@@ -14,6 +14,9 @@ import {
   mdiPailRemove,
   mdiCloudOutline,
   mdiCalendar,
+  mdiChevronDown,
+  mdiPlus,
+  mdiMinus,
 } from "@mdi/js";
 import {
   deleteZone,
@@ -116,6 +119,20 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
   // Cache for rendered zone cards
   private zoneCache = new Map<string, TemplateResult>();
+
+  // Which zone cards are expanded (own collapsible — full control over styling)
+  private _expanded: Set<number> = new Set();
+  private _toggleZone(id?: number): void {
+    if (id == undefined) {
+      return;
+    }
+    if (this._expanded.has(id)) {
+      this._expanded.delete(id);
+    } else {
+      this._expanded.add(id);
+    }
+    this._scheduleUpdate();
+  }
 
   @query("#nameInput")
   private nameInput!: HTMLInputElement;
@@ -750,496 +767,445 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
   private renderZone(zone: SmartIrrigationZone, index: number): TemplateResult {
     if (!this.hass) {
       return html``;
-    } else {
-      let explanation_svg_to_show;
-      if (zone.explanation != null && zone.explanation.length > 0) {
-        explanation_svg_to_show = html`<svg
-          style="width:24px;height:24px"
-          viewBox="0 0 24 24"
-          id="showcalcresults${index}"
-          @click="${() => this.toggleExplanation(index)}"
+    }
+    const lang = this.hass.language;
+    const isAutomatic = zone.state === SmartIrrigationZoneState.Automatic;
+    const durationReadonly =
+      zone.state === SmartIrrigationZoneState.Disabled ||
+      zone.state === SmartIrrigationZoneState.Automatic;
+    const hasExplanation =
+      zone.explanation != null && zone.explanation.length > 0;
+
+    // keep data-point count in sync from the linked mapping
+    if (zone.mapping != undefined) {
+      const the_mapping = this.mappings.filter((o) => o.id === zone.mapping)[0];
+      if (the_mapping != undefined && the_mapping.data != undefined) {
+        zone.number_of_data_points = the_mapping.data.length;
+      }
+    }
+
+    const stateLabel = localize(
+      "panels.zones.labels.states." + zone.state,
+      lang,
+    );
+    const durationText = `${Math.round(
+      Number(zone.duration) || 0,
+    )} ${UNIT_SECONDS}`;
+
+    const expanded = zone.id != undefined && this._expanded.has(zone.id);
+
+    return html`
+      <ha-card class="zone-card">
+        <div
+          class="zone-head"
+          role="button"
+          tabindex="0"
+          aria-expanded=${expanded ? "true" : "false"}
+          @click=${() => this._toggleZone(zone.id)}
+          @keydown=${(e: KeyboardEvent) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              this._toggleZone(zone.id);
+            }
+          }}
         >
-          <title>
-            ${localize("panels.zones.actions.information", this.hass.language)}
-          </title>
-          <path fill="#404040" d="${mdiInformationOutline}" />
-        </svg>`;
-      }
-      // Create labeled action buttons for zones page
-      let calculation_button_to_show;
-      if (zone.state === SmartIrrigationZoneState.Automatic) {
-        calculation_button_to_show = html` <div
-          class="action-button-left"
-          @click="${() => this.handleCalculateZone(index)}"
-        >
-          <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-            <path fill="#404040" d="${mdiCalculator}" />
-          </svg>
-          <span class="action-button-label">
-            ${localize("panels.zones.actions.calculate", this.hass.language)}
-          </span>
-        </div>`;
-      }
-
-      let update_button_to_show;
-      if (zone.state === SmartIrrigationZoneState.Automatic) {
-        update_button_to_show = html` <div
-          class="action-button-left"
-          @click="${() => this.handleUpdateZone(index)}"
-        >
-          <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-            <path fill="#404040" d="${mdiUpdate}" />
-          </svg>
-          <span class="action-button-label">
-            ${localize("panels.zones.actions.update", this.hass.language)}
-          </span>
-        </div>`;
-      }
-
-      const reset_bucket_button_to_show = html` <div
-        class="action-button-right"
-        @click="${() =>
-          this.handleEditZone(index, {
-            ...zone,
-            [ZONE_BUCKET]: 0.0,
-          })}"
-      >
-        <span class="action-button-label">
-          ${localize("panels.zones.actions.reset-bucket", this.hass.language)}
-        </span>
-        <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-          <path fill="#404040" d="${mdiPailRemove}" />
-        </svg>
-      </div>`;
-
-      let weather_info_button_to_show;
-      if (zone.mapping != undefined) {
-        weather_info_button_to_show = html` <div
-          class="action-button-right"
-          @click="${() => this.handleViewWeatherInfo(index)}"
-        >
-          <span class="action-button-label">
-            ${localize(
-              "panels.zones.actions.view-weather-info",
-              this.hass.language,
-            )}
-          </span>
-          <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-            <path fill="#404040" d="${mdiCloudOutline}" />
-          </svg>
-        </div>`;
-      }
-
-      // Calendar button for watering calendar
-      const calendar_button_to_show = html` <div
-        class="action-button-right"
-        @click="${() => this.handleViewWateringCalendar(index)}"
-      >
-        <span class="action-button-label">
-          ${localize(
-            "panels.zones.actions.view-watering-calendar",
-            this.hass.language,
-          )}
-        </span>
-        <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-          <path fill="#404040" d="${mdiCalendar}" />
-        </svg>
-      </div>`;
-
-      const information_button_to_show =
-        zone.explanation != null && zone.explanation.length > 0
-          ? html` <div
-              class="action-button-left"
-              @click="${() => this.toggleExplanation(index)}"
-            >
-              <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-                <path fill="#404040" d="${mdiInformationOutline}" />
-              </svg>
-              <span class="action-button-label">
-                ${localize(
-                  "panels.zones.actions.information",
-                  this.hass.language,
-                )}
-              </span>
-            </div>`
-          : html``;
-
-      const delete_button_to_show = html` <div
-        class="action-button-right"
-        @click="${(e: Event) => this.handleRemoveZone(e, index)}"
-      >
-        <span class="action-button-label">
-          ${localize("common.actions.delete", this.hass.language)}
-        </span>
-        <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-          <path fill="#404040" d="${mdiDelete}" />
-        </svg>
-      </div>`;
-
-      //get number of datapoints
-      let the_mapping;
-      if (zone.mapping != undefined) {
-        the_mapping = this.mappings.filter((o) => o.id === zone.mapping)[0];
-        if (the_mapping != undefined) {
-          if (the_mapping.data != undefined) {
-            zone.number_of_data_points = the_mapping.data.length;
-          }
-        }
-      }
-      return html`
-        <ha-card header="${zone.name}">
-          <div class="card-content">
-            <div class="zone-info-table">
-              <div class="zone-info-row">
-                <span class="zone-info-label">${localize(
-                  "panels.zones.labels.last_calculated",
-                  this.hass.language,
-                )}:</span>
-                <span class="zone-info-value">${
-                  zone.last_calculated
-                    ? moment(zone.last_calculated).format("YYYY-MM-DD HH:mm:ss")
-                    : "-"
-                }</span>
-              </div>
-              <div class="zone-info-row">
-                <span class="zone-info-label">${localize(
-                  "panels.zones.labels.data-last-updated",
-                  this.hass.language,
-                )}:</span>
-                <span class="zone-info-value">${
-                  zone.last_updated
-                    ? moment(zone.last_updated).format("YYYY-MM-DD HH:mm:ss")
-                    : "-"
-                }</span>
-              </div>
-              <div class="zone-info-row">
-                <span class="zone-info-label">${localize(
+          <div class="zone-head-text">
+            <div class="zone-title-row">
+              <span class="zone-title">${zone.name || "—"}</span>
+              <ha-label class="state-label state-label--${zone.state}" dense
+                >${stateLabel}</ha-label
+              >
+            </div>
+            <div class="zone-sub">${durationText}</div>
+          </div>
+          <ha-svg-icon
+            class="zone-chevron ${expanded ? "open" : ""}"
+            .path=${mdiChevronDown}
+          ></ha-svg-icon>
+        </div>
+        ${expanded
+          ? html` <div class="zone-body">
+          <div class="zone-meta">
+            <div class="meta-item">
+              <span class="meta-label"
+                >${localize("panels.zones.labels.last_calculated", lang)}</span
+              >
+              <span class="meta-value"
+                >${zone.last_calculated
+                  ? moment(zone.last_calculated).format("YYYY-MM-DD HH:mm")
+                  : "—"}</span
+              >
+            </div>
+            <div class="meta-item">
+              <span class="meta-label"
+                >${localize("panels.zones.labels.data-last-updated", lang)}</span
+              >
+              <span class="meta-value"
+                >${zone.last_updated
+                  ? moment(zone.last_updated).format("YYYY-MM-DD HH:mm")
+                  : "—"}</span
+              >
+            </div>
+            <div class="meta-item">
+              <span class="meta-label"
+                >${localize(
                   "panels.zones.labels.data-number-of-data-points",
-                  this.hass.language,
-                )}:</span>
-                <span class="zone-info-value">${zone.number_of_data_points}</span>
-              </div>
+                  lang,
+                )}</span
+              >
+              <span class="meta-value">${zone.number_of_data_points ?? "—"}</span>
             </div>
           </div>
-          <div class="card-content">
-            <label for="name${index}"
-              >${localize(
-                "panels.zones.labels.name",
-                this.hass.language,
-              )}:</label
-            >
-            <input
-              id="name${index}"
-              type="text"
-              .value="${zone.name}"
-              @change="${(e: Event) =>
+
+          <div class="settings">
+            ${this._textRow(
+              localize("panels.zones.labels.name", lang),
+              "",
+              zone.name,
+              (v) => this.handleEditZone(index, { ...zone, [ZONE_NAME]: v }),
+            )}
+            ${this._numRow(
+              localize("panels.zones.labels.size", lang),
+              output_unit(this.config, ZONE_SIZE),
+              zone.size,
+              (v) =>
+                this.handleEditZone(index, { ...zone, [ZONE_SIZE]: parseFloat(v) }),
+              0.1,
+            )}
+            ${this._numRow(
+              localize("panels.zones.labels.throughput", lang),
+              output_unit(this.config, ZONE_THROUGHPUT),
+              zone.throughput,
+              (v) =>
                 this.handleEditZone(index, {
                   ...zone,
-                  [ZONE_NAME]: (e.target as HTMLInputElement).value,
-                })}"
-            />
-            <div class="zoneline">
-              <label for="size${index}"
-                >${localize("panels.zones.labels.size", this.hass.language)}
-                (${output_unit(this.config, ZONE_SIZE)}):</label
-              >
-              <input class="shortinput" id="size${index}" type="number""
-              .value="${zone.size}"
-              @change="${(e: Event) =>
+                  [ZONE_THROUGHPUT]: parseFloat(v),
+                }),
+              0.1,
+            )}
+            ${this._numRow(
+              localize("panels.zones.labels.drainage_rate", lang),
+              output_unit(this.config, ZONE_DRAINAGE_RATE),
+              zone.drainage_rate,
+              (v) =>
                 this.handleEditZone(index, {
                   ...zone,
-                  [ZONE_SIZE]: parseFloat((e.target as HTMLInputElement).value),
-                })}"
-              />
-            </div>
-            <div class="zoneline">
-              <label for="throughput${index}"
-                >${localize(
-                  "panels.zones.labels.throughput",
-                  this.hass.language,
-                )}
-                (${output_unit(this.config, ZONE_THROUGHPUT)}):</label
-              >
-              <input
-                class="shortinput"
-                id="throughput${index}"
-                type="number"
-                .value="${zone.throughput}"
-                @change="${(e: Event) =>
-                  this.handleEditZone(index, {
-                    ...zone,
-                    [ZONE_THROUGHPUT]: parseFloat(
-                      (e.target as HTMLInputElement).value,
-                    ),
-                  })}"
-              />
-            </div>
-            <div class="zoneline">
-              <label for="drainage_rate${index}"
-                >${localize(
-                  "panels.zones.labels.drainage_rate",
-                  this.hass.language,
-                )}
-                (${output_unit(this.config, ZONE_DRAINAGE_RATE)}):</label
-              >
-              <input
-                class="shortinput"
-                id="drainage_rate${index}"
-                type="number"
-                .value="${zone.drainage_rate}"
-                @change="${(e: Event) =>
-                  this.handleEditZone(index, {
-                    ...zone,
-                    [ZONE_DRAINAGE_RATE]: parseFloat(
-                      (e.target as HTMLInputElement).value,
-                    ),
-                  })}"
-              />
-            </div>
-            <div class="zoneline">
-              <label for="state${index}"
-                >${localize(
-                  "panels.zones.labels.state",
-                  this.hass.language,
-                )}:</label
-              >
-              <select
-                required
-                id="state${index}"
-                @change="${(e: Event) =>
-                  this.handleEditZone(index, {
-                    ...zone,
-                    [ZONE_STATE]: (e.target as HTMLSelectElement)
-                      .value as SmartIrrigationZoneState,
-                    [ZONE_DURATION]: 0,
-                  })}"
-              >
+                  [ZONE_DRAINAGE_RATE]: parseFloat(v),
+                }),
+              0.1,
+            )}
+
+            ${this._selectRow(
+              localize("panels.zones.labels.state", lang),
+              html`
                 <option
                   value="${SmartIrrigationZoneState.Automatic}"
-                  ?selected="${
-                    zone.state === SmartIrrigationZoneState.Automatic
-                  }"
+                  ?selected=${zone.state === SmartIrrigationZoneState.Automatic}
                 >
-                  ${localize(
-                    "panels.zones.labels.states.automatic",
-                    this.hass.language,
-                  )}
+                  ${localize("panels.zones.labels.states.automatic", lang)}
                 </option>
                 <option
                   value="${SmartIrrigationZoneState.Disabled}"
-                  ?selected="${
-                    zone.state === SmartIrrigationZoneState.Disabled
-                  }"
+                  ?selected=${zone.state === SmartIrrigationZoneState.Disabled}
                 >
-                  ${localize(
-                    "panels.zones.labels.states.disabled",
-                    this.hass.language,
-                  )}
+                  ${localize("panels.zones.labels.states.disabled", lang)}
                 </option>
                 <option
                   value="${SmartIrrigationZoneState.Manual}"
-                  ?selected="${zone.state === SmartIrrigationZoneState.Manual}"
+                  ?selected=${zone.state === SmartIrrigationZoneState.Manual}
                 >
-                  ${localize(
-                    "panels.zones.labels.states.manual",
-                    this.hass.language,
-                  )}
+                  ${localize("panels.zones.labels.states.manual", lang)}
                 </option>
-              </select>
-              <label for="module${index}"
-                >${localize("common.labels.module", this.hass.language)}:</label
-              >
+              `,
+              (e: Event) =>
+                this.handleEditZone(index, {
+                  ...zone,
+                  [ZONE_STATE]: (e.target as HTMLSelectElement)
+                    .value as SmartIrrigationZoneState,
+                  [ZONE_DURATION]: 0,
+                }),
+            )}
+            ${this._selectRow(
+              localize("common.labels.module", lang),
+              this.renderTheOptions(this.modules, zone.module),
+              (e: Event) => {
+                const v = (e.target as HTMLSelectElement).value;
+                this.handleEditZone(index, {
+                  ...zone,
+                  [ZONE_MODULE]: v === "" ? undefined : parseInt(v),
+                });
+              },
+            )}
+            ${this._selectRow(
+              localize("panels.zones.labels.mapping", lang),
+              this.renderTheOptions(this.mappings, zone.mapping),
+              (e: Event) => {
+                const v = (e.target as HTMLSelectElement).value;
+                this.handleEditZone(index, {
+                  ...zone,
+                  [ZONE_MAPPING]: v === "" ? undefined : parseInt(v),
+                });
+              },
+            )}
 
-              <select
-                id="module${index}"
-                @change="${(e: Event) =>
-                  this.handleEditZone(index, {
-                    ...zone,
-                    [ZONE_MODULE]: parseInt(
-                      (e.target as HTMLSelectElement).value,
-                    ),
-                  })}"
-              >
-                ${this.renderTheOptions(this.modules, zone.module)}
-              </select>
-              <label for="module${index}"
-                >${localize(
-                  "panels.zones.labels.mapping",
-                  this.hass.language,
-                )}:</label
-              >
-
-              <select
-                id="mapping${index}"
-                @change="${(e: Event) =>
-                  this.handleEditZone(index, {
-                    ...zone,
-                    [ZONE_MAPPING]: parseInt(
-                      (e.target as HTMLSelectElement).value,
-                    ),
-                  })}"
-              >
-                ${this.renderTheOptions(this.mappings, zone.mapping)}
-              </select>
-            </div>
-            <div class="zoneline">
-              <label for="bucket${index}"
-                >${localize("panels.zones.labels.bucket", this.hass.language)}
-                (${output_unit(this.config, ZONE_BUCKET)}):</label
-              >
-              <input
-                class="shortinput"
-                id="bucket${index}"
-                type="number"
-                .value="${Number(zone.bucket).toFixed(1)}"
-                @change="${(e: Event) =>
-                  this.handleEditZone(index, {
-                    ...zone,
-                    [ZONE_BUCKET]: parseFloat(
-                      (e.target as HTMLInputElement).value,
-                    ),
-                  })}"
-              />
-              <label for="maximum-bucket${index}"
-                >${localize(
-                  "panels.zones.labels.maximum-bucket",
-                  this.hass.language,
-                )}
-                (${output_unit(this.config, ZONE_BUCKET)}):</label
-              >
-              <input
-                class="shortinput"
-                id="maximum-bucket${index}"
-                type="number"
-                .value="${Number(zone.maximum_bucket).toFixed(1)}"
-                @change="${(e: Event) =>
-                  this.handleEditZone(index, {
-                    ...zone,
-                    [ZONE_MAXIMUM_BUCKET]: parseFloat(
-                      (e.target as HTMLInputElement).value,
-                    ),
-                  })}"
-              />
-            </div>
-            <div class="zoneline">
-              <label for="lead_time${index}"
-                >${localize(
-                  "panels.zones.labels.lead-time",
-                  this.hass.language,
-                )}
-                (s):</label
-              >
-              <input
-                class="shortinput"
-                id="lead_time${index}"
-                type="number"
-                .value="${zone.lead_time}"
-                @change="${(e: Event) =>
-                  this.handleEditZone(index, {
-                    ...zone,
-                    [ZONE_LEAD_TIME]: parseInt(
-                      (e.target as HTMLInputElement).value,
-                      10,
-                    ),
-                  })}"
-              />
-            </div>
-            <div class="zoneline">
-              <label for="maximum-duration${index}"
-                >${localize(
-                  "panels.zones.labels.maximum-duration",
-                  this.hass.language,
-                )}
-                (s):</label
-              >
-              <input
-                class="shortinput"
-                id="maximum-duration${index}"
-                type="number"
-                .value="${zone.maximum_duration}"
-                @change="${(e: Event) =>
-                  this.handleEditZone(index, {
-                    ...zone,
-                    [ZONE_MAXIMUM_DURATION]: parseInt(
-                      (e.target as HTMLInputElement).value,
-                      10,
-                    ),
-                  })}"
-              />
-            </div>
-            <div class="zoneline">
-              <label for="multiplier${index}"
-                >${localize(
-                  "panels.zones.labels.multiplier",
-                  this.hass.language,
-                )}:</label
-              >
-              <input
-                class="shortinput"
-                id="multiplier${index}"
-                type="number"
-                .value="${zone.multiplier}"
-                @change="${(e: Event) =>
-                  this.handleEditZone(index, {
-                    ...zone,
-                    [ZONE_MULTIPLIER]: parseFloat(
-                      (e.target as HTMLInputElement).value,
-                    ),
-                  })}"
-              />
-              <label for="duration${index}"
-                >${localize("panels.zones.labels.duration", this.hass.language)}
-                (${UNIT_SECONDS}):</label
-              >
-              <input
-                class="shortinput"
-                id="duration${index}"
-                type="number"
-                .value="${zone.duration}"
-                ?readonly="${
-                  zone.state === SmartIrrigationZoneState.Disabled ||
-                  zone.state === SmartIrrigationZoneState.Automatic
-                }"
-                @change="${(e: Event) =>
-                  this.handleEditZone(index, {
-                    ...zone,
-                    [ZONE_DURATION]: parseInt(
-                      (e.target as HTMLInputElement).value,
-                      10,
-                    ),
-                  })}"
-              />
-            </div>
-            <div class="action-buttons">
-              <div class="action-buttons-left">
-                ${update_button_to_show}
-                ${calculation_button_to_show}
-                ${information_button_to_show}
-              </div>
-              <div class="action-buttons-right">
-                ${reset_bucket_button_to_show}
-                ${weather_info_button_to_show}
-                ${calendar_button_to_show}
-                ${delete_button_to_show}
-              </div>
-            </div>
-            <div class="zoneline">
-              <div>
-                <label class="hidden" id="calcresults${index}"
-                  >${unsafeHTML("<br/>" + zone.explanation)}</label
-                >
-              </div>
-            </div>
-            <div id="calendar-section-${zone.id}" hidden>
-              ${this.renderWateringCalendar(zone)}
-            </div>
-            <div id="weather-section-${zone.id}" hidden>
-              ${this.renderWeatherRecords(zone)}
-            </div>
+            ${this._numRow(
+              localize("panels.zones.labels.bucket", lang),
+              output_unit(this.config, ZONE_BUCKET),
+              Number(zone.bucket).toFixed(1),
+              (v) =>
+                this.handleEditZone(index, { ...zone, [ZONE_BUCKET]: parseFloat(v) }),
+              0.1,
+            )}
+            ${this._numRow(
+              localize("panels.zones.labels.maximum-bucket", lang),
+              output_unit(this.config, ZONE_BUCKET),
+              Number(zone.maximum_bucket).toFixed(1),
+              (v) =>
+                this.handleEditZone(index, {
+                  ...zone,
+                  [ZONE_MAXIMUM_BUCKET]: parseFloat(v),
+                }),
+              0.1,
+            )}
+            ${this._numRow(
+              localize("panels.zones.labels.lead-time", lang),
+              "s",
+              zone.lead_time,
+              (v) =>
+                this.handleEditZone(index, {
+                  ...zone,
+                  [ZONE_LEAD_TIME]: parseInt(v, 10),
+                }),
+              1,
+            )}
+            ${this._numRow(
+              localize("panels.zones.labels.maximum-duration", lang),
+              "s",
+              zone.maximum_duration,
+              (v) =>
+                this.handleEditZone(index, {
+                  ...zone,
+                  [ZONE_MAXIMUM_DURATION]: parseInt(v, 10),
+                }),
+              1,
+            )}
+            ${this._numRow(
+              localize("panels.zones.labels.multiplier", lang),
+              "",
+              zone.multiplier,
+              (v) =>
+                this.handleEditZone(index, {
+                  ...zone,
+                  [ZONE_MULTIPLIER]: parseFloat(v),
+                }),
+              0.1,
+            )}
+            ${this._numRow(
+              localize("panels.zones.labels.duration", lang),
+              UNIT_SECONDS,
+              zone.duration,
+              (v) =>
+                this.handleEditZone(index, {
+                  ...zone,
+                  [ZONE_DURATION]: parseInt(v, 10),
+                }),
+              1,
+              durationReadonly,
+            )}
           </div>
-        </ha-card>
-      `;
-    }
+
+          <div class="zone-actions">
+            ${isAutomatic
+              ? html`
+                  ${this._actionBtn(
+                    mdiCalculator,
+                    localize("panels.zones.actions.calculate", lang),
+                    () => this.handleCalculateZone(index),
+                  )}
+                  ${this._actionBtn(
+                    mdiUpdate,
+                    localize("panels.zones.actions.update", lang),
+                    () => this.handleUpdateZone(index),
+                  )}
+                `
+              : ""}
+            ${this._actionBtn(
+              mdiPailRemove,
+              localize("panels.zones.actions.reset-bucket", lang),
+              () =>
+                this.handleEditZone(index, { ...zone, [ZONE_BUCKET]: 0.0 }),
+            )}
+            ${zone.mapping != undefined
+              ? this._actionBtn(
+                  mdiCloudOutline,
+                  localize("panels.zones.actions.view-weather-info", lang),
+                  () => this.handleViewWeatherInfo(index),
+                )
+              : ""}
+            ${this._actionBtn(
+              mdiCalendar,
+              localize("panels.zones.actions.view-watering-calendar", lang),
+              () => this.handleViewWateringCalendar(index),
+            )}
+            ${hasExplanation
+              ? this._actionBtn(
+                  mdiInformationOutline,
+                  localize("panels.zones.actions.information", lang),
+                  () => this.toggleExplanation(index),
+                )
+              : ""}
+            ${this._actionBtn(
+              mdiDelete,
+              localize("common.actions.delete", lang),
+              (e: Event) => this.handleRemoveZone(e, index),
+              true,
+            )}
+          </div>
+
+          ${hasExplanation
+            ? html`<label class="hidden" id="calcresults${index}"
+                >${unsafeHTML("<br/>" + zone.explanation)}</label
+              >`
+            : ""}
+          <div id="calendar-section-${zone.id}" hidden>
+            ${this.renderWateringCalendar(zone)}
+          </div>
+          <div id="weather-section-${zone.id}" hidden>
+            ${this.renderWeatherRecords(zone)}
+          </div>
+        </div>`
+          : ""}
+      </ha-card>
+    `;
+  }
+
+  // --- modern row helpers (HA-native controls) ---
+  private _textRow(
+    label: string,
+    unit: string | TemplateResult,
+    value: any,
+    onCommit: (v: string) => void,
+  ): TemplateResult {
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">
+          ${label}${unit ? html` <span class="unit">(${unit})</span>` : ""}
+        </div>
+        <input
+          class="field"
+          type="text"
+          .value=${value === undefined || value === null ? "" : String(value)}
+          @change=${(e: Event) =>
+            onCommit((e.target as HTMLInputElement).value)}
+        />
+      </div>
+    `;
+  }
+
+  private _numRow(
+    label: string,
+    unit: string | TemplateResult,
+    value: any,
+    onCommit: (v: string) => void,
+    step = 1,
+    readonly = false,
+  ): TemplateResult {
+    const decimals = (String(step).split(".")[1] || "").length;
+    const bump = (input: HTMLInputElement, dir: number) => {
+      const cur = parseFloat(input.value);
+      const next = +((isNaN(cur) ? 0 : cur) + dir * step).toFixed(decimals);
+      input.value = String(next);
+      onCommit(String(next));
+    };
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">
+          ${label}${unit ? html` <span class="unit">(${unit})</span>` : ""}
+        </div>
+        <div class="num-field">
+          <input
+            class="field num-input"
+            type="number"
+            step=${step}
+            ?readonly=${readonly}
+            .value=${value === undefined || value === null ? "" : String(value)}
+            @wheel=${(e: WheelEvent) => {
+              // never let scrolling change a focused number field (auto-save!)
+              if ((e.target as HTMLElement).matches(":focus"))
+                e.preventDefault();
+            }}
+            @change=${(e: Event) =>
+              onCommit((e.target as HTMLInputElement).value)}
+          />
+          <ha-icon-button
+            class="step-btn"
+            .path=${mdiMinus}
+            ?disabled=${readonly}
+            @click=${(e: Event) =>
+              bump(
+                (e.currentTarget as HTMLElement).parentElement!.querySelector(
+                  "input",
+                ) as HTMLInputElement,
+                -1,
+              )}
+          ></ha-icon-button>
+          <ha-icon-button
+            class="step-btn"
+            .path=${mdiPlus}
+            ?disabled=${readonly}
+            @click=${(e: Event) =>
+              bump(
+                (e.currentTarget as HTMLElement).parentElement!.querySelector(
+                  "input",
+                ) as HTMLInputElement,
+                1,
+              )}
+          ></ha-icon-button>
+        </div>
+      </div>
+    `;
+  }
+
+  private _selectRow(
+    label: string,
+    options: TemplateResult,
+    onChange: (e: Event) => void,
+  ): TemplateResult {
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">${label}</div>
+        <div class="select-wrap">
+          <select class="field" @change=${onChange}>
+            ${options}
+          </select>
+          <svg class="chev" viewBox="0 0 24 24">
+            <path d=${mdiChevronDown}></path>
+          </svg>
+        </div>
+      </div>
+    `;
+  }
+
+  // Action button: native ha-button, light "filled" appearance,
+  // "danger" variant turns it red.
+  private _actionBtn(
+    icon: string,
+    label: string,
+    onClick: (e: Event) => void,
+    danger = false,
+    disabled = false,
+  ): TemplateResult {
+    return html`
+      <ha-button
+        appearance=${danger ? "accent" : "filled"}
+        variant=${danger ? "danger" : "brand"}
+        ?disabled=${disabled}
+        @click=${onClick}
+      >
+        <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
+        ${label}
+      </ha-button>
+    `;
   }
 
   toggleExplanation(index: number) {
@@ -1291,106 +1257,60 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         )}"
       >
         <div class="card-content">
-          <div class="zoneline">
-            <label for="nameInput"
-              >${localize(
-                "panels.zones.labels.name",
-                this.hass.language,
-              )}:</label
-            >
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize("panels.zones.labels.name", this.hass.language)}
+            </div>
             <input
               id="nameInput"
+              class="field"
               type="text"
               @focus="${this.handleZoneFormFocus}"
               @blur="${this.handleZoneFormBlur}"
             />
           </div>
-          <div class="zoneline">
-            <label for="sizeInput"
-              >${localize(
-                "panels.zones.labels.size",
-                this.hass.language,
-              )}:</label
-            >
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize("panels.zones.labels.size", this.hass.language)}
+              <span class="unit">(${output_unit(this.config, ZONE_SIZE)})</span>
+            </div>
             <input
               id="sizeInput"
+              class="field"
               type="number"
               @focus="${this.handleZoneFormFocus}"
               @blur="${this.handleZoneFormBlur}"
             />
           </div>
-          <div class="zoneline">
-            <label for="throughputInput"
-              >${localize(
-                "panels.zones.labels.throughput",
-                this.hass.language,
-              )}:</label
-            >
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize("panels.zones.labels.throughput", this.hass.language)}
+              <span class="unit"
+                >(${output_unit(this.config, ZONE_THROUGHPUT)})</span
+              >
+            </div>
             <input
               id="throughputInput"
+              class="field"
               type="number"
               @focus="${this.handleZoneFormFocus}"
               @blur="${this.handleZoneFormBlur}"
             />
           </div>
-          <div class="zoneline">
-            <span></span>
-            <button @click="${this.handleAddZone}" ?disabled="${this.isSaving}">
+          <div class="add-zone-actions">
+            <ha-button
+              appearance="filled"
+              @click="${this.handleAddZone}"
+              ?disabled="${this.isSaving}"
+            >
+              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
               ${this.isSaving
                 ? localize("common.saving-messages.adding", this.hass.language)
                 : localize(
                     "panels.zones.cards.add-zone.actions.add",
                     this.hass.language,
                   )}
-            </button>
-          </div>
-        </div>
-      </ha-card>
-
-      <ha-card
-        header="${localize(
-          "panels.zones.cards.zone-actions.header",
-          this.hass.language,
-        )}"
-      >
-        <div class="card-content">
-          <div class="action-buttons">
-            <button
-              @click="${this.handleCalculateAllZones}"
-              ?disabled="${this.isSaving}"
-            >
-              ${localize(
-                "panels.zones.cards.zone-actions.actions.calculate-all",
-                this.hass.language,
-              )}
-            </button>
-            <button
-              @click="${this.handleUpdateAllZones}"
-              ?disabled="${this.isSaving}"
-            >
-              ${localize(
-                "panels.zones.cards.zone-actions.actions.update-all",
-                this.hass.language,
-              )}
-            </button>
-            <button
-              @click="${this.handleResetAllBuckets}"
-              ?disabled="${this.isSaving}"
-            >
-              ${localize(
-                "panels.zones.cards.zone-actions.actions.reset-all-buckets",
-                this.hass.language,
-              )}
-            </button>
-            <button
-              @click="${this.handleClearAllWeatherdata}"
-              ?disabled="${this.isSaving}"
-            >
-              ${localize(
-                "panels.zones.cards.zone-actions.actions.clear-all-weatherdata",
-                this.hass.language,
-              )}
-            </button>
+            </ha-button>
           </div>
         </div>
       </ha-card>
@@ -1400,6 +1320,58 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         (zone) => zone.id ?? zone.name,
         (zone, index) => this.renderZone(zone, index),
       )}
+
+      <ha-card
+        header="${localize(
+          "panels.zones.cards.zone-actions.header",
+          this.hass.language,
+        )}"
+      >
+        <div class="card-content">
+          <div class="zone-actions-grid">
+            ${this._actionBtn(
+              mdiCalculator,
+              localize(
+                "panels.zones.cards.zone-actions.actions.calculate-all",
+                this.hass.language,
+              ),
+              () => this.handleCalculateAllZones(),
+              false,
+              this.isSaving,
+            )}
+            ${this._actionBtn(
+              mdiUpdate,
+              localize(
+                "panels.zones.cards.zone-actions.actions.update-all",
+                this.hass.language,
+              ),
+              () => this.handleUpdateAllZones(),
+              false,
+              this.isSaving,
+            )}
+            ${this._actionBtn(
+              mdiPailRemove,
+              localize(
+                "panels.zones.cards.zone-actions.actions.reset-all-buckets",
+                this.hass.language,
+              ),
+              () => this.handleResetAllBuckets(),
+              false,
+              this.isSaving,
+            )}
+            ${this._actionBtn(
+              mdiCloudOutline,
+              localize(
+                "panels.zones.cards.zone-actions.actions.clear-all-weatherdata",
+                this.hass.language,
+              ),
+              () => this.handleClearAllWeatherdata(),
+              false,
+              this.isSaving,
+            )}
+          </div>
+        </div>
+      </ha-card>
     `;
   }
 
@@ -1425,7 +1397,291 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return css`
-      ${globalStyle}/* View-specific styles only - most common styles are now in globalStyle */
+      ${globalStyle}
+
+      /* --- Modern zone cards (HA-native look) --- */
+      /* own collapsible: a plain ha-card (white surface like every HA card)
+         with a clickable header — no mystery hover/focus tints */
+      .zone-card {
+        overflow: hidden;
+      }
+      .zone-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .zone-head:focus-visible {
+        outline: 2px solid var(--primary-color);
+        outline-offset: -2px;
+      }
+      .zone-head-text {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      .zone-title-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+      .zone-title {
+        font-size: 1.15rem;
+        font-weight: 500;
+        color: var(--primary-text-color);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 0 1 auto;
+        min-width: 0;
+      }
+      /* native HA state pill (ha-label), tinted by zone state */
+      ha-label.state-label {
+        flex: 0 0 auto;
+        --ha-label-background-color: rgba(
+          var(--rgb-disabled-text-color, 120, 120, 120),
+          0.15
+        );
+      }
+      ha-label.state-label--automatic {
+        --ha-label-background-color: rgba(
+          var(--rgb-success-color, 67, 160, 71),
+          0.18
+        );
+      }
+      ha-label.state-label--manual {
+        --ha-label-background-color: rgba(
+          var(--rgb-warning-color, 255, 166, 0),
+          0.22
+        );
+      }
+      .zone-sub {
+        font-size: 0.85em;
+        color: var(--secondary-text-color);
+      }
+      .zone-chevron {
+        flex: 0 0 auto;
+        color: var(--secondary-text-color);
+        transition: transform 0.2s ease;
+      }
+      .zone-chevron.open {
+        transform: rotate(180deg);
+      }
+
+      .zone-body {
+        padding: 12px 16px 16px;
+        border-top: 1px solid var(--divider-color);
+      }
+
+      .zone-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 28px;
+        padding: 4px 0 12px;
+      }
+      .meta-item {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .meta-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--secondary-text-color);
+      }
+      .meta-value {
+        color: var(--primary-text-color);
+        font-weight: 500;
+      }
+
+      .settings {
+        display: flex;
+        flex-direction: column;
+      }
+      .setting-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 52px;
+        padding: 4px 0;
+        border-bottom: 1px solid var(--divider-color);
+      }
+      .setting-row:last-child {
+        border-bottom: 0;
+      }
+      .setting-label {
+        color: var(--primary-text-color);
+        font-weight: 500;
+      }
+      .setting-label .unit {
+        color: var(--secondary-text-color);
+        font-weight: 400;
+        font-size: 0.85em;
+      }
+      /* one unified field style for BOTH inputs and selects, themed with the
+         same MDC variables HA's own ha-textfield/ha-select use (native feel) */
+      .field {
+        flex: 0 0 auto;
+        width: 240px;
+        max-width: 50%;
+        height: 44px;
+        box-sizing: border-box;
+        padding: 0 12px;
+        border: none;
+        border-bottom: 1px solid
+          var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
+        border-radius: 4px 4px 0 0;
+        background: var(
+          --mdc-text-field-fill-color,
+          var(--input-fill-color, rgba(0, 0, 0, 0.04))
+        );
+        color: var(--primary-text-color);
+        font-size: 1rem;
+        font-family: var(--paper-font-body1_-_font-family, inherit);
+        line-height: normal;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+      }
+      .field:hover {
+        border-bottom-color: var(
+          --mdc-text-field-hover-line-color,
+          var(--primary-text-color)
+        );
+      }
+      .field:focus {
+        outline: none;
+        border-bottom: 2px solid var(--mdc-theme-primary, var(--primary-color));
+      }
+      input.field[readonly] {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+      /* kill the number spinners (silly 1-by-1 increments on decimal fields) */
+      input.field[type="number"] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
+      input.field[type="number"]::-webkit-outer-spin-button,
+      input.field[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      /* number field with clean HA +/- steppers */
+      .num-field {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        flex: 0 0 auto;
+        width: 240px;
+        max-width: 50%;
+      }
+      .num-field .num-input {
+        flex: 1 1 auto;
+        width: auto;
+        min-width: 0;
+        max-width: none;
+        /* text on the left, like the fields without steppers */
+        text-align: left;
+      }
+      .num-field .step-btn {
+        flex: 0 0 auto;
+        color: var(--secondary-text-color);
+        --mdc-icon-button-size: 36px;
+        --mdc-icon-size: 20px;
+      }
+      .num-field .step-btn:hover {
+        color: var(--primary-color);
+      }
+      /* native select wrapped so we can draw a themed chevron */
+      .select-wrap {
+        position: relative;
+        flex: 0 0 auto;
+        width: 240px;
+        max-width: 50%;
+        display: inline-flex;
+      }
+      .select-wrap .field {
+        width: 100%;
+        max-width: 100%;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        padding-right: 36px;
+        cursor: pointer;
+      }
+      .select-wrap .chev {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        pointer-events: none;
+        fill: var(--secondary-text-color);
+      }
+
+      .zone-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--divider-color);
+      }
+      .zone-actions-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .add-zone-actions {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 8px;
+      }
+      /* native ha-button: appearance/variant handle the colors. 2-col grid,
+         full-width cells, content left-aligned so the icon stays fixed left. */
+      .zone-actions ha-button,
+      .zone-actions-grid ha-button {
+        width: 100%;
+      }
+      .zone-actions ha-button::part(base),
+      .zone-actions-grid ha-button::part(base) {
+        justify-content: flex-start;
+      }
+      .zone-actions ha-button::part(label),
+      .zone-actions-grid ha-button::part(label) {
+        text-align: left;
+      }
+      .zone-actions ha-button ha-svg-icon,
+      .zone-actions-grid ha-button ha-svg-icon,
+      .add-zone-actions ha-button ha-svg-icon {
+        --mdc-icon-size: 18px;
+      }
+      @media (max-width: 600px) {
+        .zone-actions,
+        .zone-actions-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .setting-row {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 6px;
+        }
+        .field,
+        .select-wrap,
+        .num-field {
+          width: 100%;
+          max-width: 100%;
+        }
+      }
     `;
   }
 }

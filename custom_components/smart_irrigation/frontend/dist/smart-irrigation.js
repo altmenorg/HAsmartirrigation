@@ -954,7 +954,7 @@
       ye(e, "show-dialog", {
         dialogTag: "error-dialog",
         dialogImport: () => Promise.resolve().then(function () {
-          return qn;
+          return es;
         }),
         dialogParams: {
           error: t
@@ -5116,10 +5116,16 @@
       return "Translation " + e;
     }
   }
-  var mn = "M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z",
-    fn = "M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z",
-    vn = "M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z";
-  const bn = o`
+  var mn = "M7,2H17A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H7A2,2 0 0,1 5,20V4A2,2 0 0,1 7,2M7,4V8H17V4H7M7,10V12H9V10H7M11,10V12H13V10H11M15,10V12H17V10H15M7,14V16H9V14H7M11,14V16H13V14H11M15,14V16H17V14H15M7,18V20H9V18H7M11,18V20H13V18H11M15,18V20H17V18H15Z",
+    fn = "M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z",
+    vn = "M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z",
+    bn = "M6.5 20Q4.22 20 2.61 18.43 1 16.85 1 14.58 1 12.63 2.17 11.1 3.35 9.57 5.25 9.15 5.88 6.85 7.75 5.43 9.63 4 12 4 14.93 4 16.96 6.04 19 8.07 19 11 20.73 11.2 21.86 12.5 23 13.78 23 15.5 23 17.38 21.69 18.69 20.38 20 18.5 20M6.5 18H18.5Q19.55 18 20.27 17.27 21 16.55 21 15.5 21 14.45 20.27 13.73 19.55 13 18.5 13H17V11Q17 8.93 15.54 7.46 14.08 6 12 6 9.93 6 8.46 7.46 7 8.93 7 11H6.5Q5.05 11 4.03 12.03 3 13.05 3 14.5 3 15.95 4.03 17 5.05 18 6.5 18M12 12Z",
+    _n = "M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z",
+    yn = "M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z",
+    wn = "M12.5 9.36L4.27 14.11C3.79 14.39 3.18 14.23 2.9 13.75C2.62 13.27 2.79 12.66 3.27 12.38L11.5 7.63C11.97 7.35 12.58 7.5 12.86 8C13.14 8.47 12.97 9.09 12.5 9.36M13 19C13 15.82 15.47 13.23 18.6 13L20 6H21V4H3V6H4L4.76 9.79L10.71 6.36C11.09 6.13 11.53 6 12 6C13.38 6 14.5 7.12 14.5 8.5C14.5 9.44 14 10.26 13.21 10.69L5.79 14.97L7 21H13.35C13.13 20.37 13 19.7 13 19M21.12 15.46L19 17.59L16.88 15.46L15.47 16.88L17.59 19L15.47 21.12L16.88 22.54L19 20.41L21.12 22.54L22.54 21.12L20.41 19L22.54 16.88L21.12 15.46Z",
+    kn = "M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z",
+    $n = "M21,10.12H14.22L16.96,7.3C14.23,4.6 9.81,4.5 7.08,7.2C4.35,9.91 4.35,14.28 7.08,17C9.81,19.7 14.23,19.7 16.96,17C18.32,15.65 19,14.08 19,12.1H21C21,14.08 20.12,16.65 18.36,18.39C14.85,21.87 9.15,21.87 5.64,18.39C2.14,14.92 2.11,9.28 5.62,5.81C9.13,2.34 14.76,2.34 18.27,5.81L21,3V10.12M12.5,8V12.25L16,14.33L15.28,15.54L11,13V8H12.5Z";
+  const xn = o`
   /* Existing common styles */
   ha-card {
     display: flex;
@@ -5638,7 +5644,7 @@
     white-space: nowrap;
   }
 `,
-    _n = o`
+    Sn = o`
   /* mwc-dialog (ha-dialog) styles */
   ha-dialog {
     --mdc-dialog-min-width: 400px;
@@ -5666,7 +5672,7 @@
     margin-bottom: 10px;
   }
 `;
-  let yn = class extends oe {
+  let zn = class extends oe {
     async showDialog(e) {
       var t, a, i, n, s, r, o, l, d;
       if (this.params = e, e.createTrigger) this._trigger = {
@@ -5766,7 +5772,7 @@
         <div slot="heading" class="dialog-header-bar">
           <ha-icon-button
             dialogAction="cancel"
-            .path=${mn}
+            .path=${vn}
             class="dialog-close"
           ></ha-icon-button>
           <span class="dialog-header">${i}</span>
@@ -5925,7 +5931,7 @@
       });
     }
     static get styles() {
-      return [_n, o`
+      return [Sn, o`
         .wrapper {
           color: var(--primary-text-color);
         }
@@ -5977,10 +5983,10 @@
   };
   t([ce({
     attribute: !1
-  })], yn.prototype, "hass", void 0), t([ce({
+  })], zn.prototype, "hass", void 0), t([ce({
     attribute: !1
-  })], yn.prototype, "params", void 0), t([he()], yn.prototype, "_trigger", void 0), yn = t([de("trigger-dialog")], yn);
-  let wn = class extends Et(oe) {
+  })], zn.prototype, "params", void 0), t([he()], zn.prototype, "_trigger", void 0), zn = t([de("trigger-dialog")], zn);
+  let An = class extends Et(oe) {
     constructor() {
       super(...arguments), this.isLoading = !0, this.isSaving = !1, this._hasLoadedOnce = !1, this._suppressNextConfigUpdate = !1, this._updateScheduled = !1, this.debouncedSave = (() => {
         let e = null;
@@ -6047,7 +6053,7 @@
             <title>
               ${gn("panels.zones.actions.information", this.hass.language)}
             </title>
-            <path fill="#404040" d="${vn}" />
+            <path fill="#404040" d="${yn}" />
           </svg>
         </div>
 
@@ -6127,7 +6133,7 @@
             <title>
               ${gn("panels.zones.actions.information", this.hass.language)}
             </title>
-            <path fill="#404040" d="${vn}" />
+            <path fill="#404040" d="${yn}" />
           </svg>
         </div>
         <div class="card-content">
@@ -6252,7 +6258,7 @@
               ${gn("panels.zones.actions.information", this.hass.language)}
             </title>
 
-            <path fill="#404040" d="${vn}" />
+            <path fill="#404040" d="${yn}" />
           </svg>
         </div>
         <div class="card-content">
@@ -6330,7 +6336,7 @@
             <title>
               ${gn("panels.zones.actions.information", this.hass.language)}
             </title>
-            <path fill="#404040" d="${vn}" />
+            <path fill="#404040" d="${yn}" />
           </svg>
         </div>
         <div class="card-content">
@@ -6428,7 +6434,7 @@
             <title>
               ${gn("panels.zones.actions.information", this.hass.language)}
             </title>
-            <path fill="#404040" d="${vn}" />
+            <path fill="#404040" d="${yn}" />
           </svg>
         </div>
 
@@ -6449,7 +6455,7 @@
 
           <div class="add-trigger-section">
             <ha-button @click="${this._addTrigger}">
-              <ha-icon .path="${"M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"}"></ha-icon>
+              <ha-icon .path="${kn}"></ha-icon>
               ${gn("irrigation_start_triggers.add_trigger", this.hass.language)}
             </ha-button>
           </div>
@@ -6489,7 +6495,7 @@
             title="${gn("irrigation_start_triggers.edit_trigger", this.hass.language)}"
           ></ha-icon-button>
           <ha-icon-button
-            .path="${fn}"
+            .path="${_n}"
             @click="${() => this._deleteTrigger(t)}"
             title="${gn("irrigation_start_triggers.delete_trigger", this.hass.language)}"
           ></ha-icon-button>
@@ -6568,7 +6574,7 @@
             <title>
               ${gn("panels.zones.actions.information", this.hass.language)}
             </title>
-            <path fill="#404040" d="${vn}" />
+            <path fill="#404040" d="${yn}" />
           </svg>
         </div>
 
@@ -6656,7 +6662,7 @@
             <title>
               ${gn("panels.zones.actions.information", this.hass.language)}
             </title>
-            <path fill="#404040" d="${vn}" />
+            <path fill="#404040" d="${yn}" />
           </svg>
         </div>
 
@@ -6792,7 +6798,7 @@
             <title>
               ${gn("panels.zones.actions.information", this.hass.language)}
             </title>
-            <path fill="#404040" d="${vn}" />
+            <path fill="#404040" d="${yn}" />
           </svg>
         </div>
 
@@ -6859,7 +6865,7 @@
     }
     static get styles() {
       return o`
-      ${bn} /* View-specific styles only - most common styles are now in globalStyle */
+      ${xn} /* View-specific styles only - most common styles are now in globalStyle */
 
       /* Irrigation triggers styles */
       .triggers-list {
@@ -6945,28 +6951,28 @@
     `;
     }
   };
-  t([ce()], wn.prototype, "narrow", void 0), t([ce()], wn.prototype, "path", void 0), t([ce()], wn.prototype, "data", void 0), t([ce()], wn.prototype, "config", void 0), t([ce({
+  t([ce()], An.prototype, "narrow", void 0), t([ce()], An.prototype, "path", void 0), t([ce()], An.prototype, "data", void 0), t([ce()], An.prototype, "config", void 0), t([ce({
     type: Boolean
-  })], wn.prototype, "isLoading", void 0), t([ce({
+  })], An.prototype, "isLoading", void 0), t([ce({
     type: Boolean
-  })], wn.prototype, "isSaving", void 0), wn = t([de("smart-irrigation-view-general")], wn);
+  })], An.prototype, "isSaving", void 0), An = t([de("smart-irrigation-view-general")], An);
   /**
        * @license
        * Copyright 2020 Google LLC
        * SPDX-License-Identifier: BSD-3-Clause
        */
   const {
-      I: kn
+      I: Mn
     } = ie,
-    $n = () => document.createComment(""),
-    xn = (e, t, a) => {
+    Tn = () => document.createComment(""),
+    En = (e, t, a) => {
       var i;
       const n = e._$AA.parentNode,
         s = void 0 === t ? e._$AB : t._$AA;
       if (void 0 === a) {
-        const t = n.insertBefore($n(), s),
-          i = n.insertBefore($n(), s);
-        a = new kn(t, i, e, e.options);
+        const t = n.insertBefore(Tn(), s),
+          i = n.insertBefore(Tn(), s);
+        a = new Mn(t, i, e, e.options);
       } else {
         const t = a._$AB.nextSibling,
           r = a._$AM,
@@ -6985,10 +6991,10 @@
       }
       return a;
     },
-    Sn = (e, t, a = e) => (e._$AI(t, a), e),
-    zn = {},
-    An = (e, t = zn) => e._$AH = t,
-    Mn = e => {
+    Dn = (e, t, a = e) => (e._$AI(t, a), e),
+    Cn = {},
+    Hn = (e, t = Cn) => e._$AH = t,
+    On = e => {
       var t;
       null === (t = e._$AP) || void 0 === t || t.call(e, !1, !0);
       let a = e._$AA;
@@ -6998,12 +7004,12 @@
         a.remove(), a = e;
       }
     },
-    Tn = (e, t, a) => {
+    Pn = (e, t, a) => {
       const i = new Map();
       for (let n = t; n <= a; n++) i.set(e[n], n);
       return i;
     },
-    En = mt(class extends ft {
+    Nn = mt(class extends ft {
       constructor(e) {
         if (super(e), e.type !== gt) throw Error("repeat() can only be used in text expressions");
       }
@@ -7038,26 +7044,26 @@
           p = s.length - 1,
           g = 0,
           m = r.length - 1;
-        for (; h <= p && g <= m;) if (null === s[h]) h++;else if (null === s[p]) p--;else if (l[h] === o[g]) d[g] = Sn(s[h], r[g]), h++, g++;else if (l[p] === o[m]) d[m] = Sn(s[p], r[m]), p--, m--;else if (l[h] === o[m]) d[m] = Sn(s[h], r[m]), xn(e, d[m + 1], s[h]), h++, m--;else if (l[p] === o[g]) d[g] = Sn(s[p], r[g]), xn(e, s[h], s[p]), p--, g++;else if (void 0 === u && (u = Tn(o, g, m), c = Tn(l, h, p)), u.has(l[h])) {
+        for (; h <= p && g <= m;) if (null === s[h]) h++;else if (null === s[p]) p--;else if (l[h] === o[g]) d[g] = Dn(s[h], r[g]), h++, g++;else if (l[p] === o[m]) d[m] = Dn(s[p], r[m]), p--, m--;else if (l[h] === o[m]) d[m] = Dn(s[h], r[m]), En(e, d[m + 1], s[h]), h++, m--;else if (l[p] === o[g]) d[g] = Dn(s[p], r[g]), En(e, s[h], s[p]), p--, g++;else if (void 0 === u && (u = Pn(o, g, m), c = Pn(l, h, p)), u.has(l[h])) {
           if (u.has(l[p])) {
             const t = c.get(o[g]),
               a = void 0 !== t ? s[t] : null;
             if (null === a) {
-              const t = xn(e, s[h]);
-              Sn(t, r[g]), d[g] = t;
-            } else d[g] = Sn(a, r[g]), xn(e, s[h], a), s[t] = null;
+              const t = En(e, s[h]);
+              Dn(t, r[g]), d[g] = t;
+            } else d[g] = Dn(a, r[g]), En(e, s[h], a), s[t] = null;
             g++;
-          } else Mn(s[p]), p--;
-        } else Mn(s[h]), h++;
+          } else On(s[p]), p--;
+        } else On(s[h]), h++;
         for (; g <= m;) {
-          const t = xn(e, d[m + 1]);
-          Sn(t, r[g]), d[g++] = t;
+          const t = En(e, d[m + 1]);
+          Dn(t, r[g]), d[g++] = t;
         }
         for (; h <= p;) {
           const e = s[h++];
-          null !== e && Mn(e);
+          null !== e && On(e);
         }
-        return this.ut = o, An(e, d), U;
+        return this.ut = o, Hn(e, d), U;
       }
     });
   /**
@@ -7065,23 +7071,23 @@
        * Copyright 2017 Google LLC
        * SPDX-License-Identifier: BSD-3-Clause
        */
-  var Dn, Cn;
-  function Hn(e) {
+  var jn, Ln;
+  function Bn(e) {
     return e && e.__esModule && Object.prototype.hasOwnProperty.call(e, "default") ? e.default : e;
   }
-  function On(e) {
+  function In(e) {
     throw new Error('Could not dynamically require "' + e + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');
   }
   !function (e) {
     e.Sunrise = "sunrise", e.Sunset = "sunset", e.SolarAzimuth = "solar_azimuth";
-  }(Dn || (Dn = {})), function (e) {
+  }(jn || (jn = {})), function (e) {
     e.Disabled = "disabled", e.Manual = "manual", e.Automatic = "automatic";
-  }(Cn || (Cn = {}));
-  var Pn,
-    Nn = {
+  }(Ln || (Ln = {}));
+  var Un,
+    Rn = {
       exports: {}
     };
-  var jn = (Pn || (Pn = 1, function (e) {
+  var Yn = (Un || (Un = 1, function (e) {
       e.exports = function () {
         var t, a;
         function i() {
@@ -7944,7 +7950,7 @@
         function pa(t) {
           var a = null;
           if (void 0 === oa[t] && e && e.exports && ha(t)) try {
-            a = sa._abbr, On("./locale/" + t), ga(a);
+            a = sa._abbr, In("./locale/" + t), ga(a);
           } catch (e) {
             oa[t] = null;
           }
@@ -8741,7 +8747,7 @@
           }
           return "";
         }
-        function Pn() {
+        function On() {
           var e,
             t,
             a,
@@ -8750,19 +8756,19 @@
           for (e = 0, t = s.length; e < t; ++e) if (a = s[e].since <= s[e].until ? 1 : -1, n = this.clone().startOf("day").valueOf(), s[e].since <= n && n <= s[e].until || s[e].until <= n && n <= s[e].since) return (this.year() - i(s[e].since).year()) * a + s[e].offset;
           return this.year();
         }
-        function Nn(e) {
+        function Pn(e) {
           return o(this, "_erasNameRegex") || Yn.call(this), e ? this._erasNameRegex : this._erasRegex;
         }
-        function jn(e) {
+        function Nn(e) {
           return o(this, "_erasAbbrRegex") || Yn.call(this), e ? this._erasAbbrRegex : this._erasRegex;
         }
-        function Ln(e) {
+        function jn(e) {
           return o(this, "_erasNarrowRegex") || Yn.call(this), e ? this._erasNarrowRegex : this._erasRegex;
         }
-        function Bn(e, t) {
+        function Ln(e, t) {
           return t.erasAbbrRegex(e);
         }
-        function In(e, t) {
+        function Bn(e, t) {
           return t.erasNameRegex(e);
         }
         function Un(e, t) {
@@ -8820,7 +8826,7 @@
         function Xn(e) {
           return null == e ? Math.ceil((this.month() + 1) / 3) : this.month(3 * (e - 1) + this.month() % 3);
         }
-        I("N", 0, 0, "eraAbbr"), I("NN", 0, 0, "eraAbbr"), I("NNN", 0, 0, "eraAbbr"), I("NNNN", 0, 0, "eraName"), I("NNNNN", 0, 0, "eraNarrow"), I("y", ["y", 1], "yo", "eraYear"), I("y", ["yy", 2], 0, "eraYear"), I("y", ["yyy", 3], 0, "eraYear"), I("y", ["yyyy", 4], 0, "eraYear"), ze("N", Bn), ze("NN", Bn), ze("NNN", Bn), ze("NNNN", In), ze("NNNNN", Un), He(["N", "NN", "NNN", "NNNN", "NNNNN"], function (e, t, a, i) {
+        I("N", 0, 0, "eraAbbr"), I("NN", 0, 0, "eraAbbr"), I("NNN", 0, 0, "eraAbbr"), I("NNNN", 0, 0, "eraName"), I("NNNNN", 0, 0, "eraNarrow"), I("y", ["y", 1], "yo", "eraYear"), I("y", ["yy", 2], 0, "eraYear"), I("y", ["yyy", 3], 0, "eraYear"), I("y", ["yyyy", 4], 0, "eraYear"), ze("N", Ln), ze("NN", Ln), ze("NNN", Ln), ze("NNNN", Bn), ze("NNNNN", Un), He(["N", "NN", "NNN", "NNNN", "NNNNN"], function (e, t, a, i) {
           var n = a._locale.erasParse(e, i, a._strict);
           n ? f(a).era = n : f(a).invalidEra = e;
         }), ze("y", be), ze("yy", be), ze("yyy", be), ze("yyyy", be), ze("yo", Rn), He(["y", "yy", "yyy", "yyyy"], je), He(["yo"], function (e, t, a, i) {
@@ -8894,7 +8900,7 @@
         }
         ds.add = Hi, ds.calendar = Ui, ds.clone = Ri, ds.diff = Zi, ds.endOf = vn, ds.format = en, ds.from = tn, ds.fromNow = an, ds.to = nn, ds.toNow = sn, ds.get = Xe, ds.invalidAt = zn, ds.isAfter = Yi, ds.isBefore = Fi, ds.isBetween = Vi, ds.isSame = Wi, ds.isSameOrAfter = Gi, ds.isSameOrBefore = qi, ds.isValid = xn, ds.lang = on, ds.locale = rn, ds.localeData = ln, ds.max = Ka, ds.min = Za, ds.parsingFlags = Sn, ds.set = et, ds.startOf = fn, ds.subtract = Oi, ds.toArray = wn, ds.toObject = kn, ds.toDate = yn, ds.toISOString = Qi, ds.inspect = Xi, "undefined" != typeof Symbol && null != Symbol.for && (ds[Symbol.for("nodejs.util.inspect.custom")] = function () {
           return "Moment<" + this.format() + ">";
-        }), ds.toJSON = $n, ds.toString = Ji, ds.unix = _n, ds.valueOf = bn, ds.creationData = An, ds.eraName = Dn, ds.eraNarrow = Cn, ds.eraAbbr = Hn, ds.eraYear = Pn, ds.year = qe, ds.isLeapYear = Ze, ds.weekYear = Vn, ds.isoWeekYear = Wn, ds.quarter = ds.quarters = Xn, ds.month = pt, ds.daysInMonth = gt, ds.week = ds.weeks = Mt, ds.isoWeek = ds.isoWeeks = Tt, ds.weeksInYear = Zn, ds.weeksInWeekYear = Kn, ds.isoWeeksInYear = Gn, ds.isoWeeksInISOWeekYear = qn, ds.date = es, ds.day = ds.days = Ft, ds.weekday = Vt, ds.isoWeekday = Wt, ds.dayOfYear = ts, ds.hour = ds.hours = ia, ds.minute = ds.minutes = as, ds.second = ds.seconds = ss, ds.millisecond = ds.milliseconds = ns, ds.utcOffset = gi, ds.utc = fi, ds.local = vi, ds.parseZone = bi, ds.hasAlignedHourOffset = _i, ds.isDST = yi, ds.isLocal = ki, ds.isUtcOffset = $i, ds.isUtc = xi, ds.isUTC = xi, ds.zoneAbbr = os, ds.zoneName = ls, ds.dates = S("dates accessor is deprecated. Use date instead.", es), ds.months = S("months accessor is deprecated. Use month instead", pt), ds.years = S("years accessor is deprecated. Use year instead", qe), ds.zone = S("moment().zone is deprecated, use moment().utcOffset instead. http://momentjs.com/guides/#/warnings/zone/", mi), ds.isDSTShifted = S("isDSTShifted is deprecated. See http://momentjs.com/guides/#/warnings/dst-shifted/ for more information", wi);
+        }), ds.toJSON = $n, ds.toString = Ji, ds.unix = _n, ds.valueOf = bn, ds.creationData = An, ds.eraName = Dn, ds.eraNarrow = Cn, ds.eraAbbr = Hn, ds.eraYear = On, ds.year = qe, ds.isLeapYear = Ze, ds.weekYear = Vn, ds.isoWeekYear = Wn, ds.quarter = ds.quarters = Xn, ds.month = pt, ds.daysInMonth = gt, ds.week = ds.weeks = Mt, ds.isoWeek = ds.isoWeeks = Tt, ds.weeksInYear = Zn, ds.weeksInWeekYear = Kn, ds.isoWeeksInYear = Gn, ds.isoWeeksInISOWeekYear = qn, ds.date = es, ds.day = ds.days = Ft, ds.weekday = Vt, ds.isoWeekday = Wt, ds.dayOfYear = ts, ds.hour = ds.hours = ia, ds.minute = ds.minutes = as, ds.second = ds.seconds = ss, ds.millisecond = ds.milliseconds = ns, ds.utcOffset = gi, ds.utc = fi, ds.local = vi, ds.parseZone = bi, ds.hasAlignedHourOffset = _i, ds.isDST = yi, ds.isLocal = ki, ds.isUtcOffset = $i, ds.isUtc = xi, ds.isUTC = xi, ds.zoneAbbr = os, ds.zoneName = ls, ds.dates = S("dates accessor is deprecated. Use date instead.", es), ds.months = S("months accessor is deprecated. Use month instead", pt), ds.years = S("years accessor is deprecated. Use year instead", qe), ds.zone = S("moment().zone is deprecated, use moment().utcOffset instead. http://momentjs.com/guides/#/warnings/zone/", mi), ds.isDSTShifted = S("isDSTShifted is deprecated. See http://momentjs.com/guides/#/warnings/dst-shifted/ for more information", wi);
         var ps = C.prototype;
         function gs(e, t, a, i) {
           var n = va(),
@@ -8933,7 +8939,7 @@
         function ws(e, t, a) {
           return fs(e, t, a, "weekdaysMin");
         }
-        ps.calendar = O, ps.longDateFormat = W, ps.invalidDate = q, ps.ordinal = J, ps.preparse = hs, ps.postformat = hs, ps.relativeTime = X, ps.pastFuture = ee, ps.set = E, ps.eras = Mn, ps.erasParse = Tn, ps.erasConvertYear = En, ps.erasAbbrRegex = jn, ps.erasNameRegex = Nn, ps.erasNarrowRegex = Ln, ps.months = lt, ps.monthsShort = dt, ps.monthsParse = ct, ps.monthsRegex = ft, ps.monthsShortRegex = mt, ps.week = xt, ps.firstDayOfYear = At, ps.firstDayOfWeek = zt, ps.weekdays = Bt, ps.weekdaysMin = Ut, ps.weekdaysShort = It, ps.weekdaysParse = Yt, ps.weekdaysRegex = Gt, ps.weekdaysShortRegex = qt, ps.weekdaysMinRegex = Zt, ps.isPM = ta, ps.meridiem = na, ga("en", {
+        ps.calendar = O, ps.longDateFormat = W, ps.invalidDate = q, ps.ordinal = J, ps.preparse = hs, ps.postformat = hs, ps.relativeTime = X, ps.pastFuture = ee, ps.set = E, ps.eras = Mn, ps.erasParse = Tn, ps.erasConvertYear = En, ps.erasAbbrRegex = Nn, ps.erasNameRegex = Pn, ps.erasNarrowRegex = jn, ps.months = lt, ps.monthsShort = dt, ps.monthsParse = ct, ps.monthsRegex = ft, ps.monthsShortRegex = mt, ps.week = xt, ps.firstDayOfYear = At, ps.firstDayOfWeek = zt, ps.weekdays = Bt, ps.weekdaysMin = Ut, ps.weekdaysShort = It, ps.weekdaysParse = Yt, ps.weekdaysRegex = Gt, ps.weekdaysShortRegex = qt, ps.weekdaysMinRegex = Zt, ps.isPM = ta, ps.meridiem = na, ga("en", {
           eras: [{
             since: "0001-01-01",
             until: 1 / 0,
@@ -9134,16 +9140,19 @@
           MONTH: "YYYY-MM"
         }, i;
       }();
-    }(Nn)), Nn.exports),
-    Ln = Hn(jn);
-  let Bn = class extends Et(oe) {
+    }(Rn)), Rn.exports),
+    Fn = Bn(Yn);
+  let Vn = class extends Et(oe) {
     constructor() {
-      super(...arguments), this.zones = [], this.modules = [], this.mappings = [], this.wateringCalendars = new Map(), this.weatherRecords = new Map(), this.isLoading = !0, this.isSaving = !1, this.isCreatingZone = !1, this._hasLoadedOnce = !1, this._suppressNextConfigUpdate = !1, this._updateScheduled = !1, this.globalDebounceTimer = null, this.zoneCache = new Map();
+      super(...arguments), this.zones = [], this.modules = [], this.mappings = [], this.wateringCalendars = new Map(), this.weatherRecords = new Map(), this.isLoading = !0, this.isSaving = !1, this.isCreatingZone = !1, this._hasLoadedOnce = !1, this._suppressNextConfigUpdate = !1, this._updateScheduled = !1, this.globalDebounceTimer = null, this.zoneCache = new Map(), this._expanded = new Set();
     }
     _scheduleUpdate() {
       this._updateScheduled || (this._updateScheduled = !0, requestAnimationFrame(() => {
         this._updateScheduled = !1, this.requestUpdate();
       }));
+    }
+    _toggleZone(e) {
+      null != e && (this._expanded.has(e) ? this._expanded.delete(e) : this._expanded.add(e), this._scheduleUpdate());
     }
     firstUpdated() {
       ve().catch(e => {
@@ -9219,7 +9228,7 @@
         name: this.nameInput.value.trim(),
         size: parseFloat(this.sizeInput.value) || 0,
         throughput: parseFloat(this.throughputInput.value) || 0,
-        state: Cn.Automatic,
+        state: Ln.Automatic,
         duration: 0,
         bucket: 0,
         module: void 0,
@@ -9354,7 +9363,7 @@
                 ${t.slice(0, 10).map(e => I`
                     <div class="weather-row">
                       <span
-                        >${Ln(e.timestamp).format("MM-DD HH:mm")}</span
+                        >${Fn(e.timestamp).format("MM-DD HH:mm")}</span
                       >
                       <span
                         >${e.temperature ? e.temperature.toFixed(1) + "°C" : "-"}</span
@@ -9366,7 +9375,7 @@
                         >${e.precipitation ? e.precipitation.toFixed(1) + "mm" : "-"}</span
                       >
                       <span
-                        >${e.retrieval_time ? Ln(e.retrieval_time).format("MM-DD HH:mm") : "-"}</span
+                        >${e.retrieval_time ? Fn(e.retrieval_time).format("MM-DD HH:mm") : "-"}</span
                       >
                     </div>
                   `)}
@@ -9447,343 +9456,250 @@
       return I``;
     }
     renderZone(e, t) {
-      if (this.hass) {
-        let a, i;
-        null != e.explanation && e.explanation.length > 0 && I`<svg
-          style="width:24px;height:24px"
-          viewBox="0 0 24 24"
-          id="showcalcresults${t}"
-          @click="${() => this.toggleExplanation(t)}"
-        >
-          <title>
-            ${gn("panels.zones.actions.information", this.hass.language)}
-          </title>
-          <path fill="#404040" d="${vn}" />
-        </svg>`, e.state === Cn.Automatic && (a = I` <div
-          class="action-button-left"
-          @click="${() => this.handleCalculateZone(t)}"
-        >
-          <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-            <path fill="#404040" d="${"M7,2H17A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H7A2,2 0 0,1 5,20V4A2,2 0 0,1 7,2M7,4V8H17V4H7M7,10V12H9V10H7M11,10V12H13V10H11M15,10V12H17V10H15M7,14V16H9V14H7M11,14V16H13V14H11M15,14V16H17V14H15M7,18V20H9V18H7M11,18V20H13V18H11M15,18V20H17V18H15Z"}" />
-          </svg>
-          <span class="action-button-label">
-            ${gn("panels.zones.actions.calculate", this.hass.language)}
-          </span>
-        </div>`), e.state === Cn.Automatic && (i = I` <div
-          class="action-button-left"
-          @click="${() => this.handleUpdateZone(t)}"
-        >
-          <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-            <path fill="#404040" d="${"M21,10.12H14.22L16.96,7.3C14.23,4.6 9.81,4.5 7.08,7.2C4.35,9.91 4.35,14.28 7.08,17C9.81,19.7 14.23,19.7 16.96,17C18.32,15.65 19,14.08 19,12.1H21C21,14.08 20.12,16.65 18.36,18.39C14.85,21.87 9.15,21.87 5.64,18.39C2.14,14.92 2.11,9.28 5.62,5.81C9.13,2.34 14.76,2.34 18.27,5.81L21,3V10.12M12.5,8V12.25L16,14.33L15.28,15.54L11,13V8H12.5Z"}" />
-          </svg>
-          <span class="action-button-label">
-            ${gn("panels.zones.actions.update", this.hass.language)}
-          </span>
-        </div>`);
-        const n = I` <div
-        class="action-button-right"
-        @click="${() => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
-          [ot]: 0
-        }))}"
-      >
-        <span class="action-button-label">
-          ${gn("panels.zones.actions.reset-bucket", this.hass.language)}
-        </span>
-        <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-          <path fill="#404040" d="${"M12.5 9.36L4.27 14.11C3.79 14.39 3.18 14.23 2.9 13.75C2.62 13.27 2.79 12.66 3.27 12.38L11.5 7.63C11.97 7.35 12.58 7.5 12.86 8C13.14 8.47 12.97 9.09 12.5 9.36M13 19C13 15.82 15.47 13.23 18.6 13L20 6H21V4H3V6H4L4.76 9.79L10.71 6.36C11.09 6.13 11.53 6 12 6C13.38 6 14.5 7.12 14.5 8.5C14.5 9.44 14 10.26 13.21 10.69L5.79 14.97L7 21H13.35C13.13 20.37 13 19.7 13 19M21.12 15.46L19 17.59L16.88 15.46L15.47 16.88L17.59 19L15.47 21.12L16.88 22.54L19 20.41L21.12 22.54L22.54 21.12L20.41 19L22.54 16.88L21.12 15.46Z"}" />
-        </svg>
-      </div>`;
-        let s;
-        null != e.mapping && (s = I` <div
-          class="action-button-right"
-          @click="${() => this.handleViewWeatherInfo(t)}"
-        >
-          <span class="action-button-label">
-            ${gn("panels.zones.actions.view-weather-info", this.hass.language)}
-          </span>
-          <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-            <path fill="#404040" d="${"M6.5 20Q4.22 20 2.61 18.43 1 16.85 1 14.58 1 12.63 2.17 11.1 3.35 9.57 5.25 9.15 5.88 6.85 7.75 5.43 9.63 4 12 4 14.93 4 16.96 6.04 19 8.07 19 11 20.73 11.2 21.86 12.5 23 13.78 23 15.5 23 17.38 21.69 18.69 20.38 20 18.5 20M6.5 18H18.5Q19.55 18 20.27 17.27 21 16.55 21 15.5 21 14.45 20.27 13.73 19.55 13 18.5 13H17V11Q17 8.93 15.54 7.46 14.08 6 12 6 9.93 6 8.46 7.46 7 8.93 7 11H6.5Q5.05 11 4.03 12.03 3 13.05 3 14.5 3 15.95 4.03 17 5.05 18 6.5 18M12 12Z"}" />
-          </svg>
-        </div>`);
-        const r = I` <div
-        class="action-button-right"
-        @click="${() => this.handleViewWateringCalendar(t)}"
-      >
-        <span class="action-button-label">
-          ${gn("panels.zones.actions.view-watering-calendar", this.hass.language)}
-        </span>
-        <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-          <path fill="#404040" d="${"M19,19H5V8H19M16,1V3H8V1H6V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3H18V1M17,12H12V17H17V12Z"}" />
-        </svg>
-      </div>`,
-          o = null != e.explanation && e.explanation.length > 0 ? I` <div
-              class="action-button-left"
-              @click="${() => this.toggleExplanation(t)}"
-            >
-              <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-                <path fill="#404040" d="${vn}" />
-              </svg>
-              <span class="action-button-label">
-                ${gn("panels.zones.actions.information", this.hass.language)}
-              </span>
-            </div>` : I``,
-          l = I` <div
-        class="action-button-right"
-        @click="${e => this.handleRemoveZone(e, t)}"
-      >
-        <span class="action-button-label">
-          ${gn("common.actions.delete", this.hass.language)}
-        </span>
-        <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-          <path fill="#404040" d="${fn}" />
-        </svg>
-      </div>`;
-        let d;
-        return null != e.mapping && (d = this.mappings.filter(t => t.id === e.mapping)[0], null != d && null != d.data && (e.number_of_data_points = d.data.length)), I`
-        <ha-card header="${e.name}">
-          <div class="card-content">
-            <div class="zone-info-table">
-              <div class="zone-info-row">
-                <span class="zone-info-label">${gn("panels.zones.labels.last_calculated", this.hass.language)}:</span>
-                <span class="zone-info-value">${e.last_calculated ? Ln(e.last_calculated).format("YYYY-MM-DD HH:mm:ss") : "-"}</span>
-              </div>
-              <div class="zone-info-row">
-                <span class="zone-info-label">${gn("panels.zones.labels.data-last-updated", this.hass.language)}:</span>
-                <span class="zone-info-value">${e.last_updated ? Ln(e.last_updated).format("YYYY-MM-DD HH:mm:ss") : "-"}</span>
-              </div>
-              <div class="zone-info-row">
-                <span class="zone-info-label">${gn("panels.zones.labels.data-number-of-data-points", this.hass.language)}:</span>
-                <span class="zone-info-value">${e.number_of_data_points}</span>
-              </div>
-            </div>
-          </div>
-          <div class="card-content">
-            <label for="name${t}"
-              >${gn("panels.zones.labels.name", this.hass.language)}:</label
-            >
-            <input
-              id="name${t}"
-              type="text"
-              .value="${e.name}"
-              @change="${a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
-          [tt]: a.target.value
-        }))}"
-            />
-            <div class="zoneline">
-              <label for="size${t}"
-                >${gn("panels.zones.labels.size", this.hass.language)}
-                (${wt(this.config, at)}):</label
-              >
-              <input class="shortinput" id="size${t}" type="number""
-              .value="${e.size}"
-              @change="${a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
-          [at]: parseFloat(a.target.value)
-        }))}"
-              />
-            </div>
-            <div class="zoneline">
-              <label for="throughput${t}"
-                >${gn("panels.zones.labels.throughput", this.hass.language)}
-                (${wt(this.config, it)}):</label
-              >
-              <input
-                class="shortinput"
-                id="throughput${t}"
-                type="number"
-                .value="${e.throughput}"
-                @change="${a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
-          [it]: parseFloat(a.target.value)
-        }))}"
-              />
-            </div>
-            <div class="zoneline">
-              <label for="drainage_rate${t}"
-                >${gn("panels.zones.labels.drainage_rate", this.hass.language)}
-                (${wt(this.config, pt)}):</label
-              >
-              <input
-                class="shortinput"
-                id="drainage_rate${t}"
-                type="number"
-                .value="${e.drainage_rate}"
-                @change="${a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
-          [pt]: parseFloat(a.target.value)
-        }))}"
-              />
-            </div>
-            <div class="zoneline">
-              <label for="state${t}"
-                >${gn("panels.zones.labels.state", this.hass.language)}:</label
-              >
-              <select
-                required
-                id="state${t}"
-                @change="${a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
-          [nt]: a.target.value,
-          [st]: 0
-        }))}"
-              >
-                <option
-                  value="${Cn.Automatic}"
-                  ?selected="${e.state === Cn.Automatic}"
-                >
-                  ${gn("panels.zones.labels.states.automatic", this.hass.language)}
-                </option>
-                <option
-                  value="${Cn.Disabled}"
-                  ?selected="${e.state === Cn.Disabled}"
-                >
-                  ${gn("panels.zones.labels.states.disabled", this.hass.language)}
-                </option>
-                <option
-                  value="${Cn.Manual}"
-                  ?selected="${e.state === Cn.Manual}"
-                >
-                  ${gn("panels.zones.labels.states.manual", this.hass.language)}
-                </option>
-              </select>
-              <label for="module${t}"
-                >${gn("common.labels.module", this.hass.language)}:</label
-              >
-
-              <select
-                id="module${t}"
-                @change="${a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
-          [rt]: parseInt(a.target.value)
-        }))}"
-              >
-                ${this.renderTheOptions(this.modules, e.module)}
-              </select>
-              <label for="module${t}"
-                >${gn("panels.zones.labels.mapping", this.hass.language)}:</label
-              >
-
-              <select
-                id="mapping${t}"
-                @change="${a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
-          [dt]: parseInt(a.target.value)
-        }))}"
-              >
-                ${this.renderTheOptions(this.mappings, e.mapping)}
-              </select>
-            </div>
-            <div class="zoneline">
-              <label for="bucket${t}"
-                >${gn("panels.zones.labels.bucket", this.hass.language)}
-                (${wt(this.config, ot)}):</label
-              >
-              <input
-                class="shortinput"
-                id="bucket${t}"
-                type="number"
-                .value="${Number(e.bucket).toFixed(1)}"
-                @change="${a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
-          [ot]: parseFloat(a.target.value)
-        }))}"
-              />
-              <label for="maximum-bucket${t}"
-                >${gn("panels.zones.labels.maximum-bucket", this.hass.language)}
-                (${wt(this.config, ot)}):</label
-              >
-              <input
-                class="shortinput"
-                id="maximum-bucket${t}"
-                type="number"
-                .value="${Number(e.maximum_bucket).toFixed(1)}"
-                @change="${a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
-          [ht]: parseFloat(a.target.value)
-        }))}"
-              />
-            </div>
-            <div class="zoneline">
-              <label for="lead_time${t}"
-                >${gn("panels.zones.labels.lead-time", this.hass.language)}
-                (s):</label
-              >
-              <input
-                class="shortinput"
-                id="lead_time${t}"
-                type="number"
-                .value="${e.lead_time}"
-                @change="${a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
-          [ut]: parseInt(a.target.value, 10)
-        }))}"
-              />
-            </div>
-            <div class="zoneline">
-              <label for="maximum-duration${t}"
-                >${gn("panels.zones.labels.maximum-duration", this.hass.language)}
-                (s):</label
-              >
-              <input
-                class="shortinput"
-                id="maximum-duration${t}"
-                type="number"
-                .value="${e.maximum_duration}"
-                @change="${a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
-          [ct]: parseInt(a.target.value, 10)
-        }))}"
-              />
-            </div>
-            <div class="zoneline">
-              <label for="multiplier${t}"
-                >${gn("panels.zones.labels.multiplier", this.hass.language)}:</label
-              >
-              <input
-                class="shortinput"
-                id="multiplier${t}"
-                type="number"
-                .value="${e.multiplier}"
-                @change="${a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
-          [lt]: parseFloat(a.target.value)
-        }))}"
-              />
-              <label for="duration${t}"
-                >${gn("panels.zones.labels.duration", this.hass.language)}
-                (${"s"}):</label
-              >
-              <input
-                class="shortinput"
-                id="duration${t}"
-                type="number"
-                .value="${e.duration}"
-                ?readonly="${e.state === Cn.Disabled || e.state === Cn.Automatic}"
-                @change="${a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
-          [st]: parseInt(a.target.value, 10)
-        }))}"
-              />
-            </div>
-            <div class="action-buttons">
-              <div class="action-buttons-left">
-                ${i}
-                ${a}
-                ${o}
-              </div>
-              <div class="action-buttons-right">
-                ${n}
-                ${s}
-                ${r}
-                ${l}
-              </div>
-            </div>
-            <div class="zoneline">
-              <div>
-                <label class="hidden" id="calcresults${t}"
-                  >${bt("<br/>" + e.explanation)}</label
-                >
-              </div>
-            </div>
-            <div id="calendar-section-${e.id}" hidden>
-              ${this.renderWateringCalendar(e)}
-            </div>
-            <div id="weather-section-${e.id}" hidden>
-              ${this.renderWeatherRecords(e)}
-            </div>
-          </div>
-        </ha-card>
-      `;
+      var a;
+      if (!this.hass) return I``;
+      const i = this.hass.language,
+        n = e.state === Ln.Automatic,
+        s = e.state === Ln.Disabled || e.state === Ln.Automatic,
+        r = null != e.explanation && e.explanation.length > 0;
+      if (null != e.mapping) {
+        const t = this.mappings.filter(t => t.id === e.mapping)[0];
+        null != t && null != t.data && (e.number_of_data_points = t.data.length);
       }
-      return I``;
+      const o = gn("panels.zones.labels.states." + e.state, i),
+        l = `${Math.round(Number(e.duration) || 0)} s`,
+        d = null != e.id && this._expanded.has(e.id);
+      return I`
+      <ha-card class="zone-card">
+        <div
+          class="zone-head"
+          role="button"
+          tabindex="0"
+          aria-expanded=${d ? "true" : "false"}
+          @click=${() => this._toggleZone(e.id)}
+          @keydown=${t => {
+        "Enter" !== t.key && " " !== t.key || (t.preventDefault(), this._toggleZone(e.id));
+      }}
+        >
+          <div class="zone-head-text">
+            <div class="zone-title-row">
+              <span class="zone-title">${e.name || "—"}</span>
+              <ha-label class="state-label state-label--${e.state}" dense
+                >${o}</ha-label
+              >
+            </div>
+            <div class="zone-sub">${l}</div>
+          </div>
+          <ha-svg-icon
+            class="zone-chevron ${d ? "open" : ""}"
+            .path=${fn}
+          ></ha-svg-icon>
+        </div>
+        ${d ? I` <div class="zone-body">
+          <div class="zone-meta">
+            <div class="meta-item">
+              <span class="meta-label"
+                >${gn("panels.zones.labels.last_calculated", i)}</span
+              >
+              <span class="meta-value"
+                >${e.last_calculated ? Fn(e.last_calculated).format("YYYY-MM-DD HH:mm") : "—"}</span
+              >
+            </div>
+            <div class="meta-item">
+              <span class="meta-label"
+                >${gn("panels.zones.labels.data-last-updated", i)}</span
+              >
+              <span class="meta-value"
+                >${e.last_updated ? Fn(e.last_updated).format("YYYY-MM-DD HH:mm") : "—"}</span
+              >
+            </div>
+            <div class="meta-item">
+              <span class="meta-label"
+                >${gn("panels.zones.labels.data-number-of-data-points", i)}</span
+              >
+              <span class="meta-value">${null !== (a = e.number_of_data_points) && void 0 !== a ? a : "—"}</span>
+            </div>
+          </div>
+
+          <div class="settings">
+            ${this._textRow(gn("panels.zones.labels.name", i), "", e.name, a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
+        [tt]: a
+      })))}
+            ${this._numRow(gn("panels.zones.labels.size", i), wt(this.config, at), e.size, a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
+        [at]: parseFloat(a)
+      })), .1)}
+            ${this._numRow(gn("panels.zones.labels.throughput", i), wt(this.config, it), e.throughput, a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
+        [it]: parseFloat(a)
+      })), .1)}
+            ${this._numRow(gn("panels.zones.labels.drainage_rate", i), wt(this.config, pt), e.drainage_rate, a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
+        [pt]: parseFloat(a)
+      })), .1)}
+
+            ${this._selectRow(gn("panels.zones.labels.state", i), I`
+                <option
+                  value="${Ln.Automatic}"
+                  ?selected=${e.state === Ln.Automatic}
+                >
+                  ${gn("panels.zones.labels.states.automatic", i)}
+                </option>
+                <option
+                  value="${Ln.Disabled}"
+                  ?selected=${e.state === Ln.Disabled}
+                >
+                  ${gn("panels.zones.labels.states.disabled", i)}
+                </option>
+                <option
+                  value="${Ln.Manual}"
+                  ?selected=${e.state === Ln.Manual}
+                >
+                  ${gn("panels.zones.labels.states.manual", i)}
+                </option>
+              `, a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
+        [nt]: a.target.value,
+        [st]: 0
+      })))}
+            ${this._selectRow(gn("common.labels.module", i), this.renderTheOptions(this.modules, e.module), a => {
+        const i = a.target.value;
+        this.handleEditZone(t, Object.assign(Object.assign({}, e), {
+          [rt]: "" === i ? void 0 : parseInt(i)
+        }));
+      })}
+            ${this._selectRow(gn("panels.zones.labels.mapping", i), this.renderTheOptions(this.mappings, e.mapping), a => {
+        const i = a.target.value;
+        this.handleEditZone(t, Object.assign(Object.assign({}, e), {
+          [dt]: "" === i ? void 0 : parseInt(i)
+        }));
+      })}
+
+            ${this._numRow(gn("panels.zones.labels.bucket", i), wt(this.config, ot), Number(e.bucket).toFixed(1), a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
+        [ot]: parseFloat(a)
+      })), .1)}
+            ${this._numRow(gn("panels.zones.labels.maximum-bucket", i), wt(this.config, ot), Number(e.maximum_bucket).toFixed(1), a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
+        [ht]: parseFloat(a)
+      })), .1)}
+            ${this._numRow(gn("panels.zones.labels.lead-time", i), "s", e.lead_time, a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
+        [ut]: parseInt(a, 10)
+      })), 1)}
+            ${this._numRow(gn("panels.zones.labels.maximum-duration", i), "s", e.maximum_duration, a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
+        [ct]: parseInt(a, 10)
+      })), 1)}
+            ${this._numRow(gn("panels.zones.labels.multiplier", i), "", e.multiplier, a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
+        [lt]: parseFloat(a)
+      })), .1)}
+            ${this._numRow(gn("panels.zones.labels.duration", i), "s", e.duration, a => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
+        [st]: parseInt(a, 10)
+      })), 1, s)}
+          </div>
+
+          <div class="zone-actions">
+            ${n ? I`
+                  ${this._actionBtn(mn, gn("panels.zones.actions.calculate", i), () => this.handleCalculateZone(t))}
+                  ${this._actionBtn($n, gn("panels.zones.actions.update", i), () => this.handleUpdateZone(t))}
+                ` : ""}
+            ${this._actionBtn(wn, gn("panels.zones.actions.reset-bucket", i), () => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
+        [ot]: 0
+      })))}
+            ${null != e.mapping ? this._actionBtn(bn, gn("panels.zones.actions.view-weather-info", i), () => this.handleViewWeatherInfo(t)) : ""}
+            ${this._actionBtn("M19,19H5V8H19M16,1V3H8V1H6V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3H18V1M17,12H12V17H17V12Z", gn("panels.zones.actions.view-watering-calendar", i), () => this.handleViewWateringCalendar(t))}
+            ${r ? this._actionBtn(yn, gn("panels.zones.actions.information", i), () => this.toggleExplanation(t)) : ""}
+            ${this._actionBtn(_n, gn("common.actions.delete", i), e => this.handleRemoveZone(e, t), !0)}
+          </div>
+
+          ${r ? I`<label class="hidden" id="calcresults${t}"
+                >${bt("<br/>" + e.explanation)}</label
+              >` : ""}
+          <div id="calendar-section-${e.id}" hidden>
+            ${this.renderWateringCalendar(e)}
+          </div>
+          <div id="weather-section-${e.id}" hidden>
+            ${this.renderWeatherRecords(e)}
+          </div>
+        </div>` : ""}
+      </ha-card>
+    `;
+    }
+    _textRow(e, t, a, i) {
+      return I`
+      <div class="setting-row">
+        <div class="setting-label">
+          ${e}${t ? I` <span class="unit">(${t})</span>` : ""}
+        </div>
+        <input
+          class="field"
+          type="text"
+          .value=${null == a ? "" : String(a)}
+          @change=${e => i(e.target.value)}
+        />
+      </div>
+    `;
+    }
+    _numRow(e, t, a, i, n = 1, s = !1) {
+      const r = (String(n).split(".")[1] || "").length,
+        o = (e, t) => {
+          const a = parseFloat(e.value),
+            s = +((isNaN(a) ? 0 : a) + t * n).toFixed(r);
+          e.value = String(s), i(String(s));
+        };
+      return I`
+      <div class="setting-row">
+        <div class="setting-label">
+          ${e}${t ? I` <span class="unit">(${t})</span>` : ""}
+        </div>
+        <div class="num-field">
+          <input
+            class="field num-input"
+            type="number"
+            step=${n}
+            ?readonly=${s}
+            .value=${null == a ? "" : String(a)}
+            @wheel=${e => {
+        e.target.matches(":focus") && e.preventDefault();
+      }}
+            @change=${e => i(e.target.value)}
+          />
+          <ha-icon-button
+            class="step-btn"
+            .path=${"M19,13H5V11H19V13Z"}
+            ?disabled=${s}
+            @click=${e => o(e.currentTarget.parentElement.querySelector("input"), -1)}
+          ></ha-icon-button>
+          <ha-icon-button
+            class="step-btn"
+            .path=${kn}
+            ?disabled=${s}
+            @click=${e => o(e.currentTarget.parentElement.querySelector("input"), 1)}
+          ></ha-icon-button>
+        </div>
+      </div>
+    `;
+    }
+    _selectRow(e, t, a) {
+      return I`
+      <div class="setting-row">
+        <div class="setting-label">${e}</div>
+        <div class="select-wrap">
+          <select class="field" @change=${a}>
+            ${t}
+          </select>
+          <svg class="chev" viewBox="0 0 24 24">
+            <path d=${fn}></path>
+          </svg>
+        </div>
+      </div>
+    `;
+    }
+    _actionBtn(e, t, a, i = !1, n = !1) {
+      return I`
+      <ha-button
+        appearance=${i ? "accent" : "filled"}
+        variant=${i ? "danger" : "brand"}
+        ?disabled=${n}
+        @click=${a}
+      >
+        <ha-svg-icon slot="start" .path=${e}></ha-svg-icon>
+        ${t}
+      </ha-button>
+    `;
     }
     toggleExplanation(e) {
       var t;
@@ -9808,85 +9724,76 @@
         header="${gn("panels.zones.cards.add-zone.header", this.hass.language)}"
       >
         <div class="card-content">
-          <div class="zoneline">
-            <label for="nameInput"
-              >${gn("panels.zones.labels.name", this.hass.language)}:</label
-            >
+          <div class="setting-row">
+            <div class="setting-label">
+              ${gn("panels.zones.labels.name", this.hass.language)}
+            </div>
             <input
               id="nameInput"
+              class="field"
               type="text"
               @focus="${this.handleZoneFormFocus}"
               @blur="${this.handleZoneFormBlur}"
             />
           </div>
-          <div class="zoneline">
-            <label for="sizeInput"
-              >${gn("panels.zones.labels.size", this.hass.language)}:</label
-            >
+          <div class="setting-row">
+            <div class="setting-label">
+              ${gn("panels.zones.labels.size", this.hass.language)}
+              <span class="unit">(${wt(this.config, at)})</span>
+            </div>
             <input
               id="sizeInput"
+              class="field"
               type="number"
               @focus="${this.handleZoneFormFocus}"
               @blur="${this.handleZoneFormBlur}"
             />
           </div>
-          <div class="zoneline">
-            <label for="throughputInput"
-              >${gn("panels.zones.labels.throughput", this.hass.language)}:</label
-            >
+          <div class="setting-row">
+            <div class="setting-label">
+              ${gn("panels.zones.labels.throughput", this.hass.language)}
+              <span class="unit"
+                >(${wt(this.config, it)})</span
+              >
+            </div>
             <input
               id="throughputInput"
+              class="field"
               type="number"
               @focus="${this.handleZoneFormFocus}"
               @blur="${this.handleZoneFormBlur}"
             />
           </div>
-          <div class="zoneline">
-            <span></span>
-            <button @click="${this.handleAddZone}" ?disabled="${this.isSaving}">
+          <div class="add-zone-actions">
+            <ha-button
+              appearance="filled"
+              @click="${this.handleAddZone}"
+              ?disabled="${this.isSaving}"
+            >
+              <ha-svg-icon slot="start" .path=${kn}></ha-svg-icon>
               ${this.isSaving ? gn("common.saving-messages.adding", this.hass.language) : gn("panels.zones.cards.add-zone.actions.add", this.hass.language)}
-            </button>
+            </ha-button>
           </div>
         </div>
       </ha-card>
+
+      ${Nn(this.zones, e => {
+        var t;
+        return null !== (t = e.id) && void 0 !== t ? t : e.name;
+      }, (e, t) => this.renderZone(e, t))}
 
       <ha-card
         header="${gn("panels.zones.cards.zone-actions.header", this.hass.language)}"
       >
         <div class="card-content">
-          <div class="action-buttons">
-            <button
-              @click="${this.handleCalculateAllZones}"
-              ?disabled="${this.isSaving}"
-            >
-              ${gn("panels.zones.cards.zone-actions.actions.calculate-all", this.hass.language)}
-            </button>
-            <button
-              @click="${this.handleUpdateAllZones}"
-              ?disabled="${this.isSaving}"
-            >
-              ${gn("panels.zones.cards.zone-actions.actions.update-all", this.hass.language)}
-            </button>
-            <button
-              @click="${this.handleResetAllBuckets}"
-              ?disabled="${this.isSaving}"
-            >
-              ${gn("panels.zones.cards.zone-actions.actions.reset-all-buckets", this.hass.language)}
-            </button>
-            <button
-              @click="${this.handleClearAllWeatherdata}"
-              ?disabled="${this.isSaving}"
-            >
-              ${gn("panels.zones.cards.zone-actions.actions.clear-all-weatherdata", this.hass.language)}
-            </button>
+          <div class="zone-actions-grid">
+            ${this._actionBtn(mn, gn("panels.zones.cards.zone-actions.actions.calculate-all", this.hass.language), () => this.handleCalculateAllZones(), !1, this.isSaving)}
+            ${this._actionBtn($n, gn("panels.zones.cards.zone-actions.actions.update-all", this.hass.language), () => this.handleUpdateAllZones(), !1, this.isSaving)}
+            ${this._actionBtn(wn, gn("panels.zones.cards.zone-actions.actions.reset-all-buckets", this.hass.language), () => this.handleResetAllBuckets(), !1, this.isSaving)}
+            ${this._actionBtn(bn, gn("panels.zones.cards.zone-actions.actions.clear-all-weatherdata", this.hass.language), () => this.handleClearAllWeatherdata(), !1, this.isSaving)}
           </div>
         </div>
       </ha-card>
-
-      ${En(this.zones, e => {
-        var t;
-        return null !== (t = e.id) && void 0 !== t ? t : e.name;
-      }, (e, t) => this.renderZone(e, t))}
     ` : I``;
     }
     disconnectedCallback() {
@@ -9894,28 +9801,312 @@
     }
     static get styles() {
       return o`
-      ${bn}/* View-specific styles only - most common styles are now in globalStyle */
+      ${xn}
+
+      /* --- Modern zone cards (HA-native look) --- */
+      /* own collapsible: a plain ha-card (white surface like every HA card)
+         with a clickable header — no mystery hover/focus tints */
+      .zone-card {
+        overflow: hidden;
+      }
+      .zone-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .zone-head:focus-visible {
+        outline: 2px solid var(--primary-color);
+        outline-offset: -2px;
+      }
+      .zone-head-text {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      .zone-title-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+      .zone-title {
+        font-size: 1.15rem;
+        font-weight: 500;
+        color: var(--primary-text-color);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 0 1 auto;
+        min-width: 0;
+      }
+      /* native HA state pill (ha-label), tinted by zone state */
+      ha-label.state-label {
+        flex: 0 0 auto;
+        --ha-label-background-color: rgba(
+          var(--rgb-disabled-text-color, 120, 120, 120),
+          0.15
+        );
+      }
+      ha-label.state-label--automatic {
+        --ha-label-background-color: rgba(
+          var(--rgb-success-color, 67, 160, 71),
+          0.18
+        );
+      }
+      ha-label.state-label--manual {
+        --ha-label-background-color: rgba(
+          var(--rgb-warning-color, 255, 166, 0),
+          0.22
+        );
+      }
+      .zone-sub {
+        font-size: 0.85em;
+        color: var(--secondary-text-color);
+      }
+      .zone-chevron {
+        flex: 0 0 auto;
+        color: var(--secondary-text-color);
+        transition: transform 0.2s ease;
+      }
+      .zone-chevron.open {
+        transform: rotate(180deg);
+      }
+
+      .zone-body {
+        padding: 12px 16px 16px;
+        border-top: 1px solid var(--divider-color);
+      }
+
+      .zone-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 28px;
+        padding: 4px 0 12px;
+      }
+      .meta-item {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .meta-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--secondary-text-color);
+      }
+      .meta-value {
+        color: var(--primary-text-color);
+        font-weight: 500;
+      }
+
+      .settings {
+        display: flex;
+        flex-direction: column;
+      }
+      .setting-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 52px;
+        padding: 4px 0;
+        border-bottom: 1px solid var(--divider-color);
+      }
+      .setting-row:last-child {
+        border-bottom: 0;
+      }
+      .setting-label {
+        color: var(--primary-text-color);
+        font-weight: 500;
+      }
+      .setting-label .unit {
+        color: var(--secondary-text-color);
+        font-weight: 400;
+        font-size: 0.85em;
+      }
+      /* one unified field style for BOTH inputs and selects, themed with the
+         same MDC variables HA's own ha-textfield/ha-select use (native feel) */
+      .field {
+        flex: 0 0 auto;
+        width: 240px;
+        max-width: 50%;
+        height: 44px;
+        box-sizing: border-box;
+        padding: 0 12px;
+        border: none;
+        border-bottom: 1px solid
+          var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
+        border-radius: 4px 4px 0 0;
+        background: var(
+          --mdc-text-field-fill-color,
+          var(--input-fill-color, rgba(0, 0, 0, 0.04))
+        );
+        color: var(--primary-text-color);
+        font-size: 1rem;
+        font-family: var(--paper-font-body1_-_font-family, inherit);
+        line-height: normal;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+      }
+      .field:hover {
+        border-bottom-color: var(
+          --mdc-text-field-hover-line-color,
+          var(--primary-text-color)
+        );
+      }
+      .field:focus {
+        outline: none;
+        border-bottom: 2px solid var(--mdc-theme-primary, var(--primary-color));
+      }
+      input.field[readonly] {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+      /* kill the number spinners (silly 1-by-1 increments on decimal fields) */
+      input.field[type="number"] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
+      input.field[type="number"]::-webkit-outer-spin-button,
+      input.field[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      /* number field with clean HA +/- steppers */
+      .num-field {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        flex: 0 0 auto;
+        width: 240px;
+        max-width: 50%;
+      }
+      .num-field .num-input {
+        flex: 1 1 auto;
+        width: auto;
+        min-width: 0;
+        max-width: none;
+        /* text on the left, like the fields without steppers */
+        text-align: left;
+      }
+      .num-field .step-btn {
+        flex: 0 0 auto;
+        color: var(--secondary-text-color);
+        --mdc-icon-button-size: 36px;
+        --mdc-icon-size: 20px;
+      }
+      .num-field .step-btn:hover {
+        color: var(--primary-color);
+      }
+      /* native select wrapped so we can draw a themed chevron */
+      .select-wrap {
+        position: relative;
+        flex: 0 0 auto;
+        width: 240px;
+        max-width: 50%;
+        display: inline-flex;
+      }
+      .select-wrap .field {
+        width: 100%;
+        max-width: 100%;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        padding-right: 36px;
+        cursor: pointer;
+      }
+      .select-wrap .chev {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        pointer-events: none;
+        fill: var(--secondary-text-color);
+      }
+
+      .zone-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--divider-color);
+      }
+      .zone-actions-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .add-zone-actions {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 8px;
+      }
+      /* native ha-button: appearance/variant handle the colors. 2-col grid,
+         full-width cells, content left-aligned so the icon stays fixed left. */
+      .zone-actions ha-button,
+      .zone-actions-grid ha-button {
+        width: 100%;
+      }
+      .zone-actions ha-button::part(base),
+      .zone-actions-grid ha-button::part(base) {
+        justify-content: flex-start;
+      }
+      .zone-actions ha-button::part(label),
+      .zone-actions-grid ha-button::part(label) {
+        text-align: left;
+      }
+      .zone-actions ha-button ha-svg-icon,
+      .zone-actions-grid ha-button ha-svg-icon,
+      .add-zone-actions ha-button ha-svg-icon {
+        --mdc-icon-size: 18px;
+      }
+      @media (max-width: 600px) {
+        .zone-actions,
+        .zone-actions-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .setting-row {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 6px;
+        }
+        .field,
+        .select-wrap,
+        .num-field {
+          width: 100%;
+          max-width: 100%;
+        }
+      }
     `;
     }
   };
-  t([ce()], Bn.prototype, "config", void 0), t([ce({
+  t([ce()], Vn.prototype, "config", void 0), t([ce({
     type: Array
-  })], Bn.prototype, "zones", void 0), t([ce({
+  })], Vn.prototype, "zones", void 0), t([ce({
     type: Array
-  })], Bn.prototype, "modules", void 0), t([ce({
+  })], Vn.prototype, "modules", void 0), t([ce({
     type: Array
-  })], Bn.prototype, "mappings", void 0), t([ce({
+  })], Vn.prototype, "mappings", void 0), t([ce({
     type: Map
-  })], Bn.prototype, "wateringCalendars", void 0), t([ce({
+  })], Vn.prototype, "wateringCalendars", void 0), t([ce({
     type: Map
-  })], Bn.prototype, "weatherRecords", void 0), t([ce({
+  })], Vn.prototype, "weatherRecords", void 0), t([ce({
     type: Boolean
-  })], Bn.prototype, "isLoading", void 0), t([ce({
+  })], Vn.prototype, "isLoading", void 0), t([ce({
     type: Boolean
-  })], Bn.prototype, "isSaving", void 0), t([ce({
+  })], Vn.prototype, "isSaving", void 0), t([ce({
     type: Boolean
-  })], Bn.prototype, "isCreatingZone", void 0), t([pe("#nameInput")], Bn.prototype, "nameInput", void 0), t([pe("#sizeInput")], Bn.prototype, "sizeInput", void 0), t([pe("#throughputInput")], Bn.prototype, "throughputInput", void 0), Bn = t([de("smart-irrigation-view-zones")], Bn);
-  let In = class extends Et(oe) {
+  })], Vn.prototype, "isCreatingZone", void 0), t([pe("#nameInput")], Vn.prototype, "nameInput", void 0), t([pe("#sizeInput")], Vn.prototype, "sizeInput", void 0), t([pe("#throughputInput")], Vn.prototype, "throughputInput", void 0), Vn = t([de("smart-irrigation-view-zones")], Vn);
+  let Wn = class extends Et(oe) {
     constructor() {
       super(...arguments), this.zones = [], this.modules = [], this.allmodules = [], this.isLoading = !0, this.isSaving = !1, this._hasLoadedOnce = !1, this._suppressNextConfigUpdate = !1, this._updateScheduled = !1, this.globalDebounceTimer = null, this.moduleCache = new Map(), this.debouncedSave = (() => {
         let e = null;
@@ -10038,7 +10229,7 @@
                 @click="${e => this.handleRemoveModule(e, t)}"
               >
                 <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-                  <path fill="#404040" d="${fn}" />
+                  <path fill="#404040" d="${_n}" />
                 </svg>
                 <span class="action-button-label">
                   ${gn("common.actions.delete", this.hass.language)}
@@ -10157,7 +10348,7 @@
 
       ${this.isLoading ? I`<div class="loading-indicator">
             ${gn("common.loading-messages.modules", this.hass.language)}
-          </div>` : En(this.modules, e => {
+          </div>` : Nn(this.modules, e => {
         var t;
         return null !== (t = e.id) && void 0 !== t ? t : e.name;
       }, (e, t) => this.renderModule(e, t))}
@@ -10168,22 +10359,22 @@
     }
     static get styles() {
       return o`
-      ${bn}/* View-specific styles only - most common styles are now in globalStyle */
+      ${xn}/* View-specific styles only - most common styles are now in globalStyle */
     `;
     }
   };
-  t([ce()], In.prototype, "config", void 0), t([ce({
+  t([ce()], Wn.prototype, "config", void 0), t([ce({
     type: Array
-  })], In.prototype, "zones", void 0), t([ce({
+  })], Wn.prototype, "zones", void 0), t([ce({
     type: Array
-  })], In.prototype, "modules", void 0), t([ce({
+  })], Wn.prototype, "modules", void 0), t([ce({
     type: Array
-  })], In.prototype, "allmodules", void 0), t([ce({
+  })], Wn.prototype, "allmodules", void 0), t([ce({
     type: Boolean
-  })], In.prototype, "isLoading", void 0), t([ce({
+  })], Wn.prototype, "isLoading", void 0), t([ce({
     type: Boolean
-  })], In.prototype, "isSaving", void 0), t([pe("#moduleInput")], In.prototype, "moduleInput", void 0), In = t([de("smart-irrigation-view-modules")], In);
-  let Un = class extends Et(oe) {
+  })], Wn.prototype, "isSaving", void 0), t([pe("#moduleInput")], Wn.prototype, "moduleInput", void 0), Wn = t([de("smart-irrigation-view-modules")], Wn);
+  let Gn = class extends Et(oe) {
     constructor() {
       super(...arguments), this.zones = [], this.mappings = [], this.weatherRecords = new Map(), this.isLoading = !0, this.isSaving = !1, this._hasLoadedOnce = !1, this._suppressNextConfigUpdate = !1, this.debounceTimers = new Map(), this.globalDebounceTimer = null, this.mappingCache = new Map(), this._updateScheduled = !1, this._lastUpdateTime = 0, this._updateThrottleDelay = 16;
     }
@@ -10276,7 +10467,7 @@
           a = "-";
         try {
           if (e.timestamp && null !== e.timestamp) {
-            const a = Ln(e.timestamp);
+            const a = Fn(e.timestamp);
             a.isValid() && (t = a.format("MM-DD HH:mm"));
           }
         } catch (t) {
@@ -10284,7 +10475,7 @@
         }
         try {
           if (e.retrieval_time && null !== e.retrieval_time) {
-            const t = Ln(e.retrieval_time);
+            const t = Fn(e.retrieval_time);
             t.isValid() && (a = t.format("MM-DD HH:mm"));
           }
         } catch (t) {
@@ -10411,7 +10602,7 @@
                   @click="${e => this.handleRemoveMapping(e, t)}"
                 >
                   <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-                    <path fill="#404040" d="${fn}" />
+                    <path fill="#404040" d="${_n}" />
                   </svg>
                   <span class="action-button-label">
                     ${gn("common.actions.delete", this.hass.language)}
@@ -10953,7 +11144,7 @@
       const e = this.mappings.slice(0, Math.min(this.mappings.length, 10)),
         t = this.mappings.slice(10);
       return I`
-      ${En(e, e => {
+      ${Nn(e, e => {
         var t;
         return null !== (t = e.id) && void 0 !== t ? t : e.name;
       }, (e, t) => this.renderMappingCard(e, t))}
@@ -10993,7 +11184,7 @@
                   @click="${e => this.handleRemoveMapping(e, t)}"
                 >
                   <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-                    <path fill="#404040" d="${fn}" />
+                    <path fill="#404040" d="${_n}" />
                   </svg>
                   <span class="action-button-label">
                     ${gn("common.actions.delete", this.hass.language)}
@@ -11015,7 +11206,7 @@
     }
     static get styles() {
       return o`
-      ${bn}/* View-specific styles only - most common styles are now in globalStyle */
+      ${xn}/* View-specific styles only - most common styles are now in globalStyle */
     `;
     }
     disconnectedCallback() {
@@ -11024,18 +11215,18 @@
       }), this.debounceTimers.clear(), this.globalDebounceTimer && (clearTimeout(this.globalDebounceTimer), this.globalDebounceTimer = null), this.mappingCache.clear();
     }
   };
-  t([ce()], Un.prototype, "config", void 0), t([ce({
+  t([ce()], Gn.prototype, "config", void 0), t([ce({
     type: Array
-  })], Un.prototype, "zones", void 0), t([ce({
+  })], Gn.prototype, "zones", void 0), t([ce({
     type: Array
-  })], Un.prototype, "mappings", void 0), t([ce({
+  })], Gn.prototype, "mappings", void 0), t([ce({
     type: Map
-  })], Un.prototype, "weatherRecords", void 0), t([ce({
+  })], Gn.prototype, "weatherRecords", void 0), t([ce({
     type: Boolean
-  })], Un.prototype, "isLoading", void 0), t([ce({
+  })], Gn.prototype, "isLoading", void 0), t([ce({
     type: Boolean
-  })], Un.prototype, "isSaving", void 0), t([pe("#mappingNameInput")], Un.prototype, "mappingNameInput", void 0), Un = t([de("smart-irrigation-view-mappings")], Un);
-  let Rn = class extends Et(oe) {
+  })], Gn.prototype, "isSaving", void 0), t([pe("#mappingNameInput")], Gn.prototype, "mappingNameInput", void 0), Gn = t([de("smart-irrigation-view-mappings")], Gn);
+  let qn = class extends Et(oe) {
     constructor() {
       super(...arguments), this.zones = [], this.isLoading = !0, this._updateScheduled = !1;
     }
@@ -11163,7 +11354,7 @@
               >${gn("panels.info.cards.next-irrigation.labels.next-start", this.hass.language)}:</label
             >
             <span class="value">
-              ${this.info.next_irrigation_start ? Ln(this.info.next_irrigation_start).format("YYYY-MM-DD HH:mm:ss") : gn("panels.info.cards.next-irrigation.no-data", this.hass.language)}
+              ${this.info.next_irrigation_start ? Fn(this.info.next_irrigation_start).format("YYYY-MM-DD HH:mm:ss") : gn("panels.info.cards.next-irrigation.no-data", this.hass.language)}
             </span>
           </div>
 
@@ -11232,7 +11423,7 @@
                     >${gn("panels.info.cards.irrigation-reason.labels.sunrise", this.hass.language)}:</label
                   >
                   <span class="value"
-                    >${Ln(this.info.sunrise_time).format("HH:mm:ss")}</span
+                    >${Fn(this.info.sunrise_time).format("HH:mm:ss")}</span
                   >
                 </div>
               ` : ""}
@@ -11281,7 +11472,7 @@
     }
     static get styles() {
       return o`
-      ${bn} /* View-specific styles only - most common styles are now in globalStyle */
+      ${xn} /* View-specific styles only - most common styles are now in globalStyle */
 
       .zone-info {
         margin-bottom: 16px;
@@ -11343,15 +11534,15 @@
     `;
     }
   };
-  t([ce()], Rn.prototype, "config", void 0), t([ce({
+  t([ce()], qn.prototype, "config", void 0), t([ce({
     type: Object
-  })], Rn.prototype, "info", void 0), t([ce({
+  })], qn.prototype, "info", void 0), t([ce({
     type: Array
-  })], Rn.prototype, "zones", void 0), t([ce({
+  })], qn.prototype, "zones", void 0), t([ce({
     type: Boolean
-  })], Rn.prototype, "isLoading", void 0), Rn = t([de("smart-irrigation-view-info")], Rn);
-  const Yn = bn,
-    Fn = () => {
+  })], qn.prototype, "isLoading", void 0), qn = t([de("smart-irrigation-view-info")], qn);
+  const Zn = xn,
+    Kn = () => {
       const e = e => {
           let t = {};
           for (let a = 0; a < e.length; a += 2) {
@@ -11385,7 +11576,7 @@
       }
       return a;
     },
-    Vn = (e, ...t) => {
+    Jn = (e, ...t) => {
       let a = {
         page: e,
         params: {}
@@ -11411,10 +11602,10 @@
       let n = `/${we}/${a.page}`;
       return a.subpage && (n = `${n}/${a.subpage}`), i(a.params).length && (n = `${n}/${i(a.params)}`), a.filter && (n = `${n}/filter/${i(a.filter)}`), n;
     };
-  var Wn;
+  var Qn;
   !function (e) {
     e.Info = "info", e.General = "general", e.Zones = "zones", e.Modules = "modules", e.Mappings = "mappings", e.Help = "help";
-  }(Wn || (Wn = {})), e.SmartIrrigationPanel = class extends oe {
+  }(Qn || (Qn = {})), e.SmartIrrigationPanel = class extends oe {
     constructor() {
       super(...arguments), this._updateScheduled = !1, this._lastNavigationTime = 0, this._navigationThrottleDelay = 100;
     }
@@ -11424,8 +11615,8 @@
       }));
     }
     async firstUpdated() {
-      const e = Fn();
-      e.page && Object.values(Wn).includes(e.page) ? (window.addEventListener("location-changed", () => {
+      const e = Kn();
+      e.page && Object.values(Qn).includes(e.page) ? (window.addEventListener("location-changed", () => {
         if (!window.location.pathname.includes("smart-irrigation")) return;
         const e = performance.now();
         e - this._lastNavigationTime < this._navigationThrottleDelay || (this._lastNavigationTime = e, this._scheduleUpdate());
@@ -11433,10 +11624,10 @@
         this._scheduleUpdate();
       }).catch(e => {
         console.error("Failed to load HA form elements:", e), this._scheduleUpdate();
-      })) : $t(0, Vn(Wn.General));
+      })) : $t(0, Jn(Qn.General));
     }
     render() {
-      const e = Fn(),
+      const e = Kn(),
         t = !!customElements.get("ha-tab-group"),
         a = !!customElements.get("ha-tab-group-tab");
       return I`
@@ -11454,7 +11645,7 @@
           <ha-tab-group
             @wa-tab-show=${this.handlePageSelected}
           >
-            ${Object.values(Wn).map(t => I`
+            ${Object.values(Qn).map(t => I`
               <ha-tab-group-tab slot="nav" panel="${t}" .active=${e.page === t}>
                 ${gn(`panels.${t}.title`, this.hass.language)}
               </ha-tab-group-tab>
@@ -11462,7 +11653,7 @@
           </ha-tab-group>
         ` : I`
           <div class="custom-tabs">
-            ${Object.values(Wn).map(t => I`
+            ${Object.values(Qn).map(t => I`
               <button
                 class="custom-tab ${e.page === t ? "active" : ""}"
                 @click=${() => this.navigateToPage(t)}
@@ -11554,20 +11745,20 @@
       }
     }
     navigateToPage(e) {
-      if (e !== Fn().page) {
-        const t = Vn(e);
+      if (e !== Kn().page) {
+        const t = Jn(e);
         $t(0, t), this.requestUpdate();
       } else scrollTo(0, 0);
     }
     handlePageSelected(e) {
       const t = e.detail.name;
-      if (t !== Fn().page) {
-        const e = Vn(t);
+      if (t !== Kn().page) {
+        const e = Jn(t);
         $t(0, e), this.requestUpdate();
       } else scrollTo(0, 0);
     }
     static get styles() {
-      return [Yn, o`
+      return [Zn, o`
         :host {
           color: var(--primary-text-color);
           --paper-card-header-color: var(--primary-text-color);
@@ -11675,7 +11866,7 @@
     type: Boolean,
     reflect: !0
   })], e.SmartIrrigationPanel.prototype, "narrow", void 0), e.SmartIrrigationPanel = t([de("smart-irrigation")], e.SmartIrrigationPanel);
-  let Gn = class extends oe {
+  let Xn = class extends oe {
     async showDialog(e) {
       this._params = e, await this.updateComplete;
     }
@@ -11695,7 +11886,7 @@
             <ha-icon-button
               slot="navigationIcon"
               dialogAction="cancel"
-              .path=${mn}
+              .path=${vn}
             ></ha-icon-button>
             <span class="errortitle" slot="title">
               ${this.hass.localize("state_badge.default.error")}
@@ -11730,11 +11921,11 @@
   };
   t([ce({
     attribute: !1
-  })], Gn.prototype, "hass", void 0), t([he()], Gn.prototype, "_params", void 0), Gn = t([de("error-dialog")], Gn);
-  var qn = Object.freeze({
+  })], Xn.prototype, "hass", void 0), t([he()], Xn.prototype, "_params", void 0), Xn = t([de("error-dialog")], Xn);
+  var es = Object.freeze({
     __proto__: null,
     get ErrorDialog() {
-      return Gn;
+      return Xn;
     }
   });
   Object.defineProperty(e, "__esModule", {
