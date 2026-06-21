@@ -1,4 +1,5 @@
 import { TemplateResult, LitElement, html, css, CSSResultGroup } from "lit";
+import { repeat } from "lit/directives/repeat.js";
 import { query } from "lit/decorators.js";
 import { property, customElement } from "lit/decorators.js";
 import { HomeAssistant } from "custom-card-helpers";
@@ -79,6 +80,14 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
   @property({ type: Boolean })
   private isSaving = false;
 
+  // True once the first data load has completed. Avoids tearing the whole view
+  // down to a "loading" card on every background refresh (focus/scroll loss).
+  private _hasLoadedOnce = false;
+
+  // Set just before an inline-edit save to ignore the _config_updated echo our
+  // own write triggers. External changes still refresh normally.
+  private _suppressNextConfigUpdate = false;
+
   private debounceTimers = new Map<number, number>();
   private globalDebounceTimer: number | null = null;
 
@@ -137,6 +146,11 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     return [
       this.hass!.connection.subscribeMessage(
         () => {
+          // Ignore the echo of our own inline-edit save (see _suppressNextConfigUpdate).
+          if (this._suppressNextConfigUpdate) {
+            this._suppressNextConfigUpdate = false;
+            return;
+          }
           // Update data when notified of changes with proper error handling
           this._fetchData().catch((error) => {
             console.error("Failed to fetch data on config update:", error);
@@ -155,7 +169,11 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     }
 
     try {
-      this.isLoading = true;
+      // Only show the full-screen loading card on the very first load.
+      // Background refreshes must not unmount the view (focus/scroll loss).
+      if (!this._hasLoadedOnce) {
+        this.isLoading = true;
+      }
 
       // Fetch all data concurrently to reduce total wait time
       const [config, zones, mappings] = await Promise.all([
@@ -185,6 +203,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
       );
     } finally {
       this.isLoading = false;
+      this._hasLoadedOnce = true;
       // Trigger a re-render to ensure UI updates
       this._scheduleUpdate();
     }
@@ -458,8 +477,12 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     // Debounce saving to avoid excessive API calls during rapid editing
     this.globalDebounceTimer = window.setTimeout(() => {
       this.isSaving = true;
+      // Ignore the _config_updated echo this save triggers (see flag declaration).
+      this._suppressNextConfigUpdate = true;
       this.saveToHA(updatedMapping)
         .catch((error) => {
+          // Save failed: clear the guard so it doesn't swallow a later refresh.
+          this._suppressNextConfigUpdate = false;
           console.error("Failed to save mapping:", error);
         })
         .finally(() => {
@@ -555,7 +578,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
               id="name${mapping.id}"
               type="text"
               .value="${mapping.name}"
-              @input="${(e: Event) =>
+              @change="${(e: Event) =>
                 this.handleEditMapping(index, {
                   ...mapping,
                   name: (e.target as HTMLInputElement).value,
@@ -753,7 +776,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
           <input
             type="text"
             .value="${mappingline[MAPPING_CONF_STATIC_VALUE] || ""}"
-            @input="${(e: Event) =>
+            @change="${(e: Event) =>
               this.handleSimpleInputChange(
                 index,
                 value,
@@ -1059,7 +1082,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
           type="text"
           id="${baseId}_static_value"
           .value="${mappingline[MAPPING_CONF_STATIC_VALUE] || ""}"
-          @input="${(e: Event) =>
+          @change="${(e: Event) =>
             this.handleStaticValueChange(index, value, e)}"
         />
       </div>
@@ -1411,8 +1434,10 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     const remainingMappings = this.mappings.slice(10);
 
     return html`
-      ${mappingsToRender.map((mapping, index) =>
-        this.renderMappingCard(mapping, index),
+      ${repeat(
+        mappingsToRender,
+        (mapping) => mapping.id ?? mapping.name,
+        (mapping, index) => this.renderMappingCard(mapping, index),
       )}
       ${remainingMappings.length > 0
         ? html`
@@ -1452,7 +1477,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
               id="name${mapping.id}"
               type="text"
               .value="${mapping.name}"
-              @input="${(e: Event) =>
+              @change="${(e: Event) =>
                 this.handleEditMapping(index, {
                   ...mapping,
                   name: (e.target as HTMLInputElement).value,

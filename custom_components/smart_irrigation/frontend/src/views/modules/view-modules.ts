@@ -1,4 +1,5 @@
 import { TemplateResult, LitElement, html, css, CSSResultGroup } from "lit";
+import { repeat } from "lit/directives/repeat.js";
 import { query } from "lit/decorators.js";
 import { property, customElement } from "lit/decorators.js";
 import { HomeAssistant } from "custom-card-helpers";
@@ -43,6 +44,15 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
   @property({ type: Boolean })
   private isSaving = false;
 
+  // True once the first data load has completed. Avoids tearing the module
+  // list down to a "loading" indicator on every background refresh, which
+  // dropped focus and reset scroll while editing.
+  private _hasLoadedOnce = false;
+
+  // Set just before an inline-edit save to ignore the _config_updated echo our
+  // own write triggers. External changes (add/remove) still refresh normally.
+  private _suppressNextConfigUpdate = false;
+
   // Prevent excessive re-renders
   private _updateScheduled = false;
   private _scheduleUpdate() {
@@ -79,6 +89,11 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
     return [
       this.hass!.connection.subscribeMessage(
         () => {
+          // Ignore the echo of our own inline-edit save (see _suppressNextConfigUpdate).
+          if (this._suppressNextConfigUpdate) {
+            this._suppressNextConfigUpdate = false;
+            return;
+          }
           // Update data when notified of changes with proper error handling
           this._fetchData().catch((error) => {
             console.error("Failed to fetch data on config update:", error);
@@ -96,8 +111,12 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
       return;
     }
 
-    this.isLoading = true;
-    this._scheduleUpdate();
+    // Only show the loading indicator on the very first load; background
+    // refreshes must not unmount the list (focus/scroll loss).
+    if (!this._hasLoadedOnce) {
+      this.isLoading = true;
+      this._scheduleUpdate();
+    }
 
     try {
       // Fetch all data concurrently for better performance
@@ -120,6 +139,7 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
       // Handle error gracefully - keep existing data if fetch fails
     } finally {
       this.isLoading = false;
+      this._hasLoadedOnce = true;
       this._scheduleUpdate();
     }
   }
@@ -132,7 +152,13 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
         clearTimeout(timeoutId);
       }
       timeoutId = window.setTimeout(() => {
-        this.saveToHA(module);
+        // Ignore the _config_updated echo this save triggers (see flag declaration).
+        this._suppressNextConfigUpdate = true;
+        this.saveToHA(module).catch(() => {
+          // Save failed (already logged): clear the guard so it doesn't
+          // swallow a later genuine refresh.
+          this._suppressNextConfigUpdate = false;
+        });
         timeoutId = null;
       }, 500); // 500ms debounce
     };
@@ -326,7 +352,7 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
           type="checkbox"
           id="${name + index}"
           .checked=${val}
-          @input="${(e: Event) =>
+          @change="${(e: Event) =>
             this.handleEditConfig(index, {
               ...mod,
               config: {
@@ -344,7 +370,7 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
           class="shortinput"
           id="${schemaline["name"] + index}"
           .value="${mod.config[schemaline["name"]]}"
-          @input="${(e: Event) =>
+          @change="${(e: Event) =>
             this.handleEditConfig(index, {
               ...mod,
               config: {
@@ -358,7 +384,7 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
           type="text"
           id="${name + index}"
           .value="${val}"
-          @input="${(e: Event) =>
+          @change="${(e: Event) =>
             this.handleEditConfig(index, {
               ...mod,
               config: {
@@ -494,8 +520,10 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
         ? html`<div class="loading-indicator">
             ${localize("common.loading-messages.modules", this.hass.language)}
           </div>`
-        : Object.entries(this.modules).map(([key, value]) =>
-            this.renderModule(value, parseInt(key)),
+        : repeat(
+            this.modules,
+            (module) => module.id ?? module.name,
+            (module, index) => this.renderModule(module, index),
           )}
     `;
   }

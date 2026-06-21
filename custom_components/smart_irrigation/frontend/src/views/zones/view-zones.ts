@@ -1,5 +1,6 @@
 import { TemplateResult, LitElement, html, CSSResultGroup, css } from "lit";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
+import { repeat } from "lit/directives/repeat.js";
 import { query } from "lit/decorators.js";
 import { property, customElement } from "lit/decorators.js";
 import { HomeAssistant } from "custom-card-helpers";
@@ -89,6 +90,16 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
   @property({ type: Boolean })
   private isCreatingZone = false;
 
+  // True once the first data load has completed. Used to avoid tearing the
+  // whole view down to a "loading" card on every background refresh — that
+  // teardown is what dropped focus and reset scroll to the top while editing.
+  private _hasLoadedOnce = false;
+
+  // Set just before an inline-edit save so we can ignore the _config_updated
+  // event our own write echoes back (the local state is already up to date,
+  // a refetch would only cause a flicker). External changes still refresh.
+  private _suppressNextConfigUpdate = false;
+
   // Prevent excessive re-renders
   private _updateScheduled = false;
   private _scheduleUpdate() {
@@ -140,6 +151,11 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
             console.debug("Skipping data refresh during zone creation");
             return;
           }
+          // Ignore the echo of our own inline-edit save (see _suppressNextConfigUpdate).
+          if (this._suppressNextConfigUpdate) {
+            this._suppressNextConfigUpdate = false;
+            return;
+          }
           // Update data when notified of changes with proper error handling
           this._fetchData().catch((error) => {
             console.error("Failed to fetch data on config update:", error);
@@ -158,7 +174,11 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     }
 
     try {
-      this.isLoading = true;
+      // Only show the full-screen loading card on the very first load.
+      // Background refreshes must not unmount the view (focus/scroll loss).
+      if (!this._hasLoadedOnce) {
+        this.isLoading = true;
+      }
 
       // Fetch all data concurrently to reduce total wait time
       const [config, zones, modules, mappings] = await Promise.all([
@@ -185,6 +205,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       console.error("Error fetching data:", error);
     } finally {
       this.isLoading = false;
+      this._hasLoadedOnce = true;
       // Trigger a re-render to ensure UI updates
       this._scheduleUpdate();
     }
@@ -327,8 +348,12 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     // Debounce saving to avoid excessive API calls during rapid editing
     this.globalDebounceTimer = window.setTimeout(() => {
       this.isSaving = true;
+      // Ignore the _config_updated echo this save triggers (see flag declaration).
+      this._suppressNextConfigUpdate = true;
       this.saveToHA(updatedZone)
         .catch((error) => {
+          // Save failed: clear the guard so it doesn't swallow a later refresh.
+          this._suppressNextConfigUpdate = false;
           console.error("Failed to save zone:", error);
         })
         .finally(() => {
@@ -907,7 +932,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
               id="name${index}"
               type="text"
               .value="${zone.name}"
-              @input="${(e: Event) =>
+              @change="${(e: Event) =>
                 this.handleEditZone(index, {
                   ...zone,
                   [ZONE_NAME]: (e.target as HTMLInputElement).value,
@@ -920,7 +945,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
               >
               <input class="shortinput" id="size${index}" type="number""
               .value="${zone.size}"
-              @input="${(e: Event) =>
+              @change="${(e: Event) =>
                 this.handleEditZone(index, {
                   ...zone,
                   [ZONE_SIZE]: parseFloat((e.target as HTMLInputElement).value),
@@ -940,7 +965,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 id="throughput${index}"
                 type="number"
                 .value="${zone.throughput}"
-                @input="${(e: Event) =>
+                @change="${(e: Event) =>
                   this.handleEditZone(index, {
                     ...zone,
                     [ZONE_THROUGHPUT]: parseFloat(
@@ -962,7 +987,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 id="drainage_rate${index}"
                 type="number"
                 .value="${zone.drainage_rate}"
-                @input="${(e: Event) =>
+                @change="${(e: Event) =>
                   this.handleEditZone(index, {
                     ...zone,
                     [ZONE_DRAINAGE_RATE]: parseFloat(
@@ -1067,7 +1092,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 id="bucket${index}"
                 type="number"
                 .value="${Number(zone.bucket).toFixed(1)}"
-                @input="${(e: Event) =>
+                @change="${(e: Event) =>
                   this.handleEditZone(index, {
                     ...zone,
                     [ZONE_BUCKET]: parseFloat(
@@ -1087,7 +1112,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 id="maximum-bucket${index}"
                 type="number"
                 .value="${Number(zone.maximum_bucket).toFixed(1)}"
-                @input="${(e: Event) =>
+                @change="${(e: Event) =>
                   this.handleEditZone(index, {
                     ...zone,
                     [ZONE_MAXIMUM_BUCKET]: parseFloat(
@@ -1109,7 +1134,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 id="lead_time${index}"
                 type="number"
                 .value="${zone.lead_time}"
-                @input="${(e: Event) =>
+                @change="${(e: Event) =>
                   this.handleEditZone(index, {
                     ...zone,
                     [ZONE_LEAD_TIME]: parseInt(
@@ -1132,7 +1157,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 id="maximum-duration${index}"
                 type="number"
                 .value="${zone.maximum_duration}"
-                @input="${(e: Event) =>
+                @change="${(e: Event) =>
                   this.handleEditZone(index, {
                     ...zone,
                     [ZONE_MAXIMUM_DURATION]: parseInt(
@@ -1154,7 +1179,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 id="multiplier${index}"
                 type="number"
                 .value="${zone.multiplier}"
-                @input="${(e: Event) =>
+                @change="${(e: Event) =>
                   this.handleEditZone(index, {
                     ...zone,
                     [ZONE_MULTIPLIER]: parseFloat(
@@ -1175,7 +1200,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                   zone.state === SmartIrrigationZoneState.Disabled ||
                   zone.state === SmartIrrigationZoneState.Automatic
                 }"
-                @input="${(e: Event) =>
+                @change="${(e: Event) =>
                   this.handleEditZone(index, {
                     ...zone,
                     [ZONE_DURATION]: parseInt(
@@ -1370,8 +1395,10 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         </div>
       </ha-card>
 
-      ${Object.entries(this.zones).map(([key, value]) =>
-        this.renderZone(value, parseInt(key)),
+      ${repeat(
+        this.zones,
+        (zone) => zone.id ?? zone.name,
+        (zone, index) => this.renderZone(zone, index),
       )}
     `;
   }
