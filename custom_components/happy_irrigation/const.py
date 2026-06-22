@@ -1,6 +1,6 @@
 """Store constants."""
 
-VERSION = "v2026.6.2"
+VERSION = "v2026.6.3"
 NAME = "HAppy Irrigation"
 MANUFACTURER = "@altmenorg"
 
