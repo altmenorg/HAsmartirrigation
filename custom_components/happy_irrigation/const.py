@@ -12,7 +12,29 @@ LEGACY_DOMAIN = "smart_irrigation"
 CONF_IMPORT_FROM_LEGACY = "import_from_smart_irrigation"
 
 LANGUAGE_FILES_DIR = "frontend/localize/languages"
-SUPPORTED_LANGUAGES = ["de", "en", "es", "fr", "it", "nl", "no", "sk"]
+# Two-letter language codes for which the backend reads a translation file when
+# building the calculation explanation. Regional variants (pt-BR, zh-Hans) are
+# intentionally omitted: localize() lowercases the code, which would not match
+# their file names, so they fall back to English here.
+SUPPORTED_LANGUAGES = [
+    "cs",
+    "da",
+    "de",
+    "en",
+    "es",
+    "fi",
+    "fr",
+    "hu",
+    "it",
+    "nl",
+    "no",
+    "pl",
+    "pt",
+    "ru",
+    "sk",
+    "sv",
+    "uk",
+]
 
 START_EVENT_FIRED_TODAY = "starteventfiredtoday"
 

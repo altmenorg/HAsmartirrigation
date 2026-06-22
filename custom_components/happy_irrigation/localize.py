@@ -54,6 +54,9 @@ async def localize(string: str, language: str) -> str:
         return string  # noqa: TRY300
     except OSError:
         _LOGGER.error("Couldn't load translations language file for %s", language)
+        # Never return None: callers concatenate this into the calculation
+        # explanation, so fall back to the key itself rather than crashing.
+        return string
 
 
 def get_string_from_data(stringpath: list[str], data: dict) -> str:
