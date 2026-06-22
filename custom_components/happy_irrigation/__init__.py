@@ -1232,9 +1232,11 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
 
     async def track_update_time(self, *args):
         """Track and schedule periodic updates for HAppy Irrigation based on configuration."""
-        # perform update once
-        # Fire-and-forget: trigger immediate update in background
-        self.hass.async_create_task(self._async_update_all())
+        # Do an immediate update only when Home Assistant is already running
+        # (e.g. the user just changed a setting). Skip it during start-up, when
+        # source sensors may not have a value yet and would poison the data.
+        if self.hass.is_running:
+            self.hass.async_create_task(self._async_update_all())
         # use async_track_time_interval
         data = await self.store.async_get_config()
         the_time_delta = None
