@@ -42,7 +42,7 @@ import {
 } from "../../const";
 import { mdiPlus, mdiPencil, mdiDelete, mdiMenuDown, mdiMinus } from "@mdi/js";
 
-@customElement("smart-irrigation-view-general")
+@customElement("happy-irrigation-view-general")
 export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   hass?: HomeAssistant;
   @property() narrow!: boolean;
@@ -636,7 +636,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   private async _showTriggerDialog(params: any) {
     if (!this.hass) return;
 
-    const dialog = document.createElement("trigger-dialog") as any;
+    const dialog = document.createElement(
+      "happy-irrigation-trigger-dialog",
+    ) as any;
     dialog.hass = this.hass;
 
     dialog.addEventListener("trigger-save", (event: any) => {
@@ -665,7 +667,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     });
 
     /*fireEvent(this, "show-dialog", {
-      dialogTag: "trigger-dialog",
+      dialogTag: "happy-irrigation-trigger-dialog",
       dialogImport: () => import("../../dialogs/trigger-dialog"),
       dialogParams: params,
     });*/

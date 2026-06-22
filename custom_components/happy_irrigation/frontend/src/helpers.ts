@@ -264,7 +264,7 @@ export function showConfirmationDialog(
     ? (ev as HTMLElement)
     : ((ev as Event).target as HTMLElement);
   fireEvent(elem, "show-dialog", {
-    dialogTag: "confirmation-dialog",
+    dialogTag: "happy-irrigation-confirmation-dialog",
     dialogImport: () => import("./dialogs/confirmation-dialog"),
     dialogParams: { target: target, message: message },
   });
@@ -278,7 +278,7 @@ export function showErrorDialog(
     : ((ev as Event).target as HTMLElement);*/
   const elem = ev as HTMLElement;
   fireEvent(elem, "show-dialog", {
-    dialogTag: "error-dialog",
+    dialogTag: "happy-irrigation-error-dialog",
     dialogImport: () => import("./dialogs/error-dialog"),
     dialogParams: { error: error },
   });

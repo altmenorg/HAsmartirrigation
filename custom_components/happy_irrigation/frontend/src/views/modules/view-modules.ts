@@ -33,7 +33,7 @@ import {
   mdiMinus,
 } from "@mdi/js";
 
-@customElement("smart-irrigation-view-modules")
+@customElement("happy-irrigation-view-modules")
 class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
   hass?: HomeAssistant;
   @property() config?: SmartIrrigationConfig;

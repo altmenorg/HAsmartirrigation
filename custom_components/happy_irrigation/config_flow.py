@@ -78,13 +78,22 @@ class SmartIrrigationConfigFlow(config_entries.ConfigFlow, domain=const.DOMAIN):
         """Offer to import an existing Smart Irrigation configuration."""
         if user_input is not None:
             if user_input.get("import_existing"):
-                # The actual import happens in async_setup_entry, which has the
-                # store; here we just flag the entry. Weather-service settings and
-                # the API key are carried over from the legacy config entry there.
-                return self.async_create_entry(
-                    title=const.NAME,
-                    data={const.CONF_IMPORT_FROM_LEGACY: True},
-                )
+                # Carry over the weather-service settings + API key from the
+                # legacy config entry NOW (they live in the entry, not the
+                # storage file), and flag the entry so async_setup_entry imports
+                # the zones/modules/mappings from the legacy storage.
+                data = {const.CONF_IMPORT_FROM_LEGACY: True}
+                legacy = self.hass.config_entries.async_entries(const.LEGACY_DOMAIN)
+                if legacy:
+                    legacy_data = legacy[0].data
+                    for key in (
+                        const.CONF_USE_WEATHER_SERVICE,
+                        const.CONF_WEATHER_SERVICE,
+                        const.CONF_WEATHER_SERVICE_API_KEY,
+                    ):
+                        if key in legacy_data:
+                            data[key] = legacy_data[key]
+                return self.async_create_entry(title=const.NAME, data=data)
             # Declined: fall through to the normal first-time setup.
             return await self._show_step_user(None)
         return self.async_show_form(

@@ -21,7 +21,7 @@ import { localize } from "../../../localize/localize";
 import { DOMAIN, ZONE_BUCKET } from "../../const";
 import moment from "moment";
 
-@customElement("smart-irrigation-view-info")
+@customElement("happy-irrigation-view-info")
 class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
   hass?: HomeAssistant;
   @property() config?: SmartIrrigationConfig;

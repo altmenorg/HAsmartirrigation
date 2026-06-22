@@ -108,20 +108,10 @@ async def _async_import_from_legacy(hass: HomeAssistant, entry: ConfigEntry, sto
         except (ValueError, KeyError, TypeError) as err:
             _LOGGER.error("[migration] failed to import legacy config: %s", err)
 
-    # Carry over weather-service settings + API key from the legacy config entry.
-    merged = dict(entry.data)
-    legacy_entries = hass.config_entries.async_entries(const.LEGACY_DOMAIN)
-    if legacy_entries:
-        legacy_data = legacy_entries[0].data
-        for key in (
-            const.CONF_USE_WEATHER_SERVICE,
-            const.CONF_WEATHER_SERVICE,
-            const.CONF_WEATHER_SERVICE_API_KEY,
-        ):
-            if key in legacy_data:
-                merged[key] = legacy_data[key]
-    merged.pop(const.CONF_IMPORT_FROM_LEGACY, None)
-    hass.config_entries.async_update_entry(entry, data=merged)
+    # Clear the one-shot import flag (the weather-service settings/API key were
+    # already put in entry.data by the config flow, so they are preserved here).
+    new_data = {k: v for k, v in entry.data.items() if k != const.CONF_IMPORT_FROM_LEGACY}
+    hass.config_entries.async_update_entry(entry, data=new_data)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
@@ -384,9 +374,18 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
                 self._get_effective_coordinates()
             )
 
-            if self.weather_service == const.CONF_WEATHER_SERVICE_OWM:
+            api_key = hass.data[const.DOMAIN].get(
+                const.CONF_WEATHER_SERVICE_API_KEY
+            )
+            if not api_key:
+                _LOGGER.warning(
+                    "Weather service '%s' is enabled but no API key is set; "
+                    "skipping weather client setup",
+                    self.weather_service,
+                )
+            elif self.weather_service == const.CONF_WEATHER_SERVICE_OWM:
                 self._WeatherServiceClient = OWMClient(
-                    api_key=hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_API_KEY],
+                    api_key=api_key,
                     api_version=hass.data[const.DOMAIN].get(
                         const.CONF_WEATHER_SERVICE_API_VERSION
                     ),
@@ -396,7 +395,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
                 )
             elif self.weather_service == const.CONF_WEATHER_SERVICE_PW:
                 self._WeatherServiceClient = PirateWeatherClient(
-                    api_key=hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_API_KEY],
+                    api_key=api_key,
                     api_version="1",
                     latitude=effective_lat,
                     longitude=effective_lon,

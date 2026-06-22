@@ -67,7 +67,7 @@ import {
 } from "../../const";
 import moment, { Moment } from "moment";
 
-@customElement("smart-irrigation-view-zones")
+@customElement("happy-irrigation-view-zones")
 class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
   hass?: HomeAssistant;
   @property() config?: SmartIrrigationConfig;

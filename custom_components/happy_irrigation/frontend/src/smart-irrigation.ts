@@ -28,7 +28,7 @@ enum EMenuItems {
   Help = "help",
 }
 
-@customElement("smart-irrigation")
+@customElement("happy-irrigation")
 export class SmartIrrigationPanel extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
@@ -141,59 +141,59 @@ export class SmartIrrigationPanel extends LitElement {
     switch (page) {
       case "info":
         return html`
-          <smart-irrigation-view-info
+          <happy-irrigation-view-info
             .hass=${this.hass}
             .narrow=${this.narrow}
             .path=${path}
-          ></smart-irrigation-view-info>
+          ></happy-irrigation-view-info>
         `;
       case "general":
         return html`
-          <smart-irrigation-view-general
+          <happy-irrigation-view-general
             .hass=${this.hass}
             .narrow=${this.narrow}
             .path=${path}
-          ></smart-irrigation-view-general>
+          ></happy-irrigation-view-general>
         `;
       case "zones":
         return html`
-          <smart-irrigation-view-zones
+          <happy-irrigation-view-zones
             .hass=${this.hass}
             .narrow=${this.narrow}
             .path=${path}
-          ></smart-irrigation-view-zones>
+          ></happy-irrigation-view-zones>
         `;
       case "modules":
         return html`
-          <smart-irrigation-view-modules
+          <happy-irrigation-view-modules
             .hass=${this.hass}
             .narrow=${this.narrow}
             .path=${path}
-          ></smart-irrigation-view-modules>
+          ></happy-irrigation-view-modules>
         `;
       case "mappings":
         return html`
-          <smart-irrigation-view-mappings
+          <happy-irrigation-view-mappings
             .hass=${this.hass}
             .narrow=${this.narrow}
             .path=${path}
-          ></smart-irrigation-view-mappings>
+          ></happy-irrigation-view-mappings>
         `;
       case "weatherservice":
         return html`
-          <smart-irrigation-view-weatherservice
+          <happy-irrigation-view-weatherservice
             .hass=${this.hass}
             .narrow=${this.narrow}
             .path=${path}
-          ></smart-irrigation-view-weatherservice>
+          ></happy-irrigation-view-weatherservice>
         `;
       case "backuprestore":
         return html`
-          <smart-irrigation-view-backuprestore
+          <happy-irrigation-view-backuprestore
             .hass=${this.hass}
             .narrow=${this.narrow}
             .path=${path}
-          ></smart-irrigation-view-backuprestore>
+          ></happy-irrigation-view-backuprestore>
         `;
       case "help":
         return html`<ha-card

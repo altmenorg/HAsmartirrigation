@@ -181,10 +181,10 @@ INTEGRATION_FOLDER = DOMAIN
 PANEL_FOLDER = "frontend"
 PANEL_FILENAME = "dist/smart-irrigation.js"
 
-PANEL_URL = "/api/panel_custom/smart-irrigation"
+PANEL_URL = f"/api/panel_custom/{DOMAIN}"
 PANEL_TITLE = NAME
 PANEL_ICON = "mdi:sprinkler"
-PANEL_NAME = "smart-irrigation"
+PANEL_NAME = "happy-irrigation"
 
 ATTR_REMOVE = "remove"
 ATTR_CALCULATE = "calculate"

@@ -3,7 +3,7 @@ import { property, customElement, state } from "lit/decorators.js";
 import { HomeAssistant } from "custom-card-helpers";
 import { mdiClose } from "@mdi/js";
 
-@customElement("confirmation-dialog")
+@customElement("happy-irrigation-confirmation-dialog")
 export class ConfirmationDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 

@@ -2,7 +2,7 @@ export const VERSION = "v2025.10.0";
 export const REPO = "https://github.com/jeroenterheerdt/HASmartIrrigation;";
 export const ISSUES_URL = REPO + "/issues";
 
-export const PLATFORM = "smart-irrigation";
+export const PLATFORM = "happy_irrigation";
 export const DOMAIN = "happy_irrigation";
 export const editConfigService = "edit_config";
 

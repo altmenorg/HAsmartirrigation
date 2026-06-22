@@ -23,7 +23,7 @@ export interface TriggerDialogParams {
   triggerIndex?: number;
 }
 
-@customElement("trigger-dialog")
+@customElement("happy-irrigation-trigger-dialog")
 export class TriggerDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 

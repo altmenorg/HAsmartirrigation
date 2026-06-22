@@ -13,7 +13,7 @@ import {
   WeatherServiceInfo,
 } from "../../data/websockets";
 
-@customElement("smart-irrigation-view-weatherservice")
+@customElement("happy-irrigation-view-weatherservice")
 export class SmartIrrigationViewWeatherService extends LitElement {
   hass?: HomeAssistant;
   @property() narrow!: boolean;

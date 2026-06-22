@@ -9,7 +9,7 @@ import { loadHaForm } from "../../load-ha-elements";
 import { Path } from "../../common/navigation";
 import { exportConfig, restoreConfig } from "../../data/websockets";
 
-@customElement("smart-irrigation-view-backuprestore")
+@customElement("happy-irrigation-view-backuprestore")
 export class SmartIrrigationViewBackupRestore extends LitElement {
   hass?: HomeAssistant;
   @property() narrow!: boolean;

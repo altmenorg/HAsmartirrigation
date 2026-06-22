@@ -69,7 +69,7 @@ import {
 } from "@mdi/js";
 import moment from "moment";
 
-@customElement("smart-irrigation-view-mappings")
+@customElement("happy-irrigation-view-mappings")
 class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
   hass?: HomeAssistant;
   @property() config?: SmartIrrigationConfig;
