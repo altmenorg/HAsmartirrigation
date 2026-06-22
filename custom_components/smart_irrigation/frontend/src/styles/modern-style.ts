@@ -135,6 +135,31 @@ export const modernStyle = css`
     font-size: 0.85em;
   }
 
+  /* --- per-field sub-group: section heading + its controls (shared by views) --- */
+  .si-subgroup {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--divider-color);
+  }
+  .si-subgroup:last-child {
+    border-bottom: 0;
+  }
+  .si-subgroup-title {
+    /* same font as the field labels below (.setting-label), just a touch larger
+       and heavier so the section reads as a heading. em is relative to the
+       surrounding body text, so it stays "a bit bigger than Source" whatever
+       the base size is. */
+    font-size: 1.05em;
+    font-weight: 600;
+    color: var(--primary-text-color);
+    margin-bottom: 4px;
+  }
+  /* a sub-group's own setting-rows shouldn't draw their own divider line
+     (the sub-group already has one), keeps the nested look clean */
+  .si-subgroup .setting-row {
+    border-bottom: 0;
+    min-height: 44px;
+  }
+
   /* --- unified field style for inputs AND selects (HA filled look) --- */
   .field {
     flex: 0 0 auto;

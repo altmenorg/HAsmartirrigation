@@ -1684,26 +1684,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     return css`
       ${globalStyle} ${modernStyle}
 
-      /* --- mappings: per-field sub-group inside the expanded card body --- */
-      .si-subgroup {
-        padding: 12px 0;
-        border-bottom: 1px solid var(--divider-color);
-      }
-      .si-subgroup:last-child {
-        border-bottom: 0;
-      }
-      .si-subgroup-title {
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: var(--primary-text-color);
-        margin-bottom: 4px;
-      }
-      /* a sub-group's own setting-rows shouldn't draw their own divider line
-         (the sub-group already has one), keeps the nested look clean */
-      .si-subgroup .setting-row {
-        border-bottom: 0;
-        min-height: 44px;
-      }
+      /* .si-subgroup / .si-subgroup-title now live in modern-style (shared) */
       /* source radios laid out inline like the other field controls */
       .radio-group {
         display: flex;
