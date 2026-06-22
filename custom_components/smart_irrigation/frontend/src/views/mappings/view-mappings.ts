@@ -1056,7 +1056,10 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
   ): TemplateResult {
     if (!this.hass) return html``;
 
-    return this._textRow(
+    // Valeur statique = mesure météo (temp, pression, humidité…) → toujours
+    // numérique. On utilise _numRow (input type=number + spinner ±) comme dans
+    // zones, sinon on peut taper du texte (bug). step 0.1 = décimales autorisées.
+    return this._numRow(
       localize(
         "panels.mappings.cards.mapping.static_value",
         this.hass.language,
@@ -1067,6 +1070,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         this.handleStaticValueChange(index, value, {
           target: { value: v },
         } as unknown as Event),
+      0.1,
     );
   }
 
