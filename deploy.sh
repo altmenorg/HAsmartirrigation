@@ -22,6 +22,12 @@ set -euo pipefail
 SSH_HOST="${HAOS_SSH_HOST:-haos}"
 REMOTE_BASE="/config/custom_components"
 MODULE="smart_irrigation"
+# IMPORTANT : les backups NE doivent PAS vivre dans REMOTE_BASE. HA scanne
+# /config/custom_components/ pour découvrir les intégrations, et un dossier
+# nommé "smart_irrigation.backup-..." est lu par Python comme un sous-module
+# de smart_irrigation (à cause du point) -> ModuleNotFoundError -> le setup de
+# l'intégration plante. On les range donc hors du chemin scanné.
+BACKUP_BASE="/config/si_backups"
 
 cd "$(dirname "$0")/custom_components"
 
@@ -57,8 +63,8 @@ tar czf "$TARBALL" \
 
 if [ "$DO_BACKUP" -eq 1 ]; then
   STAMP="$(date +%Y%m%d-%H%M%S)"
-  echo "==> Backup distant : ${MODULE}.backup-${STAMP}"
-  ssh "$SSH_HOST" "cd ${REMOTE_BASE} && [ -d ${MODULE} ] && cp -a ${MODULE} ${MODULE}.backup-${STAMP} || true"
+  echo "==> Backup distant : ${BACKUP_BASE}/${MODULE}.backup-${STAMP}"
+  ssh "$SSH_HOST" "mkdir -p ${BACKUP_BASE} && [ -d ${REMOTE_BASE}/${MODULE} ] && cp -a ${REMOTE_BASE}/${MODULE} ${BACKUP_BASE}/${MODULE}.backup-${STAMP} || true"
 fi
 
 echo "==> Déploiement (remplacement propre) vers ${SSH_HOST}:${REMOTE_BASE}/${MODULE}"
