@@ -12146,8 +12146,8 @@
         }
 
         .view > * {
-          width: 600px;
-          max-width: 600px;
+          width: 100%;
+          max-width: 1100px;
         }
 
         .view > *:last-child {
