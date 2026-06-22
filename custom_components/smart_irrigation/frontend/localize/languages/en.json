@@ -86,7 +86,7 @@
   },
   "panels": {
     "weatherservice": {
-      "title": "Weather Service",
+      "title": "Weather service",
       "description": "View and change the weather service used to fetch weather data — no need to reinstall the integration. The API key is validated and the change is applied immediately.",
       "labels": {
         "use-weather-service": "Use a weather service",
@@ -104,7 +104,7 @@
       }
     },
     "backuprestore": {
-      "title": "Backup / Restore",
+      "title": "Backup / restore",
       "description": "Export the full Smart Irrigation configuration to a JSON file, or restore it from a previous backup.",
       "cards": {
         "backup": {
@@ -202,7 +202,7 @@
       "configuration-not-available": "Configuration not available.",
       "cards": {
         "zone-bucket-values": {
-          "title": "Zone Bucket Values & Duration",
+          "title": "Zone bucket values & duration",
           "labels": {
             "bucket": "Bucket",
             "duration": "Duration"
@@ -210,7 +210,7 @@
           "no-zones": "No zones configured"
         },
         "next-irrigation": {
-          "title": "Next Irrigation",
+          "title": "Next irrigation",
           "labels": {
             "next-start": "Next start",
             "duration": "Duration",
@@ -219,7 +219,7 @@
           "no-data": "No data available"
         },
         "irrigation-reason": {
-          "title": "Irrigation Reason",
+          "title": "Irrigation reason",
           "labels": {
             "reason": "Reason",
             "sunrise": "Sunrise",
@@ -292,9 +292,9 @@
         "mapping-name": "Name"
       },
       "no_items": "There are no sensor group defined yet.",
-      "title": "Sensor Groups",
+      "title": "Sensor groups",
       "weather-records": {
-        "title": "Weather Records (Last 10)",
+        "title": "Weather records (last 10)",
         "timestamp": "Time",
         "temperature": "Temp",
         "humidity": "Humidity",
@@ -388,9 +388,9 @@
   },
   "title": "Smart Irrigation",
   "irrigation_start_triggers": {
-    "title": "Irrigation Start Triggers",
+    "title": "Irrigation start triggers",
     "description": "Configure when irrigation should start based on solar events. You can add multiple triggers for different schedules. For sunrise triggers, leaving offset at 0 will automatically use the total duration of all enabled zones.",
-    "add_trigger": "Add Trigger",
+    "add_trigger": "Add trigger",
     "edit_trigger": "Edit Trigger",
     "delete_trigger": "Delete Trigger",
     "trigger_types": {
@@ -446,13 +446,13 @@
     }
   },
   "weather_skip": {
-    "title": "Weather-based Irrigation Skip",
+    "title": "Weather-based irrigation skip",
     "description": "Automatically skip irrigation when precipitation is forecasted. This feature requires a weather service to be configured.",
     "threshold_label": "Precipitation Threshold",
     "threshold_description": "Minimum amount of precipitation (in mm) forecasted for today and tomorrow to skip irrigation."
   },
   "coordinate_config": {
-    "title": "Location Coordinates",
+    "title": "Location coordinates",
     "description": "Configure location coordinates for weather data retrieval. You can use manual coordinates different from your Home Assistant location if needed.",
     "manual_enabled": "Use manual coordinates",
     "use_ha_location": "Use Home Assistant location",
@@ -462,7 +462,7 @@
     "current_ha_coords": "Current Home Assistant coordinates"
   },
   "days_between_irrigation": {
-    "title": "Days Between Irrigation",
+    "title": "Days between irrigation",
     "description": "Configure the minimum number of days that must pass between irrigation events. This helps control watering frequency for water conservation and plant health management.\n\nTypical real-world use cases:\n• Lawn care: 1-2 day intervals prevent overwatering\n• Drought restrictions: 6+ day intervals for weekly watering\n• Deep-rooted plants: 3-7 day intervals for less frequent watering\n• Water conservation: Customizable based on climate and soil conditions",
     "label": "Minimum days between irrigation",
     "help_text": "Set to 0 to disable this feature. Values from 1-365 days are supported. This setting works alongside existing precipitation forecasting logic."
