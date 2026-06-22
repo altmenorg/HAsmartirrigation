@@ -7,6 +7,7 @@ import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { loadHaForm } from "../../load-ha-elements";
 import { Path } from "../../common/navigation";
+import { WEATHER_SERVICES_NO_API_KEY } from "../../const";
 import {
   fetchWeatherService,
   setWeatherService,
@@ -152,21 +153,27 @@ export class SmartIrrigationViewWeatherService extends LitElement {
                     </svg>
                   </div>
                 </div>
-                <div class="setting-row">
-                  <div class="setting-label">
-                    ${localize("panels.weatherservice.labels.api-key", lang)}
-                  </div>
-                  <input
-                    class="field"
-                    type="text"
-                    autocomplete="off"
-                    .value=${this._apiKey}
-                    @change=${(e: Event) => {
-                      this._apiKey = (e.target as HTMLInputElement).value;
-                      this._saved = false;
-                    }}
-                  />
-                </div>
+                ${this._service &&
+                WEATHER_SERVICES_NO_API_KEY.includes(this._service)
+                  ? ""
+                  : html`<div class="setting-row">
+                      <div class="setting-label">
+                        ${localize(
+                          "panels.weatherservice.labels.api-key",
+                          lang,
+                        )}
+                      </div>
+                      <input
+                        class="field"
+                        type="text"
+                        autocomplete="off"
+                        .value=${this._apiKey}
+                        @change=${(e: Event) => {
+                          this._apiKey = (e.target as HTMLInputElement).value;
+                          this._saved = false;
+                        }}
+                      />
+                    </div>`}
               `
             : html`<div class="ws-note">
                 ${localize("panels.weatherservice.messages.no-service", lang)}

@@ -183,8 +183,8 @@ class Config:
 
     calctime = attr.ib(type=str, default=CONF_DEFAULT_CALC_TIME)
     units = attr.ib(type=str, default=None)
-    use_weather_service = attr.ib(type=bool, default=CONF_DEFAULT_WEATHER_SERVICE)
-    weather_service = attr.ib(type=str, default=None)
+    use_weather_service = attr.ib(type=bool, default=CONF_DEFAULT_USE_WEATHER_SERVICE)
+    weather_service = attr.ib(type=str, default=CONF_DEFAULT_WEATHER_SERVICE)
     autocalcenabled = attr.ib(type=bool, default=CONF_AUTO_CALC_ENABLED)
     autoupdateenabled = attr.ib(type=bool, default=CONF_AUTO_UPDATE_ENABLED)
     autoupdateschedule = attr.ib(type=str, default=CONF_DEFAULT_AUTO_UPDATE_SCHEDULE)

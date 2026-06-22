@@ -667,7 +667,7 @@ async def websocket_set_weather_service(hass: HomeAssistant, connection, msg):
                 msg["id"], "invalid_service", "Please choose a valid weather service."
             )
             return
-        if not api_key:
+        if not api_key and service not in const.CONF_WEATHER_SERVICES_NO_API_KEY:
             connection.send_error(
                 msg["id"],
                 "missing_api_key",

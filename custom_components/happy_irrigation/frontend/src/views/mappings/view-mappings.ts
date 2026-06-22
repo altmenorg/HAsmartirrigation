@@ -51,6 +51,7 @@ import {
   MAPPING_PRECIPITATION,
   MAPPING_PRESSURE,
   MAPPING_SOLRAD,
+  WEATHER_SERVICES_WITH_SOLRAD_ET,
   MAPPING_TEMPERATURE,
   MAPPING_WINDSPEED,
   MAPPING_CONF_PRESSURE_TYPE,
@@ -676,9 +677,16 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     const isSpecialMapping =
       value === MAPPING_EVAPOTRANSPIRATION || value === MAPPING_SOLRAD;
     const currentSource = mappingline[MAPPING_CONF_SOURCE];
+    // SolRad/ET can be sourced from the weather service only when the chosen
+    // service actually provides them (e.g. Open-Meteo).
+    const offerWeatherService =
+      !!this.config.use_weather_service &&
+      (!isSpecialMapping ||
+        (!!this.config.weather_service &&
+          WEATHER_SERVICES_WITH_SOLRAD_ET.includes(this.config.weather_service)));
 
     return html`
-      ${!isSpecialMapping && this.config.use_weather_service
+      ${offerWeatherService
         ? html`<option
             value="${MAPPING_CONF_SOURCE_WEATHER_SERVICE}"
             ?selected=${currentSource === MAPPING_CONF_SOURCE_WEATHER_SERVICE}
@@ -833,6 +841,13 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     const baseId = `${value}_${index}`;
     const isSpecialMapping =
       value === MAPPING_EVAPOTRANSPIRATION || value === MAPPING_SOLRAD;
+    // SolRad/ET expose the weather-service option only when the chosen service
+    // provides them (e.g. Open-Meteo).
+    const offerWeatherService =
+      !!this.config?.use_weather_service &&
+      (!isSpecialMapping ||
+        (!!this.config?.weather_service &&
+          WEATHER_SERVICES_WITH_SOLRAD_ET.includes(this.config.weather_service)));
 
     return html`
       <div class="mappingsettingline">
@@ -844,7 +859,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         </label>
       </div>
       <div class="radio-group">
-        ${!isSpecialMapping
+        ${offerWeatherService
           ? this.renderWeatherServiceOption(index, value, mappingline)
           : ""}
         ${isSpecialMapping

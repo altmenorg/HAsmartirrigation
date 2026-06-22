@@ -131,13 +131,22 @@ CONF_DEFAULT_REFERENCE_ET = 0.0
 
 CONF_WEATHER_SERVICE_OWM = "Open Weather Map"
 CONF_WEATHER_SERVICE_PW = "Pirate Weather"
+CONF_WEATHER_SERVICE_OM = "Open-Meteo"
+# Services that do NOT need an API key (free, keyless).
+CONF_WEATHER_SERVICES_NO_API_KEY = [CONF_WEATHER_SERVICE_OM]
+# Services that can additionally provide solar radiation and reference ET0
+# (so those fields may be sourced from the weather service in the UI).
+CONF_WEATHER_SERVICES_WITH_SOLRAD_ET = [CONF_WEATHER_SERVICE_OM]
 CONF_WEATHER_SERVICES = [
+    CONF_WEATHER_SERVICE_OM,
     CONF_WEATHER_SERVICE_OWM,
     CONF_WEATHER_SERVICE_PW,
 ]
 
 CONF_DEFAULT_USE_WEATHER_SERVICE = False
-CONF_DEFAULT_WEATHER_SERVICE = None
+# Open-Meteo is the recommended default: free, keyless, and it supplies solar
+# radiation + FAO-56 ET0 out of the box.
+CONF_DEFAULT_WEATHER_SERVICE = CONF_WEATHER_SERVICE_OM
 CONF_CALC_TIME = "calctime"
 CONF_DEFAULT_CALC_TIME = "23:00"
 CONF_AUTO_CALC_ENABLED = "autocalcenabled"

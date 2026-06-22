@@ -119,10 +119,11 @@ class SmartIrrigationConfigFlow(config_entries.ConfigFlow, domain=const.DOMAIN):
         self._errors = {}
         if user_input is not None:
             try:
-                # store values entered
-                self._weather_service_api_key = user_input[
-                    const.CONF_WEATHER_SERVICE_API_KEY
-                ].strip()
+                # store values entered (api key is optional for keyless services
+                # such as Open-Meteo)
+                self._weather_service_api_key = user_input.get(
+                    const.CONF_WEATHER_SERVICE_API_KEY, ""
+                ).strip()
                 self._weather_service = user_input[const.CONF_WEATHER_SERVICE].strip()
                 # v2024.4.5: removing handling of 2.5 API version of sunsetting by OWM in June 2024.
                 # self._owm_api_version = user_input[const.CONF_OWM_API_VERSION]
@@ -150,10 +151,14 @@ class SmartIrrigationConfigFlow(config_entries.ConfigFlow, domain=const.DOMAIN):
             step_id="step1",
             data_schema=vol.Schema(
                 {
-                    vol.Required(const.CONF_WEATHER_SERVICE): selector(
-                        {"select": {"options": const.CONF_WEATHER_SERVICES}}
-                    ),
-                    vol.Required(const.CONF_WEATHER_SERVICE_API_KEY): str,
+                    vol.Required(
+                        const.CONF_WEATHER_SERVICE,
+                        default=const.CONF_DEFAULT_WEATHER_SERVICE,
+                    ): selector({"select": {"options": const.CONF_WEATHER_SERVICES}}),
+                    # Optional: keyless services (e.g. Open-Meteo) need no key.
+                    vol.Optional(
+                        const.CONF_WEATHER_SERVICE_API_KEY, default=""
+                    ): str,
                     # vol.Required(const.CONF_OWM_API_VERSION, default="3.0"): selector(
                     #    {"select": {"options": ["2.5", "3.0"]}}
                     # ),

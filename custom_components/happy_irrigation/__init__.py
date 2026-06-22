@@ -61,6 +61,7 @@ from .localize import localize
 from .panel import async_register_panel, remove_panel
 from .scheduler import RecurringScheduleManager, SeasonalAdjustmentManager
 from .store import SmartIrrigationStorage, async_get_registry
+from .weathermodules.OpenMeteoClient import OpenMeteoClient
 from .weathermodules.OWMClient import OWMClient
 from .weathermodules.PirateWeatherClient import PirateWeatherClient
 from .websockets import async_register_websockets
@@ -381,7 +382,14 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
             )
 
             api_key = hass.data[const.DOMAIN].get(const.CONF_WEATHER_SERVICE_API_KEY)
-            if not api_key:
+            # Open-Meteo is keyless, so build it before the api_key guard.
+            if self.weather_service == const.CONF_WEATHER_SERVICE_OM:
+                self._WeatherServiceClient = OpenMeteoClient(
+                    latitude=effective_lat,
+                    longitude=effective_lon,
+                    elevation=effective_elev,
+                )
+            elif not api_key:
                 _LOGGER.warning(
                     "Weather service '%s' is enabled but no API key is set; "
                     "skipping weather client setup",
@@ -643,7 +651,14 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         self._WeatherServiceClient = None
         if self.use_weather_service:
             lat, lon, elev = self._get_effective_coordinates()
-            if self.weather_service == const.CONF_WEATHER_SERVICE_OWM:
+            if self.weather_service == const.CONF_WEATHER_SERVICE_OM:
+                # Open-Meteo is keyless.
+                self._WeatherServiceClient = OpenMeteoClient(
+                    latitude=lat,
+                    longitude=lon,
+                    elevation=elev,
+                )
+            elif self.weather_service == const.CONF_WEATHER_SERVICE_OWM:
                 self._WeatherServiceClient = OWMClient(
                     api_key=api_key,
                     api_version=self.hass.data[const.DOMAIN].get(
