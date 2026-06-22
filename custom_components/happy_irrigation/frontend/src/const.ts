@@ -59,10 +59,9 @@ export const MAPPING_SOLRAD = "Solar Radiation";
 export const MAPPING_TEMPERATURE = "Temperature";
 export const MAPPING_WINDSPEED = "Windspeed";
 
-// Weather services that additionally provide solar radiation and FAO-56 ET0,
-// so those fields may be sourced from the weather service (not just sensors).
+// The default / canonical Open-Meteo service name (used to show "(via
+// Open-Meteo)" when radiation is filled from it on other providers).
 export const WEATHER_SERVICE_OPEN_METEO = "Open-Meteo";
-export const WEATHER_SERVICES_WITH_SOLRAD_ET = [WEATHER_SERVICE_OPEN_METEO];
 // Weather services that need no API key (free / keyless).
 export const WEATHER_SERVICES_NO_API_KEY = [WEATHER_SERVICE_OPEN_METEO];
 

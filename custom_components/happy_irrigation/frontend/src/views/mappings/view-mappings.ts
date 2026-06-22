@@ -51,7 +51,7 @@ import {
   MAPPING_PRECIPITATION,
   MAPPING_PRESSURE,
   MAPPING_SOLRAD,
-  WEATHER_SERVICES_WITH_SOLRAD_ET,
+  WEATHER_SERVICE_OPEN_METEO,
   MAPPING_TEMPERATURE,
   MAPPING_WINDSPEED,
   MAPPING_CONF_PRESSURE_TYPE,
@@ -677,13 +677,15 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     const isSpecialMapping =
       value === MAPPING_EVAPOTRANSPIRATION || value === MAPPING_SOLRAD;
     const currentSource = mappingline[MAPPING_CONF_SOURCE];
-    // SolRad/ET can be sourced from the weather service only when the chosen
-    // service actually provides them (e.g. Open-Meteo).
-    const offerWeatherService =
-      !!this.config.use_weather_service &&
-      (!isSpecialMapping ||
-        (!!this.config.weather_service &&
-          WEATHER_SERVICES_WITH_SOLRAD_ET.includes(this.config.weather_service)));
+    // Solar Radiation and Evapotranspiration can be sourced from the weather
+    // service on any provider: for services that don't supply them (OWM /
+    // Pirate Weather) the integration fills them from Open-Meteo.
+    const offerWeatherService = !!this.config.use_weather_service;
+    // Show "(via Open-Meteo)" when the value will actually come from the
+    // Open-Meteo fallback rather than the chosen service.
+    const viaOpenMeteo =
+      isSpecialMapping &&
+      this.config.weather_service !== WEATHER_SERVICE_OPEN_METEO;
 
     return html`
       ${offerWeatherService
@@ -694,7 +696,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
             ${localize(
               "panels.mappings.cards.mapping.sources.weather_service",
               this.hass.language,
-            )}
+            )}${viaOpenMeteo ? " (via Open-Meteo)" : ""}
           </option>`
         : ""}
       ${isSpecialMapping
@@ -841,13 +843,9 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     const baseId = `${value}_${index}`;
     const isSpecialMapping =
       value === MAPPING_EVAPOTRANSPIRATION || value === MAPPING_SOLRAD;
-    // SolRad/ET expose the weather-service option only when the chosen service
-    // provides them (e.g. Open-Meteo).
-    const offerWeatherService =
-      !!this.config?.use_weather_service &&
-      (!isSpecialMapping ||
-        (!!this.config?.weather_service &&
-          WEATHER_SERVICES_WITH_SOLRAD_ET.includes(this.config.weather_service)));
+    // SolRad/ET are sourceable from the weather service on any provider
+    // (filled from Open-Meteo when the chosen service lacks them).
+    const offerWeatherService = !!this.config?.use_weather_service;
 
     return html`
       <div class="mappingsettingline">
@@ -883,6 +881,12 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     const isChecked =
       this.config.use_weather_service &&
       mappingline[MAPPING_CONF_SOURCE] === MAPPING_CONF_SOURCE_WEATHER_SERVICE;
+    // SolRad/ET are filled from Open-Meteo when the chosen service lacks them.
+    const isSpecialMapping =
+      value === MAPPING_EVAPOTRANSPIRATION || value === MAPPING_SOLRAD;
+    const viaOpenMeteo =
+      isSpecialMapping &&
+      this.config.weather_service !== WEATHER_SERVICE_OPEN_METEO;
 
     return html`
       <label class="${isDisabled ? "strikethrough" : ""}">
@@ -898,7 +902,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         ${localize(
           "panels.mappings.cards.mapping.sources.weather_service",
           this.hass.language,
-        )}
+        )}${viaOpenMeteo ? " (via Open-Meteo)" : ""}
       </label>
     `;
   }

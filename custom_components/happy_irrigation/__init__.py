@@ -64,6 +64,7 @@ from .store import SmartIrrigationStorage, async_get_registry
 from .weathermodules.OpenMeteoClient import OpenMeteoClient
 from .weathermodules.OWMClient import OWMClient
 from .weathermodules.PirateWeatherClient import PirateWeatherClient
+from .weathermodules.SolarRadiationFallback import SolarRadiationFallbackClient
 from .websockets import async_register_websockets
 
 _LOGGER = logging.getLogger(__name__)
@@ -414,6 +415,20 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
                     elevation=effective_elev,
                 )
 
+            # OWM and Pirate Weather do not provide solar radiation; transparently
+            # fill it (and FAO-56 ET0) from Open-Meteo so those fields can be
+            # sourced from the weather service on any provider.
+            if self._WeatherServiceClient is not None and self.weather_service in (
+                const.CONF_WEATHER_SERVICE_OWM,
+                const.CONF_WEATHER_SERVICE_PW,
+            ):
+                self._WeatherServiceClient = SolarRadiationFallbackClient(
+                    self._WeatherServiceClient,
+                    latitude=effective_lat,
+                    longitude=effective_lon,
+                    elevation=effective_elev,
+                )
+
         # Initialize coordinates for weather services and other features
         (
             self._effective_latitude,
@@ -672,6 +687,18 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
                 self._WeatherServiceClient = PirateWeatherClient(
                     api_key=api_key,
                     api_version="1",
+                    latitude=lat,
+                    longitude=lon,
+                    elevation=elev,
+                )
+
+            # Fill solar radiation / ET0 from Open-Meteo for services that lack it.
+            if self._WeatherServiceClient is not None and self.weather_service in (
+                const.CONF_WEATHER_SERVICE_OWM,
+                const.CONF_WEATHER_SERVICE_PW,
+            ):
+                self._WeatherServiceClient = SolarRadiationFallbackClient(
+                    self._WeatherServiceClient,
                     latitude=lat,
                     longitude=lon,
                     elevation=elev,
