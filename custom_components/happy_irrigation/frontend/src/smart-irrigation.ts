@@ -207,7 +207,7 @@ export class SmartIrrigationPanel extends LitElement {
               "panels.help.cards.how-to-get-help.first-read-the",
               this.hass.language,
             )}
-            <a href="https://github.com/jeroenterheerdt/HAsmartirrigation/wiki"
+            <a href="https://github.com/altmenorg/HappyIrrigation#readme"
               >${localize(
                 "panels.help.cards.how-to-get-help.wiki",
                 this.hass.language,
@@ -228,8 +228,7 @@ export class SmartIrrigationPanel extends LitElement {
               "panels.help.cards.how-to-get-help.or-open-a",
               this.hass.language,
             )}
-            <a
-              href="https://github.com/jeroenterheerdt/HAsmartirrigation/issues"
+            <a href="https://github.com/altmenorg/HappyIrrigation/issues"
               >${localize(
                 "panels.help.cards.how-to-get-help.github-issue",
                 this.hass.language,

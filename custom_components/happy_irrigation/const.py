@@ -2,7 +2,7 @@
 
 VERSION = "v2025.10.0"
 NAME = "HAppy Irrigation"
-MANUFACTURER = "@jeroenterheerdt"
+MANUFACTURER = "@altmenorg"
 
 DOMAIN = "happy_irrigation"
 CUSTOM_COMPONENTS = "custom_components"
