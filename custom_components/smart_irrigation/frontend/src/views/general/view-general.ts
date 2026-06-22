@@ -56,6 +56,15 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   @property({ type: Boolean })
   private isSaving = false;
 
+  // True once the first data load has completed. Avoids replacing the whole
+  // form with a "loading" indicator on every background refresh, which dropped
+  // focus and reset scroll while editing.
+  private _hasLoadedOnce = false;
+
+  // Set just before an inline-edit save to ignore the _config_updated echo our
+  // own write triggers. External changes still refresh normally.
+  private _suppressNextConfigUpdate = false;
+
   // Prevent excessive re-renders
   private _updateScheduled = false;
   private _scheduleUpdate() {
@@ -90,6 +99,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     return [
       this.hass!.connection.subscribeMessage(
         () => {
+          // Ignore the echo of our own inline-edit save (see _suppressNextConfigUpdate).
+          if (this._suppressNextConfigUpdate) {
+            this._suppressNextConfigUpdate = false;
+            return;
+          }
           // Update data when notified of changes with proper error handling
           this._fetchData().catch((error) => {
             console.error("Failed to fetch data on config update:", error);
@@ -107,8 +121,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       return;
     }
 
-    this.isLoading = true;
-    this._scheduleUpdate();
+    // Only show the loading indicator on the very first load; background
+    // refreshes must not replace the form (focus/scroll loss).
+    if (!this._hasLoadedOnce) {
+      this.isLoading = true;
+      this._scheduleUpdate();
+    }
 
     try {
       this.config = await fetchConfig(this.hass);
@@ -134,6 +152,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // Handle error gracefully - keep existing data if fetch fails
     } finally {
       this.isLoading = false;
+      this._hasLoadedOnce = true;
       this._scheduleUpdate();
     }
   }
@@ -245,7 +264,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 type="text"
                 class="shortinput"
                 .value="${this.config.calctime}"
-                @input=${(e: Event) => {
+                @change=${(e: Event) => {
                   this.handleConfigChange({
                     calctime: (e.target as HTMLInputElement).value,
                   });
@@ -347,7 +366,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   class="shortinput"
                   type="number"
                   value="${this.data.autoupdateinterval}"
-                  @input="${(e: Event) => {
+                  @change="${(e: Event) => {
                     this.saveData({
                       autoupdateinterval: parseInt(
                         (e.target as HTMLInputElement).value,
@@ -415,7 +434,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 type="text"
                 class="shortinput"
                 .value="${this.config.autoupdatedelay}"
-                @input=${(e: Event) => {
+                @change=${(e: Event) => {
                   this.saveData({
                     autoupdatedelay: parseInt(
                       (e.target as HTMLInputElement).value,
@@ -517,7 +536,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 type="text"
                 class="shortinput"
                 .value="${this.config.cleardatatime}"
-                @input=${(e: Event) => {
+                @change=${(e: Event) => {
                   this.handleConfigChange({
                     cleardatatime: (e.target as HTMLInputElement).value,
                   });
@@ -620,7 +639,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 type="text"
                 class="shortinput"
                 .value="${this.config.sensor_debounce}"
-                @input=${(e: Event) => {
+                @change=${(e: Event) => {
                   this.handleConfigChange({
                     sensor_debounce: parseInt(
                       (e.target as HTMLInputElement).value,
@@ -995,7 +1014,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       min="0"
                       step="0.1"
                       .value="${this.config.precipitation_threshold_mm}"
-                      @input=${(e: Event) => {
+                      @change=${(e: Event) => {
                         this.handleConfigChange({
                           precipitation_threshold_mm: parseFloat(
                             (e.target as HTMLInputElement).value,
@@ -1106,7 +1125,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         max="90"
                         step="0.000001"
                         .value="${this.config.manual_latitude || haLatitude}"
-                        @input=${(e: Event) => {
+                        @change=${(e: Event) => {
                           this.handleConfigChange({
                             manual_latitude: parseFloat(
                               (e.target as HTMLInputElement).value,
@@ -1130,7 +1149,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         max="180"
                         step="0.000001"
                         .value="${this.config.manual_longitude || haLongitude}"
-                        @input=${(e: Event) => {
+                        @change=${(e: Event) => {
                           this.handleConfigChange({
                             manual_longitude: parseFloat(
                               (e.target as HTMLInputElement).value,
@@ -1154,7 +1173,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         max="9000"
                         step="1"
                         .value="${this.config.manual_elevation || haElevation}"
-                        @input=${(e: Event) => {
+                        @change=${(e: Event) => {
                           this.handleConfigChange({
                             manual_elevation: parseFloat(
                               (e.target as HTMLInputElement).value,
@@ -1251,7 +1270,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               max="365"
               step="1"
               .value="${this.config.days_between_irrigation || 0}"
-              @input=${(e: Event) => {
+              @change=${(e: Event) => {
                 this.handleConfigChange({
                   days_between_irrigation: parseInt(
                     (e.target as HTMLInputElement).value,
@@ -1283,6 +1302,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     this.isSaving = true;
     this._scheduleUpdate();
 
+    // Our own save echoes back a _config_updated event; ignore it (the
+    // optimistic update below already reflects the change) so the form isn't
+    // refetched/re-rendered out from under the user.
+    this._suppressNextConfigUpdate = true;
+
     try {
       // Optimistic update for responsive UI
       this.data = {
@@ -1293,6 +1317,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
       await saveConfig(this.hass, this.data);
     } catch (error) {
+      // Save failed: no _config_updated echo will arrive, so clear the guard
+      // (otherwise it would swallow the next genuine external refresh).
+      this._suppressNextConfigUpdate = false;
       console.error("Error saving config:", error);
       handleError(
         error,
