@@ -67,7 +67,7 @@ class TestSmartIrrigationPanel:
             assert static_config.cache_headers is False
             # Path should point to the panel file
             assert "happy_irrigation" in str(static_config.path)
-            assert "frontend/dist/smart-irrigation.js" in str(static_config.path)
+            assert "frontend/dist/happy-irrigation.js" in str(static_config.path)
 
     def test_remove_panel(self, mock_hass):
         """Test panel removal."""

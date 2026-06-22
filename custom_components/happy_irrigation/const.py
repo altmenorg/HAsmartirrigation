@@ -179,7 +179,7 @@ CONF_PYETO_FORECAST_DAYS = "forecast_days"
 CUSTOM_COMPONENTS = "custom_components"
 INTEGRATION_FOLDER = DOMAIN
 PANEL_FOLDER = "frontend"
-PANEL_FILENAME = "dist/smart-irrigation.js"
+PANEL_FILENAME = "dist/happy-irrigation.js"
 
 PANEL_URL = f"/api/panel_custom/{DOMAIN}"
 PANEL_TITLE = NAME

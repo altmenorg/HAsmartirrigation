@@ -3533,4 +3533,4 @@ i.version="2.30.1",s(qa),i.fn=dn,i.min=Ja,i.max=Qa,i.now=ei,i.utc=g,i.unix=un,i.
         vertical-align: bottom;
       }
     `}};n([fe({attribute:!1})],xn.prototype,"hass",void 0),n([ve()],xn.prototype,"_params",void 0),xn=n([ge("happy-irrigation-error-dialog")],xn);var $n=Object.freeze({__proto__:null,get ErrorDialog(){return xn}});Object.defineProperty(e,"__esModule",{value:!0})}({});
-//# sourceMappingURL=smart-irrigation.js.map
+//# sourceMappingURL=happy-irrigation.js.map

@@ -20,7 +20,7 @@ const plugins = [
 
 export default [
   {
-    input: 'src/smart-irrigation.ts',
+    input: 'src/happy-irrigation.ts',
     output: {
       dir: 'dist',
       format: 'iife',
