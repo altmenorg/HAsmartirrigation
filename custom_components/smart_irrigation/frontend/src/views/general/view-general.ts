@@ -634,7 +634,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     // Clean up when dialog closes
     dialog.addEventListener("closed", (ev: Event) => {
       // Only react when the closed event originates from the dialog itself.
-      // Ignore "closed" emitted by nested overlays (mwc-menu / ha-select).
+      // Ignore "closed" emitted by nested overlays (ha-select).
       const origin = ev.target as Element | null;
       if (!origin) return;
       if (origin.tagName.toLowerCase() !== "ha-dialog") {
@@ -686,7 +686,16 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
     const triggers = [...this.config.irrigation_start_triggers];
     triggers.splice(detail.index, 1);
-    this.handleConfigChange({ [CONF_IRRIGATION_START_TRIGGERS]: triggers });
+    // Optimistic update + immediate save (same path as _handleTriggerSave) so
+    // the list refreshes without a page reload. handleConfigChange only updated
+    // this.data (debounced), but the trigger list renders from this.config.
+    this.config = { ...this.config, irrigation_start_triggers: triggers };
+    this.saveData({ [CONF_IRRIGATION_START_TRIGGERS]: triggers }).catch(
+      (err) => {
+        console.error("Error saving triggers:", err);
+        this._fetchData().catch(() => {});
+      },
+    );
   }
 
   renderWeatherSkipCard() {
@@ -1126,8 +1135,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       }
 
       .no-triggers {
-        text-align: center;
-        padding: 32px 16px;
+        text-align: left;
+        padding: 16px 0;
         color: var(--secondary-text-color);
         font-style: italic;
       }
@@ -1191,7 +1200,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
       .add-trigger-section {
         margin-top: 16px;
-        text-align: center;
+        text-align: right;
       }
 
       .add-trigger-section ha-button {

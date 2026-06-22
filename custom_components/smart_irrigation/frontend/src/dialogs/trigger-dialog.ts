@@ -231,15 +231,19 @@ export class TriggerDialog extends LitElement {
 
         <div class="wrapper">
           <div class="form-group">
-            <ha-textfield
-              .label=${localize(
+            <label class="form-label"
+              >${localize(
                 "irrigation_start_triggers.fields.name.name",
                 this.hass.language,
-              )}
+              )}</label
+            >
+            <input
+              class="form-input"
+              type="text"
               .value=${this._trigger.name || ""}
               @input=${this._nameChanged}
               required
-            ></ha-textfield>
+            />
           </div>
 
           <div class="form-group">
@@ -249,27 +253,26 @@ export class TriggerDialog extends LitElement {
                 this.hass.language,
               )}
               .value=${this._trigger.type}
-              @value-changed=${this._typeChanged}
-              @change=${this._typeChanged}
+              @selected=${this._typeChanged}
             >
-              <mwc-list-item value=${TRIGGER_TYPE_SUNRISE}>
+              <ha-dropdown-item value=${TRIGGER_TYPE_SUNRISE}>
                 ${localize(
                   "irrigation_start_triggers.trigger_types.sunrise",
                   this.hass.language,
                 )}
-              </mwc-list-item>
-              <mwc-list-item value=${TRIGGER_TYPE_SUNSET}>
+              </ha-dropdown-item>
+              <ha-dropdown-item value=${TRIGGER_TYPE_SUNSET}>
                 ${localize(
                   "irrigation_start_triggers.trigger_types.sunset",
                   this.hass.language,
                 )}
-              </mwc-list-item>
-              <mwc-list-item value=${TRIGGER_TYPE_SOLAR_AZIMUTH}>
+              </ha-dropdown-item>
+              <ha-dropdown-item value=${TRIGGER_TYPE_SOLAR_AZIMUTH}>
                 ${localize(
                   "irrigation_start_triggers.trigger_types.solar_azimuth",
                   this.hass.language,
                 )}
-              </mwc-list-item>
+              </ha-dropdown-item>
             </ha-select>
           </div>
 
@@ -288,19 +291,21 @@ export class TriggerDialog extends LitElement {
           </div>
 
           <div class="form-group">
-            <ha-textfield
-              type="number"
-              .label=${localize(
+            <label class="form-label"
+              >${localize(
                 "irrigation_start_triggers.fields.offset_minutes.name",
                 this.hass.language,
-              )}
+              )}</label
+            >
+            <input
+              class="form-input"
+              type="number"
               .value=${this._trigger.offset_minutes?.toString() || "0"}
               min="-1440"
               max="1440"
               step="1"
-              suffix="min"
               @input=${this._offsetChanged}
-            ></ha-textfield>
+            />
           </div>
 
           <div class="form-group">
@@ -320,51 +325,63 @@ export class TriggerDialog extends LitElement {
           ${this._trigger.type === TRIGGER_TYPE_SOLAR_AZIMUTH
             ? html`
                 <div class="form-group">
-                  <ha-textfield
-                    type="number"
-                    .label=${localize(
+                  <label class="form-label"
+                    >${localize(
                       "irrigation_start_triggers.fields.azimuth_angle.name",
                       this.hass.language,
-                    )}
+                    )}</label
+                  >
+                  <input
+                    class="form-input"
+                    type="number"
                     .value=${this._trigger.azimuth_angle?.toString() || "90"}
                     min="0"
                     max="359"
                     step="1"
-                    suffix="°"
                     @input=${this._azimuthChanged}
-                  ></ha-textfield>
+                  />
                 </div>
               `
             : ""}
         </div>
 
-        <div slot="primaryAction">
-          <mwc-button @click=${this._saveTrigger}>
-            ${localize(
-              "irrigation_start_triggers.dialog.save",
-              this.hass.language,
-            )}
-          </mwc-button>
-        </div>
-
-        <div slot="secondaryAction">
-          <mwc-button @click=${this._closeDialog}>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this._closeDialog}
+          >
             ${localize(
               "irrigation_start_triggers.dialog.cancel",
               this.hass.language,
             )}
-          </mwc-button>
+          </ha-button>
           ${!isCreate
             ? html`
-                <mwc-button @click=${this._deleteTrigger} class="warning">
+                <ha-button
+                  slot="secondaryAction"
+                  appearance="plain"
+                  variant="danger"
+                  @click=${this._deleteTrigger}
+                >
                   ${localize(
                     "irrigation_start_triggers.dialog.delete",
                     this.hass.language,
                   )}
-                </mwc-button>
+                </ha-button>
               `
             : ""}
-        </div>
+          <ha-button
+            slot="primaryAction"
+            appearance="accent"
+            @click=${this._saveTrigger}
+          >
+            ${localize(
+              "irrigation_start_triggers.dialog.save",
+              this.hass.language,
+            )}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }
@@ -458,9 +475,37 @@ export class TriggerDialog extends LitElement {
           margin-bottom: 0;
         }
 
-        ha-textfield,
         ha-select {
           width: 100%;
+        }
+
+        /* native text inputs (ha-textfield isn't reliably registered in this
+           dialog on HA 2026.3+, so we use the same .field look as the views) */
+        .form-label {
+          display: block;
+          color: var(--primary-text-color);
+          font-weight: 500;
+          margin-bottom: 4px;
+        }
+        .form-input {
+          width: 100%;
+          height: 44px;
+          box-sizing: border-box;
+          padding: 0 12px;
+          border: none;
+          border-bottom: 1px solid
+            var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
+          border-radius: 4px 4px 0 0;
+          background: var(
+            --mdc-text-field-fill-color,
+            var(--input-fill-color, rgba(0, 0, 0, 0.04))
+          );
+          color: var(--primary-text-color);
+          font-size: 1rem;
+        }
+        .form-input:focus {
+          outline: none;
+          border-bottom: 2px solid var(--primary-color);
         }
 
         ha-formfield {
