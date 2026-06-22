@@ -24,6 +24,15 @@ If it rains or snows less than the amount of moisture lost, then irrigation is r
 The integration can take into account weather forecasts for the coming days and also keeps track of the total moisture lost or added ('bucket').
 Multiple zones are supported, each zone having its own configuration and set up.
 
+## ✨ Highlights
+
+- 🎛️ **A modern, Home-Assistant-native configuration UI.** The whole config experience was rebuilt with native HA components: instant-save on edit (no more lost focus or jump-to-the-top), native inputs, steppers and pickers, and a clean, responsive layout. Zones, sensor groups, modules, weather service and backup/restore — all from one panel.
+- 🌍 **19 languages, out of the box.** The panel *and* the config flow are fully translated: English, French, German, Spanish, Italian, Dutch, Norwegian, Slovak, Polish, Portuguese, Brazilian Portuguese, Czech, Russian, Ukrainian, Simplified Chinese, Swedish, Danish, Finnish and Hungarian.
+- 🌦️ **Switch weather service on the fly** — move between OpenWeatherMap and Pirate Weather, and update the API key, without removing and re-adding the integration.
+- 💾 **One-click Backup / Restore** of your entire configuration as a JSON file.
+- ⏰ **Flexible start triggers** around sunrise, sunset or solar azimuth — each firing its own identifiable event for your automations.
+- 🛠️ **Actively maintained** — keeps fixing the rough edges the original no longer addresses, with a first-run wizard that imports your existing Smart Irrigation setup.
+
 ## Installation
 
 **Via HACS (recommended).** HAppy Irrigation is distributed as a HACS **custom repository**:
@@ -55,15 +64,17 @@ Go through your automations, scripts and dashboard cards and update these refere
 
 **3. Remove Smart Irrigation.** Once you've verified HAppy Irrigation works and your automations point at the new entities, events and services, delete the old Smart Irrigation integration.
 
-## What this fork fixes
+## What this fork fixes and adds
 
+- A modernized, **HA-native configuration UI** throughout — instant-save editing (no lost focus, no jump-to-the-top), native inputs and controls, and a consolidated panel for every setting.
+- A **fully translated UI in 19 languages** (panel *and* config flow).
+- **Switch weather service on the fly** — change between OpenWeatherMap and Pirate Weather (and update the API key) from the integration's *Configure* dialog, without removing and re-adding everything.
+- New **Backup / Restore** tab: export the whole configuration to a JSON file and restore it.
+- Irrigation start triggers now fire independently and carry their identity in the event data (see below); the trigger form and live add/delete were repaired.
 - Dialogs repaired for Home Assistant 2026.3+ — the Web Awesome `ha-dialog` migration had hidden every dialog's action buttons.
 - Manual coordinates now save and are actually used for weather data (the config API used to reject them).
+- The **weather-service API key is preserved across restarts** — imported setups used to lose it.
 - A sensor-sourced field no longer silently falls back to weather-service data when its sensor is unavailable.
-- **Switch weather service on the fly** — change between OpenWeatherMap and Pirate Weather (and update the API key) from the integration's *Configure* dialog, without removing and re-adding everything.
-- Irrigation start triggers now fire independently and carry their identity in the event data (see below); the trigger form and live add/delete were repaired.
-- New **Backup / Restore** tab: export the whole configuration to a JSON file and restore it.
-- A modernized, **HA-native configuration UI** throughout.
 
 ## Irrigation start triggers
 
