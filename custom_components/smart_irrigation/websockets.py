@@ -97,6 +97,16 @@ class SmartIrrigationConfigView(HomeAssistantView):
                 vol.Optional(const.CONF_SKIP_IRRIGATION_ON_PRECIPITATION): cv.boolean,
                 vol.Optional(const.CONF_PRECIPITATION_THRESHOLD_MM): vol.Coerce(float),
                 vol.Optional(const.CONF_DAYS_BETWEEN_IRRIGATION): vol.Coerce(int),
+                vol.Optional(const.CONF_MANUAL_COORDINATES_ENABLED): cv.boolean,
+                vol.Optional(const.CONF_MANUAL_LATITUDE): vol.Any(
+                    None, vol.Coerce(float)
+                ),
+                vol.Optional(const.CONF_MANUAL_LONGITUDE): vol.Any(
+                    None, vol.Coerce(float)
+                ),
+                vol.Optional(const.CONF_MANUAL_ELEVATION): vol.Any(
+                    None, vol.Coerce(float)
+                ),
             }
         )
     )
