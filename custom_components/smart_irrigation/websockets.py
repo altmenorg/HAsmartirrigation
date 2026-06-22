@@ -711,6 +711,58 @@ async def websocket_set_weather_service(hass: HomeAssistant, connection, msg):
     connection.send_result(msg["id"], {"success": True})
 
 
+class SmartIrrigationExportView(HomeAssistantView):
+    """View to export the full Smart Irrigation configuration as JSON."""
+
+    url = "/api/" + const.DOMAIN + "/export"
+    name = "api:" + const.DOMAIN + ":export"
+
+    async def get(self, request):
+        """Return the full configuration (config + zones + modules + mappings)."""
+        from .store import STORAGE_VERSION
+
+        hass = request.app["hass"]
+        coordinator = hass.data[const.DOMAIN]["coordinator"]
+        data = await coordinator.store.async_export()
+        return self.json({"version": STORAGE_VERSION, **data})
+
+
+class SmartIrrigationRestoreView(HomeAssistantView):
+    """View to restore the full Smart Irrigation configuration from a backup."""
+
+    url = "/api/" + const.DOMAIN + "/restore"
+    name = "api:" + const.DOMAIN + ":restore"
+
+    @RequestDataValidator(
+        vol.Schema(
+            {
+                vol.Required("config"): dict,
+                vol.Optional("zones"): list,
+                vol.Optional("modules"): list,
+                vol.Optional("mappings"): list,
+            },
+            extra=vol.ALLOW_EXTRA,  # tolerate backup metadata (version, ...)
+        )
+    )
+    async def post(self, request, data):
+        """Replace the whole configuration with the supplied backup, then reload."""
+        hass = request.app["hass"]
+        coordinator = hass.data[const.DOMAIN]["coordinator"]
+        try:
+            await coordinator.store.async_import(data)
+        except (ValueError, KeyError, TypeError) as err:
+            _LOGGER.error("[restore] invalid backup: %s", err)
+            return self.json(
+                {"success": False, "error": str(err)}, status_code=400
+            )
+        # Reload the entry (after responding) so the running coordinator applies
+        # the restored config: sensor subscriptions, weather client, schedules.
+        entry = coordinator.entry
+        hass.async_create_task(hass.config_entries.async_reload(entry.entry_id))
+        _LOGGER.info("[restore] configuration restored, reloading entry")
+        return self.json({"success": True})
+
+
 async def async_register_websockets(hass: HomeAssistant):
     """Register Smart Irrigation HTTP views and websocket commands."""
     hass.http.register_view(SmartIrrigationConfigView)
@@ -719,6 +771,8 @@ async def async_register_websockets(hass: HomeAssistant):
     hass.http.register_view(SmartIrrigationAllModuleView)
     hass.http.register_view(SmartIrrigationMappingView)
     hass.http.register_view(SmartIrrigationWateringCalendarView)
+    hass.http.register_view(SmartIrrigationExportView)
+    hass.http.register_view(SmartIrrigationRestoreView)
 
     async_register_command(hass, handle_subscribe_updates)
 

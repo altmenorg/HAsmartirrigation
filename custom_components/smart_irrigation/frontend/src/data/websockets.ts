@@ -21,6 +21,16 @@ export const saveConfig = (
   return hass.callApi("POST", DOMAIN + "/config", config);
 };
 
+// Full configuration backup: {version, config, zones, modules, mappings}.
+export const exportConfig = (hass: HomeAssistant): Promise<any> =>
+  hass.callApi("GET", DOMAIN + "/export");
+
+export const restoreConfig = (
+  hass: HomeAssistant,
+  backup: any,
+): Promise<{ success: boolean; error?: string }> =>
+  hass.callApi("POST", DOMAIN + "/restore", backup);
+
 export interface WeatherServiceInfo {
   use_weather_service: boolean;
   weather_service: string | null;

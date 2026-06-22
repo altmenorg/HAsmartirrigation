@@ -388,3 +388,7 @@ test_calendar_fix.py
 
 # IDE history files
 .history/
+
+# Frontend source view, NOT a Visual Studio backup folder: the generic
+# "Backup*/" rule above matches "backuprestore/" case-insensitively on Windows.
+!custom_components/smart_irrigation/frontend/src/views/backuprestore/

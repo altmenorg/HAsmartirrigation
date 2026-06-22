@@ -74,6 +74,35 @@
         "reload-note": "L'enregistrement valide la clé API auprès du service et applique le changement immédiatement."
       }
     },
+    "backuprestore": {
+      "title": "Sauvegarde / Restauration",
+      "description": "Exportez toute la configuration Smart Irrigation dans un fichier JSON, ou restaurez-la depuis une sauvegarde précédente.",
+      "cards": {
+        "backup": {
+          "title": "Sauvegarde",
+          "description": "Téléchargez la configuration complète (réglages généraux, zones, modules et groupes de capteurs) dans un fichier JSON."
+        },
+        "restore": {
+          "title": "Restauration",
+          "description": "Chargez un fichier JSON exporté précédemment pour remplacer la configuration actuelle."
+        }
+      },
+      "actions": {
+        "export": "Exporter en JSON",
+        "choose-file": "Choisir un fichier de sauvegarde…",
+        "restore": "Restaurer cette sauvegarde",
+        "restoring": "Restauration…"
+      },
+      "messages": {
+        "exported": "Fichier de sauvegarde téléchargé.",
+        "restored": "Configuration restaurée — rechargement de l'intégration.",
+        "invalid-file": "Ce fichier n'est pas une sauvegarde Smart Irrigation valide.",
+        "confirm-title": "Remplacer toute la configuration ?",
+        "summary": "Cette sauvegarde contient",
+        "confirm-warning": "La restauration écrase tous les réglages généraux, zones, modules et groupes de capteurs actuels. Action irréversible.",
+        "reload-note": "La restauration remplace tout et recharge l'intégration pour appliquer le changement."
+      }
+    },
     "general": {
       "cards": {
         "automatic-duration-calculation": {

@@ -9,6 +9,7 @@ import "./views/zones/view-zones.ts";
 import "./views/modules/view-modules.ts";
 import "./views/mappings/view-mappings.ts";
 import "./views/weatherservice/view-weatherservice.ts";
+import "./views/backuprestore/view-backuprestore.ts";
 import "./views/info/view-info.ts";
 
 import { commonStyle } from "./styles";
@@ -23,6 +24,7 @@ enum EMenuItems {
   Modules = "modules",
   Mappings = "mappings",
   WeatherService = "weatherservice",
+  BackupRestore = "backuprestore",
   Help = "help",
 }
 
@@ -184,6 +186,14 @@ export class SmartIrrigationPanel extends LitElement {
             .narrow=${this.narrow}
             .path=${path}
           ></smart-irrigation-view-weatherservice>
+        `;
+      case "backuprestore":
+        return html`
+          <smart-irrigation-view-backuprestore
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+            .path=${path}
+          ></smart-irrigation-view-backuprestore>
         `;
       case "help":
         return html`<ha-card

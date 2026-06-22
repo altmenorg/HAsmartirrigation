@@ -103,6 +103,35 @@
         "reload-note": "Saving validates the API key against the service and applies the change immediately."
       }
     },
+    "backuprestore": {
+      "title": "Backup / Restore",
+      "description": "Export the full Smart Irrigation configuration to a JSON file, or restore it from a previous backup.",
+      "cards": {
+        "backup": {
+          "title": "Backup",
+          "description": "Download the complete configuration (general settings, zones, modules and sensor groups) as a JSON file."
+        },
+        "restore": {
+          "title": "Restore",
+          "description": "Load a previously exported JSON file to replace the current configuration."
+        }
+      },
+      "actions": {
+        "export": "Export to JSON",
+        "choose-file": "Choose a backup file…",
+        "restore": "Restore this backup",
+        "restoring": "Restoring…"
+      },
+      "messages": {
+        "exported": "Backup file downloaded.",
+        "restored": "Configuration restored — reloading the integration.",
+        "invalid-file": "This file is not a valid Smart Irrigation backup.",
+        "confirm-title": "Replace the entire configuration?",
+        "summary": "This backup contains",
+        "confirm-warning": "Restoring overwrites all current general settings, zones, modules and sensor groups. This cannot be undone.",
+        "reload-note": "Restoring replaces everything and reloads the integration to apply the change."
+      }
+    },
     "general": {
       "cards": {
         "automatic-duration-calculation": {

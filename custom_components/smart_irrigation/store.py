@@ -355,6 +355,17 @@ class SmartIrrigationStorage:
     async def async_load(self) -> None:
         """Load the registry of schedule entries."""
         data = await self._store.async_load()
+        await self._populate_from_data(data)
+
+    async def _populate_from_data(self, data) -> None:
+        """Rebuild config/zones/modules/mappings from a storage-shaped dict.
+
+        Shared by async_load (data read from disk) and async_import (data from a
+        user-provided backup). ``data`` may be None on a fresh install, in which
+        case defaults are used. The reconstructed values are only assigned to
+        ``self`` at the very end, so a malformed payload raises before touching
+        the live configuration (atomic restore).
+        """
         config: Config = Config(
             calctime=CONF_DEFAULT_CALC_TIME,
             units=(
@@ -655,6 +666,30 @@ class SmartIrrigationStorage:
             attr.asdict(entry) for entry in self.mappings.values()
         ]
         return store_data
+
+    async def async_export(self) -> dict:
+        """Return the full configuration (config + zones + modules + mappings).
+
+        Same shape as the on-disk storage, so it round-trips through
+        async_import without any conversion.
+        """
+        return self._data_to_save()
+
+    async def async_import(self, data: dict) -> None:
+        """Replace the entire stored configuration with ``data`` and persist it.
+
+        ``data`` must be storage-shaped: a dict with at least a ``config`` key
+        and optional ``zones`` / ``modules`` / ``mappings`` lists (extra keys
+        such as backup metadata are ignored). The caller must reload the config
+        entry afterwards so the running coordinator applies the restored config
+        (sensor subscriptions, weather client, schedules).
+        """
+        if not isinstance(data, dict) or "config" not in data:
+            raise ValueError("Invalid backup: missing 'config'")
+        # _populate_from_data assigns to self only once fully rebuilt, so a bad
+        # payload raises here without corrupting the live configuration.
+        await self._populate_from_data(data)
+        await self.async_save()
 
     async def async_delete(self):
         """Delete config."""
