@@ -248,7 +248,7 @@
       "title": "Zonen"
     }
   },
-  "title": "Happy Irrigation",
+  "title": "HAppy Irrigation",
   "coordinate_config": {
     "title": "Standortkoordinaten",
     "description": "Konfigurieren Sie Standortkoordinaten für den Abruf von Wetterdaten. Sie können manuelle Koordinaten verwenden, die sich von Ihrem Home Assistant Standort unterscheiden.",

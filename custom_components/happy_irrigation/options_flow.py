@@ -1,4 +1,4 @@
-"""Options flow handler for Happy Irrigation integration."""
+"""Options flow handler for HAppy Irrigation integration."""
 
 import voluptuous as vol
 from homeassistant import config_entries
@@ -10,7 +10,7 @@ from .helpers import CannotConnect, InvalidAuth, validate_api_key
 
 
 class SmartIrrigationOptionsFlowHandler(config_entries.OptionsFlow):
-    """Happy Irrigation config flow options handler."""
+    """HAppy Irrigation config flow options handler."""
 
     # options flow should allow change of use OWM (boolean)
     # options flow should allow update of API key (if set) and version (only if api key set)

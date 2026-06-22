@@ -1,7 +1,7 @@
 import { css } from "lit";
 
 /**
- * Shared "modern HA-native" styling used across the Happy Irrigation panels.
+ * Shared "modern HA-native" styling used across the HAppy Irrigation panels.
  * Validated on the Zones view; reused (general/mappings/modules) for a
  * consistent look:
  *  - collapsible white cards (.si-card / .si-head / .si-body)

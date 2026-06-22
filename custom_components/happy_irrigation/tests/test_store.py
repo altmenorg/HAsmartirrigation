@@ -1,4 +1,4 @@
-"""Test Happy Irrigation store functionality."""
+"""Test HAppy Irrigation store functionality."""
 
 from unittest.mock import AsyncMock, patch
 
@@ -9,7 +9,7 @@ from custom_components.happy_irrigation.store import async_get_registry
 
 
 class TestSmartIrrigationStore:
-    """Test Happy Irrigation store functionality."""
+    """Test HAppy Irrigation store functionality."""
 
     async def test_async_get_registry(self, hass: HomeAssistant) -> None:
         """Test getting the registry."""

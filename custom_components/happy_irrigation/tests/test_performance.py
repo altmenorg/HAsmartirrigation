@@ -1,4 +1,4 @@
-"""Test the Happy Irrigation performance monitoring utilities."""
+"""Test the HAppy Irrigation performance monitoring utilities."""
 
 import asyncio
 import time

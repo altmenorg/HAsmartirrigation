@@ -57,7 +57,7 @@ Please note that this is experimental right now and will have bugs.
 For continous updates, in the future, it will likely use specific set of aggregates (last for all data points except for solar radiation which will use average of riemann integral) and also requires current precipitation to be mapped in the sensor group.
 
 ### Unit System Responsiveness
-Smart Irrigation automatically detects and responds to changes in your Home Assistant unit system setting (metric/imperial). When you change the unit system in Home Assistant:
+HAppy Irrigation automatically detects and responds to changes in your Home Assistant unit system setting (metric/imperial). When you change the unit system in Home Assistant:
 * All sensor entities immediately update to display values in the new units
 * The web interface refreshes to show measurements in the correct units  
 * Stored configurations like precipitation thresholds maintain their values but display in appropriate units

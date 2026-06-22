@@ -1,4 +1,4 @@
-"""Test the Happy Irrigation options flow."""
+"""Test the HAppy Irrigation options flow."""
 
 from unittest.mock import Mock, patch
 
@@ -20,7 +20,7 @@ from custom_components.happy_irrigation.options_flow import (
 
 
 class TestSmartIrrigationOptionsFlow:
-    """Test Happy Irrigation options flow."""
+    """Test HAppy Irrigation options flow."""
 
     @pytest.fixture
     def mock_hass(self):
@@ -35,7 +35,7 @@ class TestSmartIrrigationOptionsFlow:
         return ConfigEntry(
             version=1,
             domain="happy_irrigation",
-            title="Happy Irrigation",
+            title="HAppy Irrigation",
             data={
                 CONF_USE_WEATHER_SERVICE: False,
                 CONF_WEATHER_SERVICE: None,
@@ -53,7 +53,7 @@ class TestSmartIrrigationOptionsFlow:
         return ConfigEntry(
             version=1,
             domain="happy_irrigation",
-            title="Happy Irrigation",
+            title="HAppy Irrigation",
             data={
                 CONF_USE_WEATHER_SERVICE: True,
                 CONF_WEATHER_SERVICE: CONF_WEATHER_SERVICE_OWM,
@@ -201,7 +201,7 @@ class TestSmartIrrigationOptionsFlow:
         mock_config_entry = ConfigEntry(
             version=1,
             domain="happy_irrigation",
-            title="Happy Irrigation",
+            title="HAppy Irrigation",
             data={
                 "use_owm": True,
                 "owm_api_key": "old_api_key",
@@ -222,7 +222,7 @@ class TestSmartIrrigationOptionsFlow:
         mock_config_entry = ConfigEntry(
             version=1,
             domain="happy_irrigation",
-            title="Happy Irrigation",
+            title="HAppy Irrigation",
             data={
                 CONF_USE_WEATHER_SERVICE: False,
             },
@@ -246,7 +246,7 @@ class TestSmartIrrigationOptionsFlow:
         mock_config_entry = ConfigEntry(
             version=1,
             domain="happy_irrigation",
-            title="Happy Irrigation",
+            title="HAppy Irrigation",
             data={
                 CONF_WEATHER_SERVICE_API_KEY: "  api_key_with_spaces  ",
             },
@@ -270,7 +270,7 @@ class TestSmartIrrigationOptionsFlow:
         mock_config_entry = ConfigEntry(
             version=1,
             domain="happy_irrigation",
-            title="Happy Irrigation",
+            title="HAppy Irrigation",
             data={},
             options={},
             source="user",
@@ -284,7 +284,7 @@ class TestSmartIrrigationOptionsFlow:
         mock_config_entry_with_data = ConfigEntry(
             version=1,
             domain="happy_irrigation",
-            title="Happy Irrigation",
+            title="HAppy Irrigation",
             data={CONF_DAYS_BETWEEN_IRRIGATION: 5},
             options={},
             source="user",
@@ -298,7 +298,7 @@ class TestSmartIrrigationOptionsFlow:
         mock_config_entry_with_options = ConfigEntry(
             version=1,
             domain="happy_irrigation",
-            title="Happy Irrigation",
+            title="HAppy Irrigation",
             data={CONF_DAYS_BETWEEN_IRRIGATION: 5},
             options={CONF_DAYS_BETWEEN_IRRIGATION: 3},
             source="user",

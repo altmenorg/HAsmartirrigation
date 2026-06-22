@@ -2,7 +2,7 @@
 
 The below image shows a graphical representation of what this integration does.
 
-![](assets/images/smart_irrigation_diagram.png)
+![](assets/images/happy_irrigation_diagram.png)
 
 1. Snow and rain fall on the ground add moisture. Together, this makes up the `precipitation`.
 2. Sunshine, temperature, wind speed, place on earth and other factors influence the amount of moisture lost from the ground(`evapotranspiration`).
@@ -10,7 +10,7 @@ The below image shows a graphical representation of what this integration does.
 4. At some point in the day (configurable) the `nett precipitation` is added/substracted from the `bucket,` which starts as empty. The bucket is calculated using this formula: `old_bucket + nett precipitation.
 5. If the bucket > 0, the `drainage rate` is taken into the account (if set) and subtracted from the bucket value. The actual drainage rate is determined dynamically by the fraction the bucket is of the maximum bucket value, following hydraulic conductivity method of [Brooks and Corey, Eq. 4-6](https://open.library.okstate.edu/rainorshine/chapter/1-8-models-for-soil-hydraulic-conductivity/)
 6. If the `bucket` is below zero, irrigation is required.
-7. Irrigation should be run for `sensor.smart_irrigation_[zone_name]`, which is 0 if `bucket >=0`. Afterwards, the `bucket` needs to be reset (using [`reset_bucket` service](services)). It's up to the user of the integration to build the automation for this final step. See [Example automation](example-automations) for automations that people have built.
+7. Irrigation should be run for `sensor.happy_irrigation_[zone_name]`, which is 0 if `bucket >=0`. Afterwards, the `bucket` needs to be reset (using [`reset_bucket` service](services)). It's up to the user of the integration to build the automation for this final step. See [Example automation](example-automations) for automations that people have built.
 
 ## Weekly behavior example
 To understand how `precipitation`, `nett precipitation`, the `bucket` and irrigation interact, see let's look at an example behavior in a week.

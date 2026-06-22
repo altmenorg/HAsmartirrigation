@@ -1,4 +1,4 @@
-"""Sensor platform for Happy Irrigation integration."""
+"""Sensor platform for HAppy Irrigation integration."""
 
 import logging
 
@@ -87,7 +87,7 @@ def check_zone_entity_in_hass_data(hass: HomeAssistant | None, entity_id: str) -
 
 
 class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
-    """Sensor entity representing a Happy Irrigation zone."""
+    """Sensor entity representing a HAppy Irrigation zone."""
 
     def __init__(
         self,

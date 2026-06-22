@@ -1,4 +1,4 @@
-"""Irrigation Unlimited integration for Happy Irrigation."""
+"""Irrigation Unlimited integration for HAppy Irrigation."""
 
 import datetime
 import logging
@@ -67,7 +67,7 @@ class IrrigationUnlimitedIntegration:
     async def async_sync_zones_to_iu(
         self, zone_ids: list[int] | None = None
     ) -> dict[str, Any]:
-        """Sync Happy Irrigation zones to Irrigation Unlimited."""
+        """Sync HAppy Irrigation zones to Irrigation Unlimited."""
         if not self._sync_enabled:
             raise ValueError("Irrigation Unlimited integration is not enabled")
 
@@ -178,7 +178,7 @@ class IrrigationUnlimitedIntegration:
     async def _sync_zone_to_iu_entity(
         self, zone: dict[str, Any], iu_entity: dict[str, Any]
     ) -> None:
-        """Sync a Happy Irrigation zone to an Irrigation Unlimited entity."""
+        """Sync a HAppy Irrigation zone to an Irrigation Unlimited entity."""
         zone_duration = zone.get(const.ZONE_DURATION, 0)
         iu_entity_id = iu_entity["entity_id"]
 
@@ -307,11 +307,11 @@ class IrrigationUnlimitedIntegration:
     async def async_create_iu_schedule_from_happy_irrigation(
         self, zone_ids: list[int] | None = None
     ) -> dict[str, Any]:
-        """Create IU schedules based on Happy Irrigation triggers and schedules."""
+        """Create IU schedules based on HAppy Irrigation triggers and schedules."""
         if not self._sync_enabled:
             raise ValueError("Irrigation Unlimited integration is not enabled")
 
-        # Get Happy Irrigation triggers and schedules
+        # Get HAppy Irrigation triggers and schedules
         config = await self.coordinator.store.async_get_config()
         triggers = config.get(const.CONF_IRRIGATION_START_TRIGGERS, [])
         recurring_schedules = config.get(const.CONF_RECURRING_SCHEDULES, [])
@@ -373,9 +373,9 @@ class IrrigationUnlimitedIntegration:
     async def _convert_trigger_to_iu_schedule(
         self, trigger: dict[str, Any]
     ) -> dict[str, Any] | None:
-        """Convert a Happy Irrigation trigger to an IU schedule format."""
+        """Convert a HAppy Irrigation trigger to an IU schedule format."""
         trigger_type = trigger.get(const.TRIGGER_CONF_TYPE)
-        trigger_name = trigger.get(const.TRIGGER_CONF_NAME, "Happy Irrigation Trigger")
+        trigger_name = trigger.get(const.TRIGGER_CONF_NAME, "HAppy Irrigation Trigger")
 
         iu_schedule = {
             "name": trigger_name,
@@ -421,10 +421,10 @@ class IrrigationUnlimitedIntegration:
     async def _convert_recurring_schedule_to_iu_schedule(
         self, schedule: dict[str, Any]
     ) -> dict[str, Any] | None:
-        """Convert a Happy Irrigation recurring schedule to an IU schedule format."""
+        """Convert a HAppy Irrigation recurring schedule to an IU schedule format."""
         schedule_type = schedule.get(const.SCHEDULE_CONF_TYPE)
         schedule_name = schedule.get(
-            const.SCHEDULE_CONF_NAME, "Happy Irrigation Schedule"
+            const.SCHEDULE_CONF_NAME, "HAppy Irrigation Schedule"
         )
         schedule_time = schedule.get(const.SCHEDULE_CONF_TIME, "06:00")
 

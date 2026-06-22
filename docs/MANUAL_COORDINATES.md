@@ -4,7 +4,7 @@ This feature allows users to manually set coordinates (latitude, longitude, and 
 
 ## Overview
 
-By default, Smart Irrigation uses your Home Assistant's configured location coordinates for weather data retrieval. With this feature, you can override these coordinates if you need weather data from a different location, such as:
+By default, HAppy Irrigation uses your Home Assistant's configured location coordinates for weather data retrieval. With this feature, you can override these coordinates if you need weather data from a different location, such as:
 
 - Your irrigation system is at a different property than your Home Assistant instance
 - You want to use weather data from a nearby weather station
@@ -15,7 +15,7 @@ By default, Smart Irrigation uses your Home Assistant's configured location coor
 
 ### Initial Setup (Options Flow)
 
-When configuring Smart Irrigation for the first time or updating settings:
+When configuring HAppy Irrigation for the first time or updating settings:
 
 1. **Weather Service Setup**: First configure your weather service (OpenWeatherMap, Pirate Weather, or KNMI)
 2. **Coordinate Configuration**: After weather service setup, you'll see a coordinate configuration step
@@ -33,7 +33,7 @@ When manual coordinates are enabled, you can configure:
 
 ### General Settings UI
 
-In the Smart Irrigation general settings panel, you'll find a "Location Coordinates" card where you can:
+In the HAppy Irrigation general settings panel, you'll find a "Location Coordinates" card where you can:
 
 - Toggle between manual coordinates and Home Assistant location
 - View current Home Assistant coordinates when manual mode is disabled

@@ -1,4 +1,4 @@
-"""The Happy Irrigation Integration."""
+"""The HAppy Irrigation Integration."""
 
 import contextlib
 import logging
@@ -76,7 +76,7 @@ async def async_setup(hass: HomeAssistant, config):
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Set up Happy Irrigation from a config entry."""
+    """Set up HAppy Irrigation from a config entry."""
 
     _LOGGER.info("async_setup_entry called for %s", entry.entry_id)
 
@@ -184,7 +184,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         # Check if unit system actually changed
         if coordinator.previous_unit_system != current_unit_system:
             _LOGGER.info(
-                "Home Assistant unit system changed from %s to %s, updating Happy Irrigation",
+                "Home Assistant unit system changed from %s to %s, updating HAppy Irrigation",
                 coordinator.previous_unit_system.name,
                 current_unit_system.name,
             )
@@ -276,7 +276,7 @@ async def options_update_listener(hass: HomeAssistant, config_entry):
 
 
 async def async_unload_entry(hass: HomeAssistant, entry):
-    """Unload Happy Irrigation config entry."""
+    """Unload HAppy Irrigation config entry."""
     unload_ok = all(
         await asyncio.gather(
             *[hass.config_entries.async_forward_entry_unload(entry, PLATFORM)]
@@ -292,7 +292,7 @@ async def async_unload_entry(hass: HomeAssistant, entry):
 
 
 async def async_remove_entry(hass: HomeAssistant, entry):
-    """Remove Happy Irrigation config entry."""
+    """Remove HAppy Irrigation config entry."""
     remove_panel(hass)
     if const.DOMAIN in hass.data:
         if "coordinator" in hass.data[const.DOMAIN]:
@@ -302,11 +302,11 @@ async def async_remove_entry(hass: HomeAssistant, entry):
 
 
 class SmartIrrigationError(Exception):
-    """Exception raised for errors in the Happy Irrigation integration."""
+    """Exception raised for errors in the HAppy Irrigation integration."""
 
 
 class SmartIrrigationCoordinator(DataUpdateCoordinator):
-    """Define an object to hold Happy Irrigation device."""
+    """Define an object to hold HAppy Irrigation device."""
 
     def __init__(
         self, hass: HomeAssistant, session, entry, store: SmartIrrigationStorage
@@ -524,7 +524,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
 
     async def async_handle_unit_system_change(self):
         """Handle changes to the Home Assistant unit system."""
-        _LOGGER.info("Processing unit system change for Happy Irrigation")
+        _LOGGER.info("Processing unit system change for HAppy Irrigation")
 
         # Update sensor entities to refresh their unit display
         async_dispatcher_send(self.hass, const.DOMAIN + "_unit_system_changed")
@@ -667,7 +667,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
             await self.store.async_update_config(data)
 
     async def update_subscriptions(self, config=None):
-        """Update sensor subscriptions for Happy Irrigation coordinator."""
+        """Update sensor subscriptions for HAppy Irrigation coordinator."""
         # WIP v2024.6.X: move to subscriptions
         # remove all existing sensor subscriptions
         _LOGGER.debug("[update_subscriptions]: removing all sensor subscriptions")
@@ -1070,7 +1070,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
             await self.store.async_update_mapping(mapping_id, changes=changes)
 
     async def set_up_auto_calc_time(self, data):
-        """Set up the automatic calculation time for Happy Irrigation based on configuration data."""
+        """Set up the automatic calculation time for HAppy Irrigation based on configuration data."""
         # unsubscribe from any existing track_time_changes
         if self._track_auto_calc_time_unsub:
             self._track_auto_calc_time_unsub()
@@ -1107,7 +1107,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
             await self.store.async_update_config(data)
 
     async def set_up_auto_clear_time(self, data):
-        """Set up the automatic clear time for Happy Irrigation based on configuration data."""
+        """Set up the automatic clear time for HAppy Irrigation based on configuration data."""
         # unsubscribe from any existing track_time_changes
         if self._track_auto_clear_time_unsub:
             self._track_auto_clear_time_unsub()
@@ -1137,7 +1137,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         await self.store.async_update_config(data)
 
     async def track_update_time(self, *args):
-        """Track and schedule periodic updates for Happy Irrigation based on configuration."""
+        """Track and schedule periodic updates for HAppy Irrigation based on configuration."""
         # perform update once
         # Fire-and-forget: trigger immediate update in background
         self.hass.async_create_task(self._async_update_all())
@@ -3108,7 +3108,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         self.hass.data[const.DOMAIN]["zones"].pop(zone_id, None)
 
     async def async_unload(self):
-        """Remove all Happy Irrigation objects."""
+        """Remove all HAppy Irrigation objects."""
 
         # remove zone entities
         zones = list(self.hass.data[const.DOMAIN]["zones"].keys())
@@ -3120,7 +3120,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
             self._subscriptions.pop()()
 
     async def async_delete_config(self):
-        """Wipe Happy Irrigation storage."""
+        """Wipe HAppy Irrigation storage."""
         await self.store.async_delete()
 
     async def _async_set_all_buckets(self, val=0):
@@ -3870,7 +3870,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
 
 @callback
 def register_services(hass: HomeAssistant):
-    """Register services used by Happy Irrigation integration."""
+    """Register services used by HAppy Irrigation integration."""
 
     coordinator = hass.data[const.DOMAIN]["coordinator"]
 

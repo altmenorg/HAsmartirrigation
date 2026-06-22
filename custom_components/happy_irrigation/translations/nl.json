@@ -1,7 +1,7 @@
 {
   "config": {
     "abort": {
-      "single_instance_allowed": "Maar een installatie van Happy Irrigation is toegestaan."
+      "single_instance_allowed": "Maar een installatie van HAppy Irrigation is toegestaan."
     },
     "error": {
       "auth": "Weerdienst API sleutel of versie is verkeerd",

@@ -1,1 +1,1 @@
-"""Calculation modules for Happy Irrigation integration."""
+"""Calculation modules for HAppy Irrigation integration."""

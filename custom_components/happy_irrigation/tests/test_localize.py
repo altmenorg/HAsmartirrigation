@@ -1,4 +1,4 @@
-"""Test the Happy Irrigation localization utilities."""
+"""Test the HAppy Irrigation localization utilities."""
 
 import json
 from unittest.mock import AsyncMock, mock_open, patch
@@ -9,7 +9,7 @@ from custom_components.happy_irrigation.localize import get_string_from_data, lo
 
 
 class TestSmartIrrigationLocalize:
-    """Test Happy Irrigation localization utilities."""
+    """Test HAppy Irrigation localization utilities."""
 
     @pytest.fixture
     def mock_translations(self):

@@ -1,4 +1,4 @@
-"""Test Happy Irrigation weather modules."""
+"""Test HAppy Irrigation weather modules."""
 
 from unittest.mock import AsyncMock
 

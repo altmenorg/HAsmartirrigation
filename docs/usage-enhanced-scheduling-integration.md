@@ -1,10 +1,10 @@
 # Enhanced Scheduling and Irrigation Unlimited Integration
 
-This document describes the enhanced scheduling capabilities and Irrigation Unlimited integration features added to Smart Irrigation.
+This document describes the enhanced scheduling capabilities and Irrigation Unlimited integration features added to HAppy Irrigation.
 
 ## Overview
 
-Smart Irrigation now includes advanced scheduling capabilities and seamless integration with the Irrigation Unlimited integration, providing users with more flexible and powerful irrigation management options.
+HAppy Irrigation now includes advanced scheduling capabilities and seamless integration with the Irrigation Unlimited integration, providing users with more flexible and powerful irrigation management options.
 
 ## Enhanced Native Scheduling
 
@@ -24,7 +24,7 @@ Create flexible recurring schedules that automatically trigger irrigation calcul
 Use the new services to create and manage recurring schedules:
 
 ```yaml
-service: smart_irrigation.create_recurring_schedule
+service: happy_irrigation.create_recurring_schedule
 data:
   name: "Morning Calculation"
   type: "daily"
@@ -52,7 +52,7 @@ Automatically adjust irrigation parameters based on the season or time of year.
 #### Example Configuration
 
 ```yaml
-service: smart_irrigation.create_seasonal_adjustment
+service: happy_irrigation.create_seasonal_adjustment
 data:
   name: "Summer Boost"
   month_start: 6  # June
@@ -67,7 +67,7 @@ data:
 
 ### Overview
 
-The integration provides bidirectional communication between Smart Irrigation and Irrigation Unlimited, allowing:
+The integration provides bidirectional communication between HAppy Irrigation and Irrigation Unlimited, allowing:
 
 - Automatic zone synchronization
 - Schedule sharing and conversion
@@ -76,11 +76,11 @@ The integration provides bidirectional communication between Smart Irrigation an
 
 ### Configuration
 
-Enable the integration in your Smart Irrigation configuration:
+Enable the integration in your HAppy Irrigation configuration:
 
 ```yaml
 # In configuration.yaml or through the UI
-smart_irrigation:
+happy_irrigation:
   irrigation_unlimited_integration: true
   iu_entity_prefix: "switch.irrigation_unlimited"
   iu_sync_schedules: true
@@ -89,10 +89,10 @@ smart_irrigation:
 
 ### Zone Synchronization
 
-Automatically sync Smart Irrigation zones with corresponding Irrigation Unlimited entities:
+Automatically sync HAppy Irrigation zones with corresponding Irrigation Unlimited entities:
 
 ```yaml
-service: smart_irrigation.sync_with_irrigation_unlimited
+service: happy_irrigation.sync_with_irrigation_unlimited
 data:
   zone_ids: [1, 2, 3]  # Optional: specific zones, or omit for all
 ```
@@ -107,7 +107,7 @@ The integration attempts to match zones using:
 Send zone data directly to Irrigation Unlimited:
 
 ```yaml
-service: smart_irrigation.send_zone_data_to_irrigation_unlimited
+service: happy_irrigation.send_zone_data_to_irrigation_unlimited
 data:
   zone_id: 1
   data:
@@ -117,24 +117,24 @@ data:
 
 ### Schedule Conversion
 
-Convert Smart Irrigation triggers and schedules to Irrigation Unlimited format:
+Convert HAppy Irrigation triggers and schedules to Irrigation Unlimited format:
 
 ```yaml
-service: smart_irrigation.get_irrigation_unlimited_status
+service: happy_irrigation.get_irrigation_unlimited_status
 ```
 
 ## Best Practices
 
 ### Using Both Integrations Together
 
-1. **Primary Controller**: Choose either Smart Irrigation or Irrigation Unlimited as your primary controller
-2. **Data Flow**: Use Smart Irrigation for calculations and Irrigation Unlimited for execution
-3. **Scheduling**: Use Smart Irrigation's enhanced scheduling with Irrigation Unlimited's execution
+1. **Primary Controller**: Choose either HAppy Irrigation or Irrigation Unlimited as your primary controller
+2. **Data Flow**: Use HAppy Irrigation for calculations and Irrigation Unlimited for execution
+3. **Scheduling**: Use HAppy Irrigation's enhanced scheduling with Irrigation Unlimited's execution
 4. **Monitoring**: Monitor both systems for comprehensive irrigation oversight
 
 ### Recommended Workflow
 
-1. **Smart Irrigation**: Calculate irrigation needs based on weather and ET
+1. **HAppy Irrigation**: Calculate irrigation needs based on weather and ET
 2. **Integration**: Automatically sync calculated durations to Irrigation Unlimited
 3. **Irrigation Unlimited**: Execute irrigation schedules with hardware control
 4. **Feedback**: Monitor execution and adjust parameters as needed
@@ -143,34 +143,34 @@ service: smart_irrigation.get_irrigation_unlimited_status
 
 ```yaml
 automation:
-  - alias: "Smart Irrigation to IU Sync"
+  - alias: "HAppy Irrigation to IU Sync"
     trigger:
       - platform: state
-        entity_id: sensor.smart_irrigation_zone_1
+        entity_id: sensor.happy_irrigation_zone_1
         attribute: duration
     condition:
       - condition: template
-        value_template: "{{ states('sensor.smart_irrigation_zone_1') | int > 0 }}"
+        value_template: "{{ states('sensor.happy_irrigation_zone_1') | int > 0 }}"
     action:
-      - service: smart_irrigation.sync_with_irrigation_unlimited
+      - service: happy_irrigation.sync_with_irrigation_unlimited
         data:
           zone_ids: [1]
       - service: switch.turn_on
         entity_id: switch.irrigation_unlimited_c1_z1
       - delay:
-          seconds: "{{ states('sensor.smart_irrigation_zone_1') | int }}"
+          seconds: "{{ states('sensor.happy_irrigation_zone_1') | int }}"
       - service: switch.turn_off
         entity_id: switch.irrigation_unlimited_c1_z1
-      - service: smart_irrigation.reset_bucket
+      - service: happy_irrigation.reset_bucket
         target:
-          entity_id: sensor.smart_irrigation_zone_1
+          entity_id: sensor.happy_irrigation_zone_1
 ```
 
 ## Automation Blueprints
 
-### Smart Irrigation with Irrigation Unlimited Integration
+### HAppy Irrigation with Irrigation Unlimited Integration
 
-A comprehensive blueprint that automatically syncs Smart Irrigation zones with Irrigation Unlimited entities, handling:
+A comprehensive blueprint that automatically syncs HAppy Irrigation zones with Irrigation Unlimited entities, handling:
 - Duration-based irrigation control
 - Automatic bucket reset after irrigation
 - Minimum/maximum duration limits
@@ -190,31 +190,31 @@ An advanced blueprint that implements weather-responsive irrigation with:
 
 #### Enhanced Scheduling Services
 
-- `smart_irrigation.create_recurring_schedule`
-- `smart_irrigation.update_recurring_schedule`
-- `smart_irrigation.delete_recurring_schedule`
-- `smart_irrigation.create_seasonal_adjustment`
-- `smart_irrigation.update_seasonal_adjustment`
-- `smart_irrigation.delete_seasonal_adjustment`
+- `happy_irrigation.create_recurring_schedule`
+- `happy_irrigation.update_recurring_schedule`
+- `happy_irrigation.delete_recurring_schedule`
+- `happy_irrigation.create_seasonal_adjustment`
+- `happy_irrigation.update_seasonal_adjustment`
+- `happy_irrigation.delete_seasonal_adjustment`
 
 #### Irrigation Unlimited Integration Services
 
-- `smart_irrigation.sync_with_irrigation_unlimited`
-- `smart_irrigation.send_zone_data_to_irrigation_unlimited`
-- `smart_irrigation.get_irrigation_unlimited_status`
+- `happy_irrigation.sync_with_irrigation_unlimited`
+- `happy_irrigation.send_zone_data_to_irrigation_unlimited`
+- `happy_irrigation.get_irrigation_unlimited_status`
 
 ### Events
 
 #### Enhanced Scheduling Events
 
-- `smart_irrigation_recurring_schedule_triggered`
-- `smart_irrigation_seasonal_adjustment_applied`
+- `happy_irrigation_recurring_schedule_triggered`
+- `happy_irrigation_seasonal_adjustment_applied`
 
 #### Integration Events
 
-- `smart_irrigation_irrigation_unlimited_sync_completed`
-- `smart_irrigation_iu_sync_result`
-- `smart_irrigation_iu_status`
+- `happy_irrigation_irrigation_unlimited_sync_completed`
+- `happy_irrigation_iu_sync_result`
+- `happy_irrigation_iu_status`
 
 ## Troubleshooting
 
@@ -232,8 +232,8 @@ Enable debug logging for detailed information:
 ```yaml
 logger:
   logs:
-    custom_components.smart_irrigation.scheduler: debug
-    custom_components.smart_irrigation.irrigation_unlimited: debug
+    custom_components.happy_irrigation.scheduler: debug
+    custom_components.happy_irrigation.irrigation_unlimited: debug
 ```
 
 ### Entity Matching
@@ -244,7 +244,7 @@ If automatic zone matching fails, you can implement custom matching logic in you
 
 ### Backward Compatibility
 
-All enhanced features are optional and maintain full backward compatibility with existing Smart Irrigation installations.
+All enhanced features are optional and maintain full backward compatibility with existing HAppy Irrigation installations.
 
 ### Upgrading
 
@@ -254,7 +254,7 @@ All enhanced features are optional and maintain full backward compatibility with
 
 ### Integration with Existing Setups
 
-The enhanced features complement existing Smart Irrigation functionality:
+The enhanced features complement existing HAppy Irrigation functionality:
 - Existing triggers continue to work
 - Current automations remain functional
 - New features can be gradually adopted
@@ -265,7 +265,7 @@ The enhanced features complement existing Smart Irrigation functionality:
 
 ```yaml
 # Daily morning calculation
-service: smart_irrigation.create_recurring_schedule
+service: happy_irrigation.create_recurring_schedule
 data:
   name: "Daily Morning Check"
   type: "daily" 
@@ -278,7 +278,7 @@ data:
 
 ```yaml
 # Summer irrigation boost
-service: smart_irrigation.create_seasonal_adjustment
+service: happy_irrigation.create_seasonal_adjustment
 data:
   name: "Summer Heat Adjustment"
   month_start: 6
@@ -291,7 +291,7 @@ data:
 
 ```yaml
 # Sync all zones with IU
-service: smart_irrigation.sync_with_irrigation_unlimited
+service: happy_irrigation.sync_with_irrigation_unlimited
 ```
 
-This enhanced functionality provides Smart Irrigation users with professional-grade scheduling capabilities while maintaining the simplicity and reliability they expect.
+This enhanced functionality provides HAppy Irrigation users with professional-grade scheduling capabilities while maintaining the simplicity and reliability they expect.

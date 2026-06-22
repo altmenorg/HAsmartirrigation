@@ -247,7 +247,7 @@
       "title": "Zones"
     }
   },
-  "title": "Happy Irrigation",
+  "title": "HAppy Irrigation",
   "coordinate_config": {
     "title": "Locatie Coördinaten",
     "description": "Configureer locatie coördinaten voor het ophalen van weergegevens. Je kunt handmatige coördinaten gebruiken die verschillen van je Home Assistant locatie indien nodig.",

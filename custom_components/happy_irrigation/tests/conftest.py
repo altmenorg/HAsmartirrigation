@@ -1,4 +1,4 @@
-"""Fixtures for testing Happy Irrigation integration."""
+"""Fixtures for testing HAppy Irrigation integration."""
 
 import sys
 from pathlib import Path
@@ -98,7 +98,7 @@ def mock_config_entry():
         domain=const.DOMAIN,
         title=const.NAME,
         data={
-            const.CONF_INSTANCE_NAME: "Test Happy Irrigation",
+            const.CONF_INSTANCE_NAME: "Test HAppy Irrigation",
             const.CONF_USE_WEATHER_SERVICE: False,
             CONF_LATITUDE: 52.379189,
             CONF_LONGITUDE: 4.899431,
@@ -116,7 +116,7 @@ def mock_config_entry_with_weather():
         domain=const.DOMAIN,
         title=const.NAME,
         data={
-            const.CONF_INSTANCE_NAME: "Test Happy Irrigation",
+            const.CONF_INSTANCE_NAME: "Test HAppy Irrigation",
             const.CONF_USE_WEATHER_SERVICE: True,
             const.CONF_WEATHER_SERVICE: const.CONF_WEATHER_SERVICE_OWM,
             const.CONF_WEATHER_SERVICE_API_KEY: "validate_api_key",
@@ -136,7 +136,7 @@ def mock_weather_config_entry():
         domain=const.DOMAIN,
         title=const.NAME,
         data={
-            const.CONF_INSTANCE_NAME: "Test Happy Irrigation",
+            const.CONF_INSTANCE_NAME: "Test HAppy Irrigation",
             const.CONF_USE_WEATHER_SERVICE: True,
             const.CONF_WEATHER_SERVICE: const.CONF_WEATHER_SERVICE_OWM,
             const.CONF_WEATHER_SERVICE_API_KEY: "validate_api_key",

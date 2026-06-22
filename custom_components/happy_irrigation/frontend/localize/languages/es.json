@@ -228,7 +228,7 @@
       "title": "Zonas"
     }
   },
-  "title": "Happy Irrigation",
+  "title": "HAppy Irrigation",
   "coordinate_config": {
     "title": "Coordenadas de Ubicación",
     "description": "Configure las coordenadas de ubicación para obtener datos meteorológicos. Puede usar coordenadas manuales diferentes a la ubicación de Home Assistant si es necesario.",

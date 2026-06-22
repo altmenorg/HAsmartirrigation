@@ -1,4 +1,4 @@
-"""The Passthrough module for Happy Irrigation Integration."""
+"""The Passthrough module for HAppy Irrigation Integration."""
 
 import logging
 

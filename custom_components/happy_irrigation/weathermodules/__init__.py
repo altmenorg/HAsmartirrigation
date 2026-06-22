@@ -1,1 +1,1 @@
-"""Weather modules for Happy Irrigation integration."""
+"""Weather modules for HAppy Irrigation integration."""

@@ -1,4 +1,4 @@
-"""Calculation module base class for Happy Irrigation integration."""
+"""Calculation module base class for HAppy Irrigation integration."""
 
 import logging
 import time
@@ -14,7 +14,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class SmartIrrigationCalculationModule:
-    """Base class for calculation modules in the Happy Irrigation integration."""
+    """Base class for calculation modules in the HAppy Irrigation integration."""
 
     def __init__(self, name, description, schema: vol.Schema, config) -> None:
         """Initialize the calculation module with name, description, schema, and config.

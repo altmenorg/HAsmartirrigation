@@ -1,4 +1,4 @@
-"""Helpers for the Happy Irrigation integration."""
+"""Helpers for the HAppy Irrigation integration."""
 
 import importlib
 import logging

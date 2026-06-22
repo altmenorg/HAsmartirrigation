@@ -1,4 +1,4 @@
-"""Test Happy Irrigation sensor platform."""
+"""Test HAppy Irrigation sensor platform."""
 
 from unittest.mock import AsyncMock, Mock, patch
 

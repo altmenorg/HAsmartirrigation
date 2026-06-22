@@ -4,7 +4,7 @@ title: Usage
 ---
 # Usage
 
-Once Smart Irrigation is installed, the following things will be created in Home Assistant:
+Once HAppy Irrigation is installed, the following things will be created in Home Assistant:
 - A sidebar panel that you can use to [configure the integration](configuration.md).
 - [An sensor entity](usage-entities.md) for [each zone you configured](configuration-zones.md).
 - [A couple of services](usage-services.md) to automate tasks.

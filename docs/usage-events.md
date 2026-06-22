@@ -13,7 +13,7 @@ After installation, the following event is available:
 
 | Event | Description|
 | --- | --- |
-|`smart_irrigation_start_irrigation_all_zones`|Fired when an [irrigation start trigger](configuration-general.md) is reached. Listen to it to start your irrigation. See [automations](usage-automations.md) for examples.|
+|`happy_irrigation_start_irrigation_all_zones`|Fired when an [irrigation start trigger](configuration-general.md) is reached. Listen to it to start your irrigation. See [automations](usage-automations.md) for examples.|
 
 ## When does it fire?
 
@@ -37,7 +37,7 @@ Example: filter on `trigger_name` to react to a specific trigger.
 ```yaml
 trigger:
   - platform: event
-    event_type: smart_irrigation_start_irrigation_all_zones
+    event_type: happy_irrigation_start_irrigation_all_zones
     event_data:
       trigger_name: "Morning"
 ```

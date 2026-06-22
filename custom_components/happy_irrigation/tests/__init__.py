@@ -1,1 +1,1 @@
-"""Tests for Happy Irrigation integration."""
+"""Tests for HAppy Irrigation integration."""

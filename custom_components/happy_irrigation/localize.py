@@ -1,4 +1,4 @@
-"""Localization utilities for Happy Irrigation integration."""
+"""Localization utilities for HAppy Irrigation integration."""
 
 import json
 import logging

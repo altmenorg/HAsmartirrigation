@@ -1,4 +1,4 @@
-"""Storage and management for Happy Irrigation configuration, zones, modules, and mappings."""
+"""Storage and management for HAppy Irrigation configuration, zones, modules, and mappings."""
 
 import datetime
 import logging
@@ -224,10 +224,10 @@ class Config:
 
 
 class MigratableStore(Store):
-    """Store subclass that supports migration for Happy Irrigation storage."""
+    """Store subclass that supports migration for HAppy Irrigation storage."""
 
     async def _async_migrate_func(self, old_version, data: dict):
-        """Migration function for Happy Irrigation storage.
+        """Migration function for HAppy Irrigation storage.
 
         This function ALWAYS runs on version mismatch to ensure config compatibility.
         It performs critical tasks:
@@ -341,7 +341,7 @@ class MigratableStore(Store):
 
 
 class SmartIrrigationStorage:
-    """Class to hold Happy Irrigation configuration data."""
+    """Class to hold HAppy Irrigation configuration data."""
 
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the storage."""
@@ -646,16 +646,16 @@ class SmartIrrigationStorage:
 
     @callback
     def async_schedule_save(self) -> None:
-        """Schedule saving the registry of Happy Irrigation."""
+        """Schedule saving the registry of HAppy Irrigation."""
         self._store.async_delay_save(self._data_to_save, SAVE_DELAY)
 
     async def async_save(self) -> None:
-        """Save the registry of Happy Irrigation."""
+        """Save the registry of HAppy Irrigation."""
         await self._store.async_save(self._data_to_save())
 
     @callback
     def _data_to_save(self) -> dict:
-        """Return data for the registry for Happy Irrigation to store in a file."""
+        """Return data for the registry for HAppy Irrigation to store in a file."""
         store_data = {
             "config": attr.asdict(self.config),
         }
@@ -693,7 +693,7 @@ class SmartIrrigationStorage:
 
     async def async_delete(self):
         """Delete config."""
-        _LOGGER.warning("Removing Happy Irrigation configuration data!")
+        _LOGGER.warning("Removing HAppy Irrigation configuration data!")
         await self._store.async_remove()
         # self.config = Config()
         # await self.async_factory_default_zones()
@@ -921,7 +921,7 @@ class SmartIrrigationStorage:
 
 @bind_hass
 async def async_get_registry(hass: HomeAssistant) -> SmartIrrigationStorage:
-    """Return Happy Irrigation storage instance."""
+    """Return HAppy Irrigation storage instance."""
     task = hass.data.get(DATA_REGISTRY)
 
     if task is None:

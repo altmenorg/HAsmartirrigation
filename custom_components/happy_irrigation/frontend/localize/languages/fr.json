@@ -76,7 +76,7 @@
     },
     "backuprestore": {
       "title": "Sauvegarde / restauration",
-      "description": "Exportez toute la configuration Happy Irrigation dans un fichier JSON, ou restaurez-la depuis une sauvegarde précédente.",
+      "description": "Exportez toute la configuration HAppy Irrigation dans un fichier JSON, ou restaurez-la depuis une sauvegarde précédente.",
       "cards": {
         "backup": {
           "title": "Sauvegarde",
@@ -96,7 +96,7 @@
       "messages": {
         "exported": "Fichier de sauvegarde téléchargé.",
         "restored": "Configuration restaurée — rechargement de l'intégration.",
-        "invalid-file": "Ce fichier n'est pas une sauvegarde Happy Irrigation valide.",
+        "invalid-file": "Ce fichier n'est pas une sauvegarde HAppy Irrigation valide.",
         "confirm-title": "Remplacer toute la configuration ?",
         "summary": "Cette sauvegarde contient",
         "confirm-warning": "La restauration écrase tous les réglages généraux, zones, modules et groupes de capteurs actuels. Action irréversible.",
@@ -296,7 +296,7 @@
       "title": "Zones"
     }
   },
-  "title": "Happy Irrigation",
+  "title": "HAppy Irrigation",
   "coordinate_config": {
     "title": "Coordonnées de localisation",
     "description": "Configurez les coordonnées de localisation pour la récupération des données météo. Vous pouvez utiliser des coordonnées manuelles différentes de votre emplacement Home Assistant si nécessaire.",

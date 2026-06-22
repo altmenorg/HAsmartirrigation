@@ -1,7 +1,7 @@
 {
   "config": {
     "abort": {
-      "single_instance_allowed": "Only a single configuration of Happy Irrigation is allowed."
+      "single_instance_allowed": "Only a single configuration of HAppy Irrigation is allowed."
     },
     "error": {
       "auth": "Weather service API key incorrect",

@@ -1,4 +1,4 @@
-"""The Static module for Happy Irrigation Integration."""
+"""The Static module for HAppy Irrigation Integration."""
 
 import logging
 
@@ -25,7 +25,7 @@ SCHEMA = vol.Schema(
 
 
 class Static(SmartIrrigationCalculationModule):
-    """Calculation module that returns a static delta value for Happy Irrigation."""
+    """Calculation module that returns a static delta value for HAppy Irrigation."""
 
     def __init__(self, hass: HomeAssistant | None, description, config: dict) -> None:
         """Initialize the Static calculation module with configuration.

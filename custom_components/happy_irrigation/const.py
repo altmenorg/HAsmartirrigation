@@ -1,7 +1,7 @@
 """Store constants."""
 
 VERSION = "v2025.10.0"
-NAME = "Happy Irrigation"
+NAME = "HAppy Irrigation"
 MANUFACTURER = "@jeroenterheerdt"
 
 DOMAIN = "happy_irrigation"

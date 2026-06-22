@@ -1,6 +1,6 @@
 {
   "domain": "happy_irrigation",
-  "name": "Happy Irrigation",
+  "name": "HAppy Irrigation",
   "codeowners": ["@altmenorg"],
   "config_flow": true,
   "dependencies": ["http", "panel_custom"],

@@ -2,7 +2,7 @@
 layout: default
 title: Introduction
 ---
-# Smart Irrigation
+# HAppy Irrigation
 
 Ever wondered if you're watering your lawn/garden/greenhouse/plants/crops too much or too little?
 Are you fed up with the guesswork? Did you just set the timer on your sprinklers to 15 minutes?

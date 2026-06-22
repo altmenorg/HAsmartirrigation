@@ -1,4 +1,4 @@
-"""Websocket and HTTP API views for Happy Irrigation integration."""
+"""Websocket and HTTP API views for HAppy Irrigation integration."""
 
 import datetime
 import logging
@@ -72,7 +72,7 @@ async def handle_subscribe_updates(hass: HomeAssistant, connection, msg):
 
 
 class SmartIrrigationConfigView(HomeAssistantView):
-    """View to handle Happy Irrigation configuration updates via HTTP API."""
+    """View to handle HAppy Irrigation configuration updates via HTTP API."""
 
     url = "/api/" + const.DOMAIN + "/config"
     name = "api:" + const.DOMAIN + ":config"
@@ -121,7 +121,7 @@ class SmartIrrigationConfigView(HomeAssistantView):
 
 
 class SmartIrrigationModuleView(HomeAssistantView):
-    """View to handle Happy Irrigation module configuration via HTTP API."""
+    """View to handle HAppy Irrigation module configuration via HTTP API."""
 
     url = "/api/" + const.DOMAIN + "/modules"
     name = "api:" + const.DOMAIN + ":modules"
@@ -150,14 +150,14 @@ class SmartIrrigationModuleView(HomeAssistantView):
 
 
 class SmartIrrigationAllModuleView(HomeAssistantView):
-    """View to handle retrieval of all Happy Irrigation modules via HTTP API."""
+    """View to handle retrieval of all HAppy Irrigation modules via HTTP API."""
 
     url = "/api/" + const.DOMAIN + "/allmodules"
     name = "api:" + const.DOMAIN + ":allmodules"
 
 
 class SmartIrrigationMappingView(HomeAssistantView):
-    """View to handle Happy Irrigation mapping configuration via HTTP API."""
+    """View to handle HAppy Irrigation mapping configuration via HTTP API."""
 
     url = "/api/" + const.DOMAIN + "/mappings"
     name = "api:" + const.DOMAIN + ":mapping"
@@ -194,7 +194,7 @@ class SmartIrrigationMappingView(HomeAssistantView):
 
 
 class SmartIrrigationZoneView(HomeAssistantView):
-    """View to handle Happy Irrigation zone configuration via HTTP API."""
+    """View to handle HAppy Irrigation zone configuration via HTTP API."""
 
     url = "/api/" + const.DOMAIN + "/zones"
     name = "api:" + const.DOMAIN + ":zones"
@@ -642,7 +642,7 @@ async def websocket_set_weather_service(hass: HomeAssistant, connection, msg):
     entries = hass.config_entries.async_entries(const.DOMAIN)
     if not entries:
         connection.send_error(
-            msg["id"], "not_found", "No Happy Irrigation configuration entry found."
+            msg["id"], "not_found", "No HAppy Irrigation configuration entry found."
         )
         return
     entry = entries[0]
@@ -712,7 +712,7 @@ async def websocket_set_weather_service(hass: HomeAssistant, connection, msg):
 
 
 class SmartIrrigationExportView(HomeAssistantView):
-    """View to export the full Happy Irrigation configuration as JSON."""
+    """View to export the full HAppy Irrigation configuration as JSON."""
 
     url = "/api/" + const.DOMAIN + "/export"
     name = "api:" + const.DOMAIN + ":export"
@@ -728,7 +728,7 @@ class SmartIrrigationExportView(HomeAssistantView):
 
 
 class SmartIrrigationRestoreView(HomeAssistantView):
-    """View to restore the full Happy Irrigation configuration from a backup."""
+    """View to restore the full HAppy Irrigation configuration from a backup."""
 
     url = "/api/" + const.DOMAIN + "/restore"
     name = "api:" + const.DOMAIN + ":restore"
@@ -764,7 +764,7 @@ class SmartIrrigationRestoreView(HomeAssistantView):
 
 
 async def async_register_websockets(hass: HomeAssistant):
-    """Register Happy Irrigation HTTP views and websocket commands."""
+    """Register HAppy Irrigation HTTP views and websocket commands."""
     hass.http.register_view(SmartIrrigationConfigView)
     hass.http.register_view(SmartIrrigationZoneView)
     hass.http.register_view(SmartIrrigationModuleView)

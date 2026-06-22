@@ -1,4 +1,4 @@
-"""Diagnostics support for Happy Irrigation."""
+"""Diagnostics support for HAppy Irrigation."""
 
 from __future__ import annotations
 

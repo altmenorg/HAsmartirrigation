@@ -1,4 +1,4 @@
-"""Enhanced scheduling system for Happy Irrigation."""
+"""Enhanced scheduling system for HAppy Irrigation."""
 
 import datetime
 import logging
@@ -17,7 +17,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class RecurringScheduleManager:
-    """Manages recurring schedules for Happy Irrigation."""
+    """Manages recurring schedules for HAppy Irrigation."""
 
     def __init__(self, hass: HomeAssistant, coordinator) -> None:
         """Initialize the recurring schedule manager."""
@@ -330,7 +330,7 @@ class RecurringScheduleManager:
 
 
 class SeasonalAdjustmentManager:
-    """Manages seasonal adjustments for Happy Irrigation."""
+    """Manages seasonal adjustments for HAppy Irrigation."""
 
     def __init__(self, hass: HomeAssistant, coordinator) -> None:
         """Initialize the seasonal adjustment manager."""

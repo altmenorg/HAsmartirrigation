@@ -1,4 +1,4 @@
-"""Test the Happy Irrigation panel registration."""
+"""Test the HAppy Irrigation panel registration."""
 
 from unittest.mock import AsyncMock, Mock, patch
 
@@ -16,7 +16,7 @@ from custom_components.happy_irrigation.panel import async_register_panel, remov
 
 
 class TestSmartIrrigationPanel:
-    """Test Happy Irrigation panel registration."""
+    """Test HAppy Irrigation panel registration."""
 
     @pytest.fixture
     def mock_hass(self):

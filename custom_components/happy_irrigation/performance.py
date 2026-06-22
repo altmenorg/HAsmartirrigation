@@ -1,4 +1,4 @@
-"""Performance monitoring utilities for Happy Irrigation."""
+"""Performance monitoring utilities for HAppy Irrigation."""
 
 import inspect
 import logging

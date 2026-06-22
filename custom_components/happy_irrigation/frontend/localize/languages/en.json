@@ -105,7 +105,7 @@
     },
     "backuprestore": {
       "title": "Backup / restore",
-      "description": "Export the full Happy Irrigation configuration to a JSON file, or restore it from a previous backup.",
+      "description": "Export the full HAppy Irrigation configuration to a JSON file, or restore it from a previous backup.",
       "cards": {
         "backup": {
           "title": "Backup",
@@ -125,7 +125,7 @@
       "messages": {
         "exported": "Backup file downloaded.",
         "restored": "Configuration restored — reloading the integration.",
-        "invalid-file": "This file is not a valid Happy Irrigation backup.",
+        "invalid-file": "This file is not a valid HAppy Irrigation backup.",
         "confirm-title": "Replace the entire configuration?",
         "summary": "This backup contains",
         "confirm-warning": "Restoring overwrites all current general settings, zones, modules and sensor groups. This cannot be undone.",
@@ -386,11 +386,11 @@
       "title": "Zones"
     }
   },
-  "title": "Happy Irrigation",
+  "title": "HAppy Irrigation",
   "irrigation_start_triggers": {
     "title": "Irrigation start triggers",
     "description": "Configure when irrigation should start based on solar events. You can add multiple triggers for different schedules. For sunrise triggers, leaving offset at 0 will automatically use the total duration of all enabled zones.",
-    "usage_before": "When a trigger fires, Happy Irrigation emits the event ",
+    "usage_before": "When a trigger fires, HAppy Irrigation emits the event ",
     "usage_after": " — listen to it in an automation to start watering. The event data includes trigger_name, trigger_type and offset_minutes, so you can react differently per trigger. The precipitation skip and days-between-irrigation settings still apply: on a skip day no event is fired.",
     "add_trigger": "Add trigger",
     "edit_trigger": "Edit Trigger",
@@ -432,7 +432,7 @@
       "cancel": "Cancel",
       "save": "Save",
       "delete": "Delete",
-      "help": "When this trigger fires, Happy Irrigation emits the following event — use it in an automation to start watering. The event data includes this trigger's name (and type/offset), so you can react to it specifically:"
+      "help": "When this trigger fires, HAppy Irrigation emits the following event — use it in an automation to start watering. The event data includes this trigger's name (and type/offset), so you can react to it specifically:"
     },
     "no_triggers": "No irrigation start triggers configured. The system will use the default behavior (sunrise with total zone duration). Add triggers to customize when irrigation starts.",
     "offset_auto": "Auto (calculated from total zone duration)",

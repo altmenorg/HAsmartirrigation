@@ -1,4 +1,4 @@
-"""Test Happy Irrigation services."""
+"""Test HAppy Irrigation services."""
 
 from unittest.mock import AsyncMock, patch
 
@@ -9,7 +9,7 @@ from custom_components.happy_irrigation import const
 
 
 class TestSmartIrrigationServices:
-    """Test Happy Irrigation service calls."""
+    """Test HAppy Irrigation service calls."""
 
     @pytest.fixture
     def mock_coordinator(self):

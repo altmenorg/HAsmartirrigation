@@ -1,4 +1,4 @@
-"""Test Happy Irrigation helper functions."""
+"""Test HAppy Irrigation helper functions."""
 
 import contextlib
 

@@ -1,4 +1,4 @@
-"""Panel registration for the Happy Irrigation integration."""
+"""Panel registration for the HAppy Irrigation integration."""
 
 import logging
 from pathlib import Path
@@ -23,7 +23,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def async_register_panel(hass: HomeAssistant):
-    """Register the custom panel for the Happy Irrigation integration."""
+    """Register the custom panel for the HAppy Irrigation integration."""
     root_dir = Path(hass.config.path(CUSTOM_COMPONENTS)) / INTEGRATION_FOLDER
     panel_dir = root_dir / PANEL_FOLDER
     view_url = panel_dir / PANEL_FILENAME
@@ -46,6 +46,6 @@ async def async_register_panel(hass: HomeAssistant):
 
 
 def remove_panel(hass: HomeAssistant):
-    """Unregister the custom panel for the Happy Irrigation integration."""
+    """Unregister the custom panel for the HAppy Irrigation integration."""
     frontend.async_remove_panel(hass, DOMAIN)
     _LOGGER.debug("Removing panel")

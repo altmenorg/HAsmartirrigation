@@ -1,4 +1,4 @@
-"""Test the Happy Irrigation diagnostics."""
+"""Test the HAppy Irrigation diagnostics."""
 
 from unittest.mock import AsyncMock, Mock
 
@@ -14,7 +14,7 @@ from custom_components.happy_irrigation.diagnostics import (
 
 
 class TestSmartIrrigationDiagnostics:
-    """Test Happy Irrigation diagnostics."""
+    """Test HAppy Irrigation diagnostics."""
 
     @pytest.fixture
     def mock_hass(self):

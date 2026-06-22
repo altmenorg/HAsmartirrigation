@@ -4,7 +4,7 @@ title: Configuration
 ---
 # Configuration
 
-You use the Smart Irrigation panel to configure the integration. Make sure you [install](installation.md) it first.
+You use the HAppy Irrigation panel to configure the integration. Make sure you [install](installation.md) it first.
 
 ![](assets/images/configuration-1.png)
 

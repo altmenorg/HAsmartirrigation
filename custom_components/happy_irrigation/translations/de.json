@@ -1,7 +1,7 @@
 {
   "config": {
     "abort": {
-      "single_instance_allowed": "Es ist nur eine Integration für Happy Irrigation zulässig."
+      "single_instance_allowed": "Es ist nur eine Integration für HAppy Irrigation zulässig."
     },
     "error": {
       "auth": "Weather service API key incorrect",

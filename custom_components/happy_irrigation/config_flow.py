@@ -1,4 +1,4 @@
-"""Config flow for the Happy Irrigation integration."""
+"""Config flow for the HAppy Irrigation integration."""
 
 import voluptuous as vol
 from homeassistant import config_entries, exceptions
