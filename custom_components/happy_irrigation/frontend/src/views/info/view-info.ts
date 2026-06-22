@@ -17,6 +17,7 @@ import {
 } from "../../types";
 import { output_unit } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
+import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
 import { DOMAIN, ZONE_BUCKET } from "../../const";
 import moment from "moment";
@@ -181,9 +182,9 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
         <div class="card-content">
           ${this.zones.map(
             (zone) => html`
-              <div class="info-item zone-info">
+              <div class="zone-info">
                 <div class="zone-header">
-                  <label class="zone-name">${zone.name}:</label>
+                  <label class="zone-name">${zone.name}</label>
                 </div>
                 <div class="zone-details">
                   <div class="zone-bucket">
@@ -436,64 +437,83 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return css`
-      ${globalStyle} /* View-specific styles only - most common styles are now in globalStyle */
+      ${globalStyle} ${modernStyle}
 
+      /* Align the Info view with the shared modern look used on the other
+         pages: each zone is a sub-group (heading + rows), and every label/value
+         line matches .setting-row / .setting-label typography and spacing. */
+      .card-content {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* each zone reads as a section, like .si-subgroup elsewhere */
       .zone-info {
-        margin-bottom: 16px;
-        padding: 8px 0;
+        padding: 12px 0;
         border-bottom: 1px solid var(--divider-color);
       }
-
       .zone-info:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
+        border-bottom: 0;
       }
-
       .zone-header {
-        margin-bottom: 8px;
+        margin-bottom: 4px;
       }
-
       .zone-name {
-        font-weight: 500;
+        font-size: 1.05em;
+        font-weight: 600;
         color: var(--primary-text-color);
       }
 
+      /* a zone's bucket + duration: compact, left-aligned label:value pairs
+         that sit next to each other and wrap as a whole (never mid-value),
+         using the free space instead of cramming to the right. */
       .zone-details {
         display: flex;
-        flex-direction: column;
-        gap: 4px;
-        margin-left: 12px;
+        flex-wrap: wrap;
+        gap: 4px 28px;
+        margin-top: 2px;
       }
-
       .zone-bucket,
       .zone-duration {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        align-items: baseline;
+        gap: 6px;
+        white-space: nowrap;
       }
-
       .zone-bucket .label,
       .zone-duration .label {
         color: var(--secondary-text-color);
-        font-size: 0.9em;
       }
-
       .zone-bucket .value,
       .zone-duration .value {
-        font-weight: 500;
         color: var(--primary-text-color);
+        font-weight: 500;
+        white-space: nowrap;
       }
 
-      @media (min-width: 768px) {
-        .zone-details {
-          flex-direction: row;
-          gap: 24px;
-        }
+      /* single label/value rows in the other cards (next irrigation, reason):
+         label left, value right, like a .setting-row */
+      .info-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 44px;
+        padding: 2px 0;
+      }
+      .info-item label {
+        color: var(--secondary-text-color);
+      }
+      .info-item .value {
+        color: var(--primary-text-color);
+        font-weight: 500;
+      }
 
-        .zone-bucket,
-        .zone-duration {
-          flex: 1;
-        }
+      .info-note {
+        color: var(--secondary-text-color);
+        font-size: 0.9em;
+        line-height: 1.4;
+        margin-top: 8px;
       }
     `;
   }

@@ -3070,9 +3070,9 @@ i.version="2.30.1",n(Gt),i.fn=lr,i.min=Qt,i.max=Xt,i.now=ei,i.utc=m,i.unix=dr,i.
       >
         <div class="card-content">
           ${this.zones.map((a=>{var t,i,n,r,s,o,l,d;return W`
-              <div class="info-item zone-info">
+              <div class="zone-info">
                 <div class="zone-header">
-                  <label class="zone-name">${a.name}:</label>
+                  <label class="zone-name">${a.name}</label>
                 </div>
                 <div class="zone-details">
                   <div class="zone-bucket">
@@ -3217,64 +3217,83 @@ i.version="2.30.1",n(Gt),i.fn=lr,i.min=Qt,i.max=Xt,i.now=ei,i.utc=m,i.unix=dr,i.
           </div>
         </ha-card>
       `}static get styles(){return p`
-      ${Oo} /* View-specific styles only - most common styles are now in globalStyle */
+      ${Oo} ${Po}
 
+      /* Align the Info view with the shared modern look used on the other
+         pages: each zone is a sub-group (heading + rows), and every label/value
+         line matches .setting-row / .setting-label typography and spacing. */
+      .card-content {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* each zone reads as a section, like .si-subgroup elsewhere */
       .zone-info {
-        margin-bottom: 16px;
-        padding: 8px 0;
+        padding: 12px 0;
         border-bottom: 1px solid var(--divider-color);
       }
-
       .zone-info:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
+        border-bottom: 0;
       }
-
       .zone-header {
-        margin-bottom: 8px;
+        margin-bottom: 4px;
       }
-
       .zone-name {
-        font-weight: 500;
+        font-size: 1.05em;
+        font-weight: 600;
         color: var(--primary-text-color);
       }
 
+      /* a zone's bucket + duration: compact, left-aligned label:value pairs
+         that sit next to each other and wrap as a whole (never mid-value),
+         using the free space instead of cramming to the right. */
       .zone-details {
         display: flex;
-        flex-direction: column;
-        gap: 4px;
-        margin-left: 12px;
+        flex-wrap: wrap;
+        gap: 4px 28px;
+        margin-top: 2px;
       }
-
       .zone-bucket,
       .zone-duration {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        align-items: baseline;
+        gap: 6px;
+        white-space: nowrap;
       }
-
       .zone-bucket .label,
       .zone-duration .label {
         color: var(--secondary-text-color);
-        font-size: 0.9em;
       }
-
       .zone-bucket .value,
       .zone-duration .value {
-        font-weight: 500;
         color: var(--primary-text-color);
+        font-weight: 500;
+        white-space: nowrap;
       }
 
-      @media (min-width: 768px) {
-        .zone-details {
-          flex-direction: row;
-          gap: 24px;
-        }
+      /* single label/value rows in the other cards (next irrigation, reason):
+         label left, value right, like a .setting-row */
+      .info-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 44px;
+        padding: 2px 0;
+      }
+      .info-item label {
+        color: var(--secondary-text-color);
+      }
+      .info-item .value {
+        color: var(--primary-text-color);
+        font-weight: 500;
+      }
 
-        .zone-bucket,
-        .zone-duration {
-          flex: 1;
-        }
+      .info-note {
+        color: var(--secondary-text-color);
+        font-size: 0.9em;
+        line-height: 1.4;
+        margin-top: 8px;
       }
     `}};r([ve()],sl.prototype,"config",void 0),r([ve({type:Object})],sl.prototype,"info",void 0),r([ve({type:Array})],sl.prototype,"zones",void 0),r([ve({type:Boolean})],sl.prototype,"isLoading",void 0),sl=r([me("happy-irrigation-view-info")],sl);const ol=Oo,ll=()=>{const e=e=>{let a={};for(let t=0;t<e.length;t+=2){const i=e[t],n=t<e.length?e[t+1]:void 0;a=Object.assign(Object.assign({},a),{[i]:n})}return a},a=window.location.pathname.split("/");let t={page:a[2]||"general",params:{}};if(a.length>3){let i=a.slice(3);if(a.includes("filter")){const a=i.findIndex((e=>"filter"==e)),n=i.slice(a+1);i=i.slice(0,a),t=Object.assign(Object.assign({},t),{filter:e(n)})}i.length&&(i.length%2&&(t=Object.assign(Object.assign({},t),{subpage:i.shift()})),i.length&&(t=Object.assign(Object.assign({},t),{params:e(i)})))}return t},dl=(e,...a)=>{let t={page:e,params:{}};a.forEach((e=>{"string"==typeof e?t=Object.assign(Object.assign({},t),{subpage:e}):"params"in e?t=Object.assign(Object.assign({},t),{params:e.params}):"filter"in e&&(t=Object.assign(Object.assign({},t),{filter:e.filter}))}));const i=e=>{let a=Object.keys(e);a=a.filter((a=>e[a])),a.sort();let t="";return a.forEach((a=>{const i=e[a];t=t.length?`${t}/${a}/${i}`:`${a}/${i}`})),t};let n=`/${je}/${t.page}`;return t.subpage&&(n=`${n}/${t.subpage}`),i(t.params).length&&(n=`${n}/${i(t.params)}`),t.filter&&(n=`${n}/filter/${i(t.filter)}`),n};var ul;!function(e){e.Info="info",e.General="general",e.Zones="zones",e.Modules="modules",e.Mappings="mappings",e.WeatherService="weatherservice",e.BackupRestore="backuprestore",e.Help="help"}(ul||(ul={})),e.SmartIrrigationPanel=class extends pe{constructor(){super(...arguments),this._updateScheduled=!1,this._lastNavigationTime=0,this._navigationThrottleDelay=100}_scheduleUpdate(){this._updateScheduled||(this._updateScheduled=!0,requestAnimationFrame((()=>{this._updateScheduled=!1,this.requestUpdate()})))}async firstUpdated(){const e=ll();e.page&&Object.values(ul).includes(e.page)?(window.addEventListener("location-changed",(()=>{if(!window.location.pathname.includes("happy_irrigation"))return;const e=performance.now();e-this._lastNavigationTime<this._navigationThrottleDelay||(this._lastNavigationTime=e,this._scheduleUpdate())})),ze().then((()=>{this._scheduleUpdate()})).catch((e=>{console.error("Failed to load HA form elements:",e),this._scheduleUpdate()}))):Ea(0,dl(ul.General))}render(){const e=ll(),a=!!customElements.get("ha-tab-group"),t=!!customElements.get("ha-tab-group-tab");return W`
       <div class="header">
