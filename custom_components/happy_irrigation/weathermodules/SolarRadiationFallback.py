@@ -54,7 +54,9 @@ class SolarRadiationFallbackClient:  # pylint: disable=invalid-name
             return None
         if any(field not in data for field in _FALLBACK_FIELDS):
             self._fill(data, self._fallback.get_data())
-            _LOGGER.debug("Filled solar radiation/ET0 from Open-Meteo fallback (current)")
+            _LOGGER.debug(
+                "Filled solar radiation/ET0 from Open-Meteo fallback (current)"
+            )
         return data
 
     def get_forecast_data(self):

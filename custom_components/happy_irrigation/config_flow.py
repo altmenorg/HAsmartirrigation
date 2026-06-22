@@ -156,9 +156,7 @@ class SmartIrrigationConfigFlow(config_entries.ConfigFlow, domain=const.DOMAIN):
                         default=const.CONF_DEFAULT_WEATHER_SERVICE,
                     ): selector({"select": {"options": const.CONF_WEATHER_SERVICES}}),
                     # Optional: keyless services (e.g. Open-Meteo) need no key.
-                    vol.Optional(
-                        const.CONF_WEATHER_SERVICE_API_KEY, default=""
-                    ): str,
+                    vol.Optional(const.CONF_WEATHER_SERVICE_API_KEY, default=""): str,
                     # vol.Required(const.CONF_OWM_API_VERSION, default="3.0"): selector(
                     #    {"select": {"options": ["2.5", "3.0"]}}
                     # ),
