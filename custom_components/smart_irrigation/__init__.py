@@ -6,6 +6,7 @@ import math
 import re
 import statistics
 from datetime import datetime, timedelta
+from functools import partial
 
 from homeassistant.components.sensor import DOMAIN as PLATFORM
 from homeassistant.config_entries import ConfigEntry
@@ -393,6 +394,17 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
             self._start_event_fired_today = True
         else:
             self._start_event_fired_today = False
+
+        # Names of triggers that have already fired today, so each trigger fires
+        # independently (replaces the old single global "fired today" block).
+        # In-memory; cleared at midnight.
+        self._fired_triggers_today: set = set()
+        # Today's watering decision (precipitation forecast + days-between),
+        # computed once and shared by all triggers for the day:
+        # None = undecided, True = water, False = skip.
+        self._watering_decision_today = (
+            True if self._start_event_fired_today else None
+        )
 
         # Initialize enhanced scheduling managers
         self.recurring_schedule_manager = RecurringScheduleManager(hass, self)
@@ -2591,6 +2603,14 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
             account_for_duration = trigger.get(
                 const.TRIGGER_CONF_ACCOUNT_FOR_DURATION, True
             )
+            # Identity carried into the fired event so automations can tell
+            # triggers apart (see _fire_start_event).
+            trigger_info = {
+                const.TRIGGER_CONF_NAME: trigger_name,
+                const.TRIGGER_CONF_TYPE: trigger_type,
+                const.TRIGGER_CONF_OFFSET_MINUTES: offset_minutes,
+                const.TRIGGER_CONF_ACCOUNT_FOR_DURATION: account_for_duration,
+            }
 
             try:
                 if trigger_type == const.TRIGGER_TYPE_SUNRISE:
@@ -2599,6 +2619,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
                         trigger_name,
                         total_duration,
                         account_for_duration,
+                        trigger_info,
                     )
                 elif trigger_type == const.TRIGGER_TYPE_SUNSET:
                     await self._register_sunset_trigger(
@@ -2606,17 +2627,20 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
                         trigger_name,
                         total_duration,
                         account_for_duration,
+                        trigger_info,
                     )
                 elif trigger_type == const.TRIGGER_TYPE_SOLAR_AZIMUTH:
                     azimuth_angle = trigger.get(const.TRIGGER_CONF_AZIMUTH_ANGLE, 0)
                     # Normalize azimuth angle to 0-360 range
                     azimuth_angle = normalize_azimuth_angle(azimuth_angle)
+                    trigger_info[const.TRIGGER_CONF_AZIMUTH_ANGLE] = azimuth_angle
                     await self._register_azimuth_trigger(
                         azimuth_angle,
                         offset_minutes,
                         trigger_name,
                         total_duration,
                         account_for_duration,
+                        trigger_info,
                     )
                 else:
                     _LOGGER.warning("Unknown trigger type: %s", trigger_type)
@@ -2637,9 +2661,15 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
             # self._track_sunrise_event_unsub = async_track_point_in_utc_time(
             #    self.hass, self._fire_start_event, point_in_time=time_to_fire
             # )
+            legacy_trigger_info = {
+                const.TRIGGER_CONF_NAME: "default",
+                const.TRIGGER_CONF_TYPE: const.TRIGGER_TYPE_SUNRISE,
+                const.TRIGGER_CONF_OFFSET_MINUTES: 0,
+                const.TRIGGER_CONF_ACCOUNT_FOR_DURATION: True,
+            }
             self._track_sunrise_event_unsub = async_track_sunrise(
                 self.hass,
-                self._fire_start_event,
+                partial(self._fire_start_event, legacy_trigger_info),
                 timedelta(seconds=0 - total_duration),
             )
             event_to_fire = f"{const.DOMAIN}_{const.EVENT_IRRIGATE_START}"
@@ -2655,6 +2685,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         trigger_name: str,
         total_duration: int,
         account_for_duration: bool,
+        trigger_info: dict,
     ):
         """Register a sunrise-based trigger."""
         # Calculate offset based on account_for_duration setting
@@ -2671,7 +2702,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
 
         unsub = async_track_sunrise(
             self.hass,
-            self._fire_start_event,
+            partial(self._fire_start_event, trigger_info),
             timedelta(seconds=offset_seconds),
         )
         self._track_irrigation_triggers_unsub.append(unsub)
@@ -2697,6 +2728,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         trigger_name: str,
         total_duration: int,
         account_for_duration: bool,
+        trigger_info: dict,
     ):
         """Register a sunset-based trigger."""
         # Calculate offset based on account_for_duration setting
@@ -2709,7 +2741,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
 
         unsub = async_track_sunset(
             self.hass,
-            self._fire_start_event,
+            partial(self._fire_start_event, trigger_info),
             timedelta(seconds=offset_seconds),
         )
         self._track_irrigation_triggers_unsub.append(unsub)
@@ -2736,6 +2768,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         trigger_name: str,
         total_duration: int,
         account_for_duration: bool,
+        trigger_info: dict,
     ):
         """Register a solar azimuth-based trigger."""
         # Calculate next occurrence of this azimuth
@@ -2770,7 +2803,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
 
         unsub = async_track_point_in_utc_time(
             self.hass,
-            self._fire_start_event,
+            partial(self._fire_start_event, trigger_info),
             trigger_time,
         )
         self._track_irrigation_triggers_unsub.append(unsub)
@@ -2944,73 +2977,92 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         _LOGGER.debug("Reset days since last irrigation to 0")
 
     @callback
-    def _fire_start_event(self, *args):
-        """Fire the irrigation start event if conditions are met."""
-        if not self._start_event_fired_today:
-            # Check for precipitation forecast and days between irrigation asynchronously
-            async def check_and_fire():
-                try:
-                    # Check precipitation forecast
-                    should_skip_precipitation = (
-                        await self._check_precipitation_forecast()
-                    )
-                    if should_skip_precipitation:
+    def _fire_start_event(self, trigger_info, *args):
+        """Fire the irrigation start event for one trigger, if conditions allow.
+
+        Each trigger fires independently. The "is today a watering day" decision
+        (precipitation forecast + days-between-irrigation) is computed once and
+        shared by all triggers for the day. The fired event carries the trigger's
+        identity (name/type/offset) so automations can tell triggers apart and
+        react per-trigger.
+        """
+        name = trigger_info.get(const.TRIGGER_CONF_NAME) or "Unnamed Trigger"
+
+        if name in self._fired_triggers_today:
+            _LOGGER.debug("Trigger '%s' already fired today, skipping", name)
+            return
+        # Mark synchronously to avoid any re-entrancy double-fire.
+        self._fired_triggers_today.add(name)
+
+        async def check_and_fire():
+            event_to_fire = f"{const.DOMAIN}_{const.EVENT_IRRIGATE_START}"
+            event_data = {
+                "trigger_name": name,
+                "trigger_type": trigger_info.get(const.TRIGGER_CONF_TYPE),
+                "offset_minutes": trigger_info.get(
+                    const.TRIGGER_CONF_OFFSET_MINUTES
+                ),
+                "account_for_duration": trigger_info.get(
+                    const.TRIGGER_CONF_ACCOUNT_FOR_DURATION
+                ),
+            }
+            try:
+                # Decide once per day whether today is a watering day.
+                if self._watering_decision_today is None:
+                    skip_reason = None
+                    if await self._check_precipitation_forecast():
+                        skip_reason = "forecasted precipitation"
+                    elif await self._check_days_between_irrigation():
+                        skip_reason = "insufficient days since last irrigation"
+                    self._watering_decision_today = skip_reason is None
+                    if skip_reason is not None:
                         _LOGGER.info(
-                            "Irrigation start event skipped due to forecasted precipitation"
+                            "Today is not a watering day (%s); start triggers "
+                            "will not fire",
+                            skip_reason,
                         )
-                        # Still increment days counter even if skipped due to precipitation
+                        # Count this as a (skipped) day, once.
                         await self._increment_days_since_irrigation()
-                        return
 
-                    # Check days between irrigation
-                    should_skip_days = await self._check_days_between_irrigation()
-                    if should_skip_days:
-                        _LOGGER.info(
-                            "Irrigation start event skipped due to insufficient days since last irrigation"
-                        )
-                        # Increment days counter when skipped due to days restriction
-                        await self._increment_days_since_irrigation()
-                        return
+                if not self._watering_decision_today:
+                    _LOGGER.info(
+                        "Trigger '%s' reached but today is a skip day; not "
+                        "firing event",
+                        name,
+                    )
+                    return
 
-                    # Fire the event
-                    event_to_fire = f"{const.DOMAIN}_{const.EVENT_IRRIGATE_START}"
-                    self.hass.bus.fire(event_to_fire, {})
-                    _LOGGER.info("Fired start event: %s", event_to_fire)
+                # Fire the event with the trigger's identity.
+                self.hass.bus.fire(event_to_fire, event_data)
+                _LOGGER.info(
+                    "Fired start event %s for trigger '%s'", event_to_fire, name
+                )
+
+                # On the first actual fire of the day, mark the day as watered
+                # and reset the days-since counter (once, not per trigger).
+                if not self._start_event_fired_today:
                     self._start_event_fired_today = True
-
-                    # Reset days since last irrigation counter
                     await self._reset_days_since_irrigation()
-
-                    # Save config asynchronously
                     await self.store.async_update_config(
-                        {const.START_EVENT_FIRED_TODAY: self._start_event_fired_today}
+                        {const.START_EVENT_FIRED_TODAY: True}
                     )
-                except Exception as e:
-                    _LOGGER.error(
-                        "Error checking irrigation conditions, firing irrigation event anyway: %s",
-                        e,
-                    )
-                    # Fire the event as fallback
-                    event_to_fire = f"{const.DOMAIN}_{const.EVENT_IRRIGATE_START}"
-                    self.hass.bus.fire(event_to_fire, {})
-                    _LOGGER.info("Fired start event (fallback): %s", event_to_fire)
-                    self._start_event_fired_today = True
+            except Exception as e:
+                _LOGGER.error(
+                    "Error evaluating irrigation conditions for trigger '%s', "
+                    "firing event anyway: %s",
+                    name,
+                    e,
+                )
+                self.hass.bus.fire(event_to_fire, event_data)
 
-                    # Reset days since last irrigation counter
-                    await self._reset_days_since_irrigation()
-
-                    # Save config asynchronously
-                    await self.store.async_update_config(
-                        {const.START_EVENT_FIRED_TODAY: self._start_event_fired_today}
-                    )
-
-            # Schedule the async check
-            self.hass.async_create_task(check_and_fire())
-        else:
-            _LOGGER.info("Did not fire start event, it was already fired today")
+        self.hass.async_create_task(check_and_fire())
 
     @callback
     def _reset_event_fired_today(self, *args):
+        # New day: every trigger may fire again and the watering decision is
+        # recomputed on the next trigger that is reached.
+        self._fired_triggers_today.clear()
+        self._watering_decision_today = None
         if self._start_event_fired_today:
             _LOGGER.info("Resetting start event fired today tracker")
             self._start_event_fired_today = False

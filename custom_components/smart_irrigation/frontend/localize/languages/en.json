@@ -390,6 +390,8 @@
   "irrigation_start_triggers": {
     "title": "Irrigation start triggers",
     "description": "Configure when irrigation should start based on solar events. You can add multiple triggers for different schedules. For sunrise triggers, leaving offset at 0 will automatically use the total duration of all enabled zones.",
+    "usage_before": "When a trigger fires, Smart Irrigation emits the event ",
+    "usage_after": " — listen to it in an automation to start watering. The event data includes trigger_name, trigger_type and offset_minutes, so you can react differently per trigger. The precipitation skip and days-between-irrigation settings still apply: on a skip day no event is fired.",
     "add_trigger": "Add trigger",
     "edit_trigger": "Edit Trigger",
     "delete_trigger": "Delete Trigger",
@@ -429,7 +431,8 @@
       "edit_title": "Edit Irrigation Start Trigger",
       "cancel": "Cancel",
       "save": "Save",
-      "delete": "Delete"
+      "delete": "Delete",
+      "help": "When this trigger fires, Smart Irrigation emits the following event — use it in an automation to start watering. The event data includes this trigger's name (and type/offset), so you can react to it specifically:"
     },
     "no_triggers": "No irrigation start triggers configured. The system will use the default behavior (sunrise with total zone duration). Add triggers to customize when irrigation starts.",
     "offset_auto": "Auto (calculated from total zone duration)",

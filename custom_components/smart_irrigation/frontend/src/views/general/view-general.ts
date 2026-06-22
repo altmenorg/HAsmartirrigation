@@ -474,6 +474,17 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           )}
         </div>
 
+        <div class="card-content trigger-usage">
+          ${localize(
+            "irrigation_start_triggers.usage_before",
+            this.hass.language,
+          )}
+          <code>smart_irrigation_start_irrigation_all_zones</code>${localize(
+            "irrigation_start_triggers.usage_after",
+            this.hass.language,
+          )}
+        </div>
+
         <div class="card-content">
           <div class="triggers-list">
             ${triggers.length === 0
@@ -609,7 +620,16 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     ) {
       const triggers = [...this.config.irrigation_start_triggers];
       triggers.splice(index, 1);
-      this.handleConfigChange({ [CONF_IRRIGATION_START_TRIGGERS]: triggers });
+      // Optimistic update + immediate save so the list refreshes without a
+      // reload (it renders from this.config; handleConfigChange only touched
+      // this.data, debounced).
+      this.config = { ...this.config, irrigation_start_triggers: triggers };
+      this.saveData({ [CONF_IRRIGATION_START_TRIGGERS]: triggers }).catch(
+        (err) => {
+          console.error("Error saving triggers:", err);
+          this._fetchData().catch(() => {});
+        },
+      );
     }
   }
 
@@ -663,9 +683,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     } else if (detail.index !== undefined) {
       triggers[detail.index] = detail.trigger;
     }
-
-    // Log for debugging so you can see what we received
-    console.log("RECEIVED trigger-save in view-general", { detail, triggers });
 
     // Optimistic update so UI immediately reflects change
     this.config = { ...this.config, irrigation_start_triggers: triggers };
@@ -1130,6 +1147,20 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       }
 
       /* Irrigation triggers styles */
+      .trigger-usage {
+        color: var(--secondary-text-color);
+        font-size: 0.9em;
+        line-height: 1.5;
+      }
+      .trigger-usage code {
+        font-family: var(--ha-font-family-code, monospace);
+        background: var(--secondary-background-color);
+        padding: 1px 6px;
+        border-radius: 4px;
+        color: var(--primary-text-color);
+        white-space: nowrap;
+      }
+
       .triggers-list {
         margin: 16px 0;
       }

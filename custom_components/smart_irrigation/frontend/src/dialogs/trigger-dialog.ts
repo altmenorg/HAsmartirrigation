@@ -88,8 +88,6 @@ export class TriggerDialog extends LitElement {
       this._trigger = undefined;
     }
 
-    console.log("showDialog _trigger:", this._trigger);
-
     await this.updateComplete;
   }
 
@@ -122,7 +120,6 @@ export class TriggerDialog extends LitElement {
           } as IrrigationStartTrigger;
         }
         this.requestUpdate();
-        console.log("SYNCED _trigger from select before save:", this._trigger);
       }
     }
 
@@ -156,11 +153,6 @@ export class TriggerDialog extends LitElement {
         this._trigger.azimuth_angle += 360;
       }
     }
-    console.log("DISPATCH: trigger-save", this._trigger, {
-      isNew: this.params?.createTrigger,
-      index: this.params?.triggerIndex,
-    });
-
     this.dispatchEvent(
       new CustomEvent("trigger-save", {
         detail: {
@@ -204,7 +196,6 @@ export class TriggerDialog extends LitElement {
   }
 
   render() {
-    console.log("RENDER: _trigger", this._trigger);
     if (!this.params || !this._trigger) return html``;
 
     const isCreate = this.params.createTrigger;
@@ -230,6 +221,13 @@ export class TriggerDialog extends LitElement {
         </div>
 
         <div class="wrapper">
+          <div class="dialog-help">
+            ${localize(
+              "irrigation_start_triggers.dialog.help",
+              this.hass.language,
+            )}
+            <code>smart_irrigation_start_irrigation_all_zones</code>
+          </div>
           <div class="form-group">
             <label class="form-label"
               >${localize(
@@ -399,13 +397,6 @@ export class TriggerDialog extends LitElement {
       (this.shadowRoot?.querySelector("ha-select") as any)?.value;
     const newType = String(maybeValue) as TriggerType;
 
-    console.log(
-      "TYPE CHANGED: newType",
-      newType,
-      "old _trigger",
-      this._trigger,
-    );
-
     let newTrigger: IrrigationStartTrigger;
 
     if (newType === TRIGGER_TYPE_SOLAR_AZIMUTH) {
@@ -428,7 +419,6 @@ export class TriggerDialog extends LitElement {
     }
 
     this._trigger = newTrigger;
-    console.log("NEW _trigger", this._trigger);
     this.requestUpdate();
   }
 
@@ -506,6 +496,20 @@ export class TriggerDialog extends LitElement {
         .form-input:focus {
           outline: none;
           border-bottom: 2px solid var(--primary-color);
+        }
+        .dialog-help {
+          margin-bottom: 16px;
+          color: var(--secondary-text-color);
+          font-size: 0.9em;
+          line-height: 1.5;
+        }
+        .dialog-help code {
+          font-family: var(--ha-font-family-code, monospace);
+          background: var(--secondary-background-color);
+          padding: 1px 6px;
+          border-radius: 4px;
+          color: var(--primary-text-color);
+          white-space: nowrap;
         }
 
         ha-formfield {
