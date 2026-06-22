@@ -1,0 +1,473 @@
+{
+  "common": {
+    "loading": "加载中",
+    "saving": "保存中",
+    "actions": {
+      "delete": "删除"
+    },
+    "labels": {
+      "module": "模块",
+      "no": "否",
+      "select": "选择",
+      "yes": "是",
+      "enabled": "已启用",
+      "disabled": "已禁用",
+      "before": "之前",
+      "after": "之后"
+    },
+    "units": {
+      "seconds": "秒"
+    },
+    "attributes": {
+      "size": "面积",
+      "throughput": "流量",
+      "state": "状态",
+      "bucket": "bucket",
+      "last_updated": "上次更新",
+      "last_calculated": "上次计算",
+      "number_of_data_points": "数据点数量"
+    },
+    "loading-messages": {
+      "configuration": "正在加载配置……",
+      "modules": "正在加载模块……",
+      "general": "加载中……"
+    },
+    "saving-messages": {
+      "adding": "正在添加……",
+      "saving": "正在保存……"
+    }
+  },
+  "defaults": {
+    "default-zone": "默认区域",
+    "default-mapping": "默认传感器组"
+  },
+  "module": {
+    "calculation": {
+      "explanation": {
+        "module-returned-evapotranspiration-deficiency": "注意：此说明使用 '.' 作为小数分隔符，显示四舍五入后的公制值。模块返回的蒸散亏缺（ = et0 * hour_multiplier + precipitation）为",
+        "bucket-was": "bucket 原值为",
+        "new-bucket-values-is": "新的 bucket 值为",
+        "bucket": "bucket",
+        "old-bucket-variable": "old_bucket",
+        "max-bucket-variable": "max_bucket",
+        "delta": "delta",
+        "bucket-less-than-zero-irrigation-necessary": "由于 bucket < 0，需要进行灌溉",
+        "steps-taken-to-calculate-duration": "为计算精确的持续时间，执行了以下步骤",
+        "precipitation-rate-defined-as": "降水速率定义为",
+        "duration-is-calculated-as": "持续时间的计算方式为",
+        "drainage": "drainage",
+        "drainage-rate": "drainage_rate",
+        "hours": "小时",
+        "precipitation-rate-variable": "precipitation_rate",
+        "multiplier-is-applied": "现在应用乘数。乘数为",
+        "duration-after-multiplier-is": "因此持续时间为",
+        "maximum-duration-is-applied": "然后应用最大持续时间。最大持续时间为",
+        "duration-after-maximum-duration-is": "因此持续时间为",
+        "lead-time-is-applied": "最后应用提前时间。提前时间为",
+        "duration-after-lead-time-is": "因此最终持续时间为",
+        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "由于 bucket >= 0，无需灌溉，持续时间设置为",
+        "maximum-bucket-is": "最大 bucket 容量为",
+        "drainage-rate-is": "饱和时（bucket 处于最大值）的排水速率为",
+        "current-drainage-is": "当前排水量的计算方式为",
+        "no-drainage": "当前排水量为 0，原因是"
+      }
+    }
+  },
+  "calcmodules": {
+    "pyeto": {
+      "description": "基于 PyETO 库的 FAO56 算法计算持续时间"
+    },
+    "static": {
+      "description": "带有可配置静态 delta 的“虚拟”模块"
+    },
+    "passthrough": {
+      "description": "直通模块，将蒸散传感器的值作为 delta 返回"
+    }
+  },
+  "panels": {
+    "weatherservice": {
+      "title": "天气服务",
+      "description": "查看并更改用于获取天气数据的天气服务——无需重新安装集成。API 密钥将被验证，更改会立即生效。",
+      "labels": {
+        "use-weather-service": "使用天气服务",
+        "service": "天气服务",
+        "api-key": "API 密钥"
+      },
+      "actions": {
+        "save": "保存",
+        "saving": "正在保存…"
+      },
+      "messages": {
+        "no-service": "未使用任何天气服务——天气数据仅来自您自己的传感器。",
+        "saved": "天气服务已更新并应用。",
+        "reload-note": "保存时会针对该服务验证 API 密钥并立即应用更改。"
+      }
+    },
+    "backuprestore": {
+      "title": "备份 / 恢复",
+      "description": "将完整的 HAppy Irrigation 配置导出为 JSON 文件，或从先前的备份中恢复。",
+      "cards": {
+        "backup": {
+          "title": "备份",
+          "description": "将完整配置（常规设置、区域、模块和传感器组）下载为 JSON 文件。"
+        },
+        "restore": {
+          "title": "恢复",
+          "description": "加载先前导出的 JSON 文件以替换当前配置。"
+        }
+      },
+      "actions": {
+        "export": "导出为 JSON",
+        "choose-file": "选择一个备份文件…",
+        "restore": "恢复此备份",
+        "restoring": "正在恢复…"
+      },
+      "messages": {
+        "exported": "备份文件已下载。",
+        "restored": "配置已恢复——正在重新加载集成。",
+        "invalid-file": "此文件不是有效的 HAppy Irrigation 备份。",
+        "confirm-title": "替换整个配置？",
+        "summary": "此备份包含",
+        "confirm-warning": "恢复将覆盖当前所有的常规设置、区域、模块和传感器组。此操作无法撤销。",
+        "reload-note": "恢复会替换所有内容并重新加载集成以应用更改。"
+      }
+    },
+    "general": {
+      "cards": {
+        "automatic-duration-calculation": {
+          "header": "自动计算持续时间",
+          "description": "计算时会采用到目前为止收集的天气数据，并更新每个自动区域的 bucket。然后根据新的 bucket 值调整持续时间，并移除收集的天气数据。",
+          "labels": {
+            "auto-calc-enabled": "自动计算灌溉持续时间",
+            "calc-time": "计算时间"
+          }
+        },
+        "automatic-update": {
+          "errors": {
+            "warning-update-time-on-or-after-calc-time": "警告：天气数据更新时间等于或晚于计算时间"
+          },
+          "header": "自动更新天气数据",
+          "description": "自动收集并存储天气数据。计算区域的 bucket 和持续时间需要天气数据。",
+          "labels": {
+            "auto-update-enabled": "自动更新天气数据",
+            "auto-update-schedule": "更新计划",
+            "auto-update-time": "更新时间",
+            "auto-update-interval": "更新传感器数据的间隔",
+            "auto-update-delay": "更新延迟"
+          },
+          "options": {
+            "minutes": "分钟",
+            "hours": "小时",
+            "days": "天"
+          }
+        },
+        "automatic-clear": {
+          "header": "自动清理天气数据",
+          "description": "在配置的时间自动移除收集的天气数据。使用此功能可确保不会残留前几天的天气数据。请勿在计算之前移除天气数据，并且仅在您预期自动更新会在当天计算之后收集天气数据时才使用此选项。理想情况下，您应尽可能在一天中较晚的时间进行清理。",
+          "labels": {
+            "automatic-clear-enabled": "自动清除收集的天气数据",
+            "automatic-clear-time": "清除天气数据的时间"
+          }
+        },
+        "continuousupdates": {
+          "header": "传感器连续更新（实验性）",
+          "description": "此实验性功能将连续更新传感器数据。这对于使用提供连续数据的来源（例如气象站）的传感器组很有用。此功能不能用于至少部分依赖天气服务的传感器组，因为连续轮询 API 会产生费用。请记住这是实验性功能，可能无法按预期工作。使用风险自负。",
+          "labels": {
+            "continuousupdates": "启用连续更新",
+            "sensor_debounce": "传感器防抖"
+          }
+        }
+      },
+      "description": "此页面提供全局设置。",
+      "title": "常规"
+    },
+    "help": {
+      "title": "帮助",
+      "cards": {
+        "how-to-get-help": {
+          "title": "如何获取帮助",
+          "first-read-the": "首先，请阅读",
+          "wiki": "Wiki",
+          "if-you-still-need-help": "如果您仍需帮助，请通过以下方式联系",
+          "community-forum": "社区论坛",
+          "or-open-a": "或提交一个",
+          "github-issue": "Github Issue",
+          "english-only": "仅限英语"
+        }
+      }
+    },
+    "info": {
+      "title": "信息",
+      "description": "查看有关下次灌溉和系统状态的信息。",
+      "configuration-not-available": "配置不可用。",
+      "cards": {
+        "zone-bucket-values": {
+          "title": "区域 bucket 值和持续时间",
+          "labels": {
+            "bucket": "Bucket",
+            "duration": "持续时间"
+          },
+          "no-zones": "未配置任何区域"
+        },
+        "next-irrigation": {
+          "title": "下次灌溉",
+          "labels": {
+            "next-start": "下次开始",
+            "duration": "持续时间",
+            "zones": "区域"
+          },
+          "no-data": "无可用数据"
+        },
+        "irrigation-reason": {
+          "title": "灌溉原因",
+          "labels": {
+            "reason": "原因",
+            "sunrise": "日出",
+            "total-duration": "总持续时间",
+            "explanation": "说明"
+          },
+          "no-data": "无可用数据"
+        }
+      }
+    },
+    "mappings": {
+      "cards": {
+        "add-mapping": {
+          "actions": {
+            "add": "添加传感器组"
+          },
+          "header": "添加传感器组"
+        },
+        "mapping": {
+          "aggregates": {
+            "average": "平均值",
+            "first": "首个",
+            "last": "最后",
+            "maximum": "最大值",
+            "median": "中位数",
+            "minimum": "最小值",
+            "riemannsum": "黎曼和",
+            "sum": "总和",
+            "delta": "差值"
+          },
+          "errors": {
+            "cannot-delete-mapping-because-zones-use-it": "无法删除此传感器组，因为至少有一个区域正在使用它。",
+            "invalid_source": "来源无效",
+            "source_does_not_exist": "来源不存在。请输入有效的来源，例如 'sensor.mysensor'。"
+          },
+          "items": {
+            "dewpoint": "露点",
+            "evapotranspiration": "蒸散量",
+            "humidity": "湿度",
+            "maximum temperature": "最高温度",
+            "minimum temperature": "最低温度",
+            "precipitation": "总降水量",
+            "current precipitation": "当前降水量",
+            "pressure": "气压",
+            "solar radiation": "太阳辐射",
+            "temperature": "温度",
+            "windspeed": "风速"
+          },
+          "pressure_types": {
+            "absolute": "绝对",
+            "relative": "相对"
+          },
+          "pressure-type": "气压为",
+          "sensor-aggregate-of-sensor-values-to-calculate": "传感器值以计算持续时间",
+          "sensor-aggregate-use-the": "使用",
+          "sensor-entity": "传感器实体",
+          "static_value": "值",
+          "input-units": "输入提供的值的单位为",
+          "source": "来源",
+          "sources": {
+            "none": "无",
+            "weather_service": "天气服务",
+            "sensor": "传感器",
+            "static": "静态值"
+          }
+        }
+      },
+      "description": "添加一个或多个传感器组，从天气服务、传感器或两者的组合中获取天气数据。您可以将每个传感器组映射到一个或多个区域",
+      "labels": {
+        "mapping-name": "名称"
+      },
+      "no_items": "尚未定义任何传感器组。",
+      "title": "传感器组",
+      "weather-records": {
+        "title": "天气记录（最近 10 条）",
+        "timestamp": "时间",
+        "temperature": "温度",
+        "humidity": "湿度",
+        "precipitation": "降水",
+        "retrieval-time": "获取时间",
+        "no-data": "此传感器组没有可用的天气数据"
+      }
+    },
+    "modules": {
+      "cards": {
+        "add-module": {
+          "actions": {
+            "add": "添加模块"
+          },
+          "header": "添加模块"
+        },
+        "module": {
+          "errors": {
+            "cannot-delete-module-because-zones-use-it": "无法删除此模块，因为至少有一个区域正在使用它。"
+          },
+          "labels": {
+            "configuration": "配置",
+            "required": "表示必填字段"
+          },
+          "translated-options": {
+            "DontEstimate": "不估算",
+            "EstimateFromSunHours": "根据日照时数估算",
+            "EstimateFromTemp": "根据温度估算",
+            "EstimateFromSunHoursAndTemperature": "根据日照时数和温度的平均值估算"
+          }
+        }
+      },
+      "description": "添加一个或多个用于计算灌溉持续时间的模块。每个模块都有自己的配置，可用于计算一个或多个区域的持续时间。",
+      "no_items": "尚未定义任何模块。",
+      "title": "模块"
+    },
+    "zones": {
+      "actions": {
+        "add": "添加",
+        "calculate": "计算",
+        "information": "信息",
+        "update": "更新",
+        "reset-bucket": "重置 bucket",
+        "view-weather-info": "查看天气数据",
+        "view-weather-info-message": "可用天气数据：",
+        "view-watering-calendar": "查看浇水日历"
+      },
+      "cards": {
+        "add-zone": {
+          "actions": {
+            "add": "添加区域"
+          },
+          "header": "添加区域"
+        },
+        "zone-actions": {
+          "actions": {
+            "calculate-all": "计算所有区域",
+            "update-all": "更新所有区域",
+            "reset-all-buckets": "重置所有 bucket",
+            "clear-all-weatherdata": "清除所有天气数据"
+          },
+          "header": "对所有区域的操作"
+        }
+      },
+      "description": "在此处指定一个或多个灌溉区域。灌溉持续时间按区域计算，取决于面积、流量、状态、模块和传感器组。",
+      "labels": {
+        "bucket": "Bucket",
+        "duration": "持续时间",
+        "lead-time": "提前时间",
+        "mapping": "传感器组",
+        "maximum-duration": "最大持续时间",
+        "multiplier": "乘数",
+        "name": "名称",
+        "size": "面积",
+        "state": "状态",
+        "states": {
+          "automatic": "自动",
+          "disabled": "已禁用",
+          "manual": "手动"
+        },
+        "throughput": "流量",
+        "maximum-bucket": "最大 bucket",
+        "last_calculated": "上次计算",
+        "data-last-updated": "数据上次更新",
+        "data-number-of-data-points": "数据点数量",
+        "drainage_rate": "排水速率"
+      },
+      "no_items": "尚未定义任何区域。",
+      "title": "区域"
+    }
+  },
+  "title": "HAppy Irrigation",
+  "irrigation_start_triggers": {
+    "title": "灌溉启动触发器",
+    "description": "根据太阳事件配置灌溉应何时开始。您可以为不同的计划添加多个触发器。对于日出触发器，将偏移量保持为 0 将自动使用所有已启用区域的总持续时间。",
+    "usage_before": "当触发器触发时，HAppy Irrigation 会发出事件 ",
+    "usage_after": " ——在自动化中监听该事件以开始浇水。事件数据包含 trigger_name、trigger_type 和 offset_minutes，因此您可以针对每个触发器做出不同的响应。降水跳过和灌溉间隔天数设置仍然适用：在跳过日不会发出任何事件。",
+    "add_trigger": "添加触发器",
+    "edit_trigger": "编辑触发器",
+    "delete_trigger": "删除触发器",
+    "trigger_types": {
+      "sunrise": "日出",
+      "sunset": "日落",
+      "solar_azimuth": "太阳方位角"
+    },
+    "fields": {
+      "name": {
+        "name": "触发器名称",
+        "description": "用于标识此触发器的描述性名称"
+      },
+      "type": {
+        "name": "触发器类型",
+        "description": "触发所依据的太阳事件类型"
+      },
+      "enabled": {
+        "name": "已启用",
+        "description": "此触发器当前是否处于活动状态"
+      },
+      "offset_minutes": {
+        "name": "偏移量（分钟）",
+        "description": "太阳事件之前（-）或之后（+）的分钟数。对于日出触发器，使用 0 表示根据区域总持续时间自动计时。"
+      },
+      "azimuth_angle": {
+        "name": "方位角（度）",
+        "description": "太阳方位角（度），其中 0=北，90=东，180=南，270=西"
+      },
+      "account_for_duration": {
+        "name": "考虑持续时间",
+        "description": "启用时，灌溉将提前开始，以便在指定时间完成。禁用时，灌溉将正好在指定时间开始。"
+      }
+    },
+    "dialog": {
+      "add_title": "添加灌溉启动触发器",
+      "edit_title": "编辑灌溉启动触发器",
+      "cancel": "取消",
+      "save": "保存",
+      "delete": "删除",
+      "help": "当此触发器触发时，HAppy Irrigation 会发出以下事件——在自动化中使用它来开始浇水。事件数据包含此触发器的名称（以及类型/偏移量），因此您可以专门对其做出响应："
+    },
+    "no_triggers": "未配置任何灌溉启动触发器。系统将使用默认行为（按区域总持续时间在日出时灌溉）。添加触发器以自定义灌溉的开始时间。",
+    "offset_auto": "自动（根据区域总持续时间计算）",
+    "confirm_delete": "确定要删除触发器“{name}”吗？",
+    "validation": {
+      "name_required": "触发器名称为必填项",
+      "azimuth_invalid": "方位角必须是有效的数字"
+    },
+    "help": {
+      "sunrise_offset": "对于日出触发器：使用负值在日出之前开始，使用正值在日出之后开始。设置为 0 可自动提前开始，以便在日出之前完成所有区域。",
+      "sunset_offset": "对于日落触发器：使用负值在日落之前开始，使用正值在日落之后开始。",
+      "azimuth_explanation": "太阳方位角是太阳所处的罗盘方向。0°=北，90°=东，180°=南，270°=西。您可以输入任何角度值（例如 450° = 90°，-30° = 330°）。使用此功能可在太阳到达特定位置时触发灌溉。",
+      "multiple_triggers": "您可以配置多个触发器。每个已启用的触发器都将独立安排灌溉的开始。"
+    }
+  },
+  "weather_skip": {
+    "title": "基于天气的灌溉跳过",
+    "description": "当预报有降水时自动跳过灌溉。此功能需要配置天气服务。",
+    "threshold_label": "降水阈值",
+    "threshold_description": "今天和明天预报的最低降水量（毫米），达到该值则跳过灌溉。"
+  },
+  "coordinate_config": {
+    "title": "位置坐标",
+    "description": "配置用于获取天气数据的位置坐标。如有需要，您可以使用与 Home Assistant 位置不同的手动坐标。",
+    "manual_enabled": "使用手动坐标",
+    "use_ha_location": "使用 Home Assistant 位置",
+    "latitude": "纬度（十进制度）",
+    "longitude": "经度（十进制度）",
+    "elevation": "海拔（海平面以上米数）",
+    "current_ha_coords": "当前 Home Assistant 坐标"
+  },
+  "days_between_irrigation": {
+    "title": "灌溉间隔天数",
+    "description": "配置两次灌溉事件之间必须经过的最少天数。这有助于控制浇水频率，以实现节水和植物健康管理。\n\n典型的实际使用场景：\n• 草坪养护：1-2 天间隔可防止过度浇水\n• 干旱限制：6 天以上间隔用于每周浇水\n• 深根植物：3-7 天间隔用于减少浇水频率\n• 节约用水：可根据气候和土壤条件自定义",
+    "label": "灌溉之间的最少天数",
+    "help_text": "设置为 0 可禁用此功能。支持 1-365 天的值。此设置与现有的降水预报逻辑配合使用。"
+  }
+}

@@ -1,0 +1,231 @@
+{
+  "config": {
+    "abort": {
+      "single_instance_allowed": "Je povolena pouze jedna konfigurace HAppy Irrigation."
+    },
+    "error": {
+      "auth": "Nesprávný API klíč meteorologické služby",
+      "name": "Zadejte jedinečný název integrace."
+    },
+    "step": {
+      "migrate": {
+        "title": "Import ze Smart Irrigation",
+        "description": "Byla nalezena existující konfigurace Smart Irrigation. Importovat ji do HAppy Irrigation? Vaše zóny, skupiny senzorů, moduly a nastavení (a API klíč meteorologické služby) budou zkopírovány. Vaše stávající integrace Smart Irrigation zůstane nedotčena; můžete ji poté odebrat.",
+        "data": {
+          "import_existing": "Importovat existující konfiguraci Smart Irrigation"
+        }
+      },
+      "user": {
+        "title": "Obecné nastavení",
+        "description": "Pokud potřebujete pomoc s konfigurací, podívejte se do dokumentace.",
+        "data": {
+          "name": "Jedinečný název integrace",
+          "use_weather_service": "Použít meteorologickou službu (Open Weather Map nebo Pirate Weather) pro meteorologická data nebo předpovědi. Tuto možnost povolte, pokud chcete použít některou z podporovaných meteorologických služeb alespoň pro část meteorologických dat, včetně předpovědí. Tuto možnost zakažte, pokud chcete výhradně používat jiný zdroj, jako je vaše vlastní meteorologická stanice. V takovém případě nebude Smart Irrigation moci používat předpovědi."
+        }
+      },
+      "step1": {
+        "title": "Nastavení API meteorologické služby",
+        "description": "Pokud potřebujete pomoc s konfigurací, podívejte se do dokumentace.",
+        "data": {
+          "weather_service": "Použít meteorologickou službu",
+          "weather_service_api_key": "API klíč pro meteorologickou službu",
+          "weather_service_api_version": "Verze API meteorologické služby"
+        }
+      }
+    }
+  },
+  "options": {
+    "error": {
+      "auth": "Nesprávný API klíč nebo verze meteorologické služby",
+      "invalid_coordinates": "Byly zadány neplatné souřadnice. Zkontrolujte hodnoty zeměpisné šířky (-90 až 90) a zeměpisné délky (-180 až 180)."
+    },
+    "step": {
+      "init": {
+        "title": "Nastavení API meteorologické služby",
+        "description": "Pokud potřebujete pomoc s konfigurací, podívejte se do dokumentace.",
+        "data": {
+          "use_weather_service": "Použít meteorologickou službu (Open Weather Map nebo Pirate Weather) pro meteorologická data nebo předpovědi. Tuto možnost povolte, pokud chcete použít některou z podporovaných meteorologických služeb alespoň pro část meteorologických dat, včetně předpovědí. Tuto možnost zakažte, pokud chcete výhradně používat jiný zdroj, jako je vaše vlastní meteorologická stanice. V takovém případě nebude Smart Irrigation moci používat předpovědi."
+        }
+      },
+      "step1": {
+        "title": "Nastavení API meteorologické služby",
+        "description": "Pokud potřebujete pomoc s konfigurací, podívejte se do dokumentace.",
+        "data": {
+          "weather_service": "Použít meteorologickou službu",
+          "weather_service_api_key": "API klíč pro meteorologickou službu",
+          "weather_service_api_version": "Verze API meteorologické služby"
+        }
+      },
+      "coordinates": {
+        "title": "Souřadnice polohy",
+        "description": "Nakonfigurujte souřadnice polohy pro získávání meteorologických dat. V případě potřeby můžete použít ruční souřadnice odlišné od polohy vašeho Home Assistant.",
+        "data": {
+          "manual_coordinates_enabled": "Použít ruční souřadnice namísto polohy Home Assistant",
+          "manual_latitude": "Zeměpisná šířka (desetinné stupně, -90 až 90)",
+          "manual_longitude": "Zeměpisná délka (desetinné stupně, -180 až 180)",
+          "manual_elevation": "Nadmořská výška (metry, volitelné)"
+        }
+      }
+    }
+  },
+  "services": {
+    "calculate_all_zones": {
+      "name": "Vypočítat všechny zóny",
+      "description": "Vypočítat všechny zóny v automatickém režimu",
+      "fields":{
+        "delete_weather_data": {
+          "name": "Smazat meteorologická data",
+          "description": "Smazat meteorologická data po výpočtu"
+        }
+      }
+    },
+    "calculate_zone": {
+      "name": "Vypočítat zónu",
+      "description": "Vypočítat zadanou zónu",
+      "fields": {
+        "entity": {
+          "name": "Entita",
+          "description": "Zóna k výpočtu"
+        },
+        "delete_weather_data": {
+          "name": "Smazat meteorologická data",
+          "description": "Smazat meteorologická data pro zónu po výpočtu"
+        }
+      }
+    },
+    "update_all_zones": {
+      "name": "Aktualizovat všechny zóny",
+      "description": "Aktualizovat meteorologická data pro všechny zóny v automatickém režimu"
+    },
+    "update_zone": {
+      "name": "Aktualizovat zónu",
+      "description": "Aktualizovat meteorologická data pro zadanou zónu",
+      "fields": {
+        "entity": {
+          "name": "Entita",
+          "description": "Zóna k aktualizaci"
+        }
+      }
+    },
+    "set_bucket": {
+      "name": "Nastavit bucket",
+      "description": "Nastavit bucket zóny na konkrétní hodnotu",
+      "fields": {
+        "entity": {
+          "name": "Entita",
+          "description": "Zóna, pro kterou se nastaví bucket"
+        },
+        "new_bucket_value": {
+          "name": "Nová hodnota bucket",
+          "description": "nová hodnota bucket"
+        }
+      }
+    },
+    "set_all_buckets": {
+      "name": "Nastavit všechny buckety",
+      "description": "Nastavit buckety všech zón na konkrétní hodnotu",
+      "fields": {
+        "new_bucket_value": {
+          "name": "Nová hodnota bucket",
+          "description": "nová hodnota bucket"
+        }
+      }
+    },
+    "reset_bucket": {
+      "name": "Resetovat bucket",
+      "description": "Resetovat bucket zóny na 0",
+      "fields": {
+        "entity": {
+          "name": "Entita",
+          "description": "Zóna, pro kterou se resetuje bucket"
+        }
+      }
+    },
+    "reset_all_buckets": {
+      "name": "Resetovat všechny buckety",
+      "description": "Resetovat bucket všech zón na 0"
+    },
+    "clear_all_weather_data": {
+      "name": "Vymazat všechna meteorologická data",
+      "description": "Vymazat meteorologická data pro všechny zóny"
+    },
+    "set_multiplier": {
+      "name": "Nastavit násobitel",
+      "description": "Nastavit násobitel zóny na konkrétní hodnotu",
+      "fields": {
+        "entity": {
+          "name": "Entita",
+          "description": "Zóna, pro kterou se nastaví násobitel"
+        },
+        "new_multiplier_value": {
+          "name": "Nová hodnota násobitele",
+          "description": "nová hodnota násobitele"
+        }
+      }
+    },
+    "set_all_multipliers": {
+      "name": "Nastavit všechny násobitele",
+      "description": "Nastavit násobitele všech zón na konkrétní hodnotu",
+      "fields": {
+        "new_multiplier_value": {
+          "name": "Nová hodnota násobitele",
+          "description": "nová hodnota násobitele"
+        }
+      }
+    },
+    "set_state": {
+      "name": "Nastavit stav zóny",
+      "description": "Nastavit stav zóny na konkrétní hodnotu",
+      "fields": {
+        "entity": {
+          "name": "Entita",
+          "description": "Zóna, pro kterou se nastaví stav"
+        },
+        "new_state_value": {
+          "name": "Nová hodnota stavu",
+          "description": "Nová hodnota stavu"
+        }
+      }
+    },
+    "set_zone": {
+      "name": "Nastavit hodnoty zóny",
+      "description": "Nastavit všechny konfigurovatelné hodnoty zóny",
+      "fields": {
+        "entity": {
+          "name": "Entita",
+          "description": "Zóna, pro kterou se nastaví konfigurační hodnoty"
+        },
+        "new_bucket_value": {
+          "name": "Nová hodnota bucket",
+          "description": "Nová hodnota pro bucket"
+        },
+        "new_multiplier_value": {
+          "name": "Nová hodnota násobitele",
+          "description": "Nová hodnota pro násobitel"
+        },
+        "new_duration_value": {
+          "name": "Nová hodnota doby trvání",
+          "description": "Nová hodnota pro dobu trvání"
+        },
+        "new_state_value": {
+          "name": "Nová hodnota stavu",
+          "description": "Nová hodnota stavu"
+        },
+        "new_throughput_value": {
+          "name": "Nová hodnota průtoku",
+          "description": "Nová hodnota pro průtok"
+        }
+      }
+    },
+    "generate_watering_calendar": {
+      "name": "Vygenerovat zavlažovací kalendář",
+      "description": "Vygenerovat 12měsíční zavlažovací kalendář pro zavlažovací zóny na základě reprezentativních klimatických dat",
+      "fields": {
+        "entity": {
+          "name": "Entita",
+          "description": "Zóna, pro kterou se vygeneruje zavlažovací kalendář"
+        }
+      }
+    }
+  }
+}

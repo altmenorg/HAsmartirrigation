@@ -1,0 +1,231 @@
+{
+  "config": {
+    "abort": {
+      "single_instance_allowed": "Kun én konfiguration af HAppy Irrigation er tilladt."
+    },
+    "error": {
+      "auth": "API-nøgle til vejrtjeneste er forkert",
+      "name": "Angiv et unikt navn til integrationen."
+    },
+    "step": {
+      "migrate": {
+        "title": "Importér fra Smart Irrigation",
+        "description": "En eksisterende Smart Irrigation-konfiguration blev fundet. Vil du importere den til HAppy Irrigation? Dine zoner, sensorgrupper, moduler og indstillinger (samt vejrtjenestens API-nøgle) bliver kopieret. Din eksisterende Smart Irrigation-integration forbliver urørt; du kan fjerne den bagefter.",
+        "data": {
+          "import_existing": "Importér den eksisterende Smart Irrigation-konfiguration"
+        }
+      },
+      "user": {
+        "title": "Generel opsætning",
+        "description": "Hvis du har brug for hjælp til konfigurationen, så se dokumentationen.",
+        "data": {
+          "name": "Unikt navn på integrationen",
+          "use_weather_service": "Brug en vejrtjeneste (Open Weather Map eller Pirate Weather) til vejrdata eller prognoser. Aktivér denne indstilling, hvis du har til hensigt at bruge en af de understøttede vejrtjenester til i det mindste en del af vejrdataene, inklusive prognoser. Deaktivér denne indstilling, hvis du udelukkende vil bruge en anden kilde, såsom din egen vejrstation. I så fald vil Smart Irrigation ikke kunne bruge prognoser."
+        }
+      },
+      "step1": {
+        "title": "Opsætning af vejrtjeneste-API",
+        "description": "Hvis du har brug for hjælp til konfigurationen, så se dokumentationen.",
+        "data": {
+          "weather_service": "Vejrtjeneste der skal bruges",
+          "weather_service_api_key": "API-nøgle til vejrtjeneste",
+          "weather_service_api_version": "Vejrtjeneste-API-version"
+        }
+      }
+    }
+  },
+  "options": {
+    "error": {
+      "auth": "API-nøgle eller version til vejrtjeneste er forkert",
+      "invalid_coordinates": "Ugyldige koordinater angivet. Kontrollér venligst breddegrad (-90 til 90) og længdegrad (-180 til 180)."
+    },
+    "step": {
+      "init": {
+        "title": "Opsætning af vejrtjeneste-API",
+        "description": "Hvis du har brug for hjælp til konfigurationen, så se dokumentationen.",
+        "data": {
+          "use_weather_service": "Brug en vejrtjeneste (Open Weather Map eller Pirate Weather) til vejrdata eller prognoser. Aktivér denne indstilling, hvis du har til hensigt at bruge en af de understøttede vejrtjenester til i det mindste en del af vejrdataene, inklusive prognoser. Deaktivér denne indstilling, hvis du udelukkende vil bruge en anden kilde, såsom din egen vejrstation. I så fald vil Smart Irrigation ikke kunne bruge prognoser."
+        }
+      },
+      "step1": {
+        "title": "Opsætning af vejrtjeneste-API",
+        "description": "Hvis du har brug for hjælp til konfigurationen, så se dokumentationen.",
+        "data": {
+          "weather_service": "Vejrtjeneste der skal bruges",
+          "weather_service_api_key": "API-nøgle til vejrtjeneste",
+          "weather_service_api_version": "Vejrtjeneste-API-version"
+        }
+      },
+      "coordinates": {
+        "title": "Placeringskoordinater",
+        "description": "Konfigurér placeringskoordinater til hentning af vejrdata. Du kan om nødvendigt bruge manuelle koordinater, der adskiller sig fra din Home Assistant-placering.",
+        "data": {
+          "manual_coordinates_enabled": "Brug manuelle koordinater i stedet for Home Assistant-placering",
+          "manual_latitude": "Breddegrad (decimalgrader, -90 til 90)",
+          "manual_longitude": "Længdegrad (decimalgrader, -180 til 180)",
+          "manual_elevation": "Højde over havets overflade (meter, valgfrit)"
+        }
+      }
+    }
+  },
+  "services": {
+    "calculate_all_zones": {
+      "name": "Beregn alle zoner",
+      "description": "Beregn alle zoner i automatisk tilstand",
+      "fields":{
+        "delete_weather_data": {
+          "name": "Slet vejrdata",
+          "description": "Slet vejrdata efter beregning"
+        }
+      }
+    },
+    "calculate_zone": {
+      "name": "Beregn zone",
+      "description": "Beregn angivet zone",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zone der skal beregnes"
+        },
+        "delete_weather_data": {
+          "name": "Slet vejrdata",
+          "description": "Slet vejrdata for zonen efter beregning"
+        }
+      }
+    },
+    "update_all_zones": {
+      "name": "Opdatér alle zoner",
+      "description": "Opdatér vejrdata for alle zoner i automatisk tilstand"
+    },
+    "update_zone": {
+      "name": "Opdatér zone",
+      "description": "Opdatér vejrdata for angivet zone",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zone der skal opdateres"
+        }
+      }
+    },
+    "set_bucket": {
+      "name": "Indstil bucket",
+      "description": "Indstil bucket for en zone til en bestemt værdi",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zone som bucket skal indstilles for"
+        },
+        "new_bucket_value": {
+          "name": "Ny bucket-værdi",
+          "description": "ny værdi for bucket"
+        }
+      }
+    },
+    "set_all_buckets": {
+      "name": "Indstil alle buckets",
+      "description": "Indstil buckets for alle zoner til en bestemt værdi",
+      "fields": {
+        "new_bucket_value": {
+          "name": "Ny bucket-værdi",
+          "description": "ny værdi for bucket"
+        }
+      }
+    },
+    "reset_bucket": {
+      "name": "Nulstil bucket",
+      "description": "Nulstil bucket for en zone til 0",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zone som bucket skal nulstilles for"
+        }
+      }
+    },
+    "reset_all_buckets": {
+      "name": "Nulstil alle buckets",
+      "description": "Nulstil bucket for alle zoner til 0"
+    },
+    "clear_all_weather_data": {
+      "name": "Ryd alle vejrdata",
+      "description": "Ryd vejrdata for alle zoner"
+    },
+    "set_multiplier": {
+      "name": "Indstil multiplikator",
+      "description": "Indstil multiplikator for en zone til en bestemt værdi",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zone som multiplikator skal indstilles for"
+        },
+        "new_multiplier_value": {
+          "name": "Ny multiplikatorværdi",
+          "description": "ny værdi for multiplikatoren"
+        }
+      }
+    },
+    "set_all_multipliers": {
+      "name": "Indstil alle multiplikatorer",
+      "description": "Indstil multiplikatorer for alle zoner til en bestemt værdi",
+      "fields": {
+        "new_multiplier_value": {
+          "name": "Ny multiplikatorværdi",
+          "description": "ny værdi for multiplikatoren"
+        }
+      }
+    },
+    "set_state": {
+      "name": "Indstil tilstanden for en zone",
+      "description": "Indstil tilstanden for en zone til en bestemt værdi",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zone som tilstand skal indstilles for"
+        },
+        "new_state_value": {
+          "name": "Ny tilstandsværdi",
+          "description": "Ny værdi for tilstanden"
+        }
+      }
+    },
+    "set_zone": {
+      "name": "Indstil værdierne for en zone",
+      "description": "Indstil alle konfigurerbare værdier for en zone",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zone som konfigurationsværdier skal indstilles for"
+        },
+        "new_bucket_value": {
+          "name": "Ny bucket-værdi",
+          "description": "Ny værdi for bucket"
+        },
+        "new_multiplier_value": {
+          "name": "Ny multiplikatorværdi",
+          "description": "Ny værdi for multiplikatoren"
+        },
+        "new_duration_value": {
+          "name": "Ny varighedsværdi",
+          "description": "Ny værdi for varigheden"
+        },
+        "new_state_value": {
+          "name": "Ny tilstandsværdi",
+          "description": "Ny værdi for tilstanden"
+        },
+        "new_throughput_value": {
+          "name": "Ny gennemstrømningsværdi",
+          "description": "Ny værdi for gennemstrømningen"
+        }
+      }
+    },
+    "generate_watering_calendar": {
+      "name": "Generér vandingskalender",
+      "description": "Generér en 12-måneders vandingskalender for vandingszoner baseret på repræsentative klimadata",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zone som vandingskalender skal genereres for"
+        }
+      }
+    }
+  }
+}

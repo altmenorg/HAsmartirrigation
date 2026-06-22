@@ -1,0 +1,473 @@
+{
+  "common": {
+    "loading": "Betöltés",
+    "saving": "Mentés",
+    "actions": {
+      "delete": "Törlés"
+    },
+    "labels": {
+      "module": "Modul",
+      "no": "Nem",
+      "select": "Kiválasztás",
+      "yes": "Igen",
+      "enabled": "Engedélyezve",
+      "disabled": "Letiltva",
+      "before": "előtte",
+      "after": "utána"
+    },
+    "units": {
+      "seconds": "másodperc"
+    },
+    "attributes": {
+      "size": "méret",
+      "throughput": "átfolyás",
+      "state": "állapot",
+      "bucket": "vödör",
+      "last_updated": "utolsó frissítés",
+      "last_calculated": "utolsó számítás",
+      "number_of_data_points": "adatpontok száma"
+    },
+    "loading-messages": {
+      "configuration": "Konfiguráció betöltése…",
+      "modules": "Modulok betöltése…",
+      "general": "Betöltés…"
+    },
+    "saving-messages": {
+      "adding": "Hozzáadás…",
+      "saving": "Mentés…"
+    }
+  },
+  "defaults": {
+    "default-zone": "Alapértelmezett zóna",
+    "default-mapping": "Alapértelmezett érzékelőcsoport"
+  },
+  "module": {
+    "calculation": {
+      "explanation": {
+        "module-returned-evapotranspiration-deficiency": "Megjegyzés: ez a magyarázat „.” jelet használ tizedesjelként, és kerekített, metrikus értékeket mutat. A modul által visszaadott evapotranspirációs hiány ( = et0 * hour_multiplier + precipitation) értéke",
+        "bucket-was": "A vödör értéke volt",
+        "new-bucket-values-is": "Az új vödörérték",
+        "bucket": "vödör",
+        "old-bucket-variable": "old_bucket",
+        "max-bucket-variable": "max_bucket",
+        "delta": "delta",
+        "bucket-less-than-zero-irrigation-necessary": "Mivel a vödör < 0, az öntözés szükséges",
+        "steps-taken-to-calculate-duration": "A pontos időtartam kiszámításához a következő lépéseket tettük",
+        "precipitation-rate-defined-as": "A csapadékmennyiség a következőképpen van meghatározva",
+        "duration-is-calculated-as": "Az időtartam a következőképpen kerül kiszámításra",
+        "drainage": "drainage",
+        "drainage-rate": "drainage_rate",
+        "hours": "óra",
+        "precipitation-rate-variable": "precipitation_rate",
+        "multiplier-is-applied": "Most a szorzó kerül alkalmazásra. A szorzó",
+        "duration-after-multiplier-is": "így az időtartam",
+        "maximum-duration-is-applied": "Ezután a maximális időtartam kerül alkalmazásra. A maximális időtartam",
+        "duration-after-maximum-duration-is": "így az időtartam",
+        "lead-time-is-applied": "Végül az átfutási idő kerül alkalmazásra. Az átfutási idő",
+        "duration-after-lead-time-is": "így a végső időtartam",
+        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Mivel a vödör >= 0, öntözésre nincs szükség, és az időtartam beállítása",
+        "maximum-bucket-is": "A maximális vödörméret",
+        "drainage-rate-is": "A telített állapotú elvezetési sebesség (a vödör maximumon) ",
+        "current-drainage-is": "Az aktuális elvezetés a következőképpen kerül kiszámításra",
+        "no-drainage": "Az aktuális elvezetés 0, mert"
+      }
+    }
+  },
+  "calcmodules": {
+    "pyeto": {
+      "description": "Az időtartam kiszámítása a PyETO könyvtár FAO56 számítása alapján"
+    },
+    "static": {
+      "description": "„Próba” modul statikus, konfigurálható deltával"
+    },
+    "passthrough": {
+      "description": "Átengedő modul, amely egy evapotranspirációs érzékelő értékét adja vissza deltaként"
+    }
+  },
+  "panels": {
+    "weatherservice": {
+      "title": "Időjárás-szolgáltatás",
+      "description": "Tekintse meg és módosítsa az időjárási adatok lekéréséhez használt időjárás-szolgáltatást — nincs szükség az integráció újratelepítésére. Az API-kulcs ellenőrzésre kerül, és a változás azonnal érvénybe lép.",
+      "labels": {
+        "use-weather-service": "Időjárás-szolgáltatás használata",
+        "service": "Időjárás-szolgáltatás",
+        "api-key": "API-kulcs"
+      },
+      "actions": {
+        "save": "Mentés",
+        "saving": "Mentés…"
+      },
+      "messages": {
+        "no-service": "Nincs használatban időjárás-szolgáltatás — az időjárási adatok kizárólag a saját érzékelőiből származnak.",
+        "saved": "Az időjárás-szolgáltatás frissítve és alkalmazva.",
+        "reload-note": "A mentés ellenőrzi az API-kulcsot a szolgáltatásnál, és azonnal alkalmazza a változást."
+      }
+    },
+    "backuprestore": {
+      "title": "Biztonsági mentés / visszaállítás",
+      "description": "Exportálja a teljes HAppy Irrigation konfigurációt egy JSON-fájlba, vagy állítsa vissza egy korábbi biztonsági mentésből.",
+      "cards": {
+        "backup": {
+          "title": "Biztonsági mentés",
+          "description": "Töltse le a teljes konfigurációt (általános beállítások, zónák, modulok és érzékelőcsoportok) JSON-fájlként."
+        },
+        "restore": {
+          "title": "Visszaállítás",
+          "description": "Töltsön be egy korábban exportált JSON-fájlt az aktuális konfiguráció lecseréléséhez."
+        }
+      },
+      "actions": {
+        "export": "Exportálás JSON-ba",
+        "choose-file": "Válasszon biztonsági mentési fájlt…",
+        "restore": "Ennek a biztonsági mentésnek a visszaállítása",
+        "restoring": "Visszaállítás…"
+      },
+      "messages": {
+        "exported": "Biztonsági mentési fájl letöltve.",
+        "restored": "A konfiguráció visszaállítva — az integráció újratöltése folyamatban.",
+        "invalid-file": "Ez a fájl nem érvényes HAppy Irrigation biztonsági mentés.",
+        "confirm-title": "Lecseréli a teljes konfigurációt?",
+        "summary": "Ez a biztonsági mentés a következőket tartalmazza",
+        "confirm-warning": "A visszaállítás felülírja az összes jelenlegi általános beállítást, zónát, modult és érzékelőcsoportot. Ez nem vonható vissza.",
+        "reload-note": "A visszaállítás mindent lecserél, és újratölti az integrációt a változás érvénybe léptetéséhez."
+      }
+    },
+    "general": {
+      "cards": {
+        "automatic-duration-calculation": {
+          "header": "Automatikus időtartam-számítás",
+          "description": "A számítás az addig gyűjtött időjárási adatokat veszi alapul, és frissíti a vödröt minden automatikus zónánál. Ezután az időtartam az új vödörérték alapján kerül beállításra, és a gyűjtött időjárási adatok eltávolításra kerülnek.",
+          "labels": {
+            "auto-calc-enabled": "Az öntözési időtartamok automatikus kiszámítása",
+            "calc-time": "Számítás ekkor"
+          }
+        },
+        "automatic-update": {
+          "errors": {
+            "warning-update-time-on-or-after-calc-time": "Figyelmeztetés: az időjárási adatok frissítési ideje a számítás idejére vagy az után esik"
+          },
+          "header": "Automatikus időjárásiadat-frissítés",
+          "description": "Az időjárási adatok automatikus gyűjtése és tárolása. Az időjárási adatok szükségesek a zónák vödreinek és időtartamainak kiszámításához.",
+          "labels": {
+            "auto-update-enabled": "Az időjárási adatok automatikus frissítése",
+            "auto-update-schedule": "Frissítési ütemezés",
+            "auto-update-time": "Frissítés ekkor",
+            "auto-update-interval": "Érzékelőadatok frissítése ennyente",
+            "auto-update-delay": "Frissítési késleltetés"
+          },
+          "options": {
+            "minutes": "perc",
+            "hours": "óra",
+            "days": "nap"
+          }
+        },
+        "automatic-clear": {
+          "header": "Automatikus időjárásiadat-tisztítás",
+          "description": "A gyűjtött időjárási adatok automatikus eltávolítása egy beállított időpontban. Ezzel biztosíthatja, hogy ne maradjon megmaradt időjárási adat az előző napokról. Ne távolítsa el az időjárási adatokat a számítás előtt, és csak akkor használja ezt a lehetőséget, ha azt várja, hogy az automatikus frissítés a napra történő számítás után is gyűjt időjárási adatokat. Ideális esetben a lehető legkésőbb érdemes tisztítani a nap folyamán.",
+          "labels": {
+            "automatic-clear-enabled": "A gyűjtött időjárási adatok automatikus törlése",
+            "automatic-clear-time": "Időjárási adatok törlése ekkor"
+          }
+        },
+        "continuousupdates": {
+          "header": "Folyamatos frissítések az érzékelőkhöz (kísérleti)",
+          "description": "Ez a kísérleti funkció folyamatosan frissíti az érzékelőadatokat. Ez hasznos azoknál az érzékelőcsoportoknál, amelyek folyamatos adatot szolgáltató forrásokat használnak, például időjárás-állomásokat. Ez a funkció nem használható olyan érzékelőcsoportoknál, amelyek legalább részben időjárás-szolgáltatásokra támaszkodnak, mivel az API-k folyamatos lekérdezése költségekkel jár. Ne feledje, hogy ez kísérleti, és előfordulhat, hogy nem a várt módon működik. A használata saját felelősségre történik.",
+          "labels": {
+            "continuousupdates": "Folyamatos frissítések engedélyezése",
+            "sensor_debounce": "Érzékelő-pergésmentesítés"
+          }
+        }
+      },
+      "description": "Ez az oldal globális beállításokat biztosít.",
+      "title": "Általános"
+    },
+    "help": {
+      "title": "Súgó",
+      "cards": {
+        "how-to-get-help": {
+          "title": "Hogyan kérhet segítséget",
+          "first-read-the": "Először olvassa el a",
+          "wiki": "Wiki",
+          "if-you-still-need-help": "Ha továbbra is segítségre van szüksége, forduljon a",
+          "community-forum": "Közösségi fórum",
+          "or-open-a": "vagy nyisson egy",
+          "github-issue": "Github-hibajegy",
+          "english-only": "Csak angol nyelven"
+        }
+      }
+    },
+    "info": {
+      "title": "Információ",
+      "description": "Tekintse meg a következő öntözéssel és a rendszer állapotával kapcsolatos információkat.",
+      "configuration-not-available": "A konfiguráció nem érhető el.",
+      "cards": {
+        "zone-bucket-values": {
+          "title": "Zóna vödörértékei és időtartama",
+          "labels": {
+            "bucket": "Vödör",
+            "duration": "Időtartam"
+          },
+          "no-zones": "Nincs konfigurált zóna"
+        },
+        "next-irrigation": {
+          "title": "Következő öntözés",
+          "labels": {
+            "next-start": "Következő indulás",
+            "duration": "Időtartam",
+            "zones": "Zónák"
+          },
+          "no-data": "Nincs elérhető adat"
+        },
+        "irrigation-reason": {
+          "title": "Öntözés oka",
+          "labels": {
+            "reason": "Ok",
+            "sunrise": "Napkelte",
+            "total-duration": "Teljes időtartam",
+            "explanation": "Magyarázat"
+          },
+          "no-data": "Nincs elérhető adat"
+        }
+      }
+    },
+    "mappings": {
+      "cards": {
+        "add-mapping": {
+          "actions": {
+            "add": "Érzékelőcsoport hozzáadása"
+          },
+          "header": "Érzékelőcsoportok hozzáadása"
+        },
+        "mapping": {
+          "aggregates": {
+            "average": "Átlag",
+            "first": "Első",
+            "last": "Utolsó",
+            "maximum": "Maximum",
+            "median": "Medián",
+            "minimum": "Minimum",
+            "riemannsum": "Riemann-összeg",
+            "sum": "Összeg",
+            "delta": "Delta"
+          },
+          "errors": {
+            "cannot-delete-mapping-because-zones-use-it": "Nem törölheti ezt az érzékelőcsoportot, mert legalább egy zóna használja.",
+            "invalid_source": "Érvénytelen forrás",
+            "source_does_not_exist": "A forrás nem létezik. Kérjük, adjon meg egy érvényes forrást, például a „sensor.mysensor” értéket."
+          },
+          "items": {
+            "dewpoint": "Harmatpont",
+            "evapotranspiration": "Evapotranspiráció",
+            "humidity": "Páratartalom",
+            "maximum temperature": "Maximális hőmérséklet",
+            "minimum temperature": "Minimális hőmérséklet",
+            "precipitation": "Teljes csapadékmennyiség",
+            "current precipitation": "Aktuális csapadékmennyiség",
+            "pressure": "Nyomás",
+            "solar radiation": "Napsugárzás",
+            "temperature": "Hőmérséklet",
+            "windspeed": "Szélsebesség"
+          },
+          "pressure_types": {
+            "absolute": "abszolút",
+            "relative": "relatív"
+          },
+          "pressure-type": "A nyomás",
+          "sensor-aggregate-of-sensor-values-to-calculate": "az érzékelőértékekből az időtartam kiszámításához",
+          "sensor-aggregate-use-the": "Használja a",
+          "sensor-entity": "Érzékelő entitás",
+          "static_value": "Érték",
+          "input-units": "A bemenet az értékeket a következő egységben adja meg",
+          "source": "Forrás",
+          "sources": {
+            "none": "Nincs",
+            "weather_service": "Időjárás-szolgáltatás",
+            "sensor": "Érzékelő",
+            "static": "Statikus érték"
+          }
+        }
+      },
+      "description": "Adjon hozzá egy vagy több érzékelőcsoportot, amelyek időjárási adatokat kérnek le az időjárás-szolgáltatásból, érzékelőkből vagy ezek kombinációjából. Minden érzékelőcsoportot egy vagy több zónához rendelhet",
+      "labels": {
+        "mapping-name": "Név"
+      },
+      "no_items": "Még nincs definiált érzékelőcsoport.",
+      "title": "Érzékelőcsoportok",
+      "weather-records": {
+        "title": "Időjárási feljegyzések (utolsó 10)",
+        "timestamp": "Idő",
+        "temperature": "Hőm.",
+        "humidity": "Páratartalom",
+        "precipitation": "Csapadék",
+        "retrieval-time": "Lekérve",
+        "no-data": "Ehhez az érzékelőcsoporthoz nincs elérhető időjárási adat"
+      }
+    },
+    "modules": {
+      "cards": {
+        "add-module": {
+          "actions": {
+            "add": "Modul hozzáadása"
+          },
+          "header": "Modul hozzáadása"
+        },
+        "module": {
+          "errors": {
+            "cannot-delete-module-because-zones-use-it": "Nem törölheti ezt a modult, mert legalább egy zóna használja."
+          },
+          "labels": {
+            "configuration": "Konfiguráció",
+            "required": "kötelező mezőt jelez"
+          },
+          "translated-options": {
+            "DontEstimate": "Ne becsülje",
+            "EstimateFromSunHours": "Becslés a napsütéses órákból",
+            "EstimateFromTemp": "Becslés a hőmérsékletből",
+            "EstimateFromSunHoursAndTemperature": "Becslés a napsütéses órák és a hőmérséklet átlagából"
+          }
+        }
+      },
+      "description": "Adjon hozzá egy vagy több modult, amely kiszámítja az öntözési időtartamot. Minden modulnak saját konfigurációja van, és egy vagy több zóna időtartamának kiszámítására használható.",
+      "no_items": "Még nincs definiált modul.",
+      "title": "Modulok"
+    },
+    "zones": {
+      "actions": {
+        "add": "Hozzáadás",
+        "calculate": "Számítás",
+        "information": "Információ",
+        "update": "Frissítés",
+        "reset-bucket": "Vödör visszaállítása",
+        "view-weather-info": "Időjárási adatok megtekintése",
+        "view-weather-info-message": "Időjárási adatok elérhetők ehhez:",
+        "view-watering-calendar": "Öntözési naptár megtekintése"
+      },
+      "cards": {
+        "add-zone": {
+          "actions": {
+            "add": "Zóna hozzáadása"
+          },
+          "header": "Zóna hozzáadása"
+        },
+        "zone-actions": {
+          "actions": {
+            "calculate-all": "Összes zóna kiszámítása",
+            "update-all": "Összes zóna frissítése",
+            "reset-all-buckets": "Összes vödör visszaállítása",
+            "clear-all-weatherdata": "Összes időjárási adat törlése"
+          },
+          "header": "Műveletek az összes zónán"
+        }
+      },
+      "description": "Adjon meg itt egy vagy több öntözési zónát. Az öntözési időtartam zónánként kerül kiszámításra, a méret, az átfolyás, az állapot, a modul és az érzékelőcsoport függvényében.",
+      "labels": {
+        "bucket": "Vödör",
+        "duration": "Időtartam",
+        "lead-time": "Átfutási idő",
+        "mapping": "Érzékelőcsoport",
+        "maximum-duration": "Maximális időtartam",
+        "multiplier": "Szorzó",
+        "name": "Név",
+        "size": "Méret",
+        "state": "Állapot",
+        "states": {
+          "automatic": "Automatikus",
+          "disabled": "Letiltva",
+          "manual": "Kézi"
+        },
+        "throughput": "Átfolyás",
+        "maximum-bucket": "Maximális vödör",
+        "last_calculated": "Utolsó számítás",
+        "data-last-updated": "Adatok utolsó frissítése",
+        "data-number-of-data-points": "Adatpontok száma",
+        "drainage_rate": "Elvezetési sebesség"
+      },
+      "no_items": "Még nincs definiált zóna.",
+      "title": "Zónák"
+    }
+  },
+  "title": "HAppy Irrigation",
+  "irrigation_start_triggers": {
+    "title": "Öntözésindítási triggerek",
+    "description": "Állítsa be, mikor kezdődjön az öntözés napeseményeken alapulva. Több triggert is hozzáadhat különböző ütemezésekhez. Napkelte triggereknél az eltolás 0 értéken hagyása automatikusan az összes engedélyezett zóna teljes időtartamát használja.",
+    "usage_before": "Amikor egy trigger aktiválódik, a HAppy Irrigation kibocsátja a következő eseményt: ",
+    "usage_after": " — figyelje ezt egy automatizálásban az öntözés indításához. Az esemény adatai tartalmazzák a trigger_name, trigger_type és offset_minutes mezőket, így triggerenként eltérően reagálhat. A csapadékalapú kihagyás és az öntözések közötti napok beállításai továbbra is érvényesek: kihagyott napon nem keletkezik esemény.",
+    "add_trigger": "Trigger hozzáadása",
+    "edit_trigger": "Trigger szerkesztése",
+    "delete_trigger": "Trigger törlése",
+    "trigger_types": {
+      "sunrise": "Napkelte",
+      "sunset": "Napnyugta",
+      "solar_azimuth": "Nap azimutja"
+    },
+    "fields": {
+      "name": {
+        "name": "Trigger neve",
+        "description": "Beszédes név a trigger azonosításához"
+      },
+      "type": {
+        "name": "Trigger típusa",
+        "description": "A napesemény típusa, amelyre triggerelni kell"
+      },
+      "enabled": {
+        "name": "Engedélyezve",
+        "description": "Hogy ez a trigger jelenleg aktív-e"
+      },
+      "offset_minutes": {
+        "name": "Eltolás (perc)",
+        "description": "A napesemény előtti (-) vagy utáni (+) percek száma. Napkelte triggereknél használja a 0 értéket a teljes zónaidőtartam alapján történő automatikus időzítéshez."
+      },
+      "azimuth_angle": {
+        "name": "Azimutszög (fok)",
+        "description": "A nap azimutszöge fokban, ahol 0=Észak, 90=Kelet, 180=Dél, 270=Nyugat"
+      },
+      "account_for_duration": {
+        "name": "Időtartam figyelembevétele",
+        "description": "Ha engedélyezve van, az öntözés elég korán indul, hogy a megadott időpontra befejeződjön. Ha le van tiltva, az öntözés pontosan a megadott időpontban indul."
+      }
+    },
+    "dialog": {
+      "add_title": "Öntözésindítási trigger hozzáadása",
+      "edit_title": "Öntözésindítási trigger szerkesztése",
+      "cancel": "Mégse",
+      "save": "Mentés",
+      "delete": "Törlés",
+      "help": "Amikor ez a trigger aktiválódik, a HAppy Irrigation kibocsátja a következő eseményt — használja egy automatizálásban az öntözés indításához. Az esemény adatai tartalmazzák ennek a triggernek a nevét (valamint a típusát/eltolását), így konkrétan reagálhat rá:"
+    },
+    "no_triggers": "Nincsenek konfigurált öntözésindítási triggerek. A rendszer az alapértelmezett viselkedést használja (napkelte a teljes zónaidőtartammal). Adjon hozzá triggereket az öntözés indításának testreszabásához.",
+    "offset_auto": "Automatikus (a teljes zónaidőtartamból számítva)",
+    "confirm_delete": "Biztosan törli a(z) „{name}” triggert?",
+    "validation": {
+      "name_required": "A trigger neve kötelező",
+      "azimuth_invalid": "Az azimutszögnek érvényes számnak kell lennie"
+    },
+    "help": {
+      "sunrise_offset": "Napkelte triggereknél: Használjon negatív értékeket a napkelte előtti indításhoz, pozitívat a napkelte utánihoz. Állítsa 0-ra, hogy automatikusan elég korán induljon az összes zóna befejezéséhez napkelte előtt.",
+      "sunset_offset": "Napnyugta triggereknél: Használjon negatív értékeket a napnyugta előtti indításhoz, pozitívat a napnyugta utánihoz.",
+      "azimuth_explanation": "A nap azimutja a nap iránytű szerinti iránya. 0°=Észak, 90°=Kelet, 180°=Dél, 270°=Nyugat. Bármilyen szögértéket megadhat (pl. 450° = 90°, -30° = 330°). Ezzel akkor indíthatja az öntözést, amikor a nap egy adott pozíciót ér el.",
+      "multiple_triggers": "Több triggert is konfigurálhat. Minden engedélyezett trigger önállóan ütemezi az öntözések indítását."
+    }
+  },
+  "weather_skip": {
+    "title": "Időjárás-alapú öntözéskihagyás",
+    "description": "Automatikusan kihagyja az öntözést, ha csapadék van előrejelezve. Ehhez a funkcióhoz időjárás-szolgáltatás konfigurálása szükséges.",
+    "threshold_label": "Csapadékküszöb",
+    "threshold_description": "A mai és holnapi napra előrejelzett csapadék minimális mennyisége (mm-ben) az öntözés kihagyásához."
+  },
+  "coordinate_config": {
+    "title": "Helykoordináták",
+    "description": "Állítsa be a helykoordinátákat az időjárási adatok lekéréséhez. Szükség esetén a Home Assistant helyétől eltérő, kézi koordinátákat is használhat.",
+    "manual_enabled": "Kézi koordináták használata",
+    "use_ha_location": "A Home Assistant helyének használata",
+    "latitude": "Szélesség (tizedfok)",
+    "longitude": "Hosszúság (tizedfok)",
+    "elevation": "Magasság (méter tengerszint felett)",
+    "current_ha_coords": "Jelenlegi Home Assistant koordináták"
+  },
+  "days_between_irrigation": {
+    "title": "Öntözések közötti napok",
+    "description": "Állítsa be az öntözési események között eltelő napok minimális számát. Ez segít szabályozni az öntözés gyakoriságát a vízmegtakarítás és a növények egészségének megőrzése érdekében.\n\nTipikus valós felhasználási esetek:\n• Gyepápolás: az 1-2 napos időközök megakadályozzák a túlöntözést\n• Aszálykorlátozások: 6+ napos időközök a heti öntözéshez\n• Mélygyökerű növények: 3-7 napos időközök a ritkább öntözéshez\n• Vízmegtakarítás: az éghajlat és a talajviszonyok alapján testreszabható",
+    "label": "Öntözések közötti minimális napok",
+    "help_text": "Állítsa 0-ra a funkció letiltásához. 1-365 nap közötti értékek támogatottak. Ez a beállítás a meglévő csapadék-előrejelzési logikával együtt működik."
+  }
+}
