@@ -102,15 +102,15 @@ async def _async_import_from_legacy(hass: HomeAssistant, entry: ConfigEntry, sto
     else:
         try:
             await store.async_import(raw["data"])
-            _LOGGER.info(
-                "[migration] imported configuration from Smart Irrigation"
-            )
+            _LOGGER.info("[migration] imported configuration from Smart Irrigation")
         except (ValueError, KeyError, TypeError) as err:
             _LOGGER.error("[migration] failed to import legacy config: %s", err)
 
     # Clear the one-shot import flag (the weather-service settings/API key were
     # already put in entry.data by the config flow, so they are preserved here).
-    new_data = {k: v for k, v in entry.data.items() if k != const.CONF_IMPORT_FROM_LEGACY}
+    new_data = {
+        k: v for k, v in entry.data.items() if k != const.CONF_IMPORT_FROM_LEGACY
+    }
     hass.config_entries.async_update_entry(entry, data=new_data)
 
 
@@ -374,9 +374,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
                 self._get_effective_coordinates()
             )
 
-            api_key = hass.data[const.DOMAIN].get(
-                const.CONF_WEATHER_SERVICE_API_KEY
-            )
+            api_key = hass.data[const.DOMAIN].get(const.CONF_WEATHER_SERVICE_API_KEY)
             if not api_key:
                 _LOGGER.warning(
                     "Weather service '%s' is enabled but no API key is set; "
@@ -454,9 +452,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         # Today's watering decision (precipitation forecast + days-between),
         # computed once and shared by all triggers for the day:
         # None = undecided, True = water, False = skip.
-        self._watering_decision_today = (
-            True if self._start_event_fired_today else None
-        )
+        self._watering_decision_today = True if self._start_event_fired_today else None
 
         # Initialize enhanced scheduling managers
         self.recurring_schedule_manager = RecurringScheduleManager(hass, self)
@@ -521,9 +517,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         # Manual coordinates are saved via the websocket API into the store
         # config (not entry.data / HA config), so read them from there.
         cfg = self.store.config
-        manual_enabled = getattr(
-            cfg, const.CONF_MANUAL_COORDINATES_ENABLED, False
-        )
+        manual_enabled = getattr(cfg, const.CONF_MANUAL_COORDINATES_ENABLED, False)
 
         if manual_enabled:
             # Use manual coordinates
@@ -632,9 +626,9 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         """
         self.use_weather_service = bool(use)
         self.weather_service = service if use else None
-        self.hass.data[const.DOMAIN][const.CONF_USE_WEATHER_SERVICE] = (
-            self.use_weather_service
-        )
+        self.hass.data[const.DOMAIN][
+            const.CONF_USE_WEATHER_SERVICE
+        ] = self.use_weather_service
         self.hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE] = self.weather_service
         self.hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_API_KEY] = (
             api_key if use else None
@@ -3051,9 +3045,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
             event_data = {
                 "trigger_name": name,
                 "trigger_type": trigger_info.get(const.TRIGGER_CONF_TYPE),
-                "offset_minutes": trigger_info.get(
-                    const.TRIGGER_CONF_OFFSET_MINUTES
-                ),
+                "offset_minutes": trigger_info.get(const.TRIGGER_CONF_OFFSET_MINUTES),
                 "account_for_duration": trigger_info.get(
                     const.TRIGGER_CONF_ACCOUNT_FOR_DURATION
                 ),

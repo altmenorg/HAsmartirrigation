@@ -705,9 +705,7 @@ async def websocket_set_weather_service(hass: HomeAssistant, connection, msg):
         hass.data.setdefault(const.DOMAIN, {})["_suppress_options_reload"] = True
         hass.config_entries.async_update_entry(entry, data=new_data)
 
-    _LOGGER.info(
-        "Weather service updated via panel (use=%s, service=%s)", use, service
-    )
+    _LOGGER.info("Weather service updated via panel (use=%s, service=%s)", use, service)
     connection.send_result(msg["id"], {"success": True})
 
 
@@ -752,9 +750,7 @@ class SmartIrrigationRestoreView(HomeAssistantView):
             await coordinator.store.async_import(data)
         except (ValueError, KeyError, TypeError) as err:
             _LOGGER.error("[restore] invalid backup: %s", err)
-            return self.json(
-                {"success": False, "error": str(err)}, status_code=400
-            )
+            return self.json({"success": False, "error": str(err)}, status_code=400)
         # Reload the entry (after responding) so the running coordinator applies
         # the restored config: sensor subscriptions, weather client, schedules.
         entry = coordinator.entry

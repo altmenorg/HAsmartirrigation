@@ -788,9 +788,7 @@ def parse_datetime(val) -> datetime | None:
         return val
     if isinstance(val, str):
         return datetime.strptime(val, "%Y-%m-%dT%H:%M:%S.%f")
-    _LOGGER.warning(
-        "[get_datetime]: value not instanceof datetime or string: %s", val
-    )
+    _LOGGER.warning("[get_datetime]: value not instanceof datetime or string: %s", val)
     return None
 
 
