@@ -214,6 +214,13 @@ class Config:
     )
     seasonal_adjustments = attr.ib(type=list, default=CONF_DEFAULT_SEASONAL_ADJUSTMENTS)
     recurring_schedules = attr.ib(type=list, default=CONF_DEFAULT_RECURRING_SCHEDULES)
+    # Manual coordinates (used for weather data instead of HA's location).
+    # Without these fields attr.evolve() would reject the keys the frontend
+    # saves, so the config update would error.
+    manual_coordinates_enabled = attr.ib(type=bool, default=False)
+    manual_latitude = attr.ib(type=float, default=None)
+    manual_longitude = attr.ib(type=float, default=None)
+    manual_elevation = attr.ib(type=float, default=0)
 
 
 class MigratableStore(Store):
