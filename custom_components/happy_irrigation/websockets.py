@@ -169,16 +169,15 @@ class SmartIrrigationMappingView(HomeAssistantView):
                 vol.Optional(const.MAPPING_NAME): cv.string,
                 vol.Optional(const.MAPPING_MAPPINGS): vol.Coerce(dict),
                 vol.Optional(const.ATTR_REMOVE): cv.boolean,
-                vol.Optional(const.MAPPING_DATA): vol.Coerce(list),
-                vol.Optional(const.MAPPING_DATA_LAST_UPDATED): vol.Or(
-                    None, vol.Coerce(dict)
-                ),
-                vol.Optional(const.MAPPING_DATA_LAST_ENTRY): vol.Or(
-                    None, vol.Coerce(dict)
-                ),
-                vol.Optional(const.MAPPING_DATA_LAST_CALCULATION): vol.Or(
-                    None, vol.Coerce(dict)
-                ),
+                # The following fields are server-computed. They are accepted
+                # here (as ``object``) so that older frontends which echo them
+                # back on save do not fail schema validation (see #680), but
+                # they are stripped before being passed to the store so the
+                # server remains authoritative.
+                vol.Optional(const.MAPPING_DATA): object,
+                vol.Optional(const.MAPPING_DATA_LAST_UPDATED): object,
+                vol.Optional(const.MAPPING_DATA_LAST_ENTRY): object,
+                vol.Optional(const.MAPPING_DATA_LAST_CALCULATION): object,
             }
         )
     )
@@ -188,7 +187,22 @@ class SmartIrrigationMappingView(HomeAssistantView):
         hass = request.app["hass"]
         coordinator = hass.data[const.DOMAIN]["coordinator"]
         mapping = int(data[const.MAPPING_ID]) if const.MAPPING_ID in data else None
-        await coordinator.async_update_mapping_config(mapping, data)
+        # Strip server-computed fields so clients cannot overwrite them via
+        # the config API. These are populated by the coordinator when sensor
+        # data is collected or calculations run, and the store's
+        # ``async_update_mapping`` otherwise preserves existing values.
+        sanitized = {
+            key: value
+            for key, value in data.items()
+            if key
+            not in (
+                const.MAPPING_DATA,
+                const.MAPPING_DATA_LAST_UPDATED,
+                const.MAPPING_DATA_LAST_ENTRY,
+                const.MAPPING_DATA_LAST_CALCULATION,
+            )
+        }
+        await coordinator.async_update_mapping_config(mapping, sanitized)
         async_dispatcher_send(hass, const.DOMAIN + "_update_frontend")
         return self.json({"success": True})
 

@@ -565,8 +565,12 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
       throw new Error("Invalid sensor entities found");
     }
 
-    // Save mapping to HA backend
-    await saveMapping(this.hass, mapping);
+    // Save mapping to HA backend. Only send fields that are editable from
+    // the UI — ``data``, ``data_last_updated``, ``data_last_entry`` and
+    // ``data_last_calculation`` are server-computed and would be rejected or
+    // overwrite authoritative state on the backend (issue #680).
+    const { id, name, mappings } = mapping;
+    await saveMapping(this.hass, { id, name, mappings });
   }
   private renderMapping(
     mapping: SmartIrrigationMapping,
