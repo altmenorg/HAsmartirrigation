@@ -1561,16 +1561,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         opacity: 0.55;
         cursor: not-allowed;
       }
-      /* kill the number spinners (silly 1-by-1 increments on decimal fields) */
-      input.field[type="number"] {
-        -moz-appearance: textfield;
-        appearance: textfield;
-      }
-      input.field[type="number"]::-webkit-outer-spin-button,
-      input.field[type="number"]::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-      }
+      /* keep native up/down spinners (they respect the per-field step) */
       /* number field with clean HA +/- steppers */
       .num-field {
         display: inline-flex;
@@ -1589,13 +1580,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         text-align: left;
       }
       .num-field .step-btn {
-        flex: 0 0 auto;
-        color: var(--secondary-text-color);
-        --mdc-icon-button-size: 36px;
-        --mdc-icon-size: 20px;
-      }
-      .num-field .step-btn:hover {
-        color: var(--primary-color);
+        display: none;
       }
       /* native select wrapped so we can draw a themed chevron */
       .select-wrap {
