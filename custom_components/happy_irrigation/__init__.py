@@ -75,6 +75,55 @@ async def async_setup(hass: HomeAssistant, config):
     return True
 
 
+async def _async_import_from_legacy(hass: HomeAssistant, entry: ConfigEntry, store):
+    """Import a legacy Smart Irrigation configuration on first run.
+
+    Reads the legacy ``smart_irrigation.storage`` file into our (fresh) store and
+    carries over the weather-service settings + API key from the legacy config
+    entry (the key lives in the entry, not the storage file). The import flag is
+    then cleared so it does not run again on reload.
+    """
+    import json
+    import os
+
+    path = hass.config.path(".storage", f"{const.LEGACY_DOMAIN}.storage")
+
+    def _read():
+        if not os.path.exists(path):
+            return None
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+
+    raw = await hass.async_add_executor_job(_read)
+    if not raw or not isinstance(raw.get("data"), dict):
+        _LOGGER.warning(
+            "[migration] no usable %s.storage to import", const.LEGACY_DOMAIN
+        )
+    else:
+        try:
+            await store.async_import(raw["data"])
+            _LOGGER.info(
+                "[migration] imported configuration from Smart Irrigation"
+            )
+        except (ValueError, KeyError, TypeError) as err:
+            _LOGGER.error("[migration] failed to import legacy config: %s", err)
+
+    # Carry over weather-service settings + API key from the legacy config entry.
+    merged = dict(entry.data)
+    legacy_entries = hass.config_entries.async_entries(const.LEGACY_DOMAIN)
+    if legacy_entries:
+        legacy_data = legacy_entries[0].data
+        for key in (
+            const.CONF_USE_WEATHER_SERVICE,
+            const.CONF_WEATHER_SERVICE,
+            const.CONF_WEATHER_SERVICE_API_KEY,
+        ):
+            if key in legacy_data:
+                merged[key] = legacy_data[key]
+    merged.pop(const.CONF_IMPORT_FROM_LEGACY, None)
+    hass.config_entries.async_update_entry(entry, data=merged)
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up HAppy Irrigation from a config entry."""
 
@@ -83,6 +132,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     session = async_get_clientsession(hass)
 
     store = await async_get_registry(hass)
+    # First-run migration: import an existing Smart Irrigation configuration into
+    # the (fresh) store before anything reads it.
+    if entry.data.get(const.CONF_IMPORT_FROM_LEGACY):
+        await _async_import_from_legacy(hass, entry, store)
     # store Weather Service info in hass.data
     hass.data.setdefault(const.DOMAIN, {})
     # load store info into hass.data[const.DOMAIN]

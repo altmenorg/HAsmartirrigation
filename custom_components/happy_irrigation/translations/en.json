@@ -8,6 +8,13 @@
       "name": "Specify an unique name for the integration."
     },
     "step": {
+      "migrate": {
+        "title": "Import from Smart Irrigation",
+        "description": "An existing Smart Irrigation configuration was found. Import it into HAppy Irrigation? Your zones, sensor groups, modules and settings (and the weather-service API key) will be copied. Your existing Smart Irrigation integration is left untouched; you can remove it afterwards.",
+        "data": {
+          "import_existing": "Import the existing Smart Irrigation configuration"
+        }
+      },
       "user": {
         "title": "General set up",
         "description": "If you need help with the configuration, please see https://github.com/jeroenterheerdt/HASmartIrrigation",

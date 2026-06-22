@@ -18,6 +18,7 @@ class SmartIrrigationConfigFlow(config_entries.ConfigFlow, domain=const.DOMAIN):
     def __init__(self) -> None:
         """Initialize the SmartIrrigationConfigFlow instance."""
         self._errors = {}
+        self._migration_offered = False
         self._name = ""
         self._use_weather_service = False
         self._weather_service_api_key = ""
@@ -32,6 +33,13 @@ class SmartIrrigationConfigFlow(config_entries.ConfigFlow, domain=const.DOMAIN):
         # Only a single instance of the integration
         if self._async_current_entries():
             return self.async_abort(reason="single_instance_allowed")
+
+        # First run: if a legacy Smart Irrigation configuration exists, offer to
+        # import it before the normal setup questions.
+        if user_input is None and not self._migration_offered:
+            self._migration_offered = True
+            if await self.hass.async_add_executor_job(self._legacy_storage_exists):
+                return await self.async_step_migrate()
 
         if user_input is not None:
             try:
@@ -56,6 +64,34 @@ class SmartIrrigationConfigFlow(config_entries.ConfigFlow, domain=const.DOMAIN):
                 }
             ),
             errors=self._errors,
+        )
+
+    def _legacy_storage_exists(self) -> bool:
+        """Return True if a legacy Smart Irrigation storage file is present."""
+        import os
+
+        return os.path.exists(
+            self.hass.config.path(".storage", f"{const.LEGACY_DOMAIN}.storage")
+        )
+
+    async def async_step_migrate(self, user_input=None):
+        """Offer to import an existing Smart Irrigation configuration."""
+        if user_input is not None:
+            if user_input.get("import_existing"):
+                # The actual import happens in async_setup_entry, which has the
+                # store; here we just flag the entry. Weather-service settings and
+                # the API key are carried over from the legacy config entry there.
+                return self.async_create_entry(
+                    title=const.NAME,
+                    data={const.CONF_IMPORT_FROM_LEGACY: True},
+                )
+            # Declined: fall through to the normal first-time setup.
+            return await self._show_step_user(None)
+        return self.async_show_form(
+            step_id="migrate",
+            data_schema=vol.Schema(
+                {vol.Required("import_existing", default=True): bool}
+            ),
         )
 
     async def async_step_step1(self, user_input=None):

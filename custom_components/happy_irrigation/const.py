@@ -7,6 +7,10 @@ MANUFACTURER = "@jeroenterheerdt"
 DOMAIN = "happy_irrigation"
 CUSTOM_COMPONENTS = "custom_components"
 
+# Legacy Smart Irrigation domain we can migrate a configuration from on first run.
+LEGACY_DOMAIN = "smart_irrigation"
+CONF_IMPORT_FROM_LEGACY = "import_from_smart_irrigation"
+
 LANGUAGE_FILES_DIR = "frontend/localize/languages"
 SUPPORTED_LANGUAGES = ["de", "en", "es", "fr", "it", "nl", "no", "sk"]
 
