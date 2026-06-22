@@ -4,7 +4,7 @@
       "single_instance_allowed": "Une seule configuration de HAppy Irrigation est autorisée."
     },
     "error": {
-      "auth": "Weather service API key or version incorrect",
+      "auth": "Clé API du service météo incorrecte",
       "name": "Spécifiez un nom unique pour l'intégration."
     },
     "step": {
@@ -20,199 +20,210 @@
         "description": "Si vous avez besoin d'aide avec la configuration, consultez la documentation.",
         "data": {
           "name": "Nom unique de l'intégration",
-          "use_weather_service": "Use a weather service (Open Weather Map or Pirate Weather) for weather data or forecasting. Enable this option if you intent to use one of the supported weather services for at least part of the weather data, including forecasting. Disable this option if you want to use another source, such as your own weather station, exclusively. In this case, Smart Irigation will not be able to use forecasts."
+          "use_weather_service": "Utiliser un service météo (Open Weather Map ou Pirate Weather) pour les données météo ou les prévisions. Activez cette option si vous comptez utiliser l'un des services météo pris en charge pour au moins une partie des données météo, prévisions comprises. Désactivez-la si vous souhaitez utiliser exclusivement une autre source, comme votre propre station météo. Dans ce cas, HAppy Irrigation ne pourra pas utiliser les prévisions."
         }
       },
       "step1": {
-        "title": "Weather service API set up",
+        "title": "Configuration de l'API du service météo",
         "description": "Si vous avez besoin d'aide avec la configuration, consultez la documentation.",
         "data": {
-          "weather_service": "Weather service to use",
-          "weather_service_api_key": "API key for weather service",
-          "weather_service_api_version": "Weather service API version"
+          "weather_service": "Service météo à utiliser",
+          "weather_service_api_key": "Clé API du service météo",
+          "weather_service_api_version": "Version de l'API du service météo"
         }
       }
     }
   },
   "options": {
     "error": {
-      "auth": "Weather service API key or version incorrect"
+      "auth": "Clé API ou version du service météo incorrecte",
+      "invalid_coordinates": "Coordonnées invalides. Vérifiez la latitude (-90 à 90) et la longitude (-180 à 180)."
     },
     "step": {
       "init": {
-        "title": "Weather service API set up",
+        "title": "Configuration de l'API du service météo",
         "description": "Si vous avez besoin d'aide avec la configuration, consultez la documentation.",
         "data": {
-          "use_weather_service": "Use a weather service (Open Weather Map or Pirate Weather) for weather data or forecasting. Enable this option if you intent to use one of the supported weather services for at least part of the weather data, including forecasting. Disable this option if you want to use another source, such as your own weather station, exclusively. In this case, Smart Irigation will not be able to use forecasts."
+          "use_weather_service": "Utiliser un service météo (Open Weather Map ou Pirate Weather) pour les données météo ou les prévisions. Activez cette option si vous comptez utiliser l'un des services météo pris en charge pour au moins une partie des données météo, prévisions comprises. Désactivez-la si vous souhaitez utiliser exclusivement une autre source, comme votre propre station météo. Dans ce cas, HAppy Irrigation ne pourra pas utiliser les prévisions."
         }
       },
       "step1": {
-        "title": "Weather service API set up",
+        "title": "Configuration de l'API du service météo",
         "description": "Si vous avez besoin d'aide avec la configuration, consultez la documentation.",
         "data": {
-          "weather_service": "Weather service to use",
-          "weather_service_api_key": "API key for weather service",
-          "weather_service_api_version": "Weather service API version"
+          "weather_service": "Service météo à utiliser",
+          "weather_service_api_key": "Clé API du service météo",
+          "weather_service_api_version": "Version de l'API du service météo"
+        }
+      },
+      "coordinates": {
+        "title": "Coordonnées de localisation",
+        "description": "Configurez les coordonnées de localisation pour la récupération des données météo. Vous pouvez utiliser des coordonnées manuelles différentes de l'emplacement de votre Home Assistant si nécessaire.",
+        "data": {
+          "manual_coordinates_enabled": "Utiliser des coordonnées manuelles au lieu de l'emplacement de Home Assistant",
+          "manual_latitude": "Latitude (degrés décimaux, -90 à 90)",
+          "manual_longitude": "Longitude (degrés décimaux, -180 à 180)",
+          "manual_elevation": "Altitude au-dessus du niveau de la mer (mètres, optionnel)"
         }
       }
     }
   },
   "services": {
     "calculate_all_zones": {
-      "name": "Calculate all zones",
-      "description": "Calculate all zones in automatic mode",
+      "name": "Calculer toutes les zones",
+      "description": "Calculer toutes les zones en mode automatique",
       "fields": {
         "delete_weather_data": {
-          "name": "Delete weather data",
-          "description": "Delete weather data after calculation"
+          "name": "Supprimer les données météo",
+          "description": "Supprimer les données météo après le calcul"
         }
       }
     },
     "calculate_zone": {
-      "name": "Calculate zone",
-      "description": "Calculate specified zone",
+      "name": "Calculer la zone",
+      "description": "Calculer la zone spécifiée",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to calculate"
+          "name": "Entité",
+          "description": "Zone à calculer"
         },
         "delete_weather_data": {
-          "name": "Delete weather data",
-          "description": "Delete weather data for the zone after calculation"
+          "name": "Supprimer les données météo",
+          "description": "Supprimer les données météo de la zone après le calcul"
         }
       }
     },
     "update_all_zones": {
-      "name": "Update all zones",
-      "description": "Update weatherdata for all zones in automatic mode"
+      "name": "Mettre à jour toutes les zones",
+      "description": "Mettre à jour les données météo de toutes les zones en mode automatique"
     },
     "update_zone": {
-      "name": "Update zone",
-      "description": "Update weatherdata for specified zone",
+      "name": "Mettre à jour la zone",
+      "description": "Mettre à jour les données météo de la zone spécifiée",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to update"
+          "name": "Entité",
+          "description": "Zone à mettre à jour"
         }
       }
     },
     "set_bucket": {
-      "name": "Set bucket",
-      "description": "Set bucket for a zone to a specific value",
+      "name": "Définir le réservoir",
+      "description": "Définir le réservoir d'une zone à une valeur spécifique",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to set bucket for"
+          "name": "Entité",
+          "description": "Zone pour laquelle définir le réservoir"
         },
         "new_bucket_value": {
-          "name": "New bucket value",
-          "description": "new value of the bucket"
+          "name": "Nouvelle valeur du réservoir",
+          "description": "nouvelle valeur du réservoir"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Set all buckets",
-      "description": "Set buckets for all zones to a specific value",
+      "name": "Définir tous les réservoirs",
+      "description": "Définir le réservoir de toutes les zones à une valeur spécifique",
       "fields": {
         "new_bucket_value": {
-          "name": "New bucket value",
-          "description": "new value of the bucket"
+          "name": "Nouvelle valeur du réservoir",
+          "description": "nouvelle valeur du réservoir"
         }
       }
     },
     "reset_bucket": {
-      "name": "Reset bucket",
-      "description": "Reset bucket for a zone to 0",
+      "name": "Réinitialiser le réservoir",
+      "description": "Réinitialiser le réservoir d'une zone à 0",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to reset bucket for"
+          "name": "Entité",
+          "description": "Zone pour laquelle réinitialiser le réservoir"
         }
       }
     },
     "reset_all_buckets": {
-      "name": "Reset all buckets",
-      "description": "Reset bucket for all zones to 0"
+      "name": "Réinitialiser tous les réservoirs",
+      "description": "Réinitialiser le réservoir de toutes les zones à 0"
     },
     "clear_all_weather_data": {
-      "name": "Clear all weather data",
-      "description": "Clear weather data for all zones"
+      "name": "Effacer toutes les données météo",
+      "description": "Effacer les données météo de toutes les zones"
     },
     "set_multiplier": {
-      "name": "Set multiplier",
-      "description": "Set multiplier for a zone to a specific value",
+      "name": "Définir le multiplicateur",
+      "description": "Définir le multiplicateur d'une zone à une valeur spécifique",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to set multiplier for"
+          "name": "Entité",
+          "description": "Zone pour laquelle définir le multiplicateur"
         },
         "new_multiplier_value": {
-          "name": "New multiplier value",
-          "description": "new value of the multiplier"
+          "name": "Nouvelle valeur du multiplicateur",
+          "description": "nouvelle valeur du multiplicateur"
         }
       }
     },
     "set_all_multipliers": {
-      "name": "Set all multipliers",
-      "description": "Set multipliers for all zones to a specific value",
+      "name": "Définir tous les multiplicateurs",
+      "description": "Définir le multiplicateur de toutes les zones à une valeur spécifique",
       "fields": {
         "new_multiplier_value": {
-          "name": "New multiplier value",
-          "description": "new value of the multiplier"
+          "name": "Nouvelle valeur du multiplicateur",
+          "description": "nouvelle valeur du multiplicateur"
         }
       }
     },
     "set_state": {
-      "name": "Set the state of a zone",
-      "description": "Set the state of a zone to a specific value",
+      "name": "Définir l'état d'une zone",
+      "description": "Définir l'état d'une zone à une valeur spécifique",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to set state for"
+          "name": "Entité",
+          "description": "Zone pour laquelle définir l'état"
         },
         "new_state_value": {
-          "name": "New state value",
-          "description": "New value of the state"
+          "name": "Nouvelle valeur d'état",
+          "description": "Nouvelle valeur de l'état"
         }
       }
     },
     "set_zone": {
-      "name": "Set the values of a zone",
-      "description": "Set all configurable values of a zone",
+      "name": "Définir les valeurs d'une zone",
+      "description": "Définir toutes les valeurs configurables d'une zone",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to set configuration values"
+          "name": "Entité",
+          "description": "Zone pour laquelle définir les valeurs de configuration"
         },
         "new_bucket_value": {
-          "name": "New bucket value",
-          "description": "New value for the bucket"
+          "name": "Nouvelle valeur du réservoir",
+          "description": "Nouvelle valeur du réservoir"
         },
         "new_multiplier_value": {
-          "name": "New multiplier value",
-          "description": "New value for the multiplier"
+          "name": "Nouvelle valeur du multiplicateur",
+          "description": "Nouvelle valeur du multiplicateur"
         },
         "new_duration_value": {
-          "name": "New duration value",
-          "description": "New value for the duration"
+          "name": "Nouvelle valeur de durée",
+          "description": "Nouvelle valeur de la durée"
         },
         "new_state_value": {
-          "name": "New state value",
-          "description": "New value of the state"
+          "name": "Nouvelle valeur d'état",
+          "description": "Nouvelle valeur de l'état"
         },
         "new_throughput_value": {
-          "name": "New throughput value",
-          "description": "New value for the throughput"
+          "name": "Nouvelle valeur de débit",
+          "description": "Nouvelle valeur du débit"
         }
       }
     },
     "generate_watering_calendar": {
-      "name": "Generate watering calendar",
-      "description": "Generate a 12-month watering calendar for irrigation zones based on representative climate data",
+      "name": "Générer le calendrier d'arrosage",
+      "description": "Générer un calendrier d'arrosage sur 12 mois pour les zones d'irrigation, basé sur des données climatiques représentatives",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to generate watering calendar for"
+          "name": "Entité",
+          "description": "Zone pour laquelle générer le calendrier d'arrosage"
         }
       }
     }
