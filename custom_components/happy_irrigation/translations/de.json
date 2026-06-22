@@ -8,6 +8,13 @@
       "name": "Gebe einen eindeutigen Namen für die Integration ein."
     },
     "step": {
+      "migrate": {
+        "title": "Aus Smart Irrigation importieren",
+        "description": "Eine vorhandene Smart Irrigation-Konfiguration wurde gefunden. In HAppy Irrigation importieren? Ihre Zonen, Sensorgruppen, Module und Einstellungen (sowie der API-Schlüssel des Wetterdienstes) werden kopiert. Ihre bestehende Smart Irrigation-Integration bleibt unverändert; Sie können sie anschließend entfernen.",
+        "data": {
+          "import_existing": "Vorhandene Smart Irrigation-Konfiguration importieren"
+        }
+      },
       "user": {
         "title": "Allgemein",
         "description": "Falls du Hilfe benötigst, siehe die Dokumentation.",
@@ -29,7 +36,8 @@
   },
   "options": {
     "error": {
-      "auth": "Weather service API key or version incorrect"
+      "auth": "Weather service API key or version incorrect",
+      "invalid_coordinates": "Ungültige Koordinaten angegeben. Bitte überprüfen Sie die Werte für Breitengrad (-90 bis 90) und Längengrad (-180 bis 180)."
     },
     "step": {
       "init": {
@@ -46,6 +54,16 @@
           "weather_service": "Weather service to use",
           "weather_service_api_key": "API key for weather service",
           "weather_service_api_version": "Weather service API version"
+        }
+      },
+      "coordinates": {
+        "title": "Standortkoordinaten",
+        "description": "Konfigurieren Sie die Standortkoordinaten für den Abruf von Wetterdaten. Bei Bedarf können Sie manuelle Koordinaten verwenden, die von Ihrem Home Assistant-Standort abweichen.",
+        "data": {
+          "manual_coordinates_enabled": "Manuelle Koordinaten anstelle des Home Assistant-Standorts verwenden",
+          "manual_latitude": "Breitengrad (Dezimalgrad, -90 bis 90)",
+          "manual_longitude": "Längengrad (Dezimalgrad, -180 bis 180)",
+          "manual_elevation": "Höhe über dem Meeresspiegel (Meter, optional)"
         }
       }
     }

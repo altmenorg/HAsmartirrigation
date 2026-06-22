@@ -8,6 +8,13 @@
       "name": "Spesifiser et unikt navn for integrasjonen."
     },
     "step": {
+      "migrate": {
+        "title": "Importer fra Smart Irrigation",
+        "description": "En eksisterende Smart Irrigation-konfigurasjon ble funnet. Importere den til HAppy Irrigation? Sonene, sensorgruppene, modulene og innstillingene dine (og API-nøkkelen til værtjenesten) blir kopiert. Den eksisterende Smart Irrigation-integrasjonen din forblir uendret; du kan fjerne den etterpå.",
+        "data": {
+          "import_existing": "Importer den eksisterende Smart Irrigation-konfigurasjonen"
+        }
+      },
       "user": {
         "title": "Generell oppsett",
         "description": "Hvis du trenger hjelp med konfigurasjonen, kan du se dokumentasjonen.",

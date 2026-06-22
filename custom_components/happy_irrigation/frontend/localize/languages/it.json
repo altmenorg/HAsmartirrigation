@@ -1,5 +1,7 @@
 {
   "common": {
+    "loading": "Caricamento",
+    "saving": "Salvataggio",
     "actions": {
       "delete": "Cancella"
     },
@@ -7,7 +9,11 @@
       "module": "Modulo",
       "no": "No",
       "select": "Seleziona",
-      "yes": "Si"
+      "yes": "Si",
+      "enabled": "Attivato",
+      "disabled": "Disattivato",
+      "before": "prima",
+      "after": "dopo"
     },
     "units": {
       "seconds": "secondi"
@@ -20,6 +26,15 @@
       "last_updated": "ultimo aggiornamento",
       "last_calculated": "ultimo calcolo",
       "number_of_data_points": "numero di punti dati"
+    },
+    "loading-messages": {
+      "configuration": "Caricamento della configurazione…",
+      "modules": "Caricamento dei moduli…",
+      "general": "Caricamento…"
+    },
+    "saving-messages": {
+      "adding": "Aggiunta…",
+      "saving": "Salvataggio…"
     }
   },
   "defaults": {
@@ -70,6 +85,53 @@
     }
   },
   "panels": {
+    "weatherservice": {
+      "title": "Servizio meteo",
+      "description": "Visualizza e cambia il servizio meteo usato per recuperare i dati meteo — senza reinstallare l'integrazione. La chiave API viene convalidata e la modifica applicata immediatamente.",
+      "labels": {
+        "use-weather-service": "Usa un servizio meteo",
+        "service": "Servizio meteo",
+        "api-key": "Chiave API"
+      },
+      "actions": {
+        "save": "Salva",
+        "saving": "Salvataggio…"
+      },
+      "messages": {
+        "no-service": "Non viene usato alcun servizio meteo — i dati meteo provengono solo dai tuoi sensori.",
+        "saved": "Servizio meteo aggiornato e applicato.",
+        "reload-note": "Al salvataggio la chiave API viene convalidata con il servizio e la modifica applicata immediatamente."
+      }
+    },
+    "backuprestore": {
+      "title": "Backup / ripristino",
+      "description": "Esporta l'intera configurazione di HAppy Irrigation in un file JSON, oppure ripristinala da un backup precedente.",
+      "cards": {
+        "backup": {
+          "title": "Backup",
+          "description": "Scarica la configurazione completa (impostazioni generali, zone, moduli e gruppi di sensori) come file JSON."
+        },
+        "restore": {
+          "title": "Ripristina",
+          "description": "Carica un file JSON esportato in precedenza per sostituire la configurazione attuale."
+        }
+      },
+      "actions": {
+        "export": "Esporta in JSON",
+        "choose-file": "Scegli un file di backup…",
+        "restore": "Ripristina questo backup",
+        "restoring": "Ripristino…"
+      },
+      "messages": {
+        "exported": "File di backup scaricato.",
+        "restored": "Configurazione ripristinata — ricaricamento dell'integrazione.",
+        "invalid-file": "Questo file non è un backup valido di HAppy Irrigation.",
+        "confirm-title": "Sostituire l'intera configurazione?",
+        "summary": "Questo backup contiene",
+        "confirm-warning": "Il ripristino sovrascrive tutte le impostazioni generali, le zone, i moduli e i gruppi di sensori attuali. L'operazione non può essere annullata.",
+        "reload-note": "Il ripristino sostituisce tutto e ricarica l'integrazione per applicare la modifica."
+      }
+    },
     "general": {
       "cards": {
         "automatic-duration-calculation": {
@@ -77,7 +139,7 @@
           "description": "Il calcolo prende i dati meteorologici raccolti fino a quel momento e aggiorna il bucket per ciascuna zona automatica. Quindi, la durata viene regolata in base al nuovo valore del segmento e i dati meteorologici raccolti vengono rimossi.",
           "labels": {
             "auto-calc-enabled": "Calcola automaticamente la durata delle zone",
-            "auto-calc-time": "Calcola a"
+            "calc-time": "Calcola alle"
           }
         },
         "automatic-update": {
@@ -88,13 +150,15 @@
           "description": "Raccogli e archivia automaticamente i dati meteorologici. I dati meteorologici sono necessari per calcolare gli intervalli e le durate delle zone.",
           "labels": {
             "auto-update-enabled": "Aggiorna automaticamente i dati meteorologici",
-            "auto-update-first-update": "(Primo) aggiornamento alle",
-            "auto-update-interval": "Aggiorna i dati del sensore ogni"
+            "auto-update-schedule": "Programma di aggiornamento",
+            "auto-update-time": "Aggiorna alle",
+            "auto-update-interval": "Aggiorna i dati del sensore ogni",
+            "auto-update-delay": "Ritardo di aggiornamento"
           },
           "options": {
-            "days": "giorni",
+            "minutes": "minuti",
             "hours": "ore",
-            "minutes": "minuti"
+            "days": "giorni"
           }
         },
         "automatic-clear": {
@@ -135,7 +199,16 @@
     "info": {
       "title": "Info",
       "description": "Visualizza le informazioni sulla prossima irrigazione e sullo stato del sistema.",
+      "configuration-not-available": "Configurazione non disponibile.",
       "cards": {
+        "zone-bucket-values": {
+          "title": "Valori bucket e durata per zona",
+          "labels": {
+            "bucket": "Bucket",
+            "duration": "Durata"
+          },
+          "no-zones": "Nessuna zona configurata"
+        },
         "next-irrigation": {
           "title": "Prossima Irrigazione",
           "labels": {
@@ -143,8 +216,7 @@
             "duration": "Durata",
             "zones": "Zone"
           },
-          "no-data": "Non ci sono dati disponibili",
-          "backend-todo": "TODO: API di backend necessaria per le informazioni sull'irrigazione"
+          "no-data": "Non ci sono dati disponibili"
         },
         "irrigation-reason": {
           "title": "Motivo dell'irrigazione",
@@ -154,8 +226,7 @@
             "total-duration": "Durata totale",
             "explanation": "Spiegazione"
           },
-          "no-data": "Non ci sono dati disponibili",
-          "backend-todo": "TODO: API di backend necessaria per le informazioni sull'irrigazione"
+          "no-data": "Non ci sono dati disponibili"
         }
       }
     },
@@ -176,7 +247,8 @@
             "median": "Mediana",
             "minimum": "Minimo",
             "riemannsum": "Somma di Riemann",
-            "sum": "Somma"
+            "sum": "Somma",
+            "delta": "Delta"
           },
           "errors": {
             "cannot-delete-mapping-because-zones-use-it": "Non è possibile eliminare questo gruppo di sensori perché almeno una zona lo utilizza.",
@@ -268,7 +340,6 @@
         "reset-bucket": "Reimposta il secchio",
         "view-weather-info": "Visualizza le informazioni meteo",
         "view-weather-info-message": "Informazioni meteo disponibili per",
-        "view-weather-info-todo": "TODO: Implementare la navigazione ai dettagli del gruppo di sensori",
         "view-watering-calendar": "Visualizza il calendario delle irrigazioni"
       },
       "cards": {
@@ -309,13 +380,80 @@
         "last_calculated": "Ultimo calcolo",
         "data-last-updated": "Ultimo aggiornamento dei dati",
         "data-number-of-data-points": "Numero di dati",
-        "tasso_di_drenaggio": "tasso di drenaggio"
+        "drainage_rate": "Tasso di drenaggio"
       },
       "no_items": "Non ci sono ancora zone definite.",
       "title": "Zone"
     }
   },
   "title": "HAppy Irrigation",
+  "irrigation_start_triggers": {
+    "title": "Trigger di avvio irrigazione",
+    "description": "Configura quando deve iniziare l'irrigazione in base agli eventi solari. Puoi aggiungere più trigger per programmi diversi. Per i trigger all'alba, lasciando lo scostamento a 0 verrà usata automaticamente la durata totale di tutte le zone attive.",
+    "usage_before": "Quando un trigger scatta, HAppy Irrigation emette l'evento ",
+    "usage_after": " — ascoltalo in un'automazione per avviare l'irrigazione. I dati dell'evento includono trigger_name, trigger_type e offset_minutes, così puoi reagire in modo diverso per ogni trigger. Le impostazioni di salto per precipitazioni e di giorni tra le irrigazioni continuano ad applicarsi: in un giorno di salto non viene emesso alcun evento.",
+    "add_trigger": "Aggiungi trigger",
+    "edit_trigger": "Modifica trigger",
+    "delete_trigger": "Elimina trigger",
+    "trigger_types": {
+      "sunrise": "Alba",
+      "sunset": "Tramonto",
+      "solar_azimuth": "Azimut solare"
+    },
+    "fields": {
+      "name": {
+        "name": "Nome del trigger",
+        "description": "Un nome descrittivo per identificare questo trigger"
+      },
+      "type": {
+        "name": "Tipo di trigger",
+        "description": "Il tipo di evento solare su cui attivare il trigger"
+      },
+      "enabled": {
+        "name": "Attivato",
+        "description": "Se questo trigger è attualmente attivo"
+      },
+      "offset_minutes": {
+        "name": "Scostamento (minuti)",
+        "description": "Minuti prima (-) o dopo (+) l'evento solare. Per i trigger all'alba, usa 0 per una temporizzazione automatica basata sulla durata totale delle zone."
+      },
+      "azimuth_angle": {
+        "name": "Angolo di azimut (gradi)",
+        "description": "Angolo di azimut solare in gradi, dove 0=Nord, 90=Est, 180=Sud, 270=Ovest"
+      },
+      "account_for_duration": {
+        "name": "Considera la durata",
+        "description": "Se attivato, l'irrigazione inizierà abbastanza presto da terminare all'ora indicata. Se disattivato, l'irrigazione inizierà esattamente all'ora indicata."
+      }
+    },
+    "dialog": {
+      "add_title": "Aggiungi trigger di avvio irrigazione",
+      "edit_title": "Modifica trigger di avvio irrigazione",
+      "cancel": "Annulla",
+      "save": "Salva",
+      "delete": "Elimina",
+      "help": "Quando questo trigger scatta, HAppy Irrigation emette il seguente evento — usalo in un'automazione per avviare l'irrigazione. I dati dell'evento includono il nome di questo trigger (e tipo/scostamento), così puoi reagire in modo specifico:"
+    },
+    "no_triggers": "Nessun trigger di avvio irrigazione configurato. Il sistema userà il comportamento predefinito (alba con la durata totale delle zone). Aggiungi trigger per personalizzare quando inizia l'irrigazione.",
+    "offset_auto": "Auto (calcolato dalla durata totale delle zone)",
+    "confirm_delete": "Vuoi davvero eliminare il trigger \"{name}\"?",
+    "validation": {
+      "name_required": "Il nome del trigger è obbligatorio",
+      "azimuth_invalid": "L'angolo di azimut deve essere un numero valido"
+    },
+    "help": {
+      "sunrise_offset": "Per i trigger all'alba: usa valori negativi per iniziare prima dell'alba, positivi per iniziare dopo. Imposta 0 per iniziare automaticamente abbastanza presto da completare tutte le zone prima dell'alba.",
+      "sunset_offset": "Per i trigger al tramonto: usa valori negativi per iniziare prima del tramonto, positivi per iniziare dopo il tramonto.",
+      "azimuth_explanation": "L'azimut solare è la direzione bussola del sole. 0°=Nord, 90°=Est, 180°=Sud, 270°=Ovest. Puoi inserire qualsiasi valore di angolo (es. 450°=90°, -30°=330°). Usalo per avviare l'irrigazione quando il sole raggiunge una posizione specifica.",
+      "multiple_triggers": "Puoi configurare più trigger. Ogni trigger attivo pianificherà gli avvii di irrigazione in modo indipendente."
+    }
+  },
+  "weather_skip": {
+    "title": "Salto dell'irrigazione in base al meteo",
+    "description": "Salta automaticamente l'irrigazione quando sono previste precipitazioni. Questa funzione richiede un servizio meteo configurato.",
+    "threshold_label": "Soglia di precipitazione",
+    "threshold_description": "Quantità minima di precipitazioni (in mm) prevista per oggi e domani per saltare l'irrigazione."
+  },
   "coordinate_config": {
     "title": "Coordinate di Posizione",
     "description": "Configura le coordinate di posizione per il recupero dei dati meteorologici. Puoi usare coordinate manuali diverse dalla tua posizione Home Assistant se necessario.",

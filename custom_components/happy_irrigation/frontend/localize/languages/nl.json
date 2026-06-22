@@ -1,5 +1,7 @@
 {
   "common": {
+    "loading": "Laden",
+    "saving": "Opslaan",
     "actions": {
       "delete": "Verwijderen"
     },
@@ -7,12 +9,32 @@
       "module": "Module",
       "no": "Nee",
       "select": "Kies",
-      "yes": "Ja"
+      "yes": "Ja",
+      "enabled": "Ingeschakeld",
+      "disabled": "Uitgeschakeld",
+      "before": "voor",
+      "after": "na"
+    },
+    "units": {
+      "seconds": "seconden"
     },
     "attributes": {
       "size": "afmeting",
       "throughput": "doorvoer",
-      "state": "status"
+      "state": "status",
+      "bucket": "bucket",
+      "last_updated": "laatst bijgewerkt",
+      "last_calculated": "laatst berekend",
+      "number_of_data_points": "aantal gegevenspunten"
+    },
+    "loading-messages": {
+      "configuration": "Configuratie laden…",
+      "modules": "Modules laden…",
+      "general": "Laden…"
+    },
+    "saving-messages": {
+      "adding": "Toevoegen…",
+      "saving": "Opslaan…"
     }
   },
   "defaults": {
@@ -25,13 +47,17 @@
         "module-returned-evapotranspiration-deficiency": "NB: in deze uitleg wordt de '.' as decimaalscheidingsteken gebruikt, worden afgeronde en metrische getallen getoond. Module berekende ET waarde van",
         "bucket-was": "Voorraad was",
         "new-bucket-values-is": "Nieuwe voorraad is",
+        "bucket": "voorraad",
         "old-bucket-variable": "oude_voorraad",
+        "max-bucket-variable": "max_bucket",
         "delta": "verandering",
         "bucket-less-than-zero-irrigation-necessary": "Omdat de voorraad < 0 is, is irrigatie nodig",
         "steps-taken-to-calculate-duration": "On de exacte duur te berekenen werd het volgende gedaan",
         "precipitation-rate-defined-as": "De neerslag is",
         "duration-is-calculated-as": "De duur is",
-        "bucket": "voorraad",
+        "drainage": "drainage",
+        "drainage-rate": "drainage_rate",
+        "hours": "uur",
         "precipitation-rate-variable": "neerslag",
         "multiplier-is-applied": "De vermenigvuldiger wordt toegepast. Deze is",
         "duration-after-multiplier-is": "dus de duur is",
@@ -40,7 +66,10 @@
         "lead-time-is-applied": "As laatste wordt de aanlooptijd toegepast. Deze is",
         "duration-after-lead-time-is": "dus de uiteindelijke duur is",
         "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Omdat de voorraad >= 0 is er geen irrigatie nodig en is de duur gelijk aan",
-        "maximum-bucket-is": "maximale voorraad grootte is"
+        "maximum-bucket-is": "maximale voorraad grootte is",
+        "drainage-rate-is": "De afvoersnelheid bij verzadiging (bucket op max) is",
+        "current-drainage-is": "De huidige afvoer wordt berekend als",
+        "no-drainage": "De huidige afvoer is 0 omdat"
       }
     }
   },
@@ -56,6 +85,53 @@
     }
   },
   "panels": {
+    "weatherservice": {
+      "title": "Weerdienst",
+      "description": "Bekijk en wijzig de weerdienst die wordt gebruikt om weergegevens op te halen — zonder de integratie opnieuw te installeren. De API-sleutel wordt gevalideerd en de wijziging wordt direct toegepast.",
+      "labels": {
+        "use-weather-service": "Een weerdienst gebruiken",
+        "service": "Weerdienst",
+        "api-key": "API-sleutel"
+      },
+      "actions": {
+        "save": "Opslaan",
+        "saving": "Opslaan…"
+      },
+      "messages": {
+        "no-service": "Er wordt geen weerdienst gebruikt — de weergegevens komen alleen van je eigen sensoren.",
+        "saved": "Weerdienst bijgewerkt en toegepast.",
+        "reload-note": "Bij het opslaan wordt de API-sleutel bij de dienst gevalideerd en de wijziging direct toegepast."
+      }
+    },
+    "backuprestore": {
+      "title": "Back-up / herstel",
+      "description": "Exporteer de volledige HAppy Irrigation-configuratie naar een JSON-bestand, of herstel deze vanuit een eerdere back-up.",
+      "cards": {
+        "backup": {
+          "title": "Back-up",
+          "description": "Download de volledige configuratie (algemene instellingen, zones, modules en sensorgroepen) als JSON-bestand."
+        },
+        "restore": {
+          "title": "Herstellen",
+          "description": "Laad een eerder geëxporteerd JSON-bestand om de huidige configuratie te vervangen."
+        }
+      },
+      "actions": {
+        "export": "Exporteren naar JSON",
+        "choose-file": "Kies een back-upbestand…",
+        "restore": "Deze back-up herstellen",
+        "restoring": "Herstellen…"
+      },
+      "messages": {
+        "exported": "Back-upbestand gedownload.",
+        "restored": "Configuratie hersteld — integratie wordt herladen.",
+        "invalid-file": "Dit bestand is geen geldige HAppy Irrigation-back-up.",
+        "confirm-title": "De volledige configuratie vervangen?",
+        "summary": "Deze back-up bevat",
+        "confirm-warning": "Herstellen overschrijft alle huidige algemene instellingen, zones, modules en sensorgroepen. Dit kan niet ongedaan worden gemaakt.",
+        "reload-note": "Herstellen vervangt alles en herlaadt de integratie om de wijziging toe te passen."
+      }
+    },
     "general": {
       "cards": {
         "automatic-duration-calculation": {
@@ -63,7 +139,7 @@
           "description": "Bij het berekenen wordt de verzamelde weersinformatie gebruikt om the voorraad en irrigatieduur per zone aan te passen. Daarna wordt de verzamelde weersinformatie verwijderd.",
           "labels": {
             "auto-calc-enabled": "Automatisch irrigatietijd berekening voor elke zone",
-            "auto-calc-time": "Berekenen op"
+            "calc-time": "Berekenen om"
           }
         },
         "automatic-update": {
@@ -74,13 +150,15 @@
           "description": "Verzamel en bewaar weersinformatie automatisch. Weersinformatie is nodig om vorraad en irrigatieduur per zone te berekenen.",
           "labels": {
             "auto-update-enabled": "Automatisch weersinformatie bijwerken",
-            "auto-update-delay": "Vertraging",
-            "auto-update-interval": "Sensor data bijwerken elke"
+            "auto-update-schedule": "Updateschema",
+            "auto-update-time": "Bijwerken om",
+            "auto-update-interval": "Sensor data bijwerken elke",
+            "auto-update-delay": "Vertraging"
           },
           "options": {
-            "days": "dagen",
+            "minutes": "minuten",
             "hours": "uren",
-            "minutes": "minuten"
+            "days": "dagen"
           }
         },
         "automatic-clear": {
@@ -89,6 +167,14 @@
           "labels": {
             "automatic-clear-enabled": "Automatisch weersinformatie verwijderen",
             "automatic-clear-time": "Verwijder weersinformatie om"
+          }
+        },
+        "continuousupdates": {
+          "header": "Continue updates voor sensoren (experimenteel)",
+          "description": "Deze experimentele functie werkt de sensorgegevens continu bij. Dit is handig voor sensorgroepen die bronnen met continue gegevens gebruiken, zoals weerstations. Deze functie kan niet worden gebruikt voor sensorgroepen die ten minste deels afhankelijk zijn van weerdiensten, omdat continu pollen van API's kosten met zich meebrengt. Houd er rekening mee dat dit experimenteel is en mogelijk niet werkt zoals verwacht. Gebruik op eigen risico.",
+          "labels": {
+            "continuousupdates": "Continue updates inschakelen",
+            "sensor_debounce": "Sensor-debounce"
           }
         }
       },
@@ -110,6 +196,40 @@
         }
       }
     },
+    "info": {
+      "title": "Info",
+      "description": "Bekijk informatie over de volgende irrigatie en de systeemstatus.",
+      "configuration-not-available": "Configuratie niet beschikbaar.",
+      "cards": {
+        "zone-bucket-values": {
+          "title": "Bucketwaarden en duur per zone",
+          "labels": {
+            "bucket": "Bucket",
+            "duration": "Duur"
+          },
+          "no-zones": "Geen zones geconfigureerd"
+        },
+        "next-irrigation": {
+          "title": "Volgende irrigatie",
+          "labels": {
+            "next-start": "Volgende start",
+            "duration": "Duur",
+            "zones": "Zones"
+          },
+          "no-data": "Geen gegevens beschikbaar"
+        },
+        "irrigation-reason": {
+          "title": "Reden voor irrigatie",
+          "labels": {
+            "reason": "Reden",
+            "sunrise": "Zonsopgang",
+            "total-duration": "Totale duur",
+            "explanation": "Uitleg"
+          },
+          "no-data": "Geen gegevens beschikbaar"
+        }
+      }
+    },
     "mappings": {
       "cards": {
         "add-mapping": {
@@ -126,10 +246,14 @@
             "maximum": "Maximum",
             "median": "Mediaan",
             "minimum": "Minimum",
-            "sum": "Totaal"
+            "riemannsum": "Riemann-som",
+            "sum": "Totaal",
+            "delta": "Delta"
           },
           "errors": {
-            "cannot-delete-mapping-because-zones-use-it": "Deze sensorgroep kan niet worden verwijderd omdat er minimaal een zone gebruik van maakt."
+            "cannot-delete-mapping-because-zones-use-it": "Deze sensorgroep kan niet worden verwijderd omdat er minimaal een zone gebruik van maakt.",
+            "invalid_source": "Ongeldige bron",
+            "source_does_not_exist": "De bron bestaat niet. Voer een geldige bron in, zoals \"sensor.mysensor\"."
           },
           "items": {
             "dewpoint": "Dauwpunt",
@@ -138,6 +262,7 @@
             "maximum temperature": "Maximum temperatuur",
             "minimum temperature": "Minimum temperatuur",
             "precipitation": "Totale neerslag",
+            "current precipitation": "Huidige neerslag",
             "pressure": "Druk",
             "solar radiation": "Zonnestraling",
             "temperature": "Temperatuur",
@@ -151,8 +276,8 @@
           "sensor-aggregate-of-sensor-values-to-calculate": "van de sensor waardes om irrigatietijd te berekenen",
           "sensor-aggregate-use-the": "Gebruik de/het",
           "sensor-entity": "Sensor entiteit",
-          "input-units": "Invoer geeft waardes in",
           "static_value": "Waarde",
+          "input-units": "Invoer geeft waardes in",
           "source": "Bron",
           "sources": {
             "none": "Geen",
@@ -167,7 +292,16 @@
         "mapping-name": "Name"
       },
       "no_items": "Er zijn nog geen sensorgroepen.",
-      "title": "Sensorgroepen"
+      "title": "Sensorgroepen",
+      "weather-records": {
+        "title": "Weerregistraties (laatste 10)",
+        "timestamp": "Tijd",
+        "temperature": "Temp.",
+        "humidity": "Vochtigheid",
+        "precipitation": "Neersl.",
+        "retrieval-time": "Opgehaald",
+        "no-data": "Geen weergegevens beschikbaar voor deze sensorgroep"
+      }
     },
     "modules": {
       "cards": {
@@ -188,7 +322,8 @@
           "translated-options": {
             "DontEstimate": "Niet berekenen",
             "EstimateFromSunHours": "Gebaseerd op zon uren",
-            "EstimateFromTemp": "Gebaseerd op temperatuur"
+            "EstimateFromTemp": "Gebaseerd op temperatuur",
+            "EstimateFromSunHoursAndTemperature": "Schatten op basis van het gemiddelde van zonuren en temperatuur"
           }
         }
       },
@@ -202,7 +337,10 @@
         "calculate": "Bereken",
         "information": "Informatie",
         "update": "Bijwerken",
-        "reset-bucket": "Leeg voorraad"
+        "reset-bucket": "Leeg voorraad",
+        "view-weather-info": "Weergegevens bekijken",
+        "view-weather-info-message": "Weergegevens beschikbaar voor",
+        "view-watering-calendar": "Irrigatiekalender bekijken"
       },
       "cards": {
         "add-zone": {
@@ -241,13 +379,81 @@
         "maximum-bucket": "Maximale voorraad",
         "last_calculated": "Berekend op",
         "data-last-updated": "Bijgewerkt op",
-        "data-number-of-data-points": "Aantal datapunten"
+        "data-number-of-data-points": "Aantal datapunten",
+        "drainage_rate": "Afvoersnelheid"
       },
       "no_items": "Er zijn nog geen zones.",
       "title": "Zones"
     }
   },
   "title": "HAppy Irrigation",
+  "irrigation_start_triggers": {
+    "title": "Irrigatiestart-triggers",
+    "description": "Stel in wanneer de irrigatie moet starten op basis van zonne-evenementen. Je kunt meerdere triggers toevoegen voor verschillende schema's. Bij zonsopgang-triggers wordt met een offset van 0 automatisch de totale duur van alle ingeschakelde zones gebruikt.",
+    "usage_before": "Wanneer een trigger afgaat, zendt HAppy Irrigation de gebeurtenis ",
+    "usage_after": " — luister ernaar in een automatisering om de irrigatie te starten. De gebeurtenisgegevens bevatten trigger_name, trigger_type en offset_minutes, zodat je per trigger anders kunt reageren. De instellingen voor overslaan bij neerslag en dagen tussen irrigaties blijven gelden: op een overslagdag wordt geen gebeurtenis verzonden.",
+    "add_trigger": "Trigger toevoegen",
+    "edit_trigger": "Trigger bewerken",
+    "delete_trigger": "Trigger verwijderen",
+    "trigger_types": {
+      "sunrise": "Zonsopgang",
+      "sunset": "Zonsondergang",
+      "solar_azimuth": "Zonne-azimut"
+    },
+    "fields": {
+      "name": {
+        "name": "Triggernaam",
+        "description": "Een beschrijvende naam om deze trigger te identificeren"
+      },
+      "type": {
+        "name": "Triggertype",
+        "description": "Het type zonne-evenement waarop wordt getriggerd"
+      },
+      "enabled": {
+        "name": "Ingeschakeld",
+        "description": "Of deze trigger momenteel actief is"
+      },
+      "offset_minutes": {
+        "name": "Offset (minuten)",
+        "description": "Minuten vóór (-) of na (+) het zonne-evenement. Gebruik bij zonsopgang-triggers 0 voor automatische timing op basis van de totale zoneduur."
+      },
+      "azimuth_angle": {
+        "name": "Azimuthoek (graden)",
+        "description": "Zonne-azimuthoek in graden, waarbij 0=Noord, 90=Oost, 180=Zuid, 270=West"
+      },
+      "account_for_duration": {
+        "name": "Rekening houden met duur",
+        "description": "Indien ingeschakeld start de irrigatie vroeg genoeg om op het opgegeven tijdstip klaar te zijn. Indien uitgeschakeld start de irrigatie precies op het opgegeven tijdstip."
+      }
+    },
+    "dialog": {
+      "add_title": "Irrigatiestart-trigger toevoegen",
+      "edit_title": "Irrigatiestart-trigger bewerken",
+      "cancel": "Annuleren",
+      "save": "Opslaan",
+      "delete": "Verwijderen",
+      "help": "Wanneer deze trigger afgaat, zendt HAppy Irrigation de volgende gebeurtenis uit — gebruik die in een automatisering om de irrigatie te starten. De gebeurtenisgegevens bevatten de naam van deze trigger (en het type/de offset), zodat je er specifiek op kunt reageren:"
+    },
+    "no_triggers": "Geen irrigatiestart-triggers geconfigureerd. Het systeem gebruikt het standaardgedrag (zonsopgang met de totale zoneduur). Voeg triggers toe om aan te passen wanneer de irrigatie start.",
+    "offset_auto": "Auto (berekend uit de totale zoneduur)",
+    "confirm_delete": "Weet je zeker dat je de trigger \"{name}\" wilt verwijderen?",
+    "validation": {
+      "name_required": "De triggernaam is verplicht",
+      "azimuth_invalid": "De azimuthoek moet een geldig getal zijn"
+    },
+    "help": {
+      "sunrise_offset": "Voor zonsopgang-triggers: gebruik negatieve waarden om vóór zonsopgang te starten, positieve om erna te starten. Stel in op 0 om automatisch vroeg genoeg te starten zodat alle zones vóór zonsopgang klaar zijn.",
+      "sunset_offset": "Voor zonsondergang-triggers: gebruik negatieve waarden om vóór zonsondergang te starten, positieve om na zonsondergang te starten.",
+      "azimuth_explanation": "Het zonne-azimut is de kompasrichting van de zon. 0°=Noord, 90°=Oost, 180°=Zuid, 270°=West. Je kunt elke hoekwaarde invoeren (bijv. 450°=90°, -30°=330°). Gebruik dit om de irrigatie te starten wanneer de zon een specifieke positie bereikt.",
+      "multiple_triggers": "Je kunt meerdere triggers configureren. Elke ingeschakelde trigger plant irrigatiestarts onafhankelijk."
+    }
+  },
+  "weather_skip": {
+    "title": "Weergebaseerd overslaan van irrigatie",
+    "description": "Sla de irrigatie automatisch over wanneer neerslag wordt voorspeld. Voor deze functie moet een weerdienst zijn geconfigureerd.",
+    "threshold_label": "Neerslagdrempel",
+    "threshold_description": "Minimale hoeveelheid neerslag (in mm) die voor vandaag en morgen wordt voorspeld om de irrigatie over te slaan."
+  },
   "coordinate_config": {
     "title": "Locatie Coördinaten",
     "description": "Configureer locatie coördinaten voor het ophalen van weergegevens. Je kunt handmatige coördinaten gebruiken die verschillen van je Home Assistant locatie indien nodig.",

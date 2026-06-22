@@ -8,6 +8,13 @@
       "name": "Specifica un nome univoco per questa istanza."
     },
     "step": {
+      "migrate": {
+        "title": "Importa da Smart Irrigation",
+        "description": "È stata trovata una configurazione Smart Irrigation esistente. Importarla in HAppy Irrigation? Le tue zone, i gruppi di sensori, i moduli e le impostazioni (e la chiave API del servizio meteo) verranno copiati. La tua integrazione Smart Irrigation esistente non viene modificata; puoi rimuoverla in seguito.",
+        "data": {
+          "import_existing": "Importa la configurazione Smart Irrigation esistente"
+        }
+      },
       "user": {
         "title": "Impostazioni Generali",
         "description": "Se hai bisogno di aiuto con la configurazione, consulta la documentazione.",
@@ -29,7 +36,8 @@
   },
   "options": {
     "error": {
-      "auth": "Weather service API key or version incorrect"
+      "auth": "Weather service API key or version incorrect",
+      "invalid_coordinates": "Coordinate non valide. Controlla i valori di latitudine (da -90 a 90) e longitudine (da -180 a 180)."
     },
     "step": {
       "init": {
@@ -47,6 +55,16 @@
           "weather_service_api_key": "API key for weather service",
           "weather_service_api_version": "Weather service API version"
         }
+      },
+      "coordinates": {
+        "title": "Coordinate della posizione",
+        "description": "Configura le coordinate della posizione per il recupero dei dati meteo. Se necessario, puoi usare coordinate manuali diverse dalla posizione di Home Assistant.",
+        "data": {
+          "manual_coordinates_enabled": "Usa coordinate manuali invece della posizione di Home Assistant",
+          "manual_latitude": "Latitudine (gradi decimali, da -90 a 90)",
+          "manual_longitude": "Longitudine (gradi decimali, da -180 a 180)",
+          "manual_elevation": "Altitudine sul livello del mare (metri, opzionale)"
+        }
       }
     }
   },
@@ -54,7 +72,7 @@
     "calculate_all_zones": {
       "name": "Calcola tutte le zone",
       "description": "Calcola tutte le zone in modalità automatica",
-      "fields":{
+      "fields": {
         "delete_weather_data": {
           "name": "Cancellare i dati meteo",
           "description": "Cancellare i dati meteo dopo il calcolo"
@@ -152,7 +170,7 @@
         "new_multiplier_value": {
           "name": "Nuovo valore di moltiplicazione",
           "description": "nuovo valore di moltiplicazione"
-          }
+        }
       }
     },
     "set_state": {
@@ -196,6 +214,16 @@
         "new_throughput_value": {
           "name": "Nuovo valore di capacità",
           "description": "Nuovo valore di capacità"
+        }
+      }
+    },
+    "generate_watering_calendar": {
+      "name": "Genera calendario di irrigazione",
+      "description": "Genera un calendario di irrigazione di 12 mesi per le zone di irrigazione in base a dati climatici rappresentativi",
+      "fields": {
+        "entity": {
+          "name": "Entità",
+          "description": "Zona per cui generare il calendario di irrigazione"
         }
       }
     }
