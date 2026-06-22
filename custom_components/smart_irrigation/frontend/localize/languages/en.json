@@ -87,7 +87,7 @@
   "panels": {
     "weatherservice": {
       "title": "Weather Service",
-      "description": "View and change the weather service used to fetch weather data — no need to reinstall the integration. Changing it validates the API key and reloads the integration, which takes a few seconds.",
+      "description": "View and change the weather service used to fetch weather data — no need to reinstall the integration. The API key is validated and the change is applied immediately.",
       "labels": {
         "use-weather-service": "Use a weather service",
         "service": "Weather service",
@@ -99,8 +99,8 @@
       },
       "messages": {
         "no-service": "No weather service is used — weather data comes from your own sensors only.",
-        "saved": "Weather service saved. The integration is reloading to apply the change…",
-        "reload-note": "Saving validates the API key and reloads the integration (takes a few seconds)."
+        "saved": "Weather service updated and applied.",
+        "reload-note": "Saving validates the API key against the service and applies the change immediately."
       }
     },
     "general": {

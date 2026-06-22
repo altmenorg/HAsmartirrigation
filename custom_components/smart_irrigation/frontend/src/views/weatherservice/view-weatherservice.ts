@@ -76,9 +76,8 @@ export class SmartIrrigationViewWeatherService extends LitElement {
         weather_service_api_key: this._use ? this._apiKey : null,
       });
       this._saved = true;
-      // Saving updates the config entry, which reloads the integration; refresh
-      // the displayed state once it has come back up.
-      window.setTimeout(() => this._load(), 4000);
+      // Applied in-place on the backend; refresh the displayed state to confirm.
+      window.setTimeout(() => this._load(), 800);
     } catch (e) {
       this._error = this._errText(e);
     } finally {

@@ -670,16 +670,33 @@ async def websocket_set_weather_service(hass: HomeAssistant, connection, msg):
             connection.send_error(msg["id"], "unknown", f"Validation failed: {err}")
             return
 
+    # Apply the change at runtime (rebuilds the weather client) — no reload.
+    coordinator = hass.data.get(const.DOMAIN, {}).get("coordinator")
+    if coordinator is not None:
+        await coordinator.async_apply_weather_service(
+            use, service if use else None, api_key if use else None
+        )
+
+    # Persist to the config entry so the choice survives restarts. Suppress the
+    # listener-driven reload (we already applied it in-place, and the reload
+    # would re-register the panel/views).
     new_data = dict(entry.data)
     new_data[const.CONF_USE_WEATHER_SERVICE] = use
     new_data[const.CONF_WEATHER_SERVICE] = service if use else None
     new_data[const.CONF_WEATHER_SERVICE_API_KEY] = api_key if use else None
+    if any(
+        entry.data.get(k) != new_data.get(k)
+        for k in (
+            const.CONF_USE_WEATHER_SERVICE,
+            const.CONF_WEATHER_SERVICE,
+            const.CONF_WEATHER_SERVICE_API_KEY,
+        )
+    ):
+        hass.data.setdefault(const.DOMAIN, {})["_suppress_options_reload"] = True
+        hass.config_entries.async_update_entry(entry, data=new_data)
 
-    hass.config_entries.async_update_entry(entry, data=new_data)
     _LOGGER.info(
-        "Weather service updated via panel (use=%s, service=%s); reloading entry",
-        use,
-        service,
+        "Weather service updated via panel (use=%s, service=%s)", use, service
     )
     connection.send_result(msg["id"], {"success": True})
 

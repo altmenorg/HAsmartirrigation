@@ -1391,7 +1391,7 @@
     Ft = {
       weatherservice: {
         title: "Weather Service",
-        description: "View and change the weather service used to fetch weather data — no need to reinstall the integration. Changing it validates the API key and reloads the integration, which takes a few seconds.",
+        description: "View and change the weather service used to fetch weather data — no need to reinstall the integration. The API key is validated and the change is applied immediately.",
         labels: {
           "use-weather-service": "Use a weather service",
           service: "Weather service",
@@ -1403,8 +1403,8 @@
         },
         messages: {
           "no-service": "No weather service is used — weather data comes from your own sensors only.",
-          saved: "Weather service saved. The integration is reloading to apply the change…",
-          "reload-note": "Saving validates the API key and reloads the integration (takes a few seconds)."
+          saved: "Weather service updated and applied.",
+          "reload-note": "Saving validates the API key against the service and applies the change immediately."
         }
       },
       general: {
@@ -2095,7 +2095,7 @@
     ha = {
       weatherservice: {
         title: "Service météo",
-        description: "Consultez et modifiez le service météo utilisé pour récupérer les données — sans réinstaller l'intégration. La modification valide la clé API et recharge l'intégration (quelques secondes).",
+        description: "Consultez et modifiez le service météo utilisé pour récupérer les données — sans réinstaller l'intégration. La clé API est validée et le changement est appliqué immédiatement.",
         labels: {
           "use-weather-service": "Utiliser un service météo",
           service: "Service météo",
@@ -2107,8 +2107,8 @@
         },
         messages: {
           "no-service": "Aucun service météo utilisé — les données proviennent uniquement de vos capteurs.",
-          saved: "Service météo enregistré. L'intégration se recharge pour appliquer le changement…",
-          "reload-note": "L'enregistrement valide la clé API et recharge l'intégration (quelques secondes)."
+          saved: "Service météo mis à jour et appliqué.",
+          "reload-note": "L'enregistrement valide la clé API auprès du service et applique le changement immédiatement."
         }
       },
       general: {
@@ -11599,7 +11599,7 @@
             weather_service_api_key: this._use ? this._apiKey : null
           }, e.callWS(Object.assign({
             type: we + "/set_weatherservice"
-          }, t))), this._saved = !0, window.setTimeout(() => this._load(), 4e3);
+          }, t))), this._saved = !0, window.setTimeout(() => this._load(), 800);
         } catch (e) {
           this._error = this._errText(e);
         } finally {

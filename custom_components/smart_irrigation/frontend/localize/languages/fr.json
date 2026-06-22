@@ -58,7 +58,7 @@
   "panels": {
     "weatherservice": {
       "title": "Service météo",
-      "description": "Consultez et modifiez le service météo utilisé pour récupérer les données — sans réinstaller l'intégration. La modification valide la clé API et recharge l'intégration (quelques secondes).",
+      "description": "Consultez et modifiez le service météo utilisé pour récupérer les données — sans réinstaller l'intégration. La clé API est validée et le changement est appliqué immédiatement.",
       "labels": {
         "use-weather-service": "Utiliser un service météo",
         "service": "Service météo",
@@ -70,8 +70,8 @@
       },
       "messages": {
         "no-service": "Aucun service météo utilisé — les données proviennent uniquement de vos capteurs.",
-        "saved": "Service météo enregistré. L'intégration se recharge pour appliquer le changement…",
-        "reload-note": "L'enregistrement valide la clé API et recharge l'intégration (quelques secondes)."
+        "saved": "Service météo mis à jour et appliqué.",
+        "reload-note": "L'enregistrement valide la clé API auprès du service et applique le changement immédiatement."
       }
     },
     "general": {

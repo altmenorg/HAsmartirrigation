@@ -242,6 +242,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 async def options_update_listener(hass: HomeAssistant, config_entry):
     """Handle options update."""
+    # The panel's weather-service editor applies changes in-place and only
+    # writes them to the entry for persistence; skip the (heavy, panel-
+    # disrupting) reload in that case.
+    if hass.data.get(const.DOMAIN, {}).pop("_suppress_options_reload", False):
+        _LOGGER.debug(
+            "Skipping entry reload: weather service change applied in-place by panel"
+        )
+        return
     # copy the api key and version to the hass data
     if const.DOMAIN in hass.data:
         hass.data[const.DOMAIN][const.CONF_USE_WEATHER_SERVICE] = (
@@ -548,6 +556,59 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         await self.set_up_auto_clear_time(data)
         await self.store.async_update_config(data)
         async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated")
+
+    async def async_apply_weather_service(self, use, service, api_key):
+        """Apply a weather-service change at runtime (no entry reload).
+
+        Rebuilds the weather client and updates hass.data + store so the change
+        takes effect immediately. Persistence across restarts is handled by the
+        caller writing the values to the config entry data.
+        """
+        self.use_weather_service = bool(use)
+        self.weather_service = service if use else None
+        self.hass.data[const.DOMAIN][const.CONF_USE_WEATHER_SERVICE] = (
+            self.use_weather_service
+        )
+        self.hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE] = self.weather_service
+        self.hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_API_KEY] = (
+            api_key if use else None
+        )
+
+        self._WeatherServiceClient = None
+        if self.use_weather_service:
+            lat, lon, elev = self._get_effective_coordinates()
+            if self.weather_service == const.CONF_WEATHER_SERVICE_OWM:
+                self._WeatherServiceClient = OWMClient(
+                    api_key=api_key,
+                    api_version=self.hass.data[const.DOMAIN].get(
+                        const.CONF_WEATHER_SERVICE_API_VERSION
+                    ),
+                    latitude=lat,
+                    longitude=lon,
+                    elevation=elev,
+                )
+            elif self.weather_service == const.CONF_WEATHER_SERVICE_PW:
+                self._WeatherServiceClient = PirateWeatherClient(
+                    api_key=api_key,
+                    api_version="1",
+                    latitude=lat,
+                    longitude=lon,
+                    elevation=elev,
+                )
+
+        # keep the store in sync so the choice is reflected in the config panel
+        await self.store.async_update_config(
+            {
+                const.CONF_USE_WEATHER_SERVICE: self.use_weather_service,
+                const.CONF_WEATHER_SERVICE: self.weather_service,
+            }
+        )
+        async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated")
+        _LOGGER.info(
+            "Applied weather service in-place: use=%s service=%s",
+            self.use_weather_service,
+            self.weather_service,
+        )
 
     async def set_up_auto_update_time(self, data):  # noqa: D102
         # WIP v2024.6.X:
