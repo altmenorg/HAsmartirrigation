@@ -1,0 +1,31 @@
+# Dependabot keeps dependencies current and opens PRs for security fixes.
+# Read more: https://docs.github.com/code-security/dependabot
+version: 2
+updates:
+  # Frontend panel (TypeScript / Lit, built with rollup). These are build-time
+  # only (compiled into the shipped bundle), so minor/patch bumps are grouped
+  # into a single PR to keep the noise down.
+  - package-ecosystem: "npm"
+    directory: "/custom_components/happy_irrigation/frontend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      frontend-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Python dev / test dependencies.
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # Versions of the actions used in the GitHub workflows (e.g. deploy-pages).
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
