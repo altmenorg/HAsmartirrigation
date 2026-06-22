@@ -15,6 +15,7 @@ import {
   mdiCloudOutline,
   mdiCalendar,
   mdiChevronDown,
+  mdiMenuDown,
   mdiPlus,
   mdiMinus,
 } from "@mdi/js";
@@ -1179,7 +1180,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
             ${options}
           </select>
           <svg class="chev" viewBox="0 0 24 24">
-            <path d=${mdiChevronDown}></path>
+            <path d=${mdiMenuDown}></path>
           </svg>
         </div>
       </div>
@@ -1526,8 +1527,8 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
          same MDC variables HA's own ha-textfield/ha-select use (native feel) */
       .field {
         flex: 0 0 auto;
-        width: 240px;
-        max-width: 50%;
+        width: 360px;
+        max-width: 100%;
         height: 44px;
         box-sizing: border-box;
         padding: 0 12px;
@@ -1568,8 +1569,8 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         align-items: center;
         gap: 4px;
         flex: 0 0 auto;
-        width: 240px;
-        max-width: 50%;
+        width: 360px;
+        max-width: 100%;
       }
       .num-field .num-input {
         flex: 1 1 auto;
@@ -1586,8 +1587,8 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       .select-wrap {
         position: relative;
         flex: 0 0 auto;
-        width: 240px;
-        max-width: 50%;
+        width: 360px;
+        max-width: 100%;
         display: inline-flex;
       }
       .select-wrap .field {
@@ -1601,11 +1602,11 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       }
       .select-wrap .chev {
         position: absolute;
-        right: 10px;
+        right: 8px;
         top: 50%;
         transform: translateY(-50%);
-        width: 20px;
-        height: 20px;
+        width: 24px;
+        height: 24px;
         pointer-events: none;
         fill: var(--secondary-text-color);
       }

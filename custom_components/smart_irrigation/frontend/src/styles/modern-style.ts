@@ -132,8 +132,8 @@ export const modernStyle = css`
   /* --- unified field style for inputs AND selects (HA filled look) --- */
   .field {
     flex: 0 0 auto;
-    width: 240px;
-    max-width: 50%;
+    width: 360px;
+    max-width: 100%;
     height: 44px;
     box-sizing: border-box;
     padding: 0 12px;
@@ -175,8 +175,8 @@ export const modernStyle = css`
     display: inline-flex;
     align-items: center;
     flex: 0 0 auto;
-    width: 240px;
-    max-width: 50%;
+    width: 360px;
+    max-width: 100%;
   }
   .num-field .num-input {
     flex: 1 1 auto;
@@ -193,8 +193,8 @@ export const modernStyle = css`
   .select-wrap {
     position: relative;
     flex: 0 0 auto;
-    width: 240px;
-    max-width: 50%;
+    width: 360px;
+    max-width: 100%;
     display: inline-flex;
   }
   .select-wrap .field {
@@ -208,11 +208,11 @@ export const modernStyle = css`
   }
   .select-wrap .chev {
     position: absolute;
-    right: 10px;
+    right: 8px;
     top: 50%;
     transform: translateY(-50%);
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     pointer-events: none;
     fill: var(--secondary-text-color);
   }

@@ -28,6 +28,7 @@ import { prettyPrint, getPart } from "../../helpers";
 import {
   mdiDelete,
   mdiChevronDown,
+  mdiMenuDown,
   mdiPlus,
   mdiMinus,
 } from "@mdi/js";
@@ -592,7 +593,7 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
             ${options}
           </select>
           <svg class="chev" viewBox="0 0 24 24">
-            <path d=${mdiChevronDown}></path>
+            <path d=${mdiMenuDown}></path>
           </svg>
         </div>
       </div>
@@ -687,7 +688,7 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
                       )}
                     </select>
                     <svg class="chev" viewBox="0 0 24 24">
-                      <path d=${mdiChevronDown}></path>
+                      <path d=${mdiMenuDown}></path>
                     </svg>
                   </div>
                 </div>

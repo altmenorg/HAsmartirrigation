@@ -45,7 +45,7 @@ import {
   mdiPlus,
   mdiPencil,
   mdiDelete,
-  mdiChevronDown,
+  mdiMenuDown,
   mdiMinus,
 } from "@mdi/js";
 
@@ -358,7 +358,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     </option>
                   </select>
                   <svg class="chev" viewBox="0 0 24 24">
-                    <path d=${mdiChevronDown}></path>
+                    <path d=${mdiMenuDown}></path>
                   </svg>
                 </div>
               </div>
@@ -1217,7 +1217,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             ${options}
           </select>
           <svg class="chev" viewBox="0 0 24 24">
-            <path d=${mdiChevronDown}></path>
+            <path d=${mdiMenuDown}></path>
           </svg>
         </div>
       </div>

@@ -63,6 +63,7 @@ import {
   mdiConsoleNetworkOutline,
   mdiDelete,
   mdiChevronDown,
+  mdiMenuDown,
   mdiPlus,
   mdiMinus,
 } from "@mdi/js";
@@ -1127,7 +1128,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
             ${this.renderAggregateOptionsForMapping(value, mappingline)}
           </select>
           <svg class="chev" viewBox="0 0 24 24">
-            <path d=${mdiChevronDown}></path>
+            <path d=${mdiMenuDown}></path>
           </svg>
         </div>
       </div>
@@ -1424,7 +1425,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
             ${options}
           </select>
           <svg class="chev" viewBox="0 0 24 24">
-            <path d=${mdiChevronDown}></path>
+            <path d=${mdiMenuDown}></path>
           </svg>
         </div>
       </div>
@@ -1716,8 +1717,8 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
       /* HA entity picker, sized like the other controls */
       .entity-field {
         flex: 0 0 auto;
-        width: 280px;
-        max-width: 55%;
+        width: 360px;
+        max-width: 100%;
       }
       @media (max-width: 600px) {
         .radio-group,

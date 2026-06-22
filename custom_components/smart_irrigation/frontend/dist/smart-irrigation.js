@@ -951,7 +951,7 @@
       ye(e, "show-dialog", {
         dialogTag: "error-dialog",
         dialogImport: () => Promise.resolve().then(function () {
-          return ts;
+          return as;
         }),
         dialogParams: {
           error: t
@@ -5119,11 +5119,12 @@
     vn = "M6.5 20Q4.22 20 2.61 18.43 1 16.85 1 14.58 1 12.63 2.17 11.1 3.35 9.57 5.25 9.15 5.88 6.85 7.75 5.43 9.63 4 12 4 14.93 4 16.96 6.04 19 8.07 19 11 20.73 11.2 21.86 12.5 23 13.78 23 15.5 23 17.38 21.69 18.69 20.38 20 18.5 20M6.5 18H18.5Q19.55 18 20.27 17.27 21 16.55 21 15.5 21 14.45 20.27 13.73 19.55 13 18.5 13H17V11Q17 8.93 15.54 7.46 14.08 6 12 6 9.93 6 8.46 7.46 7 8.93 7 11H6.5Q5.05 11 4.03 12.03 3 13.05 3 14.5 3 15.95 4.03 17 5.05 18 6.5 18M12 12Z",
     bn = "M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z",
     _n = "M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z",
-    yn = "M19,13H5V11H19V13Z",
-    wn = "M12.5 9.36L4.27 14.11C3.79 14.39 3.18 14.23 2.9 13.75C2.62 13.27 2.79 12.66 3.27 12.38L11.5 7.63C11.97 7.35 12.58 7.5 12.86 8C13.14 8.47 12.97 9.09 12.5 9.36M13 19C13 15.82 15.47 13.23 18.6 13L20 6H21V4H3V6H4L4.76 9.79L10.71 6.36C11.09 6.13 11.53 6 12 6C13.38 6 14.5 7.12 14.5 8.5C14.5 9.44 14 10.26 13.21 10.69L5.79 14.97L7 21H13.35C13.13 20.37 13 19.7 13 19M21.12 15.46L19 17.59L16.88 15.46L15.47 16.88L17.59 19L15.47 21.12L16.88 22.54L19 20.41L21.12 22.54L22.54 21.12L20.41 19L22.54 16.88L21.12 15.46Z",
-    xn = "M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z",
-    kn = "M21,10.12H14.22L16.96,7.3C14.23,4.6 9.81,4.5 7.08,7.2C4.35,9.91 4.35,14.28 7.08,17C9.81,19.7 14.23,19.7 16.96,17C18.32,15.65 19,14.08 19,12.1H21C21,14.08 20.12,16.65 18.36,18.39C14.85,21.87 9.15,21.87 5.64,18.39C2.14,14.92 2.11,9.28 5.62,5.81C9.13,2.34 14.76,2.34 18.27,5.81L21,3V10.12M12.5,8V12.25L16,14.33L15.28,15.54L11,13V8H12.5Z";
-  const $n = o`
+    yn = "M7,10L12,15L17,10H7Z",
+    wn = "M19,13H5V11H19V13Z",
+    xn = "M12.5 9.36L4.27 14.11C3.79 14.39 3.18 14.23 2.9 13.75C2.62 13.27 2.79 12.66 3.27 12.38L11.5 7.63C11.97 7.35 12.58 7.5 12.86 8C13.14 8.47 12.97 9.09 12.5 9.36M13 19C13 15.82 15.47 13.23 18.6 13L20 6H21V4H3V6H4L4.76 9.79L10.71 6.36C11.09 6.13 11.53 6 12 6C13.38 6 14.5 7.12 14.5 8.5C14.5 9.44 14 10.26 13.21 10.69L5.79 14.97L7 21H13.35C13.13 20.37 13 19.7 13 19M21.12 15.46L19 17.59L16.88 15.46L15.47 16.88L17.59 19L15.47 21.12L16.88 22.54L19 20.41L21.12 22.54L22.54 21.12L20.41 19L22.54 16.88L21.12 15.46Z",
+    kn = "M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z",
+    $n = "M21,10.12H14.22L16.96,7.3C14.23,4.6 9.81,4.5 7.08,7.2C4.35,9.91 4.35,14.28 7.08,17C9.81,19.7 14.23,19.7 16.96,17C18.32,15.65 19,14.08 19,12.1H21C21,14.08 20.12,16.65 18.36,18.39C14.85,21.87 9.15,21.87 5.64,18.39C2.14,14.92 2.11,9.28 5.62,5.81C9.13,2.34 14.76,2.34 18.27,5.81L21,3V10.12M12.5,8V12.25L16,14.33L15.28,15.54L11,13V8H12.5Z";
+  const Sn = o`
   /* Existing common styles */
   ha-card {
     display: flex;
@@ -5642,7 +5643,7 @@
     white-space: nowrap;
   }
 `,
-    Sn = o`
+    zn = o`
   /* mwc-dialog (ha-dialog) styles */
   ha-dialog {
     --mdc-dialog-min-width: 400px;
@@ -5670,7 +5671,7 @@
     margin-bottom: 10px;
   }
 `;
-  let zn = class extends oe {
+  let An = class extends oe {
     async showDialog(e) {
       var t, a, i, n, s, r, o, l, d;
       if (this.params = e, e.createTrigger) this._trigger = {
@@ -5929,7 +5930,7 @@
       });
     }
     static get styles() {
-      return [Sn, o`
+      return [zn, o`
         .wrapper {
           color: var(--primary-text-color);
         }
@@ -5981,10 +5982,10 @@
   };
   t([ce({
     attribute: !1
-  })], zn.prototype, "hass", void 0), t([ce({
+  })], An.prototype, "hass", void 0), t([ce({
     attribute: !1
-  })], zn.prototype, "params", void 0), t([he()], zn.prototype, "_trigger", void 0), zn = t([de("trigger-dialog")], zn);
-  const An = o`
+  })], An.prototype, "params", void 0), t([he()], An.prototype, "_trigger", void 0), An = t([de("trigger-dialog")], An);
+  const Mn = o`
   /* --- collapsible card: a plain ha-card with a clickable header --- */
   .si-card {
     overflow: hidden;
@@ -6106,8 +6107,8 @@
   /* --- unified field style for inputs AND selects (HA filled look) --- */
   .field {
     flex: 0 0 auto;
-    width: 240px;
-    max-width: 50%;
+    width: 360px;
+    max-width: 100%;
     height: 44px;
     box-sizing: border-box;
     padding: 0 12px;
@@ -6149,8 +6150,8 @@
     display: inline-flex;
     align-items: center;
     flex: 0 0 auto;
-    width: 240px;
-    max-width: 50%;
+    width: 360px;
+    max-width: 100%;
   }
   .num-field .num-input {
     flex: 1 1 auto;
@@ -6167,8 +6168,8 @@
   .select-wrap {
     position: relative;
     flex: 0 0 auto;
-    width: 240px;
-    max-width: 50%;
+    width: 360px;
+    max-width: 100%;
     display: inline-flex;
   }
   .select-wrap .field {
@@ -6182,11 +6183,11 @@
   }
   .select-wrap .chev {
     position: absolute;
-    right: 10px;
+    right: 8px;
     top: 50%;
     transform: translateY(-50%);
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     pointer-events: none;
     fill: var(--secondary-text-color);
   }
@@ -6242,7 +6243,7 @@
     }
   }
 `;
-  let Mn = class extends Tt(oe) {
+  let Tn = class extends Tt(oe) {
     constructor() {
       super(...arguments), this.isLoading = !0, this.isSaving = !1, this._hasLoadedOnce = !1, this._suppressNextConfigUpdate = !1, this._updateScheduled = !1, this.debouncedSave = (() => {
         let e = null;
@@ -6417,7 +6418,7 @@
                     </option>
                   </select>
                   <svg class="chev" viewBox="0 0 24 24">
-                    <path d=${mn}></path>
+                    <path d=${yn}></path>
                   </svg>
                 </div>
               </div>
@@ -6561,7 +6562,7 @@
           </div>
 
           <div class="add-trigger-section">
-            ${this._actionBtn(xn, pn("irrigation_start_triggers.add_trigger", this.hass.language), () => this._addTrigger())}
+            ${this._actionBtn(kn, pn("irrigation_start_triggers.add_trigger", this.hass.language), () => this._addTrigger())}
           </div>
         </div>
       </ha-card>
@@ -6892,13 +6893,13 @@
           />
           <ha-icon-button
             class="step-btn"
-            .path=${yn}
+            .path=${wn}
             ?disabled=${s}
             @click=${e => o(e.currentTarget.parentElement.querySelector("input"), -1)}
           ></ha-icon-button>
           <ha-icon-button
             class="step-btn"
-            .path=${xn}
+            .path=${kn}
             ?disabled=${s}
             @click=${e => o(e.currentTarget.parentElement.querySelector("input"), 1)}
           ></ha-icon-button>
@@ -6915,7 +6916,7 @@
             ${t}
           </select>
           <svg class="chev" viewBox="0 0 24 24">
-            <path d=${mn}></path>
+            <path d=${yn}></path>
           </svg>
         </div>
       </div>
@@ -6941,7 +6942,7 @@
     }
     static get styles() {
       return o`
-      ${$n} ${An} /* View-specific styles only - most common styles are now in globalStyle */
+      ${Sn} ${Mn} /* View-specific styles only - most common styles are now in globalStyle */
 
       /* Drop the clickable (i) toggles and just always show the section
          descriptions (they're short and not in the way). */
@@ -7063,28 +7064,28 @@
     `;
     }
   };
-  t([ce()], Mn.prototype, "narrow", void 0), t([ce()], Mn.prototype, "path", void 0), t([ce()], Mn.prototype, "data", void 0), t([ce()], Mn.prototype, "config", void 0), t([ce({
+  t([ce()], Tn.prototype, "narrow", void 0), t([ce()], Tn.prototype, "path", void 0), t([ce()], Tn.prototype, "data", void 0), t([ce()], Tn.prototype, "config", void 0), t([ce({
     type: Boolean
-  })], Mn.prototype, "isLoading", void 0), t([ce({
+  })], Tn.prototype, "isLoading", void 0), t([ce({
     type: Boolean
-  })], Mn.prototype, "isSaving", void 0), Mn = t([de("smart-irrigation-view-general")], Mn);
+  })], Tn.prototype, "isSaving", void 0), Tn = t([de("smart-irrigation-view-general")], Tn);
   /**
        * @license
        * Copyright 2020 Google LLC
        * SPDX-License-Identifier: BSD-3-Clause
        */
   const {
-      I: Tn
+      I: En
     } = ie,
-    En = () => document.createComment(""),
-    Dn = (e, t, a) => {
+    Dn = () => document.createComment(""),
+    Hn = (e, t, a) => {
       var i;
       const n = e._$AA.parentNode,
         s = void 0 === t ? e._$AB : t._$AA;
       if (void 0 === a) {
-        const t = n.insertBefore(En(), s),
-          i = n.insertBefore(En(), s);
-        a = new Tn(t, i, e, e.options);
+        const t = n.insertBefore(Dn(), s),
+          i = n.insertBefore(Dn(), s);
+        a = new En(t, i, e, e.options);
       } else {
         const t = a._$AB.nextSibling,
           r = a._$AM,
@@ -7103,10 +7104,10 @@
       }
       return a;
     },
-    Hn = (e, t, a = e) => (e._$AI(t, a), e),
-    Cn = {},
-    On = (e, t = Cn) => e._$AH = t,
-    Pn = e => {
+    Cn = (e, t, a = e) => (e._$AI(t, a), e),
+    On = {},
+    Pn = (e, t = On) => e._$AH = t,
+    Nn = e => {
       var t;
       null === (t = e._$AP) || void 0 === t || t.call(e, !1, !0);
       let a = e._$AA;
@@ -7116,12 +7117,12 @@
         a.remove(), a = e;
       }
     },
-    Nn = (e, t, a) => {
+    jn = (e, t, a) => {
       const i = new Map();
       for (let n = t; n <= a; n++) i.set(e[n], n);
       return i;
     },
-    jn = mt(class extends ft {
+    Bn = mt(class extends ft {
       constructor(e) {
         if (super(e), e.type !== gt) throw Error("repeat() can only be used in text expressions");
       }
@@ -7156,26 +7157,26 @@
           p = s.length - 1,
           g = 0,
           m = r.length - 1;
-        for (; h <= p && g <= m;) if (null === s[h]) h++;else if (null === s[p]) p--;else if (l[h] === o[g]) d[g] = Hn(s[h], r[g]), h++, g++;else if (l[p] === o[m]) d[m] = Hn(s[p], r[m]), p--, m--;else if (l[h] === o[m]) d[m] = Hn(s[h], r[m]), Dn(e, d[m + 1], s[h]), h++, m--;else if (l[p] === o[g]) d[g] = Hn(s[p], r[g]), Dn(e, s[h], s[p]), p--, g++;else if (void 0 === u && (u = Nn(o, g, m), c = Nn(l, h, p)), u.has(l[h])) {
+        for (; h <= p && g <= m;) if (null === s[h]) h++;else if (null === s[p]) p--;else if (l[h] === o[g]) d[g] = Cn(s[h], r[g]), h++, g++;else if (l[p] === o[m]) d[m] = Cn(s[p], r[m]), p--, m--;else if (l[h] === o[m]) d[m] = Cn(s[h], r[m]), Hn(e, d[m + 1], s[h]), h++, m--;else if (l[p] === o[g]) d[g] = Cn(s[p], r[g]), Hn(e, s[h], s[p]), p--, g++;else if (void 0 === u && (u = jn(o, g, m), c = jn(l, h, p)), u.has(l[h])) {
           if (u.has(l[p])) {
             const t = c.get(o[g]),
               a = void 0 !== t ? s[t] : null;
             if (null === a) {
-              const t = Dn(e, s[h]);
-              Hn(t, r[g]), d[g] = t;
-            } else d[g] = Hn(a, r[g]), Dn(e, s[h], a), s[t] = null;
+              const t = Hn(e, s[h]);
+              Cn(t, r[g]), d[g] = t;
+            } else d[g] = Cn(a, r[g]), Hn(e, s[h], a), s[t] = null;
             g++;
-          } else Pn(s[p]), p--;
-        } else Pn(s[h]), h++;
+          } else Nn(s[p]), p--;
+        } else Nn(s[h]), h++;
         for (; g <= m;) {
-          const t = Dn(e, d[m + 1]);
-          Hn(t, r[g]), d[g++] = t;
+          const t = Hn(e, d[m + 1]);
+          Cn(t, r[g]), d[g++] = t;
         }
         for (; h <= p;) {
           const e = s[h++];
-          null !== e && Pn(e);
+          null !== e && Nn(e);
         }
-        return this.ut = o, On(e, d), R;
+        return this.ut = o, Pn(e, d), R;
       }
     });
   /**
@@ -7183,23 +7184,23 @@
        * Copyright 2017 Google LLC
        * SPDX-License-Identifier: BSD-3-Clause
        */
-  var Bn, Ln;
-  function In(e) {
+  var Ln, In;
+  function Rn(e) {
     return e && e.__esModule && Object.prototype.hasOwnProperty.call(e, "default") ? e.default : e;
   }
-  function Rn(e) {
+  function Un(e) {
     throw new Error('Could not dynamically require "' + e + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');
   }
   !function (e) {
     e.Sunrise = "sunrise", e.Sunset = "sunset", e.SolarAzimuth = "solar_azimuth";
-  }(Bn || (Bn = {})), function (e) {
+  }(Ln || (Ln = {})), function (e) {
     e.Disabled = "disabled", e.Manual = "manual", e.Automatic = "automatic";
-  }(Ln || (Ln = {}));
-  var Un,
-    Yn = {
+  }(In || (In = {}));
+  var Yn,
+    Fn = {
       exports: {}
     };
-  var Fn = (Un || (Un = 1, function (e) {
+  var Vn = (Yn || (Yn = 1, function (e) {
       e.exports = function () {
         var t, a;
         function i() {
@@ -8062,7 +8063,7 @@
         function pa(t) {
           var a = null;
           if (void 0 === oa[t] && e && e.exports && ha(t)) try {
-            a = sa._abbr, Rn("./locale/" + t), ga(a);
+            a = sa._abbr, Un("./locale/" + t), ga(a);
           } catch (e) {
             oa[t] = null;
           }
@@ -8886,7 +8887,7 @@
         function In(e, t) {
           return t.erasNarrowRegex(e);
         }
-        function Un(e, t) {
+        function Rn(e, t) {
           return t._eraYearOrdinalRegex || be;
         }
         function Yn() {
@@ -8941,7 +8942,7 @@
         I("N", 0, 0, "eraAbbr"), I("NN", 0, 0, "eraAbbr"), I("NNN", 0, 0, "eraAbbr"), I("NNNN", 0, 0, "eraName"), I("NNNNN", 0, 0, "eraNarrow"), I("y", ["y", 1], "yo", "eraYear"), I("y", ["yy", 2], 0, "eraYear"), I("y", ["yyy", 3], 0, "eraYear"), I("y", ["yyyy", 4], 0, "eraYear"), ze("N", Bn), ze("NN", Bn), ze("NNN", Bn), ze("NNNN", Ln), ze("NNNNN", In), Ce(["N", "NN", "NNN", "NNNN", "NNNNN"], function (e, t, a, i) {
           var n = a._locale.erasParse(e, i, a._strict);
           n ? f(a).era = n : f(a).invalidEra = e;
-        }), ze("y", be), ze("yy", be), ze("yyy", be), ze("yyyy", be), ze("yo", Un), Ce(["y", "yy", "yyy", "yyyy"], je), Ce(["yo"], function (e, t, a, i) {
+        }), ze("y", be), ze("yy", be), ze("yyy", be), ze("yyyy", be), ze("yo", Rn), Ce(["y", "yy", "yyy", "yyyy"], je), Ce(["yo"], function (e, t, a, i) {
           var n;
           a._locale._eraYearOrdinalRegex && (n = e.match(a._locale._eraYearOrdinalRegex)), a._locale.eraYearOrdinalParse ? t[je] = a._locale.eraYearOrdinalParse(e, n) : t[je] = parseInt(e, 10);
         }), I(0, ["gg", 2], 0, function () {
@@ -9252,9 +9253,9 @@
           MONTH: "YYYY-MM"
         }, i;
       }();
-    }(Yn)), Yn.exports),
-    Vn = In(Fn);
-  let Wn = class extends Tt(oe) {
+    }(Fn)), Fn.exports),
+    Wn = Rn(Vn);
+  let Gn = class extends Tt(oe) {
     constructor() {
       super(...arguments), this.zones = [], this.modules = [], this.mappings = [], this.wateringCalendars = new Map(), this.weatherRecords = new Map(), this.isLoading = !0, this.isSaving = !1, this.isCreatingZone = !1, this._hasLoadedOnce = !1, this._suppressNextConfigUpdate = !1, this._updateScheduled = !1, this.globalDebounceTimer = null, this.zoneCache = new Map(), this._expanded = new Set();
     }
@@ -9340,7 +9341,7 @@
         name: this.nameInput.value.trim(),
         size: parseFloat(this.sizeInput.value) || 0,
         throughput: parseFloat(this.throughputInput.value) || 0,
-        state: Ln.Automatic,
+        state: In.Automatic,
         duration: 0,
         bucket: 0,
         module: void 0,
@@ -9475,7 +9476,7 @@
                 ${t.slice(0, 10).map(e => I`
                     <div class="weather-row">
                       <span
-                        >${Vn(e.timestamp).format("MM-DD HH:mm")}</span
+                        >${Wn(e.timestamp).format("MM-DD HH:mm")}</span
                       >
                       <span
                         >${e.temperature ? e.temperature.toFixed(1) + "°C" : "-"}</span
@@ -9487,7 +9488,7 @@
                         >${e.precipitation ? e.precipitation.toFixed(1) + "mm" : "-"}</span
                       >
                       <span
-                        >${e.retrieval_time ? Vn(e.retrieval_time).format("MM-DD HH:mm") : "-"}</span
+                        >${e.retrieval_time ? Wn(e.retrieval_time).format("MM-DD HH:mm") : "-"}</span
                       >
                     </div>
                   `)}
@@ -9571,8 +9572,8 @@
       var a;
       if (!this.hass) return I``;
       const i = this.hass.language,
-        n = e.state === Ln.Automatic,
-        s = e.state === Ln.Disabled || e.state === Ln.Automatic,
+        n = e.state === In.Automatic,
+        s = e.state === In.Disabled || e.state === In.Automatic,
         r = null != e.explanation && e.explanation.length > 0;
       if (null != e.mapping) {
         const t = this.mappings.filter(t => t.id === e.mapping)[0];
@@ -9614,7 +9615,7 @@
                 >${pn("panels.zones.labels.last_calculated", i)}</span
               >
               <span class="meta-value"
-                >${e.last_calculated ? Vn(e.last_calculated).format("YYYY-MM-DD HH:mm") : "—"}</span
+                >${e.last_calculated ? Wn(e.last_calculated).format("YYYY-MM-DD HH:mm") : "—"}</span
               >
             </div>
             <div class="meta-item">
@@ -9622,7 +9623,7 @@
                 >${pn("panels.zones.labels.data-last-updated", i)}</span
               >
               <span class="meta-value"
-                >${e.last_updated ? Vn(e.last_updated).format("YYYY-MM-DD HH:mm") : "—"}</span
+                >${e.last_updated ? Wn(e.last_updated).format("YYYY-MM-DD HH:mm") : "—"}</span
               >
             </div>
             <div class="meta-item">
@@ -9649,20 +9650,20 @@
 
             ${this._selectRow(pn("panels.zones.labels.state", i), I`
                 <option
-                  value="${Ln.Automatic}"
-                  ?selected=${e.state === Ln.Automatic}
+                  value="${In.Automatic}"
+                  ?selected=${e.state === In.Automatic}
                 >
                   ${pn("panels.zones.labels.states.automatic", i)}
                 </option>
                 <option
-                  value="${Ln.Disabled}"
-                  ?selected=${e.state === Ln.Disabled}
+                  value="${In.Disabled}"
+                  ?selected=${e.state === In.Disabled}
                 >
                   ${pn("panels.zones.labels.states.disabled", i)}
                 </option>
                 <option
-                  value="${Ln.Manual}"
-                  ?selected=${e.state === Ln.Manual}
+                  value="${In.Manual}"
+                  ?selected=${e.state === In.Manual}
                 >
                   ${pn("panels.zones.labels.states.manual", i)}
                 </option>
@@ -9706,9 +9707,9 @@
           <div class="zone-actions">
             ${n ? I`
                   ${this._actionBtn(gn, pn("panels.zones.actions.calculate", i), () => this.handleCalculateZone(t))}
-                  ${this._actionBtn(kn, pn("panels.zones.actions.update", i), () => this.handleUpdateZone(t))}
+                  ${this._actionBtn($n, pn("panels.zones.actions.update", i), () => this.handleUpdateZone(t))}
                 ` : ""}
-            ${this._actionBtn(wn, pn("panels.zones.actions.reset-bucket", i), () => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
+            ${this._actionBtn(xn, pn("panels.zones.actions.reset-bucket", i), () => this.handleEditZone(t, Object.assign(Object.assign({}, e), {
         [ot]: 0
       })))}
             ${null != e.mapping ? this._actionBtn(vn, pn("panels.zones.actions.view-weather-info", i), () => this.handleViewWeatherInfo(t)) : ""}
@@ -9771,13 +9772,13 @@
           />
           <ha-icon-button
             class="step-btn"
-            .path=${yn}
+            .path=${wn}
             ?disabled=${s}
             @click=${e => o(e.currentTarget.parentElement.querySelector("input"), -1)}
           ></ha-icon-button>
           <ha-icon-button
             class="step-btn"
-            .path=${xn}
+            .path=${kn}
             ?disabled=${s}
             @click=${e => o(e.currentTarget.parentElement.querySelector("input"), 1)}
           ></ha-icon-button>
@@ -9794,7 +9795,7 @@
             ${t}
           </select>
           <svg class="chev" viewBox="0 0 24 24">
-            <path d=${mn}></path>
+            <path d=${yn}></path>
           </svg>
         </div>
       </div>
@@ -9882,14 +9883,14 @@
               @click="${this.handleAddZone}"
               ?disabled="${this.isSaving}"
             >
-              <ha-svg-icon slot="start" .path=${xn}></ha-svg-icon>
+              <ha-svg-icon slot="start" .path=${kn}></ha-svg-icon>
               ${this.isSaving ? pn("common.saving-messages.adding", this.hass.language) : pn("panels.zones.cards.add-zone.actions.add", this.hass.language)}
             </ha-button>
           </div>
         </div>
       </ha-card>
 
-      ${jn(this.zones, e => {
+      ${Bn(this.zones, e => {
         var t;
         return null !== (t = e.id) && void 0 !== t ? t : e.name;
       }, (e, t) => this.renderZone(e, t))}
@@ -9900,8 +9901,8 @@
         <div class="card-content">
           <div class="zone-actions-grid">
             ${this._actionBtn(gn, pn("panels.zones.cards.zone-actions.actions.calculate-all", this.hass.language), () => this.handleCalculateAllZones(), !1, this.isSaving)}
-            ${this._actionBtn(kn, pn("panels.zones.cards.zone-actions.actions.update-all", this.hass.language), () => this.handleUpdateAllZones(), !1, this.isSaving)}
-            ${this._actionBtn(wn, pn("panels.zones.cards.zone-actions.actions.reset-all-buckets", this.hass.language), () => this.handleResetAllBuckets(), !1, this.isSaving)}
+            ${this._actionBtn($n, pn("panels.zones.cards.zone-actions.actions.update-all", this.hass.language), () => this.handleUpdateAllZones(), !1, this.isSaving)}
+            ${this._actionBtn(xn, pn("panels.zones.cards.zone-actions.actions.reset-all-buckets", this.hass.language), () => this.handleResetAllBuckets(), !1, this.isSaving)}
             ${this._actionBtn(vn, pn("panels.zones.cards.zone-actions.actions.clear-all-weatherdata", this.hass.language), () => this.handleClearAllWeatherdata(), !1, this.isSaving)}
           </div>
         </div>
@@ -9913,7 +9914,7 @@
     }
     static get styles() {
       return o`
-      ${$n}
+      ${Sn}
 
       /* --- Modern zone cards (HA-native look) --- */
       /* own collapsible: a plain ha-card (white surface like every HA card)
@@ -10042,8 +10043,8 @@
          same MDC variables HA's own ha-textfield/ha-select use (native feel) */
       .field {
         flex: 0 0 auto;
-        width: 240px;
-        max-width: 50%;
+        width: 360px;
+        max-width: 100%;
         height: 44px;
         box-sizing: border-box;
         padding: 0 12px;
@@ -10084,8 +10085,8 @@
         align-items: center;
         gap: 4px;
         flex: 0 0 auto;
-        width: 240px;
-        max-width: 50%;
+        width: 360px;
+        max-width: 100%;
       }
       .num-field .num-input {
         flex: 1 1 auto;
@@ -10102,8 +10103,8 @@
       .select-wrap {
         position: relative;
         flex: 0 0 auto;
-        width: 240px;
-        max-width: 50%;
+        width: 360px;
+        max-width: 100%;
         display: inline-flex;
       }
       .select-wrap .field {
@@ -10117,11 +10118,11 @@
       }
       .select-wrap .chev {
         position: absolute;
-        right: 10px;
+        right: 8px;
         top: 50%;
         transform: translateY(-50%);
-        width: 20px;
-        height: 20px;
+        width: 24px;
+        height: 24px;
         pointer-events: none;
         fill: var(--secondary-text-color);
       }
@@ -10186,24 +10187,24 @@
     `;
     }
   };
-  t([ce()], Wn.prototype, "config", void 0), t([ce({
+  t([ce()], Gn.prototype, "config", void 0), t([ce({
     type: Array
-  })], Wn.prototype, "zones", void 0), t([ce({
+  })], Gn.prototype, "zones", void 0), t([ce({
     type: Array
-  })], Wn.prototype, "modules", void 0), t([ce({
+  })], Gn.prototype, "modules", void 0), t([ce({
     type: Array
-  })], Wn.prototype, "mappings", void 0), t([ce({
+  })], Gn.prototype, "mappings", void 0), t([ce({
     type: Map
-  })], Wn.prototype, "wateringCalendars", void 0), t([ce({
+  })], Gn.prototype, "wateringCalendars", void 0), t([ce({
     type: Map
-  })], Wn.prototype, "weatherRecords", void 0), t([ce({
+  })], Gn.prototype, "weatherRecords", void 0), t([ce({
     type: Boolean
-  })], Wn.prototype, "isLoading", void 0), t([ce({
+  })], Gn.prototype, "isLoading", void 0), t([ce({
     type: Boolean
-  })], Wn.prototype, "isSaving", void 0), t([ce({
+  })], Gn.prototype, "isSaving", void 0), t([ce({
     type: Boolean
-  })], Wn.prototype, "isCreatingZone", void 0), t([pe("#nameInput")], Wn.prototype, "nameInput", void 0), t([pe("#sizeInput")], Wn.prototype, "sizeInput", void 0), t([pe("#throughputInput")], Wn.prototype, "throughputInput", void 0), Wn = t([de("smart-irrigation-view-zones")], Wn);
-  let Gn = class extends Tt(oe) {
+  })], Gn.prototype, "isCreatingZone", void 0), t([pe("#nameInput")], Gn.prototype, "nameInput", void 0), t([pe("#sizeInput")], Gn.prototype, "sizeInput", void 0), t([pe("#throughputInput")], Gn.prototype, "throughputInput", void 0), Gn = t([de("smart-irrigation-view-zones")], Gn);
+  let qn = class extends Tt(oe) {
     constructor() {
       super(...arguments), this.zones = [], this.modules = [], this.allmodules = [], this.isLoading = !0, this.isSaving = !1, this._hasLoadedOnce = !1, this._suppressNextConfigUpdate = !1, this._updateScheduled = !1, this.globalDebounceTimer = null, this.moduleCache = new Map(), this._expanded = new Set(), this.debouncedSave = (() => {
         let e = null;
@@ -10455,13 +10456,13 @@
           />
           <ha-icon-button
             class="step-btn"
-            .path=${yn}
+            .path=${wn}
             ?disabled=${s}
             @click=${e => o(e.currentTarget.parentElement.querySelector("input"), -1)}
           ></ha-icon-button>
           <ha-icon-button
             class="step-btn"
-            .path=${xn}
+            .path=${kn}
             ?disabled=${s}
             @click=${e => o(e.currentTarget.parentElement.querySelector("input"), 1)}
           ></ha-icon-button>
@@ -10478,7 +10479,7 @@
             ${t}
           </select>
           <svg class="chev" viewBox="0 0 24 24">
-            <path d=${mn}></path>
+            <path d=${yn}></path>
           </svg>
         </div>
       </div>
@@ -10533,7 +10534,7 @@
                           </option>`)}
                     </select>
                     <svg class="chev" viewBox="0 0 24 24">
-                      <path d=${mn}></path>
+                      <path d=${yn}></path>
                     </svg>
                   </div>
                 </div>
@@ -10543,7 +10544,7 @@
                     @click="${this.handleAddModule}"
                     ?disabled="${this.isSaving}"
                   >
-                    <ha-svg-icon slot="start" .path=${xn}></ha-svg-icon>
+                    <ha-svg-icon slot="start" .path=${kn}></ha-svg-icon>
                     ${this.isSaving ? pn("common.saving-messages.adding", this.hass.language) : pn("panels.modules.cards.add-module.actions.add", this.hass.language)}
                   </ha-button>
                 </div>
@@ -10553,7 +10554,7 @@
 
       ${this.isLoading ? I`<div class="loading-indicator">
             ${pn("common.loading-messages.modules", this.hass.language)}
-          </div>` : jn(this.modules, e => {
+          </div>` : Bn(this.modules, e => {
         var t;
         return null !== (t = e.id) && void 0 !== t ? t : e.name;
       }, (e, t) => this.renderModule(e, t))}
@@ -10564,23 +10565,23 @@
     }
     static get styles() {
       return o`
-      ${$n} ${An}
+      ${Sn} ${Mn}
       /* View-specific styles only - most common styles are now in globalStyle */
     `;
     }
   };
-  t([ce()], Gn.prototype, "config", void 0), t([ce({
+  t([ce()], qn.prototype, "config", void 0), t([ce({
     type: Array
-  })], Gn.prototype, "zones", void 0), t([ce({
+  })], qn.prototype, "zones", void 0), t([ce({
     type: Array
-  })], Gn.prototype, "modules", void 0), t([ce({
+  })], qn.prototype, "modules", void 0), t([ce({
     type: Array
-  })], Gn.prototype, "allmodules", void 0), t([ce({
+  })], qn.prototype, "allmodules", void 0), t([ce({
     type: Boolean
-  })], Gn.prototype, "isLoading", void 0), t([ce({
+  })], qn.prototype, "isLoading", void 0), t([ce({
     type: Boolean
-  })], Gn.prototype, "isSaving", void 0), t([pe("#moduleInput")], Gn.prototype, "moduleInput", void 0), Gn = t([de("smart-irrigation-view-modules")], Gn);
-  let qn = class extends Tt(oe) {
+  })], qn.prototype, "isSaving", void 0), t([pe("#moduleInput")], qn.prototype, "moduleInput", void 0), qn = t([de("smart-irrigation-view-modules")], qn);
+  let Zn = class extends Tt(oe) {
     constructor() {
       super(...arguments), this.zones = [], this.mappings = [], this.weatherRecords = new Map(), this.isLoading = !0, this.isSaving = !1, this._hasLoadedOnce = !1, this._suppressNextConfigUpdate = !1, this.debounceTimers = new Map(), this.globalDebounceTimer = null, this.mappingCache = new Map(), this._updateScheduled = !1, this._lastUpdateTime = 0, this._updateThrottleDelay = 16, this._expanded = new Set();
     }
@@ -10676,7 +10677,7 @@
           a = "-";
         try {
           if (e.timestamp && null !== e.timestamp) {
-            const a = Vn(e.timestamp);
+            const a = Wn(e.timestamp);
             a.isValid() && (t = a.format("MM-DD HH:mm"));
           }
         } catch (t) {
@@ -10684,7 +10685,7 @@
         }
         try {
           if (e.retrieval_time && null !== e.retrieval_time) {
-            const t = Vn(e.retrieval_time);
+            const t = Wn(e.retrieval_time);
             t.isValid() && (a = t.format("MM-DD HH:mm"));
           }
         } catch (t) {
@@ -11058,7 +11059,7 @@
             ${this.renderAggregateOptionsForMapping(t, a)}
           </select>
           <svg class="chev" viewBox="0 0 24 24">
-            <path d=${mn}></path>
+            <path d=${yn}></path>
           </svg>
         </div>
       </div>
@@ -11290,13 +11291,13 @@
           />
           <ha-icon-button
             class="step-btn"
-            .path=${yn}
+            .path=${wn}
             ?disabled=${s}
             @click=${e => o(e.currentTarget.parentElement.querySelector("input"), -1)}
           ></ha-icon-button>
           <ha-icon-button
             class="step-btn"
-            .path=${xn}
+            .path=${kn}
             ?disabled=${s}
             @click=${e => o(e.currentTarget.parentElement.querySelector("input"), 1)}
           ></ha-icon-button>
@@ -11313,7 +11314,7 @@
             ${t}
           </select>
           <svg class="chev" viewBox="0 0 24 24">
-            <path d=${mn}></path>
+            <path d=${yn}></path>
           </svg>
         </div>
       </div>
@@ -11366,7 +11367,7 @@
               @click="${this.handleAddMapping}"
               ?disabled="${this.isSaving}"
             >
-              <ha-svg-icon slot="start" .path=${xn}></ha-svg-icon>
+              <ha-svg-icon slot="start" .path=${kn}></ha-svg-icon>
               ${this.isSaving ? pn("common.saving-messages.adding", this.hass.language) : pn("panels.mappings.cards.add-mapping.actions.add", this.hass.language)}
             </ha-button>
           </div>
@@ -11380,13 +11381,13 @@
       const e = this.mappings.slice(0, Math.min(this.mappings.length, 10)),
         t = this.mappings.slice(10);
       return I`
-      ${jn(e, e => {
+      ${Bn(e, e => {
         var t;
         return null !== (t = e.id) && void 0 !== t ? t : e.name;
       }, (e, t) => this.renderMappingCard(e, t))}
       ${t.length > 0 ? I`
             <div class="si-form-actions">
-              ${this._actionBtn(xn, `Load ${t.length} more mappings...`, () => this.loadMoreMappings())}
+              ${this._actionBtn(kn, `Load ${t.length} more mappings...`, () => this.loadMoreMappings())}
             </div>
           ` : ""}
     `;
@@ -11453,7 +11454,7 @@
     }
     static get styles() {
       return o`
-      ${$n} ${An}
+      ${Sn} ${Mn}
 
       /* --- mappings: per-field sub-group inside the expanded card body --- */
       .si-subgroup {
@@ -11498,8 +11499,8 @@
       /* HA entity picker, sized like the other controls */
       .entity-field {
         flex: 0 0 auto;
-        width: 280px;
-        max-width: 55%;
+        width: 360px;
+        max-width: 100%;
       }
       @media (max-width: 600px) {
         .radio-group,
@@ -11516,18 +11517,18 @@
       }), this.debounceTimers.clear(), this.globalDebounceTimer && (clearTimeout(this.globalDebounceTimer), this.globalDebounceTimer = null), this.mappingCache.clear();
     }
   };
-  t([ce()], qn.prototype, "config", void 0), t([ce({
+  t([ce()], Zn.prototype, "config", void 0), t([ce({
     type: Array
-  })], qn.prototype, "zones", void 0), t([ce({
+  })], Zn.prototype, "zones", void 0), t([ce({
     type: Array
-  })], qn.prototype, "mappings", void 0), t([ce({
+  })], Zn.prototype, "mappings", void 0), t([ce({
     type: Map
-  })], qn.prototype, "weatherRecords", void 0), t([ce({
+  })], Zn.prototype, "weatherRecords", void 0), t([ce({
     type: Boolean
-  })], qn.prototype, "isLoading", void 0), t([ce({
+  })], Zn.prototype, "isLoading", void 0), t([ce({
     type: Boolean
-  })], qn.prototype, "isSaving", void 0), t([pe("#mappingNameInput")], qn.prototype, "mappingNameInput", void 0), qn = t([de("smart-irrigation-view-mappings")], qn);
-  let Zn = class extends Tt(oe) {
+  })], Zn.prototype, "isSaving", void 0), t([pe("#mappingNameInput")], Zn.prototype, "mappingNameInput", void 0), Zn = t([de("smart-irrigation-view-mappings")], Zn);
+  let Kn = class extends Tt(oe) {
     constructor() {
       super(...arguments), this.zones = [], this.isLoading = !0, this._updateScheduled = !1;
     }
@@ -11655,7 +11656,7 @@
               >${pn("panels.info.cards.next-irrigation.labels.next-start", this.hass.language)}:</label
             >
             <span class="value">
-              ${this.info.next_irrigation_start ? Vn(this.info.next_irrigation_start).format("YYYY-MM-DD HH:mm:ss") : pn("panels.info.cards.next-irrigation.no-data", this.hass.language)}
+              ${this.info.next_irrigation_start ? Wn(this.info.next_irrigation_start).format("YYYY-MM-DD HH:mm:ss") : pn("panels.info.cards.next-irrigation.no-data", this.hass.language)}
             </span>
           </div>
 
@@ -11724,7 +11725,7 @@
                     >${pn("panels.info.cards.irrigation-reason.labels.sunrise", this.hass.language)}:</label
                   >
                   <span class="value"
-                    >${Vn(this.info.sunrise_time).format("HH:mm:ss")}</span
+                    >${Wn(this.info.sunrise_time).format("HH:mm:ss")}</span
                   >
                 </div>
               ` : ""}
@@ -11773,7 +11774,7 @@
     }
     static get styles() {
       return o`
-      ${$n} /* View-specific styles only - most common styles are now in globalStyle */
+      ${Sn} /* View-specific styles only - most common styles are now in globalStyle */
 
       .zone-info {
         margin-bottom: 16px;
@@ -11835,15 +11836,15 @@
     `;
     }
   };
-  t([ce()], Zn.prototype, "config", void 0), t([ce({
+  t([ce()], Kn.prototype, "config", void 0), t([ce({
     type: Object
-  })], Zn.prototype, "info", void 0), t([ce({
+  })], Kn.prototype, "info", void 0), t([ce({
     type: Array
-  })], Zn.prototype, "zones", void 0), t([ce({
+  })], Kn.prototype, "zones", void 0), t([ce({
     type: Boolean
-  })], Zn.prototype, "isLoading", void 0), Zn = t([de("smart-irrigation-view-info")], Zn);
-  const Kn = $n,
-    Jn = () => {
+  })], Kn.prototype, "isLoading", void 0), Kn = t([de("smart-irrigation-view-info")], Kn);
+  const Jn = Sn,
+    Qn = () => {
       const e = e => {
           let t = {};
           for (let a = 0; a < e.length; a += 2) {
@@ -11877,7 +11878,7 @@
       }
       return a;
     },
-    Qn = (e, ...t) => {
+    Xn = (e, ...t) => {
       let a = {
         page: e,
         params: {}
@@ -11903,10 +11904,10 @@
       let n = `/${we}/${a.page}`;
       return a.subpage && (n = `${n}/${a.subpage}`), i(a.params).length && (n = `${n}/${i(a.params)}`), a.filter && (n = `${n}/filter/${i(a.filter)}`), n;
     };
-  var Xn;
+  var es;
   !function (e) {
     e.Info = "info", e.General = "general", e.Zones = "zones", e.Modules = "modules", e.Mappings = "mappings", e.Help = "help";
-  }(Xn || (Xn = {})), e.SmartIrrigationPanel = class extends oe {
+  }(es || (es = {})), e.SmartIrrigationPanel = class extends oe {
     constructor() {
       super(...arguments), this._updateScheduled = !1, this._lastNavigationTime = 0, this._navigationThrottleDelay = 100;
     }
@@ -11916,8 +11917,8 @@
       }));
     }
     async firstUpdated() {
-      const e = Jn();
-      e.page && Object.values(Xn).includes(e.page) ? (window.addEventListener("location-changed", () => {
+      const e = Qn();
+      e.page && Object.values(es).includes(e.page) ? (window.addEventListener("location-changed", () => {
         if (!window.location.pathname.includes("smart-irrigation")) return;
         const e = performance.now();
         e - this._lastNavigationTime < this._navigationThrottleDelay || (this._lastNavigationTime = e, this._scheduleUpdate());
@@ -11925,10 +11926,10 @@
         this._scheduleUpdate();
       }).catch(e => {
         console.error("Failed to load HA form elements:", e), this._scheduleUpdate();
-      })) : xt(0, Qn(Xn.General));
+      })) : xt(0, Xn(es.General));
     }
     render() {
-      const e = Jn(),
+      const e = Qn(),
         t = !!customElements.get("ha-tab-group"),
         a = !!customElements.get("ha-tab-group-tab");
       return I`
@@ -11946,7 +11947,7 @@
           <ha-tab-group
             @wa-tab-show=${this.handlePageSelected}
           >
-            ${Object.values(Xn).map(t => I`
+            ${Object.values(es).map(t => I`
               <ha-tab-group-tab slot="nav" panel="${t}" .active=${e.page === t}>
                 ${pn(`panels.${t}.title`, this.hass.language)}
               </ha-tab-group-tab>
@@ -11954,7 +11955,7 @@
           </ha-tab-group>
         ` : I`
           <div class="custom-tabs">
-            ${Object.values(Xn).map(t => I`
+            ${Object.values(es).map(t => I`
               <button
                 class="custom-tab ${e.page === t ? "active" : ""}"
                 @click=${() => this.navigateToPage(t)}
@@ -12046,20 +12047,20 @@
       }
     }
     navigateToPage(e) {
-      if (e !== Jn().page) {
-        const t = Qn(e);
+      if (e !== Qn().page) {
+        const t = Xn(e);
         xt(0, t), this.requestUpdate();
       } else scrollTo(0, 0);
     }
     handlePageSelected(e) {
       const t = e.detail.name;
-      if (t !== Jn().page) {
-        const e = Qn(t);
+      if (t !== Qn().page) {
+        const e = Xn(t);
         xt(0, e), this.requestUpdate();
       } else scrollTo(0, 0);
     }
     static get styles() {
-      return [Kn, o`
+      return [Jn, o`
         :host {
           color: var(--primary-text-color);
           --paper-card-header-color: var(--primary-text-color);
@@ -12167,7 +12168,7 @@
     type: Boolean,
     reflect: !0
   })], e.SmartIrrigationPanel.prototype, "narrow", void 0), e.SmartIrrigationPanel = t([de("smart-irrigation")], e.SmartIrrigationPanel);
-  let es = class extends oe {
+  let ts = class extends oe {
     async showDialog(e) {
       this._params = e, await this.updateComplete;
     }
@@ -12222,11 +12223,11 @@
   };
   t([ce({
     attribute: !1
-  })], es.prototype, "hass", void 0), t([he()], es.prototype, "_params", void 0), es = t([de("error-dialog")], es);
-  var ts = Object.freeze({
+  })], ts.prototype, "hass", void 0), t([he()], ts.prototype, "_params", void 0), ts = t([de("error-dialog")], ts);
+  var as = Object.freeze({
     __proto__: null,
     get ErrorDialog() {
-      return es;
+      return ts;
     }
   });
   Object.defineProperty(e, "__esModule", {
