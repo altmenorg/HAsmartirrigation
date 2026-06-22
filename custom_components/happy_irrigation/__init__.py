@@ -254,8 +254,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         {const.CONF_USE_WEATHER_SERVICE: coordinator.use_weather_service}
     )
 
+    # NOTE: ne PAS passer data={} ici — ça écrasait entièrement entry.data, qui
+    # est le SEUL endroit où la clé API du service météo est persistée (le store
+    # ne la garde pas). Comme le config flow ne pose jamais d'unique_id,
+    # entry.unique_id reste None et ce bloc s'exécute à CHAQUE setup : l'ancien
+    # data={} effaçait donc la clé à chaque redémarrage (elle ne survivait qu'en
+    # mémoire jusque-là). Bug partagé avec l'upstream Smart Irrigation.
     if entry.unique_id is None:
-        hass.config_entries.async_update_entry(entry, unique_id=coordinator.id, data={})
+        hass.config_entries.async_update_entry(entry, unique_id=coordinator.id)
 
     _LOGGER.info("Calling async_forward_entry_setups")
     await hass.config_entries.async_forward_entry_setups(entry, [PLATFORM])

@@ -78,11 +78,21 @@ class SmartIrrigationConfigFlow(config_entries.ConfigFlow, domain=const.DOMAIN):
         """Offer to import an existing Smart Irrigation configuration."""
         if user_input is not None:
             if user_input.get("import_existing"):
+                # Give the imported entry a stable unique_id, exactly like the
+                # normal setup flow does (_check_unique). Without it,
+                # entry.unique_id stays None and the "if entry.unique_id is None"
+                # branch in async_setup_entry fires on every restart — which used
+                # to wipe entry.data (incl. the weather-service API key) each time.
+                await self.async_set_unique_id(const.NAME)
+                self._abort_if_unique_id_configured()
                 # Carry over the weather-service settings + API key from the
                 # legacy config entry NOW (they live in the entry, not the
                 # storage file), and flag the entry so async_setup_entry imports
                 # the zones/modules/mappings from the legacy storage.
-                data = {const.CONF_IMPORT_FROM_LEGACY: True}
+                data = {
+                    const.CONF_IMPORT_FROM_LEGACY: True,
+                    const.CONF_INSTANCE_NAME: const.NAME,
+                }
                 legacy = self.hass.config_entries.async_entries(const.LEGACY_DOMAIN)
                 if legacy:
                     legacy_data = legacy[0].data
