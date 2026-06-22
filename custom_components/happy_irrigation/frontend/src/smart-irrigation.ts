@@ -207,7 +207,7 @@ export class SmartIrrigationPanel extends LitElement {
               "panels.help.cards.how-to-get-help.first-read-the",
               this.hass.language,
             )}
-            <a href="https://github.com/altmenorg/HappyIrrigation#readme"
+            <a href="https://altmenorg.github.io/HappyIrrigation/"
               >${localize(
                 "panels.help.cards.how-to-get-help.wiki",
                 this.hass.language,

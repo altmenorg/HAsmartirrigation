@@ -3360,7 +3360,7 @@ i.version="2.30.1",s(qa),i.fn=dn,i.min=Ja,i.max=Qa,i.now=ei,i.utc=g,i.unix=un,i.
         >
           <div class="card-content">
             ${Cs("panels.help.cards.how-to-get-help.first-read-the",this.hass.language)}
-            <a href="https://github.com/altmenorg/HappyIrrigation#readme"
+            <a href="https://altmenorg.github.io/HappyIrrigation/"
               >${Cs("panels.help.cards.how-to-get-help.wiki",this.hass.language)}</a
             >.
             ${Cs("panels.help.cards.how-to-get-help.if-you-still-need-help",this.hass.language)}
