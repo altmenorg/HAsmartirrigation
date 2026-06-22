@@ -204,7 +204,9 @@ export class SmartIrrigationViewWeatherService extends LitElement {
       ${globalStyle} ${modernStyle}
 
       .ws-description {
-        color: var(--secondary-text-color);
+        /* description toujours en couleur de texte primaire, comme l'intro des
+           autres modules (pas de gris secondaire) */
+        color: var(--primary-text-color);
         line-height: 1.4;
       }
       .ws-actions {

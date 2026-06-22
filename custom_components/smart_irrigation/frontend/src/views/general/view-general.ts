@@ -40,14 +40,7 @@ import {
   TRIGGER_TYPE_SOLAR_AZIMUTH,
   DOMAIN,
 } from "../../const";
-import {
-  mdiInformationOutline,
-  mdiPlus,
-  mdiPencil,
-  mdiDelete,
-  mdiMenuDown,
-  mdiMinus,
-} from "@mdi/js";
+import { mdiPlus, mdiPencil, mdiDelete, mdiMenuDown, mdiMinus } from "@mdi/js";
 
 @customElement("smart-irrigation-view-general")
 export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
@@ -188,30 +181,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       </div>`;
     } else {
       let r1 = html` <div class="card-content">
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-            id="showautocalcdescription"
-            @click="${() => this.toggleInformation("autocalcdescription")}"
-          >
-            >
-            <title>
-              ${localize(
-                "panels.zones.actions.information",
-                this.hass.language,
-              )}
-            </title>
-            <path fill="#404040" d="${mdiInformationOutline}" />
-          </svg>
-        </div>
-
-        <div class="card-content">
-          <label class="hidden" id="autocalcdescription">
-            ${localize(
-              "panels.general.cards.automatic-duration-calculation.description",
-              this.hass.language,
-            )}
-          </label>
+          ${localize(
+            "panels.general.cards.automatic-duration-calculation.description",
+            this.hass.language,
+          )}
         </div>
         <div class="card-content">
           <div class="setting-row">
@@ -252,29 +225,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         ${r1}</ha-card
       >`;
       let r2 = html` <div class="card-content">
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-            id="showautoupdatedescription"
-            @click="${() => this.toggleInformation("autoupdatedescription")}"
-          >
-            >
-            <title>
-              ${localize(
-                "panels.zones.actions.information",
-                this.hass.language,
-              )}
-            </title>
-            <path fill="#404040" d="${mdiInformationOutline}" />
-          </svg>
-        </div>
-        <div class="card-content">
-          <label class="hidden" id="autoupdatedescription">
-            ${localize(
-              "panels.general.cards.automatic-update.description",
-              this.hass.language,
-            )}
-          </label>
+          ${localize(
+            "panels.general.cards.automatic-update.description",
+            this.hass.language,
+          )}
         </div>
         <div class="card-content">
           <div class="setting-row">
@@ -388,29 +342,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       this.hass.language)}">${r2}</ha-card>`;
 
       let r3 = html` <div class="card-content">
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-            id="showautocleardescription"
-            @click="${() => this.toggleInformation("autocleardescription")}"
-          >
-            <title>
-              ${localize(
-                "panels.zones.actions.information",
-                this.hass.language,
-              )}
-            </title>
-
-            <path fill="#404040" d="${mdiInformationOutline}" />
-          </svg>
-        </div>
-        <div class="card-content">
-          <label class="hidden" id="autocleardescription">
-            ${localize(
-              "panels.general.cards.automatic-clear.description",
-              this.hass.language,
-            )}
-          </label>
+          ${localize(
+            "panels.general.cards.automatic-clear.description",
+            this.hass.language,
+          )}
         </div>
         <div class="card-content">
           <div class="setting-row">
@@ -451,30 +386,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       >`;
 
       let r4 = html`<div class="card-content">
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-            id="showcontinuousupdatesdescription"
-            @click="${() =>
-              this.toggleInformation("continuousupdatesdescription")}"
-          >
-            >
-            <title>
-              ${localize(
-                "panels.zones.actions.information",
-                this.hass.language,
-              )}
-            </title>
-            <path fill="#404040" d="${mdiInformationOutline}" />
-          </svg>
-        </div>
-        <div class="card-content">
-          <label class="hidden" id="continuousupdatesdescription">
-            ${localize(
-              "panels.general.cards.continuousupdates.description",
-              this.hass.language,
-            )}
-          </label>
+          ${localize(
+            "panels.general.cards.continuousupdates.description",
+            this.hass.language,
+          )}
         </div>
         <div class="card-content">
           <div class="setting-row">
@@ -553,29 +468,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         )}"
       >
         <div class="card-content">
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-            id="showtriggersdescription"
-            @click="${() => this.toggleInformation("triggersdescription")}"
-          >
-            <title>
-              ${localize(
-                "panels.zones.actions.information",
-                this.hass.language,
-              )}
-            </title>
-            <path fill="#404040" d="${mdiInformationOutline}" />
-          </svg>
-        </div>
-
-        <div class="card-content">
-          <label class="hidden" id="triggersdescription">
-            ${localize(
-              "irrigation_start_triggers.description",
-              this.hass.language,
-            )}
-          </label>
+          ${localize(
+            "irrigation_start_triggers.description",
+            this.hass.language,
+          )}
         </div>
 
         <div class="card-content">
@@ -799,26 +695,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     return html`
       <ha-card header="${localize("weather_skip.title", this.hass.language)}">
         <div class="card-content">
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-            id="showweatherskipdescription"
-            @click="${() => this.toggleInformation("weather_skipdescription")}"
-          >
-            <title>
-              ${localize(
-                "panels.zones.actions.information",
-                this.hass.language,
-              )}
-            </title>
-            <path fill="#404040" d="${mdiInformationOutline}" />
-          </svg>
-        </div>
-
-        <div class="card-content">
-          <label class="hidden" id="weather_skipdescription">
-            ${localize("weather_skip.description", this.hass.language)}
-          </label>
+          ${localize("weather_skip.description", this.hass.language)}
         </div>
         <div class="card-content">
           <div class="setting-row">
@@ -865,27 +742,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         header="${localize("coordinate_config.title", this.hass.language)}"
       >
         <div class="card-content">
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-            id="showmanualcoordinatesdescription"
-            @click="${() =>
-              this.toggleInformation("coordinate_configdescription")}"
-          >
-            <title>
-              ${localize(
-                "panels.zones.actions.information",
-                this.hass.language,
-              )}
-            </title>
-            <path fill="#404040" d="${mdiInformationOutline}" />
-          </svg>
-        </div>
-
-        <div class="card-content">
-          <label class="hidden" id="coordinate_configdescription">
-            ${localize("coordinate_config.description", this.hass.language)}
-          </label>
+          ${localize("coordinate_config.description", this.hass.language)}
         </div>
         <div class="card-content">
           <div class="setting-row">
@@ -992,30 +849,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         )}"
       >
         <div class="card-content">
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-            id="showdaysbetweenirrigationdescription"
-            @click="${() =>
-              this.toggleInformation("daysbetweenirrigationdescription")}"
-          >
-            <title>
-              ${localize(
-                "panels.zones.actions.information",
-                this.hass.language,
-              )}
-            </title>
-            <path fill="#404040" d="${mdiInformationOutline}" />
-          </svg>
-        </div>
-
-        <div class="card-content">
-          <label class="hidden" id="daysbetweenirrigationdescription">
-            ${localize(
-              "days_between_irrigation.description",
-              this.hass.language,
-            )}
-          </label>
+          ${localize("days_between_irrigation.description", this.hass.language)}
         </div>
 
         <div class="card-content">
@@ -1246,23 +1080,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     `;
   }
 
-  toggleInformation(item: string) {
-    const el = this.shadowRoot?.querySelector("#" + item);
-
-    //const bt = this.shadowRoot?.querySelector("#showcalcresults" + index);
-    //if (!el || !bt) {
-    if (!el) {
-      return;
-    } else {
-      if (el.className != "hidden") {
-        el.className = "hidden";
-        //bt.textContent = "Show calculation explanation";
-      } else {
-        el.className = "information";
-        //bt.textContent = "Hide explanation";
-      }
-    }
-  }
   static get styles(): CSSResultGroup {
     return css`
       ${globalStyle} ${modernStyle} /* View-specific styles only - most common styles are now in globalStyle */
