@@ -24,6 +24,19 @@ If it rains or snows less than the amount of moisture lost, then irrigation is r
 The integration can take into account weather forecasts for the coming days and also keeps track of the total moisture lost or added ('bucket').
 Multiple zones are supported, each zone having its own configuration and set up.
 
+## Installation
+
+**Via HACS (recommended).** HAppy Irrigation is distributed as a HACS **custom repository**:
+
+1. In [HACS](https://hacs.xyz), open the **⋮ menu → Custom repositories**.
+2. Add `https://github.com/altmenorg/HAppyIrrigation` with category **Integration**, and confirm.
+3. Search for **HAppy Irrigation** in HACS and click **Download**.
+4. **Restart Home Assistant**, then add it from *Settings → Devices & Services → Add Integration → HAppy Irrigation*.
+
+**Manually.** Download the [latest release](https://github.com/altmenorg/HAppyIrrigation/releases) and extract it into `custom_components/happy_irrigation/`, then restart Home Assistant.
+
+On first run, if an existing Smart Irrigation configuration is detected, a wizard offers to import it (see below). Full documentation: **[altmenorg.github.io/HAppyIrrigation](https://altmenorg.github.io/HAppyIrrigation/)**.
+
 ## Migrating from Smart Irrigation
 
 HAppy Irrigation is a **separate** integration (domain `happy_irrigation`), so it installs and runs **alongside** your existing Smart Irrigation — nothing is overwritten.
