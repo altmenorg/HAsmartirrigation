@@ -47,9 +47,10 @@ Go through your automations, scripts and dashboard cards and update these refere
 - Dialogs repaired for Home Assistant 2026.3+ — the Web Awesome `ha-dialog` migration had hidden every dialog's action buttons.
 - Manual coordinates now save and are actually used for weather data (the config API used to reject them).
 - A sensor-sourced field no longer silently falls back to weather-service data when its sensor is unavailable.
+- **Switch weather service on the fly** — change between OpenWeatherMap and Pirate Weather (and update the API key) from the integration's *Configure* dialog, without removing and re-adding everything.
 - Irrigation start triggers now fire independently and carry their identity in the event data (see below); the trigger form and live add/delete were repaired.
 - New **Backup / Restore** tab: export the whole configuration to a JSON file and restore it.
-- A modernized, HA-native configuration UI throughout.
+- A modernized, **HA-native configuration UI** throughout.
 
 ## Irrigation start triggers
 
