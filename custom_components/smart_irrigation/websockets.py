@@ -593,6 +593,97 @@ class SmartIrrigationWateringCalendarView(HomeAssistantView):
             return self.json({"error": str(e)}, status_code=500)
 
 
+@async_response
+async def websocket_get_weather_service(hass: HomeAssistant, connection, msg):
+    """Publish the currently configured weather service so the panel can show/edit it."""
+    data = hass.data.get(const.DOMAIN, {})
+    connection.send_result(
+        msg["id"],
+        {
+            const.CONF_USE_WEATHER_SERVICE: bool(
+                data.get(const.CONF_USE_WEATHER_SERVICE)
+            ),
+            const.CONF_WEATHER_SERVICE: data.get(const.CONF_WEATHER_SERVICE),
+            const.CONF_WEATHER_SERVICE_API_KEY: data.get(
+                const.CONF_WEATHER_SERVICE_API_KEY
+            ),
+            "services": const.CONF_WEATHER_SERVICES,
+        },
+    )
+
+
+@async_response
+async def websocket_set_weather_service(hass: HomeAssistant, connection, msg):
+    """Change the weather service after install.
+
+    Validates the API key, writes the choice to the config entry data and lets
+    the registered options-update listener reload the integration so the change
+    takes effect immediately and persists across restarts.
+    """
+    # imported here to avoid any import cycle at module load
+    from .helpers import CannotConnect, InvalidAuth, validate_api_key
+
+    use = bool(msg.get(const.CONF_USE_WEATHER_SERVICE))
+    service = msg.get(const.CONF_WEATHER_SERVICE)
+    service = service.strip() if isinstance(service, str) else None
+    api_key = msg.get(const.CONF_WEATHER_SERVICE_API_KEY)
+    api_key = api_key.strip() if isinstance(api_key, str) else None
+
+    entries = hass.config_entries.async_entries(const.DOMAIN)
+    if not entries:
+        connection.send_error(
+            msg["id"], "not_found", "No Smart Irrigation configuration entry found."
+        )
+        return
+    entry = entries[0]
+
+    if use:
+        if not service or service not in const.CONF_WEATHER_SERVICES:
+            connection.send_error(
+                msg["id"], "invalid_service", "Please choose a valid weather service."
+            )
+            return
+        if not api_key:
+            connection.send_error(
+                msg["id"],
+                "missing_api_key",
+                "An API key is required for the selected weather service.",
+            )
+            return
+        try:
+            await validate_api_key(hass, service, api_key)
+        except InvalidAuth:
+            connection.send_error(
+                msg["id"],
+                "invalid_auth",
+                "The weather service rejected this API key.",
+            )
+            return
+        except CannotConnect:
+            connection.send_error(
+                msg["id"],
+                "cannot_connect",
+                "Could not reach the weather service. Check your connection.",
+            )
+            return
+        except Exception as err:  # noqa: BLE001
+            connection.send_error(msg["id"], "unknown", f"Validation failed: {err}")
+            return
+
+    new_data = dict(entry.data)
+    new_data[const.CONF_USE_WEATHER_SERVICE] = use
+    new_data[const.CONF_WEATHER_SERVICE] = service if use else None
+    new_data[const.CONF_WEATHER_SERVICE_API_KEY] = api_key if use else None
+
+    hass.config_entries.async_update_entry(entry, data=new_data)
+    _LOGGER.info(
+        "Weather service updated via panel (use=%s, service=%s); reloading entry",
+        use,
+        service,
+    )
+    connection.send_result(msg["id"], {"success": True})
+
+
 async def async_register_websockets(hass: HomeAssistant):
     """Register Smart Irrigation HTTP views and websocket commands."""
     hass.http.register_view(SmartIrrigationConfigView)
@@ -672,6 +763,29 @@ async def async_register_websockets(hass: HomeAssistant):
             {
                 vol.Required("type"): const.DOMAIN + "/watering_calendar",
                 vol.Optional("zone_id"): vol.Coerce(str),
+            }
+        ),
+    )
+    async_register_command(
+        hass,
+        const.DOMAIN + "/weatherservice",
+        websocket_get_weather_service,
+        websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend(
+            {vol.Required("type"): const.DOMAIN + "/weatherservice"}
+        ),
+    )
+    async_register_command(
+        hass,
+        const.DOMAIN + "/set_weatherservice",
+        websocket_set_weather_service,
+        websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend(
+            {
+                vol.Required("type"): const.DOMAIN + "/set_weatherservice",
+                vol.Required(const.CONF_USE_WEATHER_SERVICE): cv.boolean,
+                vol.Optional(const.CONF_WEATHER_SERVICE): vol.Any(None, cv.string),
+                vol.Optional(const.CONF_WEATHER_SERVICE_API_KEY): vol.Any(
+                    None, cv.string
+                ),
             }
         ),
     )

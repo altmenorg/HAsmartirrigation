@@ -85,6 +85,24 @@
     }
   },
   "panels": {
+    "weatherservice": {
+      "title": "Weather Service",
+      "description": "View and change the weather service used to fetch weather data — no need to reinstall the integration. Changing it validates the API key and reloads the integration, which takes a few seconds.",
+      "labels": {
+        "use-weather-service": "Use a weather service",
+        "service": "Weather service",
+        "api-key": "API key"
+      },
+      "actions": {
+        "save": "Save",
+        "saving": "Saving…"
+      },
+      "messages": {
+        "no-service": "No weather service is used — weather data comes from your own sensors only.",
+        "saved": "Weather service saved. The integration is reloading to apply the change…",
+        "reload-note": "Saving validates the API key and reloads the integration (takes a few seconds)."
+      }
+    },
     "general": {
       "cards": {
         "automatic-duration-calculation": {
