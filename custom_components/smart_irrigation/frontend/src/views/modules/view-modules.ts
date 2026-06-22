@@ -746,8 +746,7 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return css`
-      ${globalStyle} ${modernStyle}
-      /* View-specific styles only - most common styles are now in globalStyle */
+      ${globalStyle} ${modernStyle} /* View-specific styles only - most common styles are now in globalStyle */
     `;
   }
 }

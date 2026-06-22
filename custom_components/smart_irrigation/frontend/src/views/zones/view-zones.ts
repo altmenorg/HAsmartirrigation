@@ -826,255 +826,271 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         </div>
         ${expanded
           ? html` <div class="zone-body">
-          <div class="zone-meta">
-            <div class="meta-item">
-              <span class="meta-label"
-                >${localize("panels.zones.labels.last_calculated", lang)}</span
-              >
-              <span class="meta-value"
-                >${zone.last_calculated
-                  ? moment(zone.last_calculated).format("YYYY-MM-DD HH:mm")
-                  : "—"}</span
-              >
-            </div>
-            <div class="meta-item">
-              <span class="meta-label"
-                >${localize("panels.zones.labels.data-last-updated", lang)}</span
-              >
-              <span class="meta-value"
-                >${zone.last_updated
-                  ? moment(zone.last_updated).format("YYYY-MM-DD HH:mm")
-                  : "—"}</span
-              >
-            </div>
-            <div class="meta-item">
-              <span class="meta-label"
-                >${localize(
-                  "panels.zones.labels.data-number-of-data-points",
-                  lang,
-                )}</span
-              >
-              <span class="meta-value">${zone.number_of_data_points ?? "—"}</span>
-            </div>
-          </div>
+              <div class="zone-meta">
+                <div class="meta-item">
+                  <span class="meta-label"
+                    >${localize(
+                      "panels.zones.labels.last_calculated",
+                      lang,
+                    )}</span
+                  >
+                  <span class="meta-value"
+                    >${zone.last_calculated
+                      ? moment(zone.last_calculated).format("YYYY-MM-DD HH:mm")
+                      : "—"}</span
+                  >
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label"
+                    >${localize(
+                      "panels.zones.labels.data-last-updated",
+                      lang,
+                    )}</span
+                  >
+                  <span class="meta-value"
+                    >${zone.last_updated
+                      ? moment(zone.last_updated).format("YYYY-MM-DD HH:mm")
+                      : "—"}</span
+                  >
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label"
+                    >${localize(
+                      "panels.zones.labels.data-number-of-data-points",
+                      lang,
+                    )}</span
+                  >
+                  <span class="meta-value"
+                    >${zone.number_of_data_points ?? "—"}</span
+                  >
+                </div>
+              </div>
 
-          <div class="settings">
-            ${this._textRow(
-              localize("panels.zones.labels.name", lang),
-              "",
-              zone.name,
-              (v) => this.handleEditZone(index, { ...zone, [ZONE_NAME]: v }),
-            )}
-            ${this._numRow(
-              localize("panels.zones.labels.size", lang),
-              output_unit(this.config, ZONE_SIZE),
-              zone.size,
-              (v) =>
-                this.handleEditZone(index, { ...zone, [ZONE_SIZE]: parseFloat(v) }),
-              0.1,
-            )}
-            ${this._numRow(
-              localize("panels.zones.labels.throughput", lang),
-              output_unit(this.config, ZONE_THROUGHPUT),
-              zone.throughput,
-              (v) =>
-                this.handleEditZone(index, {
-                  ...zone,
-                  [ZONE_THROUGHPUT]: parseFloat(v),
-                }),
-              0.1,
-            )}
-            ${this._numRow(
-              localize("panels.zones.labels.drainage_rate", lang),
-              output_unit(this.config, ZONE_DRAINAGE_RATE),
-              zone.drainage_rate,
-              (v) =>
-                this.handleEditZone(index, {
-                  ...zone,
-                  [ZONE_DRAINAGE_RATE]: parseFloat(v),
-                }),
-              0.1,
-            )}
+              <div class="settings">
+                ${this._textRow(
+                  localize("panels.zones.labels.name", lang),
+                  "",
+                  zone.name,
+                  (v) =>
+                    this.handleEditZone(index, { ...zone, [ZONE_NAME]: v }),
+                )}
+                ${this._numRow(
+                  localize("panels.zones.labels.size", lang),
+                  output_unit(this.config, ZONE_SIZE),
+                  zone.size,
+                  (v) =>
+                    this.handleEditZone(index, {
+                      ...zone,
+                      [ZONE_SIZE]: parseFloat(v),
+                    }),
+                  0.1,
+                )}
+                ${this._numRow(
+                  localize("panels.zones.labels.throughput", lang),
+                  output_unit(this.config, ZONE_THROUGHPUT),
+                  zone.throughput,
+                  (v) =>
+                    this.handleEditZone(index, {
+                      ...zone,
+                      [ZONE_THROUGHPUT]: parseFloat(v),
+                    }),
+                  0.1,
+                )}
+                ${this._numRow(
+                  localize("panels.zones.labels.drainage_rate", lang),
+                  output_unit(this.config, ZONE_DRAINAGE_RATE),
+                  zone.drainage_rate,
+                  (v) =>
+                    this.handleEditZone(index, {
+                      ...zone,
+                      [ZONE_DRAINAGE_RATE]: parseFloat(v),
+                    }),
+                  0.1,
+                )}
+                ${this._selectRow(
+                  localize("panels.zones.labels.state", lang),
+                  html`
+                    <option
+                      value="${SmartIrrigationZoneState.Automatic}"
+                      ?selected=${zone.state ===
+                      SmartIrrigationZoneState.Automatic}
+                    >
+                      ${localize("panels.zones.labels.states.automatic", lang)}
+                    </option>
+                    <option
+                      value="${SmartIrrigationZoneState.Disabled}"
+                      ?selected=${zone.state ===
+                      SmartIrrigationZoneState.Disabled}
+                    >
+                      ${localize("panels.zones.labels.states.disabled", lang)}
+                    </option>
+                    <option
+                      value="${SmartIrrigationZoneState.Manual}"
+                      ?selected=${zone.state ===
+                      SmartIrrigationZoneState.Manual}
+                    >
+                      ${localize("panels.zones.labels.states.manual", lang)}
+                    </option>
+                  `,
+                  (e: Event) =>
+                    this.handleEditZone(index, {
+                      ...zone,
+                      [ZONE_STATE]: (e.target as HTMLSelectElement)
+                        .value as SmartIrrigationZoneState,
+                      [ZONE_DURATION]: 0,
+                    }),
+                )}
+                ${this._selectRow(
+                  localize("common.labels.module", lang),
+                  this.renderTheOptions(this.modules, zone.module),
+                  (e: Event) => {
+                    const v = (e.target as HTMLSelectElement).value;
+                    this.handleEditZone(index, {
+                      ...zone,
+                      [ZONE_MODULE]: v === "" ? undefined : parseInt(v),
+                    });
+                  },
+                )}
+                ${this._selectRow(
+                  localize("panels.zones.labels.mapping", lang),
+                  this.renderTheOptions(this.mappings, zone.mapping),
+                  (e: Event) => {
+                    const v = (e.target as HTMLSelectElement).value;
+                    this.handleEditZone(index, {
+                      ...zone,
+                      [ZONE_MAPPING]: v === "" ? undefined : parseInt(v),
+                    });
+                  },
+                )}
+                ${this._numRow(
+                  localize("panels.zones.labels.bucket", lang),
+                  output_unit(this.config, ZONE_BUCKET),
+                  Number(zone.bucket).toFixed(1),
+                  (v) =>
+                    this.handleEditZone(index, {
+                      ...zone,
+                      [ZONE_BUCKET]: parseFloat(v),
+                    }),
+                  0.1,
+                )}
+                ${this._numRow(
+                  localize("panels.zones.labels.maximum-bucket", lang),
+                  output_unit(this.config, ZONE_BUCKET),
+                  Number(zone.maximum_bucket).toFixed(1),
+                  (v) =>
+                    this.handleEditZone(index, {
+                      ...zone,
+                      [ZONE_MAXIMUM_BUCKET]: parseFloat(v),
+                    }),
+                  0.1,
+                )}
+                ${this._numRow(
+                  localize("panels.zones.labels.lead-time", lang),
+                  "s",
+                  zone.lead_time,
+                  (v) =>
+                    this.handleEditZone(index, {
+                      ...zone,
+                      [ZONE_LEAD_TIME]: parseInt(v, 10),
+                    }),
+                  1,
+                )}
+                ${this._numRow(
+                  localize("panels.zones.labels.maximum-duration", lang),
+                  "s",
+                  zone.maximum_duration,
+                  (v) =>
+                    this.handleEditZone(index, {
+                      ...zone,
+                      [ZONE_MAXIMUM_DURATION]: parseInt(v, 10),
+                    }),
+                  1,
+                )}
+                ${this._numRow(
+                  localize("panels.zones.labels.multiplier", lang),
+                  "",
+                  zone.multiplier,
+                  (v) =>
+                    this.handleEditZone(index, {
+                      ...zone,
+                      [ZONE_MULTIPLIER]: parseFloat(v),
+                    }),
+                  0.1,
+                )}
+                ${this._numRow(
+                  localize("panels.zones.labels.duration", lang),
+                  UNIT_SECONDS,
+                  zone.duration,
+                  (v) =>
+                    this.handleEditZone(index, {
+                      ...zone,
+                      [ZONE_DURATION]: parseInt(v, 10),
+                    }),
+                  1,
+                  durationReadonly,
+                )}
+              </div>
 
-            ${this._selectRow(
-              localize("panels.zones.labels.state", lang),
-              html`
-                <option
-                  value="${SmartIrrigationZoneState.Automatic}"
-                  ?selected=${zone.state === SmartIrrigationZoneState.Automatic}
-                >
-                  ${localize("panels.zones.labels.states.automatic", lang)}
-                </option>
-                <option
-                  value="${SmartIrrigationZoneState.Disabled}"
-                  ?selected=${zone.state === SmartIrrigationZoneState.Disabled}
-                >
-                  ${localize("panels.zones.labels.states.disabled", lang)}
-                </option>
-                <option
-                  value="${SmartIrrigationZoneState.Manual}"
-                  ?selected=${zone.state === SmartIrrigationZoneState.Manual}
-                >
-                  ${localize("panels.zones.labels.states.manual", lang)}
-                </option>
-              `,
-              (e: Event) =>
-                this.handleEditZone(index, {
-                  ...zone,
-                  [ZONE_STATE]: (e.target as HTMLSelectElement)
-                    .value as SmartIrrigationZoneState,
-                  [ZONE_DURATION]: 0,
-                }),
-            )}
-            ${this._selectRow(
-              localize("common.labels.module", lang),
-              this.renderTheOptions(this.modules, zone.module),
-              (e: Event) => {
-                const v = (e.target as HTMLSelectElement).value;
-                this.handleEditZone(index, {
-                  ...zone,
-                  [ZONE_MODULE]: v === "" ? undefined : parseInt(v),
-                });
-              },
-            )}
-            ${this._selectRow(
-              localize("panels.zones.labels.mapping", lang),
-              this.renderTheOptions(this.mappings, zone.mapping),
-              (e: Event) => {
-                const v = (e.target as HTMLSelectElement).value;
-                this.handleEditZone(index, {
-                  ...zone,
-                  [ZONE_MAPPING]: v === "" ? undefined : parseInt(v),
-                });
-              },
-            )}
+              <div class="zone-actions">
+                ${isAutomatic
+                  ? html`
+                      ${this._actionBtn(
+                        mdiCalculator,
+                        localize("panels.zones.actions.calculate", lang),
+                        () => this.handleCalculateZone(index),
+                      )}
+                      ${this._actionBtn(
+                        mdiUpdate,
+                        localize("panels.zones.actions.update", lang),
+                        () => this.handleUpdateZone(index),
+                      )}
+                    `
+                  : ""}
+                ${this._actionBtn(
+                  mdiPailRemove,
+                  localize("panels.zones.actions.reset-bucket", lang),
+                  () =>
+                    this.handleEditZone(index, { ...zone, [ZONE_BUCKET]: 0.0 }),
+                )}
+                ${zone.mapping != undefined
+                  ? this._actionBtn(
+                      mdiCloudOutline,
+                      localize("panels.zones.actions.view-weather-info", lang),
+                      () => this.handleViewWeatherInfo(index),
+                    )
+                  : ""}
+                ${this._actionBtn(
+                  mdiCalendar,
+                  localize("panels.zones.actions.view-watering-calendar", lang),
+                  () => this.handleViewWateringCalendar(index),
+                )}
+                ${hasExplanation
+                  ? this._actionBtn(
+                      mdiInformationOutline,
+                      localize("panels.zones.actions.information", lang),
+                      () => this.toggleExplanation(index),
+                    )
+                  : ""}
+                ${this._actionBtn(
+                  mdiDelete,
+                  localize("common.actions.delete", lang),
+                  (e: Event) => this.handleRemoveZone(e, index),
+                  true,
+                )}
+              </div>
 
-            ${this._numRow(
-              localize("panels.zones.labels.bucket", lang),
-              output_unit(this.config, ZONE_BUCKET),
-              Number(zone.bucket).toFixed(1),
-              (v) =>
-                this.handleEditZone(index, { ...zone, [ZONE_BUCKET]: parseFloat(v) }),
-              0.1,
-            )}
-            ${this._numRow(
-              localize("panels.zones.labels.maximum-bucket", lang),
-              output_unit(this.config, ZONE_BUCKET),
-              Number(zone.maximum_bucket).toFixed(1),
-              (v) =>
-                this.handleEditZone(index, {
-                  ...zone,
-                  [ZONE_MAXIMUM_BUCKET]: parseFloat(v),
-                }),
-              0.1,
-            )}
-            ${this._numRow(
-              localize("panels.zones.labels.lead-time", lang),
-              "s",
-              zone.lead_time,
-              (v) =>
-                this.handleEditZone(index, {
-                  ...zone,
-                  [ZONE_LEAD_TIME]: parseInt(v, 10),
-                }),
-              1,
-            )}
-            ${this._numRow(
-              localize("panels.zones.labels.maximum-duration", lang),
-              "s",
-              zone.maximum_duration,
-              (v) =>
-                this.handleEditZone(index, {
-                  ...zone,
-                  [ZONE_MAXIMUM_DURATION]: parseInt(v, 10),
-                }),
-              1,
-            )}
-            ${this._numRow(
-              localize("panels.zones.labels.multiplier", lang),
-              "",
-              zone.multiplier,
-              (v) =>
-                this.handleEditZone(index, {
-                  ...zone,
-                  [ZONE_MULTIPLIER]: parseFloat(v),
-                }),
-              0.1,
-            )}
-            ${this._numRow(
-              localize("panels.zones.labels.duration", lang),
-              UNIT_SECONDS,
-              zone.duration,
-              (v) =>
-                this.handleEditZone(index, {
-                  ...zone,
-                  [ZONE_DURATION]: parseInt(v, 10),
-                }),
-              1,
-              durationReadonly,
-            )}
-          </div>
-
-          <div class="zone-actions">
-            ${isAutomatic
-              ? html`
-                  ${this._actionBtn(
-                    mdiCalculator,
-                    localize("panels.zones.actions.calculate", lang),
-                    () => this.handleCalculateZone(index),
-                  )}
-                  ${this._actionBtn(
-                    mdiUpdate,
-                    localize("panels.zones.actions.update", lang),
-                    () => this.handleUpdateZone(index),
-                  )}
-                `
-              : ""}
-            ${this._actionBtn(
-              mdiPailRemove,
-              localize("panels.zones.actions.reset-bucket", lang),
-              () =>
-                this.handleEditZone(index, { ...zone, [ZONE_BUCKET]: 0.0 }),
-            )}
-            ${zone.mapping != undefined
-              ? this._actionBtn(
-                  mdiCloudOutline,
-                  localize("panels.zones.actions.view-weather-info", lang),
-                  () => this.handleViewWeatherInfo(index),
-                )
-              : ""}
-            ${this._actionBtn(
-              mdiCalendar,
-              localize("panels.zones.actions.view-watering-calendar", lang),
-              () => this.handleViewWateringCalendar(index),
-            )}
-            ${hasExplanation
-              ? this._actionBtn(
-                  mdiInformationOutline,
-                  localize("panels.zones.actions.information", lang),
-                  () => this.toggleExplanation(index),
-                )
-              : ""}
-            ${this._actionBtn(
-              mdiDelete,
-              localize("common.actions.delete", lang),
-              (e: Event) => this.handleRemoveZone(e, index),
-              true,
-            )}
-          </div>
-
-          ${hasExplanation
-            ? html`<label class="hidden" id="calcresults${index}"
-                >${unsafeHTML("<br/>" + zone.explanation)}</label
-              >`
-            : ""}
-          <div id="calendar-section-${zone.id}" hidden>
-            ${this.renderWateringCalendar(zone)}
-          </div>
-          <div id="weather-section-${zone.id}" hidden>
-            ${this.renderWeatherRecords(zone)}
-          </div>
-        </div>`
+              ${hasExplanation
+                ? html`<label class="hidden" id="calcresults${index}"
+                    >${unsafeHTML("<br/>" + zone.explanation)}</label
+                  >`
+                : ""}
+              <div id="calendar-section-${zone.id}" hidden>
+                ${this.renderWateringCalendar(zone)}
+              </div>
+              <div id="weather-section-${zone.id}" hidden>
+                ${this.renderWeatherRecords(zone)}
+              </div>
+            </div>`
           : ""}
       </ha-card>
     `;

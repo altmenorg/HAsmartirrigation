@@ -1057,7 +1057,10 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     if (!this.hass) return html``;
 
     return this._textRow(
-      localize("panels.mappings.cards.mapping.static_value", this.hass.language),
+      localize(
+        "panels.mappings.cards.mapping.static_value",
+        this.hass.language,
+      ),
       "",
       mappingline[MAPPING_CONF_STATIC_VALUE] || "",
       (v: string) =>
@@ -1089,7 +1092,10 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     if (!this.hass) return html``;
 
     return this._selectRow(
-      localize("panels.mappings.cards.mapping.pressure-type", this.hass.language),
+      localize(
+        "panels.mappings.cards.mapping.pressure-type",
+        this.hass.language,
+      ),
       this.renderPressureTypes(value, mappingline),
       (e: Event) => this.handlePressureTypeChange(index, value, e),
     );

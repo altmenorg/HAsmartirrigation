@@ -73,10 +73,16 @@ export const modernStyle = css`
     );
   }
   ha-label.state-label--automatic {
-    --ha-label-background-color: rgba(var(--rgb-success-color, 67, 160, 71), 0.18);
+    --ha-label-background-color: rgba(
+      var(--rgb-success-color, 67, 160, 71),
+      0.18
+    );
   }
   ha-label.state-label--manual {
-    --ha-label-background-color: rgba(var(--rgb-warning-color, 255, 166, 0), 0.22);
+    --ha-label-background-color: rgba(
+      var(--rgb-warning-color, 255, 166, 0),
+      0.22
+    );
   }
 
   /* --- meta summary row --- */

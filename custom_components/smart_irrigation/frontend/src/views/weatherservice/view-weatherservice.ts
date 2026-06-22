@@ -109,7 +109,10 @@ export class SmartIrrigationViewWeatherService extends LitElement {
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${localize("panels.weatherservice.labels.use-weather-service", lang)}
+              ${localize(
+                "panels.weatherservice.labels.use-weather-service",
+                lang,
+              )}
             </div>
             <ha-switch
               .checked=${this._use}
@@ -135,12 +138,13 @@ export class SmartIrrigationViewWeatherService extends LitElement {
                       }}
                     >
                       ${(this._info?.services || []).map(
-                        (s) => html`<option
-                          value="${s}"
-                          ?selected=${this._service === s}
-                        >
-                          ${s}
-                        </option>`,
+                        (s) =>
+                          html`<option
+                            value="${s}"
+                            ?selected=${this._service === s}
+                          >
+                            ${s}
+                          </option>`,
                       )}
                     </select>
                     <svg class="chev" viewBox="0 0 24 24">
@@ -167,7 +171,6 @@ export class SmartIrrigationViewWeatherService extends LitElement {
             : html`<div class="ws-note">
                 ${localize("panels.weatherservice.messages.no-service", lang)}
               </div>`}
-
           ${this._error
             ? html`<div class="ws-msg ws-msg--error">${this._error}</div>`
             : ""}

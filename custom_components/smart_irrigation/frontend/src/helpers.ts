@@ -315,7 +315,7 @@ export function sortAlphabetically(
 export const navigate = (
   _node: any,
   path: string,
-  replace: boolean = false
+  replace: boolean = false,
 ) => {
   if (replace) {
     history.replaceState(null, "", path);
@@ -323,6 +323,6 @@ export const navigate = (
     history.pushState(null, "", path);
   }
   fireEvent(window, "location-changed", {
-    replace
+    replace,
   });
 };
