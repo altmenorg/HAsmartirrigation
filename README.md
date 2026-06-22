@@ -10,118 +10,83 @@
 
 > **Happy Irrigation** is a community-maintained fork of
 > [Smart Irrigation](https://github.com/jeroenterheerdt/HAsmartirrigation) by
-> [Jeroen ter Heerdt](https://github.com/jeroenterheerdt) — all credit for the
-> original integration goes to him. This fork keeps it actively maintained,
-> with bug fixes (e.g. the editing scroll-jump,
-> [#708](https://github.com/jeroenterheerdt/HAsmartirrigation/issues/708)) and a
-> modernized, HA-native configuration UI. It uses the same `smart_irrigation`
-> domain, so it is a drop-in replacement (your existing configuration is kept).
-
-```diff
-- WARNING: upgrading from V1 (V0.0.X) to V2 (V2023.X.X)? Read the instructions below!
-```
-
-| :warning: WARNING Are you upgrading from v0.0.X (aka V1) to V2023.X.X (aka V2)? |
-|:---------------------------|
-| Stop what you're doing and [capture your V1 configuration](https://jeroenterheerdt.github.io/HAsmartirrigation/installation-migration.html) _before_ installing V2. V2 is a complete overhaul of this integration and there is no upgrade path. This means that effectively you will have to start over. See the [docs](https://jeroenterheerdt.github.io/HAsmartirrigation/installation-migration.html) for instructions. We will not be able to recover your V1 configuration if you don't capture it before installing V2. |
+> [Jeroen ter Heerdt](https://github.com/jeroenterheerdt). All credit for the
+> original integration and its evapotranspiration model goes to him. This fork
+> keeps it actively maintained and fixes the rough edges of the configuration
+> UI and plumbing. It uses the same `smart_irrigation` domain, so it is a
+> drop-in replacement and your existing configuration is kept.
 
 This integration calculates the time to run your irrigation system to compensate for moisture loss by [evapotranspiration](https://en.wikipedia.org/wiki/Evapotranspiration). Using this integration you water your garden, lawn or crops precisely enough to compensate what has evaporated. It takes into account precipitation (rain, snow) and moisture loss caused by evapotranspiration and adjusts accordingly.
 If it rains or snows less than the amount of moisture lost, then irrigation is required. Otherwise, no irrigation is required.
-The integration can take into account weather forecasts for the coming days and also keeps track of the total moisture lost or added ('bucket')
-Multiple zones are supported with each zone having it own configuration and set up.
+The integration can take into account weather forecasts for the coming days and also keeps track of the total moisture lost or added ('bucket').
+Multiple zones are supported, each zone having its own configuration and set up.
 
-## Enhanced Features
+## What this fork fixes
 
-Smart Irrigation now includes enhanced scheduling capabilities and Irrigation Unlimited integration:
+- Dialogs repaired for Home Assistant 2026.3+ — the Web Awesome `ha-dialog` migration had hidden every dialog's action buttons.
+- Manual coordinates now save and are actually used for weather data (the config API used to reject them).
+- A sensor-sourced field no longer silently falls back to weather-service data when its sensor is unavailable.
+- Irrigation start triggers now fire independently and carry their identity in the event data (see below); the trigger form and live add/delete were repaired.
+- New **Backup / Restore** tab: export the whole configuration to a JSON file and restore it.
+- A modernized, HA-native configuration UI throughout.
 
-- **Recurring Schedules**: Create flexible daily, weekly, monthly, or interval-based irrigation schedules
-- **Seasonal Adjustments**: Automatically adjust irrigation parameters based on the season
-- **Irrigation Unlimited Integration**: Seamless bidirectional integration with the Irrigation Unlimited component
-- **Weather-Responsive Scheduling**: Advanced scheduling that adapts to weather conditions and forecasts
-- **Automation Blueprints**: Ready-to-use blueprints for common irrigation scenarios
+## Irrigation start triggers
 
-See the [enhanced scheduling documentation](docs/enhanced-scheduling-integration.md) for detailed information and examples.
+Smart Irrigation computes irrigation **durations** — your own automation does the actual watering. A **start trigger** schedules a start relative to a solar event (sunrise, sunset, or solar azimuth, ± an offset) and fires the Home Assistant event `smart_irrigation_start_irrigation_all_zones` so an automation can react.
+
+Each trigger fires independently, and the event data identifies which one fired:
+
+| field | meaning |
+|-------|---------|
+| `trigger_name` | the name you gave the trigger |
+| `trigger_type` | `sunrise`, `sunset` or `solar_azimuth` |
+| `offset_minutes` | the configured offset |
+| `account_for_duration` | whether timing is shifted so watering finishes at the target moment |
+
+Example automation:
+
+```yaml
+trigger:
+  - platform: event
+    event_type: smart_irrigation_start_irrigation_all_zones
+    event_data:
+      trigger_name: "Morning"
+action:
+  - # open your valves for the durations Smart Irrigation calculated
+```
+
+The precipitation-skip and "days between irrigation" settings still apply: on a skip day no event is fired.
+
+## Enhanced features
+
+These advanced features are driven by **services and blueprints** — there is no dedicated panel UI for them yet:
+
+- **Recurring schedules** — daily / weekly / monthly / interval-based schedules via the `smart_irrigation.create_recurring_schedule` service.
+- **Seasonal adjustments** — automatically adjust irrigation parameters based on the season.
+- **Irrigation Unlimited integration** — bidirectional integration with the [Irrigation Unlimited](https://github.com/rgc99/irrigation_unlimited) component.
+- **Automation blueprints** — ready-to-use blueprints in [`blueprints/`](blueprints/).
+
+See the [enhanced scheduling documentation](docs/usage-enhanced-scheduling-integration.md) for details and examples.
+
+## Documentation
+
+The full documentation lives in [`docs/`](docs/) — installation, configuration (zones, sensor groups, modules), usage, events, services and troubleshooting. It is the same content as the original project's docs site.
 
 ## Development
 
-For contributors and developers:
-
-### Quick Setup
-
 ```bash
-# Clone and setup development environment
-git clone <repository-url>
-cd HAsmartirrigation
-make setup
+git clone https://github.com/altmenorg/HappyIrrigation.git
+cd HappyIrrigation
+make setup          # create the venv and install dev dependencies
+make help           # list all commands (test / lint / format / check)
 ```
 
-### Available Commands
+The frontend panel is a separate TypeScript/Lit project under
+[`custom_components/smart_irrigation/frontend/`](custom_components/smart_irrigation/frontend/)
+(`npm install` then `npm run build`).
 
-```bash
-make help        # Show all available commands
-make test        # Run all tests
-make format      # Format code
-make lint        # Run linting
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed development and testing instructions.
 
-### Testing
+## License
 
-To run the tests for this Smart Irrigation custom component:
-
-#### Prerequisites
-
-1. Install test requirements:
-   ```bash
-   pip install -r requirements.test.txt
-   ```
-
-#### Running Tests
-
-Run all tests:
-```bash
-pytest
-```
-
-Run specific test directories:
-```bash
-# Tests in the main tests/ directory
-pytest tests/
-
-# Tests in the custom component
-pytest custom_components/smart_irrigation/tests/
-```
-
-Run specific test files:
-```bash
-pytest tests/test_services.py
-pytest custom_components/smart_irrigation/tests/test_init.py
-```
-
-#### Test Structure
-
-The project has two test directories:
-- `tests/` - Integration tests and component behavior tests
-- `custom_components/smart_irrigation/tests/` - Unit tests for the custom component
-
-#### Troubleshooting Tests
-
-If you encounter issues:
-
-1. **Missing Home Assistant objects**: The test infrastructure includes mocks for Home Assistant core objects like `hass.config` and `hass.data`. If you get AttributeErrors, ensure the fixtures are properly imported.
-
-2. **Import errors**: Make sure you're running tests from the repository root directory. The test configuration automatically adds the necessary paths.
-
-3. **Module not found errors**: Ensure all test dependencies are installed:
-   ```bash
-   pip install -r requirements.test.txt
-   ```
-
-4. **Async/await issues**: Tests use pytest-asyncio. Make sure async test functions are properly marked and fixtures are compatible.
-
-#### Known Test Limitations
-
-Some test files reference modules that don't exist in the current codebase (e.g., `core.zone`, `core.updater`). These have been disabled with `.disabled` extensions until the corresponding functionality is implemented or the tests are updated.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed development instructions.
-
-## Read the docs: https://jeroenterheerdt.github.io/HAsmartirrigation/
+[MIT](LICENSE) — © 2020 Jeroen ter Heerdt (original Smart Irrigation), maintained as Happy Irrigation by the community.
