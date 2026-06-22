@@ -1,8 +1,8 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=flat-square)](https://github.com/hacs/integration)
 [![release][release-badge]][release-url]
 
-[release-url]: https://github.com/altmenorg/HappyIrrigation/releases
-[release-badge]: https://img.shields.io/github/v/release/altmenorg/HappyIrrigation?style=flat-square
+[release-url]: https://github.com/altmenorg/HAppyIrrigation/releases
+[release-badge]: https://img.shields.io/github/v/release/altmenorg/HAppyIrrigation?style=flat-square
 
 # HAppy Irrigation
 
@@ -92,13 +92,13 @@ See the [enhanced scheduling documentation](docs/usage-enhanced-scheduling-integ
 
 ## Documentation
 
-The full documentation is published at **[altmenorg.github.io/HappyIrrigation](https://altmenorg.github.io/HappyIrrigation/)** (source in [`docs/`](docs/)) — installation, configuration (zones, sensor groups, modules), usage, events, services and troubleshooting.
+The full documentation is published at **[altmenorg.github.io/HAppyIrrigation](https://altmenorg.github.io/HAppyIrrigation/)** (source in [`docs/`](docs/)) — installation, configuration (zones, sensor groups, modules), usage, events, services and troubleshooting.
 
 ## Development
 
 ```bash
-git clone https://github.com/altmenorg/HappyIrrigation.git
-cd HappyIrrigation
+git clone https://github.com/altmenorg/HAppyIrrigation.git
+cd HAppyIrrigation
 make setup          # create the venv and install dev dependencies
 make help           # list all commands (test / lint / format / check)
 ```

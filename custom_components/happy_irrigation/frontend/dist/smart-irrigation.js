@@ -3360,7 +3360,7 @@ i.version="2.30.1",s(qa),i.fn=dn,i.min=Ja,i.max=Qa,i.now=ei,i.utc=g,i.unix=un,i.
         >
           <div class="card-content">
             ${Cs("panels.help.cards.how-to-get-help.first-read-the",this.hass.language)}
-            <a href="https://altmenorg.github.io/HappyIrrigation/"
+            <a href="https://altmenorg.github.io/HAppyIrrigation/"
               >${Cs("panels.help.cards.how-to-get-help.wiki",this.hass.language)}</a
             >.
             ${Cs("panels.help.cards.how-to-get-help.if-you-still-need-help",this.hass.language)}
@@ -3369,7 +3369,7 @@ i.version="2.30.1",s(qa),i.fn=dn,i.min=Ja,i.max=Qa,i.now=ei,i.utc=g,i.unix=un,i.
               >${Cs("panels.help.cards.how-to-get-help.community-forum",this.hass.language)}</a
             >
             ${Cs("panels.help.cards.how-to-get-help.or-open-a",this.hass.language)}
-            <a href="https://github.com/altmenorg/HappyIrrigation/issues"
+            <a href="https://github.com/altmenorg/HAppyIrrigation/issues"
               >${Cs("panels.help.cards.how-to-get-help.github-issue",this.hass.language)}</a
             >
             (${Cs("panels.help.cards.how-to-get-help.english-only",this.hass.language)}).

@@ -1,5 +1,5 @@
 export const VERSION = "v2026.6.0";
-export const REPO = "https://github.com/altmenorg/HappyIrrigation";
+export const REPO = "https://github.com/altmenorg/HAppyIrrigation";
 export const ISSUES_URL = REPO + "/issues";
 
 export const PLATFORM = "happy_irrigation";
