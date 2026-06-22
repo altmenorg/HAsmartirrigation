@@ -3,7 +3,7 @@ mode: single
 trigger:
   - platform: numeric_state
     entity_id:
-      - sensor.smart_irrigation_[zone_name]
+      - sensor.happy_irrigation_[zone_name]
     attribute: bucket
     below: -25
   - platform: time
@@ -12,13 +12,13 @@ condition:
   - condition: or
     conditions:
       - condition: numeric_state
-        entity_id: sensor.smart_irrigation_[zone_name]
+        entity_id: sensor.happy_irrigation_[zone_name]
         below: "-25"
         attribute: bucket
       - condition: and
         conditions:
           - condition: numeric_state
-            entity_id: sensor.smart_irrigation_[zone_name]
+            entity_id: sensor.happy_irrigation_[zone_name]
             above: 0
           - condition: template
             value_template: "{{ now().isoweekday() == 1 }}"
@@ -31,6 +31,6 @@ action:
   - service: switch.turn_off
     data: {}
     entity_id: switch.irrigation_tap1
-  - service: smart_irrigation.reset_bucket
+  - service: happy_irrigation.reset_bucket
     data: {}
-    entity_id: sensor.smart_irrigation_[zone_name]
+    entity_id: sensor.happy_irrigation_[zone_name]

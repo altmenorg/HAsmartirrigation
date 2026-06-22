@@ -34,7 +34,7 @@ condition:
     above: 0
 
 action:
-  - service: smart_irrigation.reset_bucket
+  - service: happy_irrigation.reset_bucket
     data: {}
     target:
       entity_id: !input irrigation_zone

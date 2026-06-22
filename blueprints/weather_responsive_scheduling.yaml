@@ -5,13 +5,13 @@ blueprint:
     seasonal conditions and weather forecasts.
   domain: automation
   input:
-    smart_irrigation_zones:
+    happy_irrigation_zones:
       name: Smart Irrigation Zones
       description: Select the Smart Irrigation zone entities to control
       selector:
         entity:
           domain: sensor
-          integration: smart_irrigation
+          integration: happy_irrigation
           multiple: true
     weather_entity:
       name: Weather Entity
@@ -83,9 +83,9 @@ blueprint:
 
 trigger:
   - platform: event
-    event_type: smart_irrigation_start_irrigation_all_zones
+    event_type: happy_irrigation_start_irrigation_all_zones
   - platform: event
-    event_type: smart_irrigation_recurring_schedule_triggered
+    event_type: happy_irrigation_recurring_schedule_triggered
   - platform: time
     at: "06:00:00"
 
@@ -127,7 +127,7 @@ action:
     value_template: "{{ current_wind <= wind_threshold }}"
 
   # Apply seasonal adjustments
-  - service: smart_irrigation.create_seasonal_adjustment
+  - service: happy_irrigation.create_seasonal_adjustment
     data:
       name: "Auto Seasonal Adjustment {{ now().strftime('%Y-%m') }}"
       enabled: true
@@ -138,14 +138,14 @@ action:
 
   # Calculate zones with weather consideration
   - repeat:
-      for_each: !input smart_irrigation_zones
+      for_each: !input happy_irrigation_zones
       sequence:
         - variables:
             zone_entity: "{{ repeat.item }}"
             zone_id: "{{ state_attr(zone_entity, 'zone_id') }}"
         
         # Calculate the zone
-        - service: smart_irrigation.calculate_zone
+        - service: happy_irrigation.calculate_zone
           target:
             entity_id: "{{ zone_entity }}"
         
@@ -170,9 +170,9 @@ action:
               Season multiplier: {{ seasonal_multiplier }})
 
   # Fire custom event for other automations
-  - event: smart_irrigation_weather_responsive_completed
+  - event: happy_irrigation_weather_responsive_completed
     event_data:
-      zones: !input smart_irrigation_zones
+      zones: !input happy_irrigation_zones
       seasonal_multiplier: "{{ seasonal_multiplier }}"
       weather_conditions:
         temperature: "{{ current_temp }}"

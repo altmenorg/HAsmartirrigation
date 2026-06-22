@@ -5,13 +5,13 @@ blueprint:
     for seamless irrigation control with advanced scheduling.
   domain: automation
   input:
-    smart_irrigation_entity:
+    happy_irrigation_entity:
       name: Smart Irrigation Zone
       description: The Smart Irrigation zone sensor entity
       selector:
         entity:
           domain: sensor
-          integration: smart_irrigation
+          integration: happy_irrigation
     irrigation_unlimited_entity:
       name: Irrigation Unlimited Switch
       description: The corresponding Irrigation Unlimited switch entity
@@ -45,12 +45,12 @@ blueprint:
 
 trigger:
   - platform: state
-    entity_id: !input smart_irrigation_entity
+    entity_id: !input happy_irrigation_entity
     attribute: duration
   - platform: event
-    event_type: smart_irrigation_start_irrigation_all_zones
+    event_type: happy_irrigation_start_irrigation_all_zones
   - platform: event
-    event_type: smart_irrigation_recurring_schedule_triggered
+    event_type: happy_irrigation_recurring_schedule_triggered
 
 condition:
   - condition: template
@@ -61,17 +61,17 @@ action:
       # Handle irrigation start event
       - conditions:
           - condition: template
-            value_template: "{{ trigger.platform == 'event' and trigger.event.event_type == 'smart_irrigation_start_irrigation_all_zones' }}"
+            value_template: "{{ trigger.platform == 'event' and trigger.event.event_type == 'happy_irrigation_start_irrigation_all_zones' }}"
         sequence:
           - variables:
-              duration: "{{ states(smart_irrigation_entity) | int }}"
+              duration: "{{ states(happy_irrigation_entity) | int }}"
               min_duration: !input minimum_duration
               max_duration: !input maximum_duration
           - condition: template
             value_template: "{{ duration >= min_duration }}"
-          - service: smart_irrigation.send_zone_data_to_irrigation_unlimited
+          - service: happy_irrigation.send_zone_data_to_irrigation_unlimited
             data:
-              zone_id: "{{ state_attr(smart_irrigation_entity, 'zone_id') }}"
+              zone_id: "{{ state_attr(happy_irrigation_entity, 'zone_id') }}"
               data:
                 duration: "{{ [duration, max_duration] | min }}"
                 state: "on"
@@ -83,29 +83,29 @@ action:
           - service: switch.turn_off
             target:
               entity_id: !input irrigation_unlimited_entity
-          - service: smart_irrigation.reset_bucket
+          - service: happy_irrigation.reset_bucket
             target:
-              entity_id: !input smart_irrigation_entity
+              entity_id: !input happy_irrigation_entity
 
       # Handle recurring schedule trigger  
       - conditions:
           - condition: template
-            value_template: "{{ trigger.platform == 'event' and trigger.event.event_type == 'smart_irrigation_recurring_schedule_triggered' }}"
+            value_template: "{{ trigger.platform == 'event' and trigger.event.event_type == 'happy_irrigation_recurring_schedule_triggered' }}"
         sequence:
-          - service: smart_irrigation.calculate_zone
+          - service: happy_irrigation.calculate_zone
             target:
-              entity_id: !input smart_irrigation_entity
+              entity_id: !input happy_irrigation_entity
           - delay:
               seconds: 5
           - variables:
-              duration: "{{ states(smart_irrigation_entity) | int }}"
+              duration: "{{ states(happy_irrigation_entity) | int }}"
               min_duration: !input minimum_duration
               max_duration: !input maximum_duration
           - condition: template
             value_template: "{{ duration >= min_duration }}"
-          - service: smart_irrigation.sync_with_irrigation_unlimited
+          - service: happy_irrigation.sync_with_irrigation_unlimited
             data:
-              zone_ids: ["{{ state_attr(smart_irrigation_entity, 'zone_id') }}"]
+              zone_ids: ["{{ state_attr(happy_irrigation_entity, 'zone_id') }}"]
 
       # Handle duration change
       - conditions:
@@ -117,9 +117,9 @@ action:
               min_duration: !input minimum_duration
           - condition: template
             value_template: "{{ duration >= min_duration and duration != (trigger.from_state.state | int) }}"
-          - service: smart_irrigation.send_zone_data_to_irrigation_unlimited
+          - service: happy_irrigation.send_zone_data_to_irrigation_unlimited
             data:
-              zone_id: "{{ state_attr(smart_irrigation_entity, 'zone_id') }}"
+              zone_id: "{{ state_attr(happy_irrigation_entity, 'zone_id') }}"
               data:
                 duration: "{{ duration }}"
 

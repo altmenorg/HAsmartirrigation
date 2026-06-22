@@ -11,17 +11,17 @@
       state: 'on'
     - above: '0'
       condition: numeric_state
-      entity_id: sensor.smart_irrigation_[zone_name]
+      entity_id: sensor.happy_irrigation_[zone_name]
   action:
   - data: {}
     entity_id: switch.irrigation_tap1
     service: switch.turn_on
   - delay:
-      seconds: '{{states("sensor.smart_irrigation_[zone_name]")}}'
+      seconds: '{{states("sensor.happy_irrigation_[zone_name]")}}'
   - data: {}
     entity_id: switch.irrigation_tap1
     service: switch.turn_off
   - data: {}
-    service: smart_irrigation.reset_bucket
+    service: happy_irrigation.reset_bucket
     target:
-      entity_id: sensor.smart_irrigation_[zone_name]
+      entity_id: sensor.happy_irrigation_[zone_name]

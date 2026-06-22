@@ -37,7 +37,7 @@ description: "Standard irrigation for a Zone"
 
 triggers:
   trigger: event
-  event_type: smart_irrigation_start_irrigation_all_zones
+  event_type: happy_irrigation_start_irrigation_all_zones
 
 conditions:
   - condition: numeric_state
@@ -61,7 +61,7 @@ actions:
       entity_id:
         - !input irrigation_switch
 
-  - action: smart_irrigation.reset_bucket
+  - action: happy_irrigation.reset_bucket
     data: {}
     target:
       entity_id: !input irrigation_zone
