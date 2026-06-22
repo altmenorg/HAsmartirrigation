@@ -1233,15 +1233,15 @@ function be(e,t){return(({finisher:e,descriptor:t})=>(a,i)=>{var n;if(void 0===i
               ${On("coordinate_config.manual_enabled",this.hass.language)}
             </div>
             <ha-switch
-              .checked=${this.config.manual_coordinates_enabled}
-              @change=${e=>this.handleConfigChange({manual_coordinates_enabled:e.target.checked})}
+              .checked=${this.data.manual_coordinates_enabled}
+              @change=${e=>this.saveData({manual_coordinates_enabled:e.target.checked})}
             ></ha-switch>
           </div>
             <div class="card-content">
-            ${this.config.manual_coordinates_enabled?V`
-                    ${this._numRow(On("coordinate_config.latitude",this.hass.language),"",this.config.manual_latitude||t,(e=>this.handleConfigChange({manual_latitude:parseFloat(e)})),.1)}
-                    ${this._numRow(On("coordinate_config.longitude",this.hass.language),"",this.config.manual_longitude||a,(e=>this.handleConfigChange({manual_longitude:parseFloat(e)})),.1)}
-                    ${this._numRow(On("coordinate_config.elevation",this.hass.language),"",this.config.manual_elevation||i,(e=>this.handleConfigChange({manual_elevation:parseFloat(e)})),1)}
+            ${this.data.manual_coordinates_enabled?V`
+                    ${this._numRow(On("coordinate_config.latitude",this.hass.language),"",this.data.manual_latitude||t,(e=>this.handleConfigChange({manual_latitude:parseFloat(e)})),.1)}
+                    ${this._numRow(On("coordinate_config.longitude",this.hass.language),"",this.data.manual_longitude||a,(e=>this.handleConfigChange({manual_longitude:parseFloat(e)})),.1)}
+                    ${this._numRow(On("coordinate_config.elevation",this.hass.language),"",this.data.manual_elevation||i,(e=>this.handleConfigChange({manual_elevation:parseFloat(e)})),1)}
                   `:V`
                     <div
                       class="zoneline"

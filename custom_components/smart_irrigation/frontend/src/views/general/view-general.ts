@@ -753,16 +753,16 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               )}
             </div>
             <ha-switch
-              .checked=${this.config.manual_coordinates_enabled}
+              .checked=${this.data.manual_coordinates_enabled}
               @change=${(e: Event) =>
-                this.handleConfigChange({
+                this.saveData({
                   manual_coordinates_enabled: (e.target as any).checked,
                 })}
             ></ha-switch>
           </div>
             <div class="card-content">
             ${
-              this.config.manual_coordinates_enabled
+              this.data.manual_coordinates_enabled
                 ? html`
                     ${this._numRow(
                       localize(
@@ -770,7 +770,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         this.hass.language,
                       ),
                       "",
-                      this.config.manual_latitude || haLatitude,
+                      this.data.manual_latitude || haLatitude,
                       (v) =>
                         this.handleConfigChange({
                           manual_latitude: parseFloat(v),
@@ -783,7 +783,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         this.hass.language,
                       ),
                       "",
-                      this.config.manual_longitude || haLongitude,
+                      this.data.manual_longitude || haLongitude,
                       (v) =>
                         this.handleConfigChange({
                           manual_longitude: parseFloat(v),
@@ -796,7 +796,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         this.hass.language,
                       ),
                       "",
-                      this.config.manual_elevation || haElevation,
+                      this.data.manual_elevation || haElevation,
                       (v) =>
                         this.handleConfigChange({
                           manual_elevation: parseFloat(v),
