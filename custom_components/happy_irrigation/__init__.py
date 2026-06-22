@@ -2466,10 +2466,10 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
                                 the_map.get(const.MAPPING_CONF_UNIT),
                                 self.hass.config.units is METRIC_SYSTEM,
                             )
-                            # add val to sensor values
+                            # add val to sensor values, at debug logging level due to startup ordering issues
                             sensor_values[key] = val
                         except (ValueError, TypeError):
-                            _LOGGER.warning(
+                            _LOGGER.debug(
                                 "No / unknown value for sensor %s",
                                 the_map.get(const.MAPPING_CONF_SENSOR),
                             )
