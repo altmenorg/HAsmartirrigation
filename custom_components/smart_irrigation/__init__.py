@@ -1194,6 +1194,23 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
 
             if sensor_in_mapping:
                 sensor_values = self.build_sensor_values_for_mapping(mapping)
+                # A sensor-sourced field must come ONLY from its sensor, never
+                # fall back to weather service data. Strip these keys from the
+                # weather data first: an unavailable sensor (zha not yet loaded
+                # at startup, or a runtime dropout) is then omitted from the
+                # record instead of silently storing the weather value as if it
+                # were the sensor reading.
+                if weatherdata:
+                    for k in self._get_sensor_sourced_keys(mapping):
+                        if (
+                            k not in sensor_values
+                            and weatherdata.pop(k, None) is not None
+                        ):
+                            _LOGGER.warning(
+                                "[update] sensor group %s: '%s' is sensor-sourced but its sensor is unavailable; omitting from this record (no weather-data fallback)",
+                                mapping_id,
+                                k,
+                            )
                 weatherdata = await self.merge_weatherdata_and_sensor_values(
                     weatherdata, sensor_values
                 )
@@ -1305,6 +1322,23 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
 
             if sensor_in_mapping:
                 sensor_values = self.build_sensor_values_for_mapping(mapping)
+                # A sensor-sourced field must come ONLY from its sensor, never
+                # fall back to weather service data. Strip these keys from the
+                # weather data first: an unavailable sensor (zha not yet loaded
+                # at startup, or a runtime dropout) is then omitted from the
+                # record instead of silently storing the weather value as if it
+                # were the sensor reading.
+                if weatherdata:
+                    for k in self._get_sensor_sourced_keys(mapping):
+                        if (
+                            k not in sensor_values
+                            and weatherdata.pop(k, None) is not None
+                        ):
+                            _LOGGER.warning(
+                                "[update] sensor group %s: '%s' is sensor-sourced but its sensor is unavailable; omitting from this record (no weather-data fallback)",
+                                mapping_id,
+                                k,
+                            )
                 weatherdata = await self.merge_weatherdata_and_sensor_values(
                     weatherdata, sensor_values
                 )
@@ -2314,6 +2348,24 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
                 static_in_mapping,
             )
         return owm_in_mapping, sensor_in_mapping, static_in_mapping
+
+    def _get_sensor_sourced_keys(self, mapping):
+        """Return the set of mapping field keys whose source is a sensor.
+
+        Used so a sensor-sourced field never silently falls back to weather
+        service data when its sensor is unavailable (see _async_update_zone /
+        _async_update_all): these keys are stripped from the weather data
+        before merging the sensor values.
+        """
+        keys = set()
+        if mapping is not None:
+            for key, the_map in mapping[const.MAPPING_MAPPINGS].items():
+                if not isinstance(the_map, str) and (
+                    the_map.get(const.MAPPING_CONF_SOURCE)
+                    == const.MAPPING_CONF_SOURCE_SENSOR
+                ):
+                    keys.add(key)
+        return keys
 
     def build_sensor_values_for_mapping(self, mapping):
         """Build a dictionary of sensor values for a given mapping by retrieving and converting sensor states from Home Assistant.
