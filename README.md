@@ -7,7 +7,7 @@
 # HAppy Irrigation
 
 <p align="center">
-  <img src="logo.png?raw=true" alt="HAppy Irrigation" width="720">
+  <img src="images/happyirrigation.jpg?raw=true" alt="HAppy Irrigation" width="720">
 </p>
 
 > **HAppy Irrigation** is a community-maintained fork of
