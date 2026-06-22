@@ -67,8 +67,16 @@ async def async_setup_entry(
                 hass.data[const.DOMAIN]["zones"][config["id"]] = sensor_entity
                 async_add_devices([sensor_entity])
 
-    async_dispatcher_connect(
-        hass, const.DOMAIN + "_register_entity", async_add_sensor_entity
+    # Tie the dispatcher subscription to the config entry lifecycle: without
+    # this, the connection leaks on unload and a later remove+re-add (without a
+    # full HA restart) leaves a stale listener bound to the dead entry. That
+    # ghost listener fires first, pre-fills hass.data["zones"] and then fails to
+    # link the device to the now-unknown entry, so the live listener skips the
+    # zone as "already added" -> zero real entities created.
+    config_entry.async_on_unload(
+        async_dispatcher_connect(
+            hass, const.DOMAIN + "_register_entity", async_add_sensor_entity
+        )
     )
     async_dispatcher_send(hass, const.DOMAIN + "_platform_loaded")
 
