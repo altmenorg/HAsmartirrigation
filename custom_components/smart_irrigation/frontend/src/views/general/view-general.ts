@@ -233,12 +233,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       if (this.data.autocalcenabled) {
         r1 = html`${r1}
           <div class="card-content">
-            ${this._textRow(
+            ${this._timeRow(
               localize(
                 "panels.general.cards.automatic-duration-calculation.labels.calc-time",
                 this.hass.language,
               ),
-              "",
               this.config.calctime,
               (v) => this.handleConfigChange({ calctime: v }),
             )}
@@ -297,58 +296,73 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       if (this.data.autoupdateenabled) {
         r2 = html`${r2}
           <div class="card-content">
-            ${this._numRow(
-              localize(
-                "panels.general.cards.automatic-update.labels.auto-update-interval",
-                this.hass.language,
-              ),
-              "",
-              this.data.autoupdateinterval,
-              (v) => this.saveData({ autoupdateinterval: parseInt(v) }),
-              1,
-            )}
-            ${this._selectRow(
-              localize(
-                "panels.general.cards.automatic-update.labels.auto-update-interval",
-                this.hass.language,
-              ),
-              html`
-                <option
-                  value="${AUTO_UPDATE_SCHEDULE_MINUTELY}"
-                  ?selected="${this.data.autoupdateschedule ===
-                  AUTO_UPDATE_SCHEDULE_MINUTELY}"
-                >
-                  ${localize(
-                    "panels.general.cards.automatic-update.options.minutes",
-                    this.hass.language,
-                  )}
-                </option>
-                <option
-                  value="${AUTO_UPDATE_SCHEDULE_HOURLY}"
-                  ?selected="${this.data.autoupdateschedule ===
-                  AUTO_UPDATE_SCHEDULE_HOURLY}"
-                >
-                  ${localize(
-                    "panels.general.cards.automatic-update.options.hours",
-                    this.hass.language,
-                  )}
-                </option>
-                <option
-                  value="${AUTO_UPDATE_SCHEDULE_DAILY}"
-                  ?selected="${this.data.autoupdateschedule ===
-                  AUTO_UPDATE_SCHEDULE_DAILY}"
-                >
-                  ${localize(
-                    "panels.general.cards.automatic-update.options.days",
-                    this.hass.language,
-                  )}
-                </option>
-              `,
-              (e: Event) =>
-                this.saveData({
-                  autoupdateschedule: (e.target as HTMLSelectElement).value,
-                }),
-            )}
+            <div class="setting-row">
+              <div class="setting-label">
+                ${localize(
+                  "panels.general.cards.automatic-update.labels.auto-update-interval",
+                  this.hass.language,
+                )}
+              </div>
+              <div class="combo-field">
+                <input
+                  class="field combo-num"
+                  type="number"
+                  min="1"
+                  step="1"
+                  .value=${this.data.autoupdateinterval ?? ""}
+                  @change=${(e: Event) =>
+                    this.saveData({
+                      autoupdateinterval: parseInt(
+                        (e.target as HTMLInputElement).value,
+                      ),
+                    })}
+                />
+                <div class="select-wrap">
+                  <select
+                    class="field"
+                    @change=${(e: Event) =>
+                      this.saveData({
+                        autoupdateschedule: (e.target as HTMLSelectElement)
+                          .value,
+                      })}
+                  >
+                    <option
+                      value="${AUTO_UPDATE_SCHEDULE_MINUTELY}"
+                      ?selected=${this.data.autoupdateschedule ===
+                      AUTO_UPDATE_SCHEDULE_MINUTELY}
+                    >
+                      ${localize(
+                        "panels.general.cards.automatic-update.options.minutes",
+                        this.hass.language,
+                      )}
+                    </option>
+                    <option
+                      value="${AUTO_UPDATE_SCHEDULE_HOURLY}"
+                      ?selected=${this.data.autoupdateschedule ===
+                      AUTO_UPDATE_SCHEDULE_HOURLY}
+                    >
+                      ${localize(
+                        "panels.general.cards.automatic-update.options.hours",
+                        this.hass.language,
+                      )}
+                    </option>
+                    <option
+                      value="${AUTO_UPDATE_SCHEDULE_DAILY}"
+                      ?selected=${this.data.autoupdateschedule ===
+                      AUTO_UPDATE_SCHEDULE_DAILY}
+                    >
+                      ${localize(
+                        "panels.general.cards.automatic-update.options.days",
+                        this.hass.language,
+                      )}
+                    </option>
+                  </select>
+                  <svg class="chev" viewBox="0 0 24 24">
+                    <path d=${mdiChevronDown}></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
           </div>`;
       }
       if (this.data.autoupdateenabled) {
@@ -418,12 +432,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       if (this.data.autoclearenabled) {
         r3 = html`${r3}
           <div class="card-content">
-            ${this._textRow(
+            ${this._timeRow(
               localize(
                 "panels.general.cards.automatic-clear.labels.automatic-clear-time",
                 this.hass.language,
               ),
-              "",
               this.config.cleardatatime,
               (v) => this.handleConfigChange({ cleardatatime: v }),
             )}
@@ -1106,6 +1119,27 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     `;
   }
 
+  // Time picker. ha-time-input isn't reliably registered on this panel, so we
+  // use the native <input type="time"> (real HH:MM picker, same stored format).
+  private _timeRow(
+    label: string,
+    value: any,
+    onCommit: (v: string) => void,
+  ): TemplateResult {
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">${label}</div>
+        <input
+          class="field"
+          type="time"
+          .value=${value ? String(value) : ""}
+          @change=${(e: Event) =>
+            onCommit((e.target as HTMLInputElement).value)}
+        />
+      </div>
+    `;
+  }
+
   private _numRow(
     label: string,
     unit: string | TemplateResult,
@@ -1232,6 +1266,42 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup {
     return css`
       ${globalStyle} ${modernStyle} /* View-specific styles only - most common styles are now in globalStyle */
+
+      /* Drop the clickable (i) toggles and just always show the section
+         descriptions (they're short and not in the way). */
+      .card-content:has(> svg[id$="description"]) {
+        display: none;
+      }
+      label[id$="description"] {
+        display: block;
+        margin: 0 0 8px;
+        color: var(--secondary-text-color);
+        line-height: 1.4;
+      }
+
+      /* number + unit-select on a single line (e.g. update interval) */
+      .combo-field {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 0 0 auto;
+      }
+      .combo-field .combo-num {
+        width: 90px;
+        max-width: none;
+      }
+      .combo-field .select-wrap {
+        width: 150px;
+        max-width: none;
+      }
+      @media (max-width: 600px) {
+        .combo-field {
+          width: 100%;
+        }
+        .combo-field .combo-num {
+          flex: 1 1 auto;
+        }
+      }
 
       /* Irrigation triggers styles */
       .triggers-list {

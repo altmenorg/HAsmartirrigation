@@ -651,17 +651,11 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
             this.hass.language,
           )}
         </div>
-        <div class="setting-row">
-          <div class="setting-label">
-            ${localize(
-              "panels.mappings.cards.mapping.source",
-              this.hass.language,
-            )}
-          </div>
-          <div class="radio-group">
-            ${this.renderSimpleRadioOptions(index, value, mappingline)}
-          </div>
-        </div>
+        ${this._selectRow(
+          localize("panels.mappings.cards.mapping.source", this.hass.language),
+          this.renderSimpleRadioOptions(index, value, mappingline),
+          (e: Event) => this.handleSimpleSourceChange(index, value, e),
+        )}
         ${this.renderMappingInputs(index, value, mappingline)}
       </div>
     `;
@@ -680,72 +674,45 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
 
     return html`
       ${!isSpecialMapping && this.config.use_weather_service
-        ? html`
-            <label>
-              <input
-                type="radio"
-                name="${value}_${index}_source"
-                value="${MAPPING_CONF_SOURCE_WEATHER_SERVICE}"
-                ?checked="${currentSource ===
-                MAPPING_CONF_SOURCE_WEATHER_SERVICE}"
-                @change="${(e: Event) =>
-                  this.handleSimpleSourceChange(index, value, e)}"
-              />
-              ${localize(
-                "panels.mappings.cards.mapping.sources.weather_service",
-                this.hass.language,
-              )}
-            </label>
-          `
+        ? html`<option
+            value="${MAPPING_CONF_SOURCE_WEATHER_SERVICE}"
+            ?selected=${currentSource === MAPPING_CONF_SOURCE_WEATHER_SERVICE}
+          >
+            ${localize(
+              "panels.mappings.cards.mapping.sources.weather_service",
+              this.hass.language,
+            )}
+          </option>`
         : ""}
       ${isSpecialMapping
-        ? html`
-            <label>
-              <input
-                type="radio"
-                name="${value}_${index}_source"
-                value="${MAPPING_CONF_SOURCE_NONE}"
-                ?checked="${currentSource === MAPPING_CONF_SOURCE_NONE}"
-                @change="${(e: Event) =>
-                  this.handleSimpleSourceChange(index, value, e)}"
-              />
-              ${localize(
-                "panels.mappings.cards.mapping.sources.none",
-                this.hass.language,
-              )}
-            </label>
-          `
+        ? html`<option
+            value="${MAPPING_CONF_SOURCE_NONE}"
+            ?selected=${currentSource === MAPPING_CONF_SOURCE_NONE}
+          >
+            ${localize(
+              "panels.mappings.cards.mapping.sources.none",
+              this.hass.language,
+            )}
+          </option>`
         : ""}
-
-      <label>
-        <input
-          type="radio"
-          name="${value}_${index}_source"
-          value="${MAPPING_CONF_SOURCE_SENSOR}"
-          ?checked="${currentSource === MAPPING_CONF_SOURCE_SENSOR}"
-          @change="${(e: Event) =>
-            this.handleSimpleSourceChange(index, value, e)}"
-        />
+      <option
+        value="${MAPPING_CONF_SOURCE_SENSOR}"
+        ?selected=${currentSource === MAPPING_CONF_SOURCE_SENSOR}
+      >
         ${localize(
           "panels.mappings.cards.mapping.sources.sensor",
           this.hass.language,
         )}
-      </label>
-
-      <label>
-        <input
-          type="radio"
-          name="${value}_${index}_source"
-          value="${MAPPING_CONF_SOURCE_STATIC_VALUE}"
-          ?checked="${currentSource === MAPPING_CONF_SOURCE_STATIC_VALUE}"
-          @change="${(e: Event) =>
-            this.handleSimpleSourceChange(index, value, e)}"
-        />
+      </option>
+      <option
+        value="${MAPPING_CONF_SOURCE_STATIC_VALUE}"
+        ?selected=${currentSource === MAPPING_CONF_SOURCE_STATIC_VALUE}
+      >
         ${localize(
           "panels.mappings.cards.mapping.sources.static",
           this.hass.language,
         )}
-      </label>
+      </option>
     `;
   }
 
@@ -1059,15 +1026,26 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
   ): TemplateResult {
     if (!this.hass) return html``;
 
-    return this._textRow(
-      localize("panels.mappings.cards.mapping.sensor-entity", this.hass.language),
-      "",
-      mappingline[MAPPING_CONF_SENSOR] || "",
-      (v: string) =>
-        this.handleSensorChange(index, value, {
-          target: { value: v },
-        } as unknown as Event),
-    );
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">
+          ${localize(
+            "panels.mappings.cards.mapping.sensor-entity",
+            this.hass.language,
+          )}
+        </div>
+        <ha-entity-picker
+          class="entity-field"
+          .hass=${this.hass}
+          .value=${mappingline[MAPPING_CONF_SENSOR] || ""}
+          allow-custom-entity
+          @value-changed=${(e: CustomEvent) =>
+            this.handleSensorChange(index, value, {
+              target: { value: e.detail?.value || "" },
+            } as unknown as Event)}
+        ></ha-entity-picker>
+      </div>
+    `;
   }
 
   private renderStaticValueInput(
@@ -1735,8 +1713,15 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         text-decoration: line-through;
         opacity: 0.55;
       }
+      /* HA entity picker, sized like the other controls */
+      .entity-field {
+        flex: 0 0 auto;
+        width: 280px;
+        max-width: 55%;
+      }
       @media (max-width: 600px) {
-        .radio-group {
+        .radio-group,
+        .entity-field {
           width: 100%;
           max-width: 100%;
         }

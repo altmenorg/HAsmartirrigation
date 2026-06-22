@@ -167,21 +167,13 @@ export const modernStyle = css`
     opacity: 0.55;
     cursor: not-allowed;
   }
-  input.field[type="number"] {
-    -moz-appearance: textfield;
-    appearance: textfield;
-  }
-  input.field[type="number"]::-webkit-outer-spin-button,
-  input.field[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
+  /* keep the native up/down spinner arrows (they respect the per-field step);
+     the spinner is the integrated, compact replacement for external +/- */
 
-  /* --- number field with +/- steppers --- */
+  /* number field: native up/down spinner (external +/- buttons removed) */
   .num-field {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
     flex: 0 0 auto;
     width: 240px;
     max-width: 50%;
@@ -194,13 +186,7 @@ export const modernStyle = css`
     text-align: left;
   }
   .num-field .step-btn {
-    flex: 0 0 auto;
-    color: var(--secondary-text-color);
-    --mdc-icon-button-size: 36px;
-    --mdc-icon-size: 20px;
-  }
-  .num-field .step-btn:hover {
-    color: var(--primary-color);
+    display: none;
   }
 
   /* --- native select with themed chevron --- */

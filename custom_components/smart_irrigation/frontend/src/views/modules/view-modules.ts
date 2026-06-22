@@ -290,6 +290,13 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
     const expandKey = module.id ?? index;
     const expanded = this._expanded.has(expandKey);
 
+    // Some saved instances have no stored description; fall back to the module
+    // type's description (matched by name) so every card shows it.
+    const description =
+      module.description ||
+      this.allmodules.find((m) => m.name === module.name)?.description ||
+      "";
+
     // Use cache for better performance. Include the expanded flag in the key so
     // toggling a card open/closed produces a distinct (re-rendered) result.
     const cacheKey = `module-${module.id || index}-${
@@ -322,7 +329,7 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
                   : module.name}</span
               >
             </div>
-            <div class="si-sub">${module.description || ""}</div>
+            <div class="si-sub">${description}</div>
           </div>
           <ha-svg-icon
             class="si-chevron ${expanded ? "open" : ""}"

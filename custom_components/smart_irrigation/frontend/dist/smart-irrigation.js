@@ -6141,21 +6141,13 @@
     opacity: 0.55;
     cursor: not-allowed;
   }
-  input.field[type="number"] {
-    -moz-appearance: textfield;
-    appearance: textfield;
-  }
-  input.field[type="number"]::-webkit-outer-spin-button,
-  input.field[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
+  /* keep the native up/down spinner arrows (they respect the per-field step);
+     the spinner is the integrated, compact replacement for external +/- */
 
-  /* --- number field with +/- steppers --- */
+  /* number field: native up/down spinner (external +/- buttons removed) */
   .num-field {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
     flex: 0 0 auto;
     width: 240px;
     max-width: 50%;
@@ -6168,13 +6160,7 @@
     text-align: left;
   }
   .num-field .step-btn {
-    flex: 0 0 auto;
-    color: var(--secondary-text-color);
-    --mdc-icon-button-size: 36px;
-    --mdc-icon-size: 20px;
-  }
-  .num-field .step-btn:hover {
-    color: var(--primary-color);
+    display: none;
   }
 
   /* --- native select with themed chevron --- */
@@ -6304,7 +6290,7 @@
       });
     }
     render() {
-      var e, t;
+      var e, t, a;
       if (!this.hass || !this.config || !this.data) return I`<div class="loading-indicator">
         ${pn("common.loading-messages.configuration", null !== (t = null === (e = this.hass) || void 0 === e ? void 0 : e.language) && void 0 !== t ? t : "en")}
       </div>`;
@@ -6347,7 +6333,7 @@
         </div>`;
         this.data.autocalcenabled && (e = I`${e}
           <div class="card-content">
-            ${this._textRow(pn("panels.general.cards.automatic-duration-calculation.labels.calc-time", this.hass.language), "", this.config.calctime, e => this.handleConfigChange({
+            ${this._timeRow(pn("panels.general.cards.automatic-duration-calculation.labels.calc-time", this.hass.language), this.config.calctime, e => this.handleConfigChange({
           calctime: e
         }))}
           </div>`), e = I`<ha-card
@@ -6389,31 +6375,53 @@
         </div>`;
         this.data.autoupdateenabled && (t = I`${t}
           <div class="card-content">
-            ${this._numRow(pn("panels.general.cards.automatic-update.labels.auto-update-interval", this.hass.language), "", this.data.autoupdateinterval, e => this.saveData({
-          autoupdateinterval: parseInt(e)
-        }), 1)}
-            ${this._selectRow(pn("panels.general.cards.automatic-update.labels.auto-update-interval", this.hass.language), I`
-                <option
-                  value="${ze}"
-                  ?selected="${this.data.autoupdateschedule === ze}"
-                >
-                  ${pn("panels.general.cards.automatic-update.options.minutes", this.hass.language)}
-                </option>
-                <option
-                  value="${Ae}"
-                  ?selected="${this.data.autoupdateschedule === Ae}"
-                >
-                  ${pn("panels.general.cards.automatic-update.options.hours", this.hass.language)}
-                </option>
-                <option
-                  value="${Me}"
-                  ?selected="${this.data.autoupdateschedule === Me}"
-                >
-                  ${pn("panels.general.cards.automatic-update.options.days", this.hass.language)}
-                </option>
-              `, e => this.saveData({
+            <div class="setting-row">
+              <div class="setting-label">
+                ${pn("panels.general.cards.automatic-update.labels.auto-update-interval", this.hass.language)}
+              </div>
+              <div class="combo-field">
+                <input
+                  class="field combo-num"
+                  type="number"
+                  min="1"
+                  step="1"
+                  .value=${null !== (a = this.data.autoupdateinterval) && void 0 !== a ? a : ""}
+                  @change=${e => this.saveData({
+          autoupdateinterval: parseInt(e.target.value)
+        })}
+                />
+                <div class="select-wrap">
+                  <select
+                    class="field"
+                    @change=${e => this.saveData({
           autoupdateschedule: e.target.value
-        }))}
+        })}
+                  >
+                    <option
+                      value="${ze}"
+                      ?selected=${this.data.autoupdateschedule === ze}
+                    >
+                      ${pn("panels.general.cards.automatic-update.options.minutes", this.hass.language)}
+                    </option>
+                    <option
+                      value="${Ae}"
+                      ?selected=${this.data.autoupdateschedule === Ae}
+                    >
+                      ${pn("panels.general.cards.automatic-update.options.hours", this.hass.language)}
+                    </option>
+                    <option
+                      value="${Me}"
+                      ?selected=${this.data.autoupdateschedule === Me}
+                    >
+                      ${pn("panels.general.cards.automatic-update.options.days", this.hass.language)}
+                    </option>
+                  </select>
+                  <svg class="chev" viewBox="0 0 24 24">
+                    <path d=${mn}></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
           </div>`), this.data.autoupdateenabled && (t = I`${t}
           <div class="card-content">
             ${this._numRow(pn("panels.general.cards.automatic-update.labels.auto-update-delay", this.hass.language), "s", this.config.autoupdatedelay, e => this.saveData({
@@ -6421,7 +6429,7 @@
         }), 1)}
           </div>`), t = I`<ha-card header="${pn("panels.general.cards.automatic-update.header", this.hass.language)}",
       this.hass.language)}">${t}</ha-card>`;
-        let a = I` <div class="card-content">
+        let i = I` <div class="card-content">
           <svg
             style="width:24px;height:24px"
             viewBox="0 0 24 24"
@@ -6453,16 +6461,16 @@
             ></ha-switch>
           </div>
         </div>`;
-        this.data.autoclearenabled && (a = I`${a}
+        this.data.autoclearenabled && (i = I`${i}
           <div class="card-content">
-            ${this._textRow(pn("panels.general.cards.automatic-clear.labels.automatic-clear-time", this.hass.language), "", this.config.cleardatatime, e => this.handleConfigChange({
+            ${this._timeRow(pn("panels.general.cards.automatic-clear.labels.automatic-clear-time", this.hass.language), this.config.cleardatatime, e => this.handleConfigChange({
           cleardatatime: e
         }))}
-          </div>`), a = I`<ha-card
+          </div>`), i = I`<ha-card
         header="${pn("panels.general.cards.automatic-clear.header", this.hass.language)}"
-        >${a}</ha-card
+        >${i}</ha-card
       >`;
-        let i = I`<div class="card-content">
+        let n = I`<div class="card-content">
           <svg
             style="width:24px;height:24px"
             viewBox="0 0 24 24"
@@ -6494,26 +6502,26 @@
             ></ha-switch>
           </div>
         </div>`;
-        this.data.continuousupdates && (i = I`${i}
+        this.data.continuousupdates && (n = I`${n}
           <div class="card-content">
             ${this._numRow(pn("panels.general.cards.continuousupdates.labels.sensor_debounce", this.hass.language), "ms", this.config.sensor_debounce, e => this.handleConfigChange({
           sensor_debounce: parseInt(e)
         }), 1)}
-          </div>`), i = I`<ha-card
+          </div>`), n = I`<ha-card
         header="${pn("panels.general.cards.continuousupdates.header", this.hass.language)}"
-        >${i}</ha-card
+        >${n}</ha-card
       > `;
-        const n = this.renderTriggersCard(),
-          s = this.renderWeatherSkipCard(),
-          r = this.renderCoordinateCard(),
-          o = this.renderDaysBetweenIrrigationCard();
+        const s = this.renderTriggersCard(),
+          r = this.renderWeatherSkipCard(),
+          o = this.renderCoordinateCard(),
+          l = this.renderDaysBetweenIrrigationCard();
         return I`<ha-card
           header="${pn("panels.general.title", this.hass.language)}"
         >
           <div class="card-content">
             ${pn("panels.general.description", this.hass.language)}
           </div> </ha-card
-        >${t}${e}${a}${i}${n}${s}${r}${o}`;
+        >${t}${e}${i}${n}${s}${r}${o}${l}`;
       }
     }
     renderTriggersCard() {
@@ -6845,6 +6853,19 @@
       </div>
     `;
     }
+    _timeRow(e, t, a) {
+      return I`
+      <div class="setting-row">
+        <div class="setting-label">${e}</div>
+        <input
+          class="field"
+          type="time"
+          .value=${t ? String(t) : ""}
+          @change=${e => a(e.target.value)}
+        />
+      </div>
+    `;
+    }
     _numRow(e, t, a, i, n = 1, s = !1) {
       const r = (String(n).split(".")[1] || "").length,
         o = (e, t) => {
@@ -6921,6 +6942,42 @@
     static get styles() {
       return o`
       ${$n} ${An} /* View-specific styles only - most common styles are now in globalStyle */
+
+      /* Drop the clickable (i) toggles and just always show the section
+         descriptions (they're short and not in the way). */
+      .card-content:has(> svg[id$="description"]) {
+        display: none;
+      }
+      label[id$="description"] {
+        display: block;
+        margin: 0 0 8px;
+        color: var(--secondary-text-color);
+        line-height: 1.4;
+      }
+
+      /* number + unit-select on a single line (e.g. update interval) */
+      .combo-field {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 0 0 auto;
+      }
+      .combo-field .combo-num {
+        width: 90px;
+        max-width: none;
+      }
+      .combo-field .select-wrap {
+        width: 150px;
+        max-width: none;
+      }
+      @media (max-width: 600px) {
+        .combo-field {
+          width: 100%;
+        }
+        .combo-field .combo-num {
+          flex: 1 1 auto;
+        }
+      }
 
       /* Irrigation triggers styles */
       .triggers-list {
@@ -10020,16 +10077,7 @@
         opacity: 0.55;
         cursor: not-allowed;
       }
-      /* kill the number spinners (silly 1-by-1 increments on decimal fields) */
-      input.field[type="number"] {
-        -moz-appearance: textfield;
-        appearance: textfield;
-      }
-      input.field[type="number"]::-webkit-outer-spin-button,
-      input.field[type="number"]::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-      }
+      /* keep native up/down spinners (they respect the per-field step) */
       /* number field with clean HA +/- steppers */
       .num-field {
         display: inline-flex;
@@ -10048,13 +10096,7 @@
         text-align: left;
       }
       .num-field .step-btn {
-        flex: 0 0 auto;
-        color: var(--secondary-text-color);
-        --mdc-icon-button-size: 36px;
-        --mdc-icon-size: 20px;
-      }
-      .num-field .step-btn:hover {
-        color: var(--primary-color);
+        display: none;
       }
       /* native select wrapped so we can draw a themed chevron */
       .select-wrap {
@@ -10264,23 +10306,24 @@
       }
     }
     renderModule(e, t) {
-      var a;
+      var a, i;
       if (!this.hass) return I``;
-      const i = this.zones.filter(t => t.module === e.id).length,
-        n = null !== (a = e.id) && void 0 !== a ? a : t,
-        s = this._expanded.has(n),
-        r = `module-${e.id || t}-${s ? "open" : "closed"}-${JSON.stringify(e)}`;
-      if (this.moduleCache.has(r)) return this.moduleCache.get(r);
-      const o = I`
+      const n = this.zones.filter(t => t.module === e.id).length,
+        s = null !== (a = e.id) && void 0 !== a ? a : t,
+        r = this._expanded.has(s),
+        o = e.description || (null === (i = this.allmodules.find(t => t.name === e.name)) || void 0 === i ? void 0 : i.description) || "",
+        l = `module-${e.id || t}-${r ? "open" : "closed"}-${JSON.stringify(e)}`;
+      if (this.moduleCache.has(l)) return this.moduleCache.get(l);
+      const d = I`
       <ha-card class="si-card">
         <div
           class="si-head"
           role="button"
           tabindex="0"
-          aria-expanded=${s ? "true" : "false"}
-          @click=${() => this._toggleItem(n)}
+          aria-expanded=${r ? "true" : "false"}
+          @click=${() => this._toggleItem(s)}
           @keydown=${e => {
-        "Enter" !== e.key && " " !== e.key || (e.preventDefault(), this._toggleItem(n));
+        "Enter" !== e.key && " " !== e.key || (e.preventDefault(), this._toggleItem(s));
       }}
         >
           <div class="si-head-text">
@@ -10289,14 +10332,14 @@
                 >${null != e.id ? `${e.id}: ${e.name}` : e.name}</span
               >
             </div>
-            <div class="si-sub">${e.description || ""}</div>
+            <div class="si-sub">${o}</div>
           </div>
           <ha-svg-icon
-            class="si-chevron ${s ? "open" : ""}"
+            class="si-chevron ${r ? "open" : ""}"
             .path=${mn}
           ></ha-svg-icon>
         </div>
-        ${s ? I` <div class="si-body">
+        ${r ? I` <div class="si-body">
               <div class="moduleconfig">
                 <label class="subheader"
                   >${pn("panels.modules.cards.module.labels.configuration", this.hass.language)}
@@ -10307,7 +10350,7 @@
                   ${e.schema ? Object.entries(e.schema).map(([e]) => this.renderConfig(t, e)) : null}
                 </div>
               </div>
-              ${i ? I`<div class="weather-note">
+              ${n ? I`<div class="weather-note">
                     ${pn("panels.modules.cards.module.errors.cannot-delete-module-because-zones-use-it", this.hass.language)}
                   </div>` : I`<div class="si-actions">
                     ${this._actionBtn(bn, pn("common.actions.delete", this.hass.language), e => this.handleRemoveModule(e, t), !0)}
@@ -10315,7 +10358,7 @@
             </div>` : ""}
       </ha-card>
     `;
-      return this.moduleCache.set(r, o), o;
+      return this.moduleCache.set(l, d), d;
     }
     renderConfig(e, t) {
       const a = Object.values(this.modules).at(e);
@@ -10789,14 +10832,7 @@
         <div class="si-subgroup-title">
           ${pn(`panels.mappings.cards.mapping.items.${t.toLowerCase()}`, this.hass.language)}
         </div>
-        <div class="setting-row">
-          <div class="setting-label">
-            ${pn("panels.mappings.cards.mapping.source", this.hass.language)}
-          </div>
-          <div class="radio-group">
-            ${this.renderSimpleRadioOptions(e, t, i)}
-          </div>
-        </div>
+        ${this._selectRow(pn("panels.mappings.cards.mapping.source", this.hass.language), this.renderSimpleRadioOptions(e, t, i), a => this.handleSimpleSourceChange(e, t, a))}
         ${this.renderMappingInputs(e, t, i)}
       </div>
     `;
@@ -10806,52 +10842,30 @@
       const i = t === He || t === je,
         n = a[Ge];
       return I`
-      ${!i && this.config.use_weather_service ? I`
-            <label>
-              <input
-                type="radio"
-                name="${t}_${e}_source"
-                value="${Ie}"
-                ?checked="${n === Ie}"
-                @change="${a => this.handleSimpleSourceChange(e, t, a)}"
-              />
-              ${pn("panels.mappings.cards.mapping.sources.weather_service", this.hass.language)}
-            </label>
-          ` : ""}
-      ${i ? I`
-            <label>
-              <input
-                type="radio"
-                name="${t}_${e}_source"
-                value="${We}"
-                ?checked="${n === We}"
-                @change="${a => this.handleSimpleSourceChange(e, t, a)}"
-              />
-              ${pn("panels.mappings.cards.mapping.sources.none", this.hass.language)}
-            </label>
-          ` : ""}
-
-      <label>
-        <input
-          type="radio"
-          name="${t}_${e}_source"
-          value="${Re}"
-          ?checked="${n === Re}"
-          @change="${a => this.handleSimpleSourceChange(e, t, a)}"
-        />
+      ${!i && this.config.use_weather_service ? I`<option
+            value="${Ie}"
+            ?selected=${n === Ie}
+          >
+            ${pn("panels.mappings.cards.mapping.sources.weather_service", this.hass.language)}
+          </option>` : ""}
+      ${i ? I`<option
+            value="${We}"
+            ?selected=${n === We}
+          >
+            ${pn("panels.mappings.cards.mapping.sources.none", this.hass.language)}
+          </option>` : ""}
+      <option
+        value="${Re}"
+        ?selected=${n === Re}
+      >
         ${pn("panels.mappings.cards.mapping.sources.sensor", this.hass.language)}
-      </label>
-
-      <label>
-        <input
-          type="radio"
-          name="${t}_${e}_source"
-          value="${Ue}"
-          ?checked="${n === Ue}"
-          @change="${a => this.handleSimpleSourceChange(e, t, a)}"
-        />
+      </option>
+      <option
+        value="${Ue}"
+        ?selected=${n === Ue}
+      >
         ${pn("panels.mappings.cards.mapping.sources.static", this.hass.language)}
-      </label>
+      </option>
     `;
     }
     handleSimpleSourceChange(e, t, a) {
@@ -10992,11 +11006,27 @@
     `;
     }
     renderSensorInput(e, t, a) {
-      return this.hass ? this._textRow(pn("panels.mappings.cards.mapping.sensor-entity", this.hass.language), "", a[qe] || "", a => this.handleSensorChange(e, t, {
-        target: {
-          value: a
-        }
-      })) : I``;
+      return this.hass ? I`
+      <div class="setting-row">
+        <div class="setting-label">
+          ${pn("panels.mappings.cards.mapping.sensor-entity", this.hass.language)}
+        </div>
+        <ha-entity-picker
+          class="entity-field"
+          .hass=${this.hass}
+          .value=${a[qe] || ""}
+          allow-custom-entity
+          @value-changed=${a => {
+        var i;
+        return this.handleSensorChange(e, t, {
+          target: {
+            value: (null === (i = a.detail) || void 0 === i ? void 0 : i.value) || ""
+          }
+        });
+      }}
+        ></ha-entity-picker>
+      </div>
+    ` : I``;
     }
     renderStaticValueInput(e, t, a) {
       return this.hass ? this._textRow(pn("panels.mappings.cards.mapping.static_value", this.hass.language), "", a[Ze] || "", a => this.handleStaticValueChange(e, t, {
@@ -11465,8 +11495,15 @@
         text-decoration: line-through;
         opacity: 0.55;
       }
+      /* HA entity picker, sized like the other controls */
+      .entity-field {
+        flex: 0 0 auto;
+        width: 280px;
+        max-width: 55%;
+      }
       @media (max-width: 600px) {
-        .radio-group {
+        .radio-group,
+        .entity-field {
           width: 100%;
           max-width: 100%;
         }
