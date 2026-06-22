@@ -1,5 +1,7 @@
 {
   "common": {
+    "loading": "Chargement",
+    "saving": "Enregistrement",
     "actions": {
       "delete": "Suppression"
     },
@@ -7,12 +9,32 @@
       "module": "Module",
       "no": "Non",
       "select": "Sélectionner",
-      "yes": "Oui"
+      "yes": "Oui",
+      "enabled": "Activé",
+      "disabled": "Désactivé",
+      "before": "avant",
+      "after": "après"
+    },
+    "units": {
+      "seconds": "secondes"
     },
     "attributes": {
       "size": "taille",
       "throughput": "débit",
-      "state": "état"
+      "state": "état",
+      "bucket": "bucket",
+      "last_updated": "dernière mise à jour",
+      "last_calculated": "dernier calcul",
+      "number_of_data_points": "nombre de points de données"
+    },
+    "loading-messages": {
+      "configuration": "Chargement de la configuration…",
+      "modules": "Chargement des modules…",
+      "general": "Chargement…"
+    },
+    "saving-messages": {
+      "adding": "Ajout…",
+      "saving": "Enregistrement…"
     }
   },
   "defaults": {
@@ -25,13 +47,17 @@
         "module-returned-evapotranspiration-deficiency": "NB: cette explication utilise '.' comme séparateur décimal, et affiche des valeurs arrondies. Le module a donné un manque d'Évapotranspiration de",
         "bucket-was": "Le seau (bucket) était de",
         "new-bucket-values-is": "La nouvelle valeur du seau (bucket) est",
+        "bucket": "seau (bucket)",
         "old-bucket-variable": "ancien_bucket",
+        "max-bucket-variable": "max_bucket",
         "delta": "delta",
         "bucket-less-than-zero-irrigation-necessary": "Puisque le seau (bucket) est < 0, l'irrigation est nécessaire",
         "steps-taken-to-calculate-duration": "Pour calculer la durée d'irrigation, les étapes suivantes ont été réalisées",
         "precipitation-rate-defined-as": "Le taux de précipitation est défini comme",
         "duration-is-calculated-as": "La durée d'irrigation est calculée avec",
-        "bucket": "seau (bucket)",
+        "drainage": "drainage",
+        "drainage-rate": "drainage_rate",
+        "hours": "heures",
         "precipitation-rate-variable": "taux_precipitation",
         "multiplier-is-applied": "Le multiplicateur est appliqué. Le multiplicateur est",
         "duration-after-multiplier-is": "donc la durée d'irrigation est de",
@@ -40,7 +66,10 @@
         "lead-time-is-applied": "Enfin, le délai est appliqué. Le délai est de",
         "duration-after-lead-time-is": "et donc la durée finale est de",
         "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Puisque le seau (bucket) est >= 0, l'irrigation n'est pas nécessaire, et la durée est réglée à",
-        "maximum-bucket-is": "la taille du seau (bucket) maximale est"
+        "maximum-bucket-is": "la taille du seau (bucket) maximale est",
+        "drainage-rate-is": "Le taux de drainage à saturation (bucket au max) est de",
+        "current-drainage-is": "Le drainage actuel est calculé comme",
+        "no-drainage": "Le drainage actuel est de 0 car"
       }
     }
   },
@@ -107,29 +136,30 @@
       "cards": {
         "automatic-duration-calculation": {
           "header": "Calcul automatique de la durée",
+          "description": "Le calcul prend en compte les données météo jusqu'à ce point et met à jour le seau (bucket) pour chaque zone automatique. Ensuite, la durée est ajustée par la nouvelle valeur de seau (bucket) et les données météo sont supprimées.",
           "labels": {
             "auto-calc-enabled": "Calcule automatiquement la durée par zone",
-            "auto-calc-time": "Calcule à"
-          },
-          "description": "Le calcul prend en compte les données météo jusqu'à ce point et met à jour le seau (bucket) pour chaque zone automatique. Ensuite, la durée est ajustée par la nouvelle valeur de seau (bucket) et les données météo sont supprimées."
+            "calc-time": "Calculer à"
+          }
         },
         "automatic-update": {
           "errors": {
             "warning-update-time-on-or-after-calc-time": "Attention: mise à jour des données météo au moment du, ou après le, calcul"
           },
           "header": "Mise à jour automatique des données météo",
+          "description": "Récupère et stocke les données météo automatiquement. Des données météo sont nécessaires pour calculer les seaux (buckets) par zone et les durées.",
           "labels": {
             "auto-update-enabled": "Met à jour les données météo automatiquement",
-            "auto-update-first-update": "(Première) Mise à jour à",
+            "auto-update-schedule": "Fréquence de mise à jour",
+            "auto-update-time": "Mettre à jour à",
             "auto-update-interval": "Mettre à jour les données des capteurs toutes les",
             "auto-update-delay": "Délai de mise à jour"
           },
           "options": {
-            "days": "jours",
+            "minutes": "minutes",
             "hours": "heures",
-            "minutes": "minutes"
-          },
-          "description": "Récupère et stocke les données météo automatiquement. Des données météo sont nécessaires pour calculer les seaux (buckets) par zone et les durées."
+            "days": "jours"
+          }
         },
         "automatic-clear": {
           "header": "Délestage automatique des données météo",
@@ -137,6 +167,14 @@
           "labels": {
             "automatic-clear-enabled": "Suppression automatique des données météo collectées",
             "automatic-clear-time": "Supprimer les données météo à"
+          }
+        },
+        "continuousupdates": {
+          "header": "Mises à jour continues pour les capteurs (expérimental)",
+          "description": "Cette fonctionnalité expérimentale met à jour en continu les données des capteurs. C'est utile pour les groupes de capteurs qui utilisent des sources fournissant des données continues, comme les stations météo. Elle ne peut pas être utilisée pour les groupes de capteurs qui s'appuient au moins en partie sur des services météo, car l'interrogation continue des API engendre des coûts. Gardez à l'esprit que cette fonctionnalité est expérimentale et peut ne pas fonctionner comme prévu. À utiliser à vos propres risques.",
+          "labels": {
+            "continuousupdates": "Activer les mises à jour continues",
+            "sensor_debounce": "Anti-rebond capteur"
           }
         }
       },
@@ -158,6 +196,40 @@
         }
       }
     },
+    "info": {
+      "title": "Infos",
+      "description": "Consultez les informations sur la prochaine irrigation et l'état du système.",
+      "configuration-not-available": "Configuration non disponible.",
+      "cards": {
+        "zone-bucket-values": {
+          "title": "Valeurs de bucket et durée par zone",
+          "labels": {
+            "bucket": "Bucket",
+            "duration": "Durée"
+          },
+          "no-zones": "Aucune zone configurée"
+        },
+        "next-irrigation": {
+          "title": "Prochaine irrigation",
+          "labels": {
+            "next-start": "Prochain démarrage",
+            "duration": "Durée",
+            "zones": "Zones"
+          },
+          "no-data": "Aucune donnée disponible"
+        },
+        "irrigation-reason": {
+          "title": "Raison de l'irrigation",
+          "labels": {
+            "reason": "Raison",
+            "sunrise": "Lever du soleil",
+            "total-duration": "Durée totale",
+            "explanation": "Explication"
+          },
+          "no-data": "Aucune donnée disponible"
+        }
+      }
+    },
     "mappings": {
       "cards": {
         "add-mapping": {
@@ -174,10 +246,14 @@
             "maximum": "Maximum",
             "median": "Médian",
             "minimum": "Minimum",
-            "sum": "Somme"
+            "riemannsum": "Somme de Riemann",
+            "sum": "Somme",
+            "delta": "Delta"
           },
           "errors": {
-            "cannot-delete-mapping-because-zones-use-it": "Vous ne pouvez pas supprimer ce groupe de capteurs car au moins une zone l'utilise."
+            "cannot-delete-mapping-because-zones-use-it": "Vous ne pouvez pas supprimer ce groupe de capteurs car au moins une zone l'utilise.",
+            "invalid_source": "Source invalide",
+            "source_does_not_exist": "La source n'existe pas. Veuillez saisir une source valide, telle que \"sensor.mysensor\"."
           },
           "items": {
             "dewpoint": "Point de rosée",
@@ -186,11 +262,17 @@
             "maximum temperature": "Température maximale",
             "minimum temperature": "Température minimale",
             "precipitation": "Précipitation totale",
+            "current precipitation": "Précipitations actuelles",
             "pressure": "Pression",
             "solar radiation": "Rayonnement solaire",
             "temperature": "Température",
             "windspeed": "Vitesse du vent"
           },
+          "pressure_types": {
+            "absolute": "absolue",
+            "relative": "relative"
+          },
+          "pressure-type": "La pression est",
           "sensor-aggregate-of-sensor-values-to-calculate": "des valeurs des capteurs pour calculer la durée",
           "sensor-aggregate-use-the": "Utiliser les",
           "sensor-entity": "Entité capteur",
@@ -202,13 +284,7 @@
             "weather_service": "Weather service",
             "sensor": "Capteur",
             "static": "Valeur statique"
-          },
-          "pressure_types": {
-            "relative": "relative",
-            "absolute": "absolue"
-          },
-          "pressure-type": "La pression est",
-          "sensor-units": "Le capteur fournit les valeurs en"
+          }
         }
       },
       "description": "Ajouter un ou plusieurs groupes de capteurs qui récupèrent les données météo de Weather service, de capteurs locaux ou d'une combinaison de tous ceux-ci. Vous pouvez associer chaque groupe de capteurs avec une ou plusieurs zones",
@@ -216,7 +292,16 @@
         "mapping-name": "Nom"
       },
       "no_items": "Il n'y a pas encore de groupe de capteurs définis.",
-      "title": "Groupes de capteurs"
+      "title": "Groupes de capteurs",
+      "weather-records": {
+        "title": "Relevés météo (10 derniers)",
+        "timestamp": "Heure",
+        "temperature": "Temp.",
+        "humidity": "Humidité",
+        "precipitation": "Précip.",
+        "retrieval-time": "Récupéré",
+        "no-data": "Aucune donnée météo disponible pour ce groupe de capteurs"
+      }
     },
     "modules": {
       "cards": {
@@ -237,7 +322,8 @@
           "translated-options": {
             "DontEstimate": "Ne fait pas d'estimation",
             "EstimateFromSunHours": "Estimation à partir des heures d'ensoleillement",
-            "EstimateFromTemp": "Estimation à partir de la température"
+            "EstimateFromTemp": "Estimation à partir de la température",
+            "EstimateFromSunHoursAndTemperature": "Estimer à partir de la moyenne des heures d'ensoleillement et de la température"
           }
         }
       },
@@ -251,7 +337,10 @@
         "calculate": "Calculer",
         "information": "Information",
         "update": "Mise à jour",
-        "reset-bucket": "Mise à zéro du seau (bucket)"
+        "reset-bucket": "Mise à zéro du seau (bucket)",
+        "view-weather-info": "Voir les données météo",
+        "view-weather-info-message": "Données météo disponibles pour",
+        "view-watering-calendar": "Voir le calendrier d'arrosage"
       },
       "cards": {
         "add-zone": {
@@ -290,13 +379,81 @@
         "maximum-bucket": "Seau (bucket) maximum",
         "last_calculated": "Dernier calcul",
         "data-last-updated": "Dernière mise à jour",
-        "data-number-of-data-points": "Nombre de points de données"
+        "data-number-of-data-points": "Nombre de points de données",
+        "drainage_rate": "Taux de drainage"
       },
       "no_items": "Il n'y a pas encore de zone définie.",
       "title": "Zones"
     }
   },
   "title": "HAppy Irrigation",
+  "irrigation_start_triggers": {
+    "title": "Déclencheurs de démarrage d'irrigation",
+    "description": "Configurez le moment où l'irrigation doit démarrer en fonction des événements solaires. Vous pouvez ajouter plusieurs déclencheurs pour différents horaires. Pour les déclencheurs au lever du soleil, laisser le décalage à 0 utilisera automatiquement la durée totale de toutes les zones activées.",
+    "usage_before": "Lorsqu'un déclencheur s'active, HAppy Irrigation émet l'événement ",
+    "usage_after": " — écoutez-le dans une automatisation pour démarrer l'arrosage. Les données de l'événement incluent trigger_name, trigger_type et offset_minutes, vous pouvez donc réagir différemment selon le déclencheur. Les réglages de saut pour précipitations et de jours entre arrosages s'appliquent toujours : un jour de saut, aucun événement n'est émis.",
+    "add_trigger": "Ajouter un déclencheur",
+    "edit_trigger": "Modifier le déclencheur",
+    "delete_trigger": "Supprimer le déclencheur",
+    "trigger_types": {
+      "sunrise": "Lever du soleil",
+      "sunset": "Coucher du soleil",
+      "solar_azimuth": "Azimut solaire"
+    },
+    "fields": {
+      "name": {
+        "name": "Nom du déclencheur",
+        "description": "Un nom descriptif pour identifier ce déclencheur"
+      },
+      "type": {
+        "name": "Type de déclencheur",
+        "description": "Le type d'événement solaire qui déclenche"
+      },
+      "enabled": {
+        "name": "Activé",
+        "description": "Indique si ce déclencheur est actuellement actif"
+      },
+      "offset_minutes": {
+        "name": "Décalage (minutes)",
+        "description": "Minutes avant (-) ou après (+) l'événement solaire. Pour les déclencheurs au lever du soleil, utilisez 0 pour un calage automatique basé sur la durée totale des zones."
+      },
+      "azimuth_angle": {
+        "name": "Angle d'azimut (degrés)",
+        "description": "Angle d'azimut solaire en degrés, où 0=Nord, 90=Est, 180=Sud, 270=Ouest"
+      },
+      "account_for_duration": {
+        "name": "Tenir compte de la durée",
+        "description": "Lorsqu'elle est activée, l'irrigation démarre assez tôt pour se terminer à l'heure indiquée. Lorsqu'elle est désactivée, l'irrigation démarre exactement à l'heure indiquée."
+      }
+    },
+    "dialog": {
+      "add_title": "Ajouter un déclencheur de démarrage d'irrigation",
+      "edit_title": "Modifier le déclencheur de démarrage d'irrigation",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "delete": "Supprimer",
+      "help": "Lorsque ce déclencheur s'active, HAppy Irrigation émet l'événement suivant — utilisez-le dans une automatisation pour démarrer l'arrosage. Les données de l'événement incluent le nom de ce déclencheur (ainsi que son type/décalage), vous pouvez donc y réagir spécifiquement :"
+    },
+    "no_triggers": "Aucun déclencheur de démarrage d'irrigation configuré. Le système utilisera le comportement par défaut (lever du soleil avec la durée totale des zones). Ajoutez des déclencheurs pour personnaliser le moment où l'irrigation démarre.",
+    "offset_auto": "Auto (calculé d'après la durée totale des zones)",
+    "confirm_delete": "Voulez-vous vraiment supprimer le déclencheur \"{name}\" ?",
+    "validation": {
+      "name_required": "Le nom du déclencheur est obligatoire",
+      "azimuth_invalid": "L'angle d'azimut doit être un nombre valide"
+    },
+    "help": {
+      "sunrise_offset": "Pour les déclencheurs au lever du soleil : utilisez des valeurs négatives pour démarrer avant le lever, positives pour démarrer après. Réglez sur 0 pour démarrer automatiquement assez tôt afin de terminer toutes les zones avant le lever du soleil.",
+      "sunset_offset": "Pour les déclencheurs au coucher du soleil : utilisez des valeurs négatives pour démarrer avant le coucher, positives pour démarrer après le coucher.",
+      "azimuth_explanation": "L'azimut solaire est la direction de la boussole vers le soleil. 0°=Nord, 90°=Est, 180°=Sud, 270°=Ouest. Vous pouvez saisir n'importe quelle valeur d'angle (p. ex. 450°=90°, -30°=330°). Utilisez-le pour déclencher l'irrigation lorsque le soleil atteint une position précise.",
+      "multiple_triggers": "Vous pouvez configurer plusieurs déclencheurs. Chaque déclencheur activé planifiera indépendamment les démarrages d'irrigation."
+    }
+  },
+  "weather_skip": {
+    "title": "Saut d'irrigation basé sur la météo",
+    "description": "Saute automatiquement l'irrigation lorsque des précipitations sont prévues. Cette fonctionnalité nécessite qu'un service météo soit configuré.",
+    "threshold_label": "Seuil de précipitations",
+    "threshold_description": "Quantité minimale de précipitations (en mm) prévue pour aujourd'hui et demain pour sauter l'irrigation."
+  },
   "coordinate_config": {
     "title": "Coordonnées de localisation",
     "description": "Configurez les coordonnées de localisation pour la récupération des données météo. Vous pouvez utiliser des coordonnées manuelles différentes de votre emplacement Home Assistant si nécessaire.",
