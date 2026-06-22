@@ -21,7 +21,7 @@ Note that this integration does not control your irrigation system - it merely c
 
 **Sounds good? let's get started with [installation](installation.md)**.
 
-Prefer to learn more first? Read [how it works](how-it-works.md) or watch [our official tutorial videos on Youtube (English)](https://youtube.com/playlist?list=PLUHIAUPJHMiakbda92--fgb6A0hFReAo7&si=82Xc6mHoLDwFBfCP) and [community-created tutorial in German](https://youtu.be/1AYLuIs7_Pw).
+Prefer to learn more first? Read [how it works](how-it-works.md), see [which weather service to use](weather-services.md), or watch [our official tutorial videos on Youtube (English)](https://youtube.com/playlist?list=PLUHIAUPJHMiakbda92--fgb6A0hFReAo7&si=82Xc6mHoLDwFBfCP) and [community-created tutorial in German](https://youtu.be/1AYLuIs7_Pw).
 
 ---
 
