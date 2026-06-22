@@ -920,11 +920,19 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     this._suppressNextConfigUpdate = true;
 
     try {
-      // Optimistic update for responsive UI
+      // Optimistic update for responsive UI. Mirror the change into `config`
+      // as well: several controls (the toggles) bind their state to
+      // `this.config`, and because we suppress our own save echo there is no
+      // refetch to reconcile them. Without this they visually revert to the
+      // pre-save value (even though the save itself succeeded).
       this.data = {
         ...this.data,
         ...changes,
       };
+      this.config = {
+        ...this.config,
+        ...changes,
+      } as SmartIrrigationConfig;
       this._scheduleUpdate();
 
       await saveConfig(this.hass, this.data);

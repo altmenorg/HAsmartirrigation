@@ -1320,7 +1320,7 @@ function be(e,a){return(({finisher:e,descriptor:a})=>(t,i)=>{var n;if(void 0===i
           </div>
         </div>
       </ha-card>
-    `:W``}async saveData(e){if(this.hass&&this.data){this.isSaving=!0,this._scheduleUpdate(),this._suppressNextConfigUpdate=!0;try{this.data=Object.assign(Object.assign({},this.data),e),this._scheduleUpdate(),await(a=this.hass,t=this.data,a.callApi("POST",je+"/config",t))}catch(e){this._suppressNextConfigUpdate=!1,console.error("Error saving config:",e),$a(e,this.shadowRoot.querySelector("ha-card")),await this._fetchData()}finally{this.isSaving=!1,this._scheduleUpdate()}var a,t}}handleConfigChange(e){this.debouncedSave(e)}disconnectedCallback(){super.disconnectedCallback()}_textRow(e,a,t,i){return W`
+    `:W``}async saveData(e){if(this.hass&&this.data){this.isSaving=!0,this._scheduleUpdate(),this._suppressNextConfigUpdate=!0;try{this.data=Object.assign(Object.assign({},this.data),e),this.config=Object.assign(Object.assign({},this.config),e),this._scheduleUpdate(),await(a=this.hass,t=this.data,a.callApi("POST",je+"/config",t))}catch(e){this._suppressNextConfigUpdate=!1,console.error("Error saving config:",e),$a(e,this.shadowRoot.querySelector("ha-card")),await this._fetchData()}finally{this.isSaving=!1,this._scheduleUpdate()}var a,t}}handleConfigChange(e){this.debouncedSave(e)}disconnectedCallback(){super.disconnectedCallback()}_textRow(e,a,t,i){return W`
       <div class="setting-row">
         <div class="setting-label">
           ${e}${a?W` <span class="unit">(${a})</span>`:""}
