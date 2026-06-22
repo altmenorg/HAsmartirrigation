@@ -10,7 +10,7 @@
     "step": {
       "user": {
         "title": "Algemeen",
-        "description": "Als je hulp nodig hebt, zie https://github.com/jeroenterheerdt/HASmartIrrigation",
+        "description": "Als je hulp nodig hebt, zie de documentatie.",
         "data": {
           "name": "Unieke naam",
           "use_weather_service": "Gebruik een weersdient (Open Weather Map of Pirate Weather) voor weergegevens en voorspellingen. Zet dit aan als je van plan bent dit te gebruiken voor in ieder geval een deel van de benodigde weersinformatie of voorspellingen. Zet het uit als je een andere weersdienst of een andere bron (zoals een eigen weersstation) wilt gebruiken. In dat geval zijn er geen voorspellingen beschikbaar."
@@ -18,7 +18,7 @@
       },
       "step1": {
         "title": "Weerdienst API instellingen",
-        "description": "Als je hulp nodig hebt, zie https://github.com/jeroenterheerdt/HASmartIrrigation",
+        "description": "Als je hulp nodig hebt, zie de documentatie.",
         "data": {
           "weather_service": "Weerdienst",
           "weather_service_api_key": "API sleutel",
@@ -35,14 +35,14 @@
     "step": {
       "init": {
         "title": "Weerdienst API instellingen",
-        "description": "Als je hulp nodig hebt, zie https://github.com/jeroenterheerdt/HASmartIrrigation",
+        "description": "Als je hulp nodig hebt, zie de documentatie.",
         "data": {
           "use_weather_service": "Gebruik een weersdient (Open Weather Map of Pirate Weather) voor weergegevens en voorspellingen. Zet dit aan als je van plan bent dit te gebruiken voor in ieder geval een deel van de benodigde weersinformatie of voorspellingen. Zet het uit als je een andere weersdienst of een andere bron (zoals een eigen weersstation) wilt gebruiken. In dat geval zijn er geen voorspellingen beschikbaar."
         }
       },
       "step1": {
         "title": "Weerdienst API instellingen",
-        "description": "Als je hulp nodig hebt, zie https://github.com/jeroenterheerdt/HASmartIrrigation",
+        "description": "Als je hulp nodig hebt, zie de documentatie.",
         "data": {
           "weather_service": "Weerdienst",
           "weather_service_api_key": "API sleutel",
