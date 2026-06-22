@@ -446,16 +446,18 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
             tuple: (latitude, longitude, elevation)
 
         """
-        # Check if manual coordinates are enabled
-        manual_enabled = self._get_config_value(
-            const.CONF_MANUAL_COORDINATES_ENABLED, False
+        # Manual coordinates are saved via the config API into the store config
+        # (not entry.data / HA config), so read them from there.
+        cfg = self.store.config
+        manual_enabled = getattr(
+            cfg, const.CONF_MANUAL_COORDINATES_ENABLED, False
         )
 
         if manual_enabled:
             # Use manual coordinates
-            latitude = self._get_config_value(const.CONF_MANUAL_LATITUDE, None)
-            longitude = self._get_config_value(const.CONF_MANUAL_LONGITUDE, None)
-            elevation = self._get_config_value(const.CONF_MANUAL_ELEVATION, 0)
+            latitude = getattr(cfg, const.CONF_MANUAL_LATITUDE, None)
+            longitude = getattr(cfg, const.CONF_MANUAL_LONGITUDE, None)
+            elevation = getattr(cfg, const.CONF_MANUAL_ELEVATION, 0)
 
             if latitude is not None and longitude is not None:
                 _LOGGER.info(
