@@ -4,14 +4,14 @@ import contextlib
 
 import pytest
 
-from custom_components.smart_irrigation.const import (
+from custom_components.happy_irrigation.const import (
     UNIT_INCH,
     UNIT_KMH,
     UNIT_MH,
     UNIT_MM,
     UNIT_MS,
 )
-from custom_components.smart_irrigation.helpers import (
+from custom_components.happy_irrigation.helpers import (
     CannotConnect,
     InvalidAuth,
     altitudeToPressure,

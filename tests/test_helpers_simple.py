@@ -4,7 +4,7 @@ import contextlib
 
 import pytest
 
-from custom_components.smart_irrigation.helpers import (
+from custom_components.happy_irrigation.helpers import (
     CannotConnect,
     InvalidAuth,
     altitudeToPressure,

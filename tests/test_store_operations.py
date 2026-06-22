@@ -4,8 +4,8 @@ import contextlib
 
 import pytest
 
-from custom_components.smart_irrigation import const
-from custom_components.smart_irrigation.store import SmartIrrigationStorage
+from custom_components.happy_irrigation import const
+from custom_components.happy_irrigation.store import SmartIrrigationStorage
 
 
 class TestSmartIrrigationStorageBasics:

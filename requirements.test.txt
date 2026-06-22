@@ -1,7 +1,7 @@
-# Testing requirements for Smart Irrigation project
+# Testing requirements for HAppy Irrigation project
 
 # Core component requirements
--r custom_components/smart_irrigation/requirements.txt
+-r custom_components/happy_irrigation/requirements.txt
 
 # Component-specific dependency
 aiofiles

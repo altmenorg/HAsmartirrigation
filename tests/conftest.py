@@ -77,7 +77,7 @@ def mock_entry():
     """Return a mock config entry."""
     from homeassistant.const import CONF_ELEVATION, CONF_LATITUDE, CONF_LONGITUDE
 
-    from custom_components.smart_irrigation import const
+    from custom_components.happy_irrigation import const
     from tests.common import MockConfigEntry
 
     return MockConfigEntry(
@@ -98,7 +98,7 @@ def mock_entry():
 @pytest.fixture
 def mock_store():
     """Return a mock store."""
-    from custom_components.smart_irrigation import const
+    from custom_components.happy_irrigation import const
 
     store = Mock()
     store.async_get_config = AsyncMock(return_value={})

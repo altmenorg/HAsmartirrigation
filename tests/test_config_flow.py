@@ -10,5 +10,5 @@ from pytest_homeassistant_custom_component.common import (
     patch,
 )
 
-from custom_components.smart_irrigation import config_flow
-from custom_components.smart_irrigation.const import DOMAIN
+from custom_components.happy_irrigation import config_flow
+from custom_components.happy_irrigation.const import DOMAIN
