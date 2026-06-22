@@ -92,4 +92,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed development and testing inst
 
 ## License
 
-[MIT](LICENSE) — © 2020 Jeroen ter Heerdt (original Smart Irrigation), maintained as HAppy Irrigation by the community.
+[MIT](LICENSE) — © 2020 Jeroen ter Heerdt (original Smart Irrigation), © 2026 altmenorg (HAppy Irrigation fork).
