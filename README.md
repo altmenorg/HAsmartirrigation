@@ -31,7 +31,7 @@ Multiple zones are supported, each zone having its own configuration and set up.
 - 🌦️ **Switch weather service on the fly** — move between OpenWeatherMap and Pirate Weather, and update the API key, without removing and re-adding the integration.
 - 💾 **One-click Backup / Restore** of your entire configuration as a JSON file.
 - ⏰ **Flexible start triggers** around sunrise, sunset or solar azimuth — each firing its own identifiable event for your automations.
-- 🛠️ **Actively maintained** — keeps fixing the rough edges the original no longer addresses, with a first-run wizard that imports your existing Smart Irrigation setup.
+- 🛠️ **Actively maintained** — steady fixes, refinements and new features, with a first-run wizard that imports your existing Smart Irrigation setup.
 
 <p align="center">
   <img src="images/panel-zones.png?raw=true" alt="HAppy Irrigation — Zones panel (Home Assistant-native UI)" width="860">
