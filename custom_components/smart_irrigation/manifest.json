@@ -1,12 +1,12 @@
 {
   "domain": "smart_irrigation",
-  "name": "Smart Irrigation",
-  "codeowners": ["@jeroenterheerdt"],
+  "name": "Happy Irrigation",
+  "codeowners": ["@altmenorg"],
   "config_flow": true,
   "dependencies": ["http", "panel_custom"],
-  "documentation": "https://github.com/jeroenterheerdt/HASmartIrrigation",
+  "documentation": "https://github.com/altmenorg/HappyIrrigation",
   "iot_class": "local_push",
-  "issue_tracker": "https://github.com/jeroenterheerdt/HASmartIrrigation/issues",
+  "issue_tracker": "https://github.com/altmenorg/HappyIrrigation/issues",
   "requirements": ["aiofiles"],
   "version": "v2025.10.0"
 }

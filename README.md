@@ -1,20 +1,21 @@
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg?style=flat-square)](https://github.com/hacs/integration)
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=flat-square)](https://github.com/hacs/integration)
 [![release][release-badge]][release-url]
 
-[![Support the author on Patreon][patreon-shield]][patreon]
+[release-url]: https://github.com/altmenorg/HappyIrrigation/releases
+[release-badge]: https://img.shields.io/github/v/release/altmenorg/HappyIrrigation?style=flat-square
 
-[![Buy me a coffee][buymeacoffee-shield]][buymeacoffee]
-
-[patreon-shield]: https://frenck.dev/wp-content/uploads/2019/12/patreon.png
-[patreon]: https://www.patreon.com/dutchdatadude
-
-[buymeacoffee]: https://www.buymeacoffee.com/dutchdatadude
-[buymeacoffee-shield]: https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png
-[release-url]: https://github.com/jeroenterheerdt/HASmartIrrigation/releases
-[release-badge]: https://img.shields.io/github/v/release/jeroenterheerdt/HASmartIrrigation?style=flat-square
-# Smart Irrigation
+# Happy Irrigation
 
 ![](logo.png?raw=true)
+
+> **Happy Irrigation** is a community-maintained fork of
+> [Smart Irrigation](https://github.com/jeroenterheerdt/HAsmartirrigation) by
+> [Jeroen ter Heerdt](https://github.com/jeroenterheerdt) — all credit for the
+> original integration goes to him. This fork keeps it actively maintained,
+> with bug fixes (e.g. the editing scroll-jump,
+> [#708](https://github.com/jeroenterheerdt/HAsmartirrigation/issues/708)) and a
+> modernized, HA-native configuration UI. It uses the same `smart_irrigation`
+> domain, so it is a drop-in replacement (your existing configuration is kept).
 
 ```diff
 - WARNING: upgrading from V1 (V0.0.X) to V2 (V2023.X.X)? Read the instructions below!
