@@ -21,6 +21,9 @@ after watering, remove that call, or the bucket is accounted twice.
 
 The methods live on a mixin the SmartIrrigationCoordinator inherits, so they use
 ``self`` to reach coordinator state (store, hass, the observer subscription).
+
+Credit: the closed-loop / observed-watering design is adapted from JustChr's
+Smart Irrigation fork (https://github.com/JustChr/HAsmartirrigation), MIT.
 """
 
 import logging
