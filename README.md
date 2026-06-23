@@ -113,14 +113,43 @@ The full documentation is published at **[altmenorg.github.io/HAsmartirrigation]
 git clone https://github.com/altmenorg/HAsmartirrigation.git
 cd HAsmartirrigation
 make setup          # create the venv and install dev dependencies
-make help           # list all commands (test / lint / format / check)
+```
+
+### Available commands
+
+```bash
+make help           # list all commands
+make test           # run all tests
+make format         # format code (black)
+make lint           # run linting (ruff)
+make check          # run all CI quality checks
 ```
 
 The frontend panel is a separate TypeScript/Lit project under
 [`custom_components/smart_irrigation/frontend/`](custom_components/smart_irrigation/frontend/)
 (`npm install` then `npm run build`).
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed development and testing instructions.
+### Testing
+
+Install the test requirements, then run the suite:
+
+```bash
+pip install -r requirements.test.txt
+
+pytest                                            # everything
+pytest tests/                                     # integration / behavior tests
+pytest custom_components/smart_irrigation/tests/  # component unit tests
+pytest tests/test_services.py                     # a single file
+```
+
+The project has two test directories:
+
+- `tests/` — integration tests and component behavior tests
+- `custom_components/smart_irrigation/tests/` — unit tests for the custom component
+
+Tests use `pytest-asyncio`, so async test functions must be marked accordingly. A few test files that reference not-yet-implemented modules are parked with a `.disabled` extension until they are updated.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full development and testing guide.
 
 ## License
 
