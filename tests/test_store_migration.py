@@ -138,3 +138,25 @@ async def test_migrate_v4_to_v5_adds_fields_and_strips_unknown(hass):
     # Config(**cfg) since they are not attributes of the Config class).
     assert "use_owm" not in cfg
     assert "obsolete_field" not in cfg
+
+
+@pytest.mark.asyncio
+async def test_manual_coordinates_survive_reload(hass):
+    """Manual coordinates saved to the store are read back on load, not reset.
+
+    They are persisted by _data_to_save but were not read back in
+    _populate_from_data, so they silently reverted to HA's location on restart.
+    """
+    payload = _canonical_v5_payload()
+    payload["config"][const.CONF_MANUAL_COORDINATES_ENABLED] = True
+    payload["config"][const.CONF_MANUAL_LATITUDE] = 43.6
+    payload["config"][const.CONF_MANUAL_LONGITUDE] = 3.88
+    payload["config"][const.CONF_MANUAL_ELEVATION] = 12.0
+
+    store = SmartIrrigationStorage(hass)
+    await store._populate_from_data(payload)
+
+    assert store.config.manual_coordinates_enabled is True
+    assert store.config.manual_latitude == 43.6
+    assert store.config.manual_longitude == 3.88
+    assert store.config.manual_elevation == 12.0

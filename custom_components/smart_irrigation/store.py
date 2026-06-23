@@ -50,6 +50,10 @@ from .const import (
     CONF_DEFAULT_WEATHER_SERVICE,
     CONF_IMPERIAL,
     CONF_IRRIGATION_START_TRIGGERS,
+    CONF_MANUAL_COORDINATES_ENABLED,
+    CONF_MANUAL_ELEVATION,
+    CONF_MANUAL_LATITUDE,
+    CONF_MANUAL_LONGITUDE,
     CONF_METRIC,
     CONF_PRECIPITATION_THRESHOLD_MM,
     CONF_SENSOR_DEBOUNCE,
@@ -455,6 +459,15 @@ class SmartIrrigationStorage:
                     CONF_DAYS_SINCE_LAST_IRRIGATION,
                     CONF_DEFAULT_DAYS_SINCE_LAST_IRRIGATION,
                 ),
+                # Manual coordinates are persisted by _data_to_save (attr.asdict)
+                # but must be read back here too, otherwise they reset to defaults
+                # on every restart and the feature silently reverts to HA's location.
+                manual_coordinates_enabled=data["config"].get(
+                    CONF_MANUAL_COORDINATES_ENABLED, False
+                ),
+                manual_latitude=data["config"].get(CONF_MANUAL_LATITUDE, None),
+                manual_longitude=data["config"].get(CONF_MANUAL_LONGITUDE, None),
+                manual_elevation=data["config"].get(CONF_MANUAL_ELEVATION, 0),
             )
 
             if "zones" in data:
