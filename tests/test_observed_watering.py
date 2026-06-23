@@ -21,7 +21,17 @@ class _Coordinator(ObservedWateringMixin):
         self._observed_unsub = None
         self._observed_entities = frozenset()
         self._observed_on_since = {}
+        self._observed_flow_start = {}
         self._observed_zone_by_entity = {}
+
+
+@pytest.fixture(autouse=True)
+def _silence_dispatcher(monkeypatch):
+    """Neutralise the real HA dispatcher so the credit path needs no live hass."""
+    monkeypatch.setattr(
+        "custom_components.smart_irrigation.observed_watering.async_dispatcher_send",
+        lambda *args, **kwargs: None,
+    )
 
 
 def _make_hass(metric=True):
