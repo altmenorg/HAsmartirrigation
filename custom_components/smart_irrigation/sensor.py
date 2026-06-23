@@ -61,14 +61,26 @@ async def async_setup_entry(
             delta=config[const.ZONE_DELTA],
             drainage_rate=config[const.ZONE_DRAINAGE_RATE],
             current_drainage=config[const.ZONE_CURRENT_DRAINAGE],
+            maximum_bucket=config[const.ZONE_MAXIMUM_BUCKET],
+            multiplier=config[const.ZONE_MULTIPLIER],
+            lead_time=config[const.ZONE_LEAD_TIME],
+            maximum_duration=config[const.ZONE_MAXIMUM_DURATION],
         )
         if const.DOMAIN in hass.data:
             if not check_zone_entity_in_hass_data(hass, entity_id):
                 hass.data[const.DOMAIN]["zones"][config["id"]] = sensor_entity
                 async_add_devices([sensor_entity])
 
-    async_dispatcher_connect(
-        hass, const.DOMAIN + "_register_entity", async_add_sensor_entity
+    # Tie the dispatcher subscription to the config entry lifecycle: without
+    # this, the connection leaks on unload and a later remove+re-add (without a
+    # full HA restart) leaves a stale listener bound to the dead entry. That
+    # ghost listener fires first, pre-fills hass.data["zones"] and then fails to
+    # link the device to the now-unknown entry, so the live listener skips the
+    # zone as "already added" -> zero real entities created.
+    config_entry.async_on_unload(
+        async_dispatcher_connect(
+            hass, const.DOMAIN + "_register_entity", async_add_sensor_entity
+        )
     )
     async_dispatcher_send(hass, const.DOMAIN + "_platform_loaded")
 
@@ -106,6 +118,10 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
         delta: float,
         drainage_rate: float,
         current_drainage: float,
+        maximum_bucket: float,
+        multiplier: float,
+        lead_time: float,
+        maximum_duration: float,
     ) -> None:
         """Initialize the sensor entity."""
         self._hass = hass
@@ -140,6 +156,10 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
         self._current_drainage = (
             current_drainage  # Cache formatted timestamps for performance
         )
+        self._maximum_bucket = maximum_bucket
+        self._multiplier = multiplier
+        self._lead_time = lead_time
+        self._maximum_duration = maximum_duration
         self._last_updated_formatted = self._format_timestamp(self._last_updated)
         self._last_calculated_formatted = self._format_timestamp(self._last_calculated)
 
@@ -198,6 +218,10 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
             self._delta = zone["delta"]
             self._drainage_rate = zone["drainage_rate"]
             self._current_drainage = zone["current_drainage"]
+            self._maximum_bucket = zone["maximum_bucket"]
+            self._multiplier = zone["multiplier"]
+            self._lead_time = zone["lead_time"]
+            self._maximum_duration = zone["maximum_duration"]
 
             # Update cached formatted timestamps for performance
             self._last_updated_formatted = self._format_timestamp(self._last_updated)
@@ -315,6 +339,10 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
             "throughput": self._throughput,
             "drainage_rate": self._drainage_rate,
             "current_drainage": self._current_drainage,
+            "maximum_bucket": self._maximum_bucket,
+            "multiplier": self._multiplier,
+            "lead_time": self._lead_time,
+            "maximum_duration": self._maximum_duration,
             "state": self._state,
             "bucket": self._bucket,
             "last_updated": self._last_updated_formatted,

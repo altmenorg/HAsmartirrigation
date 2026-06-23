@@ -10,7 +10,7 @@
     "step": {
       "user": {
         "title": "Impostazioni Generali",
-        "description": "Se hai bisogno di aiuto con la configurazione, dai un'occhiata qui https://github.com/jeroenterheerdt/HASmartIrrigation",
+        "description": "Se hai bisogno di aiuto con la configurazione, consulta la documentazione.",
         "data": {
           "name": "Nome univoco per questa istanza",
           "use_weather_service": "Use a weather service (Open Weather Map or Pirate Weather) for weather data or forecasting. Enable this option if you intent to use one of the supported weather services for at least part of the weather data, including forecasting. Disable this option if you want to use another source, such as your own weather station, exclusively. In this case, Smart Irigation will not be able to use forecasts."
@@ -18,7 +18,7 @@
       },
       "step1": {
         "title": "Weather service API set up",
-        "description": "Se hai bisogno di aiuto con la configurazione, dai un'occhiata qui https://github.com/jeroenterheerdt/HASmartIrrigation",
+        "description": "Se hai bisogno di aiuto con la configurazione, consulta la documentazione.",
         "data": {
           "weather_service": "Weather service to use",
           "weather_service_api_key": "API key for weather service",
@@ -29,23 +29,34 @@
   },
   "options": {
     "error": {
-      "auth": "Weather service API key or version incorrect"
+      "auth": "Weather service API key or version incorrect",
+      "invalid_coordinates": "Coordinate non valide. Controlla i valori di latitudine (da -90 a 90) e longitudine (da -180 a 180)."
     },
     "step": {
       "init": {
         "title": "Weather service API set up",
-        "description": "Se hai bisogno di aiuto con la configurazione, dai un'occhiata qui https://github.com/jeroenterheerdt/HASmartIrrigation",
+        "description": "Se hai bisogno di aiuto con la configurazione, consulta la documentazione.",
         "data": {
           "use_weather_service": "Use a weather service (Open Weather Map or Pirate Weather) for weather data or forecasting. Enable this option if you intent to use one of the supported weather services for at least part of the weather data, including forecasting. Disable this option if you want to use another source, such as your own weather station, exclusively. In this case, Smart Irigation will not be able to use forecasts."
         }
       },
       "step1": {
         "title": "Weather service API set up",
-        "description": "Se hai bisogno di aiuto con la configurazione, consulta https://github.com/jeroenterheerdt/HASmartIrrigation",
+        "description": "Se hai bisogno di aiuto con la configurazione, consulta la documentazione.",
         "data": {
           "weather_service": "Weather service to use",
           "weather_service_api_key": "API key for weather service",
           "weather_service_api_version": "Weather service API version"
+        }
+      },
+      "coordinates": {
+        "title": "Coordinate della posizione",
+        "description": "Configura le coordinate della posizione per il recupero dei dati meteo. Se necessario, puoi usare coordinate manuali diverse dalla posizione di Home Assistant.",
+        "data": {
+          "manual_coordinates_enabled": "Usa coordinate manuali invece della posizione di Home Assistant",
+          "manual_latitude": "Latitudine (gradi decimali, da -90 a 90)",
+          "manual_longitude": "Longitudine (gradi decimali, da -180 a 180)",
+          "manual_elevation": "Altitudine sul livello del mare (metri, opzionale)"
         }
       }
     }
@@ -54,7 +65,7 @@
     "calculate_all_zones": {
       "name": "Calcola tutte le zone",
       "description": "Calcola tutte le zone in modalità automatica",
-      "fields":{
+      "fields": {
         "delete_weather_data": {
           "name": "Cancellare i dati meteo",
           "description": "Cancellare i dati meteo dopo il calcolo"
@@ -152,7 +163,7 @@
         "new_multiplier_value": {
           "name": "Nuovo valore di moltiplicazione",
           "description": "nuovo valore di moltiplicazione"
-          }
+        }
       }
     },
     "set_state": {
@@ -196,6 +207,16 @@
         "new_throughput_value": {
           "name": "Nuovo valore di capacità",
           "description": "Nuovo valore di capacità"
+        }
+      }
+    },
+    "generate_watering_calendar": {
+      "name": "Genera calendario di irrigazione",
+      "description": "Genera un calendario di irrigazione di 12 mesi per le zone di irrigazione in base a dati climatici rappresentativi",
+      "fields": {
+        "entity": {
+          "name": "Entità",
+          "description": "Zona per cui generare il calendario di irrigazione"
         }
       }
     }

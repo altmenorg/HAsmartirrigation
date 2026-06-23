@@ -21,6 +21,43 @@ export const saveConfig = (
   return hass.callApi("POST", DOMAIN + "/config", config);
 };
 
+// Full configuration backup: {version, config, zones, modules, mappings}.
+export const exportConfig = (hass: HomeAssistant): Promise<any> =>
+  hass.callApi("GET", DOMAIN + "/export");
+
+export const restoreConfig = (
+  hass: HomeAssistant,
+  backup: any,
+): Promise<{ success: boolean; error?: string }> =>
+  hass.callApi("POST", DOMAIN + "/restore", backup);
+
+export interface WeatherServiceInfo {
+  use_weather_service: boolean;
+  weather_service: string | null;
+  weather_service_api_key: string | null;
+  services: string[];
+}
+
+export const fetchWeatherService = (
+  hass: HomeAssistant,
+): Promise<WeatherServiceInfo> =>
+  hass.callWS({
+    type: DOMAIN + "/weatherservice",
+  });
+
+export const setWeatherService = (
+  hass: HomeAssistant,
+  data: {
+    use_weather_service: boolean;
+    weather_service?: string | null;
+    weather_service_api_key?: string | null;
+  },
+): Promise<{ success: boolean }> =>
+  hass.callWS({
+    type: DOMAIN + "/set_weatherservice",
+    ...data,
+  });
+
 /*export const fetchZones = (
   hass: HomeAssistant
 ): Promise<Dictionary<SmartIrrigationZone>> =>*/

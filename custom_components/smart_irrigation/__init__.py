@@ -6,6 +6,7 @@ import math
 import re
 import statistics
 from datetime import datetime, timedelta
+from functools import partial
 
 from homeassistant.components.sensor import DOMAIN as PLATFORM
 from homeassistant.config_entries import ConfigEntry
@@ -60,8 +61,10 @@ from .localize import localize
 from .panel import async_register_panel, remove_panel
 from .scheduler import RecurringScheduleManager, SeasonalAdjustmentManager
 from .store import SmartIrrigationStorage, async_get_registry
+from .weathermodules.OpenMeteoClient import OpenMeteoClient
 from .weathermodules.OWMClient import OWMClient
 from .weathermodules.PirateWeatherClient import PirateWeatherClient
+from .weathermodules.SolarRadiationFallback import SolarRadiationFallbackClient
 from .websockets import async_register_websockets
 
 _LOGGER = logging.getLogger(__name__)
@@ -210,8 +213,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         {const.CONF_USE_WEATHER_SERVICE: coordinator.use_weather_service}
     )
 
+    # NOTE: ne PAS passer data={} ici — ça écrasait entièrement entry.data, qui
+    # est le SEUL endroit où la clé API du service météo est persistée (le store
+    # ne la garde pas). Comme le config flow ne pose jamais d'unique_id,
+    # entry.unique_id reste None et ce bloc s'exécute à CHAQUE setup : l'ancien
+    # data={} effaçait donc la clé à chaque redémarrage (elle ne survivait qu'en
+    # mémoire jusque-là). Bug partagé avec l'upstream Smart Irrigation.
     if entry.unique_id is None:
-        hass.config_entries.async_update_entry(entry, unique_id=coordinator.id, data={})
+        hass.config_entries.async_update_entry(entry, unique_id=coordinator.id)
 
     _LOGGER.info("Calling async_forward_entry_setups")
     await hass.config_entries.async_forward_entry_setups(entry, [PLATFORM])
@@ -242,6 +251,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 async def options_update_listener(hass: HomeAssistant, config_entry):
     """Handle options update."""
+    # The panel's weather-service editor applies changes in-place and only
+    # writes them to the entry for persistence; skip the (heavy, panel-
+    # disrupting) reload in that case.
+    if hass.data.get(const.DOMAIN, {}).pop("_suppress_options_reload", False):
+        _LOGGER.debug(
+            "Skipping entry reload: weather service change applied in-place by panel"
+        )
+        return
     # copy the api key and version to the hass data
     if const.DOMAIN in hass.data:
         hass.data[const.DOMAIN][const.CONF_USE_WEATHER_SERVICE] = (
@@ -322,9 +339,23 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
                 self._get_effective_coordinates()
             )
 
-            if self.weather_service == const.CONF_WEATHER_SERVICE_OWM:
+            api_key = hass.data[const.DOMAIN].get(const.CONF_WEATHER_SERVICE_API_KEY)
+            # Open-Meteo is keyless, so build it before the api_key guard.
+            if self.weather_service == const.CONF_WEATHER_SERVICE_OM:
+                self._WeatherServiceClient = OpenMeteoClient(
+                    latitude=effective_lat,
+                    longitude=effective_lon,
+                    elevation=effective_elev,
+                )
+            elif not api_key:
+                _LOGGER.warning(
+                    "Weather service '%s' is enabled but no API key is set; "
+                    "skipping weather client setup",
+                    self.weather_service,
+                )
+            elif self.weather_service == const.CONF_WEATHER_SERVICE_OWM:
                 self._WeatherServiceClient = OWMClient(
-                    api_key=hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_API_KEY],
+                    api_key=api_key,
                     api_version=hass.data[const.DOMAIN].get(
                         const.CONF_WEATHER_SERVICE_API_VERSION
                     ),
@@ -334,8 +365,22 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
                 )
             elif self.weather_service == const.CONF_WEATHER_SERVICE_PW:
                 self._WeatherServiceClient = PirateWeatherClient(
-                    api_key=hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_API_KEY],
+                    api_key=api_key,
                     api_version="1",
+                    latitude=effective_lat,
+                    longitude=effective_lon,
+                    elevation=effective_elev,
+                )
+
+            # OWM and Pirate Weather do not provide solar radiation; transparently
+            # fill it (and FAO-56 ET0) from Open-Meteo so those fields can be
+            # sourced from the weather service on any provider.
+            if self._WeatherServiceClient is not None and self.weather_service in (
+                const.CONF_WEATHER_SERVICE_OWM,
+                const.CONF_WEATHER_SERVICE_PW,
+            ):
+                self._WeatherServiceClient = SolarRadiationFallbackClient(
+                    self._WeatherServiceClient,
                     latitude=effective_lat,
                     longitude=effective_lon,
                     elevation=effective_elev,
@@ -385,6 +430,15 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
             self._start_event_fired_today = True
         else:
             self._start_event_fired_today = False
+
+        # Names of triggers that have already fired today, so each trigger fires
+        # independently (replaces the old single global "fired today" block).
+        # In-memory; cleared at midnight.
+        self._fired_triggers_today: set = set()
+        # Today's watering decision (precipitation forecast + days-between),
+        # computed once and shared by all triggers for the day:
+        # None = undecided, True = water, False = skip.
+        self._watering_decision_today = True if self._start_event_fired_today else None
 
         # Initialize enhanced scheduling managers
         self.recurring_schedule_manager = RecurringScheduleManager(hass, self)
@@ -446,16 +500,16 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
             tuple: (latitude, longitude, elevation)
 
         """
-        # Check if manual coordinates are enabled
-        manual_enabled = self._get_config_value(
-            const.CONF_MANUAL_COORDINATES_ENABLED, False
-        )
+        # Manual coordinates are saved via the websocket API into the store
+        # config (not entry.data / HA config), so read them from there.
+        cfg = self.store.config
+        manual_enabled = getattr(cfg, const.CONF_MANUAL_COORDINATES_ENABLED, False)
 
         if manual_enabled:
             # Use manual coordinates
-            latitude = self._get_config_value(const.CONF_MANUAL_LATITUDE, None)
-            longitude = self._get_config_value(const.CONF_MANUAL_LONGITUDE, None)
-            elevation = self._get_config_value(const.CONF_MANUAL_ELEVATION, 0)
+            latitude = getattr(cfg, const.CONF_MANUAL_LATITUDE, None)
+            longitude = getattr(cfg, const.CONF_MANUAL_LONGITUDE, None)
+            elevation = getattr(cfg, const.CONF_MANUAL_ELEVATION, 0)
 
             if latitude is not None and longitude is not None:
                 _LOGGER.info(
@@ -548,6 +602,78 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         await self.set_up_auto_clear_time(data)
         await self.store.async_update_config(data)
         async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated")
+
+    async def async_apply_weather_service(self, use, service, api_key):
+        """Apply a weather-service change at runtime (no entry reload).
+
+        Rebuilds the weather client and updates hass.data + store so the change
+        takes effect immediately. Persistence across restarts is handled by the
+        caller writing the values to the config entry data.
+        """
+        self.use_weather_service = bool(use)
+        self.weather_service = service if use else None
+        self.hass.data[const.DOMAIN][
+            const.CONF_USE_WEATHER_SERVICE
+        ] = self.use_weather_service
+        self.hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE] = self.weather_service
+        self.hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_API_KEY] = (
+            api_key if use else None
+        )
+
+        self._WeatherServiceClient = None
+        if self.use_weather_service:
+            lat, lon, elev = self._get_effective_coordinates()
+            if self.weather_service == const.CONF_WEATHER_SERVICE_OM:
+                # Open-Meteo is keyless.
+                self._WeatherServiceClient = OpenMeteoClient(
+                    latitude=lat,
+                    longitude=lon,
+                    elevation=elev,
+                )
+            elif self.weather_service == const.CONF_WEATHER_SERVICE_OWM:
+                self._WeatherServiceClient = OWMClient(
+                    api_key=api_key,
+                    api_version=self.hass.data[const.DOMAIN].get(
+                        const.CONF_WEATHER_SERVICE_API_VERSION
+                    ),
+                    latitude=lat,
+                    longitude=lon,
+                    elevation=elev,
+                )
+            elif self.weather_service == const.CONF_WEATHER_SERVICE_PW:
+                self._WeatherServiceClient = PirateWeatherClient(
+                    api_key=api_key,
+                    api_version="1",
+                    latitude=lat,
+                    longitude=lon,
+                    elevation=elev,
+                )
+
+            # Fill solar radiation / ET0 from Open-Meteo for services that lack it.
+            if self._WeatherServiceClient is not None and self.weather_service in (
+                const.CONF_WEATHER_SERVICE_OWM,
+                const.CONF_WEATHER_SERVICE_PW,
+            ):
+                self._WeatherServiceClient = SolarRadiationFallbackClient(
+                    self._WeatherServiceClient,
+                    latitude=lat,
+                    longitude=lon,
+                    elevation=elev,
+                )
+
+        # keep the store in sync so the choice is reflected in the config panel
+        await self.store.async_update_config(
+            {
+                const.CONF_USE_WEATHER_SERVICE: self.use_weather_service,
+                const.CONF_WEATHER_SERVICE: self.weather_service,
+            }
+        )
+        async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated")
+        _LOGGER.info(
+            "Applied weather service in-place: use=%s service=%s",
+            self.use_weather_service,
+            self.weather_service,
+        )
 
     async def set_up_auto_update_time(self, data):  # noqa: D102
         # WIP v2024.6.X:
@@ -1063,9 +1189,11 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
 
     async def track_update_time(self, *args):
         """Track and schedule periodic updates for Smart Irrigation based on configuration."""
-        # perform update once
-        # Fire-and-forget: trigger immediate update in background
-        self.hass.async_create_task(self._async_update_all())
+        # Do an immediate update only when Home Assistant is already running
+        # (e.g. the user just changed a setting). Skip it during start-up, when
+        # source sensors may not have a value yet and would poison the data.
+        if self.hass.is_running:
+            self.hass.async_create_task(self._async_update_all())
         # use async_track_time_interval
         data = await self.store.async_get_config()
         the_time_delta = None
@@ -1133,6 +1261,23 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
 
             if sensor_in_mapping:
                 sensor_values = self.build_sensor_values_for_mapping(mapping)
+                # A sensor-sourced field must come ONLY from its sensor, never
+                # fall back to weather service data. Strip these keys from the
+                # weather data first: an unavailable sensor (zha not yet loaded
+                # at startup, or a runtime dropout) is then omitted from the
+                # record instead of silently storing the weather value as if it
+                # were the sensor reading.
+                if weatherdata:
+                    for k in self._get_sensor_sourced_keys(mapping):
+                        if (
+                            k not in sensor_values
+                            and weatherdata.pop(k, None) is not None
+                        ):
+                            _LOGGER.warning(
+                                "[update] sensor group %s: '%s' is sensor-sourced but its sensor is unavailable; omitting from this record (no weather-data fallback)",
+                                mapping_id,
+                                k,
+                            )
                 weatherdata = await self.merge_weatherdata_and_sensor_values(
                     weatherdata, sensor_values
                 )
@@ -1244,6 +1389,23 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
 
             if sensor_in_mapping:
                 sensor_values = self.build_sensor_values_for_mapping(mapping)
+                # A sensor-sourced field must come ONLY from its sensor, never
+                # fall back to weather service data. Strip these keys from the
+                # weather data first: an unavailable sensor (zha not yet loaded
+                # at startup, or a runtime dropout) is then omitted from the
+                # record instead of silently storing the weather value as if it
+                # were the sensor reading.
+                if weatherdata:
+                    for k in self._get_sensor_sourced_keys(mapping):
+                        if (
+                            k not in sensor_values
+                            and weatherdata.pop(k, None) is not None
+                        ):
+                            _LOGGER.warning(
+                                "[update] sensor group %s: '%s' is sensor-sourced but its sensor is unavailable; omitting from this record (no weather-data fallback)",
+                                mapping_id,
+                                k,
+                            )
                 weatherdata = await self.merge_weatherdata_and_sensor_values(
                     weatherdata, sensor_values
                 )
@@ -2254,6 +2416,24 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
             )
         return owm_in_mapping, sensor_in_mapping, static_in_mapping
 
+    def _get_sensor_sourced_keys(self, mapping):
+        """Return the set of mapping field keys whose source is a sensor.
+
+        Used so a sensor-sourced field never silently falls back to weather
+        service data when its sensor is unavailable (see _async_update_zone /
+        _async_update_all): these keys are stripped from the weather data
+        before merging the sensor values.
+        """
+        keys = set()
+        if mapping is not None:
+            for key, the_map in mapping[const.MAPPING_MAPPINGS].items():
+                if not isinstance(the_map, str) and (
+                    the_map.get(const.MAPPING_CONF_SOURCE)
+                    == const.MAPPING_CONF_SOURCE_SENSOR
+                ):
+                    keys.add(key)
+        return keys
+
     def build_sensor_values_for_mapping(self, mapping):
         """Build a dictionary of sensor values for a given mapping by retrieving and converting sensor states from Home Assistant.
 
@@ -2287,10 +2467,10 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
                                 the_map.get(const.MAPPING_CONF_UNIT),
                                 self.hass.config.units is METRIC_SYSTEM,
                             )
-                            # add val to sensor values
+                            # add val to sensor values, at debug logging level due to startup ordering issues
                             sensor_values[key] = val
                         except (ValueError, TypeError):
-                            _LOGGER.warning(
+                            _LOGGER.debug(
                                 "No / unknown value for sensor %s",
                                 the_map.get(const.MAPPING_CONF_SENSOR),
                             )
@@ -2476,6 +2656,14 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
             account_for_duration = trigger.get(
                 const.TRIGGER_CONF_ACCOUNT_FOR_DURATION, True
             )
+            # Identity carried into the fired event so automations can tell
+            # triggers apart (see _fire_start_event).
+            trigger_info = {
+                const.TRIGGER_CONF_NAME: trigger_name,
+                const.TRIGGER_CONF_TYPE: trigger_type,
+                const.TRIGGER_CONF_OFFSET_MINUTES: offset_minutes,
+                const.TRIGGER_CONF_ACCOUNT_FOR_DURATION: account_for_duration,
+            }
 
             try:
                 if trigger_type == const.TRIGGER_TYPE_SUNRISE:
@@ -2484,6 +2672,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
                         trigger_name,
                         total_duration,
                         account_for_duration,
+                        trigger_info,
                     )
                 elif trigger_type == const.TRIGGER_TYPE_SUNSET:
                     await self._register_sunset_trigger(
@@ -2491,17 +2680,20 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
                         trigger_name,
                         total_duration,
                         account_for_duration,
+                        trigger_info,
                     )
                 elif trigger_type == const.TRIGGER_TYPE_SOLAR_AZIMUTH:
                     azimuth_angle = trigger.get(const.TRIGGER_CONF_AZIMUTH_ANGLE, 0)
                     # Normalize azimuth angle to 0-360 range
                     azimuth_angle = normalize_azimuth_angle(azimuth_angle)
+                    trigger_info[const.TRIGGER_CONF_AZIMUTH_ANGLE] = azimuth_angle
                     await self._register_azimuth_trigger(
                         azimuth_angle,
                         offset_minutes,
                         trigger_name,
                         total_duration,
                         account_for_duration,
+                        trigger_info,
                     )
                 else:
                     _LOGGER.warning("Unknown trigger type: %s", trigger_type)
@@ -2522,9 +2714,15 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
             # self._track_sunrise_event_unsub = async_track_point_in_utc_time(
             #    self.hass, self._fire_start_event, point_in_time=time_to_fire
             # )
+            legacy_trigger_info = {
+                const.TRIGGER_CONF_NAME: "default",
+                const.TRIGGER_CONF_TYPE: const.TRIGGER_TYPE_SUNRISE,
+                const.TRIGGER_CONF_OFFSET_MINUTES: 0,
+                const.TRIGGER_CONF_ACCOUNT_FOR_DURATION: True,
+            }
             self._track_sunrise_event_unsub = async_track_sunrise(
                 self.hass,
-                self._fire_start_event,
+                partial(self._fire_start_event, legacy_trigger_info),
                 timedelta(seconds=0 - total_duration),
             )
             event_to_fire = f"{const.DOMAIN}_{const.EVENT_IRRIGATE_START}"
@@ -2540,6 +2738,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         trigger_name: str,
         total_duration: int,
         account_for_duration: bool,
+        trigger_info: dict,
     ):
         """Register a sunrise-based trigger."""
         # Calculate offset based on account_for_duration setting
@@ -2556,7 +2755,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
 
         unsub = async_track_sunrise(
             self.hass,
-            self._fire_start_event,
+            partial(self._fire_start_event, trigger_info),
             timedelta(seconds=offset_seconds),
         )
         self._track_irrigation_triggers_unsub.append(unsub)
@@ -2582,6 +2781,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         trigger_name: str,
         total_duration: int,
         account_for_duration: bool,
+        trigger_info: dict,
     ):
         """Register a sunset-based trigger."""
         # Calculate offset based on account_for_duration setting
@@ -2594,7 +2794,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
 
         unsub = async_track_sunset(
             self.hass,
-            self._fire_start_event,
+            partial(self._fire_start_event, trigger_info),
             timedelta(seconds=offset_seconds),
         )
         self._track_irrigation_triggers_unsub.append(unsub)
@@ -2621,6 +2821,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         trigger_name: str,
         total_duration: int,
         account_for_duration: bool,
+        trigger_info: dict,
     ):
         """Register a solar azimuth-based trigger."""
         # Calculate next occurrence of this azimuth
@@ -2655,7 +2856,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
 
         unsub = async_track_point_in_utc_time(
             self.hass,
-            self._fire_start_event,
+            partial(self._fire_start_event, trigger_info),
             trigger_time,
         )
         self._track_irrigation_triggers_unsub.append(unsub)
@@ -2829,73 +3030,90 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         _LOGGER.debug("Reset days since last irrigation to 0")
 
     @callback
-    def _fire_start_event(self, *args):
-        """Fire the irrigation start event if conditions are met."""
-        if not self._start_event_fired_today:
-            # Check for precipitation forecast and days between irrigation asynchronously
-            async def check_and_fire():
-                try:
-                    # Check precipitation forecast
-                    should_skip_precipitation = (
-                        await self._check_precipitation_forecast()
-                    )
-                    if should_skip_precipitation:
+    def _fire_start_event(self, trigger_info, *args):
+        """Fire the irrigation start event for one trigger, if conditions allow.
+
+        Each trigger fires independently. The "is today a watering day" decision
+        (precipitation forecast + days-between-irrigation) is computed once and
+        shared by all triggers for the day. The fired event carries the trigger's
+        identity (name/type/offset) so automations can tell triggers apart and
+        react per-trigger.
+        """
+        name = trigger_info.get(const.TRIGGER_CONF_NAME) or "Unnamed Trigger"
+
+        if name in self._fired_triggers_today:
+            _LOGGER.debug("Trigger '%s' already fired today, skipping", name)
+            return
+        # Mark synchronously to avoid any re-entrancy double-fire.
+        self._fired_triggers_today.add(name)
+
+        async def check_and_fire():
+            event_to_fire = f"{const.DOMAIN}_{const.EVENT_IRRIGATE_START}"
+            event_data = {
+                "trigger_name": name,
+                "trigger_type": trigger_info.get(const.TRIGGER_CONF_TYPE),
+                "offset_minutes": trigger_info.get(const.TRIGGER_CONF_OFFSET_MINUTES),
+                "account_for_duration": trigger_info.get(
+                    const.TRIGGER_CONF_ACCOUNT_FOR_DURATION
+                ),
+            }
+            try:
+                # Decide once per day whether today is a watering day.
+                if self._watering_decision_today is None:
+                    skip_reason = None
+                    if await self._check_precipitation_forecast():
+                        skip_reason = "forecasted precipitation"
+                    elif await self._check_days_between_irrigation():
+                        skip_reason = "insufficient days since last irrigation"
+                    self._watering_decision_today = skip_reason is None
+                    if skip_reason is not None:
                         _LOGGER.info(
-                            "Irrigation start event skipped due to forecasted precipitation"
+                            "Today is not a watering day (%s); start triggers "
+                            "will not fire",
+                            skip_reason,
                         )
-                        # Still increment days counter even if skipped due to precipitation
+                        # Count this as a (skipped) day, once.
                         await self._increment_days_since_irrigation()
-                        return
 
-                    # Check days between irrigation
-                    should_skip_days = await self._check_days_between_irrigation()
-                    if should_skip_days:
-                        _LOGGER.info(
-                            "Irrigation start event skipped due to insufficient days since last irrigation"
-                        )
-                        # Increment days counter when skipped due to days restriction
-                        await self._increment_days_since_irrigation()
-                        return
+                if not self._watering_decision_today:
+                    _LOGGER.info(
+                        "Trigger '%s' reached but today is a skip day; not "
+                        "firing event",
+                        name,
+                    )
+                    return
 
-                    # Fire the event
-                    event_to_fire = f"{const.DOMAIN}_{const.EVENT_IRRIGATE_START}"
-                    self.hass.bus.fire(event_to_fire, {})
-                    _LOGGER.info("Fired start event: %s", event_to_fire)
+                # Fire the event with the trigger's identity.
+                self.hass.bus.fire(event_to_fire, event_data)
+                _LOGGER.info(
+                    "Fired start event %s for trigger '%s'", event_to_fire, name
+                )
+
+                # On the first actual fire of the day, mark the day as watered
+                # and reset the days-since counter (once, not per trigger).
+                if not self._start_event_fired_today:
                     self._start_event_fired_today = True
-
-                    # Reset days since last irrigation counter
                     await self._reset_days_since_irrigation()
-
-                    # Save config asynchronously
                     await self.store.async_update_config(
-                        {const.START_EVENT_FIRED_TODAY: self._start_event_fired_today}
+                        {const.START_EVENT_FIRED_TODAY: True}
                     )
-                except Exception as e:
-                    _LOGGER.error(
-                        "Error checking irrigation conditions, firing irrigation event anyway: %s",
-                        e,
-                    )
-                    # Fire the event as fallback
-                    event_to_fire = f"{const.DOMAIN}_{const.EVENT_IRRIGATE_START}"
-                    self.hass.bus.fire(event_to_fire, {})
-                    _LOGGER.info("Fired start event (fallback): %s", event_to_fire)
-                    self._start_event_fired_today = True
+            except Exception as e:
+                _LOGGER.error(
+                    "Error evaluating irrigation conditions for trigger '%s', "
+                    "firing event anyway: %s",
+                    name,
+                    e,
+                )
+                self.hass.bus.fire(event_to_fire, event_data)
 
-                    # Reset days since last irrigation counter
-                    await self._reset_days_since_irrigation()
-
-                    # Save config asynchronously
-                    await self.store.async_update_config(
-                        {const.START_EVENT_FIRED_TODAY: self._start_event_fired_today}
-                    )
-
-            # Schedule the async check
-            self.hass.async_create_task(check_and_fire())
-        else:
-            _LOGGER.info("Did not fire start event, it was already fired today")
+        self.hass.async_create_task(check_and_fire())
 
     @callback
     def _reset_event_fired_today(self, *args):
+        # New day: every trigger may fire again and the watering decision is
+        # recomputed on the next trigger that is reached.
+        self._fired_triggers_today.clear()
+        self._watering_decision_today = None
         if self._start_event_fired_today:
             _LOGGER.info("Resetting start event fired today tracker")
             self._start_event_fired_today = False

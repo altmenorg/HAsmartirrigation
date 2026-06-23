@@ -97,6 +97,16 @@ class SmartIrrigationConfigView(HomeAssistantView):
                 vol.Optional(const.CONF_SKIP_IRRIGATION_ON_PRECIPITATION): cv.boolean,
                 vol.Optional(const.CONF_PRECIPITATION_THRESHOLD_MM): vol.Coerce(float),
                 vol.Optional(const.CONF_DAYS_BETWEEN_IRRIGATION): vol.Coerce(int),
+                vol.Optional(const.CONF_MANUAL_COORDINATES_ENABLED): cv.boolean,
+                vol.Optional(const.CONF_MANUAL_LATITUDE): vol.Any(
+                    None, vol.Coerce(float)
+                ),
+                vol.Optional(const.CONF_MANUAL_LONGITUDE): vol.Any(
+                    None, vol.Coerce(float)
+                ),
+                vol.Optional(const.CONF_MANUAL_ELEVATION): vol.Any(
+                    None, vol.Coerce(float)
+                ),
             }
         )
     )
@@ -159,16 +169,15 @@ class SmartIrrigationMappingView(HomeAssistantView):
                 vol.Optional(const.MAPPING_NAME): cv.string,
                 vol.Optional(const.MAPPING_MAPPINGS): vol.Coerce(dict),
                 vol.Optional(const.ATTR_REMOVE): cv.boolean,
-                vol.Optional(const.MAPPING_DATA): vol.Coerce(list),
-                vol.Optional(const.MAPPING_DATA_LAST_UPDATED): vol.Or(
-                    None, vol.Coerce(dict)
-                ),
-                vol.Optional(const.MAPPING_DATA_LAST_ENTRY): vol.Or(
-                    None, vol.Coerce(dict)
-                ),
-                vol.Optional(const.MAPPING_DATA_LAST_CALCULATION): vol.Or(
-                    None, vol.Coerce(dict)
-                ),
+                # The following fields are server-computed. They are accepted
+                # here (as ``object``) so that older frontends which echo them
+                # back on save do not fail schema validation (see #680), but
+                # they are stripped before being passed to the store so the
+                # server remains authoritative.
+                vol.Optional(const.MAPPING_DATA): object,
+                vol.Optional(const.MAPPING_DATA_LAST_UPDATED): object,
+                vol.Optional(const.MAPPING_DATA_LAST_ENTRY): object,
+                vol.Optional(const.MAPPING_DATA_LAST_CALCULATION): object,
             }
         )
     )
@@ -178,7 +187,22 @@ class SmartIrrigationMappingView(HomeAssistantView):
         hass = request.app["hass"]
         coordinator = hass.data[const.DOMAIN]["coordinator"]
         mapping = int(data[const.MAPPING_ID]) if const.MAPPING_ID in data else None
-        await coordinator.async_update_mapping_config(mapping, data)
+        # Strip server-computed fields so clients cannot overwrite them via
+        # the config API. These are populated by the coordinator when sensor
+        # data is collected or calculations run, and the store's
+        # ``async_update_mapping`` otherwise preserves existing values.
+        sanitized = {
+            key: value
+            for key, value in data.items()
+            if key
+            not in (
+                const.MAPPING_DATA,
+                const.MAPPING_DATA_LAST_UPDATED,
+                const.MAPPING_DATA_LAST_ENTRY,
+                const.MAPPING_DATA_LAST_CALCULATION,
+            )
+        }
+        await coordinator.async_update_mapping_config(mapping, sanitized)
         async_dispatcher_send(hass, const.DOMAIN + "_update_frontend")
         return self.json({"success": True})
 
@@ -593,6 +617,162 @@ class SmartIrrigationWateringCalendarView(HomeAssistantView):
             return self.json({"error": str(e)}, status_code=500)
 
 
+@async_response
+async def websocket_get_weather_service(hass: HomeAssistant, connection, msg):
+    """Publish the currently configured weather service so the panel can show/edit it."""
+    data = hass.data.get(const.DOMAIN, {})
+    connection.send_result(
+        msg["id"],
+        {
+            const.CONF_USE_WEATHER_SERVICE: bool(
+                data.get(const.CONF_USE_WEATHER_SERVICE)
+            ),
+            const.CONF_WEATHER_SERVICE: data.get(const.CONF_WEATHER_SERVICE),
+            const.CONF_WEATHER_SERVICE_API_KEY: data.get(
+                const.CONF_WEATHER_SERVICE_API_KEY
+            ),
+            "services": const.CONF_WEATHER_SERVICES,
+        },
+    )
+
+
+@async_response
+async def websocket_set_weather_service(hass: HomeAssistant, connection, msg):
+    """Change the weather service after install.
+
+    Validates the API key, writes the choice to the config entry data and lets
+    the registered options-update listener reload the integration so the change
+    takes effect immediately and persists across restarts.
+    """
+    # imported here to avoid any import cycle at module load
+    from .helpers import CannotConnect, InvalidAuth, validate_api_key
+
+    use = bool(msg.get(const.CONF_USE_WEATHER_SERVICE))
+    service = msg.get(const.CONF_WEATHER_SERVICE)
+    service = service.strip() if isinstance(service, str) else None
+    api_key = msg.get(const.CONF_WEATHER_SERVICE_API_KEY)
+    api_key = api_key.strip() if isinstance(api_key, str) else None
+
+    entries = hass.config_entries.async_entries(const.DOMAIN)
+    if not entries:
+        connection.send_error(
+            msg["id"], "not_found", "No Smart Irrigation configuration entry found."
+        )
+        return
+    entry = entries[0]
+
+    if use:
+        if not service or service not in const.CONF_WEATHER_SERVICES:
+            connection.send_error(
+                msg["id"], "invalid_service", "Please choose a valid weather service."
+            )
+            return
+        if not api_key and service not in const.CONF_WEATHER_SERVICES_NO_API_KEY:
+            connection.send_error(
+                msg["id"],
+                "missing_api_key",
+                "An API key is required for the selected weather service.",
+            )
+            return
+        try:
+            await validate_api_key(hass, service, api_key)
+        except InvalidAuth:
+            connection.send_error(
+                msg["id"],
+                "invalid_auth",
+                "The weather service rejected this API key.",
+            )
+            return
+        except CannotConnect:
+            connection.send_error(
+                msg["id"],
+                "cannot_connect",
+                "Could not reach the weather service. Check your connection.",
+            )
+            return
+        except Exception as err:  # noqa: BLE001
+            connection.send_error(msg["id"], "unknown", f"Validation failed: {err}")
+            return
+
+    # Apply the change at runtime (rebuilds the weather client) — no reload.
+    coordinator = hass.data.get(const.DOMAIN, {}).get("coordinator")
+    if coordinator is not None:
+        await coordinator.async_apply_weather_service(
+            use, service if use else None, api_key if use else None
+        )
+
+    # Persist to the config entry so the choice survives restarts. Suppress the
+    # listener-driven reload (we already applied it in-place, and the reload
+    # would re-register the panel/views).
+    new_data = dict(entry.data)
+    new_data[const.CONF_USE_WEATHER_SERVICE] = use
+    new_data[const.CONF_WEATHER_SERVICE] = service if use else None
+    new_data[const.CONF_WEATHER_SERVICE_API_KEY] = api_key if use else None
+    if any(
+        entry.data.get(k) != new_data.get(k)
+        for k in (
+            const.CONF_USE_WEATHER_SERVICE,
+            const.CONF_WEATHER_SERVICE,
+            const.CONF_WEATHER_SERVICE_API_KEY,
+        )
+    ):
+        hass.data.setdefault(const.DOMAIN, {})["_suppress_options_reload"] = True
+        hass.config_entries.async_update_entry(entry, data=new_data)
+
+    _LOGGER.info("Weather service updated via panel (use=%s, service=%s)", use, service)
+    connection.send_result(msg["id"], {"success": True})
+
+
+class SmartIrrigationExportView(HomeAssistantView):
+    """View to export the full Smart Irrigation configuration as JSON."""
+
+    url = "/api/" + const.DOMAIN + "/export"
+    name = "api:" + const.DOMAIN + ":export"
+
+    async def get(self, request):
+        """Return the full configuration (config + zones + modules + mappings)."""
+        from .store import STORAGE_VERSION
+
+        hass = request.app["hass"]
+        coordinator = hass.data[const.DOMAIN]["coordinator"]
+        data = await coordinator.store.async_export()
+        return self.json({"version": STORAGE_VERSION, **data})
+
+
+class SmartIrrigationRestoreView(HomeAssistantView):
+    """View to restore the full Smart Irrigation configuration from a backup."""
+
+    url = "/api/" + const.DOMAIN + "/restore"
+    name = "api:" + const.DOMAIN + ":restore"
+
+    @RequestDataValidator(
+        vol.Schema(
+            {
+                vol.Required("config"): dict,
+                vol.Optional("zones"): list,
+                vol.Optional("modules"): list,
+                vol.Optional("mappings"): list,
+            },
+            extra=vol.ALLOW_EXTRA,  # tolerate backup metadata (version, ...)
+        )
+    )
+    async def post(self, request, data):
+        """Replace the whole configuration with the supplied backup, then reload."""
+        hass = request.app["hass"]
+        coordinator = hass.data[const.DOMAIN]["coordinator"]
+        try:
+            await coordinator.store.async_import(data)
+        except (ValueError, KeyError, TypeError) as err:
+            _LOGGER.error("[restore] invalid backup: %s", err)
+            return self.json({"success": False, "error": str(err)}, status_code=400)
+        # Reload the entry (after responding) so the running coordinator applies
+        # the restored config: sensor subscriptions, weather client, schedules.
+        entry = coordinator.entry
+        hass.async_create_task(hass.config_entries.async_reload(entry.entry_id))
+        _LOGGER.info("[restore] configuration restored, reloading entry")
+        return self.json({"success": True})
+
+
 async def async_register_websockets(hass: HomeAssistant):
     """Register Smart Irrigation HTTP views and websocket commands."""
     hass.http.register_view(SmartIrrigationConfigView)
@@ -601,6 +781,8 @@ async def async_register_websockets(hass: HomeAssistant):
     hass.http.register_view(SmartIrrigationAllModuleView)
     hass.http.register_view(SmartIrrigationMappingView)
     hass.http.register_view(SmartIrrigationWateringCalendarView)
+    hass.http.register_view(SmartIrrigationExportView)
+    hass.http.register_view(SmartIrrigationRestoreView)
 
     async_register_command(hass, handle_subscribe_updates)
 
@@ -672,6 +854,29 @@ async def async_register_websockets(hass: HomeAssistant):
             {
                 vol.Required("type"): const.DOMAIN + "/watering_calendar",
                 vol.Optional("zone_id"): vol.Coerce(str),
+            }
+        ),
+    )
+    async_register_command(
+        hass,
+        const.DOMAIN + "/weatherservice",
+        websocket_get_weather_service,
+        websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend(
+            {vol.Required("type"): const.DOMAIN + "/weatherservice"}
+        ),
+    )
+    async_register_command(
+        hass,
+        const.DOMAIN + "/set_weatherservice",
+        websocket_set_weather_service,
+        websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend(
+            {
+                vol.Required("type"): const.DOMAIN + "/set_weatherservice",
+                vol.Required(const.CONF_USE_WEATHER_SERVICE): cv.boolean,
+                vol.Optional(const.CONF_WEATHER_SERVICE): vol.Any(None, cv.string),
+                vol.Optional(const.CONF_WEATHER_SERVICE_API_KEY): vol.Any(
+                    None, cv.string
+                ),
             }
         ),
     )

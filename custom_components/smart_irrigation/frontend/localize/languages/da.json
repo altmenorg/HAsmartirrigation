@@ -1,0 +1,473 @@
+{
+  "common": {
+    "loading": "Indlæser",
+    "saving": "Gemmer",
+    "actions": {
+      "delete": "Slet"
+    },
+    "labels": {
+      "module": "Modul",
+      "no": "Nej",
+      "select": "Vælg",
+      "yes": "Ja",
+      "enabled": "Aktiveret",
+      "disabled": "Deaktiveret",
+      "before": "før",
+      "after": "efter"
+    },
+    "units": {
+      "seconds": "sekunder"
+    },
+    "attributes": {
+      "size": "størrelse",
+      "throughput": "gennemstrømning",
+      "state": "tilstand",
+      "bucket": "bucket",
+      "last_updated": "senest opdateret",
+      "last_calculated": "senest beregnet",
+      "number_of_data_points": "antal datapunkter"
+    },
+    "loading-messages": {
+      "configuration": "Indlæser konfiguration...",
+      "modules": "Indlæser moduler...",
+      "general": "Indlæser..."
+    },
+    "saving-messages": {
+      "adding": "Tilføjer...",
+      "saving": "Gemmer..."
+    }
+  },
+  "defaults": {
+    "default-zone": "Standardzone",
+    "default-mapping": "Standardsensorgruppe"
+  },
+  "module": {
+    "calculation": {
+      "explanation": {
+        "module-returned-evapotranspiration-deficiency": "Bemærk: denne forklaring bruger '.' som decimalseparator og viser afrundede metriske værdier. Modulet returnerede et fordampningsunderskud ( = et0 * hour_multiplier + nedbør) på",
+        "bucket-was": "Bucket var",
+        "new-bucket-values-is": "Ny bucket-værdi er",
+        "bucket": "bucket",
+        "old-bucket-variable": "old_bucket",
+        "max-bucket-variable": "max_bucket",
+        "delta": "delta",
+        "bucket-less-than-zero-irrigation-necessary": "Da bucket < 0, er vanding nødvendig",
+        "steps-taken-to-calculate-duration": "For at beregne den nøjagtige varighed blev følgende trin udført",
+        "precipitation-rate-defined-as": "Nedbørshastigheden er defineret som",
+        "duration-is-calculated-as": "Varigheden beregnes som",
+        "drainage": "drainage",
+        "drainage-rate": "drainage_rate",
+        "hours": "timer",
+        "precipitation-rate-variable": "precipitation_rate",
+        "multiplier-is-applied": "Nu anvendes multiplikatoren. Multiplikatoren er",
+        "duration-after-multiplier-is": "derfor er varigheden",
+        "maximum-duration-is-applied": "Derefter anvendes den maksimale varighed. Den maksimale varighed er",
+        "duration-after-maximum-duration-is": "derfor er varigheden",
+        "lead-time-is-applied": "Til sidst anvendes leveringstiden. Leveringstiden er",
+        "duration-after-lead-time-is": "derfor er den endelige varighed",
+        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Da bucket >= 0, er vanding ikke nødvendig, og varigheden sættes til",
+        "maximum-bucket-is": "Maksimal bucket-størrelse er",
+        "drainage-rate-is": "Drænhastighed ved mætning (bucket på maks) er",
+        "current-drainage-is": "Aktuel dræning beregnes som",
+        "no-drainage": "Aktuel dræning er 0, fordi"
+      }
+    }
+  },
+  "calcmodules": {
+    "pyeto": {
+      "description": "Beregn varighed baseret på FAO56-beregningen fra PyETO-biblioteket"
+    },
+    "static": {
+      "description": "'Dummy'-modul med en statisk konfigurerbar delta"
+    },
+    "passthrough": {
+      "description": "Passthrough-modul der returnerer værdien fra en fordampningssensor som delta"
+    }
+  },
+  "panels": {
+    "weatherservice": {
+      "title": "Vejrtjeneste",
+      "description": "Se og skift den vejrtjeneste, der bruges til at hente vejrdata — uden at skulle geninstallere integrationen. API-nøglen valideres, og ændringen anvendes med det samme.",
+      "labels": {
+        "use-weather-service": "Brug en vejrtjeneste",
+        "service": "Vejrtjeneste",
+        "api-key": "API-nøgle"
+      },
+      "actions": {
+        "save": "Gem",
+        "saving": "Gemmer…"
+      },
+      "messages": {
+        "no-service": "Ingen vejrtjeneste bruges — vejrdata kommer udelukkende fra dine egne sensorer.",
+        "saved": "Vejrtjeneste opdateret og anvendt.",
+        "reload-note": "Når du gemmer, valideres API-nøglen mod tjenesten, og ændringen anvendes med det samme."
+      }
+    },
+    "backuprestore": {
+      "title": "Sikkerhedskopiering / gendannelse",
+      "description": "Eksportér hele Smart Irrigation-konfigurationen til en JSON-fil, eller gendan den fra en tidligere sikkerhedskopi.",
+      "cards": {
+        "backup": {
+          "title": "Sikkerhedskopiering",
+          "description": "Download den komplette konfiguration (generelle indstillinger, zoner, moduler og sensorgrupper) som en JSON-fil."
+        },
+        "restore": {
+          "title": "Gendannelse",
+          "description": "Indlæs en tidligere eksporteret JSON-fil for at erstatte den nuværende konfiguration."
+        }
+      },
+      "actions": {
+        "export": "Eksportér til JSON",
+        "choose-file": "Vælg en sikkerhedskopifil…",
+        "restore": "Gendan denne sikkerhedskopi",
+        "restoring": "Gendanner…"
+      },
+      "messages": {
+        "exported": "Sikkerhedskopifil downloadet.",
+        "restored": "Konfiguration gendannet — genindlæser integrationen.",
+        "invalid-file": "Denne fil er ikke en gyldig Smart Irrigation-sikkerhedskopi.",
+        "confirm-title": "Erstat hele konfigurationen?",
+        "summary": "Denne sikkerhedskopi indeholder",
+        "confirm-warning": "Gendannelse overskriver alle nuværende generelle indstillinger, zoner, moduler og sensorgrupper. Dette kan ikke fortrydes.",
+        "reload-note": "Gendannelse erstatter alt og genindlæser integrationen for at anvende ændringen."
+      }
+    },
+    "general": {
+      "cards": {
+        "automatic-duration-calculation": {
+          "header": "Automatisk varighedsberegning",
+          "description": "Beregningen anvender de indsamlede vejrdata frem til det tidspunkt og opdaterer bucket for hver automatisk zone. Derefter justeres varigheden baseret på den nye bucket-værdi, og de indsamlede vejrdata fjernes.",
+          "labels": {
+            "auto-calc-enabled": "Beregn automatisk vandingsvarigheder",
+            "calc-time": "Beregn kl."
+          }
+        },
+        "automatic-update": {
+          "errors": {
+            "warning-update-time-on-or-after-calc-time": "Advarsel: opdateringstidspunkt for vejrdata er på eller efter beregningstidspunktet"
+          },
+          "header": "Automatisk opdatering af vejrdata",
+          "description": "Indsaml og gem vejrdata automatisk. Vejrdata er nødvendige for at beregne zoners buckets og varigheder.",
+          "labels": {
+            "auto-update-enabled": "Opdatér vejrdata automatisk",
+            "auto-update-schedule": "Opdateringsplan",
+            "auto-update-time": "Opdatér kl.",
+            "auto-update-interval": "Opdatér sensordata hver",
+            "auto-update-delay": "Opdateringsforsinkelse"
+          },
+          "options": {
+            "minutes": "minutter",
+            "hours": "timer",
+            "days": "dage"
+          }
+        },
+        "automatic-clear": {
+          "header": "Automatisk udrensning af vejrdata",
+          "description": "Fjern automatisk indsamlede vejrdata på et konfigureret tidspunkt. Brug dette til at sikre, at der ikke er rester af vejrdata fra tidligere dage. Fjern ikke vejrdataene, før du beregner, og brug kun denne mulighed, hvis du forventer, at den automatiske opdatering indsamler vejrdata, efter du har beregnet for dagen. Ideelt set vil du udrense så sent på dagen som muligt.",
+          "labels": {
+            "automatic-clear-enabled": "Ryd automatisk indsamlede vejrdata",
+            "automatic-clear-time": "Ryd vejrdata kl."
+          }
+        },
+        "continuousupdates": {
+          "header": "Kontinuerlige opdateringer for sensorer (eksperimentel)",
+          "description": "Denne eksperimentelle funktion vil løbende opdatere sensordataene. Dette er nyttigt for sensorgrupper, der bruger kilder, som leverer kontinuerlige data, såsom vejrstationer. Denne funktion kan ikke bruges til sensorgrupper, der i det mindste delvist er afhængige af vejrtjenester, da kontinuerlig polling af API'er vil medføre omkostninger. Husk, at dette er eksperimentelt og muligvis ikke fungerer som forventet. Brug på eget ansvar.",
+          "labels": {
+            "continuousupdates": "Aktivér kontinuerlige opdateringer",
+            "sensor_debounce": "Sensor-debounce"
+          }
+        }
+      },
+      "description": "Denne side indeholder globale indstillinger.",
+      "title": "Generelt"
+    },
+    "help": {
+      "title": "Hjælp",
+      "cards": {
+        "how-to-get-help": {
+          "title": "Sådan får du hjælp",
+          "first-read-the": "Læs først",
+          "wiki": "Wikien",
+          "if-you-still-need-help": "Hvis du stadig har brug for hjælp, så henvend dig på",
+          "community-forum": "Fællesskabsforummet",
+          "or-open-a": "eller opret en",
+          "github-issue": "Github-issue",
+          "english-only": "Kun på engelsk"
+        }
+      }
+    },
+    "info": {
+      "title": "Info",
+      "description": "Se information om næste vanding og systemstatus.",
+      "configuration-not-available": "Konfiguration ikke tilgængelig.",
+      "cards": {
+        "zone-bucket-values": {
+          "title": "Zoners bucket-værdier og varighed",
+          "labels": {
+            "bucket": "Bucket",
+            "duration": "Varighed"
+          },
+          "no-zones": "Ingen zoner konfigureret"
+        },
+        "next-irrigation": {
+          "title": "Næste vanding",
+          "labels": {
+            "next-start": "Næste start",
+            "duration": "Varighed",
+            "zones": "Zoner"
+          },
+          "no-data": "Ingen data tilgængelige"
+        },
+        "irrigation-reason": {
+          "title": "Vandingsårsag",
+          "labels": {
+            "reason": "Årsag",
+            "sunrise": "Solopgang",
+            "total-duration": "Samlet varighed",
+            "explanation": "Forklaring"
+          },
+          "no-data": "Ingen data tilgængelige"
+        }
+      }
+    },
+    "mappings": {
+      "cards": {
+        "add-mapping": {
+          "actions": {
+            "add": "Tilføj sensorgruppe"
+          },
+          "header": "Tilføj sensorgrupper"
+        },
+        "mapping": {
+          "aggregates": {
+            "average": "Gennemsnit",
+            "first": "Første",
+            "last": "Sidste",
+            "maximum": "Maksimum",
+            "median": "Median",
+            "minimum": "Minimum",
+            "riemannsum": "Riemann-sum",
+            "sum": "Sum",
+            "delta": "Delta"
+          },
+          "errors": {
+            "cannot-delete-mapping-because-zones-use-it": "Du kan ikke slette denne sensorgruppe, fordi mindst én zone bruger den.",
+            "invalid_source": "Ugyldig kilde",
+            "source_does_not_exist": "Kilden findes ikke. Indtast venligst en gyldig kilde, såsom 'sensor.mysensor'."
+          },
+          "items": {
+            "dewpoint": "Dugpunkt",
+            "evapotranspiration": "Fordampning",
+            "humidity": "Luftfugtighed",
+            "maximum temperature": "Maksimumtemperatur",
+            "minimum temperature": "Minimumtemperatur",
+            "precipitation": "Samlet nedbør",
+            "current precipitation": "Aktuel nedbør",
+            "pressure": "Tryk",
+            "solar radiation": "Solstråling",
+            "temperature": "Temperatur",
+            "windspeed": "Vindhastighed"
+          },
+          "pressure_types": {
+            "absolute": "absolut",
+            "relative": "relativt"
+          },
+          "pressure-type": "Trykket er",
+          "sensor-aggregate-of-sensor-values-to-calculate": "af sensorværdier til at beregne varighed",
+          "sensor-aggregate-use-the": "Brug",
+          "sensor-entity": "Sensorentitet",
+          "static_value": "Værdi",
+          "input-units": "Input leverer værdier i",
+          "source": "Kilde",
+          "sources": {
+            "none": "Ingen",
+            "weather_service": "Vejrtjeneste",
+            "sensor": "Sensor",
+            "static": "Statisk værdi"
+          }
+        }
+      },
+      "description": "Tilføj en eller flere sensorgrupper, der henter vejrdata fra vejrtjeneste, fra sensorer eller en kombination af disse. Du kan tilknytte hver sensorgruppe til en eller flere zoner",
+      "labels": {
+        "mapping-name": "Navn"
+      },
+      "no_items": "Der er endnu ikke defineret nogen sensorgruppe.",
+      "title": "Sensorgrupper",
+      "weather-records": {
+        "title": "Vejrregistreringer (seneste 10)",
+        "timestamp": "Tidspunkt",
+        "temperature": "Temp",
+        "humidity": "Luftfugtighed",
+        "precipitation": "Nedbør",
+        "retrieval-time": "Hentet",
+        "no-data": "Ingen vejrdata tilgængelige for denne sensorgruppe"
+      }
+    },
+    "modules": {
+      "cards": {
+        "add-module": {
+          "actions": {
+            "add": "Tilføj modul"
+          },
+          "header": "Tilføj modul"
+        },
+        "module": {
+          "errors": {
+            "cannot-delete-module-because-zones-use-it": "Du kan ikke slette dette modul, fordi mindst én zone bruger det."
+          },
+          "labels": {
+            "configuration": "Konfiguration",
+            "required": "angiver et obligatorisk felt"
+          },
+          "translated-options": {
+            "DontEstimate": "Estimér ikke",
+            "EstimateFromSunHours": "Estimér ud fra soltimer",
+            "EstimateFromTemp": "Estimér ud fra temperatur",
+            "EstimateFromSunHoursAndTemperature": "Estimér ud fra gennemsnit af soltimer og temperatur"
+          }
+        }
+      },
+      "description": "Tilføj et eller flere moduler, der beregner vandingsvarighed. Hvert modul har sin egen konfiguration og kan bruges til at beregne varighed for en eller flere zoner.",
+      "no_items": "Der er endnu ikke defineret nogen moduler.",
+      "title": "Moduler"
+    },
+    "zones": {
+      "actions": {
+        "add": "Tilføj",
+        "calculate": "Beregn",
+        "information": "Information",
+        "update": "Opdatér",
+        "reset-bucket": "Nulstil bucket",
+        "view-weather-info": "Se vejrdata",
+        "view-weather-info-message": "Vejrdata tilgængelige for",
+        "view-watering-calendar": "Se vandingskalender"
+      },
+      "cards": {
+        "add-zone": {
+          "actions": {
+            "add": "Tilføj zone"
+          },
+          "header": "Tilføj zone"
+        },
+        "zone-actions": {
+          "actions": {
+            "calculate-all": "Beregn alle zoner",
+            "update-all": "Opdatér alle zoner",
+            "reset-all-buckets": "Nulstil alle buckets",
+            "clear-all-weatherdata": "Ryd alle vejrdata"
+          },
+          "header": "Handlinger på alle zoner"
+        }
+      },
+      "description": "Angiv en eller flere vandingszoner her. Vandingsvarigheden beregnes pr. zone, afhængigt af størrelse, gennemstrømning, tilstand, modul og sensorgruppe.",
+      "labels": {
+        "bucket": "Bucket",
+        "duration": "Varighed",
+        "lead-time": "Leveringstid",
+        "mapping": "Sensorgruppe",
+        "maximum-duration": "Maksimal varighed",
+        "multiplier": "Multiplikator",
+        "name": "Navn",
+        "size": "Størrelse",
+        "state": "Tilstand",
+        "states": {
+          "automatic": "Automatisk",
+          "disabled": "Deaktiveret",
+          "manual": "Manuel"
+        },
+        "throughput": "Gennemstrømning",
+        "maximum-bucket": "Maksimal bucket",
+        "last_calculated": "Senest beregnet",
+        "data-last-updated": "Data senest opdateret",
+        "data-number-of-data-points": "Antal datapunkter",
+        "drainage_rate": "Drænhastighed"
+      },
+      "no_items": "Der er endnu ikke defineret nogen zoner.",
+      "title": "Zoner"
+    }
+  },
+  "title": "Smart Irrigation",
+  "irrigation_start_triggers": {
+    "title": "Vandingsstart-udløsere",
+    "description": "Konfigurér, hvornår vanding skal starte baseret på solbegivenheder. Du kan tilføje flere udløsere til forskellige planer. For solopgangsudløsere vil et offset på 0 automatisk bruge den samlede varighed af alle aktiverede zoner.",
+    "usage_before": "Når en udløser aktiveres, udsender Smart Irrigation begivenheden ",
+    "usage_after": " — lyt efter den i en automatisering for at starte vanding. Begivenhedsdataene indeholder trigger_name, trigger_type og offset_minutes, så du kan reagere forskelligt pr. udløser. Indstillingerne for nedbørsspring og dage-mellem-vanding gælder stadig: på en springdag udsendes ingen begivenhed.",
+    "add_trigger": "Tilføj udløser",
+    "edit_trigger": "Redigér udløser",
+    "delete_trigger": "Slet udløser",
+    "trigger_types": {
+      "sunrise": "Solopgang",
+      "sunset": "Solnedgang",
+      "solar_azimuth": "Solens azimut"
+    },
+    "fields": {
+      "name": {
+        "name": "Udløsernavn",
+        "description": "Et beskrivende navn til at identificere denne udløser"
+      },
+      "type": {
+        "name": "Udløsertype",
+        "description": "Typen af solbegivenhed der skal udløse på"
+      },
+      "enabled": {
+        "name": "Aktiveret",
+        "description": "Om denne udløser i øjeblikket er aktiv"
+      },
+      "offset_minutes": {
+        "name": "Offset (minutter)",
+        "description": "Minutter før (-) eller efter (+) solbegivenheden. For solopgangsudløsere, brug 0 for automatisk timing baseret på den samlede zonevarighed."
+      },
+      "azimuth_angle": {
+        "name": "Azimutvinkel (grader)",
+        "description": "Solens azimutvinkel i grader, hvor 0=Nord, 90=Øst, 180=Syd, 270=Vest"
+      },
+      "account_for_duration": {
+        "name": "Tag højde for varighed",
+        "description": "Når aktiveret, starter vandingen tidligt nok til at slutte på det angivne tidspunkt. Når deaktiveret, starter vandingen præcis på det angivne tidspunkt."
+      }
+    },
+    "dialog": {
+      "add_title": "Tilføj vandingsstart-udløser",
+      "edit_title": "Redigér vandingsstart-udløser",
+      "cancel": "Annullér",
+      "save": "Gem",
+      "delete": "Slet",
+      "help": "Når denne udløser aktiveres, udsender Smart Irrigation følgende begivenhed — brug den i en automatisering for at starte vanding. Begivenhedsdataene indeholder denne udløsers navn (samt type/offset), så du kan reagere specifikt på den:"
+    },
+    "no_triggers": "Ingen vandingsstart-udløsere konfigureret. Systemet vil bruge standardadfærden (solopgang med samlet zonevarighed). Tilføj udløsere for at tilpasse, hvornår vanding starter.",
+    "offset_auto": "Auto (beregnet ud fra samlet zonevarighed)",
+    "confirm_delete": "Er du sikker på, at du vil slette udløseren '{name}'?",
+    "validation": {
+      "name_required": "Udløsernavn er påkrævet",
+      "azimuth_invalid": "Azimutvinkel skal være et gyldigt tal"
+    },
+    "help": {
+      "sunrise_offset": "For solopgangsudløsere: Brug negative værdier for at starte før solopgang, positive for at starte efter. Sæt til 0 for automatisk at starte tidligt nok til at fuldføre alle zoner før solopgang.",
+      "sunset_offset": "For solnedgangsudløsere: Brug negative værdier for at starte før solnedgang, positive for at starte efter solnedgang.",
+      "azimuth_explanation": "Solens azimut er solens kompasretning. 0°=Nord, 90°=Øst, 180°=Syd, 270°=Vest. Du kan indtaste en hvilken som helst vinkelværdi (f.eks. 450° = 90°, -30° = 330°). Brug dette til at udløse vanding, når solen når en bestemt position.",
+      "multiple_triggers": "Du kan konfigurere flere udløsere. Hver aktiveret udløser planlægger vandingsstarter uafhængigt."
+    }
+  },
+  "weather_skip": {
+    "title": "Vejrbaseret vandingsspring",
+    "description": "Spring automatisk vanding over, når der er varslet nedbør. Denne funktion kræver, at en vejrtjeneste er konfigureret.",
+    "threshold_label": "Nedbørstærskel",
+    "threshold_description": "Mindste mængde nedbør (i mm) varslet for i dag og i morgen for at springe vanding over."
+  },
+  "coordinate_config": {
+    "title": "Placeringskoordinater",
+    "description": "Konfigurér placeringskoordinater til hentning af vejrdata. Du kan om nødvendigt bruge manuelle koordinater, der adskiller sig fra din Home Assistant-placering.",
+    "manual_enabled": "Brug manuelle koordinater",
+    "use_ha_location": "Brug Home Assistant-placering",
+    "latitude": "Breddegrad (decimalgrader)",
+    "longitude": "Længdegrad (decimalgrader)",
+    "elevation": "Højde (meter over havets overflade)",
+    "current_ha_coords": "Aktuelle Home Assistant-koordinater"
+  },
+  "days_between_irrigation": {
+    "title": "Dage mellem vanding",
+    "description": "Konfigurér det mindste antal dage, der skal gå mellem vandingsbegivenheder. Dette hjælper med at styre vandingsfrekvensen til vandbesparelse og pleje af plantesundhed.\n\nTypiske anvendelser i den virkelige verden:\n• Plænepleje: 1-2 dages intervaller forhindrer overvanding\n• Tørkerestriktioner: 6+ dages intervaller til ugentlig vanding\n• Dybtrodede planter: 3-7 dages intervaller til mindre hyppig vanding\n• Vandbesparelse: Kan tilpasses ud fra klima- og jordforhold",
+    "label": "Mindste antal dage mellem vanding",
+    "help_text": "Sæt til 0 for at deaktivere denne funktion. Værdier fra 1-365 dage understøttes. Denne indstilling fungerer sammen med eksisterende logik for nedbørsprognoser."
+  }
+}

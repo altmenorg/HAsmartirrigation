@@ -23,7 +23,7 @@ Here's a list of units:
 - Windspeed: meter per second (m/s)
 
 The reason we're using these units is consistency but also because the most-used module (PyETO) requires the data to be provided in these units (at least, that's what the limited documentation and code seem to imply).
-For those interested, [here's the function that does this most of the conversion in code (with the exception of the absolute to relative conversion for pressure)](https://github.com/jeroenterheerdt/HAsmartirrigation/blob/7c206809ac35a686a16eb8b3b209d030a28463f7/custom_components/smart_irrigation/helpers.py#L115): 
+For those interested, [here's the function that does this most of the conversion in code (with the exception of the absolute to relative conversion for pressure)](https://github.com/altmenorg/HAsmartirrigation/blob/7c206809ac35a686a16eb8b3b209d030a28463f7/custom_components/smart_irrigation/helpers.py#L115): 
 
 > Main page: [Usage](usage.md)<br/>
 > Previous: [Automations](usage-automations.md)<br/>

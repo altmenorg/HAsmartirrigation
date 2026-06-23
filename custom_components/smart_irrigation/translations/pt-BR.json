@@ -1,0 +1,224 @@
+{
+  "config": {
+    "abort": {
+      "single_instance_allowed": "Apenas uma configuração do Smart Irrigation é permitida."
+    },
+    "error": {
+      "auth": "Chave de API do serviço de meteorologia incorreta",
+      "name": "Especifique um nome único para a integração."
+    },
+    "step": {
+      "user": {
+        "title": "Configuração geral",
+        "description": "Se precisar de ajuda com a configuração, consulte a documentação.",
+        "data": {
+          "name": "Nome único da integração",
+          "use_weather_service": "Use um serviço de meteorologia (Open Weather Map ou Pirate Weather) para dados meteorológicos ou previsão. Ative esta opção se pretende usar um dos serviços de meteorologia suportados para pelo menos parte dos dados meteorológicos, incluindo previsão. Desative esta opção se quiser usar exclusivamente outra fonte, como sua própria estação meteorológica. Nesse caso, o Smart Irigation não poderá usar previsões."
+        }
+      },
+      "step1": {
+        "title": "Configuração da API do serviço de meteorologia",
+        "description": "Se precisar de ajuda com a configuração, consulte a documentação.",
+        "data": {
+          "weather_service": "Serviço de meteorologia a usar",
+          "weather_service_api_key": "Chave de API do serviço de meteorologia",
+          "weather_service_api_version": "Versão da API do serviço de meteorologia"
+        }
+      }
+    }
+  },
+  "options": {
+    "error": {
+      "auth": "Chave de API ou versão do serviço de meteorologia incorreta",
+      "invalid_coordinates": "Coordenadas inválidas fornecidas. Verifique os valores de latitude (-90 a 90) e longitude (-180 a 180)."
+    },
+    "step": {
+      "init": {
+        "title": "Configuração da API do serviço de meteorologia",
+        "description": "Se precisar de ajuda com a configuração, consulte a documentação.",
+        "data": {
+          "use_weather_service": "Use um serviço de meteorologia (Open Weather Map ou Pirate Weather) para dados meteorológicos ou previsão. Ative esta opção se pretende usar um dos serviços de meteorologia suportados para pelo menos parte dos dados meteorológicos, incluindo previsão. Desative esta opção se quiser usar exclusivamente outra fonte, como sua própria estação meteorológica. Nesse caso, o Smart Irigation não poderá usar previsões."
+        }
+      },
+      "step1": {
+        "title": "Configuração da API do serviço de meteorologia",
+        "description": "Se precisar de ajuda com a configuração, consulte a documentação.",
+        "data": {
+          "weather_service": "Serviço de meteorologia a usar",
+          "weather_service_api_key": "Chave de API do serviço de meteorologia",
+          "weather_service_api_version": "Versão da API do serviço de meteorologia"
+        }
+      },
+      "coordinates": {
+        "title": "Coordenadas da localização",
+        "description": "Configure as coordenadas da localização para a obtenção de dados meteorológicos. Você pode usar coordenadas manuais diferentes da localização do seu Home Assistant, se necessário.",
+        "data": {
+          "manual_coordinates_enabled": "Usar coordenadas manuais em vez da localização do Home Assistant",
+          "manual_latitude": "Latitude (graus decimais, -90 a 90)",
+          "manual_longitude": "Longitude (graus decimais, -180 a 180)",
+          "manual_elevation": "Altitude acima do nível do mar (metros, opcional)"
+        }
+      }
+    }
+  },
+  "services": {
+    "calculate_all_zones": {
+      "name": "Calcular todas as zonas",
+      "description": "Calcular todas as zonas em modo automático",
+      "fields": {
+        "delete_weather_data": {
+          "name": "Excluir dados meteorológicos",
+          "description": "Excluir dados meteorológicos após o cálculo"
+        }
+      }
+    },
+    "calculate_zone": {
+      "name": "Calcular zona",
+      "description": "Calcular a zona especificada",
+      "fields": {
+        "entity": {
+          "name": "Entidade",
+          "description": "Zona a calcular"
+        },
+        "delete_weather_data": {
+          "name": "Excluir dados meteorológicos",
+          "description": "Excluir os dados meteorológicos da zona após o cálculo"
+        }
+      }
+    },
+    "update_all_zones": {
+      "name": "Atualizar todas as zonas",
+      "description": "Atualizar dados meteorológicos de todas as zonas em modo automático"
+    },
+    "update_zone": {
+      "name": "Atualizar zona",
+      "description": "Atualizar dados meteorológicos da zona especificada",
+      "fields": {
+        "entity": {
+          "name": "Entidade",
+          "description": "Zona a atualizar"
+        }
+      }
+    },
+    "set_bucket": {
+      "name": "Definir bucket",
+      "description": "Definir o bucket de uma zona com um valor específico",
+      "fields": {
+        "entity": {
+          "name": "Entidade",
+          "description": "Zona para a qual definir o bucket"
+        },
+        "new_bucket_value": {
+          "name": "Novo valor do bucket",
+          "description": "novo valor do bucket"
+        }
+      }
+    },
+    "set_all_buckets": {
+      "name": "Definir todos os buckets",
+      "description": "Definir os buckets de todas as zonas com um valor específico",
+      "fields": {
+        "new_bucket_value": {
+          "name": "Novo valor do bucket",
+          "description": "novo valor do bucket"
+        }
+      }
+    },
+    "reset_bucket": {
+      "name": "Redefinir bucket",
+      "description": "Redefinir o bucket de uma zona para 0",
+      "fields": {
+        "entity": {
+          "name": "Entidade",
+          "description": "Zona para a qual redefinir o bucket"
+        }
+      }
+    },
+    "reset_all_buckets": {
+      "name": "Redefinir todos os buckets",
+      "description": "Redefinir o bucket de todas as zonas para 0"
+    },
+    "clear_all_weather_data": {
+      "name": "Limpar todos os dados meteorológicos",
+      "description": "Limpar os dados meteorológicos de todas as zonas"
+    },
+    "set_multiplier": {
+      "name": "Definir multiplicador",
+      "description": "Definir o multiplicador de uma zona com um valor específico",
+      "fields": {
+        "entity": {
+          "name": "Entidade",
+          "description": "Zona para a qual definir o multiplicador"
+        },
+        "new_multiplier_value": {
+          "name": "Novo valor do multiplicador",
+          "description": "novo valor do multiplicador"
+        }
+      }
+    },
+    "set_all_multipliers": {
+      "name": "Definir todos os multiplicadores",
+      "description": "Definir os multiplicadores de todas as zonas com um valor específico",
+      "fields": {
+        "new_multiplier_value": {
+          "name": "Novo valor do multiplicador",
+          "description": "novo valor do multiplicador"
+        }
+      }
+    },
+    "set_state": {
+      "name": "Definir o estado de uma zona",
+      "description": "Definir o estado de uma zona com um valor específico",
+      "fields": {
+        "entity": {
+          "name": "Entidade",
+          "description": "Zona para a qual definir o estado"
+        },
+        "new_state_value": {
+          "name": "Novo valor do estado",
+          "description": "Novo valor do estado"
+        }
+      }
+    },
+    "set_zone": {
+      "name": "Definir os valores de uma zona",
+      "description": "Definir todos os valores configuráveis de uma zona",
+      "fields": {
+        "entity": {
+          "name": "Entidade",
+          "description": "Zona para a qual definir os valores de configuração"
+        },
+        "new_bucket_value": {
+          "name": "Novo valor do bucket",
+          "description": "Novo valor do bucket"
+        },
+        "new_multiplier_value": {
+          "name": "Novo valor do multiplicador",
+          "description": "Novo valor do multiplicador"
+        },
+        "new_duration_value": {
+          "name": "Novo valor da duração",
+          "description": "Novo valor da duração"
+        },
+        "new_state_value": {
+          "name": "Novo valor do estado",
+          "description": "Novo valor do estado"
+        },
+        "new_throughput_value": {
+          "name": "Novo valor da vazão",
+          "description": "Novo valor da vazão"
+        }
+      }
+    },
+    "generate_watering_calendar": {
+      "name": "Gerar calendário de irrigação",
+      "description": "Gerar um calendário de irrigação de 12 meses para as zonas de irrigação com base em dados climáticos representativos",
+      "fields": {
+        "entity": {
+          "name": "Entidade",
+          "description": "Zona para a qual gerar o calendário de irrigação"
+        }
+      }
+    }
+  }
+}

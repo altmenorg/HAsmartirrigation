@@ -264,7 +264,7 @@ export function showConfirmationDialog(
     ? (ev as HTMLElement)
     : ((ev as Event).target as HTMLElement);
   fireEvent(elem, "show-dialog", {
-    dialogTag: "confirmation-dialog",
+    dialogTag: "smart-irrigation-confirmation-dialog",
     dialogImport: () => import("./dialogs/confirmation-dialog"),
     dialogParams: { target: target, message: message },
   });
@@ -278,7 +278,7 @@ export function showErrorDialog(
     : ((ev as Event).target as HTMLElement);*/
   const elem = ev as HTMLElement;
   fireEvent(elem, "show-dialog", {
-    dialogTag: "error-dialog",
+    dialogTag: "smart-irrigation-error-dialog",
     dialogImport: () => import("./dialogs/error-dialog"),
     dialogParams: { error: error },
   });
@@ -315,7 +315,7 @@ export function sortAlphabetically(
 export const navigate = (
   _node: any,
   path: string,
-  replace: boolean = false
+  replace: boolean = false,
 ) => {
   if (replace) {
     history.replaceState(null, "", path);
@@ -323,6 +323,6 @@ export const navigate = (
     history.pushState(null, "", path);
   }
   fireEvent(window, "location-changed", {
-    replace
+    replace,
   });
 };

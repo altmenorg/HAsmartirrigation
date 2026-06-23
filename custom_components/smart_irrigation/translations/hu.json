@@ -1,0 +1,224 @@
+{
+  "config": {
+    "abort": {
+      "single_instance_allowed": "A Smart Irrigation csak egyetlen konfigurációja engedélyezett."
+    },
+    "error": {
+      "auth": "Az időjárás-szolgáltatás API-kulcsa helytelen",
+      "name": "Adjon meg egy egyedi nevet az integrációhoz."
+    },
+    "step": {
+      "user": {
+        "title": "Általános beállítás",
+        "description": "Ha segítségre van szüksége a konfigurációhoz, kérjük, tekintse meg a dokumentációt.",
+        "data": {
+          "name": "Az integráció egyedi neve",
+          "use_weather_service": "Időjárás-szolgáltatás (Open Weather Map vagy Pirate Weather) használata időjárási adatokhoz vagy előrejelzéshez. Engedélyezze ezt a lehetőséget, ha a támogatott időjárás-szolgáltatások egyikét legalább részben az időjárási adatokhoz, beleértve az előrejelzést is, használni szeretné. Tiltsa le ezt a lehetőséget, ha kizárólag más forrást, például saját időjárás-állomást szeretne használni. Ebben az esetben a Smart Irigation nem tud előrejelzéseket használni."
+        }
+      },
+      "step1": {
+        "title": "Időjárás-szolgáltatás API beállítása",
+        "description": "Ha segítségre van szüksége a konfigurációhoz, kérjük, tekintse meg a dokumentációt.",
+        "data": {
+          "weather_service": "Használandó időjárás-szolgáltatás",
+          "weather_service_api_key": "Az időjárás-szolgáltatás API-kulcsa",
+          "weather_service_api_version": "Az időjárás-szolgáltatás API-verziója"
+        }
+      }
+    }
+  },
+  "options": {
+    "error": {
+      "auth": "Az időjárás-szolgáltatás API-kulcsa vagy verziója helytelen",
+      "invalid_coordinates": "Érvénytelen koordináták. Kérjük, ellenőrizze a szélességi (-90 és 90 között) és a hosszúsági (-180 és 180 között) értékeket."
+    },
+    "step": {
+      "init": {
+        "title": "Időjárás-szolgáltatás API beállítása",
+        "description": "Ha segítségre van szüksége a konfigurációhoz, kérjük, tekintse meg a dokumentációt.",
+        "data": {
+          "use_weather_service": "Időjárás-szolgáltatás (Open Weather Map vagy Pirate Weather) használata időjárási adatokhoz vagy előrejelzéshez. Engedélyezze ezt a lehetőséget, ha a támogatott időjárás-szolgáltatások egyikét legalább részben az időjárási adatokhoz, beleértve az előrejelzést is, használni szeretné. Tiltsa le ezt a lehetőséget, ha kizárólag más forrást, például saját időjárás-állomást szeretne használni. Ebben az esetben a Smart Irigation nem tud előrejelzéseket használni."
+        }
+      },
+      "step1": {
+        "title": "Időjárás-szolgáltatás API beállítása",
+        "description": "Ha segítségre van szüksége a konfigurációhoz, kérjük, tekintse meg a dokumentációt.",
+        "data": {
+          "weather_service": "Használandó időjárás-szolgáltatás",
+          "weather_service_api_key": "Az időjárás-szolgáltatás API-kulcsa",
+          "weather_service_api_version": "Az időjárás-szolgáltatás API-verziója"
+        }
+      },
+      "coordinates": {
+        "title": "Helykoordináták",
+        "description": "Állítsa be a helykoordinátákat az időjárási adatok lekéréséhez. Szükség esetén a Home Assistant helyétől eltérő, kézi koordinátákat is használhat.",
+        "data": {
+          "manual_coordinates_enabled": "Kézi koordináták használata a Home Assistant helye helyett",
+          "manual_latitude": "Szélesség (tizedfok, -90 és 90 között)",
+          "manual_longitude": "Hosszúság (tizedfok, -180 és 180 között)",
+          "manual_elevation": "Tengerszint feletti magasság (méter, opcionális)"
+        }
+      }
+    }
+  },
+  "services": {
+    "calculate_all_zones": {
+      "name": "Összes zóna kiszámítása",
+      "description": "Az összes zóna kiszámítása automatikus módban",
+      "fields": {
+        "delete_weather_data": {
+          "name": "Időjárási adatok törlése",
+          "description": "Az időjárási adatok törlése a számítás után"
+        }
+      }
+    },
+    "calculate_zone": {
+      "name": "Zóna kiszámítása",
+      "description": "A megadott zóna kiszámítása",
+      "fields": {
+        "entity": {
+          "name": "Entitás",
+          "description": "A kiszámítandó zóna"
+        },
+        "delete_weather_data": {
+          "name": "Időjárási adatok törlése",
+          "description": "A zóna időjárási adatainak törlése a számítás után"
+        }
+      }
+    },
+    "update_all_zones": {
+      "name": "Összes zóna frissítése",
+      "description": "Az időjárási adatok frissítése az összes zónánál automatikus módban"
+    },
+    "update_zone": {
+      "name": "Zóna frissítése",
+      "description": "Az időjárási adatok frissítése a megadott zónánál",
+      "fields": {
+        "entity": {
+          "name": "Entitás",
+          "description": "A frissítendő zóna"
+        }
+      }
+    },
+    "set_bucket": {
+      "name": "Vödör beállítása",
+      "description": "Egy zóna vödrének beállítása egy adott értékre",
+      "fields": {
+        "entity": {
+          "name": "Entitás",
+          "description": "A zóna, amelynek a vödrét beállítja"
+        },
+        "new_bucket_value": {
+          "name": "Új vödörérték",
+          "description": "a vödör új értéke"
+        }
+      }
+    },
+    "set_all_buckets": {
+      "name": "Összes vödör beállítása",
+      "description": "Az összes zóna vödrének beállítása egy adott értékre",
+      "fields": {
+        "new_bucket_value": {
+          "name": "Új vödörérték",
+          "description": "a vödör új értéke"
+        }
+      }
+    },
+    "reset_bucket": {
+      "name": "Vödör visszaállítása",
+      "description": "Egy zóna vödrének visszaállítása 0-ra",
+      "fields": {
+        "entity": {
+          "name": "Entitás",
+          "description": "A zóna, amelynek a vödrét visszaállítja"
+        }
+      }
+    },
+    "reset_all_buckets": {
+      "name": "Összes vödör visszaállítása",
+      "description": "Az összes zóna vödrének visszaállítása 0-ra"
+    },
+    "clear_all_weather_data": {
+      "name": "Összes időjárási adat törlése",
+      "description": "Az összes zóna időjárási adatainak törlése"
+    },
+    "set_multiplier": {
+      "name": "Szorzó beállítása",
+      "description": "Egy zóna szorzójának beállítása egy adott értékre",
+      "fields": {
+        "entity": {
+          "name": "Entitás",
+          "description": "A zóna, amelynek a szorzóját beállítja"
+        },
+        "new_multiplier_value": {
+          "name": "Új szorzóérték",
+          "description": "a szorzó új értéke"
+        }
+      }
+    },
+    "set_all_multipliers": {
+      "name": "Összes szorzó beállítása",
+      "description": "Az összes zóna szorzójának beállítása egy adott értékre",
+      "fields": {
+        "new_multiplier_value": {
+          "name": "Új szorzóérték",
+          "description": "a szorzó új értéke"
+        }
+      }
+    },
+    "set_state": {
+      "name": "Egy zóna állapotának beállítása",
+      "description": "Egy zóna állapotának beállítása egy adott értékre",
+      "fields": {
+        "entity": {
+          "name": "Entitás",
+          "description": "A zóna, amelynek az állapotát beállítja"
+        },
+        "new_state_value": {
+          "name": "Új állapotérték",
+          "description": "Az állapot új értéke"
+        }
+      }
+    },
+    "set_zone": {
+      "name": "Egy zóna értékeinek beállítása",
+      "description": "Egy zóna összes konfigurálható értékének beállítása",
+      "fields": {
+        "entity": {
+          "name": "Entitás",
+          "description": "A zóna, amelynek a konfigurációs értékeit beállítja"
+        },
+        "new_bucket_value": {
+          "name": "Új vödörérték",
+          "description": "A vödör új értéke"
+        },
+        "new_multiplier_value": {
+          "name": "Új szorzóérték",
+          "description": "A szorzó új értéke"
+        },
+        "new_duration_value": {
+          "name": "Új időtartamérték",
+          "description": "Az időtartam új értéke"
+        },
+        "new_state_value": {
+          "name": "Új állapotérték",
+          "description": "Az állapot új értéke"
+        },
+        "new_throughput_value": {
+          "name": "Új átfolyásérték",
+          "description": "Az átfolyás új értéke"
+        }
+      }
+    },
+    "generate_watering_calendar": {
+      "name": "Öntözési naptár létrehozása",
+      "description": "12 hónapos öntözési naptár létrehozása az öntözési zónákhoz reprezentatív éghajlati adatok alapján",
+      "fields": {
+        "entity": {
+          "name": "Entitás",
+          "description": "A zóna, amelyhez öntözési naptárt hoz létre"
+        }
+      }
+    }
+  }
+}

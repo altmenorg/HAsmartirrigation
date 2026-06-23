@@ -50,22 +50,6 @@ export const globalStyle = css`
     right: 0px;
   }
 
-  mwc-button.active {
-    background: var(--primary-color);
-    --mdc-theme-primary: var(--text-primary-color);
-    border-radius: 4px;
-  }
-  mwc-button.warning {
-    --mdc-theme-primary: var(--error-color);
-  }
-  mwc-button.success {
-    --mdc-theme-primary: var(--success-color);
-  }
-
-  mwc-button.disabled.active {
-    opacity: 0.5;
-  }
-
   div.entity-row {
     display: flex;
     align-items: center;
@@ -102,42 +86,6 @@ export const globalStyle = css`
   a:visited {
     color: var(--primary-color);
   }
-  mwc-button ha-icon {
-    padding-right: 11px;
-  }
-  mwc-button[trailingIcon] ha-icon {
-    padding: 0px 0px 0px 6px;
-  }
-  mwc-button.vertical {
-    height: 60px;
-    --mdc-button-height: 60px;
-    background: var(--primary-color);
-    --mdc-theme-primary: var(--text-primary-color);
-  }
-  mwc-button.vertical div {
-    display: flex;
-    flex-direction: column;
-  }
-  mwc-button.vertical span {
-    display: flex;
-  }
-  mwc-button.vertical ha-icon {
-    display: flex;
-    margin-left: 50%;
-  }
-  mwc-tab {
-    --mdc-tab-color-default: var(--secondary-text-color);
-    --mdc-tab-text-label-color-default: var(--secondary-text-color);
-  }
-  mwc-tab ha-icon {
-    --mdc-icon-size: 20px;
-  }
-  mwc-tab.disabled {
-    --mdc-theme-primary: var(--disabled-text-color);
-    --mdc-tab-color-default: var(--disabled-text-color);
-    --mdc-tab-text-label-color-default: var(--disabled-text-color);
-  }
-
   ha-card settings-row:first-child,
   ha-card settings-row:first-of-type {
     border-top: 0px;
@@ -521,7 +469,7 @@ export const globalStyle = css`
 `;
 
 export const dialogStyle = css`
-  /* mwc-dialog (ha-dialog) styles */
+  /* ha-dialog styles */
   ha-dialog {
     --mdc-dialog-min-width: 400px;
     --mdc-dialog-max-width: 600px;

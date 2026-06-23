@@ -1,4 +1,4 @@
-import { CSSResultGroup, LitElement, css, html } from "lit";
+import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
 import { property, customElement } from "lit/decorators.js";
 import { HomeAssistant, fireEvent } from "custom-card-helpers";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -6,11 +6,12 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { fetchConfig, saveConfig } from "../../data/websockets";
 import { SubscribeMixin } from "../../subscribe-mixin";
 import { localize } from "../../../localize/localize";
-import { output_unit, pick, handleError, parseBoolean } from "../../helpers";
+import { output_unit, pick, handleError } from "../../helpers";
 import { loadHaForm } from "../../load-ha-elements";
 import "../../dialogs/trigger-dialog";
 import { SmartIrrigationConfig, IrrigationStartTrigger } from "../../types";
 import { globalStyle } from "../../styles/global-style";
+import { modernStyle } from "../../styles/modern-style";
 import { Path } from "../../common/navigation";
 import {
   AUTO_UPDATE_SCHEDULE_DAILY,
@@ -39,7 +40,7 @@ import {
   TRIGGER_TYPE_SOLAR_AZIMUTH,
   DOMAIN,
 } from "../../const";
-import { mdiInformationOutline, mdiPlus, mdiPencil, mdiDelete } from "@mdi/js";
+import { mdiPlus, mdiPencil, mdiDelete, mdiMenuDown, mdiMinus } from "@mdi/js";
 
 @customElement("smart-irrigation-view-general")
 export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
@@ -55,6 +56,15 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean })
   private isSaving = false;
+
+  // True once the first data load has completed. Avoids replacing the whole
+  // form with a "loading" indicator on every background refresh, which dropped
+  // focus and reset scroll while editing.
+  private _hasLoadedOnce = false;
+
+  // Set just before an inline-edit save to ignore the _config_updated echo our
+  // own write triggers. External changes still refresh normally.
+  private _suppressNextConfigUpdate = false;
 
   // Prevent excessive re-renders
   private _updateScheduled = false;
@@ -90,6 +100,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     return [
       this.hass!.connection.subscribeMessage(
         () => {
+          // Ignore the echo of our own inline-edit save (see _suppressNextConfigUpdate).
+          if (this._suppressNextConfigUpdate) {
+            this._suppressNextConfigUpdate = false;
+            return;
+          }
           // Update data when notified of changes with proper error handling
           this._fetchData().catch((error) => {
             console.error("Failed to fetch data on config update:", error);
@@ -107,8 +122,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       return;
     }
 
-    this.isLoading = true;
-    this._scheduleUpdate();
+    // Only show the loading indicator on the very first load; background
+    // refreshes must not replace the form (focus/scroll loss).
+    if (!this._hasLoadedOnce) {
+      this.isLoading = true;
+      this._scheduleUpdate();
+    }
 
     try {
       this.config = await fetchConfig(this.hass);
@@ -134,6 +153,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // Handle error gracefully - keep existing data if fetch fails
     } finally {
       this.isLoading = false;
+      this._hasLoadedOnce = true;
       this._scheduleUpdate();
     }
   }
@@ -161,97 +181,39 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       </div>`;
     } else {
       let r1 = html` <div class="card-content">
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-            id="showautocalcdescription"
-            @click="${() => this.toggleInformation("autocalcdescription")}"
-          >
-            >
-            <title>
+          ${localize(
+            "panels.general.cards.automatic-duration-calculation.description",
+            this.hass.language,
+          )}
+        </div>
+        <div class="card-content">
+          <div class="setting-row">
+            <div class="setting-label">
               ${localize(
-                "panels.zones.actions.information",
-                this.hass.language,
-              )}
-            </title>
-            <path fill="#404040" d="${mdiInformationOutline}" />
-          </svg>
-        </div>
-
-        <div class="card-content">
-          <label class="hidden" id="autocalcdescription">
-            ${localize(
-              "panels.general.cards.automatic-duration-calculation.description",
-              this.hass.language,
-            )}
-          </label>
-        </div>
-        <div class="card-content">
-          <div class="zoneline">
-            <label for="autocalcenabled"
-              >${localize(
                 "panels.general.cards.automatic-duration-calculation.labels.auto-calc-enabled",
                 this.hass.language,
-              )}:</label
-            >
-            <div>
-              <input
-                type="radio"
-                id="autocalcon"
-                name="autocalcenabled"
-                value="True"
-                ?checked="${this.config.autocalcenabled}"
-                @change="${(e: Event) => {
-                  this.handleConfigChange({
-                    autocalcenabled: parseBoolean(
-                      (e.target as HTMLInputElement).value,
-                    ),
-                  });
-                }}"
-              /><label for="autocalcon"
-                >${localize("common.labels.yes", this.hass.language)}</label
-              >
-              <input
-                type="radio"
-                id="autocalcoff"
-                name="autocalcenabled"
-                value="False"
-                ?checked="${!this.config.autocalcenabled}"
-                @change="${(e: Event) => {
-                  this.handleConfigChange({
-                    autocalcenabled: parseBoolean(
-                      (e.target as HTMLInputElement).value,
-                    ),
-                  });
-                }}"
-              /><label for="autocalcoff"
-                >${localize("common.labels.no", this.hass.language)}</label
-              >
+              )}
             </div>
+            <ha-switch
+              .checked=${this.config.autocalcenabled}
+              @change=${(e: Event) =>
+                this.handleConfigChange({
+                  autocalcenabled: (e.target as any).checked,
+                })}
+            ></ha-switch>
           </div>
         </div>`;
       if (this.data.autocalcenabled) {
         r1 = html`${r1}
           <div class="card-content">
-            <div class="zoneline">
-              <label for="calctime"
-                >${localize(
-                  "panels.general.cards.automatic-duration-calculation.labels.calc-time",
-                  this.hass.language,
-                )}:</label
-              >
-              <input
-                id="calctime"
-                type="text"
-                class="shortinput"
-                .value="${this.config.calctime}"
-                @input=${(e: Event) => {
-                  this.handleConfigChange({
-                    calctime: (e.target as HTMLInputElement).value,
-                  });
-                }}
-              />
-            </div>
+            ${this._timeRow(
+              localize(
+                "panels.general.cards.automatic-duration-calculation.labels.calc-time",
+                this.hass.language,
+              ),
+              this.config.calctime,
+              (v) => this.handleConfigChange({ calctime: v }),
+            )}
           </div>`;
       }
       r1 = html`<ha-card
@@ -263,138 +225,96 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         ${r1}</ha-card
       >`;
       let r2 = html` <div class="card-content">
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-            id="showautoupdatedescription"
-            @click="${() => this.toggleInformation("autoupdatedescription")}"
-          >
-            >
-            <title>
+          ${localize(
+            "panels.general.cards.automatic-update.description",
+            this.hass.language,
+          )}
+        </div>
+        <div class="card-content">
+          <div class="setting-row">
+            <div class="setting-label">
               ${localize(
-                "panels.zones.actions.information",
-                this.hass.language,
-              )}
-            </title>
-            <path fill="#404040" d="${mdiInformationOutline}" />
-          </svg>
-        </div>
-        <div class="card-content">
-          <label class="hidden" id="autoupdatedescription">
-            ${localize(
-              "panels.general.cards.automatic-update.description",
-              this.hass.language,
-            )}
-          </label>
-        </div>
-        <div class="card-content">
-          <div class="zoneline">
-            <label for="autoupdateenabled"
-              >${localize(
                 "panels.general.cards.automatic-update.labels.auto-update-enabled",
                 this.hass.language,
-              )}:</label
-            >
-            <div>
-              <input
-                type="radio"
-                id="autoupdateon"
-                name="autoupdateenabled"
-                value="True"
-                ?checked="${this.config.autoupdateenabled}"
-                @change="${(e: Event) => {
-                  this.saveData({
-                    autoupdateenabled: parseBoolean(
-                      (e.target as HTMLInputElement).value,
-                    ),
-                  });
-                }}"
-              /><label for="autoupdateon"
-                >${localize("common.labels.yes", this.hass.language)}</label
-              >
-              <input
-                type="radio"
-                id="autoupdateoff"
-                name="autoupdateenabled"
-                value="False"
-                ?checked="${!this.config.autoupdateenabled}"
-                @change="${(e: Event) => {
-                  this.saveData({
-                    autoupdateenabled: parseBoolean(
-                      (e.target as HTMLInputElement).value,
-                    ),
-                  });
-                }}"
-              /><label for="autoupdateoff"
-                >${localize("common.labels.no", this.hass.language)}</label
-              >
+              )}
             </div>
+            <ha-switch
+              .checked=${this.config.autoupdateenabled}
+              @change=${(e: Event) =>
+                this.saveData({
+                  autoupdateenabled: (e.target as any).checked,
+                })}
+            ></ha-switch>
           </div>
         </div>`;
       if (this.data.autoupdateenabled) {
         r2 = html`${r2}
           <div class="card-content">
-            <div class="zoneline">
-              <label for="autoupdateinterval"
-                >${localize(
+            <div class="setting-row">
+              <div class="setting-label">
+                ${localize(
                   "panels.general.cards.automatic-update.labels.auto-update-interval",
                   this.hass.language,
-                )}:</label
-              >
-              <div style="display: flex; gap: 8px; align-items: center;">
+                )}
+              </div>
+              <div class="combo-field">
                 <input
-                  name="autoupdateinterval"
-                  class="shortinput"
+                  class="field combo-num"
                   type="number"
-                  value="${this.data.autoupdateinterval}"
-                  @input="${(e: Event) => {
+                  min="1"
+                  step="1"
+                  .value=${this.data.autoupdateinterval ?? ""}
+                  @change=${(e: Event) =>
                     this.saveData({
                       autoupdateinterval: parseInt(
                         (e.target as HTMLInputElement).value,
                       ),
-                    });
-                  }}"
+                    })}
                 />
-                <select
-                  type="text"
-                  id="autoupdateschedule"
-                  @change="${(e: Event) => {
-                    this.saveData({
-                      autoupdateschedule: (e.target as HTMLInputElement).value,
-                    });
-                  }}"
-                >
-                  <option
-                    value="${AUTO_UPDATE_SCHEDULE_MINUTELY}"
-                    ?selected="${this.data.autoupdateschedule ===
-                    AUTO_UPDATE_SCHEDULE_MINUTELY}"
+                <div class="select-wrap">
+                  <select
+                    class="field"
+                    @change=${(e: Event) =>
+                      this.saveData({
+                        autoupdateschedule: (e.target as HTMLSelectElement)
+                          .value,
+                      })}
                   >
-                    ${localize(
-                      "panels.general.cards.automatic-update.options.minutes",
-                      this.hass.language,
-                    )}
-                  </option>
-                  <option
-                    value="${AUTO_UPDATE_SCHEDULE_HOURLY}"
-                    ?selected="${this.data.autoupdateschedule ===
-                    AUTO_UPDATE_SCHEDULE_HOURLY}"
-                  >
-                    ${localize(
-                      "panels.general.cards.automatic-update.options.hours",
-                      this.hass.language,
-                    )}
-                  </option>
-                  <option
-                    value="${AUTO_UPDATE_SCHEDULE_DAILY}"
-                    ?selected="${this.data.autoupdateschedule ===
-                    AUTO_UPDATE_SCHEDULE_DAILY}"
-                  >
-                    ${localize(
-                      "panels.general.cards.automatic-update.options.days",
-                      this.hass.language,
-                    )}
-                  </option>
-                </select>
+                    <option
+                      value="${AUTO_UPDATE_SCHEDULE_MINUTELY}"
+                      ?selected=${this.data.autoupdateschedule ===
+                      AUTO_UPDATE_SCHEDULE_MINUTELY}
+                    >
+                      ${localize(
+                        "panels.general.cards.automatic-update.options.minutes",
+                        this.hass.language,
+                      )}
+                    </option>
+                    <option
+                      value="${AUTO_UPDATE_SCHEDULE_HOURLY}"
+                      ?selected=${this.data.autoupdateschedule ===
+                      AUTO_UPDATE_SCHEDULE_HOURLY}
+                    >
+                      ${localize(
+                        "panels.general.cards.automatic-update.options.hours",
+                        this.hass.language,
+                      )}
+                    </option>
+                    <option
+                      value="${AUTO_UPDATE_SCHEDULE_DAILY}"
+                      ?selected=${this.data.autoupdateschedule ===
+                      AUTO_UPDATE_SCHEDULE_DAILY}
+                    >
+                      ${localize(
+                        "panels.general.cards.automatic-update.options.days",
+                        this.hass.language,
+                      )}
+                    </option>
+                  </select>
+                  <svg class="chev" viewBox="0 0 24 24">
+                    <path d=${mdiMenuDown}></path>
+                  </svg>
+                </div>
               </div>
             </div>
           </div>`;
@@ -402,28 +322,16 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       if (this.data.autoupdateenabled) {
         r2 = html`${r2}
           <div class="card-content">
-            <div class="zoneline">
-              <label for="updatedelay"
-                >${localize(
-                  "panels.general.cards.automatic-update.labels.auto-update-delay",
-                  this.hass.language,
-                )}
-                (s):</label
-              >
-              <input
-                id="updatedelay"
-                type="text"
-                class="shortinput"
-                .value="${this.config.autoupdatedelay}"
-                @input=${(e: Event) => {
-                  this.saveData({
-                    autoupdatedelay: parseInt(
-                      (e.target as HTMLInputElement).value,
-                    ),
-                  });
-                }}
-              />
-            </div>
+            ${this._numRow(
+              localize(
+                "panels.general.cards.automatic-update.labels.auto-update-delay",
+                this.hass.language,
+              ),
+              "s",
+              this.config.autoupdatedelay,
+              (v) => this.saveData({ autoupdatedelay: parseInt(v) }),
+              1,
+            )}
           </div>`;
       }
 
@@ -434,96 +342,39 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       this.hass.language)}">${r2}</ha-card>`;
 
       let r3 = html` <div class="card-content">
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-            id="showautocleardescription"
-            @click="${() => this.toggleInformation("autocleardescription")}"
-          >
-            <title>
+          ${localize(
+            "panels.general.cards.automatic-clear.description",
+            this.hass.language,
+          )}
+        </div>
+        <div class="card-content">
+          <div class="setting-row">
+            <div class="setting-label">
               ${localize(
-                "panels.zones.actions.information",
-                this.hass.language,
-              )}
-            </title>
-
-            <path fill="#404040" d="${mdiInformationOutline}" />
-          </svg>
-        </div>
-        <div class="card-content">
-          <label class="hidden" id="autocleardescription">
-            ${localize(
-              "panels.general.cards.automatic-clear.description",
-              this.hass.language,
-            )}
-          </label>
-        </div>
-        <div class="card-content">
-          <div class="zoneline">
-            <label for="autoclearenabled"
-              >${localize(
                 "panels.general.cards.automatic-clear.labels.automatic-clear-enabled",
                 this.hass.language,
-              )}:</label
-            >
-            <div>
-              <input
-                type="radio"
-                id="autoclearon"
-                name="autoclearenabled"
-                value="True"
-                ?checked="${this.config.autoclearenabled}"
-                @change="${(e: Event) => {
-                  this.handleConfigChange({
-                    autoclearenabled: parseBoolean(
-                      (e.target as HTMLInputElement).value,
-                    ),
-                  });
-                }}"
-              /><label for="autoclearon"
-                >${localize("common.labels.yes", this.hass.language)}</label
-              >
-              <input
-                type="radio"
-                id="autoclearoff"
-                name="autoclearenabled"
-                value="False"
-                ?checked="${!this.config.autoclearenabled}"
-                @change="${(e: Event) => {
-                  this.handleConfigChange({
-                    autoclearenabled: parseBoolean(
-                      (e.target as HTMLInputElement).value,
-                    ),
-                  });
-                }}"
-              /><label for="autoclearoff"
-                >${localize("common.labels.no", this.hass.language)}</label
-              >
+              )}
             </div>
+            <ha-switch
+              .checked=${this.config.autoclearenabled}
+              @change=${(e: Event) =>
+                this.handleConfigChange({
+                  autoclearenabled: (e.target as any).checked,
+                })}
+            ></ha-switch>
           </div>
         </div>`;
       if (this.data.autoclearenabled) {
         r3 = html`${r3}
           <div class="card-content">
-            <div class="zoneline">
-              <label for="calctime"
-                >${localize(
-                  "panels.general.cards.automatic-clear.labels.automatic-clear-time",
-                  this.hass.language,
-                )}:</label
-              >
-              <input
-                id="cleardatatime"
-                type="text"
-                class="shortinput"
-                .value="${this.config.cleardatatime}"
-                @input=${(e: Event) => {
-                  this.handleConfigChange({
-                    cleardatatime: (e.target as HTMLInputElement).value,
-                  });
-                }}
-              />
-            </div>
+            ${this._timeRow(
+              localize(
+                "panels.general.cards.automatic-clear.labels.automatic-clear-time",
+                this.hass.language,
+              ),
+              this.config.cleardatatime,
+              (v) => this.handleConfigChange({ cleardatatime: v }),
+            )}
           </div>`;
       }
       r3 = html`<ha-card
@@ -535,100 +386,41 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       >`;
 
       let r4 = html`<div class="card-content">
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-            id="showcontinuousupdatesdescription"
-            @click="${() =>
-              this.toggleInformation("continuousupdatesdescription")}"
-          >
-            >
-            <title>
+          ${localize(
+            "panels.general.cards.continuousupdates.description",
+            this.hass.language,
+          )}
+        </div>
+        <div class="card-content">
+          <div class="setting-row">
+            <div class="setting-label">
               ${localize(
-                "panels.zones.actions.information",
-                this.hass.language,
-              )}
-            </title>
-            <path fill="#404040" d="${mdiInformationOutline}" />
-          </svg>
-        </div>
-        <div class="card-content">
-          <label class="hidden" id="continuousupdatesdescription">
-            ${localize(
-              "panels.general.cards.continuousupdates.description",
-              this.hass.language,
-            )}
-          </label>
-        </div>
-        <div class="card-content">
-          <div class="zoneline">
-            <label for="continuousupdates"
-              >${localize(
                 "panels.general.cards.continuousupdates.labels.continuousupdates",
                 this.hass.language,
-              )}:</label
-            >
-            <div>
-              <input
-                type="radio"
-                id="continuousupdateson"
-                name="continuousupdates"
-                value="True"
-                ?checked="${this.config.continuousupdates}"
-                @change="${(e: Event) => {
-                  this.handleConfigChange({
-                    continuousupdates: parseBoolean(
-                      (e.target as HTMLInputElement).value,
-                    ),
-                  });
-                }}"
-              /><label for="continuousupdateson"
-                >${localize("common.labels.yes", this.hass.language)}</label
-              >
-              <input
-                type="radio"
-                id="continuousupdatesoff"
-                name="continuousupdates"
-                value="False"
-                ?checked="${!this.config.continuousupdates}"
-                @change="${(e: Event) => {
-                  this.handleConfigChange({
-                    continuousupdates: parseBoolean(
-                      (e.target as HTMLInputElement).value,
-                    ),
-                  });
-                }}"
-              /><label for="continuousupdatesoff"
-                >${localize("common.labels.no", this.hass.language)}</label
-              >
+              )}
             </div>
+            <ha-switch
+              .checked=${this.config.continuousupdates}
+              @change=${(e: Event) =>
+                this.handleConfigChange({
+                  continuousupdates: (e.target as any).checked,
+                })}
+            ></ha-switch>
           </div>
         </div>`;
       if (this.data.continuousupdates) {
         r4 = html`${r4}
           <div class="card-content">
-            <div class="zoneline">
-              <label for="sensor_debounce"
-                >${localize(
-                  "panels.general.cards.continuousupdates.labels.sensor_debounce",
-                  this.hass.language,
-                )}
-                (ms):</label
-              >
-              <input
-                id="sensor_debounce"
-                type="text"
-                class="shortinput"
-                .value="${this.config.sensor_debounce}"
-                @input=${(e: Event) => {
-                  this.handleConfigChange({
-                    sensor_debounce: parseInt(
-                      (e.target as HTMLInputElement).value,
-                    ),
-                  });
-                }}
-              />
-            </div>
+            ${this._numRow(
+              localize(
+                "panels.general.cards.continuousupdates.labels.sensor_debounce",
+                this.hass.language,
+              ),
+              "ms",
+              this.config.sensor_debounce,
+              (v) => this.handleConfigChange({ sensor_debounce: parseInt(v) }),
+              1,
+            )}
           </div>`;
       }
       r4 = html`<ha-card
@@ -676,29 +468,21 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         )}"
       >
         <div class="card-content">
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-            id="showtriggersdescription"
-            @click="${() => this.toggleInformation("triggersdescription")}"
-          >
-            <title>
-              ${localize(
-                "panels.zones.actions.information",
-                this.hass.language,
-              )}
-            </title>
-            <path fill="#404040" d="${mdiInformationOutline}" />
-          </svg>
+          ${localize(
+            "irrigation_start_triggers.description",
+            this.hass.language,
+          )}
         </div>
 
-        <div class="card-content">
-          <label class="hidden" id="triggersdescription">
-            ${localize(
-              "irrigation_start_triggers.description",
-              this.hass.language,
-            )}
-          </label>
+        <div class="card-content trigger-usage">
+          ${localize(
+            "irrigation_start_triggers.usage_before",
+            this.hass.language,
+          )}
+          <code>smart_irrigation_start_irrigation_all_zones</code>${localize(
+            "irrigation_start_triggers.usage_after",
+            this.hass.language,
+          )}
         </div>
 
         <div class="card-content">
@@ -718,13 +502,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           </div>
 
           <div class="add-trigger-section">
-            <ha-button @click="${this._addTrigger}">
-              <ha-icon .path="${mdiPlus}"></ha-icon>
-              ${localize(
+            ${this._actionBtn(
+              mdiPlus,
+              localize(
                 "irrigation_start_triggers.add_trigger",
                 this.hass.language,
-              )}
-            </ha-button>
+              ),
+              () => this._addTrigger(),
+            )}
           </div>
         </div>
       </ha-card>
@@ -835,14 +620,25 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     ) {
       const triggers = [...this.config.irrigation_start_triggers];
       triggers.splice(index, 1);
-      this.handleConfigChange({ [CONF_IRRIGATION_START_TRIGGERS]: triggers });
+      // Optimistic update + immediate save so the list refreshes without a
+      // reload (it renders from this.config; handleConfigChange only touched
+      // this.data, debounced).
+      this.config = { ...this.config, irrigation_start_triggers: triggers };
+      this.saveData({ [CONF_IRRIGATION_START_TRIGGERS]: triggers }).catch(
+        (err) => {
+          console.error("Error saving triggers:", err);
+          this._fetchData().catch(() => {});
+        },
+      );
     }
   }
 
   private async _showTriggerDialog(params: any) {
     if (!this.hass) return;
 
-    const dialog = document.createElement("trigger-dialog") as any;
+    const dialog = document.createElement(
+      "smart-irrigation-trigger-dialog",
+    ) as any;
     dialog.hass = this.hass;
 
     dialog.addEventListener("trigger-save", (event: any) => {
@@ -860,7 +656,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     // Clean up when dialog closes
     dialog.addEventListener("closed", (ev: Event) => {
       // Only react when the closed event originates from the dialog itself.
-      // Ignore "closed" emitted by nested overlays (mwc-menu / ha-select).
+      // Ignore "closed" emitted by nested overlays (ha-select).
       const origin = ev.target as Element | null;
       if (!origin) return;
       if (origin.tagName.toLowerCase() !== "ha-dialog") {
@@ -871,7 +667,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     });
 
     /*fireEvent(this, "show-dialog", {
-      dialogTag: "trigger-dialog",
+      dialogTag: "smart-irrigation-trigger-dialog",
       dialogImport: () => import("../../dialogs/trigger-dialog"),
       dialogParams: params,
     });*/
@@ -889,9 +685,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     } else if (detail.index !== undefined) {
       triggers[detail.index] = detail.trigger;
     }
-
-    // Log for debugging so you can see what we received
-    console.log("RECEIVED trigger-save in view-general", { detail, triggers });
 
     // Optimistic update so UI immediately reflects change
     this.config = { ...this.config, irrigation_start_triggers: triggers };
@@ -912,7 +705,16 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
     const triggers = [...this.config.irrigation_start_triggers];
     triggers.splice(detail.index, 1);
-    this.handleConfigChange({ [CONF_IRRIGATION_START_TRIGGERS]: triggers });
+    // Optimistic update + immediate save (same path as _handleTriggerSave) so
+    // the list refreshes without a page reload. handleConfigChange only updated
+    // this.data (debounced), but the trigger list renders from this.config.
+    this.config = { ...this.config, irrigation_start_triggers: triggers };
+    this.saveData({ [CONF_IRRIGATION_START_TRIGGERS]: triggers }).catch(
+      (err) => {
+        console.error("Error saving triggers:", err);
+        this._fetchData().catch(() => {});
+      },
+    );
   }
 
   renderWeatherSkipCard() {
@@ -921,92 +723,34 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     return html`
       <ha-card header="${localize("weather_skip.title", this.hass.language)}">
         <div class="card-content">
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-            id="showweatherskipdescription"
-            @click="${() => this.toggleInformation("weather_skipdescription")}"
-          >
-            <title>
-              ${localize(
-                "panels.zones.actions.information",
-                this.hass.language,
-              )}
-            </title>
-            <path fill="#404040" d="${mdiInformationOutline}" />
-          </svg>
-        </div>
-
-        <div class="card-content">
-          <label class="hidden" id="weather_skipdescription">
-            ${localize("weather_skip.description", this.hass.language)}
-          </label>
+          ${localize("weather_skip.description", this.hass.language)}
         </div>
         <div class="card-content">
-          <div class="zoneline">
-            <div class="switch-container" style="margin-bottom: 16px;">
-              <input
-                type="radio"
-                id="weatherskipon"
-                name="skip_irrigation_on_precipitation"
-                value="true"
-                ?checked="${this.config.skip_irrigation_on_precipitation}"
-                @change=${() => {
-                  this.handleConfigChange({
-                    skip_irrigation_on_precipitation: true,
-                  });
-                }}
-              /><label for="weatherskipon"
-                >${localize("common.labels.yes", this.hass.language)}</label
-              >
-              <input
-                type="radio"
-                id="weatherskipoff"
-                name="skip_irrigation_on_precipitation"
-                value="false"
-                ?checked="${!this.config.skip_irrigation_on_precipitation}"
-                @change=${() => {
-                  this.handleConfigChange({
-                    skip_irrigation_on_precipitation: false,
-                  });
-                }}
-              /><label for="weatherskipoff"
-                >${localize("common.labels.no", this.hass.language)}</label
-              >
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize("weather_skip.title", this.hass.language)}
             </div>
-
-            ${this.config.skip_irrigation_on_precipitation
-              ? html`
-                  <div class="zoneline">
-                    <label for="precipitation_threshold_mm"
-                      >${localize(
-                        "weather_skip.threshold_label",
-                        this.hass.language,
-                      )}
-                      (${output_unit(
-                        this.config,
-                        CONF_PRECIPITATION_THRESHOLD_MM,
-                      )}):</label
-                    >
-                    <input
-                      id="precipitation_threshold_mm"
-                      type="number"
-                      class="shortinput"
-                      min="0"
-                      step="0.1"
-                      .value="${this.config.precipitation_threshold_mm}"
-                      @input=${(e: Event) => {
-                        this.handleConfigChange({
-                          precipitation_threshold_mm: parseFloat(
-                            (e.target as HTMLInputElement).value,
-                          ),
-                        });
-                      }}
-                    />
-                  </div>
-                `
-              : ""}
+            <ha-switch
+              .checked=${this.config.skip_irrigation_on_precipitation}
+              @change=${(e: Event) =>
+                this.handleConfigChange({
+                  skip_irrigation_on_precipitation: (e.target as any).checked,
+                })}
+            ></ha-switch>
           </div>
+
+          ${this.config.skip_irrigation_on_precipitation
+            ? this._numRow(
+                localize("weather_skip.threshold_label", this.hass.language),
+                output_unit(this.config, CONF_PRECIPITATION_THRESHOLD_MM),
+                this.config.precipitation_threshold_mm,
+                (v) =>
+                  this.handleConfigChange({
+                    precipitation_threshold_mm: parseFloat(v),
+                  }),
+                0.1,
+              )
+            : ""}
         </div>
       </ha-card>
     `;
@@ -1026,143 +770,67 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         header="${localize("coordinate_config.title", this.hass.language)}"
       >
         <div class="card-content">
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-            id="showmanualcoordinatesdescription"
-            @click="${() =>
-              this.toggleInformation("coordinate_configdescription")}"
-          >
-            <title>
+          ${localize("coordinate_config.description", this.hass.language)}
+        </div>
+        <div class="card-content">
+          <div class="setting-row">
+            <div class="setting-label">
               ${localize(
-                "panels.zones.actions.information",
+                "coordinate_config.manual_enabled",
                 this.hass.language,
               )}
-            </title>
-            <path fill="#404040" d="${mdiInformationOutline}" />
-          </svg>
-        </div>
-
-        <div class="card-content">
-          <label class="hidden" id="coordinate_configdescription">
-            ${localize("coordinate_config.description", this.hass.language)}
-          </label>
-        </div>
-        <div class="card-content">
-          <div class="zoneline">
-            <div class="switch-container" style="margin-bottom: 16px;">
-              <input
-                type="radio"
-                id="manualcoordson"
-                name="manual_coordinates_enabled"
-                value="true"
-                ?checked="${this.config.manual_coordinates_enabled}"
-                @change=${() => {
-                  this.handleConfigChange({
-                    manual_coordinates_enabled: true,
-                  });
-                }}
-              /><label for="manualcoordson"
-                >${localize(
-                  "coordinate_config.manual_enabled",
-                  this.hass.language,
-                )}</label
-              >
-              <input
-                type="radio"
-                id="manualcoordsoff"
-                name="manual_coordinates_enabled"
-                value="false"
-                ?checked="${!this.config.manual_coordinates_enabled}"
-                @change=${() => {
-                  this.handleConfigChange({
-                    manual_coordinates_enabled: false,
-                  });
-                }}
-              /><label for="manualcoordsoff"
-                >${localize(
-                  "coordinate_config.use_ha_location",
-                  this.hass.language,
-                )}</label
-              >
             </div>
-            </div>
+            <ha-switch
+              .checked=${this.data.manual_coordinates_enabled}
+              @change=${(e: Event) =>
+                this.saveData({
+                  manual_coordinates_enabled: (e.target as any).checked,
+                })}
+            ></ha-switch>
+          </div>
             <div class="card-content">
             ${
-              this.config.manual_coordinates_enabled
+              this.data.manual_coordinates_enabled
                 ? html`
-                    <div class="zoneline">
-                      <label for="manual_latitude"
-                        >${localize(
-                          "coordinate_config.latitude",
-                          this.hass.language,
-                        )}:</label
-                      >
-                      <input
-                        id="manual_latitude"
-                        type="number"
-                        class="shortinput"
-                        min="-90"
-                        max="90"
-                        step="0.000001"
-                        .value="${this.config.manual_latitude || haLatitude}"
-                        @input=${(e: Event) => {
-                          this.handleConfigChange({
-                            manual_latitude: parseFloat(
-                              (e.target as HTMLInputElement).value,
-                            ),
-                          });
-                        }}
-                      />
-                    </div>
-                    <div class="zoneline">
-                      <label for="manual_longitude"
-                        >${localize(
-                          "coordinate_config.longitude",
-                          this.hass.language,
-                        )}:</label
-                      >
-                      <input
-                        id="manual_longitude"
-                        type="number"
-                        class="shortinput"
-                        min="-180"
-                        max="180"
-                        step="0.000001"
-                        .value="${this.config.manual_longitude || haLongitude}"
-                        @input=${(e: Event) => {
-                          this.handleConfigChange({
-                            manual_longitude: parseFloat(
-                              (e.target as HTMLInputElement).value,
-                            ),
-                          });
-                        }}
-                      />
-                    </div>
-                    <div class="zoneline">
-                      <label for="manual_elevation"
-                        >${localize(
-                          "coordinate_config.elevation",
-                          this.hass.language,
-                        )}:</label
-                      >
-                      <input
-                        id="manual_elevation"
-                        type="number"
-                        class="shortinput"
-                        min="-1000"
-                        max="9000"
-                        step="1"
-                        .value="${this.config.manual_elevation || haElevation}"
-                        @input=${(e: Event) => {
-                          this.handleConfigChange({
-                            manual_elevation: parseFloat(
-                              (e.target as HTMLInputElement).value,
-                            ),
-                          });
-                        }}
-                      />
-                    </div>
+                    ${this._numRow(
+                      localize(
+                        "coordinate_config.latitude",
+                        this.hass.language,
+                      ),
+                      "",
+                      this.data.manual_latitude || haLatitude,
+                      (v) =>
+                        this.handleConfigChange({
+                          manual_latitude: parseFloat(v),
+                        }),
+                      0.1,
+                    )}
+                    ${this._numRow(
+                      localize(
+                        "coordinate_config.longitude",
+                        this.hass.language,
+                      ),
+                      "",
+                      this.data.manual_longitude || haLongitude,
+                      (v) =>
+                        this.handleConfigChange({
+                          manual_longitude: parseFloat(v),
+                        }),
+                      0.1,
+                    )}
+                    ${this._numRow(
+                      localize(
+                        "coordinate_config.elevation",
+                        this.hass.language,
+                      ),
+                      "",
+                      this.data.manual_elevation || haElevation,
+                      (v) =>
+                        this.handleConfigChange({
+                          manual_elevation: parseFloat(v),
+                        }),
+                      1,
+                    )}
                   `
                 : html`
                     <div
@@ -1209,57 +877,20 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         )}"
       >
         <div class="card-content">
-          <svg
-            style="width:24px;height:24px"
-            viewBox="0 0 24 24"
-            id="showdaysbetweenirrigationdescription"
-            @click="${() =>
-              this.toggleInformation("daysbetweenirrigationdescription")}"
-          >
-            <title>
-              ${localize(
-                "panels.zones.actions.information",
-                this.hass.language,
-              )}
-            </title>
-            <path fill="#404040" d="${mdiInformationOutline}" />
-          </svg>
+          ${localize("days_between_irrigation.description", this.hass.language)}
         </div>
 
         <div class="card-content">
-          <label class="hidden" id="daysbetweenirrigationdescription">
-            ${localize(
-              "days_between_irrigation.description",
-              this.hass.language,
-            )}
-          </label>
-        </div>
-
-        <div class="card-content">
-          <div class="zoneline">
-            <label for="days_between_irrigation"
-              >${localize(
-                "days_between_irrigation.label",
-                this.hass.language,
-              )}:</label
-            >
-            <input
-              id="days_between_irrigation"
-              type="number"
-              class="shortinput"
-              min="0"
-              max="365"
-              step="1"
-              .value="${this.config.days_between_irrigation || 0}"
-              @input=${(e: Event) => {
-                this.handleConfigChange({
-                  days_between_irrigation: parseInt(
-                    (e.target as HTMLInputElement).value,
-                  ),
-                });
-              }}
-            />
-          </div>
+          ${this._numRow(
+            localize("days_between_irrigation.label", this.hass.language),
+            "",
+            this.config.days_between_irrigation || 0,
+            (v) =>
+              this.handleConfigChange({
+                days_between_irrigation: parseInt(v),
+              }),
+            1,
+          )}
           <div class="card-content">
             <div
               style="color: var(--secondary-text-color); font-size: 0.875rem; margin-top: 8px;"
@@ -1283,16 +914,32 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     this.isSaving = true;
     this._scheduleUpdate();
 
+    // Our own save echoes back a _config_updated event; ignore it (the
+    // optimistic update below already reflects the change) so the form isn't
+    // refetched/re-rendered out from under the user.
+    this._suppressNextConfigUpdate = true;
+
     try {
-      // Optimistic update for responsive UI
+      // Optimistic update for responsive UI. Mirror the change into `config`
+      // as well: several controls (the toggles) bind their state to
+      // `this.config`, and because we suppress our own save echo there is no
+      // refetch to reconcile them. Without this they visually revert to the
+      // pre-save value (even though the save itself succeeded).
       this.data = {
         ...this.data,
         ...changes,
       };
+      this.config = {
+        ...this.config,
+        ...changes,
+      } as SmartIrrigationConfig;
       this._scheduleUpdate();
 
       await saveConfig(this.hass, this.data);
     } catch (error) {
+      // Save failed: no _config_updated echo will arrive, so clear the guard
+      // (otherwise it would swallow the next genuine external refresh).
+      this._suppressNextConfigUpdate = false;
       console.error("Error saving config:", error);
       handleError(
         error,
@@ -1319,35 +966,218 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     // Let them complete naturally or be garbage collected
   }
 
-  toggleInformation(item: string) {
-    const el = this.shadowRoot?.querySelector("#" + item);
-
-    //const bt = this.shadowRoot?.querySelector("#showcalcresults" + index);
-    //if (!el || !bt) {
-    if (!el) {
-      return;
-    } else {
-      if (el.className != "hidden") {
-        el.className = "hidden";
-        //bt.textContent = "Show calculation explanation";
-      } else {
-        el.className = "information";
-        //bt.textContent = "Hide explanation";
-      }
-    }
+  // --- modern row helpers (HA-native controls) ---
+  private _textRow(
+    label: string,
+    unit: string | TemplateResult,
+    value: any,
+    onCommit: (v: string) => void,
+  ): TemplateResult {
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">
+          ${label}${unit ? html` <span class="unit">(${unit})</span>` : ""}
+        </div>
+        <input
+          class="field"
+          type="text"
+          .value=${value === undefined || value === null ? "" : String(value)}
+          @change=${(e: Event) =>
+            onCommit((e.target as HTMLInputElement).value)}
+        />
+      </div>
+    `;
   }
+
+  // Time picker. ha-time-input isn't reliably registered on this panel, so we
+  // use the native <input type="time"> (real HH:MM picker, same stored format).
+  private _timeRow(
+    label: string,
+    value: any,
+    onCommit: (v: string) => void,
+  ): TemplateResult {
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">${label}</div>
+        <input
+          class="field"
+          type="time"
+          .value=${value ? String(value) : ""}
+          @change=${(e: Event) =>
+            onCommit((e.target as HTMLInputElement).value)}
+        />
+      </div>
+    `;
+  }
+
+  private _numRow(
+    label: string,
+    unit: string | TemplateResult,
+    value: any,
+    onCommit: (v: string) => void,
+    step = 1,
+    readonly = false,
+  ): TemplateResult {
+    const decimals = (String(step).split(".")[1] || "").length;
+    const bump = (input: HTMLInputElement, dir: number) => {
+      const cur = parseFloat(input.value);
+      const next = +((isNaN(cur) ? 0 : cur) + dir * step).toFixed(decimals);
+      input.value = String(next);
+      onCommit(String(next));
+    };
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">
+          ${label}${unit ? html` <span class="unit">(${unit})</span>` : ""}
+        </div>
+        <div class="num-field">
+          <input
+            class="field num-input"
+            type="number"
+            step=${step}
+            ?readonly=${readonly}
+            .value=${value === undefined || value === null ? "" : String(value)}
+            @wheel=${(e: WheelEvent) => {
+              // never let scrolling change a focused number field (auto-save!)
+              if ((e.target as HTMLElement).matches(":focus"))
+                e.preventDefault();
+            }}
+            @change=${(e: Event) =>
+              onCommit((e.target as HTMLInputElement).value)}
+          />
+          <ha-icon-button
+            class="step-btn"
+            .path=${mdiMinus}
+            ?disabled=${readonly}
+            @click=${(e: Event) =>
+              bump(
+                (e.currentTarget as HTMLElement).parentElement!.querySelector(
+                  "input",
+                ) as HTMLInputElement,
+                -1,
+              )}
+          ></ha-icon-button>
+          <ha-icon-button
+            class="step-btn"
+            .path=${mdiPlus}
+            ?disabled=${readonly}
+            @click=${(e: Event) =>
+              bump(
+                (e.currentTarget as HTMLElement).parentElement!.querySelector(
+                  "input",
+                ) as HTMLInputElement,
+                1,
+              )}
+          ></ha-icon-button>
+        </div>
+      </div>
+    `;
+  }
+
+  private _selectRow(
+    label: string,
+    options: TemplateResult,
+    onChange: (e: Event) => void,
+  ): TemplateResult {
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">${label}</div>
+        <div class="select-wrap">
+          <select class="field" @change=${onChange}>
+            ${options}
+          </select>
+          <svg class="chev" viewBox="0 0 24 24">
+            <path d=${mdiMenuDown}></path>
+          </svg>
+        </div>
+      </div>
+    `;
+  }
+
+  // Action button: native ha-button, light "filled" appearance,
+  // "danger" variant turns it red.
+  private _actionBtn(
+    icon: string,
+    label: string,
+    onClick: (e: Event) => void,
+    danger = false,
+    disabled = false,
+  ): TemplateResult {
+    return html`
+      <ha-button
+        appearance=${danger ? "accent" : "filled"}
+        variant=${danger ? "danger" : "brand"}
+        ?disabled=${disabled}
+        @click=${onClick}
+      >
+        <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
+        ${label}
+      </ha-button>
+    `;
+  }
+
   static get styles(): CSSResultGroup {
     return css`
-      ${globalStyle} /* View-specific styles only - most common styles are now in globalStyle */
+      ${globalStyle} ${modernStyle} /* View-specific styles only - most common styles are now in globalStyle */
+
+      /* Drop the clickable (i) toggles and just always show the section
+         descriptions (they're short and not in the way). */
+      .card-content:has(> svg[id$="description"]) {
+        display: none;
+      }
+      label[id$="description"] {
+        display: block;
+        margin: 0 0 8px;
+        color: var(--secondary-text-color);
+        line-height: 1.4;
+      }
+
+      /* number + unit-select on a single line (e.g. update interval) */
+      .combo-field {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 0 0 auto;
+      }
+      .combo-field .combo-num {
+        width: 90px;
+        max-width: none;
+      }
+      .combo-field .select-wrap {
+        width: 150px;
+        max-width: none;
+      }
+      @media (max-width: 600px) {
+        .combo-field {
+          width: 100%;
+        }
+        .combo-field .combo-num {
+          flex: 1 1 auto;
+        }
+      }
 
       /* Irrigation triggers styles */
+      .trigger-usage {
+        color: var(--secondary-text-color);
+        font-size: 0.9em;
+        line-height: 1.5;
+      }
+      .trigger-usage code {
+        font-family: var(--ha-font-family-code, monospace);
+        background: var(--secondary-background-color);
+        padding: 1px 6px;
+        border-radius: 4px;
+        color: var(--primary-text-color);
+        white-space: nowrap;
+      }
+
       .triggers-list {
         margin: 16px 0;
       }
 
       .no-triggers {
-        text-align: center;
-        padding: 32px 16px;
+        text-align: left;
+        padding: 16px 0;
         color: var(--secondary-text-color);
         font-style: italic;
       }
@@ -1411,7 +1241,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
       .add-trigger-section {
         margin-top: 16px;
-        text-align: center;
+        text-align: right;
       }
 
       .add-trigger-section ha-button {

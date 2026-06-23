@@ -1,8 +1,8 @@
-export const VERSION = "v2025.10.0";
-export const REPO = "https://github.com/jeroenterheerdt/HASmartIrrigation;";
+export const VERSION = "v2026.6.4";
+export const REPO = "https://github.com/altmenorg/HAsmartirrigation";
 export const ISSUES_URL = REPO + "/issues";
 
-export const PLATFORM = "smart-irrigation";
+export const PLATFORM = "smart_irrigation";
 export const DOMAIN = "smart_irrigation";
 export const editConfigService = "edit_config";
 
@@ -58,6 +58,12 @@ export const MAPPING_PRESSURE = "Pressure";
 export const MAPPING_SOLRAD = "Solar Radiation";
 export const MAPPING_TEMPERATURE = "Temperature";
 export const MAPPING_WINDSPEED = "Windspeed";
+
+// The default / canonical Open-Meteo service name (used to show "(via
+// Open-Meteo)" when radiation is filled from it on other providers).
+export const WEATHER_SERVICE_OPEN_METEO = "Open-Meteo";
+// Weather services that need no API key (free / keyless).
+export const WEATHER_SERVICES_NO_API_KEY = [WEATHER_SERVICE_OPEN_METEO];
 
 export const MAPPING_CONF_SOURCE_WEATHER_SERVICE = "weather_service";
 export const MAPPING_CONF_SOURCE_SENSOR = "sensor";

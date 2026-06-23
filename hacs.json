@@ -1,5 +1,5 @@
 {
-    "name": "Smart Irrigation",
-    "render_readme": true,
-    "homeassistant": "2025.5.0"
-  }
+  "name": "Smart Irrigation",
+  "render_readme": true,
+  "homeassistant": "2025.5.0"
+}

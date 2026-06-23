@@ -3,7 +3,7 @@ import { property, customElement, state } from "lit/decorators.js";
 import { HomeAssistant } from "custom-card-helpers";
 import { mdiClose } from "@mdi/js";
 
-@customElement("confirmation-dialog")
+@customElement("smart-irrigation-confirmation-dialog")
 export class ConfirmationDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -49,22 +49,24 @@ export class ConfirmationDialog extends LitElement {
         </div>
         <div class="wrapper">${this._params.message || ""}</div>
 
-        <mwc-button
-          slot="primaryAction"
-          style="float: left"
-          @click=${this.confirmAction}
-          dialogAction="close"
-        >
-          ${this.hass.localize("dialogs.generic.ok")}
-        </mwc-button>
-        <mwc-button
-          slot="primaryAction"
-          style="float: left"
-          @click=${this.cancelAction}
-          dialogAction="cancel"
-        >
-          ${this.hass.localize("dialogs.generic.cancel")}
-        </mwc-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this.cancelAction}
+            dialogAction="cancel"
+          >
+            ${this.hass.localize("dialogs.generic.cancel")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            appearance="accent"
+            @click=${this.confirmAction}
+            dialogAction="close"
+          >
+            ${this.hass.localize("dialogs.generic.ok")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }

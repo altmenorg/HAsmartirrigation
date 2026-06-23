@@ -3,7 +3,7 @@ import { property, customElement, state } from "lit/decorators.js";
 import { HomeAssistant } from "custom-card-helpers";
 import { mdiClose } from "@mdi/js";
 
-@customElement("error-dialog")
+@customElement("smart-irrigation-error-dialog")
 export class ErrorDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -41,14 +41,16 @@ export class ErrorDialog extends LitElement {
         </div>
         <div class="wrapper">${this._params.error || ""}</div>
 
-        <mwc-button
-          slot="primaryAction"
-          style="float: left"
-          @click=${this.closeDialog}
-          dialogAction="close"
-        >
-          ${this.hass.localize("ui.dialogs.generic.ok")}
-        </mwc-button>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="primaryAction"
+            appearance="accent"
+            @click=${this.closeDialog}
+            dialogAction="close"
+          >
+            ${this.hass.localize("ui.dialogs.generic.ok")}
+          </ha-button>
+        </ha-dialog-footer>
       </ha-dialog>
     `;
   }

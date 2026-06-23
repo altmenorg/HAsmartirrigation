@@ -37,6 +37,12 @@ def mock_store():
 
     store = Mock()
 
+    # _get_effective_coordinates() reads store.config.<attr> via getattr(); on a
+    # bare Mock those return truthy Mocks, wrongly entering the manual-coordinates
+    # branch and crashing when a Mock is formatted with %.6f. Force the manual
+    # flag off so the coordinator falls back to the (real) Home Assistant config.
+    store.config.manual_coordinates_enabled = False
+
     # Configure synchronous get_config() to return proper dict
     store.get_config.return_value = {
         CONF_USE_WEATHER_SERVICE: False,

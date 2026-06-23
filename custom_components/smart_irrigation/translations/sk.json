@@ -10,7 +10,7 @@
     "step": {
       "user": {
         "title": "Všeobecné nastavenie",
-        "description": "Ak potrebujete pomoc s konfiguráciou, pozrite si https://github.com/jeroenterheerdt/HASmartIrrigation",
+        "description": "Ak potrebujete pomoc s konfiguráciou, pozrite si dokumentáciu.",
         "data": {
           "name": "Jedinečný názov integrácie",
           "use_weather_service": "Use a weather service (Open Weather Map or Pirate Weather) for weather data or forecasting. Enable this option if you intent to use one of the supported weather services for at least part of the weather data, including forecasting. Disable this option if you want to use another source, such as your own weather station, exclusively. In this case, Smart Irigation will not be able to use forecasts."
@@ -18,7 +18,7 @@
       },
       "step1": {
         "title": "Weather service API set up",
-        "description": "Ak potrebujete pomoc s konfiguráciou, pozrite si https://github.com/jeroenterheerdt/HASmartIrrigation",
+        "description": "Ak potrebujete pomoc s konfiguráciou, pozrite si dokumentáciu.",
         "data": {
           "weather_service": "Weather service to use",
           "weather_service_api_key": "API key for weather service",
@@ -35,14 +35,14 @@
     "step": {
       "init": {
         "title": "Weather service API set up",
-        "description": "Ak potrebujete pomoc s konfiguráciou, pozrite si https://github.com/jeroenterheerdt/HASmartIrrigation",
+        "description": "Ak potrebujete pomoc s konfiguráciou, pozrite si dokumentáciu.",
         "data": {
           "use_weather_service": "Use a weather service (Open Weather Map or Pirate Weather) for weather data or forecasting. Enable this option if you intent to use one of the supported weather services for at least part of the weather data, including forecasting. Disable this option if you want to use another source, such as your own weather station, exclusively. In this case, Smart Irigation will not be able to use forecasts."
         }
       },
       "step1": {
         "title": "Weather service API set up",
-        "description": "Ak potrebujete pomoc s konfiguráciou, pozrite si https://github.com/jeroenterheerdt/HASmartIrrigation",
+        "description": "Ak potrebujete pomoc s konfiguráciou, pozrite si dokumentáciu.",
         "data": {
           "weather_service": "Využitie meteorologickej služby",
           "weather_service_api_key": "API kľúč pre meteorologickú službu",
@@ -64,7 +64,13 @@
   "services": {
     "calculate_all_zones": {
       "name": "Vypočítajte všetky zóny",
-      "description": "Vypočítajte všetky zóny v automatickom režime"
+      "description": "Vypočítajte všetky zóny v automatickom režime",
+      "fields": {
+        "delete_weather_data": {
+          "name": "Odstrániť meteorologické údaje",
+          "description": "Odstrániť meteorologické údaje po výpočte"
+        }
+      }
     },
     "calculate_zone": {
       "name": "Vypočítajte zónu",
@@ -73,6 +79,10 @@
         "entity": {
           "name": "Entita",
           "description": "Zóna pre výpočet"
+        },
+        "delete_weather_data": {
+          "name": "Odstrániť meteorologické údaje",
+          "description": "Odstrániť meteorologické údaje pre zónu po výpočte"
         }
       }
     },

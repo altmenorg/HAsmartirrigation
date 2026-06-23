@@ -1,14 +1,36 @@
 """Store constants."""
 
-VERSION = "v2025.10.0"
+VERSION = "v2026.6.4"
 NAME = "Smart Irrigation"
-MANUFACTURER = "@jeroenterheerdt"
+MANUFACTURER = "@altmenorg"
 
 DOMAIN = "smart_irrigation"
 CUSTOM_COMPONENTS = "custom_components"
 
 LANGUAGE_FILES_DIR = "frontend/localize/languages"
-SUPPORTED_LANGUAGES = ["de", "en", "es", "fr", "it", "nl", "no", "sk"]
+# Two-letter language codes for which the backend reads a translation file when
+# building the calculation explanation. Regional variants (pt-BR, zh-Hans) are
+# intentionally omitted: localize() lowercases the code, which would not match
+# their file names, so they fall back to English here.
+SUPPORTED_LANGUAGES = [
+    "cs",
+    "da",
+    "de",
+    "en",
+    "es",
+    "fi",
+    "fr",
+    "hu",
+    "it",
+    "nl",
+    "no",
+    "pl",
+    "pt",
+    "ru",
+    "sk",
+    "sv",
+    "uk",
+]
 
 START_EVENT_FIRED_TODAY = "starteventfiredtoday"
 
@@ -127,13 +149,22 @@ CONF_DEFAULT_REFERENCE_ET = 0.0
 
 CONF_WEATHER_SERVICE_OWM = "Open Weather Map"
 CONF_WEATHER_SERVICE_PW = "Pirate Weather"
+CONF_WEATHER_SERVICE_OM = "Open-Meteo"
+# Services that do NOT need an API key (free, keyless).
+CONF_WEATHER_SERVICES_NO_API_KEY = [CONF_WEATHER_SERVICE_OM]
+# Services that can additionally provide solar radiation and reference ET0
+# (so those fields may be sourced from the weather service in the UI).
+CONF_WEATHER_SERVICES_WITH_SOLRAD_ET = [CONF_WEATHER_SERVICE_OM]
 CONF_WEATHER_SERVICES = [
+    CONF_WEATHER_SERVICE_OM,
     CONF_WEATHER_SERVICE_OWM,
     CONF_WEATHER_SERVICE_PW,
 ]
 
 CONF_DEFAULT_USE_WEATHER_SERVICE = False
-CONF_DEFAULT_WEATHER_SERVICE = None
+# Open-Meteo is the recommended default: free, keyless, and it supplies solar
+# radiation + FAO-56 ET0 out of the box.
+CONF_DEFAULT_WEATHER_SERVICE = CONF_WEATHER_SERVICE_OM
 CONF_CALC_TIME = "calctime"
 CONF_DEFAULT_CALC_TIME = "23:00"
 CONF_AUTO_CALC_ENABLED = "autocalcenabled"
@@ -177,7 +208,7 @@ INTEGRATION_FOLDER = DOMAIN
 PANEL_FOLDER = "frontend"
 PANEL_FILENAME = "dist/smart-irrigation.js"
 
-PANEL_URL = "/api/panel_custom/smart-irrigation"
+PANEL_URL = f"/api/panel_custom/{DOMAIN}"
 PANEL_TITLE = NAME
 PANEL_ICON = "mdi:sprinkler"
 PANEL_NAME = "smart-irrigation"

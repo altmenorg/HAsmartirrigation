@@ -85,6 +85,53 @@
     }
   },
   "panels": {
+    "weatherservice": {
+      "title": "Weather service",
+      "description": "View and change the weather service used to fetch weather data — no need to reinstall the integration. The API key is validated and the change is applied immediately.",
+      "labels": {
+        "use-weather-service": "Use a weather service",
+        "service": "Weather service",
+        "api-key": "API key"
+      },
+      "actions": {
+        "save": "Save",
+        "saving": "Saving…"
+      },
+      "messages": {
+        "no-service": "No weather service is used — weather data comes from your own sensors only.",
+        "saved": "Weather service updated and applied.",
+        "reload-note": "Saving validates the API key against the service and applies the change immediately."
+      }
+    },
+    "backuprestore": {
+      "title": "Backup / restore",
+      "description": "Export the full Smart Irrigation configuration to a JSON file, or restore it from a previous backup.",
+      "cards": {
+        "backup": {
+          "title": "Backup",
+          "description": "Download the complete configuration (general settings, zones, modules and sensor groups) as a JSON file."
+        },
+        "restore": {
+          "title": "Restore",
+          "description": "Load a previously exported JSON file to replace the current configuration."
+        }
+      },
+      "actions": {
+        "export": "Export to JSON",
+        "choose-file": "Choose a backup file…",
+        "restore": "Restore this backup",
+        "restoring": "Restoring…"
+      },
+      "messages": {
+        "exported": "Backup file downloaded.",
+        "restored": "Configuration restored — reloading the integration.",
+        "invalid-file": "This file is not a valid Smart Irrigation backup.",
+        "confirm-title": "Replace the entire configuration?",
+        "summary": "This backup contains",
+        "confirm-warning": "Restoring overwrites all current general settings, zones, modules and sensor groups. This cannot be undone.",
+        "reload-note": "Restoring replaces everything and reloads the integration to apply the change."
+      }
+    },
     "general": {
       "cards": {
         "automatic-duration-calculation": {
@@ -155,7 +202,7 @@
       "configuration-not-available": "Configuration not available.",
       "cards": {
         "zone-bucket-values": {
-          "title": "Zone Bucket Values & Duration",
+          "title": "Zone bucket values & duration",
           "labels": {
             "bucket": "Bucket",
             "duration": "Duration"
@@ -163,7 +210,7 @@
           "no-zones": "No zones configured"
         },
         "next-irrigation": {
-          "title": "Next Irrigation",
+          "title": "Next irrigation",
           "labels": {
             "next-start": "Next start",
             "duration": "Duration",
@@ -172,7 +219,7 @@
           "no-data": "No data available"
         },
         "irrigation-reason": {
-          "title": "Irrigation Reason",
+          "title": "Irrigation reason",
           "labels": {
             "reason": "Reason",
             "sunrise": "Sunrise",
@@ -245,9 +292,9 @@
         "mapping-name": "Name"
       },
       "no_items": "There are no sensor group defined yet.",
-      "title": "Sensor Groups",
+      "title": "Sensor groups",
       "weather-records": {
-        "title": "Weather Records (Last 10)",
+        "title": "Weather records (last 10)",
         "timestamp": "Time",
         "temperature": "Temp",
         "humidity": "Humidity",
@@ -341,9 +388,11 @@
   },
   "title": "Smart Irrigation",
   "irrigation_start_triggers": {
-    "title": "Irrigation Start Triggers",
+    "title": "Irrigation start triggers",
     "description": "Configure when irrigation should start based on solar events. You can add multiple triggers for different schedules. For sunrise triggers, leaving offset at 0 will automatically use the total duration of all enabled zones.",
-    "add_trigger": "Add Trigger",
+    "usage_before": "When a trigger fires, Smart Irrigation emits the event ",
+    "usage_after": " — listen to it in an automation to start watering. The event data includes trigger_name, trigger_type and offset_minutes, so you can react differently per trigger. The precipitation skip and days-between-irrigation settings still apply: on a skip day no event is fired.",
+    "add_trigger": "Add trigger",
     "edit_trigger": "Edit Trigger",
     "delete_trigger": "Delete Trigger",
     "trigger_types": {
@@ -382,7 +431,8 @@
       "edit_title": "Edit Irrigation Start Trigger",
       "cancel": "Cancel",
       "save": "Save",
-      "delete": "Delete"
+      "delete": "Delete",
+      "help": "When this trigger fires, Smart Irrigation emits the following event — use it in an automation to start watering. The event data includes this trigger's name (and type/offset), so you can react to it specifically:"
     },
     "no_triggers": "No irrigation start triggers configured. The system will use the default behavior (sunrise with total zone duration). Add triggers to customize when irrigation starts.",
     "offset_auto": "Auto (calculated from total zone duration)",
@@ -399,13 +449,13 @@
     }
   },
   "weather_skip": {
-    "title": "Weather-based Irrigation Skip",
+    "title": "Weather-based irrigation skip",
     "description": "Automatically skip irrigation when precipitation is forecasted. This feature requires a weather service to be configured.",
     "threshold_label": "Precipitation Threshold",
     "threshold_description": "Minimum amount of precipitation (in mm) forecasted for today and tomorrow to skip irrigation."
   },
   "coordinate_config": {
-    "title": "Location Coordinates",
+    "title": "Location coordinates",
     "description": "Configure location coordinates for weather data retrieval. You can use manual coordinates different from your Home Assistant location if needed.",
     "manual_enabled": "Use manual coordinates",
     "use_ha_location": "Use Home Assistant location",
@@ -415,7 +465,7 @@
     "current_ha_coords": "Current Home Assistant coordinates"
   },
   "days_between_irrigation": {
-    "title": "Days Between Irrigation",
+    "title": "Days between irrigation",
     "description": "Configure the minimum number of days that must pass between irrigation events. This helps control watering frequency for water conservation and plant health management.\n\nTypical real-world use cases:\n• Lawn care: 1-2 day intervals prevent overwatering\n• Drought restrictions: 6+ day intervals for weekly watering\n• Deep-rooted plants: 3-7 day intervals for less frequent watering\n• Water conservation: Customizable based on climate and soil conditions",
     "label": "Minimum days between irrigation",
     "help_text": "Set to 0 to disable this feature. Values from 1-365 days are supported. This setting works alongside existing precipitation forecasting logic."

@@ -55,11 +55,11 @@ You can change the following settings on a zone:
 - **Maximum bucket**: You can manually set a maximum bucket size which represents the soil's water holding capacity. The maximum recommended bucket size is based on the type of soil:
     - clay soil: 30 mm (1.18")
     - sandy soil: 12 mm (0.47"). 
-This recommendation is based on the soil water holding capacity. See [this discussion for more details](https://github.com/jeroenterheerdt/HAsmartirrigation/discussions/448).
+This recommendation is based on the soil water holding capacity. See [this discussion for more details](https://github.com/altmenorg/HAsmartirrigation/discussions/448).
 
 - **Lead time**: Time needed to warm up your irrigation system (in seconds), e.g. time to establish a connection, start a pump, build pressure, etc. After the duration is calculated, the lead time is added but only if the duration is > 0.
 - **Maximum duration**: The maximum duration of the irrigation, to avoid flooding, wasting water, etc.
-- **Multiplier**: Multiplies / divides the duration of the irrigation. For lawns, it is recommended to set the multiplier depending on your grass type (See [this discussion for more details](https://github.com/jeroenterheerdt/HAsmartirrigation/discussions/448)):
+- **Multiplier**: Multiplies / divides the duration of the irrigation. For lawns, it is recommended to set the multiplier depending on your grass type (See [this discussion for more details](https://github.com/altmenorg/HAsmartirrigation/discussions/448)):
     * Cool-reason grasses (such as fescue, bluegrass) should be set to `0.8`
     * Warm-season grasses (such as bermuda, zoysia) should be set to `0.7`. 
 - *Duration*: Irrigation duration in seconds. Either calculated or manually set.

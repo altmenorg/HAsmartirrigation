@@ -5,6 +5,7 @@ import contextlib
 import pytest
 
 from custom_components.smart_irrigation.const import (
+    CONF_WEATHER_SERVICE_OM,
     CONF_WEATHER_SERVICE_OWM,
     CONF_WEATHER_SERVICE_PW,
 )
@@ -97,6 +98,12 @@ class TestHelperFunctions:
         """Test Pirate Weather API key validation success."""
         with contextlib.suppress(CannotConnect, InvalidAuth, OSError):
             await validate_api_key(hass, CONF_WEATHER_SERVICE_PW, "valid_api_key")
+
+    async def test_validate_api_key_open_meteo_no_key(self, hass) -> None:
+        """Open-Meteo is keyless: validating with no API key must not raise
+        a missing-key/None error (a connection error is acceptable)."""
+        with contextlib.suppress(CannotConnect, InvalidAuth, OSError):
+            await validate_api_key(hass, CONF_WEATHER_SERVICE_OM, None)
 
     def test_convert_between_pressure_units(self) -> None:
         """Test pressure unit conversions."""

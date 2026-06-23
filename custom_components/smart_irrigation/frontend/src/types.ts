@@ -21,6 +21,7 @@ export interface Dictionary<TValue> {
 export class SmartIrrigationConfig {
   calctime: string;
   use_weather_service: boolean;
+  weather_service?: string | null;
   units: string;
   autocalcenabled: boolean;
   autoupdateenabled: boolean;
@@ -43,6 +44,7 @@ export class SmartIrrigationConfig {
   constructor() {
     this.calctime = "23:00";
     this.use_weather_service = false;
+    this.weather_service = null;
     this.units = "";
     this.autocalcenabled = true;
     this.autoupdateenabled = true;

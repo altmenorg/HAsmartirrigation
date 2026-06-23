@@ -106,19 +106,25 @@ export const loadHaTabs = async (): Promise<void> => {
 
   // Check what components are actually available
   console.log("ha-tab-group available:", !!customElements.get("ha-tab-group"));
-  console.log("ha-tab-group-tab available:", !!customElements.get("ha-tab-group-tab"));
+  console.log(
+    "ha-tab-group-tab available:",
+    !!customElements.get("ha-tab-group-tab"),
+  );
 
   // Let's try a timeout-based wait for the components
   let attempts = 0;
   const maxAttempts = 50; // 5 seconds max wait
 
   while (attempts < maxAttempts) {
-    if (customElements.get("ha-tab-group") && customElements.get("ha-tab-group-tab")) {
+    if (
+      customElements.get("ha-tab-group") &&
+      customElements.get("ha-tab-group-tab")
+    ) {
       console.log("Tab components found after", attempts * 100, "ms");
       return Promise.resolve();
     }
 
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
     attempts++;
   }
 

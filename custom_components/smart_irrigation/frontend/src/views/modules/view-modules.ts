@@ -1,4 +1,5 @@
 import { TemplateResult, LitElement, html, css, CSSResultGroup } from "lit";
+import { repeat } from "lit/directives/repeat.js";
 import { query } from "lit/decorators.js";
 import { property, customElement } from "lit/decorators.js";
 import { HomeAssistant } from "custom-card-helpers";
@@ -20,10 +21,17 @@ import {
   SmartIrrigationModule,
 } from "../../types";
 import { globalStyle } from "../../styles/global-style";
+import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
 import { DOMAIN } from "../../const";
 import { prettyPrint, getPart } from "../../helpers";
-import { mdiDelete } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiChevronDown,
+  mdiMenuDown,
+  mdiPlus,
+  mdiMinus,
+} from "@mdi/js";
 
 @customElement("smart-irrigation-view-modules")
 class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
@@ -43,6 +51,15 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
   @property({ type: Boolean })
   private isSaving = false;
 
+  // True once the first data load has completed. Avoids tearing the module
+  // list down to a "loading" indicator on every background refresh, which
+  // dropped focus and reset scroll while editing.
+  private _hasLoadedOnce = false;
+
+  // Set just before an inline-edit save to ignore the _config_updated echo our
+  // own write triggers. External changes (add/remove) still refresh normally.
+  private _suppressNextConfigUpdate = false;
+
   // Prevent excessive re-renders
   private _updateScheduled = false;
   private _scheduleUpdate() {
@@ -59,6 +76,20 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
 
   // Cache for rendered module cards
   private moduleCache = new Map<string, TemplateResult>();
+
+  // Which module cards are expanded (own collapsible — full control over styling)
+  private _expanded: Set<number> = new Set();
+  private _toggleItem(id?: number): void {
+    if (id == undefined) {
+      return;
+    }
+    if (this._expanded.has(id)) {
+      this._expanded.delete(id);
+    } else {
+      this._expanded.add(id);
+    }
+    this._scheduleUpdate();
+  }
 
   @query("#moduleInput")
   private moduleInput!: HTMLSelectElement;
@@ -79,6 +110,11 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
     return [
       this.hass!.connection.subscribeMessage(
         () => {
+          // Ignore the echo of our own inline-edit save (see _suppressNextConfigUpdate).
+          if (this._suppressNextConfigUpdate) {
+            this._suppressNextConfigUpdate = false;
+            return;
+          }
           // Update data when notified of changes with proper error handling
           this._fetchData().catch((error) => {
             console.error("Failed to fetch data on config update:", error);
@@ -96,8 +132,12 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
       return;
     }
 
-    this.isLoading = true;
-    this._scheduleUpdate();
+    // Only show the loading indicator on the very first load; background
+    // refreshes must not unmount the list (focus/scroll loss).
+    if (!this._hasLoadedOnce) {
+      this.isLoading = true;
+      this._scheduleUpdate();
+    }
 
     try {
       // Fetch all data concurrently for better performance
@@ -120,6 +160,7 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
       // Handle error gracefully - keep existing data if fetch fails
     } finally {
       this.isLoading = false;
+      this._hasLoadedOnce = true;
       this._scheduleUpdate();
     }
   }
@@ -132,7 +173,13 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
         clearTimeout(timeoutId);
       }
       timeoutId = window.setTimeout(() => {
-        this.saveToHA(module);
+        // Ignore the _config_updated echo this save triggers (see flag declaration).
+        this._suppressNextConfigUpdate = true;
+        this.saveToHA(module).catch(() => {
+          // Save failed (already logged): clear the guard so it doesn't
+          // swallow a later genuine refresh.
+          this._suppressNextConfigUpdate = false;
+        });
         timeoutId = null;
       }, 500); // 500ms debounce
     };
@@ -235,57 +282,100 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
       return html``;
     }
 
-    // Use cache for better performance
-    const cacheKey = `module-${module.id || index}-${JSON.stringify(module)}`;
-    if (this.moduleCache.has(cacheKey)) {
-      return this.moduleCache.get(cacheKey)!;
-    }
-
     const numberofzonesusingthismodule = this.zones.filter(
       (o) => o.module === module.id,
     ).length;
 
+    // expand key: module id when saved, else fall back to the list index so
+    // not-yet-saved modules are still toggleable
+    const expandKey = module.id ?? index;
+    const expanded = this._expanded.has(expandKey);
+
+    // Some saved instances have no stored description; fall back to the module
+    // type's description (matched by name) so every card shows it.
+    const description =
+      module.description ||
+      this.allmodules.find((m) => m.name === module.name)?.description ||
+      "";
+
+    // Use cache for better performance. Include the expanded flag in the key so
+    // toggling a card open/closed produces a distinct (re-rendered) result.
+    const cacheKey = `module-${module.id || index}-${
+      expanded ? "open" : "closed"
+    }-${JSON.stringify(module)}`;
+    if (this.moduleCache.has(cacheKey)) {
+      return this.moduleCache.get(cacheKey)!;
+    }
+
     const result = html`
-      <ha-card header="${module.id}: ${module.name}">
-        <div class="card-content">
-          <div class="moduledescription${index}">${module.description}</div>
-          <div class="moduleconfig">
-            <label class="subheader"
-              >${localize(
-                "panels.modules.cards.module.labels.configuration",
-                this.hass.language,
-              )}
-              (*
-              ${localize(
-                "panels.modules.cards.module.labels.required",
-                this.hass.language,
-              )})</label
-            >
-            ${module.schema
-              ? Object.entries(module.schema).map(([value]) =>
-                  this.renderConfig(index, value),
-                )
-              : null}
-          </div>
-          ${numberofzonesusingthismodule
-            ? html`<div class="weather-note">
-                ${localize(
-                  "panels.modules.cards.module.errors.cannot-delete-module-because-zones-use-it",
-                  this.hass.language,
-                )}
-              </div>`
-            : html` <div
-                class="action-button"
-                @click="${(e: Event) => this.handleRemoveModule(e, index)}"
+      <ha-card class="si-card">
+        <div
+          class="si-head"
+          role="button"
+          tabindex="0"
+          aria-expanded=${expanded ? "true" : "false"}
+          @click=${() => this._toggleItem(expandKey)}
+          @keydown=${(e: KeyboardEvent) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              this._toggleItem(expandKey);
+            }
+          }}
+        >
+          <div class="si-head-text">
+            <div class="si-title-row">
+              <span class="si-title"
+                >${module.id != undefined
+                  ? `${module.id}: ${module.name}`
+                  : module.name}</span
               >
-                <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-                  <path fill="#404040" d="${mdiDelete}" />
-                </svg>
-                <span class="action-button-label">
-                  ${localize("common.actions.delete", this.hass.language)}
-                </span>
-              </div>`}
+            </div>
+            <div class="si-sub">${description}</div>
+          </div>
+          <ha-svg-icon
+            class="si-chevron ${expanded ? "open" : ""}"
+            .path=${mdiChevronDown}
+          ></ha-svg-icon>
         </div>
+        ${expanded
+          ? html` <div class="si-body">
+              <div class="moduleconfig">
+                <label class="subheader"
+                  >${localize(
+                    "panels.modules.cards.module.labels.configuration",
+                    this.hass.language,
+                  )}
+                  (*
+                  ${localize(
+                    "panels.modules.cards.module.labels.required",
+                    this.hass.language,
+                  )})</label
+                >
+                <div class="settings">
+                  ${module.schema
+                    ? Object.entries(module.schema).map(([value]) =>
+                        this.renderConfig(index, value),
+                      )
+                    : null}
+                </div>
+              </div>
+              ${numberofzonesusingthismodule
+                ? html`<div class="weather-note">
+                    ${localize(
+                      "panels.modules.cards.module.errors.cannot-delete-module-because-zones-use-it",
+                      this.hass.language,
+                    )}
+                  </div>`
+                : html`<div class="si-actions">
+                    ${this._actionBtn(
+                      mdiDelete,
+                      localize("common.actions.delete", this.hass.language),
+                      (e: Event) => this.handleRemoveModule(e, index),
+                      true,
+                    )}
+                  </div>`}
+            </div>`
+          : ""}
       </ha-card>
     `;
 
@@ -318,90 +408,218 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
     if (name in mod.config) {
       val = mod.config[name];
     }
-    let r = html`<label for="${name + index}"
-      >${prettyName} </label
-    `;
+    // required fields are flagged with a trailing "*" in the label
+    const label = schemaline["required"]
+      ? `${prettyName} *`
+      : (prettyName ?? "");
+
     if (schemaline["type"] == "boolean") {
-      r = html`${r}<input
-          type="checkbox"
-          id="${name + index}"
-          .checked=${val}
-          @input="${(e: Event) =>
-            this.handleEditConfig(index, {
-              ...mod,
-              config: {
-                ...mod.config,
-                [name]: (e.target as HTMLInputElement).checked,
-              },
-            })}"
-        />`;
+      // no dedicated row helper for booleans — keep a native checkbox inside a
+      // .setting-row, same @change handler shape as before
+      return html`
+        <div class="setting-row">
+          <div class="setting-label">${label}</div>
+          <input
+            type="checkbox"
+            id="${name + index}"
+            .checked=${val}
+            @change="${(e: Event) =>
+              this.handleEditConfig(index, {
+                ...mod,
+                config: {
+                  ...mod.config,
+                  [name]: (e.target as HTMLInputElement).checked,
+                },
+              })}"
+          />
+        </div>
+      `;
     } else if (
       schemaline["type"] == "float" ||
       schemaline["type"] == "integer"
     ) {
-      r = html`${r}<input
-          type="number"
-          class="shortinput"
-          id="${schemaline["name"] + index}"
-          .value="${mod.config[schemaline["name"]]}"
-          @input="${(e: Event) =>
-            this.handleEditConfig(index, {
-              ...mod,
-              config: {
-                ...mod.config,
-                [name]: (e.target as HTMLInputElement).value,
-              },
-            })}"
-        />`;
+      // integers step by 1, floats by 1 as well (no decimal hint in schema)
+      return this._numRow(
+        label,
+        "",
+        mod.config[name],
+        (v) =>
+          this.handleEditConfig(index, {
+            ...mod,
+            config: {
+              ...mod.config,
+              [name]: v,
+            },
+          }),
+        1,
+      );
     } else if (schemaline["type"] == "string") {
-      r = html`${r}<input
-          type="text"
-          id="${name + index}"
-          .value="${val}"
-          @input="${(e: Event) =>
-            this.handleEditConfig(index, {
-              ...mod,
-              config: {
-                ...mod.config,
-                [name]: (e.target as HTMLInputElement).value,
-              },
-            })}"
-        />`;
+      return this._textRow(label, "", val, (v) =>
+        this.handleEditConfig(index, {
+          ...mod,
+          config: {
+            ...mod.config,
+            [name]: v,
+          },
+        }),
+      );
     } else if (schemaline["type"] == "select") {
       const hasslanguage = this.hass.language;
-      //@change
-      r = html`${r}<select
-          id="${name + index}"
-          @change="${(e: Event) =>
-            this.handleEditConfig(index, {
-              ...mod,
-              config: {
-                ...mod.config,
-                [name]: (e.target as HTMLSelectElement).value,
-              },
-            })}"
-        >
-          ${Object.entries(schemaline["options"]).map(
-            ([key, value]) =>
-              html`<option
-                value="${getPart(value, 0)}"
-                ?selected="${val === getPart(value, 0)}"
-              >
-                ${localize(
-                  "panels.modules.cards.module.translated-options." +
-                    getPart(value, 1),
-                  hasslanguage,
-                )}
-              </option>`,
-          )}
-        </select>`;
+      const options = html`
+        ${Object.entries(schemaline["options"]).map(
+          ([key, value]) =>
+            html`<option
+              value="${getPart(value, 0)}"
+              ?selected="${val === getPart(value, 0)}"
+            >
+              ${localize(
+                "panels.modules.cards.module.translated-options." +
+                  getPart(value, 1),
+                hasslanguage,
+              )}
+            </option>`,
+        )}
+      `;
+      return this._selectRow(label, options, (e: Event) =>
+        this.handleEditConfig(index, {
+          ...mod,
+          config: {
+            ...mod.config,
+            [name]: (e.target as HTMLSelectElement).value,
+          },
+        }),
+      );
     }
+    return html``;
+  }
 
-    if (schemaline["required"]) {
-      r = html`${r}`;
-    }
-    r = html`<div class="schemaline">${r}</div>`;
-    return r;
+  // --- modern row helpers (HA-native controls) ---
+  private _textRow(
+    label: string,
+    unit: string | TemplateResult,
+    value: any,
+    onCommit: (v: string) => void,
+  ): TemplateResult {
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">
+          ${label}${unit ? html` <span class="unit">(${unit})</span>` : ""}
+        </div>
+        <input
+          class="field"
+          type="text"
+          .value=${value === undefined || value === null ? "" : String(value)}
+          @change=${(e: Event) =>
+            onCommit((e.target as HTMLInputElement).value)}
+        />
+      </div>
+    `;
+  }
+
+  private _numRow(
+    label: string,
+    unit: string | TemplateResult,
+    value: any,
+    onCommit: (v: string) => void,
+    step = 1,
+    readonly = false,
+  ): TemplateResult {
+    const decimals = (String(step).split(".")[1] || "").length;
+    const bump = (input: HTMLInputElement, dir: number) => {
+      const cur = parseFloat(input.value);
+      const next = +((isNaN(cur) ? 0 : cur) + dir * step).toFixed(decimals);
+      input.value = String(next);
+      onCommit(String(next));
+    };
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">
+          ${label}${unit ? html` <span class="unit">(${unit})</span>` : ""}
+        </div>
+        <div class="num-field">
+          <input
+            class="field num-input"
+            type="number"
+            step=${step}
+            ?readonly=${readonly}
+            .value=${value === undefined || value === null ? "" : String(value)}
+            @wheel=${(e: WheelEvent) => {
+              // never let scrolling change a focused number field (auto-save!)
+              if ((e.target as HTMLElement).matches(":focus"))
+                e.preventDefault();
+            }}
+            @change=${(e: Event) =>
+              onCommit((e.target as HTMLInputElement).value)}
+          />
+          <ha-icon-button
+            class="step-btn"
+            .path=${mdiMinus}
+            ?disabled=${readonly}
+            @click=${(e: Event) =>
+              bump(
+                (e.currentTarget as HTMLElement).parentElement!.querySelector(
+                  "input",
+                ) as HTMLInputElement,
+                -1,
+              )}
+          ></ha-icon-button>
+          <ha-icon-button
+            class="step-btn"
+            .path=${mdiPlus}
+            ?disabled=${readonly}
+            @click=${(e: Event) =>
+              bump(
+                (e.currentTarget as HTMLElement).parentElement!.querySelector(
+                  "input",
+                ) as HTMLInputElement,
+                1,
+              )}
+          ></ha-icon-button>
+        </div>
+      </div>
+    `;
+  }
+
+  private _selectRow(
+    label: string,
+    options: TemplateResult,
+    onChange: (e: Event) => void,
+  ): TemplateResult {
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">${label}</div>
+        <div class="select-wrap">
+          <select class="field" @change=${onChange}>
+            ${options}
+          </select>
+          <svg class="chev" viewBox="0 0 24 24">
+            <path d=${mdiMenuDown}></path>
+          </svg>
+        </div>
+      </div>
+    `;
+  }
+
+  // Action button: native ha-button, light "filled" appearance,
+  // "danger" variant turns it red.
+  private _actionBtn(
+    icon: string,
+    label: string,
+    onClick: (e: Event) => void,
+    danger = false,
+    disabled = false,
+  ): TemplateResult {
+    return html`
+      <ha-button
+        appearance=${danger ? "accent" : "filled"}
+        variant=${danger ? "danger" : "brand"}
+        ?disabled=${disabled}
+        @click=${onClick}
+      >
+        <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
+        ${label}
+      </ha-button>
+    `;
   }
 
   handleEditConfig(index: number, updatedModule: SmartIrrigationModule) {
@@ -452,29 +670,35 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
                 )}
               </div>`
             : html`
-                <div class="zoneline">
-                  <label for="moduleInput"
-                    >${localize(
-                      "common.labels.module",
-                      this.hass.language,
-                    )}:</label
-                  >
-                  <select id="moduleInput" ?disabled="${this.isSaving}">
-                    ${Object.entries(this.allmodules).map(
-                      ([key, value]) =>
-                        html`<option value="${value.id}">
-                          ${value.name}
-                        </option>`,
-                    )}
-                  </select>
+                <div class="setting-row">
+                  <div class="setting-label">
+                    ${localize("common.labels.module", this.hass.language)}
+                  </div>
+                  <div class="select-wrap">
+                    <select
+                      id="moduleInput"
+                      class="field"
+                      ?disabled="${this.isSaving}"
+                    >
+                      ${Object.entries(this.allmodules).map(
+                        ([key, value]) =>
+                          html`<option value="${value.id}">
+                            ${value.name}
+                          </option>`,
+                      )}
+                    </select>
+                    <svg class="chev" viewBox="0 0 24 24">
+                      <path d=${mdiMenuDown}></path>
+                    </svg>
+                  </div>
                 </div>
-                <div class="zoneline">
-                  <span></span>
-                  <button
+                <div class="si-form-actions">
+                  <ha-button
+                    appearance="filled"
                     @click="${this.handleAddModule}"
                     ?disabled="${this.isSaving}"
-                    class="${this.isSaving ? "saving" : ""}"
                   >
+                    <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                     ${this.isSaving
                       ? localize(
                           "common.saving-messages.adding",
@@ -484,7 +708,7 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
                           "panels.modules.cards.add-module.actions.add",
                           this.hass.language,
                         )}
-                  </button>
+                  </ha-button>
                 </div>
               `}
         </div>
@@ -494,8 +718,10 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
         ? html`<div class="loading-indicator">
             ${localize("common.loading-messages.modules", this.hass.language)}
           </div>`
-        : Object.entries(this.modules).map(([key, value]) =>
-            this.renderModule(value, parseInt(key)),
+        : repeat(
+            this.modules,
+            (module) => module.id ?? module.name,
+            (module, index) => this.renderModule(module, index),
           )}
     `;
   }
@@ -520,7 +746,7 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return css`
-      ${globalStyle}/* View-specific styles only - most common styles are now in globalStyle */
+      ${globalStyle} ${modernStyle} /* View-specific styles only - most common styles are now in globalStyle */
     `;
   }
 }

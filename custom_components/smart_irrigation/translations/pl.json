@@ -1,0 +1,224 @@
+{
+  "config": {
+    "abort": {
+      "single_instance_allowed": "Dozwolona jest tylko jedna konfiguracja Smart Irrigation."
+    },
+    "error": {
+      "auth": "Nieprawidłowy klucz API usługi pogodowej",
+      "name": "Podaj unikalną nazwę dla integracji."
+    },
+    "step": {
+      "user": {
+        "title": "Konfiguracja ogólna",
+        "description": "Jeśli potrzebujesz pomocy przy konfiguracji, zapoznaj się z dokumentacją.",
+        "data": {
+          "name": "Unikalna nazwa integracji",
+          "use_weather_service": "Użyj usługi pogodowej (Open Weather Map lub Pirate Weather) do danych pogodowych lub prognoz. Włącz tę opcję, jeśli zamierzasz korzystać z jednej z obsługiwanych usług pogodowych przynajmniej dla części danych pogodowych, w tym prognoz. Wyłącz tę opcję, jeśli chcesz korzystać wyłącznie z innego źródła, takiego jak własna stacja pogodowa. W takim przypadku Smart Irrigation nie będzie mogła korzystać z prognoz."
+        }
+      },
+      "step1": {
+        "title": "Konfiguracja API usługi pogodowej",
+        "description": "Jeśli potrzebujesz pomocy przy konfiguracji, zapoznaj się z dokumentacją.",
+        "data": {
+          "weather_service": "Usługa pogodowa do użycia",
+          "weather_service_api_key": "Klucz API usługi pogodowej",
+          "weather_service_api_version": "Wersja API usługi pogodowej"
+        }
+      }
+    }
+  },
+  "options": {
+    "error": {
+      "auth": "Nieprawidłowy klucz API lub wersja usługi pogodowej",
+      "invalid_coordinates": "Podano nieprawidłowe współrzędne. Sprawdź wartości szerokości geograficznej (-90 do 90) i długości geograficznej (-180 do 180)."
+    },
+    "step": {
+      "init": {
+        "title": "Konfiguracja API usługi pogodowej",
+        "description": "Jeśli potrzebujesz pomocy przy konfiguracji, zapoznaj się z dokumentacją.",
+        "data": {
+          "use_weather_service": "Użyj usługi pogodowej (Open Weather Map lub Pirate Weather) do danych pogodowych lub prognoz. Włącz tę opcję, jeśli zamierzasz korzystać z jednej z obsługiwanych usług pogodowych przynajmniej dla części danych pogodowych, w tym prognoz. Wyłącz tę opcję, jeśli chcesz korzystać wyłącznie z innego źródła, takiego jak własna stacja pogodowa. W takim przypadku Smart Irrigation nie będzie mogła korzystać z prognoz."
+        }
+      },
+      "step1": {
+        "title": "Konfiguracja API usługi pogodowej",
+        "description": "Jeśli potrzebujesz pomocy przy konfiguracji, zapoznaj się z dokumentacją.",
+        "data": {
+          "weather_service": "Usługa pogodowa do użycia",
+          "weather_service_api_key": "Klucz API usługi pogodowej",
+          "weather_service_api_version": "Wersja API usługi pogodowej"
+        }
+      },
+      "coordinates": {
+        "title": "Współrzędne lokalizacji",
+        "description": "Skonfiguruj współrzędne lokalizacji na potrzeby pobierania danych pogodowych. W razie potrzeby możesz użyć ręcznych współrzędnych różnych od lokalizacji Home Assistant.",
+        "data": {
+          "manual_coordinates_enabled": "Użyj ręcznych współrzędnych zamiast lokalizacji Home Assistant",
+          "manual_latitude": "Szerokość geograficzna (stopnie dziesiętne, -90 do 90)",
+          "manual_longitude": "Długość geograficzna (stopnie dziesiętne, -180 do 180)",
+          "manual_elevation": "Wysokość nad poziomem morza (metry, opcjonalnie)"
+        }
+      }
+    }
+  },
+  "services": {
+    "calculate_all_zones": {
+      "name": "Oblicz wszystkie strefy",
+      "description": "Oblicz wszystkie strefy w trybie automatycznym",
+      "fields": {
+        "delete_weather_data": {
+          "name": "Usuń dane pogodowe",
+          "description": "Usuń dane pogodowe po obliczeniu"
+        }
+      }
+    },
+    "calculate_zone": {
+      "name": "Oblicz strefę",
+      "description": "Oblicz wskazaną strefę",
+      "fields": {
+        "entity": {
+          "name": "Encja",
+          "description": "Strefa do obliczenia"
+        },
+        "delete_weather_data": {
+          "name": "Usuń dane pogodowe",
+          "description": "Usuń dane pogodowe dla strefy po obliczeniu"
+        }
+      }
+    },
+    "update_all_zones": {
+      "name": "Aktualizuj wszystkie strefy",
+      "description": "Aktualizuj dane pogodowe dla wszystkich stref w trybie automatycznym"
+    },
+    "update_zone": {
+      "name": "Aktualizuj strefę",
+      "description": "Aktualizuj dane pogodowe dla wskazanej strefy",
+      "fields": {
+        "entity": {
+          "name": "Encja",
+          "description": "Strefa do aktualizacji"
+        }
+      }
+    },
+    "set_bucket": {
+      "name": "Ustaw bucket",
+      "description": "Ustaw bucket dla strefy na określoną wartość",
+      "fields": {
+        "entity": {
+          "name": "Encja",
+          "description": "Strefa, dla której ustawić bucket"
+        },
+        "new_bucket_value": {
+          "name": "Nowa wartość bucket",
+          "description": "nowa wartość bucket"
+        }
+      }
+    },
+    "set_all_buckets": {
+      "name": "Ustaw wszystkie buckets",
+      "description": "Ustaw buckets dla wszystkich stref na określoną wartość",
+      "fields": {
+        "new_bucket_value": {
+          "name": "Nowa wartość bucket",
+          "description": "nowa wartość bucket"
+        }
+      }
+    },
+    "reset_bucket": {
+      "name": "Zeruj bucket",
+      "description": "Zeruj bucket dla strefy do 0",
+      "fields": {
+        "entity": {
+          "name": "Encja",
+          "description": "Strefa, dla której wyzerować bucket"
+        }
+      }
+    },
+    "reset_all_buckets": {
+      "name": "Zeruj wszystkie buckets",
+      "description": "Zeruj bucket dla wszystkich stref do 0"
+    },
+    "clear_all_weather_data": {
+      "name": "Wyczyść wszystkie dane pogodowe",
+      "description": "Wyczyść dane pogodowe dla wszystkich stref"
+    },
+    "set_multiplier": {
+      "name": "Ustaw mnożnik",
+      "description": "Ustaw mnożnik dla strefy na określoną wartość",
+      "fields": {
+        "entity": {
+          "name": "Encja",
+          "description": "Strefa, dla której ustawić mnożnik"
+        },
+        "new_multiplier_value": {
+          "name": "Nowa wartość mnożnika",
+          "description": "nowa wartość mnożnika"
+        }
+      }
+    },
+    "set_all_multipliers": {
+      "name": "Ustaw wszystkie mnożniki",
+      "description": "Ustaw mnożniki dla wszystkich stref na określoną wartość",
+      "fields": {
+        "new_multiplier_value": {
+          "name": "Nowa wartość mnożnika",
+          "description": "nowa wartość mnożnika"
+        }
+      }
+    },
+    "set_state": {
+      "name": "Ustaw stan strefy",
+      "description": "Ustaw stan strefy na określoną wartość",
+      "fields": {
+        "entity": {
+          "name": "Encja",
+          "description": "Strefa, dla której ustawić stan"
+        },
+        "new_state_value": {
+          "name": "Nowa wartość stanu",
+          "description": "Nowa wartość stanu"
+        }
+      }
+    },
+    "set_zone": {
+      "name": "Ustaw wartości strefy",
+      "description": "Ustaw wszystkie konfigurowalne wartości strefy",
+      "fields": {
+        "entity": {
+          "name": "Encja",
+          "description": "Strefa, dla której ustawić wartości konfiguracji"
+        },
+        "new_bucket_value": {
+          "name": "Nowa wartość bucket",
+          "description": "Nowa wartość dla bucket"
+        },
+        "new_multiplier_value": {
+          "name": "Nowa wartość mnożnika",
+          "description": "Nowa wartość dla mnożnika"
+        },
+        "new_duration_value": {
+          "name": "Nowa wartość czasu trwania",
+          "description": "Nowa wartość dla czasu trwania"
+        },
+        "new_state_value": {
+          "name": "Nowa wartość stanu",
+          "description": "Nowa wartość stanu"
+        },
+        "new_throughput_value": {
+          "name": "Nowa wartość przepływu",
+          "description": "Nowa wartość dla przepływu"
+        }
+      }
+    },
+    "generate_watering_calendar": {
+      "name": "Generuj kalendarz podlewania",
+      "description": "Wygeneruj 12-miesięczny kalendarz podlewania dla stref nawadniania na podstawie reprezentatywnych danych klimatycznych",
+      "fields": {
+        "entity": {
+          "name": "Encja",
+          "description": "Strefa, dla której wygenerować kalendarz podlewania"
+        }
+      }
+    }
+  }
+}

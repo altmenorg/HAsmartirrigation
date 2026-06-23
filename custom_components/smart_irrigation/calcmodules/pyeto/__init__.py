@@ -22,7 +22,6 @@ from .pyeto import (
     avp_from_tdew,
     convert,
     cs_rad,
-    daylight_hours,
     deg2rad,
     delta_svp,
     et_rad,
@@ -33,7 +32,6 @@ from .pyeto import (
     net_rad,
     psy_const,
     sol_dec,
-    sol_rad_from_sun_hours,
     sol_rad_from_t,
     sunset_hour_angle,
     svp_from_t,
@@ -73,13 +71,17 @@ SCHEMA = vol.Schema(
         vol.Optional(CONF_PYETO_COASTAL, default=DEFAULT_COASTAL): vol.Coerce(
             bool
         ),  # is really required, but otherwise the UI shows a * near the checkbox
-        vol.Required(
-            CONF_PYETO_SOLRAD_BEHAVIOR, default=DEFAULT_SOLRAD_BEHAVIOR
-        ): vol.Coerce(SOLRAD_behavior),
         vol.Optional(
             CONF_PYETO_FORECAST_DAYS, default=DEFAULT_FORECAST_DAYS
         ): vol.Coerce(int),
-    }
+    },
+    # The solar-radiation estimation method used to be configurable here, which
+    # was a footgun: it silently estimated even when a real radiation source was
+    # available, or fell back silently when "don't estimate" was set without one.
+    # Radiation is now used whenever a source provides it and estimated from
+    # temperature otherwise — no setting needed. ALLOW_EXTRA tolerates the legacy
+    # `solrad_behavior` key still present in configs saved before this change.
+    extra=vol.ALLOW_EXTRA,
 )
 
 
@@ -187,7 +189,6 @@ class PyETO(SmartIrrigationCalculationModule):
                 day_of_year = datetime.datetime.now().timetuple().tm_yday
 
                 sha = sunset_hour_angle(deg2rad(self._latitude), sol_dec(day_of_year))
-                daylight_hoursvar = daylight_hours(sha)
 
                 ird = inv_rel_dist_earth_sun(day_of_year)
                 et_radvar = et_rad(
@@ -196,53 +197,26 @@ class PyETO(SmartIrrigationCalculationModule):
                 _LOGGER.debug("[pyETO: calculate_et_for_day] et_radvar: %s", et_radvar)
                 cs_radvar = cs_rad(self._elevation, et_radvar)
                 _LOGGER.debug("[pyETO: calculate_et_for_day] cs_radvar: %s", cs_radvar)
-                _LOGGER.debug(
-                    "[pyETO: calculate_et_for_day]: solrad_behavior: %s and sol_rad: %s",
-                    self._solrad_behavior,
-                    sol_rad,
-                )
-                # if we need to calculate solar_radiation we need to override the value passed in.
-                if (
-                    self._solrad_behavior != SOLRAD_behavior.DontEstimate.value
-                    or sol_rad is None
-                ):
-                    if self._solrad_behavior == SOLRAD_behavior.EstimateFromTemp.value:
-                        sol_rad = sol_rad_from_t(
-                            et_radvar, cs_radvar, temp_c_min, temp_c_max, self._coastal
-                        )
-                        _LOGGER.debug(
-                            "[pyETO: calculate_et_for_day] estimated sol_rad from temp: %s",
-                            sol_rad,
-                        )
-                    elif (
-                        self._solrad_behavior
-                        == SOLRAD_behavior.EstimateFromSunHoursAndTemperature.value
-                    ):
-                        sol_rad = (
-                            sol_rad_from_t(
-                                et_radvar,
-                                cs_radvar,
-                                temp_c_min,
-                                temp_c_max,
-                                self._coastal,
-                            )
-                            + sol_rad_from_sun_hours(
-                                daylight_hoursvar, 0.8 * daylight_hoursvar, et_radvar
-                            )
-                        ) / 2
-                        _LOGGER.debug(
-                            "[pyETO: calculate_et_for_day] estimated sol_rad from sunhours and temperature: %s",
-                            sol_rad,
-                        )
-                    else:
-                        # this is the default behavior for version < 0.0.50
-                        sol_rad = sol_rad_from_sun_hours(
-                            daylight_hoursvar, 0.8 * daylight_hoursvar, et_radvar
-                        )
-                        _LOGGER.debug(
-                            "[pyETO: calculate_et_for_day] estimated sol_rad from sunhours: %s",
-                            sol_rad,
-                        )
+                # Use the solar radiation provided by the sensor group (a sensor,
+                # or a weather service such as Open-Meteo) when available, and
+                # estimate it from temperature (FAO-56) only when no source
+                # provides it. Provided radiation always takes precedence — this
+                # is what makes a full Penman-Monteith possible instead of a
+                # temperature-only approximation.
+                if sol_rad is None:
+                    sol_rad = sol_rad_from_t(
+                        et_radvar, cs_radvar, temp_c_min, temp_c_max, self._coastal
+                    )
+                    _LOGGER.debug(
+                        "[pyETO: calculate_et_for_day] no solar radiation provided; "
+                        "estimated from temperature: %s",
+                        sol_rad,
+                    )
+                else:
+                    _LOGGER.debug(
+                        "[pyETO: calculate_et_for_day] using provided solar radiation: %s",
+                        sol_rad,
+                    )
                 _LOGGER.debug(
                     "[pyETO: calculate_et_for_day] sol_rad passed to net_in_sol_radvar: %s",
                     sol_rad,

@@ -1,5 +1,7 @@
 {
   "common": {
+    "loading": "Wird geladen",
+    "saving": "Wird gespeichert",
     "actions": {
       "delete": "Lösche"
     },
@@ -7,12 +9,32 @@
       "module": "Modul",
       "no": "Nein",
       "select": "Wähle",
-      "yes": "Ja"
+      "yes": "Ja",
+      "enabled": "Aktiviert",
+      "disabled": "Deaktiviert",
+      "before": "vor",
+      "after": "nach"
+    },
+    "units": {
+      "seconds": "Sekunden"
     },
     "attributes": {
       "size": "Größe",
       "throughput": "Durchfluss",
-      "state": "Zustand"
+      "state": "Zustand",
+      "bucket": "Bucket",
+      "last_updated": "zuletzt aktualisiert",
+      "last_calculated": "zuletzt berechnet",
+      "number_of_data_points": "Anzahl der Datenpunkte"
+    },
+    "loading-messages": {
+      "configuration": "Konfiguration wird geladen…",
+      "modules": "Module werden geladen…",
+      "general": "Wird geladen…"
+    },
+    "saving-messages": {
+      "adding": "Wird hinzugefügt…",
+      "saving": "Wird gespeichert…"
     }
   },
   "defaults": {
@@ -25,13 +47,17 @@
         "module-returned-evapotranspiration-deficiency": "Beachte: Diese Beschreibung nutzt '.' als Dezimalzeichen und zeigt gerundete Werte. Das Modul berechnete einen Evapotranspirationsmangel von",
         "bucket-was": "Der alte Vorrat war",
         "new-bucket-values-is": "Der neue Vorrat ist",
+        "bucket": "Vorrat",
         "old-bucket-variable": "alter_Vorrat",
+        "max-bucket-variable": "max_bucket",
         "delta": "Veränderung",
         "bucket-less-than-zero-irrigation-necessary": "Wenn der Vorrat < 0 ist, ist eine Bewässerung nötig.",
         "steps-taken-to-calculate-duration": "Für eine exakte Berechnung der Dauer, wurden folgende Schritte durchgeführt",
         "precipitation-rate-defined-as": "Der Niederschlag ist",
         "duration-is-calculated-as": "Die Dauer ist",
-        "bucket": "Vorrat",
+        "drainage": "drainage",
+        "drainage-rate": "drainage_rate",
+        "hours": "Stunden",
         "precipitation-rate-variable": "Niederschlag",
         "multiplier-is-applied": "Der Multiplikator wird angewendet. Der Multiplikator ist",
         "duration-after-multiplier-is": "also ist die Dauer",
@@ -40,7 +66,10 @@
         "lead-time-is-applied": "Zuletzt wird die Vorlaufzeit angewendet. Die Vorlaufzeit ist",
         "duration-after-lead-time-is": "also ist die Dauer",
         "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Wenn der Vorrat >= 0 ist, ist keine Bewässerung nötig und die Dauer ist gleich",
-        "maximum-bucket-is": "Der maximale Vorrat ist"
+        "maximum-bucket-is": "Der maximale Vorrat ist",
+        "drainage-rate-is": "Die Entwässerungsrate bei Sättigung (Bucket am Maximum) beträgt",
+        "current-drainage-is": "Die aktuelle Entwässerung wird berechnet als",
+        "no-drainage": "Die aktuelle Entwässerung beträgt 0, weil"
       }
     }
   },
@@ -56,6 +85,53 @@
     }
   },
   "panels": {
+    "weatherservice": {
+      "title": "Wetterdienst",
+      "description": "Zeigen und ändern Sie den Wetterdienst, der zum Abrufen der Wetterdaten verwendet wird — ohne die Integration neu installieren zu müssen. Der API-Schlüssel wird validiert und die Änderung sofort angewendet.",
+      "labels": {
+        "use-weather-service": "Einen Wetterdienst verwenden",
+        "service": "Wetterdienst",
+        "api-key": "API-Schlüssel"
+      },
+      "actions": {
+        "save": "Speichern",
+        "saving": "Wird gespeichert…"
+      },
+      "messages": {
+        "no-service": "Es wird kein Wetterdienst verwendet — die Wetterdaten stammen ausschließlich von Ihren eigenen Sensoren.",
+        "saved": "Wetterdienst aktualisiert und angewendet.",
+        "reload-note": "Beim Speichern wird der API-Schlüssel mit dem Dienst validiert und die Änderung sofort angewendet."
+      }
+    },
+    "backuprestore": {
+      "title": "Sichern / Wiederherstellen",
+      "description": "Exportieren Sie die vollständige Smart Irrigation-Konfiguration in eine JSON-Datei oder stellen Sie sie aus einer früheren Sicherung wieder her.",
+      "cards": {
+        "backup": {
+          "title": "Sicherung",
+          "description": "Laden Sie die vollständige Konfiguration (allgemeine Einstellungen, Zonen, Module und Sensorgruppen) als JSON-Datei herunter."
+        },
+        "restore": {
+          "title": "Wiederherstellen",
+          "description": "Laden Sie eine zuvor exportierte JSON-Datei, um die aktuelle Konfiguration zu ersetzen."
+        }
+      },
+      "actions": {
+        "export": "Als JSON exportieren",
+        "choose-file": "Sicherungsdatei auswählen…",
+        "restore": "Diese Sicherung wiederherstellen",
+        "restoring": "Wird wiederhergestellt…"
+      },
+      "messages": {
+        "exported": "Sicherungsdatei heruntergeladen.",
+        "restored": "Konfiguration wiederhergestellt — Integration wird neu geladen.",
+        "invalid-file": "Diese Datei ist keine gültige Smart Irrigation-Sicherung.",
+        "confirm-title": "Gesamte Konfiguration ersetzen?",
+        "summary": "Diese Sicherung enthält",
+        "confirm-warning": "Beim Wiederherstellen werden alle aktuellen allgemeinen Einstellungen, Zonen, Module und Sensorgruppen überschrieben. Dies kann nicht rückgängig gemacht werden.",
+        "reload-note": "Beim Wiederherstellen wird alles ersetzt und die Integration neu geladen, um die Änderung anzuwenden."
+      }
+    },
     "general": {
       "cards": {
         "automatic-duration-calculation": {
@@ -63,7 +139,7 @@
           "description": "Die Berechnung berücksichtigt die bis zu diesem Zeitpunkt gesammelten Wetterdaten und aktualisiert den Vorrat für jede automatische Zone. Anschließend wird die Dauer basierend auf dem neuen Vorrat angepasst und die gesammelten Wetterdaten entfernt.",
           "labels": {
             "auto-calc-enabled": "Automatische Berechnung der Dauer pro Zone",
-            "auto-calc-time": "Berechne um"
+            "calc-time": "Berechnen um"
           }
         },
         "automatic-update": {
@@ -74,13 +150,15 @@
           "description": "Die Wetterdaten werden automatisch gesammelt und gespeichert. Zur Berechnung der Zonen und Bewässerungsdauer sind Wetterdaten erforderlich.",
           "labels": {
             "auto-update-enabled": "Automatisches Update der Wetterdaten",
-            "auto-update-delay": "Update Verzögerung",
-            "auto-update-interval": "Update der Sensordaten alle"
+            "auto-update-schedule": "Aktualisierungszeitplan",
+            "auto-update-time": "Aktualisieren um",
+            "auto-update-interval": "Update der Sensordaten alle",
+            "auto-update-delay": "Update Verzögerung"
           },
           "options": {
-            "days": "Tage",
+            "minutes": "Minuten",
             "hours": "Stunden",
-            "minutes": "Minuten"
+            "days": "Tage"
           }
         },
         "automatic-clear": {
@@ -89,6 +167,14 @@
           "labels": {
             "automatic-clear-enabled": "Automatisches Löschen der Wetterdaten",
             "automatic-clear-time": "Löschen der Wetterdaten um"
+          }
+        },
+        "continuousupdates": {
+          "header": "Kontinuierliche Updates für Sensoren (experimentell)",
+          "description": "Diese experimentelle Funktion aktualisiert die Sensordaten kontinuierlich. Das ist nützlich für Sensorgruppen, die Quellen mit kontinuierlichen Daten verwenden, etwa Wetterstationen. Diese Funktion kann nicht für Sensorgruppen verwendet werden, die zumindest teilweise auf Wetterdiensten beruhen, da kontinuierliches Abfragen von APIs Kosten verursacht. Beachten Sie, dass dies experimentell ist und möglicherweise nicht wie erwartet funktioniert. Verwendung auf eigenes Risiko.",
+          "labels": {
+            "continuousupdates": "Kontinuierliche Updates aktivieren",
+            "sensor_debounce": "Sensor-Entprellung"
           }
         }
       },
@@ -110,6 +196,40 @@
         }
       }
     },
+    "info": {
+      "title": "Infos",
+      "description": "Informationen zur nächsten Bewässerung und zum Systemstatus anzeigen.",
+      "configuration-not-available": "Konfiguration nicht verfügbar.",
+      "cards": {
+        "zone-bucket-values": {
+          "title": "Bucket-Werte & Dauer pro Zone",
+          "labels": {
+            "bucket": "Bucket",
+            "duration": "Dauer"
+          },
+          "no-zones": "Keine Zonen konfiguriert"
+        },
+        "next-irrigation": {
+          "title": "Nächste Bewässerung",
+          "labels": {
+            "next-start": "Nächster Start",
+            "duration": "Dauer",
+            "zones": "Zonen"
+          },
+          "no-data": "Keine Daten verfügbar"
+        },
+        "irrigation-reason": {
+          "title": "Bewässerungsgrund",
+          "labels": {
+            "reason": "Grund",
+            "sunrise": "Sonnenaufgang",
+            "total-duration": "Gesamtdauer",
+            "explanation": "Erläuterung"
+          },
+          "no-data": "Keine Daten verfügbar"
+        }
+      }
+    },
     "mappings": {
       "cards": {
         "add-mapping": {
@@ -126,10 +246,14 @@
             "maximum": "Maximum",
             "median": "Median",
             "minimum": "Minimum",
-            "sum": "Summe"
+            "riemannsum": "Riemann-Summe",
+            "sum": "Summe",
+            "delta": "Delta"
           },
           "errors": {
-            "cannot-delete-mapping-because-zones-use-it": "Diese Sensorgruppe kann nicht entfernt werden, da sie von mindestens einer Zone verwendet wird."
+            "cannot-delete-mapping-because-zones-use-it": "Diese Sensorgruppe kann nicht entfernt werden, da sie von mindestens einer Zone verwendet wird.",
+            "invalid_source": "Ungültige Quelle",
+            "source_does_not_exist": "Die Quelle existiert nicht. Bitte geben Sie eine gültige Quelle an, z. B. \"sensor.mysensor\"."
           },
           "items": {
             "dewpoint": "Taupunkt",
@@ -138,6 +262,7 @@
             "maximum temperature": "Maximum-Temperatur",
             "minimum temperature": "Minimum-Temperatur",
             "precipitation": "Gesamtniederschlag",
+            "current precipitation": "Aktueller Niederschlag",
             "pressure": "Luftdruck",
             "solar radiation": "Sonnenstrahlung",
             "temperature": "Temperatur",
@@ -167,7 +292,16 @@
         "mapping-name": "Name"
       },
       "no_items": "Es ist noch keine Sensorgruppe angelegt.",
-      "title": "Sensorgruppen"
+      "title": "Sensorgruppen",
+      "weather-records": {
+        "title": "Wetteraufzeichnungen (letzte 10)",
+        "timestamp": "Zeit",
+        "temperature": "Temp.",
+        "humidity": "Luftfeuchtigkeit",
+        "precipitation": "Niederschl.",
+        "retrieval-time": "Abgerufen",
+        "no-data": "Keine Wetterdaten für diese Sensorgruppe verfügbar"
+      }
     },
     "modules": {
       "cards": {
@@ -203,7 +337,10 @@
         "calculate": "Bewässerungsdauer berechnen.",
         "information": "Information",
         "update": "Wetterdaten aktualisieren.",
-        "reset-bucket": "Vorrat zurücksetzen"
+        "reset-bucket": "Vorrat zurücksetzen",
+        "view-weather-info": "Wetterdaten anzeigen",
+        "view-weather-info-message": "Wetterdaten verfügbar für",
+        "view-watering-calendar": "Bewässerungskalender anzeigen"
       },
       "cards": {
         "add-zone": {
@@ -242,13 +379,81 @@
         "maximum-bucket": "Maximaler Vorrat",
         "last_calculated": "Zuletzt berechnet",
         "data-last-updated": "Daten zuletzt aktualisiert",
-        "data-number-of-data-points": "Anzahl der Messungen"
+        "data-number-of-data-points": "Anzahl der Messungen",
+        "drainage_rate": "Entwässerungsrate"
       },
       "no_items": "Es ist noch keine Zone vorhanden.",
       "title": "Zonen"
     }
   },
   "title": "Smart Irrigation",
+  "irrigation_start_triggers": {
+    "title": "Bewässerungsstart-Auslöser",
+    "description": "Legen Sie fest, wann die Bewässerung anhand von Sonnenereignissen starten soll. Sie können mehrere Auslöser für verschiedene Zeitpläne hinzufügen. Wenn Sie bei Sonnenaufgangs-Auslösern den Versatz auf 0 lassen, wird automatisch die Gesamtdauer aller aktivierten Zonen verwendet.",
+    "usage_before": "Wenn ein Auslöser ausgelöst wird, sendet Smart Irrigation das Ereignis ",
+    "usage_after": " — reagieren Sie darauf in einer Automatisierung, um die Bewässerung zu starten. Die Ereignisdaten enthalten trigger_name, trigger_type und offset_minutes, sodass Sie je Auslöser unterschiedlich reagieren können. Die Einstellungen für Niederschlagsüberspringung und Tage zwischen den Bewässerungen gelten weiterhin: an einem Überspringungstag wird kein Ereignis ausgelöst.",
+    "add_trigger": "Auslöser hinzufügen",
+    "edit_trigger": "Auslöser bearbeiten",
+    "delete_trigger": "Auslöser löschen",
+    "trigger_types": {
+      "sunrise": "Sonnenaufgang",
+      "sunset": "Sonnenuntergang",
+      "solar_azimuth": "Sonnenazimut"
+    },
+    "fields": {
+      "name": {
+        "name": "Auslösername",
+        "description": "Ein beschreibender Name zur Identifizierung dieses Auslösers"
+      },
+      "type": {
+        "name": "Auslösertyp",
+        "description": "Die Art des Sonnenereignisses, das den Auslöser aktiviert"
+      },
+      "enabled": {
+        "name": "Aktiviert",
+        "description": "Ob dieser Auslöser derzeit aktiv ist"
+      },
+      "offset_minutes": {
+        "name": "Versatz (Minuten)",
+        "description": "Minuten vor (-) oder nach (+) dem Sonnenereignis. Verwenden Sie bei Sonnenaufgangs-Auslösern 0 für eine automatische Zeitsteuerung basierend auf der Gesamtdauer der Zonen."
+      },
+      "azimuth_angle": {
+        "name": "Azimutwinkel (Grad)",
+        "description": "Sonnenazimutwinkel in Grad, wobei 0=Nord, 90=Ost, 180=Süd, 270=West"
+      },
+      "account_for_duration": {
+        "name": "Dauer berücksichtigen",
+        "description": "Wenn aktiviert, startet die Bewässerung früh genug, um zur angegebenen Zeit fertig zu sein. Wenn deaktiviert, startet die Bewässerung genau zur angegebenen Zeit."
+      }
+    },
+    "dialog": {
+      "add_title": "Bewässerungsstart-Auslöser hinzufügen",
+      "edit_title": "Bewässerungsstart-Auslöser bearbeiten",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "delete": "Löschen",
+      "help": "Wenn dieser Auslöser ausgelöst wird, sendet Smart Irrigation das folgende Ereignis — verwenden Sie es in einer Automatisierung, um die Bewässerung zu starten. Die Ereignisdaten enthalten den Namen dieses Auslösers (sowie Typ/Versatz), sodass Sie gezielt darauf reagieren können:"
+    },
+    "no_triggers": "Keine Bewässerungsstart-Auslöser konfiguriert. Das System verwendet das Standardverhalten (Sonnenaufgang mit der Gesamtdauer der Zonen). Fügen Sie Auslöser hinzu, um anzupassen, wann die Bewässerung startet.",
+    "offset_auto": "Automatisch (aus der Gesamtdauer der Zonen berechnet)",
+    "confirm_delete": "Möchten Sie den Auslöser \"{name}\" wirklich löschen?",
+    "validation": {
+      "name_required": "Der Auslösername ist erforderlich",
+      "azimuth_invalid": "Der Azimutwinkel muss eine gültige Zahl sein"
+    },
+    "help": {
+      "sunrise_offset": "Für Sonnenaufgangs-Auslöser: Verwenden Sie negative Werte, um vor Sonnenaufgang zu starten, positive für danach. Setzen Sie auf 0, um automatisch früh genug zu starten, damit alle Zonen vor Sonnenaufgang fertig sind.",
+      "sunset_offset": "Für Sonnenuntergangs-Auslöser: Verwenden Sie negative Werte, um vor Sonnenuntergang zu starten, positive für nach Sonnenuntergang.",
+      "azimuth_explanation": "Das Sonnenazimut ist die Himmelsrichtung der Sonne. 0°=Nord, 90°=Ost, 180°=Süd, 270°=West. Sie können einen beliebigen Winkelwert eingeben (z. B. 450°=90°, -30°=330°). Damit lösen Sie die Bewässerung aus, wenn die Sonne eine bestimmte Position erreicht.",
+      "multiple_triggers": "Sie können mehrere Auslöser konfigurieren. Jeder aktivierte Auslöser plant Bewässerungsstarts unabhängig."
+    }
+  },
+  "weather_skip": {
+    "title": "Wetterbasiertes Überspringen der Bewässerung",
+    "description": "Bewässerung automatisch überspringen, wenn Niederschlag vorhergesagt ist. Diese Funktion erfordert einen konfigurierten Wetterdienst.",
+    "threshold_label": "Niederschlagsschwelle",
+    "threshold_description": "Mindestmenge an Niederschlag (in mm), die für heute und morgen vorhergesagt sein muss, um die Bewässerung zu überspringen."
+  },
   "coordinate_config": {
     "title": "Standortkoordinaten",
     "description": "Konfigurieren Sie Standortkoordinaten für den Abruf von Wetterdaten. Sie können manuelle Koordinaten verwenden, die sich von Ihrem Home Assistant Standort unterscheiden.",

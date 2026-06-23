@@ -50,6 +50,10 @@ from .const import (
     CONF_DEFAULT_WEATHER_SERVICE,
     CONF_IMPERIAL,
     CONF_IRRIGATION_START_TRIGGERS,
+    CONF_MANUAL_COORDINATES_ENABLED,
+    CONF_MANUAL_ELEVATION,
+    CONF_MANUAL_LATITUDE,
+    CONF_MANUAL_LONGITUDE,
     CONF_METRIC,
     CONF_PRECIPITATION_THRESHOLD_MM,
     CONF_SENSOR_DEBOUNCE,
@@ -183,8 +187,8 @@ class Config:
 
     calctime = attr.ib(type=str, default=CONF_DEFAULT_CALC_TIME)
     units = attr.ib(type=str, default=None)
-    use_weather_service = attr.ib(type=bool, default=CONF_DEFAULT_WEATHER_SERVICE)
-    weather_service = attr.ib(type=str, default=None)
+    use_weather_service = attr.ib(type=bool, default=CONF_DEFAULT_USE_WEATHER_SERVICE)
+    weather_service = attr.ib(type=str, default=CONF_DEFAULT_WEATHER_SERVICE)
     autocalcenabled = attr.ib(type=bool, default=CONF_AUTO_CALC_ENABLED)
     autoupdateenabled = attr.ib(type=bool, default=CONF_AUTO_UPDATE_ENABLED)
     autoupdateschedule = attr.ib(type=str, default=CONF_DEFAULT_AUTO_UPDATE_SCHEDULE)
@@ -214,6 +218,13 @@ class Config:
     )
     seasonal_adjustments = attr.ib(type=list, default=CONF_DEFAULT_SEASONAL_ADJUSTMENTS)
     recurring_schedules = attr.ib(type=list, default=CONF_DEFAULT_RECURRING_SCHEDULES)
+    # Manual coordinates (used for weather data instead of HA's location).
+    # Without these fields attr.evolve() would reject the keys the frontend
+    # saves, so the websocket config update would error.
+    manual_coordinates_enabled = attr.ib(type=bool, default=False)
+    manual_latitude = attr.ib(type=float, default=None)
+    manual_longitude = attr.ib(type=float, default=None)
+    manual_elevation = attr.ib(type=float, default=0)
 
 
 class MigratableStore(Store):
@@ -348,6 +359,17 @@ class SmartIrrigationStorage:
     async def async_load(self) -> None:
         """Load the registry of schedule entries."""
         data = await self._store.async_load()
+        await self._populate_from_data(data)
+
+    async def _populate_from_data(self, data) -> None:
+        """Rebuild config/zones/modules/mappings from a storage-shaped dict.
+
+        Shared by async_load (data read from disk) and async_import (data from a
+        user-provided backup). ``data`` may be None on a fresh install, in which
+        case defaults are used. The reconstructed values are only assigned to
+        ``self`` at the very end, so a malformed payload raises before touching
+        the live configuration (atomic restore).
+        """
         config: Config = Config(
             calctime=CONF_DEFAULT_CALC_TIME,
             units=(
@@ -437,6 +459,15 @@ class SmartIrrigationStorage:
                     CONF_DAYS_SINCE_LAST_IRRIGATION,
                     CONF_DEFAULT_DAYS_SINCE_LAST_IRRIGATION,
                 ),
+                # Manual coordinates are persisted by _data_to_save (attr.asdict)
+                # but must be read back here too, otherwise they reset to defaults
+                # on every restart and the feature silently reverts to HA's location.
+                manual_coordinates_enabled=data["config"].get(
+                    CONF_MANUAL_COORDINATES_ENABLED, False
+                ),
+                manual_latitude=data["config"].get(CONF_MANUAL_LATITUDE, None),
+                manual_longitude=data["config"].get(CONF_MANUAL_LONGITUDE, None),
+                manual_elevation=data["config"].get(CONF_MANUAL_ELEVATION, 0),
             )
 
             if "zones" in data:
@@ -648,6 +679,30 @@ class SmartIrrigationStorage:
             attr.asdict(entry) for entry in self.mappings.values()
         ]
         return store_data
+
+    async def async_export(self) -> dict:
+        """Return the full configuration (config + zones + modules + mappings).
+
+        Same shape as the on-disk storage, so it round-trips through
+        async_import without any conversion.
+        """
+        return self._data_to_save()
+
+    async def async_import(self, data: dict) -> None:
+        """Replace the entire stored configuration with ``data`` and persist it.
+
+        ``data`` must be storage-shaped: a dict with at least a ``config`` key
+        and optional ``zones`` / ``modules`` / ``mappings`` lists (extra keys
+        such as backup metadata are ignored). The caller must reload the config
+        entry afterwards so the running coordinator applies the restored config
+        (sensor subscriptions, weather client, schedules).
+        """
+        if not isinstance(data, dict) or "config" not in data:
+            raise ValueError("Invalid backup: missing 'config'")
+        # _populate_from_data assigns to self only once fully rebuilt, so a bad
+        # payload raises here without corrupting the live configuration.
+        await self._populate_from_data(data)
+        await self.async_save()
 
     async def async_delete(self):
         """Delete config."""
