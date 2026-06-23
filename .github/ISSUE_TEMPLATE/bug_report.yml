@@ -1,17 +1,17 @@
 name: Report bug
 description: Report an issue with Smart Irrigation
 labels: ["bug"]
-assignees: jeroenterheerdt
+assignees: altmenorg
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report. Before you create this new issue, [read the docs](https://jeroenterheerdt.github.io/HAsmartirrigation/).
+        Thanks for taking the time to fill out this bug report. Before you create this new issue, [read the docs](https://altmenorg.github.io/HAsmartirrigation/).
   - type: checkboxes
     id: docsread
     attributes:
       label: Did you read the docs?
-      description: You are required to read [the docs](https://jeroenterheerdt.github.io/HAsmartirrigation/) and confirm your question wasn't anwered there.
+      description: You are required to read [the docs](https://altmenorg.github.io/HAsmartirrigation/) and confirm your question wasn't anwered there.
       options:
         - label: I read the docs and my question is not answered there.
           required: true
