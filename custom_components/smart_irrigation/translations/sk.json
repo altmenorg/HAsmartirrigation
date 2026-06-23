@@ -8,13 +8,6 @@
       "name": "Zadajte jedinečný názov pre integráciu."
     },
     "step": {
-      "migrate": {
-        "title": "Importovať zo Smart Irrigation",
-        "description": "Našla sa existujúca konfigurácia Smart Irrigation. Importovať ju do Smart Irrigation? Vaše zóny, skupiny senzorov, moduly a nastavenia (a API kľúč poveternostnej služby) sa skopírujú. Vaša existujúca integrácia Smart Irrigation zostane nezmenená; môžete ju potom odstrániť.",
-        "data": {
-          "import_existing": "Importovať existujúcu konfiguráciu Smart Irrigation"
-        }
-      },
       "user": {
         "title": "Všeobecné nastavenie",
         "description": "Ak potrebujete pomoc s konfiguráciou, pozrite si dokumentáciu.",

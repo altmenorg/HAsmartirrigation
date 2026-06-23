@@ -10,14 +10,11 @@
   <img src="images/happyirrigation.jpg?raw=true" alt="Smart Irrigation" width="720">
 </p>
 
-> **Smart Irrigation** is a community-maintained fork of
-> [Smart Irrigation](https://github.com/jeroenterheerdt/HAsmartirrigation) by
-> [Jeroen ter Heerdt](https://github.com/jeroenterheerdt). All credit for the
-> original integration and its evapotranspiration model goes to him. This fork
-> keeps it actively maintained and fixes the rough edges of the configuration
-> UI and plumbing. It is its own integration (domain `smart_irrigation`); on
-> first run a wizard offers to import your existing Smart Irrigation
-> configuration.
+> **Smart Irrigation** was created by
+> [Jeroen ter Heerdt](https://github.com/jeroenterheerdt); all credit for the
+> original integration and its evapotranspiration model goes to him. It is now
+> actively maintained here, with the rough edges of the configuration UI and
+> plumbing smoothed out.
 
 This integration calculates the time to run your irrigation system to compensate for moisture loss by [evapotranspiration](https://en.wikipedia.org/wiki/Evapotranspiration). Using this integration you water your garden, lawn or crops precisely enough to compensate what has evaporated. It takes into account precipitation (rain, snow) and moisture loss caused by evapotranspiration and adjusts accordingly.
 If it rains or snows less than the amount of moisture lost, then irrigation is required. Otherwise, no irrigation is required.
@@ -31,7 +28,7 @@ Multiple zones are supported, each zone having its own configuration and set up.
 - 🌦️ **Switch weather service on the fly** — move between OpenWeatherMap and Pirate Weather, and update the API key, without removing and re-adding the integration.
 - 💾 **One-click Backup / Restore** of your entire configuration as a JSON file.
 - ⏰ **Flexible start triggers** around sunrise, sunset or solar azimuth — each firing its own identifiable event for your automations.
-- 🛠️ **Actively maintained** — steady fixes, refinements and new features, with a first-run wizard that imports your existing Smart Irrigation setup.
+- 🛠️ **Actively maintained** — steady fixes, refinements and new features.
 
 <p align="center">
   <img src="images/panel-zones.png?raw=true" alt="Smart Irrigation — Zones panel (Home Assistant-native UI)" width="860">
@@ -54,27 +51,9 @@ Multiple zones are supported, each zone having its own configuration and set up.
 
 **Manually.** Download the [latest release](https://github.com/altmenorg/HAppyIrrigation/releases) and extract it into `custom_components/smart_irrigation/`, then restart Home Assistant.
 
-On first run, if an existing Smart Irrigation configuration is detected, a wizard offers to import it (see below). Full documentation: **[altmenorg.github.io/HAppyIrrigation](https://altmenorg.github.io/HAppyIrrigation/)**.
+Full documentation: **[altmenorg.github.io/HAppyIrrigation](https://altmenorg.github.io/HAppyIrrigation/)**.
 
-## Migrating from Smart Irrigation
-
-Smart Irrigation is a **separate** integration (domain `smart_irrigation`), so it installs and runs **alongside** your existing Smart Irrigation — nothing is overwritten.
-
-**1. Automatic import.** Install Smart Irrigation, then add it from *Settings → Devices & Services → Add Integration*. On first run, if a Smart Irrigation configuration is detected, a wizard offers to import it. Accepting copies over your zones, sensor groups, modules/mappings and the weather service settings (including the API key), and the new `sensor.smart_irrigation_*` entities are created immediately.
-
-**2. Update your automations (manual).** Because the domain changed, anything that referenced the old integration by name must be updated by hand:
-
-| Old (`smart_irrigation`) | New (`smart_irrigation`) |
-|--------------------------|--------------------------|
-| `sensor.smart_irrigation_<zone>` | `sensor.smart_irrigation_<zone>` |
-| event `smart_irrigation_start_irrigation_all_zones` | event `smart_irrigation_start_irrigation_all_zones` |
-| services `smart_irrigation.*` | services `smart_irrigation.*` |
-
-Go through your automations, scripts and dashboard cards and update these references.
-
-**3. Remove Smart Irrigation.** Once you've verified Smart Irrigation works and your automations point at the new entities, events and services, delete the old Smart Irrigation integration.
-
-## What this fork fixes and adds
+## Recent improvements
 
 - A modernized, **HA-native configuration UI** throughout — instant-save editing (no lost focus, no jump-to-the-top), native inputs and controls, and a consolidated panel for every setting.
 - A **fully translated UI in 19 languages** (panel *and* config flow).
@@ -145,4 +124,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed development and testing inst
 
 ## License
 
-[MIT](LICENSE) — © 2020 Jeroen ter Heerdt (original Smart Irrigation), © 2026 Anthony Mercatante (Smart Irrigation fork).
+[MIT](LICENSE) — © 2020 Jeroen ter Heerdt (original Smart Irrigation), © 2026 Anthony Mercatante.

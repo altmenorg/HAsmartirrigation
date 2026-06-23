@@ -8,13 +8,6 @@
       "name": "请为该集成指定一个唯一名称。"
     },
     "step": {
-      "migrate": {
-        "title": "从 Smart Irrigation 导入",
-        "description": "检测到现有的 Smart Irrigation 配置。是否将其导入到 Smart Irrigation？您的区域、传感器组、模块和设置（以及天气服务 API 密钥）将被复制。现有的 Smart Irrigation 集成不会被改动；导入后您可以将其移除。",
-        "data": {
-          "import_existing": "导入现有的 Smart Irrigation 配置"
-        }
-      },
       "user": {
         "title": "常规设置",
         "description": "如果您在配置时需要帮助，请参阅文档。",
@@ -72,7 +65,7 @@
     "calculate_all_zones": {
       "name": "计算所有区域",
       "description": "在自动模式下计算所有区域",
-      "fields":{
+      "fields": {
         "delete_weather_data": {
           "name": "删除天气数据",
           "description": "计算后删除天气数据"

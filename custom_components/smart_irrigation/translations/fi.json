@@ -8,13 +8,6 @@
       "name": "Anna integraatiolle yksilöllinen nimi."
     },
     "step": {
-      "migrate": {
-        "title": "Tuo Smart Irrigation -määritys",
-        "description": "Olemassa oleva Smart Irrigation -määritys löytyi. Tuodaanko se Smart Irrigation -integraatioon? Vyöhykkeesi, anturiryhmäsi, moduulisi ja asetuksesi (sekä sääpalvelun API-avain) kopioidaan. Nykyinen Smart Irrigation -integraatiosi jätetään ennalleen; voit poistaa sen jälkikäteen.",
-        "data": {
-          "import_existing": "Tuo olemassa oleva Smart Irrigation -määritys"
-        }
-      },
       "user": {
         "title": "Yleiset asetukset",
         "description": "Jos tarvitset apua määrityksessä, katso ohjeet dokumentaatiosta.",
@@ -72,7 +65,7 @@
     "calculate_all_zones": {
       "name": "Laske kaikki vyöhykkeet",
       "description": "Laske kaikki automaattitilassa olevat vyöhykkeet",
-      "fields":{
+      "fields": {
         "delete_weather_data": {
           "name": "Poista säätiedot",
           "description": "Poista säätiedot laskennan jälkeen"

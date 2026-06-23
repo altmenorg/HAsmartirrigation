@@ -7,10 +7,6 @@ MANUFACTURER = "@altmenorg"
 DOMAIN = "smart_irrigation"
 CUSTOM_COMPONENTS = "custom_components"
 
-# Legacy Smart Irrigation domain we can migrate a configuration from on first run.
-LEGACY_DOMAIN = "smart_irrigation"
-CONF_IMPORT_FROM_LEGACY = "import_from_smart_irrigation"
-
 LANGUAGE_FILES_DIR = "frontend/localize/languages"
 # Two-letter language codes for which the backend reads a translation file when
 # building the calculation explanation. Regional variants (pt-BR, zh-Hans) are

@@ -27,6 +27,6 @@ Prefer to learn more first? Read [how it works](how-it-works.md), see [which wea
 
 ## Attribution
 
-**Smart Irrigation** is an independent, community-maintained fork of [Smart Irrigation](https://github.com/jeroenterheerdt/HAsmartirrigation) created by [Jeroen ter Heerdt](https://github.com/jeroenterheerdt) and its contributors. This documentation is derived from the original project's documentation and adapted for the fork.
+**Smart Irrigation** was created by [Jeroen ter Heerdt](https://github.com/jeroenterheerdt) and its contributors. All credit for the underlying evapotranspiration calculation engine and the original design goes to them.
 
-Both the original integration and this fork are distributed under the [MIT License](https://github.com/altmenorg/HAppyIrrigation/blob/master/LICENSE) — © Jeroen ter Heerdt and contributors. All credit for the underlying evapotranspiration calculation engine and the original design goes to the original authors. The original documentation remains available at [jeroenterheerdt.github.io/HAsmartirrigation](https://jeroenterheerdt.github.io/HAsmartirrigation/).
+The integration is distributed under the [MIT License](https://github.com/altmenorg/HAppyIrrigation/blob/master/LICENSE) — © Jeroen ter Heerdt and contributors.

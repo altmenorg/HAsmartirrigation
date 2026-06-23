@@ -8,8 +8,8 @@
 
 ## What this is
 
-A fork of [Smart Irrigation](https://github.com/jeroenterheerdt/HAsmartirrigation) turned into
-its own Home Assistant integration: domain **`smart_irrigation`**, branded **Smart Irrigation**.
+The [Smart Irrigation](https://github.com/jeroenterheerdt/HAsmartirrigation) Home Assistant
+integration: domain **`smart_irrigation`**, branded **Smart Irrigation**.
 Backend Python in `custom_components/smart_irrigation/`, frontend panel (TS/Lit) in
 `custom_components/smart_irrigation/frontend/`, Jekyll docs in `docs/`.
 

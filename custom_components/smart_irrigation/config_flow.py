@@ -18,7 +18,6 @@ class SmartIrrigationConfigFlow(config_entries.ConfigFlow, domain=const.DOMAIN):
     def __init__(self) -> None:
         """Initialize the SmartIrrigationConfigFlow instance."""
         self._errors = {}
-        self._migration_offered = False
         self._name = ""
         self._use_weather_service = False
         self._weather_service_api_key = ""
@@ -33,13 +32,6 @@ class SmartIrrigationConfigFlow(config_entries.ConfigFlow, domain=const.DOMAIN):
         # Only a single instance of the integration
         if self._async_current_entries():
             return self.async_abort(reason="single_instance_allowed")
-
-        # First run: if a legacy Smart Irrigation configuration exists, offer to
-        # import it before the normal setup questions.
-        if user_input is None and not self._migration_offered:
-            self._migration_offered = True
-            if await self.hass.async_add_executor_job(self._legacy_storage_exists):
-                return await self.async_step_migrate()
 
         if user_input is not None:
             try:
@@ -64,53 +56,6 @@ class SmartIrrigationConfigFlow(config_entries.ConfigFlow, domain=const.DOMAIN):
                 }
             ),
             errors=self._errors,
-        )
-
-    def _legacy_storage_exists(self) -> bool:
-        """Return True if a legacy Smart Irrigation storage file is present."""
-        import os
-
-        return os.path.exists(
-            self.hass.config.path(".storage", f"{const.LEGACY_DOMAIN}.storage")
-        )
-
-    async def async_step_migrate(self, user_input=None):
-        """Offer to import an existing Smart Irrigation configuration."""
-        if user_input is not None:
-            if user_input.get("import_existing"):
-                # Give the imported entry a stable unique_id, exactly like the
-                # normal setup flow does (_check_unique). Without it,
-                # entry.unique_id stays None and the "if entry.unique_id is None"
-                # branch in async_setup_entry fires on every restart — which used
-                # to wipe entry.data (incl. the weather-service API key) each time.
-                await self.async_set_unique_id(const.NAME)
-                self._abort_if_unique_id_configured()
-                # Carry over the weather-service settings + API key from the
-                # legacy config entry NOW (they live in the entry, not the
-                # storage file), and flag the entry so async_setup_entry imports
-                # the zones/modules/mappings from the legacy storage.
-                data = {
-                    const.CONF_IMPORT_FROM_LEGACY: True,
-                    const.CONF_INSTANCE_NAME: const.NAME,
-                }
-                legacy = self.hass.config_entries.async_entries(const.LEGACY_DOMAIN)
-                if legacy:
-                    legacy_data = legacy[0].data
-                    for key in (
-                        const.CONF_USE_WEATHER_SERVICE,
-                        const.CONF_WEATHER_SERVICE,
-                        const.CONF_WEATHER_SERVICE_API_KEY,
-                    ):
-                        if key in legacy_data:
-                            data[key] = legacy_data[key]
-                return self.async_create_entry(title=const.NAME, data=data)
-            # Declined: fall through to the normal first-time setup.
-            return await self._show_step_user(None)
-        return self.async_show_form(
-            step_id="migrate",
-            data_schema=vol.Schema(
-                {vol.Required("import_existing", default=True): bool}
-            ),
         )
 
     async def async_step_step1(self, user_input=None):

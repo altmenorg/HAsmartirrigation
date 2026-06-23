@@ -8,13 +8,6 @@
       "name": "Ange ett unikt namn för integrationen."
     },
     "step": {
-      "migrate": {
-        "title": "Importera från Smart Irrigation",
-        "description": "En befintlig Smart Irrigation-konfiguration hittades. Vill du importera den till Smart Irrigation? Dina zoner, sensorgrupper, moduler och inställningar (samt API-nyckeln för vädertjänsten) kopieras. Din befintliga Smart Irrigation-integration lämnas orörd; du kan ta bort den efteråt.",
-        "data": {
-          "import_existing": "Importera den befintliga Smart Irrigation-konfigurationen"
-        }
-      },
       "user": {
         "title": "Allmän konfiguration",
         "description": "Om du behöver hjälp med konfigurationen, se dokumentationen.",
@@ -72,7 +65,7 @@
     "calculate_all_zones": {
       "name": "Beräkna alla zoner",
       "description": "Beräkna alla zoner i automatiskt läge",
-      "fields":{
+      "fields": {
         "delete_weather_data": {
           "name": "Radera väderdata",
           "description": "Radera väderdata efter beräkning"

@@ -8,13 +8,6 @@
       "name": "Adjon meg egy egyedi nevet az integrációhoz."
     },
     "step": {
-      "migrate": {
-        "title": "Importálás a Smart Irrigation-ból",
-        "description": "Egy meglévő Smart Irrigation konfiguráció található. Importálja a Smart Irrigation rendszerbe? A zónák, az érzékelőcsoportok, a modulok és a beállítások (valamint az időjárás-szolgáltatás API-kulcsa) másolásra kerülnek. A meglévő Smart Irrigation integrációja érintetlen marad; utána eltávolíthatja.",
-        "data": {
-          "import_existing": "A meglévő Smart Irrigation konfiguráció importálása"
-        }
-      },
       "user": {
         "title": "Általános beállítás",
         "description": "Ha segítségre van szüksége a konfigurációhoz, kérjük, tekintse meg a dokumentációt.",
@@ -72,7 +65,7 @@
     "calculate_all_zones": {
       "name": "Összes zóna kiszámítása",
       "description": "Az összes zóna kiszámítása automatikus módban",
-      "fields":{
+      "fields": {
         "delete_weather_data": {
           "name": "Időjárási adatok törlése",
           "description": "Az időjárási adatok törlése a számítás után"

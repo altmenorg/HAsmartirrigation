@@ -8,13 +8,6 @@
       "name": "Podaj unikalną nazwę dla integracji."
     },
     "step": {
-      "migrate": {
-        "title": "Importuj z Smart Irrigation",
-        "description": "Znaleziono istniejącą konfigurację Smart Irrigation. Zaimportować ją do Smart Irrigation? Twoje strefy, grupy czujników, moduły i ustawienia (oraz klucz API usługi pogodowej) zostaną skopiowane. Twoja istniejąca integracja Smart Irrigation pozostanie nienaruszona; możesz ją później usunąć.",
-        "data": {
-          "import_existing": "Importuj istniejącą konfigurację Smart Irrigation"
-        }
-      },
       "user": {
         "title": "Konfiguracja ogólna",
         "description": "Jeśli potrzebujesz pomocy przy konfiguracji, zapoznaj się z dokumentacją.",
@@ -72,7 +65,7 @@
     "calculate_all_zones": {
       "name": "Oblicz wszystkie strefy",
       "description": "Oblicz wszystkie strefy w trybie automatycznym",
-      "fields":{
+      "fields": {
         "delete_weather_data": {
           "name": "Usuń dane pogodowe",
           "description": "Usuń dane pogodowe po obliczeniu"

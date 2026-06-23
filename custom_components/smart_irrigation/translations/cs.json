@@ -8,13 +8,6 @@
       "name": "Zadejte jedinečný název integrace."
     },
     "step": {
-      "migrate": {
-        "title": "Import ze Smart Irrigation",
-        "description": "Byla nalezena existující konfigurace Smart Irrigation. Importovat ji do Smart Irrigation? Vaše zóny, skupiny senzorů, moduly a nastavení (a API klíč meteorologické služby) budou zkopírovány. Vaše stávající integrace Smart Irrigation zůstane nedotčena; můžete ji poté odebrat.",
-        "data": {
-          "import_existing": "Importovat existující konfiguraci Smart Irrigation"
-        }
-      },
       "user": {
         "title": "Obecné nastavení",
         "description": "Pokud potřebujete pomoc s konfigurací, podívejte se do dokumentace.",
@@ -72,7 +65,7 @@
     "calculate_all_zones": {
       "name": "Vypočítat všechny zóny",
       "description": "Vypočítat všechny zóny v automatickém režimu",
-      "fields":{
+      "fields": {
         "delete_weather_data": {
           "name": "Smazat meteorologická data",
           "description": "Smazat meteorologická data po výpočtu"

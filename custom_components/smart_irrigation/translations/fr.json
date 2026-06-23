@@ -8,13 +8,6 @@
       "name": "Spécifiez un nom unique pour l'intégration."
     },
     "step": {
-      "migrate": {
-        "title": "Importer depuis Smart Irrigation",
-        "description": "Une configuration Smart Irrigation existante a été détectée. L'importer dans Smart Irrigation ? Vos zones, groupes de capteurs, modules et réglages (ainsi que la clé API du service météo) seront copiés. Votre intégration Smart Irrigation existante n'est pas modifiée ; vous pourrez la retirer ensuite.",
-        "data": {
-          "import_existing": "Importer la configuration Smart Irrigation existante"
-        }
-      },
       "user": {
         "title": "Configuration générale",
         "description": "Si vous avez besoin d'aide avec la configuration, consultez la documentation.",
