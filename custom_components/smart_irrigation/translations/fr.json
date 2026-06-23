@@ -4,51 +4,23 @@
       "single_instance_allowed": "Une seule configuration de Smart Irrigation est autorisée."
     },
     "error": {
-      "auth": "Clé API du service météo incorrecte",
       "name": "Spécifiez un nom unique pour l'intégration."
     },
     "step": {
       "user": {
         "title": "Configuration générale",
-        "description": "Si vous avez besoin d'aide avec la configuration, consultez la documentation.",
+        "description": "Si vous avez besoin d'aide avec la configuration, consultez la documentation. Le service météo se configure ensuite depuis le panneau Smart Irrigation.",
         "data": {
-          "name": "Nom unique de l'intégration",
-          "use_weather_service": "Utiliser un service météo (Open Weather Map ou Pirate Weather) pour les données météo ou les prévisions. Activez cette option si vous comptez utiliser l'un des services météo pris en charge pour au moins une partie des données météo, prévisions comprises. Désactivez-la si vous souhaitez utiliser exclusivement une autre source, comme votre propre station météo. Dans ce cas, Smart Irrigation ne pourra pas utiliser les prévisions."
-        }
-      },
-      "step1": {
-        "title": "Configuration de l'API du service météo",
-        "description": "Si vous avez besoin d'aide avec la configuration, consultez la documentation.",
-        "data": {
-          "weather_service": "Service météo à utiliser",
-          "weather_service_api_key": "Clé API du service météo",
-          "weather_service_api_version": "Version de l'API du service météo"
+          "name": "Nom unique de l'intégration"
         }
       }
     }
   },
   "options": {
     "error": {
-      "auth": "Clé API ou version du service météo incorrecte",
       "invalid_coordinates": "Coordonnées invalides. Vérifiez la latitude (-90 à 90) et la longitude (-180 à 180)."
     },
     "step": {
-      "init": {
-        "title": "Configuration de l'API du service météo",
-        "description": "Si vous avez besoin d'aide avec la configuration, consultez la documentation.",
-        "data": {
-          "use_weather_service": "Utiliser un service météo (Open Weather Map ou Pirate Weather) pour les données météo ou les prévisions. Activez cette option si vous comptez utiliser l'un des services météo pris en charge pour au moins une partie des données météo, prévisions comprises. Désactivez-la si vous souhaitez utiliser exclusivement une autre source, comme votre propre station météo. Dans ce cas, Smart Irrigation ne pourra pas utiliser les prévisions."
-        }
-      },
-      "step1": {
-        "title": "Configuration de l'API du service météo",
-        "description": "Si vous avez besoin d'aide avec la configuration, consultez la documentation.",
-        "data": {
-          "weather_service": "Service météo à utiliser",
-          "weather_service_api_key": "Clé API du service météo",
-          "weather_service_api_version": "Version de l'API du service météo"
-        }
-      },
       "coordinates": {
         "title": "Coordonnées de localisation",
         "description": "Configurez les coordonnées de localisation pour la récupération des données météo. Vous pouvez utiliser des coordonnées manuelles différentes de l'emplacement de votre Home Assistant si nécessaire.",
