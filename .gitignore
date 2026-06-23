@@ -396,6 +396,7 @@ test_calendar_fix.py
 # Local-only, NOT for the public repo (personal infra: HAOS host, SSH, paths)
 /deploy.sh
 /HANDOFF.md
+/CLAUDE.local.md
 
 # Icon-generation scratch (the real brand assets live in custom_components/.../brand/)
 /images/brand/

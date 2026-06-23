@@ -6,6 +6,12 @@
 > If `HANDOFF.md` is missing (fresh clone elsewhere), ask the user for it — it carries the
 > personal infra details that are kept out of this public repo.
 
+> **👉 Also read `CLAUDE.local.md`** if present (local / gitignored). It links the maintainer's
+> product roadmap notes (future of Smart Irrigation: competitive analysis, greenhouse mode,
+> executor blueprints, companion card) to keep in mind. Absent on a fresh public clone — fine.
+
+@CLAUDE.local.md
+
 ## What this is
 
 The [Smart Irrigation](https://github.com/jeroenterheerdt/HAsmartirrigation) Home Assistant
