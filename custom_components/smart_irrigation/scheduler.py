@@ -10,6 +10,7 @@ from homeassistant.helpers.event import (
     async_track_time_change,
     async_track_time_interval,
 )
+from homeassistant.util import dt as dt_util
 
 from . import const
 
@@ -222,11 +223,23 @@ class RecurringScheduleManager:
 
         if start_date:
             start_dt = datetime.datetime.fromisoformat(start_date)
+            if start_dt.tzinfo is None:
+                # The frontend stores a date-only value (e.g. "2026-06-19"), which
+                # parses to a naive datetime at midnight. `now` is tz-aware, so
+                # localize before comparing to avoid a TypeError that crashes the
+                # schedule at fire time.
+                start_dt = start_dt.replace(tzinfo=dt_util.DEFAULT_TIME_ZONE)
             if now < start_dt:
                 return
 
         if end_date:
             end_dt = datetime.datetime.fromisoformat(end_date)
+            if end_dt.tzinfo is None:
+                # Date-only end value: treat it as inclusive through end-of-day in
+                # local time so the schedule still runs on the final day.
+                end_dt = end_dt.replace(
+                    hour=23, minute=59, second=59, tzinfo=dt_util.DEFAULT_TIME_ZONE
+                )
             if now > end_dt:
                 return
 
