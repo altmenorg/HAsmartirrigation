@@ -10,7 +10,10 @@ const plugins = [
   commonjs({
     include: 'node_modules/**'
   }),
-  typescript(),
+  // include explicite : le filtre par défaut de typescript2 est en extglob
+  // (`**/*.ts+(|x)`), que picomatch >=4 ne matche plus -> les .ts seraient
+  // skippes (non transpiles) et rollup planterait sur la syntaxe TS brute.
+  typescript({ include: ['**/*.ts', '**/*.tsx'] }),
   json(),
   babel({
     exclude: 'node_modules/**',
