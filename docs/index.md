@@ -29,4 +29,4 @@ Prefer to learn more first? Read [how it works](how-it-works.md), see [which wea
 
 **Smart Irrigation** was created by [Jeroen ter Heerdt](https://github.com/jeroenterheerdt) and its contributors. All credit for the underlying evapotranspiration calculation engine and the original design goes to them.
 
-The integration is distributed under the [MIT License](https://github.com/altmenorg/HAppyIrrigation/blob/master/LICENSE) — © Jeroen ter Heerdt and contributors.
+The integration is distributed under the [MIT License](https://github.com/altmenorg/HAsmartirrigation/blob/master/LICENSE) — © Jeroen ter Heerdt and contributors.

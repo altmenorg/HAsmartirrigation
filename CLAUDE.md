@@ -31,7 +31,7 @@ Backend Python in `custom_components/smart_irrigation/`, frontend panel (TS/Lit)
 - **Frontend**: a change in `frontend/src/` or `frontend/localize/` only takes effect after a
   rebuild (`npm run build`), because the language files are compiled into the bundle.
 - Windows host: use `py` (not `python`, a Store stub); Python paths are `C:/...`.
-- `gh` CLI: always pass `--repo altmenorg/HAppyIrrigation` (the `upstream` remote makes bare
+- `gh` CLI: always pass `--repo altmenorg/HAsmartirrigation` (the `upstream` remote makes bare
   `gh run ...` hit jeroenterheerdt's repo).
 
 See `HANDOFF.md` for everything operational (deploy, HAOS access, gotchas, translation status).

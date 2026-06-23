@@ -1,8 +1,8 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=flat-square)](https://github.com/hacs/integration)
 [![release][release-badge]][release-url]
 
-[release-url]: https://github.com/altmenorg/HAppyIrrigation/releases
-[release-badge]: https://img.shields.io/github/v/release/altmenorg/HAppyIrrigation?style=flat-square
+[release-url]: https://github.com/altmenorg/HAsmartirrigation/releases
+[release-badge]: https://img.shields.io/github/v/release/altmenorg/HAsmartirrigation?style=flat-square
 
 # Smart Irrigation
 
@@ -45,13 +45,13 @@ Multiple zones are supported, each zone having its own configuration and set up.
 **Via HACS (recommended).** Smart Irrigation is distributed as a HACS **custom repository**:
 
 1. In [HACS](https://hacs.xyz), open the **⋮ menu → Custom repositories**.
-2. Add `https://github.com/altmenorg/HAppyIrrigation` with category **Integration**, and confirm.
+2. Add `https://github.com/altmenorg/HAsmartirrigation` with category **Integration**, and confirm.
 3. Search for **Smart Irrigation** in HACS and click **Download**.
 4. **Restart Home Assistant**, then add it from *Settings → Devices & Services → Add Integration → Smart Irrigation*.
 
-**Manually.** Download the [latest release](https://github.com/altmenorg/HAppyIrrigation/releases) and extract it into `custom_components/smart_irrigation/`, then restart Home Assistant.
+**Manually.** Download the [latest release](https://github.com/altmenorg/HAsmartirrigation/releases) and extract it into `custom_components/smart_irrigation/`, then restart Home Assistant.
 
-Full documentation: **[altmenorg.github.io/HAppyIrrigation](https://altmenorg.github.io/HAppyIrrigation/)**.
+Full documentation: **[altmenorg.github.io/HAsmartirrigation](https://altmenorg.github.io/HAsmartirrigation/)**.
 
 ## Recent improvements
 
@@ -105,13 +105,13 @@ See the [enhanced scheduling documentation](docs/usage-enhanced-scheduling-integ
 
 ## Documentation
 
-The full documentation is published at **[altmenorg.github.io/HAppyIrrigation](https://altmenorg.github.io/HAppyIrrigation/)** (source in [`docs/`](docs/)) — installation, configuration (zones, sensor groups, modules), usage, events, services and troubleshooting.
+The full documentation is published at **[altmenorg.github.io/HAsmartirrigation](https://altmenorg.github.io/HAsmartirrigation/)** (source in [`docs/`](docs/)) — installation, configuration (zones, sensor groups, modules), usage, events, services and troubleshooting.
 
 ## Development
 
 ```bash
-git clone https://github.com/altmenorg/HAppyIrrigation.git
-cd HAppyIrrigation
+git clone https://github.com/altmenorg/HAsmartirrigation.git
+cd HAsmartirrigation
 make setup          # create the venv and install dev dependencies
 make help           # list all commands (test / lint / format / check)
 ```

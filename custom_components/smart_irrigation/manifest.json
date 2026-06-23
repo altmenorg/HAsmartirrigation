@@ -4,9 +4,9 @@
   "codeowners": ["@altmenorg"],
   "config_flow": true,
   "dependencies": ["http", "panel_custom"],
-  "documentation": "https://github.com/altmenorg/HAppyIrrigation",
+  "documentation": "https://github.com/altmenorg/HAsmartirrigation",
   "iot_class": "local_push",
-  "issue_tracker": "https://github.com/altmenorg/HAppyIrrigation/issues",
+  "issue_tracker": "https://github.com/altmenorg/HAsmartirrigation/issues",
   "requirements": ["aiofiles"],
   "version": "v2026.6.4"
 }
