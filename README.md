@@ -92,14 +92,14 @@ action:
 
 The precipitation-skip and "days between irrigation" settings still apply: on a skip day no event is fired.
 
-## Enhanced features
+## 🧩 Enhanced features
 
 These advanced features are driven by **services and blueprints** — there is no dedicated panel UI for them yet:
 
-- **Recurring schedules** — daily / weekly / monthly / interval-based schedules via the `smart_irrigation.create_recurring_schedule` service.
-- **Seasonal adjustments** — automatically adjust irrigation parameters based on the season.
-- **Irrigation Unlimited integration** — bidirectional integration with the [Irrigation Unlimited](https://github.com/rgc99/irrigation_unlimited) component.
-- **Automation blueprints** — ready-to-use blueprints in [`blueprints/`](blueprints/).
+- 🔁 **Recurring schedules** — daily / weekly / monthly / interval-based schedules via the `smart_irrigation.create_recurring_schedule` service.
+- 🍂 **Seasonal adjustments** — automatically adjust irrigation parameters based on the season.
+- 🔗 **Irrigation Unlimited integration** — bidirectional integration with the [Irrigation Unlimited](https://github.com/rgc99/irrigation_unlimited) component.
+- 📐 **Automation blueprints** — ready-to-use blueprints in [`blueprints/`](blueprints/).
 
 See the [enhanced scheduling documentation](docs/usage-enhanced-scheduling-integration.md) for details and examples.
 
