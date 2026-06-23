@@ -4,8 +4,8 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
-from custom_components.happy_irrigation import SmartIrrigationCoordinator
-from custom_components.happy_irrigation.const import (
+from custom_components.smart_irrigation import SmartIrrigationCoordinator
+from custom_components.smart_irrigation.const import (
     MODULE_NAME,
     ZONE_ID,
     ZONE_MAPPING,
@@ -26,7 +26,7 @@ def mock_store():
     # Use regular Mock to avoid coroutine issues with sync methods
     from unittest.mock import Mock
 
-    from custom_components.happy_irrigation.const import (
+    from custom_components.smart_irrigation.const import (
         CONF_AUTO_CALC_ENABLED,
         CONF_AUTO_CLEAR_ENABLED,
         CONF_AUTO_UPDATE_ENABLED,
@@ -120,7 +120,7 @@ def mock_pyeto_module():
 @pytest.fixture
 async def coordinator(hass, mock_store):
     """Create a SmartIrrigationCoordinator instance for testing."""
-    from custom_components.happy_irrigation.const import (
+    from custom_components.smart_irrigation.const import (
         CONF_USE_WEATHER_SERVICE,
         CONF_WEATHER_SERVICE,
         DOMAIN,

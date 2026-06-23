@@ -13,7 +13,7 @@ class MockConfigEntry(ConfigEntry):
         """Initialize mock config entry."""
         # Set default values
         default_data = {
-            "domain": "happy_irrigation",
+            "domain": "smart_irrigation",
             "title": "Smart Irrigation Test",
             "data": {},
             "options": {},

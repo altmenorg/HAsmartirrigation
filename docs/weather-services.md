@@ -6,7 +6,7 @@ title: Weather services
 
 > Related: [How it works](how-it-works.md) &middot; [Sensor groups](configuration-sensor-groups.md) &middot; [Weather service setup](installation-weatherservice.md)
 
-HAppy Irrigation needs weather data to estimate evapotranspiration (ET) and, from it, how long to run each zone. That data can come from a **weather service**, from your **own sensors**, or from a mix of both (configured per field in a [sensor group](configuration-sensor-groups.md)).
+Smart Irrigation needs weather data to estimate evapotranspiration (ET) and, from it, how long to run each zone. That data can come from a **weather service**, from your **own sensors**, or from a mix of both (configured per field in a [sensor group](configuration-sensor-groups.md)).
 
 Three weather services are supported.
 

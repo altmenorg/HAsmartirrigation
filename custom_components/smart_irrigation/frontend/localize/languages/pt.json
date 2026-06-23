@@ -1,0 +1,473 @@
+{
+  "common": {
+    "loading": "A carregar",
+    "saving": "A guardar",
+    "actions": {
+      "delete": "Eliminar"
+    },
+    "labels": {
+      "module": "Módulo",
+      "no": "Não",
+      "select": "Selecionar",
+      "yes": "Sim",
+      "enabled": "Ativado",
+      "disabled": "Desativado",
+      "before": "antes",
+      "after": "depois"
+    },
+    "units": {
+      "seconds": "segundos"
+    },
+    "attributes": {
+      "size": "tamanho",
+      "throughput": "débito",
+      "state": "estado",
+      "bucket": "bucket",
+      "last_updated": "última atualização",
+      "last_calculated": "último cálculo",
+      "number_of_data_points": "número de pontos de dados"
+    },
+    "loading-messages": {
+      "configuration": "A carregar configuração...",
+      "modules": "A carregar módulos...",
+      "general": "A carregar..."
+    },
+    "saving-messages": {
+      "adding": "A adicionar...",
+      "saving": "A guardar..."
+    }
+  },
+  "defaults": {
+    "default-zone": "Zona predefinida",
+    "default-mapping": "Grupo de sensores predefinido"
+  },
+  "module": {
+    "calculation": {
+      "explanation": {
+        "module-returned-evapotranspiration-deficiency": "Nota: esta explicação utiliza '.' como separador decimal e mostra valores arredondados e métricos. O módulo devolveu uma deficiência de evapotranspiração ( = et0 * hour_multiplier + precipitation) de",
+        "bucket-was": "O bucket era",
+        "new-bucket-values-is": "O novo valor do bucket é",
+        "bucket": "bucket",
+        "old-bucket-variable": "old_bucket",
+        "max-bucket-variable": "max_bucket",
+        "delta": "delta",
+        "bucket-less-than-zero-irrigation-necessary": "Como bucket < 0, a irrigação é necessária",
+        "steps-taken-to-calculate-duration": "Para calcular a duração exata, foram seguidos os seguintes passos",
+        "precipitation-rate-defined-as": "A taxa de precipitação é definida como",
+        "duration-is-calculated-as": "A duração é calculada como",
+        "drainage": "drainage",
+        "drainage-rate": "drainage_rate",
+        "hours": "horas",
+        "precipitation-rate-variable": "precipitation_rate",
+        "multiplier-is-applied": "Agora, o multiplicador é aplicado. O multiplicador é",
+        "duration-after-multiplier-is": "logo a duração é",
+        "maximum-duration-is-applied": "Em seguida, é aplicada a duração máxima. A duração máxima é",
+        "duration-after-maximum-duration-is": "logo a duração é",
+        "lead-time-is-applied": "Por fim, é aplicado o tempo de antecedência. O tempo de antecedência é",
+        "duration-after-lead-time-is": "logo a duração final é",
+        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Como bucket >= 0, não é necessária irrigação e a duração é definida como",
+        "maximum-bucket-is": "O tamanho máximo do bucket é",
+        "drainage-rate-is": "A taxa de drenagem quando saturado (bucket no máximo) é",
+        "current-drainage-is": "A drenagem atual é calculada como",
+        "no-drainage": "A drenagem atual é 0 porque"
+      }
+    }
+  },
+  "calcmodules": {
+    "pyeto": {
+      "description": "Calcular a duração com base no cálculo FAO56 da biblioteca PyETO"
+    },
+    "static": {
+      "description": "Módulo 'fictício' com um delta estático configurável"
+    },
+    "passthrough": {
+      "description": "Módulo de passagem que devolve o valor de um sensor de evapotranspiração como delta"
+    }
+  },
+  "panels": {
+    "weatherservice": {
+      "title": "Serviço meteorológico",
+      "description": "Veja e altere o serviço meteorológico utilizado para obter dados meteorológicos — sem necessidade de reinstalar a integração. A chave de API é validada e a alteração é aplicada de imediato.",
+      "labels": {
+        "use-weather-service": "Utilizar um serviço meteorológico",
+        "service": "Serviço meteorológico",
+        "api-key": "Chave de API"
+      },
+      "actions": {
+        "save": "Guardar",
+        "saving": "A guardar…"
+      },
+      "messages": {
+        "no-service": "Não é utilizado nenhum serviço meteorológico — os dados meteorológicos provêm apenas dos seus próprios sensores.",
+        "saved": "Serviço meteorológico atualizado e aplicado.",
+        "reload-note": "Ao guardar, a chave de API é validada junto do serviço e a alteração é aplicada de imediato."
+      }
+    },
+    "backuprestore": {
+      "title": "Cópia de segurança / restauro",
+      "description": "Exporte a configuração completa do Smart Irrigation para um ficheiro JSON, ou restaure-a a partir de uma cópia de segurança anterior.",
+      "cards": {
+        "backup": {
+          "title": "Cópia de segurança",
+          "description": "Transfira a configuração completa (definições gerais, zonas, módulos e grupos de sensores) como ficheiro JSON."
+        },
+        "restore": {
+          "title": "Restaurar",
+          "description": "Carregue um ficheiro JSON exportado anteriormente para substituir a configuração atual."
+        }
+      },
+      "actions": {
+        "export": "Exportar para JSON",
+        "choose-file": "Escolher um ficheiro de cópia de segurança…",
+        "restore": "Restaurar esta cópia de segurança",
+        "restoring": "A restaurar…"
+      },
+      "messages": {
+        "exported": "Ficheiro de cópia de segurança transferido.",
+        "restored": "Configuração restaurada — a recarregar a integração.",
+        "invalid-file": "Este ficheiro não é uma cópia de segurança válida do Smart Irrigation.",
+        "confirm-title": "Substituir toda a configuração?",
+        "summary": "Esta cópia de segurança contém",
+        "confirm-warning": "O restauro substitui todas as definições gerais, zonas, módulos e grupos de sensores atuais. Esta ação não pode ser anulada.",
+        "reload-note": "O restauro substitui tudo e recarrega a integração para aplicar a alteração."
+      }
+    },
+    "general": {
+      "cards": {
+        "automatic-duration-calculation": {
+          "header": "Cálculo automático da duração",
+          "description": "O cálculo utiliza os dados meteorológicos recolhidos até esse momento e atualiza o bucket de cada zona automática. Depois, a duração é ajustada com base no novo valor do bucket e os dados meteorológicos recolhidos são removidos.",
+          "labels": {
+            "auto-calc-enabled": "Calcular automaticamente as durações de irrigação",
+            "calc-time": "Calcular às"
+          }
+        },
+        "automatic-update": {
+          "errors": {
+            "warning-update-time-on-or-after-calc-time": "Aviso: a hora de atualização dos dados meteorológicos é igual ou posterior à hora de cálculo"
+          },
+          "header": "Atualização automática dos dados meteorológicos",
+          "description": "Recolher e armazenar dados meteorológicos automaticamente. Os dados meteorológicos são necessários para calcular os buckets e as durações das zonas.",
+          "labels": {
+            "auto-update-enabled": "Atualizar automaticamente os dados meteorológicos",
+            "auto-update-schedule": "Agendamento da atualização",
+            "auto-update-time": "Atualizar às",
+            "auto-update-interval": "Atualizar os dados dos sensores a cada",
+            "auto-update-delay": "Atraso da atualização"
+          },
+          "options": {
+            "minutes": "minutos",
+            "hours": "horas",
+            "days": "dias"
+          }
+        },
+        "automatic-clear": {
+          "header": "Eliminação automática dos dados meteorológicos",
+          "description": "Remova automaticamente os dados meteorológicos recolhidos a uma hora configurada. Use esta opção para garantir que não ficam dados meteorológicos de dias anteriores. Não remova os dados meteorológicos antes de calcular e use esta opção apenas se esperar que a atualização automática recolha dados meteorológicos após ter calculado para o dia. Idealmente, deve eliminar o mais tarde possível no dia.",
+          "labels": {
+            "automatic-clear-enabled": "Limpar automaticamente os dados meteorológicos recolhidos",
+            "automatic-clear-time": "Limpar os dados meteorológicos às"
+          }
+        },
+        "continuousupdates": {
+          "header": "Atualizações contínuas para sensores (experimental)",
+          "description": "Esta funcionalidade experimental atualiza continuamente os dados dos sensores. É útil para grupos de sensores que utilizam fontes que fornecem dados contínuos, como estações meteorológicas. Esta funcionalidade não pode ser usada para grupos de sensores que dependam, pelo menos em parte, de serviços meteorológicos, pois a consulta contínua de APIs implica custos. Tenha em conta que isto é experimental e pode não funcionar como esperado. Use por sua conta e risco.",
+          "labels": {
+            "continuousupdates": "Ativar atualizações contínuas",
+            "sensor_debounce": "Debounce do sensor"
+          }
+        }
+      },
+      "description": "Esta página fornece definições globais.",
+      "title": "Geral"
+    },
+    "help": {
+      "title": "Ajuda",
+      "cards": {
+        "how-to-get-help": {
+          "title": "Como obter ajuda",
+          "first-read-the": "Primeiro, leia a",
+          "wiki": "Wiki",
+          "if-you-still-need-help": "Se ainda precisar de ajuda, contacte através do",
+          "community-forum": "Fórum da comunidade",
+          "or-open-a": "ou abra uma",
+          "github-issue": "Issue no Github",
+          "english-only": "Apenas em inglês"
+        }
+      }
+    },
+    "info": {
+      "title": "Informação",
+      "description": "Veja informação sobre a próxima irrigação e o estado do sistema.",
+      "configuration-not-available": "Configuração não disponível.",
+      "cards": {
+        "zone-bucket-values": {
+          "title": "Valores de bucket e duração das zonas",
+          "labels": {
+            "bucket": "Bucket",
+            "duration": "Duração"
+          },
+          "no-zones": "Nenhuma zona configurada"
+        },
+        "next-irrigation": {
+          "title": "Próxima irrigação",
+          "labels": {
+            "next-start": "Próximo início",
+            "duration": "Duração",
+            "zones": "Zonas"
+          },
+          "no-data": "Sem dados disponíveis"
+        },
+        "irrigation-reason": {
+          "title": "Motivo da irrigação",
+          "labels": {
+            "reason": "Motivo",
+            "sunrise": "Nascer do sol",
+            "total-duration": "Duração total",
+            "explanation": "Explicação"
+          },
+          "no-data": "Sem dados disponíveis"
+        }
+      }
+    },
+    "mappings": {
+      "cards": {
+        "add-mapping": {
+          "actions": {
+            "add": "Adicionar grupo de sensores"
+          },
+          "header": "Adicionar grupos de sensores"
+        },
+        "mapping": {
+          "aggregates": {
+            "average": "Média",
+            "first": "Primeiro",
+            "last": "Último",
+            "maximum": "Máximo",
+            "median": "Mediana",
+            "minimum": "Mínimo",
+            "riemannsum": "Soma de Riemann",
+            "sum": "Soma",
+            "delta": "Delta"
+          },
+          "errors": {
+            "cannot-delete-mapping-because-zones-use-it": "Não pode eliminar este grupo de sensores porque existe pelo menos uma zona a utilizá-lo.",
+            "invalid_source": "Fonte inválida",
+            "source_does_not_exist": "A fonte não existe. Introduza uma fonte válida, como 'sensor.mysensor'."
+          },
+          "items": {
+            "dewpoint": "Ponto de orvalho",
+            "evapotranspiration": "Evapotranspiração",
+            "humidity": "Humidade",
+            "maximum temperature": "Temperatura máxima",
+            "minimum temperature": "Temperatura mínima",
+            "precipitation": "Precipitação total",
+            "current precipitation": "Precipitação atual",
+            "pressure": "Pressão",
+            "solar radiation": "Radiação solar",
+            "temperature": "Temperatura",
+            "windspeed": "Velocidade do vento"
+          },
+          "pressure_types": {
+            "absolute": "absoluta",
+            "relative": "relativa"
+          },
+          "pressure-type": "A pressão é",
+          "sensor-aggregate-of-sensor-values-to-calculate": "dos valores dos sensores para calcular a duração",
+          "sensor-aggregate-use-the": "Utilizar a",
+          "sensor-entity": "Entidade do sensor",
+          "static_value": "Valor",
+          "input-units": "A entrada fornece valores em",
+          "source": "Fonte",
+          "sources": {
+            "none": "Nenhuma",
+            "weather_service": "Serviço meteorológico",
+            "sensor": "Sensor",
+            "static": "Valor estático"
+          }
+        }
+      },
+      "description": "Adicione um ou mais grupos de sensores que obtêm dados meteorológicos a partir do serviço meteorológico, de sensores ou de uma combinação destes. Pode associar cada grupo de sensores a uma ou mais zonas",
+      "labels": {
+        "mapping-name": "Nome"
+      },
+      "no_items": "Ainda não existem grupos de sensores definidos.",
+      "title": "Grupos de sensores",
+      "weather-records": {
+        "title": "Registos meteorológicos (últimos 10)",
+        "timestamp": "Hora",
+        "temperature": "Temp",
+        "humidity": "Humidade",
+        "precipitation": "Precip",
+        "retrieval-time": "Obtido",
+        "no-data": "Sem dados meteorológicos disponíveis para este grupo de sensores"
+      }
+    },
+    "modules": {
+      "cards": {
+        "add-module": {
+          "actions": {
+            "add": "Adicionar módulo"
+          },
+          "header": "Adicionar módulo"
+        },
+        "module": {
+          "errors": {
+            "cannot-delete-module-because-zones-use-it": "Não pode eliminar este módulo porque existe pelo menos uma zona a utilizá-lo."
+          },
+          "labels": {
+            "configuration": "Configuração",
+            "required": "indica um campo obrigatório"
+          },
+          "translated-options": {
+            "DontEstimate": "Não estimar",
+            "EstimateFromSunHours": "Estimar a partir das horas de sol",
+            "EstimateFromTemp": "Estimar a partir da temperatura",
+            "EstimateFromSunHoursAndTemperature": "Estimar a partir da média das horas de sol e da temperatura"
+          }
+        }
+      },
+      "description": "Adicione um ou mais módulos que calculam a duração da irrigação. Cada módulo tem a sua própria configuração e pode ser usado para calcular a duração de uma ou mais zonas.",
+      "no_items": "Ainda não existem módulos definidos.",
+      "title": "Módulos"
+    },
+    "zones": {
+      "actions": {
+        "add": "Adicionar",
+        "calculate": "Calcular",
+        "information": "Informação",
+        "update": "Atualizar",
+        "reset-bucket": "Repor bucket",
+        "view-weather-info": "Ver dados meteorológicos",
+        "view-weather-info-message": "Dados meteorológicos disponíveis para",
+        "view-watering-calendar": "Ver calendário de rega"
+      },
+      "cards": {
+        "add-zone": {
+          "actions": {
+            "add": "Adicionar zona"
+          },
+          "header": "Adicionar zona"
+        },
+        "zone-actions": {
+          "actions": {
+            "calculate-all": "Calcular todas as zonas",
+            "update-all": "Atualizar todas as zonas",
+            "reset-all-buckets": "Repor todos os buckets",
+            "clear-all-weatherdata": "Limpar todos os dados meteorológicos"
+          },
+          "header": "Ações em todas as zonas"
+        }
+      },
+      "description": "Especifique aqui uma ou mais zonas de irrigação. A duração da irrigação é calculada por zona, dependendo do tamanho, do débito, do estado, do módulo e do grupo de sensores.",
+      "labels": {
+        "bucket": "Bucket",
+        "duration": "Duração",
+        "lead-time": "Tempo de antecedência",
+        "mapping": "Grupo de sensores",
+        "maximum-duration": "Duração máxima",
+        "multiplier": "Multiplicador",
+        "name": "Nome",
+        "size": "Tamanho",
+        "state": "Estado",
+        "states": {
+          "automatic": "Automático",
+          "disabled": "Desativado",
+          "manual": "Manual"
+        },
+        "throughput": "Débito",
+        "maximum-bucket": "Bucket máximo",
+        "last_calculated": "Último cálculo",
+        "data-last-updated": "Dados atualizados pela última vez",
+        "data-number-of-data-points": "Número de pontos de dados",
+        "drainage_rate": "Taxa de drenagem"
+      },
+      "no_items": "Ainda não existem zonas definidas.",
+      "title": "Zonas"
+    }
+  },
+  "title": "Smart Irrigation",
+  "irrigation_start_triggers": {
+    "title": "Acionadores de início de irrigação",
+    "description": "Configure quando a irrigação deve começar com base em eventos solares. Pode adicionar vários acionadores para diferentes agendamentos. Para acionadores ao nascer do sol, deixar o desvio a 0 utilizará automaticamente a duração total de todas as zonas ativadas.",
+    "usage_before": "Quando um acionador dispara, o Smart Irrigation emite o evento ",
+    "usage_after": " — escute-o numa automação para começar a regar. Os dados do evento incluem trigger_name, trigger_type e offset_minutes, para que possa reagir de forma diferente a cada acionador. As definições de salto por precipitação e de dias entre irrigações continuam a aplicar-se: num dia de salto não é emitido nenhum evento.",
+    "add_trigger": "Adicionar acionador",
+    "edit_trigger": "Editar acionador",
+    "delete_trigger": "Eliminar acionador",
+    "trigger_types": {
+      "sunrise": "Nascer do sol",
+      "sunset": "Pôr do sol",
+      "solar_azimuth": "Azimute solar"
+    },
+    "fields": {
+      "name": {
+        "name": "Nome do acionador",
+        "description": "Um nome descritivo para identificar este acionador"
+      },
+      "type": {
+        "name": "Tipo de acionador",
+        "description": "O tipo de evento solar que dispara o acionador"
+      },
+      "enabled": {
+        "name": "Ativado",
+        "description": "Se este acionador está atualmente ativo"
+      },
+      "offset_minutes": {
+        "name": "Desvio (minutos)",
+        "description": "Minutos antes (-) ou depois (+) do evento solar. Para acionadores ao nascer do sol, use 0 para um agendamento automático baseado na duração total das zonas."
+      },
+      "azimuth_angle": {
+        "name": "Ângulo de azimute (graus)",
+        "description": "Ângulo de azimute solar em graus, onde 0=Norte, 90=Este, 180=Sul, 270=Oeste"
+      },
+      "account_for_duration": {
+        "name": "Considerar a duração",
+        "description": "Quando ativado, a irrigação começa com antecedência suficiente para terminar à hora especificada. Quando desativado, a irrigação começa exatamente à hora especificada."
+      }
+    },
+    "dialog": {
+      "add_title": "Adicionar acionador de início de irrigação",
+      "edit_title": "Editar acionador de início de irrigação",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "delete": "Eliminar",
+      "help": "Quando este acionador dispara, o Smart Irrigation emite o evento seguinte — utilize-o numa automação para começar a regar. Os dados do evento incluem o nome deste acionador (e o tipo/desvio), para que possa reagir-lhe especificamente:"
+    },
+    "no_triggers": "Não há acionadores de início de irrigação configurados. O sistema utilizará o comportamento predefinido (nascer do sol com a duração total das zonas). Adicione acionadores para personalizar quando a irrigação começa.",
+    "offset_auto": "Automático (calculado a partir da duração total das zonas)",
+    "confirm_delete": "Tem a certeza de que pretende eliminar o acionador '{name}'?",
+    "validation": {
+      "name_required": "O nome do acionador é obrigatório",
+      "azimuth_invalid": "O ângulo de azimute deve ser um número válido"
+    },
+    "help": {
+      "sunrise_offset": "Para acionadores ao nascer do sol: use valores negativos para começar antes do nascer do sol, positivos para começar depois. Defina como 0 para começar automaticamente com antecedência suficiente para concluir todas as zonas antes do nascer do sol.",
+      "sunset_offset": "Para acionadores ao pôr do sol: use valores negativos para começar antes do pôr do sol, positivos para começar depois do pôr do sol.",
+      "azimuth_explanation": "O azimute solar é a direção da bússola do sol. 0°=Norte, 90°=Este, 180°=Sul, 270°=Oeste. Pode introduzir qualquer valor de ângulo (por exemplo, 450° = 90°, -30° = 330°). Use isto para acionar a irrigação quando o sol atinge uma posição específica.",
+      "multiple_triggers": "Pode configurar vários acionadores. Cada acionador ativado agendará independentemente os inícios de irrigação."
+    }
+  },
+  "weather_skip": {
+    "title": "Salto de irrigação com base no tempo",
+    "description": "Saltar automaticamente a irrigação quando há precipitação prevista. Esta funcionalidade requer um serviço meteorológico configurado.",
+    "threshold_label": "Limiar de precipitação",
+    "threshold_description": "Quantidade mínima de precipitação (em mm) prevista para hoje e amanhã para saltar a irrigação."
+  },
+  "coordinate_config": {
+    "title": "Coordenadas de localização",
+    "description": "Configure as coordenadas de localização para a obtenção de dados meteorológicos. Se necessário, pode usar coordenadas manuais diferentes da localização do seu Home Assistant.",
+    "manual_enabled": "Utilizar coordenadas manuais",
+    "use_ha_location": "Utilizar a localização do Home Assistant",
+    "latitude": "Latitude (graus decimais)",
+    "longitude": "Longitude (graus decimais)",
+    "elevation": "Altitude (metros acima do nível do mar)",
+    "current_ha_coords": "Coordenadas atuais do Home Assistant"
+  },
+  "days_between_irrigation": {
+    "title": "Dias entre irrigações",
+    "description": "Configure o número mínimo de dias que devem decorrer entre eventos de irrigação. Isto ajuda a controlar a frequência de rega para conservação da água e gestão da saúde das plantas.\n\nCasos de uso típicos do mundo real:\n• Cuidado do relvado: intervalos de 1-2 dias evitam o excesso de rega\n• Restrições por seca: intervalos de 6+ dias para rega semanal\n• Plantas de raízes profundas: intervalos de 3-7 dias para rega menos frequente\n• Conservação da água: personalizável consoante o clima e as condições do solo",
+    "label": "Mínimo de dias entre irrigações",
+    "help_text": "Defina como 0 para desativar esta funcionalidade. São suportados valores de 1-365 dias. Esta definição funciona em conjunto com a lógica de previsão de precipitação existente."
+  }
+}

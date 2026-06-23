@@ -1,7 +1,7 @@
 alias: Smart Irrigation
 trigger:
   - platform: event
-    event_type: happy_irrigation_start_irrigation_all_zones
+    event_type: smart_irrigation_start_irrigation_all_zones
   - platform: sun
     event: sunrise
     offset: "01:00:00"
@@ -45,27 +45,27 @@ action:
             else:
               - service: input_number.set_value
                 target:
-                  entity_id: input_number.happy_irrigation_number_of_zones_enabled
+                  entity_id: input_number.smart_irrigation_number_of_zones_enabled
                 data:
                   value: 0
               - repeat:
                   for_each:
-                    - sensor: sensor.happy_irrigation_lawn_main_deck
+                    - sensor: sensor.smart_irrigation_lawn_main_deck
                       vid: 0
                       zid: 1
-                    - sensor: sensor.happy_irrigation_lawn_tree
+                    - sensor: sensor.smart_irrigation_lawn_tree
                       vid: 1
                       zid: 2
-                    - sensor: sensor.happy_irrigation_lawn_office
+                    - sensor: sensor.smart_irrigation_lawn_office
                       vid: 2
                       zid: 3
-                    - sensor: sensor.happy_irrigation_herbs
+                    - sensor: sensor.smart_irrigation_herbs
                       vid: 3
                       zid: 4
-                    - sensor: sensor.happy_irrigation_greenhouse
+                    - sensor: sensor.smart_irrigation_greenhouse
                       vid: 4
                       zid: 5
-                    - sensor: sensor.happy_irrigation_side_house
+                    - sensor: sensor.smart_irrigation_side_house
                       vid: 5
                       zid: 6
                   sequence:
@@ -89,7 +89,7 @@ action:
                         - service: input_number.increment
                           target:
                             entity_id: >-
-                              input_number.happy_irrigation_number_of_zones_enabled
+                              input_number.smart_irrigation_number_of_zones_enabled
                           data: {}
                         - service: esphome.sprinklercontroller_set_valve_run_duration
                           data:
@@ -98,7 +98,7 @@ action:
               - if:
                   - condition: template
                     value_template: >-
-                      {{states('input_number.happy_irrigation_number_of_zones_enabled')|int(default=0)>0}}
+                      {{states('input_number.smart_irrigation_number_of_zones_enabled')|int(default=0)>0}}
                 then:
                   - alias: >-
                       Run zone 0 for a couple seconds to build up pressure
@@ -130,22 +130,22 @@ action:
                       title: Smart Irrigation
                   - repeat:
                       for_each:
-                        - sensor: sensor.happy_irrigation_lawn_main_deck
+                        - sensor: sensor.smart_irrigation_lawn_main_deck
                           vid: 0
                           zid: 1
-                        - sensor: sensor.happy_irrigation_lawn_tree
+                        - sensor: sensor.smart_irrigation_lawn_tree
                           vid: 1
                           zid: 2
-                        - sensor: sensor.happy_irrigation_lawn_office
+                        - sensor: sensor.smart_irrigation_lawn_office
                           vid: 2
                           zid: 3
-                        - sensor: sensor.happy_irrigation_herbs
+                        - sensor: sensor.smart_irrigation_herbs
                           vid: 3
                           zid: 4
-                        - sensor: sensor.happy_irrigation_greenhouse
+                        - sensor: sensor.smart_irrigation_greenhouse
                           vid: 4
                           zid: 5
-                        - sensor: sensor.happy_irrigation_side_house
+                        - sensor: sensor.smart_irrigation_side_house
                           vid: 5
                           zid: 6
                       sequence:
@@ -155,11 +155,11 @@ action:
                                 {{states('switch.sprinklercontroller_enable_zone_'+repeat.item.zid|string()
                                 == 'on')}}
                           then:
-                            - service: happy_irrigation.reset_bucket
+                            - service: smart_irrigation.reset_bucket
                               target:
                                 entity_id: "{{repeat.item.sensor}}"
                               data: {}
-                  - service: happy_irrigation.reset_all_buckets
+                  - service: smart_irrigation.reset_all_buckets
                     data: {}
                     enabled: false
                   - service: input_number.set_value

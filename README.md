@@ -4,18 +4,18 @@
 [release-url]: https://github.com/altmenorg/HAppyIrrigation/releases
 [release-badge]: https://img.shields.io/github/v/release/altmenorg/HAppyIrrigation?style=flat-square
 
-# HAppy Irrigation
+# Smart Irrigation
 
 <p align="center">
-  <img src="images/happyirrigation.jpg?raw=true" alt="HAppy Irrigation" width="720">
+  <img src="images/happyirrigation.jpg?raw=true" alt="Smart Irrigation" width="720">
 </p>
 
-> **HAppy Irrigation** is a community-maintained fork of
+> **Smart Irrigation** is a community-maintained fork of
 > [Smart Irrigation](https://github.com/jeroenterheerdt/HAsmartirrigation) by
 > [Jeroen ter Heerdt](https://github.com/jeroenterheerdt). All credit for the
 > original integration and its evapotranspiration model goes to him. This fork
 > keeps it actively maintained and fixes the rough edges of the configuration
-> UI and plumbing. It is its own integration (domain `happy_irrigation`); on
+> UI and plumbing. It is its own integration (domain `smart_irrigation`); on
 > first run a wizard offers to import your existing Smart Irrigation
 > configuration.
 
@@ -34,7 +34,7 @@ Multiple zones are supported, each zone having its own configuration and set up.
 - 🛠️ **Actively maintained** — steady fixes, refinements and new features, with a first-run wizard that imports your existing Smart Irrigation setup.
 
 <p align="center">
-  <img src="images/panel-zones.png?raw=true" alt="HAppy Irrigation — Zones panel (Home Assistant-native UI)" width="860">
+  <img src="images/panel-zones.png?raw=true" alt="Smart Irrigation — Zones panel (Home Assistant-native UI)" width="860">
   <br><em>The HA-native configuration panel — instant-save editing, native controls, everything in one place.</em>
 </p>
 
@@ -45,34 +45,34 @@ Multiple zones are supported, each zone having its own configuration and set up.
 
 ## Installation
 
-**Via HACS (recommended).** HAppy Irrigation is distributed as a HACS **custom repository**:
+**Via HACS (recommended).** Smart Irrigation is distributed as a HACS **custom repository**:
 
 1. In [HACS](https://hacs.xyz), open the **⋮ menu → Custom repositories**.
 2. Add `https://github.com/altmenorg/HAppyIrrigation` with category **Integration**, and confirm.
-3. Search for **HAppy Irrigation** in HACS and click **Download**.
-4. **Restart Home Assistant**, then add it from *Settings → Devices & Services → Add Integration → HAppy Irrigation*.
+3. Search for **Smart Irrigation** in HACS and click **Download**.
+4. **Restart Home Assistant**, then add it from *Settings → Devices & Services → Add Integration → Smart Irrigation*.
 
-**Manually.** Download the [latest release](https://github.com/altmenorg/HAppyIrrigation/releases) and extract it into `custom_components/happy_irrigation/`, then restart Home Assistant.
+**Manually.** Download the [latest release](https://github.com/altmenorg/HAppyIrrigation/releases) and extract it into `custom_components/smart_irrigation/`, then restart Home Assistant.
 
 On first run, if an existing Smart Irrigation configuration is detected, a wizard offers to import it (see below). Full documentation: **[altmenorg.github.io/HAppyIrrigation](https://altmenorg.github.io/HAppyIrrigation/)**.
 
 ## Migrating from Smart Irrigation
 
-HAppy Irrigation is a **separate** integration (domain `happy_irrigation`), so it installs and runs **alongside** your existing Smart Irrigation — nothing is overwritten.
+Smart Irrigation is a **separate** integration (domain `smart_irrigation`), so it installs and runs **alongside** your existing Smart Irrigation — nothing is overwritten.
 
-**1. Automatic import.** Install HAppy Irrigation, then add it from *Settings → Devices & Services → Add Integration*. On first run, if a Smart Irrigation configuration is detected, a wizard offers to import it. Accepting copies over your zones, sensor groups, modules/mappings and the weather service settings (including the API key), and the new `sensor.happy_irrigation_*` entities are created immediately.
+**1. Automatic import.** Install Smart Irrigation, then add it from *Settings → Devices & Services → Add Integration*. On first run, if a Smart Irrigation configuration is detected, a wizard offers to import it. Accepting copies over your zones, sensor groups, modules/mappings and the weather service settings (including the API key), and the new `sensor.smart_irrigation_*` entities are created immediately.
 
 **2. Update your automations (manual).** Because the domain changed, anything that referenced the old integration by name must be updated by hand:
 
-| Old (`smart_irrigation`) | New (`happy_irrigation`) |
+| Old (`smart_irrigation`) | New (`smart_irrigation`) |
 |--------------------------|--------------------------|
-| `sensor.smart_irrigation_<zone>` | `sensor.happy_irrigation_<zone>` |
-| event `smart_irrigation_start_irrigation_all_zones` | event `happy_irrigation_start_irrigation_all_zones` |
-| services `smart_irrigation.*` | services `happy_irrigation.*` |
+| `sensor.smart_irrigation_<zone>` | `sensor.smart_irrigation_<zone>` |
+| event `smart_irrigation_start_irrigation_all_zones` | event `smart_irrigation_start_irrigation_all_zones` |
+| services `smart_irrigation.*` | services `smart_irrigation.*` |
 
 Go through your automations, scripts and dashboard cards and update these references.
 
-**3. Remove Smart Irrigation.** Once you've verified HAppy Irrigation works and your automations point at the new entities, events and services, delete the old Smart Irrigation integration.
+**3. Remove Smart Irrigation.** Once you've verified Smart Irrigation works and your automations point at the new entities, events and services, delete the old Smart Irrigation integration.
 
 ## What this fork fixes and adds
 
@@ -88,7 +88,7 @@ Go through your automations, scripts and dashboard cards and update these refere
 
 ## Irrigation start triggers
 
-HAppy Irrigation computes irrigation **durations** — your own automation does the actual watering. A **start trigger** schedules a start relative to a solar event (sunrise, sunset, or solar azimuth, ± an offset) and fires the Home Assistant event `happy_irrigation_start_irrigation_all_zones` so an automation can react.
+Smart Irrigation computes irrigation **durations** — your own automation does the actual watering. A **start trigger** schedules a start relative to a solar event (sunrise, sunset, or solar azimuth, ± an offset) and fires the Home Assistant event `smart_irrigation_start_irrigation_all_zones` so an automation can react.
 
 Each trigger fires independently, and the event data identifies which one fired:
 
@@ -104,11 +104,11 @@ Example automation:
 ```yaml
 trigger:
   - platform: event
-    event_type: happy_irrigation_start_irrigation_all_zones
+    event_type: smart_irrigation_start_irrigation_all_zones
     event_data:
       trigger_name: "Morning"
 action:
-  - # open your valves for the durations HAppy Irrigation calculated
+  - # open your valves for the durations Smart Irrigation calculated
 ```
 
 The precipitation-skip and "days between irrigation" settings still apply: on a skip day no event is fired.
@@ -117,7 +117,7 @@ The precipitation-skip and "days between irrigation" settings still apply: on a 
 
 These advanced features are driven by **services and blueprints** — there is no dedicated panel UI for them yet:
 
-- **Recurring schedules** — daily / weekly / monthly / interval-based schedules via the `happy_irrigation.create_recurring_schedule` service.
+- **Recurring schedules** — daily / weekly / monthly / interval-based schedules via the `smart_irrigation.create_recurring_schedule` service.
 - **Seasonal adjustments** — automatically adjust irrigation parameters based on the season.
 - **Irrigation Unlimited integration** — bidirectional integration with the [Irrigation Unlimited](https://github.com/rgc99/irrigation_unlimited) component.
 - **Automation blueprints** — ready-to-use blueprints in [`blueprints/`](blueprints/).
@@ -138,11 +138,11 @@ make help           # list all commands (test / lint / format / check)
 ```
 
 The frontend panel is a separate TypeScript/Lit project under
-[`custom_components/happy_irrigation/frontend/`](custom_components/happy_irrigation/frontend/)
+[`custom_components/smart_irrigation/frontend/`](custom_components/smart_irrigation/frontend/)
 (`npm install` then `npm run build`).
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed development and testing instructions.
 
 ## License
 
-[MIT](LICENSE) — © 2020 Jeroen ter Heerdt (original Smart Irrigation), © 2026 Anthony Mercatante (HAppy Irrigation fork).
+[MIT](LICENSE) — © 2020 Jeroen ter Heerdt (original Smart Irrigation), © 2026 Anthony Mercatante (Smart Irrigation fork).

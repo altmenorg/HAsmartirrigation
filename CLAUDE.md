@@ -1,4 +1,4 @@
-# Working on HAppy Irrigation
+# Working on Smart Irrigation
 
 > **👉 First, read `HANDOFF.md` at the repo root** (it's local / gitignored). It holds the
 > current work state, the full session log, the TODO list (translations in progress), and the
@@ -9,9 +9,9 @@
 ## What this is
 
 A fork of [Smart Irrigation](https://github.com/jeroenterheerdt/HAsmartirrigation) turned into
-its own Home Assistant integration: domain **`happy_irrigation`**, branded **HAppy Irrigation**.
-Backend Python in `custom_components/happy_irrigation/`, frontend panel (TS/Lit) in
-`custom_components/happy_irrigation/frontend/`, Jekyll docs in `docs/`.
+its own Home Assistant integration: domain **`smart_irrigation`**, branded **Smart Irrigation**.
+Backend Python in `custom_components/smart_irrigation/`, frontend panel (TS/Lit) in
+`custom_components/smart_irrigation/frontend/`, Jekyll docs in `docs/`.
 
 ## Branch workflow
 
@@ -26,7 +26,7 @@ Backend Python in `custom_components/happy_irrigation/`, frontend panel (TS/Lit)
 
 - **Public content (commits, PRs, issues, code/comments) in English.** Conversations with the
   user are in French.
-- **Python**: format with `py -m black custom_components/happy_irrigation/` and lint with
+- **Python**: format with `py -m black custom_components/smart_irrigation/` and lint with
   `py -m ruff check ...` before pushing — the CI checks both.
 - **Frontend**: a change in `frontend/src/` or `frontend/localize/` only takes effect after a
   rebuild (`npm run build`), because the language files are compiled into the bundle.

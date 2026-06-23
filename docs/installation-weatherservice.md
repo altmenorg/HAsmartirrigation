@@ -21,9 +21,9 @@ Let's walk through the wizard:
 
 ![](assets/images/installation-1.png)
 
-After the integration has been installed, you will find a new panel named 'HAppy Irrigation' in your side bar. [Use it to configure your set up](configuration.md).
+After the integration has been installed, you will find a new panel named 'Smart Irrigation' in your side bar. [Use it to configure your set up](configuration.md).
 
-You have now finished the installation of HAppy Irrigation and are ready to continue to [Configuration](configuration.md)!
+You have now finished the installation of Smart Irrigation and are ready to continue to [Configuration](configuration.md)!
 
 ## Getting Open Weather Map API Key
 

@@ -29,11 +29,11 @@ jobs:
 
       - name: Run unit tests with coverage
         run: |
-          pytest tests/ -v --cov=custom_components.happy_irrigation --cov-report=xml --cov-report=term-missing --ignore-glob="**/test_*.py.disabled"
+          pytest tests/ -v --cov=custom_components.smart_irrigation --cov-report=xml --cov-report=term-missing --ignore-glob="**/test_*.py.disabled"
 
       - name: Run integration tests
         run: |
-          pytest custom_components/happy_irrigation/tests/test_helpers.py custom_components/happy_irrigation/tests/test_performance.py custom_components/happy_irrigation/tests/test_diagnostics.py -v
+          pytest custom_components/smart_irrigation/tests/test_helpers.py custom_components/smart_irrigation/tests/test_performance.py custom_components/smart_irrigation/tests/test_diagnostics.py -v
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
@@ -60,7 +60,7 @@ jobs:
           pip install ruff black isort
 
       - name: Run ruff linter
-        run: ruff check custom_components/happy_irrigation/ --output-format=github
+        run: ruff check custom_components/smart_irrigation/ --output-format=github
 
       - name: Check code formatting with black
-        run: black --check custom_components/happy_irrigation/
+        run: black --check custom_components/smart_irrigation/

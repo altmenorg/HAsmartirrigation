@@ -4,7 +4,7 @@ title: Installation
 ---
 # Installation
 
-Installing the HAppy Irrigation integration consists of a few steps:
+Installing the Smart Irrigation integration consists of a few steps:
 
 1. [Downloading the integration](installation-download.md).
 2. Configuring if you want to use specific coordinates. By default location data is inherited from your Home Assistant configuration. 
@@ -12,7 +12,7 @@ Installing the HAppy Irrigation integration consists of a few steps:
 
 ![](assets/images/installation-1.png)
 
-After the integration has been installed, you will find a new panel named 'HAppy Irrigation' in your side bar. [Use it to configure your set up](configuration.md).
+After the integration has been installed, you will find a new panel named 'Smart Irrigation' in your side bar. [Use it to configure your set up](configuration.md).
 
 Also in this section:
 

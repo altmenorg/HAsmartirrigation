@@ -1,6 +1,6 @@
 """Working tests for Smart Irrigation helper functions."""
 
-from custom_components.happy_irrigation.helpers import (
+from custom_components.smart_irrigation.helpers import (
     CannotConnect,
     InvalidAuth,
     check_time,

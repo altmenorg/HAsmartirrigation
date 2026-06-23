@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from custom_components.happy_irrigation.websockets import (
+from custom_components.smart_irrigation.websockets import (
     SmartIrrigationWateringCalendarView,
     websocket_get_watering_calendar,
 )
@@ -46,7 +46,7 @@ def mock_coordinator():
 @pytest.fixture
 async def setup_hass_with_coordinator(hass, mock_coordinator):
     """Set up real hass instance with mock coordinator."""
-    from custom_components.happy_irrigation.const import DOMAIN
+    from custom_components.smart_irrigation.const import DOMAIN
 
     # Ensure hass.data exists and is properly initialized
     if not hasattr(hass, "data"):
@@ -96,7 +96,7 @@ class TestWateringCalendarAPI:
     @pytest.mark.asyncio
     async def test_websocket_get_watering_calendar_error_handling(self, hass):
         """Test WebSocket API error handling."""
-        from custom_components.happy_irrigation.const import DOMAIN
+        from custom_components.smart_irrigation.const import DOMAIN
 
         # Mock coordinator to raise an exception
         mock_coordinator = AsyncMock()
@@ -158,7 +158,7 @@ class TestWateringCalendarAPI:
         mock_coordinator.async_generate_watering_calendar.side_effect = Exception(
             "HTTP test error"
         )
-        from custom_components.happy_irrigation.const import DOMAIN
+        from custom_components.smart_irrigation.const import DOMAIN
 
         hass.data[DOMAIN] = {"coordinator": mock_coordinator}
 

@@ -1,5 +1,5 @@
 import pytest
-from custom_components.happy_irrigation.core.updater import ContinuousUpdater
+from custom_components.smart_irrigation.core.updater import ContinuousUpdater
 
 def test_empty_aggregate():
     updater = ContinuousUpdater()

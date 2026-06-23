@@ -1,4 +1,4 @@
-from custom_components.happy_irrigation.core.updater import ContinuousUpdater
+from custom_components.smart_irrigation.core.updater import ContinuousUpdater
 
 def test_riemann_sum_aggregate():
     # Sample hourly delta readings

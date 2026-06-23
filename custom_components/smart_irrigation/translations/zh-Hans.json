@@ -1,0 +1,231 @@
+{
+  "config": {
+    "abort": {
+      "single_instance_allowed": "只允许配置一个 Smart Irrigation 实例。"
+    },
+    "error": {
+      "auth": "天气服务 API 密钥不正确",
+      "name": "请为该集成指定一个唯一名称。"
+    },
+    "step": {
+      "migrate": {
+        "title": "从 Smart Irrigation 导入",
+        "description": "检测到现有的 Smart Irrigation 配置。是否将其导入到 Smart Irrigation？您的区域、传感器组、模块和设置（以及天气服务 API 密钥）将被复制。现有的 Smart Irrigation 集成不会被改动；导入后您可以将其移除。",
+        "data": {
+          "import_existing": "导入现有的 Smart Irrigation 配置"
+        }
+      },
+      "user": {
+        "title": "常规设置",
+        "description": "如果您在配置时需要帮助，请参阅文档。",
+        "data": {
+          "name": "集成的唯一名称",
+          "use_weather_service": "使用天气服务（Open Weather Map 或 Pirate Weather）获取天气数据或预报。如果您打算使用受支持的天气服务获取至少部分天气数据（包括预报），请启用此选项。如果您想专门使用其他来源（例如您自己的气象站），请禁用此选项。在这种情况下，Smart Irrigation 将无法使用预报。"
+        }
+      },
+      "step1": {
+        "title": "天气服务 API 设置",
+        "description": "如果您在配置时需要帮助，请参阅文档。",
+        "data": {
+          "weather_service": "要使用的天气服务",
+          "weather_service_api_key": "天气服务的 API 密钥",
+          "weather_service_api_version": "天气服务 API 版本"
+        }
+      }
+    }
+  },
+  "options": {
+    "error": {
+      "auth": "天气服务 API 密钥或版本不正确",
+      "invalid_coordinates": "提供的坐标无效。请检查纬度（-90 至 90）和经度（-180 至 180）的值。"
+    },
+    "step": {
+      "init": {
+        "title": "天气服务 API 设置",
+        "description": "如果您在配置时需要帮助，请参阅文档。",
+        "data": {
+          "use_weather_service": "使用天气服务（Open Weather Map 或 Pirate Weather）获取天气数据或预报。如果您打算使用受支持的天气服务获取至少部分天气数据（包括预报），请启用此选项。如果您想专门使用其他来源（例如您自己的气象站），请禁用此选项。在这种情况下，Smart Irrigation 将无法使用预报。"
+        }
+      },
+      "step1": {
+        "title": "天气服务 API 设置",
+        "description": "如果您在配置时需要帮助，请参阅文档。",
+        "data": {
+          "weather_service": "要使用的天气服务",
+          "weather_service_api_key": "天气服务的 API 密钥",
+          "weather_service_api_version": "天气服务 API 版本"
+        }
+      },
+      "coordinates": {
+        "title": "位置坐标",
+        "description": "配置用于获取天气数据的位置坐标。如有需要，您可以使用与 Home Assistant 位置不同的手动坐标。",
+        "data": {
+          "manual_coordinates_enabled": "使用手动坐标而非 Home Assistant 位置",
+          "manual_latitude": "纬度（十进制度，-90 至 90）",
+          "manual_longitude": "经度（十进制度，-180 至 180）",
+          "manual_elevation": "海拔高度（米，可选）"
+        }
+      }
+    }
+  },
+  "services": {
+    "calculate_all_zones": {
+      "name": "计算所有区域",
+      "description": "在自动模式下计算所有区域",
+      "fields":{
+        "delete_weather_data": {
+          "name": "删除天气数据",
+          "description": "计算后删除天气数据"
+        }
+      }
+    },
+    "calculate_zone": {
+      "name": "计算区域",
+      "description": "计算指定的区域",
+      "fields": {
+        "entity": {
+          "name": "实体",
+          "description": "要计算的区域"
+        },
+        "delete_weather_data": {
+          "name": "删除天气数据",
+          "description": "计算后删除该区域的天气数据"
+        }
+      }
+    },
+    "update_all_zones": {
+      "name": "更新所有区域",
+      "description": "在自动模式下更新所有区域的天气数据"
+    },
+    "update_zone": {
+      "name": "更新区域",
+      "description": "更新指定区域的天气数据",
+      "fields": {
+        "entity": {
+          "name": "实体",
+          "description": "要更新的区域"
+        }
+      }
+    },
+    "set_bucket": {
+      "name": "设置 bucket",
+      "description": "将某个区域的 bucket 设置为特定值",
+      "fields": {
+        "entity": {
+          "name": "实体",
+          "description": "要设置 bucket 的区域"
+        },
+        "new_bucket_value": {
+          "name": "新的 bucket 值",
+          "description": "bucket 的新值"
+        }
+      }
+    },
+    "set_all_buckets": {
+      "name": "设置所有 bucket",
+      "description": "将所有区域的 bucket 设置为特定值",
+      "fields": {
+        "new_bucket_value": {
+          "name": "新的 bucket 值",
+          "description": "bucket 的新值"
+        }
+      }
+    },
+    "reset_bucket": {
+      "name": "重置 bucket",
+      "description": "将某个区域的 bucket 重置为 0",
+      "fields": {
+        "entity": {
+          "name": "实体",
+          "description": "要重置 bucket 的区域"
+        }
+      }
+    },
+    "reset_all_buckets": {
+      "name": "重置所有 bucket",
+      "description": "将所有区域的 bucket 重置为 0"
+    },
+    "clear_all_weather_data": {
+      "name": "清除所有天气数据",
+      "description": "清除所有区域的天气数据"
+    },
+    "set_multiplier": {
+      "name": "设置乘数",
+      "description": "将某个区域的乘数设置为特定值",
+      "fields": {
+        "entity": {
+          "name": "实体",
+          "description": "要设置乘数的区域"
+        },
+        "new_multiplier_value": {
+          "name": "新的乘数值",
+          "description": "乘数的新值"
+        }
+      }
+    },
+    "set_all_multipliers": {
+      "name": "设置所有乘数",
+      "description": "将所有区域的乘数设置为特定值",
+      "fields": {
+        "new_multiplier_value": {
+          "name": "新的乘数值",
+          "description": "乘数的新值"
+        }
+      }
+    },
+    "set_state": {
+      "name": "设置区域的状态",
+      "description": "将某个区域的状态设置为特定值",
+      "fields": {
+        "entity": {
+          "name": "实体",
+          "description": "要设置状态的区域"
+        },
+        "new_state_value": {
+          "name": "新的状态值",
+          "description": "状态的新值"
+        }
+      }
+    },
+    "set_zone": {
+      "name": "设置区域的值",
+      "description": "设置某个区域的所有可配置值",
+      "fields": {
+        "entity": {
+          "name": "实体",
+          "description": "要设置配置值的区域"
+        },
+        "new_bucket_value": {
+          "name": "新的 bucket 值",
+          "description": "bucket 的新值"
+        },
+        "new_multiplier_value": {
+          "name": "新的乘数值",
+          "description": "乘数的新值"
+        },
+        "new_duration_value": {
+          "name": "新的持续时间值",
+          "description": "持续时间的新值"
+        },
+        "new_state_value": {
+          "name": "新的状态值",
+          "description": "状态的新值"
+        },
+        "new_throughput_value": {
+          "name": "新的流量值",
+          "description": "流量的新值"
+        }
+      }
+    },
+    "generate_watering_calendar": {
+      "name": "生成浇水日历",
+      "description": "根据具有代表性的气候数据为灌溉区域生成 12 个月的浇水日历",
+      "fields": {
+        "entity": {
+          "name": "实体",
+          "description": "要生成浇水日历的区域"
+        }
+      }
+    }
+  }
+}

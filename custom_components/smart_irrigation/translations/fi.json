@@ -1,0 +1,231 @@
+{
+  "config": {
+    "abort": {
+      "single_instance_allowed": "Vain yksi Smart Irrigation -määritys on sallittu."
+    },
+    "error": {
+      "auth": "Sääpalvelun API-avain on virheellinen",
+      "name": "Anna integraatiolle yksilöllinen nimi."
+    },
+    "step": {
+      "migrate": {
+        "title": "Tuo Smart Irrigation -määritys",
+        "description": "Olemassa oleva Smart Irrigation -määritys löytyi. Tuodaanko se Smart Irrigation -integraatioon? Vyöhykkeesi, anturiryhmäsi, moduulisi ja asetuksesi (sekä sääpalvelun API-avain) kopioidaan. Nykyinen Smart Irrigation -integraatiosi jätetään ennalleen; voit poistaa sen jälkikäteen.",
+        "data": {
+          "import_existing": "Tuo olemassa oleva Smart Irrigation -määritys"
+        }
+      },
+      "user": {
+        "title": "Yleiset asetukset",
+        "description": "Jos tarvitset apua määrityksessä, katso ohjeet dokumentaatiosta.",
+        "data": {
+          "name": "Integraation yksilöllinen nimi",
+          "use_weather_service": "Käytä sääpalvelua (Open Weather Map tai Pirate Weather) säätietoja tai ennusteita varten. Ota tämä asetus käyttöön, jos aiot käyttää jotakin tuetuista sääpalveluista vähintään osalle säätiedoista, ennusteet mukaan lukien. Poista tämä asetus käytöstä, jos haluat käyttää yksinomaan jotain muuta lähdettä, kuten omaa sääasemaasi. Tässä tapauksessa Smart Irigation ei voi käyttää ennusteita."
+        }
+      },
+      "step1": {
+        "title": "Sääpalvelun API-asetukset",
+        "description": "Jos tarvitset apua määrityksessä, katso ohjeet dokumentaatiosta.",
+        "data": {
+          "weather_service": "Käytettävä sääpalvelu",
+          "weather_service_api_key": "Sääpalvelun API-avain",
+          "weather_service_api_version": "Sääpalvelun API-versio"
+        }
+      }
+    }
+  },
+  "options": {
+    "error": {
+      "auth": "Sääpalvelun API-avain tai versio on virheellinen",
+      "invalid_coordinates": "Annetut koordinaatit ovat virheellisiä. Tarkista leveysaste (-90...90) ja pituusaste (-180...180)."
+    },
+    "step": {
+      "init": {
+        "title": "Sääpalvelun API-asetukset",
+        "description": "Jos tarvitset apua määrityksessä, katso ohjeet dokumentaatiosta.",
+        "data": {
+          "use_weather_service": "Käytä sääpalvelua (Open Weather Map tai Pirate Weather) säätietoja tai ennusteita varten. Ota tämä asetus käyttöön, jos aiot käyttää jotakin tuetuista sääpalveluista vähintään osalle säätiedoista, ennusteet mukaan lukien. Poista tämä asetus käytöstä, jos haluat käyttää yksinomaan jotain muuta lähdettä, kuten omaa sääasemaasi. Tässä tapauksessa Smart Irigation ei voi käyttää ennusteita."
+        }
+      },
+      "step1": {
+        "title": "Sääpalvelun API-asetukset",
+        "description": "Jos tarvitset apua määrityksessä, katso ohjeet dokumentaatiosta.",
+        "data": {
+          "weather_service": "Käytettävä sääpalvelu",
+          "weather_service_api_key": "Sääpalvelun API-avain",
+          "weather_service_api_version": "Sääpalvelun API-versio"
+        }
+      },
+      "coordinates": {
+        "title": "Sijainnin koordinaatit",
+        "description": "Määritä sijainnin koordinaatit säätietojen hakua varten. Voit tarvittaessa käyttää Home Assistant -sijainnista poikkeavia manuaalisia koordinaatteja.",
+        "data": {
+          "manual_coordinates_enabled": "Käytä manuaalisia koordinaatteja Home Assistant -sijainnin sijaan",
+          "manual_latitude": "Leveysaste (desimaaliasteet, -90...90)",
+          "manual_longitude": "Pituusaste (desimaaliasteet, -180...180)",
+          "manual_elevation": "Korkeus merenpinnasta (metreinä, valinnainen)"
+        }
+      }
+    }
+  },
+  "services": {
+    "calculate_all_zones": {
+      "name": "Laske kaikki vyöhykkeet",
+      "description": "Laske kaikki automaattitilassa olevat vyöhykkeet",
+      "fields":{
+        "delete_weather_data": {
+          "name": "Poista säätiedot",
+          "description": "Poista säätiedot laskennan jälkeen"
+        }
+      }
+    },
+    "calculate_zone": {
+      "name": "Laske vyöhyke",
+      "description": "Laske määritetty vyöhyke",
+      "fields": {
+        "entity": {
+          "name": "Entiteetti",
+          "description": "Laskettava vyöhyke"
+        },
+        "delete_weather_data": {
+          "name": "Poista säätiedot",
+          "description": "Poista vyöhykkeen säätiedot laskennan jälkeen"
+        }
+      }
+    },
+    "update_all_zones": {
+      "name": "Päivitä kaikki vyöhykkeet",
+      "description": "Päivitä säätiedot kaikille automaattitilassa oleville vyöhykkeille"
+    },
+    "update_zone": {
+      "name": "Päivitä vyöhyke",
+      "description": "Päivitä määritetyn vyöhykkeen säätiedot",
+      "fields": {
+        "entity": {
+          "name": "Entiteetti",
+          "description": "Päivitettävä vyöhyke"
+        }
+      }
+    },
+    "set_bucket": {
+      "name": "Aseta bucket",
+      "description": "Aseta vyöhykkeen bucket tiettyyn arvoon",
+      "fields": {
+        "entity": {
+          "name": "Entiteetti",
+          "description": "Vyöhyke, jonka bucket asetetaan"
+        },
+        "new_bucket_value": {
+          "name": "Uusi bucket-arvo",
+          "description": "bucketin uusi arvo"
+        }
+      }
+    },
+    "set_all_buckets": {
+      "name": "Aseta kaikki bucketit",
+      "description": "Aseta kaikkien vyöhykkeiden bucketit tiettyyn arvoon",
+      "fields": {
+        "new_bucket_value": {
+          "name": "Uusi bucket-arvo",
+          "description": "bucketin uusi arvo"
+        }
+      }
+    },
+    "reset_bucket": {
+      "name": "Nollaa bucket",
+      "description": "Nollaa vyöhykkeen bucket arvoon 0",
+      "fields": {
+        "entity": {
+          "name": "Entiteetti",
+          "description": "Vyöhyke, jonka bucket nollataan"
+        }
+      }
+    },
+    "reset_all_buckets": {
+      "name": "Nollaa kaikki bucketit",
+      "description": "Nollaa kaikkien vyöhykkeiden bucket arvoon 0"
+    },
+    "clear_all_weather_data": {
+      "name": "Tyhjennä kaikki säätiedot",
+      "description": "Tyhjennä kaikkien vyöhykkeiden säätiedot"
+    },
+    "set_multiplier": {
+      "name": "Aseta kerroin",
+      "description": "Aseta vyöhykkeen kerroin tiettyyn arvoon",
+      "fields": {
+        "entity": {
+          "name": "Entiteetti",
+          "description": "Vyöhyke, jonka kerroin asetetaan"
+        },
+        "new_multiplier_value": {
+          "name": "Uusi kertoimen arvo",
+          "description": "kertoimen uusi arvo"
+        }
+      }
+    },
+    "set_all_multipliers": {
+      "name": "Aseta kaikki kertoimet",
+      "description": "Aseta kaikkien vyöhykkeiden kertoimet tiettyyn arvoon",
+      "fields": {
+        "new_multiplier_value": {
+          "name": "Uusi kertoimen arvo",
+          "description": "kertoimen uusi arvo"
+        }
+      }
+    },
+    "set_state": {
+      "name": "Aseta vyöhykkeen tila",
+      "description": "Aseta vyöhykkeen tila tiettyyn arvoon",
+      "fields": {
+        "entity": {
+          "name": "Entiteetti",
+          "description": "Vyöhyke, jonka tila asetetaan"
+        },
+        "new_state_value": {
+          "name": "Uusi tilan arvo",
+          "description": "Tilan uusi arvo"
+        }
+      }
+    },
+    "set_zone": {
+      "name": "Aseta vyöhykkeen arvot",
+      "description": "Aseta kaikki vyöhykkeen määritettävät arvot",
+      "fields": {
+        "entity": {
+          "name": "Entiteetti",
+          "description": "Vyöhyke, jonka määritysarvot asetetaan"
+        },
+        "new_bucket_value": {
+          "name": "Uusi bucket-arvo",
+          "description": "Bucketin uusi arvo"
+        },
+        "new_multiplier_value": {
+          "name": "Uusi kertoimen arvo",
+          "description": "Kertoimen uusi arvo"
+        },
+        "new_duration_value": {
+          "name": "Uusi keston arvo",
+          "description": "Keston uusi arvo"
+        },
+        "new_state_value": {
+          "name": "Uusi tilan arvo",
+          "description": "Tilan uusi arvo"
+        },
+        "new_throughput_value": {
+          "name": "Uusi läpäisyn arvo",
+          "description": "Läpäisyn uusi arvo"
+        }
+      }
+    },
+    "generate_watering_calendar": {
+      "name": "Luo kastelukalenteri",
+      "description": "Luo 12 kuukauden kastelukalenteri kasteluvyöhykkeille edustavien ilmastotietojen perusteella",
+      "fields": {
+        "entity": {
+          "name": "Entiteetti",
+          "description": "Vyöhyke, jolle kastelukalenteri luodaan"
+        }
+      }
+    }
+  }
+}

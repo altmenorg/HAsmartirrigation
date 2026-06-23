@@ -1,0 +1,473 @@
+{
+  "common": {
+    "loading": "Načítání",
+    "saving": "Ukládání",
+    "actions": {
+      "delete": "Smazat"
+    },
+    "labels": {
+      "module": "Modul",
+      "no": "Ne",
+      "select": "Vybrat",
+      "yes": "Ano",
+      "enabled": "Povoleno",
+      "disabled": "Zakázáno",
+      "before": "před",
+      "after": "po"
+    },
+    "units": {
+      "seconds": "sekund"
+    },
+    "attributes": {
+      "size": "velikost",
+      "throughput": "průtok",
+      "state": "stav",
+      "bucket": "bucket",
+      "last_updated": "naposledy aktualizováno",
+      "last_calculated": "naposledy vypočítáno",
+      "number_of_data_points": "počet datových bodů"
+    },
+    "loading-messages": {
+      "configuration": "Načítání konfigurace…",
+      "modules": "Načítání modulů…",
+      "general": "Načítání…"
+    },
+    "saving-messages": {
+      "adding": "Přidávání…",
+      "saving": "Ukládání…"
+    }
+  },
+  "defaults": {
+    "default-zone": "Výchozí zóna",
+    "default-mapping": "Výchozí skupina senzorů"
+  },
+  "module": {
+    "calculation": {
+      "explanation": {
+        "module-returned-evapotranspiration-deficiency": "Poznámka: toto vysvětlení používá jako desetinný oddělovač '.', zobrazuje zaokrouhlené a metrické hodnoty. Modul vrátil deficit evapotranspirace ( = et0 * hour_multiplier + srážky) ve výši",
+        "bucket-was": "Bucket byl",
+        "new-bucket-values-is": "Nová hodnota bucket je",
+        "bucket": "bucket",
+        "old-bucket-variable": "old_bucket",
+        "max-bucket-variable": "max_bucket",
+        "delta": "delta",
+        "bucket-less-than-zero-irrigation-necessary": "Protože bucket < 0, zavlažování je nutné",
+        "steps-taken-to-calculate-duration": "K výpočtu přesné doby trvání byly provedeny následující kroky",
+        "precipitation-rate-defined-as": "Intenzita srážek je definována jako",
+        "duration-is-calculated-as": "Doba trvání se vypočítá jako",
+        "drainage": "drainage",
+        "drainage-rate": "drainage_rate",
+        "hours": "hodin",
+        "precipitation-rate-variable": "precipitation_rate",
+        "multiplier-is-applied": "Nyní se aplikuje násobitel. Násobitel je",
+        "duration-after-multiplier-is": "tudíž doba trvání je",
+        "maximum-duration-is-applied": "Poté se aplikuje maximální doba trvání. Maximální doba trvání je",
+        "duration-after-maximum-duration-is": "tudíž doba trvání je",
+        "lead-time-is-applied": "Nakonec se aplikuje předstihový čas. Předstihový čas je",
+        "duration-after-lead-time-is": "tudíž konečná doba trvání je",
+        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Protože bucket >= 0, zavlažování není nutné a doba trvání je nastavena na",
+        "maximum-bucket-is": "Maximální velikost bucket je",
+        "drainage-rate-is": "Rychlost odvodnění při nasycení (bucket na maximu) je",
+        "current-drainage-is": "Aktuální odvodnění se vypočítá jako",
+        "no-drainage": "Aktuální odvodnění je 0, protože"
+      }
+    }
+  },
+  "calcmodules": {
+    "pyeto": {
+      "description": "Vypočítat dobu trvání na základě výpočtu FAO56 z knihovny PyETO"
+    },
+    "static": {
+      "description": "'Fiktivní' modul se statickou konfigurovatelnou deltou"
+    },
+    "passthrough": {
+      "description": "Průchozí modul, který vrací hodnotu senzoru evapotranspirace jako deltu"
+    }
+  },
+  "panels": {
+    "weatherservice": {
+      "title": "Meteorologická služba",
+      "description": "Zobrazte a změňte meteorologickou službu používanou k načítání meteorologických dat — bez nutnosti přeinstalovat integraci. API klíč je ověřen a změna se použije okamžitě.",
+      "labels": {
+        "use-weather-service": "Použít meteorologickou službu",
+        "service": "Meteorologická služba",
+        "api-key": "API klíč"
+      },
+      "actions": {
+        "save": "Uložit",
+        "saving": "Ukládání…"
+      },
+      "messages": {
+        "no-service": "Není použita žádná meteorologická služba — meteorologická data pocházejí pouze z vašich vlastních senzorů.",
+        "saved": "Meteorologická služba aktualizována a použita.",
+        "reload-note": "Uložení ověří API klíč vůči službě a změnu použije okamžitě."
+      }
+    },
+    "backuprestore": {
+      "title": "Záloha / obnovení",
+      "description": "Exportujte úplnou konfiguraci Smart Irrigation do souboru JSON nebo ji obnovte z předchozí zálohy.",
+      "cards": {
+        "backup": {
+          "title": "Záloha",
+          "description": "Stáhněte úplnou konfiguraci (obecná nastavení, zóny, moduly a skupiny senzorů) jako soubor JSON."
+        },
+        "restore": {
+          "title": "Obnovení",
+          "description": "Načtěte dříve exportovaný soubor JSON pro nahrazení aktuální konfigurace."
+        }
+      },
+      "actions": {
+        "export": "Exportovat do JSON",
+        "choose-file": "Vyberte soubor zálohy…",
+        "restore": "Obnovit tuto zálohu",
+        "restoring": "Obnovování…"
+      },
+      "messages": {
+        "exported": "Soubor zálohy stažen.",
+        "restored": "Konfigurace obnovena — znovu se načítá integrace.",
+        "invalid-file": "Tento soubor není platná záloha Smart Irrigation.",
+        "confirm-title": "Nahradit celou konfiguraci?",
+        "summary": "Tato záloha obsahuje",
+        "confirm-warning": "Obnovení přepíše všechna aktuální obecná nastavení, zóny, moduly a skupiny senzorů. Tuto akci nelze vrátit zpět.",
+        "reload-note": "Obnovení nahradí vše a znovu načte integraci, aby se změna projevila."
+      }
+    },
+    "general": {
+      "cards": {
+        "automatic-duration-calculation": {
+          "header": "Automatický výpočet doby trvání",
+          "description": "Výpočet bere shromážděná meteorologická data do daného okamžiku a aktualizuje bucket pro každou automatickou zónu. Poté se doba trvání upraví na základě nové hodnoty bucket a shromážděná meteorologická data se odeberou.",
+          "labels": {
+            "auto-calc-enabled": "Automaticky vypočítávat doby zavlažování",
+            "calc-time": "Vypočítat v"
+          }
+        },
+        "automatic-update": {
+          "errors": {
+            "warning-update-time-on-or-after-calc-time": "Varování: čas aktualizace meteorologických dat je v době výpočtu nebo po ní"
+          },
+          "header": "Automatická aktualizace meteorologických dat",
+          "description": "Shromažďujte a ukládejte meteorologická data automaticky. Meteorologická data jsou potřebná k výpočtu bucketů a dob trvání zón.",
+          "labels": {
+            "auto-update-enabled": "Automaticky aktualizovat meteorologická data",
+            "auto-update-schedule": "Plán aktualizací",
+            "auto-update-time": "Aktualizovat v",
+            "auto-update-interval": "Aktualizovat data senzorů každých",
+            "auto-update-delay": "Zpoždění aktualizace"
+          },
+          "options": {
+            "minutes": "minut",
+            "hours": "hodin",
+            "days": "dnů"
+          }
+        },
+        "automatic-clear": {
+          "header": "Automatické čištění meteorologických dat",
+          "description": "Automaticky odebírat shromážděná meteorologická data v nakonfigurovaném čase. Použijte toto pro ujištění, že nezůstanou žádná meteorologická data z předchozích dnů. Neodstraňujte meteorologická data dříve, než provedete výpočet, a tuto možnost použijte pouze tehdy, pokud očekáváte, že automatická aktualizace bude shromažďovat meteorologická data poté, co jste provedli výpočet pro daný den. V ideálním případě chcete čistit co nejpozději během dne.",
+          "labels": {
+            "automatic-clear-enabled": "Automaticky vymazat shromážděná meteorologická data",
+            "automatic-clear-time": "Vymazat meteorologická data v"
+          }
+        },
+        "continuousupdates": {
+          "header": "Průběžné aktualizace senzorů (experimentální)",
+          "description": "Tato experimentální funkce bude průběžně aktualizovat data senzorů. To je užitečné pro skupiny senzorů, které používají zdroje poskytující průběžná data, jako jsou meteorologické stanice. Tuto funkci nelze použít pro skupiny senzorů, které se alespoň částečně spoléhají na meteorologické služby, protože průběžné dotazování API bude generovat náklady. Mějte na paměti, že je to experimentální a nemusí to fungovat podle očekávání. Používáte na vlastní riziko.",
+          "labels": {
+            "continuousupdates": "Povolit průběžné aktualizace",
+            "sensor_debounce": "Debounce senzoru"
+          }
+        }
+      },
+      "description": "Tato stránka poskytuje globální nastavení.",
+      "title": "Obecné"
+    },
+    "help": {
+      "title": "Nápověda",
+      "cards": {
+        "how-to-get-help": {
+          "title": "Jak získat pomoc",
+          "first-read-the": "Nejprve si přečtěte",
+          "wiki": "Wiki",
+          "if-you-still-need-help": "Pokud stále potřebujete pomoc, obraťte se na",
+          "community-forum": "Komunitní fórum",
+          "or-open-a": "nebo otevřete",
+          "github-issue": "Github Issue",
+          "english-only": "pouze anglicky"
+        }
+      }
+    },
+    "info": {
+      "title": "Informace",
+      "description": "Zobrazte informace o příštím zavlažování a stavu systému.",
+      "configuration-not-available": "Konfigurace není dostupná.",
+      "cards": {
+        "zone-bucket-values": {
+          "title": "Hodnoty bucket zón a doba trvání",
+          "labels": {
+            "bucket": "Bucket",
+            "duration": "Doba trvání"
+          },
+          "no-zones": "Nejsou nakonfigurovány žádné zóny"
+        },
+        "next-irrigation": {
+          "title": "Příští zavlažování",
+          "labels": {
+            "next-start": "Příští spuštění",
+            "duration": "Doba trvání",
+            "zones": "Zóny"
+          },
+          "no-data": "Nejsou k dispozici žádná data"
+        },
+        "irrigation-reason": {
+          "title": "Důvod zavlažování",
+          "labels": {
+            "reason": "Důvod",
+            "sunrise": "Východ slunce",
+            "total-duration": "Celková doba trvání",
+            "explanation": "Vysvětlení"
+          },
+          "no-data": "Nejsou k dispozici žádná data"
+        }
+      }
+    },
+    "mappings": {
+      "cards": {
+        "add-mapping": {
+          "actions": {
+            "add": "Přidat skupinu senzorů"
+          },
+          "header": "Přidat skupiny senzorů"
+        },
+        "mapping": {
+          "aggregates": {
+            "average": "Průměr",
+            "first": "První",
+            "last": "Poslední",
+            "maximum": "Maximum",
+            "median": "Medián",
+            "minimum": "Minimum",
+            "riemannsum": "Riemannův součet",
+            "sum": "Součet",
+            "delta": "Delta"
+          },
+          "errors": {
+            "cannot-delete-mapping-because-zones-use-it": "Tuto skupinu senzorů nelze smazat, protože ji používá alespoň jedna zóna.",
+            "invalid_source": "Neplatný zdroj",
+            "source_does_not_exist": "Zdroj neexistuje. Zadejte platný zdroj, například 'sensor.mysensor'."
+          },
+          "items": {
+            "dewpoint": "Rosný bod",
+            "evapotranspiration": "Evapotranspirace",
+            "humidity": "Vlhkost",
+            "maximum temperature": "Maximální teplota",
+            "minimum temperature": "Minimální teplota",
+            "precipitation": "Celkové srážky",
+            "current precipitation": "Aktuální srážky",
+            "pressure": "Tlak",
+            "solar radiation": "Sluneční záření",
+            "temperature": "Teplota",
+            "windspeed": "Rychlost větru"
+          },
+          "pressure_types": {
+            "absolute": "absolutní",
+            "relative": "relativní"
+          },
+          "pressure-type": "Tlak je",
+          "sensor-aggregate-of-sensor-values-to-calculate": "hodnot senzorů pro výpočet doby trvání",
+          "sensor-aggregate-use-the": "Použít",
+          "sensor-entity": "Entita senzoru",
+          "static_value": "Hodnota",
+          "input-units": "Vstup poskytuje hodnoty v",
+          "source": "Zdroj",
+          "sources": {
+            "none": "Žádný",
+            "weather_service": "Meteorologická služba",
+            "sensor": "Senzor",
+            "static": "Statická hodnota"
+          }
+        }
+      },
+      "description": "Přidejte jednu nebo více skupin senzorů, které získávají meteorologická data z meteorologické služby, ze senzorů nebo z jejich kombinace. Každou skupinu senzorů můžete přiřadit k jedné nebo více zónám",
+      "labels": {
+        "mapping-name": "Název"
+      },
+      "no_items": "Zatím nejsou definovány žádné skupiny senzorů.",
+      "title": "Skupiny senzorů",
+      "weather-records": {
+        "title": "Meteorologické záznamy (posledních 10)",
+        "timestamp": "Čas",
+        "temperature": "Teplota",
+        "humidity": "Vlhkost",
+        "precipitation": "Srážky",
+        "retrieval-time": "Načteno",
+        "no-data": "Pro tuto skupinu senzorů nejsou k dispozici žádná meteorologická data"
+      }
+    },
+    "modules": {
+      "cards": {
+        "add-module": {
+          "actions": {
+            "add": "Přidat modul"
+          },
+          "header": "Přidat modul"
+        },
+        "module": {
+          "errors": {
+            "cannot-delete-module-because-zones-use-it": "Tento modul nelze smazat, protože ho používá alespoň jedna zóna."
+          },
+          "labels": {
+            "configuration": "Konfigurace",
+            "required": "označuje povinné pole"
+          },
+          "translated-options": {
+            "DontEstimate": "Neodhadovat",
+            "EstimateFromSunHours": "Odhadnout z hodin slunečního svitu",
+            "EstimateFromTemp": "Odhadnout z teploty",
+            "EstimateFromSunHoursAndTemperature": "Odhadnout z průměru hodin slunečního svitu a teploty"
+          }
+        }
+      },
+      "description": "Přidejte jeden nebo více modulů, které vypočítávají dobu zavlažování. Každý modul má vlastní konfiguraci a lze ho použít k výpočtu doby trvání pro jednu nebo více zón.",
+      "no_items": "Zatím nejsou definovány žádné moduly.",
+      "title": "Moduly"
+    },
+    "zones": {
+      "actions": {
+        "add": "Přidat",
+        "calculate": "Vypočítat",
+        "information": "Informace",
+        "update": "Aktualizovat",
+        "reset-bucket": "Resetovat bucket",
+        "view-weather-info": "Zobrazit meteorologická data",
+        "view-weather-info-message": "Meteorologická data k dispozici pro",
+        "view-watering-calendar": "Zobrazit zavlažovací kalendář"
+      },
+      "cards": {
+        "add-zone": {
+          "actions": {
+            "add": "Přidat zónu"
+          },
+          "header": "Přidat zónu"
+        },
+        "zone-actions": {
+          "actions": {
+            "calculate-all": "Vypočítat všechny zóny",
+            "update-all": "Aktualizovat všechny zóny",
+            "reset-all-buckets": "Resetovat všechny buckety",
+            "clear-all-weatherdata": "Vymazat všechna meteorologická data"
+          },
+          "header": "Akce na všech zónách"
+        }
+      },
+      "description": "Zde zadejte jednu nebo více zavlažovacích zón. Doba zavlažování se počítá pro každou zónu zvlášť, v závislosti na velikosti, průtoku, stavu, modulu a skupině senzorů.",
+      "labels": {
+        "bucket": "Bucket",
+        "duration": "Doba trvání",
+        "lead-time": "Předstihový čas",
+        "mapping": "Skupina senzorů",
+        "maximum-duration": "Maximální doba trvání",
+        "multiplier": "Násobitel",
+        "name": "Název",
+        "size": "Velikost",
+        "state": "Stav",
+        "states": {
+          "automatic": "Automatický",
+          "disabled": "Zakázaný",
+          "manual": "Ruční"
+        },
+        "throughput": "Průtok",
+        "maximum-bucket": "Maximální bucket",
+        "last_calculated": "Naposledy vypočítáno",
+        "data-last-updated": "Data naposledy aktualizována",
+        "data-number-of-data-points": "Počet datových bodů",
+        "drainage_rate": "Rychlost odvodnění"
+      },
+      "no_items": "Zatím nejsou definovány žádné zóny.",
+      "title": "Zóny"
+    }
+  },
+  "title": "Smart Irrigation",
+  "irrigation_start_triggers": {
+    "title": "Spouštěče zahájení zavlažování",
+    "description": "Nakonfigurujte, kdy má zavlažování začít na základě solárních událostí. Můžete přidat více spouštěčů pro různé plány. U spouštěčů východu slunce ponechání posunu na 0 automaticky použije celkovou dobu trvání všech povolených zón.",
+    "usage_before": "Když se spouštěč spustí, Smart Irrigation vyšle událost ",
+    "usage_after": " — naslouchejte jí v automatizaci pro zahájení zavlažování. Data události zahrnují trigger_name, trigger_type a offset_minutes, takže můžete reagovat odlišně pro každý spouštěč. Nastavení přeskočení kvůli srážkám a počtu dnů mezi zavlažováními stále platí: v den přeskočení se nevyšle žádná událost.",
+    "add_trigger": "Přidat spouštěč",
+    "edit_trigger": "Upravit spouštěč",
+    "delete_trigger": "Smazat spouštěč",
+    "trigger_types": {
+      "sunrise": "Východ slunce",
+      "sunset": "Západ slunce",
+      "solar_azimuth": "Solární azimut"
+    },
+    "fields": {
+      "name": {
+        "name": "Název spouštěče",
+        "description": "Popisný název pro identifikaci tohoto spouštěče"
+      },
+      "type": {
+        "name": "Typ spouštěče",
+        "description": "Typ solární události, na kterou se má spustit"
+      },
+      "enabled": {
+        "name": "Povoleno",
+        "description": "Zda je tento spouštěč aktuálně aktivní"
+      },
+      "offset_minutes": {
+        "name": "Posun (minuty)",
+        "description": "Minuty před (-) nebo po (+) solární události. U spouštěčů východu slunce použijte 0 pro automatické načasování na základě celkové doby trvání zón."
+      },
+      "azimuth_angle": {
+        "name": "Úhel azimutu (stupně)",
+        "description": "Úhel solárního azimutu ve stupních, kde 0=Sever, 90=Východ, 180=Jih, 270=Západ"
+      },
+      "account_for_duration": {
+        "name": "Zohlednit dobu trvání",
+        "description": "Když je povoleno, zavlažování začne dostatečně brzy, aby skončilo v zadaný čas. Když je zakázáno, zavlažování začne přesně v zadaný čas."
+      }
+    },
+    "dialog": {
+      "add_title": "Přidat spouštěč zahájení zavlažování",
+      "edit_title": "Upravit spouštěč zahájení zavlažování",
+      "cancel": "Zrušit",
+      "save": "Uložit",
+      "delete": "Smazat",
+      "help": "Když se tento spouštěč spustí, Smart Irrigation vyšle následující událost — použijte ji v automatizaci pro zahájení zavlažování. Data události zahrnují název tohoto spouštěče (a typ/posun), takže na něj můžete reagovat konkrétně:"
+    },
+    "no_triggers": "Nejsou nakonfigurovány žádné spouštěče zahájení zavlažování. Systém použije výchozí chování (východ slunce s celkovou dobou trvání zón). Přidejte spouštěče pro přizpůsobení, kdy zavlažování začne.",
+    "offset_auto": "Auto (vypočítáno z celkové doby trvání zón)",
+    "confirm_delete": "Opravdu chcete smazat spouštěč '{name}'?",
+    "validation": {
+      "name_required": "Název spouštěče je povinný",
+      "azimuth_invalid": "Úhel azimutu musí být platné číslo"
+    },
+    "help": {
+      "sunrise_offset": "U spouštěčů východu slunce: Použijte záporné hodnoty pro spuštění před východem slunce, kladné pro spuštění po něm. Nastavte na 0 pro automatické spuštění dostatečně brzy, aby se všechny zóny dokončily před východem slunce.",
+      "sunset_offset": "U spouštěčů západu slunce: Použijte záporné hodnoty pro spuštění před západem slunce, kladné pro spuštění po západu slunce.",
+      "azimuth_explanation": "Solární azimut je směr slunce podle kompasu. 0°=Sever, 90°=Východ, 180°=Jih, 270°=Západ. Můžete zadat libovolnou hodnotu úhlu (např. 450° = 90°, -30° = 330°). Použijte toto pro spuštění zavlažování, když slunce dosáhne konkrétní polohy.",
+      "multiple_triggers": "Můžete nakonfigurovat více spouštěčů. Každý povolený spouštěč bude nezávisle plánovat zahájení zavlažování."
+    }
+  },
+  "weather_skip": {
+    "title": "Přeskočení zavlažování na základě počasí",
+    "description": "Automaticky přeskočit zavlažování, když jsou předpovězeny srážky. Tato funkce vyžaduje nakonfigurovanou meteorologickou službu.",
+    "threshold_label": "Práh srážek",
+    "threshold_description": "Minimální množství srážek (v mm) předpovězené pro dnešek a zítřek pro přeskočení zavlažování."
+  },
+  "coordinate_config": {
+    "title": "Souřadnice polohy",
+    "description": "Nakonfigurujte souřadnice polohy pro získávání meteorologických dat. V případě potřeby můžete použít ruční souřadnice odlišné od polohy vašeho Home Assistant.",
+    "manual_enabled": "Použít ruční souřadnice",
+    "use_ha_location": "Použít polohu Home Assistant",
+    "latitude": "Zeměpisná šířka (desetinné stupně)",
+    "longitude": "Zeměpisná délka (desetinné stupně)",
+    "elevation": "Nadmořská výška (metry nad mořem)",
+    "current_ha_coords": "Aktuální souřadnice Home Assistant"
+  },
+  "days_between_irrigation": {
+    "title": "Dny mezi zavlažováními",
+    "description": "Nakonfigurujte minimální počet dnů, které musí uplynout mezi zavlažovacími událostmi. To pomáhá řídit frekvenci zavlažování pro úsporu vody a péči o zdraví rostlin.\n\nTypické případy použití z praxe:\n• Péče o trávník: intervaly 1-2 dny zabraňují přemokření\n• Omezení kvůli suchu: intervaly 6+ dnů pro týdenní zavlažování\n• Hluboce kořenící rostliny: intervaly 3-7 dnů pro méně časté zavlažování\n• Úspora vody: přizpůsobitelné podle klimatu a půdních podmínek",
+    "label": "Minimální počet dnů mezi zavlažováními",
+    "help_text": "Nastavte na 0 pro zakázání této funkce. Podporovány jsou hodnoty od 1 do 365 dnů. Toto nastavení funguje společně se stávající logikou předpovědi srážek."
+  }
+}

@@ -2,7 +2,7 @@ remote_theme: pages-themes/slate@v0.2.0
 plugins:
 - jekyll-remote-theme # add this line to the plugins list if you already have one
 markdown: GFM
-title: HAppy Irrigation
+title: Smart Irrigation
 description: A Home Assistant integration to optimize irrigation
 url: https://altmenorg.github.io
 baseurl: /HAppyIrrigation

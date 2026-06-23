@@ -48,7 +48,7 @@ format: install-dev
 
 # Linting (matches CI requirements)
 lint: install-dev
-	./.venv/bin/ruff check custom_components/happy_irrigation/
+	./.venv/bin/ruff check custom_components/smart_irrigation/
 	@echo "✅ Linting complete"
 
 # Clean up
@@ -61,6 +61,6 @@ clean:
 
 # Run all CI quality checks
 check: install-dev
-	./.venv/bin/ruff check custom_components/happy_irrigation/
+	./.venv/bin/ruff check custom_components/smart_irrigation/
 	./.venv/bin/black --check .
 	@echo "✅ All CI checks passed"

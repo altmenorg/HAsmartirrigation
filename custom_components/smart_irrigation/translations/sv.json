@@ -1,0 +1,231 @@
+{
+  "config": {
+    "abort": {
+      "single_instance_allowed": "Endast en enda konfiguration av Smart Irrigation tillåts."
+    },
+    "error": {
+      "auth": "Felaktig API-nyckel för vädertjänsten",
+      "name": "Ange ett unikt namn för integrationen."
+    },
+    "step": {
+      "migrate": {
+        "title": "Importera från Smart Irrigation",
+        "description": "En befintlig Smart Irrigation-konfiguration hittades. Vill du importera den till Smart Irrigation? Dina zoner, sensorgrupper, moduler och inställningar (samt API-nyckeln för vädertjänsten) kopieras. Din befintliga Smart Irrigation-integration lämnas orörd; du kan ta bort den efteråt.",
+        "data": {
+          "import_existing": "Importera den befintliga Smart Irrigation-konfigurationen"
+        }
+      },
+      "user": {
+        "title": "Allmän konfiguration",
+        "description": "Om du behöver hjälp med konfigurationen, se dokumentationen.",
+        "data": {
+          "name": "Unikt namn för integrationen",
+          "use_weather_service": "Använd en vädertjänst (Open Weather Map eller Pirate Weather) för väderdata eller prognoser. Aktivera det här alternativet om du tänker använda en av de vädertjänster som stöds för åtminstone en del av väderdatan, inklusive prognoser. Inaktivera det här alternativet om du uteslutande vill använda en annan källa, till exempel din egen väderstation. I så fall kan Smart Irrigation inte använda prognoser."
+        }
+      },
+      "step1": {
+        "title": "Konfiguration av vädertjänstens API",
+        "description": "Om du behöver hjälp med konfigurationen, se dokumentationen.",
+        "data": {
+          "weather_service": "Vädertjänst att använda",
+          "weather_service_api_key": "API-nyckel för vädertjänsten",
+          "weather_service_api_version": "API-version för vädertjänsten"
+        }
+      }
+    }
+  },
+  "options": {
+    "error": {
+      "auth": "Felaktig API-nyckel eller version för vädertjänsten",
+      "invalid_coordinates": "Ogiltiga koordinater angivna. Kontrollera värdena för latitud (-90 till 90) och longitud (-180 till 180)."
+    },
+    "step": {
+      "init": {
+        "title": "Konfiguration av vädertjänstens API",
+        "description": "Om du behöver hjälp med konfigurationen, se dokumentationen.",
+        "data": {
+          "use_weather_service": "Använd en vädertjänst (Open Weather Map eller Pirate Weather) för väderdata eller prognoser. Aktivera det här alternativet om du tänker använda en av de vädertjänster som stöds för åtminstone en del av väderdatan, inklusive prognoser. Inaktivera det här alternativet om du uteslutande vill använda en annan källa, till exempel din egen väderstation. I så fall kan Smart Irrigation inte använda prognoser."
+        }
+      },
+      "step1": {
+        "title": "Konfiguration av vädertjänstens API",
+        "description": "Om du behöver hjälp med konfigurationen, se dokumentationen.",
+        "data": {
+          "weather_service": "Vädertjänst att använda",
+          "weather_service_api_key": "API-nyckel för vädertjänsten",
+          "weather_service_api_version": "API-version för vädertjänsten"
+        }
+      },
+      "coordinates": {
+        "title": "Platskoordinater",
+        "description": "Konfigurera platskoordinater för hämtning av väderdata. Du kan använda manuella koordinater som skiljer sig från din Home Assistant-plats om det behövs.",
+        "data": {
+          "manual_coordinates_enabled": "Använd manuella koordinater istället för Home Assistant-platsen",
+          "manual_latitude": "Latitud (decimalgrader, -90 till 90)",
+          "manual_longitude": "Longitud (decimalgrader, -180 till 180)",
+          "manual_elevation": "Höjd över havet (meter, valfritt)"
+        }
+      }
+    }
+  },
+  "services": {
+    "calculate_all_zones": {
+      "name": "Beräkna alla zoner",
+      "description": "Beräkna alla zoner i automatiskt läge",
+      "fields":{
+        "delete_weather_data": {
+          "name": "Radera väderdata",
+          "description": "Radera väderdata efter beräkning"
+        }
+      }
+    },
+    "calculate_zone": {
+      "name": "Beräkna zon",
+      "description": "Beräkna angiven zon",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zon att beräkna"
+        },
+        "delete_weather_data": {
+          "name": "Radera väderdata",
+          "description": "Radera väderdata för zonen efter beräkning"
+        }
+      }
+    },
+    "update_all_zones": {
+      "name": "Uppdatera alla zoner",
+      "description": "Uppdatera väderdata för alla zoner i automatiskt läge"
+    },
+    "update_zone": {
+      "name": "Uppdatera zon",
+      "description": "Uppdatera väderdata för angiven zon",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zon att uppdatera"
+        }
+      }
+    },
+    "set_bucket": {
+      "name": "Ställ in bucket",
+      "description": "Ställ in bucket för en zon till ett specifikt värde",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zon att ställa in bucket för"
+        },
+        "new_bucket_value": {
+          "name": "Nytt bucket-värde",
+          "description": "nytt värde för bucket"
+        }
+      }
+    },
+    "set_all_buckets": {
+      "name": "Ställ in alla buckets",
+      "description": "Ställ in buckets för alla zoner till ett specifikt värde",
+      "fields": {
+        "new_bucket_value": {
+          "name": "Nytt bucket-värde",
+          "description": "nytt värde för bucket"
+        }
+      }
+    },
+    "reset_bucket": {
+      "name": "Återställ bucket",
+      "description": "Återställ bucket för en zon till 0",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zon att återställa bucket för"
+        }
+      }
+    },
+    "reset_all_buckets": {
+      "name": "Återställ alla buckets",
+      "description": "Återställ bucket för alla zoner till 0"
+    },
+    "clear_all_weather_data": {
+      "name": "Rensa all väderdata",
+      "description": "Rensa väderdata för alla zoner"
+    },
+    "set_multiplier": {
+      "name": "Ställ in multiplikator",
+      "description": "Ställ in multiplikator för en zon till ett specifikt värde",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zon att ställa in multiplikator för"
+        },
+        "new_multiplier_value": {
+          "name": "Nytt multiplikatorvärde",
+          "description": "nytt värde för multiplikatorn"
+        }
+      }
+    },
+    "set_all_multipliers": {
+      "name": "Ställ in alla multiplikatorer",
+      "description": "Ställ in multiplikatorer för alla zoner till ett specifikt värde",
+      "fields": {
+        "new_multiplier_value": {
+          "name": "Nytt multiplikatorvärde",
+          "description": "nytt värde för multiplikatorn"
+        }
+      }
+    },
+    "set_state": {
+      "name": "Ställ in en zons tillstånd",
+      "description": "Ställ in en zons tillstånd till ett specifikt värde",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zon att ställa in tillstånd för"
+        },
+        "new_state_value": {
+          "name": "Nytt tillståndsvärde",
+          "description": "Nytt värde för tillståndet"
+        }
+      }
+    },
+    "set_zone": {
+      "name": "Ställ in en zons värden",
+      "description": "Ställ in alla konfigurerbara värden för en zon",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zon att ställa in konfigurationsvärden för"
+        },
+        "new_bucket_value": {
+          "name": "Nytt bucket-värde",
+          "description": "Nytt värde för bucket"
+        },
+        "new_multiplier_value": {
+          "name": "Nytt multiplikatorvärde",
+          "description": "Nytt värde för multiplikatorn"
+        },
+        "new_duration_value": {
+          "name": "Nytt varaktighetsvärde",
+          "description": "Nytt värde för varaktigheten"
+        },
+        "new_state_value": {
+          "name": "Nytt tillståndsvärde",
+          "description": "Nytt värde för tillståndet"
+        },
+        "new_throughput_value": {
+          "name": "Nytt flödesvärde",
+          "description": "Nytt värde för flödet"
+        }
+      }
+    },
+    "generate_watering_calendar": {
+      "name": "Generera bevattningskalender",
+      "description": "Generera en 12-månaders bevattningskalender för bevattningszoner baserat på representativa klimatdata",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zon att generera bevattningskalender för"
+        }
+      }
+    }
+  }
+}

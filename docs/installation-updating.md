@@ -15,16 +15,16 @@ title: Installation: Updating
         ```yaml
         service: update.install
         target:
-        entity_id: update.happy_irrigation_update
+        entity_id: update.smart_irrigation_update
         data:
         version: 2024.7.0
         ```
     * **If installed manually**: Download the zip file for the [specific release](/HAsmartIrrigation/releases) you want and extract it into the `custom_components` folder in your Home Assistant installation, overwriting the previous installation.
 3. Restart HA to load the changes.
 4. (Optional) Verify the version number:
-    * **Verify version of the backend**: In HA, go to Configuration -> Integrations. In the HAppy Irrigation card, click the device to see the Device info. The 'firmware version' represents the installed version number.
+    * **Verify version of the backend**: In HA, go to Configuration -> Integrations. In the Smart Irrigation card, click the device to see the Device info. The 'firmware version' represents the installed version number.
     * **Verify version of the frontend**:
-In the HAppy Irrigation configuration panel, the version number is displayed in the top right. If the version does not match with the backend version, your browser has an outdated version stored in the cache.
+In the Smart Irrigation configuration panel, the version number is displayed in the top right. If the version does not match with the backend version, your browser has an outdated version stored in the cache.
 To clear the cache, you should do a [force refresh of your browser](https://refreshyourcache.com/en/cache/).
 
 > Main page: [Installation](installation.md)<br/>

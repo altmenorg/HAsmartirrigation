@@ -43,7 +43,7 @@ sequence:
       entity_id:
         - !input irrigation_switch
 
-  - service: happy_irrigation.reset_bucket
+  - service: smart_irrigation.reset_bucket
     data: {}
     target:
       entity_id: !input irrigation_zone

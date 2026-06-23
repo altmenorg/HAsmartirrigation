@@ -48,7 +48,7 @@ body:
     id: diagnostics
     attributes:
       label: Diagnostics file
-      description: You are *required* to attach a diagnostics file. Issues that do not have a diagnostic file will be closed immediately. To download a diagnostics file, in Home Assistant, go to Settings>Devices&Services>Integrations>Smart Irrigation, or use [this link](https://my.home-assistant.io/redirect/integration/?domain=happy_irrigation). Click the 'three vertical dots' menu and select 'download diagnostics'.
+      description: You are *required* to attach a diagnostics file. Issues that do not have a diagnostic file will be closed immediately. To download a diagnostics file, in Home Assistant, go to Settings>Devices&Services>Integrations>Smart Irrigation, or use [this link](https://my.home-assistant.io/redirect/integration/?domain=smart_irrigation). Click the 'three vertical dots' menu and select 'download diagnostics'.
       options:
         - label: I have attached a diagnostics file
           required: true

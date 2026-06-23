@@ -391,7 +391,7 @@ test_calendar_fix.py
 
 # Frontend source view, NOT a Visual Studio backup folder: the generic
 # "Backup*/" rule above matches "backuprestore/" case-insensitively on Windows.
-!custom_components/happy_irrigation/frontend/src/views/backuprestore/
+!custom_components/smart_irrigation/frontend/src/views/backuprestore/
 
 # Local-only, NOT for the public repo (personal infra: HAOS host, SSH, paths)
 /deploy.sh

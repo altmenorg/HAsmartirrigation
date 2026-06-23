@@ -6,7 +6,7 @@ updates:
   # only (compiled into the shipped bundle), so minor/patch bumps are grouped
   # into a single PR to keep the noise down.
   - package-ecosystem: "npm"
-    directory: "/custom_components/happy_irrigation/frontend"
+    directory: "/custom_components/smart_irrigation/frontend"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
