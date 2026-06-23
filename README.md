@@ -151,6 +151,10 @@ Tests use `pytest-asyncio`, so async test functions must be marked accordingly. 
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full development and testing guide.
 
+## Acknowledgements
+
+Smart Irrigation exists thanks to [Jeroen ter Heerdt](https://github.com/jeroenterheerdt), who created it, designed its evapotranspiration model and maintained it for years. With this release he is passing the torch, and the project carries on in the same spirit. Thank you, Jeroen, for building something so many gardens rely on, and for entrusting it to good hands. 🌱
+
 ## License
 
 [MIT](LICENSE) — © 2020 Jeroen ter Heerdt (original Smart Irrigation), © 2026 Anthony Mercatante.
