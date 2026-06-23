@@ -96,9 +96,10 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
         self.latitude = latitude
         self.elevation = elevation
         self.cache_seconds = cache_seconds
+        # The coordinator sets cache_seconds to the update interval, so one fetch
+        # per cycle is reused across all intra-cycle lookups (zones, mappings,
+        # primary + fallback) instead of hitting the API every time.
         self.override_cache = override_cache
-        # disabling cache for now (parity with the other clients)
-        self.override_cache = True
         self._last_time_called = datetime.datetime(1900, 1, 1, 0, 0, 0)
         self._cached_doc = None
 

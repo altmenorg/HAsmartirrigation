@@ -98,9 +98,9 @@ class PirateWeatherClient:  # pylint: disable=invalid-name
         )
         # defaults to no cache
         self.cache_seconds = cache_seconds
+        # The coordinator sets cache_seconds to the update interval, so one fetch
+        # per cycle is reused instead of hitting the API on every lookup.
         self.override_cache = override_cache
-        # disabling cache for now
-        self.override_cache = True
         self._last_time_called = datetime.datetime(1900, 1, 1, 0, 0, 0)
         self._cached_data = None
         self._cached_forecast_data = None
