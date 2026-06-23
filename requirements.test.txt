@@ -17,4 +17,4 @@ pytest-cov>=4.0.0
 # Additional testing utilities
 freezegun>=1.2.0
 respx>=0.20.0
-syrupy>=4.0.0
+syrupy>=5.3.2
