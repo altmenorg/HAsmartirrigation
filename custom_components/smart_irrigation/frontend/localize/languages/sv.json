@@ -380,7 +380,12 @@
         "last_calculated": "Senast beräknad",
         "data-last-updated": "Data senast uppdaterad",
         "data-number-of-data-points": "Antal datapunkter",
-        "drainage_rate": "Dräneringshastighet"
+        "drainage_rate": "Dräneringshastighet",
+        "linked-entity": "Länkad ventil/brytare",
+        "linked-entity-hint": "Ventilen eller brytaren som vattnar denna zon. Varje gång den körs (en manuell kran, en automation eller Smart Irrigation själv när direkt ventilstyrning är på) krediteras bucket utifrån körtiden och zonens flöde. Krävs för de slutna funktionerna.",
+        "flow-sensor": "Kumulativ volymmätare",
+        "flow-sensor-hint": "För exakt kreditering i stället för flöde x tid: en kumulativ vattenmätarsumma (tillståndsklass total_increasing), inte ett momentant flöde. Enheten läses av automatiskt (L, mL, m³, gal, ft³).",
+        "optional": "valfritt"
       },
       "no_items": "Det finns inga zoner definierade ännu.",
       "title": "Zoner"
@@ -446,7 +451,10 @@
       "sunset_offset": "För solnedgångsutlösare: Använd negativa värden för att starta före solnedgången, positiva för att starta efter solnedgången.",
       "azimuth_explanation": "Solens azimut är solens kompassriktning. 0°=Norr, 90°=Öst, 180°=Söder, 270°=Väst. Du kan ange vilket vinkelvärde som helst (t.ex. 450° = 90°, -30° = 330°). Använd detta för att utlösa bevattning när solen når en specifik position.",
       "multiple_triggers": "Du kan konfigurera flera utlösare. Varje aktiverad utlösare schemalägger bevattningsstarter oberoende av varandra."
-    }
+    },
+    "active_label": "Aktiv utlösare",
+    "active_default": "Standard (soluppgång minus total bevattningstid)",
+    "active_hint": "Endast den valda utlösaren startar bevattningen, så den körs en gång per dag. \"Standard\" tidsbestämmer körningen så att den avslutas exakt vid soluppgången. Lägg till egna utlösare (solnedgång, azimut, förskjutningar) nedan och välj sedan en här."
   },
   "weather_skip": {
     "title": "Väderbaserad överhoppning av bevattning",
@@ -469,5 +477,17 @@
     "description": "Konfigurera det minsta antalet dagar som måste gå mellan bevattningstillfällen. Detta hjälper till att kontrollera bevattningsfrekvensen för vattenbesparing och växthälsa.\n\nTypiska verkliga användningsfall:\n• Gräsmatteskötsel: 1–2 dagars intervall förhindrar överbevattning\n• Torkrestriktioner: 6+ dagars intervall för veckovis bevattning\n• Djuprotade växter: 3–7 dagars intervall för mindre frekvent bevattning\n• Vattenbesparing: Anpassningsbar utifrån klimat och markförhållanden",
     "label": "Minsta antal dagar mellan bevattning",
     "help_text": "Ställ in på 0 för att inaktivera den här funktionen. Värden från 1–365 dagar stöds. Den här inställningen fungerar tillsammans med befintlig logik för nederbördsprognoser."
+  },
+  "observed_watering": {
+    "title": "Observerad bevattning (sluten slinga)",
+    "description": "Kreditera varje zons bucket automatiskt utifrån verklig bevattning, i stället för att nollställa bucket från en automation. När det är aktiverat väljer du en ventil-/brytarentitet per zon på fliken Zoner: medan den är öppen krediteras bucket utifrån körtiden och zonens flöde. För exakt bokföring kan du även välja en kumulativ volymmätare (en vattenmätarsumma) per zon, och den uppmätta volymen används i stället. Viktigt: när detta är på är det det enda som krediterar bucket, så ta bort alla reset_bucket-anrop från din bevattningsautomation för att undvika dubbelräkning.",
+    "enabled_label": "Aktivera observerad bevattning",
+    "direct_control_label": "Låt Smart Irrigation styra ventilen",
+    "direct_control_description": "När detta är på öppnar Smart Irrigation varje zons länkade ventil, väntar den beräknade tiden och stänger den sedan - ingen automation behövs. En pågående körning återupptas efter en omstart. Säkerhet: om Home Assistant ligger nere en längre tid mitt i en körning förblir ventilen öppen och fortsätter vattna, så ge din ventil ett maskinvaruskydd (en maximal körtid).",
+    "sequencing_label": "Zonsekvensering",
+    "sequencing": {
+      "sequential": "Sekventiell (en zon i taget)",
+      "parallel": "Parallell (alla zoner samtidigt)"
+    }
   }
 }

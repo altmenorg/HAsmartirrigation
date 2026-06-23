@@ -380,7 +380,12 @@
         "last_calculated": "Último cálculo",
         "data-last-updated": "Dados atualizados pela última vez",
         "data-number-of-data-points": "Número de pontos de dados",
-        "drainage_rate": "Taxa de drenagem"
+        "drainage_rate": "Taxa de drenagem",
+        "linked-entity": "Válvula/interruptor associado",
+        "linked-entity-hint": "A válvula ou interruptor que rega esta zona. Sempre que funcionar (uma torneira manual, uma automação ou o próprio Smart Irrigation quando o controlo direto da válvula está ativo), o bucket é creditado a partir do tempo de funcionamento e do débito da zona. Necessário para as funcionalidades de circuito fechado.",
+        "flow-sensor": "Medidor de volume acumulado",
+        "flow-sensor-hint": "Para um crédito exato em vez de débito x tempo: um total de contador de água acumulado (classe de estado total_increasing), não um caudal instantâneo. A unidade é lida automaticamente (L, mL, m³, gal, ft³).",
+        "optional": "opcional"
       },
       "no_items": "Ainda não existem zonas definidas.",
       "title": "Zonas"
@@ -446,7 +451,10 @@
       "sunset_offset": "Para acionadores ao pôr do sol: use valores negativos para começar antes do pôr do sol, positivos para começar depois do pôr do sol.",
       "azimuth_explanation": "O azimute solar é a direção da bússola do sol. 0°=Norte, 90°=Este, 180°=Sul, 270°=Oeste. Pode introduzir qualquer valor de ângulo (por exemplo, 450° = 90°, -30° = 330°). Use isto para acionar a irrigação quando o sol atinge uma posição específica.",
       "multiple_triggers": "Pode configurar vários acionadores. Cada acionador ativado agendará independentemente os inícios de irrigação."
-    }
+    },
+    "active_label": "Acionador ativo",
+    "active_default": "Predefinido (nascer do sol menos a duração total de rega)",
+    "active_hint": "Apenas o acionador selecionado inicia a rega, por isso esta corre uma vez por dia. \"Predefinido\" calcula a rega para terminar exatamente ao nascer do sol. Adicione acionadores personalizados (pôr do sol, azimute, desvios) abaixo e depois escolha um aqui."
   },
   "weather_skip": {
     "title": "Salto de irrigação com base no tempo",
@@ -469,5 +477,17 @@
     "description": "Configure o número mínimo de dias que devem decorrer entre eventos de irrigação. Isto ajuda a controlar a frequência de rega para conservação da água e gestão da saúde das plantas.\n\nCasos de uso típicos do mundo real:\n• Cuidado do relvado: intervalos de 1-2 dias evitam o excesso de rega\n• Restrições por seca: intervalos de 6+ dias para rega semanal\n• Plantas de raízes profundas: intervalos de 3-7 dias para rega menos frequente\n• Conservação da água: personalizável consoante o clima e as condições do solo",
     "label": "Mínimo de dias entre irrigações",
     "help_text": "Defina como 0 para desativar esta funcionalidade. São suportados valores de 1-365 dias. Esta definição funciona em conjunto com a lógica de previsão de precipitação existente."
+  },
+  "observed_watering": {
+    "title": "Rega observada (circuito fechado)",
+    "description": "Credita automaticamente o bucket de cada zona a partir da rega real, em vez de repor o bucket a partir de uma automação. Uma vez ativado, escolha uma entidade de válvula/interruptor por zona no separador Zonas: enquanto estiver aberta, o bucket é creditado a partir do tempo de funcionamento e do débito da zona. Para uma contabilidade exata, também pode escolher um medidor de volume acumulado (um total estilo contador de água) por zona, e o volume medido é usado em vez disso. Importante: quando isto está ativo, é a única coisa a creditar o bucket, por isso remova qualquer chamada reset_bucket da sua automação de rega para evitar contagem dupla.",
+    "enabled_label": "Ativar rega observada",
+    "direct_control_label": "Permitir que o Smart Irrigation controle a válvula",
+    "direct_control_description": "Quando ativo, o Smart Irrigation abre a válvula associada de cada zona, aguarda a duração calculada e depois fecha-a - sem necessidade de automação. Uma rega em curso é retomada após um reinício. Segurança: se o Home Assistant ficar indisponível durante muito tempo a meio de uma rega, a válvula permanece aberta e continua a regar, por isso atribua à sua válvula um mecanismo de segurança por hardware (um tempo máximo de funcionamento).",
+    "sequencing_label": "Sequenciamento de zonas",
+    "sequencing": {
+      "sequential": "Sequencial (uma zona de cada vez)",
+      "parallel": "Paralelo (todas as zonas em simultâneo)"
+    }
   }
 }

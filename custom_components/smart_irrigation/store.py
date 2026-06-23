@@ -15,6 +15,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 from .const import (
     ATTR_NEW_BUCKET_VALUE,
     ATTR_NEW_MULTIPLIER_VALUE,
+    CONF_ACTIVE_START_TRIGGER,
     CONF_ACTIVE_VALVE_RUNS,
     CONF_AUTO_CALC_ENABLED,
     CONF_AUTO_CLEAR_ENABLED,
@@ -27,6 +28,7 @@ from .const import (
     CONF_CONTINUOUS_UPDATES,
     CONF_DAYS_BETWEEN_IRRIGATION,
     CONF_DAYS_SINCE_LAST_IRRIGATION,
+    CONF_DEFAULT_ACTIVE_START_TRIGGER,
     CONF_DEFAULT_AUTO_CALC_ENABLED,
     CONF_DEFAULT_AUTO_CLEAR_ENABLED,
     CONF_DEFAULT_AUTO_UPDATE_DELAY,
@@ -217,6 +219,9 @@ class Config:
     irrigation_start_triggers = attr.ib(
         type=list, default=CONF_DEFAULT_IRRIGATION_START_TRIGGERS
     )
+    # Which configured trigger actually starts irrigation ("default" = sunrise
+    # minus the total watering duration).
+    active_start_trigger = attr.ib(type=str, default=CONF_DEFAULT_ACTIVE_START_TRIGGER)
     skip_irrigation_on_precipitation = attr.ib(
         type=bool, default=CONF_DEFAULT_SKIP_IRRIGATION_ON_PRECIPITATION
     )
@@ -467,6 +472,10 @@ class SmartIrrigationStorage:
                 irrigation_start_triggers=data["config"].get(
                     CONF_IRRIGATION_START_TRIGGERS,
                     CONF_DEFAULT_IRRIGATION_START_TRIGGERS,
+                ),
+                active_start_trigger=data["config"].get(
+                    CONF_ACTIVE_START_TRIGGER,
+                    CONF_DEFAULT_ACTIVE_START_TRIGGER,
                 ),
                 skip_irrigation_on_precipitation=data["config"].get(
                     CONF_SKIP_IRRIGATION_ON_PRECIPITATION,

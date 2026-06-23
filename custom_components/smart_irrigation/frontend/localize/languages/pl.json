@@ -380,7 +380,12 @@
         "last_calculated": "Ostatnio obliczono",
         "data-last-updated": "Dane ostatnio zaktualizowane",
         "data-number-of-data-points": "Liczba punktów danych",
-        "drainage_rate": "Natężenie drenażu"
+        "drainage_rate": "Natężenie drenażu",
+        "linked-entity": "Połączony zawór/przełącznik",
+        "linked-entity-hint": "Zawór lub przełącznik nawadniający tę strefę. Za każdym razem, gdy działa (ręczne odkręcenie, automatyzacja lub sam Smart Irrigation, gdy włączone jest bezpośrednie sterowanie zaworem), bucket jest zasilany na podstawie czasu działania i przepływu strefy. Wymagane dla funkcji zamkniętej pętli.",
+        "flow-sensor": "Licznik skumulowanej objętości",
+        "flow-sensor-hint": "Dla dokładnego zasilania zamiast przepływu x czas: skumulowana suma wodomierza (klasa stanu total_increasing), a nie chwilowe natężenie przepływu. Jednostka jest odczytywana automatycznie (L, mL, m³, gal, ft³).",
+        "optional": "opcjonalne"
       },
       "no_items": "Nie zdefiniowano jeszcze żadnych stref.",
       "title": "Strefy"
@@ -446,7 +451,10 @@
       "sunset_offset": "Dla wyzwalaczy zachodu słońca: użyj wartości ujemnych, aby rozpocząć przed zachodem słońca, dodatnich, aby rozpocząć po zachodzie słońca.",
       "azimuth_explanation": "Azymut słońca to kierunek kompasowy słońca. 0°=Północ, 90°=Wschód, 180°=Południe, 270°=Zachód. Możesz wprowadzić dowolną wartość kąta (np. 450° = 90°, -30° = 330°). Użyj tego, aby wyzwolić nawadnianie, gdy słońce osiągnie określone położenie.",
       "multiple_triggers": "Możesz skonfigurować wiele wyzwalaczy. Każdy włączony wyzwalacz będzie niezależnie planował starty nawadniania."
-    }
+    },
+    "active_label": "Aktywny wyzwalacz",
+    "active_default": "Domyślny (wschód słońca minus całkowity czas nawadniania)",
+    "active_hint": "Tylko wybrany wyzwalacz uruchamia nawadnianie, więc działa ono raz dziennie. \"Domyślny\" tak dobiera czas, aby zakończyć podlewanie dokładnie o wschodzie słońca. Dodaj poniżej własne wyzwalacze (zachód słońca, azymut, przesunięcia), a następnie wybierz jeden tutaj."
   },
   "weather_skip": {
     "title": "Pomijanie nawadniania na podstawie pogody",
@@ -469,5 +477,17 @@
     "description": "Skonfiguruj minimalną liczbę dni, które muszą upłynąć między zdarzeniami nawadniania. Pomaga to kontrolować częstotliwość podlewania w celu oszczędzania wody i dbania o zdrowie roślin.\n\nTypowe zastosowania w praktyce:\n• Pielęgnacja trawnika: odstępy 1–2 dni zapobiegają przelewaniu\n• Ograniczenia w czasie suszy: odstępy 6+ dni dla cotygodniowego podlewania\n• Rośliny głęboko ukorzenione: odstępy 3–7 dni dla rzadszego podlewania\n• Oszczędzanie wody: dostosowywalne w zależności od klimatu i warunków glebowych",
     "label": "Minimalna liczba dni między nawadnianiem",
     "help_text": "Ustaw na 0, aby wyłączyć tę funkcję. Obsługiwane są wartości od 1 do 365 dni. To ustawienie współdziała z istniejącą logiką prognozowania opadów."
+  },
+  "observed_watering": {
+    "title": "Obserwowane nawadnianie (zamknięta pętla)",
+    "description": "Automatycznie zasilaj bucket każdej strefy na podstawie rzeczywistego nawadniania, zamiast resetować bucket z automatyzacji. Po włączeniu wybierz w zakładce Strefy encję zaworu/przełącznika dla każdej strefy: gdy jest otwarty, bucket jest zasilany na podstawie czasu działania i przepływu strefy. Dla dokładnego rozliczenia możesz też wybrać licznik skumulowanej objętości (sumę typu wodomierza) dla każdej strefy, a zamiast tego użyta zostanie zmierzona objętość. Ważne: gdy ta funkcja jest włączona, jest jedynym, co zasila bucket, więc usuń wszelkie wywołania reset_bucket z automatyzacji nawadniania, aby uniknąć podwójnego liczenia.",
+    "enabled_label": "Włącz obserwowane nawadnianie",
+    "direct_control_label": "Pozwól Smart Irrigation sterować zaworem",
+    "direct_control_description": "Gdy włączone, Smart Irrigation otwiera połączony zawór każdej strefy, czeka przez obliczony czas, a następnie go zamyka - bez potrzeby automatyzacji. Trwające działanie zostaje wznowione po ponownym uruchomieniu. Bezpieczeństwo: jeśli Home Assistant przestanie działać na długo w trakcie nawadniania, zawór pozostaje otwarty i dalej podlewa, więc zapewnij zaworowi sprzętowe zabezpieczenie (maksymalny czas działania).",
+    "sequencing_label": "Sekwencjonowanie stref",
+    "sequencing": {
+      "sequential": "Sekwencyjnie (jedna strefa naraz)",
+      "parallel": "Równolegle (wszystkie strefy naraz)"
+    }
   }
 }

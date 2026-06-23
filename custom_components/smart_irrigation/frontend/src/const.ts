@@ -42,6 +42,8 @@ export const ZONE_SEQUENCING_PARALLEL = "parallel";
 
 // Irrigation start trigger configuration
 export const CONF_IRRIGATION_START_TRIGGERS = "irrigation_start_triggers";
+export const CONF_ACTIVE_START_TRIGGER = "active_start_trigger";
+export const START_TRIGGER_DEFAULT = "default";
 export const TRIGGER_TYPE_SUNRISE = "sunrise";
 export const TRIGGER_TYPE_SUNSET = "sunset";
 export const TRIGGER_TYPE_SOLAR_AZIMUTH = "solar_azimuth";

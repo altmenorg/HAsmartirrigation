@@ -380,7 +380,12 @@
         "last_calculated": "Ultimo calcolo",
         "data-last-updated": "Ultimo aggiornamento dei dati",
         "data-number-of-data-points": "Numero di dati",
-        "drainage_rate": "Tasso di drenaggio"
+        "drainage_rate": "Tasso di drenaggio",
+        "linked-entity": "Valvola/interruttore collegato",
+        "linked-entity-hint": "La valvola o l'interruttore che irriga questa zona. Ogni volta che si attiva (un rubinetto manuale, un'automazione o Smart Irrigation stesso quando il controllo diretto della valvola è attivo), il secchio viene accreditato in base al tempo di funzionamento e alla portata della zona. Necessario per le funzioni ad anello chiuso.",
+        "flow-sensor": "Contatore di volume cumulativo",
+        "flow-sensor-hint": "Per un accredito esatto invece di portata x tempo: un totale cumulativo del contatore d'acqua (classe di stato total_increasing), non una portata istantanea. L'unità viene letta automaticamente (L, mL, m³, gal, ft³).",
+        "optional": "opzionale"
       },
       "no_items": "Non ci sono ancora zone definite.",
       "title": "Zone"
@@ -446,7 +451,10 @@
       "sunset_offset": "Per i trigger al tramonto: usa valori negativi per iniziare prima del tramonto, positivi per iniziare dopo il tramonto.",
       "azimuth_explanation": "L'azimut solare è la direzione bussola del sole. 0°=Nord, 90°=Est, 180°=Sud, 270°=Ovest. Puoi inserire qualsiasi valore di angolo (es. 450°=90°, -30°=330°). Usalo per avviare l'irrigazione quando il sole raggiunge una posizione specifica.",
       "multiple_triggers": "Puoi configurare più trigger. Ogni trigger attivo pianificherà gli avvii di irrigazione in modo indipendente."
-    }
+    },
+    "active_label": "Trigger attivo",
+    "active_default": "Predefinito (alba meno la durata totale dell'irrigazione)",
+    "active_hint": "Solo il trigger selezionato avvia l'irrigazione, quindi viene eseguita una volta al giorno. \"Predefinito\" calcola l'irrigazione in modo che termini esattamente all'alba. Aggiungi trigger personalizzati (tramonto, azimut, scostamenti) qui sotto, poi selezionane uno qui."
   },
   "weather_skip": {
     "title": "Salto dell'irrigazione in base al meteo",
@@ -469,5 +477,17 @@
     "description": "Configura il numero minimo di giorni che devono passare tra gli eventi di irrigazione. Questo aiuta a controllare la frequenza di irrigazione per la conservazione dell'acqua e la gestione della salute delle piante.\n\nCasi d'uso tipici:\n• Cura del prato: intervalli di 1-2 giorni prevengono l'eccesso di irrigazione\n• Restrizioni di siccità: intervalli di 6+ giorni per irrigazione settimanale\n• Piante a radici profonde: intervalli di 3-7 giorni per irrigazione meno frequente\n• Conservazione dell'acqua: personalizzabile in base al clima e alle condizioni del suolo",
     "label": "Giorni minimi tra irrigazioni",
     "help_text": "Imposta a 0 per disabilitare questa funzione. Sono supportati valori da 1-365 giorni. Questa impostazione funziona insieme alla logica di previsione delle precipitazioni esistente."
+  },
+  "observed_watering": {
+    "title": "Irrigazione osservata (anello chiuso)",
+    "description": "Accredita automaticamente il secchio di ogni zona in base all'irrigazione reale, invece di azzerare il secchio da un'automazione. Una volta attivato, scegli un'entità valvola/interruttore per ogni zona nella scheda Zone: mentre è aperta, il secchio viene accreditato in base al tempo di funzionamento e alla portata della zona. Per una contabilità esatta puoi anche scegliere un contatore di volume cumulativo (un totale in stile contatore d'acqua) per ogni zona, e viene utilizzato il volume misurato. Importante: quando questa opzione è attiva, è l'unica cosa che accredita il secchio, quindi rimuovi qualsiasi chiamata reset_bucket dalla tua automazione di irrigazione per evitare doppi conteggi.",
+    "enabled_label": "Attiva l'irrigazione osservata",
+    "direct_control_label": "Consenti a Smart Irrigation di controllare la valvola",
+    "direct_control_description": "Quando è attivo, Smart Irrigation apre la valvola collegata di ogni zona, attende la durata calcolata, poi la chiude - nessuna automazione necessaria. Un'irrigazione in corso riprende dopo un riavvio. Sicurezza: se Home Assistant si arresta a lungo durante un'irrigazione, la valvola rimane aperta e continua a irrigare, quindi dota la tua valvola di una protezione hardware (un tempo di funzionamento massimo).",
+    "sequencing_label": "Sequenza delle zone",
+    "sequencing": {
+      "sequential": "Sequenziale (una zona alla volta)",
+      "parallel": "Parallelo (tutte le zone contemporaneamente)"
+    }
   }
 }

@@ -380,7 +380,12 @@
         "last_calculated": "Sist beregnet",
         "data-last-updated": "Data sist oppdatert",
         "data-number-of-data-points": "Antall datapunkter",
-        "drainage_rate": "Dreneringsrate"
+        "drainage_rate": "Dreneringsrate",
+        "linked-entity": "Tilknyttet ventil/bryter",
+        "linked-entity-hint": "Ventilen eller bryteren som vanner denne sonen. Hver gang den kjører (en manuell kran, en automasjon, eller Smart Irrigation selv når direkte ventilstyring er på), krediteres bucketen ut fra kjøretiden og sonens kapasitet. Påkrevd for funksjonene med lukket sløyfe.",
+        "flow-sensor": "Kumulativ volummåler",
+        "flow-sensor-hint": "For nøyaktig kreditering i stedet for kapasitet x tid: en kumulativ vannmålertotal (tilstandsklasse total_increasing), ikke en momentan strømningshastighet. Enheten leses automatisk (L, mL, m³, gal, ft³).",
+        "optional": "valgfritt"
       },
       "no_items": "Det er ingen definerte soner ennå.",
       "title": "Soner"
@@ -446,7 +451,10 @@
       "sunset_offset": "For solnedgangsutløsere: bruk negative verdier for å starte før solnedgang, positive for å starte etter solnedgang.",
       "azimuth_explanation": "Solazimut er solens kompassretning. 0°=Nord, 90°=Øst, 180°=Sør, 270°=Vest. Du kan angi en hvilken som helst vinkelverdi (f.eks. 450°=90°, -30°=330°). Bruk dette til å utløse vanning når solen når en bestemt posisjon.",
       "multiple_triggers": "Du kan konfigurere flere utløsere. Hver aktivert utløser planlegger vanningsstart uavhengig."
-    }
+    },
+    "active_label": "Aktiv utløser",
+    "active_default": "Standard (soloppgang minus total vanningsvarighet)",
+    "active_hint": "Bare den valgte utløseren starter vanning, så den kjører én gang per dag. \"Standard\" tidsbestemmer kjøringen til å avsluttes akkurat ved soloppgang. Legg til egendefinerte utløsere (solnedgang, asimut, forskyvninger) nedenfor, og velg én her."
   },
   "weather_skip": {
     "title": "Værbasert hopp over vanning",
@@ -469,5 +477,17 @@
     "description": "Konfigurer minimum antall dager som må gå mellom vanningshendelser. Dette hjelper med å kontrollere vanningsfrekvensen for vannsparing og plantehelse.\n\nTypiske brukstilfeller:\n• Plenpleie: 1-2 dagers intervaller forhindrer overvanning\n• Tørkerestriksjoner: 6+ dagers intervaller for ukentlig vanning\n• Dyprottede planter: 3-7 dagers intervaller for mindre hyppig vanning\n• Vannsparing: tilpassbar basert på klima og jordforhold",
     "label": "Minimum dager mellom vanninger",
     "help_text": "Sett til 0 for å deaktivere denne funksjonen. Verdier fra 1-365 dager støttes. Denne innstillingen fungerer sammen med eksisterende nedbørprognosering logikk."
+  },
+  "observed_watering": {
+    "title": "Observert vanning (lukket sløyfe)",
+    "description": "Krediter hver sones bucket automatisk fra reell vanning, i stedet for å nullstille bucketen fra en automasjon. Når dette er aktivert, velg en ventil/bryter-entitet per sone i Soner-fanen: mens den er åpen, krediteres bucketen ut fra kjøretiden og sonens kapasitet. For nøyaktig regnskap kan du også velge en kumulativ volummåler (en vannmålertotal) per sone, og det målte volumet brukes i stedet. Viktig: når dette er på er det det eneste som krediterer bucketen, så fjern ethvert reset_bucket-kall fra vanningsautomasjonen din for å unngå dobbelttelling.",
+    "enabled_label": "Aktiver observert vanning",
+    "direct_control_label": "La Smart Irrigation styre ventilen",
+    "direct_control_description": "Når dette er på, åpner Smart Irrigation hver sones tilknyttede ventil, venter den beregnede varigheten, og lukker den deretter - ingen automasjon nødvendig. En pågående kjøring gjenopptas etter en omstart. Sikkerhet: hvis Home Assistant går ned i lengre tid midt i en kjøring, forblir ventilen åpen og fortsetter å vanne, så gi ventilen din en maskinvarebeskyttelse (en maksimal kjøretid).",
+    "sequencing_label": "Sonesekvensering",
+    "sequencing": {
+      "sequential": "Sekvensiell (én sone om gangen)",
+      "parallel": "Parallell (alle soner samtidig)"
+    }
   }
 }

@@ -989,6 +989,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 ${this.config?.observed_watering_enabled
                   ? this._entityRow(
                       localize("panels.zones.labels.linked-entity", lang),
+                      localize("panels.zones.labels.optional", lang),
                       zone.linked_entity,
                       ["switch", "valve", "input_boolean", "binary_sensor"],
                       (v) =>
@@ -996,11 +997,13 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           ...zone,
                           [ZONE_LINKED_ENTITY]: v || undefined,
                         }),
+                      localize("panels.zones.labels.linked-entity-hint", lang),
                     )
                   : ""}
                 ${this.config?.observed_watering_enabled && zone.linked_entity
                   ? this._entityRow(
                       localize("panels.zones.labels.flow-sensor", lang),
+                      localize("panels.zones.labels.optional", lang),
                       zone.flow_sensor,
                       ["sensor"],
                       (v) =>
@@ -1008,6 +1011,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           ...zone,
                           [ZONE_FLOW_SENSOR]: v || undefined,
                         }),
+                      localize("panels.zones.labels.flow-sensor-hint", lang),
                     )
                   : ""}
                 ${this._numRow(
@@ -1231,15 +1235,20 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
   private _entityRow(
     label: string,
+    unit: string,
     value: string | undefined,
     includeDomains: string[],
     onCommit: (v: string) => void,
+    hint?: string,
   ): TemplateResult {
     return html`
       <div class="setting-row">
-        <div class="setting-label">${label}</div>
+        <div class="setting-label">
+          ${label}${unit ? html` <span class="unit">(${unit})</span>` : ""}
+          ${hint ? html`<div class="setting-hint">${hint}</div>` : ""}
+        </div>
         <ha-entity-picker
-          class="field"
+          class="entity-field"
           .hass=${this.hass}
           .value=${value || ""}
           .includeDomains=${includeDomains}
@@ -1588,6 +1597,20 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       }
       /* one unified field style for BOTH inputs and selects, themed with the
          same MDC variables HA's own ha-textfield/ha-select use (native feel) */
+      .setting-hint {
+        font-size: 0.8rem;
+        font-weight: normal;
+        color: var(--secondary-text-color);
+        margin-top: 2px;
+        max-width: 460px;
+      }
+      /* HA entity picker: sized like the other controls, but it brings its own
+         input chrome, so it must NOT get the .field text-input background. */
+      .entity-field {
+        flex: 0 0 auto;
+        width: 360px;
+        max-width: 100%;
+      }
       .field {
         flex: 0 0 auto;
         width: 360px;

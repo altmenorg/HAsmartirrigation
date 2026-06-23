@@ -489,6 +489,51 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         </div>
 
         <div class="card-content">
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize(
+                "irrigation_start_triggers.active_label",
+                this.hass.language,
+              )}
+            </div>
+            <select
+              class="field"
+              @change=${(e: Event) =>
+                this.handleConfigChange({
+                  active_start_trigger: (e.target as HTMLSelectElement).value,
+                })}
+            >
+              <option
+                value="default"
+                ?selected=${(this.config.active_start_trigger || "default") ===
+                "default"}
+              >
+                ${localize(
+                  "irrigation_start_triggers.active_default",
+                  this.hass.language,
+                )}
+              </option>
+              ${triggers.map(
+                (t) => html`
+                  <option
+                    value="${t.name}"
+                    ?selected=${this.config!.active_start_trigger === t.name}
+                  >
+                    ${t.name}
+                  </option>
+                `,
+              )}
+            </select>
+          </div>
+          <div class="trigger-active-hint">
+            ${localize(
+              "irrigation_start_triggers.active_hint",
+              this.hass.language,
+            )}
+          </div>
+        </div>
+
+        <div class="card-content">
           <div class="triggers-list">
             ${triggers.length === 0
               ? html`
@@ -1243,6 +1288,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         color: var(--secondary-text-color);
         font-size: 0.9em;
         line-height: 1.5;
+      }
+      .trigger-active-hint {
+        color: var(--secondary-text-color);
+        font-size: 0.85em;
+        line-height: 1.4;
+        margin-top: 6px;
       }
       .trigger-usage code {
         font-family: var(--ha-font-family-code, monospace);

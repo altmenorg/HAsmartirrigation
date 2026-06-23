@@ -37,6 +37,13 @@ START_EVENT_FIRED_TODAY = "starteventfiredtoday"
 # Irrigation start trigger configuration
 CONF_IRRIGATION_START_TRIGGERS = "irrigation_start_triggers"
 CONF_DEFAULT_IRRIGATION_START_TRIGGERS = []
+# Which single configured trigger actually starts irrigation. The defined
+# triggers are just the pool of options; this picks the active one. The
+# sentinel "default" means a sunrise trigger offset by the total watering
+# duration, so the run finishes right at sunrise.
+START_TRIGGER_DEFAULT = "default"
+CONF_ACTIVE_START_TRIGGER = "active_start_trigger"
+CONF_DEFAULT_ACTIVE_START_TRIGGER = START_TRIGGER_DEFAULT
 
 # Weather-based skip configuration
 CONF_SKIP_IRRIGATION_ON_PRECIPITATION = "skip_irrigation_on_precipitation"

@@ -94,6 +94,7 @@ class SmartIrrigationConfigView(HomeAssistantView):
                 vol.Optional(const.CONF_USE_WEATHER_SERVICE): cv.boolean,
                 vol.Optional(const.CONF_WEATHER_SERVICE): cv.string,
                 vol.Optional(const.CONF_IRRIGATION_START_TRIGGERS): vol.Coerce(list),
+                vol.Optional(const.CONF_ACTIVE_START_TRIGGER): cv.string,
                 vol.Optional(const.CONF_SKIP_IRRIGATION_ON_PRECIPITATION): cv.boolean,
                 vol.Optional(const.CONF_OBSERVED_WATERING_ENABLED): cv.boolean,
                 vol.Optional(const.CONF_DIRECT_VALVE_CONTROL_ENABLED): cv.boolean,

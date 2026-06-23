@@ -2661,76 +2661,98 @@ class SmartIrrigationCoordinator(
             unsub()
         self._track_irrigation_triggers_unsub.clear()
 
-        # Get triggers configuration
+        # Get triggers configuration and the single active trigger. The defined
+        # triggers are just the pool of options; only the selected one starts
+        # irrigation, so multiple triggers can no longer each fire a full run
+        # (which would over-water).
         config = await self.store.async_get_config()
         triggers = config.get(const.CONF_IRRIGATION_START_TRIGGERS, [])
+        active = config.get(
+            const.CONF_ACTIVE_START_TRIGGER, const.CONF_DEFAULT_ACTIVE_START_TRIGGER
+        )
 
-        if not triggers:
-            # Backward compatibility: if no triggers configured, use legacy behavior
+        # "default" (or a missing/deleted selection) -> legacy "sunrise minus
+        # the total watering duration" so the run finishes at sunrise.
+        selected = None
+        if active and active != const.START_TRIGGER_DEFAULT:
+            selected = next(
+                (t for t in triggers if t.get(const.TRIGGER_CONF_NAME) == active),
+                None,
+            )
+            if selected is None:
+                _LOGGER.warning(
+                    "Active start trigger '%s' not found; using default "
+                    "(sunrise minus total duration)",
+                    active,
+                )
+
+        if selected is None:
             await self._register_legacy_sunrise_trigger()
             return
 
-        total_duration = await self.get_total_duration_all_enabled_zones()
         if total_duration <= 0:
             _LOGGER.info(
                 "No enabled zones with duration > 0, skipping trigger registration"
             )
             return
-
-        # Register each enabled trigger
-        for trigger in triggers:
-            if not trigger.get(const.TRIGGER_CONF_ENABLED, True):
-                continue
-
-            trigger_type = trigger.get(const.TRIGGER_CONF_TYPE)
-            offset_minutes = trigger.get(const.TRIGGER_CONF_OFFSET_MINUTES, 0)
-            trigger_name = trigger.get(const.TRIGGER_CONF_NAME, "Unnamed Trigger")
-            account_for_duration = trigger.get(
-                const.TRIGGER_CONF_ACCOUNT_FOR_DURATION, True
+        if not selected.get(const.TRIGGER_CONF_ENABLED, True):
+            _LOGGER.info(
+                "Active start trigger '%s' is disabled; nothing scheduled", active
             )
-            # Identity carried into the fired event so automations can tell
-            # triggers apart (see _fire_start_event).
-            trigger_info = {
-                const.TRIGGER_CONF_NAME: trigger_name,
-                const.TRIGGER_CONF_TYPE: trigger_type,
-                const.TRIGGER_CONF_OFFSET_MINUTES: offset_minutes,
-                const.TRIGGER_CONF_ACCOUNT_FOR_DURATION: account_for_duration,
-            }
+            return
+        await self._register_trigger(selected, total_duration)
 
-            try:
-                if trigger_type == const.TRIGGER_TYPE_SUNRISE:
-                    await self._register_sunrise_trigger(
-                        offset_minutes,
-                        trigger_name,
-                        total_duration,
-                        account_for_duration,
-                        trigger_info,
-                    )
-                elif trigger_type == const.TRIGGER_TYPE_SUNSET:
-                    await self._register_sunset_trigger(
-                        offset_minutes,
-                        trigger_name,
-                        total_duration,
-                        account_for_duration,
-                        trigger_info,
-                    )
-                elif trigger_type == const.TRIGGER_TYPE_SOLAR_AZIMUTH:
-                    azimuth_angle = trigger.get(const.TRIGGER_CONF_AZIMUTH_ANGLE, 0)
-                    # Normalize azimuth angle to 0-360 range
-                    azimuth_angle = normalize_azimuth_angle(azimuth_angle)
-                    trigger_info[const.TRIGGER_CONF_AZIMUTH_ANGLE] = azimuth_angle
-                    await self._register_azimuth_trigger(
-                        azimuth_angle,
-                        offset_minutes,
-                        trigger_name,
-                        total_duration,
-                        account_for_duration,
-                        trigger_info,
-                    )
-                else:
-                    _LOGGER.warning("Unknown trigger type: %s", trigger_type)
-            except Exception as e:
-                _LOGGER.error("Failed to register trigger '%s': %s", trigger_name, e)
+    async def _register_trigger(self, trigger, total_duration):
+        """Register one start trigger (sunrise / sunset / solar azimuth)."""
+        trigger_type = trigger.get(const.TRIGGER_CONF_TYPE)
+        offset_minutes = trigger.get(const.TRIGGER_CONF_OFFSET_MINUTES, 0)
+        trigger_name = trigger.get(const.TRIGGER_CONF_NAME, "Unnamed Trigger")
+        account_for_duration = trigger.get(
+            const.TRIGGER_CONF_ACCOUNT_FOR_DURATION, True
+        )
+        # Identity carried into the fired event so automations can tell
+        # triggers apart (see _fire_start_event).
+        trigger_info = {
+            const.TRIGGER_CONF_NAME: trigger_name,
+            const.TRIGGER_CONF_TYPE: trigger_type,
+            const.TRIGGER_CONF_OFFSET_MINUTES: offset_minutes,
+            const.TRIGGER_CONF_ACCOUNT_FOR_DURATION: account_for_duration,
+        }
+
+        try:
+            if trigger_type == const.TRIGGER_TYPE_SUNRISE:
+                await self._register_sunrise_trigger(
+                    offset_minutes,
+                    trigger_name,
+                    total_duration,
+                    account_for_duration,
+                    trigger_info,
+                )
+            elif trigger_type == const.TRIGGER_TYPE_SUNSET:
+                await self._register_sunset_trigger(
+                    offset_minutes,
+                    trigger_name,
+                    total_duration,
+                    account_for_duration,
+                    trigger_info,
+                )
+            elif trigger_type == const.TRIGGER_TYPE_SOLAR_AZIMUTH:
+                azimuth_angle = trigger.get(const.TRIGGER_CONF_AZIMUTH_ANGLE, 0)
+                # Normalize azimuth angle to 0-360 range
+                azimuth_angle = normalize_azimuth_angle(azimuth_angle)
+                trigger_info[const.TRIGGER_CONF_AZIMUTH_ANGLE] = azimuth_angle
+                await self._register_azimuth_trigger(
+                    azimuth_angle,
+                    offset_minutes,
+                    trigger_name,
+                    total_duration,
+                    account_for_duration,
+                    trigger_info,
+                )
+            else:
+                _LOGGER.warning("Unknown trigger type: %s", trigger_type)
+        except Exception as e:
+            _LOGGER.error("Failed to register trigger '%s': %s", trigger_name, e)
 
     async def _register_legacy_sunrise_trigger(self):
         """Register the legacy sunrise trigger for backward compatibility."""
