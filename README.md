@@ -7,7 +7,7 @@
 # Smart Irrigation
 
 <p align="center">
-  <img src="images/happyirrigation.jpg?raw=true" alt="Smart Irrigation" width="720">
+  <img src="logo.png?raw=true" alt="Smart Irrigation" width="720">
 </p>
 
 > **Smart Irrigation** was created by
