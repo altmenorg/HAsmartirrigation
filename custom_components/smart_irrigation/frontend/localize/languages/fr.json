@@ -475,6 +475,13 @@
   "observed_watering": {
     "title": "Arrosage observé (boucle fermée)",
     "description": "Crédite automatiquement le réservoir de chaque zone à partir de l'arrosage réel, au lieu de le réinitialiser depuis une automatisation. Une fois activé, choisissez une entité vanne/interrupteur par zone dans l'onglet Zones : pendant qu'elle est ouverte, le réservoir est crédité d'après la durée et le débit de la zone. Pour un comptage exact, vous pouvez aussi choisir un compteur de volume cumulé (type compteur d'eau) par zone, et le volume mesuré est alors utilisé. Important : quand c'est activé, c'est la seule chose qui crédite le réservoir, donc retirez tout appel à reset_bucket de votre automatisation d'irrigation pour éviter un double comptage.",
-    "enabled_label": "Activer l'arrosage observé"
+    "enabled_label": "Activer l'arrosage observé",
+    "direct_control_label": "Laisser Smart Irrigation piloter la vanne",
+    "direct_control_description": "Une fois activé, Smart Irrigation ouvre la vanne liée de chaque zone, attend la durée calculée, puis la referme - aucune automatisation nécessaire. Un arrosage en cours reprend après un redémarrage. Sécurité : si Home Assistant tombe longtemps en plein arrosage, la vanne reste ouverte et continue d'arroser, donnez donc à votre vanne un failsafe matériel (une durée d'ouverture maximale).",
+    "sequencing_label": "Séquencement des zones",
+    "sequencing": {
+      "sequential": "Séquentiel (une zone à la fois)",
+      "parallel": "Parallèle (toutes les zones en même temps)"
+    }
   }
 }

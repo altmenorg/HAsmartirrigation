@@ -49,6 +49,28 @@ CONF_DEFAULT_PRECIPITATION_THRESHOLD_MM = 2.0  # 2mm threshold
 CONF_OBSERVED_WATERING_ENABLED = "observed_watering_enabled"
 CONF_DEFAULT_OBSERVED_WATERING_ENABLED = False
 
+# Direct valve control: Smart Irrigation opens each zone's linked valve, waits
+# the calculated duration, then closes it (optional executor). The start event
+# still fires for external executors. Crediting is handled by the runner, and
+# in-flight runs are persisted so a reboot mid-run can resume and credit.
+CONF_DIRECT_VALVE_CONTROL_ENABLED = "direct_valve_control_enabled"
+CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED = False
+CONF_ZONE_SEQUENCING = "zone_sequencing"
+CONF_ZONE_SEQUENCING_SEQUENTIAL = "sequential"
+CONF_ZONE_SEQUENCING_PARALLEL = "parallel"
+CONF_ZONE_SEQUENCING_OPTIONS = [
+    CONF_ZONE_SEQUENCING_SEQUENTIAL,
+    CONF_ZONE_SEQUENCING_PARALLEL,
+]
+CONF_DEFAULT_ZONE_SEQUENCING = CONF_ZONE_SEQUENCING_SEQUENTIAL
+# Persisted list of in-flight direct-control runs (reboot resilience).
+CONF_ACTIVE_VALVE_RUNS = "active_valve_runs"
+# Keys inside an active-run record.
+RUN_ZONE_ID = "zone_id"
+RUN_ENTITY_ID = "entity_id"
+RUN_STARTED = "started"
+RUN_DURATION = "duration"
+
 # Days between irrigation configuration
 CONF_DAYS_BETWEEN_IRRIGATION = "days_between_irrigation"
 CONF_DEFAULT_DAYS_BETWEEN_IRRIGATION = 0  # 0 = no restriction (default behavior)

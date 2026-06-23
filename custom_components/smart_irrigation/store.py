@@ -15,6 +15,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 from .const import (
     ATTR_NEW_BUCKET_VALUE,
     ATTR_NEW_MULTIPLIER_VALUE,
+    CONF_ACTIVE_VALVE_RUNS,
     CONF_AUTO_CALC_ENABLED,
     CONF_AUTO_CLEAR_ENABLED,
     CONF_AUTO_UPDATE_DELAY,
@@ -37,6 +38,7 @@ from .const import (
     CONF_DEFAULT_CONTINUOUS_UPDATES,
     CONF_DEFAULT_DAYS_BETWEEN_IRRIGATION,
     CONF_DEFAULT_DAYS_SINCE_LAST_IRRIGATION,
+    CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED,
     CONF_DEFAULT_DRAINAGE_RATE,
     CONF_DEFAULT_IRRIGATION_START_TRIGGERS,
     CONF_DEFAULT_MAXIMUM_BUCKET,
@@ -49,6 +51,8 @@ from .const import (
     CONF_DEFAULT_SKIP_IRRIGATION_ON_PRECIPITATION,
     CONF_DEFAULT_USE_WEATHER_SERVICE,
     CONF_DEFAULT_WEATHER_SERVICE,
+    CONF_DEFAULT_ZONE_SEQUENCING,
+    CONF_DIRECT_VALVE_CONTROL_ENABLED,
     CONF_IMPERIAL,
     CONF_IRRIGATION_START_TRIGGERS,
     CONF_MANUAL_COORDINATES_ENABLED,
@@ -64,6 +68,7 @@ from .const import (
     CONF_USE_WEATHER_SERVICE,
     CONF_WEATHER_SERVICE,
     CONF_WEATHER_SERVICE_OWM,
+    CONF_ZONE_SEQUENCING,
     DOMAIN,
     MAPPING_CONF_SENSOR,
     MAPPING_CONF_SOURCE,
@@ -238,6 +243,13 @@ class Config:
     observed_watering_enabled = attr.ib(
         type=bool, default=CONF_DEFAULT_OBSERVED_WATERING_ENABLED
     )
+    # Direct valve control: SI opens/closes each zone's linked valve itself.
+    direct_valve_control_enabled = attr.ib(
+        type=bool, default=CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED
+    )
+    zone_sequencing = attr.ib(type=str, default=CONF_DEFAULT_ZONE_SEQUENCING)
+    # In-flight direct-control runs, persisted so a reboot can resume them.
+    active_valve_runs = attr.ib(type=list, default=[])
 
 
 class MigratableStore(Store):
@@ -485,6 +497,14 @@ class SmartIrrigationStorage:
                     CONF_OBSERVED_WATERING_ENABLED,
                     CONF_DEFAULT_OBSERVED_WATERING_ENABLED,
                 ),
+                direct_valve_control_enabled=data["config"].get(
+                    CONF_DIRECT_VALVE_CONTROL_ENABLED,
+                    CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED,
+                ),
+                zone_sequencing=data["config"].get(
+                    CONF_ZONE_SEQUENCING, CONF_DEFAULT_ZONE_SEQUENCING
+                ),
+                active_valve_runs=data["config"].get(CONF_ACTIVE_VALVE_RUNS, []),
             )
 
             if "zones" in data:

@@ -475,6 +475,13 @@
   "observed_watering": {
     "title": "Observed watering (closed loop)",
     "description": "Credit each zone's bucket automatically from real irrigation, instead of resetting the bucket from an automation. Once enabled, pick a valve/switch entity per zone in the Zones tab: while it is open, the bucket is credited from the run time and the zone's throughput. For exact accounting you can also pick a cumulative volume meter (a water-meter style total) per zone, and the measured volume is used instead. Important: when this is on it is the only thing crediting the bucket, so remove any reset_bucket call from your irrigation automation to avoid double counting.",
-    "enabled_label": "Enable observed watering"
+    "enabled_label": "Enable observed watering",
+    "direct_control_label": "Let Smart Irrigation control the valve",
+    "direct_control_description": "When on, Smart Irrigation opens each zone's linked valve, waits the calculated duration, then closes it - no automation needed. An in-flight run resumes after a restart. Safety: if Home Assistant goes down for a long time mid-run the valve stays open and keeps watering, so give your valve a hardware failsafe (a maximum runtime).",
+    "sequencing_label": "Zone sequencing",
+    "sequencing": {
+      "sequential": "Sequential (one zone at a time)",
+      "parallel": "Parallel (all zones at once)"
+    }
   }
 }

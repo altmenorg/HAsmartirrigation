@@ -128,6 +128,17 @@ class ObservedWateringMixin:
         old_on = old_state is not None and old_state.state in _ON_STATES
 
         if new_on and not old_on:
+            # Ignore runs Smart Irrigation is driving itself (direct valve
+            # control): the runner already credits those, so crediting here too
+            # would double-count.
+            si_driven = getattr(self, "_si_driven_until", {})
+            if self.hass.loop.time() < si_driven.get(zone_id, 0.0):
+                _LOGGER.debug(
+                    "Observed watering: zone %s opened by Smart Irrigation, "
+                    "not tracking",
+                    zone_id,
+                )
+                return
             # Valve opened: record the start time, and snapshot the flow meter so
             # a close can credit the measured volume delta.
             self._observed_on_since[zone_id] = dt_util.utcnow()

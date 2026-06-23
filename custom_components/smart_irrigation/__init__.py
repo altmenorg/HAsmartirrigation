@@ -62,6 +62,7 @@ from .observed_watering import ObservedWateringMixin
 from .panel import async_register_panel, remove_panel
 from .scheduler import RecurringScheduleManager, SeasonalAdjustmentManager
 from .store import SmartIrrigationStorage, async_get_registry
+from .valve_runner import ValveRunnerMixin
 from .weathermodules.OpenMeteoClient import OpenMeteoClient
 from .weathermodules.OWMClient import OWMClient
 from .weathermodules.PirateWeatherClient import PirateWeatherClient
@@ -250,6 +251,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     # Closed-loop bucket: start watching linked valves if the feature is enabled.
     await coordinator.async_setup_observed_watering()
+
+    # Direct valve control: resume any run that was in flight before a restart.
+    await coordinator.async_resume_valve_runs()
     return True
 
 
@@ -317,7 +321,9 @@ class SmartIrrigationError(Exception):
     """Exception raised for errors in the Smart Irrigation integration."""
 
 
-class SmartIrrigationCoordinator(ObservedWateringMixin, DataUpdateCoordinator):
+class SmartIrrigationCoordinator(
+    ObservedWateringMixin, ValveRunnerMixin, DataUpdateCoordinator
+):
     """Define an object to hold Smart Irrigation device."""
 
     def __init__(
@@ -464,6 +470,13 @@ class SmartIrrigationCoordinator(ObservedWateringMixin, DataUpdateCoordinator):
         self._observed_on_since = {}
         self._observed_flow_start = {}
         self._observed_zone_by_entity = {}
+
+        # Direct valve control state: per-zone "SI is driving this valve until"
+        # markers (suppress the observer), in-flight runs (reboot resume), and
+        # the background run tasks (cancelled on unload).
+        self._si_driven_until = {}
+        self._active_valve_runs = {}
+        self._valve_run_tasks = set()
 
         # set up sunrise tracking
         _LOGGER.debug("calling register start event from init")
@@ -3108,6 +3121,18 @@ class SmartIrrigationCoordinator(ObservedWateringMixin, DataUpdateCoordinator):
                     "Fired start event %s for trigger '%s'", event_to_fire, name
                 )
 
+                # Optional executor: if direct valve control is on, SI drives the
+                # valves itself (the event above still fires for external setups).
+                if (
+                    getattr(
+                        self.store.config,
+                        const.CONF_DIRECT_VALVE_CONTROL_ENABLED,
+                        False,
+                    )
+                    is True
+                ):
+                    self._spawn_valve_run(self.async_run_direct_valves())
+
                 # On the first actual fire of the day, mark the day as watered
                 # and reset the days-since counter (once, not per trigger).
                 if not self._start_event_fired_today:
@@ -3192,6 +3217,9 @@ class SmartIrrigationCoordinator(ObservedWateringMixin, DataUpdateCoordinator):
 
         # stop watching linked valves (closed-loop bucket)
         self.async_teardown_observed_watering()
+
+        # cancel any in-flight direct valve runs
+        self.async_teardown_valve_runs()
 
     async def async_delete_config(self):
         """Wipe Smart Irrigation storage."""

@@ -34,6 +34,12 @@ export const CONF_DAYS_BETWEEN_IRRIGATION = "days_between_irrigation";
 // Observed watering (closed-loop bucket) configuration
 export const CONF_OBSERVED_WATERING_ENABLED = "observed_watering_enabled";
 
+// Direct valve control configuration
+export const CONF_DIRECT_VALVE_CONTROL_ENABLED = "direct_valve_control_enabled";
+export const CONF_ZONE_SEQUENCING = "zone_sequencing";
+export const ZONE_SEQUENCING_SEQUENTIAL = "sequential";
+export const ZONE_SEQUENCING_PARALLEL = "parallel";
+
 // Irrigation start trigger configuration
 export const CONF_IRRIGATION_START_TRIGGERS = "irrigation_start_triggers";
 export const TRIGGER_TYPE_SUNRISE = "sunrise";

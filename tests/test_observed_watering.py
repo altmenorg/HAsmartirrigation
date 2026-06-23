@@ -23,6 +23,7 @@ class _Coordinator(ObservedWateringMixin):
         self._observed_on_since = {}
         self._observed_flow_start = {}
         self._observed_zone_by_entity = {}
+        self._si_driven_until = {}
 
 
 @pytest.fixture(autouse=True)
@@ -39,6 +40,8 @@ def _make_hass(metric=True):
     hass = Mock()
     hass.config = Mock()
     hass.config.units = METRIC_SYSTEM if metric else Mock()
+    hass.loop = Mock()
+    hass.loop.time = lambda: 1000.0
     created = []
     hass.async_create_task = lambda coro: created.append(coro) or coro
     hass.created_tasks = created
@@ -174,6 +177,24 @@ async def test_open_then_close_credits_the_run():
     args = coord.store.async_update_zone.await_args.args
     # ~1 mm applied over 5 min -> bucket -3 rises toward -2.
     assert args[1][const.ZONE_BUCKET] == pytest.approx(-2.0, abs=0.05)
+
+
+async def test_si_driven_run_is_not_credited_by_observer():
+    """A valve Smart Irrigation drives itself is suppressed (runner credits it)."""
+    zone = _zone()
+    hass = _make_hass()  # loop.time() == 1000.0
+    coord = _Coordinator(hass, _make_store(zone))
+    coord._observed_zone_by_entity = {"switch.valve": 0}
+    # Marker in the future: SI is driving this zone.
+    coord._si_driven_until[0] = 2000.0
+
+    coord._observed_state_changed(_open_event())
+    # Open was ignored: nothing recorded, so a close credits nothing.
+    assert 0 not in coord._observed_on_since
+
+    coord._observed_state_changed(_close_event())
+    assert not hass.created_tasks
+    coord.store.async_update_zone.assert_not_awaited()
 
 
 async def test_unrelated_entity_is_ignored():
