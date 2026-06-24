@@ -6,6 +6,9 @@ Per zone (on the zone device):
 - Irrigate now (only when direct valve control is enabled): run this zone's
   valve for its calculated duration. The run credits the bucket, so the water
   delivered is accounted for and the next (evening) calculation irrigates less.
+
+Per-zone and hub action entities inspired by JustChr's Smart Irrigation fork
+(https://github.com/JustChr/HAsmartirrigation), MIT.
 """
 
 import logging

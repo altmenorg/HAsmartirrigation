@@ -85,6 +85,9 @@ async def _migrate_duration_unique_ids(hass: HomeAssistant, entry, store) -> Non
 
     Idempotent: already-migrated ids do not start with ``sensor.`` so they are
     skipped. The ``sensor.`` prefix uniquely identifies the legacy duration ids.
+
+    The per-zone device + unique_id migration approach is adapted from JustChr's
+    Smart Irrigation fork (https://github.com/JustChr/HAsmartirrigation), MIT.
     """
     legacy_prefix = f"{PLATFORM}.{const.DOMAIN}_"  # "sensor.smart_irrigation_"
     try:

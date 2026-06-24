@@ -3,6 +3,9 @@
 Every zone entity groups under a per-zone device, and the per-zone devices hang
 off the single Smart Irrigation hub device (via ``via_device``). These helpers
 return plain dicts, which Home Assistant accepts for ``device_info``.
+
+The per-zone device layout is adapted from JustChr's Smart Irrigation fork
+(https://github.com/JustChr/HAsmartirrigation), MIT.
 """
 
 from homeassistant.core import HomeAssistant

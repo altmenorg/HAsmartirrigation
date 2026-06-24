@@ -3,6 +3,8 @@
 Exposes each zone's multiplier as an editable number under the zone device.
 Setting it writes straight to the zone store (used by the next calculation),
 mirroring the panel's multiplier field.
+
+Per-zone entity approach inspired by JustChr's Smart Irrigation fork (MIT).
 """
 
 import contextlib
