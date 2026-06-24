@@ -40,6 +40,26 @@
       },
       "irrigate_now": {
         "name": "Irrigate now"
+      },
+      "calculate_all": {
+        "name": "Calculate all zones"
+      },
+      "update_weather": {
+        "name": "Refresh weather"
+      },
+      "irrigate_all": {
+        "name": "Irrigate all zones"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Irrigation needed"
+      },
+      "watering_now": {
+        "name": "Watering now"
+      },
+      "problem": {
+        "name": "Problem"
       }
     }
   },

@@ -267,7 +267,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     _LOGGER.info("Calling async_forward_entry_setups")
     await hass.config_entries.async_forward_entry_setups(
-        entry, [PLATFORM, "number", "button"]
+        entry, [PLATFORM, "number", "button", "binary_sensor"]
     )
     _LOGGER.info("Finished calling async_forward_entry_setups")
 
@@ -346,6 +346,7 @@ async def async_unload_entry(hass: HomeAssistant, entry):
             hass.config_entries.async_forward_entry_unload(entry, PLATFORM),
             hass.config_entries.async_forward_entry_unload(entry, "number"),
             hass.config_entries.async_forward_entry_unload(entry, "button"),
+            hass.config_entries.async_forward_entry_unload(entry, "binary_sensor"),
         )
     )
     if not unload_ok:

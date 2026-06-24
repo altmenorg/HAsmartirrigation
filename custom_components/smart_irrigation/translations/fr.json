@@ -40,6 +40,26 @@
       },
       "irrigate_now": {
         "name": "Arroser maintenant"
+      },
+      "calculate_all": {
+        "name": "Calculer toutes les zones"
+      },
+      "update_weather": {
+        "name": "Rafraîchir la météo"
+      },
+      "irrigate_all": {
+        "name": "Arroser toutes les zones"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Irrigation nécessaire"
+      },
+      "watering_now": {
+        "name": "Arrosage en cours"
+      },
+      "problem": {
+        "name": "Problème"
       }
     }
   },
