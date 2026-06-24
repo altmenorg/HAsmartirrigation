@@ -1,4 +1,11 @@
 {
+  "entity": {
+    "sensor": {
+      "duration": {
+        "name": "Durée"
+      }
+    }
+  },
   "config": {
     "abort": {
       "single_instance_allowed": "Une seule configuration de Smart Irrigation est autorisée."

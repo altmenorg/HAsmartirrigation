@@ -35,6 +35,7 @@ from homeassistant.helpers.event import (
     async_track_time_interval,
 )
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.util import slugify
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
@@ -72,6 +73,46 @@ CONFIG_SCHEMA = cv.config_entry_only_config_schema(const.DOMAIN)
 async def async_setup(hass: HomeAssistant, config):
     """Track states and offer events for sensors."""
     return True
+
+
+async def _migrate_duration_unique_ids(hass: HomeAssistant, entry, store) -> None:
+    """Migrate the zone duration sensor's legacy unique_id.
+
+    The duration sensor historically used its own entity_id as unique_id
+    (``sensor.smart_irrigation_<slug>`` -- the only entity that did). Rewrite it
+    to ``smart_irrigation_<zone_id>_duration`` to match the per-zone scheme. The
+    registry entry (hence the entity_id and recorded history) carries over.
+
+    Idempotent: already-migrated ids do not start with ``sensor.`` so they are
+    skipped. The ``sensor.`` prefix uniquely identifies the legacy duration ids.
+    """
+    legacy_prefix = f"{PLATFORM}.{const.DOMAIN}_"  # "sensor.smart_irrigation_"
+    try:
+        zone_ids = list(getattr(store, "zones", None) or [])
+    except TypeError:  # store not fully initialized (e.g. mocked) -> nothing to migrate
+        zone_ids = []
+    slug_to_zone_id = {}
+    for zone_id in zone_ids:
+        zone = store.get_zone(zone_id)
+        name = zone.get(const.ZONE_NAME) if zone else None
+        if name:
+            slug_to_zone_id.setdefault(slugify(name), zone.get(const.ZONE_ID, zone_id))
+
+    @callback
+    def _migrator(reg_entry):
+        uid = reg_entry.unique_id
+        if (
+            reg_entry.domain != PLATFORM
+            or not isinstance(uid, str)
+            or not uid.startswith(legacy_prefix)
+        ):
+            return None
+        zone_id = slug_to_zone_id.get(uid[len(legacy_prefix) :])
+        if zone_id is None:
+            return None
+        return {"new_unique_id": f"{const.DOMAIN}_{zone_id}_duration"}
+
+    await er.async_migrate_entries(hass, entry.entry_id, _migrator)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
@@ -218,6 +259,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # mémoire jusque-là). Bug partagé avec l'upstream Smart Irrigation.
     if entry.unique_id is None:
         hass.config_entries.async_update_entry(entry, unique_id=coordinator.id)
+
+    # One-time migration: rewrite the duration sensor's legacy unique_id (its
+    # entity_id) to the per-zone scheme so it joins the per-zone device while
+    # keeping its entity_id and recorded history. Idempotent on later setups.
+    await _migrate_duration_unique_ids(hass, entry, store)
 
     _LOGGER.info("Calling async_forward_entry_setups")
     await hass.config_entries.async_forward_entry_setups(entry, [PLATFORM])

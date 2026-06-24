@@ -18,6 +18,7 @@ from homeassistant.util import slugify
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
+from .entity import zone_device_info
 from .performance import async_timer
 
 _LOGGER = logging.getLogger(__name__)
@@ -101,7 +102,10 @@ def check_zone_entity_in_hass_data(hass: HomeAssistant | None, entity_id: str) -
 
 
 class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
-    """Sensor entity representing a Smart Irrigation zone."""
+    """Sensor entity representing a Smart Irrigation zone (its watering duration)."""
+
+    _attr_has_entity_name = True
+    _attr_translation_key = "duration"
 
     def __init__(
         self,
@@ -248,48 +252,24 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
 
     @property
     def device_info(self) -> dict:
-        """Return info for device registry."""
-        # Use a safe approach to get coordinator ID without blocking
-        coordinator_id = "smart_irrigation"  # Default fallback
-
-        # Only access hass.data if we're certain it's available and won't block
-        if (
-            hasattr(self, "hass")
-            and self.hass is not None
-            and hasattr(self.hass, "data")
-            and const.DOMAIN in self.hass.data
-        ):
-            try:
-                coordinator = self.hass.data[const.DOMAIN].get("coordinator")
-                if coordinator and hasattr(coordinator, "id"):
-                    coordinator_id = coordinator.id
-            except (KeyError, AttributeError, RuntimeError):
-                # Fall back to default if anything goes wrong
-                pass
-
-        return {
-            "identifiers": {(const.DOMAIN, coordinator_id)},
-            "name": const.NAME,
-            "model": const.NAME,
-            "sw_version": const.VERSION,
-            "manufacturer": const.MANUFACTURER,
-        }
+        """Return per-zone device info (grouped under the hub via via_device)."""
+        return zone_device_info(self._hass, self._id, self._name)
 
     @property
     def unique_id(self):
-        """Return a unique ID to use for this entity."""
+        """Return a unique ID to use for this entity.
 
-        return f"{self.entity_id}"
+        Migrated from the legacy entity-id-based id to the per-zone scheme
+        ``smart_irrigation_<zone_id>_duration``. The one-time registry migration
+        in __init__ rewrites existing installs so the entity_id and recorded
+        history carry over.
+        """
+        return f"{const.DOMAIN}_{self._id}_duration"
 
     @property
     def icon(self):
         """Return icon."""
         return const.SENSOR_ICON
-
-    @property
-    def name(self):
-        """Return the friendly name to use for this entity."""
-        return self._name
 
     @property
     def should_poll(self) -> bool:
