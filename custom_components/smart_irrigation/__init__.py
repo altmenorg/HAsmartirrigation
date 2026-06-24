@@ -266,8 +266,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     await _migrate_duration_unique_ids(hass, entry, store)
 
     _LOGGER.info("Calling async_forward_entry_setups")
-    await hass.config_entries.async_forward_entry_setups(entry, [PLATFORM])
+    await hass.config_entries.async_forward_entry_setups(entry, [PLATFORM, "number"])
     _LOGGER.info("Finished calling async_forward_entry_setups")
+
+    # Every entity platform is now subscribed to "_register_entity"; replay the
+    # existing zones to all of them at once. Fired here (not from a single
+    # platform) so a second platform cannot miss the replay due to setup order.
+    async_dispatcher_send(hass, const.DOMAIN + "_platform_loaded")
     # update listener for options flow
     entry.async_on_unload(entry.add_update_listener(options_update_listener))
 
@@ -336,7 +341,8 @@ async def async_unload_entry(hass: HomeAssistant, entry):
     """Unload Smart Irrigation config entry."""
     unload_ok = all(
         await asyncio.gather(
-            *[hass.config_entries.async_forward_entry_unload(entry, PLATFORM)]
+            hass.config_entries.async_forward_entry_unload(entry, PLATFORM),
+            hass.config_entries.async_forward_entry_unload(entry, "number"),
         )
     )
     if not unload_ok:

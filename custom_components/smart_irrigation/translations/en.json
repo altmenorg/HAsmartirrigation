@@ -16,6 +16,11 @@
       "current_drainage": {
         "name": "Current drainage"
       }
+    },
+    "number": {
+      "multiplier": {
+        "name": "Multiplier"
+      }
     }
   },
   "config": {

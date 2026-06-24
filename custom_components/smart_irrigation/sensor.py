@@ -9,7 +9,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import (
     async_dispatcher_connect,
-    async_dispatcher_send,
 )
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
@@ -86,7 +85,9 @@ async def async_setup_entry(
             hass, const.DOMAIN + "_register_entity", async_add_sensor_entity
         )
     )
-    async_dispatcher_send(hass, const.DOMAIN + "_platform_loaded")
+    # "_platform_loaded" (which replays existing zones) is now fired from
+    # __init__.async_setup_entry after ALL entity platforms have subscribed, so
+    # the number platform receives the zones too. Firing it here would race it.
 
     # register services if any here
 

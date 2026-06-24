@@ -16,6 +16,11 @@
       "current_drainage": {
         "name": "Drainage actuel"
       }
+    },
+    "number": {
+      "multiplier": {
+        "name": "Multiplicateur"
+      }
     }
   },
   "config": {
