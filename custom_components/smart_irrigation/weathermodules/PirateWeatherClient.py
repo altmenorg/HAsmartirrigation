@@ -289,21 +289,14 @@ class PirateWeatherClient:  # pylint: disable=invalid-name
                         PirateWeather_current_precip_key_name
                     ]
 
-                    # add precip from daily
-                    dailydata = doc[PirateWeather_daily_weather_key_name]["data"][0]
-                    if dailydata is not None:
-                        # precipAccumulation is centimetres in si units; x10 to mm.
-                        _daily_precip = dailydata.get(PirateWeather_precip_key_name)
-                        parsed_data[MAPPING_PRECIPITATION] = (
-                            _daily_precip * 10 if _daily_precip is not None else 0.0
-                        )
-                        _LOGGER.debug(
-                            "PirateWeatherClient daily precipitation (mm): %s",
-                            parsed_data[MAPPING_PRECIPITATION],
-                        )
-
-                    else:
-                        parsed_data[MAPPING_PRECIPITATION] = 0.0
+                    # Use actual measured precipitation intensity (precipIntensity, mm/h)
+                    # instead of daily precipAccumulation (forecast total including
+                    # future rain). Crediting forecast rain before it falls causes bucket
+                    # jumps that swing back when the forecast changes or doesn't
+                    # materialise (issue #694).
+                    parsed_data[MAPPING_PRECIPITATION] = parsed_data.get(
+                        MAPPING_CURRENT_PRECIPITATION, 0.0
+                    )
                     _LOGGER.debug(
                         "PirateWeatherCLIENT daily precipitation: %s",
                         parsed_data[MAPPING_PRECIPITATION],

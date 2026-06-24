@@ -13,11 +13,14 @@ This closes Smart Irrigation's open loop: the soil-moisture bucket is replenishe
 from real irrigation (a scheduled run, a manual tap, or any automation that opens
 the valve) instead of from a separate manual reset.
 
-Smart Irrigation is event-based and never opens valves itself, so every observed
-run is real watering worth crediting -- there is nothing of our own to exclude.
+When direct valve control is also enabled, runs driven by Smart Irrigation itself
+are suppressed here (via the per-zone ``_si_driven_until`` marker) so the bucket
+is never credited twice -- the runner credits those directly. Every other observed
+run (manual tap, external automation) is real watering worth crediting.
 The flip side: when this feature is on it MUST be the only thing crediting the
-bucket. If an irrigation automation still calls the ``reset_bucket`` service
-after watering, remove that call, or the bucket is accounted twice.
+bucket for external runs. If an irrigation automation still calls the
+``reset_bucket`` service after watering, remove that call, or the bucket is
+accounted twice.
 
 The methods live on a mixin the SmartIrrigationCoordinator inherits, so they use
 ``self`` to reach coordinator state (store, hass, the observer subscription).
