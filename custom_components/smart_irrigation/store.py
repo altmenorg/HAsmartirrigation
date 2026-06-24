@@ -117,6 +117,7 @@ from .const import (
     ZONE_ET_DEFICIENCY,
     ZONE_FLOW_SENSOR,
     ZONE_ID,
+    ZONE_LAST_IRRIGATION,
     ZONE_LAST_UPDATED,
     ZONE_LEAD_TIME,
     ZONE_LINKED_ENTITY,
@@ -131,6 +132,7 @@ from .const import (
     ZONE_STATE,
     ZONE_STATE_AUTOMATIC,
     ZONE_THROUGHPUT,
+    ZONE_WATER_USED,
 )
 from .helpers import loadModules
 from .localize import localize
@@ -169,6 +171,9 @@ class ZoneEntry:
     number_of_data_points = attr.ib(type=int, default=0)
     drainage_rate = attr.ib(type=float, default=CONF_DEFAULT_DRAINAGE_RATE)
     current_drainage = attr.ib(type=float, default=0)
+    # Timestamp of the last credited irrigation run + cumulative water (litres).
+    last_irrigation = attr.ib(type=datetime, default=None)
+    water_used = attr.ib(type=float, default=0.0)
     # Optional valve/switch entity watched to credit the bucket (closed-loop).
     linked_entity = attr.ib(type=str, default=None)
     # Optional cumulative volume meter; credits the bucket by measured volume.
@@ -547,6 +552,8 @@ class SmartIrrigationStorage:
                         ),
                         drainage_rate=zone.get(ZONE_DRAINAGE_RATE, None),
                         current_drainage=zone.get(ZONE_CURRENT_DRAINAGE, None),
+                        last_irrigation=zone.get(ZONE_LAST_IRRIGATION, None),
+                        water_used=zone.get(ZONE_WATER_USED, 0.0),
                         linked_entity=zone.get(ZONE_LINKED_ENTITY, None),
                         flow_sensor=zone.get(ZONE_FLOW_SENSOR, None),
                     )

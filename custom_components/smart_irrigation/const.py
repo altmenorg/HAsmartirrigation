@@ -301,6 +301,10 @@ ZONE_LAST_UPDATED = "last_updated"
 ZONE_NUMBER_OF_DATA_POINTS = "number_of_data_points"
 ZONE_DRAINAGE_RATE = "drainage_rate"
 ZONE_CURRENT_DRAINAGE = "current_drainage"
+# Timestamp of the last credited irrigation run, and cumulative water delivered
+# (litres). Both set when a run credits the bucket (direct or observed).
+ZONE_LAST_IRRIGATION = "last_irrigation"
+ZONE_WATER_USED = "water_used"
 # Optional valve/switch entity observed to credit the bucket (closed-loop).
 ZONE_LINKED_ENTITY = "linked_entity"
 # Optional cumulative volume/flow meter; credits the bucket by measured volume.

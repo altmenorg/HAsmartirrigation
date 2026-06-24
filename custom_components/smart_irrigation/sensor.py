@@ -2,10 +2,12 @@
 
 import logging
 
+import homeassistant.util.dt as dt_util
 from homeassistant.components.sensor import DOMAIN as PLATFORM
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.components.sensor.const import SensorDeviceClass, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import UnitOfVolume
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import (
     async_dispatcher_connect,
@@ -118,6 +120,27 @@ def _add_zone_child_sensors(hass: HomeAssistant, async_add_devices, config: dict
         )
         for suffix, data_key in specs
     ]
+    # Two non-depth sensors: last irrigation (timestamp) and water used (litres).
+    children.append(
+        SmartIrrigationZoneLastIrrigationSensor(
+            hass,
+            f"{PLATFORM}.{base}_last_irrigation",
+            zid,
+            zname,
+            "last_irrigation",
+            const.ZONE_LAST_IRRIGATION,
+        )
+    )
+    children.append(
+        SmartIrrigationZoneWaterUsedSensor(
+            hass,
+            f"{PLATFORM}.{base}_water_used",
+            zid,
+            zname,
+            "water_used",
+            const.ZONE_WATER_USED,
+        )
+    )
     registered[config["id"]] = children
     async_add_devices(children)
 
@@ -523,3 +546,44 @@ class SmartIrrigationZoneChildSensor(SensorEntity):
         """Force an initial state once added."""
         await super().async_added_to_hass()
         self.async_schedule_update_ha_state(force_refresh=True)
+
+
+class SmartIrrigationZoneLastIrrigationSensor(SmartIrrigationZoneChildSensor):
+    """Timestamp of this zone's last credited irrigation run."""
+
+    _attr_state_class = None
+    _attr_device_class = SensorDeviceClass.TIMESTAMP
+    _attr_icon = "mdi:history"
+
+    @property
+    def native_value(self):
+        """Return the run time as an aware datetime (parse if stored as text)."""
+        val = self._value
+        if not val:
+            return None
+        if isinstance(val, str):
+            return dt_util.parse_datetime(val)
+        return val
+
+    @property
+    def native_unit_of_measurement(self):
+        """A timestamp has no unit."""
+        return None
+
+
+class SmartIrrigationZoneWaterUsedSensor(SmartIrrigationZoneChildSensor):
+    """Cumulative water delivered to this zone (litres)."""
+
+    _attr_device_class = SensorDeviceClass.WATER
+    _attr_state_class = SensorStateClass.TOTAL_INCREASING
+    _attr_icon = "mdi:water"
+
+    @property
+    def native_value(self):
+        """Return the cumulative litres."""
+        return round(self._value, 1) if isinstance(self._value, (int, float)) else None
+
+    @property
+    def native_unit_of_measurement(self):
+        """Litres (the unit the run crediting works in)."""
+        return UnitOfVolume.LITERS

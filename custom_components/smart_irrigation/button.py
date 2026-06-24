@@ -71,6 +71,9 @@ async def async_setup_entry(
             SmartIrrigationZoneResetBucketButton(
                 hass, f"{BUTTON_PLATFORM}.{base}_reset_bucket", zid, zname
             ),
+            SmartIrrigationZoneResetUsageButton(
+                hass, f"{BUTTON_PLATFORM}.{base}_reset_usage", zid, zname
+            ),
         ]
         # Irrigate-now only makes sense when SI itself drives the valves.
         if _direct_valve_control_enabled(hass):
@@ -157,6 +160,26 @@ class SmartIrrigationZoneResetBucketButton(SmartIrrigationZoneButton):
         if coordinator is None:
             return
         await coordinator.store.async_update_zone(self._zone_id, {const.ZONE_BUCKET: 0})
+        async_dispatcher_send(
+            self._hass, const.DOMAIN + "_config_updated", self._zone_id
+        )
+
+
+class SmartIrrigationZoneResetUsageButton(SmartIrrigationZoneButton):
+    """Reset this zone's cumulative water-usage counter to 0."""
+
+    suffix = "reset_usage"
+    _attr_icon = "mdi:restart"
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+
+    async def async_press(self) -> None:
+        """Zero the water-used total and notify the other entities."""
+        coordinator = _coordinator(self._hass)
+        if coordinator is None:
+            return
+        await coordinator.store.async_update_zone(
+            self._zone_id, {const.ZONE_WATER_USED: 0.0}
+        )
         async_dispatcher_send(
             self._hass, const.DOMAIN + "_config_updated", self._zone_id
         )

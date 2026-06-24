@@ -15,6 +15,12 @@
       },
       "current_drainage": {
         "name": "Drainage actuel"
+      },
+      "last_irrigation": {
+        "name": "Dernière irrigation"
+      },
+      "water_used": {
+        "name": "Eau utilisée"
       }
     },
     "number": {
@@ -28,6 +34,9 @@
       },
       "reset_bucket": {
         "name": "Vider le seau"
+      },
+      "reset_usage": {
+        "name": "Réinitialiser le compteur d'eau"
       },
       "irrigate_now": {
         "name": "Arroser maintenant"

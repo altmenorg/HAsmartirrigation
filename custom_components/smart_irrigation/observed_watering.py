@@ -306,10 +306,22 @@ class ObservedWateringMixin:
         if max_bucket is not None and new_bucket > max_bucket:
             new_bucket = float(max_bucket)
 
-        await self.store.async_update_zone(zone_id, {const.ZONE_BUCKET: new_bucket})
+        # Also stamp the run time and accumulate the delivered volume (litres);
+        # this is the single crediting path for both direct and observed runs.
+        prev_used = zone.get(const.ZONE_WATER_USED) or 0.0
+        await self.store.async_update_zone(
+            zone_id,
+            {
+                const.ZONE_BUCKET: new_bucket,
+                const.ZONE_LAST_IRRIGATION: dt_util.utcnow(),
+                const.ZONE_WATER_USED: round(prev_used + volume_l, 3),
+            },
+        )
         # Refresh the zone sensor (it listens to _config_updated) and any open
-        # panel (it listens to _update_frontend).
+        # panel (it listens to _update_frontend); _zone_irrigated lets the
+        # per-zone "problem" binary sensor clear after a successful run.
         async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated", zone_id)
+        async_dispatcher_send(self.hass, const.DOMAIN + "_zone_irrigated", zone_id)
         async_dispatcher_send(self.hass, const.DOMAIN + "_update_frontend")
         _LOGGER.info(
             "Observed watering: zone %s %s -> +%.2f mm, bucket %.3f -> %.3f",

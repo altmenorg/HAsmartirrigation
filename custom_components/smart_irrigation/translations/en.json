@@ -15,6 +15,12 @@
       },
       "current_drainage": {
         "name": "Current drainage"
+      },
+      "last_irrigation": {
+        "name": "Last irrigation"
+      },
+      "water_used": {
+        "name": "Water used"
       }
     },
     "number": {
@@ -28,6 +34,9 @@
       },
       "reset_bucket": {
         "name": "Reset bucket"
+      },
+      "reset_usage": {
+        "name": "Reset water usage"
       },
       "irrigate_now": {
         "name": "Irrigate now"
