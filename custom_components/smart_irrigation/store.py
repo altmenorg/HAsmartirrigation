@@ -114,6 +114,7 @@ from .const import (
     ZONE_DELTA,
     ZONE_DRAINAGE_RATE,
     ZONE_DURATION,
+    ZONE_ET_DEFICIENCY,
     ZONE_FLOW_SENSOR,
     ZONE_ID,
     ZONE_LAST_UPDATED,
@@ -153,6 +154,8 @@ class ZoneEntry:
     state = attr.ib(type=str, default="automatic")
     bucket = attr.ib(type=float, default=0)
     delta = attr.ib(type=float, default=0)
+    # Raw daily ET deficiency from the last calculation (see ZONE_ET_DEFICIENCY).
+    et_deficiency = attr.ib(type=float, default=0)
     duration = attr.ib(type=float, default=0)
     module = attr.ib(type=str, default=None)
     multiplier = attr.ib(type=float, default=1)
@@ -525,6 +528,7 @@ class SmartIrrigationStorage:
                         throughput=zone[ZONE_THROUGHPUT],
                         state=zone[ZONE_STATE],
                         delta=zone[ZONE_DELTA],
+                        et_deficiency=zone.get(ZONE_ET_DEFICIENCY, 0),
                         bucket=zone[ZONE_BUCKET],
                         duration=zone[ZONE_DURATION],
                         module=zone[ZONE_MODULE],

@@ -56,6 +56,7 @@ async def async_setup_entry(
             state=config[const.ZONE_STATE],
             duration=config[const.ZONE_DURATION],
             bucket=config[const.ZONE_BUCKET],
+            et_deficiency=config.get(const.ZONE_ET_DEFICIENCY, 0),
             last_updated=config[const.ZONE_LAST_UPDATED],
             last_calculated=config[const.ZONE_LAST_CALCULATED],
             number_of_data_points=config[const.ZONE_NUMBER_OF_DATA_POINTS],
@@ -113,6 +114,7 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
         state: str,
         duration: int,
         bucket: float,
+        et_deficiency: float,
         last_updated: str,
         last_calculated: str,
         number_of_data_points: int,
@@ -149,6 +151,7 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
         self._state = state
         self._duration = duration
         self._bucket = bucket
+        self._et_deficiency = et_deficiency
         self._last_updated = last_updated
         self._last_calculated = last_calculated
         self._number_of_data_points = number_of_data_points
@@ -213,6 +216,7 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
             self._state = zone["state"]
             self._duration = zone["duration"]
             self._bucket = zone["bucket"]
+            self._et_deficiency = zone.get("et_deficiency", 0)
             self._last_updated = zone["last_updated"]
             self._last_calculated = zone["last_calculated"]
             self._number_of_data_points = zone["number_of_data_points"]
@@ -360,7 +364,13 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
             "last_updated": self._last_updated_formatted,
             "last_calculated": self._last_calculated_formatted,
             "number_of_data_points": self._number_of_data_points,
+            # et_value: ET deficiency actually applied to the bucket this run
+            # (et0 * hour_multiplier + precipitation). et_deficiency: the raw
+            # per-day ET deficiency, independent of interval and bucket resets.
             "et_value": self._delta,
+            "et_value_unit": depth_unit,
+            "et_deficiency": self._et_deficiency,
+            "et_deficiency_unit": depth_unit,
             # asyncio.run_coroutine_threadsafe(
             #    localize("common.attributes.size", "en"), self._hass.loop
             # ).result(): self._size,

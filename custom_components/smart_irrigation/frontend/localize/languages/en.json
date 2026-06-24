@@ -362,6 +362,7 @@
       "description": "Specify one or more irrigation zones here. The irrigation duration is calculated per zone, depending on size, throughput, state, module and sensor group.",
       "labels": {
         "bucket": "Bucket",
+        "et-deficiency": "Daily ET deficiency",
         "duration": "Duration",
         "lead-time": "Lead time",
         "mapping": "Sensor Group",

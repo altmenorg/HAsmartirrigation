@@ -2043,6 +2043,12 @@ class SmartIrrigationCoordinator(
                 return None
         # Scale module ET value by interval (hour_multiplier = fractional days)
         _LOGGER.debug("[calculate-module]: retrieved from module: %s", delta)
+        # Keep the raw per-day ET deficiency (before interval scaling and
+        # precipitation). This is the daily water need that tracks the sensor
+        # group / weather; unlike the bucket it does not depend on the
+        # hour_multiplier or on bucket resets, so it is the value to compare when
+        # experimenting with configurations (issue #576).
+        et_deficiency = delta
         hour_multiplier = weatherdata.get(const.MAPPING_DATA_MULTIPLIER, 1.0)
         _LOGGER.debug("[calculate-module]: hour_multiplier: %s", hour_multiplier)
         delta = delta * hour_multiplier + precip
@@ -2321,9 +2327,19 @@ class SmartIrrigationCoordinator(
             )
 
         data[const.ZONE_BUCKET] = newbucket
+        data[const.ZONE_ET_DEFICIENCY] = et_deficiency
         if not ha_config_is_metric:
+            # bucket, delta and et_deficiency are computed in mm internally;
+            # store them in the HA unit (inches) so the sensor and panel show a
+            # value consistent with the rest of the imperial UI.
             data[const.ZONE_BUCKET] = convert_between(
                 const.UNIT_MM, const.UNIT_INCH, data[const.ZONE_BUCKET]
+            )
+            data[const.ZONE_DELTA] = convert_between(
+                const.UNIT_MM, const.UNIT_INCH, data[const.ZONE_DELTA]
+            )
+            data[const.ZONE_ET_DEFICIENCY] = convert_between(
+                const.UNIT_MM, const.UNIT_INCH, data[const.ZONE_ET_DEFICIENCY]
             )
         data[const.ZONE_DURATION] = duration
         data[const.ZONE_EXPLANATION] = explanation

@@ -285,6 +285,10 @@ ZONE_STATES = [ZONE_STATE_DISABLED, ZONE_STATE_MANUAL, ZONE_STATE_AUTOMATIC]
 ZONE_MODULE = "module"
 ZONE_BUCKET = "bucket"
 ZONE_DELTA = "delta"
+# Raw daily ET deficiency returned by the module, before interval scaling
+# (hour_multiplier) and precipitation. Independent of the bucket and of bucket
+# resets, so it is the value to watch when comparing sensor groups (issue #576).
+ZONE_ET_DEFICIENCY = "et_deficiency"
 ZONE_EXPLANATION = "explanation"
 ZONE_MULTIPLIER = "multiplier"
 ZONE_THROUGHPUT = "throughput"

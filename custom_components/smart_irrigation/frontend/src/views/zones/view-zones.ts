@@ -309,6 +309,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       bucket: 0,
       module: undefined,
       delta: 0,
+      et_deficiency: 0,
       explanation: "",
       multiplier: 1,
       mapping: undefined,
@@ -985,6 +986,16 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       [ZONE_MAXIMUM_BUCKET]: parseFloat(v),
                     }),
                   0.1,
+                )}
+                ${this._numRow(
+                  localize("panels.zones.labels.et-deficiency", lang),
+                  output_unit(this.config, ZONE_BUCKET),
+                  zone.et_deficiency != null
+                    ? Number(zone.et_deficiency).toFixed(2)
+                    : "",
+                  () => {},
+                  0.01,
+                  true,
                 )}
                 ${this.config?.observed_watering_enabled
                   ? this._entityRow(

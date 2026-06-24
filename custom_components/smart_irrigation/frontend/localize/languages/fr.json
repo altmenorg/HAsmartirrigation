@@ -362,6 +362,7 @@
       "description": "Spécifiez une ou plusieurs zones d'irrigation ici. La durée d'irrigation est calculée par zone, en fonction de la taille, du débit, état, module et groupe de capteurs.",
       "labels": {
         "bucket": "Seau",
+        "et-deficiency": "Déficit ET journalier",
         "duration": "Durée",
         "lead-time": "Délai",
         "mapping": "Groupe de capteurs",
