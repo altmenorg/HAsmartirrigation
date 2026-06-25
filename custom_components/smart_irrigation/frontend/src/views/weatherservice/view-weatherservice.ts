@@ -7,7 +7,10 @@ import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { loadHaForm } from "../../load-ha-elements";
 import { Path } from "../../common/navigation";
-import { WEATHER_SERVICES_NO_API_KEY } from "../../const";
+import {
+  WEATHER_SERVICE_OPEN_METEO,
+  WEATHER_SERVICES_NO_API_KEY,
+} from "../../const";
 import {
   fetchWeatherService,
   setWeatherService,
@@ -44,9 +47,15 @@ export class SmartIrrigationViewWeatherService extends LitElement {
       const info = await fetchWeatherService(this.hass);
       this._info = info;
       this._use = !!info.use_weather_service;
+      // Default to Open-Meteo (keyless, worldwide) when nothing is configured
+      // yet, rather than whatever happens to be first in the list.
       this._service =
         info.weather_service ||
-        (info.services && info.services.length ? info.services[0] : null);
+        (info.services && info.services.includes(WEATHER_SERVICE_OPEN_METEO)
+          ? WEATHER_SERVICE_OPEN_METEO
+          : info.services && info.services.length
+            ? info.services[0]
+            : null);
       this._apiKey = info.weather_service_api_key || "";
       this._error = "";
     } catch (e) {

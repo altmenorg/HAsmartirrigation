@@ -31,8 +31,19 @@ export const CONF_PRECIPITATION_THRESHOLD_MM = "precipitation_threshold_mm";
 // Days between irrigation configuration
 export const CONF_DAYS_BETWEEN_IRRIGATION = "days_between_irrigation";
 
+// Observed watering (closed-loop bucket) configuration
+export const CONF_OBSERVED_WATERING_ENABLED = "observed_watering_enabled";
+
+// Direct valve control configuration
+export const CONF_DIRECT_VALVE_CONTROL_ENABLED = "direct_valve_control_enabled";
+export const CONF_ZONE_SEQUENCING = "zone_sequencing";
+export const ZONE_SEQUENCING_SEQUENTIAL = "sequential";
+export const ZONE_SEQUENCING_PARALLEL = "parallel";
+
 // Irrigation start trigger configuration
 export const CONF_IRRIGATION_START_TRIGGERS = "irrigation_start_triggers";
+export const CONF_ACTIVE_START_TRIGGER = "active_start_trigger";
+export const START_TRIGGER_DEFAULT = "default";
 export const TRIGGER_TYPE_SUNRISE = "sunrise";
 export const TRIGGER_TYPE_SUNSET = "sunset";
 export const TRIGGER_TYPE_SOLAR_AZIMUTH = "solar_azimuth";
@@ -138,3 +149,5 @@ export const ZONE_MAXIMUM_DURATION = "maximum_duration";
 export const ZONE_MAXIMUM_BUCKET = "maximum_bucket";
 export const ZONE_DRAINAGE_RATE = "drainage_rate";
 export const ZONE_CURRENT_DRAINAGE = "current_drainage";
+export const ZONE_LINKED_ENTITY = "linked_entity";
+export const ZONE_FLOW_SENSOR = "flow_sensor";

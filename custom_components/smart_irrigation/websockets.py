@@ -94,7 +94,13 @@ class SmartIrrigationConfigView(HomeAssistantView):
                 vol.Optional(const.CONF_USE_WEATHER_SERVICE): cv.boolean,
                 vol.Optional(const.CONF_WEATHER_SERVICE): cv.string,
                 vol.Optional(const.CONF_IRRIGATION_START_TRIGGERS): vol.Coerce(list),
+                vol.Optional(const.CONF_ACTIVE_START_TRIGGER): cv.string,
                 vol.Optional(const.CONF_SKIP_IRRIGATION_ON_PRECIPITATION): cv.boolean,
+                vol.Optional(const.CONF_OBSERVED_WATERING_ENABLED): cv.boolean,
+                vol.Optional(const.CONF_DIRECT_VALVE_CONTROL_ENABLED): cv.boolean,
+                vol.Optional(const.CONF_ZONE_SEQUENCING): vol.In(
+                    const.CONF_ZONE_SEQUENCING_OPTIONS
+                ),
                 vol.Optional(const.CONF_PRECIPITATION_THRESHOLD_MM): vol.Coerce(float),
                 vol.Optional(const.CONF_DAYS_BETWEEN_IRRIGATION): vol.Coerce(int),
                 vol.Optional(const.CONF_MANUAL_COORDINATES_ENABLED): cv.boolean,
@@ -248,6 +254,8 @@ class SmartIrrigationZoneView(HomeAssistantView):
                 vol.Optional(const.ATTR_CLEAR_ALL_WEATHERDATA): cv.boolean,
                 vol.Optional(const.ZONE_DRAINAGE_RATE): vol.Or(float, int, None),
                 vol.Optional(const.ZONE_CURRENT_DRAINAGE): vol.Or(float, int, None),
+                vol.Optional(const.ZONE_LINKED_ENTITY): vol.Any(None, cv.string),
+                vol.Optional(const.ZONE_FLOW_SENSOR): vol.Any(None, cv.string),
             }
         )
     )

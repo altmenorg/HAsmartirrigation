@@ -362,6 +362,7 @@
       "description": "Specify one or more irrigation zones here. The irrigation duration is calculated per zone, depending on size, throughput, state, module and sensor group.",
       "labels": {
         "bucket": "Bucket",
+        "et-deficiency": "Daily ET deficiency",
         "duration": "Duration",
         "lead-time": "Lead time",
         "mapping": "Sensor Group",
@@ -380,7 +381,12 @@
         "last_calculated": "Last calculated",
         "data-last-updated": "Data last updated",
         "data-number-of-data-points": "Number of data points",
-        "drainage_rate": "Drainage rate"
+        "drainage_rate": "Drainage rate",
+        "linked-entity": "Linked valve/switch",
+        "linked-entity-hint": "The valve or switch that waters this zone. Whenever it runs (a manual tap, an automation, or Smart Irrigation itself when direct valve control is on), the bucket is credited from the run time and the zone's throughput. Required for the closed-loop features.",
+        "flow-sensor": "Cumulative volume meter",
+        "flow-sensor-hint": "For exact crediting instead of throughput x time: a cumulative water-meter total (state class total_increasing), not an instant flow rate. The unit is read automatically (L, mL, m³, gal, ft³).",
+        "optional": "optional"
       },
       "no_items": "There are no zones defined yet.",
       "title": "Zones"
@@ -389,7 +395,10 @@
   "title": "Smart Irrigation",
   "irrigation_start_triggers": {
     "title": "Irrigation start triggers",
-    "description": "Configure when irrigation should start based on solar events. You can add multiple triggers for different schedules. For sunrise triggers, leaving offset at 0 will automatically use the total duration of all enabled zones.",
+    "description": "Configure when irrigation should start based on solar events. Define your triggers below, then choose which single one starts irrigation. For sunrise triggers, leaving offset at 0 will automatically use the total duration of all enabled zones.",
+    "active_label": "Active trigger",
+    "active_default": "Default (sunrise minus total watering duration)",
+    "active_hint": "Only the selected trigger starts irrigation, so it runs once per day. \"Default\" times the run to finish right at sunrise. Add custom triggers (sunset, azimuth, offsets) below, then pick one here.",
     "usage_before": "When a trigger fires, Smart Irrigation emits the event ",
     "usage_after": " — listen to it in an automation to start watering. The event data includes trigger_name, trigger_type and offset_minutes, so you can react differently per trigger. The precipitation skip and days-between-irrigation settings still apply: on a skip day no event is fired.",
     "add_trigger": "Add trigger",
@@ -469,5 +478,17 @@
     "description": "Configure the minimum number of days that must pass between irrigation events. This helps control watering frequency for water conservation and plant health management.\n\nTypical real-world use cases:\n• Lawn care: 1-2 day intervals prevent overwatering\n• Drought restrictions: 6+ day intervals for weekly watering\n• Deep-rooted plants: 3-7 day intervals for less frequent watering\n• Water conservation: Customizable based on climate and soil conditions",
     "label": "Minimum days between irrigation",
     "help_text": "Set to 0 to disable this feature. Values from 1-365 days are supported. This setting works alongside existing precipitation forecasting logic."
+  },
+  "observed_watering": {
+    "title": "Observed watering (closed loop)",
+    "description": "Credit each zone's bucket automatically from real irrigation, instead of resetting the bucket from an automation. Once enabled, pick a valve/switch entity per zone in the Zones tab: while it is open, the bucket is credited from the run time and the zone's throughput. For exact accounting you can also pick a cumulative volume meter (a water-meter style total) per zone, and the measured volume is used instead. Important: when this is on it is the only thing crediting the bucket, so remove any reset_bucket call from your irrigation automation to avoid double counting.",
+    "enabled_label": "Enable observed watering",
+    "direct_control_label": "Let Smart Irrigation control the valve",
+    "direct_control_description": "When on, Smart Irrigation opens each zone's linked valve, waits the calculated duration, then closes it - no automation needed. An in-flight run resumes after a restart. Safety: if Home Assistant goes down for a long time mid-run the valve stays open and keeps watering, so give your valve a hardware failsafe (a maximum runtime).",
+    "sequencing_label": "Zone sequencing",
+    "sequencing": {
+      "sequential": "Sequential (one zone at a time)",
+      "parallel": "Parallel (all zones at once)"
+    }
   }
 }

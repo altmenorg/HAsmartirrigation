@@ -16,7 +16,7 @@ title: Installation: Download
 
 2. Restart Home Assistant to load the integration.
 3. Go to **Settings → Devices & Services → Add Integration**, search for **Smart Irrigation** and click to add it.
-4. Follow the wizard to complete the installation. The first step is [setting up a weather service](installation-weatherservice.md).
+4. Give the integration a name to complete the setup. Then open the Smart Irrigation panel and [configure the weather service](installation-weatherservice.md).
 
 >Main page: [Installation](installation.md)<br/>
 >Next: [Set up weatherservice](installation-weatherservice.md)

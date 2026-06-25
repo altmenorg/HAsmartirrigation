@@ -37,12 +37,46 @@ START_EVENT_FIRED_TODAY = "starteventfiredtoday"
 # Irrigation start trigger configuration
 CONF_IRRIGATION_START_TRIGGERS = "irrigation_start_triggers"
 CONF_DEFAULT_IRRIGATION_START_TRIGGERS = []
+# Which single configured trigger actually starts irrigation. The defined
+# triggers are just the pool of options; this picks the active one. The
+# sentinel "default" means a sunrise trigger offset by the total watering
+# duration, so the run finishes right at sunrise.
+START_TRIGGER_DEFAULT = "default"
+CONF_ACTIVE_START_TRIGGER = "active_start_trigger"
+CONF_DEFAULT_ACTIVE_START_TRIGGER = START_TRIGGER_DEFAULT
 
 # Weather-based skip configuration
 CONF_SKIP_IRRIGATION_ON_PRECIPITATION = "skip_irrigation_on_precipitation"
 CONF_DEFAULT_SKIP_IRRIGATION_ON_PRECIPITATION = False
 CONF_PRECIPITATION_THRESHOLD_MM = "precipitation_threshold_mm"
 CONF_DEFAULT_PRECIPITATION_THRESHOLD_MM = 2.0  # 2mm threshold
+
+# Observed watering (closed-loop bucket): credit the bucket from a linked
+# valve/switch entity's real run time instead of a manual reset automation.
+CONF_OBSERVED_WATERING_ENABLED = "observed_watering_enabled"
+CONF_DEFAULT_OBSERVED_WATERING_ENABLED = False
+
+# Direct valve control: Smart Irrigation opens each zone's linked valve, waits
+# the calculated duration, then closes it (optional executor). The start event
+# still fires for external executors. Crediting is handled by the runner, and
+# in-flight runs are persisted so a reboot mid-run can resume and credit.
+CONF_DIRECT_VALVE_CONTROL_ENABLED = "direct_valve_control_enabled"
+CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED = False
+CONF_ZONE_SEQUENCING = "zone_sequencing"
+CONF_ZONE_SEQUENCING_SEQUENTIAL = "sequential"
+CONF_ZONE_SEQUENCING_PARALLEL = "parallel"
+CONF_ZONE_SEQUENCING_OPTIONS = [
+    CONF_ZONE_SEQUENCING_SEQUENTIAL,
+    CONF_ZONE_SEQUENCING_PARALLEL,
+]
+CONF_DEFAULT_ZONE_SEQUENCING = CONF_ZONE_SEQUENCING_SEQUENTIAL
+# Persisted list of in-flight direct-control runs (reboot resilience).
+CONF_ACTIVE_VALVE_RUNS = "active_valve_runs"
+# Keys inside an active-run record.
+RUN_ZONE_ID = "zone_id"
+RUN_ENTITY_ID = "entity_id"
+RUN_STARTED = "started"
+RUN_DURATION = "duration"
 
 # Days between irrigation configuration
 CONF_DAYS_BETWEEN_IRRIGATION = "days_between_irrigation"
@@ -96,7 +130,7 @@ SEASONAL_CONF_ZONES = "zones"  # List of zone IDs or "all"
 CONF_IRRIGATION_UNLIMITED_INTEGRATION = "irrigation_unlimited_integration"
 CONF_DEFAULT_IRRIGATION_UNLIMITED_INTEGRATION = False
 CONF_IU_ENTITY_PREFIX = "iu_entity_prefix"
-CONF_DEFAULT_IU_ENTITY_PREFIX = "switch.irrigation_unlimited"
+CONF_DEFAULT_IU_ENTITY_PREFIX = "binary_sensor.irrigation_unlimited"
 CONF_IU_SYNC_SCHEDULES = "iu_sync_schedules"
 CONF_DEFAULT_IU_SYNC_SCHEDULES = False
 CONF_IU_SHARE_ZONE_DATA = "iu_share_zone_data"
@@ -251,6 +285,10 @@ ZONE_STATES = [ZONE_STATE_DISABLED, ZONE_STATE_MANUAL, ZONE_STATE_AUTOMATIC]
 ZONE_MODULE = "module"
 ZONE_BUCKET = "bucket"
 ZONE_DELTA = "delta"
+# Raw daily ET deficiency returned by the module, before interval scaling
+# (hour_multiplier) and precipitation. Independent of the bucket and of bucket
+# resets, so it is the value to watch when comparing sensor groups (issue #576).
+ZONE_ET_DEFICIENCY = "et_deficiency"
 ZONE_EXPLANATION = "explanation"
 ZONE_MULTIPLIER = "multiplier"
 ZONE_THROUGHPUT = "throughput"
@@ -263,6 +301,14 @@ ZONE_LAST_UPDATED = "last_updated"
 ZONE_NUMBER_OF_DATA_POINTS = "number_of_data_points"
 ZONE_DRAINAGE_RATE = "drainage_rate"
 ZONE_CURRENT_DRAINAGE = "current_drainage"
+# Timestamp of the last credited irrigation run, and cumulative water delivered
+# (litres). Both set when a run credits the bucket (direct or observed).
+ZONE_LAST_IRRIGATION = "last_irrigation"
+ZONE_WATER_USED = "water_used"
+# Optional valve/switch entity observed to credit the bucket (closed-loop).
+ZONE_LINKED_ENTITY = "linked_entity"
+# Optional cumulative volume/flow meter; credits the bucket by measured volume.
+ZONE_FLOW_SENSOR = "flow_sensor"
 
 MODULE_DIR = "calcmodules"
 MODULE_ID = "id"
@@ -335,6 +381,16 @@ MAPPING_CONF_AGGREGATE_OPTIONS = [
 RETRIEVED_AT = "retrieved"  # on weatherdata
 
 EVENT_IRRIGATE_START = "start_irrigation_all_zones"
+# Fired (as smart_irrigation_irrigation_started) when direct valve control
+# begins running the zones, with the list about to be watered.
+EVENT_IRRIGATE_STARTED = "irrigation_started"
+# Fired (as smart_irrigation_irrigation_finished) once direct valve control has
+# finished running every eligible zone, with a per-zone summary, so a single
+# automation can send an end-of-watering report.
+EVENT_IRRIGATE_FINISHED = "irrigation_finished"
+# Fired (as smart_irrigation_zone_problem) when a direct-control valve fails to
+# open, so users can wire a notification automation.
+EVENT_ZONE_PROBLEM = "zone_problem"
 
 UNIT_M2 = "m<sup>2</sup>"
 UNIT_SQ_FT = "sq ft"

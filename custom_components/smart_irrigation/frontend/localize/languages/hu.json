@@ -380,7 +380,12 @@
         "last_calculated": "Utolsó számítás",
         "data-last-updated": "Adatok utolsó frissítése",
         "data-number-of-data-points": "Adatpontok száma",
-        "drainage_rate": "Elvezetési sebesség"
+        "drainage_rate": "Elvezetési sebesség",
+        "linked-entity": "Csatlakoztatott szelep/kapcsoló",
+        "linked-entity-hint": "A szelep vagy kapcsoló, amely ezt a zónát öntözi. Amikor működik (kézi nyitás, automatizálás vagy maga a Smart Irrigation, ha a közvetlen szelepvezérlés be van kapcsolva), a vödör a működési időből és a zóna átfolyásából töltődik fel. A zárt hurkú funkciókhoz szükséges.",
+        "flow-sensor": "Kumulatív térfogatmérő",
+        "flow-sensor-hint": "Az átfolyás x idő helyett pontos feltöltéshez: egy kumulatív vízmérő összérték (total_increasing állapotosztály), nem pillanatnyi átfolyási sebesség. A mértékegység automatikusan beolvasásra kerül (L, mL, m³, gal, ft³).",
+        "optional": "opcionális"
       },
       "no_items": "Még nincs definiált zóna.",
       "title": "Zónák"
@@ -446,7 +451,10 @@
       "sunset_offset": "Napnyugta triggereknél: Használjon negatív értékeket a napnyugta előtti indításhoz, pozitívat a napnyugta utánihoz.",
       "azimuth_explanation": "A nap azimutja a nap iránytű szerinti iránya. 0°=Észak, 90°=Kelet, 180°=Dél, 270°=Nyugat. Bármilyen szögértéket megadhat (pl. 450° = 90°, -30° = 330°). Ezzel akkor indíthatja az öntözést, amikor a nap egy adott pozíciót ér el.",
       "multiple_triggers": "Több triggert is konfigurálhat. Minden engedélyezett trigger önállóan ütemezi az öntözések indítását."
-    }
+    },
+    "active_label": "Aktív trigger",
+    "active_default": "Alapértelmezett (napkelte mínusz a teljes öntözési időtartam)",
+    "active_hint": "Csak a kiválasztott trigger indítja az öntözést, így naponta egyszer fut le. Az \"Alapértelmezett\" úgy időzíti a működést, hogy pontosan napkeltekor fejeződjön be. Adj hozzá egyéni triggereket (naplemente, azimut, eltolások) alább, majd válassz egyet itt."
   },
   "weather_skip": {
     "title": "Időjárás-alapú öntözéskihagyás",
@@ -469,5 +477,17 @@
     "description": "Állítsa be az öntözési események között eltelő napok minimális számát. Ez segít szabályozni az öntözés gyakoriságát a vízmegtakarítás és a növények egészségének megőrzése érdekében.\n\nTipikus valós felhasználási esetek:\n• Gyepápolás: az 1-2 napos időközök megakadályozzák a túlöntözést\n• Aszálykorlátozások: 6+ napos időközök a heti öntözéshez\n• Mélygyökerű növények: 3-7 napos időközök a ritkább öntözéshez\n• Vízmegtakarítás: az éghajlat és a talajviszonyok alapján testreszabható",
     "label": "Öntözések közötti minimális napok",
     "help_text": "Állítsa 0-ra a funkció letiltásához. 1-365 nap közötti értékek támogatottak. Ez a beállítás a meglévő csapadék-előrejelzési logikával együtt működik."
+  },
+  "observed_watering": {
+    "title": "Megfigyelt öntözés (zárt hurok)",
+    "description": "Töltsd fel minden zóna vödrét automatikusan a valós öntözésből, ahelyett hogy a vödröt egy automatizálásból állítanád vissza. Az engedélyezés után válassz egy szelep/kapcsoló entitást zónánként a Zónák lapon: amíg nyitva van, a vödör a működési időből és a zóna átfolyásából töltődik fel. A pontos elszámoláshoz zónánként választhatsz egy kumulatív térfogatmérőt is (vízmérő jellegű összérték), és a mért térfogat lesz felhasználva helyette. Fontos: amikor ez be van kapcsolva, csak ez tölti fel a vödröt, ezért távolítsd el a reset_bucket hívást az öntözési automatizálásodból a dupla számolás elkerülése érdekében.",
+    "enabled_label": "Megfigyelt öntözés engedélyezése",
+    "direct_control_label": "A Smart Irrigation vezérelje a szelepet",
+    "direct_control_description": "Bekapcsolva a Smart Irrigation kinyitja minden zóna csatlakoztatott szelepét, megvárja a kiszámított időtartamot, majd bezárja - nincs szükség automatizálásra. A folyamatban lévő működés újraindítás után folytatódik. Biztonság: ha a Home Assistant hosszú időre leáll működés közben, a szelep nyitva marad és tovább öntöz, ezért adj a szelepednek hardveres vészleállítást (egy maximális működési időt).",
+    "sequencing_label": "Zóna sorrend",
+    "sequencing": {
+      "sequential": "Szekvenciális (egy zóna egyszerre)",
+      "parallel": "Párhuzamos (minden zóna egyszerre)"
+    }
   }
 }

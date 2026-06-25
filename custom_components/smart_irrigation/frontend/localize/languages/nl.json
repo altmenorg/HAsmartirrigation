@@ -380,7 +380,12 @@
         "last_calculated": "Berekend op",
         "data-last-updated": "Bijgewerkt op",
         "data-number-of-data-points": "Aantal datapunten",
-        "drainage_rate": "Afvoersnelheid"
+        "drainage_rate": "Afvoersnelheid",
+        "linked-entity": "Gekoppelde klep/schakelaar",
+        "linked-entity-hint": "De klep of schakelaar die deze zone bewatert. Telkens als die actief is (een handmatige kraan, een automatisering of Smart Irrigation zelf wanneer directe klepbesturing aanstaat), wordt de bucket bijgewerkt op basis van de looptijd en de doorvoer van de zone. Vereist voor de closed-loop-functies.",
+        "flow-sensor": "Cumulatieve volumemeter",
+        "flow-sensor-hint": "Voor exacte verrekening in plaats van doorvoer x tijd: een cumulatief watermetertotaal (state class total_increasing), geen momentaan debiet. De eenheid wordt automatisch uitgelezen (L, mL, m³, gal, ft³).",
+        "optional": "optioneel"
       },
       "no_items": "Er zijn nog geen zones.",
       "title": "Zones"
@@ -446,7 +451,10 @@
       "sunset_offset": "Voor zonsondergang-triggers: gebruik negatieve waarden om vóór zonsondergang te starten, positieve om na zonsondergang te starten.",
       "azimuth_explanation": "Het zonne-azimut is de kompasrichting van de zon. 0°=Noord, 90°=Oost, 180°=Zuid, 270°=West. Je kunt elke hoekwaarde invoeren (bijv. 450°=90°, -30°=330°). Gebruik dit om de irrigatie te starten wanneer de zon een specifieke positie bereikt.",
       "multiple_triggers": "Je kunt meerdere triggers configureren. Elke ingeschakelde trigger plant irrigatiestarts onafhankelijk."
-    }
+    },
+    "active_label": "Actieve trigger",
+    "active_default": "Standaard (zonsopkomst min totale bewateringsduur)",
+    "active_hint": "Alleen de geselecteerde trigger start de irrigatie, zodat die eenmaal per dag draait. \"Standaard\" plant de beurt zo dat hij precies bij zonsopkomst klaar is. Voeg hieronder aangepaste triggers toe (zonsondergang, azimut, offsets) en kies er hier vervolgens één."
   },
   "weather_skip": {
     "title": "Weergebaseerd overslaan van irrigatie",
@@ -469,5 +477,17 @@
     "description": "Configureer het minimum aantal dagen dat moet verstrijken tussen irrigatie gebeurtenissen. Dit helpt bij het controleren van de bevloeiingsfrequentie voor waterbesparing en plantgezondheid beheer.\n\nTypische gebruikssituaties:\n• Gazonverzorging: 1-2 dag intervallen voorkomen overbewatering\n• Droogte beperkingen: 6+ dag intervallen voor wekelijkse bewatering\n• Diepwortelende planten: 3-7 dag intervallen voor minder frequente bewatering\n• Waterbesparing: aanpasbaar op basis van klimaat en bodemcondities",
     "label": "Minimum dagen tussen irrigaties",
     "help_text": "Stel in op 0 om deze functie uit te schakelen. Waarden van 1-365 dagen worden ondersteund. Deze instelling werkt samen met de bestaande neerslagvoorspelling logica."
+  },
+  "observed_watering": {
+    "title": "Waargenomen bewatering (closed loop)",
+    "description": "Werk de bucket van elke zone automatisch bij op basis van echte irrigatie, in plaats van de bucket te resetten vanuit een automatisering. Zodra dit is ingeschakeld, kies je per zone een klep/schakelaar-entiteit op het tabblad Zones: zolang die open is, wordt de bucket bijgewerkt op basis van de looptijd en de doorvoer van de zone. Voor exacte verrekening kun je ook per zone een cumulatieve volumemeter kiezen (een watermetertotaal), en dan wordt het gemeten volume gebruikt. Belangrijk: als dit aanstaat, is het het enige dat de bucket bijwerkt, dus verwijder elke reset_bucket-aanroep uit je irrigatie-automatisering om dubbeltelling te voorkomen.",
+    "enabled_label": "Waargenomen bewatering inschakelen",
+    "direct_control_label": "Smart Irrigation de klep laten besturen",
+    "direct_control_description": "Wanneer dit aanstaat, opent Smart Irrigation de gekoppelde klep van elke zone, wacht de berekende duur af en sluit hem daarna - geen automatisering nodig. Een lopende beurt wordt na een herstart hervat. Veiligheid: als Home Assistant lange tijd uitvalt midden in een beurt, blijft de klep open en blijft hij bewateren, dus geef je klep een hardwarematige beveiliging (een maximale looptijd).",
+    "sequencing_label": "Volgorde van zones",
+    "sequencing": {
+      "sequential": "Sequentieel (één zone tegelijk)",
+      "parallel": "Parallel (alle zones tegelijk)"
+    }
   }
 }

@@ -380,7 +380,12 @@
         "last_calculated": "Senest beregnet",
         "data-last-updated": "Data senest opdateret",
         "data-number-of-data-points": "Antal datapunkter",
-        "drainage_rate": "Drænhastighed"
+        "drainage_rate": "Drænhastighed",
+        "linked-entity": "Tilknyttet ventil/kontakt",
+        "linked-entity-hint": "Ventilen eller kontakten, der vander denne zone. Hver gang den kører (en manuel hane, en automatisering eller Smart Irrigation selv, når direkte ventilstyring er slået til), krediteres bucket'en ud fra køretiden og zonens gennemstrømning. Påkrævet for funktionerne med lukket sløjfe.",
+        "flow-sensor": "Akkumuleret volumenmåler",
+        "flow-sensor-hint": "Til nøjagtig kreditering i stedet for gennemstrømning x tid: en akkumuleret samlet vandmåler (tilstandsklasse total_increasing), ikke en øjeblikkelig gennemstrømningshastighed. Enheden aflæses automatisk (L, mL, m³, gal, ft³).",
+        "optional": "valgfri"
       },
       "no_items": "Der er endnu ikke defineret nogen zoner.",
       "title": "Zoner"
@@ -446,7 +451,10 @@
       "sunset_offset": "For solnedgangsudløsere: Brug negative værdier for at starte før solnedgang, positive for at starte efter solnedgang.",
       "azimuth_explanation": "Solens azimut er solens kompasretning. 0°=Nord, 90°=Øst, 180°=Syd, 270°=Vest. Du kan indtaste en hvilken som helst vinkelværdi (f.eks. 450° = 90°, -30° = 330°). Brug dette til at udløse vanding, når solen når en bestemt position.",
       "multiple_triggers": "Du kan konfigurere flere udløsere. Hver aktiveret udløser planlægger vandingsstarter uafhængigt."
-    }
+    },
+    "active_label": "Aktiv udløser",
+    "active_default": "Standard (solopgang minus samlet vandingsvarighed)",
+    "active_hint": "Kun den valgte udløser starter vanding, så den kører én gang om dagen. \"Standard\" tilpasser kørslen, så den afsluttes præcis ved solopgang. Tilføj brugerdefinerede udløsere (solnedgang, azimut, forskydninger) nedenfor, og vælg derefter én her."
   },
   "weather_skip": {
     "title": "Vejrbaseret vandingsspring",
@@ -469,5 +477,17 @@
     "description": "Konfigurér det mindste antal dage, der skal gå mellem vandingsbegivenheder. Dette hjælper med at styre vandingsfrekvensen til vandbesparelse og pleje af plantesundhed.\n\nTypiske anvendelser i den virkelige verden:\n• Plænepleje: 1-2 dages intervaller forhindrer overvanding\n• Tørkerestriktioner: 6+ dages intervaller til ugentlig vanding\n• Dybtrodede planter: 3-7 dages intervaller til mindre hyppig vanding\n• Vandbesparelse: Kan tilpasses ud fra klima- og jordforhold",
     "label": "Mindste antal dage mellem vanding",
     "help_text": "Sæt til 0 for at deaktivere denne funktion. Værdier fra 1-365 dage understøttes. Denne indstilling fungerer sammen med eksisterende logik for nedbørsprognoser."
+  },
+  "observed_watering": {
+    "title": "Observeret vanding (lukket sløjfe)",
+    "description": "Kreditér automatisk hver zones bucket ud fra reel vanding i stedet for at nulstille bucket'en fra en automatisering. Når funktionen er aktiveret, vælges en ventil/kontakt-entitet pr. zone under fanen Zoner: mens den er åben, krediteres bucket'en ud fra køretiden og zonens gennemstrømning. For nøjagtig bogføring kan du også vælge en akkumuleret volumenmåler (en samlet vandmåler) pr. zone, og den målte volumen anvendes i stedet. Vigtigt: når dette er slået til, er det det eneste, der krediterer bucket'en, så fjern ethvert reset_bucket-kald fra din vandingsautomatisering for at undgå dobbelttælling.",
+    "enabled_label": "Aktivér observeret vanding",
+    "direct_control_label": "Lad Smart Irrigation styre ventilen",
+    "direct_control_description": "Når funktionen er slået til, åbner Smart Irrigation hver zones tilknyttede ventil, venter den beregnede varighed og lukker den derefter - ingen automatisering nødvendig. En igangværende kørsel genoptages efter en genstart. Sikkerhed: hvis Home Assistant er nede i længere tid midt i en kørsel, forbliver ventilen åben og fortsætter med at vande, så giv din ventil en hardware-failsafe (en maksimal køretid).",
+    "sequencing_label": "Zonesekvensering",
+    "sequencing": {
+      "sequential": "Sekventiel (én zone ad gangen)",
+      "parallel": "Parallel (alle zoner på én gang)"
+    }
   }
 }

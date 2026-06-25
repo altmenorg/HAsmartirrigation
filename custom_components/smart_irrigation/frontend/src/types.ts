@@ -33,6 +33,7 @@ export class SmartIrrigationConfig {
   continuousupdates: boolean;
   sensor_debounce: number;
   irrigation_start_triggers: IrrigationStartTrigger[];
+  active_start_trigger: string;
   skip_irrigation_on_precipitation: boolean;
   precipitation_threshold_mm: number;
   manual_coordinates_enabled: boolean;
@@ -40,6 +41,9 @@ export class SmartIrrigationConfig {
   manual_longitude?: number;
   manual_elevation?: number;
   days_between_irrigation: number;
+  observed_watering_enabled: boolean;
+  direct_valve_control_enabled: boolean;
+  zone_sequencing: string;
 
   constructor() {
     this.calctime = "23:00";
@@ -57,6 +61,7 @@ export class SmartIrrigationConfig {
     this.continuousupdates = false;
     this.sensor_debounce = 100;
     this.irrigation_start_triggers = [];
+    this.active_start_trigger = "default";
     this.skip_irrigation_on_precipitation = false;
     this.precipitation_threshold_mm = 2.0;
     this.manual_coordinates_enabled = false;
@@ -64,6 +69,9 @@ export class SmartIrrigationConfig {
     this.manual_longitude = undefined;
     this.manual_elevation = undefined;
     this.days_between_irrigation = 0;
+    this.observed_watering_enabled = false;
+    this.direct_valve_control_enabled = false;
+    this.zone_sequencing = "sequential";
   }
 }
 
@@ -99,6 +107,7 @@ export class SmartIrrigationZone {
   module?: number;
   bucket: number;
   delta: number;
+  et_deficiency: number;
   explanation: string;
   multiplier: number;
   mapping?: number;
@@ -110,6 +119,8 @@ export class SmartIrrigationZone {
   number_of_data_points?: number;
   drainage_rate?: number;
   current_drainage?: number;
+  linked_entity?: string;
+  flow_sensor?: string;
 
   constructor(
     i: number,
@@ -128,6 +139,7 @@ export class SmartIrrigationZone {
     this.module = undefined;
     this.bucket = 0;
     this.delta = 0;
+    this.et_deficiency = 0;
     this.explanation = "";
     this.multiplier = 1.0;
     this.mapping = undefined;

@@ -76,16 +76,9 @@ The integration provides bidirectional communication between Smart Irrigation an
 
 ### Configuration
 
-Enable the integration in your Smart Irrigation configuration:
+Smart Irrigation v2 is a UI-only integration — there is no `configuration.yaml` block to add. Adding one will cause a setup error on restart.
 
-```yaml
-# In configuration.yaml or through the UI
-smart_irrigation:
-  irrigation_unlimited_integration: true
-  iu_entity_prefix: "switch.irrigation_unlimited"
-  iu_sync_schedules: true
-  iu_share_zone_data: true
-```
+Enable the Irrigation Unlimited integration from the Smart Irrigation panel in the Home Assistant UI (Settings → Integrations → Smart Irrigation → Configure). The relevant options are stored internally by the integration.
 
 ### Zone Synchronization
 
@@ -141,30 +134,25 @@ service: smart_irrigation.get_irrigation_unlimited_status
 
 ### Example Integration Automation
 
+Irrigation Unlimited exposes `binary_sensor` entities (not switches). Use the `irrigation_unlimited.adjust_time` service to pass the calculated duration to IU, then let IU handle execution:
+
 ```yaml
 automation:
-  - alias: "Smart Irrigation to IU Sync"
+  - alias: "Smart Irrigation → IU: push duration for zone 1"
     trigger:
-      - platform: state
-        entity_id: sensor.smart_irrigation_zone_1
-        attribute: duration
+      - platform: time
+        at: "23:00:00"
     condition:
       - condition: template
-        value_template: "{{ states('sensor.smart_irrigation_zone_1') | int > 0 }}"
+        value_template: "{{ states('sensor.smart_irrigation_zone_1') | int(0) > 0 }}"
     action:
-      - service: smart_irrigation.sync_with_irrigation_unlimited
+      - service: irrigation_unlimited.adjust_time
         data:
-          zone_ids: [1]
-      - service: switch.turn_on
-        entity_id: switch.irrigation_unlimited_c1_z1
-      - delay:
-          seconds: "{{ states('sensor.smart_irrigation_zone_1') | int }}"
-      - service: switch.turn_off
-        entity_id: switch.irrigation_unlimited_c1_z1
-      - service: smart_irrigation.reset_bucket
-        target:
-          entity_id: sensor.smart_irrigation_zone_1
+          entity_id: binary_sensor.irrigation_unlimited_c1_z1
+          actual: "{{ timedelta(seconds=states('sensor.smart_irrigation_zone_1') | int(0)) }}"
 ```
+
+The bucket reset can be handled by a separate automation that triggers when the IU zone turns off (see the [Irrigation Unlimited reset bucket blueprint](../blueprints/automation/Irrigation%20Unlimited%20reset%20bucket.yaml)).
 
 ## Automation Blueprints
 

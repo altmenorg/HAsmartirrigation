@@ -380,7 +380,12 @@
         "last_calculated": "Último cálculo",
         "data-last-updated": "Datos actualizados por última vez",
         "data-number-of-data-points": "Número de puntos de datos",
-        "drainage_rate": "Tasa de drenaje"
+        "drainage_rate": "Tasa de drenaje",
+        "linked-entity": "Válvula/interruptor vinculado",
+        "linked-entity-hint": "La válvula o interruptor que riega esta zona. Cada vez que se acciona (un grifo manual, una automatización o la propia Smart Irrigation cuando el control directo de válvula está activado), el bucket se acredita a partir del tiempo de funcionamiento y el rendimiento de la zona. Necesario para las funciones de lazo cerrado.",
+        "flow-sensor": "Contador de volumen acumulado",
+        "flow-sensor-hint": "Para una acreditación exacta en lugar de rendimiento x tiempo: un total de contador de agua acumulado (clase de estado total_increasing), no un caudal instantáneo. La unidad se lee automáticamente (L, mL, m³, gal, ft³).",
+        "optional": "opcional"
       },
       "no_items": "Aún no hay zonas definidas.",
       "title": "Zonas"
@@ -446,7 +451,10 @@
       "sunset_offset": "Para los disparadores de atardecer: usa valores negativos para empezar antes del atardecer y positivos para después del atardecer.",
       "azimuth_explanation": "El azimut solar es la dirección de la brújula hacia el sol. 0°=Norte, 90°=Este, 180°=Sur, 270°=Oeste. Puedes introducir cualquier valor de ángulo (p. ej., 450°=90°, -30°=330°). Úsalo para activar el riego cuando el sol alcance una posición concreta.",
       "multiple_triggers": "Puedes configurar varios disparadores. Cada disparador activado programará los inicios de riego de forma independiente."
-    }
+    },
+    "active_label": "Disparador activo",
+    "active_default": "Predeterminado (amanecer menos la duración total del riego)",
+    "active_hint": "Solo el disparador seleccionado inicia el riego, de modo que se ejecuta una vez al día. \"Predeterminado\" programa el riego para que termine justo al amanecer. Añade disparadores personalizados (atardecer, azimut, desfases) más abajo y luego elige uno aquí."
   },
   "weather_skip": {
     "title": "Omisión de riego según el tiempo",
@@ -469,5 +477,17 @@
     "description": "Configure el número mínimo de días que deben pasar entre eventos de riego. Esto ayuda a controlar la frecuencia de riego para la conservación del agua y el manejo de la salud de las plantas.\n\nCasos de uso típicos:\n• Cuidado del césped: intervalos de 1-2 días previenen el exceso de riego\n• Restricciones de sequía: intervalos de 6+ días para riego semanal\n• Plantas de raíces profundas: intervalos de 3-7 días para riego menos frecuente\n• Conservación del agua: personalizable según el clima y las condiciones del suelo",
     "label": "Días mínimos entre riegos",
     "help_text": "Establezca en 0 para desactivar esta función. Se admiten valores de 1-365 días. Esta configuración funciona junto con la lógica de pronóstico de precipitación existente."
+  },
+  "observed_watering": {
+    "title": "Riego observado (lazo cerrado)",
+    "description": "Acredita automáticamente el bucket de cada zona a partir del riego real, en lugar de restablecer el bucket desde una automatización. Una vez activado, elige una entidad de válvula/interruptor por zona en la pestaña Zonas: mientras está abierta, el bucket se acredita a partir del tiempo de funcionamiento y el rendimiento de la zona. Para una contabilidad exacta también puedes elegir un contador de volumen acumulado (un total de tipo contador de agua) por zona, y se utiliza el volumen medido en su lugar. Importante: cuando esto está activado es lo único que acredita el bucket, así que elimina cualquier llamada a reset_bucket de tu automatización de riego para evitar el doble conteo.",
+    "enabled_label": "Activar riego observado",
+    "direct_control_label": "Permitir que Smart Irrigation controle la válvula",
+    "direct_control_description": "Cuando está activado, Smart Irrigation abre la válvula vinculada de cada zona, espera la duración calculada y luego la cierra, sin necesidad de automatización. Un riego en curso se reanuda tras un reinicio. Seguridad: si Home Assistant se cae durante mucho tiempo en mitad de un riego, la válvula permanece abierta y sigue regando, así que dale a tu válvula un mecanismo de seguridad por hardware (un tiempo máximo de funcionamiento).",
+    "sequencing_label": "Secuenciación de zonas",
+    "sequencing": {
+      "sequential": "Secuencial (una zona a la vez)",
+      "parallel": "Paralelo (todas las zonas a la vez)"
+    }
   }
 }

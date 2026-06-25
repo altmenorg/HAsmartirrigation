@@ -2,21 +2,24 @@
 
 import logging
 
+import homeassistant.util.dt as dt_util
 from homeassistant.components.sensor import DOMAIN as PLATFORM
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.components.sensor.const import SensorDeviceClass
+from homeassistant.components.sensor.const import SensorDeviceClass, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import UnitOfVolume
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import (
     async_dispatcher_connect,
-    async_dispatcher_send,
 )
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from homeassistant.util import slugify
+from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
+from .entity import zone_device_info
 from .performance import async_timer
 
 _LOGGER = logging.getLogger(__name__)
@@ -55,6 +58,7 @@ async def async_setup_entry(
             state=config[const.ZONE_STATE],
             duration=config[const.ZONE_DURATION],
             bucket=config[const.ZONE_BUCKET],
+            et_deficiency=config.get(const.ZONE_ET_DEFICIENCY, 0),
             last_updated=config[const.ZONE_LAST_UPDATED],
             last_calculated=config[const.ZONE_LAST_CALCULATED],
             number_of_data_points=config[const.ZONE_NUMBER_OF_DATA_POINTS],
@@ -70,6 +74,7 @@ async def async_setup_entry(
             if not check_zone_entity_in_hass_data(hass, entity_id):
                 hass.data[const.DOMAIN]["zones"][config["id"]] = sensor_entity
                 async_add_devices([sensor_entity])
+                _add_zone_child_sensors(hass, async_add_devices, config)
 
     # Tie the dispatcher subscription to the config entry lifecycle: without
     # this, the connection leaks on unload and a later remove+re-add (without a
@@ -82,9 +87,62 @@ async def async_setup_entry(
             hass, const.DOMAIN + "_register_entity", async_add_sensor_entity
         )
     )
-    async_dispatcher_send(hass, const.DOMAIN + "_platform_loaded")
+    # "_platform_loaded" (which replays existing zones) is now fired from
+    # __init__.async_setup_entry after ALL entity platforms have subscribed, so
+    # the number platform receives the zones too. Firing it here would race it.
 
     # register services if any here
+
+
+def _add_zone_child_sensors(hass: HomeAssistant, async_add_devices, config: dict):
+    """Add the per-zone child value sensors (bucket, ET, drainage) once.
+
+    These read-only sensors expose values that are also kept as attributes on
+    the duration sensor (nothing is removed); they group under the same per-zone
+    device so each zone reads as a set of entities rather than one attribute bag.
+    """
+    registered = hass.data[const.DOMAIN].setdefault("zone_child_sensors", {})
+    if config["id"] in registered:
+        return
+    base = const.DOMAIN + "_" + slugify(config["name"])
+    zid = config[const.ZONE_ID]
+    zname = config[const.ZONE_NAME]
+    # (entity_id suffix / translation_key, store data key)
+    specs = [
+        ("bucket", const.ZONE_BUCKET),
+        ("et_value", const.ZONE_DELTA),
+        ("et_deficiency", const.ZONE_ET_DEFICIENCY),
+        ("current_drainage", const.ZONE_CURRENT_DRAINAGE),
+    ]
+    children = [
+        SmartIrrigationZoneChildSensor(
+            hass, f"{PLATFORM}.{base}_{suffix}", zid, zname, suffix, data_key
+        )
+        for suffix, data_key in specs
+    ]
+    # Two non-depth sensors: last irrigation (timestamp) and water used (litres).
+    children.append(
+        SmartIrrigationZoneLastIrrigationSensor(
+            hass,
+            f"{PLATFORM}.{base}_last_irrigation",
+            zid,
+            zname,
+            "last_irrigation",
+            const.ZONE_LAST_IRRIGATION,
+        )
+    )
+    children.append(
+        SmartIrrigationZoneWaterUsedSensor(
+            hass,
+            f"{PLATFORM}.{base}_water_used",
+            zid,
+            zname,
+            "water_used",
+            const.ZONE_WATER_USED,
+        )
+    )
+    registered[config["id"]] = children
+    async_add_devices(children)
 
 
 def check_zone_entity_in_hass_data(hass: HomeAssistant | None, entity_id: str) -> bool:
@@ -99,7 +157,10 @@ def check_zone_entity_in_hass_data(hass: HomeAssistant | None, entity_id: str) -
 
 
 class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
-    """Sensor entity representing a Smart Irrigation zone."""
+    """Sensor entity representing a Smart Irrigation zone (its watering duration)."""
+
+    _attr_has_entity_name = True
+    _attr_translation_key = "duration"
 
     def __init__(
         self,
@@ -112,6 +173,7 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
         state: str,
         duration: int,
         bucket: float,
+        et_deficiency: float,
         last_updated: str,
         last_calculated: str,
         number_of_data_points: int,
@@ -148,6 +210,7 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
         self._state = state
         self._duration = duration
         self._bucket = bucket
+        self._et_deficiency = et_deficiency
         self._last_updated = last_updated
         self._last_calculated = last_calculated
         self._number_of_data_points = number_of_data_points
@@ -212,6 +275,7 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
             self._state = zone["state"]
             self._duration = zone["duration"]
             self._bucket = zone["bucket"]
+            self._et_deficiency = zone.get("et_deficiency", 0)
             self._last_updated = zone["last_updated"]
             self._last_calculated = zone["last_calculated"]
             self._number_of_data_points = zone["number_of_data_points"]
@@ -243,48 +307,24 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
 
     @property
     def device_info(self) -> dict:
-        """Return info for device registry."""
-        # Use a safe approach to get coordinator ID without blocking
-        coordinator_id = "smart_irrigation"  # Default fallback
-
-        # Only access hass.data if we're certain it's available and won't block
-        if (
-            hasattr(self, "hass")
-            and self.hass is not None
-            and hasattr(self.hass, "data")
-            and const.DOMAIN in self.hass.data
-        ):
-            try:
-                coordinator = self.hass.data[const.DOMAIN].get("coordinator")
-                if coordinator and hasattr(coordinator, "id"):
-                    coordinator_id = coordinator.id
-            except (KeyError, AttributeError, RuntimeError):
-                # Fall back to default if anything goes wrong
-                pass
-
-        return {
-            "identifiers": {(const.DOMAIN, coordinator_id)},
-            "name": const.NAME,
-            "model": const.NAME,
-            "sw_version": const.VERSION,
-            "manufacturer": const.MANUFACTURER,
-        }
+        """Return per-zone device info (grouped under the hub via via_device)."""
+        return zone_device_info(self._hass, self._id, self._name)
 
     @property
     def unique_id(self):
-        """Return a unique ID to use for this entity."""
+        """Return a unique ID to use for this entity.
 
-        return f"{self.entity_id}"
+        Migrated from the legacy entity-id-based id to the per-zone scheme
+        ``smart_irrigation_<zone_id>_duration``. The one-time registry migration
+        in __init__ rewrites existing installs so the entity_id and recorded
+        history carry over.
+        """
+        return f"{const.DOMAIN}_{self._id}_duration"
 
     @property
     def icon(self):
         """Return icon."""
         return const.SENSOR_ICON
-
-    @property
-    def name(self):
-        """Return the friendly name to use for this entity."""
-        return self._name
 
     @property
     def should_poll(self) -> bool:
@@ -333,22 +373,39 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
                 self._last_calculated
             )
 
+        ha_metric = self._hass.config.units is METRIC_SYSTEM
+        depth_unit = const.UNIT_MM if ha_metric else const.UNIT_INCH
+        area_unit = const.UNIT_M2 if ha_metric else const.UNIT_SQ_FT
+        flow_unit = const.UNIT_LPM if ha_metric else const.UNIT_GPM
+
         return {
             "id": self._id,
             "size": self._size,
+            "size_unit": area_unit,
             "throughput": self._throughput,
+            "throughput_unit": flow_unit,
             "drainage_rate": self._drainage_rate,
+            "drainage_rate_unit": f"{depth_unit}/h",
             "current_drainage": self._current_drainage,
+            "current_drainage_unit": depth_unit,
             "maximum_bucket": self._maximum_bucket,
+            "maximum_bucket_unit": depth_unit,
             "multiplier": self._multiplier,
             "lead_time": self._lead_time,
             "maximum_duration": self._maximum_duration,
             "state": self._state,
             "bucket": self._bucket,
+            "bucket_unit": depth_unit,
             "last_updated": self._last_updated_formatted,
             "last_calculated": self._last_calculated_formatted,
             "number_of_data_points": self._number_of_data_points,
+            # et_value: ET deficiency actually applied to the bucket this run
+            # (et0 * hour_multiplier + precipitation). et_deficiency: the raw
+            # per-day ET deficiency, independent of interval and bucket resets.
             "et_value": self._delta,
+            "et_value_unit": depth_unit,
+            "et_deficiency": self._et_deficiency,
+            "et_deficiency_unit": depth_unit,
             # asyncio.run_coroutine_threadsafe(
             #    localize("common.attributes.size", "en"), self._hass.loop
             # ).result(): self._size,
@@ -391,3 +448,142 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
         """Handle removal of the entity from Home Assistant."""
         await super().async_will_remove_from_hass()
         _LOGGER.debug("%s is removed from hass", self.entity_id)
+
+
+class SmartIrrigationZoneChildSensor(SensorEntity):
+    """Read-only per-zone sensor exposing one stored value (depth, in mm/inch).
+
+    Reads its value from the zone store and refreshes on the config-updated
+    dispatcher, mirroring the duration sensor. Grouped under the per-zone device.
+    """
+
+    _attr_has_entity_name = True
+    _attr_should_poll = False
+    _attr_state_class = SensorStateClass.MEASUREMENT
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        entity_id: str,
+        zone_id: int,
+        zone_name: str,
+        suffix: str,
+        data_key: str,
+    ) -> None:
+        """Initialize a child value sensor for a zone."""
+        self._hass = hass
+        self.entity_id = entity_id
+        self._zone_id = zone_id
+        self._zone_name = zone_name
+        self._suffix = suffix
+        self._data_key = data_key
+        self._attr_translation_key = suffix
+        self._value = self._read_value()
+
+        async_dispatcher_connect(
+            hass, const.DOMAIN + "_config_updated", self._async_zone_updated
+        )
+
+    def _read_value(self):
+        """Read the current value for this sensor from the zone store."""
+        try:
+            zone = self._hass.data[const.DOMAIN]["coordinator"].store.get_zone(
+                self._zone_id
+            )
+        except (KeyError, AttributeError, TypeError):
+            return None
+        return zone.get(self._data_key) if zone else None
+
+    @callback
+    def _async_zone_updated(self, zone_id=None):
+        """Refresh the value (and zone name) when the zone config changes."""
+        if zone_id != self._zone_id or not (self.hass and self.hass.data):
+            return
+        self._value = self._read_value()
+        zone = self._hass.data[const.DOMAIN]["coordinator"].store.get_zone(
+            self._zone_id
+        )
+        if zone:
+            self._zone_name = zone.get(const.ZONE_NAME, self._zone_name)
+        self.async_schedule_update_ha_state()
+
+    @property
+    def unique_id(self) -> str:
+        """Return a stable per-zone unique ID."""
+        return f"{const.DOMAIN}_{self._zone_id}_{self._suffix}"
+
+    @property
+    def should_poll(self) -> bool:
+        """No polling; updated via dispatcher."""
+        return False
+
+    @property
+    def native_value(self):
+        """Return the stored value, rounded for display."""
+        return (
+            round(self._value, 2)
+            if isinstance(self._value, (int, float))
+            else self._value
+        )
+
+    @property
+    def native_unit_of_measurement(self):
+        """Depth unit following the Home Assistant unit system."""
+        ha_metric = self._hass.config.units is METRIC_SYSTEM
+        return const.UNIT_MM if ha_metric else const.UNIT_INCH
+
+    @property
+    def device_info(self) -> dict:
+        """Group under the per-zone device (same as the duration sensor)."""
+        return zone_device_info(self._hass, self._zone_id, self._zone_name)
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        """Return zone identification attributes."""
+        return {"zone_id": self._zone_id}
+
+    async def async_added_to_hass(self):
+        """Force an initial state once added."""
+        await super().async_added_to_hass()
+        self.async_schedule_update_ha_state(force_refresh=True)
+
+
+class SmartIrrigationZoneLastIrrigationSensor(SmartIrrigationZoneChildSensor):
+    """Timestamp of this zone's last credited irrigation run."""
+
+    _attr_state_class = None
+    _attr_device_class = SensorDeviceClass.TIMESTAMP
+    _attr_icon = "mdi:history"
+
+    @property
+    def native_value(self):
+        """Return the run time as an aware datetime (parse if stored as text)."""
+        val = self._value
+        if not val:
+            return None
+        if isinstance(val, str):
+            return dt_util.parse_datetime(val)
+        return val
+
+    @property
+    def native_unit_of_measurement(self):
+        """A timestamp has no unit."""
+        return None
+
+
+class SmartIrrigationZoneWaterUsedSensor(SmartIrrigationZoneChildSensor):
+    """Cumulative water delivered to this zone (litres)."""
+
+    _attr_device_class = SensorDeviceClass.WATER
+    _attr_state_class = SensorStateClass.TOTAL_INCREASING
+    _attr_icon = "mdi:water"
+
+    @property
+    def native_value(self):
+        """Return the cumulative litres."""
+        return round(self._value, 1) if isinstance(self._value, (int, float)) else None
+
+    @property
+    def native_unit_of_measurement(self):
+        """Litres (the unit the run crediting works in)."""
+        return UnitOfVolume.LITERS

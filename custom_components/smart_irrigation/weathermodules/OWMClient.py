@@ -293,27 +293,15 @@ class OWMClient:  # pylint: disable=invalid-name
                     # parsed_data[MAPPING_MAX_TEMP] = data[OWM_temp_key_name]
                     # parsed_data[MAPPING_MIN_TEMP] = data[OWM_temp_key_name]
 
-                    # add precip from daily
-                    dailydata = doc["daily"][0]
-                    if dailydata is not None:
-                        # if rain or snow are missing from the OWM data set them to 0
-                        rain = 0.0
-                        snow = 0.0
-                        if "rain" in dailydata:
-                            rain = float(dailydata["rain"])
-                        if "snow" in dailydata:
-                            snow = float(dailydata["snow"])
-                        parsed_data[MAPPING_PRECIPITATION] = rain + snow
-                        _LOGGER.debug("OWMCLIENT daily rain: %s", rain)
-
-                        # get max temp and min temp and store
-                        # removing this as part of beta12. Temperature is the only thing we want to take and we will apply min and max aggregation on our own.
-                        # parsed_data[MAPPING_MIN_TEMP] = dailydata[OWM_temp_key_name]["min"]
-                        # parsed_data[MAPPING_MAX_TEMP] = dailydata[OWM_temp_key_name]["max"]
-                    else:
-                        parsed_data[MAPPING_PRECIPITATION] = 0.0
+                    # Use actual measured rain (rain.1h + snow.1h from the current
+                    # observation) instead of daily[0].rain (forecast total). Crediting
+                    # forecast rain before it falls causes bucket jumps that swing back
+                    # when the forecast changes or doesn't materialise (issue #694).
+                    parsed_data[MAPPING_PRECIPITATION] = parsed_data.get(
+                        MAPPING_CURRENT_PRECIPITATION, 0.0
+                    )
                     _LOGGER.debug(
-                        "OWMCLIENT daily precipitation: %s",
+                        "OWMCLIENT actual precipitation (rain.1h + snow.1h): %s",
                         parsed_data[MAPPING_PRECIPITATION],
                     )
 

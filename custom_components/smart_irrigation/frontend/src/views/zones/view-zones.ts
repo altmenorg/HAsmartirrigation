@@ -54,7 +54,9 @@ import {
   ZONE_BUCKET,
   ZONE_DRAINAGE_RATE,
   ZONE_DURATION,
+  ZONE_FLOW_SENSOR,
   ZONE_LEAD_TIME,
+  ZONE_LINKED_ENTITY,
   ZONE_MAPPING,
   ZONE_MAXIMUM_BUCKET,
   ZONE_MAXIMUM_DURATION,
@@ -307,6 +309,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       bucket: 0,
       module: undefined,
       delta: 0,
+      et_deficiency: 0,
       explanation: "",
       multiplier: 1,
       mapping: undefined,
@@ -985,6 +988,44 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                   0.1,
                 )}
                 ${this._numRow(
+                  localize("panels.zones.labels.et-deficiency", lang),
+                  output_unit(this.config, ZONE_BUCKET),
+                  zone.et_deficiency != null
+                    ? Number(zone.et_deficiency).toFixed(2)
+                    : "",
+                  () => {},
+                  0.01,
+                  true,
+                )}
+                ${this.config?.observed_watering_enabled
+                  ? this._entityRow(
+                      localize("panels.zones.labels.linked-entity", lang),
+                      localize("panels.zones.labels.optional", lang),
+                      zone.linked_entity,
+                      ["switch", "valve", "input_boolean", "binary_sensor"],
+                      (v) =>
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_LINKED_ENTITY]: v || undefined,
+                        }),
+                      localize("panels.zones.labels.linked-entity-hint", lang),
+                    )
+                  : ""}
+                ${this.config?.observed_watering_enabled && zone.linked_entity
+                  ? this._entityRow(
+                      localize("panels.zones.labels.flow-sensor", lang),
+                      localize("panels.zones.labels.optional", lang),
+                      zone.flow_sensor,
+                      ["sensor"],
+                      (v) =>
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_FLOW_SENSOR]: v || undefined,
+                        }),
+                      localize("panels.zones.labels.flow-sensor-hint", lang),
+                    )
+                  : ""}
+                ${this._numRow(
                   localize("panels.zones.labels.lead-time", lang),
                   "s",
                   zone.lead_time,
@@ -1199,6 +1240,32 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
             <path d=${mdiMenuDown}></path>
           </svg>
         </div>
+      </div>
+    `;
+  }
+
+  private _entityRow(
+    label: string,
+    unit: string,
+    value: string | undefined,
+    includeDomains: string[],
+    onCommit: (v: string) => void,
+    hint?: string,
+  ): TemplateResult {
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">
+          ${label}${unit ? html` <span class="unit">(${unit})</span>` : ""}
+          ${hint ? html`<div class="setting-hint">${hint}</div>` : ""}
+        </div>
+        <ha-entity-picker
+          class="entity-field"
+          .hass=${this.hass}
+          .value=${value || ""}
+          .includeDomains=${includeDomains}
+          allow-custom-entity
+          @value-changed=${(e: CustomEvent) => onCommit(e.detail?.value || "")}
+        ></ha-entity-picker>
       </div>
     `;
   }
@@ -1541,6 +1608,20 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       }
       /* one unified field style for BOTH inputs and selects, themed with the
          same MDC variables HA's own ha-textfield/ha-select use (native feel) */
+      .setting-hint {
+        font-size: 0.8rem;
+        font-weight: normal;
+        color: var(--secondary-text-color);
+        margin-top: 2px;
+        max-width: 460px;
+      }
+      /* HA entity picker: sized like the other controls, but it brings its own
+         input chrome, so it must NOT get the .field text-input background. */
+      .entity-field {
+        flex: 0 0 auto;
+        width: 360px;
+        max-width: 100%;
+      }
       .field {
         flex: 0 0 auto;
         width: 360px;

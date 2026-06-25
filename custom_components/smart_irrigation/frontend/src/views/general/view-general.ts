@@ -443,13 +443,16 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // Days Between Irrigation Card
       const r8 = this.renderDaysBetweenIrrigationCard();
 
+      // Observed Watering (closed-loop bucket) Card
+      const r9 = this.renderObservedWateringCard();
+
       const r = html`<ha-card
           header="${localize("panels.general.title", this.hass.language)}"
         >
           <div class="card-content">
             ${localize("panels.general.description", this.hass.language)}
           </div> </ha-card
-        >${r2}${r1}${r3}${r4}${r5}${r6}${r7}${r8}`;
+        >${r2}${r1}${r3}${r4}${r5}${r6}${r7}${r8}${r9}`;
 
       return r;
     }
@@ -483,6 +486,51 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             "irrigation_start_triggers.usage_after",
             this.hass.language,
           )}
+        </div>
+
+        <div class="card-content">
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize(
+                "irrigation_start_triggers.active_label",
+                this.hass.language,
+              )}
+            </div>
+            <select
+              class="field"
+              @change=${(e: Event) =>
+                this.handleConfigChange({
+                  active_start_trigger: (e.target as HTMLSelectElement).value,
+                })}
+            >
+              <option
+                value="default"
+                ?selected=${(this.config.active_start_trigger || "default") ===
+                "default"}
+              >
+                ${localize(
+                  "irrigation_start_triggers.active_default",
+                  this.hass.language,
+                )}
+              </option>
+              ${triggers.map(
+                (t) => html`
+                  <option
+                    value="${t.name}"
+                    ?selected=${this.config!.active_start_trigger === t.name}
+                  >
+                    ${t.name}
+                  </option>
+                `,
+              )}
+            </select>
+          </div>
+          <div class="trigger-active-hint">
+            ${localize(
+              "irrigation_start_triggers.active_hint",
+              this.hass.language,
+            )}
+          </div>
         </div>
 
         <div class="card-content">
@@ -750,6 +798,85 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   }),
                 0.1,
               )
+            : ""}
+        </div>
+      </ha-card>
+    `;
+  }
+
+  renderObservedWateringCard() {
+    if (!this.config || !this.data || !this.hass) return html``;
+    const lang = this.hass.language;
+
+    return html`
+      <ha-card header="${localize("observed_watering.title", lang)}">
+        <div class="card-content">
+          ${localize("observed_watering.description", lang)}
+        </div>
+        <div class="card-content">
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize("observed_watering.enabled_label", lang)}
+            </div>
+            <ha-switch
+              .checked=${this.config.observed_watering_enabled}
+              @change=${(e: Event) =>
+                this.handleConfigChange({
+                  observed_watering_enabled: (e.target as any).checked,
+                })}
+            ></ha-switch>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize("observed_watering.direct_control_label", lang)}
+            </div>
+            <ha-switch
+              .checked=${this.config.direct_valve_control_enabled}
+              @change=${(e: Event) =>
+                this.handleConfigChange({
+                  direct_valve_control_enabled: (e.target as any).checked,
+                })}
+            ></ha-switch>
+          </div>
+
+          ${this.config.direct_valve_control_enabled
+            ? html`
+                <div class="card-content">
+                  ${localize(
+                    "observed_watering.direct_control_description",
+                    lang,
+                  )}
+                </div>
+                <div class="setting-row">
+                  <div class="setting-label">
+                    ${localize("observed_watering.sequencing_label", lang)}
+                  </div>
+                  <select
+                    class="field"
+                    @change=${(e: Event) =>
+                      this.handleConfigChange({
+                        zone_sequencing: (e.target as HTMLSelectElement).value,
+                      })}
+                  >
+                    <option
+                      value="sequential"
+                      ?selected=${this.config.zone_sequencing === "sequential"}
+                    >
+                      ${localize(
+                        "observed_watering.sequencing.sequential",
+                        lang,
+                      )}
+                    </option>
+                    <option
+                      value="parallel"
+                      ?selected=${this.config.zone_sequencing === "parallel"}
+                    >
+                      ${localize("observed_watering.sequencing.parallel", lang)}
+                    </option>
+                  </select>
+                </div>
+              `
             : ""}
         </div>
       </ha-card>
@@ -1161,6 +1288,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         color: var(--secondary-text-color);
         font-size: 0.9em;
         line-height: 1.5;
+      }
+      .trigger-active-hint {
+        color: var(--secondary-text-color);
+        font-size: 0.85em;
+        line-height: 1.4;
+        margin-top: 6px;
       }
       .trigger-usage code {
         font-family: var(--ha-font-family-code, monospace);
