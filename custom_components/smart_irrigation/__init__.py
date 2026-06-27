@@ -413,6 +413,7 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         self._track_irrigation_triggers_unsub = []  # List to track multiple triggers
         self._track_midnight_time_unsub = None
         self._debounced_update_cancel = {}  # mapping_id -> cancel callback
+        self._register_start_event_task = None
         # set up auto calc time and auto update time from data
         the_config = self.store.get_config()
         the_config[const.CONF_USE_WEATHER_SERVICE] = self.use_weather_service
@@ -455,7 +456,9 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         # set up sunrise tracking
         _LOGGER.debug("calling register start event from init")
         # Fire-and-forget: register start event tracking in background
-        asyncio.create_task(self.register_start_event())
+        self._register_start_event_task = asyncio.create_task(
+            self.register_start_event()
+        )
 
         # set up midnight tracking
         self._track_midnight_time_unsub = async_track_time_change(
@@ -3165,7 +3168,40 @@ class SmartIrrigationCoordinator(DataUpdateCoordinator):
         # state on unload. Registry entries are preserved so user customizations
         # (friendly names, areas) survive disable/re-enable cycles and entity_id
         # collisions (_2, _3 suffixes) no longer happen on re-enable. See #506.
-        self.hass.data[const.DOMAIN]["zones"].clear()
+        zones = self.hass.data.get(const.DOMAIN, {}).get("zones")
+        if zones is not None:
+            zones.clear()
+
+        if self._register_start_event_task:
+            self._register_start_event_task.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await self._register_start_event_task
+            self._register_start_event_task = None
+
+        if self.recurring_schedule_manager:
+            await self.recurring_schedule_manager.async_unload()
+
+        for unsubscribe_attr in (
+            "_track_auto_calc_time_unsub",
+            "_track_auto_update_time_unsub",
+            "_track_auto_clear_time_unsub",
+            "_track_sunrise_event_unsub",
+            "_track_midnight_time_unsub",
+        ):
+            unsubscribe = getattr(self, unsubscribe_attr, None)
+            if unsubscribe:
+                unsubscribe()
+                setattr(self, unsubscribe_attr, None)
+
+        while self._track_irrigation_triggers_unsub:
+            self._track_irrigation_triggers_unsub.pop()()
+
+        while self._sensor_subscriptions:
+            self._sensor_subscriptions.pop()()
+
+        for cancel_update in self._debounced_update_cancel.values():
+            cancel_update()
+        self._debounced_update_cancel.clear()
 
         # remove subscriptions for coordinator
         while self._subscriptions:

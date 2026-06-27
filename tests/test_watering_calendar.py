@@ -139,7 +139,9 @@ async def coordinator(hass, mock_store):
     coord = SmartIrrigationCoordinator(hass, None, entry, mock_store)
     coord.store = mock_store
 
-    return coord
+    yield coord
+
+    await coord.async_unload()
 
 
 class TestWateringCalendar:

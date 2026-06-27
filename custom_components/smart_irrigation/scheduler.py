@@ -341,6 +341,13 @@ class RecurringScheduleManager:
         """Get all schedules."""
         return self._schedules.copy()
 
+    async def async_unload(self) -> None:
+        """Unload schedule trackers."""
+        for tracker in self._schedule_trackers.values():
+            if tracker:
+                tracker()
+        self._schedule_trackers.clear()
+
 
 class SeasonalAdjustmentManager:
     """Manages seasonal adjustments for Smart Irrigation."""
