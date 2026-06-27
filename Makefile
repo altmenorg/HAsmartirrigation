@@ -37,9 +37,9 @@ install-dev:
 	./.venv/bin/pip install --upgrade pip
 	./.venv/bin/pip install -r requirements-dev.txt
 
-# Run all tests (exclude integration tests which have fixtures)
+# Run the same test set as GitHub Actions
 test:
-	./.venv/bin/python -m pytest tests/ -v --ignore=tests/integration/
+	./.venv/bin/python -m pytest
 
 # Code formatting (matches CI requirements)
 format: install-dev
