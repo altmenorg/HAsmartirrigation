@@ -45,6 +45,7 @@ Direct valve control fires events you can use to notify or react, so you do not 
 
 Example: a single end-of-watering report for all zones.
 
+{% raw %}
 ```yaml
 alias: Watering report
 triggers:
@@ -68,6 +69,7 @@ actions:
         {{ l.t | join("\n") }}
 mode: single
 ```
+{% endraw %}
 
 > If you previously had one automation per zone that opened the valve and called `reset_bucket`, remove them once direct valve control is on: Smart Irrigation now opens the valves and credits the bucket itself, so the old automations would double up. Keep only report/notification automations like the one above.
 
