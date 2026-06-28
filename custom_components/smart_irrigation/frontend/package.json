@@ -23,7 +23,7 @@
   "dependencies": {
     "@mdi/js": "^7.4.47",
     "custom-card-helpers": "^1.9.0",
-    "intl-messageformat": "^10.7.3",
+    "intl-messageformat": "^11.2.9",
     "lit": "^2.7.6",
     "moment": "^2.29.4"
   },
