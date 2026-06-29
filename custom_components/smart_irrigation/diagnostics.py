@@ -26,16 +26,19 @@ async def async_get_config_entry_diagnostics(
     diagnostics: dict[str, Any] = {
         key: value for key, value in data.items() if key not in ("coordinator", "zones")
     }
-    if coordinator is not None and coordinator.store is not None:
+    if coordinator is not None:
         store = coordinator.store
-        diagnostics["store"] = {
-            "config": await store.async_get_config(),
-            "mappings": store.get_mappings(),
-            "modules": store.get_modules(),
-            "zones": store.get_zones(),
-        }
+        if store is not None:
+            diagnostics["store"] = {
+                "config": await store.async_get_config(),
+                "mappings": store.get_mappings(),
+                "modules": store.get_modules(),
+                "zones": store.get_zones(),
+            }
+        else:
+            _LOGGER.warning("Store is not available")
     else:
-        _LOGGER.warning("Coordinator or store is not available for diagnostics")
+        _LOGGER.warning("Coordinator is not available")
     if const.CONF_WEATHER_SERVICE_API_KEY in diagnostics:
         diagnostics[const.CONF_WEATHER_SERVICE_API_KEY] = "[redacted]"
     return diagnostics
