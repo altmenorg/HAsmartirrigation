@@ -1,7 +1,7 @@
 {
   "domain": "smart_irrigation",
   "name": "Smart Irrigation",
-  "codeowners": ["@jeroenterheerdt", "@altmenorg"],
+  "codeowners": ["@altmenorg", "@jeroenterheerdt"],
   "config_flow": true,
   "dependencies": ["http", "panel_custom"],
   "documentation": "https://altmenorg.github.io/HAsmartirrigation/",

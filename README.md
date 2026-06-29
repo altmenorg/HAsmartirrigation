@@ -1,4 +1,4 @@
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=flat-square)](https://github.com/hacs/integration)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-blue.svg?style=flat-square)](https://github.com/hacs/integration)
 [![release][release-badge]][release-url]
 
 [release-url]: https://github.com/altmenorg/HAsmartirrigation/releases
@@ -7,7 +7,7 @@
 # Smart Irrigation
 
 <p align="center">
-  <img src="logo.png?raw=true" alt="Smart Irrigation" width="720">
+  <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/logo.png" alt="Smart Irrigation" width="720">
 </p>
 
 > **Smart Irrigation** was created by
@@ -31,13 +31,13 @@ Multiple zones are supported, each zone having its own configuration and set up.
 - 🛠️ **Actively maintained** — steady fixes, refinements and new features.
 
 <p align="center">
-  <img src="images/panel-zones.png?raw=true" alt="Smart Irrigation — Zones panel (Home Assistant-native UI)" width="860">
+  <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/images/panel-zones.png" alt="Smart Irrigation — Zones panel (Home Assistant-native UI)" width="860">
   <br><em>The HA-native configuration panel — instant-save editing, native controls, everything in one place.</em>
 </p>
 
 <p align="center">
-  <img src="images/panel-sensor-groups.png?raw=true" alt="Sensor groups configuration" width="420">
-  <img src="images/panel-backup-restore.png?raw=true" alt="Backup / restore" width="420">
+  <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/images/panel-sensor-groups.png" alt="Sensor groups configuration" width="420">
+  <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/images/panel-backup-restore.png" alt="Backup / restore" width="420">
 </p>
 
 ## Installation
