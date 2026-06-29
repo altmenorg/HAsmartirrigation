@@ -3426,7 +3426,7 @@ t.version="2.30.1",i(Gt),t.fn=or,t.min=Jt,t.max=Qt,t.now=Xt,t.utc=m,t.unix=lr,t.
             .narrow=${this.narrow}
           ></ha-menu-button>
           <div class="main-title">${Bo("title",this.hass.language)}</div>
-          <div class="version">${"v2026.7.0-beta1"}</div>
+          <div class="version">${"v2026.7.0-beta2"}</div>
         </div>
 
         ${a&&t?q`
