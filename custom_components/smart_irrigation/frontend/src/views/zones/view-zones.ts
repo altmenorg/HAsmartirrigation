@@ -616,17 +616,20 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                         >${moment(record.timestamp).format("MM-DD HH:mm")}</span
                       >
                       <span
-                        >${record.temperature
+                        >${record.temperature !== null &&
+                        record.temperature !== undefined
                           ? record.temperature.toFixed(1) + "°C"
                           : "-"}</span
                       >
                       <span
-                        >${record.humidity
+                        >${record.humidity !== null &&
+                        record.humidity !== undefined
                           ? record.humidity.toFixed(1) + "%"
                           : "-"}</span
                       >
                       <span
-                        >${record.precipitation
+                        >${record.precipitation !== null &&
+                        record.precipitation !== undefined
                           ? record.precipitation.toFixed(1) + "mm"
                           : "-"}</span
                       >
@@ -680,22 +683,26 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       "-"}</span
                     >
                     <span
-                      >${estimate.estimated_et_mm
+                      >${estimate.estimated_et_mm !== null &&
+                      estimate.estimated_et_mm !== undefined
                         ? estimate.estimated_et_mm.toFixed(1)
                         : "-"}</span
                     >
                     <span
-                      >${estimate.average_precipitation_mm
+                      >${estimate.average_precipitation_mm !== null &&
+                      estimate.average_precipitation_mm !== undefined
                         ? estimate.average_precipitation_mm.toFixed(1)
                         : "-"}</span
                     >
                     <span
-                      >${estimate.estimated_watering_volume_liters
+                      >${estimate.estimated_watering_volume_liters !== null &&
+                      estimate.estimated_watering_volume_liters !== undefined
                         ? estimate.estimated_watering_volume_liters.toFixed(0)
                         : "-"}</span
                     >
                     <span
-                      >${estimate.average_temperature_c
+                      >${estimate.average_temperature_c !== null &&
+                      estimate.average_temperature_c !== undefined
                         ? estimate.average_temperature_c.toFixed(1)
                         : "-"}</span
                     >

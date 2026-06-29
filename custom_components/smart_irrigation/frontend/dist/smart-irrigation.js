@@ -1665,13 +1665,13 @@ t.version="2.30.1",i(Gt),t.fn=or,t.min=Jt,t.max=Qt,t.now=Xt,t.utc=m,t.unix=lr,t.
                         >${yl(e.timestamp).format("MM-DD HH:mm")}</span
                       >
                       <span
-                        >${e.temperature?e.temperature.toFixed(1)+"°C":"-"}</span
+                        >${null!==e.temperature&&void 0!==e.temperature?e.temperature.toFixed(1)+"°C":"-"}</span
                       >
                       <span
-                        >${e.humidity?e.humidity.toFixed(1)+"%":"-"}</span
+                        >${null!==e.humidity&&void 0!==e.humidity?e.humidity.toFixed(1)+"%":"-"}</span
                       >
                       <span
-                        >${e.precipitation?e.precipitation.toFixed(1)+"mm":"-"}</span
+                        >${null!==e.precipitation&&void 0!==e.precipitation?e.precipitation.toFixed(1)+"mm":"-"}</span
                       >
                       <span
                         >${e.retrieval_time?yl(e.retrieval_time).format("MM-DD HH:mm"):"-"}</span
@@ -1701,16 +1701,16 @@ t.version="2.30.1",i(Gt),t.fn=or,t.min=Jt,t.max=Qt,t.now=Xt,t.utc=m,t.unix=lr,t.
                       >${e.month_name||`Month ${e.month}`||"-"}</span
                     >
                     <span
-                      >${e.estimated_et_mm?e.estimated_et_mm.toFixed(1):"-"}</span
+                      >${null!==e.estimated_et_mm&&void 0!==e.estimated_et_mm?e.estimated_et_mm.toFixed(1):"-"}</span
                     >
                     <span
-                      >${e.average_precipitation_mm?e.average_precipitation_mm.toFixed(1):"-"}</span
+                      >${null!==e.average_precipitation_mm&&void 0!==e.average_precipitation_mm?e.average_precipitation_mm.toFixed(1):"-"}</span
                     >
                     <span
-                      >${e.estimated_watering_volume_liters?e.estimated_watering_volume_liters.toFixed(0):"-"}</span
+                      >${null!==e.estimated_watering_volume_liters&&void 0!==e.estimated_watering_volume_liters?e.estimated_watering_volume_liters.toFixed(0):"-"}</span
                     >
                     <span
-                      >${e.average_temperature_c?e.average_temperature_c.toFixed(1):"-"}</span
+                      >${null!==e.average_temperature_c&&void 0!==e.average_temperature_c?e.average_temperature_c.toFixed(1):"-"}</span
                     >
                   </div>
                 `))}
