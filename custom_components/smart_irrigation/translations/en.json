@@ -26,6 +26,9 @@
     "number": {
       "multiplier": {
         "name": "Multiplier"
+      },
+      "precipitation_threshold": {
+        "name": "Precipitation threshold"
       }
     },
     "button": {
@@ -60,6 +63,11 @@
       },
       "problem": {
         "name": "Problem"
+      }
+    },
+    "switch": {
+      "skip_on_precipitation": {
+        "name": "Skip on precipitation"
       }
     }
   },
