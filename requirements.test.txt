@@ -9,7 +9,7 @@ aiofiles
 # Home Assistant and testing framework
 homeassistant>=2023.1.0
 pytest>=7.0.0
-pytest-homeassistant-custom-component>=0.13.0
+pytest-homeassistant-custom-component>=0.13.342
 pytest-asyncio>=0.21.0
 pytest-aiohttp>=1.0.0
 pytest-cov>=4.0.0
