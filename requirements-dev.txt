@@ -9,7 +9,7 @@
 
 # Additional dependencies for test scripts and development
 requests>=2.25.0
-python-dotenv>=0.19.0
+python-dotenv>=1.2.2
 
 # Home Assistant development (useful for local testing)
 homeassistant>=2023.1.0
