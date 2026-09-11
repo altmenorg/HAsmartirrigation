@@ -421,6 +421,10 @@ MAPPING_CURRENT_PRECIPITATION = "Current Precipitation"
 # How many samples of the precipitation rate went into an aggregate. Each one
 # reports the last hour, so it also says how many hours were actually observed.
 MAPPING_CURRENT_PRECIPITATION_SAMPLES = "current_precipitation_samples"
+# Rain that fell over the calculation interval according to the weather
+# service's hourly history, in mm. Only Open-Meteo keeps one. It is a depth, so
+# it takes the place of integrating the sampled rate (#835).
+MAPPING_WEATHER_SERVICE_RAIN = "weather_service_rain"
 MAPPING_PRESSURE = "Pressure"
 MAPPING_SOLRAD = "Solar Radiation"
 MAPPING_TEMPERATURE = "Temperature"

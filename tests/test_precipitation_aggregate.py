@@ -20,10 +20,15 @@ from custom_components.smart_irrigation.weathermodules.OpenMeteoClient import (
 
 
 def test_open_meteo_reports_a_rate_and_not_the_daily_total():
-    """The daily total is a forecast for the rest of the day; the rate is measured."""
+    """The daily total is a forecast for the rest of the day; the rate is measured.
+
+    ``current.precipitation`` is the amount over the last 15 minutes, so 1.2 mm
+    of it is a rate of 4.8 mm/h (#835).
+    """
     client = OpenMeteoClient(api_key="", api_version="", latitude=51.5, longitude=5.5)
     doc = {
         "current": {
+            "interval": 900,
             "temperature_2m": 18.6,
             "relative_humidity_2m": 95,
             "dew_point_2m": 17.7,
@@ -38,7 +43,7 @@ def test_open_meteo_reports_a_rate_and_not_the_daily_total():
     with patch.object(OpenMeteoClient, "_get_doc", return_value=doc):
         parsed = client.get_data()
 
-    assert parsed[const.MAPPING_CURRENT_PRECIPITATION] == 1.2
+    assert parsed[const.MAPPING_CURRENT_PRECIPITATION] == pytest.approx(4.8)
     assert const.MAPPING_PRECIPITATION not in parsed
 
 

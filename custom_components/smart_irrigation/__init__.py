@@ -844,14 +844,19 @@ class SmartIrrigationCoordinator(
     def _warn_if_update_interval_undersamples_rain(self, data):
         """Warn when the update schedule cannot see all the rain.
 
-        The weather services report precipitation as the amount over the last
-        hour (Open-Meteo, OpenWeatherMap) or as an instantaneous rate (Pirate
-        Weather). Collecting that once every few hours leaves the hours in
-        between unobserved, so rain that fell in them is missed and rain that
-        fell in a sampled hour is stretched over the whole gap. Hourly or more
-        frequent collection is what the water balance expects.
+        OpenWeatherMap reports precipitation as the amount over the last hour and
+        Pirate Weather as an instantaneous rate. Collecting that once every few
+        hours leaves the hours in between unobserved, so rain that fell in them
+        is missed and rain that fell in a sampled hour is stretched over the
+        whole gap. Hourly or more frequent collection is what the water balance
+        expects.
+
+        Open-Meteo is exempt: its rain is read from the hourly history at
+        calculation time, which covers every hour whatever the schedule (#835).
         """
         if not self.use_weather_service or not data.get(const.CONF_AUTO_UPDATE_ENABLED):
+            return
+        if getattr(self, "weather_service", None) == const.CONF_WEATHER_SERVICE_OM:
             return
         schedule = data.get(const.CONF_AUTO_UPDATE_SCHEDULE)
         try:
