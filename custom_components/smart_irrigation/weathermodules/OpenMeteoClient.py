@@ -70,6 +70,29 @@ WIND_10M_TO_2M = 4.87 / math.log((67.8 * 10) - 5.42)
 # 1 W/m² sustained for a day = 86400 J/m² = 0.0864 MJ/m².
 WM2_TO_MJ_PER_DAY = 0.0864
 
+SECONDS_PER_HOUR = 3600
+# The "current" block is built from 15-minutely data, and its precipitation is
+# the amount over that interval. The response states the length in
+# current.interval (seconds); assume 15 minutes if it is ever missing.
+CURRENT_INTERVAL_SECONDS_DEFAULT = 900
+# The forecast endpoint keeps at most this many days of past hours.
+MAX_PAST_DAYS = 92
+# A calculation and the live estimate of every zone ask for the hourly
+# precipitation within moments of each other, so one fetch is reused this long.
+PRECIPITATION_CACHE_SECONDS = 600
+
+
+def current_precipitation_rate(current):
+    """Return the precipitation rate of an Open-Meteo "current" block, in mm/h.
+
+    ``precipitation`` there is the amount over the block's own interval, which
+    is 15 minutes, not an hour. Taken as an hourly amount it credited a quarter
+    of the rain (#835), so it is scaled to the hour.
+    """
+    amount = current.get("precipitation") or 0.0
+    interval = current.get("interval") or CURRENT_INTERVAL_SECONDS_DEFAULT
+    return float(amount) * SECONDS_PER_HOUR / float(interval)
+
 
 class OpenMeteoClient:  # pylint: disable=invalid-name
     """Open-Meteo Client.
@@ -102,6 +125,10 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
         self.override_cache = override_cache
         self._last_time_called = datetime.datetime(1900, 1, 1, 0, 0, 0)
         self._cached_doc = None
+        # Hourly precipitation history, see get_precipitation_between.
+        self._precipitation_series = None
+        self._precipitation_fetched_at = datetime.datetime(1900, 1, 1, 0, 0, 0)
+        self._precipitation_covers_from = math.inf
 
     def _params(self):
         params = {
@@ -121,6 +148,23 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
             params["elevation"] = self.elevation
         return params
 
+    def _request(self, params):
+        """GET the forecast endpoint, retrying; the decoded response or None."""
+        req = None
+        for _ in range(RETRY_TIMES):
+            req = requests.get(OpenMeteo_URL, params=params, timeout=60)
+            if req.status_code == 200:
+                break
+        if req is None or req.status_code != 200:
+            _LOGGER.error(
+                "Open-Meteo API returned error status code: %s",
+                None if req is None else req.status_code,
+            )
+            return None
+        doc = json.loads(req.text)
+        _LOGGER.debug("OpenMeteoClient called API %s and received %s", req.url, doc)
+        return doc
+
     def _get_doc(self):
         """Fetch (and cache) the combined current+hourly+daily response."""
         if (
@@ -132,19 +176,9 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
             _LOGGER.info("Returning cached Open-Meteo data")
             return self._cached_doc
 
-        req = None
-        for _ in range(RETRY_TIMES):
-            req = requests.get(OpenMeteo_URL, params=self._params(), timeout=60)
-            if req.status_code == 200:
-                break
-        if req is None or req.status_code != 200:
-            _LOGGER.error(
-                "Open-Meteo API returned error status code: %s",
-                None if req is None else req.status_code,
-            )
+        doc = self._request(self._params())
+        if doc is None:
             return None
-        doc = json.loads(req.text)
-        _LOGGER.debug("OpenMeteoClient called API %s and received %s", req.url, doc)
         self._cached_doc = doc
         self._last_time_called = datetime.datetime.now()
         return doc
@@ -167,8 +201,8 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
             parsed_data[MAPPING_PRESSURE] = cur["surface_pressure"]
             # wind is reported at 10 m; convert to 2 m for FAO-56
             parsed_data[MAPPING_WINDSPEED] = cur["wind_speed_10m"] * WIND_10M_TO_2M
-            # "current" precipitation = the most recent hourly bucket
-            parsed_data[MAPPING_CURRENT_PRECIPITATION] = cur.get("precipitation", 0.0)
+            # the precipitation of the last 15 minutes, as a rate in mm/h
+            parsed_data[MAPPING_CURRENT_PRECIPITATION] = current_precipitation_rate(cur)
             # instantaneous shortwave radiation (W/m²) converted to MJ/m²/day
             if cur.get("shortwave_radiation") is not None:
                 parsed_data[MAPPING_SOLRAD] = (
@@ -177,15 +211,91 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
             # Today's daily total is deliberately not reported here. It is a
             # forecast for the part of the day that has not happened yet, and
             # feeding it to the water balance credited rain before it fell
-            # (#787). Current Precipitation above is the measured rate, which is
-            # integrated over the calculation interval instead (#764). The daily
-            # total is still used where a forecast is what is wanted, in
-            # get_forecast_data and the precipitation-skip check.
+            # (#787). The water balance reads the hourly history instead (see
+            # get_precipitation_between), and falls back to integrating Current
+            # Precipitation above (#764). The daily total is still used where a
+            # forecast is what is wanted, in get_forecast_data and the
+            # precipitation-skip check.
             self._cached_doc = doc
             return parsed_data
         except (KeyError, requests.RequestException, json.JSONDecodeError) as ex:
             _LOGGER.warning("Error reading current data from Open-Meteo: %s", ex)
             return None
+
+    def get_precipitation_between(self, start, end):
+        """Return the rain that fell between two moments, in mm, or None.
+
+        Summed from Open-Meteo's hourly precipitation, where each value is the
+        rain of the hour ending at its timestamp. An hour is counted when it
+        ends after ``start`` and no later than ``end``, so consecutive windows
+        count every hour exactly once however often weather data is collected,
+        and the hour still under way at ``end`` is left to the next window.
+
+        ``start`` and ``end`` are datetimes; naive ones are local time. None
+        means the history could not be read, so the caller can fall back to
+        the sampled rate rather than credit no rain at all.
+        """
+        try:
+            start_ts = start.timestamp()
+            end_ts = end.timestamp()
+        except (AttributeError, TypeError, ValueError, OverflowError):
+            return None
+        if end_ts <= start_ts:
+            return 0.0
+        series = self._hourly_precipitation(start_ts)
+        if series is None:
+            return None
+        return float(
+            sum(amount for hour_end, amount in series if start_ts < hour_end <= end_ts)
+        )
+
+    def _hourly_precipitation(self, since_ts):
+        """Return (hour end as unix time, mm) pairs from ``since_ts`` on, or None."""
+        now = datetime.datetime.now()
+        if (
+            self._precipitation_series is not None
+            and now
+            < self._precipitation_fetched_at
+            + datetime.timedelta(seconds=PRECIPITATION_CACHE_SECONDS)
+            and self._precipitation_covers_from <= since_ts
+        ):
+            return self._precipitation_series
+
+        past_seconds = max(0.0, now.timestamp() - since_ts)
+        params = {
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "hourly": "precipitation",
+            "precipitation_unit": "mm",
+            # Unix timestamps in UTC, so the hours compare directly with the
+            # calculation's own moments whatever the site's time zone.
+            "timezone": "GMT",
+            "timeformat": "unixtime",
+            "past_days": min(MAX_PAST_DAYS, math.ceil(past_seconds / 86400) + 1),
+            "forecast_days": 1,
+        }
+        try:
+            doc = self._request(params)
+            if doc is None:
+                return None
+            hourly = doc["hourly"]
+            series = [
+                (float(hour_end), float(amount or 0.0))
+                for hour_end, amount in zip(
+                    hourly["time"], hourly["precipitation"], strict=False
+                )
+            ]
+        except (KeyError, TypeError, ValueError, requests.RequestException) as ex:
+            _LOGGER.warning(
+                "Error reading hourly precipitation from Open-Meteo: %s", ex
+            )
+            return None
+        if not series:
+            return None
+        self._precipitation_series = series
+        self._precipitation_fetched_at = now
+        self._precipitation_covers_from = series[0][0] - SECONDS_PER_HOUR
+        return series
 
     def get_forecast_data(self, include_today=False):
         """Return a list of daily forecast dicts, keyed by MAPPING_* constants.

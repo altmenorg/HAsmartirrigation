@@ -207,6 +207,11 @@ class CalculationMixin:
 
         hour_multiplier = self._calc_hour_multiplier(data_by_sensor, mapping, audit)
         resultdata[const.MAPPING_DATA_MULTIPLIER] = hour_multiplier
+        # The rain window is the interval that scales ET. Both ends are taken
+        # before aggregating: a persisting aggregation moves the last
+        # calculation marker the window starts at, and ending no later than the
+        # new marker keeps two windows from counting the same hour.
+        rain_window = (self._rain_window_start(mapping, data), datetime.now())
 
         if continuous_updates:
             self._fill_missing_from_last_entry(mapping, data_by_sensor, audit)
@@ -219,6 +224,10 @@ class CalculationMixin:
             timestamps_by_sensor=timestamps_by_sensor,
             audit=audit,
         )
+
+        rain = await self._weather_service_rain(mapping, *rain_window)
+        if rain is not None:
+            resultdata[const.MAPPING_WEATHER_SERVICE_RAIN] = rain
 
         if audit is not None:
             audit["multiplier"] = hour_multiplier
@@ -406,6 +415,92 @@ class CalculationMixin:
         )
         return net
 
+    def _rain_window_start(self, mapping, data):
+        """Where the rain window of an aggregation starts, or None.
+
+        The same moment the interval that scales ET starts at: the sensor
+        group's last calculation, or its earliest reading when it has never
+        been calculated.
+        """
+        last_calc = mapping.get(const.MAPPING_DATA_LAST_CALCULATION) or {}
+        start = self._parse_stamp(last_calc.get(const.MAPPING_TIMESTAMP))
+        if start is not None:
+            return start
+        stamps = [
+            stamp
+            for record in data or []
+            if isinstance(record, dict)
+            and (stamp := self._parse_stamp(record.get(const.RETRIEVED_AT)))
+        ]
+        try:
+            return min(stamps) if stamps else None
+        except TypeError:
+            # Naive and aware timestamps mixed: no window rather than a crash.
+            return None
+
+    @staticmethod
+    def _parse_stamp(value):
+        """A stored timestamp as a datetime, or None when absent or unreadable."""
+        if value is None:
+            return None
+        try:
+            return parse_datetime(value)
+        except (ValueError, TypeError):
+            return None
+
+    async def _weather_service_rain(self, mapping, start, end):
+        """Rain that fell over the window per the weather service's history, in mm.
+
+        Only Open-Meteo keeps an hourly precipitation history, and it is only
+        asked when the sensor group takes its rain from the weather service.
+        The history holds the rain of every hour of the window, where the rate
+        sampled at each update sees only the moment of that update: the last
+        15 minutes for Open-Meteo, whose "current" block is 15-minutely (#835).
+
+        Returns None when it does not apply or could not be read, which leaves
+        the sampled rate to the calculation.
+        """
+        if (
+            not getattr(self, "use_weather_service", False)
+            or getattr(self, "weather_service", None) != const.CONF_WEATHER_SERVICE_OM
+            or start is None
+            or (mapping or {}).get(const.MAPPING_GREENHOUSE)
+        ):
+            return None
+        fetch = getattr(
+            getattr(self, "_WeatherServiceClient", None),
+            "get_precipitation_between",
+            None,
+        )
+        if fetch is None:
+            return None
+        the_map = ((mapping or {}).get(const.MAPPING_MAPPINGS) or {}).get(
+            const.MAPPING_CURRENT_PRECIPITATION
+        )
+        if (
+            not isinstance(the_map, dict)
+            or the_map.get(const.MAPPING_CONF_SOURCE)
+            != const.MAPPING_CONF_SOURCE_WEATHER_SERVICE
+        ):
+            return None
+
+        rain = await self.hass.async_add_executor_job(fetch, start, end)
+        if rain is None:
+            _LOGGER.warning(
+                "Could not read the hourly precipitation from Open-Meteo for sensor "
+                "group %s; using the sampled precipitation rate instead",
+                mapping.get(const.MAPPING_NAME),
+            )
+            return None
+        _LOGGER.debug(
+            "[_weather_service_rain]: sensor group %s: %.2f mm fell between %s and %s",
+            mapping.get(const.MAPPING_NAME),
+            rain,
+            start,
+            end,
+        )
+        return rain
+
     def _precipitation_for_interval(self, zone, weatherdata):
         """Return the precipitation to add to the bucket, in mm.
 
@@ -421,6 +516,10 @@ class CalculationMixin:
         what makes a sensor group that only maps a rain-rate sensor count its
         rain at all: the rate was collected, converted and shown in the panel,
         but never reached the water balance (#571).
+
+        Between the two, the weather service's hourly history of the interval is
+        used when there is one. It is already a depth, and it covers every hour
+        where the sampled rate only sees the moments of the updates (#835).
         """
         mapping = self.store.get_mapping(zone.get(const.ZONE_MAPPING))
         if (mapping or {}).get(const.MAPPING_GREENHOUSE):
@@ -435,6 +534,14 @@ class CalculationMixin:
         if precip is not None:
             _LOGGER.debug("[calculate-module]: precip: %s", precip)
             return precip
+
+        rain = weatherdata.get(const.MAPPING_WEATHER_SERVICE_RAIN)
+        if rain is not None:
+            _LOGGER.debug(
+                "[calculate-module]: rain from the weather service's hourly history: %s",
+                rain,
+            )
+            return rain
 
         rate = weatherdata.get(const.MAPPING_CURRENT_PRECIPITATION)
         if not rate:
