@@ -270,13 +270,15 @@ class CalculationMixin:
         # the aggregate the calculation module is fed. None when the log is off.
         audit = self._new_mapping_audit(mapping, data)
 
-        hour_multiplier = self._calc_hour_multiplier(data_by_sensor, mapping, audit)
+        hour_multiplier = self._calc_hour_multiplier(
+            data_by_sensor, mapping, audit, since=since
+        )
         resultdata[const.MAPPING_DATA_MULTIPLIER] = hour_multiplier
         # The rain window is the interval that scales ET. Both ends are taken
         # before aggregating: a persisting aggregation moves the last
         # calculation marker the window starts at, and ending no later than the
         # new marker keeps two windows from counting the same hour.
-        rain_window = (self._rain_window_start(mapping, data), datetime.now())
+        rain_window = (self._rain_window_start(mapping, data, since), datetime.now())
 
         if continuous_updates:
             self._fill_missing_from_last_entry(mapping, data_by_sensor, audit)
@@ -391,13 +393,30 @@ class CalculationMixin:
             timestamps_by_sensor.pop(key, None)
         return data_by_sensor, timestamps_by_sensor
 
-    def _calc_hour_multiplier(self, data_by_sensor, mapping, audit=None):
-        """Process retrieved_at timestamps and calculate hour multiplier."""
+    def _calc_hour_multiplier(self, data_by_sensor, mapping, audit=None, since=None):
+        """Process retrieved_at timestamps and calculate hour multiplier.
+
+        ``since`` is where this reader's own window opens, and it wins when it
+        is given. The sensor group's last calculation belongs to the group: on
+        a group read by two zones on different schedules it holds whichever of
+        them calculated last, so the zone that calculates second would scale a
+        day of evapotranspiration by the other zone's interval.
+        """
 
         # get interval from last calculation to now
         diff = None
         last_calc_time = None
-        if last_calc := mapping.get(const.MAPPING_DATA_LAST_CALCULATION):
+        if since is not None:
+            last_calc_time = since
+            now = datetime.now()
+            diff = now - since
+            if audit is not None:
+                audit["interval"] = {
+                    "start": since,
+                    "end": now,
+                    "source": const.ZONE_LAST_CONSUMED_AT,
+                }
+        elif last_calc := mapping.get(const.MAPPING_DATA_LAST_CALCULATION):
             last_calc_time = parse_datetime(last_calc.get(const.MAPPING_TIMESTAMP))
             if last_calc_time:
                 now = datetime.now()
@@ -481,13 +500,17 @@ class CalculationMixin:
         )
         return net
 
-    def _rain_window_start(self, mapping, data):
+    def _rain_window_start(self, mapping, data, since=None):
         """Where the rain window of an aggregation starts, or None.
 
-        The same moment the interval that scales ET starts at: the sensor
-        group's last calculation, or its earliest reading when it has never
-        been calculated.
+        The same moment the interval that scales ET starts at: this reader's
+        own window when it has one, else the sensor group's last calculation,
+        else its earliest reading. The group's marker is shared, so on a group
+        read by two zones it would hand the second zone the rain of the first
+        zone's interval instead of its own.
         """
+        if since is not None:
+            return since
         last_calc = mapping.get(const.MAPPING_DATA_LAST_CALCULATION) or {}
         start = self._parse_stamp(last_calc.get(const.MAPPING_TIMESTAMP))
         if start is not None:

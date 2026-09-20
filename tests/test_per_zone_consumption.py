@@ -228,3 +228,59 @@ class TestCalculatingOneZone:
         # The group keeps its readings: zone 2 has not read them.
         for call in coord.store.async_update_mapping.await_args_list:
             assert call.kwargs.get("changes", {}).get(const.MAPPING_DATA) != []
+
+
+class TestTheWindowDrivesEverything:
+    """The window a zone reads must also scale its evapotranspiration and its rain.
+
+    The readings came from the zone's own watermark while the interval and the
+    rain window still came from the sensor group's last calculation, which is
+    one marker for the group. A zone calculating second therefore read a day of
+    its own readings and scaled them by the interval of the zone that had just
+    calculated, then credited that zone's rain on top.
+    """
+
+    def _mapping(self, last_calculated_minutes_ago=60):
+        return {
+            const.MAPPING_ID: 1,
+            const.MAPPING_DATA_LAST_CALCULATION: {
+                const.MAPPING_TIMESTAMP: (
+                    NOW - timedelta(minutes=last_calculated_minutes_ago)
+                ).isoformat()
+            },
+        }
+
+    def test_the_interval_is_the_zone_s_own(self):
+        coord = _Coordinator([], [])
+
+        multiplier = coord._calc_hour_multiplier(
+            {}, self._mapping(), since=datetime.now() - timedelta(hours=6)
+        )
+
+        # Six hours of a day, not the one hour since the sibling calculated.
+        assert multiplier == pytest.approx(6 / 24, abs=1e-3)
+
+    def test_without_a_window_the_group_marker_still_applies(self):
+        coord = _Coordinator([], [])
+
+        multiplier = coord._calc_hour_multiplier({}, self._mapping(), since=None)
+
+        assert multiplier == pytest.approx(
+            (datetime.now() - (NOW - timedelta(minutes=60))).total_seconds()
+            / 3600
+            / 24,
+            abs=1e-3,
+        )
+
+    def test_the_rain_window_starts_where_the_zone_left_off(self):
+        coord = _Coordinator([], [])
+        since = NOW - timedelta(hours=6)
+
+        assert coord._rain_window_start(self._mapping(), [], since) == since
+
+    def test_without_a_window_the_rain_starts_at_the_group_marker(self):
+        coord = _Coordinator([], [])
+
+        start = coord._rain_window_start(self._mapping(), [], None)
+
+        assert start == NOW - timedelta(minutes=60)
