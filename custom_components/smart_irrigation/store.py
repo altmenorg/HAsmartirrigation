@@ -130,10 +130,12 @@ from .const import (
     ZONE_DRAINAGE_RATE,
     ZONE_DURATION,
     ZONE_ET_DEFICIENCY,
+    ZONE_EXPLANATION,
     ZONE_FLOW_SENSOR,
     ZONE_ID,
     ZONE_INPUT_METHOD,
     ZONE_IRRIGATION_THRESHOLD,
+    ZONE_LAST_CALCULATED,
     ZONE_LAST_CONSUMED_AT,
     ZONE_LAST_IRRIGATION,
     ZONE_LAST_UPDATED,
@@ -789,6 +791,14 @@ class SmartIrrigationStorage:
                         maximum_bucket=zone.get(
                             ZONE_MAXIMUM_BUCKET, CONF_DEFAULT_MAXIMUM_BUCKET
                         ),
+                        # Both of these were dropped here, so every restart
+                        # rebuilt the zone without them and the next save wrote
+                        # the emptied values back. The explanation is the only
+                        # place the water balance shows its work, and it did
+                        # not survive a restart; last_calculated was never set
+                        # on any install at all.
+                        explanation=zone.get(ZONE_EXPLANATION, None),
+                        last_calculated=zone.get(ZONE_LAST_CALCULATED, None),
                         last_updated=zone.get(ZONE_LAST_UPDATED, None),
                         number_of_data_points=zone.get(
                             ZONE_NUMBER_OF_DATA_POINTS, None
