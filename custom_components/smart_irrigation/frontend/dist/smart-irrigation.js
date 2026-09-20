@@ -3898,36 +3898,39 @@ a.version="2.31.0",i(ii),a.fn=fs,a.min=oi,a.max=li,a.now=di,a.utc=m,a.unix=bs,a.
     `:q``}renderStep(){switch(this.currentStep){case"zone":return this.renderZoneStep();case"environment":return this.renderEnvironmentStep();case"weather":return this.renderWeatherStep();case"sensors":return this.renderSensorsStep();default:return this.renderReviewStep()}}renderZoneStep(){return q`
       <h3>${this.t("steps.zone.question")}</h3>
       <div class="note">${this.t("steps.zone.help")}</div>
-      <div class="field">
-        <label>${this.t("steps.zone.name")}</label>
+      <div class="setting-row">
+        <div class="setting-label">${this.t("steps.zone.name")}</div>
         <input
+          class="field"
           type="text"
           .value=${this.zoneName}
           @input=${e=>this.zoneName=e.target.value}
         />
       </div>
-      <div class="field">
-        <label
-          >${this.t("steps.zone.size")}
-          <span class="unit"
-            >${this.config?q`(${Oo(this.config,ro)})`:""}</span
-          ></label
-        >
+      <div class="setting-row">
+        <div class="setting-label">
+          ${this.t("steps.zone.size")}
+          ${this.config?q`<span class="unit"
+                >(${Oo(this.config,ro)})</span
+              >`:""}
+        </div>
         <input
+          class="field"
           type="number"
           min="0"
           .value=${this.zoneSize}
           @input=${e=>this.zoneSize=e.target.value}
         />
       </div>
-      <div class="field">
-        <label
-          >${this.t("steps.zone.throughput")}
-          <span class="unit"
-            >${this.config?q`(${Oo(this.config,oo)})`:""}</span
-          ></label
-        >
+      <div class="setting-row">
+        <div class="setting-label">
+          ${this.t("steps.zone.throughput")}
+          ${this.config?q`<span class="unit"
+                >(${Oo(this.config,oo)})</span
+              >`:""}
+        </div>
         <input
+          class="field"
           type="number"
           min="0"
           .value=${this.zoneThroughput}
@@ -3951,9 +3954,12 @@ a.version="2.31.0",i(ii),a.fn=fs,a.min=oi,a.max=li,a.now=di,a.utc=m,a.unix=bs,a.
     `}renderSensorsStep(){return"static"===this.weather?q`
         <h3>${this.t("steps.sensors.static-question")}</h3>
         <div class="note">${this.t("steps.sensors.static-help")}</div>
-        <div class="field">
-          <label>${this.t("steps.sensors.static-label")}</label>
+        <div class="setting-row">
+          <div class="setting-label">
+            ${this.t("steps.sensors.static-label")}
+          </div>
           <input
+            class="field"
             type="number"
             min="0"
             step="0.1"
@@ -3966,9 +3972,10 @@ a.version="2.31.0",i(ii),a.fn=fs,a.min=oi,a.max=li,a.now=di,a.utc=m,a.unix=bs,a.
       <div class="note">${this.t("steps.sensors.help")}</div>
       ${this.underGlass&&this.sensorsToAsk.includes(Or)?q`<div class="note">${this.t("steps.sensors.lux-hint")}</div>`:""}
       ${this.sensorsToAsk.map((e=>{var t;return q`
-          <div class="field">
-            <label>${e}</label>
+          <div class="setting-row">
+            <div class="setting-label">${e}</div>
             <ha-entity-picker
+              class="entity-field"
               .hass=${this.hass}
               .value=${null!==(t=this.sensors[e])&&void 0!==t?t:""}
               allow-custom-entity
@@ -4012,57 +4019,13 @@ a.version="2.31.0",i(ii),a.fn=fs,a.min=oi,a.max=li,a.now=di,a.utc=m,a.unix=bs,a.
         line-height: 1.4;
         margin: 4px 0 8px;
       }
-      .field {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        margin: 8px 0;
-      }
-      .field label {
-        color: var(--secondary-text-color);
-      }
-      .field label .unit {
-        font-size: 0.85em;
-      }
-      /* The answers are native inputs, themed with the same MDC variables as
-         HA's own ha-textfield, exactly as the zones editor does it. Left
-         unstyled they rendered as bare boxes a third of the card wide, which
-         made the first screen of the integration look broken. */
-      .field input,
-      .field select {
+      /* The entity picker brings its own chrome, so it is sized like the
+         other controls without taking the filled-field background. */
+      .entity-field {
+        flex: 0 0 auto;
         width: 360px;
         max-width: 100%;
-        height: 44px;
-        box-sizing: border-box;
-        padding: 0 12px;
-        border: none;
-        border-bottom: 1px solid
-          var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
-        border-radius: 4px 4px 0 0;
-        background: var(
-          --mdc-text-field-fill-color,
-          var(--input-fill-color, rgba(0, 0, 0, 0.04))
-        );
-        color: var(--primary-text-color);
-        font-size: 1rem;
-        font-family: var(--paper-font-body1_-_font-family, inherit);
-        transition:
-          border-color 0.15s,
-          background 0.15s;
       }
-      .field input:hover,
-      .field select:hover {
-        border-bottom-color: var(
-          --mdc-text-field-hover-line-color,
-          var(--primary-text-color)
-        );
-      }
-      .field input:focus,
-      .field select:focus {
-        outline: none;
-        border-bottom: 2px solid var(--mdc-theme-primary, var(--primary-color));
-      }
-
       /* one answer, big enough to tap, readable before it is chosen */
       .choice {
         border: 1px solid var(--divider-color);
