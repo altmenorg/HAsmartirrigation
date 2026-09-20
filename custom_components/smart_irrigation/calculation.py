@@ -134,14 +134,30 @@ class CalculationMixin:
         if watermarks:
             cutoff = max(cutoff, min(watermarks))
 
-        kept = self._readings_after(mapping.get(const.MAPPING_DATA), cutoff)
-        if len(kept) == len(mapping.get(const.MAPPING_DATA)):
+        buffered = mapping.get(const.MAPPING_DATA)
+        kept = self._readings_after(buffered, cutoff)
+        # Keep the last reading each field took before the cutoff. Those are
+        # consumed, so they are never counted again, but a cumulative sensor
+        # measures the window against them: drop them and the rain that fell
+        # between the cutoff and the window's first sample goes uncounted, with
+        # nothing to show it went missing.
+        baselines = sorted(
+            {
+                id(record): (stamp, record)
+                for stamp, record in self._latest_before(buffered, cutoff).values()
+            }.values(),
+            key=lambda pair: pair[0],
+        )
+        kept = [record for _, record in baselines] + kept
+        if len(kept) == len(buffered):
             return
         _LOGGER.debug(
-            "[prune_consumed_readings] sensor group %s: %s readings kept of %s",
+            "[prune_consumed_readings] sensor group %s: %s readings kept of %s "
+            "(%s of them baselines held for the fields' next delta)",
             mapping_id,
             len(kept),
-            len(mapping.get(const.MAPPING_DATA)),
+            len(buffered),
+            len(baselines),
         )
         await self.store.async_update_mapping(
             mapping_id, changes={const.MAPPING_DATA: kept}
@@ -174,6 +190,44 @@ class CalculationMixin:
                 window.append(record)
         return window
 
+    @staticmethod
+    def _latest_before(data, moment):
+        """The newest reading of each field from before ``moment``.
+
+        A sensor writes one row per state change carrying that one field, so
+        "the reading before the window" is not a single row: it is one row per
+        field. Keeping only the newest of them would leave every other field
+        without the value its delta is measured from.
+
+        This is what a cumulative sensor (a rain gauge that counts up) needs.
+        Its reading is a total, so the rain that fell during a window is the
+        last total minus the total the window started from, and that starting
+        total is by definition the reading before the window.
+
+        A reading whose timestamp cannot be read is not a candidate: those are
+        left in the window by ``_readings_after``, and one cannot be both.
+        """
+        if moment is None:
+            return {}
+        latest = {}
+        for record in data or []:
+            if not isinstance(record, dict):
+                continue
+            stamp = record.get(const.RETRIEVED_AT)
+            try:
+                parsed = parse_datetime(stamp) if stamp is not None else None
+            except (ValueError, TypeError):
+                parsed = None
+            if parsed is None or parsed > moment:
+                continue
+            for key in record:
+                if key == const.RETRIEVED_AT:
+                    continue
+                known = latest.get(key)
+                if known is None or known[0] <= parsed:
+                    latest[key] = (parsed, record)
+        return latest
+
     async def apply_aggregates_to_mapping_data(
         self, mapping, continuous_updates=False, persist=True, since=None
     ):
@@ -195,9 +249,20 @@ class CalculationMixin:
 
         """
         _LOGGER.debug("[apply_aggregates_to_mapping_data]: mapping: %s", mapping)
-        data = self._readings_after(mapping.get(const.MAPPING_DATA), since)
+        buffered = mapping.get(const.MAPPING_DATA)
+        data = self._readings_after(buffered, since)
         if not data:
             return None
+
+        # What each field read just before this window opened. A delta is
+        # measured from there, and the mapping's last calculation cannot say
+        # it any more: it belongs to the group, so on a group read by several
+        # zones it holds whichever zone calculated last rather than where this
+        # zone left off.
+        baselines = {
+            key: record.get(key)
+            for key, (_, record) in self._latest_before(buffered, since).items()
+        }
 
         data_by_sensor, timestamps_by_sensor = self._group_data_by_sensor(data)
         resultdata = {}
@@ -218,6 +283,7 @@ class CalculationMixin:
             persist=persist,
             timestamps_by_sensor=timestamps_by_sensor,
             audit=audit,
+            baselines=baselines,
         )
 
         if audit is not None:
@@ -481,6 +547,7 @@ class CalculationMixin:
         persist=True,
         timestamps_by_sensor=None,
         audit=None,
+        baselines=None,
     ):
         """Aggregate sensor data by configured or default aggregate.
 
@@ -488,6 +555,9 @@ class CalculationMixin:
         which is what the Riemann sum integrates over. Without it the flat
         RETRIEVED_AT list is used, which is only right when every record carries
         every key.
+
+        ``baselines`` carries what each field read just before this window, for
+        the aggregates that measure a change rather than a level.
         """
         # A copy, not the stored dict: this is stamped with a new timestamp
         # below, and anything that is only looking (a dry run, the live
@@ -526,13 +596,24 @@ class CalculationMixin:
             )
 
             if aggregate == const.MAPPING_CONF_AGGREGATE_DELTA:
-                # Fetch value from last calculation
-                last_calc_value = last_calc_data.get(key)
+                # Where this window starts from, most precise source first: the
+                # reading this field took just before the window, then the
+                # group's last calculation (right when the group has a single
+                # reader, stale when it has several), then the first reading of
+                # the window, which measures the change across the window and
+                # loses whatever happened before its first sample.
+                last_calc_value = (baselines or {}).get(key)
+                if last_calc_value is None:
+                    last_calc_value = last_calc_data.get(key)
                 if last_calc_value is None:
                     _LOGGER.debug(
                         "[_aggregate_sensor_data]: last calc value is not set, using d[0] = %s",
                         d[0],
                     )
+                    last_calc_value = d[0]
+                try:
+                    last_calc_value = float(last_calc_value)
+                except (TypeError, ValueError):
                     last_calc_value = d[0]
                 # Accumulate values
                 prev = last_calc_value

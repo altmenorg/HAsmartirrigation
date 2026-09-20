@@ -17,12 +17,24 @@ import pytest
 from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.calculation import CalculationMixin
 
-NOW = datetime(2026, 9, 4, 12, 0, 0)
+# Relative to the real clock, not a fixed date: pruning caps readings at a week
+# against ``datetime.now()``, so a hardcoded NOW quietly turns every reading here
+# into one older than the cap, and these tests start passing or failing by the
+# calendar rather than by the code.
+NOW = datetime.now()
 
 
 def _reading(minutes_ago, value=1.0):
     return {
         const.MAPPING_TEMPERATURE: value,
+        const.RETRIEVED_AT: (NOW - timedelta(minutes=minutes_ago)).isoformat(),
+    }
+
+
+def _rain_reading(minutes_ago, total):
+    """A cumulative rain gauge: its reading is a running total, not a rainfall."""
+    return {
+        const.MAPPING_PRECIPITATION: total,
         const.RETRIEVED_AT: (NOW - timedelta(minutes=minutes_ago)).isoformat(),
     }
 
@@ -114,20 +126,23 @@ class TestPruning:
 
     @pytest.mark.asyncio
     async def test_what_every_zone_has_passed_is_dropped(self):
-        readings = [_reading(120), _reading(10)]
+        readings = [_reading(120), _reading(90), _reading(10)]
         zones = [_zone(1, consumed_minutes_ago=60), _zone(2, consumed_minutes_ago=30)]
         coord = _Coordinator(readings, zones)
 
         await coord.prune_consumed_readings(1)
 
         kept = coord.store.async_update_mapping.await_args.kwargs["changes"]
-        assert len(kept[const.MAPPING_DATA]) == 1
+        # The unread one, plus the reading before the cutoff kept as the
+        # baseline the next delta is measured from. The one before that is
+        # consumed and no longer a baseline, so it goes.
+        assert kept[const.MAPPING_DATA] == [readings[1], readings[2]]
 
     @pytest.mark.asyncio
     async def test_a_disabled_zone_does_not_pin_the_buffer(self):
         """It is not calculating, so letting it hold the buffer would grow the
         store without end."""
-        readings = [_reading(120), _reading(10)]
+        readings = [_reading(120), _reading(90), _reading(10)]
         zones = [
             _zone(1, consumed_minutes_ago=30),
             _zone(2, consumed_minutes_ago=600, state=const.ZONE_STATE_DISABLED),
@@ -137,7 +152,32 @@ class TestPruning:
         await coord.prune_consumed_readings(1)
 
         kept = coord.store.async_update_mapping.await_args.kwargs["changes"]
-        assert len(kept[const.MAPPING_DATA]) == 1
+        assert kept[const.MAPPING_DATA] == [readings[1], readings[2]]
+
+    @pytest.mark.asyncio
+    async def test_every_field_keeps_its_own_baseline(self):
+        """Rows are sparse: a sensor writes the one field that changed.
+
+        Keeping only the newest consumed row would leave every other field
+        measuring its next delta from nothing.
+        """
+        readings = [
+            _reading(300),
+            _rain_reading(200, 4.0),
+            _reading(90),
+            _reading(10),
+        ]
+        zones = [_zone(1, consumed_minutes_ago=60)]
+        coord = _Coordinator(readings, zones)
+
+        await coord.prune_consumed_readings(1)
+
+        kept = coord.store.async_update_mapping.await_args.kwargs["changes"][
+            const.MAPPING_DATA
+        ]
+        # The rain gauge's last total survives even though two temperature
+        # readings are newer than it.
+        assert kept == [readings[1], readings[2], readings[3]]
 
     @pytest.mark.asyncio
     async def test_an_empty_group_is_left_alone(self):
