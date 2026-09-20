@@ -51,7 +51,9 @@
   "module": {
     "calculation": {
       "explanation": {
-        "module-returned-evapotranspiration-deficiency": "Note: this explanation uses '.' as decimal separator, shows rounded and metric values. Module returned Evapotranspiration deficiency ( = et0 * hour_multiplier + precipitation) of",
+        "formatting-note": "Note: this explanation uses '.' as decimal separator, shows rounded and metric values.",
+        "module-returned-evapotranspiration-deficiency": "Module returned Crop evapotranspiration deficiency ( = et0 * hour_multiplier * Kc + precipitation) of",
+        "crop-factor-is": "Crop factor is",
         "bucket-was": "Bucket was",
         "new-bucket-values-is": "New bucket value is",
         "bucket": "bucket",
@@ -78,7 +80,6 @@
         "drainage-rate-is": "Drainage rate when saturated (bucket at max) is",
         "current-drainage-is": "Current drainage is calculated as",
         "no-drainage": "Current drainage is 0 because",
-        "crop-factor-applied-to-et": "The multiplier is the crop factor: it was applied to the evapotranspiration rather than to this duration, which therefore already accounts for it. Its value is",
         "below-irrigation-threshold": "The deficit has not reached this zone's irrigation threshold yet, so no irrigation is necessary and the duration is set to 0. Deficit / threshold:"
       }
     }
@@ -235,14 +236,6 @@
             "minutes": "minutes",
             "hours": "hours",
             "days": "days"
-          }
-        },
-        "automatic-clear": {
-          "header": "Automatic weather data pruning",
-          "description": "Automatically remove collected weather data at a configured time. Use this to make sure that there is no left over weather data from previous days. Don't remove the weather data before you calculate and only use this option if you expect the automatic update to collect weather data after you calculated for the day. Ideally, you want to prune as late in the day as possible.",
-          "labels": {
-            "automatic-clear-enabled": "Automatically clear collected weather data",
-            "automatic-clear-time": "Clear weather data at"
           }
         },
         "continuousupdates": {

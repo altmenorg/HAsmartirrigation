@@ -1180,18 +1180,37 @@ class CalculationMixin:
         data[const.ZONE_CURRENT_DRAINAGE] = drainage
         _LOGGER.debug("[calculate-module]: newbucket: %s", newbucket)
 
+        # The formatting note is a note about the whole text, so it stands on
+        # its own line, and the crop factor is stated where it is applied,
+        # which is to the evapotranspiration and not to the duration (#817).
         explanation = (
+            await localize(
+                "module.calculation.explanation.formatting-note",
+                self.hass.config.language,
+            )
+            + "<br/><br/>"
+        )
+        explanation += (
             await localize(
                 "module.calculation.explanation.module-returned-evapotranspiration-deficiency",
                 self.hass.config.language,
             )
-            + f" {data[const.ZONE_DELTA]:.2f}."
+            + f" {data[const.ZONE_DELTA]:.2f} mm."
         )
         explanation += (
-            await localize(
+            " "
+            + await localize(
+                "module.calculation.explanation.crop-factor-is",
+                self.hass.config.language,
+            )
+            + f" {crop_factor}."
+        )
+        explanation += (
+            "<br/>"
+            + await localize(
                 "module.calculation.explanation.bucket-was", self.hass.config.language
             )
-            + f" {old_bucket:.2f}"
+            + f" {old_bucket:.2f} mm"
         )
         explanation += (
             ".<br/>"
@@ -1199,7 +1218,7 @@ class CalculationMixin:
                 "module.calculation.explanation.maximum-bucket-is",
                 self.hass.config.language,
             )
-            + f" {float(maximum_bucket):.1f}"
+            + f" {float(maximum_bucket):.1f} mm"
         )
         explanation += (
             ".<br/>"
@@ -1207,7 +1226,7 @@ class CalculationMixin:
                 "module.calculation.explanation.drainage-rate-is",
                 self.hass.config.language,
             )
-            + f" {float(drainage_rate):.1f}.<br/>"
+            + f" {float(drainage_rate):.1f} mm/h.<br/>"
         )
 
         # Define some localized strings here for cleaner code below
@@ -1238,7 +1257,7 @@ class CalculationMixin:
                     "module.calculation.explanation.no-drainage",
                     self.hass.config.language,
                 )
-                + f" [{old_bucket_loc}] + [{delta_loc}] <= 0 ({old_bucket:.2f}{data[const.ZONE_DELTA]:+.2f} = {bucket_plus_delta_capped:.2f})"
+                + f" [{old_bucket_loc}] + [{delta_loc}] <= 0 ({old_bucket:.2f} mm {data[const.ZONE_DELTA]:+.2f} mm = {bucket_plus_delta_capped:.2f} mm)"
             )
         else:
             explanation += await localize(
@@ -1246,9 +1265,9 @@ class CalculationMixin:
                 self.hass.config.language,
             )
             if maximum_bucket is None or maximum_bucket <= 0:
-                explanation += f" [{drainage_rate_loc}] * {hours_loc} = {drainage_rate:.1f} * {24 * hour_multiplier:.2f} = {drainage:.2f}"
+                explanation += f" [{drainage_rate_loc}] * {hours_loc} = {drainage_rate:.1f} * {24 * hour_multiplier:.2f} = {drainage:.2f} mm"
             else:
-                explanation += f" [{drainage_rate_loc}] * [{hours_loc}] * (min([{old_bucket_loc}] + [{delta_loc}], [{max_bucket_loc}]) / [{max_bucket_loc}])^4 = {drainage_rate:.1f} * {24 * hour_multiplier:.2f} * ({bucket_plus_delta_capped:.2f} / {maximum_bucket:.1f})^4 = {drainage:.2f}"
+                explanation += f" [{drainage_rate_loc}] * [{hours_loc}] * (min([{old_bucket_loc}] + [{delta_loc}], [{max_bucket_loc}]) / [{max_bucket_loc}])^4 = {drainage_rate:.1f} * {24 * hour_multiplier:.2f} * ({bucket_plus_delta_capped:.2f} / {maximum_bucket:.1f})^4 = {drainage:.2f} mm"
         explanation += ".<br/>" + await localize(
             "module.calculation.explanation.new-bucket-values-is",
             self.hass.config.language,
@@ -1258,20 +1277,26 @@ class CalculationMixin:
             # Deficit: drainage and the max(0, ...) clamp do not apply (see the
             # `if newbucket > 0` guard above), so the bucket stays negative.
             # Show the formula that was actually used, without max(0)/min/drainage.
-            explanation += f" [{old_bucket_loc}] + [{delta_loc}] = {old_bucket:.2f}{data[const.ZONE_DELTA]:+.2f} = {newbucket:.2f}.<br/>"
+            explanation += f" [{old_bucket_loc}] + [{delta_loc}] = {old_bucket:.2f} mm {data[const.ZONE_DELTA]:+.2f} mm = {newbucket:.2f} mm.<br/>"
         elif maximum_bucket is not None and maximum_bucket > 0:
-            explanation += f" max(0, min([{old_bucket_loc}] + [{delta_loc}], {max_bucket_loc}) - [{drainage_loc}]) = max(0, min({old_bucket:.2f}{data[const.ZONE_DELTA]:+.2f}, {maximum_bucket:.1f}) - {drainage:.2f}) = {newbucket:.2f}.<br/>"
+            explanation += f" max(0, min([{old_bucket_loc}] + [{delta_loc}], {max_bucket_loc}) - [{drainage_loc}]) = max(0, min({old_bucket:.2f} mm {data[const.ZONE_DELTA]:+.2f} mm, {maximum_bucket:.1f} mm) - {drainage:.2f} mm) = {newbucket:.2f} mm.<br/>"
         else:
-            explanation += f" max(0, [{old_bucket_loc}] + [{delta_loc}] - [{drainage_loc}]) = max(0, {old_bucket:.2f} + {data[const.ZONE_DELTA]:.2f} - {drainage:.2f}) = {newbucket:.2f}.<br/>"
+            explanation += f" max(0, [{old_bucket_loc}] + [{delta_loc}] - [{drainage_loc}]) = max(0, {old_bucket:.2f} mm + {data[const.ZONE_DELTA]:.2f} mm - {drainage:.2f} mm) = {newbucket:.2f} mm.<br/>"
 
         threshold_mm = self.irrigation_threshold_mm(zone)
-        if newbucket < 0 and abs(newbucket) < threshold_mm:
+        # Two different reasons not to water, and only one of them is "the soil
+        # is full". A deficit that has not reached the zone's threshold is
+        # explained here, and must not then be told it is at or above zero
+        # (#832): the bucket is negative, that is the whole point of a
+        # threshold.
+        below_threshold = newbucket < 0 and abs(newbucket) < threshold_mm
+        if below_threshold:
             explanation += (
                 await localize(
                     "module.calculation.explanation.below-irrigation-threshold",
                     self.hass.config.language,
                 )
-                + f" {abs(newbucket):.2f} / {threshold_mm:.2f}.<br/>"
+                + f" {abs(newbucket):.2f} mm / {threshold_mm:.2f} mm.<br/>"
             )
         if newbucket < 0 and abs(newbucket) >= threshold_mm:
             # calculate duration
@@ -1329,7 +1354,7 @@ class CalculationMixin:
                     + await localize(
                         "common.attributes.size", self.hass.config.language
                     )
-                    + f"] = {tput:.1f} * 60 / {sz:.1f} = {precipitation_rate:.1f}.</li>"
+                    + f"] = {tput:.1f} * 60 / {sz:.1f} = {precipitation_rate:.1f} mm/h.</li>"
                 )
             else:
                 explanation += (
@@ -1338,7 +1363,7 @@ class CalculationMixin:
                         "module.calculation.explanation.precipitation-rate-is",
                         self.hass.config.language,
                     )
-                    + f" {precipitation_rate:.1f}.</li>"
+                    + f" {precipitation_rate:.1f} mm/h.</li>"
                 )
             # v1 only
             # explanation += "<li>The base schedule index is defined as (max(ET)/[precipitation rate]*60)*60=({}/{}*60)*60={}</li>".format(mod.maximum_et,precipitation_rate,round(base_schedule_index,1))
@@ -1359,17 +1384,8 @@ class CalculationMixin:
                     "module.calculation.explanation.precipitation-rate-variable",
                     self.hass.config.language,
                 )
-                + f"] * 3600 = {abs(newbucket):.2f} / {precipitation_rate:.1f} * 3600 = {duration:.0f}.</li>"
+                + f"] * 3600 = {abs(newbucket):.2f} / {precipitation_rate:.1f} * 3600 = {duration:.0f} s.</li>"
             )
-            explanation += (
-                "<li>"
-                + await localize(
-                    "module.calculation.explanation.crop-factor-applied-to-et",
-                    self.hass.config.language,
-                )
-                + f" {crop_factor}.</li>"
-            )
-
             # get maximum duration if set and >=0 and override duration if it's higher than maximum duration
             explanation += (
                 "<li>"
@@ -1377,7 +1393,7 @@ class CalculationMixin:
                     "module.calculation.explanation.maximum-duration-is-applied",
                     self.hass.config.language,
                 )
-                + f" {zone.get(const.ZONE_MAXIMUM_DURATION):.0f}"
+                + f" {zone.get(const.ZONE_MAXIMUM_DURATION):.0f} s"
             )
             if (
                 zone.get(const.ZONE_MAXIMUM_DURATION) is not None
@@ -1391,7 +1407,7 @@ class CalculationMixin:
                         "module.calculation.explanation.duration-after-maximum-duration-is",
                         self.hass.config.language,
                     )
-                    + f" {duration:.0f}"
+                    + f" {duration:.0f} s"
                 )
             explanation += ".</li>"
 
@@ -1404,34 +1420,28 @@ class CalculationMixin:
                         "module.calculation.explanation.lead-time-is-applied",
                         self.hass.config.language,
                     )
-                    + f" {zone.get(const.ZONE_LEAD_TIME)}, "
+                    + f" {zone.get(const.ZONE_LEAD_TIME)} s.</li></ol>"
                 )
                 explanation += (
                     await localize(
                         "module.calculation.explanation.duration-after-lead-time-is",
                         self.hass.config.language,
                     )
-                    + f" {duration}</li></ol>"
-                )
-                explanation += (
-                    await localize(
-                        "module.calculation.explanation.duration-after-lead-time-is",
-                        self.hass.config.language,
-                    )
-                    + f" {duration}.</li></ol>"
+                    + f" {duration} s."
                 )
 
                 # _LOGGER.debug("[calculate-module]: explanation: %s", explanation)
         else:
             # no need to irrigate, set duration to 0
             duration = 0
-            explanation += (
-                await localize(
-                    "module.calculation.explanation.bucket-larger-than-or-equal-to-zero-no-irrigation-necessary",
-                    self.hass.config.language,
+            if not below_threshold:
+                explanation += (
+                    await localize(
+                        "module.calculation.explanation.bucket-larger-than-or-equal-to-zero-no-irrigation-necessary",
+                        self.hass.config.language,
+                    )
+                    + f" {duration} s"
                 )
-                + f" {duration}"
-            )
 
         data[const.ZONE_BUCKET] = newbucket
         data[const.ZONE_ET_DEFICIENCY] = et_deficiency

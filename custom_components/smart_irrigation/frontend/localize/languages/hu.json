@@ -49,7 +49,8 @@
   "module": {
     "calculation": {
       "explanation": {
-        "module-returned-evapotranspiration-deficiency": "Megjegyzés: ez a magyarázat „.” jelet használ tizedesjelként, és kerekített, metrikus értékeket mutat. A modul által visszaadott evapotranspirációs hiány ( = et0 * hour_multiplier + precipitation) értéke",
+        "formatting-note": "Megjegyzés: ez a magyarázat „.” jelet használ tizedesjelként, és kerekített, metrikus értékeket mutat.",
+        "module-returned-evapotranspiration-deficiency": "A modul által visszaadott evapotranspirációs hiány ( = et0 * hour_multiplier * Kc + precipitation) értéke",
         "bucket-was": "A vödör értéke volt",
         "new-bucket-values-is": "Az új vödörérték",
         "bucket": "vödör",
@@ -191,14 +192,6 @@
             "minutes": "perc",
             "hours": "óra",
             "days": "nap"
-          }
-        },
-        "automatic-clear": {
-          "header": "Automatikus időjárásiadat-tisztítás",
-          "description": "A gyűjtött időjárási adatok automatikus eltávolítása egy beállított időpontban. Ezzel biztosíthatja, hogy ne maradjon megmaradt időjárási adat az előző napokról. Ne távolítsa el az időjárási adatokat a számítás előtt, és csak akkor használja ezt a lehetőséget, ha azt várja, hogy az automatikus frissítés a napra történő számítás után is gyűjt időjárási adatokat. Ideális esetben a lehető legkésőbb érdemes tisztítani a nap folyamán.",
-          "labels": {
-            "automatic-clear-enabled": "A gyűjtött időjárási adatok automatikus törlése",
-            "automatic-clear-time": "Időjárási adatok törlése ekkor"
           }
         },
         "continuousupdates": {

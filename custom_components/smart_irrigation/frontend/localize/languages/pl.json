@@ -49,7 +49,8 @@
   "module": {
     "calculation": {
       "explanation": {
-        "module-returned-evapotranspiration-deficiency": "Uwaga: to wyjaśnienie używa „.” jako separatora dziesiętnego, pokazuje zaokrąglone wartości metryczne. Moduł zwrócił niedobór ewapotranspiracji ( = et0 * hour_multiplier + opady) wynoszący",
+        "formatting-note": "Uwaga: to wyjaśnienie używa „.” jako separatora dziesiętnego, pokazuje zaokrąglone wartości metryczne.",
+        "module-returned-evapotranspiration-deficiency": "Moduł zwrócił niedobór ewapotranspiracji ( = et0 * hour_multiplier * Kc + opady) wynoszący",
         "bucket-was": "Bucket wynosił",
         "new-bucket-values-is": "Nowa wartość bucket wynosi",
         "bucket": "bucket",
@@ -164,14 +165,6 @@
             "minutes": "minuty",
             "hours": "godziny",
             "days": "dni"
-          }
-        },
-        "automatic-clear": {
-          "header": "Automatyczne czyszczenie danych pogodowych",
-          "description": "Automatycznie usuwaj zebrane dane pogodowe o skonfigurowanej porze. Użyj tej opcji, aby upewnić się, że nie pozostają żadne dane pogodowe z poprzednich dni. Nie usuwaj danych pogodowych przed obliczeniem i korzystaj z tej opcji tylko wtedy, gdy spodziewasz się, że automatyczna aktualizacja zbierze dane pogodowe po obliczeniu danego dnia. Najlepiej czyścić dane jak najpóźniej w ciągu dnia.",
-          "labels": {
-            "automatic-clear-enabled": "Automatycznie czyść zebrane dane pogodowe",
-            "automatic-clear-time": "Czyść dane pogodowe o"
           }
         },
         "continuousupdates": {

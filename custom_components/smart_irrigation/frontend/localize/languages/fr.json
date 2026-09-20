@@ -51,7 +51,9 @@
   "module": {
     "calculation": {
       "explanation": {
-        "module-returned-evapotranspiration-deficiency": "NB: cette explication utilise '.' comme séparateur décimal, et affiche des valeurs arrondies. Le module a donné un manque d'Évapotranspiration de",
+        "formatting-note": "NB: cette explication utilise '.' comme séparateur décimal, et affiche des valeurs arrondies.",
+        "module-returned-evapotranspiration-deficiency": "Le module a donné un manque d'évapotranspiration de la culture ( = et0 * hour_multiplier * Kc + précipitations) de",
+        "crop-factor-is": "Le coefficient cultural est",
         "bucket-was": "Le seau (bucket) était de",
         "new-bucket-values-is": "La nouvelle valeur du seau (bucket) est",
         "bucket": "seau (bucket)",
@@ -77,7 +79,6 @@
         "drainage-rate-is": "Le taux de drainage à saturation (bucket au max) est de",
         "current-drainage-is": "Le drainage actuel est calculé comme",
         "no-drainage": "Le drainage actuel est de 0 car",
-        "crop-factor-applied-to-et": "Le multiplicateur est le coefficient cultural : il a été appliqué à l'évapotranspiration et non à cette durée, qui en tient donc déjà compte. Sa valeur est",
         "below-irrigation-threshold": "Le déficit n'a pas encore atteint le seuil d'arrosage de cette zone, donc aucun arrosage n'est nécessaire et la durée est mise à 0. Déficit / seuil :"
       }
     }
@@ -233,14 +234,6 @@
             "minutes": "minutes",
             "hours": "heures",
             "days": "jours"
-          }
-        },
-        "automatic-clear": {
-          "header": "Délestage automatique des données météo",
-          "description": "Suppression automatique des données météo collectées à une heure donnée. Utilisez ceci pour être sûr qu'il n'y ait plus de restes des données météo des jours précédents. Ne supprimez pas les données météo avant le calcul et n'utilisez cette option que si vous vous attendez à ce que les données météo soient récupérées après le calcul du jour. Idéalement, vous voudrez \"élaguer\" les données le plus tard possible dans la journée.",
-          "labels": {
-            "automatic-clear-enabled": "Suppression automatique des données météo collectées",
-            "automatic-clear-time": "Supprimer les données météo à"
           }
         },
         "continuousupdates": {

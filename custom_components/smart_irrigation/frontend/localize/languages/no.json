@@ -49,7 +49,8 @@
   "module": {
     "calculation": {
       "explanation": {
-        "module-returned-evapotranspiration-deficiency": "Merk: Denne forklaringen bruker '.' som desimaltegn og viser avrundede verdier. Modulen returnerte evapotranspirasjonsunderskudd på",
+        "formatting-note": "Merk: Denne forklaringen bruker '.' som desimaltegn og viser avrundede verdier.",
+        "module-returned-evapotranspiration-deficiency": "Modulen returnerte evapotranspirasjonsunderskudd på",
         "bucket-was": "Bucket var",
         "new-bucket-values-is": "Ny bucket verdien er",
         "bucket": "bucket",
@@ -164,14 +165,6 @@
             "minutes": "minutter",
             "hours": "timer",
             "days": "dager"
-          }
-        },
-        "automatic-clear": {
-          "header": "Automatisk opprydding av værdata",
-          "description": "Fjern innsamlede værdata automatisk på et konfigurert tidspunkt. Bruk dette for å sikre at det ikke er igjen værdata fra tidligere dager. Ikke fjern værdataene før du beregner, og bruk bare dette alternativet hvis du forventer at den automatiske oppdateringen samler inn værdata etter at du har beregnet for dagen. Ideelt sett bør du rydde så sent på dagen som mulig.",
-          "labels": {
-            "automatic-clear-enabled": "Slett innsamlede værdata automatisk",
-            "automatic-clear-time": "Slett værdata kl."
           }
         },
         "continuousupdates": {

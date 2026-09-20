@@ -49,7 +49,8 @@
   "module": {
     "calculation": {
       "explanation": {
-        "module-returned-evapotranspiration-deficiency": "Bemærk: denne forklaring bruger '.' som decimalseparator og viser afrundede metriske værdier. Modulet returnerede et fordampningsunderskud ( = et0 * hour_multiplier + nedbør) på",
+        "formatting-note": "Bemærk: denne forklaring bruger '.' som decimalseparator og viser afrundede metriske værdier.",
+        "module-returned-evapotranspiration-deficiency": "Modulet returnerede et fordampningsunderskud ( = et0 * hour_multiplier * Kc + nedbør) på",
         "bucket-was": "Bucket var",
         "new-bucket-values-is": "Ny bucket-værdi er",
         "bucket": "bucket",
@@ -164,14 +165,6 @@
             "minutes": "minutter",
             "hours": "timer",
             "days": "dage"
-          }
-        },
-        "automatic-clear": {
-          "header": "Automatisk udrensning af vejrdata",
-          "description": "Fjern automatisk indsamlede vejrdata på et konfigureret tidspunkt. Brug dette til at sikre, at der ikke er rester af vejrdata fra tidligere dage. Fjern ikke vejrdataene, før du beregner, og brug kun denne mulighed, hvis du forventer, at den automatiske opdatering indsamler vejrdata, efter du har beregnet for dagen. Ideelt set vil du udrense så sent på dagen som muligt.",
-          "labels": {
-            "automatic-clear-enabled": "Ryd automatisk indsamlede vejrdata",
-            "automatic-clear-time": "Ryd vejrdata kl."
           }
         },
         "continuousupdates": {
