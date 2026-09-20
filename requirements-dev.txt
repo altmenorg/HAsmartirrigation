@@ -8,20 +8,20 @@
 -r requirements.test.txt
 
 # Additional dependencies for test scripts and development
-requests>=2.25.0
-python-dotenv>=1.2.2
+requests>=2.34.2
+python-dotenv>=1.2.3
 
 # Home Assistant development (useful for local testing)
 homeassistant>=2026.6.4
 
 # Development tools (matches CI pipeline)
 black>=26.5.1
-ruff>=0.1.0
+ruff>=0.16.5
 isort>=5.10.0
-pre-commit>=4.6.0
+pre-commit>=4.6.2
 
 # Documentation
-markdown>=3.3.0
+markdown>=3.10.3
 
 # Testing dependencies
 pytest
