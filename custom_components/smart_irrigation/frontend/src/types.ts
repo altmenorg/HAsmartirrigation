@@ -129,6 +129,8 @@ export class SmartIrrigationZone {
   flow_sensor?: string;
   input_method?: string;
   precipitation_rate?: number;
+  /** When this zone last watered. Recorded by the run, never by the panel. */
+  last_irrigation?: string | null;
 
   constructor(
     i: number,

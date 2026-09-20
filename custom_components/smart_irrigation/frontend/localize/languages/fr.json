@@ -312,9 +312,11 @@
           "labels": {
             "now": "Maintenant",
             "at-last-calculation": "Au dernier calcul",
-            "would-water": "Arroserait"
+            "would-water": "Arroserait",
+            "last-irrigation": "Dernier arrosage"
           },
-          "nothing": "rien"
+          "nothing": "rien",
+          "never-watered": "jamais"
         }
       }
     },

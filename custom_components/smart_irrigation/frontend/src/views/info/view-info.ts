@@ -400,6 +400,28 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                               : this.t("cards.estimate.nothing")}</span
                           >
                         </div>
+                        <div class="pair">
+                          <span class="label"
+                            >${this.t(
+                              "cards.estimate.labels.last-irrigation",
+                            )}:</span
+                          >
+                          <span class="value"
+                            >${zone.last_irrigation
+                              ? localizedDateTime(
+                                  zone.last_irrigation,
+                                  this.hass,
+                                  {
+                                    weekday: "short",
+                                    day: "numeric",
+                                    month: "short",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  },
+                                )
+                              : this.t("cards.estimate.never-watered")}</span
+                          >
+                        </div>
                       </div>
                     </div>
                   `;

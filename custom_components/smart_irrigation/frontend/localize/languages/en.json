@@ -314,9 +314,11 @@
           "labels": {
             "now": "Now",
             "at-last-calculation": "At last calculation",
-            "would-water": "Would water"
+            "would-water": "Would water",
+            "last-irrigation": "Last watered"
           },
-          "nothing": "nothing"
+          "nothing": "nothing",
+          "never-watered": "never"
         }
       }
     },
