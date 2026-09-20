@@ -150,7 +150,8 @@
           "from-the-service": "depuis le service météo",
           "help": "Ceci crée un module de calcul, un groupe de capteurs et une zone, exactement comme les autres onglets le feraient. Rien n'est verrouillé ensuite."
         }
-      }
+      },
+      "step": "étape"
     },
     "weatherservice": {
       "history": {

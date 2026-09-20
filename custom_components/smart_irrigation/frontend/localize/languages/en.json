@@ -151,7 +151,8 @@
           "from-the-service": "from the weather service",
           "help": "This creates a calculation module, a sensor group and a zone, exactly as the other tabs would. Nothing is locked afterwards."
         }
-      }
+      },
+      "step": "step"
     },
     "weatherservice": {
       "history": {

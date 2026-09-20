@@ -1,5 +1,6 @@
 import { TemplateResult, LitElement, html, css, CSSResultGroup } from "lit";
 import { property, state, customElement } from "lit/decorators.js";
+import { mdiArrowLeft, mdiArrowRight, mdiCheck } from "@mdi/js";
 import { HomeAssistant } from "custom-card-helpers";
 import { loadHaForm } from "../../load-ha-elements";
 import {
@@ -236,34 +237,37 @@ class SmartIrrigationViewSetup extends LitElement {
       <ha-card header="${this.t("title")}">
         <div class="card-content">
           <div class="note">${this.t("description")}</div>
-          <div class="progress">
-            ${this.steps.map(
-              (s, i) =>
-                html`<span class="dot ${i === this.step ? "on" : ""}"></span>`,
-            )}
-          </div>
           ${this.renderStep()}
           ${this.error ? html`<div class="error">${this.error}</div>` : ""}
-          <div class="actions">
+          <div class="si-form-actions">
+            <span class="step-count"
+              >(${this.t("step")}
+              ${Math.min(this.step, this.steps.length - 1) + 1} /
+              ${this.steps.length})</span
+            >
             ${this.step > 0
-              ? html`<button
-                  class="secondary"
+              ? html`<ha-button
+                  appearance="plain"
                   @click=${() => {
                     this.step -= 1;
                     this.error = undefined;
                   }}
                 >
+                  <ha-svg-icon slot="start" .path=${mdiArrowLeft}></ha-svg-icon>
                   ${this.t("back")}
-                </button>`
+                </ha-button>`
               : ""}
             ${this.currentStep === "review"
-              ? html`<button
+              ? html`<ha-button
+                  appearance="filled"
                   ?disabled=${this.isSaving}
                   @click=${() => this.create()}
                 >
+                  <ha-svg-icon slot="start" .path=${mdiCheck}></ha-svg-icon>
                   ${this.isSaving ? this.t("creating") : this.t("create")}
-                </button>`
-              : html`<button
+                </ha-button>`
+              : html`<ha-button
+                  appearance="filled"
                   ?disabled=${!this.canGoOn}
                   @click=${() => {
                     this.step += 1;
@@ -271,7 +275,8 @@ class SmartIrrigationViewSetup extends LitElement {
                   }}
                 >
                   ${this.t("next")}
-                </button>`}
+                  <ha-svg-icon slot="end" .path=${mdiArrowRight}></ha-svg-icon>
+                </ha-button>`}
           </div>
         </div>
       </ha-card>
@@ -663,19 +668,18 @@ class SmartIrrigationViewSetup extends LitElement {
         margin-top: 2px;
       }
 
-      .progress {
-        display: flex;
-        gap: 6px;
-        margin: 8px 0 4px;
+      /* Which step this is, beside the button that moves to the next one.
+         Dots were eight grey pixels: countable in principle, unreadable in
+         practice, and silent about how many were left. */
+      .step-count {
+        color: var(--secondary-text-color);
+        font-size: 0.9em;
       }
-      .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: var(--divider-color);
-      }
-      .dot.on {
-        background: var(--primary-color);
+      /* The shared row justifies to the end and sets no gap, which is right
+         for a single button and too tight for three items. */
+      .si-form-actions {
+        gap: 12px;
+        align-items: center;
       }
 
       .review div {
@@ -685,17 +689,6 @@ class SmartIrrigationViewSetup extends LitElement {
       .review span {
         color: var(--secondary-text-color);
         margin-right: 8px;
-      }
-
-      .actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 8px;
-        margin-top: 16px;
-      }
-      .actions button.secondary {
-        background: transparent;
-        color: var(--primary-color);
       }
 
       .error {
