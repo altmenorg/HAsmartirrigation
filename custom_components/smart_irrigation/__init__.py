@@ -58,7 +58,6 @@ from .helpers import (
     convert_mapping_to_metric,
     loadModules,
     mapping_sources_changed,
-    parse_datetime,
     relative_to_absolute_pressure,
 )
 from .irrigation_unlimited import IrrigationUnlimitedIntegration
@@ -2029,10 +2028,16 @@ class SmartIrrigationCoordinator(
                 # every zone reading it, so calculating one must not consume
                 # the history the others have not read yet. A dry run does not
                 # move the marker at all.
+                # Through zone_window_start, which is the accessor for this and
+                # handles a zone that has no mark yet or an unreadable one.
+                # Parsing the stored value here instead logged a warning on the
+                # first calculation of every new zone, and raised outright on a
+                # value it could not read, where taking everything is the safe
+                # answer and the one the emptied buffer used to leave behind.
                 weatherdata = await self.apply_aggregates_to_mapping_data(
                     mapping,
                     persist=not dry_run,
-                    since=parse_datetime(zone.get(const.ZONE_LAST_CONSUMED_AT)),
+                    since=self.zone_window_start(zone),
                 )
             else:
                 _LOGGER.error(
