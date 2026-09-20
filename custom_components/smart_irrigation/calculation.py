@@ -902,8 +902,41 @@ class CalculationMixin:
             last_calc_data,
         )
 
+    @staticmethod
+    def _sourced_fields(mapping) -> set:
+        """The sensor group's fields that something currently reports.
+
+        A field whose source was removed keeps whatever it last held in the
+        last entry, and the last entry never loses a key.
+        """
+        sourced = set()
+        for key, conf in (mapping.get(const.MAPPING_MAPPINGS) or {}).items():
+            if isinstance(conf, str):
+                # A legacy group storing the source as a plain string.
+                if conf and conf != const.MAPPING_CONF_SOURCE_NONE:
+                    sourced.add(key)
+                continue
+            if not isinstance(conf, dict):
+                continue
+            source = conf.get(const.MAPPING_CONF_SOURCE)
+            if source and source != const.MAPPING_CONF_SOURCE_NONE:
+                sourced.add(key)
+        return sourced
+
     def _fill_missing_from_last_entry(self, mapping, data_by_sensor, audit=None):
-        """Fill missing keys in data_by_sensor from last entry data."""
+        """Fill missing keys in data_by_sensor from last entry data.
+
+        Only for fields the group still reads. A source that reports rarely has
+        to keep counting between its updates, which is what this is for, but a
+        field whose source was removed must not: its last value stays in the
+        last entry for good and would be carried into every later calculation.
+
+        That is what stopped rain reaching the bucket for weather-service users
+        (#834). Since v2026.8.2 the service feeds the rain as a rate through
+        ``Current Precipitation`` and the migration leaves ``Precipitation``
+        without a source. The 0.0 it last held kept being carried over, and a
+        depth takes precedence over a rate, so every drop was discarded.
+        """
         last_entry = mapping.get(const.MAPPING_DATA_LAST_ENTRY)
         _LOGGER.debug(
             "[_fill_missing_from_last_entry]: last entry data for sensor group %s: %s",
@@ -912,7 +945,16 @@ class CalculationMixin:
         )
         if not last_entry:
             return
+        sourced = self._sourced_fields(mapping)
         for key, val in last_entry.items():
+            if key not in data_by_sensor and key not in sourced:
+                _LOGGER.debug(
+                    "[_fill_missing_from_last_entry]: %s has no source on this sensor "
+                    "group any more, not carrying its last value (%s) over",
+                    key,
+                    val,
+                )
+                continue
             if key not in data_by_sensor and val is not None:
                 _LOGGER.debug(
                     "[_fill_missing_from_last_entry]: %s is missing from data_by_sensor, adding %s from last entry",
