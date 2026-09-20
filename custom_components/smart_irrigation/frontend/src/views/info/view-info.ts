@@ -17,12 +17,11 @@ import {
   SmartIrrigationInfo,
   SmartIrrigationZone,
 } from "../../types";
-import { output_unit } from "../../helpers";
+import { localizedDateTime, output_unit } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
 import { DOMAIN, ZONE_BUCKET } from "../../const";
-import moment from "moment";
 
 /**
  * The Info view answers the one question the Zones view cannot: what will
@@ -177,8 +176,16 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                 <div class="info-item">
                   <label>${this.t("cards.next-run.labels.start")}</label>
                   <span class="value"
-                    >${moment(info.next_irrigation_start).format(
-                      "ddd D MMM, HH:mm",
+                    >${localizedDateTime(
+                      info.next_irrigation_start,
+                      this.hass,
+                      {
+                        weekday: "short",
+                        day: "numeric",
+                        month: "short",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      },
                     )}</span
                   >
                 </div>
@@ -322,7 +329,13 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
               >${last.should_skip
                 ? this.t("cards.decision.last-skipped")
                 : this.t("cards.decision.last-ran")}${last.evaluated_at
-                ? ` (${moment(last.evaluated_at).format("ddd D MMM, HH:mm")})`
+                ? ` (${localizedDateTime(last.evaluated_at, this.hass, {
+                    weekday: "short",
+                    day: "numeric",
+                    month: "short",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })})`
                 : ""}</span
             >`
           : html`<span class="value"

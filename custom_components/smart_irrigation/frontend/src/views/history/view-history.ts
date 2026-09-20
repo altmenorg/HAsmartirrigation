@@ -17,7 +17,12 @@ import { modernStyle } from "../../styles/modern-style";
 import { loadHaForm } from "../../load-ha-elements";
 import { SubscribeMixin } from "../../subscribe-mixin";
 import { Path } from "../../common/navigation";
-import { displayVolume, formatDuration, output_unit } from "../../helpers";
+import {
+  displayVolume,
+  formatDuration,
+  localizedDateTime,
+  output_unit,
+} from "../../helpers";
 import { DOMAIN, ZONE_WATER_VOLUME } from "../../const";
 import { SmartIrrigationConfig } from "../../types";
 import {
@@ -385,7 +390,9 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
           rx="1"
         >
           <title>
-            ${moment(bucket.key).format("LL")}: ${bucket.value.toFixed(1)}
+            ${localizedDateTime(bucket.key, this.hass, {
+              dateStyle: "long",
+            })}: ${bucket.value.toFixed(1)}
           </title>
         </rect>
       `;
@@ -405,7 +412,10 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
           y=${CHART_HEIGHT - 8}
           text-anchor="middle"
         >
-          ${moment(bucket.key).format("MMM D")}
+          ${localizedDateTime(bucket.key, this.hass, {
+            day: "numeric",
+            month: "short",
+          })}
         </text>
       `;
     });

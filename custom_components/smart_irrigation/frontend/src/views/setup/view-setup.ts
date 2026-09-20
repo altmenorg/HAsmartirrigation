@@ -461,23 +461,32 @@ class SmartIrrigationViewSetup extends LitElement {
   private renderReviewStep(): TemplateResult {
     return html`
       <h3>${this.t("steps.review.question")}</h3>
-      <div class="review">
-        <div><span>${this.t("steps.review.zone")}</span> ${this.zoneName}</div>
-        <div>
-          <span>${this.t("steps.review.environment")}</span>
-          ${this.underGlass
-            ? this.t("steps.environment.under-glass")
-            : this.t("steps.environment.outdoors")}
+      <div class="settings">
+        <div class="setting-row">
+          <div class="setting-label">${this.t("steps.review.zone")}</div>
+          <div class="review-value">${this.zoneName}</div>
         </div>
-        <div>
-          <span>${this.t("steps.review.engine")}</span>
-          ${engineModeLabel(this.engineName, this.lng)}
+        <div class="setting-row">
+          <div class="setting-label">${this.t("steps.review.environment")}</div>
+          <div class="review-value">
+            ${this.underGlass
+              ? this.t("steps.environment.under-glass")
+              : this.t("steps.environment.outdoors")}
+          </div>
         </div>
-        <div>
-          <span>${this.t("steps.review.sources")}</span>
-          ${this.sensorsToAsk.length
-            ? this.sensorsToAsk.join(", ")
-            : this.t("steps.review.from-the-service")}
+        <div class="setting-row">
+          <div class="setting-label">${this.t("steps.review.engine")}</div>
+          <div class="review-value">
+            ${engineModeLabel(this.engineName, this.lng)}
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">${this.t("steps.review.sources")}</div>
+          <div class="review-value">
+            ${this.sensorsToAsk.length
+              ? this.sensorsToAsk.join(", ")
+              : this.t("steps.review.from-the-service")}
+          </div>
         </div>
       </div>
       <div class="note">${this.t("steps.review.help")}</div>
@@ -618,6 +627,12 @@ class SmartIrrigationViewSetup extends LitElement {
         font-size: 0.9em;
         line-height: 1.4;
         margin: 4px 0 8px;
+      }
+      /* The recap's answers: the right-hand side of a row, reading as a
+         value rather than as something still editable. */
+      .review-value {
+        color: var(--secondary-text-color);
+        text-align: right;
       }
       /* The entity picker brings its own chrome, so it is sized like the
          other controls without taking the filled-field background. */

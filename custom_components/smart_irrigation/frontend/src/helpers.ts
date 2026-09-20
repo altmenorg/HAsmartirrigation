@@ -72,6 +72,33 @@ export function getPart(value: any, index: number) {
   value = value.toString();
   return value.split(",")[index];
 }
+/**
+ * A date and time in the language Home Assistant is running in.
+ *
+ * The panel used to format these through moment with an English pattern, so a
+ * French or German install read "Mon 21 Sep" in the middle of its own
+ * language. Intl does it from the same language the frontend is set to, with
+ * no locale data to bundle.
+ */
+export function localizedDateTime(
+  value: string | number | Date,
+  hass: any,
+  options: Intl.DateTimeFormatOptions,
+): string {
+  const date = new Date(value);
+  if (isNaN(date.getTime())) {
+    return "-";
+  }
+  const language =
+    hass?.locale?.language ?? hass?.language ?? navigator.language;
+  try {
+    return new Intl.DateTimeFormat(language, options).format(date);
+  } catch {
+    // An unknown language tag: the system default still beats a crash.
+    return date.toLocaleString();
+  }
+}
+
 export function output_unit(config, arg0: string): TemplateResult {
   switch (arg0) {
     case ZONE_DRAINAGE_RATE:
