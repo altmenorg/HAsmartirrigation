@@ -61,7 +61,30 @@ class _Coordinator(TriggersMixin, SkipConditionsMixin):
 
     @property
     def fire_count(self):
-        return self.hass.bus.fire.call_count
+        """How many times the run actually started.
+
+        Counting every event would count a skip too, now that a skipped day
+        says so rather than staying silent (#841).
+        """
+        return len(
+            [
+                call
+                for call in self.hass.bus.fire.call_args_list
+                if call.args
+                and call.args[0] == f"{const.DOMAIN}_{const.EVENT_IRRIGATE_START}"
+            ]
+        )
+
+    @property
+    def skip_count(self):
+        return len(
+            [
+                call
+                for call in self.hass.bus.fire.call_args_list
+                if call.args
+                and call.args[0] == f"{const.DOMAIN}_{const.EVENT_IRRIGATE_SKIPPED}"
+            ]
+        )
 
     async def _drain(self):
         while self._pending:
@@ -98,6 +121,8 @@ async def test_skipped_day_leaves_the_counter_to_the_midnight_reset():
     await coordinator.reach_trigger()
 
     assert coordinator.fire_count == 0
+    # Silent before: the skip is now something an automation can hear.
+    assert coordinator.skip_count == 1
     assert coordinator.days_since == 2
 
 

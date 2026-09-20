@@ -497,6 +497,10 @@ EVENT_IRRIGATE_FINISHED = "irrigation_finished"
 # Fired (as smart_irrigation_zone_problem) when a direct-control valve fails to
 # open, so users can wire a notification automation.
 EVENT_ZONE_PROBLEM = "zone_problem"
+# Fired (as smart_irrigation_irrigation_skipped) when a start trigger is reached
+# and the day is a skip day, so a skipped run is something an automation can see
+# rather than an event that simply never arrives (#841).
+EVENT_IRRIGATE_SKIPPED = "irrigation_skipped"
 
 UNIT_M2 = "m<sup>2</sup>"
 UNIT_SQ_FT = "sq ft"

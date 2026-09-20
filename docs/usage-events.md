@@ -9,11 +9,34 @@ title: Usage: Events
 > Previous: [Services](usage-services.md)<br/>
 > Next: [Automations](usage-automations.md)
 
-After installation, the following event is available:
+After installation, the following events are available:
 
 | Event | Description|
 | --- | --- |
 |`smart_irrigation_start_irrigation_all_zones`|Fired when an [irrigation start trigger](configuration-general.md) is reached. Listen to it to start your irrigation. See [automations](usage-automations.md) for examples.|
+|`smart_irrigation_irrigation_skipped`|Fired when a start trigger is reached and the day is a skip day, so nothing is watered. Data: the trigger's identity, plus `reason` (`precipitation` or `days_between`) and `checks`, the same detail the Info tab shows.|
+
+Direct valve control fires three more, described in [closed-loop irrigation](configuration-closed-loop.md).
+
+### Knowing a run was skipped
+
+A skipped day used to be the absence of an event, and nothing can listen for
+something that does not happen. That is why the skip now fires its own event:
+
+```yaml
+automation:
+  - alias: "Tell me when irrigation was skipped"
+    trigger:
+      - platform: event
+        event_type: smart_irrigation_irrigation_skipped
+    action:
+      - service: notify.persistent_notification
+        data:
+          message: "No irrigation today: {{ trigger.event.data.reason }}"
+```
+
+The Info tab answers the same question without an automation: it shows whether
+the next start would be skipped and why, and what the last real decision was.
 
 ## When does it fire?
 

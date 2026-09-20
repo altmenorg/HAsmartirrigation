@@ -469,6 +469,22 @@ class TriggersMixin:
                             "firing event",
                             name,
                         )
+                        # Say so. A skipped day used to be the absence of an
+                        # event, which an automation cannot listen for: users
+                        # ended up polling their zones hours later to find out
+                        # nothing had run (#841).
+                        self.hass.bus.fire(
+                            f"{const.DOMAIN}_{const.EVENT_IRRIGATE_SKIPPED}",
+                            {
+                                **event_data,
+                                "reason": (self._last_skip_evaluation or {}).get(
+                                    "reason"
+                                ),
+                                "checks": (self._last_skip_evaluation or {}).get(
+                                    "checks", []
+                                ),
+                            },
+                        )
                         return
                     _LOGGER.info(
                         "Rain is forecast, so only the %s sheltered zone(s) run",
