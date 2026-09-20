@@ -18,13 +18,11 @@ import {
   AUTO_UPDATE_SCHEDULE_HOURLY,
   AUTO_UPDATE_SCHEDULE_MINUTELY,
   CONF_AUTO_CALC_ENABLED,
-  CONF_AUTO_CLEAR_ENABLED,
   CONF_AUTO_UPDATE_ENABLED,
   CONF_AUTO_UPDATE_INTERVAL,
   CONF_AUTO_UPDATE_SCHEDULE,
   CONF_AUTO_UPDATE_TIME,
   CONF_CALC_TIME,
-  CONF_CLEAR_TIME,
   CONF_CONTINUOUS_UPDATES,
   CONF_SENSOR_DEBOUNCE,
   CONF_CALC_LOG_ENABLED,
@@ -139,8 +137,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         CONF_AUTO_UPDATE_SCHEDULE,
         CONF_AUTO_UPDATE_TIME,
         CONF_AUTO_UPDATE_INTERVAL,
-        CONF_AUTO_CLEAR_ENABLED,
-        CONF_CLEAR_TIME,
         CONF_CONTINUOUS_UPDATES,
         CONF_SENSOR_DEBOUNCE,
         CONF_CALC_LOG_ENABLED,
@@ -343,50 +339,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       )}",
       this.hass.language)}">${r2}</ha-card>`;
 
-      let r3 = html` <div class="card-content">
-          ${localize(
-            "panels.general.cards.automatic-clear.description",
-            this.hass.language,
-          )}
-        </div>
-        <div class="card-content">
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize(
-                "panels.general.cards.automatic-clear.labels.automatic-clear-enabled",
-                this.hass.language,
-              )}
-            </div>
-            <ha-switch
-              .checked=${this.config.autoclearenabled}
-              @change=${(e: Event) =>
-                this.handleConfigChange({
-                  autoclearenabled: (e.target as any).checked,
-                })}
-            ></ha-switch>
-          </div>
-        </div>`;
-      if (this.data.autoclearenabled) {
-        r3 = html`${r3}
-          <div class="card-content">
-            ${this._timeRow(
-              localize(
-                "panels.general.cards.automatic-clear.labels.automatic-clear-time",
-                this.hass.language,
-              ),
-              this.config.cleardatatime,
-              (v) => this.handleConfigChange({ cleardatatime: v }),
-            )}
-          </div>`;
-      }
-      r3 = html`<ha-card
-        header="${localize(
-          "panels.general.cards.automatic-clear.header",
-          this.hass.language,
-        )}"
-        >${r3}</ha-card
-      >`;
-
       let r4 = html`<div class="card-content">
           ${localize(
             "panels.general.cards.continuousupdates.description",
@@ -457,7 +409,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           <div class="card-content">
             ${localize("panels.general.description", this.hass.language)}
           </div> </ha-card
-        >${r2}${r1}${r3}${r4}${r5}${r6}${r7}${r8}${r9}${r10}`;
+        >${r2}${r1}${r4}${r5}${r6}${r7}${r8}${r9}${r10}`;
 
       return r;
     }

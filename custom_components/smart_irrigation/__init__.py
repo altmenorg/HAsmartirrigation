@@ -1361,33 +1361,33 @@ class SmartIrrigationCoordinator(
             await self.store.async_update_config(data)
 
     async def set_up_auto_clear_time(self, data):
-        """Set up the automatic clear time for Smart Irrigation based on configuration data."""
-        # unsubscribe from any existing track_time_changes
+        """No longer schedules anything, and deliberately so.
+
+        Clearing the weather data on a timer existed to stop the buffer growing
+        without end. It is not needed for that any more: each zone records how
+        far it has read, the buffer is pruned to the slowest reader after every
+        calculation, and readings are capped at a week regardless.
+
+        What it still did was destroy readings nobody had consumed. The clear
+        ran at a fixed time while the calculation time is the user's to choose,
+        so anyone who moved their calculation earlier silently lost everything
+        collected between the two, every night, and their next calculation was
+        short by that much evaporation. A calculation at 18:55 against the
+        default 23:59 clear threw away five hours a day.
+
+        The setting is left in place rather than migrated away, so nothing
+        breaks, and the manual "clear all weather data" action still works for a
+        deliberate reset.
+        """
         if self._track_auto_clear_time_unsub:
             self._track_auto_clear_time_unsub()
             self._track_auto_clear_time_unsub = None
-        if data[const.CONF_AUTO_CLEAR_ENABLED]:
-            # make sure to unsub any existing and add for clear time
-            if check_time(data[const.CONF_CLEAR_TIME]):
-                timesplit = data[const.CONF_CLEAR_TIME].split(":")
-
-                self._track_auto_clear_time_unsub = async_track_time_change(
-                    self.hass,
-                    self._async_clear_all_weatherdata,
-                    hour=timesplit[0],
-                    minute=timesplit[1],
-                    second=0,
-                )
-                _LOGGER.info(
-                    "Scheduled auto clear of weatherdata for %s",
-                    data[const.CONF_CLEAR_TIME],
-                )
-            else:
-                _LOGGER.warning(
-                    "Scheduled auto clear time is not valid: %s",
-                    data[const.CONF_CLEAR_TIME],
-                )
-                raise ValueError("Time is not a valid time")
+        if data.get(const.CONF_AUTO_CLEAR_ENABLED):
+            _LOGGER.info(
+                "Automatic clearing of weather data is no longer scheduled: the "
+                "calculation consumes what it uses and the buffer is pruned to "
+                "the zone that has read least. Nothing is lost by it being off"
+            )
         await self.store.async_update_config(data)
 
     async def track_update_time(self, *args):

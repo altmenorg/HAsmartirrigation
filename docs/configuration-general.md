@@ -15,7 +15,9 @@ If enabled, specify how often sensor update should happen (minutes, hours, days)
 As calculation needs weatherdata make sure to update your weather data at least once before calculating.
 
 ### Automatic duration calculation
-If enabled, set the time of calculation (HH:MM). Calculation uses weatherdata that is collected in updates to determine irrigation duration. After automatic calculation has happened used weatherdata is deleted.
+If enabled, set the time of calculation (HH:MM). Calculation uses weatherdata that is collected in updates to determine irrigation duration.
+
+Each zone reads only the readings that arrived since its own last calculation, and remembers how far it has read. Readings are dropped once every zone using that sensor group has consumed them, so two zones sharing a group can calculate at different times without either of them losing data.
 
 Irrigation usually starts hours after the calculation, and it can rain in between. When the start trigger is reached, each automatic zone's duration is reworked against the rain collected since its calculation, so a night of rain shortens the run or cancels it instead of watering the full calculated amount on wet ground.
 
@@ -23,8 +25,18 @@ The bucket itself is left alone by that. It is a running balance: irrigation cre
 
 Note that the run still starts at the time it was scheduled for. A trigger set to finish at sunrise works back from the duration known at calculation time, so a run shortened by rain finishes early rather than starting late.
 
-### Automatic weather data pruning
-If enabled configure time of pruning weather data. Use this to make sure that there is no left over weatherdata from previous days. Don't remove the weatherdata before you calculate and only use this option if you expect the automatic update to collect weatherdata after you calculated for the day. Ideally, you want to prune as late in the day as possible.
+### Automatic weather data pruning (removed)
+Weather data used to be cleared on a timer, and that setting no longer does anything.
+
+It existed to stop the collected data growing without end, which pruning after each
+calculation now handles by itself. What it also did was throw away readings nobody had
+consumed: the clear ran at a fixed time while the calculation time is yours to choose, so
+moving the calculation earlier silently lost everything collected between the two, every
+night. A calculation at 18:55 against the default clear at 23:59 discarded five hours of
+evaporation a day, and the next calculation was short by that much.
+
+Readings are also capped at a week, so nothing accumulates even if a zone stops calculating.
+The **Clear all weather data** action is still there for a deliberate reset.
 
 ### Days between irrigation events
 Configure the minimum number of days that must pass between irrigation events. This setting allows you to control how frequently irrigation can occur, which is useful for:
