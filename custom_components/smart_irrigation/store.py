@@ -69,6 +69,8 @@ from .const import (
     CONF_METRIC,
     CONF_OBSERVED_WATERING_ENABLED,
     CONF_PRECIPITATION_THRESHOLD_MM,
+    CONF_RECURRING_SCHEDULES,
+    CONF_SEASONAL_ADJUSTMENTS,
     CONF_SENSOR_DEBOUNCE,
     CONF_SKIP_IRRIGATION_ON_PRECIPITATION,
     CONF_UNITS,
@@ -721,6 +723,16 @@ class SmartIrrigationStorage:
                 ),
                 calc_log_enabled=data["config"].get(
                     CONF_CALC_LOG_ENABLED, CONF_DEFAULT_CALC_LOG_ENABLED
+                ),
+                # These two are configuration the user entered, not state the
+                # integration derives, and they were never read back here: a
+                # restart replaced them with the empty defaults and the next
+                # save wrote those over the file.
+                seasonal_adjustments=data["config"].get(
+                    CONF_SEASONAL_ADJUSTMENTS, CONF_DEFAULT_SEASONAL_ADJUSTMENTS
+                ),
+                recurring_schedules=data["config"].get(
+                    CONF_RECURRING_SCHEDULES, CONF_DEFAULT_RECURRING_SCHEDULES
                 ),
                 irrigation_start_triggers=data["config"].get(
                     CONF_IRRIGATION_START_TRIGGERS,
