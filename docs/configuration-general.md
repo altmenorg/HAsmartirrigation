@@ -5,6 +5,7 @@ title: Configuration: General
 # General configuration
 
 > Main page: [Configuration](configuration.md)<br/>
+> Previous: [Guided setup](configuration-setup.md)<br/>
 > Next: [Zone configuration](configuration-zones.md)
 
 This page provides the following global settings:
@@ -115,4 +116,5 @@ This ensures seamless transitions between unit systems without losing your confi
 
 
 > Main page: [Configuration](configuration.md)<br/>
+> Previous: [Guided setup](configuration-setup.md)<br/>
 > Next: [Zone configuration](configuration-zones.md)

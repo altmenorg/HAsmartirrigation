@@ -59,7 +59,7 @@ You can change the following settings on a zone:
   - _Disabled_: The zone is disabled. No updating and calculation of that zone. Setting a [module](configuration-modules.md) and [sensor group](configuration-sensor-groups.md) on the zone is optional.
 - **Module**: Choose the [calculation module](configuration-modules.md) that should be used to calculate irrigation for the zone.
 - **Sensor group**: Choose the [sensor group](configuration-sensor-groups.md) that provides the weather data for this zone.
-- **Bucket**: Either calculated or manually set. If `bucket >= 0` then no irrigation is necesarry, if `bucket < 0` irrigation is necessary. See [automations](automations.md) for examples on how to use this value to decide to irrigate.
+- **Bucket**: Either calculated or manually set. If `bucket >= 0` then no irrigation is necesarry, if `bucket < 0` irrigation is necessary. See [automations](usage-automations.md) for examples on how to use this value to decide to irrigate.
 - **Maximum bucket**: A cap on the **surplus** side of the bucket, so it only ever applies when `bucket > 0`, meaning the soil is already at field capacity. It is how much water the ground can hold on to above field capacity before the rest runs off or drains past the roots, and it doubles as the saturation reference for the drainage curve. It is not the total water your soil can hold for the plant, and it has no effect on the deficit side, so it never changes when a zone starts watering. The recommended value is based on the type of soil:
     - clay soil: 30 mm (1.18")
     - sandy soil: 12 mm (0.47"). 
