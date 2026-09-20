@@ -3907,7 +3907,12 @@ a.version="2.31.0",i(ii),a.fn=fs,a.min=oi,a.max=li,a.now=di,a.utc=m,a.unix=bs,a.
         />
       </div>
       <div class="field">
-        <label>${this.t("steps.zone.size")}</label>
+        <label
+          >${this.t("steps.zone.size")}
+          <span class="unit"
+            >${this.config?q`(${Oo(this.config,ro)})`:""}</span
+          ></label
+        >
         <input
           type="number"
           min="0"
@@ -3916,7 +3921,12 @@ a.version="2.31.0",i(ii),a.fn=fs,a.min=oi,a.max=li,a.now=di,a.utc=m,a.unix=bs,a.
         />
       </div>
       <div class="field">
-        <label>${this.t("steps.zone.throughput")}</label>
+        <label
+          >${this.t("steps.zone.throughput")}
+          <span class="unit"
+            >${this.config?q`(${Oo(this.config,oo)})`:""}</span
+          ></label
+        >
         <input
           type="number"
           min="0"
@@ -4010,6 +4020,47 @@ a.version="2.31.0",i(ii),a.fn=fs,a.min=oi,a.max=li,a.now=di,a.utc=m,a.unix=bs,a.
       }
       .field label {
         color: var(--secondary-text-color);
+      }
+      .field label .unit {
+        font-size: 0.85em;
+      }
+      /* The answers are native inputs, themed with the same MDC variables as
+         HA's own ha-textfield, exactly as the zones editor does it. Left
+         unstyled they rendered as bare boxes a third of the card wide, which
+         made the first screen of the integration look broken. */
+      .field input,
+      .field select {
+        width: 360px;
+        max-width: 100%;
+        height: 44px;
+        box-sizing: border-box;
+        padding: 0 12px;
+        border: none;
+        border-bottom: 1px solid
+          var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
+        border-radius: 4px 4px 0 0;
+        background: var(
+          --mdc-text-field-fill-color,
+          var(--input-fill-color, rgba(0, 0, 0, 0.04))
+        );
+        color: var(--primary-text-color);
+        font-size: 1rem;
+        font-family: var(--paper-font-body1_-_font-family, inherit);
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+      }
+      .field input:hover,
+      .field select:hover {
+        border-bottom-color: var(
+          --mdc-text-field-hover-line-color,
+          var(--primary-text-color)
+        );
+      }
+      .field input:focus,
+      .field select:focus {
+        outline: none;
+        border-bottom: 2px solid var(--mdc-theme-primary, var(--primary-color));
       }
 
       /* one answer, big enough to tap, readable before it is chosen */
