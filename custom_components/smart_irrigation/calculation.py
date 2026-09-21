@@ -1336,16 +1336,29 @@ class CalculationMixin:
         # drainage only applies above field capacity (bucket > 0)
         drainage = 0
         if newbucket > 0:
-            # drainage rate is related to water level, such that full drainage_rate
-            # occurs at saturation (maximum_bucket), but is reduced below that point.
-            # if maximum_bucket is not set, ignore this relationship and just
-            # drain at a constant rate.
-            drainage = drainage_rate * hour_multiplier * 24
+            hours = hour_multiplier * 24
             if maximum_bucket is not None and maximum_bucket > 0:
-                # gamma is set by uniformity of soil particle size,
-                # but 2 is a reasonable approximation.
+                # Brooks-Corey: the drainage rate is the full rate at saturation
+                # (maximum_bucket) scaled by (bucket / maximum_bucket)^n, so it is
+                # a rate law, dB/dt = -r (B/M)^n, and it falls as the surplus
+                # drains. It used to be evaluated once, at the bucket after the
+                # interval's rain, and applied over the whole interval: one
+                # 24-hour step on a curve that steep drained an 8 mm surplus
+                # completely where the law itself drains 3.7 mm and leaves 4.3.
+                # The law has an exact solution for a constant rate, so use it.
+                # gamma is set by uniformity of soil particle size, but 2 is a
+                # reasonable approximation, which makes n = 4.
                 gamma = 2
-                drainage *= (newbucket / maximum_bucket) ** ((2 + 3 * gamma) / gamma)
+                n = (2 + 3 * gamma) / gamma
+                if drainage_rate > 0 and hours > 0:
+                    remaining = (
+                        newbucket ** (1 - n)
+                        + (n - 1) * drainage_rate * hours / maximum_bucket**n
+                    ) ** (1 / (1 - n))
+                    drainage = newbucket - remaining
+            else:
+                # No saturation reference to scale by: drain at a constant rate.
+                drainage = drainage_rate * hours
             _LOGGER.debug("[calculate-module]: current_drainage: %s", drainage)
             newbucket = max(0, newbucket - drainage)
 
@@ -1390,7 +1403,15 @@ class CalculationMixin:
                 "module.calculation.explanation.maximum-bucket-is",
                 self.hass.config.language,
             )
-            + f" {float(maximum_bucket):.1f} mm"
+            # A zone may have no maximum bucket: the schema allows it, and
+            # clearing the field in the panel sends null. The drainage handles
+            # that case; this line used to raise on it and take the whole
+            # calculation of the zone down with it.
+            + (
+                f" {float(maximum_bucket):.1f} mm"
+                if maximum_bucket is not None
+                else " -"
+            )
         )
         explanation += (
             ".<br/>"
@@ -1439,7 +1460,14 @@ class CalculationMixin:
             if maximum_bucket is None or maximum_bucket <= 0:
                 explanation += f" [{drainage_rate_loc}] * {hours_loc} = {drainage_rate:.1f} * {24 * hour_multiplier:.2f} = {drainage:.2f} mm"
             else:
-                explanation += f" [{drainage_rate_loc}] * [{hours_loc}] * (min([{old_bucket_loc}] + [{delta_loc}], [{max_bucket_loc}]) / [{max_bucket_loc}])^4 = {drainage_rate:.1f} * {24 * hour_multiplier:.2f} * ({bucket_plus_delta_capped:.2f} / {maximum_bucket:.1f})^4 = {drainage:.2f} mm"
+                start = f"min([{old_bucket_loc}] + [{delta_loc}], [{max_bucket_loc}])"
+                explanation += (
+                    f" {start} - ({start}^-3 + 3 * [{drainage_rate_loc}] * [{hours_loc}]"
+                    f" / [{max_bucket_loc}]^4)^(-1/3)"
+                    f" = {bucket_plus_delta_capped:.2f} - ({bucket_plus_delta_capped:.2f}^-3"
+                    f" + 3 * {drainage_rate:.1f} * {24 * hour_multiplier:.2f}"
+                    f" / {maximum_bucket:.1f}^4)^(-1/3) = {drainage:.2f} mm"
+                )
         explanation += ".<br/>" + await localize(
             "module.calculation.explanation.new-bucket-values-is",
             self.hass.config.language,
