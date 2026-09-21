@@ -45,6 +45,11 @@ class LiveEstimateMixin:
         if not mapping or not mapping.get(const.MAPPING_DATA):
             return None
 
+        # A real calculation keeps its audit record here until it writes it,
+        # across awaits this estimate can run between. Computing the estimate
+        # would replace it, and the log would then record the estimate as the
+        # calculation.
+        pending_record = getattr(self, "_pending_calc_record", None)
         try:
             # persist=False: this must not become the mapping's last
             # calculation, or the real one would then see an empty window.
@@ -63,6 +68,8 @@ class LiveEstimateMixin:
                 "Live estimate unavailable for zone %s: %s", zone.get(const.ZONE_ID), e
             )
             return None
+        finally:
+            self._pending_calc_record = pending_record
 
         if not calc or const.ZONE_BUCKET not in calc:
             return None

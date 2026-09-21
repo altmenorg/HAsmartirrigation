@@ -134,3 +134,31 @@ async def test_disabled_zones_are_left_out():
     estimates = await coord.async_estimate_all_zones_now()
 
     assert set(estimates) == {"1"}
+
+
+async def test_an_estimate_leaves_a_pending_calculation_record_alone():
+    """The record a real calculation is about to write must not become the
+    estimate's, which the calculation log would then record as the run."""
+    from unittest.mock import AsyncMock, MagicMock
+
+    from custom_components.smart_irrigation import SmartIrrigationCoordinator
+
+    coordinator = SmartIrrigationCoordinator.__new__(SmartIrrigationCoordinator)
+    coordinator.store = MagicMock()
+    coordinator.store.get_mapping = MagicMock(
+        return_value={const.MAPPING_DATA: [{"x": 1}]}
+    )
+    coordinator.apply_aggregates_to_mapping_data = AsyncMock(
+        return_value={const.MAPPING_DATA_MULTIPLIER: 1.0}
+    )
+
+    async def estimate_calc(zone, weatherdata, forecast):
+        coordinator._pending_calc_record = {"estimate": True}
+        return {const.ZONE_BUCKET: -1.0}
+
+    coordinator.calculate_module = estimate_calc
+    coordinator._pending_calc_record = {"real": True}
+
+    await coordinator.async_estimate_zone_now({const.ZONE_MAPPING: 1})
+
+    assert coordinator._pending_calc_record == {"real": True}
