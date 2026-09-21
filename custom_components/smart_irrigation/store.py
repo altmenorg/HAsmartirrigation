@@ -45,6 +45,7 @@ from .const import (
     CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED,
     CONF_DEFAULT_DRAINAGE_RATE,
     CONF_DEFAULT_GREENHOUSE,
+    CONF_DEFAULT_HOURLY_CALCULATION,
     CONF_DEFAULT_IRRIGATION_START_TRIGGERS,
     CONF_DEFAULT_IRRIGATION_THRESHOLD,
     CONF_DEFAULT_MAXIMUM_BUCKET,
@@ -60,6 +61,7 @@ from .const import (
     CONF_DEFAULT_ZONE_INPUT_METHOD,
     CONF_DEFAULT_ZONE_SEQUENCING,
     CONF_DIRECT_VALVE_CONTROL_ENABLED,
+    CONF_HOURLY_CALCULATION,
     CONF_IMPERIAL,
     CONF_IRRIGATION_START_TRIGGERS,
     CONF_MANUAL_COORDINATES_ENABLED,
@@ -461,6 +463,9 @@ class Config:
     continuousupdates = attr.ib(
         type=bool, default=CONF_DEFAULT_CONTINUOUS_UPDATES
     )  # continuous updates are disabled by default for now
+    # Reference ET summed hour by hour (FAO-56 Eq. 53) instead of the daily
+    # equation on the window's means. Off by default while in beta.
+    hourly_calculation = attr.ib(type=bool, default=CONF_DEFAULT_HOURLY_CALCULATION)
     sensor_debounce = attr.ib(type=int, default=CONF_DEFAULT_SENSOR_DEBOUNCE)
     # Opt-in calculation audit log (#12): append every calculation's inputs,
     # intermediates and outputs to a JSON Lines file so days can be diffed.
@@ -668,6 +673,7 @@ class SmartIrrigationStorage:
             cleardatatime=CONF_DEFAULT_CLEAR_TIME,
             starteventfiredtoday=False,
             continuousupdates=CONF_DEFAULT_CONTINUOUS_UPDATES,
+            hourly_calculation=CONF_DEFAULT_HOURLY_CALCULATION,
             sensor_debounce=CONF_DEFAULT_SENSOR_DEBOUNCE,
             calc_log_enabled=CONF_DEFAULT_CALC_LOG_ENABLED,
         )
@@ -717,6 +723,9 @@ class SmartIrrigationStorage:
                 starteventfiredtoday=data["config"].get(START_EVENT_FIRED_TODAY, False),
                 continuousupdates=data["config"].get(
                     CONF_CONTINUOUS_UPDATES, CONF_DEFAULT_CONTINUOUS_UPDATES
+                ),
+                hourly_calculation=data["config"].get(
+                    CONF_HOURLY_CALCULATION, CONF_DEFAULT_HOURLY_CALCULATION
                 ),
                 sensor_debounce=data["config"].get(
                     CONF_SENSOR_DEBOUNCE, CONF_DEFAULT_SENSOR_DEBOUNCE

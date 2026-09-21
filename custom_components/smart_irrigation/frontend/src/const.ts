@@ -15,6 +15,7 @@ export const CONF_AUTO_UPDATE_INTERVAL = "autoupdateinterval";
 export const CONF_AUTO_CLEAR_ENABLED = "autoclearenabled";
 export const CONF_CLEAR_TIME = "cleardatatime";
 export const CONF_CONTINUOUS_UPDATES = "continuousupdates";
+export const CONF_HOURLY_CALCULATION = "hourly_calculation";
 export const CONF_SENSOR_DEBOUNCE = "sensor_debounce";
 export const CONF_CALC_LOG_ENABLED = "calc_log_enabled";
 

@@ -214,6 +214,32 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             )}
           </div>`;
       }
+      // Applies to every calculation, automatic or not, so it sits outside
+      // the auto-calc condition above.
+      r1 = html`${r1}
+        <div class="card-content">
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize(
+                "panels.general.cards.automatic-duration-calculation.labels.hourly-calculation",
+                this.hass.language,
+              )}
+              <div class="setting-hint">
+                ${localize(
+                  "panels.general.cards.automatic-duration-calculation.labels.hourly-calculation-hint",
+                  this.hass.language,
+                )}
+              </div>
+            </div>
+            <ha-switch
+              .checked=${this.config.hourly_calculation}
+              @change=${(e: Event) =>
+                this.handleConfigChange({
+                  hourly_calculation: (e.target as any).checked,
+                })}
+            ></ha-switch>
+          </div>
+        </div>`;
       r1 = html`<ha-card
         header="${localize(
           "panels.general.cards.automatic-duration-calculation.header",

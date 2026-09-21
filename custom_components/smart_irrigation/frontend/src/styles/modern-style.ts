@@ -134,6 +134,13 @@ export const modernStyle = css`
     font-weight: 400;
     font-size: 0.85em;
   }
+  .setting-hint {
+    font-size: 0.8rem;
+    font-weight: normal;
+    color: var(--secondary-text-color);
+    margin-top: 2px;
+    max-width: 460px;
+  }
 
   /* --- per-field sub-group: section heading + its controls (shared by views) --- */
   .si-subgroup {

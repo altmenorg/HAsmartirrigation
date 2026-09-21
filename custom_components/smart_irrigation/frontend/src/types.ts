@@ -31,6 +31,7 @@ export class SmartIrrigationConfig {
   cleardatatime: string;
   autoclearenabled: boolean;
   continuousupdates: boolean;
+  hourly_calculation: boolean;
   sensor_debounce: number;
   irrigation_start_triggers: IrrigationStartTrigger[];
   active_start_trigger: string;
@@ -60,6 +61,8 @@ export class SmartIrrigationConfig {
     this.cleardatatime = "23:59";
     // continuousupdates are disabled by default
     this.continuousupdates = false;
+    // the hourly calculation is in beta and off by default
+    this.hourly_calculation = false;
     this.sensor_debounce = 100;
     this.irrigation_start_triggers = [];
     this.active_start_trigger = "default";

@@ -91,6 +91,7 @@ class SmartIrrigationConfigView(HomeAssistantView):
                 vol.Optional(const.CONF_AUTO_CLEAR_ENABLED): cv.boolean,
                 vol.Optional(const.CONF_CLEAR_TIME): cv.string,
                 vol.Optional(const.CONF_CONTINUOUS_UPDATES): cv.boolean,
+                vol.Optional(const.CONF_HOURLY_CALCULATION): cv.boolean,
                 vol.Optional(const.CONF_SENSOR_DEBOUNCE): cv.string,
                 vol.Optional(const.CONF_CALC_LOG_ENABLED): cv.boolean,
                 vol.Optional(const.CONF_USE_WEATHER_SERVICE): cv.boolean,

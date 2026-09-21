@@ -240,6 +240,11 @@ CONF_DEFAULT_MAXIMUM_BUCKET = 24  # mm default maximum bucket of 24mm
 CONF_DEFAULT_DRAINAGE_RATE = 50.8  # mm / hour (=2 inch per hour)
 CONF_DEFAULT_CONTINUOUS_UPDATES = False  # continuous updates are disabled by default
 CONF_CONTINUOUS_UPDATES = "continuousupdates"
+# Price the evapotranspiration of a calculation hour by hour (FAO-56 Eq. 53)
+# instead of running the daily equation on the window and scaling it. Off by
+# default while it is new: switching it on changes every zone's ET.
+CONF_HOURLY_CALCULATION = "hourly_calculation"
+CONF_DEFAULT_HOURLY_CALCULATION = False
 CONF_SENSOR_DEBOUNCE = "sensor_debounce"
 CONF_DEFAULT_SENSOR_DEBOUNCE = 100  # milliseconds, 0 = disabled
 

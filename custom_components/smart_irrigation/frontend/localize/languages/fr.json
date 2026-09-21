@@ -53,6 +53,7 @@
       "explanation": {
         "formatting-note": "NB: cette explication utilise '.' comme séparateur décimal, et affiche des valeurs arrondies.",
         "module-returned-evapotranspiration-deficiency": "Le module a donné un manque d'évapotranspiration de la culture ( = et0 * hour_multiplier * Kc + précipitations) de",
+        "module-returned-hourly-evapotranspiration-deficiency": "Le module a additionné heure par heure le manque d'évapotranspiration de la culture ( = somme des et0 horaires * Kc + précipitations) sur",
         "crop-factor-is": "Le coefficient cultural est",
         "bucket-was": "Le seau (bucket) était de",
         "new-bucket-values-is": "La nouvelle valeur du seau (bucket) est",
@@ -215,7 +216,9 @@
           "description": "Le calcul prend en compte les données météo jusqu'à ce point et met à jour le seau (bucket) pour chaque zone automatique. Ensuite, la durée est ajustée par la nouvelle valeur de seau (bucket) et les données météo sont supprimées.",
           "labels": {
             "auto-calc-enabled": "Calcule automatiquement la durée par zone",
-            "calc-time": "Calculer à"
+            "calc-time": "Calculer à",
+            "hourly-calculation": "Calculer l'évapotranspiration heure par heure (bêta)",
+            "hourly-calculation-hint": "Additionne l'équation horaire de la FAO-56 sur chaque heure depuis le dernier calcul, au lieu d'appliquer l'équation journalière aux moyennes. Seulement avec PyETO, une source de rayonnement solaire et sans jours de prévision ; sinon l'équation journalière reste utilisée."
           }
         },
         "automatic-update": {

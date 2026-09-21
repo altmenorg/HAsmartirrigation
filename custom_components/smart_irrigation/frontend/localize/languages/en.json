@@ -53,6 +53,7 @@
       "explanation": {
         "formatting-note": "Note: this explanation uses '.' as decimal separator, shows rounded and metric values.",
         "module-returned-evapotranspiration-deficiency": "Module returned Crop evapotranspiration deficiency ( = et0 * hour_multiplier * Kc + precipitation) of",
+        "module-returned-hourly-evapotranspiration-deficiency": "Module summed the Crop evapotranspiration deficiency hour by hour ( = sum of hourly et0 * Kc + precipitation) over",
         "crop-factor-is": "Crop factor is",
         "bucket-was": "Bucket was",
         "new-bucket-values-is": "New bucket value is",
@@ -217,7 +218,9 @@
           "description": "Calculation takes collected weather data up to that point and updates the bucket for each automatic zone. Then, the duration is adjusted based on the new bucket value and the collected weather data is removed.",
           "labels": {
             "auto-calc-enabled": "Automatically calculate irrigation durations",
-            "calc-time": "Calculate at"
+            "calc-time": "Calculate at",
+            "hourly-calculation": "Calculate evapotranspiration hour by hour (beta)",
+            "hourly-calculation-hint": "Sums the FAO-56 hourly equation over each hour since the last calculation, instead of applying the daily equation to the averages. Only for PyETO with a solar radiation source and no forecast days; anything else keeps the daily equation."
           }
         },
         "automatic-update": {

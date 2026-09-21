@@ -17,6 +17,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 from . import const
 from .calc_log import timestamps as calc_log_timestamps
 from .helpers import convert_between, loadModules, parse_datetime
+from .hourly_rows import SystemLocalTime, summed_hourly_eto
 from .localize import localize
 
 _LOGGER = logging.getLogger(__name__)
@@ -902,6 +903,64 @@ class CalculationMixin:
             last_calc_data,
         )
 
+    def _hourly_reference_et(self, zone, modinst):
+        """Reference ET summed hour by hour over the zone's window, or None.
+
+        ``(total_mm, hours)`` when the hourly calculation is switched on and the
+        window supports it. None in every other case, and then the caller runs
+        the daily equation exactly as before:
+
+        - the setting is off, which is the default;
+        - the engine averages forecast days, which only the daily form can do;
+        - the sensor group has no readings, or no measured solar radiation, or
+          a required field missing everywhere: the hourly equation needs the
+          hour's own sun, and summing an estimated one would be a guess;
+        - the site has no coordinates, since placing the sun needs them.
+
+        The window is the zone's own, from its mark to now, the same one the
+        daily path reads, so switching forms never moves where a calculation
+        starts or ends.
+        """
+        config = self.store.get_config() or {}
+        if not config.get(const.CONF_HOURLY_CALCULATION):
+            return None
+        if getattr(modinst, "forecast_days", 0):
+            return None
+        mapping = self.store.get_mapping(zone.get(const.ZONE_MAPPING))
+        if not mapping or not mapping.get(const.MAPPING_DATA):
+            return None
+        sourced = self._sourced_fields(mapping)
+        last_entry = {
+            key: value
+            for key, value in (mapping.get(const.MAPPING_DATA_LAST_ENTRY) or {}).items()
+            if key in sourced
+        }
+        result = summed_hourly_eto(
+            mapping.get(const.MAPPING_DATA),
+            self.zone_window_start(zone),
+            now=datetime.now(),
+            last_entry=last_entry,
+            latitude=getattr(self, "_effective_latitude", None),
+            longitude=getattr(self, "_effective_longitude", None),
+            elevation=getattr(self, "_effective_elevation", None) or 0.0,
+            tz=SystemLocalTime(),
+        )
+        if result is None:
+            _LOGGER.debug(
+                "[calculate-module]: zone %s: the window will not reduce to hourly "
+                "rows, keeping the daily equation",
+                zone.get(const.ZONE_ID),
+            )
+            return None
+        _LOGGER.debug(
+            "[calculate-module]: zone %s: %.3f mm of reference ET summed over "
+            "%.2f hours",
+            zone.get(const.ZONE_ID),
+            result[0],
+            result[1],
+        )
+        return result
+
     @staticmethod
     def _sourced_fields(mapping) -> set:
         """The sensor group's fields that something currently reports.
@@ -1259,11 +1318,18 @@ class CalculationMixin:
         size_metric = None
 
         precip = 0
+        # Set when the ET below already covers the whole window, as the hourly
+        # sum does. Scaling it by the interval again would count it twice.
+        hourly = None
         if m[const.MODULE_NAME] == "PyETO":
-            # pyeto expects pressure in hpa, solar radiation in mj/m2/day and wind speed in m/s
-            delta = modinst.calculate(
-                weather_data=weatherdata, forecast_data=forecastdata
-            )
+            hourly = self._hourly_reference_et(zone, modinst)
+            if hourly is not None:
+                delta = -hourly[0]
+            else:
+                # pyeto expects pressure in hpa, solar radiation in mj/m2/day and wind speed in m/s
+                delta = modinst.calculate(
+                    weather_data=weatherdata, forecast_data=forecastdata
+                )
             precip = self._precipitation_net_of_superseded(zone, weatherdata)
         elif m[const.MODULE_NAME] == "Static":
             delta = modinst.calculate()
@@ -1307,7 +1373,7 @@ class CalculationMixin:
             crop_factor,
             hour_multiplier,
         )
-        delta = delta * hour_multiplier + precip
+        delta = delta * (1.0 if hourly is not None else hour_multiplier) + precip
         data[const.ZONE_DELTA] = delta
         _LOGGER.debug("[calculate-module]: new delta: %s", delta)
         newbucket = bucket + delta
@@ -1375,13 +1441,23 @@ class CalculationMixin:
             )
             + "<br/><br/>"
         )
-        explanation += (
-            await localize(
-                "module.calculation.explanation.module-returned-evapotranspiration-deficiency",
-                self.hass.config.language,
+        if hourly is not None:
+            explanation += (
+                await localize(
+                    "module.calculation.explanation.module-returned-hourly-evapotranspiration-deficiency",
+                    self.hass.config.language,
+                )
+                + f" {hourly[1]:.1f} h:"
+                + f" {data[const.ZONE_DELTA]:.2f} mm."
             )
-            + f" {data[const.ZONE_DELTA]:.2f} mm."
-        )
+        else:
+            explanation += (
+                await localize(
+                    "module.calculation.explanation.module-returned-evapotranspiration-deficiency",
+                    self.hass.config.language,
+                )
+                + f" {data[const.ZONE_DELTA]:.2f} mm."
+            )
         explanation += (
             " "
             + await localize(
@@ -1686,6 +1762,7 @@ class CalculationMixin:
                 "throughput": throughput_metric,
                 "size": size_metric,
                 "duration": duration,
+                "hourly": hourly,
             },
         )
         return data
@@ -1815,7 +1892,17 @@ class CalculationMixin:
                 },
                 "forecast_records": len(forecastdata) if forecastdata else 0,
             },
-            "module": getattr(modinst, "last_trace", None),
+            # The hourly sum does not call the module, whose last trace would
+            # then describe some earlier calculation instead of this one.
+            "module": (
+                {
+                    "form": "hourly",
+                    "reference_et": values["hourly"][0],
+                    "hours": values["hourly"][1],
+                }
+                if values.get("hourly") is not None
+                else getattr(modinst, "last_trace", None)
+            ),
             "outputs": {
                 "et_deficiency": values.get("et_deficiency"),
                 "hour_multiplier": values.get("hour_multiplier"),
