@@ -77,15 +77,22 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   }
 
   // Debounced save operation for better performance
+  // The changes waiting are merged, not replaced: keeping only the last one
+  // lost any other setting changed within the half second, such as a switch
+  // turned on just before its threshold was typed in.
   private debouncedSave = (() => {
     let timeoutId: number | null = null;
+    let pending: Partial<SmartIrrigationConfig> = {};
     return (changes: Partial<SmartIrrigationConfig>) => {
+      pending = { ...pending, ...changes };
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
       timeoutId = window.setTimeout(() => {
-        this.saveData(changes);
+        const batch = pending;
+        pending = {};
         timeoutId = null;
+        this.saveData(batch);
       }, 500); // 500ms debounce
     };
   })();

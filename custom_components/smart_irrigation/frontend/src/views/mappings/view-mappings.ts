@@ -107,6 +107,8 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
   private _suppressNextConfigUpdate = false;
 
   private debounceTimers = new Map<number, number>();
+  // The groups edited since the last save, by id, each at its latest state.
+  private _pendingMappings = new Map<number, SmartIrrigationMapping>();
   private globalDebounceTimer: number | null = null;
 
   // Cache for rendered mapping cards to avoid re-rendering unchanged ones
@@ -535,6 +537,13 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
       this.mappingCache.delete(updatedMapping.id.toString());
     }
 
+    // Every group edited before the timer fires is saved, not only the last
+    // one: the timer is shared, and keeping just the latest group dropped the
+    // edit of another group made within the half second.
+    if (updatedMapping.id !== undefined) {
+      this._pendingMappings.set(updatedMapping.id, updatedMapping);
+    }
+
     // Use global debounce to reduce timer overhead
     if (this.globalDebounceTimer) {
       clearTimeout(this.globalDebounceTimer);
@@ -542,10 +551,12 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
 
     // Debounce saving to avoid excessive API calls during rapid editing
     this.globalDebounceTimer = window.setTimeout(() => {
+      const batch = [...this._pendingMappings.values()];
+      this._pendingMappings.clear();
       this.isSaving = true;
       // Ignore the _config_updated echo this save triggers (see flag declaration).
       this._suppressNextConfigUpdate = true;
-      this.saveToHA(updatedMapping)
+      Promise.all(batch.map((mapping) => this.saveToHA(mapping)))
         .catch((error) => {
           // Save failed: clear the guard so it doesn't swallow a later refresh.
           this._suppressNextConfigUpdate = false;
