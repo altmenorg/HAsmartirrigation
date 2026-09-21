@@ -1,84 +1,54 @@
 # Contributing to Smart Irrigation
 
-## Development Setup
+Smart Irrigation is the official integration, listed by default in HACS and used on a lot of real gardens. Contributions are welcome, and they are reviewed: a pull request gets an answer within a few days, and what is merged is credited by name in the release notes.
 
-### Prerequisites
-- Python 3.13.2 or higher
-- Git
-- on Windows:
-   - Microsoft Visual C++ 14.0 or greater # Get it with "Microsoft C++ Build Tools": https://visualstudio.microsoft.com/visual-cpp-build-tools/
+## Before you start
 
-### Quick Start
+- **Bugs**: open an issue with what you expected, what you got, and if you can, the diagnostics file (Settings > Devices & Services > Smart Irrigation > Download diagnostics). It redacts your coordinates and API key.
+- **Ideas**: open a discussion first for anything larger than a fix, so we can agree on the design before you spend time on code.
+- **Scope**: Smart Irrigation decides *whether and how long* to water, and can drive one valve per zone. Controlling hardware beyond that (master valves, pumps, pressure, third-party controllers) belongs to other integrations; bridges to them, such as blueprints, are welcome.
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd HAsmartirrigation
-   ```
-
-2. **Set up development environment**
-   ```bash
-   make setup
-   ```
-   This will create a Python 3.13 virtual environment and install all dependencies.
-
-3. **Activate the environment**
-   ```bash
-   source .venv/bin/activate
-   ```
-
-4. **Set up environment variables** (for testing)
-   ```bash
-   cp .env.example .env
-   # Edit .env with your API keys
-   ```
-
-### Running Tests
+## Setting up
 
 ```bash
-make test
+git clone https://github.com/altmenorg/HAsmartirrigation
+cd HAsmartirrigation
+make setup            # a virtual environment with the test requirements
+source .venv/bin/activate
 ```
 
-### Code Quality
+On Windows without `make`: `python -m venv .venv`, then `.venv\Scripts\activate` and `pip install -r requirements.test.txt`.
 
-**All CI checks:**
-```bash
-make check    # Run all CI quality checks
-```
+Work on the `dev` branch; `master` only receives releases.
 
-**Individual commands:**
-```bash
-make format   # Format code (black)
-make lint     # Lint code (ruff)
-```
+## Checks
 
-### Available Make Commands
-
-Run `make help` to see all available commands:
-```bash
-make help
-```
-
-### Pre-commit Hooks
-
-Install pre-commit hooks to automatically run checks:
+Every pull request runs these, and they must pass:
 
 ```bash
-pre-commit install
+pytest tests/                                       # the test suite
+black --check custom_components/smart_irrigation/   # formatting
+ruff check custom_components/smart_irrigation/      # lint
 ```
 
-### Deactivating Environment
-
-When you're done developing:
+The panel lives in `custom_components/smart_irrigation/frontend/` (TypeScript and Lit, Node 20):
 
 ```bash
-deactivate
+cd custom_components/smart_irrigation/frontend
+npm ci
+npm run build   # the bundle in dist/ is committed with the change
+npx vitest run  # the panel's tests
 ```
 
-## Project Structure
+Language files in `frontend/localize/languages/` are compiled into the bundle, so a text change needs a rebuild too.
 
-- `custom_components/smart_irrigation/` - Main component code
-- `tests/` - Unit tests
-- `test_*.py` - Integration test scripts
-- `requirements-dev.txt` - Development dependencies
-- `requirements.test.txt` - Testing dependencies
+## What makes a change easy to merge
+
+- **A test that fails without it.** For a bug, the test reproduces it; for a calculation, it checks a known reference (FAO-56 examples, a hand-computed value) rather than whatever the code currently returns.
+- **One change per pull request**, with a commit message that says what was wrong and why the fix is right.
+- **Compatibility**: existing installs must keep working after an update. A change to what is stored needs a migration, and a change to what users see or to the numbers it produces is announced in the release notes.
+- English for code, comments, commits and pull requests.
+
+## Credits
+
+Code or ideas taken from elsewhere are credited: in the code, in the commit, and in the release notes. Please do the same when you bring something in.
