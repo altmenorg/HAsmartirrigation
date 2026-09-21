@@ -37,18 +37,16 @@ Multiple zones are supported, each zone having its own configuration and set up.
 </p>
 
 <p align="center">
+  <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/images/panel-info.png" alt="Info page: the next run and whether it will be skipped" width="420">
   <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/images/panel-sensor-groups.png" alt="Sensor groups configuration" width="420">
-  <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/images/panel-backup-restore.png" alt="Backup / restore" width="420">
 </p>
 
 ## Installation
 
-**Via HACS (recommended).** Smart Irrigation is distributed as a HACS **custom repository**:
+**Via HACS (recommended).** Smart Irrigation is in the HACS default store, so there is no repository to add:
 
-1. In [HACS](https://hacs.xyz), open the **⋮ menu → Custom repositories**.
-2. Add `https://github.com/altmenorg/HAsmartirrigation` with category **Integration**, and confirm.
-3. Search for **Smart Irrigation** in HACS and click **Download**.
-4. **Restart Home Assistant**, then add it from *Settings → Devices & Services → Add Integration → Smart Irrigation*.
+1. In [HACS](https://hacs.xyz), search for **Smart Irrigation** and click **Download**.
+2. **Restart Home Assistant**, then add it from *Settings → Devices & Services → Add Integration → Smart Irrigation*.
 
 **Manually.** Download the [latest release](https://github.com/altmenorg/HAsmartirrigation/releases) and extract it into `custom_components/smart_irrigation/`, then restart Home Assistant.
 
