@@ -220,13 +220,21 @@ class ServiceHandlersMixin:
                     raise SmartIrrigationError(
                         "Can only set duration if zone state is set to manual."
                     )
-                if v == const.ATTR_NEW_BUCKET_VALUE and data[v] > zone.get(
-                    const.ZONE_MAXIMUM_BUCKET
+                # A zone may have no maximum bucket; comparing with None
+                # raised a TypeError instead of setting the value.
+                maximum = zone.get(const.ZONE_MAXIMUM_BUCKET)
+                if (
+                    v == const.ATTR_NEW_BUCKET_VALUE
+                    and maximum is not None
+                    and data[v] > maximum
                 ):
                     raise SmartIrrigationError(
                         "Bucket size is above maximmum bucket allowed value."
                     )
-                if v == const.ATTR_NEW_STATE_VALUE and data[v] in const.ZONE_STATE:
+                # This checked the value against the key's own name, "state",
+                # as a substring, so it rejected nothing and a misspelt state
+                # left the zone outside every automatic and manual path.
+                if v == const.ATTR_NEW_STATE_VALUE and data[v] not in const.ZONE_STATES:
                     raise SmartIrrigationError(
                         f"Invalid value ({data[v]}) for zone state."
                     )
@@ -241,6 +249,20 @@ class ServiceHandlersMixin:
                 raise SmartIrrigationError("No valid parameter provided")
 
             if count > 0:
+                # A bucket set here asserts the soil's state as set_bucket
+                # does, so the weather before it must leave the zone's next
+                # window the same way; written straight to the store, it was
+                # counted again on top of the value set (#811).
+                if const.ZONE_BUCKET in zone_data:
+                    zone_data = await self._supersede_precipitation_on_bucket_set(
+                        zone_id,
+                        {
+                            **zone_data,
+                            const.ATTR_NEW_BUCKET_VALUE: zone_data.pop(
+                                const.ZONE_BUCKET
+                            ),
+                        },
+                    )
                 await self.store.async_update_zone(zone_id, zone_data)
                 async_dispatcher_send(
                     self.hass,
