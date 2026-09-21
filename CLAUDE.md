@@ -3,8 +3,11 @@
 > **👉 First, read `HANDOFF.md` at the repo root** (it's local / gitignored). It holds the
 > current work state, the full session log, the TODO list (translations in progress), and the
 > **build & deploy** process (Node, frontend build, deploying to the test HAOS, reload/restart).
-> If `HANDOFF.md` is missing (fresh clone elsewhere), ask the user for it — it carries the
-> personal infra details that are kept out of this public repo.
+> If `HANDOFF.md` is missing (fresh clone elsewhere), it lives in the maintainer's private repo
+> `altmenorg/HAsmartirrigation-notes`: clone it next to this working copy and run
+> `./sync.sh pull` (it also restores the Claude memory, `deploy.sh` and `CLAUDE.local.md`).
+> Run `./sync.sh push` there at the end of a session so the other machine gets it. If the
+> repo is not reachable, ask the user.
 
 > **👉 Also read `CLAUDE.local.md`** if present (local / gitignored). It links the maintainer's
 > product roadmap notes (future of Smart Irrigation: competitive analysis, greenhouse mode,
