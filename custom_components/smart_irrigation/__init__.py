@@ -616,33 +616,6 @@ class SmartIrrigationCoordinator(
         # relies on the ContextVar to discover it.
         super().__init__(hass, _LOGGER, name=const.DOMAIN, config_entry=entry)
 
-    def _get_config_value(self, key: str, default_value):
-        """Get configuration value from Home Assistant config, entry data, or options with fallback to default.
-
-        Args:
-            key: Configuration key to look up (e.g., CONF_LATITUDE, CONF_ELEVATION)
-            default_value: Default value to use if not found anywhere
-
-        Returns:
-            The configuration value or default_value if not found
-
-        """
-        # Try Home Assistant config first (most reliable)
-        value = self.hass.config.as_dict().get(key)
-        if value is not None:
-            return value
-
-        # Try config entry data
-        if hasattr(self.entry, "data") and key in self.entry.data:
-            return self.entry.data[key]
-
-        # Try config entry options
-        if hasattr(self.entry, "options") and key in self.entry.options:
-            return self.entry.options[key]
-
-        # Fall back to default
-        return default_value
-
     def _get_effective_coordinates(self):
         """Get the effective coordinates to use for weather services and calculations.
 

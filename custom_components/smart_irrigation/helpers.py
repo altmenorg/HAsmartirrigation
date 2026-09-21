@@ -81,20 +81,6 @@ from .weathermodules.PirateWeatherClient import PirateWeatherClient
 _LOGGER = logging.getLogger(__name__)
 
 
-def friendly_name_for_entity_id(entity_id: str, hass: HomeAssistant):
-    """Return the friendly name for an entity."""
-    state = hass.states.get(entity_id)
-    if state and state.attributes.get("friendly_name"):
-        return state.attributes["friendly_name"]
-
-    return entity_id
-
-
-def omit(obj: dict, blacklisted_keys: list):
-    """Return a copy of obj omitting keys present in blacklisted_keys."""
-    return {key: val for key, val in obj.items() if key not in blacklisted_keys}
-
-
 def check_time(itime):
     """Check time."""
     # Add type safety for None and non-string inputs
@@ -651,25 +637,6 @@ def convert_temperatures(from_unit, to_unit, val):
     return None
 
 
-def check_reference_et(reference_et):
-    """Check reference et values here."""
-    try:
-        if len(reference_et) != 12:
-            return False
-        all_floats = True
-        for ref in reference_et:
-            if not isinstance(ref, float):
-                all_floats = False
-                break
-        # test that max > 0
-        if all_floats and max(reference_et) == 0:
-            return False
-    except (TypeError, ValueError):
-        return False
-    else:
-        return all_floats
-
-
 def relative_to_absolute_pressure(pressure, height):
     """The pressure at the site from a sea-level ("relative") pressure, in hPa.
 
@@ -779,20 +746,6 @@ def loadModules(moduleDir=None):
                     res[d] = {"module": mod, "class": classname}
         return res
     return None
-
-
-def convert_list_to_dict(lst):
-    """Convert list to dict."""
-    res_dict = {}
-    for i in range(0, len(lst), 1):
-        # print(i)
-        # print(lst[i])
-        if isinstance(lst[i], str):
-            if i + 1 >= len(lst) or isinstance(lst[i + 1], str):
-                res_dict[lst[i]] = None
-            else:
-                res_dict[lst[i]] = lst[i + 1]
-    return res_dict
 
 
 def _quantity_source(value):

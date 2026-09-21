@@ -362,13 +362,6 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
             _LOGGER.warning("Error reading forecast data from Open-Meteo: %s", ex)
             return None
 
-    def _daily_value(self, doc, key, index, default):
-        """Safely read doc['daily'][key][index]."""
-        try:
-            return doc["daily"][key][index]
-        except (KeyError, IndexError, TypeError):
-            return default
-
     def _hourly_daily_means(self, doc):
         """Average the hourly humidity/pressure/dew point/wind per calendar day."""
         hourly = doc.get("hourly")

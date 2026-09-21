@@ -342,10 +342,6 @@ class RecurringScheduleManager:
 
         return f"schedule_{uuid.uuid4().hex[:8]}"
 
-    def get_schedules(self) -> list[dict[str, Any]]:
-        """Get all schedules."""
-        return self._schedules.copy()
-
 
 class SeasonalAdjustmentManager:
     """Manages seasonal adjustments for Smart Irrigation."""
@@ -519,7 +515,3 @@ class SeasonalAdjustmentManager:
         """Generate a unique adjustment ID."""
 
         return f"adjustment_{uuid.uuid4().hex[:8]}"
-
-    def get_adjustments(self) -> list[dict[str, Any]]:
-        """Get all adjustments."""
-        return self._adjustments.copy()
