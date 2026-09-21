@@ -132,3 +132,50 @@ async def test_zone_scoped_config_update_is_ignored(number_entity):
     entity._async_refresh(zone_id=42)
     assert entity.native_value == 3.0
     entity.async_write_ha_state.assert_not_called()
+
+
+# --- per-zone multiplier --------------------------------------------------------
+
+from unittest.mock import patch  # noqa: E402
+
+from homeassistant.helpers.restore_state import RestoreEntity  # noqa: E402
+
+from custom_components.smart_irrigation.number import (  # noqa: E402
+    SmartIrrigationZoneMultiplierEntity,
+)
+
+
+def _multiplier_entity(stored_zone, last_state):
+    hass = Mock()
+    store = Mock()
+    store.get_zone = Mock(return_value=stored_zone)
+    hass.data = {const.DOMAIN: {"coordinator": Mock(store=store)}}
+    with patch("custom_components.smart_irrigation.number.async_dispatcher_connect"):
+        entity = SmartIrrigationZoneMultiplierEntity(
+            hass, "number.lawn_multiplier", 1, "Lawn", 1.0
+        )
+    entity.hass = hass
+    entity.async_schedule_update_ha_state = Mock()
+    entity.async_get_last_state = AsyncMock(return_value=last_state)
+    return entity
+
+
+async def test_the_multiplier_shown_at_startup_is_the_stored_one():
+    """After a backup restore, the last state kept by HA is not the zone's."""
+    entity = _multiplier_entity(
+        {const.ZONE_ID: 1, const.ZONE_MULTIPLIER: 0.8}, Mock(state="1.5")
+    )
+
+    with patch.object(RestoreEntity, "async_added_to_hass", AsyncMock()):
+        await entity.async_added_to_hass()
+
+    assert entity.native_value == 0.8
+
+
+async def test_without_a_stored_value_the_last_state_is_used():
+    entity = _multiplier_entity({const.ZONE_ID: 1}, Mock(state="1.5"))
+
+    with patch.object(RestoreEntity, "async_added_to_hass", AsyncMock()):
+        await entity.async_added_to_hass()
+
+    assert entity.native_value == 1.5

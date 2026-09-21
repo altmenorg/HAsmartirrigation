@@ -166,15 +166,30 @@ class SmartIrrigationZoneMultiplierEntity(NumberEntity, RestoreEntity):
         return {"zone_id": self._zone_id}
 
     async def async_added_to_hass(self) -> None:
-        """Restore the previous value if available."""
+        """Show the zone's stored multiplier, the one the calculation uses.
+
+        The last state Home Assistant kept is only a fallback: after a backup
+        was restored, or the multiplier changed just before a shutdown, it is
+        not the value the zone has, and showing it contradicted the
+        calculation.
+        """
         await super().async_added_to_hass()
-        last_state = await self.async_get_last_state()
-        if last_state is not None and last_state.state not in (
-            "unknown",
-            "unavailable",
-        ):
-            with contextlib.suppress(ValueError, TypeError):
-                self._multiplier = float(last_state.state)
+        stored = None
+        with contextlib.suppress(KeyError, AttributeError, TypeError):
+            zone = self.hass.data[const.DOMAIN]["coordinator"].store.get_zone(
+                self._zone_id
+            )
+            stored = zone.get(const.ZONE_MULTIPLIER) if zone else None
+        if stored is not None:
+            self._multiplier = stored
+        else:
+            last_state = await self.async_get_last_state()
+            if last_state is not None and last_state.state not in (
+                "unknown",
+                "unavailable",
+            ):
+                with contextlib.suppress(ValueError, TypeError):
+                    self._multiplier = float(last_state.state)
         self.async_schedule_update_ha_state(force_refresh=True)
 
 
