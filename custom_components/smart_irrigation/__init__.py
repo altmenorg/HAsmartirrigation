@@ -2195,6 +2195,12 @@ class SmartIrrigationCoordinator(
         # (friendly names, areas) survive disable/re-enable cycles and entity_id
         # collisions (_2, _3 suffixes) no longer happen on re-enable. See #506.
         self.hass.data[const.DOMAIN]["zones"].clear()
+        # The per-zone child sensors are guarded by "already created" in
+        # sensor.py and keyed by zone id. The platform drops the entities on
+        # unload, so a registry left populated made every reload skip them: the
+        # six child sensors of each zone stayed unavailable until a restart,
+        # while the duration sensor beside them came back (#845).
+        self.hass.data[const.DOMAIN].pop("zone_child_sensors", None)
 
         # remove subscriptions for coordinator
         while self._subscriptions:
