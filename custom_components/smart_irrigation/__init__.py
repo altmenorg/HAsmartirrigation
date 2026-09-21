@@ -1937,7 +1937,7 @@ class SmartIrrigationCoordinator(
                     static_values[key] = val
         return static_values
 
-    async def _supersede_precipitation_on_bucket_set(self, zone_id, data):
+    async def _start_window_at_bucket_assertion(self, zone_id, data):
         """Start the zone's next window at the moment its bucket is asserted.
 
         Setting the bucket says the soil is in a known state right now, which is
@@ -2087,7 +2087,7 @@ class SmartIrrigationCoordinator(
             await self.handle_clear_weatherdata(None)
         elif zone_id is not None and self.store.get_zone(zone_id):
             # modify a zone
-            data = await self._supersede_precipitation_on_bucket_set(zone_id, data)
+            data = await self._start_window_at_bucket_assertion(zone_id, data)
             entry = await self.store.async_update_zone(zone_id, data)
             async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated", zone_id)
             await self.update_subscriptions()

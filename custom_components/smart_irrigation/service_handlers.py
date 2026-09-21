@@ -254,7 +254,7 @@ class ServiceHandlersMixin:
                 # window the same way; written straight to the store, it was
                 # counted again on top of the value set (#811).
                 if const.ZONE_BUCKET in zone_data:
-                    zone_data = await self._supersede_precipitation_on_bucket_set(
+                    zone_data = await self._start_window_at_bucket_assertion(
                         zone_id,
                         {
                             **zone_data,

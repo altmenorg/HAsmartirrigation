@@ -91,7 +91,7 @@ async def test_resetting_the_bucket_starts_the_zone_window_now():
     coordinator.store.get_zone = MagicMock(return_value=_zone(superseded=3.0))
     before = datetime.now()
 
-    data = await coordinator._supersede_precipitation_on_bucket_set(
+    data = await coordinator._start_window_at_bucket_assertion(
         0, {const.ATTR_NEW_BUCKET_VALUE: 0}
     )
 
@@ -108,7 +108,7 @@ async def test_crediting_the_bucket_records_nothing():
     coordinator.store.get_zone = MagicMock(return_value=_zone())
     coordinator.precipitation_since_last_calculation = AsyncMock(return_value=8.0)
 
-    data = await coordinator._supersede_precipitation_on_bucket_set(
+    data = await coordinator._start_window_at_bucket_assertion(
         0, {const.ZONE_BUCKET: -8.0}
     )
 
@@ -121,7 +121,7 @@ async def test_an_unknown_zone_is_passed_through():
     coordinator.store = MagicMock()
     coordinator.store.get_zone = MagicMock(return_value=None)
 
-    data = await coordinator._supersede_precipitation_on_bucket_set(
+    data = await coordinator._start_window_at_bucket_assertion(
         0, {const.ATTR_NEW_BUCKET_VALUE: 0}
     )
 
