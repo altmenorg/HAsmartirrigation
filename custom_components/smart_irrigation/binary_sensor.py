@@ -23,9 +23,11 @@ from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.util import slugify
+from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
 from .entity import zone_device_info
+from .helpers import convert_between
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -145,9 +147,31 @@ class SmartIrrigationZoneIrrigationNeededBinarySensor(SmartIrrigationZoneBinaryS
     def _recompute(self) -> None:
         zone = self._zone()
         bucket = zone.get(const.ZONE_BUCKET) if zone else None
-        self._attr_is_on = bucket is not None and bucket < 0
+        self._attr_is_on = bucket is not None and self._needs_water(zone, bucket)
         if zone:
             self._zone_name = zone.get(const.ZONE_NAME, self._zone_name)
+
+    def _needs_water(self, zone: dict, bucket: float) -> bool:
+        """Whether the deficit has reached the point the zone waters at.
+
+        By the same rule as the duration: a zone with an irrigation threshold
+        lets the deficit build up to it before watering (#815), and this read
+        any deficit as a need, so it said water was needed on days the zone
+        would not water and was not meant to.
+        """
+        if bucket >= 0:
+            return False
+        try:
+            coordinator = self._hass.data[const.DOMAIN]["coordinator"]
+            threshold_mm = coordinator.irrigation_threshold_mm(zone)
+        except (KeyError, AttributeError, TypeError):
+            return True
+        if not threshold_mm:
+            return True
+        deficit_mm = abs(bucket)
+        if self._hass.config.units is not METRIC_SYSTEM:
+            deficit_mm = convert_between(const.UNIT_INCH, const.UNIT_MM, deficit_mm)
+        return deficit_mm >= threshold_mm
 
 
 class SmartIrrigationZoneWateringNowBinarySensor(SmartIrrigationZoneBinarySensor):
