@@ -103,19 +103,24 @@ class CalculationMixin:
         """Drop the readings every zone of a group has already consumed.
 
         The buffer is shared, so it can only lose what the slowest reader has
-        passed. A zone that is disabled does not hold it: it is not calculating,
-        and letting it pin the buffer forever would grow the store without end.
+        passed. Only automatic zones read it. A disabled zone is not
+        calculating, and a manual one never does: its duration is the one its
+        owner set. Letting either pin the buffer would grow the store without
+        end, which a manual zone did, having no mark and so seeming to need
+        everything.
 
         Readings are also capped at a week regardless, so a group whose zones
-        have all stopped calculating does not accumulate indefinitely.
+        have all stopped calculating does not accumulate indefinitely. A zone
+        that has never consumed used to return before the cap was applied.
         """
         mapping = self.store.get_mapping(mapping_id)
         if not mapping or not mapping.get(const.MAPPING_DATA):
             return
 
         watermarks = []
+        never_consumed = False
         for zone in await self.store.async_get_zones():
-            if zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED:
+            if zone.get(const.ZONE_STATE) != const.ZONE_STATE_AUTOMATIC:
                 continue
             if zone.get(const.ZONE_MAPPING) is None:
                 continue
@@ -127,12 +132,14 @@ class CalculationMixin:
                 continue
             start = self.zone_window_start(zone)
             if start is None:
-                # A zone that has never consumed still needs everything.
-                return
+                # A zone that has never consumed still needs everything the
+                # week cap keeps.
+                never_consumed = True
+                continue
             watermarks.append(start)
 
         cutoff = datetime.now() - timedelta(days=7)
-        if watermarks:
+        if watermarks and not never_consumed:
             cutoff = max(cutoff, min(watermarks))
 
         buffered = mapping.get(const.MAPPING_DATA)

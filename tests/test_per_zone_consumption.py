@@ -155,6 +155,35 @@ class TestPruning:
         assert kept[const.MAPPING_DATA] == [readings[1], readings[2]]
 
     @pytest.mark.asyncio
+    async def test_a_manual_zone_does_not_pin_the_buffer(self):
+        """It never calculates, so it has no mark and seemed to need everything:
+        a group shared with a manual zone was never pruned at all."""
+        readings = [_reading(120), _reading(90), _reading(10)]
+        zones = [
+            _zone(1, consumed_minutes_ago=30),
+            _zone(2, state=const.ZONE_STATE_MANUAL),
+        ]
+        coord = _Coordinator(readings, zones)
+
+        await coord.prune_consumed_readings(1)
+
+        kept = coord.store.async_update_mapping.await_args.kwargs["changes"]
+        assert kept[const.MAPPING_DATA] == [readings[1], readings[2]]
+
+    @pytest.mark.asyncio
+    async def test_the_week_cap_holds_even_for_a_zone_that_has_never_read(self):
+        """It returned before the cap: the buffer then grew without end."""
+        week = 7 * 24 * 60
+        readings = [_reading(week + 120), _reading(week + 60), _reading(10)]
+        coord = _Coordinator(readings, [_zone(1), _zone(2, 0)])
+
+        await coord.prune_consumed_readings(1)
+
+        kept = coord.store.async_update_mapping.await_args.kwargs["changes"]
+        # The newest reading older than the cap stays as the baseline.
+        assert kept[const.MAPPING_DATA] == [readings[1], readings[2]]
+
+    @pytest.mark.asyncio
     async def test_every_field_keeps_its_own_baseline(self):
         """Rows are sparse: a sensor writes the one field that changed.
 
