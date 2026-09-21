@@ -75,17 +75,14 @@ def test_precipitation_rate_defaults_to_throughput_mode():
     assert duration > 0
 
 
-def test_precipitation_rate_imperial_conversion():
-    """An in/h rate is converted to mm/h before being used, like other zone fields."""
-    coordinator = _Coordinator(_make_hass(metric=False))
-
-    # 1 in/h == 25.4 mm/h; compare against the metric equivalent computed above.
-    metric_coordinator = _Coordinator(_make_hass(metric=True))
-    metric_duration = metric_coordinator.duration_from_bucket(
+def test_the_unit_system_does_not_change_the_duration():
+    """The rate and the bucket are stored in mm/h and mm on any system
+    (units.py); only what is shown differs."""
+    metric_duration = _Coordinator(_make_hass(metric=True)).duration_from_bucket(
         _rate_zone(25.4), bucket_native=-2.0
     )
-    imperial_duration = coordinator.duration_from_bucket(
-        _rate_zone(1.0), bucket_native=-2.0 / 25.4
+    imperial_duration = _Coordinator(_make_hass(metric=False)).duration_from_bucket(
+        _rate_zone(25.4), bucket_native=-2.0
     )
 
     assert imperial_duration == metric_duration

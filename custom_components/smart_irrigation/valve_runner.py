@@ -30,10 +30,8 @@ import logging
 from functools import partial
 
 import homeassistant.util.dt as dt_util
-from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
-from .helpers import convert_between
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -359,13 +357,8 @@ class ValveRunnerMixin:
         throughput = zone.get(const.ZONE_THROUGHPUT) or 0.0
         if throughput <= 0 or seconds <= 0:
             return 0.0
-        ha_metric = self.hass.config.units is METRIC_SYSTEM
-        tput_lpm = (
-            throughput
-            if ha_metric
-            else convert_between(const.UNIT_GPM, const.UNIT_LPM, throughput)
-        )
-        return tput_lpm * seconds / 60.0
+        # Stored in L/min (units.py).
+        return throughput * seconds / 60.0
 
     async def _credit_direct_run(
         self, zone_id: int, elapsed: float, started=None
@@ -401,14 +394,8 @@ class ValveRunnerMixin:
                 zone_id,
             )
             return
-        throughput = zone.get(const.ZONE_THROUGHPUT) or 0.0
-
-        ha_metric = self.hass.config.units is METRIC_SYSTEM
-        tput_lpm = (
-            throughput
-            if ha_metric
-            else convert_between(const.UNIT_GPM, const.UNIT_LPM, throughput)
-        )
+        # Stored in L/min (units.py).
+        tput_lpm = zone.get(const.ZONE_THROUGHPUT) or 0.0
         # The crop factor is applied to the evapotranspiration now, not to the
         # duration (#779), so the run is no longer inflated by it and there is
         # nothing to divide back out. Credit the water that actually flowed,

@@ -16,7 +16,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
 from .calc_log import timestamps as calc_log_timestamps
-from .helpers import convert_between, loadModules, parse_datetime
+from .helpers import loadModules, parse_datetime
 from .hourly_rows import SystemLocalTime, forecast_eto_by_day, summed_hourly_eto
 from .localize import localize
 
@@ -1498,15 +1498,11 @@ class CalculationMixin:
             _LOGGER.error("Unknown module for zone %s", zone.get(const.ZONE_NAME))
             return None
         # precip = 0
+        # Zone values are stored in metric (units.py): the calculation reads
+        # and writes them as they are.
         ha_config_is_metric = self.hass.config.units is METRIC_SYSTEM
         bucket = zone.get(const.ZONE_BUCKET)
         maximum_bucket = zone.get(const.ZONE_MAXIMUM_BUCKET)
-        if not ha_config_is_metric:
-            bucket = convert_between(const.UNIT_INCH, const.UNIT_MM, bucket)
-            if zone.get(const.ZONE_MAXIMUM_BUCKET) is not None:
-                maximum_bucket = convert_between(
-                    const.UNIT_INCH, const.UNIT_MM, zone.get(const.ZONE_MAXIMUM_BUCKET)
-                )
         data = {}
         old_bucket = bucket
         explanation = ""
@@ -1595,12 +1591,6 @@ class CalculationMixin:
         drainage_rate = zone.get(const.ZONE_DRAINAGE_RATE, 0.0)
         if drainage_rate is None:
             drainage_rate = 0.0
-        if not ha_config_is_metric:
-            # drainage_rate is in inch/h since HA is not in metric, so we need to adjust those first!
-            # using inch and mm here since both are per hour
-            drainage_rate = convert_between(
-                const.UNIT_INCH, const.UNIT_MM, drainage_rate
-            )
         _LOGGER.debug("[calculate-module]: drainage_rate: %s", drainage_rate)
         # drainage only applies above field capacity (bucket > 0)
         drainage = 0
@@ -1780,9 +1770,7 @@ class CalculationMixin:
         if newbucket < 0 and abs(newbucket) >= threshold_mm:
             # calculate duration
 
-            precipitation_rate, tput, sz = self._zone_precipitation_rate(
-                zone, ha_config_is_metric
-            )
+            precipitation_rate, tput, sz = self._zone_precipitation_rate(zone)
             # Guard against a missing/zero rate (e.g. direct mode with no value
             # entered yet) so the formatting below never divides by None/0.
             precipitation_rate = precipitation_rate or 0
@@ -1924,22 +1912,6 @@ class CalculationMixin:
 
         data[const.ZONE_BUCKET] = newbucket
         data[const.ZONE_ET_DEFICIENCY] = et_deficiency
-        if not ha_config_is_metric:
-            # bucket, delta, et_deficiency and current_drainage are computed in
-            # mm internally; store them in the HA unit (inches) so the sensors
-            # and panel show a value consistent with the rest of the imperial UI.
-            data[const.ZONE_BUCKET] = convert_between(
-                const.UNIT_MM, const.UNIT_INCH, data[const.ZONE_BUCKET]
-            )
-            data[const.ZONE_DELTA] = convert_between(
-                const.UNIT_MM, const.UNIT_INCH, data[const.ZONE_DELTA]
-            )
-            data[const.ZONE_ET_DEFICIENCY] = convert_between(
-                const.UNIT_MM, const.UNIT_INCH, data[const.ZONE_ET_DEFICIENCY]
-            )
-            data[const.ZONE_CURRENT_DRAINAGE] = convert_between(
-                const.UNIT_MM, const.UNIT_INCH, data[const.ZONE_CURRENT_DRAINAGE]
-            )
         data[const.ZONE_DURATION] = duration
         data[const.ZONE_EXPLANATION] = explanation
 
@@ -1999,8 +1971,6 @@ class CalculationMixin:
         bucket into a duration read it from here so they cannot disagree (#815).
         """
         threshold = zone.get(const.ZONE_IRRIGATION_THRESHOLD) or 0.0
-        if threshold > 0 and self.hass.config.units is not METRIC_SYSTEM:
-            threshold = convert_between(const.UNIT_INCH, const.UNIT_MM, threshold)
         # A seasonal threshold adjustment is in mm and moves the threshold for
         # the months it covers, never below watering at any deficit.
         threshold = max(0.0, float(threshold) + self._seasonal_factors(zone)[1])
@@ -2017,13 +1987,12 @@ class CalculationMixin:
         except Exception:  # noqa: BLE001 - never let the season break a calculation
             return 1.0, 0.0
 
-    def _zone_precipitation_rate(self, zone: dict, ha_config_is_metric: bool):
+    def _zone_precipitation_rate(self, zone: dict):
         """Return the zone's precipitation rate in mm/h.
 
         If the zone is configured with a directly entered precipitation rate
-        (``ZONE_INPUT_METHOD_PRECIPITATION_RATE``), that value is used
-        (converted from in/h to mm/h for imperial systems). Otherwise it is
-        derived from throughput and size.
+        (``ZONE_INPUT_METHOD_PRECIPITATION_RATE``), that value is used.
+        Otherwise it is derived from throughput (L/min) and size (m2).
 
         Returns a tuple ``(precipitation_rate, tput, sz)`` where ``tput``/``sz``
         are ``None`` when the direct rate is used (nothing to show in that
@@ -2036,16 +2005,10 @@ class CalculationMixin:
             rate = zone.get(const.ZONE_PRECIPITATION_RATE)
             if not rate:
                 return None, None, None
-            if not ha_config_is_metric:
-                rate = convert_between(const.UNIT_INCHH, const.UNIT_MMH, rate)
             return rate, None, None
 
         tput = zone.get(const.ZONE_THROUGHPUT)
         sz = zone.get(const.ZONE_SIZE)
-        if not ha_config_is_metric:
-            # throughput is in gpm and size is in sq ft since HA is not in metric, so we need to adjust those first!
-            tput = convert_between(const.UNIT_GPM, const.UNIT_LPM, tput)
-            sz = convert_between(const.UNIT_SQ_FT, const.UNIT_M2, sz)
         if not tput or not sz:
             return None, tput, sz
         return (tput * 60) / sz, tput, sz
@@ -2175,15 +2138,9 @@ class CalculationMixin:
         crediting the bucket, #772) can refresh the zone duration consistently.
         A bucket at or above zero means no irrigation is needed, so 0.
 
-        ``bucket_native`` is in the user's unit (inches when imperial, mm when
-        metric), like the stored ``ZONE_BUCKET``.
+        ``bucket_native`` is in mm, like the stored ``ZONE_BUCKET``.
         """
-        ha_config_is_metric = self.hass.config.units is METRIC_SYSTEM
-        bucket_mm = (
-            bucket_native
-            if ha_config_is_metric
-            else convert_between(const.UNIT_INCH, const.UNIT_MM, bucket_native)
-        )
+        bucket_mm = bucket_native
         if bucket_mm >= 0:
             return 0
         # Below the allowed depletion there is nothing to do yet, so that the
@@ -2191,9 +2148,7 @@ class CalculationMixin:
         if abs(bucket_mm) < self.irrigation_threshold_mm(zone):
             return 0
 
-        precipitation_rate, _tput, _sz = self._zone_precipitation_rate(
-            zone, ha_config_is_metric
-        )
+        precipitation_rate, _tput, _sz = self._zone_precipitation_rate(zone)
         if not precipitation_rate:
             return 0
         duration = abs(bucket_mm) / precipitation_rate * 3600

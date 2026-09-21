@@ -84,13 +84,15 @@ def test_a_zone_never_waters_less_than_its_threshold():
     assert durations == [0, 0, 0]
 
 
-def test_the_threshold_is_read_in_the_users_unit():
-    """Stored in inches on an imperial system, like the bucket."""
+def test_the_threshold_is_stored_in_mm_on_any_system():
+    """Zone values are stored in metric whatever the unit system (units.py)."""
     metric = _Coordinator()
     imperial = _Coordinator(metric=False)
 
     assert metric.irrigation_threshold_mm(_zone(threshold=25.4)) == pytest.approx(25.4)
-    assert imperial.irrigation_threshold_mm(_zone(threshold=1.0)) == pytest.approx(25.4)
+    assert imperial.irrigation_threshold_mm(_zone(threshold=25.4)) == pytest.approx(
+        25.4
+    )
 
 
 def test_a_missing_or_negative_threshold_is_treated_as_none():

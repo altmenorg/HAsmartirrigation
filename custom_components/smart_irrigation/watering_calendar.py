@@ -10,11 +10,9 @@ import logging
 import math
 from datetime import date, datetime
 
-from homeassistant.util.unit_system import METRIC_SYSTEM
-
 from . import const
 from .exceptions import SmartIrrigationError
-from .helpers import altitudeToPressure, convert_between
+from .helpers import altitudeToPressure
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -323,12 +321,7 @@ class WateringCalendarMixin:
         multiplier = zone.get(const.ZONE_MULTIPLIER, 1.0)
         precipitation_mm = month_data.get("precipitation", 0.0)
 
-        # Convert from imperial if needed
-        ha_config_is_metric = self.hass.config.units is METRIC_SYSTEM
-        if not ha_config_is_metric:
-            zone_size_m2 = convert_between(
-                const.UNIT_SQ_FT, const.UNIT_M2, zone_size_m2
-            )
+        # The size is stored in m2 (units.py).
 
         # The multiplier is the crop factor: it scales the crop's water use, not
         # the rain that fell on it, so it goes on the ET before the rain is

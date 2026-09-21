@@ -22,12 +22,10 @@ from homeassistant.helpers.event import (
     async_track_sunset,
     async_track_time_change,
 )
-from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
 from .helpers import (
     check_time,
-    convert_between,
     find_next_solar_azimuth_time,
     normalize_azimuth_angle,
 )
@@ -633,7 +631,6 @@ class TriggersMixin:
             _LOGGER.error("Could not read the zones to account for rain: %s", e)
             return
 
-        ha_config_is_metric = self.hass.config.units is METRIC_SYSTEM
         for zone in zones:
             if zone.get(const.ZONE_STATE) != const.ZONE_STATE_AUTOMATIC:
                 # A manual zone carries a duration its owner set, not one
@@ -648,12 +645,8 @@ class TriggersMixin:
                 rain_mm -= zone.get(const.ZONE_PRECIPITATION_SUPERSEDED) or 0.0
                 if rain_mm <= 0:
                     continue
-                rain_native = (
-                    rain_mm
-                    if ha_config_is_metric
-                    else convert_between(const.UNIT_MM, const.UNIT_INCH, rain_mm)
-                )
-                bucket = (zone.get(const.ZONE_BUCKET) or 0.0) + rain_native
+                # The bucket is stored in mm (units.py).
+                bucket = (zone.get(const.ZONE_BUCKET) or 0.0) + rain_mm
                 duration = self.duration_from_bucket(zone, bucket)
                 # Rain can only ever shorten a run. Anything else would mean the
                 # two ways of deriving a duration from a bucket have drifted

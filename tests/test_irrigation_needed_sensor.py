@@ -60,7 +60,7 @@ def test_it_follows_the_threshold(bucket, threshold, needed):
     assert _sensor(_zone(bucket, threshold)) is needed
 
 
-def test_imperial_values_compare_in_the_same_unit():
-    """A 0.5 in deficit is 12.7 mm, past a 0.4 in (10.2 mm) threshold."""
-    assert _sensor(_zone(-0.5, 0.4), US_CUSTOMARY_SYSTEM) is True
-    assert _sensor(_zone(-0.3, 0.4), US_CUSTOMARY_SYSTEM) is False
+def test_the_unit_system_does_not_change_the_answer():
+    """Bucket and threshold are both stored in mm on any system (units.py)."""
+    assert _sensor(_zone(-12.7, 10.2), US_CUSTOMARY_SYSTEM) is True
+    assert _sensor(_zone(-7.6, 10.2), US_CUSTOMARY_SYSTEM) is False

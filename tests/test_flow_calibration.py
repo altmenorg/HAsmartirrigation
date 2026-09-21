@@ -175,15 +175,16 @@ async def test_an_unconfigured_throughput_is_someone_else_s_problem(issues):
     assert not issues.deleted
 
 
-async def test_the_measurement_lands_in_the_user_s_own_unit(issues):
-    """An imperial zone stores gal/min, so the measurement must too."""
+async def test_the_measurement_is_stored_in_litres_per_minute_on_any_system(issues):
+    """Zones store their flow in L/min whatever the unit system (units.py); it
+    is converted to gal/min only where it is shown."""
     coord, store = _coord(_zone(), metric=False)
 
-    # 50 L over 10 minutes == 5 L/min == ~1.32 gal/min.
+    # 50 L over 10 minutes == 5 L/min.
     await coord.async_record_measured_flow(0, volume_l=50.0, seconds=600)
 
     written = store.async_update_zone.await_args.args[1]
-    assert written[const.ZONE_MEASURED_THROUGHPUT] == pytest.approx(1.321, abs=0.002)
+    assert written[const.ZONE_MEASURED_THROUGHPUT] == pytest.approx(5.0)
 
 
 async def test_the_zone_s_throughput_is_never_touched(issues):

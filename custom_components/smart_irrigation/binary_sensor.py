@@ -23,11 +23,9 @@ from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.util import slugify
-from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
 from .entity import zone_device_info
-from .helpers import convert_between
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -168,10 +166,8 @@ class SmartIrrigationZoneIrrigationNeededBinarySensor(SmartIrrigationZoneBinaryS
             return True
         if not threshold_mm:
             return True
-        deficit_mm = abs(bucket)
-        if self._hass.config.units is not METRIC_SYSTEM:
-            deficit_mm = convert_between(const.UNIT_INCH, const.UNIT_MM, deficit_mm)
-        return deficit_mm >= threshold_mm
+        # Both in mm, as the zone stores them (units.py).
+        return abs(bucket) >= threshold_mm
 
 
 class SmartIrrigationZoneWateringNowBinarySensor(SmartIrrigationZoneBinarySensor):

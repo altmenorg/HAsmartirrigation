@@ -39,7 +39,6 @@ from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
-from .helpers import convert_between
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -254,14 +253,8 @@ class ObservedWateringMixin:
             )
             return
 
-        # Throughput is stored in the user's unit system; normalise to L/min.
-        throughput = zone.get(const.ZONE_THROUGHPUT) or 0.0
-        ha_metric = self.hass.config.units is METRIC_SYSTEM
-        tput_lpm = (
-            throughput
-            if ha_metric
-            else convert_between(const.UNIT_GPM, const.UNIT_LPM, throughput)
-        )
+        # Throughput is stored in L/min (units.py).
+        tput_lpm = zone.get(const.ZONE_THROUGHPUT) or 0.0
         volume_l = tput_lpm * (seconds / 60.0)
         await self._apply_volume_credit(
             zone,
@@ -281,8 +274,7 @@ class ObservedWateringMixin:
         values the panel asks for when the zone is created and then hides,
         which have nothing to do with the rate it waters at.
         """
-        ha_metric = self.hass.config.units is METRIC_SYSTEM
-        rate_mm_h, _tput, _size = self._zone_precipitation_rate(zone, ha_metric)
+        rate_mm_h, _tput, _size = self._zone_precipitation_rate(zone)
         if not rate_mm_h or seconds <= 0:
             return None
         return rate_mm_h * seconds / 3600.0
@@ -349,23 +341,13 @@ class ObservedWateringMixin:
         what the water-used total and the history record count.
         """
         zone_id = int(zone.get(const.ZONE_ID))
-        ha_metric = self.hass.config.units is METRIC_SYSTEM
         if applied_mm is None:
-            # A metered volume: spread over the zone's area. Size is stored in
-            # the user's unit system; normalise to m2 for the litres/m2 == mm
-            # identity, then convert the resulting depth back.
-            size = zone.get(const.ZONE_SIZE) or 0.0
-            size_m2 = (
-                size
-                if ha_metric
-                else convert_between(const.UNIT_SQ_FT, const.UNIT_M2, size)
-            )
-            applied_mm = volume_l / size_m2  # litres / m2 == mm
-        applied_native = (
-            applied_mm
-            if ha_metric
-            else convert_between(const.UNIT_MM, const.UNIT_INCH, applied_mm)
-        )
+            # A metered volume, spread over the zone's area (stored in m2):
+            # litres / m2 == mm.
+            size_m2 = zone.get(const.ZONE_SIZE) or 0.0
+            applied_mm = volume_l / size_m2
+        # The bucket is stored in mm (units.py).
+        applied_native = applied_mm
 
         old_bucket = zone.get(const.ZONE_BUCKET) or 0.0
         new_bucket = old_bucket + applied_native

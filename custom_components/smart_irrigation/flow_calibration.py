@@ -27,10 +27,8 @@ HAsmartirrigation), MIT.
 import logging
 
 from homeassistant.helpers import issue_registry as ir
-from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
-from .helpers import convert_between
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -83,15 +81,8 @@ class FlowCalibrationMixin:
         if zone is None:
             return
 
-        sample_lpm = volume_l / (seconds / 60.0)
-        # The zone's throughput is stored in the user's unit system, so the
-        # measurement has to land in the same unit to be comparable.
-        if self.hass.config.units is METRIC_SYSTEM:
-            sample = sample_lpm
-        else:
-            sample = convert_between(const.UNIT_LPM, const.UNIT_GPM, sample_lpm)
-            if sample is None:
-                return
+        # In L/min, the unit the zone's throughput is stored in (units.py).
+        sample = volume_l / (seconds / 60.0)
 
         previous = zone.get(const.ZONE_MEASURED_THROUGHPUT)
         samples = int(zone.get(const.ZONE_MEASURED_THROUGHPUT_SAMPLES) or 0)

@@ -179,6 +179,12 @@ from .const import (
 )
 from .helpers import loadModules
 from .localize import localize
+from .units import (
+    CONF_STORED_UNITS,
+    STORED_UNITS_METRIC,
+    ZONE_UNIT_FIELDS,
+    zone_from_display,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -511,6 +517,9 @@ class Config:
     # Reference ET summed hour by hour (FAO-56 Eq. 53) instead of the daily
     # equation on the window's means. Off by default while in beta.
     hourly_calculation = attr.ib(type=bool, default=CONF_DEFAULT_HOURLY_CALCULATION)
+    # "metric" once the zones' values are stored in metric (see units.py);
+    # None on an install that has not been through that migration yet.
+    stored_units = attr.ib(type=str, default=None)
     sensor_debounce = attr.ib(type=int, default=CONF_DEFAULT_SENSOR_DEBOUNCE)
     # Opt-in calculation audit log (#12): append every calculation's inputs,
     # intermediates and outputs to a JSON Lines file so days can be diffed.
@@ -700,6 +709,35 @@ class SmartIrrigationStorage:
         """Load the registry of schedule entries."""
         data = await self._store.async_load()
         await self._populate_from_data(data)
+        await self._async_store_zones_in_metric()
+
+    async def _async_store_zones_in_metric(self) -> None:
+        """Convert an imperial install's zone values to metric, once.
+
+        Zones used to keep their depths, rates, area and flow in Home
+        Assistant's unit system. They are stored in metric now and converted
+        only where they are shown or entered (units.py). Values on an install
+        in imperial are read as the imperial ones they were entered as, as
+        every calculation read them until now, and converted; a metric install
+        has nothing to convert. Either way the configuration then records that
+        its zones are in metric, so this never runs twice.
+        """
+        if self.config.stored_units == STORED_UNITS_METRIC:
+            return
+        if self.hass.config.units is not METRIC_SYSTEM:
+            for zone_id, zone in list(self.zones.items()):
+                converted = zone_from_display(attr.asdict(zone), metric=False)
+                changes = {
+                    key: converted[key] for key in ZONE_UNIT_FIELDS if key in converted
+                }
+                self.zones[zone_id] = attr.evolve(zone, **changes)
+            _LOGGER.info(
+                "Stored the values of %s zone(s) in metric; they are still shown "
+                "in imperial",
+                len(self.zones),
+            )
+        self.config = attr.evolve(self.config, stored_units=STORED_UNITS_METRIC)
+        self.async_schedule_save()
 
     async def _populate_from_data(self, data) -> None:
         """Rebuild config/zones/modules/mappings/history from a storage-shaped dict.
@@ -782,6 +820,7 @@ class SmartIrrigationStorage:
                 hourly_calculation=data["config"].get(
                     CONF_HOURLY_CALCULATION, CONF_DEFAULT_HOURLY_CALCULATION
                 ),
+                stored_units=data["config"].get(CONF_STORED_UNITS),
                 sensor_debounce=data["config"].get(
                     CONF_SENSOR_DEBOUNCE, CONF_DEFAULT_SENSOR_DEBOUNCE
                 ),
@@ -1138,6 +1177,9 @@ class SmartIrrigationStorage:
         # _populate_from_data assigns to self only once fully rebuilt, so a bad
         # payload raises here without corrupting the live configuration.
         await self._populate_from_data(data)
+        # A backup taken before zones were stored in metric carries no marker,
+        # and is converted the same way.
+        await self._async_store_zones_in_metric()
         await self.async_save()
 
     async def async_delete(self):
