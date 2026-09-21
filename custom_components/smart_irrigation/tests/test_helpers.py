@@ -45,7 +45,12 @@ class TestHelperFunctions:
         absolute_pressure = relative_to_absolute_pressure(relative_pressure, altitude)
 
         assert isinstance(absolute_pressure, float)
-        assert absolute_pressure > 0
+        # FAO-56 Eq. 7: 1001.5 hPa at 100 m. Only checking the result was
+        # positive let a formula through that returned 1013.3 at any height.
+        assert absolute_pressure == pytest.approx(1001.5, abs=0.5)
+        assert relative_to_absolute_pressure(1013.25, 1000) == pytest.approx(
+            900.5, abs=1.0
+        )
 
     def test_check_time_valid(self) -> None:
         """Test check_time with valid time string."""

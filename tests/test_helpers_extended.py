@@ -62,7 +62,10 @@ class TestPressureFunctions:
     def test_relative_to_absolute_pressure(self):
         """Test relative to absolute pressure conversion."""
         absolute = relative_to_absolute_pressure(1000, 100)
-        assert absolute > 1000
+        # The pressure falls with height: 988.4 hPa at 100 m for 1000 at sea
+        # level (FAO-56 Eq. 7). This asserted it rose, which is what the
+        # formula it tested did.
+        assert absolute == pytest.approx(988.4, abs=0.5)
         assert isinstance(absolute, float)
 
 

@@ -73,6 +73,7 @@ from .const import (
     W_SQ_FT_TO_W_M2_FACTOR,
     W_TO_MJ_DAY_FACTOR,
 )
+from .weathermodules.atmosphere import sea_level_to_station_pressure
 from .weathermodules.OpenMeteoClient import OpenMeteoClient
 from .weathermodules.OWMClient import OWMClient
 from .weathermodules.PirateWeatherClient import PirateWeatherClient
@@ -668,18 +669,13 @@ def check_reference_et(reference_et):
 
 
 def relative_to_absolute_pressure(pressure, height):
-    """Convert relative pressure to absolute pressure."""
-    # Constants
-    g = 9.80665  # m/s^2
-    M = 0.0289644  # kg/mol
-    R = 8.31447  # J/(mol*K)
-    T0 = 288.15  # K
+    """The pressure at the site from a sea-level ("relative") pressure, in hPa.
 
-    # Calculate temperature at given height
-    temperature = T0 - (g * M * height) / (R * T0)
-
-    # Calculate absolute pressure at given height
-    return pressure * (T0 / temperature) ** (g * M / (R * 287))
+    Used for a sensor group whose pressure sensor is marked relative. See
+    ``sea_level_to_station_pressure``: the formula this replaces returned the
+    sea-level pressure all but unchanged at any height.
+    """
+    return sea_level_to_station_pressure(pressure, height)
 
 
 def altitudeToPressure(alt):
