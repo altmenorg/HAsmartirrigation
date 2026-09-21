@@ -343,11 +343,18 @@ class TriggersMixin:
     ):
         """Register a solar azimuth-based trigger."""
         # Calculate next occurrence of this azimuth
+        # Both from the same place: the latitude followed manual coordinates
+        # while the longitude was always Home Assistant's own.
         latitude = self._latitude
-        longitude = self.hass.config.as_dict().get(CONF_LONGITUDE, 0.0)
+        longitude = getattr(self, "_effective_longitude", None)
+        if longitude is None:
+            longitude = self.hass.config.as_dict().get(CONF_LONGITUDE, 0.0)
 
+        # In UTC: the sun's position is computed from UTC, and the local time
+        # this used to pass was read as UTC, which moved the trigger by the
+        # zone's offset from it (two hours in a French summer).
         next_azimuth_time = find_next_solar_azimuth_time(
-            latitude, longitude, azimuth_angle, datetime.now()
+            latitude, longitude, azimuth_angle, dt_util.utcnow()
         )
 
         if next_azimuth_time is None:

@@ -4,7 +4,7 @@ import importlib
 import logging
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from homeassistant import exceptions
@@ -880,53 +880,23 @@ def normalize_azimuth_angle(angle: float) -> float:
 def calculate_solar_azimuth(
     latitude: float, longitude: float, timestamp: datetime
 ) -> float:
-    """Calculate solar azimuth angle for a given location and time.
+    """Solar azimuth at a place and moment, in degrees clockwise from north.
 
-    Args:
-        latitude: Latitude in degrees
-        longitude: Longitude in degrees
-        timestamp: UTC datetime object
+    0 is north, 90 east, 180 south, 270 west. ``timestamp`` should be timezone
+    aware; a naive one is read as UTC.
 
-    Returns:
-        Solar azimuth angle in degrees (0-360, 0=North, 90=East, 180=South, 270=West)
+    This is astral's calculation, the one Home Assistant's own sun uses. The
+    hand-written version it replaces applied the longitude with the wrong sign
+    and left out the equation of time, which put the sun 9 degrees off in
+    western France, 48 in Berlin and over 100 in California or Australia, so a
+    solar azimuth trigger fired hours from the moment it was set for.
     """
-    import math
+    from astral import Observer
+    from astral.sun import azimuth
 
-    # Convert to radians
-    lat_rad = math.radians(latitude)
-
-    # Day of year
-    day_of_year = timestamp.timetuple().tm_yday
-
-    # Solar declination (simplified)
-    declination = math.radians(
-        23.45 * math.sin(math.radians(360 * (284 + day_of_year) / 365))
-    )
-
-    # Hour angle
-    time_decimal = timestamp.hour + timestamp.minute / 60.0 + timestamp.second / 3600.0
-    # Longitude correction for local solar time
-    longitude_correction = longitude / 15.0
-    solar_time = time_decimal - longitude_correction
-    hour_angle = math.radians((solar_time - 12) * 15)
-
-    # Solar elevation (calculated but not used in this function)
-    # elevation = math.asin(
-    #     math.sin(lat_rad) * math.sin(declination) +
-    #     math.cos(lat_rad) * math.cos(declination) * math.cos(hour_angle)
-    # )
-
-    # Solar azimuth
-    azimuth = math.atan2(
-        math.sin(hour_angle),
-        math.cos(hour_angle) * math.sin(lat_rad)
-        - math.tan(declination) * math.cos(lat_rad),
-    )
-
-    # Convert to degrees and normalize to 0-360 (0=North, 90=East, 180=South, 270=West)
-    azimuth_degrees = (math.degrees(azimuth) + 180) % 360
-
-    return azimuth_degrees
+    if timestamp.tzinfo is None:
+        timestamp = timestamp.replace(tzinfo=timezone.utc)
+    return azimuth(Observer(latitude=latitude, longitude=longitude), timestamp)
 
 
 def find_next_solar_azimuth_time(
