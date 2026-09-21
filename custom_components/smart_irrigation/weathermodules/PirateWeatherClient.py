@@ -20,6 +20,7 @@ from ..const import (
     MAPPING_TEMPERATURE,
     MAPPING_WINDSPEED,
 )
+from .atmosphere import sea_level_to_station_pressure
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -209,17 +210,8 @@ class PirateWeatherClient:  # pylint: disable=invalid-name
             )
 
     def relative_to_absolute_pressure(self, pressure, height):
-        """Convert relative pressure to absolute pressure."""
-        # Constants
-        g = 9.80665  # m/s^2
-        M = 0.0289644  # kg/mol
-        R = 8.31447  # J/(mol*K)
-        T0 = 288.15  # K
-
-        # Calculate temperature at given height
-        temperature = T0 - (g * M * float(height)) / (R * T0)
-        # Calculate absolute pressure at given height
-        return pressure * (T0 / temperature) ** (g * M / (R * 287))
+        """The pressure at the site from the reported sea-level pressure."""
+        return sea_level_to_station_pressure(pressure, height)
 
     def get_data(self):
         """Validate and return data."""
