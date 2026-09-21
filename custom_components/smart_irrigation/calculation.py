@@ -260,10 +260,9 @@ class CalculationMixin:
         # it any more: it belongs to the group, so on a group read by several
         # zones it holds whichever zone calculated last rather than where this
         # zone left off.
-        baselines = {
-            key: record.get(key)
-            for key, (_, record) in self._latest_before(buffered, since).items()
-        }
+        before = self._latest_before(buffered, since)
+        baselines = {key: record.get(key) for key, (_, record) in before.items()}
+        baseline_stamps = {key: stamp for key, (stamp, _) in before.items()}
 
         data_by_sensor, timestamps_by_sensor = self._group_data_by_sensor(data)
         resultdata = {}
@@ -292,6 +291,7 @@ class CalculationMixin:
             timestamps_by_sensor=timestamps_by_sensor,
             audit=audit,
             baselines=baselines,
+            baseline_stamps=baseline_stamps,
         )
 
         rain = await self._weather_service_rain(mapping, *rain_window)
@@ -362,6 +362,76 @@ class CalculationMixin:
             "static_value": static_value,
             "carried_over": key in audit["carried_over"],
         }
+
+    @staticmethod
+    def _cumulative_change(values, stamps=None, start=None, start_stamp=None):
+        """The rain a cumulative gauge counted, from its successive totals.
+
+        The gauge reports a running total, so only a reading above the highest
+        total seen so far is new rain. A total can go down for two reasons, and
+        they need opposite treatment:
+
+        - the counter was reset. A "rain today" total restarts at midnight, and
+          any counter restarts at 0. What it reads afterwards fell since the
+          reset, so the reading itself is counted and becomes the new mark;
+        - the source revised its total down, as sensors fed by a web service do
+          when the service corrects itself. No water left the ground, so this
+          counts nothing and the mark stays where it was. Counting the climb
+          back to it counted that rain twice: a total revised from 4.3 to 3.0
+          and then reaching 5.0 is 5.0 mm, not 6.3.
+
+        A drop to 0, or across midnight between two readings, is a reset. Any
+        other drop is a revision. Home Assistant's own rule for these counters
+        (any drop of more than 10% is a reset) would take that 4.3 to 3.0
+        revision for a reset and count the 3.0 again.
+
+        ``start`` is the total the window is measured from, None to measure
+        from the first reading. ``stamps`` pairs a timestamp with each value.
+        A missing or unreadable one cannot show midnight, so a drop there is a
+        reset only if it reaches 0.
+        """
+
+        def _day(stamp):
+            if isinstance(stamp, datetime):
+                return stamp.date()
+            if stamp is None:
+                return None
+            try:
+                parsed = parse_datetime(stamp)
+            except (ValueError, TypeError):
+                return None
+            return parsed.date() if parsed is not None else None
+
+        values = list(values)
+        stamps = list(stamps or [])
+        if not values:
+            return 0.0
+        if start is None:
+            start, start_stamp = values[0], (stamps[0] if stamps else None)
+        mark, previous_day, total = start, _day(start_stamp), 0.0
+        for index, value in enumerate(values):
+            day = _day(stamps[index]) if index < len(stamps) else None
+            if value >= mark:
+                total += value - mark
+                mark = value
+            elif value == 0 or (
+                day is not None and previous_day is not None and day > previous_day
+            ):
+                _LOGGER.debug(
+                    "[_aggregate_sensor_data]: counter reset (%s after %s)", value, mark
+                )
+                total += value
+                mark = value
+            else:
+                _LOGGER.debug(
+                    "[_aggregate_sensor_data]: total revised down (%s below %s), "
+                    "counting nothing until it passes it again",
+                    value,
+                    mark,
+                )
+            if day is not None:
+                previous_day = day
+        return total
 
     def _group_data_by_sensor(self, data):
         """Group mapping data by sensor key, keeping each value's timestamp.
@@ -679,6 +749,7 @@ class CalculationMixin:
         timestamps_by_sensor=None,
         audit=None,
         baselines=None,
+        baseline_stamps=None,
     ):
         """Aggregate sensor data by configured or default aggregate.
 
@@ -688,7 +759,8 @@ class CalculationMixin:
         every key.
 
         ``baselines`` carries what each field read just before this window, for
-        the aggregates that measure a change rather than a level.
+        the aggregates that measure a change rather than a level, and
+        ``baseline_stamps`` when it read it.
         """
         # A copy, not the stored dict: this is stamped with a new timestamp
         # below, and anything that is only looking (a dry run, the live
@@ -696,6 +768,8 @@ class CalculationMixin:
         # it. Bumping that timestamp in place would shorten the interval the
         # next real calculation works over, and under-water every zone.
         last_calc_data = dict(mapping.get(const.MAPPING_DATA_LAST_CALCULATION) or {})
+        # When the stored totals were read, before the copy is restamped.
+        last_calc_stamp = last_calc_data.get(const.MAPPING_TIMESTAMP)
         last_calc_data[const.MAPPING_TIMESTAMP] = datetime.now()
 
         for key, d in data_by_sensor.items():
@@ -733,41 +807,27 @@ class CalculationMixin:
                 # reader, stale when it has several), then the first reading of
                 # the window, which measures the change across the window and
                 # loses whatever happened before its first sample.
+                stamps = (timestamps_by_sensor or {}).get(key) or []
                 last_calc_value = (baselines or {}).get(key)
+                start_stamp = (baseline_stamps or {}).get(key)
                 if last_calc_value is None:
                     last_calc_value = last_calc_data.get(key)
+                    start_stamp = last_calc_stamp
                 if last_calc_value is None:
                     _LOGGER.debug(
                         "[_aggregate_sensor_data]: last calc value is not set, using d[0] = %s",
                         d[0],
                     )
                     last_calc_value = d[0]
+                    start_stamp = stamps[0] if stamps else None
                 try:
                     last_calc_value = float(last_calc_value)
                 except (TypeError, ValueError):
                     last_calc_value = d[0]
-                # Accumulate values
-                prev = last_calc_value
-                result = 0
-                for val in d:
-                    # Detect resets to zero (i.e. passing midnight)
-                    if val < prev:
-                        if val == 0:
-                            _LOGGER.debug(
-                                "[_aggregate_sensor_data]: detected reset to zero (%s < %s)",
-                                val,
-                                prev,
-                            )
-                            prev = 0
-                        else:
-                            _LOGGER.warning(
-                                "[_aggregate_sensor_data]: value decreased (%s < %s), skipping",
-                                val,
-                                prev,
-                            )
-                            prev = val
-                    result += val - prev
-                    prev = val
+                    start_stamp = stamps[0] if stamps else None
+                result = self._cumulative_change(
+                    d, stamps, start=last_calc_value, start_stamp=start_stamp
+                )
                 _LOGGER.debug(
                     "[_aggregate_sensor_data]: last calc value: %s change: %s",
                     last_calc_value,
