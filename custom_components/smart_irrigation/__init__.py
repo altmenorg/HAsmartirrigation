@@ -878,9 +878,13 @@ class SmartIrrigationCoordinator(
     async def set_up_auto_update_time(self, data):  # noqa: D102
         # WIP v2024.6.X:
         # experiment to use subscriptions to catch all updates instead of just on a time schedule
-        await self.update_subscriptions(data)
-        self._warn_if_update_interval_undersamples_rain(data)
-        if data[const.CONF_AUTO_UPDATE_ENABLED]:
+        # Read from the whole configuration: with only the changed field,
+        # update_subscriptions saw continuous updates as unset and dropped every
+        # sensor subscription, and the enabled flag below raised (#844).
+        settings = self._settings(data)
+        await self.update_subscriptions(settings)
+        self._warn_if_update_interval_undersamples_rain(settings)
+        if settings.get(const.CONF_AUTO_UPDATE_ENABLED):
             # CONF_AUTO_UPDATE_SCHEDULE: minute, hour, day
             # CONF_AUTO_UPDATE_INTERVAL: X
             # CONF_AUTO_UPDATE_TIME: first update time
@@ -1327,17 +1331,36 @@ class SmartIrrigationCoordinator(
             changes[const.MAPPING_DATA] = []
             await self.store.async_update_mapping(mapping_id, changes=changes)
 
+    def _settings(self, changes):
+        """The stored configuration with a change set applied on top.
+
+        Callers may send only the field they changed: the switch and number
+        entities do, and the REST schema marks every key optional. The
+        schedulers need several fields at once, so they read them from here.
+        What they write is still exactly what they were given, so a partial
+        change stays partial and never overwrites a field another writer owns,
+        such as the valve runs the runner records while a run is under way.
+        """
+        return {**self.store.get_config(), **(changes or {})}
+
     async def set_up_auto_calc_time(self, data):
         """Set up the automatic calculation time for Smart Irrigation based on configuration data."""
+        # Read the settings before touching the tracker. It used to be cancelled
+        # first and the fields indexed after, so a caller sending only what it
+        # changed raised a KeyError with the nightly calculation already gone,
+        # and nothing re-registered it until a restart (#844).
+        settings = self._settings(data)
+        enabled = settings.get(const.CONF_AUTO_CALC_ENABLED)
+        calc_time = settings.get(const.CONF_CALC_TIME)
         # unsubscribe from any existing track_time_changes
         if self._track_auto_calc_time_unsub:
             self._track_auto_calc_time_unsub()
             self._track_auto_calc_time_unsub = None
-        if data[const.CONF_AUTO_CALC_ENABLED]:
+        if enabled:
             # make sure to unsub any existing and add for calc time
-            if check_time(data[const.CONF_CALC_TIME]):
+            if check_time(calc_time):
                 # make sure we track this time and at that moment trigger the refresh of all modules of all zones that are on automatic
-                timesplit = data[const.CONF_CALC_TIME].split(":")
+                timesplit = calc_time.split(":")
                 self._track_auto_calc_time_unsub = async_track_time_change(
                     self.hass,
                     self._async_calculate_all,
@@ -1345,13 +1368,11 @@ class SmartIrrigationCoordinator(
                     minute=timesplit[1],
                     second=0,
                 )
-                _LOGGER.info(
-                    "Scheduled auto calculate for %s", data[const.CONF_CALC_TIME]
-                )
+                _LOGGER.info("Scheduled auto calculate for %s", calc_time)
             else:
                 _LOGGER.warning(
                     "Scheduled auto calculate time is not valid: %s",
-                    data[const.CONF_CALC_TIME],
+                    calc_time,
                 )
                 # raise ValueError("Time is not a valid time")
         else:
