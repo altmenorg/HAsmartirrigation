@@ -380,21 +380,28 @@ class ValveRunnerMixin:
         zone = self.store.get_zone(zone_id)
         if zone is None:
             return
-        throughput = zone.get(const.ZONE_THROUGHPUT) or 0.0
-        size = zone.get(const.ZONE_SIZE) or 0.0
-        if throughput <= 0 or size <= 0:
+        # Clamp the credited time to the safety cap (a long downtime overrun must
+        # not credit unbounded water). A negative maximum means there is none:
+        # read as a cap, -1 turned every run into a credit of -1 second, so a
+        # zone set to no maximum never had its bucket refilled and was watered
+        # again at every start.
+        max_duration = zone.get(const.ZONE_MAXIMUM_DURATION)
+        credit_seconds = elapsed
+        if (
+            max_duration is not None
+            and max_duration >= 0
+            and credit_seconds > max_duration
+        ):
+            credit_seconds = float(max_duration)
+        applied_mm = self._applied_depth_mm(zone, credit_seconds)
+        if applied_mm is None:
             _LOGGER.warning(
-                "Direct valve control: zone %s has no size/throughput, "
+                "Direct valve control: zone %s has no precipitation rate, "
                 "bucket not credited",
                 zone_id,
             )
             return
-        # Clamp the credited time to the safety cap (a long downtime overrun must
-        # not credit unbounded water).
-        max_duration = zone.get(const.ZONE_MAXIMUM_DURATION)
-        credit_seconds = elapsed
-        if max_duration and credit_seconds > max_duration:
-            credit_seconds = float(max_duration)
+        throughput = zone.get(const.ZONE_THROUGHPUT) or 0.0
 
         ha_metric = self.hass.config.units is METRIC_SYSTEM
         tput_lpm = (
@@ -413,6 +420,7 @@ class ValveRunnerMixin:
             source=f"direct run {elapsed:.0f}s",
             seconds=elapsed,
             started=started,
+            applied_mm=applied_mm,
             # The bucket credit above divides the multiplier back out, but the
             # tap ran for the full elapsed time: that is the water actually
             # delivered, which is what the History tab and the water-used total

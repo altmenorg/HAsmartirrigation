@@ -246,16 +246,16 @@ class ObservedWateringMixin:
         zone = self.store.get_zone(zone_id)
         if zone is None:
             return
-        size = zone.get(const.ZONE_SIZE) or 0.0
-        throughput = zone.get(const.ZONE_THROUGHPUT) or 0.0
-        if size <= 0 or throughput <= 0:
+        applied_mm = self._applied_depth_mm(zone, seconds)
+        if applied_mm is None:
             _LOGGER.warning(
-                "Observed watering: zone %s has no size/throughput, cannot credit",
+                "Observed watering: zone %s has no precipitation rate, cannot credit",
                 zone_id,
             )
             return
 
         # Throughput is stored in the user's unit system; normalise to L/min.
+        throughput = zone.get(const.ZONE_THROUGHPUT) or 0.0
         ha_metric = self.hass.config.units is METRIC_SYSTEM
         tput_lpm = (
             throughput
@@ -269,7 +269,23 @@ class ObservedWateringMixin:
             source=f"{seconds:.0f}s timed",
             seconds=seconds,
             started=started,
+            applied_mm=applied_mm,
         )
+
+    def _applied_depth_mm(self, zone: dict, seconds: float):
+        """The depth a timed run of ``seconds`` applied, in mm, or None.
+
+        From the same precipitation rate the duration was worked out from, so
+        a run credits exactly what it was sized to deliver. A zone entered as a
+        precipitation rate was credited from its size and throughput instead:
+        values the panel asks for when the zone is created and then hides,
+        which have nothing to do with the rate it waters at.
+        """
+        ha_metric = self.hass.config.units is METRIC_SYSTEM
+        rate_mm_h, _tput, _size = self._zone_precipitation_rate(zone, ha_metric)
+        if not rate_mm_h or seconds <= 0:
+            return None
+        return rate_mm_h * seconds / 3600.0
 
     async def _credit_from_volume(
         self,
@@ -315,6 +331,7 @@ class ObservedWateringMixin:
         seconds: float | None = None,
         started=None,
         water_l: float | None = None,
+        applied_mm: float | None = None,
     ) -> None:
         """Convert a delivered ``volume_l`` to depth and add it to the bucket.
 
@@ -332,16 +349,18 @@ class ObservedWateringMixin:
         what the water-used total and the history record count.
         """
         zone_id = int(zone.get(const.ZONE_ID))
-        size = zone.get(const.ZONE_SIZE) or 0.0
-        # Size is stored in the user's unit system; normalise to m2 for the
-        # litres/m2 == mm identity, then convert the resulting depth back.
         ha_metric = self.hass.config.units is METRIC_SYSTEM
-        size_m2 = (
-            size
-            if ha_metric
-            else convert_between(const.UNIT_SQ_FT, const.UNIT_M2, size)
-        )
-        applied_mm = volume_l / size_m2  # litres / m2 == mm
+        if applied_mm is None:
+            # A metered volume: spread over the zone's area. Size is stored in
+            # the user's unit system; normalise to m2 for the litres/m2 == mm
+            # identity, then convert the resulting depth back.
+            size = zone.get(const.ZONE_SIZE) or 0.0
+            size_m2 = (
+                size
+                if ha_metric
+                else convert_between(const.UNIT_SQ_FT, const.UNIT_M2, size)
+            )
+            applied_mm = volume_l / size_m2  # litres / m2 == mm
         applied_native = (
             applied_mm
             if ha_metric
