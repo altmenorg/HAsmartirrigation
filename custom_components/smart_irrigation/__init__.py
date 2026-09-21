@@ -1446,248 +1446,145 @@ class SmartIrrigationCoordinator(
         ]
 
     async def _async_update_zone(self, zone_id):
-        # update the weather data for the mapping for the zone
+        """Collect a weather reading for the sensor group of one zone."""
         _LOGGER.info("Updating weather data for zone %s", zone_id)
         zone = self.store.get_zone(zone_id)
         if not zone:
             raise SmartIrrigationError(f"Zone {zone_id} not found")
         mapping_id = zone.get(const.ZONE_MAPPING)
         if mapping_id is not None:
-            mapping = self.store.get_mapping(mapping_id)
-            (
-                owm_in_mapping,
-                sensor_in_mapping,
-                static_in_mapping,
-            ) = self.check_mapping_sources(mapping_id=mapping_id)
-            weatherdata = None
-            if self.use_weather_service and owm_in_mapping:
-                # retrieve data from OWM
-                weatherdata = await self.hass.async_add_executor_job(
-                    self._WeatherServiceClient.get_data
-                )
-
-            if sensor_in_mapping:
-                sensor_values = self.build_sensor_values_for_mapping(mapping)
-                # A sensor-sourced field must come ONLY from its sensor, never
-                # fall back to weather service data. Strip these keys from the
-                # weather data first: an unavailable sensor (zha not yet loaded
-                # at startup, or a runtime dropout) is then omitted from the
-                # record instead of silently storing the weather value as if it
-                # were the sensor reading.
-                if weatherdata:
-                    for k in self._get_sensor_sourced_keys(mapping):
-                        if (
-                            k not in sensor_values
-                            and weatherdata.pop(k, None) is not None
-                        ):
-                            _LOGGER.warning(
-                                "[update] sensor group %s: '%s' is sensor-sourced but its sensor is unavailable; omitting from this record (no weather-data fallback)",
-                                mapping_id,
-                                k,
-                            )
-                weatherdata = await self.merge_weatherdata_and_sensor_values(
-                    weatherdata, sensor_values
-                )
-            if static_in_mapping:
-                static_values = self.build_static_values_for_mapping(mapping)
-                weatherdata = await self.merge_weatherdata_and_sensor_values(
-                    weatherdata, static_values
-                )
-            if sensor_in_mapping or static_in_mapping:
-                # if pressure type is set to relative, replace it with absolute. not necessary for OWM as it already happened
-                # convert the relative pressure to absolute or estimate from height
-                if (
-                    mapping.get(const.MAPPING_MAPPINGS)
-                    .get(const.MAPPING_PRESSURE)
-                    .get(const.MAPPING_CONF_PRESSURE_TYPE)
-                    == const.MAPPING_CONF_PRESSURE_RELATIVE
-                ):
-                    if const.MAPPING_PRESSURE in weatherdata:
-                        weatherdata[const.MAPPING_PRESSURE] = (
-                            relative_to_absolute_pressure(
-                                weatherdata[const.MAPPING_PRESSURE],
-                                self.hass.config.as_dict().get(CONF_ELEVATION),
-                            )
-                        )
-                    else:
-                        weatherdata[const.MAPPING_PRESSURE] = altitudeToPressure(
-                            self.hass.config.as_dict().get(CONF_ELEVATION)
-                        )
-
-            # add the weatherdata value to the mappings sensor values
-            if mapping is not None and weatherdata is not None:
-                weatherdata[const.RETRIEVED_AT] = datetime.now()
-                mapping_data = mapping[const.MAPPING_DATA]
-                if isinstance(mapping_data, list):
-                    mapping_data.append(weatherdata)
-                elif isinstance(mapping_data, str):
-                    mapping_data = [weatherdata]
-                else:
-                    _LOGGER.error(
-                        "[async_update_all]: sensor group is unexpected type: %s",
-                        mapping_data,
-                    )
-                _LOGGER.debug(
-                    "async_update_all for mapping %s new weatherdata: %s",
-                    mapping_id,
-                    weatherdata,
-                )
-                changes = {
-                    "data": mapping_data,
-                    const.MAPPING_DATA_LAST_UPDATED: datetime.now(),
-                }
-                await self.store.async_update_mapping(mapping_id, changes)
-                # store last updated and number of data points in the zone here.
-                changes_to_zone = {
-                    const.ZONE_LAST_UPDATED: changes[const.MAPPING_DATA_LAST_UPDATED],
-                    const.ZONE_NUMBER_OF_DATA_POINTS: len(mapping_data) - 1,
-                }
-                await self.store.async_update_zone(zone_id, changes_to_zone)
-                async_dispatcher_send(
-                    self.hass,
-                    const.DOMAIN + "_config_updated",
-                    zone,
-                )
-            else:
-                if mapping is None:
-                    _LOGGER.warning(
-                        "[async_update_all] Unable to find sensor group with id: %s",
-                        mapping_id,
-                    )
-                if weatherdata is None:
-                    _LOGGER.warning(
-                        "[async_update_all] No weather data to parse for sensor group %s",
-                        mapping_id,
-                    )
+            await self._async_record_weather_for_mapping(mapping_id)
 
     async def _async_update_all(self, *args):
-        # update the weather data for all mappings for all zones that are automatic here and store it.
-        # in _async_calculate_all we need to read that data back and if there is none, we log an error, otherwise apply aggregate and use data
-        # this should skip any pure sensor zones if continuous updates is enabled, otherwise it should include them
+        """Collect a weather reading for every sensor group automatic zones use.
+
+        With continuous updates on, a group fed only by sensors is already
+        recorded as its sensors change, so only groups that need the weather
+        service are read here.
+        """
         _LOGGER.info("Updating weather data for all automatic zones")
         zones = await self.store.async_get_zones()
         mappings = await self._get_unique_mappings_for_automatic_zones(zones)
-        # loop over the mappings and store sensor data
+        the_config = await self.store.async_get_config()
         for mapping_id in mappings:
-            (
-                owm_in_mapping,
-                sensor_in_mapping,
-                static_in_mapping,
-            ) = self.check_mapping_sources(mapping_id=mapping_id)
-            the_config = await self.store.async_get_config()
+            owm_in_mapping, _sensor, _static = self.check_mapping_sources(
+                mapping_id=mapping_id
+            )
             if the_config.get(const.CONF_CONTINUOUS_UPDATES) and not owm_in_mapping:
-                # if continuous updates are enabled, we do not need to update the mappings here for pure sensor mappings
                 _LOGGER.debug(
-                    "Continuous updates are enabled, skipping update for sensor group %s because it is not dependent on weather service and should already be included in the continuous updates",
+                    "Continuous updates are enabled, skipping sensor group %s: it "
+                    "does not use the weather service and is recorded as its "
+                    "sensors change",
                     mapping_id,
                 )
                 continue
-            _LOGGER.debug(
-                "Continuous updates are enabled, but updating sensor group %s as part of scheduled updates because it is dependent on weather service and therefore is not included in continuous updates",
-                mapping_id,
+            await self._async_record_weather_for_mapping(mapping_id)
+
+    async def _async_record_weather_for_mapping(self, mapping_id):
+        """Read a sensor group's sources once and append the reading to its buffer.
+
+        This was two copies, one for a zone and one for all zones, that had
+        drifted apart: the one for a zone stamped the group's last update and
+        the other did not, it refreshed only the zone asked about although the
+        buffer is shared by every zone of the group, and it notified the
+        entities with the whole zone where they compare its id.
+        """
+        mapping = self.store.get_mapping(mapping_id)
+        if mapping is None:
+            _LOGGER.warning(
+                "[update] Unable to find sensor group with id: %s", mapping_id
             )
-            mapping = self.store.get_mapping(mapping_id)
-            weatherdata = None
-            if self.use_weather_service and owm_in_mapping:
-                # retrieve data from OWM
-                weatherdata = await self.hass.async_add_executor_job(
-                    self._WeatherServiceClient.get_data
-                )
+            return
+        (
+            owm_in_mapping,
+            sensor_in_mapping,
+            static_in_mapping,
+        ) = self.check_mapping_sources(mapping_id=mapping_id)
+        weatherdata = None
+        if self.use_weather_service and owm_in_mapping:
+            weatherdata = await self.hass.async_add_executor_job(
+                self._WeatherServiceClient.get_data
+            )
 
-            if sensor_in_mapping:
-                sensor_values = self.build_sensor_values_for_mapping(mapping)
-                # A sensor-sourced field must come ONLY from its sensor, never
-                # fall back to weather service data. Strip these keys from the
-                # weather data first: an unavailable sensor (zha not yet loaded
-                # at startup, or a runtime dropout) is then omitted from the
-                # record instead of silently storing the weather value as if it
-                # were the sensor reading.
-                if weatherdata:
-                    for k in self._get_sensor_sourced_keys(mapping):
-                        if (
-                            k not in sensor_values
-                            and weatherdata.pop(k, None) is not None
-                        ):
-                            _LOGGER.warning(
-                                "[update] sensor group %s: '%s' is sensor-sourced but its sensor is unavailable; omitting from this record (no weather-data fallback)",
-                                mapping_id,
-                                k,
-                            )
-                weatherdata = await self.merge_weatherdata_and_sensor_values(
-                    weatherdata, sensor_values
-                )
-            if static_in_mapping:
-                static_values = self.build_static_values_for_mapping(mapping)
-                weatherdata = await self.merge_weatherdata_and_sensor_values(
-                    weatherdata, static_values
-                )
-            if sensor_in_mapping or static_in_mapping:
-                # if pressure type is set to relative, replace it with absolute. not necessary for OWM as it already happened
-                # convert the relative pressure to absolute or estimate from height
-                if (
-                    mapping.get(const.MAPPING_MAPPINGS)
-                    .get(const.MAPPING_PRESSURE)
-                    .get(const.MAPPING_CONF_PRESSURE_TYPE)
-                    == const.MAPPING_CONF_PRESSURE_RELATIVE
-                ):
-                    if const.MAPPING_PRESSURE in weatherdata:
-                        weatherdata[const.MAPPING_PRESSURE] = (
-                            relative_to_absolute_pressure(
-                                weatherdata[const.MAPPING_PRESSURE],
-                                self.hass.config.as_dict().get(CONF_ELEVATION),
-                            )
+        if sensor_in_mapping:
+            sensor_values = self.build_sensor_values_for_mapping(mapping)
+            # A sensor-sourced field must come ONLY from its sensor, never
+            # fall back to weather service data. Strip these keys from the
+            # weather data first: an unavailable sensor (zha not yet loaded
+            # at startup, or a runtime dropout) is then omitted from the
+            # record instead of silently storing the weather value as if it
+            # were the sensor reading.
+            if weatherdata:
+                for k in self._get_sensor_sourced_keys(mapping):
+                    if k not in sensor_values and weatherdata.pop(k, None) is not None:
+                        _LOGGER.warning(
+                            "[update] sensor group %s: '%s' is sensor-sourced but its sensor is unavailable; omitting from this record (no weather-data fallback)",
+                            mapping_id,
+                            k,
                         )
-                    else:
-                        weatherdata[const.MAPPING_PRESSURE] = altitudeToPressure(
-                            self.hass.config.as_dict().get(CONF_ELEVATION)
-                        )
-
-            # add the weatherdata value to the mappings sensor values
-            if mapping is not None and weatherdata is not None:
-                weatherdata[const.RETRIEVED_AT] = datetime.now()
-                mapping_data = mapping[const.MAPPING_DATA]
-                if isinstance(mapping_data, list):
-                    mapping_data.append(weatherdata)
-                elif isinstance(mapping_data, str):
-                    mapping_data = [weatherdata]
+            weatherdata = await self.merge_weatherdata_and_sensor_values(
+                weatherdata, sensor_values
+            )
+        if static_in_mapping:
+            static_values = self.build_static_values_for_mapping(mapping)
+            weatherdata = await self.merge_weatherdata_and_sensor_values(
+                weatherdata, static_values
+            )
+        if weatherdata is not None and (sensor_in_mapping or static_in_mapping):
+            # A pressure marked relative is brought to the site's height; the
+            # weather service clients do that themselves. The site is the one
+            # the calculation uses, manual coordinates included.
+            pressure_conf = (mapping.get(const.MAPPING_MAPPINGS) or {}).get(
+                const.MAPPING_PRESSURE
+            ) or {}
+            if (
+                isinstance(pressure_conf, dict)
+                and pressure_conf.get(const.MAPPING_CONF_PRESSURE_TYPE)
+                == const.MAPPING_CONF_PRESSURE_RELATIVE
+            ):
+                elevation = getattr(self, "_elevation", None)
+                if elevation is None:
+                    elevation = self.hass.config.as_dict().get(CONF_ELEVATION)
+                if const.MAPPING_PRESSURE in weatherdata:
+                    weatherdata[const.MAPPING_PRESSURE] = relative_to_absolute_pressure(
+                        weatherdata[const.MAPPING_PRESSURE], elevation
+                    )
                 else:
-                    _LOGGER.error(
-                        "[async_update_all]: sensor group is unexpected type: %s",
-                        mapping_data,
-                    )
-                _LOGGER.debug(
-                    "async_update_all for mapping %s new weatherdata: %s",
+                    weatherdata[const.MAPPING_PRESSURE] = altitudeToPressure(elevation)
+
+        if weatherdata is None:
+            _LOGGER.warning(
+                "[update] No weather data to parse for sensor group %s", mapping_id
+            )
+            return
+
+        now = datetime.now()
+        weatherdata[const.RETRIEVED_AT] = now
+        mapping_data = mapping.get(const.MAPPING_DATA)
+        if not isinstance(mapping_data, list):
+            if mapping_data not in (None, "", []):
+                _LOGGER.error(
+                    "[update]: sensor group %s buffer is of unexpected type: %s",
                     mapping_id,
-                    weatherdata,
+                    type(mapping_data).__name__,
                 )
-                changes = {
-                    "data": mapping_data,
-                }
-                await self.store.async_update_mapping(mapping_id, changes)
-                # store last updated and number of data points in the zone here.
-                changes_to_zone = {
-                    const.ZONE_LAST_UPDATED: datetime.now(),
-                    const.ZONE_NUMBER_OF_DATA_POINTS: len(mapping_data) - 1,
-                }
-                zones_to_loop = await self._get_zones_that_use_this_mapping(mapping_id)
-                for z in zones_to_loop:
-                    await self.store.async_update_zone(z, changes_to_zone)
-                    async_dispatcher_send(
-                        self.hass,
-                        const.DOMAIN + "_config_updated",
-                        z,
-                    )
-            else:
-                if mapping is None:
-                    _LOGGER.warning(
-                        "[async_update_all] Unable to find sensor group with id: %s",
-                        mapping_id,
-                    )
-                if weatherdata is None:
-                    _LOGGER.warning(
-                        "[async_update_all] No weather data to parse for sensor group %s",
-                        mapping_id,
-                    )
+            mapping_data = []
+        mapping_data.append(weatherdata)
+        _LOGGER.debug(
+            "[update] sensor group %s new weatherdata: %s", mapping_id, weatherdata
+        )
+        await self.store.async_update_mapping(
+            mapping_id,
+            {const.MAPPING_DATA: mapping_data, const.MAPPING_DATA_LAST_UPDATED: now},
+        )
+        # The buffer is the group's, so every zone reading it is refreshed.
+        changes_to_zone = {
+            const.ZONE_LAST_UPDATED: now,
+            const.ZONE_NUMBER_OF_DATA_POINTS: len(mapping_data) - 1,
+        }
+        for zone_id in await self._get_zones_that_use_this_mapping(mapping_id):
+            await self.store.async_update_zone(zone_id, changes_to_zone)
+            async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated", zone_id)
 
     async def async_update_module_config(
         self, module_id: int | None = None, data: dict | None = None
