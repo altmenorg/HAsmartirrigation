@@ -1058,11 +1058,8 @@ class SmartIrrigationCoordinator(
                 mapping_data = mapping.get(const.MAPPING_DATA) or []
                 mapping_data.append(
                     {
-                        key: convert_mapping_to_metric(
-                            float(the_new_state),
-                            key,
-                            val.get(const.MAPPING_CONF_UNIT),
-                            self.hass.config.units is METRIC_SYSTEM,
+                        key: self._sensor_reading_to_metric(
+                            key, val, the_new_state, self.hass.states.get(entity)
                         ),
                         const.RETRIEVED_AT: timestamp,
                     }
@@ -1757,6 +1754,80 @@ class SmartIrrigationCoordinator(
             efficacy = const.CONF_DEFAULT_LUMINOUS_EFFICACY
         return float(lux) / efficacy
 
+    # Home Assistant's unit strings, as the sensors report them, in the ones the
+    # conversions know. Only those that differ are listed.
+    _HA_UNITS = {
+        "W/m²": const.UNIT_W_M2,
+        "m/s": const.UNIT_MS,
+        "mph": const.UNIT_MH,
+        "kn": const.UNIT_KNOTS,
+        "inHg": const.UNIT_INHG,
+        "mbar": const.UNIT_MILLIBAR,
+        "mm/h": const.UNIT_MMH,
+        "in/h": const.UNIT_INCHH,
+    }
+    # The units the conversions know, which is what a sensor's own unit must be
+    # to be used. Checked here rather than by trying the conversion, which logs
+    # a warning for a unit it does not know on every reading.
+    _KNOWN_UNITS = frozenset(
+        {
+            "°C",
+            "°F",
+            const.UNIT_MM,
+            const.UNIT_INCH,
+            const.UNIT_MMH,
+            const.UNIT_INCHH,
+            const.UNIT_MBAR,
+            const.UNIT_MILLIBAR,
+            const.UNIT_HPA,
+            const.UNIT_PSI,
+            const.UNIT_INHG,
+            const.UNIT_KMH,
+            const.UNIT_MS,
+            const.UNIT_MH,
+            const.UNIT_KNOTS,
+            const.UNIT_W_M2,
+            const.UNIT_W_SQFT,
+            const.UNIT_MJ_DAY_M2,
+            const.UNIT_MJ_DAY_SQFT,
+        }
+    )
+
+    def _sensor_reading_to_metric(self, key, the_map, raw, state=None):
+        """A sensor's reading in the unit the calculation works in, or None.
+
+        One conversion for the scheduled update and the continuous one, which
+        had their own: the continuous one did not know a light sensor has to
+        be turned into radiation first, so a lux reading reached the solar
+        radiation as a value no conversion knew.
+
+        The unit is the sensor group's for that field. A group left without one,
+        as the setup wizard creates them, took the unit system's default
+        instead: a wind sensor in km/h was read as m/s, 3.6 times too strong,
+        and a thermometer in F as C. The sensor's own unit is used then, when
+        it is one the conversions know.
+        """
+        value = float(raw)
+        unit = the_map.get(const.MAPPING_CONF_UNIT)
+        if (
+            the_map.get(const.MAPPING_CONF_SOURCE)
+            == const.MAPPING_CONF_SOURCE_ILLUMINANCE
+        ):
+            value = self.radiation_from_illuminance(value, the_map)
+            # The result is shortwave radiation, whatever unit the light
+            # sensor itself reported in.
+            unit = const.UNIT_W_M2
+        elif not unit and state is not None:
+            reported = (getattr(state, "attributes", None) or {}).get(
+                "unit_of_measurement"
+            )
+            candidate = self._HA_UNITS.get(reported, reported)
+            if candidate in self._KNOWN_UNITS:
+                unit = candidate
+        return convert_mapping_to_metric(
+            value, key, unit, self.hass.config.units is METRIC_SYSTEM
+        )
+
     def build_sensor_values_for_mapping(self, mapping):
         """Build a dictionary of sensor values for a given mapping by retrieving and converting sensor states from Home Assistant.
 
@@ -1775,25 +1846,11 @@ class SmartIrrigationCoordinator(
                     const.MAPPING_CONF_SENSOR
                 ):
                     # this mapping maps to a sensor, so retrieve its value from HA
-                    if self.hass.states.get(the_map.get(const.MAPPING_CONF_SENSOR)):
+                    state = self.hass.states.get(the_map.get(const.MAPPING_CONF_SENSOR))
+                    if state:
                         try:
-                            val = float(
-                                self.hass.states.get(
-                                    the_map.get(const.MAPPING_CONF_SENSOR)
-                                ).state
-                            )
-                            unit = the_map.get(const.MAPPING_CONF_UNIT)
-                            if source == const.MAPPING_CONF_SOURCE_ILLUMINANCE:
-                                val = self.radiation_from_illuminance(val, the_map)
-                                # The result is shortwave radiation, whatever
-                                # unit the light sensor itself reported in.
-                                unit = const.UNIT_W_M2
-                            # make sure to store the val as metric and do necessary conversions along the way
-                            val = convert_mapping_to_metric(
-                                val,
-                                key,
-                                unit,
-                                self.hass.config.units is METRIC_SYSTEM,
+                            val = self._sensor_reading_to_metric(
+                                key, the_map, state.state, state
                             )
                             # add val to sensor values, at debug logging level due to startup ordering issues
                             sensor_values[key] = val
