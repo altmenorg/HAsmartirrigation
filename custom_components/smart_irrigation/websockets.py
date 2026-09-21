@@ -19,6 +19,7 @@ from homeassistant.helpers.dispatcher import (
     async_dispatcher_connect,
     async_dispatcher_send,
 )
+from homeassistant.util import dt as dt_util
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
@@ -503,6 +504,53 @@ def _trigger_start_base_and_offset(selected, total_duration):
     return "sunrise", -total_duration
 
 
+def _next_clock_trigger_start(selected, total_duration, now):
+    """When a clock-time trigger next fires, or None if it has no valid time.
+
+    Mirrors ``_register_time_trigger``: the run is worked back from the time so
+    it finishes then when the trigger accounts for the duration, else it starts
+    then, and the trigger repeats daily at that time of day. ``now`` is aware.
+    """
+    at = selected.get(const.TRIGGER_CONF_AT, const.TRIGGER_CONF_DEFAULT_AT)
+    try:
+        hours, minutes = (int(part) for part in str(at).split(":")[:2])
+    except (TypeError, ValueError):
+        return None
+    if not (0 <= hours < 24 and 0 <= minutes < 60):
+        return None
+    fire_at = now.replace(hour=hours, minute=minutes, second=0, microsecond=0)
+    if selected.get(const.TRIGGER_CONF_ACCOUNT_FOR_DURATION, True):
+        fire_at -= datetime.timedelta(seconds=total_duration)
+    # The tracker fires at that time of day, so the next start is its next
+    # occurrence after now.
+    while fire_at <= now:
+        fire_at += datetime.timedelta(days=1)
+    while fire_at - now > datetime.timedelta(days=1):
+        fire_at -= datetime.timedelta(days=1)
+    return fire_at
+
+
+def _next_azimuth_trigger_start(selected, total_duration, latitude, longitude, now):
+    """When a solar azimuth trigger next fires, or None if the sun never gets there.
+
+    Mirrors ``_register_azimuth_trigger``. ``now`` is aware and in UTC.
+    """
+    from .helpers import find_next_solar_azimuth_time, normalize_azimuth_angle
+
+    if latitude is None or longitude is None:
+        return None
+    angle = normalize_azimuth_angle(selected.get(const.TRIGGER_CONF_AZIMUTH_ANGLE, 0))
+    reached = find_next_solar_azimuth_time(latitude, longitude, angle, now)
+    if reached is None:
+        return None
+    start = reached + datetime.timedelta(
+        minutes=selected.get(const.TRIGGER_CONF_OFFSET_MINUTES, 0)
+    )
+    if selected.get(const.TRIGGER_CONF_ACCOUNT_FOR_DURATION, True):
+        start -= datetime.timedelta(seconds=total_duration)
+    return start
+
+
 @async_response
 async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
     """Publish irrigation information."""
@@ -602,6 +650,30 @@ async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
         if sunrise_time is None:
             sunrise_time = base_time
         next_irrigation_start = base_time + datetime.timedelta(seconds=offset_seconds)
+        # A clock-time or solar azimuth trigger is not measured from the sun
+        # rising or setting, and the preview used to fall back to "finish at
+        # sunrise" for them: the time shown was not the time the run would
+        # start at.
+        selected_type = selected.get(const.TRIGGER_CONF_TYPE) if selected else None
+        if selected_type in (
+            const.TRIGGER_TYPE_TIME,
+            const.TRIGGER_TYPE_SOLAR_AZIMUTH,
+        ):
+            if selected_type == const.TRIGGER_TYPE_TIME:
+                exact = _next_clock_trigger_start(
+                    selected, total_duration, dt_util.now()
+                )
+            else:
+                exact = _next_azimuth_trigger_start(
+                    selected,
+                    total_duration,
+                    getattr(coordinator, "_latitude", None),
+                    getattr(coordinator, "_effective_longitude", None),
+                    dt_util.utcnow(),
+                )
+            if exact is not None:
+                next_irrigation_start = exact
+                base_name = selected_type
 
         # Account for the "days between irrigation" restriction. The start
         # triggers fire every day, but on a skip day the watering decision is
