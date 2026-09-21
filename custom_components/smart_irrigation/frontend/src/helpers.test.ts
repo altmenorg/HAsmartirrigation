@@ -13,7 +13,7 @@ import {
   MAPPING_TEMPERATURE,
   MAPPING_WINDSPEED,
 } from "./const";
-import { getOptionsForMappingType } from "./helpers";
+import { changedFields, getOptionsForMappingType } from "./helpers";
 
 /**
  * The unit strings this panel writes are read back by the integration, which
@@ -78,5 +78,42 @@ describe("getOptionsForMappingType", () => {
 
     expect(knots).toBeDefined();
     expect(knots!.system).toEqual([CONF_METRIC, CONF_IMPERIAL]);
+  });
+});
+
+describe("changedFields", () => {
+  const loaded = {
+    id: 1,
+    name: "Lawn",
+    bucket: -4.2,
+    explanation: "old",
+    last_calculated: null,
+    flow_sensor: "sensor.meter",
+  };
+
+  it("sends only the field an edit changed, never the stale rest", () => {
+    // The nightly calculation moved the bucket on the server; the page still
+    // holds -4.2 and must not write it back when the name is edited.
+    expect(changedFields(loaded, { ...loaded, name: "Front lawn" })).toEqual({
+      name: "Front lawn",
+    });
+  });
+
+  it("sends a cleared field as null, so the server clears it", () => {
+    expect(
+      changedFields(loaded, { ...loaded, flow_sensor: undefined }),
+    ).toEqual({ flow_sensor: null });
+  });
+
+  it("sends nothing when nothing changed", () => {
+    expect(changedFields(loaded, { ...loaded })).toEqual({});
+  });
+
+  it("compares nested values by content", () => {
+    const withList = { ...loaded, tags: [1, 2] };
+    expect(changedFields(withList, { ...withList, tags: [1, 2] })).toEqual({});
+    expect(changedFields(withList, { ...withList, tags: [1, 3] })).toEqual({
+      tags: [1, 3],
+    });
   });
 });

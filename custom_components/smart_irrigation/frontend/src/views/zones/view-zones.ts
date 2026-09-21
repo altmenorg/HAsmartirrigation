@@ -46,6 +46,7 @@ import {
   WeatherRecord,
 } from "../../types";
 import {
+  changedFields,
   engineModeLabel,
   formatDuration,
   output_unit,
@@ -132,6 +133,9 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
   // Global debounce timer for better performance
   private globalDebounceTimer: number | null = null;
+  // What each zone's pending save changes, keyed by zone id: an index would
+  // point at another zone if the list were reloaded before the save.
+  private _pendingZoneChanges = new Map<number, Record<string, unknown>>();
 
   // Cache for rendered zone cards
   private zoneCache = new Map<string, TemplateResult>();
@@ -366,6 +370,28 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       return;
     }
 
+    // Send only what this edit changed, never the whole zone. The zone held
+    // here is a copy loaded when the page was, and posting all of it wrote
+    // that copy back over whatever the server had done since: a page left
+    // open across the nightly calculation reverted its bucket, its
+    // explanation and its last calculation time on the next edit of any
+    // field. A field cleared to undefined is sent as null, because JSON drops
+    // undefined and the server then kept the old value.
+    const previous = this.zones[index] as unknown as
+      | Record<string, unknown>
+      | undefined;
+    const zoneId = updatedZone.id;
+    const pending = {
+      ...(zoneId !== undefined ? this._pendingZoneChanges.get(zoneId) : {}),
+      ...changedFields(
+        previous,
+        updatedZone as unknown as Record<string, unknown>,
+      ),
+    };
+    if (zoneId !== undefined) {
+      this._pendingZoneChanges.set(zoneId, pending);
+    }
+
     // Use direct array assignment for better performance
     this.zones[index] = updatedZone;
 
@@ -379,12 +405,27 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       clearTimeout(this.globalDebounceTimer);
     }
 
-    // Debounce saving to avoid excessive API calls during rapid editing
+    // Debounce saving to avoid excessive API calls during rapid editing. The
+    // timer is shared by every zone, so it flushes the changes of each zone
+    // edited meanwhile: saving only the last one lost the others.
     this.globalDebounceTimer = window.setTimeout(() => {
+      const batch = [...this._pendingZoneChanges.entries()];
+      this._pendingZoneChanges.clear();
+      const saves = batch
+        .filter(([, changes]) => Object.keys(changes).length > 0)
+        .map(([id, changes]) => ({ ...changes, id }));
+      if (saves.length === 0) {
+        this.globalDebounceTimer = null;
+        return;
+      }
       this.isSaving = true;
       // Ignore the _config_updated echo this save triggers (see flag declaration).
       this._suppressNextConfigUpdate = true;
-      this.saveToHA(updatedZone)
+      Promise.all(
+        saves.map((changes) =>
+          this.saveToHA(changes as unknown as SmartIrrigationZone),
+        ),
+      )
         .catch((error) => {
           // Save failed: clear the guard so it doesn't swallow a later refresh.
           this._suppressNextConfigUpdate = false;

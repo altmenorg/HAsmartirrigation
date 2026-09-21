@@ -436,3 +436,25 @@ export function engineModeLabel(
   const mode = ENGINE_MODES[engineName];
   return mode ? localize(`common.modes.${mode}`, lang) : engineName;
 }
+
+/**
+ * The fields an edit changed between two copies of a record, to send those
+ * alone. Posting the whole record wrote the page's copy back over whatever the
+ * server had done since it was loaded. A field cleared to undefined comes out
+ * as null, since JSON drops undefined and the server would keep the old value.
+ */
+export function changedFields(
+  previous: Record<string, unknown> | undefined,
+  next: Record<string, unknown>,
+): Record<string, unknown> {
+  const changes: Record<string, unknown> = {};
+  for (const key of new Set([
+    ...Object.keys(previous ?? {}),
+    ...Object.keys(next),
+  ])) {
+    if (JSON.stringify(previous?.[key]) !== JSON.stringify(next[key])) {
+      changes[key] = next[key] === undefined ? null : next[key];
+    }
+  }
+  return changes;
+}

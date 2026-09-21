@@ -1196,14 +1196,15 @@ class SmartIrrigationStorage:
             if ATTR_NEW_BUCKET_VALUE in changes:
                 changes[ZONE_BUCKET] = changes[ATTR_NEW_BUCKET_VALUE]
                 changes.pop(ATTR_NEW_BUCKET_VALUE)
-            # apply maximum bucket value
-            if (
-                ZONE_MAXIMUM_BUCKET in changes
-                and changes[ZONE_MAXIMUM_BUCKET] is not None
-                and changes[ZONE_BUCKET] is not None
-                and changes[ZONE_BUCKET] > changes[ZONE_MAXIMUM_BUCKET]
-            ):
-                changes[ZONE_BUCKET] = changes[ZONE_MAXIMUM_BUCKET]
+            # Apply the maximum bucket value. Either can come on its own, now
+            # that the panel sends only what changed, so the other one is the
+            # zone's current value; reading it from the changes raised a
+            # KeyError on a maximum sent without a bucket.
+            if ZONE_MAXIMUM_BUCKET in changes or ZONE_BUCKET in changes:
+                maximum = changes.get(ZONE_MAXIMUM_BUCKET, old.maximum_bucket)
+                bucket = changes.get(ZONE_BUCKET, old.bucket)
+                if maximum is not None and bucket is not None and bucket > maximum:
+                    changes[ZONE_BUCKET] = maximum
             # if bucket on zone is 0, then duration should be 0, but only if zone is automatic
             if (
                 ZONE_BUCKET in changes

@@ -243,6 +243,16 @@ SERVER_OWNED_ZONE_FIELDS = (
     const.ZONE_MEASURED_THROUGHPUT_SAMPLES,
     const.ZONE_PRECIPITATION_SUPERSEDED,
     const.ZONE_LAST_CONSUMED_AT,
+    # What the calculation writes. The panel now sends only the fields an edit
+    # changed, but a panel still cached in a browser posts the whole zone, and
+    # its stale copy of these reverted the calculation it had not seen.
+    const.ZONE_LAST_CALCULATED,
+    const.ZONE_LAST_UPDATED,
+    const.ZONE_EXPLANATION,
+    const.ZONE_DELTA,
+    const.ZONE_ET_DEFICIENCY,
+    const.ZONE_CURRENT_DRAINAGE,
+    const.ZONE_NUMBER_OF_DATA_POINTS,
 )
 
 
