@@ -350,6 +350,12 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
                     parsed_data[MAPPING_PRESSURE] = means["pressure"]
                 if "dewpoint" in means:
                     parsed_data[MAPPING_DEWPOINT] = means["dewpoint"]
+                # The day's mean wind, as the evaporation needs, where the
+                # hourly series has it: wind_speed_10m_max is the strongest
+                # gust hour of the day, and fed as the day's wind it raised
+                # the forecast evaporation of every forecast day.
+                if "wind" in means:
+                    parsed_data[MAPPING_WINDSPEED] = means["wind"] * WIND_10M_TO_2M
                 parsed_data_total.append(parsed_data)
             return parsed_data_total if include_today else parsed_data_total[1:]
         except (KeyError, requests.RequestException, json.JSONDecodeError) as ex:
@@ -364,7 +370,7 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
             return default
 
     def _hourly_daily_means(self, doc):
-        """Average the hourly humidity/pressure/dew point per calendar day."""
+        """Average the hourly humidity/pressure/dew point/wind per calendar day."""
         hourly = doc.get("hourly")
         if not hourly or "time" not in hourly:
             return {}
@@ -373,6 +379,7 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
             "humidity": hourly.get("relative_humidity_2m"),
             "pressure": hourly.get("surface_pressure"),
             "dewpoint": hourly.get("dew_point_2m"),
+            "wind": hourly.get("wind_speed_10m"),
         }
         # accumulate sums/counts per day (date prefix of the ISO timestamp)
         acc = {}
