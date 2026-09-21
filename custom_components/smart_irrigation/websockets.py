@@ -483,22 +483,15 @@ def _trigger_start_base_and_offset(selected, total_duration):
         else True
     )
 
-    if ttype == const.TRIGGER_TYPE_SUNSET:
-        if account_for_duration:
-            offset_seconds = (offset_minutes * 60) - total_duration
-        else:
-            offset_seconds = offset_minutes * 60
-        return "sunset", offset_seconds
+    from .triggers import sun_trigger_offset_seconds
 
-    if ttype == const.TRIGGER_TYPE_SUNRISE:
-        if account_for_duration:
-            if offset_minutes == 0:
-                offset_seconds = -total_duration
-            else:
-                offset_seconds = (offset_minutes * 60) - total_duration
-        else:
-            offset_seconds = offset_minutes * 60
-        return "sunrise", offset_seconds
+    if ttype in (const.TRIGGER_TYPE_SUNSET, const.TRIGGER_TYPE_SUNRISE):
+        return (
+            "sunset" if ttype == const.TRIGGER_TYPE_SUNSET else "sunrise",
+            sun_trigger_offset_seconds(
+                offset_minutes, total_duration, account_for_duration
+            ),
+        )
 
     # default sentinel, solar_azimuth, or unknown -> finish at sunrise.
     return "sunrise", -total_duration

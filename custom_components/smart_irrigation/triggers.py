@@ -35,6 +35,21 @@ from .helpers import (
 _LOGGER = logging.getLogger(__name__)
 
 
+def sun_trigger_offset_seconds(
+    offset_minutes, total_duration, account_for_duration
+) -> int:
+    """Seconds from the sun event to the start of a sunrise or sunset trigger.
+
+    The trigger's offset, less the whole run when it is to finish at that
+    moment rather than start then. The Info page's preview reads the same
+    function, so the start it shows is the one the trigger fires at.
+    """
+    offset_seconds = int(offset_minutes or 0) * 60
+    if account_for_duration:
+        offset_seconds -= int(total_duration or 0)
+    return offset_seconds
+
+
 class TriggersMixin:
     """Start-event trigger registration and firing for the coordinator.
 
@@ -259,17 +274,9 @@ class TriggersMixin:
         trigger_info: dict,
     ):
         """Register a sunrise-based trigger."""
-        # Calculate offset based on account_for_duration setting
-        if account_for_duration:
-            if offset_minutes == 0:
-                # Legacy behavior: use total duration for automatic timing
-                offset_seconds = -total_duration  # Negative for "before"
-            else:
-                # Account for duration: subtract total duration from offset to finish at the target time
-                offset_seconds = (offset_minutes * 60) - total_duration
-        else:
-            # Start exactly at the specified time
-            offset_seconds = offset_minutes * 60
+        offset_seconds = sun_trigger_offset_seconds(
+            offset_minutes, total_duration, account_for_duration
+        )
 
         unsub = async_track_sunrise(
             self.hass,
@@ -302,13 +309,9 @@ class TriggersMixin:
         trigger_info: dict,
     ):
         """Register a sunset-based trigger."""
-        # Calculate offset based on account_for_duration setting
-        if account_for_duration:
-            # Account for duration: subtract total duration from offset to finish at the target time
-            offset_seconds = (offset_minutes * 60) - total_duration
-        else:
-            # Start exactly at the specified time
-            offset_seconds = offset_minutes * 60
+        offset_seconds = sun_trigger_offset_seconds(
+            offset_minutes, total_duration, account_for_duration
+        )
 
         unsub = async_track_sunset(
             self.hass,

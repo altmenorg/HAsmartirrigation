@@ -5,6 +5,8 @@ logic of TriggersMixin so the displayed start matches when irrigation actually
 begins, rather than always assuming "finish at sunrise".
 """
 
+import pytest
+
 from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.websockets import (
     _trigger_start_base_and_offset,
@@ -140,3 +142,41 @@ def test_an_azimuth_trigger_without_coordinates_has_no_start():
     now = _dt.datetime(2026, 6, 21, 6, 0, tzinfo=_dt.UTC)
 
     assert _next_azimuth_trigger_start(trigger, 0, None, None, now) is None
+
+
+# --- one offset for the trigger and its preview ---------------------------------
+
+from custom_components.smart_irrigation.triggers import (  # noqa: E402
+    sun_trigger_offset_seconds,
+)
+
+
+@pytest.mark.parametrize(
+    ("offset_minutes", "account", "expected"),
+    [
+        (0, True, -1800),
+        (30, True, 0),
+        (-30, True, -3600),
+        (30, False, 1800),
+        (0, False, 0),
+    ],
+)
+def test_the_sun_trigger_offset(offset_minutes, account, expected):
+    assert sun_trigger_offset_seconds(offset_minutes, 1800, account) == expected
+
+
+@pytest.mark.parametrize(
+    "ttype", [const.TRIGGER_TYPE_SUNRISE, const.TRIGGER_TYPE_SUNSET]
+)
+@pytest.mark.parametrize("offset_minutes", [-45, 0, 20])
+@pytest.mark.parametrize("account", [True, False])
+def test_the_preview_uses_the_triggers_own_offset(ttype, offset_minutes, account):
+    trigger = {
+        const.TRIGGER_CONF_TYPE: ttype,
+        const.TRIGGER_CONF_OFFSET_MINUTES: offset_minutes,
+        const.TRIGGER_CONF_ACCOUNT_FOR_DURATION: account,
+    }
+
+    _base, offset = _trigger_start_base_and_offset(trigger, 1800)
+
+    assert offset == sun_trigger_offset_seconds(offset_minutes, 1800, account)
