@@ -12,9 +12,10 @@
 
 > **Smart Irrigation** was created by
 > [Jeroen ter Heerdt](https://github.com/jeroenterheerdt); all credit for the
-> original integration and its evapotranspiration model goes to him. It is now
-> actively maintained here, with the rough edges of the configuration UI and
-> plumbing smoothed out.
+> original integration and its evapotranspiration model goes to him. He
+> transferred the project to this repository in June 2026, and this is where
+> the official Smart Irrigation is maintained and released, available by
+> default in HACS.
 
 This integration calculates the time to run your irrigation system to compensate for moisture loss by [evapotranspiration](https://en.wikipedia.org/wiki/Evapotranspiration). Using this integration you water your garden, lawn or crops precisely enough to compensate what has evaporated. It takes into account precipitation (rain, snow) and moisture loss caused by evapotranspiration and adjusts accordingly.
 If it rains or snows less than the amount of moisture lost, then irrigation is required. Otherwise, no irrigation is required.
