@@ -8,7 +8,7 @@ their bodies are unchanged and still use ``self`` to reach coordinator state.
 
 import logging
 import math
-from datetime import datetime
+from datetime import date, datetime
 
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
@@ -281,7 +281,10 @@ class WateringCalendarMixin:
         }
 
         # Calculate daily ET and scale to monthly
-        daily_et_delta = modinst.calculate_et_for_day(weather_data)
+        # Priced under the sun of that month, not of today's: every month used
+        # to get the radiation of the day the calendar was opened.
+        mid_month = date(date.today().year, month, 15)
+        daily_et_delta = modinst.calculate_et_for_day(weather_data, mid_month)
 
         # Get days in month
         import calendar

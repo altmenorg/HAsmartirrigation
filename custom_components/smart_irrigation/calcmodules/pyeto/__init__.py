@@ -16,6 +16,7 @@ from custom_components.smart_irrigation.const import (
     CONF_PYETO_COASTAL,
     CONF_PYETO_FORECAST_DAYS,
     CONF_PYETO_SOLRAD_BEHAVIOR,
+    MAPPING_DATA_MULTIPLIER,
 )
 
 from .pyeto import (
@@ -160,7 +161,9 @@ class PyETO(SmartIrrigationCalculationModule):
                     x,
                 )
                 if len(forecast_data) - 1 >= x:
-                    deltas.append(self.calculate_et_for_day(forecast_data[x]))
+                    # The forecast list starts at tomorrow.
+                    day = datetime.date.today() + datetime.timedelta(days=x + 1)
+                    deltas.append(self.calculate_et_for_day(forecast_data[x], day))
                     days.append(self.last_day_trace)
         # return average of the collected deltas
         _LOGGER.debug("[pyETO: calculate_et_for_day] collected deltas: %s", deltas)
@@ -180,7 +183,26 @@ class PyETO(SmartIrrigationCalculationModule):
         }
         return delta
 
-    def calculate_et_for_day(self, weather_data):
+    @staticmethod
+    def _day_of_the_weather(weather_data, day=None) -> datetime.date:
+        """The day the weather belongs to, which sets the sun it is priced under.
+
+        ``day`` when the caller knows it (a forecast day, a month of the
+        calendar). Otherwise the middle of the window the readings cover: the
+        clock alone put a calculation run just after midnight on the next day,
+        and every forecast day on today.
+        """
+        if day is not None:
+            return day
+        now = datetime.datetime.now()
+        multiplier = (weather_data or {}).get(MAPPING_DATA_MULTIPLIER)
+        try:
+            hours = float(multiplier) * 24.0 if multiplier else 0.0
+        except (TypeError, ValueError):
+            hours = 0.0
+        return (now - datetime.timedelta(hours=hours / 2.0)).date()
+
+    def calculate_et_for_day(self, weather_data, day=None):
         """Calculate the evapotranspiration delta for a single day's weather data.
 
         Args:
@@ -206,7 +228,9 @@ class PyETO(SmartIrrigationCalculationModule):
                 and wind_m_s is not None
                 and atmos_pres is not None
             ):
-                day_of_year = datetime.datetime.now().timetuple().tm_yday
+                day_of_year = (
+                    self._day_of_the_weather(weather_data, day).timetuple().tm_yday
+                )
 
                 sha = sunset_hour_angle(deg2rad(self._latitude), sol_dec(day_of_year))
 
