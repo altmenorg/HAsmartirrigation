@@ -167,13 +167,19 @@ class SmartIrrigationZoneResetBucketButton(SmartIrrigationZoneButton):
     _attr_icon = "mdi:bucket-outline"
 
     async def async_press(self) -> None:
-        """Reset the zone's bucket and notify the other entities."""
+        """Reset the zone's bucket, as the reset_bucket service does.
+
+        Through the same path, which starts the zone's next window at the
+        reset: written straight to the store, the rain and the evaporation
+        collected before it were counted again on top of the 0 it asserts
+        (#811).
+        """
         coordinator = _coordinator(self._hass)
         if coordinator is None:
             return
-        await coordinator.store.async_update_zone(self._zone_id, {const.ZONE_BUCKET: 0})
-        async_dispatcher_send(
-            self._hass, const.DOMAIN + "_config_updated", self._zone_id
+        await coordinator.async_update_zone_config(
+            zone_id=self._zone_id,
+            data={const.ATTR_SET_BUCKET: {}, const.ATTR_NEW_BUCKET_VALUE: 0},
         )
 
 
