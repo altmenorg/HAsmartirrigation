@@ -25,6 +25,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 from . import const
 from .calcmodules.consumes import consumed_mappings
 from .skip_conditions import thresholds_for_display
+from .units import zone_from_display, zone_to_display
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -342,6 +343,8 @@ class SmartIrrigationZoneView(HomeAssistantView):
         coordinator = hass.data[const.DOMAIN]["coordinator"]
         zone = int(data[const.ZONE_ID]) if const.ZONE_ID in data else None
         data = _without_server_owned_fields(data)
+        # Entered in the unit system, stored in metric (units.py).
+        data = zone_from_display(data, hass.config.units is METRIC_SYSTEM)
         await coordinator.async_update_zone_config(zone, data)
         async_dispatcher_send(hass, const.DOMAIN + "_update_frontend")
         return self.json({"success": True})
@@ -390,7 +393,9 @@ async def websocket_get_zones(hass: HomeAssistant, connection, msg):
     """Publish zone data."""
     coordinator = hass.data[const.DOMAIN]["coordinator"]
     zones = await coordinator.store.async_get_zones()
-    connection.send_result(msg["id"], zones)
+    # Stored in metric, shown in the unit system (units.py).
+    metric = hass.config.units is METRIC_SYSTEM
+    connection.send_result(msg["id"], [zone_to_display(z, metric) for z in zones])
 
 
 @async_response

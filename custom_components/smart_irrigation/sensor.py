@@ -21,6 +21,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 from . import const
 from .entity import zone_device_info
 from .performance import async_timer
+from .units import depth_to_display, zone_to_display
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -389,27 +390,42 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
         depth_unit = const.UNIT_MM if ha_metric else const.UNIT_INCH
         area_unit = const.UNIT_M2 if ha_metric else const.UNIT_SQ_FT
         flow_unit = const.UNIT_LPM if ha_metric else const.UNIT_GPM
+        # Stored in metric (units.py), shown in the unit system.
+        shown = zone_to_display(
+            {
+                const.ZONE_SIZE: self._size,
+                const.ZONE_THROUGHPUT: self._throughput,
+                const.ZONE_DRAINAGE_RATE: self._drainage_rate,
+                const.ZONE_CURRENT_DRAINAGE: self._current_drainage,
+                const.ZONE_MAXIMUM_BUCKET: self._maximum_bucket,
+                const.ZONE_PRECIPITATION_RATE: self._precipitation_rate,
+                const.ZONE_BUCKET: self._bucket,
+                const.ZONE_DELTA: self._delta,
+                const.ZONE_ET_DEFICIENCY: self._et_deficiency,
+            },
+            ha_metric,
+        )
 
         return {
             "id": self._id,
-            "size": self._size,
+            "size": shown[const.ZONE_SIZE],
             "size_unit": area_unit,
-            "throughput": self._throughput,
+            "throughput": shown[const.ZONE_THROUGHPUT],
             "throughput_unit": flow_unit,
-            "drainage_rate": self._drainage_rate,
+            "drainage_rate": shown[const.ZONE_DRAINAGE_RATE],
             "drainage_rate_unit": f"{depth_unit}/h",
-            "current_drainage": self._current_drainage,
+            "current_drainage": shown[const.ZONE_CURRENT_DRAINAGE],
             "current_drainage_unit": depth_unit,
-            "maximum_bucket": self._maximum_bucket,
+            "maximum_bucket": shown[const.ZONE_MAXIMUM_BUCKET],
             "maximum_bucket_unit": depth_unit,
             "multiplier": self._multiplier,
             "lead_time": self._lead_time,
             "maximum_duration": self._maximum_duration,
             "input_method": self._input_method,
-            "precipitation_rate": self._precipitation_rate,
+            "precipitation_rate": shown[const.ZONE_PRECIPITATION_RATE],
             "precipitation_rate_unit": f"{depth_unit}/h",
             "state": self._state,
-            "bucket": self._bucket,
+            "bucket": shown[const.ZONE_BUCKET],
             "bucket_unit": depth_unit,
             "last_updated": self._last_updated_formatted,
             "last_calculated": self._last_calculated_formatted,
@@ -423,11 +439,15 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
             #   scaling and before precipitation, so it is negative;
             # - eto is that same need as a reference evapotranspiration, the
             #   positive number the literature and the weather services quote.
-            "et_value": self._delta,
+            "et_value": shown[const.ZONE_DELTA],
             "et_value_unit": depth_unit,
-            "et_deficiency": self._et_deficiency,
+            "et_deficiency": shown[const.ZONE_ET_DEFICIENCY],
             "et_deficiency_unit": depth_unit,
-            "eto": (None if self._et_deficiency is None else -self._et_deficiency),
+            "eto": (
+                None
+                if shown[const.ZONE_ET_DEFICIENCY] is None
+                else -shown[const.ZONE_ET_DEFICIENCY]
+            ),
             "eto_unit": depth_unit,
             # asyncio.run_coroutine_threadsafe(
             #    localize("common.attributes.size", "en"), self._hass.loop
@@ -542,11 +562,14 @@ class SmartIrrigationZoneChildSensor(SensorEntity):
 
     @property
     def native_value(self):
-        """Return the stored value, rounded for display."""
-        return (
-            round(self._value, 2)
-            if isinstance(self._value, (int, float))
-            else self._value
+        """Return the value in the unit shown, rounded for display.
+
+        Every child value is a depth, stored in mm (units.py).
+        """
+        if not isinstance(self._value, (int, float)):
+            return self._value
+        return round(
+            depth_to_display(self._value, self._hass.config.units is METRIC_SYSTEM), 2
         )
 
     @property

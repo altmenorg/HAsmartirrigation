@@ -9,6 +9,7 @@ water a zone gets.
 from unittest.mock import AsyncMock, Mock
 
 import pytest
+from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.calculation import CalculationMixin
@@ -21,6 +22,8 @@ class _Coordinator(LiveEstimateMixin, CalculationMixin):
 
     def __init__(self, store):
         self.store = store
+        self.hass = Mock()
+        self.hass.config.units = METRIC_SYSTEM
         self.apply_aggregates_to_mapping_data = AsyncMock(
             return_value={"evapotranspiration": 3.0}
         )
@@ -144,6 +147,8 @@ async def test_an_estimate_leaves_a_pending_calculation_record_alone():
     from custom_components.smart_irrigation import SmartIrrigationCoordinator
 
     coordinator = SmartIrrigationCoordinator.__new__(SmartIrrigationCoordinator)
+    coordinator.hass = MagicMock()
+    coordinator.hass.config.units = METRIC_SYSTEM
     coordinator.store = MagicMock()
     coordinator.store.get_mapping = MagicMock(
         return_value={const.MAPPING_DATA: [{"x": 1}]}

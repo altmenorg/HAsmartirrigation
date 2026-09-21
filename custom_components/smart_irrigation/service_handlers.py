@@ -14,9 +14,11 @@ import re
 from datetime import datetime
 
 from homeassistant.helpers.dispatcher import async_dispatcher_send
+from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
 from .exceptions import SmartIrrigationError
+from .units import depth_from_display, zone_from_display
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -176,7 +178,10 @@ class ServiceHandlersMixin:
         if const.ATTR_NEW_BUCKET_VALUE in call.data:
             new_value = call.data[const.ATTR_NEW_BUCKET_VALUE]
             _LOGGER.info("Set all buckets service called, new value: %s", new_value)
-            await self._async_set_all_buckets(new_value)
+            # Entered in the unit system, stored in mm (units.py).
+            await self._async_set_all_buckets(
+                depth_from_display(new_value, self.hass.config.units is METRIC_SYSTEM)
+            )
 
     async def handle_set_zone(self, call):
         """Reset a specific zone state to new value."""
@@ -204,6 +209,7 @@ class ServiceHandlersMixin:
                 raise SmartIrrigationError("No zone_id found in state attributes.")
 
             zone = self.store.get_zone(zone_id)
+            metric = self.hass.config.units is METRIC_SYSTEM
             zone_data = {}
             count = 0
             for v in data:
@@ -226,7 +232,7 @@ class ServiceHandlersMixin:
                 if (
                     v == const.ATTR_NEW_BUCKET_VALUE
                     and maximum is not None
-                    and data[v] > maximum
+                    and depth_from_display(data[v], metric) > maximum
                 ):
                     raise SmartIrrigationError(
                         "Bucket size is above maximmum bucket allowed value."
@@ -249,6 +255,8 @@ class ServiceHandlersMixin:
                 raise SmartIrrigationError("No valid parameter provided")
 
             if count > 0:
+                # Entered in the unit system, stored in metric (units.py).
+                zone_data = zone_from_display(zone_data, metric)
                 # A bucket set here asserts the soil's state as set_bucket
                 # does, so the weather before it must leave the zone's next
                 # window the same way; written straight to the store, it was

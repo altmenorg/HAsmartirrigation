@@ -23,8 +23,10 @@ Two limits worth knowing, both stated rather than hidden:
 import logging
 
 import homeassistant.util.dt as dt_util
+from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
+from .units import depth_to_display
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -74,9 +76,11 @@ class LiveEstimateMixin:
         if not calc or const.ZONE_BUCKET not in calc:
             return None
 
+        metric = self.hass.config.units is METRIC_SYSTEM
         return {
-            "bucket": calc.get(const.ZONE_BUCKET),
-            "delta": calc.get(const.ZONE_DELTA),
+            # Depths stored in mm, shown in the unit system (units.py).
+            "bucket": depth_to_display(calc.get(const.ZONE_BUCKET), metric),
+            "delta": depth_to_display(calc.get(const.ZONE_DELTA), metric),
             "duration": calc.get(const.ZONE_DURATION),
             # What it is measured from, so the panel can say "since 23:00".
             "since": (
