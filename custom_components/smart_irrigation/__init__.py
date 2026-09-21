@@ -1170,24 +1170,17 @@ class SmartIrrigationCoordinator(
                 static_values,
             )
 
-        # TODO: convert relative pressure to absolute?
-
-        # if there is sensor data for this mapping, apply aggregates to it.
-        sensor_values = await self.apply_aggregates_to_mapping_data(mapping, True)
-        if not sensor_values:
-            # no data to calculate with!
-            _LOGGER.debug(
-                "[async_continuous_update_for_mapping] no data available",
-            )
-            return
-
-        # TODO: maybe calc each module once here
-
+        # Each zone reads its own window of the group's buffer and records how
+        # far it got, as the scheduled calculation does. This aggregated the
+        # buffer once for the whole group, calculated every zone without
+        # advancing its mark, then emptied the buffer only when every zone of
+        # the group had been calculated: a manual or disabled zone sharing the
+        # group kept it from ever being emptied, and each update counted the
+        # whole of it again for the others, the same rain credited at every
+        # sensor change.
         # calculate each zone in this mapping
         zones = await self._get_zones_that_use_this_mapping(mapping_id)
-        zones_to_calculate = []
         for z in zones:
-            zones_to_calculate.append(z)
             zone = self.store.get_zone(z)
             if zone is None or zone.get(const.ZONE_STATE) != const.ZONE_STATE_AUTOMATIC:
                 _LOGGER.info(
@@ -1275,8 +1268,18 @@ class SmartIrrigationCoordinator(
                     mapping_id,
                     zone.get(const.ZONE_ID),
                 )
-                await self.async_calculate_zone(z, sensor_values)
-                zones_to_calculate.remove(z)
+                weatherdata = await self.apply_aggregates_to_mapping_data(
+                    mapping, True, since=self.zone_window_start(zone)
+                )
+                if not weatherdata:
+                    _LOGGER.debug(
+                        "[async_continuous_update_for_mapping] zone %s: no new data",
+                        z,
+                    )
+                    continue
+                await self.async_calculate_zone(
+                    z, weatherdata, delete_weather_data=True, prune=False
+                )
             else:
                 _LOGGER.info(
                     "[async_continuous_update_for_mapping] for sensor group %s: zone %s has module %s that uses forecasting, skipping to avoid API calls that can incur costs",
@@ -1285,25 +1288,9 @@ class SmartIrrigationCoordinator(
                     mod.get(const.MODULE_NAME),
                 )
 
-        # remove weather data from this mapping unless there are zones we did not calculate!
-        _LOGGER.debug(
-            "[async_continuous_update_for_mapping] for sensor group %s: zones_to_calculate: %s. if this is empty this means that all zones for this sensor group have been calculated and therefore we can remove the weather data",
-            mapping_id,
-            zones_to_calculate,
-        )
-        if zones_to_calculate and len(zones_to_calculate) > 0:
-            _LOGGER.debug(
-                "[async_continuous_update_for_mapping] for sensor group %s: did not calculate all zones, keeping weather data for the sensor group",
-                mapping_id,
-            )
-        else:
-            _LOGGER.debug(
-                "clearing weather data for sensor group %s since we calculated all dependent zones",
-                mapping_id,
-            )
-            changes = {}
-            changes[const.MAPPING_DATA] = []
-            await self.store.async_update_mapping(mapping_id, changes=changes)
+        # Drop what every zone of the group has read, as the scheduled
+        # calculation does, instead of emptying the buffer.
+        await self.prune_consumed_readings(mapping_id)
 
     def _settings(self, changes):
         """The stored configuration with a change set applied on top.
