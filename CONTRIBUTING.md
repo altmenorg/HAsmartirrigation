@@ -45,6 +45,7 @@ Language files in `frontend/localize/languages/` are compiled into the bundle, s
 ## What makes a change easy to merge
 
 - **A test that fails without it.** For a bug, the test reproduces it; for a calculation, it checks a known reference (FAO-56 examples, a hand-computed value) rather than whatever the code currently returns.
+- **Stored values are metric.** Depths in mm, rates in mm/h, area in m², flow in L/min. They are converted only where they are shown or entered, for installs in imperial (see `units.py`).
 - **One change per pull request**, with a commit message that says what was wrong and why the fix is right.
 - **Compatibility**: existing installs must keep working after an update. A change to what is stored needs a migration, and a change to what users see or to the numbers it produces is announced in the release notes.
 - English for code, comments, commits and pull requests.
