@@ -105,6 +105,18 @@ class SmartIrrigationConfigView(HomeAssistantView):
                     const.CONF_ZONE_SEQUENCING_OPTIONS
                 ),
                 vol.Optional(const.CONF_PRECIPITATION_THRESHOLD_MM): vol.Coerce(float),
+                vol.Optional(const.CONF_SKIP_ON_FREEZE): cv.boolean,
+                vol.Optional(const.CONF_FREEZE_THRESHOLD): vol.Any(
+                    None, vol.Coerce(float)
+                ),
+                vol.Optional(const.CONF_FREEZE_SENSOR): vol.Any(None, cv.string),
+                vol.Optional(const.CONF_SKIP_ON_WIND): cv.boolean,
+                vol.Optional(const.CONF_WIND_THRESHOLD): vol.Any(
+                    None, vol.Coerce(float)
+                ),
+                vol.Optional(const.CONF_WIND_SENSOR): vol.Any(None, cv.string),
+                vol.Optional(const.CONF_SKIP_ON_RAIN_SENSOR): cv.boolean,
+                vol.Optional(const.CONF_RAIN_SENSOR): vol.Any(None, cv.string),
                 vol.Optional(const.CONF_DAYS_BETWEEN_IRRIGATION): vol.Coerce(int),
                 vol.Optional(const.CONF_MANUAL_COORDINATES_ENABLED): cv.boolean,
                 vol.Optional(const.CONF_MANUAL_LATITUDE): vol.Any(
@@ -288,6 +300,10 @@ class SmartIrrigationZoneView(HomeAssistantView):
                 vol.Optional(const.ZONE_CURRENT_DRAINAGE): vol.Or(float, int, None),
                 vol.Optional(const.ZONE_LINKED_ENTITY): vol.Any(None, cv.string),
                 vol.Optional(const.ZONE_FLOW_SENSOR): vol.Any(None, cv.string),
+                vol.Optional(const.ZONE_SOIL_MOISTURE_SENSOR): vol.Any(None, cv.string),
+                vol.Optional(const.ZONE_SOIL_MOISTURE_THRESHOLD): vol.Any(
+                    None, vol.Coerce(float)
+                ),
                 vol.Optional(const.ZONE_INPUT_METHOD): vol.In(const.ZONE_INPUT_METHODS),
                 vol.Optional(const.ZONE_PRECIPITATION_RATE): vol.Or(float, int, None),
                 vol.Optional(const.ZONE_ET_DEFICIENCY): vol.Or(float, int, None),

@@ -492,6 +492,9 @@ class TriggersMixin:
                     )
                     await self._hold_back_zones_exposed_to_rain(sheltered)
 
+                # A zone whose own soil is already moist sits this run out.
+                await self._hold_back_zones_with_moist_soil()
+
                 # Rain between the calculation and now shortens the run.
                 await self._apply_rain_since_calculation()
 
@@ -568,6 +571,34 @@ class TriggersMixin:
                 zone.get(const.ZONE_NAME),
             )
             await self.store.async_update_zone(zone_id, {const.ZONE_DURATION: 0})
+        async_dispatcher_send(self.hass, const.DOMAIN + "_update_frontend")
+
+    async def _hold_back_zones_with_moist_soil(self) -> None:
+        """Zero this run for every zone whose soil moisture sensor reads moist.
+
+        Like a zone held back by forecast rain: the duration of this run goes
+        to 0 and the bucket is left alone, so the deficit rolls over to the
+        next run. A zone whose sensor cannot be read waters as usual.
+        """
+        try:
+            held = await self.async_zones_held_by_soil_moisture()
+            if not held:
+                return
+            zones = await self.store.async_get_zones()
+        except Exception as e:  # noqa: BLE001 - never block the run over this
+            _LOGGER.error("Could not read the soil moisture sensors: %s", e)
+            return
+        for zone in zones:
+            if zone.get(const.ZONE_ID) not in held or not zone.get(const.ZONE_DURATION):
+                continue
+            _LOGGER.info(
+                "Zone %s is held back: its soil moisture is at or above %s%%",
+                zone.get(const.ZONE_NAME),
+                zone.get(const.ZONE_SOIL_MOISTURE_THRESHOLD),
+            )
+            await self.store.async_update_zone(
+                zone.get(const.ZONE_ID), {const.ZONE_DURATION: 0}
+            )
         async_dispatcher_send(self.hass, const.DOMAIN + "_update_frontend")
 
     async def _apply_rain_since_calculation(self):

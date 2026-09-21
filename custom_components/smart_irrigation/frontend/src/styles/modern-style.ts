@@ -141,6 +141,13 @@ export const modernStyle = css`
     margin-top: 2px;
     max-width: 460px;
   }
+  /* HA entity picker: sized like the other controls, but it brings its own
+     input chrome, so it must not get the .field text-input background. */
+  .entity-field {
+    flex: 0 0 auto;
+    width: 360px;
+    max-width: 100%;
+  }
 
   /* --- per-field sub-group: section heading + its controls (shared by views) --- */
   .si-subgroup {

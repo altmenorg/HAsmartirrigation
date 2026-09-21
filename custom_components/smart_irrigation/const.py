@@ -51,6 +51,28 @@ CONF_DEFAULT_SKIP_IRRIGATION_ON_PRECIPITATION = False
 CONF_PRECIPITATION_THRESHOLD_MM = "precipitation_threshold_mm"
 CONF_DEFAULT_PRECIPITATION_THRESHOLD_MM = 2.0  # 2mm threshold
 
+# Conditions measured at the start of a run, each off by default. The
+# thresholds follow Home Assistant's unit system: degrees C and km/h in metric,
+# F and mph in imperial. A reading is converted from its own unit.
+# Freeze: do not water on frozen ground or into a freezing morning.
+CONF_SKIP_ON_FREEZE = "skip_on_freeze"
+CONF_DEFAULT_SKIP_ON_FREEZE = False
+CONF_FREEZE_THRESHOLD = "freeze_threshold"
+CONF_DEFAULT_FREEZE_THRESHOLD_C = 2.0
+CONF_DEFAULT_FREEZE_THRESHOLD_F = 36.0
+CONF_FREEZE_SENSOR = "freeze_sensor"  # None: the weather service's temperature
+# Wind: a sprinkler in strong wind waters the path, not the bed.
+CONF_SKIP_ON_WIND = "skip_on_wind"
+CONF_DEFAULT_SKIP_ON_WIND = False
+CONF_WIND_THRESHOLD = "wind_threshold"
+CONF_DEFAULT_WIND_THRESHOLD_KMH = 20.0
+CONF_DEFAULT_WIND_THRESHOLD_MPH = 12.0
+CONF_WIND_SENSOR = "wind_sensor"  # None: the weather service's wind speed
+# Rain sensor: a binary sensor that is on while it rains.
+CONF_SKIP_ON_RAIN_SENSOR = "skip_on_rain_sensor"
+CONF_DEFAULT_SKIP_ON_RAIN_SENSOR = False
+CONF_RAIN_SENSOR = "rain_sensor"
+
 # Observed watering (closed-loop bucket): credit the bucket from a linked
 # valve/switch entity's real run time instead of a manual reset automation.
 CONF_OBSERVED_WATERING_ENABLED = "observed_watering_enabled"
@@ -351,6 +373,11 @@ CONF_DEFAULT_IRRIGATION_THRESHOLD = 0.0
 ZONE_LINKED_ENTITY = "linked_entity"
 # Optional cumulative volume/flow meter; credits the bucket by measured volume.
 ZONE_FLOW_SENSOR = "flow_sensor"
+# A soil moisture sensor, in %, and the moisture at or above which the zone
+# sits out a run: the soil already holds what the bucket says it lacks.
+ZONE_SOIL_MOISTURE_SENSOR = "soil_moisture_sensor"
+ZONE_SOIL_MOISTURE_THRESHOLD = "soil_moisture_threshold"
+CONF_DEFAULT_SOIL_MOISTURE_THRESHOLD = 50.0
 # Throughput actually measured by the flow meter, smoothed over runs, in the
 # user's volume-rate unit. Advisory only: it is never used to compute a
 # duration, it only lets us tell the user their configured value is off.

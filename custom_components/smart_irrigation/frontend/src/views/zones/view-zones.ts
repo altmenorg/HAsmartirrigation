@@ -60,6 +60,8 @@ import {
   ZONE_DRAINAGE_RATE,
   ZONE_DURATION,
   ZONE_FLOW_SENSOR,
+  ZONE_SOIL_MOISTURE_SENSOR,
+  ZONE_SOIL_MOISTURE_THRESHOLD,
   ZONE_INPUT_METHOD,
   ZONE_INPUT_METHOD_PRECIPITATION_RATE,
   ZONE_INPUT_METHOD_THROUGHPUT,
@@ -1130,6 +1132,37 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           [ZONE_FLOW_SENSOR]: v || undefined,
                         }),
                       localize("panels.zones.labels.flow-sensor-hint", lang),
+                    )
+                  : ""}
+                ${this._entityRow(
+                  localize("panels.zones.labels.soil-moisture-sensor", lang),
+                  localize("panels.zones.labels.optional", lang),
+                  zone.soil_moisture_sensor,
+                  ["sensor"],
+                  (v) =>
+                    this.handleEditZone(index, {
+                      ...zone,
+                      [ZONE_SOIL_MOISTURE_SENSOR]: v || undefined,
+                    }),
+                  localize(
+                    "panels.zones.labels.soil-moisture-sensor-hint",
+                    lang,
+                  ),
+                )}
+                ${zone.soil_moisture_sensor
+                  ? this._numRow(
+                      localize(
+                        "panels.zones.labels.soil-moisture-threshold",
+                        lang,
+                      ),
+                      "%",
+                      zone.soil_moisture_threshold ?? 50,
+                      (v) =>
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_SOIL_MOISTURE_THRESHOLD]: parseFloat(v),
+                        }),
+                      1,
                     )
                   : ""}
                 ${this._numRow(

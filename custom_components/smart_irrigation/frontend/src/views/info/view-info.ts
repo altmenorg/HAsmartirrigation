@@ -301,6 +301,41 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
         >
       `;
     }
+    if (check.id === "freeze" || check.id === "wind") {
+      const source =
+        check.source === "weather_service"
+          ? this.t("cards.decision.detail-weather-service")
+          : check.source;
+      return html`
+        <span
+          >${this.t("cards.decision.detail-now")}: ${check.value ?? "-"}
+          ${check.unit ?? ""}</span
+        >
+        <span
+          >${this.t("cards.decision.detail-threshold")}:
+          ${check.threshold ?? "-"} ${check.unit ?? ""}</span
+        >
+        <span>${source ?? ""}</span>
+      `;
+    }
+    if (check.id === "rain_sensor") {
+      return html`<span
+        >${check.raining
+          ? this.t("cards.decision.detail-raining")
+          : this.t("cards.decision.detail-dry")}</span
+      >`;
+    }
+    if (check.id === "soil_moisture") {
+      return html`${(check.zones || []).map(
+        (zone) =>
+          html`<span
+            >${zone.name}: ${zone.moisture ?? "-"} % / ${zone.threshold} %
+            ${zone.held
+              ? `(${this.t("cards.decision.detail-held")})`
+              : ""}</span
+          >`,
+      )}`;
+    }
     if (check.id === "days_between") {
       return html`
         <span

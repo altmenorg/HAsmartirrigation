@@ -18,6 +18,7 @@ def _coordinator(**config):
     coordinator.hass = MagicMock()
     coordinator.store = MagicMock()
     coordinator.store.async_get_config = AsyncMock(return_value=config)
+    coordinator.store.async_get_zones = AsyncMock(return_value=[])
     coordinator._WeatherServiceClient = None
     return coordinator
 
@@ -32,7 +33,15 @@ async def test_nothing_configured_vetoes_nothing():
 
     assert evaluation["should_skip"] is False
     assert evaluation["reason"] is None
-    assert {c["id"] for c in evaluation["checks"]} == {"precipitation", "days_between"}
+    assert {c["id"] for c in evaluation["checks"]} == {
+        "rain_sensor",
+        "freeze",
+        "wind",
+        "precipitation",
+        "days_between",
+        "soil_moisture",
+    }
+    assert not any(c["enabled"] for c in evaluation["checks"])
 
 
 @pytest.mark.asyncio

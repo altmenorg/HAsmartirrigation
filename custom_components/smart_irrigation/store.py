@@ -56,11 +56,17 @@ from .const import (
     CONF_DEFAULT_SEASONAL_ADJUSTMENTS,
     CONF_DEFAULT_SENSOR_DEBOUNCE,
     CONF_DEFAULT_SKIP_IRRIGATION_ON_PRECIPITATION,
+    CONF_DEFAULT_SKIP_ON_FREEZE,
+    CONF_DEFAULT_SKIP_ON_RAIN_SENSOR,
+    CONF_DEFAULT_SKIP_ON_WIND,
+    CONF_DEFAULT_SOIL_MOISTURE_THRESHOLD,
     CONF_DEFAULT_USE_WEATHER_SERVICE,
     CONF_DEFAULT_WEATHER_SERVICE,
     CONF_DEFAULT_ZONE_INPUT_METHOD,
     CONF_DEFAULT_ZONE_SEQUENCING,
     CONF_DIRECT_VALVE_CONTROL_ENABLED,
+    CONF_FREEZE_SENSOR,
+    CONF_FREEZE_THRESHOLD,
     CONF_HOURLY_CALCULATION,
     CONF_IMPERIAL,
     CONF_IRRIGATION_START_TRIGGERS,
@@ -71,14 +77,20 @@ from .const import (
     CONF_METRIC,
     CONF_OBSERVED_WATERING_ENABLED,
     CONF_PRECIPITATION_THRESHOLD_MM,
+    CONF_RAIN_SENSOR,
     CONF_RECURRING_SCHEDULES,
     CONF_SEASONAL_ADJUSTMENTS,
     CONF_SENSOR_DEBOUNCE,
     CONF_SKIP_IRRIGATION_ON_PRECIPITATION,
+    CONF_SKIP_ON_FREEZE,
+    CONF_SKIP_ON_RAIN_SENSOR,
+    CONF_SKIP_ON_WIND,
     CONF_UNITS,
     CONF_USE_WEATHER_SERVICE,
     CONF_WEATHER_SERVICE,
     CONF_WEATHER_SERVICE_OWM,
+    CONF_WIND_SENSOR,
+    CONF_WIND_THRESHOLD,
     CONF_ZONE_SEQUENCING,
     DOMAIN,
     HISTORY_DURATION,
@@ -157,6 +169,8 @@ from .const import (
     ZONE_PRECIPITATION_RATE,
     ZONE_PRECIPITATION_SUPERSEDED,
     ZONE_SIZE,
+    ZONE_SOIL_MOISTURE_SENSOR,
+    ZONE_SOIL_MOISTURE_THRESHOLD,
     ZONE_STATE,
     ZONE_STATE_AUTOMATIC,
     ZONE_THROUGHPUT,
@@ -237,6 +251,12 @@ class ZoneEntry:
     precipitation_superseded = attr.ib(type=float, default=0.0)
     # Optional cumulative volume meter; credits the bucket by measured volume.
     flow_sensor = attr.ib(type=str, default=None)
+    # Optional soil moisture sensor (%): the zone sits out a run while the
+    # reading is at or above the threshold.
+    soil_moisture_sensor = attr.ib(type=str, default=None)
+    soil_moisture_threshold = attr.ib(
+        type=float, default=CONF_DEFAULT_SOIL_MOISTURE_THRESHOLD
+    )
     # How far this zone has read its sensor group's shared buffer (see const).
     # None means it has never consumed one, and its first calculation takes
     # everything there, which is what clearing the buffer used to leave behind.
@@ -482,6 +502,16 @@ class Config:
     precipitation_threshold_mm = attr.ib(
         type=float, default=CONF_DEFAULT_PRECIPITATION_THRESHOLD_MM
     )
+    # Conditions read at the start of a run. A threshold of None means the
+    # default for the unit system in use (see skip_conditions).
+    skip_on_freeze = attr.ib(type=bool, default=CONF_DEFAULT_SKIP_ON_FREEZE)
+    freeze_threshold = attr.ib(type=float, default=None)
+    freeze_sensor = attr.ib(type=str, default=None)
+    skip_on_wind = attr.ib(type=bool, default=CONF_DEFAULT_SKIP_ON_WIND)
+    wind_threshold = attr.ib(type=float, default=None)
+    wind_sensor = attr.ib(type=str, default=None)
+    skip_on_rain_sensor = attr.ib(type=bool, default=CONF_DEFAULT_SKIP_ON_RAIN_SENSOR)
+    rain_sensor = attr.ib(type=str, default=None)
     days_between_irrigation = attr.ib(
         type=int, default=CONF_DEFAULT_DAYS_BETWEEN_IRRIGATION
     )
@@ -759,6 +789,20 @@ class SmartIrrigationStorage:
                     CONF_PRECIPITATION_THRESHOLD_MM,
                     CONF_DEFAULT_PRECIPITATION_THRESHOLD_MM,
                 ),
+                skip_on_freeze=data["config"].get(
+                    CONF_SKIP_ON_FREEZE, CONF_DEFAULT_SKIP_ON_FREEZE
+                ),
+                freeze_threshold=data["config"].get(CONF_FREEZE_THRESHOLD, None),
+                freeze_sensor=data["config"].get(CONF_FREEZE_SENSOR, None),
+                skip_on_wind=data["config"].get(
+                    CONF_SKIP_ON_WIND, CONF_DEFAULT_SKIP_ON_WIND
+                ),
+                wind_threshold=data["config"].get(CONF_WIND_THRESHOLD, None),
+                wind_sensor=data["config"].get(CONF_WIND_SENSOR, None),
+                skip_on_rain_sensor=data["config"].get(
+                    CONF_SKIP_ON_RAIN_SENSOR, CONF_DEFAULT_SKIP_ON_RAIN_SENSOR
+                ),
+                rain_sensor=data["config"].get(CONF_RAIN_SENSOR, None),
                 days_between_irrigation=data["config"].get(
                     CONF_DAYS_BETWEEN_IRRIGATION,
                     CONF_DEFAULT_DAYS_BETWEEN_IRRIGATION,
@@ -836,6 +880,11 @@ class SmartIrrigationStorage:
                         ),
                         linked_entity=zone.get(ZONE_LINKED_ENTITY, None),
                         flow_sensor=zone.get(ZONE_FLOW_SENSOR, None),
+                        soil_moisture_sensor=zone.get(ZONE_SOIL_MOISTURE_SENSOR, None),
+                        soil_moisture_threshold=zone.get(
+                            ZONE_SOIL_MOISTURE_THRESHOLD,
+                            CONF_DEFAULT_SOIL_MOISTURE_THRESHOLD,
+                        ),
                         last_consumed_at=zone.get(ZONE_LAST_CONSUMED_AT, None),
                         measured_throughput=zone.get(ZONE_MEASURED_THROUGHPUT, None),
                         measured_throughput_samples=zone.get(

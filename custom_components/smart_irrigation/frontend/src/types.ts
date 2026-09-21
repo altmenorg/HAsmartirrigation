@@ -32,6 +32,14 @@ export class SmartIrrigationConfig {
   autoclearenabled: boolean;
   continuousupdates: boolean;
   hourly_calculation: boolean;
+  skip_on_freeze?: boolean;
+  freeze_threshold?: number | null;
+  freeze_sensor?: string | null;
+  skip_on_wind?: boolean;
+  wind_threshold?: number | null;
+  wind_sensor?: string | null;
+  skip_on_rain_sensor?: boolean;
+  rain_sensor?: string | null;
   sensor_debounce: number;
   irrigation_start_triggers: IrrigationStartTrigger[];
   active_start_trigger: string;
@@ -130,6 +138,8 @@ export class SmartIrrigationZone {
   current_drainage?: number;
   linked_entity?: string;
   flow_sensor?: string;
+  soil_moisture_sensor?: string;
+  soil_moisture_threshold?: number;
   input_method?: string;
   precipitation_rate?: number;
   /** When this zone last watered. Recorded by the run, never by the panel. */
@@ -225,6 +235,22 @@ export interface SkipCheck {
   threshold_mm?: number | null;
   days_since?: number | null;
   days_required?: number | null;
+  /** Freeze and wind: the reading, its limit, and the unit of both. */
+  value?: number | null;
+  threshold?: number | null;
+  unit?: string | null;
+  /** An entity id, or "weather_service". */
+  source?: string | null;
+  /** Rain sensor. */
+  raining?: boolean | null;
+  /** Soil moisture, one entry per zone with a sensor. */
+  zones?: {
+    zone_id: number;
+    name: string;
+    moisture: number | null;
+    threshold: number;
+    held: boolean;
+  }[];
 }
 
 export interface SkipEvaluation {

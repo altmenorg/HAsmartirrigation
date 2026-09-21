@@ -307,7 +307,16 @@
           "detail-forecast": "Prévision",
           "detail-threshold": "Seuil",
           "detail-days-since": "Jours depuis le dernier arrosage",
-          "detail-days-required": "Jours requis"
+          "detail-days-required": "Jours requis",
+          "check-rain_sensor": "Capteur de pluie",
+          "check-freeze": "Gel",
+          "check-wind": "Vent",
+          "check-soil_moisture": "Humidité du sol",
+          "detail-now": "Maintenant",
+          "detail-weather-service": "service météo",
+          "detail-raining": "Il pleut",
+          "detail-dry": "Il ne pleut pas",
+          "detail-held": "n'arrose pas cette fois"
         },
         "estimate": {
           "title": "Où en est chaque zone",
@@ -488,7 +497,10 @@
         "flow-sensor": "Compteur de volume cumulé",
         "flow-sensor-hint": "Pour un comptage exact au lieu de débit x temps : un total de compteur d'eau cumulé (state class total_increasing), pas un débit instantané. L'unité est lue automatiquement (L, mL, m³, gal, ft³).",
         "optional": "option",
-        "irrigation-threshold": "Seuil d'arrosage"
+        "irrigation-threshold": "Seuil d'arrosage",
+        "soil-moisture-sensor": "Capteur d'humidité du sol",
+        "soil-moisture-sensor-hint": "La zone n'arrose pas tant que le sol est au seuil ou au-dessus. Le seau est conservé.",
+        "soil-moisture-threshold": "Ne pas arroser à partir de"
       },
       "no_items": "Il n'y a pas encore de zone définie.",
       "title": "Zones",
@@ -624,5 +636,28 @@
     "description": "Écrit dans un fichier l'intégralité des données d'entrée de chaque calcul, afin de pouvoir comparer après coup deux journées qui se ressemblent mais qui arrosent très différemment. Chaque calcul ajoute une ligne : les relevés du groupe de capteurs et la façon dont ils ont été agrégés, les valeurs intermédiaires du module (rayonnement solaire, rayonnement net, ET0), ainsi que le réservoir, la durée et le volume obtenus. Désactivé par défaut ; la taille du fichier est limitée et il est archivé par rotation, il peut donc rester activé toute une saison.",
     "enabled_label": "Journaliser les données de calcul dans un fichier",
     "file_hint": "Écrit dans config/smart_irrigation/calc_log.jsonl, un enregistrement JSON par ligne. Les enregistrements les plus récents sont aussi inclus dans le téléchargement des diagnostics (coordonnées arrondies, identifiants d'entités supprimés), pour les joindre à un ticket en une seule étape."
+  },
+  "measured_skip": {
+    "title": "Ne pas arroser selon les mesures",
+    "description": "Vérifié au début de chaque arrosage, avec un capteur ou le service météo. Un capteur illisible n'empêche jamais d'arroser.",
+    "enabled": "Activé",
+    "threshold": "Seuil",
+    "sensor": "Capteur",
+    "sensor-optional": "Capteur (facultatif)",
+    "rain": {
+      "title": "Capteur de pluie",
+      "description": "Ne pas arroser tant qu'un capteur de pluie indique qu'il pleut.",
+      "sensor-hint": "Un capteur binaire allumé quand il pleut."
+    },
+    "freeze": {
+      "title": "Gel",
+      "description": "Ne pas arroser quand la température est inférieure ou égale au seuil.",
+      "sensor-hint": "Vide : la température actuelle du service météo."
+    },
+    "wind": {
+      "title": "Vent",
+      "description": "Ne pas arroser quand le vent atteint ou dépasse le seuil : par grand vent, l'arroseur mouille l'allée, pas le massif.",
+      "sensor-hint": "Vide : le vent actuel du service météo, à 10 m."
+    }
   }
 }

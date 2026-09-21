@@ -309,7 +309,16 @@
           "detail-forecast": "Forecast",
           "detail-threshold": "Threshold",
           "detail-days-since": "Days since last run",
-          "detail-days-required": "Days required"
+          "detail-days-required": "Days required",
+          "check-rain_sensor": "Rain sensor",
+          "check-freeze": "Freeze",
+          "check-wind": "Wind",
+          "check-soil_moisture": "Soil moisture",
+          "detail-now": "Now",
+          "detail-weather-service": "weather service",
+          "detail-raining": "It is raining",
+          "detail-dry": "Not raining",
+          "detail-held": "sits out this run"
         },
         "estimate": {
           "title": "Where each zone stands now",
@@ -496,7 +505,10 @@
         "flow-sensor": "Cumulative volume meter",
         "flow-sensor-hint": "For exact crediting instead of throughput x time: a cumulative water-meter total (state class total_increasing), not an instant flow rate. The unit is read automatically (L, mL, m³, gal, ft³).",
         "optional": "optional",
-        "irrigation-threshold": "Irrigation threshold"
+        "irrigation-threshold": "Irrigation threshold",
+        "soil-moisture-sensor": "Soil moisture sensor",
+        "soil-moisture-sensor-hint": "The zone sits out a run while the soil is at or above the threshold. The bucket is kept.",
+        "soil-moisture-threshold": "Skip at or above"
       },
       "no_items": "There are no zones defined yet.",
       "title": "Zones",
@@ -632,5 +644,28 @@
     "description": "Write the complete input of every calculation to a file, so two days that look alike but water very differently can be compared afterwards. Each calculation appends one line: the sensor group records and how they were aggregated, the module intermediates (solar radiation, net radiation, ET0), and the resulting bucket, duration and volume. Off by default; the file is capped in size and rotated, so it can be left on for a season.",
     "enabled_label": "Log calculation inputs to a file",
     "file_hint": "Written to config/smart_irrigation/calc_log.jsonl, one JSON record per line. The most recent records are also included in the diagnostics download (coordinates rounded, entity ids removed), so you can attach them to an issue in one step."
+  },
+  "measured_skip": {
+    "title": "Skip on measured conditions",
+    "description": "Checked at the start of each run, from a sensor or the weather service. A sensor that cannot be read never stops a run.",
+    "enabled": "Enabled",
+    "threshold": "Threshold",
+    "sensor": "Sensor",
+    "sensor-optional": "Sensor (optional)",
+    "rain": {
+      "title": "Rain sensor",
+      "description": "Skip the run while a rain sensor says it is raining.",
+      "sensor-hint": "A binary sensor that is on while it rains."
+    },
+    "freeze": {
+      "title": "Freeze",
+      "description": "Skip the run when the temperature is at or below the threshold.",
+      "sensor-hint": "Empty: the weather service's current temperature."
+    },
+    "wind": {
+      "title": "Wind",
+      "description": "Skip the run when the wind is at or above the threshold: a sprinkler in strong wind waters the path, not the bed.",
+      "sensor-hint": "Empty: the weather service's current wind, at 10 m."
+    }
   }
 }

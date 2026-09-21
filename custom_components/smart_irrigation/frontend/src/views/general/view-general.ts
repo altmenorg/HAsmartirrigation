@@ -784,6 +784,151 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             : ""}
         </div>
       </ha-card>
+      ${this.renderMeasuredSkipCard()}
+    `;
+  }
+
+  /** Rain sensor, freeze and wind: read at the start of each run. */
+  renderMeasuredSkipCard() {
+    if (!this.config || !this.hass) return html``;
+    const lang = this.hass.language;
+    const metric = this.config.units !== "imperial";
+    const t = (key: string) => localize(`measured_skip.${key}`, lang);
+    const toggle = (key: string, checked: boolean | undefined) => html`
+      <ha-switch
+        .checked=${!!checked}
+        @change=${(e: Event) =>
+          this.handleConfigChange({ [key]: (e.target as any).checked })}
+      ></ha-switch>
+    `;
+    const entity = (
+      key: string,
+      value: string | null | undefined,
+      domains: string[],
+      label: string,
+      hint: string,
+    ) => html`
+      <div class="setting-row">
+        <div class="setting-label">
+          ${label}
+          <div class="setting-hint">${hint}</div>
+        </div>
+        <ha-entity-picker
+          class="entity-field"
+          .hass=${this.hass}
+          .value=${value || ""}
+          .includeDomains=${domains}
+          allow-custom-entity
+          @value-changed=${(e: CustomEvent) =>
+            this.handleConfigChange({ [key]: e.detail?.value || null })}
+        ></ha-entity-picker>
+      </div>
+    `;
+    const section = (title: string, description: string, body: unknown) => html`
+      <div class="si-subgroup">
+        <div class="si-subgroup-title">${title}</div>
+        <div class="setting-hint">${description}</div>
+        ${body}
+      </div>
+    `;
+    const threshold = (
+      key: string,
+      value: number | null | undefined,
+      fallback: number,
+      unit: string,
+      step: number,
+    ) =>
+      this._numRow(
+        t("threshold"),
+        unit,
+        value ?? fallback,
+        (v) =>
+          this.handleConfigChange({
+            [key]: v === "" ? null : parseFloat(v),
+          }),
+        step,
+      );
+
+    return html`
+      <ha-card header="${t("title")}">
+        <div class="card-content">${t("description")}</div>
+        <div class="card-content">
+          ${section(
+            t("rain.title"),
+            t("rain.description"),
+            html`
+              <div class="setting-row">
+                <div class="setting-label">${t("enabled")}</div>
+                ${toggle(
+                  "skip_on_rain_sensor",
+                  this.config.skip_on_rain_sensor,
+                )}
+              </div>
+              ${this.config.skip_on_rain_sensor
+                ? entity(
+                    "rain_sensor",
+                    this.config.rain_sensor,
+                    ["binary_sensor"],
+                    t("sensor"),
+                    t("rain.sensor-hint"),
+                  )
+                : ""}
+            `,
+          )}
+          ${section(
+            t("freeze.title"),
+            t("freeze.description"),
+            html`
+              <div class="setting-row">
+                <div class="setting-label">${t("enabled")}</div>
+                ${toggle("skip_on_freeze", this.config.skip_on_freeze)}
+              </div>
+              ${this.config.skip_on_freeze
+                ? html`${threshold(
+                    "freeze_threshold",
+                    this.config.freeze_threshold,
+                    metric ? 2 : 36,
+                    metric ? "°C" : "°F",
+                    0.5,
+                  )}
+                  ${entity(
+                    "freeze_sensor",
+                    this.config.freeze_sensor,
+                    ["sensor"],
+                    t("sensor-optional"),
+                    t("freeze.sensor-hint"),
+                  )}`
+                : ""}
+            `,
+          )}
+          ${section(
+            t("wind.title"),
+            t("wind.description"),
+            html`
+              <div class="setting-row">
+                <div class="setting-label">${t("enabled")}</div>
+                ${toggle("skip_on_wind", this.config.skip_on_wind)}
+              </div>
+              ${this.config.skip_on_wind
+                ? html`${threshold(
+                    "wind_threshold",
+                    this.config.wind_threshold,
+                    metric ? 20 : 12,
+                    metric ? "km/h" : "mph",
+                    1,
+                  )}
+                  ${entity(
+                    "wind_sensor",
+                    this.config.wind_sensor,
+                    ["sensor"],
+                    t("sensor-optional"),
+                    t("wind.sensor-hint"),
+                  )}`
+                : ""}
+            `,
+          )}
+        </div>
+      </ha-card>
     `;
   }
 
