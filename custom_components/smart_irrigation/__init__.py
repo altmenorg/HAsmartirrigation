@@ -1965,14 +1965,21 @@ class SmartIrrigationCoordinator(
         return static_values
 
     async def _supersede_precipitation_on_bucket_set(self, zone_id, data):
-        """Record the rain an asserted bucket value has already accounted for.
+        """Start the zone's next window at the moment its bucket is asserted.
 
         Setting the bucket says the soil is in a known state right now, which is
         what ``reset_bucket`` asserts at the end of the documented irrigation
-        automation. The rain collected since the last calculation happened
-        before that assertion, so it is part of what the assertion is about, but
-        the calculation window spans the moment of the reset and would credit it
-        to the bucket afterwards, on top of the value just asserted (#811).
+        automation. Everything the weather did before that moment is part of
+        what the assertion is about, the rain and the evaporation alike, but the
+        next calculation's window would still span it and count it again on top
+        of the value just asserted.
+
+        This used to be handled for the rain alone, by recording how much the
+        assertion superseded (#811), so the evaporation before it was still
+        taken off: a bucket set at 15:00 lost the ET from the previous
+        calculation to 15:00 a second time. Moving the zone's mark to now keeps
+        both out of its next window, and the superseded rain is cleared so it
+        is not taken off a window that no longer holds it.
 
         Nothing is needed on the closed-loop path: observed watering credits the
         bucket by the water applied rather than asserting a value, and the
@@ -1980,29 +1987,13 @@ class SmartIrrigationCoordinator(
         """
         if const.ATTR_NEW_BUCKET_VALUE not in data:
             return data
-        zone = self.store.get_zone(zone_id)
-        if not zone:
+        if not self.store.get_zone(zone_id):
             return data
-        try:
-            superseded = await self.precipitation_since_last_calculation(zone)
-        except Exception as e:
-            # Losing the marker costs accuracy at the next calculation; failing
-            # the bucket reset would leave an automation half done.
-            _LOGGER.error(
-                "Could not work out the rain superseded by the new bucket value "
-                "on zone %s: %s",
-                zone.get(const.ZONE_NAME),
-                e,
-            )
-            return data
-        if superseded <= 0:
-            return data
-        _LOGGER.debug(
-            "[set_bucket] zone %s: %.1f mm of rain is superseded by the asserted bucket value",
-            zone.get(const.ZONE_NAME),
-            superseded,
-        )
-        return {**data, const.ZONE_PRECIPITATION_SUPERSEDED: superseded}
+        return {
+            **data,
+            const.ZONE_LAST_CONSUMED_AT: datetime.now(),
+            const.ZONE_PRECIPITATION_SUPERSEDED: 0.0,
+        }
 
     async def async_update_zone_config(
         self, zone_id: int | None = None, data: dict | None = None

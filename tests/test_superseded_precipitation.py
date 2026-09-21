@@ -11,6 +11,7 @@ next day: the closed loop lands on -4 because the bucket is credited by the
 water applied, while a reset landed on +4, over-credited by exactly the rain.
 """
 
+from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -81,17 +82,22 @@ def test_the_result_never_goes_negative():
 
 
 @pytest.mark.asyncio
-async def test_resetting_the_bucket_records_the_rain_it_covers():
+async def test_resetting_the_bucket_starts_the_zone_window_now():
+    """The assertion covers the rain and the evaporation before it alike, so the
+    zone's next window starts at the assertion rather than recording the rain
+    it superseded and still counting the evaporation."""
     coordinator = SmartIrrigationCoordinator.__new__(SmartIrrigationCoordinator)
     coordinator.store = MagicMock()
-    coordinator.store.get_zone = MagicMock(return_value=_zone())
-    coordinator.precipitation_since_last_calculation = AsyncMock(return_value=8.0)
+    coordinator.store.get_zone = MagicMock(return_value=_zone(superseded=3.0))
+    before = datetime.now()
 
     data = await coordinator._supersede_precipitation_on_bucket_set(
         0, {const.ATTR_NEW_BUCKET_VALUE: 0}
     )
 
-    assert data[const.ZONE_PRECIPITATION_SUPERSEDED] == 8.0
+    assert before <= data[const.ZONE_LAST_CONSUMED_AT] <= datetime.now()
+    # Nothing left to take off: the window no longer holds that rain.
+    assert data[const.ZONE_PRECIPITATION_SUPERSEDED] == 0.0
 
 
 @pytest.mark.asyncio
@@ -110,17 +116,49 @@ async def test_crediting_the_bucket_records_nothing():
 
 
 @pytest.mark.asyncio
-async def test_a_failure_does_not_block_the_reset():
-    """Losing the marker costs accuracy; failing leaves an automation half done."""
+async def test_an_unknown_zone_is_passed_through():
     coordinator = SmartIrrigationCoordinator.__new__(SmartIrrigationCoordinator)
     coordinator.store = MagicMock()
-    coordinator.store.get_zone = MagicMock(return_value=_zone())
-    coordinator.precipitation_since_last_calculation = AsyncMock(
-        side_effect=RuntimeError("boom")
-    )
+    coordinator.store.get_zone = MagicMock(return_value=None)
 
     data = await coordinator._supersede_precipitation_on_bucket_set(
         0, {const.ATTR_NEW_BUCKET_VALUE: 0}
     )
 
     assert data == {const.ATTR_NEW_BUCKET_VALUE: 0}
+
+
+@pytest.mark.asyncio
+async def test_rain_since_the_calculation_starts_at_the_zones_own_mark():
+    """What shortens a run at its start is the rain after the bucket was
+    asserted, not the rain since whichever zone last calculated the group."""
+    from datetime import timedelta
+
+    now = datetime.now().replace(microsecond=0)
+
+    def reading(hours_ago, total):
+        return {
+            const.MAPPING_PRECIPITATION: total,
+            const.RETRIEVED_AT: (now - timedelta(hours=hours_ago)).isoformat(),
+        }
+
+    mapping = {
+        const.MAPPING_ID: 1,
+        const.MAPPING_NAME: "Garden",
+        const.MAPPING_MAPPINGS: {},
+        # A gauge counting up: 6 mm before the assertion, 2 mm after it.
+        const.MAPPING_DATA: [reading(10, 0.0), reading(5, 6.0), reading(1, 8.0)],
+    }
+    coordinator = _Coordinator()
+    coordinator.hass = MagicMock()
+    coordinator.store.get_mapping = MagicMock(return_value=mapping)
+    coordinator.store.async_update_mapping = AsyncMock()
+    zone = {
+        **_zone(),
+        const.ZONE_MAPPING: 1,
+        const.ZONE_LAST_CONSUMED_AT: (now - timedelta(hours=4)).isoformat(),
+    }
+
+    rain = await coordinator.precipitation_since_last_calculation(zone)
+
+    assert rain == pytest.approx(2.0)

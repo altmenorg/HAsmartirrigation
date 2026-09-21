@@ -1837,8 +1837,11 @@ class CalculationMixin:
         mapping = self.store.get_mapping(zone.get(const.ZONE_MAPPING))
         if not mapping or not mapping.get(const.MAPPING_DATA):
             return 0.0
+        # From the zone's own mark, as its next calculation will read: the
+        # group's last calculation belongs to whichever zone ran last, and it
+        # does not move when this zone's bucket is asserted.
         weatherdata = await self.apply_aggregates_to_mapping_data(
-            mapping, persist=False
+            mapping, persist=False, since=self.zone_window_start(zone)
         )
         if not weatherdata:
             return 0.0
