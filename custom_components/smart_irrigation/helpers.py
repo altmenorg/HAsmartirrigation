@@ -342,7 +342,9 @@ def convert_production(from_unit, to_unit, val):
             )
             return outval
         if from_unit == UNIT_MJ_DAY_SQFT:
-            outval = float(float(val) * SQ_FT_TO_M2_FACTOR)
+            # An amount per square foot is 10.76 times that per square metre;
+            # multiplying by the area of a square foot gave 1/116th of it.
+            outval = float(float(val) * W_SQ_FT_TO_W_M2_FACTOR)
             _LOGGER.debug(
                 "[convert production]: Converting %s from MJ/day/sq ft to MJ/day/m2. Result: %s",
                 val,
@@ -368,7 +370,7 @@ def convert_production(from_unit, to_unit, val):
             )
             return outval
         if from_unit == UNIT_MJ_DAY_M2:
-            outval = float(float(val) * M2_TO_SQ_FT_FACTOR)
+            outval = float(float(val) * SQ_FT_TO_M2_FACTOR)
             _LOGGER.debug(
                 "[convert production]: Converting %s from MJ/day/m2 to MJ/day/sq ft. Result: %s",
                 val,
