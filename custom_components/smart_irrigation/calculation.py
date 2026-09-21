@@ -868,7 +868,11 @@ class CalculationMixin:
                 seconds_per_unit = (
                     3600.0 if key == const.MAPPING_CURRENT_PRECIPITATION else 86400.0
                 )
-                if len(d) < 2:
+                if len(d) < 2 and key != const.MAPPING_CURRENT_PRECIPITATION:
+                    # One sample of a rate per day is that rate (see the
+                    # time-weighted mean below).
+                    resultdata[key] = float(d[0])
+                elif len(d) < 2:
                     # A single sample carries no interval of its own, so
                     # integrate the rate over the calculation interval instead of
                     # handing back the rate as if it were already a total.
@@ -915,13 +919,27 @@ class CalculationMixin:
                         )
                         times = None
                     riemann_sum = 0.0
+                    span = 0.0
                     for i in range(len(d) - 1):
                         if times is not None:
                             dt = (
                                 times[i + 1] - times[i]
                             ).total_seconds() / seconds_per_unit
                         riemann_sum += ((d[i] + d[i + 1]) / 2) * dt
+                        span += dt
                     resultdata[key] = riemann_sum
+                    if key != const.MAPPING_CURRENT_PRECIPITATION and span > 0:
+                        # The precipitation rate is integrated into the depth
+                        # that fell. Anything else is a rate per day that the
+                        # engine takes as the day's value, above all the solar
+                        # radiation in MJ/m2/day: its integral is the energy of
+                        # the samples' span, which equals a day's value only
+                        # when the span is a day. Continuous updates calculate
+                        # over minutes and handed PyETO almost no sun; a
+                        # two-day window handed it twice the sun, then scaled
+                        # the result by the interval again. The time-weighted
+                        # mean is the value the engine expects.
+                        resultdata[key] = riemann_sum / span
             last_calc_data[key] = d[-1]
             if audit is not None:
                 self._record_field_audit(

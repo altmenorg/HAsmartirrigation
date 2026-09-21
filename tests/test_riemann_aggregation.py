@@ -58,8 +58,61 @@ async def test_riemann_sum_15_minute_interval():
     await coordinator._aggregate_sensor_data(
         data_by_sensor, _mapping_with_riemann(const.MAPPING_SOLRAD), resultdata
     )
-    # trapezoids: ((10+20)/2 + (20+30)/2) * (900 / 86400) = 40 * 0.0104166...
-    assert resultdata[const.MAPPING_SOLRAD] == pytest.approx(40.0 * 900.0 / 86400.0)
+    # trapezoids: ((10+20)/2 + (20+30)/2) * (900 / 86400), over a span of
+    # 1800 / 86400 days: the time-weighted mean rate, 20 MJ/day/m2. Not the
+    # integral, which PyETO would read as a day with almost no sun.
+    assert resultdata[const.MAPPING_SOLRAD] == pytest.approx(
+        (40.0 * 900.0 / 86400.0) / (1800.0 / 86400.0)
+    )
+
+
+async def test_a_constant_sun_is_the_same_by_riemann_sum_or_average():
+    """The engine takes the solar radiation as the day's rate, and scales its
+    result by the interval itself. A Riemann sum handing it the energy of a
+    short window instead gave 40% less evaporation over half an hour than the
+    Average aggregate did for the same constant sun."""
+    start = datetime(2026, 7, 25, 12, 0, 0)
+    values = {}
+    for aggregate in (
+        const.MAPPING_CONF_AGGREGATE_AVERAGE,
+        const.MAPPING_CONF_AGGREGATE_RIEMANNSUM,
+    ):
+        resultdata = {const.MAPPING_DATA_MULTIPLIER: 0.5 / 24}
+        await _Coordinator()._aggregate_sensor_data(
+            {
+                const.MAPPING_SOLRAD: [20.0] * 3,
+                const.RETRIEVED_AT: [
+                    start + timedelta(minutes=15 * i) for i in range(3)
+                ],
+            },
+            {
+                const.MAPPING_ID: 1,
+                const.MAPPING_MAPPINGS: {
+                    const.MAPPING_SOLRAD: {const.MAPPING_CONF_AGGREGATE: aggregate}
+                },
+            },
+            resultdata,
+        )
+        values[aggregate] = resultdata[const.MAPPING_SOLRAD]
+
+    assert values[const.MAPPING_CONF_AGGREGATE_RIEMANNSUM] == pytest.approx(20.0)
+    assert values[const.MAPPING_CONF_AGGREGATE_AVERAGE] == pytest.approx(20.0)
+
+
+async def test_the_precipitation_rate_is_still_integrated_into_a_depth():
+    """2 mm/h for half an hour is 1 mm: that one is a depth, not a rate."""
+    start = datetime(2026, 7, 25, 12, 0, 0)
+    resultdata = {}
+    await _Coordinator()._aggregate_sensor_data(
+        {
+            const.MAPPING_CURRENT_PRECIPITATION: [2.0] * 3,
+            const.RETRIEVED_AT: [start + timedelta(minutes=15 * i) for i in range(3)],
+        },
+        _mapping_with_riemann(const.MAPPING_CURRENT_PRECIPITATION),
+        resultdata,
+    )
+
+    assert resultdata[const.MAPPING_CURRENT_PRECIPITATION] == pytest.approx(1.0)
 
 
 def _mapping_with_data(key, data):
