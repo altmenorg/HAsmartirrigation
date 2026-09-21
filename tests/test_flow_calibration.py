@@ -209,3 +209,23 @@ def test_removing_a_zone_drops_its_advisory(issues):
     coord.async_clear_throughput_issue(3)
 
     assert issues.deleted == ["throughput_mismatch_3"]
+
+
+async def test_a_zone_entered_as_a_rate_is_not_told_its_throughput_is_wrong(issues):
+    """It waters by its rate; the throughput it stores from its creation is
+    hidden and unused, and flagging it pointed at a value nobody can see."""
+    coord, store = _coord(
+        _zone(
+            **{
+                const.ZONE_INPUT_METHOD: const.ZONE_INPUT_METHOD_PRECIPITATION_RATE,
+                const.ZONE_MEASURED_THROUGHPUT: 5.0,
+                const.ZONE_MEASURED_THROUGHPUT_SAMPLES: 10,
+            }
+        )
+    )
+
+    # 5 L/min measured against 10 configured: half, far past the tolerance.
+    await coord.async_record_measured_flow(0, volume_l=50.0, seconds=600)
+
+    assert not issues.created
+    assert "throughput_mismatch_0" in issues.deleted

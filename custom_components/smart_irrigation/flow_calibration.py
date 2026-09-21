@@ -122,6 +122,15 @@ class FlowCalibrationMixin:
         self, zone_id: int, zone: dict, measured: float, samples: int
     ) -> None:
         """Raise or clear the repair issue for one zone."""
+        # A zone entered as a precipitation rate waters by that rate, and the
+        # throughput it still stores from its creation is hidden and unused:
+        # flagging it as wrong points at a value the user cannot see.
+        if (
+            zone.get(const.ZONE_INPUT_METHOD)
+            == const.ZONE_INPUT_METHOD_PRECIPITATION_RATE
+        ):
+            ir.async_delete_issue(self.hass, const.DOMAIN, self._issue_id(zone_id))
+            return
         configured = zone.get(const.ZONE_THROUGHPUT) or 0.0
         # A zone with no throughput at all cannot produce a duration anyway;
         # that is a different problem, and not one to report from here.
