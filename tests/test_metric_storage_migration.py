@@ -148,3 +148,57 @@ def test_a_metric_install_shows_what_is_stored():
     stored = {**IMPERIAL_ZONE, **EXPECTED_METRIC}
 
     assert zone_to_display(stored, metric=True) is stored
+
+
+@pytest.mark.asyncio
+async def test_a_calculation_does_not_depend_on_the_unit_system():
+    """Stored in metric, calculated in metric: the unit system only changes what
+    is shown, never the water balance."""
+    from unittest.mock import AsyncMock, MagicMock
+
+    from custom_components.smart_irrigation.calculation import CalculationMixin
+
+    class _Module:
+        name = "Static"
+
+        def calculate(self):
+            return -4.0
+
+    class _Coordinator(CalculationMixin):
+        def __init__(self, units):
+            self.hass = MagicMock()
+            self.hass.config.units = units
+            self.hass.config.language = "en"
+            self.store = MagicMock()
+            self.store.get_module = MagicMock(
+                return_value={const.MODULE_ID: 1, const.MODULE_NAME: "Static"}
+            )
+            self.getModuleInstanceByID = AsyncMock(return_value=_Module())
+            self._build_calc_record = MagicMock(return_value=None)
+            self.seasonal_adjustment_manager = None
+
+    zone = {
+        const.ZONE_ID: 1,
+        const.ZONE_NAME: "Lawn",
+        const.ZONE_STATE: const.ZONE_STATE_AUTOMATIC,
+        const.ZONE_MODULE: 1,
+        const.ZONE_MAPPING: None,
+        const.ZONE_BUCKET: -3.0,
+        const.ZONE_MAXIMUM_BUCKET: 25.0,
+        const.ZONE_DRAINAGE_RATE: 10.0,
+        const.ZONE_MULTIPLIER: 0.8,
+        const.ZONE_SIZE: 50.0,
+        const.ZONE_THROUGHPUT: 10.0,
+        const.ZONE_MAXIMUM_DURATION: 3600,
+        const.ZONE_LEAD_TIME: 0,
+        const.ZONE_IRRIGATION_THRESHOLD: 2.0,
+    }
+    results = []
+    for units in (METRIC_SYSTEM, US_CUSTOMARY_SYSTEM):
+        data = await _Coordinator(units).calculate_module(
+            dict(zone), {const.MAPPING_DATA_MULTIPLIER: 1.0}, []
+        )
+        results.append({k: v for k, v in data.items() if k != const.ZONE_EXPLANATION})
+
+    assert results[0] == results[1]
+    assert results[0][const.ZONE_DURATION] > 0
