@@ -136,7 +136,13 @@ class WateringCalendarMixin:
                         month_data, modinst, month
                     )
                 elif modinst.name == "Static":
-                    et_estimate = modinst.calculate()
+                    # The static delta is a daily deficit, negative when it
+                    # dries; the month needs its magnitude over the month.
+                    import calendar
+
+                    et_estimate = abs(modinst.calculate()) * (
+                        calendar.monthrange(2024, month)[1]
+                    )
                 else:
                     # For other modules like Passthrough, use a simple estimation
                     et_estimate = (
@@ -205,10 +211,14 @@ class WateringCalendarMixin:
         monthly_data = []
 
         for month in range(1, 13):
-            # Calculate seasonal temperature variation
-            temp_factor = math.cos((month - 7) * math.pi / 6)  # Peak in July (month 7)
+            # +1 at the height of summer, -1 in midwinter: July in the north,
+            # January in the south. Every seasonal quantity below follows it;
+            # only the temperature used to, so a southern site had its wettest,
+            # most humid months in its summer.
+            season = math.cos((month - 7) * math.pi / 6)
             if self._latitude and self._latitude < 0:  # Southern hemisphere
-                temp_factor = -temp_factor
+                season = -season
+            temp_factor = season
 
             avg_temp = base_temp + (temp_variation * temp_factor)
             min_temp = avg_temp - 5.0
@@ -216,9 +226,8 @@ class WateringCalendarMixin:
 
             # Simple precipitation model (more in winter for temperate, varies by location)
             if latitude > 35.0:  # Temperate zones
-                precip_factor = 1.5 - 0.5 * math.cos(
-                    (month - 1) * math.pi / 6
-                )  # More in winter
+                # More in winter: twice the summer's. The formula peaked in July.
+                precip_factor = 1.5 - 0.5 * season
             else:  # Tropical/subtropical
                 precip_factor = 1.0 + 0.3 * math.sin(
                     (month - 1) * math.pi / 6
@@ -226,11 +235,12 @@ class WateringCalendarMixin:
 
             precipitation = 60.0 * precip_factor  # Base 60mm/month
 
-            # Humidity varies seasonally (higher in winter for temperate zones)
-            humidity = 65.0 + 15.0 * math.cos((month - 7) * math.pi / 6)
+            # Humidity varies seasonally (higher in winter for temperate zones);
+            # this peaked in July, the opposite of what it said.
+            humidity = 65.0 - 15.0 * season
 
-            # Wind speed (slightly higher in winter)
-            wind_speed = 3.0 + 1.0 * math.cos((month - 7) * math.pi / 6)
+            # Wind speed (slightly higher in winter), the same inversion.
+            wind_speed = 3.0 - 1.0 * season
 
             # Pressure (standard sea level, adjusted for elevation)
             pressure = altitudeToPressure(self._elevation or 0)
@@ -249,8 +259,7 @@ class WateringCalendarMixin:
                     "wind_speed": wind_speed,
                     "pressure": pressure,
                     "dewpoint": dewpoint,
-                    "average_daily_et": 2.0
-                    + 2.0 * math.cos((month - 7) * math.pi / 6),  # Higher ET in summer
+                    "average_daily_et": 2.0 + 2.0 * season,  # Higher ET in summer
                 }
             )
 
@@ -293,9 +302,10 @@ class WateringCalendarMixin:
             1
         ]  # Use 2024 as reference year
 
-        # Convert daily ET delta to monthly total (remove precipitation since we want just ET)
-        daily_et = abs(daily_et_delta) + month_data["precipitation"] / days_in_month
-        return daily_et * days_in_month
+        # The day's delta is the evaporation alone, with no rain in it. Adding
+        # the month's rain here, which the volume then subtracts again, made
+        # the need equal to the evaporation whatever it rained.
+        return abs(daily_et_delta) * days_in_month
 
     def _calculate_monthly_watering_volume(self, zone, et_mm, month_data):
         """Calculate monthly watering volume in liters for a zone.
