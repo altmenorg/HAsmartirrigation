@@ -495,7 +495,11 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
         text-align: right;
       }
 
+      /* A remark under a value, not an alert: the shared style paints
+         .info-note as a warning banner, which read as something wrong. */
       .info-note {
+        background: none;
+        padding: 0;
         color: var(--secondary-text-color);
         font-size: 0.9em;
         line-height: 1.4;

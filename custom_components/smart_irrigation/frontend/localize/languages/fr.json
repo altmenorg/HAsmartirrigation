@@ -411,6 +411,12 @@
         "precipitation": "Précip.",
         "retrieval-time": "Récupéré",
         "no-data": "Aucune donnée météo disponible pour ce groupe de capteurs"
+      },
+      "summary": {
+        "sources-one": "{n} source",
+        "sources-other": "{n} sources",
+        "zones-one": "{n} zone",
+        "zones-other": "{n} zones"
       }
     },
     "modules": {

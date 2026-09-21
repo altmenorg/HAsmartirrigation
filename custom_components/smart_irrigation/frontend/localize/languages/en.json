@@ -413,6 +413,12 @@
         "precipitation": "Precip",
         "retrieval-time": "Retrieved",
         "no-data": "No weather data available for this sensor group"
+      },
+      "summary": {
+        "sources-one": "{n} source",
+        "sources-other": "{n} sources",
+        "zones-one": "{n} zone",
+        "zones-other": "{n} zones"
       }
     },
     "modules": {

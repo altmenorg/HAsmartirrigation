@@ -1799,22 +1799,23 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
       (o) => o.mapping === mapping.id,
     ).length;
 
-    // short summary line: how many sensor groups + zones that use this mapping
-    const numberofsensors = Object.keys(mapping.mappings || {}).length;
-    const subParts: string[] = [];
-    subParts.push(
-      `${numberofsensors} ${localize(
-        "panels.mappings.title",
+    // Short summary line: how many fields have a source, and how many zones
+    // read the group. It counted every field, "None" ones included, under the
+    // page's own title, and read "9 sensor groups" for one sensor group.
+    const numberofsources = Object.values(mapping.mappings || {}).filter(
+      (conf: any) => {
+        const source = typeof conf === "string" ? conf : conf?.source;
+        return !!source && source !== MAPPING_CONF_SOURCE_NONE;
+      },
+    ).length;
+    const count = (n: number, key: string) =>
+      localize(
+        `panels.mappings.summary.${key}-${n === 1 ? "one" : "other"}`,
         lang,
-      ).toLowerCase()}`,
-    );
+      ).replace("{n}", String(n));
+    const subParts: string[] = [count(numberofsources, "sources")];
     if (numberofzonesusingthismapping) {
-      subParts.push(
-        `${numberofzonesusingthismapping} ${localize(
-          "panels.zones.title",
-          lang,
-        ).toLowerCase()}`,
-      );
+      subParts.push(count(numberofzonesusingthismapping, "zones"));
     }
     const subText = subParts.join(" · ");
 
