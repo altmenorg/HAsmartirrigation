@@ -1,0 +1,71 @@
+blueprint:
+  name: Smart Irrigation with Rain Bird
+  description: >-
+    Waters one Smart Irrigation zone on a Rain Bird zone, for the duration Smart
+    Irrigation calculated, when irrigation starts. Turn off Rain Bird's own
+    schedule for that zone, or it will water on top of this. The run is
+    rounded up to what Rain Bird accepts. Create one automation per zone.
+    Not yet confirmed on real Rain Bird hardware: feedback is welcome on the
+    Smart Irrigation discussions.
+  domain: automation
+  source_url: https://github.com/altmenorg/HAsmartirrigation/blob/master/custom_components/smart_irrigation/blueprints/automation/rainbird.yaml
+  input:
+    irrigation_zone:
+      name: Smart Irrigation zone
+      description: The zone's duration sensor.
+      selector:
+        entity:
+          filter:
+            - integration: smart_irrigation
+              device_class: duration
+    controller_zone:
+      name: Rain Bird zone
+      description: The Rain Bird zone that waters it.
+      selector:
+        entity:
+          filter:
+            - integration: rainbird
+              domain: switch
+    reset_bucket:
+      name: Reset the bucket after the run
+      description: >-
+        Leave on unless observed watering already credits this zone from the
+        Rain Bird zone's own on and off, which would count the run twice.
+      default: true
+      selector:
+        boolean:
+
+variables:
+  duration_entity: !input irrigation_zone
+  reset_after: !input reset_bucket
+  # The run in whole minutes, rounded up so no deficit is left, at least 1
+  # and no more than the controller accepts (1440 minutes).
+  amount: >-
+    {{ [[((states(duration_entity) | float(0)) / 60) | round(0, 'ceil') | int, 1] | max, 1440] | min }}
+
+triggers:
+  - trigger: event
+    event_type: smart_irrigation_start_irrigation_all_zones
+
+conditions:
+  - condition: numeric_state
+    entity_id: !input irrigation_zone
+    above: 0
+
+actions:
+  - action: rainbird.start_irrigation
+    target:
+      entity_id: !input controller_zone
+    data:
+      duration: "{{ amount }}"
+  - delay:
+      minutes: "{{ amount | int }}"
+  - if:
+      - condition: template
+        value_template: "{{ reset_after }}"
+    then:
+      - action: smart_irrigation.reset_bucket
+        target:
+          entity_id: !input irrigation_zone
+
+mode: single
