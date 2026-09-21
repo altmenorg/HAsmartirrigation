@@ -1444,6 +1444,9 @@ class CalculationMixin:
         crop_factor = zone.get(const.ZONE_MULTIPLIER)
         if crop_factor is None:
             crop_factor = 1.0
+        # A seasonal multiplier adjustment scales the crop factor for the months
+        # it covers.
+        crop_factor = crop_factor * self._seasonal_factors(zone)[0]
         delta = delta * crop_factor
         hour_multiplier = weatherdata.get(const.MAPPING_DATA_MULTIPLIER, 1.0)
         _LOGGER.debug(
@@ -1873,12 +1876,24 @@ class CalculationMixin:
         wants the soil to dry down and then a deep soak. Both places that turn a
         bucket into a duration read it from here so they cannot disagree (#815).
         """
-        threshold = zone.get(const.ZONE_IRRIGATION_THRESHOLD)
-        if not threshold or threshold <= 0:
-            return 0.0
-        if self.hass.config.units is METRIC_SYSTEM:
-            return float(threshold)
-        return float(convert_between(const.UNIT_INCH, const.UNIT_MM, threshold))
+        threshold = zone.get(const.ZONE_IRRIGATION_THRESHOLD) or 0.0
+        if threshold > 0 and self.hass.config.units is not METRIC_SYSTEM:
+            threshold = convert_between(const.UNIT_INCH, const.UNIT_MM, threshold)
+        # A seasonal threshold adjustment is in mm and moves the threshold for
+        # the months it covers, never below watering at any deficit.
+        threshold = max(0.0, float(threshold) + self._seasonal_factors(zone)[1])
+        return threshold
+
+    def _seasonal_factors(self, zone):
+        """``(multiplier, threshold_offset_mm)`` of the season, neutral if none."""
+        manager = getattr(self, "seasonal_adjustment_manager", None)
+        if manager is None:
+            return 1.0, 0.0
+        try:
+            multiplier, offset = manager.seasonal_factors(zone.get(const.ZONE_ID))
+            return float(multiplier), float(offset)
+        except Exception:  # noqa: BLE001 - never let the season break a calculation
+            return 1.0, 0.0
 
     def _zone_precipitation_rate(self, zone: dict, ha_config_is_metric: bool):
         """Return the zone's precipitation rate in mm/h.

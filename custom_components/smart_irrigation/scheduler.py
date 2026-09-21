@@ -420,85 +420,79 @@ class SeasonalAdjustmentManager:
 
         _LOGGER.info("Deleted seasonal adjustment: %s", adjustment_id)
 
-    async def apply_seasonal_adjustments(
-        self, zone_data: dict[str, Any], zone_id: int | None = None
-    ) -> dict[str, Any]:
-        """Apply applicable seasonal adjustments to zone data."""
-        current_month = datetime.datetime.now().month
-        applied_adjustments = []
-
+    def active_adjustments(self, zone_id, month: int | None = None) -> list:
+        """The enabled adjustments that apply to a zone in a month (now by default)."""
+        month = month or datetime.datetime.now().month
+        active = []
         for adjustment in self._adjustments:
             if not adjustment.get(const.SEASONAL_CONF_ENABLED, True):
                 continue
-
-            # Check if adjustment applies to this zone
             adjustment_zones = adjustment.get(const.SEASONAL_CONF_ZONES, "all")
             if adjustment_zones != "all" and zone_id not in adjustment_zones:
                 continue
-
-            # Check if current month is within adjustment period
             month_start = adjustment.get(const.SEASONAL_CONF_MONTH_START, 1)
             month_end = adjustment.get(const.SEASONAL_CONF_MONTH_END, 12)
-
             if month_start <= month_end:
                 # Normal range (e.g., March to September)
-                in_range = month_start <= current_month <= month_end
+                in_range = month_start <= month <= month_end
             else:
                 # Cross-year range (e.g., November to February)
-                in_range = current_month >= month_start or current_month <= month_end
+                in_range = month >= month_start or month <= month_end
+            if in_range:
+                active.append(adjustment)
+        return active
 
-            if not in_range:
-                continue
+    def seasonal_factors(self, zone_id, month: int | None = None):
+        """``(multiplier, threshold_offset_mm)`` the season applies to a zone.
 
-            # Apply multiplier adjustment
-            multiplier_adj = adjustment.get(
-                const.SEASONAL_CONF_MULTIPLIER_ADJUSTMENT, 1.0
+        The multiplier scales the zone's crop factor and the offset is added to
+        its irrigation threshold, both where the calculation reads them.
+        """
+        multiplier, offset = 1.0, 0.0
+        for adjustment in self.active_adjustments(zone_id, month):
+            multiplier *= float(
+                adjustment.get(const.SEASONAL_CONF_MULTIPLIER_ADJUSTMENT, 1.0)
             )
-            if multiplier_adj != 1.0 and const.ZONE_MULTIPLIER in zone_data:
-                old_multiplier = zone_data[const.ZONE_MULTIPLIER]
-                zone_data[const.ZONE_MULTIPLIER] = old_multiplier * multiplier_adj
-                applied_adjustments.append(
-                    {
-                        "name": adjustment[const.SEASONAL_CONF_NAME],
-                        "type": "multiplier",
-                        "old_value": old_multiplier,
-                        "new_value": zone_data[const.ZONE_MULTIPLIER],
-                        "adjustment": multiplier_adj,
-                    }
-                )
-
-            # Apply threshold adjustment (if applicable)
-            threshold_adj = adjustment.get(
-                const.SEASONAL_CONF_THRESHOLD_ADJUSTMENT, 0.0
+            offset += float(
+                adjustment.get(const.SEASONAL_CONF_THRESHOLD_ADJUSTMENT, 0.0)
             )
-            if threshold_adj != 0.0 and const.ZONE_BUCKET in zone_data:
-                zone_data[const.ZONE_BUCKET] += threshold_adj
-                applied_adjustments.append(
-                    {
-                        "name": adjustment[const.SEASONAL_CONF_NAME],
-                        "type": "threshold",
-                        "adjustment": threshold_adj,
-                    }
-                )
+        return multiplier, offset
 
-        # Fire event if adjustments were applied
-        if applied_adjustments:
+    async def apply_seasonal_adjustments(
+        self, zone_data: dict[str, Any], zone_id: int | None = None
+    ) -> dict[str, Any]:
+        """Report the seasonal adjustments a calculation of this zone used.
+
+        The adjustments are applied inside the calculation now (see
+        ``seasonal_factors``), and this no longer touches the result. It used
+        to add the threshold adjustment to the calculated bucket, which is then
+        stored: every calculation added it again, so -5 mm became -10 mm the
+        next day and the zone was watered more and more. The multiplier
+        adjustment scaled a crop factor the result does not carry, so it never
+        applied at all.
+        """
+        active = self.active_adjustments(zone_id)
+        if active:
             self.hass.bus.fire(
                 f"{const.DOMAIN}_{const.EVENT_SEASONAL_ADJUSTMENT_APPLIED}",
                 {
                     "zone_id": zone_id,
-                    "adjustments": applied_adjustments,
-                    "month": current_month,
+                    "adjustments": [
+                        {
+                            "name": adjustment.get(const.SEASONAL_CONF_NAME),
+                            "multiplier": adjustment.get(
+                                const.SEASONAL_CONF_MULTIPLIER_ADJUSTMENT, 1.0
+                            ),
+                            "threshold": adjustment.get(
+                                const.SEASONAL_CONF_THRESHOLD_ADJUSTMENT, 0.0
+                            ),
+                        }
+                        for adjustment in active
+                    ],
+                    "month": datetime.datetime.now().month,
                     "timestamp": datetime.datetime.now().isoformat(),
                 },
             )
-
-            _LOGGER.info(
-                "Applied %d seasonal adjustments to zone %s",
-                len(applied_adjustments),
-                zone_id,
-            )
-
         return zone_data
 
     async def _save_adjustments(self) -> None:
