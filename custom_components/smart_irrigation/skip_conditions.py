@@ -18,6 +18,45 @@ from .weathermodules.OpenMeteoClient import WIND_10M_TO_2M
 
 _LOGGER = logging.getLogger(__name__)
 
+# The measured-condition thresholds: stored in the first unit, shown to an
+# imperial install in the second.
+_IMPERIAL_THRESHOLDS = {
+    const.CONF_FREEZE_THRESHOLD: (
+        TemperatureConverter,
+        UnitOfTemperature.CELSIUS,
+        UnitOfTemperature.FAHRENHEIT,
+    ),
+    const.CONF_WIND_THRESHOLD: (
+        SpeedConverter,
+        UnitOfSpeed.KILOMETERS_PER_HOUR,
+        UnitOfSpeed.MILES_PER_HOUR,
+    ),
+}
+
+
+def thresholds_for_display(config: dict, metric: bool) -> dict:
+    """The config with the measured thresholds in the unit shown to the user."""
+    if metric:
+        return config
+    shown = dict(config)
+    for key, (converter, stored, displayed) in _IMPERIAL_THRESHOLDS.items():
+        if shown.get(key) is not None:
+            shown[key] = round(
+                converter.convert(float(shown[key]), stored, displayed), 1
+            )
+    return shown
+
+
+def thresholds_for_storage(changes: dict, metric: bool) -> dict:
+    """The changes with the measured thresholds brought back to the stored unit."""
+    if metric:
+        return changes
+    stored = dict(changes)
+    for key, (converter, unit, displayed) in _IMPERIAL_THRESHOLDS.items():
+        if stored.get(key) is not None:
+            stored[key] = converter.convert(float(stored[key]), displayed, unit)
+    return stored
+
 
 class SkipConditionsMixin:
     """Skip-condition checks and days-between tracking for the coordinator.
@@ -276,6 +315,7 @@ class SkipConditionsMixin:
         sensor_key,
         default_metric,
         default_imperial,
+        metric_unit,
         system_unit,
         convert,
         from_service,
@@ -283,8 +323,8 @@ class SkipConditionsMixin:
     ) -> dict:
         """The freeze and wind checks, which differ only in their numbers.
 
-        The threshold is in the unit Home Assistant displays, None meaning the
-        default for that unit system. The reading comes from the configured
+        The threshold is stored in ``metric_unit`` and compared in
+        ``system_unit``, None meaning the default for the unit system. The reading comes from the configured
         entity, converted from its own unit, or from the weather service when
         no entity is set. ``skips(value, threshold)`` says whether it vetoes.
         """
@@ -302,14 +342,16 @@ class SkipConditionsMixin:
         if not config.get(enabled_key):
             return result
         result["enabled"] = True
-        threshold = config.get(threshold_key)
-        if threshold is None:
-            threshold = (
-                default_metric
-                if self.hass.config.units is METRIC_SYSTEM
-                else default_imperial
-            )
-        result["threshold"] = threshold
+        # Stored in metric whatever the unit system, so that changing it
+        # cannot turn 2 C into 2 F; shown and compared in the system's unit.
+        stored = config.get(threshold_key)
+        if stored is not None:
+            threshold = convert(float(stored), metric_unit, system_unit)
+        elif self.hass.config.units is METRIC_SYSTEM:
+            threshold = default_metric
+        else:
+            threshold = default_imperial
+        result["threshold"] = round(threshold, 1)
 
         value = None
         entity_id = config.get(sensor_key)
@@ -366,6 +408,7 @@ class SkipConditionsMixin:
             sensor_key=const.CONF_FREEZE_SENSOR,
             default_metric=const.CONF_DEFAULT_FREEZE_THRESHOLD_C,
             default_imperial=const.CONF_DEFAULT_FREEZE_THRESHOLD_F,
+            metric_unit=UnitOfTemperature.CELSIUS,
             system_unit=system_unit,
             convert=TemperatureConverter.convert,
             from_service=from_service,
@@ -402,6 +445,7 @@ class SkipConditionsMixin:
             sensor_key=const.CONF_WIND_SENSOR,
             default_metric=const.CONF_DEFAULT_WIND_THRESHOLD_KMH,
             default_imperial=const.CONF_DEFAULT_WIND_THRESHOLD_MPH,
+            metric_unit=UnitOfSpeed.KILOMETERS_PER_HOUR,
             system_unit=system_unit,
             convert=SpeedConverter.convert,
             from_service=from_service,

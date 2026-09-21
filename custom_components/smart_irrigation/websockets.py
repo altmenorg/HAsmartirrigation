@@ -23,6 +23,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
 from .calcmodules.consumes import consumed_mappings
+from .skip_conditions import thresholds_for_display
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -369,6 +370,7 @@ async def websocket_get_config(hass: HomeAssistant, connection, msg):
                 threshold_mm,
             )
 
+    config = thresholds_for_display(config, hass.config.units is METRIC_SYSTEM)
     connection.send_result(msg["id"], config)
 
 

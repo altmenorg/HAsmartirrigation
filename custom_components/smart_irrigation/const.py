@@ -52,8 +52,9 @@ CONF_PRECIPITATION_THRESHOLD_MM = "precipitation_threshold_mm"
 CONF_DEFAULT_PRECIPITATION_THRESHOLD_MM = 2.0  # 2mm threshold
 
 # Conditions measured at the start of a run, each off by default. The
-# thresholds follow Home Assistant's unit system: degrees C and km/h in metric,
-# F and mph in imperial. A reading is converted from its own unit.
+# thresholds are stored in C and km/h, None meaning the default, and shown in
+# Home Assistant's unit system (F and mph in imperial). A reading is converted
+# from its own unit.
 # Freeze: do not water on frozen ground or into a freezing morning.
 CONF_SKIP_ON_FREEZE = "skip_on_freeze"
 CONF_DEFAULT_SKIP_ON_FREEZE = False

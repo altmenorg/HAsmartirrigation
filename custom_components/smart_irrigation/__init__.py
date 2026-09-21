@@ -66,7 +66,7 @@ from .observed_watering import ObservedWateringMixin
 from .panel import async_register_panel, remove_panel
 from .scheduler import RecurringScheduleManager, SeasonalAdjustmentManager
 from .service_handlers import ServiceHandlersMixin
-from .skip_conditions import SkipConditionsMixin
+from .skip_conditions import SkipConditionsMixin, thresholds_for_storage
 from .store import SmartIrrigationStorage, async_get_registry
 from .triggers import TriggersMixin
 from .valve_runner import ValveRunnerMixin
@@ -720,6 +720,10 @@ class SmartIrrigationCoordinator(
 
     async def async_update_config(self, data):  # noqa: D102
         _LOGGER.debug("[async_update_config]: config changed: %s", data)
+
+        # The freeze and wind thresholds arrive in the unit shown to the user
+        # and are stored in C and km/h.
+        data = thresholds_for_storage(data, self.hass.config.units is METRIC_SYSTEM)
 
         # Handle precipitation threshold unit conversion
         # Always store internally in mm, but convert from user units if needed

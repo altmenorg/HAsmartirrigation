@@ -362,3 +362,56 @@ async def test_no_moist_zone_touches_nothing(monkeypatch):
     await coordinator._hold_back_zones_with_moist_soil()
 
     coordinator.store.async_update_zone.assert_not_awaited()
+
+
+# --- thresholds are stored in C and km/h ---------------------------------------
+
+from custom_components.smart_irrigation.skip_conditions import (  # noqa: E402
+    thresholds_for_display,
+    thresholds_for_storage,
+)
+
+
+def test_an_imperial_threshold_is_stored_in_celsius_and_kmh():
+    stored = thresholds_for_storage(
+        {const.CONF_FREEZE_THRESHOLD: 36.0, const.CONF_WIND_THRESHOLD: 12.0},
+        metric=False,
+    )
+
+    assert stored[const.CONF_FREEZE_THRESHOLD] == pytest.approx(2.22, abs=0.01)
+    assert stored[const.CONF_WIND_THRESHOLD] == pytest.approx(19.31, abs=0.01)
+
+
+def test_it_is_shown_back_as_it_was_entered():
+    entered = {const.CONF_FREEZE_THRESHOLD: 36.0, const.CONF_WIND_THRESHOLD: 12.0}
+
+    shown = thresholds_for_display(thresholds_for_storage(entered, False), False)
+
+    assert shown == entered
+
+
+def test_metric_is_stored_and_shown_as_is():
+    config = {const.CONF_FREEZE_THRESHOLD: 2.0, const.CONF_WIND_THRESHOLD: 20.0}
+
+    assert thresholds_for_storage(config, True) == config
+    assert thresholds_for_display(config, True) == config
+
+
+def test_an_unset_threshold_stays_unset():
+    assert thresholds_for_storage({const.CONF_FREEZE_THRESHOLD: None}, False) == {
+        const.CONF_FREEZE_THRESHOLD: None
+    }
+
+
+@pytest.mark.asyncio
+async def test_switching_to_imperial_keeps_the_threshold_meaning():
+    """2 C stored, read by an imperial install: the limit is 35.6 F, not 2 F."""
+    evaluation = await _evaluate(
+        config={**FREEZE, const.CONF_FREEZE_THRESHOLD: 2.0},
+        states={"sensor.t": _State("34", "°F")},
+        units=US_CUSTOMARY_SYSTEM,
+    )
+
+    freeze = _check(evaluation, "freeze")
+    assert freeze["threshold"] == pytest.approx(35.6)
+    assert freeze["skip"] is True
