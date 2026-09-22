@@ -19,7 +19,7 @@ CONTROLLERS = {
     "rainbird.yaml": ("rainbird.start_irrigation", "duration", 1440),
     "hydrawise.yaml": ("hydrawise.start_watering", "duration", 1440),
     "rachio.yaml": ("rachio.start_watering", "duration", 180),
-    "opensprinkler.yaml": ("opensprinkler.run", "run_seconds", 64800),
+    "opensprinkler.yaml": ("opensprinkler.run_station", "run_seconds", 64800),
     "bhyve.yaml": ("bhyve.start_watering", "minutes", 1440),
 }
 

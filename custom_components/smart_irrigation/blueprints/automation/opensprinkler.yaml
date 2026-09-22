@@ -20,11 +20,14 @@ blueprint:
               device_class: duration
     controller_zone:
       name: OpenSprinkler zone
-      description: The OpenSprinkler zone that waters it.
+      description: >-
+        The enabled switch of the OpenSprinkler station that waters it. The
+        station must be enabled or the run is refused.
       selector:
         entity:
           filter:
             - integration: opensprinkler
+              device_class: station
     reset_bucket:
       name: Reset the bucket after the run
       description: >-
@@ -51,7 +54,7 @@ conditions:
     above: 0
 
 actions:
-  - action: opensprinkler.run
+  - action: opensprinkler.run_station
     data:
       entity_id: !input controller_zone
       run_seconds: "{{ amount }}"
