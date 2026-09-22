@@ -98,7 +98,7 @@ These advanced features are driven by **services and blueprints** — there is n
 - 🔁 **Recurring schedules** — daily / weekly / monthly / interval-based schedules via the `smart_irrigation.create_recurring_schedule` service.
 - 🍂 **Seasonal adjustments** — automatically adjust irrigation parameters based on the season.
 - 🔗 **Irrigation Unlimited integration** — bidirectional integration with the [Irrigation Unlimited](https://github.com/rgc99/irrigation_unlimited) component.
-- 📐 **Automation blueprints** — ready-to-use blueprints in [`blueprints/`](blueprints/).
+- 📐 **Automation blueprints** — ready-to-use blueprints, installed with the integration, for plain valves, ESPHome, Irrigation Unlimited and off-the-shelf controllers (Rain Bird, Hydrawise, Rachio, OpenSprinkler, B-hyve): see the [automations](docs/usage-automations.md) and [controllers](docs/usage-controllers.md) pages.
 
 See the [enhanced scheduling documentation](docs/usage-enhanced-scheduling-integration.md) for details and examples.
 
