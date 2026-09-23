@@ -4223,7 +4223,7 @@ a.version="2.31.0",i(ii),a.fn=fs,a.min=oi,a.max=li,a.now=di,a.utc=m,a.unix=bs,a.
             .narrow=${this.narrow}
           ></ha-menu-button>
           <div class="main-title">${cr("title",this.hass.language)}</div>
-          <div class="version">${"v2026.9.1-beta5"}</div>
+          <div class="version">${"v2026.9.1"}</div>
         </div>
 
         ${t&&a?B`
