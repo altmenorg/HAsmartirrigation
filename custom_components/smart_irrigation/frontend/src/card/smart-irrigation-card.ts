@@ -17,6 +17,7 @@ import {
   depthLabel,
   durationLabel,
   momentLabel,
+  zoneActionEntity,
   zoneNow,
 } from "./format";
 
@@ -52,6 +53,10 @@ const STRINGS: Record<string, Record<string, string>> = {
     never_watered: "never watered",
     last_watered: "last watered {when}",
     calculate: "Calculate now",
+    water_now: "Water now",
+    confirm_water: "Tap again to water now",
+    watering: "Watering",
+    nothing_to_water: "Nothing to water right now",
     manual: "manual",
     disabled: "disabled",
     no_zones: "No zones yet. Open the Smart Irrigation panel to add one.",
@@ -70,6 +75,10 @@ const STRINGS: Record<string, Record<string, string>> = {
     never_watered: "jamais arrosé",
     last_watered: "dernier arrosage {when}",
     calculate: "Calculer maintenant",
+    water_now: "Arroser maintenant",
+    confirm_water: "Touchez encore pour arroser",
+    watering: "Arrosage en cours",
+    nothing_to_water: "Rien à arroser pour le moment",
     manual: "manuel",
     disabled: "désactivé",
     no_zones:
@@ -87,6 +96,8 @@ interface CardConfig {
   zones?: number[];
   /** The next start line above the zones. */
   show_next_start?: boolean;
+  /** Show only the zones that would water. */
+  compact?: boolean;
 }
 
 interface Zone {
@@ -97,6 +108,8 @@ interface Zone {
   duration: number;
   irrigation_threshold?: number;
   last_irrigation?: string | null;
+  /** The valve this zone drives directly, when it drives one. */
+  linked_entity?: string;
 }
 
 @customElement("smart-irrigation-card")
@@ -106,9 +119,18 @@ export class SmartIrrigationCard extends LitElement {
   @state() private _zones: Zone[] = [];
   @state() private _info: any = null;
   @state() private _busy: number | null = null;
+  /** The zone whose "water now" is waiting for a second tap. */
+  @state() private _confirming: number | null = null;
+  private _confirmTimer?: number;
 
   private _unsubscribe?: () => void;
   private _timer?: number;
+
+  /** The dashboard's "edit card" dialog asks for this. */
+  public static async getConfigElement(): Promise<HTMLElement> {
+    await import("./smart-irrigation-card-editor");
+    return document.createElement("smart-irrigation-card-editor");
+  }
 
   public static getStubConfig(): CardConfig {
     return { type: CARD_TYPE, show_next_start: true };
@@ -136,6 +158,7 @@ export class SmartIrrigationCard extends LitElement {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     if (this._timer) window.clearInterval(this._timer);
+    if (this._confirmTimer) window.clearTimeout(this._confirmTimer);
     document.removeEventListener("visibilitychange", this._onVisible);
     this._unsubscribe?.();
     this._unsubscribe = undefined;
@@ -214,8 +237,62 @@ export class SmartIrrigationCard extends LitElement {
 
   private _zonesToShow(): Zone[] {
     const wanted = this._config?.zones;
-    if (!wanted || !wanted.length) return this._zones;
-    return this._zones.filter((zone) => wanted.includes(zone.id));
+    const chosen =
+      !wanted || !wanted.length
+        ? this._zones
+        : this._zones.filter((zone) => wanted.includes(zone.id));
+    if (!this._config?.compact) return chosen;
+    return chosen.filter((zone) => this._needs(zone));
+  }
+
+  /** Whether this zone would water if a start came now. */
+  private _needs(zone: Zone): boolean {
+    const now = this._now(zone);
+    return (
+      deficitOf(now.bucket) > (zone.irrigation_threshold ?? 0) &&
+      now.duration > 0
+    );
+  }
+
+  /** This zone's "water now" button, when the integration can run its valve. */
+  private _waterButton(zone: Zone): string | undefined {
+    if (!zone.linked_entity) return undefined;
+    return zoneActionEntity(
+      this.hass?.entities,
+      this.hass?.devices,
+      zone.id,
+      "irrigate_now",
+    );
+  }
+
+  /**
+   * Watering takes two taps. One tap on a dashboard is easy to do by mistake,
+   * and this one opens a valve in the garden: the first tap arms it, the
+   * second runs it, and it disarms itself after a few seconds.
+   */
+  private _waterPressed(zone: Zone, entityId: string): void {
+    if (this._confirming !== zone.id) {
+      this._confirming = zone.id;
+      if (this._confirmTimer) window.clearTimeout(this._confirmTimer);
+      this._confirmTimer = window.setTimeout(() => {
+        this._confirming = null;
+      }, 5000);
+      return;
+    }
+    if (this._confirmTimer) window.clearTimeout(this._confirmTimer);
+    this._confirming = null;
+    this._water(zone, entityId);
+  }
+
+  private async _water(zone: Zone, entityId: string): Promise<void> {
+    this._busy = zone.id;
+    try {
+      await this.hass.callService("button", "press", { entity_id: entityId });
+      // The run holds the valve for the whole duration, so the bucket is
+      // credited later; a refresh now would show nothing new.
+    } finally {
+      this._busy = null;
+    }
   }
 
   private async _calculate(zone: Zone): Promise<void> {
@@ -255,6 +332,7 @@ export class SmartIrrigationCard extends LitElement {
 
   private _zoneRow(zone: Zone): TemplateResult {
     const threshold = zone.irrigation_threshold ?? 0;
+    const waterButton = this._waterButton(zone);
     const now = this._now(zone);
     const deficit = deficitOf(now.bucket);
     const needed = deficit > threshold && now.duration > 0;
@@ -295,13 +373,35 @@ export class SmartIrrigationCard extends LitElement {
               })
             : this._t("never_watered")}
         </div>
-        <ha-icon-button
-          .disabled=${this._busy === zone.id}
-          .label=${this._t("calculate")}
-          @click=${() => this._calculate(zone)}
-        >
-          <ha-icon icon="mdi:calculator"></ha-icon>
-        </ha-icon-button>
+        <div class="actions">
+          ${waterButton
+            ? html`<ha-icon-button
+                class=${this._confirming === zone.id ? "confirming" : ""}
+                .disabled=${this._busy === zone.id}
+                .label=${this._t(
+                  this._confirming === zone.id ? "confirm_water" : "water_now",
+                )}
+                title=${this._t(
+                  this._confirming === zone.id ? "confirm_water" : "water_now",
+                )}
+                @click=${() => this._waterPressed(zone, waterButton)}
+              >
+                <ha-icon
+                  icon=${this._confirming === zone.id
+                    ? "mdi:check"
+                    : "mdi:water"}
+                ></ha-icon>
+              </ha-icon-button>`
+            : ""}
+          <ha-icon-button
+            .disabled=${this._busy === zone.id}
+            .label=${this._t("calculate")}
+            title=${this._t("calculate")}
+            @click=${() => this._calculate(zone)}
+          >
+            <ha-icon icon="mdi:calculator"></ha-icon>
+          </ha-icon-button>
+        </div>
       </div>
     `;
   }
@@ -315,7 +415,9 @@ export class SmartIrrigationCard extends LitElement {
           ${this._nextStart()}
           ${zones.length
             ? zones.map((zone) => this._zoneRow(zone))
-            : html`<div class="empty">${this._t("no_zones")}</div>`}
+            : html`<div class="empty">
+                ${this._t(this._zones.length ? "nothing_to_water" : "no_zones")}
+              </div>`}
         </div>
       </ha-card>
     `;
@@ -372,9 +474,16 @@ export class SmartIrrigationCard extends LitElement {
       color: var(--secondary-text-color);
       font-size: 0.85em;
     }
-    ha-icon-button {
+    .actions {
       grid-area: button;
+      display: flex;
+      align-items: center;
+    }
+    ha-icon-button {
       color: var(--secondary-text-color);
+    }
+    ha-icon-button.confirming {
+      color: var(--primary-color);
     }
     .chip {
       margin-left: 6px;

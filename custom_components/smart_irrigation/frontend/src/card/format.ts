@@ -102,3 +102,51 @@ export const momentLabel = (
     month: "short",
   })} ${time}`;
 };
+
+/** The bits of the frontend's entity registry the card reads. */
+export interface RegistryEntity {
+  entity_id: string;
+  device_id?: string;
+  platform?: string;
+  translation_key?: string;
+}
+
+/** The bits of the frontend's device registry the card reads. */
+export interface RegistryDevice {
+  identifiers?: [string, string][];
+}
+
+/**
+ * The entity of one of a zone's own buttons, or undefined when it is not
+ * there.
+ *
+ * A zone's entities are named after the zone, which people rename, so the card
+ * matches on what does not move: the integration's own translation key, and
+ * the zone device's identifier, which carries the zone's id.
+ */
+export const zoneActionEntity = (
+  entities: Record<string, RegistryEntity> | undefined,
+  devices: Record<string, RegistryDevice> | undefined,
+  zoneId: number,
+  translationKey: string,
+  domain = "smart_irrigation",
+): string | undefined => {
+  if (!entities || !devices) return undefined;
+  const suffix = `_zone_${zoneId}`;
+  for (const entity of Object.values(entities)) {
+    if (
+      entity.platform !== domain ||
+      entity.translation_key !== translationKey
+    ) {
+      continue;
+    }
+    const device = entity.device_id ? devices[entity.device_id] : undefined;
+    const identifiers = device?.identifiers ?? [];
+    for (const [entityDomain, identifier] of identifiers) {
+      if (entityDomain === domain && String(identifier).endsWith(suffix)) {
+        return entity.entity_id;
+      }
+    }
+  }
+  return undefined;
+};

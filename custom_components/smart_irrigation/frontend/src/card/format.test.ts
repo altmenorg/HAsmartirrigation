@@ -5,6 +5,7 @@ import {
   depthLabel,
   durationLabel,
   momentLabel,
+  zoneActionEntity,
   zoneNow,
 } from "./format";
 
@@ -106,5 +107,92 @@ describe("momentLabel", () => {
 
   it("hands back what it cannot read", () => {
     expect(momentLabel("not a date", "en-GB", WORDS, today)).toBe("not a date");
+  });
+});
+
+describe("zoneActionEntity", () => {
+  const devices = {
+    dev0: { identifiers: [["smart_irrigation", "Smart Irrigation_zone_0"]] },
+    dev1: { identifiers: [["smart_irrigation", "Smart Irrigation_zone_1"]] },
+    other: { identifiers: [["other_domain", "whatever"]] },
+  } as any;
+  const entities = {
+    a: {
+      entity_id: "button.smart_irrigation_serre_irrigate_now",
+      device_id: "dev0",
+      platform: "smart_irrigation",
+      translation_key: "irrigate_now",
+    },
+    b: {
+      entity_id: "button.smart_irrigation_potager_irrigate_now",
+      device_id: "dev1",
+      platform: "smart_irrigation",
+      translation_key: "irrigate_now",
+    },
+    c: {
+      entity_id: "button.smart_irrigation_serre_reset_bucket",
+      device_id: "dev0",
+      platform: "smart_irrigation",
+      translation_key: "reset_bucket",
+    },
+    d: {
+      entity_id: "button.someone_elses_irrigate_now",
+      device_id: "other",
+      platform: "another_integration",
+      translation_key: "irrigate_now",
+    },
+  } as any;
+
+  it("finds a zone's button through its device identifier", () => {
+    // Not through the entity_id: people rename zones.
+    expect(zoneActionEntity(entities, devices, 0, "irrigate_now")).toBe(
+      "button.smart_irrigation_serre_irrigate_now",
+    );
+    expect(zoneActionEntity(entities, devices, 1, "irrigate_now")).toBe(
+      "button.smart_irrigation_potager_irrigate_now",
+    );
+  });
+
+  it("tells the zone's buttons apart", () => {
+    expect(zoneActionEntity(entities, devices, 0, "reset_bucket")).toBe(
+      "button.smart_irrigation_serre_reset_bucket",
+    );
+  });
+
+  it("never takes another integration's entity", () => {
+    expect(
+      zoneActionEntity(entities, devices, 9, "irrigate_now"),
+    ).toBeUndefined();
+  });
+
+  it("does not mistake zone 1 for zone 10", () => {
+    const wide = {
+      ...devices,
+      dev10: { identifiers: [["smart_irrigation", "x_zone_10"]] },
+    } as any;
+    const withTen = {
+      ...entities,
+      e: {
+        entity_id: "button.zone_ten_irrigate_now",
+        device_id: "dev10",
+        platform: "smart_irrigation",
+        translation_key: "irrigate_now",
+      },
+    } as any;
+    expect(zoneActionEntity(withTen, wide, 10, "irrigate_now")).toBe(
+      "button.zone_ten_irrigate_now",
+    );
+    expect(zoneActionEntity(withTen, wide, 1, "irrigate_now")).toBe(
+      "button.smart_irrigation_potager_irrigate_now",
+    );
+  });
+
+  it("is undefined without a registry to read", () => {
+    expect(
+      zoneActionEntity(undefined, devices, 0, "irrigate_now"),
+    ).toBeUndefined();
+    expect(
+      zoneActionEntity(entities, undefined, 0, "irrigate_now"),
+    ).toBeUndefined();
   });
 });

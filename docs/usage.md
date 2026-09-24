@@ -6,6 +6,7 @@ title: Usage
 
 Once Smart Irrigation is installed, the following things will be created in Home Assistant:
 - A sidebar panel that you can use to [configure the integration](configuration.md), including the [Info and History tabs](usage-info.md) that show what is about to happen and what already did.
+- [A dashboard card](usage-card.md) you can add to any dashboard, showing where each zone stands right now and when the water goes on.
 - [An sensor entity](usage-entities.md) for [each zone you configured](configuration-zones.md).
 - [A couple of services](usage-services.md) to automate tasks.
 - [A start event](usage-events.md) that will indicate that irrigation should start to finish before sunrise.

@@ -5,7 +5,7 @@ title: Usage: Info and history
 # Info and history
 
 > Main page: [Usage](usage.md)<br/>
-> Next: [Entities](usage-entities.md)
+> Next: [Dashboard card](usage-card.md)
 
 Two tabs answer the questions the other tabs cannot: what is about to happen,
 and what already happened.
