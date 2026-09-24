@@ -12,7 +12,18 @@
 import { LitElement, html, css, TemplateResult, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
+import {
+  deficitOf,
+  depthLabel,
+  durationLabel,
+  momentLabel,
+  zoneNow,
+} from "./format";
+
 const DOMAIN = "smart_irrigation";
+
+/** How often the card asks the server where the zones stand. */
+const REFRESH_MS = 120000;
 
 /**
  * The card's own strings. The panel's translations live in a module that
@@ -37,6 +48,7 @@ const STRINGS: Record<string, Record<string, string>> = {
     no_zones: "No zones yet. Open the Smart Irrigation panel to add one.",
     tomorrow: "tomorrow",
     yesterday: "yesterday",
+    live_since: "Estimated now, from the readings since {when}",
   },
   fr: {
     title: "Smart Irrigation",
@@ -51,9 +63,11 @@ const STRINGS: Record<string, Record<string, string>> = {
     calculate: "Calculer maintenant",
     manual: "manuel",
     disabled: "désactivé",
-    no_zones: "Aucune zone. Ouvrez le panneau Smart Irrigation pour en créer une.",
+    no_zones:
+      "Aucune zone. Ouvrez le panneau Smart Irrigation pour en créer une.",
     tomorrow: "demain",
     yesterday: "hier",
+    live_since: "Estimé maintenant, sur les relevés depuis {when}",
   },
 };
 
@@ -101,18 +115,26 @@ export class SmartIrrigationCard extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    // The panel writes through the same event, so an edit there shows here
-    // without a reload. The timer is for the clock alone: "next start" moves
-    // on its own.
-    this._timer = window.setInterval(() => this._load(), 60000);
+    // The live estimate re-runs the calculation on the server for every zone,
+    // so it is asked for on a slow beat, and not at all for a dashboard
+    // nobody is looking at. Coming back to the tab refreshes it at once.
+    this._timer = window.setInterval(() => {
+      if (document.visibilityState === "visible") this._load();
+    }, REFRESH_MS);
+    document.addEventListener("visibilitychange", this._onVisible);
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     if (this._timer) window.clearInterval(this._timer);
+    document.removeEventListener("visibilitychange", this._onVisible);
     this._unsubscribe?.();
     this._unsubscribe = undefined;
   }
+
+  private _onVisible = (): void => {
+    if (document.visibilityState === "visible") this._load();
+  };
 
   protected updated(changed: PropertyValues): void {
     if (changed.has("hass") && this.hass && !this._unsubscribe) {
@@ -135,11 +157,11 @@ export class SmartIrrigationCard extends LitElement {
   private async _load(): Promise<void> {
     if (!this.hass) return;
     try {
+      // The info payload carries the live estimates as well as the next
+      // start, so it is fetched even when the start line is turned off.
       const [zones, info] = await Promise.all([
         this.hass.callWS({ type: `${DOMAIN}/zones` }),
-        this._config?.show_next_start
-          ? this.hass.callWS({ type: `${DOMAIN}/info` })
-          : Promise.resolve(null),
+        this.hass.callWS({ type: `${DOMAIN}/info` }),
       ]);
       this._zones = zones ?? [];
       this._info = info;
@@ -156,54 +178,29 @@ export class SmartIrrigationCard extends LitElement {
     return template.replace(/\{(\w+)\}/g, (_m, name) => values[name] ?? "");
   }
 
-  /** A depth in the unit the viewer's Home Assistant shows lengths in. */
-  private _depth(mm: number): string {
-    const imperial = this.hass?.config?.unit_system?.length === "mi";
-    return imperial ? `${(mm / 25.4).toFixed(2)} in` : `${mm.toFixed(1)} mm`;
+  private _depth(value: number): string {
+    return depthLabel(value, this.hass?.config?.unit_system?.length === "mi");
   }
 
-  /**
-   * A deficit worth naming. A zone that has just watered sits a hair below
-   * zero, and "short 0.0 mm" is a worse answer than "no watering needed".
-   */
-  private _deficit(zone: Zone): number {
-    const deficit = zone.bucket < 0 ? -zone.bucket : 0;
-    return deficit >= 0.05 ? deficit : 0;
+  /** Where the zone stands now: the live estimate when there is one. */
+  private _now(zone: Zone) {
+    return zoneNow(zone, this._info?.zone_estimates?.[String(zone.id)]);
   }
 
   private _duration(seconds: number): string {
-    const total = Math.round(seconds);
-    const h = Math.floor(total / 3600);
-    const m = Math.floor((total % 3600) / 60);
-    const s = total % 60;
-    const parts = h ? [h, m, s] : [m, s];
-    return parts
-      .map((part, index) => (index ? String(part).padStart(2, "0") : String(part)))
-      .join(":");
+    return durationLabel(seconds);
   }
 
-  /** A moment as a dashboard shows one: the day when it is not today, and
-   * the time to the minute. Seconds are noise on a card. */
   private _moment(when: string): string {
-    const date = new Date(when);
-    if (isNaN(date.getTime())) return when;
-    const language = this.hass?.locale?.language || this.hass?.language || "en";
-    const time = date.toLocaleTimeString(language, {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    const midnight = new Date();
-    midnight.setHours(0, 0, 0, 0);
-    const days = Math.floor(
-      (date.getTime() - midnight.getTime()) / (24 * 3600 * 1000),
+    return momentLabel(
+      when,
+      this.hass?.locale?.language || this.hass?.language || "en",
+      { tomorrow: this._t("tomorrow"), yesterday: this._t("yesterday") },
     );
-    if (days === 0) return time;
-    if (days === 1) return `${this._t("tomorrow")} ${time}`;
-    if (days === -1) return `${this._t("yesterday")} ${time}`;
-    return `${date.toLocaleDateString(language, {
-      day: "numeric",
-      month: "short",
-    })} ${time}`;
+  }
+
+  private _momentOrEmpty(when?: string | null): string {
+    return when ? this._moment(when) : "";
   }
 
   private _zonesToShow(): Zone[] {
@@ -238,7 +235,9 @@ export class SmartIrrigationCard extends LitElement {
     const reason = skipped ? this._info.skip_preview?.reason : null;
     return html`
       <div class="next ${skipped ? "held" : ""}">
-        <ha-icon icon=${skipped ? "mdi:calendar-remove" : "mdi:calendar-clock"}></ha-icon>
+        <ha-icon
+          icon=${skipped ? "mdi:calendar-remove" : "mdi:calendar-clock"}
+        ></ha-icon>
         <span class="next-label">${this._t("next_start")}</span>
         <span class="next-value">${label}${reason ? ` (${reason})` : ""}</span>
       </div>
@@ -247,8 +246,9 @@ export class SmartIrrigationCard extends LitElement {
 
   private _zoneRow(zone: Zone): TemplateResult {
     const threshold = zone.irrigation_threshold ?? 0;
-    const deficit = this._deficit(zone);
-    const needed = deficit > threshold && zone.duration > 0;
+    const now = this._now(zone);
+    const deficit = deficitOf(now.bucket);
+    const needed = deficit > threshold && now.duration > 0;
     return html`
       <div class="zone">
         <div class="zone-name">
@@ -262,14 +262,28 @@ export class SmartIrrigationCard extends LitElement {
             ? this._t("short_by", { value: this._depth(deficit) })
             : this._t("no_need")}
           ${needed
-            ? html`&middot; ${this._t("runs_for", {
-                duration: this._duration(zone.duration),
+            ? html`&middot;
+              ${this._t("runs_for", {
+                duration: this._duration(now.duration),
               })}`
+            : ""}
+          ${now.live
+            ? html`<ha-icon
+                class="live"
+                icon="mdi:access-point"
+                title=${this._t("live_since", {
+                  when: this._momentOrEmpty(
+                    this._info?.zone_estimates?.[String(zone.id)]?.since,
+                  ),
+                })}
+              ></ha-icon>`
             : ""}
         </div>
         <div class="zone-last">
           ${zone.last_irrigation
-            ? this._t("last_watered", { when: this._moment(zone.last_irrigation) })
+            ? this._t("last_watered", {
+                when: this._moment(zone.last_irrigation),
+              })
             : this._t("never_watered")}
         </div>
         <ha-icon-button
@@ -338,6 +352,11 @@ export class SmartIrrigationCard extends LitElement {
     }
     .zone-state.needed {
       color: var(--primary-color);
+    }
+    .live {
+      --mdc-icon-size: 14px;
+      vertical-align: text-top;
+      opacity: 0.55;
     }
     .zone-last {
       grid-area: last;
