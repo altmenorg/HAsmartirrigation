@@ -47,7 +47,8 @@ const STRINGS: Record<string, Record<string, string>> = {
     skipped: "Held back",
     short_by: "short {value}",
     no_need: "no watering needed",
-    runs_for: "runs {duration}",
+    // A projection, not a report: the run has not happened yet.
+    runs_for: "would run {duration}",
     never_watered: "never watered",
     last_watered: "last watered {when}",
     calculate: "Calculate now",
@@ -65,7 +66,7 @@ const STRINGS: Record<string, Record<string, string>> = {
     skipped: "Reporté",
     short_by: "déficit {value}",
     no_need: "pas d'arrosage nécessaire",
-    runs_for: "arrose {duration}",
+    runs_for: "arroserait {duration}",
     never_watered: "jamais arrosé",
     last_watered: "dernier arrosage {when}",
     calculate: "Calculer maintenant",
