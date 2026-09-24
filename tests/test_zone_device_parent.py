@@ -18,9 +18,13 @@ def _hass():
     return hass
 
 
-def _registry_with_hub(device_id="hubdev"):
-    registry = Mock()
-    registry.async_get_device = Mock(return_value=Mock(id=device_id))
+def _registry_with_hub(device_id="hubdev", by_identifier=True):
+    """A registry with only the lookup the emulated version would have."""
+    names = (
+        ["async_get_device_by_identifier"] if by_identifier else ["async_get_device"]
+    )
+    registry = Mock(spec=names)
+    getattr(registry, names[0]).return_value = Mock(id=device_id)
     return registry
 
 
@@ -35,8 +39,8 @@ def test_the_new_form_names_the_parent_by_its_device_id():
 
     assert info["via_device_id"] == "hubdev"
     assert "via_device" not in info, "passing both is an error"
-    registry.async_get_device.assert_called_once_with(
-        identifiers={(const.DOMAIN, "abc123")}
+    registry.async_get_device_by_identifier.assert_called_once_with(
+        (const.DOMAIN, "abc123")
     )
 
 
@@ -49,10 +53,26 @@ def test_an_older_home_assistant_still_gets_the_identifiers():
     assert "via_device_id" not in info
 
 
+def test_an_older_registry_is_looked_up_the_old_way():
+    """`async_get_device` goes at the same time as `via_device`, not before."""
+    registry = _registry_with_hub(by_identifier=False)
+
+    with (
+        patch.object(entity, "_via_device_id_supported", return_value=True),
+        patch.object(entity.dr, "async_get", return_value=registry),
+    ):
+        info = entity.zone_device_info(_hass(), 1, "Front lawn")
+
+    assert info["via_device_id"] == "hubdev"
+    registry.async_get_device.assert_called_once_with(
+        identifiers={(const.DOMAIN, "abc123")}
+    )
+
+
 def test_a_hub_device_that_is_not_registered_yet_falls_back():
     """The link matters more than the warning, so the old form still applies."""
-    registry = Mock()
-    registry.async_get_device = Mock(return_value=None)
+    registry = Mock(spec=["async_get_device_by_identifier"])
+    registry.async_get_device_by_identifier.return_value = None
 
     with (
         patch.object(entity, "_via_device_id_supported", return_value=True),

@@ -26,13 +26,28 @@ def _via_device_id_supported() -> bool:
     return "via_device_id" in getattr(dr.DeviceInfo, "__annotations__", {})
 
 
+def _hub_device(hass: HomeAssistant, hub: tuple[str, str]):
+    """The hub device, looked up the way this Home Assistant asks for.
+
+    ``async_get_device`` is deprecated too, and goes at the same time as
+    ``via_device``: identifiers are no longer unique across config entries, so
+    a lookup by identifier alone is now ``async_get_device_by_identifier``.
+    Older versions only have the first, so take whichever is there.
+    """
+    registry = dr.async_get(hass)
+    by_identifier = getattr(registry, "async_get_device_by_identifier", None)
+    if by_identifier is not None:
+        return by_identifier(hub)
+    return registry.async_get_device(identifiers={hub})
+
+
 def _parent_of(hass: HomeAssistant, hub: tuple[str, str]) -> dict:
     """The "hangs off the hub device" part of a per-zone device's info."""
     if _via_device_id_supported():
         # The hub device is created in async_setup_entry, before any platform,
         # so it is there to be found. If it somehow is not, the deprecated form
         # still links the device on every version that has not removed it.
-        device = dr.async_get(hass).async_get_device(identifiers={hub})
+        device = _hub_device(hass, hub)
         if device is not None:
             return {"via_device_id": device.id}
     return {"via_device": hub}
