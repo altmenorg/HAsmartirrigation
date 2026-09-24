@@ -22,6 +22,14 @@ import {
 
 const DOMAIN = "smart_irrigation";
 
+/**
+ * The custom element's name, and so the card type a dashboard stores. It is
+ * spelled with hyphens, where the integration's domain has an underscore:
+ * building it out of the domain gave "custom:smart_irrigation-card", which
+ * matches no element, and the card picker handed that to the dashboard.
+ */
+const CARD_TYPE = "custom:smart-irrigation-card";
+
 /** How often the card asks the server where the zones stand. */
 const REFRESH_MS = 120000;
 
@@ -102,7 +110,7 @@ export class SmartIrrigationCard extends LitElement {
   private _timer?: number;
 
   public static getStubConfig(): CardConfig {
-    return { type: `custom:${DOMAIN}-card`, show_next_start: true };
+    return { type: CARD_TYPE, show_next_start: true };
   }
 
   public setConfig(config: CardConfig): void {
