@@ -1,6 +1,7 @@
 """Storage and management for Smart Irrigation configuration, zones, modules, and mappings."""
 
 import datetime
+import json
 import logging
 from collections import OrderedDict
 from collections.abc import MutableMapping
@@ -429,6 +430,28 @@ def normalize_mapping_conf(the_map: dict, use_weather_service: bool) -> dict:
     return the_map
 
 
+def as_reading_list(value):
+    """Return a sensor group's buffer as the list every reader expects.
+
+    The buffer defaulted to the string ``"[]"`` until v2026.9.2, and the API
+    accepts whatever a caller sends, so it can arrive as a string. ``"[]"`` is
+    truthy, so a reader that only checked truthiness took it for a buffer with
+    readings in it and then appended to a string (#846). Anything that is not a
+    list of readings is an empty buffer, with a JSON string decoded rather than
+    discarded so a hand-posted buffer is not silently lost.
+    """
+    if isinstance(value, list):
+        return value
+    if isinstance(value, str):
+        try:
+            decoded = json.loads(value)
+        except ValueError:
+            return []
+        if isinstance(decoded, list):
+            return decoded
+    return []
+
+
 @attr.s(slots=True, frozen=True)
 class MappingEntry:
     """Mapping storage Entry."""
@@ -436,7 +459,9 @@ class MappingEntry:
     id = attr.ib(type=int, default=None)
     name = attr.ib(type=str, default=None)
     mappings = attr.ib(type=str, default=None)
-    data = attr.ib(type=str, default="[]")
+    # The buffer of readings, a list. It used to default to the string "[]",
+    # which every reader then had to recognise as "empty" (#846).
+    data = attr.ib(type=list, factory=list)
     data_last_updated = attr.ib(type=datetime, default=None)
     data_last_entry = attr.ib(type=str, default={})
     data_last_calculation = attr.ib(type=str, default={})
@@ -937,7 +962,7 @@ class SmartIrrigationStorage:
                         id=mapping[MAPPING_ID],
                         name=mapping[MAPPING_NAME],
                         mappings=the_map,
-                        data=mapping.get(MAPPING_DATA),
+                        data=as_reading_list(mapping.get(MAPPING_DATA)),
                         data_last_updated=mapping.get(MAPPING_DATA_LAST_UPDATED, None),
                         data_last_entry=mapping.get(MAPPING_DATA_LAST_ENTRY, {}),
                         data_last_calculation=mapping.get(
@@ -1294,6 +1319,8 @@ class SmartIrrigationStorage:
                     dict(data[MAPPING_MAPPINGS]), self.config.use_weather_service
                 ),
             }
+        if MAPPING_DATA in data:
+            data = {**data, MAPPING_DATA: as_reading_list(data[MAPPING_DATA])}
         new_mapping = MappingEntry(**data)
         if not new_mapping.id:
             mappings = await self.async_get_mappings()
@@ -1323,6 +1350,8 @@ class SmartIrrigationStorage:
             changes[MAPPING_MAPPINGS] = normalize_mapping_conf(
                 dict(changes[MAPPING_MAPPINGS]), self.config.use_weather_service
             )
+        if MAPPING_DATA in changes:
+            changes[MAPPING_DATA] = as_reading_list(changes[MAPPING_DATA])
         if old is not None:
             if old.data_last_entry is not None and len(old.data_last_entry) > 0:
                 if MAPPING_DATA_LAST_ENTRY not in changes:

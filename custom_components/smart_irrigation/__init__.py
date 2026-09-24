@@ -1546,7 +1546,9 @@ class SmartIrrigationCoordinator(
         weatherdata[const.RETRIEVED_AT] = now
         mapping_data = mapping.get(const.MAPPING_DATA)
         if not isinstance(mapping_data, list):
-            if mapping_data not in (None, "", []):
+            # "[]" was the stored default until v2026.9.2, so a group that has
+            # never been updated carries it: empty, not corrupt (#846).
+            if mapping_data not in (None, "", "[]", []):
                 _LOGGER.error(
                     "[update]: sensor group %s buffer is of unexpected type: %s",
                     mapping_id,

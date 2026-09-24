@@ -1205,7 +1205,15 @@ class CalculationMixin:
             # calculate the zone
             if zone.get(const.ZONE_STATE) == const.ZONE_STATE_AUTOMATIC:
                 mapping_id = zone.get(const.ZONE_MAPPING)
-                mapping = self.store.get_mapping(mapping_id) if mapping_id else None
+                # `is not None`, because the sensor group created on a fresh
+                # install has id 0: a falsy check left every default setup
+                # without weather data, and the zone was never calculated
+                # (#846).
+                mapping = (
+                    self.store.get_mapping(mapping_id)
+                    if mapping_id is not None
+                    else None
+                )
                 weatherdata = None
                 if mapping and mapping.get(const.MAPPING_DATA):
                     weatherdata = await self.apply_aggregates_to_mapping_data(
