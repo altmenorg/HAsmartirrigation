@@ -8,10 +8,14 @@ The per-zone device layout is adapted from JustChr's Smart Irrigation fork
 (https://github.com/JustChr/HAsmartirrigation), MIT.
 """
 
+import logging
+
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 
 from . import const
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def _via_device_id_supported() -> bool:
@@ -26,18 +30,33 @@ def _via_device_id_supported() -> bool:
     return "via_device_id" in getattr(dr.DeviceInfo, "__annotations__", {})
 
 
+def _config_entry_id(hass: HomeAssistant) -> str | None:
+    """Our config entry's id, which the new device lookup asks for."""
+    try:
+        coordinator = hass.data[const.DOMAIN].get("coordinator")
+    except (KeyError, AttributeError, TypeError):
+        return None
+    return getattr(getattr(coordinator, "entry", None), "entry_id", None)
+
+
 def _hub_device(hass: HomeAssistant, hub: tuple[str, str]):
     """The hub device, looked up the way this Home Assistant asks for.
 
     ``async_get_device`` is deprecated too, and goes at the same time as
     ``via_device``: identifiers are no longer unique across config entries, so
-    a lookup by identifier alone is now ``async_get_device_by_identifier``.
-    Older versions only have the first, so take whichever is there.
+    the lookup is now ``async_get_device_by_identifier``, which takes the
+    config entry to look within. Older versions only have the first, so take
+    whichever is there, by keyword, and fall back rather than raise if a
+    version shapes it differently again.
     """
     registry = dr.async_get(hass)
     by_identifier = getattr(registry, "async_get_device_by_identifier", None)
-    if by_identifier is not None:
-        return by_identifier(hub)
+    entry_id = _config_entry_id(hass)
+    if by_identifier is not None and entry_id is not None:
+        try:
+            return by_identifier(identifier=hub, config_entry_id=entry_id)
+        except TypeError:  # pragma: no cover - a third shape of the same call
+            _LOGGER.debug("async_get_device_by_identifier has an unexpected signature")
     return registry.async_get_device(identifiers={hub})
 
 

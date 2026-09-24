@@ -12,19 +12,38 @@ from unittest.mock import Mock, patch
 from custom_components.smart_irrigation import const, entity
 
 
-def _hass():
+def _hass(entry_id="entry1"):
     hass = Mock()
-    hass.data = {const.DOMAIN: {"coordinator": Mock(id="abc123")}}
+    coordinator = Mock(id="abc123")
+    coordinator.entry = Mock(entry_id=entry_id) if entry_id else None
+    hass.data = {const.DOMAIN: {"coordinator": coordinator}}
     return hass
+
+
+class _NewRegistry:
+    """A registry with the signature Home Assistant actually declares.
+
+    A Mock accepts any arguments, so it cannot catch a call that does not
+    match: the first version of this passed the identifier positionally, and
+    every zone entity failed to be added on a real install, which only the
+    running Home Assistant said.
+    """
+
+    def __init__(self, device_id="hubdev"):
+        self.device_id = device_id
+        self.calls = []
+
+    def async_get_device_by_identifier(self, identifier: tuple, config_entry_id: str):
+        self.calls.append((identifier, config_entry_id))
+        return Mock(id=self.device_id) if self.device_id else None
 
 
 def _registry_with_hub(device_id="hubdev", by_identifier=True):
     """A registry with only the lookup the emulated version would have."""
-    names = (
-        ["async_get_device_by_identifier"] if by_identifier else ["async_get_device"]
-    )
-    registry = Mock(spec=names)
-    getattr(registry, names[0]).return_value = Mock(id=device_id)
+    if by_identifier:
+        return _NewRegistry(device_id)
+    registry = Mock(spec=["async_get_device"])
+    registry.async_get_device.return_value = Mock(id=device_id)
     return registry
 
 
@@ -39,9 +58,7 @@ def test_the_new_form_names_the_parent_by_its_device_id():
 
     assert info["via_device_id"] == "hubdev"
     assert "via_device" not in info, "passing both is an error"
-    registry.async_get_device_by_identifier.assert_called_once_with(
-        (const.DOMAIN, "abc123")
-    )
+    assert registry.calls == [((const.DOMAIN, "abc123"), "entry1")]
 
 
 def test_an_older_home_assistant_still_gets_the_identifiers():
@@ -71,8 +88,7 @@ def test_an_older_registry_is_looked_up_the_old_way():
 
 def test_a_hub_device_that_is_not_registered_yet_falls_back():
     """The link matters more than the warning, so the old form still applies."""
-    registry = Mock(spec=["async_get_device_by_identifier"])
-    registry.async_get_device_by_identifier.return_value = None
+    registry = _NewRegistry(device_id=None)
 
     with (
         patch.object(entity, "_via_device_id_supported", return_value=True),
@@ -81,6 +97,21 @@ def test_a_hub_device_that_is_not_registered_yet_falls_back():
         info = entity.zone_device_info(_hass(), 1, "Front lawn")
 
     assert info["via_device"] == (const.DOMAIN, "abc123")
+
+
+def test_without_a_config_entry_the_old_lookup_is_used():
+    """The new lookup needs the entry, so there is nothing to ask it with."""
+    registry = Mock(spec=["async_get_device_by_identifier", "async_get_device"])
+    registry.async_get_device.return_value = Mock(id="hubdev")
+
+    with (
+        patch.object(entity, "_via_device_id_supported", return_value=True),
+        patch.object(entity.dr, "async_get", return_value=registry),
+    ):
+        info = entity.zone_device_info(_hass(entry_id=None), 1, "Front lawn")
+
+    assert info["via_device_id"] == "hubdev"
+    registry.async_get_device_by_identifier.assert_not_called()
 
 
 def test_the_rest_of_the_zone_device_is_unchanged():
