@@ -327,6 +327,17 @@ def _ratio_hold_solar(rows, solar_samples, latitude, longitude, elevation, tz_of
         )
 
 
+def _hour_start_timestamp(hour_start, offset_h):
+    """A row's local hour start as a unix timestamp.
+
+    The buffer's stamps are naive local time and a solar series is stamped in
+    UTC, so the two only meet through the offset that hour was written in,
+    daylight saving included.
+    """
+    zone = datetime.timezone(datetime.timedelta(hours=offset_h))
+    return hour_start.replace(tzinfo=zone).timestamp()
+
+
 def build_hourly_rows(
     readings,
     since,
@@ -338,6 +349,7 @@ def build_hourly_rows(
     elevation=0.0,
     tz_offset_h=0.0,
     tz=None,
+    solar_series=None,
 ):
     """One FAO-56 row per clock hour the window touches, or None.
 
@@ -377,6 +389,11 @@ def build_hourly_rows(
         else:
             samples = None
         if samples is None:
+            if key == const.MAPPING_SOLRAD and solar_series:
+                # No radiation sensor, but the weather service keeps the sun of
+                # every hour: that is a measurement of the hour, not the day's
+                # temperatures guessing at it.
+                continue
             if key in HOURLY_ROW_REQUIRED:
                 return None
             continue
@@ -417,7 +434,17 @@ def build_hourly_rows(
         # Handed to FAO-56 as u2 exactly as the daily path does, so the two
         # forms cannot disagree about the anemometer height.
         row["wind_2m"] = means[const.MAPPING_WINDSPEED]
-        row["solar_mj_h"] = means[const.MAPPING_SOLRAD] * MJ_DAY_TO_MJ_HOUR
+        if const.MAPPING_SOLRAD in means:
+            row["solar_mj_h"] = means[const.MAPPING_SOLRAD] * MJ_DAY_TO_MJ_HOUR
+        else:
+            sun = solar_series.get(
+                _hour_start_timestamp(hour_start, row.get("tz_offset_h", tz_offset_h))
+            )
+            if sun is None:
+                # An hour the series does not cover cannot be priced, and
+                # inventing it would be exactly the guess this avoids.
+                return None
+            row["solar_mj_h"] = sun
         if const.MAPPING_PRESSURE in means:
             row["pressure_kpa"] = means[const.MAPPING_PRESSURE] * HPA_TO_KPA
         rows.append(row)
@@ -468,11 +495,16 @@ def summed_hourly_eto(
     elevation=0.0,
     tz_offset_h=0.0,
     tz=None,
+    solar_series=None,
 ):
     """``(total_mm, hours)`` of reference ET over the window, or None.
 
     None whenever the window will not reduce to hourly rows, or when the site
     has no coordinates: the hourly equation needs the sun's position.
+
+    ``solar_series`` stands in for a radiation sensor the sensor group does not
+    have: the sun of each hour in MJ/m2, keyed by the hour's start as a unix
+    timestamp.
     """
     if latitude is None or longitude is None:
         return None
@@ -486,6 +518,7 @@ def summed_hourly_eto(
         elevation=elevation,
         tz_offset_h=tz_offset_h,
         tz=tz,
+        solar_series=solar_series,
     )
     if not rows:
         return None

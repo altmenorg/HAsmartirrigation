@@ -29,7 +29,11 @@ Note that the run still starts at the time it was scheduled for. A trigger set t
 #### Calculate evapotranspiration hour by hour (beta)
 Off by default. When on, PyETO sums the FAO-56 hourly equation (Eq. 53) over each hour of the zone's window instead of running the daily equation on the window's averages. The daily form is biased by cloudiness, because an average day hides whether the sun and the heat came together; summing the hours removes most of that bias. The hourly equation and its row builder come from [JustChr's Irrigation Plus fork](https://github.com/JustChr/HAsmartirrigation).
 
-It needs temperature, humidity, wind speed and solar radiation in the sensor group (a sensor or a weather service), and the site's coordinates. With forecast days set on PyETO, with no solar radiation source, or with any other module, the daily equation keeps being used, so switching it on never leaves a zone without a calculation. The calculation explanation says which form was used.
+It needs temperature, humidity and wind speed in the sensor group (a sensor or a weather service), and the site's coordinates.
+
+**Solar radiation without a sensor.** The hourly equation needs the sun of each hour, and the daily equation's way of estimating it, from the day's temperature range, is fair over a day and poor over an hour. So when the sensor group has no radiation source and your weather service is Open-Meteo, the sun of each hour is read from Open-Meteo's own hourly history, which measures and models it. A group that does have a radiation sensor reads its own, as before, and a greenhouse is never asked: no sky reading describes what reaches a plant under glass.
+
+With forecast days set on PyETO, with any other module, or when the hours cannot be reconstructed (no readings, a field missing everywhere, or no hourly radiation available for a group without a sensor), the daily equation keeps being used, so switching it on never leaves a zone without a calculation. The calculation explanation says which form was used.
 
 ### Automatic weather data pruning (removed)
 Weather data used to be cleared on a timer, and that setting no longer does anything.

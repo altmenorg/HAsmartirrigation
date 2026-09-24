@@ -988,7 +988,38 @@ class CalculationMixin:
             last_calc_data,
         )
 
-    def _hourly_reference_et(self, zone, modinst):
+    async def _hourly_solar_series(self, mapping, since):
+        """The sun of each hour of the window from the weather service, or None.
+
+        For a sensor group with no radiation source. The daily equation
+        estimates the day's sun from its temperature range, which is a fair
+        guess for a whole day and a poor one for an hour, so without this an
+        installation without a pyranometer could never calculate hour by hour.
+        Only Open-Meteo publishes the history, and a greenhouse is not asked:
+        no sky reading describes what reaches a plant under glass.
+        """
+        if (
+            not getattr(self, "use_weather_service", False)
+            or getattr(self, "weather_service", None) != const.CONF_WEATHER_SERVICE_OM
+            or since is None
+            or (mapping or {}).get(const.MAPPING_GREENHOUSE)
+        ):
+            return None
+        fetch = getattr(
+            getattr(self, "_WeatherServiceClient", None), "get_hourly_radiation", None
+        )
+        if fetch is None:
+            return None
+        series = await self.hass.async_add_executor_job(fetch, since, datetime.now())
+        if not series:
+            _LOGGER.debug(
+                "No hourly radiation from Open-Meteo for sensor group %s",
+                (mapping or {}).get(const.MAPPING_NAME),
+            )
+            return None
+        return series
+
+    async def _hourly_reference_et(self, zone, modinst):
         """Reference ET summed hour by hour over the zone's window, or None.
 
         ``(total_mm, hours)`` when the hourly calculation is switched on and the
@@ -997,9 +1028,11 @@ class CalculationMixin:
 
         - the setting is off, which is the default;
         - the engine averages forecast days, which only the daily form can do;
-        - the sensor group has no readings, or no measured solar radiation, or
-          a required field missing everywhere: the hourly equation needs the
-          hour's own sun, and summing an estimated one would be a guess;
+        - the sensor group has no readings, or a required field missing
+          everywhere;
+        - the sensor group has no radiation source and the weather service
+          cannot supply the sun of each hour: the hourly equation needs the
+          hour's own sun, and estimating it from the day would be a guess;
         - the site has no coordinates, since placing the sun needs them.
 
         The window is the zone's own, from its mark to now, the same one the
@@ -1020,15 +1053,22 @@ class CalculationMixin:
             for key, value in (mapping.get(const.MAPPING_DATA_LAST_ENTRY) or {}).items()
             if key in sourced
         }
+        since = self.zone_window_start(zone)
+        solar_series = None
+        if const.MAPPING_SOLRAD not in sourced:
+            solar_series = await self._hourly_solar_series(mapping, since)
+            if solar_series is None:
+                return None
         result = summed_hourly_eto(
             mapping.get(const.MAPPING_DATA),
-            self.zone_window_start(zone),
+            since,
             now=datetime.now(),
             last_entry=last_entry,
             latitude=getattr(self, "_effective_latitude", None),
             longitude=getattr(self, "_effective_longitude", None),
             elevation=getattr(self, "_effective_elevation", None) or 0.0,
             tz=SystemLocalTime(),
+            solar_series=solar_series,
         )
         if result is None:
             _LOGGER.debug(
@@ -1415,7 +1455,7 @@ class CalculationMixin:
         # sum does. Scaling it by the interval again would count it twice.
         hourly = None
         if m[const.MODULE_NAME] == "PyETO":
-            hourly = self._hourly_reference_et(zone, modinst)
+            hourly = await self._hourly_reference_et(zone, modinst)
             if hourly is not None:
                 delta = -hourly[0]
             else:

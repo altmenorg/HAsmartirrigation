@@ -129,6 +129,10 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
         self._precipitation_series = None
         self._precipitation_fetched_at = datetime.datetime(1900, 1, 1, 0, 0, 0)
         self._precipitation_covers_from = math.inf
+        # Hourly radiation history, see get_hourly_radiation.
+        self._radiation_series = None
+        self._radiation_fetched_at = datetime.datetime(1900, 1, 1, 0, 0, 0)
+        self._radiation_covers_from = math.inf
 
     def _params(self):
         params = {
@@ -248,6 +252,84 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
         return float(
             sum(amount for hour_end, amount in series if start_ts < hour_end <= end_ts)
         )
+
+    def get_hourly_radiation(self, start, end):
+        """The sun of each hour between two moments, in MJ/m2/h, or None.
+
+        Keyed by the hour's start as a unix timestamp, which is how Open-Meteo
+        stamps its hourly arrays, and how the hourly equation asks for it: one
+        value per clock hour, the mean over that hour.
+
+        This is what lets an installation without a radiation sensor calculate
+        hour by hour. Estimating the sun of one hour from the day's
+        temperatures is a guess, but Open-Meteo actually measures and models
+        it, so the hourly equation gets the driving term it needs.
+
+        ``start`` and ``end`` are datetimes; naive ones are local time. None
+        means the history could not be read, and the caller keeps the daily
+        equation rather than invent an hour's sun.
+        """
+        try:
+            start_ts = start.timestamp()
+            end_ts = end.timestamp()
+        except (AttributeError, TypeError, ValueError, OverflowError):
+            return None
+        if end_ts <= start_ts:
+            return {}
+        series = self._hourly_radiation(start_ts)
+        if series is None:
+            return None
+        # W/m2 is a rate, so an hour of it is W/m2 * 3600 s = J, and
+        # 1 W/m2 over an hour is 0.0036 MJ/m2.
+        return {
+            hour_start: watts * SECONDS_PER_HOUR / 1_000_000
+            for hour_start, watts in series
+            # The hour that starts before the window ends has sun in it.
+            if start_ts - SECONDS_PER_HOUR < hour_start < end_ts
+        }
+
+    def _hourly_radiation(self, since_ts):
+        """Return (hour start as unix time, W/m2) pairs from ``since_ts`` on."""
+        now = datetime.datetime.now()
+        if (
+            self._radiation_series is not None
+            and now
+            < self._radiation_fetched_at
+            + datetime.timedelta(seconds=PRECIPITATION_CACHE_SECONDS)
+            and self._radiation_covers_from <= since_ts
+        ):
+            return self._radiation_series
+
+        past_seconds = max(0.0, now.timestamp() - since_ts)
+        params = {
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "hourly": "shortwave_radiation",
+            "timezone": "GMT",
+            "timeformat": "unixtime",
+            "past_days": min(MAX_PAST_DAYS, math.ceil(past_seconds / 86400) + 1),
+            "forecast_days": 1,
+        }
+        try:
+            doc = self._request(params)
+            if doc is None:
+                return None
+            hourly = doc["hourly"]
+            series = [
+                (float(hour_start), float(watts or 0.0))
+                for hour_start, watts in zip(
+                    hourly["time"], hourly["shortwave_radiation"], strict=False
+                )
+            ]
+        except (KeyError, TypeError, ValueError, requests.RequestException) as ex:
+            _LOGGER.warning("Error reading hourly radiation from Open-Meteo: %s", ex)
+            return None
+        if not series:
+            return None
+        self._radiation_series = series
+        self._radiation_fetched_at = now
+        self._radiation_covers_from = series[0][0]
+        return series
 
     def _hourly_precipitation(self, since_ts):
         """Return (hour end as unix time, mm) pairs from ``since_ts`` on, or None."""
