@@ -35,6 +35,8 @@ const STRINGS: Record<string, Record<string, string>> = {
     manual: "manual",
     disabled: "disabled",
     no_zones: "No zones yet. Open the Smart Irrigation panel to add one.",
+    tomorrow: "tomorrow",
+    yesterday: "yesterday",
   },
   fr: {
     title: "Smart Irrigation",
@@ -50,6 +52,8 @@ const STRINGS: Record<string, Record<string, string>> = {
     manual: "manuel",
     disabled: "désactivé",
     no_zones: "Aucune zone. Ouvrez le panneau Smart Irrigation pour en créer une.",
+    tomorrow: "demain",
+    yesterday: "hier",
   },
 };
 
@@ -155,9 +159,16 @@ export class SmartIrrigationCard extends LitElement {
   /** A depth in the unit the viewer's Home Assistant shows lengths in. */
   private _depth(mm: number): string {
     const imperial = this.hass?.config?.unit_system?.length === "mi";
-    return imperial
-      ? `${(mm / 25.4).toFixed(2)} in`
-      : `${mm.toFixed(1)} mm`;
+    return imperial ? `${(mm / 25.4).toFixed(2)} in` : `${mm.toFixed(1)} mm`;
+  }
+
+  /**
+   * A deficit worth naming. A zone that has just watered sits a hair below
+   * zero, and "short 0.0 mm" is a worse answer than "no watering needed".
+   */
+  private _deficit(zone: Zone): number {
+    const deficit = zone.bucket < 0 ? -zone.bucket : 0;
+    return deficit >= 0.05 ? deficit : 0;
   }
 
   private _duration(seconds: number): string {
@@ -171,10 +182,28 @@ export class SmartIrrigationCard extends LitElement {
       .join(":");
   }
 
-  private _relative(when: string): string {
+  /** A moment as a dashboard shows one: the day when it is not today, and
+   * the time to the minute. Seconds are noise on a card. */
+  private _moment(when: string): string {
     const date = new Date(when);
     if (isNaN(date.getTime())) return when;
-    return date.toLocaleString(this.hass?.locale?.language || this.hass?.language);
+    const language = this.hass?.locale?.language || this.hass?.language || "en";
+    const time = date.toLocaleTimeString(language, {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const midnight = new Date();
+    midnight.setHours(0, 0, 0, 0);
+    const days = Math.floor(
+      (date.getTime() - midnight.getTime()) / (24 * 3600 * 1000),
+    );
+    if (days === 0) return time;
+    if (days === 1) return `${this._t("tomorrow")} ${time}`;
+    if (days === -1) return `${this._t("yesterday")} ${time}`;
+    return `${date.toLocaleDateString(language, {
+      day: "numeric",
+      month: "short",
+    })} ${time}`;
   }
 
   private _zonesToShow(): Zone[] {
@@ -204,7 +233,7 @@ export class SmartIrrigationCard extends LitElement {
     const label = skipped
       ? this._t("skipped")
       : start
-        ? this._relative(start)
+        ? this._moment(start)
         : this._t("no_start");
     const reason = skipped ? this._info.skip_preview?.reason : null;
     return html`
@@ -218,7 +247,7 @@ export class SmartIrrigationCard extends LitElement {
 
   private _zoneRow(zone: Zone): TemplateResult {
     const threshold = zone.irrigation_threshold ?? 0;
-    const deficit = zone.bucket < 0 ? -zone.bucket : 0;
+    const deficit = this._deficit(zone);
     const needed = deficit > threshold && zone.duration > 0;
     return html`
       <div class="zone">
@@ -240,7 +269,7 @@ export class SmartIrrigationCard extends LitElement {
         </div>
         <div class="zone-last">
           ${zone.last_irrigation
-            ? this._t("last_watered", { when: this._relative(zone.last_irrigation) })
+            ? this._t("last_watered", { when: this._moment(zone.last_irrigation) })
             : this._t("never_watered")}
         </div>
         <ha-icon-button
