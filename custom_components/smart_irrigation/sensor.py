@@ -319,7 +319,7 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
 
     @property
     def device_info(self) -> dict:
-        """Return per-zone device info (grouped under the hub via via_device)."""
+        """Return per-zone device info (grouped under the hub device)."""
         return zone_device_info(self._hass, self._id, self._name)
 
     @property
