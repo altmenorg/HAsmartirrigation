@@ -33,4 +33,17 @@ export default [
     plugins: [...plugins],
     context: 'window'
   },
+  // The dashboard card, built on its own: it loads on every dashboard, so it
+  // must not carry the panel (or its nineteen language files) with it.
+  {
+    input: 'src/card/smart-irrigation-card.ts',
+    output: {
+      file: 'dist/smart-irrigation-card.js',
+      format: 'iife',
+      inlineDynamicImports: true,
+      sourcemap: true,
+    },
+    plugins: [...plugins],
+    context: 'window'
+  },
 ];

@@ -298,6 +298,11 @@ PANEL_URL = f"/api/panel_custom/{DOMAIN}"
 PANEL_TITLE = NAME
 PANEL_ICON = "mdi:sprinkler"
 PANEL_NAME = "smart-irrigation"
+# The companion Lovelace card, served by the integration and registered as a
+# Lovelace resource, so it needs no HACS install and no hand-written entry.
+CARD_FILENAME = "dist/smart-irrigation-card.js"
+CARD_URL = f"/api/{DOMAIN}/card.js"
+CARD_NAME = "smart-irrigation-card"
 
 ATTR_REMOVE = "remove"
 ATTR_CALCULATE = "calculate"

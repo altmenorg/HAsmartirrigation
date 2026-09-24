@@ -379,6 +379,8 @@ dist/
 !custom_components/smart_irrigation/frontend/dist/
 !custom_components/smart_irrigation/frontend/dist/smart-irrigation.js
 !custom_components/smart_irrigation/frontend/dist/smart-irrigation.js.map
+!custom_components/smart_irrigation/frontend/dist/smart-irrigation-card.js
+!custom_components/smart_irrigation/frontend/dist/smart-irrigation-card.js.map
 
 # OS specific
 .DS_Store

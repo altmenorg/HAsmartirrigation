@@ -49,6 +49,7 @@ from . import const
 from .blueprint_install import async_install_bundled_blueprints
 from .calc_log import CalculationLogger
 from .calculation import CalculationMixin
+from .card import async_register_card
 from .exceptions import SmartIrrigationError
 from .flow_calibration import FlowCalibrationMixin
 from .helpers import (
@@ -332,6 +333,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     # Register the panel (frontend)
     await async_register_panel(hass)
+    # The card is a convenience, never a reason for setup to fail.
+    await async_register_card(hass)
 
     # Websocket support
     await async_register_websockets(hass)
