@@ -1,6 +1,5 @@
 import nodeResolve from '@rollup/plugin-node-resolve';
 import typescript from 'rollup-plugin-typescript2';
-import babel from '@rollup/plugin-babel';
 import json from '@rollup/plugin-json';
 import terser from '@rollup/plugin-terser';
 import commonjs from '@rollup/plugin-commonjs';
@@ -15,9 +14,6 @@ const plugins = [
   // skippes (non transpiles) et rollup planterait sur la syntaxe TS brute.
   typescript({ include: ['**/*.ts', '**/*.tsx'] }),
   json(),
-  babel({
-    exclude: 'node_modules/**',
-  }),
   terser()
 ];
 

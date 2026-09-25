@@ -24,19 +24,14 @@
   "homepage": "https://github.com/altmenorg/HAsmartirrigation#readme",
   "dependencies": {
     "@mdi/js": "^7.4.47",
-    "custom-card-helpers": "^1.9.0",
+    "custom-card-helpers": "^2.0.0",
     "intl-messageformat": "^11.2.14",
-    "lit": "^2.7.6",
+    "lit": "^3.3.3",
     "moment": "^2.29.4"
   },
   "devDependencies": {
-    "@babel/cli": "^7.29.7",
-    "@babel/core": "^7.29.7",
-    "@babel/plugin-proposal-decorators": "^7.25.9",
-    "@babel/plugin-transform-class-properties": "^7.25.9",
     "@eslint/eslintrc": "^3.3.6",
     "@eslint/js": "^9.28.0",
-    "@rollup/plugin-babel": "^6.1.0",
     "@rollup/plugin-commonjs": "^29.0.3",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^16.0.3",

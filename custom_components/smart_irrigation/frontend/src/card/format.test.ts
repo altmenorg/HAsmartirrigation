@@ -5,6 +5,7 @@ import {
   depthLabel,
   durationLabel,
   momentLabel,
+  retryDelay,
   zoneActionEntity,
   zoneNow,
 } from "./format";
@@ -194,5 +195,21 @@ describe("zoneActionEntity", () => {
     expect(
       zoneActionEntity(entities, undefined, 0, "irrigate_now"),
     ).toBeUndefined();
+  });
+});
+
+describe("retryDelay", () => {
+  // The integration is not up the moment a dashboard is, so the first ask
+  // after a restart can fail, and the card would otherwise sit blank for the
+  // whole beat.
+  it("asks again quickly the first times", () => {
+    expect(retryDelay(1, 120000)).toBe(3000);
+    expect(retryDelay(2, 120000)).toBe(10000);
+    expect(retryDelay(3, 120000)).toBe(30000);
+  });
+
+  it("settles on the normal beat rather than hammering", () => {
+    expect(retryDelay(4, 120000)).toBe(120000);
+    expect(retryDelay(50, 120000)).toBe(120000);
   });
 });

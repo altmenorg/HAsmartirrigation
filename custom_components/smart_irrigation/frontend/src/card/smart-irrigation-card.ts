@@ -17,6 +17,7 @@ import {
   depthLabel,
   durationLabel,
   momentLabel,
+  retryDelay,
   zoneActionEntity,
   zoneNow,
 } from "./format";
@@ -57,6 +58,7 @@ const STRINGS: Record<string, Record<string, string>> = {
     confirm_water: "Tap again to water now",
     watering: "Watering",
     nothing_to_water: "Nothing to water right now",
+    loading: "Reading the zones…",
     manual: "manual",
     disabled: "disabled",
     no_zones: "No zones yet. Open the Smart Irrigation panel to add one.",
@@ -79,6 +81,7 @@ const STRINGS: Record<string, Record<string, string>> = {
     confirm_water: "Touchez encore pour arroser",
     watering: "Arrosage en cours",
     nothing_to_water: "Rien à arroser pour le moment",
+    loading: "Lecture des zones…",
     manual: "manuel",
     disabled: "désactivé",
     no_zones:
@@ -117,6 +120,9 @@ export class SmartIrrigationCard extends LitElement {
   @property({ attribute: false }) public hass?: any;
   @state() private _config?: CardConfig;
   @state() private _zones: Zone[] = [];
+  /** False until one load has answered: "no zones yet" is a claim, and the
+   * card must not make it before it has asked successfully. */
+  @state() private _loaded = false;
   @state() private _info: any = null;
   @state() private _busy: number | null = null;
   /** The zone whose "water now" is waiting for a second tap. */
@@ -125,6 +131,8 @@ export class SmartIrrigationCard extends LitElement {
 
   private _unsubscribe?: () => void;
   private _timer?: number;
+  private _retryTimer?: number;
+  private _failures = 0;
 
   /** The dashboard's "edit card" dialog asks for this. */
   public static async getConfigElement(): Promise<HTMLElement> {
@@ -159,6 +167,7 @@ export class SmartIrrigationCard extends LitElement {
     super.disconnectedCallback();
     if (this._timer) window.clearInterval(this._timer);
     if (this._confirmTimer) window.clearTimeout(this._confirmTimer);
+    if (this._retryTimer) window.clearTimeout(this._retryTimer);
     document.removeEventListener("visibilitychange", this._onVisible);
     this._unsubscribe?.();
     this._unsubscribe = undefined;
@@ -197,9 +206,18 @@ export class SmartIrrigationCard extends LitElement {
       ]);
       this._zones = zones ?? [];
       this._info = info;
+      this._loaded = true;
+      this._failures = 0;
     } catch (_e) {
       // A failed refresh keeps what is on screen: a card that empties itself
-      // on a hiccup is worse than one showing numbers a minute old.
+      // on a hiccup is worse than one showing numbers a minute old. The
+      // integration may simply still be starting, so ask again soon.
+      this._failures += 1;
+      if (this._retryTimer) window.clearTimeout(this._retryTimer);
+      this._retryTimer = window.setTimeout(
+        () => this._load(),
+        retryDelay(this._failures, REFRESH_MS),
+      );
     }
   }
 

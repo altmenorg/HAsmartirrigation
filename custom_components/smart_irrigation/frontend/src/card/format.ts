@@ -150,3 +150,16 @@ export const zoneActionEntity = (
   }
   return undefined;
 };
+
+/**
+ * How long to wait before asking again after a failed load, in ms.
+ *
+ * The integration is not up the moment a dashboard is, so the first ask after
+ * a restart can fail. Waiting the normal beat would leave the card blank for
+ * minutes, and hammering would be rude to a server that is busy starting, so
+ * the first retries are quick and they back off to the normal beat.
+ */
+export const retryDelay = (failures: number, beat: number): number => {
+  const steps = [3000, 10000, 30000];
+  return failures <= steps.length ? steps[failures - 1] : beat;
+};
