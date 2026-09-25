@@ -433,6 +433,10 @@ async def websocket_get_zones(hass: HomeAssistant, connection, msg):
                 # from the engine behind it, never stored: the engine is the
                 # model, the method is how it is said.
                 const.ZONE_CALCULATION_METHOD: _zone_method(coordinator, zone),
+                # The engine's own options (a number of forecast days, a fixed
+                # amount), so the zone card can offer them where the method is
+                # chosen instead of on a page about engines.
+                const.ZONE_METHOD_CONFIG: _zone_method_config(coordinator, zone),
             }
             for zone in zones
         ],
@@ -441,11 +445,21 @@ async def websocket_get_zones(hass: HomeAssistant, connection, msg):
 
 def _zone_method(coordinator, zone):
     """The method behind this zone's engine, or None for an unknown engine."""
+    module = _zone_module(coordinator, zone)
+    return method_of_engine((module or {}).get(const.MODULE_NAME))
+
+
+def _zone_method_config(coordinator, zone):
+    """The engine's own options, as the zone card shows them."""
+    module = _zone_module(coordinator, zone)
+    return dict((module or {}).get(const.MODULE_CONFIG) or {})
+
+
+def _zone_module(coordinator, zone):
     module_id = coordinator.module_id_for_zone(zone)
     if module_id is None:
         return None
-    module = coordinator.store.get_module(module_id)
-    return method_of_engine((module or {}).get(const.MODULE_NAME))
+    return coordinator.store.get_module(module_id)
 
 
 @async_response

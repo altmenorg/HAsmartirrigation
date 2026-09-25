@@ -366,6 +366,58 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       });
   }
 
+  /**
+   * The engine's own options, where the method is chosen.
+   *
+   * They used to live on a page about engines, which asked people to know
+   * what an engine was before they could say "look two days ahead". They
+   * belong to the engine rather than to the zone, so the help line says so
+   * rather than pretending otherwise.
+   */
+  private _engineOptions(
+    index: number,
+    zone: SmartIrrigationZone,
+    lang: string,
+  ): TemplateResult | string {
+    const method = zone.calculation_method ?? "from_weather";
+    const config = (zone.method_config ?? {}) as Record<string, any>;
+    const save = (changes: Record<string, unknown>) =>
+      this.handleEditZone(index, {
+        ...zone,
+        calculation_method: method,
+        method_config: { ...config, ...changes },
+      } as SmartIrrigationZone);
+
+    if (method === "from_weather") {
+      return html`
+        ${this._numRow(
+          localize("panels.zones.labels.forecast-days", lang),
+          "",
+          config.forecast_days ?? 0,
+          (v) => save({ forecast_days: parseInt(v, 10) || 0 }),
+        )}
+        <div class="setting-help">
+          ${localize("panels.zones.labels.forecast-days-help", lang)}
+          ${localize("panels.zones.labels.engine-shared-help", lang)}
+        </div>
+      `;
+    }
+    if (method === "fixed") {
+      return html`
+        ${this._numRow(
+          localize("panels.zones.labels.fixed-amount", lang),
+          output_unit(this.config, ZONE_BUCKET),
+          config.delta ?? 0,
+          (v) => save({ delta: parseFloat(v) || 0 }),
+        )}
+        <div class="setting-help">
+          ${localize("panels.zones.labels.engine-shared-help", lang)}
+        </div>
+      `;
+    }
+    return "";
+  }
+
   private handleEditZone(
     index: number,
     updatedZone: SmartIrrigationZone,
@@ -1018,6 +1070,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                     lang,
                   )}
                 </div>
+                ${this._engineOptions(index, zone, lang)}
                 ${this._selectRow(
                   localize("panels.zones.labels.input-method", lang),
                   html`

@@ -525,7 +525,11 @@
           "from_weather": "Calculated by Smart Irrigation",
           "provided": "Provided by a sensor or a service",
           "fixed": "A fixed amount"
-        }
+        },
+        "forecast-days": "Look ahead",
+        "forecast-days-help": "0: the zone waters on what has happened. 1 or more: the evapotranspiration expected over that many coming days is averaged with today's, so a hot tomorrow raises today's run and a cool one lowers it. It does not look at the rain to come, which is a separate setting.",
+        "fixed-amount": "Fixed amount",
+        "engine-shared-help": "This setting is shared by every zone calculated the same way."
       },
       "no_items": "There are no zones defined yet.",
       "title": "Zones",

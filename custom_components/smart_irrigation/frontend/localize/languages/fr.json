@@ -522,7 +522,11 @@
         "input-methods": {
           "throughput": "Débit et surface",
           "direct": "Pluviométrie de l'arrosage"
-        }
+        },
+        "forecast-days": "Anticiper les jours à venir",
+        "forecast-days-help": "0 : la zone arrose sur ce qui s'est passé. 1 ou plus : l'évapotranspiration prévue sur ce nombre de jours est moyennée avec celle du jour, donc un lendemain chaud augmente l'arrosage d'aujourd'hui et un lendemain frais le réduit. Ça ne regarde pas la pluie à venir, qui est un réglage à part.",
+        "fixed-amount": "Valeur fixe",
+        "engine-shared-help": "Ce réglage est partagé par toutes les zones calculées de la même façon."
       },
       "no_items": "Il n'y a pas encore de zone définie.",
       "title": "Zones",

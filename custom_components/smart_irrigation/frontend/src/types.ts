@@ -148,6 +148,8 @@ export class SmartIrrigationZone {
    * bound server side, so the panel never names one.
    */
   calculation_method?: string;
+  /** The engine's own options, shown next to the method that implies them. */
+  method_config?: Record<string, unknown>;
   /** When this zone last watered. Recorded by the run, never by the panel. */
   last_irrigation?: string | null;
 

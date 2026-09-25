@@ -46,11 +46,9 @@ const TAB_GROUPS: { id: string; pages: EMenuItems[] }[] = [
   { id: "home", pages: [EMenuItems.Info, EMenuItems.History] },
   // What is watered.
   { id: "zones", pages: [EMenuItems.Zones] },
-  // Where the numbers come from: the service, the groups, the engines.
-  {
-    id: "weather",
-    pages: [EMenuItems.WeatherService, EMenuItems.Mappings, EMenuItems.Modules],
-  },
+  // Where the numbers come from: the service they are read from, and the
+  // sensors that report them.
+  { id: "data", pages: [EMenuItems.WeatherService, EMenuItems.Mappings] },
   // Everything you set once.
   {
     id: "settings",
@@ -63,10 +61,32 @@ const TAB_GROUPS: { id: string; pages: EMenuItems[] }[] = [
   },
 ];
 
+/**
+ * The engines page is not in any group: a zone says how it is calculated and
+ * the engine behind it is created and configured from there, so "modules" is
+ * not a thing anyone should have to open. Its address still works, and it
+ * shows under Settings when it is open, for an installation that was built on
+ * it and for a bookmark.
+ */
+const UNLISTED_PAGE_GROUP: Record<string, string> = {
+  [EMenuItems.Modules]: "settings",
+};
+
 /** The group a page belongs to, falling back to the first one. */
-const groupOf = (page: string): { id: string; pages: EMenuItems[] } =>
-  TAB_GROUPS.find((group) => (group.pages as string[]).includes(page)) ??
-  TAB_GROUPS[0];
+const groupOf = (page: string): { id: string; pages: EMenuItems[] } => {
+  const listed = TAB_GROUPS.find((group) =>
+    (group.pages as string[]).includes(page),
+  );
+  if (listed) return listed;
+  const unlisted = UNLISTED_PAGE_GROUP[page];
+  if (unlisted) {
+    const group = TAB_GROUPS.find((g) => g.id === unlisted);
+    // The page joins that group's second row while it is open, so there is a
+    // way back and the tab above it is not left looking unselected.
+    if (group) return { ...group, pages: [...group.pages, page as EMenuItems] };
+  }
+  return TAB_GROUPS[0];
+};
 
 @customElement("smart-irrigation")
 export class SmartIrrigationPanel extends LitElement {
