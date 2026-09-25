@@ -47,6 +47,9 @@ import {
 } from "../../types";
 import {
   changedFields,
+  displayDepth,
+  displayTemperature,
+  displayVolume,
   engineModeLabel,
   formatDuration,
   output_unit,
@@ -55,6 +58,7 @@ import {
 import { globalStyle } from "../../styles/global-style";
 import { localize } from "../../../localize/localize";
 import {
+  CONF_METRIC,
   DOMAIN,
   UNIT_SECONDS,
   ZONE_BUCKET,
@@ -723,10 +727,19 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         : html` <div class="calendar-table">
               <div class="calendar-header">
                 <span>Month</span>
-                <span>ET (mm)</span>
-                <span>Precipitation (mm)</span>
-                <span>Watering (L)</span>
-                <span>Avg Temp (°C)</span>
+                <span>ET (${output_unit(this.config, ZONE_BUCKET)})</span>
+                <span
+                  >Precipitation
+                  (${output_unit(this.config, ZONE_BUCKET)})</span
+                >
+                <span
+                  >Watering
+                  (${output_unit(this.config, ZONE_WATER_VOLUME)})</span
+                >
+                <span
+                  >Avg Temp
+                  (${this.config?.units === CONF_METRIC ? "°C" : "°F"})</span
+                >
               </div>
               ${monthlyEstimates.map(
                 (estimate) => html`
@@ -739,25 +752,37 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                     <span
                       >${estimate.estimated_et_mm !== null &&
                       estimate.estimated_et_mm !== undefined
-                        ? estimate.estimated_et_mm.toFixed(1)
+                        ? displayDepth(
+                            estimate.estimated_et_mm,
+                            this.config,
+                          ).toFixed(1)
                         : "-"}</span
                     >
                     <span
                       >${estimate.average_precipitation_mm !== null &&
                       estimate.average_precipitation_mm !== undefined
-                        ? estimate.average_precipitation_mm.toFixed(1)
+                        ? displayDepth(
+                            estimate.average_precipitation_mm,
+                            this.config,
+                          ).toFixed(1)
                         : "-"}</span
                     >
                     <span
                       >${estimate.estimated_watering_volume_liters !== null &&
                       estimate.estimated_watering_volume_liters !== undefined
-                        ? estimate.estimated_watering_volume_liters.toFixed(0)
+                        ? displayVolume(
+                            estimate.estimated_watering_volume_liters,
+                            this.config,
+                          ).toFixed(0)
                         : "-"}</span
                     >
                     <span
                       >${estimate.average_temperature_c !== null &&
                       estimate.average_temperature_c !== undefined
-                        ? estimate.average_temperature_c.toFixed(1)
+                        ? displayTemperature(
+                            estimate.average_temperature_c,
+                            this.config,
+                          ).toFixed(1)
                         : "-"}</span
                     >
                   </div>

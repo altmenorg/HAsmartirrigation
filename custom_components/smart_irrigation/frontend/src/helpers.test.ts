@@ -13,7 +13,13 @@ import {
   MAPPING_TEMPERATURE,
   MAPPING_WINDSPEED,
 } from "./const";
-import { changedFields, getOptionsForMappingType } from "./helpers";
+import {
+  changedFields,
+  displayDepth,
+  displayTemperature,
+  displayVolume,
+  getOptionsForMappingType,
+} from "./helpers";
 
 /**
  * The unit strings this panel writes are read back by the integration, which
@@ -115,5 +121,34 @@ describe("changedFields", () => {
     expect(changedFields(withList, { ...withList, tags: [1, 3] })).toEqual({
       tags: [1, 3],
     });
+  });
+});
+
+describe("what the watering calendar shows", () => {
+  // The calendar describes a climate, so the backend computes it in metric
+  // whatever the install: mm, litres and Celsius. The panel is where it meets
+  // the unit system the user reads in.
+  const metric = { units: CONF_METRIC };
+  const imperial = { units: CONF_IMPERIAL };
+
+  it("shows a depth in the unit of the configuration", () => {
+    expect(displayDepth(25.4, metric)).toBeCloseTo(25.4);
+    expect(displayDepth(25.4, imperial)).toBeCloseTo(1);
+  });
+
+  it("shows a temperature in the unit of the configuration", () => {
+    expect(displayTemperature(20, metric)).toBeCloseTo(20);
+    expect(displayTemperature(20, imperial)).toBeCloseTo(68);
+    expect(displayTemperature(0, imperial)).toBeCloseTo(32);
+  });
+
+  it("shows a volume in the unit of the configuration", () => {
+    expect(displayVolume(3.785411784, metric)).toBeCloseTo(3.785411784);
+    expect(displayVolume(3.785411784, imperial)).toBeCloseTo(1);
+  });
+
+  it("reads a missing value as zero rather than NaN", () => {
+    expect(displayDepth(undefined as any, imperial)).toBe(0);
+    expect(displayTemperature(null as any, imperial)).toBe(32);
   });
 });

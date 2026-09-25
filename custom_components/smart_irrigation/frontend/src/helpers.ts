@@ -173,6 +173,25 @@ export function displayVolume(litres: number, config): number {
   return config?.units === CONF_METRIC ? value : value / LITRES_PER_GALLON;
 }
 
+/** Millimetres in one inch, for the values the backend keeps in metric. */
+const MM_PER_INCH = 25.4;
+
+/**
+ * A depth the backend computes in mm, in the unit this configuration shows.
+ * The watering calendar is the one place that sends plain metric numbers
+ * rather than zone fields, because it describes a climate, not a stored zone.
+ */
+export function displayDepth(mm: number, config): number {
+  const value = Number(mm) || 0;
+  return config?.units === CONF_METRIC ? value : value / MM_PER_INCH;
+}
+
+/** A temperature the backend computes in Celsius, in the unit shown. */
+export function displayTemperature(celsius: number, config): number {
+  const value = Number(celsius) || 0;
+  return config?.units === CONF_METRIC ? value : value * 1.8 + 32;
+}
+
 export function getOptionsForMappingType(mapping: string) {
   switch (mapping) {
     case MAPPING_DEWPOINT:
