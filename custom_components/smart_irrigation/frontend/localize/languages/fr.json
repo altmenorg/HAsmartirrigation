@@ -534,7 +534,7 @@
     "groups": {
       "home": "Accueil",
       "zones": "Zones",
-      "weather": "Météo",
+      "data": "Données",
       "settings": "Réglages"
     }
   },

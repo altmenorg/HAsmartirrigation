@@ -542,7 +542,7 @@
     "groups": {
       "home": "Home",
       "zones": "Zones",
-      "weather": "Weather",
+      "data": "Data",
       "settings": "Settings"
     }
   },
