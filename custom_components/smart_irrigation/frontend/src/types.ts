@@ -142,6 +142,12 @@ export class SmartIrrigationZone {
   soil_moisture_threshold?: number;
   input_method?: string;
   precipitation_rate?: number;
+  /**
+   * How this zone's evapotranspiration is produced: computed here, provided
+   * by a sensor or a service, or a fixed amount. The engine behind it is
+   * bound server side, so the panel never names one.
+   */
+  calculation_method?: string;
   /** When this zone last watered. Recorded by the run, never by the panel. */
   last_irrigation?: string | null;
 

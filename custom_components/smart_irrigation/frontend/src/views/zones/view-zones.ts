@@ -987,6 +987,38 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                     this.handleEditZone(index, { ...zone, [ZONE_NAME]: v }),
                 )}
                 ${this._selectRow(
+                  localize("panels.zones.labels.calculation-method", lang),
+                  html`
+                    ${["from_weather", "provided", "fixed"].map(
+                      (method) => html`
+                        <option
+                          value="${method}"
+                          ?selected=${(zone.calculation_method ??
+                            "from_weather") === method}
+                        >
+                          ${localize(
+                            `panels.zones.labels.calculation-methods.${method}`,
+                            lang,
+                          )}
+                        </option>
+                      `,
+                    )}
+                  `,
+                  (e: Event) =>
+                    this.handleEditZone(index, {
+                      ...zone,
+                      calculation_method: (e.target as HTMLSelectElement).value,
+                    }),
+                )}
+                <div class="setting-help">
+                  ${localize(
+                    `panels.zones.labels.calculation-method-help.${
+                      zone.calculation_method ?? "from_weather"
+                    }`,
+                    lang,
+                  )}
+                </div>
+                ${this._selectRow(
                   localize("panels.zones.labels.input-method", lang),
                   html`
                     <option
@@ -1798,6 +1830,14 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         gap: 16px;
         min-height: 52px;
         padding: 4px 0;
+        border-bottom: 1px solid var(--divider-color);
+      }
+
+      /* One line under a setting, saying what the choice above it means. */
+      .setting-help {
+        color: var(--secondary-text-color);
+        font-size: 0.85em;
+        padding: 6px 0 10px 0;
         border-bottom: 1px solid var(--divider-color);
       }
       .setting-row:last-child {

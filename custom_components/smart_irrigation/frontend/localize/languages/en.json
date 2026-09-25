@@ -514,7 +514,18 @@
         "irrigation-threshold": "Irrigation threshold",
         "soil-moisture-sensor": "Soil moisture sensor",
         "soil-moisture-sensor-hint": "The zone sits out a run while the soil is at or above the threshold. The bucket is kept.",
-        "soil-moisture-threshold": "Skip at or above"
+        "soil-moisture-threshold": "Skip at or above",
+        "calculation-method": "Evapotranspiration",
+        "calculation-method-help": {
+          "from_weather": "From your measurements: temperature, humidity, wind, sun.",
+          "provided": "You already have an evapotranspiration in mm; it is taken as it is.",
+          "fixed": "So many mm a day, whatever the weather."
+        },
+        "calculation-methods": {
+          "from_weather": "Calculated by Smart Irrigation",
+          "provided": "Provided by a sensor or a service",
+          "fixed": "A fixed amount"
+        }
       },
       "no_items": "There are no zones defined yet.",
       "title": "Zones",

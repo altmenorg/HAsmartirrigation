@@ -506,7 +506,23 @@
         "irrigation-threshold": "Seuil d'arrosage",
         "soil-moisture-sensor": "Capteur d'humidité du sol",
         "soil-moisture-sensor-hint": "La zone n'arrose pas tant que le sol est au seuil ou au-dessus. Le seau est conservé.",
-        "soil-moisture-threshold": "Ne pas arroser à partir de"
+        "soil-moisture-threshold": "Ne pas arroser à partir de",
+        "calculation-method": "Évapotranspiration",
+        "calculation-method-help": {
+          "from_weather": "À partir de vos mesures : température, humidité, vent, soleil.",
+          "provided": "Vous avez déjà une évapotranspiration en mm, elle est prise telle quelle.",
+          "fixed": "Tant de mm par jour, quelle que soit la météo."
+        },
+        "calculation-methods": {
+          "from_weather": "Calculée par Smart Irrigation",
+          "provided": "Fournie par un capteur ou un service",
+          "fixed": "Valeur fixe"
+        },
+        "input-method": "Méthode de saisie",
+        "input-methods": {
+          "throughput": "Débit et surface",
+          "direct": "Pluviométrie de l'arrosage"
+        }
       },
       "no_items": "Il n'y a pas encore de zone définie.",
       "title": "Zones",

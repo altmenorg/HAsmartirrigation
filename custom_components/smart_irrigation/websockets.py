@@ -24,7 +24,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
 from .calcmodules.consumes import consumed_mappings, idle_options
-from .engine_binding import ENGINE_BY_METHOD
+from .engine_binding import ENGINE_BY_METHOD, method_of_engine
 from .skip_conditions import thresholds_for_display
 from .units import zone_from_display, zone_to_display
 
@@ -424,7 +424,28 @@ async def websocket_get_zones(hass: HomeAssistant, connection, msg):
     zones = await coordinator.store.async_get_zones()
     # Stored in metric, shown in the unit system (units.py).
     metric = hass.config.units is METRIC_SYSTEM
-    connection.send_result(msg["id"], [zone_to_display(z, metric) for z in zones])
+    connection.send_result(
+        msg["id"],
+        [
+            {
+                **zone_to_display(zone, metric),
+                # How this zone is calculated, in the panel's words. Computed
+                # from the engine behind it, never stored: the engine is the
+                # model, the method is how it is said.
+                const.ZONE_CALCULATION_METHOD: _zone_method(coordinator, zone),
+            }
+            for zone in zones
+        ],
+    )
+
+
+def _zone_method(coordinator, zone):
+    """The method behind this zone's engine, or None for an unknown engine."""
+    module_id = coordinator.module_id_for_zone(zone)
+    if module_id is None:
+        return None
+    module = coordinator.store.get_module(module_id)
+    return method_of_engine((module or {}).get(const.MODULE_NAME))
 
 
 @async_response
