@@ -86,19 +86,36 @@ class _Coordinator(CalculationMixin):
 
 
 class TestTheResolver:
-    def test_the_group_decides_when_it_says_so(self):
+    def test_the_zone_s_own_engine_wins(self):
+        """It used to be the group's, and that was changed on purpose.
+
+        An engine carries settings the zone owns: how many days it looks
+        ahead, the fixed amount it uses. While a group's engine won, zones
+        sharing a group shared those settings, and changing one on a zone
+        changed it on the others. Every zone has its own instance now, and the
+        zone is therefore what says which.
+        """
         coord = _Coordinator({const.MAPPING_MODULE: 7})
 
         assert (
-            coord.module_id_for_zone({const.ZONE_MAPPING: 0, const.ZONE_MODULE: 3}) == 7
+            coord.module_id_for_zone({const.ZONE_MAPPING: 0, const.ZONE_MODULE: 3}) == 3
         )
 
-    def test_an_undecided_group_leaves_the_zone_in_charge(self):
-        """Nothing changes for an install whose groups have not adopted one."""
+    def test_a_zone_without_one_falls_back_to_its_group(self):
+        """Which is what an install set up before the split had."""
+        coord = _Coordinator({const.MAPPING_MODULE: 7})
+
+        assert (
+            coord.module_id_for_zone({const.ZONE_MAPPING: 0, const.ZONE_MODULE: None})
+            == 7
+        )
+
+    def test_an_undecided_group_and_no_zone_engine_is_nothing(self):
         coord = _Coordinator({const.MAPPING_MODULE: None})
 
         assert (
-            coord.module_id_for_zone({const.ZONE_MAPPING: 0, const.ZONE_MODULE: 3}) == 3
+            coord.module_id_for_zone({const.ZONE_MAPPING: 0, const.ZONE_MODULE: None})
+            is None
         )
 
     def test_a_group_predating_the_move_leaves_the_zone_in_charge(self):

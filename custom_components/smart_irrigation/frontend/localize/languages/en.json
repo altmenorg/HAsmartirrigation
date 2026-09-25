@@ -527,7 +527,7 @@
           "fixed": "A fixed amount"
         },
         "forecast-days": "Look ahead",
-        "forecast-days-help": "0: the zone waters on what has happened. 1 or more: the evapotranspiration expected over that many coming days is averaged with today's, so a hot tomorrow raises today's run and a cool one lowers it. It does not look at the rain to come, which is a separate setting.",
+        "forecast-days-help": "0: the zone waters what the weather actually took. 1: tomorrow is taken into account as well, 2: tomorrow and the day after, and so on. The hotter the days ahead, the more is watered today. This is not the rain skip, which is a setting of its own.",
         "fixed-amount": "Fixed amount",
         "engine-shared-help": "This setting is shared by every zone calculated the same way."
       },

@@ -95,6 +95,7 @@ from .const import (
     CONF_WEATHER_SERVICE_OWM,
     CONF_WIND_SENSOR,
     CONF_WIND_THRESHOLD,
+    CONF_ZONE_ENGINES_SPLIT,
     CONF_ZONE_SEQUENCING,
     DOMAIN,
     HISTORY_DURATION,
@@ -523,6 +524,9 @@ class Config:
     # "standard" or "advanced"; None until the first load decides (see
     # _async_choose_ui_mode).
     ui_mode = attr.ib(type=str, default=None)
+    # True once every zone has its own engine instance (see
+    # _async_split_engines_per_zone).
+    zone_engines_split = attr.ib(type=bool, default=False)
     # "metric" once the zones' values are stored in metric (see units.py);
     # None on an install that has not been through that migration yet.
     stored_units = attr.ib(type=str, default=None)
@@ -717,6 +721,55 @@ class SmartIrrigationStorage:
         await self._populate_from_data(data)
         await self._async_store_zones_in_metric()
         await self._async_choose_ui_mode()
+        await self._async_split_engines_per_zone()
+
+    async def _async_split_engines_per_zone(self) -> None:
+        """Give every zone its own engine instance, once.
+
+        An engine carries settings a zone owns: how many days it looks ahead,
+        the fixed amount it uses. While zones shared one instance, changing one
+        of those on a zone changed it on every other zone using the same
+        engine, silently. So each zone gets a copy of its own.
+
+        The engine each zone uses is first resolved the way the calculation
+        used to: the sensor group's when it had adopted one, the zone's
+        otherwise. Nothing therefore changes about what any zone computes; the
+        settings simply stop being shared.
+        """
+        if self.config.zone_engines_split:
+            self.config = attr.evolve(self.config, zone_engines_split=True)
+            return
+
+        taken: dict[int, int] = {}
+        for zone_id in sorted(self.zones):
+            zone = self.zones[zone_id]
+            module_id = zone.module
+            mapping = (
+                self.mappings.get(zone.mapping) if zone.mapping is not None else None
+            )
+            if mapping is not None and mapping.module is not None:
+                module_id = mapping.module
+            if module_id is None or module_id not in self.modules:
+                continue
+            if module_id not in taken:
+                taken[module_id] = zone_id
+                if zone.module != module_id:
+                    self.zones[zone_id] = attr.evolve(zone, module=module_id)
+                continue
+            source = self.modules[module_id]
+            copy = await self.async_create_module(
+                {
+                    MODULE_NAME: source.name,
+                    MODULE_DESCRIPTION: source.description,
+                    MODULE_CONFIG: dict(source.config or {}),
+                    MODULE_SCHEMA: source.schema,
+                }
+            )
+            self.zones[zone_id] = attr.evolve(zone, module=copy[MODULE_ID])
+            _LOGGER.debug("Zone %s now has its own %s engine", zone_id, source.name)
+
+        self.config = attr.evolve(self.config, zone_engines_split=True)
+        self.async_schedule_save()
 
     async def _async_choose_ui_mode(self) -> None:
         """Decide, once, how much of the panel this installation is shown.
@@ -844,6 +897,7 @@ class SmartIrrigationStorage:
                     CONF_HOURLY_CALCULATION, CONF_DEFAULT_HOURLY_CALCULATION
                 ),
                 ui_mode=data["config"].get(CONF_UI_MODE),
+                zone_engines_split=data["config"].get(CONF_ZONE_ENGINES_SPLIT, False),
                 stored_units=data["config"].get(CONF_STORED_UNITS),
                 sensor_debounce=data["config"].get(
                     CONF_SENSOR_DEBOUNCE, CONF_DEFAULT_SENSOR_DEBOUNCE

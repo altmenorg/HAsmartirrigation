@@ -32,6 +32,8 @@ export class SmartIrrigationConfig {
   autoclearenabled: boolean;
   continuousupdates: boolean;
   hourly_calculation: boolean;
+  /** How much of the panel is shown: "standard" or "advanced". */
+  ui_mode?: string;
   skip_on_freeze?: boolean;
   freeze_threshold?: number | null;
   freeze_sensor?: string | null;

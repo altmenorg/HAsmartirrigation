@@ -389,6 +389,12 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       } as SmartIrrigationZone);
 
     if (method === "from_weather") {
+      // Looking ahead is a decision almost nobody makes, and a confusing one
+      // to meet by accident, so the standard panel leaves it at zero and does
+      // not ask.
+      if (this.config?.ui_mode !== "advanced") {
+        return "";
+      }
       return html`
         ${this._numRow(
           localize("panels.zones.labels.forecast-days", lang),

@@ -197,3 +197,71 @@ async def test_each_method_binds_its_own_engine(method, engine):
 
     created = coordinator.store.async_create_module.call_args[0][0]
     assert created[const.MODULE_NAME] == engine
+
+
+# --- one engine per zone ----------------------------------------------------
+
+
+async def test_a_zone_keeps_its_own_engine_when_the_method_does_not_change():
+    """Its options are its own, so they are updated in place."""
+    own = {
+        const.MODULE_ID: 4,
+        const.MODULE_NAME: "PyETO",
+        const.MODULE_CONFIG: {"forecast_days": 0},
+    }
+    coordinator = _coordinator(modules=[own])
+    coordinator.store.get_zone = MagicMock(
+        return_value={**_zone(1), const.ZONE_MODULE: 4}
+    )
+    coordinator.store.get_module = MagicMock(return_value=own)
+
+    module_id = await coordinator.async_module_for_method(
+        METHOD_FROM_WEATHER, {"forecast_days": 2}, zone_id=1
+    )
+
+    assert module_id == 4
+    _id, changes = coordinator.store.async_update_module.call_args[0]
+    assert changes[const.MODULE_CONFIG]["forecast_days"] == 2
+    coordinator.store.async_create_module.assert_not_awaited()
+
+
+async def test_another_zone_on_the_same_kind_of_engine_gets_its_own():
+    """Otherwise a setting changed on one zone changes on the other."""
+    other = {
+        const.MODULE_ID: 4,
+        const.MODULE_NAME: "PyETO",
+        const.MODULE_CONFIG: {"forecast_days": 2},
+    }
+    coordinator = _coordinator(modules=[other])
+    # Zone 2 has no engine of its own yet.
+    coordinator.store.get_zone = MagicMock(return_value=_zone(2))
+    coordinator.store.get_module = MagicMock(return_value=None)
+
+    module_id = await coordinator.async_module_for_method(
+        METHOD_FROM_WEATHER, None, zone_id=2
+    )
+
+    assert module_id == 7
+    coordinator.store.async_create_module.assert_awaited_once()
+
+
+async def test_changing_the_method_gives_the_zone_the_other_engine():
+    own = {
+        const.MODULE_ID: 4,
+        const.MODULE_NAME: "PyETO",
+        const.MODULE_CONFIG: {},
+    }
+    coordinator = _coordinator(modules=[own])
+    coordinator.store.get_zone = MagicMock(
+        return_value={**_zone(1), const.ZONE_MODULE: 4}
+    )
+    coordinator.store.get_module = MagicMock(return_value=own)
+
+    module_id = await coordinator.async_module_for_method(
+        METHOD_FIXED, {"delta": 2.0}, zone_id=1
+    )
+
+    assert module_id == 7
+    created = coordinator.store.async_create_module.call_args[0][0]
+    assert created[const.MODULE_NAME] == "Static"
+    assert created[const.MODULE_CONFIG]["delta"] == 2.0

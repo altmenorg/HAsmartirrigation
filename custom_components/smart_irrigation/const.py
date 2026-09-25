@@ -272,6 +272,9 @@ CONF_DEFAULT_HOURLY_CALCULATION = False
 # installations never touch folded away; "advanced" shows everything, which is
 # what every install had until now and what they keep.
 CONF_UI_MODE = "ui_mode"
+# Set once every zone has been given its own engine instance, so a setting
+# that belongs to a zone stops being shared with the others.
+CONF_ZONE_ENGINES_SPLIT = "zone_engines_split"
 CONF_UI_MODE_STANDARD = "standard"
 CONF_UI_MODE_ADVANCED = "advanced"
 CONF_SENSOR_DEBOUNCE = "sensor_debounce"

@@ -68,21 +68,24 @@ class CalculationMixin:
     def module_id_for_zone(self, zone) -> int | None:
         """Which engine computes this zone's evapotranspiration.
 
-        The sensor group decides when it says so: "this group produces ET this
-        way" is a property of the group, not of every zone that happens to read
-        it, and it is what lets the editor show only the sources that engine
-        consumes.
+        The zone's own, because an engine carries settings a zone owns: how
+        many days it looks ahead, the fixed amount it uses. Sharing one
+        instance between zones made those settings change together behind the
+        user's back, which is why every zone has its own (engine_binding).
 
-        A group that has not adopted an engine, because its zones disagree or
-        because it predates the move, leaves the zone's own module in charge.
-        Nothing changes for those installs until the disagreement is resolved.
+        The sensor group is the fallback, for a zone that has none: a group
+        that adopted an engine still answers for the zones that never picked
+        one, which is what installs set up before this had.
         """
+        module_id = zone.get(const.ZONE_MODULE)
+        if module_id is not None:
+            return module_id
         mapping_id = zone.get(const.ZONE_MAPPING)
         if mapping_id is not None:
             mapping = self.store.get_mapping(mapping_id)
-            if mapping and mapping.get(const.MAPPING_MODULE) is not None:
+            if mapping:
                 return mapping.get(const.MAPPING_MODULE)
-        return zone.get(const.ZONE_MODULE)
+        return None
 
     @staticmethod
     def zone_window_start(zone):

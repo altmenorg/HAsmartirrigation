@@ -524,7 +524,7 @@
           "direct": "Pluviométrie de l'arrosage"
         },
         "forecast-days": "Anticiper les jours à venir",
-        "forecast-days-help": "0 : la zone arrose sur ce qui s'est passé. 1 ou plus : l'évapotranspiration prévue sur ce nombre de jours est moyennée avec celle du jour, donc un lendemain chaud augmente l'arrosage d'aujourd'hui et un lendemain frais le réduit. Ça ne regarde pas la pluie à venir, qui est un réglage à part.",
+        "forecast-days-help": "0 : la zone arrose ce que la météo a réellement pris. 1 : on tient compte aussi de demain, 2 : de demain et après-demain, et ainsi de suite. Plus les jours à venir sont chauds, plus on arrose aujourd'hui. Ce n'est pas le saut d'arrosage sur pluie prévue, qui est un réglage à part.",
         "fixed-amount": "Valeur fixe",
         "engine-shared-help": "Ce réglage est partagé par toutes les zones calculées de la même façon."
       },
