@@ -2,7 +2,9 @@
 layout: default
 title: Introduction
 ---
-# Smart Irrigation
+<p align="center">
+  <img src="assets/images/logo.png" alt="Smart Irrigation" width="720">
+</p>
 
 **Waters your garden with what the weather actually took out of it.**
 
