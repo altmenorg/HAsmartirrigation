@@ -77,6 +77,7 @@ from .const import (
     CONF_MANUAL_LONGITUDE,
     CONF_METRIC,
     CONF_OBSERVED_WATERING_ENABLED,
+    CONF_POSTPONE_UNTIL,
     CONF_PRECIPITATION_THRESHOLD_MM,
     CONF_RAIN_SENSOR,
     CONF_RECURRING_SCHEDULES,
@@ -527,6 +528,8 @@ class Config:
     # True once every zone has its own engine instance (see
     # _async_split_engines_per_zone).
     zone_engines_split = attr.ib(type=bool, default=False)
+    # Watering is postponed until this moment (ISO 8601), or None.
+    postpone_until = attr.ib(type=str, default=None)
     # "metric" once the zones' values are stored in metric (see units.py);
     # None on an install that has not been through that migration yet.
     stored_units = attr.ib(type=str, default=None)
@@ -898,6 +901,7 @@ class SmartIrrigationStorage:
                 ),
                 ui_mode=data["config"].get(CONF_UI_MODE),
                 zone_engines_split=data["config"].get(CONF_ZONE_ENGINES_SPLIT, False),
+                postpone_until=data["config"].get(CONF_POSTPONE_UNTIL),
                 stored_units=data["config"].get(CONF_STORED_UNITS),
                 sensor_debounce=data["config"].get(
                     CONF_SENSOR_DEBOUNCE, CONF_DEFAULT_SENSOR_DEBOUNCE

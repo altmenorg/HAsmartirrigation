@@ -249,6 +249,13 @@
             "continuousupdates": "Enable continuous updates",
             "sensor_debounce": "Sensor debounce"
           }
+        },
+        "panel-mode": {
+          "header": "Panel",
+          "labels": {
+            "advanced": "Advanced settings",
+            "advanced-hint": "Shows the settings that tune the model: drainage, thresholds, multiplier, how far ahead a zone looks. They have sound defaults; leave this off unless you know you need them. Your values are kept either way."
+          }
         }
       },
       "description": "This page provides global settings.",
@@ -288,7 +295,15 @@
           "accounts-for-duration": "counted back so the run finishes then",
           "starts-at-trigger": "starts at that moment",
           "sequencing-sequential": "one zone at a time, so the total is every zone added up",
-          "sequencing-parallel": "all zones at once, so the total is the longest zone"
+          "sequencing-parallel": "all zones at once, so the total is the longest zone",
+          "headline-nothing": "Nothing to water",
+          "sub-nothing": "No zone is short enough of water yet. The next start would be {start}.",
+          "headline-watering": "Watering {start}",
+          "headline-watering-soon": "Watering at the next start",
+          "sub-watering": "{count} zone(s), {duration} in all.",
+          "headline-postponed": "Watering is held back",
+          "sub-postponed": "You postponed it. It resumes by itself, and nothing is lost: a zone that is short of water still is.",
+          "headline-skipped": "No watering today"
         },
         "decision": {
           "title": "Will it be skipped?",
@@ -318,7 +333,8 @@
           "detail-weather-service": "weather service",
           "detail-raining": "It is raining",
           "detail-dry": "Not raining",
-          "detail-held": "sits out this run"
+          "detail-held": "sits out this run",
+          "check-postponed": "Postponed by you"
         },
         "estimate": {
           "title": "Where each zone stands now",
@@ -332,6 +348,27 @@
           },
           "nothing": "nothing",
           "never-watered": "never"
+        },
+        "postpone": {
+          "prompt": "Rain the forecast missed, or a reason of your own?",
+          "for-24": "Hold for 24 h",
+          "for-48": "Hold for 48 h",
+          "until": "Watering is held back until",
+          "resume": "Resume now"
+        }
+      },
+      "gaps": {
+        "auto_calc_off": {
+          "title": "Nothing is being calculated",
+          "body": "Automatic duration calculation is off, so the zones' durations never update. Turn it back on under Settings, or calculate by hand when you want a run."
+        },
+        "no_automatic_zone": {
+          "title": "No zone waters on its own",
+          "body": "Every zone is manual or disabled, so a start reaches nothing. Set a zone to automatic for it to be watered by the schedule."
+        },
+        "no_valve_path": {
+          "title": "Nothing here opens a valve",
+          "body": "Smart Irrigation calculates how long to water; something has to act on it. Either link a valve to a zone and turn on direct valve control, or write an automation on the start event (the blueprints do this for you). If an automation already does it, there is nothing to change."
         }
       }
     },

@@ -34,6 +34,7 @@ async def test_nothing_configured_vetoes_nothing():
     assert evaluation["should_skip"] is False
     assert evaluation["reason"] is None
     assert {c["id"] for c in evaluation["checks"]} == {
+        "postponed",
         "rain_sensor",
         "freeze",
         "wind",

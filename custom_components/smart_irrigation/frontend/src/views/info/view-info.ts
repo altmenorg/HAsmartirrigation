@@ -108,8 +108,8 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
     return this.hass?.language ?? "en";
   }
 
-  private t(key: string): string {
-    return localize(`panels.info.${key}`, this._lang);
+  private t(key: string, ...args: any[]): string {
+    return localize(`panels.info.${key}`, this._lang, ...args);
   }
 
   /** Seconds as something a person reads, not a raw count. */
@@ -159,73 +159,184 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
         <div class="card-content">${this.t("description")}</div>
       </ha-card>
 
+      ${this.renderPostpone()} ${this.renderDeliveryGap()}
       ${this.renderNextRun()} ${this.renderDecision()} ${this.renderEstimates()}
     `;
   }
 
-  /** When the next run starts, why then, how long, and which zones. */
+  /**
+   * Hold watering back for a day or two, and lift it.
+   *
+   * Rain the forecast missed, a party on the lawn, a repair: the reasons are
+   * the user's, and the answer used to be turning every zone off, which is
+   * easy to do and easy to forget. A postponement ends by itself.
+   */
+  private renderPostpone(): TemplateResult {
+    const postponed = (this.info as any)?.skip_preview?.checks?.find(
+      (check: any) => check.id === "postponed" && check.skip,
+    );
+    return html`
+      <ha-card>
+        <div class="card-content postpone">
+          ${postponed
+            ? html`
+                <ha-icon icon="mdi:pause-circle-outline"></ha-icon>
+                <span class="postpone-state">
+                  ${this.t("cards.postpone.until")}
+                  ${localizedDateTime(postponed.until, this.hass, {
+                    weekday: "short",
+                    day: "numeric",
+                    month: "short",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+                <ha-button @click=${() => this.resumeIrrigation()}>
+                  ${this.t("cards.postpone.resume")}
+                </ha-button>
+              `
+            : html`
+                <ha-icon icon="mdi:weather-pouring"></ha-icon>
+                <span class="postpone-state">
+                  ${this.t("cards.postpone.prompt")}
+                </span>
+                <ha-button @click=${() => this.postponeIrrigation(24)}>
+                  ${this.t("cards.postpone.for-24")}
+                </ha-button>
+                <ha-button @click=${() => this.postponeIrrigation(48)}>
+                  ${this.t("cards.postpone.for-48")}
+                </ha-button>
+              `}
+        </div>
+      </ha-card>
+    `;
+  }
+
+  private async postponeIrrigation(hours: number): Promise<void> {
+    await this.hass!.callService("smart_irrigation", "postpone_irrigation", {
+      hours,
+    });
+    await this._fetchData();
+  }
+
+  private async resumeIrrigation(): Promise<void> {
+    await this.hass!.callService("smart_irrigation", "resume_irrigation", {});
+    await this._fetchData();
+  }
+
+  /**
+   * Why nothing would water, when that is the case.
+   *
+   * An installation can be set up correctly, update its durations every night
+   * and never open a valve, without a single error anywhere: this integration
+   * calculates, and something else acts on the result. That is the most
+   * expensive thing to get wrong here, because everything looks right, so it
+   * is said at the top of the page that answers "what is about to happen".
+   */
+  private renderDeliveryGap(): TemplateResult | string {
+    const gap = (this.info as any)?.delivery_gap;
+    if (!gap) return "";
+    return html`
+      <ha-card>
+        <div class="card-content gap-banner">
+          <ha-icon icon="mdi:water-alert-outline"></ha-icon>
+          <div>
+            <div class="gap-title">${this.t(`gaps.${gap}.title`)}</div>
+            <div class="info-note">${this.t(`gaps.${gap}.body`)}</div>
+          </div>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  /**
+   * One sentence for what is about to happen, then the detail.
+   *
+   * This used to be four rows of label and value, which managed to say "next
+   * run tomorrow at 07:58" and "nothing to water" at the same time: both were
+   * true (the trigger fires daily, no zone is short of water) and together
+   * they were nonsense. So the page answers with one line, chosen in the order
+   * that matters: held back by you, held back by the weather, watering, or
+   * nothing to water, and the trigger is the detail underneath.
+   */
   private renderNextRun(): TemplateResult {
     const info = this.info;
     const zones = info?.next_irrigation_zones ?? [];
+    const seconds = info?.next_irrigation_duration ?? 0;
+    const postponed = (info as any)?.skip_preview?.checks?.find(
+      (check: any) => check.id === "postponed" && check.skip,
+    );
+    const skipped = info?.skip_preview?.should_skip
+      ? info?.skip_preview?.reason
+      : null;
+    const start = info?.next_irrigation_start
+      ? localizedDateTime(info.next_irrigation_start, this.hass, {
+          weekday: "long",
+          day: "numeric",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : null;
+
+    let icon = "mdi:water-off-outline";
+    let headline = this.t("cards.next-run.headline-nothing");
+    let sub = start
+      ? this.t("cards.next-run.sub-nothing", "{start}", start)
+      : this.t("cards.next-run.no-start");
+
+    if (postponed) {
+      icon = "mdi:pause-circle-outline";
+      headline = this.t("cards.next-run.headline-postponed");
+      sub = this.t("cards.next-run.sub-postponed");
+    } else if (skipped && skipped !== "postponed") {
+      icon = "mdi:calendar-remove-outline";
+      headline = this.t("cards.next-run.headline-skipped");
+      sub = this.t(`cards.decision.check-${skipped}`);
+    } else if (zones.length && seconds > 0) {
+      icon = "mdi:water-outline";
+      headline = start
+        ? this.t("cards.next-run.headline-watering", "{start}", start)
+        : this.t("cards.next-run.headline-watering-soon");
+      sub = this.t(
+        "cards.next-run.sub-watering",
+        "{count}",
+        String(zones.length),
+        "{duration}",
+        this.formatDuration(seconds),
+      );
+    }
 
     return html`
-      <ha-card header="${this.t("cards.next-run.title")}">
-        <div class="card-content">
-          ${info?.next_irrigation_start
-            ? html`
-                <div class="info-item">
-                  <label>${this.t("cards.next-run.labels.start")}</label>
-                  <span class="value"
-                    >${localizedDateTime(
-                      info.next_irrigation_start,
-                      this.hass,
-                      {
-                        weekday: "short",
-                        day: "numeric",
-                        month: "short",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      },
-                    )}</span
-                  >
-                </div>
-                <div class="info-item">
-                  <label>${this.t("cards.next-run.labels.trigger")}</label>
-                  <span class="value"
-                    >${info.trigger_name ??
-                    this.t("cards.next-run.trigger-default")}</span
-                  >
-                </div>
-                <div class="info-note">
-                  ${info.trigger_accounts_for_duration
-                    ? this.t("cards.next-run.accounts-for-duration")
-                    : this.t("cards.next-run.starts-at-trigger")}
-                </div>
-              `
-            : html`<div class="info-note">
-                ${this.t("cards.next-run.no-start")}
-              </div>`}
-
-          <div class="info-item">
-            <label>${this.t("cards.next-run.labels.duration")}</label>
-            <span class="value"
-              >${this.formatDuration(info?.next_irrigation_duration)}</span
-            >
+      <ha-card>
+        <div class="card-content hero">
+          <ha-icon icon=${icon}></ha-icon>
+          <div class="hero-text">
+            <div class="hero-headline">${headline}</div>
+            <div class="hero-sub">${sub}</div>
           </div>
-          ${info?.zone_sequencing
-            ? html`<div class="info-note">
-                ${this.t(`cards.next-run.sequencing-${info.zone_sequencing}`)}
-              </div>`
+        </div>
+        <div class="card-content hero-detail">
+          <span>
+            ${this.t("cards.next-run.labels.trigger")}:
+            ${info?.trigger_name ?? this.t("cards.next-run.trigger-default")}
+            ${info?.trigger_accounts_for_duration
+              ? `(${this.t("cards.next-run.accounts-for-duration")})`
+              : ""}
+          </span>
+          ${zones.length
+            ? html`<span
+                >${this.t("cards.next-run.labels.zones")}:
+                ${zones.join(", ")}</span
+              >`
             : ""}
-
-          <div class="info-item">
-            <label>${this.t("cards.next-run.labels.zones")}</label>
-            <span class="value"
-              >${zones.length
-                ? zones.join(", ")
-                : this.t("cards.next-run.nothing-to-water")}</span
-            >
-          </div>
+          ${info?.zone_sequencing
+            ? html`<span
+                >${this.t(
+                  `cards.next-run.sequencing-${info.zone_sequencing}`,
+                )}</span
+              >`
+            : ""}
         </div>
       </ha-card>
     `;
@@ -478,6 +589,43 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       }
 
       /* label left, value right, matching .setting-row elsewhere */
+      /* One sentence, said the way a person would say it. */
+      .hero {
+        /* The shared .card-content stacks its children, which put the icon on
+           a line of its own. */
+        flex-direction: row;
+        gap: 16px;
+        align-items: flex-start;
+      }
+
+      .hero ha-icon {
+        --mdc-icon-size: 32px;
+        color: var(--primary-color);
+        flex: none;
+        margin-top: 2px;
+      }
+
+      .hero-headline {
+        font-size: 1.35em;
+        font-weight: 400;
+        line-height: 1.3;
+      }
+
+      .hero-sub {
+        color: var(--secondary-text-color);
+        margin-top: 4px;
+      }
+
+      /* The trigger and the zones: true, and nobody's first question. */
+      .hero-detail {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px 20px;
+        padding-top: 0;
+        color: var(--secondary-text-color);
+        font-size: 0.9em;
+      }
+
       .info-item {
         display: flex;
         align-items: center;
@@ -497,6 +645,38 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
 
       /* A remark under a value, not an alert: the shared style paints
          .info-note as a warning banner, which read as something wrong. */
+      .postpone {
+        flex-direction: row;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .postpone ha-icon {
+        color: var(--secondary-text-color);
+        flex: none;
+      }
+
+      .postpone-state {
+        flex: 1;
+        min-width: 180px;
+      }
+
+      .gap-banner {
+        flex-direction: row;
+        gap: 12px;
+        align-items: flex-start;
+      }
+
+      .gap-banner ha-icon {
+        color: var(--warning-color, #ffa600);
+        flex: none;
+      }
+
+      .gap-title {
+        font-weight: 500;
+      }
+
       .info-note {
         background: none;
         padding: 0;

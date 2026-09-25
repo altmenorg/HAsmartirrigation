@@ -247,6 +247,13 @@
             "continuousupdates": "Activer les mises à jour continues",
             "sensor_debounce": "Anti-rebond capteur"
           }
+        },
+        "panel-mode": {
+          "header": "Panneau",
+          "labels": {
+            "advanced": "Réglages avancés",
+            "advanced-hint": "Affiche les réglages qui ajustent le modèle : drainage, seuils, multiplicateur, anticipation des jours à venir. Leurs valeurs par défaut sont saines, laissez éteint tant que vous n'en avez pas besoin. Vos valeurs sont conservées dans tous les cas."
+          }
         }
       },
       "description": "Cette page fournit les réglages globaux.",
@@ -286,7 +293,15 @@
           "accounts-for-duration": "calculé à rebours pour finir à ce moment",
           "starts-at-trigger": "démarre à ce moment",
           "sequencing-sequential": "une zone à la fois, le total est donc la somme des zones",
-          "sequencing-parallel": "toutes les zones à la fois, le total est donc la zone la plus longue"
+          "sequencing-parallel": "toutes les zones à la fois, le total est donc la zone la plus longue",
+          "headline-nothing": "Rien à arroser",
+          "sub-nothing": "Aucune zone n'est assez en déficit. Le prochain départ serait {start}.",
+          "headline-watering": "Arrosage {start}",
+          "headline-watering-soon": "Arrosage au prochain départ",
+          "sub-watering": "{count} zone(s), {duration} en tout.",
+          "headline-postponed": "Arrosage reporté",
+          "sub-postponed": "Vous l'avez reporté. Il reprend tout seul, et rien n'est perdu : une zone en déficit le reste.",
+          "headline-skipped": "Pas d'arrosage aujourd'hui"
         },
         "decision": {
           "title": "L'arrosage sera-t-il annulé ?",
@@ -316,7 +331,8 @@
           "detail-weather-service": "service météo",
           "detail-raining": "Il pleut",
           "detail-dry": "Il ne pleut pas",
-          "detail-held": "n'arrose pas cette fois"
+          "detail-held": "n'arrose pas cette fois",
+          "check-postponed": "Reporté par vous"
         },
         "estimate": {
           "title": "Où en est chaque zone",
@@ -330,6 +346,27 @@
           },
           "nothing": "rien",
           "never-watered": "jamais"
+        },
+        "postpone": {
+          "prompt": "Une pluie que la prévision a ratée, ou une raison à vous ?",
+          "for-24": "Reporter de 24 h",
+          "for-48": "Reporter de 48 h",
+          "until": "Arrosage reporté jusqu'au",
+          "resume": "Reprendre maintenant"
+        }
+      },
+      "gaps": {
+        "auto_calc_off": {
+          "title": "Rien n'est calculé",
+          "body": "Le calcul automatique des durées est désactivé, donc les durées des zones ne bougent plus. Réactivez-le dans les réglages, ou calculez à la main quand vous voulez arroser."
+        },
+        "no_automatic_zone": {
+          "title": "Aucune zone ne s'arrose toute seule",
+          "body": "Toutes les zones sont en manuel ou désactivées, donc un départ n'atteint personne. Passez une zone en automatique pour qu'elle soit arrosée par la programmation."
+        },
+        "no_valve_path": {
+          "title": "Rien ici n'ouvre de vanne",
+          "body": "Smart Irrigation calcule la durée d'arrosage ; il faut que quelque chose l'exécute. Soit vous liez une vanne à une zone et activez le pilotage direct, soit vous écrivez une automatisation sur l'événement de départ (les blueprints le font pour vous). Si une automatisation le fait déjà, il n'y a rien à changer."
         }
       }
     },

@@ -9,6 +9,7 @@ mixin the coordinator inherits; their bodies are unchanged and still use
 
 import logging
 
+import homeassistant.util.dt as dt_util
 from homeassistant.const import UnitOfSpeed, UnitOfTemperature
 from homeassistant.util.unit_conversion import SpeedConverter, TemperatureConverter
 from homeassistant.util.unit_system import METRIC_SYSTEM
@@ -114,6 +115,8 @@ class SkipConditionsMixin:
         # calendar: the first check that vetoes is the reason given, and "it is
         # raining" is a better answer than "it will rain".
         checks = [
+            # First, because it is the user saying "not now" in as many words.
+            await self._guarded("postponed", self._evaluate_postponed),
             await self._guarded("rain_sensor", self._evaluate_rain_sensor),
             await self._guarded("freeze", self._evaluate_freeze),
             await self._guarded("wind", self._evaluate_wind),
@@ -525,6 +528,33 @@ class SkipConditionsMixin:
         """Zone ids whose soil is moist enough to sit out this run."""
         report = await self._evaluate_soil_moisture()
         return {entry["zone_id"] for entry in report["zones"] if entry["held"]}
+
+    async def _evaluate_postponed(self) -> dict:
+        """Report the postponement the user asked for, if it still holds.
+
+        A postponement is a moment, not a countdown: it survives a restart, and
+        it ends by itself. Nothing is cleared when it ends, so a zone that was
+        short of water still is, and the next run makes it up.
+        """
+        result = {
+            "id": "postponed",
+            "enabled": False,
+            "available": True,
+            "skip": False,
+            "until": None,
+        }
+        config = await self.store.async_get_config()
+        until = config.get(const.CONF_POSTPONE_UNTIL)
+        if not until:
+            return result
+        moment = dt_util.parse_datetime(until)
+        if moment is None:
+            _LOGGER.warning("Unreadable postponement moment: %s", until)
+            return result
+        result["enabled"] = True
+        result["until"] = until
+        result["skip"] = dt_util.utcnow() < dt_util.as_utc(moment)
+        return result
 
     async def _evaluate_days_between_irrigation(self) -> dict:
         """Report the days-between-irrigation guard."""

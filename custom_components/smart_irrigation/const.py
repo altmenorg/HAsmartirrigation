@@ -275,6 +275,13 @@ CONF_UI_MODE = "ui_mode"
 # Set once every zone has been given its own engine instance, so a setting
 # that belongs to a zone stops being shared with the others.
 CONF_ZONE_ENGINES_SPLIT = "zone_engines_split"
+# Watering is postponed until this moment (ISO 8601). Rain that the forecast
+# missed, a party on the lawn, a repair: the reasons are the user's, and the
+# answer is one button rather than turning zones off and forgetting them on.
+CONF_POSTPONE_UNTIL = "postpone_until"
+SERVICE_POSTPONE_IRRIGATION = "postpone_irrigation"
+SERVICE_RESUME_IRRIGATION = "resume_irrigation"
+ATTR_HOURS = "hours"
 CONF_UI_MODE_STANDARD = "standard"
 CONF_UI_MODE_ADVANCED = "advanced"
 CONF_SENSOR_DEBOUNCE = "sensor_debounce"

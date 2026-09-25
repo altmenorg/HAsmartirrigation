@@ -11,8 +11,9 @@ a mixin the coordinator inherits; their bodies are unchanged and still use
 
 import logging
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
+import homeassistant.util.dt as dt_util
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
@@ -148,6 +149,35 @@ class ServiceHandlersMixin:
                         data = {}
                         data[const.ATTR_UPDATE] = const.ATTR_UPDATE
                         await self.async_update_zone_config(zone_id=zone_id, data=data)
+
+    async def handle_postpone_irrigation(self, call):
+        """Hold watering back for a while, then let it resume by itself.
+
+        A postponement is a moment, not a countdown, so it survives a restart
+        and ends on its own. Nothing is reset: a zone that is short of water
+        still is when it ends, and the next run makes it up.
+        """
+        hours = call.data.get(const.ATTR_HOURS, 24)
+        try:
+            hours = float(hours)
+        except (TypeError, ValueError):
+            _LOGGER.warning("postpone_irrigation called with %s hours", hours)
+            return
+        if hours <= 0:
+            await self.handle_resume_irrigation(call)
+            return
+        until = dt_util.utcnow() + timedelta(hours=hours)
+        await self.store.async_update_config(
+            {const.CONF_POSTPONE_UNTIL: until.isoformat()}
+        )
+        _LOGGER.info("Irrigation postponed until %s", until.isoformat())
+        async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated")
+
+    async def handle_resume_irrigation(self, _call=None):
+        """Lift a postponement, whatever is left of it."""
+        await self.store.async_update_config({const.CONF_POSTPONE_UNTIL: None})
+        _LOGGER.info("Irrigation resumed")
+        async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated")
 
     async def handle_reset_bucket(self, call):
         """Reset a specific zone bucket to 0."""

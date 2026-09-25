@@ -24,6 +24,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
 from .calcmodules.consumes import consumed_mappings, idle_options
+from .delivery import delivery_gap
 from .engine_binding import ENGINE_BY_METHOD, method_of_engine
 from .skip_conditions import thresholds_for_display
 from .units import zone_from_display, zone_to_display
@@ -842,6 +843,9 @@ async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
             "zone_estimates": zone_estimates,
             "skip_preview": skip_preview,
             "last_skip_evaluation": last_skip_evaluation,
+            # Why nothing would water, when that is the case. See
+            # delivery_gap().
+            "delivery_gap": delivery_gap(config, zones),
         }
 
         _LOGGER.debug("Irrigation info calculated: %s", irrigation_info)

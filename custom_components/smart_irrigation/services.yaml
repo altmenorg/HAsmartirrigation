@@ -381,3 +381,25 @@ send_zone_data_to_irrigation_unlimited:
 get_irrigation_unlimited_status:
   name: Get Irrigation Unlimited status
   description: Get the current status of Irrigation Unlimited entities and schedules.
+postpone_irrigation:
+  name: Postpone irrigation
+  description: >-
+    Hold watering back for a while, then let it resume by itself. Nothing is
+    reset: a zone that is short of water still is when the postponement ends,
+    and the next run makes it up.
+  fields:
+    hours:
+      name: Hours
+      description: How long to hold watering back. Zero lifts a postponement.
+      required: false
+      default: 24
+      example: 48
+      selector:
+        number:
+          min: 0
+          max: 336
+          step: 1
+          unit_of_measurement: h
+resume_irrigation:
+  name: Resume irrigation
+  description: Lift a postponement, whatever is left of it.
