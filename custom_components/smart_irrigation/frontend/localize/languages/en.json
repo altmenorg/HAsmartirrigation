@@ -538,6 +538,12 @@
         "per-zone-title": "Water used per day, per zone (last 30 days)",
         "no-data": "No water was used in this period."
       }
+    },
+    "groups": {
+      "home": "Home",
+      "zones": "Zones",
+      "weather": "Weather",
+      "settings": "Settings"
     }
   },
   "title": "Smart Irrigation",

@@ -530,6 +530,12 @@
         "per-zone-title": "Eau utilisée par jour et par zone (30 derniers jours)",
         "no-data": "Aucune eau utilisée sur cette période."
       }
+    },
+    "groups": {
+      "home": "Accueil",
+      "zones": "Zones",
+      "weather": "Météo",
+      "settings": "Réglages"
     }
   },
   "title": "Smart Irrigation",

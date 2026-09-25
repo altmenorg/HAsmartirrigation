@@ -32,6 +32,42 @@ enum EMenuItems {
   Help = "help",
 }
 
+/**
+ * The ten pages, in four groups.
+ *
+ * Ten tabs is a wall: it asks a newcomer to know what a "module" is before
+ * they can decide which tab to open, and it hides the two pages people look at
+ * daily among eight they visit twice a year. The pages themselves do not
+ * change, nor do their addresses: a group opens its first page, and a group
+ * with several shows them on a second row.
+ */
+const TAB_GROUPS: { id: string; pages: EMenuItems[] }[] = [
+  // What is happening: the next run, and what already ran.
+  { id: "home", pages: [EMenuItems.Info, EMenuItems.History] },
+  // What is watered.
+  { id: "zones", pages: [EMenuItems.Zones] },
+  // Where the numbers come from: the service, the groups, the engines.
+  {
+    id: "weather",
+    pages: [EMenuItems.WeatherService, EMenuItems.Mappings, EMenuItems.Modules],
+  },
+  // Everything you set once.
+  {
+    id: "settings",
+    pages: [
+      EMenuItems.General,
+      EMenuItems.Setup,
+      EMenuItems.BackupRestore,
+      EMenuItems.Help,
+    ],
+  },
+];
+
+/** The group a page belongs to, falling back to the first one. */
+const groupOf = (page: string): { id: string; pages: EMenuItems[] } =>
+  TAB_GROUPS.find((group) => (group.pages as string[]).includes(page)) ??
+  TAB_GROUPS[0];
+
 @customElement("smart-irrigation")
 export class SmartIrrigationPanel extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -108,14 +144,17 @@ export class SmartIrrigationPanel extends LitElement {
         ${hasTabGroup && hasTabGroupTab
           ? html`
               <ha-tab-group @wa-tab-show=${this.handlePageSelected}>
-                ${Object.values(EMenuItems).map(
-                  (e) => html`
+                ${TAB_GROUPS.map(
+                  (group) => html`
                     <ha-tab-group-tab
                       slot="nav"
-                      panel="${e}"
-                      .active=${path.page === e}
+                      panel="${group.pages[0]}"
+                      .active=${groupOf(path.page).id === group.id}
                     >
-                      ${localize(`panels.${e}.title`, this.hass.language)}
+                      ${localize(
+                        `panels.groups.${group.id}`,
+                        this.hass.language,
+                      )}
                     </ha-tab-group-tab>
                   `,
                 )}
@@ -123,20 +162,48 @@ export class SmartIrrigationPanel extends LitElement {
             `
           : html`
               <div class="custom-tabs">
-                ${Object.values(EMenuItems).map(
-                  (e) => html`
+                ${TAB_GROUPS.map(
+                  (group) => html`
                     <button
-                      class="custom-tab ${path.page === e ? "active" : ""}"
-                      @click=${() => this.navigateToPage(e)}
+                      class="custom-tab ${groupOf(path.page).id === group.id
+                        ? "active"
+                        : ""}"
+                      @click=${() => this.navigateToPage(group.pages[0])}
                     >
-                      ${localize(`panels.${e}.title`, this.hass.language)}
+                      ${localize(
+                        `panels.groups.${group.id}`,
+                        this.hass.language,
+                      )}
                     </button>
                   `,
                 )}
               </div>
             `}
+        ${this.renderSubTabs(path.page)}
       </div>
       <div class="view">${this.getView(path)}</div>
+    `;
+  }
+
+  /** The pages of the current group, when it holds more than one. */
+  renderSubTabs(page: string) {
+    const group = groupOf(page);
+    if (group.pages.length < 2) {
+      return "";
+    }
+    return html`
+      <div class="sub-tabs">
+        ${group.pages.map(
+          (sub) => html`
+            <button
+              class="sub-tab ${page === sub ? "active" : ""}"
+              @click=${() => this.navigateToPage(sub)}
+            >
+              ${localize(`panels.${sub}.title`, this.hass.language)}
+            </button>
+          `,
+        )}
+      </div>
     `;
   }
 
@@ -383,6 +450,46 @@ export class SmartIrrigationPanel extends LitElement {
           left: 0;
           position: absolute;
           right: 0;
+        }
+
+        /* The pages of the group that is open. It sits below the header, on
+           the page's own background, so it takes the page's colours: the
+           header's are white on white here. A quieter row than the tabs above
+           it, because this says where you are inside a section rather than
+           offering a choice between sections. */
+        .sub-tabs {
+          display: flex;
+          gap: 8px;
+          padding: 8px max(env(safe-area-inset-left), 24px);
+          background: var(
+            --card-background-color,
+            var(--primary-background-color)
+          );
+          border-bottom: 1px solid var(--divider-color);
+          overflow-x: auto;
+        }
+
+        .sub-tab {
+          background: var(--secondary-background-color, rgba(0, 0, 0, 0.05));
+          border: none;
+          border-radius: 16px;
+          color: var(--secondary-text-color);
+          cursor: pointer;
+          font-family: inherit;
+          font-size: 13px;
+          line-height: 30px;
+          padding: 0 16px;
+          white-space: nowrap;
+        }
+
+        .sub-tab:hover {
+          color: var(--primary-text-color);
+        }
+
+        .sub-tab.active {
+          background: var(--primary-color);
+          color: var(--text-primary-color, white);
+          font-weight: 500;
         }
 
         .view {
