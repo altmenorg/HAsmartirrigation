@@ -367,6 +367,11 @@ ZONE_EXPLANATION = "explanation"
 ZONE_MULTIPLIER = "multiplier"
 ZONE_THROUGHPUT = "throughput"
 ZONE_MAPPING = "mapping"
+# What the zone is made of and what grows in it, in words. They stand for the
+# drainage rate and the crop coefficient, which is what the calculation reads
+# (see presets.py).
+ZONE_SOIL_TYPE = "soil_type"
+ZONE_PLANT_TYPE = "plant_type"
 ZONE_LEAD_TIME = "lead_time"
 ZONE_MAXIMUM_DURATION = "maximum_duration"
 ZONE_MAXIMUM_BUCKET = "maximum_bucket"

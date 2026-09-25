@@ -87,6 +87,27 @@ import {
 } from "../../const";
 import moment, { Moment } from "moment";
 
+/** The soils and plantings the panel offers, in the order it offers them. */
+const SOIL_TYPES = [
+  "sand",
+  "sandy_loam",
+  "loam",
+  "clay_loam",
+  "clay",
+  "custom",
+];
+const PLANT_TYPES = [
+  "lawn",
+  "vegetables",
+  "flowers",
+  "shrubs",
+  "hedge",
+  "fruit_trees",
+  "vines",
+  "ground_cover",
+  "custom",
+];
+
 @customElement("smart-irrigation-view-zones")
 class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
   hass?: HomeAssistant;
@@ -1218,6 +1239,54 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                         0.1,
                       )}
                     `}
+                ${this._selectRow(
+                  localize("panels.zones.labels.soil-type", lang),
+                  html`
+                    ${SOIL_TYPES.map(
+                      (soil) => html`
+                        <option
+                          value="${soil}"
+                          ?selected=${(zone.soil_type ?? "custom") === soil}
+                        >
+                          ${localize(
+                            `panels.zones.labels.soil-types.${soil}`,
+                            lang,
+                          )}
+                        </option>
+                      `,
+                    )}
+                  `,
+                  (e: Event) =>
+                    this.handleEditZone(index, {
+                      ...zone,
+                      // The number the choice stands for is written server
+                      // side, and comes back on the next read.
+                      soil_type: (e.target as HTMLSelectElement).value,
+                    } as SmartIrrigationZone),
+                )}
+                ${this._selectRow(
+                  localize("panels.zones.labels.plant-type", lang),
+                  html`
+                    ${PLANT_TYPES.map(
+                      (plant) => html`
+                        <option
+                          value="${plant}"
+                          ?selected=${(zone.plant_type ?? "custom") === plant}
+                        >
+                          ${localize(
+                            `panels.zones.labels.plant-types.${plant}`,
+                            lang,
+                          )}
+                        </option>
+                      `,
+                    )}
+                  `,
+                  (e: Event) =>
+                    this.handleEditZone(index, {
+                      ...zone,
+                      plant_type: (e.target as HTMLSelectElement).value,
+                    } as SmartIrrigationZone),
+                )}
                 ${this._adv(
                   this._numRow(
                     localize("panels.zones.labels.drainage_rate", lang),

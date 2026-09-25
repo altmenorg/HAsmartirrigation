@@ -566,7 +566,28 @@
         "forecast-days": "Look ahead",
         "forecast-days-help": "0: the zone waters what the weather actually took. 1: tomorrow is taken into account as well, 2: tomorrow and the day after, and so on. The hotter the days ahead, the more is watered today. This is not the rain skip, which is a setting of its own.",
         "fixed-amount": "Fixed amount",
-        "engine-shared-help": "This setting is shared by every zone calculated the same way."
+        "engine-shared-help": "This setting is shared by every zone calculated the same way.",
+        "soil-type": "Soil",
+        "plant-type": "What grows here",
+        "soil-types": {
+          "sand": "Sandy",
+          "sandy_loam": "Sandy loam",
+          "loam": "Loam",
+          "clay_loam": "Clay loam",
+          "clay": "Clay",
+          "custom": "I set the drainage rate myself"
+        },
+        "plant-types": {
+          "lawn": "Lawn",
+          "vegetables": "Vegetables",
+          "flowers": "Flowers",
+          "shrubs": "Shrubs",
+          "hedge": "Hedge",
+          "fruit_trees": "Fruit trees",
+          "vines": "Vines",
+          "ground_cover": "Ground cover",
+          "custom": "I set the crop coefficient myself"
+        }
       },
       "no_items": "There are no zones defined yet.",
       "title": "Zones",

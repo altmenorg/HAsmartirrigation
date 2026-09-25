@@ -172,11 +172,13 @@ from .const import (
     ZONE_MULTIPLIER,
     ZONE_NAME,
     ZONE_NUMBER_OF_DATA_POINTS,
+    ZONE_PLANT_TYPE,
     ZONE_PRECIPITATION_RATE,
     ZONE_PRECIPITATION_SUPERSEDED,
     ZONE_SIZE,
     ZONE_SOIL_MOISTURE_SENSOR,
     ZONE_SOIL_MOISTURE_THRESHOLD,
+    ZONE_SOIL_TYPE,
     ZONE_STATE,
     ZONE_STATE_AUTOMATIC,
     ZONE_THROUGHPUT,
@@ -238,6 +240,10 @@ class ZoneEntry:
     multiplier = attr.ib(type=float, default=1)
     explanation = attr.ib(type=str, default=None)
     mapping = attr.ib(type=str, default=None)
+    # The soil and the planting these zones were described by, when they were
+    # (see presets.py). The numbers they stand for are what is calculated with.
+    soil_type = attr.ib(type=str, default=None)
+    plant_type = attr.ib(type=str, default=None)
     lead_time = attr.ib(type=float, default=None)
     maximum_duration = attr.ib(type=float, default=CONF_DEFAULT_MAXIMUM_DURATION)
     maximum_bucket = attr.ib(type=float, default=CONF_DEFAULT_MAXIMUM_BUCKET)
@@ -995,6 +1001,8 @@ class SmartIrrigationStorage:
                         module=zone[ZONE_MODULE],
                         multiplier=zone[ZONE_MULTIPLIER],
                         mapping=zone[ZONE_MAPPING],
+                        soil_type=zone.get(ZONE_SOIL_TYPE),
+                        plant_type=zone.get(ZONE_PLANT_TYPE),
                         lead_time=zone[ZONE_LEAD_TIME],
                         maximum_duration=zone.get(
                             ZONE_MAXIMUM_DURATION, CONF_DEFAULT_MAXIMUM_DURATION

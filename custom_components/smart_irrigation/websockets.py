@@ -26,6 +26,7 @@ from . import const
 from .calcmodules.consumes import consumed_mappings, idle_options
 from .delivery import delivery_gap
 from .engine_binding import ENGINE_BY_METHOD, method_of_engine
+from .presets import apply_preset, describe_zone
 from .skip_conditions import thresholds_for_display
 from .units import zone_from_display, zone_to_display
 
@@ -310,6 +311,8 @@ class SmartIrrigationZoneView(HomeAssistantView):
                 vol.Optional(const.ZONE_MULTIPLIER): vol.Coerce(float),
                 vol.Optional(const.ZONE_MAPPING): vol.Or(int, str, None),
                 vol.Optional(const.ZONE_LEAD_TIME): vol.Coerce(float),
+                vol.Optional(const.ZONE_SOIL_TYPE): vol.Any(str, None),
+                vol.Optional(const.ZONE_PLANT_TYPE): vol.Any(str, None),
                 vol.Optional(const.ZONE_MAXIMUM_DURATION): vol.Coerce(float),
                 vol.Optional(const.ZONE_MAXIMUM_BUCKET): vol.Or(float, int, None),
                 vol.Optional(const.ZONE_LAST_CALCULATED): vol.Or(
@@ -359,6 +362,9 @@ class SmartIrrigationZoneView(HomeAssistantView):
         # "How is this zone calculated" is answered in the panel's words; the
         # engine it implies is bound after the zone exists, since a new zone
         # has no id until it is saved.
+        # A soil or a planting chosen in words is stored as the number it
+        # stands for, which is what the calculation reads (presets.py).
+        data = apply_preset(data)
         method = data.pop(const.ZONE_CALCULATION_METHOD, None)
         method_config = data.pop(const.ZONE_METHOD_CONFIG, None)
         saved = await coordinator.async_update_zone_config(zone, data)
@@ -438,6 +444,9 @@ async def websocket_get_zones(hass: HomeAssistant, connection, msg):
                 # amount), so the zone card can offer them where the method is
                 # chosen instead of on a page about engines.
                 const.ZONE_METHOD_CONFIG: _zone_method_config(coordinator, zone),
+                # The soil and the planting the zone's numbers correspond to,
+                # so the panel can offer words rather than millimetres an hour.
+                **describe_zone(zone),
             }
             for zone in zones
         ],

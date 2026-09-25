@@ -152,6 +152,9 @@ export class SmartIrrigationZone {
   calculation_method?: string;
   /** The engine's own options, shown next to the method that implies them. */
   method_config?: Record<string, unknown>;
+  /** The soil and planting this zone was described by, in words. */
+  soil_type?: string;
+  plant_type?: string;
   /** When this zone last watered. Recorded by the run, never by the panel. */
   last_irrigation?: string | null;
 

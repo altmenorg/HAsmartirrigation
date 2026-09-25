@@ -563,7 +563,28 @@
         "forecast-days": "Anticiper les jours à venir",
         "forecast-days-help": "0 : la zone arrose ce que la météo a réellement pris. 1 : on tient compte aussi de demain, 2 : de demain et après-demain, et ainsi de suite. Plus les jours à venir sont chauds, plus on arrose aujourd'hui. Ce n'est pas le saut d'arrosage sur pluie prévue, qui est un réglage à part.",
         "fixed-amount": "Valeur fixe",
-        "engine-shared-help": "Ce réglage est partagé par toutes les zones calculées de la même façon."
+        "engine-shared-help": "Ce réglage est partagé par toutes les zones calculées de la même façon.",
+        "soil-type": "Sol",
+        "plant-type": "Ce qui pousse ici",
+        "soil-types": {
+          "sand": "Sableux",
+          "sandy_loam": "Limon sableux",
+          "loam": "Limon",
+          "clay_loam": "Limon argileux",
+          "clay": "Argileux",
+          "custom": "Je règle le drainage moi-même"
+        },
+        "plant-types": {
+          "lawn": "Pelouse",
+          "vegetables": "Potager",
+          "flowers": "Fleurs",
+          "shrubs": "Arbustes",
+          "hedge": "Haie",
+          "fruit_trees": "Arbres fruitiers",
+          "vines": "Vigne",
+          "ground_cover": "Couvre-sol",
+          "custom": "Je règle le coefficient moi-même"
+        }
       },
       "no_items": "Il n'y a pas encore de zone définie.",
       "title": "Zones",
