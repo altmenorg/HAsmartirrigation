@@ -436,13 +436,16 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // Calculation audit log Card
       const r10 = this.renderCalculationLogCard();
 
+      // How much of the panel to show.
+      const r11 = this.renderPanelModeCard();
+
       const r = html`<ha-card
           header="${localize("panels.general.title", this.hass.language)}"
         >
           <div class="card-content">
             ${localize("panels.general.description", this.hass.language)}
           </div> </ha-card
-        >${r2}${r1}${r4}${r5}${r6}${r7}${r8}${r9}${r10}`;
+        >${r11}${r2}${r1}${r4}${r5}${r6}${r7}${r8}${r9}${r10}`;
 
       return r;
     }
@@ -1020,6 +1023,50 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         </div>
       </ha-card>
     `;
+  }
+
+  /**
+   * Standard or advanced.
+   *
+   * The advanced panel shows the settings that tune the model: the drainage
+   * law, the thresholds, the multiplier, how far ahead a zone looks. They have
+   * sound defaults, and meeting them by accident is how a working
+   * installation gets broken, so the standard panel leaves them out. Nothing
+   * is lost by switching: the values are kept either way.
+   */
+  renderPanelModeCard() {
+    if (!this.hass || !this.config) return html``;
+    const advanced = this.config.ui_mode === "advanced";
+    return html`<ha-card
+      header="${localize(
+        "panels.general.cards.panel-mode.header",
+        this.hass.language,
+      )}"
+    >
+      <div class="card-content">
+        <div class="setting-row">
+          <div class="setting-label">
+            ${localize(
+              "panels.general.cards.panel-mode.labels.advanced",
+              this.hass.language,
+            )}
+            <div class="setting-hint">
+              ${localize(
+                "panels.general.cards.panel-mode.labels.advanced-hint",
+                this.hass.language,
+              )}
+            </div>
+          </div>
+          <ha-switch
+            .checked=${advanced}
+            @change=${(e: Event) =>
+              this.handleConfigChange({
+                ui_mode: (e.target as any).checked ? "advanced" : "standard",
+              })}
+          ></ha-switch>
+        </div>
+      </div>
+    </ha-card>`;
   }
 
   renderCalculationLogCard() {
