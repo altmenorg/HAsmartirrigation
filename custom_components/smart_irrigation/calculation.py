@@ -17,7 +17,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 from . import const
 from .calc_log import timestamps as calc_log_timestamps
 from .helpers import convert_between, loadModules, parse_datetime
-from .hourly_rows import SystemLocalTime, summed_hourly_eto
+from .hourly_rows import SystemLocalTime, forecast_eto_by_day, summed_hourly_eto
 from .localize import localize
 
 _LOGGER = logging.getLogger(__name__)
@@ -995,12 +995,17 @@ class CalculationMixin:
         estimates the day's sun from its temperature range, which is a fair
         guess for a whole day and a poor one for an hour, so without this an
         installation without a pyranometer could never calculate hour by hour.
-        Only Open-Meteo publishes the history, and a greenhouse is not asked:
-        no sky reading describes what reaches a plant under glass.
+
+        Open-Meteo publishes the history. On OpenWeatherMap or Pirate Weather,
+        which publish no radiation at all, the client is already wrapped in the
+        Open-Meteo fallback that fills that field, and the same wrapper answers
+        here: the choice of service was never a choice about radiation.
+
+        A greenhouse is not asked: no sky reading describes what reaches a
+        plant under glass.
         """
         if (
             not getattr(self, "use_weather_service", False)
-            or getattr(self, "weather_service", None) != const.CONF_WEATHER_SERVICE_OM
             or since is None
             or (mapping or {}).get(const.MAPPING_GREENHOUSE)
         ):
@@ -1019,6 +1024,62 @@ class CalculationMixin:
             return None
         return series
 
+    async def _hourly_with_forecast(self, zone, mapping, measured, forecast_days):
+        """The window's ET averaged with the days to come, hour by hour.
+
+        A zone set to look ahead does not water on what fell; it waters on what
+        the mean of today and the next days asks for, so a hot tomorrow raises
+        today's run. The daily equation does that by averaging days, and this
+        keeps exactly that arithmetic, with every term summed hour by hour:
+        the measured window as a rate per day, and each forecast day as its own
+        24 hours.
+
+        None when the hours of those days cannot be read, and the caller then
+        keeps the daily equation rather than average an hourly sum with a
+        daily one, which would put back the bias the hourly form removes.
+        """
+        total_mm, hours = measured
+        if hours <= 0:
+            return None
+        series = await self._hourly_forecast_series(mapping, forecast_days)
+        if not series:
+            return None
+        by_day = forecast_eto_by_day(
+            series,
+            latitude=getattr(self, "_effective_latitude", None),
+            longitude=getattr(self, "_effective_longitude", None),
+            elevation=getattr(self, "_effective_elevation", None) or 0.0,
+            tz=SystemLocalTime(),
+        )
+        days = [eto for _day, eto in sorted(by_day.items())][:forecast_days]
+        if len(days) < forecast_days:
+            _LOGGER.debug(
+                "[calculate-module]: zone %s: only %s of %s forecast days can be "
+                "read hour by hour, keeping the daily equation",
+                zone.get(const.ZONE_ID),
+                len(days),
+                forecast_days,
+            )
+            return None
+        # The window as the rate per day it implies, so it is one term among
+        # days, exactly as the daily equation averages them.
+        measured_per_day = total_mm * 24.0 / hours
+        mean_per_day = (measured_per_day + sum(days)) / (1 + len(days))
+        return mean_per_day * hours / 24.0, hours
+
+    async def _hourly_forecast_series(self, mapping, days):
+        """The coming days hour by hour from the weather service, or None."""
+        if not getattr(self, "use_weather_service", False) or (mapping or {}).get(
+            const.MAPPING_GREENHOUSE
+        ):
+            return None
+        fetch = getattr(
+            getattr(self, "_WeatherServiceClient", None), "get_hourly_forecast", None
+        )
+        if fetch is None:
+            return None
+        return await self.hass.async_add_executor_job(fetch, days)
+
     async def _hourly_reference_et(self, zone, modinst):
         """Reference ET summed hour by hour over the zone's window, or None.
 
@@ -1027,7 +1088,8 @@ class CalculationMixin:
         the daily equation exactly as before:
 
         - the setting is off, which is the default;
-        - the engine averages forecast days, which only the daily form can do;
+        - the engine averages forecast days and the hours of those days cannot
+          be read, which only Open-Meteo publishes;
         - the sensor group has no readings, or a required field missing
           everywhere;
         - the sensor group has no radiation source and the weather service
@@ -1041,8 +1103,6 @@ class CalculationMixin:
         """
         config = self.store.get_config() or {}
         if not config.get(const.CONF_HOURLY_CALCULATION):
-            return None
-        if getattr(modinst, "forecast_days", 0):
             return None
         mapping = self.store.get_mapping(zone.get(const.ZONE_MAPPING))
         if not mapping or not mapping.get(const.MAPPING_DATA):
@@ -1077,6 +1137,13 @@ class CalculationMixin:
                 zone.get(const.ZONE_ID),
             )
             return None
+        forecast_days = getattr(modinst, "forecast_days", 0) or 0
+        if forecast_days:
+            result = await self._hourly_with_forecast(
+                zone, mapping, result, forecast_days
+            )
+            if result is None:
+                return None
         _LOGGER.debug(
             "[calculate-module]: zone %s: %.3f mm of reference ET summed over "
             "%.2f hours",

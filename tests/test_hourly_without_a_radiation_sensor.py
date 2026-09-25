@@ -207,11 +207,21 @@ async def test_the_history_is_asked_of_open_meteo():
     assert asked_since == since
 
 
+async def test_another_service_is_asked_too_through_its_fallback():
+    """OpenWeatherMap and Pirate Weather publish no radiation at all, so their
+    client is already wrapped in the Open-Meteo fallback that fills it."""
+    coordinator = _coordinator(service=const.CONF_WEATHER_SERVICE_OWM)
+
+    series = await coordinator._hourly_solar_series(
+        {}, datetime.datetime(2026, 6, 21, 10, 0, 0)
+    )
+
+    assert series == {1.0: 2.0}
+
+
 @pytest.mark.parametrize(
     ("kwargs", "mapping"),
     [
-        # Only Open-Meteo keeps the history.
-        ({"service": const.CONF_WEATHER_SERVICE_OWM}, {}),
         # No weather service at all: sensors only.
         ({"use_service": False}, {}),
         # Under glass, no sky reading describes what the plants receive.
@@ -227,6 +237,50 @@ async def test_the_history_is_not_asked_when_it_does_not_apply(kwargs, mapping):
 
     assert series is None
     coordinator._WeatherServiceClient.get_hourly_radiation.assert_not_called()
+
+
+async def test_a_client_that_does_not_keep_a_history_is_not_asked_twice():
+    """A service with no history at all leaves the daily equation in place."""
+    coordinator = _coordinator()
+    coordinator._WeatherServiceClient = Mock(spec=[])
+
+    series = await coordinator._hourly_solar_series(
+        {}, datetime.datetime(2026, 6, 21, 10, 0, 0)
+    )
+
+    assert series is None
+
+
+def test_the_fallback_wrapper_reads_the_radiation_from_open_meteo():
+    """The wrapper's whole job: the field its primary does not have."""
+    from custom_components.smart_irrigation.weathermodules.SolarRadiationFallback import (  # noqa: E501
+        SolarRadiationFallbackClient,
+    )
+
+    wrapper = SolarRadiationFallbackClient.__new__(SolarRadiationFallbackClient)
+    wrapper._primary = Mock(spec=["get_data"])
+    wrapper._fallback = Mock()
+    wrapper._fallback.get_hourly_radiation = Mock(return_value={1.0: 2.0})
+    start = datetime.datetime(2026, 6, 21, 10, 0, 0)
+    end = datetime.datetime(2026, 6, 21, 13, 0, 0)
+
+    assert wrapper.get_hourly_radiation(start, end) == {1.0: 2.0}
+    wrapper._fallback.get_hourly_radiation.assert_called_once_with(start, end)
+
+
+def test_the_fallback_wrapper_leaves_the_rain_to_the_service_the_user_chose():
+    """Rain is a field the primary reports; reading it elsewhere would mix two
+    services' idea of the same sky."""
+    from custom_components.smart_irrigation.weathermodules.SolarRadiationFallback import (  # noqa: E501
+        SolarRadiationFallbackClient,
+    )
+
+    wrapper = SolarRadiationFallbackClient.__new__(SolarRadiationFallbackClient)
+    wrapper._primary = Mock(spec=["get_data"])  # no history
+    wrapper._fallback = Mock()
+
+    assert wrapper.get_precipitation_between(1, 2) is None
+    wrapper._fallback.get_precipitation_between.assert_not_called()
 
 
 async def test_a_history_that_cannot_be_read_keeps_the_daily_equation():

@@ -77,6 +77,8 @@ SECONDS_PER_HOUR = 3600
 CURRENT_INTERVAL_SECONDS_DEFAULT = 900
 # The forecast endpoint keeps at most this many days of past hours.
 MAX_PAST_DAYS = 92
+# Open-Meteo serves 16 days of forecast at most.
+MAX_FORECAST_DAYS = 16
 # A calculation and the live estimate of every zone ask for the hourly
 # precipitation within moments of each other, so one fetch is reused this long.
 PRECIPITATION_CACHE_SECONDS = 600
@@ -133,6 +135,10 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
         self._radiation_series = None
         self._radiation_fetched_at = datetime.datetime(1900, 1, 1, 0, 0, 0)
         self._radiation_covers_from = math.inf
+        # Hourly forecast, see get_hourly_forecast.
+        self._forecast_series = None
+        self._forecast_fetched_at = datetime.datetime(1900, 1, 1, 0, 0, 0)
+        self._forecast_days = 0
 
     def _params(self):
         params = {
@@ -330,6 +336,96 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
         self._radiation_fetched_at = now
         self._radiation_covers_from = series[0][0]
         return series
+
+    # The fields an hourly FAO-56 row is built from, as Open-Meteo names them.
+    _FORECAST_HOURLY_VARS = (
+        "temperature_2m",
+        "relative_humidity_2m",
+        "wind_speed_10m",
+        "shortwave_radiation",
+        "surface_pressure",
+    )
+
+    def get_hourly_forecast(self, days):
+        """The coming ``days`` days, hour by hour, or None.
+
+        A list of dicts, one per hour, carrying the hour's start as a unix
+        timestamp and the fields the hourly equation prices: temperature in C,
+        humidity in %, wind in m/s, the hour's sun in MJ/m2 and the pressure in
+        hPa. Today is left out: the hours that have already happened are in the
+        sensor group's own history, and the ones to come belong to today's own
+        balance, not to a forecast day.
+
+        This is what lets a zone that looks ahead stay on the hourly equation.
+        Averaging a forecast day computed from its daily means back into an
+        hourly sum would put the bias the hourly form removes straight back in.
+        """
+        try:
+            days = int(days)
+        except (TypeError, ValueError):
+            return None
+        if days <= 0:
+            return []
+        # Every zone that looks ahead asks within moments of the others, and
+        # the live estimate asks again: one fetch serves them all.
+        now = datetime.datetime.now()
+        if (
+            self._forecast_series is not None
+            and self._forecast_days >= days
+            and now
+            < self._forecast_fetched_at
+            + datetime.timedelta(seconds=PRECIPITATION_CACHE_SECONDS)
+        ):
+            return self._forecast_series
+        params = {
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "hourly": ",".join(self._FORECAST_HOURLY_VARS),
+            "wind_speed_unit": "ms",
+            "temperature_unit": "celsius",
+            "timezone": "GMT",
+            "timeformat": "unixtime",
+            "past_days": 0,
+            # The day that is running now, plus the days asked for.
+            "forecast_days": min(MAX_FORECAST_DAYS, days + 1),
+        }
+        try:
+            doc = self._request(params)
+            if doc is None:
+                return None
+            hourly = doc["hourly"]
+            stamps = hourly["time"]
+            out = []
+            for index, stamp in enumerate(stamps):
+                row = {"ts": float(stamp)}
+                for key, name in (
+                    ("temperature", "temperature_2m"),
+                    ("humidity", "relative_humidity_2m"),
+                    ("wind", "wind_speed_10m"),
+                ):
+                    value = hourly[name][index]
+                    if value is None:
+                        return None
+                    row[key] = float(value)
+                watts = hourly["shortwave_radiation"][index]
+                row["solar_mj_h"] = float(watts or 0.0) * SECONDS_PER_HOUR / 1_000_000
+                pressure = hourly.get("surface_pressure", [None] * len(stamps))[index]
+                if pressure is not None:
+                    row["pressure_hpa"] = float(pressure)
+                out.append(row)
+        except (
+            KeyError,
+            IndexError,
+            TypeError,
+            ValueError,
+            requests.RequestException,
+        ) as ex:
+            _LOGGER.warning("Error reading the hourly forecast from Open-Meteo: %s", ex)
+            return None
+        self._forecast_series = out
+        self._forecast_fetched_at = now
+        self._forecast_days = days
+        return out
 
     def _hourly_precipitation(self, since_ts):
         """Return (hour end as unix time, mm) pairs from ``since_ts`` on, or None."""

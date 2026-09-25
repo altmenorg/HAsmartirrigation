@@ -70,3 +70,31 @@ class SolarRadiationFallbackClient:  # pylint: disable=invalid-name
                 if i < len(fb):
                     self._fill(day, fb[i])
         return data
+
+    def get_hourly_radiation(self, start, end):
+        """The sun of each hour, from Open-Meteo, for the hourly equation.
+
+        The primary services do not publish radiation at all, hourly or
+        otherwise, which is the reason this wrapper exists. So this goes
+        straight to the fallback, and an installation on OpenWeatherMap or
+        Pirate Weather can calculate hour by hour like any other.
+        """
+        return self._fallback.get_hourly_radiation(start, end)
+
+    def get_precipitation_between(self, start, end):
+        """The rain of each hour, from the primary when it keeps a history.
+
+        Only Open-Meteo does, and the fallback is not asked for it: rain is a
+        field the user's own service reports, and reading it from another
+        would mix two services' idea of the same sky.
+        """
+        fetch = getattr(self._primary, "get_precipitation_between", None)
+        return None if fetch is None else fetch(start, end)
+
+    def get_hourly_forecast(self, days):
+        """The coming days hour by hour, from Open-Meteo.
+
+        The primaries publish no radiation, so their own hourly forecast could
+        not price an hour even if they had one.
+        """
+        return self._fallback.get_hourly_forecast(days)

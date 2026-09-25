@@ -524,3 +524,61 @@ def summed_hourly_eto(
         return None
     series = price_hourly_rows(rows, latitude, longitude, elevation, tz_offset_h)
     return sum(series), sum(row.get("coverage_h", 1.0) for row in rows)
+
+
+def forecast_rows_by_day(series, tz=None, tz_offset_h=0.0, today=None):
+    """Hourly FAO-56 rows of each forecast day, keyed by that day's date.
+
+    ``series`` is what a weather client returns for the hours to come: one
+    entry per hour carrying ``ts`` (the hour's start, unix time) and the fields
+    a row is priced from. Each hour is placed on the site's own clock, so a day
+    is the day the site lives, and only whole days after ``today`` are kept: a
+    day the forecast starts in the middle of would read as a short day and
+    understate its evaporation.
+    """
+    if not series:
+        return {}
+    today = today or datetime.datetime.now().date()
+    by_day = {}
+    for entry in series:
+        try:
+            hour_start = datetime.datetime.fromtimestamp(float(entry["ts"]))
+            row = {
+                "hour_start": hour_start,
+                "hour": hour_start.hour + 0.5,
+                "doy": hour_start.timetuple().tm_yday,
+                "coverage_h": 1.0,
+                "temperature": float(entry["temperature"]),
+                "humidity": float(entry["humidity"]),
+                "wind_2m": float(entry["wind"]),
+                "solar_mj_h": float(entry["solar_mj_h"]),
+            }
+        except (KeyError, TypeError, ValueError, OSError, OverflowError):
+            return {}
+        if entry.get("pressure_hpa") is not None:
+            row["pressure_kpa"] = float(entry["pressure_hpa"]) * HPA_TO_KPA
+        if tz is not None:
+            offset = tz.utcoffset(hour_start)
+            if offset is not None:
+                row["tz_offset_h"] = offset.total_seconds() / 3600.0
+        else:
+            row["tz_offset_h"] = tz_offset_h
+        day = hour_start.date()
+        if day <= today:
+            continue
+        by_day.setdefault(day, []).append(row)
+    # A day the series does not cover from end to end is not a day.
+    return {day: rows for day, rows in by_day.items() if len(rows) == 24}
+
+
+def forecast_eto_by_day(
+    series, latitude, longitude, elevation=0.0, tz=None, tz_offset_h=0.0, today=None
+):
+    """Reference ET of each forecast day in mm, summed hour by hour."""
+    rows_by_day = forecast_rows_by_day(
+        series, tz=tz, tz_offset_h=tz_offset_h, today=today
+    )
+    return {
+        day: sum(price_hourly_rows(rows, latitude, longitude, elevation, tz_offset_h))
+        for day, rows in sorted(rows_by_day.items())
+    }

@@ -33,7 +33,9 @@ It needs temperature, humidity and wind speed in the sensor group (a sensor or a
 
 **Solar radiation without a sensor.** The hourly equation needs the sun of each hour, and the daily equation's way of estimating it, from the day's temperature range, is fair over a day and poor over an hour. So when the sensor group has no radiation source and your weather service is Open-Meteo, the sun of each hour is read from Open-Meteo's own hourly history, which measures and models it. A group that does have a radiation sensor reads its own, as before, and a greenhouse is never asked: no sky reading describes what reaches a plant under glass.
 
-With forecast days set on PyETO, with any other module, or when the hours cannot be reconstructed (no readings, a field missing everywhere, or no hourly radiation available for a group without a sensor), the daily equation keeps being used, so switching it on never leaves a zone without a calculation. The calculation explanation says which form was used.
+**Forecast days.** A zone whose engine looks ahead waters on the mean of today and the days to come, so a hot tomorrow raises today's run. Those days are now read hour by hour as well: each one is priced as its own 24 hours, and the measured window joins the average as the rate per day it implies. Every term of that mean is then hourly, which is the point, since averaging an hourly sum with a day computed from its own averages would put the bias straight back in.
+
+With any other module, or when the hours cannot be reconstructed (no readings, a field missing everywhere, no hourly radiation for a group without a sensor, or fewer forecast days available than the engine asks for), the daily equation keeps being used, so switching it on never leaves a zone without a calculation. The calculation explanation says which form was used.
 
 ### Automatic weather data pruning (removed)
 Weather data used to be cleared on a timer, and that setting no longer does anything.

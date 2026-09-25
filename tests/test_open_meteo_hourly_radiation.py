@@ -129,3 +129,112 @@ def test_the_radiation_history_is_asked_for_on_its_own():
     assert params["hourly"] == "shortwave_radiation"
     assert params["timeformat"] == "unixtime"
     assert params["timezone"] == "GMT"
+
+
+# --- the hourly forecast ----------------------------------------------------
+
+
+def _forecast_doc(hours=48, missing=None):
+    start = DAY
+    stamps = [int((start + timedelta(hours=h)).timestamp()) for h in range(hours)]
+    doc = {
+        "hourly": {
+            "time": stamps,
+            "temperature_2m": [20.0] * hours,
+            "relative_humidity_2m": [50.0] * hours,
+            "wind_speed_10m": [2.0] * hours,
+            "shortwave_radiation": [300.0] * hours,
+            "surface_pressure": [1010.0] * hours,
+        }
+    }
+    if missing:
+        doc["hourly"][missing][5] = None
+    return doc
+
+
+def test_the_forecast_carries_what_an_hourly_row_needs():
+    client = _client()
+    with patch.object(OpenMeteoClient, "_request", return_value=_forecast_doc()):
+        series = client.get_hourly_forecast(1)
+
+    assert len(series) == 48
+    first = series[0]
+    assert first["temperature"] == 20.0
+    assert first["humidity"] == 50.0
+    assert first["wind"] == 2.0
+    assert first["solar_mj_h"] == pytest.approx(300.0 * 0.0036)
+    assert first["pressure_hpa"] == 1010.0
+
+
+def test_no_days_asked_for_asks_nothing():
+    client = _client()
+    with patch.object(OpenMeteoClient, "_request") as request:
+        assert client.get_hourly_forecast(0) == []
+    request.assert_not_called()
+
+
+def test_the_day_under_way_is_fetched_alongside_the_days_asked_for():
+    """Its hours are skipped later, but the request has to reach past them."""
+    client = _client()
+    with patch.object(OpenMeteoClient, "_request", return_value=_forecast_doc()) as req:
+        client.get_hourly_forecast(2)
+
+    assert req.call_args[0][0]["forecast_days"] == 3
+    assert req.call_args[0][0]["past_days"] == 0
+
+
+def test_a_missing_hour_of_a_field_the_equation_needs_is_no_forecast():
+    """Better the daily equation than an hour priced on a guess."""
+    client = _client()
+    with patch.object(
+        OpenMeteoClient,
+        "_request",
+        return_value=_forecast_doc(missing="temperature_2m"),
+    ):
+        assert client.get_hourly_forecast(1) is None
+
+
+def test_a_missing_hour_of_sun_reads_as_night():
+    client = _client()
+    with patch.object(
+        OpenMeteoClient,
+        "_request",
+        return_value=_forecast_doc(missing="shortwave_radiation"),
+    ):
+        series = client.get_hourly_forecast(1)
+
+    assert series[5]["solar_mj_h"] == 0.0
+
+
+def test_a_failed_forecast_request_is_none():
+    client = _client()
+    with patch.object(
+        OpenMeteoClient, "_request", side_effect=requests.RequestException("down")
+    ):
+        assert client.get_hourly_forecast(1) is None
+
+
+def test_days_that_are_not_a_number_are_none():
+    client = _client()
+    with patch.object(OpenMeteoClient, "_request", return_value=_forecast_doc()):
+        assert client.get_hourly_forecast("two") is None
+
+
+def test_the_forecast_is_fetched_once_for_the_zones_that_share_it():
+    client = _client()
+    with patch.object(OpenMeteoClient, "_request", return_value=_forecast_doc()) as req:
+        client.get_hourly_forecast(2)
+        client.get_hourly_forecast(2)
+        # One day is covered by the two already fetched.
+        client.get_hourly_forecast(1)
+
+    assert req.call_count == 1
+
+
+def test_more_days_than_the_cache_holds_are_fetched():
+    client = _client()
+    with patch.object(OpenMeteoClient, "_request", return_value=_forecast_doc()) as req:
+        client.get_hourly_forecast(1)
+        client.get_hourly_forecast(4)
+
+    assert req.call_count == 2
