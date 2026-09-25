@@ -2454,7 +2454,7 @@ a.version="2.31.0",i(ii),a.fn=fs,a.min=oi,a.max=li,a.now=di,a.utc=m,a.unix=bs,a.
                   ${pr("panels.modules.cards.module.labels.required",this.hass.language)})</label
                 >
                 <div class="settings">
-                  ${e.schema?Object.entries(e.schema).map((([e])=>this.renderConfig(t,e))):null}
+                  ${e.schema?Object.entries(e.schema).filter((([,t])=>{var a;return!(null!==(a=e.idle_options)&&void 0!==a?a:[]).includes(null==t?void 0:t.name)})).map((([e])=>this.renderConfig(t,e))):null}
                 </div>
               </div>
               ${n?F`<div class="weather-note">

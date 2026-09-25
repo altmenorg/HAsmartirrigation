@@ -61,3 +61,52 @@ def consumed_mappings(engine_name: str | None) -> list[str]:
     for sources in CONSUMED_BY_ENGINE.values():
         every.update(sources)
     return sorted(every) + list(ALWAYS_CONSUMED)
+
+
+# Options an engine offers that only do something in one situation, with the
+# source whose absence is that situation. "Coastal" picks the coefficient
+# FAO-56 uses to estimate radiation from the day's temperature range, so it
+# does nothing at all once something actually reports the radiation.
+_OPTION_NEEDS_MISSING_SOURCE = {
+    "PyETO": {const.CONF_PYETO_COASTAL: const.MAPPING_SOLRAD},
+}
+
+
+def sourced_fields(mapping: dict) -> set:
+    """The sensor group's fields that something currently reports."""
+    sourced = set()
+    for key, conf in (mapping.get(const.MAPPING_MAPPINGS) or {}).items():
+        if isinstance(conf, str):
+            # A legacy group storing the source as a plain string.
+            if conf and conf != const.MAPPING_CONF_SOURCE_NONE:
+                sourced.add(key)
+            continue
+        if isinstance(conf, dict):
+            source = conf.get(const.MAPPING_CONF_SOURCE)
+            if source and source != const.MAPPING_CONF_SOURCE_NONE:
+                sourced.add(key)
+    return sourced
+
+
+def idle_options(engine_name: str | None, mappings) -> list[str]:
+    """The engine's options that change nothing for these sensor groups.
+
+    Every option an installation is shown is one more thing to understand, and
+    the ones that do nothing are the worst of them: they read as a decision the
+    user has to make, and whatever they pick, nothing happens. So the editor is
+    told which ones to leave out.
+
+    An option is only called idle when it is idle for **every** group feeding
+    the engine: a module shared by a group with a radiation sensor and one
+    without still has a coastal setting that matters to the second. With no
+    group at all, nothing is hidden, because nothing is known yet.
+    """
+    conditions = _OPTION_NEEDS_MISSING_SOURCE.get(engine_name)
+    groups = list(mappings or [])
+    if not conditions or not groups:
+        return []
+    idle = []
+    for option, source in conditions.items():
+        if all(source in sourced_fields(mapping) for mapping in groups):
+            idle.append(option)
+    return sorted(idle)

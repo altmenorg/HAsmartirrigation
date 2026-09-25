@@ -353,9 +353,15 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
                 >
                 <div class="settings">
                   ${module.schema
-                    ? Object.entries(module.schema).map(([value]) =>
-                        this.renderConfig(index, value),
-                      )
+                    ? Object.entries(module.schema)
+                        .filter(
+                          // An option that changes nothing for the sensor
+                          // groups feeding this engine is not a decision to
+                          // put in front of anyone: the backend says which.
+                          ([, line]: [string, any]) =>
+                            !(module.idle_options ?? []).includes(line?.name),
+                        )
+                        .map(([value]) => this.renderConfig(index, value))
                     : null}
                 </div>
               </div>

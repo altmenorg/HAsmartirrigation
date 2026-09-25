@@ -16,6 +16,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
 from .calc_log import timestamps as calc_log_timestamps
+from .calcmodules.consumes import sourced_fields
 from .helpers import loadModules, parse_datetime
 from .hourly_rows import SystemLocalTime, forecast_eto_by_day, summed_hourly_eto
 from .localize import localize
@@ -1158,21 +1159,10 @@ class CalculationMixin:
         """The sensor group's fields that something currently reports.
 
         A field whose source was removed keeps whatever it last held in the
-        last entry, and the last entry never loses a key.
+        last entry, and the last entry never loses a key. Shared with the
+        module editor, which hides the options a sourced field makes idle.
         """
-        sourced = set()
-        for key, conf in (mapping.get(const.MAPPING_MAPPINGS) or {}).items():
-            if isinstance(conf, str):
-                # A legacy group storing the source as a plain string.
-                if conf and conf != const.MAPPING_CONF_SOURCE_NONE:
-                    sourced.add(key)
-                continue
-            if not isinstance(conf, dict):
-                continue
-            source = conf.get(const.MAPPING_CONF_SOURCE)
-            if source and source != const.MAPPING_CONF_SOURCE_NONE:
-                sourced.add(key)
-        return sourced
+        return sourced_fields(mapping)
 
     def _fill_missing_from_last_entry(self, mapping, data_by_sensor, audit=None):
         """Fill missing keys in data_by_sensor from last entry data.

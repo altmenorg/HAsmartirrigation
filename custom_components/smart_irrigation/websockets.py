@@ -23,7 +23,7 @@ from homeassistant.util import dt as dt_util
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
-from .calcmodules.consumes import consumed_mappings
+from .calcmodules.consumes import consumed_mappings, idle_options
 from .skip_conditions import thresholds_for_display
 from .units import zone_from_display, zone_to_display
 
@@ -403,18 +403,56 @@ async def websocket_get_modules(hass: HomeAssistant, connection, msg):
     """Publish module data, with the sources each engine reads.
 
     ``consumes`` travels with the module so the sensor-group editor can offer
-    only the sources that engine uses. It is computed here rather than stored:
-    it is a property of the code, not of the user's configuration.
+    only the sources that engine uses. ``idle_options`` travels with it for the
+    same reason, one level down: an option that changes nothing for the groups
+    feeding this module is not a decision to put in front of anyone. Both are
+    computed here rather than stored: they are properties of the code and of
+    the current configuration, not settings of their own.
     """
     coordinator = hass.data[const.DOMAIN]["coordinator"]
     modules = await coordinator.store.async_get_modules()
+    mappings = await coordinator.store.async_get_mappings()
+    zones = await coordinator.store.async_get_zones()
     connection.send_result(
         msg["id"],
         [
-            {**module, "consumes": consumed_mappings(module.get("name"))}
+            {
+                **module,
+                "consumes": consumed_mappings(module.get("name")),
+                "idle_options": idle_options(
+                    module.get("name"),
+                    _mappings_feeding(module.get(const.MODULE_ID), mappings, zones),
+                ),
+            }
             for module in modules
         ],
     )
+
+
+def _mappings_feeding(module_id, mappings, zones) -> list:
+    """The sensor groups whose readings reach ``module_id``.
+
+    A group says which engine it feeds once it has adopted one; a group that
+    has not leaves its zones' own module in charge, so those zones are what
+    ties it to a module.
+    """
+    if module_id is None:
+        return []
+    feeding = []
+    zone_modules = {}
+    for zone in zones or []:
+        mapping_id = zone.get(const.ZONE_MAPPING)
+        if mapping_id is not None:
+            zone_modules.setdefault(mapping_id, set()).add(zone.get(const.ZONE_MODULE))
+    for mapping in mappings or []:
+        adopted = mapping.get(const.MAPPING_MODULE)
+        if adopted is not None:
+            if adopted == module_id:
+                feeding.append(mapping)
+            continue
+        if module_id in zone_modules.get(mapping.get(const.MAPPING_ID), set()):
+            feeding.append(mapping)
+    return feeding
 
 
 @async_response

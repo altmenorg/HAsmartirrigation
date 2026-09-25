@@ -186,6 +186,8 @@ export class SmartIrrigationModule {
    * disagree about what a group needs.
    */
   consumes?: string[];
+  /** Options this engine offers that do nothing for the groups feeding it. */
+  idle_options?: string[];
   //duration: number;
   config: object;
   schema: object;
