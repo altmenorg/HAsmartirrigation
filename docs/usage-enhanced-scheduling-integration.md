@@ -176,7 +176,7 @@ If you prefer to stay open loop, call `smart_irrigation.reset_bucket` from your 
 
 ## Automation Blueprints
 
-See [the blueprints page](usage-automations.md) for the full list and which one to pick, and the [off-the-shelf controllers page](usage-controllers.md) for Rain Bird, Hydrawise, Rachio, OpenSprinkler and B-hyve. For Irrigation Unlimited, use the `adjust time` blueprint that matches your setup (single zone or sequence) together with the `reset bucket` one.
+See [the blueprints page](usage-automations.md) for the full list and which one to pick, and the [off-the-shelf controllers page](usage-controllers.md) for Rain Bird, Hydrawise, Rachio, OpenSprinkler and B-hyve. For Irrigation Unlimited, use the `adjust time` blueprint that matches your setup (a zone of its own, or a zone inside a sequence) together with the `reset bucket` one. Either way it is one automation per zone: a sequence adjusted as a whole spreads the time you give it across its zones in proportion to their original durations, so a calculated duration handed to the sequence would water every zone by the wrong amount.
 
 ## API Reference
 

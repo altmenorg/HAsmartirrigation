@@ -1,11 +1,19 @@
 blueprint:
-  name: Irrigation Unlimited adjust watering time for a sequence.
-  description: Adjust watering times based on smart irrigation calculations.
+  name: Irrigation Unlimited adjust watering time for one zone of a sequence.
+  description: >-
+    Hand Irrigation Unlimited the duration Smart Irrigation calculated for one
+    zone inside a sequence.
+
+    Adjusting a sequence as a whole spreads the time you give it across every
+    zone in it, in proportion to their original durations: three zones of 10,
+    20 and 30 minutes told to run 30 minutes become 5, 10 and 15. That is not
+    what a calculated duration means, since each zone has its own need. So this
+    adjusts one zone of the sequence, and you add one automation per zone.
   domain: automation
   input:
     irrigation_zone:
-      name: Irrigation Zone
-      description: Zone to irrigate
+      name: Smart Irrigation zone
+      description: The zone whose calculated duration should be used.
       selector:
         entity:
           filter:
@@ -15,24 +23,41 @@ blueprint:
               device_class: duration
 
     unlimited_sequence:
-      name: Unlimited sequence
-      description: Unlimited sequence to irrigate
+      name: Irrigation Unlimited controller
+      description: The controller entity that holds the sequence.
       selector:
         entity:
           filter:
             - domain: binary_sensor
 
     unlimited_sequence_id:
-      name: Unlimited sequence ID
-      description: Unlimited sequence ID to irrigate
+      name: Sequence number
+      description: >-
+        Which sequence of that controller, numbered from 1 as Irrigation
+        Unlimited numbers them.
       selector:
         number:
           max: 100
-          min: 0
+          min: 1
+          mode: box
+
+    unlimited_zone_ref:
+      name: Zone number inside the sequence
+      description: >-
+        Which zone of that sequence this Smart Irrigation zone feeds, numbered
+        from 1 in the order the sequence lists them.
+      selector:
+        number:
+          max: 100
+          min: 1
           mode: box
 
     time_on:
-      name: Time to turn on
+      name: Time to adjust
+      description: >-
+        After Smart Irrigation has calculated, and before Irrigation Unlimited
+        starts. The default sits between the usual 11 PM calculation and a
+        run at dawn.
       selector:
         time:
       default: "23:30:00"
@@ -58,8 +83,9 @@ action:
   - service: irrigation_unlimited.adjust_time
     data:
       actual: "{{ timedelta(seconds=states(duration) | int(0)) }}"
-      # 2. Adjust a sequence.
       entity_id: !input unlimited_sequence
       sequence_id: !input unlimited_sequence_id
+      # Without this the time would be spread over the whole sequence.
+      zones: !input unlimited_zone_ref
 
 mode: single
