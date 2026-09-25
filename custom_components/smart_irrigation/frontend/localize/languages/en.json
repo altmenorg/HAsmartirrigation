@@ -355,6 +355,9 @@
           "for-48": "Hold for 48 h",
           "until": "Watering is held back until",
           "resume": "Resume now"
+        },
+        "forecast": {
+          "today": "Today"
         }
       },
       "gaps": {

@@ -353,6 +353,9 @@
           "for-48": "Reporter de 48 h",
           "until": "Arrosage reporté jusqu'au",
           "resume": "Reprendre maintenant"
+        },
+        "forecast": {
+          "today": "Aujourd'hui"
         }
       },
       "gaps": {

@@ -499,7 +499,10 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
             # today; today is dropped again on return unless include_today.
             for i in range(0, len(days)):
                 day = days[i]
-                parsed_data = {}
+                # The day this forecast is for, so a caller can label it: the
+                # panel shows a strip of days and cannot count them itself, a
+                # request can be served from a cache made yesterday.
+                parsed_data = {"date": day}
                 tmax = daily["temperature_2m_max"][i]
                 tmin = daily["temperature_2m_min"][i]
                 parsed_data[MAPPING_MAX_TEMP] = tmax

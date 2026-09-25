@@ -453,6 +453,39 @@ async def websocket_get_zones(hass: HomeAssistant, connection, msg):
     )
 
 
+async def _forecast_days(hass, coordinator, days: int = 6):
+    """The next few days as the panel shows them, or an empty list.
+
+    Temperature and rain only: this is a glance at the week, not a weather
+    station. It is read from the service the installation already uses, and
+    served from its cache, so opening the page costs nothing.
+    """
+    if not getattr(coordinator, "use_weather_service", False):
+        return []
+    client = getattr(coordinator, "_WeatherServiceClient", None)
+    fetch = getattr(client, "get_forecast_data", None)
+    if fetch is None:
+        return []
+    try:
+        forecast = await hass.async_add_executor_job(fetch, True)
+    except Exception as e:  # noqa: BLE001 - a strip of days is never worth an error
+        _LOGGER.debug("No forecast for the panel: %s", e)
+        return []
+    out = []
+    for day in (forecast or [])[:days]:
+        if not isinstance(day, dict):
+            continue
+        out.append(
+            {
+                "date": day.get("date"),
+                "temp_max": day.get(const.MAPPING_MAX_TEMP),
+                "temp_min": day.get(const.MAPPING_MIN_TEMP),
+                "precipitation": day.get(const.MAPPING_PRECIPITATION),
+            }
+        )
+    return out
+
+
 def _zone_method(coordinator, zone):
     """The method behind this zone's engine, or None for an unknown engine."""
     module = _zone_module(coordinator, zone)
@@ -855,6 +888,9 @@ async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
             # Why nothing would water, when that is the case. See
             # delivery_gap().
             "delivery_gap": delivery_gap(config, zones),
+            # The days ahead, for the strip the panel shows: what the sky is
+            # about to do is half of what "will it water" depends on.
+            "forecast": await _forecast_days(hass, coordinator),
         }
 
         _LOGGER.debug("Irrigation info calculated: %s", irrigation_info)

@@ -160,7 +160,8 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       </ha-card>
 
       ${this.renderPostpone()} ${this.renderDeliveryGap()}
-      ${this.renderNextRun()} ${this.renderDecision()} ${this.renderEstimates()}
+      ${this.renderNextRun()} ${this.renderForecast()} ${this.renderDecision()}
+      ${this.renderEstimates()}
     `;
   }
 
@@ -222,6 +223,61 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
   private async resumeIrrigation(): Promise<void> {
     await this.hass!.callService("smart_irrigation", "resume_irrigation", {});
     await this._fetchData();
+  }
+
+  /**
+   * The days ahead, at a glance.
+   *
+   * Half of "will it water" is what the sky is about to do, and a line of
+   * days answers that faster than any number on this page. Temperature and
+   * rain only: this is a glance at the week, not a weather station.
+   */
+  private renderForecast(): TemplateResult | string {
+    const days = ((this.info as any)?.forecast ?? []) as any[];
+    if (!days.length) return "";
+    const metric = this.hass?.config?.unit_system?.length !== "mi";
+    const temp = (value: number | null) =>
+      value == null
+        ? "—"
+        : metric
+          ? `${Math.round(value)}°`
+          : `${Math.round(value * 1.8 + 32)}°`;
+    const rain = (value: number | null) =>
+      value == null || value <= 0
+        ? ""
+        : metric
+          ? `${value.toFixed(1)} mm`
+          : `${(value / 25.4).toFixed(2)} in`;
+
+    return html`
+      <ha-card>
+        <div class="card-content forecast">
+          ${days.map((day, index) => {
+            const wet = (day.precipitation ?? 0) > 0;
+            return html`
+              <div class="forecast-day">
+                <div class="forecast-name">
+                  ${index === 0
+                    ? this.t("cards.forecast.today")
+                    : localizedDateTime(day.date, this.hass, {
+                        weekday: "short",
+                      })}
+                </div>
+                <ha-icon
+                  icon=${wet ? "mdi:weather-rainy" : "mdi:weather-sunny"}
+                  class=${wet ? "wet" : "dry"}
+                ></ha-icon>
+                <div class="forecast-temps">
+                  <span class="forecast-max">${temp(day.temp_max)}</span>
+                  <span class="forecast-min">${temp(day.temp_min)}</span>
+                </div>
+                <div class="forecast-rain">${rain(day.precipitation)}</div>
+              </div>
+            `;
+          })}
+        </div>
+      </ha-card>
+    `;
   }
 
   /**
@@ -624,6 +680,58 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
         padding-top: 0;
         color: var(--secondary-text-color);
         font-size: 0.9em;
+      }
+
+      /* A line of days: what the sky is about to do. */
+      .forecast {
+        flex-direction: row;
+        gap: 8px;
+        justify-content: space-between;
+        overflow-x: auto;
+      }
+
+      .forecast-day {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        min-width: 62px;
+        padding: 4px 0;
+      }
+
+      .forecast-name {
+        color: var(--secondary-text-color);
+        font-size: 0.85em;
+        text-transform: capitalize;
+      }
+
+      .forecast ha-icon {
+        --mdc-icon-size: 24px;
+      }
+
+      .forecast ha-icon.wet {
+        color: var(--info-color, #4fc3f7);
+      }
+
+      .forecast ha-icon.dry {
+        color: var(--warning-color, #ffb300);
+      }
+
+      .forecast-temps {
+        display: flex;
+        gap: 6px;
+        align-items: baseline;
+      }
+
+      .forecast-min {
+        color: var(--secondary-text-color);
+        font-size: 0.85em;
+      }
+
+      .forecast-rain {
+        color: var(--info-color, #4fc3f7);
+        font-size: 0.8em;
+        min-height: 1em;
       }
 
       .info-item {
