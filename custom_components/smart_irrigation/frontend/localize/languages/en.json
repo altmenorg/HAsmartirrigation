@@ -570,7 +570,16 @@
       },
       "no_items": "There are no zones defined yet.",
       "title": "Zones",
-      "module-comes-from-the-group": "The calculation engine comes from this zone's sensor group. Change it there, and every zone using that group follows."
+      "module-comes-from-the-group": "The calculation engine comes from this zone's sensor group. Change it there, and every zone using that group follows.",
+      "status": {
+        "will-water": "Will water {duration} at the next start.",
+        "idle": "Nothing to water: {short} short.",
+        "satisfied": "Nothing to water: this zone has what it needs.",
+        "under-threshold": "Nothing to water yet: {short} short, under this zone's threshold.",
+        "manual": "Waters only when you ask.",
+        "disabled": "Disabled: never watered, and its balance is not kept.",
+        "threshold": "threshold"
+      }
     },
     "history": {
       "title": "History",

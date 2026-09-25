@@ -424,6 +424,73 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     return "";
   }
 
+  /**
+   * What this zone is doing, in one sentence.
+   *
+   * A zone card opened on numbers: a bucket, a deficit, a duration in
+   * seconds. They are all true and none of them answers "is my lawn going to
+   * be watered tonight", which is the only question most people have. So the
+   * card says that first, in a band whose colour carries the same answer, and
+   * the numbers stay underneath for whoever wants them.
+   */
+  private _zoneStatus(zone: SmartIrrigationZone, lang: string) {
+    const t = (key: string, ...args: any[]) =>
+      localize(`panels.zones.status.${key}`, lang, ...args);
+    const deficit = Math.max(0, -(zone.bucket ?? 0));
+    const threshold = zone.irrigation_threshold ?? 0;
+    const unit = output_unit(this.config, ZONE_BUCKET);
+
+    // A zone that has just watered sits a hair below zero, and "short 0.0 mm"
+    // says nothing true.
+    const short = deficit >= 0.05 ? `${deficit.toFixed(1)} ${unit}` : null;
+
+    let kind = "idle";
+    let text = short ? t("idle", "{short}", short) : t("satisfied");
+    if (zone.state === SmartIrrigationZoneState.Disabled) {
+      kind = "off";
+      text = t("disabled");
+    } else if (zone.state === SmartIrrigationZoneState.Manual) {
+      kind = "off";
+      text = t("manual");
+    } else if ((zone.duration ?? 0) > 0) {
+      kind = "watering";
+      text = t("will-water", "{duration}", formatDuration(zone.duration));
+    } else if (short && threshold > 0) {
+      text = t("under-threshold", "{short}", short);
+    }
+
+    return html`
+      <div class="zone-status zone-status--${kind}">
+        <ha-icon
+          icon=${kind === "watering"
+            ? "mdi:water-outline"
+            : kind === "off"
+              ? "mdi:pause-circle-outline"
+              : "mdi:check-circle-outline"}
+        ></ha-icon>
+        <span>${text}</span>
+        ${kind !== "off" && threshold > 0
+          ? html`<span class="zone-status-numbers">
+              ${t("threshold")}: ${threshold.toFixed(1)} ${unit}
+            </span>`
+          : ""}
+      </div>
+    `;
+  }
+
+  /**
+   * A field only the advanced panel shows.
+   *
+   * The standard panel keeps what a zone is (its name, what it waters with,
+   * where its weather comes from, what it is short of) and leaves out what
+   * tunes the model: the drainage law, the thresholds, the multiplier, the
+   * lead time. Those have sound defaults, and meeting them by accident is how
+   * a working installation gets broken.
+   */
+  private _adv(content: TemplateResult | string): TemplateResult | string {
+    return this.config?.ui_mode === "advanced" ? content : "";
+  }
+
   private handleEditZone(
     index: number,
     updatedZone: SmartIrrigationZone,
@@ -994,6 +1061,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
             .path=${mdiChevronDown}
           ></ha-svg-icon>
         </div>
+        ${this._zoneStatus(zone, lang)}
         ${expanded
           ? html` <div class="zone-body">
               <div class="zone-meta">
@@ -1044,38 +1112,43 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                   (v) =>
                     this.handleEditZone(index, { ...zone, [ZONE_NAME]: v }),
                 )}
-                ${this._selectRow(
-                  localize("panels.zones.labels.calculation-method", lang),
-                  html`
-                    ${["from_weather", "provided", "fixed"].map(
-                      (method) => html`
-                        <option
-                          value="${method}"
-                          ?selected=${(zone.calculation_method ??
-                            "from_weather") === method}
-                        >
-                          ${localize(
-                            `panels.zones.labels.calculation-methods.${method}`,
-                            lang,
-                          )}
-                        </option>
-                      `,
-                    )}
-                  `,
-                  (e: Event) =>
-                    this.handleEditZone(index, {
-                      ...zone,
-                      calculation_method: (e.target as HTMLSelectElement).value,
-                    }),
+                ${this._adv(
+                  this._selectRow(
+                    localize("panels.zones.labels.calculation-method", lang),
+                    html`
+                      ${["from_weather", "provided", "fixed"].map(
+                        (method) => html`
+                          <option
+                            value="${method}"
+                            ?selected=${(zone.calculation_method ??
+                              "from_weather") === method}
+                          >
+                            ${localize(
+                              `panels.zones.labels.calculation-methods.${method}`,
+                              lang,
+                            )}
+                          </option>
+                        `,
+                      )}
+                    `,
+                    (e: Event) =>
+                      this.handleEditZone(index, {
+                        ...zone,
+                        calculation_method: (e.target as HTMLSelectElement)
+                          .value,
+                      }),
+                  ),
                 )}
-                <div class="setting-help">
-                  ${localize(
-                    `panels.zones.labels.calculation-method-help.${
-                      zone.calculation_method ?? "from_weather"
-                    }`,
-                    lang,
-                  )}
-                </div>
+                ${this._adv(
+                  html`<div class="setting-help">
+                    ${localize(
+                      `panels.zones.labels.calculation-method-help.${
+                        zone.calculation_method ?? "from_weather"
+                      }`,
+                      lang,
+                    )}
+                  </div>`,
+                )}
                 ${this._engineOptions(index, zone, lang)}
                 ${this._selectRow(
                   localize("panels.zones.labels.input-method", lang),
@@ -1145,16 +1218,18 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                         0.1,
                       )}
                     `}
-                ${this._numRow(
-                  localize("panels.zones.labels.drainage_rate", lang),
-                  output_unit(this.config, ZONE_DRAINAGE_RATE),
-                  zone.drainage_rate,
-                  (v) =>
-                    this.handleEditZone(index, {
-                      ...zone,
-                      [ZONE_DRAINAGE_RATE]: parseFloat(v),
-                    }),
-                  0.1,
+                ${this._adv(
+                  this._numRow(
+                    localize("panels.zones.labels.drainage_rate", lang),
+                    output_unit(this.config, ZONE_DRAINAGE_RATE),
+                    zone.drainage_rate,
+                    (v) =>
+                      this.handleEditZone(index, {
+                        ...zone,
+                        [ZONE_DRAINAGE_RATE]: parseFloat(v),
+                      }),
+                    0.1,
+                  ),
                 )}
                 ${this._selectRow(
                   localize("panels.zones.labels.state", lang),
@@ -1231,27 +1306,31 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                     }),
                   0.1,
                 )}
-                ${this._numRow(
-                  localize("panels.zones.labels.maximum-bucket", lang),
-                  output_unit(this.config, ZONE_BUCKET),
-                  Number(zone.maximum_bucket).toFixed(1),
-                  (v) =>
-                    this.handleEditZone(index, {
-                      ...zone,
-                      [ZONE_MAXIMUM_BUCKET]: parseFloat(v),
-                    }),
-                  0.1,
+                ${this._adv(
+                  this._numRow(
+                    localize("panels.zones.labels.maximum-bucket", lang),
+                    output_unit(this.config, ZONE_BUCKET),
+                    Number(zone.maximum_bucket).toFixed(1),
+                    (v) =>
+                      this.handleEditZone(index, {
+                        ...zone,
+                        [ZONE_MAXIMUM_BUCKET]: parseFloat(v),
+                      }),
+                    0.1,
+                  ),
                 )}
-                ${this._numRow(
-                  localize("panels.zones.labels.irrigation-threshold", lang),
-                  output_unit(this.config, ZONE_BUCKET),
-                  Number(zone.irrigation_threshold ?? 0).toFixed(1),
-                  (v) =>
-                    this.handleEditZone(index, {
-                      ...zone,
-                      [ZONE_IRRIGATION_THRESHOLD]: parseFloat(v),
-                    }),
-                  0.1,
+                ${this._adv(
+                  this._numRow(
+                    localize("panels.zones.labels.irrigation-threshold", lang),
+                    output_unit(this.config, ZONE_BUCKET),
+                    Number(zone.irrigation_threshold ?? 0).toFixed(1),
+                    (v) =>
+                      this.handleEditZone(index, {
+                        ...zone,
+                        [ZONE_IRRIGATION_THRESHOLD]: parseFloat(v),
+                      }),
+                    0.1,
+                  ),
                 )}
                 ${this._numRow(
                   localize("panels.zones.labels.et-deficiency", lang),
@@ -1277,33 +1356,37 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       localize("panels.zones.labels.linked-entity-hint", lang),
                     )
                   : ""}
-                ${this.config?.observed_watering_enabled && zone.linked_entity
-                  ? this._entityRow(
-                      localize("panels.zones.labels.flow-sensor", lang),
-                      localize("panels.zones.labels.optional", lang),
-                      zone.flow_sensor,
-                      ["sensor"],
-                      (v) =>
-                        this.handleEditZone(index, {
-                          ...zone,
-                          [ZONE_FLOW_SENSOR]: v || undefined,
-                        }),
-                      localize("panels.zones.labels.flow-sensor-hint", lang),
-                    )
-                  : ""}
-                ${this._entityRow(
-                  localize("panels.zones.labels.soil-moisture-sensor", lang),
-                  localize("panels.zones.labels.optional", lang),
-                  zone.soil_moisture_sensor,
-                  ["sensor"],
-                  (v) =>
-                    this.handleEditZone(index, {
-                      ...zone,
-                      [ZONE_SOIL_MOISTURE_SENSOR]: v || undefined,
-                    }),
-                  localize(
-                    "panels.zones.labels.soil-moisture-sensor-hint",
-                    lang,
+                ${this._adv(
+                  this.config?.observed_watering_enabled && zone.linked_entity
+                    ? this._entityRow(
+                        localize("panels.zones.labels.flow-sensor", lang),
+                        localize("panels.zones.labels.optional", lang),
+                        zone.flow_sensor,
+                        ["sensor"],
+                        (v) =>
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_FLOW_SENSOR]: v || undefined,
+                          }),
+                        localize("panels.zones.labels.flow-sensor-hint", lang),
+                      )
+                    : "",
+                )}
+                ${this._adv(
+                  this._entityRow(
+                    localize("panels.zones.labels.soil-moisture-sensor", lang),
+                    localize("panels.zones.labels.optional", lang),
+                    zone.soil_moisture_sensor,
+                    ["sensor"],
+                    (v) =>
+                      this.handleEditZone(index, {
+                        ...zone,
+                        [ZONE_SOIL_MOISTURE_SENSOR]: v || undefined,
+                      }),
+                    localize(
+                      "panels.zones.labels.soil-moisture-sensor-hint",
+                      lang,
+                    ),
                   ),
                 )}
                 ${zone.soil_moisture_sensor
@@ -1322,38 +1405,44 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       1,
                     )
                   : ""}
-                ${this._numRow(
-                  localize("panels.zones.labels.lead-time", lang),
-                  "s",
-                  zone.lead_time,
-                  (v) =>
-                    this.handleEditZone(index, {
-                      ...zone,
-                      [ZONE_LEAD_TIME]: parseInt(v, 10),
-                    }),
-                  1,
+                ${this._adv(
+                  this._numRow(
+                    localize("panels.zones.labels.lead-time", lang),
+                    "s",
+                    zone.lead_time,
+                    (v) =>
+                      this.handleEditZone(index, {
+                        ...zone,
+                        [ZONE_LEAD_TIME]: parseInt(v, 10),
+                      }),
+                    1,
+                  ),
                 )}
-                ${this._numRow(
-                  localize("panels.zones.labels.maximum-duration", lang),
-                  "s",
-                  zone.maximum_duration,
-                  (v) =>
-                    this.handleEditZone(index, {
-                      ...zone,
-                      [ZONE_MAXIMUM_DURATION]: parseInt(v, 10),
-                    }),
-                  1,
+                ${this._adv(
+                  this._numRow(
+                    localize("panels.zones.labels.maximum-duration", lang),
+                    "s",
+                    zone.maximum_duration,
+                    (v) =>
+                      this.handleEditZone(index, {
+                        ...zone,
+                        [ZONE_MAXIMUM_DURATION]: parseInt(v, 10),
+                      }),
+                    1,
+                  ),
                 )}
-                ${this._numRow(
-                  localize("panels.zones.labels.multiplier", lang),
-                  "",
-                  zone.multiplier,
-                  (v) =>
-                    this.handleEditZone(index, {
-                      ...zone,
-                      [ZONE_MULTIPLIER]: parseFloat(v),
-                    }),
-                  0.1,
+                ${this._adv(
+                  this._numRow(
+                    localize("panels.zones.labels.multiplier", lang),
+                    "",
+                    zone.multiplier,
+                    (v) =>
+                      this.handleEditZone(index, {
+                        ...zone,
+                        [ZONE_MULTIPLIER]: parseFloat(v),
+                      }),
+                    0.1,
+                  ),
                 )}
                 ${this._numRow(
                   localize("panels.zones.labels.duration", lang),
@@ -1882,6 +1971,44 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         display: flex;
         flex-direction: column;
       }
+      /* One sentence per zone, and a colour that says the same thing. */
+      .zone-status {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 16px 12px 16px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: var(--secondary-background-color);
+        color: var(--primary-text-color);
+        font-size: 0.95em;
+      }
+
+      .zone-status ha-icon {
+        --mdc-icon-size: 20px;
+        color: var(--secondary-text-color);
+        flex: none;
+      }
+
+      .zone-status--watering {
+        background: rgba(3, 169, 244, 0.12);
+      }
+
+      .zone-status--watering ha-icon {
+        color: var(--primary-color);
+      }
+
+      .zone-status--idle ha-icon {
+        color: var(--success-color, #43a047);
+      }
+
+      .zone-status-numbers {
+        margin-left: auto;
+        color: var(--secondary-text-color);
+        font-size: 0.9em;
+        white-space: nowrap;
+      }
+
       .setting-row {
         display: flex;
         align-items: center;

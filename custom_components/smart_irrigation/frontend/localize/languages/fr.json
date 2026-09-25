@@ -567,7 +567,16 @@
       },
       "no_items": "Il n'y a pas encore de zone définie.",
       "title": "Zones",
-      "module-comes-from-the-group": "Le moteur de calcul vient du groupe de capteurs de cette zone. Modifiez-le là-bas, et toutes les zones de ce groupe suivent."
+      "module-comes-from-the-group": "Le moteur de calcul vient du groupe de capteurs de cette zone. Modifiez-le là-bas, et toutes les zones de ce groupe suivent.",
+      "status": {
+        "will-water": "Arrosera {duration} au prochain départ.",
+        "idle": "Rien à arroser : déficit de {short}.",
+        "satisfied": "Rien à arroser : cette zone a ce qu'il lui faut.",
+        "under-threshold": "Rien à arroser pour l'instant : déficit de {short}, sous le seuil de cette zone.",
+        "manual": "N'arrose que si vous le demandez.",
+        "disabled": "Désactivée : jamais arrosée, et son bilan n'est pas suivi.",
+        "threshold": "seuil"
+      }
     },
     "history": {
       "title": "Historique",
