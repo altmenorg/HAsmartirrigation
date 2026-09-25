@@ -587,7 +587,9 @@
           "vines": "Vigne",
           "ground_cover": "Couvre-sol",
           "custom": "Je règle le coefficient moi-même"
-        }
+        },
+        "duration-readonly-automatic": "Calculée pour vous : la durée de cette zone vient de son bilan hydrique. Passez-la en manuel pour saisir une durée vous-même.",
+        "duration-readonly-disabled": "Une zone désactivée n'est jamais arrosée, elle n'a donc pas de durée."
       },
       "no_items": "Il n'y a pas encore de zone définie.",
       "title": "Zones",

@@ -590,7 +590,9 @@
           "vines": "Vines",
           "ground_cover": "Ground cover",
           "custom": "I set the crop coefficient myself"
-        }
+        },
+        "duration-readonly-automatic": "Calculated for you: this zone's run comes from its water balance. Set it to manual to type a duration yourself.",
+        "duration-readonly-disabled": "A disabled zone is never watered, so it has no run time."
       },
       "no_items": "There are no zones defined yet.",
       "title": "Zones",

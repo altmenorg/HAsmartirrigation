@@ -1525,6 +1525,16 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                   1,
                   durationReadonly,
                 )}
+                ${durationReadonly
+                  ? html`<div class="setting-help">
+                      ${localize(
+                        zone.state === SmartIrrigationZoneState.Disabled
+                          ? "panels.zones.labels.duration-readonly-disabled"
+                          : "panels.zones.labels.duration-readonly-automatic",
+                        lang,
+                      )}
+                    </div>`
+                  : ""}
               </div>
 
               <div class="zone-actions">
