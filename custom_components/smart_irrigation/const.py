@@ -268,6 +268,12 @@ CONF_CONTINUOUS_UPDATES = "continuousupdates"
 # default while it is new: switching it on changes every zone's ET.
 CONF_HOURLY_CALCULATION = "hourly_calculation"
 CONF_DEFAULT_HOURLY_CALCULATION = False
+# How much of the panel is shown. "standard" keeps the settings most
+# installations never touch folded away; "advanced" shows everything, which is
+# what every install had until now and what they keep.
+CONF_UI_MODE = "ui_mode"
+CONF_UI_MODE_STANDARD = "standard"
+CONF_UI_MODE_ADVANCED = "advanced"
 CONF_SENSOR_DEBOUNCE = "sensor_debounce"
 CONF_DEFAULT_SENSOR_DEBOUNCE = 100  # milliseconds, 0 = disabled
 
@@ -419,6 +425,11 @@ HISTORY_WATER_USED = "water_used"
 # with many zones watering several times a day.
 IRRIGATION_HISTORY_RETENTION_DAYS = 90
 IRRIGATION_HISTORY_MAX_ENTRIES = 1000
+
+# Sent by the panel when a zone is saved: how this zone is calculated, in the
+# panel's words. It is not stored on the zone; it binds the engine behind it.
+ZONE_CALCULATION_METHOD = "calculation_method"
+ZONE_METHOD_CONFIG = "method_config"
 
 MODULE_DIR = "calcmodules"
 MODULE_ID = "id"

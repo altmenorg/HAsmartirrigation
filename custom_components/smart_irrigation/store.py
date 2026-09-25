@@ -86,6 +86,9 @@ from .const import (
     CONF_SKIP_ON_FREEZE,
     CONF_SKIP_ON_RAIN_SENSOR,
     CONF_SKIP_ON_WIND,
+    CONF_UI_MODE,
+    CONF_UI_MODE_ADVANCED,
+    CONF_UI_MODE_STANDARD,
     CONF_UNITS,
     CONF_USE_WEATHER_SERVICE,
     CONF_WEATHER_SERVICE,
@@ -517,6 +520,9 @@ class Config:
     # Reference ET summed hour by hour (FAO-56 Eq. 53) instead of the daily
     # equation on the window's means. Off by default while in beta.
     hourly_calculation = attr.ib(type=bool, default=CONF_DEFAULT_HOURLY_CALCULATION)
+    # "standard" or "advanced"; None until the first load decides (see
+    # _async_choose_ui_mode).
+    ui_mode = attr.ib(type=str, default=None)
     # "metric" once the zones' values are stored in metric (see units.py);
     # None on an install that has not been through that migration yet.
     stored_units = attr.ib(type=str, default=None)
@@ -710,6 +716,23 @@ class SmartIrrigationStorage:
         data = await self._store.async_load()
         await self._populate_from_data(data)
         await self._async_store_zones_in_metric()
+        await self._async_choose_ui_mode()
+
+    async def _async_choose_ui_mode(self) -> None:
+        """Decide, once, how much of the panel this installation is shown.
+
+        An installation that already has zones was set up on a panel that
+        showed every setting, and some of those settings were changed on
+        purpose: folding them away under it would hide decisions its owner
+        made. So it stays on the full panel, and a fresh one starts on the
+        standard one. Either way the choice is written down and is the user's
+        from then on.
+        """
+        if self.config.ui_mode in (CONF_UI_MODE_STANDARD, CONF_UI_MODE_ADVANCED):
+            return
+        mode = CONF_UI_MODE_ADVANCED if self.zones else CONF_UI_MODE_STANDARD
+        self.config = attr.evolve(self.config, ui_mode=mode)
+        self.async_schedule_save()
 
     async def _async_store_zones_in_metric(self) -> None:
         """Convert an imperial install's zone values to metric, once.
@@ -820,6 +843,7 @@ class SmartIrrigationStorage:
                 hourly_calculation=data["config"].get(
                     CONF_HOURLY_CALCULATION, CONF_DEFAULT_HOURLY_CALCULATION
                 ),
+                ui_mode=data["config"].get(CONF_UI_MODE),
                 stored_units=data["config"].get(CONF_STORED_UNITS),
                 sensor_debounce=data["config"].get(
                     CONF_SENSOR_DEBOUNCE, CONF_DEFAULT_SENSOR_DEBOUNCE

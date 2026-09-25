@@ -24,6 +24,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
 from .calcmodules.consumes import consumed_mappings, idle_options
+from .engine_binding import ENGINE_BY_METHOD
 from .skip_conditions import thresholds_for_display
 from .units import zone_from_display, zone_to_display
 
@@ -95,6 +96,9 @@ class SmartIrrigationConfigView(HomeAssistantView):
                 vol.Optional(const.CONF_CLEAR_TIME): cv.string,
                 vol.Optional(const.CONF_CONTINUOUS_UPDATES): cv.boolean,
                 vol.Optional(const.CONF_HOURLY_CALCULATION): cv.boolean,
+                vol.Optional(const.CONF_UI_MODE): vol.In(
+                    [const.CONF_UI_MODE_STANDARD, const.CONF_UI_MODE_ADVANCED]
+                ),
                 vol.Optional(const.CONF_SENSOR_DEBOUNCE): cv.string,
                 vol.Optional(const.CONF_CALC_LOG_ENABLED): cv.boolean,
                 vol.Optional(const.CONF_USE_WEATHER_SERVICE): cv.boolean,
@@ -287,6 +291,12 @@ class SmartIrrigationZoneView(HomeAssistantView):
                 vol.Optional(const.ZONE_BUCKET): vol.Or(float, int, str, None),
                 vol.Optional(const.ZONE_DELTA): vol.Or(float, int, str, None),
                 vol.Optional(const.ZONE_MODULE): vol.Or(int, str, None),
+                # How this zone is calculated, in the panel's words. The engine
+                # behind it is created or reused server side (engine_binding).
+                vol.Optional(const.ZONE_CALCULATION_METHOD): vol.In(
+                    list(ENGINE_BY_METHOD)
+                ),
+                vol.Optional(const.ZONE_METHOD_CONFIG): dict,
                 vol.Optional(const.ATTR_REMOVE): cv.boolean,
                 vol.Optional(const.ATTR_CALCULATE): cv.boolean,
                 vol.Optional(const.ATTR_CALCULATE_ALL): cv.boolean,
@@ -345,9 +355,28 @@ class SmartIrrigationZoneView(HomeAssistantView):
         data = _without_server_owned_fields(data)
         # Entered in the unit system, stored in metric (units.py).
         data = zone_from_display(data, hass.config.units is METRIC_SYSTEM)
-        await coordinator.async_update_zone_config(zone, data)
+        # "How is this zone calculated" is answered in the panel's words; the
+        # engine it implies is bound after the zone exists, since a new zone
+        # has no id until it is saved.
+        method = data.pop(const.ZONE_CALCULATION_METHOD, None)
+        method_config = data.pop(const.ZONE_METHOD_CONFIG, None)
+        saved = await coordinator.async_update_zone_config(zone, data)
+        if method is not None:
+            zone_id = zone if zone is not None else _last_zone_id(saved, coordinator)
+            if zone_id is not None:
+                await coordinator.async_set_zone_method(
+                    int(zone_id), method, method_config
+                )
         async_dispatcher_send(hass, const.DOMAIN + "_update_frontend")
         return self.json({"success": True})
+
+
+def _last_zone_id(saved, coordinator):
+    """The id of the zone a save just created, when the caller sent none."""
+    if isinstance(saved, dict) and const.ZONE_ID in saved:
+        return saved[const.ZONE_ID]
+    zones = coordinator.store.zones or {}
+    return max(zones) if zones else None
 
 
 @async_response
