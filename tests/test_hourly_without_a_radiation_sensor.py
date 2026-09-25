@@ -23,7 +23,14 @@ from custom_components.smart_irrigation.hourly_rows import (
 )
 
 LAT, LON = 47.0, -1.5
-TZ_OFFSET = 2.0
+# The row builder places a naive stamp with the offset it is given, and a
+# solar series is stamped in UTC. Reading the machine's own offset for that
+# date is what keeps the two meeting wherever the tests run, including a CI
+# runner on UTC.
+TZ_OFFSET = (
+    datetime.datetime(2026, 6, 21, 10, 0, 0).astimezone().utcoffset().total_seconds()
+    / 3600.0
+)
 
 
 def _reading(stamp, **fields):
@@ -48,13 +55,14 @@ def _window(hours=3):
     return readings, start, start + datetime.timedelta(hours=hours)
 
 
-def _series(start, hours, mj_per_hour=2.0, offset_h=TZ_OFFSET):
-    """The sun of each hour, keyed as Open-Meteo stamps it: UTC, hour start."""
-    zone = datetime.timezone(datetime.timedelta(hours=offset_h))
+def _series(start, hours, mj_per_hour=2.0):
+    """The sun of each hour, keyed as Open-Meteo stamps it: UTC, hour start.
+
+    Built from the local stamps themselves, so the keys are the moments the
+    row builder will compute whatever zone the machine is in.
+    """
     return {
-        (start + datetime.timedelta(hours=hour))
-        .replace(tzinfo=zone)
-        .timestamp(): (mj_per_hour)
+        (start + datetime.timedelta(hours=hour)).timestamp(): mj_per_hour
         for hour in range(hours)
     }
 
