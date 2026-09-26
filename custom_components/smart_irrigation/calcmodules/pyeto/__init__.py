@@ -152,8 +152,7 @@ class PyETO(SmartIrrigationCalculationModule):
         deltas = []
         days = []
         if weather_data:
-            deltas.append(self.calculate_et_for_day(weather_data))
-            days.append(self.last_day_trace)
+            self._price_day(weather_data, None, deltas, days)
             # loop over the forecast days
             for x in range(self.forecast_days):
                 _LOGGER.debug(
@@ -163,8 +162,7 @@ class PyETO(SmartIrrigationCalculationModule):
                 if len(forecast_data) - 1 >= x:
                     # The forecast list starts at tomorrow.
                     day = datetime.date.today() + datetime.timedelta(days=x + 1)
-                    deltas.append(self.calculate_et_for_day(forecast_data[x], day))
-                    days.append(self.last_day_trace)
+                    self._price_day(forecast_data[x], day, deltas, days)
         # return average of the collected deltas
         _LOGGER.debug("[pyETO: calculate_et_for_day] collected deltas: %s", deltas)
         if deltas:
@@ -177,11 +175,34 @@ class PyETO(SmartIrrigationCalculationModule):
             "coastal": self._coastal,
             "forecast_days": self.forecast_days,
             "forecast_days_used": max(0, len(days) - 1),
+            "days_in_average": len(deltas),
             "days": days,
             "deltas": deltas,
             "mean_delta": delta,
         }
         return delta
+
+    def _price_day(self, data, day, deltas: list, days: list) -> None:
+        """Price one day, and keep it out of the average if it could not be.
+
+        A day missing one of the five inputs the equation needs returns zero,
+        and averaging that zero in divides the evapotranspiration by the number
+        of days asked for: three forecast days a weather service does not fill
+        turned a 4 mm day into 1 mm, quietly, and the zone was watered a quarter
+        of what it needed. Such a day is left out of the average -- the days
+        that could be priced answer for the period -- but it stays in the trace
+        with what it was missing, so the History tab still shows it.
+        """
+        value = self.calculate_et_for_day(data, day)
+        trace = self.last_day_trace
+        days.append(trace)
+        if trace is None or trace.get("missing"):
+            _LOGGER.warning(
+                "[pyETO: calculate] leaving a day out of the average, missing: %s",
+                ", ".join((trace or {}).get("missing") or ["all of it"]),
+            )
+            return
+        deltas.append(value)
 
     @staticmethod
     def _day_of_the_weather(weather_data, day=None) -> datetime.date:
