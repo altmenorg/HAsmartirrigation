@@ -31,6 +31,7 @@ class _Coordinator(ObservedWateringMixin, ValveRunnerMixin, CalculationMixin):
         self.store = store
         self._si_driven_until = {}
         self._active_valve_runs = {}
+        self._direct_run_finished = {}
         self._valve_run_tasks = set()
 
 
@@ -390,3 +391,81 @@ async def test_a_late_valve_service_failure_is_logged(monkeypatch, caplog):
     await _REAL_SLEEP(0)
 
     assert "valve proxy exploded" in caplog.text
+
+
+# --- a zone is watered once per cycle --------------------------------------
+
+
+async def test_a_zone_whose_valve_we_hold_is_not_opened_again():
+    """Two presses of "irrigate now" used to open the same valve twice and
+    credit the bucket twice for water that was delivered once."""
+    zone = _zone()
+    hass = _make_hass()
+    coord = _Coordinator(hass, _make_store(zone))
+    coord._active_valve_runs[0] = {
+        "entity": "switch.valve",
+        "started": dt_util.utcnow().isoformat(),
+        "duration": 300.0,
+    }
+
+    await coord.async_run_direct_valves([0])
+
+    hass.services.async_call.assert_not_awaited()
+    coord.store.async_update_zone.assert_not_awaited()
+
+
+async def test_a_zone_watered_while_it_waited_its_turn_is_skipped():
+    """A sequential cycle dispatches a zone long after it listed it: if that
+    zone was watered in the meantime, watering it again would double the water
+    and the credit."""
+    z0 = _zone(id=0, linked_entity="switch.a")
+    z1 = _zone(id=1, linked_entity="switch.b")
+    hass = _make_hass()
+    coord = _Coordinator(hass, _make_store(z0, zones=[z0, z1]))
+    ran = []
+
+    async def _fake_run(zone):
+        zone_id = int(zone[const.ZONE_ID])
+        ran.append(zone_id)
+        if zone_id == 0:
+            # The user waters zone 1 on the spot while zone 0 is still open.
+            coord._direct_run_finished[1] = hass.loop.time()
+        return {"zone_id": zone_id, "zone": "z", "seconds": 300, "ran": True}
+
+    coord._run_one_valve = _fake_run
+    await coord.async_run_direct_valves()
+
+    assert ran == [0]
+
+
+async def test_a_sequential_cycle_still_waters_every_zone():
+    """The guard must not skip a zone that simply comes second."""
+    z0 = _zone(id=0, linked_entity="switch.a")
+    z1 = _zone(id=1, linked_entity="switch.b")
+    hass = _make_hass()
+    coord = _Coordinator(hass, _make_store(z0, zones=[z0, z1]))
+    ran = []
+
+    async def _fake_run(zone):
+        ran.append(int(zone[const.ZONE_ID]))
+        return {
+            "zone_id": int(zone[const.ZONE_ID]),
+            "zone": "z",
+            "seconds": 300,
+            "ran": True,
+        }
+
+    coord._run_one_valve = _fake_run
+    await coord.async_run_direct_valves()
+
+    assert ran == [0, 1]
+
+
+async def test_a_finished_run_is_remembered():
+    zone = _zone()
+    hass = _make_hass()
+    coord = _Coordinator(hass, _make_store(zone))
+
+    await coord._run_one_valve(zone)
+
+    assert coord._direct_run_finished[0] > 0

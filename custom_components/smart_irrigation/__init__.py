@@ -605,6 +605,7 @@ class SmartIrrigationCoordinator(
         # the background run tasks (cancelled on unload).
         self._si_driven_until = {}
         self._active_valve_runs = {}
+        self._direct_run_finished = {}
         self._valve_run_tasks = set()
 
         # set up sunrise tracking

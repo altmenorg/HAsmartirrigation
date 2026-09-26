@@ -203,13 +203,33 @@ class ValveRunnerMixin:
 
     # --- running ------------------------------------------------------------
 
+    def _run_in_flight(self, zone_id) -> bool:
+        """Whether we are holding this zone's valve open right now."""
+        return int(zone_id) in self._active_valve_runs
+
+    def _watered_since(self, zone_id, moment: float) -> bool:
+        """Whether our own runner already finished a run on this zone since
+        ``moment`` (the loop clock)."""
+        return self._direct_run_finished.get(int(zone_id), 0.0) > moment
+
     def _eligible_direct_zones(self, zones, zone_ids):
-        """Zones with a linked valve, a positive duration, and not disabled."""
+        """Zones with a linked valve, a positive duration, and not disabled.
+
+        A zone whose valve we are already holding open is left out: asking to
+        water it again while it runs would open the valve a second time and
+        credit the bucket twice for water delivered once.
+        """
         want_all = zone_ids is None or zone_ids == "all"
         target = None if want_all else {int(z) for z in zone_ids}
         eligible = []
         for z in zones:
             if not z.get(const.ZONE_LINKED_ENTITY):
+                continue
+            if self._run_in_flight(z.get(const.ZONE_ID)):
+                _LOGGER.info(
+                    "Direct valve control: zone %s is already running, skipped",
+                    z.get(const.ZONE_ID),
+                )
                 continue
             if (z.get(const.ZONE_DURATION) or 0) <= 0:
                 continue
@@ -225,6 +245,11 @@ class ValveRunnerMixin:
         cfg = self.store.config
         if getattr(cfg, const.CONF_DIRECT_VALVE_CONTROL_ENABLED, False) is not True:
             return
+        # The moment this cycle starts, on the loop clock. A zone watered by
+        # another cycle while this one waits its turn is not watered again:
+        # pressing "irrigate now" on a zone queued behind others used to run it
+        # twice, once on request and once when the queue reached it.
+        cycle_start = self.hass.loop.time()
         zones = await self.store.async_get_zones()
         eligible = self._eligible_direct_zones(zones, zone_ids)
         if not eligible:
@@ -259,7 +284,21 @@ class ValveRunnerMixin:
         if sequencing == const.CONF_ZONE_SEQUENCING_PARALLEL:
             results = await asyncio.gather(*(self._run_one_valve(z) for z in eligible))
         else:
-            results = [await self._run_one_valve(zone) for zone in eligible]
+            results = []
+            for zone in eligible:
+                zone_id = zone.get(const.ZONE_ID)
+                # Re-checked here rather than only up front: a sequential cycle
+                # dispatches each zone minutes or hours after it was listed.
+                if self._run_in_flight(zone_id) or self._watered_since(
+                    zone_id, cycle_start
+                ):
+                    _LOGGER.info(
+                        "Direct valve control: zone %s was watered while it "
+                        "waited its turn, skipped",
+                        zone_id,
+                    )
+                    continue
+                results.append(await self._run_one_valve(zone))
 
         # Fire a single end-of-watering summary so one automation can report.
         results = [r for r in results if r]
@@ -338,6 +377,7 @@ class ValveRunnerMixin:
         # Clear the persisted run before crediting: a crash in this window then
         # loses at most one credit rather than double-crediting on resume.
         await self._remove_active_run(zone_id)
+        self._direct_run_finished[zone_id] = self.hass.loop.time()
         # The valve was held for ``duration``; credit that (a cancelled run never
         # reaches here, so its credit comes from the reboot-resume path instead).
         await self._credit_direct_run(zone_id, duration, started)
@@ -461,6 +501,7 @@ class ValveRunnerMixin:
                 )
             await self._async_call_valve_service(domain, off_svc, entity_id)
             await self._remove_active_run(zone_id)
+            self._direct_run_finished[zone_id] = self.hass.loop.time()
             await self._credit_direct_run(zone_id, elapsed, started)
             return
 
@@ -489,4 +530,5 @@ class ValveRunnerMixin:
         finally:
             await self._async_call_valve_service(domain, off_svc, entity_id)
         await self._remove_active_run(zone_id)
+        self._direct_run_finished[zone_id] = self.hass.loop.time()
         await self._credit_direct_run(zone_id, duration, started)
