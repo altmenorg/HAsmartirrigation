@@ -18,6 +18,8 @@ Experts say you should water deeply but infrequently to avoid overwatering and e
 
 The examples on this page don't use a timer - see [this discussion](https://github.com/altmenorg/HAsmartirrigation/discussions/361) for an example of using a timer for extra safety.
 
+> Writing your own executor rather than using a blueprint? [The output contract](usage-output-contract.md) says exactly what Smart Irrigation publishes, when it changes, and what to send back.
+
 ## Blueprints we provide
 
 A blueprint is a parameterised mould for an automation: you import it once, pick your entities from filtered dropdowns, and Home Assistant writes the automation for you.
