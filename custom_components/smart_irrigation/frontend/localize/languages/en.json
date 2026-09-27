@@ -219,8 +219,8 @@
           "labels": {
             "auto-calc-enabled": "Automatically calculate irrigation durations",
             "calc-time": "Calculate at",
-            "hourly-calculation": "Calculate evapotranspiration hour by hour (beta)",
-            "hourly-calculation-hint": "Sums the FAO-56 hourly equation over each hour since the last calculation, instead of applying the daily equation to the averages. Only for PyETO with a solar radiation source and no forecast days; anything else keeps the daily equation."
+            "hourly-calculation": "Calculate evapotranspiration hour by hour",
+            "hourly-calculation-hint": "Sums the FAO-56 hourly equation over each hour since the last calculation, instead of applying the daily equation to the averages, which hides whether the sun and the heat came together. A new installation starts on it; an installation set up before it arrived keeps the daily equation until you switch, because the two give different numbers and your watering should not change on an update. The sun of each hour comes from a radiation or illuminance sensor, from the weather service's own hourly history, or from the day's temperature range. It is worth having when readings arrive through the day: one update a day leaves a single reading held across twenty-four hours, and neither form is trustworthy then. A greenhouse with no sensor of its own keeps the daily equation."
           }
         },
         "automatic-update": {
