@@ -45,6 +45,7 @@ Smart Irrigation does not open your valves by itself unless you ask it to: by de
 
 ## Start here
 
+- **[Never done any of this?](getting-started-from-scratch.md)** The whole path in half an hour: a machine, a valve, Home Assistant, a zone that waters itself.
 - **[Install it](installation.md)**, which is a HACS download and a restart.
 - Prefer to read first? **[How it works](how-it-works.md)** and **[which weather service to use](weather-services.md)**.
 - Rather watch? The [official tutorial videos (English)](https://youtube.com/playlist?list=PLUHIAUPJHMiakbda92--fgb6A0hFReAo7&si=82Xc6mHoLDwFBfCP), and a [community tutorial in German](https://youtu.be/1AYLuIs7_Pw).
