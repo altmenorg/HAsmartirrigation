@@ -21,6 +21,9 @@
       },
       "water_used": {
         "name": "Eau utilisée"
+      },
+      "live_bucket": {
+        "name": "Réservoir en direct"
       }
     },
     "number": {

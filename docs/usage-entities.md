@@ -46,7 +46,8 @@ Each zone is also grouped as a **device** in Home Assistant (named after the zon
 | Entity | Type | Description |
 | --- | --- | --- |
 | Duration (`sensor.smart_irrigation_[zone]`) | sensor | Calculated watering duration (seconds). This is the original entity: its `entity_id`, recorded history and attributes are preserved. |
-| Bucket | sensor | Current soil water balance (mm/inch); negative means deficit. |
+| Bucket | sensor | Current soil water balance (mm/inch); negative means deficit. This is the value the last calculation committed. |
+| Live bucket | sensor | Where the zone stands **now**: the same calculation run over the readings collected since the last one, without committing anything. Recomputed as the zone's readings arrive, at most every thirty seconds. Its `live` attribute is `false` when there is nothing to estimate from yet (just after a calculation), and the value is then the committed bucket; `since`, `as_of` and `duration` say what the estimate covers and the run it implies. |
 | Applied ET | sensor | ET applied to the bucket at the last calculation (daily et0 x elapsed interval + rain). |
 | Daily ET deficiency | sensor | This zone's daily need, crop factor included, independent of the interval and of rain. |
 | Current drainage | sensor | Water drained as runoff at the last calculation. |

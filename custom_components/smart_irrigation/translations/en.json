@@ -21,6 +21,9 @@
       },
       "water_used": {
         "name": "Water used"
+      },
+      "live_bucket": {
+        "name": "Live bucket"
       }
     },
     "number": {
