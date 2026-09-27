@@ -80,41 +80,13 @@ Smart Irrigation v2 is a UI-only integration — there is no `configuration.yaml
 
 Enable the Irrigation Unlimited integration from the Smart Irrigation panel in the Home Assistant UI (Settings → Integrations → Smart Irrigation → Configure). The relevant options are stored internally by the integration.
 
-### Zone Synchronization
+### The sync services do not work, and will tell you so
 
-Automatically sync Smart Irrigation zones with corresponding Irrigation Unlimited entities:
+`sync_with_irrigation_unlimited`, `send_zone_data_to_irrigation_unlimited` and the schedule conversion belong to a sync subsystem that is switched off and has no setting to switch it on: the flag it reads was never a setting of this integration. Calling one used to return quietly and write a warning in the log, which cost at least one person an evening (discussion #696); it now raises an error that says this and points here.
 
-```yaml
-service: smart_irrigation.sync_with_irrigation_unlimited
-data:
-  zone_ids: [1, 2, 3]  # Optional: specific zones, or omit for all
-```
+Use the blueprint below instead. It hands Irrigation Unlimited the calculated duration through IU's own `adjust_time` action and lets IU run the valves, which is the division of labour both integrations are built for, and it does not depend on guessing which IU entity belongs to which zone from their names.
 
-The integration attempts to match zones using:
-1. Zone name similarity
-2. Zone ID matching in entity names
-3. Entity ID patterns (e.g., `c1_z2` for zone 2)
-
-### Real-time Data Sharing
-
-Send zone data directly to Irrigation Unlimited:
-
-```yaml
-service: smart_irrigation.send_zone_data_to_irrigation_unlimited
-data:
-  zone_id: 1
-  data:
-    duration: 300
-    state: "on"
-```
-
-### Schedule Conversion
-
-Convert Smart Irrigation triggers and schedules to Irrigation Unlimited format:
-
-```yaml
-service: smart_irrigation.get_irrigation_unlimited_status
-```
+`get_irrigation_unlimited_status` still answers: it reports that the sync is off.
 
 ## Best Practices
 

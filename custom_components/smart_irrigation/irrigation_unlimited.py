@@ -1,4 +1,18 @@
-"""Irrigation Unlimited integration for Smart Irrigation."""
+"""Irrigation Unlimited integration for Smart Irrigation.
+
+This is the *sync* subsystem: it looks for Irrigation Unlimited entities and
+pushes durations and schedules at them. It is switched off, and there is no way
+to switch it on: the flag it reads (``irrigation_unlimited_integration``) is not
+a setting of this integration and never has been, so every entry point below
+refuses. That is not an accident to work around silently -- a service that
+cannot work has to say so rather than warn in a log nobody is watching
+(discussion #696, where somebody spent an evening on it).
+
+The supported way to drive Irrigation Unlimited is the blueprint, which calls
+IU's own ``adjust_time`` with the calculated duration and lets IU run the
+valves. It is documented, it is tested, and it does not depend on guessing which
+IU entity belongs to which zone from their names.
+"""
 
 import datetime
 import logging
@@ -9,8 +23,18 @@ from homeassistant.const import STATE_ON
 from homeassistant.core import HomeAssistant
 
 from . import const
+from .exceptions import SmartIrrigationError
 
 _LOGGER = logging.getLogger(__name__)
+
+# What every refusal says, once.
+NO_IU_SYNC = (
+    "The Irrigation Unlimited sync is not available: it is switched off and "
+    "there is no setting to switch it on. Use the Irrigation Unlimited "
+    "blueprint instead, which hands IU the calculated duration through its own "
+    "adjust_time action: "
+    "https://altmenorg.github.io/HAsmartirrigation/usage-automations.html"
+)
 
 
 class IrrigationUnlimitedIntegration:
@@ -69,7 +93,7 @@ class IrrigationUnlimitedIntegration:
     ) -> dict[str, Any]:
         """Sync Smart Irrigation zones to Irrigation Unlimited."""
         if not self._sync_enabled:
-            raise ValueError("Irrigation Unlimited integration is not enabled")
+            raise SmartIrrigationError(NO_IU_SYNC)
 
         zones = await self.coordinator.store.async_get_zones()
         if zone_ids:
@@ -238,7 +262,9 @@ class IrrigationUnlimitedIntegration:
     async def async_get_iu_status(self) -> dict[str, Any]:
         """Get status of Irrigation Unlimited entities."""
         if not self._sync_enabled:
-            return {"enabled": False, "entities": []}
+            # Not an error: asking whether it is on is a fair question, and the
+            # answer is no.
+            return {"enabled": False, "entities": [], "reason": NO_IU_SYNC}
 
         await self._discover_iu_entities()  # Refresh entity list
 
@@ -276,7 +302,7 @@ class IrrigationUnlimitedIntegration:
     ) -> bool:
         """Send zone data to corresponding Irrigation Unlimited entity."""
         if not self._sync_enabled:
-            return False
+            raise SmartIrrigationError(NO_IU_SYNC)
 
         zone = self.coordinator.store.get_zone(zone_id)
         if not zone:
@@ -309,7 +335,7 @@ class IrrigationUnlimitedIntegration:
     ) -> dict[str, Any]:
         """Create IU schedules based on Smart Irrigation triggers and schedules."""
         if not self._sync_enabled:
-            raise ValueError("Irrigation Unlimited integration is not enabled")
+            raise SmartIrrigationError(NO_IU_SYNC)
 
         # Get Smart Irrigation triggers and schedules
         config = await self.coordinator.store.async_get_config()
