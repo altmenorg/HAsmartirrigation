@@ -71,3 +71,90 @@ async def test_no_zones_at_all():
     coordinator = _coordinator(const.CONF_ZONE_SEQUENCING_PARALLEL)
 
     assert await coordinator.get_total_duration_all_enabled_zones() == 0
+
+
+# --- cycle and soak, and the pause between zones ----------------------------
+#
+# Both occupy the run without watering in it, so a trigger that has to finish
+# at sunrise has to know about them. They only exist when Smart Irrigation
+# opens the valves itself.
+
+
+def _driving(config, *durations):
+    coordinator = _coordinator(const.CONF_ZONE_SEQUENCING_SEQUENTIAL, *durations)
+    coordinator.store.async_get_config = AsyncMock(
+        return_value={
+            const.CONF_ZONE_SEQUENCING: const.CONF_ZONE_SEQUENCING_SEQUENTIAL,
+            const.CONF_DIRECT_VALVE_CONTROL_ENABLED: True,
+            **config,
+        }
+    )
+    return coordinator
+
+
+@pytest.mark.asyncio
+async def test_soaking_lengthens_the_run():
+    """Two zones of 30 min in 3 passes, soaking 10 min: 30 + 20 each."""
+    coordinator = _driving(
+        {const.CONF_WATERING_PASSES: 3, const.CONF_SOAK_MINUTES: 10}, 1800, 1800
+    )
+
+    assert await coordinator.get_total_duration_all_enabled_zones() == 2 * (1800 + 1200)
+
+
+@pytest.mark.asyncio
+async def test_the_pause_between_zones_lengthens_it_too():
+    coordinator = _driving({const.CONF_PAUSE_BETWEEN_ZONES: 120}, 600, 600, 600)
+
+    # Three zones, two pauses.
+    assert await coordinator.get_total_duration_all_enabled_zones() == 1800 + 240
+
+
+@pytest.mark.asyncio
+async def test_one_zone_is_never_paused_after():
+    coordinator = _driving({const.CONF_PAUSE_BETWEEN_ZONES: 120}, 600)
+
+    assert await coordinator.get_total_duration_all_enabled_zones() == 600
+
+
+@pytest.mark.asyncio
+async def test_zones_at_once_take_the_longest_soaking_and_all():
+    coordinator = _driving(
+        {
+            const.CONF_WATERING_PASSES: 2,
+            const.CONF_SOAK_MINUTES: 5,
+            const.CONF_PAUSE_BETWEEN_ZONES: 120,
+            const.CONF_ZONE_SEQUENCING: const.CONF_ZONE_SEQUENCING_PARALLEL,
+        },
+        1800,
+        600,
+    )
+
+    # The longest zone, its own soak included; no pause, nothing waits.
+    assert await coordinator.get_total_duration_all_enabled_zones() == 1800 + 300
+
+
+@pytest.mark.asyncio
+async def test_an_executor_of_your_own_keeps_its_own_timing():
+    """Our passes do not exist when somebody else opens the valves."""
+    coordinator = _coordinator(const.CONF_ZONE_SEQUENCING_SEQUENTIAL, 1800, 1800)
+    coordinator.store.async_get_config = AsyncMock(
+        return_value={
+            const.CONF_ZONE_SEQUENCING: const.CONF_ZONE_SEQUENCING_SEQUENTIAL,
+            const.CONF_DIRECT_VALVE_CONTROL_ENABLED: False,
+            const.CONF_WATERING_PASSES: 3,
+            const.CONF_SOAK_MINUTES: 10,
+            const.CONF_PAUSE_BETWEEN_ZONES: 120,
+        }
+    )
+
+    assert await coordinator.get_total_duration_all_enabled_zones() == 3600
+
+
+@pytest.mark.asyncio
+async def test_a_run_too_short_to_split_soaks_not_at_all():
+    coordinator = _driving(
+        {const.CONF_WATERING_PASSES: 4, const.CONF_SOAK_MINUTES: 10}, 45
+    )
+
+    assert await coordinator.get_total_duration_all_enabled_zones() == 45

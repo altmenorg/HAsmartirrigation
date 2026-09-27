@@ -54,6 +54,62 @@ _VALVE_ON_STATES = ("on", "open", "opening")
 _VALVE_UNUSABLE = (None, "", "unknown", "unavailable")
 
 
+def setting(config, key: str, default: float) -> float:
+    """A positive number from the configuration, or the default if it is not one.
+
+    ``config`` is the stored object here and a plain dict where it comes back
+    from ``async_get_config``, and both call sites matter: the runner splits a
+    run into passes, and the start trigger has to work back from the same
+    wall clock.
+    """
+    raw = (
+        config.get(key, default)
+        if isinstance(config, dict)
+        else getattr(config, key, default)
+    )
+    try:
+        return max(0.0, float(raw))
+    except (TypeError, ValueError):
+        return float(default)
+
+
+def pass_plan(config, duration: float) -> list:
+    """The passes a run of ``duration`` seconds is watered in.
+
+    Cycle and soak: the same water, in shorter passes with a pause between
+    them, so heavy soil takes it in instead of letting it run off the surface.
+    The number of passes comes down until each one is worth opening a valve
+    for, so a four-minute run is never cut into six forty-second ones.
+    """
+    passes = int(
+        setting(config, const.CONF_WATERING_PASSES, const.CONF_DEFAULT_WATERING_PASSES)
+    )
+    passes = max(1, min(passes, const.CONF_MAX_WATERING_PASSES))
+    while passes > 1 and duration / passes < const.MIN_PASS_SECONDS:
+        passes -= 1
+    return [duration / passes] * passes
+
+
+def soak_seconds(config) -> float:
+    """How long a zone soaks between two passes, in seconds."""
+    return (
+        setting(config, const.CONF_SOAK_MINUTES, const.CONF_DEFAULT_SOAK_MINUTES) * 60.0
+    )
+
+
+def wall_clock_seconds(config, duration: float) -> float:
+    """How long a zone's run takes end to end, soaking included.
+
+    The watering is the same either way; the soaking is time the run occupies
+    without watering, which is exactly what a trigger that must finish at
+    sunrise has to know about.
+    """
+    if duration <= 0:
+        return 0.0
+    plan = pass_plan(config, duration)
+    return duration + soak_seconds(config) * (len(plan) - 1)
+
+
 class ValveRunnerMixin:
     """Open/close linked valves directly and credit the bucket for the run."""
 
@@ -240,6 +296,15 @@ class ValveRunnerMixin:
             eligible.append(z)
         return eligible
 
+    def _positive_setting(self, key: str, default: float) -> float:
+        return setting(self.store.config, key, default)
+
+    def _pass_plan(self, duration: float) -> list:
+        return pass_plan(self.store.config, duration)
+
+    def _soak_seconds(self) -> float:
+        return soak_seconds(self.store.config)
+
     async def async_run_direct_valves(self, zone_ids=None) -> None:
         """Open/run/close every eligible zone, sequentially or in parallel."""
         cfg = self.store.config
@@ -298,6 +363,15 @@ class ValveRunnerMixin:
                         zone_id,
                     )
                     continue
+                if results:
+                    # Time for the line pressure to recover, or for a slow
+                    # valve to finish closing before the next one opens.
+                    pause = self._positive_setting(
+                        const.CONF_PAUSE_BETWEEN_ZONES,
+                        const.CONF_DEFAULT_PAUSE_BETWEEN_ZONES,
+                    )
+                    if pause:
+                        await asyncio.sleep(pause)
                 results.append(await self._run_one_valve(zone))
 
         # Fire a single end-of-watering summary so one automation can report.
@@ -329,7 +403,7 @@ class ValveRunnerMixin:
         )
 
     async def _run_one_valve(self, zone: dict):
-        """Open one zone's valve, hold it for its duration, close it, credit.
+        """Water one zone for its duration, in one pass or several, and credit.
 
         Returns a result dict ``{zone_id, zone, seconds, ran, problem}`` used to
         build the end-of-watering summary, or None when there was nothing to do.
@@ -340,15 +414,68 @@ class ValveRunnerMixin:
         duration = float(zone.get(const.ZONE_DURATION) or 0)
         if not entity_id or duration <= 0:
             return None
+        plan = self._pass_plan(duration)
+        soak = self._soak_seconds() if len(plan) > 1 else 0.0
+        # Suppress the observer from the moment we send the first open command
+        # until the last pass has closed, soaking time included.
+        self._note_si_valve(
+            zone_id, duration + soak * (len(plan) - 1) + VALVE_CONFIRM_TIMEOUT
+        )
+        if len(plan) > 1:
+            _LOGGER.info(
+                "Direct valve control: zone %s in %d passes of %.0fs, "
+                "soaking %.0fs between them",
+                zone_id,
+                len(plan),
+                plan[0],
+                soak,
+            )
+
+        watered = 0.0
+        problem = None
+        for index, seconds in enumerate(plan):
+            if index and soak:
+                await asyncio.sleep(soak)
+            problem = await self._run_one_pass(zone, entity_id, seconds)
+            if problem:
+                break
+            watered += seconds
+
+        if problem and not watered:
+            return {
+                "zone_id": zone_id,
+                "zone": zone_name,
+                "seconds": 0,
+                "ran": False,
+                "problem": problem,
+            }
+        zone_after = self.store.get_zone(zone_id) or {}
+        return {
+            "zone_id": zone_id,
+            "zone": zone_name,
+            "seconds": int(watered),
+            "volume_l": round(self._gross_volume_litres(zone, watered), 1),
+            "bucket": round(float(zone_after.get(const.ZONE_BUCKET) or 0.0), 1),
+            "ran": True,
+            # A pass that failed after water was already delivered is reported
+            # here too, and has fired its own zone_problem event.
+            "problem": problem,
+        }
+
+    async def _run_one_pass(self, zone: dict, entity_id: str, seconds: float):
+        """Open the valve, hold it for ``seconds``, close it, credit that water.
+
+        Returns None when the pass ran, or the reason it did not. Each pass is
+        persisted and credited on its own, so a reboot in the middle of a run
+        resumes the pass that was open and never credits water twice.
+        """
+        zone_id = int(zone.get(const.ZONE_ID))
         domain, on_svc, off_svc = self._valve_services(entity_id)
-        # Suppress the observer from the moment we send the open command (it must
-        # cover the confirm poll and the whole run).
-        self._note_si_valve(zone_id, duration + VALVE_CONFIRM_TIMEOUT)
         _LOGGER.info(
             "Direct valve control: opening %s for zone %s (%.0fs)",
             entity_id,
             zone_id,
-            duration,
+            seconds,
         )
         await self._async_call_valve_service(domain, on_svc, entity_id)
 
@@ -359,38 +486,23 @@ class ValveRunnerMixin:
         if await self._confirm_valve_running(entity_id) is False:
             await self._async_call_valve_service(domain, off_svc, entity_id)
             self._report_valve_problem(zone, entity_id, "valve_did_not_open")
-            return {
-                "zone_id": zone_id,
-                "zone": zone_name,
-                "seconds": 0,
-                "ran": False,
-                "problem": "valve_did_not_open",
-            }
+            return "valve_did_not_open"
 
         # Start counting only once the valve is confirmed open.
         started = dt_util.utcnow()
-        await self._add_active_run(zone_id, entity_id, started, duration)
+        await self._add_active_run(zone_id, entity_id, started, seconds)
         try:
-            await asyncio.sleep(duration)
+            await asyncio.sleep(seconds)
         finally:
             await self._async_call_valve_service(domain, off_svc, entity_id)
         # Clear the persisted run before crediting: a crash in this window then
         # loses at most one credit rather than double-crediting on resume.
         await self._remove_active_run(zone_id)
         self._direct_run_finished[zone_id] = self.hass.loop.time()
-        # The valve was held for ``duration``; credit that (a cancelled run never
+        # The valve was held for ``seconds``; credit that (a cancelled pass never
         # reaches here, so its credit comes from the reboot-resume path instead).
-        await self._credit_direct_run(zone_id, duration, started)
-        zone_after = self.store.get_zone(zone_id) or {}
-        return {
-            "zone_id": zone_id,
-            "zone": zone_name,
-            "seconds": int(duration),
-            "volume_l": round(self._gross_volume_litres(zone, duration), 1),
-            "bucket": round(float(zone_after.get(const.ZONE_BUCKET) or 0.0), 1),
-            "ran": True,
-            "problem": None,
-        }
+        await self._credit_direct_run(zone_id, seconds, started)
+        return None
 
     def _gross_volume_litres(self, zone: dict, seconds: float) -> float:
         """Litres actually delivered (throughput x time), for the report."""

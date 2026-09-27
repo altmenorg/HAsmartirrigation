@@ -15,6 +15,7 @@ from homeassistant.util.unit_conversion import SpeedConverter, TemperatureConver
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
+from .valve_runner import setting, wall_clock_seconds
 from .weathermodules.OpenMeteoClient import WIND_10M_TO_2M
 
 _LOGGER = logging.getLogger(__name__)
@@ -90,12 +91,33 @@ class SkipConditionsMixin:
         if not durations:
             return 0
         config = await self.store.async_get_config()
+        # Cycle and soak, and the pause between zones, occupy the run without
+        # watering in it. They only exist when Smart Irrigation opens the
+        # valves itself; an executor of your own keeps its own timing.
+        driving = bool(
+            config.get(
+                const.CONF_DIRECT_VALVE_CONTROL_ENABLED,
+                const.CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED,
+            )
+        )
+        lengths = (
+            [wall_clock_seconds(config, duration) for duration in durations]
+            if driving
+            else list(durations)
+        )
         sequencing = config.get(
             const.CONF_ZONE_SEQUENCING, const.CONF_DEFAULT_ZONE_SEQUENCING
         )
         if sequencing == const.CONF_ZONE_SEQUENCING_PARALLEL:
-            return max(durations)
-        return sum(durations)
+            return int(max(lengths))
+        pauses = 0.0
+        if driving and len(lengths) > 1:
+            pauses = setting(
+                config,
+                const.CONF_PAUSE_BETWEEN_ZONES,
+                const.CONF_DEFAULT_PAUSE_BETWEEN_ZONES,
+            ) * (len(lengths) - 1)
+        return int(sum(lengths) + pauses)
 
     async def async_evaluate_skip_conditions(self) -> dict:
         """Evaluate every skip condition and say which one vetoes watering.

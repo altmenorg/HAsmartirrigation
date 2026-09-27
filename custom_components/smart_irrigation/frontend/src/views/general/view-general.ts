@@ -1020,8 +1020,72 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           <div class="card-content">
             ${localize("observed_watering.sequencing_description", lang)}
           </div>
+
+          ${this.config.direct_valve_control_enabled &&
+          this.config.ui_mode === "advanced"
+            ? this.renderCycleAndSoak(lang)
+            : ""}
         </div>
       </ha-card>
+    `;
+  }
+
+  /**
+   * Cycle and soak, and the pause between two zones.
+   *
+   * Both only mean anything when Smart Irrigation opens the valves itself, and
+   * both are for an installation somebody has already tuned: they are shown on
+   * the advanced panel only. Left alone, a zone waters in one go, which is what
+   * it has always done.
+   */
+  renderCycleAndSoak(lang: string) {
+    if (!this.config) return html``;
+    const config = this.config;
+    const passes = Number(config.watering_passes ?? 1) || 1;
+    const sequential = config.zone_sequencing !== "parallel";
+    return html`
+      ${this._numRow(
+        localize("observed_watering.passes_label", lang),
+        "",
+        passes,
+        (v) =>
+          this.handleConfigChange({
+            watering_passes: Math.min(6, Math.max(1, parseInt(v) || 1)),
+          }),
+      )}
+      ${passes > 1
+        ? html`${this._numRow(
+              localize("observed_watering.soak_label", lang),
+              localize("observed_watering.minutes", lang),
+              config.soak_minutes ?? 15,
+              (v) =>
+                this.handleConfigChange({
+                  soak_minutes: Math.max(0, parseFloat(v) || 0),
+                }),
+            )}
+            <div class="card-content">
+              ${localize("observed_watering.passes_description", lang)}
+            </div>`
+        : html`<div class="card-content">
+            ${localize("observed_watering.passes_description", lang)}
+          </div>`}
+      ${sequential
+        ? html`${this._numRow(
+              localize("observed_watering.pause_between_zones_label", lang),
+              localize("observed_watering.seconds", lang),
+              config.pause_between_zones ?? 0,
+              (v) =>
+                this.handleConfigChange({
+                  pause_between_zones: Math.max(0, parseFloat(v) || 0),
+                }),
+            )}
+            <div class="card-content">
+              ${localize(
+                "observed_watering.pause_between_zones_description",
+                lang,
+              )}
+            </div>`
+        : ""}
     `;
   }
 

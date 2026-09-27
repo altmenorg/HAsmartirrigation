@@ -55,6 +55,10 @@ export class SmartIrrigationConfig {
   observed_watering_enabled: boolean;
   direct_valve_control_enabled: boolean;
   zone_sequencing: string;
+  // Cycle and soak, and the pause between two zones of a sequential run.
+  watering_passes?: number;
+  soak_minutes?: number;
+  pause_between_zones?: number;
   calc_log_enabled: boolean;
 
   constructor() {
@@ -86,6 +90,10 @@ export class SmartIrrigationConfig {
     this.observed_watering_enabled = false;
     this.direct_valve_control_enabled = false;
     this.zone_sequencing = "sequential";
+    // one pass, no soaking, no pause: a zone waters in a single go
+    this.watering_passes = 1;
+    this.soak_minutes = 15;
+    this.pause_between_zones = 0;
     // the calculation audit log is opt-in
     this.calc_log_enabled = false;
   }
