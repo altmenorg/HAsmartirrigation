@@ -325,12 +325,31 @@ async def test_forecast_days_keep_the_daily_equation():
 
 
 @pytest.mark.asyncio
-async def test_without_solar_radiation_it_keeps_the_daily_equation():
-    """An estimated sun summed hour by hour would only be a guess."""
+async def test_without_solar_radiation_the_sun_is_estimated():
+    """Nothing measures the sun and no service can be asked for it, so it is
+    worked out from the day's temperature range and the sun's own path
+    (hourly_solar_estimate). Covered on its own in
+    tests/test_hourly_solar_estimate.py; what matters here is that the window
+    stays hourly instead of falling back."""
     sourced = tuple(k for k in SOURCED if k != const.MAPPING_SOLRAD)
     coordinator = _Coordinator(
         hourly=True, mapping=_mapping(_day_of_readings(solar=False), sourced)
     )
+
+    data = await _run(coordinator)
+
+    assert coordinator.module.calls == 0, "the daily equation did not run"
+    assert data[const.ZONE_DELTA] < 0
+
+
+@pytest.mark.asyncio
+async def test_a_greenhouse_with_no_radiation_source_keeps_the_daily_equation():
+    """What reaches a plant under glass is not what the sky delivers, so there
+    is nothing to estimate from up there."""
+    sourced = tuple(k for k in SOURCED if k != const.MAPPING_SOLRAD)
+    mapping = _mapping(_day_of_readings(solar=False), sourced)
+    mapping[const.MAPPING_GREENHOUSE] = True
+    coordinator = _Coordinator(hourly=True, mapping=mapping)
 
     data = await _run(coordinator)
 

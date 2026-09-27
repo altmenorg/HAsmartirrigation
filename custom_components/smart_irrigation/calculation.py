@@ -19,6 +19,7 @@ from .calc_log import timestamps as calc_log_timestamps
 from .calcmodules.consumes import sourced_fields
 from .helpers import loadModules, parse_datetime
 from .hourly_rows import SystemLocalTime, forecast_eto_by_day, summed_hourly_eto
+from .hourly_solar_estimate import estimated_solar_series
 from .localize import localize
 
 _LOGGER = logging.getLogger(__name__)
@@ -1096,9 +1097,11 @@ class CalculationMixin:
           be read, which only Open-Meteo publishes;
         - the sensor group has no readings, or a required field missing
           everywhere;
-        - the sensor group has no radiation source and the weather service
-          cannot supply the sun of each hour: the hourly equation needs the
-          hour's own sun, and estimating it from the day would be a guess;
+        - a greenhouse group with no radiation or illuminance source of its
+          own: no sky reading describes what reaches a plant under glass, and
+          the daily equation at least reads the group's own aggregate;
+        - the sensor group has no readings of the temperature the estimate
+          below is built from;
         - the site has no coordinates, since placing the sun needs them.
 
         The window is the zone's own, from its mark to now, the same one the
@@ -1119,8 +1122,16 @@ class CalculationMixin:
         }
         since = self.zone_window_start(zone)
         solar_series = None
+        estimated_solar = False
         if const.MAPPING_SOLRAD not in sourced:
             solar_series = await self._hourly_solar_series(mapping, since)
+            if solar_series is None:
+                # Nothing measures the sun and no service can be asked for it.
+                # The day's temperature range still says how much of it got
+                # through (FAO-56 Eq. 50), which is exactly what the daily
+                # equation falls back on, and the sun's own path says when.
+                solar_series = self._estimated_solar_series(mapping, since, modinst)
+                estimated_solar = solar_series is not None
             if solar_series is None:
                 return None
         result = summed_hourly_eto(
@@ -1150,12 +1161,38 @@ class CalculationMixin:
                 return None
         _LOGGER.debug(
             "[calculate-module]: zone %s: %.3f mm of reference ET summed over "
-            "%.2f hours",
+            "%.2f hours%s",
             zone.get(const.ZONE_ID),
             result[0],
             result[1],
+            (
+                " (the sun estimated from the temperature range)"
+                if estimated_solar
+                else ""
+            ),
         )
+        self._hourly_solar_estimated = estimated_solar
         return result
+
+    def _estimated_solar_series(self, mapping, since, modinst):
+        """The sun of each hour worked out from the temperature range, or None.
+
+        Not for a greenhouse: what reaches a plant under glass is not what the
+        sky delivers, so a zone under glass without a radiation or illuminance
+        sensor keeps the daily equation, which at least reads its own group.
+        """
+        if (mapping or {}).get(const.MAPPING_GREENHOUSE):
+            return None
+        return estimated_solar_series(
+            mapping.get(const.MAPPING_DATA),
+            since,
+            now=datetime.now(),
+            latitude=getattr(self, "_effective_latitude", None),
+            longitude=getattr(self, "_effective_longitude", None),
+            elevation=getattr(self, "_effective_elevation", None) or 0.0,
+            tz=SystemLocalTime(),
+            coastal=bool(getattr(modinst, "_coastal", False)),
+        )
 
     @staticmethod
     def _sourced_fields(mapping) -> set:
@@ -2081,6 +2118,14 @@ class CalculationMixin:
                     "form": "hourly",
                     "reference_et": values["hourly"][0],
                     "hours": values["hourly"][1],
+                    # Whether the sun of each hour was measured (a sensor, a
+                    # lux sensor, or the service's own history) or worked out
+                    # from the day's temperature range. A zone whose sun is
+                    # estimated reads differently from one with a pyranometer,
+                    # so the audit says which it was, as the daily form does.
+                    "sol_rad_estimated": bool(
+                        getattr(self, "_hourly_solar_estimated", False)
+                    ),
                 }
                 if values.get("hourly") is not None
                 else getattr(modinst, "last_trace", None)
