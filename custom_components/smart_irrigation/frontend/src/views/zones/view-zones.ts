@@ -1400,6 +1400,9 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                   0.01,
                   true,
                 )}
+                <div class="setting-help">
+                  ${localize("panels.zones.labels.et-deficiency-help", lang)}
+                </div>
                 ${this.config?.observed_watering_enabled ||
                 this.config?.direct_valve_control_enabled
                   ? this._entityRow(

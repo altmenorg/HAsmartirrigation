@@ -576,7 +576,7 @@
         "forecast-days": "Look ahead",
         "forecast-days-help": "0: the zone waters what the weather actually took. 1: tomorrow is taken into account as well, 2: tomorrow and the day after, and so on. The hotter the days ahead, the more is watered today. This is not the rain skip, which is a setting of its own.",
         "fixed-amount": "Fixed amount",
-        "engine-shared-help": "This setting is shared by every zone calculated the same way.",
+        "engine-shared-help": "This setting belongs to this zone alone: each zone has its own, and changing it here changes nothing anywhere else.",
         "soil-type": "Soil",
         "plant-type": "What grows here",
         "soil-types": {
@@ -599,7 +599,8 @@
           "custom": "I set the crop coefficient myself"
         },
         "duration-readonly-automatic": "Calculated for you: this zone's run comes from its water balance. Set it to manual to type a duration yourself.",
-        "duration-readonly-disabled": "A disabled zone is never watered, so it has no run time."
+        "duration-readonly-disabled": "A disabled zone is never watered, so it has no run time.",
+        "et-deficiency-help": "What this zone needs per day: ETc, the reference evapotranspiration times the crop factor, seasonal adjustment included. Before the interval scaling and before rain, which is what makes it comparable from one configuration to the next. The zone sensor also carries the reference figure on its own, as the `eto` attribute, for holding against what a weather service publishes."
       },
       "no_items": "There are no zones defined yet.",
       "title": "Zones",

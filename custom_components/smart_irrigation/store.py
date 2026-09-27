@@ -744,6 +744,7 @@ class SmartIrrigationStorage:
         await self._async_store_zones_in_metric()
         await self._async_choose_ui_mode()
         await self._async_split_engines_per_zone()
+        await self._async_drop_orphan_engines()
 
     async def _async_split_engines_per_zone(self) -> None:
         """Give every zone its own engine instance, once.
@@ -791,6 +792,48 @@ class SmartIrrigationStorage:
             _LOGGER.debug("Zone %s now has its own %s engine", zone_id, source.name)
 
         self.config = attr.evolve(self.config, zone_engines_split=True)
+        self.async_schedule_save()
+
+    async def _async_drop_orphan_engines(self) -> None:
+        """Remove calculation engines nothing points at.
+
+        Nobody creates an engine by hand any more: a zone says how it is
+        calculated and the instance behind that answer is created, reused or
+        replaced underneath. Replacing one leaves the old instance behind, and
+        the split that gave every zone its own left the shared ones behind, so
+        an installation accumulates engines it cannot see.
+
+        They are not harmless. An engine is picked up by name when a caller has
+        no zone to go on -- the setup assistant -- so a leftover carrying a
+        stale setting can be adopted by the next zone created, which is how a
+        look-ahead of two days arrives on a zone nobody set it on. One of these
+        even held its forecast days as the string "2".
+
+        Referenced means a zone or a sensor group names it. Nothing else can.
+        """
+        referenced = {
+            zone.module for zone in self.zones.values() if zone.module is not None
+        }
+        referenced |= {
+            mapping.module
+            for mapping in self.mappings.values()
+            if mapping.module is not None
+        }
+        orphans = [
+            module_id
+            for module_id in list(self.modules)
+            if int(module_id) not in {int(ref) for ref in referenced}
+        ]
+        if not orphans:
+            return
+        for module_id in orphans:
+            module = self.modules[module_id]
+            _LOGGER.info(
+                "Removing the %s engine %s: no zone and no sensor group uses it",
+                module.name,
+                module_id,
+            )
+            del self.modules[module_id]
         self.async_schedule_save()
 
     async def _async_choose_ui_mode(self) -> None:
