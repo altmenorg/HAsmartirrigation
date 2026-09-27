@@ -62,7 +62,6 @@ from .helpers import (
     mapping_sources_changed,
     relative_to_absolute_pressure,
 )
-from .irrigation_unlimited import IrrigationUnlimitedIntegration
 from .live_estimate import LiveEstimateMixin
 from .observed_watering import ObservedWateringMixin
 from .panel import async_register_panel, remove_panel
@@ -349,7 +348,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # Initialize enhanced scheduling managers
     await coordinator.recurring_schedule_manager.async_load_schedules()
     await coordinator.seasonal_adjustment_manager.async_load_adjustments()
-    await coordinator.irrigation_unlimited_integration.async_initialize()
 
     await coordinator.update_subscriptions()
 
@@ -586,9 +584,6 @@ class SmartIrrigationCoordinator(
         # Initialize enhanced scheduling managers
         self.recurring_schedule_manager = RecurringScheduleManager(hass, self)
         self.seasonal_adjustment_manager = SeasonalAdjustmentManager(hass, self)
-        self.irrigation_unlimited_integration = IrrigationUnlimitedIntegration(
-            hass, self
-        )
 
         # WIP v2024.6.X:
         # experiment with subscriptions on sensors
@@ -2281,23 +2276,4 @@ def register_services(hass: HomeAssistant):
         const.DOMAIN,
         const.SERVICE_DELETE_SEASONAL_ADJUSTMENT,
         coordinator.handle_delete_seasonal_adjustment,
-    )
-
-    # Irrigation Unlimited integration services
-    hass.services.async_register(
-        const.DOMAIN,
-        const.SERVICE_SYNC_WITH_IRRIGATION_UNLIMITED,
-        coordinator.handle_sync_with_irrigation_unlimited,
-    )
-
-    hass.services.async_register(
-        const.DOMAIN,
-        const.SERVICE_SEND_ZONE_DATA_TO_IU,
-        coordinator.handle_send_zone_data_to_iu,
-    )
-
-    hass.services.async_register(
-        const.DOMAIN,
-        const.SERVICE_GET_IU_SCHEDULE_STATUS,
-        coordinator.handle_get_iu_schedule_status,
     )

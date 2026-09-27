@@ -80,13 +80,13 @@ Smart Irrigation v2 is a UI-only integration — there is no `configuration.yaml
 
 Enable the Irrigation Unlimited integration from the Smart Irrigation panel in the Home Assistant UI (Settings → Integrations → Smart Irrigation → Configure). The relevant options are stored internally by the integration.
 
-### The sync services do not work, and will tell you so
+### The sync services are gone
 
-`sync_with_irrigation_unlimited`, `send_zone_data_to_irrigation_unlimited` and the schedule conversion belong to a sync subsystem that is switched off and has no setting to switch it on: the flag it reads was never a setting of this integration. Calling one used to return quietly and write a warning in the log, which cost at least one person an evening (discussion #696); it now raises an error that says this and points here.
+`sync_with_irrigation_unlimited`, `send_zone_data_to_irrigation_unlimited` and `get_irrigation_unlimited_status` have been removed. They belonged to a sync subsystem that was switched off and had no setting to switch it on: the flag it read was never a setting of this integration, so it could not work for anyone, and calling one returned quietly with a warning in the log. That cost at least one person an evening of looking for a mistake in their own configuration (discussion #696).
 
-Use the blueprint below instead. It hands Irrigation Unlimited the calculated duration through IU's own `adjust_time` action and lets IU run the valves, which is the division of labour both integrations are built for, and it does not depend on guessing which IU entity belongs to which zone from their names.
+It also worked by guessing which Irrigation Unlimited entity belonged to which zone from their names, which is not something to build on.
 
-`get_irrigation_unlimited_status` still answers: it reports that the sync is off.
+**Use the blueprint instead.** It hands Irrigation Unlimited the calculated duration through IU's own `adjust_time` action and lets IU run the valves, which is the division of labour both integrations are built for.
 
 ## Best Practices
 
@@ -163,24 +163,12 @@ See [the blueprints page](usage-automations.md) for the full list and which one 
 - `smart_irrigation.update_seasonal_adjustment`
 - `smart_irrigation.delete_seasonal_adjustment`
 
-#### Irrigation Unlimited Integration Services
-
-- `smart_irrigation.sync_with_irrigation_unlimited`
-- `smart_irrigation.send_zone_data_to_irrigation_unlimited`
-- `smart_irrigation.get_irrigation_unlimited_status`
-
 ### Events
 
 #### Enhanced Scheduling Events
 
 - `smart_irrigation_recurring_schedule_triggered`
 - `smart_irrigation_seasonal_adjustment_applied`
-
-#### Integration Events
-
-- `smart_irrigation_irrigation_unlimited_sync_completed`
-- `smart_irrigation_iu_sync_result`
-- `smart_irrigation_iu_status`
 
 ## Troubleshooting
 
@@ -251,13 +239,6 @@ data:
   month_end: 8
   multiplier_adjustment: 1.3
   zones: "all"
-```
-
-### IU Synchronization
-
-```yaml
-# Sync all zones with IU
-service: smart_irrigation.sync_with_irrigation_unlimited
 ```
 
 This enhanced functionality provides Smart Irrigation users with professional-grade scheduling capabilities while maintaining the simplicity and reliability they expect.

@@ -350,37 +350,6 @@ delete_seasonal_adjustment:
         text:
 
 # Irrigation Unlimited Integration Services
-sync_with_irrigation_unlimited:
-  name: Sync with Irrigation Unlimited
-  description: Synchronize Smart Irrigation zones with Irrigation Unlimited entities.
-  fields:
-    zone_ids:
-      required: false
-      example: [1, 2, 3]
-      description: "Specific zone IDs to sync (leave empty for all zones)"
-      selector:
-        text:
-
-send_zone_data_to_irrigation_unlimited:
-  name: Send zone data to Irrigation Unlimited
-  description: Send specific zone data to corresponding Irrigation Unlimited entity.
-  fields:
-    zone_id:
-      required: true
-      example: 1
-      description: "Zone ID to send data for"
-      selector:
-        number:
-    data:
-      required: true
-      example: '{"duration": 300, "state": "on"}'
-      description: "Data to send (JSON format)"
-      selector:
-        text:
-
-get_irrigation_unlimited_status:
-  name: Get Irrigation Unlimited status
-  description: Get the current status of Irrigation Unlimited entities and schedules.
 postpone_irrigation:
   name: Postpone irrigation
   description: >-

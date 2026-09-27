@@ -165,14 +165,7 @@ SEASONAL_CONF_THRESHOLD_ADJUSTMENT = "threshold_adjustment"
 SEASONAL_CONF_ZONES = "zones"  # List of zone IDs or "all"
 
 # Irrigation Unlimited Integration
-CONF_IRRIGATION_UNLIMITED_INTEGRATION = "irrigation_unlimited_integration"
 CONF_DEFAULT_IRRIGATION_UNLIMITED_INTEGRATION = False
-CONF_IU_ENTITY_PREFIX = "iu_entity_prefix"
-CONF_DEFAULT_IU_ENTITY_PREFIX = "binary_sensor.irrigation_unlimited"
-CONF_IU_SYNC_SCHEDULES = "iu_sync_schedules"
-CONF_DEFAULT_IU_SYNC_SCHEDULES = False
-CONF_IU_SHARE_ZONE_DATA = "iu_share_zone_data"
-CONF_DEFAULT_IU_SHARE_ZONE_DATA = False
 
 # Trigger types
 TRIGGER_TYPE_SUNRISE = "sunrise"
@@ -664,11 +657,7 @@ SERVICE_DELETE_RECURRING_SCHEDULE = "delete_recurring_schedule"
 SERVICE_CREATE_SEASONAL_ADJUSTMENT = "create_seasonal_adjustment"
 SERVICE_UPDATE_SEASONAL_ADJUSTMENT = "update_seasonal_adjustment"
 SERVICE_DELETE_SEASONAL_ADJUSTMENT = "delete_seasonal_adjustment"
-SERVICE_SYNC_WITH_IRRIGATION_UNLIMITED = "sync_with_irrigation_unlimited"
-SERVICE_SEND_ZONE_DATA_TO_IU = "send_zone_data_to_irrigation_unlimited"
-SERVICE_GET_IU_SCHEDULE_STATUS = "get_irrigation_unlimited_status"
 
 # Events
 EVENT_RECURRING_SCHEDULE_TRIGGERED = "recurring_schedule_triggered"
 EVENT_SEASONAL_ADJUSTMENT_APPLIED = "seasonal_adjustment_applied"
-EVENT_IU_SYNC_COMPLETED = "irrigation_unlimited_sync_completed"

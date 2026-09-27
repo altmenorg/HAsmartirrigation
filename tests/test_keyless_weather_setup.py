@@ -40,7 +40,6 @@ async def test_setup_entry_accepts_keyless_open_meteo(
     coordinator.use_weather_service = True
     coordinator.recurring_schedule_manager.async_load_schedules = AsyncMock()
     coordinator.seasonal_adjustment_manager.async_load_adjustments = AsyncMock()
-    coordinator.irrigation_unlimited_integration.async_initialize = AsyncMock()
     coordinator.update_subscriptions = AsyncMock()
     coordinator.async_setup_observed_watering = AsyncMock()
     coordinator.async_resume_valve_runs = AsyncMock()
