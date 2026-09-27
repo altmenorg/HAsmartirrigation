@@ -36,13 +36,31 @@ from custom_components.smart_irrigation.hourly_et import (
     svp_from_t,
 )
 from custom_components.smart_irrigation.hourly_rows import (
-    SystemLocalTime,
     build_hourly_rows,
     price_hourly_rows,
 )
 
 LAT, LON, ELEV = 43.6, 1.44, 150.0
 OFFSET = 2.0
+
+
+class _FixedOffset(datetime.tzinfo):
+    """A timezone of our own, so the machine's is not part of the test.
+
+    The readings' radiation is generated against ``OFFSET``; the row builder has
+    to place the hours in the same offset or the measured sun lands beside the
+    clear-sky sun it is compared with. Reading the machine's zone instead made
+    this pass here (UTC+2) and fail on CI (UTC).
+    """
+
+    def utcoffset(self, _dt):
+        return datetime.timedelta(hours=OFFSET)
+
+    def dst(self, _dt):
+        return datetime.timedelta(0)
+
+
+TZ = _FixedOffset()
 
 
 def _day(date, *, clearness=0.75, tmin=12.0, tmax=28.0):
@@ -86,7 +104,7 @@ def _rows(date, **kwargs):
         latitude=LAT,
         longitude=LON,
         elevation=ELEV,
-        tz=SystemLocalTime(),
+        tz=TZ,
     )
 
 
@@ -148,7 +166,7 @@ def test_a_window_with_no_daylight_has_nothing_to_hand_over():
         latitude=LAT,
         longitude=LON,
         elevation=ELEV,
-        tz=SystemLocalTime(),
+        tz=TZ,
     )
 
     assert _carried(rows) is None
