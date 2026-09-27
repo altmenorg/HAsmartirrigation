@@ -1,6 +1,7 @@
 {
   "domain": "smart_irrigation",
   "name": "Smart Irrigation",
+  "after_dependencies": ["recorder"],
   "codeowners": ["@altmenorg", "@jeroenterheerdt"],
   "config_flow": true,
   "dependencies": ["http", "panel_custom"],
