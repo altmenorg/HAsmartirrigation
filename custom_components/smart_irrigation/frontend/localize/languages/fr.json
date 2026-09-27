@@ -777,7 +777,9 @@
     "rain": {
       "title": "Capteur de pluie",
       "description": "Ne pas arroser tant qu'un capteur de pluie indique qu'il pleut.",
-      "sensor-hint": "Un capteur binaire allumé quand il pleut."
+      "sensor-hint": "Un capteur binaire allumé quand il pleut.",
+      "history-label": "Raccourcir les arrosages après une pluie récente",
+      "history-description": "Pour une zone qui n'a aucune pluie en millimètres : pas de pluviomètre, et un service météo qui n'en donne pas. L'historique du capteur sur les cinq derniers jours est lu, pondéré pour qu'hier compte plus qu'il y a quatre jours, et l'arrosage est raccourci d'autant. Une journée de pluie aujourd'hui prend tout l'arrosage ; il y a quatre jours, un dixième. Cela ne touche jamais au bilan hydrique, puisque cela ignore combien de millimètres sont tombés : le déficit reste et sera arrosé quand le temps tournera. Une zone dont le groupe de capteurs donne la pluie en millimètres n'est pas concernée, le bilan l'a déjà. Demande un capteur qui reste allumé pendant la pluie, pas un qui impulse à chaque basculement."
     },
     "freeze": {
       "title": "Gel",

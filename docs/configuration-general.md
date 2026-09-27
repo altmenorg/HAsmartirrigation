@@ -86,6 +86,14 @@ A condition that cannot be checked, because its sensor is unavailable or the wea
 
 * **Rain forecast.** Skip when the weather service forecasts at least the threshold of rain for today and tomorrow. Zones in a greenhouse sensor group still water.
 * **Rain sensor.** Skip while a binary sensor that is on in the rain says it is raining.
+
+  On the advanced panel, that same sensor can do more than veto today: **shorten runs after recent rain** reads its history over the last five days, weighted so that yesterday counts for more than four days ago, and shortens the run by the result. A day of reported rain today takes the whole run, four days ago takes a tenth of it, and a wet week takes everything.
+
+  It is for one case and it applies to one case: a zone whose sensor group reports **no rain in millimetres at all**, neither a gauge's depth nor a service's rate. Where millimetres exist, the water balance already carries them, decides for itself how long rain keeps counting, and this stays out of the way.
+
+  It never touches the balance, because it does not know how much fell. The deficit stays where it was and is watered off once the weather turns, which is the safe direction: a run that was shortened too much is made up tomorrow, while water that was never owed cannot be taken back out of the ground. It needs a sensor that stays on while it rains; one that pulses briefly per bucket tip spends almost no time on and will barely register.
+
+  The idea of weighting rain over a few rolling days comes from [kloggy's HA-Irrigation-Version2](https://github.com/kloggy/HA-Irrigation-Version2) package, which does it with `history_stats` over five 24-hour windows.
 * **Freeze.** Skip when the temperature is at or below the threshold, 2 °C (36 °F) unless you set one. It reads the sensor you choose, or the weather service's current temperature when none is set.
 * **Wind.** Skip when the wind is at or above the threshold, 20 km/h (12 mph) unless you set one: in strong wind a sprinkler waters the path rather than the bed. It reads the sensor you choose, or the weather service's current wind. The weather service's wind is stored at 2 m for the evaporation, and is taken back up to the 10 m that forecasts and wind limits are quoted at.
 * **Days between irrigation**, above.

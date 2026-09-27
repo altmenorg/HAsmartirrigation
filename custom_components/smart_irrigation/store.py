@@ -54,6 +54,7 @@ from .const import (
     CONF_DEFAULT_OBSERVED_WATERING_ENABLED,
     CONF_DEFAULT_PAUSE_BETWEEN_ZONES,
     CONF_DEFAULT_PRECIPITATION_THRESHOLD_MM,
+    CONF_DEFAULT_RAIN_HISTORY_ENABLED,
     CONF_DEFAULT_RECURRING_SCHEDULES,
     CONF_DEFAULT_SEASONAL_ADJUSTMENTS,
     CONF_DEFAULT_SENSOR_DEBOUNCE,
@@ -83,6 +84,7 @@ from .const import (
     CONF_PAUSE_BETWEEN_ZONES,
     CONF_POSTPONE_UNTIL,
     CONF_PRECIPITATION_THRESHOLD_MM,
+    CONF_RAIN_HISTORY_ENABLED,
     CONF_RAIN_SENSOR,
     CONF_RECURRING_SCHEDULES,
     CONF_SEASONAL_ADJUSTMENTS,
@@ -574,6 +576,7 @@ class Config:
     wind_sensor = attr.ib(type=str, default=None)
     skip_on_rain_sensor = attr.ib(type=bool, default=CONF_DEFAULT_SKIP_ON_RAIN_SENSOR)
     rain_sensor = attr.ib(type=str, default=None)
+    rain_history_enabled = attr.ib(type=bool, default=CONF_DEFAULT_RAIN_HISTORY_ENABLED)
     days_between_irrigation = attr.ib(
         type=int, default=CONF_DEFAULT_DAYS_BETWEEN_IRRIGATION
     )
@@ -1025,6 +1028,9 @@ class SmartIrrigationStorage:
                     CONF_SKIP_ON_RAIN_SENSOR, CONF_DEFAULT_SKIP_ON_RAIN_SENSOR
                 ),
                 rain_sensor=data["config"].get(CONF_RAIN_SENSOR, None),
+                rain_history_enabled=data["config"].get(
+                    CONF_RAIN_HISTORY_ENABLED, CONF_DEFAULT_RAIN_HISTORY_ENABLED
+                ),
                 days_between_irrigation=data["config"].get(
                     CONF_DAYS_BETWEEN_IRRIGATION,
                     CONF_DEFAULT_DAYS_BETWEEN_IRRIGATION,

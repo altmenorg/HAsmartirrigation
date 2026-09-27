@@ -24,11 +24,13 @@ from homeassistant.helpers.event import (
 )
 
 from . import const
+from .calcmodules.consumes import sourced_fields
 from .helpers import (
     check_time,
     find_next_solar_azimuth_time,
     normalize_azimuth_angle,
 )
+from .rain_history import MAX_FACTOR, MIN_FACTOR, rain_suppression
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -516,6 +518,11 @@ class TriggersMixin:
                 # Rain between the calculation and now shortens the run.
                 await self._apply_rain_since_calculation()
 
+                # And, for a zone with no rain gauge and no service to give it
+                # millimetres, what a binary rain sensor says about the last few
+                # days shortens it too.
+                self._last_rain_history = await self._apply_rain_history_suppression()
+
                 # Fire the event with the trigger's identity.
                 self.hass.bus.fire(event_to_fire, event_data)
                 _LOGGER.info(
@@ -687,6 +694,84 @@ class TriggersMixin:
                     zone.get(const.ZONE_NAME),
                     e,
                 )
+
+    async def _apply_rain_history_suppression(self):
+        """Shorten runs by what a binary rain sensor says about the last few days.
+
+        Only for a zone whose sensor group has no precipitation in millimetres at
+        all. Where there is real rain data the bucket already carries it, and
+        this would take the same rain off twice.
+
+        The factor comes from the sensor's own history (rain_history.py). The
+        bucket is left alone for the same reason as the rain-since-calculation
+        step above, and more so: this one does not know how many millimetres
+        fell, so it has nothing a balance in millimetres could be credited with.
+        A zone that is held back keeps its deficit and waters it off once the
+        weather turns.
+
+        Returns the suppression that was applied, or None, so the panel can say
+        what happened.
+        """
+        config = await self.store.async_get_config()
+        if not config.get(const.CONF_RAIN_HISTORY_ENABLED):
+            return None
+        suppression = await rain_suppression(
+            self.hass, config.get(const.CONF_RAIN_SENSOR)
+        )
+        if suppression is None:
+            return None
+        factor = suppression["factor"]
+        if factor < MIN_FACTOR:
+            return suppression
+
+        try:
+            zones = await self.store.async_get_zones()
+        except Exception as e:  # pragma: no cover - defensive
+            _LOGGER.error("Could not read the zones to account for rain: %s", e)
+            return suppression
+
+        for zone in zones:
+            if zone.get(const.ZONE_STATE) != const.ZONE_STATE_AUTOMATIC:
+                continue
+            duration = zone.get(const.ZONE_DURATION) or 0
+            if duration <= 0:
+                continue
+            if self._zone_has_precipitation_source(zone):
+                continue
+            shortened = 0 if factor > MAX_FACTOR else round(duration * (1.0 - factor))
+            if shortened >= duration:
+                continue
+            _LOGGER.info(
+                "Zone %s: %s reported rain over the last days, watering for %s s "
+                "instead of %s s",
+                zone.get(const.ZONE_NAME),
+                suppression["source"],
+                shortened,
+                duration,
+            )
+            await self.store.async_update_zone(
+                zone.get(const.ZONE_ID), {const.ZONE_DURATION: shortened}
+            )
+            async_dispatcher_send(
+                self.hass, const.DOMAIN + "_config_updated", zone.get(const.ZONE_ID)
+            )
+        return suppression
+
+    def _zone_has_precipitation_source(self, zone) -> bool:
+        """Whether this zone's sensor group reports rain in millimetres.
+
+        Either shape counts: a depth from a gauge, or a rate from a service.
+        When one of them is there, the bucket has the rain and nothing else
+        should guess at it.
+        """
+        mapping_id = zone.get(const.ZONE_MAPPING)
+        if mapping_id is None:
+            return False
+        mapping = self.store.get_mapping(mapping_id)
+        sourced = sourced_fields(mapping) if mapping else set()
+        return bool(
+            sourced & {const.MAPPING_PRECIPITATION, const.MAPPING_CURRENT_PRECIPITATION}
+        )
 
     @callback
     def _reset_event_fired_today(self, *args):

@@ -780,7 +780,9 @@
     "rain": {
       "title": "Rain sensor",
       "description": "Skip the run while a rain sensor says it is raining.",
-      "sensor-hint": "A binary sensor that is on while it rains."
+      "sensor-hint": "A binary sensor that is on while it rains.",
+      "history-label": "Shorten runs after recent rain",
+      "history-description": "For a zone that has no rain in millimetres at all: no gauge, and a weather service that gives none. The sensor's own history over the last five days is read, weighted so that yesterday counts for more than four days ago, and the run is shortened by it. A day of reported rain today takes the whole run; four days ago takes a tenth of it. It never touches the water balance, because it does not know how many millimetres fell: the deficit stays and is watered off once the weather turns. A zone whose sensor group does report rain in millimetres is left alone, since the balance already has it. This needs a sensor that stays on while it rains rather than one that pulses per tip."
     },
     "freeze": {
       "title": "Freeze",

@@ -875,13 +875,27 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 )}
               </div>
               ${this.config.skip_on_rain_sensor
-                ? entity(
+                ? html`${entity(
                     "rain_sensor",
                     this.config.rain_sensor,
                     ["binary_sensor"],
                     t("sensor"),
                     t("rain.sensor-hint"),
-                  )
+                  )}
+                  ${this.config.ui_mode === "advanced"
+                    ? html`<div class="setting-row">
+                          <div class="setting-label">
+                            ${t("rain.history-label")}
+                          </div>
+                          ${toggle(
+                            "rain_history_enabled",
+                            this.config.rain_history_enabled,
+                          )}
+                        </div>
+                        <div class="card-content">
+                          ${t("rain.history-description")}
+                        </div>`
+                    : ""}`
                 : ""}
             `,
           )}

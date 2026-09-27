@@ -39,6 +39,7 @@ def _coordinator(should_skip, reason, sheltered=None):
         return_value=sheltered or set()
     )
     coordinator._apply_rain_since_calculation = AsyncMock()
+    coordinator._apply_rain_history_suppression = AsyncMock(return_value=None)
     coordinator._hold_back_zones_exposed_to_rain = AsyncMock()
     coordinator._reset_days_since_irrigation = AsyncMock()
     coordinator.store.async_update_config = AsyncMock()

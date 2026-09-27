@@ -136,6 +136,7 @@ class SmartIrrigationConfigView(HomeAssistantView):
                 ),
                 vol.Optional(const.CONF_WIND_SENSOR): vol.Any(None, cv.string),
                 vol.Optional(const.CONF_SKIP_ON_RAIN_SENSOR): cv.boolean,
+                vol.Optional(const.CONF_RAIN_HISTORY_ENABLED): cv.boolean,
                 vol.Optional(const.CONF_RAIN_SENSOR): vol.Any(None, cv.string),
                 vol.Optional(const.CONF_DAYS_BETWEEN_IRRIGATION): vol.Coerce(int),
                 vol.Optional(const.CONF_MANUAL_COORDINATES_ENABLED): cv.boolean,

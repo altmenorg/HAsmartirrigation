@@ -73,6 +73,12 @@ CONF_WIND_SENSOR = "wind_sensor"  # None: the weather service's wind speed
 CONF_SKIP_ON_RAIN_SENSOR = "skip_on_rain_sensor"
 CONF_DEFAULT_SKIP_ON_RAIN_SENSOR = False
 CONF_RAIN_SENSOR = "rain_sensor"
+# Shorten a run by the rain the rain sensor reported over the last few days,
+# for a zone whose sensor group provides no precipitation in millimetres at all
+# (see rain_history.py). Off by default, and never for a group that has real
+# rain data: the bucket is the better answer wherever it can be used.
+CONF_RAIN_HISTORY_ENABLED = "rain_history_enabled"
+CONF_DEFAULT_RAIN_HISTORY_ENABLED = False
 
 # Observed watering (closed-loop bucket): credit the bucket from a linked
 # valve/switch entity's real run time instead of a manual reset automation.
