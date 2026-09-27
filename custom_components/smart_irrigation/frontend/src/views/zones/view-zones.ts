@@ -876,30 +876,36 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       calendarData && zone.id in calendarData ? calendarData[zone.id] : null;
     const monthlyEstimates = zoneCalendar?.monthly_estimates || [];
 
+    const lang = this.hass.language;
+    const t = (key: string) => localize(`panels.zones.calendar.${key}`, lang);
+
     return html` <div class="watering-calendar">
-      <h4>Watering Calendar (12-Month Estimates)</h4>
+      <h4>${t("title")}</h4>
+      <div class="calendar-note">${t("caveat")}</div>
       ${monthlyEstimates.length === 0
         ? html`
             <div class="calendar-note">
               ${zoneCalendar?.error
-                ? `Error generating calendar: ${zoneCalendar.error}`
-                : "No watering calendar data available for this zone"}
+                ? `${t("error")}: ${zoneCalendar.error}`
+                : t("none")}
             </div>
           `
         : html` <div class="calendar-table">
               <div class="calendar-header">
-                <span>Month</span>
-                <span>ET (${output_unit(this.config, ZONE_BUCKET)})</span>
+                <span>${t("month")}</span>
                 <span
-                  >Precipitation
+                  >${t("et")} (${output_unit(this.config, ZONE_BUCKET)})</span
+                >
+                <span
+                  >${t("precipitation")}
                   (${output_unit(this.config, ZONE_BUCKET)})</span
                 >
                 <span
-                  >Watering
+                  >${t("watering")}
                   (${output_unit(this.config, ZONE_WATER_VOLUME)})</span
                 >
                 <span
-                  >Avg Temp
+                  >${t("avg-temp")}
                   (${this.config?.units === CONF_METRIC ? "°C" : "°F"})</span
                 >
               </div>
@@ -954,7 +960,11 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
             ${zoneCalendar?.calculation_method
               ? html`
                   <div class="calendar-info">
-                    Method: ${zoneCalendar.calculation_method}
+                    ${localize("panels.zones.labels.calculation-method", lang)}:
+                    ${localize(
+                      `panels.zones.labels.calculation-methods.${zoneCalendar.calculation_method}`,
+                      lang,
+                    )}
                   </div>
                 `
               : ""}`}

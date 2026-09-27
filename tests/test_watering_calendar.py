@@ -214,12 +214,18 @@ class TestWateringCalendar:
 
     @pytest.mark.asyncio
     async def test_get_zone_calculation_method(self, coordinator):
-        """Test getting zone calculation method description."""
+        """The method id the panel turns into words, never an engine's name."""
         test_zone = {ZONE_MODULE: 1}
 
         method = coordinator._get_zone_calculation_method(test_zone)
-        assert "PyETO" in method
-        assert "FAO-56" in method
+
+        assert method == "from_weather"
+
+    @pytest.mark.asyncio
+    async def test_a_zone_with_no_engine_has_no_method(self, coordinator):
+        coordinator.module_id_for_zone = lambda zone: None
+
+        assert coordinator._get_zone_calculation_method({}) is None
 
     @pytest.mark.asyncio
     async def test_generate_watering_calendar_single_zone(

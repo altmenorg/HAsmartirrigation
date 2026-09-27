@@ -34,7 +34,7 @@ def mock_coordinator():
                 for i in range(1, 13)
             ],
             "generated_at": "2024-01-15T10:30:00",
-            "calculation_method": "FAO-56 Penman-Monteith method using PyETO",
+            "calculation_method": "from_weather",
         }
     }
 

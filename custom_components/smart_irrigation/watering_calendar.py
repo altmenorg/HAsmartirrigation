@@ -11,6 +11,7 @@ import math
 from datetime import date, datetime
 
 from . import const
+from .engine_binding import method_of_engine
 from .exceptions import SmartIrrigationError
 from .helpers import altitudeToPressure
 
@@ -332,29 +333,22 @@ class WateringCalendarMixin:
         return adjusted_water_need_mm * zone_size_m2
 
     def _get_zone_calculation_method(self, zone):
-        """Get the calculation method description for a zone.
+        """How this zone is calculated, as the panel says it.
 
-        Args:
-            zone: Zone configuration dictionary.
+        The method id (``from_weather`` / ``provided`` / ``fixed``), which the
+        panel turns into words in the user's language. It used to be an English
+        sentence built here, which named PyETO to the user and could not be
+        translated.
 
-        Returns:
-            str: Description of the calculation method used.
-
+        Returns None when there is nothing to say: no engine, or one we do not
+        recognise.
         """
         module_id = self.module_id_for_zone(zone)
         if module_id is None:
-            return "No calculation module configured"
+            return None
 
         module = self.store.get_module(module_id)
         if module is None:
-            return f"Module {module_id} not found"
+            return None
 
-        method_name = module.get(const.MODULE_NAME, "Unknown")
-
-        if method_name == "PyETO":
-            return "FAO-56 Penman-Monteith method using PyETO"
-        if method_name == "Static":
-            return "Static evapotranspiration rate"
-        if method_name == "Passthrough":
-            return "Direct evapotranspiration input"
-        return f"{method_name} calculation method"
+        return method_of_engine(module.get(const.MODULE_NAME))

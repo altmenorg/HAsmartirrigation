@@ -612,6 +612,17 @@
         "manual": "Waters only when you ask.",
         "disabled": "Disabled: never watered, and its balance is not kept.",
         "threshold": "threshold"
+      },
+      "calendar": {
+        "title": "Watering calendar (12 months, estimated)",
+        "caveat": "A planning estimate, not your weather: the months are modelled from your latitude and a typical seasonal pattern, so a continental summer reads hotter and drier than it is. It influences nothing, calculates nothing and waters nothing.",
+        "month": "Month",
+        "et": "ET",
+        "precipitation": "Precipitation",
+        "watering": "Watering",
+        "avg-temp": "Avg temp",
+        "none": "No watering calendar data available for this zone",
+        "error": "Could not generate the calendar"
       }
     },
     "history": {

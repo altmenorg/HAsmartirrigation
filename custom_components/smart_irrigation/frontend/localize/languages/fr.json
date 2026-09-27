@@ -609,6 +609,17 @@
         "manual": "N'arrose que si vous le demandez.",
         "disabled": "Désactivée : jamais arrosée, et son bilan n'est pas suivi.",
         "threshold": "seuil"
+      },
+      "calendar": {
+        "title": "Calendrier d'arrosage (12 mois, estimé)",
+        "caveat": "Une estimation pour planifier, pas votre météo : les mois sont modélisés d'après votre latitude et un profil saisonnier type, donc un été continental y paraît plus chaud et plus sec qu'il ne l'est. Cela n'influence rien, ne calcule rien et n'arrose rien.",
+        "month": "Mois",
+        "et": "ET",
+        "precipitation": "Précipitations",
+        "watering": "Arrosage",
+        "avg-temp": "Temp. moy.",
+        "none": "Aucune donnée de calendrier pour cette zone",
+        "error": "Impossible de générer le calendrier"
       }
     },
     "history": {
