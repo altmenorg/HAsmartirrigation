@@ -95,9 +95,7 @@ def test_a_fresh_installation_is_not_a_fault():
     assert _stale(zones) == []
 
 
-@pytest.mark.parametrize(
-    "state", [const.ZONE_STATE_DISABLED, const.ZONE_STATE_MANUAL]
-)
+@pytest.mark.parametrize("state", [const.ZONE_STATE_DISABLED, const.ZONE_STATE_MANUAL])
 def test_only_the_zones_a_run_calculates_are_judged(state):
     """A run calculates automatic zones, so nothing else can be behind."""
     zones = [_zone(0, "Lawn", 21), _zone(1, "Old", 5 * 24, state=state)]

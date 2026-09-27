@@ -24,8 +24,8 @@ import pytest
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from custom_components.smart_irrigation import const
-from custom_components.smart_irrigation.calculation import CalculationMixin
 from custom_components.smart_irrigation.calcmodules.pyeto import PyETO
+from custom_components.smart_irrigation.calculation import CalculationMixin
 from custom_components.smart_irrigation.hourly_et import (
     clear_sky_radiation_hourly_eq36,
     extraterrestrial_radiation_hourly,

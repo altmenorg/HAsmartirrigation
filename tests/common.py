@@ -1,7 +1,5 @@
 """Common test utilities for Smart Irrigation tests."""
 
-from unittest.mock import Mock
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.data_entry_flow import FlowResultType
 

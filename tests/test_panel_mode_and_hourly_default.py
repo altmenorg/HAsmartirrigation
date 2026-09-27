@@ -85,9 +85,7 @@ async def test_an_installation_with_zones_keeps_the_advanced_panel(hass, hass_st
 
 
 @pytest.mark.asyncio
-async def test_an_installation_with_zones_is_not_switched_to_hourly(
-    hass, hass_storage
-):
+async def test_an_installation_with_zones_is_not_switched_to_hourly(hass, hass_storage):
     """The point of the whole decision: nobody's watering changes behind their
     back. The hourly form gives different numbers from the daily one."""
     store = await _load(hass, hass_storage, zones=[ZONE])
@@ -96,9 +94,7 @@ async def test_an_installation_with_zones_is_not_switched_to_hourly(
 
 
 @pytest.mark.asyncio
-async def test_an_existing_installation_that_chose_hourly_keeps_it(
-    hass, hass_storage
-):
+async def test_an_existing_installation_that_chose_hourly_keeps_it(hass, hass_storage):
     store = await _load(
         hass,
         hass_storage,

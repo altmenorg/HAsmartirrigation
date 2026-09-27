@@ -16,7 +16,6 @@ ETc = ET0 * Kc, applied before the bucket is depleted.
 from unittest.mock import MagicMock
 
 import pytest
-
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from custom_components.smart_irrigation import const

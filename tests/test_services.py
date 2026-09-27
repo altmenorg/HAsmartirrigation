@@ -1,8 +1,4 @@
-from unittest.mock import AsyncMock, Mock
-
-import pytest
-
-from custom_components.smart_irrigation import SmartIrrigationCoordinator
+from unittest.mock import Mock
 
 
 async def test_handle_reset_all_buckets(mock_hass, mock_coordinator):

@@ -137,7 +137,9 @@ def test_the_net_radiation_of_the_daylight_hour():
     avp = svp * DAY["rh_pct"] / 100.0
 
     rns = (1 - ALBEDO) * DAY["rs"]
-    rn = net_radiation_hourly(DAY["rs"], _ra(DAY["hour_mid"]), DAY["t_c"], avp, ELEVATION)
+    rn = net_radiation_hourly(
+        DAY["rs"], _ra(DAY["hour_mid"]), DAY["t_c"], avp, ELEVATION
+    )
 
     assert rns == pytest.approx(PUBLISHED_DAY["rns"], abs=0.001)
     assert rn == pytest.approx(PUBLISHED_DAY["rn"], abs=0.005)
@@ -219,9 +221,7 @@ def test_the_night_evaporates_next_to_nothing():
 
 def test_the_soil_heat_flux_of_a_night_hour():
     """Half the net radiation, and the net radiation is negative."""
-    assert 0.5 * PUBLISHED_NIGHT["rn"] == pytest.approx(
-        PUBLISHED_NIGHT["g"], abs=0.001
-    )
+    assert 0.5 * PUBLISHED_NIGHT["rn"] == pytest.approx(PUBLISHED_NIGHT["g"], abs=0.001)
 
 
 def test_a_night_that_assumed_a_clear_bound_evaporated_water_it_should_not():

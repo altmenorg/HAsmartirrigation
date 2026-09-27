@@ -12,7 +12,6 @@ start as well would count the same rain twice.
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from custom_components.smart_irrigation import SmartIrrigationCoordinator, const

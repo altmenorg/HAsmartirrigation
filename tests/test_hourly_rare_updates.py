@@ -50,7 +50,8 @@ def _readings(step_min, tmin=12.0, tmax=28.0, peak_sun=25.0):
         rows.append(
             {
                 const.RETRIEVED_AT: stamp.isoformat(),
-                const.MAPPING_TEMPERATURE: (tmin + tmax) / 2 + (tmax - tmin) / 2 * phase,
+                const.MAPPING_TEMPERATURE: (tmin + tmax) / 2
+                + (tmax - tmin) / 2 * phase,
                 const.MAPPING_HUMIDITY: 60.0 - 20.0 * phase,
                 const.MAPPING_WINDSPEED: 2.0,
                 const.MAPPING_PRESSURE: 1013.0,

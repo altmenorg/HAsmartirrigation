@@ -82,7 +82,8 @@ def _day(date, *, clearness=0.75, tmin=12.0, tmax=28.0):
         readings.append(
             {
                 const.RETRIEVED_AT: stamp.isoformat(),
-                const.MAPPING_TEMPERATURE: (tmin + tmax) / 2 + (tmax - tmin) / 2 * phase,
+                const.MAPPING_TEMPERATURE: (tmin + tmax) / 2
+                + (tmax - tmin) / 2 * phase,
                 const.MAPPING_HUMIDITY: 60.0 - 20.0 * phase,
                 const.MAPPING_WINDSPEED: 2.0,
                 const.MAPPING_PRESSURE: 1013.0,
@@ -154,8 +155,8 @@ def test_a_window_with_no_daylight_has_nothing_to_hand_over():
     night = [
         reading
         for reading in readings
-        if datetime.datetime.fromisoformat(reading[const.RETRIEVED_AT]) >= end
-        - datetime.timedelta(hours=4)
+        if datetime.datetime.fromisoformat(reading[const.RETRIEVED_AT])
+        >= end - datetime.timedelta(hours=4)
         and datetime.datetime.fromisoformat(reading[const.RETRIEVED_AT]) <= end
     ]
     rows = build_hourly_rows(

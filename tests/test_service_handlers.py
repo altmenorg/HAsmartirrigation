@@ -1,9 +1,5 @@
 from unittest.mock import Mock
 
-import pytest
-
-from custom_components.smart_irrigation import SmartIrrigationCoordinator
-
 
 async def test_reset_bucket_service(mock_hass, mock_coordinator):
     """Test the reset bucket service handler."""
