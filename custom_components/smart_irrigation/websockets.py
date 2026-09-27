@@ -24,7 +24,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
 from .calcmodules.consumes import consumed_mappings, idle_options
-from .delivery import delivery_gap
+from .delivery import delivery_gap, stale_zones
 from .engine_binding import ENGINE_BY_METHOD, method_of_engine
 from .presets import apply_preset, describe_zone
 from .skip_conditions import thresholds_for_display
@@ -906,6 +906,9 @@ async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
             # Why nothing would water, when that is the case. See
             # delivery_gap().
             "delivery_gap": delivery_gap(config, zones),
+            # Zones whose water need is days old while the rest are current.
+            # A frozen zone used to be visible only in the log (#847).
+            "stale_zones": stale_zones(config, zones),
             # The days ahead, for the strip the panel shows: what the sky is
             # about to do is half of what "will it water" depends on.
             "forecast": await _forecast_days(hass, coordinator),

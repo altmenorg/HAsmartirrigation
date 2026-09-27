@@ -356,6 +356,11 @@
         },
         "forecast": {
           "today": "Aujourd'hui"
+        },
+        "stale": {
+          "title": "Une zone n'est plus calculée",
+          "body": "Son besoin en eau est plus ancien que celui des autres, elle arrose donc sur une météo périmée. Vérifiez que son groupe de capteurs reçoit toujours des données, et regardez ce que le journal dit du calcul de cette zone.",
+          "never": "jamais calculée"
         }
       },
       "gaps": {

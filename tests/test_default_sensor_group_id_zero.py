@@ -23,7 +23,7 @@ from custom_components.smart_irrigation.store import (
 )
 
 
-def _calculator(mapping_id):
+def _calculator(mapping_id, zone_id=1):
     """A coordinator with one automatic zone reading the group `mapping_id`."""
     calc = CalculationMixin()
     calc.hass = Mock()
@@ -32,7 +32,7 @@ def _calculator(mapping_id):
     calc.store.async_get_zones = AsyncMock(
         return_value=[
             {
-                const.ZONE_ID: 1,
+                const.ZONE_ID: zone_id,
                 const.ZONE_NAME: "zone",
                 const.ZONE_MAPPING: mapping_id,
                 const.ZONE_MODULE: 0,
@@ -69,6 +69,16 @@ async def test_a_zone_on_the_default_sensor_group_is_calculated():
     calc.store.get_mapping.assert_called_with(0)
     calc.apply_aggregates_to_mapping_data.assert_awaited()
     assert results[1][const.ZONE_BUCKET] == -7.5
+
+
+async def test_the_first_zone_of_a_fresh_install_is_calculated():
+    """Zone 0 on group 0, which is what a fresh install creates and what
+    Megalos had: his zone went five days without a calculation (#847)."""
+    calc = _calculator(0, zone_id=0)
+
+    results = await calc._async_calculate_all(delete_weather_data=True)
+
+    assert results[0][const.ZONE_BUCKET] == -7.5
 
 
 async def test_a_zone_on_a_later_sensor_group_still_is():

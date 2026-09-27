@@ -358,6 +358,11 @@
         },
         "forecast": {
           "today": "Today"
+        },
+        "stale": {
+          "title": "A zone is no longer being calculated",
+          "body": "Its water need is older than the others, so it is watering on old weather. Check that its sensor group still receives data, and look at the log for what the calculation said about it.",
+          "never": "never calculated"
         }
       },
       "gaps": {

@@ -160,7 +160,8 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       </ha-card>
 
       ${this.renderPostpone()} ${this.renderDeliveryGap()}
-      ${this.renderNextRun()} ${this.renderForecast()} ${this.renderDecision()}
+      ${this.renderStaleZones()} ${this.renderNextRun()}
+      ${this.renderForecast()} ${this.renderDecision()}
       ${this.renderEstimates()}
     `;
   }
@@ -299,6 +300,50 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
           <div>
             <div class="gap-title">${this.t(`gaps.${gap}.title`)}</div>
             <div class="info-note">${this.t(`gaps.${gap}.body`)}</div>
+          </div>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  /**
+   * A zone whose water need has stopped being recalculated.
+   *
+   * One zone can freeze while everything else works: the panel is fine, the
+   * other zones update every night, and the frozen one keeps watering on the
+   * weather of days ago. It happened for five days to somebody whose sensor
+   * group had id 0 (#846), and the only trace was a line in the log. The cause
+   * is not the point -- the state is, so the page says it.
+   */
+  private renderStaleZones(): TemplateResult | string {
+    const stale = ((this.info as any)?.stale_zones ?? []) as {
+      zone: string;
+      last_calculated: string | null;
+    }[];
+    if (!stale.length) return "";
+    return html`
+      <ha-card>
+        <div class="card-content gap-banner">
+          <ha-icon icon="mdi:clock-alert-outline"></ha-icon>
+          <div>
+            <div class="gap-title">${this.t("cards.stale.title")}</div>
+            <div class="info-note">${this.t("cards.stale.body")}</div>
+            ${stale.map(
+              (entry) => html`
+                <div class="info-note">
+                  <b>${entry.zone}</b>:
+                  ${entry.last_calculated
+                    ? localizedDateTime(entry.last_calculated, this.hass, {
+                        weekday: "short",
+                        day: "numeric",
+                        month: "short",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : this.t("cards.stale.never")}
+                </div>
+              `,
+            )}
           </div>
         </div>
       </ha-card>
