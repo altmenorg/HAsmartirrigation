@@ -37,11 +37,26 @@ It only ever tells you. The zone's throughput is never rewritten, because pressu
 
 With **Let Smart Irrigation control the valve** on, Smart Irrigation opens each zone's linked valve, waits the calculated duration, then closes it. No execution automation needed. The start event still fires, so external executors keep working too.
 
+It stands on its own: the zone's **Linked valve/switch** can be set with direct valve control alone, without observed watering. The two answer different questions, and the difference matters when the same valve is used for other things -- filling a paddling pool, hosing the terrace. Direct valve control credits the bucket for the runs *it* performs, since it knows exactly what it delivered. Observed watering credits *any* run of that valve, which is what you want for a tap somebody opens by hand to water the same lawn, and not what you want if that valve also does something else. Leave observed watering off in that case.
+
 - **Zone sequencing**: **Sequential** runs one zone at a time (safe for water pressure); **Parallel** opens all eligible zones at once. This setting also decides how long the whole run is taken to be, which is what a start trigger works back from when it has to finish at sunrise: sequential is the sum of every zone's run time, parallel is the longest of them. It therefore applies whether Smart Irrigation opens the valves itself or an automation of your own does, and it is available in the general settings either way.
 - **Open confirmation**: before crediting, Smart Irrigation waits for the valve to report an on-state. If it never opens, the run is not credited (so the deficit stays and rolls over to the next day) and a `smart_irrigation_zone_problem` event is fired. A write-only valve with no readable state is given the benefit of the doubt.
 - **Reboot resilience**: a run that is in progress when Home Assistant restarts is resumed (or closed if it already exceeded its duration) and then credited.
+- **One run per zone per cycle**: a zone whose valve is already open is left out, and a zone watered while it waited its turn in a sequential run is not watered again when the queue reaches it.
 
 > **Safety:** if Home Assistant goes down for a long time during a run, the physical valve stays open and keeps watering, because Home Assistant is no longer there to close it. Give your valve a hardware failsafe (a maximum runtime on the device itself). Smart Irrigation also caps the credited time at the zone's maximum duration.
+
+### Cycle and soak, and the pause between zones
+
+Two settings on the advanced panel, both off by default, for an installation that is already tuned.
+
+**Water in several passes** splits a run into shorter passes with a pause between them. Clay and compacted soil have an infiltration rate: past it the water runs off or puddles, and the zone is billed for water the roots never see. Three passes of five minutes with fifteen minutes of soaking deliver the same water as one run of fifteen minutes, and the soil keeps more of it. Guidance: sand takes water as fast as you can give it, so leave this at one pass; loam rarely needs more than two; clay and slopes are what it is for.
+
+The plan is fixed when the run starts, and a run too short to split is left alone (no pass shorter than a minute). Each pass is credited as it closes, so a restart in the middle of a run never credits water twice and never leaves a valve open.
+
+**Pause between zones** waits between two zones of a sequential run, for the line pressure to recover or for a slow valve to finish closing before the next one opens.
+
+Both lengthen the run without adding water to it, and a start trigger that has to finish at sunrise works back from the whole thing, soaking and pauses included: three zones of half an hour in three passes with fifteen minutes of soaking occupy two and a half hours, not an hour and a half. Watch that against the hour you want to be finished by. When an executor of your own opens the valves instead, neither setting applies and the run length is the watering alone.
 
 ### Events for your own automations
 

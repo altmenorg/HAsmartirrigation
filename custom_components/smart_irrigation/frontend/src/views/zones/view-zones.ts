@@ -50,9 +50,9 @@ import {
   displayDepth,
   displayTemperature,
   displayVolume,
-  engineModeLabel,
   formatDuration,
   output_unit,
+  unit_text,
   waterVolume,
 } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
@@ -459,7 +459,8 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       localize(`panels.zones.status.${key}`, lang, ...args);
     const deficit = Math.max(0, -(zone.bucket ?? 0));
     const threshold = zone.irrigation_threshold ?? 0;
-    const unit = output_unit(this.config, ZONE_BUCKET);
+    // Plain text, not the markup form: this goes into sentences (#849).
+    const unit = unit_text(this.config, ZONE_BUCKET);
 
     // A zone that has just watered sits a hair below zero, and "short 0.0 mm"
     // says nothing true.
@@ -545,8 +546,10 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     // Use direct array assignment for better performance
     this.zones[index] = updatedZone;
 
-    // Invalidate cache for this zone
-    if (updatedZone.id) {
+    // Invalidate cache for this zone. Zone 0 is a zone: a plain truthiness
+    // test left the first zone of every installation rendering from a stale
+    // card after an edit (the same class of bug as #846).
+    if (updatedZone.id != undefined) {
       this.zoneCache.delete(updatedZone.id.toString());
     }
 
@@ -571,11 +574,24 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       this.isSaving = true;
       // Ignore the _config_updated echo this save triggers (see flag declaration).
       this._suppressNextConfigUpdate = true;
+      // Some fields are answered in words and stored as numbers: a soil or a
+      // planting writes the drainage rate or the crop factor it stands for,
+      // and the engine's options are written on the engine. The echo is
+      // suppressed above, so those derived values have to be fetched back or
+      // the page keeps showing the old ones until the tab is left (#852).
+      const derived = saves.some(
+        (changes) =>
+          "soil_type" in changes ||
+          "plant_type" in changes ||
+          "calculation_method" in changes ||
+          "method_config" in changes,
+      );
       Promise.all(
         saves.map((changes) =>
           this.saveToHA(changes as unknown as SmartIrrigationZone),
         ),
       )
+        .then(() => (derived ? this._fetchData() : undefined))
         .catch((error) => {
           // Save failed: clear the guard so it doesn't swallow a later refresh.
           this._suppressNextConfigUpdate = false;
@@ -971,23 +987,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     }
   }
 
-  /**
-   * Whether this zone's sensor group has adopted an engine.
-   *
-   * When it has, the group is where that choice belongs and the zone's own
-   * selector would be a second, contradictory control. When it has not, either
-   * because the group is shared by zones that disagree or because it predates
-   * the move, the zone keeps choosing: removing the control would leave those
-   * installs with no way to change it at all.
-   */
-  private groupDecidesEngine(zone: SmartIrrigationZone): boolean {
-    if (zone.mapping === undefined || zone.mapping === null) {
-      return false;
-    }
-    const group = this.mappings.find((m) => m.id === zone.mapping);
-    return group?.module !== undefined && group?.module !== null;
-  }
-
   private renderTheOptions(
     thelist: object,
     selected?: number,
@@ -1333,26 +1332,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       [ZONE_DURATION]: 0,
                     }),
                 )}
-                ${this.groupDecidesEngine(zone)
-                  ? html`<div class="weather-note">
-                      ${localize(
-                        "panels.zones.module-comes-from-the-group",
-                        lang,
-                      )}
-                    </div>`
-                  : this._selectRow(
-                      localize("common.labels.module", lang),
-                      this.renderTheOptions(this.modules, zone.module, (m) =>
-                        engineModeLabel(m["name"], lang),
-                      ),
-                      (e: Event) => {
-                        const v = (e.target as HTMLSelectElement).value;
-                        this.handleEditZone(index, {
-                          ...zone,
-                          [ZONE_MODULE]: v === "" ? undefined : parseInt(v),
-                        });
-                      },
-                    )}
                 ${this._selectRow(
                   localize("panels.zones.labels.mapping", lang),
                   this.renderTheOptions(this.mappings, zone.mapping),
@@ -1411,7 +1390,8 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                   0.01,
                   true,
                 )}
-                ${this.config?.observed_watering_enabled
+                ${this.config?.observed_watering_enabled ||
+                this.config?.direct_valve_control_enabled
                   ? this._entityRow(
                       localize("panels.zones.labels.linked-entity", lang),
                       localize("panels.zones.labels.optional", lang),
@@ -1426,6 +1406,8 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                     )
                   : ""}
                 ${this._adv(
+                  // A flow meter is for crediting what actually came out, which
+                  // is observed watering's business, not the runner's.
                   this.config?.observed_watering_enabled && zone.linked_entity
                     ? this._entityRow(
                         localize("panels.zones.labels.flow-sensor", lang),

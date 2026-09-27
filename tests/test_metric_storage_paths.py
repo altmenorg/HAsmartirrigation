@@ -34,6 +34,7 @@ def test_every_zone_field_that_carries_a_unit_is_listed():
         const.ZONE_MAXIMUM_BUCKET,
         const.ZONE_DELTA,
         const.ZONE_ET_DEFICIENCY,
+        const.ZONE_ETO,
         const.ZONE_CURRENT_DRAINAGE,
         const.ZONE_IRRIGATION_THRESHOLD,
         const.ZONE_DRAINAGE_RATE,

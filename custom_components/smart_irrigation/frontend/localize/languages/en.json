@@ -547,7 +547,7 @@
         "data-number-of-data-points": "Number of data points",
         "drainage_rate": "Drainage rate",
         "linked-entity": "Linked valve/switch",
-        "linked-entity-hint": "The valve or switch that waters this zone. Whenever it runs (a manual tap, an automation, or Smart Irrigation itself when direct valve control is on), the bucket is credited from the run time and the zone's throughput. Required for the closed-loop features.",
+        "linked-entity-hint": "The valve or switch that waters this zone. Smart Irrigation opens and closes it when direct valve control is on. With observed watering on, any run of it (a manual tap, an automation, or Smart Irrigation itself) credits the bucket from the run time and the zone's throughput.",
         "flow-sensor": "Cumulative volume meter",
         "flow-sensor-hint": "For exact crediting instead of throughput x time: a cumulative water-meter total (state class total_increasing), not an instant flow rate. The unit is read automatically (L, mL, m³, gal, ft³).",
         "optional": "optional",
@@ -736,7 +736,14 @@
       "sequential": "Sequential (one zone at a time)",
       "parallel": "Parallel (all zones at once)"
     },
-    "sequencing_description": "How your zones are watered. This sets what a start trigger works back from when it has to finish at sunrise: one after another takes the sum of every zone's run time, all at once takes the longest of them. It applies whether Smart Irrigation opens the valves itself or an automation of your own does."
+    "sequencing_description": "How your zones are watered. This sets what a start trigger works back from when it has to finish at sunrise: one after another takes the sum of every zone's run time, all at once takes the longest of them. It applies whether Smart Irrigation opens the valves itself or an automation of your own does.",
+    "passes_label": "Water in several passes",
+    "passes_description": "Cycle and soak: the same water, split into shorter passes with a pause between them, so heavy soil takes it in instead of letting it run off. One pass waters in a single go, which is the default. A run too short to split is left alone.",
+    "soak_label": "Soak between passes",
+    "pause_between_zones_label": "Pause between zones",
+    "pause_between_zones_description": "A wait between two zones of a sequential run: time for the line pressure to recover, or for a slow valve to finish closing before the next one opens.",
+    "minutes": "minutes",
+    "seconds": "seconds"
   },
   "calculation_log": {
     "title": "Calculation log",

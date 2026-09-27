@@ -93,6 +93,21 @@ CONF_ZONE_SEQUENCING_OPTIONS = [
     CONF_ZONE_SEQUENCING_PARALLEL,
 ]
 CONF_DEFAULT_ZONE_SEQUENCING = CONF_ZONE_SEQUENCING_SEQUENTIAL
+# Cycle and soak: water a zone in several shorter passes with a pause between
+# them, so the water has time to soak in instead of running off. One pass (the
+# default) is the behaviour without it: a single run of the whole duration.
+CONF_WATERING_PASSES = "watering_passes"
+CONF_DEFAULT_WATERING_PASSES = 1
+CONF_MAX_WATERING_PASSES = 6
+# Minimum length of one pass. Splitting a short run into passes only wastes
+# valve cycles, so the number of passes is reduced until each one reaches this.
+MIN_PASS_SECONDS = 60
+CONF_SOAK_MINUTES = "soak_minutes"
+CONF_DEFAULT_SOAK_MINUTES = 15
+# A pause between two zones of a sequential run, in seconds: time for the line
+# pressure to recover, or for a slow valve to finish closing.
+CONF_PAUSE_BETWEEN_ZONES = "pause_between_zones"
+CONF_DEFAULT_PAUSE_BETWEEN_ZONES = 0
 # Persisted list of in-flight direct-control runs (reboot resilience).
 CONF_ACTIVE_VALVE_RUNS = "active_valve_runs"
 # Keys inside an active-run record.
@@ -359,10 +374,16 @@ ZONE_STATES = [ZONE_STATE_DISABLED, ZONE_STATE_MANUAL, ZONE_STATE_AUTOMATIC]
 ZONE_MODULE = "module"
 ZONE_BUCKET = "bucket"
 ZONE_DELTA = "delta"
-# Raw daily ET deficiency returned by the module, before interval scaling
-# (hour_multiplier) and precipitation. Independent of the bucket and of bucket
-# resets, so it is the value to watch when comparing sensor groups (issue #576).
+# This zone's own daily water need, ETc = ET0 x Kc, before interval scaling
+# (hour_multiplier) and before precipitation. Independent of the bucket and of
+# bucket resets, so it is the value to watch when comparing sensor groups
+# (#576). It carries the crop factor because the bucket does, and a figure
+# shown beside the bucket that disagrees with it explains nothing (#850).
 ZONE_ET_DEFICIENCY = "et_deficiency"
+# The reference evapotranspiration of the same run, without the crop factor:
+# the positive figure a weather service quotes, kept so an installation can be
+# compared against one. ZONE_ET_DEFICIENCY is this zone's own need, ET0 x Kc.
+ZONE_ETO = "eto"
 ZONE_EXPLANATION = "explanation"
 ZONE_MULTIPLIER = "multiplier"
 ZONE_THROUGHPUT = "throughput"

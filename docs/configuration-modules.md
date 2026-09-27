@@ -8,7 +8,11 @@ title: Configuration: Modules
 > Previous: [Zone configuration](configuration-zones.md)<br/>
 > Next: [Sensor group configuration](configuration-sensor-groups.md)
 
-A module is the method used to work out how much water evaporated. You pick one per [sensor group](configuration-sensor-groups.md), and every zone using that group inherits it. A module cannot be deleted while something still uses it.
+A module is the method used to work out how much water evaporated.
+
+**You no longer create or pick one.** A zone says how it is calculated, in plain words, on its own card: *calculated from the weather data*, *provided by a sensor or a service*, or *a fixed amount*. The module behind that answer is created and reused for you, one per zone, and its own settings (how many days to look ahead, the fixed amount) are on the zone card too. The engines page has left the panel's navigation, and the three modes below are what those three answers mean.
+
+The sensor group still records which kind of engine it feeds, because what sources a group has to provide depends on it. When one group feeds zones that are calculated differently, it records none and each zone answers for itself.
 
 ## The three modes
 
@@ -16,9 +20,9 @@ They differ in one thing: where the evapotranspiration figure comes from. Everyt
 
 | Mode | Where the figure comes from | What you need |
 | --- | --- | --- |
-| **Manual** | You give one number, used every day | Nothing |
-| **Standard** | An evapotranspiration figure that already exists | A weather service that publishes one, or your own sensor |
-| **Advanced** | Computed from the weather, by FAO-56 Penman-Monteith | Temperature, humidity, pressure and wind, ideally solar radiation |
+| **Manual** (a fixed amount) | You give one number, used every day | Nothing |
+| **Standard** (provided) | An evapotranspiration figure that already exists | A weather service that publishes one, or your own sensor |
+| **Advanced** (from the weather data) | Computed from the weather, by FAO-56 Penman-Monteith | Temperature, humidity, pressure and wind, ideally solar radiation |
 
 If you are unsure, **Standard** with Open-Meteo is the shortest path to something correct: it is free, needs no API key, and publishes a reference evapotranspiration computed the same way Advanced would.
 

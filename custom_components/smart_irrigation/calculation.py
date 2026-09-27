@@ -1539,12 +1539,10 @@ class CalculationMixin:
                 return None
         # Scale module ET value by interval (hour_multiplier = fractional days)
         _LOGGER.debug("[calculate-module]: retrieved from module: %s", delta)
-        # Keep the raw per-day ET deficiency (before interval scaling and
-        # precipitation). This is the daily water need that tracks the sensor
-        # group / weather; unlike the bucket it does not depend on the
-        # hour_multiplier or on bucket resets, so it is the value to compare when
-        # experimenting with configurations (issue #576).
-        et_deficiency = delta
+        # The reference evapotranspiration of this run, before the crop factor:
+        # what a weather service quotes, so an installation can be compared
+        # against one (the `eto` attribute).
+        reference_et = delta
         # The multiplier is the crop factor Kc, so it belongs on the crop's water
         # use and nowhere else: ETc = ET0 * Kc. It used to be applied at the very
         # end, to the duration, which scaled the whole water balance and so
@@ -1559,6 +1557,14 @@ class CalculationMixin:
         # it covers.
         crop_factor = crop_factor * self._seasonal_factors(zone)[0]
         delta = delta * crop_factor
+        # The per-day water need of this zone, before interval scaling and
+        # before precipitation. Unlike the bucket it does not depend on the
+        # hour_multiplier or on bucket resets, which is what makes it the value
+        # to compare when trying configurations out (#576). It is taken after
+        # the crop factor, because what this zone needs is ETc = ET0 x Kc: the
+        # reference figure was the same for two zones growing different things
+        # and did not match the bucket it was shown beside (#850).
+        et_deficiency = delta
         hour_multiplier = weatherdata.get(const.MAPPING_DATA_MULTIPLIER, 1.0)
         _LOGGER.debug(
             "[calculate-module]: crop factor: %s, hour_multiplier: %s",
@@ -1905,6 +1911,7 @@ class CalculationMixin:
 
         data[const.ZONE_BUCKET] = newbucket
         data[const.ZONE_ET_DEFICIENCY] = et_deficiency
+        data[const.ZONE_ETO] = -reference_et if reference_et is not None else None
         data[const.ZONE_DURATION] = duration
         data[const.ZONE_EXPLANATION] = explanation
 
@@ -1917,6 +1924,7 @@ class CalculationMixin:
             metric=ha_config_is_metric,
             values={
                 "et_deficiency": et_deficiency,
+                "eto": -reference_et if reference_et is not None else None,
                 "hour_multiplier": hour_multiplier,
                 "precipitation": precip,
                 "delta": delta,

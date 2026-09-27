@@ -317,12 +317,23 @@ class PyETO(SmartIrrigationCalculationModule):
                 # see https://github.com/jeroenterheerdt/HAsmartirrigation/issues/70
                 temp_c = (temp_c_min + temp_c_max) / 2.0
 
+                # Saturation vapour pressure over a day is the mean of the two
+                # extremes, e0(Tmax) and e0(Tmin) (FAO-56 Eq. 12), not e0 of the
+                # mean temperature. Because the curve is convex, the mean
+                # temperature gives a lower value, which understates the vapour
+                # pressure deficit and so the evapotranspiration -- FAO-56 says
+                # so in as many words. On a day of 5.2/21.6 C it cost 0.20 kPa
+                # of deficit and 13% of the ETo (#848).
+                svp = (svp_from_t(temp_c_max) + svp_from_t(temp_c_min)) / 2.0
+
                 eto = fao56_penman_monteith(
                     net_rad=net_radvar,
                     t=convert.celsius2kelvin(temp_c),
                     ws=wind_m_s,
-                    svp=svp_from_t(temp_c),
+                    svp=svp,
                     avp=avp,
+                    # The slope of the curve is taken at the mean temperature
+                    # (FAO-56 Eq. 13), which is what the equation asks for.
                     delta_svp=delta_svp(temp_c),
                     psy=psy_const(
                         atmos_pres / 10
@@ -349,6 +360,7 @@ class PyETO(SmartIrrigationCalculationModule):
                     "sol_rad": sol_rad,
                     "sol_rad_estimated": sol_rad_estimated,
                     "net_in_sol_rad": net_in_sol_radvar,
+                    "svp": svp,
                     "avp": avp,
                     "net_out_lw_rad": net_out_lw_radvar,
                     "net_rad": net_radvar,

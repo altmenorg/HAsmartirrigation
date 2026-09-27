@@ -60,6 +60,7 @@ async def async_setup_entry(
             duration=config[const.ZONE_DURATION],
             bucket=config[const.ZONE_BUCKET],
             et_deficiency=config.get(const.ZONE_ET_DEFICIENCY, 0),
+            eto=config.get(const.ZONE_ETO, 0),
             last_updated=config[const.ZONE_LAST_UPDATED],
             last_calculated=config[const.ZONE_LAST_CALCULATED],
             number_of_data_points=config[const.ZONE_NUMBER_OF_DATA_POINTS],
@@ -191,6 +192,7 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
         maximum_duration: float,
         input_method: str = None,
         precipitation_rate: float = None,
+        eto: float = 0,
     ) -> None:
         """Initialize the sensor entity."""
         self._hass = hass
@@ -218,6 +220,7 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
         self._duration = duration
         self._bucket = bucket
         self._et_deficiency = et_deficiency
+        self._eto = eto
         self._last_updated = last_updated
         self._last_calculated = last_calculated
         self._number_of_data_points = number_of_data_points
@@ -285,6 +288,7 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
             self._duration = zone["duration"]
             self._bucket = zone["bucket"]
             self._et_deficiency = zone.get("et_deficiency", 0)
+            self._eto = zone.get("eto", 0)
             self._last_updated = zone["last_updated"]
             self._last_calculated = zone["last_calculated"]
             self._number_of_data_points = zone["number_of_data_points"]
@@ -402,6 +406,7 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
                 const.ZONE_BUCKET: self._bucket,
                 const.ZONE_DELTA: self._delta,
                 const.ZONE_ET_DEFICIENCY: self._et_deficiency,
+                const.ZONE_ETO: self._eto,
             },
             ha_metric,
         )
@@ -437,17 +442,16 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
             #   day where more rain fell than water evaporated;
             # - et_deficiency is the raw per-day water need before the interval
             #   scaling and before precipitation, so it is negative;
-            # - eto is that same need as a reference evapotranspiration, the
+            # - eto is the reference evapotranspiration of the same run, the
             #   positive number the literature and the weather services quote.
+            #   It carries no crop factor, which is what makes it comparable
+            #   with an external ET0 figure; et_deficiency is this zone's own
+            #   need, ET0 x Kc (#850).
             "et_value": shown[const.ZONE_DELTA],
             "et_value_unit": depth_unit,
             "et_deficiency": shown[const.ZONE_ET_DEFICIENCY],
             "et_deficiency_unit": depth_unit,
-            "eto": (
-                None
-                if shown[const.ZONE_ET_DEFICIENCY] is None
-                else -shown[const.ZONE_ET_DEFICIENCY]
-            ),
+            "eto": shown[const.ZONE_ETO],
             "eto_unit": depth_unit,
             # asyncio.run_coroutine_threadsafe(
             #    localize("common.attributes.size", "en"), self._hass.loop

@@ -539,7 +539,7 @@
         "data-number-of-data-points": "Nombre de points de données",
         "drainage_rate": "Taux de drainage",
         "linked-entity": "Vanne/interrupteur lié",
-        "linked-entity-hint": "La vanne ou l'interrupteur qui arrose cette zone. Dès qu'il fonctionne (robinet manuel, automatisation, ou Smart Irrigation lui-même si le pilotage direct est activé), le réservoir est crédité d'après la durée de fonctionnement et le débit de la zone. Nécessaire pour les fonctions en boucle fermée.",
+        "linked-entity-hint": "La vanne ou l'interrupteur qui arrose cette zone. Smart Irrigation l'ouvre et la ferme quand le pilotage direct est activé. Avec l'arrosage observé activé, chacune de ses ouvertures (à la main, par une automatisation, ou par Smart Irrigation) crédite le réservoir d'après la durée et le débit de la zone.",
         "flow-sensor": "Compteur de volume cumulé",
         "flow-sensor-hint": "Pour un comptage exact au lieu de débit x temps : un total de compteur d'eau cumulé (state class total_increasing), pas un débit instantané. L'unité est lue automatiquement (L, mL, m³, gal, ft³).",
         "optional": "option",
@@ -733,7 +733,14 @@
       "sequential": "Séquentiel (une zone à la fois)",
       "parallel": "Parallèle (toutes les zones en même temps)"
     },
-    "sequencing_description": "Comment vos zones sont arrosées. Ce réglage détermine la durée dont un déclencheur tient compte lorsqu'il doit finir au lever du soleil : l'une après l'autre prend la somme des durées de chaque zone, toutes en même temps prend la plus longue. Il s'applique que Smart Irrigation pilote les vannes lui-même ou que ce soit votre propre automatisation."
+    "sequencing_description": "Comment vos zones sont arrosées. Ce réglage détermine la durée dont un déclencheur tient compte lorsqu'il doit finir au lever du soleil : l'une après l'autre prend la somme des durées de chaque zone, toutes en même temps prend la plus longue. Il s'applique que Smart Irrigation pilote les vannes lui-même ou que ce soit votre propre automatisation.",
+    "passes_label": "Arroser en plusieurs passes",
+    "passes_description": "Cycle et absorption : la même eau, découpée en passes plus courtes avec une pause entre elles, pour qu'un sol lourd l'absorbe au lieu de la laisser ruisseler. Une seule passe arrose d'un coup, c'est le réglage par défaut. Un arrosage trop court pour être découpé reste tel quel.",
+    "soak_label": "Absorption entre les passes",
+    "pause_between_zones_label": "Pause entre les zones",
+    "pause_between_zones_description": "Une attente entre deux zones d'un arrosage séquentiel : le temps que la pression revienne, ou qu'une vanne lente finisse de se fermer avant que la suivante s'ouvre.",
+    "minutes": "minutes",
+    "seconds": "secondes"
   },
   "calculation_log": {
     "title": "Journal de calcul",

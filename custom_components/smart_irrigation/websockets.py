@@ -113,6 +113,17 @@ class SmartIrrigationConfigView(HomeAssistantView):
                 vol.Optional(const.CONF_ZONE_SEQUENCING): vol.In(
                     const.CONF_ZONE_SEQUENCING_OPTIONS
                 ),
+                # Cycle and soak, and the pause between two zones.
+                vol.Optional(const.CONF_WATERING_PASSES): vol.All(
+                    vol.Coerce(int),
+                    vol.Range(min=1, max=const.CONF_MAX_WATERING_PASSES),
+                ),
+                vol.Optional(const.CONF_SOAK_MINUTES): vol.All(
+                    vol.Coerce(float), vol.Range(min=0, max=240)
+                ),
+                vol.Optional(const.CONF_PAUSE_BETWEEN_ZONES): vol.All(
+                    vol.Coerce(float), vol.Range(min=0, max=3600)
+                ),
                 vol.Optional(const.CONF_PRECIPITATION_THRESHOLD_MM): vol.Coerce(float),
                 vol.Optional(const.CONF_SKIP_ON_FREEZE): cv.boolean,
                 vol.Optional(const.CONF_FREEZE_THRESHOLD): vol.Any(
@@ -259,6 +270,7 @@ SERVER_OWNED_ZONE_FIELDS = (
     const.ZONE_EXPLANATION,
     const.ZONE_DELTA,
     const.ZONE_ET_DEFICIENCY,
+    const.ZONE_ETO,
     const.ZONE_CURRENT_DRAINAGE,
     const.ZONE_NUMBER_OF_DATA_POINTS,
 )
@@ -334,6 +346,7 @@ class SmartIrrigationZoneView(HomeAssistantView):
                 vol.Optional(const.ZONE_INPUT_METHOD): vol.In(const.ZONE_INPUT_METHODS),
                 vol.Optional(const.ZONE_PRECIPITATION_RATE): vol.Or(float, int, None),
                 vol.Optional(const.ZONE_ET_DEFICIENCY): vol.Or(float, int, None),
+                vol.Optional(const.ZONE_ETO): vol.Or(float, int, None),
                 vol.Optional(const.ZONE_LAST_IRRIGATION): vol.Or(
                     None, str, datetime.datetime
                 ),
@@ -368,12 +381,17 @@ class SmartIrrigationZoneView(HomeAssistantView):
         method = data.pop(const.ZONE_CALCULATION_METHOD, None)
         method_config = data.pop(const.ZONE_METHOD_CONFIG, None)
         saved = await coordinator.async_update_zone_config(zone, data)
-        if method is not None:
-            zone_id = zone if zone is not None else _last_zone_id(saved, coordinator)
-            if zone_id is not None:
-                await coordinator.async_set_zone_method(
-                    int(zone_id), method, method_config
-                )
+        zone_id = zone if zone is not None else _last_zone_id(saved, coordinator)
+        if method is None and method_config and zone_id is not None:
+            # The panel sends only what changed, so a change to the engine's
+            # own options (how many days to look ahead, the fixed amount)
+            # arrives without the method, which did not change. Reading the
+            # zone's current method here is what makes such a change stick:
+            # without it the options were dropped and the old value came back
+            # on the next refresh (#851).
+            method = _zone_method(coordinator, coordinator.store.get_zone(int(zone_id)))
+        if method is not None and zone_id is not None:
+            await coordinator.async_set_zone_method(int(zone_id), method, method_config)
         async_dispatcher_send(hass, const.DOMAIN + "_update_frontend")
         return self.json({"success": True})
 

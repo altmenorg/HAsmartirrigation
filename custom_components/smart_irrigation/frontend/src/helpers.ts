@@ -99,6 +99,35 @@ export function localizedDateTime(
   }
 }
 
+/**
+ * The same unit as plain text, for a sentence rather than a template.
+ *
+ * ``output_unit`` returns a lit template, because a square metre needs markup.
+ * Interpolating one into a JavaScript string printed "[object Object]" on the
+ * Zones tab (#849), which is why a text form exists at all: anything built as
+ * a string has to ask for this one.
+ */
+export function unit_text(config, arg0: string): string {
+  const metric = config?.units == CONF_METRIC;
+  switch (arg0) {
+    case ZONE_DRAINAGE_RATE:
+    case ZONE_PRECIPITATION_RATE:
+      return metric ? UNIT_MMH : UNIT_INCHH;
+    case CONF_PRECIPITATION_THRESHOLD_MM:
+    case ZONE_BUCKET:
+      return metric ? UNIT_MM : UNIT_INCH;
+    case ZONE_SIZE:
+      // The markup form carries a superscript; this one carries the character.
+      return metric ? "m²" : UNIT_SQ_FT;
+    case ZONE_THROUGHPUT:
+      return metric ? UNIT_LPM : UNIT_GPM;
+    case ZONE_WATER_VOLUME:
+      return metric ? UNIT_LITER : UNIT_GALLON;
+    default:
+      return "";
+  }
+}
+
 export function output_unit(config, arg0: string): TemplateResult {
   switch (arg0) {
     case ZONE_DRAINAGE_RATE:

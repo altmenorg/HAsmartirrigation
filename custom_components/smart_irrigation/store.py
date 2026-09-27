@@ -52,6 +52,7 @@ from .const import (
     CONF_DEFAULT_MAXIMUM_BUCKET,
     CONF_DEFAULT_MAXIMUM_DURATION,
     CONF_DEFAULT_OBSERVED_WATERING_ENABLED,
+    CONF_DEFAULT_PAUSE_BETWEEN_ZONES,
     CONF_DEFAULT_PRECIPITATION_THRESHOLD_MM,
     CONF_DEFAULT_RECURRING_SCHEDULES,
     CONF_DEFAULT_SEASONAL_ADJUSTMENTS,
@@ -60,8 +61,10 @@ from .const import (
     CONF_DEFAULT_SKIP_ON_FREEZE,
     CONF_DEFAULT_SKIP_ON_RAIN_SENSOR,
     CONF_DEFAULT_SKIP_ON_WIND,
+    CONF_DEFAULT_SOAK_MINUTES,
     CONF_DEFAULT_SOIL_MOISTURE_THRESHOLD,
     CONF_DEFAULT_USE_WEATHER_SERVICE,
+    CONF_DEFAULT_WATERING_PASSES,
     CONF_DEFAULT_WEATHER_SERVICE,
     CONF_DEFAULT_ZONE_INPUT_METHOD,
     CONF_DEFAULT_ZONE_SEQUENCING,
@@ -77,6 +80,7 @@ from .const import (
     CONF_MANUAL_LONGITUDE,
     CONF_METRIC,
     CONF_OBSERVED_WATERING_ENABLED,
+    CONF_PAUSE_BETWEEN_ZONES,
     CONF_POSTPONE_UNTIL,
     CONF_PRECIPITATION_THRESHOLD_MM,
     CONF_RAIN_SENSOR,
@@ -87,11 +91,13 @@ from .const import (
     CONF_SKIP_ON_FREEZE,
     CONF_SKIP_ON_RAIN_SENSOR,
     CONF_SKIP_ON_WIND,
+    CONF_SOAK_MINUTES,
     CONF_UI_MODE,
     CONF_UI_MODE_ADVANCED,
     CONF_UI_MODE_STANDARD,
     CONF_UNITS,
     CONF_USE_WEATHER_SERVICE,
+    CONF_WATERING_PASSES,
     CONF_WEATHER_SERVICE,
     CONF_WEATHER_SERVICE_OWM,
     CONF_WIND_SENSOR,
@@ -152,6 +158,7 @@ from .const import (
     ZONE_DRAINAGE_RATE,
     ZONE_DURATION,
     ZONE_ET_DEFICIENCY,
+    ZONE_ETO,
     ZONE_EXPLANATION,
     ZONE_FLOW_SENSOR,
     ZONE_ID,
@@ -233,8 +240,10 @@ class ZoneEntry:
     state = attr.ib(type=str, default="automatic")
     bucket = attr.ib(type=float, default=0)
     delta = attr.ib(type=float, default=0)
-    # Raw daily ET deficiency from the last calculation (see ZONE_ET_DEFICIENCY).
+    # This zone's daily need and the reference ET behind it, from the last
+    # calculation (see ZONE_ET_DEFICIENCY and ZONE_ETO).
     et_deficiency = attr.ib(type=float, default=0)
+    eto = attr.ib(type=float, default=0)
     duration = attr.ib(type=float, default=0)
     module = attr.ib(type=str, default=None)
     multiplier = attr.ib(type=float, default=1)
@@ -590,6 +599,10 @@ class Config:
         type=bool, default=CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED
     )
     zone_sequencing = attr.ib(type=str, default=CONF_DEFAULT_ZONE_SEQUENCING)
+    # Cycle and soak, and the pause between two zones of a sequential run.
+    watering_passes = attr.ib(type=int, default=CONF_DEFAULT_WATERING_PASSES)
+    soak_minutes = attr.ib(type=float, default=CONF_DEFAULT_SOAK_MINUTES)
+    pause_between_zones = attr.ib(type=float, default=CONF_DEFAULT_PAUSE_BETWEEN_ZONES)
     # In-flight direct-control runs, persisted so a reboot can resume them.
     active_valve_runs = attr.ib(type=list, default=[])
 
@@ -983,6 +996,15 @@ class SmartIrrigationStorage:
                 zone_sequencing=data["config"].get(
                     CONF_ZONE_SEQUENCING, CONF_DEFAULT_ZONE_SEQUENCING
                 ),
+                watering_passes=data["config"].get(
+                    CONF_WATERING_PASSES, CONF_DEFAULT_WATERING_PASSES
+                ),
+                soak_minutes=data["config"].get(
+                    CONF_SOAK_MINUTES, CONF_DEFAULT_SOAK_MINUTES
+                ),
+                pause_between_zones=data["config"].get(
+                    CONF_PAUSE_BETWEEN_ZONES, CONF_DEFAULT_PAUSE_BETWEEN_ZONES
+                ),
                 active_valve_runs=data["config"].get(CONF_ACTIVE_VALVE_RUNS, []),
             )
 
@@ -996,6 +1018,7 @@ class SmartIrrigationStorage:
                         state=zone[ZONE_STATE],
                         delta=zone[ZONE_DELTA],
                         et_deficiency=zone.get(ZONE_ET_DEFICIENCY, 0),
+                        eto=zone.get(ZONE_ETO, 0),
                         bucket=zone[ZONE_BUCKET],
                         duration=zone[ZONE_DURATION],
                         module=zone[ZONE_MODULE],

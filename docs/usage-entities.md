@@ -22,8 +22,8 @@ Each entity will have the following attributes:
 |`state`|disabled, manual, automatic |
 |`bucket`|the bucket size in mm or inch|
 |`et_value`|the **net precipitation** applied to the bucket by the last calculation, in mm or inch: the water need over the interval with the precipitation already subtracted from it. It is positive on a day where more rain fell than water evaporated. Despite its name this is not the evapotranspiration.|
-|`et_deficiency`|the water need on its own, per day, before the interval scaling and before precipitation, in mm or inch. Negative, because it is what the soil lost. Unlike the bucket it does not depend on the calculation interval or on bucket resets, so this is the value to compare when trying out configurations.|
-|`eto`|the same water need expressed as a reference evapotranspiration, which is `et_deficiency` without the sign. This is the positive number the literature and the weather services quote, so it is the one to compare against an external ET0 figure.|
+|`et_deficiency`|what this zone needs, per day, before the interval scaling and before precipitation, in mm or inch. Negative, because it is what the soil lost. It carries the zone's crop factor, so it is `ETc = ET0 x Kc` and it agrees with the bucket beside it. Unlike the bucket it does not depend on the calculation interval or on bucket resets, so this is the value to compare when trying out configurations.|
+|`eto`|the reference evapotranspiration of the same run, positive, with no crop factor. This is the number the literature and the weather services quote, so it is the one to hold against an external ET0 figure.|
 |`unit_of_measurement`|seconds|
 |`device_class`|duration|
 |`icon`|default: mdi:sprinkler|
@@ -48,7 +48,7 @@ Each zone is also grouped as a **device** in Home Assistant (named after the zon
 | Duration (`sensor.smart_irrigation_[zone]`) | sensor | Calculated watering duration (seconds). This is the original entity: its `entity_id`, recorded history and attributes are preserved. |
 | Bucket | sensor | Current soil water balance (mm/inch); negative means deficit. |
 | Applied ET | sensor | ET applied to the bucket at the last calculation (daily et0 x elapsed interval + rain). |
-| Daily ET deficiency | sensor | Raw daily reference ET (et0), independent of the interval and of rain. |
+| Daily ET deficiency | sensor | This zone's daily need, crop factor included, independent of the interval and of rain. |
 | Current drainage | sensor | Water drained as runoff at the last calculation. |
 | Last irrigation | sensor (timestamp) | When the zone was last credited for a run. |
 | Water used | sensor (water, total) | Cumulative water delivered to the zone (litres). |
