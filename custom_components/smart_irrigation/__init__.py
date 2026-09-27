@@ -547,6 +547,10 @@ class SmartIrrigationCoordinator(
         self._track_sunrise_event_unsub = None
         self._track_irrigation_triggers_unsub = []  # List to track multiple triggers
         self._track_midnight_time_unsub = None
+        # Whether a start trigger is actually scheduled right now. False leaves
+        # the panel free to say so instead of printing a time nothing will act
+        # on (#841).
+        self.start_trigger_armed = False
         self._debounced_update_cancel = {}  # mapping_id -> cancel callback
         # set up auto calc time and auto update time from data
         the_config = self.store.get_config()

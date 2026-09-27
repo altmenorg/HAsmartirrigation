@@ -301,7 +301,9 @@
           "sub-watering": "{count} zone(s), {duration} en tout.",
           "headline-postponed": "Arrosage reporté",
           "sub-postponed": "Vous l'avez reporté. Il reprend tout seul, et rien n'est perdu : une zone en déficit le reste.",
-          "headline-skipped": "Pas d'arrosage aujourd'hui"
+          "headline-skipped": "Pas d'arrosage aujourd'hui",
+          "headline-not-scheduled": "Un arrosage est dû, et rien n'est prévu pour le lancer",
+          "sub-not-scheduled": "L'heure ci-dessus est celle à laquelle il démarrerait. Aucun déclencheur n'est armé en ce moment, ce qui arrive quand le déclencheur actif est désactivé ou n'a pas été enregistré. Vérifiez-le dans Réglages ; s'il est correct, un calcul le réarme."
         },
         "decision": {
           "title": "L'arrosage sera-t-il annulé ?",

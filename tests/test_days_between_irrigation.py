@@ -30,6 +30,12 @@ class _Store:
     async def async_update_config(self, data):
         self._config.update(data)
 
+    async def async_get_zones(self):
+        """No zones: midnight re-arms the start trigger (#841) and that reads
+        them, and this harness is about the day counter rather than the
+        registration."""
+        return []
+
 
 class _Coordinator(TriggersMixin, SkipConditionsMixin):
     """Just enough coordinator to drive the once-per-day watering decision."""
@@ -54,6 +60,9 @@ class _Coordinator(TriggersMixin, SkipConditionsMixin):
         self._fired_triggers_today = set()
         self._watering_decision_today = None
         self._start_event_fired_today = False
+        self._track_sunrise_event_unsub = None
+        self._track_irrigation_triggers_unsub = []
+        self.start_trigger_armed = False
 
     @property
     def days_since(self):

@@ -408,6 +408,17 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       );
     }
 
+    // The time above is worked out arithmetically. Whether anything is armed to
+    // act on it is a different question, and printing the one while the other
+    // is false is a countdown that reaches zero and rolls over to tomorrow
+    // (#841). When a run is owed and nothing is scheduled, say that instead.
+    const armed = (info as any)?.start_trigger_armed !== false;
+    if (!armed && !postponed && !skipped && zones.length && seconds > 0) {
+      icon = "mdi:calendar-alert";
+      headline = this.t("cards.next-run.headline-not-scheduled");
+      sub = this.t("cards.next-run.sub-not-scheduled");
+    }
+
     return html`
       <ha-card>
         <div class="card-content hero">

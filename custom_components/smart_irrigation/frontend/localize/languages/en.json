@@ -303,7 +303,9 @@
           "sub-watering": "{count} zone(s), {duration} in all.",
           "headline-postponed": "Watering is held back",
           "sub-postponed": "You postponed it. It resumes by itself, and nothing is lost: a zone that is short of water still is.",
-          "headline-skipped": "No watering today"
+          "headline-skipped": "No watering today",
+          "headline-not-scheduled": "A run is owed, and nothing is scheduled to start it",
+          "sub-not-scheduled": "The time above is when it would start. No start trigger is armed right now, which happens when the active trigger is disabled or was not registered. Check the trigger under Settings, and if it looks right, a calculation re-arms it."
         },
         "decision": {
           "title": "Will it be skipped?",

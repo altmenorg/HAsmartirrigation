@@ -57,7 +57,14 @@ class TriggersMixin:
     """
 
     async def register_start_event(self):
-        """Register a callback to fire the irrigation start event before sunrise based on total duration of enabled zones."""
+        """Register a callback to fire the irrigation start event before sunrise based on total duration of enabled zones.
+
+        Every path through this either arms a tracker or leaves the
+        installation with none, and ``start_trigger_armed`` records which: the
+        panel showed a start time worked out arithmetically whether or not
+        anything was scheduled to happen at it, which is what a countdown that
+        reaches zero and rolls over to tomorrow looks like (#841).
+        """
         # sun_state = self.hass.states.get("sun.sun")
         # if sun_state is not None:
         #    sun_rise = sun_state.attributes.get("next_rising")
@@ -67,6 +74,7 @@ class TriggersMixin:
         #        except(ValueError):
         #            sun_rise = datetime.strptime(sun_rise, "%Y-%m-%dT%H:%M:%S%z")
         total_duration = await self.get_total_duration_all_enabled_zones()
+        self.start_trigger_armed = False
         if self._track_sunrise_event_unsub:
             self._track_sunrise_event_unsub()
             self._track_sunrise_event_unsub = None
@@ -122,6 +130,7 @@ class TriggersMixin:
             )
             return
         await self._register_trigger(selected, total_duration)
+        self.start_trigger_armed = bool(self._track_irrigation_triggers_unsub)
 
     async def _register_trigger(self, trigger, total_duration):
         """Register one start trigger (sunrise / sunset / solar azimuth)."""
@@ -256,6 +265,7 @@ class TriggersMixin:
                 partial(self._fire_start_event, legacy_trigger_info),
                 timedelta(seconds=0 - total_duration),
             )
+            self.start_trigger_armed = True
             event_to_fire = f"{const.DOMAIN}_{const.EVENT_IRRIGATE_START}"
             _LOGGER.info(
                 "Legacy start irrigation event %s will fire at %s seconds before sunrise",
@@ -697,3 +707,12 @@ class TriggersMixin:
         # Increment days since last irrigation at midnight
         # Fire-and-forget async task
         self.hass.async_create_task(self._increment_days_since_irrigation())
+
+        # And arm the start trigger again for the new day. Registration happens
+        # after a calculation and after a zone is edited, and it deliberately
+        # arms nothing when no zone needs water; an installation could
+        # therefore sit unarmed until one of those happened again, which is
+        # "it starts working after I restart Home Assistant" (#841). The
+        # durations are those of the night's calculation, so this costs nothing
+        # and cannot arm a run that is not owed.
+        self.hass.async_create_task(self.register_start_event())

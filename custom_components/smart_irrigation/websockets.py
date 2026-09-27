@@ -903,6 +903,12 @@ async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
             "zone_estimates": zone_estimates,
             "skip_preview": skip_preview,
             "last_skip_evaluation": last_skip_evaluation,
+            # Whether anything is actually scheduled to fire. The time above is
+            # arithmetic; this says whether a tracker is armed to act on it
+            # (#841).
+            "start_trigger_armed": bool(
+                getattr(coordinator, "start_trigger_armed", False)
+            ),
             # Why nothing would water, when that is the case. See
             # delivery_gap().
             "delivery_gap": delivery_gap(config, zones),
@@ -934,6 +940,7 @@ async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
             "trigger_base": None,
             "trigger_accounts_for_duration": None,
             "zone_sequencing": None,
+            "start_trigger_armed": False,
             "error": str(e),
             "zone_estimates": {},
             "skip_preview": None,
