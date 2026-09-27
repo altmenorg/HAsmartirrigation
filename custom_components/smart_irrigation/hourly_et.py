@@ -24,8 +24,14 @@ nothing calls it and the daily equation stands exactly as before.
 
 Taken from JustChr's fork, Irrigation Plus
 (https://github.com/JustChr/HAsmartirrigation, ``et_hourly.py``), MIT licensed
-like this integration, and unchanged below this docstring. It is validated
-there, and here, against FAO-56 Example 19.
+like this integration. It is validated there, and here, against FAO-56
+Example 19 (tests/test_fao56_example_19.py).
+
+One thing below is ours rather than his: the cloudiness of an hour after dark
+(``cloudiness_factor``, ``NIGHT_CLOUDINESS_FALLBACK`` and the ``cloudiness``
+parameter). The original used the lower bound of the cloudiness function for
+every night hour, which makes the long-wave loss about fourteen times too
+small and lets a night evaporate water it did not.
 """
 
 import math
@@ -190,28 +196,56 @@ def clear_sky_radiation_hourly_eq36(
     return (kb + kd) * ra_hr
 
 
+def cloudiness_factor(solar_rad_hr: float, rso_hr: float) -> float | None:
+    """fcd = 1.35 Rs/Rso - 0.35, bounded to [0.05, 1.0], or None after dark.
+
+    None when there is no sun to take a ratio of: the caller then has to say
+    what the sky was like, because the hour's own radiation cannot (see
+    ``NIGHT_CLOUDINESS_FALLBACK`` and the carry in ``hourly_rows``).
+    """
+    if rso_hr <= 0:
+        return None
+    ratio = min(1.0, max(0.0, solar_rad_hr / rso_hr))
+    return max(0.05, min(1.0, 1.35 * ratio - 0.35))
+
+
+# What a night hour assumes when nothing in the window says what the sky was
+# like -- a window that is night from end to end. FAO-56 asks for the ratio of
+# two to three hours before sunset, which the caller carries when it has it;
+# this is the last resort, and it is deliberately the clear-sky end of the
+# range, because an overcast night loses the least and assuming it would
+# under-count the loss (which is what 0.05 did, by a factor of fourteen).
+NIGHT_CLOUDINESS_FALLBACK = 0.8
+
+
 def net_radiation_hourly(
     solar_rad_hr: float,
     ra_hr: float,
     t_c: float,
     ea_kpa: float,
     elevation_m: float,
+    cloudiness: float | None = None,
 ) -> float:
     """Net radiation Rn [MJ m-2 h-1] from measured solar radiation [MJ m-2 h-1].
 
     Uses the hourly Stefan-Boltzmann constant and the hourly mean temperature
     for the net long-wave term (FAO-56 Eq. 38-40, hourly).
+
+    ``cloudiness`` is fcd for an hour that cannot compute its own, which is
+    every hour after dark. FAO-56 says to use the Rs/Rso ratio of two to three
+    hours before sunset, and the row builder carries it; this parameter is how
+    it arrives. Without it a night hour used the lower bound of 0.05, which
+    made the long-wave loss of a night about fourteen times too small: FAO's
+    own worked example (Example 19) publishes Rnl 0.100 MJ/m2 for a night hour
+    where that gave 0.007, so a night of eight hours evaporated around 0.15 mm
+    it should not have, and a long winter night proportionally much more.
     """
     rns = (1 - ALBEDO) * solar_rad_hr
     rso = clear_sky_radiation_hourly(ra_hr, elevation_m)
-    # Cloudiness function fcd = 1.35 Rs/Rso − 0.35, bounded to [0.05, 1.0].
-    # At night (Rso ≈ 0) the ratio is undefined; fall back to the lower bound,
-    # which keeps the (small) night-time Rnl reasonable for a status estimate.
-    if rso > 0:
-        ratio = min(1.0, max(0.0, solar_rad_hr / rso))
-        fcd = max(0.05, min(1.0, 1.35 * ratio - 0.35))
-    else:
-        fcd = 0.05
+    fcd = cloudiness_factor(solar_rad_hr, rso)
+    if fcd is None:
+        fcd = NIGHT_CLOUDINESS_FALLBACK if cloudiness is None else cloudiness
+    fcd = max(0.05, min(1.0, fcd))
     t_k = t_c + 273.16
     rnl = (
         STEFAN_BOLTZMANN_HOURLY
@@ -257,6 +291,7 @@ def eto_hourly(
     tz_offset_h: float,
     elevation_m: float = 0.0,
     pressure_kpa: float | None = None,
+    cloudiness: float | None = None,
 ) -> float:
     """Hourly reference ETo [mm h-1] (FAO-56 Eq. 53) from hourly weather.
 
@@ -272,7 +307,7 @@ def eto_hourly(
     ra = extraterrestrial_radiation_hourly(
         latitude_deg, longitude_deg, doy, hour_mid, tz_offset_h
     )
-    rn = net_radiation_hourly(solar_rad_hr, ra, t_c, avp, elevation_m)
+    rn = net_radiation_hourly(solar_rad_hr, ra, t_c, avp, elevation_m, cloudiness)
     # Soil heat flux: 0.1·Rn during daytime (Rn > 0), 0.5·Rn at night.
     g = 0.1 * rn if rn > 0 else 0.5 * rn
     return penman_monteith_hourly(rn, g, t_c, wind_2m, svp, avp, slope, gamma)

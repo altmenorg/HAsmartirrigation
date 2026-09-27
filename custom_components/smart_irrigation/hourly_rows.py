@@ -27,7 +27,9 @@ import datetime
 from . import const
 from .hourly_et import (
     atm_pressure,
+    clear_sky_radiation_hourly,
     clear_sky_radiation_hourly_eq36,
+    cloudiness_factor,
     eto_hourly,
     extraterrestrial_radiation_hourly,
     solar_elevation_sin,
@@ -459,11 +461,48 @@ def build_hourly_rows(
     return rows
 
 
+def _night_cloudiness(rows, latitude, longitude, elevation, tz_offset_h):
+    """The cloudiness a night hour borrows, or None when the window has no day.
+
+    An hour after dark cannot compute its own: there is no sun to take the
+    Rs/Rso ratio of, and using the lower bound of the cloudiness function -- as
+    this did before -- makes the long-wave loss about fourteen times too small,
+    so a night evaporates water it did not.
+
+    FAO-56 says to use the ratio of two to three hours before sunset. Taken
+    literally that reads one low-sun hour, where the ratio is least reliable and
+    where a clear evening and a hazy one are hard to tell apart; on a test day
+    it landed on the clamped minimum and changed nothing. So the ratio is taken
+    over the daylight of the window as a whole, sum against sum, which is also
+    the ratio the daily equation uses for its own long-wave term: the two forms
+    then say the same thing about the same sky.
+
+    Ours, not from the fork.
+    """
+    measured = 0.0
+    clear_sky = 0.0
+    for row in rows:
+        ra = extraterrestrial_radiation_hourly(
+            latitude,
+            longitude,
+            row["doy"],
+            row["hour"],
+            row.get("tz_offset_h", tz_offset_h),
+        )
+        rso = clear_sky_radiation_hourly(max(0.0, ra), elevation)
+        if rso <= 0:
+            continue
+        clear_sky += rso
+        measured += max(0.0, row.get("solar_mj_h") or 0.0)
+    return cloudiness_factor(measured, clear_sky)
+
+
 def price_hourly_rows(rows, latitude, longitude, elevation=0.0, tz_offset_h=0.0):
     """Hourly FAO-56 ETo [mm] of each row, weighted by the share it covers.
 
     A row's own ``tz_offset_h`` wins over the argument.
     """
+    night = _night_cloudiness(rows, latitude, longitude, elevation, tz_offset_h)
     series = []
     for row in rows:
         eto = eto_hourly(
@@ -478,6 +517,8 @@ def price_hourly_rows(rows, latitude, longitude, elevation=0.0, tz_offset_h=0.0)
             tz_offset_h=row.get("tz_offset_h", tz_offset_h),
             elevation_m=elevation,
             pressure_kpa=row.get("pressure_kpa"),
+            # Only used by an hour that has no sun of its own to judge by.
+            cloudiness=night,
         )
         # A row that does not say otherwise covers its whole hour.
         series.append(eto * row.get("coverage_h", 1.0))
