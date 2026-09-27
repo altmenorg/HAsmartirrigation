@@ -12,7 +12,8 @@ forms, which is where a regression would reach every user:
 - the crop factor still scales the ET, and the rain is still added unscaled;
 - every case the hourly form cannot support falls back to the daily one.
 
-The contract follows JustChr's tests for the same feature in Irrigation Plus.
+The equations themselves are checked against FAO-56's own worked example in
+tests/test_fao56_example_19.py; what this file pins down is the wiring.
 """
 
 import math

@@ -1,278 +1,678 @@
-"""The daily bucket's ET sourced from summed hourly FAO-56 ETo.
+"""The row builder: a buffer of sparse readings reduced to clock hours.
 
-Taken from JustChr's fork, Irrigation Plus (MIT), onto this integration's
-row builder. The precipitation and sub-step cases are not carried over: here
-rain is handled apart from the hourly ET.
+``hourly_et`` prices an hour that arrives complete. Nothing in the integration
+stores anything of the sort -- the buffer holds one reading per sensor update,
+each carrying only the fields of the sensor that triggered it -- so this is
+where the two meet, and it is the part that is a design rather than a paper.
 
+What is pinned down here is the contract the rest of the integration relies on:
+what a row carries, how a field with no reading in an hour is valued, which
+windows are refused outright so that the caller keeps the daily equation, and
+the unit conversions that a rewrite gets wrong silently.
 
-Running the daily FAO-56 equation on window-mean weather is biased by cloudiness:
-fed one identical hourly series over 362 days it comes out 1.144x a reference
-implementation on overcast days and 0.925x on clear ones, while the same series
-summed hour by hour sits flat at 1.02-1.04 across every sky band (mean absolute
-daily error 0.099 mm against 0.254 mm). The equation itself is already pinned
-against FAO-56 Example 19 in test_et_hourly.py, so everything that can still go
-wrong lives in the inputs handed to it -- which is what these cover:
-
-* the MJ/day/m2 -> MJ/m2/h conversion, hand-computed, because omitting it hands
-  the equation about 12x the solar constant;
-* the two buffer shapes, since the continuous-update path writes one field per
-  event and a builder that assumes dense rows drops most of that buffer;
-* carry-forward for hours with no readings, and partial-hour coverage;
-* that ``hour_multiplier`` is NOT applied on top of a summed-hourly total, which
-  would scale the same window twice;
-* that every path which cannot support hourly rows falls back to the daily form
-  rather than to a fabricated series.
+Every test fixes its own timezone. Reading the machine's put a generated sun
+beside a differently placed clear sky, which passed on the maintainer's UTC+2
+and failed on a UTC runner.
 """
 
 import datetime
-from datetime import timedelta
 
-import homeassistant.util.dt as dt_util
 import pytest
 
 from custom_components.smart_irrigation import const
-from custom_components.smart_irrigation.hourly_et import eto_hourly
 from custom_components.smart_irrigation.hourly_rows import (
+    HOURLY_ROWS_MAX_HOURS,
+    REQUIRED_FIELDS,
+    SystemLocalTime,
+    _effective_series,
+    _group_by_sensor,
+    _hour_start_timestamp,
+    _mean_over,
     build_hourly_rows,
     price_hourly_rows,
+    summed_hourly_eto,
 )
 
-T0 = datetime.datetime(2026, 5, 22, 0, 0, 0)
-LAT, LON, ELEV = 39.68987, -84.07865, 311.0
-
-# 1 W/m2 = 0.0864 MJ/day/m2, which is what the buffer stores.
-W_TO_MJ_DAY = 0.0864
+LAT, LON, ELEV = 43.6, 1.44, 150.0
+OFFSET = 2.0
+NOON = datetime.datetime(2026, 6, 15, 12, 0)
 
 
-def _row(stamp, fields):
-    return {const.RETRIEVED_AT: stamp, **fields}
+class _FixedOffset(datetime.tzinfo):
+    """A zone of our own, so no test here is about the machine's."""
+
+    def utcoffset(self, _dt):
+        return datetime.timedelta(hours=OFFSET)
+
+    def dst(self, _dt):
+        return datetime.timedelta(0)
 
 
-def _local_tz_offset_h():
-    """The offset the calculation derives, so expectations track the code."""
-    offset = dt_util.now().utcoffset()
-    return offset.total_seconds() / 3600.0 if offset else 0.0
+TZ = _FixedOffset()
 
 
-def _bell(peak=800.0):
-    """Daylight solar in W/m2, flat within each hour so hourly means are exact."""
-
-    def f(hour):
-        if not 6 <= hour < 20:
-            return 0.0
-        return peak * (1 - abs(hour + 0.5 - 13) / 7)
-
-    return f
+def _reading(stamp, **fields):
+    return {const.RETRIEVED_AT: stamp.isoformat(), **fields}
 
 
-def _dense(solar_w, *, hours=24, temp=20.0, rh=60.0, wind=1.0, pressure=None, step=10):
-    """A dense buffer: every mapped field on every row, as the poll path writes."""
-    readings = []
-    for hour in range(hours):
-        for minute in range(0, 60, step):
-            fields = {
-                const.MAPPING_TEMPERATURE: temp,
-                const.MAPPING_HUMIDITY: rh,
-                const.MAPPING_WINDSPEED: wind,
-                const.MAPPING_SOLRAD: solar_w(hour) * W_TO_MJ_DAY,
-            }
-            if pressure is not None:
-                fields[const.MAPPING_PRESSURE] = pressure
-            readings.append(_row(T0 + timedelta(hours=hour, minutes=minute), fields))
-    return readings
+def _full(stamp, temperature=22.0, humidity=50.0, wind=2.0, **extra):
+    return _reading(
+        stamp,
+        **{
+            const.MAPPING_TEMPERATURE: temperature,
+            const.MAPPING_HUMIDITY: humidity,
+            const.MAPPING_WINDSPEED: wind,
+            **extra,
+        },
+    )
 
 
-def _sparse(solar_w, *, hours=24, temp=20.0, rh=60.0, wind=1.0, step=10):
-    """A sparse buffer: one field per row, as the continuous-update path writes.
-
-    Only solar moves here, so the other fields appear once -- exactly the shape a
-    dense-row assumption drops most of. They sit just inside the window because
-    ``select_window`` keeps a single boundary row: a sparse field whose last
-    reading predates the watermark reaches the calculation through the mapping's
-    carry-forward instead, which is a different path.
-    """
-    readings = [
-        _row(T0 + timedelta(minutes=1), {const.MAPPING_TEMPERATURE: temp}),
-        _row(T0 + timedelta(minutes=1), {const.MAPPING_HUMIDITY: rh}),
-        _row(T0 + timedelta(minutes=1), {const.MAPPING_WINDSPEED: wind}),
+def _hourly_readings(start, hours, **fields):
+    return [
+        _full(start + datetime.timedelta(hours=hour), **fields)
+        for hour in range(hours + 1)
     ]
-    for hour in range(hours):
-        for minute in range(0, 60, step):
-            readings.append(
-                _row(
-                    T0 + timedelta(hours=hour, minutes=minute),
-                    {const.MAPPING_SOLRAD: solar_w(hour) * W_TO_MJ_DAY},
-                )
-            )
-    return readings
 
 
-def _upto(readings, end):
-    """Trim to readings at or before ``end``.
+class _SunEverywhere(dict):
+    """A radiation series that answers for any hour.
 
-    The window end is ``max(now, last reading)``, so a fixture holding readings
-    from the future would silently stretch the window past the ``now`` under test.
+    Most of what is tested here is not about where the sun came from, and a
+    window with no radiation source at all is refused outright -- correctly, but
+    it would make every one of those tests about radiation. The tests that *are*
+    about it pass a real dict, or ``solar_series=None`` to say there is none.
     """
-    return [r for r in readings if r[const.RETRIEVED_AT] <= end]
+
+    def __bool__(self):
+        return True
+
+    def get(self, _key, _default=None):
+        return 1.5
 
 
-class TestRowBuilder:
-    """The row-builder is the new code; the equation behind it is already pinned."""
+def _rows(readings, start, end, **kwargs):
+    kwargs.setdefault("tz", TZ)
+    kwargs.setdefault("solar_series", _SunEverywhere())
+    return build_hourly_rows(
+        readings,
+        start,
+        now=end,
+        latitude=LAT,
+        longitude=LON,
+        elevation=ELEV,
+        **kwargs,
+    )
 
-    def test_solar_is_divided_by_24(self):
-        """Hand-computed: 800 W/m2 -> 69.12 MJ/day/m2 stored -> 2.88 MJ/m2/h.
 
-        The buffer holds a DAILY rate and FAO-56 hourly wants an HOURLY one. Skip
-        the divide and the equation is handed 16.3 kW/m2, about 12x the solar
-        constant, and the day's ET goes with it.
-        """
-        readings = _dense(lambda h: 800.0)
-        assert readings[0][const.MAPPING_SOLRAD] == pytest.approx(69.12)
-        rows = build_hourly_rows(readings, T0, now=T0 + timedelta(hours=24))
-        assert rows is not None
-        assert all(r["solar_mj_h"] == pytest.approx(2.88) for r in rows)
+# --- the window -------------------------------------------------------------
 
-    def test_one_row_per_clock_hour_with_the_hour_midpoint(self):
-        rows = build_hourly_rows(_dense(_bell()), T0, now=T0 + timedelta(hours=24))
-        assert len(rows) == 24
-        assert [r["hour"] for r in rows] == [h + 0.5 for h in range(24)]
-        assert {r["doy"] for r in rows} == {T0.timetuple().tm_yday}
-        assert all(r["coverage_h"] == pytest.approx(1.0) for r in rows)
-        assert rows[0]["hour_start"] == T0
 
-    def test_partial_hours_at_both_ends_are_charged_their_real_share(self):
-        """A window that starts and ends mid-hour must not book two whole hours."""
-        start = T0 + timedelta(hours=6, minutes=30)
-        end = T0 + timedelta(hours=9, minutes=15)
-        rows = build_hourly_rows(_upto(_dense(_bell()), end), start, now=end)
-        assert [r["coverage_h"] for r in rows] == pytest.approx([0.5, 1.0, 1.0, 0.25])
+def test_one_row_per_clock_hour_the_window_touches():
+    start = NOON
+    rows = _rows(_hourly_readings(start, 3), start, start + datetime.timedelta(hours=3))
 
-    def test_sparse_and_dense_buffers_agree(self):
-        """The continuous-update buffer is the shape this install actually writes."""
-        now = T0 + timedelta(hours=24)
-        dense = build_hourly_rows(_dense(_bell()), T0, now=now)
-        sparse = build_hourly_rows(_sparse(_bell()), T0, now=now)
-        assert sparse is not None
-        assert len(sparse) == len(dense) == 24
-        for a, b in zip(dense, sparse, strict=True):
-            for key in ("temperature", "humidity", "wind_2m", "solar_mj_h"):
-                assert a[key] == pytest.approx(b[key])
+    assert [row["hour_start"].hour for row in rows] == [12, 13, 14]
+    assert [row["hour"] for row in rows] == [12.5, 13.5, 14.5]
+    assert all(row["coverage_h"] == 1.0 for row in rows)
 
-    def test_an_hour_with_no_readings_carries_the_last_value_forward(self):
-        """Missing-hour policy. Solar emits no rows overnight, so this is the norm."""
-        base = {
-            const.MAPPING_HUMIDITY: 50.0,
-            const.MAPPING_WINDSPEED: 1.0,
-            const.MAPPING_SOLRAD: 0.0,
-        }
-        readings = [
-            _row(T0 + timedelta(hours=1), {**base, const.MAPPING_TEMPERATURE: 10.0}),
-            _row(T0 + timedelta(hours=5), {**base, const.MAPPING_TEMPERATURE: 20.0}),
-        ]
-        rows = build_hourly_rows(readings, T0, now=T0 + timedelta(hours=6))
-        assert len(rows) == 6
-        # Held backwards to the window start, forwards over the silent hours 2-4,
-        # and forwards again past the last reading.
-        assert [r["temperature"] for r in rows] == pytest.approx(
-            [10.0, 10.0, 10.0, 10.0, 10.0, 20.0]
+
+def test_a_window_that_starts_mid_hour_still_touches_that_hour():
+    """A calculation at 12:40 over the last twenty minutes is twenty minutes of
+    the 12:00 hour, not a whole one and not none of it."""
+    start = NOON + datetime.timedelta(minutes=20)
+    end = NOON + datetime.timedelta(minutes=40)
+    readings = [
+        _full(NOON),
+        _full(NOON + datetime.timedelta(minutes=30)),
+        _full(NOON + datetime.timedelta(hours=1)),
+    ]
+    rows = _rows(readings, start, end)
+
+    assert len(rows) == 1
+    assert rows[0]["hour_start"] == NOON
+    assert rows[0]["coverage_h"] == pytest.approx(20 / 60)
+
+
+def test_a_window_with_no_reading_of_its_own_is_refused():
+    """Twenty minutes between two readings of a slow sensor. Nothing was
+    observed in that window, so nothing about it is known hour by hour, and the
+    caller keeps the daily equation rather than price a held value as if it had
+    been measured."""
+    start = NOON + datetime.timedelta(minutes=20)
+    end = NOON + datetime.timedelta(minutes=40)
+
+    assert _rows(_hourly_readings(NOON, 2), start, end) is None
+
+
+def test_the_partial_hours_at_both_ends_are_charged_their_share():
+    start = NOON + datetime.timedelta(minutes=30)
+    end = NOON + datetime.timedelta(hours=2, minutes=15)
+    rows = _rows(_hourly_readings(NOON, 3), start, end)
+
+    assert [row["coverage_h"] for row in rows] == pytest.approx([0.5, 1.0, 0.25])
+    assert sum(row["coverage_h"] for row in rows) == pytest.approx(1.75)
+
+
+def test_the_hours_are_what_the_sum_reports():
+    """The caller turns the sum into a rate per day with these hours, so a row
+    charged more than it covers would inflate a forecast average."""
+    start = NOON + datetime.timedelta(minutes=30)
+    end = NOON + datetime.timedelta(hours=2, minutes=15)
+    total, hours = summed_hourly_eto(
+        _hourly_readings(NOON, 3),
+        start,
+        now=end,
+        latitude=LAT,
+        longitude=LON,
+        elevation=ELEV,
+        tz=TZ,
+        solar_series=_series(NOON, 3),
+    )
+
+    assert hours == pytest.approx(1.75)
+    assert total > 0
+
+
+def test_a_zone_that_has_never_consumed_takes_the_whole_buffer():
+    """``since`` is None on the first calculation after an upgrade, and the
+    window is then the buffer itself."""
+    start = NOON
+    rows = _rows(_hourly_readings(start, 4), None, start + datetime.timedelta(hours=4))
+
+    assert len(rows) == 4
+    assert rows[0]["hour_start"] == start
+
+
+def test_a_window_longer_than_the_cap_is_refused():
+    """A zone that has not calculated for months is a bug elsewhere, not a
+    reason to sum ten thousand hours to decide one irrigation run."""
+    end = NOON
+    start = end - datetime.timedelta(hours=HOURLY_ROWS_MAX_HOURS + 1)
+
+    assert _rows([_full(start), _full(end)], start, end) is None
+
+
+def test_a_window_just_inside_the_cap_is_not_refused():
+    end = NOON
+    start = end - datetime.timedelta(hours=HOURLY_ROWS_MAX_HOURS)
+    rows = _rows([_full(start), _full(end)], start, end)
+
+    assert rows is not None
+    assert len(rows) == HOURLY_ROWS_MAX_HOURS
+
+
+@pytest.mark.parametrize(
+    ("start", "end"),
+    [
+        (NOON, NOON),  # empty
+        (NOON + datetime.timedelta(hours=1), NOON),  # backwards
+    ],
+)
+def test_an_empty_or_backwards_window_has_no_rows(start, end):
+    assert _rows(_hourly_readings(NOON, 3), start, end) is None
+
+
+def test_no_readings_at_all_is_no_rows():
+    assert _rows([], NOON, NOON + datetime.timedelta(hours=1)) is None
+    assert _rows(None, NOON, NOON + datetime.timedelta(hours=1)) is None
+
+
+def test_readings_entirely_outside_the_window_are_no_readings():
+    old = _hourly_readings(NOON - datetime.timedelta(days=2), 3)
+
+    assert _rows(old, NOON, NOON + datetime.timedelta(hours=2)) is None
+
+
+def test_without_coordinates_the_sun_cannot_be_placed():
+    readings = _hourly_readings(NOON, 2)
+    end = NOON + datetime.timedelta(hours=2)
+
+    assert (
+        build_hourly_rows(readings, NOON, now=end, latitude=None, longitude=LON) is None
+    )
+    assert (
+        build_hourly_rows(readings, NOON, now=end, latitude=LAT, longitude=None) is None
+    )
+
+
+# --- what a row carries -----------------------------------------------------
+
+
+def _series(start, hours, mj_per_hour=1.5):
+    """A radiation series, keyed the way the row builder will look it up."""
+    return {
+        _hour_start_timestamp(
+            start.replace(minute=0, second=0, microsecond=0)
+            + datetime.timedelta(hours=hour),
+            OFFSET,
+        ): mj_per_hour
+        for hour in range(-1, hours + 2)
+    }
+
+
+def test_a_row_carries_everything_the_equation_prices():
+    start = NOON
+    rows = _rows(
+        _hourly_readings(start, 1, **{const.MAPPING_PRESSURE: 1013.0}),
+        start,
+        start + datetime.timedelta(hours=1),
+    )
+    row = rows[0]
+
+    assert row["temperature"] == pytest.approx(22.0)
+    assert row["humidity"] == pytest.approx(50.0)
+    assert row["wind_2m"] == pytest.approx(2.0)
+    assert row["doy"] == start.timetuple().tm_yday
+    assert row["tz_offset_h"] == OFFSET
+    assert "solar_mj_h" in row
+
+
+def test_the_pressure_is_converted_from_the_hectopascals_the_store_keeps():
+    start = NOON
+    rows = _rows(
+        _hourly_readings(start, 1, **{const.MAPPING_PRESSURE: 1013.0}),
+        start,
+        start + datetime.timedelta(hours=1),
+    )
+
+    assert rows[0]["pressure_kpa"] == pytest.approx(101.3)
+
+
+def test_a_group_with_no_barometer_carries_no_pressure():
+    start = NOON
+    rows = _rows(_hourly_readings(start, 1), start, start + datetime.timedelta(hours=1))
+
+    assert "pressure_kpa" not in rows[0]
+
+
+def test_the_radiation_is_converted_from_the_day_the_store_keeps():
+    """The buffer holds MJ/m2 per day; a row needs MJ/m2 per hour. A factor of
+    24 here is the single most expensive slip in this module."""
+    start = NOON
+    rows = _rows(
+        _hourly_readings(start, 2, **{const.MAPPING_SOLRAD: 48.0}),
+        start,
+        start + datetime.timedelta(hours=2),
+    )
+
+    assert all(row["solar_mj_h"] == pytest.approx(2.0) for row in rows)
+
+
+# --- sparse readings --------------------------------------------------------
+
+
+def test_an_hours_value_is_the_time_weighted_mean_of_its_own_readings():
+    """Half an hour at 10 degrees and half at 20 is 15, whatever the other
+    sensors were doing."""
+    start = NOON
+    readings = [
+        _full(start, temperature=10.0),
+        _full(start + datetime.timedelta(minutes=30), temperature=20.0),
+        _full(start + datetime.timedelta(hours=1), temperature=20.0),
+    ]
+    rows = _rows(readings, start, start + datetime.timedelta(hours=1))
+
+    assert rows[0]["temperature"] == pytest.approx(15.0)
+
+
+def test_a_reading_is_held_until_the_next_one_replaces_it():
+    """Forty-five minutes at 10 and fifteen at 30 is 15, not 20: the mean is of
+    the staircase, not of the samples, so a sensor that reports more often does
+    not weigh more."""
+    start = NOON
+    readings = [
+        _full(start, temperature=10.0),
+        _full(start + datetime.timedelta(minutes=45), temperature=30.0),
+    ]
+    rows = _rows(readings, start, start + datetime.timedelta(hours=1))
+
+    assert rows[0]["temperature"] == pytest.approx(15.0)
+
+
+def test_each_field_has_its_own_timeline():
+    """A sensor writes one field at a time, so a reading that carries only a
+    wind speed must not reset the temperature to nothing."""
+    start = NOON
+    readings = [
+        _full(start, temperature=10.0, wind=1.0),
+        _reading(
+            start + datetime.timedelta(minutes=30), **{const.MAPPING_WINDSPEED: 5.0}
+        ),
+    ]
+    rows = _rows(readings, start, start + datetime.timedelta(hours=1))
+
+    assert rows[0]["temperature"] == pytest.approx(10.0)
+    assert rows[0]["wind_2m"] == pytest.approx(3.0)
+
+
+def test_a_field_with_no_reading_in_the_window_is_held_from_the_last_entry():
+    """A sensor that reports twice a day still has to be worth something in the
+    hours between, and the group's last known value is what it is worth."""
+    start = NOON
+    readings = [
+        _reading(
+            start + datetime.timedelta(minutes=minutes),
+            **{const.MAPPING_TEMPERATURE: 24.0, const.MAPPING_HUMIDITY: 40.0},
         )
+        for minutes in (0, 30, 60)
+    ]
+    rows = _rows(
+        readings,
+        start,
+        start + datetime.timedelta(hours=1),
+        last_entry={const.MAPPING_WINDSPEED: 3.5},
+        solar_series=_series(start, 1),
+    )
 
-    def test_the_measured_barometer_is_passed_through_in_kpa(self):
-        rows = build_hourly_rows(
-            _dense(_bell(), pressure=983.0), T0, now=T0 + timedelta(hours=24)
+    assert rows[0]["wind_2m"] == pytest.approx(3.5)
+
+
+def test_the_last_entry_only_fills_the_hours_before_the_first_reading():
+    """Once the sensor speaks it is the sensor that is believed."""
+    start = NOON
+    readings = [
+        _full(start + datetime.timedelta(minutes=30), temperature=30.0),
+    ]
+    rows = _rows(
+        readings,
+        start,
+        start + datetime.timedelta(hours=1),
+        last_entry={const.MAPPING_TEMPERATURE: 10.0},
+        solar_series=_series(start, 1),
+    )
+
+    assert rows[0]["temperature"] == pytest.approx(20.0)
+
+
+def test_the_first_reading_is_held_backwards_when_nothing_else_is_known():
+    """Better than inventing a value: the field was presumably already there."""
+    start = NOON
+    readings = [_full(start + datetime.timedelta(minutes=30), temperature=30.0)]
+    rows = _rows(
+        readings,
+        start,
+        start + datetime.timedelta(hours=1),
+        solar_series=_series(start, 1),
+    )
+
+    assert rows[0]["temperature"] == pytest.approx(30.0)
+
+
+@pytest.mark.parametrize("missing", REQUIRED_FIELDS)
+def test_a_required_field_missing_everywhere_refuses_the_window(missing):
+    """Not a zero and not a guess: None, and the caller keeps the daily
+    equation, which reads the group's own aggregate."""
+    start = NOON
+    readings = [
+        {k: v for k, v in reading.items() if k != missing}
+        for reading in _hourly_readings(start, 2)
+    ]
+
+    assert _rows(readings, start, start + datetime.timedelta(hours=2)) is None
+
+
+def test_a_field_whose_source_was_removed_is_not_carried_in():
+    """The caller passes only the fields that still have a source; a last entry
+    the builder is not given cannot rescue the window."""
+    start = NOON
+    readings = [
+        {k: v for k, v in reading.items() if k != const.MAPPING_WINDSPEED}
+        for reading in _hourly_readings(start, 2)
+    ]
+
+    assert _rows(readings, start, start + datetime.timedelta(hours=2)) is None
+    assert (
+        _rows(
+            readings,
+            start,
+            start + datetime.timedelta(hours=2),
+            last_entry={const.MAPPING_WINDSPEED: 2.0},
+            solar_series=_series(start, 2),
         )
-        assert all(r["pressure_kpa"] == pytest.approx(98.3) for r in rows)
+        is not None
+    )
 
-    def test_no_barometer_means_no_key_so_the_helper_derives_it(self):
-        rows = build_hourly_rows(_dense(_bell()), T0, now=T0 + timedelta(hours=24))
-        assert all("pressure_kpa" not in r for r in rows)
 
-    def test_a_missing_required_field_falls_back(self):
-        """No radiation anywhere means no hourly ETo; the daily form still runs."""
-        readings = [
-            _row(
-                T0 + timedelta(hours=1),
-                {
-                    const.MAPPING_TEMPERATURE: 20.0,
-                    const.MAPPING_HUMIDITY: 50.0,
-                    const.MAPPING_WINDSPEED: 1.0,
-                },
-            )
-        ]
-        assert build_hourly_rows(readings, T0, now=T0 + timedelta(hours=6)) is None
+def test_a_reading_that_is_not_a_number_is_skipped_rather_than_fatal():
+    """Sensors publish "unknown" and "unavailable", and a single one of those
+    used to take a whole calculation down."""
+    start = NOON
+    readings = [
+        _full(start, temperature=20.0),
+        _full(start + datetime.timedelta(minutes=30), temperature="unavailable"),
+        _full(start + datetime.timedelta(hours=1), temperature=20.0),
+    ]
+    rows = _rows(
+        readings,
+        start,
+        start + datetime.timedelta(hours=1),
+        solar_series=_series(start, 1),
+    )
 
-    def test_a_field_only_in_the_carry_forward_is_still_usable(self):
-        """A sparse buffer can hold no row at all for a slow-moving field."""
-        readings = [
-            _row(
-                T0 + timedelta(hours=1),
-                {
-                    const.MAPPING_TEMPERATURE: 20.0,
-                    const.MAPPING_WINDSPEED: 1.0,
-                    const.MAPPING_SOLRAD: 0.0,
-                },
-            )
-        ]
-        now = T0 + timedelta(hours=6)
-        assert build_hourly_rows(readings, T0, now=now) is None
-        rows = build_hourly_rows(
-            readings, T0, now=now, last_entry={const.MAPPING_HUMIDITY: 55.0}
+    assert rows[0]["temperature"] == pytest.approx(20.0)
+
+
+def test_a_reading_with_an_unreadable_timestamp_is_skipped():
+    start = NOON
+    readings = _hourly_readings(start, 2)
+    readings.insert(
+        1, {const.RETRIEVED_AT: "the other day", const.MAPPING_TEMPERATURE: 9.0}
+    )
+
+    rows = _rows(
+        readings,
+        start,
+        start + datetime.timedelta(hours=2),
+        solar_series=_series(start, 2),
+    )
+
+    assert rows is not None
+    assert all(row["temperature"] == pytest.approx(22.0) for row in rows)
+
+
+# --- where the sun comes from -----------------------------------------------
+
+
+def test_nothing_reports_the_sun_and_nothing_can_be_asked():
+    """The one case the caller must see as None: an hour cannot be priced
+    without knowing whether it was daylight."""
+    start = NOON
+
+    assert (
+        _rows(
+            _hourly_readings(start, 2),
+            start,
+            start + datetime.timedelta(hours=2),
+            solar_series=None,
         )
-        assert all(r["humidity"] == pytest.approx(55.0) for r in rows)
-
-    def test_an_absurdly_long_window_falls_back(self):
-        """Past the buffer retention every extra hour is pure carry-forward."""
-        readings = _dense(_bell(), step=30)
-        assert build_hourly_rows(readings, T0, now=T0 + timedelta(days=8)) is None
+        is None
+    )
 
 
-class TestSeries:
-    """``price_hourly_rows`` adds coverage scaling and the barometer to the equation."""
+def test_a_series_fills_the_hours_a_sensor_does_not():
+    start = NOON
+    rows = _rows(
+        _hourly_readings(start, 2),
+        start,
+        start + datetime.timedelta(hours=2),
+        solar_series=_series(start, 2, mj_per_hour=2.25),
+    )
 
-    def _r(self, **over):
-        base = {
-            "temperature": 25.0,
-            "humidity": 55.0,
-            "wind_2m": 1.2,
-            "solar_mj_h": 2.0,
-            "hour": 13.5,
-            "doy": 142,
-        }
-        base.update(over)
-        return base
+    assert [row["solar_mj_h"] for row in rows] == [2.25, 2.25]
 
-    def test_coverage_scales_the_hour(self):
-        full = price_hourly_rows(
-            [self._r()], LAT, LON, elevation=ELEV, tz_offset_h=-4.0
-        )[0]
-        half = price_hourly_rows(
-            [self._r(coverage_h=0.5)], LAT, LON, elevation=ELEV, tz_offset_h=-4.0
-        )[0]
-        assert full > 0
-        assert half == pytest.approx(full / 2)
 
-    def test_the_barometer_is_used_when_present(self):
-        measured = price_hourly_rows(
-            [self._r(pressure_kpa=98.3)], LAT, LON, elevation=ELEV, tz_offset_h=-4.0
+def test_a_gap_in_the_series_refuses_the_window():
+    """An hour the history does not cover is not invented."""
+    start = NOON
+    series = _series(start, 2)
+    del series[_hour_start_timestamp(start + datetime.timedelta(hours=1), OFFSET)]
+
+    assert (
+        _rows(
+            _hourly_readings(start, 2),
+            start,
+            start + datetime.timedelta(hours=2),
+            solar_series=series,
         )
-        assert measured[0] == pytest.approx(
-            eto_hourly(
-                t_c=25.0,
-                rh_pct=55.0,
-                wind_2m=1.2,
-                solar_rad_hr=2.0,
-                latitude_deg=LAT,
-                longitude_deg=LON,
-                doy=142,
-                hour_mid=13.5,
-                tz_offset_h=-4.0,
-                elevation_m=ELEV,
-                pressure_kpa=98.3,
-            )
+        is None
+    )
+
+
+def test_the_groups_own_pyranometer_wins_over_a_series():
+    start = NOON
+    rows = _rows(
+        _hourly_readings(start, 2, **{const.MAPPING_SOLRAD: 24.0}),
+        start,
+        start + datetime.timedelta(hours=2),
+        solar_series=_series(start, 2, mj_per_hour=99.0),
+    )
+
+    assert all(row["solar_mj_h"] == pytest.approx(1.0) for row in rows)
+
+
+# --- the helpers the solar estimate shares ----------------------------------
+
+
+def test_the_effective_series_is_the_window_and_its_bounds():
+    start = NOON
+    readings = _hourly_readings(start - datetime.timedelta(hours=2), 6)
+
+    effective, window_start, window_end = _effective_series(
+        readings, start, start + datetime.timedelta(hours=2)
+    )
+
+    assert window_start == start
+    assert window_end == start + datetime.timedelta(hours=2)
+    assert [stamp for stamp, _reading in effective] == [
+        start + datetime.timedelta(hours=hour) for hour in range(3)
+    ]
+
+
+def test_the_effective_series_says_so_when_there_is_nothing():
+    assert _effective_series([], NOON, NOON + datetime.timedelta(hours=1))[0] is None
+    assert _effective_series(None, NOON, NOON)[0] is None
+
+
+def test_grouping_gives_each_field_its_own_ordered_timeline():
+    start = NOON
+    effective, _start, _end = _effective_series(
+        [
+            _full(start, temperature=10.0),
+            _reading(
+                start + datetime.timedelta(minutes=30), **{const.MAPPING_WINDSPEED: 4.0}
+            ),
+        ],
+        start,
+        start + datetime.timedelta(hours=1),
+    )
+
+    grouped = _group_by_sensor(effective)
+
+    assert [value for _stamp, value in grouped[const.MAPPING_TEMPERATURE]] == [10.0]
+    assert [value for _stamp, value in grouped[const.MAPPING_WINDSPEED]] == [2.0, 4.0]
+    assert const.RETRIEVED_AT not in grouped
+
+
+def test_an_hour_start_is_keyed_by_the_offset_it_was_written_in():
+    """The two clocks meet here, and only here: a naive local hour and the unix
+    timestamp a weather service keys the same hour by."""
+    naive = datetime.datetime(2026, 6, 15, 12, 0)
+
+    assert _hour_start_timestamp(naive, 2.0) == pytest.approx(
+        _hour_start_timestamp(naive, 1.0) - 3600
+    )
+    assert _hour_start_timestamp(naive, 0.0) == pytest.approx(
+        naive.replace(tzinfo=datetime.timezone.utc).timestamp()
+    )
+
+
+def test_the_mean_of_an_empty_timeline_is_whatever_was_already_known():
+    assert _mean_over([], NOON, NOON + datetime.timedelta(hours=1)) is None
+    assert _mean_over([], NOON, NOON + datetime.timedelta(hours=1), seed=4.0) == 4.0
+
+
+# --- the machine's own clock ------------------------------------------------
+
+
+def test_the_system_zone_answers_for_a_naive_moment():
+    zone = SystemLocalTime()
+    offset = zone.utcoffset(datetime.datetime(2026, 6, 15, 12, 0))
+
+    assert isinstance(offset, datetime.timedelta)
+    assert -datetime.timedelta(hours=14) <= offset <= datetime.timedelta(hours=14)
+    assert zone.dst(datetime.datetime(2026, 6, 15, 12, 0)) >= datetime.timedelta(0)
+    assert isinstance(zone.tzname(datetime.datetime(2026, 6, 15, 12, 0)), str)
+
+
+def test_the_system_zone_survives_a_moment_it_cannot_place():
+    """``time.mktime`` raises on dates outside the platform's range, and a row
+    builder that let that through would take a calculation down."""
+    assert SystemLocalTime().utcoffset(None) is not None
+    assert SystemLocalTime().utcoffset(datetime.datetime(1, 1, 1, 0, 0)) is not None
+
+
+# --- the sum ----------------------------------------------------------------
+
+
+def test_the_sum_is_the_rows_weighted_by_their_coverage():
+    start = NOON + datetime.timedelta(minutes=30)
+    end = NOON + datetime.timedelta(hours=2)
+    readings = _hourly_readings(NOON, 3, **{const.MAPPING_SOLRAD: 48.0})
+
+    rows = _rows(readings, start, end)
+    total, hours = summed_hourly_eto(
+        readings,
+        start,
+        now=end,
+        latitude=LAT,
+        longitude=LON,
+        elevation=ELEV,
+        tz=TZ,
+    )
+
+    assert total == pytest.approx(sum(price_hourly_rows(rows, LAT, LON, ELEV)))
+    assert hours == pytest.approx(1.5)
+
+
+def test_a_window_that_cannot_be_reduced_to_rows_has_no_sum():
+    assert (
+        summed_hourly_eto(
+            [],
+            NOON,
+            now=NOON + datetime.timedelta(hours=1),
+            latitude=LAT,
+            longitude=LON,
         )
-        # And it matters: the psychrometric constant is linear in pressure.
-        assert measured[0] != pytest.approx(
-            price_hourly_rows([self._r()], LAT, LON, elevation=ELEV, tz_offset_h=-4.0)[
-                0
-            ]
-        )
+        is None
+    )
+
+
+def test_a_longer_window_of_the_same_weather_evaporates_more():
+    readings = _hourly_readings(NOON, 6, **{const.MAPPING_SOLRAD: 48.0})
+
+    short = summed_hourly_eto(
+        readings,
+        NOON,
+        now=NOON + datetime.timedelta(hours=2),
+        latitude=LAT,
+        longitude=LON,
+        elevation=ELEV,
+        tz=TZ,
+    )
+    long = summed_hourly_eto(
+        readings,
+        NOON,
+        now=NOON + datetime.timedelta(hours=5),
+        latitude=LAT,
+        longitude=LON,
+        elevation=ELEV,
+        tz=TZ,
+    )
+
+    assert long[0] > short[0] > 0
+    assert long[1] == pytest.approx(5.0)
+
+
+def test_pricing_no_rows_is_no_millimetres():
+    assert price_hourly_rows([], LAT, LON, ELEV) == []
+    assert price_hourly_rows(None, LAT, LON, ELEV) == []

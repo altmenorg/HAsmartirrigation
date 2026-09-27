@@ -1,231 +1,255 @@
-"""Taken from JustChr's fork, Irrigation Plus (MIT), onto this integration's row
-builder.
+"""A window that straddles the start or the end of summer time.
 
-A calculation window can span a DST transition, so the offset is per row.
+The buffer stores naive local timestamps. A radiation series is keyed by unix
+timestamps. Converting between the two needs the offset in force *at that
+hour*, and twice a year a week-long window contains hours on both sides of a
+change.
 
-Buffer stamps are naive local times and the solar-time correction needs the UTC
-offset they are in. Resolving that once for the window puts every row on the far
-side of a transition an hour out in solar time, and a window reaches seven days,
-so this is reachable rather than theoretical.
+Reading one offset for the whole window is the bug this file exists to prevent:
+every hour on the far side of the change is then placed an hour away from where
+it was, which moves the sun an hour across the sky. It sums to something
+plausible -- a day still has a day's worth of sun in it -- so nothing looks
+wrong until a zone waters at the wrong time of year.
 
-The size of the error depends on where the geometry lands. On the pure ET path a
-one-hour shift is worth 0.26-0.74% of daily ETo, because with measured Rs the
-extraterrestrial radiation only reaches ETo through the cloudiness term. On the
-clearness-ratio gap hold, where Rso is the DENOMINATOR, the same shift moves the
-refilled radiation by +23.5% / -16.0%. The second is what makes this worth
-fixing, and it is exactly the asymmetry that makes "ETo still looks right" no
-evidence at all about solar geometry.
-
-Not fixed here, and not a regression this introduces: a 25-hour day is still
-charged 24 hours of ET (-4.1%) and a 23-hour day 24 (+4.3%). ``_hour_multiplier``
-is ``now - watermark`` over the same naive stamps, so the daily equation
-miscounts the same day by the same hour.
+The zone here is written out rather than taken from the machine, because the
+failure this guards against is precisely a timezone failure and a test that
+read the machine's would pass in Paris and mean nothing on a UTC runner.
 """
 
 import datetime
-from datetime import timedelta
-from zoneinfo import ZoneInfo
 
 import pytest
 
 from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.hourly_rows import (
+    _hour_start_timestamp,
     build_hourly_rows,
-    price_hourly_rows,
+    summed_hourly_eto,
 )
 
-# A zone with both transitions in 2026: forward 08 March 02:00 -> 03:00,
-# back 01 November 02:00 -> 01:00. EST is -5, EDT is -4.
-TZ = ZoneInfo("America/New_York")
-LAT, LON, ELEV = 39.68987, -84.07865, 311.0
+LAT, LON, ELEV = 43.6, 1.44, 150.0
 
-TEMP, RH, WIND, SOLAR = 20.0, 50.0, 1.0, 500.0
+WINTER = datetime.timedelta(hours=1)
+SUMMER = datetime.timedelta(hours=2)
+
+# Central European time in 2026: summer time from 29 March to 25 October, and
+# the switch happens at 02:00 local in spring and 03:00 local in autumn.
+SPRING_FORWARD = datetime.datetime(2026, 3, 29, 2, 0)
+FALL_BACK = datetime.datetime(2026, 10, 25, 3, 0)
 
 
-def _readings(start, hours, *, rain_per_hour=0.0, step=10):
-    """Dense rows over ``hours`` naive local hours from ``start``.
+class _CentralEurope(datetime.tzinfo):
+    """Summer time as the calendar has it, for naive local moments."""
 
-    The rain gauge is cumulative, which is how a real one reads and what makes
-    conservation across the repeated hour a meaningful claim: the two passes over
-    01:00 both add into the same hour key.
-    """
-    readings = []
-    cumulative = 0.0
-    for i in range(hours * (60 // step)):
-        stamp = start + timedelta(minutes=i * step)
-        cumulative += rain_per_hour * step / 60
-        readings.append(
+    def utcoffset(self, dt):
+        if dt is None:
+            return WINTER
+        naive = dt.replace(tzinfo=None)
+        return SUMMER if SPRING_FORWARD <= naive < FALL_BACK else WINTER
+
+    def dst(self, dt):
+        return self.utcoffset(dt) - WINTER
+
+    def tzname(self, dt):
+        return "CEST" if self.dst(dt) else "CET"
+
+
+TZ = _CentralEurope()
+
+
+def _readings(start, hours, step_min=30, **fields):
+    """Steady weather across the window, so only the clock is under test."""
+    out = []
+    for step in range(int(hours * 60 / step_min) + 1):
+        stamp = start + datetime.timedelta(minutes=step * step_min)
+        out.append(
             {
-                const.RETRIEVED_AT: stamp,
-                const.MAPPING_TEMPERATURE: TEMP,
-                const.MAPPING_HUMIDITY: RH,
-                const.MAPPING_WINDSPEED: WIND,
-                const.MAPPING_SOLRAD: SOLAR,
-                const.MAPPING_PRECIPITATION: cumulative,
+                const.RETRIEVED_AT: stamp.isoformat(),
+                const.MAPPING_TEMPERATURE: 14.0,
+                const.MAPPING_HUMIDITY: 60.0,
+                const.MAPPING_WINDSPEED: 2.0,
+                const.MAPPING_SOLRAD: 24.0,  # MJ/m2/day, so 1 per hour
+                **fields,
             }
         )
-    return readings
+    return out
 
 
 def _rows(start, hours, **kwargs):
+    end = start + datetime.timedelta(hours=hours)
     return build_hourly_rows(
-        _readings(start, hours, **kwargs),
+        _readings(start, hours),
         start,
-        now=start + timedelta(hours=hours),
+        now=end,
         latitude=LAT,
         longitude=LON,
         elevation=ELEV,
-        tz_offset_h=-5.0,
         tz=TZ,
+        **kwargs,
     )
 
 
-class TestTheOffsetIsResolvedPerRow:
-    def test_rows_either_side_of_the_spring_transition_differ(self):
-        """20:00 on 07 March to 08:00 on 08 March: EST before, EDT after."""
-        rows = _rows(datetime.datetime(2026, 3, 7, 20, 0), 12)
-        assert rows is not None
-        by_hour = {r["hour_start"]: r["tz_offset_h"] for r in rows}
-        assert by_hour[datetime.datetime(2026, 3, 7, 23, 0)] == -5.0
-        assert by_hour[datetime.datetime(2026, 3, 8, 5, 0)] == -4.0
-        # Both offsets are genuinely present, which is the whole claim.
-        assert set(by_hour.values()) == {-5.0, -4.0}
-
-    def test_rows_either_side_of_the_autumn_transition_differ(self):
-        rows = _rows(datetime.datetime(2026, 10, 31, 20, 0), 12)
-        assert rows is not None
-        by_hour = {r["hour_start"]: r["tz_offset_h"] for r in rows}
-        assert by_hour[datetime.datetime(2026, 10, 31, 23, 0)] == -4.0
-        assert by_hour[datetime.datetime(2026, 11, 1, 5, 0)] == -5.0
-
-    def test_the_ambiguous_hour_resolves_fold_zero(self):
-        """01:00 on 01 November happens twice; a naive stamp cannot say which.
-
-        fold=0 is the first pass, so the hour reads as EDT. The residual is the
-        one hour that is genuinely indistinguishable, not a choice with a better
-        alternative available.
-        """
-        rows = _rows(datetime.datetime(2026, 11, 1, 0, 0), 6)
-        by_hour = {r["hour_start"]: r["tz_offset_h"] for r in rows}
-        assert by_hour[datetime.datetime(2026, 11, 1, 1, 0)] == -4.0
-        assert by_hour[datetime.datetime(2026, 11, 1, 2, 0)] == -5.0
-
-    def test_no_timezone_means_no_per_row_offset(self):
-        """Every existing caller passes the scalar only and must be unchanged."""
-        rows = build_hourly_rows(
-            _readings(datetime.datetime(2026, 3, 7, 20, 0), 12),
-            datetime.datetime(2026, 3, 7, 20, 0),
-            now=datetime.datetime(2026, 3, 8, 8, 0),
-            latitude=LAT,
-            longitude=LON,
-            elevation=ELEV,
-            tz_offset_h=-5.0,
-        )
-        assert rows is not None
-        assert all("tz_offset_h" not in r for r in rows)
+# --- the offsets a window carries -------------------------------------------
 
 
-class TestTheSeriesUsesIt:
-    def test_a_rows_own_offset_beats_the_argument(self):
-        """The ETo series prefers the row's offset, so the geometry follows it."""
-        row = {
-            "temperature": TEMP,
-            "humidity": RH,
-            "wind_2m": WIND,
-            "solar_mj_h": 2.0,
-            "doy": 172,
-            "hour": 12.5,
-        }
-        scalar = price_hourly_rows([row], LAT, LON, elevation=ELEV, tz_offset_h=-4.0)[0]
-        shifted = price_hourly_rows([row], LAT, LON, elevation=ELEV, tz_offset_h=-5.0)[
-            0
-        ]
-        carried = price_hourly_rows(
-            [{**row, "tz_offset_h": -5.0}], LAT, LON, elevation=ELEV, tz_offset_h=-4.0
-        )
-        assert carried[0] == pytest.approx(shifted)
-        assert carried[0] != pytest.approx(scalar)
+def test_each_row_carries_the_offset_of_its_own_hour_in_spring():
+    """Naive local 00:00 to 06:00 on the morning the clocks go forward."""
+    start = SPRING_FORWARD - datetime.timedelta(hours=2)
+    rows = _rows(start, 6)
 
-    def test_rows_without_the_key_still_take_the_argument(self):
-        """The live estimate's Open-Meteo rows come from elsewhere and carry none."""
-        row = {
-            "temperature": TEMP,
-            "humidity": RH,
-            "wind_2m": WIND,
-            "solar_mj_h": 2.0,
-            "doy": 172,
-            "hour": 12.5,
-        }
-        assert price_hourly_rows([row], LAT, LON, elevation=ELEV, tz_offset_h=-4.0)[
-            0
-        ] == pytest.approx(
-            price_hourly_rows([dict(row)], LAT, LON, elevation=ELEV, tz_offset_h=-4.0)[
-                0
-            ]
-        )
+    offsets = {row["hour_start"].hour: row["tz_offset_h"] for row in rows}
+
+    assert offsets[0] == 1.0
+    assert offsets[1] == 1.0
+    # 02:00 local does not exist on that morning, but the grid is naive local
+    # and walks through it; what matters is that everything from the change on
+    # is in summer time.
+    assert offsets[2] == 2.0
+    assert offsets[5] == 2.0
 
 
-class TestTheGapHoldFeelsIt:
-    """The half that made this worth doing: Rso is the ratio's denominator.
+def test_each_row_carries_the_offset_of_its_own_hour_in_autumn():
+    start = FALL_BACK - datetime.timedelta(hours=2)
+    rows = _rows(start, 5)
 
-    An hour with no solar reading is refilled as ``held ratio x its own Rso``, so
-    a one-hour solar-time error scales the refilled radiation directly instead of
-    reaching ETo through the cloudiness term. Asserted as a difference between
-    the corrected and uncorrected runs rather than against ETo, which is nearly
-    blind to solar geometry.
+    offsets = {row["hour_start"].hour: row["tz_offset_h"] for row in rows}
+
+    assert offsets[1] == 2.0
+    assert offsets[2] == 2.0
+    assert offsets[3] == 1.0
+    assert offsets[5] == 1.0
+
+
+def test_a_window_with_no_change_in_it_carries_one_offset():
+    rows = _rows(datetime.datetime(2026, 6, 15, 10, 0), 4)
+
+    assert {row["tz_offset_h"] for row in rows} == {2.0}
+
+
+# --- what the offsets are for -----------------------------------------------
+
+
+def test_the_sun_is_placed_by_the_offset_of_the_hour_and_not_of_the_window():
+    """The same physical moment, on either side of the change, has the same sun.
+
+    03:00 summer time on the morning of the change is 02:00 standard time, and
+    an hour of the previous morning at 02:00 standard time sees the sun in the
+    same place. A row builder that read one offset for the whole window would
+    put them an hour apart.
     """
+    from custom_components.smart_irrigation.hourly_et import solar_elevation_sin
 
-    def _gap_solar(self, **kwargs):
-        # 20:00 on 07 March through 20:00 on 08 March, with 10:00-16:00 silent.
-        start = datetime.datetime(2026, 3, 7, 20, 0)
-        readings = [
-            r
-            for r in _readings(start, 24)
-            if not (
-                r[const.RETRIEVED_AT].day == 8 and 10 <= r[const.RETRIEVED_AT].hour < 16
-            )
-        ]
-        rows = build_hourly_rows(
-            readings,
-            start,
-            now=start + timedelta(hours=24),
-            latitude=LAT,
-            longitude=LON,
-            elevation=ELEV,
-            **kwargs,
-        )
-        assert rows is not None
-        return {
-            r["hour_start"]: r["solar_mj_h"]
-            for r in rows
-            if r["hour_start"].day == 8 and 10 <= r["hour_start"].hour < 16
-        }
+    after = _rows(SPRING_FORWARD, 2)[1]  # naive 03:00, summer time
+    doy = after["doy"]
 
-    def test_the_refilled_hours_move_when_the_offset_is_resolved_per_row(self):
-        """Post-transition hours are EDT; the window opened in EST."""
-        corrected = self._gap_solar(tz_offset_h=-5.0, tz=TZ)
-        stale = self._gap_solar(tz_offset_h=-5.0)
-        assert set(corrected) == set(stale)
-        # Well past rounding, and the direction is consistent across the gap.
-        worst = max(
-            abs(corrected[h] - stale[h]) / stale[h] for h in corrected if stale[h] > 0
-        )
-        assert worst > 0.05
+    assert after["tz_offset_h"] == 2.0
+    # Not bit-for-bit: Eq. 31 writes 1/15 as 0.06667, so the two descriptions
+    # of the same moment differ in the fifth decimal of an hour. An offset read
+    # for the whole window instead would differ by a whole hour.
+    assert solar_elevation_sin(
+        LAT, LON, doy, after["hour"], after["tz_offset_h"]
+    ) == pytest.approx(solar_elevation_sin(LAT, LON, doy, 2.5, 1.0), abs=1e-4)
+    assert solar_elevation_sin(
+        LAT, LON, doy, after["hour"], after["tz_offset_h"]
+    ) != pytest.approx(solar_elevation_sin(LAT, LON, doy, 3.5, 1.0), abs=1e-4)
 
-    def test_a_window_with_no_transition_is_untouched(self):
-        """The correction must cost nothing on the other 363 days."""
-        start = datetime.datetime(2026, 3, 14, 20, 0)
-        kwargs = {
-            "latitude": LAT,
-            "longitude": LON,
-            "elevation": ELEV,
-            "tz_offset_h": -4.0,
-        }
-        readings = _readings(start, 24)
-        args = (readings, start)
-        now = start + timedelta(hours=24)
-        with_tz = build_hourly_rows(*args, now=now, tz=TZ, **kwargs)
-        without = build_hourly_rows(*args, now=now, **kwargs)
-        assert [r["solar_mj_h"] for r in with_tz] == [
-            pytest.approx(r["solar_mj_h"]) for r in without
-        ]
+
+def test_the_series_key_of_an_hour_follows_its_own_offset():
+    """A series is keyed by the instant. Two naive local hours an hour apart on
+    the clock are two hours apart in the world when a change falls between
+    them, and the keys have to say so."""
+    before = _hour_start_timestamp(SPRING_FORWARD - datetime.timedelta(hours=1), 1.0)
+    after = _hour_start_timestamp(SPRING_FORWARD, 2.0)
+
+    # 01:00 CET and 02:00 CEST are the same instant: the hour that never
+    # happened. Keying both by a single offset would make them an hour apart
+    # and leave a hole in the series that the builder would refuse.
+    assert after == before
+    # Whereas the next hour really is an hour later.
+    assert (
+        _hour_start_timestamp(SPRING_FORWARD + datetime.timedelta(hours=1), 2.0)
+        == after + 3600
+    )
+
+
+def test_a_series_built_hour_by_hour_covers_a_window_that_straddles_a_change():
+    """The end-to-end shape of it: the keys the builder computes are the keys a
+    caller computes with the same rule, on both sides of the change."""
+    start = FALL_BACK - datetime.timedelta(hours=3)
+    rows = _rows(start, 6)
+    series = {
+        _hour_start_timestamp(row["hour_start"], row["tz_offset_h"]): 1.0
+        for row in rows
+    }
+
+    built = build_hourly_rows(
+        _readings(start, 6, **{const.MAPPING_SOLRAD: None}),
+        start,
+        now=start + datetime.timedelta(hours=6),
+        latitude=LAT,
+        longitude=LON,
+        elevation=ELEV,
+        tz=TZ,
+        solar_series=series,
+    )
+
+    assert built is not None
+    assert all(row["solar_mj_h"] == 1.0 for row in built)
+
+
+# --- the window still adds up -----------------------------------------------
+
+
+@pytest.mark.parametrize("change", [SPRING_FORWARD, FALL_BACK])
+def test_the_hours_of_a_window_are_the_hours_of_its_clock(change):
+    """The grid is naive local, so six hours on the clock are six rows, spring
+    and autumn alike. The offsets move the sun, not the accounting."""
+    start = change - datetime.timedelta(hours=3)
+    result = summed_hourly_eto(
+        _readings(start, 6),
+        start,
+        now=start + datetime.timedelta(hours=6),
+        latitude=LAT,
+        longitude=LON,
+        elevation=ELEV,
+        tz=TZ,
+    )
+
+    assert result is not None
+    assert result[1] == pytest.approx(6.0)
+
+
+def test_a_week_across_the_change_is_still_priced():
+    """The cap is a week, and a week is exactly long enough to contain one."""
+    start = SPRING_FORWARD - datetime.timedelta(days=3)
+    result = summed_hourly_eto(
+        _readings(start, 24 * 6, step_min=60),
+        start,
+        now=start + datetime.timedelta(hours=24 * 6),
+        latitude=LAT,
+        longitude=LON,
+        elevation=ELEV,
+        tz=TZ,
+    )
+
+    assert result is not None
+    assert result[1] == pytest.approx(24 * 6)
+    assert result[0] > 0
+
+
+def test_without_a_zone_the_flat_offset_is_used_for_every_hour():
+    """A caller that has no tzinfo hands a number instead, and then every row
+    gets it. Correct for a site that does not observe summer time, and the
+    reason the argument is still there."""
+    start = SPRING_FORWARD - datetime.timedelta(hours=2)
+    rows = build_hourly_rows(
+        _readings(start, 6),
+        start,
+        now=start + datetime.timedelta(hours=6),
+        latitude=LAT,
+        longitude=LON,
+        elevation=ELEV,
+        tz_offset_h=1.0,
+    )
+
+    assert {row["tz_offset_h"] for row in rows} == {1.0}

@@ -154,7 +154,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full development and testing guid
 
 Smart Irrigation exists thanks to [Jeroen ter Heerdt](https://github.com/jeroenterheerdt), who created it, designed its evapotranspiration model and maintained it for years. With this release he is passing the torch, and the project carries on in the same spirit. Thank you, Jeroen, for building something so many gardens rely on, and for entrusting it to good hands. 🌱
 
-Thanks also to [JustChr](https://github.com/JustChr), whose [Smart Irrigation fork](https://github.com/JustChr/HAsmartirrigation) explored the closed-loop direction. The observed-watering bucket crediting, and parts of the direct valve control, are adapted from that work (MIT).
+Thanks also to [JustChr](https://github.com/JustChr), whose [Smart Irrigation fork](https://github.com/JustChr/HAsmartirrigation) explored the closed-loop direction. The observed-watering bucket crediting, and parts of the direct valve control, are adapted from that work (MIT), and calculating the evapotranspiration hour by hour is an idea that fork tried first, though the equations here are written from FAO-56 and checked against the paper's own worked example.
 
 ## License
 

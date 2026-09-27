@@ -1,267 +1,392 @@
-"""Taken from JustChr's fork, Irrigation Plus (MIT), onto this integration's row
-builder. His calculation-level case is replaced by our own.
+"""A radiation reading held across hours must not shine through the night.
 
-Hours with no solar reading are refilled from a held CLEARNESS RATIO.
+Every other field in the buffer is a state: a temperature read at eight is a
+fair description of half past eight, and holding it until the next reading is
+the right thing to do. Radiation is not. It is a rate, it swings from zero to
+its peak and back inside a single day, and the one thing that is certainly
+false about it is that it was constant.
 
-``build_hourly_rows`` emits a row for every clock hour the window touches and
-fills a silent hour by zero-order hold. For solar radiation that is right for a
-**deadband gap** -- the sensor sits pinned at 0 all night and emits no rows, so
-holding 0 is the true answer -- and a fabrication for an **outage gap**, where
-the value moved and nobody looked. Nothing in the row distinguishes the two:
-``coverage_h`` is the hour's overlap with the calculation window, so a six-hour
-hole in the middle of the day still produces six rows at ``coverage_h = 1.0``,
-each charged a full hour of ET from a stale value.
+Hold it anyway and a sensor that reports once, at noon, has the sun shining at
+the same rate at three in the morning. That is not a small error in one hour,
+it is a different sky over the whole window: the night gains energy it never
+received, and a night that gains energy evaporates water a garden did not lose.
 
-Holding ``Rs/Rso`` instead of ``Rs`` separates the two by construction, because
-Rso is zero at night and follows the sun's real height by day. Measured on nine
-recorded days across six gap shapes, flat hold sits 77.4% from dense truth and
-the ratio hold 15.7%.
+What *does* persist across a few hours is the condition of the sky -- overcast,
+hazy, clear -- and that is what an unsampled hour borrows: the clearness Rs/Rso
+of the nearest hour that measured a lit sky, applied to its own clear sky. Two
+consequences are the point of the design:
 
-The fixtures here generate solar as an exact multiple of clear sky, so the ratio
-a gap hour should reproduce is known to the last decimal rather than eyeballed.
+* **an hour that has a sample of its own is never touched.** Reshaping a whole
+  day because one hour of it went unreported would give a cloudy afternoon the
+  shape of a clear one, and it would fire in the most ordinary case there is: a
+  sensor polled once an hour, and a window that opens a second past the hour;
+* **darkness receives nothing** without a rule saying so, because any clearness
+  times a clear sky of zero is zero.
+
+The zone is fixed rather than the machine's: the clear-sky curve is placed from
+an offset, and reading the machine's would put the sun in one place here and
+another on a UTC runner.
 """
 
 import datetime
-from datetime import timedelta
 
 import pytest
 
 from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.hourly_et import (
-    atm_pressure,
-    clear_sky_radiation_hourly_eq36,
+    clear_sky_radiation_hourly,
     extraterrestrial_radiation_hourly,
-    solar_elevation_sin,
-    svp_from_t,
 )
 from custom_components.smart_irrigation.hourly_rows import (
-    SOLAR_CLEAR_SKY_TOLERANCE,
+    _hour_start_timestamp,
     build_hourly_rows,
 )
 
-T0 = datetime.datetime(2026, 5, 22, 0, 0, 0)
-LAT, LON, ELEV = 39.68987, -84.07865, 311.0
-# Fixed rather than read from the clock: the solar-time correction is what these
-# tests are about, so a test whose sun moved with the runner's timezone would be
-# measuring the runner.
-TZ = -4.0
-
-TEMP, RH, WIND = 20.0, 50.0, 1.0
-# The sky state every fixture day is generated at. Any value below the 1.3
-# tolerance works; 0.8 is a plausible lightly-hazy clear day.
-RATIO = 0.8
-
-# 1 W/m2 = 0.0864 MJ/day/m2, which is what the buffer stores; FAO-56 hourly
-# wants MJ/m2/h, and the two differ by 24.
-MJ_DAY_PER_MJ_HOUR = 24.0
+LAT, LON, ELEV = 43.6, 1.44, 150.0
+OFFSET = 2.0
+MIDNIGHT = datetime.datetime(2026, 6, 15, 0, 0)
 
 
-def rso(hour, doy=None):
-    """Clear-sky radiation [MJ/m2/h] at local clock ``hour`` (FAO-56 Eq. 36).
+class _FixedOffset(datetime.tzinfo):
+    def utcoffset(self, _dt):
+        return datetime.timedelta(hours=OFFSET)
 
-    The model the fixtures are generated from and the expectations checked
-    against, built from the public helpers rather than from the hold's own code
-    so a bug in the hold cannot cancel itself out.
-    """
-    doy = T0.timetuple().tm_yday if doy is None else doy
-    ra = extraterrestrial_radiation_hourly(LAT, LON, doy, hour, TZ)
-    if ra <= 0:
-        return 0.0
-    return clear_sky_radiation_hourly_eq36(
-        ra,
-        solar_elevation_sin(LAT, LON, doy, hour, TZ),
-        atm_pressure(ELEV),
-        svp_from_t(TEMP) * RH / 100.0,
+    def dst(self, _dt):
+        return datetime.timedelta(0)
+
+
+TZ = _FixedOffset()
+
+
+def _reading(stamp, solar=None):
+    row = {
+        const.RETRIEVED_AT: stamp.isoformat(),
+        const.MAPPING_TEMPERATURE: 20.0,
+        const.MAPPING_HUMIDITY: 55.0,
+        const.MAPPING_WINDSPEED: 2.0,
+    }
+    if solar is not None:
+        row[const.MAPPING_SOLRAD] = solar
+    return row
+
+
+def _rows(readings, start, hours, **kwargs):
+    return build_hourly_rows(
+        readings,
+        start,
+        now=start + datetime.timedelta(hours=hours),
+        latitude=LAT,
+        longitude=LON,
+        elevation=ELEV,
+        tz=TZ,
+        **kwargs,
     )
 
 
-def _readings(*, keep=None, ratio=RATIO, step=10, hours=24, spike=None):
-    """A dense buffer whose solar is exactly ``ratio`` x clear sky.
+def _by_hour(rows):
+    return {row["hour_start"].hour: row for row in rows}
 
-    ``keep`` drops rows to carve a gap. Every mapped field lives on every row,
-    so a dropped row is a total outage rather than one field going quiet.
-    """
+
+def _rso(row):
+    ra = max(
+        0.0,
+        extraterrestrial_radiation_hourly(
+            LAT, LON, row["doy"], row["hour"], row["tz_offset_h"]
+        ),
+    )
+    return clear_sky_radiation_hourly(ra, ELEV)
+
+
+def _sparse_day(solar_mj_day=20.0, at_hour=12):
+    """A whole day whose only radiation sample falls at one hour."""
     readings = []
-    for hour in range(hours):
-        for minute in range(0, 60, step):
-            stamp = T0 + timedelta(hours=hour, minutes=minute)
-            if keep is not None and not keep(stamp):
-                continue
-            clock = hour + minute / 60
-            value = ratio * rso(clock)
-            if spike is not None and spike(stamp):
-                value = spike(stamp) * rso(clock)
-            readings.append(
-                {
-                    const.RETRIEVED_AT: stamp,
-                    const.MAPPING_TEMPERATURE: TEMP,
-                    const.MAPPING_HUMIDITY: RH,
-                    const.MAPPING_WINDSPEED: WIND,
-                    const.MAPPING_SOLRAD: value * MJ_DAY_PER_MJ_HOUR,
-                }
-            )
+    for hour in range(25):
+        stamp = MIDNIGHT + datetime.timedelta(hours=hour)
+        readings.append(
+            _reading(stamp, solar=solar_mj_day if hour == at_hour else None)
+        )
     return readings
 
 
-def _rows(readings, *, watermark=T0, now=None, coords=True):
-    now = T0 + timedelta(hours=24) if now is None else now
-    extra = (
-        {"latitude": LAT, "longitude": LON, "elevation": ELEV, "tz_offset_h": TZ}
-        if coords
-        else {}
+# --- a measurement is never overwritten -------------------------------------
+
+
+def test_an_hour_with_a_sample_keeps_exactly_what_it_implies():
+    """The rule everything else here is subordinate to.
+
+    Two hours, the first with a reading and the second without. Whatever the
+    second is filled with, the first reads what its sensor said: 36 MJ/m2 over
+    a day is 1.5 over an hour, to rounding and not approximately.
+    """
+    start = MIDNIGHT + datetime.timedelta(hours=10)
+    readings = [
+        _reading(start, solar=36.0),
+        _reading(start + datetime.timedelta(hours=2)),
+    ]
+
+    rows = _rows(readings, start, 2)
+
+    assert rows[0]["solar_mj_h"] == pytest.approx(36.0 / 24.0, rel=1e-12)
+    # And the hour that measured nothing was filled from somewhere.
+    assert rows[1]["solar_mj_h"] > 0
+
+
+def test_one_unreported_hour_does_not_reshape_the_rest_of_the_day():
+    """The regression this replaced.
+
+    An installation polled once an hour, and a window opening a second past the
+    hour: the first hour's own sample falls a second outside its covered
+    interval, so that hour has none of its own. Every *other* hour has one, and
+    every other hour has to come out exactly as its sensor read it -- 24 MJ/m2
+    over a day is 1 over an hour. Reshaping the window from the clear sky
+    because of that one hour is what gave a cloudy afternoon the shape of a
+    clear one.
+    """
+    start = MIDNIGHT + datetime.timedelta(hours=8, seconds=1)
+    readings = [
+        _reading(MIDNIGHT + datetime.timedelta(hours=hour), solar=24.0)
+        for hour in range(25)
+    ]
+
+    rows = _rows(readings, start, 12)
+
+    # The 08:00 hour is covered from 08:00:01, so its sample fell a second
+    # outside it and it is the one modelled.
+    assert rows[0]["hour_start"].hour == 8
+    assert rows[0]["solar_mj_h"] > 0
+    # Every other hour measured, and every other hour is left alone.
+    for row in rows[1:]:
+        assert row["solar_mj_h"] == pytest.approx(1.0, rel=1e-12)
+
+
+def test_a_cloudy_afternoon_keeps_its_own_shape():
+    """A day whose sun really did collapse after noon, with one hour of the
+    morning unreported. The afternoon must stay dark."""
+    readings = []
+    for hour in range(25):
+        if hour == 8:  # the sensor missed an hour
+            continue
+        # Bright until noon, a tenth of that afterwards.
+        daily = 48.0 if hour < 12 else 4.8
+        readings.append(
+            _reading(MIDNIGHT + datetime.timedelta(hours=hour), solar=daily)
+        )
+
+    rows = _by_hour(_rows(readings, MIDNIGHT, 24))
+
+    assert rows[11]["solar_mj_h"] == pytest.approx(2.0, rel=1e-12)
+    assert rows[15]["solar_mj_h"] == pytest.approx(0.2, rel=1e-12)
+    assert rows[15]["solar_mj_h"] < rows[11]["solar_mj_h"] / 5
+
+
+def test_a_measured_night_stays_measured_even_when_it_reports_sun():
+    """A lux sensor under a street lamp, or a pyranometer badly sited. That is
+    a sensor problem and the row builder does not silently correct it: it would
+    be correcting a measurement with a model."""
+    readings = [
+        _reading(MIDNIGHT + datetime.timedelta(hours=hour), solar=2.4)
+        for hour in range(25)
+    ]
+
+    rows = _rows(readings, MIDNIGHT, 24)
+    dark = [row for row in rows if _rso(row) <= 0]
+
+    assert dark
+    assert all(row["solar_mj_h"] == pytest.approx(0.1) for row in dark)
+
+
+def test_an_hour_with_a_sample_of_its_own_keeps_it():
+    """A pyranometer that reports every hour measured each hour, and nothing
+    here knows better than a measurement."""
+    readings = [
+        _reading(MIDNIGHT + datetime.timedelta(hours=hour), solar=24.0)
+        for hour in range(25)
+    ]
+
+    rows = _rows(readings, MIDNIGHT, 24)
+
+    assert all(row["solar_mj_h"] == pytest.approx(1.0) for row in rows)
+
+
+# --- what a gap hour borrows ------------------------------------------------
+
+
+def test_a_gap_hour_borrows_the_sky_and_supplies_its_own_sun():
+    """Clearness carried, irradiance recomputed: the gap hour is its measured
+    neighbour's Rs/Rso applied to its own clear sky."""
+    rows = _by_hour(_rows(_sparse_day(), MIDNIGHT, 24))
+    measured = rows[12]
+    clearness = measured["solar_mj_h"] / _rso(measured)
+
+    for hour in (10, 13, 16):
+        assert rows[hour]["solar_mj_h"] == pytest.approx(clearness * _rso(rows[hour]))
+
+
+def test_a_midday_ratio_carried_into_the_small_hours_charges_them_nothing():
+    """The whole reason the ratio is what travels rather than the irradiance.
+    Noon's sky, applied to three in the morning, is three in the morning."""
+    rows = _by_hour(_rows(_sparse_day(), MIDNIGHT, 24))
+
+    assert rows[12]["solar_mj_h"] > 0
+    for hour in (0, 1, 2, 3, 23):
+        assert _rso(rows[hour]) == 0
+        assert rows[hour]["solar_mj_h"] == 0.0
+
+
+def test_a_single_daytime_sample_leaves_the_night_dark():
+    rows = _rows(_sparse_day(), MIDNIGHT, 24)
+    # The sampled hour is at midday, so every dark hour here is a gap hour.
+    dark = [row for row in rows if _rso(row) <= 0]
+
+    assert dark, "a June day in Toulouse still has night hours"
+    assert all(row["solar_mj_h"] == 0.0 for row in dark)
+
+
+def test_the_daylight_hours_all_get_some_of_it():
+    rows = _rows(_sparse_day(), MIDNIGHT, 24)
+    lit = [row for row in rows if _rso(row) > 0]
+
+    assert all(row["solar_mj_h"] > 0 for row in lit)
+    assert len(lit) < len(rows)
+
+
+def test_noon_gets_more_than_the_hour_after_dawn():
+    rows = _by_hour(_rows(_sparse_day(), MIDNIGHT, 24))
+
+    assert rows[13]["solar_mj_h"] > rows[7]["solar_mj_h"] > 0
+
+
+def test_a_gap_hour_is_not_charged_beyond_its_own_clear_sky():
+    """An overexposed reading, or a sensor in kilojoules by mistake. The hour
+    that measured it keeps it, but no other hour inherits a sky twice as bright
+    as a clear one."""
+    rows = _by_hour(_rows(_sparse_day(solar_mj_day=2000.0), MIDNIGHT, 24))
+
+    assert rows[12]["solar_mj_h"] == pytest.approx(2000.0 / 24.0)
+    for hour, row in rows.items():
+        if hour == 12:
+            continue
+        assert row["solar_mj_h"] <= 1.1 * _rso(row) + 1e-12
+
+
+def test_a_ratio_is_not_taken_from_a_sun_barely_over_the_horizon():
+    """Rs/Rso of two numbers near zero says more about the model than about the
+    sky: a reading taken against a modelled clear sky of 0.016 would set the
+    whole day's clearness from almost nothing.
+
+    21:00 in June here is such an hour. The sample is kept where it was taken
+    and no other hour inherits a ratio from it: with nothing usable to borrow,
+    the gap hours are shaped from the clear sky alone.
+    """
+    rows = _by_hour(_rows(_sparse_day(solar_mj_day=24.0, at_hour=21), MIDNIGHT, 24))
+
+    assert 0 < _rso(rows[21]) < 0.1, "21:00 in June here is a very low sun"
+    assert rows[21]["solar_mj_h"] == pytest.approx(1.0)
+    # A clearness of 1/0.016 would have made midday some sixty times its clear
+    # sky. It is not taken, so midday stays under its own.
+    assert 0 < rows[13]["solar_mj_h"] < _rso(rows[13])
+    assert all(
+        row["solar_mj_h"] == 0.0
+        for hour, row in rows.items()
+        if _rso(row) <= 0 and hour != 21
     )
-    return build_hourly_rows(readings, watermark, now=now, **extra)
 
 
-def _solar(rows):
-    return {r["hour_start"].hour: r["solar_mj_h"] for r in rows}
-
-
-class TestOutageGap:
-    """The case the change exists for: the value moved and nobody looked."""
-
-    def test_a_midday_outage_follows_the_clear_sky_curve(self):
-        """Six silent daylight hours, refilled from the 08:50 sky state.
-
-        Flat hold charges every one of them the 08:50 radiation, which is barely
-        a third of solar noon here; the ratio hold rebuilds the noon peak from
-        the sun's own geometry and only carries the sky condition across.
-        """
-        readings = _readings(keep=lambda s: not (9 <= s.hour < 15))
-        held = _solar(_rows(readings))
-        flat = _solar(_rows(readings, coords=False))
-
-        for hour in range(9, 15):
-            assert held[hour] == pytest.approx(RATIO * rso(hour + 0.5), rel=1e-9)
-        # The last reading before the outage, held flat, is what it replaces.
-        assert flat[13] == pytest.approx(flat[9])
-        assert held[13] > 2 * flat[13]
-
-    def test_the_hours_that_did_see_a_reading_are_untouched(self):
-        """Only silent hours are refilled, so a healthy buffer cannot move."""
-        readings = _readings(keep=lambda s: not (9 <= s.hour < 15))
-        held = _solar(_rows(readings))
-        flat = _solar(_rows(readings, coords=False))
-        for hour in [*range(0, 9), *range(15, 24)]:
-            assert held[hour] == pytest.approx(flat[hour])
-
-    def test_a_dense_buffer_is_byte_identical(self):
-        """Every hour has a reading, so there is nothing to hold."""
-        readings = _readings()
-        assert _solar(_rows(readings)) == _solar(_rows(readings, coords=False))
-
-    def test_without_coordinates_the_flat_hold_stands(self):
-        """No site geometry means no Rso, so today's behaviour is what is left."""
-        readings = _readings(keep=lambda s: not (9 <= s.hour < 15))
-        no_lat = build_hourly_rows(
-            readings,
-            T0,
-            now=T0 + timedelta(hours=24),
-            longitude=LON,
-            elevation=ELEV,
-        )
-        assert _solar(no_lat) == _solar(_rows(readings, coords=False))
-
-
-class TestNightGap:
-    """A deadband gap is not an outage gap, and must not be 'fixed'."""
-
-    def test_a_sensor_that_dies_in_daylight_still_reads_zero_at_night(self):
-        """The failure flat hold cannot survive: noon sun carried into the dark.
-
-        A pyranometer stuck at a daytime level through the night is a recorded
-        failure at this site (19 hours at 722 W/m2). Rso is zero after sunset, so
-        a held ratio lands at zero there however bright the last reading was.
-        """
-        readings = _readings(keep=lambda s: s.hour < 15)
-        held = _solar(_rows(readings))
-        flat = _solar(_rows(readings, coords=False))
-        for hour in range(21, 24):
-            assert held[hour] == 0.0
-            assert flat[hour] > 1.0
-
-    def test_a_deadband_night_stays_at_zero(self):
-        """Solar pinned at 0 emits no rows overnight; holding 0 is the truth.
-
-        The trap this guards: treating every silent hour as suspect would
-        fabricate radiation for a night that really was dark.
-        """
-        # Rows only while the sun is up, exactly as the deadband produces them.
-        readings = _readings(keep=lambda s: rso(s.hour + s.minute / 60) > 0)
-        held = _solar(_rows(readings))
-        assert held is not None
-        for hour, value in held.items():
-            if rso(hour + 0.5) == 0.0:
-                assert value == 0.0
-        # And the daylight hours it does have are still real radiation.
-        assert max(held.values()) > 1.0
-
-    def test_a_night_only_window_is_left_alone(self):
-        """No hour is bright enough to measure a ratio from; nothing to hold."""
-        readings = _readings(keep=lambda s: s.hour < 2, hours=4)
-        now = T0 + timedelta(hours=4)
-        assert _solar(_rows(readings, now=now)) == _solar(
-            _rows(readings, now=now, coords=False)
+def test_the_nearest_measured_hour_is_the_one_borrowed_from():
+    """A morning that was clear and an afternoon that was not, with one hour
+    missing from each half: each gap takes the sky next to it."""
+    readings = []
+    for hour in range(25):
+        if hour in (9, 16):
+            continue
+        daily = 48.0 if hour < 13 else 4.8
+        readings.append(
+            _reading(MIDNIGHT + datetime.timedelta(hours=hour), solar=daily)
         )
 
+    rows = _by_hour(_rows(readings, MIDNIGHT, 24))
 
-class TestPartialHourWindow:
-    """Coverage and the ratio hold are independent; neither may eat the other."""
+    morning_clearness = rows[9]["solar_mj_h"] / _rso(rows[9])
+    afternoon_clearness = rows[16]["solar_mj_h"] / _rso(rows[16])
 
-    def test_partial_end_hours_keep_their_coverage_and_the_gap_is_refilled(self):
-        start = T0 + timedelta(hours=8, minutes=30)
-        end = T0 + timedelta(hours=12, minutes=15)
-        readings = [
-            r
-            for r in _readings(keep=lambda s: not (10 <= s.hour < 12))
-            if r[const.RETRIEVED_AT] <= end
-        ]
-        rows = _rows(readings, watermark=start, now=end)
-
-        assert [r["coverage_h"] for r in rows] == pytest.approx(
-            [0.5, 1.0, 1.0, 1.0, 0.25]
-        )
-        held = _solar(rows)
-        for hour in (10, 11):
-            assert held[hour] == pytest.approx(RATIO * rso(hour + 0.5), rel=1e-9)
-        # coverage_h is applied by the ETo series, not baked into the row, so the
-        # partial hours carry a whole hour's radiation exactly as they always did.
-        assert held[8] == pytest.approx(
-            _solar(_rows(readings, watermark=start, now=end, coords=False))[8]
-        )
+    assert morning_clearness > 4 * afternoon_clearness
 
 
-class TestRatioBounds:
-    """What may be projected across a gap, and from where."""
+# --- no measured sky at all -------------------------------------------------
 
-    def test_an_impossible_reading_cannot_be_projected_across_the_gap(self):
-        """Capped at the same tolerance the ingest clamp uses.
 
-        The ingest clamp guards readings and stays; this guards the hours the
-        hold fabricates from them. A reading that slipped past ingest (a
-        different mapping's units, a stuck sensor) must not be carried forward at
-        five times clear sky for the rest of the day.
-        """
-        readings = _readings(
-            keep=lambda s: not (9 <= s.hour < 15),
-            spike=lambda s: 5.0 if s.hour == 8 else None,
-        )
-        held = _solar(_rows(readings))
-        for hour in range(9, 15):
-            assert held[hour] == pytest.approx(
-                SOLAR_CLEAR_SKY_TOLERANCE * rso(hour + 0.5), rel=1e-9
-            )
+def test_a_sample_taken_at_night_lights_nothing():
+    """A service polled at three in the morning reports whatever the sky was
+    doing then, which is nothing. There is no sky to borrow, so the day is
+    shaped from what the hold implied and that is zero."""
+    rows = _rows(_sparse_day(solar_mj_day=0.0, at_hour=3), MIDNIGHT, 24)
 
-    def test_a_gap_before_the_first_reading_uses_the_first_measured_ratio(self):
-        """Back-fill, matching the rule every other field already follows.
+    assert all(row["solar_mj_h"] == 0.0 for row in rows)
 
-        ``_hold_integral_table`` holds a field's first sample BACKWARDS to the
-        window start, and the ratio hold does the same in ratio space. The
-        alternative -- leaving the leading gap at zero -- would silently delete a
-        whole morning's ET on the shape that produces it, an outage that runs
-        from the window start into the middle of the day.
-        """
-        readings = _readings(keep=lambda s: s.hour >= 12)
-        held = _solar(_rows(readings))
-        for hour in range(6, 12):
-            assert held[hour] == pytest.approx(RATIO * rso(hour + 0.5), rel=1e-9)
+
+def test_a_window_that_is_night_from_end_to_end_receives_nothing():
+    """Four hours of a December night with one held reading: the hour that read
+    it keeps it, and there is no clear sky anywhere to share the rest along."""
+    start = datetime.datetime(2026, 12, 10, 0, 0)
+    readings = [
+        _reading(start, solar=24.0),
+        _reading(start + datetime.timedelta(hours=4)),
+    ]
+
+    rows = _rows(readings, start, 4)
+
+    assert rows is not None
+    assert rows[0]["solar_mj_h"] == pytest.approx(1.0)
+    assert all(row["solar_mj_h"] == 0.0 for row in rows[1:])
+
+
+def test_the_last_known_value_is_shaped_by_the_clear_sky():
+    """A group whose radiation sensor reported nothing in this window at all
+    still has a last known value, and it is a day's worth, not an hour's. With
+    no measurement anywhere there is no sky to carry, so the energy it implies
+    is laid along the sun's own curve."""
+    readings = [
+        _reading(MIDNIGHT + datetime.timedelta(hours=hour)) for hour in range(25)
+    ]
+
+    rows = _rows(readings, MIDNIGHT, 24, last_entry={const.MAPPING_SOLRAD: 24.0})
+
+    assert rows is not None
+    assert sum(row["solar_mj_h"] * row["coverage_h"] for row in rows) == pytest.approx(
+        24.0
+    )
+    assert all(row["solar_mj_h"] == 0.0 for row in rows if _rso(row) <= 0)
+
+
+def test_the_shape_of_a_held_value_is_the_clear_sky_of_each_hour():
+    """Not a flat share across the daylight: the hours around noon receive far
+    more than the hour after dawn, because that is what the sky delivers."""
+    readings = [
+        _reading(MIDNIGHT + datetime.timedelta(hours=hour)) for hour in range(25)
+    ]
+    rows = _rows(readings, MIDNIGHT, 24, last_entry={const.MAPPING_SOLRAD: 24.0})
+
+    total = sum(row["solar_mj_h"] * row["coverage_h"] for row in rows)
+    available = sum(_rso(row) * row["coverage_h"] for row in rows)
+
+    for row in rows:
+        assert row["solar_mj_h"] == pytest.approx(total * _rso(row) / available)
+
+
+# --- the series path is untouched by any of this ----------------------------
+
+
+def test_a_series_is_never_reshaped():
+    """An hourly history from the weather service is already one value per
+    hour, measured for that hour."""
+    readings = [
+        _reading(MIDNIGHT + datetime.timedelta(hours=hour)) for hour in range(25)
+    ]
+    series = {
+        _hour_start_timestamp(MIDNIGHT + datetime.timedelta(hours=hour), OFFSET): 0.5
+        for hour in range(24)
+    }
+
+    rows = _rows(readings, MIDNIGHT, 24, solar_series=series)
+
+    assert all(row["solar_mj_h"] == 0.5 for row in rows)
