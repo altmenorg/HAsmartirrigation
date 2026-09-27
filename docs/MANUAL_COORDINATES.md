@@ -17,7 +17,7 @@ By default, Smart Irrigation uses your Home Assistant's configured location coor
 
 When configuring Smart Irrigation for the first time or updating settings:
 
-1. **Weather Service Setup**: First configure your weather service (OpenWeatherMap, Pirate Weather, or KNMI)
+1. **Weather Service Setup**: First configure your weather service (Open-Meteo, OpenWeatherMap or Pirate Weather)
 2. **Coordinate Configuration**: After weather service setup, you'll see a coordinate configuration step
 3. **Choose Coordinate Source**:
    - **Use Home Assistant location** (default): Uses your HA's configured coordinates
@@ -57,9 +57,9 @@ The system uses the following priority order for coordinates:
 
 All supported weather services automatically use the effective coordinates:
 
-- **OpenWeatherMap**: Uses coordinates for API calls and pressure calculations
-- **Pirate Weather**: Uses coordinates for location-specific forecasts
-- **KNMI**: Uses coordinates for Dutch weather data (when applicable)
+- **Open-Meteo**: uses the coordinates for the forecast, for the hourly radiation history, and for the hourly forecast
+- **OpenWeatherMap**: uses the coordinates for API calls and pressure calculations
+- **Pirate Weather**: uses the coordinates for location-specific forecasts
 
 ### Coordinate Validation
 
