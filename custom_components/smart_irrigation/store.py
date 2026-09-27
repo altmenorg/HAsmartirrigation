@@ -794,7 +794,8 @@ class SmartIrrigationStorage:
         self.async_schedule_save()
 
     async def _async_choose_ui_mode(self) -> None:
-        """Decide, once, how much of the panel this installation is shown.
+        """Decide, once, how much of the panel this installation is shown, and
+        which form of the equation a fresh one starts on.
 
         An installation that already has zones was set up on a panel that
         showed every setting, and some of those settings were changed on
@@ -802,11 +803,24 @@ class SmartIrrigationStorage:
         made. So it stays on the full panel, and a fresh one starts on the
         standard one. Either way the choice is written down and is the user's
         from then on.
+
+        A fresh installation also starts on the hourly calculation. It is the
+        better arithmetic -- the daily form averages a cool night with a hot
+        afternoon and evapotranspiration is not linear in its terms -- and
+        nothing now stops it running anywhere: the sun of each hour comes from
+        a sensor, from the weather service's history, or from the day's
+        temperature range. An installation that already exists is left exactly
+        as it is, because switching it would change how long its zones water
+        without anybody asking.
         """
         if self.config.ui_mode in (CONF_UI_MODE_STANDARD, CONF_UI_MODE_ADVANCED):
             return
-        mode = CONF_UI_MODE_ADVANCED if self.zones else CONF_UI_MODE_STANDARD
-        self.config = attr.evolve(self.config, ui_mode=mode)
+        fresh = not self.zones
+        mode = CONF_UI_MODE_STANDARD if fresh else CONF_UI_MODE_ADVANCED
+        changes = {"ui_mode": mode}
+        if fresh:
+            changes[CONF_HOURLY_CALCULATION] = True
+        self.config = attr.evolve(self.config, **changes)
         self.async_schedule_save()
 
     async def _async_store_zones_in_metric(self) -> None:

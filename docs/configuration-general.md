@@ -27,7 +27,7 @@ The bucket itself is left alone by that. It is a running balance: irrigation cre
 Note that the run still starts at the time it was scheduled for. A trigger set to finish at sunrise works back from the duration known at calculation time, so a run shortened by rain finishes early rather than starting late.
 
 #### Calculate evapotranspiration hour by hour (beta)
-Off by default. When on, PyETO sums the FAO-56 hourly equation (Eq. 53) over each hour of the zone's window instead of running the daily equation on the window's averages. The daily form is biased by cloudiness, because an average day hides whether the sun and the heat came together; summing the hours removes most of that bias. The hourly equation and its row builder come from [JustChr's Irrigation Plus fork](https://github.com/JustChr/HAsmartirrigation).
+**On for a new installation, off for one that already existed.** A fresh installation starts on it, because it is the better arithmetic; an installation set up before it arrived keeps the daily equation until its owner switches, because the two give different numbers and nobody's watering should change on an update without being asked. When on, PyETO sums the FAO-56 hourly equation (Eq. 53) over each hour of the zone's window instead of running the daily equation on the window's averages. The daily form is biased by cloudiness, because an average day hides whether the sun and the heat came together; summing the hours removes most of that bias. The hourly equation and its row builder come from [JustChr's Irrigation Plus fork](https://github.com/JustChr/HAsmartirrigation).
 
 It needs temperature, humidity and wind speed in the sensor group (a sensor or a weather service), and the site's coordinates.
 
