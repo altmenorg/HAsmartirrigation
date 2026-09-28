@@ -4,7 +4,6 @@
       "single_instance_allowed": "Je povolena pouze jedna konfigurace Smart Irrigation."
     },
     "error": {
-      "auth": "Nesprávný API klíč meteorologické služby",
       "name": "Zadejte jedinečný název integrace."
     },
     "step": {
@@ -12,43 +11,16 @@
         "title": "Obecné nastavení",
         "description": "Pokud potřebujete pomoc s konfigurací, podívejte se do dokumentace.",
         "data": {
-          "name": "Jedinečný název integrace",
-          "use_weather_service": "Použít meteorologickou službu (Open Weather Map nebo Pirate Weather) pro meteorologická data nebo předpovědi. Tuto možnost povolte, pokud chcete použít některou z podporovaných meteorologických služeb alespoň pro část meteorologických dat, včetně předpovědí. Tuto možnost zakažte, pokud chcete výhradně používat jiný zdroj, jako je vaše vlastní meteorologická stanice. V takovém případě nebude Smart Irrigation moci používat předpovědi."
-        }
-      },
-      "step1": {
-        "title": "Nastavení API meteorologické služby",
-        "description": "Pokud potřebujete pomoc s konfigurací, podívejte se do dokumentace.",
-        "data": {
-          "weather_service": "Použít meteorologickou službu",
-          "weather_service_api_key": "API klíč pro meteorologickou službu",
-          "weather_service_api_version": "Verze API meteorologické služby"
+          "name": "Jedinečný název integrace"
         }
       }
     }
   },
   "options": {
     "error": {
-      "auth": "Nesprávný API klíč nebo verze meteorologické služby",
       "invalid_coordinates": "Byly zadány neplatné souřadnice. Zkontrolujte hodnoty zeměpisné šířky (-90 až 90) a zeměpisné délky (-180 až 180)."
     },
     "step": {
-      "init": {
-        "title": "Nastavení API meteorologické služby",
-        "description": "Pokud potřebujete pomoc s konfigurací, podívejte se do dokumentace.",
-        "data": {
-          "use_weather_service": "Použít meteorologickou službu (Open Weather Map nebo Pirate Weather) pro meteorologická data nebo předpovědi. Tuto možnost povolte, pokud chcete použít některou z podporovaných meteorologických služeb alespoň pro část meteorologických dat, včetně předpovědí. Tuto možnost zakažte, pokud chcete výhradně používat jiný zdroj, jako je vaše vlastní meteorologická stanice. V takovém případě nebude Smart Irrigation moci používat předpovědi."
-        }
-      },
-      "step1": {
-        "title": "Nastavení API meteorologické služby",
-        "description": "Pokud potřebujete pomoc s konfigurací, podívejte se do dokumentace.",
-        "data": {
-          "weather_service": "Použít meteorologickou službu",
-          "weather_service_api_key": "API klíč pro meteorologickou službu",
-          "weather_service_api_version": "Verze API meteorologické služby"
-        }
-      },
       "coordinates": {
         "title": "Souřadnice polohy",
         "description": "Nakonfigurujte souřadnice polohy pro získávání meteorologických dat. V případě potřeby můžete použít ruční souřadnice odlišné od polohy vašeho Home Assistant.",
@@ -69,6 +41,10 @@
         "delete_weather_data": {
           "name": "Smazat meteorologická data",
           "description": "Smazat meteorologická data po výpočtu"
+        },
+        "dry_run": {
+          "name": "Nasucho",
+          "description": "Oznámit, co by výpočet udělal, bez změny zásobníku, zóny nebo posbíraných meteorologických dat"
         }
       }
     },
@@ -83,6 +59,10 @@
         "delete_weather_data": {
           "name": "Smazat meteorologická data",
           "description": "Smazat meteorologická data pro zónu po výpočtu"
+        },
+        "dry_run": {
+          "name": "Nasucho",
+          "description": "Oznámit, co by výpočet udělal, bez změny zásobníku, zóny nebo posbíraných meteorologických dat"
         }
       }
     },
@@ -234,6 +214,72 @@
       "skip_on_precipitation": {
         "name": "Vynechat při srážkách"
       }
+    },
+    "sensor": {
+      "duration": {
+        "name": "Doba"
+      },
+      "bucket": {
+        "name": "Zásobník"
+      },
+      "et_value": {
+        "name": "Použitá ET"
+      },
+      "et_deficiency": {
+        "name": "Denní deficit ET"
+      },
+      "current_drainage": {
+        "name": "Aktuální drenáž"
+      },
+      "last_irrigation": {
+        "name": "Poslední zavlažování"
+      },
+      "water_used": {
+        "name": "Spotřeba vody"
+      },
+      "live_bucket": {
+        "name": "Zásobník právě teď"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Spočítat"
+      },
+      "reset_bucket": {
+        "name": "Vynulovat zásobník"
+      },
+      "reset_usage": {
+        "name": "Vynulovat spotřebu vody"
+      },
+      "irrigate_now": {
+        "name": "Zalít nyní"
+      },
+      "calculate_all": {
+        "name": "Spočítat všechny zóny"
+      },
+      "update_weather": {
+        "name": "Načíst počasí znovu"
+      },
+      "irrigate_all": {
+        "name": "Zalít všechny zóny"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Potřeba zavlažit"
+      },
+      "watering_now": {
+        "name": "Právě zalévá"
+      },
+      "problem": {
+        "name": "Problém"
+      }
+    }
+  },
+  "issues": {
+    "throughput_mismatch": {
+      "title": "Zóna {zone}: měřený průtok neodpovídá nastavenému",
+      "description": "Za posledních {samples} zavlažování naměřil průtokoměr na zóně **{zone}** asi **{measured}**, přičemž zóna je nastavena na **{configured}**, tedy o {percentage}% vedle.\n\nKaždá doba zavlažování se odvozuje z nastaveného průtoku, takže jsou všechny špatně přibližně stejně.\n\nPokud měření vypadá správně, nastavte průtok zóny na něj. Pokud ne, zkontrolujte, že měřič počítá jen tuto zónu a že tlak v potrubí je takový, jaký očekáváte. Smart Irrigation hodnotu nikdy nemění za vás."
     }
   }
 }

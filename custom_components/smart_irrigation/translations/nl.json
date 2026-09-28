@@ -4,7 +4,6 @@
       "single_instance_allowed": "Maar een installatie van Smart Irrigation is toegestaan."
     },
     "error": {
-      "auth": "Weerdienst API sleutel of versie is verkeerd",
       "name": "Geef de integratie een unieke naam."
     },
     "step": {
@@ -12,43 +11,16 @@
         "title": "Algemeen",
         "description": "Als je hulp nodig hebt, zie de documentatie.",
         "data": {
-          "name": "Unieke naam",
-          "use_weather_service": "Gebruik een weersdient (Open Weather Map of Pirate Weather) voor weergegevens en voorspellingen. Zet dit aan als je van plan bent dit te gebruiken voor in ieder geval een deel van de benodigde weersinformatie of voorspellingen. Zet het uit als je een andere weersdienst of een andere bron (zoals een eigen weersstation) wilt gebruiken. In dat geval zijn er geen voorspellingen beschikbaar."
-        }
-      },
-      "step1": {
-        "title": "Weerdienst API instellingen",
-        "description": "Als je hulp nodig hebt, zie de documentatie.",
-        "data": {
-          "weather_service": "Weerdienst",
-          "weather_service_api_key": "API sleutel",
-          "weather_service_api_version": "API versie"
+          "name": "Unieke naam"
         }
       }
     }
   },
   "options": {
     "error": {
-      "auth": "Weerdienst API sleutel of versie is verkeerd",
       "invalid_coordinates": "Ongeldige coördinaten. Controleer breedtegraad (-90 tot 90) en lengtegraad (-180 tot 180) waarden."
     },
     "step": {
-      "init": {
-        "title": "Weerdienst API instellingen",
-        "description": "Als je hulp nodig hebt, zie de documentatie.",
-        "data": {
-          "use_weather_service": "Gebruik een weersdient (Open Weather Map of Pirate Weather) voor weergegevens en voorspellingen. Zet dit aan als je van plan bent dit te gebruiken voor in ieder geval een deel van de benodigde weersinformatie of voorspellingen. Zet het uit als je een andere weersdienst of een andere bron (zoals een eigen weersstation) wilt gebruiken. In dat geval zijn er geen voorspellingen beschikbaar."
-        }
-      },
-      "step1": {
-        "title": "Weerdienst API instellingen",
-        "description": "Als je hulp nodig hebt, zie de documentatie.",
-        "data": {
-          "weather_service": "Weerdienst",
-          "weather_service_api_key": "API sleutel",
-          "weather_service_api_version": "API versie"
-        }
-      },
       "coordinates": {
         "title": "Locatie coördinaten",
         "description": "Configureer locatie coördinaten voor het ophalen van weergegevens. Je kunt handmatige coördinaten gebruiken die verschillen van je Home Assistant locatie indien nodig.",
@@ -69,6 +41,10 @@
         "delete_weather_data": {
           "name": "Delete weather data",
           "description": "Delete weather data after calculation"
+        },
+        "dry_run": {
+          "name": "Proefrun",
+          "description": "Melden wat de berekening zou doen, zonder de voorraad, de zone of de verzamelde weergegevens te wijzigen"
         }
       }
     },
@@ -83,6 +59,10 @@
         "delete_weather_data": {
           "name": "Delete weather data",
           "description": "Delete weather data for the zone after calculation"
+        },
+        "dry_run": {
+          "name": "Proefrun",
+          "description": "Melden wat de berekening zou doen, zonder de voorraad, de zone of de verzamelde weergegevens te wijzigen"
         }
       }
     },
@@ -234,6 +214,72 @@
       "skip_on_precipitation": {
         "name": "Overslaan bij neerslag"
       }
+    },
+    "sensor": {
+      "duration": {
+        "name": "Duur"
+      },
+      "bucket": {
+        "name": "Voorraad"
+      },
+      "et_value": {
+        "name": "Toegepaste ET"
+      },
+      "et_deficiency": {
+        "name": "Dagelijks ET-tekort"
+      },
+      "current_drainage": {
+        "name": "Huidige drainage"
+      },
+      "last_irrigation": {
+        "name": "Laatste bewatering"
+      },
+      "water_used": {
+        "name": "Waterverbruik"
+      },
+      "live_bucket": {
+        "name": "Voorraad live"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Berekenen"
+      },
+      "reset_bucket": {
+        "name": "Voorraad terugzetten"
+      },
+      "reset_usage": {
+        "name": "Waterverbruik terugzetten"
+      },
+      "irrigate_now": {
+        "name": "Nu bewateren"
+      },
+      "calculate_all": {
+        "name": "Alle zones berekenen"
+      },
+      "update_weather": {
+        "name": "Weer verversen"
+      },
+      "irrigate_all": {
+        "name": "Alle zones bewateren"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Bewatering nodig"
+      },
+      "watering_now": {
+        "name": "Bewatert nu"
+      },
+      "problem": {
+        "name": "Probleem"
+      }
+    }
+  },
+  "issues": {
+    "throughput_mismatch": {
+      "title": "Zone {zone}: het gemeten debiet komt niet overeen met het ingestelde debiet",
+      "description": "Over de laatste {samples} rondes heeft de debietmeter van zone **{zone}** ongeveer **{measured}** gemeten, terwijl de zone is ingesteld op **{configured}**, dus {percentage}% ernaast.\n\nElke bewateringsduur wordt uit het ingestelde debiet afgeleid, dus zitten ze er allemaal ongeveer evenveel naast.\n\nAls de meting klopt, zet het debiet van de zone daarop. Zo niet, controleer dan of de meter alleen deze zone telt en of de leidingdruk is wat je verwacht. Smart Irrigation verandert de waarde nooit zelf."
     }
   }
 }

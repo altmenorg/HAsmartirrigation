@@ -4,7 +4,6 @@
       "single_instance_allowed": "Endast en enda konfiguration av Smart Irrigation tillåts."
     },
     "error": {
-      "auth": "Felaktig API-nyckel för vädertjänsten",
       "name": "Ange ett unikt namn för integrationen."
     },
     "step": {
@@ -12,43 +11,16 @@
         "title": "Allmän konfiguration",
         "description": "Om du behöver hjälp med konfigurationen, se dokumentationen.",
         "data": {
-          "name": "Unikt namn för integrationen",
-          "use_weather_service": "Använd en vädertjänst (Open Weather Map eller Pirate Weather) för väderdata eller prognoser. Aktivera det här alternativet om du tänker använda en av de vädertjänster som stöds för åtminstone en del av väderdatan, inklusive prognoser. Inaktivera det här alternativet om du uteslutande vill använda en annan källa, till exempel din egen väderstation. I så fall kan Smart Irrigation inte använda prognoser."
-        }
-      },
-      "step1": {
-        "title": "Konfiguration av vädertjänstens API",
-        "description": "Om du behöver hjälp med konfigurationen, se dokumentationen.",
-        "data": {
-          "weather_service": "Vädertjänst att använda",
-          "weather_service_api_key": "API-nyckel för vädertjänsten",
-          "weather_service_api_version": "API-version för vädertjänsten"
+          "name": "Unikt namn för integrationen"
         }
       }
     }
   },
   "options": {
     "error": {
-      "auth": "Felaktig API-nyckel eller version för vädertjänsten",
       "invalid_coordinates": "Ogiltiga koordinater angivna. Kontrollera värdena för latitud (-90 till 90) och longitud (-180 till 180)."
     },
     "step": {
-      "init": {
-        "title": "Konfiguration av vädertjänstens API",
-        "description": "Om du behöver hjälp med konfigurationen, se dokumentationen.",
-        "data": {
-          "use_weather_service": "Använd en vädertjänst (Open Weather Map eller Pirate Weather) för väderdata eller prognoser. Aktivera det här alternativet om du tänker använda en av de vädertjänster som stöds för åtminstone en del av väderdatan, inklusive prognoser. Inaktivera det här alternativet om du uteslutande vill använda en annan källa, till exempel din egen väderstation. I så fall kan Smart Irrigation inte använda prognoser."
-        }
-      },
-      "step1": {
-        "title": "Konfiguration av vädertjänstens API",
-        "description": "Om du behöver hjälp med konfigurationen, se dokumentationen.",
-        "data": {
-          "weather_service": "Vädertjänst att använda",
-          "weather_service_api_key": "API-nyckel för vädertjänsten",
-          "weather_service_api_version": "API-version för vädertjänsten"
-        }
-      },
       "coordinates": {
         "title": "Platskoordinater",
         "description": "Konfigurera platskoordinater för hämtning av väderdata. Du kan använda manuella koordinater som skiljer sig från din Home Assistant-plats om det behövs.",
@@ -69,6 +41,10 @@
         "delete_weather_data": {
           "name": "Radera väderdata",
           "description": "Radera väderdata efter beräkning"
+        },
+        "dry_run": {
+          "name": "Testkörning",
+          "description": "Rapportera vad beräkningen skulle göra utan att ändra förrådet, zonen eller den insamlade väderdatan"
         }
       }
     },
@@ -83,6 +59,10 @@
         "delete_weather_data": {
           "name": "Radera väderdata",
           "description": "Radera väderdata för zonen efter beräkning"
+        },
+        "dry_run": {
+          "name": "Testkörning",
+          "description": "Rapportera vad beräkningen skulle göra utan att ändra förrådet, zonen eller den insamlade väderdatan"
         }
       }
     },
@@ -234,6 +214,72 @@
       "skip_on_precipitation": {
         "name": "Hoppa över vid nederbörd"
       }
+    },
+    "sensor": {
+      "duration": {
+        "name": "Längd"
+      },
+      "bucket": {
+        "name": "Förråd"
+      },
+      "et_value": {
+        "name": "Använd ET"
+      },
+      "et_deficiency": {
+        "name": "Dagligt ET-underskott"
+      },
+      "current_drainage": {
+        "name": "Aktuell dränering"
+      },
+      "last_irrigation": {
+        "name": "Senaste vattning"
+      },
+      "water_used": {
+        "name": "Vattenförbrukning"
+      },
+      "live_bucket": {
+        "name": "Förråd just nu"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Beräkna"
+      },
+      "reset_bucket": {
+        "name": "Nollställ förrådet"
+      },
+      "reset_usage": {
+        "name": "Nollställ vattenförbrukningen"
+      },
+      "irrigate_now": {
+        "name": "Vattna nu"
+      },
+      "calculate_all": {
+        "name": "Beräkna alla zoner"
+      },
+      "update_weather": {
+        "name": "Hämta vädret igen"
+      },
+      "irrigate_all": {
+        "name": "Vattna alla zoner"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Vattning behövs"
+      },
+      "watering_now": {
+        "name": "Vattnar nu"
+      },
+      "problem": {
+        "name": "Problem"
+      }
+    }
+  },
+  "issues": {
+    "throughput_mismatch": {
+      "title": "Zon {zone}: det uppmätta flödet stämmer inte med det inställda",
+      "description": "Över de senaste {samples} körningarna mätte flödesmätaren på zon **{zone}** omkring **{measured}**, där zonen är inställd på **{configured}**, alltså {percentage}% fel.\n\nVarje vattningslängd härleds ur det inställda flödet, så de är alla fel med ungefär lika mycket.\n\nOm mätningen ser rätt ut, sätt zonens flöde till den. Om den inte gör det, kontrollera att mätaren bara räknar den här zonen och att trycket i ledningen är det du tror. Smart Irrigation ändrar aldrig värdet för dig."
     }
   }
 }

@@ -4,7 +4,6 @@
       "single_instance_allowed": "只允许配置一个 Smart Irrigation 实例。"
     },
     "error": {
-      "auth": "天气服务 API 密钥不正确",
       "name": "请为该集成指定一个唯一名称。"
     },
     "step": {
@@ -12,43 +11,16 @@
         "title": "常规设置",
         "description": "如果您在配置时需要帮助，请参阅文档。",
         "data": {
-          "name": "集成的唯一名称",
-          "use_weather_service": "使用天气服务（Open Weather Map 或 Pirate Weather）获取天气数据或预报。如果您打算使用受支持的天气服务获取至少部分天气数据（包括预报），请启用此选项。如果您想专门使用其他来源（例如您自己的气象站），请禁用此选项。在这种情况下，Smart Irrigation 将无法使用预报。"
-        }
-      },
-      "step1": {
-        "title": "天气服务 API 设置",
-        "description": "如果您在配置时需要帮助，请参阅文档。",
-        "data": {
-          "weather_service": "要使用的天气服务",
-          "weather_service_api_key": "天气服务的 API 密钥",
-          "weather_service_api_version": "天气服务 API 版本"
+          "name": "集成的唯一名称"
         }
       }
     }
   },
   "options": {
     "error": {
-      "auth": "天气服务 API 密钥或版本不正确",
       "invalid_coordinates": "提供的坐标无效。请检查纬度（-90 至 90）和经度（-180 至 180）的值。"
     },
     "step": {
-      "init": {
-        "title": "天气服务 API 设置",
-        "description": "如果您在配置时需要帮助，请参阅文档。",
-        "data": {
-          "use_weather_service": "使用天气服务（Open Weather Map 或 Pirate Weather）获取天气数据或预报。如果您打算使用受支持的天气服务获取至少部分天气数据（包括预报），请启用此选项。如果您想专门使用其他来源（例如您自己的气象站），请禁用此选项。在这种情况下，Smart Irrigation 将无法使用预报。"
-        }
-      },
-      "step1": {
-        "title": "天气服务 API 设置",
-        "description": "如果您在配置时需要帮助，请参阅文档。",
-        "data": {
-          "weather_service": "要使用的天气服务",
-          "weather_service_api_key": "天气服务的 API 密钥",
-          "weather_service_api_version": "天气服务 API 版本"
-        }
-      },
       "coordinates": {
         "title": "位置坐标",
         "description": "配置用于获取天气数据的位置坐标。如有需要，您可以使用与 Home Assistant 位置不同的手动坐标。",
@@ -69,6 +41,10 @@
         "delete_weather_data": {
           "name": "删除天气数据",
           "description": "计算后删除天气数据"
+        },
+        "dry_run": {
+          "name": "试算",
+          "description": "报告计算会做什么，但不改动水量余额、区域或已收集的天气数据"
         }
       }
     },
@@ -83,6 +59,10 @@
         "delete_weather_data": {
           "name": "删除天气数据",
           "description": "计算后删除该区域的天气数据"
+        },
+        "dry_run": {
+          "name": "试算",
+          "description": "报告计算会做什么，但不改动水量余额、区域或已收集的天气数据"
         }
       }
     },
@@ -234,6 +214,72 @@
       "skip_on_precipitation": {
         "name": "有降水时跳过"
       }
+    },
+    "sensor": {
+      "duration": {
+        "name": "时长"
+      },
+      "bucket": {
+        "name": "水量余额"
+      },
+      "et_value": {
+        "name": "已采用的 ET"
+      },
+      "et_deficiency": {
+        "name": "每日 ET 亏缺"
+      },
+      "current_drainage": {
+        "name": "当前排水"
+      },
+      "last_irrigation": {
+        "name": "上次浇水"
+      },
+      "water_used": {
+        "name": "用水量"
+      },
+      "live_bucket": {
+        "name": "实时水量余额"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "计算"
+      },
+      "reset_bucket": {
+        "name": "重置水量余额"
+      },
+      "reset_usage": {
+        "name": "重置用水量"
+      },
+      "irrigate_now": {
+        "name": "立即浇水"
+      },
+      "calculate_all": {
+        "name": "计算所有区域"
+      },
+      "update_weather": {
+        "name": "刷新天气"
+      },
+      "irrigate_all": {
+        "name": "浇灌所有区域"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "需要浇水"
+      },
+      "watering_now": {
+        "name": "正在浇水"
+      },
+      "problem": {
+        "name": "问题"
+      }
+    }
+  },
+  "issues": {
+    "throughput_mismatch": {
+      "title": "区域 {zone}：实测流量与配置的流量不一致",
+      "description": "在最近 {samples} 次浇水中，区域 **{zone}** 的流量计测得约 **{measured}**，而该区域配置为 **{configured}**，相差 {percentage}%。\n\n每个浇水时长都是由配置的流量推算出来的，所以它们全都偏了差不多同样的幅度。\n\n如果实测值看起来没错，就把区域的流量改成它。如果不对，请检查这个流量计是否只统计这一个区域，以及自来水压力是否符合预期。Smart Irrigation 绝不会替你改这个值。"
     }
   }
 }

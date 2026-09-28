@@ -4,7 +4,6 @@
       "single_instance_allowed": "Sólo se permite una única configuración de Riego Inteligente."
     },
     "error": {
-      "auth": "Weather service API key or version incorrect",
       "name": "Especifique un nombre único para la integración."
     },
     "step": {
@@ -12,43 +11,16 @@
         "title": "Configuración general",
         "description": "Si necesita ayuda con la configuración, consulte la documentación.",
         "data": {
-          "name": "Nombre único de la integración",
-          "use_weather_service": "Use a weather service (Open Weather Map or Pirate Weather) for weather data or forecasting. Enable this option if you intent to use one of the supported weather services for at least part of the weather data, including forecasting. Disable this option if you want to use another source, such as your own weather station, exclusively. In this case, Smart Irigation will not be able to use forecasts."
-        }
-      },
-      "step1": {
-        "title": "Weather service API set up",
-        "description": "Si necesita ayuda con la configuración, consulte la documentación.",
-        "data": {
-          "weather_service": "Weather service to use",
-          "weather_service_api_key": "API key for weather service",
-          "weather_service_api_version": "Weather service API version"
+          "name": "Nombre único de la integración"
         }
       }
     }
   },
   "options": {
     "error": {
-      "auth": "Weather service API key or version incorrect",
       "invalid_coordinates": "Coordenadas inválidas. Verifique los valores de latitud (-90 a 90) y longitud (-180 a 180)."
     },
     "step": {
-      "init": {
-        "title": "Weather service API set up",
-        "description": "Si necesita ayuda con la configuración, consulte la documentación.",
-        "data": {
-          "use_weather_service": "Use a weather service (Open Weather Map or Pirate Weather) for weather data or forecasting. Enable this option if you intent to use one of the supported weather services for at least part of the weather data, including forecasting. Disable this option if you want to use another source, such as your own weather station, exclusively. In this case, Smart Irigation will not be able to use forecasts."
-        }
-      },
-      "step1": {
-        "title": "Weather service API set up",
-        "description": "Si necesita ayuda con la configuración, consulte la documentación.",
-        "data": {
-          "weather_service": "Weather service to use",
-          "weather_service_api_key": "API key for weather service",
-          "weather_service_api_version": "Weather service API version"
-        }
-      },
       "coordinates": {
         "title": "Coordenadas de ubicación",
         "description": "Configure las coordenadas de ubicación para obtener datos meteorológicos. Puede usar coordenadas manuales diferentes a la ubicación de Home Assistant si es necesario.",
@@ -69,6 +41,10 @@
         "delete_weather_data": {
           "name": "Delete weather data",
           "description": "Delete weather data after calculation"
+        },
+        "dry_run": {
+          "name": "Simulación",
+          "description": "Informar de lo que haría el cálculo sin modificar el depósito, la zona ni los datos meteorológicos recogidos"
         }
       }
     },
@@ -83,6 +59,10 @@
         "delete_weather_data": {
           "name": "Delete weather data",
           "description": "Delete weather data for the zone after calculation"
+        },
+        "dry_run": {
+          "name": "Simulación",
+          "description": "Informar de lo que haría el cálculo sin modificar el depósito, la zona ni los datos meteorológicos recogidos"
         }
       }
     },
@@ -234,6 +214,72 @@
       "skip_on_precipitation": {
         "name": "Omitir si hay precipitación"
       }
+    },
+    "sensor": {
+      "duration": {
+        "name": "Duración"
+      },
+      "bucket": {
+        "name": "Depósito"
+      },
+      "et_value": {
+        "name": "ET aplicada"
+      },
+      "et_deficiency": {
+        "name": "Déficit de ET diario"
+      },
+      "current_drainage": {
+        "name": "Drenaje actual"
+      },
+      "last_irrigation": {
+        "name": "Último riego"
+      },
+      "water_used": {
+        "name": "Agua usada"
+      },
+      "live_bucket": {
+        "name": "Depósito en vivo"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Calcular"
+      },
+      "reset_bucket": {
+        "name": "Reiniciar el depósito"
+      },
+      "reset_usage": {
+        "name": "Reiniciar el consumo de agua"
+      },
+      "irrigate_now": {
+        "name": "Regar ahora"
+      },
+      "calculate_all": {
+        "name": "Calcular todas las zonas"
+      },
+      "update_weather": {
+        "name": "Actualizar el tiempo"
+      },
+      "irrigate_all": {
+        "name": "Regar todas las zonas"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Riego necesario"
+      },
+      "watering_now": {
+        "name": "Regando ahora"
+      },
+      "problem": {
+        "name": "Problema"
+      }
+    }
+  },
+  "issues": {
+    "throughput_mismatch": {
+      "title": "Zona {zone}: el caudal medido no coincide con el caudal configurado",
+      "description": "En los últimos {samples} ciclos, el caudalímetro de la zona **{zone}** midió unos **{measured}** mientras que la zona está configurada para **{configured}**, un {percentage}% de desvío.\n\nCada duración de riego se deriva del caudal configurado, así que todas están desviadas más o menos lo mismo.\n\nSi la medición parece correcta, ajusta el caudal de la zona a ese valor. Si no, comprueba que el contador solo cuenta esta zona y que la presión de red es la que esperas. Smart Irrigation nunca cambia el valor por ti."
     }
   }
 }

@@ -25,7 +25,7 @@ Multiple zones are supported, each zone having its own configuration and set up.
 ## ✨ Highlights
 
 - 🎛️ **A modern, Home-Assistant-native configuration UI.** The whole config experience was rebuilt with native HA components: instant-save on edit (no more lost focus or jump-to-the-top), native inputs, steppers and pickers, and a clean, responsive layout. Zones, sensor groups, modules, weather service and backup/restore — all from one panel.
-- 🌍 **19 languages, out of the box.** The panel *and* the config flow are fully translated: English, French, German, Spanish, Italian, Dutch, Norwegian, Slovak, Polish, Portuguese, Brazilian Portuguese, Czech, Russian, Ukrainian, Simplified Chinese, Swedish, Danish, Finnish and Hungarian.
+- 🌍 **19 languages, out of the box.** The panel *and* the config flow are fully translated: English, French, German, Spanish, Italian, Dutch, Norwegian, Slovak, Polish, Portuguese, Brazilian Portuguese, Czech, Russian, Ukrainian, Simplified Chinese, Swedish, Danish, Finnish and Hungarian. Everything except English and French was machine-translated, so if yours reads oddly, [a correction is one JSON file away](CONTRIBUTING.md#translations) and needs no build tools.
 - 🌦️ **Switch weather service on the fly** — move between OpenWeatherMap and Pirate Weather, and update the API key, without removing and re-adding the integration.
 - 💾 **One-click Backup / Restore** of your entire configuration as a JSON file.
 - ⏰ **Flexible start triggers** around sunrise, sunset or solar azimuth — each firing its own identifiable event for your automations.
@@ -55,7 +55,7 @@ Full documentation: **[altmenorg.github.io/HAsmartirrigation](https://altmenorg.
 ## Recent improvements
 
 - A modernized, **HA-native configuration UI** throughout — instant-save editing (no lost focus, no jump-to-the-top), native inputs and controls, and a consolidated panel for every setting.
-- A **fully translated UI in 19 languages** (panel *and* config flow).
+- A **fully translated UI in 19 languages** (panel *and* config flow), machine-translated beyond English and French and open to corrections.
 - **Switch weather service on the fly** — change between OpenWeatherMap and Pirate Weather (and update the API key) from the integration's *Configure* dialog, without removing and re-adding everything.
 - New **Backup / Restore** tab: export the whole configuration to a JSON file and restore it.
 - Irrigation start triggers now fire independently and carry their identity in the event data (see below); the trigger form and live add/delete were repaired.

@@ -4,7 +4,6 @@
       "single_instance_allowed": "Dozwolona jest tylko jedna konfiguracja Smart Irrigation."
     },
     "error": {
-      "auth": "Nieprawidłowy klucz API usługi pogodowej",
       "name": "Podaj unikalną nazwę dla integracji."
     },
     "step": {
@@ -12,43 +11,16 @@
         "title": "Konfiguracja ogólna",
         "description": "Jeśli potrzebujesz pomocy przy konfiguracji, zapoznaj się z dokumentacją.",
         "data": {
-          "name": "Unikalna nazwa integracji",
-          "use_weather_service": "Użyj usługi pogodowej (Open Weather Map lub Pirate Weather) do danych pogodowych lub prognoz. Włącz tę opcję, jeśli zamierzasz korzystać z jednej z obsługiwanych usług pogodowych przynajmniej dla części danych pogodowych, w tym prognoz. Wyłącz tę opcję, jeśli chcesz korzystać wyłącznie z innego źródła, takiego jak własna stacja pogodowa. W takim przypadku Smart Irrigation nie będzie mogła korzystać z prognoz."
-        }
-      },
-      "step1": {
-        "title": "Konfiguracja API usługi pogodowej",
-        "description": "Jeśli potrzebujesz pomocy przy konfiguracji, zapoznaj się z dokumentacją.",
-        "data": {
-          "weather_service": "Usługa pogodowa do użycia",
-          "weather_service_api_key": "Klucz API usługi pogodowej",
-          "weather_service_api_version": "Wersja API usługi pogodowej"
+          "name": "Unikalna nazwa integracji"
         }
       }
     }
   },
   "options": {
     "error": {
-      "auth": "Nieprawidłowy klucz API lub wersja usługi pogodowej",
       "invalid_coordinates": "Podano nieprawidłowe współrzędne. Sprawdź wartości szerokości geograficznej (-90 do 90) i długości geograficznej (-180 do 180)."
     },
     "step": {
-      "init": {
-        "title": "Konfiguracja API usługi pogodowej",
-        "description": "Jeśli potrzebujesz pomocy przy konfiguracji, zapoznaj się z dokumentacją.",
-        "data": {
-          "use_weather_service": "Użyj usługi pogodowej (Open Weather Map lub Pirate Weather) do danych pogodowych lub prognoz. Włącz tę opcję, jeśli zamierzasz korzystać z jednej z obsługiwanych usług pogodowych przynajmniej dla części danych pogodowych, w tym prognoz. Wyłącz tę opcję, jeśli chcesz korzystać wyłącznie z innego źródła, takiego jak własna stacja pogodowa. W takim przypadku Smart Irrigation nie będzie mogła korzystać z prognoz."
-        }
-      },
-      "step1": {
-        "title": "Konfiguracja API usługi pogodowej",
-        "description": "Jeśli potrzebujesz pomocy przy konfiguracji, zapoznaj się z dokumentacją.",
-        "data": {
-          "weather_service": "Usługa pogodowa do użycia",
-          "weather_service_api_key": "Klucz API usługi pogodowej",
-          "weather_service_api_version": "Wersja API usługi pogodowej"
-        }
-      },
       "coordinates": {
         "title": "Współrzędne lokalizacji",
         "description": "Skonfiguruj współrzędne lokalizacji na potrzeby pobierania danych pogodowych. W razie potrzeby możesz użyć ręcznych współrzędnych różnych od lokalizacji Home Assistant.",
@@ -69,6 +41,10 @@
         "delete_weather_data": {
           "name": "Usuń dane pogodowe",
           "description": "Usuń dane pogodowe po obliczeniu"
+        },
+        "dry_run": {
+          "name": "Na próbę",
+          "description": "Zgłoś, co zrobiłoby obliczenie, bez zmiany zapasu, strefy ani zebranych danych pogodowych"
         }
       }
     },
@@ -83,6 +59,10 @@
         "delete_weather_data": {
           "name": "Usuń dane pogodowe",
           "description": "Usuń dane pogodowe dla strefy po obliczeniu"
+        },
+        "dry_run": {
+          "name": "Na próbę",
+          "description": "Zgłoś, co zrobiłoby obliczenie, bez zmiany zapasu, strefy ani zebranych danych pogodowych"
         }
       }
     },
@@ -234,6 +214,72 @@
       "skip_on_precipitation": {
         "name": "Pomiń przy opadach"
       }
+    },
+    "sensor": {
+      "duration": {
+        "name": "Czas"
+      },
+      "bucket": {
+        "name": "Zapas"
+      },
+      "et_value": {
+        "name": "Zastosowana ET"
+      },
+      "et_deficiency": {
+        "name": "Dzienny deficyt ET"
+      },
+      "current_drainage": {
+        "name": "Bieżący drenaż"
+      },
+      "last_irrigation": {
+        "name": "Ostatnie nawadnianie"
+      },
+      "water_used": {
+        "name": "Zużycie wody"
+      },
+      "live_bucket": {
+        "name": "Zapas na bieżąco"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Policz"
+      },
+      "reset_bucket": {
+        "name": "Zeruj zapas"
+      },
+      "reset_usage": {
+        "name": "Zeruj zużycie wody"
+      },
+      "irrigate_now": {
+        "name": "Podlej teraz"
+      },
+      "calculate_all": {
+        "name": "Policz wszystkie strefy"
+      },
+      "update_weather": {
+        "name": "Pobierz pogodę ponownie"
+      },
+      "irrigate_all": {
+        "name": "Podlej wszystkie strefy"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Nawadnianie potrzebne"
+      },
+      "watering_now": {
+        "name": "Właśnie podlewa"
+      },
+      "problem": {
+        "name": "Problem"
+      }
+    }
+  },
+  "issues": {
+    "throughput_mismatch": {
+      "title": "Strefa {zone}: zmierzony przepływ nie zgadza się z ustawionym",
+      "description": "Przez ostatnie {samples} nawadniania przepływomierz strefy **{zone}** zmierzył około **{measured}**, gdy strefa jest ustawiona na **{configured}**, czyli {percentage}% obok.\n\nKażdy czas nawadniania wyprowadzany jest z ustawionego przepływu, więc wszystkie są przesunięte o tyle samo.\n\nJeśli pomiar wygląda poprawnie, ustaw przepływ strefy na tę wartość. Jeśli nie, sprawdź, czy licznik liczy tylko tę strefę i czy ciśnienie w instalacji jest takie, jakiego się spodziewasz. Smart Irrigation nigdy nie zmienia tej wartości za ciebie."
     }
   }
 }

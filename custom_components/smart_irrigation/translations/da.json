@@ -4,7 +4,6 @@
       "single_instance_allowed": "Kun én konfiguration af Smart Irrigation er tilladt."
     },
     "error": {
-      "auth": "API-nøgle til vejrtjeneste er forkert",
       "name": "Angiv et unikt navn til integrationen."
     },
     "step": {
@@ -12,43 +11,16 @@
         "title": "Generel opsætning",
         "description": "Hvis du har brug for hjælp til konfigurationen, så se dokumentationen.",
         "data": {
-          "name": "Unikt navn på integrationen",
-          "use_weather_service": "Brug en vejrtjeneste (Open Weather Map eller Pirate Weather) til vejrdata eller prognoser. Aktivér denne indstilling, hvis du har til hensigt at bruge en af de understøttede vejrtjenester til i det mindste en del af vejrdataene, inklusive prognoser. Deaktivér denne indstilling, hvis du udelukkende vil bruge en anden kilde, såsom din egen vejrstation. I så fald vil Smart Irrigation ikke kunne bruge prognoser."
-        }
-      },
-      "step1": {
-        "title": "Opsætning af vejrtjeneste-API",
-        "description": "Hvis du har brug for hjælp til konfigurationen, så se dokumentationen.",
-        "data": {
-          "weather_service": "Vejrtjeneste der skal bruges",
-          "weather_service_api_key": "API-nøgle til vejrtjeneste",
-          "weather_service_api_version": "Vejrtjeneste-API-version"
+          "name": "Unikt navn på integrationen"
         }
       }
     }
   },
   "options": {
     "error": {
-      "auth": "API-nøgle eller version til vejrtjeneste er forkert",
       "invalid_coordinates": "Ugyldige koordinater angivet. Kontrollér venligst breddegrad (-90 til 90) og længdegrad (-180 til 180)."
     },
     "step": {
-      "init": {
-        "title": "Opsætning af vejrtjeneste-API",
-        "description": "Hvis du har brug for hjælp til konfigurationen, så se dokumentationen.",
-        "data": {
-          "use_weather_service": "Brug en vejrtjeneste (Open Weather Map eller Pirate Weather) til vejrdata eller prognoser. Aktivér denne indstilling, hvis du har til hensigt at bruge en af de understøttede vejrtjenester til i det mindste en del af vejrdataene, inklusive prognoser. Deaktivér denne indstilling, hvis du udelukkende vil bruge en anden kilde, såsom din egen vejrstation. I så fald vil Smart Irrigation ikke kunne bruge prognoser."
-        }
-      },
-      "step1": {
-        "title": "Opsætning af vejrtjeneste-API",
-        "description": "Hvis du har brug for hjælp til konfigurationen, så se dokumentationen.",
-        "data": {
-          "weather_service": "Vejrtjeneste der skal bruges",
-          "weather_service_api_key": "API-nøgle til vejrtjeneste",
-          "weather_service_api_version": "Vejrtjeneste-API-version"
-        }
-      },
       "coordinates": {
         "title": "Placeringskoordinater",
         "description": "Konfigurér placeringskoordinater til hentning af vejrdata. Du kan om nødvendigt bruge manuelle koordinater, der adskiller sig fra din Home Assistant-placering.",
@@ -69,6 +41,10 @@
         "delete_weather_data": {
           "name": "Slet vejrdata",
           "description": "Slet vejrdata efter beregning"
+        },
+        "dry_run": {
+          "name": "Prøvekørsel",
+          "description": "Fortæl hvad beregningen ville gøre uden at ændre beholdningen, zonen eller de indsamlede vejrdata"
         }
       }
     },
@@ -83,6 +59,10 @@
         "delete_weather_data": {
           "name": "Slet vejrdata",
           "description": "Slet vejrdata for zonen efter beregning"
+        },
+        "dry_run": {
+          "name": "Prøvekørsel",
+          "description": "Fortæl hvad beregningen ville gøre uden at ændre beholdningen, zonen eller de indsamlede vejrdata"
         }
       }
     },
@@ -234,6 +214,72 @@
       "skip_on_precipitation": {
         "name": "Spring over ved nedbør"
       }
+    },
+    "sensor": {
+      "duration": {
+        "name": "Varighed"
+      },
+      "bucket": {
+        "name": "Beholdning"
+      },
+      "et_value": {
+        "name": "Anvendt ET"
+      },
+      "et_deficiency": {
+        "name": "Dagligt ET-underskud"
+      },
+      "current_drainage": {
+        "name": "Aktuel dræning"
+      },
+      "last_irrigation": {
+        "name": "Seneste vanding"
+      },
+      "water_used": {
+        "name": "Vandforbrug"
+      },
+      "live_bucket": {
+        "name": "Beholdning lige nu"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Beregn"
+      },
+      "reset_bucket": {
+        "name": "Nulstil beholdningen"
+      },
+      "reset_usage": {
+        "name": "Nulstil vandforbruget"
+      },
+      "irrigate_now": {
+        "name": "Vand nu"
+      },
+      "calculate_all": {
+        "name": "Beregn alle zoner"
+      },
+      "update_weather": {
+        "name": "Hent vejret igen"
+      },
+      "irrigate_all": {
+        "name": "Vand alle zoner"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Vanding nødvendig"
+      },
+      "watering_now": {
+        "name": "Vander nu"
+      },
+      "problem": {
+        "name": "Problem"
+      }
+    }
+  },
+  "issues": {
+    "throughput_mismatch": {
+      "title": "Zone {zone}: den målte vandmængde passer ikke til den indstillede",
+      "description": "Over de seneste {samples} vandinger målte flowmåleren på zone **{zone}** omkring **{measured}**, hvor zonen er sat til **{configured}**, altså {percentage}% ved siden af.\n\nHver vandingstid udledes af den indstillede vandmængde, så de er alle forkerte med omtrent det samme.\n\nHvis målingen ser rigtig ud, så sæt zonens vandmængde til den. Hvis den ikke gør, så tjek at måleren kun tæller denne zone, og at trykket i ledningen er som forventet. Smart Irrigation ændrer aldrig værdien for dig."
     }
   }
 }

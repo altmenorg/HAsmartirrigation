@@ -4,7 +4,6 @@
       "single_instance_allowed": "Vain yksi Smart Irrigation -määritys on sallittu."
     },
     "error": {
-      "auth": "Sääpalvelun API-avain on virheellinen",
       "name": "Anna integraatiolle yksilöllinen nimi."
     },
     "step": {
@@ -12,43 +11,16 @@
         "title": "Yleiset asetukset",
         "description": "Jos tarvitset apua määrityksessä, katso ohjeet dokumentaatiosta.",
         "data": {
-          "name": "Integraation yksilöllinen nimi",
-          "use_weather_service": "Käytä sääpalvelua (Open Weather Map tai Pirate Weather) säätietoja tai ennusteita varten. Ota tämä asetus käyttöön, jos aiot käyttää jotakin tuetuista sääpalveluista vähintään osalle säätiedoista, ennusteet mukaan lukien. Poista tämä asetus käytöstä, jos haluat käyttää yksinomaan jotain muuta lähdettä, kuten omaa sääasemaasi. Tässä tapauksessa Smart Irigation ei voi käyttää ennusteita."
-        }
-      },
-      "step1": {
-        "title": "Sääpalvelun API-asetukset",
-        "description": "Jos tarvitset apua määrityksessä, katso ohjeet dokumentaatiosta.",
-        "data": {
-          "weather_service": "Käytettävä sääpalvelu",
-          "weather_service_api_key": "Sääpalvelun API-avain",
-          "weather_service_api_version": "Sääpalvelun API-versio"
+          "name": "Integraation yksilöllinen nimi"
         }
       }
     }
   },
   "options": {
     "error": {
-      "auth": "Sääpalvelun API-avain tai versio on virheellinen",
       "invalid_coordinates": "Annetut koordinaatit ovat virheellisiä. Tarkista leveysaste (-90...90) ja pituusaste (-180...180)."
     },
     "step": {
-      "init": {
-        "title": "Sääpalvelun API-asetukset",
-        "description": "Jos tarvitset apua määrityksessä, katso ohjeet dokumentaatiosta.",
-        "data": {
-          "use_weather_service": "Käytä sääpalvelua (Open Weather Map tai Pirate Weather) säätietoja tai ennusteita varten. Ota tämä asetus käyttöön, jos aiot käyttää jotakin tuetuista sääpalveluista vähintään osalle säätiedoista, ennusteet mukaan lukien. Poista tämä asetus käytöstä, jos haluat käyttää yksinomaan jotain muuta lähdettä, kuten omaa sääasemaasi. Tässä tapauksessa Smart Irigation ei voi käyttää ennusteita."
-        }
-      },
-      "step1": {
-        "title": "Sääpalvelun API-asetukset",
-        "description": "Jos tarvitset apua määrityksessä, katso ohjeet dokumentaatiosta.",
-        "data": {
-          "weather_service": "Käytettävä sääpalvelu",
-          "weather_service_api_key": "Sääpalvelun API-avain",
-          "weather_service_api_version": "Sääpalvelun API-versio"
-        }
-      },
       "coordinates": {
         "title": "Sijainnin koordinaatit",
         "description": "Määritä sijainnin koordinaatit säätietojen hakua varten. Voit tarvittaessa käyttää Home Assistant -sijainnista poikkeavia manuaalisia koordinaatteja.",
@@ -69,6 +41,10 @@
         "delete_weather_data": {
           "name": "Poista säätiedot",
           "description": "Poista säätiedot laskennan jälkeen"
+        },
+        "dry_run": {
+          "name": "Koeajo",
+          "description": "Kerro, mitä laskenta tekisi, muuttamatta varantoa, aluetta tai kerättyjä säätietoja"
         }
       }
     },
@@ -83,6 +59,10 @@
         "delete_weather_data": {
           "name": "Poista säätiedot",
           "description": "Poista vyöhykkeen säätiedot laskennan jälkeen"
+        },
+        "dry_run": {
+          "name": "Koeajo",
+          "description": "Kerro, mitä laskenta tekisi, muuttamatta varantoa, aluetta tai kerättyjä säätietoja"
         }
       }
     },
@@ -234,6 +214,72 @@
       "skip_on_precipitation": {
         "name": "Ohita sateella"
       }
+    },
+    "sensor": {
+      "duration": {
+        "name": "Kesto"
+      },
+      "bucket": {
+        "name": "Varanto"
+      },
+      "et_value": {
+        "name": "Käytetty ET"
+      },
+      "et_deficiency": {
+        "name": "Päivittäinen ET-alijäämä"
+      },
+      "current_drainage": {
+        "name": "Nykyinen kuivatus"
+      },
+      "last_irrigation": {
+        "name": "Viimeisin kastelu"
+      },
+      "water_used": {
+        "name": "Veden kulutus"
+      },
+      "live_bucket": {
+        "name": "Varanto juuri nyt"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Laske"
+      },
+      "reset_bucket": {
+        "name": "Nollaa varanto"
+      },
+      "reset_usage": {
+        "name": "Nollaa veden kulutus"
+      },
+      "irrigate_now": {
+        "name": "Kastele nyt"
+      },
+      "calculate_all": {
+        "name": "Laske kaikki alueet"
+      },
+      "update_weather": {
+        "name": "Hae sää uudelleen"
+      },
+      "irrigate_all": {
+        "name": "Kastele kaikki alueet"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Kastelu tarpeen"
+      },
+      "watering_now": {
+        "name": "Kastelee nyt"
+      },
+      "problem": {
+        "name": "Ongelma"
+      }
+    }
+  },
+  "issues": {
+    "throughput_mismatch": {
+      "title": "Alue {zone}: mitattu virtaama ei vastaa asetettua",
+      "description": "Viimeisten {samples} kastelun aikana alueen **{zone}** virtausmittari mittasi noin **{measured}**, kun alue on asetettu arvoon **{configured}**, eli {percentage}% sivussa.\n\nJokainen kastelun kesto johdetaan asetetusta virtaamasta, joten ne ovat kaikki väärässä suunnilleen saman verran.\n\nJos mittaus näyttää oikealta, aseta alueen virtaama siihen. Jos ei, tarkista, että mittari laskee vain tämän alueen ja että verkkopaine on odotettu. Smart Irrigation ei koskaan muuta arvoa puolestasi."
     }
   }
 }

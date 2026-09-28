@@ -63,7 +63,7 @@ zones: [0, 2]
 compact: true
 ```
 
-> The card speaks English and French. It is built as its own file, separate from the panel, so a dashboard does not load the panel's nineteen language files to show a few lines: that is why its own words are not translated with the rest yet.
+> The card speaks English and French. It is built as its own file, separate from the panel, and it does not read the panel's translations: that is why its own words are not translated with the rest yet.
 
 > Main page: [Usage](usage.md)<br/>
 > Previous: [Info and History](usage-info.md)<br/>

@@ -4,7 +4,6 @@
       "single_instance_allowed": "A Smart Irrigation csak egyetlen konfigurációja engedélyezett."
     },
     "error": {
-      "auth": "Az időjárás-szolgáltatás API-kulcsa helytelen",
       "name": "Adjon meg egy egyedi nevet az integrációhoz."
     },
     "step": {
@@ -12,43 +11,16 @@
         "title": "Általános beállítás",
         "description": "Ha segítségre van szüksége a konfigurációhoz, kérjük, tekintse meg a dokumentációt.",
         "data": {
-          "name": "Az integráció egyedi neve",
-          "use_weather_service": "Időjárás-szolgáltatás (Open Weather Map vagy Pirate Weather) használata időjárási adatokhoz vagy előrejelzéshez. Engedélyezze ezt a lehetőséget, ha a támogatott időjárás-szolgáltatások egyikét legalább részben az időjárási adatokhoz, beleértve az előrejelzést is, használni szeretné. Tiltsa le ezt a lehetőséget, ha kizárólag más forrást, például saját időjárás-állomást szeretne használni. Ebben az esetben a Smart Irigation nem tud előrejelzéseket használni."
-        }
-      },
-      "step1": {
-        "title": "Időjárás-szolgáltatás API beállítása",
-        "description": "Ha segítségre van szüksége a konfigurációhoz, kérjük, tekintse meg a dokumentációt.",
-        "data": {
-          "weather_service": "Használandó időjárás-szolgáltatás",
-          "weather_service_api_key": "Az időjárás-szolgáltatás API-kulcsa",
-          "weather_service_api_version": "Az időjárás-szolgáltatás API-verziója"
+          "name": "Az integráció egyedi neve"
         }
       }
     }
   },
   "options": {
     "error": {
-      "auth": "Az időjárás-szolgáltatás API-kulcsa vagy verziója helytelen",
       "invalid_coordinates": "Érvénytelen koordináták. Kérjük, ellenőrizze a szélességi (-90 és 90 között) és a hosszúsági (-180 és 180 között) értékeket."
     },
     "step": {
-      "init": {
-        "title": "Időjárás-szolgáltatás API beállítása",
-        "description": "Ha segítségre van szüksége a konfigurációhoz, kérjük, tekintse meg a dokumentációt.",
-        "data": {
-          "use_weather_service": "Időjárás-szolgáltatás (Open Weather Map vagy Pirate Weather) használata időjárási adatokhoz vagy előrejelzéshez. Engedélyezze ezt a lehetőséget, ha a támogatott időjárás-szolgáltatások egyikét legalább részben az időjárási adatokhoz, beleértve az előrejelzést is, használni szeretné. Tiltsa le ezt a lehetőséget, ha kizárólag más forrást, például saját időjárás-állomást szeretne használni. Ebben az esetben a Smart Irigation nem tud előrejelzéseket használni."
-        }
-      },
-      "step1": {
-        "title": "Időjárás-szolgáltatás API beállítása",
-        "description": "Ha segítségre van szüksége a konfigurációhoz, kérjük, tekintse meg a dokumentációt.",
-        "data": {
-          "weather_service": "Használandó időjárás-szolgáltatás",
-          "weather_service_api_key": "Az időjárás-szolgáltatás API-kulcsa",
-          "weather_service_api_version": "Az időjárás-szolgáltatás API-verziója"
-        }
-      },
       "coordinates": {
         "title": "Helykoordináták",
         "description": "Állítsa be a helykoordinátákat az időjárási adatok lekéréséhez. Szükség esetén a Home Assistant helyétől eltérő, kézi koordinátákat is használhat.",
@@ -69,6 +41,10 @@
         "delete_weather_data": {
           "name": "Időjárási adatok törlése",
           "description": "Az időjárási adatok törlése a számítás után"
+        },
+        "dry_run": {
+          "name": "Próbafutás",
+          "description": "Jelentse, mit tenne a számítás, a tartalék, a zóna és az összegyűjtött időjárási adatok módosítása nélkül"
         }
       }
     },
@@ -83,6 +59,10 @@
         "delete_weather_data": {
           "name": "Időjárási adatok törlése",
           "description": "A zóna időjárási adatainak törlése a számítás után"
+        },
+        "dry_run": {
+          "name": "Próbafutás",
+          "description": "Jelentse, mit tenne a számítás, a tartalék, a zóna és az összegyűjtött időjárási adatok módosítása nélkül"
         }
       }
     },
@@ -234,6 +214,72 @@
       "skip_on_precipitation": {
         "name": "Kihagyás csapadék esetén"
       }
+    },
+    "sensor": {
+      "duration": {
+        "name": "Időtartam"
+      },
+      "bucket": {
+        "name": "Tartalék"
+      },
+      "et_value": {
+        "name": "Alkalmazott ET"
+      },
+      "et_deficiency": {
+        "name": "Napi ET-hiány"
+      },
+      "current_drainage": {
+        "name": "Jelenlegi vízelvezetés"
+      },
+      "last_irrigation": {
+        "name": "Utolsó öntözés"
+      },
+      "water_used": {
+        "name": "Vízfogyás"
+      },
+      "live_bucket": {
+        "name": "Tartalék élőben"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Számítás"
+      },
+      "reset_bucket": {
+        "name": "Tartalék nullázása"
+      },
+      "reset_usage": {
+        "name": "Vízfogyás nullázása"
+      },
+      "irrigate_now": {
+        "name": "Öntözés most"
+      },
+      "calculate_all": {
+        "name": "Összes zóna számítása"
+      },
+      "update_weather": {
+        "name": "Időjárás újratöltése"
+      },
+      "irrigate_all": {
+        "name": "Összes zóna öntözése"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Öntözés szükséges"
+      },
+      "watering_now": {
+        "name": "Most öntöz"
+      },
+      "problem": {
+        "name": "Probléma"
+      }
+    }
+  },
+  "issues": {
+    "throughput_mismatch": {
+      "title": "{zone} zóna: a mért átfolyás nem egyezik a beállítottal",
+      "description": "Az utolsó {samples} öntözés során a **{zone}** zóna áramlásmérője körülbelül **{measured}** értéket mért, míg a zóna **{configured}** értékre van beállítva, ami {percentage}% eltérés.\n\nMinden öntözési idő a beállított átfolyásból vezet le, így mindegyik körülbelül ugyanannyival téved.\n\nHa a mérés helyesnek tűnik, állítsd a zóna átfolyását arra. Ha nem, ellenőrizd, hogy a mérő csak ezt a zónát számolja, és hogy a hálózati nyomás az, amire számítasz. A Smart Irrigation soha nem módosítja helyetted az értéket."
     }
   }
 }

@@ -21,6 +21,9 @@
       },
       "water_used": {
         "name": "Acqua utilizzata"
+      },
+      "live_bucket": {
+        "name": "Serbatoio in tempo reale"
       }
     },
     "number": {
@@ -76,7 +79,6 @@
       "single_instance_allowed": "Soltanto una configurazione di Smart Irrigation è consentita."
     },
     "error": {
-      "auth": "Chiave API o versione del servizio meteo non corretta",
       "name": "Specifica un nome univoco per questa istanza."
     },
     "step": {
@@ -84,43 +86,16 @@
         "title": "Impostazioni Generali",
         "description": "Se hai bisogno di aiuto con la configurazione, consulta la documentazione.",
         "data": {
-          "name": "Nome univoco per questa istanza",
-          "use_weather_service": "Usa un servizio meteo (Open Weather Map o Pirate Weather) per i dati meteo o le previsioni. Attiva questa opzione se intendi utilizzare uno dei servizi meteo supportati per almeno parte dei dati meteo, incluse le previsioni. Disattiva questa opzione se vuoi utilizzare esclusivamente un'altra fonte, come la tua stazione meteo personale. In questo caso, Smart Irrigation non potrà utilizzare le previsioni."
-        }
-      },
-      "step1": {
-        "title": "Configurazione API del servizio meteo",
-        "description": "Se hai bisogno di aiuto con la configurazione, consulta la documentazione.",
-        "data": {
-          "weather_service": "Servizio meteo da utilizzare",
-          "weather_service_api_key": "Chiave API per il servizio meteo",
-          "weather_service_api_version": "Versione API del servizio meteo"
+          "name": "Nome univoco per questa istanza"
         }
       }
     }
   },
   "options": {
     "error": {
-      "auth": "Chiave API o versione del servizio meteo non corretta",
       "invalid_coordinates": "Coordinate non valide. Controlla i valori di latitudine (da -90 a 90) e longitudine (da -180 a 180)."
     },
     "step": {
-      "init": {
-        "title": "Configurazione API del servizio meteo",
-        "description": "Se hai bisogno di aiuto con la configurazione, consulta la documentazione.",
-        "data": {
-          "use_weather_service": "Usa un servizio meteo (Open Weather Map o Pirate Weather) per i dati meteo o le previsioni. Attiva questa opzione se intendi utilizzare uno dei servizi meteo supportati per almeno parte dei dati meteo, incluse le previsioni. Disattiva questa opzione se vuoi utilizzare esclusivamente un'altra fonte, come la tua stazione meteo personale. In questo caso, Smart Irrigation non potrà utilizzare le previsioni."
-        }
-      },
-      "step1": {
-        "title": "Configurazione API del servizio meteo",
-        "description": "Se hai bisogno di aiuto con la configurazione, consulta la documentazione.",
-        "data": {
-          "weather_service": "Servizio meteo da utilizzare",
-          "weather_service_api_key": "Chiave API per il servizio meteo",
-          "weather_service_api_version": "Versione API del servizio meteo"
-        }
-      },
       "coordinates": {
         "title": "Coordinate della posizione",
         "description": "Configura le coordinate della posizione per il recupero dei dati meteo. Se necessario, puoi usare coordinate manuali diverse dalla posizione di Home Assistant.",
@@ -141,6 +116,10 @@
         "delete_weather_data": {
           "name": "Cancellare i dati meteo",
           "description": "Cancellare i dati meteo dopo il calcolo"
+        },
+        "dry_run": {
+          "name": "Simulazione",
+          "description": "Riferire cosa farebbe il calcolo senza modificare il serbatoio, la zona o i dati meteo raccolti"
         }
       }
     },
@@ -155,6 +134,10 @@
         "delete_weather_data": {
           "name": "Elimina i dati meteo",
           "description": "Elimina i dati meteo per la zona dopo il calcolo"
+        },
+        "dry_run": {
+          "name": "Simulazione",
+          "description": "Riferire cosa farebbe il calcolo senza modificare il serbatoio, la zona o i dati meteo raccolti"
         }
       }
     },
@@ -291,6 +274,12 @@
           "description": "Zona per cui generare il calendario di irrigazione"
         }
       }
+    }
+  },
+  "issues": {
+    "throughput_mismatch": {
+      "title": "Zona {zone}: la portata misurata non corrisponde a quella configurata",
+      "description": "Negli ultimi {samples} cicli il misuratore di portata della zona **{zone}** ha misurato circa **{measured}** mentre la zona è configurata per **{configured}**, uno scarto del {percentage}%.\n\nOgni durata di irrigazione deriva dalla portata configurata, quindi sono tutte sbagliate più o meno della stessa quantità.\n\nSe la misura sembra giusta, imposta la portata della zona su quel valore. Se non lo è, verifica che il contatore conti solo questa zona e che la pressione di rete sia quella che ti aspetti. Smart Irrigation non cambia mai il valore per te."
     }
   }
 }

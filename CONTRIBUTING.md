@@ -40,7 +40,38 @@ npm run build   # the bundle in dist/ is committed with the change
 npx vitest run  # the panel's tests
 ```
 
-Language files in `frontend/localize/languages/` are compiled into the bundle, so a text change needs a rebuild too.
+Only English is compiled into the bundle, so **a translation does not need a rebuild** (see below). Any other change to `frontend/src/` does.
+
+## Translations
+
+Two sets, both plain JSON, both fine to edit by hand:
+
+| Where | What it holds |
+| --- | --- |
+| `custom_components/smart_irrigation/frontend/localize/languages/` | the panel's own words |
+| `custom_components/smart_irrigation/translations/` | what Home Assistant renders itself: entity names, service fields, the config flow, the repair issues |
+
+`en.json` is the source in both. Copy the key you want to translate from it, keep
+the structure, and translate the value. Rules, all checked by the test suite:
+
+- **Keep every placeholder exactly as it is**: `{count}`, `{duration}`, `{zone}`.
+  A renamed or dropped one puts a hole in the sentence, or makes the formatter
+  throw and the user read `Translation Error`.
+- **Leave out what you have not translated.** A missing key falls back to English
+  string by string, which is a working panel. An empty string is not a fallback:
+  it shows as nothing at all.
+- **Do not add keys English does not have.** Nobody will ever see them.
+- Two-space indent, real accented characters rather than `é` escapes.
+
+Run `pytest tests/test_translations_match_english.py` to check a file before
+opening the pull request. And do not rebuild the bundle for a translation: the
+panel fetches the language file at runtime, so the JSON change is the whole
+change.
+
+**The translations shipped today were machine-translated**, with the exception of
+English and French, and they say so in their commit. They are grammatical and
+nobody who speaks the language has read them. Corrections are the most useful
+pull request there is right now, however small: one word in one file is welcome.
 
 ## What makes a change easy to merge
 

@@ -116,6 +116,10 @@
         "delete_weather_data": {
           "name": "Supprimer les données météo",
           "description": "Supprimer les données météo après le calcul"
+        },
+        "dry_run": {
+          "name": "Simulation",
+          "description": "Indiquer ce que le calcul ferait, sans toucher au bucket, à la zone ni aux données météo collectées"
         }
       }
     },
@@ -130,6 +134,10 @@
         "delete_weather_data": {
           "name": "Supprimer les données météo",
           "description": "Supprimer les données météo de la zone après le calcul"
+        },
+        "dry_run": {
+          "name": "Simulation",
+          "description": "Indiquer ce que le calcul ferait, sans toucher au bucket, à la zone ni aux données météo collectées"
         }
       }
     },
