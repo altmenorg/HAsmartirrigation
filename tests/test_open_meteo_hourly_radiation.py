@@ -5,12 +5,13 @@ mean irradiance in W/m2 stamped at the hour it starts, so the client converts
 and keys it the way the row builder asks.
 """
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from unittest.mock import patch
 
 import pytest
 import requests
 
+from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.weathermodules.OpenMeteoClient import (
     OpenMeteoClient,
 )
@@ -238,3 +239,63 @@ def test_more_days_than_the_cache_holds_are_fetched():
         client.get_hourly_forecast(4)
 
     assert req.call_count == 2
+
+
+# --- the reference evapotranspiration of today (#847) -----------------------
+#
+# A zone whose evapotranspiration is "provided" takes it from its sensor group,
+# and the group offers the field as coming from the weather service. Open-Meteo
+# publishes it, the forecast path parsed it, and the current-weather path -- the
+# one that fills the readings buffer -- did not. So that method could not work
+# at all with this service: the engine had nothing to pass through, returned
+# nothing, and the zone was never calculated.
+
+
+def _doc_with_today(value, day=None):
+    """An API document whose daily block starts at today."""
+    day = day or date.today()
+    stamp = datetime.combine(day, time()).timestamp()
+    return {
+        "current": {
+            "temperature_2m": 18.0,
+            "relative_humidity_2m": 60,
+            "dew_point_2m": 10.0,
+            "surface_pressure": 1013.0,
+            "wind_speed_10m": 3.0,
+            "precipitation": 0.0,
+        },
+        "daily": {
+            "time": [stamp],
+            "et0_fao_evapotranspiration": [value],
+        },
+    }
+
+
+def test_the_current_reading_carries_todays_reference_et():
+    client = _client()
+    client._get_doc = lambda: _doc_with_today(3.4)
+
+    data = client.get_data()
+
+    assert data[const.MAPPING_EVAPOTRANSPIRATION] == 3.4
+
+
+def test_a_service_that_does_not_answer_with_it_is_not_a_failure():
+    client = _client()
+    client._get_doc = lambda: {**_doc_with_today(None), "daily": {}}
+
+    data = client.get_data()
+
+    assert const.MAPPING_EVAPOTRANSPIRATION not in data
+    assert data[const.MAPPING_TEMPERATURE] == 18.0
+
+
+def test_a_daily_block_that_starts_on_another_day_is_not_taken_for_today():
+    """The request asks for no past days, so the block starts today; a response
+    that changed that would give the wrong day rather than no day."""
+    client = _client()
+    client._get_doc = lambda: _doc_with_today(3.4, day=date.today() - timedelta(days=1))
+
+    data = client.get_data()
+
+    assert const.MAPPING_EVAPOTRANSPIRATION not in data

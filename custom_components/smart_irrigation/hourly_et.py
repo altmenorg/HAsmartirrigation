@@ -423,7 +423,7 @@ def eto_hourly(
     net_rad = net_radiation_hourly(
         max(0.0, solar_rad_hr), ra_hr, t_c, avp, elevation_m, cloudiness
     )
-    return penman_monteith_hourly(
+    eto = penman_monteith_hourly(
         net_rad,
         soil_heat_flux_hourly(net_rad),
         t_c,
@@ -433,3 +433,13 @@ def eto_hourly(
         slope,
         psy,
     )
+    # Never below zero. On a calm humid night the equation returns a small
+    # negative: the radiation term is negative because the surface loses more
+    # heat than it receives, and there is not enough wind and dryness to offset
+    # it. That is condensation, and it is real -- but it is dew on the leaves,
+    # not water in the root zone, and it evaporates in the morning. Summed over
+    # a night it credited the water balance with rain that never fell: a zone
+    # at -1.57 mm read -1.53 mm by dawn, which is a bucket gaining water on a
+    # dry night (#866). FAO-56's own worked example prints 0.00 mm for exactly
+    # such an hour.
+    return max(0.0, eto)

@@ -254,6 +254,10 @@
             "advanced": "Réglages avancés",
             "advanced-hint": "Affiche les réglages qui ajustent le modèle : drainage, seuils, multiplicateur, anticipation des jours à venir. Leurs valeurs par défaut sont saines, laissez éteint tant que vous n'en avez pas besoin. Vos valeurs sont conservées dans tous les cas."
           }
+        },
+        "setup-assistant": {
+          "description": "Quatre questions au maximum, et il crée pour vous un groupe de capteurs et une zone, en choisissant ce qu'il faut à chacun. Pour une première zone, une suivante, ou repartir de zéro. C'était un onglet, qui invitait une installation déjà configurée à se configurer.",
+          "open": "Ouvrir l'assistant"
         }
       },
       "description": "Cette page fournit les réglages globaux.",

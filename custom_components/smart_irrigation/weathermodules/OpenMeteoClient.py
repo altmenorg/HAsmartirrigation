@@ -218,19 +218,52 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
                 parsed_data[MAPPING_SOLRAD] = (
                     cur["shortwave_radiation"] * WM2_TO_MJ_PER_DAY
                 )
-            # Today's daily total is deliberately not reported here. It is a
-            # forecast for the part of the day that has not happened yet, and
-            # feeding it to the water balance credited rain before it fell
-            # (#787). The water balance reads the hourly history instead (see
-            # get_precipitation_between), and falls back to integrating Current
-            # Precipitation above (#764). The daily total is still used where a
-            # forecast is what is wanted, in get_forecast_data and the
-            # precipitation-skip check.
+            # Today's daily *precipitation* total is deliberately not reported
+            # here. It is a forecast for the part of the day that has not
+            # happened yet, and feeding it to the water balance credited rain
+            # before it fell (#787). The water balance reads the hourly history
+            # instead (see get_precipitation_between), and falls back to
+            # integrating Current Precipitation above (#764). The daily total is
+            # still used where a forecast is what is wanted, in
+            # get_forecast_data and the precipitation-skip check.
+            #
+            # The daily reference evapotranspiration is different and is
+            # reported: it is the only way this service can answer a zone whose
+            # evapotranspiration is "provided", the sensor group offers the
+            # field as coming from the weather service, and it was never
+            # recorded -- so that method could not work at all with Open-Meteo,
+            # and such a zone was simply never calculated (#847). It is a rate
+            # per day, which is what the engine consumes, and unlike a depth of
+            # rain a partly-forecast rate is not double counted by anything.
+            et0 = self._today(doc, "et0_fao_evapotranspiration")
+            if et0 is not None:
+                parsed_data[MAPPING_EVAPOTRANSPIRATION] = et0
             self._cached_doc = doc
             return parsed_data
         except (KeyError, requests.RequestException, json.JSONDecodeError) as ex:
             _LOGGER.warning("Error reading current data from Open-Meteo: %s", ex)
             return None
+
+    @staticmethod
+    def _today(doc, field):
+        """Today's value of a daily field, or None if the block does not have it.
+
+        The daily block starts at today, because the request asks for no past
+        days; a response that ever changed that would give the wrong day rather
+        than no day, so the date is checked.
+        """
+        daily = (doc or {}).get("daily") or {}
+        values = daily.get(field)
+        times = daily.get("time")
+        if not values or not times:
+            return None
+        try:
+            day = datetime.datetime.fromtimestamp(float(times[0])).date()
+        except (TypeError, ValueError, OSError):
+            return None
+        if day != datetime.date.today():
+            return None
+        return values[0]
 
     def get_precipitation_between(self, start, end):
         """Return the rain that fell between two moments, in mm, or None.

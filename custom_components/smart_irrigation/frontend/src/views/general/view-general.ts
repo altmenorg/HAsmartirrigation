@@ -439,16 +439,52 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // How much of the panel to show.
       const r11 = this.renderPanelModeCard();
 
+      // The way to the setup assistant, which is no longer a tab.
+      const r12 = this.renderSetupAssistantCard();
+
       const r = html`<ha-card
           header="${localize("panels.general.title", this.hass.language)}"
         >
           <div class="card-content">
             ${localize("panels.general.description", this.hass.language)}
           </div> </ha-card
-        >${r11}${r2}${r1}${r4}${r5}${r6}${r7}${r8}${r9}${r10}`;
+        >${r11}${r2}${r1}${r4}${r5}${r6}${r7}${r8}${r9}${r10}${r12}`;
 
       return r;
     }
+  }
+
+  /**
+   * The way to the setup assistant.
+   *
+   * It used to be a tab, which invited an installation that was already set up
+   * to set itself up: somebody with two zones asked why it was there, fairly.
+   * It belongs here, one click away, for a fresh start or a first zone.
+   */
+  renderSetupAssistantCard() {
+    if (!this.hass) return html``;
+    const lang = this.hass.language;
+    return html`
+      <ha-card header="${localize("panels.setup.title", lang)}">
+        <div class="card-content">
+          ${localize("panels.general.cards.setup-assistant.description", lang)}
+        </div>
+        <div class="card-actions">
+          <ha-button
+            @click=${() => {
+              window.history.pushState(
+                null,
+                "",
+                `${window.location.pathname.split("/").slice(0, -1).join("/")}/setup`,
+              );
+              window.dispatchEvent(new Event("location-changed"));
+            }}
+          >
+            ${localize("panels.general.cards.setup-assistant.open", lang)}
+          </ha-button>
+        </div>
+      </ha-card>
+    `;
   }
 
   renderTriggersCard() {

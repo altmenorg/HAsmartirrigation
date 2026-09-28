@@ -1365,14 +1365,25 @@ class CalculationMixin:
                         zone.get(const.ZONE_NAME),
                     )
                     continue
-                calc_data = await self.async_calculate_zone(
-                    zone.get(const.ZONE_ID),
-                    weatherdata,
-                    forecastdata,
-                    delete_weather_data=delete_weather_data,
-                    prune=False,
-                    dry_run=dry_run,
-                )
+                try:
+                    calc_data = await self.async_calculate_zone(
+                        zone.get(const.ZONE_ID),
+                        weatherdata,
+                        forecastdata,
+                        delete_weather_data=delete_weather_data,
+                        prune=False,
+                        dry_run=dry_run,
+                    )
+                except Exception as e:  # noqa: BLE001 - one zone is one zone
+                    # Whatever went wrong here, the rest of the run must still
+                    # happen: the other zones, the pruning of what has been
+                    # read, and re-arming the start trigger all come after this
+                    # loop, and an exception escaping it took the night with it
+                    # (#867).
+                    _LOGGER.error(
+                        "Error calculating zone %s: %s", zone.get(const.ZONE_NAME), e
+                    )
+                    continue
                 if calc_data is not None:
                     results[zone.get(const.ZONE_ID)] = calc_data
 
@@ -1423,6 +1434,21 @@ class CalculationMixin:
             weatherdata,
             forecastdata,
         )
+        if calc_data is None:
+            # The engine could not produce a value: a zone taking its
+            # evapotranspiration from a sensor or a service whose group has
+            # none to give is the way in. Assigning into the result then raised
+            # a TypeError that escaped the whole nightly run, so every zone
+            # after this one in the loop went uncalculated, the readings were
+            # never pruned and the start trigger was never re-armed (#847,
+            # #867). One zone that cannot be calculated is one zone.
+            _LOGGER.warning(
+                "Zone %s could not be calculated: its engine returned nothing. "
+                "A zone whose evapotranspiration is provided needs that value "
+                "in its sensor group",
+                (zone or {}).get(const.ZONE_NAME, zone_id),
+            )
+            return None
 
         # Apply seasonal adjustments before updating the zone
         calc_data = await self.seasonal_adjustment_manager.apply_seasonal_adjustments(

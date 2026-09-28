@@ -256,6 +256,10 @@
             "advanced": "Advanced settings",
             "advanced-hint": "Shows the settings that tune the model: drainage, thresholds, multiplier, how far ahead a zone looks. They have sound defaults; leave this off unless you know you need them. Your values are kept either way."
           }
+        },
+        "setup-assistant": {
+          "description": "Four questions at most, and it creates a sensor group and a zone for you, choosing what each needs. For a first zone, another one, or a fresh start. It used to be a tab, which invited an installation that was already set up to set itself up.",
+          "open": "Open the assistant"
         }
       },
       "description": "This page provides global settings.",

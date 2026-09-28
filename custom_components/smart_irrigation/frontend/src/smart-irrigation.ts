@@ -52,24 +52,26 @@ const TAB_GROUPS: { id: string; pages: EMenuItems[] }[] = [
   // Everything you set once.
   {
     id: "settings",
-    pages: [
-      EMenuItems.General,
-      EMenuItems.Setup,
-      EMenuItems.BackupRestore,
-      EMenuItems.Help,
-    ],
+    pages: [EMenuItems.General, EMenuItems.BackupRestore, EMenuItems.Help],
   },
 ];
 
 /**
- * The engines page is not in any group: a zone says how it is calculated and
- * the engine behind it is created and configured from there, so "modules" is
- * not a thing anyone should have to open. Its address still works, and it
- * shows under Settings when it is open, for an installation that was built on
- * it and for a bookmark.
+ * Two pages are in no group, and their addresses still work; each shows under
+ * Settings while it is open, so there is a way back.
+ *
+ * The engines page, because a zone says how it is calculated and the engine
+ * behind it is created and configured from there: "modules" is not a thing
+ * anyone should have to open.
+ *
+ * The setup assistant, because it is for an installation that has nothing yet.
+ * Somebody with two zones was asking why a tab was inviting them to set up
+ * what they had already set up, which is a fair question. It is one click away
+ * under Settings, for a second zone or a fresh start.
  */
 const UNLISTED_PAGE_GROUP: Record<string, string> = {
   [EMenuItems.Modules]: "settings",
+  [EMenuItems.Setup]: "settings",
 };
 
 /** The group a page belongs to, falling back to the first one. */
