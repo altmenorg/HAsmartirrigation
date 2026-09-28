@@ -470,3 +470,74 @@ async def test_a_finished_run_is_remembered():
     await coord._run_one_valve(zone)
 
     assert coord._direct_run_finished[0] > 0
+
+
+def _service_names(hass):
+    return [c.args[1] for c in hass.services.async_call.await_args_list]
+
+
+async def test_a_run_cancelled_while_confirming_closes_the_valve():
+    """A restart or reload landing in the confirm window must not leave it open.
+
+    The run is not persisted yet at that point, so the resume path would never
+    find it: the close has to come from the run itself.
+    """
+    zone = _zone()
+    hass = _make_hass()
+    coord = _Coordinator(hass, _make_store(zone))
+    coord._confirm_valve_running = AsyncMock(side_effect=asyncio.CancelledError)
+
+    with pytest.raises(asyncio.CancelledError):
+        await coord._run_one_pass(zone, "switch.valve", 300)
+
+    assert _service_names(hass) == ["turn_on", "turn_off"]
+    coord.store.async_update_zone.assert_not_awaited()
+
+
+async def test_a_failed_open_still_closes_the_valve():
+    """An open service that raises may have half-opened the valve."""
+    zone = _zone()
+    hass = _make_hass()
+
+    async def _call(domain, service, data, **kwargs):
+        if service == "turn_on":
+            raise RuntimeError("open failed")
+
+    hass.services.async_call = AsyncMock(side_effect=_call)
+    coord = _Coordinator(hass, _make_store(zone))
+
+    with pytest.raises(RuntimeError):
+        await coord._run_one_pass(zone, "switch.valve", 300)
+
+    assert _service_names(hass) == ["turn_on", "turn_off"]
+
+
+async def test_a_valve_that_stays_off_is_closed_once():
+    zone = _zone()
+    hass = _make_hass(valve_state="off")
+    coord = _Coordinator(hass, _make_store(zone))
+
+    assert await coord._run_one_pass(zone, "switch.valve", 300) == (
+        "valve_did_not_open"
+    )
+
+    assert _service_names(hass) == ["turn_on", "turn_off"]
+
+
+async def test_a_resume_cancelled_while_confirming_closes_the_valve():
+    zone = _zone()
+    hass = _make_hass()
+    coord = _Coordinator(hass, _make_store(zone))
+    coord._confirm_valve_running = AsyncMock(side_effect=asyncio.CancelledError)
+    started = (dt_util.utcnow() - datetime.timedelta(seconds=100)).isoformat()
+    run = {
+        const.RUN_ZONE_ID: 0,
+        const.RUN_ENTITY_ID: "switch.valve",
+        const.RUN_STARTED: started,
+        const.RUN_DURATION: 300.0,
+    }
+
+    with pytest.raises(asyncio.CancelledError):
+        await coord._resume_one(run)
+
+    assert _service_names(hass) == ["turn_on", "turn_off"]

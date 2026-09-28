@@ -550,24 +550,31 @@ class ValveRunnerMixin:
             zone_id,
             seconds,
         )
-        await self._async_call_valve_service(domain, on_svc, entity_id)
-
-        # Confirm the valve actually opened before counting/crediting: a valve
-        # that never opens would otherwise clear the deficit while running dry
-        # (and the missed water silently rolls over to the next day). Only an
-        # explicit "still off" aborts; an unverifiable (write-only) valve runs.
-        if await self._confirm_valve_running(entity_id) is False:
-            await self._async_call_valve_service(domain, off_svc, entity_id)
-            self._report_valve_problem(zone, entity_id, "valve_did_not_open")
-            return "valve_did_not_open"
-
-        # Start counting only once the valve is confirmed open.
-        started = dt_util.utcnow()
-        await self._add_active_run(zone_id, entity_id, started, seconds)
+        # The try starts with the open. A cancellation during the confirm
+        # window (a restart, a reload) used to leave the valve open, with no
+        # persisted run yet for the resume path to find and close.
+        closed = False
         try:
+            await self._async_call_valve_service(domain, on_svc, entity_id)
+
+            # Confirm the valve actually opened before counting/crediting: a
+            # valve that never opens would otherwise clear the deficit while
+            # running dry (and the missed water silently rolls over to the next
+            # day). Only an explicit "still off" aborts; an unverifiable
+            # (write-only) valve runs.
+            if await self._confirm_valve_running(entity_id) is False:
+                closed = True
+                await self._async_call_valve_service(domain, off_svc, entity_id)
+                self._report_valve_problem(zone, entity_id, "valve_did_not_open")
+                return "valve_did_not_open"
+
+            # Start counting only once the valve is confirmed open.
+            started = dt_util.utcnow()
+            await self._add_active_run(zone_id, entity_id, started, seconds)
             await asyncio.sleep(seconds)
         finally:
-            await self._async_call_valve_service(domain, off_svc, entity_id)
+            if not closed:
+                await self._async_call_valve_service(domain, off_svc, entity_id)
         # Clear the persisted run before crediting: a crash in this window then
         # loses at most one credit rather than double-crediting on resume.
         await self._remove_active_run(zone_id)
@@ -699,21 +706,25 @@ class ValveRunnerMixin:
             duration,
         )
         # Re-assert open: the valve should still be on after an HA reboot, but a
-        # power cut may have reset it. Confirm before finishing/crediting.
-        await self._async_call_valve_service(domain, on_svc, entity_id)
-        if await self._confirm_valve_running(entity_id) is False:
-            await self._async_call_valve_service(domain, off_svc, entity_id)
-            await self._remove_active_run(zone_id)
-            self._report_valve_problem(
-                self.store.get_zone(zone_id) or {const.ZONE_ID: zone_id},
-                entity_id,
-                "valve_did_not_open",
-            )
-            return
+        # power cut may have reset it. Confirm before finishing/crediting. The
+        # try starts with the open, as in _run_one_pass.
+        closed = False
         try:
+            await self._async_call_valve_service(domain, on_svc, entity_id)
+            if await self._confirm_valve_running(entity_id) is False:
+                closed = True
+                await self._async_call_valve_service(domain, off_svc, entity_id)
+                await self._remove_active_run(zone_id)
+                self._report_valve_problem(
+                    self.store.get_zone(zone_id) or {const.ZONE_ID: zone_id},
+                    entity_id,
+                    "valve_did_not_open",
+                )
+                return
             await asyncio.sleep(remaining)
         finally:
-            await self._async_call_valve_service(domain, off_svc, entity_id)
+            if not closed:
+                await self._async_call_valve_service(domain, off_svc, entity_id)
         await self._remove_active_run(zone_id)
         self._direct_run_finished[zone_id] = self.hass.loop.time()
         await self._credit_direct_run(zone_id, duration, started)
