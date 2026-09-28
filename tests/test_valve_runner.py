@@ -541,3 +541,71 @@ async def test_a_resume_cancelled_while_confirming_closes_the_valve():
         await coord._resume_one(run)
 
     assert _service_names(hass) == ["turn_on", "turn_off"]
+
+
+def _open_from_outside(coord, zone_id):
+    """What the observed-watering tracker records when a valve is opened by
+    anything other than Smart Irrigation (by hand, another automation)."""
+    coord._observed_on_since = {int(zone_id): dt_util.utcnow()}
+
+
+async def test_a_zone_watered_from_outside_is_not_dispatched():
+    """Opening it again would hold the valve for our duration, close it under
+    the other run, and credit the overlap twice: once for our run, once when the
+    tracker credits the external run on close."""
+    zone = _zone()
+    hass = _make_hass()
+    coord = _Coordinator(hass, _make_store(zone))
+    _open_from_outside(coord, 0)
+
+    await coord.async_run_direct_valves()
+
+    hass.services.async_call.assert_not_awaited()
+    coord.store.async_update_zone.assert_not_awaited()
+
+
+async def test_a_zone_opened_from_outside_while_it_waited_is_skipped():
+    """A sequential cycle reaches a zone minutes after listing it."""
+    z0 = _zone(id=0, linked_entity="switch.a")
+    z1 = _zone(id=1, linked_entity="switch.b")
+    hass = _make_hass()
+    coord = _Coordinator(hass, _make_store(z0, zones=[z0, z1]))
+    ran = []
+
+    async def _fake_run(zone):
+        ran.append(int(zone[const.ZONE_ID]))
+        _open_from_outside(coord, 1)  # zone 1 is opened by hand meanwhile
+        return {
+            "zone_id": int(zone[const.ZONE_ID]),
+            "zone": "z",
+            "seconds": 300,
+            "ran": True,
+        }
+
+    coord._run_one_valve = _fake_run
+    await coord.async_run_direct_valves()
+
+    assert ran == [0]
+
+
+async def test_the_other_zones_still_water_when_one_is_watered_from_outside():
+    z0 = _zone(id=0, linked_entity="switch.a")
+    z1 = _zone(id=1, linked_entity="switch.b")
+    hass = _make_hass()
+    coord = _Coordinator(hass, _make_store(z0, zones=[z0, z1]))
+    _open_from_outside(coord, 0)
+    ran = []
+
+    async def _fake_run(zone):
+        ran.append(int(zone[const.ZONE_ID]))
+        return {
+            "zone_id": int(zone[const.ZONE_ID]),
+            "zone": "z",
+            "seconds": 300,
+            "ran": True,
+        }
+
+    coord._run_one_valve = _fake_run
+    await coord.async_run_direct_valves()
+
+    assert ran == [1]

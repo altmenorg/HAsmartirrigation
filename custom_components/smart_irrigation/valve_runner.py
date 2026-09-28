@@ -264,6 +264,20 @@ class ValveRunnerMixin:
         """Whether we are holding this zone's valve open right now."""
         return int(zone_id) in self._active_valve_runs
 
+    def _watered_from_outside(self, zone_id) -> bool:
+        """Whether something other than Smart Irrigation has this zone's valve
+        open right now, as the observed-watering tracker saw it open.
+
+        Running such a zone would hold its valve for our duration, close it
+        under the other run, and credit the overlap twice: once for our run,
+        once when the tracker credits the external run on close.
+        """
+        return int(zone_id) in getattr(self, "_observed_on_since", {})
+
+    def _busy(self, zone_id) -> bool:
+        """Whether this zone's valve is open, by us or from outside."""
+        return self._run_in_flight(zone_id) or self._watered_from_outside(zone_id)
+
     def _watered_since(self, zone_id, moment: float) -> bool:
         """Whether our own runner already finished a run on this zone since
         ``moment`` (the loop clock)."""
@@ -272,9 +286,10 @@ class ValveRunnerMixin:
     def _eligible_direct_zones(self, zones, zone_ids):
         """Zones with a linked valve, a positive duration, and not disabled.
 
-        A zone whose valve we are already holding open is left out: asking to
-        water it again while it runs would open the valve a second time and
-        credit the bucket twice for water delivered once.
+        A zone whose valve is already open is left out, whether we hold it or
+        something else opened it: asking to water it again while it runs would
+        open the valve a second time and credit the bucket twice for water
+        delivered once.
         """
         want_all = zone_ids is None or zone_ids == "all"
         target = None if want_all else {int(z) for z in zone_ids}
@@ -285,6 +300,13 @@ class ValveRunnerMixin:
             if self._run_in_flight(z.get(const.ZONE_ID)):
                 _LOGGER.info(
                     "Direct valve control: zone %s is already running, skipped",
+                    z.get(const.ZONE_ID),
+                )
+                continue
+            if self._watered_from_outside(z.get(const.ZONE_ID)):
+                _LOGGER.info(
+                    "Direct valve control: zone %s is being watered outside "
+                    "Smart Irrigation, skipped",
                     z.get(const.ZONE_ID),
                 )
                 continue
@@ -341,7 +363,7 @@ class ValveRunnerMixin:
         added = []
         for zone in eligible:
             zone_id = int(zone.get(const.ZONE_ID))
-            if zone_id in cycle["queued"] or self._run_in_flight(zone_id):
+            if zone_id in cycle["queued"] or self._busy(zone_id):
                 continue
             cycle["queued"].add(zone_id)
             cycle["queue"].append(zone)
@@ -414,9 +436,7 @@ class ValveRunnerMixin:
                 cycle["queued"].discard(int(zone_id))
                 # Re-checked here rather than only up front: a sequential cycle
                 # dispatches each zone minutes or hours after it was listed.
-                if self._run_in_flight(zone_id) or self._watered_since(
-                    zone_id, cycle_start
-                ):
+                if self._busy(zone_id) or self._watered_since(zone_id, cycle_start):
                     _LOGGER.info(
                         "Direct valve control: zone %s was watered while it "
                         "waited its turn, skipped",
