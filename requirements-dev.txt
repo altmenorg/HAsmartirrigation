@@ -17,7 +17,7 @@ homeassistant>=2026.6.4
 # Development tools (matches CI pipeline)
 black>=26.5.1
 ruff>=0.16.5
-isort>=5.10.0
+isort>=9.0.1
 pre-commit>=4.6.2
 
 # Documentation
