@@ -24,7 +24,7 @@ This is different from [direct valve control](configuration-closed-loop.md), whi
 
 ## Before you start
 
-1. **Smart Irrigation calculates.** At least one zone is in automatic mode and the [Info tab](usage-info.md) shows a duration for it after the daily calculation.
+1. **Smart Irrigation calculates.** At least one zone is in automatic mode and the [Home page](usage-info.md) shows a duration for it after the daily calculation.
 2. **A start trigger is set** on the [General page](configuration-general.md). The blueprints listen to the `smart_irrigation_start_irrigation_all_zones` [event](usage-events.md); without a trigger, that event never fires and nothing waters.
 3. **The controller's integration is set up** in Home Assistant and its zones show up as entities.
 4. **The controller's own schedule is off** for the zones Smart Irrigation will drive. Otherwise it waters twice: once on its own program, once on ours. How to do that for each brand is [below](#per-controller-notes).

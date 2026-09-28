@@ -7,10 +7,14 @@ title: Configuration: Guided setup
 > Main page: [Configuration](configuration.md)<br/>
 > Next: [General configuration](configuration-general.md)
 
-The **Setup** tab is the first one in the panel, and it exists because the
-others assume you already know what a sensor group is. It asks one question at
-a time and only the questions your previous answers leave open, then creates
-the three things a working zone needs.
+The setup assistant exists because the other pages assume you already know what
+a sensor group is. It asks one question at a time, and only the questions your
+previous answers leave open, then creates the things a working zone needs.
+
+It is **not a tab**: it is a button under **Settings**, because it is for an
+installation that has nothing yet, and a tab inviting one with three zones to
+set itself up was in the way. Use it for a first zone, another one, or a fresh
+start.
 
 You do not have to use it. Everything it does can be done by hand on the other
 tabs, and nothing it creates is locked afterwards.

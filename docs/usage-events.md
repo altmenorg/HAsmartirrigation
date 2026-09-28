@@ -14,7 +14,7 @@ After installation, the following events are available:
 | Event | Description|
 | --- | --- |
 |`smart_irrigation_start_irrigation_all_zones`|Fired when an [irrigation start trigger](configuration-general.md) is reached. Listen to it to start your irrigation. See [automations](usage-automations.md) for examples.|
-|`smart_irrigation_irrigation_skipped`|Fired when a start trigger is reached and the day is a skip day, so nothing is watered. Data: the trigger's identity, plus `reason` (`precipitation` or `days_between`) and `checks`, the same detail the Info tab shows.|
+|`smart_irrigation_irrigation_skipped`|Fired when a start trigger is reached and the day is a skip day, so nothing is watered. Data: the trigger's identity, plus `reason` (`precipitation` or `days_between`) and `checks`, the same detail the Home page shows.|
 
 Direct valve control fires three more, described in [closed-loop irrigation](configuration-closed-loop.md).
 
@@ -35,7 +35,7 @@ automation:
           message: "No irrigation today: {{ trigger.event.data.reason }}"
 ```
 
-The Info tab answers the same question without an automation: it shows whether
+The Home page answers the same question without an automation: it shows whether
 the next start would be skipped and why, and what the last real decision was.
 
 ## When does it fire?

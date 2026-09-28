@@ -7,23 +7,49 @@ title: Usage: Info and history
 > Main page: [Usage](usage.md)<br/>
 > Next: [Dashboard card](usage-card.md)
 
-Two tabs answer the questions the other tabs cannot: what is about to happen,
-and what already happened.
+The **Home** tab answers the questions the other tabs cannot: what is about to
+happen, and what already happened. Info is its first page, History its second.
 
 ## Info
 
-The **Info** tab is built around the next start, and it answers three
-questions in order.
+### One answer, first
 
-### When is the next run, and why then
+The page opens with a single sentence, because that is what the question
+deserves: this zone will water for so long at the next start, or nothing is
+short of water, or a postponement is holding it back, or the weather is. It
+used to print four rows of label and value which between them managed to say
+"next run tomorrow at 07:58" and "nothing to water" at the same time -- both
+true, and nonsense together.
 
-The start time, which trigger decides it, the total duration and the zones that
-would run. When the trigger works back from sunrise, the start is the moment
-the run has to begin to finish on time, so it moves with the season and with
-the durations themselves.
+Underneath it, the detail: which trigger decides the start, whether it works
+back from sunrise, the zones that would run and how the total is counted. When
+a trigger works back from sunrise, the start is the moment the run has to begin
+to finish on time, so it moves with the season and with the durations
+themselves. A run shortened by rain still starts when it was scheduled and
+finishes early, rather than starting late.
 
-A run shortened by rain still starts when it was scheduled and finishes early,
-rather than starting late.
+Three things the page says when they are true, each of which used to be
+invisible:
+
+- **nothing is scheduled to start a run that is owed.** The time above it is
+  arithmetic; whether anything is armed to act on it is another question, and a
+  countdown reaching zero and rolling over to tomorrow is what the answer used
+  to look like.
+- **a zone has stopped being calculated**, with the date of its last one. One
+  zone can freeze while everything else works, and it then waters on the
+  weather of days ago.
+- **this installation would never water**, when the configuration says so:
+  nothing calculated, no zone in a state that waters, or nothing here that can
+  open a valve. This integration calculates and something else acts, so an
+  installation can be correct, update its durations every night and never open
+  a valve, in silence.
+
+### Hold watering back
+
+One button postpones every zone for a day or two, for rain the forecast missed.
+It ends by itself and resets nothing, so the deficit it was holding back is
+still there afterwards. The same thing is available as the
+`postpone_irrigation` action for automations.
 
 ### Will it be skipped
 

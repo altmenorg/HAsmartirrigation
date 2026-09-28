@@ -24,6 +24,10 @@ After installation, the following services are available:
 |`Smart Irrigation: set_zone`| Allows configuration for bucket (with `new_bucket_value` (default 0)), multiplier (with `new_multiplier_value` (default 1.0)), duration (with `new_duration_value` (default 0)), state (with `new_state_value` (default 'automatic')) and throughput (with `new_throughput_value` (default 50)) settings for a zone.|
 |`Smart Irrigation: update_all_zones`|Updates all automatic zones with weather data|
 |`Smart Irrigation: update_zone`|Updates one specific zone with weather data|
+|`Smart Irrigation: postpone_irrigation`|Holds watering back for `hours` (default 24), for rain the forecast missed or an afternoon on the lawn. It is a moment, not a countdown: it survives a restart and ends by itself. It resets nothing, so a zone that is short of water still is when it ends. `hours: 0` lifts it.|
+|`Smart Irrigation: resume_irrigation`|Lifts a postponement now.|
+|`Smart Irrigation: create_recurring_schedule` / `update_recurring_schedule` / `delete_recurring_schedule`|Schedules of your own that calculate, update or start irrigation. See [enhanced scheduling](usage-enhanced-scheduling-integration.md).|
+|`Smart Irrigation: create_seasonal_adjustment` / `update_seasonal_adjustment` / `delete_seasonal_adjustment`|Scale the crop factor, and shift the irrigation threshold, over a range of months.|
 
 ## Dry run
 

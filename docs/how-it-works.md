@@ -10,7 +10,52 @@ The below image shows a graphical representation of what this integration does.
 4. At some point in the day (configurable) the `nett precipitation` is added/substracted from the `bucket,` which starts as empty. The bucket is calculated using this formula: `old_bucket + nett precipitation.
 5. If the bucket > 0, the `drainage rate` is taken into the account (if set) and subtracted from the bucket value. The actual drainage rate is determined dynamically by the fraction the bucket is of the maximum bucket value, following hydraulic conductivity method of [Brooks and Corey, Eq. 4-6](https://open.library.okstate.edu/rainorshine/chapter/1-8-models-for-soil-hydraulic-conductivity/)
 6. If the `bucket` is below zero, irrigation is required.
-7. Irrigation should be run for `sensor.smart_irrigation_[zone_name]`, which is 0 if `bucket >=0`. Afterwards, the `bucket` needs to be reset (using [`reset_bucket` service](usage-services.md)). It's up to the user of the integration to build the automation for this final step. See [Example automation](usage-automations.md) for automations that people have built.
+7. Irrigation should run for `sensor.smart_irrigation_[zone_name]` seconds, which is 0 when `bucket >= 0` or when the deficit is below the zone's **irrigation threshold** — deep and infrequent beats a daily trickle.
+8. Afterwards the bucket has to be credited with the water that went in. Three ways, and you pick one: let Smart Irrigation [open the valve itself](configuration-closed-loop.md), which credits the run it performed; let it [watch the valve](configuration-closed-loop.md) and credit any run of it; or call [`reset_bucket`](usage-services.md) from your own automation. Never two of them, or the water is counted twice. A [blueprint](usage-automations.md) does the third for you, per brand of controller.
+
+The whole of what is published and when it changes is on one page: [the output contract](usage-output-contract.md).
+
+## What the crop needs, not what a lawn of grass would
+
+The evapotranspiration the equation computes is a **reference**: what a short,
+well-watered grass surface would lose. A hedge, a vegetable bed and a lawn do
+not lose the same, and the difference is the **crop factor** `Kc`, which is the
+zone's multiplier:
+
+    ETc = ET0 x Kc
+
+It is applied to the evapotranspiration, before the water balance. That order
+matters, and it is worth saying why, because it used to be the other way round:
+the factor was applied at the very end, to the duration. That scaled the whole
+balance rather than the crop's water use, so a factor below 1 credited only that
+fraction of the rain that fell, and the bucket kept draining at the full
+reference rate — reaching any threshold about `1/Kc` times too fast. No factor
+applied at the end can undo a decision about *when* to water.
+
+The panel asks what grows in the zone, in words, and writes the FAO-56 factor
+for the answer. Your own number wins if you set one.
+
+## Hour by hour, or once a day
+
+The equation exists in two forms, and both are FAO-56.
+
+The **daily** form runs once over the whole window, on its averages. The
+**hourly** form prices each hour of the window and adds them up. They are not
+the same number, because evapotranspiration is not linear in its terms: a cool
+humid night and a hot dry afternoon priced separately do not give what their
+averages give, and the separate answer is the right one. The daily equation is
+an average of a curve.
+
+A new installation starts on the hourly form. One that existed before it arrived
+keeps the daily one until its owner switches, because the two give different
+numbers and nobody's watering should change on an update. The switch is under
+Settings > General, and [what each form needs is documented
+there](configuration-general.md).
+
+Either way the sun is the term the result is most sensitive to. A radiation
+sensor is best, a weather service that publishes radiation is next, and the
+day's temperature range is the last resort — the estimate FAO-56 gives for
+exactly that case.
 
 ## Weekly behavior example
 To understand how `precipitation`, `nett precipitation`, the `bucket` and irrigation interact, see let's look at an example behavior in a week.
