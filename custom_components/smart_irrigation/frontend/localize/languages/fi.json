@@ -16,7 +16,9 @@
       "after": "jälkeen"
     },
     "units": {
-      "seconds": "sekuntia"
+      "seconds": "sekuntia",
+      "minutes": "min",
+      "hours": "h"
     },
     "attributes": {
       "size": "koko",
@@ -75,7 +77,11 @@
         "maximum-bucket-is": "Bucketin enimmäiskoko on",
         "drainage-rate-is": "Valumisnopeus kyllästyneenä (bucket maksimissa) on",
         "current-drainage-is": "Nykyinen valuminen lasketaan seuraavasti",
-        "no-drainage": "Nykyinen valuminen on 0, koska"
+        "no-drainage": "Nykyinen valuminen on 0, koska",
+        "module-returned-hourly-evapotranspiration-deficiency": "Moduuli laski kasvin haihdunnan alijäämän yhteen tunti tunnilta ( = tuntikohtaisten et0 * Kc + sade -arvojen summa) ajalta",
+        "crop-factor-is": "Kasvikerroin on",
+        "precipitation-rate-is": "Sateen voimakkuus on",
+        "below-irrigation-threshold": "Alijäämä ei ole vielä saavuttanut tämän alueen kastelurajaa, joten kastelua ei tarvita ja kesto asetetaan nollaan. Alijäämä / raja:"
       }
     }
   },
@@ -106,7 +112,16 @@
       "messages": {
         "no-service": "Sääpalvelua ei käytetä — säätiedot tulevat vain omilta antureiltasi.",
         "saved": "Sääpalvelu päivitetty ja otettu käyttöön.",
-        "reload-note": "Tallennus vahvistaa API-avaimen palvelua vasten ja ottaa muutoksen käyttöön välittömästi."
+        "reload-note": "Tallennus vahvistaa API-avaimen palvelua vasten ja ottaa muutoksen käyttöön välittömästi.",
+        "owm-onecall-hint": "OpenWeatherMap vaatii One Call API 3.0 -tilauksen (One Call by Call). Se on maksuton 1000 kutsuun päivässä, mutta se täytyy aktivoida kortilla, ja uusi avain voi vaatia parikin tuntia ennen kuin se toimii. Tavallinen oletusavain hylätään."
+      },
+      "history": {
+        "title": "Historia",
+        "refresh": "Päivitä",
+        "last-update": "Viimeisin päivitys",
+        "time": "Haettu",
+        "sensor-group": "Anturiryhmä",
+        "no-data": "Sääpalvelusta ei ole vielä haettu tietoja."
       }
     },
     "backuprestore": {
@@ -145,7 +160,9 @@
           "description": "Laskenta käyttää siihen mennessä kerättyjä säätietoja ja päivittää kunkin automaattisen vyöhykkeen bucketin. Sen jälkeen kestoa säädetään uuden bucket-arvon perusteella ja kerätyt säätiedot poistetaan.",
           "labels": {
             "auto-calc-enabled": "Laske kastelukestot automaattisesti",
-            "calc-time": "Laske kello"
+            "calc-time": "Laske kello",
+            "hourly-calculation": "Laske haihdunta tunti tunnilta",
+            "hourly-calculation-hint": "Laskee FAO-56:n tuntiyhtälön yhteen jokaiselta tunnilta viime laskennan jälkeen sen sijaan että soveltaisi päiväyhtälöä keskiarvoihin, jotka peittävät sen, tulivatko aurinko ja helle yhtä aikaa. Uusi asennus aloittaa tällä; ennen tätä olemassa ollut asennus pitää päiväyhtälön kunnes vaihdat, koska nämä kaksi antavat eri luvut eikä kastelusi pidä muuttua päivityksestä. Kunkin tunnin aurinko tulee säteily- tai valoisuusanturista, sääpalvelun omasta tuntihistoriasta, tai päivän lämpötilavaihtelusta. Tästä on hyötyä, kun lukemia tulee pitkin päivää: yksi päivitys päivässä jättää yhden lukeman voimaan neljäksikymmeneksineljäksi tunniksi, ja silloin kumpaankaan muotoon ei voi luottaa. Kasvihuone ilman omaa anturia pitää päiväyhtälön."
           }
         },
         "automatic-update": {
@@ -174,6 +191,17 @@
             "continuousupdates": "Ota jatkuvat päivitykset käyttöön",
             "sensor_debounce": "Anturin debounce"
           }
+        },
+        "panel-mode": {
+          "header": "Paneeli",
+          "labels": {
+            "advanced": "Lisäasetukset",
+            "advanced-hint": "Näyttää asetukset, jotka hienosäätävät mallia: kuivatus, rajat, kerroin, kuinka pitkälle alue katsoo eteenpäin. Niillä on järkevät oletusarvot; jätä tämä pois päältä, ellet tiedä tarvitsevasi niitä. Arvosi säilyvät kummassakin tapauksessa."
+          }
+        },
+        "setup-assistant": {
+          "description": "Enintään neljä kysymystä, ja se luo puolestasi anturiryhmän ja alueen valiten sen, mitä kumpikin tarvitsee. Ensimmäiselle alueelle, toiselle, tai puhtaalta pöydältä aloittamiseen. Ennen tämä oli välilehti, joka kutsui jo valmiiksi määritettyä asennusta määrittämään itsensä.",
+          "open": "Avaa avustaja"
         }
       },
       "description": "Tämä sivu tarjoaa yleiset asetukset.",
@@ -199,32 +227,104 @@
       "description": "Tarkastele tietoja seuraavasta kastelusta ja järjestelmän tilasta.",
       "configuration-not-available": "Määritys ei ole saatavilla.",
       "cards": {
-        "zone-bucket-values": {
-          "title": "Vyöhykkeen bucket-arvot ja kesto",
-          "labels": {
-            "bucket": "Bucket",
-            "duration": "Kesto"
-          },
-          "no-zones": "Vyöhykkeitä ei ole määritetty"
-        },
-        "next-irrigation": {
+        "next-run": {
           "title": "Seuraava kastelu",
           "labels": {
-            "next-start": "Seuraava aloitus",
-            "duration": "Kesto",
-            "zones": "Vyöhykkeet"
+            "start": "Alkaa",
+            "duration": "Kokonaiskesto",
+            "zones": "Kastelevat alueet",
+            "trigger": "Liipaisin"
           },
-          "no-data": "Ei tietoja saatavilla"
+          "no-start": "Aloitusaikaa ei ole vielä voitu päätellä.",
+          "nothing-to-water": "Ei kasteltavaa: yksikään alue ei ole saavuttanut kastelurajaansa.",
+          "trigger-default": "Oletus, päättyy auringonnousuun",
+          "accounts-for-duration": "laskettu taaksepäin niin että kastelu päättyy silloin",
+          "starts-at-trigger": "alkaa sillä hetkellä",
+          "sequencing-sequential": "yksi alue kerrallaan, joten kokonaisaika on kaikkien alueiden summa",
+          "sequencing-parallel": "kaikki alueet yhtä aikaa, joten kokonaisaika on pisin alue",
+          "headline-nothing": "Ei kasteltavaa",
+          "sub-nothing": "Yhdeltäkään alueelta ei vielä puutu tarpeeksi vettä. Seuraava aloitus olisi {start}.",
+          "headline-watering": "Kastelu {start}",
+          "headline-watering-soon": "Kastelu seuraavalla aloituksella",
+          "sub-watering": "{count} alue(tta), {duration} kaikkiaan.",
+          "headline-postponed": "Kastelu on lykätty",
+          "sub-postponed": "Lykkäsit sen. Se jatkuu itsestään, eikä mitään mene hukkaan: alue, jolta puuttuu vettä, on yhtä vajaa senkin jälkeen.",
+          "headline-skipped": "Ei kastelua tänään",
+          "headline-not-scheduled": "Kastelu on jäänyt tekemättä, eikä mitään ole ajastettu aloittamaan sitä",
+          "sub-not-scheduled": "Yllä oleva aika on se, jolloin kastelu alkaisi. Yksikään aloitusliipaisin ei ole juuri nyt viritetty, mikä tapahtuu kun aktiivinen liipaisin on pois päältä tai sitä ei rekisteröity. Tarkista liipaisin Asetuksista, ja jos se näyttää oikealta, laskenta virittää sen uudelleen."
         },
-        "irrigation-reason": {
-          "title": "Kastelun syy",
+        "decision": {
+          "title": "Ohitetaanko se?",
+          "will-run": "Mikään ei estä kastelua.",
+          "will-skip": "Kastelu ohitettaisiin.",
+          "preview-note": "Arvioitu juuri nyt. Ennuste voi vielä muuttua ennen aloitusta.",
+          "unavailable": "Ohitusehtoja ei voitu arvioida.",
+          "last-title": "Viimeinen todellinen päätös",
+          "last-none": "Yhdestäkään kastelusta ei ole vielä päätetty.",
+          "last-skipped": "Ohitettiin",
+          "last-ran": "Toteutui",
+          "check-precipitation": "Sade-ennuste",
+          "check-days_between": "Päiviä kastelujen välillä",
+          "state-off": "Pois",
+          "state-unavailable": "Ei voitu tarkistaa",
+          "state-passing": "Ei estä",
+          "state-blocking": "Estää",
+          "detail-forecast": "Ennuste",
+          "detail-threshold": "Raja",
+          "detail-days-since": "Päiviä viime kastelusta",
+          "detail-days-required": "Vaadittavat päivät",
+          "check-rain_sensor": "Sadeanturi",
+          "check-freeze": "Pakkanen",
+          "check-wind": "Tuuli",
+          "check-soil_moisture": "Maan kosteus",
+          "detail-now": "Nyt",
+          "detail-weather-service": "sääpalvelu",
+          "detail-raining": "Sataa",
+          "detail-dry": "Ei sada",
+          "detail-held": "jää tämän kastelun väliin",
+          "check-postponed": "Sinun lykkäämä"
+        },
+        "estimate": {
+          "title": "Missä kukin alue on nyt",
+          "note": "Arvioitu ajamalla laskenta lukemille, jotka on kerätty sen viime ajon jälkeen. Mitään ei tallenneta: alue pitää viime laskentansa arvon seuraavaan asti.",
+          "none": "Yhtäkään aluetta ei voi vielä arvioida.",
           "labels": {
-            "reason": "Syy",
-            "sunrise": "Auringonnousu",
-            "total-duration": "Kokonaiskesto",
-            "explanation": "Selitys"
+            "now": "Nyt",
+            "at-last-calculation": "Viime laskennassa",
+            "would-water": "Kastelisi",
+            "last-irrigation": "Viimeksi kasteltu"
           },
-          "no-data": "Ei tietoja saatavilla"
+          "nothing": "ei mitään",
+          "never-watered": "ei koskaan"
+        },
+        "postpone": {
+          "prompt": "Sade, jota ennuste ei nähnyt, vai oma syysi?",
+          "for-24": "Lykkää 24 h",
+          "for-48": "Lykkää 48 h",
+          "until": "Kastelu on lykätty ajankohtaan",
+          "resume": "Jatka nyt"
+        },
+        "forecast": {
+          "today": "Tänään"
+        },
+        "stale": {
+          "title": "Yhtä aluetta ei enää lasketa",
+          "body": "Sen vedentarve on vanhempi kuin muiden, joten se kastelee vanhan sään mukaan. Tarkista, että sen anturiryhmä saa vielä tietoa, ja katso lokista mitä laskenta sanoi siitä.",
+          "never": "ei koskaan laskettu"
+        }
+      },
+      "gaps": {
+        "auto_calc_off": {
+          "title": "Mitään ei lasketa",
+          "body": "Keston automaattinen laskenta on pois päältä, joten alueiden kestot eivät koskaan päivity. Kytke se takaisin päälle Asetuksista, tai laske käsin kun haluat kastelun."
+        },
+        "no_automatic_zone": {
+          "title": "Yksikään alue ei kastele itsestään",
+          "body": "Jokainen alue on käsikäytöllä tai pois päältä, joten aloitus ei tavoita mitään. Aseta jokin alue automaattiseksi, jotta aikataulu kastelee sen."
+        },
+        "no_valve_path": {
+          "title": "Mikään täällä ei avaa venttiiliä",
+          "body": "Smart Irrigation laskee, kuinka kauan kastellaan; jonkin täytyy toimia sen mukaan. Liitä venttiili alueeseen ja kytke suora venttiiliohjaus päälle, tai kirjoita automaatio aloitustapahtumaan (blueprintit tekevät tämän puolestasi). Jos automaatio tekee sen jo, mitään ei tarvitse muuttaa."
         }
       }
     },
@@ -281,8 +381,15 @@
             "none": "Ei mitään",
             "weather_service": "Sääpalvelu",
             "sensor": "Anturi",
-            "static": "Staattinen arvo"
-          }
+            "static": "Staattinen arvo",
+            "illuminance": "Valoanturi (lux)"
+          },
+          "luminous_efficacy": "Valotehokkuus",
+          "greenhouse": "Kasvihuone",
+          "greenhouse_description": "Suljettu ympäristö: kasvihuone, muovitunneli, mikä tahansa lasin tai muovin alla. Näille alueille ei tule sadetta, joten sade jätetään niiden vesitasapainon ulkopuolelle ja sen kentät piilotetaan. Kaksi asiaa sinun on asetettava itse, koska niitä ei voi arvata: anna Tuulen nopeudelle kiinteä arvo lähellä nollaa, koska laskenta olettaa vapaan ilman, ja käytä Auringon säteilylle valoanturia, koska lasitus suodattaa taivaan.",
+          "module": "Laskentamoottori",
+          "module_description": "Tämä ryhmä tarjoaa vain ne lähteet, joita tämä moottori lukee. Sitä käyttävät alueet perivät valinnan.",
+          "module_undecided": "Moottoria ei ole vielä valittu, joten kaikki lähteet tarjotaan ja jokainen tätä ryhmää käyttävä alue pitää omansa. Valitse yksi nähdäksesi vain ne lähteet, joita se lukee."
         }
       },
       "description": "Lisää yksi tai useampi anturiryhmä, joka hakee säätietoja sääpalvelusta, antureista tai näiden yhdistelmästä. Voit liittää kunkin anturiryhmän yhteen tai useampaan vyöhykkeeseen",
@@ -299,6 +406,12 @@
         "precipitation": "Sade",
         "retrieval-time": "Haettu",
         "no-data": "Tälle anturiryhmälle ei ole saatavilla säätietoja"
+      },
+      "summary": {
+        "sources-one": "{n} lähde",
+        "sources-other": "{n} lähdettä",
+        "zones-one": "{n} alue",
+        "zones-other": "{n} aluetta"
       }
     },
     "modules": {
@@ -383,10 +496,164 @@
         "linked-entity-hint": "Venttiili tai kytkin, joka kastelee tämän vyöhykkeen. Aina kun se on käynnissä (manuaalinen hana, automaatio tai Smart Irrigation itse, kun suora venttiilin ohjaus on käytössä), bucketiin hyvitetään käyntiaika ja vyöhykkeen läpäisy. Vaaditaan suljetun silmukan ominaisuuksiin.",
         "flow-sensor": "Kumulatiivinen tilavuusmittari",
         "flow-sensor-hint": "Tarkkaa hyvitystä varten läpäisyn ja ajan sijaan: kumulatiivinen vesimittarin kokonaislukema (tilaluokka total_increasing), ei hetkellinen virtausnopeus. Yksikkö luetaan automaattisesti (L, mL, m³, gal, ft³).",
-        "optional": "valinnainen"
+        "optional": "valinnainen",
+        "et-deficiency": "Päivittäinen ET-alijäämä",
+        "input-method": "Syöttötapa",
+        "input-methods": {
+          "throughput": "Virtaama ja pinta-ala",
+          "direct": "Sateen voimakkuus"
+        },
+        "precipitation-rate": "Sateen voimakkuus",
+        "irrigation-threshold": "Kasteluraja",
+        "soil-moisture-sensor": "Maankosteusanturi",
+        "soil-moisture-sensor-hint": "Alue jää kastelun väliin niin kauan kuin maa on rajassa tai sen yli. Varanto säilytetään.",
+        "soil-moisture-threshold": "Ohita arvosta",
+        "calculation-method": "Haihdunta",
+        "calculation-method-help": {
+          "from_weather": "Mittauksistasi: lämpötila, kosteus, tuuli, aurinko.",
+          "provided": "Sinulla on jo haihdunta millimetreinä; se otetaan sellaisenaan.",
+          "fixed": "Näin monta mm päivässä, säästä riippumatta."
+        },
+        "calculation-methods": {
+          "from_weather": "Smart Irrigationin laskema",
+          "provided": "Anturin tai palvelun antama",
+          "fixed": "Kiinteä määrä"
+        },
+        "forecast-days": "Katso eteenpäin",
+        "forecast-days-help": "0: alue kastelee sen, minkä sää todella otti. 1: myös huominen otetaan huomioon, 2: huominen ja sitä seuraava päivä, ja niin edelleen. Mitä kuumemmat tulevat päivät ovat, sitä enemmän kastellaan tänään. Tämä ei ole sateen takia ohittaminen, joka on oma asetuksensa.",
+        "fixed-amount": "Kiinteä määrä",
+        "engine-shared-help": "Tämä asetus kuuluu vain tälle alueelle: jokaisella alueella on omansa, eikä sen muuttaminen tässä muuta mitään muualla.",
+        "soil-type": "Maaperä",
+        "plant-type": "Mitä täällä kasvaa",
+        "soil-types": {
+          "sand": "Hiekkainen",
+          "sandy_loam": "Hiekkainen multamaa",
+          "loam": "Multamaa",
+          "clay_loam": "Savinen multamaa",
+          "clay": "Savi",
+          "custom": "Asetan kuivatusnopeuden itse"
+        },
+        "plant-types": {
+          "lawn": "Nurmikko",
+          "vegetables": "Vihannekset",
+          "flowers": "Kukat",
+          "shrubs": "Pensaat",
+          "hedge": "Pensasaita",
+          "fruit_trees": "Hedelmäpuut",
+          "vines": "Viiniköynnökset",
+          "ground_cover": "Maanpeitekasvit",
+          "custom": "Asetan kasvikertoimen itse"
+        },
+        "duration-readonly-automatic": "Laskettu puolestasi: tämän alueen kastelu tulee sen vesitasapainosta. Aseta se käsikäytölle, jos haluat kirjoittaa keston itse.",
+        "duration-readonly-disabled": "Pois päältä olevaa aluetta ei koskaan kastella, joten sillä ei ole kasteluaikaa.",
+        "et-deficiency-help": "Mitä tämä alue tarvitsee päivässä: ETc, referenssihaihdunta kertaa kasvikerroin, kausisäätö mukaan lukien. Ennen jaksolle skaalausta ja ennen sadetta, mikä tekee siitä vertailukelpoisen määrityksestä toiseen. Alueen anturi kantaa myös referenssiluvun omanaan, attribuuttina `eto`, jota voi verrata siihen mitä sääpalvelu julkaisee."
       },
       "no_items": "Vyöhykkeitä ei ole vielä määritetty.",
-      "title": "Vyöhykkeet"
+      "title": "Vyöhykkeet",
+      "module-comes-from-the-group": "Laskentamoottori tulee tämän alueen anturiryhmästä. Vaihda se siellä, niin jokainen tätä ryhmää käyttävä alue seuraa perässä.",
+      "status": {
+        "will-water": "Kastelee {duration} seuraavalla aloituksella.",
+        "idle": "Ei kasteltavaa: {short} vajaa.",
+        "satisfied": "Ei kasteltavaa: tällä alueella on se mitä se tarvitsee.",
+        "under-threshold": "Ei vielä kasteltavaa: {short} vajaa, tämän alueen rajan alle.",
+        "manual": "Kastelee vain kun pyydät.",
+        "disabled": "Pois päältä: ei kastella koskaan, eikä sen tasapainoa pidetä.",
+        "threshold": "raja"
+      },
+      "calendar": {
+        "title": "Kastelukalenteri (12 kuukautta, arvio)",
+        "caveat": "Suunnitteluun tarkoitettu arvio, ei oma sääsi: kuukaudet mallinnetaan leveysasteestasi ja tyypillisestä vuodenkierrosta, joten mannerilmaston kesä näyttää kuumemmalta ja kuivemmalta kuin se on. Se ei vaikuta mihinkään, ei laske mitään eikä kastele mitään.",
+        "month": "Kuukausi",
+        "et": "ET",
+        "precipitation": "Sade",
+        "watering": "Kastelu",
+        "avg-temp": "Keskilämpö",
+        "none": "Tälle alueelle ei ole kalenteritietoja",
+        "error": "Kalenteria ei voitu luoda"
+      }
+    },
+    "setup": {
+      "title": "Määritys",
+      "description": "Ohjattu tapa luoda ensimmäinen alueesi. Se kysyy yhden kysymyksen kerrallaan, ja vain ne kysymykset, jotka aiemmat vastauksesi jättävät auki.",
+      "next": "Seuraava",
+      "back": "Takaisin",
+      "create": "Luo",
+      "creating": "Luodaan...",
+      "failed": "Jotain meni vikaan eikä mitään luotu. Muut välilehdet ovat edelleen käytettävissä, jos haluat mieluummin määrittää sen käsin.",
+      "done": "Alueesi on valmis.",
+      "done-note": "Se näkyy kohdassa Alueet, ja sen anturiryhmä kohdassa Anturiryhmät. Niissä ei ole mitään erityistä: muokkaa kumpaakin kuten mitä tahansa muuta. Aja päivitys ja laskenta, kun anturisi ovat raportoineet, niin alue alkaa tuottaa keston.",
+      "steps": {
+        "zone": {
+          "question": "Mitä kastelet?",
+          "help": "Yksi alue on yksi venttiili, joka kastelee yhden alan.",
+          "name": "Nimi",
+          "size": "Pinta-ala",
+          "throughput": "Virtaama",
+          "throughput-help": "Kuinka paljon vettä tämä alue antaa minuutissa. Mittaa se jos voit, sen sijaan että otat sen tuotetiedoista: siitä johdetaan jokainen kesto, ja se on hiljaisin tapa kastella kaksi kertaa niin kauan kuin tarkoitit."
+        },
+        "environment": {
+          "question": "Missä se kasvaa?",
+          "outdoors": "Ulkona",
+          "outdoors-help": "Vapaa ilma. Sade tavoittaa sen, ja taivas on kysymisen arvoinen.",
+          "under-glass": "Lasin tai muovin alla",
+          "under-glass-help": "Kasvihuone, muovitunneli, viherhuone. Sadetta ei tule, ja ennuste kuvaa säätä, jota nämä kasvit eivät koskaan koe."
+        },
+        "weather": {
+          "question": "Mistä haihduntaluku otetaan?",
+          "service": "Määrittämäsi sääpalvelu",
+          "service-help": "Mitään muuta ei tarvitse asentaa. Smart Irrigation hakee sään sijainnillesi ja laskee haihdunnan siitä.",
+          "no-service-indoors": "Sääpalvelua ei tarjota tässä: se kuvaa taivasta, jonka alla nämä kasvit eivät ole.",
+          "sensors": "Omat sääanturini",
+          "sensors-help": "Sinulla on anturit lämpötilalle, kosteudelle ja muulle. Tarkin vaihtoehto, koska se mittaa siellä missä kasvit todella ovat.",
+          "et": "Anturi, joka jo ilmoittaa haihdunnan",
+          "et-help": "Jokin muu laskee sen jo, ja Smart Irrigationin pitäisi käyttää sitä lukua sellaisenaan.",
+          "static": "Kiinteä määrä päivässä",
+          "static-help": "Ei antureita eikä palvelua. Annat yhden luvun ja sitä käytetään joka päivä. Karkea, mutta se seuraa silti sitä, mitä olet jo kastellut."
+        },
+        "sensors": {
+          "question": "Mitä entiteettejä sen pitäisi lukea?",
+          "help": "Kysytään vain niitä, joita laskenta todella käyttää.",
+          "lux-hint": "Lasin alla valoanturi voi korvata auringon säteilyn: valitse valoisuusentiteettisi tässä ja aseta sen lähde jälkeenpäin anturiryhmässä arvoon Valoanturi (lux).",
+          "static-question": "Kuinka paljon haihtuu päivässä?",
+          "static-help": "Vesikerroksen paksuus, alueidesi käyttämässä yksikössä. Noin 4 - 5 mm päivässä on tavallista lauhkealle kesälle.",
+          "static-label": "Haihdunta päivässä"
+        },
+        "review": {
+          "question": "Valmis luomaan",
+          "zone": "Alue",
+          "environment": "Ympäristö",
+          "engine": "Laskentamoottori",
+          "sources": "Lähteet",
+          "from-the-service": "sääpalvelusta",
+          "help": "Tämä luo laskentamoduulin, anturiryhmän ja alueen, täsmälleen kuten muut välilehdet tekisivät. Jälkeenpäin mikään ei ole lukittu."
+        }
+      },
+      "step": "vaihe"
+    },
+    "history": {
+      "title": "Historia",
+      "description": "Jokainen kastelu, jonka Smart Irrigation on kirjannut alueelle: milloin se alkoi, kuinka kauan se kasteli ja kuinka paljon vettä se käytti. Kastelut kirjaa suora venttiiliohjaus ja havaittu kastelu, ja ne säilytetään 90 päivää.",
+      "refresh": "Päivitä",
+      "no-data": "Kasteluja ei ole vielä kirjattu.",
+      "table": {
+        "title": "Kastelut",
+        "start": "Alku",
+        "zone": "Alue",
+        "duration": "Kesto",
+        "water": "Veden kulutus",
+        "truncated": "Näytetään {count} uusinta kastelua yhteensä {total} kastelusta."
+      },
+      "charts": {
+        "total-title": "Veden kokonaiskulutus päivässä (viimeiset 30 päivää)",
+        "per-zone-title": "Veden kulutus päivässä, aluekohtaisesti (viimeiset 30 päivää)",
+        "no-data": "Tällä jaksolla ei kulunut vettä."
+      }
+    },
+    "groups": {
+      "home": "Etusivu",
+      "zones": "Alueet",
+      "data": "Tiedot",
+      "settings": "Asetukset"
     }
   },
   "title": "Smart Irrigation",
@@ -401,7 +668,8 @@
     "trigger_types": {
       "sunrise": "Auringonnousu",
       "sunset": "Auringonlasku",
-      "solar_azimuth": "Auringon atsimuutti"
+      "solar_azimuth": "Auringon atsimuutti",
+      "time": "Kiinteä kellonaika"
     },
     "fields": {
       "name": {
@@ -427,6 +695,9 @@
       "account_for_duration": {
         "name": "Huomioi kesto",
         "description": "Kun tämä on käytössä, kastelu alkaa riittävän aikaisin valmistuakseen määritettyyn aikaan mennessä. Kun tämä on pois käytöstä, kastelu alkaa täsmälleen määritettynä aikana."
+      },
+      "at": {
+        "name": "Kellonaika"
       }
     },
     "dialog": {
@@ -442,7 +713,8 @@
     "confirm_delete": "Haluatko varmasti poistaa liipaisimen '{name}'?",
     "validation": {
       "name_required": "Liipaisimen nimi on pakollinen",
-      "azimuth_invalid": "Atsimuuttikulman on oltava kelvollinen luku"
+      "azimuth_invalid": "Atsimuuttikulman on oltava kelvollinen luku",
+      "time_invalid": "Anna kelvollinen kellonaika muodossa HH:MM."
     },
     "help": {
       "sunrise_offset": "Auringonnousuliipaisimissa: Käytä negatiivisia arvoja aloittaaksesi ennen auringonnousua, positiivisia aloittaaksesi sen jälkeen. Aseta arvoon 0 aloittaaksesi automaattisesti riittävän aikaisin, jotta kaikki vyöhykkeet ehtivät valmistua ennen auringonnousua.",
@@ -486,6 +758,45 @@
     "sequencing": {
       "sequential": "Peräkkäin (yksi vyöhyke kerrallaan)",
       "parallel": "Rinnakkain (kaikki vyöhykkeet kerralla)"
+    },
+    "sequencing_description": "Miten alueesi kastellaan. Tämä määrää, mistä kestosta aloitusliipaisin laskee taaksepäin, kun sen on määrä päättyä auringonnousuun: yksi kerrallaan antaa kaikkien alueiden aikojen summan, kaikki yhtä aikaa niistä pisimmän. Tämä pätee, avaako Smart Irrigation venttiilit itse vai tekeekö sen oma automaatiosi.",
+    "passes_label": "Kastele useassa kierroksessa",
+    "passes_description": "Jaksotus ja imeytys: sama vesimäärä jaettuna lyhyempiin kierroksiin, joiden välissä on tauko, jotta raskas maa ottaa sen sisään sen sijaan että se valuisi pois. Yksi kierros kastelee kertaheitolla, ja se on oletus. Kastelua, joka on liian lyhyt jaettavaksi, ei kosketa.",
+    "soak_label": "Imeytys kierrosten välissä",
+    "pause_between_zones_label": "Tauko alueiden välillä",
+    "pause_between_zones_description": "Odotus kahden alueen välillä peräkkäisessä kastelussa: aikaa linjan paineen palautumiselle tai hitaan venttiilin sulkeutumiselle ennen kuin seuraava avautuu.",
+    "minutes": "minuuttia",
+    "seconds": "sekuntia"
+  },
+  "calculation_log": {
+    "title": "Laskentaloki",
+    "description": "Kirjoittaa jokaisen laskennan koko lähtötiedot tiedostoon, jotta kaksi samanlaiselta näyttävää mutta hyvin eri tavalla kastelevaa päivää voi verrata jälkikäteen. Jokainen laskenta lisää yhden rivin: anturiryhmän lukemat ja miten ne yhdistettiin, moduulin välitulokset (auringon säteily, nettosäteily, ET0) sekä niistä syntyvä varanto, kesto ja määrä. Pois päältä oletuksena; tiedoston koko on rajattu ja se kierrätetään, joten se voi olla päällä koko kauden.",
+    "enabled_label": "Kirjoita laskennan lähtötiedot tiedostoon",
+    "file_hint": "Kirjoitetaan tiedostoon config/smart_irrigation/calc_log.jsonl, yksi JSON-tietue riviä kohden. Uusimmat tietueet ovat mukana myös vianmäärityksen latauksessa (koordinaatit pyöristetty, entiteettien tunnukset poistettu), joten voit liittää ne vikailmoitukseen yhdellä kertaa."
+  },
+  "measured_skip": {
+    "title": "Ohita mitattujen olosuhteiden perusteella",
+    "description": "Tarkistetaan jokaisen kastelun alussa, anturista tai sääpalvelusta. Anturi, jota ei saada luettua, ei koskaan estä kastelua.",
+    "enabled": "Käytössä",
+    "threshold": "Raja",
+    "sensor": "Anturi",
+    "sensor-optional": "Anturi (valinnainen)",
+    "rain": {
+      "title": "Sadeanturi",
+      "description": "Ohita kastelu niin kauan kuin sadeanturi kertoo, että sataa.",
+      "sensor-hint": "Binäärianturi, joka on päällä sateen ajan.",
+      "history-label": "Lyhennä kasteluja tuoreen sateen jälkeen",
+      "history-description": "Alueelle, jolla ei ole sadetta millimetreinä lainkaan: ei sademittaria, ja sääpalvelu joka ei anna sitä. Anturin oma historia viiden viime päivän ajalta luetaan ja painotetaan niin, että eilinen painaa enemmän kuin neljä päivää sitten, ja kastelua lyhennetään sen mukaan. Kokonainen sadepäivä tänään vie koko kastelun; neljä päivää sitten kymmenesosan siitä. Vesitasapainoon ei kosketa koskaan, koska ei tiedetä montako millimetriä tuli: alijäämä jää voimaan ja kastellaan pois heti kun sää kääntyy. Aluetta, jonka anturiryhmä ilmoittaa sateen millimetreinä, ei kosketa, koska tasapainossa se on jo. Tämä vaatii anturin, joka pysyy päällä sateen ajan, eikä sellaista joka antaa lyhyen pulssin jokaisesta kipsahduksesta."
+    },
+    "freeze": {
+      "title": "Pakkanen",
+      "description": "Ohita kastelu, kun lämpötila on rajassa tai sen alle.",
+      "sensor-hint": "Tyhjä: sääpalvelun nykyinen lämpötila."
+    },
+    "wind": {
+      "title": "Tuuli",
+      "description": "Ohita kastelu, kun tuuli on rajassa tai sen yli: sadetin kovassa tuulessa kastelee käytävän, ei penkkiä.",
+      "sensor-hint": "Tyhjä: sääpalvelun nykyinen tuuli, 10 m korkeudella."
     }
   }
 }

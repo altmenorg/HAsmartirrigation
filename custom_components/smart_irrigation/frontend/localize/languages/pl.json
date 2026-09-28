@@ -16,7 +16,9 @@
       "after": "po"
     },
     "units": {
-      "seconds": "sekundy"
+      "seconds": "sekundy",
+      "minutes": "min",
+      "hours": "godz."
     },
     "attributes": {
       "size": "rozmiar",
@@ -75,7 +77,11 @@
         "maximum-bucket-is": "Maksymalny rozmiar bucket wynosi",
         "drainage-rate-is": "Natężenie drenażu przy nasyceniu (bucket na maksimum) wynosi",
         "current-drainage-is": "Bieżący drenaż jest obliczany jako",
-        "no-drainage": "Bieżący drenaż wynosi 0, ponieważ"
+        "no-drainage": "Bieżący drenaż wynosi 0, ponieważ",
+        "module-returned-hourly-evapotranspiration-deficiency": "Moduł zsumował deficyt evapotranspiracji roślin godzina po godzinie ( = suma godzinowych et0 * Kc + opad) w ciągu",
+        "crop-factor-is": "Współczynnik roślinny wynosi",
+        "precipitation-rate-is": "Intensywność opadu wynosi",
+        "below-irrigation-threshold": "Deficyt nie osiągnął jeszcze progu nawadniania tej strefy, więc nawadnianie nie jest potrzebne i czas zostaje ustawiony na 0. Deficyt / próg:"
       }
     }
   },
@@ -106,7 +112,16 @@
       "messages": {
         "no-service": "Nie jest używana żadna usługa pogodowa — dane pogodowe pochodzą wyłącznie z Twoich własnych czujników.",
         "saved": "Usługa pogodowa zaktualizowana i zastosowana.",
-        "reload-note": "Zapisanie weryfikuje klucz API w usłudze i stosuje zmianę natychmiast."
+        "reload-note": "Zapisanie weryfikuje klucz API w usłudze i stosuje zmianę natychmiast.",
+        "owm-onecall-hint": "OpenWeatherMap wymaga planu One Call API 3.0 (One Call by Call). Jest darmowy do 1000 wywołań na dobę, ale musi zostać aktywowany kartą, a nowy klucz może zacząć działać po paru godzinach. Zwykły klucz domyślny jest odrzucany."
+      },
+      "history": {
+        "title": "Historia",
+        "refresh": "Odśwież",
+        "last-update": "Ostatnia aktualizacja",
+        "time": "Pobrano",
+        "sensor-group": "Grupa czujników",
+        "no-data": "Nie pobrano jeszcze żadnych danych z serwisu pogodowego."
       }
     },
     "backuprestore": {
@@ -145,7 +160,9 @@
           "description": "Obliczanie wykorzystuje zebrane do tej pory dane pogodowe i aktualizuje bucket dla każdej strefy automatycznej. Następnie czas trwania jest dostosowywany na podstawie nowej wartości bucket, a zebrane dane pogodowe są usuwane.",
           "labels": {
             "auto-calc-enabled": "Automatycznie obliczaj czasy trwania nawadniania",
-            "calc-time": "Oblicz o"
+            "calc-time": "Oblicz o",
+            "hourly-calculation": "Obliczaj evapotranspirację godzina po godzinie",
+            "hourly-calculation-hint": "Sumuje godzinowe równanie FAO-56 dla każdej godziny od ostatniego obliczenia, zamiast stosować równanie dzienne do średnich, które ukrywają, czy słońce i upał przyszły razem. Nowa instalacja startuje na nim; instalacja, która istniała wcześniej, zostaje przy równaniu dziennym do momentu przełączenia, bo oba dają inne liczby, a twoje nawadnianie nie powinno się zmieniać z powodu aktualizacji. Słońce każdej godziny bierze się z czujnika promieniowania lub natężenia światła, z godzinowej historii samego serwisu pogodowego, albo z dziennego zakresu temperatur. Warto to mieć, gdy odczyty przychodzą w ciągu dnia: jedna aktualizacja na dobę pozostawia jeden odczyt obowiązujący przez dwadzieścia cztery godziny, a wtedy żadna z form nie jest godna zaufania. Szklarnia bez własnego czujnika zostaje przy równaniu dziennym."
           }
         },
         "automatic-update": {
@@ -174,6 +191,17 @@
             "continuousupdates": "Włącz ciągłe aktualizacje",
             "sensor_debounce": "Opóźnienie czujnika (debounce)"
           }
+        },
+        "panel-mode": {
+          "header": "Panel",
+          "labels": {
+            "advanced": "Ustawienia zaawansowane",
+            "advanced-hint": "Pokazuje ustawienia, które dostrajają model: drenaż, progi, mnożnik, jak daleko w przód patrzy strefa. Mają sensowne wartości domyślne; zostaw to wyłączone, jeśli nie wiesz, że ich potrzebujesz. Twoje wartości są w obu przypadkach zachowane."
+          }
+        },
+        "setup-assistant": {
+          "description": "Najwyżej cztery pytania i tworzy za ciebie grupę czujników oraz strefę, wybierając to, czego każda z nich potrzebuje. Na pierwszą strefę, kolejną albo na świeży start. Kiedyś była to zakładka, która zapraszała instalację już skonfigurowaną do skonfigurowania się.",
+          "open": "Otwórz asystenta"
         }
       },
       "description": "Ta strona zawiera ustawienia globalne.",
@@ -199,32 +227,104 @@
       "description": "Wyświetl informacje o następnym nawadnianiu i stanie systemu.",
       "configuration-not-available": "Konfiguracja niedostępna.",
       "cards": {
-        "zone-bucket-values": {
-          "title": "Wartości bucket strefy i czas trwania",
-          "labels": {
-            "bucket": "Bucket",
-            "duration": "Czas trwania"
-          },
-          "no-zones": "Brak skonfigurowanych stref"
-        },
-        "next-irrigation": {
+        "next-run": {
           "title": "Następne nawadnianie",
           "labels": {
-            "next-start": "Następny start",
-            "duration": "Czas trwania",
-            "zones": "Strefy"
+            "start": "Zaczyna",
+            "duration": "Czas całkowity",
+            "zones": "Strefy, które podlewają",
+            "trigger": "Wyzwalacz"
           },
-          "no-data": "Brak dostępnych danych"
+          "no-start": "Nie udało się jeszcze ustalić godziny startu.",
+          "nothing-to-water": "Nie ma czego podlewać: żadna strefa nie osiągnęła swojego progu nawadniania.",
+          "trigger-default": "Domyślnie, kończąc o wschodzie słońca",
+          "accounts-for-duration": "policzone wstecz, żeby nawadnianie skończyło się wtedy",
+          "starts-at-trigger": "zaczyna w tej chwili",
+          "sequencing-sequential": "jedna strefa po drugiej, więc całość to suma wszystkich stref",
+          "sequencing-parallel": "wszystkie strefy naraz, więc całość to najdłuższa strefa",
+          "headline-nothing": "Nie ma czego podlewać",
+          "sub-nothing": "Żadnej strefie nie brakuje jeszcze dość wody. Następny start to {start}.",
+          "headline-watering": "Podlewanie {start}",
+          "headline-watering-soon": "Podlewanie przy następnym starcie",
+          "sub-watering": "{count} strefa/y, {duration} razem.",
+          "headline-postponed": "Podlewanie jest wstrzymane",
+          "sub-postponed": "Odłożyłeś je. Wznowi się samo i nic nie przepada: strefie, której brakuje wody, brakuje jej i potem.",
+          "headline-skipped": "Dziś bez podlewania",
+          "headline-not-scheduled": "Nawadnianie jest należne, a nic nie jest zaplanowane, by je uruchomić",
+          "sub-not-scheduled": "Godzina powyżej to moment, w którym nawadnianie by się zaczęło. Żaden wyzwalacz startu nie jest teraz uzbrojony, co zdarza się, gdy aktywny wyzwalacz jest wyłączony albo nie został zarejestrowany. Sprawdź wyzwalacz w Ustawieniach, a jeśli wygląda poprawnie, obliczenie uzbroi go ponownie."
         },
-        "irrigation-reason": {
-          "title": "Powód nawadniania",
+        "decision": {
+          "title": "Czy zostanie pominięte?",
+          "will-run": "Nic nie wstrzymuje nawadniania.",
+          "will-skip": "Nawadnianie zostałoby pominięte.",
+          "preview-note": "Ocenione właśnie teraz. Prognoza może się jeszcze zmienić przed startem.",
+          "unavailable": "Nie udało się ocenić warunków pominięcia.",
+          "last-title": "Ostatnia prawdziwa decyzja",
+          "last-none": "O żadnym nawadnianiu jeszcze nie zdecydowano.",
+          "last-skipped": "Pominięte",
+          "last-ran": "Odbyło się",
+          "check-precipitation": "Prognoza deszczu",
+          "check-days_between": "Dni między nawadnianiami",
+          "state-off": "Wyłączone",
+          "state-unavailable": "Nie udało się sprawdzić",
+          "state-passing": "Nie blokuje",
+          "state-blocking": "Blokuje",
+          "detail-forecast": "Prognoza",
+          "detail-threshold": "Próg",
+          "detail-days-since": "Dni od ostatniego nawadniania",
+          "detail-days-required": "Wymagane dni",
+          "check-rain_sensor": "Czujnik deszczu",
+          "check-freeze": "Mróz",
+          "check-wind": "Wiatr",
+          "check-soil_moisture": "Wilgotność gleby",
+          "detail-now": "Teraz",
+          "detail-weather-service": "serwis pogodowy",
+          "detail-raining": "Pada",
+          "detail-dry": "Nie pada",
+          "detail-held": "pomija to nawadnianie",
+          "check-postponed": "Odłożone przez ciebie"
+        },
+        "estimate": {
+          "title": "Na czym stoi teraz każda strefa",
+          "note": "Oszacowane przez uruchomienie obliczenia na odczytach zebranych od jego ostatniego przebiegu. Nic nie jest zapisywane: strefa trzyma wartość z ostatniego obliczenia do następnego.",
+          "none": "Żadnej strefy nie można jeszcze oszacować.",
           "labels": {
-            "reason": "Powód",
-            "sunrise": "Wschód słońca",
-            "total-duration": "Łączny czas trwania",
-            "explanation": "Wyjaśnienie"
+            "now": "Teraz",
+            "at-last-calculation": "Przy ostatnim obliczeniu",
+            "would-water": "Podlewałoby",
+            "last-irrigation": "Ostatnio podlewane"
           },
-          "no-data": "Brak dostępnych danych"
+          "nothing": "nic",
+          "never-watered": "nigdy"
+        },
+        "postpone": {
+          "prompt": "Deszcz, którego prognoza nie zauważyła, czy własny powód?",
+          "for-24": "Wstrzymaj na 24 godz.",
+          "for-48": "Wstrzymaj na 48 godz.",
+          "until": "Podlewanie jest wstrzymane do",
+          "resume": "Wznów teraz"
+        },
+        "forecast": {
+          "today": "Dziś"
+        },
+        "stale": {
+          "title": "Jedna strefa nie jest już obliczana",
+          "body": "Jej potrzeba wody jest starsza niż pozostałych, więc podlewa według starej pogody. Sprawdź, czy jej grupa czujników wciąż dostaje dane, i zajrzyj do dziennika, co obliczenie o niej powiedziało.",
+          "never": "nigdy nie obliczana"
+        }
+      },
+      "gaps": {
+        "auto_calc_off": {
+          "title": "Nic nie jest obliczane",
+          "body": "Automatyczne obliczanie czasu jest wyłączone, więc czasy stref nigdy się nie aktualizują. Włącz je z powrotem w Ustawieniach albo policz ręcznie, gdy chcesz nawodnić."
+        },
+        "no_automatic_zone": {
+          "title": "Żadna strefa nie podlewa sama",
+          "body": "Każda strefa jest ręczna albo wyłączona, więc start nic nie osiąga. Ustaw strefę na automatyczną, żeby harmonogram ją podlewał."
+        },
+        "no_valve_path": {
+          "title": "Nic tutaj nie otwiera zaworu",
+          "body": "Smart Irrigation obliczy, jak długo podlewać; coś musi na to zareagować. Albo powiąż zawór ze strefą i włącz bezpośrednie sterowanie zaworami, albo napisz automatyzację na zdarzenie startu (blueprinty robią to za ciebie). Jeśli automatyzacja już to robi, nie ma czego zmieniać."
         }
       }
     },
@@ -281,8 +381,15 @@
             "none": "Brak",
             "weather_service": "Usługa pogodowa",
             "sensor": "Czujnik",
-            "static": "Wartość statyczna"
-          }
+            "static": "Wartość statyczna",
+            "illuminance": "Czujnik światła (lux)"
+          },
+          "luminous_efficacy": "Skuteczność świetlna",
+          "greenhouse": "Szklarnia",
+          "greenhouse_description": "Środowisko zamknięte: szklarnia, tunel foliowy, wszystko pod szkłem lub folią. Do tych stref nie dociera deszcz, więc opad zostaje poza ich bilansem wodnym, a jego pola są ukryte. Dwie rzeczy trzeba ustawić samemu, bo nie da się ich odgadnąć: nadaj Prędkości wiatru stałą wartość blisko 0, bo obliczenie zakłada wolne powietrze, i użyj czujnika światła dla Promieniowania słonecznego, bo szyby filtrują niebo.",
+          "module": "Silnik obliczeniowy",
+          "module_description": "Ta grupa oferuje tylko źródła, które czyta ten silnik. Strefy, które jej używają, przejmują ten wybór.",
+          "module_undecided": "Silnik nie został jeszcze wybrany, więc oferowane są wszystkie źródła, a każda strefa używająca tej grupy zostaje przy swoim. Wybierz jeden, żeby widzieć tylko źródła, które czyta."
         }
       },
       "description": "Dodaj jedną lub więcej grup czujników, które pobierają dane pogodowe z usługi pogodowej, z czujników lub ich kombinacji. Każdą grupę czujników możesz przypisać do jednej lub więcej stref",
@@ -299,6 +406,12 @@
         "precipitation": "Opady",
         "retrieval-time": "Pobrano",
         "no-data": "Brak dostępnych danych pogodowych dla tej grupy czujników"
+      },
+      "summary": {
+        "sources-one": "{n} źródło",
+        "sources-other": "{n} źródeł",
+        "zones-one": "{n} strefa",
+        "zones-other": "{n} stref"
       }
     },
     "modules": {
@@ -383,10 +496,164 @@
         "linked-entity-hint": "Zawór lub przełącznik nawadniający tę strefę. Za każdym razem, gdy działa (ręczne odkręcenie, automatyzacja lub sam Smart Irrigation, gdy włączone jest bezpośrednie sterowanie zaworem), bucket jest zasilany na podstawie czasu działania i przepływu strefy. Wymagane dla funkcji zamkniętej pętli.",
         "flow-sensor": "Licznik skumulowanej objętości",
         "flow-sensor-hint": "Dla dokładnego zasilania zamiast przepływu x czas: skumulowana suma wodomierza (klasa stanu total_increasing), a nie chwilowe natężenie przepływu. Jednostka jest odczytywana automatycznie (L, mL, m³, gal, ft³).",
-        "optional": "opcjonalne"
+        "optional": "opcjonalne",
+        "et-deficiency": "Dzienny deficyt ET",
+        "input-method": "Metoda wprowadzania",
+        "input-methods": {
+          "throughput": "Przepływ i powierzchnia",
+          "direct": "Intensywność opadu"
+        },
+        "precipitation-rate": "Intensywność opadu",
+        "irrigation-threshold": "Próg nawadniania",
+        "soil-moisture-sensor": "Czujnik wilgotności gleby",
+        "soil-moisture-sensor-hint": "Strefa pomija nawadnianie, dopóki gleba jest na progu lub powyżej. Zapas jest zachowany.",
+        "soil-moisture-threshold": "Pomiń od",
+        "calculation-method": "Evapotranspiracja",
+        "calculation-method-help": {
+          "from_weather": "Z twoich pomiarów: temperatura, wilgotność, wiatr, słońce.",
+          "provided": "Masz już evapotranspirację w mm; jest brana taka, jaka jest.",
+          "fixed": "Tyle i tyle mm na dobę, niezależnie od pogody."
+        },
+        "calculation-methods": {
+          "from_weather": "Obliczana przez Smart Irrigation",
+          "provided": "Dostarczana przez czujnik albo serwis",
+          "fixed": "Stała ilość"
+        },
+        "forecast-days": "Patrz w przód",
+        "forecast-days-help": "0: strefa podlewa to, co pogoda naprawdę zabrała. 1: brany jest w rachubę także dzień następny, 2: jutro i pojutrze, i tak dalej. Im cieplejsze są kolejne dni, tym więcej podlewa się dziś. To nie jest pomijanie z powodu deszczu, które ma własne ustawienie.",
+        "fixed-amount": "Stała ilość",
+        "engine-shared-help": "To ustawienie należy tylko do tej strefy: każda strefa ma własne, a zmiana tutaj nie zmienia nic w innym miejscu.",
+        "soil-type": "Gleba",
+        "plant-type": "Co tu rośnie",
+        "soil-types": {
+          "sand": "Piaszczysta",
+          "sandy_loam": "Ziemia piaszczysto-gliniasta",
+          "loam": "Ziemia gliniasta",
+          "clay_loam": "Glina pylasta",
+          "clay": "Glina",
+          "custom": "Szybkość drenażu ustawiam sam"
+        },
+        "plant-types": {
+          "lawn": "Trawnik",
+          "vegetables": "Warzywa",
+          "flowers": "Kwiaty",
+          "shrubs": "Krzewy",
+          "hedge": "Żywopłot",
+          "fruit_trees": "Drzewa owocowe",
+          "vines": "Winorośl",
+          "ground_cover": "Rośliny okrywowe",
+          "custom": "Współczynnik roślinny ustawiam sam"
+        },
+        "duration-readonly-automatic": "Obliczone za ciebie: nawadnianie tej strefy wynika z jej bilansu wodnego. Przestaw ją na ręczną, żeby wpisać czas samemu.",
+        "duration-readonly-disabled": "Wyłączona strefa nigdy nie jest podlewana, więc nie ma czasu nawadniania.",
+        "et-deficiency-help": "Czego ta strefa potrzebuje na dobę: ETc, evapotranspiracja odniesienia razy współczynnik roślinny, z korektą sezonową. Przed przeliczeniem na interwał i przed deszczem, i właśnie to czyni ją porównywalną między konfiguracjami. Czujnik strefy nosi też samą wartość odniesienia, jako atrybut `eto`, do porównania z tym, co publikuje serwis pogodowy."
       },
       "no_items": "Nie zdefiniowano jeszcze żadnych stref.",
-      "title": "Strefy"
+      "title": "Strefy",
+      "module-comes-from-the-group": "Silnik obliczeniowy pochodzi z grupy czujników tej strefy. Zmień go tam, a każda strefa używająca tej grupy pójdzie za nim.",
+      "status": {
+        "will-water": "Podleje {duration} przy następnym starcie.",
+        "idle": "Nie ma czego podlewać: brakuje {short}.",
+        "satisfied": "Nie ma czego podlewać: ta strefa ma to, czego potrzebuje.",
+        "under-threshold": "Jeszcze nie ma czego podlewać: brakuje {short}, poniżej progu tej strefy.",
+        "manual": "Podlewa tylko wtedy, gdy o to poprosisz.",
+        "disabled": "Wyłączona: nigdy nie jest podlewana, a jej bilans nie jest prowadzony.",
+        "threshold": "próg"
+      },
+      "calendar": {
+        "title": "Kalendarz podlewania (12 miesięcy, szacunek)",
+        "caveat": "Szacunek do planowania, nie twoja pogoda: miesiące są modelowane z twojej szerokości geograficznej i typowego przebiegu roku, więc lato kontynentalne wychodzi cieplejsze i bardziej suche, niż jest. Na nic nie wpływa, nic nie liczy i nic nie podlewa.",
+        "month": "Miesiąc",
+        "et": "ET",
+        "precipitation": "Opad",
+        "watering": "Podlewanie",
+        "avg-temp": "Śr. temp.",
+        "none": "Brak danych kalendarza dla tej strefy",
+        "error": "Nie udało się wygenerować kalendarza"
+      }
+    },
+    "setup": {
+      "title": "Konfiguracja",
+      "description": "Prowadzona droga do twojej pierwszej strefy. Zadaje jedno pytanie po drugim, i tylko te pytania, które twoje poprzednie odpowiedzi zostawiają otwarte.",
+      "next": "Dalej",
+      "back": "Wstecz",
+      "create": "Utwórz",
+      "creating": "Tworzenie...",
+      "failed": "Coś poszło nie tak i nic nie zostało utworzone. Pozostałe zakładki są nadal dostępne, jeśli wolisz ustawić to ręcznie.",
+      "done": "Twoja strefa jest gotowa.",
+      "done-note": "Pojawia się w Strefach, ze swoją grupą czujników w Grupach czujników. Nie ma w nich nic szczególnego: edytuj jedną i drugą jak każde inne. Uruchom aktualizację i obliczenie, gdy twoje czujniki podadzą wartości, a strefa zacznie dawać czas.",
+      "steps": {
+        "zone": {
+          "question": "Co podlewasz?",
+          "help": "Jedna strefa to jeden zawór, podlewający jeden obszar.",
+          "name": "Nazwa",
+          "size": "Powierzchnia",
+          "throughput": "Przepływ",
+          "throughput-help": "Ile wody ta strefa podaje na minutę. Zmierz to, jeśli możesz, zamiast brać z karty katalogowej: z tego wyprowadzany jest każdy czas, i to najcichszy sposób, żeby podlewać dwa razy dłużej, niż chciałeś."
+        },
+        "environment": {
+          "question": "Gdzie to rośnie?",
+          "outdoors": "Na zewnątrz",
+          "outdoors-help": "Wolne powietrze. Deszcz do niej dociera, a o niebo warto zapytać.",
+          "under-glass": "Pod szkłem lub folią",
+          "under-glass-help": "Szklarnia, tunel foliowy, ogród zimowy. Deszcz nie dociera, a prognoza opisuje pogodę, której te rośliny nigdy nie zaznają."
+        },
+        "weather": {
+          "question": "Skąd ma pochodzić liczba parowania?",
+          "service": "Serwis pogodowy, który skonfigurowałeś",
+          "service-help": "Nic więcej do instalowania. Smart Irrigation bierze pogodę dla twojej lokalizacji i liczy z niej evapotranspirację.",
+          "no-service-indoors": "Serwis pogodowy nie jest tu oferowany: opisuje niebo, pod którym te rośliny nie stoją.",
+          "sensors": "Moje własne czujniki pogodowe",
+          "sensors-help": "Masz czujniki temperatury, wilgotności i pozostałe. Najdokładniejsza opcja, bo mierzy tam, gdzie rośliny naprawdę są.",
+          "et": "Czujnik, który już podaje evapotranspirację",
+          "et-help": "Coś innego już ją liczy, a Smart Irrigation ma użyć tej liczby tak, jak jest.",
+          "static": "Stała ilość na dobę",
+          "static-help": "Bez czujników i bez serwisu. Podajesz jedną liczbę i jest używana codziennie. Zgrubne, ale nadal śledzi to, co już podlałeś."
+        },
+        "sensors": {
+          "question": "Które encje ma czytać?",
+          "help": "Pytamy tylko o te, których obliczenie naprawdę używa.",
+          "lux-hint": "Pod szkłem czujnik światła może zastąpić promieniowanie słoneczne: wybierz tu swoją encję natężenia światła, a potem w grupie czujników ustaw jej źródło na Czujnik światła (lux).",
+          "static-question": "Ile paruje na dobę?",
+          "static-help": "Wysokość słupa wody, w jednostce używanej przez twoje strefy. Gdzieś około 4 do 5 mm na dobę to typowa wartość dla umiarkowanego lata.",
+          "static-label": "Parowanie na dobę"
+        },
+        "review": {
+          "question": "Gotowe do utworzenia",
+          "zone": "Strefa",
+          "environment": "Środowisko",
+          "engine": "Silnik obliczeniowy",
+          "sources": "Źródła",
+          "from-the-service": "z serwisu pogodowego",
+          "help": "To tworzy moduł obliczeniowy, grupę czujników i strefę, dokładnie tak jak zrobiłyby to pozostałe zakładki. Potem nic nie jest zablokowane."
+        }
+      },
+      "step": "krok"
+    },
+    "history": {
+      "title": "Historia",
+      "description": "Każde nawadnianie, które Smart Irrigation zaliczył strefie: kiedy się zaczęło, jak długo podlewało i ile wody zużyło. Nawadnianie zapisuje bezpośrednie sterowanie zaworami oraz obserwowane podlewanie, a zapisy są przechowywane 90 dni.",
+      "refresh": "Odśwież",
+      "no-data": "Nie zapisano jeszcze żadnego nawadniania.",
+      "table": {
+        "title": "Nawadnianie",
+        "start": "Początek",
+        "zone": "Strefa",
+        "duration": "Czas",
+        "water": "Zużycie wody",
+        "truncated": "Pokazano {count} najnowszych z {total}."
+      },
+      "charts": {
+        "total-title": "Całkowite zużycie wody na dzień (ostatnie 30 dni)",
+        "per-zone-title": "Zużycie wody na dzień, w podziale na strefy (ostatnie 30 dni)",
+        "no-data": "W tym okresie nie zużyto wody."
+      }
+    },
+    "groups": {
+      "home": "Start",
+      "zones": "Strefy",
+      "data": "Dane",
+      "settings": "Ustawienia"
     }
   },
   "title": "Smart Irrigation",
@@ -401,7 +668,8 @@
     "trigger_types": {
       "sunrise": "Wschód słońca",
       "sunset": "Zachód słońca",
-      "solar_azimuth": "Azymut słońca"
+      "solar_azimuth": "Azymut słońca",
+      "time": "Stała godzina"
     },
     "fields": {
       "name": {
@@ -427,6 +695,9 @@
       "account_for_duration": {
         "name": "Uwzględnij czas trwania",
         "description": "Gdy włączone, nawadnianie rozpocznie się odpowiednio wcześnie, aby zakończyć się o określonej porze. Gdy wyłączone, nawadnianie rozpocznie się dokładnie o określonej porze."
+      },
+      "at": {
+        "name": "Godzina"
       }
     },
     "dialog": {
@@ -442,7 +713,8 @@
     "confirm_delete": "Czy na pewno chcesz usunąć wyzwalacz „{name}”?",
     "validation": {
       "name_required": "Nazwa wyzwalacza jest wymagana",
-      "azimuth_invalid": "Kąt azymutu musi być prawidłową liczbą"
+      "azimuth_invalid": "Kąt azymutu musi być prawidłową liczbą",
+      "time_invalid": "Podaj prawidłową godzinę w formacie HH:MM."
     },
     "help": {
       "sunrise_offset": "Dla wyzwalaczy wschodu słońca: użyj wartości ujemnych, aby rozpocząć przed wschodem słońca, dodatnich, aby rozpocząć po nim. Ustaw na 0, aby automatycznie rozpocząć odpowiednio wcześnie, by ukończyć wszystkie strefy przed wschodem słońca.",
@@ -486,6 +758,45 @@
     "sequencing": {
       "sequential": "Sekwencyjnie (jedna strefa naraz)",
       "parallel": "Równolegle (wszystkie strefy naraz)"
+    },
+    "sequencing_description": "Jak nawadniane są twoje strefy. To ustala, od jakiego czasu wyzwalacz startu liczy wstecz, gdy ma skończyć o wschodzie słońca: jedna po drugiej daje sumę czasów wszystkich stref, wszystkie naraz najdłuższy z nich. Obowiązuje niezależnie od tego, czy zawory otwiera sam Smart Irrigation, czy twoja własna automatyzacja.",
+    "passes_label": "Podlewaj w kilku przejściach",
+    "passes_description": "Cykl i wsiąkanie: ta sama ilość wody podzielona na krótsze przejścia z przerwą między nimi, żeby ciężka gleba ją wchłonęła, a nie pozwoliła spłynąć. Jedno przejście podlewa za jednym razem i tak jest domyślnie. Nawadnianie zbyt krótkie, by je podzielić, zostaje bez zmian.",
+    "soak_label": "Wsiąkanie między przejściami",
+    "pause_between_zones_label": "Przerwa między strefami",
+    "pause_between_zones_description": "Oczekiwanie między dwiema strefami nawadniania po kolei: czas, by ciśnienie w instalacji wróciło albo by wolny zaworek zamknął się przed otwarciem następnego.",
+    "minutes": "minut",
+    "seconds": "sekund"
+  },
+  "calculation_log": {
+    "title": "Dziennik obliczeń",
+    "description": "Zapisuje do pliku pełne dane wejściowe każdego obliczenia, żeby dwa dni, które wyglądają podobnie, ale nawadniają bardzo różnie, dało się później porównać. Każde obliczenie dopisuje jeden wiersz: odczyty grupy czujników i sposób ich scalenia, wartości pośrednie modułu (promieniowanie słoneczne, promieniowanie netto, ET0) oraz wynikowy zapas, czas i objętość. Domyślnie wyłączone; rozmiar pliku jest ograniczony, a plik jest rotowany, więc może zostać włączony na cały sezon.",
+    "enabled_label": "Zapisuj dane wejściowe obliczenia do pliku",
+    "file_hint": "Zapisywane do config/smart_irrigation/calc_log.jsonl, jeden rekord JSON na wiersz. Najnowsze rekordy są też w pobieranej diagnostyce (współrzędne zaokrąglone, identyfikatory encji usunięte), więc można je dołączyć do zgłoszenia w jednym kroku."
+  },
+  "measured_skip": {
+    "title": "Pomiń według zmierzonych warunków",
+    "description": "Sprawdzane na początku każdego nawadniania, z czujnika albo z serwisu pogodowego. Czujnik, którego nie da się odczytać, nigdy nie zatrzymuje nawadniania.",
+    "enabled": "Włączone",
+    "threshold": "Próg",
+    "sensor": "Czujnik",
+    "sensor-optional": "Czujnik (opcjonalnie)",
+    "rain": {
+      "title": "Czujnik deszczu",
+      "description": "Pomiń nawadnianie, dopóki czujnik deszczu mówi, że pada.",
+      "sensor-hint": "Czujnik binarny, który jest włączony, gdy pada.",
+      "history-label": "Skracaj nawadnianie po niedawnym deszczu",
+      "history-description": "Dla strefy, która wcale nie ma deszczu w milimetrach: bez deszczomierza i z serwisem pogodowym, który go nie podaje. Odczytywana jest własna historia czujnika z ostatnich pięciu dni, ważona tak, że wczoraj liczy się bardziej niż cztery dni temu, i nawadnianie zostaje o tyle skrócone. Cały dzień odnotowanego deszczu dziś zabiera całe nawadnianie; cztery dni temu jedną dziesiątą. Bilans wodny nigdy nie jest ruszany, bo nie wiadomo, ile milimetrów spadło: deficyt zostaje i zostanie nawodniony, gdy pogoda się odwróci. Strefa, której grupa czujników podaje deszcz w milimetrach, jest pomijana, bo bilans już go ma. Wymaga to czujnika, który pozostaje włączony przez cały deszcz, a nie takiego, który daje krótki impuls przy każdym przechyle."
+    },
+    "freeze": {
+      "title": "Mróz",
+      "description": "Pomiń nawadnianie, gdy temperatura jest na progu lub poniżej.",
+      "sensor-hint": "Puste: bieżąca temperatura z serwisu pogodowego."
+    },
+    "wind": {
+      "title": "Wiatr",
+      "description": "Pomiń nawadnianie, gdy wiatr jest na progu lub powyżej: zraszacz przy silnym wiatrze podlewa ścieżkę, nie rabatę.",
+      "sensor-hint": "Puste: bieżący wiatr z serwisu pogodowego, na 10 m."
     }
   }
 }

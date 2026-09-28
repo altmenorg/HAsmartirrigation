@@ -16,7 +16,9 @@
       "after": "之后"
     },
     "units": {
-      "seconds": "秒"
+      "seconds": "秒",
+      "minutes": "分钟",
+      "hours": "小时"
     },
     "attributes": {
       "size": "面积",
@@ -75,7 +77,11 @@
         "maximum-bucket-is": "最大 bucket 容量为",
         "drainage-rate-is": "饱和时（bucket 处于最大值）的排水速率为",
         "current-drainage-is": "当前排水量的计算方式为",
-        "no-drainage": "当前排水量为 0，原因是"
+        "no-drainage": "当前排水量为 0，原因是",
+        "module-returned-hourly-evapotranspiration-deficiency": "模块逐小时累加了作物蒸散亏缺（ = 每小时 et0 * Kc + 降水之和），时段为",
+        "crop-factor-is": "作物系数为",
+        "precipitation-rate-is": "降水强度为",
+        "below-irrigation-threshold": "亏缺尚未达到该区域的灌溉阈值，因此不需要浇水，时长设为 0。亏缺 / 阈值："
       }
     }
   },
@@ -106,7 +112,16 @@
       "messages": {
         "no-service": "未使用任何天气服务——天气数据仅来自您自己的传感器。",
         "saved": "天气服务已更新并应用。",
-        "reload-note": "保存时会针对该服务验证 API 密钥并立即应用更改。"
+        "reload-note": "保存时会针对该服务验证 API 密钥并立即应用更改。",
+        "owm-onecall-hint": "OpenWeatherMap 需要 One Call API 3.0 套餐（One Call by Call）。每天 1000 次调用以内免费，但必须绑卡激活，而且新密钥可能要过一两个小时才能生效。普通的默认密钥会被拒绝。"
+      },
+      "history": {
+        "title": "历史",
+        "refresh": "刷新",
+        "last-update": "上次更新",
+        "time": "获取时间",
+        "sensor-group": "传感器组",
+        "no-data": "还没有从天气服务获取到数据。"
       }
     },
     "backuprestore": {
@@ -145,7 +160,9 @@
           "description": "计算时会采用到目前为止收集的天气数据，并更新每个自动区域的 bucket。然后根据新的 bucket 值调整持续时间，并移除收集的天气数据。",
           "labels": {
             "auto-calc-enabled": "自动计算灌溉持续时间",
-            "calc-time": "计算时间"
+            "calc-time": "计算时间",
+            "hourly-calculation": "逐小时计算蒸散量",
+            "hourly-calculation-hint": "把 FAO-56 的小时方程在上次计算以来的每个小时上累加，而不是把日方程套用在平均值上，因为平均值会掩盖阳光和高温是否同时出现。新安装从这种方式开始；此功能出现之前就已存在的安装会保留日方程，直到你切换为止，因为两者给出的数字不同，而你的浇水不该因为一次更新而改变。每小时的阳光来自辐射或照度传感器、天气服务自身的小时历史，或当天的温度区间。当读数在一天里陆续到来时，这样做才有意义：每天只更新一次会让单个读数在二十四小时里一直生效，那时两种方式都不可信。没有自己传感器的温室保留日方程。"
           }
         },
         "automatic-update": {
@@ -174,6 +191,17 @@
             "continuousupdates": "启用连续更新",
             "sensor_debounce": "传感器防抖"
           }
+        },
+        "panel-mode": {
+          "header": "面板",
+          "labels": {
+            "advanced": "高级设置",
+            "advanced-hint": "显示用于微调模型的设置：排水、阈值、系数、区域往前看多远。它们都有合理的默认值；除非你确定需要，就保持关闭。无论哪种情况，你的取值都会保留。"
+          }
+        },
+        "setup-assistant": {
+          "description": "最多四个问题，它就会为你创建一个传感器组和一个区域，并为两者选好所需的内容。适用于第一个区域、再加一个，或者重新开始。它以前是一个标签页，等于在邀请一个已经配置好的安装去配置自己。",
+          "open": "打开向导"
         }
       },
       "description": "此页面提供全局设置。",
@@ -199,32 +227,104 @@
       "description": "查看有关下次灌溉和系统状态的信息。",
       "configuration-not-available": "配置不可用。",
       "cards": {
-        "zone-bucket-values": {
-          "title": "区域 bucket 值和持续时间",
+        "next-run": {
+          "title": "下次浇水",
           "labels": {
-            "bucket": "Bucket",
-            "duration": "持续时间"
+            "start": "开始",
+            "duration": "总时长",
+            "zones": "将要浇水的区域",
+            "trigger": "触发器"
           },
-          "no-zones": "未配置任何区域"
+          "no-start": "目前还无法推算出开始时间。",
+          "nothing-to-water": "无需浇水：没有区域达到自己的灌溉阈值。",
+          "trigger-default": "默认，在日出时结束",
+          "accounts-for-duration": "往回推算，使浇水正好在那时结束",
+          "starts-at-trigger": "在那一刻开始",
+          "sequencing-sequential": "一次一个区域，所以总时长是所有区域相加",
+          "sequencing-parallel": "所有区域同时进行，所以总时长取最长的那个区域",
+          "headline-nothing": "无需浇水",
+          "sub-nothing": "还没有区域缺水到需要浇的程度。下一次启动会是 {start}。",
+          "headline-watering": "{start} 浇水",
+          "headline-watering-soon": "下次启动时浇水",
+          "sub-watering": "{count} 个区域，共 {duration}。",
+          "headline-postponed": "浇水已暂缓",
+          "sub-postponed": "是你推迟的。它会自行恢复，也不会丢失什么：缺水的区域之后依然缺水。",
+          "headline-skipped": "今天不浇水",
+          "headline-not-scheduled": "有一次浇水该做了，但没有任何安排会去启动它",
+          "sub-not-scheduled": "上面的时间是它会开始的时刻。此刻没有任何启动触发器处于待发状态，这种情况会在活动触发器被停用或未注册时出现。请到设置里检查该触发器，如果看起来没问题，一次计算就会重新让它待发。"
         },
-        "next-irrigation": {
-          "title": "下次灌溉",
-          "labels": {
-            "next-start": "下次开始",
-            "duration": "持续时间",
-            "zones": "区域"
-          },
-          "no-data": "无可用数据"
+        "decision": {
+          "title": "会被跳过吗？",
+          "will-run": "没有任何条件在拦着这次浇水。",
+          "will-skip": "这次浇水会被跳过。",
+          "preview-note": "刚刚评估的结果。预报在开始前仍可能变化。",
+          "unavailable": "无法评估跳过条件。",
+          "last-title": "上一次真正的判定",
+          "last-none": "还没有对任何一次浇水作出判定。",
+          "last-skipped": "已跳过",
+          "last-ran": "已执行",
+          "check-precipitation": "降雨预报",
+          "check-days_between": "两次浇水的间隔天数",
+          "state-off": "关闭",
+          "state-unavailable": "无法检查",
+          "state-passing": "不阻止",
+          "state-blocking": "正在阻止",
+          "detail-forecast": "预报",
+          "detail-threshold": "阈值",
+          "detail-days-since": "距上次浇水的天数",
+          "detail-days-required": "所需天数",
+          "check-rain_sensor": "雨量传感器",
+          "check-freeze": "霜冻",
+          "check-wind": "风",
+          "check-soil_moisture": "土壤湿度",
+          "detail-now": "当前",
+          "detail-weather-service": "天气服务",
+          "detail-raining": "正在下雨",
+          "detail-dry": "没有下雨",
+          "detail-held": "这次不参与",
+          "check-postponed": "由你推迟"
         },
-        "irrigation-reason": {
-          "title": "灌溉原因",
+        "estimate": {
+          "title": "各区域当前的状况",
+          "note": "通过对上次计算之后收集的读数重新跑一遍计算得出的估算。不会写入任何数据：区域会保留上次计算的值，直到下一次计算。",
+          "none": "目前还没有区域可以估算。",
           "labels": {
-            "reason": "原因",
-            "sunrise": "日出",
-            "total-duration": "总持续时间",
-            "explanation": "说明"
+            "now": "当前",
+            "at-last-calculation": "上次计算时",
+            "would-water": "将会浇",
+            "last-irrigation": "上次浇水"
           },
-          "no-data": "无可用数据"
+          "nothing": "不浇",
+          "never-watered": "从未"
+        },
+        "postpone": {
+          "prompt": "预报没算到的降雨，还是你自己的原因？",
+          "for-24": "暂缓 24 小时",
+          "for-48": "暂缓 48 小时",
+          "until": "浇水已暂缓至",
+          "resume": "立即恢复"
+        },
+        "forecast": {
+          "today": "今天"
+        },
+        "stale": {
+          "title": "有一个区域已经不再参与计算",
+          "body": "它的需水量比其他区域的更旧，所以它是按过时的天气在浇水。请检查它的传感器组是否还在收到数据，并到日志里看看计算对它说了什么。",
+          "never": "从未计算"
+        }
+      },
+      "gaps": {
+        "auto_calc_off": {
+          "title": "当前没有在计算任何东西",
+          "body": "自动时长计算已关闭，所以各区域的时长永远不会更新。到设置里重新打开它，或者在想浇水时手动计算。"
+        },
+        "no_automatic_zone": {
+          "title": "没有区域会自己浇水",
+          "body": "每个区域都是手动或已停用，所以启动什么也触及不到。把某个区域设为自动，它才会按计划浇水。"
+        },
+        "no_valve_path": {
+          "title": "这里没有任何东西会打开阀门",
+          "body": "Smart Irrigation 计算要浇多久；需要有东西照此行动。要么把阀门关联到区域并打开直接阀门控制，要么针对启动事件写一个自动化（蓝图会替你做好）。如果已经有自动化在做这件事，就无需改动。"
         }
       }
     },
@@ -281,8 +381,15 @@
             "none": "无",
             "weather_service": "天气服务",
             "sensor": "传感器",
-            "static": "静态值"
-          }
+            "static": "静态值",
+            "illuminance": "光照传感器（勒克斯）"
+          },
+          "luminous_efficacy": "光视效能",
+          "greenhouse": "温室",
+          "greenhouse_description": "封闭环境：温室、塑料大棚，以及任何玻璃或塑料覆盖之下的地方。雨到不了这些区域，因此降水不计入它们的水量平衡，相关字段也会隐藏。有两项需要你自己设置，因为无法推测：给风速一个接近 0 的静态值，因为计算假定的是露天；太阳辐射用光照传感器，因为覆盖材料会过滤天空。",
+          "module": "计算引擎",
+          "module_description": "该组只提供这个引擎会读取的数据源。使用它的区域会继承这一选择。",
+          "module_undecided": "还没有选择引擎，所以会提供全部数据源，使用该组的每个区域都保留各自的选择。选定一个后，就只会看到它会读取的数据源。"
         }
       },
       "description": "添加一个或多个传感器组，从天气服务、传感器或两者的组合中获取天气数据。您可以将每个传感器组映射到一个或多个区域",
@@ -299,6 +406,12 @@
         "precipitation": "降水",
         "retrieval-time": "获取时间",
         "no-data": "此传感器组没有可用的天气数据"
+      },
+      "summary": {
+        "sources-one": "{n} 个数据源",
+        "sources-other": "{n} 个数据源",
+        "zones-one": "{n} 个区域",
+        "zones-other": "{n} 个区域"
       }
     },
     "modules": {
@@ -383,10 +496,164 @@
         "linked-entity-hint": "为该区域浇水的阀门或开关。每当它运行时（手动开启、自动化，或在启用直接阀门控制时由 Smart Irrigation 自身运行），都会根据运行时间和该区域的流量为 bucket 计入水量。闭环功能需要此项。",
         "flow-sensor": "累计水量计",
         "flow-sensor-hint": "若需精确计量而非以流量×时间估算：请提供一个累计用水总量（状态类别为 total_increasing），而非瞬时流速。单位会自动读取（L、mL、m³、gal、ft³）。",
-        "optional": "可选"
+        "optional": "可选",
+        "et-deficiency": "每日 ET 亏缺",
+        "input-method": "输入方式",
+        "input-methods": {
+          "throughput": "流量与面积",
+          "direct": "降水强度"
+        },
+        "precipitation-rate": "降水强度",
+        "irrigation-threshold": "灌溉阈值",
+        "soil-moisture-sensor": "土壤湿度传感器",
+        "soil-moisture-sensor-hint": "只要土壤湿度等于或高于阈值，该区域就跳过本次浇水。水量余额会保留。",
+        "soil-moisture-threshold": "达到或超过此值时跳过",
+        "calculation-method": "蒸散量",
+        "calculation-method-help": {
+          "from_weather": "来自你的测量：温度、湿度、风、日照。",
+          "provided": "你已经有以毫米为单位的蒸散量；直接采用。",
+          "fixed": "每天固定多少毫米，不看天气。"
+        },
+        "calculation-methods": {
+          "from_weather": "由 Smart Irrigation 计算",
+          "provided": "由传感器或服务提供",
+          "fixed": "固定的量"
+        },
+        "forecast-days": "向前预判",
+        "forecast-days-help": "0：区域只补天气实际带走的水。1：把明天也算进来，2：明天和后天，以此类推。接下来的几天越热，今天浇的就越多。这不是因下雨而跳过，那是另外一项设置。",
+        "fixed-amount": "固定的量",
+        "engine-shared-help": "这项设置只属于这个区域：每个区域都有自己的一份，在这里改动不会影响别处。",
+        "soil-type": "土壤",
+        "plant-type": "这里种的是什么",
+        "soil-types": {
+          "sand": "砂质",
+          "sandy_loam": "砂壤土",
+          "loam": "壤土",
+          "clay_loam": "黏壤土",
+          "clay": "黏土",
+          "custom": "我自己设定排水速率"
+        },
+        "plant-types": {
+          "lawn": "草坪",
+          "vegetables": "蔬菜",
+          "flowers": "花卉",
+          "shrubs": "灌木",
+          "hedge": "绿篱",
+          "fruit_trees": "果树",
+          "vines": "藤本作物",
+          "ground_cover": "地被植物",
+          "custom": "我自己设定作物系数"
+        },
+        "duration-readonly-automatic": "已为你算好：该区域的浇水时长来自它的水量平衡。想自己填时长，请把它改为手动。",
+        "duration-readonly-disabled": "已停用的区域永远不会浇水，所以没有浇水时长。",
+        "et-deficiency-help": "该区域每天需要的量：ETc，即参考蒸散量乘以作物系数，已包含季节性调整。它在按时间间隔换算之前、在扣除降雨之前，正因如此不同配置之间才可以互相比较。区域传感器还单独带有参考值，作为 `eto` 属性，便于和天气服务公布的数值对照。"
       },
       "no_items": "尚未定义任何区域。",
-      "title": "区域"
+      "title": "区域",
+      "module-comes-from-the-group": "计算引擎来自该区域的传感器组。在那里修改，使用该组的每个区域都会跟着变。",
+      "status": {
+        "will-water": "下次启动时将浇 {duration}。",
+        "idle": "无需浇水：还差 {short}。",
+        "satisfied": "无需浇水：这个区域已经够了。",
+        "under-threshold": "暂时无需浇水：还差 {short}，低于该区域的阈值。",
+        "manual": "只在你要求时浇水。",
+        "disabled": "已停用：永远不会浇水，也不为它记水量平衡。",
+        "threshold": "阈值"
+      },
+      "calendar": {
+        "title": "浇水日历（12 个月，估算）",
+        "caveat": "这是用于规划的估算，不是你当地的天气：各月份是根据你的纬度和一条典型的季节曲线建模出来的，所以大陆性气候的夏天看起来会比实际更热更干。它不影响任何东西，不计算任何东西，也不浇任何水。",
+        "month": "月份",
+        "et": "ET",
+        "precipitation": "降水",
+        "watering": "浇水",
+        "avg-temp": "平均温度",
+        "none": "该区域没有可用的日历数据",
+        "error": "无法生成日历"
+      }
+    },
+    "setup": {
+      "title": "设置",
+      "description": "创建第一个区域的引导流程。它一次问一个问题，而且只问你之前的回答尚未决定的那些。",
+      "next": "下一步",
+      "back": "上一步",
+      "create": "创建",
+      "creating": "正在创建...",
+      "failed": "出了点问题，什么也没有创建。如果你更愿意手动设置，其他标签页仍然在。",
+      "done": "你的区域已就绪。",
+      "done-note": "它出现在「区域」下，它的传感器组在「传感器组」下。它们没有任何特殊之处：像其他条目一样编辑即可。等传感器上报数据后，运行一次更新和一次计算，区域就会开始给出时长。",
+      "steps": {
+        "zone": {
+          "question": "你在浇什么？",
+          "help": "一个区域就是一个阀门，浇一片地方。",
+          "name": "名称",
+          "size": "面积",
+          "throughput": "流量",
+          "throughput-help": "这个区域每分钟出多少水。能测就实测，而不要照抄产品参数表：所有时长都是由它推出来的，而它也是最不声不响地让你浇两倍时长的原因。"
+        },
+        "environment": {
+          "question": "它长在哪里？",
+          "outdoors": "室外",
+          "outdoors-help": "露天。雨能落到它上面，天空的情况值得问一问。",
+          "under-glass": "玻璃或塑料覆盖之下",
+          "under-glass-help": "温室、塑料大棚、阳光房。雨进不来，而预报描述的是这些植物永远遇不到的天气。"
+        },
+        "weather": {
+          "question": "蒸发量的数值该从哪里来？",
+          "service": "你已配置的天气服务",
+          "service-help": "无需再安装什么。Smart Irrigation 获取你所在位置的天气，并据此计算蒸散量。",
+          "no-service-indoors": "这里不提供天气服务：它描述的是天空，而这些植物并不在天空之下。",
+          "sensors": "我自己的气象传感器",
+          "sensors-help": "你有温度、湿度等传感器。这是最准确的选项，因为它测的正是植物实际所在的位置。",
+          "et": "已经在上报蒸散量的传感器",
+          "et-help": "已经有别的东西算好了，Smart Irrigation 应该直接采用那个数值。",
+          "static": "每天固定一个量",
+          "static-help": "既没有传感器，也没有服务。你给一个数字，每天都用它。比较粗糙，但仍然会跟踪你已经浇过的水。"
+        },
+        "sensors": {
+          "question": "它该读取哪些实体？",
+          "help": "只会询问计算真正用到的那些。",
+          "lux-hint": "在玻璃之下，光照传感器可以代替太阳辐射：在这里选择你的照度实体，之后到传感器组里把它的来源设为「光照传感器（勒克斯）」。",
+          "static-question": "每天蒸发多少？",
+          "static-help": "以水深表示，单位与你的区域一致。温带的夏天，每天 4 到 5 毫米左右是常见值。",
+          "static-label": "每天的蒸发量"
+        },
+        "review": {
+          "question": "可以创建了",
+          "zone": "区域",
+          "environment": "环境",
+          "engine": "计算引擎",
+          "sources": "数据源",
+          "from-the-service": "来自天气服务",
+          "help": "这会创建一个计算模块、一个传感器组和一个区域，和用其他标签页创建的完全一样。之后一切都可以再改。"
+        }
+      },
+      "step": "步"
+    },
+    "history": {
+      "title": "历史",
+      "description": "Smart Irrigation 记到某个区域名下的每次浇水：何时开始、浇了多久、用了多少水。浇水由直接阀门控制和观测浇水记录，保留 90 天。",
+      "refresh": "刷新",
+      "no-data": "还没有记录任何浇水。",
+      "table": {
+        "title": "浇水记录",
+        "start": "开始",
+        "zone": "区域",
+        "duration": "时长",
+        "water": "用水量",
+        "truncated": "显示 {total} 次中最近的 {count} 次。"
+      },
+      "charts": {
+        "total-title": "每日总用水量（最近 30 天）",
+        "per-zone-title": "每日各区域用水量（最近 30 天）",
+        "no-data": "这段时间内没有用水。"
+      }
+    },
+    "groups": {
+      "home": "主页",
+      "zones": "区域",
+      "data": "数据",
+      "settings": "设置"
     }
   },
   "title": "Smart Irrigation",
@@ -401,7 +668,8 @@
     "trigger_types": {
       "sunrise": "日出",
       "sunset": "日落",
-      "solar_azimuth": "太阳方位角"
+      "solar_azimuth": "太阳方位角",
+      "time": "固定时间"
     },
     "fields": {
       "name": {
@@ -427,6 +695,9 @@
       "account_for_duration": {
         "name": "考虑持续时间",
         "description": "启用时，灌溉将提前开始，以便在指定时间完成。禁用时，灌溉将正好在指定时间开始。"
+      },
+      "at": {
+        "name": "时间"
       }
     },
     "dialog": {
@@ -442,7 +713,8 @@
     "confirm_delete": "确定要删除触发器“{name}”吗？",
     "validation": {
       "name_required": "触发器名称为必填项",
-      "azimuth_invalid": "方位角必须是有效的数字"
+      "azimuth_invalid": "方位角必须是有效的数字",
+      "time_invalid": "请按 HH:MM 输入有效时间。"
     },
     "help": {
       "sunrise_offset": "对于日出触发器：使用负值在日出之前开始，使用正值在日出之后开始。设置为 0 可自动提前开始，以便在日出之前完成所有区域。",
@@ -486,6 +758,45 @@
     "sequencing": {
       "sequential": "顺序（一次一个区域）",
       "parallel": "并行（所有区域同时）"
+    },
+    "sequencing_description": "你的区域是如何浇水的。这决定了启动触发器在需要于日出前结束时，是从多长时间往回推算：一个接一个是所有区域时长之和，全部同时则取其中最长的。无论阀门是由 Smart Irrigation 自己打开，还是由你自己的自动化打开，都适用。",
+    "passes_label": "分多段浇水",
+    "passes_description": "循环与渗透：同样的水量分成几段较短的浇灌，中间留出间歇，让黏重的土壤吸进去，而不是任它流走。一段就是一次浇完，这是默认值。太短而无法拆分的浇水不作改动。",
+    "soak_label": "各段之间的渗透",
+    "pause_between_zones_label": "区域之间的暂停",
+    "pause_between_zones_description": "顺序浇水时两个区域之间的等待：让管路压力恢复，或让动作慢的阀门先关好，再打开下一个。",
+    "minutes": "分钟",
+    "seconds": "秒"
+  },
+  "calculation_log": {
+    "title": "计算日志",
+    "description": "把每次计算的全部输入写入文件，这样两个看起来相似却浇水差别很大的日子，事后可以拿来对比。每次计算追加一行：传感器组的读数以及它们是如何汇总的、模块的中间量（太阳辐射、净辐射、ET0），以及由此得出的水量余额、时长和用水量。默认关闭；文件大小有上限并会轮转，所以可以整个季节都开着。",
+    "enabled_label": "把计算输入写入文件",
+    "file_hint": "写入 config/smart_irrigation/calc_log.jsonl，每行一条 JSON 记录。最近的记录也包含在诊断下载里（坐标已取整，实体 ID 已移除），所以可以一步就附到问题报告上。"
+  },
+  "measured_skip": {
+    "title": "按实测条件跳过",
+    "description": "每次浇水开始时检查，来自传感器或天气服务。读不到的传感器绝不会阻止浇水。",
+    "enabled": "已启用",
+    "threshold": "阈值",
+    "sensor": "传感器",
+    "sensor-optional": "传感器（可选）",
+    "rain": {
+      "title": "雨量传感器",
+      "description": "只要雨量传感器显示正在下雨，就跳过本次浇水。",
+      "sensor-hint": "一个在下雨期间为开启状态的二元传感器。",
+      "history-label": "近期下雨后缩短浇水",
+      "history-description": "适用于完全没有毫米降雨量的区域：没有雨量计，天气服务也不提供。系统读取该传感器自身最近五天的历史，加权处理，使昨天比四天前更有分量，并据此缩短浇水时间。今天一整天都在下雨会占掉整次浇水；四天前只占十分之一。水量平衡从不改动，因为不知道降了多少毫米：亏缺会保留下来，等天气转变后再补回。传感器组确实以毫米上报降雨的区域不受影响，因为平衡里已经算上了。这需要一个下雨期间保持开启的传感器，而不是每翻斗一次发一个短脉冲的传感器。"
+    },
+    "freeze": {
+      "title": "霜冻",
+      "description": "当温度等于或低于阈值时跳过本次浇水。",
+      "sensor-hint": "留空：使用天气服务的当前温度。"
+    },
+    "wind": {
+      "title": "风",
+      "description": "当风速等于或高于阈值时跳过本次浇水：大风中的喷头浇的是小路，不是花坛。",
+      "sensor-hint": "留空：使用天气服务的当前风速，10 米高度。"
     }
   }
 }

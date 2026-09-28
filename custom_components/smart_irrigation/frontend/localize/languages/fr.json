@@ -80,7 +80,8 @@
         "drainage-rate-is": "Le taux de drainage à saturation (bucket au max) est de",
         "current-drainage-is": "Le drainage actuel est calculé comme",
         "no-drainage": "Le drainage actuel est de 0 car",
-        "below-irrigation-threshold": "Le déficit n'a pas encore atteint le seuil d'arrosage de cette zone, donc aucun arrosage n'est nécessaire et la durée est mise à 0. Déficit / seuil :"
+        "below-irrigation-threshold": "Le déficit n'a pas encore atteint le seuil d'arrosage de cette zone, donc aucun arrosage n'est nécessaire et la durée est mise à 0. Déficit / seuil :",
+        "precipitation-rate-is": "Le taux de précipitation est"
       }
     }
   },
@@ -177,7 +178,8 @@
       "messages": {
         "no-service": "Aucun service météo utilisé — les données proviennent uniquement de vos capteurs.",
         "saved": "Service météo mis à jour et appliqué.",
-        "reload-note": "L'enregistrement valide la clé API auprès du service et applique le changement immédiatement."
+        "reload-note": "L'enregistrement valide la clé API auprès du service et applique le changement immédiatement.",
+        "owm-onecall-hint": "OpenWeatherMap exige le forfait One Call API 3.0 (One Call by Call). Il est gratuit jusqu'à 1000 appels par jour mais doit être activé avec une carte, et une nouvelle clé peut mettre une ou deux heures à fonctionner. Une simple clé par défaut est refusée."
       }
     },
     "backuprestore": {
@@ -601,7 +603,8 @@
         },
         "duration-readonly-automatic": "Calculée pour vous : la durée de cette zone vient de son bilan hydrique. Passez-la en manuel pour saisir une durée vous-même.",
         "duration-readonly-disabled": "Une zone désactivée n'est jamais arrosée, elle n'a donc pas de durée.",
-        "et-deficiency-help": "Ce dont cette zone a besoin par jour : ETc, l'évapotranspiration de référence multipliée par le facteur de culture, ajustement saisonnier inclus. Avant la mise à l'échelle de l'intervalle et avant la pluie, ce qui la rend comparable d'une configuration à l'autre. Le capteur de la zone porte aussi la valeur de référence seule, dans l'attribut `eto`, à confronter à ce que publie un service météo."
+        "et-deficiency-help": "Ce dont cette zone a besoin par jour : ETc, l'évapotranspiration de référence multipliée par le facteur de culture, ajustement saisonnier inclus. Avant la mise à l'échelle de l'intervalle et avant la pluie, ce qui la rend comparable d'une configuration à l'autre. Le capteur de la zone porte aussi la valeur de référence seule, dans l'attribut `eto`, à confronter à ce que publie un service météo.",
+        "precipitation-rate": "Taux de précipitation"
       },
       "no_items": "Il n'y a pas encore de zone définie.",
       "title": "Zones",

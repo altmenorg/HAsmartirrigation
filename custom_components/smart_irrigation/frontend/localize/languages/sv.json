@@ -16,7 +16,9 @@
       "after": "efter"
     },
     "units": {
-      "seconds": "sekunder"
+      "seconds": "sekunder",
+      "minutes": "min",
+      "hours": "h"
     },
     "attributes": {
       "size": "storlek",
@@ -75,7 +77,11 @@
         "maximum-bucket-is": "Maximal bucket-storlek är",
         "drainage-rate-is": "Dräneringshastighet vid mättnad (bucket på max) är",
         "current-drainage-is": "Aktuell dränering beräknas som",
-        "no-drainage": "Aktuell dränering är 0 eftersom"
+        "no-drainage": "Aktuell dränering är 0 eftersom",
+        "module-returned-hourly-evapotranspiration-deficiency": "Modulen summerade underskottet i grödans avdunstning timme för timme ( = summan av timmarnas et0 * Kc + nedbörd) över",
+        "crop-factor-is": "Grödfaktorn är",
+        "precipitation-rate-is": "Nedbördsintensiteten är",
+        "below-irrigation-threshold": "Underskottet har ännu inte nått den här zonens vattningsgräns, så ingen vattning behövs och längden sätts till 0. Underskott / gräns:"
       }
     }
   },
@@ -106,7 +112,16 @@
       "messages": {
         "no-service": "Ingen vädertjänst används — väderdata kommer enbart från dina egna sensorer.",
         "saved": "Vädertjänsten uppdaterad och tillämpad.",
-        "reload-note": "När du sparar valideras API-nyckeln mot tjänsten och ändringen tillämpas omedelbart."
+        "reload-note": "När du sparar valideras API-nyckeln mot tjänsten och ändringen tillämpas omedelbart.",
+        "owm-onecall-hint": "OpenWeatherMap kräver planen One Call API 3.0 (One Call by Call). Den är gratis upp till 1000 anrop per dag men måste aktiveras med ett kort, och en ny nyckel kan behöva ett par timmar innan den fungerar. En vanlig standardnyckel avvisas."
+      },
+      "history": {
+        "title": "Historik",
+        "refresh": "Uppdatera",
+        "last-update": "Senaste uppdatering",
+        "time": "Hämtat",
+        "sensor-group": "Sensorgrupp",
+        "no-data": "Inga data har hämtats från vädertjänsten än."
       }
     },
     "backuprestore": {
@@ -145,7 +160,9 @@
           "description": "Beräkningen tar insamlad väderdata fram till den tidpunkten och uppdaterar bucket för varje automatisk zon. Sedan justeras varaktigheten baserat på det nya bucket-värdet och den insamlade väderdatan tas bort.",
           "labels": {
             "auto-calc-enabled": "Beräkna bevattningsvaraktigheter automatiskt",
-            "calc-time": "Beräkna kl."
+            "calc-time": "Beräkna kl.",
+            "hourly-calculation": "Beräkna avdunstning timme för timme",
+            "hourly-calculation-hint": "Summerar FAO-56:s timekvation över varje timme sedan förra beräkningen, i stället för att använda dygnsekvationen på medelvärden, som döljer om solen och värmen kom samtidigt. En ny installation börjar med den; en installation som fanns innan behåller dygnsekvationen tills du byter, eftersom de två ger olika tal och din vattning inte ska ändras av en uppdatering. Solen för varje timme kommer från en strålnings- eller ljussensor, från vädertjänstens egen timhistorik, eller från dagens temperaturspann. Det är värt att ha när mätvärden kommer in under dagen: en uppdatering om dagen låter ett enda mätvärde gälla i tjugofyra timmar, och då går ingen av formerna att lita på. Ett växthus utan egen sensor behåller dygnsekvationen."
           }
         },
         "automatic-update": {
@@ -174,6 +191,17 @@
             "continuousupdates": "Aktivera kontinuerliga uppdateringar",
             "sensor_debounce": "Sensor-debounce"
           }
+        },
+        "panel-mode": {
+          "header": "Panel",
+          "labels": {
+            "advanced": "Avancerade inställningar",
+            "advanced-hint": "Visar de inställningar som finjusterar modellen: dränering, gränser, faktor, hur långt fram en zon ser. De har vettiga standardvärden; låt det här vara av om du inte vet att du behöver dem. Dina värden behålls i vilket fall."
+          }
+        },
+        "setup-assistant": {
+          "description": "Högst fyra frågor, och den skapar en sensorgrupp och en zon för dig och väljer det var och en behöver. För en första zon, en till, eller en nystart. Det var tidigare en flik, som bjöd in en installation som redan var uppsatt att sätta upp sig.",
+          "open": "Öppna assistenten"
         }
       },
       "description": "Den här sidan tillhandahåller globala inställningar.",
@@ -199,32 +227,104 @@
       "description": "Visa information om nästa bevattning och systemstatus.",
       "configuration-not-available": "Konfiguration inte tillgänglig.",
       "cards": {
-        "zone-bucket-values": {
-          "title": "Zonens bucket-värden & varaktighet",
+        "next-run": {
+          "title": "Nästa körning",
           "labels": {
-            "bucket": "Bucket",
-            "duration": "Varaktighet"
+            "start": "Börjar",
+            "duration": "Total längd",
+            "zones": "Zoner som vattnar",
+            "trigger": "Utlösare"
           },
-          "no-zones": "Inga zoner konfigurerade"
+          "no-start": "Ingen starttid kunde räknas ut än.",
+          "nothing-to-water": "Inget att vattna: ingen zon har nått sin vattningsgräns.",
+          "trigger-default": "Standard, klar vid soluppgången",
+          "accounts-for-duration": "räknat bakåt så att körningen slutar då",
+          "starts-at-trigger": "börjar vid den tidpunkten",
+          "sequencing-sequential": "en zon åt gången, så totalen är alla zoner sammanlagda",
+          "sequencing-parallel": "alla zoner samtidigt, så totalen är den längsta zonen",
+          "headline-nothing": "Inget att vattna",
+          "sub-nothing": "Ingen zon saknar tillräckligt med vatten än. Nästa start skulle vara {start}.",
+          "headline-watering": "Vattnar {start}",
+          "headline-watering-soon": "Vattnar vid nästa start",
+          "sub-watering": "{count} zon(er), {duration} totalt.",
+          "headline-postponed": "Vattningen är uppskjuten",
+          "sub-postponed": "Du sköt upp den. Den återupptas av sig själv, och inget går förlorat: en zon som saknar vatten gör det fortfarande efteråt.",
+          "headline-skipped": "Ingen vattning i dag",
+          "headline-not-scheduled": "En körning väntar, och inget är schemalagt att starta den",
+          "sub-not-scheduled": "Tiden ovan är när den skulle börja. Just nu finns ingen startutlösare i beredskap, vilket händer när den aktiva utlösaren är avstängd eller inte registrerades. Kontrollera utlösaren under Inställningar, och om den ser rätt ut gör en beräkning den redo igen."
         },
-        "next-irrigation": {
-          "title": "Nästa bevattning",
-          "labels": {
-            "next-start": "Nästa start",
-            "duration": "Varaktighet",
-            "zones": "Zoner"
-          },
-          "no-data": "Ingen data tillgänglig"
+        "decision": {
+          "title": "Kommer den att hoppas över?",
+          "will-run": "Inget håller tillbaka körningen.",
+          "will-skip": "Körningen skulle hoppas över.",
+          "preview-note": "Bedömt nu. En prognos kan fortfarande ändras före starten.",
+          "unavailable": "Villkoren för att hoppa över kunde inte bedömas.",
+          "last-title": "Senaste verkliga beslutet",
+          "last-none": "Ingen körning har avgjorts än.",
+          "last-skipped": "Hoppades över",
+          "last-ran": "Genomfördes",
+          "check-precipitation": "Regnprognos",
+          "check-days_between": "Dagar mellan vattningar",
+          "state-off": "Av",
+          "state-unavailable": "Kunde inte kontrolleras",
+          "state-passing": "Blockerar inte",
+          "state-blocking": "Blockerar",
+          "detail-forecast": "Prognos",
+          "detail-threshold": "Gräns",
+          "detail-days-since": "Dagar sedan förra körningen",
+          "detail-days-required": "Dagar som krävs",
+          "check-rain_sensor": "Regnsensor",
+          "check-freeze": "Frost",
+          "check-wind": "Vind",
+          "check-soil_moisture": "Markfukt",
+          "detail-now": "Nu",
+          "detail-weather-service": "vädertjänst",
+          "detail-raining": "Det regnar",
+          "detail-dry": "Det regnar inte",
+          "detail-held": "sitter över den här körningen",
+          "check-postponed": "Uppskjuten av dig"
         },
-        "irrigation-reason": {
-          "title": "Bevattningsorsak",
+        "estimate": {
+          "title": "Var varje zon står nu",
+          "note": "Uppskattat genom att köra beräkningen på de mätvärden som kommit in sedan förra gången. Inget sparas: en zon behåller värdet från sin senaste beräkning till nästa.",
+          "none": "Ingen zon kan uppskattas än.",
           "labels": {
-            "reason": "Orsak",
-            "sunrise": "Soluppgång",
-            "total-duration": "Total varaktighet",
-            "explanation": "Förklaring"
+            "now": "Nu",
+            "at-last-calculation": "Vid senaste beräkningen",
+            "would-water": "Skulle vattna",
+            "last-irrigation": "Senast vattnad"
           },
-          "no-data": "Ingen data tillgänglig"
+          "nothing": "inget",
+          "never-watered": "aldrig"
+        },
+        "postpone": {
+          "prompt": "Regn som prognosen missade, eller ett eget skäl?",
+          "for-24": "Skjut upp 24 h",
+          "for-48": "Skjut upp 48 h",
+          "until": "Vattningen är uppskjuten till",
+          "resume": "Återuppta nu"
+        },
+        "forecast": {
+          "today": "I dag"
+        },
+        "stale": {
+          "title": "En zon beräknas inte längre",
+          "body": "Dess vattenbehov är äldre än de andras, så den vattnar efter gammalt väder. Kontrollera att dess sensorgrupp fortfarande får data, och se i loggen vad beräkningen sa om den.",
+          "never": "aldrig beräknad"
+        }
+      },
+      "gaps": {
+        "auto_calc_off": {
+          "title": "Inget beräknas",
+          "body": "Automatisk längdberäkning är av, så zonernas längder uppdateras aldrig. Slå på den igen under Inställningar, eller beräkna för hand när du vill ha en körning."
+        },
+        "no_automatic_zone": {
+          "title": "Ingen zon vattnar av sig själv",
+          "body": "Alla zoner är manuella eller avstängda, så en start når ingenting. Ställ en zon på automatisk för att den ska vattnas av schemat."
+        },
+        "no_valve_path": {
+          "title": "Inget här öppnar en ventil",
+          "body": "Smart Irrigation beräknar hur länge det ska vattnas; något måste agera på det. Antingen kopplar du en ventil till en zon och slår på direkt ventilstyrning, eller du skriver en automation på starthändelsen (blueprints gör det för dig). Om en automation redan gör det finns inget att ändra."
         }
       }
     },
@@ -281,8 +381,15 @@
             "none": "Ingen",
             "weather_service": "Vädertjänst",
             "sensor": "Sensor",
-            "static": "Statiskt värde"
-          }
+            "static": "Statiskt värde",
+            "illuminance": "Ljussensor (lux)"
+          },
+          "luminous_efficacy": "Ljusutbyte",
+          "greenhouse": "Växthus",
+          "greenhouse_description": "En sluten miljö: ett växthus, en plasttunnel, allt under glas eller plast. Inget regn når dessa zoner, så nedbörd hålls utanför deras vattenbalans och dess fält göms. Två saker måste du sätta själv, eftersom de inte går att gissa: ge Vindhastighet ett fast värde nära 0, eftersom beräkningen utgår från fri luft, och använd en ljussensor för Solinstrålning, eftersom glaset filtrerar himlen.",
+          "module": "Beräkningsmotor",
+          "module_description": "Den här gruppen erbjuder bara de källor som motorn läser. Zonerna som använder den ärver valet.",
+          "module_undecided": "Ingen motor är vald än, så alla källor erbjuds och varje zon som använder den här gruppen behåller sin egen. Välj en för att bara se de källor den läser."
         }
       },
       "description": "Lägg till en eller flera sensorgrupper som hämtar väderdata från en vädertjänst, från sensorer eller en kombination av dessa. Du kan koppla varje sensorgrupp till en eller flera zoner",
@@ -299,6 +406,12 @@
         "precipitation": "Nederb.",
         "retrieval-time": "Hämtad",
         "no-data": "Ingen väderdata tillgänglig för den här sensorgruppen"
+      },
+      "summary": {
+        "sources-one": "{n} källa",
+        "sources-other": "{n} källor",
+        "zones-one": "{n} zon",
+        "zones-other": "{n} zoner"
       }
     },
     "modules": {
@@ -383,10 +496,164 @@
         "linked-entity-hint": "Ventilen eller brytaren som vattnar denna zon. Varje gång den körs (en manuell kran, en automation eller Smart Irrigation själv när direkt ventilstyrning är på) krediteras bucket utifrån körtiden och zonens flöde. Krävs för de slutna funktionerna.",
         "flow-sensor": "Kumulativ volymmätare",
         "flow-sensor-hint": "För exakt kreditering i stället för flöde x tid: en kumulativ vattenmätarsumma (tillståndsklass total_increasing), inte ett momentant flöde. Enheten läses av automatiskt (L, mL, m³, gal, ft³).",
-        "optional": "valfritt"
+        "optional": "valfritt",
+        "et-deficiency": "Dagligt ET-underskott",
+        "input-method": "Inmatningsmetod",
+        "input-methods": {
+          "throughput": "Flöde och yta",
+          "direct": "Nedbördsintensitet"
+        },
+        "precipitation-rate": "Nedbördsintensitet",
+        "irrigation-threshold": "Vattningsgräns",
+        "soil-moisture-sensor": "Markfuktsensor",
+        "soil-moisture-sensor-hint": "Zonen sitter över en körning så länge marken är på eller över gränsen. Förrådet behålls.",
+        "soil-moisture-threshold": "Hoppa över från",
+        "calculation-method": "Avdunstning",
+        "calculation-method-help": {
+          "from_weather": "Ur dina mätningar: temperatur, luftfuktighet, vind, sol.",
+          "provided": "Du har redan en avdunstning i mm; den används som den är.",
+          "fixed": "Så och så många mm om dagen, oavsett vädret."
+        },
+        "calculation-methods": {
+          "from_weather": "Beräknad av Smart Irrigation",
+          "provided": "Levererad av en sensor eller en tjänst",
+          "fixed": "En fast mängd"
+        },
+        "forecast-days": "Se framåt",
+        "forecast-days-help": "0: zonen vattnar det vädret faktiskt tog. 1: morgondagen räknas också in, 2: i morgon och dagen därpå, och så vidare. Ju varmare dagarna framåt är, desto mer vattnas i dag. Det här är inte överhoppningen vid regn, som är en egen inställning.",
+        "fixed-amount": "Fast mängd",
+        "engine-shared-help": "Den här inställningen hör bara till den här zonen: varje zon har sin egen, och att ändra den här ändrar inget någon annanstans.",
+        "soil-type": "Jord",
+        "plant-type": "Vad som växer här",
+        "soil-types": {
+          "sand": "Sandig",
+          "sandy_loam": "Sandig mulljord",
+          "loam": "Mulljord",
+          "clay_loam": "Lerig mulljord",
+          "clay": "Lera",
+          "custom": "Jag sätter dräneringshastigheten själv"
+        },
+        "plant-types": {
+          "lawn": "Gräsmatta",
+          "vegetables": "Grönsaker",
+          "flowers": "Blommor",
+          "shrubs": "Buskar",
+          "hedge": "Häck",
+          "fruit_trees": "Fruktträd",
+          "vines": "Vinrankor",
+          "ground_cover": "Marktäckare",
+          "custom": "Jag sätter grödkoefficienten själv"
+        },
+        "duration-readonly-automatic": "Beräknad för dig: den här zonens körning kommer ur dess vattenbalans. Ställ den på manuell för att skriva en längd själv.",
+        "duration-readonly-disabled": "En avstängd zon vattnas aldrig, så den har ingen vattningstid.",
+        "et-deficiency-help": "Vad den här zonen behöver per dag: ETc, referensavdunstningen gånger grödfaktorn, säsongsjustering inkluderad. Före skalningen till intervallet och före regnet, och det är det som gör talet jämförbart mellan olika uppsättningar. Zonsensorn bär också referenstalet för sig, som attributet `eto`, att hålla mot vad en vädertjänst publicerar."
       },
       "no_items": "Det finns inga zoner definierade ännu.",
-      "title": "Zoner"
+      "title": "Zoner",
+      "module-comes-from-the-group": "Beräkningsmotorn kommer från den här zonens sensorgrupp. Ändra den där, och varje zon som använder gruppen följer med.",
+      "status": {
+        "will-water": "Vattnar {duration} vid nästa start.",
+        "idle": "Inget att vattna: {short} saknas.",
+        "satisfied": "Inget att vattna: den här zonen har vad den behöver.",
+        "under-threshold": "Ännu inget att vattna: {short} saknas, under den här zonens gräns.",
+        "manual": "Vattnar bara när du ber om det.",
+        "disabled": "Avstängd: vattnas aldrig, och dess balans förs inte.",
+        "threshold": "gräns"
+      },
+      "calendar": {
+        "title": "Vattningskalender (12 månader, uppskattad)",
+        "caveat": "En uppskattning för planering, inte ditt väder: månaderna modelleras från din latitud och ett typiskt årsmönster, så en inlandssommar framstår som varmare och torrare än den är. Det påverkar inget, beräknar inget och vattnar inget.",
+        "month": "Månad",
+        "et": "ET",
+        "precipitation": "Nedbörd",
+        "watering": "Vattning",
+        "avg-temp": "Medeltemp.",
+        "none": "Inga kalenderdata finns för den här zonen",
+        "error": "Kalendern kunde inte skapas"
+      }
+    },
+    "setup": {
+      "title": "Uppsättning",
+      "description": "En guidad väg till din första zon. Den ställer en fråga i taget, och bara de frågor dina tidigare svar lämnar öppna.",
+      "next": "Nästa",
+      "back": "Tillbaka",
+      "create": "Skapa",
+      "creating": "Skapar...",
+      "failed": "Något gick fel och inget skapades. De andra flikarna finns kvar om du hellre sätter upp det för hand.",
+      "done": "Din zon är klar.",
+      "done-note": "Den syns under Zoner, med sin sensorgrupp under Sensorgrupper. Inget här är särskilt: redigera båda som vilka andra som helst. Kör en uppdatering och en beräkning när dina sensorer har rapporterat, då börjar zonen ge en längd.",
+      "steps": {
+        "zone": {
+          "question": "Vad vattnar du?",
+          "help": "En zon är en ventil som vattnar ett område.",
+          "name": "Namn",
+          "size": "Yta",
+          "throughput": "Flöde",
+          "throughput-help": "Hur mycket vatten den här zonen ger per minut. Mät det om du kan i stället för att ta det från ett datablad: det är vad varje längd härleds ur, och det tystaste sättet att vattna dubbelt så länge som du tänkte."
+        },
+        "environment": {
+          "question": "Var växer det?",
+          "outdoors": "Utomhus",
+          "outdoors-help": "Fri luft. Regnet når den, och himlen är värd att fråga om.",
+          "under-glass": "Under glas eller plast",
+          "under-glass-help": "Ett växthus, en plasttunnel, ett uterum. Inget regn kommer in, och en prognos beskriver väder dessa växter aldrig får se."
+        },
+        "weather": {
+          "question": "Var ska avdunstningstalet komma från?",
+          "service": "Vädertjänsten du har ställt in",
+          "service-help": "Inget mer att installera. Smart Irrigation hämtar vädret för din plats och räknar ut avdunstningen ur det.",
+          "no-service-indoors": "En vädertjänst erbjuds inte här: den beskriver himlen, och under den står inte dessa växter.",
+          "sensors": "Mina egna vädersensorer",
+          "sensors-help": "Du har sensorer för temperatur, luftfuktighet och resten. Det mest exakta alternativet, eftersom det mäter där växterna faktiskt står.",
+          "et": "En sensor som redan rapporterar avdunstning",
+          "et-help": "Något annat räknar redan ut den, och Smart Irrigation ska använda det talet som det är.",
+          "static": "En fast mängd per dag",
+          "static-help": "Inga sensorer och ingen tjänst. Du anger ett tal och det används varje dag. Grovt, men det håller ändå reda på vad du redan har vattnat."
+        },
+        "sensors": {
+          "question": "Vilka entiteter ska den läsa?",
+          "help": "Bara de som beräkningen faktiskt använder efterfrågas.",
+          "lux-hint": "Under glas kan en ljussensor ersätta solinstrålningen: välj din belysningsstyrke-entitet här och sätt sedan dess källa till Ljussensor (lux) i sensorgruppen.",
+          "static-question": "Hur mycket avdunstar per dag?",
+          "static-help": "En vattenmängd i höjd, i den enhet dina zoner använder. Runt 4 till 5 mm om dagen är vanligt för en tempererad sommar.",
+          "static-label": "Avdunstning per dag"
+        },
+        "review": {
+          "question": "Klart att skapa",
+          "zone": "Zon",
+          "environment": "Miljö",
+          "engine": "Beräkningsmotor",
+          "sources": "Källor",
+          "from-the-service": "från vädertjänsten",
+          "help": "Det här skapar en beräkningsmodul, en sensorgrupp och en zon, precis som de andra flikarna skulle göra. Efteråt är inget låst."
+        }
+      },
+      "step": "steg"
+    },
+    "history": {
+      "title": "Historik",
+      "description": "Varje vattning som Smart Irrigation har tillskrivit en zon: när den började, hur länge den vattnade och hur mycket vatten den använde. Körningar registreras av direkt ventilstyrning och av observerad vattning, och sparas i 90 dagar.",
+      "refresh": "Uppdatera",
+      "no-data": "Inga vattningar har registrerats än.",
+      "table": {
+        "title": "Vattningar",
+        "start": "Start",
+        "zone": "Zon",
+        "duration": "Längd",
+        "water": "Vattenförbrukning",
+        "truncated": "Visar de {count} senaste körningarna av {total}."
+      },
+      "charts": {
+        "total-title": "Total vattenförbrukning per dag (senaste 30 dagarna)",
+        "per-zone-title": "Vattenförbrukning per dag, per zon (senaste 30 dagarna)",
+        "no-data": "Inget vatten användes under den här perioden."
+      }
+    },
+    "groups": {
+      "home": "Start",
+      "zones": "Zoner",
+      "data": "Data",
+      "settings": "Inställningar"
     }
   },
   "title": "Smart Irrigation",
@@ -401,7 +668,8 @@
     "trigger_types": {
       "sunrise": "Soluppgång",
       "sunset": "Solnedgång",
-      "solar_azimuth": "Solens azimut"
+      "solar_azimuth": "Solens azimut",
+      "time": "Fast tid"
     },
     "fields": {
       "name": {
@@ -427,6 +695,9 @@
       "account_for_duration": {
         "name": "Ta hänsyn till varaktighet",
         "description": "När detta är aktiverat startar bevattningen tillräckligt tidigt för att avslutas vid den angivna tidpunkten. När det är inaktiverat startar bevattningen exakt vid den angivna tidpunkten."
+      },
+      "at": {
+        "name": "Tid"
       }
     },
     "dialog": {
@@ -442,7 +713,8 @@
     "confirm_delete": "Är du säker på att du vill radera utlösaren '{name}'?",
     "validation": {
       "name_required": "Utlösarens namn är obligatoriskt",
-      "azimuth_invalid": "Azimutvinkeln måste vara ett giltigt tal"
+      "azimuth_invalid": "Azimutvinkeln måste vara ett giltigt tal",
+      "time_invalid": "Ange en giltig tid som TT:MM."
     },
     "help": {
       "sunrise_offset": "För soluppgångsutlösare: Använd negativa värden för att starta före soluppgången, positiva för att starta efter. Ställ in på 0 för att automatiskt starta tillräckligt tidigt för att slutföra alla zoner före soluppgången.",
@@ -486,6 +758,45 @@
     "sequencing": {
       "sequential": "Sekventiell (en zon i taget)",
       "parallel": "Parallell (alla zoner samtidigt)"
+    },
+    "sequencing_description": "Hur dina zoner vattnas. Det avgör vad en startutlösare räknar bakåt från när den ska vara klar vid soluppgången: en åt gången ger summan av alla zoners tid, alla samtidigt ger den längsta av dem. Det gäller både om Smart Irrigation öppnar ventilerna själv och om din egen automation gör det.",
+    "passes_label": "Vattna i flera pass",
+    "passes_description": "Cykel och upptagning: samma mängd vatten, delad i kortare pass med en paus emellan, så att tung jord tar upp det i stället för att låta det rinna av. Ett pass vattnar i ett svep, och det är standard. En körning som är för kort att dela lämnas orörd.",
+    "soak_label": "Upptagning mellan passen",
+    "pause_between_zones_label": "Paus mellan zoner",
+    "pause_between_zones_description": "En väntetid mellan två zoner i en körning en åt gången: tid för trycket i ledningen att komma tillbaka, eller för en långsam ventil att hinna stänga innan nästa öppnar.",
+    "minutes": "minuter",
+    "seconds": "sekunder"
+  },
+  "calculation_log": {
+    "title": "Beräkningslogg",
+    "description": "Skriver hela underlaget för varje beräkning till en fil, så att två dagar som ser likadana ut men vattnar mycket olika kan jämföras efteråt. Varje beräkning lägger till en rad: sensorgruppens mätvärden och hur de slogs samman, modulens mellanled (solinstrålning, nettostrålning, ET0) samt det förråd, den längd och den mängd det ger. Av som standard; filen har en maxstorlek och roteras, så den kan stå på en hel säsong.",
+    "enabled_label": "Skriv beräkningens underlag till en fil",
+    "file_hint": "Skrivs till config/smart_irrigation/calc_log.jsonl, en JSON-post per rad. De senaste posterna följer också med i diagnostiknedladdningen (koordinater avrundade, entitets-id borttagna), så du kan bifoga dem till en felrapport i ett steg."
+  },
+  "measured_skip": {
+    "title": "Hoppa över vid uppmätta förhållanden",
+    "description": "Kontrolleras i början av varje körning, från en sensor eller från vädertjänsten. En sensor som inte går att läsa stoppar aldrig en körning.",
+    "enabled": "På",
+    "threshold": "Gräns",
+    "sensor": "Sensor",
+    "sensor-optional": "Sensor (valfri)",
+    "rain": {
+      "title": "Regnsensor",
+      "description": "Hoppa över körningen så länge en regnsensor säger att det regnar.",
+      "sensor-hint": "En binär sensor som är på medan det regnar.",
+      "history-label": "Korta körningar efter regn nyligen",
+      "history-description": "För en zon som inte har något regn i millimeter alls: ingen regnmätare, och en vädertjänst som inte ger något. Sensorns egen historik för de senaste fem dagarna läses, viktad så att i går väger mer än för fyra dagar sedan, och körningen kortas av det. En hel dag med rapporterat regn i dag tar hela körningen; för fyra dagar sedan en tiondel. Vattenbalansen rörs aldrig, eftersom det är okänt hur många millimeter som föll: underskottet står kvar och vattnas bort så snart vädret vänder. En zon vars sensorgrupp faktiskt rapporterar regn i millimeter lämnas orörd, eftersom balansen redan har det. Det här kräver en sensor som står på medan det regnar, inte en som ger en kort puls per tipp."
+    },
+    "freeze": {
+      "title": "Frost",
+      "description": "Hoppa över körningen när temperaturen är på eller under gränsen.",
+      "sensor-hint": "Tom: vädertjänstens aktuella temperatur."
+    },
+    "wind": {
+      "title": "Vind",
+      "description": "Hoppa över körningen när vinden är på eller över gränsen: en spridare i hård vind vattnar gången, inte rabatten.",
+      "sensor-hint": "Tom: vädertjänstens aktuella vind, på 10 m."
     }
   }
 }

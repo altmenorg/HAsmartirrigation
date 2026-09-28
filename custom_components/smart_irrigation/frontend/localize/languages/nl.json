@@ -16,7 +16,9 @@
       "after": "na"
     },
     "units": {
-      "seconds": "seconden"
+      "seconds": "seconden",
+      "minutes": "min",
+      "hours": "u"
     },
     "attributes": {
       "size": "afmeting",
@@ -75,7 +77,11 @@
         "maximum-bucket-is": "maximale voorraad grootte is",
         "drainage-rate-is": "De afvoersnelheid bij verzadiging (bucket op max) is",
         "current-drainage-is": "De huidige afvoer wordt berekend als",
-        "no-drainage": "De huidige afvoer is 0 omdat"
+        "no-drainage": "De huidige afvoer is 0 omdat",
+        "module-returned-hourly-evapotranspiration-deficiency": "De module heeft het tekort aan gewasverdamping uur per uur opgeteld ( = som van de uurlijkse et0 * Kc + neerslag) over",
+        "crop-factor-is": "De gewasfactor is",
+        "precipitation-rate-is": "De neerslagintensiteit is",
+        "below-irrigation-threshold": "Het tekort heeft de irrigatiedrempel van deze zone nog niet bereikt, dus er is geen bewatering nodig en de duur wordt op 0 gezet. Tekort / drempel:"
       }
     }
   },
@@ -106,7 +112,16 @@
       "messages": {
         "no-service": "Er wordt geen weerdienst gebruikt — de weergegevens komen alleen van je eigen sensoren.",
         "saved": "Weerdienst bijgewerkt en toegepast.",
-        "reload-note": "Bij het opslaan wordt de API-sleutel bij de dienst gevalideerd en de wijziging direct toegepast."
+        "reload-note": "Bij het opslaan wordt de API-sleutel bij de dienst gevalideerd en de wijziging direct toegepast.",
+        "owm-onecall-hint": "OpenWeatherMap heeft het One Call API 3.0-abonnement nodig (One Call by Call). Het is gratis tot 1000 aanroepen per dag, maar moet met een kaart geactiveerd worden, en een nieuwe sleutel kan een paar uur nodig hebben voordat hij werkt. Een gewone standaardsleutel wordt geweigerd."
+      },
+      "history": {
+        "title": "Geschiedenis",
+        "refresh": "Verversen",
+        "last-update": "Laatste update",
+        "time": "Opgehaald",
+        "sensor-group": "Sensorgroep",
+        "no-data": "Er zijn nog geen gegevens van de weerdienst opgehaald."
       }
     },
     "backuprestore": {
@@ -145,7 +160,9 @@
           "description": "Bij het berekenen wordt de verzamelde weersinformatie gebruikt om the voorraad en irrigatieduur per zone aan te passen. Daarna wordt de verzamelde weersinformatie verwijderd.",
           "labels": {
             "auto-calc-enabled": "Automatisch irrigatietijd berekening voor elke zone",
-            "calc-time": "Berekenen om"
+            "calc-time": "Berekenen om",
+            "hourly-calculation": "Verdamping uur per uur berekenen",
+            "hourly-calculation-hint": "Telt de uurlijkse FAO-56-vergelijking op over elk uur sinds de laatste berekening, in plaats van de dagvergelijking toe te passen op gemiddelden, die verbergen of de zon en de hitte samen kwamen. Een nieuwe installatie begint ermee; een installatie die er al was houdt de dagvergelijking tot je omschakelt, want de twee geven verschillende getallen en je bewatering hoort niet te veranderen door een update. De zon van elk uur komt uit een stralings- of lichtsensor, uit de uurlijkse geschiedenis van de weerdienst, of uit het temperatuurbereik van de dag. Het is de moeite waard als metingen over de dag verspreid binnenkomen: één update per dag laat één meting vierentwintig uur lang gelden, en dan is geen van beide vormen betrouwbaar. Een serre zonder eigen sensor houdt de dagvergelijking."
           }
         },
         "automatic-update": {
@@ -174,6 +191,17 @@
             "continuousupdates": "Continue updates inschakelen",
             "sensor_debounce": "Sensor-debounce"
           }
+        },
+        "panel-mode": {
+          "header": "Paneel",
+          "labels": {
+            "advanced": "Geavanceerde instellingen",
+            "advanced-hint": "Toont de instellingen die het model fijnregelen: drainage, drempels, factor, hoe ver een zone vooruitkijkt. Ze hebben degelijke standaardwaarden; laat dit uit tenzij je weet dat je ze nodig hebt. Je waarden blijven in beide gevallen bewaard."
+          }
+        },
+        "setup-assistant": {
+          "description": "Maximaal vier vragen, en hij maakt een sensorgroep en een zone voor je aan, met de keuzes die beide nodig hebben. Voor een eerste zone, nog een, of een frisse start. Het was ooit een tabblad, dat een installatie die al klaar was uitnodigde zich in te stellen.",
+          "open": "Assistent openen"
         }
       },
       "description": "Dit zijn de algemene instellingen.",
@@ -199,32 +227,104 @@
       "description": "Bekijk informatie over de volgende irrigatie en de systeemstatus.",
       "configuration-not-available": "Configuratie niet beschikbaar.",
       "cards": {
-        "zone-bucket-values": {
-          "title": "Bucketwaarden en duur per zone",
+        "next-run": {
+          "title": "Volgende ronde",
           "labels": {
-            "bucket": "Bucket",
-            "duration": "Duur"
+            "start": "Begint",
+            "duration": "Totale duur",
+            "zones": "Zones die bewateren",
+            "trigger": "Trigger"
           },
-          "no-zones": "Geen zones geconfigureerd"
+          "no-start": "Er kon nog geen starttijd bepaald worden.",
+          "nothing-to-water": "Niets te bewateren: geen zone heeft haar irrigatiedrempel bereikt.",
+          "trigger-default": "Standaard, klaar bij zonsopkomst",
+          "accounts-for-duration": "teruggerekend zodat de ronde dan klaar is",
+          "starts-at-trigger": "begint op dat moment",
+          "sequencing-sequential": "één zone per keer, dus het totaal is de som van alle zones",
+          "sequencing-parallel": "alle zones tegelijk, dus het totaal is de langste zone",
+          "headline-nothing": "Niets te bewateren",
+          "sub-nothing": "Nog geen zone komt genoeg water tekort. De volgende start zou {start} zijn.",
+          "headline-watering": "Bewatering {start}",
+          "headline-watering-soon": "Bewatering bij de volgende start",
+          "sub-watering": "{count} zone(s), {duration} in totaal.",
+          "headline-postponed": "De bewatering is uitgesteld",
+          "sub-postponed": "Je hebt het uitgesteld. Het gaat van zichzelf weer door, en er gaat niets verloren: een zone die water tekortkomt, komt dat daarna nog steeds tekort.",
+          "headline-skipped": "Vandaag geen bewatering",
+          "headline-not-scheduled": "Er staat een ronde open, en niets is ingepland om die te starten",
+          "sub-not-scheduled": "De tijd hierboven is wanneer de ronde zou beginnen. Er staat nu geen starttrigger klaar, wat gebeurt als de actieve trigger uit staat of niet geregistreerd is. Controleer de trigger onder Instellingen; als die goed lijkt, zet een berekening hem weer klaar."
         },
-        "next-irrigation": {
-          "title": "Volgende irrigatie",
-          "labels": {
-            "next-start": "Volgende start",
-            "duration": "Duur",
-            "zones": "Zones"
-          },
-          "no-data": "Geen gegevens beschikbaar"
+        "decision": {
+          "title": "Wordt de ronde overgeslagen?",
+          "will-run": "Niets houdt de ronde tegen.",
+          "will-skip": "De ronde zou overgeslagen worden.",
+          "preview-note": "Net geëvalueerd. Een verwachting kan voor de start nog veranderen.",
+          "unavailable": "De voorwaarden om over te slaan konden niet geëvalueerd worden.",
+          "last-title": "Laatste echte beslissing",
+          "last-none": "Er is nog over geen enkele ronde beslist.",
+          "last-skipped": "Overgeslagen",
+          "last-ran": "Doorgegaan",
+          "check-precipitation": "Regenverwachting",
+          "check-days_between": "Dagen tussen bewateringen",
+          "state-off": "Uit",
+          "state-unavailable": "Kon niet gecontroleerd worden",
+          "state-passing": "Blokkeert niet",
+          "state-blocking": "Blokkeert",
+          "detail-forecast": "Verwachting",
+          "detail-threshold": "Drempel",
+          "detail-days-since": "Dagen sinds de laatste ronde",
+          "detail-days-required": "Vereiste dagen",
+          "check-rain_sensor": "Regensensor",
+          "check-freeze": "Vorst",
+          "check-wind": "Wind",
+          "check-soil_moisture": "Bodemvochtigheid",
+          "detail-now": "Nu",
+          "detail-weather-service": "weerdienst",
+          "detail-raining": "Het regent",
+          "detail-dry": "Het regent niet",
+          "detail-held": "slaat deze ronde over",
+          "check-postponed": "Door jou uitgesteld"
         },
-        "irrigation-reason": {
-          "title": "Reden voor irrigatie",
+        "estimate": {
+          "title": "Waar elke zone nu staat",
+          "note": "Geschat door de berekening uit te voeren op de metingen die sinds de vorige keer zijn verzameld. Er wordt niets vastgelegd: een zone houdt de waarde van haar laatste berekening tot de volgende.",
+          "none": "Nog geen zone kan geschat worden.",
           "labels": {
-            "reason": "Reden",
-            "sunrise": "Zonsopgang",
-            "total-duration": "Totale duur",
-            "explanation": "Uitleg"
+            "now": "Nu",
+            "at-last-calculation": "Bij de laatste berekening",
+            "would-water": "Zou bewateren",
+            "last-irrigation": "Laatst bewaterd"
           },
-          "no-data": "Geen gegevens beschikbaar"
+          "nothing": "niets",
+          "never-watered": "nooit"
+        },
+        "postpone": {
+          "prompt": "Regen die de verwachting miste, of een eigen reden?",
+          "for-24": "24 u uitstellen",
+          "for-48": "48 u uitstellen",
+          "until": "De bewatering is uitgesteld tot",
+          "resume": "Nu doorgaan"
+        },
+        "forecast": {
+          "today": "Vandaag"
+        },
+        "stale": {
+          "title": "Een zone wordt niet meer berekend",
+          "body": "Haar waterbehoefte is ouder dan die van de andere, dus ze bewatert op oud weer. Controleer of haar sensorgroep nog gegevens ontvangt, en kijk in het log wat de berekening erover zei.",
+          "never": "nooit berekend"
+        }
+      },
+      "gaps": {
+        "auto_calc_off": {
+          "title": "Er wordt niets berekend",
+          "body": "De automatische duurberekening staat uit, dus de duren van de zones worden nooit bijgewerkt. Zet die weer aan onder Instellingen, of bereken met de hand als je een ronde wilt."
+        },
+        "no_automatic_zone": {
+          "title": "Geen zone bewatert van zichzelf",
+          "body": "Elke zone staat op manueel of uit, dus een start bereikt niets. Zet een zone op automatisch om die door het schema te laten bewateren."
+        },
+        "no_valve_path": {
+          "title": "Hier opent niets een ventiel",
+          "body": "Smart Irrigation berekent hoe lang er bewaterd moet worden; iets moet daarop handelen. Koppel een ventiel aan een zone en zet directe ventielbesturing aan, of schrijf een automatisering op het startevent (de blueprints doen dat voor je). Als een automatisering dat al doet, hoeft er niets te veranderen."
         }
       }
     },
@@ -281,8 +381,15 @@
             "none": "Geen",
             "weather_service": "Weather service",
             "sensor": "Sensor",
-            "static": "Vaste waarde"
-          }
+            "static": "Vaste waarde",
+            "illuminance": "Lichtsensor (lux)"
+          },
+          "luminous_efficacy": "Lichtrendement",
+          "greenhouse": "Serre",
+          "greenhouse_description": "Een afgesloten omgeving: een serre, een folietunnel, alles onder glas of plastic. Er komt geen regen bij deze zones, dus neerslag blijft buiten hun waterbalans en de velden ervan worden verborgen. Twee dingen moet je zelf zetten, want ze zijn niet te raden: geef Windsnelheid een statische waarde dicht bij 0, want de berekening gaat uit van open lucht, en gebruik een lichtsensor voor Zonnestraling, want het glas filtert de lucht.",
+          "module": "Berekeningsengine",
+          "module_description": "Deze groep biedt alleen de bronnen die deze engine leest. De zones die haar gebruiken nemen de keuze over.",
+          "module_undecided": "Nog geen engine gekozen, dus elke bron wordt aangeboden en elke zone die deze groep gebruikt houdt haar eigen. Kies er een om alleen de bronnen te zien die ze leest."
         }
       },
       "description": "Voeg een of meer sensorgroepen toe die weergegevens ophalen van Weather service, van sensoren of een combinatie. Elke sensorgroep kan worden gebruikt voor een of meerdere zones",
@@ -299,6 +406,12 @@
         "precipitation": "Neersl.",
         "retrieval-time": "Opgehaald",
         "no-data": "Geen weergegevens beschikbaar voor deze sensorgroep"
+      },
+      "summary": {
+        "sources-one": "{n} bron",
+        "sources-other": "{n} bronnen",
+        "zones-one": "{n} zone",
+        "zones-other": "{n} zones"
       }
     },
     "modules": {
@@ -383,10 +496,164 @@
         "linked-entity-hint": "De klep of schakelaar die deze zone bewatert. Telkens als die actief is (een handmatige kraan, een automatisering of Smart Irrigation zelf wanneer directe klepbesturing aanstaat), wordt de bucket bijgewerkt op basis van de looptijd en de doorvoer van de zone. Vereist voor de closed-loop-functies.",
         "flow-sensor": "Cumulatieve volumemeter",
         "flow-sensor-hint": "Voor exacte verrekening in plaats van doorvoer x tijd: een cumulatief watermetertotaal (state class total_increasing), geen momentaan debiet. De eenheid wordt automatisch uitgelezen (L, mL, m³, gal, ft³).",
-        "optional": "optioneel"
+        "optional": "optioneel",
+        "et-deficiency": "Dagelijks ET-tekort",
+        "input-method": "Invoermethode",
+        "input-methods": {
+          "throughput": "Debiet & oppervlakte",
+          "direct": "Neerslagintensiteit"
+        },
+        "precipitation-rate": "Neerslagintensiteit",
+        "irrigation-threshold": "Irrigatiedrempel",
+        "soil-moisture-sensor": "Bodemvochtsensor",
+        "soil-moisture-sensor-hint": "De zone slaat een ronde over zolang de bodem op of boven de drempel zit. De voorraad blijft bewaard.",
+        "soil-moisture-threshold": "Overslaan vanaf",
+        "calculation-method": "Verdamping",
+        "calculation-method-help": {
+          "from_weather": "Uit je metingen: temperatuur, luchtvochtigheid, wind, zon.",
+          "provided": "Je hebt al een verdamping in mm; die wordt overgenomen zoals ze is.",
+          "fixed": "Zoveel mm per dag, wat het weer ook doet."
+        },
+        "calculation-methods": {
+          "from_weather": "Berekend door Smart Irrigation",
+          "provided": "Geleverd door een sensor of een dienst",
+          "fixed": "Een vast bedrag"
+        },
+        "forecast-days": "Vooruitkijken",
+        "forecast-days-help": "0: de zone bewatert wat het weer echt heeft genomen. 1: morgen wordt meegerekend, 2: morgen en overmorgen, en zo verder. Hoe heter de komende dagen, hoe meer er vandaag bewaterd wordt. Dit is niet het overslaan bij regen, dat een eigen instelling heeft.",
+        "fixed-amount": "Vast bedrag",
+        "engine-shared-help": "Deze instelling hoort bij deze zone alleen: elke zone heeft haar eigen, en dit hier veranderen verandert nergens anders iets.",
+        "soil-type": "Bodem",
+        "plant-type": "Wat hier groeit",
+        "soil-types": {
+          "sand": "Zandig",
+          "sandy_loam": "Zandige leem",
+          "loam": "Leem",
+          "clay_loam": "Kleiige leem",
+          "clay": "Klei",
+          "custom": "Ik zet de drainagesnelheid zelf"
+        },
+        "plant-types": {
+          "lawn": "Gazon",
+          "vegetables": "Groenten",
+          "flowers": "Bloemen",
+          "shrubs": "Heesters",
+          "hedge": "Heg",
+          "fruit_trees": "Fruitbomen",
+          "vines": "Wijnstokken",
+          "ground_cover": "Bodembedekkers",
+          "custom": "Ik zet de gewascoëfficiënt zelf"
+        },
+        "duration-readonly-automatic": "Voor je berekend: de ronde van deze zone komt uit haar waterbalans. Zet haar op manueel om zelf een duur in te vullen.",
+        "duration-readonly-disabled": "Een uitgeschakelde zone wordt nooit bewaterd, dus ze heeft geen looptijd.",
+        "et-deficiency-help": "Wat deze zone per dag nodig heeft: ETc, de referentieverdamping maal de gewasfactor, seizoenscorrectie inbegrepen. Vóór het schalen naar het interval en vóór de regen, en dat maakt het vergelijkbaar van de ene configuratie naar de andere. De zonesensor draagt het referentiegetal ook op zichzelf, als attribuut `eto`, om te vergelijken met wat een weerdienst publiceert."
       },
       "no_items": "Er zijn nog geen zones.",
-      "title": "Zones"
+      "title": "Zones",
+      "module-comes-from-the-group": "De berekeningsengine komt van de sensorgroep van deze zone. Verander die daar, en elke zone die die groep gebruikt volgt.",
+      "status": {
+        "will-water": "Bewatert {duration} bij de volgende start.",
+        "idle": "Niets te bewateren: {short} tekort.",
+        "satisfied": "Niets te bewateren: deze zone heeft wat ze nodig heeft.",
+        "under-threshold": "Nog niets te bewateren: {short} tekort, onder de drempel van deze zone.",
+        "manual": "Bewatert alleen als je het vraagt.",
+        "disabled": "Uitgeschakeld: wordt nooit bewaterd, en haar balans wordt niet bijgehouden.",
+        "threshold": "drempel"
+      },
+      "calendar": {
+        "title": "Bewateringskalender (12 maanden, schatting)",
+        "caveat": "Een schatting om te plannen, niet jouw weer: de maanden worden gemodelleerd uit je breedtegraad en een typisch seizoenspatroon, dus een landklimaatzomer leest heter en droger dan hij is. Het beïnvloedt niets, berekent niets en bewatert niets.",
+        "month": "Maand",
+        "et": "ET",
+        "precipitation": "Neerslag",
+        "watering": "Bewatering",
+        "avg-temp": "Gem. temp.",
+        "none": "Geen kalendergegevens beschikbaar voor deze zone",
+        "error": "De kalender kon niet gemaakt worden"
+      }
+    },
+    "setup": {
+      "title": "Instellen",
+      "description": "Een begeleide weg naar je eerste zone. Er wordt één vraag per keer gesteld, en alleen de vragen die je eerdere antwoorden openlaten.",
+      "next": "Volgende",
+      "back": "Terug",
+      "create": "Aanmaken",
+      "creating": "Wordt aangemaakt...",
+      "failed": "Er is iets misgegaan en er is niets aangemaakt. De andere tabbladen zijn er nog als je het liever met de hand instelt.",
+      "done": "Je zone is klaar.",
+      "done-note": "Ze staat onder Zones, haar sensorgroep onder Sensorgroepen. Niets hieraan is bijzonder: bewerk beide zoals elke andere. Voer een update en een berekening uit zodra je sensoren hebben gemeld, en dan levert de zone een duur.",
+      "steps": {
+        "zone": {
+          "question": "Wat bewater je?",
+          "help": "Eén zone is één ventiel, dat één stuk bewatert.",
+          "name": "Naam",
+          "size": "Oppervlakte",
+          "throughput": "Debiet",
+          "throughput-help": "Hoeveel water deze zone per minuut geeft. Meet het als je kunt, in plaats van het uit een datasheet te halen: elke duur wordt eruit afgeleid, en het is de stilste manier om twee keer zo lang te bewateren als je bedoelde."
+        },
+        "environment": {
+          "question": "Waar groeit het?",
+          "outdoors": "Buiten",
+          "outdoors-help": "Open lucht. Regen komt erbij, en de lucht is een vraag waard.",
+          "under-glass": "Onder glas of plastic",
+          "under-glass-help": "Een serre, een folietunnel, een serrekamer. Er komt geen regen bij, en een verwachting beschrijft weer dat deze planten nooit zien."
+        },
+        "weather": {
+          "question": "Waar moet het verdampingsgetal vandaan komen?",
+          "service": "De weerdienst die je hebt ingesteld",
+          "service-help": "Niets anders te installeren. Smart Irrigation haalt het weer voor jouw locatie en berekent daaruit de verdamping.",
+          "no-service-indoors": "Een weerdienst wordt hier niet aangeboden: die beschrijft de lucht, en daar staan deze planten niet onder.",
+          "sensors": "Mijn eigen weersensoren",
+          "sensors-help": "Je hebt sensoren voor temperatuur, luchtvochtigheid en de rest. De nauwkeurigste optie, want er wordt gemeten waar de planten echt staan.",
+          "et": "Een sensor die de verdamping al meldt",
+          "et-help": "Iets anders berekent haar al, en Smart Irrigation moet dat getal overnemen zoals het is.",
+          "static": "Een vast bedrag per dag",
+          "static-help": "Geen sensoren en geen dienst. Je geeft één getal en dat wordt elke dag gebruikt. Grof, maar het houdt nog steeds bij wat je al bewaterd hebt."
+        },
+        "sensors": {
+          "question": "Welke entiteiten moet ze lezen?",
+          "help": "Er wordt alleen gevraagd naar de sensoren die de berekening echt gebruikt.",
+          "lux-hint": "Onder glas kan een lichtsensor de zonnestraling vervangen: kies hier je verlichtingssterkte-entiteit en zet haar bron daarna in de sensorgroep op Lichtsensor (lux).",
+          "static-question": "Hoeveel verdampt er per dag?",
+          "static-help": "Een waterhoogte, in de eenheid die je zones gebruiken. Zo'n 4 tot 5 mm per dag is gebruikelijk voor een gematigde zomer.",
+          "static-label": "Verdamping per dag"
+        },
+        "review": {
+          "question": "Klaar om aan te maken",
+          "zone": "Zone",
+          "environment": "Omgeving",
+          "engine": "Berekeningsengine",
+          "sources": "Bronnen",
+          "from-the-service": "van de weerdienst",
+          "help": "Dit maakt een berekeningsmodule, een sensorgroep en een zone aan, net als de andere tabbladen zouden doen. Daarna staat niets vast."
+        }
+      },
+      "step": "stap"
+    },
+    "history": {
+      "title": "Geschiedenis",
+      "description": "Elke bewateringsronde die Smart Irrigation aan een zone heeft toegerekend: wanneer die begon, hoe lang er bewaterd is en hoeveel water er bij gebruikt is. Rondes worden vastgelegd door de directe ventielbesturing en door waargenomen bewatering, en 90 dagen bewaard.",
+      "refresh": "Verversen",
+      "no-data": "Er zijn nog geen bewateringsrondes vastgelegd.",
+      "table": {
+        "title": "Bewateringsrondes",
+        "start": "Start",
+        "zone": "Zone",
+        "duration": "Duur",
+        "water": "Waterverbruik",
+        "truncated": "De {count} meest recente rondes van {total} worden getoond."
+      },
+      "charts": {
+        "total-title": "Totaal waterverbruik per dag (laatste 30 dagen)",
+        "per-zone-title": "Waterverbruik per dag, per zone (laatste 30 dagen)",
+        "no-data": "In deze periode is geen water gebruikt."
+      }
+    },
+    "groups": {
+      "home": "Start",
+      "zones": "Zones",
+      "data": "Gegevens",
+      "settings": "Instellingen"
     }
   },
   "title": "Smart Irrigation",
@@ -401,7 +668,8 @@
     "trigger_types": {
       "sunrise": "Zonsopgang",
       "sunset": "Zonsondergang",
-      "solar_azimuth": "Zonne-azimut"
+      "solar_azimuth": "Zonne-azimut",
+      "time": "Vast tijdstip"
     },
     "fields": {
       "name": {
@@ -427,6 +695,9 @@
       "account_for_duration": {
         "name": "Rekening houden met duur",
         "description": "Indien ingeschakeld start de irrigatie vroeg genoeg om op het opgegeven tijdstip klaar te zijn. Indien uitgeschakeld start de irrigatie precies op het opgegeven tijdstip."
+      },
+      "at": {
+        "name": "Tijd"
       }
     },
     "dialog": {
@@ -442,7 +713,8 @@
     "confirm_delete": "Weet je zeker dat je de trigger \"{name}\" wilt verwijderen?",
     "validation": {
       "name_required": "De triggernaam is verplicht",
-      "azimuth_invalid": "De azimuthoek moet een geldig getal zijn"
+      "azimuth_invalid": "De azimuthoek moet een geldig getal zijn",
+      "time_invalid": "Voer een geldige tijd in als UU:MM."
     },
     "help": {
       "sunrise_offset": "Voor zonsopgang-triggers: gebruik negatieve waarden om vóór zonsopgang te starten, positieve om erna te starten. Stel in op 0 om automatisch vroeg genoeg te starten zodat alle zones vóór zonsopgang klaar zijn.",
@@ -486,6 +758,45 @@
     "sequencing": {
       "sequential": "Sequentieel (één zone tegelijk)",
       "parallel": "Parallel (alle zones tegelijk)"
+    },
+    "sequencing_description": "Hoe je zones bewaterd worden. Dit bepaalt waarvan een starttrigger terugrekent als hij bij zonsopkomst klaar moet zijn: één na de ander geeft de som van alle looptijden, allemaal tegelijk de langste ervan. Het geldt of Smart Irrigation de ventielen zelf opent of een eigen automatisering.",
+    "passes_label": "In meerdere beurten bewateren",
+    "passes_description": "Cyclus en intrekken: hetzelfde water, verdeeld over kortere beurten met een pauze ertussen, zodat zware grond het opneemt in plaats van het te laten afstromen. Eén beurt bewatert in één keer, dat is de standaard. Een ronde die te kort is om te splitsen blijft ongemoeid.",
+    "soak_label": "Intrekken tussen de beurten",
+    "pause_between_zones_label": "Pauze tussen zones",
+    "pause_between_zones_description": "Een wachttijd tussen twee zones van een opeenvolgende ronde: tijd voor de leidingdruk om te herstellen, of voor een langzaam ventiel om te sluiten voordat het volgende opengaat.",
+    "minutes": "minuten",
+    "seconds": "seconden"
+  },
+  "calculation_log": {
+    "title": "Berekeningslog",
+    "description": "Schrijft de volledige invoer van elke berekening naar een bestand, zodat twee dagen die op elkaar lijken maar heel anders bewateren achteraf vergeleken kunnen worden. Elke berekening voegt één regel toe: de metingen van de sensorgroep en hoe ze zijn samengevoegd, de tussenwaarden van de module (zonnestraling, netto straling, ET0) en de resulterende voorraad, duur en hoeveelheid. Standaard uit; het bestand heeft een maximale grootte en wordt geroteerd, dus het kan een seizoen lang aan blijven.",
+    "enabled_label": "Invoer van de berekening naar een bestand loggen",
+    "file_hint": "Wordt geschreven naar config/smart_irrigation/calc_log.jsonl, één JSON-record per regel. De meest recente records zitten ook in de diagnose-download (coördinaten afgerond, entiteit-id's verwijderd), zodat je ze in één stap aan een issue kunt hangen."
+  },
+  "measured_skip": {
+    "title": "Overslaan op gemeten omstandigheden",
+    "description": "Wordt gecontroleerd aan het begin van elke ronde, vanuit een sensor of de weerdienst. Een sensor die niet gelezen kan worden houdt een ronde nooit tegen.",
+    "enabled": "Aan",
+    "threshold": "Drempel",
+    "sensor": "Sensor",
+    "sensor-optional": "Sensor (optioneel)",
+    "rain": {
+      "title": "Regensensor",
+      "description": "Sla de ronde over zolang een regensensor zegt dat het regent.",
+      "sensor-hint": "Een binaire sensor die aan is terwijl het regent.",
+      "history-label": "Rondes inkorten na recente regen",
+      "history-description": "Voor een zone die helemaal geen regen in millimeters heeft: geen regenmeter, en een weerdienst die er geen geeft. De geschiedenis van de sensor over de laatste vijf dagen wordt gelezen en gewogen, zodat gisteren zwaarder telt dan vier dagen terug, en de ronde wordt er korter door. Een dag met gemelde regen vandaag neemt de hele ronde; vier dagen terug een tiende ervan. De waterbalans blijft onaangeroerd, want hoeveel millimeter er viel is onbekend: het tekort blijft staan en wordt weggewerkt zodra het weer omslaat. Een zone waarvan de sensorgroep wél regen in millimeters meldt wordt overgeslagen, want de balans heeft die al. Dit vraagt een sensor die aan blijft terwijl het regent, niet een die per kanteling kort pulst."
+    },
+    "freeze": {
+      "title": "Vorst",
+      "description": "Sla de ronde over als de temperatuur op of onder de drempel ligt.",
+      "sensor-hint": "Leeg: de huidige temperatuur van de weerdienst."
+    },
+    "wind": {
+      "title": "Wind",
+      "description": "Sla de ronde over als de wind op of boven de drempel zit: een sproeier bewatert bij harde wind het pad, niet het bed.",
+      "sensor-hint": "Leeg: de huidige wind van de weerdienst, op 10 m."
     }
   }
 }

@@ -16,7 +16,9 @@
       "after": "nach"
     },
     "units": {
-      "seconds": "Sekunden"
+      "seconds": "Sekunden",
+      "minutes": "min",
+      "hours": "h"
     },
     "attributes": {
       "size": "Größe",
@@ -75,7 +77,11 @@
         "maximum-bucket-is": "Der maximale Vorrat ist",
         "drainage-rate-is": "Die Entwässerungsrate bei Sättigung (Bucket am Maximum) beträgt",
         "current-drainage-is": "Die aktuelle Entwässerung wird berechnet als",
-        "no-drainage": "Die aktuelle Entwässerung beträgt 0, weil"
+        "no-drainage": "Die aktuelle Entwässerung beträgt 0, weil",
+        "module-returned-hourly-evapotranspiration-deficiency": "Das Modul hat das Defizit der Pflanzen-Evapotranspiration Stunde für Stunde summiert ( = Summe der stündlichen et0 * Kc + Niederschlag) über",
+        "crop-factor-is": "Der Pflanzenfaktor ist",
+        "precipitation-rate-is": "Die Niederschlagsrate ist",
+        "below-irrigation-threshold": "Das Defizit hat den Bewässerungsschwellwert dieser Zone noch nicht erreicht, es ist also keine Bewässerung nötig und die Dauer wird auf 0 gesetzt. Defizit / Schwellwert:"
       }
     }
   },
@@ -106,7 +112,16 @@
       "messages": {
         "no-service": "Es wird kein Wetterdienst verwendet — die Wetterdaten stammen ausschließlich von Ihren eigenen Sensoren.",
         "saved": "Wetterdienst aktualisiert und angewendet.",
-        "reload-note": "Beim Speichern wird der API-Schlüssel mit dem Dienst validiert und die Änderung sofort angewendet."
+        "reload-note": "Beim Speichern wird der API-Schlüssel mit dem Dienst validiert und die Änderung sofort angewendet.",
+        "owm-onecall-hint": "OpenWeatherMap benötigt den Tarif One Call API 3.0 (One Call by Call). Er ist bis 1000 Aufrufe/Tag kostenlos, muss aber mit einer Karte aktiviert werden, und ein neuer Schlüssel kann ein paar Stunden brauchen, bis er funktioniert. Ein einfacher Standardschlüssel wird abgelehnt."
+      },
+      "history": {
+        "title": "Verlauf",
+        "refresh": "Aktualisieren",
+        "last-update": "Letzte Aktualisierung",
+        "time": "Abgerufen",
+        "sensor-group": "Sensorgruppe",
+        "no-data": "Es wurden noch keine Daten vom Wetterdienst abgerufen."
       }
     },
     "backuprestore": {
@@ -145,7 +160,9 @@
           "description": "Die Berechnung berücksichtigt die bis zu diesem Zeitpunkt gesammelten Wetterdaten und aktualisiert den Vorrat für jede automatische Zone. Anschließend wird die Dauer basierend auf dem neuen Vorrat angepasst und die gesammelten Wetterdaten entfernt.",
           "labels": {
             "auto-calc-enabled": "Automatische Berechnung der Dauer pro Zone",
-            "calc-time": "Berechnen um"
+            "calc-time": "Berechnen um",
+            "hourly-calculation": "Evapotranspiration Stunde für Stunde berechnen",
+            "hourly-calculation-hint": "Summiert die stündliche FAO-56-Gleichung über jede Stunde seit der letzten Berechnung, anstatt die Tagesgleichung auf Mittelwerte anzuwenden, die verbergen, ob Sonne und Hitze zusammen auftraten. Eine neue Installation beginnt damit; eine Installation, die es vorher schon gab, behält die Tagesgleichung, bis du umschaltest, denn die beiden ergeben unterschiedliche Zahlen und deine Bewässerung soll sich nicht durch ein Update ändern. Die Sonne jeder Stunde kommt aus einem Strahlungs- oder Lichtsensor, aus der stündlichen Historie des Wetterdienstes oder aus der Temperaturspanne des Tages. Es lohnt sich, wenn Messwerte über den Tag verteilt eintreffen: eine Aktualisierung pro Tag lässt einen einzigen Messwert über vierundzwanzig Stunden gelten, und dann ist keine der beiden Formen verlässlich. Ein Gewächshaus ohne eigenen Sensor behält die Tagesgleichung."
           }
         },
         "automatic-update": {
@@ -174,6 +191,17 @@
             "continuousupdates": "Kontinuierliche Updates aktivieren",
             "sensor_debounce": "Sensor-Entprellung"
           }
+        },
+        "panel-mode": {
+          "header": "Oberfläche",
+          "labels": {
+            "advanced": "Erweiterte Einstellungen",
+            "advanced-hint": "Zeigt die Einstellungen, die das Modell justieren: Drainage, Schwellwerte, Faktor, wie weit eine Zone vorausschaut. Sie haben sinnvolle Voreinstellungen; lass das aus, wenn du sie nicht brauchst. Deine Werte bleiben in beiden Fällen erhalten."
+          }
+        },
+        "setup-assistant": {
+          "description": "Höchstens vier Fragen, und er erstellt eine Sensorgruppe und eine Zone für dich und wählt aus, was beide brauchen. Für eine erste Zone, eine weitere oder einen Neuanfang. Früher war das ein Tab, der eine bereits eingerichtete Installation aufforderte, sich einzurichten.",
+          "open": "Assistenten öffnen"
         }
       },
       "description": "Diese Seite ist für allgemeine Einstellungen.",
@@ -199,32 +227,104 @@
       "description": "Informationen zur nächsten Bewässerung und zum Systemstatus anzeigen.",
       "configuration-not-available": "Konfiguration nicht verfügbar.",
       "cards": {
-        "zone-bucket-values": {
-          "title": "Bucket-Werte & Dauer pro Zone",
+        "next-run": {
+          "title": "Nächster Durchlauf",
           "labels": {
-            "bucket": "Bucket",
-            "duration": "Dauer"
+            "start": "Beginnt",
+            "duration": "Gesamtdauer",
+            "zones": "Zonen, die bewässern",
+            "trigger": "Auslöser"
           },
-          "no-zones": "Keine Zonen konfiguriert"
+          "no-start": "Es konnte noch keine Startzeit ermittelt werden.",
+          "nothing-to-water": "Nichts zu bewässern: keine Zone hat ihren Bewässerungsschwellwert erreicht.",
+          "trigger-default": "Standard, endet zum Sonnenaufgang",
+          "accounts-for-duration": "zurückgerechnet, damit der Durchlauf dann endet",
+          "starts-at-trigger": "beginnt zu diesem Zeitpunkt",
+          "sequencing-sequential": "eine Zone nach der anderen, die Gesamtdauer ist also die Summe aller Zonen",
+          "sequencing-parallel": "alle Zonen gleichzeitig, die Gesamtdauer ist also die längste Zone",
+          "headline-nothing": "Nichts zu bewässern",
+          "sub-nothing": "Noch hat keine Zone genug Wasser verloren. Der nächste Start wäre {start}.",
+          "headline-watering": "Bewässerung {start}",
+          "headline-watering-soon": "Bewässerung beim nächsten Start",
+          "sub-watering": "{count} Zone(n), {duration} insgesamt.",
+          "headline-postponed": "Die Bewässerung ist zurückgestellt",
+          "sub-postponed": "Du hast sie verschoben. Sie setzt von selbst wieder ein, und nichts geht verloren: eine Zone, der Wasser fehlt, braucht es danach weiterhin.",
+          "headline-skipped": "Heute keine Bewässerung",
+          "headline-not-scheduled": "Ein Durchlauf ist fällig, und nichts ist eingeplant, um ihn zu starten",
+          "sub-not-scheduled": "Die Zeit oben ist der Zeitpunkt, zu dem er beginnen würde. Im Moment ist kein Startauslöser scharf, was vorkommt, wenn der aktive Auslöser deaktiviert ist oder nicht registriert wurde. Prüfe den Auslöser unter Einstellungen; wenn er stimmt, macht eine Berechnung ihn wieder scharf."
         },
-        "next-irrigation": {
-          "title": "Nächste Bewässerung",
-          "labels": {
-            "next-start": "Nächster Start",
-            "duration": "Dauer",
-            "zones": "Zonen"
-          },
-          "no-data": "Keine Daten verfügbar"
+        "decision": {
+          "title": "Wird übersprungen?",
+          "will-run": "Nichts hält den Durchlauf zurück.",
+          "will-skip": "Der Durchlauf würde übersprungen.",
+          "preview-note": "Gerade eben ausgewertet. Eine Vorhersage kann sich bis zum Start noch ändern.",
+          "unavailable": "Die Bedingungen zum Überspringen konnten nicht ausgewertet werden.",
+          "last-title": "Letzte echte Entscheidung",
+          "last-none": "Es wurde noch über keinen Durchlauf entschieden.",
+          "last-skipped": "Übersprungen",
+          "last-ran": "Durchgeführt",
+          "check-precipitation": "Regenvorhersage",
+          "check-days_between": "Tage zwischen Bewässerungen",
+          "state-off": "Aus",
+          "state-unavailable": "Konnte nicht geprüft werden",
+          "state-passing": "Blockiert nicht",
+          "state-blocking": "Blockiert",
+          "detail-forecast": "Vorhersage",
+          "detail-threshold": "Schwellwert",
+          "detail-days-since": "Tage seit dem letzten Durchlauf",
+          "detail-days-required": "Erforderliche Tage",
+          "check-rain_sensor": "Regensensor",
+          "check-freeze": "Frost",
+          "check-wind": "Wind",
+          "check-soil_moisture": "Bodenfeuchte",
+          "detail-now": "Jetzt",
+          "detail-weather-service": "Wetterdienst",
+          "detail-raining": "Es regnet",
+          "detail-dry": "Es regnet nicht",
+          "detail-held": "setzt diesen Durchlauf aus",
+          "check-postponed": "Von dir verschoben"
         },
-        "irrigation-reason": {
-          "title": "Bewässerungsgrund",
+        "estimate": {
+          "title": "Wo jede Zone jetzt steht",
+          "note": "Geschätzt, indem die Berechnung auf die seit ihrem letzten Lauf gesammelten Messwerte angewendet wird. Nichts wird übernommen: eine Zone behält den Wert ihrer letzten Berechnung bis zur nächsten.",
+          "none": "Noch keine Zone kann geschätzt werden.",
           "labels": {
-            "reason": "Grund",
-            "sunrise": "Sonnenaufgang",
-            "total-duration": "Gesamtdauer",
-            "explanation": "Erläuterung"
+            "now": "Jetzt",
+            "at-last-calculation": "Bei der letzten Berechnung",
+            "would-water": "Würde bewässern",
+            "last-irrigation": "Zuletzt bewässert"
           },
-          "no-data": "Keine Daten verfügbar"
+          "nothing": "nichts",
+          "never-watered": "nie"
+        },
+        "postpone": {
+          "prompt": "Regen, den die Vorhersage verpasst hat, oder ein eigener Grund?",
+          "for-24": "24 h zurückstellen",
+          "for-48": "48 h zurückstellen",
+          "until": "Die Bewässerung ist zurückgestellt bis",
+          "resume": "Jetzt fortsetzen"
+        },
+        "forecast": {
+          "today": "Heute"
+        },
+        "stale": {
+          "title": "Eine Zone wird nicht mehr berechnet",
+          "body": "Ihr Wasserbedarf ist älter als der der anderen, sie bewässert also nach altem Wetter. Prüfe, ob ihre Sensorgruppe noch Daten erhält, und sieh im Protokoll nach, was die Berechnung zu ihr gesagt hat.",
+          "never": "nie berechnet"
+        }
+      },
+      "gaps": {
+        "auto_calc_off": {
+          "title": "Es wird nichts berechnet",
+          "body": "Die automatische Dauerberechnung ist aus, die Dauern der Zonen werden also nie aktualisiert. Schalte sie unter Einstellungen wieder ein, oder berechne von Hand, wenn du einen Durchlauf willst."
+        },
+        "no_automatic_zone": {
+          "title": "Keine Zone bewässert von selbst",
+          "body": "Jede Zone ist manuell oder deaktiviert, ein Start erreicht also nichts. Setze eine Zone auf automatisch, damit sie vom Zeitplan bewässert wird."
+        },
+        "no_valve_path": {
+          "title": "Hier öffnet nichts ein Ventil",
+          "body": "Smart Irrigation berechnet, wie lange bewässert wird; etwas muss darauf reagieren. Verknüpfe entweder ein Ventil mit einer Zone und schalte die direkte Ventilsteuerung ein, oder schreibe eine Automatisierung auf das Startereignis (die Blueprints tun das für dich). Wenn eine Automatisierung das schon tut, ist nichts zu ändern."
         }
       }
     },
@@ -281,8 +381,15 @@
             "none": "Keine",
             "weather_service": "Weather service",
             "sensor": "Sensor",
-            "static": "Fester Wert"
-          }
+            "static": "Fester Wert",
+            "illuminance": "Lichtsensor (Lux)"
+          },
+          "luminous_efficacy": "Lichtausbeute",
+          "greenhouse": "Gewächshaus",
+          "greenhouse_description": "Eine geschlossene Umgebung: ein Gewächshaus, ein Folientunnel, alles unter Glas oder Folie. Zu diesen Zonen kommt kein Regen, der Niederschlag bleibt daher aus ihrer Wasserbilanz heraus und seine Felder werden ausgeblendet. Zwei Dinge musst du selbst setzen, weil sie nicht zu erraten sind: gib der Windgeschwindigkeit einen statischen Wert nahe 0, da die Berechnung freie Luft annimmt, und nutze einen Lichtsensor für die Sonnenstrahlung, da die Verglasung den Himmel filtert.",
+          "module": "Berechnungs-Engine",
+          "module_description": "Diese Gruppe bietet nur die Quellen an, die diese Engine liest. Die Zonen, die sie nutzen, übernehmen die Wahl.",
+          "module_undecided": "Noch keine Engine gewählt, daher wird jede Quelle angeboten und jede Zone, die diese Gruppe nutzt, behält ihre eigene. Wähle eine, um nur die Quellen zu sehen, die sie liest."
         }
       },
       "description": "Füge eine oder mehrere Sensorgruppen hinzu, die Wetterdaten von Weather service, Sensoren oder einer Kombination daraus abrufen. Jede Sensorgruppe kann für eine oder mehrere Zonen verwendet werden",
@@ -299,6 +406,12 @@
         "precipitation": "Niederschl.",
         "retrieval-time": "Abgerufen",
         "no-data": "Keine Wetterdaten für diese Sensorgruppe verfügbar"
+      },
+      "summary": {
+        "sources-one": "{n} Quelle",
+        "sources-other": "{n} Quellen",
+        "zones-one": "{n} Zone",
+        "zones-other": "{n} Zonen"
       }
     },
     "modules": {
@@ -383,10 +496,164 @@
         "linked-entity-hint": "Das Ventil oder der Schalter, der diese Zone bewässert. Immer wenn er läuft (ein manueller Wasserhahn, eine Automatisierung oder Smart Irrigation selbst bei aktivierter direkter Ventilsteuerung), wird der Eimer aus der Laufzeit und dem Durchsatz der Zone gutgeschrieben. Erforderlich für die Closed-Loop-Funktionen.",
         "flow-sensor": "Kumulativer Volumenzähler",
         "flow-sensor-hint": "Für eine exakte Gutschrift anstelle von Durchsatz x Zeit: ein kumulativer Wasserzählerstand (Statusklasse total_increasing), keine momentane Durchflussrate. Die Einheit wird automatisch ausgelesen (L, mL, m³, gal, ft³).",
-        "optional": "optional"
+        "optional": "optional",
+        "et-deficiency": "Täglicher ET-Mangel",
+        "input-method": "Eingabeart",
+        "input-methods": {
+          "throughput": "Durchfluss & Fläche",
+          "direct": "Niederschlagsrate"
+        },
+        "precipitation-rate": "Niederschlagsrate",
+        "irrigation-threshold": "Bewässerungsschwellwert",
+        "soil-moisture-sensor": "Bodenfeuchtesensor",
+        "soil-moisture-sensor-hint": "Die Zone setzt einen Durchlauf aus, solange der Boden den Schwellwert erreicht oder überschreitet. Der Vorrat bleibt erhalten.",
+        "soil-moisture-threshold": "Überspringen ab",
+        "calculation-method": "Evapotranspiration",
+        "calculation-method-help": {
+          "from_weather": "Aus deinen Messwerten: Temperatur, Luftfeuchte, Wind, Sonne.",
+          "provided": "Du hast schon eine Evapotranspiration in mm; sie wird so übernommen.",
+          "fixed": "So viele mm pro Tag, unabhängig vom Wetter."
+        },
+        "calculation-methods": {
+          "from_weather": "Von Smart Irrigation berechnet",
+          "provided": "Von einem Sensor oder Dienst geliefert",
+          "fixed": "Ein fester Betrag"
+        },
+        "forecast-days": "Vorausschau",
+        "forecast-days-help": "0: die Zone bewässert, was das Wetter tatsächlich genommen hat. 1: morgen wird mitgerechnet, 2: morgen und übermorgen, und so weiter. Je heißer die kommenden Tage, desto mehr wird heute bewässert. Das ist nicht das Überspringen bei Regen, das eine eigene Einstellung hat.",
+        "fixed-amount": "Fester Betrag",
+        "engine-shared-help": "Diese Einstellung gehört allein zu dieser Zone: jede Zone hat ihre eigene, und eine Änderung hier ändert nirgends sonst etwas.",
+        "soil-type": "Boden",
+        "plant-type": "Was hier wächst",
+        "soil-types": {
+          "sand": "Sandig",
+          "sandy_loam": "Sandiger Lehm",
+          "loam": "Lehm",
+          "clay_loam": "Toniger Lehm",
+          "clay": "Ton",
+          "custom": "Ich setze die Drainagerate selbst"
+        },
+        "plant-types": {
+          "lawn": "Rasen",
+          "vegetables": "Gemüse",
+          "flowers": "Blumen",
+          "shrubs": "Sträucher",
+          "hedge": "Hecke",
+          "fruit_trees": "Obstbäume",
+          "vines": "Reben",
+          "ground_cover": "Bodendecker",
+          "custom": "Ich setze den Pflanzenkoeffizienten selbst"
+        },
+        "duration-readonly-automatic": "Für dich berechnet: der Durchlauf dieser Zone ergibt sich aus ihrer Wasserbilanz. Stelle sie auf manuell, um eine Dauer selbst einzutragen.",
+        "duration-readonly-disabled": "Eine deaktivierte Zone wird nie bewässert, sie hat also keine Laufzeit.",
+        "et-deficiency-help": "Was diese Zone pro Tag braucht: ETc, die Referenz-Evapotranspiration mal dem Pflanzenfaktor, saisonale Anpassung inbegriffen. Vor der Skalierung auf das Intervall und vor dem Regen, was sie von einer Konfiguration zur nächsten vergleichbar macht. Der Zonensensor trägt die Referenzzahl auch für sich allein, als Attribut `eto`, zum Vergleich mit dem, was ein Wetterdienst veröffentlicht."
       },
       "no_items": "Es ist noch keine Zone vorhanden.",
-      "title": "Zonen"
+      "title": "Zonen",
+      "module-comes-from-the-group": "Die Berechnungs-Engine kommt von der Sensorgruppe dieser Zone. Ändere sie dort, und jede Zone, die diese Gruppe nutzt, folgt.",
+      "status": {
+        "will-water": "Bewässert {duration} beim nächsten Start.",
+        "idle": "Nichts zu bewässern: {short} fehlen.",
+        "satisfied": "Nichts zu bewässern: diese Zone hat, was sie braucht.",
+        "under-threshold": "Noch nichts zu bewässern: {short} fehlen, unter dem Schwellwert dieser Zone.",
+        "manual": "Bewässert nur, wenn du es verlangst.",
+        "disabled": "Deaktiviert: wird nie bewässert, und ihre Bilanz wird nicht geführt.",
+        "threshold": "Schwellwert"
+      },
+      "calendar": {
+        "title": "Bewässerungskalender (12 Monate, geschätzt)",
+        "caveat": "Eine Schätzung zur Planung, nicht dein Wetter: die Monate werden aus deinem Breitengrad und einem typischen Jahresverlauf modelliert, ein kontinentaler Sommer erscheint darin also heißer und trockener als er ist. Es beeinflusst nichts, berechnet nichts und bewässert nichts.",
+        "month": "Monat",
+        "et": "ET",
+        "precipitation": "Niederschlag",
+        "watering": "Bewässerung",
+        "avg-temp": "Mittl. Temp.",
+        "none": "Für diese Zone liegen keine Kalenderdaten vor",
+        "error": "Der Kalender konnte nicht erzeugt werden"
+      }
+    },
+    "setup": {
+      "title": "Einrichtung",
+      "description": "Ein geführter Weg zu deiner ersten Zone. Er stellt eine Frage nach der anderen, und nur die Fragen, die deine bisherigen Antworten offenlassen.",
+      "next": "Weiter",
+      "back": "Zurück",
+      "create": "Erstellen",
+      "creating": "Wird erstellt...",
+      "failed": "Etwas ist schiefgegangen und es wurde nichts erstellt. Die anderen Tabs sind weiterhin da, wenn du es lieber von Hand einrichtest.",
+      "done": "Deine Zone ist fertig.",
+      "done-note": "Sie erscheint unter Zonen, ihre Sensorgruppe unter Sensorgruppen. Nichts daran ist besonders: bearbeite beide wie alle anderen. Führe eine Aktualisierung und eine Berechnung aus, sobald deine Sensoren gemeldet haben, dann liefert die Zone eine Dauer.",
+      "steps": {
+        "zone": {
+          "question": "Was bewässerst du?",
+          "help": "Eine Zone ist ein Ventil, das eine Fläche bewässert.",
+          "name": "Name",
+          "size": "Fläche",
+          "throughput": "Durchfluss",
+          "throughput-help": "Wie viel Wasser diese Zone pro Minute abgibt. Miss es, wenn du kannst, statt es einem Datenblatt zu entnehmen: davon wird jede Dauer abgeleitet, und es ist der leiseste Weg, doppelt so lange zu bewässern wie gewollt."
+        },
+        "environment": {
+          "question": "Wo wächst es?",
+          "outdoors": "Im Freien",
+          "outdoors-help": "Freie Luft. Regen erreicht sie, und der Himmel ist eine Frage wert.",
+          "under-glass": "Unter Glas oder Folie",
+          "under-glass-help": "Ein Gewächshaus, ein Folientunnel, ein Wintergarten. Es kommt kein Regen an, und eine Vorhersage beschreibt Wetter, das diese Pflanzen nie erleben."
+        },
+        "weather": {
+          "question": "Woher soll die Verdunstungszahl kommen?",
+          "service": "Der von dir eingerichtete Wetterdienst",
+          "service-help": "Nichts weiter zu installieren. Smart Irrigation holt das Wetter für deinen Standort und berechnet daraus die Evapotranspiration.",
+          "no-service-indoors": "Ein Wetterdienst wird hier nicht angeboten: er beschreibt den Himmel, unter dem diese Pflanzen nicht stehen.",
+          "sensors": "Meine eigenen Wettersensoren",
+          "sensors-help": "Du hast Sensoren für Temperatur, Luftfeuchte und den Rest. Die genaueste Möglichkeit, weil dort gemessen wird, wo die Pflanzen wirklich stehen.",
+          "et": "Ein Sensor, der die Evapotranspiration schon meldet",
+          "et-help": "Etwas anderes berechnet sie bereits, und Smart Irrigation soll diese Zahl so übernehmen, wie sie ist.",
+          "static": "Ein fester Betrag pro Tag",
+          "static-help": "Keine Sensoren und kein Dienst. Du gibst eine Zahl an, und sie wird jeden Tag verwendet. Grob, aber es verfolgt trotzdem, was du schon bewässert hast."
+        },
+        "sensors": {
+          "question": "Welche Entitäten soll sie lesen?",
+          "help": "Es wird nur nach denen gefragt, die die Berechnung wirklich nutzt.",
+          "lux-hint": "Unter Glas kann ein Lichtsensor die Sonnenstrahlung ersetzen: wähle hier deine Beleuchtungsstärke-Entität und setze ihre Quelle danach in der Sensorgruppe auf Lichtsensor (Lux).",
+          "static-question": "Wie viel verdunstet pro Tag?",
+          "static-help": "Eine Wasserhöhe, in der Einheit deiner Zonen. Etwa 4 bis 5 mm pro Tag ist für einen gemäßigten Sommer üblich.",
+          "static-label": "Verdunstung pro Tag"
+        },
+        "review": {
+          "question": "Bereit zum Erstellen",
+          "zone": "Zone",
+          "environment": "Umgebung",
+          "engine": "Berechnungs-Engine",
+          "sources": "Quellen",
+          "from-the-service": "vom Wetterdienst",
+          "help": "Damit werden ein Berechnungsmodul, eine Sensorgruppe und eine Zone erstellt, genau wie über die anderen Tabs. Danach ist nichts festgeschrieben."
+        }
+      },
+      "step": "Schritt"
+    },
+    "history": {
+      "title": "Verlauf",
+      "description": "Jeder Bewässerungsdurchlauf, den Smart Irrigation einer Zone angerechnet hat: wann er begann, wie lange bewässert wurde und wie viel Wasser dabei verbraucht wurde. Durchläufe werden von der direkten Ventilsteuerung und von der beobachteten Bewässerung aufgezeichnet und 90 Tage aufbewahrt.",
+      "refresh": "Aktualisieren",
+      "no-data": "Es wurden noch keine Bewässerungsdurchläufe aufgezeichnet.",
+      "table": {
+        "title": "Bewässerungsdurchläufe",
+        "start": "Beginn",
+        "zone": "Zone",
+        "duration": "Dauer",
+        "water": "Wasserverbrauch",
+        "truncated": "Es werden die {count} neuesten von {total} Durchläufen gezeigt."
+      },
+      "charts": {
+        "total-title": "Gesamter Wasserverbrauch pro Tag (letzte 30 Tage)",
+        "per-zone-title": "Wasserverbrauch pro Tag und Zone (letzte 30 Tage)",
+        "no-data": "In diesem Zeitraum wurde kein Wasser verbraucht."
+      }
+    },
+    "groups": {
+      "home": "Start",
+      "zones": "Zonen",
+      "data": "Daten",
+      "settings": "Einstellungen"
     }
   },
   "title": "Smart Irrigation",
@@ -401,7 +668,8 @@
     "trigger_types": {
       "sunrise": "Sonnenaufgang",
       "sunset": "Sonnenuntergang",
-      "solar_azimuth": "Sonnenazimut"
+      "solar_azimuth": "Sonnenazimut",
+      "time": "Feste Uhrzeit"
     },
     "fields": {
       "name": {
@@ -427,6 +695,9 @@
       "account_for_duration": {
         "name": "Dauer berücksichtigen",
         "description": "Wenn aktiviert, startet die Bewässerung früh genug, um zur angegebenen Zeit fertig zu sein. Wenn deaktiviert, startet die Bewässerung genau zur angegebenen Zeit."
+      },
+      "at": {
+        "name": "Uhrzeit"
       }
     },
     "dialog": {
@@ -442,7 +713,8 @@
     "confirm_delete": "Möchten Sie den Auslöser \"{name}\" wirklich löschen?",
     "validation": {
       "name_required": "Der Auslösername ist erforderlich",
-      "azimuth_invalid": "Der Azimutwinkel muss eine gültige Zahl sein"
+      "azimuth_invalid": "Der Azimutwinkel muss eine gültige Zahl sein",
+      "time_invalid": "Bitte gib eine gültige Uhrzeit als HH:MM ein."
     },
     "help": {
       "sunrise_offset": "Für Sonnenaufgangs-Auslöser: Verwenden Sie negative Werte, um vor Sonnenaufgang zu starten, positive für danach. Setzen Sie auf 0, um automatisch früh genug zu starten, damit alle Zonen vor Sonnenaufgang fertig sind.",
@@ -486,6 +758,45 @@
     "sequencing": {
       "sequential": "Sequenziell (eine Zone nach der anderen)",
       "parallel": "Parallel (alle Zonen gleichzeitig)"
+    },
+    "sequencing_description": "Wie deine Zonen bewässert werden. Das bestimmt, von welcher Dauer ein Startauslöser zurückrechnet, wenn er zum Sonnenaufgang fertig sein soll: eine nach der anderen ergibt die Summe aller Laufzeiten, alle gleichzeitig die längste davon. Es gilt, ob Smart Irrigation die Ventile selbst öffnet oder eine eigene Automatisierung.",
+    "passes_label": "In mehreren Durchgängen bewässern",
+    "passes_description": "Zyklus und Einsickern: dieselbe Wassermenge, aufgeteilt in kürzere Durchgänge mit einer Pause dazwischen, damit schwerer Boden sie aufnimmt statt sie abfließen zu lassen. Ein Durchgang bewässert in einem Zug, das ist die Voreinstellung. Ein Durchlauf, der zu kurz zum Aufteilen ist, bleibt unberührt.",
+    "soak_label": "Einsickern zwischen den Durchgängen",
+    "pause_between_zones_label": "Pause zwischen Zonen",
+    "pause_between_zones_description": "Eine Wartezeit zwischen zwei Zonen eines sequenziellen Durchlaufs: Zeit, damit sich der Leitungsdruck erholt oder ein langsames Ventil schließt, bevor das nächste öffnet.",
+    "minutes": "Minuten",
+    "seconds": "Sekunden"
+  },
+  "calculation_log": {
+    "title": "Berechnungsprotokoll",
+    "description": "Schreibt die vollständigen Eingaben jeder Berechnung in eine Datei, damit zwei Tage, die sich gleichen und doch sehr unterschiedlich bewässern, hinterher verglichen werden können. Jede Berechnung hängt eine Zeile an: die Datensätze der Sensorgruppe und wie sie zusammengefasst wurden, die Zwischenwerte des Moduls (Sonnenstrahlung, Nettostrahlung, ET0) sowie den daraus entstehenden Vorrat, die Dauer und die Menge. Standardmäßig aus; die Datei ist in der Größe begrenzt und wird rotiert, sie kann also eine Saison lang eingeschaltet bleiben.",
+    "enabled_label": "Berechnungseingaben in eine Datei schreiben",
+    "file_hint": "Wird nach config/smart_irrigation/calc_log.jsonl geschrieben, ein JSON-Datensatz je Zeile. Die neuesten Datensätze liegen auch im Diagnose-Download (Koordinaten gerundet, Entitäts-IDs entfernt), du kannst sie also in einem Schritt an ein Issue anhängen."
+  },
+  "measured_skip": {
+    "title": "Bei gemessenen Bedingungen überspringen",
+    "description": "Wird zu Beginn jedes Durchlaufs geprüft, aus einem Sensor oder dem Wetterdienst. Ein Sensor, der nicht gelesen werden kann, verhindert nie einen Durchlauf.",
+    "enabled": "Aktiviert",
+    "threshold": "Schwellwert",
+    "sensor": "Sensor",
+    "sensor-optional": "Sensor (optional)",
+    "rain": {
+      "title": "Regensensor",
+      "description": "Durchlauf überspringen, solange ein Regensensor meldet, dass es regnet.",
+      "sensor-hint": "Ein binärer Sensor, der an ist, während es regnet.",
+      "history-label": "Durchläufe nach kürzlichem Regen verkürzen",
+      "history-description": "Für eine Zone, die überhaupt keinen Regen in Millimetern hat: kein Messgerät und ein Wetterdienst, der keinen liefert. Die Historie des Sensors über die letzten fünf Tage wird gelesen und so gewichtet, dass gestern mehr zählt als vor vier Tagen, und der Durchlauf wird entsprechend verkürzt. Ein ganzer Regentag heute nimmt den gesamten Durchlauf; vor vier Tagen ein Zehntel davon. Die Wasserbilanz wird dabei nie angetastet, denn wie viele Millimeter gefallen sind, ist unbekannt: das Defizit bleibt und wird nachgeholt, sobald das Wetter dreht. Eine Zone, deren Sensorgruppe Regen in Millimetern meldet, bleibt unberührt, weil die Bilanz ihn schon hat. Das braucht einen Sensor, der während des Regens eingeschaltet bleibt, und nicht einen, der pro Kippvorgang kurz auslöst."
+    },
+    "freeze": {
+      "title": "Frost",
+      "description": "Durchlauf überspringen, wenn die Temperatur den Schwellwert erreicht oder unterschreitet.",
+      "sensor-hint": "Leer: die aktuelle Temperatur des Wetterdienstes."
+    },
+    "wind": {
+      "title": "Wind",
+      "description": "Durchlauf überspringen, wenn der Wind den Schwellwert erreicht oder überschreitet: ein Sprinkler bei starkem Wind bewässert den Weg, nicht das Beet.",
+      "sensor-hint": "Leer: der aktuelle Wind des Wetterdienstes, in 10 m Höhe."
     }
   }
 }

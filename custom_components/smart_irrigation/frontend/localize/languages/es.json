@@ -16,7 +16,9 @@
       "after": "después"
     },
     "units": {
-      "seconds": "segundos"
+      "seconds": "segundos",
+      "minutes": "min",
+      "hours": "h"
     },
     "attributes": {
       "size": "Tamaño",
@@ -75,7 +77,11 @@
         "maximum-bucket-is": "El tamaño máximo de cubo es",
         "drainage-rate-is": "La tasa de drenaje en saturación (bucket al máximo) es",
         "current-drainage-is": "El drenaje actual se calcula como",
-        "no-drainage": "El drenaje actual es 0 porque"
+        "no-drainage": "El drenaje actual es 0 porque",
+        "module-returned-hourly-evapotranspiration-deficiency": "El módulo ha sumado el déficit de evapotranspiración del cultivo hora a hora ( = suma de la et0 horaria * Kc + precipitación) a lo largo de",
+        "crop-factor-is": "El factor de cultivo es",
+        "precipitation-rate-is": "La tasa de precipitación es",
+        "below-irrigation-threshold": "El déficit aún no ha alcanzado el umbral de riego de esta zona, así que no hace falta riego y la duración se pone a 0. Déficit / umbral:"
       }
     }
   },
@@ -106,7 +112,16 @@
       "messages": {
         "no-service": "No se usa ningún servicio meteorológico — los datos del tiempo provienen solo de tus propios sensores.",
         "saved": "Servicio meteorológico actualizado y aplicado.",
-        "reload-note": "Al guardar se valida la clave API con el servicio y se aplica el cambio de inmediato."
+        "reload-note": "Al guardar se valida la clave API con el servicio y se aplica el cambio de inmediato.",
+        "owm-onecall-hint": "OpenWeatherMap necesita el plan One Call API 3.0 (One Call by Call). Es gratuito hasta 1000 llamadas al día, pero hay que activarlo con una tarjeta, y una clave nueva puede tardar un par de horas en funcionar. Una clave por defecto normal se rechaza."
+      },
+      "history": {
+        "title": "Histórico",
+        "refresh": "Actualizar",
+        "last-update": "Última actualización",
+        "time": "Obtenido",
+        "sensor-group": "Grupo de sensores",
+        "no-data": "Todavía no se han obtenido datos del servicio meteorológico."
       }
     },
     "backuprestore": {
@@ -145,7 +160,9 @@
           "description": "El cálculo toma los datos meteorológicos recopilados hasta ese momento y actualiza el bucket de cada zona automática. Después, la duración se ajusta según el nuevo valor del bucket y se eliminan los datos meteorológicos recopilados.",
           "labels": {
             "auto-calc-enabled": "Cálculo automático de la duración de las zonas",
-            "calc-time": "Calcular a las"
+            "calc-time": "Calcular a las",
+            "hourly-calculation": "Calcular la evapotranspiración hora a hora",
+            "hourly-calculation-hint": "Suma la ecuación horaria de la FAO-56 en cada hora transcurrida desde el último cálculo, en lugar de aplicar la ecuación diaria a las medias, que esconden si el sol y el calor llegaron juntos. Una instalación nueva empieza con ella; una instalación que ya existía antes conserva la ecuación diaria hasta que la cambies, porque las dos dan números distintos y tu riego no debería cambiar por una actualización. El sol de cada hora viene de un sensor de radiación o de iluminancia, del histórico horario del propio servicio meteorológico, o del rango de temperatura del día. Merece la pena cuando las lecturas llegan repartidas a lo largo del día: una sola actualización al día deja una única lectura sostenida durante veinticuatro horas, y entonces ninguna de las dos formas es fiable. Un invernadero sin sensor propio conserva la ecuación diaria."
           }
         },
         "automatic-update": {
@@ -174,6 +191,17 @@
             "continuousupdates": "Activar actualizaciones continuas",
             "sensor_debounce": "Antirrebote del sensor"
           }
+        },
+        "panel-mode": {
+          "header": "Panel",
+          "labels": {
+            "advanced": "Ajustes avanzados",
+            "advanced-hint": "Muestra los ajustes que afinan el modelo: drenaje, umbrales, multiplicador, hasta dónde mira una zona hacia delante. Tienen valores predeterminados razonables; déjalo desactivado si no sabes que los necesitas. Tus valores se conservan en cualquier caso."
+          }
+        },
+        "setup-assistant": {
+          "description": "Cuatro preguntas como máximo, y crea un grupo de sensores y una zona por ti, eligiendo lo que cada uno necesita. Para una primera zona, otra más, o empezar de cero. Antes era una pestaña, que invitaba a una instalación ya configurada a configurarse.",
+          "open": "Abrir el asistente"
         }
       },
       "description": "Esta página provee configuraciones globales.",
@@ -199,32 +227,104 @@
       "description": "Consulta información sobre el próximo riego y el estado del sistema.",
       "configuration-not-available": "Configuración no disponible.",
       "cards": {
-        "zone-bucket-values": {
-          "title": "Valores de bucket y duración por zona",
+        "next-run": {
+          "title": "Próximo ciclo",
           "labels": {
-            "bucket": "Bucket",
-            "duration": "Duración"
+            "start": "Empieza",
+            "duration": "Duración total",
+            "zones": "Zonas que riegan",
+            "trigger": "Disparador"
           },
-          "no-zones": "No hay zonas configuradas"
+          "no-start": "Todavía no se ha podido determinar una hora de inicio.",
+          "nothing-to-water": "Nada que regar: ninguna zona ha alcanzado su umbral de riego.",
+          "trigger-default": "Predeterminado, terminando al amanecer",
+          "accounts-for-duration": "calculado hacia atrás para que el ciclo termine entonces",
+          "starts-at-trigger": "empieza en ese momento",
+          "sequencing-sequential": "una zona cada vez, así que el total es la suma de todas las zonas",
+          "sequencing-parallel": "todas las zonas a la vez, así que el total es la zona más larga",
+          "headline-nothing": "Nada que regar",
+          "sub-nothing": "Todavía ninguna zona tiene suficiente falta de agua. El próximo inicio sería {start}.",
+          "headline-watering": "Riego {start}",
+          "headline-watering-soon": "Riego en el próximo inicio",
+          "sub-watering": "{count} zona(s), {duration} en total.",
+          "headline-postponed": "El riego está aplazado",
+          "sub-postponed": "Lo has aplazado. Se reanuda por sí solo, y no se pierde nada: una zona a la que le falta agua sigue faltándole después.",
+          "headline-skipped": "Hoy no se riega",
+          "headline-not-scheduled": "Hay un ciclo pendiente, y no hay nada programado que lo inicie",
+          "sub-not-scheduled": "La hora de arriba es cuando empezaría. Ahora mismo no hay ningún disparador de inicio armado, lo que ocurre cuando el disparador activo está desactivado o no se registró. Revisa el disparador en Ajustes, y si está bien, un cálculo lo vuelve a armar."
         },
-        "next-irrigation": {
-          "title": "Próximo riego",
-          "labels": {
-            "next-start": "Próximo inicio",
-            "duration": "Duración",
-            "zones": "Zonas"
-          },
-          "no-data": "No hay datos disponibles"
+        "decision": {
+          "title": "¿Se va a omitir?",
+          "will-run": "Nada retiene el ciclo.",
+          "will-skip": "El ciclo se omitiría.",
+          "preview-note": "Evaluado ahora mismo. Una previsión todavía puede cambiar antes del inicio.",
+          "unavailable": "No se pudieron evaluar las condiciones de omisión.",
+          "last-title": "Última decisión real",
+          "last-none": "Todavía no se ha decidido ningún ciclo.",
+          "last-skipped": "Omitido",
+          "last-ran": "Se ejecutó",
+          "check-precipitation": "Previsión de lluvia",
+          "check-days_between": "Días entre riegos",
+          "state-off": "Desactivado",
+          "state-unavailable": "No se pudo comprobar",
+          "state-passing": "No bloquea",
+          "state-blocking": "Bloquea",
+          "detail-forecast": "Previsión",
+          "detail-threshold": "Umbral",
+          "detail-days-since": "Días desde el último ciclo",
+          "detail-days-required": "Días necesarios",
+          "check-rain_sensor": "Sensor de lluvia",
+          "check-freeze": "Heladas",
+          "check-wind": "Viento",
+          "check-soil_moisture": "Humedad del suelo",
+          "detail-now": "Ahora",
+          "detail-weather-service": "servicio meteorológico",
+          "detail-raining": "Está lloviendo",
+          "detail-dry": "No llueve",
+          "detail-held": "se salta este ciclo",
+          "check-postponed": "Aplazado por ti"
         },
-        "irrigation-reason": {
-          "title": "Motivo del riego",
+        "estimate": {
+          "title": "Cómo está cada zona ahora",
+          "note": "Estimado ejecutando el cálculo sobre las lecturas recogidas desde la última vez. No se guarda nada: una zona conserva el valor de su último cálculo hasta el siguiente.",
+          "none": "Todavía no se puede estimar ninguna zona.",
           "labels": {
-            "reason": "Motivo",
-            "sunrise": "Amanecer",
-            "total-duration": "Duración total",
-            "explanation": "Explicación"
+            "now": "Ahora",
+            "at-last-calculation": "En el último cálculo",
+            "would-water": "Regaría",
+            "last-irrigation": "Último riego"
           },
-          "no-data": "No hay datos disponibles"
+          "nothing": "nada",
+          "never-watered": "nunca"
+        },
+        "postpone": {
+          "prompt": "¿Lluvia que la previsión no vio, o un motivo propio?",
+          "for-24": "Aplazar 24 h",
+          "for-48": "Aplazar 48 h",
+          "until": "El riego está aplazado hasta",
+          "resume": "Reanudar ahora"
+        },
+        "forecast": {
+          "today": "Hoy"
+        },
+        "stale": {
+          "title": "Una zona ya no se está calculando",
+          "body": "Su necesidad de agua es más antigua que la de las demás, así que está regando con el tiempo de días atrás. Comprueba que su grupo de sensores sigue recibiendo datos, y mira en el registro qué dijo el cálculo sobre ella.",
+          "never": "nunca calculada"
+        }
+      },
+      "gaps": {
+        "auto_calc_off": {
+          "title": "No se está calculando nada",
+          "body": "El cálculo automático de duración está desactivado, así que las duraciones de las zonas nunca se actualizan. Vuelve a activarlo en Ajustes, o calcula a mano cuando quieras un ciclo."
+        },
+        "no_automatic_zone": {
+          "title": "Ninguna zona riega por sí sola",
+          "body": "Todas las zonas están en manual o desactivadas, así que un inicio no alcanza nada. Pon una zona en automático para que la riegue la programación."
+        },
+        "no_valve_path": {
+          "title": "Aquí nada abre una válvula",
+          "body": "Smart Irrigation calcula cuánto tiempo regar; algo tiene que actuar en consecuencia. O vinculas una válvula a una zona y activas el control directo de válvulas, o escribes una automatización sobre el evento de inicio (los blueprints lo hacen por ti). Si ya lo hace una automatización, no hay nada que cambiar."
         }
       }
     },
@@ -281,8 +381,15 @@
             "none": "Ninguno",
             "weather_service": "Weather service",
             "sensor": "Sensor",
-            "static": "Valor estático"
-          }
+            "static": "Valor estático",
+            "illuminance": "Sensor de luz (lux)"
+          },
+          "luminous_efficacy": "Eficacia luminosa",
+          "greenhouse": "Invernadero",
+          "greenhouse_description": "Un entorno cerrado: un invernadero, un túnel de plástico, cualquier cosa bajo cristal o plástico. A estas zonas no les llega la lluvia, así que la precipitación se deja fuera de su balance hídrico y sus campos se ocultan. Dos cosas hay que poner a mano, porque no se pueden adivinar: dale a Velocidad del viento un valor estático cercano a 0, porque el cálculo supone aire libre, y usa un sensor de luz para la Radiación solar, porque el acristalamiento filtra el cielo.",
+          "module": "Motor de cálculo",
+          "module_description": "Este grupo solo ofrece las fuentes que lee este motor. Las zonas que lo usan heredan la elección.",
+          "module_undecided": "Todavía no se ha elegido un motor, así que se ofrecen todas las fuentes y cada zona que usa este grupo conserva la suya. Elige uno para ver solo las fuentes que lee."
         }
       },
       "description": "Añada uno o más grupos de sensores que recuperen datos meteorológicos de Weather service, de sensores o de una combinación de éstos. Puede asignar cada grupo de sensores a una o más zonas",
@@ -299,6 +406,12 @@
         "precipitation": "Precip.",
         "retrieval-time": "Obtenido",
         "no-data": "No hay datos meteorológicos disponibles para este grupo de sensores"
+      },
+      "summary": {
+        "sources-one": "{n} fuente",
+        "sources-other": "{n} fuentes",
+        "zones-one": "{n} zona",
+        "zones-other": "{n} zonas"
       }
     },
     "modules": {
@@ -383,10 +496,164 @@
         "linked-entity-hint": "La válvula o interruptor que riega esta zona. Cada vez que se acciona (un grifo manual, una automatización o la propia Smart Irrigation cuando el control directo de válvula está activado), el bucket se acredita a partir del tiempo de funcionamiento y el rendimiento de la zona. Necesario para las funciones de lazo cerrado.",
         "flow-sensor": "Contador de volumen acumulado",
         "flow-sensor-hint": "Para una acreditación exacta en lugar de rendimiento x tiempo: un total de contador de agua acumulado (clase de estado total_increasing), no un caudal instantáneo. La unidad se lee automáticamente (L, mL, m³, gal, ft³).",
-        "optional": "opcional"
+        "optional": "opcional",
+        "et-deficiency": "Déficit de ET diario",
+        "input-method": "Método de entrada",
+        "input-methods": {
+          "throughput": "Caudal y área",
+          "direct": "Tasa de precipitación"
+        },
+        "precipitation-rate": "Tasa de precipitación",
+        "irrigation-threshold": "Umbral de riego",
+        "soil-moisture-sensor": "Sensor de humedad del suelo",
+        "soil-moisture-sensor-hint": "La zona se salta un ciclo mientras el suelo esté en el umbral o por encima. El depósito se conserva.",
+        "soil-moisture-threshold": "Omitir a partir de",
+        "calculation-method": "Evapotranspiración",
+        "calculation-method-help": {
+          "from_weather": "A partir de tus medidas: temperatura, humedad, viento, sol.",
+          "provided": "Ya tienes una evapotranspiración en mm; se toma tal cual.",
+          "fixed": "Tantos mm al día, haga el tiempo que haga."
+        },
+        "calculation-methods": {
+          "from_weather": "Calculada por Smart Irrigation",
+          "provided": "Proporcionada por un sensor o un servicio",
+          "fixed": "Una cantidad fija"
+        },
+        "forecast-days": "Mirar hacia delante",
+        "forecast-days-help": "0: la zona riega lo que el tiempo se ha llevado de verdad. 1: también se tiene en cuenta mañana, 2: mañana y pasado mañana, y así. Cuanto más calurosos sean los días que vienen, más se riega hoy. Esto no es la omisión por lluvia, que es un ajuste aparte.",
+        "fixed-amount": "Cantidad fija",
+        "engine-shared-help": "Este ajuste pertenece solo a esta zona: cada zona tiene el suyo, y cambiarlo aquí no cambia nada en ningún otro sitio.",
+        "soil-type": "Suelo",
+        "plant-type": "Qué crece aquí",
+        "soil-types": {
+          "sand": "Arenoso",
+          "sandy_loam": "Franco arenoso",
+          "loam": "Franco",
+          "clay_loam": "Franco arcilloso",
+          "clay": "Arcilloso",
+          "custom": "Pongo yo la tasa de drenaje"
+        },
+        "plant-types": {
+          "lawn": "Césped",
+          "vegetables": "Hortalizas",
+          "flowers": "Flores",
+          "shrubs": "Arbustos",
+          "hedge": "Seto",
+          "fruit_trees": "Frutales",
+          "vines": "Viñas",
+          "ground_cover": "Cubierta vegetal",
+          "custom": "Pongo yo el coeficiente de cultivo"
+        },
+        "duration-readonly-automatic": "Calculada por ti: el ciclo de esta zona sale de su balance hídrico. Ponla en manual para escribir una duración tú mismo.",
+        "duration-readonly-disabled": "Una zona desactivada nunca se riega, así que no tiene tiempo de riego.",
+        "et-deficiency-help": "Lo que esta zona necesita al día: ETc, la evapotranspiración de referencia por el factor de cultivo, ajuste estacional incluido. Antes de escalarlo al intervalo y antes de la lluvia, que es lo que lo hace comparable de una configuración a otra. El sensor de la zona también lleva la cifra de referencia por separado, en el atributo `eto`, para contrastarla con lo que publica un servicio meteorológico."
       },
       "no_items": "Aún no hay zonas definidas.",
-      "title": "Zonas"
+      "title": "Zonas",
+      "module-comes-from-the-group": "El motor de cálculo viene del grupo de sensores de esta zona. Cámbialo ahí, y todas las zonas que usan ese grupo lo siguen.",
+      "status": {
+        "will-water": "Regará {duration} en el próximo inicio.",
+        "idle": "Nada que regar: faltan {short}.",
+        "satisfied": "Nada que regar: esta zona tiene lo que necesita.",
+        "under-threshold": "Todavía nada que regar: faltan {short}, por debajo del umbral de esta zona.",
+        "manual": "Solo riega cuando lo pides.",
+        "disabled": "Desactivada: nunca se riega, y su balance no se lleva.",
+        "threshold": "umbral"
+      },
+      "calendar": {
+        "title": "Calendario de riego (12 meses, estimado)",
+        "caveat": "Una estimación para planificar, no tu tiempo real: los meses se modelan a partir de tu latitud y de un patrón estacional típico, así que un verano continental sale más caluroso y seco de lo que es. No influye en nada, no calcula nada y no riega nada.",
+        "month": "Mes",
+        "et": "ET",
+        "precipitation": "Precipitación",
+        "watering": "Riego",
+        "avg-temp": "Temp. media",
+        "none": "No hay datos de calendario de riego para esta zona",
+        "error": "No se pudo generar el calendario"
+      }
+    },
+    "setup": {
+      "title": "Configuración",
+      "description": "Una forma guiada de crear tu primera zona. Hace una pregunta cada vez, y solo las preguntas que tus respuestas anteriores dejan abiertas.",
+      "next": "Siguiente",
+      "back": "Atrás",
+      "create": "Crearla",
+      "creating": "Creando...",
+      "failed": "Algo ha salido mal y no se ha creado nada. Las otras pestañas siguen ahí si prefieres configurarla a mano.",
+      "done": "Tu zona está lista.",
+      "done-note": "Aparece en Zonas, y su grupo de sensores en Grupos de sensores. Aquí no hay nada especial: edita cualquiera de los dos como los demás. Ejecuta una actualización y un cálculo cuando tus sensores hayan informado, y la zona empezará a dar una duración.",
+      "steps": {
+        "zone": {
+          "question": "¿Qué estás regando?",
+          "help": "Una zona es una válvula que riega un área.",
+          "name": "Nombre",
+          "size": "Área",
+          "throughput": "Caudal",
+          "throughput-help": "Cuánta agua entrega esta zona por minuto. Mídelo si puedes, en lugar de tomarlo de una ficha técnica: es de donde sale cada duración, y es la forma más silenciosa de regar el doble de lo que pretendías."
+        },
+        "environment": {
+          "question": "¿Dónde crece?",
+          "outdoors": "Al aire libre",
+          "outdoors-help": "Aire libre. Le llega la lluvia, y vale la pena preguntar por el cielo.",
+          "under-glass": "Bajo cristal o plástico",
+          "under-glass-help": "Un invernadero, un túnel de plástico, una galería. No llega lluvia, y una previsión describe un tiempo que estas plantas nunca ven."
+        },
+        "weather": {
+          "question": "¿De dónde debe venir la cifra de evaporación?",
+          "service": "El servicio meteorológico que has configurado",
+          "service-help": "Nada más que instalar. Smart Irrigation toma el tiempo de tu ubicación y calcula la evapotranspiración a partir de él.",
+          "no-service-indoors": "Aquí no se ofrece un servicio meteorológico: describe el cielo, y estas plantas no están debajo de él.",
+          "sensors": "Mis propios sensores meteorológicos",
+          "sensors-help": "Tienes sensores de temperatura, humedad y el resto. La opción más precisa, porque mide donde están realmente las plantas.",
+          "et": "Un sensor que ya informa de la evapotranspiración",
+          "et-help": "Otra cosa ya la calcula, y Smart Irrigation debería usar esa cifra tal cual.",
+          "static": "Una cantidad fija por día",
+          "static-help": "Sin sensores y sin servicio. Das un número y se usa todos los días. Es tosco, pero sigue llevando la cuenta de lo que ya has regado."
+        },
+        "sensors": {
+          "question": "¿Qué entidades debe leer?",
+          "help": "Solo se piden los que el cálculo usa de verdad.",
+          "lux-hint": "Bajo cristal, un sensor de luz puede sustituir a la radiación solar: elige aquí tu entidad de iluminancia y después, en el grupo de sensores, pon su fuente en Sensor de luz (lux).",
+          "static-question": "¿Cuánto se evapora al día?",
+          "static-help": "Una altura de agua, en la unidad que usan tus zonas. Alrededor de 4 o 5 mm al día es habitual para un verano templado.",
+          "static-label": "Evaporación por día"
+        },
+        "review": {
+          "question": "Listo para crear",
+          "zone": "Zona",
+          "environment": "Entorno",
+          "engine": "Motor de cálculo",
+          "sources": "Fuentes",
+          "from-the-service": "del servicio meteorológico",
+          "help": "Esto crea un módulo de cálculo, un grupo de sensores y una zona, exactamente como lo harían las otras pestañas. Después nada queda fijado."
+        }
+      },
+      "step": "paso"
+    },
+    "history": {
+      "title": "Histórico",
+      "description": "Cada ciclo de riego que Smart Irrigation ha atribuido a una zona: cuándo empezó, cuánto tiempo regó y cuánta agua usó. Los ciclos los registran el control directo de válvulas y el riego observado, y se conservan 90 días.",
+      "refresh": "Actualizar",
+      "no-data": "Todavía no se ha registrado ningún ciclo de riego.",
+      "table": {
+        "title": "Ciclos de riego",
+        "start": "Inicio",
+        "zone": "Zona",
+        "duration": "Duración",
+        "water": "Agua usada",
+        "truncated": "Se muestran los {count} ciclos más recientes de {total}."
+      },
+      "charts": {
+        "total-title": "Agua total usada por día (últimos 30 días)",
+        "per-zone-title": "Agua usada por día y por zona (últimos 30 días)",
+        "no-data": "No se ha usado agua en este periodo."
+      }
+    },
+    "groups": {
+      "home": "Inicio",
+      "zones": "Zonas",
+      "data": "Datos",
+      "settings": "Ajustes"
     }
   },
   "title": "Smart Irrigation",
@@ -401,7 +668,8 @@
     "trigger_types": {
       "sunrise": "Amanecer",
       "sunset": "Atardecer",
-      "solar_azimuth": "Azimut solar"
+      "solar_azimuth": "Azimut solar",
+      "time": "Hora fija"
     },
     "fields": {
       "name": {
@@ -427,6 +695,9 @@
       "account_for_duration": {
         "name": "Tener en cuenta la duración",
         "description": "Cuando está activado, el riego empezará con suficiente antelación para terminar a la hora indicada. Cuando está desactivado, el riego empezará exactamente a la hora indicada."
+      },
+      "at": {
+        "name": "Hora"
       }
     },
     "dialog": {
@@ -442,7 +713,8 @@
     "confirm_delete": "¿Seguro que quieres eliminar el disparador \"{name}\"?",
     "validation": {
       "name_required": "El nombre del disparador es obligatorio",
-      "azimuth_invalid": "El ángulo de azimut debe ser un número válido"
+      "azimuth_invalid": "El ángulo de azimut debe ser un número válido",
+      "time_invalid": "Introduce una hora válida en formato HH:MM."
     },
     "help": {
       "sunrise_offset": "Para los disparadores de amanecer: usa valores negativos para empezar antes del amanecer y positivos para después. Pon 0 para empezar automáticamente con suficiente antelación para completar todas las zonas antes del amanecer.",
@@ -486,6 +758,45 @@
     "sequencing": {
       "sequential": "Secuencial (una zona a la vez)",
       "parallel": "Paralelo (todas las zonas a la vez)"
+    },
+    "sequencing_description": "Cómo se riegan tus zonas. Esto determina desde qué duración cuenta atrás un disparador de inicio cuando tiene que terminar al amanecer: una tras otra da la suma de los tiempos de todas las zonas, todas a la vez da el más largo de ellos. Se aplica tanto si Smart Irrigation abre las válvulas como si lo hace una automatización tuya.",
+    "passes_label": "Regar en varias pasadas",
+    "passes_description": "Ciclo y absorción: la misma agua, repartida en pasadas más cortas con una pausa entre ellas, para que un suelo pesado la absorba en lugar de dejarla escurrir. Una pasada riega de una vez, y es lo predeterminado. Un ciclo demasiado corto para dividirse se deja como está.",
+    "soak_label": "Absorción entre pasadas",
+    "pause_between_zones_label": "Pausa entre zonas",
+    "pause_between_zones_description": "Una espera entre dos zonas de un ciclo secuencial: tiempo para que se recupere la presión de la línea, o para que una válvula lenta acabe de cerrarse antes de que se abra la siguiente.",
+    "minutes": "minutos",
+    "seconds": "segundos"
+  },
+  "calculation_log": {
+    "title": "Registro de cálculo",
+    "description": "Escribe en un archivo todas las entradas de cada cálculo, para poder comparar después dos días que se parecen pero riegan de forma muy distinta. Cada cálculo añade una línea: los registros del grupo de sensores y cómo se agregaron, los valores intermedios del módulo (radiación solar, radiación neta, ET0) y el depósito, la duración y el volumen resultantes. Desactivado por defecto; el archivo tiene un tamaño limitado y se rota, así que puede quedarse activado toda una temporada.",
+    "enabled_label": "Registrar en un archivo las entradas del cálculo",
+    "file_hint": "Se escribe en config/smart_irrigation/calc_log.jsonl, un registro JSON por línea. Los registros más recientes también se incluyen en la descarga de diagnóstico (coordenadas redondeadas, identificadores de entidad eliminados), así que se pueden adjuntar a una incidencia en un solo paso."
+  },
+  "measured_skip": {
+    "title": "Omitir según las condiciones medidas",
+    "description": "Se comprueba al principio de cada ciclo, desde un sensor o desde el servicio meteorológico. Un sensor que no se puede leer nunca detiene un ciclo.",
+    "enabled": "Activado",
+    "threshold": "Umbral",
+    "sensor": "Sensor",
+    "sensor-optional": "Sensor (opcional)",
+    "rain": {
+      "title": "Sensor de lluvia",
+      "description": "Omitir el ciclo mientras un sensor de lluvia indique que está lloviendo.",
+      "sensor-hint": "Un sensor binario que está activo mientras llueve.",
+      "history-label": "Acortar los ciclos tras una lluvia reciente",
+      "history-description": "Para una zona que no tiene ninguna lluvia en milímetros: sin pluviómetro y con un servicio meteorológico que no la proporciona. Se lee el histórico del propio sensor de los últimos cinco días, ponderado de forma que ayer cuente más que hace cuatro días, y el ciclo se acorta en consecuencia. Un día de lluvia registrada hoy se lleva todo el ciclo; hace cuatro días, una décima parte. Nunca toca el balance hídrico, porque no sabe cuántos milímetros cayeron: el déficit se mantiene y se riega en cuanto cambie el tiempo. Una zona cuyo grupo de sensores sí informa de la lluvia en milímetros se deja en paz, porque el balance ya la tiene. Esto necesita un sensor que permanezca activo mientras llueve, y no uno que emita un pulso por cada vuelco."
+    },
+    "freeze": {
+      "title": "Heladas",
+      "description": "Omitir el ciclo cuando la temperatura esté en el umbral o por debajo.",
+      "sensor-hint": "Vacío: la temperatura actual del servicio meteorológico."
+    },
+    "wind": {
+      "title": "Viento",
+      "description": "Omitir el ciclo cuando el viento esté en el umbral o por encima: un aspersor con viento fuerte riega el camino, no el bancal.",
+      "sensor-hint": "Vacío: el viento actual del servicio meteorológico, a 10 m."
     }
   }
 }

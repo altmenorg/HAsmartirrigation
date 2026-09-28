@@ -16,7 +16,9 @@
       "after": "efter"
     },
     "units": {
-      "seconds": "sekunder"
+      "seconds": "sekunder",
+      "minutes": "min",
+      "hours": "t"
     },
     "attributes": {
       "size": "størrelse",
@@ -75,7 +77,11 @@
         "maximum-bucket-is": "Maksimal bucket-størrelse er",
         "drainage-rate-is": "Drænhastighed ved mætning (bucket på maks) er",
         "current-drainage-is": "Aktuel dræning beregnes som",
-        "no-drainage": "Aktuel dræning er 0, fordi"
+        "no-drainage": "Aktuel dræning er 0, fordi",
+        "module-returned-hourly-evapotranspiration-deficiency": "Modulet lagde underskuddet i afgrødens fordampning sammen time for time ( = summen af timernes et0 * Kc + nedbør) over",
+        "crop-factor-is": "Afgrødefaktoren er",
+        "precipitation-rate-is": "Nedbørsintensiteten er",
+        "below-irrigation-threshold": "Underskuddet har endnu ikke nået denne zones vandingsgrænse, så der er ikke behov for vanding, og varigheden sættes til 0. Underskud / grænse:"
       }
     }
   },
@@ -106,7 +112,16 @@
       "messages": {
         "no-service": "Ingen vejrtjeneste bruges — vejrdata kommer udelukkende fra dine egne sensorer.",
         "saved": "Vejrtjeneste opdateret og anvendt.",
-        "reload-note": "Når du gemmer, valideres API-nøglen mod tjenesten, og ændringen anvendes med det samme."
+        "reload-note": "Når du gemmer, valideres API-nøglen mod tjenesten, og ændringen anvendes med det samme.",
+        "owm-onecall-hint": "OpenWeatherMap kræver abonnementet One Call API 3.0 (One Call by Call). Det er gratis op til 1000 kald om dagen, men skal aktiveres med et kort, og en ny nøgle kan være et par timer om at virke. En almindelig standardnøgle bliver afvist."
+      },
+      "history": {
+        "title": "Historik",
+        "refresh": "Opdater",
+        "last-update": "Sidste opdatering",
+        "time": "Hentet",
+        "sensor-group": "Sensorgruppe",
+        "no-data": "Der er endnu ikke hentet data fra vejrtjenesten."
       }
     },
     "backuprestore": {
@@ -145,7 +160,9 @@
           "description": "Beregningen anvender de indsamlede vejrdata frem til det tidspunkt og opdaterer bucket for hver automatisk zone. Derefter justeres varigheden baseret på den nye bucket-værdi, og de indsamlede vejrdata fjernes.",
           "labels": {
             "auto-calc-enabled": "Beregn automatisk vandingsvarigheder",
-            "calc-time": "Beregn kl."
+            "calc-time": "Beregn kl.",
+            "hourly-calculation": "Beregn fordampning time for time",
+            "hourly-calculation-hint": "Lægger FAO-56's timeligning sammen for hver time siden sidste beregning i stedet for at bruge døgnligningen på gennemsnit, der skjuler om solen og varmen kom samtidig. En ny installation begynder med den; en installation der fandtes i forvejen, beholder døgnligningen indtil du skifter, for de to giver forskellige tal, og din vanding skal ikke ændre sig af en opdatering. Solen i hver time kommer fra en strålings- eller lyssensor, fra vejrtjenestens egen timehistorik, eller fra dagens temperaturspænd. Det er værd at have, når målinger kommer ind hen over dagen: én opdatering om dagen lader en enkelt måling gælde i fireogtyve timer, og så er ingen af formerne til at stole på. Et drivhus uden egen sensor beholder døgnligningen."
           }
         },
         "automatic-update": {
@@ -174,6 +191,17 @@
             "continuousupdates": "Aktivér kontinuerlige opdateringer",
             "sensor_debounce": "Sensor-debounce"
           }
+        },
+        "panel-mode": {
+          "header": "Panel",
+          "labels": {
+            "advanced": "Avancerede indstillinger",
+            "advanced-hint": "Viser de indstillinger der finjusterer modellen: dræning, grænser, faktor, hvor langt frem en zone ser. De har fornuftige standardværdier; lad dette være slået fra, medmindre du ved at du har brug for dem. Dine værdier bevares under alle omstændigheder."
+          }
+        },
+        "setup-assistant": {
+          "description": "Højst fire spørgsmål, og den opretter en sensorgruppe og en zone for dig og vælger det, de hver især har brug for. Til en første zone, en mere, eller en frisk start. Det var før en fane, som opfordrede en installation der allerede var sat op, til at sætte sig op.",
+          "open": "Åbn assistenten"
         }
       },
       "description": "Denne side indeholder globale indstillinger.",
@@ -199,32 +227,104 @@
       "description": "Se information om næste vanding og systemstatus.",
       "configuration-not-available": "Konfiguration ikke tilgængelig.",
       "cards": {
-        "zone-bucket-values": {
-          "title": "Zoners bucket-værdier og varighed",
-          "labels": {
-            "bucket": "Bucket",
-            "duration": "Varighed"
-          },
-          "no-zones": "Ingen zoner konfigureret"
-        },
-        "next-irrigation": {
+        "next-run": {
           "title": "Næste vanding",
           "labels": {
-            "next-start": "Næste start",
-            "duration": "Varighed",
-            "zones": "Zoner"
+            "start": "Starter",
+            "duration": "Samlet varighed",
+            "zones": "Zoner der vander",
+            "trigger": "Udløser"
           },
-          "no-data": "Ingen data tilgængelige"
+          "no-start": "Der kunne endnu ikke findes et starttidspunkt.",
+          "nothing-to-water": "Intet at vande: ingen zone har nået sin vandingsgrænse.",
+          "trigger-default": "Standard, slutter ved solopgang",
+          "accounts-for-duration": "regnet tilbage, så vandingen slutter dér",
+          "starts-at-trigger": "starter på det tidspunkt",
+          "sequencing-sequential": "én zone ad gangen, så det samlede er alle zoner lagt sammen",
+          "sequencing-parallel": "alle zoner på én gang, så det samlede er den længste zone",
+          "headline-nothing": "Intet at vande",
+          "sub-nothing": "Ingen zone mangler vand nok endnu. Næste start ville være {start}.",
+          "headline-watering": "Vander {start}",
+          "headline-watering-soon": "Vander ved næste start",
+          "sub-watering": "{count} zone(r), {duration} i alt.",
+          "headline-postponed": "Vandingen er udskudt",
+          "sub-postponed": "Du har udskudt den. Den fortsætter af sig selv, og intet går tabt: en zone der mangler vand, gør det stadig bagefter.",
+          "headline-skipped": "Ingen vanding i dag",
+          "headline-not-scheduled": "Der mangler en vanding, og intet er planlagt til at starte den",
+          "sub-not-scheduled": "Tidspunktet ovenfor er hvornår den ville begynde. Der er ingen startudløser klar lige nu, hvilket sker når den aktive udløser er slået fra eller ikke blev registreret. Tjek udløseren under Indstillinger, og hvis den ser rigtig ud, gør en beregning den klar igen."
         },
-        "irrigation-reason": {
-          "title": "Vandingsårsag",
+        "decision": {
+          "title": "Bliver den sprunget over?",
+          "will-run": "Intet holder vandingen tilbage.",
+          "will-skip": "Vandingen ville blive sprunget over.",
+          "preview-note": "Vurderet lige nu. En udsigt kan stadig ændre sig inden starten.",
+          "unavailable": "Betingelserne for at springe over kunne ikke vurderes.",
+          "last-title": "Seneste rigtige beslutning",
+          "last-none": "Der er endnu ikke taget stilling til nogen vanding.",
+          "last-skipped": "Sprunget over",
+          "last-ran": "Gennemført",
+          "check-precipitation": "Regnudsigt",
+          "check-days_between": "Dage mellem vandinger",
+          "state-off": "Fra",
+          "state-unavailable": "Kunne ikke tjekkes",
+          "state-passing": "Blokerer ikke",
+          "state-blocking": "Blokerer",
+          "detail-forecast": "Udsigt",
+          "detail-threshold": "Grænse",
+          "detail-days-since": "Dage siden sidste vanding",
+          "detail-days-required": "Dage der kræves",
+          "check-rain_sensor": "Regnsensor",
+          "check-freeze": "Frost",
+          "check-wind": "Vind",
+          "check-soil_moisture": "Jordfugt",
+          "detail-now": "Nu",
+          "detail-weather-service": "vejrtjeneste",
+          "detail-raining": "Det regner",
+          "detail-dry": "Det regner ikke",
+          "detail-held": "sidder denne vanding over",
+          "check-postponed": "Udskudt af dig"
+        },
+        "estimate": {
+          "title": "Hvor hver zone står nu",
+          "note": "Anslået ved at køre beregningen på de målinger der er kommet ind siden sidst. Intet gemmes: en zone beholder værdien fra sin sidste beregning indtil den næste.",
+          "none": "Ingen zone kan endnu anslås.",
           "labels": {
-            "reason": "Årsag",
-            "sunrise": "Solopgang",
-            "total-duration": "Samlet varighed",
-            "explanation": "Forklaring"
+            "now": "Nu",
+            "at-last-calculation": "Ved sidste beregning",
+            "would-water": "Ville vande",
+            "last-irrigation": "Sidst vandet"
           },
-          "no-data": "Ingen data tilgængelige"
+          "nothing": "intet",
+          "never-watered": "aldrig"
+        },
+        "postpone": {
+          "prompt": "Regn som udsigten ikke fangede, eller din egen grund?",
+          "for-24": "Udskyd 24 t",
+          "for-48": "Udskyd 48 t",
+          "until": "Vandingen er udskudt til",
+          "resume": "Fortsæt nu"
+        },
+        "forecast": {
+          "today": "I dag"
+        },
+        "stale": {
+          "title": "En zone bliver ikke længere beregnet",
+          "body": "Dens vandbehov er ældre end de andres, så den vander efter gammelt vejr. Tjek at dens sensorgruppe stadig får data, og se i loggen hvad beregningen sagde om den.",
+          "never": "aldrig beregnet"
+        }
+      },
+      "gaps": {
+        "auto_calc_off": {
+          "title": "Der bliver ikke beregnet noget",
+          "body": "Automatisk beregning af varighed er slået fra, så zonernes varigheder bliver aldrig opdateret. Slå den til igen under Indstillinger, eller beregn i hånden når du vil have en vanding."
+        },
+        "no_automatic_zone": {
+          "title": "Ingen zone vander af sig selv",
+          "body": "Alle zoner er manuelle eller slået fra, så en start rammer ingenting. Sæt en zone til automatisk, så den vandes af tidsplanen."
+        },
+        "no_valve_path": {
+          "title": "Der er intet her der åbner en ventil",
+          "body": "Smart Irrigation beregner hvor længe der skal vandes; noget skal handle på det. Enten knytter du en ventil til en zone og slår direkte ventilstyring til, eller du skriver en automatisering på start-hændelsen (blueprints gør det for dig). Hvis en automatisering allerede gør det, er der intet at ændre."
         }
       }
     },
@@ -281,8 +381,15 @@
             "none": "Ingen",
             "weather_service": "Vejrtjeneste",
             "sensor": "Sensor",
-            "static": "Statisk værdi"
-          }
+            "static": "Statisk værdi",
+            "illuminance": "Lyssensor (lux)"
+          },
+          "luminous_efficacy": "Lysudbytte",
+          "greenhouse": "Drivhus",
+          "greenhouse_description": "Et lukket miljø: et drivhus, en plasttunnel, alt under glas eller plast. Der kommer ingen regn til disse zoner, så nedbør holdes ude af deres vandbalance, og dens felter skjules. To ting skal du selv sætte, for de kan ikke gættes: giv Vindhastighed en fast værdi tæt på 0, da beregningen regner med fri luft, og brug en lyssensor til Solindstråling, da glasset filtrerer himlen.",
+          "module": "Beregningsmotor",
+          "module_description": "Denne gruppe tilbyder kun de kilder, denne motor læser. De zoner der bruger den, overtager valget.",
+          "module_undecided": "Der er endnu ikke valgt en motor, så alle kilder tilbydes, og hver zone der bruger denne gruppe, beholder sin egen. Vælg en for kun at se de kilder den læser."
         }
       },
       "description": "Tilføj en eller flere sensorgrupper, der henter vejrdata fra vejrtjeneste, fra sensorer eller en kombination af disse. Du kan tilknytte hver sensorgruppe til en eller flere zoner",
@@ -299,6 +406,12 @@
         "precipitation": "Nedbør",
         "retrieval-time": "Hentet",
         "no-data": "Ingen vejrdata tilgængelige for denne sensorgruppe"
+      },
+      "summary": {
+        "sources-one": "{n} kilde",
+        "sources-other": "{n} kilder",
+        "zones-one": "{n} zone",
+        "zones-other": "{n} zoner"
       }
     },
     "modules": {
@@ -383,10 +496,164 @@
         "linked-entity-hint": "Ventilen eller kontakten, der vander denne zone. Hver gang den kører (en manuel hane, en automatisering eller Smart Irrigation selv, når direkte ventilstyring er slået til), krediteres bucket'en ud fra køretiden og zonens gennemstrømning. Påkrævet for funktionerne med lukket sløjfe.",
         "flow-sensor": "Akkumuleret volumenmåler",
         "flow-sensor-hint": "Til nøjagtig kreditering i stedet for gennemstrømning x tid: en akkumuleret samlet vandmåler (tilstandsklasse total_increasing), ikke en øjeblikkelig gennemstrømningshastighed. Enheden aflæses automatisk (L, mL, m³, gal, ft³).",
-        "optional": "valgfri"
+        "optional": "valgfri",
+        "et-deficiency": "Dagligt ET-underskud",
+        "input-method": "Indtastningsmetode",
+        "input-methods": {
+          "throughput": "Vandmængde og areal",
+          "direct": "Nedbørsintensitet"
+        },
+        "precipitation-rate": "Nedbørsintensitet",
+        "irrigation-threshold": "Vandingsgrænse",
+        "soil-moisture-sensor": "Jordfugtsensor",
+        "soil-moisture-sensor-hint": "Zonen sidder en vanding over, så længe jorden er på eller over grænsen. Beholdningen bevares.",
+        "soil-moisture-threshold": "Spring over fra",
+        "calculation-method": "Fordampning",
+        "calculation-method-help": {
+          "from_weather": "Ud fra dine målinger: temperatur, luftfugtighed, vind, sol.",
+          "provided": "Du har allerede en fordampning i mm; den bruges som den er.",
+          "fixed": "Så og så mange mm om dagen, uanset vejret."
+        },
+        "calculation-methods": {
+          "from_weather": "Beregnet af Smart Irrigation",
+          "provided": "Leveret af en sensor eller en tjeneste",
+          "fixed": "En fast mængde"
+        },
+        "forecast-days": "Se fremad",
+        "forecast-days-help": "0: zonen vander hvad vejret faktisk tog. 1: i morgen regnes også med, 2: i morgen og dagen efter, og så videre. Jo varmere de kommende dage er, jo mere vandes der i dag. Dette er ikke overspringet ved regn, som er en indstilling for sig.",
+        "fixed-amount": "Fast mængde",
+        "engine-shared-help": "Denne indstilling hører kun til denne zone: hver zone har sin egen, og at ændre den her ændrer intet andet sted.",
+        "soil-type": "Jord",
+        "plant-type": "Hvad der vokser her",
+        "soil-types": {
+          "sand": "Sandet",
+          "sandy_loam": "Sandet muld",
+          "loam": "Muld",
+          "clay_loam": "Lerholdig muld",
+          "clay": "Ler",
+          "custom": "Jeg sætter selv drænhastigheden"
+        },
+        "plant-types": {
+          "lawn": "Græsplæne",
+          "vegetables": "Grøntsager",
+          "flowers": "Blomster",
+          "shrubs": "Buske",
+          "hedge": "Hæk",
+          "fruit_trees": "Frugttræer",
+          "vines": "Vinranker",
+          "ground_cover": "Bunddække",
+          "custom": "Jeg sætter selv afgrødekoefficienten"
+        },
+        "duration-readonly-automatic": "Beregnet for dig: denne zones vanding kommer fra dens vandbalance. Sæt den til manuel for selv at skrive en varighed.",
+        "duration-readonly-disabled": "En zone der er slået fra, vandes aldrig, så den har ingen vandingstid.",
+        "et-deficiency-help": "Hvad denne zone har brug for pr. dag: ETc, referencefordampningen gange afgrødefaktoren, sæsonjustering inkluderet. Før skaleringen til intervallet og før regnen, og det er det, der gør tallet sammenligneligt fra en opsætning til en anden. Zonesensoren bærer også referencetallet for sig selv, som attributten `eto`, til at holde op mod hvad en vejrtjeneste offentliggør."
       },
       "no_items": "Der er endnu ikke defineret nogen zoner.",
-      "title": "Zoner"
+      "title": "Zoner",
+      "module-comes-from-the-group": "Beregningsmotoren kommer fra denne zones sensorgruppe. Skift den dér, og alle zoner der bruger gruppen, følger med.",
+      "status": {
+        "will-water": "Vander {duration} ved næste start.",
+        "idle": "Intet at vande: der mangler {short}.",
+        "satisfied": "Intet at vande: denne zone har det den skal have.",
+        "under-threshold": "Endnu intet at vande: der mangler {short}, under denne zones grænse.",
+        "manual": "Vander kun når du beder om det.",
+        "disabled": "Slået fra: vandes aldrig, og dens balance føres ikke.",
+        "threshold": "grænse"
+      },
+      "calendar": {
+        "title": "Vandingskalender (12 måneder, anslået)",
+        "caveat": "Et overslag til planlægning, ikke dit vejr: månederne modelleres ud fra din breddegrad og et typisk årsforløb, så en indlandssommer fremstår varmere og tørrere end den er. Det påvirker intet, beregner intet og vander intet.",
+        "month": "Måned",
+        "et": "ET",
+        "precipitation": "Nedbør",
+        "watering": "Vanding",
+        "avg-temp": "Gns. temp.",
+        "none": "Der er ingen kalenderdata for denne zone",
+        "error": "Kalenderen kunne ikke laves"
+      }
+    },
+    "setup": {
+      "title": "Opsætning",
+      "description": "En guidet vej til din første zone. Den stiller ét spørgsmål ad gangen, og kun de spørgsmål dine tidligere svar lader stå åbne.",
+      "next": "Næste",
+      "back": "Tilbage",
+      "create": "Opret",
+      "creating": "Opretter...",
+      "failed": "Noget gik galt, og der blev ikke oprettet noget. De andre faner er stadig der, hvis du hellere vil sætte det op i hånden.",
+      "done": "Din zone er klar.",
+      "done-note": "Den ligger under Zoner, med sin sensorgruppe under Sensorgrupper. Der er intet særligt ved den: ret i dem begge som i alle andre. Kør en opdatering og en beregning, når dine sensorer har meldt ind, og så begynder zonen at give en varighed.",
+      "steps": {
+        "zone": {
+          "question": "Hvad vander du?",
+          "help": "Én zone er én ventil, der vander ét område.",
+          "name": "Navn",
+          "size": "Areal",
+          "throughput": "Vandmængde",
+          "throughput-help": "Hvor meget vand denne zone giver pr. minut. Mål det hvis du kan, i stedet for at tage det fra et datablad: det er det, hver varighed udledes af, og den mest lydløse måde at vande dobbelt så længe som du mente."
+        },
+        "environment": {
+          "question": "Hvor vokser det?",
+          "outdoors": "Udendørs",
+          "outdoors-help": "Fri luft. Regnen når den, og himlen er værd at spørge om.",
+          "under-glass": "Under glas eller plast",
+          "under-glass-help": "Et drivhus, en plasttunnel, en udestue. Der kommer ingen regn, og en udsigt beskriver vejr disse planter aldrig oplever."
+        },
+        "weather": {
+          "question": "Hvor skal fordampningstallet komme fra?",
+          "service": "Den vejrtjeneste du har sat op",
+          "service-help": "Der er ikke mere at installere. Smart Irrigation henter vejret for din placering og beregner fordampningen ud fra det.",
+          "no-service-indoors": "En vejrtjeneste tilbydes ikke her: den beskriver himlen, og den står disse planter ikke under.",
+          "sensors": "Mine egne vejrsensorer",
+          "sensors-help": "Du har sensorer til temperatur, luftfugtighed og resten. Den mest præcise mulighed, fordi der måles der hvor planterne faktisk står.",
+          "et": "En sensor der allerede melder fordampning",
+          "et-help": "Noget andet beregner den allerede, og Smart Irrigation skal bruge det tal som det er.",
+          "static": "En fast mængde pr. dag",
+          "static-help": "Ingen sensorer og ingen tjeneste. Du giver ét tal, og det bruges hver dag. Groft, men det holder stadig regnskab med det du allerede har vandet."
+        },
+        "sensors": {
+          "question": "Hvilke entiteter skal den læse?",
+          "help": "Der spørges kun om dem beregningen faktisk bruger.",
+          "lux-hint": "Under glas kan en lyssensor stå i stedet for solindstråling: vælg din belysningsstyrke-entitet her, og sæt bagefter dens kilde til Lyssensor (lux) i sensorgruppen.",
+          "static-question": "Hvor meget fordamper der pr. dag?",
+          "static-help": "En vanddybde, i den enhed dine zoner bruger. Omkring 4 til 5 mm om dagen er almindeligt for en tempereret sommer.",
+          "static-label": "Fordampning pr. dag"
+        },
+        "review": {
+          "question": "Klar til at oprette",
+          "zone": "Zone",
+          "environment": "Miljø",
+          "engine": "Beregningsmotor",
+          "sources": "Kilder",
+          "from-the-service": "fra vejrtjenesten",
+          "help": "Dette opretter et beregningsmodul, en sensorgruppe og en zone, præcis som de andre faner ville. Bagefter er intet låst."
+        }
+      },
+      "step": "trin"
+    },
+    "history": {
+      "title": "Historik",
+      "description": "Hver vanding Smart Irrigation har tilskrevet en zone: hvornår den begyndte, hvor længe der blev vandet, og hvor meget vand det tog. Vandinger registreres af direkte ventilstyring og af observeret vanding, og gemmes i 90 dage.",
+      "refresh": "Opdater",
+      "no-data": "Der er endnu ikke registreret nogen vandinger.",
+      "table": {
+        "title": "Vandinger",
+        "start": "Start",
+        "zone": "Zone",
+        "duration": "Varighed",
+        "water": "Vandforbrug",
+        "truncated": "Viser de {count} nyeste vandinger ud af {total}."
+      },
+      "charts": {
+        "total-title": "Samlet vandforbrug pr. dag (seneste 30 dage)",
+        "per-zone-title": "Vandforbrug pr. dag, pr. zone (seneste 30 dage)",
+        "no-data": "Der blev ikke brugt vand i denne periode."
+      }
+    },
+    "groups": {
+      "home": "Start",
+      "zones": "Zoner",
+      "data": "Data",
+      "settings": "Indstillinger"
     }
   },
   "title": "Smart Irrigation",
@@ -401,7 +668,8 @@
     "trigger_types": {
       "sunrise": "Solopgang",
       "sunset": "Solnedgang",
-      "solar_azimuth": "Solens azimut"
+      "solar_azimuth": "Solens azimut",
+      "time": "Fast tidspunkt"
     },
     "fields": {
       "name": {
@@ -427,6 +695,9 @@
       "account_for_duration": {
         "name": "Tag højde for varighed",
         "description": "Når aktiveret, starter vandingen tidligt nok til at slutte på det angivne tidspunkt. Når deaktiveret, starter vandingen præcis på det angivne tidspunkt."
+      },
+      "at": {
+        "name": "Tidspunkt"
       }
     },
     "dialog": {
@@ -442,7 +713,8 @@
     "confirm_delete": "Er du sikker på, at du vil slette udløseren '{name}'?",
     "validation": {
       "name_required": "Udløsernavn er påkrævet",
-      "azimuth_invalid": "Azimutvinkel skal være et gyldigt tal"
+      "azimuth_invalid": "Azimutvinkel skal være et gyldigt tal",
+      "time_invalid": "Angiv et gyldigt tidspunkt som TT:MM."
     },
     "help": {
       "sunrise_offset": "For solopgangsudløsere: Brug negative værdier for at starte før solopgang, positive for at starte efter. Sæt til 0 for automatisk at starte tidligt nok til at fuldføre alle zoner før solopgang.",
@@ -486,6 +758,45 @@
     "sequencing": {
       "sequential": "Sekventiel (én zone ad gangen)",
       "parallel": "Parallel (alle zoner på én gang)"
+    },
+    "sequencing_description": "Hvordan dine zoner vandes. Det bestemmer, hvad en startudløser regner tilbage fra, når den skal være færdig ved solopgang: én ad gangen giver summen af alle zoners tid, alle på én gang giver den længste af dem. Det gælder både hvis Smart Irrigation selv åbner ventilerne, og hvis din egen automatisering gør det.",
+    "passes_label": "Vand i flere omgange",
+    "passes_description": "Cyklus og optagelse: samme mængde vand, delt i kortere omgange med en pause imellem, så tung jord tager det til sig i stedet for at lade det løbe af. Én omgang vander i ét stræk, og det er standard. En vanding der er for kort at dele, bliver ikke rørt.",
+    "soak_label": "Optagelse mellem omgangene",
+    "pause_between_zones_label": "Pause mellem zoner",
+    "pause_between_zones_description": "En ventetid mellem to zoner i en vanding én ad gangen: tid til at trykket i ledningen kommer igen, eller til at en langsom ventil lukker helt, før den næste åbner.",
+    "minutes": "minutter",
+    "seconds": "sekunder"
+  },
+  "calculation_log": {
+    "title": "Beregningslog",
+    "description": "Skriver hele grundlaget for hver beregning til en fil, så to dage der ligner hinanden men vander meget forskelligt kan sammenlignes bagefter. Hver beregning tilføjer én linje: sensorgruppens målinger og hvordan de blev sammenlagt, modulets mellemresultater (solindstråling, nettostråling, ET0) samt den beholdning, varighed og mængde det giver. Slået fra som standard; filen har en maksimal størrelse og roteres, så den kan stå tændt en hel sæson.",
+    "enabled_label": "Skriv beregningens grundlag til en fil",
+    "file_hint": "Skrives til config/smart_irrigation/calc_log.jsonl, én JSON-post pr. linje. De nyeste poster er også med i diagnostik-downloadet (koordinater afrundet, entitets-id'er fjernet), så du kan vedhæfte dem til en fejlrapport i ét skridt."
+  },
+  "measured_skip": {
+    "title": "Spring over ved målte forhold",
+    "description": "Tjekkes ved starten af hver vanding, fra en sensor eller fra vejrtjenesten. En sensor der ikke kan læses, stopper aldrig en vanding.",
+    "enabled": "Slået til",
+    "threshold": "Grænse",
+    "sensor": "Sensor",
+    "sensor-optional": "Sensor (valgfri)",
+    "rain": {
+      "title": "Regnsensor",
+      "description": "Spring vandingen over, så længe en regnsensor siger at det regner.",
+      "sensor-hint": "En binær sensor der er tændt mens det regner.",
+      "history-label": "Forkort vandinger efter nylig regn",
+      "history-description": "Til en zone der slet ikke har regn i millimeter: ingen regnmåler, og en vejrtjeneste der ikke leverer nogen. Sensorens egen historik for de sidste fem dage læses, vægtet så i går tæller mere end for fire dage siden, og vandingen forkortes derefter. En hel dag med registreret regn i dag tager hele vandingen; for fire dage siden en tiendedel. Vandbalancen bliver aldrig rørt, for det er ukendt hvor mange millimeter der faldt: underskuddet bliver stående og vandes ud, så snart vejret skifter. En zone hvis sensorgruppe faktisk melder regn i millimeter, bliver ikke berørt, for balancen har den allerede. Det kræver en sensor der bliver ved at være tændt mens det regner, og ikke en der giver et kort puls pr. vip."
+    },
+    "freeze": {
+      "title": "Frost",
+      "description": "Spring vandingen over, når temperaturen er på eller under grænsen.",
+      "sensor-hint": "Tom: vejrtjenestens aktuelle temperatur."
+    },
+    "wind": {
+      "title": "Vind",
+      "description": "Spring vandingen over, når vinden er på eller over grænsen: en sprinkler i hård vind vander stien, ikke bedet.",
+      "sensor-hint": "Tom: vejrtjenestens aktuelle vind, i 10 m."
     }
   }
 }
