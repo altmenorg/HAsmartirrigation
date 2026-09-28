@@ -8,7 +8,7 @@
 # Smart Irrigation
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/logo.png" alt="Smart Irrigation" width="720">
+  <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/images/smart_irrigation_horizontal.svg?sanitize=true" alt="Smart Irrigation" width="720">
 </p>
 
 > **Smart Irrigation** was created by
