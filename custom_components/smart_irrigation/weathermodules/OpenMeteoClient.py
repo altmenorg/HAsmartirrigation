@@ -251,17 +251,35 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
         The daily block starts at today, because the request asks for no past
         days; a response that ever changed that would give the wrong day rather
         than no day, so the date is checked.
+
+        The main request asks for no time format, so the API dates the block
+        in ISO ("2026-09-28"), in the location's own time zone. Reading that as
+        a unix timestamp failed on every real response and the value was never
+        taken. Today is therefore today at the location, from the offset the
+        response carries, not the date of the machine's clock, which a Docker
+        container left on UTC puts on another day for hours each night.
         """
         daily = (doc or {}).get("daily") or {}
         values = daily.get(field)
         times = daily.get("time")
         if not values or not times:
             return None
+        first = times[0]
         try:
-            day = datetime.datetime.fromtimestamp(float(times[0])).date()
+            if isinstance(first, str):
+                day = datetime.date.fromisoformat(first[:10])
+            else:
+                day = datetime.datetime.fromtimestamp(float(first)).date()
         except (TypeError, ValueError, OSError):
             return None
-        if day != datetime.date.today():
+        offset = doc.get("utc_offset_seconds")
+        if isinstance(offset, (int, float)):
+            today = (
+                datetime.datetime.now(datetime.UTC) + datetime.timedelta(seconds=offset)
+            ).date()
+        else:
+            today = datetime.date.today()
+        if day != today:
             return None
         return values[0]
 

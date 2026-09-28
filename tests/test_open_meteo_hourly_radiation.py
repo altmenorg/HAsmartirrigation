@@ -5,7 +5,7 @@ mean irradiance in W/m2 stamped at the hour it starts, so the client converts
 and keys it the way the row builder asks.
 """
 
-from datetime import date, datetime, time, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 from unittest.mock import patch
 
 import pytest
@@ -295,6 +295,56 @@ def test_a_daily_block_that_starts_on_another_day_is_not_taken_for_today():
     that changed that would give the wrong day rather than no day."""
     client = _client()
     client._get_doc = lambda: _doc_with_today(3.4, day=date.today() - timedelta(days=1))
+
+    data = client.get_data()
+
+    assert const.MAPPING_EVAPOTRANSPIRATION not in data
+
+
+def _doc_as_the_api_sends_it(value, offset_hours, day):
+    """The main request asks for no time format: the daily block comes dated in
+    ISO, in the location's time zone, with that zone's offset alongside."""
+    return {
+        **_doc_with_today(value),
+        "utc_offset_seconds": int(offset_hours * 3600),
+        "daily": {"time": [day.isoformat()], "et0_fao_evapotranspiration": [value]},
+    }
+
+
+def _location_today(offset_hours):
+    return (datetime.now(UTC) + timedelta(hours=offset_hours)).date()
+
+
+def test_todays_reference_et_is_read_from_an_iso_dated_block():
+    """What Open-Meteo actually returns. Read as a unix timestamp, the ISO date
+    failed on every real response and the value was never taken (#847)."""
+    client = _client()
+    client._get_doc = lambda: _doc_as_the_api_sends_it(3.4, 2, _location_today(2))
+
+    data = client.get_data()
+
+    assert data[const.MAPPING_EVAPOTRANSPIRATION] == 3.4
+
+
+@pytest.mark.parametrize("offset_hours", [-11, 13])
+def test_today_is_the_locations_day_not_the_machines(offset_hours):
+    """A container left on UTC is on another calendar day than a location at
+    UTC-11 or UTC+13 for most of the day: the block is dated at the location."""
+    client = _client()
+    client._get_doc = lambda: _doc_as_the_api_sends_it(
+        3.4, offset_hours, _location_today(offset_hours)
+    )
+
+    data = client.get_data()
+
+    assert data[const.MAPPING_EVAPOTRANSPIRATION] == 3.4
+
+
+def test_an_iso_block_that_starts_on_another_day_is_not_taken_for_today():
+    client = _client()
+    client._get_doc = lambda: _doc_as_the_api_sends_it(
+        3.4, 2, _location_today(2) - timedelta(days=1)
+    )
 
     data = client.get_data()
 
