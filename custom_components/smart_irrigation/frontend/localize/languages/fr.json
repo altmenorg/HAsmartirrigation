@@ -277,6 +277,11 @@
           "or-open-a": "ou ouvrez un",
           "github-issue": "problème Github",
           "english-only": "en Anglais uniquement"
+        },
+        "translate": {
+          "title": "Aidez à traduire",
+          "text": "En dehors de l'anglais et du français, les traductions de ce panneau ont été faites automatiquement, et personne parlant la langue ne les a encore relues. Si un mot ou une phrase sonne faux dans la vôtre, vous pouvez la corriger depuis votre navigateur, sans connaissance technique.",
+          "link": "Traduire sur Weblate"
         }
       }
     },

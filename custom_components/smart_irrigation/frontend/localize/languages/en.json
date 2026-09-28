@@ -277,6 +277,11 @@
           "or-open-a": "or open a",
           "github-issue": "Github Issue",
           "english-only": "English only"
+        },
+        "translate": {
+          "title": "Help translate",
+          "text": "Apart from English and French, the translations of this panel were machine-made and nobody who speaks the language has checked them yet. If a word or a sentence reads oddly in yours, you can correct it in your browser, with no technical knowledge needed.",
+          "link": "Translate on Weblate"
         }
       }
     },

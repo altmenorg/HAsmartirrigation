@@ -374,50 +374,73 @@ export class SmartIrrigationPanel extends LitElement {
           ></smart-irrigation-view-backuprestore>
         `;
       case "help":
-        return html`<ha-card
-          header="${localize(
-            "panels.help.cards.how-to-get-help.title",
-            this.hass.language,
-          )}"
-        >
-          <div class="card-content">
-            ${localize(
-              "panels.help.cards.how-to-get-help.first-read-the",
+        return html`<div class="help-cards">
+          <ha-card
+            header="${localize(
+              "panels.help.cards.how-to-get-help.title",
               this.hass.language,
-            )}
-            <a href="https://altmenorg.github.io/HAsmartirrigation/"
-              >${localize(
-                "panels.help.cards.how-to-get-help.wiki",
+            )}"
+          >
+            <div class="card-content">
+              ${localize(
+                "panels.help.cards.how-to-get-help.first-read-the",
                 this.hass.language,
-              )}</a
-            >.
-            ${localize(
-              "panels.help.cards.how-to-get-help.if-you-still-need-help",
-              this.hass.language,
-            )}
-            <a
-              href="https://community.home-assistant.io/t/smart-irrigation-save-water-by-precisely-watering-your-lawn-garden"
-              >${localize(
-                "panels.help.cards.how-to-get-help.community-forum",
+              )}
+              <a href="https://altmenorg.github.io/HAsmartirrigation/"
+                >${localize(
+                  "panels.help.cards.how-to-get-help.wiki",
+                  this.hass.language,
+                )}</a
+              >.
+              ${localize(
+                "panels.help.cards.how-to-get-help.if-you-still-need-help",
                 this.hass.language,
-              )}</a
-            >
-            ${localize(
-              "panels.help.cards.how-to-get-help.or-open-a",
-              this.hass.language,
-            )}
-            <a href="https://github.com/altmenorg/HAsmartirrigation/issues"
-              >${localize(
-                "panels.help.cards.how-to-get-help.github-issue",
+              )}
+              <a
+                href="https://community.home-assistant.io/t/smart-irrigation-save-water-by-precisely-watering-your-lawn-garden"
+                >${localize(
+                  "panels.help.cards.how-to-get-help.community-forum",
+                  this.hass.language,
+                )}</a
+              >
+              ${localize(
+                "panels.help.cards.how-to-get-help.or-open-a",
                 this.hass.language,
-              )}</a
-            >
-            (${localize(
-              "panels.help.cards.how-to-get-help.english-only",
+              )}
+              <a href="https://github.com/altmenorg/HAsmartirrigation/issues"
+                >${localize(
+                  "panels.help.cards.how-to-get-help.github-issue",
+                  this.hass.language,
+                )}</a
+              >
+              (${localize(
+                "panels.help.cards.how-to-get-help.english-only",
+                this.hass.language,
+              )}).
+            </div></ha-card
+          ><ha-card
+            header="${localize(
+              "panels.help.cards.translate.title",
               this.hass.language,
-            )}).
-          </div></ha-card
-        >`;
+            )}"
+          >
+            <div class="card-content">
+              ${localize(
+                "panels.help.cards.translate.text",
+                this.hass.language,
+              )}
+              <a
+                href="https://hosted.weblate.org/engage/smart-irrigation/"
+                target="_blank"
+                rel="noreferrer"
+                >${localize(
+                  "panels.help.cards.translate.link",
+                  this.hass.language,
+                )}</a
+              >.
+            </div></ha-card
+          >
+        </div>`;
       default:
         return html`
           <ha-card header="Page not found">
@@ -594,6 +617,13 @@ export class SmartIrrigationPanel extends LitElement {
         .view > * {
           width: 100%;
           max-width: 1100px;
+        }
+
+        .help-cards {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          padding: 16px 0;
         }
 
         .view > *:last-child {
