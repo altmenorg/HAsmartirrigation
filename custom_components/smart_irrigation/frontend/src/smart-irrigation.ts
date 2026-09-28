@@ -1,5 +1,5 @@
 import { LitElement, html, CSSResultGroup, css } from "lit";
-import { property, customElement } from "lit/decorators.js";
+import { property, customElement, state } from "lit/decorators.js";
 import { HomeAssistant } from "custom-card-helpers";
 import { loadHaForm } from "./load-ha-elements";
 import { navigate } from "./helpers";
@@ -16,8 +16,16 @@ import "./views/setup/view-setup.ts";
 
 import { commonStyle } from "./styles";
 import { VERSION, PLATFORM } from "./const";
-import { localize } from "../localize/localize";
+import { languageLoaded, loadLanguage, localize } from "../localize/localize";
 import { exportPath, getPath, Path } from "./common/navigation";
+
+/**
+ * How long the first paint waits for the language file, in milliseconds.
+ *
+ * Long enough that a locally served file always wins the race, short enough
+ * that a file which cannot be served costs a blink rather than a blank panel.
+ */
+const FIRST_PAINT_WAIT_MS = 600;
 
 enum EMenuItems {
   Setup = "setup",
@@ -99,6 +107,19 @@ export class SmartIrrigationPanel extends LitElement {
   private _lastNavigationTime = 0;
   private _navigationThrottleDelay = 100; // Prevent too rapid navigation updates
 
+  /**
+   * Whether the first paint may go ahead.
+   *
+   * The language is fetched rather than compiled in, so for a moment the panel
+   * could only render in English. That moment is a few milliseconds for a file
+   * Home Assistant serves locally, so it is worth waiting for and not worth
+   * waiting long for: the flag is set when the fetch settles, or after
+   * FIRST_PAINT_WAIT_MS whatever it is doing, so a language file that cannot be
+   * served gives an English panel rather than a blank one.
+   */
+  @state() private _languageReady = false;
+  private _languageRequested?: string;
+
   private _scheduleUpdate() {
     if (this._updateScheduled) return;
     this._updateScheduled = true;
@@ -106,6 +127,50 @@ export class SmartIrrigationPanel extends LitElement {
       this._updateScheduled = false;
       this.requestUpdate();
     });
+  }
+
+  /**
+   * Start loading the language, before the first render rather than after it.
+   *
+   * Also runs when Home Assistant's language changes under us, which is why the
+   * request is keyed on the language rather than on being the first update.
+   */
+  protected willUpdate() {
+    const language = this.hass?.language;
+    if (!language || this._languageRequested === language) return;
+    this._languageRequested = language;
+
+    if (languageLoaded(language)) {
+      this._languageReady = true;
+      return;
+    }
+
+    const ready = () => {
+      this._languageReady = true;
+      this._refreshViews();
+    };
+    // loadLanguage settles either way, so this is a cap on the wait, not a
+    // second chance at it.
+    const cap = setTimeout(ready, FIRST_PAINT_WAIT_MS);
+    loadLanguage(language, VERSION).then(() => {
+      clearTimeout(cap);
+      ready();
+    });
+  }
+
+  /**
+   * Re-render the page that is mounted, not only this element.
+   *
+   * A view is a child element with its own template, and Lit leaves a child
+   * alone when the properties it was given have not changed. When a translation
+   * arrives after the first paint, nothing it was given has changed, and the
+   * page would stay in English until something else moved.
+   */
+  private _refreshViews() {
+    this.requestUpdate();
+    this.shadowRoot
+      ?.querySelectorAll("*")
+      .forEach((el: any) => el.requestUpdate?.());
   }
 
   async firstUpdated() {
@@ -146,6 +211,11 @@ export class SmartIrrigationPanel extends LitElement {
   }
 
   render() {
+    // Nothing rather than the whole panel in English, for the few milliseconds
+    // the language file takes to arrive. Capped, so this is never where the
+    // panel stops.
+    if (!this._languageReady) return html``;
+
     const path = getPath();
 
     // Check what tab components are available

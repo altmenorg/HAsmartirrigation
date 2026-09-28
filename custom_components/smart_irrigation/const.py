@@ -325,6 +325,13 @@ PANEL_FOLDER = "frontend"
 PANEL_FILENAME = "dist/smart-irrigation.js"
 
 PANEL_URL = f"/api/panel_custom/{DOMAIN}"
+# The translations are served as files rather than compiled into the bundle, so
+# that a correction to one of them reaches a panel without the bundle being
+# rebuilt. That is what makes community translation workable: a contributor
+# edits one JSON file and nothing else. English stays in the bundle, as the
+# fallback for every string a language is missing.
+LANGUAGES_FOLDER = "localize/languages"
+LANGUAGES_URL = f"/api/{DOMAIN}/languages"
 PANEL_TITLE = NAME
 PANEL_ICON = "mdi:sprinkler"
 PANEL_NAME = "smart-irrigation"

@@ -1,53 +1,114 @@
-import * as cs from "./languages/cs.json";
-import * as da from "./languages/da.json";
-import * as de from "./languages/de.json";
 import * as en from "./languages/en.json";
-import * as es from "./languages/es.json";
-import * as fi from "./languages/fi.json";
-import * as fr from "./languages/fr.json";
-import * as hu from "./languages/hu.json";
-import * as it from "./languages/it.json";
-import * as nl from "./languages/nl.json";
-import * as no from "./languages/no.json";
-import * as pl from "./languages/pl.json";
-import * as pt from "./languages/pt.json";
-import * as ptBR from "./languages/pt-BR.json";
-import * as ru from "./languages/ru.json";
-import * as sk from "./languages/sk.json";
-import * as sv from "./languages/sv.json";
-import * as uk from "./languages/uk.json";
-import * as zhHans from "./languages/zh-Hans.json";
 
 import IntlMessageFormat from "intl-messageformat";
 
-const languages: any = {
-  cs: cs,
-  da: da,
-  de: de,
-  en: en,
-  es: es,
-  fi: fi,
-  fr: fr,
-  hu: hu,
-  it: it,
-  nl: nl,
-  no: no,
-  pl: pl,
-  pt: pt,
-  "pt-BR": ptBR,
-  ru: ru,
-  sk: sk,
-  sv: sv,
-  uk: uk,
-  "zh-Hans": zhHans,
-};
+/**
+ * English is the only language in the bundle. The others are fetched.
+ *
+ * Every language used to be imported here, which compiled all nineteen of them
+ * into the panel. It worked, and it made a correction to one translation cost a
+ * bundle rebuild: a contributor could not fix a wrong string without running
+ * Node, and a merged fix changed nothing for anyone until someone rebuilt. For
+ * translations that come from people who speak the language rather than from
+ * whoever happens to have a build setup, that is the wrong trade.
+ *
+ * So the language files are served by the integration and loaded on demand, and
+ * English stays compiled in: it is the fallback for every missing string, so it
+ * has to be there before any fetch has finished, or before one has failed.
+ */
+const LANGUAGES_URL = "/api/smart_irrigation/languages";
+
+/** A fetch that never finishes must not keep the panel in English forever. */
+const FETCH_TIMEOUT_MS = 5000;
+
+/** The languages that exist as files. English is not fetched. */
+export const FETCHABLE_LANGUAGES = [
+  "cs",
+  "da",
+  "de",
+  "es",
+  "fi",
+  "fr",
+  "hu",
+  "it",
+  "nl",
+  "no",
+  "pl",
+  "pt",
+  "pt-BR",
+  "ru",
+  "sk",
+  "sv",
+  "uk",
+  "zh-Hans",
+];
+
+const languages: any = { en: en };
+const pending: Record<string, Promise<void>> = {};
+
+/** Whether `localize` can already answer in this language. */
+export function languageLoaded(language: string): boolean {
+  return normalize(language) in languages;
+}
+
+function normalize(language: string): string {
+  return (language || "").replace(/['"]+/g, "");
+}
+
+/**
+ * Load one language, once.
+ *
+ * Resolves either way: a language that cannot be fetched leaves the panel in
+ * English, which is a worse panel and a working one. `version` is appended to
+ * the URL so that a browser holding the previous release's file asks again.
+ */
+export async function loadLanguage(
+  language: string,
+  version = "",
+): Promise<void> {
+  const lang = normalize(language);
+  if (lang in languages) return;
+  if (!FETCHABLE_LANGUAGES.includes(lang)) return;
+  if (lang in pending) return pending[lang];
+
+  const load = (async () => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+    try {
+      const url = version
+        ? `${LANGUAGES_URL}/${lang}.json?v=${encodeURIComponent(version)}`
+        : `${LANGUAGES_URL}/${lang}.json`;
+      const response = await fetch(url, { signal: controller.signal });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const translations = await response.json();
+      // An empty or broken file would silently blank the interface, which is
+      // harder to diagnose than an interface in English.
+      if (!translations || typeof translations !== "object") {
+        throw new Error("not an object");
+      }
+      languages[lang] = translations;
+    } catch (err) {
+      console.warn(
+        `Smart Irrigation: could not load the ${lang} translation, ` +
+          `falling back to English`,
+        err,
+      );
+    } finally {
+      clearTimeout(timer);
+      delete pending[lang];
+    }
+  })();
+
+  pending[lang] = load;
+  return load;
+}
 
 export function localize(
   string: string,
   language: string,
   ...args: any[]
 ): string {
-  const lang = language.replace(/['"]+/g, "");
+  const lang = normalize(language);
   let translated: string;
 
   try {

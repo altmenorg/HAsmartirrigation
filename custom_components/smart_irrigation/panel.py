@@ -11,6 +11,8 @@ from .const import (
     CUSTOM_COMPONENTS,
     DOMAIN,
     INTEGRATION_FOLDER,
+    LANGUAGES_FOLDER,
+    LANGUAGES_URL,
     PANEL_FILENAME,
     PANEL_FOLDER,
     PANEL_ICON,
@@ -43,7 +45,18 @@ async def async_register_panel(hass: HomeAssistant):
     view_url = panel_dir / PANEL_FILENAME
 
     await hass.http.async_register_static_paths(
-        [StaticPathConfig(PANEL_URL, str(view_url), cache_headers=False)]
+        [
+            StaticPathConfig(PANEL_URL, str(view_url), cache_headers=False),
+            # The translations, as files. The panel fetches the one language it
+            # needs, which is why a corrected translation shows up without the
+            # bundle being rebuilt. English is not here: it is in the bundle,
+            # because it is the fallback and has to be present before any fetch.
+            StaticPathConfig(
+                LANGUAGES_URL,
+                str(panel_dir / LANGUAGES_FOLDER),
+                cache_headers=False,
+            ),
+        ]
     )
     # hass.http.register_static_path(PANEL_URL, str(view_url), False)
 
