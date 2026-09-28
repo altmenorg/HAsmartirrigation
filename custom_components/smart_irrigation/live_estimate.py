@@ -66,8 +66,13 @@ class LiveEstimateMixin:
             # forecastdata=None on purpose, see the module docstring.
             calc = await self.calculate_module(zone, weatherdata, None)
         except Exception as e:  # noqa: BLE001 - a display estimate must not fail
+            # With the traceback: otherwise "switched off" and "raises on every
+            # refresh" look the same from outside.
             _LOGGER.debug(
-                "Live estimate unavailable for zone %s: %s", zone.get(const.ZONE_ID), e
+                "Live estimate unavailable for zone %s: %s",
+                zone.get(const.ZONE_ID),
+                e,
+                exc_info=True,
             )
             return None
         finally:

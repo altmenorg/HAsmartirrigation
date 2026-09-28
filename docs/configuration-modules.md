@@ -51,7 +51,7 @@ It reads temperature, dewpoint, humidity, pressure, wind speed and solar radiati
 Two settings of its own:
 
 - _Coastal_: enable it if your location is on or near the coast of a large land mass, or anywhere air masses are influenced by a nearby body of water. It adjusts the radiation estimate.
-- _Forecast days_: how many forecast days to fold into the calculation, so a run can be reduced ahead of rain that has not fallen yet. Requires a weather service.
+- _Forecast days_: how many forecast days to fold into the calculation. `0` uses today's weather only; a higher value averages today's evapotranspiration with the forecast evapotranspiration of that many upcoming days, so a hot tomorrow raises today's run. It never reads forecast rain: a cloudy, humid day ahead only lowers the average a little, whatever it is forecast to rain. To hold a run back ahead of rain, use the rain forecast condition under [Skipping a run](configuration-general.md#skipping-a-run). Requires a weather service.
 
 ## Adding a module
 
