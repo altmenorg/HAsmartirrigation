@@ -23,6 +23,7 @@ It is the official Smart Irrigation integration for Home Assistant, available by
 - **It says why.** Every calculation shows its work: what was read, what was computed, and what it decided. The Info page shows the next start, and whether it would be held back and on what numbers.
 - **It does not water when it should not.** Rain in the forecast, a rain sensor, frost, wind, or soil that is already wet: any of these can hold a run back, and a greenhouse ignores the ones that describe the sky.
 - **It drives whatever you have.** A switch, a valve, Irrigation Unlimited, Irrigation-V5, or a Rain Bird, Hydrawise, Rachio, OpenSprinkler or B-hyve controller, through a [blueprint per brand](usage-controllers.md).
+- **It speaks your language.** The panel and everything Home Assistant shows for it come in 19 languages. Most were machine-translated and wait for a native speaker: [you can correct them on Weblate](help.md#help-translate), in the browser.
 
 <p align="center">
   <img src="assets/images/panel-info.png" alt="The Info page: the next start and the conditions that would hold it back" width="420">

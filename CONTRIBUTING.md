@@ -44,7 +44,18 @@ Only English is compiled into the bundle, so **a translation does not need a reb
 
 ## Translations
 
-Two sets, both plain JSON, both fine to edit by hand:
+**The easiest way is [Weblate](https://hosted.weblate.org/engage/smart-irrigation/)**:
+translate in the browser, no Git and no build tools. Hosted Weblate is free for
+libre projects, and it sends the changes here as a pull request against `dev`,
+which the test suite checks like any other.
+
+[![translation status](https://hosted.weblate.org/widget/smart-irrigation/multi-auto.svg)](https://hosted.weblate.org/engage/smart-irrigation/)
+
+A language that is not listed yet: ask on Weblate or open an issue. The panel
+keeps a list of the languages it fetches, so a new one needs a small code change
+as well as its file.
+
+Editing the files by hand works just as well. Two sets, both plain JSON:
 
 | Where | What it holds |
 | --- | --- |

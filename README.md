@@ -1,5 +1,6 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-blue.svg?style=flat-square)](https://github.com/hacs/integration)
 [![release][release-badge]][release-url]
+[![translation status](https://hosted.weblate.org/widget/smart-irrigation/svg-badge.svg)](https://hosted.weblate.org/engage/smart-irrigation/)
 
 [release-url]: https://github.com/altmenorg/HAsmartirrigation/releases
 [release-badge]: https://img.shields.io/github/v/release/altmenorg/HAsmartirrigation?style=flat-square
@@ -25,7 +26,7 @@ Multiple zones are supported, each zone having its own configuration and set up.
 ## ✨ Highlights
 
 - 🎛️ **A modern, Home-Assistant-native configuration UI.** The whole config experience was rebuilt with native HA components: instant-save on edit (no more lost focus or jump-to-the-top), native inputs, steppers and pickers, and a clean, responsive layout. Zones, sensor groups, modules, weather service and backup/restore — all from one panel.
-- 🌍 **19 languages, out of the box.** The panel *and* the config flow are fully translated: English, French, German, Spanish, Italian, Dutch, Norwegian, Slovak, Polish, Portuguese, Brazilian Portuguese, Czech, Russian, Ukrainian, Simplified Chinese, Swedish, Danish, Finnish and Hungarian. Everything except English and French was machine-translated, so if yours reads oddly, [a correction is one JSON file away](CONTRIBUTING.md#translations) and needs no build tools.
+- 🌍 **19 languages, out of the box.** The panel *and* the config flow are fully translated: English, French, German, Spanish, Italian, Dutch, Norwegian, Slovak, Polish, Portuguese, Brazilian Portuguese, Czech, Russian, Ukrainian, Simplified Chinese, Swedish, Danish, Finnish and Hungarian. Everything except English and French was machine-translated, so if yours reads oddly, [correct it on Weblate](https://hosted.weblate.org/engage/smart-irrigation/), in the browser and with no account on GitHub, or [in the JSON file directly](CONTRIBUTING.md#translations).
 - 🌦️ **Switch weather service on the fly** — move between OpenWeatherMap and Pirate Weather, and update the API key, without removing and re-adding the integration.
 - 💾 **One-click Backup / Restore** of your entire configuration as a JSON file.
 - ⏰ **Flexible start triggers** around sunrise, sunset or solar azimuth — each firing its own identifiable event for your automations.
@@ -105,6 +106,18 @@ See the [enhanced scheduling documentation](docs/usage-enhanced-scheduling-integ
 ## Documentation
 
 The full documentation is published at **[altmenorg.github.io/HAsmartirrigation](https://altmenorg.github.io/HAsmartirrigation/)** (source in [`docs/`](docs/)) — installation, configuration (zones, sensor groups, modules), usage, events, services and troubleshooting.
+
+## Contributing
+
+You do not need to write code to help, and the most useful contributions right now are not code.
+
+- **Translate.** The interface comes in 19 languages, and apart from English and French they were machine-translated: nobody who speaks them has read them yet. If yours reads oddly, correct it on **[Hosted Weblate](https://hosted.weblate.org/engage/smart-irrigation/)**, in the browser, with no Git and no build tools. One word in one string is welcome. A language that is missing can be requested there too.
+
+  [![Translation status](https://hosted.weblate.org/widget/smart-irrigation/multi-auto.svg)](https://hosted.weblate.org/engage/smart-irrigation/)
+
+- **Report what looks wrong.** A zone that waters too much, too little or not at all: [open an issue](https://github.com/altmenorg/HAsmartirrigation/issues) and attach the **diagnostics file** (Settings, Devices & services, Smart Irrigation, Download diagnostics). Most of the fixes in the last releases were found from one.
+- **Ask and share.** Questions, setups and ideas go to the [Discussions](https://github.com/altmenorg/HAsmartirrigation/discussions).
+- **Change the code.** Pull requests go against the `dev` branch. [CONTRIBUTING.md](CONTRIBUTING.md) explains the setup, the tests and what makes a change easy to merge.
 
 ## Development
 
