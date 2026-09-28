@@ -34,6 +34,7 @@ class _Coordinator(ObservedWateringMixin, ValveRunnerMixin, CalculationMixin):
         self._si_driven_until = {}
         self._active_valve_runs = {}
         self._direct_run_finished = {}
+        self._sequential_cycle = None
         self._valve_run_tasks = set()
 
 

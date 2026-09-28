@@ -27,6 +27,7 @@ The methods live on a mixin the SmartIrrigationCoordinator inherits.
 
 import asyncio
 import logging
+from collections import deque
 from functools import partial
 
 import homeassistant.util.dt as dt_util
@@ -305,6 +306,48 @@ class ValveRunnerMixin:
     def _soak_seconds(self) -> float:
         return soak_seconds(self.store.config)
 
+    def _announce_start(self, sequencing, zones) -> None:
+        """Say which zones are about to be watered, so an automation can too."""
+        self.hass.bus.async_fire(
+            f"{const.DOMAIN}_{const.EVENT_IRRIGATE_STARTED}",
+            {
+                "sequencing": sequencing,
+                "zones": [
+                    {
+                        "zone_id": int(z.get(const.ZONE_ID)),
+                        "zone": z.get(const.ZONE_NAME),
+                        "seconds": int(z.get(const.ZONE_DURATION) or 0),
+                    }
+                    for z in zones
+                ],
+            },
+        )
+
+    def _join_sequential_cycle(self, eligible) -> list:
+        """Add zones to the sequential cycle already under way, and say which.
+
+        One zone at a time is the promise of sequential watering, and a second
+        dispatch used to break it: the nightly run watering zone 1 with 2 and 3
+        waiting, then "irrigate now" on zone 4, opened two valves at once,
+        because each dispatch ran a cycle of its own. A dispatch now joins the
+        cycle that is running instead of racing it.
+
+        Two zones are not queued: one already waiting in the cycle, and the one
+        whose valve is open right now. The second is not in the queue any more,
+        having been taken out of it to be watered, so the in-flight record is
+        what identifies it.
+        """
+        cycle = self._sequential_cycle
+        added = []
+        for zone in eligible:
+            zone_id = int(zone.get(const.ZONE_ID))
+            if zone_id in cycle["queued"] or self._run_in_flight(zone_id):
+                continue
+            cycle["queued"].add(zone_id)
+            cycle["queue"].append(zone)
+            added.append(zone)
+        return added
+
     async def async_run_direct_valves(self, zone_ids=None) -> None:
         """Open/run/close every eligible zone, sequentially or in parallel."""
         cfg = self.store.config
@@ -323,35 +366,52 @@ class ValveRunnerMixin:
         sequencing = getattr(
             cfg, const.CONF_ZONE_SEQUENCING, const.CONF_DEFAULT_ZONE_SEQUENCING
         )
-        _LOGGER.info(
-            "Direct valve control: running %d zone(s) (%s)",
-            len(eligible),
-            sequencing,
-        )
-
-        # Announce the start, with the zones about to be watered, so an
-        # automation can send a "watering started" notification.
-        self.hass.bus.async_fire(
-            f"{const.DOMAIN}_{const.EVENT_IRRIGATE_STARTED}",
-            {
-                "sequencing": sequencing,
-                "zones": [
-                    {
-                        "zone_id": int(z.get(const.ZONE_ID)),
-                        "zone": z.get(const.ZONE_NAME),
-                        "seconds": int(z.get(const.ZONE_DURATION) or 0),
-                    }
-                    for z in eligible
-                ],
-            },
-        )
 
         if sequencing == const.CONF_ZONE_SEQUENCING_PARALLEL:
+            # Every zone at once is what this setting asks for, so two
+            # dispatches overlapping is not a contradiction, and there is no
+            # queue for one to join.
+            _LOGGER.info(
+                "Direct valve control: running %d zone(s) (parallel)", len(eligible)
+            )
+            self._announce_start(sequencing, eligible)
             results = await asyncio.gather(*(self._run_one_valve(z) for z in eligible))
-        else:
-            results = []
-            for zone in eligible:
+            self._report_finished(results)
+            return
+
+        if self._sequential_cycle is not None:
+            added = self._join_sequential_cycle(eligible)
+            if not added:
+                _LOGGER.info(
+                    "Direct valve control: every zone asked for is already "
+                    "running or waiting in the cycle under way"
+                )
+                return
+            _LOGGER.info(
+                "Direct valve control: %d zone(s) joined the cycle under way: %s",
+                len(added),
+                ", ".join(str(z.get(const.ZONE_ID)) for z in added),
+            )
+            # Announced on their own, because they were not part of what the
+            # running cycle said it would water.
+            self._announce_start(sequencing, added)
+            return
+
+        _LOGGER.info(
+            "Direct valve control: running %d zone(s) (sequential)", len(eligible)
+        )
+        self._announce_start(sequencing, eligible)
+        self._sequential_cycle = {
+            "queue": deque(eligible),
+            "queued": {int(z.get(const.ZONE_ID)) for z in eligible},
+            "results": [],
+        }
+        cycle = self._sequential_cycle
+        try:
+            while cycle["queue"]:
+                zone = cycle["queue"].popleft()
                 zone_id = zone.get(const.ZONE_ID)
+                cycle["queued"].discard(int(zone_id))
                 # Re-checked here rather than only up front: a sequential cycle
                 # dispatches each zone minutes or hours after it was listed.
                 if self._run_in_flight(zone_id) or self._watered_since(
@@ -363,7 +423,7 @@ class ValveRunnerMixin:
                         zone_id,
                     )
                     continue
-                if results:
+                if cycle["results"]:
                     # Time for the line pressure to recover, or for a slow
                     # valve to finish closing before the next one opens.
                     pause = self._positive_setting(
@@ -372,9 +432,22 @@ class ValveRunnerMixin:
                     )
                     if pause:
                         await asyncio.sleep(pause)
-                results.append(await self._run_one_valve(zone))
+                try:
+                    cycle["results"].append(await self._run_one_valve(zone))
+                except Exception as e:  # noqa: BLE001 - one zone is one zone
+                    # The zones still waiting are owed their water whatever
+                    # happened to this one.
+                    _LOGGER.error(
+                        "Direct valve control: zone %s failed: %s", zone_id, e
+                    )
+            results = cycle["results"]
+        finally:
+            self._sequential_cycle = None
 
-        # Fire a single end-of-watering summary so one automation can report.
+        self._report_finished(results)
+
+    def _report_finished(self, results) -> None:
+        """One end-of-watering summary for the whole cycle, joined zones and all."""
         results = [r for r in results if r]
         self.hass.bus.async_fire(
             f"{const.DOMAIN}_{const.EVENT_IRRIGATE_FINISHED}",

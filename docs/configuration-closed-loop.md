@@ -43,6 +43,7 @@ It stands on its own: the zone's **Linked valve/switch** can be set with direct 
 - **Open confirmation**: before crediting, Smart Irrigation waits for the valve to report an on-state. If it never opens, the run is not credited (so the deficit stays and rolls over to the next day) and a `smart_irrigation_zone_problem` event is fired. A write-only valve with no readable state is given the benefit of the doubt.
 - **Reboot resilience**: a run that is in progress when Home Assistant restarts is resumed (or closed if it already exceeded its duration) and then credited.
 - **One run per zone per cycle**: a zone whose valve is already open is left out, and a zone watered while it waited its turn in a sequential run is not watered again when the queue reaches it.
+- **One cycle at a time, in sequential mode**: a run asked for while one is already going joins the queue instead of starting beside it, so two valves are never open at once. A zone already waiting is not queued twice, the zone being watered right now is not queued behind itself, and the zones that joined are in the same end-of-run summary. In parallel mode there is nothing to join: every zone at once is what that setting asks for.
 
 > **Safety:** if Home Assistant goes down for a long time during a run, the physical valve stays open and keeps watering, because Home Assistant is no longer there to close it. Give your valve a hardware failsafe (a maximum runtime on the device itself). Smart Irrigation also caps the credited time at the zone's maximum duration.
 
