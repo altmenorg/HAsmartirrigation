@@ -51,11 +51,11 @@
   "module": {
     "calculation": {
       "explanation": {
-        "formatting-note": "NB: in deze uitleg wordt de '.' as decimaalscheidingsteken gebruikt, worden afgeronde en metrische getallen getoond.",
-        "module-returned-evapotranspiration-deficiency": "Module berekende ET waarde van",
-        "bucket-was": "Voorraad was",
-        "new-bucket-values-is": "Nieuwe voorraad is",
-        "bucket": "voorraad",
+        "formatting-note": "NB: in deze uitleg wordt de '.' als decimaalscheidingsteken gebruikt, en worden afgeronde en metrische getallen getoond.",
+        "module-returned-evapotranspiration-deficiency": "Module berekende het verdampingstekort van het gewas ( = et0 * hour_multiplier * Kc + neerslag) van",
+        "bucket-was": "Emmer was",
+        "new-bucket-values-is": "Nieuwe emmer is",
+        "bucket": "emmer",
         "old-bucket-variable": "oude_voorraad",
         "max-bucket-variable": "max_bucket",
         "delta": "verandering",
@@ -78,7 +78,7 @@
         "drainage-rate-is": "De afvoersnelheid bij verzadiging (bucket op max) is",
         "current-drainage-is": "De huidige afvoer wordt berekend als",
         "no-drainage": "De huidige afvoer is 0 omdat",
-        "module-returned-hourly-evapotranspiration-deficiency": "De module heeft het tekort aan gewasverdamping uur per uur opgeteld ( = som van de uurlijkse et0 * Kc + neerslag) over",
+        "module-returned-hourly-evapotranspiration-deficiency": "De module heeft het verdampingstekort van het gewas per uur opgeteld ( = som van de uurlijkse et0 * Kc + neerslag) over",
         "crop-factor-is": "De gewasfactor is",
         "precipitation-rate-is": "De neerslagintensiteit is",
         "below-irrigation-threshold": "Het tekort heeft de irrigatiedrempel van deze zone nog niet bereikt, dus er is geen bewatering nodig en de duur wordt op 0 gezet. Tekort / drempel:"
@@ -219,6 +219,11 @@
           "or-open-a": "of open een",
           "github-issue": "Github Issue",
           "english-only": "alleen Engels"
+        },
+        "translate": {
+          "title": "Help om te vertalen",
+          "text": "Behalve Engels en Frans zijn de vertalingen van dit scherm machinevertalingen, en zijn ze nog niet gecontroleerd door iemand die de taal spreekt. Indien een woord of zin wat raar leest in jouw taal, kun je het corrigeren in je browser, zonder enige technische kennis.",
+          "link": "Vertalen op Weblate"
         }
       }
     },
