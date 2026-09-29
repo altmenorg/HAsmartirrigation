@@ -1,17 +1,17 @@
 {
   "config": {
     "abort": {
-      "single_instance_allowed": "Maar een installatie van Smart Irrigation is toegestaan."
+      "single_instance_allowed": "Slechts een enkele installatie van Smart Irrigation is toegestaan."
     },
     "error": {
       "name": "Geef de integratie een unieke naam."
     },
     "step": {
       "user": {
-        "title": "Algemeen",
-        "description": "Als je hulp nodig hebt, zie de documentatie.",
+        "title": "Algemene instellingen",
+        "description": "Als je hulp nodig hebt, zie de documentatie. De weerservice wordt achteraf geconfigureerd via het Smart Irrigation scherm.",
         "data": {
-          "name": "Unieke naam"
+          "name": "Unieke naam van de integratie"
         }
       }
     }
@@ -35,30 +35,30 @@
   },
   "services": {
     "calculate_all_zones": {
-      "name": "Calculate all zones",
-      "description": "Calculate all zones in automatic mode",
+      "name": "Bereken alle zone",
+      "description": "Bereken alle zones in automatische modus",
       "fields": {
         "delete_weather_data": {
-          "name": "Delete weather data",
-          "description": "Delete weather data after calculation"
+          "name": "Weerdata verwijderen",
+          "description": "Weerdata verwijderen na berekening"
         },
         "dry_run": {
           "name": "Proefrun",
-          "description": "Melden wat de berekening zou doen, zonder de voorraad, de zone of de verzamelde weergegevens te wijzigen"
+          "description": "Melden wat de berekening zou doen, zonder de emmer, de zone of de verzamelde weergegevens te wijzigen"
         }
       }
     },
     "calculate_zone": {
-      "name": "Calculate zone",
-      "description": "Calculate specified zone",
+      "name": "Bereken zone",
+      "description": "Bereken gespecificeerde zone",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to calculate"
+          "name": "Entiteit",
+          "description": "Zone om te berekenen"
         },
         "delete_weather_data": {
-          "name": "Delete weather data",
-          "description": "Delete weather data for the zone after calculation"
+          "name": "Weerdata verwijderen",
+          "description": "Weerdata verwijderen voor de zone na berekening"
         },
         "dry_run": {
           "name": "Proefrun",
@@ -67,35 +67,35 @@
       }
     },
     "update_all_zones": {
-      "name": "Update all zones",
-      "description": "Update weatherdata for all zones in automatic mode"
+      "name": "Update alle zones",
+      "description": "Update weerdata voor alle zones in automatische modus"
     },
     "update_zone": {
       "name": "Update zone",
-      "description": "Update weatherdata for specified zone",
+      "description": "Update weerdata voor gespecificeerde zone",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to update"
+          "name": "Entiteit",
+          "description": "Te updaten zone"
         }
       }
     },
     "set_bucket": {
-      "name": "Set bucket",
-      "description": "Set bucket for a zone to a specific value",
+      "name": "Stel emmer in",
+      "description": "Stel emmer in voor een zone met een specifieke waarde",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to set bucket for"
+          "name": "Entiteit",
+          "description": "Zone voor de emmer in te stellen"
         },
         "new_bucket_value": {
-          "name": "New bucket value",
-          "description": "new value of the bucket"
+          "name": "Nieuwe emmer waarde",
+          "description": "nieuwe emmerwaarde"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Set all buckets",
+      "name": "Stel alle emmers in",
       "description": "Set buckets for all zones to a specific value",
       "fields": {
         "new_bucket_value": {
@@ -230,7 +230,7 @@
         "name": "Duur"
       },
       "bucket": {
-        "name": "Voorraad"
+        "name": "Emmer"
       },
       "et_value": {
         "name": "Toegepaste ET"
@@ -248,7 +248,7 @@
         "name": "Waterverbruik"
       },
       "live_bucket": {
-        "name": "Voorraad live"
+        "name": "Live emmer"
       }
     },
     "button": {
@@ -256,7 +256,7 @@
         "name": "Berekenen"
       },
       "reset_bucket": {
-        "name": "Voorraad terugzetten"
+        "name": "Emmer terugzetten"
       },
       "reset_usage": {
         "name": "Waterverbruik terugzetten"
