@@ -2073,6 +2073,16 @@ class SmartIrrigationCoordinator(
                     zone.get(const.ZONE_NAME),
                 )
                 return
+            if weatherdata is None:
+                # Every reading in the buffer is one this zone has already
+                # read: there is nothing new to calculate. Passing the empty
+                # aggregate on made the calculation raise on it.
+                _LOGGER.info(
+                    "Zone %s has no readings since its last calculation; "
+                    "nothing to calculate",
+                    zone.get(const.ZONE_NAME),
+                )
+                return None
 
             # get forecast data if needed
             forecastdata = None
