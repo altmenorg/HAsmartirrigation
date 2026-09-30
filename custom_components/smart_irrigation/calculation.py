@@ -156,6 +156,11 @@ class CalculationMixin:
         cutoff = datetime.now() - timedelta(days=7)
         if watermarks and not never_consumed:
             cutoff = max(cutoff, min(watermarks))
+        # Consumed or not, the last day stays: a short window reads its daily
+        # weather from it (_daily_context).
+        cutoff = min(
+            cutoff, datetime.now() - timedelta(hours=const.DAILY_CONTEXT_HOURS)
+        )
 
         buffered = mapping.get(const.MAPPING_DATA)
         kept = self._readings_after(buffered, cutoff)
@@ -320,6 +325,10 @@ class CalculationMixin:
             baseline_stamps=baseline_stamps,
         )
 
+        # A window of known length only: zero is an interval nobody could read.
+        if 0 < hour_multiplier * 24.0 < const.DAILY_CONTEXT_MIN_HOURS:
+            self._daily_context(mapping, buffered, window_end, resultdata, audit)
+
         rain = await self._weather_service_rain(mapping, *rain_window)
         if rain is not None:
             resultdata[const.MAPPING_WEATHER_SERVICE_RAIN] = rain
@@ -330,6 +339,81 @@ class CalculationMixin:
 
         _LOGGER.debug("[apply_aggregates_to_mapping_data] returns %s", resultdata)
         return resultdata
+
+    # The fields the daily equation reads as the weather of a day, and which a
+    # short window therefore reads over the last day (_daily_context).
+    _DAILY_CONTEXT_FIELDS = (
+        const.MAPPING_TEMPERATURE,
+        const.MAPPING_HUMIDITY,
+        const.MAPPING_DEWPOINT,
+        const.MAPPING_WINDSPEED,
+        const.MAPPING_PRESSURE,
+        const.MAPPING_SOLRAD,
+    )
+
+    def _daily_context(self, mapping, buffered, window_end, resultdata, audit):
+        """Give a short window the weather of the day it ends, for the equation.
+
+        The daily equation prices a day: the day's minimum and maximum
+        temperature, its mean humidity and wind, its sun. A window of a few
+        hours handed it the extremes and the sun of those hours instead, and
+        two calculations a day, a manual one, a continuous update or the live
+        estimate each priced a "day" that was not one: a night had no sun and a
+        narrow temperature range, an afternoon twice the sun. Continuous
+        updates came out about 60% low.
+
+        So a window shorter than DAILY_CONTEXT_MIN_HOURS reads those fields
+        over the last DAILY_CONTEXT_HOURS ending where it ends, and the rate
+        the equation gives is scaled to the window as before. The rain is still
+        the window's own: it is a quantity, not a rate.
+
+        A field aggregated otherwise than as an average (a maximum, the last
+        value) is left as it was: that is a choice its owner made.
+        """
+        start = window_end - timedelta(hours=const.DAILY_CONTEXT_HOURS)
+        context = [
+            record
+            for record in self._readings_after(buffered, start)
+            if isinstance(record, dict)
+        ]
+        values, stamps = self._group_data_by_sensor(context)
+        mappings = mapping.get(const.MAPPING_MAPPINGS) or {}
+        widened = []
+        for key in self._DAILY_CONTEXT_FIELDS:
+            readings = [v for v in values.get(key, []) if v is not None]
+            if len(readings) < 2:
+                continue
+            the_map = mappings.get(key)
+            aggregate = (
+                the_map.get(const.MAPPING_CONF_AGGREGATE)
+                if isinstance(the_map, dict)
+                else None
+            ) or const.MAPPING_CONF_AGGREGATE_OPTIONS_DEFAULT
+            if key == const.MAPPING_TEMPERATURE:
+                numbers = [float(v) for v in readings]
+                resultdata[const.MAPPING_MIN_TEMP] = min(numbers)
+                resultdata[const.MAPPING_MAX_TEMP] = max(numbers)
+            if aggregate not in (
+                const.MAPPING_CONF_AGGREGATE_AVERAGE,
+                const.MAPPING_CONF_AGGREGATE_RIEMANNSUM,
+            ):
+                if key == const.MAPPING_TEMPERATURE:
+                    widened.append(key)
+                continue
+            resultdata[key] = self._time_weighted_mean(readings, stamps.get(key))
+            widened.append(key)
+        if widened:
+            _LOGGER.debug(
+                "[apply_aggregates_to_mapping_data]: short window, %s read over "
+                "the last %s hours",
+                ", ".join(widened),
+                const.DAILY_CONTEXT_HOURS,
+            )
+        if audit is not None:
+            audit["daily_context"] = {
+                "hours": const.DAILY_CONTEXT_HOURS,
+                "fields": widened,
+            }
 
     # --- calculation audit log helpers (#12) ---
 

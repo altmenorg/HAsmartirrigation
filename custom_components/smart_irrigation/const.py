@@ -504,6 +504,13 @@ MAPPING_DATA_LAST_CALCULATION = "data_last_calculation"
 # asking a weather service about, so the settings that assume open air stop
 # applying to the zones that use this group.
 MAPPING_GREENHOUSE = "greenhouse"
+# The daily equation prices a day. A window shorter than this, in hours, reads
+# its weather over the last day instead (see _daily_context), and the rate it
+# gives is scaled to the window as before.
+DAILY_CONTEXT_MIN_HOURS = 20
+# How long the readings are kept after every zone has consumed them, in hours:
+# what a short window needs to read a whole day.
+DAILY_CONTEXT_HOURS = 24
 # What a sensor can plausibly report, after conversion to the units the
 # calculation works in. A reading outside is a glitch (a Zigbee sensor reporting
 # 85 C, a gauge reporting -1 mm), and one such reading set a whole day's maximum

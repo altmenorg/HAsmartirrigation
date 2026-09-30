@@ -103,6 +103,13 @@ class TestTheWindow:
 
 
 class TestPruning:
+    @pytest.fixture(autouse=True)
+    def _no_daily_retention(self, monkeypatch):
+        """These readings are minutes old: the last day kept for short windows
+        (phase 1.1) would keep them all. What is tested here is the watermark
+        logic, so that retention is set aside; it has its own test below."""
+        monkeypatch.setattr(const, "DAILY_CONTEXT_HOURS", 0)
+
     @pytest.mark.asyncio
     async def test_a_sibling_that_has_not_read_keeps_the_readings(self):
         """The bug, stated as a test: zone 2 must still have its history."""
@@ -313,3 +320,19 @@ class TestTheWindowDrivesEverything:
         start = coord._rain_window_start(self._mapping(), [], None)
 
         assert start == NOW - timedelta(minutes=60)
+
+
+class TestTheLastDayIsKept:
+    @pytest.mark.asyncio
+    async def test_readings_of_the_last_day_stay_after_every_zone_read_them(self):
+        """A short window reads its daily weather from them (phase 1.1)."""
+        readings = [_reading(60 * 32), _reading(60 * 30), _reading(120), _reading(10)]
+        zones = [_zone(1, consumed_minutes_ago=5)]
+        coord = _Coordinator(readings, zones)
+
+        await coord.prune_consumed_readings(1)
+
+        kept = coord.store.async_update_mapping.await_args.kwargs["changes"]
+        # The one from 32 hours ago goes, the one from 30 stays as the baseline
+        # before the day, and the last day stays whole.
+        assert kept[const.MAPPING_DATA] == readings[1:]

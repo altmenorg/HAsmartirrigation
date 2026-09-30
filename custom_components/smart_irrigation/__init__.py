@@ -1602,11 +1602,17 @@ class SmartIrrigationCoordinator(
             {const.MAPPING_DATA: mapping_data, const.MAPPING_DATA_LAST_UPDATED: now},
         )
         # The buffer is the group's, so every zone reading it is refreshed.
-        changes_to_zone = {
-            const.ZONE_LAST_UPDATED: now,
-            const.ZONE_NUMBER_OF_DATA_POINTS: len(mapping_data) - 1,
-        }
         for zone_id in await self._get_zones_that_use_this_mapping(mapping_id):
+            # The readings this zone has not read yet. The buffer also keeps
+            # the last day of readings every zone has read, for a short window
+            # to read a day's weather from, and counting those looked like a
+            # buffer that was never pruned (#867).
+            zone = self.store.get_zone(zone_id) or {}
+            unread = self._readings_after(mapping_data, self.zone_window_start(zone))
+            changes_to_zone = {
+                const.ZONE_LAST_UPDATED: now,
+                const.ZONE_NUMBER_OF_DATA_POINTS: len(unread),
+            }
             await self.store.async_update_zone(zone_id, changes_to_zone)
             async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated", zone_id)
 
