@@ -1077,6 +1077,11 @@ class CalculationMixin:
                             dt = (
                                 times[i + 1] - times[i]
                             ).total_seconds() / seconds_per_unit
+                            if dt <= 0:
+                                # Timestamps are local and naive: at the autumn
+                                # clock change the repeated hour runs backwards,
+                                # and the rain of that interval was subtracted.
+                                continue
                         riemann_sum += ((d[i] + d[i + 1]) / 2) * dt
                         span += dt
                     resultdata[key] = riemann_sum

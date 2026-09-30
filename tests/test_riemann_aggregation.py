@@ -182,3 +182,28 @@ async def test_missing_timestamps_are_spread_over_the_interval_and_warned(caplog
 
     assert "no usable timestamps" in caplog.text
     assert result[const.MAPPING_SOLRAD] < 20.0
+
+
+async def test_the_autumn_clock_change_does_not_subtract_rain():
+    """Timestamps are local and naive: at the autumn change 02:59 is followed
+    by 02:00, and the rain of that backward interval was subtracted
+    (phase 1.17)."""
+    coordinator = _Coordinator()
+    stamps = [
+        datetime(2026, 10, 25, 1, 30),
+        datetime(2026, 10, 25, 2, 30),
+        datetime(2026, 10, 25, 2, 0),  # the clock went back
+        datetime(2026, 10, 25, 3, 0),
+    ]
+    data_by_sensor = {
+        const.MAPPING_CURRENT_PRECIPITATION: [2.0, 2.0, 2.0, 2.0],
+        const.RETRIEVED_AT: stamps,
+    }
+    resultdata = {}
+    await coordinator._aggregate_sensor_data(
+        data_by_sensor,
+        _mapping_with_riemann(const.MAPPING_CURRENT_PRECIPITATION),
+        resultdata,
+    )
+    # 1 h + 1 h of 2 mm/h; the backward half hour counts for nothing.
+    assert resultdata[const.MAPPING_CURRENT_PRECIPITATION] == pytest.approx(4.0)
