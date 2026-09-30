@@ -798,5 +798,42 @@
       "description": "Spring vandingen over, når vinden er på eller over grænsen: en sprinkler i hård vind vander stien, ikke bedet.",
       "sensor-hint": "Tom: vejrtjenestens aktuelle vind, i 10 m."
     }
+  },
+  "card": {
+    "next_start": "Næste start",
+    "no_start": "Ingen start planlagt",
+    "skipped": "Udskudt",
+    "short_by": "mangler {value}",
+    "no_need": "ingen vanding nødvendig",
+    "runs_for": "ville køre {duration}",
+    "never_watered": "aldrig vandet",
+    "last_watered": "sidst vandet {when}",
+    "calculate": "Beregn nu",
+    "water_now": "Vand nu",
+    "confirm_water": "Tryk igen for at vande nu",
+    "watering": "Vander",
+    "nothing_to_water": "Intet at vande lige nu",
+    "loading": "Læser zonerne…",
+    "manual": "manuel",
+    "disabled": "deaktiveret",
+    "no_zones": "Ingen zoner endnu. Åbn Smart Irrigation-panelet for at tilføje en.",
+    "tomorrow": "i morgen",
+    "yesterday": "i går",
+    "live_since": "Anslået nu, ud fra målingerne siden {when}",
+    "reasons": {
+      "precipitation": "regnudsigt",
+      "days_between": "dage mellem vandinger",
+      "rain_sensor": "regnsensor",
+      "freeze": "frost",
+      "wind": "vind",
+      "soil_moisture": "jordfugtighed",
+      "postponed": "udskudt af dig"
+    },
+    "editor": {
+      "title": "Titel",
+      "zones": "Zoner (alle hvis tom)",
+      "show_next_start": "Vis næste start",
+      "compact": "Kun zoner, der ville vande"
+    }
   }
 }

@@ -8,6 +8,7 @@
  */
 import { LitElement, html, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
+import { cardString, cardStringsLoaded, loadCardStrings } from "./card-strings";
 
 const DOMAIN = "smart_irrigation";
 
@@ -18,21 +19,6 @@ interface EditorConfig {
   show_next_start?: boolean;
   compact?: boolean;
 }
-
-const LABELS: Record<string, Record<string, string>> = {
-  en: {
-    title: "Title",
-    zones: "Zones (all of them when empty)",
-    show_next_start: "Show the next start",
-    compact: "Only the zones that would water",
-  },
-  fr: {
-    title: "Titre",
-    zones: "Zones (toutes si vide)",
-    show_next_start: "Afficher le prochain départ",
-    compact: "Seulement les zones qui arroseraient",
-  },
-};
 
 @customElement("smart-irrigation-card-editor")
 export class SmartIrrigationCardEditor extends LitElement {
@@ -52,6 +38,9 @@ export class SmartIrrigationCardEditor extends LitElement {
     if (changed.has("hass") && this.hass && !this._zones.length) {
       this._loadZones();
     }
+    if (changed.has("hass") && !cardStringsLoaded(this.hass?.language)) {
+      loadCardStrings(this.hass?.language).then(() => this.requestUpdate());
+    }
   }
 
   private async _loadZones(): Promise<void> {
@@ -67,8 +56,7 @@ export class SmartIrrigationCardEditor extends LitElement {
   }
 
   private _label(key: string): string {
-    const language = (this.hass?.language || "en").split("-")[0];
-    return (LABELS[language] ?? LABELS.en)[key] ?? LABELS.en[key];
+    return cardString(this.hass?.language, `editor.${key}`);
   }
 
   private get _schema() {

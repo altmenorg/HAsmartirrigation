@@ -798,5 +798,42 @@
       "description": "Sla de ronde over als de wind op of boven de drempel zit: een sproeier bewatert bij harde wind het pad, niet het bed.",
       "sensor-hint": "Leeg: de huidige wind van de weerdienst, op 10 m."
     }
+  },
+  "card": {
+    "next_start": "Volgende start",
+    "no_start": "Geen start gepland",
+    "skipped": "Uitgesteld",
+    "short_by": "tekort {value}",
+    "no_need": "geen beregening nodig",
+    "runs_for": "zou {duration} lopen",
+    "never_watered": "nooit beregend",
+    "last_watered": "laatst beregend {when}",
+    "calculate": "Nu berekenen",
+    "water_now": "Nu beregenen",
+    "confirm_water": "Tik nogmaals om nu te beregenen",
+    "watering": "Bezig met beregenen",
+    "nothing_to_water": "Nu niets te beregenen",
+    "loading": "Zones lezen…",
+    "manual": "handmatig",
+    "disabled": "uitgeschakeld",
+    "no_zones": "Nog geen zones. Open het Smart Irrigation-paneel om er een toe te voegen.",
+    "tomorrow": "morgen",
+    "yesterday": "gisteren",
+    "live_since": "Nu geschat, op basis van de metingen sinds {when}",
+    "reasons": {
+      "precipitation": "regenvoorspelling",
+      "days_between": "dagen tussen beregeningen",
+      "rain_sensor": "regensensor",
+      "freeze": "vorst",
+      "wind": "wind",
+      "soil_moisture": "bodemvocht",
+      "postponed": "door jou uitgesteld"
+    },
+    "editor": {
+      "title": "Titel",
+      "zones": "Zones (alle als leeg)",
+      "show_next_start": "Volgende start tonen",
+      "compact": "Alleen zones die zouden beregenen"
+    }
   }
 }

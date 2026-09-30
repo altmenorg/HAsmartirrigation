@@ -798,5 +798,42 @@
       "description": "Hoppa över körningen när vinden är på eller över gränsen: en spridare i hård vind vattnar gången, inte rabatten.",
       "sensor-hint": "Tom: vädertjänstens aktuella vind, på 10 m."
     }
+  },
+  "card": {
+    "next_start": "Nästa start",
+    "no_start": "Ingen start planerad",
+    "skipped": "Uppskjuten",
+    "short_by": "saknas {value}",
+    "no_need": "ingen bevattning behövs",
+    "runs_for": "skulle gå {duration}",
+    "never_watered": "aldrig bevattnad",
+    "last_watered": "senast bevattnad {when}",
+    "calculate": "Beräkna nu",
+    "water_now": "Bevattna nu",
+    "confirm_water": "Tryck igen för att bevattna nu",
+    "watering": "Bevattnar",
+    "nothing_to_water": "Inget att bevattna just nu",
+    "loading": "Läser zonerna…",
+    "manual": "manuell",
+    "disabled": "inaktiverad",
+    "no_zones": "Inga zoner än. Öppna Smart Irrigation-panelen för att lägga till en.",
+    "tomorrow": "i morgon",
+    "yesterday": "i går",
+    "live_since": "Uppskattat nu, från mätningarna sedan {when}",
+    "reasons": {
+      "precipitation": "regnprognos",
+      "days_between": "dagar mellan bevattningar",
+      "rain_sensor": "regnsensor",
+      "freeze": "frost",
+      "wind": "vind",
+      "soil_moisture": "markfuktighet",
+      "postponed": "uppskjuten av dig"
+    },
+    "editor": {
+      "title": "Titel",
+      "zones": "Zoner (alla om tomt)",
+      "show_next_start": "Visa nästa start",
+      "compact": "Bara zoner som skulle bevattna"
+    }
   }
 }

@@ -798,5 +798,42 @@
       "description": "Az öntözés kihagyása, ha a szél a küszöbön vagy fölötte van: az erős szélben szóró szórófej az utat öntözi, nem az ágyást.",
       "sensor-hint": "Üresen: az időjárás-szolgáltatás aktuális szele, 10 m magasságban."
     }
+  },
+  "card": {
+    "next_start": "Következő indítás",
+    "no_start": "Nincs ütemezett indítás",
+    "skipped": "Elhalasztva",
+    "short_by": "hiányzik {value}",
+    "no_need": "nincs szükség öntözésre",
+    "runs_for": "{duration} ideig futna",
+    "never_watered": "még nem volt öntözve",
+    "last_watered": "utoljára öntözve {when}",
+    "calculate": "Számítás most",
+    "water_now": "Öntözés most",
+    "confirm_water": "Koppints újra az öntözéshez",
+    "watering": "Öntözés folyamatban",
+    "nothing_to_water": "Most nincs mit öntözni",
+    "loading": "Zónák beolvasása…",
+    "manual": "kézi",
+    "disabled": "kikapcsolva",
+    "no_zones": "Még nincsenek zónák. Nyisd meg a Smart Irrigation panelt egy hozzáadásához.",
+    "tomorrow": "holnap",
+    "yesterday": "tegnap",
+    "live_since": "Most becsülve, a(z) {when} óta mért adatokból",
+    "reasons": {
+      "precipitation": "esőelőrejelzés",
+      "days_between": "öntözések közötti napok",
+      "rain_sensor": "esőérzékelő",
+      "freeze": "fagy",
+      "wind": "szél",
+      "soil_moisture": "talajnedvesség",
+      "postponed": "általad elhalasztva"
+    },
+    "editor": {
+      "title": "Cím",
+      "zones": "Zónák (mind, ha üres)",
+      "show_next_start": "Következő indítás mutatása",
+      "compact": "Csak az öntöző zónák"
+    }
   }
 }

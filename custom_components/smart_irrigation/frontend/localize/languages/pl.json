@@ -798,5 +798,42 @@
       "description": "Pomiń nawadnianie, gdy wiatr jest na progu lub powyżej: zraszacz przy silnym wiatrze podlewa ścieżkę, nie rabatę.",
       "sensor-hint": "Puste: bieżący wiatr z serwisu pogodowego, na 10 m."
     }
+  },
+  "card": {
+    "next_start": "Następny start",
+    "no_start": "Brak zaplanowanego startu",
+    "skipped": "Wstrzymane",
+    "short_by": "brakuje {value}",
+    "no_need": "podlewanie niepotrzebne",
+    "runs_for": "trwałoby {duration}",
+    "never_watered": "nigdy nie podlewana",
+    "last_watered": "ostatnio podlewana {when}",
+    "calculate": "Oblicz teraz",
+    "water_now": "Podlej teraz",
+    "confirm_water": "Dotknij ponownie, aby podlać teraz",
+    "watering": "Podlewanie",
+    "nothing_to_water": "Teraz nie ma czego podlewać",
+    "loading": "Odczytywanie stref…",
+    "manual": "ręczna",
+    "disabled": "wyłączona",
+    "no_zones": "Brak stref. Otwórz panel Smart Irrigation, aby dodać strefę.",
+    "tomorrow": "jutro",
+    "yesterday": "wczoraj",
+    "live_since": "Oszacowane teraz, z odczytów od {when}",
+    "reasons": {
+      "precipitation": "prognoza deszczu",
+      "days_between": "dni między podlewaniami",
+      "rain_sensor": "czujnik deszczu",
+      "freeze": "mróz",
+      "wind": "wiatr",
+      "soil_moisture": "wilgotność gleby",
+      "postponed": "odłożone przez ciebie"
+    },
+    "editor": {
+      "title": "Tytuł",
+      "zones": "Strefy (wszystkie, gdy puste)",
+      "show_next_start": "Pokaż następny start",
+      "compact": "Tylko strefy, które by podlewały"
+    }
   }
 }

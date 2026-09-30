@@ -803,5 +803,42 @@
       "description": "Ne pas arroser quand le vent atteint ou dépasse le seuil : par grand vent, l'arroseur mouille l'allée, pas le massif.",
       "sensor-hint": "Vide : le vent actuel du service météo, à 10 m."
     }
+  },
+  "card": {
+    "next_start": "Prochain départ",
+    "no_start": "Aucun départ prévu",
+    "skipped": "Reporté",
+    "short_by": "déficit {value}",
+    "no_need": "pas d'arrosage nécessaire",
+    "runs_for": "arroserait {duration}",
+    "never_watered": "jamais arrosé",
+    "last_watered": "dernier arrosage {when}",
+    "calculate": "Calculer maintenant",
+    "water_now": "Arroser maintenant",
+    "confirm_water": "Touchez encore pour arroser",
+    "watering": "Arrosage en cours",
+    "nothing_to_water": "Rien à arroser pour le moment",
+    "loading": "Lecture des zones…",
+    "manual": "manuel",
+    "disabled": "désactivé",
+    "no_zones": "Aucune zone. Ouvrez le panneau Smart Irrigation pour en créer une.",
+    "tomorrow": "demain",
+    "yesterday": "hier",
+    "live_since": "Estimé maintenant, sur les relevés depuis {when}",
+    "reasons": {
+      "precipitation": "pluie prévue",
+      "days_between": "jours entre deux arrosages",
+      "rain_sensor": "capteur de pluie",
+      "freeze": "gel",
+      "wind": "vent",
+      "soil_moisture": "humidité du sol",
+      "postponed": "reporté par vous"
+    },
+    "editor": {
+      "title": "Titre",
+      "zones": "Zones (toutes si vide)",
+      "show_next_start": "Afficher le prochain départ",
+      "compact": "Seulement les zones qui arroseraient"
+    }
   }
 }

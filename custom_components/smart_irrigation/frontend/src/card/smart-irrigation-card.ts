@@ -21,6 +21,7 @@ import {
   zoneActionEntity,
   zoneNow,
 } from "./format";
+import { cardString, cardStringsLoaded, loadCardStrings } from "./card-strings";
 
 const DOMAIN = "smart_irrigation";
 
@@ -34,63 +35,6 @@ const CARD_TYPE = "custom:smart-irrigation-card";
 
 /** How often the card asks the server where the zones stand. */
 const REFRESH_MS = 120000;
-
-/**
- * The card's own strings. The panel's translations live in a module that
- * carries all nineteen languages, and the card loads on every dashboard, so it
- * keeps its handful of words to itself. Anything not translated falls back to
- * English.
- */
-const STRINGS: Record<string, Record<string, string>> = {
-  en: {
-    title: "Smart Irrigation",
-    next_start: "Next start",
-    no_start: "No start scheduled",
-    skipped: "Held back",
-    short_by: "short {value}",
-    no_need: "no watering needed",
-    // A projection, not a report: the run has not happened yet.
-    runs_for: "would run {duration}",
-    never_watered: "never watered",
-    last_watered: "last watered {when}",
-    calculate: "Calculate now",
-    water_now: "Water now",
-    confirm_water: "Tap again to water now",
-    watering: "Watering",
-    nothing_to_water: "Nothing to water right now",
-    loading: "Reading the zones…",
-    manual: "manual",
-    disabled: "disabled",
-    no_zones: "No zones yet. Open the Smart Irrigation panel to add one.",
-    tomorrow: "tomorrow",
-    yesterday: "yesterday",
-    live_since: "Estimated now, from the readings since {when}",
-  },
-  fr: {
-    title: "Smart Irrigation",
-    next_start: "Prochain départ",
-    no_start: "Aucun départ prévu",
-    skipped: "Reporté",
-    short_by: "déficit {value}",
-    no_need: "pas d'arrosage nécessaire",
-    runs_for: "arroserait {duration}",
-    never_watered: "jamais arrosé",
-    last_watered: "dernier arrosage {when}",
-    calculate: "Calculer maintenant",
-    water_now: "Arroser maintenant",
-    confirm_water: "Touchez encore pour arroser",
-    watering: "Arrosage en cours",
-    nothing_to_water: "Rien à arroser pour le moment",
-    loading: "Lecture des zones…",
-    manual: "manuel",
-    disabled: "désactivé",
-    no_zones:
-      "Aucune zone. Ouvrez le panneau Smart Irrigation pour en créer une.",
-    tomorrow: "demain",
-    yesterday: "hier",
-    live_since: "Estimé maintenant, sur les relevés depuis {when}",
-  },
-};
 
 interface CardConfig {
   type: string;
@@ -182,6 +126,10 @@ export class SmartIrrigationCard extends LitElement {
       this._subscribe();
       this._load();
     }
+    if (changed.has("hass") && !cardStringsLoaded(this.hass?.language)) {
+      // English until the language is in, then once more in the language.
+      loadCardStrings(this.hass?.language).then(() => this.requestUpdate());
+    }
   }
 
   private async _subscribe(): Promise<void> {
@@ -222,10 +170,7 @@ export class SmartIrrigationCard extends LitElement {
   }
 
   private _t(key: string, values: Record<string, string> = {}): string {
-    const language = (this.hass?.language || "en").split("-")[0];
-    const table = STRINGS[language] ?? STRINGS.en;
-    const template = table[key] ?? STRINGS.en[key] ?? key;
-    return template.replace(/\{(\w+)\}/g, (_m, name) => values[name] ?? "");
+    return cardString(this.hass?.language, key, values);
   }
 
   private _depth(value: number): string {
@@ -343,7 +288,9 @@ export class SmartIrrigationCard extends LitElement {
           icon=${skipped ? "mdi:calendar-remove" : "mdi:calendar-clock"}
         ></ha-icon>
         <span class="next-label">${this._t("next_start")}</span>
-        <span class="next-value">${label}${reason ? ` (${reason})` : ""}</span>
+        <span class="next-value"
+          >${label}${reason ? ` (${this._t(`reasons.${reason}`)})` : ""}</span
+        >
       </div>
     `;
   }
@@ -428,7 +375,7 @@ export class SmartIrrigationCard extends LitElement {
     if (!this._config || !this.hass) return html``;
     const zones = this._zonesToShow();
     return html`
-      <ha-card .header=${this._config.title ?? this._t("title")}>
+      <ha-card .header=${this._config.title ?? "Smart Irrigation"}>
         <div class="content">
           ${this._nextStart()}
           ${zones.length

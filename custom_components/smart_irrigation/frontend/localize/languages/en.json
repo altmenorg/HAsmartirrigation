@@ -803,5 +803,42 @@
       "description": "Skip the run when the wind is at or above the threshold: a sprinkler in strong wind waters the path, not the bed.",
       "sensor-hint": "Empty: the weather service's current wind, at 10 m."
     }
+  },
+  "card": {
+    "next_start": "Next start",
+    "no_start": "No start scheduled",
+    "skipped": "Held back",
+    "short_by": "short {value}",
+    "no_need": "no watering needed",
+    "runs_for": "would run {duration}",
+    "never_watered": "never watered",
+    "last_watered": "last watered {when}",
+    "calculate": "Calculate now",
+    "water_now": "Water now",
+    "confirm_water": "Tap again to water now",
+    "watering": "Watering",
+    "nothing_to_water": "Nothing to water right now",
+    "loading": "Reading the zones…",
+    "manual": "manual",
+    "disabled": "disabled",
+    "no_zones": "No zones yet. Open the Smart Irrigation panel to add one.",
+    "tomorrow": "tomorrow",
+    "yesterday": "yesterday",
+    "live_since": "Estimated now, from the readings since {when}",
+    "reasons": {
+      "precipitation": "rain forecast",
+      "days_between": "days between irrigation",
+      "rain_sensor": "rain sensor",
+      "freeze": "freeze",
+      "wind": "wind",
+      "soil_moisture": "soil moisture",
+      "postponed": "postponed"
+    },
+    "editor": {
+      "title": "Title",
+      "zones": "Zones (all of them when empty)",
+      "show_next_start": "Show the next start",
+      "compact": "Only the zones that would water"
+    }
   }
 }

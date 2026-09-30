@@ -798,5 +798,42 @@
       "description": "Ohita kastelu, kun tuuli on rajassa tai sen yli: sadetin kovassa tuulessa kastelee käytävän, ei penkkiä.",
       "sensor-hint": "Tyhjä: sääpalvelun nykyinen tuuli, 10 m korkeudella."
     }
+  },
+  "card": {
+    "next_start": "Seuraava käynnistys",
+    "no_start": "Ei käynnistystä ajastettu",
+    "skipped": "Lykätty",
+    "short_by": "puuttuu {value}",
+    "no_need": "kastelua ei tarvita",
+    "runs_for": "kestäisi {duration}",
+    "never_watered": "ei koskaan kasteltu",
+    "last_watered": "viimeksi kasteltu {when}",
+    "calculate": "Laske nyt",
+    "water_now": "Kastele nyt",
+    "confirm_water": "Napauta uudelleen kastellaksesi nyt",
+    "watering": "Kastellaan",
+    "nothing_to_water": "Ei kasteltavaa juuri nyt",
+    "loading": "Luetaan vyöhykkeitä…",
+    "manual": "manuaalinen",
+    "disabled": "poistettu käytöstä",
+    "no_zones": "Ei vielä vyöhykkeitä. Avaa Smart Irrigation -paneeli lisätäksesi sellaisen.",
+    "tomorrow": "huomenna",
+    "yesterday": "eilen",
+    "live_since": "Arvioitu nyt, lukemista alkaen {when}",
+    "reasons": {
+      "precipitation": "sade-ennuste",
+      "days_between": "päiviä kastelujen välillä",
+      "rain_sensor": "sadeanturi",
+      "freeze": "pakkanen",
+      "wind": "tuuli",
+      "soil_moisture": "maaperän kosteus",
+      "postponed": "sinun lykkäämäsi"
+    },
+    "editor": {
+      "title": "Otsikko",
+      "zones": "Vyöhykkeet (kaikki, jos tyhjä)",
+      "show_next_start": "Näytä seuraava käynnistys",
+      "compact": "Vain vyöhykkeet, jotka kastelisivat"
+    }
   }
 }

@@ -798,5 +798,42 @@
       "description": "Omitir el ciclo cuando el viento esté en el umbral o por encima: un aspersor con viento fuerte riega el camino, no el bancal.",
       "sensor-hint": "Vacío: el viento actual del servicio meteorológico, a 10 m."
     }
+  },
+  "card": {
+    "next_start": "Próximo inicio",
+    "no_start": "Ningún inicio programado",
+    "skipped": "Aplazado",
+    "short_by": "faltan {value}",
+    "no_need": "no necesita riego",
+    "runs_for": "regaría {duration}",
+    "never_watered": "nunca regado",
+    "last_watered": "último riego {when}",
+    "calculate": "Calcular ahora",
+    "water_now": "Regar ahora",
+    "confirm_water": "Toca de nuevo para regar ahora",
+    "watering": "Regando",
+    "nothing_to_water": "Nada que regar por ahora",
+    "loading": "Leyendo las zonas…",
+    "manual": "manual",
+    "disabled": "desactivada",
+    "no_zones": "Aún no hay zonas. Abre el panel de Smart Irrigation para añadir una.",
+    "tomorrow": "mañana",
+    "yesterday": "ayer",
+    "live_since": "Estimado ahora, con las lecturas desde {when}",
+    "reasons": {
+      "precipitation": "previsión de lluvia",
+      "days_between": "días entre riegos",
+      "rain_sensor": "sensor de lluvia",
+      "freeze": "helada",
+      "wind": "viento",
+      "soil_moisture": "humedad del suelo",
+      "postponed": "aplazado por ti"
+    },
+    "editor": {
+      "title": "Título",
+      "zones": "Zonas (todas si está vacío)",
+      "show_next_start": "Mostrar el próximo inicio",
+      "compact": "Solo las zonas que regarían"
+    }
   }
 }

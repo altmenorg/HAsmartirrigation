@@ -798,5 +798,42 @@
       "description": "当风速等于或高于阈值时跳过本次浇水：大风中的喷头浇的是小路，不是花坛。",
       "sensor-hint": "留空：使用天气服务的当前风速，10 米高度。"
     }
+  },
+  "card": {
+    "next_start": "下次启动",
+    "no_start": "未安排启动",
+    "skipped": "已推迟",
+    "short_by": "缺水 {value}",
+    "no_need": "无需浇水",
+    "runs_for": "将运行 {duration}",
+    "never_watered": "从未浇水",
+    "last_watered": "上次浇水 {when}",
+    "calculate": "立即计算",
+    "water_now": "立即浇水",
+    "confirm_water": "再次点击以立即浇水",
+    "watering": "正在浇水",
+    "nothing_to_water": "目前无需浇水",
+    "loading": "正在读取区域…",
+    "manual": "手动",
+    "disabled": "已禁用",
+    "no_zones": "还没有区域。打开 Smart Irrigation 面板添加一个。",
+    "tomorrow": "明天",
+    "yesterday": "昨天",
+    "live_since": "当前估算，基于自 {when} 以来的读数",
+    "reasons": {
+      "precipitation": "降雨预报",
+      "days_between": "浇水间隔天数",
+      "rain_sensor": "雨量传感器",
+      "freeze": "霜冻",
+      "wind": "风",
+      "soil_moisture": "土壤湿度",
+      "postponed": "由你推迟"
+    },
+    "editor": {
+      "title": "标题",
+      "zones": "区域（留空则为全部）",
+      "show_next_start": "显示下次启动",
+      "compact": "仅显示需要浇水的区域"
+    }
   }
 }

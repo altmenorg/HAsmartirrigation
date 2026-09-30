@@ -798,5 +798,42 @@
       "description": "Hopp over vanningen når vinden er på eller over grensen: en spreder i sterk vind vanner stien, ikke bedet.",
       "sensor-hint": "Tom: værtjenestens nåværende vind, i 10 m."
     }
+  },
+  "card": {
+    "next_start": "Neste start",
+    "no_start": "Ingen start planlagt",
+    "skipped": "Utsatt",
+    "short_by": "mangler {value}",
+    "no_need": "ingen vanning nødvendig",
+    "runs_for": "ville gått {duration}",
+    "never_watered": "aldri vannet",
+    "last_watered": "sist vannet {when}",
+    "calculate": "Beregn nå",
+    "water_now": "Vann nå",
+    "confirm_water": "Trykk igjen for å vanne nå",
+    "watering": "Vanner",
+    "nothing_to_water": "Ingenting å vanne nå",
+    "loading": "Leser sonene…",
+    "manual": "manuell",
+    "disabled": "deaktivert",
+    "no_zones": "Ingen soner ennå. Åpne Smart Irrigation-panelet for å legge til en.",
+    "tomorrow": "i morgen",
+    "yesterday": "i går",
+    "live_since": "Anslått nå, fra målingene siden {when}",
+    "reasons": {
+      "precipitation": "regnvarsel",
+      "days_between": "dager mellom vanninger",
+      "rain_sensor": "regnsensor",
+      "freeze": "frost",
+      "wind": "vind",
+      "soil_moisture": "jordfuktighet",
+      "postponed": "utsatt av deg"
+    },
+    "editor": {
+      "title": "Tittel",
+      "zones": "Soner (alle hvis tom)",
+      "show_next_start": "Vis neste start",
+      "compact": "Bare soner som ville vannet"
+    }
   }
 }

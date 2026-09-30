@@ -798,5 +798,42 @@
       "description": "Pular o ciclo quando o vento estiver no limite ou acima dele: um aspersor com vento forte irriga o caminho, não o canteiro.",
       "sensor-hint": "Vazio: o vento atual do serviço de meteorologia, a 10 m."
     }
+  },
+  "card": {
+    "next_start": "Próximo início",
+    "no_start": "Nenhum início agendado",
+    "skipped": "Adiado",
+    "short_by": "faltam {value}",
+    "no_need": "não precisa de irrigação",
+    "runs_for": "irrigaria {duration}",
+    "never_watered": "nunca irrigada",
+    "last_watered": "última irrigação {when}",
+    "calculate": "Calcular agora",
+    "water_now": "Irrigar agora",
+    "confirm_water": "Toque de novo para irrigar agora",
+    "watering": "Irrigando",
+    "nothing_to_water": "Nada para irrigar agora",
+    "loading": "Lendo as zonas…",
+    "manual": "manual",
+    "disabled": "desativada",
+    "no_zones": "Ainda não há zonas. Abra o painel Smart Irrigation para adicionar uma.",
+    "tomorrow": "amanhã",
+    "yesterday": "ontem",
+    "live_since": "Estimado agora, com as leituras desde {when}",
+    "reasons": {
+      "precipitation": "previsão de chuva",
+      "days_between": "dias entre irrigações",
+      "rain_sensor": "sensor de chuva",
+      "freeze": "geada",
+      "wind": "vento",
+      "soil_moisture": "umidade do solo",
+      "postponed": "adiado por você"
+    },
+    "editor": {
+      "title": "Título",
+      "zones": "Zonas (todas se vazio)",
+      "show_next_start": "Mostrar o próximo início",
+      "compact": "Somente as zonas que irrigariam"
+    }
   }
 }

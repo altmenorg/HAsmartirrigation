@@ -798,5 +798,42 @@
       "description": "Salta il ciclo quando il vento è pari o superiore alla soglia: un irrigatore con vento forte bagna il vialetto, non l'aiuola.",
       "sensor-hint": "Vuoto: il vento attuale del servizio meteo, a 10 m."
     }
+  },
+  "card": {
+    "next_start": "Prossimo avvio",
+    "no_start": "Nessun avvio programmato",
+    "skipped": "Rimandato",
+    "short_by": "mancano {value}",
+    "no_need": "nessuna irrigazione necessaria",
+    "runs_for": "irrigherebbe {duration}",
+    "never_watered": "mai irrigata",
+    "last_watered": "ultima irrigazione {when}",
+    "calculate": "Calcola ora",
+    "water_now": "Irriga ora",
+    "confirm_water": "Tocca di nuovo per irrigare ora",
+    "watering": "Irrigazione in corso",
+    "nothing_to_water": "Niente da irrigare al momento",
+    "loading": "Lettura delle zone…",
+    "manual": "manuale",
+    "disabled": "disattivata",
+    "no_zones": "Nessuna zona. Apri il pannello Smart Irrigation per aggiungerne una.",
+    "tomorrow": "domani",
+    "yesterday": "ieri",
+    "live_since": "Stimato ora, dalle letture da {when}",
+    "reasons": {
+      "precipitation": "pioggia prevista",
+      "days_between": "giorni tra le irrigazioni",
+      "rain_sensor": "sensore pioggia",
+      "freeze": "gelo",
+      "wind": "vento",
+      "soil_moisture": "umidità del suolo",
+      "postponed": "rimandato da te"
+    },
+    "editor": {
+      "title": "Titolo",
+      "zones": "Zone (tutte se vuoto)",
+      "show_next_start": "Mostra il prossimo avvio",
+      "compact": "Solo le zone che irrigherebbero"
+    }
   }
 }

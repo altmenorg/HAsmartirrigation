@@ -798,5 +798,42 @@
       "description": "Durchlauf überspringen, wenn der Wind den Schwellwert erreicht oder überschreitet: ein Sprinkler bei starkem Wind bewässert den Weg, nicht das Beet.",
       "sensor-hint": "Leer: der aktuelle Wind des Wetterdienstes, in 10 m Höhe."
     }
+  },
+  "card": {
+    "next_start": "Nächster Start",
+    "no_start": "Kein Start geplant",
+    "skipped": "Zurückgestellt",
+    "short_by": "fehlen {value}",
+    "no_need": "keine Bewässerung nötig",
+    "runs_for": "würde {duration} laufen",
+    "never_watered": "nie bewässert",
+    "last_watered": "zuletzt bewässert {when}",
+    "calculate": "Jetzt berechnen",
+    "water_now": "Jetzt bewässern",
+    "confirm_water": "Nochmals tippen, um jetzt zu bewässern",
+    "watering": "Bewässerung läuft",
+    "nothing_to_water": "Derzeit nichts zu bewässern",
+    "loading": "Zonen werden gelesen…",
+    "manual": "manuell",
+    "disabled": "deaktiviert",
+    "no_zones": "Noch keine Zonen. Öffne das Smart-Irrigation-Panel, um eine anzulegen.",
+    "tomorrow": "morgen",
+    "yesterday": "gestern",
+    "live_since": "Jetzt geschätzt, aus den Messwerten seit {when}",
+    "reasons": {
+      "precipitation": "Regenvorhersage",
+      "days_between": "Tage zwischen Bewässerungen",
+      "rain_sensor": "Regensensor",
+      "freeze": "Frost",
+      "wind": "Wind",
+      "soil_moisture": "Bodenfeuchte",
+      "postponed": "von dir verschoben"
+    },
+    "editor": {
+      "title": "Titel",
+      "zones": "Zonen (alle, wenn leer)",
+      "show_next_start": "Nächsten Start anzeigen",
+      "compact": "Nur Zonen, die bewässern würden"
+    }
   }
 }

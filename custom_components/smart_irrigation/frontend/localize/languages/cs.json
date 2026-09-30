@@ -798,5 +798,42 @@
       "description": "Vynechat zavlažování, když je vítr na prahu nebo nad ním: postřikovač v silném větru zalévá cestu, ne záhon.",
       "sensor-hint": "Prázdné: aktuální vítr z meteoslužby, ve 10 m."
     }
+  },
+  "card": {
+    "next_start": "Další start",
+    "no_start": "Žádný start není naplánován",
+    "skipped": "Odloženo",
+    "short_by": "chybí {value}",
+    "no_need": "zavlažování není potřeba",
+    "runs_for": "běželo by {duration}",
+    "never_watered": "nikdy nezavlažováno",
+    "last_watered": "naposledy zavlažováno {when}",
+    "calculate": "Spočítat nyní",
+    "water_now": "Zavlažit nyní",
+    "confirm_water": "Klepněte znovu pro zavlažení",
+    "watering": "Zavlažuje se",
+    "nothing_to_water": "Momentálně není co zavlažovat",
+    "loading": "Načítání zón…",
+    "manual": "ruční",
+    "disabled": "vypnuto",
+    "no_zones": "Zatím žádné zóny. Otevřete panel Smart Irrigation a jednu přidejte.",
+    "tomorrow": "zítra",
+    "yesterday": "včera",
+    "live_since": "Odhadnuto nyní z měření od {when}",
+    "reasons": {
+      "precipitation": "předpověď deště",
+      "days_between": "dny mezi zavlažováním",
+      "rain_sensor": "senzor deště",
+      "freeze": "mráz",
+      "wind": "vítr",
+      "soil_moisture": "vlhkost půdy",
+      "postponed": "odloženo vámi"
+    },
+    "editor": {
+      "title": "Název",
+      "zones": "Zóny (všechny, pokud prázdné)",
+      "show_next_start": "Zobrazit další start",
+      "compact": "Jen zóny, které by zavlažovaly"
+    }
   }
 }
