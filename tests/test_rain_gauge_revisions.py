@@ -105,10 +105,26 @@ def test_without_a_start_the_window_measures_itself():
     assert change([10.0, 12.0, 18.0], [_at(9), _at(10), _at(11)]) == pytest.approx(8.0)
 
 
-def test_without_timestamps_only_a_drop_to_zero_is_a_reset():
-    """Nothing can show midnight, so a drop to 0.2 is read as a revision."""
+def test_without_timestamps_a_drop_to_zero_or_below_half_is_a_reset():
+    """Nothing can show midnight. A drop to 0.2 from 5.0 used to be read as a
+    revision, which lost the rain after the reset until the old total was
+    passed again; below half the total, it is a reset (phase 1.5). A drop of a
+    third is still a revision."""
     assert change([5.0, 0.0, 1.0], None, start=4.0) == pytest.approx(2.0)
-    assert change([5.0, 0.2, 1.0], None, start=4.0) == pytest.approx(1.0)
+    assert change([5.0, 0.2, 1.0], None, start=4.0) == pytest.approx(2.0)
+    assert change([5.0, 3.5, 5.5], None, start=4.0) == pytest.approx(1.5)
+
+
+def test_a_small_drop_across_midnight_is_a_revision_of_a_long_total():
+    """A yearly total revised from 812.4 to 812.3 just after midnight is not
+    812.3 mm of new rain (phase 1.5)."""
+    stamps = [DAY + timedelta(hours=h) for h in (23, 24.25, 25)]
+    assert change(
+        [812.4, 812.3, 812.6],
+        stamps,
+        start=812.0,
+        start_stamp=DAY + timedelta(hours=22),
+    ) == pytest.approx(0.6)
 
 
 def test_timestamps_can_be_datetimes():

@@ -25,6 +25,14 @@ from .localize import localize
 _LOGGER = logging.getLogger(__name__)
 
 
+# A drop to below this share of the previous total is a counter reset even
+# away from midnight (see _cumulative_change).
+_RESET_RATIO = 0.5
+# A drop across midnight to at least this share of the previous total is a
+# revision of the total, not a reset (see _cumulative_change).
+_REVISION_RATIO = 0.9
+
+
 class CalculationMixin:
     """Weather aggregation and ET/bucket/duration calculation for the coordinator.
 
@@ -429,11 +437,23 @@ class CalculationMixin:
         mark, previous_day, total = start, _day(start_stamp), 0.0
         for index, value in enumerate(values):
             day = _day(stamps[index]) if index < len(stamps) else None
+            crossed_midnight = (
+                day is not None and previous_day is not None and day > previous_day
+            )
             if value >= mark:
                 total += value - mark
                 mark = value
-            elif value == 0 or (
-                day is not None and previous_day is not None and day > previous_day
+            elif (
+                value == 0
+                # Across midnight, a drop is the daily reset, unless it is a
+                # hair: a yearly or lifetime total revised from 812.4 to 812.3
+                # just after midnight is not 812.3 mm of new rain.
+                or (crossed_midnight and value < mark * _REVISION_RATIO)
+                # Within a day, a drop of more than half is a reset too: a
+                # container on UTC, or a gauge whose rain day starts at 9:00,
+                # resets away from local midnight, and taking that for a
+                # revision lost the rain until the old total was passed again.
+                or (not crossed_midnight and value < mark * _RESET_RATIO)
             ):
                 _LOGGER.debug(
                     "[_aggregate_sensor_data]: counter reset (%s after %s)", value, mark
