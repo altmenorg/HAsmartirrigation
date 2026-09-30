@@ -77,3 +77,26 @@ def test_nothing_to_water_starts_nothing():
     with patch.object(dt_util, "utcnow", return_value=_at(6, 30)):
         coordinator._catch_up_missed_start(TIME, 0)
     coordinator._fire_start_event.assert_not_called()
+
+
+def test_a_restart_after_today_s_run_does_not_run_it_again():
+    coordinator = _Coordinator()
+    coordinator._start_event_fired_today = True
+    with patch.object(dt_util, "utcnow", return_value=_at(6, 30)):
+        coordinator._catch_up_missed_start(TIME, 3600)
+    coordinator._fire_start_event.assert_not_called()
+
+
+def test_the_night_run_for_tomorrow_is_not_blocked_by_this_morning_s():
+    coordinator = _Coordinator()
+    coordinator._start_event_fired_today = True
+    sunrise = _at(6) + timedelta(days=1)
+    with (
+        patch.object(dt_util, "utcnow", return_value=_at(23)),
+        patch(
+            "custom_components.smart_irrigation.triggers.get_astral_event_next",
+            return_value=sunrise,
+        ),
+    ):
+        coordinator._catch_up_missed_start(SUNRISE, 8 * 3600)
+    coordinator._fire_start_event.assert_called_once()

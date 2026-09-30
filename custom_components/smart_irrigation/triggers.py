@@ -205,6 +205,12 @@ class TriggersMixin:
         start = target - timedelta(seconds=total_duration)
         if not start <= now < target:
             return
+        if getattr(self, "_start_event_fired_today", False) and (
+            dt_util.as_local(target).date() == dt_util.as_local(now).date()
+        ):
+            # Today's run has gone already. The flag is persisted, so this also
+            # holds after a restart, when the triggers fired in memory are gone.
+            return
         _LOGGER.warning(
             "Start trigger '%s': the start (%s) has already gone by and the run "
             "should finish by %s, so it starts now",
