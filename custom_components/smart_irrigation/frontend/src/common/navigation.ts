@@ -21,7 +21,9 @@ export const getPath = () => {
   const parts = window.location.pathname.split("/");
 
   let path: Path = {
-    page: parts[2] || "general",
+    // The page that says what happens next, not a settings page set once
+    // (#871). firstUpdated navigates here too; this is what it reads.
+    page: parts[2] || "info",
     params: {},
   };
 
