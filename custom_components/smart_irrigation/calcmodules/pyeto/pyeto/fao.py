@@ -458,8 +458,23 @@ def net_out_lw_rad(tmin, tmax, sol_rad, cs_rad, avp):
     """
     tmp1 = STEFAN_BOLTZMANN_CONSTANT * ((math.pow(tmax, 4) + math.pow(tmin, 4)) / 2)
     tmp2 = 0.34 - (0.14 * math.sqrt(avp))
-    tmp3 = 1.35 * (sol_rad / cs_rad) - 0.35
+    tmp3 = cloudiness_factor(sol_rad, cs_rad)
     return tmp1 * tmp2 * tmp3
+
+
+def cloudiness_factor(sol_rad, cs_rad):
+    """The cloudiness term of FAO-56 Eq. 39, 1.35 Rs/Rso - 0.35, bounded.
+
+    Rs/Rso cannot exceed 1 (FAO-56, under Eq. 39), and ASCE-EWRI (2005) bounds
+    the whole term to [0.05, 1.0]. Unbounded, a window with no sun in it gave
+    -0.35 and turned the longwave loss into a gain, so a night had positive
+    evapotranspiration; a window of daylight only gave more than 1. With no
+    clear-sky radiation at all (polar night) the ratio has no meaning and the
+    division raised: ASCE's night-time value, 0.7, stands in.
+    """
+    if cs_rad is None or cs_rad <= 0:
+        return 0.7
+    return min(1.0, max(0.05, 1.35 * (sol_rad / cs_rad) - 0.35))
 
 
 def net_rad(ni_sw_rad, no_lw_rad):
