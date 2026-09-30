@@ -126,6 +126,16 @@ RUN_DURATION = "duration"
 CONF_DAYS_BETWEEN_IRRIGATION = "days_between_irrigation"
 CONF_DEFAULT_DAYS_BETWEEN_IRRIGATION = 0  # 0 = no restriction (default behavior)
 CONF_DAYS_SINCE_LAST_IRRIGATION = "days_since_last_irrigation"
+# How many days in a row the rain forecast has held the run back. Internal: not
+# a setting, and not sent by the panel.
+CONF_PRECIPITATION_SKIPS_IN_A_ROW = "precipitation_skips_in_a_row"
+# After this many days held back by a forecast in a row, the run goes ahead:
+# showers that keep being forecast and keep missing must not dry a zone out.
+MAX_PRECIPITATION_SKIPS_IN_A_ROW = 2
+# The forecast only holds a run back if the rain it expects covers at least this
+# share of the largest deficit among the zones that would water: 3 mm forecast
+# is no reason to hold back a zone 25 mm short.
+PRECIPITATION_SKIP_DEFICIT_SHARE = 0.5
 CONF_DEFAULT_DAYS_SINCE_LAST_IRRIGATION = 0
 
 # Enhanced Scheduling Configuration

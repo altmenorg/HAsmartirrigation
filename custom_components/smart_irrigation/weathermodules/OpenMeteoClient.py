@@ -50,6 +50,7 @@ OpenMeteo_daily_vars = [
     "temperature_2m_mean",
     "wind_speed_10m_max",
     "precipitation_sum",
+    "precipitation_probability_max",
     "shortwave_radiation_sum",
     "et0_fao_evapotranspiration",
 ]
@@ -585,6 +586,10 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
                     daily["wind_speed_10m_max"][i] * WIND_10M_TO_2M
                 )
                 parsed_data[MAPPING_PRECIPITATION] = daily["precipitation_sum"][i]
+                # How likely that rain is, in %, for the forecast skip.
+                probability = daily.get("precipitation_probability_max", [])
+                if i < len(probability) and probability[i] is not None:
+                    parsed_data["precipitation_probability"] = probability[i]
                 # shortwave_radiation_sum is already MJ/m²/day (what pyETO wants)
                 if daily.get("shortwave_radiation_sum") is not None:
                     parsed_data[MAPPING_SOLRAD] = daily["shortwave_radiation_sum"][i]

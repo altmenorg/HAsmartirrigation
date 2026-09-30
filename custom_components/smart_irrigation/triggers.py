@@ -457,6 +457,11 @@ class TriggersMixin:
                     }
                     skip_reason = evaluation["reason"]
                     self._watering_decision_today = not evaluation["should_skip"]
+                    # Count the days the forecast holds the run back, so that
+                    # showers forecast day after day cannot hold it back for
+                    # ever (skip_conditions.py).
+                    if skip_reason == "precipitation":
+                        await self._count_precipitation_skip()
                     if skip_reason is not None:
                         _LOGGER.info(
                             "Today is not a watering day (%s); start triggers "
@@ -548,6 +553,9 @@ class TriggersMixin:
                 # slipped by up to days-between each time.
                 if await self._any_zone_to_water():
                     await self._reset_days_since_irrigation()
+                    await self.store.async_update_config(
+                        {const.CONF_PRECIPITATION_SKIPS_IN_A_ROW: 0}
+                    )
                 else:
                     _LOGGER.info(
                         "Trigger '%s' fired with nothing to water; the days since "
@@ -573,6 +581,18 @@ class TriggersMixin:
                 )
 
         self.hass.async_create_task(check_and_fire())
+
+    async def _count_precipitation_skip(self) -> None:
+        """One more day held back by the forecast. Bookkeeping only: a failure
+        here must not decide the day, so it is logged and left."""
+        try:
+            config = await self.store.async_get_config()
+            count = int(config.get(const.CONF_PRECIPITATION_SKIPS_IN_A_ROW, 0) or 0)
+            await self.store.async_update_config(
+                {const.CONF_PRECIPITATION_SKIPS_IN_A_ROW: count + 1}
+            )
+        except Exception as ex:  # noqa: BLE001 - see docstring
+            _LOGGER.warning("Could not count the day held back by rain: %s", ex)
 
     async def _any_zone_to_water(self) -> bool:
         """Whether a zone that is not disabled has a duration above zero."""

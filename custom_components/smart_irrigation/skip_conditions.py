@@ -269,30 +269,78 @@ class SkipConditionsMixin:
 
             # Check precipitation for today and tomorrow
             total_precipitation = 0.0
+            # The rain to expect: each day's forecast weighted by how likely it
+            # is, when the service says. 10 mm at 30% is not 10 mm.
+            expected_precipitation = 0.0
             for day_data in forecast_data[:2]:  # today (index 0) + tomorrow
-                if const.MAPPING_PRECIPITATION in day_data:
-                    total_precipitation += day_data[const.MAPPING_PRECIPITATION]
+                millimetres = day_data.get(const.MAPPING_PRECIPITATION) or 0.0
+                total_precipitation += millimetres
+                probability = day_data.get("precipitation_probability")
+                if probability is not None:
+                    millimetres *= min(100.0, max(0.0, float(probability))) / 100.0
+                expected_precipitation += millimetres
 
             _LOGGER.debug(
-                "Forecast precipitation: %.1f mm (threshold: %.1f mm)",
+                "Forecast precipitation: %.1f mm, %.1f mm to expect "
+                "(threshold: %.1f mm)",
                 total_precipitation,
+                expected_precipitation,
                 threshold_mm,
             )
 
             result["forecast_mm"] = total_precipitation
-            if total_precipitation >= threshold_mm:
-                _LOGGER.info(
-                    "Skipping irrigation due to forecasted precipitation: %.1f mm (threshold: %.1f mm)",
-                    total_precipitation,
-                    threshold_mm,
-                )
-                result["skip"] = True
+            result["expected_mm"] = expected_precipitation
+            if expected_precipitation >= threshold_mm:
+                deficit = await self._largest_deficit_to_water()
+                skips = int(config.get(const.CONF_PRECIPITATION_SKIPS_IN_A_ROW, 0) or 0)
+                result["deficit_mm"] = deficit
+                result["skips_in_a_row"] = skips
+                if skips >= const.MAX_PRECIPITATION_SKIPS_IN_A_ROW:
+                    # Held back that many days already: the forecast has been
+                    # wrong often enough, and a zone must not dry out on it.
+                    result["overridden"] = "skips_in_a_row"
+                    _LOGGER.info(
+                        "Rain is forecast again (%.1f mm), but the run was held "
+                        "back %s days in a row already; watering",
+                        expected_precipitation,
+                        skips,
+                    )
+                elif (
+                    deficit is not None
+                    and expected_precipitation
+                    < const.PRECIPITATION_SKIP_DEFICIT_SHARE * deficit
+                ):
+                    result["overridden"] = "deficit"
+                    _LOGGER.info(
+                        "Rain is forecast (%.1f mm), too little for a zone "
+                        "%.1f mm short; watering",
+                        expected_precipitation,
+                        deficit,
+                    )
+                else:
+                    _LOGGER.info(
+                        "Skipping irrigation due to forecasted precipitation: "
+                        "%.1f mm (threshold: %.1f mm)",
+                        expected_precipitation,
+                        threshold_mm,
+                    )
+                    result["skip"] = True
 
         except Exception as e:
             _LOGGER.warning("Error checking precipitation forecast: %s", e)
             result["available"] = False
 
         return result
+
+    async def _largest_deficit_to_water(self):
+        """The largest deficit, in mm, among the zones that would water, or None."""
+        deficits = [
+            -float(zone.get(const.ZONE_BUCKET) or 0.0)
+            for zone in await self.store.async_get_zones()
+            if zone.get(const.ZONE_STATE) != const.ZONE_STATE_DISABLED
+            and (zone.get(const.ZONE_DURATION) or 0) > 0
+        ]
+        return max(deficits) if deficits else None
 
     def _entity_reading(self, entity_id):
         """``(value, unit)`` of a numeric entity, or None if it has none.

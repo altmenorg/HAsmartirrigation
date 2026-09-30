@@ -583,6 +583,7 @@ class Config:
     days_since_last_irrigation = attr.ib(
         type=int, default=CONF_DEFAULT_DAYS_SINCE_LAST_IRRIGATION
     )
+    precipitation_skips_in_a_row = attr.ib(type=int, default=0)
     seasonal_adjustments = attr.ib(type=list, default=CONF_DEFAULT_SEASONAL_ADJUSTMENTS)
     recurring_schedules = attr.ib(type=list, default=CONF_DEFAULT_RECURRING_SCHEDULES)
     # Manual coordinates (used for weather data instead of HA's location).
@@ -1038,6 +1039,9 @@ class SmartIrrigationStorage:
                 days_since_last_irrigation=data["config"].get(
                     CONF_DAYS_SINCE_LAST_IRRIGATION,
                     CONF_DEFAULT_DAYS_SINCE_LAST_IRRIGATION,
+                ),
+                precipitation_skips_in_a_row=data["config"].get(
+                    "precipitation_skips_in_a_row", 0
                 ),
                 # Manual coordinates are persisted by _data_to_save (attr.asdict)
                 # but must be read back here too, otherwise they reset to defaults
