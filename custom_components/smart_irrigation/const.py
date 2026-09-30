@@ -511,6 +511,13 @@ DAILY_CONTEXT_MIN_HOURS = 20
 # How long the readings are kept after every zone has consumed them, in hours:
 # what a short window needs to read a whole day.
 DAILY_CONTEXT_HOURS = 24
+# A window longer than this, in hours, is priced one day at a time by the daily
+# equation (see _days_of_the_window).
+DAILY_SPLIT_MIN_HOURS = 28
+# Weather data keys: the days of a long window, each (hours, weather), and the
+# day a set of weather belongs to.
+MAPPING_DATA_DAYS = "data_days"
+MAPPING_DATA_DAY = "data_day"
 # What a sensor can plausibly report, after conversion to the units the
 # calculation works in. A reading outside is a glitch (a Zigbee sensor reporting
 # 85 C, a gauge reporting -1 mm), and one such reading set a whole day's maximum

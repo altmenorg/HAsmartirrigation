@@ -16,6 +16,7 @@ from custom_components.smart_irrigation.const import (
     CONF_PYETO_COASTAL,
     CONF_PYETO_FORECAST_DAYS,
     CONF_PYETO_SOLRAD_BEHAVIOR,
+    MAPPING_DATA_DAY,
     MAPPING_DATA_MULTIPLIER,
     MAPPING_DATA_SOLRAD_FACTOR,
 )
@@ -221,6 +222,10 @@ class PyETO(SmartIrrigationCalculationModule):
         """
         if day is not None:
             return day
+        # The day of a long window's slice, when the caller split it by day.
+        known = (weather_data or {}).get(MAPPING_DATA_DAY)
+        if isinstance(known, datetime.date):
+            return known
         now = datetime.datetime.now()
         multiplier = (weather_data or {}).get(MAPPING_DATA_MULTIPLIER)
         try:

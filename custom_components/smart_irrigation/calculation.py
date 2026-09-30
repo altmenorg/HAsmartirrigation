@@ -328,6 +328,14 @@ class CalculationMixin:
         # A window of known length only: zero is an interval nobody could read.
         if 0 < hour_multiplier * 24.0 < const.DAILY_CONTEXT_MIN_HOURS:
             self._daily_context(mapping, buffered, window_end, resultdata, audit)
+        elif hour_multiplier * 24.0 > const.DAILY_SPLIT_MIN_HOURS:
+            days = self._days_of_the_window(
+                mapping, data, window_end, hour_multiplier * 24.0
+            )
+            if days:
+                resultdata[const.MAPPING_DATA_DAYS] = days
+                if audit is not None:
+                    audit["days"] = [round(hours, 2) for hours, _ in days]
 
         rain = await self._weather_service_rain(mapping, *rain_window)
         if rain is not None:
@@ -414,6 +422,78 @@ class CalculationMixin:
                 "hours": const.DAILY_CONTEXT_HOURS,
                 "fields": widened,
             }
+
+    def _days_of_the_window(self, mapping, data, window_end, window_hours):
+        """A long window as the days it spans, each ``(hours, weather)``.
+
+        The daily equation prices a day. A window of several days (a
+        calculation after a few days down) handed it the extremes and the mean
+        sun of all of them as one day: three days of 10/25, 14/30 and 12/28 C
+        priced as a 10/30 day came out about 13% high. Each slice of 24 hours,
+        from the end of the window back, gets its own weather instead, and the
+        engine's rates are averaged by the hours each slice covers. A slice
+        without two temperature readings is left out of the average.
+        """
+        mappings = mapping.get(const.MAPPING_MAPPINGS) or {}
+        days = []
+        remaining = window_hours
+        end = window_end
+        while remaining > 0:
+            hours = min(24.0, remaining)
+            start = end - timedelta(hours=hours)
+            records = [
+                record
+                for record in self._readings_after(data, start)
+                if isinstance(record, dict)
+                and (self._stamp_of(record) is None or self._stamp_of(record) <= end)
+            ]
+            weather = self._weather_of_a_day(records, mappings)
+            if weather is not None:
+                weather[const.MAPPING_DATA_DAY] = (
+                    start + timedelta(hours=hours / 2.0)
+                ).date()
+                days.append((hours, weather))
+            remaining -= hours
+            end = start
+        return days if len(days) > 1 else None
+
+    @staticmethod
+    def _stamp_of(record):
+        try:
+            return parse_datetime(record.get(const.RETRIEVED_AT))
+        except (ValueError, TypeError):
+            return None
+
+    def _weather_of_a_day(self, records, mappings):
+        """The daily equation's inputs over some readings, or None without a
+        temperature range to read."""
+        values, stamps = self._group_data_by_sensor(records)
+        temperatures = [
+            float(v) for v in values.get(const.MAPPING_TEMPERATURE, []) if v is not None
+        ]
+        if len(temperatures) < 2:
+            return None
+        weather = {
+            const.MAPPING_MIN_TEMP: min(temperatures),
+            const.MAPPING_MAX_TEMP: max(temperatures),
+        }
+        for key in self._DAILY_CONTEXT_FIELDS:
+            readings = [v for v in values.get(key, []) if v is not None]
+            if not readings:
+                continue
+            the_map = mappings.get(key)
+            aggregate = (
+                the_map.get(const.MAPPING_CONF_AGGREGATE)
+                if isinstance(the_map, dict)
+                else None
+            ) or const.MAPPING_CONF_AGGREGATE_OPTIONS_DEFAULT
+            if aggregate not in (
+                const.MAPPING_CONF_AGGREGATE_AVERAGE,
+                const.MAPPING_CONF_AGGREGATE_RIEMANNSUM,
+            ):
+                continue
+            weather[key] = self._time_weighted_mean(readings, stamps.get(key))
+        return weather
 
     # --- calculation audit log helpers (#12) ---
 
@@ -1771,10 +1851,24 @@ class CalculationMixin:
                 delta = -hourly[0]
             else:
                 weatherdata = self._under_glass(zone, weatherdata)
-                # pyeto expects pressure in hpa, solar radiation in mj/m2/day and wind speed in m/s
-                delta = modinst.calculate(
-                    weather_data=weatherdata, forecast_data=forecastdata
-                )
+                days = weatherdata.get(const.MAPPING_DATA_DAYS)
+                if days and not getattr(modinst, "forecast_days", 0):
+                    # A long window, priced one day at a time: the rate is the
+                    # days' rates averaged by the hours each covers, and is
+                    # scaled to the window below as any rate is.
+                    delta = sum(
+                        hours
+                        * modinst.calculate(
+                            weather_data={**weatherdata, **weather},
+                            forecast_data=None,
+                        )
+                        for hours, weather in days
+                    ) / sum(hours for hours, _ in days)
+                else:
+                    # pyeto expects pressure in hpa, solar radiation in mj/m2/day and wind speed in m/s
+                    delta = modinst.calculate(
+                        weather_data=weatherdata, forecast_data=forecastdata
+                    )
             precip = self._precipitation_net_of_superseded(zone, weatherdata)
         elif m[const.MODULE_NAME] == "Static":
             delta = modinst.calculate()
@@ -2357,6 +2451,7 @@ class CalculationMixin:
                         const.MAPPING_DATA_MULTIPLIER,
                         const.MAPPING_DATA_WINDOW_END,
                         const.MAPPING_DATA_SOLRAD_FACTOR,
+                        const.MAPPING_DATA_DAYS,
                     )
                 },
                 "forecast_records": len(forecastdata) if forecastdata else 0,
