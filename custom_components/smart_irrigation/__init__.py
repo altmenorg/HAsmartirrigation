@@ -1055,9 +1055,11 @@ class SmartIrrigationCoordinator(
         for mapping in mappings:
             if not mapping.get(const.MAPPING_MAPPINGS):
                 continue
+            uses_entity = False
             for key, val in mapping.get(const.MAPPING_MAPPINGS).items():
                 if isinstance(val, str) or val.get(const.MAPPING_CONF_SENSOR) != entity:
                     continue
+                uses_entity = True
 
                 # add the mapping data with the new sensor value
                 # conversion to metric
@@ -1088,6 +1090,11 @@ class SmartIrrigationCoordinator(
                     key,
                 )
 
+            if not uses_entity:
+                # This group does not read the sensor that changed. Updating it
+                # anyway appended a static record and recalculated its zones on
+                # every change of any sensor of any group.
+                continue
             mapping_id = mapping.get(const.MAPPING_ID)
             if debounce > 0:
                 # Cancel any previously scheduled update for this mapping
