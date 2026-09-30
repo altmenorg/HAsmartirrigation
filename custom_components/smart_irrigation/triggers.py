@@ -22,6 +22,7 @@ from homeassistant.helpers.event import (
     async_track_sunset,
     async_track_time_change,
 )
+from homeassistant.helpers.sun import get_astral_event_next
 
 from . import const
 from .calcmodules.consumes import sourced_fields
@@ -133,6 +134,85 @@ class TriggersMixin:
             return
         await self._register_trigger(selected, total_duration)
         self.start_trigger_armed = bool(self._track_irrigation_triggers_unsub)
+        if selected.get(const.TRIGGER_CONF_ACCOUNT_FOR_DURATION, True):
+            self._catch_up_missed_start(
+                {
+                    const.TRIGGER_CONF_NAME: selected.get(
+                        const.TRIGGER_CONF_NAME, "Unnamed Trigger"
+                    ),
+                    const.TRIGGER_CONF_TYPE: selected.get(const.TRIGGER_CONF_TYPE),
+                    const.TRIGGER_CONF_OFFSET_MINUTES: selected.get(
+                        const.TRIGGER_CONF_OFFSET_MINUTES, 0
+                    ),
+                    const.TRIGGER_CONF_ACCOUNT_FOR_DURATION: True,
+                    const.TRIGGER_CONF_AT: selected.get(const.TRIGGER_CONF_AT),
+                },
+                total_duration,
+            )
+
+    def _start_target(self, trigger_info, now):
+        """When a duration-aware trigger wants the run finished, or None.
+
+        The next such moment from ``now``: the next sunrise or sunset plus the
+        offset, or the next time the clock shows ``at``. None for a trigger
+        type this does not know how to place (the solar azimuth).
+        """
+        trigger_type = trigger_info.get(const.TRIGGER_CONF_TYPE)
+        offset = timedelta(
+            minutes=trigger_info.get(const.TRIGGER_CONF_OFFSET_MINUTES) or 0
+        )
+        if trigger_type in (const.TRIGGER_TYPE_SUNRISE, const.TRIGGER_TYPE_SUNSET):
+            event = (
+                "sunrise" if trigger_type == const.TRIGGER_TYPE_SUNRISE else "sunset"
+            )
+            return get_astral_event_next(self.hass, event, now - offset) + offset
+        if trigger_type == const.TRIGGER_TYPE_TIME:
+            at = (
+                trigger_info.get(const.TRIGGER_CONF_AT) or const.TRIGGER_CONF_DEFAULT_AT
+            )
+            if not check_time(at):
+                return None
+            hours, minutes = (int(part) for part in at.split(":")[:2])
+            local = dt_util.as_local(now)
+            target = local.replace(hour=hours, minute=minutes, second=0, microsecond=0)
+            if target <= local:
+                target += timedelta(days=1)
+            return target
+        return None
+
+    def _catch_up_missed_start(self, trigger_info, total_duration) -> None:
+        """Start now a run whose start time has already gone by.
+
+        A trigger that finishes the run at a moment (sunrise, a clock time)
+        starts it that long before. When that start is already past as the
+        trigger is armed -- the run is longer than the time left before the
+        moment, the calculation runs inside the watering window, or Home
+        Assistant was restarting when the start came -- the tracker waits for
+        the next day and nothing runs today. If the moment itself is still
+        ahead, the run starts now: late, but before the moment it was meant to
+        be done by, which is better than a day without water.
+        """
+        if not total_duration or total_duration <= 0:
+            return
+        try:
+            now = dt_util.utcnow()
+            target = self._start_target(trigger_info, now)
+        except Exception as ex:  # noqa: BLE001 - arming must not fail over this
+            _LOGGER.debug("Could not place the start trigger's moment: %s", ex)
+            return
+        if target is None:
+            return
+        start = target - timedelta(seconds=total_duration)
+        if not start <= now < target:
+            return
+        _LOGGER.warning(
+            "Start trigger '%s': the start (%s) has already gone by and the run "
+            "should finish by %s, so it starts now",
+            trigger_info.get(const.TRIGGER_CONF_NAME),
+            dt_util.as_local(start).strftime("%H:%M"),
+            dt_util.as_local(target).strftime("%H:%M"),
+        )
+        self._fire_start_event(trigger_info)
 
     async def _register_trigger(self, trigger, total_duration):
         """Register one start trigger (sunrise / sunset / solar azimuth)."""
@@ -268,6 +348,7 @@ class TriggersMixin:
                 timedelta(seconds=0 - total_duration),
             )
             self.start_trigger_armed = True
+            self._catch_up_missed_start(legacy_trigger_info, total_duration)
             event_to_fire = f"{const.DOMAIN}_{const.EVENT_IRRIGATE_START}"
             _LOGGER.info(
                 "Legacy start irrigation event %s will fire at %s seconds before sunrise",
