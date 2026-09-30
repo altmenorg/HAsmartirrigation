@@ -1200,12 +1200,32 @@ class CalculationMixin:
         self._hourly_solar_estimated = estimated_solar
         return result
 
+    def _under_glass(self, zone, weatherdata):
+        """The weather data, told to dim an estimated sun for a greenhouse.
+
+        A greenhouse with no radiation or illuminance sensor gets its sun from
+        the temperature range, which describes the sky outside, and a hot
+        greenhouse day reaches the clear-sky cap: its ET came out about 40%
+        too high. The daily engine applies the glass's transmission to an
+        estimated sun only; a measured one is left as it was.
+        """
+        mapping = self.store.get_mapping(zone.get(const.ZONE_MAPPING))
+        if not (mapping or {}).get(const.MAPPING_GREENHOUSE):
+            return weatherdata
+        if (weatherdata or {}).get(const.MAPPING_SOLRAD) is not None:
+            return weatherdata
+        return {
+            **(weatherdata or {}),
+            const.MAPPING_DATA_SOLRAD_FACTOR: const.GREENHOUSE_TRANSMISSION,
+        }
+
     def _estimated_solar_series(self, mapping, since, modinst):
         """The sun of each hour worked out from the temperature range, or None.
 
         Not for a greenhouse: what reaches a plant under glass is not what the
         sky delivers, so a zone under glass without a radiation or illuminance
-        sensor keeps the daily equation, which at least reads its own group.
+        sensor keeps the daily equation, which dims the sun it estimates by the
+        glass's transmission (see ``_under_glass``).
         """
         if (mapping or {}).get(const.MAPPING_GREENHOUSE):
             return None
@@ -1631,6 +1651,7 @@ class CalculationMixin:
             if hourly is not None:
                 delta = -hourly[0]
             else:
+                weatherdata = self._under_glass(zone, weatherdata)
                 # pyeto expects pressure in hpa, solar radiation in mj/m2/day and wind speed in m/s
                 delta = modinst.calculate(
                     weather_data=weatherdata, forecast_data=forecastdata
@@ -2216,6 +2237,7 @@ class CalculationMixin:
                     not in (
                         const.MAPPING_DATA_MULTIPLIER,
                         const.MAPPING_DATA_WINDOW_END,
+                        const.MAPPING_DATA_SOLRAD_FACTOR,
                     )
                 },
                 "forecast_records": len(forecastdata) if forecastdata else 0,

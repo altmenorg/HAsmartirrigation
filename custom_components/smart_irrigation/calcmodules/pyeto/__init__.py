@@ -17,6 +17,7 @@ from custom_components.smart_irrigation.const import (
     CONF_PYETO_FORECAST_DAYS,
     CONF_PYETO_SOLRAD_BEHAVIOR,
     MAPPING_DATA_MULTIPLIER,
+    MAPPING_DATA_SOLRAD_FACTOR,
 )
 
 from .pyeto import (
@@ -296,7 +297,7 @@ class PyETO(SmartIrrigationCalculationModule):
                 if sol_rad is None:
                     sol_rad = sol_rad_from_t(
                         et_radvar, cs_radvar, temp_c_min, temp_c_max, self._coastal
-                    )
+                    ) * float(weather_data.get(MAPPING_DATA_SOLRAD_FACTOR) or 1.0)
                     _LOGGER.debug(
                         "[pyETO: calculate_et_for_day] no solar radiation provided; "
                         "estimated from temperature: %s",

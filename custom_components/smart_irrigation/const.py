@@ -494,6 +494,13 @@ MAPPING_DATA_LAST_CALCULATION = "data_last_calculation"
 # asking a weather service about, so the settings that assume open air stop
 # applying to the zones that use this group.
 MAPPING_GREENHOUSE = "greenhouse"
+# The share of the sky's sun that reaches the plants under glass, for a
+# greenhouse group with no radiation or illuminance sensor of its own: the sun is
+# then estimated from the temperature range, which describes the sky outside.
+# Glass and its frame let through roughly 60 to 70% (FAO-56 on protected crops).
+GREENHOUSE_TRANSMISSION = 0.65
+# Weather data key: a factor applied to an estimated solar radiation.
+MAPPING_DATA_SOLRAD_FACTOR = "data_solrad_factor"
 # Which engine this group's sources feed. The calculation reads it here in
 # preference to the zone, so "this group produces ET this way" is a property
 # of the group and the editor can show only the sources that engine consumes.
