@@ -778,6 +778,34 @@ class CalculationMixin:
         )
         return precip
 
+    @staticmethod
+    def _time_weighted_mean(values, timestamps):
+        """The mean of a field over the time its readings span.
+
+        A sensor reports on change, so its readings bunch up when the value is
+        moving and thin out when it is steady: a plain mean gives the moving
+        part more weight than the time it lasted. Each reading counts for the
+        time it stood, by the trapezoidal rule already used for the Riemann
+        sum. Without usable timestamps it is the plain mean, as before.
+        """
+        values = [float(v) for v in values]
+        if len(values) < 2 or not timestamps or len(timestamps) != len(values):
+            return statistics.mean(values)
+        try:
+            times = [parse_datetime(t) for t in timestamps]
+        except (ValueError, TypeError):
+            return statistics.mean(values)
+        if any(t is None for t in times):
+            return statistics.mean(values)
+        area = span = 0.0
+        for i in range(len(values) - 1):
+            dt = (times[i + 1] - times[i]).total_seconds()
+            if dt <= 0:
+                continue
+            area += (values[i] + values[i + 1]) / 2.0 * dt
+            span += dt
+        return area / span if span > 0 else statistics.mean(values)
+
     async def _aggregate_sensor_data(
         self,
         data_by_sensor,
@@ -880,7 +908,9 @@ class CalculationMixin:
                 resultdata[key] = d[0]
 
             elif aggregate == const.MAPPING_CONF_AGGREGATE_AVERAGE:
-                resultdata[key] = statistics.mean(d)
+                resultdata[key] = self._time_weighted_mean(
+                    d, (timestamps_by_sensor or {}).get(key)
+                )
             elif aggregate == const.MAPPING_CONF_AGGREGATE_FIRST:
                 resultdata[key] = d[0]
             elif aggregate == const.MAPPING_CONF_AGGREGATE_LAST:
