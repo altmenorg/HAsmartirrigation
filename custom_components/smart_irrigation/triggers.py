@@ -541,11 +541,21 @@ class TriggersMixin:
                 ):
                     self._spawn_valve_run(self.async_run_direct_valves())
 
-                # On the first actual fire of the day, mark the day as watered
-                # and reset the days-since counter (once, not per trigger).
+                # Only a run that waters something makes today a watering day
+                # for days-between. A start with every duration at zero, or
+                # every zone held back above, used to reset the counter too, so
+                # the first day with a real deficit was vetoed and watering
+                # slipped by up to days-between each time.
+                if await self._any_zone_to_water():
+                    await self._reset_days_since_irrigation()
+                else:
+                    _LOGGER.info(
+                        "Trigger '%s' fired with nothing to water; the days since "
+                        "the last irrigation keep counting",
+                        name,
+                    )
                 if not self._start_event_fired_today:
                     self._start_event_fired_today = True
-                    await self._reset_days_since_irrigation()
                     await self.store.async_update_config(
                         {const.START_EVENT_FIRED_TODAY: True}
                     )
@@ -563,6 +573,16 @@ class TriggersMixin:
                 )
 
         self.hass.async_create_task(check_and_fire())
+
+    async def _any_zone_to_water(self) -> bool:
+        """Whether a zone that is not disabled has a duration above zero."""
+        for zone in await self.store.async_get_zones():
+            if zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED:
+                continue
+            duration = zone.get(const.ZONE_DURATION)
+            if isinstance(duration, (int, float)) and duration > 0:
+                return True
+        return False
 
     async def _hold_back_zones_exposed_to_rain(self, sheltered: set) -> None:
         """Zero this run for every zone the forecast rain will reach.

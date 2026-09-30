@@ -64,6 +64,11 @@ class _Coordinator(TriggersMixin, SkipConditionsMixin):
         self._track_irrigation_triggers_unsub = []
         self.start_trigger_armed = False
 
+    async def _any_zone_to_water(self):
+        """Every start here waters something: a start with nothing to water
+        leaves the counter alone, which test_phase0_decision covers."""
+        return True
+
     @property
     def days_since(self):
         return self.store._config[const.CONF_DAYS_SINCE_LAST_IRRIGATION]

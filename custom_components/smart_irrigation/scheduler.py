@@ -144,12 +144,12 @@ class RecurringScheduleManager:
         time_str = schedule[const.SCHEDULE_CONF_TIME]
         hour, minute = map(int, time_str.split(":"))
 
+        @callback
+        def execute(now):
+            self._execute_schedule(schedule, now)
+
         return async_track_time_change(
-            self.hass,
-            lambda now: self._execute_schedule(schedule, now),
-            hour=hour,
-            minute=minute,
-            second=0,
+            self.hass, execute, hour=hour, minute=minute, second=0
         )
 
     async def _setup_weekly_tracker(self, schedule: dict[str, Any]) -> Any:
@@ -169,6 +169,7 @@ class RecurringScheduleManager:
             "sunday": 6,
         }
 
+        @callback
         def check_and_execute(now):
             current_weekday = now.weekday()
             day_names = [day.lower() for day in days_of_week]
@@ -187,6 +188,7 @@ class RecurringScheduleManager:
         hour, minute = map(int, time_str.split(":"))
         day_of_month = schedule.get(const.SCHEDULE_CONF_DAY_OF_MONTH, 1)
 
+        @callback
         def check_and_execute(now):
             if now.day == day_of_month:
                 self._execute_schedule(schedule, now)
@@ -200,9 +202,11 @@ class RecurringScheduleManager:
         interval_hours = schedule.get(const.SCHEDULE_CONF_INTERVAL_HOURS, 24)
         interval_delta = datetime.timedelta(hours=interval_hours)
 
-        return async_track_time_interval(
-            self.hass, lambda now: self._execute_schedule(schedule, now), interval_delta
-        )
+        @callback
+        def execute(now):
+            self._execute_schedule(schedule, now)
+
+        return async_track_time_interval(self.hass, execute, interval_delta)
 
     async def _remove_schedule_tracker(self, schedule_id: str) -> None:
         """Remove a schedule tracker."""
@@ -296,8 +300,20 @@ class RecurringScheduleManager:
                 else:
                     for zone_id in zones:
                         await self.coordinator._async_update_zone(zone_id)
+            elif action == "irrigate" and zones == "all":
+                # The same path as a start trigger: the skip conditions, the
+                # hold-backs, direct valve control and the days-between counter
+                # all apply. Firing the event directly bypassed every one of
+                # them and could water twice on a day the trigger also ran.
+                self.coordinator._fire_start_event(
+                    {
+                        const.TRIGGER_CONF_NAME: f"Schedule: {schedule_name}",
+                        const.TRIGGER_CONF_TYPE: "recurring_schedule",
+                    }
+                )
             elif action == "irrigate":
-                # Fire irrigation event for specified zones
+                # A subset of zones has no start path of its own: the event is
+                # for an automation that runs those zones itself.
                 event_data = {
                     "triggered_by": "recurring_schedule",
                     "schedule_name": schedule_name,
