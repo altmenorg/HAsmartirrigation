@@ -104,6 +104,18 @@ class RecurringScheduleManager:
 
         _LOGGER.info("Deleted recurring schedule: %s", schedule_id)
 
+    async def _save_schedules(self) -> None:
+        """Save the schedules to the configuration.
+
+        Called by create, update and delete since the schedules were added, and
+        never written: every one of them raised an AttributeError, so no
+        recurring schedule could ever be created. Found by creating one on a
+        real install.
+        """
+        await self.coordinator.store.async_update_config(
+            {const.CONF_RECURRING_SCHEDULES: self._schedules}
+        )
+
     async def _setup_schedule_trackers(self) -> None:
         """Set up all schedule trackers."""
         # Clear existing trackers
