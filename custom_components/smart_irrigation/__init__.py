@@ -1475,7 +1475,17 @@ class SmartIrrigationCoordinator(
                     mapping_id,
                 )
                 continue
-            await self._async_record_weather_for_mapping(mapping_id)
+            try:
+                await self._async_record_weather_for_mapping(mapping_id)
+            except Exception as ex:  # noqa: BLE001 - one group, not the whole pass
+                # A weather-service error (OpenWeatherMap raises on a bad
+                # response) used to escape here and leave every group after
+                # this one without a reading for the hour.
+                _LOGGER.error(
+                    "Could not record the weather for sensor group %s: %s",
+                    mapping_id,
+                    ex,
+                )
 
     async def _async_record_weather_for_mapping(self, mapping_id):
         """Read a sensor group's sources once and append the reading to its buffer.

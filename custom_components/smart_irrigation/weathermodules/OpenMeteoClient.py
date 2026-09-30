@@ -5,6 +5,7 @@ import json
 import logging
 import math
 import sys
+import time
 
 import requests
 
@@ -159,12 +160,26 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
         return params
 
     def _request(self, params):
-        """GET the forecast endpoint, retrying; the decoded response or None."""
+        """GET the forecast endpoint, retrying; the decoded response or None.
+
+        Retried only when another try can help: a timeout, a server error or
+        a rate limit, and after a growing pause. Retrying at once hit a rate
+        limit again straight away, and a request error cannot change.
+        """
         req = None
-        for _ in range(RETRY_TIMES):
-            req = requests.get(OpenMeteo_URL, params=params, timeout=60)
-            if req.status_code == 200:
-                break
+        for attempt in range(RETRY_TIMES):
+            try:
+                req = requests.get(OpenMeteo_URL, params=params, timeout=60)
+            except requests.RequestException as ex:
+                req = None
+                _LOGGER.warning("Open-Meteo request failed: %s", ex)
+            else:
+                if req.status_code == 200:
+                    break
+                if req.status_code < 500 and req.status_code != 429:
+                    break
+            if attempt < RETRY_TIMES - 1:
+                time.sleep(2**attempt)
         if req is None or req.status_code != 200:
             _LOGGER.error(
                 "Open-Meteo API returned error status code: %s",
