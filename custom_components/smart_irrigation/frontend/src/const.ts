@@ -1,4 +1,4 @@
-export const VERSION = "v2026.9.3-beta5";
+export const VERSION = "v2026.9.3-beta6";
 export const REPO = "https://github.com/altmenorg/HAsmartirrigation";
 export const ISSUES_URL = REPO + "/issues";
 
