@@ -2100,8 +2100,15 @@ class SmartIrrigationCoordinator(
                     )
                     return
 
+            # By name: `prune` was added before `dry_run` in the signature, and
+            # passed by position the dry run landed in `prune` and the
+            # "simulation" wrote its result for real.
             result = await self.async_calculate_zone(
-                zone_id, weatherdata, forecastdata, delete_weather_data, dry_run
+                zone_id,
+                weatherdata,
+                forecastdata,
+                delete_weather_data=delete_weather_data,
+                dry_run=dry_run,
             )
             if dry_run:
                 # Nothing was written, so there is no new start event to register

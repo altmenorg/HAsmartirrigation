@@ -243,8 +243,12 @@ async def test_dry_run_zone_calculation_skips_the_start_event():
     # dry_run must reach async_calculate_zone, which is the single place that
     # enforces a dry run does not consume the collected data (covered by
     # test_dry_run_zone_writes_nothing).
-    args = coord.async_calculate_zone.call_args[0]
-    assert args[4] is True, "dry_run must reach async_calculate_zone"
+    # By name. This used to check the fifth positional argument, which was
+    # dry_run until `prune` was inserted before it: the test kept passing while
+    # the dry run landed in `prune` and one zone's "simulation" wrote its
+    # result for real (found on a real install).
+    call = coord.async_calculate_zone.call_args
+    assert call.kwargs.get("dry_run") is True, "dry_run must reach async_calculate_zone"
 
 
 async def test_calculate_all_honours_dry_run():
