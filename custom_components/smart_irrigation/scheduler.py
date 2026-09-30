@@ -416,6 +416,34 @@ class SeasonalAdjustmentManager:
 
         _LOGGER.info("Deleted seasonal adjustment: %s", adjustment_id)
 
+    @staticmethod
+    def _covers_zone(zones, zone_id) -> bool:
+        """Whether an adjustment's ``zones`` includes this zone.
+
+        The service offers that field as text, so "0" or "0, 2" is what the
+        form stores, beside the list a YAML call sends. Looking an int zone id
+        up in a string raised, and the calculation, which must not fail on the
+        season, then quietly applied nothing at all (#872).
+        """
+        if zones is None or (
+            isinstance(zones, str) and zones.strip().lower() in ("", "all")
+        ):
+            return True
+        if isinstance(zones, str):
+            zones = zones.replace(",", " ").split()
+        elif not isinstance(zones, (list, tuple, set)):
+            zones = [zones]
+        wanted = set()
+        for item in zones:
+            try:
+                wanted.add(int(item))
+            except (TypeError, ValueError):
+                continue
+        try:
+            return int(zone_id) in wanted
+        except (TypeError, ValueError):
+            return False
+
     def active_adjustments(self, zone_id, month: int | None = None) -> list:
         """The enabled adjustments that apply to a zone in a month (now by default)."""
         month = month or datetime.datetime.now().month
@@ -423,8 +451,9 @@ class SeasonalAdjustmentManager:
         for adjustment in self._adjustments:
             if not adjustment.get(const.SEASONAL_CONF_ENABLED, True):
                 continue
-            adjustment_zones = adjustment.get(const.SEASONAL_CONF_ZONES, "all")
-            if adjustment_zones != "all" and zone_id not in adjustment_zones:
+            if not self._covers_zone(
+                adjustment.get(const.SEASONAL_CONF_ZONES, "all"), zone_id
+            ):
                 continue
             month_start = adjustment.get(const.SEASONAL_CONF_MONTH_START, 1)
             month_end = adjustment.get(const.SEASONAL_CONF_MONTH_END, 12)

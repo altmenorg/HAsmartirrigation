@@ -143,3 +143,34 @@ def test_without_a_manager_the_season_is_neutral():
 
     assert _Coordinator(None).irrigation_threshold_mm(zone) == 10.0
     assert _Coordinator(None)._seasonal_factors(zone) == (1.0, 0.0)
+
+
+@pytest.mark.parametrize("zones", ["2", " 2 ", "1, 2", "2,3", 2, ["2"], [2]])
+def test_zones_typed_in_the_service_form_apply(zones):
+    """The service offers ``zones`` as text: "2" used to raise inside the
+    calculation, which applied no season at all rather than fail (#872)."""
+    manager = _manager(
+        _adjustment(
+            **{
+                const.SEASONAL_CONF_ZONES: zones,
+                const.SEASONAL_CONF_MULTIPLIER_ADJUSTMENT: 2.0,
+            }
+        )
+    )
+
+    assert manager.seasonal_factors(2, month=7)[0] == 2.0
+    assert manager.seasonal_factors(5, month=7)[0] == 1.0
+
+
+@pytest.mark.parametrize("zones", ["all", "ALL", "", None])
+def test_all_zones_however_it_is_written(zones):
+    manager = _manager(
+        _adjustment(
+            **{
+                const.SEASONAL_CONF_ZONES: zones,
+                const.SEASONAL_CONF_MULTIPLIER_ADJUSTMENT: 2.0,
+            }
+        )
+    )
+
+    assert manager.seasonal_factors(5, month=7)[0] == 2.0
