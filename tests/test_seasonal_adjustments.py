@@ -174,3 +174,15 @@ def test_all_zones_however_it_is_written(zones):
     )
 
     assert manager.seasonal_factors(5, month=7)[0] == 2.0
+
+
+@pytest.mark.freeze_time("2026-10-01 00:05:00")
+def test_the_season_is_the_month_the_water_was_used_in():
+    """Just after midnight on the 1st, the day being calculated is still in
+    the previous month (audit 0.16)."""
+    daily = {const.MAPPING_DATA_MULTIPLIER: 1.0}
+
+    assert CalculationMixin._window_month(daily) == 9
+    assert CalculationMixin._window_month({}, hourly=(3.1, 24.0)) == 9
+    # With no window to speak of, it is the month of now.
+    assert CalculationMixin._window_month({}) == 10

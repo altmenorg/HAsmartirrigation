@@ -1651,7 +1651,15 @@ class CalculationMixin:
             crop_factor = 1.0
         # A seasonal multiplier adjustment scales the crop factor for the months
         # it covers.
-        crop_factor = crop_factor * self._seasonal_factors(zone)[0]
+        # The month is the one the window's water was used in, taken at its
+        # middle: the clock alone gave a calculation just after midnight on the
+        # 1st the new month's factor for the whole of the previous day.
+        crop_factor = (
+            crop_factor
+            * self._seasonal_factors(
+                zone, month=self._window_month(weatherdata, hourly)
+            )[0]
+        )
         delta = delta * crop_factor
         # The per-day water need of this zone, before interval scaling and
         # before precipitation. Unlike the bucket it does not depend on the
@@ -2073,13 +2081,31 @@ class CalculationMixin:
         threshold = max(0.0, float(threshold) + self._seasonal_factors(zone)[1])
         return threshold
 
-    def _seasonal_factors(self, zone):
+    @staticmethod
+    def _window_month(weatherdata, hourly=None) -> int:
+        """The month in the middle of the window a calculation covers."""
+        hours = 0.0
+        try:
+            if hourly is not None:
+                hours = float(hourly[1])
+            else:
+                hours = (
+                    float((weatherdata or {}).get(const.MAPPING_DATA_MULTIPLIER) or 0.0)
+                    * 24.0
+                )
+        except (TypeError, ValueError, IndexError):
+            hours = 0.0
+        return (datetime.now() - timedelta(hours=max(0.0, hours) / 2.0)).month
+
+    def _seasonal_factors(self, zone, month: int | None = None):
         """``(multiplier, threshold_offset_mm)`` of the season, neutral if none."""
         manager = getattr(self, "seasonal_adjustment_manager", None)
         if manager is None:
             return 1.0, 0.0
         try:
-            multiplier, offset = manager.seasonal_factors(zone.get(const.ZONE_ID))
+            multiplier, offset = manager.seasonal_factors(
+                zone.get(const.ZONE_ID), month
+            )
             return float(multiplier), float(offset)
         except Exception:  # noqa: BLE001 - never let the season break a calculation
             return 1.0, 0.0
