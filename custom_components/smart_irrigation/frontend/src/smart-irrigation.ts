@@ -180,7 +180,7 @@ export class SmartIrrigationPanel extends LitElement {
       !path.page ||
       !Object.values(EMenuItems).includes(path.page as EMenuItems)
     ) {
-      navigate(this, exportPath(EMenuItems.General));
+      navigate(this, exportPath(EMenuItems.Info));
       return;
     }
 
