@@ -641,9 +641,14 @@ class TriggersMixin:
     async def _hold_back_zones_with_moist_soil(self) -> None:
         """Zero this run for every zone whose soil moisture sensor reads moist.
 
-        Like a zone held back by forecast rain: the duration of this run goes
-        to 0 and the bucket is left alone, so the deficit rolls over to the
-        next run. A zone whose sensor cannot be read waters as usual.
+        The sensor measures the soil, the bucket models it, and where they
+        disagree the measurement is right: a zone whose soil reads moist is at
+        field capacity, so its bucket is set to it. The bucket used to be left
+        alone, which kept the modelled deficit and watered all of it the first
+        morning the sensor dipped below its threshold, on soil that had been
+        moist all along. Setting it is an assertion, like ``set_bucket``, so
+        the zone's next window starts now. A zone whose sensor cannot be read
+        waters as usual.
         """
         try:
             held = await self.async_zones_held_by_soil_moisture()
@@ -657,13 +662,21 @@ class TriggersMixin:
             if zone.get(const.ZONE_ID) not in held or not zone.get(const.ZONE_DURATION):
                 continue
             _LOGGER.info(
-                "Zone %s is held back: its soil moisture is at or above %s%%",
+                "Zone %s is held back: its soil moisture is at or above %s%%, "
+                "so its bucket is set to field capacity",
                 zone.get(const.ZONE_NAME),
                 zone.get(const.ZONE_SOIL_MOISTURE_THRESHOLD),
             )
-            await self.store.async_update_zone(
-                zone.get(const.ZONE_ID), {const.ZONE_DURATION: 0}
-            )
+            changes = {const.ZONE_DURATION: 0}
+            if (zone.get(const.ZONE_BUCKET) or 0.0) < 0:
+                changes.update(
+                    {
+                        const.ZONE_BUCKET: 0.0,
+                        const.ZONE_LAST_CONSUMED_AT: datetime.now(),
+                        const.ZONE_PRECIPITATION_SUPERSEDED: 0.0,
+                    }
+                )
+            await self.store.async_update_zone(zone.get(const.ZONE_ID), changes)
         async_dispatcher_send(self.hass, const.DOMAIN + "_update_frontend")
 
     async def _apply_rain_since_calculation(self):
@@ -742,12 +755,13 @@ class TriggersMixin:
         all. Where there is real rain data the bucket already carries it, and
         this would take the same rain off twice.
 
-        The factor comes from the sensor's own history (rain_history.py). The
-        bucket is left alone for the same reason as the rain-since-calculation
-        step above, and more so: this one does not know how many millimetres
-        fell, so it has nothing a balance in millimetres could be credited with.
-        A zone that is held back keeps its deficit and waters it off once the
-        weather turns.
+        The factor comes from the sensor's own history (rain_history.py). It
+        does not know how many millimetres fell, only that the rain covered
+        that share of the need, so the bucket is credited with that share of
+        its deficit, as rain that the balance, having no rain source, never
+        saw. It used to be left alone: the run was shortened today and the
+        whole deficit watered on the first dry day, so the sensor only ever
+        delayed the water.
 
         Returns the suppression that was applied, or None, so the panel can say
         what happened.
@@ -789,9 +803,13 @@ class TriggersMixin:
                 shortened,
                 duration,
             )
-            await self.store.async_update_zone(
-                zone.get(const.ZONE_ID), {const.ZONE_DURATION: shortened}
-            )
+            changes = {const.ZONE_DURATION: shortened}
+            bucket = zone.get(const.ZONE_BUCKET) or 0.0
+            if bucket < 0:
+                changes[const.ZONE_BUCKET] = (
+                    0.0 if factor > MAX_FACTOR else bucket * (1.0 - factor)
+                )
+            await self.store.async_update_zone(zone.get(const.ZONE_ID), changes)
             async_dispatcher_send(
                 self.hass, const.DOMAIN + "_config_updated", zone.get(const.ZONE_ID)
             )

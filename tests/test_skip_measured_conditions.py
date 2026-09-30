@@ -337,7 +337,10 @@ async def test_no_zone_with_a_sensor_is_off():
 
 
 @pytest.mark.asyncio
-async def test_a_moist_zone_sits_out_the_run_and_keeps_its_bucket(monkeypatch):
+async def test_a_moist_zone_sits_out_the_run_at_field_capacity(monkeypatch):
+    """The sensor measures the soil and the bucket models it: a moist reading
+    sets the bucket to field capacity. Keeping the modelled -6 mm watered it
+    all the first morning the sensor dipped below its threshold (phase 1.12)."""
     monkeypatch.setattr(
         "custom_components.smart_irrigation.triggers.async_dispatcher_send",
         lambda *args: None,
@@ -346,9 +349,13 @@ async def test_a_moist_zone_sits_out_the_run_and_keeps_its_bucket(monkeypatch):
 
     await coordinator._hold_back_zones_with_moist_soil()
 
-    coordinator.store.async_update_zone.assert_awaited_once_with(
-        1, {const.ZONE_DURATION: 0}
-    )
+    coordinator.store.async_update_zone.assert_awaited_once()
+    zone_id, changes = coordinator.store.async_update_zone.await_args.args
+    assert zone_id == 1
+    assert changes[const.ZONE_DURATION] == 0
+    assert changes[const.ZONE_BUCKET] == 0.0
+    # An assertion of the soil's state: the next window starts now.
+    assert const.ZONE_LAST_CONSUMED_AT in changes
 
 
 @pytest.mark.asyncio

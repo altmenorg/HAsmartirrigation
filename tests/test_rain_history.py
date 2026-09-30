@@ -348,3 +348,19 @@ async def test_a_zone_with_no_sensor_group_is_shortened():
 
     _zone_id, changes = coordinator.store.async_update_zone.await_args.args
     assert changes[const.ZONE_DURATION] == 300
+
+
+@pytest.mark.asyncio
+async def test_the_rain_it_assumes_is_credited_to_the_bucket():
+    """The shortened share of the run is rain the balance never saw: it is
+    credited, so the first dry day does not water the whole deficit back
+    (phase 1.12)."""
+    zone = _zone(duration=600)
+    zone[const.ZONE_BUCKET] = -8.0
+    coordinator = _coordinator([zone], _mapping(const.MAPPING_TEMPERATURE))
+
+    await _apply(coordinator, factor=0.5)
+
+    _zone_id, changes = coordinator.store.async_update_zone.await_args.args
+    assert changes[const.ZONE_DURATION] == 300
+    assert changes[const.ZONE_BUCKET] == pytest.approx(-4.0)
