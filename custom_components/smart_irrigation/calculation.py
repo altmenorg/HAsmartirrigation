@@ -47,7 +47,9 @@ class CalculationMixin:
             return sv
         if sv is None:
             return wd
-        retval = wd
+        # A new dict: the weather data may be a client's cache, shared with
+        # every other sensor group.
+        retval = dict(wd)
         for key, val in sv.items():
             if key in retval:
                 _LOGGER.debug(

@@ -1495,6 +1495,13 @@ class SmartIrrigationCoordinator(
             weatherdata = await self.hass.async_add_executor_job(
                 self._WeatherServiceClient.get_data
             )
+            if weatherdata is not None:
+                # A copy: OpenWeatherMap and Pirate Weather hand back their
+                # cached dict itself, the same object for every group read in
+                # the same pass. Each group then edited it (its sensors merged
+                # in, sensor-sourced keys removed, the timestamp) and stored it,
+                # so one group's record could carry another's greenhouse sensor.
+                weatherdata = dict(weatherdata)
 
         if sensor_in_mapping:
             sensor_values = self.build_sensor_values_for_mapping(mapping)
