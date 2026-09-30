@@ -59,6 +59,23 @@ def _summarize_calculations(results):
     return summary
 
 
+def _entity_ids(call) -> list:
+    """The entity ids a service call targets, always as a list.
+
+    Home Assistant hands a single target over as a plain string when it is
+    written that way (``entity_id: sensor.smart_irrigation_lawn`` in YAML, or a
+    REST call). Iterating the string walked it character by character, so
+    calculate_zone and update_zone ran for "zone s", "zone e"... found nothing
+    and calculated nothing, without a word.
+    """
+    eid = call.data.get(const.SERVICE_ENTITY_ID)
+    if eid is None:
+        return []
+    if isinstance(eid, str):
+        return [eid]
+    return list(eid)
+
+
 class ServiceHandlersMixin:
     """Service-call handlers for ``SmartIrrigationCoordinator``.
 
@@ -105,7 +122,7 @@ class ServiceHandlersMixin:
         dry_run = call.data.get(const.ATTR_DRY_RUN, False)
         results = {}
         if const.SERVICE_ENTITY_ID in call.data:
-            for entity in call.data[const.SERVICE_ENTITY_ID]:
+            for entity in _entity_ids(call):
                 _LOGGER.info(
                     "Calculate zone service called for zone %s (dry_run=%s)",
                     entity,
@@ -138,7 +155,7 @@ class ServiceHandlersMixin:
     async def handle_update_zone(self, call):
         """Update specific zone."""
         if const.SERVICE_ENTITY_ID in call.data:
-            for entity in call.data[const.SERVICE_ENTITY_ID]:
+            for entity in _entity_ids(call):
                 _LOGGER.info("Update zone service called for zone %s", entity)
                 # find entity zone id and call update on the zone
                 state = self.hass.states.get(entity)
