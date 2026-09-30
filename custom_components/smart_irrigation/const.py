@@ -494,6 +494,29 @@ MAPPING_DATA_LAST_CALCULATION = "data_last_calculation"
 # asking a weather service about, so the settings that assume open air stop
 # applying to the zones that use this group.
 MAPPING_GREENHOUSE = "greenhouse"
+# What a sensor can plausibly report, after conversion to the units the
+# calculation works in. A reading outside is a glitch (a Zigbee sensor reporting
+# 85 C, a gauge reporting -1 mm), and one such reading set a whole day's maximum
+# temperature. It is dropped, with a warning, instead of being recorded.
+PLAUSIBLE_RANGES = {
+    "Temperature": (-60.0, 60.0),
+    "Minimum Temperature": (-60.0, 60.0),
+    "Maximum Temperature": (-60.0, 60.0),
+    "Dewpoint": (-70.0, 50.0),
+    "Humidity": (0.0, 105.0),
+    "Pressure": (300.0, 1100.0),
+    "Windspeed": (0.0, 75.0),
+    "Solar Radiation": (0.0, 50.0),
+    "Precipitation": (0.0, 100000.0),
+    "Current Precipitation": (0.0, 500.0),
+    "Evapotranspiration": (0.0, 25.0),
+}
+# A reading of these that has not been reported for longer than this is a
+# sensor that stopped, not a value that held: a dead thermometer keeping its
+# last state was recorded every hour, a flat day with maximum equal to minimum.
+# Fields that can legitimately stay put for days (a rain total) are not checked.
+STALE_FIELDS = ("Temperature", "Humidity", "Dewpoint")
+STALE_AFTER_HOURS = 6
 # The share of the sky's sun that reaches the plants under glass, for a
 # greenhouse group with no radiation or illuminance sensor of its own: the sun is
 # then estimated from the temperature range, which describes the sky outside.

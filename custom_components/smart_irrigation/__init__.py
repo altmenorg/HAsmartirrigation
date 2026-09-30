@@ -4,6 +4,7 @@ import contextlib
 import logging
 from datetime import datetime, timedelta
 
+import homeassistant.util.dt as dt_util
 from homeassistant.components.sensor import DOMAIN as PLATFORM
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
@@ -1063,12 +1064,19 @@ class SmartIrrigationCoordinator(
 
                 # add the mapping data with the new sensor value
                 # conversion to metric
+                try:
+                    reading = self._sensor_reading_to_metric(
+                        key, val, the_new_state, self.hass.states.get(entity)
+                    )
+                except (ValueError, TypeError) as ex:
+                    # A glitch or a state that is not a number: left out, so
+                    # one bad sample cannot set the day's maximum.
+                    _LOGGER.warning("Reading of sensor %s left out: %s", entity, ex)
+                    continue
                 mapping_data = mapping.get(const.MAPPING_DATA) or []
                 mapping_data.append(
                     {
-                        key: self._sensor_reading_to_metric(
-                            key, val, the_new_state, self.hass.states.get(entity)
-                        ),
+                        key: reading,
                         const.RETRIEVED_AT: timestamp,
                     }
                 )
@@ -1843,9 +1851,31 @@ class SmartIrrigationCoordinator(
             candidate = self._HA_UNITS.get(reported, reported)
             if candidate in self._KNOWN_UNITS:
                 unit = candidate
-        return convert_mapping_to_metric(
+        value = convert_mapping_to_metric(
             value, key, unit, self.hass.config.units is METRIC_SYSTEM
         )
+        bounds = const.PLAUSIBLE_RANGES.get(key)
+        if bounds is not None and value is not None:
+            low, high = bounds
+            if not low <= value <= high:
+                raise ValueError(
+                    f"{key} reading {value} is outside what a sensor can report "
+                    f"({low} to {high})"
+                )
+        return value
+
+    @staticmethod
+    def _is_stale(key, state) -> bool:
+        """Whether a sensor's state is too old to be a reading of the moment."""
+        if key not in const.STALE_FIELDS or state is None:
+            return False
+        stamp = getattr(state, "last_reported", None) or getattr(
+            state, "last_updated", None
+        )
+        if not isinstance(stamp, datetime):
+            return False
+        age = dt_util.utcnow() - stamp
+        return age > timedelta(hours=const.STALE_AFTER_HOURS)
 
     def build_sensor_values_for_mapping(self, mapping):
         """Build a dictionary of sensor values for a given mapping by retrieving and converting sensor states from Home Assistant.
@@ -1866,18 +1896,28 @@ class SmartIrrigationCoordinator(
                 ):
                     # this mapping maps to a sensor, so retrieve its value from HA
                     state = self.hass.states.get(the_map.get(const.MAPPING_CONF_SENSOR))
-                    if state:
+                    if state and self._is_stale(key, state):
+                        _LOGGER.warning(
+                            "Sensor %s has not reported for over %s hours; its "
+                            "%s is left out of this reading",
+                            the_map.get(const.MAPPING_CONF_SENSOR),
+                            const.STALE_AFTER_HOURS,
+                            key,
+                        )
+                    elif state:
                         try:
                             val = self._sensor_reading_to_metric(
                                 key, the_map, state.state, state
                             )
                             # add val to sensor values, at debug logging level due to startup ordering issues
                             sensor_values[key] = val
-                        except (ValueError, TypeError):
-                            _LOGGER.debug(
-                                "No / unknown value for sensor %s",
-                                the_map.get(const.MAPPING_CONF_SENSOR),
-                            )
+                        except (ValueError, TypeError) as ex:
+                            if state.state not in (STATE_UNKNOWN, STATE_UNAVAILABLE):
+                                _LOGGER.warning(
+                                    "Reading of sensor %s left out: %s",
+                                    the_map.get(const.MAPPING_CONF_SENSOR),
+                                    ex,
+                                )
 
         return sensor_values
 
