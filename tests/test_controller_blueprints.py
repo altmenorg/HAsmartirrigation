@@ -74,3 +74,21 @@ async def test_a_run_is_clamped_to_what_the_controller_accepts(hass, name):
 @pytest.mark.asyncio
 async def test_opensprinkler_takes_seconds(hass):
     assert await _amount(hass, "opensprinkler.yaml", 90.4) == 91
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("name", sorted(CONTROLLERS))
+async def test_the_run_is_credited_for_what_it_ran(hass, name):
+    """Not a reset to 0: a run cut short by the zone's maximum duration keeps
+    the deficit it did not water (phase 1.14). The seconds credited are the
+    controller's own run, rounded as it was sent."""
+    actions = _blueprint(name)["actions"]
+    credit = actions[-1]["then"][-1]
+    assert credit["action"] == "smart_irrigation.credit_watering"
+
+    amount = await _amount(hass, name, 899)
+    rendered = Template(
+        credit["data"]["seconds"].replace("amount", str(amount)), hass
+    ).async_render()
+    expected = 899 if name == "opensprinkler.yaml" else 15 * 60
+    assert int(rendered) == expected

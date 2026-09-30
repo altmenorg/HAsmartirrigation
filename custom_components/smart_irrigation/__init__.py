@@ -2280,6 +2280,11 @@ def register_services(hass: HomeAssistant):
     hass.services.async_register(
         const.DOMAIN, const.SERVICE_RESET_BUCKET, coordinator.handle_reset_bucket
     )
+    hass.services.async_register(
+        const.DOMAIN,
+        const.SERVICE_CREDIT_WATERING,
+        coordinator.handle_credit_watering,
+    )
 
     hass.services.async_register(
         const.DOMAIN,

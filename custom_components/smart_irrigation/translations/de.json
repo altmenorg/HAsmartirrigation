@@ -199,6 +199,16 @@
           "description": "Zone to generate watering calendar for"
         }
       }
+    },
+    "credit_watering": {
+      "name": "Bewässerung gutschreiben",
+      "description": "Schreibt dem Eimer einer Zone das Wasser gut, das ein Lauf tatsächlich gebracht hat, statt ihn auf 0 zu setzen.",
+      "fields": {
+        "seconds": {
+          "name": "Sekunden",
+          "description": "Wie lange die Zone lief, in Sekunden. Leer: die Dauer der Zone."
+        }
+      }
     }
   },
   "entity": {

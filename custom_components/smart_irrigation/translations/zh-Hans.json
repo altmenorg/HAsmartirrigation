@@ -199,6 +199,16 @@
           "description": "要生成浇水日历的区域"
         }
       }
+    },
+    "credit_watering": {
+      "name": "计入浇水",
+      "description": "将一次浇水实际提供的水量计入区域的水桶，而不是将其归零。",
+      "fields": {
+        "seconds": {
+          "name": "秒",
+          "description": "区域浇水的时长（秒）。留空：区域的时长。"
+        }
+      }
     }
   },
   "entity": {

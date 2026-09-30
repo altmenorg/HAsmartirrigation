@@ -199,6 +199,16 @@
           "description": "Zona para a qual gerar o calendário de rega"
         }
       }
+    },
+    "credit_watering": {
+      "name": "Creditar a rega",
+      "description": "Credita no balde de uma zona a água que uma rega realmente forneceu, em vez de o pôr a 0.",
+      "fields": {
+        "seconds": {
+          "name": "Segundos",
+          "description": "Quanto tempo a zona regou, em segundos. Vazio: a duração da zona."
+        }
+      }
     }
   },
   "entity": {

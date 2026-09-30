@@ -56,7 +56,10 @@ actions:
     target:
       entity_id: !input irrigation_switch
 
-  - delay: "{{ states(duration) }}"
+  - variables:
+      run_seconds: "{{ states(duration) | float(0) }}"
+
+  - delay: "{{ run_seconds }}"
 
   - action: homeassistant.turn_off
     data: {}
@@ -64,8 +67,11 @@ actions:
       entity_id:
         - !input irrigation_switch
 
-  - action: smart_irrigation.reset_bucket
-    data: {}
+  # The water the run delivered, not a reset to 0: a run cut short by the
+  # zone's maximum duration keeps the deficit it did not water.
+  - action: smart_irrigation.credit_watering
+    data:
+      seconds: "{{ run_seconds }}"
     target:
       entity_id: !input irrigation_zone
 

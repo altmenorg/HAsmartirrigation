@@ -199,6 +199,16 @@
           "description": "Zon att generera bevattningskalender för"
         }
       }
+    },
+    "credit_watering": {
+      "name": "Tillgodoräkna bevattning",
+      "description": "Tillgodoräknar en zons hink det vatten en bevattning faktiskt gav, i stället för att nollställa den.",
+      "fields": {
+        "seconds": {
+          "name": "Sekunder",
+          "description": "Hur länge zonen gick, i sekunder. Tomt: zonens varaktighet."
+        }
+      }
     }
   },
   "entity": {

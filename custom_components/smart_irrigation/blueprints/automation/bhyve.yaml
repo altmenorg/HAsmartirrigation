@@ -26,7 +26,7 @@ blueprint:
           filter:
             - integration: bhyve
     reset_bucket:
-      name: Reset the bucket after the run
+      name: Credit the run to the bucket
       description: >-
         Leave on unless observed watering already credits this zone from the
         Orbit B-hyve zone's own on and off, which would count the run twice.
@@ -62,8 +62,12 @@ actions:
       - condition: template
         value_template: "{{ reset_after }}"
     then:
-      - action: smart_irrigation.reset_bucket
+      # The water the run delivered, not a reset to 0: a run cut short by
+      # the zone's maximum duration keeps the deficit it did not water.
+      - action: smart_irrigation.credit_watering
         target:
           entity_id: !input irrigation_zone
+        data:
+          seconds: "{{ amount | int * 60 }}"
 
 mode: single

@@ -8,9 +8,9 @@ title: Usage: Entities
 > Previous: [Events](usage-events.md)<br/>
 > Next: [Off-the-shelf controllers](usage-controllers.md)
 
-Since this integration does not interface with your irrigation system directly, you will need to use the data it outputs to create an automation that will start and stop your irrigation system for you. This way you can use this custom integration with any irrigation system you might have, regardless of how that interfaces with Home Assistant. In order for this to work correctly, you should base your automation on the value of `sensor.smart_irrigation_[zone_name]` as long as you run your automation after it was updated (e.g. 11:00 PM/23:00 hours local time). If that value is above `0` it is time to irrigate. Note that the value is the run time in seconds. Also, after irrigation, you need to call the `smart_irrigation.reset_bucket` service to reset the net irrigation tracking (`bucket`) to 0.
+Since this integration does not interface with your irrigation system directly, you will need to use the data it outputs to create an automation that will start and stop your irrigation system for you. This way you can use this custom integration with any irrigation system you might have, regardless of how that interfaces with Home Assistant. In order for this to work correctly, you should base your automation on the value of `sensor.smart_irrigation_[zone_name]` as long as you run your automation after it was updated (e.g. 11:00 PM/23:00 hours local time). If that value is above `0` it is time to irrigate. Note that the value is the run time in seconds. Also, after irrigation, you need to call the `smart_irrigation.credit_watering` service with how long the zone ran, so the bucket is credited with the water it received. (`smart_irrigation.reset_bucket`, which sets the bucket to 0, still works, but loses the deficit a run cut short by the maximum duration did not water.)
 
-> **The last step in any automation is very important, since you will need to let the integration know you have finished irrigating and the evaporation counter can be reset by calling the `smart_irrigation.reset_bucket` service**
+> **The last step in any automation is very important, since you will need to let the integration know you have finished irrigating, by calling the `smart_irrigation.credit_watering` service**
 
 > Resetting the bucket says the soil is at field capacity at that moment, so any rain collected since the last calculation is part of what that statement covers and is not counted again at the next one. Rain falling after the reset still counts as usual. This matters when it rains between the calculation and irrigation: without it the same rain would both shorten the run and fill the next bucket.
 
@@ -52,7 +52,7 @@ Pick the one that matches how your valves are actually driven:
 
 With Irrigation Unlimited, note that it exposes **binary sensors**, not switches: Smart Irrigation tells it how long to run through `adjust_time` and IU does the running. Do not drive the valve yourself in parallel, or the two will fight.
 
-If you use **observed watering** or **direct valve control** (see [closed loop](configuration-closed-loop.md)), do not use a blueprint that calls `reset_bucket`: the integration credits the bucket itself and the two would count twice.
+If you use **observed watering** or **direct valve control** (see [closed loop](configuration-closed-loop.md)), turn off the blueprint's option to credit the run (or do not use a blueprint that calls `reset_bucket`): the integration credits the bucket itself and the two would count twice.
 
 ### Example 1: one valve, once per week irrigation if duration > 0 or if the bucket < - 25 mm:
 

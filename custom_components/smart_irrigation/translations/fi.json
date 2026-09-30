@@ -199,6 +199,16 @@
           "description": "Vyöhyke, jolle kastelukalenteri luodaan"
         }
       }
+    },
+    "credit_watering": {
+      "name": "Hyvitä kastelu",
+      "description": "Hyvittää vyöhykkeen ämpäriin kastelun todella antaman veden sen nollaamisen sijaan.",
+      "fields": {
+        "seconds": {
+          "name": "Sekunnit",
+          "description": "Kuinka kauan vyöhyke kasteli, sekunteina. Tyhjä: vyöhykkeen kesto."
+        }
+      }
     }
   },
   "entity": {

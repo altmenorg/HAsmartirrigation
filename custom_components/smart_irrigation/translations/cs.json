@@ -199,6 +199,16 @@
           "description": "Zóna, pro kterou se vygeneruje zavlažovací kalendář"
         }
       }
+    },
+    "credit_watering": {
+      "name": "Připsat zavlažení",
+      "description": "Připíše do vědra zóny vodu, kterou zavlažení skutečně dodalo, místo jeho vynulování.",
+      "fields": {
+        "seconds": {
+          "name": "Sekundy",
+          "description": "Jak dlouho zóna zavlažovala, v sekundách. Prázdné: doba zóny."
+        }
+      }
     }
   },
   "entity": {

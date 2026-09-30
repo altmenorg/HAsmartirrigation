@@ -67,6 +67,24 @@ reset_bucket:
   target:
     entity:
       domain: sensor
+credit_watering:
+  name: Credit watering
+  description: >-
+    Credit a zone's bucket with the water a run actually delivered, instead of
+    setting it to 0. Call it at the end of your own irrigation automation.
+  target:
+    entity:
+      domain: sensor
+  fields:
+    seconds:
+      required: false
+      example: 900
+      description: "How long the zone ran, in seconds. Empty: the zone's duration."
+      selector:
+        number:
+          min: 0
+          max: 86400
+          unit_of_measurement: s
 reset_all_buckets:
   name: Reset all buckets
   description: Reset the water bucket value for all zones.

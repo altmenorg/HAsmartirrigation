@@ -199,6 +199,16 @@
           "description": "Zone to generate watering calendar for"
         }
       }
+    },
+    "credit_watering": {
+      "name": "Pripísať zavlaženie",
+      "description": "Pripíše do vedra zóny vodu, ktorú zavlaženie skutočne dodalo, namiesto jeho vynulovania.",
+      "fields": {
+        "seconds": {
+          "name": "Sekundy",
+          "description": "Ako dlho zóna zavlažovala, v sekundách. Prázdne: trvanie zóny."
+        }
+      }
     }
   },
   "entity": {

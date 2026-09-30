@@ -199,6 +199,16 @@
           "description": "Zone to generate watering calendar for"
         }
       }
+    },
+    "credit_watering": {
+      "name": "Acreditar el riego",
+      "description": "Acredita al cubo de una zona el agua que un riego aportó realmente, en lugar de ponerlo a 0.",
+      "fields": {
+        "seconds": {
+          "name": "Segundos",
+          "description": "Cuánto tiempo regó la zona, en segundos. Vacío: la duración de la zona."
+        }
+      }
     }
   },
   "entity": {

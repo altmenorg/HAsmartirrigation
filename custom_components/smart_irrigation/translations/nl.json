@@ -199,6 +199,16 @@
           "description": "Zone to generate watering calendar for"
         }
       }
+    },
+    "credit_watering": {
+      "name": "Beregening bijschrijven",
+      "description": "Schrijft de emmer van een zone het water bij dat een beregening echt gaf, in plaats van hem op 0 te zetten.",
+      "fields": {
+        "seconds": {
+          "name": "Seconden",
+          "description": "Hoe lang de zone liep, in seconden. Leeg: de duur van de zone."
+        }
+      }
     }
   },
   "entity": {

@@ -199,6 +199,16 @@
           "description": "Zone to generate watering calendar for"
         }
       }
+    },
+    "credit_watering": {
+      "name": "Godskriv vanning",
+      "description": "Godskriver en sones bøtte vannet en vanning faktisk ga, i stedet for å sette den til 0.",
+      "fields": {
+        "seconds": {
+          "name": "Sekunder",
+          "description": "Hvor lenge sonen gikk, i sekunder. Tom: sonens varighet."
+        }
+      }
     }
   },
   "entity": {

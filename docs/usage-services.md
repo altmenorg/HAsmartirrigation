@@ -16,7 +16,8 @@ After installation, the following services are available:
 |`Smart Irrigation: clear_all_weather_data`|Deletes all weather data|
 |`Smart Irrigation: generate_watering_calendar`|Generate a 12-month watering calendar for a zone based on representative climate data.|
 |`Smart Irrigation: reset_all_buckets`|Resets all buckets to 0.|
-|`Smart Irrigation: reset_bucket`|Resets one specific bucket to 0.|
+|`Smart Irrigation: credit_watering`|Credits a zone with the water a run of your own delivered: its precipitation rate times `seconds` (the zone's duration when left out), less its lead time. Use it at the end of an irrigation automation rather than `reset_bucket`: a run cut short by the zone's maximum duration keeps the deficit it did not water.|
+|`Smart Irrigation: reset_bucket`|Resets one specific bucket to 0. It says the soil is back at field capacity, whatever the run delivered: `credit_watering` is the better end to an irrigation automation.|
 |`Smart Irrigation: set_all_buckets`|Sets all buckets to a specific `new_bucket_value` (default is 0).|
 |`Smart Irrigation: set_all_multipliers`|Sets all multipliers to a specific `new_multiplier_value` (default is 1.0).|
 |`Smart Irrigation: set_bucket`|Sets a specific bucket to to a specific `new_bucket_value` (default is 0).|

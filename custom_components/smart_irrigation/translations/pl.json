@@ -199,6 +199,16 @@
           "description": "Strefa, dla której wygenerować kalendarz podlewania"
         }
       }
+    },
+    "credit_watering": {
+      "name": "Zalicz podlewanie",
+      "description": "Zalicza do wiadra strefy wodę, którą podlewanie faktycznie dostarczyło, zamiast go zerować.",
+      "fields": {
+        "seconds": {
+          "name": "Sekundy",
+          "description": "Jak długo strefa podlewała, w sekundach. Puste: czas trwania strefy."
+        }
+      }
     }
   },
   "entity": {

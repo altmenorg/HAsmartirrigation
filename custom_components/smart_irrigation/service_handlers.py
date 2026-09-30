@@ -179,6 +179,49 @@ class ServiceHandlersMixin:
         _LOGGER.info("Irrigation resumed")
         async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated")
 
+    async def handle_credit_watering(self, call):
+        """Credit a zone with the water a run of its own actually delivered.
+
+        ``reset_bucket`` sets the bucket to 0, which is right only when the run
+        was the whole of what the zone needed. A run cut short by the maximum
+        duration left a deficit that the reset wiped out, and the time between
+        the calculation and the reset was taken out of the next window, so its
+        evaporation was never counted either. This credits what the run put
+        down instead: the precipitation rate times the seconds it ran, less the
+        lead time that only filled the pipe, as a run observed by Smart
+        Irrigation is credited. Without ``seconds``, the zone's own duration,
+        which is what an automation that just ran it has used.
+        """
+        eid = call.data.get(const.SERVICE_ENTITY_ID)
+        if eid is None:
+            return
+        if not isinstance(eid, list):
+            eid = [eid]
+        for entity in eid:
+            state = self.hass.states.get(entity)
+            zone_id = state.attributes.get(const.ZONE_ID) if state else None
+            if zone_id is None:
+                _LOGGER.warning("credit_watering: %s is not a zone", entity)
+                continue
+            zone = self.store.get_zone(zone_id) or {}
+            seconds = call.data.get(const.ATTR_SECONDS)
+            if seconds is None:
+                seconds = zone.get(const.ZONE_DURATION) or 0
+            try:
+                seconds = float(seconds)
+            except (TypeError, ValueError):
+                _LOGGER.warning("credit_watering: %s is not a duration", seconds)
+                continue
+            if seconds <= 0:
+                _LOGGER.info("credit_watering: zone %s ran for nothing", zone_id)
+                continue
+            _LOGGER.info(
+                "Crediting zone %s with a run of %.0f s",
+                zone.get(const.ZONE_NAME),
+                seconds,
+            )
+            await self._credit_observed_watering(int(zone_id), seconds)
+
     async def handle_reset_bucket(self, call):
         """Reset a specific zone bucket to 0."""
         if const.SERVICE_ENTITY_ID in call.data:

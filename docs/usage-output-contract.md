@@ -63,15 +63,19 @@ The skip event exists because the absence of an event is not something an automa
 
 ## What to send back
 
-**In open loop**, tell us the water was delivered, or the deficit stays and the zone waters again tomorrow:
+**In open loop**, tell us how long the zone ran, or the deficit stays and the zone waters again tomorrow:
 
 ```yaml
-action: smart_irrigation.reset_bucket
-data:
+action: smart_irrigation.credit_watering
+target:
   entity_id: sensor.smart_irrigation_lawn
+data:
+  seconds: 900
 ```
 
-**In closed loop** (observed watering or direct valve control), send nothing: the integration credits the bucket from the run itself. Calling `reset_bucket` as well counts the water twice, which empties the bucket and makes the next calculation ask for more than it should.
+Leave `seconds` out and the zone's own duration is credited. This credits the water the run put down, where `reset_bucket` sets the bucket to 0 whatever it did: a run cut short by the zone's maximum duration then lost the deficit it had not watered. `reset_bucket` still works, and is right when you want to say the soil is at field capacity.
+
+**In closed loop** (observed watering or direct valve control), send nothing: the integration credits the bucket from the run itself. Calling `credit_watering` or `reset_bucket` as well counts the water twice, which empties the bucket and makes the next calculation ask for more than it should.
 
 Never both, and never a blueprint that resets the bucket on top of a closed-loop setup. The [closed loop page](configuration-closed-loop.md) says which is which.
 

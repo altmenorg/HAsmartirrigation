@@ -199,6 +199,16 @@
           "description": "A zóna, amelyhez öntözési naptárt hoz létre"
         }
       }
+    },
+    "credit_watering": {
+      "name": "Öntözés jóváírása",
+      "description": "A zóna vödrébe jóváírja az öntözés által ténylegesen kijuttatott vizet, ahelyett hogy nullázná.",
+      "fields": {
+        "seconds": {
+          "name": "Másodperc",
+          "description": "Mennyi ideig öntözött a zóna, másodpercben. Üres: a zóna időtartama."
+        }
+      }
     }
   },
   "entity": {

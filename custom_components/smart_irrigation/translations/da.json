@@ -199,6 +199,16 @@
           "description": "Zone som vandingskalender skal genereres for"
         }
       }
+    },
+    "credit_watering": {
+      "name": "Godskriv vanding",
+      "description": "Godskriver en zones spand det vand, en vanding faktisk gav, i stedet for at sætte den til 0.",
+      "fields": {
+        "seconds": {
+          "name": "Sekunder",
+          "description": "Hvor længe zonen kørte, i sekunder. Tom: zonens varighed."
+        }
+      }
     }
   },
   "entity": {
