@@ -389,7 +389,8 @@
           "greenhouse_description": "En sluten miljö: ett växthus, en plasttunnel, allt under glas eller plast. Inget regn når dessa zoner, så nedbörd hålls utanför deras vattenbalans och dess fält göms. Två saker måste du sätta själv, eftersom de inte går att gissa: ge Vindhastighet ett fast värde nära 0, eftersom beräkningen utgår från fri luft, och använd en ljussensor för Solinstrålning, eftersom glaset filtrerar himlen.",
           "module": "Beräkningsmotor",
           "module_description": "Den här gruppen erbjuder bara de källor som motorn läser. Zonerna som använder den ärver valet.",
-          "module_undecided": "Ingen motor är vald än, så alla källor erbjuds och varje zon som använder den här gruppen behåller sin egen. Välj en för att bara se de källor den läser."
+          "module_undecided": "Ingen motor är vald än, så alla källor erbjuds och varje zon som använder den här gruppen behåller sin egen. Välj en för att bara se de källor den läser.",
+          "wind_height": "Vindmätarens höjd (tomt: 2 m)"
         }
       },
       "description": "Lägg till en eller flera sensorgrupper som hämtar väderdata från en vädertjänst, från sensorer eller en kombination av dessa. Du kan koppla varje sensorgrupp till en eller flera zoner",

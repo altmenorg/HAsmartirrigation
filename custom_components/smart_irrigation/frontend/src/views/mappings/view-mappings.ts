@@ -60,6 +60,7 @@ import {
   MAPPING_TEMPERATURE,
   MAPPING_WINDSPEED,
   MAPPING_CONF_PRESSURE_TYPE,
+  MAPPING_CONF_WIND_HEIGHT,
   MAPPING_CONF_PRESSURE_ABSOLUTE,
   MAPPING_CONF_PRESSURE_RELATIVE,
   MAPPING_CURRENT_PRECIPITATION,
@@ -1209,11 +1210,47 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         source === MAPPING_CONF_SOURCE_STATIC_VALUE)
         ? this.renderPressureTypeSelect(index, value, mappingline)
         : ""}
+      ${value === MAPPING_WINDSPEED && source === MAPPING_CONF_SOURCE_SENSOR
+        ? this.renderWindHeightInput(index, value, mappingline)
+        : ""}
       ${source === MAPPING_CONF_SOURCE_SENSOR ||
       source === MAPPING_CONF_SOURCE_ILLUMINANCE
         ? this.renderAggregateSelect(index, value, mappingline)
         : ""}
     `;
+  }
+
+  private renderWindHeightInput(
+    index: number,
+    value: string,
+    mappingline: any,
+  ): TemplateResult {
+    if (!this.hass) return html``;
+
+    // The equations want the wind at 2 m; a weather station stands higher,
+    // where it blows harder. Left empty, the sensor is read as it is.
+    return this._numRow(
+      localize("panels.mappings.cards.mapping.wind_height", this.hass.language),
+      "m",
+      mappingline[MAPPING_CONF_WIND_HEIGHT] ?? "",
+      (v: string) => {
+        const mapping = this.mappings[index];
+        const height = parseFloat(v);
+        this.handleEditMapping(index, {
+          ...mapping,
+          mappings: {
+            ...mapping.mappings,
+            [value]: {
+              ...mapping.mappings[value],
+              [MAPPING_CONF_WIND_HEIGHT]: Number.isFinite(height)
+                ? height
+                : null,
+            },
+          },
+        });
+      },
+      0.5,
+    );
   }
 
   private renderSensorInput(

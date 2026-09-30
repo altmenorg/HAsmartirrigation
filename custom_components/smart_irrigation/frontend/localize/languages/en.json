@@ -452,7 +452,8 @@
           "greenhouse_description": "An enclosed environment: a greenhouse, a polytunnel, anything under glass or plastic. No rain reaches these zones, so precipitation is left out of their water balance and its fields are hidden. Two things to set yourself, because they cannot be guessed: give Wind speed a static value near 0, since the calculation assumes open air, and use a light sensor for Solar Radiation, since the glazing filters the sky.",
           "module": "Calculation engine",
           "module_description": "This group only offers the sources this engine reads. The zones using it inherit the choice.",
-          "module_undecided": "No engine chosen yet, so every source is offered and each zone using this group keeps its own. Pick one to see only the sources it reads."
+          "module_undecided": "No engine chosen yet, so every source is offered and each zone using this group keeps its own. Pick one to see only the sources it reads.",
+          "wind_height": "Anemometer height (empty: taken at 2 m)"
         }
       },
       "description": "Add one or more sensor groups that retrieve weather data from Weather service, from sensors or a combination of these. You can map each sensor group to one or more zones",

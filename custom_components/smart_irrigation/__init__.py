@@ -2,6 +2,7 @@
 
 import contextlib
 import logging
+import math
 from datetime import datetime, timedelta
 
 import homeassistant.util.dt as dt_util
@@ -424,6 +425,21 @@ async def async_remove_entry(hass: HomeAssistant, entry):
             coordinator = hass.data[const.DOMAIN]["coordinator"]
             await coordinator.async_delete_config()
         del hass.data[const.DOMAIN]
+
+
+def wind_at_two_metres(speed, height_m):
+    """A wind speed measured at ``height_m`` brought to 2 m (FAO-56 Eq. 47).
+
+    Unchanged when the height is not given or cannot be read, which is what a
+    sensor group set up before this setting existed gets.
+    """
+    try:
+        height = float(height_m)
+    except (TypeError, ValueError):
+        return speed
+    if height <= 0.5 or height == 2.0:
+        return speed
+    return speed * 4.87 / math.log(67.8 * height - 5.42)
 
 
 class SmartIrrigationCoordinator(
@@ -1860,6 +1876,10 @@ class SmartIrrigationCoordinator(
         value = convert_mapping_to_metric(
             value, key, unit, self.hass.config.units is METRIC_SYSTEM
         )
+        if key == const.MAPPING_WINDSPEED and value is not None:
+            value = wind_at_two_metres(
+                value, the_map.get(const.MAPPING_CONF_WIND_HEIGHT)
+            )
         bounds = const.PLAUSIBLE_RANGES.get(key)
         if bounds is not None and value is not None:
             low, high = bounds

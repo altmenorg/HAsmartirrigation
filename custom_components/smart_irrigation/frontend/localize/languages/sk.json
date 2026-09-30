@@ -389,7 +389,8 @@
           "greenhouse_description": "Uzavreté prostredie: skleník, fóliovník, čokoľvek pod sklom alebo fóliou. K týmto zónam sa dážď nedostane, takže zrážky zostávajú mimo ich vodnej bilancie a ich polia sa skryjú. Dve veci musíte nastaviť sami, pretože ich nemožno odhadnúť: dajte Rýchlosti vetra statickú hodnotu blízku 0, pretože výpočet predpokladá voľný vzduch, a pre Solárnu radiáciu použite svetelný senzor, pretože zasklenie filtruje nebo.",
           "module": "Výpočtové jadro",
           "module_description": "Táto skupina ponúka len zdroje, ktoré toto jadro číta. Zóny, ktoré ju používajú, voľbu preberajú.",
-          "module_undecided": "Jadro ešte nebolo vybrané, takže sa ponúkajú všetky zdroje a každá zóna používajúca túto skupinu si drží svoje. Vyberte jedno, aby ste videli len zdroje, ktoré číta."
+          "module_undecided": "Jadro ešte nebolo vybrané, takže sa ponúkajú všetky zdroje a každá zóna používajúca túto skupinu si drží svoje. Vyberte jedno, aby ste videli len zdroje, ktoré číta.",
+          "wind_height": "Výška anemometra (prázdne: 2 m)"
         }
       },
       "description": "Pridajte jednu alebo viac skupín senzorov, ktoré získavajú údaje o počasí z Weather service, zo senzorov alebo ich kombinácie. Každú skupinu senzorov môžete namapovať na jednu alebo viac zón",

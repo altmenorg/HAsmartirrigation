@@ -408,7 +408,8 @@
           "greenhouse_description": "Zárt környezet: üvegház, fóliasátor, bármi üveg vagy fólia alatt. Ezekhez a zónákhoz nem ér el eső, így a csapadék kimarad a vízmérlegükből, és a mezői rejtve vannak. Két dolgot magadnak kell beállítanod, mert nem kitalálhatók: adj a Szélsebességnek 0-hoz közeli állandó értéket, mert a számítás szabad levegőt feltételez, és használj fényérzékelőt a Napsugárzáshoz, mert az üvegezés szűri az eget.",
           "module": "Számítási motor",
           "module_description": "Ez a csoport csak azokat a forrásokat ajánlja, amelyeket ez a motor olvas. Az őt használó zónák átveszik a választást.",
-          "module_undecided": "Még nincs motor kiválasztva, így minden forrás felajánlásra kerül, és minden zóna, amely ezt a csoportot használja, a sajátját tartja. Válassz egyet, hogy csak az általa olvasott forrásokat lásd."
+          "module_undecided": "Még nincs motor kiválasztva, így minden forrás felajánlásra kerül, és minden zóna, amely ezt a csoportot használja, a sajátját tartja. Válassz egyet, hogy csak az általa olvasott forrásokat lásd.",
+          "wind_height": "Szélmérő magassága (üres: 2 m)"
         }
       },
       "description": "Adjon hozzá egy vagy több érzékelőcsoportot, amelyek időjárási adatokat kérnek le az időjárás-szolgáltatásból, érzékelőkből vagy ezek kombinációjából. Minden érzékelőcsoportot egy vagy több zónához rendelhet",

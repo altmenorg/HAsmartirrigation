@@ -389,7 +389,8 @@
           "greenhouse_description": "Środowisko zamknięte: szklarnia, tunel foliowy, wszystko pod szkłem lub folią. Do tych stref nie dociera deszcz, więc opad zostaje poza ich bilansem wodnym, a jego pola są ukryte. Dwie rzeczy trzeba ustawić samemu, bo nie da się ich odgadnąć: nadaj Prędkości wiatru stałą wartość blisko 0, bo obliczenie zakłada wolne powietrze, i użyj czujnika światła dla Promieniowania słonecznego, bo szyby filtrują niebo.",
           "module": "Silnik obliczeniowy",
           "module_description": "Ta grupa oferuje tylko źródła, które czyta ten silnik. Strefy, które jej używają, przejmują ten wybór.",
-          "module_undecided": "Silnik nie został jeszcze wybrany, więc oferowane są wszystkie źródła, a każda strefa używająca tej grupy zostaje przy swoim. Wybierz jeden, żeby widzieć tylko źródła, które czyta."
+          "module_undecided": "Silnik nie został jeszcze wybrany, więc oferowane są wszystkie źródła, a każda strefa używająca tej grupy zostaje przy swoim. Wybierz jeden, żeby widzieć tylko źródła, które czyta.",
+          "wind_height": "Wysokość anemometru (puste: 2 m)"
         }
       },
       "description": "Dodaj jedną lub więcej grup czujników, które pobierają dane pogodowe z usługi pogodowej, z czujników lub ich kombinacji. Każdą grupę czujników możesz przypisać do jednej lub więcej stref",

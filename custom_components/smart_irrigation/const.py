@@ -599,6 +599,10 @@ MAPPING_CONF_LUMINOUS_EFFICACY = "luminous_efficacy"
 CONF_DEFAULT_LUMINOUS_EFFICACY = 110.0
 MAPPING_CONF_UNIT = "unit"
 MAPPING_CONF_PRESSURE_TYPE = "pressure_type"
+# How high a wind sensor is mounted, in metres. The equations want the wind at
+# 2 m, and a weather station usually stands at 5 to 10 m, where it blows about a
+# third harder. Empty means the sensor is taken as it reads, as before.
+MAPPING_CONF_WIND_HEIGHT = "wind_height"
 MAPPING_CONF_PRESSURE_ABSOLUTE = "absolute"
 MAPPING_CONF_PRESSURE_RELATIVE = "relative"
 MAPPING_CONF_AGGREGATE = "aggregate"

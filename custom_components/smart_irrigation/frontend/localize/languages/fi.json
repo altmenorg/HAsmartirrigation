@@ -389,7 +389,8 @@
           "greenhouse_description": "Suljettu ympäristö: kasvihuone, muovitunneli, mikä tahansa lasin tai muovin alla. Näille alueille ei tule sadetta, joten sade jätetään niiden vesitasapainon ulkopuolelle ja sen kentät piilotetaan. Kaksi asiaa sinun on asetettava itse, koska niitä ei voi arvata: anna Tuulen nopeudelle kiinteä arvo lähellä nollaa, koska laskenta olettaa vapaan ilman, ja käytä Auringon säteilylle valoanturia, koska lasitus suodattaa taivaan.",
           "module": "Laskentamoottori",
           "module_description": "Tämä ryhmä tarjoaa vain ne lähteet, joita tämä moottori lukee. Sitä käyttävät alueet perivät valinnan.",
-          "module_undecided": "Moottoria ei ole vielä valittu, joten kaikki lähteet tarjotaan ja jokainen tätä ryhmää käyttävä alue pitää omansa. Valitse yksi nähdäksesi vain ne lähteet, joita se lukee."
+          "module_undecided": "Moottoria ei ole vielä valittu, joten kaikki lähteet tarjotaan ja jokainen tätä ryhmää käyttävä alue pitää omansa. Valitse yksi nähdäksesi vain ne lähteet, joita se lukee.",
+          "wind_height": "Tuulimittarin korkeus (tyhjä: 2 m)"
         }
       },
       "description": "Lisää yksi tai useampi anturiryhmä, joka hakee säätietoja sääpalvelusta, antureista tai näiden yhdistelmästä. Voit liittää kunkin anturiryhmän yhteen tai useampaan vyöhykkeeseen",

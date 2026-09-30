@@ -90,6 +90,7 @@ export const MAPPING_CONF_SOURCE_SENSOR = "sensor";
 export const MAPPING_CONF_SOURCE_STATIC_VALUE = "static";
 export const MAPPING_CONF_SOURCE_ILLUMINANCE = "illuminance";
 export const MAPPING_CONF_PRESSURE_TYPE = "pressure_type";
+export const MAPPING_CONF_WIND_HEIGHT = "wind_height";
 export const MAPPING_CONF_PRESSURE_ABSOLUTE = "absolute";
 export const MAPPING_CONF_PRESSURE_RELATIVE = "relative";
 export const MAPPING_CONF_SOURCE_NONE = "none";

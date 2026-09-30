@@ -389,7 +389,8 @@
           "greenhouse_description": "Un entorno cerrado: un invernadero, un túnel de plástico, cualquier cosa bajo cristal o plástico. A estas zonas no les llega la lluvia, así que la precipitación se deja fuera de su balance hídrico y sus campos se ocultan. Dos cosas hay que poner a mano, porque no se pueden adivinar: dale a Velocidad del viento un valor estático cercano a 0, porque el cálculo supone aire libre, y usa un sensor de luz para la Radiación solar, porque el acristalamiento filtra el cielo.",
           "module": "Motor de cálculo",
           "module_description": "Este grupo solo ofrece las fuentes que lee este motor. Las zonas que lo usan heredan la elección.",
-          "module_undecided": "Todavía no se ha elegido un motor, así que se ofrecen todas las fuentes y cada zona que usa este grupo conserva la suya. Elige uno para ver solo las fuentes que lee."
+          "module_undecided": "Todavía no se ha elegido un motor, así que se ofrecen todas las fuentes y cada zona que usa este grupo conserva la suya. Elige uno para ver solo las fuentes que lee.",
+          "wind_height": "Altura del anemómetro (vacío: a 2 m)"
         }
       },
       "description": "Añada uno o más grupos de sensores que recuperen datos meteorológicos de Weather service, de sensores o de una combinación de éstos. Puede asignar cada grupo de sensores a una o más zonas",

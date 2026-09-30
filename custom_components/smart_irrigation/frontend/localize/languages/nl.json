@@ -389,7 +389,8 @@
           "greenhouse_description": "Een afgesloten omgeving: een serre, een folietunnel, alles onder glas of plastic. Er komt geen regen bij deze zones, dus neerslag blijft buiten hun waterbalans en de velden ervan worden verborgen. Twee dingen moet je zelf zetten, want ze zijn niet te raden: geef Windsnelheid een statische waarde dicht bij 0, want de berekening gaat uit van open lucht, en gebruik een lichtsensor voor Zonnestraling, want het glas filtert de lucht.",
           "module": "Berekeningsengine",
           "module_description": "Deze groep biedt alleen de bronnen die deze engine leest. De zones die haar gebruiken nemen de keuze over.",
-          "module_undecided": "Nog geen engine gekozen, dus elke bron wordt aangeboden en elke zone die deze groep gebruikt houdt haar eigen. Kies er een om alleen de bronnen te zien die ze leest."
+          "module_undecided": "Nog geen engine gekozen, dus elke bron wordt aangeboden en elke zone die deze groep gebruikt houdt haar eigen. Kies er een om alleen de bronnen te zien die ze leest.",
+          "wind_height": "Hoogte van de windmeter (leeg: op 2 m)"
         }
       },
       "description": "Voeg een of meer sensorgroepen toe die weergegevens ophalen van Weather service, van sensoren of een combinatie. Elke sensorgroep kan worden gebruikt voor een of meerdere zones",

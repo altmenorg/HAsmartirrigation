@@ -389,7 +389,8 @@
           "greenhouse_description": "Et lukket miljø: et drivhus, en plasttunnel, alt under glass eller plast. Det kommer ikke regn til disse sonene, så nedbør holdes utenfor vannbalansen deres, og feltene for den skjules. To ting må du sette selv, for de kan ikke gjettes: gi Vindhastighet en fast verdi nær 0, siden beregningen går ut fra fri luft, og bruk en lyssensor for Solinnstråling, siden glasset filtrerer himmelen.",
           "module": "Beregningsmotor",
           "module_description": "Denne gruppen tilbyr bare kildene denne motoren leser. Sonene som bruker den, overtar valget.",
-          "module_undecided": "Ingen motor er valgt ennå, så alle kilder tilbys, og hver sone som bruker denne gruppen beholder sin egen. Velg én for bare å se kildene den leser."
+          "module_undecided": "Ingen motor er valgt ennå, så alle kilder tilbys, og hver sone som bruker denne gruppen beholder sin egen. Velg én for bare å se kildene den leser.",
+          "wind_height": "Vindmålerens høyde (tom: 2 m)"
         }
       },
       "description": "Legg til en eller flere sensorgupper som henter værdata fra Weather service, fra sensorer eller en kombinasjon av disse. Du kan tilordne hver sensorguppe til en eller flere soner",

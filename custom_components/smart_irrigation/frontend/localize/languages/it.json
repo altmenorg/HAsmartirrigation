@@ -389,7 +389,8 @@
           "greenhouse_description": "Un ambiente chiuso: una serra, un tunnel di plastica, qualsiasi cosa sotto vetro o plastica. A queste zone non arriva pioggia, quindi la precipitazione resta fuori dal loro bilancio idrico e i suoi campi vengono nascosti. Due cose da impostare a mano, perché non si possono indovinare: dai alla Velocità del vento un valore statico vicino a 0, perché il calcolo presuppone aria libera, e usa un sensore di luce per la Radiazione solare, perché la copertura filtra il cielo.",
           "module": "Motore di calcolo",
           "module_description": "Questo gruppo offre solo le sorgenti che questo motore legge. Le zone che lo usano ereditano la scelta.",
-          "module_undecided": "Nessun motore scelto per ora, quindi vengono offerte tutte le sorgenti e ogni zona che usa questo gruppo mantiene la propria. Scegline uno per vedere solo le sorgenti che legge."
+          "module_undecided": "Nessun motore scelto per ora, quindi vengono offerte tutte le sorgenti e ogni zona che usa questo gruppo mantiene la propria. Scegline uno per vedere solo le sorgenti che legge.",
+          "wind_height": "Altezza dell'anemometro (vuoto: a 2 m)"
         }
       },
       "description": "Aggiungi uno o più gruppi di sensori che recuperano i dati meteorologici dal servizio meteo, da sensori o da una combinazione di questi. È possibile mappare ciascun gruppo di sensori su una o più zone",

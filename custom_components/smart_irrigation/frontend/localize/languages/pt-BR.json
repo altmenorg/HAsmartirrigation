@@ -389,7 +389,8 @@
           "greenhouse_description": "Um ambiente fechado: uma estufa, um túnel de plástico, qualquer coisa sob vidro ou plástico. A chuva não chega a essas zonas, então a precipitação fica fora do balanço hídrico delas e seus campos ficam escondidos. Duas coisas para definir você mesmo, porque não dá para adivinhar: dê à Velocidade do vento um valor estático perto de 0, porque o cálculo pressupõe ar livre, e use um sensor de luz para a Radiação solar, porque a cobertura filtra o céu.",
           "module": "Motor de cálculo",
           "module_description": "Este grupo só oferece as fontes que este motor lê. As zonas que o usam herdam a escolha.",
-          "module_undecided": "Nenhum motor escolhido ainda, então todas as fontes são oferecidas e cada zona que usa este grupo mantém a sua. Escolha um para ver só as fontes que ele lê."
+          "module_undecided": "Nenhum motor escolhido ainda, então todas as fontes são oferecidas e cada zona que usa este grupo mantém a sua. Escolha um para ver só as fontes que ele lê.",
+          "wind_height": "Altura do anemômetro (vazio: a 2 m)"
         }
       },
       "description": "Adicione um ou mais grupos de sensores que obtêm dados meteorológicos do serviço de meteorologia, de sensores ou de uma combinação destes. Você pode mapear cada grupo de sensores para uma ou mais zonas",

@@ -389,7 +389,8 @@
           "greenhouse_description": "Uzavřené prostředí: skleník, fóliovník, cokoli pod sklem nebo fólií. K těmto zónám se déšť nedostane, takže srážky zůstávají mimo jejich vodní bilanci a jejich pole se skryjí. Dvě věci musíte nastavit sami, protože je nelze odhadnout: dejte Rychlosti větru statickou hodnotu blízkou 0, protože výpočet předpokládá volný vzduch, a pro Solární radiaci použijte světelný senzor, protože zasklení filtruje nebe.",
           "module": "Výpočetní jádro",
           "module_description": "Tato skupina nabízí jen zdroje, které toto jádro čte. Zóny, které ji používají, volbu přebírají.",
-          "module_undecided": "Jádro dosud nebylo vybráno, takže se nabízejí všechny zdroje a každá zóna používající tuto skupinu si drží svoje. Vyberte jedno, abyste viděli jen zdroje, které čte."
+          "module_undecided": "Jádro dosud nebylo vybráno, takže se nabízejí všechny zdroje a každá zóna používající tuto skupinu si drží svoje. Vyberte jedno, abyste viděli jen zdroje, které čte.",
+          "wind_height": "Výška anemometru (prázdné: 2 m)"
         }
       },
       "description": "Přidejte jednu nebo více skupin senzorů, které získávají meteorologická data z meteorologické služby, ze senzorů nebo z jejich kombinace. Každou skupinu senzorů můžete přiřadit k jedné nebo více zónám",

@@ -389,7 +389,8 @@
           "greenhouse_description": "Eine geschlossene Umgebung: ein Gewächshaus, ein Folientunnel, alles unter Glas oder Folie. Zu diesen Zonen kommt kein Regen, der Niederschlag bleibt daher aus ihrer Wasserbilanz heraus und seine Felder werden ausgeblendet. Zwei Dinge musst du selbst setzen, weil sie nicht zu erraten sind: gib der Windgeschwindigkeit einen statischen Wert nahe 0, da die Berechnung freie Luft annimmt, und nutze einen Lichtsensor für die Sonnenstrahlung, da die Verglasung den Himmel filtert.",
           "module": "Berechnungs-Engine",
           "module_description": "Diese Gruppe bietet nur die Quellen an, die diese Engine liest. Die Zonen, die sie nutzen, übernehmen die Wahl.",
-          "module_undecided": "Noch keine Engine gewählt, daher wird jede Quelle angeboten und jede Zone, die diese Gruppe nutzt, behält ihre eigene. Wähle eine, um nur die Quellen zu sehen, die sie liest."
+          "module_undecided": "Noch keine Engine gewählt, daher wird jede Quelle angeboten und jede Zone, die diese Gruppe nutzt, behält ihre eigene. Wähle eine, um nur die Quellen zu sehen, die sie liest.",
+          "wind_height": "Höhe des Windmessers (leer: auf 2 m)"
         }
       },
       "description": "Füge eine oder mehrere Sensorgruppen hinzu, die Wetterdaten von Weather service, Sensoren oder einer Kombination daraus abrufen. Jede Sensorgruppe kann für eine oder mehrere Zonen verwendet werden",
