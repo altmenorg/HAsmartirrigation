@@ -50,3 +50,46 @@ def test_the_day_is_charged_for_the_night_s_dew():
 
 def test_hour_by_hour_the_default_is_still_never_negative():
     assert all(v >= 0 for v in price_hourly_rows(NIGHT, LAT, LON, ELEV))
+
+
+# --- phase 1.3: the hourly form reads the dew point too ----------------------
+
+
+def test_the_humidity_follows_from_the_dew_point():
+    from custom_components.smart_irrigation.hourly_rows import (
+        _humidity_from_dew_point,
+    )
+
+    assert _humidity_from_dew_point(20.0, 20.0) == 100.0
+    # FAO-56: 12 C dew point at 24 C is about 47%.
+    assert 44 < _humidity_from_dew_point(12.0, 24.0) < 50
+    assert _humidity_from_dew_point(None, 24.0) is None
+
+
+def test_a_group_with_a_dew_point_and_no_humidity_is_priced_hour_by_hour():
+    from custom_components.smart_irrigation import const
+    from custom_components.smart_irrigation.hourly_rows import build_hourly_rows
+
+    start = datetime(2026, 7, 10, 10, 0)
+    readings = [
+        {
+            const.MAPPING_TEMPERATURE: 24.0,
+            const.MAPPING_DEWPOINT: 12.0,
+            const.MAPPING_WINDSPEED: 2.0,
+            const.MAPPING_SOLRAD: 20.0,
+            const.RETRIEVED_AT: (start.replace(hour=h)).isoformat(),
+        }
+        for h in (10, 11, 12, 13)
+    ]
+
+    rows = build_hourly_rows(
+        readings,
+        start,
+        now=start.replace(hour=13, minute=30),
+        latitude=LAT,
+        longitude=LON,
+        elevation=ELEV,
+    )
+
+    assert rows
+    assert all(44 < row["humidity"] < 50 for row in rows)

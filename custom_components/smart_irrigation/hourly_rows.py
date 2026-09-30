@@ -507,8 +507,14 @@ def build_hourly_rows(
         if _as_float(value) is not None
     }
 
+    def _known(field):
+        return bool(by_field.get(field)) or _as_float(held.get(field)) is not None
+
     for field in REQUIRED_FIELDS:
-        if not by_field.get(field) and _as_float(held.get(field)) is None:
+        if field == const.MAPPING_HUMIDITY and _known(const.MAPPING_DEWPOINT):
+            # The humidity follows from the dew point, see the row loop.
+            continue
+        if not _known(field):
             _LOGGER.debug(
                 "No %s anywhere in the window, so it cannot be priced hour by hour",
                 field,
@@ -544,6 +550,20 @@ def build_hourly_rows(
                 covered_end,
                 _as_float(held.get(field)),
             )
+            if row[key] is None and key == "humidity":
+                # A group that reads the dew point and not the humidity: the
+                # daily equation takes that one, and the humidity follows from
+                # it and the temperature, so it must not make the hour
+                # unpriceable here either.
+                row[key] = _humidity_from_dew_point(
+                    _mean_over(
+                        by_field.get(const.MAPPING_DEWPOINT, []),
+                        covered_start,
+                        covered_end,
+                        _as_float(held.get(const.MAPPING_DEWPOINT)),
+                    ),
+                    row.get("temperature"),
+                )
             if row[key] is None:
                 return None
 
@@ -568,6 +588,18 @@ def build_hourly_rows(
     ):
         return None
     return [row for row, _covered_start, _covered_end in rows]
+
+
+def _humidity_from_dew_point(dew_point_c, temperature_c):
+    """Relative humidity, %, from the dew point and the air temperature.
+
+    The ratio of the vapour pressure at the dew point to the saturation vapour
+    pressure at the air temperature (FAO-56 Eq. 10 and 11). None when either is
+    unknown.
+    """
+    if dew_point_c is None or temperature_c is None:
+        return None
+    return min(100.0, 100.0 * svp_from_t(dew_point_c) / svp_from_t(temperature_c))
 
 
 def _fill_radiation(rows, by_field, held, solar_series, latitude, longitude, elevation):

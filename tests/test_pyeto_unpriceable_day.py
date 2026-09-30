@@ -42,8 +42,6 @@ def _without(field):
 @pytest.mark.parametrize(
     "missing",
     [
-        const.MAPPING_DEWPOINT,
-        const.MAPPING_PRESSURE,
         const.MAPPING_WINDSPEED,
         const.MAPPING_MIN_TEMP,
         const.MAPPING_MAX_TEMP,
@@ -65,7 +63,7 @@ def test_the_days_that_can_be_priced_are_the_ones_averaged():
     module = _module(forecast_days=2)
     warm = {**FULL, const.MAPPING_MAX_TEMP: 30.0}
 
-    delta = module.calculate(FULL, [_without(const.MAPPING_PRESSURE), warm])
+    delta = module.calculate(FULL, [_without(const.MAPPING_WINDSPEED), warm])
 
     priced = module.last_trace["deltas"]
     assert len(priced) == 2, "today and the warm forecast day, not the empty one"
@@ -78,11 +76,11 @@ def test_the_days_that_can_be_priced_are_the_ones_averaged():
 def test_the_day_that_did_not_count_is_still_in_the_trace():
     module = _module(forecast_days=1)
 
-    module.calculate(FULL, [_without(const.MAPPING_DEWPOINT)])
+    module.calculate(FULL, [_without(const.MAPPING_WINDSPEED)])
 
     days = module.last_trace["days"]
     assert len(days) == 2, "both days are reported"
-    assert days[1]["missing"] == [const.MAPPING_DEWPOINT]
+    assert days[1]["missing"] == [const.MAPPING_WINDSPEED]
     assert module.last_trace["forecast_days_used"] == 1
 
 
@@ -112,3 +110,47 @@ def test_a_zone_looking_ahead_is_priced_without_a_forecast():
 
     assert looking_ahead == pytest.approx(today_only)
     assert looking_ahead < 0
+
+
+# --- phase 1.3: the fallbacks FAO-56 gives each input ------------------------
+
+
+def test_no_dew_point_reads_the_humidity():
+    """A group with temperature and humidity but no dew point priced every day
+    at zero. FAO-56 Eq. 19 takes the vapour pressure from the mean humidity."""
+    module = _module()
+    humid = {**_without(const.MAPPING_DEWPOINT), const.MAPPING_HUMIDITY: 65.0}
+
+    delta = module.calculate(humid, [])
+
+    assert delta < 0
+    assert module.last_day_trace["avp_source"] == const.MAPPING_HUMIDITY
+
+
+def test_no_dew_point_and_no_humidity_reads_the_minimum_temperature():
+    module = _module()
+
+    delta = module.calculate(_without(const.MAPPING_DEWPOINT), [])
+
+    assert delta < 0
+    assert module.last_day_trace["avp_source"] == const.MAPPING_MIN_TEMP
+    # Eq. 48: the dew point is taken as the minimum temperature, 8 C here,
+    # against 9 C measured: a slightly drier air, so slightly more ET.
+    with_dew_point = _module().calculate(FULL, [])
+    assert delta == pytest.approx(with_dew_point, rel=0.1)
+
+
+def test_the_dew_point_comes_first_when_there_is_one():
+    module = _module()
+    module.calculate({**FULL, const.MAPPING_HUMIDITY: 30.0}, [])
+    assert module.last_day_trace["avp_source"] == const.MAPPING_DEWPOINT
+
+
+def test_no_pressure_is_worked_out_from_the_elevation():
+    module = _module()
+
+    delta = module.calculate(_without(const.MAPPING_PRESSURE), [])
+
+    assert module.last_day_trace["pressure_estimated"] is True
+    # At 4 m the standard atmosphere is within a hPa or two of the 1013 given.
+    assert delta == pytest.approx(_module().calculate(FULL, []), rel=0.01)

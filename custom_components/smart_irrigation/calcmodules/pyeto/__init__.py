@@ -20,7 +20,10 @@ from custom_components.smart_irrigation.const import (
 )
 
 from .pyeto import (
+    atm_pressure,
+    avp_from_rhmean,
     avp_from_tdew,
+    avp_from_tmin,
     convert,
     cs_rad,
     deg2rad,
@@ -244,12 +247,31 @@ class PyETO(SmartIrrigationCalculationModule):
             wind_m_s = weather_data.get(MAPPING_WINDSPEED)
             atmos_pres = weather_data.get(MAPPING_PRESSURE)
             sol_rad = weather_data.get(MAPPING_SOLRAD)
+            humidity = weather_data.get(MAPPING_HUMIDITY)
+            # FAO-56 gives each input a fallback, and the equation needed the
+            # dew point and the pressure outright: a group with temperature and
+            # humidity sensors but no dew point priced every day at zero, with
+            # a warning in the log. The pressure comes from the elevation
+            # (Eq. 7), which is what the hourly equation already did.
+            pressure_estimated = atmos_pres is None
+            if pressure_estimated:
+                atmos_pres = atm_pressure(self._elevation or 0.0) * 10.0
+            # Actual vapour pressure: from the dew point (Eq. 14), else from the
+            # mean relative humidity (Eq. 19), else from the minimum temperature
+            # (Eq. 48), in the order FAO-56 prefers them.
+            if tdew is not None:
+                avp_source = MAPPING_DEWPOINT
+            elif humidity is not None:
+                avp_source = MAPPING_HUMIDITY
+            elif temp_c_min is not None:
+                avp_source = MAPPING_MIN_TEMP
+            else:
+                avp_source = None
             if (
-                tdew is not None
+                avp_source is not None
                 and temp_c_min is not None
                 and temp_c_max is not None
                 and wind_m_s is not None
-                and atmos_pres is not None
             ):
                 day_of_year = (
                     self._day_of_the_weather(weather_data, day).timetuple().tm_yday
@@ -294,11 +316,20 @@ class PyETO(SmartIrrigationCalculationModule):
                     "[pyETO: calculate_et_for_day] net_in_sol_radvar: %s",
                     net_in_sol_radvar,
                 )
-                avp = avp_from_tdew(tdew)
+                if avp_source == MAPPING_DEWPOINT:
+                    avp = avp_from_tdew(tdew)
+                elif avp_source == MAPPING_HUMIDITY:
+                    avp = avp_from_rhmean(
+                        svp_from_t(temp_c_min),
+                        svp_from_t(temp_c_max),
+                        min(100.0, max(0.0, float(humidity))),
+                    )
+                else:
+                    avp = avp_from_tmin(temp_c_min)
                 _LOGGER.debug(
-                    "[pyETO: calculate_et_for_day] avp_from_tdew: %s for tdew %s",
+                    "[pyETO: calculate_et_for_day] avp %s, from %s",
                     avp,
-                    tdew,
+                    avp_source,
                 )
                 net_out_lw_radvar = net_out_lw_rad(
                     convert.celsius2kelvin(temp_c_min),
@@ -364,6 +395,10 @@ class PyETO(SmartIrrigationCalculationModule):
                     "net_in_sol_rad": net_in_sol_radvar,
                     "svp": svp,
                     "avp": avp,
+                    # Which input the vapour pressure came from, and whether
+                    # the pressure was worked out from the elevation.
+                    "avp_source": avp_source,
+                    "pressure_estimated": pressure_estimated,
                     "net_out_lw_rad": net_out_lw_radvar,
                     "net_rad": net_radvar,
                     "mean_temp": temp_c,
@@ -381,19 +416,13 @@ class PyETO(SmartIrrigationCalculationModule):
                 "missing": [
                     name
                     for name, value in (
-                        (MAPPING_DEWPOINT, tdew),
                         (MAPPING_MIN_TEMP, temp_c_min),
                         (MAPPING_MAX_TEMP, temp_c_max),
                         (MAPPING_WINDSPEED, wind_m_s),
-                        (MAPPING_PRESSURE, atmos_pres),
                     )
                     if value is None
                 ],
             }
-            if tdew is None:
-                _LOGGER.warning(
-                    "[pyETO: calculate_et_for_day] missing %s", MAPPING_DEWPOINT
-                )
             if temp_c_min is None:
                 _LOGGER.warning(
                     "[pyETO: calculate_et_for_day] missing %s", MAPPING_MIN_TEMP
@@ -405,10 +434,6 @@ class PyETO(SmartIrrigationCalculationModule):
             if wind_m_s is None:
                 _LOGGER.warning(
                     "[pyETO: calculate_et_for_day] missing %s", MAPPING_WINDSPEED
-                )
-            if atmos_pres is None:
-                _LOGGER.warning(
-                    "[pyETO: calculate_et_for_day] missing %s", MAPPING_PRESSURE
                 )
         _LOGGER.debug("[pyETO: calculate_et_for_day] returned: 0!")
         return 0
