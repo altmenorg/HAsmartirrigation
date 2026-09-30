@@ -153,8 +153,10 @@ class PyETO(SmartIrrigationCalculationModule):
         days = []
         if weather_data:
             self._price_day(weather_data, None, deltas, days)
-            # loop over the forecast days
-            for x in range(self.forecast_days):
+            # loop over the forecast days. The live estimate asks without a
+            # forecast on purpose (live_estimate.py): len(None) raised, and a
+            # zone looking ahead never had an estimate at all.
+            for x in range(self.forecast_days if forecast_data else 0):
                 _LOGGER.debug(
                     "[pyETO: calculate_et_for_day] calculating delta for forecast day: %s",
                     x,

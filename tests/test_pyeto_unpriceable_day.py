@@ -102,3 +102,13 @@ def test_a_day_of_readings_that_cannot_be_priced_still_yields_no_watering():
 
     assert module.calculate(_without(const.MAPPING_WINDSPEED), []) == 0
     assert module.last_trace["days_in_average"] == 0
+
+
+def test_a_zone_looking_ahead_is_priced_without_a_forecast():
+    """The live estimate asks without a forecast on purpose: len(None) raised,
+    and a zone with forecast days never had a live estimate (audit 0.12)."""
+    looking_ahead = _module(forecast_days=2).calculate(FULL, None)
+    today_only = _module(forecast_days=0).calculate(FULL, None)
+
+    assert looking_ahead == pytest.approx(today_only)
+    assert looking_ahead < 0
