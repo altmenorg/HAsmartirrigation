@@ -12,9 +12,12 @@ Nothing here writes to the store, fires an event or touches a valve.
 
 Two limits worth knowing, both stated rather than hidden:
 
-* A zone whose module uses forecasting is estimated without the forecast. The
-  forecast costs a weather-service call, and a display refresh must not spend
-  one every time somebody opens a tab.
+* A zone whose module uses forecasting is estimated with the forecast the
+  weather service sent with its last reading, never with a new request: a
+  display refresh must not spend one every time somebody opens a tab. Without
+  a forecast in hand (a service that keeps none) it is estimated without, and
+  says so. Estimating without it always made the estimate of such a zone
+  disagree with the calculation it previews.
 * An estimate is only as good as the readings so far. Early in an interval it
   rests on very little, which is exactly when it is furthest from the value the
   calculation will commit.
@@ -63,8 +66,9 @@ class LiveEstimateMixin:
             )
             if not weatherdata:
                 return None
-            # forecastdata=None on purpose, see the module docstring.
-            calc = await self.calculate_module(zone, weatherdata, None)
+            # The forecast in hand only, see the module docstring.
+            forecastdata = await self._cached_forecast_for(zone)
+            calc = await self.calculate_module(zone, weatherdata, forecastdata)
         except Exception as e:  # noqa: BLE001 - a display estimate must not fail
             # With the traceback: otherwise "switched off" and "raises on every
             # refresh" look the same from outside.
@@ -94,7 +98,27 @@ class LiveEstimateMixin:
                 else zone.get(const.ZONE_LAST_CALCULATED)
             ),
             "as_of": dt_util.now().isoformat(),
+            # Whether the days ahead were in it, for a zone that looks ahead.
+            "forecast_used": bool(forecastdata),
         }
+
+    async def _cached_forecast_for(self, zone):
+        """The last forecast the service sent, for a zone that looks ahead."""
+        try:
+            modinst = await self.getModuleInstanceByID(self.module_id_for_zone(zone))
+            if not getattr(modinst, "forecast_days", 0):
+                return None
+            fetch = getattr(
+                getattr(self, "_WeatherServiceClient", None),
+                "get_cached_forecast_data",
+                None,
+            )
+            if fetch is None or not getattr(self, "use_weather_service", False):
+                return None
+            return fetch()
+        except Exception:  # noqa: BLE001 - an estimate without it is still one
+            _LOGGER.debug("No cached forecast for the live estimate", exc_info=True)
+            return None
 
     async def async_estimate_all_zones_now(self) -> dict:
         """Live estimates for every zone that is not disabled, keyed by zone id."""

@@ -546,15 +546,28 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
         self._precipitation_covers_from = series[0][0] - SECONDS_PER_HOUR
         return series
 
-    def get_forecast_data(self, include_today=False):
+    def get_cached_forecast_data(self):
+        """The daily forecast from the last response, without asking again.
+
+        For the live estimate, which runs on every refresh of a display and
+        must not spend a request each time: the forecast is fetched with every
+        hourly reading, so the last one is at most an interval old. None when
+        nothing has been fetched yet.
+        """
+        if self._cached_doc is None:
+            return None
+        return self.get_forecast_data(cached_only=True)
+
+    def get_forecast_data(self, include_today=False, cached_only=False):
         """Return a list of daily forecast dicts, keyed by MAPPING_* constants.
 
         By default today (index 0) is dropped so the list starts at tomorrow,
         matching the PyETO forecast semantics. Pass ``include_today=True`` (the
         precipitation-skip check) to keep today at index 0. See #775.
+        ``cached_only`` reads the last response and never fetches.
         """
         try:
-            doc = self._get_doc()
+            doc = self._cached_doc if cached_only else self._get_doc()
             if doc is None or "daily" not in doc:
                 _LOGGER.warning(
                     "Ignoring Open-Meteo input: missing 'daily' block in API return"

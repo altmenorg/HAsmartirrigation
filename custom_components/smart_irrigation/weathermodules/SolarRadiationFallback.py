@@ -71,6 +71,11 @@ class SolarRadiationFallbackClient:  # pylint: disable=invalid-name
                     self._fill(day, fb[i])
         return data
 
+    def get_cached_forecast_data(self):
+        """The primary's last forecast without a new request, when it keeps one."""
+        fetch = getattr(self._primary, "get_cached_forecast_data", None)
+        return fetch() if fetch else None
+
     def get_hourly_radiation(self, start, end):
         """The sun of each hour, from Open-Meteo, for the hourly equation.
 
