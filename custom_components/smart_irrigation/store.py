@@ -207,7 +207,12 @@ _LOGGER = logging.getLogger(__name__)
 DATA_REGISTRY = f"{DOMAIN}_storage"
 STORAGE_KEY = f"{DOMAIN}.storage"
 STORAGE_VERSION = 5
-SAVE_DELAY = 0
+# How long a change waits before the store is written, in seconds, so that a
+# burst of readings (continuous updates) is one write instead of one per
+# reading, each a full copy of every buffer. Home Assistant writes what is
+# pending when it stops. What must survive a power cut is written at once
+# instead: the valves that are open, and a zone's bucket (see _save_now).
+SAVE_DELAY = 10
 
 
 def _parse_history_start(value) -> datetime.datetime | None:
@@ -1314,6 +1319,15 @@ class SmartIrrigationStorage:
         """Schedule saving the registry of Smart Irrigation."""
         self._store.async_delay_save(self._data_to_save, SAVE_DELAY)
 
+    async def _save_now(self) -> None:
+        """Write the store at once, for what a power cut must not lose.
+
+        An open valve is recorded so that a restart closes it: lost, the valve
+        stays open. A bucket credited by a run is what stops the zone being
+        watered again: lost, it waters twice. Both are rare writes.
+        """
+        await self._store.async_save(self._data_to_save())
+
     async def async_save(self) -> None:
         """Save the registry of Smart Irrigation."""
         await self._store.async_save(self._data_to_save())
@@ -1385,7 +1399,10 @@ class SmartIrrigationStorage:
         old = self.config
         changes.pop("id", None)
         new = self.config = attr.evolve(old, **changes)
-        self.async_schedule_save()
+        if CONF_ACTIVE_VALVE_RUNS in changes:
+            await self._save_now()
+        else:
+            self.async_schedule_save()
         return attr.asdict(new)
 
     @callback
@@ -1466,7 +1483,10 @@ class SmartIrrigationStorage:
             new = self.zones[zone_id] = attr.evolve(old, **filtered_changes)
         else:
             new = old
-        self.async_schedule_save()
+        if changes and ZONE_BUCKET in changes:
+            await self._save_now()
+        else:
+            self.async_schedule_save()
         return attr.asdict(new)
 
     @callback
