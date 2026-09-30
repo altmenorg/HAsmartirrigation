@@ -192,3 +192,120 @@ async def test_it_is_unique_per_zone():
     sensor, _coordinator, _tasks, _clock, _connect = _sensor(ESTIMATE)
 
     assert sensor.unique_id == f"{const.DOMAIN}_1_live_bucket"
+
+
+# --- #869: the entity dropped to last night's bucket for a few minutes ---
+
+CALCULATED = {
+    **ZONE,
+    const.ZONE_LAST_CALCULATED: "2026-09-27T23:00:00",
+    const.ZONE_LAST_CONSUMED_AT: "2026-09-27T23:00:00",
+}
+
+
+@pytest.mark.asyncio
+async def test_one_failed_estimate_keeps_the_last_one():
+    """Megalos's graph: live at -3.62, then -2.95 (committed) for seven
+    minutes, then live again. Nothing had moved the window in between, so there
+    was still something to estimate from: that attempt failed, and the last
+    estimate was the better answer."""
+    sensor, coordinator, tasks, clock, _connect = _sensor(ESTIMATE, zone=CALCULATED)
+    sensor._async_zone_updated(1)
+    await _run(tasks)
+
+    coordinator.async_estimate_zone_now = AsyncMock(side_effect=RuntimeError("boom"))
+    clock["t"] += 60
+    sensor._async_zone_updated(1)
+    await _run(tasks)
+
+    assert sensor.native_value == pytest.approx(-7.5)
+    assert sensor.extra_state_attributes["live"] is True
+
+
+@pytest.mark.asyncio
+async def test_a_calculation_still_brings_it_back_to_the_committed_bucket():
+    """The window moved: the committed bucket is what the zone stands at."""
+    sensor, coordinator, tasks, clock, _connect = _sensor(ESTIMATE, zone=CALCULATED)
+    sensor._async_zone_updated(1)
+    await _run(tasks)
+
+    coordinator.store.get_zone = MagicMock(
+        return_value={
+            **CALCULATED,
+            const.ZONE_BUCKET: -7.4,
+            const.ZONE_LAST_CALCULATED: "2026-09-28T23:00:00",
+            const.ZONE_LAST_CONSUMED_AT: "2026-09-28T23:00:00",
+        }
+    )
+    coordinator.async_estimate_zone_now = AsyncMock(return_value=None)
+    clock["t"] += 60
+    sensor._async_zone_updated(1)
+    await _run(tasks)
+
+    assert sensor.native_value == pytest.approx(-7.4)
+    assert sensor.extra_state_attributes["live"] is False
+
+
+@pytest.mark.asyncio
+async def test_a_bucket_reset_also_moves_the_window():
+    sensor, coordinator, tasks, clock, _connect = _sensor(ESTIMATE, zone=CALCULATED)
+    sensor._async_zone_updated(1)
+    await _run(tasks)
+
+    coordinator.store.get_zone = MagicMock(
+        return_value={**CALCULATED, const.ZONE_BUCKET: 0.0}
+    )
+    coordinator.async_estimate_zone_now = AsyncMock(return_value=None)
+    clock["t"] += 60
+    sensor._async_zone_updated(1)
+    await _run(tasks)
+
+    assert sensor.native_value == pytest.approx(0.0)
+    assert sensor.extra_state_attributes["live"] is False
+
+
+def _last_state(value, **attributes):
+    state = MagicMock()
+    state.state = str(value)
+    state.attributes = {"unit_of_measurement": const.UNIT_MM, **attributes}
+    return state
+
+
+@pytest.mark.asyncio
+async def test_a_restart_comes_back_with_the_estimate_it_had():
+    sensor, _coordinator, _tasks, _clock, _connect = _sensor(None, zone=CALCULATED)
+    sensor.async_get_last_state = AsyncMock(
+        return_value=_last_state(-7.5, live=True, since="2026-09-27T23:00:00")
+    )
+
+    await sensor._async_restore_estimate()
+
+    assert sensor.native_value == pytest.approx(-7.5)
+    assert sensor.extra_state_attributes["live"] is True
+
+
+@pytest.mark.asyncio
+async def test_a_restart_after_a_calculation_does_not_bring_back_the_old_one():
+    sensor, _coordinator, _tasks, _clock, _connect = _sensor(None, zone=CALCULATED)
+    sensor.async_get_last_state = AsyncMock(
+        return_value=_last_state(-7.5, live=True, since="2026-09-26T23:00:00")
+    )
+
+    await sensor._async_restore_estimate()
+
+    assert sensor.native_value == pytest.approx(-6.0)
+    assert sensor.extra_state_attributes["live"] is False
+
+
+@pytest.mark.asyncio
+async def test_a_restart_in_another_unit_does_not_bring_it_back():
+    sensor, _coordinator, _tasks, _clock, _connect = _sensor(
+        None, units=US_CUSTOMARY_SYSTEM, zone=CALCULATED
+    )
+    sensor.async_get_last_state = AsyncMock(
+        return_value=_last_state(-7.5, live=True, since="2026-09-27T23:00:00")
+    )
+
+    await sensor._async_restore_estimate()
+
+    assert sensor.extra_state_attributes["live"] is False

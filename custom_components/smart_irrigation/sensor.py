@@ -631,7 +631,9 @@ class SmartIrrigationZoneLastIrrigationSensor(SmartIrrigationZoneChildSensor):
         return None
 
 
-class SmartIrrigationZoneLiveBucketSensor(SmartIrrigationZoneChildSensor):
+class SmartIrrigationZoneLiveBucketSensor(
+    SmartIrrigationZoneChildSensor, RestoreEntity
+):
     """Where this zone stands now, not where the last calculation left it.
 
     The stored bucket is the one committed in the small hours, so by the
@@ -647,6 +649,12 @@ class SmartIrrigationZoneLiveBucketSensor(SmartIrrigationZoneChildSensor):
     value stands; when there is nothing to estimate from -- right after a
     calculation, the window being empty -- it is the committed bucket, and the
     ``live`` attribute says which of the two you are looking at.
+
+    An estimate that cannot be made while the window is still the one the last
+    estimate covered is a fault of that moment, not a reset of the window, so
+    the last estimate stands rather than the entity dropping to last night's
+    bucket for a few minutes (#869). For the same reason it comes back from a
+    restart with the estimate it had, as long as no calculation has run since.
 
     Its value is held in the unit shown rather than in millimetres, because the
     estimate arrives converted, so ``native_value`` does not convert again.
@@ -664,7 +672,25 @@ class SmartIrrigationZoneLiveBucketSensor(SmartIrrigationZoneChildSensor):
         self._as_of = None
         self._duration = None
         self._last_run = None
+        # The window the shown estimate was made over, see _window().
+        self._window_of_estimate = None
         super().__init__(*args, **kwargs)
+
+    @staticmethod
+    def _calculated_at(zone):
+        """The last calculation, as the estimate reports it in ``since``."""
+        stamp = zone.get(const.ZONE_LAST_CALCULATED)
+        return stamp.isoformat() if hasattr(stamp, "isoformat") else stamp
+
+    def _window(self, zone):
+        """What an estimate is measured from: a calculation or a reset moves it."""
+        if not zone:
+            return None
+        return (
+            self._calculated_at(zone),
+            str(zone.get(const.ZONE_LAST_CONSUMED_AT)),
+            zone.get(const.ZONE_BUCKET),
+        )
 
     def _read_value(self):
         """The committed bucket, in the unit shown: the value to stand on."""
@@ -686,6 +712,7 @@ class SmartIrrigationZoneLiveBucketSensor(SmartIrrigationZoneChildSensor):
 
     async def _async_estimate(self) -> None:
         """Recompute the estimate, falling back to the committed bucket."""
+        zone = None
         try:
             coordinator = self._hass.data[const.DOMAIN]["coordinator"]
             zone = coordinator.store.get_zone(self._zone_id)
@@ -699,6 +726,15 @@ class SmartIrrigationZoneLiveBucketSensor(SmartIrrigationZoneChildSensor):
             self._since = estimate.get("since")
             self._as_of = estimate.get("as_of")
             self._duration = estimate.get("duration")
+            self._window_of_estimate = self._window(zone)
+        elif self._live and self._window_of_estimate == self._window(zone):
+            # Same window, so there is still something to estimate from: this
+            # attempt failed, and the last estimate is closer to the truth
+            # than the bucket committed last night (#869).
+            _LOGGER.debug(
+                "Live bucket for zone %s: no estimate this time, keeping the last",
+                self._zone_id,
+            )
         else:
             # Nothing collected since the last calculation: the committed value
             # is the honest answer, and it is not an estimate.
@@ -707,6 +743,7 @@ class SmartIrrigationZoneLiveBucketSensor(SmartIrrigationZoneChildSensor):
             self._since = None
             self._as_of = None
             self._duration = None
+            self._window_of_estimate = None
         if zone := self._hass.data[const.DOMAIN]["coordinator"].store.get_zone(
             self._zone_id
         ):
@@ -735,9 +772,40 @@ class SmartIrrigationZoneLiveBucketSensor(SmartIrrigationZoneChildSensor):
 
     async def async_added_to_hass(self):
         """Estimate once on startup, so the entity is not a day behind."""
+        await self._async_restore_estimate()
         await super().async_added_to_hass()
         self._last_run = self._hass.loop.time()
         self._hass.async_create_task(self._async_estimate())
+
+    async def _async_restore_estimate(self) -> None:
+        """Take back the estimate shown before a restart, if it still applies.
+
+        Only while no calculation has run since it was made, and in the unit
+        shown now: otherwise the committed bucket is the right place to start.
+        """
+        last = await self.async_get_last_state()
+        if last is None or not last.attributes.get("live"):
+            return
+        try:
+            zone = self._hass.data[const.DOMAIN]["coordinator"].store.get_zone(
+                self._zone_id
+            )
+            value = float(last.state)
+        except (KeyError, AttributeError, TypeError, ValueError):
+            return
+        if (
+            not zone
+            or last.attributes.get("since") != self._calculated_at(zone)
+            or last.attributes.get("unit_of_measurement")
+            != self.native_unit_of_measurement
+        ):
+            return
+        self._value = value
+        self._live = True
+        self._since = last.attributes.get("since")
+        self._as_of = last.attributes.get("as_of")
+        self._duration = last.attributes.get("duration")
+        self._window_of_estimate = self._window(zone)
 
 
 class SmartIrrigationZoneWaterUsedSensor(SmartIrrigationZoneChildSensor):
