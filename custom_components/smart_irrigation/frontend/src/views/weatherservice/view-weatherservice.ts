@@ -480,8 +480,14 @@ export class SmartIrrigationViewWeatherService extends LitElement {
         min-width: 100%;
         width: max-content;
       }
-      .ws-history-unit {
+      /* The unit is a span inside the header cell, so the global
+         ".weather-header span" rule drew a second, narrower underline under it
+         (#870). Only the cell itself is underlined. */
+      .weather-header .ws-history-unit {
         display: block;
+        padding: 0;
+        background: none;
+        border-bottom: none;
         font-weight: 400;
         font-size: 0.85em;
         color: var(--secondary-text-color);
