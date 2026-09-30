@@ -13,6 +13,7 @@ import requests
 
 from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.weathermodules.OpenMeteoClient import (
+    WIND_10M_TO_2M,
     OpenMeteoClient,
 )
 
@@ -162,7 +163,10 @@ def test_the_forecast_carries_what_an_hourly_row_needs():
     first = series[0]
     assert first["temperature"] == 20.0
     assert first["humidity"] == 50.0
-    assert first["wind"] == 2.0
+    # Open-Meteo's 10 m wind, brought to the 2 m the equation wants (audit 0.3):
+    # taken as it came it raised every forecast day's wind by about a third.
+    assert first["wind"] == pytest.approx(2.0 * WIND_10M_TO_2M)
+    assert first["wind"] == pytest.approx(1.496, abs=0.001)
     assert first["solar_mj_h"] == pytest.approx(300.0 * 0.0036)
     assert first["pressure_hpa"] == 1010.0
 

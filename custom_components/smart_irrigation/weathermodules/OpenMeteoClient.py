@@ -458,6 +458,10 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
                     if value is None:
                         return None
                     row[key] = float(value)
+                # The equation wants the wind at 2 m, and every other Open-Meteo
+                # path converts it (FAO-56 Eq. 47). Taken as it came, the 10 m
+                # figure raised the wind of every forecast day by about a third.
+                row["wind"] *= WIND_10M_TO_2M
                 watts = hourly["shortwave_radiation"][index]
                 row["solar_mj_h"] = float(watts or 0.0) * SECONDS_PER_HOUR / 1_000_000
                 pressure = hourly.get("surface_pressure", [None] * len(stamps))[index]

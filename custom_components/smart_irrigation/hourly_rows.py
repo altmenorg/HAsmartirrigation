@@ -749,8 +749,8 @@ def forecast_rows_by_day(series, tz=None, tz_offset_h=0.0, today=None):
     """``{date: [row, ...]}`` for each whole day of a forecast still to come.
 
     The series is what a weather client returns for the coming hours: a list of
-    ``{"ts": unix timestamp, "temperature", "humidity", "wind", "solar_mj_h",
-    "pressure_hpa"}``. Each entry is a whole hour, so every row's coverage is 1.
+    ``{"ts": unix timestamp, "temperature", "humidity", "wind" (at 2 m),
+    "solar_mj_h", "pressure_hpa"}``. Each entry is a whole hour, so every row's coverage is 1.
 
     Only days that are both *after today* and *complete* are returned. Today's
     remaining hours belong to today's own balance -- they are part of the
