@@ -390,3 +390,22 @@ async def test_a_valve_still_open_after_the_downtime_is_credited_what_ran():
 
     # About 1200 s at 12 mm/h is 4 mm: -3 becomes about +1.
     assert zone[const.ZONE_BUCKET] == pytest.approx(1.0, abs=0.05)
+
+
+async def test_a_metered_run_on_a_zone_set_by_rate_ignores_the_hidden_size():
+    """A drip zone entered as 4 mm/h, with the 50 m2 the panel hid: litres over
+    that size credited ten times too little (audit 0.9)."""
+    zone = _zone(
+        **{
+            const.ZONE_INPUT_METHOD: const.ZONE_INPUT_METHOD_PRECIPITATION_RATE,
+            const.ZONE_PRECIPITATION_RATE: 4.0,
+        }
+    )
+    coord = _Coordinator(_make_hass(), _make_store([zone]))
+    coord.async_record_measured_flow = AsyncMock()
+
+    # 30 minutes at 4 mm/h is 2 mm, whatever the meter read in litres.
+    await coord._credit_from_volume(0, 10.0, seconds=1800)
+
+    assert zone[const.ZONE_BUCKET] == pytest.approx(-1.0)
+    assert zone[const.ZONE_WATER_USED] == pytest.approx(10.0)

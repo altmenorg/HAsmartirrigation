@@ -306,6 +306,35 @@ class ObservedWateringMixin:
         zone = self.store.get_zone(zone_id)
         if zone is None:
             return
+        if (
+            zone.get(const.ZONE_INPUT_METHOD)
+            == const.ZONE_INPUT_METHOD_PRECIPITATION_RATE
+        ):
+            # A zone entered as a precipitation rate has no area of its own:
+            # its stored size is the default the panel hid when the rate was
+            # chosen. Litres over that size credited a drip zone ten times too
+            # little. The depth comes from the rate and the time instead, as
+            # for a run without a meter, and the litres are what it recorded.
+            if not seconds:
+                _LOGGER.warning(
+                    "Observed watering: zone %s is set by precipitation rate and "
+                    "the metered run has no duration, cannot credit",
+                    zone_id,
+                )
+                return
+            lead = max(0.0, float(zone.get(const.ZONE_LEAD_TIME) or 0.0))
+            applied_mm = self._applied_depth_mm(zone, max(0.0, seconds - lead))
+            if applied_mm is None:
+                return
+            await self._apply_volume_credit(
+                zone,
+                volume_l,
+                source=f"{volume_l:.1f} L metered",
+                seconds=seconds,
+                started=started,
+                applied_mm=applied_mm,
+            )
+            return
         if (zone.get(const.ZONE_SIZE) or 0.0) <= 0:
             _LOGGER.warning(
                 "Observed watering: zone %s has no size, cannot credit", zone_id
