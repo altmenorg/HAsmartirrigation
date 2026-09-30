@@ -500,6 +500,10 @@ MAPPING_GREENHOUSE = "greenhouse"
 MAPPING_MODULE = "module"
 CONF_DEFAULT_GREENHOUSE = False
 MAPPING_DATA_MULTIPLIER = "data_multiplier"
+# When the aggregated window ends: the last reading it holds is no later. The
+# zone's watermark is set to it, so a reading arriving during the calculation
+# is left for the next window instead of falling between the two.
+MAPPING_DATA_WINDOW_END = "data_window_end"
 MAPPING_MAPPINGS = "mappings"
 MAPPING_TIMESTAMP = "timestamp"
 MAPPING_DEWPOINT = "Dewpoint"

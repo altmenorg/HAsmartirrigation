@@ -265,6 +265,9 @@ class CalculationMixin:
         """
         _LOGGER.debug("[apply_aggregates_to_mapping_data]: mapping: %s", mapping)
         buffered = mapping.get(const.MAPPING_DATA)
+        # Every reading in the buffer now is no later than this, and a reading
+        # recorded from here on is not in this window.
+        window_end = datetime.now()
         data = self._readings_after(buffered, since)
         if not data:
             return None
@@ -288,6 +291,7 @@ class CalculationMixin:
             data_by_sensor, mapping, audit, since=since
         )
         resultdata[const.MAPPING_DATA_MULTIPLIER] = hour_multiplier
+        resultdata[const.MAPPING_DATA_WINDOW_END] = window_end
         # The rain window is the interval that scales ET. Both ends are taken
         # before aggregating: a persisting aggregation moves the last
         # calculation marker the window starts at, and ending no later than the
@@ -1436,6 +1440,28 @@ class CalculationMixin:
             weatherdata,
             forecastdata,
         )
+        # The calculation awaits network fetches, and a watering credited to
+        # the bucket meanwhile (a valve closing) was overwritten by the result,
+        # which is an absolute bucket: the zone then watered the same deficit
+        # again. Calculate again from the bucket as it is now; the fetches are
+        # cached, so this is cheap, and it only happens when the bucket moved.
+        for _ in range(2):
+            fresh = self.store.get_zone(zone_id)
+            if (
+                calc_data is None
+                or not fresh
+                or fresh.get(const.ZONE_BUCKET) == zone.get(const.ZONE_BUCKET)
+            ):
+                break
+            _LOGGER.info(
+                "Zone %s: the bucket changed during the calculation (%s -> %s), "
+                "calculating again from the new value",
+                zone_id,
+                zone.get(const.ZONE_BUCKET),
+                fresh.get(const.ZONE_BUCKET),
+            )
+            zone = fresh
+            calc_data = await self.calculate_module(zone, weatherdata, forecastdata)
         if calc_data is None:
             # The engine could not produce a value: a zone taking its
             # evapotranspiration from a sensor or a service whose group has
@@ -1485,7 +1511,12 @@ class CalculationMixin:
         # reading that group: clearing it here left the others calculating on
         # whatever had arrived since, which under-watered them silently.
         if delete_weather_data:
-            calc_data[const.ZONE_LAST_CONSUMED_AT] = datetime.now()
+            # Where the window ended, not now: the calculation awaits network
+            # fetches, and a reading recorded meanwhile was neither in this
+            # window nor after the mark, so its increment was lost.
+            calc_data[const.ZONE_LAST_CONSUMED_AT] = (weatherdata or {}).get(
+                const.MAPPING_DATA_WINDOW_END
+            ) or datetime.now()
 
         await self.store.async_update_zone(zone.get(const.ZONE_ID), calc_data)
 
@@ -2135,7 +2166,11 @@ class CalculationMixin:
                 "aggregate": {
                     key: value
                     for key, value in (weatherdata or {}).items()
-                    if key != const.MAPPING_DATA_MULTIPLIER
+                    if key
+                    not in (
+                        const.MAPPING_DATA_MULTIPLIER,
+                        const.MAPPING_DATA_WINDOW_END,
+                    )
                 },
                 "forecast_records": len(forecastdata) if forecastdata else 0,
             },
