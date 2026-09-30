@@ -311,3 +311,82 @@ async def test_zones_watered_at_once_are_not_paused_apart(sleeps):
     await coord.async_run_direct_valves()
 
     assert 90.0 not in sleeps
+
+
+# --- lead time and restart credit (audit 0.6, 0.10) -------------------------
+# 10 L/min over 50 m2 is 12 mm/h: 300 s of water is 1.0 mm.
+
+
+async def test_the_lead_time_is_held_but_not_credited(sleeps):
+    """The duration is the water plus one lead time, and the lead only fills
+    the pipe. Crediting it left a phantom surplus after every run."""
+    zone = _zone(**{const.ZONE_LEAD_TIME: 60, const.ZONE_DURATION: 360})
+    hass = _make_hass()
+    coord = _Coordinator(hass, _make_store([zone]))
+
+    result = await coord._run_one_valve(zone)
+
+    assert sleeps == [360.0]
+    assert zone[const.ZONE_BUCKET] == pytest.approx(-2.0)
+    # The tap still ran for 360 s: that is what the report says.
+    assert result["seconds"] == 360
+
+
+async def test_every_pass_fills_the_pipe_again(sleeps):
+    zone = _zone(**{const.ZONE_LEAD_TIME: 60, const.ZONE_DURATION: 360})
+    hass = _make_hass()
+    coord = _Coordinator(hass, _make_store([zone], passes=3, soak=10))
+
+    await coord._run_one_valve(zone)
+
+    # 300 s of water in three passes of 100, each with its own 60 s lead.
+    assert sleeps == [160.0, 600.0, 160.0, 600.0, 160.0]
+    assert zone[const.ZONE_BUCKET] == pytest.approx(-2.0)
+
+
+async def test_an_observed_run_is_credited_without_its_lead_time():
+    zone = _zone(**{const.ZONE_LEAD_TIME: 60})
+    coord = _Coordinator(_make_hass(), _make_store([zone]))
+
+    await coord._credit_observed_watering(0, 360)
+
+    assert zone[const.ZONE_BUCKET] == pytest.approx(-2.0)
+
+
+def _stale_run(minutes_ago, duration=300):
+    from datetime import timedelta
+
+    from homeassistant.util import dt as dt_util
+
+    return {
+        const.RUN_ZONE_ID: 0,
+        const.RUN_ENTITY_ID: "switch.valve",
+        const.RUN_STARTED: (
+            dt_util.utcnow() - timedelta(minutes=minutes_ago)
+        ).isoformat(),
+        const.RUN_DURATION: duration,
+    }
+
+
+async def test_a_valve_closed_during_the_downtime_is_credited_its_pass_only():
+    """A safety timer or a power cut closed it: the downtime was not water.
+    Crediting the whole of it (up to the maximum duration) skipped days."""
+    zone = _zone()
+    hass = _make_hass()
+    hass.states.get = lambda entity_id: SimpleNamespace(state="off")
+    coord = _Coordinator(hass, _make_store([zone]))
+
+    await coord._resume_one(_stale_run(minutes_ago=120))
+
+    assert zone[const.ZONE_BUCKET] == pytest.approx(-2.0)
+
+
+async def test_a_valve_still_open_after_the_downtime_is_credited_what_ran():
+    zone = _zone()
+    hass = _make_hass()
+    coord = _Coordinator(hass, _make_store([zone]))
+
+    await coord._resume_one(_stale_run(minutes_ago=20))
+
+    # About 1200 s at 12 mm/h is 4 mm: -3 becomes about +1.
+    assert zone[const.ZONE_BUCKET] == pytest.approx(1.0, abs=0.05)

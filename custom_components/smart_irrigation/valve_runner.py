@@ -5,10 +5,9 @@ the valve, waits the calculated duration, then closes it -- no automation to
 write. The legacy start event still fires, so external executors keep working;
 direct control is purely additive.
 
-Crediting: the runner credits the zone's bucket from the delivered depth
-(throughput x run time / size), divided by the zone multiplier so a full run
-lands the bucket on target for any multiplier. Because the runner credits its
-own runs, the observed-watering observer is told to ignore them (the per-zone
+Crediting: the runner credits the zone's bucket with the depth its water
+applied (precipitation rate x run time), the lead time excluded since it only
+fills the pipe. Because the runner credits its own runs, the observed-watering observer is told to ignore them (the per-zone
 ``_si_driven_until`` marker) so the bucket is never accounted twice.
 
 Reboot resilience: each in-flight run is persisted (zone, entity, start time,
@@ -217,7 +216,13 @@ class ValveRunnerMixin:
         a small grace.
         """
         window = (seconds or 0.0) + SI_VALVE_SUPPRESS_MARGIN
-        self._si_driven_until[int(zone_id)] = self.hass.loop.time() + window
+        # Only ever extended: a pass renewing it must not cut short the window
+        # already set for the rest of the cycle.
+        until = self.hass.loop.time() + window
+        zone_id = int(zone_id)
+        self._si_driven_until[zone_id] = max(
+            until, self._si_driven_until.get(zone_id, until)
+        )
 
     def _spawn_valve_run(self, coro):
         """Run a valve coroutine as a tracked background task (cancelled on unload)."""
@@ -507,12 +512,22 @@ class ValveRunnerMixin:
         duration = float(zone.get(const.ZONE_DURATION) or 0)
         if not entity_id or duration <= 0:
             return None
-        plan = self._pass_plan(duration)
+        # The duration is the water plus one lead time (calculation.py). The
+        # lead time fills the pipe and delivers nothing, and every pass has to
+        # fill it again: split the water, add the lead to each pass, and credit
+        # only the water. Crediting the lead as water left a phantom surplus
+        # after every run.
+        lead = self._lead_seconds(zone, duration)
+        plan = self._pass_plan(duration - lead)
         soak = self._soak_seconds() if len(plan) > 1 else 0.0
         # Suppress the observer from the moment we send the first open command
-        # until the last pass has closed, soaking time included.
+        # until the last pass has closed, soaking time included. Each pass
+        # renews it as it opens: a slow valve can outlast this estimate.
         self._note_si_valve(
-            zone_id, duration + soak * (len(plan) - 1) + VALVE_CONFIRM_TIMEOUT
+            zone_id,
+            duration
+            + (lead + soak) * (len(plan) - 1)
+            + VALVE_CONFIRM_TIMEOUT * len(plan),
         )
         if len(plan) > 1:
             _LOGGER.info(
@@ -529,10 +544,10 @@ class ValveRunnerMixin:
         for index, seconds in enumerate(plan):
             if index and soak:
                 await asyncio.sleep(soak)
-            problem = await self._run_one_pass(zone, entity_id, seconds)
+            problem = await self._run_one_pass(zone, entity_id, seconds, lead)
             if problem:
                 break
-            watered += seconds
+            watered += seconds + lead
 
         if problem and not watered:
             return {
@@ -555,8 +570,12 @@ class ValveRunnerMixin:
             "problem": problem,
         }
 
-    async def _run_one_pass(self, zone: dict, entity_id: str, seconds: float):
-        """Open the valve, hold it for ``seconds``, close it, credit that water.
+    async def _run_one_pass(
+        self, zone: dict, entity_id: str, seconds: float, lead: float = 0.0
+    ):
+        """Open the valve, hold it for ``lead`` + ``seconds``, close it, credit.
+
+        Only ``seconds`` is credited: the lead time fills the pipe.
 
         Returns None when the pass ran, or the reason it did not. Each pass is
         persisted and credited on its own, so a reboot in the middle of a run
@@ -564,11 +583,16 @@ class ValveRunnerMixin:
         """
         zone_id = int(zone.get(const.ZONE_ID))
         domain, on_svc, off_svc = self._valve_services(entity_id)
+        held = seconds + lead
+        # Renew the observer's suppression for this pass: the window set for
+        # the whole run could run out before the last pass of a slow valve,
+        # and the observer then credited that pass a second time.
+        self._note_si_valve(zone_id, held + VALVE_CONFIRM_TIMEOUT)
         _LOGGER.info(
             "Direct valve control: opening %s for zone %s (%.0fs)",
             entity_id,
             zone_id,
-            seconds,
+            held,
         )
         # The try starts with the open. A cancellation during the confirm
         # window (a restart, a reload) used to leave the valve open, with no
@@ -590,8 +614,8 @@ class ValveRunnerMixin:
 
             # Start counting only once the valve is confirmed open.
             started = dt_util.utcnow()
-            await self._add_active_run(zone_id, entity_id, started, seconds)
-            await asyncio.sleep(seconds)
+            await self._add_active_run(zone_id, entity_id, started, held)
+            await asyncio.sleep(held)
         finally:
             if not closed:
                 await self._async_call_valve_service(domain, off_svc, entity_id)
@@ -599,10 +623,26 @@ class ValveRunnerMixin:
         # loses at most one credit rather than double-crediting on resume.
         await self._remove_active_run(zone_id)
         self._direct_run_finished[zone_id] = self.hass.loop.time()
-        # The valve was held for ``seconds``; credit that (a cancelled pass never
-        # reaches here, so its credit comes from the reboot-resume path instead).
-        await self._credit_direct_run(zone_id, seconds, started)
+        # The valve was held for ``held``; credit the water, not the lead (a
+        # cancelled pass never reaches here, so its credit comes from the
+        # reboot-resume path instead).
+        await self._credit_direct_run(zone_id, seconds, started, held=held)
         return None
+
+    @staticmethod
+    def _lead_seconds(zone: dict, duration: float | None = None) -> float:
+        """The zone's lead time: the time the pipe takes to fill, no water yet.
+
+        Never more than the run itself, so a run shorter than its lead time
+        (edited by hand) still counts for what it is.
+        """
+        try:
+            lead = max(0.0, float(zone.get(const.ZONE_LEAD_TIME) or 0.0))
+        except (TypeError, ValueError):
+            lead = 0.0
+        if duration is not None:
+            lead = min(lead, max(0.0, duration))
+        return lead
 
     def _gross_volume_litres(self, zone: dict, seconds: float) -> float:
         """Litres actually delivered (throughput x time), for the report."""
@@ -613,13 +653,18 @@ class ValveRunnerMixin:
         return throughput * seconds / 60.0
 
     async def _credit_direct_run(
-        self, zone_id: int, elapsed: float, started=None
+        self, zone_id: int, elapsed: float, started=None, held: float | None = None
     ) -> None:
-        """Credit the bucket for a completed direct run of ``elapsed`` seconds.
+        """Credit the bucket for ``elapsed`` seconds of water from a direct run.
 
-        ``started`` is passed through to the irrigation history so the History
-        tab shows when the run began rather than when it was credited.
+        ``held`` is how long the valve was open, lead time included, when that
+        differs: it is what the tap ran for, so it is what the history and the
+        water-used total record. ``started`` is passed through to the irrigation
+        history so the History tab shows when the run began rather than when it
+        was credited.
         """
+        if held is None:
+            held = elapsed
         if elapsed <= 0:
             return
         zone = self.store.get_zone(zone_id)
@@ -656,15 +701,15 @@ class ValveRunnerMixin:
         await self._apply_volume_credit(
             zone,
             volume_l,
-            source=f"direct run {elapsed:.0f}s",
-            seconds=elapsed,
+            source=f"direct run {held:.0f}s",
+            seconds=held,
             started=started,
             applied_mm=applied_mm,
-            # The bucket credit above divides the multiplier back out, but the
-            # tap ran for the full elapsed time: that is the water actually
-            # delivered, which is what the History tab and the water-used total
+            # The bucket is credited for the water that reached the zone, but
+            # the tap ran for the whole time the valve was held, lead time
+            # included: that is what the History tab and the water-used total
             # are about.
-            water_l=tput_lpm * (elapsed / 60.0),
+            water_l=tput_lpm * (held / 60.0),
         )
 
     # --- reboot resume ------------------------------------------------------
@@ -711,10 +756,18 @@ class ValveRunnerMixin:
                     elapsed,
                     duration,
                 )
+            # The overrun is water only if the valve is still open: one that a
+            # safety timer or a power cut closed delivered its planned pass and
+            # nothing more. Crediting the whole downtime could skip days.
+            state = self.hass.states.get(entity_id)
+            still_open = state is not None and state.state in _VALVE_ON_STATES
+            held = elapsed if still_open else duration
             await self._async_call_valve_service(domain, off_svc, entity_id)
             await self._remove_active_run(zone_id)
             self._direct_run_finished[zone_id] = self.hass.loop.time()
-            await self._credit_direct_run(zone_id, elapsed, started)
+            zone = self.store.get_zone(zone_id) or {}
+            water = held - self._lead_seconds(zone, held)
+            await self._credit_direct_run(zone_id, water, started, held=held)
             return
 
         remaining = duration - elapsed
@@ -747,4 +800,6 @@ class ValveRunnerMixin:
                 await self._async_call_valve_service(domain, off_svc, entity_id)
         await self._remove_active_run(zone_id)
         self._direct_run_finished[zone_id] = self.hass.loop.time()
-        await self._credit_direct_run(zone_id, duration, started)
+        zone = self.store.get_zone(zone_id) or {}
+        water = duration - self._lead_seconds(zone, duration)
+        await self._credit_direct_run(zone_id, water, started, held=duration)

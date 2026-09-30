@@ -245,7 +245,13 @@ class ObservedWateringMixin:
         zone = self.store.get_zone(zone_id)
         if zone is None:
             return
-        applied_mm = self._applied_depth_mm(zone, seconds)
+        # The run was sized as the water plus the zone's lead time, which fills
+        # the pipe and delivers nothing: only the rest reaches the zone.
+        lead = max(0.0, float(zone.get(const.ZONE_LEAD_TIME) or 0.0))
+        water_seconds = max(0.0, seconds - lead)
+        if water_seconds <= 0:
+            return
+        applied_mm = self._applied_depth_mm(zone, water_seconds)
         if applied_mm is None:
             _LOGGER.warning(
                 "Observed watering: zone %s has no precipitation rate, cannot credit",
@@ -255,14 +261,15 @@ class ObservedWateringMixin:
 
         # Throughput is stored in L/min (units.py).
         tput_lpm = zone.get(const.ZONE_THROUGHPUT) or 0.0
-        volume_l = tput_lpm * (seconds / 60.0)
         await self._apply_volume_credit(
             zone,
-            volume_l,
+            tput_lpm * (water_seconds / 60.0),
             source=f"{seconds:.0f}s timed",
             seconds=seconds,
             started=started,
             applied_mm=applied_mm,
+            # The tap ran for the whole time, lead time included.
+            water_l=tput_lpm * (seconds / 60.0),
         )
 
     def _applied_depth_mm(self, zone: dict, seconds: float):
@@ -335,10 +342,10 @@ class ObservedWateringMixin:
         bucket; the run is then recorded with what is known (see
         ``_record_irrigation_run``).
 
-        ``water_l`` is the water actually delivered, when that differs from the
-        volume credited to the bucket (direct valve control divides the zone
-        multiplier back out of the credit). It defaults to ``volume_l``, and is
-        what the water-used total and the history record count.
+        ``water_l`` is the water that came out of the tap, when that differs
+        from the volume credited to the bucket (the lead time runs the tap but
+        only fills the pipe). It defaults to ``volume_l``, and is what the
+        water-used total and the history record count.
         """
         zone_id = int(zone.get(const.ZONE_ID))
         if applied_mm is None:
