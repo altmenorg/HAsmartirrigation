@@ -86,6 +86,10 @@ class SolarRadiationFallbackClient:  # pylint: disable=invalid-name
         """
         return self._fallback.get_hourly_radiation(start, end)
 
+    def get_hourly_et0(self, start, end):
+        """The hourly reference ET, from Open-Meteo, which also fills the daily one."""
+        return self._fallback.get_hourly_et0(start, end)
+
     def get_precipitation_between(self, start, end):
         """The rain of each hour, from the primary when it keeps a history.
 

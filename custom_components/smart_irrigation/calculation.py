@@ -1399,6 +1399,38 @@ class CalculationMixin:
         self._hourly_solar_estimated = estimated_solar
         return result
 
+    async def _hourly_service_et(self, zone):
+        """Reference ET the weather service quotes hour by hour, or None.
+
+        ``(total_mm, hours)`` over the zone's window for a zone whose ET is
+        provided by the weather service, when the hourly calculation is on and
+        the service keeps an hourly history (Open-Meteo). None in every other
+        case, and then the daily figure is spread over the window as before:
+        a sensor-provided ET has no hours to follow.
+        """
+        config = self.store.get_config() or {}
+        if not config.get(const.CONF_HOURLY_CALCULATION):
+            return None
+        mapping = self.store.get_mapping(zone.get(const.ZONE_MAPPING))
+        if (
+            not mapping
+            or const.MAPPING_EVAPOTRANSPIRATION in self._sourced_fields(mapping)
+            or not getattr(self, "use_weather_service", False)
+        ):
+            return None
+        since = self.zone_window_start(zone)
+        fetch = getattr(
+            getattr(self, "_WeatherServiceClient", None), "get_hourly_et0", None
+        )
+        if fetch is None or since is None:
+            return None
+        now = datetime.now()
+        total = await self.hass.async_add_executor_job(fetch, since, now)
+        if total is None:
+            return None
+        self._hourly_solar_estimated = False
+        return (total, (now - since).total_seconds() / 3600)
+
     def _under_glass(self, zone, weatherdata):
         """The weather data, told to dim an estimated sun for a greenhouse.
 
@@ -1874,9 +1906,15 @@ class CalculationMixin:
             delta = modinst.calculate()
         elif m[const.MODULE_NAME] == "Passthrough":
             if const.MAPPING_EVAPOTRANSPIRATION in weatherdata:
-                delta = 0 - modinst.calculate(
-                    et_data=weatherdata[const.MAPPING_EVAPOTRANSPIRATION]
-                )
+                # The service's ET hour by hour when it keeps one, else the
+                # day's total spread over the window.
+                hourly = await self._hourly_service_et(zone)
+                if hourly is not None:
+                    delta = -hourly[0]
+                else:
+                    delta = 0 - modinst.calculate(
+                        et_data=weatherdata[const.MAPPING_EVAPOTRANSPIRATION]
+                    )
                 # Passthrough bypasses the ET calculation, not the water
                 # balance: measured/forecast precipitation must still refill
                 # the bucket, otherwise it can only ever drain (#790).
