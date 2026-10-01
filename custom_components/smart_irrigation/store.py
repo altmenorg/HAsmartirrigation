@@ -273,6 +273,11 @@ class ZoneEntry:
     water_used = attr.ib(type=float, default=0.0)
     # Optional valve/switch entity watched to credit the bucket (closed-loop).
     linked_entity = attr.ib(type=str, default=None)
+    # Optional MQTT dead-man for direct valve control: a set-topic the runner
+    # publishes an on_time "on with timed off" to, so the valve shuts itself
+    # off if Home Assistant dies mid-run. Empty = disabled (see const).
+    safety_off_topic = attr.ib(type=str, default=None)
+    safety_off_state_key = attr.ib(type=str, default=None)
     # How much of a deficit to let build up before watering, in the user's depth
     # unit. 0 keeps watering as soon as anything is missing (#815).
     irrigation_threshold = attr.ib(

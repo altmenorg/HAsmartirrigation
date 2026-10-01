@@ -150,6 +150,8 @@ export class SmartIrrigationZone {
   drainage_rate?: number;
   current_drainage?: number;
   linked_entity?: string;
+  safety_off_topic?: string;
+  safety_off_state_key?: string;
   flow_sensor?: string;
   soil_moisture_sensor?: string;
   soil_moisture_threshold?: number;
