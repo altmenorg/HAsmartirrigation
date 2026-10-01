@@ -184,6 +184,8 @@ from .const import (
     ZONE_PLANT_TYPE,
     ZONE_PRECIPITATION_RATE,
     ZONE_PRECIPITATION_SUPERSEDED,
+    ZONE_SAFETY_OFF_STATE_KEY,
+    ZONE_SAFETY_OFF_TOPIC,
     ZONE_SIZE,
     ZONE_SOIL_MOISTURE_SENSOR,
     ZONE_SOIL_MOISTURE_THRESHOLD,
@@ -1133,6 +1135,8 @@ class SmartIrrigationStorage:
                             ZONE_IRRIGATION_THRESHOLD, CONF_DEFAULT_IRRIGATION_THRESHOLD
                         ),
                         linked_entity=zone.get(ZONE_LINKED_ENTITY, None),
+                        safety_off_topic=zone.get(ZONE_SAFETY_OFF_TOPIC, None),
+                        safety_off_state_key=zone.get(ZONE_SAFETY_OFF_STATE_KEY, None),
                         flow_sensor=zone.get(ZONE_FLOW_SENSOR, None),
                         soil_moisture_sensor=zone.get(ZONE_SOIL_MOISTURE_SENSOR, None),
                         soil_moisture_threshold=zone.get(
