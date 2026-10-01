@@ -458,3 +458,36 @@ def test_over_one_clear_day_the_two_forms_are_close():
 
     assert eto_daily > 0
     assert 0.7 < total / eto_daily < 1.4
+
+
+def test_over_one_synthetic_clear_day_the_two_forms_agree_within_five_percent():
+    """The wide band above catches a slipped unit; this one catches drift.
+
+    Both forms priced on the same synthetic clear day. The daily form is built
+    from what the day's records say (min, max, a dew point from the mean), the
+    hourly one from the records themselves. They are not the same equation, so
+    they differ, but on a clear day they stay within 5% of each other, and a
+    change that moves the gap past that moved one of them.
+    """
+    readings = _day_of_readings()
+    total, _ = _expected_hourly(readings)
+
+    temps = [r[const.MAPPING_TEMPERATURE] for r in readings]
+    rh = sum(r[const.MAPPING_HUMIDITY] for r in readings) / len(readings)
+    t_mean = sum(temps) / len(temps)
+    gamma = math.log(rh / 100.0) + 17.62 * t_mean / (243.12 + t_mean)
+    dewpoint = 243.12 * gamma / (17.62 - gamma)
+    daily = {
+        const.MAPPING_MIN_TEMP: min(temps),
+        const.MAPPING_MAX_TEMP: max(temps),
+        const.MAPPING_DEWPOINT: dewpoint,
+        const.MAPPING_WINDSPEED: 2.0,
+        const.MAPPING_PRESSURE: 1000.0,
+        const.MAPPING_SOLRAD: sum(r[const.MAPPING_SOLRAD] for r in readings)
+        / len(readings),
+    }
+    hass = MagicMock()
+    hass.config.as_dict.return_value = {"latitude": LAT, "elevation": ELEV}
+    eto_daily = -PyETO(hass, "", {}).calculate(daily, [])
+
+    assert abs(total / eto_daily - 1.0) < 0.05
