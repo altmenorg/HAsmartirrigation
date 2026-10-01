@@ -1954,17 +1954,14 @@ class CalculationMixin:
         crop_factor = zone.get(const.ZONE_MULTIPLIER)
         if crop_factor is None:
             crop_factor = 1.0
+        window_month = self._window_month(weatherdata, hourly)
+        crop_factor = self._crop_factor_of_the_month(zone, window_month, crop_factor)
         # A seasonal multiplier adjustment scales the crop factor for the months
         # it covers.
         # The month is the one the window's water was used in, taken at its
         # middle: the clock alone gave a calculation just after midnight on the
         # 1st the new month's factor for the whole of the previous day.
-        crop_factor = (
-            crop_factor
-            * self._seasonal_factors(
-                zone, month=self._window_month(weatherdata, hourly)
-            )[0]
-        )
+        crop_factor = crop_factor * self._seasonal_factors(zone, month=window_month)[0]
         delta = delta * crop_factor
         # Rain that does not reach the roots is not counted (opt-in).
         precip = self._effective_rain(precip, reference_et, weatherdata, hourly)
@@ -2507,6 +2504,18 @@ class CalculationMixin:
             bucket,
         )
         return 0.0
+
+    @staticmethod
+    def _crop_factor_of_the_month(zone: dict, month: int, default: float) -> float:
+        """The zone's crop factor for a month: its own table, else ``default``."""
+        table = zone.get(const.ZONE_CROP_FACTOR_BY_MONTH)
+        if not isinstance(table, (list, tuple)) or len(table) != 12:
+            return default
+        try:
+            value = table[int(month) - 1]
+            return default if value is None else float(value)
+        except (TypeError, ValueError, IndexError):
+            return default
 
     def _check_missing_input(self, zone, modinst) -> None:
         """Say so when the equation had nothing to price (advisory)."""

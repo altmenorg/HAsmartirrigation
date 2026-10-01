@@ -77,6 +77,7 @@ import {
   ZONE_MAPPING,
   ZONE_ALLOWED_DEPLETION,
   ZONE_AVAILABLE_WATER,
+  ZONE_CROP_FACTOR_BY_MONTH,
   ZONE_DAYS_BETWEEN_IRRIGATION,
   ZONE_DISTRIBUTION_EFFICIENCY,
   ZONE_IRRIGATION_THRESHOLD,
@@ -515,6 +516,62 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
    * lead time. Those have sound defaults, and meeting them by accident is how
    * a working installation gets broken.
    */
+  /** The crop factor of each month: a table for a crop that grows through the year. */
+  private _cropFactorByMonth(
+    zone: SmartIrrigationZone,
+    index: number,
+    lang: string,
+  ): TemplateResult {
+    const table: (number | null)[] =
+      zone.crop_factor_by_month && zone.crop_factor_by_month.length === 12
+        ? zone.crop_factor_by_month
+        : new Array(12).fill(null);
+    const change = (month: number, raw: string) => {
+      const next = [...table];
+      const value = parseFloat(raw);
+      next[month] = isNaN(value) || value <= 0 ? null : value;
+      this.handleEditZone(index, {
+        ...zone,
+        [ZONE_CROP_FACTOR_BY_MONTH]: next.every((v) => v === null)
+          ? null
+          : next,
+      });
+    };
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">
+          ${localize("panels.zones.labels.crop-factor-by-month", lang)}
+        </div>
+      </div>
+      <div class="month-grid">
+        ${table.map(
+          (value, month) => html`
+            <label class="month-cell">
+              <span class="unit"
+                >${localize(
+                  `panels.zones.labels.months.${month + 1}`,
+                  lang,
+                )}</span
+              >
+              <input
+                class="field num-input"
+                type="number"
+                min="0"
+                step="0.05"
+                .value=${value === null ? "" : String(value)}
+                @change=${(e: Event) =>
+                  change(month, (e.target as HTMLInputElement).value)}
+              />
+            </label>
+          `,
+        )}
+      </div>
+      <div class="setting-help">
+        ${localize("panels.zones.labels.crop-factor-by-month-help", lang)}
+      </div>
+    `;
+  }
+
   private _adv(content: TemplateResult | string): TemplateResult | string {
     return this.config?.ui_mode === "advanced" ? content : "";
   }
@@ -1423,6 +1480,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       )}
                     </div>`,
                 )}
+                ${this._adv(this._cropFactorByMonth(zone, index, lang))}
                 ${this._adv(
                   html`${this._numRow(
                       localize("panels.zones.labels.available-water", lang),
@@ -2229,6 +2287,28 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         min-height: 52px;
         padding: 4px 0;
         border-bottom: 1px solid var(--divider-color);
+      }
+
+      .month-grid {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 8px;
+        padding: 4px 0 8px;
+      }
+      @media (max-width: 600px) {
+        .month-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+      .month-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        font-size: 12px;
+      }
+      .month-cell input {
+        width: 100%;
+        box-sizing: border-box;
       }
 
       /* One line under a setting, saying what the choice above it means. */

@@ -177,6 +177,7 @@ export const ZONE_CURRENT_DRAINAGE = "current_drainage";
 export const ZONE_LINKED_ENTITY = "linked_entity";
 export const ZONE_DAYS_BETWEEN_IRRIGATION = "days_between_irrigation";
 export const ZONE_AVAILABLE_WATER = "available_water";
+export const ZONE_CROP_FACTOR_BY_MONTH = "crop_factor_by_month";
 export const ZONE_ALLOWED_DEPLETION = "allowed_depletion";
 export const ZONE_DISTRIBUTION_EFFICIENCY = "distribution_efficiency";
 export const ZONE_SAFETY_OFF_TOPIC = "safety_off_topic";

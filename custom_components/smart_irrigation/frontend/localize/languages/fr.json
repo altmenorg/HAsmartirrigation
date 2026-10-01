@@ -567,6 +567,22 @@
         "irrigation-threshold": "Seuil d'arrosage",
         "days": "jours",
         "days-between-irrigation": "Jours entre deux arrosages",
+        "crop-factor-by-month": "Coefficient cultural par mois",
+        "crop-factor-by-month-help": "Pour une culture dont la consommation d'eau suit la croissance : le coefficient cultural (Kc) de chaque mois, janvier en premier. Un mois laissé vide utilise le coefficient cultural ci-dessus, et douze mois vides, ce coefficient toute l'année. Les ajustements saisonniers s'appliquent par-dessus.",
+        "months": {
+          "1": "Janv.",
+          "2": "Févr.",
+          "3": "Mars",
+          "4": "Avr.",
+          "5": "Mai",
+          "6": "Juin",
+          "7": "Juil.",
+          "8": "Août",
+          "9": "Sept.",
+          "10": "Oct.",
+          "11": "Nov.",
+          "12": "Déc."
+        },
         "available-water": "Eau disponible",
         "allowed-depletion": "Épuisement admis",
         "available-water-help": "L'eau que le sol de cette zone retient pour les plantes, en mm (la profondeur des racines en mm multipliée par ce que le sol retient par mm : environ 1,5 pour du sable, 2 pour un limon, 2,5 pour une argile). Vide, rien ne change. Renseignée, le déficit ne peut pas la dépasser, et quand les plantes ont épuisé la part admise (50 % par défaut) elles puisent moins d'eau, donc le déficit grandit moins vite.",
@@ -741,6 +757,21 @@
       "azimuth_explanation": "L'azimut solaire est la direction de la boussole vers le soleil. 0°=Nord, 90°=Est, 180°=Sud, 270°=Ouest. Vous pouvez saisir n'importe quelle valeur d'angle (p. ex. 450°=90°, -30°=330°). Utilisez-le pour déclencher l'irrigation lorsque le soleil atteint une position précise.",
       "multiple_triggers": "Vous pouvez configurer plusieurs déclencheurs. Chaque déclencheur activé planifiera indépendamment les démarrages d'irrigation."
     }
+  },
+  "seasonal_adjustments": {
+    "title": "Ajustements saisonniers",
+    "description": "Un coefficient cultural et un seuil qui suivent la saison. Chaque ajustement couvre une plage de mois et des zones ; plusieurs qui couvrent le même mois se multiplient. Le multiplicateur modifie le coefficient cultural de la zone (1 ne change rien, 0,5 divise la consommation par deux) et le seuil s'ajoute à son seuil d'arrosage. Un coefficient cultural mois par mois peut aussi être réglé dans chaque zone.",
+    "add": "Ajouter un ajustement",
+    "delete": "Supprimer",
+    "new_name": "Nouvel ajustement",
+    "name": "Nom",
+    "month_start": "Du mois",
+    "month_end": "Au mois",
+    "multiplier": "Multiplicateur du coefficient cultural",
+    "threshold": "Décalage du seuil",
+    "zones": "Zones",
+    "zones_hint": "all, ou les numéros des zones, séparés par des virgules.",
+    "enabled": "Activé"
   },
   "weather_skip": {
     "title": "Saut d'irrigation basé sur la météo",

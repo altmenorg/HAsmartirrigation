@@ -576,6 +576,22 @@
         "irrigation-threshold": "Irrigation threshold",
         "days": "days",
         "days-between-irrigation": "Days between irrigation",
+        "crop-factor-by-month": "Crop factor by month",
+        "crop-factor-by-month-help": "For a crop whose water use follows its growth: the crop factor (Kc) of each month, January first. A month left empty uses the crop factor above, and all twelve empty is that crop factor all year. Seasonal adjustments still apply on top.",
+        "months": {
+          "1": "Jan",
+          "2": "Feb",
+          "3": "Mar",
+          "4": "Apr",
+          "5": "May",
+          "6": "Jun",
+          "7": "Jul",
+          "8": "Aug",
+          "9": "Sep",
+          "10": "Oct",
+          "11": "Nov",
+          "12": "Dec"
+        },
         "available-water": "Available water",
         "allowed-depletion": "Allowed depletion",
         "available-water-help": "How much water the soil of this zone holds for the plants, in mm (the root depth in mm times what the soil holds per mm: about 1.5 for sand, 2 for loam, 2.5 for clay). Leave empty to leave things as they are. When set, the deficit cannot go below it, and once the plants have used up the allowed share of it (50% unless you change it) they draw less water, so the deficit stops growing as fast.",
@@ -744,6 +760,21 @@
       "azimuth_explanation": "Solar azimuth is the compass direction of the sun. 0°=North, 90°=East, 180°=South, 270°=West. You can enter any angle value (e.g., 450° = 90°, -30° = 330°). Use this to trigger irrigation when the sun reaches a specific position.",
       "multiple_triggers": "You can configure multiple triggers. Each enabled trigger will independently schedule irrigation starts."
     }
+  },
+  "seasonal_adjustments": {
+    "title": "Seasonal adjustments",
+    "description": "A crop factor and a threshold that follow the season. Each adjustment covers a range of months and some zones; several covering the same month multiply. The multiplier scales the zone's crop factor (1 changes nothing, 0.5 halves the water use) and the threshold adds to its irrigation threshold. A month-by-month crop factor can also be set in each zone.",
+    "add": "Add an adjustment",
+    "delete": "Delete",
+    "new_name": "New adjustment",
+    "name": "Name",
+    "month_start": "From month",
+    "month_end": "To month",
+    "multiplier": "Crop factor multiplier",
+    "threshold": "Threshold offset",
+    "zones": "Zones",
+    "zones_hint": "all, or the numbers of the zones, separated by commas.",
+    "enabled": "Enabled"
   },
   "weather_skip": {
     "title": "Weather-based irrigation skip",

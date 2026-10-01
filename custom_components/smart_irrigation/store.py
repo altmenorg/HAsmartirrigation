@@ -163,6 +163,7 @@ from .const import (
     ZONE_ALLOWED_DEPLETION,
     ZONE_AVAILABLE_WATER,
     ZONE_BUCKET,
+    ZONE_CROP_FACTOR_BY_MONTH,
     ZONE_CURRENT_DRAINAGE,
     ZONE_DAYS_BETWEEN_IRRIGATION,
     ZONE_DAYS_SINCE_IRRIGATION,
@@ -302,6 +303,9 @@ class ZoneEntry:
     # What the soil can hold for the plants (mm), the share they may use up
     # before suffering (%), and the share of the emitters' water that reaches
     # them (%). All optional; None leaves the calculation as it was.
+    # The crop factor of each month, January first; None entries (or the whole
+    # field) use the zone's crop factor.
+    crop_factor_by_month = attr.ib(type=list, default=None)
     available_water = attr.ib(type=float, default=None)
     allowed_depletion = attr.ib(type=float, default=None)
     distribution_efficiency = attr.ib(type=float, default=None)
@@ -1176,6 +1180,7 @@ class SmartIrrigationStorage:
                             ZONE_IRRIGATION_THRESHOLD, CONF_DEFAULT_IRRIGATION_THRESHOLD
                         ),
                         linked_entity=zone.get(ZONE_LINKED_ENTITY, None),
+                        crop_factor_by_month=zone.get(ZONE_CROP_FACTOR_BY_MONTH, None),
                         available_water=zone.get(ZONE_AVAILABLE_WATER, None),
                         allowed_depletion=zone.get(ZONE_ALLOWED_DEPLETION, None),
                         distribution_efficiency=zone.get(

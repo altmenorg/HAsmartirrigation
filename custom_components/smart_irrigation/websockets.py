@@ -351,6 +351,10 @@ class SmartIrrigationZoneView(HomeAssistantView):
                 vol.Optional(const.ZONE_DAYS_BETWEEN_IRRIGATION): vol.Or(
                     vol.All(int, vol.Range(min=0, max=365)), None
                 ),
+                vol.Optional(const.ZONE_CROP_FACTOR_BY_MONTH): vol.Any(
+                    None,
+                    vol.All([vol.Any(None, vol.Coerce(float))], vol.Length(12, 12)),
+                ),
                 vol.Optional(const.ZONE_AVAILABLE_WATER): vol.Or(float, int, None),
                 vol.Optional(const.ZONE_ALLOWED_DEPLETION): vol.Or(float, int, None),
                 vol.Optional(const.ZONE_DISTRIBUTION_EFFICIENCY): vol.Or(

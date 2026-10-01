@@ -471,6 +471,11 @@ CONF_DEFAULT_ALLOWED_DEPLETION = 50.0
 # Share of the water leaving the emitters that reaches the plants, in percent.
 # None is 100: the throughput is taken at its word, as before.
 ZONE_DISTRIBUTION_EFFICIENCY = "distribution_efficiency"
+# The crop factor of each month, January first, for a crop whose water use
+# follows its growth (#872). A month left empty uses the zone's crop factor; the
+# whole field empty is the zone's crop factor all year, as before. Seasonal
+# adjustments still apply on top.
+ZONE_CROP_FACTOR_BY_MONTH = "crop_factor_by_month"
 ZONE_DAYS_BETWEEN_IRRIGATION = "days_between_irrigation"
 ZONE_DAYS_SINCE_IRRIGATION = "days_since_irrigation"
 # Optional valve/switch entity observed to credit the bucket (closed-loop).

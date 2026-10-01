@@ -84,6 +84,11 @@ The system automatically tracks the number of days since the last irrigation eve
 
 This feature works alongside existing precipitation forecasting - if both restrictions apply, both must be satisfied for irrigation to occur.
 
+### Seasonal adjustments
+In advanced mode, the general settings have a **Seasonal adjustments** card. An adjustment covers a range of months (November to February is a range, and so is March to September) and some zones (`all`, or their numbers separated by commas), and does two things: its **multiplier** scales the crop factor of those zones for those months (1 changes nothing, 0.5 halves the water use), and its **threshold offset** is added to their irrigation threshold. Several adjustments that cover the same month multiply. They apply to the evapotranspiration, not to the duration, so the bucket follows the season.
+
+The same adjustments can be created from automations with the `create_seasonal_adjustment`, `update_seasonal_adjustment` and `delete_seasonal_adjustment` [actions](usage-services.md). For a crop with a crop factor for every month, the zone has a **Crop factor by month** table instead, which is easier than twelve adjustments.
+
 ### Skipping a run
 A start trigger can be held back by the conditions below, all off by default. They are checked once a day, when the first start trigger is reached, and the Info page shows each of them with its numbers: whether it is off, could not be checked, is not blocking or is blocking. When a run is skipped, the `smart_irrigation_irrigation_skipped` event fires with the reason.
 

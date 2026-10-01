@@ -213,3 +213,57 @@ def test_a_zone_without_a_sensor_is_untouched():
     zone = {const.ZONE_NAME: "Beds"}
 
     assert coordinator._recalibrate_on_soil(zone, -4.0) == -4.0
+
+
+# --- the crop factor of each month
+
+
+def test_without_a_table_the_zones_crop_factor_is_used_all_year():
+    assert CalculationMixin._crop_factor_of_the_month(_zone(), 7, 0.8) == 0.8
+    assert (
+        CalculationMixin._crop_factor_of_the_month(
+            _zone(crop_factor_by_month=None), 7, 0.8
+        )
+        == 0.8
+    )
+
+
+def test_a_month_in_the_table_replaces_the_crop_factor():
+    table = [None, None, None, 0.4, 0.6, 0.9, 1.1, 1.1, 0.9, 0.6, None, None]
+    zone = _zone(crop_factor_by_month=table)
+
+    assert CalculationMixin._crop_factor_of_the_month(zone, 7, 0.8) == 1.1
+    assert CalculationMixin._crop_factor_of_the_month(zone, 4, 0.8) == 0.4
+
+
+def test_a_month_left_empty_uses_the_zones_crop_factor():
+    table = [None] * 12
+    table[5] = 1.0
+
+    assert (
+        CalculationMixin._crop_factor_of_the_month(
+            _zone(crop_factor_by_month=table), 1, 0.8
+        )
+        == 0.8
+    )
+
+
+@pytest.mark.parametrize("table", [[1.0] * 11, "nope", [1.0] * 13, {"a": 1}])
+def test_a_table_that_is_not_twelve_months_is_ignored(table):
+    assert (
+        CalculationMixin._crop_factor_of_the_month(
+            _zone(crop_factor_by_month=table), 3, 0.8
+        )
+        == 0.8
+    )
+
+
+def test_a_value_that_is_not_a_number_falls_back():
+    table = ["x"] * 12
+
+    assert (
+        CalculationMixin._crop_factor_of_the_month(
+            _zone(crop_factor_by_month=table), 3, 0.8
+        )
+        == 0.8
+    )
