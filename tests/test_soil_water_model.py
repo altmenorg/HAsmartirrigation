@@ -159,3 +159,57 @@ def test_no_rain_is_no_rain():
 
     assert coordinator._effective_rain(0, -5.0, {}, None) == 0
     assert coordinator._effective_rain(None, -5.0, {}, None) is None
+
+
+# --- the soil's own sensor at every calculation
+
+
+def _soil_zone(**fields):
+    return {
+        const.ZONE_NAME: "Lawn",
+        const.ZONE_SOIL_MOISTURE_SENSOR: "sensor.soil",
+        const.ZONE_SOIL_MOISTURE_THRESHOLD: 50.0,
+        **fields,
+    }
+
+
+def _with_sensor(reading):
+    coordinator = _coordinator()
+    coordinator._entity_reading = lambda entity: reading
+    return coordinator
+
+
+def test_a_moist_soil_sets_the_bucket_to_field_capacity():
+    coordinator = _with_sensor((62.0, "%"))
+
+    assert coordinator._recalibrate_on_soil(_soil_zone(), -7.5) == 0.0
+
+
+def test_a_soil_below_the_threshold_leaves_the_bucket_alone():
+    coordinator = _with_sensor((31.0, "%"))
+
+    assert coordinator._recalibrate_on_soil(_soil_zone(), -7.5) == -7.5
+
+
+def test_a_bucket_already_full_is_left_alone():
+    coordinator = _with_sensor((90.0, "%"))
+
+    assert coordinator._recalibrate_on_soil(_soil_zone(), 3.0) == 3.0
+
+
+def test_a_sensor_that_cannot_be_read_changes_nothing():
+    assert _with_sensor(None)._recalibrate_on_soil(_soil_zone(), -4.0) == -4.0
+
+    def boom(entity):
+        raise RuntimeError("gone")
+
+    coordinator = _coordinator()
+    coordinator._entity_reading = boom
+    assert coordinator._recalibrate_on_soil(_soil_zone(), -4.0) == -4.0
+
+
+def test_a_zone_without_a_sensor_is_untouched():
+    coordinator = _with_sensor((99.0, "%"))
+    zone = {const.ZONE_NAME: "Beds"}
+
+    assert coordinator._recalibrate_on_soil(zone, -4.0) == -4.0

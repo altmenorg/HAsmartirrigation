@@ -2046,6 +2046,8 @@ class CalculationMixin:
             newbucket = max(0, newbucket - drainage)
 
         data[const.ZONE_CURRENT_DRAINAGE] = drainage
+        # The soil's own sensor outranks the model when it says the soil is moist.
+        newbucket = self._recalibrate_on_soil(zone, newbucket)
         _LOGGER.debug("[calculate-module]: newbucket: %s", newbucket)
 
         # The formatting note is a note about the whole text, so it stands on
@@ -2464,6 +2466,44 @@ class CalculationMixin:
         if not tput or not sz:
             return None, tput, sz
         return (tput * 60) / sz * self._distribution_efficiency(zone), tput, sz
+
+    def _recalibrate_on_soil(self, zone: dict, bucket: float) -> float:
+        """Pull the bucket up to field capacity when the zone's soil reads moist.
+
+        The sensor measures the soil and the bucket models it; where they
+        disagree the measurement is right. This is the same rule the start of a
+        run applies (a zone whose soil reads moist sits the run out and its
+        bucket is set to capacity), applied at every calculation, so the
+        deficit shown never contradicts the sensor between two starts.
+
+        Only in that direction. A dry reading says nothing about how many
+        millimetres are missing without a calibration of the sensor to the
+        soil, and inventing a deficit from one would water a zone for good on
+        the strength of a badly placed probe.
+        """
+        entity_id = zone.get(const.ZONE_SOIL_MOISTURE_SENSOR)
+        reader = getattr(self, "_entity_reading", None)
+        if not entity_id or reader is None or bucket >= 0:
+            return bucket
+        try:
+            reading = reader(entity_id)
+        except Exception:  # noqa: BLE001 - a sensor that cannot be read changes nothing
+            return bucket
+        moisture = reading[0] if reading is not None else None
+        threshold = zone.get(const.ZONE_SOIL_MOISTURE_THRESHOLD)
+        if threshold is None:
+            threshold = const.CONF_DEFAULT_SOIL_MOISTURE_THRESHOLD
+        if moisture is None or moisture < threshold:
+            return bucket
+        _LOGGER.info(
+            "Zone %s: the soil reads %s%%, at or above %s%%, so the bucket is set "
+            "to field capacity instead of %.1f mm",
+            zone.get(const.ZONE_NAME),
+            moisture,
+            threshold,
+            bucket,
+        )
+        return 0.0
 
     def _check_missing_input(self, zone, modinst) -> None:
         """Say so when the equation had nothing to price (advisory)."""
