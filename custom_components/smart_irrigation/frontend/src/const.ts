@@ -17,6 +17,7 @@ export const CONF_CLEAR_TIME = "cleardatatime";
 export const CONF_CONTINUOUS_UPDATES = "continuousupdates";
 export const CONF_HOURLY_CALCULATION = "hourly_calculation";
 export const CONF_FORECAST_RAIN_CREDIT = "forecast_rain_credit";
+export const CONF_EFFECTIVE_RAIN = "effective_rain";
 export const CONF_SENSOR_DEBOUNCE = "sensor_debounce";
 export const CONF_CALC_LOG_ENABLED = "calc_log_enabled";
 
@@ -174,6 +175,9 @@ export const ZONE_DRAINAGE_RATE = "drainage_rate";
 export const ZONE_CURRENT_DRAINAGE = "current_drainage";
 export const ZONE_LINKED_ENTITY = "linked_entity";
 export const ZONE_DAYS_BETWEEN_IRRIGATION = "days_between_irrigation";
+export const ZONE_AVAILABLE_WATER = "available_water";
+export const ZONE_ALLOWED_DEPLETION = "allowed_depletion";
+export const ZONE_DISTRIBUTION_EFFICIENCY = "distribution_efficiency";
 export const ZONE_SAFETY_OFF_TOPIC = "safety_off_topic";
 export const ZONE_SAFETY_OFF_STATE_KEY = "safety_off_state_key";
 export const ZONE_FLOW_SENSOR = "flow_sensor";

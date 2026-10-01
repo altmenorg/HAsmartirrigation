@@ -99,6 +99,7 @@ class SmartIrrigationConfigView(HomeAssistantView):
                 vol.Optional(const.CONF_CONTINUOUS_UPDATES): cv.boolean,
                 vol.Optional(const.CONF_HOURLY_CALCULATION): cv.boolean,
                 vol.Optional(const.CONF_FORECAST_RAIN_CREDIT): cv.boolean,
+                vol.Optional(const.CONF_EFFECTIVE_RAIN): cv.boolean,
                 vol.Optional(const.CONF_UI_MODE): vol.In(
                     [const.CONF_UI_MODE_STANDARD, const.CONF_UI_MODE_ADVANCED]
                 ),
@@ -348,6 +349,11 @@ class SmartIrrigationZoneView(HomeAssistantView):
                 ),
                 vol.Optional(const.ZONE_DAYS_BETWEEN_IRRIGATION): vol.Or(
                     vol.All(int, vol.Range(min=0, max=365)), None
+                ),
+                vol.Optional(const.ZONE_AVAILABLE_WATER): vol.Or(float, int, None),
+                vol.Optional(const.ZONE_ALLOWED_DEPLETION): vol.Or(float, int, None),
+                vol.Optional(const.ZONE_DISTRIBUTION_EFFICIENCY): vol.Or(
+                    float, int, None
                 ),
                 vol.Optional(const.ZONE_FLOW_SENSOR): vol.Any(None, cv.string),
                 vol.Optional(const.ZONE_SOIL_MOISTURE_SENSOR): vol.Any(None, cv.string),

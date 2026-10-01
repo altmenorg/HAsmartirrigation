@@ -1953,6 +1953,8 @@ class CalculationMixin:
             )[0]
         )
         delta = delta * crop_factor
+        # Rain that does not reach the roots is not counted (opt-in).
+        precip = self._effective_rain(precip, reference_et, weatherdata, hourly)
         # The per-day water need of this zone, before interval scaling and
         # before precipitation. Unlike the bucket it does not depend on the
         # hour_multiplier or on bucket resets, which is what makes it the value
@@ -1967,10 +1969,27 @@ class CalculationMixin:
             crop_factor,
             hour_multiplier,
         )
-        delta = delta * (1.0 if hourly is not None else hour_multiplier) + precip
+        et_part = delta * (1.0 if hourly is not None else hour_multiplier)
+        # A zone that knows what its soil holds stops drawing on it as freely
+        # once the plants are past their allowed depletion (FAO-56 Ks).
+        water_stress = self._water_stress(zone, bucket)
+        if water_stress < 1.0:
+            _LOGGER.debug(
+                "[calculate-module]: water stress coefficient: %.2f", water_stress
+            )
+            et_part *= water_stress
+        delta = et_part + precip
         data[const.ZONE_DELTA] = delta
         _LOGGER.debug("[calculate-module]: new delta: %s", delta)
         newbucket = bucket + delta
+        # The soil cannot be drier than what it holds for the plants.
+        available_water = zone.get(const.ZONE_AVAILABLE_WATER)
+        if available_water and available_water > 0 and newbucket < -available_water:
+            newbucket = -float(available_water)
+            _LOGGER.debug(
+                "[calculate-module]: floored the deficit at the available water: %s",
+                newbucket,
+            )
 
         # if maximum bucket configured, limit bucket with that.
         # any water above maximum is removed with runoff / bypass flow.
@@ -2420,13 +2439,71 @@ class CalculationMixin:
             rate = zone.get(const.ZONE_PRECIPITATION_RATE)
             if not rate:
                 return None, None, None
-            return rate, None, None
+            return rate * self._distribution_efficiency(zone), None, None
 
         tput = zone.get(const.ZONE_THROUGHPUT)
         sz = zone.get(const.ZONE_SIZE)
         if not tput or not sz:
             return None, tput, sz
-        return (tput * 60) / sz, tput, sz
+        return (tput * 60) / sz * self._distribution_efficiency(zone), tput, sz
+
+    @staticmethod
+    def _water_stress(zone: dict, bucket: float) -> float:
+        """Share of the evapotranspiration the plants can still draw: 1 or less.
+
+        FAO-56 Ks: no reduction while the deficit is within the allowed
+        depletion (RAW = p x TAW), then a straight fall to zero at TAW. A zone
+        without an available water figure is never reduced.
+        """
+        taw = zone.get(const.ZONE_AVAILABLE_WATER)
+        if not taw or taw <= 0:
+            return 1.0
+        share = zone.get(const.ZONE_ALLOWED_DEPLETION)
+        if share is None:
+            share = const.CONF_DEFAULT_ALLOWED_DEPLETION
+        p = min(0.95, max(0.05, float(share) / 100.0))
+        deficit = max(0.0, -(bucket or 0.0))
+        if deficit <= p * taw:
+            return 1.0
+        return max(0.0, (taw - deficit) / ((1.0 - p) * taw))
+
+    def _effective_rain(self, precip, reference_et, weatherdata, hourly) -> float:
+        """The rain that counts: a shower below a fifth of the window's ET is lost.
+
+        Opt-in. Judged on the whole window, so a window made of several days is
+        read as one: it ignores less than a day-by-day reading would.
+        """
+        try:
+            if not precip or precip <= 0:
+                return precip
+            config = self.store.get_config() or {}
+            if not config.get(const.CONF_EFFECTIVE_RAIN):
+                return precip
+        except Exception:  # noqa: BLE001 - an extra, never the calculation
+            return precip
+        window_et = abs(reference_et or 0.0) * (
+            1.0
+            if hourly is not None
+            else (weatherdata.get(const.MAPPING_DATA_MULTIPLIER, 1.0) or 1.0)
+        )
+        if precip < const.EFFECTIVE_RAIN_ET_SHARE * window_et:
+            _LOGGER.debug(
+                "[calculate-module]: %.2f mm of rain is below %.0f%% of the %.2f mm "
+                "of evapotranspiration of the window, not counted",
+                precip,
+                const.EFFECTIVE_RAIN_ET_SHARE * 100,
+                window_et,
+            )
+            return 0.0
+        return precip
+
+    @staticmethod
+    def _distribution_efficiency(zone: dict) -> float:
+        """The share of the emitters' water that reaches the plants, 0.05 to 1."""
+        efficiency = zone.get(const.ZONE_DISTRIBUTION_EFFICIENCY)
+        if not efficiency or efficiency <= 0:
+            return 1.0
+        return min(1.0, max(0.05, float(efficiency) / 100.0))
 
     def _build_calc_record(
         self, zone, module_name, modinst, weatherdata, forecastdata, metric, values

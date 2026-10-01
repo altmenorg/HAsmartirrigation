@@ -75,7 +75,10 @@ import {
   ZONE_SAFETY_OFF_TOPIC,
   ZONE_SAFETY_OFF_STATE_KEY,
   ZONE_MAPPING,
+  ZONE_ALLOWED_DEPLETION,
+  ZONE_AVAILABLE_WATER,
   ZONE_DAYS_BETWEEN_IRRIGATION,
+  ZONE_DISTRIBUTION_EFFICIENCY,
   ZONE_IRRIGATION_THRESHOLD,
   ZONE_MAXIMUM_BUCKET,
   ZONE_MAXIMUM_DURATION,
@@ -1416,6 +1419,75 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                     <div class="setting-help">
                       ${localize(
                         "panels.zones.labels.days-between-irrigation-help",
+                        lang,
+                      )}
+                    </div>`,
+                )}
+                ${this._adv(
+                  html`${this._numRow(
+                      localize("panels.zones.labels.available-water", lang),
+                      output_unit(this.config, ZONE_BUCKET),
+                      zone.available_water != null
+                        ? Number(zone.available_water).toFixed(1)
+                        : "",
+                      (v) => {
+                        const mm = parseFloat(v);
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_AVAILABLE_WATER]:
+                            isNaN(mm) || mm <= 0 ? null : mm,
+                        });
+                      },
+                      1,
+                    )}
+                    ${this._numRow(
+                      localize("panels.zones.labels.allowed-depletion", lang),
+                      "%",
+                      zone.allowed_depletion != null
+                        ? Number(zone.allowed_depletion).toFixed(0)
+                        : "",
+                      (v) => {
+                        const pct = parseFloat(v);
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_ALLOWED_DEPLETION]: isNaN(pct)
+                            ? null
+                            : Math.min(95, Math.max(5, pct)),
+                        });
+                      },
+                      5,
+                    )}
+                    <div class="setting-help">
+                      ${localize(
+                        "panels.zones.labels.available-water-help",
+                        lang,
+                      )}
+                    </div>`,
+                )}
+                ${this._adv(
+                  html`${this._numRow(
+                      localize(
+                        "panels.zones.labels.distribution-efficiency",
+                        lang,
+                      ),
+                      "%",
+                      zone.distribution_efficiency != null
+                        ? Number(zone.distribution_efficiency).toFixed(0)
+                        : "",
+                      (v) => {
+                        const pct = parseFloat(v);
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_DISTRIBUTION_EFFICIENCY]: isNaN(pct)
+                            ? null
+                            : Math.min(100, Math.max(5, pct)),
+                        });
+                      },
+                      5,
+                    )}
+                    <div class="setting-help">
+                      ${localize(
+                        "panels.zones.labels.distribution-efficiency-help",
                         lang,
                       )}
                     </div>`,

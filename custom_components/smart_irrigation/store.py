@@ -45,6 +45,7 @@ from .const import (
     CONF_DEFAULT_DAYS_SINCE_LAST_IRRIGATION,
     CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED,
     CONF_DEFAULT_DRAINAGE_RATE,
+    CONF_DEFAULT_EFFECTIVE_RAIN,
     CONF_DEFAULT_FORECAST_RAIN_CREDIT,
     CONF_DEFAULT_GREENHOUSE,
     CONF_DEFAULT_HOURLY_CALCULATION,
@@ -71,6 +72,7 @@ from .const import (
     CONF_DEFAULT_ZONE_INPUT_METHOD,
     CONF_DEFAULT_ZONE_SEQUENCING,
     CONF_DIRECT_VALVE_CONTROL_ENABLED,
+    CONF_EFFECTIVE_RAIN,
     CONF_FORECAST_RAIN_CREDIT,
     CONF_FREEZE_SENSOR,
     CONF_FREEZE_THRESHOLD,
@@ -156,11 +158,14 @@ from .const import (
     TRIGGER_CONF_OFFSET_MINUTES,
     TRIGGER_CONF_TYPE,
     TRIGGER_TYPE_SUNRISE,
+    ZONE_ALLOWED_DEPLETION,
+    ZONE_AVAILABLE_WATER,
     ZONE_BUCKET,
     ZONE_CURRENT_DRAINAGE,
     ZONE_DAYS_BETWEEN_IRRIGATION,
     ZONE_DAYS_SINCE_IRRIGATION,
     ZONE_DELTA,
+    ZONE_DISTRIBUTION_EFFICIENCY,
     ZONE_DRAINAGE_RATE,
     ZONE_DURATION,
     ZONE_ET_DEFICIENCY,
@@ -292,6 +297,12 @@ class ZoneEntry:
     # Days between irrigation for this zone alone, replacing the general setting
     # (#875). None follows it; 0 means no restriction for this zone.
     days_between_irrigation = attr.ib(type=int, default=None)
+    # What the soil can hold for the plants (mm), the share they may use up
+    # before suffering (%), and the share of the emitters' water that reaches
+    # them (%). All optional; None leaves the calculation as it was.
+    available_water = attr.ib(type=float, default=None)
+    allowed_depletion = attr.ib(type=float, default=None)
+    distribution_efficiency = attr.ib(type=float, default=None)
     # Days since this zone was last watered, kept by the scheduler. None until a
     # run has been seen, which never holds the zone back.
     days_since_irrigation = attr.ib(type=int, default=None)
@@ -562,6 +573,7 @@ class Config:
     # equation on the window's means. Off by default while in beta.
     hourly_calculation = attr.ib(type=bool, default=CONF_DEFAULT_HOURLY_CALCULATION)
     forecast_rain_credit = attr.ib(type=bool, default=CONF_DEFAULT_FORECAST_RAIN_CREDIT)
+    effective_rain = attr.ib(type=bool, default=CONF_DEFAULT_EFFECTIVE_RAIN)
     # "standard" or "advanced"; None until the first load decides (see
     # _async_choose_ui_mode).
     ui_mode = attr.ib(type=str, default=None)
@@ -950,6 +962,7 @@ class SmartIrrigationStorage:
             continuousupdates=CONF_DEFAULT_CONTINUOUS_UPDATES,
             hourly_calculation=CONF_DEFAULT_HOURLY_CALCULATION,
             forecast_rain_credit=CONF_DEFAULT_FORECAST_RAIN_CREDIT,
+            effective_rain=CONF_DEFAULT_EFFECTIVE_RAIN,
             sensor_debounce=CONF_DEFAULT_SENSOR_DEBOUNCE,
             calc_log_enabled=CONF_DEFAULT_CALC_LOG_ENABLED,
         )
@@ -1005,6 +1018,9 @@ class SmartIrrigationStorage:
                 ),
                 forecast_rain_credit=data["config"].get(
                     CONF_FORECAST_RAIN_CREDIT, CONF_DEFAULT_FORECAST_RAIN_CREDIT
+                ),
+                effective_rain=data["config"].get(
+                    CONF_EFFECTIVE_RAIN, CONF_DEFAULT_EFFECTIVE_RAIN
                 ),
                 ui_mode=data["config"].get(CONF_UI_MODE),
                 zone_engines_split=data["config"].get(CONF_ZONE_ENGINES_SPLIT, False),
@@ -1150,6 +1166,11 @@ class SmartIrrigationStorage:
                             ZONE_IRRIGATION_THRESHOLD, CONF_DEFAULT_IRRIGATION_THRESHOLD
                         ),
                         linked_entity=zone.get(ZONE_LINKED_ENTITY, None),
+                        available_water=zone.get(ZONE_AVAILABLE_WATER, None),
+                        allowed_depletion=zone.get(ZONE_ALLOWED_DEPLETION, None),
+                        distribution_efficiency=zone.get(
+                            ZONE_DISTRIBUTION_EFFICIENCY, None
+                        ),
                         days_between_irrigation=zone.get(
                             ZONE_DAYS_BETWEEN_IRRIGATION, None
                         ),

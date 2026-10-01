@@ -33,6 +33,7 @@ export class SmartIrrigationConfig {
   continuousupdates: boolean;
   hourly_calculation: boolean;
   forecast_rain_credit?: boolean;
+  effective_rain?: boolean;
   /** How much of the panel is shown: "standard" or "advanced". */
   ui_mode?: string;
   skip_on_freeze?: boolean;
@@ -146,6 +147,9 @@ export class SmartIrrigationZone {
   maximum_bucket?: number;
   irrigation_threshold?: number;
   days_between_irrigation?: number | null; // null: follow the general setting
+  available_water?: number | null; // mm the soil holds for the plants; null: not set
+  allowed_depletion?: number | null; // % of it the plants may use up; null: 50
+  distribution_efficiency?: number | null; // % of the water that reaches the plants; null: 100
   last_calculated?: Date;
   last_updated?: Date;
   number_of_data_points?: number;

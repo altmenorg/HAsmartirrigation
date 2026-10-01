@@ -381,7 +381,7 @@ class ObservedWateringMixin:
             # A metered volume, spread over the zone's area (stored in m2):
             # litres / m2 == mm.
             size_m2 = zone.get(const.ZONE_SIZE) or 0.0
-            applied_mm = volume_l / size_m2
+            applied_mm = volume_l / size_m2 * self._distribution_efficiency(zone)
         # The bucket is stored in mm (units.py).
         applied_native = applied_mm
 

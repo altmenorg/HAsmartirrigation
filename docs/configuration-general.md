@@ -88,6 +88,8 @@ A condition that cannot be checked, because its sensor is unavailable or the wea
 
 * **Rain forecast.** Skip when the weather service forecasts at least the threshold of rain for today and tomorrow. Zones in a greenhouse sensor group still water.
 
+  **Count only rain that reaches the roots** (off by default) ignores a shower smaller than a fifth of the evapotranspiration of the period, which wets the leaves and evaporates before the soil sees it. It is judged on the whole period between two calculations, not day by day, so a period of several days ignores less than a day-by-day reading would. It does not model runoff on heavy rain; the maximum bucket still caps what the soil keeps.
+
   **Reduce durations when rain is forecast** (off by default) is the proportional version of the same idea. When a run starts, each zone is watered for the rain forecast to fall in the 24 hours after the start, less: the forecast hours are weighted by the probability the weather service gives, so 10 mm at 30% counts for 3 mm, and a forecast of 4 mm against a 10 mm deficit waters 6 mm. It works alongside the skip above, which stays all or nothing. A greenhouse zone is not reduced, and a forecast that cannot be read leaves the run as calculated.
 
   Like the rain history below, it shortens the run and leaves the deficit in the bucket. The rain that really falls is measured and credited at the next calculation, so nothing is counted twice, and a forecast that does not come true is made up at the next run. The hours are counted from the moment the run starts, not from the calculation, which on a morning run is hours earlier. The forecast hours come from Open-Meteo, including for installations using another weather service.

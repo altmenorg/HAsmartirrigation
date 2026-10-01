@@ -296,6 +296,11 @@ CONF_DEFAULT_HOURLY_CALCULATION = False
 # by default). The skip on a forecast is all or nothing; this one is a credit.
 CONF_FORECAST_RAIN_CREDIT = "forecast_rain_credit"
 CONF_DEFAULT_FORECAST_RAIN_CREDIT = False
+# Count only the rain that reaches the roots (off by default): a shower below a
+# fifth of the evapotranspiration of the window wets the leaves and evaporates.
+CONF_EFFECTIVE_RAIN = "effective_rain"
+CONF_DEFAULT_EFFECTIVE_RAIN = False
+EFFECTIVE_RAIN_ET_SHARE = 0.2
 # How far past the start of a run the forecast counts, in hours.
 FORECAST_RAIN_CREDIT_HOURS = 24
 # How much of the panel is shown. "standard" keeps the settings most
@@ -443,6 +448,16 @@ CONF_DEFAULT_IRRIGATION_THRESHOLD = 0.0
 # setting, a number replaces it for the zone and 0 means no restriction. The
 # days since the zone was last watered are kept per zone as well; None means
 # nothing has been recorded yet, which never holds a zone back.
+# What the soil of the zone can hold for the plants, in mm (the total available
+# water, TAW), and the share of it the plants may use up before they suffer (the
+# allowed depletion, 50% unless set). Both are optional: without the first the
+# deficit has no floor and the evapotranspiration is never reduced, as before.
+ZONE_AVAILABLE_WATER = "available_water"
+ZONE_ALLOWED_DEPLETION = "allowed_depletion"
+CONF_DEFAULT_ALLOWED_DEPLETION = 50.0
+# Share of the water leaving the emitters that reaches the plants, in percent.
+# None is 100: the throughput is taken at its word, as before.
+ZONE_DISTRIBUTION_EFFICIENCY = "distribution_efficiency"
 ZONE_DAYS_BETWEEN_IRRIGATION = "days_between_irrigation"
 ZONE_DAYS_SINCE_IRRIGATION = "days_since_irrigation"
 # Optional valve/switch entity observed to credit the bucket (closed-loop).
