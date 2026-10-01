@@ -168,6 +168,59 @@ class FlowCalibrationMixin:
         """Drop a zone's advisories, for when the zone itself goes away."""
         ir.async_delete_issue(self.hass, const.DOMAIN, self._issue_id(zone_id))
         ir.async_delete_issue(self.hass, const.DOMAIN, self._capacity_issue_id(zone_id))
+        ir.async_delete_issue(
+            self.hass, const.DOMAIN, self._missing_input_issue_id(zone_id)
+        )
+
+    @staticmethod
+    def _missing_input_issue_id(zone_id: int) -> str:
+        return f"missing_input_{zone_id}"
+
+    def _review_missing_input(self, zone: dict, trace: dict | None) -> None:
+        """Raise or clear the advisory for a zone the equation could not price.
+
+        When every day of the window lacks something the equation needs, it
+        returns no evapotranspiration at all: the deficit stays where it is and
+        the zone is never watered, with nothing on screen but a line in the log.
+        A sensor group whose temperature or wind sensor is unavailable, or a
+        weather service that stopped sending one of them, looks exactly like a
+        zone with no need. The advisory names what was missing.
+        """
+        zone_id = zone.get(const.ZONE_ID)
+        if zone_id is None or not trace or "days_in_average" not in trace:
+            return
+        if trace["days_in_average"] > 0:
+            ir.async_delete_issue(
+                self.hass, const.DOMAIN, self._missing_input_issue_id(zone_id)
+            )
+            return
+        missing = sorted(
+            {
+                name
+                for day in trace.get("days") or []
+                for name in (day or {}).get("missing") or []
+            }
+        )
+        if not missing:
+            return
+        _LOGGER.warning(
+            "Zone %s: nothing could be calculated, missing %s",
+            zone.get(const.ZONE_NAME) or zone_id,
+            ", ".join(missing),
+        )
+        ir.async_create_issue(
+            self.hass,
+            const.DOMAIN,
+            self._missing_input_issue_id(zone_id),
+            is_fixable=False,
+            severity=ir.IssueSeverity.WARNING,
+            translation_key="missing_input",
+            translation_placeholders={
+                "zone": str(zone.get(const.ZONE_NAME) or zone_id),
+                "missing": ", ".join(missing),
+            },
+            learn_more_url=DOCS_URL,
+        )
 
     @staticmethod
     def _capacity_issue_id(zone_id: int) -> str:

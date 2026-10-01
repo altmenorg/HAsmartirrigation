@@ -209,7 +209,11 @@ def test_removing_a_zone_drops_its_advisory(issues):
 
     coord.async_clear_throughput_issue(3)
 
-    assert issues.deleted == ["throughput_mismatch_3", "undersized_zone_3"]
+    assert issues.deleted == [
+        "throughput_mismatch_3",
+        "undersized_zone_3",
+        "missing_input_3",
+    ]
 
 
 async def test_a_zone_entered_as_a_rate_is_not_told_its_throughput_is_wrong(issues):

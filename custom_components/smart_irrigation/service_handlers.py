@@ -376,8 +376,28 @@ class ServiceHandlersMixin:
             await self._async_set_all_multipliers(new_value)
 
     async def handle_clear_weatherdata(self, call):
-        """Clear all collected weatherdata."""
-        await self._async_clear_all_weatherdata()
+        """Clear the collected weatherdata: all of it, or that of some zones.
+
+        Weather data belongs to a sensor group and is shared by its zones, so
+        naming zones clears the data of their groups, and the other zones of
+        those groups lose it too. Without zones, every group is cleared.
+        """
+        entities = call.data.get(const.SERVICE_ENTITY_ID)
+        if not entities:
+            await self._async_clear_all_weatherdata()
+            return
+        if not isinstance(entities, list):
+            entities = [entities]
+        mapping_ids = set()
+        for entity in entities:
+            state = self.hass.states.get(entity)
+            zone_id = state.attributes.get(const.ZONE_ID) if state else None
+            zone = self.store.get_zone(zone_id) if zone_id is not None else None
+            if zone is None or zone.get(const.ZONE_MAPPING) is None:
+                _LOGGER.warning("clear_all_weather_data: %s is not a zone", entity)
+                continue
+            mapping_ids.add(zone.get(const.ZONE_MAPPING))
+        await self._async_clear_weatherdata_of_mappings(mapping_ids)
 
     async def handle_generate_watering_calendar(self, call):
         """Generate watering calendar service handler."""

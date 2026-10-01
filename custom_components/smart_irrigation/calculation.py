@@ -1526,12 +1526,20 @@ class CalculationMixin:
     async def _async_clear_all_weatherdata(self, *args):
         _LOGGER.info("Clearing all weatherdata")
         mappings = await self.store.async_get_mappings()
-        for mapping in mappings:
-            changes = {}
-            changes[const.MAPPING_DATA] = []
-            changes[const.MAPPING_DATA_LAST_CALCULATION] = {}
+        await self._async_clear_weatherdata_of_mappings(
+            {mapping.get(const.MAPPING_ID) for mapping in mappings}
+        )
+
+    async def _async_clear_weatherdata_of_mappings(self, mapping_ids) -> None:
+        """Empty the collected weather data of the given sensor groups."""
+        for mapping_id in mapping_ids:
+            _LOGGER.debug("Clearing the weatherdata of sensor group %s", mapping_id)
             await self.store.async_update_mapping(
-                mapping.get(const.MAPPING_ID), changes
+                mapping_id,
+                {
+                    const.MAPPING_DATA: [],
+                    const.MAPPING_DATA_LAST_CALCULATION: {},
+                },
             )
 
     async def _async_calculate_all(self, delete_weather_data=True, dry_run=False):
@@ -1902,6 +1910,8 @@ class CalculationMixin:
                         weather_data=weatherdata, forecast_data=forecastdata
                     )
             precip = self._precipitation_net_of_superseded(zone, weatherdata)
+            if hourly is None:
+                self._check_missing_input(zone, modinst)
         elif m[const.MODULE_NAME] == "Static":
             delta = modinst.calculate()
         elif m[const.MODULE_NAME] == "Passthrough":
@@ -2454,6 +2464,16 @@ class CalculationMixin:
         if not tput or not sz:
             return None, tput, sz
         return (tput * 60) / sz * self._distribution_efficiency(zone), tput, sz
+
+    def _check_missing_input(self, zone, modinst) -> None:
+        """Say so when the equation had nothing to price (advisory)."""
+        review = getattr(self, "_review_missing_input", None)
+        if review is None:
+            return
+        try:
+            review(zone, getattr(modinst, "last_trace", None))
+        except Exception as e:  # noqa: BLE001 - an advisory never costs a calculation
+            _LOGGER.debug("Could not review the inputs of a zone: %s", e)
 
     def _check_capacity(self, zone, et_deficiency, precipitation_rate) -> None:
         """Tell the user when one run cannot water what the zone loses (advisory)."""

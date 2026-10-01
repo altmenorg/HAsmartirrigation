@@ -79,4 +79,4 @@ def test_a_zone_that_goes_away_takes_its_advisories_with_it():
         _mixin().async_clear_throughput_issue(3)
 
     ids = [call.args[2] for call in ir.async_delete_issue.call_args_list]
-    assert ids == ["throughput_mismatch_3", "undersized_zone_3"]
+    assert ids == ["throughput_mismatch_3", "undersized_zone_3", "missing_input_3"]

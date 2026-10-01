@@ -287,6 +287,10 @@
     }
   },
   "issues": {
+    "missing_input": {
+      "title": "Zone {zone}: nothing could be calculated",
+      "description": "The evapotranspiration of zone **{zone}** could not be calculated because the weather data had no value for: **{missing}**.\n\nUntil it does, the zone's deficit does not move and it is not watered, which looks exactly like a zone with no need.\n\nCheck that the sensors mapped to those fields are available, or that the weather service still sends them. The issue clears at the next calculation that can be done."
+    },
     "undersized_zone": {
       "title": "Zone {zone}: one run cannot water what it loses",
       "description": "The longest run of zone **{zone}** delivers about **{capacity} mm**, but the zone loses about **{need} mm** between two waterings ({days} day(s)). Its deficit will keep growing however long the weather stays as it is.\n\nThe cap is the zone's maximum duration. Raise it, give the zone more emitters or a higher throughput, or lower the days between irrigation. If the cap is on purpose, you can ignore this."
