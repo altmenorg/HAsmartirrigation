@@ -828,6 +828,27 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 0.1,
               )
             : ""}
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize(
+                "weather_skip.forecast_credit_label",
+                this.hass.language,
+              )}
+              <div class="setting-hint">
+                ${localize(
+                  "weather_skip.forecast_credit_description",
+                  this.hass.language,
+                )}
+              </div>
+            </div>
+            <ha-switch
+              .checked=${!!this.config.forecast_rain_credit}
+              @change=${(e: Event) =>
+                this.handleConfigChange({
+                  forecast_rain_credit: (e.target as any).checked,
+                })}
+            ></ha-switch>
+          </div>
         </div>
       </ha-card>
       ${this.renderMeasuredSkipCard()}

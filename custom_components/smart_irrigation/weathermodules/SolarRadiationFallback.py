@@ -86,6 +86,13 @@ class SolarRadiationFallbackClient:  # pylint: disable=invalid-name
         """
         return self._fallback.get_hourly_radiation(start, end)
 
+    def get_expected_rain_ahead(self, start, end):
+        """The rain to expect ahead, from Open-Meteo for a service without one."""
+        fetch = getattr(self._primary, "get_expected_rain_ahead", None)
+        if fetch is not None:
+            return fetch(start, end)
+        return self._fallback.get_expected_rain_ahead(start, end)
+
     def get_hourly_et0(self, start, end):
         """The hourly reference ET, from Open-Meteo, which also fills the daily one."""
         return self._fallback.get_hourly_et0(start, end)

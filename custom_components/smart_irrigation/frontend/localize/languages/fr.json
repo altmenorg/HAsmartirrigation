@@ -739,7 +739,9 @@
     "title": "Saut d'irrigation basé sur la météo",
     "description": "Saute automatiquement l'irrigation lorsque des précipitations sont prévues. Cette fonctionnalité nécessite qu'un service météo soit configuré.",
     "threshold_label": "Seuil de précipitations",
-    "threshold_description": "Quantité minimale de précipitations (en mm) prévue pour aujourd'hui et demain pour sauter l'irrigation."
+    "threshold_description": "Quantité minimale de précipitations (en mm) prévue pour aujourd'hui et demain pour sauter l'irrigation.",
+    "forecast_credit_label": "Réduire les durées quand de la pluie est prévue",
+    "forecast_credit_description": "Au départ d'un arrosage, chaque zone reçoit en moins la pluie prévue dans les 24 heures suivantes, pondérée par la probabilité donnée par le service météo. 4 mm prévus pour un déficit de 10 mm arrosent 6 mm. Le saut ci-dessus est du tout ou rien ; celui-ci est proportionnel, et les deux fonctionnent ensemble. Les zones sous serre ne sont pas réduites. Le déficit reste dans le seau : la pluie réellement tombée est créditée au calcul suivant."
   },
   "coordinate_config": {
     "title": "Coordonnées de localisation",

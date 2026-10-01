@@ -87,6 +87,10 @@ A start trigger can be held back by the conditions below, all off by default. Th
 A condition that cannot be checked, because its sensor is unavailable or the weather service cannot be read, never stops a run: watering goes ahead as it would without it.
 
 * **Rain forecast.** Skip when the weather service forecasts at least the threshold of rain for today and tomorrow. Zones in a greenhouse sensor group still water.
+
+  **Reduce durations when rain is forecast** (off by default) is the proportional version of the same idea. When a run starts, each zone is watered for the rain forecast to fall in the 24 hours after the start, less: the forecast hours are weighted by the probability the weather service gives, so 10 mm at 30% counts for 3 mm, and a forecast of 4 mm against a 10 mm deficit waters 6 mm. It works alongside the skip above, which stays all or nothing. A greenhouse zone is not reduced, and a forecast that cannot be read leaves the run as calculated.
+
+  Like the rain history below, it shortens the run and leaves the deficit in the bucket. The rain that really falls is measured and credited at the next calculation, so nothing is counted twice, and a forecast that does not come true is made up at the next run. The hours are counted from the moment the run starts, not from the calculation, which on a morning run is hours earlier. The forecast hours come from Open-Meteo, including for installations using another weather service.
 * **Rain sensor.** Skip while a binary sensor that is on in the rain says it is raining.
 
   On the advanced panel, that same sensor can do more than veto today: **shorten runs after recent rain** reads its history over the last five days, weighted so that yesterday counts for more than four days ago, and shortens the run by the result. A day of reported rain today takes the whole run, four days ago takes a tenth of it, and a wet week takes everything.

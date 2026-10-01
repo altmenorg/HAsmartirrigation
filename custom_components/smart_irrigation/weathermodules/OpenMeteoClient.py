@@ -137,6 +137,9 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
         self._radiation_series = None
         self._radiation_fetched_at = datetime.datetime(1900, 1, 1, 0, 0, 0)
         self._radiation_covers_from = math.inf
+        # Hourly rain forecast, see get_expected_rain_ahead.
+        self._rain_ahead_series = None
+        self._rain_ahead_fetched_at = datetime.datetime(1900, 1, 1, 0, 0, 0)
         # Hourly reference ET history, see get_hourly_et0.
         self._et0_series = None
         self._et0_fetched_at = datetime.datetime(1900, 1, 1, 0, 0, 0)
@@ -548,6 +551,83 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
         self._precipitation_series = series
         self._precipitation_fetched_at = now
         self._precipitation_covers_from = series[0][0] - SECONDS_PER_HOUR
+        return series
+
+    def get_expected_rain_ahead(self, start, end):
+        """The rain to expect between two moments, in mm, or None.
+
+        From Open-Meteo's hourly forecast, each hour's millimetres weighted by
+        its probability when it gives one, as the skip guard weights its days:
+        10 mm at 30% is not 10 mm. Each value is the rain of the hour ending at
+        its timestamp, and an hour only partly inside the window counts for the
+        share that is. The window is measured from ``start``, the moment the run
+        begins, not from the calculation hours earlier: rain that falls between
+        the two is accounted for by the rain already measured.
+
+        None means the forecast could not be read, or does not reach the end of
+        the window, and the caller leaves the run as calculated rather than
+        credit a part of the window as if it were all of it.
+        """
+        try:
+            start_ts = start.timestamp()
+            end_ts = end.timestamp()
+        except (AttributeError, TypeError, ValueError, OverflowError):
+            return None
+        if end_ts <= start_ts:
+            return 0.0
+        series = self._hourly_rain_ahead()
+        if not series or series[-1][0] < end_ts:
+            return None
+        total = 0.0
+        for hour_end, expected in series:
+            overlap = min(end_ts, hour_end) - max(start_ts, hour_end - SECONDS_PER_HOUR)
+            if overlap > 0:
+                total += expected * overlap / SECONDS_PER_HOUR
+        return total
+
+    def _hourly_rain_ahead(self):
+        """Return (hour end as unix time, expected mm) pairs, or None."""
+        now = datetime.datetime.now()
+        if (
+            self._rain_ahead_series is not None
+            and now
+            < self._rain_ahead_fetched_at
+            + datetime.timedelta(seconds=PRECIPITATION_CACHE_SECONDS)
+        ):
+            return self._rain_ahead_series
+        params = {
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "hourly": "precipitation,precipitation_probability",
+            "precipitation_unit": "mm",
+            "timezone": "GMT",
+            "timeformat": "unixtime",
+            "forecast_days": 3,
+        }
+        try:
+            doc = self._request(params)
+            if doc is None:
+                return None
+            hourly = doc["hourly"]
+            probabilities = hourly.get("precipitation_probability") or []
+            series = []
+            for index, (hour_end, amount) in enumerate(
+                zip(hourly["time"], hourly["precipitation"], strict=False)
+            ):
+                millimetres = float(amount or 0.0)
+                probability = (
+                    probabilities[index] if index < len(probabilities) else None
+                )
+                if probability is not None:
+                    millimetres *= min(100.0, max(0.0, float(probability))) / 100.0
+                series.append((float(hour_end), millimetres))
+        except (KeyError, TypeError, ValueError, requests.RequestException) as ex:
+            _LOGGER.warning("Error reading the rain forecast from Open-Meteo: %s", ex)
+            return None
+        if not series:
+            return None
+        self._rain_ahead_series = series
+        self._rain_ahead_fetched_at = now
         return series
 
     def get_hourly_et0(self, start, end):

@@ -292,6 +292,12 @@ CONF_CONTINUOUS_UPDATES = "continuousupdates"
 # default while it is new: switching it on changes every zone's ET.
 CONF_HOURLY_CALCULATION = "hourly_calculation"
 CONF_DEFAULT_HOURLY_CALCULATION = False
+# Shorten each zone's run by the rain forecast for the day after it starts (off
+# by default). The skip on a forecast is all or nothing; this one is a credit.
+CONF_FORECAST_RAIN_CREDIT = "forecast_rain_credit"
+CONF_DEFAULT_FORECAST_RAIN_CREDIT = False
+# How far past the start of a run the forecast counts, in hours.
+FORECAST_RAIN_CREDIT_HOURS = 24
 # How much of the panel is shown. "standard" keeps the settings most
 # installations never touch folded away; "advanced" shows everything, which is
 # what every install had until now and what they keep.

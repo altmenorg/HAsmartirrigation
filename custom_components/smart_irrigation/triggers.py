@@ -629,6 +629,10 @@ class TriggersMixin:
                 # Rain between the calculation and now shortens the run.
                 await self._apply_rain_since_calculation()
 
+                # Rain forecast for the day ahead shortens it as well, when the
+                # user asked for that.
+                await self._apply_forecast_rain_credit()
+
                 # And, for a zone with no rain gauge and no service to give it
                 # millimetres, what a binary rain sensor says about the last few
                 # days shortens it too.
@@ -894,6 +898,98 @@ class TriggersMixin:
                 # failure here costs accuracy, not the run.
                 _LOGGER.error(
                     "Could not account for rain since the calculation on zone %s: %s",
+                    zone.get(const.ZONE_NAME),
+                    e,
+                )
+
+    async def _apply_forecast_rain_credit(self):
+        """Shorten each zone's run by the rain forecast for the day after it starts.
+
+        Opt-in (``forecast_rain_credit``). The skip on a forecast is all or
+        nothing; this credits what is expected, so a forecast of 4 mm against a
+        10 mm deficit waters 6 mm instead of 10 or nothing.
+
+        It is done the way rain since the calculation is: the duration is
+        shortened and the bucket is left alone. The rain that falls is measured
+        and credited at the next calculation, and the smaller amount applied is
+        what the run credits, so nothing is counted twice. The window starts
+        with the run, not with the calculation, which on a morning run is hours
+        earlier: a forecast list starts at a calendar day whatever time it is,
+        and pricing it by position puts the rain of the wrong day against a run.
+
+        A zone under glass is left as it is, as it is for the skip: a forecast
+        says nothing about a greenhouse. Rain can only shorten a run, and any
+        failure costs accuracy, not the run.
+        """
+        try:
+            config = self.store.get_config() or {}
+            enabled = config.get(const.CONF_FORECAST_RAIN_CREDIT)
+        except Exception:  # noqa: BLE001 - an extra, never the decision
+            return
+        if not enabled:
+            return
+        if not getattr(self, "use_weather_service", False):
+            return
+        fetch = getattr(
+            getattr(self, "_WeatherServiceClient", None),
+            "get_expected_rain_ahead",
+            None,
+        )
+        if fetch is None:
+            return
+        try:
+            zones = await self.store.async_get_zones()
+            sheltered = await self.async_zones_sheltered_from_rain()
+            start = datetime.now()
+            expected_mm = await self.hass.async_add_executor_job(
+                fetch, start, start + timedelta(hours=const.FORECAST_RAIN_CREDIT_HOURS)
+            )
+        except Exception as e:  # noqa: BLE001 - never block the run over this
+            _LOGGER.warning("Could not read the rain forecast to credit: %s", e)
+            return
+        if not expected_mm or expected_mm <= 0:
+            return
+
+        for zone in zones:
+            if zone.get(const.ZONE_STATE) != const.ZONE_STATE_AUTOMATIC:
+                continue
+            if zone.get(const.ZONE_ID) in sheltered:
+                continue
+            if not zone.get(const.ZONE_DURATION):
+                continue
+            try:
+                # What the run is sized from now, the rain that fell since the
+                # calculation included, less what the forecast says will fall.
+                rain_so_far = await self.precipitation_since_last_calculation(zone)
+                rain_so_far -= zone.get(const.ZONE_PRECIPITATION_SUPERSEDED) or 0.0
+                bucket = (
+                    (zone.get(const.ZONE_BUCKET) or 0.0)
+                    + max(0.0, rain_so_far)
+                    + expected_mm
+                )
+                duration = self.duration_from_bucket(zone, bucket)
+                if duration >= zone.get(const.ZONE_DURATION):
+                    continue
+                _LOGGER.info(
+                    "Zone %s: %.1f mm of rain forecast for the next %s hours, "
+                    "watering for %s s instead of %s s",
+                    zone.get(const.ZONE_NAME),
+                    expected_mm,
+                    const.FORECAST_RAIN_CREDIT_HOURS,
+                    duration,
+                    zone.get(const.ZONE_DURATION),
+                )
+                await self.store.async_update_zone(
+                    zone.get(const.ZONE_ID), {const.ZONE_DURATION: duration}
+                )
+                async_dispatcher_send(
+                    self.hass,
+                    const.DOMAIN + "_config_updated",
+                    zone.get(const.ZONE_ID),
+                )
+            except Exception as e:  # noqa: BLE001
+                _LOGGER.error(
+                    "Could not credit the forecast rain on zone %s: %s",
                     zone.get(const.ZONE_NAME),
                     e,
                 )

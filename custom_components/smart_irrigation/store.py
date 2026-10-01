@@ -45,6 +45,7 @@ from .const import (
     CONF_DEFAULT_DAYS_SINCE_LAST_IRRIGATION,
     CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED,
     CONF_DEFAULT_DRAINAGE_RATE,
+    CONF_DEFAULT_FORECAST_RAIN_CREDIT,
     CONF_DEFAULT_GREENHOUSE,
     CONF_DEFAULT_HOURLY_CALCULATION,
     CONF_DEFAULT_IRRIGATION_START_TRIGGERS,
@@ -70,6 +71,7 @@ from .const import (
     CONF_DEFAULT_ZONE_INPUT_METHOD,
     CONF_DEFAULT_ZONE_SEQUENCING,
     CONF_DIRECT_VALVE_CONTROL_ENABLED,
+    CONF_FORECAST_RAIN_CREDIT,
     CONF_FREEZE_SENSOR,
     CONF_FREEZE_THRESHOLD,
     CONF_HOURLY_CALCULATION,
@@ -552,6 +554,7 @@ class Config:
     # Reference ET summed hour by hour (FAO-56 Eq. 53) instead of the daily
     # equation on the window's means. Off by default while in beta.
     hourly_calculation = attr.ib(type=bool, default=CONF_DEFAULT_HOURLY_CALCULATION)
+    forecast_rain_credit = attr.ib(type=bool, default=CONF_DEFAULT_FORECAST_RAIN_CREDIT)
     # "standard" or "advanced"; None until the first load decides (see
     # _async_choose_ui_mode).
     ui_mode = attr.ib(type=str, default=None)
@@ -939,6 +942,7 @@ class SmartIrrigationStorage:
             starteventfiredtoday=False,
             continuousupdates=CONF_DEFAULT_CONTINUOUS_UPDATES,
             hourly_calculation=CONF_DEFAULT_HOURLY_CALCULATION,
+            forecast_rain_credit=CONF_DEFAULT_FORECAST_RAIN_CREDIT,
             sensor_debounce=CONF_DEFAULT_SENSOR_DEBOUNCE,
             calc_log_enabled=CONF_DEFAULT_CALC_LOG_ENABLED,
         )
@@ -991,6 +995,9 @@ class SmartIrrigationStorage:
                 ),
                 hourly_calculation=data["config"].get(
                     CONF_HOURLY_CALCULATION, CONF_DEFAULT_HOURLY_CALCULATION
+                ),
+                forecast_rain_credit=data["config"].get(
+                    CONF_FORECAST_RAIN_CREDIT, CONF_DEFAULT_FORECAST_RAIN_CREDIT
                 ),
                 ui_mode=data["config"].get(CONF_UI_MODE),
                 zone_engines_split=data["config"].get(CONF_ZONE_ENGINES_SPLIT, False),
