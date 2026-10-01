@@ -37,6 +37,13 @@ If you would rather not, the panel also takes a **precipitation rate** in mm/h d
 
 Follow Home Assistant's own [installation guide](https://www.home-assistant.io/installation/) for your machine and pick **Home Assistant OS** if you have the choice: it is the version that supports add-ons and updates itself, and it is the one every instruction you will read assumes.
 
+**On a Raspberry Pi**, the steps are these. Home Assistant's own guide has the details and is the reference if anything differs.
+
+1. On another computer, install the [Raspberry Pi Imager](https://www.raspberrypi.com/software/).
+2. In the Imager, choose your Pi model, then the operating system under **Other specific-purpose OS**, **Home assistants and home automation**, **Home Assistant**, and the version for your model. Choose the SD card or SSD, and write it. If you use an SSD, your Pi needs to be set up to boot from USB; the Imager and the Raspberry Pi documentation say how.
+3. Put the card or drive in the Pi, plug in the network cable (a cable is easier than Wi-Fi the first time) and the power. The first start downloads and prepares Home Assistant and takes a while, often twenty minutes. Nothing is wrong if the page is not there yet.
+4. From a computer on the same network, open `http://homeassistant.local:8123` (or the Pi's address from your router) and follow the on-screen setup.
+
 When it is up, create your account, set your **location, time zone and elevation** properly. Smart Irrigation needs them: the sun's position at your latitude is half of the evapotranspiration equation.
 
 ## 2. Your valve, in Home Assistant (5 minutes)
