@@ -25,7 +25,9 @@ The methods live on a mixin the SmartIrrigationCoordinator inherits.
 """
 
 import asyncio
+import json
 import logging
+import math
 from collections import deque
 from functools import partial
 
@@ -168,6 +170,45 @@ class ValveRunnerMixin:
             VALVE_SERVICE_TIMEOUT,
         )
         task.add_done_callback(partial(self._log_late_valve_service, entity_id))
+
+    async def _arm_safety_off(self, zone: dict, held: float) -> None:
+        """Arm a hardware dead-man on the zone's valve, if one is configured.
+
+        Publishes an "on with timed off" to the zone's MQTT set-topic so the
+        device shuts its own valve off after ``held`` + a margin, should Home
+        Assistant die mid-run and never send the close. This is purely a safety
+        net alongside the normal close in ``_run_one_pass``'s finally block: the
+        run is still driven by Home Assistant, the on_time only bounds it.
+
+        A missing topic, an MQTT stack that is not set up, or any publish error
+        must never break the run (the close still happens the usual way), so the
+        whole thing is best-effort and swallows its failures with a warning.
+        """
+        topic = zone.get(const.ZONE_SAFETY_OFF_TOPIC)
+        if not topic:
+            return
+        key = (
+            zone.get(const.ZONE_SAFETY_OFF_STATE_KEY)
+            or const.CONF_DEFAULT_SAFETY_OFF_STATE_KEY
+        )
+        on_time = int(math.ceil(max(0.0, held))) + const.SAFETY_OFF_TIME_MARGIN
+        payload = json.dumps({key: "ON", "on_time": on_time})
+        try:
+            # Imported lazily: mqtt is an after_dependency, so the integration
+            # loads without it; we only reach here when a topic is configured.
+            from homeassistant.components import mqtt
+
+            await mqtt.async_publish(self.hass, topic, payload, qos=0, retain=False)
+            _LOGGER.debug(
+                "Direct valve control: armed safety off_time %ss on %s", on_time, topic
+            )
+        except Exception as e:  # noqa: BLE001 - safety must never break a run
+            _LOGGER.warning(
+                "Direct valve control: could not arm safety off_time on %s "
+                "(MQTT unavailable?): %s",
+                topic,
+                e,
+            )
 
     async def _confirm_valve_running(self, entity_id: str):
         """Wait briefly for a freshly-opened valve to report an on-state.
@@ -615,6 +656,9 @@ class ValveRunnerMixin:
             # Start counting only once the valve is confirmed open.
             started = dt_util.utcnow()
             await self._add_active_run(zone_id, entity_id, started, held)
+            # Hardware dead-man: tell the device to shut itself off after the
+            # pass, in case Home Assistant never sends the close below.
+            await self._arm_safety_off(zone, held)
             await asyncio.sleep(held)
         finally:
             if not closed:
@@ -794,6 +838,8 @@ class ValveRunnerMixin:
                     "valve_did_not_open",
                 )
                 return
+            # Re-arm the hardware dead-man for the remaining time after a restart.
+            await self._arm_safety_off(self.store.get_zone(zone_id) or {}, remaining)
             await asyncio.sleep(remaining)
         finally:
             if not closed:

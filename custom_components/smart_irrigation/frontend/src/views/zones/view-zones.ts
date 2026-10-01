@@ -72,6 +72,8 @@ import {
   ZONE_INPUT_METHOD_THROUGHPUT,
   ZONE_LEAD_TIME,
   ZONE_LINKED_ENTITY,
+  ZONE_SAFETY_OFF_TOPIC,
+  ZONE_SAFETY_OFF_STATE_KEY,
   ZONE_MAPPING,
   ZONE_DAYS_BETWEEN_IRRIGATION,
   ZONE_IRRIGATION_THRESHOLD,
@@ -1445,6 +1447,42 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                         }),
                       localize("panels.zones.labels.linked-entity-hint", lang),
                     )
+                  : ""}
+                ${this.config?.direct_valve_control_enabled &&
+                zone.linked_entity
+                  ? this._adv(html`
+                      ${this._textRow(
+                        localize("panels.zones.labels.safety-off-topic", lang),
+                        localize("panels.zones.labels.optional", lang),
+                        zone.safety_off_topic,
+                        (v) =>
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_SAFETY_OFF_TOPIC]: v || undefined,
+                          }),
+                      )}
+                      ${zone.safety_off_topic
+                        ? this._textRow(
+                            localize(
+                              "panels.zones.labels.safety-off-state-key",
+                              lang,
+                            ),
+                            "",
+                            zone.safety_off_state_key,
+                            (v) =>
+                              this.handleEditZone(index, {
+                                ...zone,
+                                [ZONE_SAFETY_OFF_STATE_KEY]: v || undefined,
+                              }),
+                          )
+                        : ""}
+                      <div class="setting-help">
+                        ${localize(
+                          "panels.zones.labels.safety-off-topic-help",
+                          lang,
+                        )}
+                      </div>
+                    `)
                   : ""}
                 ${this._adv(
                   // A flow meter is for crediting what actually came out, which

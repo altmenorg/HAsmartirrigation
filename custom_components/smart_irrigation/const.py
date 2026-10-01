@@ -447,6 +447,18 @@ ZONE_DAYS_BETWEEN_IRRIGATION = "days_between_irrigation"
 ZONE_DAYS_SINCE_IRRIGATION = "days_since_irrigation"
 # Optional valve/switch entity observed to credit the bucket (closed-loop).
 ZONE_LINKED_ENTITY = "linked_entity"
+# Optional hardware dead-man for direct valve control: an MQTT set-topic the
+# runner publishes an "on with timed off" to, so the valve shuts itself off if
+# Home Assistant dies mid-run and never sends the close (e.g. a zigbee2mqtt
+# device supporting on_time). Empty = disabled; behaviour then is unchanged.
+ZONE_SAFETY_OFF_TOPIC = "safety_off_topic"
+# The state property the device expects in that payload; "state" for a
+# single-channel device, "state_l1".."state_l4" for a multi-channel one.
+ZONE_SAFETY_OFF_STATE_KEY = "safety_off_state_key"
+CONF_DEFAULT_SAFETY_OFF_STATE_KEY = "state"
+# Seconds added to a pass's own length for the on_time value, so the device's
+# own auto-off lands just after Home Assistant's close rather than before it.
+SAFETY_OFF_TIME_MARGIN = 30
 # Optional cumulative volume/flow meter; credits the bucket by measured volume.
 ZONE_FLOW_SENSOR = "flow_sensor"
 # A soil moisture sensor, in %, and the moisture at or above which the zone
