@@ -304,6 +304,13 @@ CONF_DEFAULT_EFFECTIVE_RAIN = False
 # run at sunset waters on this afternoon's weather and not on last night's.
 CONF_RECALCULATE_BEFORE_START = "recalculate_before_start"
 CONF_DEFAULT_RECALCULATE_BEFORE_START = False
+# Continuous updates used to do two things: record every sensor change, and
+# calculate the zones again at every change, which moved the bucket (and the
+# "accounts for duration" trigger) all day. The hourly calculation rebuilds every
+# hour of the window whenever it runs, and the live estimate shows where a zone
+# stands without writing anything, so the second part has nothing left to give.
+# The option now records only; the scheduled calculation consumes the readings.
+CONTINUOUS_UPDATES_RECALCULATE = False
 # A calculation younger than this is as fresh as one could make it.
 RECALCULATE_FRESH_MINUTES = 60
 EFFECTIVE_RAIN_ET_SHARE = 0.2

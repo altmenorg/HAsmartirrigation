@@ -246,7 +246,7 @@
         },
         "continuousupdates": {
           "header": "Mises à jour continues pour les capteurs (expérimental)",
-          "description": "Cette fonctionnalité expérimentale met à jour en continu les données des capteurs. C'est utile pour les groupes de capteurs qui utilisent des sources fournissant des données continues, comme les stations météo. Elle ne peut pas être utilisée pour les groupes de capteurs qui s'appuient au moins en partie sur des services météo, car l'interrogation continue des API engendre des coûts. Gardez à l'esprit que cette fonctionnalité est expérimentale et peut ne pas fonctionner comme prévu. À utiliser à vos propres risques.",
+          "description": "Enregistre chaque changement d'un capteur du groupe, au lieu d'un relevé par mise à jour. Le calcul horaire et le pluviomètre en tirent des moyennes plus fines. Les zones ne sont plus recalculées à chaque changement : le calcul programmé s'en charge, une fois, à partir des relevés enregistrés. Inutilisable pour les groupes de capteurs qui s'appuient au moins en partie sur un service météo, car interroger l'API en continu coûterait de l'argent.",
           "labels": {
             "continuousupdates": "Activer les mises à jour continues",
             "sensor_debounce": "Anti-rebond capteur"

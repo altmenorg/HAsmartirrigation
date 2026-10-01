@@ -1569,7 +1569,10 @@ class CalculationMixin:
         # skip over zones that use pure sensors (not weather service) if continuous updates are enabled
         the_config = await self.store.async_get_config()
         zones = []
-        if the_config.get(const.CONF_CONTINUOUS_UPDATES):
+        if (
+            the_config.get(const.CONF_CONTINUOUS_UPDATES)
+            and const.CONTINUOUS_UPDATES_RECALCULATE
+        ):
             _LOGGER.debug(
                 "Continuous updates are enabled, filtering out pure sensor zones"
             )

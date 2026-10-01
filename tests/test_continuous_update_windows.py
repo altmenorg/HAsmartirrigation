@@ -18,6 +18,12 @@ GROUP = 5
 MARK = datetime(2026, 9, 21, 12, 0)
 
 
+@pytest.fixture(autouse=True)
+def _recalculating(monkeypatch):
+    """These tests are about the recalculation path, which is off by default."""
+    monkeypatch.setattr(const, "CONTINUOUS_UPDATES_RECALCULATE", True)
+
+
 def _coordinator(zones):
     coordinator = SmartIrrigationCoordinator.__new__(SmartIrrigationCoordinator)
     coordinator.hass = MagicMock()
@@ -96,3 +102,19 @@ async def test_a_zone_with_nothing_new_is_not_calculated():
     await coordinator.async_continuous_update_for_mapping(GROUP)
 
     coordinator.async_calculate_zone.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_by_default_a_sensor_change_is_recorded_and_nothing_is_calculated(
+    monkeypatch,
+):
+    """Continuous updates record; the scheduled calculation does the rest."""
+    monkeypatch.setattr(const, "CONTINUOUS_UPDATES_RECALCULATE", False)
+    coordinator = _coordinator(ZONES)
+
+    await coordinator.async_continuous_update_for_mapping(GROUP)
+
+    coordinator.async_calculate_zone.assert_not_awaited()
+    coordinator.apply_aggregates_to_mapping_data.assert_not_awaited()
+    # The readings wait in the buffer for the scheduled calculation.
+    coordinator.prune_consumed_readings.assert_not_awaited()

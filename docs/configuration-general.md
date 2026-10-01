@@ -113,18 +113,10 @@ Thresholds are entered in your unit system and a sensor is read in its own unit,
 
 **Soil moisture** is set on each zone rather than here. Give a zone a soil moisture sensor and a threshold in %, 50 unless you set one, and while the reading is at or above it that zone sits the run out and the others water. Its duration for that run goes to 0 and its bucket is kept, so the deficit rolls over to the next run. Every calculation applies the same rule: a zone whose soil reads at or above its threshold has its bucket set to field capacity, so the deficit shown never contradicts the sensor between two starts. It works in that direction only. A dry reading says nothing about how many millimetres are missing without a calibration of the sensor to the soil, and a deficit invented from one would water a zone for good on the strength of a badly placed probe.
 
-### Continuous updates (experimental)
-Continuous updates is an experimental feature that tries to capture more granular weather data to avoid missing chunks of weather patterns. For a zone to be continuous updated, it needs to:
-* be set to `automatic`
-* use a [sensor group](configuration-sensor-groups.md) that does not rely on a weather service (none of the data has its source set to `weather service`). 
-* not use forecasting, as it relies on weather services. Set `forecast days` for PyETO to `0`.
+### Continuous updates
+Continuous updates records every change of a sensor of the group, instead of one reading per update, so the averages the calculation works from, hour by hour and for the rain, follow the day more finely. For a group to be recorded this way, it needs a [sensor group](configuration-sensor-groups.md) that does not rely on a weather service (none of the data has its source set to `weather service`).
 
-Any zone that does not meet the above requirements is not included in the continuous updates and instead will be included in the automatic update and calculation at the time configured. 
-Any zone that does meet this requirement will not be included in the automatic update and calculation.
-
-A sensor debounce setting is also provided to provide control over the speed of continuous updates.
-
-Please note that this is experimental right now and will have bugs.
+It records and nothing more. It used to calculate the zones again at every change, which moved the bucket, and the trigger that accounts for the duration of the run, all day. The scheduled calculation now does that once, from the readings recorded, and the live estimate on the Info page and in the zone's live bucket entity shows where a zone stands in between without writing anything. Zones on a pure-sensor group are calculated at the scheduled time like any other. A sensor debounce setting controls how fast changes are recorded.
 
 For continous updates, in the future, it will likely use specific set of aggregates (last for all data points except for solar radiation which will use average of riemann integral) and also requires current precipitation to be mapped in the sensor group.
 
