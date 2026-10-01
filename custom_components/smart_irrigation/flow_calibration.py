@@ -48,6 +48,11 @@ MIN_SAMPLES = 3
 # is past that and into "the configured number is wrong".
 TOLERANCE = 0.25
 
+# A zone is worth a word when one run delivers less than this share of what it
+# loses between two waterings: a little under is within what a forecast and a
+# crop factor can swing in a week.
+CAPACITY_TOLERANCE = 0.8
+
 DOCS_URL = (
     "https://altmenorg.github.io/HAsmartirrigation/configuration-closed-loop.html"
 )
@@ -160,5 +165,62 @@ class FlowCalibrationMixin:
         )
 
     def async_clear_throughput_issue(self, zone_id: int) -> None:
-        """Drop a zone's advisory, for when the zone itself goes away."""
+        """Drop a zone's advisories, for when the zone itself goes away."""
         ir.async_delete_issue(self.hass, const.DOMAIN, self._issue_id(zone_id))
+        ir.async_delete_issue(self.hass, const.DOMAIN, self._capacity_issue_id(zone_id))
+
+    @staticmethod
+    def _capacity_issue_id(zone_id: int) -> str:
+        return f"undersized_zone_{zone_id}"
+
+    def _review_zone_capacity(
+        self, zone: dict, daily_need_mm: float, rate_mm_h: float | None, days: float
+    ) -> None:
+        """Raise or clear the advisory for a zone that cannot water what it loses.
+
+        One run is at most ``maximum_duration`` long, so it delivers at most
+        that long at the zone's rate. When that is less than the zone loses
+        between two waterings (the daily need times the days between them, one
+        at least), the deficit grows for good however long the weather stays
+        the same: a drip line capped at ten minutes with days between at three.
+        Advisory only: the cap may be on purpose.
+        """
+        zone_id = zone.get(const.ZONE_ID)
+        maximum = zone.get(const.ZONE_MAXIMUM_DURATION)
+        if (
+            zone_id is None
+            or maximum is None
+            or maximum < 0
+            or not rate_mm_h
+            or daily_need_mm <= 0
+        ):
+            return
+        capacity_mm = rate_mm_h * maximum / 3600.0
+        need_mm = daily_need_mm * max(1.0, float(days or 1))
+        if capacity_mm >= CAPACITY_TOLERANCE * need_mm:
+            ir.async_delete_issue(
+                self.hass, const.DOMAIN, self._capacity_issue_id(zone_id)
+            )
+            return
+        _LOGGER.warning(
+            "Zone %s can deliver %.1f mm in a run at most but loses about %.1f mm "
+            "between two waterings",
+            zone.get(const.ZONE_NAME) or zone_id,
+            capacity_mm,
+            need_mm,
+        )
+        ir.async_create_issue(
+            self.hass,
+            const.DOMAIN,
+            self._capacity_issue_id(zone_id),
+            is_fixable=False,
+            severity=ir.IssueSeverity.WARNING,
+            translation_key="undersized_zone",
+            translation_placeholders={
+                "zone": str(zone.get(const.ZONE_NAME) or zone_id),
+                "capacity": f"{capacity_mm:.1f}",
+                "need": f"{need_mm:.1f}",
+                "days": f"{max(1.0, float(days or 1)):.0f}",
+            },
+            learn_more_url=DOCS_URL,
+        )

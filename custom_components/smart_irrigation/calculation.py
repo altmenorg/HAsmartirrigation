@@ -2291,6 +2291,14 @@ class CalculationMixin:
                     + f" {duration:.0f} s"
                 )
             explanation += ".</li>"
+            # The need of a day: an hourly sum covers its own window, which is
+            # rarely exactly 24 hours.
+            per_day = (
+                et_deficiency / (hourly[1] / 24.0)
+                if hourly is not None and hourly[1] > 0
+                else et_deficiency
+            )
+            self._check_capacity(zone, per_day, precipitation_rate)
 
             # add the lead time but only if duration is > 0 at this point
             if duration > 0.0:
@@ -2446,6 +2454,20 @@ class CalculationMixin:
         if not tput or not sz:
             return None, tput, sz
         return (tput * 60) / sz * self._distribution_efficiency(zone), tput, sz
+
+    def _check_capacity(self, zone, et_deficiency, precipitation_rate) -> None:
+        """Tell the user when one run cannot water what the zone loses (advisory)."""
+        review = getattr(self, "_review_zone_capacity", None)
+        if review is None:
+            return
+        try:
+            config = self.store.get_config() or {}
+            days = 1.0
+            if hasattr(self, "zone_days_between"):
+                days = self.zone_days_between(zone, config)[0] or 1.0
+            review(zone, abs(et_deficiency or 0.0), precipitation_rate, days)
+        except Exception as e:  # noqa: BLE001 - an advisory never costs a calculation
+            _LOGGER.debug("Could not review the capacity of a zone: %s", e)
 
     @staticmethod
     def _water_stress(zone: dict, bucket: float) -> float:
