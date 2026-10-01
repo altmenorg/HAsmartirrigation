@@ -433,6 +433,12 @@ ZONE_PRECIPITATION_SUPERSEDED = "precipitation_superseded"
 # (the management allowed depletion). 0 waters as soon as anything is missing.
 ZONE_IRRIGATION_THRESHOLD = "irrigation_threshold"
 CONF_DEFAULT_IRRIGATION_THRESHOLD = 0.0
+# Days between irrigation for this zone alone (#875). None follows the general
+# setting, a number replaces it for the zone and 0 means no restriction. The
+# days since the zone was last watered are kept per zone as well; None means
+# nothing has been recorded yet, which never holds a zone back.
+ZONE_DAYS_BETWEEN_IRRIGATION = "days_between_irrigation"
+ZONE_DAYS_SINCE_IRRIGATION = "days_since_irrigation"
 # Optional valve/switch entity observed to credit the bucket (closed-loop).
 ZONE_LINKED_ENTITY = "linked_entity"
 # Optional cumulative volume/flow meter; credits the bucket by measured volume.

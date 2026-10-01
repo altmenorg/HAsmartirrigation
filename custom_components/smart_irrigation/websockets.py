@@ -27,7 +27,7 @@ from .calcmodules.consumes import consumed_mappings, idle_options
 from .delivery import delivery_gap, stale_zones
 from .engine_binding import ENGINE_BY_METHOD, method_of_engine
 from .presets import apply_preset, describe_zone
-from .skip_conditions import thresholds_for_display
+from .skip_conditions import SkipConditionsMixin, thresholds_for_display
 from .units import zone_from_display, zone_to_display
 
 _LOGGER = logging.getLogger(__name__)
@@ -259,6 +259,7 @@ class SmartIrrigationMappingView(HomeAssistantView):
 SERVER_OWNED_ZONE_FIELDS = (
     const.ZONE_WATER_USED,
     const.ZONE_LAST_IRRIGATION,
+    const.ZONE_DAYS_SINCE_IRRIGATION,
     const.ZONE_MEASURED_THROUGHPUT,
     const.ZONE_MEASURED_THROUGHPUT_SAMPLES,
     const.ZONE_PRECIPITATION_SUPERSEDED,
@@ -339,6 +340,12 @@ class SmartIrrigationZoneView(HomeAssistantView):
                 vol.Optional(const.ZONE_DRAINAGE_RATE): vol.Or(float, int, None),
                 vol.Optional(const.ZONE_CURRENT_DRAINAGE): vol.Or(float, int, None),
                 vol.Optional(const.ZONE_LINKED_ENTITY): vol.Any(None, cv.string),
+                vol.Optional(const.ZONE_DAYS_SINCE_IRRIGATION): vol.Or(
+                    int, float, None
+                ),
+                vol.Optional(const.ZONE_DAYS_BETWEEN_IRRIGATION): vol.Or(
+                    vol.All(int, vol.Range(min=0, max=365)), None
+                ),
                 vol.Optional(const.ZONE_FLOW_SENSOR): vol.Any(None, cv.string),
                 vol.Optional(const.ZONE_SOIL_MOISTURE_SENSOR): vol.Any(None, cv.string),
                 vol.Optional(const.ZONE_SOIL_MOISTURE_THRESHOLD): vol.Any(
@@ -847,15 +854,16 @@ async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
                 const.CONF_DAYS_BETWEEN_IRRIGATION,
                 const.CONF_DEFAULT_DAYS_BETWEEN_IRRIGATION,
             )
-            days_since_last = config.get(
-                const.CONF_DAYS_SINCE_LAST_IRRIGATION,
-                const.CONF_DEFAULT_DAYS_SINCE_LAST_IRRIGATION,
-            )
-            if days_between and days_between > 0:
+            if (days_between and days_between > 0) or any(
+                (zone.get(const.ZONE_DAYS_BETWEEN_IRRIGATION) or 0) > 0
+                for zone in zones
+            ):
                 # The next trigger evaluates days_since_last against
                 # days_between and only fires once it has caught up, so the
                 # number of remaining skip days is days_between - days_since_last.
-                skip_days = days_between - days_since_last
+                # With zones that count days of their own, the run goes ahead as
+                # soon as the first of them is due.
+                skip_days = SkipConditionsMixin.days_until_a_zone_is_due(zones, config)
                 if skip_days > 0 and next_irrigation_start:
                     next_irrigation_start += datetime.timedelta(days=skip_days)
                     # The start we are about to show is that many days out, so

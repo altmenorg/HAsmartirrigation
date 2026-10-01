@@ -569,6 +569,9 @@
         "flow-sensor-hint": "For exact crediting instead of throughput x time: a cumulative water-meter total (state class total_increasing), not an instant flow rate. The unit is read automatically (L, mL, m³, gal, ft³).",
         "optional": "optional",
         "irrigation-threshold": "Irrigation threshold",
+        "days": "days",
+        "days-between-irrigation": "Days between irrigation",
+        "days-between-irrigation-help": "Leave empty to follow the general setting (Settings, Days between irrigation). A number replaces the general setting for this zone alone: 1 waters it every day if it needs water, 3 at most every third day, 0 removes the restriction. The days are counted from the last time this zone was watered.",
         "soil-moisture-sensor": "Soil moisture sensor",
         "soil-moisture-sensor-hint": "The zone sits out a run while the soil is at or above the threshold. The bucket is kept.",
         "soil-moisture-threshold": "Skip at or above",
@@ -752,7 +755,7 @@
     "title": "Days between irrigation",
     "description": "Configure the minimum number of days that must pass between irrigation events. This helps control watering frequency for water conservation and plant health management.\n\nTypical real-world use cases:\n• Lawn care: 1-2 day intervals prevent overwatering\n• Drought restrictions: 6+ day intervals for weekly watering\n• Deep-rooted plants: 3-7 day intervals for less frequent watering\n• Water conservation: Customizable based on climate and soil conditions",
     "label": "Minimum days between irrigation",
-    "help_text": "Set to 0 to disable this feature. Values from 1-365 days are supported. This setting works alongside existing precipitation forecasting logic."
+    "help_text": "Set to 0 to disable this feature. Values from 1-365 days are supported. This setting works alongside existing precipitation forecasting logic. A zone can have its own number of days in the Zones tab, which replaces this setting for that zone."
   },
   "observed_watering": {
     "title": "Observed watering (closed loop)",

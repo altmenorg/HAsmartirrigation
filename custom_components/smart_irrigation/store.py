@@ -156,6 +156,8 @@ from .const import (
     TRIGGER_TYPE_SUNRISE,
     ZONE_BUCKET,
     ZONE_CURRENT_DRAINAGE,
+    ZONE_DAYS_BETWEEN_IRRIGATION,
+    ZONE_DAYS_SINCE_IRRIGATION,
     ZONE_DELTA,
     ZONE_DRAINAGE_RATE,
     ZONE_DURATION,
@@ -278,6 +280,12 @@ class ZoneEntry:
     irrigation_threshold = attr.ib(
         type=float, default=CONF_DEFAULT_IRRIGATION_THRESHOLD
     )
+    # Days between irrigation for this zone alone, replacing the general setting
+    # (#875). None follows it; 0 means no restriction for this zone.
+    days_between_irrigation = attr.ib(type=int, default=None)
+    # Days since this zone was last watered, kept by the scheduler. None until a
+    # run has been seen, which never holds the zone back.
+    days_since_irrigation = attr.ib(type=int, default=None)
     # Rain already accounted for by an asserted bucket value. Setting the bucket
     # says the soil is in a known state, which supersedes the rain collected
     # since the last calculation; without this it lands in the bucket again at
@@ -1128,6 +1136,12 @@ class SmartIrrigationStorage:
                             ZONE_IRRIGATION_THRESHOLD, CONF_DEFAULT_IRRIGATION_THRESHOLD
                         ),
                         linked_entity=zone.get(ZONE_LINKED_ENTITY, None),
+                        days_between_irrigation=zone.get(
+                            ZONE_DAYS_BETWEEN_IRRIGATION, None
+                        ),
+                        days_since_irrigation=zone.get(
+                            ZONE_DAYS_SINCE_IRRIGATION, None
+                        ),
                         flow_sensor=zone.get(ZONE_FLOW_SENSOR, None),
                         soil_moisture_sensor=zone.get(ZONE_SOIL_MOISTURE_SENSOR, None),
                         soil_moisture_threshold=zone.get(

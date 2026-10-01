@@ -73,6 +73,7 @@ import {
   ZONE_LEAD_TIME,
   ZONE_LINKED_ENTITY,
   ZONE_MAPPING,
+  ZONE_DAYS_BETWEEN_IRRIGATION,
   ZONE_IRRIGATION_THRESHOLD,
   ZONE_MAXIMUM_BUCKET,
   ZONE_MAXIMUM_DURATION,
@@ -1389,6 +1390,33 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       }),
                     0.1,
                   ),
+                )}
+                ${this._adv(
+                  html`${this._numRow(
+                      localize(
+                        "panels.zones.labels.days-between-irrigation",
+                        lang,
+                      ),
+                      localize("panels.zones.labels.days", lang),
+                      zone.days_between_irrigation,
+                      (v) => {
+                        // Empty means "follow the general setting".
+                        const days = parseInt(v, 10);
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_DAYS_BETWEEN_IRRIGATION]: isNaN(days)
+                            ? null
+                            : Math.max(0, days),
+                        });
+                      },
+                      1,
+                    )}
+                    <div class="setting-help">
+                      ${localize(
+                        "panels.zones.labels.days-between-irrigation-help",
+                        lang,
+                      )}
+                    </div>`,
                 )}
                 ${this._numRow(
                   localize("panels.zones.labels.et-deficiency", lang),

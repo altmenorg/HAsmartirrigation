@@ -544,6 +544,19 @@ class TriggersMixin:
                     }
                     skip_reason = evaluation["reason"]
                     self._watering_decision_today = not evaluation["should_skip"]
+                    # Decided with the day: the first run resets the counters,
+                    # and a second trigger must not read that as "just watered".
+                    try:
+                        self._zones_held_by_days_between = (
+                            await self.async_zones_held_by_days_between()
+                        )
+                    except Exception as e:  # noqa: BLE001 - an extra, not the decision
+                        self._zones_held_by_days_between = set()
+                        _LOGGER.warning(
+                            "Could not work out the zones held by their days "
+                            "between irrigation: %s",
+                            e,
+                        )
                     # Count the days the forecast holds the run back, so that
                     # showers forecast day after day cannot hold it back for
                     # ever (skip_conditions.py).
@@ -604,6 +617,12 @@ class TriggersMixin:
                     )
                     await self._hold_back_zones_exposed_to_rain(sheltered)
 
+                # A zone that has to wait longer between two irrigations sits
+                # this run out, whatever the other zones do (#875).
+                await self._hold_back_zones_held_by_days_between(
+                    getattr(self, "_zones_held_by_days_between", None) or set()
+                )
+
                 # A zone whose own soil is already moist sits this run out.
                 await self._hold_back_zones_with_moist_soil()
 
@@ -639,7 +658,12 @@ class TriggersMixin:
                 # the first day with a real deficit was vetoed and watering
                 # slipped by up to days-between each time.
                 if await self._any_zone_to_water():
-                    await self._reset_days_since_irrigation()
+                    # The general counter belongs to the zones that follow the
+                    # general setting: a zone with days of its own, watered every
+                    # day, must not keep the others from ever being due (#875).
+                    if await self._any_zone_to_water(general_setting_only=True):
+                        await self._reset_days_since_irrigation()
+                    await self._reset_zone_days_since_irrigation()
                     await self.store.async_update_config(
                         {const.CONF_PRECIPITATION_SKIPS_IN_A_ROW: 0}
                     )
@@ -681,10 +705,19 @@ class TriggersMixin:
         except Exception as ex:  # noqa: BLE001 - see docstring
             _LOGGER.warning("Could not count the day held back by rain: %s", ex)
 
-    async def _any_zone_to_water(self) -> bool:
-        """Whether a zone that is not disabled has a duration above zero."""
+    async def _any_zone_to_water(self, general_setting_only: bool = False) -> bool:
+        """Whether a zone that is not disabled has a duration above zero.
+
+        With ``general_setting_only``, only the zones that follow the general
+        days-between setting count, not the ones with days of their own.
+        """
         for zone in await self.store.async_get_zones():
             if zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED:
+                continue
+            if (
+                general_setting_only
+                and zone.get(const.ZONE_DAYS_BETWEEN_IRRIGATION) is not None
+            ):
                 continue
             duration = zone.get(const.ZONE_DURATION)
             if isinstance(duration, (int, float)) and duration > 0:
@@ -723,6 +756,36 @@ class TriggersMixin:
                 zone.get(const.ZONE_NAME),
             )
             await self.store.async_update_zone(zone_id, {const.ZONE_DURATION: 0})
+        async_dispatcher_send(self.hass, const.DOMAIN + "_update_frontend")
+
+    async def _hold_back_zones_held_by_days_between(self, held: set) -> None:
+        """Zero this run for the zones still within their days between irrigation.
+
+        ``held`` is decided once a day (``async_zones_held_by_days_between``).
+        The general setting applies to a zone without a value of its own, so with
+        no zone customised this holds back exactly the zones the whole-day veto
+        would have, and that veto normally gets there first. It matters when
+        zones differ: the run goes ahead for the zones that are due and sits out
+        for the others. The bucket is left alone, so the deficit rolls over to
+        the next run (#875).
+        """
+        if not held:
+            return
+        try:
+            zones = await self.store.async_get_zones()
+        except Exception as e:  # noqa: BLE001 - never block the run over this
+            _LOGGER.error("Could not read the zones to hold back: %s", e)
+            return
+        for zone in zones:
+            if zone.get(const.ZONE_ID) not in held or not zone.get(const.ZONE_DURATION):
+                continue
+            _LOGGER.info(
+                "Zone %s is held back: not enough days since it was last watered",
+                zone.get(const.ZONE_NAME),
+            )
+            await self.store.async_update_zone(
+                zone.get(const.ZONE_ID), {const.ZONE_DURATION: 0}
+            )
         async_dispatcher_send(self.hass, const.DOMAIN + "_update_frontend")
 
     async def _hold_back_zones_with_moist_soil(self) -> None:

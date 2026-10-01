@@ -144,6 +144,7 @@ export class SmartIrrigationZone {
   maximum_duration?: number;
   maximum_bucket?: number;
   irrigation_threshold?: number;
+  days_between_irrigation?: number | null; // null: follow the general setting
   last_calculated?: Date;
   last_updated?: Date;
   number_of_data_points?: number;

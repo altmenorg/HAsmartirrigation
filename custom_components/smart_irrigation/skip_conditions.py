@@ -626,8 +626,67 @@ class SkipConditionsMixin:
         result["skip"] = dt_util.utcnow() < dt_util.as_utc(moment)
         return result
 
+    @staticmethod
+    def zone_days_between(zone, config) -> tuple:
+        """``(days_required, days_since)`` for a zone.
+
+        A zone with a value of its own replaces the general setting and counts
+        the days since it was last watered itself; one without follows the
+        general setting and its counter (#875). A zone with nothing recorded yet
+        has been dry for as long as we know, so it is never held back.
+        """
+        own_value = zone.get(const.ZONE_DAYS_BETWEEN_IRRIGATION)
+        if own_value is None:
+            return (
+                config.get(
+                    const.CONF_DAYS_BETWEEN_IRRIGATION,
+                    const.CONF_DEFAULT_DAYS_BETWEEN_IRRIGATION,
+                ),
+                config.get(
+                    const.CONF_DAYS_SINCE_LAST_IRRIGATION,
+                    const.CONF_DEFAULT_DAYS_SINCE_LAST_IRRIGATION,
+                ),
+            )
+        since = zone.get(const.ZONE_DAYS_SINCE_IRRIGATION)
+        return own_value, (float("inf") if since is None else since)
+
+    @classmethod
+    def days_until_a_zone_is_due(cls, zones, config) -> float:
+        """Days left before the first automatic zone may water again.
+
+        0 when one is due now; the general setting alone when there is no zone.
+        """
+        remaining = []
+        for zone in zones:
+            if zone.get(const.ZONE_STATE) != const.ZONE_STATE_AUTOMATIC:
+                continue
+            required, since = cls.zone_days_between(zone, config)
+            remaining.append(max(0, required - since) if required > 0 else 0)
+        if remaining:
+            return min(remaining)
+        required, since = cls.zone_days_between({}, config)
+        return max(0, required - since) if required > 0 else 0
+
+    async def async_zones_held_by_days_between(self) -> set:
+        """Ids of the automatic zones that must wait longer before watering."""
+        config = await self.store.async_get_config()
+        held = set()
+        for zone in await self.store.async_get_zones():
+            if zone.get(const.ZONE_STATE) != const.ZONE_STATE_AUTOMATIC:
+                continue
+            required, since = self.zone_days_between(zone, config)
+            if required and required > 0 and since < required:
+                held.add(zone.get(const.ZONE_ID))
+        return held
+
     async def _evaluate_days_between_irrigation(self) -> dict:
-        """Report the days-between-irrigation guard."""
+        """Report the days-between-irrigation guard.
+
+        The general setting applies to every zone without a value of its own.
+        The day is a skip day only when every automatic zone is held back; when
+        only some are, the run goes ahead and those are zeroed for it
+        (``_hold_back_zones_held_by_days_between``).
+        """
         result = {
             "id": "days_between",
             "enabled": False,
@@ -643,23 +702,44 @@ class SkipConditionsMixin:
             const.CONF_DAYS_BETWEEN_IRRIGATION,
             const.CONF_DEFAULT_DAYS_BETWEEN_IRRIGATION,
         )
-
-        # If days_between is 0, no restriction (always allow irrigation)
-        if days_between <= 0:
-            return result
-
-        # Get days since last irrigation
         days_since_last = config.get(
             const.CONF_DAYS_SINCE_LAST_IRRIGATION,
             const.CONF_DEFAULT_DAYS_SINCE_LAST_IRRIGATION,
         )
+        zones = [
+            zone
+            for zone in await self.store.async_get_zones()
+            if zone.get(const.ZONE_STATE) == const.ZONE_STATE_AUTOMATIC
+        ]
+        own_zones = [
+            zone.get(const.ZONE_ID)
+            for zone in zones
+            if zone.get(const.ZONE_DAYS_BETWEEN_IRRIGATION) is not None
+        ]
+
+        # No restriction (always allow irrigation) when the general setting is
+        # 0 and no zone asks for days of its own.
+        if days_between <= 0 and not any(
+            (zone.get(const.ZONE_DAYS_BETWEEN_IRRIGATION) or 0) > 0 for zone in zones
+        ):
+            return result
+
         result["enabled"] = True
         result["days_required"] = days_between
         result["days_since"] = days_since_last
+        if own_zones:
+            result["zones_with_own_setting"] = own_zones
 
-        if days_since_last < days_between:
+        if zones:
+            held = await self.async_zones_held_by_days_between()
+            result["zones_held"] = sorted(held)
+            skip = len(held) == len(zones)
+        else:
+            skip = days_since_last < days_between
+        if skip:
             _LOGGER.info(
-                "Skipping irrigation: only %d days since last irrigation, need %d days minimum",
+                "Skipping irrigation: not enough days since the last irrigation "
+                "(%s of %s days for the general setting)",
                 days_since_last,
                 days_between,
             )
@@ -680,6 +760,15 @@ class SkipConditionsMixin:
             {const.CONF_DAYS_SINCE_LAST_IRRIGATION: new_days}
         )
 
+        # And the zones that count their own days (#875).
+        for zone in await self.store.async_get_zones():
+            since = zone.get(const.ZONE_DAYS_SINCE_IRRIGATION)
+            if since is not None:
+                await self.store.async_update_zone(
+                    zone.get(const.ZONE_ID),
+                    {const.ZONE_DAYS_SINCE_IRRIGATION: since + 1},
+                )
+
         _LOGGER.debug("Incremented days since last irrigation to %d", new_days)
 
     async def _reset_days_since_irrigation(self):
@@ -687,3 +776,14 @@ class SkipConditionsMixin:
         await self.store.async_update_config({const.CONF_DAYS_SINCE_LAST_IRRIGATION: 0})
 
         _LOGGER.debug("Reset days since last irrigation to 0")
+
+    async def _reset_zone_days_since_irrigation(self):
+        """Restart the count of every zone that has something to water today."""
+        for zone in await self.store.async_get_zones():
+            if zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED:
+                continue
+            duration = zone.get(const.ZONE_DURATION)
+            if isinstance(duration, (int, float)) and duration > 0:
+                await self.store.async_update_zone(
+                    zone.get(const.ZONE_ID), {const.ZONE_DAYS_SINCE_IRRIGATION: 0}
+                )

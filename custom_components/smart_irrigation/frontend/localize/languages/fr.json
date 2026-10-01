@@ -563,6 +563,9 @@
         "flow-sensor-hint": "Pour un comptage exact au lieu de débit x temps : un total de compteur d'eau cumulé (state class total_increasing), pas un débit instantané. L'unité est lue automatiquement (L, mL, m³, gal, ft³).",
         "optional": "option",
         "irrigation-threshold": "Seuil d'arrosage",
+        "days": "jours",
+        "days-between-irrigation": "Jours entre deux arrosages",
+        "days-between-irrigation-help": "Laisser vide pour suivre le réglage général (Paramètres, Jours entre deux arrosages). Un nombre remplace le réglage général pour cette zone seulement : 1 l'arrose chaque jour si elle a besoin d'eau, 3 au plus tous les trois jours, 0 supprime la restriction. Les jours sont comptés depuis le dernier arrosage de cette zone.",
         "soil-moisture-sensor": "Capteur d'humidité du sol",
         "soil-moisture-sensor-hint": "La zone n'arrose pas tant que le sol est au seuil ou au-dessus. Le seau est conservé.",
         "soil-moisture-threshold": "Ne pas arroser à partir de",
@@ -752,7 +755,7 @@
     "title": "Jours entre irrigations",
     "description": "Configurez le nombre minimum de jours qui doivent s'écouler entre les événements d'irrigation. Cela aide à contrôler la fréquence d'arrosage pour la conservation de l'eau et la gestion de la santé des plantes.\n\nCas d'usage typiques:\n• Entretien de pelouse: intervalles de 1-2 jours préviennent l'arrosage excessif\n• Restrictions de sécheresse: intervalles de 6+ jours pour arrosage hebdomadaire\n• Plantes à racines profondes: intervalles de 3-7 jours pour arrosage moins fréquent\n• Conservation de l'eau: personnalisable selon le climat et les conditions du sol",
     "label": "Jours minimum entre irrigations",
-    "help_text": "Définir à 0 pour désactiver cette fonction. Les valeurs de 1-365 jours sont prises en charge. Ce paramètre fonctionne avec la logique de prévision de précipitation existante."
+    "help_text": "Définir à 0 pour désactiver cette fonction. Les valeurs de 1-365 jours sont prises en charge. Ce paramètre fonctionne avec la logique de prévision de précipitation existante. Une zone peut avoir son propre nombre de jours dans l'onglet Zones, qui remplace ce réglage pour elle."
   },
   "observed_watering": {
     "title": "Arrosage observé (boucle fermée)",

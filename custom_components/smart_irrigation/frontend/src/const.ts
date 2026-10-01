@@ -172,6 +172,7 @@ export const ZONE_IRRIGATION_THRESHOLD = "irrigation_threshold";
 export const ZONE_DRAINAGE_RATE = "drainage_rate";
 export const ZONE_CURRENT_DRAINAGE = "current_drainage";
 export const ZONE_LINKED_ENTITY = "linked_entity";
+export const ZONE_DAYS_BETWEEN_IRRIGATION = "days_between_irrigation";
 export const ZONE_FLOW_SENSOR = "flow_sensor";
 export const ZONE_SOIL_MOISTURE_SENSOR = "soil_moisture_sensor";
 export const ZONE_SOIL_MOISTURE_THRESHOLD = "soil_moisture_threshold";

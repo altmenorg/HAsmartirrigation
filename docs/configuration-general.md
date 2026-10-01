@@ -70,6 +70,8 @@ Configure the minimum number of days that must pass between irrigation events. T
 
 The value is the length of the watering cycle in calendar days: set to *N*, irrigation happens every *N* days.
 
+**Different days for one zone:** a zone can have its own number of days, in the **Days between irrigation** field of the [zone settings](configuration-zones.md) (advanced mode). That number *replaces* this general setting for that zone alone, so a lawn can wait three days while the flower beds are watered every day. Leave the zone's field empty to follow this setting. The general counter only restarts when a zone that follows it is watered, so a zone with days of its own, watered every day, does not keep the others from ever being due. The day is only skipped as a whole when every zone is still within its days; otherwise the run goes ahead for the zones that are due and the others sit it out.
+
 **Example scenarios:**
 * Set to 1: Allow irrigation every day (one calendar day between events)
 * Set to 3: Allow irrigation every 3 days
