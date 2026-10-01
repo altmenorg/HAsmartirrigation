@@ -532,6 +532,9 @@ class TriggersMixin:
             try:
                 # Decide once per day whether today is a watering day.
                 if self._watering_decision_today is None:
+                    # Fresh numbers first, when the user asked for them: the
+                    # skip checks and the durations below should rest on them.
+                    await self._recalculate_before_start()
                     # One structured evaluation rather than two booleans, so
                     # what the panel shows and what the runner decides come from
                     # the same call (#794).
@@ -761,6 +764,44 @@ class TriggersMixin:
             )
             await self.store.async_update_zone(zone_id, {const.ZONE_DURATION: 0})
         async_dispatcher_send(self.hass, const.DOMAIN + "_update_frontend")
+
+    async def _recalculate_before_start(self) -> None:
+        """Calculate the zones again just before the first start of the day.
+
+        Opt-in (``recalculate_before_start``). The nightly calculation prices
+        the evapotranspiration, the temperature and the wind of the hours before
+        it; a start at sunset then waters on data some twenty hours old. Only
+        the rain was brought up to date (rain since the calculation, the
+        forecast, the rain history). This brings everything up to date by
+        running the calculation itself, which also collects the weather again.
+
+        Skipped when a zone was calculated within the hour, since nothing could
+        be fresher. A failure leaves the zones as they were calculated: the run
+        goes ahead on the earlier numbers, as it always did.
+        """
+        try:
+            config = self.store.get_config() or {}
+            if not config.get(const.CONF_RECALCULATE_BEFORE_START):
+                return
+            fresh = timedelta(minutes=const.RECALCULATE_FRESH_MINUTES)
+            now = datetime.now()
+            for zone in await self.store.async_get_zones():
+                calculated = zone.get(const.ZONE_LAST_CALCULATED)
+                if isinstance(calculated, str):
+                    calculated = datetime.fromisoformat(calculated)
+                if calculated is not None:
+                    calculated = calculated.replace(tzinfo=None)
+                    if now - calculated < fresh:
+                        _LOGGER.debug(
+                            "Not recalculating before the start: zone %s was "
+                            "calculated less than an hour ago",
+                            zone.get(const.ZONE_NAME),
+                        )
+                        return
+            _LOGGER.info("Calculating again before the first start of the day")
+            await self._async_calculate_all()
+        except Exception as e:  # noqa: BLE001 - the run goes ahead on what it has
+            _LOGGER.warning("Could not calculate again before the start: %s", e)
 
     async def _hold_back_zones_held_by_days_between(self, held: set) -> None:
         """Zero this run for the zones still within their days between irrigation.

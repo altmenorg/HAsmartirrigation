@@ -43,6 +43,9 @@ A greenhouse is the exception and keeps the daily equation when it has no sensor
 
 With any other module, or when the hours cannot be reconstructed (no readings, a field missing everywhere, a greenhouse with no radiation or illuminance sensor, or fewer forecast days available than the engine asks for), the daily equation keeps being used, so switching it on never leaves a zone without a calculation. The calculation explanation says which form was used.
 
+#### Calculate again just before the first start of the day
+The nightly calculation prices the evapotranspiration, the temperature and the wind of the hours before it. A start trigger at sunset then waters on data some twenty hours old; only the rain was brought up to date at the start (rain since the calculation, the forecast, the rain history). Switch this on and the zones are calculated again, with fresh weather, just before the first start of the day. Nothing is done when a zone was calculated within the hour, and a calculation that fails leaves the run to go ahead on the earlier numbers. It is off by default.
+
 ### Automatic weather data pruning (removed)
 Weather data used to be cleared on a timer, and that setting no longer does anything.
 

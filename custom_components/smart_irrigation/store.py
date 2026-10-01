@@ -57,6 +57,7 @@ from .const import (
     CONF_DEFAULT_PAUSE_BETWEEN_ZONES,
     CONF_DEFAULT_PRECIPITATION_THRESHOLD_MM,
     CONF_DEFAULT_RAIN_HISTORY_ENABLED,
+    CONF_DEFAULT_RECALCULATE_BEFORE_START,
     CONF_DEFAULT_RECURRING_SCHEDULES,
     CONF_DEFAULT_SEASONAL_ADJUSTMENTS,
     CONF_DEFAULT_SENSOR_DEBOUNCE,
@@ -90,6 +91,7 @@ from .const import (
     CONF_PRECIPITATION_THRESHOLD_MM,
     CONF_RAIN_HISTORY_ENABLED,
     CONF_RAIN_SENSOR,
+    CONF_RECALCULATE_BEFORE_START,
     CONF_RECURRING_SCHEDULES,
     CONF_SEASONAL_ADJUSTMENTS,
     CONF_SENSOR_DEBOUNCE,
@@ -574,6 +576,9 @@ class Config:
     hourly_calculation = attr.ib(type=bool, default=CONF_DEFAULT_HOURLY_CALCULATION)
     forecast_rain_credit = attr.ib(type=bool, default=CONF_DEFAULT_FORECAST_RAIN_CREDIT)
     effective_rain = attr.ib(type=bool, default=CONF_DEFAULT_EFFECTIVE_RAIN)
+    recalculate_before_start = attr.ib(
+        type=bool, default=CONF_DEFAULT_RECALCULATE_BEFORE_START
+    )
     # "standard" or "advanced"; None until the first load decides (see
     # _async_choose_ui_mode).
     ui_mode = attr.ib(type=str, default=None)
@@ -963,6 +968,7 @@ class SmartIrrigationStorage:
             hourly_calculation=CONF_DEFAULT_HOURLY_CALCULATION,
             forecast_rain_credit=CONF_DEFAULT_FORECAST_RAIN_CREDIT,
             effective_rain=CONF_DEFAULT_EFFECTIVE_RAIN,
+            recalculate_before_start=CONF_DEFAULT_RECALCULATE_BEFORE_START,
             sensor_debounce=CONF_DEFAULT_SENSOR_DEBOUNCE,
             calc_log_enabled=CONF_DEFAULT_CALC_LOG_ENABLED,
         )
@@ -1021,6 +1027,10 @@ class SmartIrrigationStorage:
                 ),
                 effective_rain=data["config"].get(
                     CONF_EFFECTIVE_RAIN, CONF_DEFAULT_EFFECTIVE_RAIN
+                ),
+                recalculate_before_start=data["config"].get(
+                    CONF_RECALCULATE_BEFORE_START,
+                    CONF_DEFAULT_RECALCULATE_BEFORE_START,
                 ),
                 ui_mode=data["config"].get(CONF_UI_MODE),
                 zone_engines_split=data["config"].get(CONF_ZONE_ENGINES_SPLIT, False),

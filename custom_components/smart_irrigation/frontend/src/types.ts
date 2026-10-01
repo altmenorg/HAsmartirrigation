@@ -34,6 +34,7 @@ export class SmartIrrigationConfig {
   hourly_calculation: boolean;
   forecast_rain_credit?: boolean;
   effective_rain?: boolean;
+  recalculate_before_start?: boolean;
   /** How much of the panel is shown: "standard" or "advanced". */
   ui_mode?: string;
   skip_on_freeze?: boolean;

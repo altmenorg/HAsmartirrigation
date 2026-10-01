@@ -18,6 +18,7 @@ export const CONF_CONTINUOUS_UPDATES = "continuousupdates";
 export const CONF_HOURLY_CALCULATION = "hourly_calculation";
 export const CONF_FORECAST_RAIN_CREDIT = "forecast_rain_credit";
 export const CONF_EFFECTIVE_RAIN = "effective_rain";
+export const CONF_RECALCULATE_BEFORE_START = "recalculate_before_start";
 export const CONF_SENSOR_DEBOUNCE = "sensor_debounce";
 export const CONF_CALC_LOG_ENABLED = "calc_log_enabled";
 

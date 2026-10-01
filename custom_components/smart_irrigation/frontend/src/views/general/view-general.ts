@@ -246,6 +246,27 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 })}
             ></ha-switch>
           </div>
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize(
+                "panels.general.cards.automatic-duration-calculation.labels.recalculate-before-start",
+                this.hass.language,
+              )}
+              <div class="setting-hint">
+                ${localize(
+                  "panels.general.cards.automatic-duration-calculation.labels.recalculate-before-start-hint",
+                  this.hass.language,
+                )}
+              </div>
+            </div>
+            <ha-switch
+              .checked=${!!this.config.recalculate_before_start}
+              @change=${(e: Event) =>
+                this.handleConfigChange({
+                  recalculate_before_start: (e.target as any).checked,
+                })}
+            ></ha-switch>
+          </div>
         </div>`;
       r1 = html`<ha-card
         header="${localize(

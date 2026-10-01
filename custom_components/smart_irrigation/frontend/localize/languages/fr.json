@@ -219,6 +219,8 @@
           "labels": {
             "auto-calc-enabled": "Calcule automatiquement la durée par zone",
             "calc-time": "Calculer à",
+            "recalculate-before-start": "Recalculer juste avant le premier départ de la journée",
+            "recalculate-before-start-hint": "Le calcul de la nuit utilise l'évapotranspiration, la température et le vent des heures qui le précèdent. Un départ au coucher du soleil arrose alors sur des données vieilles d'une vingtaine d'heures, seule la pluie étant remise à jour. Activé, les zones sont recalculées, avec une météo fraîche, juste avant le premier départ. Rien n'est fait si une zone a été calculée dans l'heure.",
             "hourly-calculation": "Calculer l'évapotranspiration heure par heure",
             "hourly-calculation-hint": "Somme l'équation horaire FAO-56 sur chaque heure depuis le dernier calcul, au lieu d'appliquer l'équation journalière à des moyennes, qui masquent si le soleil et la chaleur sont arrivés ensemble. Une nouvelle installation démarre dessus ; une installation antérieure garde l'équation journalière jusqu'à ce que vous basculiez, parce que les deux donnent des nombres différents et que votre arrosage ne doit pas changer sur une mise à jour. Le soleil de chaque heure vient d'un capteur de rayonnement ou de luminosité, de l'historique horaire du service météo, ou de l'amplitude thermique du jour. Utile quand les relevés arrivent au fil de la journée : une seule mise à jour par jour laisse un unique relevé tenu sur vingt-quatre heures, et aucune des deux formes n'est alors fiable. Une serre sans capteur propre garde l'équation journalière."
           }

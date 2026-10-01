@@ -300,6 +300,12 @@ CONF_DEFAULT_FORECAST_RAIN_CREDIT = False
 # fifth of the evapotranspiration of the window wets the leaves and evaporates.
 CONF_EFFECTIVE_RAIN = "effective_rain"
 CONF_DEFAULT_EFFECTIVE_RAIN = False
+# Calculate again just before the first start of the day (off by default), so a
+# run at sunset waters on this afternoon's weather and not on last night's.
+CONF_RECALCULATE_BEFORE_START = "recalculate_before_start"
+CONF_DEFAULT_RECALCULATE_BEFORE_START = False
+# A calculation younger than this is as fresh as one could make it.
+RECALCULATE_FRESH_MINUTES = 60
 EFFECTIVE_RAIN_ET_SHARE = 0.2
 # How far past the start of a run the forecast counts, in hours.
 FORECAST_RAIN_CREDIT_HOURS = 24

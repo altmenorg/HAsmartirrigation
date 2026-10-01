@@ -100,6 +100,7 @@ class SmartIrrigationConfigView(HomeAssistantView):
                 vol.Optional(const.CONF_HOURLY_CALCULATION): cv.boolean,
                 vol.Optional(const.CONF_FORECAST_RAIN_CREDIT): cv.boolean,
                 vol.Optional(const.CONF_EFFECTIVE_RAIN): cv.boolean,
+                vol.Optional(const.CONF_RECALCULATE_BEFORE_START): cv.boolean,
                 vol.Optional(const.CONF_UI_MODE): vol.In(
                     [const.CONF_UI_MODE_STANDARD, const.CONF_UI_MODE_ADVANCED]
                 ),
