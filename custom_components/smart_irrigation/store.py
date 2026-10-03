@@ -184,6 +184,8 @@ from .const import (
     ZONE_PLANT_TYPE,
     ZONE_PRECIPITATION_RATE,
     ZONE_PRECIPITATION_SUPERSEDED,
+    ZONE_SAFETY_OFF_STATE_KEY,
+    ZONE_SAFETY_OFF_TOPIC,
     ZONE_SIZE,
     ZONE_SOIL_MOISTURE_SENSOR,
     ZONE_SOIL_MOISTURE_THRESHOLD,
@@ -273,6 +275,11 @@ class ZoneEntry:
     water_used = attr.ib(type=float, default=0.0)
     # Optional valve/switch entity watched to credit the bucket (closed-loop).
     linked_entity = attr.ib(type=str, default=None)
+    # Optional MQTT dead-man for direct valve control: a set-topic the runner
+    # publishes an on_time "on with timed off" to, so the valve shuts itself
+    # off if Home Assistant dies mid-run. Empty = disabled (see const).
+    safety_off_topic = attr.ib(type=str, default=None)
+    safety_off_state_key = attr.ib(type=str, default=None)
     # How much of a deficit to let build up before watering, in the user's depth
     # unit. 0 keeps watering as soon as anything is missing (#815).
     irrigation_threshold = attr.ib(
@@ -1128,6 +1135,8 @@ class SmartIrrigationStorage:
                             ZONE_IRRIGATION_THRESHOLD, CONF_DEFAULT_IRRIGATION_THRESHOLD
                         ),
                         linked_entity=zone.get(ZONE_LINKED_ENTITY, None),
+                        safety_off_topic=zone.get(ZONE_SAFETY_OFF_TOPIC, None),
+                        safety_off_state_key=zone.get(ZONE_SAFETY_OFF_STATE_KEY, None),
                         flow_sensor=zone.get(ZONE_FLOW_SENSOR, None),
                         soil_moisture_sensor=zone.get(ZONE_SOIL_MOISTURE_SENSOR, None),
                         soil_moisture_threshold=zone.get(

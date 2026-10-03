@@ -45,7 +45,24 @@ It stands on its own: the zone's **Linked valve/switch** can be set with direct 
 - **One run per zone per cycle**: a zone whose valve is already open is left out, and a zone watered while it waited its turn in a sequential run is not watered again when the queue reaches it. With observed watering on, that includes a valve opened outside Smart Irrigation, by hand or by another automation: running it too would close the valve under that run and count the overlap twice.
 - **One cycle at a time, in sequential mode**: a run asked for while one is already going joins the queue instead of starting beside it, so two valves are never open at once. A zone already waiting is not queued twice, the zone being watered right now is not queued behind itself, and the zones that joined are in the same end-of-run summary. In parallel mode there is nothing to join: every zone at once is what that setting asks for.
 
-> **Safety:** if Home Assistant goes down for a long time during a run, the physical valve stays open and keeps watering, because Home Assistant is no longer there to close it. Give your valve a hardware failsafe (a maximum runtime on the device itself). Smart Irrigation also caps the credited time at the zone's maximum duration.
+> **Safety:** if Home Assistant goes down for a long time during a run, the physical valve stays open and keeps watering, because Home Assistant is no longer there to close it. Give your valve a hardware failsafe (a maximum runtime on the device itself). Smart Irrigation also caps the credited time at the zone's maximum duration. For an MQTT valve, the integration can arm that failsafe for you on every run -- see below.
+
+### Hardware auto-off (MQTT on_time dead-man)
+
+The closing of the valve normally happens in Home Assistant: the run opens the valve, waits, and closes it. If Home Assistant stops in that window and never comes back, nothing sends the close and the valve keeps watering. (A restart *does* recover: an in-flight run is resumed and closed when Home Assistant comes back. The gap is Home Assistant staying down.)
+
+For a valve controlled over **MQTT** -- a [zigbee2mqtt](https://www.zigbee2mqtt.io/) device, for instance -- Smart Irrigation can close that gap with a hardware dead-man. On each pass it publishes an *on with timed off* command to the device, so the device's own firmware shuts the valve off after the run even if Home Assistant is no longer there. It is armed only after the valve is confirmed open, and it is additive: the normal close still runs, the `on_time` is set a little longer than the pass so it lands just after, as a failsafe rather than the primary off.
+
+Two optional per-zone fields configure it (advanced panel, shown only with direct valve control on and a linked valve set). Both empty by default, so nothing changes until you fill them in:
+
+- **Safety off MQTT topic** -- the device's `set` topic, e.g. `zigbee2mqtt/front_lawn_valve/set`.
+- **Safety off state key** -- the on/off property in the payload: `state` for a single-channel device, or `state_l1`...`state_l4` for one channel of a multi-channel device.
+
+With those set, a pass that holds the valve for 300 seconds publishes `{"state_l1": "ON", "on_time": 330}` to the topic (the run time plus a 30-second margin). The device closes its own valve after `on_time` seconds whatever happens to Home Assistant.
+
+> **Device support varies.** `on_time` ("on with timed off") is honoured by the device firmware, not by Smart Irrigation, and [not every device implements it](https://www.zigbee2mqtt.io/devices/TYWB_4ch-RF.html). Test it before you rely on it: start a run, stop Home Assistant while the valve is open, and confirm the valve closes itself after `on_time`. Some devices need an `off_wait_time` alongside `on_time` to behave.
+
+**Non-MQTT valves** (Wi-Fi switches, ESPHome, or Zigbee through ZHA) do not use this -- leave the fields empty and the run behaves exactly as before. For those, set the failsafe on the device itself, which is more reliable than Home Assistant sending it every run: a Shelly has an *Auto-off timer*, Tasmota has `PulseTime`, ESPHome can turn a switch off after a delay, and many Tuya Wi-Fi switches have a *countdown* function.
 
 ### Cycle and soak, and the pause between zones
 

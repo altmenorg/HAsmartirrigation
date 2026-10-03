@@ -324,6 +324,8 @@ class SmartIrrigationZoneView(HomeAssistantView):
                 vol.Optional(const.ZONE_MULTIPLIER): vol.Coerce(float),
                 vol.Optional(const.ZONE_MAPPING): vol.Or(int, str, None),
                 vol.Optional(const.ZONE_LEAD_TIME): vol.Coerce(float),
+                vol.Optional(const.ZONE_SAFETY_OFF_TOPIC): vol.Any(str, None),
+                vol.Optional(const.ZONE_SAFETY_OFF_STATE_KEY): vol.Any(str, None),
                 vol.Optional(const.ZONE_SOIL_TYPE): vol.Any(str, None),
                 vol.Optional(const.ZONE_PLANT_TYPE): vol.Any(str, None),
                 vol.Optional(const.ZONE_MAXIMUM_DURATION): vol.Coerce(float),
