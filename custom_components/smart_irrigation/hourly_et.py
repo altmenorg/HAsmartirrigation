@@ -395,12 +395,8 @@ def eto_hourly(
     elevation_m: float = 0.0,
     pressure_kpa=None,
     cloudiness=None,
-    signed: bool = False,
 ) -> float:
     """Reference evapotranspiration of one hour, mm, from what a sensor reads.
-
-    ``signed`` keeps a negative hour (condensation) as it is, for a caller that
-    sums a window and bounds the total instead: see ``price_hourly_rows``.
 
     Keyword-only on purpose: there are eleven arguments, several of them bare
     floats in the same range, and a caller that swapped latitude and longitude
@@ -446,4 +442,4 @@ def eto_hourly(
     # at -1.57 mm read -1.53 mm by dawn, which is a bucket gaining water on a
     # dry night (#866). FAO-56's own worked example prints 0.00 mm for exactly
     # such an hour.
-    return eto if signed else max(0.0, eto)
+    return max(0.0, eto)
