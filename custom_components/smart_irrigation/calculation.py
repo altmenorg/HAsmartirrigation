@@ -18,7 +18,12 @@ from . import const
 from .calc_log import timestamps as calc_log_timestamps
 from .calcmodules.consumes import sourced_fields
 from .helpers import loadModules, parse_datetime
-from .hourly_rows import SystemLocalTime, forecast_eto_by_day, summed_hourly_eto
+from .hourly_rows import (
+    SystemLocalTime,
+    forecast_eto_by_day,
+    summed_hourly_eto,
+    summed_hourly_eto_from_history,
+)
 from .hourly_solar_estimate import estimated_solar_series
 from .localize import localize
 
@@ -1346,6 +1351,18 @@ class CalculationMixin:
             if key in sourced
         }
         since = self.zone_window_start(zone)
+        # A group fed by Open-Meteo alone is priced on Open-Meteo's own hourly
+        # history: the polled readings are one value an hour standing in for the
+        # hour around them.
+        history = await self._open_meteo_history_total(zone, mapping, since)
+        if history is not None:
+            self._hourly_solar_estimated = False
+            forecast_days = getattr(modinst, "forecast_days", 0) or 0
+            if forecast_days:
+                history = await self._hourly_with_forecast(
+                    zone, mapping, history, forecast_days
+                )
+            return history
         solar_series = None
         estimated_solar = False
         if const.MAPPING_SOLRAD not in sourced:
@@ -1430,6 +1447,49 @@ class CalculationMixin:
             return None
         self._hourly_solar_estimated = False
         return (total, (now - since).total_seconds() / 3600)
+
+    async def _open_meteo_history_total(self, zone, mapping, since):
+        """``(mm, hours)`` of the window on Open-Meteo's hourly history, or None.
+
+        Only for a sensor group whose every source is the weather service and
+        whose service is Open-Meteo: a group with a sensor of its own, a static
+        value, another service or a greenhouse keeps summing its own readings.
+        Any failure also falls back to them.
+        """
+        if (
+            since is None
+            or not getattr(self, "use_weather_service", False)
+            or getattr(self, "weather_service", None) != const.CONF_WEATHER_SERVICE_OM
+            or (mapping or {}).get(const.MAPPING_GREENHOUSE)
+        ):
+            return None
+        fetch = getattr(
+            getattr(self, "_WeatherServiceClient", None), "get_hourly_history", None
+        )
+        if fetch is None:
+            return None
+        try:
+            from_service, from_sensor, from_static = self.check_mapping_sources(
+                zone.get(const.ZONE_MAPPING)
+            )
+            if not from_service or from_sensor or from_static:
+                return None
+            now = datetime.now()
+            entries = await self.hass.async_add_executor_job(fetch, since, now)
+            if not entries:
+                return None
+            return summed_hourly_eto_from_history(
+                entries,
+                since,
+                now,
+                latitude=getattr(self, "_effective_latitude", None),
+                longitude=getattr(self, "_effective_longitude", None),
+                elevation=getattr(self, "_effective_elevation", None) or 0.0,
+                tz=SystemLocalTime(),
+            )
+        except Exception:  # noqa: BLE001 - the readings are the fallback
+            _LOGGER.debug("The hourly history could not be used", exc_info=True)
+            return None
 
     def _under_glass(self, zone, weatherdata):
         """The weather data, told to dim an estimated sun for a greenhouse.
