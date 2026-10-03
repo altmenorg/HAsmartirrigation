@@ -1,8 +1,10 @@
 """Open-Meteo's hourly radiation history, the sun the hourly equation needs.
 
 The equation wants each hour's own sun in MJ/m2. Open-Meteo publishes it as a
-mean irradiance in W/m2 stamped at the hour it starts, so the client converts
-and keys it the way the row builder asks.
+mean irradiance in W/m2 stamped with the END of the hour it averages ("average
+of the preceding hour": 2 W/m2 stamped 08:00 and 56 stamped 09:00 on a day whose
+sun rose a little before eight), so the client converts it and keys it by the
+hour's start, the way the row builder asks (#879).
 """
 
 from datetime import UTC, date, datetime, time, timedelta
@@ -18,7 +20,7 @@ from custom_components.smart_irrigation.weathermodules.OpenMeteoClient import (
 )
 
 DAY = datetime(2026, 6, 21)
-# Mean irradiance of the hour starting at that hour, in W/m2.
+# Mean irradiance of the hour ENDING at that stamp, in W/m2.
 HOURLY_SUN = {6: 120.0, 7: 260.0, 8: 410.0, 9: 560.0, 10: 700.0}
 
 
@@ -46,10 +48,20 @@ def test_watts_become_the_hour_s_megajoules():
     """1 W/m2 held for an hour is 0.0036 MJ/m2."""
     client = _client()
     with patch.object(OpenMeteoClient, "_request", return_value=_history()):
-        series = client.get_hourly_radiation(_at(6), _at(9))
+        series = client.get_hourly_radiation(_at(5), _at(9))
 
-    assert series[_at(6).timestamp()] == pytest.approx(120.0 * 0.0036)
-    assert series[_at(8).timestamp()] == pytest.approx(410.0 * 0.0036)
+    # The value stamped 06:00 is the hour that started at 05:00.
+    assert series[_at(5).timestamp()] == pytest.approx(120.0 * 0.0036)
+    assert series[_at(7).timestamp()] == pytest.approx(410.0 * 0.0036)
+
+
+def test_the_sun_is_not_an_hour_late():
+    """The hour starting at 09:00 is the one stamped 10:00, not the one stamped 09:00."""
+    client = _client()
+    with patch.object(OpenMeteoClient, "_request", return_value=_history()):
+        series = client.get_hourly_radiation(_at(9), _at(10))
+
+    assert series[_at(9).timestamp()] == pytest.approx(700.0 * 0.0036)
 
 
 def test_the_hours_of_the_window_are_the_ones_returned():
@@ -70,7 +82,8 @@ def test_a_missing_hour_reads_as_no_sun_rather_than_breaking_the_series():
     with patch.object(OpenMeteoClient, "_request", return_value=_history(missing=(8,))):
         series = client.get_hourly_radiation(_at(6), _at(10))
 
-    assert series[_at(8).timestamp()] == 0.0
+    # The value stamped 08:00 is missing: the hour that started at 07:00.
+    assert series[_at(7).timestamp()] == 0.0
 
 
 def test_an_empty_window_asks_nothing():
@@ -171,6 +184,19 @@ def test_the_forecast_carries_what_an_hourly_row_needs():
     assert first["pressure_hpa"] == 1010.0
 
 
+def test_the_sun_of_a_forecast_hour_is_the_value_stamped_at_its_end():
+    """The hour starting at a stamp takes the radiation stamped an hour later."""
+    doc = _forecast_doc()
+    doc["hourly"]["shortwave_radiation"] = [float(h) for h in range(48)]
+    client = _client()
+    with patch.object(OpenMeteoClient, "_request", return_value=doc):
+        series = client.get_hourly_forecast(1)
+
+    assert series[3]["solar_mj_h"] == pytest.approx(4.0 * 0.0036)
+    # The last hour has no later stamp and keeps its own.
+    assert series[-1]["solar_mj_h"] == pytest.approx(47.0 * 0.0036)
+
+
 def test_no_days_asked_for_asks_nothing():
     client = _client()
     with patch.object(OpenMeteoClient, "_request") as request:
@@ -208,7 +234,8 @@ def test_a_missing_hour_of_sun_reads_as_night():
     ):
         series = client.get_hourly_forecast(1)
 
-    assert series[5]["solar_mj_h"] == 0.0
+    # The sun of the hour that starts at index 4 is the value stamped at index 5.
+    assert series[4]["solar_mj_h"] == 0.0
 
 
 def test_a_failed_forecast_request_is_none():

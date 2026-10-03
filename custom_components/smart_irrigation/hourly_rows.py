@@ -697,20 +697,11 @@ def _night_cloudiness(rows, latitude, longitude, elevation, tz_offset_h=0.0):
     return cloudiness_factor(measured, clear_sky)
 
 
-def price_hourly_rows(
-    rows, latitude, longitude, elevation=0.0, tz_offset_h=0.0, signed=False
-):
+def price_hourly_rows(rows, latitude, longitude, elevation=0.0, tz_offset_h=0.0):
     """The millimetres each row evaporated, weighted by its coverage.
 
     A partial hour is charged its share and no more, which is what keeps the
     sum equal to the window rather than to the clock hours it overlaps.
-
-    ``signed`` keeps the negative hours of a calm humid night. Set to zero one
-    by one, they are dropped from a day that also has sunny hours, and the day
-    came out about 4% above the daily equation: the dew formed at night is
-    evaporated in the morning by energy the sunny hours are then charged for.
-    A caller that sums signed hours bounds the total at zero itself, so a night
-    alone still never credits the bucket (#866).
     """
     if not rows:
         return []
@@ -732,7 +723,6 @@ def price_hourly_rows(
             elevation_m=elevation or 0.0,
             pressure_kpa=row.get("pressure_kpa"),
             cloudiness=cloudiness,
-            signed=signed,
         )
         priced.append(millimetres * row.get("coverage_h", 1.0))
     return priced
@@ -777,15 +767,14 @@ def summed_hourly_eto(
         return None
     try:
         priced = price_hourly_rows(
-            rows, latitude, longitude, elevation or 0.0, tz_offset_h, signed=True
+            rows, latitude, longitude, elevation or 0.0, tz_offset_h
         )
     except (ArithmeticError, TypeError, ValueError):
         _LOGGER.debug("An hour of the window could not be priced", exc_info=True)
         return None
     if any(value is None for value in priced):
         return None
-    # Signed hours, bounded as a whole: a window never gains water from dew.
-    return max(0.0, sum(priced)), hours
+    return sum(priced), hours
 
 
 def forecast_rows_by_day(series, tz=None, tz_offset_h=0.0, today=None):
@@ -863,18 +852,10 @@ def forecast_eto_by_day(
     priced = {}
     for day, rows in by_day.items():
         try:
-            priced[day] = max(
-                0.0,
-                sum(
-                    price_hourly_rows(
-                        rows,
-                        latitude,
-                        longitude,
-                        elevation or 0.0,
-                        tz_offset_h,
-                        signed=True,
-                    )
-                ),
+            priced[day] = sum(
+                price_hourly_rows(
+                    rows, latitude, longitude, elevation or 0.0, tz_offset_h
+                )
             )
         except (ArithmeticError, TypeError, ValueError):
             _LOGGER.debug("Forecast day %s could not be priced", day, exc_info=True)
