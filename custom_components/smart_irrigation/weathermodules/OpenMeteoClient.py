@@ -329,9 +329,14 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
     def get_hourly_radiation(self, start, end):
         """The sun of each hour between two moments, in MJ/m2/h, or None.
 
-        Keyed by the hour's start as a unix timestamp, which is how Open-Meteo
-        stamps its hourly arrays, and how the hourly equation asks for it: one
-        value per clock hour, the mean over that hour.
+        Keyed by the hour's start as a unix timestamp, which is how the hourly
+        equation asks for it: one value per clock hour, the mean over that hour.
+        Open-Meteo stamps its radiation with the END of the hour it averages
+        ("average of the preceding hour"): the value stamped 15:00 is the mean
+        of 14:00 to 15:00, which is what the sun at the first hours of the day
+        says (2 W/m2 stamped 08:00, 56 stamped 09:00, at a sunrise a little
+        before 08:00). Read as the hour that starts at its stamp, every hour of
+        sun came an hour late (#879).
 
         This is what lets an installation without a radiation sensor calculate
         hour by hour. Estimating the sun of one hour from the day's
@@ -388,9 +393,11 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
             if doc is None:
                 return None
             hourly = doc["hourly"]
+            # The stamp is the end of the hour averaged: the hour starts an
+            # hour earlier.
             series = [
-                (float(hour_start), float(watts or 0.0))
-                for hour_start, watts in zip(
+                (float(stamp) - SECONDS_PER_HOUR, float(watts or 0.0))
+                for stamp, watts in zip(
                     hourly["time"], hourly["shortwave_radiation"], strict=False
                 )
             ]
@@ -478,7 +485,12 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
                 # path converts it (FAO-56 Eq. 47). Taken as it came, the 10 m
                 # figure raised the wind of every forecast day by about a third.
                 row["wind"] *= WIND_10M_TO_2M
-                watts = hourly["shortwave_radiation"][index]
+                # The radiation stamped at the end of an hour is that hour's
+                # mean (see get_hourly_radiation): the sun of the hour that
+                # starts at this stamp is the next value. The last hour has no
+                # next one, and keeps its own.
+                sun = hourly["shortwave_radiation"]
+                watts = sun[index + 1] if index + 1 < len(sun) else sun[index]
                 row["solar_mj_h"] = float(watts or 0.0) * SECONDS_PER_HOUR / 1_000_000
                 pressure = hourly.get("surface_pressure", [None] * len(stamps))[index]
                 if pressure is not None:
