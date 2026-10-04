@@ -461,10 +461,52 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
    * card says that first, in a band whose colour carries the same answer, and
    * the numbers stay underneath for whoever wants them.
    */
+  /** A run time said the way one says it: 14 min 33 s, 1 h 05 min. */
+  private _friendlyDuration(seconds: number): string {
+    const total = Math.max(0, Math.round(seconds || 0));
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const sec = total % 60;
+    if (h > 0) return `${h} h ${String(m).padStart(2, "0")} min`;
+    if (m > 0) return sec ? `${m} min ${sec} s` : `${m} min`;
+    return `${sec} s`;
+  }
+
+  private _volumeText(seconds: number, throughput: number): string {
+    return `${waterVolume(seconds, throughput).toFixed(1)} ${output_unit(
+      this.config,
+      ZONE_WATER_VOLUME,
+    )}`;
+  }
+
+  /** The zone's live estimate, from its live bucket sensor, when there is one. */
+  private _liveEstimate(
+    zone: SmartIrrigationZone,
+  ): { bucket: number; duration: number } | undefined {
+    const states = (this.hass as any)?.states ?? {};
+    for (const entityId of Object.keys(states)) {
+      if (!entityId.endsWith("_live_bucket")) continue;
+      const state = states[entityId];
+      const attributes = state?.attributes ?? {};
+      if (String(attributes.zone_id) !== String(zone.id)) continue;
+      if (attributes.live !== true) return undefined;
+      const bucket = parseFloat(state.state);
+      if (!Number.isFinite(bucket)) return undefined;
+      return { bucket, duration: Number(attributes.duration) || 0 };
+    }
+    return undefined;
+  }
+
   private _zoneStatus(zone: SmartIrrigationZone, lang: string) {
     const t = (key: string, ...args: any[]) =>
       localize(`panels.zones.status.${key}`, lang, ...args);
-    const deficit = Math.max(0, -(zone.bucket ?? 0));
+    // The stored bucket is the one the last calculation committed: right
+    // after a watering it sits at zero and says "has what it needs" all day,
+    // while the zone has been drying out since. The live estimate, which the
+    // zone's live bucket sensor carries, is where it stands now.
+    const live = this._liveEstimate(zone);
+    const bucket = live ? live.bucket : (zone.bucket ?? 0);
+    const deficit = Math.max(0, -bucket);
     const threshold = zone.irrigation_threshold ?? 0;
     // Plain text, not the markup form: this goes into sentences (#849).
     const unit = unit_text(this.config, ZONE_BUCKET);
@@ -483,7 +525,26 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       text = t("manual");
     } else if ((zone.duration ?? 0) > 0) {
       kind = "watering";
-      text = t("will-water", "{duration}", formatDuration(zone.duration));
+      // The volume is appended rather than a placeholder of the sentence: the
+      // sentence is the same in every language, and so are its variables.
+      text =
+        t(
+          "will-water",
+          "{duration}",
+          this._friendlyDuration(zone.duration),
+        ).replace(/\.$/, "") +
+        ` (${this._volumeText(zone.duration, zone.throughput)}).`;
+    } else if (live && live.duration > 0) {
+      kind = "watering";
+      text = t(
+        "estimate",
+        "{short}",
+        short ?? "",
+        "{duration}",
+        this._friendlyDuration(live.duration),
+        "{volume}",
+        this._volumeText(live.duration, zone.throughput),
+      );
     } else if (short && threshold > 0) {
       text = t("under-threshold", "{short}", short);
     }
@@ -1147,7 +1208,9 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 >${stateLabel}</ha-label
               >
             </div>
-            <div class="zone-sub">${durationText}</div>
+            ${zone.state === SmartIrrigationZoneState.Manual
+              ? html`<div class="zone-sub">${durationText}</div>`
+              : ""}
           </div>
           <ha-svg-icon
             class="zone-chevron ${expanded ? "open" : ""}"
@@ -1244,7 +1307,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 )}
                 ${this._engineOptions(index, zone, lang)}
                 ${this._selectRow(
-                  localize("panels.zones.labels.input-method", lang),
+                  this._labelWithHint("input-method", lang),
                   html`
                     <option
                       value="${ZONE_INPUT_METHOD_THROUGHPUT}"
@@ -1336,6 +1399,24 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       soil_type: (e.target as HTMLSelectElement).value,
                     } as SmartIrrigationZone),
                 )}
+                ${
+                  // A soil picked by name already stands for a drainage rate.
+                  // The number is asked only when the soil is "set myself", in
+                  // either mode: that is the one case where it is the answer.
+                  (zone.soil_type ?? "custom") === "custom"
+                    ? this._numRow(
+                        this._labelWithHint("drainage_rate", lang),
+                        output_unit(this.config, ZONE_DRAINAGE_RATE),
+                        zone.drainage_rate,
+                        (v) =>
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_DRAINAGE_RATE]: parseFloat(v),
+                          }),
+                        0.1,
+                      )
+                    : ""
+                }
                 ${this._selectRow(
                   localize("panels.zones.labels.plant-type", lang),
                   html`
@@ -1359,21 +1440,25 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       plant_type: (e.target as HTMLSelectElement).value,
                     } as SmartIrrigationZone),
                 )}
-                ${this._adv(
-                  this._numRow(
-                    localize("panels.zones.labels.drainage_rate", lang),
-                    output_unit(this.config, ZONE_DRAINAGE_RATE),
-                    zone.drainage_rate,
-                    (v) =>
-                      this.handleEditZone(index, {
-                        ...zone,
-                        [ZONE_DRAINAGE_RATE]: parseFloat(v),
-                      }),
-                    0.1,
-                  ),
-                )}
+                ${
+                  // Same for the crop: a planting picked by name stands for its
+                  // crop factor, which is asked only when it is "set myself".
+                  (zone.plant_type ?? "custom") === "custom"
+                    ? this._numRow(
+                        localize("panels.zones.labels.multiplier", lang),
+                        "",
+                        zone.multiplier,
+                        (v) =>
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_MULTIPLIER]: parseFloat(v),
+                          }),
+                        0.1,
+                      )
+                    : ""
+                }
                 ${this._selectRow(
-                  localize("panels.zones.labels.state", lang),
+                  this._labelWithHint("state", lang),
                   html`
                     <option
                       value="${SmartIrrigationZoneState.Automatic}"
@@ -1406,7 +1491,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                     }),
                 )}
                 ${this._selectRow(
-                  localize("panels.zones.labels.mapping", lang),
+                  this._labelWithHint("mapping", lang),
                   this.renderTheOptions(this.mappings, zone.mapping),
                   (e: Event) => {
                     const v = (e.target as HTMLSelectElement).value;
@@ -1417,7 +1502,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                   },
                 )}
                 ${this._numRow(
-                  localize("panels.zones.labels.bucket", lang),
+                  this._labelWithHint("bucket", lang),
                   output_unit(this.config, ZONE_BUCKET),
                   Number(zone.bucket).toFixed(1),
                   (v) =>
@@ -1429,7 +1514,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 )}
                 ${this._adv(
                   this._numRow(
-                    localize("panels.zones.labels.maximum-bucket", lang),
+                    this._labelWithHint("maximum-bucket", lang),
                     output_unit(this.config, ZONE_BUCKET),
                     Number(zone.maximum_bucket).toFixed(1),
                     (v) =>
@@ -1442,7 +1527,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 )}
                 ${this._adv(
                   this._numRow(
-                    localize("panels.zones.labels.irrigation-threshold", lang),
+                    this._labelWithHint("irrigation-threshold", lang),
                     output_unit(this.config, ZONE_BUCKET),
                     Number(zone.irrigation_threshold ?? 0).toFixed(1),
                     (v) =>
@@ -1691,19 +1776,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                     1,
                   ),
                 )}
-                ${this._adv(
-                  this._numRow(
-                    localize("panels.zones.labels.multiplier", lang),
-                    "",
-                    zone.multiplier,
-                    (v) =>
-                      this.handleEditZone(index, {
-                        ...zone,
-                        [ZONE_MULTIPLIER]: parseFloat(v),
-                      }),
-                    0.1,
-                  ),
-                )}
                 ${this._numRow(
                   localize("panels.zones.labels.duration", lang),
                   UNIT_SECONDS,
@@ -1817,7 +1889,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
   }
 
   private _numRow(
-    label: string,
+    label: string | TemplateResult,
     unit: string | TemplateResult,
     value: any,
     onCommit: (v: string) => void,
@@ -1880,8 +1952,16 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     `;
   }
 
+  /** A label with one plain sentence under it. */
+  private _labelWithHint(name: string, lang: string): TemplateResult {
+    return html`${localize(`panels.zones.labels.${name}`, lang)}
+      <div class="setting-hint">
+        ${localize(`panels.zones.labels.${name}-hint`, lang)}
+      </div>`;
+  }
+
   private _selectRow(
-    label: string,
+    label: string | TemplateResult,
     options: TemplateResult,
     onChange: (e: Event) => void,
   ): TemplateResult {

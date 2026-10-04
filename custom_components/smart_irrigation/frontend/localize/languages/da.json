@@ -156,11 +156,16 @@
     "general": {
       "cards": {
         "automatic-duration-calculation": {
-          "header": "Automatisk varighedsberegning",
-          "description": "Beregningen anvender de indsamlede vejrdata frem til det tidspunkt og opdaterer bucket for hver automatisk zone. Derefter justeres varigheden baseret på den nye bucket-værdi, og de indsamlede vejrdata fjernes.",
+          "header": "Beregning af vandingsvarigheden",
+          "description": "Vandingsvarigheden for hver zone kommer fra dens vandbalance: det, vejret tog ud af jorden, minus regnen. Her vælger du, hvornår den beregnes. Hvad der starter vandingen, afgøres andetsteds, af startudløseren.",
           "labels": {
-            "auto-calc-enabled": "Beregn automatisk vandingsvarigheder",
+            "calc-when": "Vandingsvarighed beregnes",
+            "calc-when-time": "På et fast tidspunkt",
+            "calc-when-start": "Lige før hver start",
+            "calc-when-manual": "Kun når jeg beder om det",
+            "calc-when-hint": "Lige før hver start: på tidspunktet for startudløseren, med det friskeste vejr. Det rigtige valg, når Smart Irrigation starter vandingen (direkte ventilstyring eller start-hændelsen). På et fast tidspunkt: hver dag på tidspunktet nedenfor, hvis noget andet end Smart Irrigation starter vandingen og læser varighederne, når det passer det (Irrigation Unlimited, en egen tidsplan). Kun når jeg beder om det: intet beregnes af sig selv, brug beregn-knapperne eller services.",
             "calc-time": "Beregn kl.",
+            "calc-time-hint": "Den daglige beregning: det tabte vand lægges til bucket for hver zone, og vandingsvarighederne sættes.",
             "hourly-calculation": "Beregn fordampning time for time",
             "hourly-calculation-hint": "Lægger FAO-56's timeligning sammen for hver time siden sidste beregning i stedet for at bruge døgnligningen på gennemsnit, der skjuler om solen og varmen kom samtidig. En ny installation begynder med den; en installation der fandtes i forvejen, beholder døgnligningen indtil du skifter, for de to giver forskellige tal, og din vanding skal ikke ændre sig af en opdatering. Solen i hver time kommer fra en strålings- eller lyssensor, fra vejrtjenestens egen timehistorik, eller fra dagens temperaturspænd. Det er værd at have, når målinger kommer ind hen over dagen: én opdatering om dagen lader en enkelt måling gælde i fireogtyve timer, og så er ingen af formerne til at stole på. Et drivhus uden egen sensor beholder døgnligningen."
           }
@@ -200,7 +205,7 @@
           }
         },
         "setup-assistant": {
-          "description": "Højst fire spørgsmål, og den opretter en sensorgruppe og en zone for dig og vælger det, de hver især har brug for. Til en første zone, en mere, eller en frisk start. Det var før en fane, som opfordrede en installation der allerede var sat op, til at sætte sig op.",
+          "description": "Højst fire spørgsmål, og den opretter en sensorgruppe og en zone for dig og vælger det, de hver især har brug for. Til en første zone, en mere, eller en frisk start.",
           "open": "Åbn assistenten"
         }
       },
@@ -219,6 +224,11 @@
           "or-open-a": "eller opret en",
           "github-issue": "Github-issue",
           "english-only": "Kun på engelsk"
+        },
+        "translate": {
+          "title": "Hjælp med at oversætte",
+          "text": "Bortset fra engelsk og fransk er oversættelserne af dette panel maskinlavede, og ingen, der taler sproget, har endnu kontrolleret dem. Hvis et ord eller en sætning lyder mærkeligt på dit sprog, kan du rette det i din browser uden tekniske kundskaber.",
+          "link": "Oversæt på Weblate"
         }
       }
     },
@@ -241,6 +251,7 @@
           "accounts-for-duration": "regnet tilbage, så vandingen slutter dér",
           "starts-at-trigger": "starter på det tidspunkt",
           "sequencing-sequential": "én zone ad gangen, så det samlede er alle zoner lagt sammen",
+          "estimated": "Anslået: zonerne beregnes igen lige før starten.",
           "sequencing-parallel": "alle zoner på én gang, så det samlede er den længste zone",
           "headline-nothing": "Intet at vande",
           "sub-nothing": "Ingen zone mangler vand nok endnu. Næste start ville være {start}.",
@@ -251,7 +262,9 @@
           "sub-postponed": "Du har udskudt den. Den fortsætter af sig selv, og intet går tabt: en zone der mangler vand, gør det stadig bagefter.",
           "headline-skipped": "Ingen vanding i dag",
           "headline-not-scheduled": "Der mangler en vanding, og intet er planlagt til at starte den",
-          "sub-not-scheduled": "Tidspunktet ovenfor er hvornår den ville begynde. Der er ingen startudløser klar lige nu, hvilket sker når den aktive udløser er slået fra eller ikke blev registreret. Tjek udløseren under Indstillinger, og hvis den ser rigtig ud, gør en beregning den klar igen."
+          "sub-not-scheduled": "Tidspunktet ovenfor er hvornår den ville begynde. Der er ingen startudløser klar lige nu, hvilket sker når den aktive udløser er slået fra eller ikke blev registreret. Tjek udløseren under Indstillinger, og hvis den ser rigtig ud, gør en beregning den klar igen.",
+          "headline-no-trigger": "Ingen udløser er aktiv",
+          "sub-no-trigger": "Smart Irrigation starter ingen vanding. Vælg en startudløser i indstillingerne, så den vander."
         },
         "decision": {
           "title": "Bliver den sprunget over?",
@@ -315,8 +328,8 @@
       },
       "gaps": {
         "auto_calc_off": {
-          "title": "Der bliver ikke beregnet noget",
-          "body": "Automatisk beregning af varighed er slået fra, så zonernes varigheder bliver aldrig opdateret. Slå den til igen under Indstillinger, eller beregn i hånden når du vil have en vanding."
+          "title": "Der beregnes ingen vandingsvarighed",
+          "body": "Vandingsvarigheden er sat til \"Kun når jeg beder om det\", så zonernes varigheder opdateres aldrig af sig selv. Vælg \"På et fast tidspunkt\" eller \"Lige før hver start\" under Indstillinger, eller beregn manuelt, når du vil have en kørsel."
         },
         "no_automatic_zone": {
           "title": "Ingen zone vander af sig selv",
@@ -353,6 +366,20 @@
             "invalid_source": "Ugyldig kilde",
             "source_does_not_exist": "Kilden findes ikke. Indtast venligst en gyldig kilde, såsom 'sensor.mysensor'."
           },
+          "hidden_sources": "{n} måling(er) ikke efterspurgt: evapotranspirationen er givet færdig, de ville kun bruges til at genberegne den.",
+          "et_ignored": "Zone(r) {zones} beregnes ud fra vejret og læser ikke denne evapotranspiration. Sæt dem til leveret af en sensor eller en tjeneste på zonen.",
+          "et_missing": "Zone(r) {zones} forventer en færdig evapotranspiration: vælg en kilde til den ovenfor.",
+          "hints": {
+            "temperature": "Lufttemperatur i skyggen. Dagens minimum og maksimum tages herfra.",
+            "dewpoint": "Den temperatur, hvor luften ville være mættet, som viser, hvor meget damp den indeholder. Vejrtjenesten er fin her.",
+            "humidity": "Luftens relative fugtighed. Tør luft trækker mere vand ud af planterne.",
+            "pressure": "Lufttryk. Det ændrer kun meget lidt på resultatet: vejrtjenesten er nok.",
+            "windspeed": "Vinden fører fugtigheden væk fra bladene. Under glas: sæt en fast værdi tæt på 0.",
+            "solar radiation": "Solens energi, den vigtigste drivkraft bag fordampning. Uden den estimerer beregningen den ud fra dagens temperaturspænd. Under glas: brug en strålingssensor eller en lyssensor.",
+            "precipitation": "Regn der er faldet, som en samlet mængde, fra din egen regnmåler, der lægger sammen. Med en vejrtjeneste lades den stå på Ingen.",
+            "current precipitation": "Regn der falder lige nu, som en intensitet. Vejrtjenesten leverer den; en egen regnsensor er mere præcis.",
+            "evapotranspiration": "Det vand, planterne har mistet, allerede beregnet af din sensor eller tjeneste. Bruges af zoner sat til leveret af en sensor eller en tjeneste."
+          },
           "items": {
             "dewpoint": "Dugpunkt",
             "evapotranspiration": "Fordampning",
@@ -371,7 +398,7 @@
             "relative": "relativt"
           },
           "pressure-type": "Trykket er",
-          "sensor-aggregate-use-the": "Brug",
+          "sensor-aggregate-use-the": "Hvordan målingerne kombineres",
           "sensor-entity": "Sensorentitet",
           "static_value": "Værdi",
           "input-units": "Input leverer værdier i",
@@ -381,6 +408,7 @@
             "weather_service": "Vejrtjeneste",
             "sensor": "Sensor",
             "static": "Statisk værdi",
+            "radiation_sensor": "Strålingssensor",
             "illuminance": "Lyssensor (lux)"
           },
           "greenhouse": "Drivhus",
@@ -495,6 +523,9 @@
         "linked-entity-hint": "Ventilen eller kontakten, der vander denne zone. Hver gang den kører (en manuel hane, en automatisering eller Smart Irrigation selv, når direkte ventilstyring er slået til), krediteres bucket'en ud fra køretiden og zonens gennemstrømning. Påkrævet for funktionerne med lukket sløjfe.",
         "flow-sensor": "Akkumuleret volumenmåler",
         "flow-sensor-hint": "Til nøjagtig kreditering i stedet for gennemstrømning x tid: en akkumuleret samlet vandmåler (tilstandsklasse total_increasing), ikke en øjeblikkelig gennemstrømningshastighed. Enheden aflæses automatisk (L, mL, m³, gal, ft³).",
+        "safety-off-topic": "MQTT-emne for sikkerhedsluk",
+        "safety-off-state-key": "Tilstandsnøgle for sikkerhedsluk",
+        "safety-off-topic-help": "Valgfri hardware-dødmandsknap. Et MQTT set-emne (f.eks. zigbee2mqtt/my_valve/set), som ventilens enhed lytter på. Smart Irrigation udgiver en \"tænd med tidsindstillet sluk\" der, så enheden lukker ventilen af sig selv, hvis Home Assistant stopper midt i en kørsel og aldrig sender lukningen. Tilstandsnøglen er enhedens til/fra-egenskab (\"state\", eller \"state_l1\"…\"state_l4\" for en enhed med flere kanaler). Understøttelsen afhænger af enhedens firmware (on_time): test den, før du stoler på den. Lad feltet stå tomt for at slå det fra.",
         "optional": "valgfri",
         "et-deficiency": "Dagligt ET-underskud",
         "input-method": "Indtastningsmetode",
@@ -502,8 +533,39 @@
           "throughput": "Vandmængde og areal",
           "direct": "Nedbørsintensitet"
         },
+        "input-method-hint": "Hvordan det leverede vand kendes: ud fra zonens areal og flow, eller direkte som nedbørshastighed, hvis du har målt den.",
+        "state-hint": "Automatisk: Smart Irrigation beregner varigheden ud fra vandbalancen og vander ved starten. Manuel: den vander kun, når du beder om det, i den varighed du angiver. Deaktiveret: vandes aldrig, og dens balance føres ikke.",
+        "mapping-hint": "Den sensorgruppe, som zonen læser sit vejr fra: en vejrtjeneste, dine egne sensorer eller begge dele.",
+        "bucket-hint": "Zonens vandbalance. Negativ: den mangler vand. Nul: den har, hvad den skal bruge. Vanding bringer den tilbage til nul.",
+        "maximum-bucket-hint": "Det meste vand, jorden antages at kunne holde. En positiv balance kommer aldrig over dette: overskuddet går tabt.",
+        "irrigation-threshold-hint": "Det underskud, hvorfra zonen vandes. Under det lades zonen i fred, og underskuddet overføres til næste beregning.",
+        "drainage_rate-hint": "Hvor hurtigt jorden lader overskydende vand slippe væk. Lad den stå på 0, hvis du ikke kender din jord.",
         "precipitation-rate": "Nedbørsintensitet",
         "irrigation-threshold": "Vandingsgrænse",
+        "days": "dage",
+        "days-between-irrigation": "Dage mellem vanding",
+        "crop-factor-by-month": "Afgrødefaktor pr. måned",
+        "crop-factor-by-month-help": "Til en afgrøde, hvis vandforbrug følger dens vækst: afgrødefaktoren (Kc) for hver måned, januar først. En tom måned bruger afgrødefaktoren ovenfor, og alle tolv tomme er den afgrødefaktor hele året. Sæsonjusteringer gælder stadig oven i.",
+        "months": {
+          "1": "Jan",
+          "2": "Feb",
+          "3": "Mar",
+          "4": "Apr",
+          "5": "Maj",
+          "6": "Jun",
+          "7": "Jul",
+          "8": "Aug",
+          "9": "Sep",
+          "10": "Okt",
+          "11": "Nov",
+          "12": "Dec"
+        },
+        "available-water": "Tilgængeligt vand",
+        "allowed-depletion": "Tilladt udtømning",
+        "available-water-help": "Hvor meget vand jorden i denne zone rummer til planterne, i mm (rodedybden i mm gange det, jorden rummer pr. mm: omkring 1,5 for sand, 2 for muldjord, 2,5 for ler). Lad feltet stå tomt for at lade tingene være, som de er. Når det er sat, kan underskuddet ikke gå under det, og når planterne har brugt den tilladte andel af det (50 %, medmindre du ændrer det), trækker de mindre vand, så underskuddet ikke vokser lige så hurtigt.",
+        "distribution-efficiency": "Fordelingseffektivitet",
+        "distribution-efficiency-help": "Den andel af vandet fra dyserne, der når planterne, i %. Sprinklere i blæst eller på en skråning mister noget, drypvanding næsten intet. Lad feltet stå tomt for 100 %. En zone på 80 % vander 25 % længere for samme dybde og krediterer kun 80 % af det, den leverer.",
+        "days-between-irrigation-help": "Lad feltet stå tomt for at følge den generelle indstilling (Indstillinger, Dage mellem vanding). Et tal erstatter den generelle indstilling for denne zone alene: 1 vander den hver dag, hvis den har brug for vand, 3 højst hver tredje dag, 0 fjerner begrænsningen. Dagene tælles fra sidste gang, denne zone blev vandet.",
         "soil-moisture-sensor": "Jordfugtsensor",
         "soil-moisture-sensor-hint": "Zonen sidder en vanding over, så længe jorden er på eller over grænsen. Beholdningen bevares.",
         "soil-moisture-threshold": "Spring over fra",
@@ -551,6 +613,7 @@
       "title": "Zoner",
       "module-comes-from-the-group": "Beregningsmotoren kommer fra denne zones sensorgruppe. Skift den dér, og alle zoner der bruger gruppen, følger med.",
       "status": {
+        "estimate": "Mangler {short}: omkring {duration} ({volume}) ved næste beregning.",
         "will-water": "Vander {duration} ved næste start.",
         "idle": "Intet at vande: der mangler {short}.",
         "satisfied": "Intet at vande: denne zone har det den skal have.",
@@ -707,7 +770,6 @@
       "delete": "Slet",
       "help": "Når denne udløser aktiveres, udsender Smart Irrigation følgende begivenhed — brug den i en automatisering for at starte vanding. Begivenhedsdataene indeholder denne udløsers navn (samt type/offset), så du kan reagere specifikt på den:"
     },
-    "no_triggers": "Ingen vandingsstart-udløsere konfigureret. Systemet vil bruge standardadfærden (solopgang med samlet zonevarighed). Tilføj udløsere for at tilpasse, hvornår vanding starter.",
     "offset_auto": "Auto (beregnet ud fra samlet zonevarighed)",
     "confirm_delete": "Er du sikker på, at du vil slette udløseren '{name}'?",
     "validation": {
@@ -721,15 +783,36 @@
       "azimuth_explanation": "Solens azimut er solens kompasretning. 0°=Nord, 90°=Øst, 180°=Syd, 270°=Vest. Du kan indtaste en hvilken som helst vinkelværdi (f.eks. 450° = 90°, -30° = 330°). Brug dette til at udløse vanding, når solen når en bestemt position.",
       "multiple_triggers": "Du kan konfigurere flere udløsere. Hver aktiveret udløser planlægger vandingsstarter uafhængigt."
     },
+    "active_none": "Ingen (Smart Irrigation starter ingen vanding)",
+    "none_selected": "Ingen udløser er aktiv: Smart Irrigation starter ingen vanding, uanset vejret. Varighederne beregnes stadig; start vandingen selv eller fra en egen automatisering.",
     "active_label": "Aktiv udløser",
     "active_default": "Standard (solopgang minus samlet vandingsvarighed)",
     "active_hint": "Kun den valgte udløser starter vanding, så den kører én gang om dagen. \"Standard\" tilpasser kørslen, så den afsluttes præcis ved solopgang. Tilføj brugerdefinerede udløsere (solnedgang, azimut, forskydninger) nedenfor, og vælg derefter én her."
   },
+  "seasonal_adjustments": {
+    "title": "Sæsonjusteringer",
+    "description": "En afgrødefaktor og en grænse, der følger årstiden. Hver justering dækker en række måneder og nogle zoner; flere, der dækker samme måned, ganges. Multiplikatoren skalerer zonens afgrødefaktor (1 ændrer intet, 0,5 halverer vandforbruget), og grænsen lægges til dens vandingsgrænse. En afgrødefaktor måned for måned kan også sættes i hver zone.",
+    "add": "Tilføj en justering",
+    "delete": "Slet",
+    "new_name": "Ny justering",
+    "name": "Navn",
+    "month_start": "Fra måned",
+    "month_end": "Til måned",
+    "multiplier": "Multiplikator for afgrødefaktor",
+    "threshold": "Forskydning af grænse",
+    "zones": "Zoner",
+    "zones_hint": "alle, eller zonenumrene adskilt af kommaer.",
+    "enabled": "Aktiveret"
+  },
   "weather_skip": {
-    "title": "Vejrbaseret vandingsspring",
-    "description": "Spring automatisk vanding over, når der er varslet nedbør. Denne funktion kræver, at en vejrtjeneste er konfigureret.",
-    "threshold_label": "Nedbørstærskel",
-    "threshold_description": "Mindste mængde nedbør (i mm) varslet for i dag og i morgen for at springe vanding over."
+    "title": "Regnvarsel",
+    "description": "Når der er varslet regn, vander Smart Irrigation mindre. Denne funktion kræver, at en vejrtjeneste er konfigureret.",
+    "threshold_label": "Spring vanding over fra",
+    "threshold_description": "Mindste mængde nedbør (i mm) varslet for i dag og i morgen for at springe vanding over.",
+    "effective_rain_label": "Tæl kun regn, der når rødderne",
+    "effective_rain_description": "Ignorer en byge, der er mindre end en femtedel af periodens evapotranspiration: den fugter bladene og fordamper. Den vurderes over hele perioden mellem to beregninger.",
+    "forecast_label": "Tag højde for den varslede regn",
+    "forecast_description": "Under tærsklen vandes hver zone med sit underskud minus den regn, der er varslet for de næste 24 timer, vægtet efter den sandsynlighed, vejrtjenesten angiver: 4 mm varslet mod et underskud på 10 mm giver 6 mm. Ved eller over tærsklen springes vandingen over for zonerne udendørs. Zoner i et drivhus påvirkes ikke."
   },
   "coordinate_config": {
     "title": "Placeringskoordinater",

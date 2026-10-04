@@ -623,11 +623,16 @@ export class SmartIrrigationPanel extends LitElement {
           display: flex;
           flex-direction: column;
           gap: 16px;
-          padding: 16px 0;
+          padding: 0;
         }
 
-        .view > *:last-child {
-          margin-bottom: 20px;
+        /* The room under the last card is padding on the page itself: a margin
+           on the last child of a scrolling flex container is not counted in the
+           scrollable area, so on some pages the last card touched the bottom. */
+        .view > * {
+          padding-top: 11px;
+          padding-bottom: 24px;
+          box-sizing: border-box;
         }
 
         .version {

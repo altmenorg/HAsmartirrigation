@@ -175,11 +175,16 @@
     "general": {
       "cards": {
         "automatic-duration-calculation": {
-          "header": "Automatikus időtartam-számítás",
-          "description": "A számítás az addig gyűjtött időjárási adatokat veszi alapul, és frissíti a vödröt minden automatikus zónánál. Ezután az időtartam az új vödörérték alapján kerül beállításra, és a gyűjtött időjárási adatok eltávolításra kerülnek.",
+          "header": "Az öntözési időtartam kiszámítása",
+          "description": "Minden zóna öntözési időtartama a vízmérlegéből adódik: amennyit az időjárás elvett a talajból, mínusz az eső. Itt azt választod ki, mikor számolja ki. Azt, hogy mi indítja az öntözést, máshol dönti el az indítási kiváltó.",
           "labels": {
-            "auto-calc-enabled": "Az öntözési időtartamok automatikus kiszámítása",
+            "calc-when": "Az öntözési időtartam kiszámítása",
+            "calc-when-time": "Rögzített időpontban",
+            "calc-when-start": "Közvetlenül minden indítás előtt",
+            "calc-when-manual": "Csak kérésre",
+            "calc-when-hint": "Közvetlenül minden indítás előtt: az indítási kiváltó idején, a legfrissebb időjárással. A helyes választás, ha a Smart Irrigation indítja az öntözést (közvetlen szelepvezérlés vagy az indítási esemény). Rögzített időpontban: minden nap az alább megadott időben, ha az öntözést nem a Smart Irrigation indítja, hanem valami más, amely akkor olvassa ki az időtartamokat, amikor akarja (Irrigation Unlimited, saját ütemezés). Csak kérésre: semmi sem számítódik magától, használd a számítás gombokat vagy a szolgáltatásokat.",
             "calc-time": "Számítás ekkor",
+            "calc-time-hint": "A napi számítás: az elvesztett víz hozzáadódik minden zóna vödréhez, és beállítódnak az öntözési időtartamok.",
             "hourly-calculation": "Az evapotranszpiráció számítása óránként",
             "hourly-calculation-hint": "A FAO-56 óránkénti egyenletét összegzi az utolsó számítás óta eltelt minden órára, ahelyett hogy a napi egyenletet átlagokra alkalmazná, amelyek elrejtik, hogy a nap és a hőség együtt jött-e. Új telepítés ezzel indul; a korábban létező telepítés a napi egyenletnél marad, amíg át nem váltasz, mert a kettő más számot ad, és az öntözésed ne változzon meg egy frissítéstől. Minden óra napsütése sugárzás- vagy megvilágításérzékelőből, az időjárás-szolgáltatás saját óránkénti előzményéből, vagy a nap hőmérséklet-tartományából származik. Akkor érdemes, ha a mérések a nap folyamán érkeznek: napi egyetlen frissítés egy mérést hagy huszonnégy órán át érvényben, és akkor egyik forma sem megbízható. A saját érzékelő nélküli üvegház a napi egyenletnél marad."
           }
@@ -219,7 +224,7 @@
           }
         },
         "setup-assistant": {
-          "description": "Legfeljebb négy kérdés, és létrehoz neked egy érzékelőcsoportot és egy zónát, kiválasztva azt, amire mindkettőnek szüksége van. Első zónához, egy továbbihoz, vagy új kezdéshez. Korábban fül volt, amely egy már beállított telepítést hívott fel arra, hogy állítsa be magát.",
+          "description": "Legfeljebb négy kérdés, és létrehoz neked egy érzékelőcsoportot és egy zónát, kiválasztva azt, amire mindkettőnek szüksége van. Első zónához, egy továbbihoz, vagy új kezdéshez.",
           "open": "Segéd megnyitása"
         }
       },
@@ -238,6 +243,11 @@
           "or-open-a": "vagy nyisson egy",
           "github-issue": "Github-hibajegy",
           "english-only": "Csak angol nyelven"
+        },
+        "translate": {
+          "title": "Segíts a fordításban",
+          "text": "Az angol és a francia kivételével a panel fordításai gépiek, és még senki sem ellenőrizte őket, aki beszéli a nyelvet. Ha egy szó vagy mondat furcsán hangzik a te nyelveden, kijavíthatod a böngésződben, technikai tudás nélkül.",
+          "link": "Fordítás a Weblate-en"
         }
       }
     },
@@ -260,6 +270,7 @@
           "accounts-for-duration": "visszaszámolva, hogy az öntözés akkor fejeződjön be",
           "starts-at-trigger": "abban a pillanatban kezdődik",
           "sequencing-sequential": "egyszerre egy zóna, így az összeg az összes zóna összege",
+          "estimated": "Becsült: a zónák közvetlenül az indítás előtt újra kiszámítódnak.",
           "sequencing-parallel": "minden zóna egyszerre, így az összeg a leghosszabb zóna",
           "headline-nothing": "Nincs mit öntözni",
           "sub-nothing": "Egyetlen zónának sem hiányzik még elég víz. A következő indulás {start} lenne.",
@@ -270,7 +281,9 @@
           "sub-postponed": "Te halasztottad el. Magától folytatódik, és semmi nem vész el: annak a zónának, amelyből hiányzik a víz, utána is hiányozni fog.",
           "headline-skipped": "Ma nincs öntözés",
           "headline-not-scheduled": "Egy öntözés esedékes, és semmi nincs beütemezve, ami elindítaná",
-          "sub-not-scheduled": "A fenti idő az, amikor elkezdődne. Épp most egyetlen indítási esemény sincs élesítve, ami akkor fordul elő, ha az aktív kiváltó ki van kapcsolva vagy nem lett regisztrálva. Ellenőrizd a kiváltót a Beállításokban, és ha jónak tűnik, egy számítás újra élesíti."
+          "sub-not-scheduled": "A fenti idő az, amikor elkezdődne. Épp most egyetlen indítási esemény sincs élesítve, ami akkor fordul elő, ha az aktív kiváltó ki van kapcsolva vagy nem lett regisztrálva. Ellenőrizd a kiváltót a Beállításokban, és ha jónak tűnik, egy számítás újra élesíti.",
+          "headline-no-trigger": "Egyetlen kiváltó sem aktív",
+          "sub-no-trigger": "A Smart Irrigation nem indít öntözést. Válassz indítási kiváltót a beállításokban, hogy öntözzön."
         },
         "decision": {
           "title": "Ki lesz hagyva?",
@@ -334,8 +347,8 @@
       },
       "gaps": {
         "auto_calc_off": {
-          "title": "Semmi nem kerül kiszámításra",
-          "body": "Az automatikus időszámítás ki van kapcsolva, így a zónák idői soha nem frissülnek. Kapcsold vissza a Beállításokban, vagy számolj kézzel, amikor öntözni szeretnél."
+          "title": "Nem számolódik öntözési időtartam",
+          "body": "Az öntözési időtartam „Csak kérésre” értékre van állítva, így a zónák időtartama soha nem frissül magától. Válaszd a Beállításokban a „Rögzített időpontban” vagy a „Közvetlenül minden indítás előtt” lehetőséget, vagy számolj kézzel, amikor öntözést szeretnél."
         },
         "no_automatic_zone": {
           "title": "Egyetlen zóna sem öntöz magától",
@@ -372,6 +385,20 @@
             "invalid_source": "Érvénytelen forrás",
             "source_does_not_exist": "A forrás nem létezik. Kérjük, adjon meg egy érvényes forrást, például a „sensor.mysensor” értéket."
           },
+          "hidden_sources": "{n} mérés nincs kérve: az evapotranszpirációt készen kapja, ezek csak az újraszámítására szolgálnának.",
+          "et_ignored": "A(z) {zones} zóna(k) az időjárásból számolnak, és nem olvassák ezt az evapotranszpirációt. Állítsd őket a zónán érzékelő vagy szolgáltatás adja értékre.",
+          "et_missing": "A(z) {zones} zóna(k) kész evapotranszpirációt várnak: válassz hozzá forrást fent.",
+          "hints": {
+            "temperature": "A levegő hőmérséklete árnyékban. A nap minimuma és maximuma ebből származik.",
+            "dewpoint": "Az a hőmérséklet, amelyen a levegő telítetté válna, ebből látszik, mennyi gőzt tartalmaz. Itt az időjárás-szolgáltatás megfelel.",
+            "humidity": "A levegő relatív páratartalma. A száraz levegő több vizet von el a növényekből.",
+            "pressure": "Légköri nyomás. Nagyon keveset változtat az eredményen: az időjárás-szolgáltatás elég.",
+            "windspeed": "A szél elviszi a páratartalmat a levelekről. Üveg alatt adj meg 0-hoz közeli állandó értéket.",
+            "solar radiation": "A nap energiája, a párolgás fő hajtóereje. Nélküle a számítás a nap hőmérséklet-tartományából becsüli. Üveg alatt használj sugárzásérzékelőt vagy fényérzékelőt.",
+            "precipitation": "A lehullott eső teljes mennyiségként, egy saját, összegző csapadékmérőből. Időjárás-szolgáltatás mellett hagyd Nincs értéken.",
+            "current precipitation": "Az éppen eső eső intenzitásként. Az időjárás-szolgáltatás megadja; egy saját esőérzékelő pontosabb.",
+            "evapotranspiration": "A növények által elvesztett víz, amelyet az érzékelőd vagy a szolgáltatásod már kiszámolt. Azok a zónák használják, amelyek értéke érzékelő vagy szolgáltatás adja."
+          },
           "items": {
             "dewpoint": "Harmatpont",
             "evapotranspiration": "Evapotranspiráció",
@@ -390,7 +417,7 @@
             "relative": "relatív"
           },
           "pressure-type": "A nyomás",
-          "sensor-aggregate-use-the": "Használja a",
+          "sensor-aggregate-use-the": "A mérések összevonásának módja",
           "sensor-entity": "Érzékelő entitás",
           "static_value": "Érték",
           "input-units": "A bemenet az értékeket a következő egységben adja meg",
@@ -400,6 +427,7 @@
             "weather_service": "Időjárás-szolgáltatás",
             "sensor": "Érzékelő",
             "static": "Statikus érték",
+            "radiation_sensor": "Sugárzásérzékelő",
             "illuminance": "Fényérzékelő (lux)"
           },
           "greenhouse": "Üvegház",
@@ -514,6 +542,9 @@
         "linked-entity-hint": "A szelep vagy kapcsoló, amely ezt a zónát öntözi. Amikor működik (kézi nyitás, automatizálás vagy maga a Smart Irrigation, ha a közvetlen szelepvezérlés be van kapcsolva), a vödör a működési időből és a zóna átfolyásából töltődik fel. A zárt hurkú funkciókhoz szükséges.",
         "flow-sensor": "Kumulatív térfogatmérő",
         "flow-sensor-hint": "Az átfolyás x idő helyett pontos feltöltéshez: egy kumulatív vízmérő összérték (total_increasing állapotosztály), nem pillanatnyi átfolyási sebesség. A mértékegység automatikusan beolvasásra kerül (L, mL, m³, gal, ft³).",
+        "safety-off-topic": "Biztonsági kikapcsolás MQTT-topicja",
+        "safety-off-state-key": "Biztonsági kikapcsolás állapotkulcsa",
+        "safety-off-topic-help": "Opcionális hardveres vészleállítás. Egy MQTT set-topic (pl. zigbee2mqtt/my_valve/set), amelyet a szelep eszköze figyel. A Smart Irrigation ide \"bekapcsolás időzített kikapcsolással\" üzenetet küld, hogy az eszköz magától lezárja a szelepet, ha a Home Assistant működés közben leáll, és soha nem küldi el a zárást. Az állapotkulcs az eszköz be/ki tulajdonsága (\"state\", vagy többcsatornás eszköznél \"state_l1\"…\"state_l4\"). A támogatás az eszköz firmware-étől függ (on_time): próbáld ki, mielőtt megbízol benne. Üresen hagyva kikapcsolt.",
         "optional": "opcionális",
         "et-deficiency": "Napi ET-hiány",
         "input-method": "Bevitel módja",
@@ -521,8 +552,39 @@
           "throughput": "Átfolyás és terület",
           "direct": "Csapadékintenzitás"
         },
+        "input-method-hint": "Hogyan ismert a kijuttatott víz: a zóna területéből és átfolyásából, vagy közvetlenül csapadékintenzitásként, ha megmérted.",
+        "state-hint": "Automatikus: a Smart Irrigation a vízmérlegből számolja az időtartamot, és indításkor öntöz. Kézi: csak akkor öntöz, ha kéred, az általad megadott időtartamig. Letiltva: soha nem öntözi, és a mérlegét nem követi.",
+        "mapping-hint": "Az érzékelőcsoport, amelyből ez a zóna az időjárását olvassa: időjárás-szolgáltatás, saját érzékelők, vagy mindkettő.",
+        "bucket-hint": "A zóna vízmérlege. Negatív: vízhiányos. Nulla: megvan, amire szüksége van. Az öntözés visszaviszi nullára.",
+        "maximum-bucket-hint": "A legtöbb víz, amelyet a talaj tartani képesnek tekintünk. A pozitív mérleg soha nem megy fölé: a felesleg elvész.",
+        "irrigation-threshold-hint": "A hiány, amelytől a zónát öntözik. Alatta a zóna békén marad, és a hiány átkerül a következő számításra.",
+        "drainage_rate-hint": "Milyen gyorsan engedi el a talaj a felesleges vizet. Hagyd 0-n, ha nem ismered a talajodat.",
         "precipitation-rate": "Csapadékintenzitás",
         "irrigation-threshold": "Öntözési küszöb",
+        "days": "nap",
+        "days-between-irrigation": "Öntözések közötti napok",
+        "crop-factor-by-month": "Növénytényező havonta",
+        "crop-factor-by-month-help": "Olyan növényhez, amelynek vízfelhasználása a növekedését követi: minden hónap növénytényezője (Kc), januárral kezdve. Az üresen hagyott hónap a fenti növénytényezőt használja, és mind a tizenkettő üresen azt a növénytényezőt jelenti egész évben. A szezonális igazítások ezen felül is érvényesek.",
+        "months": {
+          "1": "Jan",
+          "2": "Febr",
+          "3": "Márc",
+          "4": "Ápr",
+          "5": "Máj",
+          "6": "Jún",
+          "7": "Júl",
+          "8": "Aug",
+          "9": "Szept",
+          "10": "Okt",
+          "11": "Nov",
+          "12": "Dec"
+        },
+        "available-water": "Hasznosítható víz",
+        "allowed-depletion": "Megengedett kimerülés",
+        "available-water-help": "Mennyi vizet tart a zóna talaja a növények számára, mm-ben (a gyökérmélység mm-ben szorozva azzal, amit a talaj milliméterenként tart: kb. 1,5 homokra, 2 vályogra, 2,5 agyagra). Hagyd üresen, ha nem akarsz változtatni. Beállítva a hiány nem mehet alá, és miután a növények felhasználták a megengedett részét (50%, hacsak nem változtatod), kevesebb vizet vesznek fel, így a hiány már nem nő olyan gyorsan.",
+        "distribution-efficiency": "Elosztási hatásfok",
+        "distribution-efficiency-help": "A kifolyókból kijövő víz azon része, amely eljut a növényekhez, %-ban. A szélben vagy lejtőn működő szórófejek veszítenek valamennyit, a csepegtetés szinte semennyit. Hagyd üresen 100%-hoz. Egy 80%-os zóna 25%-kal tovább öntöz ugyanazon vízrétegért, és a kijuttatott víznek csak 80%-át számolja el.",
+        "days-between-irrigation-help": "Hagyd üresen az általános beállítás követéséhez (Beállítások, Öntözések közötti napok). Egy szám csak erre a zónára írja felül az általános beállítást: az 1 minden nap öntözi, ha vízre van szüksége, a 3 legfeljebb háromnaponta, a 0 megszünteti a korlátozást. A napokat a zóna utolsó öntözésétől számoljuk.",
         "soil-moisture-sensor": "Talajnedvesség-érzékelő",
         "soil-moisture-sensor-hint": "A zóna kihagy egy öntözést, amíg a talaj a küszöbön vagy fölötte van. A tartalék megmarad.",
         "soil-moisture-threshold": "Kihagyás ettől",
@@ -570,6 +632,7 @@
       "title": "Zónák",
       "module-comes-from-the-group": "A számítási motor ennek a zónának az érzékelőcsoportjából jön. Ott változtasd meg, és minden zóna, amely azt a csoportot használja, követi.",
       "status": {
+        "estimate": "{short} hiányzik: kb. {duration} ({volume}) a következő számításnál.",
         "will-water": "A következő indításnál {duration} ideig öntöz.",
         "idle": "Nincs mit öntözni: {short} hiányzik.",
         "satisfied": "Nincs mit öntözni: ennek a zónának megvan, amire szüksége van.",
@@ -707,7 +770,6 @@
       "delete": "Törlés",
       "help": "Amikor ez a trigger aktiválódik, a Smart Irrigation kibocsátja a következő eseményt — használja egy automatizálásban az öntözés indításához. Az esemény adatai tartalmazzák ennek a triggernek a nevét (valamint a típusát/eltolását), így konkrétan reagálhat rá:"
     },
-    "no_triggers": "Nincsenek konfigurált öntözésindítási triggerek. A rendszer az alapértelmezett viselkedést használja (napkelte a teljes zónaidőtartammal). Adjon hozzá triggereket az öntözés indításának testreszabásához.",
     "offset_auto": "Automatikus (a teljes zónaidőtartamból számítva)",
     "confirm_delete": "Biztosan törli a(z) „{name}” triggert?",
     "validation": {
@@ -721,15 +783,36 @@
       "azimuth_explanation": "A nap azimutja a nap iránytű szerinti iránya. 0°=Észak, 90°=Kelet, 180°=Dél, 270°=Nyugat. Bármilyen szögértéket megadhat (pl. 450° = 90°, -30° = 330°). Ezzel akkor indíthatja az öntözést, amikor a nap egy adott pozíciót ér el.",
       "multiple_triggers": "Több triggert is konfigurálhat. Minden engedélyezett trigger önállóan ütemezi az öntözések indítását."
     },
+    "active_none": "Nincs (a Smart Irrigation nem indít öntözést)",
+    "none_selected": "Egyetlen kiváltó sem aktív: a Smart Irrigation nem indít öntözést, bármilyen is az időjárás. Az időtartamok ettől még kiszámolódnak; indítsd el az öntözést magad vagy saját automatizálásból.",
     "active_label": "Aktív trigger",
     "active_default": "Alapértelmezett (napkelte mínusz a teljes öntözési időtartam)",
     "active_hint": "Csak a kiválasztott trigger indítja az öntözést, így naponta egyszer fut le. Az \"Alapértelmezett\" úgy időzíti a működést, hogy pontosan napkeltekor fejeződjön be. Adj hozzá egyéni triggereket (naplemente, azimut, eltolások) alább, majd válassz egyet itt."
   },
+  "seasonal_adjustments": {
+    "title": "Szezonális igazítások",
+    "description": "A szezont követő növénytényező és küszöb. Minden igazítás egy hónaptartományt és néhány zónát fed le; ha több is ugyanazt a hónapot fedi, összeszorzódnak. A szorzó a zóna növénytényezőjét skálázza (az 1 nem változtat semmit, a 0,5 felezi a vízfelhasználást), a küszöb pedig hozzáadódik az öntözési küszöbéhez. Havi bontású növénytényező minden zónában is megadható.",
+    "add": "Igazítás hozzáadása",
+    "delete": "Törlés",
+    "new_name": "Új igazítás",
+    "name": "Név",
+    "month_start": "Kezdő hónap",
+    "month_end": "Záró hónap",
+    "multiplier": "Növénytényező-szorzó",
+    "threshold": "Küszöb eltolása",
+    "zones": "Zónák",
+    "zones_hint": "mind, vagy a zónák számai vesszővel elválasztva.",
+    "enabled": "Bekapcsolva"
+  },
   "weather_skip": {
-    "title": "Időjárás-alapú öntözéskihagyás",
-    "description": "Automatikusan kihagyja az öntözést, ha csapadék van előrejelezve. Ehhez a funkcióhoz időjárás-szolgáltatás konfigurálása szükséges.",
-    "threshold_label": "Csapadékküszöb",
-    "threshold_description": "A mai és holnapi napra előrejelzett csapadék minimális mennyisége (mm-ben) az öntözés kihagyásához."
+    "title": "Csapadék-előrejelzés",
+    "description": "Ha csapadék van előrejelezve, a Smart Irrigation kevesebbet öntöz. Ehhez a funkcióhoz időjárás-szolgáltatás konfigurálása szükséges.",
+    "threshold_label": "Öntözés kihagyása ettől:",
+    "threshold_description": "A mai és holnapi napra előrejelzett csapadék minimális mennyisége (mm-ben) az öntözés kihagyásához.",
+    "effective_rain_label": "Csak a gyökerekhez jutó esőt számold",
+    "effective_rain_description": "Figyelmen kívül hagyja az időszak evapotranszpirációjának ötödénél kisebb zivatart: megnedvesíti a leveleket, és elpárolog. A két számítás közötti teljes időszak alapján ítéli meg.",
+    "forecast_label": "Az előrejelzett eső figyelembe vétele",
+    "forecast_description": "A küszöb alatt minden zónát a hiányának megfelelően öntöz, csökkentve a következő 24 órára előrejelzett esővel, az időjárás-szolgáltató által megadott valószínűséggel súlyozva: 4 mm előrejelzés és 10 mm hiány esetén 6 mm-t öntöz. A küszöbnél vagy afölött az öntözést kihagyja a szabadban lévő zónáknál. Az üvegházban lévő zónákat ez nem érinti."
   },
   "coordinate_config": {
     "title": "Helykoordináták",

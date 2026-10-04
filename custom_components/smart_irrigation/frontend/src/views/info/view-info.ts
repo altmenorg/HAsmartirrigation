@@ -386,7 +386,12 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       ? this.t("cards.next-run.sub-nothing", "{start}", start)
       : this.t("cards.next-run.no-start");
 
-    if (postponed) {
+    const noTrigger = (info as any)?.active_start_trigger === "none";
+    if (noTrigger) {
+      icon = "mdi:calendar-remove-outline";
+      headline = this.t("cards.next-run.headline-no-trigger");
+      sub = this.t("cards.next-run.sub-no-trigger");
+    } else if (postponed) {
       icon = "mdi:pause-circle-outline";
       headline = this.t("cards.next-run.headline-postponed");
       sub = this.t("cards.next-run.sub-postponed");
@@ -413,7 +418,14 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
     // is false is a countdown that reaches zero and rolls over to tomorrow
     // (#841). When a run is owed and nothing is scheduled, say that instead.
     const armed = (info as any)?.start_trigger_armed !== false;
-    if (!armed && !postponed && !skipped && zones.length && seconds > 0) {
+    if (
+      !noTrigger &&
+      !armed &&
+      !postponed &&
+      !skipped &&
+      zones.length &&
+      seconds > 0
+    ) {
       icon = "mdi:calendar-alert";
       headline = this.t("cards.next-run.headline-not-scheduled");
       sub = this.t("cards.next-run.sub-not-scheduled");
@@ -448,6 +460,9 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                   `cards.next-run.sequencing-${info.zone_sequencing}`,
                 )}</span
               >`
+            : ""}
+          ${(info as any)?.durations_estimated
+            ? html`<span>${this.t("cards.next-run.estimated")}</span>`
             : ""}
         </div>
       </ha-card>
@@ -640,7 +655,17 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                           <span class="label"
                             >${this.t(
                               "cards.estimate.labels.at-last-calculation",
-                            )}:</span
+                            )}${zone.last_calculated
+                              ? ` (${localizedDateTime(
+                                  zone.last_calculated,
+                                  this.hass,
+                                  {
+                                    weekday: "short",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  },
+                                )})`
+                              : ""}:</span
                           >
                           <span class="value"
                             >${Number(zone.bucket).toFixed(1)} ${unit}</span

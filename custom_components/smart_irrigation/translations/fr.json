@@ -2,7 +2,7 @@
   "entity": {
     "sensor": {
       "duration": {
-        "name": "Durée"
+        "name": "Durée d'arrosage"
       },
       "bucket": {
         "name": "Seau"
@@ -252,8 +252,8 @@
           "description": "Nouvelle valeur du multiplicateur"
         },
         "new_duration_value": {
-          "name": "Nouvelle valeur de durée",
-          "description": "Nouvelle valeur de la durée"
+          "name": "Nouvelle valeur de durée d'arrosage",
+          "description": "Nouvelle valeur de la durée d'arrosage"
         },
         "new_state_value": {
           "name": "Nouvelle valeur d'état",
@@ -281,7 +281,7 @@
       "fields": {
         "seconds": {
           "name": "Secondes",
-          "description": "Durée de l'arrosage, en secondes. Vide : la durée de la zone."
+          "description": "Durée d'arrosage, en secondes. Vide : la durée d'arrosage de la zone."
         }
       }
     }

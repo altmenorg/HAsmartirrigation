@@ -185,6 +185,15 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         ${localize("common.loading-messages.general", this.hass.language)}
       </div>`;
     } else {
+      // When the watering duration is calculated is one question. What starts
+      // the watering is decided elsewhere, by the start trigger: neither answer
+      // is a switch for "we will water".
+      const base = "panels.general.cards.automatic-duration-calculation.labels";
+      const calcWhen = this.config.recalculate_before_start
+        ? "start"
+        : this.config.autocalcenabled
+          ? "time"
+          : "manual";
       let r1 = html` <div class="card-content">
           ${localize(
             "panels.general.cards.automatic-duration-calculation.description",
@@ -192,52 +201,51 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           )}
         </div>
         <div class="card-content">
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize(
-                "panels.general.cards.automatic-duration-calculation.labels.auto-calc-enabled",
-                this.hass.language,
-              )}
-            </div>
-            <ha-switch
-              .checked=${this.config.autocalcenabled}
-              @change=${(e: Event) =>
-                this.handleConfigChange({
-                  autocalcenabled: (e.target as any).checked,
-                })}
-            ></ha-switch>
-          </div>
+          ${this._selectRow(
+            html`${localize(`${base}.calc-when`, this.hass.language)}
+              <div class="setting-hint">
+                ${localize(`${base}.calc-when-hint`, this.hass.language)}
+              </div>`,
+            html`
+              <option value="time" ?selected=${calcWhen === "time"}>
+                ${localize(`${base}.calc-when-time`, this.hass.language)}
+              </option>
+              <option value="start" ?selected=${calcWhen === "start"}>
+                ${localize(`${base}.calc-when-start`, this.hass.language)}
+              </option>
+              <option value="manual" ?selected=${calcWhen === "manual"}>
+                ${localize(`${base}.calc-when-manual`, this.hass.language)}
+              </option>
+            `,
+            (e: Event) => {
+              const value = (e.target as HTMLSelectElement).value;
+              this.handleConfigChange({
+                autocalcenabled: value === "time",
+                recalculate_before_start: value === "start",
+              });
+            },
+          )}
         </div>`;
-      if (this.data.autocalcenabled) {
+      if (calcWhen === "time") {
         r1 = html`${r1}
           <div class="card-content">
             ${this._timeRow(
-              localize(
-                "panels.general.cards.automatic-duration-calculation.labels.calc-time",
-                this.hass.language,
-              ),
+              localize(`${base}.calc-time`, this.hass.language),
               this.config.calctime,
               (v) => this.handleConfigChange({ calctime: v }),
-              localize(
-                "panels.general.cards.automatic-duration-calculation.labels.calc-time-hint",
-                this.hass.language,
-              ),
+              localize(`${base}.calc-time-hint`, this.hass.language),
             )}
           </div>`;
       }
-      // Applies to every calculation, automatic or not, so it sits outside
-      // the auto-calc condition above.
+      // The form of the equation, which has nothing to do with the moment.
       r1 = html`${r1}
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${localize(
-                "panels.general.cards.automatic-duration-calculation.labels.hourly-calculation",
-                this.hass.language,
-              )}
+              ${localize(`${base}.hourly-calculation`, this.hass.language)}
               <div class="setting-hint">
                 ${localize(
-                  "panels.general.cards.automatic-duration-calculation.labels.hourly-calculation-hint",
+                  `${base}.hourly-calculation-hint`,
                   this.hass.language,
                 )}
               </div>
@@ -250,27 +258,36 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 })}
             ></ha-switch>
           </div>
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize(
-                "panels.general.cards.automatic-duration-calculation.labels.recalculate-before-start",
-                this.hass.language,
-              )}
-              <div class="setting-hint">
-                ${localize(
-                  "panels.general.cards.automatic-duration-calculation.labels.recalculate-before-start-hint",
-                  this.hass.language,
-                )}
-              </div>
-            </div>
-            <ha-switch
-              .checked=${!!this.config.recalculate_before_start}
-              @change=${(e: Event) =>
-                this.handleConfigChange({
-                  recalculate_before_start: (e.target as any).checked,
-                })}
-            ></ha-switch>
-          </div>
+          ${
+            // On for a new installation, and not a decision anybody has to take:
+            // a light shower does not reach the roots. It acts on the rain that
+            // fell, in every calculation, which is why it lives here and not
+            // with the forecast. The advanced mode only, unless it was turned
+            // off, so that is not hidden.
+            this.config.ui_mode === "advanced" || !this.config.effective_rain
+              ? html`<div class="setting-row">
+                  <div class="setting-label">
+                    ${localize(
+                      "weather_skip.effective_rain_label",
+                      this.hass.language,
+                    )}
+                    <div class="setting-hint">
+                      ${localize(
+                        "weather_skip.effective_rain_description",
+                        this.hass.language,
+                      )}
+                    </div>
+                  </div>
+                  <ha-switch
+                    .checked=${!!this.config.effective_rain}
+                    @change=${(e: Event) =>
+                      this.handleConfigChange({
+                        effective_rain: (e.target as any).checked,
+                      })}
+                  ></ha-switch>
+                </div>`
+              : ""
+          }
         </div>`;
       r1 = html`<ha-card
         header="${localize(
@@ -397,6 +414,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       )}",
       this.hass.language)}">${r2}</ha-card>`;
 
+      // Recording every change of a sensor is for those who have a rain gauge
+      // or a sensor that moves all day: the advanced mode, unless it is already
+      // on, so that nothing in use is hidden.
+      const showContinuous =
+        this.config.ui_mode === "advanced" || !!this.config.continuousupdates;
       let r4 = html`<div class="card-content">
           ${localize(
             "panels.general.cards.continuousupdates.description",
@@ -467,7 +489,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // Seasonal adjustments (advanced).
       const r13 = this.renderSeasonalAdjustmentsCard();
 
-      // The way to the setup assistant, which is no longer a tab.
+      // The way to the setup assistant, which is no longer a tab. It comes first:
+      // it is where somebody who has nothing set up wants to start.
       const r12 = this.renderSetupAssistantCard();
 
       const r = html`<ha-card
@@ -476,7 +499,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           <div class="card-content">
             ${localize("panels.general.description", this.hass.language)}
           </div> </ha-card
-        >${r11}${r2}${r1}${r4}${r5}${r6}${r7}${r8}${r9}${r10}${r13}${r12}`;
+        >${r12}${r11}${r2}${r1}${showContinuous
+          ? r4
+          : ""}${r5}${r6}${r7}${r8}${r9}${r10}${r13}`;
 
       return r;
     }
@@ -711,6 +736,15 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   </option>
                 `,
               )}
+              <option
+                value="none"
+                ?selected=${this.config.active_start_trigger === "none"}
+              >
+                ${localize(
+                  "irrigation_start_triggers.active_none",
+                  this.hass.language,
+                )}
+              </option>
             </select>
           </div>
           <div class="trigger-active-hint">
@@ -723,18 +757,19 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
         <div class="card-content">
           <div class="triggers-list">
-            ${triggers.length === 0
+            ${this.config.active_start_trigger === "none"
               ? html`
                   <div class="no-triggers">
                     ${localize(
-                      "irrigation_start_triggers.no_triggers",
+                      "irrigation_start_triggers.none_selected",
                       this.hass.language,
                     )}
                   </div>
                 `
-              : triggers.map((trigger, index) =>
-                  this.renderTriggerItem(trigger, index),
-                )}
+              : ""}
+            ${triggers.map((trigger, index) =>
+              this.renderTriggerItem(trigger, index),
+            )}
           </div>
 
           <div class="add-trigger-section">
@@ -964,18 +999,31 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${localize("weather_skip.title", this.hass.language)}
+              ${localize("weather_skip.forecast_label", this.hass.language)}
+              <div class="setting-hint">
+                ${localize(
+                  "weather_skip.forecast_description",
+                  this.hass.language,
+                )}
+              </div>
             </div>
             <ha-switch
-              .checked=${this.config.skip_irrigation_on_precipitation}
+              .checked=${!!(
+                this.config.skip_irrigation_on_precipitation ||
+                this.config.forecast_rain_credit
+              )}
               @change=${(e: Event) =>
+                // One question: below the threshold the durations are reduced,
+                // at or above it the run is skipped. Both settings follow it.
                 this.handleConfigChange({
                   skip_irrigation_on_precipitation: (e.target as any).checked,
+                  forecast_rain_credit: (e.target as any).checked,
                 })}
             ></ha-switch>
           </div>
 
-          ${this.config.skip_irrigation_on_precipitation
+          ${this.config.skip_irrigation_on_precipitation ||
+          this.config.forecast_rain_credit
             ? this._numRow(
                 localize("weather_skip.threshold_label", this.hass.language),
                 output_unit(this.config, CONF_PRECIPITATION_THRESHOLD_MM),
@@ -987,48 +1035,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 0.1,
               )
             : ""}
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize(
-                "weather_skip.forecast_credit_label",
-                this.hass.language,
-              )}
-              <div class="setting-hint">
-                ${localize(
-                  "weather_skip.forecast_credit_description",
-                  this.hass.language,
-                )}
-              </div>
-            </div>
-            <ha-switch
-              .checked=${!!this.config.forecast_rain_credit}
-              @change=${(e: Event) =>
-                this.handleConfigChange({
-                  forecast_rain_credit: (e.target as any).checked,
-                })}
-            ></ha-switch>
-          </div>
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize(
-                "weather_skip.effective_rain_label",
-                this.hass.language,
-              )}
-              <div class="setting-hint">
-                ${localize(
-                  "weather_skip.effective_rain_description",
-                  this.hass.language,
-                )}
-              </div>
-            </div>
-            <ha-switch
-              .checked=${!!this.config.effective_rain}
-              @change=${(e: Event) =>
-                this.handleConfigChange({
-                  effective_rain: (e.target as any).checked,
-                })}
-            ></ha-switch>
-          </div>
         </div>
       </ha-card>
       ${this.renderMeasuredSkipCard()}
@@ -1231,7 +1237,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
           ${this.config.direct_valve_control_enabled
             ? html`
-                <div class="card-content">
+                <div class="setting-note">
                   ${localize(
                     "observed_watering.direct_control_description",
                     lang,
@@ -1268,7 +1274,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               </option>
             </select>
           </div>
-          <div class="card-content">
+          <div class="setting-note">
             ${localize("observed_watering.sequencing_description", lang)}
           </div>
 
@@ -1741,7 +1747,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   }
 
   private _selectRow(
-    label: string,
+    label: string | TemplateResult,
     options: TemplateResult,
     onChange: (e: Event) => void,
   ): TemplateResult {
@@ -1795,6 +1801,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         display: block;
         margin: 0 0 8px;
         color: var(--secondary-text-color);
+        line-height: 1.4;
+      }
+
+      /* The explanation under a setting: a nested .card-content has no
+         padding of its own, so the text sat on the divider above it. */
+      .setting-note {
+        padding: 10px 0 12px;
         line-height: 1.4;
       }
 

@@ -214,14 +214,16 @@
     "general": {
       "cards": {
         "automatic-duration-calculation": {
-          "header": "Automatic duration calculation",
-          "description": "Calculation takes collected weather data up to that point and updates the bucket for each automatic zone. Then, the duration is adjusted based on the new bucket value and the collected weather data is removed.",
+          "header": "Calculating the watering duration",
+          "description": "The watering duration of each zone comes from its water balance: what the weather took out of the soil, minus the rain. Here you choose when it is calculated. What starts the watering is decided elsewhere, by the start trigger.",
           "labels": {
-            "auto-calc-enabled": "Automatically calculate irrigation durations",
+            "calc-when": "Watering duration calculated",
+            "calc-when-time": "At a fixed time",
+            "calc-when-start": "Just before each start",
+            "calc-when-manual": "Only when I ask",
+            "calc-when-hint": "Just before each start: at the time of the start trigger, with the freshest weather. The right choice when Smart Irrigation starts the watering (direct valve control or the start event). At a fixed time: every day at the time below, for something other than Smart Irrigation that starts the watering and reads the durations when it likes (Irrigation Unlimited, a schedule of your own). Only when I ask: nothing is calculated by itself, use the calculate buttons or the services.",
             "calc-time": "Calculate at",
-            "calc-time-hint": "The daily calculation: the water lost is added to each zone's bucket and the durations are set. Keep it when something other than Smart Irrigation starts the watering (a schedule of your own, Irrigation Unlimited): it reads the durations when it likes, from this calculation. When Smart Irrigation starts the watering, calculating again just before the first start, below, gives fresher durations, and this time is then only a first draft.",
-            "recalculate-before-start": "Calculate again just before the first start of the day",
-            "recalculate-before-start-hint": "The nightly calculation uses the evapotranspiration, temperature and wind of the hours before it. A start at sunset then waters on data some twenty hours old, with only the rain brought up to date. With this on, the zones are calculated again, with fresh weather, just before the first start. Nothing is done when a zone was calculated within the hour. Worth it when Smart Irrigation starts the watering itself, all the more so calculating hour by hour. It does nothing for a watering started by something else, which does not wait for our start.",
+            "calc-time-hint": "The daily calculation: the water lost is added to the bucket of each zone and the watering durations are set.",
             "hourly-calculation": "Calculate evapotranspiration hour by hour",
             "hourly-calculation-hint": "Sums the FAO-56 hourly equation over each hour since the last calculation, instead of applying the daily equation to the averages, which hides whether the sun and the heat came together. A new installation starts on it; an installation set up before it arrived keeps the daily equation until you switch, because the two give different numbers and your watering should not change on an update. The sun of each hour comes from a radiation or illuminance sensor, from the weather service's own hourly history, or from the day's temperature range. It is worth having when readings arrive through the day: one update a day leaves a single reading held across twenty-four hours, and neither form is trustworthy then. A greenhouse with no sensor of its own keeps the daily equation."
           }
@@ -246,7 +248,7 @@
           }
         },
         "continuousupdates": {
-          "header": "Continuous updates for sensors (experimental)",
+          "header": "Continuous updates for sensors",
           "description": "Records every change of a sensor of the group, instead of one reading per update. The hourly calculation and the pluviometer both get finer averages from it. It no longer calculates the zones again at each change: the scheduled calculation does that, once, from the readings recorded. It cannot be used for sensor groups that at least partly rely on a weather service, as polling the API continuously would incur costs.",
           "labels": {
             "continuousupdates": "Enable continuous updates",
@@ -261,7 +263,7 @@
           }
         },
         "setup-assistant": {
-          "description": "Four questions at most, and it creates a sensor group and a zone for you, choosing what each needs. For a first zone, another one, or a fresh start. It used to be a tab, which invited an installation that was already set up to set itself up.",
+          "description": "Four questions at most, and it creates a sensor group and a zone for you, choosing what each needs. For a first zone, another one, or a fresh start.",
           "open": "Open the assistant"
         }
       },
@@ -307,6 +309,7 @@
           "accounts-for-duration": "counted back so the run finishes then",
           "starts-at-trigger": "starts at that moment",
           "sequencing-sequential": "one zone at a time, so the total is every zone added up",
+          "estimated": "Estimated: the zones are calculated again just before the start.",
           "sequencing-parallel": "all zones at once, so the total is the longest zone",
           "headline-nothing": "Nothing to water",
           "sub-nothing": "No zone is short enough of water yet. The next start would be {start}.",
@@ -317,7 +320,9 @@
           "sub-postponed": "You postponed it. It resumes by itself, and nothing is lost: a zone that is short of water still is.",
           "headline-skipped": "No watering today",
           "headline-not-scheduled": "A run is owed, and nothing is scheduled to start it",
-          "sub-not-scheduled": "The time above is when it would start. No start trigger is armed right now, which happens when the active trigger is disabled or was not registered. Check the trigger under Settings, and if it looks right, a calculation re-arms it."
+          "sub-not-scheduled": "The time above is when it would start. No start trigger is armed right now, which happens when the active trigger is disabled or was not registered. Check the trigger under Settings, and if it looks right, a calculation re-arms it.",
+          "headline-no-trigger": "No trigger is active",
+          "sub-no-trigger": "Smart Irrigation starts no watering. Choose a start trigger in the settings to have it water."
         },
         "decision": {
           "title": "Will it be skipped?",
@@ -381,8 +386,8 @@
       },
       "gaps": {
         "auto_calc_off": {
-          "title": "Nothing is being calculated",
-          "body": "Automatic duration calculation is off, so the zones' durations never update. Turn it back on under Settings, or calculate by hand when you want a run."
+          "title": "No watering duration is being calculated",
+          "body": "The watering duration is set to \"Only when I ask\", so the zones' durations never update by themselves. Choose \"At a fixed time\" or \"Just before each start\" under Settings, or calculate by hand when you want a run."
         },
         "no_automatic_zone": {
           "title": "No zone waters on its own",
@@ -565,6 +570,13 @@
           "throughput": "Throughput & area",
           "direct": "Precipitation rate"
         },
+        "input-method-hint": "How the water delivered is known: from the area and the flow of the zone, or directly as a precipitation rate if you have measured it.",
+        "state-hint": "Automatic: Smart Irrigation calculates the duration from the water balance and waters at the start. Manual: it waters only when you ask, for the duration you type. Disabled: never watered, and its balance is not followed.",
+        "mapping-hint": "The group of sensors this zone reads its weather from: a weather service, your own sensors, or both.",
+        "bucket-hint": "The water balance of the zone. Negative: it is short of water. Zero: it has what it needs. Watering brings it back to zero.",
+        "maximum-bucket-hint": "The most water the soil is taken to hold. A positive balance never goes above it: the surplus is lost.",
+        "irrigation-threshold-hint": "The deficit from which the zone is watered. Under it, the zone is left alone and the deficit rolls over to the next calculation.",
+        "drainage_rate-hint": "How fast the soil lets surplus water go. Leave it at 0 if you do not know your soil.",
         "precipitation-rate": "Precipitation rate",
         "size": "Size",
         "state": "State",
@@ -659,6 +671,7 @@
       "title": "Zones",
       "module-comes-from-the-group": "The calculation engine comes from this zone's sensor group. Change it there, and every zone using that group follows.",
       "status": {
+        "estimate": "Short by {short}: about {duration} ({volume}) at the next calculation.",
         "will-water": "Will water {duration} at the next start.",
         "idle": "Nothing to water: {short} short.",
         "satisfied": "Nothing to water: this zone has what it needs.",
@@ -760,7 +773,6 @@
       "delete": "Delete",
       "help": "When this trigger fires, Smart Irrigation emits the following event — use it in an automation to start watering. The event data includes this trigger's name (and type/offset), so you can react to it specifically:"
     },
-    "no_triggers": "No irrigation start triggers configured. The system will use the default behavior (sunrise with total zone duration). Add triggers to customize when irrigation starts.",
     "offset_auto": "Auto (calculated from total zone duration)",
     "confirm_delete": "Are you sure you want to delete the trigger '{name}'?",
     "validation": {
@@ -773,7 +785,9 @@
       "sunset_offset": "For sunset triggers: Use negative values to start before sunset, positive to start after sunset.",
       "azimuth_explanation": "Solar azimuth is the compass direction of the sun. 0°=North, 90°=East, 180°=South, 270°=West. You can enter any angle value (e.g., 450° = 90°, -30° = 330°). Use this to trigger irrigation when the sun reaches a specific position.",
       "multiple_triggers": "You can configure multiple triggers. Each enabled trigger will independently schedule irrigation starts."
-    }
+    },
+    "active_none": "None (Smart Irrigation starts no watering)",
+    "none_selected": "No trigger is active: Smart Irrigation starts no watering, whatever the weather. The durations are still calculated; start the watering yourself or from an automation of your own."
   },
   "seasonal_adjustments": {
     "title": "Seasonal adjustments",
@@ -791,14 +805,14 @@
     "enabled": "Enabled"
   },
   "weather_skip": {
-    "title": "Weather-based irrigation skip",
-    "description": "Automatically skip irrigation when precipitation is forecasted. This feature requires a weather service to be configured.",
-    "threshold_label": "Precipitation Threshold",
+    "title": "Rain forecast",
+    "description": "When rain is forecast, Smart Irrigation waters less. This feature requires a weather service to be configured.",
+    "threshold_label": "Skip the run from",
     "threshold_description": "Minimum amount of precipitation (in mm) forecasted for today and tomorrow to skip irrigation.",
     "effective_rain_label": "Count only rain that reaches the roots",
     "effective_rain_description": "Ignore a shower smaller than a fifth of the evapotranspiration of the period: it wets the leaves and evaporates. It is judged on the whole period between two calculations.",
-    "forecast_credit_label": "Reduce durations when rain is forecast",
-    "forecast_credit_description": "When a run starts, each zone is watered for the rain forecast to fall in the next 24 hours less, weighted by the probability the weather service gives. A forecast of 4 mm against a 10 mm deficit waters 6 mm. The skip above is all or nothing; this one is proportional, and works alongside it. Greenhouse zones are not reduced. The deficit stays in the bucket: rain that really falls is credited at the next calculation."
+    "forecast_label": "Take the forecast rain into account",
+    "forecast_description": "Below the threshold, each zone is watered for its deficit less the rain forecast for the next 24 hours, weighted by the probability the weather service gives: 4 mm forecast against a 10 mm deficit waters 6 mm. At or above the threshold, the run is skipped for the zones in the open. Zones in a greenhouse are not affected."
   },
   "coordinate_config": {
     "title": "Location coordinates",

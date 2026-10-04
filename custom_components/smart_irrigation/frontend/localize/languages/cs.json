@@ -156,11 +156,16 @@
     "general": {
       "cards": {
         "automatic-duration-calculation": {
-          "header": "Automatický výpočet doby trvání",
-          "description": "Výpočet bere shromážděná meteorologická data do daného okamžiku a aktualizuje bucket pro každou automatickou zónu. Poté se doba trvání upraví na základě nové hodnoty bucket a shromážděná meteorologická data se odeberou.",
+          "header": "Výpočet doby zavlažování",
+          "description": "Doba zavlažování každé zóny vychází z její vodní bilance: co počasí odebralo z půdy, minus déšť. Zde určíte, kdy se počítá. Co zavlažování spouští, určuje jinde startovací spouštěč.",
           "labels": {
-            "auto-calc-enabled": "Automaticky vypočítávat doby zavlažování",
+            "calc-when": "Doba zavlažování se počítá",
+            "calc-when-time": "V pevný čas",
+            "calc-when-start": "Těsně před každým startem",
+            "calc-when-manual": "Jen na požádání",
+            "calc-when-hint": "Těsně před každým startem: v čase startovacího spouštěče, s nejčerstvějším počasím. Správná volba, když zavlažování spouští Smart Irrigation (přímé řízení ventilů nebo událost startu). V pevný čas: každý den v čase níže, pro případ, že zavlažování spouští něco jiného než Smart Irrigation a čte doby, kdy se mu zachce (Irrigation Unlimited, vlastní plán). Jen na požádání: nic se nepočítá samo, použijte tlačítka výpočtu nebo služby.",
             "calc-time": "Vypočítat v",
+            "calc-time-hint": "Denní výpočet: ztracená voda se přičte k bucketu každé zóny a nastaví se doby zavlažování.",
             "hourly-calculation": "Počítat evapotranspiraci hodinu po hodině",
             "hourly-calculation-hint": "Sčítá hodinovou rovnici FAO-56 za každou hodinu od posledního výpočtu, místo aby aplikoval denní rovnici na průměry, které skryjí, jestli slunce a horko přišly zároveň. Nová instalace na tom začíná; instalace, která existovala předtím, si nechává denní rovnici, dokud nepřepnete, protože obě dávají jiná čísla a vaše zavlažování se nemá měnit aktualizací. Slunce každé hodiny pochází ze senzoru radiace nebo osvětlenosti, z hodinové historie samotné meteoslužby, nebo z denního rozpětí teplot. Vyplatí se, když měření přicházejí v průběhu dne: jedna aktualizace za den nechá jedno jediné měření platit dvacet čtyři hodin, a pak není spolehlivá ani jedna z forem. Skleník bez vlastního senzoru si nechává denní rovnici."
           }
@@ -185,8 +190,8 @@
           }
         },
         "continuousupdates": {
-          "header": "Průběžné aktualizace senzorů (experimentální)",
-          "description": "Tato experimentální funkce bude průběžně aktualizovat data senzorů. To je užitečné pro skupiny senzorů, které používají zdroje poskytující průběžná data, jako jsou meteorologické stanice. Tuto funkci nelze použít pro skupiny senzorů, které se alespoň částečně spoléhají na meteorologické služby, protože průběžné dotazování API bude generovat náklady. Mějte na paměti, že je to experimentální a nemusí to fungovat podle očekávání. Používáte na vlastní riziko.",
+          "header": "Průběžné aktualizace senzorů",
+          "description": "Tato funkce bude průběžně aktualizovat data senzorů. To je užitečné pro skupiny senzorů, které používají zdroje poskytující průběžná data, jako jsou meteorologické stanice. Tuto funkci nelze použít pro skupiny senzorů, které se alespoň částečně spoléhají na meteorologické služby, protože průběžné dotazování API bude generovat náklady. Mějte na paměti, že je to experimentální a nemusí to fungovat podle očekávání. Používáte na vlastní riziko.",
           "labels": {
             "continuousupdates": "Povolit průběžné aktualizace",
             "sensor_debounce": "Debounce senzoru"
@@ -200,7 +205,7 @@
           }
         },
         "setup-assistant": {
-          "description": "Nejvýše čtyři otázky a vytvoří za vás skupinu senzorů a zónu a vybere, co každá z nich potřebuje. Pro první zónu, další, nebo pro nový začátek. Býval to panel, který instalaci, která už byla nastavená, vyzýval, aby se nastavila.",
+          "description": "Nejvýše čtyři otázky a vytvoří za vás skupinu senzorů a zónu a vybere, co každá z nich potřebuje. Pro první zónu, další, nebo pro nový začátek.",
           "open": "Otevřít asistenta"
         }
       },
@@ -219,6 +224,11 @@
           "or-open-a": "nebo otevřete",
           "github-issue": "Github Issue",
           "english-only": "pouze anglicky"
+        },
+        "translate": {
+          "title": "Pomozte s překladem",
+          "text": "Kromě angličtiny a francouzštiny jsou překlady tohoto panelu strojové a nikdo, kdo daným jazykem mluví, je zatím nezkontroloval. Pokud vám ve vašem jazyce nějaké slovo nebo věta zní divně, můžete ji opravit přímo v prohlížeči, bez technických znalostí.",
+          "link": "Překládat na Weblate"
         }
       }
     },
@@ -241,6 +251,7 @@
           "accounts-for-duration": "spočítáno zpět, aby zavlažování tehdy skončilo",
           "starts-at-trigger": "začíná v tu chvíli",
           "sequencing-sequential": "jedna zóna po druhé, takže celek je součet všech zón",
+          "estimated": "Odhad: zóny se znovu vypočítají těsně před startem.",
           "sequencing-parallel": "všechny zóny zároveň, takže celek je nejdelší zóna",
           "headline-nothing": "Není co zalévat",
           "sub-nothing": "Žádné zóně ještě nechybí dost vody. Další start by byl {start}.",
@@ -251,7 +262,9 @@
           "sub-postponed": "Odložili jste ho. Sám se obnoví a nic se neztratí: zóně, které chybí voda, chybí i potom.",
           "headline-skipped": "Dnes se nezalévá",
           "headline-not-scheduled": "Zavlažování je na řadě a nic není naplánováno, aby ho spustilo",
-          "sub-not-scheduled": "Čas výše je okamžik, kdy by zavlažování začalo. Právě teď není žádný startovací spouštěč připravený, což se stává, když je aktivní spouštěč vypnutý nebo nebyl zaregistrován. Zkontrolujte spouštěč v Nastavení, a pokud vypadá správně, výpočet ho znovu připraví."
+          "sub-not-scheduled": "Čas výše je okamžik, kdy by zavlažování začalo. Právě teď není žádný startovací spouštěč připravený, což se stává, když je aktivní spouštěč vypnutý nebo nebyl zaregistrován. Zkontrolujte spouštěč v Nastavení, a pokud vypadá správně, výpočet ho znovu připraví.",
+          "headline-no-trigger": "Žádný spouštěč není aktivní",
+          "sub-no-trigger": "Smart Irrigation nespouští žádné zavlažování. Chcete-li, aby zalévala, zvolte v nastavení spouštěč startu."
         },
         "decision": {
           "title": "Bude vynecháno?",
@@ -315,8 +328,8 @@
       },
       "gaps": {
         "auto_calc_off": {
-          "title": "Nic se nepočítá",
-          "body": "Automatický výpočet doby je vypnutý, takže doby zón se nikdy neaktualizují. Zapněte ho zpět v Nastavení, nebo spočítejte ručně, když chcete zavlažovat."
+          "title": "Nepočítá se žádná doba zavlažování",
+          "body": "Doba zavlažování je nastavena na „Jen na požádání“, takže doby zón se samy nikdy neaktualizují. V Nastavení zvolte „V pevný čas“ nebo „Těsně před každým startem“, případně dobu spočítejte ručně, když chcete spustit zavlažování."
         },
         "no_automatic_zone": {
           "title": "Žádná zóna nezalévá sama",
@@ -353,6 +366,20 @@
             "invalid_source": "Neplatný zdroj",
             "source_does_not_exist": "Zdroj neexistuje. Zadejte platný zdroj, například 'sensor.mysensor'."
           },
+          "hidden_sources": "{n} hodnot(a) se nevyžaduje: evapotranspirace je zadána hotová, sloužily by jen k jejímu přepočtu.",
+          "et_ignored": "Zóny {zones} se počítají z počasí a tuto evapotranspiraci nečtou. Nastavte je na zadanou senzorem nebo službou v nastavení zóny.",
+          "et_missing": "Zóny {zones} očekávají hotovou evapotranspiraci: vyberte pro ni nahoře zdroj.",
+          "hints": {
+            "temperature": "Teplota vzduchu ve stínu. Denní minimum a maximum se berou z ní.",
+            "dewpoint": "Teplota, při které by byl vzduch nasycen, což říká, kolik páry obsahuje. Meteorologická služba zde stačí.",
+            "humidity": "Relativní vlhkost vzduchu. Suchý vzduch odebírá rostlinám více vody.",
+            "pressure": "Atmosférický tlak. Výsledek ovlivňuje jen velmi málo: meteorologická služba stačí.",
+            "windspeed": "Vítr odnáší vlhkost z listů. Pod sklem nastavte pevnou hodnotu blízkou 0.",
+            "solar radiation": "Energie slunce, hlavní hnací síla výparu. Bez ní ji výpočet odhadne z denního rozpětí teplot. Pod sklem použijte senzor záření nebo světelný senzor.",
+            "precipitation": "Spadlý déšť, jako součet, z vašeho vlastního srážkoměru, který sčítá. S meteorologickou službou nechte na Žádný.",
+            "current precipitation": "Déšť padající právě teď, jako intenzita. Poskytuje ji meteorologická služba; vlastní senzor deště je přesnější.",
+            "evapotranspiration": "Voda, kterou rostliny ztratily, již vypočtená vaším senzorem nebo službou. Používají ji zóny nastavené na zadanou senzorem nebo službou."
+          },
           "items": {
             "dewpoint": "Rosný bod",
             "evapotranspiration": "Evapotranspirace",
@@ -371,7 +398,7 @@
             "relative": "relativní"
           },
           "pressure-type": "Tlak je",
-          "sensor-aggregate-use-the": "Použít",
+          "sensor-aggregate-use-the": "Jak se hodnoty kombinují",
           "sensor-entity": "Entita senzoru",
           "static_value": "Hodnota",
           "input-units": "Vstup poskytuje hodnoty v",
@@ -381,6 +408,7 @@
             "weather_service": "Meteorologická služba",
             "sensor": "Senzor",
             "static": "Statická hodnota",
+            "radiation_sensor": "Senzor záření",
             "illuminance": "Světelný senzor (lux)"
           },
           "greenhouse": "Skleník",
@@ -495,6 +523,9 @@
         "linked-entity-hint": "Ventil nebo spínač, který zavlažuje tuto zónu. Kdykoli se spustí (ruční kohoutek, automatizace nebo samotná Smart Irrigation při zapnutém přímém ovládání ventilu), bucket se připíše z doby běhu a průtoku zóny. Vyžadováno pro funkce s uzavřenou smyčkou.",
         "flow-sensor": "Měřič kumulativního objemu",
         "flow-sensor-hint": "Pro přesné připisování místo průtok x čas: kumulativní celkový stav vodoměru (třída stavu total_increasing), nikoli okamžitý průtok. Jednotka se načte automaticky (L, mL, m³, gal, ft³).",
+        "safety-off-topic": "Téma MQTT pro bezpečnostní vypnutí",
+        "safety-off-state-key": "Klíč stavu pro bezpečnostní vypnutí",
+        "safety-off-topic-help": "Volitelná hardwarová pojistka. Téma MQTT set (např. zigbee2mqtt/my_valve/set), na kterém naslouchá zařízení ventilu. Smart Irrigation tam publikuje příkaz \"zapnout s časovaným vypnutím\", aby zařízení ventil samo zavřelo, pokud Home Assistant uprostřed běhu přestane fungovat a nikdy neodešle zavření. Klíč stavu je vlastnost zapnuto/vypnuto zařízení (\"state\", nebo \"state_l1\"…\"state_l4\" u vícekanálového zařízení). Podpora závisí na firmwaru zařízení (on_time): před použitím ji vyzkoušejte. Pro vypnutí nechte prázdné.",
         "optional": "volitelné",
         "et-deficiency": "Denní deficit ET",
         "input-method": "Způsob zadání",
@@ -502,8 +533,39 @@
           "throughput": "Průtok a plocha",
           "direct": "Intenzita srážek"
         },
+        "input-method-hint": "Jak se zjišťuje dodaná voda: z plochy a průtoku zóny, nebo přímo jako intenzita srážek, pokud jste ji změřili.",
+        "state-hint": "Automatický: Smart Irrigation vypočítá dobu trvání z vodní bilance a zalévá při startu. Ruční: zalévá jen na vyžádání, po dobu, kterou zadáte. Zakázaný: nikdy se nezalévá a jeho bilance se nevede.",
+        "mapping-hint": "Skupina senzorů, ze které tato zóna čte počasí: meteorologická služba, vaše vlastní senzory, nebo obojí.",
+        "bucket-hint": "Vodní bilance zóny. Záporná: chybí jí voda. Nula: má, co potřebuje. Zalévání ji vrací na nulu.",
+        "maximum-bucket-hint": "Nejvíce vody, které půda údajně udrží. Kladná bilance nikdy nepřekročí tuto hodnotu: přebytek se ztrácí.",
+        "irrigation-threshold-hint": "Deficit, od kterého se zóna zalévá. Pod ním se zóna nechá být a deficit se přenáší do dalšího výpočtu.",
+        "drainage_rate-hint": "Jak rychle půda propouští přebytečnou vodu. Nechte 0, pokud svou půdu neznáte.",
         "precipitation-rate": "Intenzita srážek",
         "irrigation-threshold": "Prah zavlažování",
+        "days": "dní",
+        "days-between-irrigation": "Dny mezi zaléváním",
+        "crop-factor-by-month": "Plodinový faktor podle měsíce",
+        "crop-factor-by-month-help": "Pro plodinu, jejíž spotřeba vody sleduje její růst: plodinový faktor (Kc) každého měsíce, od ledna. Prázdný měsíc používá plodinový faktor výše a všech dvanáct prázdných znamená tento plodinový faktor po celý rok. Sezónní úpravy se stále uplatňují navíc.",
+        "months": {
+          "1": "Led",
+          "2": "Úno",
+          "3": "Bře",
+          "4": "Dub",
+          "5": "Kvě",
+          "6": "Čvn",
+          "7": "Čvc",
+          "8": "Srp",
+          "9": "Zář",
+          "10": "Říj",
+          "11": "Lis",
+          "12": "Pro"
+        },
+        "available-water": "Dostupná voda",
+        "allowed-depletion": "Povolené vyčerpání",
+        "available-water-help": "Kolik vody půda této zóny pro rostliny udrží, v mm (hloubka kořenů v mm krát to, co půda udrží na mm: asi 1,5 pro písek, 2 pro hlínu, 2,5 pro jíl). Nechte prázdné, pokud nic měnit nechcete. Když je nastaveno, deficit nemůže klesnout pod tuto hodnotu a jakmile rostliny spotřebují povolený podíl (50 %, pokud ho nezměníte), odebírají méně vody, takže deficit neroste tak rychle.",
+        "distribution-efficiency": "Účinnost distribuce",
+        "distribution-efficiency-help": "Podíl vody vycházející z výtoků, který se dostane k rostlinám, v %. Postřikovače ve větru nebo na svahu část ztrácejí, kapková závlaha téměř nic. Nechte prázdné pro 100 %. Zóna na 80 % zalévá o 25 % déle pro stejnou výšku vody a připočítá si jen 80 % toho, co dodá.",
+        "days-between-irrigation-help": "Nechte prázdné, aby se držela obecného nastavení (Nastavení, Dny mezi zaléváním). Číslo nahradí obecné nastavení jen pro tuto zónu: 1 ji zalévá každý den, pokud potřebuje vodu, 3 nejvýše každý třetí den, 0 omezení ruší. Dny se počítají od posledního zalití této zóny.",
         "soil-moisture-sensor": "Senzor vlhkosti půdy",
         "soil-moisture-sensor-hint": "Zóna vynechá zavlažování, dokud je půda na prahu nebo nad ním. Zásobník se zachovává.",
         "soil-moisture-threshold": "Vynechat od",
@@ -551,6 +613,7 @@
       "title": "Zóny",
       "module-comes-from-the-group": "Výpočetní jádro pochází ze skupiny senzorů této zóny. Změňte ho tam a každá zóna, která tuto skupinu používá, se přizpůsobí.",
       "status": {
+        "estimate": "Chybí {short}: asi {duration} ({volume}) při příštím výpočtu.",
         "will-water": "Při dalším startu bude zalévat {duration}.",
         "idle": "Není co zalévat: chybí {short}.",
         "satisfied": "Není co zalévat: tato zóna má, co potřebuje.",
@@ -707,7 +770,6 @@
       "delete": "Smazat",
       "help": "Když se tento spouštěč spustí, Smart Irrigation vyšle následující událost — použijte ji v automatizaci pro zahájení zavlažování. Data události zahrnují název tohoto spouštěče (a typ/posun), takže na něj můžete reagovat konkrétně:"
     },
-    "no_triggers": "Nejsou nakonfigurovány žádné spouštěče zahájení zavlažování. Systém použije výchozí chování (východ slunce s celkovou dobou trvání zón). Přidejte spouštěče pro přizpůsobení, kdy zavlažování začne.",
     "offset_auto": "Auto (vypočítáno z celkové doby trvání zón)",
     "confirm_delete": "Opravdu chcete smazat spouštěč '{name}'?",
     "validation": {
@@ -721,15 +783,36 @@
       "azimuth_explanation": "Solární azimut je směr slunce podle kompasu. 0°=Sever, 90°=Východ, 180°=Jih, 270°=Západ. Můžete zadat libovolnou hodnotu úhlu (např. 450° = 90°, -30° = 330°). Použijte toto pro spuštění zavlažování, když slunce dosáhne konkrétní polohy.",
       "multiple_triggers": "Můžete nakonfigurovat více spouštěčů. Každý povolený spouštěč bude nezávisle plánovat zahájení zavlažování."
     },
+    "active_none": "Žádný (Smart Irrigation nespouští žádné zavlažování)",
+    "none_selected": "Žádný spouštěč není aktivní: Smart Irrigation nespouští žádné zavlažování, ať je počasí jakékoli. Doby se přesto počítají; zavlažování spusťte sami nebo z vlastní automatizace.",
     "active_label": "Aktivní spouštěč",
     "active_default": "Výchozí (východ slunce minus celková doba zavlažování)",
     "active_hint": "Zavlažování spustí pouze vybraný spouštěč, takže se provede jednou denně. \"Výchozí\" načasuje běh tak, aby skončil přesně při východu slunce. Níže přidejte vlastní spouštěče (západ slunce, azimut, posuny) a poté jeden zde vyberte."
   },
+  "seasonal_adjustments": {
+    "title": "Sezónní úpravy",
+    "description": "Plodinový faktor a práh, které sledují roční období. Každá úprava platí pro rozsah měsíců a některé zóny; když se jich několik kryje v jednom měsíci, násobí se. Násobitel škáluje plodinový faktor zóny (1 nic nemění, 0,5 snižuje spotřebu vody na polovinu) a práh se přičítá k jejímu prahu zavlažování. Plodinový faktor po měsících lze nastavit i v každé zóně.",
+    "add": "Přidat úpravu",
+    "delete": "Smazat",
+    "new_name": "Nová úprava",
+    "name": "Název",
+    "month_start": "Od měsíce",
+    "month_end": "Do měsíce",
+    "multiplier": "Násobitel plodinového faktoru",
+    "threshold": "Posun prahu",
+    "zones": "Zóny",
+    "zones_hint": "všechny, nebo čísla zón oddělená čárkami.",
+    "enabled": "Povoleno"
+  },
   "weather_skip": {
-    "title": "Přeskočení zavlažování na základě počasí",
-    "description": "Automaticky přeskočit zavlažování, když jsou předpovězeny srážky. Tato funkce vyžaduje nakonfigurovanou meteorologickou službu.",
-    "threshold_label": "Práh srážek",
-    "threshold_description": "Minimální množství srážek (v mm) předpovězené pro dnešek a zítřek pro přeskočení zavlažování."
+    "title": "Předpověď deště",
+    "description": "Když je předpovězen déšť, Smart Irrigation zalévá méně. Tato funkce vyžaduje nakonfigurovanou meteorologickou službu.",
+    "threshold_label": "Přeskočit zavlažování od",
+    "threshold_description": "Minimální množství srážek (v mm) předpovězené pro dnešek a zítřek pro přeskočení zavlažování.",
+    "effective_rain_label": "Počítat jen déšť, který dosáhne kořenů",
+    "effective_rain_description": "Ignorovat přeháňku menší než pětina evapotranspirace za období: zvlhčí listy a vypaří se. Posuzuje se za celé období mezi dvěma výpočty.",
+    "forecast_label": "Zohlednit předpovězený déšť",
+    "forecast_description": "Pod prahem se každá zóna zalévá podle svého deficitu sníženého o déšť předpovězený na následujících 24 hodin, vážený pravděpodobností od meteorologické služby: při předpovědi 4 mm a deficitu 10 mm se zalévá 6 mm. Od prahu výše se zavlažování přeskočí pro zóny ve venkovním prostředí. Zóny ve skleníku to neovlivní."
   },
   "coordinate_config": {
     "title": "Souřadnice polohy",
