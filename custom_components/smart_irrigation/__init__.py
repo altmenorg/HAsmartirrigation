@@ -622,6 +622,9 @@ class SmartIrrigationCoordinator(
         # the background run tasks (cancelled on unload).
         self._si_driven_until = {}
         self._active_valve_runs = {}
+        # Zones a direct run holds from its first moment to its last, soaks
+        # included (see valve_runner._run_one_valve). In memory only.
+        self._claimed_zones = set()
         self._direct_run_finished = {}
         self._sequential_cycle = None
         self._valve_run_tasks = set()

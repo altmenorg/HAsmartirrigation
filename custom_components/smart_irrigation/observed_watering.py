@@ -30,7 +30,8 @@ Smart Irrigation fork (https://github.com/JustChr/HAsmartirrigation), MIT.
 """
 
 import logging
-from datetime import timedelta
+import math
+from datetime import datetime, timedelta
 
 import homeassistant.util.dt as dt_util
 from homeassistant.core import Event, callback
@@ -47,6 +48,12 @@ _ON_STATES = ("on", "open", "opening")
 
 # Sensor states that mean "no usable reading".
 _UNUSABLE_STATES = (None, "", "unknown", "unavailable")
+
+# How long the water has to have been flowing (after the lead time) before a
+# flow meter that still reads the same is taken as proof that none flowed. It
+# covers a meter that reported once just after the valve opened, before the
+# water reached it.
+NO_FLOW_GRACE = 60.0
 
 # Volume unit -> litres. Keys are lower-cased unit_of_measurement strings.
 _VOLUME_TO_LITRES = {
@@ -164,28 +171,99 @@ class ObservedWateringMixin:
             flow_sensor = self._zone_flow_sensor(zone_id)
             if flow_sensor and flow_start is not None:
                 litres_now = self._read_volume_litres(flow_sensor)
-                if litres_now is not None and litres_now >= flow_start:
-                    volume_l = litres_now - flow_start
-                    # The run time is only interesting alongside the metered
-                    # volume: together they say what the zone really delivers.
-                    seconds = (dt_util.utcnow() - started).total_seconds()
+                # The run time is only interesting alongside the metered
+                # volume: together they say what the zone really delivers.
+                seconds = (dt_util.utcnow() - started).total_seconds()
+                if litres_now is not None and litres_now > flow_start:
+                    self._note_watered(zone_id)
                     self.hass.async_create_task(
-                        self._credit_from_volume(zone_id, volume_l, seconds, started)
+                        self._credit_from_volume(
+                            zone_id, litres_now - flow_start, seconds, started
+                        )
                     )
                     return
-                _LOGGER.warning(
-                    "Observed watering: zone %s flow meter '%s' gave no usable "
-                    "delta (start=%s, end=%s); falling back to throughput",
-                    zone_id,
-                    flow_sensor,
-                    flow_start,
-                    litres_now,
-                )
+                if litres_now is not None and litres_now == flow_start:
+                    if self._meter_reported_since(
+                        flow_sensor,
+                        started + timedelta(seconds=self._witness_delay(zone_id)),
+                    ):
+                        # The meter reported while the water should have been
+                        # flowing, and did not move: the valve opened on a dry
+                        # line. Nothing was delivered, so nothing is credited.
+                        self._report_dry_run(zone_id, entity_id)
+                        return
+                    # The meter has not reported since the valve opened: the
+                    # run may well have delivered water it has not counted yet.
+                    _LOGGER.info(
+                        "Observed watering: zone %s flow meter '%s' has not "
+                        "reported since the valve opened; crediting by time",
+                        zone_id,
+                        flow_sensor,
+                    )
+                else:
+                    _LOGGER.warning(
+                        "Observed watering: zone %s flow meter '%s' gave no usable "
+                        "delta (start=%s, end=%s); falling back to throughput",
+                        zone_id,
+                        flow_sensor,
+                        flow_start,
+                        litres_now,
+                    )
 
             seconds = (dt_util.utcnow() - started).total_seconds()
+            self._note_watered(zone_id)
             self.hass.async_create_task(
                 self._credit_observed_watering(zone_id, seconds, started)
             )
+
+    def _note_watered(self, zone_id: int) -> None:
+        """Remember that the zone was just watered, as the runner does for its own.
+
+        A sequential cycle reads this when it reaches the zone: a zone watered
+        by hand while it waited its turn is not watered and credited again.
+        """
+        finished = getattr(self, "_direct_run_finished", None)
+        if isinstance(finished, dict):
+            finished[int(zone_id)] = self.hass.loop.time()
+
+    def _witness_delay(self, zone_id: int) -> float:
+        """Seconds after the open from which a flow meter must have moved."""
+        zone = self.store.get_zone(zone_id) or {}
+        try:
+            lead = max(0.0, float(zone.get(const.ZONE_LEAD_TIME) or 0.0))
+        except (TypeError, ValueError):
+            lead = 0.0
+        return lead + NO_FLOW_GRACE
+
+    def _meter_reported_since(self, entity_id: str, moment) -> bool:
+        """Whether the meter sent a reading at or after ``moment``.
+
+        ``last_reported`` moves on every reading, even an unchanged one, where
+        ``last_updated`` only moves when the value does. A state that carries
+        neither time says nothing.
+        """
+        state = self.hass.states.get(entity_id)
+        if state is None or state.state in _UNUSABLE_STATES:
+            return False
+        reported = getattr(state, "last_reported", None)
+        if not isinstance(reported, datetime):
+            reported = getattr(state, "last_updated", None)
+        if not isinstance(reported, datetime):
+            return False
+        return reported >= moment
+
+    def _report_dry_run(self, zone_id: int, entity_id: str) -> None:
+        """Say that a valve opened from outside delivered no water."""
+        _LOGGER.warning(
+            "Observed watering: zone %s valve %s was open but its flow meter did "
+            "not move; not credited",
+            zone_id,
+            entity_id,
+        )
+        report = getattr(self, "_report_valve_problem", None)
+        if report is not None:
+            zone = self.store.get_zone(zone_id) or {const.ZONE_ID: zone_id}
+            report(zone, entity_id, "no_flow")
 
     def _zone_flow_sensor(self, zone_id: int):
         """Return the zone's configured flow/volume meter entity id, or None."""
@@ -205,6 +283,15 @@ class ObservedWateringMixin:
         except (ValueError, TypeError):
             _LOGGER.warning(
                 "Observed watering: flow meter '%s' non-numeric state '%s'",
+                entity_id,
+                state.state,
+            )
+            return None
+        if not math.isfinite(raw):
+            # "inf" and "nan" parse as floats, and an infinite delta credited
+            # an infinite depth to a zone with no maximum bucket.
+            _LOGGER.warning(
+                "Observed watering: flow meter '%s' non-finite state '%s'",
                 entity_id,
                 state.state,
             )

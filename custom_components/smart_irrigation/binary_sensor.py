@@ -22,6 +22,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
+from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.util import slugify
 
 from . import const
@@ -244,7 +245,9 @@ class SmartIrrigationZoneWateringNowBinarySensor(SmartIrrigationZoneBinarySensor
         self._attr_is_on = bool(state and state.state in _VALVE_ON_STATES)
 
 
-class SmartIrrigationZoneProblemBinarySensor(SmartIrrigationZoneBinarySensor):
+class SmartIrrigationZoneProblemBinarySensor(
+    SmartIrrigationZoneBinarySensor, RestoreEntity
+):
     """On when a valve problem was reported; clears on the next successful run."""
 
     suffix = "problem"
@@ -257,8 +260,17 @@ class SmartIrrigationZoneProblemBinarySensor(SmartIrrigationZoneBinarySensor):
         self._reason = None
 
     async def async_added_to_hass(self) -> None:
-        """Listen for the zone-problem event and the zone-irrigated reset."""
+        """Listen for the zone-problem event and the zone-irrigated reset.
+
+        The problem is latched until the next successful run, and a restart is
+        not one: the state it had before is restored, or a valve that did not
+        close last night would show no problem after a restart this morning.
+        """
         await super().async_added_to_hass()
+        last = await self.async_get_last_state()
+        if last is not None and last.state == "on":
+            self._attr_is_on = True
+            self._reason = last.attributes.get("reason")
         self.async_on_remove(
             self._hass.bus.async_listen(
                 f"{const.DOMAIN}_{const.EVENT_ZONE_PROBLEM}", self._async_problem

@@ -45,7 +45,7 @@ If you want a value that moves with the weather through the day, that is the **L
 | `smart_irrigation_irrigation_skipped` | A start trigger is reached and today is not | The trigger's identity, `reason`, and `checks`, the same detail the Home page shows |
 | `smart_irrigation_irrigation_started` | Direct valve control begins a run | `sequencing`, and `zones`: `{zone_id, zone, seconds}` |
 | `smart_irrigation_irrigation_finished` | Direct valve control finishes | `zones`: `{zone_id, zone, seconds, volume_l, bucket}`, and `problems`: `{zone_id, zone, reason}` |
-| `smart_irrigation_zone_problem` | A valve did not open | `zone_id`, `zone`, `entity_id`, `reason` |
+| `smart_irrigation_zone_problem` | A valve did not open, did not close, or opened with no water flowing | `zone_id`, `zone`, `entity_id`, `reason` (`valve_did_not_open`, `valve_did_not_close`, `no_flow`) |
 
 The skip event exists because the absence of an event is not something an automation can listen for.
 
