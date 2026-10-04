@@ -19,10 +19,14 @@ It is the official Smart Irrigation integration for Home Assistant, available by
 ## What it does
 
 - **It measures instead of guessing.** Each zone keeps a water balance in millimetres: evaporation out, rain in. When the balance says the soil is short, the zone waters exactly that much back, and not a drop more.
-- **It uses the science, not a rule of thumb.** Evapotranspiration comes from the FAO-56 Penman-Monteith equation, the reference method in agronomy, fed by your own sensors, a weather service, or both.
+- **It uses the science, not a rule of thumb.** Evapotranspiration comes from the FAO-56 Penman-Monteith equation, the reference method in agronomy, computed hour by hour or day by day, from your own sensors, a weather service, or both.
 - **It says why.** Every calculation shows its work: what was read, what was computed, and what it decided. The Info page shows the next start, and whether it would be held back and on what numbers.
-- **It does not water when it should not.** Rain in the forecast, a rain sensor, frost, wind, or soil that is already wet: any of these can hold a run back, and a greenhouse ignores the ones that describe the sky.
+- **It does not water when it should not.** Rain in the forecast, a rain sensor, frost, wind, or soil that is already wet: any of these can hold a run back.
+- **It knows a greenhouse.** Under glass the sky is not what reaches the plant. A lux sensor inside answers it, and without one the glass dims the sun.
+- **It is easy to start and deep when you need it.** A panel in four tabs (Home, Zones, Data, Settings) starts in a standard mode with a setup assistant that creates your first zone. The advanced mode opens every setting.
+- **It can open the valves itself.** Direct valve control runs the zones in turn, with cycle and soak so clay takes the water in, a pause between zones and a watchdog that closes a valve left open. Or it hands the durations to your own automation.
 - **It drives whatever you have.** A switch, a valve, Irrigation Unlimited, Irrigation-V5, or a Rain Bird, Hydrawise, Rachio, OpenSprinkler or B-hyve controller, through a [blueprint per brand](usage-controllers.md).
+- **It has a dashboard card.** [The card](usage-card.md) shows where each zone stands and can run one on demand.
 - **It speaks your language.** The panel and everything Home Assistant shows for it come in 19 languages. Most were machine-translated and wait for a native speaker: [you can correct them on Weblate](help.md#help-translate), in the browser.
 
 <p align="center">
@@ -40,7 +44,7 @@ Water leaves the soil by evaporation and through the leaves. How fast depends on
 - **Weather data**, which can be your own sensors, or a weather service: Open-Meteo needs no account, OpenWeatherMap and Pirate Weather need a free API key.
 - **A few minutes.** The setup assistant asks what it needs, one question at a time, and creates the first zone for you.
 
-Smart Irrigation does not open your valves by itself unless you ask it to: by design it calculates, and you decide what listens. A [dashboard card](usage-card.md) shows where each zone stands and can run one on demand.
+Smart Irrigation opens your valves itself only if you turn on direct valve control. Otherwise it calculates, and you decide what listens. The [dashboard card](usage-card.md) shows where each zone stands and can run one on demand.
 
 > **Use this integration at your own risk.** We assume no responsibility for any inconvenience caused by using it. Always use common sense before deciding to irrigate on the numbers it provides: watering during heavy rain can cause flooding.
 
