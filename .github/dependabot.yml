@@ -16,6 +16,15 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    ignore:
+      # vitest 5 needs Node 22 or newer, and the build runs on Node 20.
+      - dependency-name: "vitest"
+        update-types: ["version-update:semver-major"]
+      # eslint 10 does not install with the plugins we use yet (npm ERESOLVE).
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@eslint/js"
+        update-types: ["version-update:semver-major"]
 
   # Python dev / test dependencies.
   - package-ecosystem: "pip"
