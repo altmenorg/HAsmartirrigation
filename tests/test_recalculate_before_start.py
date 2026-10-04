@@ -7,14 +7,15 @@ from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.triggers import TriggersMixin
 
 
-def _coordinator(*, enabled=True, calculated=None):
+def _coordinator(*, enabled=True, calculated=None, hourly=False):
     class _Coordinator(TriggersMixin):
         pass
 
     coordinator = _Coordinator()
     coordinator.store = MagicMock()
     coordinator.store.get_config.return_value = {
-        const.CONF_RECALCULATE_BEFORE_START: enabled
+        const.CONF_RECALCULATE_BEFORE_START: enabled,
+        const.CONF_HOURLY_CALCULATION: hourly,
     }
     zone = {const.ZONE_ID: 0, const.ZONE_NAME: "Lawn"}
     if calculated is not None:
@@ -26,6 +27,16 @@ def _coordinator(*, enabled=True, calculated=None):
 
 async def test_it_is_off_by_default():
     coordinator = _coordinator(enabled=False)
+
+    await coordinator._recalculate_before_start()
+
+    coordinator._async_calculate_all.assert_not_awaited()
+
+
+async def test_hour_by_hour_does_not_decide_who_starts_the_watering():
+    """Something else may run the watering and read the durations when it likes:
+    the recalculation stays a choice, whatever the form of the equation."""
+    coordinator = _coordinator(enabled=False, hourly=True)
 
     await coordinator._recalculate_before_start()
 

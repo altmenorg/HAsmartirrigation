@@ -219,8 +219,9 @@
           "labels": {
             "auto-calc-enabled": "Automatically calculate irrigation durations",
             "calc-time": "Calculate at",
+            "calc-time-hint": "The daily calculation: the water lost is added to each zone's bucket and the durations are set. Keep it when something other than Smart Irrigation starts the watering (a schedule of your own, Irrigation Unlimited): it reads the durations when it likes, from this calculation. When Smart Irrigation starts the watering, calculating again just before the first start, below, gives fresher durations, and this time is then only a first draft.",
             "recalculate-before-start": "Calculate again just before the first start of the day",
-            "recalculate-before-start-hint": "The nightly calculation uses the evapotranspiration, temperature and wind of the hours before it. A start at sunset then waters on data some twenty hours old, with only the rain brought up to date. With this on, the zones are calculated again, with fresh weather, just before the first start. Nothing is done when a zone was calculated within the hour.",
+            "recalculate-before-start-hint": "The nightly calculation uses the evapotranspiration, temperature and wind of the hours before it. A start at sunset then waters on data some twenty hours old, with only the rain brought up to date. With this on, the zones are calculated again, with fresh weather, just before the first start. Nothing is done when a zone was calculated within the hour. Worth it when Smart Irrigation starts the watering itself, all the more so calculating hour by hour. It does nothing for a watering started by something else, which does not wait for our start.",
             "hourly-calculation": "Calculate evapotranspiration hour by hour",
             "hourly-calculation-hint": "Sums the FAO-56 hourly equation over each hour since the last calculation, instead of applying the daily equation to the averages, which hides whether the sun and the heat came together. A new installation starts on it; an installation set up before it arrived keeps the daily equation until you switch, because the two give different numbers and your watering should not change on an update. The sun of each hour comes from a radiation or illuminance sensor, from the weather service's own hourly history, or from the day's temperature range. It is worth having when readings arrive through the day: one update a day leaves a single reading held across twenty-four hours, and neither form is trustworthy then. A greenhouse with no sensor of its own keeps the daily equation."
           }
@@ -417,6 +418,20 @@
             "cannot-delete-mapping-because-zones-use-it": "You cannot delete this sensor group because there is at least one zone using it.",
             "invalid_source": "Invalid source",
             "source_does_not_exist": "Source does not exist. Please enter a valid source, such as 'sensor.mysensor'."
+          },
+          "hidden_sources": "{n} reading(s) not asked: the evapotranspiration is given ready-made, they would only serve to recalculate it.",
+          "et_ignored": "Zone(s) {zones} are calculated from the weather and do not read this evapotranspiration. Set them to provided by a sensor or a service on the zone.",
+          "et_missing": "Zone(s) {zones} expect a ready-made evapotranspiration: choose a source for it above.",
+          "hints": {
+            "temperature": "Air temperature, in the shade. The day's minimum and maximum are taken from it.",
+            "dewpoint": "The temperature at which the air would be saturated, which tells how much vapour it holds. The weather service is fine here.",
+            "humidity": "Relative humidity of the air. Dry air draws more water out of the plants.",
+            "pressure": "Atmospheric pressure. It changes the result very little: the weather service is enough.",
+            "windspeed": "Wind carries the humidity away from the leaves. Under glass, set a fixed value near 0.",
+            "solar radiation": "The energy of the sun, the main driver of evaporation. Without it the calculation estimates it from the day's temperature range. Under glass, use a radiation sensor or a light sensor.",
+            "precipitation": "Rain that fell, as a total, from a rain gauge of your own that adds up. With a weather service, leave it on None.",
+            "current precipitation": "Rain falling now, as a rate. The weather service provides it; a rain sensor of your own is more precise.",
+            "evapotranspiration": "The water the plants lost, already calculated by your sensor or service. Used by the zones set to provided by a sensor or a service."
           },
           "items": {
             "dewpoint": "Dewpoint",

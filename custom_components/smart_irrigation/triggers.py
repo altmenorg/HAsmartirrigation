@@ -768,7 +768,10 @@ class TriggersMixin:
     async def _recalculate_before_start(self) -> None:
         """Calculate the zones again just before the first start of the day.
 
-        Opt-in (``recalculate_before_start``). The nightly calculation prices
+        Opt-in (``recalculate_before_start``): it only makes sense when Smart
+        Irrigation itself starts the watering. Whatever else does, a schedule of
+        its own or Irrigation Unlimited, reads the durations when it likes and
+        has no start of ours to wait for. The nightly calculation prices
         the evapotranspiration, the temperature and the wind of the hours before
         it; a start at sunset then waters on data some twenty hours old. Only
         the rain was brought up to date (rain since the calculation, the

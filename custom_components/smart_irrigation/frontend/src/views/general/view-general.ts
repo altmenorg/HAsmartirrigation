@@ -218,6 +218,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               ),
               this.config.calctime,
               (v) => this.handleConfigChange({ calctime: v }),
+              localize(
+                "panels.general.cards.automatic-duration-calculation.labels.calc-time-hint",
+                this.hass.language,
+              ),
             )}
           </div>`;
       }
@@ -1654,10 +1658,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     label: string,
     value: any,
     onCommit: (v: string) => void,
+    hint = "",
   ): TemplateResult {
     return html`
       <div class="setting-row">
-        <div class="setting-label">${label}</div>
+        <div class="setting-label">
+          ${label}${hint ? html`<div class="setting-hint">${hint}</div>` : ""}
+        </div>
         <input
           class="field"
           type="time"

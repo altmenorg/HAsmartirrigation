@@ -807,6 +807,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
             this.hass.language,
           )}
         </div>
+        ${this.renderSourceHint(value)}
         ${this._selectRow(
           localize("panels.mappings.cards.mapping.source", this.hass.language),
           this.renderSimpleRadioOptions(index, value, mappingline),
@@ -815,6 +816,17 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         ${this.renderMappingInputs(index, value, mappingline)}
       </div>
     `;
+  }
+
+  // One plain sentence under the title of a source: what it is, and what
+  // happens when it is left to the weather service.
+  private renderSourceHint(value: string): TemplateResult {
+    if (!this.hass) return html``;
+    const hint = localize(
+      `panels.mappings.cards.mapping.hints.${value.toLowerCase()}`,
+      this.hass.language,
+    );
+    return hint ? html`<div class="setting-hint">${hint}</div>` : html``;
   }
 
   private renderSimpleRadioOptions(
@@ -1954,16 +1966,88 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     // Nothing falls on a greenhouse, so the two rain fields are not just
     // unused here, they are misleading: a rain gauge outside measures water
     // that never reaches these zones.
-    const settingsEntries = Object.entries(mapping.mappings).filter(
+    // The total of a rain gauge of one's own is for the advanced mode, unless
+    // something already feeds it: then it stays, so nothing in use is hidden.
+    const advanced = this.config?.ui_mode === "advanced";
+    const totalUnused = (value: string) => {
+      const line = mapping.mappings[value];
+      const source =
+        typeof line === "string" ? line : line?.[MAPPING_CONF_SOURCE];
+      return !source || source === MAPPING_CONF_SOURCE_NONE;
+    };
+    const afterGreenhouse = Object.entries(mapping.mappings).filter(
       ([value]) =>
-        !mapping.greenhouse ||
-        (value !== MAPPING_PRECIPITATION &&
-          value !== MAPPING_CURRENT_PRECIPITATION),
+        (!mapping.greenhouse ||
+          (value !== MAPPING_PRECIPITATION &&
+            value !== MAPPING_CURRENT_PRECIPITATION)) &&
+        (advanced || value !== MAPPING_PRECIPITATION || !totalUnused(value)),
     );
+    // The evapotranspiration decides. Given ready-made, by a sensor or by the
+    // weather service, the other readings only serve to recalculate it, so
+    // they are not asked. Left on None, the zones work it out from the weather
+    // and those readings are exactly what is needed. The field itself always
+    // stays, first: it is the question.
+    const et = mapping.mappings[MAPPING_EVAPOTRANSPIRATION];
+    const etSource = typeof et === "string" ? et : et?.[MAPPING_CONF_SOURCE];
+    const provided = !!etSource && etSource !== MAPPING_CONF_SOURCE_NONE;
+    const settingsEntries = afterGreenhouse
+      .filter(
+        ([value]) =>
+          !provided ||
+          value === MAPPING_EVAPOTRANSPIRATION ||
+          value === MAPPING_PRECIPITATION ||
+          value === MAPPING_CURRENT_PRECIPITATION,
+      )
+      .sort(
+        ([x], [y]) =>
+          Number(y === MAPPING_EVAPOTRANSPIRATION) -
+          Number(x === MAPPING_EVAPOTRANSPIRATION),
+      );
+    const hidden = afterGreenhouse.length - settingsEntries.length;
+    const lang = this.hass!.language;
+
+    // Where the group and the zones disagree, say so: a value given here is
+    // read only by zones set to "provided", and zones set to "provided" read
+    // nothing else.
+    const names = (wanted: (engine: string) => boolean) =>
+      this.zones
+        .filter((z) => z.mapping === mapping.id)
+        .filter((z) => {
+          const engine = this.modules.find((m) => m.id === z.module)?.name;
+          return !!engine && wanted(engine);
+        })
+        .map((z) => z.name)
+        .join(", ");
+    const ignoring = provided ? names((e) => e !== "Passthrough") : "";
+    const waiting = !provided ? names((e) => e === "Passthrough") : "";
     return html`
       ${settingsEntries.map(([value]) =>
         this.renderMappingSetting(index, value),
       )}
+      ${hidden > 0
+        ? html`<div class="weather-note">
+            ${localize(
+              "panels.mappings.cards.mapping.hidden_sources",
+              lang,
+            ).replace("{n}", String(hidden))}
+          </div>`
+        : ""}
+      ${ignoring
+        ? html`<div class="weather-note">
+            ${localize(
+              "panels.mappings.cards.mapping.et_ignored",
+              lang,
+            ).replace("{zones}", ignoring)}
+          </div>`
+        : ""}
+      ${waiting
+        ? html`<div class="weather-note">
+            ${localize(
+              "panels.mappings.cards.mapping.et_missing",
+              lang,
+            ).replace("{zones}", waiting)}
+          </div>`
+        : ""}
     `;
   }
 
