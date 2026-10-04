@@ -67,7 +67,7 @@ class SkipConditionsMixin:
     coordinator state (store, hass, weather client).
     """
 
-    async def get_total_duration_all_enabled_zones(self):
+    async def get_total_duration_all_enabled_zones(self, durations_by_zone=None):
         """How long watering every enabled zone takes, in seconds.
 
         This is what a start trigger works back from to finish at sunrise, so it
@@ -77,13 +77,18 @@ class SkipConditionsMixin:
         the run hours too early (#552). Which of the two it is comes from the
         zone sequencing setting.
 
+        ``durations_by_zone`` replaces the stored duration of the zones it names,
+        for the panel to say what the run will be once the zones have been
+        calculated again just before the start.
+
         Returns:
             int: The duration of the whole run for all enabled zones.
 
         """
         zones = await self.store.async_get_zones()
+        replaced = durations_by_zone or {}
         durations = [
-            zone.get(const.ZONE_DURATION, 0)
+            replaced.get(zone.get(const.ZONE_ID), zone.get(const.ZONE_DURATION, 0))
             for zone in zones
             if zone.get(const.ZONE_STATE)
             in (const.ZONE_STATE_AUTOMATIC, const.ZONE_STATE_MANUAL)

@@ -78,6 +78,25 @@ async def test_a_fresh_installation_starts_on_the_hourly_calculation(
 
 
 @pytest.mark.asyncio
+async def test_a_fresh_installation_counts_only_the_rain_that_reaches_the_roots(
+    hass, hass_storage
+):
+    store = await _load(hass, hass_storage, stored=False)
+
+    assert getattr(store.config, const.CONF_EFFECTIVE_RAIN) is True
+
+
+@pytest.mark.asyncio
+async def test_an_installation_with_zones_keeps_counting_every_shower(
+    hass, hass_storage
+):
+    """Same rule as the hourly form: nobody's amounts change behind their back."""
+    store = await _load(hass, hass_storage, zones=[ZONE])
+
+    assert getattr(store.config, const.CONF_EFFECTIVE_RAIN) is False
+
+
+@pytest.mark.asyncio
 async def test_an_installation_with_zones_keeps_the_advanced_panel(hass, hass_storage):
     store = await _load(hass, hass_storage, zones=[ZONE])
 

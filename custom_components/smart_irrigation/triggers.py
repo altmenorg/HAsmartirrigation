@@ -59,6 +59,38 @@ class TriggersMixin:
     bookkeeping attributes, and the direct-valve runner).
     """
 
+    async def _planned_run_seconds(self) -> int:
+        """How long the run is expected to take, for placing the start.
+
+        A start that finishes at a moment (sunrise, a clock time) is placed that
+        long before it, so the length has to be known when the start is armed.
+        Calculated again just before the start, the stored durations are the
+        ones the last calculation left, usually none after a watering: nothing
+        would be armed, and the start that is meant to calculate would never
+        come. The live estimate, which is what that calculation will find, is
+        used then.
+        """
+        stored = await self.get_total_duration_all_enabled_zones()
+        config = await self.store.async_get_config()
+        if not config.get(const.CONF_RECALCULATE_BEFORE_START, False):
+            return stored
+        try:
+            estimates = await self.async_estimate_all_zones_now()
+            zones = await self.store.async_get_zones()
+            replaced = {}
+            for zone in zones:
+                estimate = (estimates or {}).get(str(zone.get(const.ZONE_ID)))
+                if (
+                    zone.get(const.ZONE_STATE) == const.ZONE_STATE_AUTOMATIC
+                    and isinstance(estimate, dict)
+                    and estimate.get("duration") is not None
+                ):
+                    replaced[zone.get(const.ZONE_ID)] = estimate["duration"]
+            return await self.get_total_duration_all_enabled_zones(replaced)
+        except Exception as ex:  # noqa: BLE001 - arming must not fail over this
+            _LOGGER.debug("Live estimate unavailable to place the start: %s", ex)
+            return stored
+
     async def register_start_event(self):
         """Register a callback to fire the irrigation start event before sunrise based on total duration of enabled zones.
 
@@ -76,7 +108,7 @@ class TriggersMixin:
         #            sun_rise = datetime.strptime(sun_rise, "%Y-%m-%dT%H:%M:%S.%f%z")
         #        except(ValueError):
         #            sun_rise = datetime.strptime(sun_rise, "%Y-%m-%dT%H:%M:%S%z")
-        total_duration = await self.get_total_duration_all_enabled_zones()
+        total_duration = await self._planned_run_seconds()
         self.start_trigger_armed = False
         if self._track_sunrise_event_unsub:
             self._track_sunrise_event_unsub()
@@ -95,6 +127,13 @@ class TriggersMixin:
         active = config.get(
             const.CONF_ACTIVE_START_TRIGGER, const.CONF_DEFAULT_ACTIVE_START_TRIGGER
         )
+
+        # "none": nothing starts the watering. That is a choice, and the only way
+        # to keep Smart Irrigation from starting one while the zones are still
+        # calculated.
+        if active == const.START_TRIGGER_NONE:
+            _LOGGER.info("Active start trigger is 'none'; nothing scheduled")
+            return
 
         # "default" (or a missing/deleted selection) -> legacy "sunrise minus
         # the total watering duration" so the run finishes at sunrise.
@@ -330,7 +369,7 @@ class TriggersMixin:
 
     async def _register_legacy_sunrise_trigger(self):
         """Register the legacy sunrise trigger for backward compatibility."""
-        total_duration = await self.get_total_duration_all_enabled_zones()
+        total_duration = await self._planned_run_seconds()
         if total_duration > 0:
             # time_to_wait = sun_rise - datetime.now(timezone.utc) - timedelta(seconds=total_duration)
             # time_to_fire = datetime.now(timezone.utc) + time_to_wait

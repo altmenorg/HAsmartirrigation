@@ -768,14 +768,33 @@ async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
             _LOGGER.debug("Live estimates unavailable: %s", e)
             zone_estimates = {}
 
+        # Calculated again just before the first start, the zones are not
+        # going to water what they hold now: the stored durations belong to the
+        # last calculation, the live estimate to the one the start will run.
+        early_config = await coordinator.store.async_get_config()
+        estimated_durations = {}
+        if early_config.get(const.CONF_RECALCULATE_BEFORE_START, False):
+            for zone in zones:
+                estimate = (zone_estimates or {}).get(str(zone.get(const.ZONE_ID)))
+                if (
+                    zone.get(const.ZONE_STATE) == const.ZONE_STATE_AUTOMATIC
+                    and isinstance(estimate, dict)
+                    and estimate.get("duration") is not None
+                ):
+                    estimated_durations[zone.get(const.ZONE_ID)] = estimate["duration"]
+
         # Calculate total duration and get enabled zones that need irrigation
-        total_duration = await coordinator.get_total_duration_all_enabled_zones()
+        total_duration = await coordinator.get_total_duration_all_enabled_zones(
+            estimated_durations
+        )
         enabled_zones = []
         irrigation_zones = []
 
         for zone in zones:
             zone_state = zone.get(const.ZONE_STATE)
-            zone_duration = zone.get(const.ZONE_DURATION, 0)
+            zone_duration = estimated_durations.get(
+                zone.get(const.ZONE_ID), zone.get(const.ZONE_DURATION, 0)
+            )
 
             if zone_state in [const.ZONE_STATE_AUTOMATIC, const.ZONE_STATE_MANUAL]:
                 enabled_zones.append(zone)
@@ -910,6 +929,10 @@ async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
             ),
             "next_irrigation_duration": int(total_duration),
             "next_irrigation_zones": irrigation_zones,
+            # True when those durations are the live estimate, because the zones
+            # are calculated again just before the start.
+            "durations_estimated": bool(estimated_durations),
+            "active_start_trigger": active,
             "sunrise_time": sunrise_time.isoformat() if sunrise_time else None,
             # Why the start is at that moment: the trigger the user selected,
             # and the sun event it is measured from.

@@ -911,6 +911,11 @@ class SmartIrrigationStorage:
         changes = {"ui_mode": mode}
         if fresh:
             changes[CONF_HOURLY_CALCULATION] = True
+            # A shower smaller than a fifth of the evapotranspiration wets the
+            # leaves and evaporates: counting it as water for the roots is
+            # simply wrong, so a new installation does not. An existing one
+            # keeps what it had, since its amounts would change.
+            changes[CONF_EFFECTIVE_RAIN] = True
         self.config = attr.evolve(self.config, **changes)
         self.async_schedule_save()
 

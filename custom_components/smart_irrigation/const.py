@@ -42,6 +42,8 @@ CONF_DEFAULT_IRRIGATION_START_TRIGGERS = []
 # sentinel "default" means a sunrise trigger offset by the total watering
 # duration, so the run finishes right at sunrise.
 START_TRIGGER_DEFAULT = "default"
+# No start trigger at all: Smart Irrigation starts no watering. The way to block it.
+START_TRIGGER_NONE = "none"
 CONF_ACTIVE_START_TRIGGER = "active_start_trigger"
 CONF_DEFAULT_ACTIVE_START_TRIGGER = START_TRIGGER_DEFAULT
 

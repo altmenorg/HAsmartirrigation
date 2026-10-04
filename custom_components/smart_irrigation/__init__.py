@@ -1521,6 +1521,14 @@ class SmartIrrigationCoordinator(
                     mapping_id,
                     ex,
                 )
+        if the_config.get(const.CONF_RECALCULATE_BEFORE_START):
+            # Calculated again just before the start, the length of the run the
+            # start is placed for is the live estimate, and it moves as the day
+            # dries the zones. Placed again, it stays what the start will find.
+            try:
+                await self.register_start_event()
+            except Exception as ex:  # noqa: BLE001 - the readings are already kept
+                _LOGGER.debug("Could not place the start again: %s", ex)
 
     async def _async_record_weather_for_mapping(self, mapping_id):
         """Read a sensor group's sources once and append the reading to its buffer.

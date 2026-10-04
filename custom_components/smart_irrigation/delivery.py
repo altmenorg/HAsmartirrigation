@@ -33,7 +33,12 @@ def delivery_gap(config: dict, zones) -> str | None:
     zone to water, then no valve this integration can open itself.
     """
     config = config or {}
-    if not config.get(const.CONF_AUTO_CALC_ENABLED, True):
+    # The evening calculation off is a choice when the zones are calculated
+    # again just before the first start: that calculation is the one that
+    # counts, and the start is what runs it.
+    if not config.get(const.CONF_AUTO_CALC_ENABLED, True) and not config.get(
+        const.CONF_RECALCULATE_BEFORE_START, False
+    ):
         return GAP_AUTO_CALC_OFF
 
     zones = list(zones or [])
