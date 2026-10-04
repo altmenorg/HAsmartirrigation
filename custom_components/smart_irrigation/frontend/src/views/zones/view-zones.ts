@@ -473,7 +473,9 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
   }
 
   private _volumeText(seconds: number, throughput: number): string {
-    return `${waterVolume(seconds, throughput).toFixed(1)} ${output_unit(
+    // Plain text: this goes into a sentence, the markup form would print
+    // as [object Object].
+    return `${waterVolume(seconds, throughput).toFixed(1)} ${unit_text(
       this.config,
       ZONE_WATER_VOLUME,
     )}`;
