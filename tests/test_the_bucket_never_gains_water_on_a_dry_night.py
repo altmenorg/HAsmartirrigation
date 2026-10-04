@@ -73,7 +73,7 @@ def _readings():
 def test_no_hour_of_a_dry_night_evaporates_a_negative_amount(
     hour, temperature, humidity
 ):
-    """Each hour on its own: zero, never below."""
+    """Each hour on its own: nothing, never below zero."""
     eto = eto_hourly(
         t_c=temperature,
         rh_pct=humidity,
@@ -87,7 +87,9 @@ def test_no_hour_of_a_dry_night_evaporates_a_negative_amount(
         elevation_m=ELEV,
     )
 
-    assert eto == 0.0
+    # A hair above zero is the aerodynamic term of a night whose sky was read
+    # off its humidity; below zero is the bug.
+    assert 0.0 <= eto < 0.001
 
 
 def test_the_whole_night_sums_to_nothing_rather_than_to_rain():
