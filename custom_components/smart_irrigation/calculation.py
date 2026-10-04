@@ -1478,7 +1478,7 @@ class CalculationMixin:
             entries = await self.hass.async_add_executor_job(fetch, since, now)
             if not entries:
                 return None
-            return summed_hourly_eto_from_history(
+            result = summed_hourly_eto_from_history(
                 entries,
                 since,
                 now,
@@ -1487,6 +1487,15 @@ class CalculationMixin:
                 elevation=getattr(self, "_effective_elevation", None) or 0.0,
                 tz=SystemLocalTime(),
             )
+            if result is not None:
+                _LOGGER.debug(
+                    "[calculate-module]: zone %s: %.3f mm of reference ET summed over "
+                    "%.2f hours of Open-Meteo's own hourly history",
+                    zone.get(const.ZONE_ID),
+                    result[0],
+                    result[1],
+                )
+            return result
         except Exception:  # noqa: BLE001 - the readings are the fallback
             _LOGGER.debug("The hourly history could not be used", exc_info=True)
             return None
