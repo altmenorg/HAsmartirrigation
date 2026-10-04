@@ -15,8 +15,20 @@ If enabled, specify how often sensor update should happen (minutes, hours, days)
 
 As calculation needs weatherdata make sure to update your weather data at least once before calculating.
 
-### Automatic duration calculation
-If enabled, set the time of calculation (HH:MM). Calculation uses weatherdata that is collected in updates to determine irrigation duration.
+The first card of this page is the [setup assistant](configuration-setup.md). The **Panel** card has the **Advanced settings** switch, which shows the extra settings mentioned on these pages as "advanced mode".
+
+### Calculating the watering duration
+One choice, **Watering duration calculated**, says when the durations are worked out:
+
+* **At a fixed time.** Every day at the time chosen below (**Calculate at**, 23:00 unless you change it), the water lost is added to each zone's bucket and the durations are set. Use it when something other than Smart Irrigation starts the watering and reads the durations whenever it likes (Irrigation Unlimited, or a schedule of your own).
+* **Just before each start.** The zones are calculated again at the time of the start trigger, with the freshest weather. There is no time to choose. Use it when Smart Irrigation itself starts the watering (direct valve control, or the start event). Because no evening calculation sets the durations with this choice, the start is placed using the live estimate of the run's length, and placed again at every weather reading.
+* **Only when I ask.** Nothing is calculated by itself. Use the calculate buttons or the [services](usage-services.md).
+
+What starts the watering is decided elsewhere, by the start trigger (see below). Under the choice, **Calculate evapotranspiration hour by hour** stays: it changes the form of the equation, not the moment of the calculation.
+
+Stored settings are unchanged by this: *At a fixed time* is the old "automatically calculate" setting being on, *Just before each start* is the old "calculate again before the first start" setting being on, and *Only when I ask* is both being off.
+
+Calculation uses weatherdata that is collected in updates to determine irrigation duration.
 
 Each zone reads only the readings that arrived since its own last calculation, and remembers how far it has read. Readings are dropped once every zone using that sensor group has consumed them, so two zones sharing a group can calculate at different times without either of them losing data.
 
@@ -52,8 +64,10 @@ The American standard of the same equation (ASCE-EWRI 2005) goes further than FA
 
 With any other module, or when the hours cannot be reconstructed (no readings, a field missing everywhere, a greenhouse with no radiation or illuminance sensor, or fewer forecast days available than the engine asks for), the daily equation keeps being used, so switching it on never leaves a zone without a calculation. The calculation explanation says which form was used.
 
-#### Calculate again just before the first start of the day
-The nightly calculation prices the evapotranspiration, the temperature and the wind of the hours before it. A start trigger at sunset then waters on data some twenty hours old; only the rain was brought up to date at the start (rain since the calculation, the forecast, the rain history). Switch this on and the zones are calculated again, with fresh weather, just before the first start of the day. Nothing is done when a zone was calculated within the hour, and a calculation that fails leaves the run to go ahead on the earlier numbers. It is off by default.
+#### Just before each start
+The calculation at a fixed time prices the evapotranspiration, the temperature and the wind of the hours before it. A start trigger at sunset then waters on data some twenty hours old; only the rain was brought up to date at the start (rain since the calculation, the forecast, the rain history). With **Just before each start** the zones are calculated again, with fresh weather, at the time of the start trigger. Nothing is done when a zone was calculated within the hour, and a calculation that fails leaves the run to go ahead on the earlier numbers.
+### Start triggers
+The **Start triggers** card holds the active trigger select. Its last choice is **None (Smart Irrigation starts no watering)**: nothing starts the watering, whatever the weather, while the durations are still calculated. It is the way to block Smart Irrigation from watering. The [Info page](usage-info.md) then says "No trigger is active". No message is shown for the default trigger.
 
 ### Automatic weather data pruning (removed)
 Weather data used to be cleared on a timer, and that setting no longer does anything.
@@ -103,11 +117,9 @@ A start trigger can be held back by the conditions below, all off by default. Th
 
 A condition that cannot be checked, because its sensor is unavailable or the weather service cannot be read, never stops a run: watering goes ahead as it would without it.
 
-* **Rain forecast.** Skip when the weather service forecasts at least the threshold of rain for today and tomorrow. Zones in a greenhouse sensor group still water.
+* **Rain forecast.** One switch, **Take the forecast rain into account**, and one threshold, **Skip the run from**. At or above the threshold of rain forecast for today and tomorrow, the run is skipped. Below it, the run goes ahead and each zone is watered for less, as described next. Zones in a greenhouse sensor group still water. The panel keeps two settings behind the one switch (`skip_irrigation_on_precipitation` and `forecast_rain_credit`): the switch shows on when either is on, and turning it on or off sets both.
 
-  **Count only rain that reaches the roots** (off by default) ignores a shower smaller than a fifth of the evapotranspiration of the period, which wets the leaves and evaporates before the soil sees it. It is judged on the whole period between two calculations, not day by day, so a period of several days ignores less than a day-by-day reading would. It does not model runoff on heavy rain; the maximum bucket still caps what the soil keeps.
-
-  **Reduce durations when rain is forecast** (off by default) is the proportional version of the same idea. When a run starts, each zone is watered for the rain forecast to fall in the 24 hours after the start, less: the forecast hours are weighted by the probability the weather service gives, so 10 mm at 30% counts for 3 mm, and a forecast of 4 mm against a 10 mm deficit waters 6 mm. It works alongside the skip above, which stays all or nothing. A greenhouse zone is not reduced, and a forecast that cannot be read leaves the run as calculated.
+  **Below the threshold** the duration is reduced in proportion. When a run starts, each zone is watered for the rain forecast to fall in the 24 hours after the start, less: the forecast hours are weighted by the probability the weather service gives, so 10 mm at 30% counts for 3 mm, and a forecast of 4 mm against a 10 mm deficit waters 6 mm. It works alongside the skip above, which stays all or nothing. A greenhouse zone is not reduced, and a forecast that cannot be read leaves the run as calculated.
 
   Like the rain history below, it shortens the run and leaves the deficit in the bucket. The rain that really falls is measured and credited at the next calculation, so nothing is counted twice, and a forecast that does not come true is made up at the next run. The hours are counted from the moment the run starts, not from the calculation, which on a morning run is hours earlier. The forecast hours come from Open-Meteo, including for installations using another weather service.
 * **Rain sensor.** Skip while a binary sensor that is on in the rain says it is raining.
@@ -127,8 +139,12 @@ Thresholds are entered in your unit system and a sensor is read in its own unit,
 
 **Soil moisture** is set on each zone rather than here. Give a zone a soil moisture sensor and a threshold in %, 50 unless you set one, and while the reading is at or above it that zone sits the run out and the others water. Its duration for that run goes to 0 and its bucket is kept, so the deficit rolls over to the next run. Every calculation applies the same rule: a zone whose soil reads at or above its threshold has its bucket set to field capacity, so the deficit shown never contradicts the sensor between two starts. It works in that direction only. A dry reading says nothing about how many millimetres are missing without a calibration of the sensor to the soil, and a deficit invented from one would water a zone for good on the strength of a badly placed probe.
 
+### Count only rain that reaches the roots
+
+On a new installation, and in the advanced mode of the **Calculating the watering duration** card. A shower smaller than a fifth of the evapotranspiration of the period wets the leaves and evaporates before the soil sees it, so it is not counted as water for the roots. It acts on the rain that fell, in every calculation, and has nothing to do with the rain forecast options of the weather skip card. It is judged on the whole period between two calculations, not day by day, so a period of several days ignores less than a day-by-day reading would. It does not model runoff on heavy rain; the maximum bucket still caps what the soil keeps. An installation that already existed keeps its setting as it was, and the switch is shown when it is off.
+
 ### Continuous updates
-Continuous updates records every change of a sensor of the group, instead of one reading per update, so the averages the calculation works from, hour by hour and for the rain, follow the day more finely. For a group to be recorded this way, it needs a [sensor group](configuration-sensor-groups.md) that does not rely on a weather service (none of the data has its source set to `weather service`).
+The **Continuous updates for sensors** card is only shown in advanced mode, or when the setting is already on. Continuous updates records every change of a sensor of the group, instead of one reading per update, so the averages the calculation works from, hour by hour and for the rain, follow the day more finely. For a group to be recorded this way, it needs a [sensor group](configuration-sensor-groups.md) that does not rely on a weather service (none of the data has its source set to `weather service`).
 
 It records and nothing more. It used to calculate the zones again at every change, which moved the bucket, and the trigger that accounts for the duration of the run, all day. The scheduled calculation now does that once, from the readings recorded, and the live estimate on the Info page and in the zone's live bucket entity shows where a zone stands in between without writing anything. Zones on a pure-sensor group are calculated at the scheduled time like any other. A sensor debounce setting controls how fast changes are recorded.
 
@@ -161,6 +177,9 @@ To compare two days, for example with [`jq`](https://jqlang.github.io/jq/):
 ```
 jq -c 'select(.zone.name == "Lawn") | {t: .timestamp, eto: .module.days[0].eto, sol_rad: .module.days[0].sol_rad, estimated: .module.days[0].sol_rad_estimated, bucket: .outputs.bucket_after, duration: .outputs.duration}' calc_log.jsonl
 ```
+
+### Language
+The panel and the configuration flow are available in 19 languages, all complete. The French is written with "tu".
 
 ### Unit System Responsiveness
 Smart Irrigation automatically detects and responds to changes in your Home Assistant unit system setting (metric/imperial). When you change the unit system in Home Assistant:

@@ -18,6 +18,12 @@ Apart from changing the name, you can specify the source where to retrieve the w
 
 It's recommended to use actual sensor sources as much as you can and only rely on weather services as needed. If your zone is covered (such as a green house), of course you can set the total precipitation to 0.
 
+The group's **Evapotranspiration** source is always the first field, and it decides what else is asked. Left on *None*, the zones calculate evapotranspiration from the weather, so the readings it needs are asked: temperature, dew point, humidity, pressure, wind speed and solar radiation. Given ready-made, by a weather service or a sensor, the other readings are not asked (a note says how many); rain stays. A plain sentence under each source explains what it does.
+
+The group also says when its zones and its source disagree: a zone calculated from the weather ignores a provided value, and a zone set to *provided* needs a source.
+
+Some fields are only shown in advanced mode. **Total precipitation** (a rain gauge that adds up) is shown only in advanced mode, or when it already has a source. **How the readings are combined** (average, first, last, maximum, median, minimum, Riemann sum, sum, delta) is advanced mode only. The question **Input provides values in** is not asked when Home Assistant reports a unit the field can be read in; it is asked when Home Assistant reports nothing usable, or when the stored unit contradicts what it reports.
+
 The following data can be provided:
 
 | Data | Required | Available sources | Available units | Expected aggregation | Expected aggregation for continuous updates |
@@ -28,7 +34,7 @@ The following data can be provided:
 |**Humidity**|Yes|Weather Service<br/>Sensor<br/>Static value|%|Average|Last|
 |**Total precipitation**|No|Sensor<br/>Static value|in<br/>mm|Delta|Delta|
 |**Pressure** (*see notes below the table)|Yes|Weather Service<br/>Sensor<br/>Static value|hPa<br/>inch Hg<br/>millibar<br/>psi|Average|Last|
-|**Solar Radiation**|No|None (requires module to estimate it)<br/>Sensor<br/>Light sensor (lux)<br/>Static value|MJ/day/m2<br/>MJ/day/sq ft<br/>W/m2<br/>W/sq ft|Average|Riemann Sum|
+|**Solar Radiation**|No|Weather Service or None (requires module to estimate it)<br/>Radiation sensor<br/>Light sensor (lux)<br/>Static value|MJ/day/m2<br/>MJ/day/sq ft<br/>W/m2<br/>W/sq ft|Average|Riemann Sum|
 |**Temperature**|Yes|Weather Service<br/>Sensor<br/>Static value|°C<br/>°F|Average|Last|
 |**Wind speed**|Yes|Weather Service<br/>Sensor<br/>Static value|meter/s<br/>mile/h<br/>km/h<br/>knot|Average|Last|
 
@@ -36,16 +42,16 @@ Please note:
 - If you use a [weather service](installation-weatherservice.md), make sure your home zone coordinates are set correctly so the data is correct. This is especially true if you set the coordinates manually in the configuration.yaml.
 - Pressure can either be absolute or relative pressure: _absolute barometric pressure_ is the actual pressure measured at your location, while _relative barometric pressure_ is the pressure calculated at sea level. Check the source of your data to find out whether it provides absolute or relative pressure.
 - Humidity for your sensor group is the air humidity / atmospheric humidity, _not_ soil humidity. Soil Humidity sensors do not provide useful information for this integration and cannot be used.
-- **Greenhouse.** A sensor group has a greenhouse switch, for an enclosed environment: a greenhouse, a polytunnel, anything under glass or plastic. Turning it on takes precipitation out of the water balance for every zone using that group, and hides its two rain fields, because rain measured outside waters nothing inside. Two things it does not decide for you, since neither can be guessed from the switch: give **Wind speed** a static value near 0, because the FAO-56 aerodynamic term assumes open air, and give **Solar Radiation** a light sensor, as below.
+- **Greenhouse.** A sensor group has a greenhouse switch, for an enclosed environment: a greenhouse, a polytunnel, anything under glass or plastic. Turning it on takes precipitation out of the water balance for every zone using that group, and hides its rain fields, because rain measured outside waters nothing inside. Two things it does not decide for you, since neither can be guessed from the switch: give **Wind speed** a static value near 0, because the FAO-56 aerodynamic term assumes open air, and give **Solar Radiation** a light sensor, as below.
 
   The **weather-based irrigation skip** and its threshold are still settings for the whole installation rather than per sensor group, but a forecast of rain no longer pauses your greenhouse. A rain forecast is a statement about the sky, so when it would skip the run, zones in a greenhouse group go ahead and only the zones the rain can actually reach are held back for that run. Their deficit is untouched and rolls over to the next one, exactly as a skipped day would have left it. If nothing in your installation is under glass, nothing changes: the run is skipped as before, and no start event fires.
 - **Greenhouses: a light sensor can stand in for a solar radiation sensor.** Under glass or plastic there is no usable sky, so a weather service has nothing relevant to say and the calculation loses the term that drives it. Most greenhouses have no pyranometer, but a light sensor is cheap and common. Set Solar Radiation's source to **Light sensor (lux)**, pick your illuminance entity, and the reading is converted to W/m2 and fed to the same Penman-Monteith calculation a real radiation sensor would feed.
 
-  The conversion divides lux by the **luminous efficacy** of daylight, and that efficacy depends on the sky: roughly 112 lm/W under a clear sky and up to 125 or more under an overcast one. Smart Irrigation uses the model of Muneer and Kinghorn (1997), `Kg = 136.6 - 74.541 Kt + 57.3421 Kt²`, where Kt is the clearness index: the radiation reaching the ground over the radiation at the top of the atmosphere. The position of the sun, from your coordinates, the date and the time, gives that ceiling, so the season and the hour are taken into account. There is nothing to set. Glass shifts the spectrum a little, which the model does not describe; the error stays within a few percent.
+  The conversion divides lux by the **luminous efficacy** of daylight, and that efficacy depends on the sky: roughly 112 lm/W under a clear sky and up to 125 or more under an overcast one. Smart Irrigation uses the model of Muneer and Kinghorn (1997), `Kg = 136.6 - 74.541 Kt + 57.3421 Kt²` in lm/W, where Kt is the clearness index: the global radiation over the radiation at the top of the atmosphere on a horizontal plane. The position of the sun at the sensor's coordinates, the date and the time, gives that ceiling, so the season and the hour are taken into account. There is no efficacy field to set. When the sun is lower than 5 degrees, or there are no coordinates, the middle of the range (113.7 lm/W) is used. A value stored by an older version is still honoured. Glass shifts the spectrum a little, which the model does not describe; the error stays within a few percent.
 
   Two other things to set for a greenhouse, which the integration does not infer for you: put Wind speed on a **static value** near 0, since the FAO-56 aerodynamic term assumes open air, and leave precipitation unmapped or static at 0, since it does not rain indoors.
 
-  If you would rather not use this, a template sensor dividing your lux entity by 110 and reported as `W/m2` reaches the same result through the ordinary Sensor source.
+  If you would rather not use this, a template sensor that converts your lux entity and is reported as `W/m2` reaches the same result through the Radiation sensor source.
 - Wind speed needs to be measured at 2 meters height. If you are using Open Weather Map this is automatically done for you, but if you do not, you need to make sure the input sensor returns the wind speed at the correct height. You can use a template sensor like the following for this:
    ```yaml
    sensor:
@@ -64,6 +70,9 @@ Please note:
 - Map total precipitation when you have a rain gauge of your own that accumulates, which is more accurate than any service. It then takes precedence over the service's rate, so the two are never added together.
 - With the 'Average' aggregation on current precipitation the mean rate over the interval is used, which is right for evenly spaced samples; with 'Riemann Sum' the samples are integrated over their own timestamps, which is more accurate when they are not evenly spaced.
 - When using continuous updates, all aggregations are expected to be set to `Last`, with the exception of Solar Radiation and Current Precipitation, which need to be set to `Riemann Sum`, and Total Precipitation, which needs `Delta`.
+
+## Weather service history
+The table of the weather service history only shows values supplied by the weather service. A field whose source is a sensor appears as `-` there.
 
 ## Deleting a sensor group
 ![](assets/images/configuration-sensor-groups-1.png)

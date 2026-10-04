@@ -75,6 +75,8 @@ For every zone: the deficit **now**, the deficit **at its last calculation**,
 how long it **would water** if it ran at this moment, and when it **last
 watered**.
 
+The headline and this table use the live estimate. With the watering duration set to **Just before each start**, the announced run is the estimate, and a line says "Estimated: the zones are calculated again just before the start". The warning "Nothing is being calculated" only appears when the watering duration is set to **Only when I ask** (see [General configuration](configuration-general.md)). When the active start trigger is **None**, the page says "No trigger is active". **At last calculation** shows the day and time of that calculation.
+
 "Now" is an estimate. It re-runs the calculation over the readings collected
 since the last one and throws the result away: nothing is written, no reading
 is consumed, and the zone keeps the value of its last calculation until the
