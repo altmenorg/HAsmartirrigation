@@ -79,12 +79,12 @@
       "single_instance_allowed": "Une seule configuration de Smart Irrigation est autorisée."
     },
     "error": {
-      "name": "Spécifiez un nom unique pour l'intégration."
+      "name": "Spécifie un nom unique pour l'intégration."
     },
     "step": {
       "user": {
         "title": "Configuration générale",
-        "description": "Si vous avez besoin d'aide avec la configuration, consultez la documentation. Le service météo se configure ensuite depuis le panneau Smart Irrigation.",
+        "description": "Si tu as besoin d'aide avec la configuration, consulte la documentation. Le service météo se configure ensuite depuis le panneau Smart Irrigation.",
         "data": {
           "name": "Nom unique de l'intégration"
         }
@@ -93,12 +93,12 @@
   },
   "options": {
     "error": {
-      "invalid_coordinates": "Coordonnées invalides. Vérifiez la latitude (-90 à 90) et la longitude (-180 à 180)."
+      "invalid_coordinates": "Coordonnées invalides. Vérifie la latitude (-90 à 90) et la longitude (-180 à 180)."
     },
     "step": {
       "coordinates": {
         "title": "Coordonnées de localisation",
-        "description": "Configurez les coordonnées de localisation pour la récupération des données météo. Vous pouvez utiliser des coordonnées manuelles différentes de l'emplacement de votre Home Assistant si nécessaire.",
+        "description": "Configure les coordonnées de localisation pour la récupération des données météo. Tu peux utiliser des coordonnées manuelles différentes de l'emplacement de ton Home Assistant si nécessaire.",
         "data": {
           "manual_coordinates_enabled": "Utiliser des coordonnées manuelles au lieu de l'emplacement de Home Assistant",
           "manual_latitude": "Latitude (degrés décimaux, -90 à 90)",
@@ -289,7 +289,7 @@
   "issues": {
     "throughput_mismatch": {
       "title": "Zone {zone} : le débit mesuré ne correspond pas au débit configuré",
-      "description": "Sur les {samples} derniers arrosages, le compteur de la zone **{zone}** a mesuré environ **{measured}** alors que la zone est configurée à **{configured}**, soit {percentage}% d'écart.\n\nToutes les durées d'arrosage sont calculées à partir du débit configuré : elles sont donc toutes fausses dans la même proportion.\n\nSi la mesure vous paraît juste, reportez-la dans le débit de la zone. Sinon, vérifiez que le compteur ne mesure que cette zone et que la pression est celle attendue. Smart Irrigation ne modifie jamais la valeur à votre place."
+      "description": "Sur les {samples} derniers arrosages, le compteur de la zone **{zone}** a mesuré environ **{measured}** alors que la zone est configurée à **{configured}**, soit {percentage}% d'écart.\n\nToutes les durées d'arrosage sont calculées à partir du débit configuré : elles sont donc toutes fausses dans la même proportion.\n\nSi la mesure te paraît juste, reporte-la dans le débit de la zone. Sinon, vérifie que le compteur ne mesure que cette zone et que la pression est celle attendue. Smart Irrigation ne modifie jamais la valeur à ta place."
     }
   }
 }
