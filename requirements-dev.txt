@@ -21,7 +21,7 @@ isort>=5.10.0
 pre-commit>=4.6.2
 
 # Documentation
-markdown>=3.10.3
+markdown>=3.11
 
 # Testing dependencies
 pytest
