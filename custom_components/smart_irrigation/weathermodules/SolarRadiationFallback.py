@@ -72,9 +72,32 @@ class SolarRadiationFallbackClient:  # pylint: disable=invalid-name
         return data
 
     def get_cached_forecast_data(self):
-        """The primary's last forecast without a new request, when it keeps one."""
+        """The primary's last forecast without a new request, when it keeps one.
+
+        Its days were filled in place when they were fetched through
+        get_forecast_data. A day still missing radiation or ET0 is filled from
+        Open-Meteo's own last response, never from a new one.
+        """
         fetch = getattr(self._primary, "get_cached_forecast_data", None)
-        return fetch() if fetch else None
+        data = fetch() if fetch else None
+        if not data:
+            return data
+        if any(
+            field not in day
+            for day in data
+            if isinstance(day, dict)
+            for field in _FALLBACK_FIELDS
+        ):
+            try:
+                fb = self._fallback.get_cached_forecast_data()
+            except Exception:  # noqa: BLE001 - the primary's days still stand
+                _LOGGER.debug("No cached Open-Meteo forecast to fill from")
+                fb = None
+            if fb:
+                for i, day in enumerate(data):
+                    if i < len(fb) and isinstance(day, dict):
+                        self._fill(day, fb[i])
+        return data
 
     def get_hourly_radiation(self, start, end):
         """The sun of each hour, from Open-Meteo, for the hourly equation.

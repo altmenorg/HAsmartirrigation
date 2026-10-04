@@ -71,6 +71,24 @@ def current_precipitation(current):
     return total
 
 
+def site_date(timestamp, offset_seconds):
+    """Return the ISO date, at the site, of a One Call daily ``dt``, or None.
+
+    ``timezone_offset`` is the site's shift from UTC in seconds. Without it the
+    date cannot be told reliably near midnight, and None lets the caller fall
+    back to counting positions.
+    """
+    if timestamp is None or offset_seconds is None:
+        return None
+    try:
+        moment = datetime.datetime.fromtimestamp(
+            float(timestamp) + float(offset_seconds), tz=datetime.UTC
+        )
+    except (TypeError, ValueError, OverflowError, OSError):
+        return None
+    return moment.date().isoformat()
+
+
 # Validators
 OWM_validators = {
     "wind_speed": {"max": 135, "min": 0},
@@ -220,6 +238,12 @@ class OWMClient:  # pylint: disable=invalid-name
                         if "snow" in data:
                             snow = float(data["snow"])
                         parsed_data[MAPPING_PRECIPITATION] = rain + snow
+                        # The day this entry is for, so the panel can label it
+                        # rather than count positions from Home Assistant's own
+                        # today, which is not the site's when the zones differ.
+                        day = site_date(data.get("dt"), doc.get("timezone_offset"))
+                        if day is not None:
+                            parsed_data["date"] = day
                         parsed_data_total.append(parsed_data)
                     self._cached_forecast_data = parsed_data_total
                     self._last_time_called = datetime.datetime.now()
@@ -240,6 +264,17 @@ class OWMClient:  # pylint: disable=invalid-name
                 if include_today
                 else self._cached_forecast_data[1:]
             )
+
+    def get_cached_forecast_data(self):
+        """The forecast from the last response, without asking again.
+
+        For the live estimate, which runs on every refresh of a display and
+        must not spend a request each time. Starts at tomorrow, as
+        get_forecast_data does by default. None when nothing has been fetched.
+        """
+        if self._cached_forecast_data is None:
+            return None
+        return self._cached_forecast_data[1:]
 
     def relative_to_absolute_pressure(self, pressure, height):
         """The pressure at the site from the reported sea-level pressure."""

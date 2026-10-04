@@ -15,7 +15,6 @@ from custom_components.smart_irrigation.calcmodules.calcmodule import (
 from custom_components.smart_irrigation.const import (
     CONF_PYETO_COASTAL,
     CONF_PYETO_FORECAST_DAYS,
-    CONF_PYETO_SOLRAD_BEHAVIOR,
     MAPPING_DATA_DAY,
     MAPPING_DATA_MULTIPLIER,
     MAPPING_DATA_SOLRAD_FACTOR,
@@ -127,12 +126,8 @@ class PyETO(SmartIrrigationCalculationModule):
         self.last_day_trace: dict | None = None
         self._coastal = DEFAULT_COASTAL
         self.forecast_days = DEFAULT_FORECAST_DAYS
-        self._solrad_behavior = DEFAULT_SOLRAD_BEHAVIOR
         if config:
             self._coastal = config.get(CONF_PYETO_COASTAL, DEFAULT_COASTAL)
-            self._solrad_behavior = config.get(
-                CONF_PYETO_SOLRAD_BEHAVIOR, DEFAULT_SOLRAD_BEHAVIOR
-            )
             self.forecast_days = config.get(
                 CONF_PYETO_FORECAST_DAYS, DEFAULT_FORECAST_DAYS
             )

@@ -518,8 +518,9 @@ async def _forecast_days(hass, coordinator, days: int = 6):
             continue
         out.append(
             {
-                # Only Open-Meteo dates its days. The list starts at today, so
-                # the others are counted from it; a missing date reached the
+                # The clients date their days at the site. One that does not
+                # (an entry without it) starts at today, so it is counted from
+                # it; a missing date reached the
                 # panel as null, which a browser reads as 1 January 1970 and
                 # every day was labelled Thursday (#880).
                 "date": day.get("date")
@@ -740,6 +741,19 @@ def _next_azimuth_trigger_start(selected, total_duration, latitude, longitude, n
     return start
 
 
+def _preview_run_start(next_start) -> dict:
+    """The start to preview the skip at, as keyword arguments, or none.
+
+    Only a known moment still to come: an aware start in the future. Anything
+    else previews a run starting now, as the preview always did.
+    """
+    if not isinstance(next_start, datetime.datetime) or next_start.tzinfo is None:
+        return {}
+    if next_start <= dt_util.now():
+        return {}
+    return {"run_start": next_start}
+
+
 @async_response
 async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
     """Publish irrigation information."""
@@ -750,14 +764,6 @@ async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
         # Get all zones from the store
         zones = await coordinator.store.async_get_zones()
 
-        # What the skip conditions say right now, and what they said at the last
-        # real decision. The preview is evaluated live, so a forecast can still
-        # change before the run: it says what would happen, not what will (#794).
-        try:
-            skip_preview = await coordinator.async_evaluate_skip_conditions()
-        except Exception as e:  # noqa: BLE001 - the info panel must not fail on it
-            _LOGGER.debug("Skip preview unavailable: %s", e)
-            skip_preview = None
         last_skip_evaluation = getattr(coordinator, "_last_skip_evaluation", None)
 
         # Where each zone stands right now rather than at the last calculation.
@@ -882,6 +888,20 @@ async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
             if exact is not None:
                 next_irrigation_start = exact
                 base_name = selected_type
+
+        # What the skip conditions say, and what they said at the last real
+        # decision. The preview is evaluated live, so a forecast can still
+        # change before the run: it says what would happen, not what will
+        # (#794). The forecast is read for the next start, as the decision will
+        # read it then, not for now: opened at 22:00, the panel showed today
+        # and tomorrow while the 06:00 run would check tomorrow and the next.
+        try:
+            skip_preview = await coordinator.async_evaluate_skip_conditions(
+                **_preview_run_start(next_irrigation_start)
+            )
+        except Exception as e:  # noqa: BLE001 - the info panel must not fail on it
+            _LOGGER.debug("Skip preview unavailable: %s", e)
+            skip_preview = None
 
         # Account for the "days between irrigation" restriction. The start
         # triggers fire every day, but on a skip day the watering decision is

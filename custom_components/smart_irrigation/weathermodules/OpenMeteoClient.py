@@ -736,7 +736,7 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
             "precipitation_unit": "mm",
             "timezone": "GMT",
             "timeformat": "unixtime",
-            "forecast_days": 3,
+            "forecast_days": 4,
         }
         try:
             doc = self._request(params)

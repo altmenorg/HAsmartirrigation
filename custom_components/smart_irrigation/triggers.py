@@ -23,6 +23,7 @@ from homeassistant.helpers.event import (
     async_track_time_change,
 )
 from homeassistant.helpers.sun import get_astral_event_next
+from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
 from .calcmodules.consumes import sourced_fields
@@ -32,6 +33,7 @@ from .helpers import (
     normalize_azimuth_angle,
 )
 from .rain_history import MAX_FACTOR, MIN_FACTOR, rain_suppression
+from .units import depth_from_display
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -69,6 +71,10 @@ class TriggersMixin:
         would be armed, and the start that is meant to calculate would never
         come. The live estimate, which is what that calculation will find, is
         used then.
+
+        With ``forecast_rain_credit`` on, the run is shortened by the forecast
+        rain as it will be when it starts, so the start is placed for the run
+        that will be made rather than a longer one.
         """
         stored = await self.get_total_duration_all_enabled_zones()
         config = await self.store.async_get_config()
@@ -77,6 +83,7 @@ class TriggersMixin:
         try:
             estimates = await self.async_estimate_all_zones_now()
             zones = await self.store.async_get_zones()
+            credit = await self._planned_forecast_credit(config)
             replaced = {}
             for zone in zones:
                 estimate = (estimates or {}).get(str(zone.get(const.ZONE_ID)))
@@ -85,11 +92,54 @@ class TriggersMixin:
                     and isinstance(estimate, dict)
                     and estimate.get("duration") is not None
                 ):
-                    replaced[zone.get(const.ZONE_ID)] = estimate["duration"]
+                    replaced[zone.get(const.ZONE_ID)] = self._planned_credited(
+                        zone, estimate, credit
+                    )
             return await self.get_total_duration_all_enabled_zones(replaced)
         except Exception as ex:  # noqa: BLE001 - arming must not fail over this
             _LOGGER.debug("Live estimate unavailable to place the start: %s", ex)
             return stored
+
+    async def _planned_forecast_credit(self, config):
+        """(expected mm, sheltered zone ids) to credit the planned run, or None.
+
+        Any failure is None: the start is then placed for the uncredited run,
+        as it was before.
+        """
+        try:
+            fetch = self._forecast_rain_credit_source(config)
+            if fetch is None:
+                return None
+            expected_mm = await self._forecast_rain_to_credit(fetch, datetime.now())
+            if isinstance(expected_mm, bool) or not isinstance(
+                expected_mm, (int, float)
+            ):
+                return None
+            if expected_mm <= 0:
+                return None
+            return expected_mm, await self.async_zones_sheltered_from_rain()
+        except Exception as ex:  # noqa: BLE001 - arming must not fail over this
+            _LOGGER.debug("No forecast credit to place the start: %s", ex)
+            return None
+
+    def _planned_credited(self, zone, estimate, credit):
+        """The estimated run of ``zone``, less the forecast rain when credited."""
+        duration = estimate["duration"]
+        if credit is None:
+            return duration
+        expected_mm, sheltered = credit
+        if zone.get(const.ZONE_ID) in sheltered:
+            return duration
+        try:
+            # The estimate's bucket is in the unit shown (live_estimate.py).
+            bucket_mm = depth_from_display(
+                float(estimate["bucket"]), self.hass.config.units is METRIC_SYSTEM
+            )
+            credited = self._duration_with_forecast_rain(zone, bucket_mm, expected_mm)
+        except Exception as ex:  # noqa: BLE001 - the uncredited run still stands
+            _LOGGER.debug("Could not credit the planned run: %s", ex)
+            return duration
+        return credited if credited < duration else duration
 
     async def register_start_event(self):
         """Register a callback to fire the irrigation start event before sunrise based on total duration of enabled zones.
@@ -985,6 +1035,39 @@ class TriggersMixin:
                     e,
                 )
 
+    def _forecast_rain_credit_source(self, config=None):
+        """The forecast to credit a run from, or None when there is no credit.
+
+        None when ``forecast_rain_credit`` is off, the weather service is not
+        used, or it has no hourly rain forecast. ``config`` is the settings
+        already read, else they are read here.
+        """
+        try:
+            if config is None:
+                config = self.store.get_config() or {}
+            enabled = config.get(const.CONF_FORECAST_RAIN_CREDIT)
+        except Exception:  # noqa: BLE001 - an extra, never the decision
+            return None
+        if not enabled:
+            return None
+        if not getattr(self, "use_weather_service", False):
+            return None
+        return getattr(
+            getattr(self, "_WeatherServiceClient", None),
+            "get_expected_rain_ahead",
+            None,
+        )
+
+    async def _forecast_rain_to_credit(self, fetch, start):
+        """The rain the forecast expects in the credit window from ``start``."""
+        return await self.hass.async_add_executor_job(
+            fetch, start, start + timedelta(hours=const.FORECAST_RAIN_CREDIT_HOURS)
+        )
+
+    def _duration_with_forecast_rain(self, zone, bucket_mm, expected_mm):
+        """The run a bucket of ``bucket_mm`` needs once the expected rain falls."""
+        return self.duration_from_bucket(zone, bucket_mm + expected_mm)
+
     async def _apply_forecast_rain_credit(self):
         """Shorten each zone's run by the rain forecast for the day after it starts.
 
@@ -1004,29 +1087,13 @@ class TriggersMixin:
         says nothing about a greenhouse. Rain can only shorten a run, and any
         failure costs accuracy, not the run.
         """
-        try:
-            config = self.store.get_config() or {}
-            enabled = config.get(const.CONF_FORECAST_RAIN_CREDIT)
-        except Exception:  # noqa: BLE001 - an extra, never the decision
-            return
-        if not enabled:
-            return
-        if not getattr(self, "use_weather_service", False):
-            return
-        fetch = getattr(
-            getattr(self, "_WeatherServiceClient", None),
-            "get_expected_rain_ahead",
-            None,
-        )
+        fetch = self._forecast_rain_credit_source()
         if fetch is None:
             return
         try:
             zones = await self.store.async_get_zones()
             sheltered = await self.async_zones_sheltered_from_rain()
-            start = datetime.now()
-            expected_mm = await self.hass.async_add_executor_job(
-                fetch, start, start + timedelta(hours=const.FORECAST_RAIN_CREDIT_HOURS)
-            )
+            expected_mm = await self._forecast_rain_to_credit(fetch, datetime.now())
         except Exception as e:  # noqa: BLE001 - never block the run over this
             _LOGGER.warning("Could not read the rain forecast to credit: %s", e)
             return
@@ -1045,12 +1112,11 @@ class TriggersMixin:
                 # calculation included, less what the forecast says will fall.
                 rain_so_far = await self.precipitation_since_last_calculation(zone)
                 rain_so_far -= zone.get(const.ZONE_PRECIPITATION_SUPERSEDED) or 0.0
-                bucket = (
-                    (zone.get(const.ZONE_BUCKET) or 0.0)
-                    + max(0.0, rain_so_far)
-                    + expected_mm
+                duration = self._duration_with_forecast_rain(
+                    zone,
+                    (zone.get(const.ZONE_BUCKET) or 0.0) + max(0.0, rain_so_far),
+                    expected_mm,
                 )
-                duration = self.duration_from_bucket(zone, bucket)
                 if duration >= zone.get(const.ZONE_DURATION):
                     continue
                 _LOGGER.info(

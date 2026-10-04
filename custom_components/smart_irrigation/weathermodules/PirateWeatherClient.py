@@ -5,6 +5,7 @@ import json
 import logging
 import math
 import sys
+import zoneinfo
 
 import requests
 
@@ -63,6 +64,38 @@ PirateWeather_required_key_temp = {
     PirateWeather_max_temp_key_name,
     PirateWeather_min_temp_key_name,
 }
+
+
+def site_date(timestamp, zone_name, offset_hours):
+    """Return the ISO date, at the site, of a daily ``time``, or None.
+
+    Pirate Weather stamps a day with its start at the site. It is read at
+    midday, so an offset off by an hour (a daylight saving change) still lands
+    on the right day. The site's own zone is used when given, else its offset;
+    with neither, None lets the caller fall back to counting positions.
+    """
+    if timestamp is None:
+        return None
+    try:
+        midday = float(timestamp) + 12 * 3600
+        if zone_name:
+            try:
+                zone = zoneinfo.ZoneInfo(zone_name)
+            except (zoneinfo.ZoneInfoNotFoundError, ValueError):
+                zone = None
+            if zone is not None:
+                return (
+                    datetime.datetime.fromtimestamp(midday, tz=zone).date().isoformat()
+                )
+        if offset_hours is None:
+            return None
+        moment = datetime.datetime.fromtimestamp(
+            midday + float(offset_hours) * 3600, tz=datetime.UTC
+        )
+    except (TypeError, ValueError, OverflowError, OSError):
+        return None
+    return moment.date().isoformat()
+
 
 # Validators
 PirateWeatherValidators = {
@@ -185,6 +218,14 @@ class PirateWeatherClient:  # pylint: disable=invalid-name
                         parsed_data[MAPPING_PRECIPITATION] = (
                             _precip * 10 if _precip is not None else 0.0
                         )
+                        # The day this entry is for, so the panel can label it
+                        # rather than count positions from Home Assistant's own
+                        # today, which is not the site's when the zones differ.
+                        day = site_date(
+                            data.get("time"), doc.get("timezone"), doc.get("offset")
+                        )
+                        if day is not None:
+                            parsed_data["date"] = day
                         parsed_data_total.append(parsed_data)
                     self._cached_forecast_data = parsed_data_total
                     self._last_time_called = datetime.datetime.now()
@@ -208,6 +249,17 @@ class PirateWeatherClient:  # pylint: disable=invalid-name
                 if include_today
                 else self._cached_forecast_data[1:]
             )
+
+    def get_cached_forecast_data(self):
+        """The forecast from the last response, without asking again.
+
+        For the live estimate, which runs on every refresh of a display and
+        must not spend a request each time. Starts at tomorrow, as
+        get_forecast_data does by default. None when nothing has been fetched.
+        """
+        if self._cached_forecast_data is None:
+            return None
+        return self._cached_forecast_data[1:]
 
     def relative_to_absolute_pressure(self, pressure, height):
         """The pressure at the site from the reported sea-level pressure."""

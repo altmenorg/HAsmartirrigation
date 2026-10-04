@@ -11,6 +11,7 @@ import logging
 import statistics
 from datetime import datetime, timedelta
 
+import homeassistant.util.dt as dt_util
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
@@ -584,18 +585,30 @@ class CalculationMixin:
         from the first reading. ``stamps`` pairs a timestamp with each value.
         A missing or unreadable one cannot show midnight, so a drop there is a
         reset only if it reaches 0.
+
+        Midnight is Home Assistant's, where a "rain today" sensor restarts. The
+        buffer writes naive stamps on the machine's clock, which is not the
+        same in a container left on UTC: read there, a revision just after
+        UTC midnight was booked as a reset and its rain counted twice, and the
+        real reset at local midnight was taken for a revision and lost.
         """
 
         def _day(stamp):
-            if isinstance(stamp, datetime):
-                return stamp.date()
             if stamp is None:
                 return None
+            if not isinstance(stamp, datetime):
+                try:
+                    stamp = parse_datetime(stamp)
+                except (ValueError, TypeError):
+                    return None
+                if stamp is None:
+                    return None
+            if stamp.tzinfo is None:
+                stamp = stamp.replace(tzinfo=SystemLocalTime())
             try:
-                parsed = parse_datetime(stamp)
-            except (ValueError, TypeError):
-                return None
-            return parsed.date() if parsed is not None else None
+                return dt_util.as_local(stamp).date()
+            except (OverflowError, ValueError, OSError):
+                return stamp.date()
 
         values = list(values)
         stamps = list(stamps or [])

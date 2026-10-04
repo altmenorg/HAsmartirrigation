@@ -16,14 +16,29 @@ aggregate.
 """
 
 from datetime import datetime, timedelta
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from homeassistant.util import dt as dt_util
 
 from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.calculation import CalculationMixin
+from custom_components.smart_irrigation.hourly_rows import SystemLocalTime
 
 change = CalculationMixin._cumulative_change
+
+
+@pytest.fixture(autouse=True)
+def _home_assistant_on_the_machines_clock():
+    """Midnight is Home Assistant's, and these cases have it on the machine's.
+
+    The test harness puts Home Assistant on US/Pacific, which only matches the
+    machine's clock by chance; test_audit_rain_gauge_midnight covers the two
+    clocks apart.
+    """
+    with patch.object(dt_util, "DEFAULT_TIME_ZONE", SystemLocalTime()):
+        yield
+
 
 DAY = datetime(2026, 9, 20, 0, 0, 0)
 

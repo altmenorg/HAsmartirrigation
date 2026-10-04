@@ -23,15 +23,43 @@ Two limits worth knowing, both stated rather than hidden:
   calculation will commit.
 """
 
+import datetime
 import logging
 
 import homeassistant.util.dt as dt_util
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
+from .helpers import parse_datetime
+from .hourly_rows import SystemLocalTime
 from .units import depth_to_display
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def _aware_iso(moment):
+    """``moment`` as an ISO string with its offset, for a browser to read.
+
+    The stored stamp is naive, on the machine's clock. Sent as it is, a browser
+    reads it as its own local time, which is another hour wherever the two
+    clocks differ. A value that cannot be read is passed on unchanged.
+    """
+    if moment is None:
+        return None
+    parsed = moment
+    if not isinstance(parsed, datetime.datetime):
+        try:
+            parsed = parse_datetime(moment)
+        except (ValueError, TypeError):
+            return moment
+        if parsed is None:
+            return moment
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=SystemLocalTime())
+    try:
+        return dt_util.as_local(parsed).isoformat()
+    except (OverflowError, ValueError, OSError):
+        return parsed.isoformat()
 
 
 class LiveEstimateMixin:
@@ -92,11 +120,7 @@ class LiveEstimateMixin:
             "delta": depth_to_display(calc.get(const.ZONE_DELTA), metric),
             "duration": calc.get(const.ZONE_DURATION),
             # What it is measured from, so the panel can say "since 23:00".
-            "since": (
-                zone.get(const.ZONE_LAST_CALCULATED).isoformat()
-                if hasattr(zone.get(const.ZONE_LAST_CALCULATED), "isoformat")
-                else zone.get(const.ZONE_LAST_CALCULATED)
-            ),
+            "since": _aware_iso(zone.get(const.ZONE_LAST_CALCULATED)),
             "as_of": dt_util.now().isoformat(),
             # Whether the days ahead were in it, for a zone that looks ahead.
             "forecast_used": bool(forecastdata),

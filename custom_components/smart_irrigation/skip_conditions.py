@@ -8,6 +8,7 @@ mixin the coordinator inherits; their bodies are unchanged and still use
 """
 
 import logging
+from datetime import timedelta
 
 import homeassistant.util.dt as dt_util
 from homeassistant.const import UnitOfSpeed, UnitOfTemperature
@@ -19,6 +20,35 @@ from .valve_runner import setting, wall_clock_seconds
 from .weathermodules.OpenMeteoClient import WIND_10M_TO_2M
 
 _LOGGER = logging.getLogger(__name__)
+
+# How far ahead of the run the forecast skip looks, where the service forecasts
+# hour by hour: about the reach of the "today and tomorrow" it replaces.
+FORECAST_SKIP_WINDOW_HOURS = 48
+
+
+def _run_day_and_next(forecast_data, run_start):
+    """The daily forecast of the run's day and the next, today at index 0.
+
+    The run is now unless ``run_start`` says otherwise, and then the list is
+    read from its day: by each entry's date where the service dates them,
+    counting from today otherwise.
+    """
+    if run_start is None:
+        return forecast_data[:2]
+    try:
+        run_day = dt_util.as_local(run_start).date()
+    except (AttributeError, TypeError, ValueError, OverflowError):
+        return forecast_data[:2]
+    dated = [
+        day
+        for day in forecast_data
+        if isinstance(day, dict) and isinstance(day.get("date"), str)
+    ]
+    if dated and len(dated) == len(forecast_data):
+        return [day for day in forecast_data if day["date"] >= run_day.isoformat()][:2]
+    offset = max(0, (run_day - dt_util.now().date()).days)
+    return forecast_data[offset : offset + 2]
+
 
 # The measured-condition thresholds: stored in the first unit, shown to an
 # imperial install in the second.
@@ -87,12 +117,17 @@ class SkipConditionsMixin:
         """
         zones = await self.store.async_get_zones()
         replaced = durations_by_zone or {}
-        durations = [
-            replaced.get(zone.get(const.ZONE_ID), zone.get(const.ZONE_DURATION, 0))
+        enabled = [
+            zone
             for zone in zones
             if zone.get(const.ZONE_STATE)
             in (const.ZONE_STATE_AUTOMATIC, const.ZONE_STATE_MANUAL)
         ]
+        durations = [
+            replaced.get(zone.get(const.ZONE_ID), zone.get(const.ZONE_DURATION, 0))
+            for zone in enabled
+        ]
+        leads = [zone.get(const.ZONE_LEAD_TIME) or 0 for zone in enabled]
         if not durations:
             return 0
         config = await self.store.async_get_config()
@@ -106,7 +141,10 @@ class SkipConditionsMixin:
             )
         )
         lengths = (
-            [wall_clock_seconds(config, duration) for duration in durations]
+            [
+                wall_clock_seconds(config, duration, lead)
+                for duration, lead in zip(durations, leads, strict=True)
+            ]
             if driving
             else list(durations)
         )
@@ -124,7 +162,7 @@ class SkipConditionsMixin:
             ) * (len(lengths) - 1)
         return int(sum(lengths) + pauses)
 
-    async def async_evaluate_skip_conditions(self) -> dict:
+    async def async_evaluate_skip_conditions(self, run_start=None) -> dict:
         """Evaluate every skip condition and say which one vetoes watering.
 
         The runner needs one boolean, but a panel that only knows *that* a run
@@ -137,6 +175,9 @@ class SkipConditionsMixin:
         check that vetoes, and ``checks``, one entry per condition carrying
         whether it is enabled, whether it could be evaluated at all, whether it
         skips, and the numbers behind that.
+
+        ``run_start`` is the start being decided, for a preview of a run still
+        to come; None is a run starting now. Only the forecast reads it.
         """
         # What is happening now first, then what is forecast, then the
         # calendar: the first check that vetoes is the reason given, and "it is
@@ -147,7 +188,11 @@ class SkipConditionsMixin:
             await self._guarded("rain_sensor", self._evaluate_rain_sensor),
             await self._guarded("freeze", self._evaluate_freeze),
             await self._guarded("wind", self._evaluate_wind),
-            await self._evaluate_precipitation_forecast(),
+            await (
+                self._evaluate_precipitation_forecast()
+                if run_start is None
+                else self._evaluate_precipitation_forecast(run_start=run_start)
+            ),
             await self._evaluate_days_between_irrigation(),
             await self._guarded("soil_moisture", self._evaluate_soil_moisture),
         ]
@@ -200,12 +245,16 @@ class SkipConditionsMixin:
                 sheltered.add(zone.get(const.ZONE_ID))
         return sheltered
 
-    async def _evaluate_precipitation_forecast(self) -> dict:
+    async def _evaluate_precipitation_forecast(self, run_start=None) -> dict:
         """Report the forecast-precipitation guard.
 
         ``available`` is False when the forecast could not be read at all. The
         run then goes ahead, which is the behaviour this has always had, but a
         reader can tell "no rain is coming" apart from "we could not find out".
+
+        ``run_start`` is when the run this decides begins, an aware datetime:
+        now for the decision itself (None), the next start for the panel's
+        preview, so the preview reads the same hours as the decision will.
         """
         result = {
             "id": "precipitation",
@@ -261,29 +310,41 @@ class SkipConditionsMixin:
                 result["available"] = False
                 return result
 
-            # Get forecast data including today (index 0). Without include_today
-            # the list would start at tomorrow and today's forecast rain would
-            # be missed entirely (#775).
-            forecast_data = await self.hass.async_add_executor_job(
-                weather_client.get_forecast_data, True
+            # The rain of the hours ahead of the run, where the service has
+            # them: two calendar days read from today counted the hours of
+            # today already past, and looked 42 hours ahead of a 06:00 run but
+            # 27 ahead of a 21:00 one.
+            expected_ahead = await self._expected_rain_ahead_of(
+                weather_client, run_start
             )
-            if not forecast_data:
-                _LOGGER.debug("No forecast data available")
-                result["available"] = False
-                return result
+            if expected_ahead is not None:
+                result["window_hours"] = FORECAST_SKIP_WINDOW_HOURS
+                total_precipitation = expected_ahead
+                expected_precipitation = expected_ahead
+            else:
+                # Get forecast data including today (index 0). Without
+                # include_today the list would start at tomorrow and today's
+                # forecast rain would be missed entirely (#775).
+                forecast_data = await self.hass.async_add_executor_job(
+                    weather_client.get_forecast_data, True
+                )
+                if not forecast_data:
+                    _LOGGER.debug("No forecast data available")
+                    result["available"] = False
+                    return result
 
-            # Check precipitation for today and tomorrow
-            total_precipitation = 0.0
-            # The rain to expect: each day's forecast weighted by how likely it
-            # is, when the service says. 10 mm at 30% is not 10 mm.
-            expected_precipitation = 0.0
-            for day_data in forecast_data[:2]:  # today (index 0) + tomorrow
-                millimetres = day_data.get(const.MAPPING_PRECIPITATION) or 0.0
-                total_precipitation += millimetres
-                probability = day_data.get("precipitation_probability")
-                if probability is not None:
-                    millimetres *= min(100.0, max(0.0, float(probability))) / 100.0
-                expected_precipitation += millimetres
+                # Check precipitation for the day of the run and the next
+                total_precipitation = 0.0
+                # The rain to expect: each day's forecast weighted by how likely
+                # it is, when the service says. 10 mm at 30% is not 10 mm.
+                expected_precipitation = 0.0
+                for day_data in _run_day_and_next(forecast_data, run_start):
+                    millimetres = day_data.get(const.MAPPING_PRECIPITATION) or 0.0
+                    total_precipitation += millimetres
+                    probability = day_data.get("precipitation_probability")
+                    if probability is not None:
+                        millimetres *= min(100.0, max(0.0, float(probability))) / 100.0
+                    expected_precipitation += millimetres
 
             _LOGGER.debug(
                 "Forecast precipitation: %.1f mm, %.1f mm to expect "
@@ -336,6 +397,29 @@ class SkipConditionsMixin:
             result["available"] = False
 
         return result
+
+    async def _expected_rain_ahead_of(self, weather_client, run_start):
+        """The rain to expect in the hours ahead of the run, in mm, or None.
+
+        None when the service has no hourly forecast, or it does not reach the
+        end of the window: the caller then reads the daily forecast.
+        """
+        fetch = getattr(weather_client, "get_expected_rain_ahead", None)
+        if fetch is None:
+            return None
+        start = run_start if run_start is not None else dt_util.now()
+        try:
+            expected = await self.hass.async_add_executor_job(
+                fetch,
+                start,
+                start + timedelta(hours=FORECAST_SKIP_WINDOW_HOURS),
+            )
+        except Exception as e:  # noqa: BLE001 - the daily forecast still answers
+            _LOGGER.debug("No hourly rain forecast for the skip: %s", e)
+            return None
+        if isinstance(expected, bool) or not isinstance(expected, (int, float)):
+            return None
+        return max(0.0, float(expected))
 
     async def _largest_deficit_to_water(self):
         """The largest deficit, in mm, among the zones that would water, or None."""
