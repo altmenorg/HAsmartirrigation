@@ -371,7 +371,6 @@
             "relative": "relativt"
           },
           "pressure-type": "Lufttrycket är",
-          "sensor-aggregate-of-sensor-values-to-calculate": "av sensorvärden för att beräkna varaktighet",
           "sensor-aggregate-use-the": "Använd",
           "sensor-entity": "Sensorentitet",
           "static_value": "Värde",
@@ -384,7 +383,6 @@
             "static": "Statiskt värde",
             "illuminance": "Ljussensor (lux)"
           },
-          "luminous_efficacy": "Ljusutbyte",
           "greenhouse": "Växthus",
           "greenhouse_description": "En sluten miljö: ett växthus, en plasttunnel, allt under glas eller plast. Inget regn når dessa zoner, så nedbörd hålls utanför deras vattenbalans och dess fält göms. Två saker måste du sätta själv, eftersom de inte går att gissa: ge Vindhastighet ett fast värde nära 0, eftersom beräkningen utgår från fri luft, och använd en ljussensor för Solinstrålning, eftersom glaset filtrerar himlen.",
           "module": "Beräkningsmotor",

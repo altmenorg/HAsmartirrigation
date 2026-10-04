@@ -371,7 +371,6 @@
             "relative": "relativt"
           },
           "pressure-type": "Trykket er",
-          "sensor-aggregate-of-sensor-values-to-calculate": "af sensorværdier til at beregne varighed",
           "sensor-aggregate-use-the": "Brug",
           "sensor-entity": "Sensorentitet",
           "static_value": "Værdi",
@@ -384,7 +383,6 @@
             "static": "Statisk værdi",
             "illuminance": "Lyssensor (lux)"
           },
-          "luminous_efficacy": "Lysudbytte",
           "greenhouse": "Drivhus",
           "greenhouse_description": "Et lukket miljø: et drivhus, en plasttunnel, alt under glas eller plast. Der kommer ingen regn til disse zoner, så nedbør holdes ude af deres vandbalance, og dens felter skjules. To ting skal du selv sætte, for de kan ikke gættes: giv Vindhastighed en fast værdi tæt på 0, da beregningen regner med fri luft, og brug en lyssensor til Solindstråling, da glasset filtrerer himlen.",
           "module": "Beregningsmotor",

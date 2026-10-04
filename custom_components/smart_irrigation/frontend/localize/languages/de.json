@@ -371,7 +371,6 @@
             "relative": "relativ"
           },
           "pressure-type": "Der Luftdruck ist",
-          "sensor-aggregate-of-sensor-values-to-calculate": "des Sensors für die Berechnung.",
           "sensor-aggregate-use-the": "Nutze den/die/das",
           "sensor-entity": "Sensor Entität",
           "static_value": "Wert",
@@ -384,7 +383,6 @@
             "static": "Fester Wert",
             "illuminance": "Lichtsensor (Lux)"
           },
-          "luminous_efficacy": "Lichtausbeute",
           "greenhouse": "Gewächshaus",
           "greenhouse_description": "Eine geschlossene Umgebung: ein Gewächshaus, ein Folientunnel, alles unter Glas oder Folie. Zu diesen Zonen kommt kein Regen, der Niederschlag bleibt daher aus ihrer Wasserbilanz heraus und seine Felder werden ausgeblendet. Zwei Dinge musst du selbst setzen, weil sie nicht zu erraten sind: gib der Windgeschwindigkeit einen statischen Wert nahe 0, da die Berechnung freie Luft annimmt, und nutze einen Lichtsensor für die Sonnenstrahlung, da die Verglasung den Himmel filtert.",
           "module": "Berechnungs-Engine",

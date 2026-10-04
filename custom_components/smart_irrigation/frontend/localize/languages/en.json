@@ -436,8 +436,7 @@
             "relative": "relative"
           },
           "pressure-type": "Pressure is",
-          "sensor-aggregate-of-sensor-values-to-calculate": "of sensor values to calculate duration",
-          "sensor-aggregate-use-the": "Use the",
+          "sensor-aggregate-use-the": "How the readings are combined",
           "sensor-entity": "Sensor entity",
           "static_value": "Value",
           "input-units": "Input provides values in",
@@ -447,9 +446,9 @@
             "weather_service": "Weather service",
             "sensor": "Sensor",
             "static": "Static value",
+            "radiation_sensor": "Radiation sensor",
             "illuminance": "Light sensor (lux)"
           },
-          "luminous_efficacy": "Luminous efficacy",
           "greenhouse": "Greenhouse",
           "greenhouse_description": "An enclosed environment: a greenhouse, a polytunnel, anything under glass or plastic. No rain reaches these zones, so precipitation is left out of their water balance and its fields are hidden. Two things to set yourself, because they cannot be guessed: give Wind speed a static value near 0, since the calculation assumes open air, and use a light sensor for Solar Radiation, since the glazing filters the sky.",
           "module": "Calculation engine",

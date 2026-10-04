@@ -44,7 +44,6 @@ import {
   MAPPING_CONF_SOURCE_SENSOR,
   MAPPING_CONF_SOURCE_STATIC_VALUE,
   MAPPING_CONF_SOURCE_ILLUMINANCE,
-  MAPPING_CONF_LUMINOUS_EFFICACY,
   MAPPING_CONF_STATIC_VALUE,
   MAPPING_CONF_UNIT,
   MAPPING_DEWPOINT,
@@ -625,8 +624,8 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     // the UI — ``data``, ``data_last_updated``, ``data_last_entry`` and
     // ``data_last_calculation`` are server-computed and would be rejected or
     // overwrite authoritative state on the backend (issue #680).
-    const { id, name, mappings } = mapping;
-    await saveMapping(this.hass, { id, name, mappings });
+    const { id, name, mappings, greenhouse } = mapping;
+    await saveMapping(this.hass, { id, name, mappings, greenhouse });
   }
   /**
    * The sources this group's engine reads, or null when every source applies.
@@ -873,16 +872,9 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         ?selected=${currentSource === MAPPING_CONF_SOURCE_SENSOR}
       >
         ${localize(
-          "panels.mappings.cards.mapping.sources.sensor",
-          this.hass.language,
-        )}
-      </option>
-      <option
-        value="${MAPPING_CONF_SOURCE_STATIC_VALUE}"
-        ?selected=${currentSource === MAPPING_CONF_SOURCE_STATIC_VALUE}
-      >
-        ${localize(
-          "panels.mappings.cards.mapping.sources.static",
+          value === MAPPING_SOLRAD
+            ? "panels.mappings.cards.mapping.sources.radiation_sensor"
+            : "panels.mappings.cards.mapping.sources.sensor",
           this.hass.language,
         )}
       </option>
@@ -897,6 +889,15 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
             )}
           </option>`
         : ""}
+      <option
+        value="${MAPPING_CONF_SOURCE_STATIC_VALUE}"
+        ?selected=${currentSource === MAPPING_CONF_SOURCE_STATIC_VALUE}
+      >
+        ${localize(
+          "panels.mappings.cards.mapping.sources.static",
+          this.hass.language,
+        )}
+      </option>
     `;
   }
 
@@ -1195,9 +1196,6 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
       source === MAPPING_CONF_SOURCE_ILLUMINANCE
         ? this.renderSensorInput(index, value, mappingline)
         : ""}
-      ${source === MAPPING_CONF_SOURCE_ILLUMINANCE
-        ? this.renderLuminousEfficacyInput(index, value, mappingline)
-        : ""}
       ${source === MAPPING_CONF_SOURCE_STATIC_VALUE
         ? this.renderStaticValueInput(index, value, mappingline)
         : ""}
@@ -1282,51 +1280,6 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private renderLuminousEfficacyInput(
-    index: number,
-    value: string,
-    mappingline: any,
-  ): TemplateResult {
-    if (!this.hass) return html``;
-
-    // Daylight is around 110 lm/W, and greenhouse glazing shifts the spectrum,
-    // so this is the one number worth calibrating against a known radiation
-    // figure. It is not a setting most people need to touch.
-    return this._numRow(
-      localize(
-        "panels.mappings.cards.mapping.luminous_efficacy",
-        this.hass.language,
-      ),
-      "lm/W",
-      mappingline[MAPPING_CONF_LUMINOUS_EFFICACY] ?? 110,
-      (v: string) =>
-        this.handleLuminousEfficacyChange(index, value, {
-          target: { value: v },
-        } as unknown as Event),
-      1,
-    );
-  }
-
-  private handleLuminousEfficacyChange(
-    index: number,
-    value: string,
-    e: Event,
-  ): void {
-    const mapping = this.mappings[index];
-    this.handleEditMapping(index, {
-      ...mapping,
-      mappings: {
-        ...mapping.mappings,
-        [value]: {
-          ...mapping.mappings[value],
-          [MAPPING_CONF_LUMINOUS_EFFICACY]: parseFloat(
-            (e.target as HTMLInputElement).value,
-          ),
-        },
-      },
-    });
-  }
-
   private renderStaticValueInput(
     index: number,
     value: string,
@@ -1359,11 +1312,48 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
   ): TemplateResult {
     if (!this.hass || !this.config) return html``;
 
+    // Home Assistant already knows what the entity reports in. Asking again is
+    // a question with one right answer; it comes back only when HA says
+    // nothing usable, or when the stored unit contradicts what it says.
+    const reported = this.reportedUnit(value, mappingline);
+    if (
+      reported &&
+      (!mappingline[MAPPING_CONF_UNIT] ||
+        mappingline[MAPPING_CONF_UNIT] === reported)
+    ) {
+      return html``;
+    }
+
     return this._selectRow(
       localize("panels.mappings.cards.mapping.input-units", this.hass.language),
       this.renderUnitOptionsForMapping(value, mappingline),
       (e: Event) => this.handleUnitChange(index, value, e),
     );
+  }
+
+  // The unit a sensor entity reports, in the spelling the options use, or
+  // undefined when it is not one of the units this field can be read in. The
+  // backend does the same when a group stores no unit.
+  private reportedUnit(value: string, mappingline: any): string | undefined {
+    if (mappingline[MAPPING_CONF_SOURCE] !== MAPPING_CONF_SOURCE_SENSOR) {
+      return undefined;
+    }
+    const entity = (mappingline[MAPPING_CONF_SENSOR] || "").trim();
+    const reported = this.hass?.states?.[entity]?.attributes
+      ?.unit_of_measurement as string | undefined;
+    if (!reported) return undefined;
+    const spelled: Record<string, string> = {
+      "W/m²": "W/m2",
+      "m/s": "meter/s",
+      mph: "mile/h",
+      kn: "knot",
+      inHg: "inch Hg",
+      mbar: "millibar",
+    };
+    const candidate = spelled[reported] ?? reported;
+    return getOptionsForMappingType(value).some((o) => o.unit === candidate)
+      ? candidate
+      : undefined;
   }
 
   private renderPressureTypeSelect(
@@ -1389,6 +1379,10 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     mappingline: any,
   ): TemplateResult {
     if (!this.hass) return html``;
+    // Nine ways to combine readings is a question for someone who knows why
+    // they would change it. The standard mode keeps what is stored and asks
+    // nothing.
+    if (this.config?.ui_mode !== "advanced") return html``;
 
     // The aggregate row has explanatory copy on both sides of the select
     // ("use the … of sensor values to calculate"). Keep both labels but place
@@ -1400,12 +1394,6 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
             "panels.mappings.cards.mapping.sensor-aggregate-use-the",
             this.hass.language,
           )}
-          <span class="unit"
-            >${localize(
-              "panels.mappings.cards.mapping.sensor-aggregate-of-sensor-values-to-calculate",
-              this.hass.language,
-            )}</span
-          >
         </div>
         <div class="select-wrap">
           <select
@@ -1910,6 +1898,30 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
                       name: v,
                     }),
                 )}
+                <div class="setting-row">
+                  <div class="setting-label">
+                    ${localize(
+                      "panels.mappings.cards.mapping.greenhouse",
+                      lang,
+                    )}
+                  </div>
+                  <ha-switch
+                    .checked=${!!mapping.greenhouse}
+                    @change=${(e: Event) =>
+                      this.handleEditMapping(index, {
+                        ...mapping,
+                        greenhouse: (e.target as any).checked,
+                      })}
+                  ></ha-switch>
+                </div>
+                ${mapping.greenhouse
+                  ? html`<div class="weather-note">
+                      ${localize(
+                        "panels.mappings.cards.mapping.greenhouse_description",
+                        lang,
+                      )}
+                    </div>`
+                  : ""}
                 ${this.renderMappingSettings(mapping, index)}
               </div>
               ${this.renderWeatherRecords(mapping)}
@@ -1939,7 +1951,15 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     index: number,
   ): TemplateResult {
     // Render mapping settings in smaller chunks
-    const settingsEntries = Object.entries(mapping.mappings);
+    // Nothing falls on a greenhouse, so the two rain fields are not just
+    // unused here, they are misleading: a rain gauge outside measures water
+    // that never reaches these zones.
+    const settingsEntries = Object.entries(mapping.mappings).filter(
+      ([value]) =>
+        !mapping.greenhouse ||
+        (value !== MAPPING_PRECIPITATION &&
+          value !== MAPPING_CURRENT_PRECIPITATION),
+    );
     return html`
       ${settingsEntries.map(([value]) =>
         this.renderMappingSetting(index, value),

@@ -371,7 +371,6 @@
             "relative": "względne"
           },
           "pressure-type": "Ciśnienie jest",
-          "sensor-aggregate-of-sensor-values-to-calculate": "wartości czujników do obliczenia czasu trwania",
           "sensor-aggregate-use-the": "Użyj",
           "sensor-entity": "Encja czujnika",
           "static_value": "Wartość",
@@ -384,7 +383,6 @@
             "static": "Wartość statyczna",
             "illuminance": "Czujnik światła (lux)"
           },
-          "luminous_efficacy": "Skuteczność świetlna",
           "greenhouse": "Szklarnia",
           "greenhouse_description": "Środowisko zamknięte: szklarnia, tunel foliowy, wszystko pod szkłem lub folią. Do tych stref nie dociera deszcz, więc opad zostaje poza ich bilansem wodnym, a jego pola są ukryte. Dwie rzeczy trzeba ustawić samemu, bo nie da się ich odgadnąć: nadaj Prędkości wiatru stałą wartość blisko 0, bo obliczenie zakłada wolne powietrze, i użyj czujnika światła dla Promieniowania słonecznego, bo szyby filtrują niebo.",
           "module": "Silnik obliczeniowy",

@@ -371,7 +371,6 @@
             "relative": "relativa"
           },
           "pressure-type": "La presión es",
-          "sensor-aggregate-of-sensor-values-to-calculate": "de los valores de los sensores para calcular la duración",
           "sensor-aggregate-use-the": "Usar la",
           "sensor-entity": "Entidad de sensor",
           "static_value": "Valor estático",
@@ -384,7 +383,6 @@
             "static": "Valor estático",
             "illuminance": "Sensor de luz (lux)"
           },
-          "luminous_efficacy": "Eficacia luminosa",
           "greenhouse": "Invernadero",
           "greenhouse_description": "Un entorno cerrado: un invernadero, un túnel de plástico, cualquier cosa bajo cristal o plástico. A estas zonas no les llega la lluvia, así que la precipitación se deja fuera de su balance hídrico y sus campos se ocultan. Dos cosas hay que poner a mano, porque no se pueden adivinar: dale a Velocidad del viento un valor estático cercano a 0, porque el cálculo supone aire libre, y usa un sensor de luz para la Radiación solar, porque el acristalamiento filtra el cielo.",
           "module": "Motor de cálculo",

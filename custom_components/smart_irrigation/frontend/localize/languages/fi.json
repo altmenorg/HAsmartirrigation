@@ -371,7 +371,6 @@
             "relative": "suhteellinen"
           },
           "pressure-type": "Paine on",
-          "sensor-aggregate-of-sensor-values-to-calculate": "anturiarvoista keston laskemiseksi",
           "sensor-aggregate-use-the": "Käytä",
           "sensor-entity": "Anturientiteetti",
           "static_value": "Arvo",
@@ -384,7 +383,6 @@
             "static": "Staattinen arvo",
             "illuminance": "Valoanturi (lux)"
           },
-          "luminous_efficacy": "Valotehokkuus",
           "greenhouse": "Kasvihuone",
           "greenhouse_description": "Suljettu ympäristö: kasvihuone, muovitunneli, mikä tahansa lasin tai muovin alla. Näille alueille ei tule sadetta, joten sade jätetään niiden vesitasapainon ulkopuolelle ja sen kentät piilotetaan. Kaksi asiaa sinun on asetettava itse, koska niitä ei voi arvata: anna Tuulen nopeudelle kiinteä arvo lähellä nollaa, koska laskenta olettaa vapaan ilman, ja käytä Auringon säteilylle valoanturia, koska lasitus suodattaa taivaan.",
           "module": "Laskentamoottori",

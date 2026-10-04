@@ -390,7 +390,6 @@
             "relative": "relatív"
           },
           "pressure-type": "A nyomás",
-          "sensor-aggregate-of-sensor-values-to-calculate": "az érzékelőértékekből az időtartam kiszámításához",
           "sensor-aggregate-use-the": "Használja a",
           "sensor-entity": "Érzékelő entitás",
           "static_value": "Érték",
@@ -403,7 +402,6 @@
             "static": "Statikus érték",
             "illuminance": "Fényérzékelő (lux)"
           },
-          "luminous_efficacy": "Fényhasznosítás",
           "greenhouse": "Üvegház",
           "greenhouse_description": "Zárt környezet: üvegház, fóliasátor, bármi üveg vagy fólia alatt. Ezekhez a zónákhoz nem ér el eső, így a csapadék kimarad a vízmérlegükből, és a mezői rejtve vannak. Két dolgot magadnak kell beállítanod, mert nem kitalálhatók: adj a Szélsebességnek 0-hoz közeli állandó értéket, mert a számítás szabad levegőt feltételez, és használj fényérzékelőt a Napsugárzáshoz, mert az üvegezés szűri az eget.",
           "module": "Számítási motor",

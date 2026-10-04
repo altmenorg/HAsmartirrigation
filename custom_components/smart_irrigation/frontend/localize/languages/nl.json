@@ -376,7 +376,6 @@
             "relative": "relatief"
           },
           "pressure-type": "Druk is",
-          "sensor-aggregate-of-sensor-values-to-calculate": "van de sensor waardes om irrigatietijd te berekenen",
           "sensor-aggregate-use-the": "Gebruik de/het",
           "sensor-entity": "Sensor entiteit",
           "static_value": "Waarde",
@@ -389,7 +388,6 @@
             "static": "Vaste waarde",
             "illuminance": "Lichtsensor (lux)"
           },
-          "luminous_efficacy": "Lichtrendement",
           "greenhouse": "Serre",
           "greenhouse_description": "Een afgesloten omgeving: een serre, een folietunnel, alles onder glas of plastic. Er komt geen regen bij deze zones, dus neerslag blijft buiten hun waterbalans en de velden ervan worden verborgen. Twee dingen moet je zelf zetten, want ze zijn niet te raden: geef Windsnelheid een statische waarde dicht bij 0, want de berekening gaat uit van open lucht, en gebruik een lichtsensor voor Zonnestraling, want het glas filtert de lucht.",
           "module": "Berekeningsengine",

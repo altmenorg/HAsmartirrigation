@@ -371,7 +371,6 @@
             "relative": "relativní"
           },
           "pressure-type": "Tlak je",
-          "sensor-aggregate-of-sensor-values-to-calculate": "hodnot senzorů pro výpočet doby trvání",
           "sensor-aggregate-use-the": "Použít",
           "sensor-entity": "Entita senzoru",
           "static_value": "Hodnota",
@@ -384,7 +383,6 @@
             "static": "Statická hodnota",
             "illuminance": "Světelný senzor (lux)"
           },
-          "luminous_efficacy": "Světelná účinnost",
           "greenhouse": "Skleník",
           "greenhouse_description": "Uzavřené prostředí: skleník, fóliovník, cokoli pod sklem nebo fólií. K těmto zónám se déšť nedostane, takže srážky zůstávají mimo jejich vodní bilanci a jejich pole se skryjí. Dvě věci musíte nastavit sami, protože je nelze odhadnout: dejte Rychlosti větru statickou hodnotu blízkou 0, protože výpočet předpokládá volný vzduch, a pro Solární radiaci použijte světelný senzor, protože zasklení filtruje nebe.",
           "module": "Výpočetní jádro",

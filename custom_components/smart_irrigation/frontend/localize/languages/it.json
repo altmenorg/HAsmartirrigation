@@ -371,7 +371,6 @@
             "relative": "relativa"
           },
           "pressure-type": "La pressione è",
-          "sensor-aggregate-of-sensor-values-to-calculate": "dei valori del sensore per calcolare la durata",
           "sensor-aggregate-use-the": "Usa il",
           "sensor-entity": "Entità sensore",
           "static_value": "Valore",
@@ -384,7 +383,6 @@
             "static": "Valore statico",
             "illuminance": "Sensore di luce (lux)"
           },
-          "luminous_efficacy": "Efficienza luminosa",
           "greenhouse": "Serra",
           "greenhouse_description": "Un ambiente chiuso: una serra, un tunnel di plastica, qualsiasi cosa sotto vetro o plastica. A queste zone non arriva pioggia, quindi la precipitazione resta fuori dal loro bilancio idrico e i suoi campi vengono nascosti. Due cose da impostare a mano, perché non si possono indovinare: dai alla Velocità del vento un valore statico vicino a 0, perché il calcolo presuppone aria libera, e usa un sensore di luce per la Radiazione solare, perché la copertura filtra il cielo.",
           "module": "Motore di calcolo",

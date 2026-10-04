@@ -436,8 +436,7 @@
             "relative": "relative"
           },
           "pressure-type": "La pression est",
-          "sensor-aggregate-of-sensor-values-to-calculate": "des valeurs des capteurs pour calculer la durée",
-          "sensor-aggregate-use-the": "Utiliser les",
+          "sensor-aggregate-use-the": "Combinaison des relevés",
           "sensor-entity": "Entité capteur",
           "static_value": "Valeur",
           "input-units": "L'entité fournit des entrées en",
@@ -447,9 +446,9 @@
             "weather_service": "Weather service",
             "sensor": "Capteur",
             "static": "Valeur statique",
+            "radiation_sensor": "Capteur de rayonnement",
             "illuminance": "Capteur de luminosité (lux)"
           },
-          "luminous_efficacy": "Efficacité lumineuse",
           "greenhouse": "Serre",
           "greenhouse_description": "Un environnement clos : serre, tunnel, tout ce qui est sous verre ou plastique. Aucune pluie n'atteint ces zones, donc la précipitation est exclue de leur bilan hydrique et ses champs sont masqués. Deux réglages restent à votre main, faute de pouvoir être devinés : donnez au vent une valeur statique proche de 0, car le calcul suppose l'air libre, et utilisez un capteur de luminosité pour le rayonnement solaire, car le vitrage filtre le ciel.",
           "module": "Moteur de calcul",

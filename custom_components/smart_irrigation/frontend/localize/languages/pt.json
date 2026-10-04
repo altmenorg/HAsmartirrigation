@@ -371,7 +371,6 @@
             "relative": "relativa"
           },
           "pressure-type": "A pressão é",
-          "sensor-aggregate-of-sensor-values-to-calculate": "dos valores dos sensores para calcular a duração",
           "sensor-aggregate-use-the": "Utilizar a",
           "sensor-entity": "Entidade do sensor",
           "static_value": "Valor",
@@ -384,7 +383,6 @@
             "static": "Valor estático",
             "illuminance": "Sensor de luz (lux)"
           },
-          "luminous_efficacy": "Eficácia luminosa",
           "greenhouse": "Estufa",
           "greenhouse_description": "Um ambiente fechado: uma estufa, um túnel de plástico, qualquer coisa sob vidro ou plástico. A chuva não chega a estas zonas, por isso a precipitação fica fora do seu balanço hídrico e os seus campos são escondidos. Duas coisas para definir por si, porque não se adivinham: dê à Velocidade do vento um valor estático perto de 0, porque o cálculo assume ar livre, e use um sensor de luz para a Radiação solar, porque a cobertura filtra o céu.",
           "module": "Motor de cálculo",

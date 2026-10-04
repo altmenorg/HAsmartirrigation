@@ -371,7 +371,6 @@
             "relative": "相对"
           },
           "pressure-type": "气压为",
-          "sensor-aggregate-of-sensor-values-to-calculate": "传感器值以计算持续时间",
           "sensor-aggregate-use-the": "使用",
           "sensor-entity": "传感器实体",
           "static_value": "值",
@@ -384,7 +383,6 @@
             "static": "静态值",
             "illuminance": "光照传感器（勒克斯）"
           },
-          "luminous_efficacy": "光视效能",
           "greenhouse": "温室",
           "greenhouse_description": "封闭环境：温室、塑料大棚，以及任何玻璃或塑料覆盖之下的地方。雨到不了这些区域，因此降水不计入它们的水量平衡，相关字段也会隐藏。有两项需要你自己设置，因为无法推测：给风速一个接近 0 的静态值，因为计算假定的是露天；太阳辐射用光照传感器，因为覆盖材料会过滤天空。",
           "module": "计算引擎",
