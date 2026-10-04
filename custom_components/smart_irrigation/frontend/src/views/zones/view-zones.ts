@@ -72,7 +72,14 @@ import {
   ZONE_INPUT_METHOD_THROUGHPUT,
   ZONE_LEAD_TIME,
   ZONE_LINKED_ENTITY,
+  ZONE_SAFETY_OFF_TOPIC,
+  ZONE_SAFETY_OFF_STATE_KEY,
   ZONE_MAPPING,
+  ZONE_ALLOWED_DEPLETION,
+  ZONE_AVAILABLE_WATER,
+  ZONE_CROP_FACTOR_BY_MONTH,
+  ZONE_DAYS_BETWEEN_IRRIGATION,
+  ZONE_DISTRIBUTION_EFFICIENCY,
   ZONE_IRRIGATION_THRESHOLD,
   ZONE_MAXIMUM_BUCKET,
   ZONE_MAXIMUM_DURATION,
@@ -509,6 +516,62 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
    * lead time. Those have sound defaults, and meeting them by accident is how
    * a working installation gets broken.
    */
+  /** The crop factor of each month: a table for a crop that grows through the year. */
+  private _cropFactorByMonth(
+    zone: SmartIrrigationZone,
+    index: number,
+    lang: string,
+  ): TemplateResult {
+    const table: (number | null)[] =
+      zone.crop_factor_by_month && zone.crop_factor_by_month.length === 12
+        ? zone.crop_factor_by_month
+        : new Array(12).fill(null);
+    const change = (month: number, raw: string) => {
+      const next = [...table];
+      const value = parseFloat(raw);
+      next[month] = isNaN(value) || value <= 0 ? null : value;
+      this.handleEditZone(index, {
+        ...zone,
+        [ZONE_CROP_FACTOR_BY_MONTH]: next.every((v) => v === null)
+          ? null
+          : next,
+      });
+    };
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">
+          ${localize("panels.zones.labels.crop-factor-by-month", lang)}
+        </div>
+      </div>
+      <div class="month-grid">
+        ${table.map(
+          (value, month) => html`
+            <label class="month-cell">
+              <span class="unit"
+                >${localize(
+                  `panels.zones.labels.months.${month + 1}`,
+                  lang,
+                )}</span
+              >
+              <input
+                class="field num-input"
+                type="number"
+                min="0"
+                step="0.05"
+                .value=${value === null ? "" : String(value)}
+                @change=${(e: Event) =>
+                  change(month, (e.target as HTMLInputElement).value)}
+              />
+            </label>
+          `,
+        )}
+      </div>
+      <div class="setting-help">
+        ${localize("panels.zones.labels.crop-factor-by-month-help", lang)}
+      </div>
+    `;
+  }
+
   private _adv(content: TemplateResult | string): TemplateResult | string {
     return this.config?.ui_mode === "advanced" ? content : "";
   }
@@ -1390,6 +1453,103 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                     0.1,
                   ),
                 )}
+                ${this._adv(
+                  html`${this._numRow(
+                      localize(
+                        "panels.zones.labels.days-between-irrigation",
+                        lang,
+                      ),
+                      localize("panels.zones.labels.days", lang),
+                      zone.days_between_irrigation,
+                      (v) => {
+                        // Empty means "follow the general setting".
+                        const days = parseInt(v, 10);
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_DAYS_BETWEEN_IRRIGATION]: isNaN(days)
+                            ? null
+                            : Math.max(0, days),
+                        });
+                      },
+                      1,
+                    )}
+                    <div class="setting-help">
+                      ${localize(
+                        "panels.zones.labels.days-between-irrigation-help",
+                        lang,
+                      )}
+                    </div>`,
+                )}
+                ${this._adv(this._cropFactorByMonth(zone, index, lang))}
+                ${this._adv(
+                  html`${this._numRow(
+                      localize("panels.zones.labels.available-water", lang),
+                      output_unit(this.config, ZONE_BUCKET),
+                      zone.available_water != null
+                        ? Number(zone.available_water).toFixed(1)
+                        : "",
+                      (v) => {
+                        const mm = parseFloat(v);
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_AVAILABLE_WATER]:
+                            isNaN(mm) || mm <= 0 ? null : mm,
+                        });
+                      },
+                      1,
+                    )}
+                    ${this._numRow(
+                      localize("panels.zones.labels.allowed-depletion", lang),
+                      "%",
+                      zone.allowed_depletion != null
+                        ? Number(zone.allowed_depletion).toFixed(0)
+                        : "",
+                      (v) => {
+                        const pct = parseFloat(v);
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_ALLOWED_DEPLETION]: isNaN(pct)
+                            ? null
+                            : Math.min(95, Math.max(5, pct)),
+                        });
+                      },
+                      5,
+                    )}
+                    <div class="setting-help">
+                      ${localize(
+                        "panels.zones.labels.available-water-help",
+                        lang,
+                      )}
+                    </div>`,
+                )}
+                ${this._adv(
+                  html`${this._numRow(
+                      localize(
+                        "panels.zones.labels.distribution-efficiency",
+                        lang,
+                      ),
+                      "%",
+                      zone.distribution_efficiency != null
+                        ? Number(zone.distribution_efficiency).toFixed(0)
+                        : "",
+                      (v) => {
+                        const pct = parseFloat(v);
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_DISTRIBUTION_EFFICIENCY]: isNaN(pct)
+                            ? null
+                            : Math.min(100, Math.max(5, pct)),
+                        });
+                      },
+                      5,
+                    )}
+                    <div class="setting-help">
+                      ${localize(
+                        "panels.zones.labels.distribution-efficiency-help",
+                        lang,
+                      )}
+                    </div>`,
+                )}
                 ${this._numRow(
                   localize("panels.zones.labels.et-deficiency", lang),
                   output_unit(this.config, ZONE_BUCKET),
@@ -1417,6 +1577,42 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                         }),
                       localize("panels.zones.labels.linked-entity-hint", lang),
                     )
+                  : ""}
+                ${this.config?.direct_valve_control_enabled &&
+                zone.linked_entity
+                  ? this._adv(html`
+                      ${this._textRow(
+                        localize("panels.zones.labels.safety-off-topic", lang),
+                        localize("panels.zones.labels.optional", lang),
+                        zone.safety_off_topic,
+                        (v) =>
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_SAFETY_OFF_TOPIC]: v || undefined,
+                          }),
+                      )}
+                      ${zone.safety_off_topic
+                        ? this._textRow(
+                            localize(
+                              "panels.zones.labels.safety-off-state-key",
+                              lang,
+                            ),
+                            "",
+                            zone.safety_off_state_key,
+                            (v) =>
+                              this.handleEditZone(index, {
+                                ...zone,
+                                [ZONE_SAFETY_OFF_STATE_KEY]: v || undefined,
+                              }),
+                          )
+                        : ""}
+                      <div class="setting-help">
+                        ${localize(
+                          "panels.zones.labels.safety-off-topic-help",
+                          lang,
+                        )}
+                      </div>
+                    `)
                   : ""}
                 ${this._adv(
                   // A flow meter is for crediting what actually came out, which
@@ -2091,6 +2287,28 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         min-height: 52px;
         padding: 4px 0;
         border-bottom: 1px solid var(--divider-color);
+      }
+
+      .month-grid {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 8px;
+        padding: 4px 0 8px;
+      }
+      @media (max-width: 600px) {
+        .month-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+      .month-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        font-size: 12px;
+      }
+      .month-cell input {
+        width: 100%;
+        box-sizing: border-box;
       }
 
       /* One line under a setting, saying what the choice above it means. */

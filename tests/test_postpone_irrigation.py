@@ -30,6 +30,7 @@ def _coordinator(config=None):
     coordinator.hass = MagicMock()
     coordinator.store = MagicMock()
     coordinator.store.async_update_config = AsyncMock()
+    coordinator.store.async_get_zones = AsyncMock(return_value=[])
     coordinator.store.async_get_config = AsyncMock(return_value=dict(config or {}))
     return coordinator
 

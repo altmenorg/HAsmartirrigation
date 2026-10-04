@@ -13,7 +13,7 @@ After installation, the following services are available:
 | --- | --- |
 |`Smart Irrigation: calculate_zone`|Triggers the calculation of one specific zone. Note that used weather data is deleted afterwards by default unless you specify `delete_weather_data: false`. Specify `dry_run: true` to see what the calculation would do without changing anything -- see [Dry run](#dry-run) below.|
 |`Smart Irrigation: calculate_all_zones`|Triggers the calculation of all automatic zones. Use only if you disabled automatic refresh in the options. Note that after calculation weather data is deleted by default unless you specify `delete_weather_data: false`. Specify `dry_run: true` to see what the calculation would do without changing anything -- see [Dry run](#dry-run) below.|
-|`Smart Irrigation: clear_all_weather_data`|Deletes all weather data|
+|`Smart Irrigation: clear_all_weather_data`|Deletes all weather data. Pick zones and only the weather data of their sensor groups is deleted (the other zones of those groups lose it too, since a group's data is shared).|
 |`Smart Irrigation: generate_watering_calendar`|Generate a 12-month watering calendar for a zone based on representative climate data.|
 |`Smart Irrigation: reset_all_buckets`|Resets all buckets to 0.|
 |`Smart Irrigation: credit_watering`|Credits a zone with the water a run of your own delivered: its precipitation rate times `seconds` (the zone's duration when left out), less its lead time. Use it at the end of an irrigation automation rather than `reset_bucket`: a run cut short by the zone's maximum duration keeps the deficit it did not water.|

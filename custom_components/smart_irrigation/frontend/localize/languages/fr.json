@@ -219,6 +219,8 @@
           "labels": {
             "auto-calc-enabled": "Calcule automatiquement la durée par zone",
             "calc-time": "Calculer à",
+            "recalculate-before-start": "Recalculer juste avant le premier départ de la journée",
+            "recalculate-before-start-hint": "Le calcul de la nuit utilise l'évapotranspiration, la température et le vent des heures qui le précèdent. Un départ au coucher du soleil arrose alors sur des données vieilles d'une vingtaine d'heures, seule la pluie étant remise à jour. Activé, les zones sont recalculées, avec une météo fraîche, juste avant le premier départ. Rien n'est fait si une zone a été calculée dans l'heure.",
             "hourly-calculation": "Calculer l'évapotranspiration heure par heure",
             "hourly-calculation-hint": "Somme l'équation horaire FAO-56 sur chaque heure depuis le dernier calcul, au lieu d'appliquer l'équation journalière à des moyennes, qui masquent si le soleil et la chaleur sont arrivés ensemble. Une nouvelle installation démarre dessus ; une installation antérieure garde l'équation journalière jusqu'à ce que vous basculiez, parce que les deux donnent des nombres différents et que votre arrosage ne doit pas changer sur une mise à jour. Le soleil de chaque heure vient d'un capteur de rayonnement ou de luminosité, de l'historique horaire du service météo, ou de l'amplitude thermique du jour. Utile quand les relevés arrivent au fil de la journée : une seule mise à jour par jour laisse un unique relevé tenu sur vingt-quatre heures, et aucune des deux formes n'est alors fiable. Une serre sans capteur propre garde l'équation journalière."
           }
@@ -244,7 +246,7 @@
         },
         "continuousupdates": {
           "header": "Mises à jour continues pour les capteurs (expérimental)",
-          "description": "Cette fonctionnalité expérimentale met à jour en continu les données des capteurs. C'est utile pour les groupes de capteurs qui utilisent des sources fournissant des données continues, comme les stations météo. Elle ne peut pas être utilisée pour les groupes de capteurs qui s'appuient au moins en partie sur des services météo, car l'interrogation continue des API engendre des coûts. Gardez à l'esprit que cette fonctionnalité est expérimentale et peut ne pas fonctionner comme prévu. À utiliser à vos propres risques.",
+          "description": "Enregistre chaque changement d'un capteur du groupe, au lieu d'un relevé par mise à jour. Le calcul horaire et le pluviomètre en tirent des moyennes plus fines. Les zones ne sont plus recalculées à chaque changement : le calcul programmé s'en charge, une fois, à partir des relevés enregistrés. Inutilisable pour les groupes de capteurs qui s'appuient au moins en partie sur un service météo, car interroger l'API en continu coûterait de l'argent.",
           "labels": {
             "continuousupdates": "Activer les mises à jour continues",
             "sensor_debounce": "Anti-rebond capteur"
@@ -563,6 +565,30 @@
         "flow-sensor-hint": "Pour un comptage exact au lieu de débit x temps : un total de compteur d'eau cumulé (state class total_increasing), pas un débit instantané. L'unité est lue automatiquement (L, mL, m³, gal, ft³).",
         "optional": "option",
         "irrigation-threshold": "Seuil d'arrosage",
+        "days": "jours",
+        "days-between-irrigation": "Jours entre deux arrosages",
+        "crop-factor-by-month": "Coefficient cultural par mois",
+        "crop-factor-by-month-help": "Pour une culture dont la consommation d'eau suit la croissance : le coefficient cultural (Kc) de chaque mois, janvier en premier. Un mois laissé vide utilise le coefficient cultural ci-dessus, et douze mois vides, ce coefficient toute l'année. Les ajustements saisonniers s'appliquent par-dessus.",
+        "months": {
+          "1": "Janv.",
+          "2": "Févr.",
+          "3": "Mars",
+          "4": "Avr.",
+          "5": "Mai",
+          "6": "Juin",
+          "7": "Juil.",
+          "8": "Août",
+          "9": "Sept.",
+          "10": "Oct.",
+          "11": "Nov.",
+          "12": "Déc."
+        },
+        "available-water": "Eau disponible",
+        "allowed-depletion": "Épuisement admis",
+        "available-water-help": "L'eau que le sol de cette zone retient pour les plantes, en mm (la profondeur des racines en mm multipliée par ce que le sol retient par mm : environ 1,5 pour du sable, 2 pour un limon, 2,5 pour une argile). Vide, rien ne change. Renseignée, le déficit ne peut pas la dépasser, et quand les plantes ont épuisé la part admise (50 % par défaut) elles puisent moins d'eau, donc le déficit grandit moins vite.",
+        "distribution-efficiency": "Efficacité de distribution",
+        "distribution-efficiency-help": "La part de l'eau sortie des émetteurs qui atteint les plantes, en %. Des asperseurs dans le vent ou sur une pente en perdent, le goutte-à-goutte presque pas. Vide : 100 %. Une zone à 80 % arrose 25 % plus longtemps pour la même hauteur, et ne crédite que 80 % de ce qu'elle distribue.",
+        "days-between-irrigation-help": "Laisser vide pour suivre le réglage général (Paramètres, Jours entre deux arrosages). Un nombre remplace le réglage général pour cette zone seulement : 1 l'arrose chaque jour si elle a besoin d'eau, 3 au plus tous les trois jours, 0 supprime la restriction. Les jours sont comptés depuis le dernier arrosage de cette zone.",
         "soil-moisture-sensor": "Capteur d'humidité du sol",
         "soil-moisture-sensor-hint": "La zone n'arrose pas tant que le sol est au seuil ou au-dessus. Le seau est conservé.",
         "soil-moisture-threshold": "Ne pas arroser à partir de",
@@ -732,11 +758,30 @@
       "multiple_triggers": "Vous pouvez configurer plusieurs déclencheurs. Chaque déclencheur activé planifiera indépendamment les démarrages d'irrigation."
     }
   },
+  "seasonal_adjustments": {
+    "title": "Ajustements saisonniers",
+    "description": "Un coefficient cultural et un seuil qui suivent la saison. Chaque ajustement couvre une plage de mois et des zones ; plusieurs qui couvrent le même mois se multiplient. Le multiplicateur modifie le coefficient cultural de la zone (1 ne change rien, 0,5 divise la consommation par deux) et le seuil s'ajoute à son seuil d'arrosage. Un coefficient cultural mois par mois peut aussi être réglé dans chaque zone.",
+    "add": "Ajouter un ajustement",
+    "delete": "Supprimer",
+    "new_name": "Nouvel ajustement",
+    "name": "Nom",
+    "month_start": "Du mois",
+    "month_end": "Au mois",
+    "multiplier": "Multiplicateur du coefficient cultural",
+    "threshold": "Décalage du seuil",
+    "zones": "Zones",
+    "zones_hint": "all, ou les numéros des zones, séparés par des virgules.",
+    "enabled": "Activé"
+  },
   "weather_skip": {
     "title": "Saut d'irrigation basé sur la météo",
     "description": "Saute automatiquement l'irrigation lorsque des précipitations sont prévues. Cette fonctionnalité nécessite qu'un service météo soit configuré.",
     "threshold_label": "Seuil de précipitations",
-    "threshold_description": "Quantité minimale de précipitations (en mm) prévue pour aujourd'hui et demain pour sauter l'irrigation."
+    "threshold_description": "Quantité minimale de précipitations (en mm) prévue pour aujourd'hui et demain pour sauter l'irrigation.",
+    "effective_rain_label": "Ne compter que la pluie qui atteint les racines",
+    "effective_rain_description": "Ignorer une averse inférieure au cinquième de l'évapotranspiration de la période : elle mouille les feuilles et s'évapore. Jugé sur toute la période entre deux calculs.",
+    "forecast_credit_label": "Réduire les durées quand de la pluie est prévue",
+    "forecast_credit_description": "Au départ d'un arrosage, chaque zone reçoit en moins la pluie prévue dans les 24 heures suivantes, pondérée par la probabilité donnée par le service météo. 4 mm prévus pour un déficit de 10 mm arrosent 6 mm. Le saut ci-dessus est du tout ou rien ; celui-ci est proportionnel, et les deux fonctionnent ensemble. Les zones sous serre ne sont pas réduites. Le déficit reste dans le seau : la pluie réellement tombée est créditée au calcul suivant."
   },
   "coordinate_config": {
     "title": "Coordonnées de localisation",
@@ -752,7 +797,7 @@
     "title": "Jours entre irrigations",
     "description": "Configurez le nombre minimum de jours qui doivent s'écouler entre les événements d'irrigation. Cela aide à contrôler la fréquence d'arrosage pour la conservation de l'eau et la gestion de la santé des plantes.\n\nCas d'usage typiques:\n• Entretien de pelouse: intervalles de 1-2 jours préviennent l'arrosage excessif\n• Restrictions de sécheresse: intervalles de 6+ jours pour arrosage hebdomadaire\n• Plantes à racines profondes: intervalles de 3-7 jours pour arrosage moins fréquent\n• Conservation de l'eau: personnalisable selon le climat et les conditions du sol",
     "label": "Jours minimum entre irrigations",
-    "help_text": "Définir à 0 pour désactiver cette fonction. Les valeurs de 1-365 jours sont prises en charge. Ce paramètre fonctionne avec la logique de prévision de précipitation existante."
+    "help_text": "Définir à 0 pour désactiver cette fonction. Les valeurs de 1-365 jours sont prises en charge. Ce paramètre fonctionne avec la logique de prévision de précipitation existante. Une zone peut avoir son propre nombre de jours dans l'onglet Zones, qui remplace ce réglage pour elle."
   },
   "observed_watering": {
     "title": "Arrosage observé (boucle fermée)",

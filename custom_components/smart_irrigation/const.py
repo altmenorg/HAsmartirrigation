@@ -292,6 +292,30 @@ CONF_CONTINUOUS_UPDATES = "continuousupdates"
 # default while it is new: switching it on changes every zone's ET.
 CONF_HOURLY_CALCULATION = "hourly_calculation"
 CONF_DEFAULT_HOURLY_CALCULATION = False
+# Shorten each zone's run by the rain forecast for the day after it starts (off
+# by default). The skip on a forecast is all or nothing; this one is a credit.
+CONF_FORECAST_RAIN_CREDIT = "forecast_rain_credit"
+CONF_DEFAULT_FORECAST_RAIN_CREDIT = False
+# Count only the rain that reaches the roots (off by default): a shower below a
+# fifth of the evapotranspiration of the window wets the leaves and evaporates.
+CONF_EFFECTIVE_RAIN = "effective_rain"
+CONF_DEFAULT_EFFECTIVE_RAIN = False
+# Calculate again just before the first start of the day (off by default), so a
+# run at sunset waters on this afternoon's weather and not on last night's.
+CONF_RECALCULATE_BEFORE_START = "recalculate_before_start"
+CONF_DEFAULT_RECALCULATE_BEFORE_START = False
+# Continuous updates used to do two things: record every sensor change, and
+# calculate the zones again at every change, which moved the bucket (and the
+# "accounts for duration" trigger) all day. The hourly calculation rebuilds every
+# hour of the window whenever it runs, and the live estimate shows where a zone
+# stands without writing anything, so the second part has nothing left to give.
+# The option now records only; the scheduled calculation consumes the readings.
+CONTINUOUS_UPDATES_RECALCULATE = False
+# A calculation younger than this is as fresh as one could make it.
+RECALCULATE_FRESH_MINUTES = 60
+EFFECTIVE_RAIN_ET_SHARE = 0.2
+# How far past the start of a run the forecast counts, in hours.
+FORECAST_RAIN_CREDIT_HOURS = 24
 # How much of the panel is shown. "standard" keeps the settings most
 # installations never touch folded away; "advanced" shows everything, which is
 # what every install had until now and what they keep.
@@ -433,8 +457,41 @@ ZONE_PRECIPITATION_SUPERSEDED = "precipitation_superseded"
 # (the management allowed depletion). 0 waters as soon as anything is missing.
 ZONE_IRRIGATION_THRESHOLD = "irrigation_threshold"
 CONF_DEFAULT_IRRIGATION_THRESHOLD = 0.0
+# Days between irrigation for this zone alone (#875). None follows the general
+# setting, a number replaces it for the zone and 0 means no restriction. The
+# days since the zone was last watered are kept per zone as well; None means
+# nothing has been recorded yet, which never holds a zone back.
+# What the soil of the zone can hold for the plants, in mm (the total available
+# water, TAW), and the share of it the plants may use up before they suffer (the
+# allowed depletion, 50% unless set). Both are optional: without the first the
+# deficit has no floor and the evapotranspiration is never reduced, as before.
+ZONE_AVAILABLE_WATER = "available_water"
+ZONE_ALLOWED_DEPLETION = "allowed_depletion"
+CONF_DEFAULT_ALLOWED_DEPLETION = 50.0
+# Share of the water leaving the emitters that reaches the plants, in percent.
+# None is 100: the throughput is taken at its word, as before.
+ZONE_DISTRIBUTION_EFFICIENCY = "distribution_efficiency"
+# The crop factor of each month, January first, for a crop whose water use
+# follows its growth (#872). A month left empty uses the zone's crop factor; the
+# whole field empty is the zone's crop factor all year, as before. Seasonal
+# adjustments still apply on top.
+ZONE_CROP_FACTOR_BY_MONTH = "crop_factor_by_month"
+ZONE_DAYS_BETWEEN_IRRIGATION = "days_between_irrigation"
+ZONE_DAYS_SINCE_IRRIGATION = "days_since_irrigation"
 # Optional valve/switch entity observed to credit the bucket (closed-loop).
 ZONE_LINKED_ENTITY = "linked_entity"
+# Optional hardware dead-man for direct valve control: an MQTT set-topic the
+# runner publishes an "on with timed off" to, so the valve shuts itself off if
+# Home Assistant dies mid-run and never sends the close (e.g. a zigbee2mqtt
+# device supporting on_time). Empty = disabled; behaviour then is unchanged.
+ZONE_SAFETY_OFF_TOPIC = "safety_off_topic"
+# The state property the device expects in that payload; "state" for a
+# single-channel device, "state_l1".."state_l4" for a multi-channel one.
+ZONE_SAFETY_OFF_STATE_KEY = "safety_off_state_key"
+CONF_DEFAULT_SAFETY_OFF_STATE_KEY = "state"
+# Seconds added to a pass's own length for the on_time value, so the device's
+# own auto-off lands just after Home Assistant's close rather than before it.
+SAFETY_OFF_TIME_MARGIN = 30
 # Optional cumulative volume/flow meter; credits the bucket by measured volume.
 ZONE_FLOW_SENSOR = "flow_sensor"
 # A soil moisture sensor, in %, and the moisture at or above which the zone

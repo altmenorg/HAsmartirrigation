@@ -45,6 +45,8 @@ from .const import (
     CONF_DEFAULT_DAYS_SINCE_LAST_IRRIGATION,
     CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED,
     CONF_DEFAULT_DRAINAGE_RATE,
+    CONF_DEFAULT_EFFECTIVE_RAIN,
+    CONF_DEFAULT_FORECAST_RAIN_CREDIT,
     CONF_DEFAULT_GREENHOUSE,
     CONF_DEFAULT_HOURLY_CALCULATION,
     CONF_DEFAULT_IRRIGATION_START_TRIGGERS,
@@ -55,6 +57,7 @@ from .const import (
     CONF_DEFAULT_PAUSE_BETWEEN_ZONES,
     CONF_DEFAULT_PRECIPITATION_THRESHOLD_MM,
     CONF_DEFAULT_RAIN_HISTORY_ENABLED,
+    CONF_DEFAULT_RECALCULATE_BEFORE_START,
     CONF_DEFAULT_RECURRING_SCHEDULES,
     CONF_DEFAULT_SEASONAL_ADJUSTMENTS,
     CONF_DEFAULT_SENSOR_DEBOUNCE,
@@ -70,6 +73,8 @@ from .const import (
     CONF_DEFAULT_ZONE_INPUT_METHOD,
     CONF_DEFAULT_ZONE_SEQUENCING,
     CONF_DIRECT_VALVE_CONTROL_ENABLED,
+    CONF_EFFECTIVE_RAIN,
+    CONF_FORECAST_RAIN_CREDIT,
     CONF_FREEZE_SENSOR,
     CONF_FREEZE_THRESHOLD,
     CONF_HOURLY_CALCULATION,
@@ -86,6 +91,7 @@ from .const import (
     CONF_PRECIPITATION_THRESHOLD_MM,
     CONF_RAIN_HISTORY_ENABLED,
     CONF_RAIN_SENSOR,
+    CONF_RECALCULATE_BEFORE_START,
     CONF_RECURRING_SCHEDULES,
     CONF_SEASONAL_ADJUSTMENTS,
     CONF_SENSOR_DEBOUNCE,
@@ -154,9 +160,15 @@ from .const import (
     TRIGGER_CONF_OFFSET_MINUTES,
     TRIGGER_CONF_TYPE,
     TRIGGER_TYPE_SUNRISE,
+    ZONE_ALLOWED_DEPLETION,
+    ZONE_AVAILABLE_WATER,
     ZONE_BUCKET,
+    ZONE_CROP_FACTOR_BY_MONTH,
     ZONE_CURRENT_DRAINAGE,
+    ZONE_DAYS_BETWEEN_IRRIGATION,
+    ZONE_DAYS_SINCE_IRRIGATION,
     ZONE_DELTA,
+    ZONE_DISTRIBUTION_EFFICIENCY,
     ZONE_DRAINAGE_RATE,
     ZONE_DURATION,
     ZONE_ET_DEFICIENCY,
@@ -184,6 +196,8 @@ from .const import (
     ZONE_PLANT_TYPE,
     ZONE_PRECIPITATION_RATE,
     ZONE_PRECIPITATION_SUPERSEDED,
+    ZONE_SAFETY_OFF_STATE_KEY,
+    ZONE_SAFETY_OFF_TOPIC,
     ZONE_SIZE,
     ZONE_SOIL_MOISTURE_SENSOR,
     ZONE_SOIL_MOISTURE_THRESHOLD,
@@ -273,11 +287,31 @@ class ZoneEntry:
     water_used = attr.ib(type=float, default=0.0)
     # Optional valve/switch entity watched to credit the bucket (closed-loop).
     linked_entity = attr.ib(type=str, default=None)
+    # Optional MQTT dead-man for direct valve control: a set-topic the runner
+    # publishes an on_time "on with timed off" to, so the valve shuts itself
+    # off if Home Assistant dies mid-run. Empty = disabled (see const).
+    safety_off_topic = attr.ib(type=str, default=None)
+    safety_off_state_key = attr.ib(type=str, default=None)
     # How much of a deficit to let build up before watering, in the user's depth
     # unit. 0 keeps watering as soon as anything is missing (#815).
     irrigation_threshold = attr.ib(
         type=float, default=CONF_DEFAULT_IRRIGATION_THRESHOLD
     )
+    # Days between irrigation for this zone alone, replacing the general setting
+    # (#875). None follows it; 0 means no restriction for this zone.
+    days_between_irrigation = attr.ib(type=int, default=None)
+    # What the soil can hold for the plants (mm), the share they may use up
+    # before suffering (%), and the share of the emitters' water that reaches
+    # them (%). All optional; None leaves the calculation as it was.
+    # The crop factor of each month, January first; None entries (or the whole
+    # field) use the zone's crop factor.
+    crop_factor_by_month = attr.ib(type=list, default=None)
+    available_water = attr.ib(type=float, default=None)
+    allowed_depletion = attr.ib(type=float, default=None)
+    distribution_efficiency = attr.ib(type=float, default=None)
+    # Days since this zone was last watered, kept by the scheduler. None until a
+    # run has been seen, which never holds the zone back.
+    days_since_irrigation = attr.ib(type=int, default=None)
     # Rain already accounted for by an asserted bucket value. Setting the bucket
     # says the soil is in a known state, which supersedes the rain collected
     # since the last calculation; without this it lands in the bucket again at
@@ -544,6 +578,11 @@ class Config:
     # Reference ET summed hour by hour (FAO-56 Eq. 53) instead of the daily
     # equation on the window's means. Off by default while in beta.
     hourly_calculation = attr.ib(type=bool, default=CONF_DEFAULT_HOURLY_CALCULATION)
+    forecast_rain_credit = attr.ib(type=bool, default=CONF_DEFAULT_FORECAST_RAIN_CREDIT)
+    effective_rain = attr.ib(type=bool, default=CONF_DEFAULT_EFFECTIVE_RAIN)
+    recalculate_before_start = attr.ib(
+        type=bool, default=CONF_DEFAULT_RECALCULATE_BEFORE_START
+    )
     # "standard" or "advanced"; None until the first load decides (see
     # _async_choose_ui_mode).
     ui_mode = attr.ib(type=str, default=None)
@@ -931,6 +970,9 @@ class SmartIrrigationStorage:
             starteventfiredtoday=False,
             continuousupdates=CONF_DEFAULT_CONTINUOUS_UPDATES,
             hourly_calculation=CONF_DEFAULT_HOURLY_CALCULATION,
+            forecast_rain_credit=CONF_DEFAULT_FORECAST_RAIN_CREDIT,
+            effective_rain=CONF_DEFAULT_EFFECTIVE_RAIN,
+            recalculate_before_start=CONF_DEFAULT_RECALCULATE_BEFORE_START,
             sensor_debounce=CONF_DEFAULT_SENSOR_DEBOUNCE,
             calc_log_enabled=CONF_DEFAULT_CALC_LOG_ENABLED,
         )
@@ -983,6 +1025,16 @@ class SmartIrrigationStorage:
                 ),
                 hourly_calculation=data["config"].get(
                     CONF_HOURLY_CALCULATION, CONF_DEFAULT_HOURLY_CALCULATION
+                ),
+                forecast_rain_credit=data["config"].get(
+                    CONF_FORECAST_RAIN_CREDIT, CONF_DEFAULT_FORECAST_RAIN_CREDIT
+                ),
+                effective_rain=data["config"].get(
+                    CONF_EFFECTIVE_RAIN, CONF_DEFAULT_EFFECTIVE_RAIN
+                ),
+                recalculate_before_start=data["config"].get(
+                    CONF_RECALCULATE_BEFORE_START,
+                    CONF_DEFAULT_RECALCULATE_BEFORE_START,
                 ),
                 ui_mode=data["config"].get(CONF_UI_MODE),
                 zone_engines_split=data["config"].get(CONF_ZONE_ENGINES_SPLIT, False),
@@ -1128,6 +1180,20 @@ class SmartIrrigationStorage:
                             ZONE_IRRIGATION_THRESHOLD, CONF_DEFAULT_IRRIGATION_THRESHOLD
                         ),
                         linked_entity=zone.get(ZONE_LINKED_ENTITY, None),
+                        crop_factor_by_month=zone.get(ZONE_CROP_FACTOR_BY_MONTH, None),
+                        available_water=zone.get(ZONE_AVAILABLE_WATER, None),
+                        allowed_depletion=zone.get(ZONE_ALLOWED_DEPLETION, None),
+                        distribution_efficiency=zone.get(
+                            ZONE_DISTRIBUTION_EFFICIENCY, None
+                        ),
+                        days_between_irrigation=zone.get(
+                            ZONE_DAYS_BETWEEN_IRRIGATION, None
+                        ),
+                        days_since_irrigation=zone.get(
+                            ZONE_DAYS_SINCE_IRRIGATION, None
+                        ),
+                        safety_off_topic=zone.get(ZONE_SAFETY_OFF_TOPIC, None),
+                        safety_off_state_key=zone.get(ZONE_SAFETY_OFF_STATE_KEY, None),
                         flow_sensor=zone.get(ZONE_FLOW_SENSOR, None),
                         soil_moisture_sensor=zone.get(ZONE_SOIL_MOISTURE_SENSOR, None),
                         soil_moisture_threshold=zone.get(

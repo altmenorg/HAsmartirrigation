@@ -1207,6 +1207,16 @@ class SmartIrrigationCoordinator(
                 static_values,
             )
 
+        if not const.CONTINUOUS_UPDATES_RECALCULATE:
+            # Recording is all this option does now: the readings stay in the
+            # buffer for the scheduled calculation to consume.
+            _LOGGER.debug(
+                "[async_continuous_update_for_mapping] sensor group %s: recorded, "
+                "not calculating again",
+                mapping_id,
+            )
+            return
+
         # Each zone reads its own window of the group's buffer and records how
         # far it got, as the scheduled calculation does. This aggregated the
         # buffer once for the whole group, calculated every zone without

@@ -777,6 +777,99 @@ def summed_hourly_eto(
     return sum(priced), hours
 
 
+def _row_from_entry(entry, tz=None, tz_offset_h=0.0):
+    """One whole-hour row from a weather service's hourly entry.
+
+    ``entry`` is ``{"ts": unix timestamp of the hour's start, "temperature",
+    "humidity", "wind" (at 2 m), "solar_mj_h", "pressure_hpa"}``. Raises on a
+    malformed entry, which the callers read as "no series".
+    """
+    stamp, offset = _naive_local_from_timestamp(float(entry["ts"]), tz, tz_offset_h)
+    hour_start = stamp.replace(minute=0, second=0, microsecond=0)
+    row = {
+        "hour_start": hour_start,
+        "hour": hour_start.hour + 0.5,
+        "doy": hour_start.timetuple().tm_yday,
+        "coverage_h": 1.0,
+        "tz_offset_h": offset,
+        "temperature": float(entry["temperature"]),
+        "humidity": float(entry["humidity"]),
+        "wind_2m": float(entry["wind"]),
+        "solar_mj_h": float(entry["solar_mj_h"]),
+    }
+    pressure_hpa = entry.get("pressure_hpa")
+    if pressure_hpa is not None:
+        row["pressure_kpa"] = float(pressure_hpa) / 10.0
+    return row
+
+
+def history_rows(entries, start, end, tz=None, tz_offset_h=0.0):
+    """Rows for the hours of ``[start, end]``, from a service's own hourly history.
+
+    Each row covers the share of its hour that lies in the window, so a window
+    that opens or closes inside an hour charges that hour for its part and no
+    more. ``start`` and ``end`` are naive local datetimes, as everywhere in the
+    hourly sum. ``None`` when any entry is malformed or no hour overlaps.
+    """
+    rows = []
+    one_hour = datetime.timedelta(hours=1)
+    for entry in entries or []:
+        try:
+            row = _row_from_entry(entry, tz, tz_offset_h)
+        except (AttributeError, KeyError, OSError, TypeError, ValueError):
+            _LOGGER.debug("The hourly history could not be read", exc_info=True)
+            return None
+        hour_start = row["hour_start"]
+        overlap = (
+            min(end, hour_start + one_hour) - max(start, hour_start)
+        ).total_seconds()
+        if overlap <= 0:
+            continue
+        row["coverage_h"] = overlap / 3600.0
+        rows.append(row)
+    if not rows:
+        return None
+    return sorted(rows, key=lambda row: row["hour_start"])
+
+
+def summed_hourly_eto_from_history(
+    entries,
+    start,
+    end,
+    *,
+    latitude=None,
+    longitude=None,
+    elevation=0.0,
+    tz=None,
+    tz_offset_h=0.0,
+):
+    """``(millimetres, hours)`` of the window, priced on a service's hourly history.
+
+    The same equation as the sum over polled readings, fed the service's own
+    hour-long figures instead of readings taken every hour or so and standing in
+    for the hours around them. ``None`` whenever it cannot be done, and the
+    caller then sums its own readings as it always has.
+    """
+    if latitude is None or longitude is None:
+        return None
+    rows = history_rows(entries, start, end, tz, tz_offset_h)
+    if not rows:
+        return None
+    hours = sum(row["coverage_h"] for row in rows)
+    if hours <= 0:
+        return None
+    try:
+        priced = price_hourly_rows(
+            rows, latitude, longitude, elevation or 0.0, tz_offset_h
+        )
+    except (ArithmeticError, TypeError, ValueError):
+        _LOGGER.debug("An hour of the history could not be priced", exc_info=True)
+        return None
+    if any(value is None for value in priced):
+        return None
+    return sum(priced), hours
+
+
 def forecast_rows_by_day(series, tz=None, tz_offset_h=0.0, today=None):
     """``{date: [row, ...]}`` for each whole day of a forecast still to come.
 

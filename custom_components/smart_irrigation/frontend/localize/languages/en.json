@@ -219,6 +219,8 @@
           "labels": {
             "auto-calc-enabled": "Automatically calculate irrigation durations",
             "calc-time": "Calculate at",
+            "recalculate-before-start": "Calculate again just before the first start of the day",
+            "recalculate-before-start-hint": "The nightly calculation uses the evapotranspiration, temperature and wind of the hours before it. A start at sunset then waters on data some twenty hours old, with only the rain brought up to date. With this on, the zones are calculated again, with fresh weather, just before the first start. Nothing is done when a zone was calculated within the hour.",
             "hourly-calculation": "Calculate evapotranspiration hour by hour",
             "hourly-calculation-hint": "Sums the FAO-56 hourly equation over each hour since the last calculation, instead of applying the daily equation to the averages, which hides whether the sun and the heat came together. A new installation starts on it; an installation set up before it arrived keeps the daily equation until you switch, because the two give different numbers and your watering should not change on an update. The sun of each hour comes from a radiation or illuminance sensor, from the weather service's own hourly history, or from the day's temperature range. It is worth having when readings arrive through the day: one update a day leaves a single reading held across twenty-four hours, and neither form is trustworthy then. A greenhouse with no sensor of its own keeps the daily equation."
           }
@@ -244,7 +246,7 @@
         },
         "continuousupdates": {
           "header": "Continuous updates for sensors (experimental)",
-          "description": "This experimental feature will continuously update the sensor data. This is useful for sensor groups that use sources that provide continuous data, such as weather stations. This feature cannot be used for sensor groups that at least partly rely on weather services as continous polling of APIs will incur costs. Keep in mind that this is experimental and may not work as expected. Use at your own risk.",
+          "description": "Records every change of a sensor of the group, instead of one reading per update. The hourly calculation and the pluviometer both get finer averages from it. It no longer calculates the zones again at each change: the scheduled calculation does that, once, from the readings recorded. It cannot be used for sensor groups that at least partly rely on a weather service, as polling the API continuously would incur costs.",
           "labels": {
             "continuousupdates": "Enable continuous updates",
             "sensor_debounce": "Sensor debounce"
@@ -567,8 +569,35 @@
         "linked-entity-hint": "The valve or switch that waters this zone. Smart Irrigation opens and closes it when direct valve control is on. With observed watering on, any run of it (a manual tap, an automation, or Smart Irrigation itself) credits the bucket from the run time and the zone's throughput.",
         "flow-sensor": "Cumulative volume meter",
         "flow-sensor-hint": "For exact crediting instead of throughput x time: a cumulative water-meter total (state class total_increasing), not an instant flow rate. The unit is read automatically (L, mL, m³, gal, ft³).",
+        "safety-off-topic": "Safety off MQTT topic",
+        "safety-off-state-key": "Safety off state key",
+        "safety-off-topic-help": "Optional hardware dead-man. An MQTT set-topic (e.g. zigbee2mqtt/my_valve/set) the valve's device listens on. Smart Irrigation publishes an \"on with timed off\" there so the device shuts the valve off by itself if Home Assistant stops mid-run and never sends the close. The state key is the device's on/off property (\"state\", or \"state_l1\"…\"state_l4\" for a multi-channel device). Support depends on the device firmware (on_time) — test it before relying on it. Leave empty to disable.",
         "optional": "optional",
         "irrigation-threshold": "Irrigation threshold",
+        "days": "days",
+        "days-between-irrigation": "Days between irrigation",
+        "crop-factor-by-month": "Crop factor by month",
+        "crop-factor-by-month-help": "For a crop whose water use follows its growth: the crop factor (Kc) of each month, January first. A month left empty uses the crop factor above, and all twelve empty is that crop factor all year. Seasonal adjustments still apply on top.",
+        "months": {
+          "1": "Jan",
+          "2": "Feb",
+          "3": "Mar",
+          "4": "Apr",
+          "5": "May",
+          "6": "Jun",
+          "7": "Jul",
+          "8": "Aug",
+          "9": "Sep",
+          "10": "Oct",
+          "11": "Nov",
+          "12": "Dec"
+        },
+        "available-water": "Available water",
+        "allowed-depletion": "Allowed depletion",
+        "available-water-help": "How much water the soil of this zone holds for the plants, in mm (the root depth in mm times what the soil holds per mm: about 1.5 for sand, 2 for loam, 2.5 for clay). Leave empty to leave things as they are. When set, the deficit cannot go below it, and once the plants have used up the allowed share of it (50% unless you change it) they draw less water, so the deficit stops growing as fast.",
+        "distribution-efficiency": "Distribution efficiency",
+        "distribution-efficiency-help": "The share of the water leaving the emitters that reaches the plants, in %. Sprinklers in wind or on a slope lose some, drip loses almost none. Leave empty for 100%. A zone at 80% waters 25% longer for the same depth, and credits only 80% of what it delivers.",
+        "days-between-irrigation-help": "Leave empty to follow the general setting (Settings, Days between irrigation). A number replaces the general setting for this zone alone: 1 waters it every day if it needs water, 3 at most every third day, 0 removes the restriction. The days are counted from the last time this zone was watered.",
         "soil-moisture-sensor": "Soil moisture sensor",
         "soil-moisture-sensor-hint": "The zone sits out a run while the soil is at or above the threshold. The bucket is kept.",
         "soil-moisture-threshold": "Skip at or above",
@@ -732,11 +761,30 @@
       "multiple_triggers": "You can configure multiple triggers. Each enabled trigger will independently schedule irrigation starts."
     }
   },
+  "seasonal_adjustments": {
+    "title": "Seasonal adjustments",
+    "description": "A crop factor and a threshold that follow the season. Each adjustment covers a range of months and some zones; several covering the same month multiply. The multiplier scales the zone's crop factor (1 changes nothing, 0.5 halves the water use) and the threshold adds to its irrigation threshold. A month-by-month crop factor can also be set in each zone.",
+    "add": "Add an adjustment",
+    "delete": "Delete",
+    "new_name": "New adjustment",
+    "name": "Name",
+    "month_start": "From month",
+    "month_end": "To month",
+    "multiplier": "Crop factor multiplier",
+    "threshold": "Threshold offset",
+    "zones": "Zones",
+    "zones_hint": "all, or the numbers of the zones, separated by commas.",
+    "enabled": "Enabled"
+  },
   "weather_skip": {
     "title": "Weather-based irrigation skip",
     "description": "Automatically skip irrigation when precipitation is forecasted. This feature requires a weather service to be configured.",
     "threshold_label": "Precipitation Threshold",
-    "threshold_description": "Minimum amount of precipitation (in mm) forecasted for today and tomorrow to skip irrigation."
+    "threshold_description": "Minimum amount of precipitation (in mm) forecasted for today and tomorrow to skip irrigation.",
+    "effective_rain_label": "Count only rain that reaches the roots",
+    "effective_rain_description": "Ignore a shower smaller than a fifth of the evapotranspiration of the period: it wets the leaves and evaporates. It is judged on the whole period between two calculations.",
+    "forecast_credit_label": "Reduce durations when rain is forecast",
+    "forecast_credit_description": "When a run starts, each zone is watered for the rain forecast to fall in the next 24 hours less, weighted by the probability the weather service gives. A forecast of 4 mm against a 10 mm deficit waters 6 mm. The skip above is all or nothing; this one is proportional, and works alongside it. Greenhouse zones are not reduced. The deficit stays in the bucket: rain that really falls is credited at the next calculation."
   },
   "coordinate_config": {
     "title": "Location coordinates",
@@ -752,7 +800,7 @@
     "title": "Days between irrigation",
     "description": "Configure the minimum number of days that must pass between irrigation events. This helps control watering frequency for water conservation and plant health management.\n\nTypical real-world use cases:\n• Lawn care: 1-2 day intervals prevent overwatering\n• Drought restrictions: 6+ day intervals for weekly watering\n• Deep-rooted plants: 3-7 day intervals for less frequent watering\n• Water conservation: Customizable based on climate and soil conditions",
     "label": "Minimum days between irrigation",
-    "help_text": "Set to 0 to disable this feature. Values from 1-365 days are supported. This setting works alongside existing precipitation forecasting logic."
+    "help_text": "Set to 0 to disable this feature. Values from 1-365 days are supported. This setting works alongside existing precipitation forecasting logic. A zone can have its own number of days in the Zones tab, which replaces this setting for that zone."
   },
   "observed_watering": {
     "title": "Observed watering (closed loop)",

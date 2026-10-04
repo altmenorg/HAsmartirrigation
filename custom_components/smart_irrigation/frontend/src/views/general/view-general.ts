@@ -246,6 +246,27 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 })}
             ></ha-switch>
           </div>
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize(
+                "panels.general.cards.automatic-duration-calculation.labels.recalculate-before-start",
+                this.hass.language,
+              )}
+              <div class="setting-hint">
+                ${localize(
+                  "panels.general.cards.automatic-duration-calculation.labels.recalculate-before-start-hint",
+                  this.hass.language,
+                )}
+              </div>
+            </div>
+            <ha-switch
+              .checked=${!!this.config.recalculate_before_start}
+              @change=${(e: Event) =>
+                this.handleConfigChange({
+                  recalculate_before_start: (e.target as any).checked,
+                })}
+            ></ha-switch>
+          </div>
         </div>`;
       r1 = html`<ha-card
         header="${localize(
@@ -439,6 +460,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // How much of the panel to show.
       const r11 = this.renderPanelModeCard();
 
+      // Seasonal adjustments (advanced).
+      const r13 = this.renderSeasonalAdjustmentsCard();
+
       // The way to the setup assistant, which is no longer a tab.
       const r12 = this.renderSetupAssistantCard();
 
@@ -448,10 +472,141 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           <div class="card-content">
             ${localize("panels.general.description", this.hass.language)}
           </div> </ha-card
-        >${r11}${r2}${r1}${r4}${r5}${r6}${r7}${r8}${r9}${r10}${r12}`;
+        >${r11}${r2}${r1}${r4}${r5}${r6}${r7}${r8}${r9}${r10}${r13}${r12}`;
 
       return r;
     }
+  }
+
+  /** Change a seasonal adjustment through the service, which also updates the one in use. */
+  private async _seasonalCall(
+    service: string,
+    data: Record<string, unknown>,
+  ): Promise<void> {
+    if (!this.hass) return;
+    try {
+      await this.hass.callService(DOMAIN, service, data);
+    } catch (error) {
+      console.error("Seasonal adjustment " + service + " failed:", error);
+    }
+    await this._fetchData();
+  }
+
+  /**
+   * Seasonal adjustments: a crop factor and a threshold that follow the season.
+   *
+   * They used to be reachable only through actions. Each row is one adjustment,
+   * for a range of months and some zones; several that cover the same month
+   * multiply.
+   */
+  renderSeasonalAdjustmentsCard() {
+    if (!this.config || !this.hass || this.config.ui_mode !== "advanced") {
+      return html``;
+    }
+    const lang = this.hass.language;
+    const t = (key: string) => localize(`seasonal_adjustments.${key}`, lang);
+    const adjustments = this.config.seasonal_adjustments || [];
+    const update = (id: string, data: Record<string, unknown>) =>
+      this._seasonalCall("update_seasonal_adjustment", {
+        adjustment_id: id,
+        ...data,
+      });
+    return html`
+      <ha-card header="${t("title")}">
+        <div class="card-content">${t("description")}</div>
+        ${adjustments.map(
+          (a) => html`
+            <div class="card-content si-subgroup">
+              ${this._textRow(t("name"), "", a.name, (v) =>
+                update(a.id, { name: v || a.name }),
+              )}
+              ${this._numRow(
+                t("month_start"),
+                "1-12",
+                a.month_start,
+                (v) =>
+                  update(a.id, {
+                    month_start: Math.min(
+                      12,
+                      Math.max(1, parseInt(v, 10) || 1),
+                    ),
+                  }),
+                1,
+              )}
+              ${this._numRow(
+                t("month_end"),
+                "1-12",
+                a.month_end,
+                (v) =>
+                  update(a.id, {
+                    month_end: Math.min(12, Math.max(1, parseInt(v, 10) || 12)),
+                  }),
+                1,
+              )}
+              ${this._numRow(
+                t("multiplier"),
+                "x",
+                a.multiplier_adjustment ?? 1,
+                (v) =>
+                  update(a.id, {
+                    multiplier_adjustment: Math.max(0, parseFloat(v) || 0),
+                  }),
+                0.05,
+              )}
+              ${this._numRow(
+                t("threshold"),
+                output_unit(this.config!, CONF_PRECIPITATION_THRESHOLD_MM),
+                a.threshold_adjustment ?? 0,
+                (v) =>
+                  update(a.id, { threshold_adjustment: parseFloat(v) || 0 }),
+                0.5,
+              )}
+              ${this._textRow(
+                t("zones"),
+                "",
+                Array.isArray(a.zones)
+                  ? a.zones.join(", ")
+                  : (a.zones ?? "all"),
+                (v) => update(a.id, { zones: v.trim() || "all" }),
+              )}
+              <div class="setting-hint">${t("zones_hint")}</div>
+              <div class="setting-row">
+                <div class="setting-label">${t("enabled")}</div>
+                <ha-switch
+                  .checked=${a.enabled !== false}
+                  @change=${(e: Event) =>
+                    update(a.id, { enabled: (e.target as any).checked })}
+                ></ha-switch>
+              </div>
+              <ha-button
+                @click=${() =>
+                  this._seasonalCall("delete_seasonal_adjustment", {
+                    adjustment_id: a.id,
+                  })}
+              >
+                ${t("delete")}
+              </ha-button>
+            </div>
+          `,
+        )}
+        <div class="card-actions">
+          <ha-button
+            @click=${() =>
+              this._seasonalCall("create_seasonal_adjustment", {
+                name: t("new_name"),
+                month_start: 6,
+                month_end: 8,
+                multiplier_adjustment: 1,
+                threshold_adjustment: 0,
+                zones: "all",
+                enabled: true,
+              })}
+          >
+            ${t("add")}
+          </ha-button>
+        </div>
+      </ha-card>
+    `;
   }
 
   /**
@@ -828,6 +983,48 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 0.1,
               )
             : ""}
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize(
+                "weather_skip.forecast_credit_label",
+                this.hass.language,
+              )}
+              <div class="setting-hint">
+                ${localize(
+                  "weather_skip.forecast_credit_description",
+                  this.hass.language,
+                )}
+              </div>
+            </div>
+            <ha-switch
+              .checked=${!!this.config.forecast_rain_credit}
+              @change=${(e: Event) =>
+                this.handleConfigChange({
+                  forecast_rain_credit: (e.target as any).checked,
+                })}
+            ></ha-switch>
+          </div>
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize(
+                "weather_skip.effective_rain_label",
+                this.hass.language,
+              )}
+              <div class="setting-hint">
+                ${localize(
+                  "weather_skip.effective_rain_description",
+                  this.hass.language,
+                )}
+              </div>
+            </div>
+            <ha-switch
+              .checked=${!!this.config.effective_rain}
+              @change=${(e: Event) =>
+                this.handleConfigChange({
+                  effective_rain: (e.target as any).checked,
+                })}
+            ></ha-switch>
+          </div>
         </div>
       </ha-card>
       ${this.renderMeasuredSkipCard()}

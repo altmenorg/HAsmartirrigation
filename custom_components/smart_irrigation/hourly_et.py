@@ -53,13 +53,19 @@ CN_HOURLY = 37.0
 # of. FAO-56 says to carry the ratio measured two to three hours before sunset
 # into the night, and the row builder does exactly that when the window
 # contains daylight. When it does not -- a calculation run over four hours of a
-# winter night -- something has to be assumed, and this is it.
+# winter night, or the live estimate in the small hours -- FAO-56 gives a
+# second, "more approximate" way (p. 75): assume Rs/Rso of 0.4 to 0.6 at night
+# in humid and subhumid climates, 0.7 to 0.8 in arid and semiarid ones.
+# ``night_cloudiness_from_humidity`` reads that range off the hour's own
+# humidity. It used to be a constant, 0.8, which is the dry end of the range
+# applied to every night, humid ones included, and which made the live estimate
+# of a night lose more heat than the calculation of the same night would.
 #
+# NIGHT_CLOUDINESS_FALLBACK is what stands in when even the humidity is unknown.
 # 0.8 is near the clear end of the range, which is the end that loses the most
-# heat. That is the deliberate choice: under-counting the long-wave loss
+# heat, and that is the cautious side: under-counting the long-wave loss
 # over-counts the net radiation, and over-counted net radiation is water the
-# garden is told it lost and did not. An assumption that waters too little is
-# recoverable on the next calculation; one that waters too much is not.
+# garden is told it lost and did not.
 NIGHT_CLOUDINESS_FALLBACK = 0.8
 
 # Eq. 39: the ratio Rs/Rso is capped at 1 (no hour beats a clear sky), which
@@ -296,6 +302,19 @@ def cloudiness_factor(solar_rad_hr: float, rso_hr: float):
     return min(_CLOUDINESS_MAX, max(_CLOUDINESS_MIN, 1.35 * ratio - 0.35))
 
 
+def night_cloudiness_from_humidity(relative_humidity: float) -> float:
+    """fcd of a night hour from its relative humidity (fraction, 0 to 1).
+
+    FAO-56's approximate alternative (p. 75) assumes Rs/Rso between 0.4 and 0.6
+    in humid climates and between 0.7 and 0.8 in arid ones. Read as a straight
+    line of the humidity, Rs/Rso = 0.8 - 0.4 RH, which gives 0.4 at saturation
+    and 0.8 in dry air. fcd is then 1.35 Rs/Rso - 0.35 (Eq. 39), so a humid
+    night loses little heat and a dry one loses most of it.
+    """
+    humidity = min(1.0, max(0.0, relative_humidity))
+    return 1.35 * (0.8 - 0.4 * humidity) - 0.35
+
+
 def net_radiation_hourly(
     solar_rad_hr: float,
     ra_hr: float,
@@ -319,14 +338,24 @@ def net_radiation_hourly(
     That last one is what ``cloudiness`` is for. When the hour has sun, fcd
     comes from its own Rs/Rso and the argument is ignored. When it has none,
     the argument is used -- the row builder hands over the ratio the window's
-    daylight measured, which is what FAO-56 instructs -- and
-    ``NIGHT_CLOUDINESS_FALLBACK`` stands in when even that is unavailable.
+    daylight measured, which is what FAO-56 instructs. When the window has no
+    daylight either, FAO-56's approximate alternative is read off the hour's
+    humidity, and ``NIGHT_CLOUDINESS_FALLBACK`` stands in only if that is
+    unavailable.
     """
     rns = (1.0 - ALBEDO) * max(0.0, solar_rad_hr)
     rso = clear_sky_radiation_hourly(max(0.0, ra_hr), elevation_m)
     fcd = cloudiness_factor(max(0.0, solar_rad_hr), rso)
     if fcd is None:
-        fcd = cloudiness if cloudiness is not None else NIGHT_CLOUDINESS_FALLBACK
+        if cloudiness is not None:
+            fcd = cloudiness
+        else:
+            svp = svp_from_t(t_c)
+            fcd = (
+                night_cloudiness_from_humidity(ea_kpa / svp)
+                if svp > 0
+                else NIGHT_CLOUDINESS_FALLBACK
+            )
     fcd = min(_CLOUDINESS_MAX, max(_CLOUDINESS_MIN, fcd))
     temperature_k = t_c + 273.16
     emissivity = 0.34 - 0.14 * math.sqrt(max(0.0, ea_kpa))

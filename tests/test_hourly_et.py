@@ -20,6 +20,7 @@ from custom_components.smart_irrigation.hourly_et import (
     ALBEDO,
     CN_HOURLY,
     NIGHT_CLOUDINESS_FALLBACK,
+    night_cloudiness_from_humidity,
     SOLAR_CONSTANT,
     STEFAN_BOLTZMANN_HOURLY,
     atm_pressure,
@@ -379,13 +380,38 @@ def test_a_night_told_the_sky_was_clear_loses_more_than_one_told_it_was_grey():
     assert clear < overcast < 0
 
 
-def test_a_night_told_nothing_assumes_the_fallback():
+def test_a_night_told_nothing_reads_the_sky_off_its_humidity():
+    """FAO-56's approximate alternative (p. 75), as a line of the humidity."""
     told_nothing = net_radiation_hourly(0.0, 0.0, 18.0, _avp(18.0, 85.0), 150.0)
-    told_the_fallback = net_radiation_hourly(
-        0.0, 0.0, 18.0, _avp(18.0, 85.0), 150.0, cloudiness=NIGHT_CLOUDINESS_FALLBACK
+    told_the_humidity = net_radiation_hourly(
+        0.0,
+        0.0,
+        18.0,
+        _avp(18.0, 85.0),
+        150.0,
+        cloudiness=night_cloudiness_from_humidity(0.85),
     )
 
-    assert told_nothing == pytest.approx(told_the_fallback)
+    assert told_nothing == pytest.approx(told_the_humidity)
+
+
+def test_the_approximate_alternative_runs_from_humid_to_dry():
+    """Rs/Rso of 0.4 at saturation and 0.8 in dry air, then fcd = 1.35 x - 0.35."""
+    assert night_cloudiness_from_humidity(1.0) == pytest.approx(1.35 * 0.4 - 0.35)
+    assert night_cloudiness_from_humidity(0.0) == pytest.approx(1.35 * 0.8 - 0.35)
+    assert night_cloudiness_from_humidity(0.5) == pytest.approx(1.35 * 0.6 - 0.35)
+
+
+def test_a_humid_night_loses_less_heat_than_a_dry_one_by_the_alternative():
+    humid = net_radiation_hourly(0.0, 0.0, 15.0, _avp(15.0, 95.0), 10.0)
+    dry = net_radiation_hourly(0.0, 0.0, 15.0, _avp(15.0, 45.0), 10.0)
+
+    assert dry < humid < 0
+
+
+def test_the_humidity_is_clamped_to_what_a_humidity_can_be():
+    assert night_cloudiness_from_humidity(1.7) == night_cloudiness_from_humidity(1.0)
+    assert night_cloudiness_from_humidity(-0.3) == night_cloudiness_from_humidity(0.0)
 
 
 def test_a_cloudiness_out_of_range_is_clamped_rather_than_believed():

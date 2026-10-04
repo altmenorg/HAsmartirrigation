@@ -46,6 +46,19 @@ These services do not provide solar radiation themselves, but you still have two
 
 Without either, ET falls back to the temperature-based estimate described above.
 
+## What reads from Open-Meteo, whatever service you pick
+
+Open-Meteo is the default service and also the one Smart Irrigation turns to for the data the others do not publish. With OpenWeatherMap or Pirate Weather, these still come from Open-Meteo, keyless and free:
+
+- **the sun**, hour by hour, for the hourly calculation when no radiation sensor is mapped, and the daily radiation and reference ET0;
+- **the hours of the days ahead**, for a zone whose engine looks ahead.
+
+Your own service's rain is never replaced by Open-Meteo's. With Open-Meteo itself, one more use:
+
+- with **Open-Meteo itself and a sensor group fed only by the weather service**, the hourly calculation is priced on Open-Meteo's own hourly history instead of the readings Smart Irrigation took (see [the hourly calculation](configuration-general.md)).
+
+None of this is a single point of failure. When Open-Meteo cannot be reached, each of these falls back to what Smart Irrigation can do without it: the sun is estimated from the day's temperature range (FAO-56 Eq. 50) or read from your sensor, the rain comes from the readings, a forecast that is not available leaves the zone on the daily equation, and the hourly calculation sums the readings it recorded. A calculation is made, with a little less precision, and the log says what was missing.
+
 ## Skipping the calculation entirely (Open-Meteo + Passthrough)
 
 Open-Meteo also returns a finished FAO-56 ET0. If you would rather not run the calculation yourself, use the **Passthrough** module instead of PyETO and set the **Evapotranspiration** source to **Weather service**. The integration then uses Open-Meteo's ET0 as-is. (Open-Meteo computes that ET0 from its own model data, so it does not take your individual sensor mappings into account; PyETO + a radiation source does.)

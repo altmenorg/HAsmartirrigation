@@ -532,6 +532,9 @@ class TriggersMixin:
             try:
                 # Decide once per day whether today is a watering day.
                 if self._watering_decision_today is None:
+                    # Fresh numbers first, when the user asked for them: the
+                    # skip checks and the durations below should rest on them.
+                    await self._recalculate_before_start()
                     # One structured evaluation rather than two booleans, so
                     # what the panel shows and what the runner decides come from
                     # the same call (#794).
@@ -544,6 +547,19 @@ class TriggersMixin:
                     }
                     skip_reason = evaluation["reason"]
                     self._watering_decision_today = not evaluation["should_skip"]
+                    # Decided with the day: the first run resets the counters,
+                    # and a second trigger must not read that as "just watered".
+                    try:
+                        self._zones_held_by_days_between = (
+                            await self.async_zones_held_by_days_between()
+                        )
+                    except Exception as e:  # noqa: BLE001 - an extra, not the decision
+                        self._zones_held_by_days_between = set()
+                        _LOGGER.warning(
+                            "Could not work out the zones held by their days "
+                            "between irrigation: %s",
+                            e,
+                        )
                     # Count the days the forecast holds the run back, so that
                     # showers forecast day after day cannot hold it back for
                     # ever (skip_conditions.py).
@@ -604,11 +620,21 @@ class TriggersMixin:
                     )
                     await self._hold_back_zones_exposed_to_rain(sheltered)
 
+                # A zone that has to wait longer between two irrigations sits
+                # this run out, whatever the other zones do (#875).
+                await self._hold_back_zones_held_by_days_between(
+                    getattr(self, "_zones_held_by_days_between", None) or set()
+                )
+
                 # A zone whose own soil is already moist sits this run out.
                 await self._hold_back_zones_with_moist_soil()
 
                 # Rain between the calculation and now shortens the run.
                 await self._apply_rain_since_calculation()
+
+                # Rain forecast for the day ahead shortens it as well, when the
+                # user asked for that.
+                await self._apply_forecast_rain_credit()
 
                 # And, for a zone with no rain gauge and no service to give it
                 # millimetres, what a binary rain sensor says about the last few
@@ -639,7 +665,12 @@ class TriggersMixin:
                 # the first day with a real deficit was vetoed and watering
                 # slipped by up to days-between each time.
                 if await self._any_zone_to_water():
-                    await self._reset_days_since_irrigation()
+                    # The general counter belongs to the zones that follow the
+                    # general setting: a zone with days of its own, watered every
+                    # day, must not keep the others from ever being due (#875).
+                    if await self._any_zone_to_water(general_setting_only=True):
+                        await self._reset_days_since_irrigation()
+                    await self._reset_zone_days_since_irrigation()
                     await self.store.async_update_config(
                         {const.CONF_PRECIPITATION_SKIPS_IN_A_ROW: 0}
                     )
@@ -681,10 +712,19 @@ class TriggersMixin:
         except Exception as ex:  # noqa: BLE001 - see docstring
             _LOGGER.warning("Could not count the day held back by rain: %s", ex)
 
-    async def _any_zone_to_water(self) -> bool:
-        """Whether a zone that is not disabled has a duration above zero."""
+    async def _any_zone_to_water(self, general_setting_only: bool = False) -> bool:
+        """Whether a zone that is not disabled has a duration above zero.
+
+        With ``general_setting_only``, only the zones that follow the general
+        days-between setting count, not the ones with days of their own.
+        """
         for zone in await self.store.async_get_zones():
             if zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED:
+                continue
+            if (
+                general_setting_only
+                and zone.get(const.ZONE_DAYS_BETWEEN_IRRIGATION) is not None
+            ):
                 continue
             duration = zone.get(const.ZONE_DURATION)
             if isinstance(duration, (int, float)) and duration > 0:
@@ -723,6 +763,74 @@ class TriggersMixin:
                 zone.get(const.ZONE_NAME),
             )
             await self.store.async_update_zone(zone_id, {const.ZONE_DURATION: 0})
+        async_dispatcher_send(self.hass, const.DOMAIN + "_update_frontend")
+
+    async def _recalculate_before_start(self) -> None:
+        """Calculate the zones again just before the first start of the day.
+
+        Opt-in (``recalculate_before_start``). The nightly calculation prices
+        the evapotranspiration, the temperature and the wind of the hours before
+        it; a start at sunset then waters on data some twenty hours old. Only
+        the rain was brought up to date (rain since the calculation, the
+        forecast, the rain history). This brings everything up to date by
+        running the calculation itself, which also collects the weather again.
+
+        Skipped when a zone was calculated within the hour, since nothing could
+        be fresher. A failure leaves the zones as they were calculated: the run
+        goes ahead on the earlier numbers, as it always did.
+        """
+        try:
+            config = self.store.get_config() or {}
+            if not config.get(const.CONF_RECALCULATE_BEFORE_START):
+                return
+            fresh = timedelta(minutes=const.RECALCULATE_FRESH_MINUTES)
+            now = datetime.now()
+            for zone in await self.store.async_get_zones():
+                calculated = zone.get(const.ZONE_LAST_CALCULATED)
+                if isinstance(calculated, str):
+                    calculated = datetime.fromisoformat(calculated)
+                if calculated is not None:
+                    calculated = calculated.replace(tzinfo=None)
+                    if now - calculated < fresh:
+                        _LOGGER.debug(
+                            "Not recalculating before the start: zone %s was "
+                            "calculated less than an hour ago",
+                            zone.get(const.ZONE_NAME),
+                        )
+                        return
+            _LOGGER.info("Calculating again before the first start of the day")
+            await self._async_calculate_all()
+        except Exception as e:  # noqa: BLE001 - the run goes ahead on what it has
+            _LOGGER.warning("Could not calculate again before the start: %s", e)
+
+    async def _hold_back_zones_held_by_days_between(self, held: set) -> None:
+        """Zero this run for the zones still within their days between irrigation.
+
+        ``held`` is decided once a day (``async_zones_held_by_days_between``).
+        The general setting applies to a zone without a value of its own, so with
+        no zone customised this holds back exactly the zones the whole-day veto
+        would have, and that veto normally gets there first. It matters when
+        zones differ: the run goes ahead for the zones that are due and sits out
+        for the others. The bucket is left alone, so the deficit rolls over to
+        the next run (#875).
+        """
+        if not held:
+            return
+        try:
+            zones = await self.store.async_get_zones()
+        except Exception as e:  # noqa: BLE001 - never block the run over this
+            _LOGGER.error("Could not read the zones to hold back: %s", e)
+            return
+        for zone in zones:
+            if zone.get(const.ZONE_ID) not in held or not zone.get(const.ZONE_DURATION):
+                continue
+            _LOGGER.info(
+                "Zone %s is held back: not enough days since it was last watered",
+                zone.get(const.ZONE_NAME),
+            )
+            await self.store.async_update_zone(
+                zone.get(const.ZONE_ID), {const.ZONE_DURATION: 0}
+            )
         async_dispatcher_send(self.hass, const.DOMAIN + "_update_frontend")
 
     async def _hold_back_zones_with_moist_soil(self) -> None:
@@ -831,6 +939,98 @@ class TriggersMixin:
                 # failure here costs accuracy, not the run.
                 _LOGGER.error(
                     "Could not account for rain since the calculation on zone %s: %s",
+                    zone.get(const.ZONE_NAME),
+                    e,
+                )
+
+    async def _apply_forecast_rain_credit(self):
+        """Shorten each zone's run by the rain forecast for the day after it starts.
+
+        Opt-in (``forecast_rain_credit``). The skip on a forecast is all or
+        nothing; this credits what is expected, so a forecast of 4 mm against a
+        10 mm deficit waters 6 mm instead of 10 or nothing.
+
+        It is done the way rain since the calculation is: the duration is
+        shortened and the bucket is left alone. The rain that falls is measured
+        and credited at the next calculation, and the smaller amount applied is
+        what the run credits, so nothing is counted twice. The window starts
+        with the run, not with the calculation, which on a morning run is hours
+        earlier: a forecast list starts at a calendar day whatever time it is,
+        and pricing it by position puts the rain of the wrong day against a run.
+
+        A zone under glass is left as it is, as it is for the skip: a forecast
+        says nothing about a greenhouse. Rain can only shorten a run, and any
+        failure costs accuracy, not the run.
+        """
+        try:
+            config = self.store.get_config() or {}
+            enabled = config.get(const.CONF_FORECAST_RAIN_CREDIT)
+        except Exception:  # noqa: BLE001 - an extra, never the decision
+            return
+        if not enabled:
+            return
+        if not getattr(self, "use_weather_service", False):
+            return
+        fetch = getattr(
+            getattr(self, "_WeatherServiceClient", None),
+            "get_expected_rain_ahead",
+            None,
+        )
+        if fetch is None:
+            return
+        try:
+            zones = await self.store.async_get_zones()
+            sheltered = await self.async_zones_sheltered_from_rain()
+            start = datetime.now()
+            expected_mm = await self.hass.async_add_executor_job(
+                fetch, start, start + timedelta(hours=const.FORECAST_RAIN_CREDIT_HOURS)
+            )
+        except Exception as e:  # noqa: BLE001 - never block the run over this
+            _LOGGER.warning("Could not read the rain forecast to credit: %s", e)
+            return
+        if not expected_mm or expected_mm <= 0:
+            return
+
+        for zone in zones:
+            if zone.get(const.ZONE_STATE) != const.ZONE_STATE_AUTOMATIC:
+                continue
+            if zone.get(const.ZONE_ID) in sheltered:
+                continue
+            if not zone.get(const.ZONE_DURATION):
+                continue
+            try:
+                # What the run is sized from now, the rain that fell since the
+                # calculation included, less what the forecast says will fall.
+                rain_so_far = await self.precipitation_since_last_calculation(zone)
+                rain_so_far -= zone.get(const.ZONE_PRECIPITATION_SUPERSEDED) or 0.0
+                bucket = (
+                    (zone.get(const.ZONE_BUCKET) or 0.0)
+                    + max(0.0, rain_so_far)
+                    + expected_mm
+                )
+                duration = self.duration_from_bucket(zone, bucket)
+                if duration >= zone.get(const.ZONE_DURATION):
+                    continue
+                _LOGGER.info(
+                    "Zone %s: %.1f mm of rain forecast for the next %s hours, "
+                    "watering for %s s instead of %s s",
+                    zone.get(const.ZONE_NAME),
+                    expected_mm,
+                    const.FORECAST_RAIN_CREDIT_HOURS,
+                    duration,
+                    zone.get(const.ZONE_DURATION),
+                )
+                await self.store.async_update_zone(
+                    zone.get(const.ZONE_ID), {const.ZONE_DURATION: duration}
+                )
+                async_dispatcher_send(
+                    self.hass,
+                    const.DOMAIN + "_config_updated",
+                    zone.get(const.ZONE_ID),
+                )
+            except Exception as e:  # noqa: BLE001
+                _LOGGER.error(
+                    "Could not credit the forecast rain on zone %s: %s",
                     zone.get(const.ZONE_NAME),
                     e,
                 )

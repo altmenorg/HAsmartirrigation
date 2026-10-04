@@ -135,8 +135,14 @@ set_zone:
       example: 50
       default: 50
 clear_all_weather_data:
-  name: Clear all weather data
-  description: Clear all collected weather data from all mappings.
+  name: Clear weather data
+  description: >-
+    Clear the collected weather data of every sensor group, or, when you pick
+    zones, of their sensor groups only. The weather data is shared by the zones
+    of a group, so the other zones of those groups lose it too.
+  target:
+    entity:
+      domain: sensor
 set_state:
   name: Set the state of a zone
   description: Set the state of a zone to a specific value.

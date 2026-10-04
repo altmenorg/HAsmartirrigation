@@ -32,6 +32,10 @@ export class SmartIrrigationConfig {
   autoclearenabled: boolean;
   continuousupdates: boolean;
   hourly_calculation: boolean;
+  forecast_rain_credit?: boolean;
+  effective_rain?: boolean;
+  seasonal_adjustments?: SmartIrrigationSeasonalAdjustment[];
+  recalculate_before_start?: boolean;
   /** How much of the panel is shown: "standard" or "advanced". */
   ui_mode?: string;
   skip_on_freeze?: boolean;
@@ -125,6 +129,17 @@ export enum SmartIrrigationZoneState {
   Automatic = "automatic",
 }
 
+export interface SmartIrrigationSeasonalAdjustment {
+  id: string;
+  name: string;
+  enabled?: boolean;
+  month_start: number;
+  month_end: number;
+  multiplier_adjustment?: number;
+  threshold_adjustment?: number;
+  zones?: string | number[];
+}
+
 //export type SmartIrrigationZone = {
 export class SmartIrrigationZone {
   id?: number;
@@ -144,12 +159,19 @@ export class SmartIrrigationZone {
   maximum_duration?: number;
   maximum_bucket?: number;
   irrigation_threshold?: number;
+  days_between_irrigation?: number | null; // null: follow the general setting
+  crop_factor_by_month?: (number | null)[] | null; // January first; null: the crop factor all year
+  available_water?: number | null; // mm the soil holds for the plants; null: not set
+  allowed_depletion?: number | null; // % of it the plants may use up; null: 50
+  distribution_efficiency?: number | null; // % of the water that reaches the plants; null: 100
   last_calculated?: Date;
   last_updated?: Date;
   number_of_data_points?: number;
   drainage_rate?: number;
   current_drainage?: number;
   linked_entity?: string;
+  safety_off_topic?: string;
+  safety_off_state_key?: string;
   flow_sensor?: string;
   soil_moisture_sensor?: string;
   soil_moisture_threshold?: number;

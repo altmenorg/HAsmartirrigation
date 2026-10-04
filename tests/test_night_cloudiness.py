@@ -29,6 +29,7 @@ from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation import hourly_rows as rows_module
 from custom_components.smart_irrigation.hourly_et import (
     NIGHT_CLOUDINESS_FALLBACK,
+    night_cloudiness_from_humidity,
     clear_sky_radiation_hourly,
     cloudiness_factor,
     extraterrestrial_radiation_hourly,
@@ -173,20 +174,29 @@ def test_a_window_with_no_daylight_has_nothing_to_hand_over():
     assert _carried(rows) is None
 
 
-def test_with_nothing_handed_over_the_clear_sky_end_is_assumed():
-    """Because assuming an overcast night loses the least, and under-counting
-    the loss is what waters a garden it should not have."""
+def test_with_nothing_handed_over_the_sky_is_read_off_the_humidity():
+    """FAO-56's approximate alternative, in place of a constant (0.8, the dry
+    end of its range) that made the live estimate of a humid night lose more heat
+    than the calculation of the same night would."""
     temperature, humidity = 8.0, 85.0
     avp = svp_from_t(temperature) * humidity / 100.0
 
     assumed = net_radiation_hourly(0.0, 0.0, temperature, avp, ELEV)
     explicit = net_radiation_hourly(
-        0.0, 0.0, temperature, avp, ELEV, cloudiness=NIGHT_CLOUDINESS_FALLBACK
+        0.0,
+        0.0,
+        temperature,
+        avp,
+        ELEV,
+        cloudiness=night_cloudiness_from_humidity(humidity / 100.0),
     )
 
     assert assumed == pytest.approx(explicit)
-    # And it is a real loss, not the old near-zero one.
-    assert assumed < -0.05
+    # Still a real loss, and smaller than under the old assumption.
+    old = net_radiation_hourly(
+        0.0, 0.0, temperature, avp, ELEV, cloudiness=NIGHT_CLOUDINESS_FALLBACK
+    )
+    assert old < assumed < 0
 
 
 def test_a_long_winter_night_is_what_this_was_costing():

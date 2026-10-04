@@ -25,6 +25,17 @@ Here's a list of units:
 The reason we're using these units is consistency but also because the most-used module (PyETO) requires the data to be provided in these units (at least, that's what the limited documentation and code seem to imply).
 For those interested, [here's the function that does this most of the conversion in code (with the exception of the absolute to relative conversion for pressure)](https://github.com/altmenorg/HAsmartirrigation/blob/7c206809ac35a686a16eb8b3b209d030a28463f7/custom_components/smart_irrigation/helpers.py#L115): 
 
+## "A zone is never watered and its deficit does not move"
+When every day of the window lacks something the equation needs (a temperature, the wind),
+the evapotranspiration comes out as nothing: the deficit stays where it was and the zone is
+never watered, which looks exactly like a zone with no need. Smart Irrigation now raises a
+repair issue naming the zone and the inputs that were missing, and clears it at the next
+calculation that can be done. Check that the sensors mapped to those fields are available,
+or that the weather service still sends them.
+
+A repair issue also appears when one run of a zone cannot water what the zone loses between
+two waterings (see *Maximum duration* in the [zone settings](configuration-zones.md)).
+
 ## "The calculated duration looks wrong"
 The diagnostic file shows the current state, not how it was reached. To find out why a
 particular day watered the way it did, switch on the

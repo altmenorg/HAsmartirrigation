@@ -137,6 +137,17 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
         self._radiation_series = None
         self._radiation_fetched_at = datetime.datetime(1900, 1, 1, 0, 0, 0)
         self._radiation_covers_from = math.inf
+        # Hourly weather history, see get_hourly_history.
+        self._history_series = None
+        self._history_fetched_at = datetime.datetime(1900, 1, 1, 0, 0, 0)
+        self._history_covers_from = math.inf
+        # Hourly rain forecast, see get_expected_rain_ahead.
+        self._rain_ahead_series = None
+        self._rain_ahead_fetched_at = datetime.datetime(1900, 1, 1, 0, 0, 0)
+        # Hourly reference ET history, see get_hourly_et0.
+        self._et0_series = None
+        self._et0_fetched_at = datetime.datetime(1900, 1, 1, 0, 0, 0)
+        self._et0_covers_from = math.inf
         # Hourly forecast, see get_hourly_forecast.
         self._forecast_series = None
         self._forecast_fetched_at = datetime.datetime(1900, 1, 1, 0, 0, 0)
@@ -556,6 +567,276 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
         self._precipitation_series = series
         self._precipitation_fetched_at = now
         self._precipitation_covers_from = series[0][0] - SECONDS_PER_HOUR
+        return series
+
+    _HISTORY_HOURLY_VARS = (
+        "temperature_2m",
+        "relative_humidity_2m",
+        "wind_speed_10m",
+        "shortwave_radiation",
+        "surface_pressure",
+    )
+
+    def get_hourly_history(self, start, end):
+        """The hours of ``[start, end]`` as Open-Meteo itself has them, or None.
+
+        A list of entries, one per clock hour that overlaps the window, in the
+        shape the hourly rows are built from: ``ts`` (the hour's start, unix),
+        ``temperature`` (C), ``humidity`` (%), ``wind`` (m/s at 2 m),
+        ``solar_mj_h`` (MJ/m2 over the hour) and ``pressure_hpa``.
+
+        This is what the hourly equation is best fed. Smart Irrigation polls
+        the service about once an hour and takes the current values, which then
+        stand in for the hour around them; Open-Meteo's own hourly figures are
+        means over the hour. Priced on them, the equation follows Open-Meteo's
+        evapotranspiration to within about three percent, where the polled
+        readings leave it several percent short on days when the sun moves fast.
+
+        The fields are not all stamped the same way. Temperature, humidity,
+        wind and pressure are values at the stamp, so the hour that starts there
+        is taken as the mean of the stamp and the next. The radiation is the
+        mean of the hour that ENDS at its stamp (see get_hourly_radiation), so
+        the sun of an hour is the value stamped an hour later.
+
+        None when anything is missing or the request failed: a history read
+        wrong is worse than none, and the caller then uses its own readings.
+        """
+        try:
+            start_ts = start.timestamp()
+            end_ts = end.timestamp()
+        except (AttributeError, TypeError, ValueError, OverflowError):
+            return None
+        if end_ts <= start_ts:
+            return []
+        series = self._hourly_history(start_ts)
+        if series is None:
+            return None
+        by_stamp = {row[0]: row for row in series}
+        out = []
+        first_hour = math.floor(start_ts / SECONDS_PER_HOUR) * SECONDS_PER_HOUR
+        hour = first_hour
+        while hour < end_ts:
+            now_row, next_row = by_stamp.get(hour), by_stamp.get(
+                hour + SECONDS_PER_HOUR
+            )
+            if now_row is None or next_row is None:
+                return None
+            out.append(
+                {
+                    "ts": hour,
+                    "temperature": (now_row[1] + next_row[1]) / 2.0,
+                    "humidity": (now_row[2] + next_row[2]) / 2.0,
+                    "wind": (now_row[3] + next_row[3]) / 2.0 * WIND_10M_TO_2M,
+                    "solar_mj_h": next_row[4] * SECONDS_PER_HOUR / 1_000_000,
+                    "pressure_hpa": (now_row[5] + next_row[5]) / 2.0,
+                }
+            )
+            hour += SECONDS_PER_HOUR
+        return out
+
+    def _hourly_history(self, since_ts):
+        """Return (stamp, T, RH, wind 10 m m/s, W/m2, hPa) rows from ``since_ts``, or None."""
+        now = datetime.datetime.now()
+        if (
+            self._history_series is not None
+            and now
+            < self._history_fetched_at
+            + datetime.timedelta(seconds=PRECIPITATION_CACHE_SECONDS)
+            and self._history_covers_from <= since_ts - SECONDS_PER_HOUR
+        ):
+            return self._history_series
+
+        past_seconds = max(0.0, now.timestamp() - since_ts)
+        params = {
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "hourly": ",".join(self._HISTORY_HOURLY_VARS),
+            "wind_speed_unit": "ms",
+            "temperature_unit": "celsius",
+            "timezone": "GMT",
+            "timeformat": "unixtime",
+            "past_days": min(MAX_PAST_DAYS, math.ceil(past_seconds / 86400) + 1),
+            "forecast_days": 2,
+        }
+        try:
+            doc = self._request(params)
+            if doc is None:
+                return None
+            hourly = doc["hourly"]
+            series = []
+            for index, stamp in enumerate(hourly["time"]):
+                values = [hourly[name][index] for name in self._HISTORY_HOURLY_VARS]
+                if any(value is None for value in values):
+                    # A hole in a field the equation needs: the hours around it
+                    # cannot be priced, and the caller finds the gap.
+                    continue
+                series.append((float(stamp), *(float(value) for value in values)))
+        except (
+            KeyError,
+            IndexError,
+            TypeError,
+            ValueError,
+            requests.RequestException,
+        ) as ex:
+            _LOGGER.warning("Error reading the hourly history from Open-Meteo: %s", ex)
+            return None
+        if not series:
+            return None
+        self._history_series = series
+        self._history_fetched_at = now
+        self._history_covers_from = series[0][0]
+        return series
+
+    def get_expected_rain_ahead(self, start, end):
+        """The rain to expect between two moments, in mm, or None.
+
+        From Open-Meteo's hourly forecast, each hour's millimetres weighted by
+        its probability when it gives one, as the skip guard weights its days:
+        10 mm at 30% is not 10 mm. Each value is the rain of the hour ending at
+        its timestamp, and an hour only partly inside the window counts for the
+        share that is. The window is measured from ``start``, the moment the run
+        begins, not from the calculation hours earlier: rain that falls between
+        the two is accounted for by the rain already measured.
+
+        None means the forecast could not be read, or does not reach the end of
+        the window, and the caller leaves the run as calculated rather than
+        credit a part of the window as if it were all of it.
+        """
+        try:
+            start_ts = start.timestamp()
+            end_ts = end.timestamp()
+        except (AttributeError, TypeError, ValueError, OverflowError):
+            return None
+        if end_ts <= start_ts:
+            return 0.0
+        series = self._hourly_rain_ahead()
+        if not series or series[-1][0] < end_ts:
+            return None
+        total = 0.0
+        for hour_end, expected in series:
+            overlap = min(end_ts, hour_end) - max(start_ts, hour_end - SECONDS_PER_HOUR)
+            if overlap > 0:
+                total += expected * overlap / SECONDS_PER_HOUR
+        return total
+
+    def _hourly_rain_ahead(self):
+        """Return (hour end as unix time, expected mm) pairs, or None."""
+        now = datetime.datetime.now()
+        if (
+            self._rain_ahead_series is not None
+            and now
+            < self._rain_ahead_fetched_at
+            + datetime.timedelta(seconds=PRECIPITATION_CACHE_SECONDS)
+        ):
+            return self._rain_ahead_series
+        params = {
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "hourly": "precipitation,precipitation_probability",
+            "precipitation_unit": "mm",
+            "timezone": "GMT",
+            "timeformat": "unixtime",
+            "forecast_days": 3,
+        }
+        try:
+            doc = self._request(params)
+            if doc is None:
+                return None
+            hourly = doc["hourly"]
+            probabilities = hourly.get("precipitation_probability") or []
+            series = []
+            for index, (hour_end, amount) in enumerate(
+                zip(hourly["time"], hourly["precipitation"], strict=False)
+            ):
+                millimetres = float(amount or 0.0)
+                probability = (
+                    probabilities[index] if index < len(probabilities) else None
+                )
+                if probability is not None:
+                    millimetres *= min(100.0, max(0.0, float(probability))) / 100.0
+                series.append((float(hour_end), millimetres))
+        except (KeyError, TypeError, ValueError, requests.RequestException) as ex:
+            _LOGGER.warning("Error reading the rain forecast from Open-Meteo: %s", ex)
+            return None
+        if not series:
+            return None
+        self._rain_ahead_series = series
+        self._rain_ahead_fetched_at = now
+        return series
+
+    def get_hourly_et0(self, start, end):
+        """The reference ET Open-Meteo quotes between two moments, in mm, or None.
+
+        Summed from its hourly ``et0_fao_evapotranspiration``, where each value
+        is the ET of the hour ending at its timestamp (the convention of the
+        hourly rain). An hour that only partly lies in the window counts for
+        the share that does, so the sum grows smoothly through the hour still
+        under way instead of stepping on the hour.
+
+        This is what lets a zone whose ET is *provided* follow the day: the
+        daily total spread evenly over the elapsed time falls at a constant
+        rate, night included. ``start`` and ``end`` are datetimes; naive ones
+        are local time. None means the history could not be read, and the
+        caller keeps the daily figure rather than invent an hour's ET.
+        """
+        try:
+            start_ts = start.timestamp()
+            end_ts = end.timestamp()
+        except (AttributeError, TypeError, ValueError, OverflowError):
+            return None
+        if end_ts <= start_ts:
+            return 0.0
+        series = self._hourly_et0(start_ts)
+        if series is None:
+            return None
+        total = 0.0
+        for hour_end, amount in series:
+            overlap = min(end_ts, hour_end) - max(start_ts, hour_end - SECONDS_PER_HOUR)
+            if overlap > 0:
+                total += amount * overlap / SECONDS_PER_HOUR
+        return total
+
+    def _hourly_et0(self, since_ts):
+        """Return (hour end as unix time, mm) pairs from ``since_ts`` on, or None."""
+        now = datetime.datetime.now()
+        if (
+            self._et0_series is not None
+            and now
+            < self._et0_fetched_at
+            + datetime.timedelta(seconds=PRECIPITATION_CACHE_SECONDS)
+            and self._et0_covers_from <= since_ts
+        ):
+            return self._et0_series
+
+        past_seconds = max(0.0, now.timestamp() - since_ts)
+        params = {
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "hourly": "et0_fao_evapotranspiration",
+            "timezone": "GMT",
+            "timeformat": "unixtime",
+            "past_days": min(MAX_PAST_DAYS, math.ceil(past_seconds / 86400) + 1),
+            "forecast_days": 1,
+        }
+        try:
+            doc = self._request(params)
+            if doc is None:
+                return None
+            hourly = doc["hourly"]
+            series = [
+                (float(hour_end), float(amount or 0.0))
+                for hour_end, amount in zip(
+                    hourly["time"], hourly["et0_fao_evapotranspiration"], strict=False
+                )
+            ]
+        except (KeyError, TypeError, ValueError, requests.RequestException) as ex:
+            _LOGGER.warning("Error reading hourly ET0 from Open-Meteo: %s", ex)
+            return None
+        if not series:
+            return None
+        self._et0_series = series
+        self._et0_fetched_at = now
+        self._et0_covers_from = series[0][0] - SECONDS_PER_HOUR
         return series
 
     def get_cached_forecast_data(self):

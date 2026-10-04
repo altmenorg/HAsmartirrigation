@@ -18,7 +18,12 @@ from . import const
 from .calc_log import timestamps as calc_log_timestamps
 from .calcmodules.consumes import sourced_fields
 from .helpers import loadModules, parse_datetime
-from .hourly_rows import SystemLocalTime, forecast_eto_by_day, summed_hourly_eto
+from .hourly_rows import (
+    SystemLocalTime,
+    forecast_eto_by_day,
+    summed_hourly_eto,
+    summed_hourly_eto_from_history,
+)
 from .hourly_solar_estimate import estimated_solar_series
 from .localize import localize
 
@@ -1346,6 +1351,18 @@ class CalculationMixin:
             if key in sourced
         }
         since = self.zone_window_start(zone)
+        # A group fed by Open-Meteo alone is priced on Open-Meteo's own hourly
+        # history: the polled readings are one value an hour standing in for the
+        # hour around them.
+        history = await self._open_meteo_history_total(zone, mapping, since)
+        if history is not None:
+            self._hourly_solar_estimated = False
+            forecast_days = getattr(modinst, "forecast_days", 0) or 0
+            if forecast_days:
+                history = await self._hourly_with_forecast(
+                    zone, mapping, history, forecast_days
+                )
+            return history
         solar_series = None
         estimated_solar = False
         if const.MAPPING_SOLRAD not in sourced:
@@ -1398,6 +1415,90 @@ class CalculationMixin:
         )
         self._hourly_solar_estimated = estimated_solar
         return result
+
+    async def _hourly_service_et(self, zone):
+        """Reference ET the weather service quotes hour by hour, or None.
+
+        ``(total_mm, hours)`` over the zone's window for a zone whose ET is
+        provided by the weather service, when the hourly calculation is on and
+        the service keeps an hourly history (Open-Meteo). None in every other
+        case, and then the daily figure is spread over the window as before:
+        a sensor-provided ET has no hours to follow.
+        """
+        config = self.store.get_config() or {}
+        if not config.get(const.CONF_HOURLY_CALCULATION):
+            return None
+        mapping = self.store.get_mapping(zone.get(const.ZONE_MAPPING))
+        if (
+            not mapping
+            or const.MAPPING_EVAPOTRANSPIRATION in self._sourced_fields(mapping)
+            or not getattr(self, "use_weather_service", False)
+        ):
+            return None
+        since = self.zone_window_start(zone)
+        fetch = getattr(
+            getattr(self, "_WeatherServiceClient", None), "get_hourly_et0", None
+        )
+        if fetch is None or since is None:
+            return None
+        now = datetime.now()
+        total = await self.hass.async_add_executor_job(fetch, since, now)
+        if total is None:
+            return None
+        self._hourly_solar_estimated = False
+        return (total, (now - since).total_seconds() / 3600)
+
+    async def _open_meteo_history_total(self, zone, mapping, since):
+        """``(mm, hours)`` of the window on Open-Meteo's hourly history, or None.
+
+        Only for a sensor group whose every source is the weather service and
+        whose service is Open-Meteo: a group with a sensor of its own, a static
+        value, another service or a greenhouse keeps summing its own readings.
+        Any failure also falls back to them.
+        """
+        if (
+            since is None
+            or not getattr(self, "use_weather_service", False)
+            or getattr(self, "weather_service", None) != const.CONF_WEATHER_SERVICE_OM
+            or (mapping or {}).get(const.MAPPING_GREENHOUSE)
+        ):
+            return None
+        fetch = getattr(
+            getattr(self, "_WeatherServiceClient", None), "get_hourly_history", None
+        )
+        if fetch is None:
+            return None
+        try:
+            from_service, from_sensor, from_static = self.check_mapping_sources(
+                zone.get(const.ZONE_MAPPING)
+            )
+            if not from_service or from_sensor or from_static:
+                return None
+            now = datetime.now()
+            entries = await self.hass.async_add_executor_job(fetch, since, now)
+            if not entries:
+                return None
+            result = summed_hourly_eto_from_history(
+                entries,
+                since,
+                now,
+                latitude=getattr(self, "_effective_latitude", None),
+                longitude=getattr(self, "_effective_longitude", None),
+                elevation=getattr(self, "_effective_elevation", None) or 0.0,
+                tz=SystemLocalTime(),
+            )
+            if result is not None:
+                _LOGGER.debug(
+                    "[calculate-module]: zone %s: %.3f mm of reference ET summed over "
+                    "%.2f hours of Open-Meteo's own hourly history",
+                    zone.get(const.ZONE_ID),
+                    result[0],
+                    result[1],
+                )
+            return result
+        except Exception:  # noqa: BLE001 - the readings are the fallback
+            _LOGGER.debug("The hourly history could not be used", exc_info=True)
+            return None
 
     def _under_glass(self, zone, weatherdata):
         """The weather data, told to dim an estimated sun for a greenhouse.
@@ -1494,12 +1595,20 @@ class CalculationMixin:
     async def _async_clear_all_weatherdata(self, *args):
         _LOGGER.info("Clearing all weatherdata")
         mappings = await self.store.async_get_mappings()
-        for mapping in mappings:
-            changes = {}
-            changes[const.MAPPING_DATA] = []
-            changes[const.MAPPING_DATA_LAST_CALCULATION] = {}
+        await self._async_clear_weatherdata_of_mappings(
+            {mapping.get(const.MAPPING_ID) for mapping in mappings}
+        )
+
+    async def _async_clear_weatherdata_of_mappings(self, mapping_ids) -> None:
+        """Empty the collected weather data of the given sensor groups."""
+        for mapping_id in mapping_ids:
+            _LOGGER.debug("Clearing the weatherdata of sensor group %s", mapping_id)
             await self.store.async_update_mapping(
-                mapping.get(const.MAPPING_ID), changes
+                mapping_id,
+                {
+                    const.MAPPING_DATA: [],
+                    const.MAPPING_DATA_LAST_CALCULATION: {},
+                },
             )
 
     async def _async_calculate_all(self, delete_weather_data=True, dry_run=False):
@@ -1529,7 +1638,10 @@ class CalculationMixin:
         # skip over zones that use pure sensors (not weather service) if continuous updates are enabled
         the_config = await self.store.async_get_config()
         zones = []
-        if the_config.get(const.CONF_CONTINUOUS_UPDATES):
+        if (
+            the_config.get(const.CONF_CONTINUOUS_UPDATES)
+            and const.CONTINUOUS_UPDATES_RECALCULATE
+        ):
             _LOGGER.debug(
                 "Continuous updates are enabled, filtering out pure sensor zones"
             )
@@ -1870,13 +1982,21 @@ class CalculationMixin:
                         weather_data=weatherdata, forecast_data=forecastdata
                     )
             precip = self._precipitation_net_of_superseded(zone, weatherdata)
+            if hourly is None:
+                self._check_missing_input(zone, modinst)
         elif m[const.MODULE_NAME] == "Static":
             delta = modinst.calculate()
         elif m[const.MODULE_NAME] == "Passthrough":
             if const.MAPPING_EVAPOTRANSPIRATION in weatherdata:
-                delta = 0 - modinst.calculate(
-                    et_data=weatherdata[const.MAPPING_EVAPOTRANSPIRATION]
-                )
+                # The service's ET hour by hour when it keeps one, else the
+                # day's total spread over the window.
+                hourly = await self._hourly_service_et(zone)
+                if hourly is not None:
+                    delta = -hourly[0]
+                else:
+                    delta = 0 - modinst.calculate(
+                        et_data=weatherdata[const.MAPPING_EVAPOTRANSPIRATION]
+                    )
                 # Passthrough bypasses the ET calculation, not the water
                 # balance: measured/forecast precipitation must still refill
                 # the bucket, otherwise it can only ever drain (#790).
@@ -1903,18 +2023,17 @@ class CalculationMixin:
         crop_factor = zone.get(const.ZONE_MULTIPLIER)
         if crop_factor is None:
             crop_factor = 1.0
+        window_month = self._window_month(weatherdata, hourly)
+        crop_factor = self._crop_factor_of_the_month(zone, window_month, crop_factor)
         # A seasonal multiplier adjustment scales the crop factor for the months
         # it covers.
         # The month is the one the window's water was used in, taken at its
         # middle: the clock alone gave a calculation just after midnight on the
         # 1st the new month's factor for the whole of the previous day.
-        crop_factor = (
-            crop_factor
-            * self._seasonal_factors(
-                zone, month=self._window_month(weatherdata, hourly)
-            )[0]
-        )
+        crop_factor = crop_factor * self._seasonal_factors(zone, month=window_month)[0]
         delta = delta * crop_factor
+        # Rain that does not reach the roots is not counted (opt-in).
+        precip = self._effective_rain(precip, reference_et, weatherdata, hourly)
         # The per-day water need of this zone, before interval scaling and
         # before precipitation. Unlike the bucket it does not depend on the
         # hour_multiplier or on bucket resets, which is what makes it the value
@@ -1929,10 +2048,27 @@ class CalculationMixin:
             crop_factor,
             hour_multiplier,
         )
-        delta = delta * (1.0 if hourly is not None else hour_multiplier) + precip
+        et_part = delta * (1.0 if hourly is not None else hour_multiplier)
+        # A zone that knows what its soil holds stops drawing on it as freely
+        # once the plants are past their allowed depletion (FAO-56 Ks).
+        water_stress = self._water_stress(zone, bucket)
+        if water_stress < 1.0:
+            _LOGGER.debug(
+                "[calculate-module]: water stress coefficient: %.2f", water_stress
+            )
+            et_part *= water_stress
+        delta = et_part + precip
         data[const.ZONE_DELTA] = delta
         _LOGGER.debug("[calculate-module]: new delta: %s", delta)
         newbucket = bucket + delta
+        # The soil cannot be drier than what it holds for the plants.
+        available_water = zone.get(const.ZONE_AVAILABLE_WATER)
+        if available_water and available_water > 0 and newbucket < -available_water:
+            newbucket = -float(available_water)
+            _LOGGER.debug(
+                "[calculate-module]: floored the deficit at the available water: %s",
+                newbucket,
+            )
 
         # if maximum bucket configured, limit bucket with that.
         # any water above maximum is removed with runoff / bypass flow.
@@ -1979,6 +2115,8 @@ class CalculationMixin:
             newbucket = max(0, newbucket - drainage)
 
         data[const.ZONE_CURRENT_DRAINAGE] = drainage
+        # The soil's own sensor outranks the model when it says the soil is moist.
+        newbucket = self._recalibrate_on_soil(zone, newbucket)
         _LOGGER.debug("[calculate-module]: newbucket: %s", newbucket)
 
         # The formatting note is a note about the whole text, so it stands on
@@ -2234,6 +2372,14 @@ class CalculationMixin:
                     + f" {duration:.0f} s"
                 )
             explanation += ".</li>"
+            # The need of a day: an hourly sum covers its own window, which is
+            # rarely exactly 24 hours.
+            per_day = (
+                et_deficiency / (hourly[1] / 24.0)
+                if hourly is not None and hourly[1] > 0
+                else et_deficiency
+            )
+            self._check_capacity(zone, per_day, precipitation_rate)
 
             # add the lead time but only if duration is > 0 at this point
             if duration > 0.0:
@@ -2382,13 +2528,145 @@ class CalculationMixin:
             rate = zone.get(const.ZONE_PRECIPITATION_RATE)
             if not rate:
                 return None, None, None
-            return rate, None, None
+            return rate * self._distribution_efficiency(zone), None, None
 
         tput = zone.get(const.ZONE_THROUGHPUT)
         sz = zone.get(const.ZONE_SIZE)
         if not tput or not sz:
             return None, tput, sz
-        return (tput * 60) / sz, tput, sz
+        return (tput * 60) / sz * self._distribution_efficiency(zone), tput, sz
+
+    def _recalibrate_on_soil(self, zone: dict, bucket: float) -> float:
+        """Pull the bucket up to field capacity when the zone's soil reads moist.
+
+        The sensor measures the soil and the bucket models it; where they
+        disagree the measurement is right. This is the same rule the start of a
+        run applies (a zone whose soil reads moist sits the run out and its
+        bucket is set to capacity), applied at every calculation, so the
+        deficit shown never contradicts the sensor between two starts.
+
+        Only in that direction. A dry reading says nothing about how many
+        millimetres are missing without a calibration of the sensor to the
+        soil, and inventing a deficit from one would water a zone for good on
+        the strength of a badly placed probe.
+        """
+        entity_id = zone.get(const.ZONE_SOIL_MOISTURE_SENSOR)
+        reader = getattr(self, "_entity_reading", None)
+        if not entity_id or reader is None or bucket >= 0:
+            return bucket
+        try:
+            reading = reader(entity_id)
+        except Exception:  # noqa: BLE001 - a sensor that cannot be read changes nothing
+            return bucket
+        moisture = reading[0] if reading is not None else None
+        threshold = zone.get(const.ZONE_SOIL_MOISTURE_THRESHOLD)
+        if threshold is None:
+            threshold = const.CONF_DEFAULT_SOIL_MOISTURE_THRESHOLD
+        if moisture is None or moisture < threshold:
+            return bucket
+        _LOGGER.info(
+            "Zone %s: the soil reads %s%%, at or above %s%%, so the bucket is set "
+            "to field capacity instead of %.1f mm",
+            zone.get(const.ZONE_NAME),
+            moisture,
+            threshold,
+            bucket,
+        )
+        return 0.0
+
+    @staticmethod
+    def _crop_factor_of_the_month(zone: dict, month: int, default: float) -> float:
+        """The zone's crop factor for a month: its own table, else ``default``."""
+        table = zone.get(const.ZONE_CROP_FACTOR_BY_MONTH)
+        if not isinstance(table, (list, tuple)) or len(table) != 12:
+            return default
+        try:
+            value = table[int(month) - 1]
+            return default if value is None else float(value)
+        except (TypeError, ValueError, IndexError):
+            return default
+
+    def _check_missing_input(self, zone, modinst) -> None:
+        """Say so when the equation had nothing to price (advisory)."""
+        review = getattr(self, "_review_missing_input", None)
+        if review is None:
+            return
+        try:
+            review(zone, getattr(modinst, "last_trace", None))
+        except Exception as e:  # noqa: BLE001 - an advisory never costs a calculation
+            _LOGGER.debug("Could not review the inputs of a zone: %s", e)
+
+    def _check_capacity(self, zone, et_deficiency, precipitation_rate) -> None:
+        """Tell the user when one run cannot water what the zone loses (advisory)."""
+        review = getattr(self, "_review_zone_capacity", None)
+        if review is None:
+            return
+        try:
+            config = self.store.get_config() or {}
+            days = 1.0
+            if hasattr(self, "zone_days_between"):
+                days = self.zone_days_between(zone, config)[0] or 1.0
+            review(zone, abs(et_deficiency or 0.0), precipitation_rate, days)
+        except Exception as e:  # noqa: BLE001 - an advisory never costs a calculation
+            _LOGGER.debug("Could not review the capacity of a zone: %s", e)
+
+    @staticmethod
+    def _water_stress(zone: dict, bucket: float) -> float:
+        """Share of the evapotranspiration the plants can still draw: 1 or less.
+
+        FAO-56 Ks: no reduction while the deficit is within the allowed
+        depletion (RAW = p x TAW), then a straight fall to zero at TAW. A zone
+        without an available water figure is never reduced.
+        """
+        taw = zone.get(const.ZONE_AVAILABLE_WATER)
+        if not taw or taw <= 0:
+            return 1.0
+        share = zone.get(const.ZONE_ALLOWED_DEPLETION)
+        if share is None:
+            share = const.CONF_DEFAULT_ALLOWED_DEPLETION
+        p = min(0.95, max(0.05, float(share) / 100.0))
+        deficit = max(0.0, -(bucket or 0.0))
+        if deficit <= p * taw:
+            return 1.0
+        return max(0.0, (taw - deficit) / ((1.0 - p) * taw))
+
+    def _effective_rain(self, precip, reference_et, weatherdata, hourly) -> float:
+        """The rain that counts: a shower below a fifth of the window's ET is lost.
+
+        Opt-in. Judged on the whole window, so a window made of several days is
+        read as one: it ignores less than a day-by-day reading would.
+        """
+        try:
+            if not precip or precip <= 0:
+                return precip
+            config = self.store.get_config() or {}
+            if not config.get(const.CONF_EFFECTIVE_RAIN):
+                return precip
+        except Exception:  # noqa: BLE001 - an extra, never the calculation
+            return precip
+        window_et = abs(reference_et or 0.0) * (
+            1.0
+            if hourly is not None
+            else (weatherdata.get(const.MAPPING_DATA_MULTIPLIER, 1.0) or 1.0)
+        )
+        if precip < const.EFFECTIVE_RAIN_ET_SHARE * window_et:
+            _LOGGER.debug(
+                "[calculate-module]: %.2f mm of rain is below %.0f%% of the %.2f mm "
+                "of evapotranspiration of the window, not counted",
+                precip,
+                const.EFFECTIVE_RAIN_ET_SHARE * 100,
+                window_et,
+            )
+            return 0.0
+        return precip
+
+    @staticmethod
+    def _distribution_efficiency(zone: dict) -> float:
+        """The share of the emitters' water that reaches the plants, 0.05 to 1."""
+        efficiency = zone.get(const.ZONE_DISTRIBUTION_EFFICIENCY)
+        if not efficiency or efficiency <= 0:
+            return 1.0
+        return min(1.0, max(0.05, float(efficiency) / 100.0))
 
     def _build_calc_record(
         self, zone, module_name, modinst, weatherdata, forecastdata, metric, values
