@@ -491,12 +491,18 @@ async def _forecast_days(hass, coordinator, days: int = 6):
         _LOGGER.debug("No forecast for the panel: %s", e)
         return []
     out = []
-    for day in (forecast or [])[:days]:
+    today = dt_util.now().date()
+    for index, day in enumerate((forecast or [])[:days]):
         if not isinstance(day, dict):
             continue
         out.append(
             {
-                "date": day.get("date"),
+                # Only Open-Meteo dates its days. The list starts at today, so
+                # the others are counted from it; a missing date reached the
+                # panel as null, which a browser reads as 1 January 1970 and
+                # every day was labelled Thursday (#880).
+                "date": day.get("date")
+                or (today + datetime.timedelta(days=index)).isoformat(),
                 "temp_max": day.get(const.MAPPING_MAX_TEMP),
                 "temp_min": day.get(const.MAPPING_MIN_TEMP),
                 "precipitation": day.get(const.MAPPING_PRECIPITATION),
