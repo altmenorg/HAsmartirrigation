@@ -7,8 +7,9 @@ have, and daylight relates lux to W/m2 through its luminous efficacy, so the
 reading can feed Penman-Monteith properly rather than the calculation falling
 back to estimating radiation from temperature.
 
-The coefficient is exposed rather than fixed: daylight sits between roughly 93
-and 120 lm/W and greenhouse glazing shifts the spectrum.
+The efficacy follows the sky (see ``illuminance``): these tests are about how
+the coordinator uses it. Without the position of the sun it reads the middle of
+the range; a figure stored by an earlier version of the panel still wins.
 """
 
 from unittest.mock import MagicMock
@@ -16,7 +17,11 @@ from unittest.mock import MagicMock
 import pytest
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
-from custom_components.smart_irrigation import SmartIrrigationCoordinator, const
+from custom_components.smart_irrigation import (
+    SmartIrrigationCoordinator,
+    const,
+    illuminance,
+)
 from custom_components.smart_irrigation.helpers import convert_mapping_to_metric
 
 
@@ -28,12 +33,13 @@ def _coordinator():
 
 
 def test_full_sun_lands_near_a_thousand_watts():
-    """100 000 lux is full daylight, which is about 1 kW/m2."""
+    """100 000 lux is full daylight, a little under 900 W/m2 at the middle of the range."""
     coordinator = _coordinator()
 
     assert coordinator.radiation_from_illuminance(100000, {}) == pytest.approx(
-        909, abs=1
+        100000 / illuminance.default_luminous_efficacy(), abs=0.1
     )
+    assert 850 < coordinator.radiation_from_illuminance(100000, {}) < 900
 
 
 def test_darkness_is_no_radiation():
@@ -61,7 +67,7 @@ def test_an_unusable_coefficient_falls_back_to_the_default(bad):
         50000, {const.MAPPING_CONF_LUMINOUS_EFFICACY: bad}
     )
 
-    assert result == pytest.approx(50000 / const.CONF_DEFAULT_LUMINOUS_EFFICACY)
+    assert result == pytest.approx(50000 / illuminance.default_luminous_efficacy())
 
 
 def test_the_result_reaches_pyeto_in_the_unit_it_expects():
@@ -73,8 +79,8 @@ def test_the_result_reaches_pyeto_in_the_unit_it_expects():
         watts, const.MAPPING_SOLRAD, const.UNIT_W_M2, True
     )
 
-    # 909 W/m2 * 0.0864 = 78.5 MJ/m2/day, the same path a pyranometer takes.
-    assert converted == pytest.approx(78.5, abs=0.1)
+    # 879.7 W/m2 * 0.0864 = 76.0 MJ/m2/day, the same path a pyranometer takes.
+    assert converted == pytest.approx(76.0, abs=0.1)
 
 
 def test_a_light_sensor_counts_as_a_sensor_source():
@@ -132,8 +138,8 @@ def test_the_reading_is_converted_when_the_values_are_built():
 
     values = coordinator.build_sensor_values_for_mapping(mapping)
 
-    # 50000 lux / 110 = 454.5 W/m2 -> 39.3 MJ/m2/day
-    assert values[const.MAPPING_SOLRAD] == pytest.approx(39.3, abs=0.1)
+    # 50000 lux / 113.7 = 439.9 W/m2 -> 38.0 MJ/m2/day
+    assert values[const.MAPPING_SOLRAD] == pytest.approx(38.0, abs=0.1)
 
 
 def _greenhouse_coordinator(greenhouse):

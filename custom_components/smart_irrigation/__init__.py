@@ -47,7 +47,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import slugify
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
-from . import const
+from . import const, illuminance
 from .blueprint_install import async_install_bundled_blueprints
 from .calc_log import CalculationLogger
 from .calculation import CalculationMixin
@@ -64,6 +64,7 @@ from .helpers import (
     mapping_sources_changed,
     relative_to_absolute_pressure,
 )
+from .hourly_et import solar_elevation_sin
 from .live_estimate import LiveEstimateMixin
 from .observed_watering import ObservedWateringMixin
 from .panel import async_register_panel, remove_panel
@@ -1794,24 +1795,36 @@ class SmartIrrigationCoordinator(
                     keys.add(key)
         return keys
 
-    def radiation_from_illuminance(self, lux, the_map):
+    def radiation_from_illuminance(self, lux, the_map, when=None):
         """Turn a light reading in lux into shortwave radiation in W/m2.
 
         Illuminance is what the eye sees, radiation is what drives evaporation,
-        and daylight relates the two by its luminous efficacy: around 110 lm/W,
-        within a range of roughly 93 to 120 depending on the light. Greenhouse
-        glazing shifts the spectrum, so the figure is configurable per sensor
-        group rather than fixed, and it is the one thing worth calibrating if an
-        independent radiation figure is available to compare against.
+        and daylight relates the two by its luminous efficacy, which moves with
+        the sky: see ``illuminance`` for the model, which takes the place of the
+        sun and the clearness of the sky. The panel offers no setting for it. A
+        figure an earlier version stored for the group is still honoured, and
+        so is the middle of the range when the position of the sun is unknown.
         """
-        efficacy = (the_map or {}).get(const.MAPPING_CONF_LUMINOUS_EFFICACY)
+        stored = (the_map or {}).get(const.MAPPING_CONF_LUMINOUS_EFFICACY)
         try:
-            efficacy = float(efficacy)
+            stored = float(stored)
         except (TypeError, ValueError):
-            efficacy = const.CONF_DEFAULT_LUMINOUS_EFFICACY
-        if efficacy <= 0:
-            efficacy = const.CONF_DEFAULT_LUMINOUS_EFFICACY
-        return float(lux) / efficacy
+            stored = None
+        if stored is not None and stored > 0:
+            return float(lux) / stored
+
+        latitude = getattr(self, "_effective_latitude", None)
+        longitude = getattr(self, "_effective_longitude", None)
+        if not isinstance(latitude, (int, float)) or not isinstance(
+            longitude, (int, float)
+        ):
+            return float(lux) / illuminance.default_luminous_efficacy()
+
+        moment = when or dt_util.utcnow()
+        doy = moment.timetuple().tm_yday
+        hour_utc = moment.hour + moment.minute / 60.0 + moment.second / 3600.0
+        sin_elevation = solar_elevation_sin(latitude, longitude, doy, hour_utc, 0.0)
+        return illuminance.radiation_from_illuminance(float(lux), sin_elevation, doy)
 
     # Home Assistant's unit strings, as the sensors report them, in the ones the
     # conversions know. Only those that differ are listed.

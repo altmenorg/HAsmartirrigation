@@ -655,12 +655,10 @@ MAPPING_CONF_SENSOR_BACKED_SOURCES = (
 MAPPING_CONF_SOURCE = "source"
 MAPPING_CONF_SENSOR = "sensorentity"
 MAPPING_CONF_STATIC_VALUE = "static_value"
-# Luminous efficacy of daylight in lumen per watt, used to turn an illuminance
-# reading into shortwave radiation. Daylight sits around 93-120 lm/W and the
-# glazing of a greenhouse shifts the spectrum, so it is exposed rather than
-# hard-coded: measure against a known radiation figure and adjust.
+# A luminous efficacy stored by an earlier version of the panel for a group. The
+# panel no longer offers it: the efficacy follows the sky (see illuminance.py).
+# A group that stored one keeps it.
 MAPPING_CONF_LUMINOUS_EFFICACY = "luminous_efficacy"
-CONF_DEFAULT_LUMINOUS_EFFICACY = 110.0
 MAPPING_CONF_UNIT = "unit"
 MAPPING_CONF_PRESSURE_TYPE = "pressure_type"
 # How high a wind sensor is mounted, in metres. The equations want the wind at
