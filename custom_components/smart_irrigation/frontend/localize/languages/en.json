@@ -832,6 +832,18 @@
     "label": "Minimum days between irrigation",
     "help_text": "Set to 0 to disable this feature. Values from 1-365 days are supported. This setting works alongside existing precipitation forecasting logic. A zone can have its own number of days in the Zones tab, which replaces this setting for that zone."
   },
+  "planning": {
+    "title": "Planning",
+    "description": "What the programs will water over the next three days. The weather is not known that far ahead: a run goes ahead if nothing holds it back.",
+    "nothing_planned": "No program is planned. Add a schedule to a program.",
+    "nothing_now": "Nothing is watering now.",
+    "paused": "Paused",
+    "waiting": "waiting for its turn",
+    "step": "step",
+    "tour": "round",
+    "tours": "rounds",
+    "remaining": "left"
+  },
   "programs": {
     "title": "Programs",
     "description": "A program waters its steps one after the other. A step is one zone, or several watered together, and by default takes the duration Smart Irrigation calculated for it. Several programs never run at the same time: the next one waits its turn.",

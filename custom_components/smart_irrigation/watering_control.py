@@ -65,6 +65,7 @@ class WateringControlMixin:
             timer.cancel()
         self._pause_timer = self._spawn_valve_run(self._lift_pause_later(minutes * 60))
         _LOGGER.info("Watering paused for at most %.0f minutes", minutes)
+        self._notify_programs()
 
     async def _lift_pause_later(self, seconds: float) -> None:
         await asyncio.sleep(seconds)
@@ -84,6 +85,7 @@ class WateringControlMixin:
         pause.clear()
         resume.set()
         _LOGGER.info("Watering resumed")
+        self._notify_programs()
 
     async def _wait_resume(self, control) -> bool:
         """Wait for the resume. False if the run was stopped while it waited."""
@@ -183,6 +185,7 @@ class WateringControlMixin:
             if (dt_util.parse_datetime(v or "") or now) > now
         }
         await self.store.async_update_config({const.CONF_SUSPENSIONS: suspensions})
+        self._notify_programs()
         _LOGGER.info(
             "%s %s %s",
             kind.capitalize(),

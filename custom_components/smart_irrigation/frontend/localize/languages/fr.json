@@ -832,6 +832,18 @@
     "label": "Jours minimum entre irrigations",
     "help_text": "Définir à 0 pour désactiver cette fonction. Les valeurs de 1-365 jours sont prises en charge. Ce paramètre fonctionne avec la logique de prévision de précipitation existante. Une zone peut avoir son propre nombre de jours dans l'onglet Zones, qui remplace ce réglage pour elle."
   },
+  "planning": {
+    "title": "Planning",
+    "description": "Ce que les programmes arroseront dans les trois jours qui viennent. La météo n'est pas connue aussi loin : un arrosage a lieu si rien ne le retient.",
+    "nothing_planned": "Aucun programme n'est prévu. Ajoute un planning à un programme.",
+    "nothing_now": "Rien n'arrose en ce moment.",
+    "paused": "En pause",
+    "waiting": "attend son tour",
+    "step": "étape",
+    "tour": "tour",
+    "tours": "tours",
+    "remaining": "restant"
+  },
   "programs": {
     "title": "Programmes",
     "description": "Un programme arrose ses étapes l'une après l'autre. Une étape est une zone, ou plusieurs arrosées en même temps, et prend par défaut la durée calculée par Smart Irrigation. Deux programmes ne tournent jamais en même temps : le suivant attend son tour.",

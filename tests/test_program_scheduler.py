@@ -70,6 +70,7 @@ class Scheduler(ProgramSchedulerMixin):
         self._note_watering_day = AsyncMock()
         self.async_run_program = AsyncMock(return_value=True)
         self.suspended = False
+        self._notify_programs = lambda: None
         self.is_suspended = lambda kind, ident: self.suspended
 
     def _sun_moment(self, event, day):

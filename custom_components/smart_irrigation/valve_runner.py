@@ -37,6 +37,7 @@ import homeassistant.util.dt as dt_util
 from . import const
 from .observed_watering import NO_FLOW_GRACE
 from .program_runner import ProgramRunnerMixin
+from .program_status import ProgramStatusMixin
 from .supply_runner import SupplyRunnerMixin
 from .watering_control import WateringControlMixin
 
@@ -161,7 +162,9 @@ def wall_clock_seconds(config, duration: float, lead: float = 0.0) -> float:
     return duration + (soak_seconds(config) + lead) * extra
 
 
-class ValveRunnerMixin(SupplyRunnerMixin, ProgramRunnerMixin, WateringControlMixin):
+class ValveRunnerMixin(
+    SupplyRunnerMixin, ProgramRunnerMixin, WateringControlMixin, ProgramStatusMixin
+):
     """Open/close linked valves directly and credit the bucket for the run."""
 
     def _run_controls(self) -> dict:

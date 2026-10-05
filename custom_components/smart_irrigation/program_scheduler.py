@@ -58,6 +58,7 @@ class ProgramSchedulerMixin:
     async def register_program_schedules(self) -> None:
         """Arm the next occurrence of every schedule, cancelling what was armed."""
         self.async_teardown_program_schedules()
+        self._notify_programs()
         config = self.store.config
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
             return

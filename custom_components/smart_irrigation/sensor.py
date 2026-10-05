@@ -21,6 +21,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 from . import const
 from .entity import zone_device_info
 from .performance import async_timer
+from .program_sensor import async_setup_program_sensors
 from .units import depth_to_display, zone_to_display
 
 _LOGGER = logging.getLogger(__name__)
@@ -97,7 +98,8 @@ async def async_setup_entry(
     # __init__.async_setup_entry after ALL entity platforms have subscribed, so
     # the number platform receives the zones too. Firing it here would race it.
 
-    # register services if any here
+    # The sensors of the full controller's programs follow the programs.
+    await async_setup_program_sensors(hass, config_entry, async_add_devices)
 
 
 def _add_zone_child_sensors(hass: HomeAssistant, async_add_devices, config: dict):

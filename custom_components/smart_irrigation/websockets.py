@@ -759,6 +759,28 @@ def _preview_run_start(next_start) -> dict:
 
 
 @async_response
+async def websocket_get_planning(hass: HomeAssistant, connection, msg):
+    """Every start of every program schedule over the next days."""
+    coordinator = hass.data[const.DOMAIN]["coordinator"]
+    connection.send_result(
+        msg["id"], await coordinator.async_planning(msg.get("days", 3))
+    )
+
+
+@async_response
+async def websocket_get_programs_state(hass: HomeAssistant, connection, msg):
+    """Each program's state and next start, and what is watering right now."""
+    coordinator = hass.data[const.DOMAIN]["coordinator"]
+    connection.send_result(
+        msg["id"],
+        {
+            "programs": await coordinator.async_program_overview(),
+            "live": coordinator.async_live_state(),
+        },
+    )
+
+
+@async_response
 async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
     """Publish irrigation information."""
     coordinator = hass.data[const.DOMAIN]["coordinator"]
@@ -1544,6 +1566,25 @@ async def async_register_websockets(hass: HomeAssistant):
         websocket_get_irrigation_info,
         websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend(
             {vol.Required("type"): const.DOMAIN + "/info"}
+        ),
+    )
+    async_register_command(
+        hass,
+        const.DOMAIN + "/planning",
+        websocket_get_planning,
+        websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend(
+            {
+                vol.Required("type"): const.DOMAIN + "/planning",
+                vol.Optional("days", default=3): vol.Coerce(int),
+            }
+        ),
+    )
+    async_register_command(
+        hass,
+        const.DOMAIN + "/programs_state",
+        websocket_get_programs_state,
+        websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend(
+            {vol.Required("type"): const.DOMAIN + "/programs_state"}
         ),
     )
     async_register_command(

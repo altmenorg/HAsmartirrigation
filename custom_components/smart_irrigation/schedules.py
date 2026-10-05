@@ -261,3 +261,30 @@ def next_fire(
         if end_anchored and fire <= now < target:
             return {"fire": now, "target": target, "catch_up": True}
     return None
+
+
+def upcoming(
+    schedule: dict,
+    now: datetime,
+    total_seconds: float,
+    last_target: datetime | None,
+    sun,
+    tz,
+    until: datetime,
+) -> list:
+    """Every start of the schedule from ``now`` up to ``until``, in order.
+
+    The same occurrences ``next_fire`` would give one after the other, each
+    handed the target of the one before, which is how the planning page shows
+    what the next days hold.
+    """
+    found = []
+    last = last_target
+    while True:
+        result = next_fire(schedule, now, total_seconds, last, sun, tz)
+        if result is None or result["fire"] > until:
+            return found
+        found.append(result)
+        last = result["target"]
+        if len(found) > 200:  # a schedule that fires every day for months
+            return found

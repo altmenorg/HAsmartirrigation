@@ -22,7 +22,12 @@ from datetime import timedelta
 import homeassistant.util.dt as dt_util
 
 from . import const
-from .programs import find_program, plan_program, restrict_plan
+from .programs import (
+    find_program,
+    plan_program,
+    plan_wall_seconds,
+    restrict_plan,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -40,6 +45,13 @@ class ProgramRun:
         self.started: str | None = None
         # The zones of the step under way, for the next-step control.
         self.current_zones: list = []
+        # Where the run is, for the live state: the tour and step, and the totals.
+        self.tour = 0
+        self.step = 0
+        self.tours = 0
+        self.steps = 0
+        self.total_seconds = 0.0
+        self.running_since: float | None = None
 
 
 class ProgramRunnerMixin:
@@ -125,6 +137,11 @@ class ProgramRunnerMixin:
                     _LOGGER.info("Program %s has nothing to water", run.program_id)
                     return
                 self._announce_program(run, plan, resumed)
+                self._notify_programs()
+                run.total_seconds = plan_wall_seconds(
+                    plan, self._soak_seconds() if hasattr(self, "_soak_seconds") else 0
+                )
+                run.running_since = self.hass.loop.time()
                 await self._execute_plan(run, plan, tour, step)
                 self._report_program_finished(run)
         except asyncio.CancelledError:
@@ -133,6 +150,7 @@ class ProgramRunnerMixin:
             raise
         finally:
             registry.pop(run.program_id, None)
+            self._notify_programs()
             if not cancelled:
                 await self.store.async_update_config(
                     {const.CONF_ACTIVE_PROGRAM_RUN: None}
@@ -151,6 +169,9 @@ class ProgramRunnerMixin:
                 await self._persist_program_run(run, plan, tour, index)
                 step = steps[index]
                 run.current_zones = [int(m["zone_id"]) for m in step["zones"]]
+                run.tour, run.step = tour, index
+                self._notify_programs()
+                run.tours, run.steps = len(plan), len(steps)
                 try:
                     run.results.extend(await self._run_step(run, step))
                 finally:

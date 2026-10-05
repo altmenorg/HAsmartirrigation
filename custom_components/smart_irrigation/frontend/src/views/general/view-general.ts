@@ -69,6 +69,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   @property() config?: SmartIrrigationConfig;
   // The zones a step can water (full controller programs).
   @property({ attribute: false }) zones: SmartIrrigationZone[] = [];
+  // What the programs are doing, and what they will do (full controller).
+  @property({ attribute: false }) planning: any[] = [];
+  @property({ attribute: false }) programsState?: any;
+  private _liveTimer?: number;
 
   @property({ type: Boolean })
   private isLoading = true;
@@ -188,7 +192,19 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     }
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    // The live state moves while a watering runs, so it is read now and then;
+    // the planning, which changes slowly, less often.
+    let ticks = 0;
+    this._liveTimer = window.setInterval(() => {
+      ticks += 1;
+      this._fetchLive(ticks % 6 === 0);
+    }, 5000);
+  }
+
   firstUpdated() {
+    this._fetchLive(true);
     // Load HA form elements in background without blocking UI
     loadHaForm().catch((error) => {
       console.error("Failed to load HA form:", error);
@@ -517,6 +533,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // Pumps and main valves (full controller).
       const r14 = this.renderSuppliesCard();
       const r15 = this.renderProgramsCard();
+      const r16 = this.renderPlanningCard();
 
       // The way to the setup assistant, which is no longer a tab. It comes first:
       // it is where somebody who has nothing set up wants to start.
@@ -530,9 +547,141 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           </div> </ha-card
         >${r12}${r11}${r2}${r1}${showContinuous
           ? r4
-          : ""}${r5}${r6}${r7}${r8}${r9}${r15}${r14}${r10}${r13}`;
+          : ""}${r5}${r6}${r7}${r8}${r9}${r16}${r15}${r14}${r10}${r13}`;
 
       return r;
+    }
+  }
+
+  /** What the programs are doing now, one line each, and the valves that are open. */
+  renderLiveState() {
+    const state = this.programsState;
+    if (!this.hass || !state) return html``;
+    const lang = this.hass.language;
+    const t = (key: string) => localize(`planning.${key}`, lang);
+    const live = state.live;
+    if (!live) return html``;
+    const minutes = (seconds: number) => {
+      const m = Math.floor(seconds / 60);
+      const s = Math.round(seconds % 60);
+      return `${m}:${String(s).padStart(2, "0")}`;
+    };
+    const rows = [
+      ...(live.paused
+        ? [
+            html`<div class="setting-note">
+              <strong>${t("paused")}</strong>
+            </div>`,
+          ]
+        : []),
+      ...(live.programs || []).map(
+        (p: any) => html`
+          <div class="setting-note">
+            <strong>${p.name}</strong>
+            ${p.state === "waiting"
+              ? html` - ${t("waiting")}`
+              : html` - ${t("step")}
+                ${p.step}/${p.steps}${p.tours > 1
+                  ? html`, ${t("tour")} ${p.tour}/${p.tours}`
+                  : ""},
+                ${p.percent} %, ${t("remaining")}
+                ${minutes(p.remaining_seconds || 0)}`}
+          </div>
+        `,
+      ),
+      ...(live.valves || []).map(
+        (v: any) => html`
+          <div class="setting-note">
+            ${v.zone}: ${t("remaining")} ${minutes(v.remaining_seconds)}
+            (${v.percent} %)
+          </div>
+        `,
+      ),
+    ];
+    if (!rows.length) {
+      return html`<div class="setting-note">${t("nothing_now")}</div>`;
+    }
+    return html`${rows}`;
+  }
+
+  /**
+   * What the programs will water over the next days.
+   *
+   * Only in full controller mode. The weather is not known days ahead: a planned
+   * run is one that goes ahead if nothing holds it back.
+   */
+  renderPlanningCard() {
+    if (!this.config || !this.hass || this.config.full_controller !== true) {
+      return html``;
+    }
+    const lang = this.hass.language;
+    const t = (key: string) => localize(`planning.${key}`, lang);
+    const dayTime = (iso: string) =>
+      new Intl.DateTimeFormat(lang, {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date(iso));
+    const clock = (iso: string) =>
+      new Intl.DateTimeFormat(lang, {
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date(iso));
+    const minutes = (seconds: number) => `${Math.round(seconds / 60)} min`;
+    const planning = this.planning || [];
+    return html`
+      <ha-card header="${t("title")}">
+        <div class="card-content">
+          ${t("description")} ${this.renderLiveState()}
+        </div>
+        ${planning.length
+          ? planning.map(
+              (item: any) => html`
+                <div class="card-content">
+                  <div class="setting-note">
+                    <strong>${dayTime(item.start)}</strong> ${item.program}
+                    (${clock(item.start)} - ${clock(item.end)})
+                  </div>
+                  ${item.steps.map(
+                    (step: any, n: number) => html`
+                      <div class="setting-note">
+                        ${n + 1}.
+                        ${step.zones
+                          .map((z: any) => `${z.zone} ${minutes(z.seconds)}`)
+                          .join(" + ")}
+                      </div>
+                    `,
+                  )}
+                  ${item.tours > 1
+                    ? html`<div class="setting-note">
+                        ${item.tours} ${t("tours")}
+                      </div>`
+                    : ""}
+                </div>
+              `,
+            )
+          : html`<div class="card-content">${t("nothing_planned")}</div>`}
+      </ha-card>
+    `;
+  }
+
+  private async _fetchLive(withPlanning: boolean): Promise<void> {
+    if (!this.hass || this.config?.full_controller !== true) return;
+    try {
+      this.programsState = await this.hass.callWS({
+        type: DOMAIN + "/programs_state",
+      });
+      if (withPlanning) {
+        this.planning = await this.hass.callWS({
+          type: DOMAIN + "/planning",
+          days: 3,
+        });
+      }
+      this._scheduleUpdate();
+    } catch (error) {
+      console.error("Error fetching the programs' state:", error);
     }
   }
 
@@ -2275,6 +2424,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    if (this._liveTimer !== undefined) {
+      window.clearInterval(this._liveTimer);
+      this._liveTimer = undefined;
+    }
 
     // Clean up debounce timer
     // The debounced function may have pending timeouts, but we can't directly access them
