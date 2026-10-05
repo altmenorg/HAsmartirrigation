@@ -127,10 +127,16 @@ class SupplyRunnerMixin:
         # the supply on, and put it off.
         runtime["on"].add(supply_id)
         ok = False
+        cancelled = False
         try:
             ok = await self._supply_switch(supply, True)
+        except asyncio.CancelledError:
+            # The call may have gone through: it stays recorded as on, for the
+            # release, the teardown or the alignment to switch it off.
+            cancelled = True
+            raise
         finally:
-            if not ok:
+            if not ok and not cancelled:
                 runtime["on"].discard(supply_id)
         if not ok and len(supply.get(const.SUPPLY_ENTITIES) or []) > 1:
             # One of several came on, maybe: do not leave it running alone.
@@ -188,8 +194,12 @@ class SupplyRunnerMixin:
         respect_holds: bool = True,
         retry: bool = True,
         quiet: bool = False,
+        only_holder=None,
     ) -> bool:
         """Switch the supply off. True if it is off, or was not to be switched.
+
+        ``only_holder`` is a hold token: the supply is left on unless that hold
+        is the only one, looked at under the lock.
 
         A supply that will not go off stays recorded as on, so that the release
         of the next run, the next start, and the retries scheduled here ask
@@ -201,6 +211,10 @@ class SupplyRunnerMixin:
         supply_id = supply[const.SUPPLY_ID]
         async with self._supply_lock(supply_id):
             if respect_holds and runtime["holds"].count(supply_id) > 0:
+                return True
+            if only_holder is not None and not runtime["holds"].only_holder(
+                supply_id, only_holder
+            ):
                 return True
             runtime["on"].discard(supply_id)
             try:
@@ -329,17 +343,19 @@ class SupplyRunnerMixin:
             # open already and the pass goes on.
             await self._supply_ensure_on(supply)
         early = max(0.0, -float(supply.get(const.SUPPLY_DELAY_AFTER) or 0.0))
-        early = min(early, remaining)
+        # Never more than half of what is left: the pump keeps running for at
+        # least that long, instead of going off the moment the valve opens and
+        # leaving a pass that is credited in full without water.
+        early = min(early, remaining / 2.0)
         if early > 0:
             if remaining - early > 0 and await self._wait_or_stop(
                 zone_id, remaining - early
             ):
                 return True
             remaining = early
-            if self._supply_runtime()["holds"].only_holder(
-                supply[const.SUPPLY_ID], token
-            ):
-                await self._supply_off_now(supply, respect_holds=False)
+            # Checked under the lock inside: another zone may take a hold
+            # meanwhile, and the pump is then not ours to put off.
+            await self._supply_off_now(supply, respect_holds=False, only_holder=token)
         return await self._wait_or_stop(zone_id, remaining)
 
     # --- switching ----------------------------------------------------------

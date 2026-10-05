@@ -29,6 +29,8 @@ def _coordinator(programs=None):
     coordinator.update_subscriptions = AsyncMock()
     coordinator.async_setup_observed_watering = AsyncMock()
     coordinator.register_start_event = AsyncMock()
+    coordinator._valve_run_tasks = set()
+    coordinator.async_align_valves = AsyncMock()
     # The schedulers are not what is under test.
     coordinator.set_up_auto_calc_time = AsyncMock()
     coordinator.set_up_auto_update_time = AsyncMock()

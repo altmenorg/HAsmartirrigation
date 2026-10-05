@@ -55,6 +55,8 @@ SI_VALVE_SUPPRESS_MARGIN = 30
 # treating the run as a failure, and how often to poll.
 VALVE_CONFIRM_TIMEOUT = 8.0
 VALVE_CONFIRM_POLL = 1.0
+# How long an unload waits for the cancelled runs to close their valves.
+VALVE_TEARDOWN_TIMEOUT = 20.0
 
 # How long a run waits for a linked valve service to return. Generous, since the
 # point of waiting is to let a template or proxy finish its own safety steps.
@@ -409,14 +411,19 @@ class ValveRunnerMixin(
             f"{const.DOMAIN}_{event}", {"entity_id": entity_id, **data}
         )
 
-    async def _open_zone_valves(self, zone: dict, primary: str) -> set:
+    async def _open_zone_valves(
+        self, zone: dict, primary: str, entities: list | None = None
+    ) -> set:
         """Open every valve of the zone. One that fails to open does not stop the others.
 
         Returns the other valves that could not be opened (the linked one
-        failing raises, as it always did).
+        failing raises, as it always did). ``entities`` is the list a pass took
+        once at its start: the close uses the same one, so the mode being
+        switched mid-pass cannot leave an extra valve open.
         """
         failed = set()
-        entities = self._zone_entities(zone, primary)
+        if entities is None:
+            entities = self._zone_entities(zone, primary)
         for index, entity_id in enumerate(entities):
             domain, on_svc, _off = self._valve_services(entity_id)
             try:
@@ -444,13 +451,16 @@ class ValveRunnerMixin(
             )
         return failed
 
-    async def _confirm_zone_valves(self, zone: dict, primary: str, failed=()):
+    async def _confirm_zone_valves(
+        self, zone: dict, primary: str, failed=(), entities: list | None = None
+    ):
         """Confirm the zone's valves opened. False only if the linked one stays closed.
 
         Another valve that stays closed is reported and the zone goes on with
         the ones that did open; one that already failed to open is not asked.
         """
-        entities = self._zone_entities(zone, primary)
+        if entities is None:
+            entities = self._zone_entities(zone, primary)
         result = await self._confirm_valve_running(entities[0]) if entities else None
         if result is False:
             return False
@@ -461,10 +471,17 @@ class ValveRunnerMixin(
                 self._report_valve_problem(zone, entity_id, PROBLEM_DID_NOT_OPEN)
         return result
 
-    async def _close_zone_valves(self, zone: dict, primary: str) -> bool:
-        """Close every valve of the zone. Whether all are closed, or not known open."""
+    async def _close_zone_valves(
+        self, zone: dict, primary: str, entities: list | None = None
+    ) -> bool:
+        """Close every valve of the zone. Whether all are closed, or not known open.
+
+        ``entities`` is the list the pass opened, whatever the mode is now.
+        """
         ok = True
-        for entity_id in self._zone_entities(zone, primary):
+        if entities is None:
+            entities = self._zone_entities(zone, primary)
+        for entity_id in entities:
             closed = await self._close_valve(zone, entity_id)
             ok = ok and closed
             self._fire_valve_event(
@@ -622,18 +639,45 @@ class ValveRunnerMixin(
         task.add_done_callback(self._valve_run_tasks.discard)
         return task
 
-    def async_teardown_valve_runs(self) -> None:
+    def async_teardown_valve_runs(self) -> list:
         """Cancel any in-flight run tasks (called on unload).
 
         A pump whose off timer is cancelled here is switched off by a task of its
         own, kept out of the ones cancelled, as the valves of the runs are.
+        Returns the tasks to wait for: the cancelled ones, whose finally closes
+        their valves, and the pump-off one.
         """
         pending = self._supply_teardown_pending()
-        for task in list(self._valve_run_tasks):
+        cancelled = list(self._valve_run_tasks)
+        for task in cancelled:
             task.cancel()
         self._valve_run_tasks.clear()
         if pending:
-            self.hass.async_create_task(self._supply_teardown_off(pending))
+            cancelled.append(
+                self.hass.async_create_task(self._supply_teardown_off(pending))
+            )
+        return cancelled
+
+    async def async_wait_valve_runs(self, tasks: list) -> None:
+        """Wait, bounded, for the tasks a teardown cancelled to be over.
+
+        Their cleanup closes the valves and puts the pumps off: the coordinator
+        of a reload must not resume (and switch the pump on) before that, or the
+        late cleanup would shut the pump under the resumed run.
+        """
+        if not isinstance(tasks, list):
+            return
+        tasks = [t for t in tasks if isinstance(t, asyncio.Future) and not t.done()]
+        if not tasks:
+            return
+        _done, not_done = await asyncio.wait(tasks, timeout=VALVE_TEARDOWN_TIMEOUT)
+        if not_done:
+            _LOGGER.warning(
+                "Direct valve control: %d run(s) were still closing their valves "
+                "after %.0fs, going on",
+                len(not_done),
+                VALVE_TEARDOWN_TIMEOUT,
+            )
 
     # --- persistence of in-flight runs --------------------------------------
 
@@ -1246,6 +1290,9 @@ class ValveRunnerMixin(
         acquired = False
         lag = 0.0
         watcher = None
+        # The valves of the pass, taken once: the mode switched off meanwhile
+        # must still close every valve this pass opened.
+        entities = self._zone_entities(zone, entity_id)
         try:
             if supply is not None:
                 # Taken before the first await, given back in the finally below.
@@ -1267,16 +1314,19 @@ class ValveRunnerMixin(
                     if control is not None:
                         control.delivered = 0.0
                     return None
-            failed = await self._open_zone_valves(zone, entity_id)
+            failed = await self._open_zone_valves(zone, entity_id, entities)
 
             # Confirm the valve actually opened before counting/crediting: a
             # valve that never opens would otherwise clear the deficit while
             # running dry (and the missed water silently rolls over to the next
             # day). Only an explicit "still off" aborts; an unverifiable
             # (write-only) valve runs.
-            if await self._confirm_zone_valves(zone, entity_id, failed) is False:
+            if (
+                await self._confirm_zone_valves(zone, entity_id, failed, entities)
+                is False
+            ):
                 closed = True
-                await self._close_zone_valves(zone, entity_id)
+                await self._close_zone_valves(zone, entity_id, entities)
                 self._report_valve_problem(zone, entity_id, PROBLEM_DID_NOT_OPEN)
                 return PROBLEM_DID_NOT_OPEN
 
@@ -1324,7 +1374,7 @@ class ValveRunnerMixin(
             if watcher is not None and not watcher.done():
                 watcher.cancel()
             if not closed:
-                close_ok = await self._close_zone_valves(zone, entity_id)
+                close_ok = await self._close_zone_valves(zone, entity_id, entities)
             # Cleared even when something above raised: a run left recorded
             # made the zone "already running" at every start until a restart.
             # Cleared before crediting: a crash in this window then loses at
@@ -1528,13 +1578,27 @@ class ValveRunnerMixin(
         its valve and is left alone, and a reading that says nothing
         (unavailable, unknown, no entity yet) is never taken for an open valve.
         """
-        if getattr(self.store.config, const.CONF_FULL_CONTROLLER, False) is not True:
-            return
+        full = getattr(self.store.config, const.CONF_FULL_CONTROLLER, False) is True
+        if not full:
+            # Switched off since: the extra valves a pass opened while the mode
+            # was on are no longer anyone's, once, so none is left running.
+            if not getattr(self, "_extra_valves_to_align", False):
+                return
+            self._extra_valves_to_align = False
         for zone in await self.store.async_get_zones():
             zone_id = int(zone.get(const.ZONE_ID))
             if self._run_in_flight(zone_id):
                 continue
-            for entity_id in self._zone_entities(zone):
+            if full:
+                candidates = self._zone_entities(zone)
+            else:
+                linked = zone.get(const.ZONE_LINKED_ENTITY)
+                candidates = [
+                    e
+                    for e in zone.get(const.ZONE_EXTRA_ENTITIES) or []
+                    if e and e != linked
+                ]
+            for entity_id in candidates:
                 state = self.hass.states.get(entity_id)
                 if state is None or state.state not in _VALVE_ON_STATES:
                     continue
@@ -1547,7 +1611,8 @@ class ValveRunnerMixin(
                 # Our close is not an external watering to credit.
                 self._note_si_valve(zone_id)
                 await self._close_valve(zone, entity_id)
-        await self._align_supplies()
+        if full:
+            await self._align_supplies()
 
     # --- reboot resume ------------------------------------------------------
 
@@ -1693,6 +1758,8 @@ class ValveRunnerMixin(
         supply = self._supply_for_zone(self._zone_or_stub(zone_id))
         token = object()
         acquired = False
+        # Taken once, as in _run_one_pass: the close mirrors the open.
+        entities = self._zone_entities(self._zone_or_stub(zone_id), entity_id)
         try:
             if supply is not None:
                 # The valve is open mid-run, so the supply is up with it: no lead.
@@ -1713,16 +1780,18 @@ class ValveRunnerMixin(
                     return
                 await self._supply_ensure_on(supply)
             failed = await self._open_zone_valves(
-                self._zone_or_stub(zone_id), entity_id
+                self._zone_or_stub(zone_id), entity_id, entities
             )
             if (
                 await self._confirm_zone_valves(
-                    self._zone_or_stub(zone_id), entity_id, failed
+                    self._zone_or_stub(zone_id), entity_id, failed, entities
                 )
                 is False
             ):
                 closed = True
-                await self._close_zone_valves(self._zone_or_stub(zone_id), entity_id)
+                await self._close_zone_valves(
+                    self._zone_or_stub(zone_id), entity_id, entities
+                )
                 self._report_valve_problem(
                     self._zone_or_stub(zone_id), entity_id, PROBLEM_DID_NOT_OPEN
                 )
@@ -1753,7 +1822,9 @@ class ValveRunnerMixin(
             raise
         finally:
             if not closed:
-                await self._close_zone_valves(self._zone_or_stub(zone_id), entity_id)
+                await self._close_zone_valves(
+                    self._zone_or_stub(zone_id), entity_id, entities
+                )
             try:
                 if not cancelled:
                     try:

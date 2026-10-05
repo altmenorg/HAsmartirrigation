@@ -100,6 +100,10 @@ A program run and a cycle that is under way are recorded as they go. After a res
 
 A valve that is slow to say it is open, a battery valve on Zigbee for instance, is given 30 seconds instead of 8 and is asked to open again at 10 and 20 seconds. Only one that stays closed after that is a failure, reported as `valve_did_not_open`.
 
+## Limitations
+
+- A flow meter shared by the zones of a parallel step cannot tell their water apart, and splits it wrongly between them. Give each zone its own meter.
+
 ## What it is not
 
 It is not a pressure controller, a master-valve scheduler for a whole farm, or a replacement for a controller that already does its job. If a Rain Bird, Hydrawise, Rachio, OpenSprinkler or B-hyve runs your valves, [its blueprint](usage-controllers.md) is the right way and the full controller has nothing to add to it.

@@ -867,7 +867,13 @@ class SmartIrrigationCoordinator(
         await self.set_up_auto_update_time(data)
         # handle auto clear changes
         await self.set_up_auto_clear_time(data)
+        was_full = getattr(self.store.config, const.CONF_FULL_CONTROLLER, False) is True
         await self.store.async_update_config(data)
+        if was_full and data.get(const.CONF_FULL_CONTROLLER) is False:
+            # Switched off: the extra valves of the zones not running are
+            # closed once, the alignment having nothing to do while it is off.
+            self._extra_valves_to_align = True
+            self._spawn_valve_run(self.async_align_valves())
         # Re-evaluate the observed-watering subscription (the feature toggle may
         # have just changed).
         await self.async_setup_observed_watering()
@@ -2406,10 +2412,15 @@ class SmartIrrigationCoordinator(
         self.async_teardown_observed_watering()
 
         # cancel any in-flight direct valve runs
-        self.async_teardown_valve_runs()
+        cancelled_runs = self.async_teardown_valve_runs()
 
         # and the timers of the programs' schedules
         self.async_teardown_program_schedules()
+
+        # Wait for the cancelled runs to have shut their valves and put their
+        # pumps off, so the setup that follows a reload cannot resume a run
+        # (and switch the pump on) under their late cleanup.
+        await self.async_wait_valve_runs(cancelled_runs)
 
     async def async_delete_config(self):
         """Wipe Smart Irrigation storage."""

@@ -12,6 +12,7 @@ import pytest
 from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.program_scheduler import ProgramSchedulerMixin
 from custom_components.smart_irrigation.programs import normalize_programs
+from custom_components.smart_irrigation.valve_runner import ValveRunnerMixin
 
 PARIS = ZoneInfo("Europe/Paris")
 UTC = timezone.utc
@@ -21,12 +22,14 @@ def _utc(day, hour, minute=0):
     return datetime(2026, 6, day, hour, minute, tzinfo=PARIS).astimezone(UTC)
 
 
-class Scheduler(ProgramSchedulerMixin):
+class Scheduler(ProgramSchedulerMixin, ValveRunnerMixin):
     """Just the scheduler, with its collaborators replaced."""
 
     def __init__(self, programs, *, zones=None, last_runs=None, full=True):
         self.hass = Mock()
         self.hass.async_create_task = lambda coro: asyncio.ensure_future(coro)
+        # The real tracking, so a teardown reaches what a schedule started.
+        self._valve_run_tasks = set()
         self.store = MagicMock()
         self.store.config = SimpleNamespace(
             full_controller=full,
@@ -297,3 +300,31 @@ async def test_a_start_that_has_gone_by_in_time_starts_at_once(armed, freezer):
     # It is armed for tomorrow, not for the run that is under way.
     assert _utc(2, 6, 40) in armed.times
     assert not [t for t in armed.times if t < _utc(2, 0)]
+
+
+async def test_a_reload_cancels_a_scheduled_run_under_way(armed):
+    scheduler = Scheduler([_program([{"time": "06:00"}])])
+    started = asyncio.Event()
+    cancelled = []
+
+    async def _long_run(*args, **kwargs):
+        started.set()
+        try:
+            await asyncio.sleep(3600)
+        except asyncio.CancelledError:
+            cancelled.append(True)
+            raise
+
+    scheduler.async_run_program = _long_run
+    await scheduler.register_program_schedules()
+    callback, when = armed.calls[0]
+    callback(when)
+    await asyncio.wait_for(started.wait(), 1)
+
+    # The real teardown, then the wait the unload does.
+    tasks = scheduler.async_teardown_valve_runs()
+    await scheduler.async_wait_valve_runs(tasks)
+
+    assert cancelled == [True]
+    assert not scheduler._valve_run_tasks
+    assert all(task.done() for task in tasks)

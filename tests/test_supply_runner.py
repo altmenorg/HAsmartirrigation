@@ -591,3 +591,146 @@ async def test_a_pump_held_by_a_run_is_not_put_off_at_startup(monkeypatch):
     await coord.async_align_valves()
 
     assert _log(hass) == []
+
+
+async def test_a_cancellation_during_the_pump_call_leaves_it_recorded_as_on(
+    monkeypatch,
+):
+    hass, coord, _ = _setup(monkeypatch)
+    real = hass.services.async_call.side_effect
+    gate = asyncio.Event()
+    asked = asyncio.Event()
+
+    async def _pump_blocks(domain, service, data, **kwargs):
+        if data["entity_id"] == PUMP and service == "turn_on":
+            hass.calls.append((service, PUMP))
+            asked.set()
+            await gate.wait()
+            return None
+        return await real(domain, service, data, **kwargs)
+
+    hass.services.async_call.side_effect = _pump_blocks
+    task = asyncio.ensure_future(coord.async_run_direct_valves())
+    await asyncio.wait_for(asked.wait(), 1)
+
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+
+    # It may have come on: the release of the cancelled run switched it off.
+    log = _log(hass)
+    gate.set()
+    await REAL_SLEEP(0)
+    assert log[0] == "pump on" and log[-1] == "pump off"
+    assert coord._supply_runtime()["on"] == set()
+    assert coord._supply_runtime()["holds"].in_use() == set()
+
+
+async def test_the_pump_turn_on_cancelled_is_recorded_for_the_teardown(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch)
+    gate = asyncio.Event()
+    asked = asyncio.Event()
+
+    async def _blocks(*args, **kwargs):
+        asked.set()
+        await gate.wait()
+
+    coord._supply_switch = _blocks
+    supply = _supply()
+    task = asyncio.ensure_future(coord._supply_turn_on(supply))
+    await asyncio.wait_for(asked.wait(), 1)
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+
+    assert "pump" in coord._supply_runtime()["on"]
+
+
+async def test_a_negative_delay_longer_than_the_pass_keeps_the_pump_on_half_of_it(
+    monkeypatch,
+):
+    hass, coord, _ = _setup(monkeypatch, supply=_supply(delay_after=-1000))
+
+    await coord.async_run_direct_valves()
+
+    assert _log(hass) == [
+        "pump on",
+        "zone_0 on",
+        "wait 150",
+        "pump off",
+        "wait 150",
+        "zone_0 off",
+    ]
+
+
+async def test_the_early_off_is_left_to_a_zone_that_took_a_hold_meanwhile(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch, zone_ids=(0, 1))
+    supply = _supply()
+    runtime = coord._supply_runtime()
+    mine, other = object(), object()
+    runtime["holds"].acquire("pump", mine)
+    runtime["on"].add("pump")
+
+    # Alone: the pump goes off.
+    runtime["holds"].acquire("pump", other)
+    await coord._supply_off_now(supply, respect_holds=False, only_holder=mine)
+    assert "pump off" not in _log(hass)
+    assert "pump" in runtime["on"]
+
+    runtime["holds"].release("pump", other)
+    await coord._supply_off_now(supply, respect_holds=False, only_holder=mine)
+    assert _log(hass) == ["pump off"]
+
+
+async def test_the_mode_switched_off_mid_pass_still_closes_every_valve(monkeypatch):
+    hass, coord, sleeps = _setup(monkeypatch)
+    coord.store.by_id[0][const.ZONE_EXTRA_ENTITIES] = ["switch.extra"]
+
+    async def _switch_off():
+        coord.store.config.full_controller = False
+
+    sleeps.on(300, _switch_off)
+
+    await coord.async_run_direct_valves()
+
+    log = _log(hass)
+    assert "extra on" in log
+    assert "extra off" in log and "zone_0 off" in log
+
+
+async def test_the_alignment_closes_extra_valves_once_after_the_mode_is_off(
+    monkeypatch,
+):
+    hass, coord, _ = _setup(monkeypatch, full=False)
+    coord.store.by_id[0][const.ZONE_EXTRA_ENTITIES] = ["switch.extra"]
+    set_state(hass, "switch.extra", "on")
+
+    # Never on in this session: nothing to answer for, the valve is left alone.
+    await coord.async_align_valves()
+    assert _log(hass) == []
+
+    coord._extra_valves_to_align = True
+    await coord.async_align_valves()
+    assert _log(hass) == ["extra off"]
+    assert coord._extra_valves_to_align is False
+
+
+async def test_an_unload_waits_for_the_cancelled_runs_to_clean_up(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch)
+    cleaned = []
+
+    async def _slow_cleanup():
+        try:
+            await REAL_SLEEP(10)
+        except asyncio.CancelledError:
+            await REAL_SLEEP(0.05)
+            cleaned.append(True)
+            raise
+
+    coord._spawn_valve_run(_slow_cleanup())
+    await REAL_SLEEP(0)
+
+    tasks = coord.async_teardown_valve_runs()
+    await coord.async_wait_valve_runs(tasks)
+
+    assert cleaned == [True]

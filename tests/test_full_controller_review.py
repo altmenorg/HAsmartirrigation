@@ -566,6 +566,8 @@ def _coordinator(programs=None, last_runs=None, suspensions=None):
     coordinator.async_setup_observed_watering = AsyncMock()
     coordinator.register_start_event = AsyncMock()
     coordinator.register_program_schedules = AsyncMock()
+    coordinator._valve_run_tasks = set()
+    coordinator.async_align_valves = AsyncMock()
     coordinator.set_up_auto_calc_time = AsyncMock()
     coordinator.set_up_auto_update_time = AsyncMock()
     coordinator.set_up_auto_clear_time = AsyncMock()
@@ -710,6 +712,16 @@ async def test_switching_off_restores_direct_valve_control_as_it_was():
 
     assert off[const.CONF_DIRECT_VALVE_CONTROL_ENABLED] is False
     assert off[const.CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER] is None
+
+
+async def test_switching_off_asks_for_the_extra_valves_to_be_aligned():
+    coordinator = _coordinator()
+    coordinator.store.config.full_controller = True
+
+    await _update(coordinator, {const.CONF_FULL_CONTROLLER: False})
+
+    assert coordinator._extra_valves_to_align is True
+    coordinator.async_align_valves.assert_called_once()
 
 
 async def test_switching_off_leaves_direct_control_on_if_it_was_on_before():

@@ -150,7 +150,8 @@ class ProgramSchedulerMixin:
                         program_id,
                         dt_util.as_local(upcoming["target"]).strftime("%H:%M"),
                     )
-                    self.hass.async_create_task(
+                    # Tracked, so a reload cancels the run with the others.
+                    self._spawn_valve_run(
                         self._fire_program_schedule(
                             program_id, schedule_id, upcoming["target"]
                         )
@@ -170,7 +171,8 @@ class ProgramSchedulerMixin:
     @callback
     def _program_timer_due(self, program_id, schedule_id, target, _now) -> None:
         self._program_timers().pop(f"{program_id}:{schedule_id}", None)
-        self.hass.async_create_task(
+        # Tracked, so a reload cancels the run with the others.
+        self._spawn_valve_run(
             self._fire_program_schedule(program_id, schedule_id, target)
         )
 
