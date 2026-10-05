@@ -38,6 +38,8 @@ class ProgramRun:
         self.results: list = []
         # When the run began (kept in its record, so a restart knows its age).
         self.started: str | None = None
+        # The zones of the step under way, for the next-step control.
+        self.current_zones: list = []
 
 
 class ProgramRunnerMixin:
@@ -78,6 +80,9 @@ class ProgramRunnerMixin:
             return False
         if program.get(const.PROGRAM_ENABLED) is False:
             _LOGGER.info("Program %s is disabled, not run", program_id)
+            return False
+        if self.is_suspended(const.SUSPEND_PROGRAM, program_id):
+            _LOGGER.info("Program %s is suspended, not run", program_id)
             return False
         if program.get(const.PROGRAM_MAIN):
             await self.async_run_direct_valves()
@@ -141,9 +146,15 @@ class ProgramRunnerMixin:
             for index in range(step0 if tour == tour0 else 0, len(steps)):
                 if run.stop.is_set():
                     return
+                if not await self._wait_run_resume(run):
+                    return
                 await self._persist_program_run(run, plan, tour, index)
                 step = steps[index]
-                run.results.extend(await self._run_step(run, step))
+                run.current_zones = [int(m["zone_id"]) for m in step["zones"]]
+                try:
+                    run.results.extend(await self._run_step(run, step))
+                finally:
+                    run.current_zones = []
                 last = tour == len(plan) - 1 and index == len(steps) - 1
                 delay = float(step.get("delay") or 0.0)
                 if delay > 0 and not last:
@@ -161,6 +172,11 @@ class ProgramRunnerMixin:
                 or not zone.get(const.ZONE_LINKED_ENTITY)
                 or zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED
             ):
+                continue
+            if self.is_suspended(const.SUSPEND_ZONE, zone_id):
+                _LOGGER.info(
+                    "Program %s: zone %s is suspended, skipped", run.program_id, zone_id
+                )
                 continue
             if self._busy(zone_id):
                 _LOGGER.info(

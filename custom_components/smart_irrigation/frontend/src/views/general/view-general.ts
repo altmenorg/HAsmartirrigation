@@ -54,6 +54,9 @@ import {
   mdiMenuDown,
   mdiMinus,
   mdiPlay,
+  mdiPause,
+  mdiStop,
+  mdiSkipNext,
 } from "@mdi/js";
 
 @customElement("smart-irrigation-view-general")
@@ -557,6 +560,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     };
     const run = (id?: string) =>
       this.hass!.callService(DOMAIN, "run_program", { program_id: id });
+    const control = (service: string) =>
+      this.hass!.callService(DOMAIN, service, {});
     const random = () => Math.random().toString(36).slice(2, 8);
 
     const renderStep = (
@@ -891,6 +896,24 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     return html`
       <ha-card header="${t("title")}">
         <div class="card-content">${t("description")}</div>
+        <div class="card-content">
+          ${this._actionBtn(mdiPause, t("pause"), () =>
+            control("pause_watering"),
+          )}
+          ${this._actionBtn(mdiPlay, t("resume"), () =>
+            control("resume_watering"),
+          )}
+          ${this._actionBtn(mdiSkipNext, t("next_step"), () =>
+            control("next_step"),
+          )}
+          ${this._actionBtn(
+            mdiStop,
+            t("stop"),
+            () => control("stop_watering"),
+            true,
+          )}
+          <div class="setting-note">${t("controls_help")}</div>
+        </div>
         ${programs.map((program, index) =>
           program.main
             ? html`

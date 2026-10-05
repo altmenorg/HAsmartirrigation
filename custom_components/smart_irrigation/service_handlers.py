@@ -204,6 +204,51 @@ class ServiceHandlersMixin:
         # The run takes as long as the watering: the service does not wait for it.
         self._spawn_valve_run(self.async_run_program(str(program_id)))
 
+    async def handle_pause_watering(self, call):
+        """Close the open valves and hold the watering until it is resumed."""
+        await self.async_pause_watering(call.data.get("minutes"))
+
+    async def handle_resume_watering(self, call):
+        """Go on with a paused watering."""
+        await self.async_resume_watering()
+
+    async def handle_next_step(self, call):
+        """End the zones of the step a program is on, and go on to the next."""
+        await self.async_skip_step()
+
+    async def handle_suspend(self, call):
+        """Keep a zone or a program from watering for a while, or lift that."""
+        hours = call.data.get("hours")
+        until = call.data.get("until")
+        program_id = call.data.get(const.ATTR_PROGRAM_ID)
+        if program_id:
+            await self.async_suspend(
+                const.SUSPEND_PROGRAM, str(program_id), hours=hours, until=until
+            )
+        eid = call.data.get(const.SERVICE_ENTITY_ID)
+        for entity in eid if isinstance(eid, list) else ([eid] if eid else []):
+            state = self.hass.states.get(entity)
+            zone_id = state.attributes.get(const.ZONE_ID) if state else None
+            if zone_id is None:
+                _LOGGER.warning("suspend: %s is not a zone", entity)
+                continue
+            await self.async_suspend(
+                const.SUSPEND_ZONE, int(zone_id), hours=hours, until=until
+            )
+
+    async def handle_water_zone(self, call):
+        """Water a zone now, for a time, or when it is its turn."""
+        eid = call.data.get(const.SERVICE_ENTITY_ID)
+        seconds = call.data.get(const.ATTR_SECONDS)
+        for entity in eid if isinstance(eid, list) else ([eid] if eid else []):
+            state = self.hass.states.get(entity)
+            zone_id = state.attributes.get(const.ZONE_ID) if state else None
+            if zone_id is None:
+                _LOGGER.warning("water_zone: %s is not a zone", entity)
+                continue
+            # Runs as long as the watering does: the service does not wait.
+            self._spawn_valve_run(self.async_water_zone_now(int(zone_id), seconds))
+
     async def handle_stop_watering(self, call):
         """Stop the watering now: every zone, or the ones named."""
         eid = call.data.get(const.SERVICE_ENTITY_ID)

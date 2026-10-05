@@ -146,6 +146,7 @@ class ProgramSchedulerMixin:
         ):
             await self.register_program_schedules()
             return
+        suspended = self.is_suspended(const.SUSPEND_PROGRAM, program_id)
         # Before anything else: whatever happens next, this occurrence has run.
         last_runs = dict(getattr(config, const.CONF_PROGRAM_LAST_RUNS, None) or {})
         last_runs[f"{program_id}:{schedule_id}"] = target.isoformat()
@@ -153,6 +154,9 @@ class ProgramSchedulerMixin:
         await self.register_program_schedules()
 
         name = program.get(const.PROGRAM_NAME) or program_id
+        if suspended:
+            _LOGGER.info("Program %s is suspended, its schedule passes", program_id)
+            return
         only_zones = None
         if schedule.get(const.SCHEDULE_WEATHER) is not False:
             try:

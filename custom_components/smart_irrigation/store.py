@@ -109,6 +109,7 @@ from .const import (
     CONF_SKIP_ON_WIND,
     CONF_SOAK_MINUTES,
     CONF_SUPPLIES,
+    CONF_SUSPENSIONS,
     CONF_UI_MODE,
     CONF_UI_MODE_ADVANCED,
     CONF_UI_MODE_STANDARD,
@@ -672,6 +673,7 @@ class Config:
     active_cycle = attr.ib(type=dict, default=None)
     active_program_run = attr.ib(type=dict, default=None)
     program_last_runs = attr.ib(type=dict, default=None)
+    suspensions = attr.ib(type=dict, default=None)
 
 
 class MigratableStore(Store):
@@ -1169,6 +1171,7 @@ class SmartIrrigationStorage:
                 active_cycle=data["config"].get(CONF_ACTIVE_CYCLE),
                 active_program_run=data["config"].get(CONF_ACTIVE_PROGRAM_RUN),
                 program_last_runs=data["config"].get(CONF_PROGRAM_LAST_RUNS),
+                suspensions=data["config"].get(CONF_SUSPENSIONS),
             )
 
             if "zones" in data:

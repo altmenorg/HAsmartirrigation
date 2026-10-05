@@ -141,6 +141,11 @@ CONF_ACTIVE_PROGRAM_RUN = "active_program_run"
 # Kept apart from the programs, which the panel sends back whole: a copy of them
 # read before a run would write the old marks over it.
 CONF_PROGRAM_LAST_RUNS = "program_last_runs"
+# What is suspended until when: {"zone:3": iso, "program:evening": iso}. Kept apart
+# from the zones and the programs, which the panel sends back whole.
+CONF_SUSPENSIONS = "suspensions"
+SUSPEND_ZONE = "zone"
+SUSPEND_PROGRAM = "program"
 # A cycle older than this is not resumed: it belongs to another day's watering.
 CYCLE_RESUME_MAX_AGE_SECONDS = 6 * 3600
 # Keys inside an active-run record.
@@ -855,6 +860,11 @@ SERVICE_RESET_BUCKET = "reset_bucket"
 SERVICE_CREDIT_WATERING = "credit_watering"
 SERVICE_RUN_PROGRAM = "run_program"
 SERVICE_STOP_WATERING = "stop_watering"
+SERVICE_PAUSE_WATERING = "pause_watering"
+SERVICE_RESUME_WATERING = "resume_watering"
+SERVICE_NEXT_STEP = "next_step"
+SERVICE_SUSPEND = "suspend"
+SERVICE_WATER_ZONE = "water_zone"
 ATTR_PROGRAM_ID = "program_id"
 ATTR_SECONDS = "seconds"
 SERVICE_RESET_ALL_BUCKETS = "reset_all_buckets"

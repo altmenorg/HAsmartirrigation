@@ -888,6 +888,11 @@
     "schedule_period_help": "A period of the year, which may run over New Year (11-01 to 03-01). Empty: the whole year.",
     "schedule_weather": "Take the weather into account",
     "schedule_weather_help": "Rain, frost, wind, a wet soil and the days you postponed can hold the run back or shorten it. Turn it off for a greenhouse drip line that does not care.",
+    "pause": "Pause",
+    "resume": "Resume",
+    "next_step": "Next step",
+    "stop": "Stop",
+    "controls_help": "For a watering that is under way. Pause closes the valves and holds everything; the rest is watered after the resume. Next step ends the zones the program is on. Stop ends everything.",
     "run_now": "Run now"
   },
   "supplies": {

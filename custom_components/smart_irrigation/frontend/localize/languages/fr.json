@@ -888,6 +888,11 @@
     "schedule_period_help": "Une période de l'année, qui peut passer le Nouvel An (11-01 au 03-01). Vide : toute l'année.",
     "schedule_weather": "Tenir compte de la météo",
     "schedule_weather_help": "La pluie, le gel, le vent, un sol humide et les jours que tu as reportés peuvent retenir ou raccourcir l'arrosage. À désactiver pour un goutte-à-goutte de serre qui s'en moque.",
+    "pause": "Pause",
+    "resume": "Reprendre",
+    "next_step": "Étape suivante",
+    "stop": "Arrêter",
+    "controls_help": "Pour un arrosage en cours. La pause ferme les vannes et suspend tout ; le reste est arrosé à la reprise. Étape suivante termine les zones sur lesquelles le programme est. Arrêter met fin à tout.",
     "run_now": "Lancer maintenant"
   },
   "supplies": {

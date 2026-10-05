@@ -2387,6 +2387,21 @@ def register_services(hass: HomeAssistant):
     hass.services.async_register(
         const.DOMAIN, const.SERVICE_STOP_WATERING, coordinator.handle_stop_watering
     )
+    hass.services.async_register(
+        const.DOMAIN, const.SERVICE_PAUSE_WATERING, coordinator.handle_pause_watering
+    )
+    hass.services.async_register(
+        const.DOMAIN, const.SERVICE_RESUME_WATERING, coordinator.handle_resume_watering
+    )
+    hass.services.async_register(
+        const.DOMAIN, const.SERVICE_NEXT_STEP, coordinator.handle_next_step
+    )
+    hass.services.async_register(
+        const.DOMAIN, const.SERVICE_SUSPEND, coordinator.handle_suspend
+    )
+    hass.services.async_register(
+        const.DOMAIN, const.SERVICE_WATER_ZONE, coordinator.handle_water_zone
+    )
 
     hass.services.async_register(
         const.DOMAIN,
