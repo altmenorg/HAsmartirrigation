@@ -43,6 +43,7 @@ from homeassistant.helpers.event import (
     async_track_time_change,
     async_track_time_interval,
 )
+from homeassistant.helpers.start import async_at_started
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import slugify
 from homeassistant.util.unit_system import METRIC_SYSTEM
@@ -68,10 +69,13 @@ from .hourly_et import solar_elevation_sin
 from .live_estimate import LiveEstimateMixin
 from .observed_watering import ObservedWateringMixin
 from .panel import async_register_panel, remove_panel
+from .program_scheduler import ProgramSchedulerMixin
+from .programs import ensure_main_program, normalize_programs
 from .scheduler import RecurringScheduleManager, SeasonalAdjustmentManager
 from .service_handlers import ServiceHandlersMixin
 from .skip_conditions import SkipConditionsMixin, thresholds_for_storage
 from .store import SmartIrrigationStorage, async_get_registry
+from .supplies import normalize_supplies
 from .triggers import TriggersMixin
 from .valve_runner import ValveRunnerMixin
 from .watering_calendar import WateringCalendarMixin
@@ -359,6 +363,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     # Direct valve control: resume any run that was in flight before a restart.
     await coordinator.async_resume_valve_runs()
+    # Full controller: once everything is up, a valve left open that no run owns
+    # is closed. Later than the resume, because entities load at their own pace.
+    async_at_started(hass, coordinator.async_align_valves)
     return True
 
 
@@ -449,6 +456,7 @@ class SmartIrrigationCoordinator(
     FlowCalibrationMixin,
     LiveEstimateMixin,
     ValveRunnerMixin,
+    ProgramSchedulerMixin,
     SkipConditionsMixin,
     ServiceHandlersMixin,
     TriggersMixin,
@@ -718,6 +726,32 @@ class SmartIrrigationCoordinator(
 
         _LOGGER.info("Unit system change processing complete")
 
+    def _full_controller_changes(self, data: dict) -> dict:
+        """What switching the full controller on carries with it.
+
+        It drives the valves itself, so direct valve control goes on, and it
+        needs its main program, made from the settings that run the watering
+        today. Switching it off changes nothing else: the programs stay stored
+        for the day it is switched on again, and what ran before runs again.
+        """
+        if data.get(const.CONF_FULL_CONTROLLER) is not True:
+            stays_on = const.CONF_FULL_CONTROLLER not in data and (
+                getattr(self.store.config, const.CONF_FULL_CONTROLLER, False) is True
+            )
+            if stays_on and data.get(const.CONF_DIRECT_VALVE_CONTROL_ENABLED) is False:
+                # The full controller drives the valves: switching that off on
+                # its own would leave programs running with no valves to open.
+                data = dict(data)
+                data[const.CONF_DIRECT_VALVE_CONTROL_ENABLED] = True
+            return data
+        data = dict(data)
+        data[const.CONF_DIRECT_VALVE_CONTROL_ENABLED] = True
+        stored = getattr(self.store.config, const.CONF_PROGRAMS, None)
+        data[const.CONF_PROGRAMS] = ensure_main_program(
+            data.get(const.CONF_PROGRAMS, stored)
+        )
+        return data
+
     async def async_update_config(self, data):  # noqa: D102
         _LOGGER.debug("[async_update_config]: config changed: %s", data)
 
@@ -750,6 +784,18 @@ class SmartIrrigationCoordinator(
                         threshold_value,
                     )
 
+        data = self._full_controller_changes(data)
+        if const.CONF_PROGRAMS in data:
+            data = {
+                **data,
+                const.CONF_PROGRAMS: normalize_programs(data[const.CONF_PROGRAMS]),
+            }
+        if const.CONF_SUPPLIES in data:
+            data = {
+                **data,
+                const.CONF_SUPPLIES: normalize_supplies(data[const.CONF_SUPPLIES]),
+            }
+
         # handle auto calc changes
         await self.set_up_auto_calc_time(data)
         # handle auto update changes, includings updating OWMClient cache settings
@@ -764,6 +810,9 @@ class SmartIrrigationCoordinator(
         # registered at setup kept the old schedule, so the change took effect
         # at the next restart (or the next zone edit / calculation, which do
         # re-register). Re-register when the trigger configuration changed (#800).
+        if const.CONF_PROGRAMS in data or const.CONF_FULL_CONTROLLER in data:
+            # A program, or its schedules, was edited, or the mode was switched.
+            await self.register_program_schedules()
         if (
             const.CONF_IRRIGATION_START_TRIGGERS in data
             or const.CONF_ACTIVE_START_TRIGGER in data
@@ -2294,6 +2343,9 @@ class SmartIrrigationCoordinator(
         # cancel any in-flight direct valve runs
         self.async_teardown_valve_runs()
 
+        # and the timers of the programs' schedules
+        self.async_teardown_program_schedules()
+
     async def async_delete_config(self):
         """Wipe Smart Irrigation storage."""
         await self.store.async_delete()
@@ -2335,6 +2387,33 @@ def register_services(hass: HomeAssistant):
         const.DOMAIN,
         const.SERVICE_CREDIT_WATERING,
         coordinator.handle_credit_watering,
+    )
+
+    hass.services.async_register(
+        const.DOMAIN, const.SERVICE_RUN_PROGRAM, coordinator.handle_run_program
+    )
+    hass.services.async_register(
+        const.DOMAIN, const.SERVICE_STOP_WATERING, coordinator.handle_stop_watering
+    )
+    hass.services.async_register(
+        const.DOMAIN, const.SERVICE_PAUSE_WATERING, coordinator.handle_pause_watering
+    )
+    hass.services.async_register(
+        const.DOMAIN, const.SERVICE_RESUME_WATERING, coordinator.handle_resume_watering
+    )
+    hass.services.async_register(
+        const.DOMAIN, const.SERVICE_NEXT_STEP, coordinator.handle_next_step
+    )
+    hass.services.async_register(
+        const.DOMAIN, const.SERVICE_SUSPEND, coordinator.handle_suspend
+    )
+    hass.services.async_register(
+        const.DOMAIN, const.SERVICE_WATER_ZONE, coordinator.handle_water_zone
+    )
+    hass.services.async_register(
+        const.DOMAIN,
+        const.SERVICE_USE_MEASURED_THROUGHPUT,
+        coordinator.handle_use_measured_throughput,
     )
 
     hass.services.async_register(

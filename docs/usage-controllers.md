@@ -6,7 +6,7 @@ title: Usage: Off-the-shelf controllers
 
 > Main page: [Usage](usage.md)<br/>
 > Previous: [Automations](usage-automations.md)<br/>
-> Next: [Troubleshooting](usage-troubleshooting.md)
+> Next: [Full controller](usage-full-controller.md)
 
 If your valves are wired to a commercial controller, you do not have to replace it. Smart Irrigation decides **how long** each zone waters, and the controller **runs** the valves, through the action its Home Assistant integration provides. One blueprint per controller does the plumbing:
 
@@ -105,4 +105,4 @@ Each blueprint says in its description that it is not yet confirmed on real hard
 
 > Main page: [Usage](usage.md)<br/>
 > Previous: [Automations](usage-automations.md)<br/>
-> Next: [Troubleshooting](usage-troubleshooting.md)
+> Next: [Full controller](usage-full-controller.md)

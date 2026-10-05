@@ -41,6 +41,7 @@ export const CONF_OBSERVED_WATERING_ENABLED = "observed_watering_enabled";
 
 // Direct valve control configuration
 export const CONF_DIRECT_VALVE_CONTROL_ENABLED = "direct_valve_control_enabled";
+export const CONF_FULL_CONTROLLER = "full_controller";
 export const CONF_ZONE_SEQUENCING = "zone_sequencing";
 export const ZONE_SEQUENCING_SEQUENTIAL = "sequential";
 export const ZONE_SEQUENCING_PARALLEL = "parallel";
@@ -182,6 +183,8 @@ export const ZONE_CROP_FACTOR_BY_MONTH = "crop_factor_by_month";
 export const ZONE_ALLOWED_DEPLETION = "allowed_depletion";
 export const ZONE_DISTRIBUTION_EFFICIENCY = "distribution_efficiency";
 export const ZONE_SAFETY_OFF_TOPIC = "safety_off_topic";
+export const ZONE_SUPPLY_ID = "supply_id";
+export const ZONE_EXTRA_ENTITIES = "extra_entities";
 export const ZONE_SAFETY_OFF_STATE_KEY = "safety_off_state_key";
 export const ZONE_FLOW_SENSOR = "flow_sensor";
 export const ZONE_SOIL_MOISTURE_SENSOR = "soil_moisture_sensor";

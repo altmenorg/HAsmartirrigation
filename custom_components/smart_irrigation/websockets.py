@@ -113,6 +113,9 @@ class SmartIrrigationConfigView(HomeAssistantView):
                 vol.Optional(const.CONF_SKIP_IRRIGATION_ON_PRECIPITATION): cv.boolean,
                 vol.Optional(const.CONF_OBSERVED_WATERING_ENABLED): cv.boolean,
                 vol.Optional(const.CONF_DIRECT_VALVE_CONTROL_ENABLED): cv.boolean,
+                vol.Optional(const.CONF_FULL_CONTROLLER): cv.boolean,
+                vol.Optional(const.CONF_PROGRAMS): vol.Coerce(list),
+                vol.Optional(const.CONF_SUPPLIES): vol.Coerce(list),
                 vol.Optional(const.CONF_ZONE_SEQUENCING): vol.In(
                     const.CONF_ZONE_SEQUENCING_OPTIONS
                 ),
@@ -330,6 +333,8 @@ class SmartIrrigationZoneView(HomeAssistantView):
                 vol.Optional(const.ZONE_LEAD_TIME): vol.Coerce(float),
                 vol.Optional(const.ZONE_SAFETY_OFF_TOPIC): vol.Any(str, None),
                 vol.Optional(const.ZONE_SAFETY_OFF_STATE_KEY): vol.Any(str, None),
+                vol.Optional(const.ZONE_SUPPLY_ID): vol.Any(str, None),
+                vol.Optional(const.ZONE_EXTRA_ENTITIES): vol.Any([str], None),
                 vol.Optional(const.ZONE_SOIL_TYPE): vol.Any(str, None),
                 vol.Optional(const.ZONE_PLANT_TYPE): vol.Any(str, None),
                 vol.Optional(const.ZONE_MAXIMUM_DURATION): vol.Coerce(float),
@@ -752,6 +757,28 @@ def _preview_run_start(next_start) -> dict:
     if next_start <= dt_util.now():
         return {}
     return {"run_start": next_start}
+
+
+@async_response
+async def websocket_get_planning(hass: HomeAssistant, connection, msg):
+    """Every start of every program schedule over the next days."""
+    coordinator = hass.data[const.DOMAIN]["coordinator"]
+    connection.send_result(
+        msg["id"], await coordinator.async_planning(msg.get("days", 3))
+    )
+
+
+@async_response
+async def websocket_get_programs_state(hass: HomeAssistant, connection, msg):
+    """Each program's state and next start, and what is watering right now."""
+    coordinator = hass.data[const.DOMAIN]["coordinator"]
+    connection.send_result(
+        msg["id"],
+        {
+            "programs": await coordinator.async_program_overview(),
+            "live": coordinator.async_live_state(),
+        },
+    )
 
 
 @async_response
@@ -1540,6 +1567,25 @@ async def async_register_websockets(hass: HomeAssistant):
         websocket_get_irrigation_info,
         websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend(
             {vol.Required("type"): const.DOMAIN + "/info"}
+        ),
+    )
+    async_register_command(
+        hass,
+        const.DOMAIN + "/planning",
+        websocket_get_planning,
+        websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend(
+            {
+                vol.Required("type"): const.DOMAIN + "/planning",
+                vol.Optional("days", default=3): vol.Coerce(int),
+            }
+        ),
+    )
+    async_register_command(
+        hass,
+        const.DOMAIN + "/programs_state",
+        websocket_get_programs_state,
+        websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend(
+            {vol.Required("type"): const.DOMAIN + "/programs_state"}
         ),
     )
     async_register_command(

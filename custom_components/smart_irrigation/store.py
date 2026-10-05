@@ -16,6 +16,8 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 from .const import (
     ATTR_NEW_BUCKET_VALUE,
     ATTR_NEW_MULTIPLIER_VALUE,
+    CONF_ACTIVE_CYCLE,
+    CONF_ACTIVE_PROGRAM_RUN,
     CONF_ACTIVE_START_TRIGGER,
     CONF_ACTIVE_VALVE_RUNS,
     CONF_AUTO_CALC_ENABLED,
@@ -47,6 +49,7 @@ from .const import (
     CONF_DEFAULT_DRAINAGE_RATE,
     CONF_DEFAULT_EFFECTIVE_RAIN,
     CONF_DEFAULT_FORECAST_RAIN_CREDIT,
+    CONF_DEFAULT_FULL_CONTROLLER,
     CONF_DEFAULT_GREENHOUSE,
     CONF_DEFAULT_HOURLY_CALCULATION,
     CONF_DEFAULT_IRRIGATION_START_TRIGGERS,
@@ -56,6 +59,7 @@ from .const import (
     CONF_DEFAULT_OBSERVED_WATERING_ENABLED,
     CONF_DEFAULT_PAUSE_BETWEEN_ZONES,
     CONF_DEFAULT_PRECIPITATION_THRESHOLD_MM,
+    CONF_DEFAULT_PROGRAMS,
     CONF_DEFAULT_RAIN_HISTORY_ENABLED,
     CONF_DEFAULT_RECALCULATE_BEFORE_START,
     CONF_DEFAULT_RECURRING_SCHEDULES,
@@ -67,6 +71,7 @@ from .const import (
     CONF_DEFAULT_SKIP_ON_WIND,
     CONF_DEFAULT_SOAK_MINUTES,
     CONF_DEFAULT_SOIL_MOISTURE_THRESHOLD,
+    CONF_DEFAULT_SUPPLIES,
     CONF_DEFAULT_USE_WEATHER_SERVICE,
     CONF_DEFAULT_WATERING_PASSES,
     CONF_DEFAULT_WEATHER_SERVICE,
@@ -77,6 +82,7 @@ from .const import (
     CONF_FORECAST_RAIN_CREDIT,
     CONF_FREEZE_SENSOR,
     CONF_FREEZE_THRESHOLD,
+    CONF_FULL_CONTROLLER,
     CONF_HOURLY_CALCULATION,
     CONF_IMPERIAL,
     CONF_IRRIGATION_START_TRIGGERS,
@@ -89,6 +95,8 @@ from .const import (
     CONF_PAUSE_BETWEEN_ZONES,
     CONF_POSTPONE_UNTIL,
     CONF_PRECIPITATION_THRESHOLD_MM,
+    CONF_PROGRAM_LAST_RUNS,
+    CONF_PROGRAMS,
     CONF_RAIN_HISTORY_ENABLED,
     CONF_RAIN_SENSOR,
     CONF_RECALCULATE_BEFORE_START,
@@ -100,6 +108,8 @@ from .const import (
     CONF_SKIP_ON_RAIN_SENSOR,
     CONF_SKIP_ON_WIND,
     CONF_SOAK_MINUTES,
+    CONF_SUPPLIES,
+    CONF_SUSPENSIONS,
     CONF_UI_MODE,
     CONF_UI_MODE_ADVANCED,
     CONF_UI_MODE_STANDARD,
@@ -174,6 +184,7 @@ from .const import (
     ZONE_ET_DEFICIENCY,
     ZONE_ETO,
     ZONE_EXPLANATION,
+    ZONE_EXTRA_ENTITIES,
     ZONE_FLOW_SENSOR,
     ZONE_ID,
     ZONE_INPUT_METHOD,
@@ -204,6 +215,7 @@ from .const import (
     ZONE_SOIL_TYPE,
     ZONE_STATE,
     ZONE_STATE_AUTOMATIC,
+    ZONE_SUPPLY_ID,
     ZONE_THROUGHPUT,
     ZONE_WATER_USED,
 )
@@ -292,6 +304,10 @@ class ZoneEntry:
     # off if Home Assistant dies mid-run. Empty = disabled (see const).
     safety_off_topic = attr.ib(type=str, default=None)
     safety_off_state_key = attr.ib(type=str, default=None)
+    # The supply (pump or main valve) that feeds this zone, by id (full controller).
+    supply_id = attr.ib(type=str, default=None)
+    # Other valves that open and close with the linked one (full controller).
+    extra_entities = attr.ib(type=list, default=None)
     # How much of a deficit to let build up before watering, in the user's depth
     # unit. 0 keeps watering as soon as anything is missing (#815).
     irrigation_threshold = attr.ib(
@@ -646,6 +662,10 @@ class Config:
     direct_valve_control_enabled = attr.ib(
         type=bool, default=CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED
     )
+    # Full controller mode and its programs (see programs.py).
+    full_controller = attr.ib(type=bool, default=CONF_DEFAULT_FULL_CONTROLLER)
+    programs = attr.ib(type=list, default=CONF_DEFAULT_PROGRAMS)
+    supplies = attr.ib(type=list, default=CONF_DEFAULT_SUPPLIES)
     zone_sequencing = attr.ib(type=str, default=CONF_DEFAULT_ZONE_SEQUENCING)
     # Cycle and soak, and the pause between two zones of a sequential run.
     watering_passes = attr.ib(type=int, default=CONF_DEFAULT_WATERING_PASSES)
@@ -653,6 +673,10 @@ class Config:
     pause_between_zones = attr.ib(type=float, default=CONF_DEFAULT_PAUSE_BETWEEN_ZONES)
     # In-flight direct-control runs, persisted so a reboot can resume them.
     active_valve_runs = attr.ib(type=list, default=[])
+    active_cycle = attr.ib(type=dict, default=None)
+    active_program_run = attr.ib(type=dict, default=None)
+    program_last_runs = attr.ib(type=dict, default=None)
+    suspensions = attr.ib(type=dict, default=None)
 
 
 class MigratableStore(Store):
@@ -978,6 +1002,9 @@ class SmartIrrigationStorage:
             forecast_rain_credit=CONF_DEFAULT_FORECAST_RAIN_CREDIT,
             effective_rain=CONF_DEFAULT_EFFECTIVE_RAIN,
             recalculate_before_start=CONF_DEFAULT_RECALCULATE_BEFORE_START,
+            full_controller=CONF_DEFAULT_FULL_CONTROLLER,
+            programs=[],
+            supplies=[],
             sensor_debounce=CONF_DEFAULT_SENSOR_DEBOUNCE,
             calc_log_enabled=CONF_DEFAULT_CALC_LOG_ENABLED,
         )
@@ -1122,6 +1149,15 @@ class SmartIrrigationStorage:
                     CONF_DIRECT_VALVE_CONTROL_ENABLED,
                     CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED,
                 ),
+                full_controller=data["config"].get(
+                    CONF_FULL_CONTROLLER, CONF_DEFAULT_FULL_CONTROLLER
+                ),
+                programs=list(
+                    data["config"].get(CONF_PROGRAMS, CONF_DEFAULT_PROGRAMS) or []
+                ),
+                supplies=list(
+                    data["config"].get(CONF_SUPPLIES, CONF_DEFAULT_SUPPLIES) or []
+                ),
                 zone_sequencing=data["config"].get(
                     CONF_ZONE_SEQUENCING, CONF_DEFAULT_ZONE_SEQUENCING
                 ),
@@ -1135,6 +1171,10 @@ class SmartIrrigationStorage:
                     CONF_PAUSE_BETWEEN_ZONES, CONF_DEFAULT_PAUSE_BETWEEN_ZONES
                 ),
                 active_valve_runs=data["config"].get(CONF_ACTIVE_VALVE_RUNS, []),
+                active_cycle=data["config"].get(CONF_ACTIVE_CYCLE),
+                active_program_run=data["config"].get(CONF_ACTIVE_PROGRAM_RUN),
+                program_last_runs=data["config"].get(CONF_PROGRAM_LAST_RUNS),
+                suspensions=data["config"].get(CONF_SUSPENSIONS),
             )
 
             if "zones" in data:
@@ -1199,6 +1239,8 @@ class SmartIrrigationStorage:
                         ),
                         safety_off_topic=zone.get(ZONE_SAFETY_OFF_TOPIC, None),
                         safety_off_state_key=zone.get(ZONE_SAFETY_OFF_STATE_KEY, None),
+                        supply_id=zone.get(ZONE_SUPPLY_ID, None),
+                        extra_entities=zone.get(ZONE_EXTRA_ENTITIES, None),
                         flow_sensor=zone.get(ZONE_FLOW_SENSOR, None),
                         soil_moisture_sensor=zone.get(ZONE_SOIL_MOISTURE_SENSOR, None),
                         soil_moisture_threshold=zone.get(
@@ -1470,7 +1512,11 @@ class SmartIrrigationStorage:
         old = self.config
         changes.pop("id", None)
         new = self.config = attr.evolve(old, **changes)
-        if CONF_ACTIVE_VALVE_RUNS in changes:
+        if (
+            CONF_ACTIVE_VALVE_RUNS in changes
+            or CONF_ACTIVE_CYCLE in changes
+            or CONF_ACTIVE_PROGRAM_RUN in changes
+        ):
             await self._save_now()
         else:
             self.async_schedule_save()

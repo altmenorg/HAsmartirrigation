@@ -196,6 +196,111 @@ class ServiceHandlersMixin:
         _LOGGER.info("Irrigation resumed")
         async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated")
 
+    async def handle_run_program(self, call):
+        """Run a program of the full controller, or take its turn if one is running."""
+        program_id = call.data.get(const.ATTR_PROGRAM_ID)
+        if not program_id:
+            return
+        # The run takes as long as the watering: the service does not wait for it.
+        self._spawn_valve_run(self.async_run_program(str(program_id)))
+
+    async def handle_pause_watering(self, call):
+        """Close the open valves and hold the watering until it is resumed."""
+        await self.async_pause_watering(call.data.get("minutes"))
+
+    async def handle_resume_watering(self, call):
+        """Go on with a paused watering."""
+        await self.async_resume_watering()
+
+    async def handle_next_step(self, call):
+        """End the zones of the step a program is on, and go on to the next."""
+        await self.async_skip_step()
+
+    async def handle_suspend(self, call):
+        """Keep a zone or a program from watering for a while, or lift that."""
+        hours = call.data.get("hours")
+        until = call.data.get("until")
+        program_id = call.data.get(const.ATTR_PROGRAM_ID)
+        if program_id:
+            await self.async_suspend(
+                const.SUSPEND_PROGRAM, str(program_id), hours=hours, until=until
+            )
+        eid = call.data.get(const.SERVICE_ENTITY_ID)
+        for entity in eid if isinstance(eid, list) else ([eid] if eid else []):
+            state = self.hass.states.get(entity)
+            zone_id = state.attributes.get(const.ZONE_ID) if state else None
+            if zone_id is None:
+                _LOGGER.warning("suspend: %s is not a zone", entity)
+                continue
+            await self.async_suspend(
+                const.SUSPEND_ZONE, int(zone_id), hours=hours, until=until
+            )
+
+    async def handle_water_zone(self, call):
+        """Water a zone now, for a time, or when it is its turn."""
+        eid = call.data.get(const.SERVICE_ENTITY_ID)
+        seconds = call.data.get(const.ATTR_SECONDS)
+        for entity in eid if isinstance(eid, list) else ([eid] if eid else []):
+            state = self.hass.states.get(entity)
+            zone_id = state.attributes.get(const.ZONE_ID) if state else None
+            if zone_id is None:
+                _LOGGER.warning("water_zone: %s is not a zone", entity)
+                continue
+            # Runs as long as the watering does: the service does not wait.
+            self._spawn_valve_run(self.async_water_zone_now(int(zone_id), seconds))
+
+    async def handle_use_measured_throughput(self, call):
+        """Take the flow the meter measured as the zone's throughput.
+
+        The measured value is advice, never applied on its own (pressure varies,
+        a meter may serve several zones). This is the person saying yes.
+        """
+        zone_ids = []
+        if call.data.get("zone_id") is not None:
+            zone_ids.append(int(call.data["zone_id"]))
+        eid = call.data.get(const.SERVICE_ENTITY_ID)
+        for entity in eid if isinstance(eid, list) else ([eid] if eid else []):
+            state = self.hass.states.get(entity)
+            zone_id = state.attributes.get(const.ZONE_ID) if state else None
+            if zone_id is None:
+                _LOGGER.warning("use_measured_throughput: %s is not a zone", entity)
+                continue
+            zone_ids.append(int(zone_id))
+        for zone_id in zone_ids:
+            zone = self.store.get_zone(zone_id) or {}
+            measured = zone.get(const.ZONE_MEASURED_THROUGHPUT)
+            if not measured or measured <= 0:
+                _LOGGER.warning(
+                    "Zone %s has no measured throughput to take yet", zone_id
+                )
+                continue
+            await self.async_update_zone_config(
+                zone_id=zone_id, data={const.ZONE_THROUGHPUT: float(measured)}
+            )
+            self.async_clear_throughput_issue(zone_id)
+            _LOGGER.info(
+                "Zone %s throughput set to the measured %.2f", zone_id, measured
+            )
+
+    async def handle_stop_watering(self, call):
+        """Stop the watering now: every zone, or the ones named."""
+        eid = call.data.get(const.SERVICE_ENTITY_ID)
+        if eid is None:
+            await self.async_stop_watering()
+            return
+        if not isinstance(eid, list):
+            eid = [eid]
+        zone_ids = []
+        for entity in eid:
+            state = self.hass.states.get(entity)
+            zone_id = state.attributes.get(const.ZONE_ID) if state else None
+            if zone_id is None:
+                _LOGGER.warning("stop_watering: %s is not a zone", entity)
+                continue
+            zone_ids.append(int(zone_id))
+        if zone_ids:
+            await self.async_stop_watering(zone_ids)
+
     async def handle_credit_watering(self, call):
         """Credit a zone with the water a run of its own actually delivered.
 

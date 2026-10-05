@@ -85,6 +85,122 @@ credit_watering:
           min: 0
           max: 86400
           unit_of_measurement: s
+run_program:
+  name: Run program
+  description: >-
+    Run a program of the full controller now, or as soon as it is its turn when
+    another one is running. The program waters its zones with the durations
+    Smart Irrigation calculated, unless its steps say otherwise.
+  fields:
+    program_id:
+      name: Program
+      required: true
+      example: evening
+      description: The id of the program, as shown in its settings.
+      selector:
+        text:
+stop_watering:
+  name: Stop watering
+  description: >-
+    Stop the watering now. Every valve Smart Irrigation opened is closed, each
+    zone is credited for the water it delivered, and the programs and the zones
+    still waiting are ended. With zones chosen, only those are stopped.
+  target:
+    entity:
+      domain: sensor
+pause_watering:
+  name: Pause watering
+  description: >-
+    Close the open valves and hold the watering, the zones still waiting
+    included. What was delivered is credited, and after the resume the rest of
+    the pass is watered. A pause that is not lifted ends by itself.
+  fields:
+    minutes:
+      name: Minutes
+      description: The longest the pause lasts before it lifts itself.
+      required: false
+      default: 60
+      selector:
+        number:
+          min: 1
+          max: 1440
+          unit_of_measurement: min
+resume_watering:
+  name: Resume watering
+  description: Go on with a paused watering from where it stopped.
+next_step:
+  name: Next step
+  description: >-
+    End the zones of the step a program is on and go on to the next step.
+suspend:
+  name: Suspend
+  description: >-
+    Keep a zone or a program from watering until a moment. With no duration and
+    no date, or zero hours, the suspension is lifted.
+  target:
+    entity:
+      domain: sensor
+  fields:
+    program_id:
+      name: Program
+      description: The id of a program to suspend.
+      required: false
+      selector:
+        text:
+    hours:
+      name: Hours
+      description: How long to suspend for. Zero lifts it.
+      required: false
+      example: 48
+      selector:
+        number:
+          min: 0
+          max: 8760
+          unit_of_measurement: h
+    until:
+      name: Until
+      description: The moment the suspension ends.
+      required: false
+      selector:
+        datetime:
+water_zone:
+  name: Water a zone
+  description: >-
+    Water a zone now, or as soon as it is its turn when something is watering.
+    Without a duration, the zone waters for the duration Smart Irrigation
+    calculated.
+  target:
+    entity:
+      domain: sensor
+  fields:
+    seconds:
+      name: Seconds
+      description: Seconds of water. Left empty, the calculated duration.
+      required: false
+      example: 600
+      selector:
+        number:
+          min: 1
+          max: 86400
+          unit_of_measurement: s
+use_measured_throughput:
+  name: Use the measured throughput
+  description: >-
+    Set a zone's throughput to the flow its meter measured over its runs. The
+    measurement is only ever advice; this is how to accept it.
+  target:
+    entity:
+      domain: sensor
+  fields:
+    zone_id:
+      name: Zone id
+      description: The id of the zone, instead of its entity.
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 999
+          mode: box
 reset_all_buckets:
   name: Reset all buckets
   description: Reset the water bucket value for all zones.

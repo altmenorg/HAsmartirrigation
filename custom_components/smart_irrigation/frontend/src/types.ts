@@ -35,6 +35,9 @@ export class SmartIrrigationConfig {
   forecast_rain_credit?: boolean;
   effective_rain?: boolean;
   seasonal_adjustments?: SmartIrrigationSeasonalAdjustment[];
+  /** Pumps or main valves of the full controller. */
+  supplies?: SmartIrrigationSupply[];
+  programs?: SmartIrrigationProgram[];
   recalculate_before_start?: boolean;
   /** How much of the panel is shown: "standard" or "advanced". */
   ui_mode?: string;
@@ -58,6 +61,8 @@ export class SmartIrrigationConfig {
   days_between_irrigation: number;
   observed_watering_enabled: boolean;
   direct_valve_control_enabled: boolean;
+  // Full controller mode: Smart Irrigation runs the whole watering itself.
+  full_controller?: boolean;
   zone_sequencing: string;
   // Shorten a run after recent rain, from a binary rain sensor's history.
   rain_history_enabled?: boolean;
@@ -141,6 +146,67 @@ export interface SmartIrrigationSeasonalAdjustment {
 }
 
 //export type SmartIrrigationZone = {
+/** One step of a program: zones watered together, and how long. */
+export interface SmartIrrigationStep {
+  id?: string;
+  zones: number[];
+  mode: "calculated" | "percent" | "fixed";
+  percent: number;
+  seconds: number;
+  passes: number;
+  /** Litres after which a zone of the step stops, by its meter; 0 is no limit. */
+  max_litres?: number;
+  /** Seconds waited after the step; null follows the program's. */
+  delay: number | null;
+  enabled: boolean;
+}
+
+/** When a program runs: which days, and at which moment. */
+export interface SmartIrrigationSchedule {
+  id?: string;
+  enabled: boolean;
+  type: "time" | "sun";
+  time: string;
+  event: "sunrise" | "sunset";
+  offset_minutes: number;
+  /** Whether the moment is when the program starts or when it must be done. */
+  anchor: "start" | "end";
+  /** Monday is 0. Empty: every day. */
+  weekdays: number[];
+  every_n_days: number;
+  every_offset: number;
+  parity: "any" | "even" | "odd";
+  /** January is 1. Empty: every month. */
+  months: number[];
+  from_date: string | null;
+  until_date: string | null;
+  /** Whether the skip conditions (rain, frost, wind, soil) apply. */
+  weather: boolean;
+}
+
+/** A program of the full controller. The main one has no steps of its own. */
+export interface SmartIrrigationProgram {
+  id?: string;
+  name: string;
+  enabled: boolean;
+  main?: boolean;
+  steps?: SmartIrrigationStep[];
+  delay?: number;
+  tours?: number;
+  schedules?: SmartIrrigationSchedule[];
+}
+
+/** A pump or a main valve that runs while a zone it feeds is being watered. */
+export interface SmartIrrigationSupply {
+  id?: string;
+  name: string;
+  entities: string[];
+  /** Seconds, signed: positive, the supply leads; negative, the valve does. */
+  delay_before: number;
+  delay_after: number;
+  enabled: boolean;
+}
+
 export class SmartIrrigationZone {
   id?: number;
   name: string;
@@ -172,6 +238,10 @@ export class SmartIrrigationZone {
   linked_entity?: string;
   safety_off_topic?: string;
   safety_off_state_key?: string;
+  supply_id?: string | null;
+  extra_entities?: string[] | null;
+  measured_throughput?: number | null;
+  measured_throughput_samples?: number;
   flow_sensor?: string;
   soil_moisture_sensor?: string;
   soil_moisture_threshold?: number;

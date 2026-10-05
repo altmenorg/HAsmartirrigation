@@ -73,6 +73,8 @@ import {
   ZONE_LEAD_TIME,
   ZONE_LINKED_ENTITY,
   ZONE_SAFETY_OFF_TOPIC,
+  ZONE_SUPPLY_ID,
+  ZONE_EXTRA_ENTITIES,
   ZONE_SAFETY_OFF_STATE_KEY,
   ZONE_MAPPING,
   ZONE_ALLOWED_DEPLETION,
@@ -1375,6 +1377,31 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           }),
                         0.1,
                       )}
+                      ${zone.measured_throughput &&
+                      (zone.measured_throughput_samples || 0) >= 3
+                        ? html`
+                            <div class="setting-help">
+                              ${localize(
+                                "panels.zones.labels.measured-flow-help",
+                                lang,
+                              )}
+                              <ha-button
+                                appearance="filled"
+                                @click=${() =>
+                                  this.hass?.callService(
+                                    DOMAIN,
+                                    "use_measured_throughput",
+                                    { zone_id: zone.id },
+                                  )}
+                              >
+                                ${localize(
+                                  "panels.zones.labels.use-measured-flow",
+                                  lang,
+                                )}
+                              </ha-button>
+                            </div>
+                          `
+                        : ""}
                     `}
                 ${this._selectRow(
                   localize("panels.zones.labels.soil-type", lang),
@@ -1656,13 +1683,64 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       localize("panels.zones.labels.linked-entity", lang),
                       localize("panels.zones.labels.optional", lang),
                       zone.linked_entity,
-                      ["switch", "valve", "input_boolean", "binary_sensor"],
+                      this.config?.full_controller
+                        ? [
+                            "switch",
+                            "valve",
+                            "input_boolean",
+                            "binary_sensor",
+                            "light",
+                            "cover",
+                          ]
+                        : ["switch", "valve", "input_boolean", "binary_sensor"],
                       (v) =>
                         this.handleEditZone(index, {
                           ...zone,
                           [ZONE_LINKED_ENTITY]: v || undefined,
                         }),
                       localize("panels.zones.labels.linked-entity-hint", lang),
+                    )
+                  : ""}
+                ${this.config?.full_controller && zone.linked_entity
+                  ? this._textRow(
+                      localize("panels.zones.labels.extra-valves", lang),
+                      localize("panels.zones.labels.extra-valves-hint", lang),
+                      (zone.extra_entities || []).join(", "),
+                      (v) =>
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_EXTRA_ENTITIES]: v
+                            .split(",")
+                            .map((e) => e.trim())
+                            .filter((e) => e),
+                        }),
+                    )
+                  : ""}
+                ${this.config?.full_controller &&
+                (this.config?.supplies || []).length
+                  ? this._selectRow(
+                      localize("panels.zones.labels.supply", lang),
+                      html`
+                        <option value="" ?selected=${!zone.supply_id}>
+                          ${localize("panels.zones.labels.supply-none", lang)}
+                        </option>
+                        ${(this.config?.supplies || []).map(
+                          (supply) => html`
+                            <option
+                              value=${supply.id || ""}
+                              ?selected=${zone.supply_id === supply.id}
+                            >
+                              ${supply.name}
+                            </option>
+                          `,
+                        )}
+                      `,
+                      (e: Event) =>
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_SUPPLY_ID]:
+                            (e.target as HTMLSelectElement).value || null,
+                        }),
                     )
                   : ""}
                 ${this.config?.direct_valve_control_enabled &&

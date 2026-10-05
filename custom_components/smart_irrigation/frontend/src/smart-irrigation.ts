@@ -15,7 +15,8 @@ import "./views/info/view-info.ts";
 import "./views/setup/view-setup.ts";
 
 import { commonStyle } from "./styles";
-import { VERSION, PLATFORM } from "./const";
+import { VERSION, PLATFORM, DOMAIN } from "./const";
+import { fetchConfig } from "./data/websockets";
 import { languageLoaded, loadLanguage, localize } from "../localize/localize";
 import { exportPath, getPath, Path } from "./common/navigation";
 
@@ -38,6 +39,9 @@ enum EMenuItems {
   History = "history",
   BackupRestore = "backuprestore",
   Help = "help",
+  Planning = "planning",
+  Programs = "programs",
+  Supplies = "supplies",
 }
 
 /**
@@ -82,8 +86,26 @@ const UNLISTED_PAGE_GROUP: Record<string, string> = {
   [EMenuItems.Setup]: "settings",
 };
 
+/**
+ * The Watering tab, shown only in full controller mode: what will run and what
+ * is running, the programs, and the pumps.
+ */
+const WATERING_GROUP = {
+  id: "watering",
+  pages: [EMenuItems.Planning, EMenuItems.Programs, EMenuItems.Supplies],
+};
+
+/** The groups shown, the Watering one after Zones when the mode is on. */
+const visibleGroups = (
+  fullController: boolean,
+): { id: string; pages: EMenuItems[] }[] =>
+  fullController
+    ? [TAB_GROUPS[0], TAB_GROUPS[1], WATERING_GROUP, ...TAB_GROUPS.slice(2)]
+    : TAB_GROUPS;
+
 /** The group a page belongs to, falling back to the first one. */
 const groupOf = (page: string): { id: string; pages: EMenuItems[] } => {
+  if ((WATERING_GROUP.pages as string[]).includes(page)) return WATERING_GROUP;
   const listed = TAB_GROUPS.find((group) =>
     (group.pages as string[]).includes(page),
   );
@@ -118,6 +140,8 @@ export class SmartIrrigationPanel extends LitElement {
    * served gives an English panel rather than a blank one.
    */
   @state() private _languageReady = false;
+  // Whether the Watering tab is shown (full controller mode).
+  @state() private _fullController = false;
   private _languageRequested?: string;
 
   private _scheduleUpdate() {
@@ -197,6 +221,15 @@ export class SmartIrrigationPanel extends LitElement {
       this._scheduleUpdate();
     });
 
+    // The Watering tab follows the full controller setting, read now and again
+    // whenever the configuration changes.
+    this._readMode();
+    this.hass.connection
+      .subscribeMessage(() => this._readMode(), {
+        type: DOMAIN + "_config_updated",
+      })
+      .catch(() => undefined);
+
     // Load HA form elements in background without blocking initial render
     loadHaForm()
       .then(() => {
@@ -236,7 +269,7 @@ export class SmartIrrigationPanel extends LitElement {
         ${hasTabGroup && hasTabGroupTab
           ? html`
               <ha-tab-group @wa-tab-show=${this.handlePageSelected}>
-                ${TAB_GROUPS.map(
+                ${visibleGroups(this._fullController).map(
                   (group) => html`
                     <ha-tab-group-tab
                       slot="nav"
@@ -254,7 +287,7 @@ export class SmartIrrigationPanel extends LitElement {
             `
           : html`
               <div class="custom-tabs">
-                ${TAB_GROUPS.map(
+                ${visibleGroups(this._fullController).map(
                   (group) => html`
                     <button
                       class="custom-tab ${groupOf(path.page).id === group.id
@@ -316,6 +349,17 @@ export class SmartIrrigationPanel extends LitElement {
             .narrow=${this.narrow}
             .path=${path}
           ></smart-irrigation-view-info>
+        `;
+      case "planning":
+      case "programs":
+      case "supplies":
+        return html`
+          <smart-irrigation-view-general
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+            .path=${path}
+            .section=${page}
+          ></smart-irrigation-view-general>
         `;
       case "general":
         return html`
@@ -460,6 +504,15 @@ export class SmartIrrigationPanel extends LitElement {
       this.requestUpdate();
     } else {
       scrollTo(0, 0);
+    }
+  }
+
+  private async _readMode() {
+    try {
+      const config = await fetchConfig(this.hass);
+      this._fullController = config?.full_controller === true;
+    } catch (error) {
+      console.error("Could not read the configuration:", error);
     }
   }
 

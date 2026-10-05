@@ -93,6 +93,19 @@ CONF_DEFAULT_OBSERVED_WATERING_ENABLED = False
 # in-flight runs are persisted so a reboot mid-run can resume and credit.
 CONF_DIRECT_VALVE_CONTROL_ENABLED = "direct_valve_control_enabled"
 CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED = False
+# "Full controller" mode (off by default): Smart Irrigation runs the whole
+# watering itself, programs and all, what Irrigation Unlimited did beside it.
+# It builds on direct valve control, which it switches on, and leaves everything
+# as it was for whoever does not tick it.
+CONF_FULL_CONTROLLER = "full_controller"
+CONF_DEFAULT_FULL_CONTROLLER = False
+# The programs of the full controller: an ordered list of dicts (see programs.py).
+CONF_PROGRAMS = "programs"
+CONF_DEFAULT_PROGRAMS = []
+# The supplies of the full controller: pumps or main valves that run while a zone
+# they feed is being watered (see supplies.py).
+CONF_SUPPLIES = "supplies"
+CONF_DEFAULT_SUPPLIES = []
 CONF_ZONE_SEQUENCING = "zone_sequencing"
 CONF_ZONE_SEQUENCING_SEQUENTIAL = "sequential"
 CONF_ZONE_SEQUENCING_PARALLEL = "parallel"
@@ -118,11 +131,76 @@ CONF_PAUSE_BETWEEN_ZONES = "pause_between_zones"
 CONF_DEFAULT_PAUSE_BETWEEN_ZONES = 0
 # Persisted list of in-flight direct-control runs (reboot resilience).
 CONF_ACTIVE_VALVE_RUNS = "active_valve_runs"
+# The sequential cycle under way (the zones still to water, in order), kept so a
+# restart goes on with them instead of leaving them dry.
+CONF_ACTIVE_CYCLE = "active_cycle"
+# The program run under way: its plan and where it has got to, kept so a restart
+# goes on with the steps still to do.
+CONF_ACTIVE_PROGRAM_RUN = "active_program_run"
+# The target of the occurrence each program schedule ran last, by "program:schedule".
+# Kept apart from the programs, which the panel sends back whole: a copy of them
+# read before a run would write the old marks over it.
+CONF_PROGRAM_LAST_RUNS = "program_last_runs"
+# What is suspended until when: {"zone:3": iso, "program:evening": iso}. Kept apart
+# from the zones and the programs, which the panel sends back whole.
+CONF_SUSPENSIONS = "suspensions"
+SUSPEND_ZONE = "zone"
+SUSPEND_PROGRAM = "program"
+# A cycle older than this is not resumed: it belongs to another day's watering.
+CYCLE_RESUME_MAX_AGE_SECONDS = 6 * 3600
 # Keys inside an active-run record.
 RUN_ZONE_ID = "zone_id"
 RUN_ENTITY_ID = "entity_id"
 RUN_STARTED = "started"
 RUN_DURATION = "duration"
+# Keys inside a program of the full controller (see programs.py).
+PROGRAM_ID = "id"
+PROGRAM_NAME = "name"
+PROGRAM_ENABLED = "enabled"
+PROGRAM_MAIN = "main"
+PROGRAM_STEPS = "steps"
+# Seconds waited after a step, unless the step sets its own.
+PROGRAM_DELAY = "delay"
+# The whole list watered this many times, each with its share of the water.
+PROGRAM_TOURS = "tours"
+PROGRAM_SCHEDULES = "schedules"
+# Keys inside a step of a program (see programs.py).
+STEP_ID = "id"
+STEP_ZONES = "zones"
+STEP_MODE = "mode"
+STEP_PERCENT = "percent"
+STEP_SECONDS = "seconds"
+# A zone watered in this many passes inside the step (cycle and soak).
+STEP_PASSES = "passes"
+STEP_DELAY = "delay"
+STEP_ENABLED = "enabled"
+# A zone of the step stops once this many litres have gone through its meter (0: no limit).
+STEP_MAX_LITRES = "max_litres"
+# Keys inside a schedule of a program (see schedules.py).
+SCHEDULE_ID = "id"
+SCHEDULE_ENABLED = "enabled"
+SCHEDULE_TYPE = "type"
+SCHEDULE_TIME = "time"
+SCHEDULE_EVENT = "event"
+SCHEDULE_OFFSET_MINUTES = "offset_minutes"
+SCHEDULE_ANCHOR = "anchor"
+SCHEDULE_WEEKDAYS = "weekdays"
+SCHEDULE_EVERY_N_DAYS = "every_n_days"
+SCHEDULE_EVERY_OFFSET = "every_offset"
+SCHEDULE_PARITY = "parity"
+SCHEDULE_MONTHS = "months"
+SCHEDULE_FROM = "from_date"
+SCHEDULE_UNTIL = "until_date"
+SCHEDULE_WEATHER = "weather"
+# Keys inside a supply of the full controller (see supplies.py).
+SUPPLY_ID = "id"
+SUPPLY_NAME = "name"
+SUPPLY_ENTITIES = "entities"
+SUPPLY_DELAY_BEFORE = "delay_before"
+SUPPLY_DELAY_AFTER = "delay_after"
+SUPPLY_ENABLED = "enabled"
+# A delay, before or after, is held to this many seconds either way.
+SUPPLY_MAX_DELAY_SECONDS = 3600
 
 # Days between irrigation configuration
 CONF_DAYS_BETWEEN_IRRIGATION = "days_between_irrigation"
@@ -487,6 +565,11 @@ ZONE_LINKED_ENTITY = "linked_entity"
 # Home Assistant dies mid-run and never sends the close (e.g. a zigbee2mqtt
 # device supporting on_time). Empty = disabled; behaviour then is unchanged.
 ZONE_SAFETY_OFF_TOPIC = "safety_off_topic"
+# The supply (pump or main valve) a zone is fed from, by id. None: none.
+ZONE_SUPPLY_ID = "supply_id"
+# Other valves opened and closed together with the zone's linked one (full
+# controller): a zone whose water comes through several valves.
+ZONE_EXTRA_ENTITIES = "extra_entities"
 # The state property the device expects in that payload; "state" for a
 # single-channel device, "state_l1".."state_l4" for a multi-channel one.
 ZONE_SAFETY_OFF_STATE_KEY = "safety_off_state_key"
@@ -700,6 +783,9 @@ EVENT_IRRIGATE_START = "start_irrigation_all_zones"
 # Fired (as smart_irrigation_irrigation_started) when direct valve control
 # begins running the zones, with the list about to be watered.
 EVENT_IRRIGATE_STARTED = "irrigation_started"
+# A program of the full controller started or ended, whoever started it.
+EVENT_PROGRAM_STARTED = "program_started"
+EVENT_PROGRAM_FINISHED = "program_finished"
 # Fired (as smart_irrigation_irrigation_finished) once direct valve control has
 # finished running every eligible zone, with a per-zone summary, so a single
 # automation can send an end-of-watering report.
@@ -707,6 +793,11 @@ EVENT_IRRIGATE_FINISHED = "irrigation_finished"
 # Fired (as smart_irrigation_zone_problem) when a direct-control valve fails to
 # open, so users can wire a notification automation.
 EVENT_ZONE_PROBLEM = "zone_problem"
+# A supply (pump or main valve) that did not do what it was told.
+EVENT_SUPPLY_PROBLEM = "supply_problem"
+# Every switch of a valve or a supply by the full controller.
+EVENT_VALVE_ON = "valve_on"
+EVENT_VALVE_OFF = "valve_off"
 # Fired (as smart_irrigation_irrigation_skipped) when a start trigger is reached
 # and the day is a skip day, so a skipped run is something an automation can see
 # rather than an event that simply never arrives (#841).
@@ -775,6 +866,15 @@ SERVICE_UPDATE_ALL_ZONES = "update_all_zones"
 SERVICE_UPDATE_ZONE = "update_zone"
 SERVICE_RESET_BUCKET = "reset_bucket"
 SERVICE_CREDIT_WATERING = "credit_watering"
+SERVICE_RUN_PROGRAM = "run_program"
+SERVICE_STOP_WATERING = "stop_watering"
+SERVICE_PAUSE_WATERING = "pause_watering"
+SERVICE_RESUME_WATERING = "resume_watering"
+SERVICE_NEXT_STEP = "next_step"
+SERVICE_SUSPEND = "suspend"
+SERVICE_WATER_ZONE = "water_zone"
+SERVICE_USE_MEASURED_THROUGHPUT = "use_measured_throughput"
+ATTR_PROGRAM_ID = "program_id"
 ATTR_SECONDS = "seconds"
 SERVICE_RESET_ALL_BUCKETS = "reset_all_buckets"
 SERVICE_SET_BUCKET = "set_bucket"

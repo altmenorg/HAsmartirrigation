@@ -14,6 +14,7 @@ Once Smart Irrigation is installed, the following things will be created in Home
 - Driving the water yourself, or integrating with Smart Irrigation from your own code? [The output contract](usage-output-contract.md) is the one page that says what is published, when it changes, and what is promised.
 - If a Rain Bird, Hydrawise, Rachio, OpenSprinkler or B-hyve controller runs your valves, a blueprint per brand hands it the calculated durations: see [off-the-shelf controllers](usage-controllers.md).
 - You can use [enhanced scheduling, and hand the calculated run times to Irrigation Unlimited or Irrigation-V5](usage-enhanced-scheduling-integration.md).
+- Or let Smart Irrigation run the whole watering itself, programs, schedules, pump and all: the [full controller](usage-full-controller.md), an option that is off by default. Coming from Irrigation Unlimited? [This page](usage-from-irrigation-unlimited.md) says where everything went.
 
 Also in this section:
 - [Troubleshooting](usage-troubleshooting.md) information.

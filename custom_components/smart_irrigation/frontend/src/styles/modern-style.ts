@@ -134,6 +134,41 @@ export const modernStyle = css`
     font-weight: 400;
     font-size: 0.85em;
   }
+  /* The hint of the row above it, set as close to it as a hint under a label.
+     For rows whose control takes the whole line. */
+  .row-hint {
+    margin: -6px 0 12px 0;
+  }
+  /* Folded blocks of the Programs page: a program, a step, a schedule. */
+  details.fold {
+    border: 1px solid var(--divider-color);
+    border-radius: 8px;
+    margin: 8px 0;
+    padding: 0 12px;
+  }
+  details.fold > summary {
+    cursor: pointer;
+    padding: 10px 0;
+    list-style-position: inside;
+  }
+  details.fold[open] > summary {
+    border-bottom: 1px solid var(--divider-color);
+    margin-bottom: 8px;
+  }
+  /* Inside a folded block: room under its last buttons, and titled sections. */
+  .fold-body {
+    padding-bottom: 12px;
+  }
+  .si-actions:not(:last-child) {
+    margin-bottom: 12px;
+  }
+  .fold-section {
+    font-weight: 500;
+    margin: 16px 0 4px 0;
+  }
+  .fold-title {
+    font-weight: 500;
+  }
   .setting-hint {
     font-size: 0.8rem;
     font-weight: normal;
@@ -276,6 +311,10 @@ export const modernStyle = css`
     margin-top: 0;
     padding-top: 0;
     border-top: 0;
+  }
+  /* The row just above a group of buttons gives up its line to theirs. */
+  .setting-row:has(+ .si-actions) {
+    border-bottom: 0;
   }
   .si-actions ha-button {
     width: 100%;

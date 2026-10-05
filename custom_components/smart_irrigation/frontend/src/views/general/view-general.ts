@@ -3,13 +3,21 @@ import { property, customElement } from "lit/decorators.js";
 import { HomeAssistant, fireEvent } from "custom-card-helpers";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 
-import { fetchConfig, saveConfig } from "../../data/websockets";
+import { fetchConfig, fetchZones, saveConfig } from "../../data/websockets";
 import { SubscribeMixin } from "../../subscribe-mixin";
 import { localize } from "../../../localize/localize";
 import { output_unit, pick, handleError } from "../../helpers";
 import { loadHaForm } from "../../load-ha-elements";
 import "../../dialogs/trigger-dialog";
-import { SmartIrrigationConfig, IrrigationStartTrigger } from "../../types";
+import {
+  SmartIrrigationConfig,
+  SmartIrrigationProgram,
+  SmartIrrigationSchedule,
+  SmartIrrigationStep,
+  SmartIrrigationSupply,
+  SmartIrrigationZone,
+  IrrigationStartTrigger,
+} from "../../types";
 import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { Path } from "../../common/navigation";
@@ -39,7 +47,17 @@ import {
   TRIGGER_TYPE_SOLAR_AZIMUTH,
   DOMAIN,
 } from "../../const";
-import { mdiPlus, mdiPencil, mdiDelete, mdiMenuDown, mdiMinus } from "@mdi/js";
+import {
+  mdiPlus,
+  mdiPencil,
+  mdiDelete,
+  mdiMenuDown,
+  mdiMinus,
+  mdiPlay,
+  mdiPause,
+  mdiStop,
+  mdiSkipNext,
+} from "@mdi/js";
 
 @customElement("smart-irrigation-view-general")
 export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
@@ -49,6 +67,32 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
   @property() data?: Partial<SmartIrrigationConfig>;
   @property() config?: SmartIrrigationConfig;
+  // Which page of the Watering tab this is (planning, programs, supplies);
+  // unset, it is the General page of the settings.
+  @property() section?: string;
+  // The zones a step can water (full controller programs).
+  @property({ attribute: false }) zones: SmartIrrigationZone[] = [];
+  // What the programs are doing, and what they will do (full controller).
+  @property({ attribute: false }) planning: any[] = [];
+  @property({ attribute: false }) programsState?: any;
+  private _liveTimer?: number;
+  // What is unfolded in the Programs page: programs, steps and schedules, by id.
+  private _unfolded = new Set<string>();
+
+  private _isOpen(key: string): boolean {
+    return this._unfolded.has(key);
+  }
+
+  /** An id for something just added, unfolded so it can be filled in. */
+  private _openNew(kind: string, id: string): string {
+    this._unfolded.add(`${kind}:${id}`);
+    return id;
+  }
+
+  private _setOpen(key: string, open: boolean) {
+    if (open) this._unfolded.add(key);
+    else this._unfolded.delete(key);
+  }
 
   @property({ type: Boolean })
   private isLoading = true;
@@ -153,6 +197,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         CONF_MANUAL_ELEVATION,
         CONF_DAYS_BETWEEN_IRRIGATION,
       ]);
+      try {
+        this.zones = await fetchZones(this.hass);
+      } catch (error) {
+        console.error("Error fetching zones:", error);
+      }
+      // The planning and the live state need the configuration first.
+      this._fetchLive(true);
     } catch (error) {
       console.error("Error fetching data:", error);
       // Handle error gracefully - keep existing data if fetch fails
@@ -163,7 +214,19 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     }
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    // The live state moves while a watering runs, so it is read now and then;
+    // the planning, which changes slowly, less often.
+    let ticks = 0;
+    this._liveTimer = window.setInterval(() => {
+      ticks += 1;
+      this._fetchLive(ticks % 6 === 0);
+    }, 5000);
+  }
+
   firstUpdated() {
+    this._fetchLive(true);
     // Load HA form elements in background without blocking UI
     loadHaForm().catch((error) => {
       console.error("Failed to load HA form:", error);
@@ -489,9 +552,21 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // Seasonal adjustments (advanced).
       const r13 = this.renderSeasonalAdjustmentsCard();
 
+      // Pumps and main valves (full controller).
+      const r14 = this.renderSuppliesCard();
+      const r15 = this.renderProgramsCard();
+      const r16 = this.renderPlanningCard();
+
       // The way to the setup assistant, which is no longer a tab. It comes first:
       // it is where somebody who has nothing set up wants to start.
       const r12 = this.renderSetupAssistantCard();
+
+      if (this.section) {
+        return this.renderWateringSection(r5);
+      }
+      // In full controller mode the start trigger is the main program's, and
+      // lives with it in the Watering tab.
+      const full = this.config.full_controller === true;
 
       const r = html`<ha-card
           header="${localize("panels.general.title", this.hass.language)}"
@@ -499,12 +574,902 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           <div class="card-content">
             ${localize("panels.general.description", this.hass.language)}
           </div> </ha-card
-        >${r12}${r11}${r2}${r1}${showContinuous
-          ? r4
-          : ""}${r5}${r6}${r7}${r8}${r9}${r10}${r13}`;
+        >${r12}${r11}${r2}${r1}${showContinuous ? r4 : ""}${full
+          ? ""
+          : r5}${r6}${r7}${r8}${r9}${r10}${r13}`;
 
       return r;
     }
+  }
+
+  /** One page of the Watering tab. ``triggers`` is the start trigger card. */
+  renderWateringSection(triggers: TemplateResult) {
+    if (!this.config || !this.hass) return html``;
+    if (this.config.full_controller !== true) {
+      return html`<ha-card>
+        <div class="card-content">
+          ${localize("programs.mode_off", this.hass.language)}
+        </div>
+      </ha-card>`;
+    }
+    const lang = this.hass.language;
+    if (this.section === "planning") {
+      return html`${this.renderPlanningCard()}`;
+    }
+    if (this.section === "supplies") {
+      return html`${this.renderSuppliesCard()}`;
+    }
+    return html`${this.renderProgramsCard()}
+      <ha-card header="${localize("programs.main_settings", lang)}">
+        <div class="card-content">
+          ${localize("programs.main_settings_description", lang)}
+        </div>
+        <div class="card-content">
+          ${this.renderExecutionSettings(lang, true)}
+        </div>
+      </ha-card>
+      ${triggers}`;
+  }
+
+  /** What the programs are doing now, one line each, and the valves that are open. */
+  renderLiveState() {
+    const state = this.programsState;
+    if (!this.hass || !state) return html``;
+    const lang = this.hass.language;
+    const t = (key: string) => localize(`planning.${key}`, lang);
+    const live = state.live;
+    if (!live) return html``;
+    const minutes = (seconds: number) => {
+      const m = Math.floor(seconds / 60);
+      const s = Math.round(seconds % 60);
+      return `${m}:${String(s).padStart(2, "0")}`;
+    };
+    const rows = [
+      ...(live.paused
+        ? [
+            html`<div class="setting-note">
+              <strong>${t("paused")}</strong>
+            </div>`,
+          ]
+        : []),
+      ...(live.programs || []).map(
+        (p: any) => html`
+          <div class="setting-note">
+            <strong>${p.name}</strong>
+            ${p.state === "waiting"
+              ? html` - ${t("waiting")}`
+              : html` - ${t("step")}
+                ${p.step}/${p.steps}${p.tours > 1
+                  ? html`, ${t("tour")} ${p.tour}/${p.tours}`
+                  : ""},
+                ${p.percent} %, ${t("remaining")}
+                ${minutes(p.remaining_seconds || 0)}`}
+          </div>
+        `,
+      ),
+      ...(live.valves || []).map(
+        (v: any) => html`
+          <div class="setting-note">
+            ${v.zone}: ${t("remaining")} ${minutes(v.remaining_seconds)}
+            (${v.percent} %)
+          </div>
+        `,
+      ),
+    ];
+    if (!rows.length) {
+      return html`<div class="setting-note">${t("nothing_now")}</div>`;
+    }
+    return html`${rows}`;
+  }
+
+  /**
+   * What the programs will water over the next days.
+   *
+   * Only in full controller mode. The weather is not known days ahead: a planned
+   * run is one that goes ahead if nothing holds it back.
+   */
+  renderPlanningCard() {
+    if (!this.config || !this.hass || this.config.full_controller !== true) {
+      return html``;
+    }
+    const lang = this.hass.language;
+    const t = (key: string) => localize(`planning.${key}`, lang);
+    const dayTime = (iso: string) =>
+      new Intl.DateTimeFormat(lang, {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date(iso));
+    const clock = (iso: string) =>
+      new Intl.DateTimeFormat(lang, {
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date(iso));
+    const tc = (key: string) => localize(`programs.${key}`, lang);
+    const control = (service: string) =>
+      this.hass!.callService(DOMAIN, service, {});
+    const minutes = (seconds: number) =>
+      seconds < 60
+        ? `${Math.round(seconds)} s`
+        : `${Math.round(seconds / 60)} min`;
+    const planning = this.planning || [];
+    return html`
+      <ha-card header="${t("title")}">
+        <div class="card-content">
+          ${t("description")} ${this.renderLiveState()}
+        </div>
+        <div class="card-content">
+          <div class="si-actions">
+            ${this._actionBtn(mdiPause, tc("pause"), () =>
+              control("pause_watering"),
+            )}
+            ${this._actionBtn(mdiPlay, tc("resume"), () =>
+              control("resume_watering"),
+            )}
+            ${this._actionBtn(mdiSkipNext, tc("next_step"), () =>
+              control("next_step"),
+            )}
+            ${this._actionBtn(
+              mdiStop,
+              tc("stop"),
+              () => control("stop_watering"),
+              true,
+            )}
+          </div>
+          <div class="setting-hint row-hint">${tc("controls_help")}</div>
+        </div>
+
+        ${planning.length
+          ? planning.map(
+              (item: any) => html`
+                <div class="card-content">
+                  <div class="setting-note">
+                    <strong>${dayTime(item.start)}</strong> ${item.program}
+                    (${clock(item.start)} - ${clock(item.end)})
+                  </div>
+                  ${item.steps.map(
+                    (step: any, n: number) => html`
+                      <div class="setting-note">
+                        ${n + 1}.
+                        ${step.zones
+                          .map((z: any) => `${z.zone} ${minutes(z.seconds)}`)
+                          .join(" + ")}
+                      </div>
+                    `,
+                  )}
+                  ${item.tours > 1
+                    ? html`<div class="setting-note">
+                        ${item.tours} ${t("tours")}
+                      </div>`
+                    : ""}
+                </div>
+              `,
+            )
+          : html`<div class="card-content">${t("nothing_planned")}</div>`}
+      </ha-card>
+    `;
+  }
+
+  private async _fetchLive(withPlanning: boolean): Promise<void> {
+    if (!this.hass || this.config?.full_controller !== true) return;
+    try {
+      this.programsState = await this.hass.callWS({
+        type: DOMAIN + "/programs_state",
+      });
+      if (withPlanning) {
+        this.planning = await this.hass.callWS({
+          type: DOMAIN + "/planning",
+          days: 3,
+        });
+      }
+      this._scheduleUpdate();
+    } catch (error) {
+      console.error("Error fetching the programs' state:", error);
+    }
+  }
+
+  /**
+   * Programs: what is watered, in what order, for how long.
+   *
+   * Only in full controller mode. The main program is made from the settings
+   * above and has nothing to edit here. A step is one or several zones watered
+   * together; by default it takes the duration Smart Irrigation calculated.
+   */
+  renderProgramsCard() {
+    if (!this.config || !this.hass || this.config.full_controller !== true) {
+      return html``;
+    }
+    const lang = this.hass.language;
+    const t = (key: string) => localize(`programs.${key}`, lang);
+    const programs: SmartIrrigationProgram[] = this.config.programs || [];
+    // The list is mirrored at once: the save is debounced, and a second edit
+    // made before it goes out must build on the first, not on the old list.
+    const save = (next: SmartIrrigationProgram[]) => {
+      this.config = { ...this.config!, programs: next };
+      this.handleConfigChange({ programs: next });
+      this._scheduleUpdate();
+    };
+    const patch = (index: number, changes: Partial<SmartIrrigationProgram>) =>
+      save(programs.map((p, n) => (n === index ? { ...p, ...changes } : p)));
+    const num = (v: string, fallback = 0) => {
+      const n = parseFloat(v);
+      return isNaN(n) ? fallback : n;
+    };
+    const run = (id?: string) =>
+      this.hass!.callService(DOMAIN, "run_program", { program_id: id });
+    const control = (service: string) =>
+      this.hass!.callService(DOMAIN, service, {});
+    const random = () => Math.random().toString(36).slice(2, 8);
+
+    const weekdayName = (i: number) =>
+      new Intl.DateTimeFormat(lang, { weekday: "short" }).format(
+        new Date(2024, 0, 1 + i),
+      );
+    const monthName = (i: number) =>
+      new Intl.DateTimeFormat(lang, { month: "short" }).format(
+        new Date(2024, i, 1),
+      );
+
+    const zoneNames = (ids: number[] | undefined) =>
+      (ids || [])
+        .map((id) => this.zones.find((z) => z.id === id)?.name ?? `#${id}`)
+        .join(" + ") || t("no_zone");
+    const durationText = (step: SmartIrrigationStep) =>
+      step.mode === "fixed"
+        ? `${step.seconds} s`
+        : step.mode === "percent"
+          ? `${t("mode_calculated_short")} × ${step.percent} %`
+          : t("mode_calculated_short");
+    const scheduleText = (schedule: SmartIrrigationSchedule) => {
+      const at =
+        schedule.type === "sun"
+          ? `${t(schedule.event === "sunset" ? "moment_sunset" : "moment_sunrise")}${
+              schedule.offset_minutes
+                ? ` ${schedule.offset_minutes > 0 ? "+" : ""}${schedule.offset_minutes} min`
+                : ""
+            }`
+          : schedule.time;
+      const days =
+        (schedule.weekdays || []).length > 0
+          ? schedule.weekdays.map((d) => weekdayName(d)).join(", ")
+          : (schedule.every_n_days ?? 1) > 1
+            ? `${t("schedule_every")} ${schedule.every_n_days} ${t("schedule_days")}`
+            : t("every_day");
+      return `${days} · ${t(schedule.anchor === "end" ? "anchor_end_short" : "anchor_start_short")} ${at}`;
+    };
+    const fold = (key: string, summary: unknown, body: unknown) => html`
+      <details
+        class="fold"
+        ?open=${this._isOpen(key)}
+        @toggle=${(e: Event) =>
+          this._setOpen(key, (e.target as HTMLDetailsElement).open)}
+      >
+        <summary>${summary}</summary>
+        <div class="fold-body">${body}</div>
+      </details>
+    `;
+
+    const renderStep = (
+      program: SmartIrrigationProgram,
+      index: number,
+      step: SmartIrrigationStep,
+      stepIndex: number,
+    ) => {
+      const patchStep = (changes: Partial<SmartIrrigationStep>) =>
+        patch(index, {
+          steps: (program.steps || []).map((s, n) =>
+            n === stepIndex ? { ...s, ...changes } : s,
+          ),
+        });
+      const toggleZone = (zoneId: number, on: boolean) => {
+        const zones = (step.zones || []).filter((z) => z !== zoneId);
+        patchStep({ zones: on ? [...zones, zoneId] : zones });
+      };
+      return fold(
+        `step:${step.id}`,
+        html`<strong>${t("step")} ${stepIndex + 1}</strong> ·
+          ${zoneNames(step.zones)} ·
+          ${durationText(step)}${step.enabled === false
+            ? html` · <em>${t("off")}</em>`
+            : ""}`,
+        html`
+          <div class="setting-row">
+            <div class="setting-label">${t("step_zones")}</div>
+            <div>
+              ${this.zones.map(
+                (zone) => html`
+                  <label style="margin-right: 12px; white-space: nowrap;">
+                    <input
+                      type="checkbox"
+                      .checked=${(step.zones || []).includes(zone.id as number)}
+                      @change=${(e: Event) =>
+                        toggleZone(
+                          zone.id as number,
+                          (e.target as HTMLInputElement).checked,
+                        )}
+                    />
+                    ${zone.name}
+                  </label>
+                `,
+              )}
+            </div>
+          </div>
+          <div class="setting-hint row-hint">${t("step_zones_help")}</div>
+          ${this._selectRow(
+            t("step_duration"),
+            html`
+              <option
+                value="calculated"
+                ?selected=${step.mode === "calculated"}
+              >
+                ${t("mode_calculated")}
+              </option>
+              <option value="percent" ?selected=${step.mode === "percent"}>
+                ${t("mode_percent")}
+              </option>
+              <option value="fixed" ?selected=${step.mode === "fixed"}>
+                ${t("mode_fixed")}
+              </option>
+            `,
+            (e: Event) =>
+              patchStep({
+                mode: (e.target as HTMLSelectElement)
+                  .value as SmartIrrigationStep["mode"],
+              }),
+          )}
+          ${step.mode === "percent"
+            ? this._numRow(t("percent"), "%", step.percent, (v) =>
+                patchStep({ percent: num(v, 100) }),
+              )
+            : ""}
+          ${step.mode === "fixed"
+            ? this._numRow(
+                t("seconds"),
+                localize("common.units.seconds", lang),
+                step.seconds,
+                (v) => patchStep({ seconds: num(v) }),
+              )
+            : ""}
+          ${this._numRow(t("passes"), "", step.passes, (v) =>
+            patchStep({ passes: Math.max(1, Math.round(num(v, 1))) }),
+          )}
+          ${this._numRow(t("max_litres"), "L", step.max_litres ?? 0, (v) =>
+            patchStep({ max_litres: Math.max(0, num(v)) }),
+          )}
+          <div class="setting-hint row-hint">${t("max_litres_help")}</div>
+          ${this._textRow(
+            t("step_delay"),
+            localize("common.units.seconds", lang),
+            step.delay === null || step.delay === undefined ? "" : step.delay,
+            (v) => patchStep({ delay: v.trim() === "" ? null : num(v) }),
+          )}
+          <div class="setting-hint row-hint">${t("step_delay_help")}</div>
+          <div class="setting-row">
+            <div class="setting-label">${t("enabled")}</div>
+            <ha-switch
+              .checked=${step.enabled !== false}
+              @change=${(e: Event) =>
+                patchStep({ enabled: (e.target as any).checked })}
+            ></ha-switch>
+          </div>
+          <div class="si-actions">
+            ${this._actionBtn(
+              mdiDelete,
+              t("delete_step"),
+              () =>
+                patch(index, {
+                  steps: (program.steps || []).filter(
+                    (_, n) => n !== stepIndex,
+                  ),
+                }),
+              true,
+            )}
+          </div>
+        `,
+      );
+    };
+
+    const renderSchedule = (
+      program: SmartIrrigationProgram,
+      index: number,
+      schedule: SmartIrrigationSchedule,
+      scheduleIndex: number,
+    ) => {
+      const patchSchedule = (changes: Partial<SmartIrrigationSchedule>) =>
+        patch(index, {
+          schedules: (program.schedules || []).map((s, n) =>
+            n === scheduleIndex ? { ...s, ...changes } : s,
+          ),
+        });
+      const toggle = (
+        list: number[] | undefined,
+        value: number,
+        on: boolean,
+      ) => {
+        const rest = (list || []).filter((v) => v !== value);
+        return on ? [...rest, value].sort((a, b) => a - b) : rest;
+      };
+      return fold(
+        `schedule:${schedule.id}`,
+        html`<strong>${t("schedule")} ${scheduleIndex + 1}</strong> ·
+          ${scheduleText(schedule)}${schedule.enabled === false
+            ? html` · <em>${t("off")}</em>`
+            : ""}`,
+        html`
+          ${this._selectRow(
+            t("schedule_moment"),
+            html`
+              <option value="time" ?selected=${schedule.type === "time"}>
+                ${t("moment_time")}
+              </option>
+              <option
+                value="sunrise"
+                ?selected=${schedule.type === "sun" &&
+                schedule.event === "sunrise"}
+              >
+                ${t("moment_sunrise")}
+              </option>
+              <option
+                value="sunset"
+                ?selected=${schedule.type === "sun" &&
+                schedule.event === "sunset"}
+              >
+                ${t("moment_sunset")}
+              </option>
+            `,
+            (e: Event) => {
+              const value = (e.target as HTMLSelectElement).value;
+              patchSchedule(
+                value === "time"
+                  ? { type: "time" }
+                  : { type: "sun", event: value as "sunrise" | "sunset" },
+              );
+            },
+          )}
+          ${schedule.type === "time"
+            ? this._timeRow(t("schedule_time"), schedule.time, (v) =>
+                patchSchedule({ time: v }),
+              )
+            : this._numRow(
+                t("schedule_offset"),
+                localize("common.units.minutes", lang),
+                schedule.offset_minutes,
+                (v) => patchSchedule({ offset_minutes: Math.round(num(v)) }),
+              )}
+          ${this._selectRow(
+            t("schedule_anchor"),
+            html`
+              <option value="start" ?selected=${schedule.anchor !== "end"}>
+                ${t("anchor_start")}
+              </option>
+              <option value="end" ?selected=${schedule.anchor === "end"}>
+                ${t("anchor_end")}
+              </option>
+            `,
+            (e: Event) =>
+              patchSchedule({
+                anchor: (e.target as HTMLSelectElement).value as
+                  | "start"
+                  | "end",
+              }),
+          )}
+          <div class="setting-hint row-hint">${t("schedule_anchor_help")}</div>
+          <div class="setting-row">
+            <div class="setting-label">${t("schedule_weekdays")}</div>
+            <div>
+              ${[0, 1, 2, 3, 4, 5, 6].map(
+                (day) => html`
+                  <label style="margin-right: 10px; white-space: nowrap;">
+                    <input
+                      type="checkbox"
+                      .checked=${(schedule.weekdays || []).includes(day)}
+                      @change=${(e: Event) =>
+                        patchSchedule({
+                          weekdays: toggle(
+                            schedule.weekdays,
+                            day,
+                            (e.target as HTMLInputElement).checked,
+                          ),
+                        })}
+                    />
+                    ${weekdayName(day)}
+                  </label>
+                `,
+              )}
+            </div>
+          </div>
+          <div class="setting-hint row-hint">
+            ${t("schedule_weekdays_help")}
+          </div>
+          ${this._numRow(
+            t("schedule_every"),
+            t("schedule_days"),
+            schedule.every_n_days ?? 1,
+            (v) =>
+              patchSchedule({
+                every_n_days: Math.max(1, Math.round(num(v, 1))),
+              }),
+          )}
+          ${(schedule.every_n_days ?? 1) > 1
+            ? this._numRow(
+                t("schedule_every_offset"),
+                t("schedule_days"),
+                schedule.every_offset ?? 0,
+                (v) =>
+                  patchSchedule({
+                    every_offset: Math.max(0, Math.round(num(v))),
+                  }),
+              )
+            : ""}
+          <div class="setting-hint row-hint">${t("schedule_every_help")}</div>
+          ${this._selectRow(
+            t("schedule_parity"),
+            html`
+              <option
+                value="any"
+                ?selected=${schedule.parity !== "even" &&
+                schedule.parity !== "odd"}
+              >
+                ${t("parity_any")}
+              </option>
+              <option value="even" ?selected=${schedule.parity === "even"}>
+                ${t("parity_even")}
+              </option>
+              <option value="odd" ?selected=${schedule.parity === "odd"}>
+                ${t("parity_odd")}
+              </option>
+            `,
+            (e: Event) =>
+              patchSchedule({
+                parity: (e.target as HTMLSelectElement)
+                  .value as SmartIrrigationSchedule["parity"],
+              }),
+          )}
+          <div class="setting-row">
+            <div class="setting-label">${t("schedule_months")}</div>
+            <div>
+              ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(
+                (month) => html`
+                  <label style="margin-right: 10px; white-space: nowrap;">
+                    <input
+                      type="checkbox"
+                      .checked=${(schedule.months || []).includes(month + 1)}
+                      @change=${(e: Event) =>
+                        patchSchedule({
+                          months: toggle(
+                            schedule.months,
+                            month + 1,
+                            (e.target as HTMLInputElement).checked,
+                          ),
+                        })}
+                    />
+                    ${monthName(month)}
+                  </label>
+                `,
+              )}
+            </div>
+          </div>
+          <div class="setting-hint row-hint">${t("schedule_months_help")}</div>
+          ${this._textRow(
+            t("schedule_from"),
+            "MM-DD",
+            schedule.from_date ?? "",
+            (v) => patchSchedule({ from_date: v.trim() || null }),
+          )}
+          ${this._textRow(
+            t("schedule_until"),
+            "MM-DD",
+            schedule.until_date ?? "",
+            (v) => patchSchedule({ until_date: v.trim() || null }),
+          )}
+          <div class="setting-hint row-hint">${t("schedule_period_help")}</div>
+          <div class="setting-row">
+            <div class="setting-label">${t("schedule_weather")}</div>
+            <ha-switch
+              .checked=${schedule.weather !== false}
+              @change=${(e: Event) =>
+                patchSchedule({ weather: (e.target as any).checked })}
+            ></ha-switch>
+          </div>
+          <div class="setting-hint row-hint">${t("schedule_weather_help")}</div>
+          <div class="setting-row">
+            <div class="setting-label">${t("enabled")}</div>
+            <ha-switch
+              .checked=${schedule.enabled !== false}
+              @change=${(e: Event) =>
+                patchSchedule({ enabled: (e.target as any).checked })}
+            ></ha-switch>
+          </div>
+          <div class="si-actions">
+            ${this._actionBtn(
+              mdiDelete,
+              t("delete_schedule"),
+              () =>
+                patch(index, {
+                  schedules: (program.schedules || []).filter(
+                    (_, n) => n !== scheduleIndex,
+                  ),
+                }),
+              true,
+            )}
+          </div>
+        `,
+      );
+    };
+
+    return html`
+      <ha-card header="${t("title")}">
+        <div class="card-content">${t("description")}</div>
+        ${programs.map((program, index) =>
+          program.main
+            ? html`
+                <div class="card-content">
+                  <div class="setting-note">
+                    <strong
+                      >${program.name === "Main program"
+                        ? t("main_name")
+                        : program.name}</strong
+                    >
+                  </div>
+                  <div class="setting-note">${t("main_description")}</div>
+                  <div class="setting-row">
+                    <div class="setting-label">${t("enabled")}</div>
+                    <ha-switch
+                      .checked=${program.enabled !== false}
+                      @change=${(e: Event) =>
+                        patch(index, { enabled: (e.target as any).checked })}
+                    ></ha-switch>
+                  </div>
+                  <div class="si-actions">
+                    ${this._actionBtn(mdiPlay, t("run_now"), () =>
+                      run(program.id),
+                    )}
+                  </div>
+                </div>
+              `
+            : html`
+                <div class="card-content">
+                  ${fold(
+                    `program:${program.id}`,
+                    html`<span class="fold-title">${program.name}</span> ·
+                      ${(program.steps || []).length} ${t("steps_count")} ·
+                      ${(program.schedules || []).length}
+                      ${t("schedules_count")}${program.enabled === false
+                        ? html` · <em>${t("off")}</em>`
+                        : ""}`,
+                    html`
+                      ${this._textRow(t("name"), "", program.name, (v) =>
+                        patch(index, { name: v }),
+                      )}
+                      <div class="fold-section">${t("steps_title")}</div>
+                      ${(program.steps || []).map((step, stepIndex) =>
+                        renderStep(program, index, step, stepIndex),
+                      )}
+                      <div class="si-actions">
+                        ${this._actionBtn(mdiPlus, t("add_step"), () =>
+                          patch(index, {
+                            steps: [
+                              ...(program.steps || []),
+                              {
+                                id: this._openNew("step", "step_" + random()),
+                                zones: [],
+                                mode: "calculated",
+                                percent: 100,
+                                seconds: 0,
+                                passes: 1,
+                                max_litres: 0,
+                                delay: null,
+                                enabled: true,
+                              },
+                            ],
+                          }),
+                        )}
+                      </div>
+                      <div class="fold-section">${t("schedules_title")}</div>
+                      ${(program.schedules || []).map(
+                        (schedule, scheduleIndex) =>
+                          renderSchedule(
+                            program,
+                            index,
+                            schedule,
+                            scheduleIndex,
+                          ),
+                      )}
+                      <div class="si-actions">
+                        ${this._actionBtn(mdiPlus, t("add_schedule"), () =>
+                          patch(index, {
+                            schedules: [
+                              ...(program.schedules || []),
+                              {
+                                id: this._openNew(
+                                  "schedule",
+                                  "schedule_" + random(),
+                                ),
+                                enabled: true,
+                                type: "time",
+                                time: "06:00",
+                                event: "sunrise",
+                                offset_minutes: 0,
+                                anchor: "start",
+                                weekdays: [],
+                                every_n_days: 1,
+                                every_offset: 0,
+                                parity: "any",
+                                months: [],
+                                from_date: null,
+                                until_date: null,
+                                weather: true,
+                              },
+                            ],
+                          }),
+                        )}
+                      </div>
+                      ${this._numRow(
+                        t("delay"),
+                        localize("common.units.seconds", lang),
+                        program.delay ?? 0,
+                        (v) => patch(index, { delay: num(v) }),
+                      )}
+                      <div class="setting-hint row-hint">
+                        ${t("delay_help")}
+                      </div>
+                      ${this._numRow(t("tours"), "", program.tours ?? 1, (v) =>
+                        patch(index, {
+                          tours: Math.max(1, Math.round(num(v, 1))),
+                        }),
+                      )}
+                      <div class="setting-hint row-hint">
+                        ${t("tours_help")}
+                      </div>
+                      <div class="setting-row">
+                        <div class="setting-label">${t("enabled")}</div>
+                        <ha-switch
+                          .checked=${program.enabled !== false}
+                          @change=${(e: Event) =>
+                            patch(index, {
+                              enabled: (e.target as any).checked,
+                            })}
+                        ></ha-switch>
+                      </div>
+                      <div class="si-actions">
+                        ${this._actionBtn(mdiPlay, t("run_now"), () =>
+                          run(program.id),
+                        )}
+                        ${this._actionBtn(
+                          mdiDelete,
+                          t("delete"),
+                          () => save(programs.filter((_, n) => n !== index)),
+                          true,
+                        )}
+                      </div>
+                    `,
+                  )}
+                </div>
+              `,
+        )}
+        <div class="card-content">
+          <div class="si-actions">
+            ${this._actionBtn(mdiPlus, t("add"), () =>
+              save([
+                ...programs,
+                {
+                  id: this._openNew("program", "program_" + random()),
+                  name: `${t("new_program")} ${programs.length}`,
+                  enabled: true,
+                  steps: [],
+                  delay: 0,
+                  tours: 1,
+                  schedules: [],
+                },
+              ]),
+            )}
+          </div>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  /**
+   * Supplies: a pump or a main valve that runs while a zone it feeds is watered.
+   *
+   * Only in full controller mode. A zone picks its supply in its own settings.
+   * The delays are signed: positive, the supply leads (on before the valve opens,
+   * off after it closes); negative, the valve leads.
+   */
+  renderSuppliesCard() {
+    if (!this.config || !this.hass || this.config.full_controller !== true) {
+      return html``;
+    }
+    const lang = this.hass.language;
+    const t = (key: string) => localize(`supplies.${key}`, lang);
+    const supplies: SmartIrrigationSupply[] = this.config.supplies || [];
+    const save = (next: SmartIrrigationSupply[]) => {
+      this.config = { ...this.config!, supplies: next };
+      this.handleConfigChange({ supplies: next });
+      this._scheduleUpdate();
+    };
+    const patch = (index: number, changes: Partial<SmartIrrigationSupply>) =>
+      save(supplies.map((s, n) => (n === index ? { ...s, ...changes } : s)));
+    const seconds = (v: string) => {
+      const n = parseFloat(v);
+      return isNaN(n) ? 0 : n;
+    };
+    return html`
+      <ha-card header="${t("title")}">
+        <div class="card-content">${t("description")}</div>
+        ${supplies.map(
+          (supply, index) => html`
+            <div class="card-content">
+              ${this._textRow(t("name"), "", supply.name, (v) =>
+                patch(index, { name: v }),
+              )}
+              ${this._textRow(
+                t("entities"),
+                t("entities_hint"),
+                (supply.entities || []).join(", "),
+                (v) =>
+                  patch(index, {
+                    entities: v
+                      .split(",")
+                      .map((e) => e.trim())
+                      .filter((e) => e),
+                  }),
+              )}
+              ${this._numRow(
+                t("delay_before"),
+                localize("common.units.seconds", lang),
+                supply.delay_before,
+                (v) => patch(index, { delay_before: seconds(v) }),
+              )}
+              <div class="setting-hint row-hint">${t("delay_before_help")}</div>
+              ${this._numRow(
+                t("delay_after"),
+                localize("common.units.seconds", lang),
+                supply.delay_after,
+                (v) => patch(index, { delay_after: seconds(v) }),
+              )}
+              <div class="setting-hint row-hint">${t("delay_after_help")}</div>
+              <div class="setting-row">
+                <div class="setting-label">${t("enabled")}</div>
+                <ha-switch
+                  .checked=${supply.enabled !== false}
+                  @change=${(e: Event) =>
+                    patch(index, { enabled: (e.target as any).checked })}
+                ></ha-switch>
+              </div>
+              <div class="si-actions">
+                ${this._actionBtn(
+                  mdiDelete,
+                  t("delete"),
+                  () => save(supplies.filter((_, n) => n !== index)),
+                  true,
+                )}
+              </div>
+            </div>
+          `,
+        )}
+        <div class="card-content">
+          <div class="si-actions">
+            ${this._actionBtn(mdiPlus, t("add"), () =>
+              save([
+                ...supplies,
+                {
+                  // Chosen here and kept, so a zone's link survives a rename.
+                  id: "supply_" + Math.random().toString(36).slice(2, 8),
+                  name: "",
+                  entities: [],
+                  delay_before: 0,
+                  delay_after: 0,
+                  enabled: true,
+                },
+              ]),
+            )}
+          </div>
+        </div>
+      </ha-card>
+    `;
   }
 
   /** Change a seasonal adjustment through the service, which also updates the one in use. */
@@ -1228,6 +2193,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             </div>
             <ha-switch
               .checked=${this.config.direct_valve_control_enabled}
+              .disabled=${this.config.full_controller === true}
               @change=${(e: Event) =>
                 this.handleConfigChange({
                   direct_valve_control_enabled: (e.target as any).checked,
@@ -1242,48 +2208,91 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     "observed_watering.direct_control_description",
                     lang,
                   )}
+                  ${this.config.full_controller === true
+                    ? localize("observed_watering.direct_control_locked", lang)
+                    : ""}
                 </div>
               `
             : ""}
 
-          <!-- Sequencing also decides what a start trigger works back from to
-               finish at sunrise, so it applies whether Smart Irrigation drives
-               the valves or an automation of your own does. -->
           <div class="setting-row">
             <div class="setting-label">
-              ${localize("observed_watering.sequencing_label", lang)}
+              ${localize("observed_watering.full_controller_label", lang)}
             </div>
-            <select
-              class="field"
-              @change=${(e: Event) =>
+            <ha-switch
+              .checked=${this.config.full_controller === true}
+              @change=${(e: Event) => {
                 this.handleConfigChange({
-                  zone_sequencing: (e.target as HTMLSelectElement).value,
-                })}
-            >
-              <option
-                value="sequential"
-                ?selected=${this.config.zone_sequencing === "sequential"}
-              >
-                ${localize("observed_watering.sequencing.sequential", lang)}
-              </option>
-              <option
-                value="parallel"
-                ?selected=${this.config.zone_sequencing === "parallel"}
-              >
-                ${localize("observed_watering.sequencing.parallel", lang)}
-              </option>
-            </select>
+                  full_controller: (e.target as any).checked,
+                  // Switching it on drives the valves, which the backend turns
+                  // on too; mirrored here since our own save is not echoed back.
+                  ...((e.target as any).checked
+                    ? { direct_valve_control_enabled: true }
+                    : {}),
+                });
+                // The main program the backend creates comes back with a reload.
+                window.setTimeout(() => this._fetchData(), 1500);
+              }}
+            ></ha-switch>
           </div>
           <div class="setting-note">
-            ${localize("observed_watering.sequencing_description", lang)}
+            ${localize("observed_watering.full_controller_description", lang)}
           </div>
 
-          ${this.config.direct_valve_control_enabled &&
-          this.config.ui_mode === "advanced"
-            ? this.renderCycleAndSoak(lang)
-            : ""}
+          ${this.config.full_controller === true
+            ? ""
+            : this.renderExecutionSettings(lang, false)}
         </div>
       </ha-card>
+    `;
+  }
+
+  /**
+   * The sequencing, the pause between zones and cycle and soak.
+   *
+   * In full controller mode they are the main program's and are shown in the
+   * Watering tab, cycle and soak included whatever the panel mode: whoever
+   * turned the controller on is past the simple panel.
+   */
+  renderExecutionSettings(lang: string, full: boolean): TemplateResult {
+    if (!this.config) return html``;
+    return html`
+      <!-- Sequencing also decides what a start trigger works back from to
+               finish at sunrise, so it applies whether Smart Irrigation drives
+               the valves or an automation of your own does. -->
+      <div class="setting-row">
+        <div class="setting-label">
+          ${localize("observed_watering.sequencing_label", lang)}
+        </div>
+        <select
+          class="field"
+          @change=${(e: Event) =>
+            this.handleConfigChange({
+              zone_sequencing: (e.target as HTMLSelectElement).value,
+            })}
+        >
+          <option
+            value="sequential"
+            ?selected=${this.config.zone_sequencing === "sequential"}
+          >
+            ${localize("observed_watering.sequencing.sequential", lang)}
+          </option>
+          <option
+            value="parallel"
+            ?selected=${this.config.zone_sequencing === "parallel"}
+          >
+            ${localize("observed_watering.sequencing.parallel", lang)}
+          </option>
+        </select>
+      </div>
+      <div class="setting-note">
+        ${localize("observed_watering.sequencing_description", lang)}
+      </div>
+
+      ${this.config.direct_valve_control_enabled &&
+      (full || this.config.ui_mode === "advanced")
+        ? this.renderCycleAndSoak(lang)
+        : ""}
     `;
   }
 
@@ -1629,6 +2638,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    if (this._liveTimer !== undefined) {
+      window.clearInterval(this._liveTimer);
+      this._liveTimer = undefined;
+    }
 
     // Clean up debounce timer
     // The debounced function may have pending timeouts, but we can't directly access them
