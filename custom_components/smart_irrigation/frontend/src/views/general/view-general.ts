@@ -67,6 +67,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
   @property() data?: Partial<SmartIrrigationConfig>;
   @property() config?: SmartIrrigationConfig;
+  // Which page of the Watering tab this is (planning, programs, supplies);
+  // unset, it is the General page of the settings.
+  @property() section?: string;
   // The zones a step can water (full controller programs).
   @property({ attribute: false }) zones: SmartIrrigationZone[] = [];
   // What the programs are doing, and what they will do (full controller).
@@ -541,18 +544,54 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // it is where somebody who has nothing set up wants to start.
       const r12 = this.renderSetupAssistantCard();
 
+      if (this.section) {
+        return this.renderWateringSection(r5);
+      }
+      // In full controller mode the start trigger is the main program's, and
+      // lives with it in the Watering tab.
+      const full = this.config.full_controller === true;
+
       const r = html`<ha-card
           header="${localize("panels.general.title", this.hass.language)}"
         >
           <div class="card-content">
             ${localize("panels.general.description", this.hass.language)}
           </div> </ha-card
-        >${r12}${r11}${r2}${r1}${showContinuous
-          ? r4
-          : ""}${r5}${r6}${r7}${r8}${r9}${r16}${r15}${r14}${r10}${r13}`;
+        >${r12}${r11}${r2}${r1}${showContinuous ? r4 : ""}${full
+          ? ""
+          : r5}${r6}${r7}${r8}${r9}${r10}${r13}`;
 
       return r;
     }
+  }
+
+  /** One page of the Watering tab. ``triggers`` is the start trigger card. */
+  renderWateringSection(triggers: TemplateResult) {
+    if (!this.config || !this.hass) return html``;
+    if (this.config.full_controller !== true) {
+      return html`<ha-card>
+        <div class="card-content">
+          ${localize("programs.mode_off", this.hass.language)}
+        </div>
+      </ha-card>`;
+    }
+    const lang = this.hass.language;
+    if (this.section === "planning") {
+      return html`${this.renderPlanningCard()}`;
+    }
+    if (this.section === "supplies") {
+      return html`${this.renderSuppliesCard()}`;
+    }
+    return html`${this.renderProgramsCard()}
+      <ha-card header="${localize("programs.main_settings", lang)}">
+        <div class="card-content">
+          ${localize("programs.main_settings_description", lang)}
+        </div>
+        <div class="card-content">
+          ${this.renderExecutionSettings(lang, true)}
+        </div>
+      </ha-card>
+      ${triggers}`;
   }
 
   /** What the programs are doing now, one line each, and the valves that are open. */
@@ -631,6 +670,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         hour: "2-digit",
         minute: "2-digit",
       }).format(new Date(iso));
+    const tc = (key: string) => localize(`programs.${key}`, lang);
+    const control = (service: string) =>
+      this.hass!.callService(DOMAIN, service, {});
     const minutes = (seconds: number) =>
       seconds < 60
         ? `${Math.round(seconds)} s`
@@ -641,6 +683,25 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         <div class="card-content">
           ${t("description")} ${this.renderLiveState()}
         </div>
+        <div class="card-content">
+          ${this._actionBtn(mdiPause, tc("pause"), () =>
+            control("pause_watering"),
+          )}
+          ${this._actionBtn(mdiPlay, tc("resume"), () =>
+            control("resume_watering"),
+          )}
+          ${this._actionBtn(mdiSkipNext, tc("next_step"), () =>
+            control("next_step"),
+          )}
+          ${this._actionBtn(
+            mdiStop,
+            tc("stop"),
+            () => control("stop_watering"),
+            true,
+          )}
+          <div class="setting-hint row-hint">${tc("controls_help")}</div>
+        </div>
+
         ${planning.length
           ? planning.map(
               (item: any) => html`
@@ -764,7 +825,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             )}
           </div>
         </div>
-        <div class="setting-note">${t("step_zones_help")}</div>
+        <div class="setting-hint row-hint">${t("step_zones_help")}</div>
         ${this._selectRow(
           t("step_duration"),
           html`
@@ -803,14 +864,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         ${this._numRow(t("max_litres"), "L", step.max_litres ?? 0, (v) =>
           patchStep({ max_litres: Math.max(0, num(v)) }),
         )}
-        <div class="setting-note">${t("max_litres_help")}</div>
+        <div class="setting-hint row-hint">${t("max_litres_help")}</div>
         ${this._textRow(
           t("step_delay"),
           localize("common.units.seconds", lang),
           step.delay === null || step.delay === undefined ? "" : step.delay,
           (v) => patchStep({ delay: v.trim() === "" ? null : num(v) }),
         )}
-        <div class="setting-note">${t("step_delay_help")}</div>
+        <div class="setting-hint row-hint">${t("step_delay_help")}</div>
         <div class="setting-row">
           <div class="setting-label">${t("enabled")}</div>
           <ha-switch
@@ -919,7 +980,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               anchor: (e.target as HTMLSelectElement).value as "start" | "end",
             }),
         )}
-        <div class="setting-note">${t("schedule_anchor_help")}</div>
+        <div class="setting-hint row-hint">${t("schedule_anchor_help")}</div>
         <div class="setting-row">
           <div class="setting-label">${t("schedule_weekdays")}</div>
           <div>
@@ -944,7 +1005,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             )}
           </div>
         </div>
-        <div class="setting-note">${t("schedule_weekdays_help")}</div>
+        <div class="setting-hint row-hint">${t("schedule_weekdays_help")}</div>
         ${this._numRow(
           t("schedule_every"),
           t("schedule_days"),
@@ -963,7 +1024,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 }),
             )
           : ""}
-        <div class="setting-note">${t("schedule_every_help")}</div>
+        <div class="setting-hint row-hint">${t("schedule_every_help")}</div>
         ${this._selectRow(
           t("schedule_parity"),
           html`
@@ -1011,7 +1072,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             )}
           </div>
         </div>
-        <div class="setting-note">${t("schedule_months_help")}</div>
+        <div class="setting-hint row-hint">${t("schedule_months_help")}</div>
         ${this._textRow(
           t("schedule_from"),
           "MM-DD",
@@ -1024,7 +1085,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           schedule.until_date ?? "",
           (v) => patchSchedule({ until_date: v.trim() || null }),
         )}
-        <div class="setting-note">${t("schedule_period_help")}</div>
+        <div class="setting-hint row-hint">${t("schedule_period_help")}</div>
         <div class="setting-row">
           <div class="setting-label">${t("schedule_weather")}</div>
           <ha-switch
@@ -1033,7 +1094,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               patchSchedule({ weather: (e.target as any).checked })}
           ></ha-switch>
         </div>
-        <div class="setting-note">${t("schedule_weather_help")}</div>
+        <div class="setting-hint row-hint">${t("schedule_weather_help")}</div>
         <div class="setting-row">
           <div class="setting-label">${t("enabled")}</div>
           <ha-switch
@@ -1059,24 +1120,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     return html`
       <ha-card header="${t("title")}">
         <div class="card-content">${t("description")}</div>
-        <div class="card-content">
-          ${this._actionBtn(mdiPause, t("pause"), () =>
-            control("pause_watering"),
-          )}
-          ${this._actionBtn(mdiPlay, t("resume"), () =>
-            control("resume_watering"),
-          )}
-          ${this._actionBtn(mdiSkipNext, t("next_step"), () =>
-            control("next_step"),
-          )}
-          ${this._actionBtn(
-            mdiStop,
-            t("stop"),
-            () => control("stop_watering"),
-            true,
-          )}
-          <div class="setting-note">${t("controls_help")}</div>
-        </div>
         ${programs.map((program, index) =>
           program.main
             ? html`
@@ -1161,11 +1204,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     program.delay ?? 0,
                     (v) => patch(index, { delay: num(v) }),
                   )}
-                  <div class="setting-note">${t("delay_help")}</div>
+                  <div class="setting-hint row-hint">${t("delay_help")}</div>
                   ${this._numRow(t("tours"), "", program.tours ?? 1, (v) =>
                     patch(index, { tours: Math.max(1, Math.round(num(v, 1))) }),
                   )}
-                  <div class="setting-note">${t("tours_help")}</div>
+                  <div class="setting-hint row-hint">${t("tours_help")}</div>
                   <div class="setting-row">
                     <div class="setting-label">${t("enabled")}</div>
                     <ha-switch
@@ -1258,14 +1301,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 supply.delay_before,
                 (v) => patch(index, { delay_before: seconds(v) }),
               )}
-              <div class="setting-note">${t("delay_before_help")}</div>
+              <div class="setting-hint row-hint">${t("delay_before_help")}</div>
               ${this._numRow(
                 t("delay_after"),
                 localize("common.units.seconds", lang),
                 supply.delay_after,
                 (v) => patch(index, { delay_after: seconds(v) }),
               )}
-              <div class="setting-note">${t("delay_after_help")}</div>
+              <div class="setting-hint row-hint">${t("delay_after_help")}</div>
               <div class="setting-row">
                 <div class="setting-label">${t("enabled")}</div>
                 <ha-switch
@@ -2024,6 +2067,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             </div>
             <ha-switch
               .checked=${this.config.direct_valve_control_enabled}
+              .disabled=${this.config.full_controller === true}
               @change=${(e: Event) =>
                 this.handleConfigChange({
                   direct_valve_control_enabled: (e.target as any).checked,
@@ -2038,6 +2082,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     "observed_watering.direct_control_description",
                     lang,
                   )}
+                  ${this.config.full_controller === true
+                    ? localize("observed_watering.direct_control_locked", lang)
+                    : ""}
                 </div>
               `
             : ""}
@@ -2066,44 +2113,60 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             ${localize("observed_watering.full_controller_description", lang)}
           </div>
 
-          <!-- Sequencing also decides what a start trigger works back from to
-               finish at sunrise, so it applies whether Smart Irrigation drives
-               the valves or an automation of your own does. -->
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize("observed_watering.sequencing_label", lang)}
-            </div>
-            <select
-              class="field"
-              @change=${(e: Event) =>
-                this.handleConfigChange({
-                  zone_sequencing: (e.target as HTMLSelectElement).value,
-                })}
-            >
-              <option
-                value="sequential"
-                ?selected=${this.config.zone_sequencing === "sequential"}
-              >
-                ${localize("observed_watering.sequencing.sequential", lang)}
-              </option>
-              <option
-                value="parallel"
-                ?selected=${this.config.zone_sequencing === "parallel"}
-              >
-                ${localize("observed_watering.sequencing.parallel", lang)}
-              </option>
-            </select>
-          </div>
-          <div class="setting-note">
-            ${localize("observed_watering.sequencing_description", lang)}
-          </div>
-
-          ${this.config.direct_valve_control_enabled &&
-          this.config.ui_mode === "advanced"
-            ? this.renderCycleAndSoak(lang)
-            : ""}
+          ${this.config.full_controller === true
+            ? ""
+            : this.renderExecutionSettings(lang, false)}
         </div>
       </ha-card>
+    `;
+  }
+
+  /**
+   * The sequencing, the pause between zones and cycle and soak.
+   *
+   * In full controller mode they are the main program's and are shown in the
+   * Watering tab, cycle and soak included whatever the panel mode: whoever
+   * turned the controller on is past the simple panel.
+   */
+  renderExecutionSettings(lang: string, full: boolean): TemplateResult {
+    if (!this.config) return html``;
+    return html`
+      <!-- Sequencing also decides what a start trigger works back from to
+               finish at sunrise, so it applies whether Smart Irrigation drives
+               the valves or an automation of your own does. -->
+      <div class="setting-row">
+        <div class="setting-label">
+          ${localize("observed_watering.sequencing_label", lang)}
+        </div>
+        <select
+          class="field"
+          @change=${(e: Event) =>
+            this.handleConfigChange({
+              zone_sequencing: (e.target as HTMLSelectElement).value,
+            })}
+        >
+          <option
+            value="sequential"
+            ?selected=${this.config.zone_sequencing === "sequential"}
+          >
+            ${localize("observed_watering.sequencing.sequential", lang)}
+          </option>
+          <option
+            value="parallel"
+            ?selected=${this.config.zone_sequencing === "parallel"}
+          >
+            ${localize("observed_watering.sequencing.parallel", lang)}
+          </option>
+        </select>
+      </div>
+      <div class="setting-note">
+        ${localize("observed_watering.sequencing_description", lang)}
+      </div>
+
+      ${this.config.direct_valve_control_enabled &&
+      (full || this.config.ui_mode === "advanced")
+        ? this.renderCycleAndSoak(lang)
+        : ""}
     `;
   }
 

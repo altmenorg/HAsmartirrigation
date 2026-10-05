@@ -100,3 +100,31 @@ async def test_supplies_are_cleaned_before_they_are_stored():
     assert supply[const.SUPPLY_ID] == "pump"
     assert supply[const.SUPPLY_ENTITIES] == ["switch.pump"]
     assert supply[const.SUPPLY_DELAY_BEFORE] == 3.0
+
+
+@pytest.mark.asyncio
+async def test_valve_control_cannot_be_switched_off_under_the_full_controller():
+    coordinator = _coordinator()
+    coordinator.store.config.full_controller = True
+
+    written = await _update(
+        coordinator, {const.CONF_DIRECT_VALVE_CONTROL_ENABLED: False}
+    )
+
+    assert written[const.CONF_DIRECT_VALVE_CONTROL_ENABLED] is True
+
+
+@pytest.mark.asyncio
+async def test_both_can_be_switched_off_together():
+    coordinator = _coordinator()
+    coordinator.store.config.full_controller = True
+
+    written = await _update(
+        coordinator,
+        {
+            const.CONF_FULL_CONTROLLER: False,
+            const.CONF_DIRECT_VALVE_CONTROL_ENABLED: False,
+        },
+    )
+
+    assert written[const.CONF_DIRECT_VALVE_CONTROL_ENABLED] is False

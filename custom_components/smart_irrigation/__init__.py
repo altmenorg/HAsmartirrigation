@@ -735,6 +735,14 @@ class SmartIrrigationCoordinator(
         for the day it is switched on again, and what ran before runs again.
         """
         if data.get(const.CONF_FULL_CONTROLLER) is not True:
+            stays_on = const.CONF_FULL_CONTROLLER not in data and (
+                getattr(self.store.config, const.CONF_FULL_CONTROLLER, False) is True
+            )
+            if stays_on and data.get(const.CONF_DIRECT_VALVE_CONTROL_ENABLED) is False:
+                # The full controller drives the valves: switching that off on
+                # its own would leave programs running with no valves to open.
+                data = dict(data)
+                data[const.CONF_DIRECT_VALVE_CONTROL_ENABLED] = True
             return data
         data = dict(data)
         data[const.CONF_DIRECT_VALVE_CONTROL_ENABLED] = True

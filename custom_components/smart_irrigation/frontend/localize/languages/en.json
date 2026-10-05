@@ -721,7 +721,17 @@
       "home": "Home",
       "zones": "Zones",
       "data": "Data",
-      "settings": "Settings"
+      "settings": "Settings",
+      "watering": "Watering"
+    },
+    "planning": {
+      "title": "Planning"
+    },
+    "programs": {
+      "title": "Programs"
+    },
+    "supplies": {
+      "title": "Pumps"
     }
   },
   "title": "Smart Irrigation",
@@ -851,7 +861,7 @@
   "programs": {
     "title": "Programs",
     "description": "A program waters its steps one after the other. A step is one zone, or several watered together, and by default takes the duration Smart Irrigation calculated for it. Several programs never run at the same time: the next one waits its turn.",
-    "main_description": "The main program waters every zone with the start trigger, the sequencing and the pauses set in the cards above. It has nothing else to edit here.",
+    "main_description": "The main program waters every zone with the start trigger, the sequencing and the pauses set in the card further down this page.",
     "name": "Name",
     "step": "Step",
     "step_zones": "Zones",
@@ -913,7 +923,10 @@
     "max_litres_help": "A zone of this step stops once its water meter has counted this many litres. 0: no limit. The meter reports every so often, so the volume is not exact. A zone without a meter ignores it.",
     "new_program": "Program",
     "main_name": "Main program",
-    "run_now": "Run now"
+    "run_now": "Run now",
+    "main_settings": "Main program: start and sequencing",
+    "main_settings_description": "How the main program waters: the zones one after the other or together, the pause between two zones and cycle and soak. Its start trigger is below.",
+    "mode_off": "The full controller is off. Turn it on in Settings, General."
   },
   "supplies": {
     "title": "Pumps and main valves",
@@ -949,7 +962,8 @@
     "pause_between_zones_label": "Pause between zones",
     "pause_between_zones_description": "A wait between two zones of a sequential run: time for the line pressure to recover, or for a slow valve to finish closing before the next one opens.",
     "minutes": "minutes",
-    "seconds": "seconds"
+    "seconds": "seconds",
+    "direct_control_locked": "The full controller drives the valves: switch it off first to change this."
   },
   "calculation_log": {
     "title": "Calculation log",

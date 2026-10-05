@@ -721,7 +721,17 @@
       "home": "Accueil",
       "zones": "Zones",
       "data": "Données",
-      "settings": "Réglages"
+      "settings": "Réglages",
+      "watering": "Arrosage"
+    },
+    "planning": {
+      "title": "Planning"
+    },
+    "programs": {
+      "title": "Programmes"
+    },
+    "supplies": {
+      "title": "Pompes"
     }
   },
   "title": "Smart Irrigation",
@@ -851,7 +861,7 @@
   "programs": {
     "title": "Programmes",
     "description": "Un programme arrose ses étapes l'une après l'autre. Une étape est une zone, ou plusieurs arrosées en même temps, et prend par défaut la durée calculée par Smart Irrigation. Deux programmes ne tournent jamais en même temps : le suivant attend son tour.",
-    "main_description": "Le programme principal arrose toutes les zones avec le déclencheur, l'enchaînement et les pauses réglés dans les cartes ci-dessus. Il n'y a rien d'autre à modifier ici.",
+    "main_description": "Le programme principal arrose toutes les zones avec le déclencheur, l'enchaînement et les pauses réglés dans la carte plus bas sur cette page.",
     "name": "Nom",
     "step": "Étape",
     "step_zones": "Zones",
@@ -913,7 +923,10 @@
     "max_litres_help": "Une zone de cette étape s'arrête quand son compteur d'eau a compté ce nombre de litres. 0 : pas de limite. Le compteur ne rapporte que de temps en temps, le volume n'est donc pas exact. Une zone sans compteur l'ignore.",
     "new_program": "Programme",
     "main_name": "Programme principal",
-    "run_now": "Lancer maintenant"
+    "run_now": "Lancer maintenant",
+    "main_settings": "Programme principal : départ et enchaînement",
+    "main_settings_description": "Comment le programme principal arrose : les zones l'une après l'autre ou ensemble, la pause entre deux zones et le cycle-and-soak. Son déclencheur est plus bas.",
+    "mode_off": "Le contrôleur complet est désactivé. Active-le dans Réglages, Général."
   },
   "supplies": {
     "title": "Pompes et vannes générales",
@@ -949,7 +962,8 @@
     "pause_between_zones_label": "Pause entre les zones",
     "pause_between_zones_description": "Une attente entre deux zones d'un arrosage séquentiel : le temps que la pression revienne, ou qu'une vanne lente finisse de se fermer avant que la suivante s'ouvre.",
     "minutes": "minutes",
-    "seconds": "secondes"
+    "seconds": "secondes",
+    "direct_control_locked": "Le contrôleur complet pilote les vannes : désactive-le d'abord pour changer ceci."
   },
   "calculation_log": {
     "title": "Journal de calcul",

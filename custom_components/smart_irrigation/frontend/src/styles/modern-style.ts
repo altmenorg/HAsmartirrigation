@@ -134,6 +134,11 @@ export const modernStyle = css`
     font-weight: 400;
     font-size: 0.85em;
   }
+  /* The hint of the row above it, set as close to it as a hint under a label.
+     For rows whose control takes the whole line. */
+  .row-hint {
+    margin: -6px 0 12px 0;
+  }
   .setting-hint {
     font-size: 0.8rem;
     font-weight: normal;
