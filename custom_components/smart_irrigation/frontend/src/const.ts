@@ -41,6 +41,7 @@ export const CONF_OBSERVED_WATERING_ENABLED = "observed_watering_enabled";
 
 // Direct valve control configuration
 export const CONF_DIRECT_VALVE_CONTROL_ENABLED = "direct_valve_control_enabled";
+export const CONF_FULL_CONTROLLER = "full_controller";
 export const CONF_ZONE_SEQUENCING = "zone_sequencing";
 export const ZONE_SEQUENCING_SEQUENTIAL = "sequential";
 export const ZONE_SEQUENCING_PARALLEL = "parallel";

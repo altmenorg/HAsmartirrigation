@@ -93,6 +93,15 @@ CONF_DEFAULT_OBSERVED_WATERING_ENABLED = False
 # in-flight runs are persisted so a reboot mid-run can resume and credit.
 CONF_DIRECT_VALVE_CONTROL_ENABLED = "direct_valve_control_enabled"
 CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED = False
+# "Full controller" mode (off by default): Smart Irrigation runs the whole
+# watering itself, programs and all, what Irrigation Unlimited did beside it.
+# It builds on direct valve control, which it switches on, and leaves everything
+# as it was for whoever does not tick it.
+CONF_FULL_CONTROLLER = "full_controller"
+CONF_DEFAULT_FULL_CONTROLLER = False
+# The programs of the full controller: an ordered list of dicts (see programs.py).
+CONF_PROGRAMS = "programs"
+CONF_DEFAULT_PROGRAMS = []
 CONF_ZONE_SEQUENCING = "zone_sequencing"
 CONF_ZONE_SEQUENCING_SEQUENTIAL = "sequential"
 CONF_ZONE_SEQUENCING_PARALLEL = "parallel"
@@ -118,11 +127,21 @@ CONF_PAUSE_BETWEEN_ZONES = "pause_between_zones"
 CONF_DEFAULT_PAUSE_BETWEEN_ZONES = 0
 # Persisted list of in-flight direct-control runs (reboot resilience).
 CONF_ACTIVE_VALVE_RUNS = "active_valve_runs"
+# The sequential cycle under way (the zones still to water, in order), kept so a
+# restart goes on with them instead of leaving them dry.
+CONF_ACTIVE_CYCLE = "active_cycle"
+# A cycle older than this is not resumed: it belongs to another day's watering.
+CYCLE_RESUME_MAX_AGE_SECONDS = 6 * 3600
 # Keys inside an active-run record.
 RUN_ZONE_ID = "zone_id"
 RUN_ENTITY_ID = "entity_id"
 RUN_STARTED = "started"
 RUN_DURATION = "duration"
+# Keys inside a program of the full controller (see programs.py).
+PROGRAM_ID = "id"
+PROGRAM_NAME = "name"
+PROGRAM_ENABLED = "enabled"
+PROGRAM_MAIN = "main"
 
 # Days between irrigation configuration
 CONF_DAYS_BETWEEN_IRRIGATION = "days_between_irrigation"

@@ -836,6 +836,8 @@
     "enabled_label": "Activer l'arrosage observé",
     "direct_control_label": "Laisser Smart Irrigation piloter la vanne",
     "direct_control_description": "Une fois activé, Smart Irrigation ouvre la vanne liée de chaque zone, attend la durée d'arrosage calculée, puis la referme - aucune automatisation nécessaire. Un arrosage en cours reprend après un redémarrage. Sécurité : si Home Assistant tombe longtemps en plein arrosage, la vanne reste ouverte et continue d'arroser, donne donc à ta vanne un failsafe matériel (une durée d'ouverture maximale).",
+    "full_controller_label": "Contrôleur complet : Smart Irrigation gère tout mon arrosage",
+    "full_controller_description": "Active le pilotage des vannes et un programme principal construit à partir des réglages ci-dessous. Rien ne change pour tes zones tant que tu n'en ajoutes pas : le déclencheur, l'enchaînement, la pause entre zones et le cycle-and-soak fonctionnent comme avant. Le désactiver rétablit exactement le comportement précédent. Une vanne trouvée ouverte au démarrage sans arrosage de notre part est refermée.",
     "sequencing_label": "Séquencement des zones",
     "sequencing": {
       "sequential": "Séquentiel (une zone à la fois)",

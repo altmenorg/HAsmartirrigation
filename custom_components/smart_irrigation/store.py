@@ -16,6 +16,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 from .const import (
     ATTR_NEW_BUCKET_VALUE,
     ATTR_NEW_MULTIPLIER_VALUE,
+    CONF_ACTIVE_CYCLE,
     CONF_ACTIVE_START_TRIGGER,
     CONF_ACTIVE_VALVE_RUNS,
     CONF_AUTO_CALC_ENABLED,
@@ -47,6 +48,7 @@ from .const import (
     CONF_DEFAULT_DRAINAGE_RATE,
     CONF_DEFAULT_EFFECTIVE_RAIN,
     CONF_DEFAULT_FORECAST_RAIN_CREDIT,
+    CONF_DEFAULT_FULL_CONTROLLER,
     CONF_DEFAULT_GREENHOUSE,
     CONF_DEFAULT_HOURLY_CALCULATION,
     CONF_DEFAULT_IRRIGATION_START_TRIGGERS,
@@ -56,6 +58,7 @@ from .const import (
     CONF_DEFAULT_OBSERVED_WATERING_ENABLED,
     CONF_DEFAULT_PAUSE_BETWEEN_ZONES,
     CONF_DEFAULT_PRECIPITATION_THRESHOLD_MM,
+    CONF_DEFAULT_PROGRAMS,
     CONF_DEFAULT_RAIN_HISTORY_ENABLED,
     CONF_DEFAULT_RECALCULATE_BEFORE_START,
     CONF_DEFAULT_RECURRING_SCHEDULES,
@@ -77,6 +80,7 @@ from .const import (
     CONF_FORECAST_RAIN_CREDIT,
     CONF_FREEZE_SENSOR,
     CONF_FREEZE_THRESHOLD,
+    CONF_FULL_CONTROLLER,
     CONF_HOURLY_CALCULATION,
     CONF_IMPERIAL,
     CONF_IRRIGATION_START_TRIGGERS,
@@ -89,6 +93,7 @@ from .const import (
     CONF_PAUSE_BETWEEN_ZONES,
     CONF_POSTPONE_UNTIL,
     CONF_PRECIPITATION_THRESHOLD_MM,
+    CONF_PROGRAMS,
     CONF_RAIN_HISTORY_ENABLED,
     CONF_RAIN_SENSOR,
     CONF_RECALCULATE_BEFORE_START,
@@ -646,6 +651,9 @@ class Config:
     direct_valve_control_enabled = attr.ib(
         type=bool, default=CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED
     )
+    # Full controller mode and its programs (see programs.py).
+    full_controller = attr.ib(type=bool, default=CONF_DEFAULT_FULL_CONTROLLER)
+    programs = attr.ib(type=list, default=CONF_DEFAULT_PROGRAMS)
     zone_sequencing = attr.ib(type=str, default=CONF_DEFAULT_ZONE_SEQUENCING)
     # Cycle and soak, and the pause between two zones of a sequential run.
     watering_passes = attr.ib(type=int, default=CONF_DEFAULT_WATERING_PASSES)
@@ -653,6 +661,7 @@ class Config:
     pause_between_zones = attr.ib(type=float, default=CONF_DEFAULT_PAUSE_BETWEEN_ZONES)
     # In-flight direct-control runs, persisted so a reboot can resume them.
     active_valve_runs = attr.ib(type=list, default=[])
+    active_cycle = attr.ib(type=dict, default=None)
 
 
 class MigratableStore(Store):
@@ -978,6 +987,8 @@ class SmartIrrigationStorage:
             forecast_rain_credit=CONF_DEFAULT_FORECAST_RAIN_CREDIT,
             effective_rain=CONF_DEFAULT_EFFECTIVE_RAIN,
             recalculate_before_start=CONF_DEFAULT_RECALCULATE_BEFORE_START,
+            full_controller=CONF_DEFAULT_FULL_CONTROLLER,
+            programs=[],
             sensor_debounce=CONF_DEFAULT_SENSOR_DEBOUNCE,
             calc_log_enabled=CONF_DEFAULT_CALC_LOG_ENABLED,
         )
@@ -1122,6 +1133,12 @@ class SmartIrrigationStorage:
                     CONF_DIRECT_VALVE_CONTROL_ENABLED,
                     CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED,
                 ),
+                full_controller=data["config"].get(
+                    CONF_FULL_CONTROLLER, CONF_DEFAULT_FULL_CONTROLLER
+                ),
+                programs=list(
+                    data["config"].get(CONF_PROGRAMS, CONF_DEFAULT_PROGRAMS) or []
+                ),
                 zone_sequencing=data["config"].get(
                     CONF_ZONE_SEQUENCING, CONF_DEFAULT_ZONE_SEQUENCING
                 ),
@@ -1135,6 +1152,7 @@ class SmartIrrigationStorage:
                     CONF_PAUSE_BETWEEN_ZONES, CONF_DEFAULT_PAUSE_BETWEEN_ZONES
                 ),
                 active_valve_runs=data["config"].get(CONF_ACTIVE_VALVE_RUNS, []),
+                active_cycle=data["config"].get(CONF_ACTIVE_CYCLE),
             )
 
             if "zones" in data:
@@ -1470,7 +1488,7 @@ class SmartIrrigationStorage:
         old = self.config
         changes.pop("id", None)
         new = self.config = attr.evolve(old, **changes)
-        if CONF_ACTIVE_VALVE_RUNS in changes:
+        if CONF_ACTIVE_VALVE_RUNS in changes or CONF_ACTIVE_CYCLE in changes:
             await self._save_now()
         else:
             self.async_schedule_save()

@@ -43,6 +43,7 @@ from homeassistant.helpers.event import (
     async_track_time_change,
     async_track_time_interval,
 )
+from homeassistant.helpers.start import async_at_started
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.util import slugify
 from homeassistant.util.unit_system import METRIC_SYSTEM
@@ -68,6 +69,7 @@ from .hourly_et import solar_elevation_sin
 from .live_estimate import LiveEstimateMixin
 from .observed_watering import ObservedWateringMixin
 from .panel import async_register_panel, remove_panel
+from .programs import ensure_main_program
 from .scheduler import RecurringScheduleManager, SeasonalAdjustmentManager
 from .service_handlers import ServiceHandlersMixin
 from .skip_conditions import SkipConditionsMixin, thresholds_for_storage
@@ -359,6 +361,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     # Direct valve control: resume any run that was in flight before a restart.
     await coordinator.async_resume_valve_runs()
+    # Full controller: once everything is up, a valve left open that no run owns
+    # is closed. Later than the resume, because entities load at their own pace.
+    async_at_started(hass, coordinator.async_align_valves)
     return True
 
 
@@ -718,6 +723,24 @@ class SmartIrrigationCoordinator(
 
         _LOGGER.info("Unit system change processing complete")
 
+    def _full_controller_changes(self, data: dict) -> dict:
+        """What switching the full controller on carries with it.
+
+        It drives the valves itself, so direct valve control goes on, and it
+        needs its main program, made from the settings that run the watering
+        today. Switching it off changes nothing else: the programs stay stored
+        for the day it is switched on again, and what ran before runs again.
+        """
+        if data.get(const.CONF_FULL_CONTROLLER) is not True:
+            return data
+        data = dict(data)
+        data[const.CONF_DIRECT_VALVE_CONTROL_ENABLED] = True
+        stored = getattr(self.store.config, const.CONF_PROGRAMS, None)
+        data[const.CONF_PROGRAMS] = ensure_main_program(
+            data.get(const.CONF_PROGRAMS, stored)
+        )
+        return data
+
     async def async_update_config(self, data):  # noqa: D102
         _LOGGER.debug("[async_update_config]: config changed: %s", data)
 
@@ -749,6 +772,8 @@ class SmartIrrigationCoordinator(
                         "Precipitation threshold %.2f mm stored directly (metric mode)",
                         threshold_value,
                     )
+
+        data = self._full_controller_changes(data)
 
         # handle auto calc changes
         await self.set_up_auto_calc_time(data)

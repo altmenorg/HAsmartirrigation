@@ -67,6 +67,23 @@ _VALVE_UNUSABLE = (None, "", "unknown", "unavailable")
 PROBLEM_DID_NOT_OPEN = "valve_did_not_open"
 PROBLEM_DID_NOT_CLOSE = "valve_did_not_close"
 PROBLEM_NO_FLOW = "no_flow"
+# Not a fault: the zone's run was stopped before it delivered anything.
+PROBLEM_STOPPED = "stopped"
+
+
+class RunControl:
+    """What can be asked of a zone's run while it is under way.
+
+    One per zone, from the moment the zone is claimed to the last close. A stop
+    is conserved here rather than acted on at once, because a run that is
+    between two awaits (opening, confirming, soaking) only sees it when it next
+    waits, and a stop asked for while it was not waiting must not be lost.
+    """
+
+    def __init__(self) -> None:
+        self.stop = asyncio.Event()
+        # Seconds the valve had been open when the run was stopped.
+        self.delivered: float | None = None
 
 
 def setting(config, key: str, default: float) -> float:
@@ -135,6 +152,70 @@ def wall_clock_seconds(config, duration: float, lead: float = 0.0) -> float:
 
 class ValveRunnerMixin:
     """Open/close linked valves directly and credit the bucket for the run."""
+
+    def _run_controls(self) -> dict:
+        """The controls of the zones being watered, by zone id."""
+        controls = getattr(self, "_zone_run_controls", None)
+        if controls is None:
+            controls = self._zone_run_controls = {}
+        return controls
+
+    async def _wait_or_stop(self, zone_id, seconds: float) -> bool:
+        """Wait ``seconds``, or less if the zone's run is stopped. True if stopped.
+
+        The wait is the runner's own ``asyncio.sleep``, raced against the stop,
+        so a run that nobody stops waits exactly as it always did.
+        """
+        control = self._run_controls().get(int(zone_id))
+        if control is None:
+            await asyncio.sleep(seconds)
+            return False
+        if control.stop.is_set():
+            return True
+        sleeper = asyncio.ensure_future(asyncio.sleep(seconds))
+        stopper = asyncio.ensure_future(control.stop.wait())
+        try:
+            await asyncio.wait({sleeper, stopper}, return_when=asyncio.FIRST_COMPLETED)
+        finally:
+            # A cancellation (a reload) must not leave either one running.
+            for task in (sleeper, stopper):
+                if not task.done():
+                    task.cancel()
+        return control.stop.is_set()
+
+    async def async_stop_watering(self, zone_ids=None) -> list:
+        """Stop the zones being watered or waiting their turn. Returns their ids.
+
+        A zone being watered has its valve closed and is credited for the water
+        it delivered; one still in the queue of a sequential cycle is taken out
+        of it. ``zone_ids`` None, or "all", stops everything.
+        """
+        want_all = zone_ids is None or zone_ids == "all"
+        target = None if want_all else {int(z) for z in zone_ids}
+        stopped = []
+        cycle = self._sequential_cycle
+        if cycle is not None:
+            keep = deque()
+            for queued in cycle["queue"]:
+                zone_id = int(queued.get(const.ZONE_ID))
+                if target is None or zone_id in target:
+                    cycle["queued"].discard(zone_id)
+                    stopped.append(zone_id)
+                else:
+                    keep.append(queued)
+            cycle["queue"] = keep
+            await self._persist_cycle()
+        for zone_id, control in self._run_controls().items():
+            if target is None or zone_id in target:
+                control.stop.set()
+                if zone_id not in stopped:
+                    stopped.append(zone_id)
+        if stopped:
+            _LOGGER.info(
+                "Direct valve control: watering stopped for zone(s) %s",
+                ", ".join(str(z) for z in stopped),
+            )
+        return stopped
 
     @staticmethod
     def _valve_services(entity_id: str):
@@ -391,6 +472,28 @@ class ValveRunnerMixin:
         self._active_valve_runs.pop(int(zone_id), None)
         await self._persist_active_runs()
 
+    async def _persist_cycle(self) -> None:
+        """Record the zones the sequential cycle still has to water.
+
+        The zone being watered stays in the record until it has finished: after
+        a restart it is either resumed from its own run record, or already
+        credited (its duration spent), and the cycle skips it either way. One
+        taken out of the record at the moment it opened could be lost in the gap
+        before its run record is written.
+        """
+        cycle = self._sequential_cycle
+        if cycle is None:
+            value = None
+        else:
+            ids = list(cycle.get("current") or [])
+            ids += [int(z.get(const.ZONE_ID)) for z in cycle["queue"]]
+            value = {
+                "zones": ids,
+                "sequencing": const.CONF_ZONE_SEQUENCING_SEQUENTIAL,
+                "started": cycle.get("started"),
+            }
+        await self.store.async_update_config({const.CONF_ACTIVE_CYCLE: value})
+
     # --- running ------------------------------------------------------------
 
     def _claimed_zone_ids(self) -> set:
@@ -565,6 +668,7 @@ class ValveRunnerMixin:
             # Announced on their own, because they were not part of what the
             # running cycle said it would water.
             self._announce_start(sequencing, added)
+            await self._persist_cycle()
             return
 
         _LOGGER.info(
@@ -575,8 +679,12 @@ class ValveRunnerMixin:
             "queue": deque(eligible),
             "queued": {int(z.get(const.ZONE_ID)) for z in eligible},
             "results": [],
+            "current": [],
+            "started": dt_util.utcnow().isoformat(),
         }
         cycle = self._sequential_cycle
+        cancelled = False
+        await self._persist_cycle()
         # Whether the pause between zones was already taken since the last
         # valve closed: a zone skipped after it must not cost a second one.
         rested = False
@@ -585,6 +693,7 @@ class ValveRunnerMixin:
                 queued = cycle["queue"].popleft()
                 zone_id = queued.get(const.ZONE_ID)
                 cycle["queued"].discard(int(zone_id))
+                cycle["current"] = [int(zone_id)]
                 # Re-checked here rather than only up front: a sequential cycle
                 # dispatches each zone minutes or hours after it was listed.
                 zone = self._zone_at_its_turn(queued, cycle_start)
@@ -613,9 +722,18 @@ class ValveRunnerMixin:
                     _LOGGER.error(
                         "Direct valve control: zone %s failed: %s", zone_id, e
                     )
+                cycle["current"] = []
+                await self._persist_cycle()
             results = cycle["results"]
+        except asyncio.CancelledError:
+            # A restart or a reload: the record stays, for the next start to
+            # go on with the zones that were waiting.
+            cancelled = True
+            raise
         finally:
             self._sequential_cycle = None
+            if not cancelled:
+                await self._persist_cycle()
 
         self._report_finished(results)
 
@@ -679,8 +797,9 @@ class ValveRunnerMixin:
                         "reason": r["problem"],
                     }
                     for r in results
-                    if not r["ran"]
+                    if not r["ran"] and not r.get("stopped")
                 ],
+                "stopped": [r["zone_id"] for r in results if r.get("stopped")],
             },
         )
 
@@ -704,10 +823,12 @@ class ValveRunnerMixin:
             )
             return None
         claimed.add(zone_id)
+        self._run_controls()[zone_id] = RunControl()
         try:
             return await self._run_claimed_valve(zone, entity_id, duration)
         finally:
             claimed.discard(zone_id)
+            self._run_controls().pop(zone_id, None)
 
     async def _run_claimed_valve(self, zone: dict, entity_id: str, duration: float):
         """The body of ``_run_one_valve``, once the zone is claimed."""
@@ -742,10 +863,20 @@ class ValveRunnerMixin:
 
         watered = 0.0
         problem = None
+        stopped = False
+        control = self._run_controls().get(zone_id)
         for index, seconds in enumerate(plan):
-            if index and soak:
-                await asyncio.sleep(soak)
+            if index and soak and await self._wait_or_stop(zone_id, soak):
+                stopped = True
+                break
             problem = await self._run_one_pass(zone, entity_id, seconds, lead)
+            if control is not None and control.stop.is_set():
+                # Stopped during the pass: what was delivered is what it was
+                # credited for, and nothing after it is watered.
+                stopped = True
+                if problem in (None, PROBLEM_DID_NOT_CLOSE):
+                    watered += control.delivered or 0.0
+                break
             if problem in (None, PROBLEM_DID_NOT_CLOSE):
                 # A valve that would not close still watered its pass, and was
                 # credited for it; the passes after it are not attempted.
@@ -753,13 +884,14 @@ class ValveRunnerMixin:
             if problem:
                 break
 
-        if problem and not watered:
+        if (problem and not watered) or (stopped and not watered):
             return {
                 "zone_id": zone_id,
                 "zone": zone_name,
                 "seconds": 0,
                 "ran": False,
-                "problem": problem,
+                "stopped": stopped,
+                "problem": problem or PROBLEM_STOPPED,
             }
         zone_after = self.store.get_zone(zone_id) or {}
         return {
@@ -769,6 +901,7 @@ class ValveRunnerMixin:
             "volume_l": round(self._gross_volume_litres(zone, watered), 1),
             "bucket": round(float(zone_after.get(const.ZONE_BUCKET) or 0.0), 1),
             "ran": True,
+            "stopped": stopped,
             # A pass that failed after water was already delivered is reported
             # here too, and has fired its own zone_problem event.
             "problem": problem,
@@ -807,6 +940,7 @@ class ValveRunnerMixin:
         close_ok = True
         flow_sensor = zone.get(const.ZONE_FLOW_SENSOR)
         meter_start = None
+        stopped = False
         try:
             await self._async_call_valve_service(domain, on_svc, entity_id)
 
@@ -832,7 +966,18 @@ class ValveRunnerMixin:
             # Hardware dead-man: tell the device to shut itself off after the
             # pass, in case Home Assistant never sends the close below.
             await self._arm_safety_off(zone, held)
-            await asyncio.sleep(held)
+            stopped = await self._wait_or_stop(zone_id, held)
+            if stopped:
+                # Counted now, before the close takes its own seconds: the water
+                # is what flowed until the stop, not until the valve was shut.
+                delivered = min(
+                    held, max(0.0, (dt_util.utcnow() - started).total_seconds())
+                )
+                control = self._run_controls().get(zone_id)
+                if control is not None:
+                    control.delivered = delivered
+                seconds = max(0.0, delivered - lead)
+                held = delivered
         except asyncio.CancelledError:
             # A restart or a reload: the persisted run stays, for the resume
             # path to finish and credit.
@@ -961,17 +1106,52 @@ class ValveRunnerMixin:
             water_l=tput_lpm * (held / 60.0),
         )
 
+    # --- startup alignment --------------------------------------------------
+
+    async def async_align_valves(self, *_args) -> None:
+        """Close every zone valve that is open while nothing of ours runs it.
+
+        Only in full controller mode, which answers for the state of its valves:
+        after a crash or a restart a valve left open by a run nobody resumes
+        would water until someone noticed. A run resumed from its record owns
+        its valve and is left alone, and a reading that says nothing
+        (unavailable, unknown, no entity yet) is never taken for an open valve.
+        """
+        if getattr(self.store.config, const.CONF_FULL_CONTROLLER, False) is not True:
+            return
+        for zone in await self.store.async_get_zones():
+            entity_id = zone.get(const.ZONE_LINKED_ENTITY)
+            if not entity_id:
+                continue
+            zone_id = int(zone.get(const.ZONE_ID))
+            if self._run_in_flight(zone_id):
+                continue
+            state = self.hass.states.get(entity_id)
+            if state is None or state.state not in _VALVE_ON_STATES:
+                continue
+            _LOGGER.warning(
+                "Full controller: %s (zone %s) is open and no run of ours has it, "
+                "closing it",
+                entity_id,
+                zone_id,
+            )
+            # Our close is not an external watering to credit.
+            self._note_si_valve(zone_id)
+            await self._close_valve(zone, entity_id)
+
     # --- reboot resume ------------------------------------------------------
 
     async def async_resume_valve_runs(self) -> None:
         """Resume or close direct runs that were in flight before a restart."""
         runs = list(getattr(self.store.config, const.CONF_ACTIVE_VALVE_RUNS, []) or [])
-        if not runs:
+        cycle = getattr(self.store.config, const.CONF_ACTIVE_CYCLE, None)
+        if not runs and not cycle:
             return
-        _LOGGER.info(
-            "Direct valve control: resuming %d in-flight run(s) after restart",
-            len(runs),
-        )
+        if runs:
+            _LOGGER.info(
+                "Direct valve control: resuming %d in-flight run(s) after restart",
+                len(runs),
+            )
         for run in runs:
             try:
                 zid = int(run.get(const.RUN_ZONE_ID))
@@ -982,8 +1162,45 @@ class ValveRunnerMixin:
                 "started": run.get(const.RUN_STARTED),
                 "duration": float(run.get(const.RUN_DURATION) or 0),
             }
-        for run in runs:
-            self._spawn_valve_run(self._resume_one(run))
+        resumed = [self._spawn_valve_run(self._resume_one(run)) for run in runs]
+        if cycle:
+            self._spawn_valve_run(self._resume_cycle(cycle, resumed))
+
+    async def _resume_cycle(self, cycle: dict, resumed: list) -> None:
+        """Go on with the zones a restart interrupted the cycle before.
+
+        The run that was open is finished first, by its own record, and only
+        then do the others follow: one zone at a time is what the cycle
+        promised. A cycle too old to be the same watering is dropped, and so is
+        one the user can no longer have wanted (direct control switched off).
+        """
+        await self.store.async_update_config({const.CONF_ACTIVE_CYCLE: None})
+        started = dt_util.parse_datetime((cycle or {}).get("started") or "")
+        age = (
+            (dt_util.utcnow() - started).total_seconds()
+            if started is not None
+            else None
+        )
+        if age is None or age > const.CYCLE_RESUME_MAX_AGE_SECONDS:
+            _LOGGER.info(
+                "Direct valve control: the interrupted cycle is too old, dropped"
+            )
+            return
+        if resumed:
+            await asyncio.gather(*resumed, return_exceptions=True)
+        zone_ids = []
+        for zone_id in cycle.get("zones") or []:
+            try:
+                zone_ids.append(int(zone_id))
+            except (TypeError, ValueError):
+                continue
+        if not zone_ids:
+            return
+        _LOGGER.info(
+            "Direct valve control: going on with the interrupted cycle, zone(s) %s",
+            ", ".join(str(z) for z in zone_ids),
+        )
+        await self.async_run_direct_valves(zone_ids)
 
     async def _resume_one(self, run: dict) -> None:
         """Finish or close one run found in flight at startup, and credit it.
@@ -994,10 +1211,12 @@ class ValveRunnerMixin:
         zone_id = int(run.get(const.RUN_ZONE_ID))
         claimed = self._claimed_zone_ids()
         claimed.add(zone_id)
+        self._run_controls()[zone_id] = RunControl()
         try:
             await self._resume_claimed(run, zone_id)
         finally:
             claimed.discard(zone_id)
+            self._run_controls().pop(zone_id, None)
 
     def _zone_or_stub(self, zone_id: int) -> dict:
         """The stored zone, or enough of it to name it in a problem report."""
@@ -1053,6 +1272,7 @@ class ValveRunnerMixin:
         # try starts with the open, as in _run_one_pass.
         closed = False
         cancelled = False
+        held_override = None
         try:
             await self._async_call_valve_service(domain, on_svc, entity_id)
             if await self._confirm_valve_running(entity_id) is False:
@@ -1070,7 +1290,12 @@ class ValveRunnerMixin:
             )
             # Re-arm the hardware dead-man for the remaining time after a restart.
             await self._arm_safety_off(self.store.get_zone(zone_id) or {}, remaining)
-            await asyncio.sleep(remaining)
+            if await self._wait_or_stop(zone_id, remaining):
+                # Stopped: credit what the valve delivered until now.
+                delivered = min(
+                    duration, max(0.0, (dt_util.utcnow() - started).total_seconds())
+                )
+                held_override = delivered
         except asyncio.CancelledError:
             # Shutting down again: the persisted run stays for the next start.
             cancelled = True
@@ -1082,5 +1307,9 @@ class ValveRunnerMixin:
                 await self._remove_active_run(zone_id)
         self._direct_run_finished[zone_id] = self.hass.loop.time()
         zone = self.store.get_zone(zone_id) or {}
+        if held_override is not None:
+            water = max(0.0, held_override - self._lead_seconds(zone, held_override))
+            await self._credit_direct_run(zone_id, water, started, held=held_override)
+            return
         water = duration - self._lead_seconds(zone, duration)
         await self._credit_direct_run(zone_id, water, started, held=duration)

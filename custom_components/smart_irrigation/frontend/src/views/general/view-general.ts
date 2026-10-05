@@ -1246,6 +1246,27 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               `
             : ""}
 
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize("observed_watering.full_controller_label", lang)}
+            </div>
+            <ha-switch
+              .checked=${this.config.full_controller === true}
+              @change=${(e: Event) =>
+                this.handleConfigChange({
+                  full_controller: (e.target as any).checked,
+                  // Switching it on drives the valves, which the backend turns
+                  // on too; mirrored here since our own save is not echoed back.
+                  ...((e.target as any).checked
+                    ? { direct_valve_control_enabled: true }
+                    : {}),
+                })}
+            ></ha-switch>
+          </div>
+          <div class="setting-note">
+            ${localize("observed_watering.full_controller_description", lang)}
+          </div>
+
           <!-- Sequencing also decides what a start trigger works back from to
                finish at sunrise, so it applies whether Smart Irrigation drives
                the valves or an automation of your own does. -->
