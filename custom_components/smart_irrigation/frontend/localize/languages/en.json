@@ -595,6 +595,8 @@
         "linked-entity-hint": "The valve or switch that waters this zone. Smart Irrigation opens and closes it when direct valve control is on. With observed watering on, any run of it (a manual tap, an automation, or Smart Irrigation itself) credits the bucket from the run time and the zone's throughput.",
         "supply": "Supply (pump or main valve)",
         "supply-none": "None",
+        "measured-flow-help": "Over several runs the zone's flow meter measured a flow that differs from the one set above. It is advice, never applied on its own.",
+        "use-measured-flow": "Use the measured flow",
         "extra-valves": "Other valves of the zone",
         "extra-valves-hint": "opened and closed together with it; separate with commas",
         "flow-sensor": "Cumulative volume meter",
@@ -907,6 +909,8 @@
     "next_step": "Next step",
     "stop": "Stop",
     "controls_help": "For a watering that is under way. Pause closes the valves and holds everything; the rest is watered after the resume. Next step ends the zones the program is on. Stop ends everything.",
+    "max_litres": "Volume limit",
+    "max_litres_help": "A zone of this step stops once its water meter has counted this many litres. 0: no limit. The meter reports every so often, so the volume is not exact. A zone without a meter ignores it.",
     "run_now": "Run now"
   },
   "supplies": {

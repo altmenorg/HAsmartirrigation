@@ -80,6 +80,13 @@ PROBLEM_DID_NOT_CLOSE = "valve_did_not_close"
 PROBLEM_NO_FLOW = "no_flow"
 # Not a fault: the zone's run was stopped before it delivered anything.
 PROBLEM_STOPPED = "stopped"
+STOP_VOLUME_LIMIT = "volume_limit"
+
+# How often a volume limit reads the meter, and how many reads in a row that find
+# it unreadable before it is given up on (the pass then ends on time alone, as
+# one with no limit does).
+VOLUME_WATCH_INTERVAL = 5.0
+VOLUME_WATCH_DEAD_READS = 4
 
 
 class RunControl:
@@ -98,6 +105,10 @@ class RunControl:
         self.resume = resume
         # Seconds the valve had been open when the run was stopped or paused.
         self.delivered: float | None = None
+        # Why the run was stopped, when it was not by a person: "volume_limit".
+        self.stop_reason: str | None = None
+        # Litres the meter counted over the passes so far.
+        self.litres = 0.0
 
 
 def setting(config, key: str, default: float) -> float:
@@ -958,10 +969,15 @@ class ValveRunnerMixin(
                     if not r["ran"] and not r.get("stopped")
                 ],
                 "stopped": [r["zone_id"] for r in results if r.get("stopped")],
+                "volume_limited": [
+                    r["zone_id"] for r in results if r.get("volume_limited")
+                ],
             },
         )
 
-    async def _run_one_valve(self, zone: dict, passes: int | None = None):
+    async def _run_one_valve(
+        self, zone: dict, passes: int | None = None, max_litres: float | None = None
+    ):
         """Water one zone for its duration, in one pass or several, and credit.
 
         ``passes`` overrides the general setting (a step of a program sets its own).
@@ -985,13 +1001,20 @@ class ValveRunnerMixin(
         claimed.add(zone_id)
         self._run_controls()[zone_id] = RunControl(*self._pause_events())
         try:
-            return await self._run_claimed_valve(zone, entity_id, duration, passes)
+            return await self._run_claimed_valve(
+                zone, entity_id, duration, passes, max_litres
+            )
         finally:
             claimed.discard(zone_id)
             self._run_controls().pop(zone_id, None)
 
     async def _run_claimed_valve(
-        self, zone: dict, entity_id: str, duration: float, passes: int | None = None
+        self,
+        zone: dict,
+        entity_id: str,
+        duration: float,
+        passes: int | None = None,
+        max_litres: float | None = None,
     ):
         """The body of ``_run_one_valve``, once the zone is claimed."""
         zone_id = int(zone.get(const.ZONE_ID))
@@ -1055,7 +1078,14 @@ class ValveRunnerMixin(
                     continue
                 soaked = True
             first = False
-            problem = await self._run_one_pass(zone, entity_id, seconds, lead)
+            budget = None
+            if max_litres and control is not None:
+                budget = max_litres - control.litres
+                if budget <= 0:
+                    control.stop_reason = STOP_VOLUME_LIMIT
+                    stopped = True
+                    break
+            problem = await self._run_one_pass(zone, entity_id, seconds, lead, budget)
             if control is not None and (
                 control.stop.is_set() or control.pause.is_set()
             ):
@@ -1104,13 +1134,21 @@ class ValveRunnerMixin(
             "bucket": round(float(zone_after.get(const.ZONE_BUCKET) or 0.0), 1),
             "ran": True,
             "stopped": stopped,
+            "volume_limited": bool(
+                control and control.stop_reason == STOP_VOLUME_LIMIT
+            ),
             # A pass that failed after water was already delivered is reported
             # here too, and has fired its own zone_problem event.
             "problem": problem,
         }
 
     async def _run_one_pass(
-        self, zone: dict, entity_id: str, seconds: float, lead: float = 0.0
+        self,
+        zone: dict,
+        entity_id: str,
+        seconds: float,
+        lead: float = 0.0,
+        max_litres: float | None = None,
     ):
         """Open the valve, hold it for ``lead`` + ``seconds``, close it, credit.
 
@@ -1147,6 +1185,7 @@ class ValveRunnerMixin(
         token = object()
         acquired = False
         lag = 0.0
+        watcher = None
         try:
             if supply is not None:
                 # Taken before the first await, given back in the finally below.
@@ -1184,6 +1223,18 @@ class ValveRunnerMixin(
             # Hardware dead-man: tell the device to shut itself off after the
             # pass, in case Home Assistant never sends the close below.
             await self._arm_safety_off(zone, held)
+            control_here = self._run_controls().get(zone_id)
+            if (
+                max_litres
+                and flow_sensor
+                and meter_start is not None
+                and control_here is not None
+            ):
+                watcher = asyncio.ensure_future(
+                    self._watch_volume_limit(
+                        control_here, flow_sensor, meter_start, max_litres
+                    )
+                )
             stopped = await self._hold_valve(zone_id, held, supply, token, lag)
             if stopped:
                 # Counted now, before the close takes its own seconds: the water
@@ -1202,6 +1253,8 @@ class ValveRunnerMixin(
             cancelled = True
             raise
         finally:
+            if watcher is not None and not watcher.done():
+                watcher.cancel()
             if not closed:
                 close_ok = await self._close_zone_valves(zone, entity_id)
             # Cleared even when something above raised: a run left recorded
@@ -1219,6 +1272,7 @@ class ValveRunnerMixin(
                 except Exception as e:  # noqa: BLE001 - never hide how the pass ended
                     _LOGGER.error("Supply release failed: %s", e)
         self._direct_run_finished[zone_id] = self.hass.loop.time()
+        await self._note_metered_litres(zone_id, flow_sensor, meter_start, held)
         if flow_sensor and self._meter_saw_no_flow(
             flow_sensor, meter_start, started + timedelta(seconds=lead + NO_FLOW_GRACE)
         ):
@@ -1232,6 +1286,62 @@ class ValveRunnerMixin(
         # reboot-resume path instead).
         await self._credit_direct_run(zone_id, seconds, started, held=held)
         return None if close_ok else PROBLEM_DID_NOT_CLOSE
+
+    async def _watch_volume_limit(
+        self, control, flow_sensor: str, meter_start: float, limit_l: float
+    ) -> None:
+        """Stop the zone's run once the meter has counted its litres.
+
+        The meter reports every so often, so the water that goes through
+        between two reports is not seen: the limit is what the meter has
+        counted, not an exact volume. A meter that stops answering (a dead-man
+        guard, after the fork this was learnt from let a valve run on for hours
+        waiting for a volume that could not be read) ends the watching and the
+        pass is left to end on time, as one with no limit does.
+        """
+        dead = 0
+        while True:
+            await asyncio.sleep(VOLUME_WATCH_INTERVAL)
+            litres = self._read_volume_litres(flow_sensor)
+            if litres is None:
+                dead += 1
+                if dead >= VOLUME_WATCH_DEAD_READS:
+                    _LOGGER.warning(
+                        "Volume limit: %s cannot be read, the run ends on time",
+                        flow_sensor,
+                    )
+                    return
+                continue
+            dead = 0
+            if litres - meter_start >= limit_l:
+                _LOGGER.info(
+                    "Volume limit reached on %s (%.1f L), stopping the zone",
+                    flow_sensor,
+                    litres - meter_start,
+                )
+                control.stop_reason = STOP_VOLUME_LIMIT
+                control.stop.set()
+                return
+
+    async def _note_metered_litres(
+        self, zone_id: int, flow_sensor, meter_start, held: float
+    ) -> None:
+        """What the meter counted over the pass: toward the run's total and the
+        zone's measured throughput, which the observed runs already feed."""
+        if not flow_sensor or meter_start is None:
+            return
+        litres_now = self._read_volume_litres(flow_sensor)
+        if litres_now is None or litres_now < meter_start:
+            # Unreadable, or the meter was reset: nothing to say.
+            return
+        litres = litres_now - meter_start
+        control = self._run_controls().get(zone_id)
+        if control is not None:
+            control.litres += litres
+        try:
+            await self.async_record_measured_flow(zone_id, litres, held)
+        except Exception as e:  # noqa: BLE001 - calibration is advice, not the run
+            _LOGGER.debug("Flow calibration skipped for zone %s: %s", zone_id, e)
 
     def _meter_saw_no_flow(self, flow_sensor: str, meter_start, witness_from) -> bool:
         """Whether the zone's flow meter witnessed a pass that delivered nothing.

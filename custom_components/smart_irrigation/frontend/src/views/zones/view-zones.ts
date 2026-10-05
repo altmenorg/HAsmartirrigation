@@ -1377,6 +1377,31 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           }),
                         0.1,
                       )}
+                      ${zone.measured_throughput &&
+                      (zone.measured_throughput_samples || 0) >= 3
+                        ? html`
+                            <div class="setting-help">
+                              ${localize(
+                                "panels.zones.labels.measured-flow-help",
+                                lang,
+                              )}
+                              <ha-button
+                                appearance="filled"
+                                @click=${() =>
+                                  this.hass?.callService(
+                                    DOMAIN,
+                                    "use_measured_throughput",
+                                    { zone_id: zone.id },
+                                  )}
+                              >
+                                ${localize(
+                                  "panels.zones.labels.use-measured-flow",
+                                  lang,
+                                )}
+                              </ha-button>
+                            </div>
+                          `
+                        : ""}
                     `}
                 ${this._selectRow(
                   localize("panels.zones.labels.soil-type", lang),

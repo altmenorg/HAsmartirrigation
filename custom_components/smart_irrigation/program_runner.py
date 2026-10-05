@@ -208,14 +208,25 @@ class ProgramRunnerMixin:
                 continue
             zone = dict(zone)
             zone[const.ZONE_DURATION] = float(member["seconds"])
-            jobs.append(self._run_program_zone(run, zone, int(member["passes"])))
+            jobs.append(
+                self._run_program_zone(
+                    run,
+                    zone,
+                    int(member["passes"]),
+                    float(member.get("max_litres") or 0.0),
+                )
+            )
         if not jobs:
             return []
         return [r for r in await asyncio.gather(*jobs) if r]
 
-    async def _run_program_zone(self, run: ProgramRun, zone: dict, passes: int):
+    async def _run_program_zone(
+        self, run: ProgramRun, zone: dict, passes: int, max_litres: float = 0.0
+    ):
         try:
-            return await self._run_one_valve(zone, passes=passes)
+            return await self._run_one_valve(
+                zone, passes=passes, max_litres=max_litres or None
+            )
         except asyncio.CancelledError:
             raise
         except Exception as e:  # noqa: BLE001 - one zone is one zone

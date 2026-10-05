@@ -134,6 +134,9 @@ def normalize_step(step, used: set, position: int = 0) -> dict | None:
             if delay in (None, "")
             else _number(delay, 0.0, 0.0, float(MAX_DELAY_SECONDS))
         ),
+        const.STEP_MAX_LITRES: _number(
+            step.get(const.STEP_MAX_LITRES), 0.0, 0.0, 100000.0
+        ),
         const.STEP_ENABLED: step.get(const.STEP_ENABLED) is not False,
     }
 
@@ -274,6 +277,7 @@ def plan_program(program: dict, zones) -> list:
                             "zone_id": int(zone_id),
                             "seconds": seconds,
                             "passes": max(1, int(step.get(const.STEP_PASSES) or 1)),
+                            "max_litres": float(step.get(const.STEP_MAX_LITRES) or 0.0),
                             # What fills the pipe, paid again on every pass.
                             "lead": min(
                                 max(0.0, float(zone.get(const.ZONE_LEAD_TIME) or 0.0)),

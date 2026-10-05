@@ -183,6 +183,24 @@ water_zone:
           min: 1
           max: 86400
           unit_of_measurement: s
+use_measured_throughput:
+  name: Use the measured throughput
+  description: >-
+    Set a zone's throughput to the flow its meter measured over its runs. The
+    measurement is only ever advice; this is how to accept it.
+  target:
+    entity:
+      domain: sensor
+  fields:
+    zone_id:
+      name: Zone id
+      description: The id of the zone, instead of its entity.
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 999
+          mode: box
 reset_all_buckets:
   name: Reset all buckets
   description: Reset the water bucket value for all zones.

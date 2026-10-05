@@ -582,6 +582,8 @@
         "linked-entity-hint": "La vanne ou l'interrupteur qui arrose cette zone. Smart Irrigation l'ouvre et la ferme quand le pilotage direct est activé. Avec l'arrosage observé activé, chacune de ses ouvertures (à la main, par une automatisation, ou par Smart Irrigation) crédite le réservoir d'après la durée d'arrosage et le débit de la zone.",
         "supply": "Alimentation (pompe ou vanne générale)",
         "supply-none": "Aucune",
+        "measured-flow-help": "Sur plusieurs arrosages, le compteur de la zone a mesuré un débit différent de celui réglé ci-dessus. C'est un conseil, jamais appliqué tout seul.",
+        "use-measured-flow": "Utiliser le débit mesuré",
         "extra-valves": "Autres vannes de la zone",
         "extra-valves-hint": "ouvertes et fermées avec elle ; séparer par des virgules",
         "flow-sensor": "Compteur de volume cumulé",
@@ -907,6 +909,8 @@
     "next_step": "Étape suivante",
     "stop": "Arrêter",
     "controls_help": "Pour un arrosage en cours. La pause ferme les vannes et suspend tout ; le reste est arrosé à la reprise. Étape suivante termine les zones sur lesquelles le programme est. Arrêter met fin à tout.",
+    "max_litres": "Limite de volume",
+    "max_litres_help": "Une zone de cette étape s'arrête quand son compteur d'eau a compté ce nombre de litres. 0 : pas de limite. Le compteur ne rapporte que de temps en temps, le volume n'est donc pas exact. Une zone sans compteur l'ignore.",
     "run_now": "Lancer maintenant"
   },
   "supplies": {

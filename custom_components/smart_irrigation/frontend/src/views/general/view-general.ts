@@ -790,6 +790,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         ${this._numRow(t("passes"), "", step.passes, (v) =>
           patchStep({ passes: Math.max(1, Math.round(num(v, 1))) }),
         )}
+        ${this._numRow(t("max_litres"), "L", step.max_litres ?? 0, (v) =>
+          patchStep({ max_litres: Math.max(0, num(v)) }),
+        )}
+        <div class="setting-note">${t("max_litres_help")}</div>
         ${this._textRow(
           t("step_delay"),
           localize("units.seconds", lang),
@@ -1103,6 +1107,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                           percent: 100,
                           seconds: 0,
                           passes: 1,
+                          max_litres: 0,
                           delay: null,
                           enabled: true,
                         },

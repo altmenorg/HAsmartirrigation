@@ -249,6 +249,39 @@ class ServiceHandlersMixin:
             # Runs as long as the watering does: the service does not wait.
             self._spawn_valve_run(self.async_water_zone_now(int(zone_id), seconds))
 
+    async def handle_use_measured_throughput(self, call):
+        """Take the flow the meter measured as the zone's throughput.
+
+        The measured value is advice, never applied on its own (pressure varies,
+        a meter may serve several zones). This is the person saying yes.
+        """
+        zone_ids = []
+        if call.data.get("zone_id") is not None:
+            zone_ids.append(int(call.data["zone_id"]))
+        eid = call.data.get(const.SERVICE_ENTITY_ID)
+        for entity in eid if isinstance(eid, list) else ([eid] if eid else []):
+            state = self.hass.states.get(entity)
+            zone_id = state.attributes.get(const.ZONE_ID) if state else None
+            if zone_id is None:
+                _LOGGER.warning("use_measured_throughput: %s is not a zone", entity)
+                continue
+            zone_ids.append(int(zone_id))
+        for zone_id in zone_ids:
+            zone = self.store.get_zone(zone_id) or {}
+            measured = zone.get(const.ZONE_MEASURED_THROUGHPUT)
+            if not measured or measured <= 0:
+                _LOGGER.warning(
+                    "Zone %s has no measured throughput to take yet", zone_id
+                )
+                continue
+            await self.async_update_zone_config(
+                zone_id=zone_id, data={const.ZONE_THROUGHPUT: float(measured)}
+            )
+            self.async_clear_throughput_issue(zone_id)
+            _LOGGER.info(
+                "Zone %s throughput set to the measured %.2f", zone_id, measured
+            )
+
     async def handle_stop_watering(self, call):
         """Stop the watering now: every zone, or the ones named."""
         eid = call.data.get(const.SERVICE_ENTITY_ID)

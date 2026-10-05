@@ -2402,6 +2402,11 @@ def register_services(hass: HomeAssistant):
     hass.services.async_register(
         const.DOMAIN, const.SERVICE_WATER_ZONE, coordinator.handle_water_zone
     )
+    hass.services.async_register(
+        const.DOMAIN,
+        const.SERVICE_USE_MEASURED_THROUGHPUT,
+        coordinator.handle_use_measured_throughput,
+    )
 
     hass.services.async_register(
         const.DOMAIN,

@@ -154,6 +154,8 @@ export interface SmartIrrigationStep {
   percent: number;
   seconds: number;
   passes: number;
+  /** Litres after which a zone of the step stops, by its meter; 0 is no limit. */
+  max_litres?: number;
   /** Seconds waited after the step; null follows the program's. */
   delay: number | null;
   enabled: boolean;
@@ -238,6 +240,8 @@ export class SmartIrrigationZone {
   safety_off_state_key?: string;
   supply_id?: string | null;
   extra_entities?: string[] | null;
+  measured_throughput?: number | null;
+  measured_throughput_samples?: number;
   flow_sensor?: string;
   soil_moisture_sensor?: string;
   soil_moisture_threshold?: number;
