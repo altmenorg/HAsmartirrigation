@@ -234,31 +234,310 @@ async def test_a_stop_during_the_lead_never_opens_the_valve(monkeypatch):
     assert _log(hass) == ["pump on", "wait 5", "pump off"]
 
 
-async def test_a_failing_pump_does_not_stop_the_watering(monkeypatch):
-    hass, coord, _ = _setup(monkeypatch)
+def _break_pump(hass, *, on=False, off=False, off_times=None):
+    """Make the pump's service calls raise: every one, or the first ``off_times`` offs."""
     real = hass.services.async_call.side_effect
+    state = {"offs": 0}
 
     async def _flaky(domain, service, data, **kwargs):
         if data["entity_id"] == PUMP:
             hass.calls.append((service, PUMP))
-            raise RuntimeError("pump unreachable")
+            if service == "turn_on" and on:
+                raise RuntimeError("pump unreachable")
+            if service == "turn_off" and off:
+                state["offs"] += 1
+                if off_times is None or state["offs"] <= off_times:
+                    raise RuntimeError("pump unreachable")
+            return None
         return await real(domain, service, data, **kwargs)
 
     hass.services.async_call.side_effect = _flaky
 
-    await coord.async_run_direct_valves()
 
-    log = _log(hass)
-    assert "zone_0 on" in log and "zone_0 off" in log
-    reasons = [
+def _supply_reasons(hass):
+    return [
         call.args[1]["reason"]
         for call in hass.bus.async_fire.call_args_list
         if call.args[0].endswith(const.EVENT_SUPPLY_PROBLEM)
     ]
-    assert "supply_did_not_turn_on" in reasons
-    # The off is tried twice before it is reported.
-    assert log.count("pump off") == 2
-    assert "supply_did_not_turn_off" in reasons
+
+
+def _zone_reasons(hass):
+    return [
+        call.args[1]["reason"]
+        for call in hass.bus.async_fire.call_args_list
+        if call.args[0].endswith(const.EVENT_ZONE_PROBLEM)
+    ]
+
+
+async def test_a_pump_that_will_not_come_on_keeps_the_valve_shut(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch)
+    _break_pump(hass, on=True)
+
+    await coord.async_run_direct_valves()
+    await _finish(hass)
+
+    log = _log(hass)
+    assert "zone_0 on" not in log
+    # Asked twice, with a wait between, before it is given up on.
+    assert log[:3] == ["pump on", "wait 3", "pump on"]
+    assert _supply_reasons(hass) == ["supply_did_not_turn_on"]
+    assert _zone_reasons(hass) == ["supply_did_not_turn_on"]
+    # Not recorded as on, and no hold left behind.
+    runtime = coord._supply_runtime()
+    assert runtime["on"] == set()
+    assert runtime["holds"].in_use() == set()
+
+
+async def test_a_pump_that_comes_on_at_the_second_ask_is_used(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch)
+    real = hass.services.async_call.side_effect
+    state = {"ons": 0}
+
+    async def _once(domain, service, data, **kwargs):
+        if data["entity_id"] == PUMP and service == "turn_on":
+            state["ons"] += 1
+            hass.calls.append((service, PUMP))
+            if state["ons"] == 1:
+                raise RuntimeError("busy")
+            return None
+        return await real(domain, service, data, **kwargs)
+
+    hass.services.async_call.side_effect = _once
+
+    await coord.async_run_direct_valves()
+
+    log = _log(hass)
+    assert "zone_0 on" in log and log[-1] == "pump off"
+    assert _supply_reasons(hass) == []
+
+
+async def test_a_pump_that_will_not_go_off_is_asked_again(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch)
+    # The two asks of the release fail, the first retry goes through.
+    _break_pump(hass, off=True, off_times=2)
+
+    await coord.async_run_direct_valves()
+    runtime = coord._supply_runtime()
+    # Still recorded as on right after the failed release.
+    assert "pump" in runtime["on"]
+    assert "supply_did_not_turn_off" in _supply_reasons(hass)
+    await _finish(hass)
+
+    log = _log(hass)
+    assert log.count("pump off") == 3
+    assert "wait 15" in log
+    assert runtime["on"] == set()
+
+
+async def test_the_retries_of_a_pump_that_stays_on_are_bounded(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch)
+    _break_pump(hass, off=True)
+
+    await coord.async_run_direct_valves()
+    await _finish(hass)
+
+    log = _log(hass)
+    # 2 asks at the release, then 2 at each of the 3 retries.
+    assert log.count("pump off") == 8
+    assert "pump" in coord._supply_runtime()["on"]
+    # Nothing holds it and it is recorded as on: the next start asks again.
+    hass.calls.clear()
+    await coord.async_align_valves()
+    await _finish(hass)
+    assert _log(hass).count("pump off") >= 1
+
+
+async def test_a_retry_leaves_a_pump_that_a_new_run_holds(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch)
+    _break_pump(hass, off=True)
+    await coord.async_run_direct_valves()
+    runtime = coord._supply_runtime()
+    runtime["holds"].acquire("pump", object())
+    hass.calls.clear()
+
+    await _finish(hass)
+
+    assert "pump off" not in _log(hass)
+
+
+async def test_a_store_failure_while_clearing_the_run_still_releases_the_pump(
+    monkeypatch,
+):
+    hass, coord, _ = _setup(monkeypatch)
+    calls = {"n": 0}
+
+    async def _update(changes):
+        calls["n"] += 1
+        # Only the write that clears the run of the zone fails.
+        if changes.get(const.CONF_ACTIVE_VALVE_RUNS) == []:
+            raise RuntimeError("disk full")
+
+    coord.store.async_update_config.side_effect = _update
+
+    await coord.async_run_direct_valves()
+    await _finish(hass)
+
+    log = _log(hass)
+    assert log[-1] == "pump off"
+    assert coord._supply_runtime()["holds"].in_use() == set()
+
+
+async def test_a_teardown_switches_off_a_pump_with_a_pending_timer(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch, supply=_supply(delay_after=30))
+    gate = asyncio.Event()
+
+    async def _timer_blocks(seconds, *args, **kwargs):
+        hass.calls.append(("sleep", seconds))
+        if seconds == 30:
+            await gate.wait()
+
+    monkeypatch.setattr(
+        "custom_components.smart_irrigation.valve_runner.asyncio.sleep", _timer_blocks
+    )
+
+    await coord.async_run_direct_valves()
+    for _ in range(5):
+        await REAL_SLEEP(0)
+    assert "pump off" not in _log(hass)
+    assert "pump" in coord._supply_runtime()["off_tasks"]
+
+    coord.async_teardown_valve_runs()
+    await asyncio.gather(*list(hass.created), return_exceptions=True)
+
+    assert _log(hass)[-1] == "pump off"
+    assert coord._supply_runtime()["on"] == set()
+
+
+async def test_a_pump_whose_state_was_unknown_is_looked_at_again(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch)
+    set_state(hass, PUMP, "unavailable")
+
+    await coord.async_align_valves()
+    assert _log(hass) == []
+    # The entity comes up, on, before the recheck.
+    set_state(hass, PUMP, "on")
+    await _finish(hass)
+
+    assert _log(hass) == ["wait 30", "pump off"]
+
+
+async def test_the_recheck_of_an_unreadable_pump_is_bounded(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch)
+
+    await coord.async_align_valves()
+    # Each recheck schedules the next: follow them until there are none.
+    seen = 0
+    while len(hass.created) != seen:
+        seen = len(hass.created)
+        await asyncio.gather(*list(hass.created), return_exceptions=True)
+
+    assert _log(hass) == ["wait 30", "wait 90"]
+
+
+async def test_a_second_zone_waits_for_the_pump_lead_to_be_over(monkeypatch):
+    hass, coord, _ = _setup(
+        monkeypatch,
+        zone_ids=(0, 1),
+        supply=_supply(delay_before=5),
+        sequencing="parallel",
+    )
+
+    await coord.async_run_direct_valves()
+
+    log = _log(hass)
+    assert log.count("pump on") == 1
+    first_valve = min(log.index("zone_0 on"), log.index("zone_1 on"))
+    assert log.index("pump on") < log.index("wait 5") < first_valve
+
+
+async def test_a_zone_arriving_while_the_pump_goes_off_turns_it_on_after(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch)
+    supply = coord._supply_for_zone(coord.store.get_zone(0))
+    real = hass.services.async_call.side_effect
+    gate = asyncio.Event()
+
+    async def _slow_off(domain, service, data, **kwargs):
+        if data["entity_id"] == PUMP:
+            hass.calls.append((service, PUMP))
+            if service == "turn_off":
+                await gate.wait()
+            return None
+        return await real(domain, service, data, **kwargs)
+
+    hass.services.async_call.side_effect = _slow_off
+    runtime = coord._supply_runtime()
+    first, second = object(), object()
+    runtime["holds"].acquire("pump", first)
+    runtime["on"].add("pump")
+
+    release = asyncio.ensure_future(coord._supply_release(supply, first))
+    for _ in range(5):
+        await REAL_SLEEP(0)
+    arrive = asyncio.ensure_future(coord._supply_before_open(supply, second, 1))
+    for _ in range(5):
+        await REAL_SLEEP(0)
+    # The new zone's on-call cannot be sent while the off is in flight.
+    assert _log(hass) == ["pump off"]
+
+    gate.set()
+    await asyncio.gather(release, arrive)
+
+    assert _log(hass) == ["pump off", "pump on"]
+    assert "pump" in runtime["on"]
+
+
+async def test_an_expired_run_found_at_startup_puts_its_pump_off(monkeypatch):
+    import datetime
+
+    import homeassistant.util.dt as dt_util
+
+    hass, coord, _ = _setup(monkeypatch)
+    set_state(hass, PUMP, "on")
+    started = (dt_util.utcnow() - datetime.timedelta(seconds=400)).isoformat()
+    run = {
+        const.RUN_ZONE_ID: 0,
+        const.RUN_ENTITY_ID: "switch.zone_0",
+        const.RUN_STARTED: started,
+        const.RUN_DURATION: 300.0,
+    }
+
+    await coord._resume_one(run)
+
+    log = _log(hass)
+    assert "zone_0 off" in log
+    assert log.index("zone_0 off") < log.index("pump off")
+
+
+async def test_a_zone_with_several_valves_keeps_the_pump_around_all_of_them(
+    monkeypatch,
+):
+    hass, coord, _ = _setup(monkeypatch)
+    coord.store.by_id[0][const.ZONE_EXTRA_ENTITIES] = ["switch.extra"]
+
+    await coord.async_run_direct_valves()
+
+    log = _log(hass)
+    assert log[0] == "pump on"
+    assert log[-1] == "pump off"
+    assert max(log.index("zone_0 on"), log.index("extra on")) < log.index("wait 300")
+    assert max(log.index("zone_0 off"), log.index("extra off")) < log.index("pump off")
+    assert log.count("pump on") == 1 and log.count("pump off") == 1
+
+
+async def test_a_valve_that_will_not_close_still_releases_the_pump_and_says_so(
+    monkeypatch,
+):
+    hass, coord, _ = _setup(monkeypatch)
+    hass.stuck.add("switch.zone_0")
+
+    await coord.async_run_direct_valves()
+
+    log = _log(hass)
+    assert log.count("zone_0 off") == 2
+    assert log[-1] == "pump off"
+    assert _zone_reasons(hass) == ["valve_did_not_close"]
+    assert coord._supply_runtime()["holds"].in_use() == set()
 
 
 async def test_a_reload_while_a_run_is_open_puts_the_supply_off_at_once(monkeypatch):

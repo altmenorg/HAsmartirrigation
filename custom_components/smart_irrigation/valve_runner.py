@@ -38,7 +38,11 @@ from . import const
 from .observed_watering import NO_FLOW_GRACE
 from .program_runner import ProgramRunnerMixin
 from .program_status import ProgramStatusMixin
-from .supply_runner import SupplyRunnerMixin
+from .supply_runner import (
+    PROBLEM_SUPPLY_DID_NOT_TURN_ON,
+    SupplyDidNotStart,
+    SupplyRunnerMixin,
+)
 from .watering_control import WateringControlMixin
 
 _LOGGER = logging.getLogger(__name__)
@@ -619,10 +623,17 @@ class ValveRunnerMixin(
         return task
 
     def async_teardown_valve_runs(self) -> None:
-        """Cancel any in-flight run tasks (called on unload)."""
+        """Cancel any in-flight run tasks (called on unload).
+
+        A pump whose off timer is cancelled here is switched off by a task of its
+        own, kept out of the ones cancelled, as the valves of the runs are.
+        """
+        pending = self._supply_teardown_pending()
         for task in list(self._valve_run_tasks):
             task.cancel()
         self._valve_run_tasks.clear()
+        if pending:
+            self.hass.async_create_task(self._supply_teardown_off(pending))
 
     # --- persistence of in-flight runs --------------------------------------
 
@@ -1239,7 +1250,15 @@ class ValveRunnerMixin(
             if supply is not None:
                 # Taken before the first await, given back in the finally below.
                 acquired = True
-                lag = await self._supply_before_open(supply, token, zone_id)
+                try:
+                    lag = await self._supply_before_open(supply, token, zone_id)
+                except SupplyDidNotStart:
+                    # No pump, no water: the valve stays shut, and it is said.
+                    closed = True
+                    self._report_valve_problem(
+                        zone, entity_id, PROBLEM_SUPPLY_DID_NOT_TURN_ON
+                    )
+                    return PROBLEM_SUPPLY_DID_NOT_TURN_ON
                 if lag is None:
                     # Stopped or paused while the supply was coming up: nothing
                     # was opened.
@@ -1310,16 +1329,23 @@ class ValveRunnerMixin(
             # made the zone "already running" at every start until a restart.
             # Cleared before crediting: a crash in this window then loses at
             # most one credit rather than double-crediting on resume.
-            if recorded and not cancelled:
-                await self._remove_active_run(zone_id)
-            if acquired:
-                # After the valve is shut, in the same finally that took it. A
-                # cancellation (a reload) puts the supply off at once rather than
-                # leave a timer behind: the run resumes from its record.
-                try:
-                    await self._supply_release(supply, token, immediate=cancelled)
-                except Exception as e:  # noqa: BLE001 - never hide how the pass ended
-                    _LOGGER.error("Supply release failed: %s", e)
+            try:
+                if recorded and not cancelled:
+                    try:
+                        await self._remove_active_run(zone_id)
+                    except Exception as e:  # noqa: BLE001 - the hold must be given back
+                        _LOGGER.error(
+                            "Clearing the run of zone %s failed: %s", zone_id, e
+                        )
+            finally:
+                if acquired:
+                    # After the valve is shut, in the same finally that took it.
+                    # A cancellation (a reload) puts the supply off at once rather
+                    # than leave a timer behind: the run resumes from its record.
+                    try:
+                        await self._supply_release(supply, token, immediate=cancelled)
+                    except Exception as e:  # noqa: BLE001 - never hide how it ended
+                        _LOGGER.error("Supply release failed: %s", e)
         self._direct_run_finished[zone_id] = self.hass.loop.time()
         await self._note_metered_litres(zone_id, flow_sensor, meter_start, held)
         if flow_sensor and self._meter_saw_no_flow(
@@ -1639,6 +1665,9 @@ class ValveRunnerMixin(
             # The close never raises (a failed one is reported), so the run is
             # always cleared; only a cancellation leaves it for the next start.
             await self._close_zone_valves(self._zone_or_stub(zone_id), entity_id)
+            # The pump of the run may have been left on by the crash; the run
+            # takes no hold, so it is put off here if nothing else holds it.
+            await self._supply_after_expired_run(zone_id)
             await self._remove_active_run(zone_id)
             self._direct_run_finished[zone_id] = self.hass.loop.time()
             zone = self.store.get_zone(zone_id) or {}
@@ -1668,7 +1697,17 @@ class ValveRunnerMixin(
             if supply is not None:
                 # The valve is open mid-run, so the supply is up with it: no lead.
                 acquired = True
-                if await self._supply_before_open(supply, token, zone_id) is None:
+                try:
+                    lead_over = await self._supply_before_open(supply, token, zone_id)
+                except SupplyDidNotStart:
+                    # The valve (open before the restart) is shut by the finally.
+                    self._report_valve_problem(
+                        self._zone_or_stub(zone_id),
+                        entity_id,
+                        PROBLEM_SUPPLY_DID_NOT_TURN_ON,
+                    )
+                    return
+                if lead_over is None:
                     # Stopped or paused during the supply's lead: the valve
                     # (open before the restart) is shut by the finally.
                     return
@@ -1715,13 +1754,20 @@ class ValveRunnerMixin(
         finally:
             if not closed:
                 await self._close_zone_valves(self._zone_or_stub(zone_id), entity_id)
-            if not cancelled:
-                await self._remove_active_run(zone_id)
-            if acquired:
-                try:
-                    await self._supply_release(supply, token, immediate=cancelled)
-                except Exception as e:  # noqa: BLE001 - never hide how the run ended
-                    _LOGGER.error("Supply release failed: %s", e)
+            try:
+                if not cancelled:
+                    try:
+                        await self._remove_active_run(zone_id)
+                    except Exception as e:  # noqa: BLE001 - the hold must be given back
+                        _LOGGER.error(
+                            "Clearing the run of zone %s failed: %s", zone_id, e
+                        )
+            finally:
+                if acquired:
+                    try:
+                        await self._supply_release(supply, token, immediate=cancelled)
+                    except Exception as e:  # noqa: BLE001 - never hide how it ended
+                        _LOGGER.error("Supply release failed: %s", e)
         self._direct_run_finished[zone_id] = self.hass.loop.time()
         zone = self.store.get_zone(zone_id) or {}
         if held_override is not None:
