@@ -52,6 +52,11 @@ class ProgramRun:
         self.steps = 0
         self.total_seconds = 0.0
         self.running_since: float | None = None
+        # Zones stopped by name: not watered by the later steps either.
+        self.excluded: set = set()
+        # The zones of the current step that have started, for the resume.
+        self.started_zones: set = set()
+        self.plan: list = []
 
 
 class ProgramRunnerMixin:
@@ -136,7 +141,8 @@ class ProgramRunnerMixin:
                 if not plan:
                     _LOGGER.info("Program %s has nothing to water", run.program_id)
                     return
-                self._announce_program(run, plan, resumed)
+                run.plan = plan
+                self._announce_program(run, plan[tour:] or plan, resumed)
                 self._notify_programs()
                 run.total_seconds = plan_wall_seconds(
                     plan, self._soak_seconds() if hasattr(self, "_soak_seconds") else 0
@@ -166,6 +172,8 @@ class ProgramRunnerMixin:
                     return
                 if not await self._wait_run_resume(run):
                     return
+                if not (tour == tour0 and index == step0 and run.started_zones):
+                    run.started_zones = set()
                 await self._persist_program_run(run, plan, tour, index)
                 step = steps[index]
                 run.current_zones = [int(m["zone_id"]) for m in step["zones"]]
@@ -193,6 +201,8 @@ class ProgramRunnerMixin:
                 or not zone.get(const.ZONE_LINKED_ENTITY)
                 or zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED
             ):
+                continue
+            if zone_id in run.excluded:
                 continue
             if self.is_suspended(const.SUSPEND_ZONE, zone_id):
                 _LOGGER.info(
@@ -223,6 +233,11 @@ class ProgramRunnerMixin:
     async def _run_program_zone(
         self, run: ProgramRun, zone: dict, passes: int, max_litres: float = 0.0
     ):
+        # Recorded before it opens: a restart from here on does not water it again
+        # (it is finished from its own run record, or loses its last passes),
+        # where watering it again in full could double what it got.
+        run.started_zones.add(int(zone.get(const.ZONE_ID)))
+        await self._persist_program_run(run, run.plan, run.tour, run.step)
         try:
             return await self._run_one_valve(
                 zone, passes=passes, max_litres=max_litres or None
@@ -252,6 +267,7 @@ class ProgramRunnerMixin:
                     "plan": plan,
                     "tour": tour,
                     "step": step,
+                    "started_zones": sorted(run.started_zones),
                     "started": run.started or dt_util.utcnow().isoformat(),
                 }
             }
@@ -278,8 +294,18 @@ class ProgramRunnerMixin:
         run.started = record.get("started")
 
         async def _remaining():
-            # The step that was open has been finished by its own record.
-            return plan, int(record.get("tour") or 0), int(record.get("step") or 0) + 1
+            # The zones of the interrupted step that had started are finished by
+            # their own record (or lose their last passes); the others still run.
+            tour = int(record.get("tour") or 0)
+            step = int(record.get("step") or 0)
+            started = {int(z) for z in record.get("started_zones") or []}
+            if 0 <= tour < len(plan) and 0 <= step < len(plan[tour]):
+                current = plan[tour][step]
+                left = [m for m in current["zones"] if int(m["zone_id"]) not in started]
+                if left:
+                    plan[tour][step] = {**current, "zones": left}
+                    return plan, tour, step
+            return plan, tour, step + 1
 
         _LOGGER.info("Going on with program %s after the restart", program_id)
         await self._drive_program(run, _remaining, resumed=True)

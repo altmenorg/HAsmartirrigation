@@ -210,7 +210,16 @@ class WateringControlMixin:
             is not True
         ):
             return False
+        generation = getattr(self, "_stop_generation", 0)
+        # A cycle of the plain mode does not take the turn: wait for it to end,
+        # so the manual run is not watered on top of it.
+        cycle = self._sequential_cycle
+        while cycle is not None:
+            await cycle["done"].wait()
+            cycle = self._sequential_cycle
         async with self._executor_lock():
+            if getattr(self, "_stop_generation", 0) != generation:
+                return False
             zone = self.store.get_zone(zone_id)
             if (
                 zone is None

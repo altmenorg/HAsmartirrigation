@@ -911,6 +911,7 @@
     "controls_help": "For a watering that is under way. Pause closes the valves and holds everything; the rest is watered after the resume. Next step ends the zones the program is on. Stop ends everything.",
     "max_litres": "Volume limit",
     "max_litres_help": "A zone of this step stops once its water meter has counted this many litres. 0: no limit. The meter reports every so often, so the volume is not exact. A zone without a meter ignores it.",
+    "new_program": "Program",
     "run_now": "Run now"
   },
   "supplies": {

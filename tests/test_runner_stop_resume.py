@@ -45,9 +45,12 @@ def sleeps(monkeypatch):
     return recorder
 
 
-def _cycle(zone_ids, **store_kwargs):
+def _cycle(zone_ids, *, full=True, **store_kwargs):
     hass = make_hass()
     coord = Coordinator(hass, make_store([zone(i) for i in zone_ids], **store_kwargs))
+    # The record of a cycle is kept in full controller mode.
+    coord.store.config.full_controller = full
+    coord.store.config.active_cycle = None
     return hass, coord
 
 
@@ -198,7 +201,7 @@ async def test_a_cycle_from_another_day_is_not_resumed(sleeps):
 
 
 async def test_the_open_valve_is_aligned_only_in_full_controller_mode():
-    hass, coord = _cycle([0, 1, 2])
+    hass, coord = _cycle([0, 1, 2], full=False)
     set_state(hass, "switch.zone_0", "off")
     set_state(hass, "switch.zone_1", "on")
     set_state(hass, "switch.zone_2", "unavailable")
@@ -222,3 +225,24 @@ async def test_a_valve_a_run_of_ours_holds_is_not_aligned():
     await coord.async_align_valves()
 
     assert closes(hass) == []
+
+
+async def test_the_plain_mode_keeps_no_cycle_record(sleeps):
+    hass, coord = _cycle([0, 1], full=False)
+
+    await coord.async_run_direct_valves()
+
+    assert _recorded_cycles(coord) == []
+
+
+async def test_a_stop_during_the_pause_between_zones_reaches_the_next_zone(sleeps):
+    hass, coord = _cycle([0, 1], pause=7)
+
+    async def _stop():
+        await coord.async_stop_watering()
+
+    sleeps.on(7, _stop)
+
+    await coord.async_run_direct_valves()
+
+    assert opens(hass) == ["switch.zone_0"]

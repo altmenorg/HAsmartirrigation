@@ -162,7 +162,9 @@ class TriggersMixin:
         # trigger (a setting changed, a calculation done, a new day), which is
         # when what they depend on may have changed.
         try:
-            await self.register_program_schedules()
+            register = getattr(self, "register_program_schedules", None)
+            if register is not None:
+                await register()
         except Exception as ex:  # noqa: BLE001 - the start trigger comes first
             _LOGGER.error("Could not arm the programs' schedules: %s", ex)
         total_duration = await self._planned_run_seconds()
@@ -626,6 +628,19 @@ class TriggersMixin:
                 ),
             }
             try:
+                held = self._main_program_held()
+                if held is not None:
+                    _LOGGER.info(
+                        "Trigger '%s' reached but the main program is %s; not "
+                        "firing event",
+                        name,
+                        held,
+                    )
+                    self.hass.bus.fire(
+                        f"{const.DOMAIN}_{const.EVENT_IRRIGATE_SKIPPED}",
+                        {**event_data, "reason": f"main_program_{held}", "checks": []},
+                    )
+                    return
                 go, _sheltered = await self._prepare_watering_for_today(
                     name, event_data
                 )
@@ -666,7 +681,27 @@ class TriggersMixin:
 
         self.hass.async_create_task(check_and_fire())
 
-    async def _note_watering_day(self, name) -> bool:
+    def _main_program_held(self):
+        """Why the main program must not run ("disabled", "suspended"), or None.
+
+        Only in full controller mode, where the start trigger is the main
+        program's schedule: switching the main program off, or suspending it,
+        has to hold the trigger back as it would any other program.
+        """
+        config = self.store.config
+        if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
+            return None
+        for program in getattr(config, const.CONF_PROGRAMS, None) or []:
+            if program.get(const.PROGRAM_MAIN):
+                if program.get(const.PROGRAM_ENABLED) is False:
+                    return "disabled"
+                if self.is_suspended(
+                    const.SUSPEND_PROGRAM, program.get(const.PROGRAM_ID)
+                ):
+                    return "suspended"
+        return None
+
+    async def _note_watering_day(self, name, zone_ids=None) -> bool:
         """Count today as a watering day if a start left something to water.
 
         Only a run that waters something makes today a watering day for
@@ -676,6 +711,35 @@ class TriggersMixin:
         right after the start, while the durations are still the ones the run
         will use.
         """
+        if zone_ids is not None:
+            # A program: the zones it is about to water, and those alone. The
+            # counters of zones it does not water are not its business, and a
+            # fixed step waters a zone whatever its calculated duration says.
+            zone_ids = {int(z) for z in zone_ids}
+            zones = [
+                z
+                for z in await self.store.async_get_zones()
+                if int(z.get(const.ZONE_ID)) in zone_ids
+            ]
+            watering = bool(zones)
+            if watering:
+                if any(
+                    z.get(const.ZONE_DAYS_BETWEEN_IRRIGATION) is None for z in zones
+                ):
+                    await self._reset_days_since_irrigation()
+                for zone in zones:
+                    await self.store.async_update_zone(
+                        zone.get(const.ZONE_ID), {const.ZONE_DAYS_SINCE_IRRIGATION: 0}
+                    )
+                await self.store.async_update_config(
+                    {const.CONF_PRECIPITATION_SKIPS_IN_A_ROW: 0}
+                )
+            if not self._start_event_fired_today:
+                self._start_event_fired_today = True
+                await self.store.async_update_config(
+                    {const.START_EVENT_FIRED_TODAY: True}
+                )
+            return watering
         watering = await self._any_zone_to_water()
         if watering:
             # The general counter belongs to the zones that follow the general
@@ -796,8 +860,10 @@ class TriggersMixin:
             )
             await self._hold_back_zones_exposed_to_rain(sheltered)
 
+        # Made once until the durations are calculated again: a second start
+        # on the same durations would hold back or shorten twice, a start after
+        # a new calculation needs them again (a calculation clears the mark).
         if not getattr(self, "_watering_prepared_today", False):
-            self._watering_prepared_today = True
             # A zone that has to wait longer between two irrigations sits
             # this run out, whatever the other zones do (#875).
             await self._hold_back_zones_held_by_days_between(
@@ -818,6 +884,9 @@ class TriggersMixin:
             # millimetres, what a binary rain sensor says about the last few
             # days shortens it too.
             self._last_rain_history = await self._apply_rain_history_suppression()
+            # Marked only once all of them went through: one that raised leaves
+            # the next start to make them again rather than skip them.
+            self._watering_prepared_today = True
         return True, sheltered
 
     async def _count_precipitation_skip(self) -> None:

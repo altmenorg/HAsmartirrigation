@@ -328,6 +328,7 @@ async def test_a_restart_goes_on_with_the_steps_still_to_do(monkeypatch):
         "plan": plan,
         "tour": 0,
         "step": 0,  # zone 0 was the open one: its own record finishes it
+        "started_zones": [0],
         "started": dt_util.utcnow().isoformat(),
     }
 
@@ -361,3 +362,45 @@ async def test_a_program_run_from_another_day_is_not_resumed(monkeypatch):
     await asyncio.gather(*list(hass.created), return_exceptions=True)
 
     assert _log(hass) == []
+
+
+async def test_a_restart_waters_the_zones_of_the_step_that_had_not_started(monkeypatch):
+    program = _program(steps=[{"zones": [0, 1]}, {"zones": [2]}])
+    hass, coord, _ = _setup(monkeypatch, [program])
+    member = lambda z: {"zone_id": z, "seconds": 300, "passes": 1}  # noqa: E731
+    coord.store.config.active_program_run = {
+        "program_id": "evening",
+        "name": "Evening",
+        "manual": False,
+        "plan": [
+            [
+                {"id": "a", "zones": [member(0), member(1)], "delay": 0},
+                {"id": "b", "zones": [member(2)], "delay": 0},
+            ]
+        ],
+        "tour": 0,
+        "step": 0,
+        "started_zones": [0],
+        "started": dt_util.utcnow().isoformat(),
+    }
+
+    await coord.async_resume_valve_runs()
+    await asyncio.gather(*list(hass.created), return_exceptions=True)
+
+    assert [i for i in _log(hass) if i.endswith(" on")] == ["zone_1 on", "zone_2 on"]
+
+
+async def test_a_stop_by_zone_keeps_it_out_of_the_later_steps(monkeypatch):
+    program = _program(steps=[{"zones": [0]}, {"zones": [1]}, {"zones": [1, 2]}])
+    hass, coord, sleeps = _setup(monkeypatch, [program])
+
+    async def _stop_zone_1():
+        await coord.async_stop_watering([1])
+
+    sleeps.on(300, _stop_zone_1)
+
+    await coord.async_run_program("evening")
+
+    opened = [i for i in _log(hass) if i.endswith(" on")]
+    assert "zone_1 on" not in opened
+    assert "zone_2 on" in opened

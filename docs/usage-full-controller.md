@@ -67,6 +67,8 @@ A program has any number of schedules, each a **moment** and the **days** it app
 - **The days** are filters, and all of them have to hold: days of the week; *every N days* with a shift (three programs with N = 3 and shifts 0, 1 and 2 take turns and never share a day); even or odd days of the month; months; and a period of the year, which may run over New Year (`11-01` to `03-01`).
 - **Take the weather into account**, on by default: the same skip conditions as the start trigger apply (rain, frost, wind, a wet soil, postponed days), with the same decision made once a day. On a day when rain is forecast, only the zones the rain cannot reach run. Turn it off for a greenhouse drip line that does not care.
 
+Good to know: the weather holds work on the zones' calculated durations, which all programs share. On a day a weather-aware start has held a zone back, a program that ignores the weather but waters that zone for its *calculated* duration finds nothing to water. For a zone that must be watered whatever the weather says, give its step a *fixed* duration.
+
 The Smart Irrigation schedules are armed when a setting changes, after a calculation and at a new day, like the start trigger.
 
 ## Driving the watering

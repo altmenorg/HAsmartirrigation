@@ -30,7 +30,7 @@ from homeassistant.helpers.event import async_track_point_in_utc_time
 from homeassistant.helpers.sun import get_astral_event_date
 
 from . import const
-from .programs import find_program, plan_program, plan_wall_seconds
+from .programs import find_program, plan_program, plan_wall_seconds, restrict_plan
 from .schedules import next_fire
 
 _LOGGER = logging.getLogger(__name__)
@@ -183,6 +183,15 @@ class ProgramSchedulerMixin:
             if not go:
                 return
             only_zones = sheltered or None
-        # Counted now, while the durations are still the ones the run will use.
-        await self._note_watering_day(name)
+        # Counted now, for the zones the run is about to water.
+        zones = await self.store.async_get_zones()
+        plan = plan_program(program, zones)
+        if only_zones is not None:
+            plan = restrict_plan(plan, only_zones)
+        await self._note_watering_day(
+            name,
+            zone_ids={
+                m["zone_id"] for tour in plan for step in tour for m in step["zones"]
+            },
+        )
         await self.async_run_program(program_id, manual=False, only_zones=only_zones)

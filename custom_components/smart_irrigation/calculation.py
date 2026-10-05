@@ -1767,6 +1767,8 @@ class CalculationMixin:
 
         # A dry run changed no durations, so there is no new start event to register.
         if not dry_run:
+            # New durations: the holds of the day are owed to them again.
+            self._watering_prepared_today = False
             _LOGGER.debug("calling register start event from async_calculate_all")
             await self.register_start_event()
         return results

@@ -190,6 +190,10 @@ class SupplyRunnerMixin:
                     )
                     if attempt == 0 and not on:
                         await asyncio.sleep(SUPPLY_OFF_RETRY_DELAY)
+                        if supply.get(const.SUPPLY_ID) in self._supply_runtime()["on"]:
+                            # Taken again meanwhile: it must stay on.
+                            failed = False
+                            break
             if not failed:
                 self._fire_valve_event(
                     const.EVENT_VALVE_ON if on else const.EVENT_VALVE_OFF,

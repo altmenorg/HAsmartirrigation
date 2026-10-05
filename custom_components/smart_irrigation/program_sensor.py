@@ -141,6 +141,10 @@ async def async_setup_program_sensors(
             if entity.entity_id and registry.async_get(entity.entity_id):
                 registry.async_remove(entity.entity_id)
 
+    # A reload sets the platform up again: the sensors of the entry that was
+    # unloaded are gone with it and must be added again, not updated.
+    hass.data.setdefault(const.DOMAIN, {})["program_sensors"] = {}
+
     @callback
     def _changed() -> None:
         hass.async_create_task(_sync())

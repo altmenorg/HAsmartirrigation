@@ -182,6 +182,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       } catch (error) {
         console.error("Error fetching zones:", error);
       }
+      // The planning and the live state need the configuration first.
+      this._fetchLive(true);
     } catch (error) {
       console.error("Error fetching data:", error);
       // Handle error gracefully - keep existing data if fetch fails
@@ -699,8 +701,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     const lang = this.hass.language;
     const t = (key: string) => localize(`programs.${key}`, lang);
     const programs: SmartIrrigationProgram[] = this.config.programs || [];
-    const save = (next: SmartIrrigationProgram[]) =>
+    // The list is mirrored at once: the save is debounced, and a second edit
+    // made before it goes out must build on the first, not on the old list.
+    const save = (next: SmartIrrigationProgram[]) => {
+      this.config = { ...this.config!, programs: next };
       this.handleConfigChange({ programs: next });
+      this._scheduleUpdate();
+    };
     const patch = (index: number, changes: Partial<SmartIrrigationProgram>) =>
       save(programs.map((p, n) => (n === index ? { ...p, ...changes } : p)));
     const num = (v: string, fallback = 0) => {
@@ -1178,7 +1185,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               ...programs,
               {
                 id: "program_" + random(),
-                name: "",
+                name: `${t("new_program")} ${programs.length}`,
                 enabled: true,
                 steps: [],
                 delay: 0,
@@ -1206,8 +1213,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     const lang = this.hass.language;
     const t = (key: string) => localize(`supplies.${key}`, lang);
     const supplies: SmartIrrigationSupply[] = this.config.supplies || [];
-    const save = (next: SmartIrrigationSupply[]) =>
+    const save = (next: SmartIrrigationSupply[]) => {
+      this.config = { ...this.config!, supplies: next };
       this.handleConfigChange({ supplies: next });
+      this._scheduleUpdate();
+    };
     const patch = (index: number, changes: Partial<SmartIrrigationSupply>) =>
       save(supplies.map((s, n) => (n === index ? { ...s, ...changes } : s)));
     const seconds = (v: string) => {
@@ -2031,7 +2041,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             </div>
             <ha-switch
               .checked=${this.config.full_controller === true}
-              @change=${(e: Event) =>
+              @change=${(e: Event) => {
                 this.handleConfigChange({
                   full_controller: (e.target as any).checked,
                   // Switching it on drives the valves, which the backend turns
@@ -2039,7 +2049,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   ...((e.target as any).checked
                     ? { direct_valve_control_enabled: true }
                     : {}),
-                })}
+                });
+                // The main program the backend creates comes back with a reload.
+                window.setTimeout(() => this._fetchData(), 1500);
+              }}
             ></ha-switch>
           </div>
           <div class="setting-note">
