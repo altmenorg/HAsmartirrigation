@@ -202,6 +202,18 @@ export function displayVolume(litres: number, config): number {
   return config?.units === CONF_METRIC ? value : value / LITRES_PER_GALLON;
 }
 
+/**
+ * The reverse of displayVolume: a volume typed in the displayed unit, as the
+ * litres the backend stores. Rounded, so a gallon figure does not come back as
+ * 18.927058919999998 litres.
+ */
+export function storedVolume(shown: number, config): number {
+  const value = Number(shown) || 0;
+  const litres =
+    config?.units === CONF_METRIC ? value : value * LITRES_PER_GALLON;
+  return Math.round(litres * 100) / 100;
+}
+
 /** Millimetres in one inch, for the values the backend keeps in metric. */
 const MM_PER_INCH = 25.4;
 

@@ -3,10 +3,22 @@ import { property, customElement } from "lit/decorators.js";
 import { HomeAssistant, fireEvent } from "custom-card-helpers";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 
-import { fetchConfig, fetchZones, saveConfig } from "../../data/websockets";
+import {
+  fetchConfig,
+  fetchZones,
+  saveConfig,
+  saveZone,
+} from "../../data/websockets";
 import { SubscribeMixin } from "../../subscribe-mixin";
 import { localize } from "../../../localize/localize";
-import { output_unit, pick, handleError } from "../../helpers";
+import {
+  output_unit,
+  unit_text,
+  pick,
+  handleError,
+  displayVolume,
+  storedVolume,
+} from "../../helpers";
 import { loadHaForm } from "../../load-ha-elements";
 import "../../dialogs/trigger-dialog";
 import {
@@ -46,6 +58,7 @@ import {
   TRIGGER_TYPE_SUNSET,
   TRIGGER_TYPE_SOLAR_AZIMUTH,
   DOMAIN,
+  ZONE_WATER_VOLUME,
 } from "../../const";
 import {
   mdiPlus,
@@ -58,6 +71,14 @@ import {
   mdiStop,
   mdiSkipNext,
 } from "@mdi/js";
+
+/**
+ * What is unfolded in the Programs page: programs, steps and schedules, by id.
+ *
+ * Kept outside the element: each tab renders its own template, so switching
+ * tabs creates a new element and an instance field would fold everything back.
+ */
+const UNFOLDED = new Set<string>();
 
 @customElement("smart-irrigation-view-general")
 export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
@@ -76,8 +97,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) planning: any[] = [];
   @property({ attribute: false }) programsState?: any;
   private _liveTimer?: number;
-  // What is unfolded in the Programs page: programs, steps and schedules, by id.
-  private _unfolded = new Set<string>();
+  private _unfolded = UNFOLDED;
 
   private _isOpen(key: string): boolean {
     return this._unfolded.has(key);
@@ -124,20 +144,28 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   // The changes waiting are merged, not replaced: keeping only the last one
   // lost any other setting changed within the half second, such as a switch
   // turned on just before its threshold was typed in.
+  // Returns a promise settled once the batch the change went into is saved.
   private debouncedSave = (() => {
     let timeoutId: number | null = null;
     let pending: Partial<SmartIrrigationConfig> = {};
-    return (changes: Partial<SmartIrrigationConfig>) => {
+    let waiting: Array<() => void> = [];
+    return (changes: Partial<SmartIrrigationConfig>): Promise<void> => {
       pending = { ...pending, ...changes };
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
+      const done = new Promise<void>((resolve) => waiting.push(resolve));
       timeoutId = window.setTimeout(() => {
         const batch = pending;
+        const resolvers = waiting;
         pending = {};
+        waiting = [];
         timeoutId = null;
-        this.saveData(batch);
+        this.saveData(batch)
+          .catch(() => undefined)
+          .then(() => resolvers.forEach((resolve) => resolve()));
       }, 500); // 500ms debounce
+      return done;
     };
   })();
 
@@ -714,7 +742,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             ${this._actionBtn(
               mdiStop,
               tc("stop"),
-              () => control("stop_watering"),
+              () => {
+                if (confirm(tc("confirm_stop"))) control("stop_watering");
+              },
               true,
             )}
           </div>
@@ -814,7 +844,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
     const zoneNames = (ids: number[] | undefined) =>
       (ids || [])
-        .map((id) => this.zones.find((z) => z.id === id)?.name ?? `#${id}`)
+        .map(
+          (id) =>
+            this.zones.find((z) => z.id === id)?.name ?? t("deleted_zone"),
+        )
         .join(" + ") || t("no_zone");
     const durationText = (step: SmartIrrigationStep) =>
       step.mode === "fixed"
@@ -878,6 +911,26 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           <div class="setting-row">
             <div class="setting-label">${t("step_zones")}</div>
             <div>
+              ${(step.zones || [])
+                .filter((id) => !this.zones.some((z) => z.id === id))
+                .map(
+                  (id) => html`
+                    <label
+                      style="margin-right: 12px; white-space: nowrap; color: var(--warning-color, #ff9800);"
+                    >
+                      <input
+                        type="checkbox"
+                        checked
+                        @change=${(e: Event) =>
+                          toggleZone(
+                            id,
+                            (e.target as HTMLInputElement).checked,
+                          )}
+                      />
+                      &#9888; ${t("deleted_zone")}
+                    </label>
+                  `,
+                )}
               ${this.zones.map(
                 (zone) => html`
                   <label style="margin-right: 12px; white-space: nowrap;">
@@ -935,8 +988,15 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           ${this._numRow(t("passes"), "", step.passes, (v) =>
             patchStep({ passes: Math.max(1, Math.round(num(v, 1))) }),
           )}
-          ${this._numRow(t("max_litres"), "L", step.max_litres ?? 0, (v) =>
-            patchStep({ max_litres: Math.max(0, num(v)) }),
+          ${this._numRow(
+            t("max_litres"),
+            unit_text(this.config, ZONE_WATER_VOLUME),
+            // Stored in litres, shown and typed in the unit of the panel.
+            +displayVolume(step.max_litres ?? 0, this.config).toFixed(2),
+            (v) =>
+              patchStep({
+                max_litres: Math.max(0, storedVolume(num(v), this.config)),
+              }),
           )}
           <div class="setting-hint row-hint">${t("max_litres_help")}</div>
           ${this._textRow(
@@ -958,12 +1018,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             ${this._actionBtn(
               mdiDelete,
               t("delete_step"),
-              () =>
+              () => {
+                if (!confirm(t("confirm_delete_step"))) return;
                 patch(index, {
                   steps: (program.steps || []).filter(
                     (_, n) => n !== stepIndex,
                   ),
-                }),
+                });
+              },
               true,
             )}
           </div>
@@ -1186,12 +1248,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             ${this._actionBtn(
               mdiDelete,
               t("delete_schedule"),
-              () =>
+              () => {
+                if (!confirm(t("confirm_delete_schedule"))) return;
                 patch(index, {
                   schedules: (program.schedules || []).filter(
                     (_, n) => n !== scheduleIndex,
                   ),
-                }),
+                });
+              },
               true,
             )}
           </div>
@@ -1340,7 +1404,18 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         ${this._actionBtn(
                           mdiDelete,
                           t("delete"),
-                          () => save(programs.filter((_, n) => n !== index)),
+                          () => {
+                            if (
+                              !confirm(
+                                t("confirm_delete_program").replace(
+                                  "{name}",
+                                  program.name,
+                                ),
+                              )
+                            )
+                              return;
+                            save(programs.filter((_, n) => n !== index));
+                          },
                           true,
                         )}
                       </div>
@@ -1443,7 +1518,19 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 ${this._actionBtn(
                   mdiDelete,
                   t("delete"),
-                  () => save(supplies.filter((_, n) => n !== index)),
+                  () => {
+                    if (
+                      !confirm(
+                        t("confirm_delete").replace(
+                          "{name}",
+                          supply.name || supply.id || "",
+                        ),
+                      )
+                    )
+                      return;
+                    save(supplies.filter((_, n) => n !== index));
+                    this._clearSupplyFromZones(supply.id);
+                  },
                   true,
                 )}
               </div>
@@ -1470,6 +1557,21 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         </div>
       </ha-card>
     `;
+  }
+
+  /** Zones keep the id of the supply they use: forget it once the supply is gone. */
+  private async _clearSupplyFromZones(supplyId?: string): Promise<void> {
+    if (!supplyId || !this.hass) return;
+    for (const zone of this.zones.filter((z) => z.supply_id === supplyId)) {
+      try {
+        await saveZone(this.hass, { ...zone, supply_id: null });
+      } catch (error) {
+        console.error("Error clearing the supply of a zone:", error);
+      }
+    }
+    this.zones = this.zones.map((z) =>
+      z.supply_id === supplyId ? { ...z, supply_id: null } : z,
+    );
   }
 
   /** Change a seasonal adjustment through the service, which also updates the one in use. */
@@ -2222,6 +2324,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             <ha-switch
               .checked=${this.config.full_controller === true}
               @change=${(e: Event) => {
+                // The main program the backend creates comes back with a reload,
+                // once the save is done rather than after a guessed delay.
                 this.handleConfigChange({
                   full_controller: (e.target as any).checked,
                   // Switching it on drives the valves, which the backend turns
@@ -2229,9 +2333,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   ...((e.target as any).checked
                     ? { direct_valve_control_enabled: true }
                     : {}),
-                });
-                // The main program the backend creates comes back with a reload.
-                window.setTimeout(() => this._fetchData(), 1500);
+                })
+                  .then(() => this._fetchData())
+                  .catch(() => undefined);
               }}
             ></ha-switch>
           </div>
@@ -2631,9 +2735,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     }
   }
 
-  private handleConfigChange(changes: Partial<SmartIrrigationConfig>): void {
+  private handleConfigChange(
+    changes: Partial<SmartIrrigationConfig>,
+  ): Promise<void> {
     // Use debounced save for better performance
-    this.debouncedSave(changes);
+    return this.debouncedSave(changes);
   }
 
   disconnectedCallback() {

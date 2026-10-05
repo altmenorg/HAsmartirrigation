@@ -918,9 +918,14 @@
     "resume": "Resume",
     "next_step": "Next step",
     "stop": "Stop",
+    "confirm_stop": "Stop all watering now? Every valve is closed and the runs under way end.",
+    "confirm_delete_program": "Delete the program \"{name}\", with its steps and schedules?",
+    "confirm_delete_step": "Delete this step?",
+    "confirm_delete_schedule": "Delete this schedule?",
+    "deleted_zone": "(deleted zone)",
     "controls_help": "For a watering that is under way. Pause closes the valves and holds everything; the rest is watered after the resume. Next step ends the zones the program is on. Stop ends everything.",
     "max_litres": "Volume limit",
-    "max_litres_help": "A zone of this step stops once its water meter has counted this many litres. 0: no limit. The meter reports every so often, so the volume is not exact. A zone without a meter ignores it.",
+    "max_litres_help": "A zone of this step stops once its water meter has counted this volume, in litres or gallons as the panel shows volumes. 0: no limit. The meter reports every so often, so the volume is not exact. A zone without a meter ignores it.",
     "new_program": "Program",
     "main_name": "Main program",
     "run_now": "Run now",
@@ -950,7 +955,8 @@
     "delay_after_help": "Positive: the supply stays on this long after the zone valve closes. Negative: the supply goes off this long before the valve closes, so a pump never pushes against a closed valve.",
     "enabled": "Enabled",
     "add": "Add a supply",
-    "delete": "Delete"
+    "delete": "Delete",
+    "confirm_delete": "Delete the supply \"{name}\"? The zones that use it will no longer have one."
   },
   "observed_watering": {
     "title": "Observed watering (closed loop)",
