@@ -949,7 +949,7 @@
     "direct_control_label": "Let Smart Irrigation control the valve",
     "direct_control_description": "When on, Smart Irrigation opens each zone's linked valve, waits the calculated duration, then closes it - no automation needed. An in-flight run resumes after a restart. Safety: if Home Assistant goes down for a long time mid-run the valve stays open and keeps watering, so give your valve a hardware failsafe (a maximum runtime).",
     "full_controller_label": "Full controller: Smart Irrigation runs all my watering",
-    "full_controller_description": "Turns on valve control and a main program built from the settings below. Nothing changes for your zones until you add more: the start trigger, the sequencing, the pause between zones and cycle and soak keep working as they did. Switching it off brings back exactly the previous behaviour. A valve found open at startup that no run of ours owns is closed.",
+    "full_controller_description": "Turns on valve control and adds a Watering tab: programs, planning and pumps. The start trigger, the sequencing, the pause between zones and cycle and soak move there, as the main program's settings, and keep working as before until you add another program. Switching it off brings back exactly the previous behaviour. A valve found open at startup that no run of ours owns is closed.",
     "sequencing_label": "Zone sequencing",
     "sequencing": {
       "sequential": "Sequential (one zone at a time)",
