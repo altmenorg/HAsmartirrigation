@@ -762,7 +762,10 @@ def _preview_run_start(next_start) -> dict:
 @async_response
 async def websocket_get_planning(hass: HomeAssistant, connection, msg):
     """Every start of every program schedule over the next days."""
-    coordinator = hass.data[const.DOMAIN]["coordinator"]
+    coordinator = _coordinator_or_none(hass)
+    if coordinator is None:
+        connection.send_error(msg["id"], "not_ready", "Smart Irrigation is loading")
+        return
     connection.send_result(
         msg["id"], await coordinator.async_planning(msg.get("days", 3))
     )
@@ -771,21 +774,41 @@ async def websocket_get_planning(hass: HomeAssistant, connection, msg):
 @async_response
 async def websocket_get_programs_state(hass: HomeAssistant, connection, msg):
     """Each program's state and next start, and what is watering right now."""
-    coordinator = hass.data[const.DOMAIN]["coordinator"]
+    coordinator = _coordinator_or_none(hass)
+    if coordinator is None:
+        connection.send_error(msg["id"], "not_ready", "Smart Irrigation is loading")
+        return
+    programs = await coordinator.async_program_overview()
+    main = [p for p in programs if p.get("main") and not p.get("next_start")]
+    if main and p_state_allows_start(main[0]):
+        # The main program starts at the active start trigger, which the Info
+        # page already works out: the same time is shown here.
+        info = await build_irrigation_info(hass, coordinator)
+        if not info.get("error"):
+            for program in main:
+                program["next_start"] = info.get("next_irrigation_start")
     connection.send_result(
         msg["id"],
         {
-            "programs": await coordinator.async_program_overview(),
+            "programs": programs,
             "live": coordinator.async_live_state(),
         },
     )
 
 
-@async_response
-async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
-    """Publish irrigation information."""
-    coordinator = hass.data[const.DOMAIN]["coordinator"]
-    _LOGGER.debug("websocket_get_irrigation_info called")
+def p_state_allows_start(program: dict) -> bool:
+    """Whether a program's next start is worth showing (not disabled or suspended)."""
+    return program.get("state") not in ("disabled", "suspended")
+
+
+def _coordinator_or_none(hass: HomeAssistant):
+    """The coordinator, or None while the integration is reloading."""
+    return (hass.data.get(const.DOMAIN) or {}).get("coordinator")
+
+
+async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
+    """The irrigation information of the Info page (a fallback with an error)."""
+    _LOGGER.debug("build_irrigation_info called")
 
     try:
         # Get all zones from the store
@@ -1046,7 +1069,19 @@ async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
             "last_skip_evaluation": None,
         }
 
-    connection.send_result(msg["id"], irrigation_info)
+    return irrigation_info
+
+
+@async_response
+async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
+    """Publish irrigation information."""
+    coordinator = _coordinator_or_none(hass)
+    if coordinator is None:
+        # A reload is under way: a clean answer the panel can retry on, not an
+        # unknown error from a KeyError.
+        connection.send_error(msg["id"], "not_ready", "Smart Irrigation is loading")
+        return
+    connection.send_result(msg["id"], await build_irrigation_info(hass, coordinator))
 
 
 @async_response

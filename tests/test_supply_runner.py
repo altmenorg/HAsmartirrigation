@@ -10,7 +10,7 @@ import asyncio
 
 import pytest
 
-from custom_components.smart_irrigation import const
+from custom_components.smart_irrigation import const, supply_runner
 from tests.runner_doubles import (
     REAL_SLEEP,
     Coordinator,
@@ -248,6 +248,7 @@ def _break_pump(hass, *, on=False, off=False, off_times=None):
                 state["offs"] += 1
                 if off_times is None or state["offs"] <= off_times:
                     raise RuntimeError("pump unreachable")
+            set_state(hass, PUMP, "on" if service == "turn_on" else "off")
             return None
         return await real(domain, service, data, **kwargs)
 
@@ -300,6 +301,7 @@ async def test_a_pump_that_comes_on_at_the_second_ask_is_used(monkeypatch):
             hass.calls.append((service, PUMP))
             if state["ons"] == 1:
                 raise RuntimeError("busy")
+            set_state(hass, PUMP, "on")
             return None
         return await real(domain, service, data, **kwargs)
 
@@ -462,6 +464,7 @@ async def test_a_zone_arriving_while_the_pump_goes_off_turns_it_on_after(monkeyp
             hass.calls.append((service, PUMP))
             if service == "turn_off":
                 await gate.wait()
+            set_state(hass, PUMP, "on" if service == "turn_on" else "off")
             return None
         return await real(domain, service, data, **kwargs)
 
@@ -734,3 +737,116 @@ async def test_an_unload_waits_for_the_cancelled_runs_to_clean_up(monkeypatch):
     await coord.async_wait_valve_runs(tasks)
 
     assert cleaned == [True]
+
+
+# --- the state of the entity after the call -----------------------------------
+
+
+async def test_a_missing_pump_keeps_the_valve_shut(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch)
+    # The call goes through without error, and the entity does not exist.
+    real = hass.services.async_call.side_effect
+
+    async def _nothing(domain, service, data, **kwargs):
+        if data["entity_id"] == PUMP:
+            hass.calls.append((service, PUMP))
+            return None
+        return await real(domain, service, data, **kwargs)
+
+    hass.services.async_call.side_effect = _nothing
+
+    await coord.async_run_direct_valves()
+
+    assert "zone_0 on" not in _log(hass)
+    assert _supply_reasons(hass) == ["supply_did_not_turn_on"]
+    assert _zone_reasons(hass) == ["supply_did_not_turn_on"]
+    assert "pump" not in coord._supply_runtime()["on"]
+
+
+async def test_an_unavailable_pump_keeps_the_valve_shut(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch)
+    real = hass.services.async_call.side_effect
+
+    async def _unavailable(domain, service, data, **kwargs):
+        if data["entity_id"] == PUMP:
+            hass.calls.append((service, PUMP))
+            set_state(hass, PUMP, "unavailable")
+            return None
+        return await real(domain, service, data, **kwargs)
+
+    hass.services.async_call.side_effect = _unavailable
+
+    await coord.async_run_direct_valves()
+
+    assert "zone_0 on" not in _log(hass)
+    assert _zone_reasons(hass) == ["supply_did_not_turn_on"]
+
+
+async def test_a_slow_pump_is_waited_for(monkeypatch):
+    hass, coord, sleeps = _setup(monkeypatch)
+    real = hass.services.async_call.side_effect
+
+    async def _slow(domain, service, data, **kwargs):
+        if data["entity_id"] == PUMP and service == "turn_on":
+            hass.calls.append((service, PUMP))
+            return None
+        return await real(domain, service, data, **kwargs)
+
+    hass.services.async_call.side_effect = _slow
+
+    # The state shows up after a few looks, inside the wait.
+    async def _appears():
+        set_state(hass, PUMP, "on")
+
+    sleeps.on(supply_runner.SUPPLY_CONFIRM_INTERVAL, _appears)
+
+    await coord.async_run_direct_valves()
+
+    assert "zone_0 on" in _log(hass)
+    assert _supply_reasons(hass) == []
+
+
+async def test_a_valve_domain_supply_reading_opening_is_on(monkeypatch):
+    hass, coord, _ = _setup(
+        monkeypatch, supply=_supply(**{const.SUPPLY_ENTITIES: ["valve.main"]})
+    )
+    real = hass.services.async_call.side_effect
+
+    async def _opening(domain, service, data, **kwargs):
+        if data["entity_id"] == "valve.main" and service == "open_valve":
+            set_state(hass, "valve.main", "opening")
+            return None
+        return await real(domain, service, data, **kwargs)
+
+    hass.services.async_call.side_effect = _opening
+
+    await coord.async_run_direct_valves()
+
+    assert _supply_reasons(hass) == []
+    assert "zone_0 on" in _log(hass)
+
+
+async def test_a_pump_that_vanishes_is_not_asked_to_go_off_forever(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch)
+    supply = coord._supply_for_zone(coord.store.get_zone(0))
+    runtime = coord._supply_runtime()
+    runtime["on"].add("pump")  # recorded as on; the entity has no state
+
+    assert await coord._supply_off_now(supply) is True
+    assert "pump" not in runtime["on"]
+    assert runtime["retry_tasks"] == {}
+
+
+async def test_a_pump_that_still_reads_on_is_retried(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch)
+    supply = coord._supply_for_zone(coord.store.get_zone(0))
+    runtime = coord._supply_runtime()
+    runtime["on"].add("pump")
+    set_state(hass, PUMP, "on")
+    hass.stuck.add(PUMP)  # the off call does nothing
+
+    assert await coord._supply_off_now(supply) is False
+    assert "pump" in runtime["on"]
+    assert "pump" in runtime["retry_tasks"]
+    for task in runtime["retry_tasks"].values():
+        task.cancel()

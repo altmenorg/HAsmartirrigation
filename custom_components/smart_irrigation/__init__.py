@@ -807,6 +807,14 @@ class SmartIrrigationCoordinator(
             kept = {k: v for k, v in last_runs.items() if k in alive}
             if kept != last_runs:
                 data[const.CONF_PROGRAM_LAST_RUNS] = kept
+        last_started = getattr(config, const.CONF_PROGRAM_LAST_STARTED, None)
+        if isinstance(last_started, dict) and (
+            const.CONF_PROGRAM_LAST_STARTED not in data
+        ):
+            program_ids = {p.get(const.PROGRAM_ID) for p in programs}
+            kept = {k: v for k, v in last_started.items() if k in program_ids}
+            if kept != last_started:
+                data[const.CONF_PROGRAM_LAST_STARTED] = kept
         suspensions = getattr(config, const.CONF_SUSPENSIONS, None)
         if isinstance(suspensions, dict) and const.CONF_SUSPENSIONS not in data:
             program_ids = {p.get(const.PROGRAM_ID) for p in programs}

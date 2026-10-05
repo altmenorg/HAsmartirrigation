@@ -141,6 +141,9 @@ CONF_ACTIVE_PROGRAM_RUN = "active_program_run"
 # Kept apart from the programs, which the panel sends back whole: a copy of them
 # read before a run would write the old marks over it.
 CONF_PROGRAM_LAST_RUNS = "program_last_runs"
+# When each program last really started watering, scheduled, manual or main:
+# {"evening": iso}. The marks above say when a schedule fired, not when water ran.
+CONF_PROGRAM_LAST_STARTED = "program_last_started"
 # What is suspended until when: {"zone:3": iso, "program:evening": iso}. Kept apart
 # from the zones and the programs, which the panel sends back whole.
 CONF_SUSPENSIONS = "suspensions"
@@ -157,6 +160,9 @@ RUN_ZONE_ID = "zone_id"
 RUN_ENTITY_ID = "entity_id"
 RUN_STARTED = "started"
 RUN_DURATION = "duration"
+# Seconds the valve was open when the run was interrupted by a reload: the valve
+# is shut from then on, so the downtime is not water.
+RUN_DELIVERED = "delivered"
 # Keys inside a program of the full controller (see programs.py).
 PROGRAM_ID = "id"
 PROGRAM_NAME = "name"

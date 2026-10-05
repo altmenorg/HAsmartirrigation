@@ -74,6 +74,13 @@ class ProgramRunnerMixin:
             lock = self._executor_turn = asyncio.Lock()
         return lock
 
+    def _programs_resuming(self) -> dict:
+        """The programs whose interrupted pass is being finished after a restart."""
+        resuming = getattr(self, "_programs_resuming_state", None)
+        if resuming is None:
+            resuming = self._programs_resuming_state = {}
+        return resuming
+
     def _program_registry(self) -> dict:
         """The programs waiting for their turn or running, by id."""
         registry = getattr(self, "_program_runs_by_id", None)
@@ -174,6 +181,8 @@ class ProgramRunnerMixin:
                 )
                 run.running_since = self.hass.loop.time()
                 run.paused_at_start = self.paused_seconds_total()
+                if not resumed:
+                    await self._note_program_started(run.program_id)
                 await self._execute_plan(run, plan, tour, step)
                 self._report_program_finished(run)
         except asyncio.CancelledError:
@@ -336,10 +345,22 @@ class ProgramRunnerMixin:
             _LOGGER.info("The interrupted program run is too old, dropped")
             await self._drop_program_record()
             return
-        if resumed:
-            await asyncio.gather(*resumed, return_exceptions=True)
         plan = record.get("plan") or []
         program_id = record.get("program_id")
+        # While the pass that was open finishes by its own record, the program
+        # is running, though it has not taken its turn yet: shown as such.
+        resuming = self._programs_resuming()
+        if program_id:
+            resuming[program_id] = {
+                "name": record.get("name") or program_id,
+                "manual": bool(record.get("manual")),
+            }
+            self._notify_programs()
+        try:
+            if resumed:
+                await asyncio.gather(*resumed, return_exceptions=True)
+        finally:
+            resuming.pop(program_id, None)
         if not plan or not program_id or program_id in self._program_registry():
             await self._drop_program_record()
             return

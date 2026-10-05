@@ -11,6 +11,7 @@ Three views of the same things, each cheap to build:
   so a planned run is a run that would go ahead if nothing held it back.
 """
 
+import asyncio
 import logging
 from datetime import timedelta
 
@@ -40,6 +41,31 @@ class ProgramStatusMixin:
             async_dispatcher_send(self.hass, const.DOMAIN + "_programs_updated")
         except Exception as e:  # noqa: BLE001 - a display must never stop a run
             _LOGGER.debug("Could not announce a program change: %s", e)
+
+    async def _note_program_started(self, program_id) -> None:
+        """Record that this program really started watering now."""
+        try:
+            started = dict(
+                getattr(self.store.config, const.CONF_PROGRAM_LAST_STARTED, None) or {}
+            )
+            started[program_id] = dt_util.utcnow().isoformat()
+            await self.store.async_update_config(
+                {const.CONF_PROGRAM_LAST_STARTED: started}
+            )
+        except asyncio.CancelledError:
+            raise
+        except Exception as e:  # noqa: BLE001 - a display must never stop a run
+            _LOGGER.debug("Could not record the start of %s: %s", program_id, e)
+
+    async def _note_main_program_started(self) -> None:
+        """The main program is the cycle the start triggers run."""
+        config = self.store.config
+        if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
+            return
+        for program in getattr(config, const.CONF_PROGRAMS, None) or []:
+            if program.get(const.PROGRAM_MAIN):
+                await self._note_program_started(program.get(const.PROGRAM_ID))
+                return
 
     # --- live -------------------------------------------------------------------
 
@@ -101,6 +127,27 @@ class ProgramStatusMixin:
                     ),
                 }
             )
+        # A program whose interrupted pass is being finished after a restart is
+        # running, though it has not taken its turn yet.
+        for program_id, info in (
+            getattr(self, "_programs_resuming_state", None) or {}
+        ).items():
+            if program_id in self._program_registry():
+                continue
+            programs.append(
+                {
+                    "program_id": program_id,
+                    "name": info.get("name"),
+                    "state": STATE_RUNNING,
+                    "manual": info.get("manual"),
+                    "tour": 1,
+                    "tours": 1,
+                    "step": 1,
+                    "steps": 1,
+                    "percent": 0,
+                    "remaining_seconds": None,
+                }
+            )
         return {
             "paused": self.watering_paused(),
             "programs": programs,
@@ -123,6 +170,7 @@ class ProgramStatusMixin:
             return []
         zones = await self.store.async_get_zones()
         last_runs = dict(getattr(config, const.CONF_PROGRAM_LAST_RUNS, None) or {})
+        started_at = dict(getattr(config, const.CONF_PROGRAM_LAST_STARTED, None) or {})
         live = self.async_live_state()
         running = {p["program_id"]: p for p in live["programs"]}
         now = dt_util.utcnow()
@@ -167,6 +215,10 @@ class ProgramStatusMixin:
                 if k.startswith(f"{program_id}:")
             ]
             stamps = [s for s in stamps if s is not None]
+            # A manual or main run leaves no mark among the schedules'.
+            started = dt_util.parse_datetime(started_at.get(program_id) or "")
+            if started is not None:
+                stamps.append(started)
             overview.append(
                 {
                     "program_id": program_id,

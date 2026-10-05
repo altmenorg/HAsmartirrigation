@@ -47,6 +47,14 @@ SUPPLY_ALIGN_RECHECK_AT = (30.0, 120.0)
 # How long a teardown waits for a supply to go off.
 SUPPLY_TEARDOWN_TIMEOUT = 10.0
 
+# How long, after a switch call, a supply's entity is given to show a state, and
+# how often it is looked at meanwhile. An entity that does not exist (a service
+# called on it does not raise) or that stays unavailable is a supply that did
+# not switch. Only an unreadable entity is waited for; any real state ends the
+# wait, so a slow but existing pump is never turned into a failure.
+SUPPLY_CONFIRM_TIMEOUT = 5.0
+SUPPLY_CONFIRM_INTERVAL = 0.5
+
 # Readings that say nothing about whether a supply is running.
 _UNREADABLE = (None, "", "unknown", "unavailable")
 
@@ -385,6 +393,14 @@ class SupplyRunnerMixin:
                     )
                     if attempt == 0:
                         await asyncio.sleep(SUPPLY_OFF_RETRY_DELAY)
+            if not failed and not await self._supply_confirm(entity_id, on):
+                failed = True
+                _LOGGER.error(
+                    "Supply %s: %s does not read as %s after the call",
+                    supply.get(const.SUPPLY_NAME),
+                    entity_id,
+                    "on" if on else "off",
+                )
             if not failed:
                 self._fire_valve_event(
                     const.EVENT_VALVE_ON if on else const.EVENT_VALVE_OFF,
@@ -407,6 +423,29 @@ class SupplyRunnerMixin:
                     ),
                 )
         return ok
+
+    async def _supply_confirm(self, entity_id: str, on: bool) -> bool:
+        """Read the entity after a switch call. False if the call did not take.
+
+        On: an entity with no state, unavailable or unknown for the whole wait
+        did not come on. Any readable state is accepted, whatever the domain
+        (a valve or cover goes through "opening", a template switch may not
+        echo at once). Off: an entity that still reads on after the wait did
+        not go off, and the off is asked again; one that cannot be read is left
+        alone, there is nothing to retry on it.
+        """
+        steps = max(1, int(SUPPLY_CONFIRM_TIMEOUT / SUPPLY_CONFIRM_INTERVAL))
+        for step in range(steps + 1):
+            state = self.hass.states.get(entity_id)
+            value = None if state is None else state.state
+            if on:
+                if value not in _UNREADABLE:
+                    return True
+            elif value not in _ON_STATES:
+                return True
+            if step < steps:
+                await asyncio.sleep(SUPPLY_CONFIRM_INTERVAL)
+        return False
 
     def _report_supply_problem(self, supply: dict, entity_id: str, reason: str) -> None:
         self.hass.bus.async_fire(
