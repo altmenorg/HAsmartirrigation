@@ -36,6 +36,7 @@ import homeassistant.util.dt as dt_util
 
 from . import const
 from .observed_watering import NO_FLOW_GRACE
+from .supply_runner import SupplyRunnerMixin
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -150,7 +151,7 @@ def wall_clock_seconds(config, duration: float, lead: float = 0.0) -> float:
     return duration + (soak_seconds(config) + lead) * extra
 
 
-class ValveRunnerMixin:
+class ValveRunnerMixin(SupplyRunnerMixin):
     """Open/close linked valves directly and credit the bucket for the run."""
 
     def _run_controls(self) -> dict:
@@ -227,6 +228,8 @@ class ValveRunnerMixin:
         domain = entity_id.split(".", 1)[0]
         if domain == "valve":
             return domain, "open_valve", "close_valve"
+        if domain == "cover":
+            return domain, "open_cover", "close_cover"
         return domain, "turn_on", "turn_off"
 
     def _log_late_valve_service(self, entity_id: str, task) -> None:
@@ -941,7 +944,23 @@ class ValveRunnerMixin:
         flow_sensor = zone.get(const.ZONE_FLOW_SENSOR)
         meter_start = None
         stopped = False
+        supply = self._supply_for_zone(zone)
+        token = object()
+        acquired = False
+        lag = 0.0
         try:
+            if supply is not None:
+                # Taken before the first await, given back in the finally below.
+                acquired = True
+                lag = await self._supply_before_open(supply, token, zone_id)
+                if lag is None:
+                    # Stopped while the supply was coming up: nothing was opened.
+                    closed = True
+                    control = self._run_controls().get(zone_id)
+                    if control is not None:
+                        control.stop.set()
+                        control.delivered = 0.0
+                    return None
             await self._async_call_valve_service(domain, on_svc, entity_id)
 
             # Confirm the valve actually opened before counting/crediting: a
@@ -966,7 +985,7 @@ class ValveRunnerMixin:
             # Hardware dead-man: tell the device to shut itself off after the
             # pass, in case Home Assistant never sends the close below.
             await self._arm_safety_off(zone, held)
-            stopped = await self._wait_or_stop(zone_id, held)
+            stopped = await self._hold_valve(zone_id, held, supply, token, lag)
             if stopped:
                 # Counted now, before the close takes its own seconds: the water
                 # is what flowed until the stop, not until the valve was shut.
@@ -992,6 +1011,14 @@ class ValveRunnerMixin:
             # most one credit rather than double-crediting on resume.
             if recorded and not cancelled:
                 await self._remove_active_run(zone_id)
+            if acquired:
+                # After the valve is shut, in the same finally that took it. A
+                # cancellation (a reload) puts the supply off at once rather than
+                # leave a timer behind: the run resumes from its record.
+                try:
+                    await self._supply_release(supply, token, immediate=cancelled)
+                except Exception as e:  # noqa: BLE001 - never hide how the pass ended
+                    _LOGGER.error("Supply release failed: %s", e)
         self._direct_run_finished[zone_id] = self.hass.loop.time()
         if flow_sensor and self._meter_saw_no_flow(
             flow_sensor, meter_start, started + timedelta(seconds=lead + NO_FLOW_GRACE)
@@ -1138,6 +1165,7 @@ class ValveRunnerMixin:
             # Our close is not an external watering to credit.
             self._note_si_valve(zone_id)
             await self._close_valve(zone, entity_id)
+        await self._align_supplies()
 
     # --- reboot resume ------------------------------------------------------
 
@@ -1273,7 +1301,15 @@ class ValveRunnerMixin:
         closed = False
         cancelled = False
         held_override = None
+        supply = self._supply_for_zone(self._zone_or_stub(zone_id))
+        token = object()
+        acquired = False
         try:
+            if supply is not None:
+                # The valve is open mid-run, so the supply is up with it: no lead.
+                acquired = True
+                await self._supply_before_open(supply, token, zone_id)
+                await self._supply_ensure_on(supply)
             await self._async_call_valve_service(domain, on_svc, entity_id)
             if await self._confirm_valve_running(entity_id) is False:
                 closed = True
@@ -1305,6 +1341,11 @@ class ValveRunnerMixin:
                 await self._close_valve(self._zone_or_stub(zone_id), entity_id)
             if not cancelled:
                 await self._remove_active_run(zone_id)
+            if acquired:
+                try:
+                    await self._supply_release(supply, token, immediate=cancelled)
+                except Exception as e:  # noqa: BLE001 - never hide how the run ended
+                    _LOGGER.error("Supply release failed: %s", e)
         self._direct_run_finished[zone_id] = self.hass.loop.time()
         zone = self.store.get_zone(zone_id) or {}
         if held_override is not None:

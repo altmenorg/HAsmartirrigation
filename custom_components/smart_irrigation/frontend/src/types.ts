@@ -35,6 +35,8 @@ export class SmartIrrigationConfig {
   forecast_rain_credit?: boolean;
   effective_rain?: boolean;
   seasonal_adjustments?: SmartIrrigationSeasonalAdjustment[];
+  /** Pumps or main valves of the full controller. */
+  supplies?: SmartIrrigationSupply[];
   recalculate_before_start?: boolean;
   /** How much of the panel is shown: "standard" or "advanced". */
   ui_mode?: string;
@@ -143,6 +145,17 @@ export interface SmartIrrigationSeasonalAdjustment {
 }
 
 //export type SmartIrrigationZone = {
+/** A pump or a main valve that runs while a zone it feeds is being watered. */
+export interface SmartIrrigationSupply {
+  id?: string;
+  name: string;
+  entities: string[];
+  /** Seconds, signed: positive, the supply leads; negative, the valve does. */
+  delay_before: number;
+  delay_after: number;
+  enabled: boolean;
+}
+
 export class SmartIrrigationZone {
   id?: number;
   name: string;
@@ -174,6 +187,7 @@ export class SmartIrrigationZone {
   linked_entity?: string;
   safety_off_topic?: string;
   safety_off_state_key?: string;
+  supply_id?: string | null;
   flow_sensor?: string;
   soil_moisture_sensor?: string;
   soil_moisture_threshold?: number;

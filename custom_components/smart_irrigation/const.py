@@ -102,6 +102,10 @@ CONF_DEFAULT_FULL_CONTROLLER = False
 # The programs of the full controller: an ordered list of dicts (see programs.py).
 CONF_PROGRAMS = "programs"
 CONF_DEFAULT_PROGRAMS = []
+# The supplies of the full controller: pumps or main valves that run while a zone
+# they feed is being watered (see supplies.py).
+CONF_SUPPLIES = "supplies"
+CONF_DEFAULT_SUPPLIES = []
 CONF_ZONE_SEQUENCING = "zone_sequencing"
 CONF_ZONE_SEQUENCING_SEQUENTIAL = "sequential"
 CONF_ZONE_SEQUENCING_PARALLEL = "parallel"
@@ -142,6 +146,15 @@ PROGRAM_ID = "id"
 PROGRAM_NAME = "name"
 PROGRAM_ENABLED = "enabled"
 PROGRAM_MAIN = "main"
+# Keys inside a supply of the full controller (see supplies.py).
+SUPPLY_ID = "id"
+SUPPLY_NAME = "name"
+SUPPLY_ENTITIES = "entities"
+SUPPLY_DELAY_BEFORE = "delay_before"
+SUPPLY_DELAY_AFTER = "delay_after"
+SUPPLY_ENABLED = "enabled"
+# A delay, before or after, is held to this many seconds either way.
+SUPPLY_MAX_DELAY_SECONDS = 3600
 
 # Days between irrigation configuration
 CONF_DAYS_BETWEEN_IRRIGATION = "days_between_irrigation"
@@ -506,6 +519,8 @@ ZONE_LINKED_ENTITY = "linked_entity"
 # Home Assistant dies mid-run and never sends the close (e.g. a zigbee2mqtt
 # device supporting on_time). Empty = disabled; behaviour then is unchanged.
 ZONE_SAFETY_OFF_TOPIC = "safety_off_topic"
+# The supply (pump or main valve) a zone is fed from, by id. None: none.
+ZONE_SUPPLY_ID = "supply_id"
 # The state property the device expects in that payload; "state" for a
 # single-channel device, "state_l1".."state_l4" for a multi-channel one.
 ZONE_SAFETY_OFF_STATE_KEY = "safety_off_state_key"
@@ -726,6 +741,8 @@ EVENT_IRRIGATE_FINISHED = "irrigation_finished"
 # Fired (as smart_irrigation_zone_problem) when a direct-control valve fails to
 # open, so users can wire a notification automation.
 EVENT_ZONE_PROBLEM = "zone_problem"
+# A supply (pump or main valve) that did not do what it was told.
+EVENT_SUPPLY_PROBLEM = "supply_problem"
 # Fired (as smart_irrigation_irrigation_skipped) when a start trigger is reached
 # and the day is a skip day, so a skipped run is something an automation can see
 # rather than an event that simply never arrives (#841).

@@ -74,6 +74,7 @@ from .scheduler import RecurringScheduleManager, SeasonalAdjustmentManager
 from .service_handlers import ServiceHandlersMixin
 from .skip_conditions import SkipConditionsMixin, thresholds_for_storage
 from .store import SmartIrrigationStorage, async_get_registry
+from .supplies import normalize_supplies
 from .triggers import TriggersMixin
 from .valve_runner import ValveRunnerMixin
 from .watering_calendar import WateringCalendarMixin
@@ -774,6 +775,11 @@ class SmartIrrigationCoordinator(
                     )
 
         data = self._full_controller_changes(data)
+        if const.CONF_SUPPLIES in data:
+            data = {
+                **data,
+                const.CONF_SUPPLIES: normalize_supplies(data[const.CONF_SUPPLIES]),
+            }
 
         # handle auto calc changes
         await self.set_up_auto_calc_time(data)

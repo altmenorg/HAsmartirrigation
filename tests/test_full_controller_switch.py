@@ -79,3 +79,21 @@ async def test_another_setting_does_not_touch_the_controller():
 
     assert const.CONF_PROGRAMS not in written
     assert const.CONF_DIRECT_VALVE_CONTROL_ENABLED not in written
+
+
+@pytest.mark.asyncio
+async def test_supplies_are_cleaned_before_they_are_stored():
+    written = await _update(
+        _coordinator(),
+        {
+            const.CONF_SUPPLIES: [
+                {"name": "Pump", "entities": "switch.pump", "delay_before": "3"},
+                "junk",
+            ]
+        },
+    )
+
+    [supply] = written[const.CONF_SUPPLIES]
+    assert supply[const.SUPPLY_ID] == "pump"
+    assert supply[const.SUPPLY_ENTITIES] == ["switch.pump"]
+    assert supply[const.SUPPLY_DELAY_BEFORE] == 3.0

@@ -9,7 +9,11 @@ import { localize } from "../../../localize/localize";
 import { output_unit, pick, handleError } from "../../helpers";
 import { loadHaForm } from "../../load-ha-elements";
 import "../../dialogs/trigger-dialog";
-import { SmartIrrigationConfig, IrrigationStartTrigger } from "../../types";
+import {
+  SmartIrrigationConfig,
+  SmartIrrigationSupply,
+  IrrigationStartTrigger,
+} from "../../types";
 import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { Path } from "../../common/navigation";
@@ -489,6 +493,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // Seasonal adjustments (advanced).
       const r13 = this.renderSeasonalAdjustmentsCard();
 
+      // Pumps and main valves (full controller).
+      const r14 = this.renderSuppliesCard();
+
       // The way to the setup assistant, which is no longer a tab. It comes first:
       // it is where somebody who has nothing set up wants to start.
       const r12 = this.renderSetupAssistantCard();
@@ -501,10 +508,104 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           </div> </ha-card
         >${r12}${r11}${r2}${r1}${showContinuous
           ? r4
-          : ""}${r5}${r6}${r7}${r8}${r9}${r10}${r13}`;
+          : ""}${r5}${r6}${r7}${r8}${r9}${r14}${r10}${r13}`;
 
       return r;
     }
+  }
+
+  /**
+   * Supplies: a pump or a main valve that runs while a zone it feeds is watered.
+   *
+   * Only in full controller mode. A zone picks its supply in its own settings.
+   * The delays are signed: positive, the supply leads (on before the valve opens,
+   * off after it closes); negative, the valve leads.
+   */
+  renderSuppliesCard() {
+    if (!this.config || !this.hass || this.config.full_controller !== true) {
+      return html``;
+    }
+    const lang = this.hass.language;
+    const t = (key: string) => localize(`supplies.${key}`, lang);
+    const supplies: SmartIrrigationSupply[] = this.config.supplies || [];
+    const save = (next: SmartIrrigationSupply[]) =>
+      this.handleConfigChange({ supplies: next });
+    const patch = (index: number, changes: Partial<SmartIrrigationSupply>) =>
+      save(supplies.map((s, n) => (n === index ? { ...s, ...changes } : s)));
+    const seconds = (v: string) => {
+      const n = parseFloat(v);
+      return isNaN(n) ? 0 : n;
+    };
+    return html`
+      <ha-card header="${t("title")}">
+        <div class="card-content">${t("description")}</div>
+        ${supplies.map(
+          (supply, index) => html`
+            <div class="card-content">
+              ${this._textRow(t("name"), "", supply.name, (v) =>
+                patch(index, { name: v }),
+              )}
+              ${this._textRow(
+                t("entities"),
+                t("entities_hint"),
+                (supply.entities || []).join(", "),
+                (v) =>
+                  patch(index, {
+                    entities: v
+                      .split(",")
+                      .map((e) => e.trim())
+                      .filter((e) => e),
+                  }),
+              )}
+              ${this._numRow(
+                t("delay_before"),
+                localize("units.seconds", lang),
+                supply.delay_before,
+                (v) => patch(index, { delay_before: seconds(v) }),
+              )}
+              <div class="setting-note">${t("delay_before_help")}</div>
+              ${this._numRow(
+                t("delay_after"),
+                localize("units.seconds", lang),
+                supply.delay_after,
+                (v) => patch(index, { delay_after: seconds(v) }),
+              )}
+              <div class="setting-note">${t("delay_after_help")}</div>
+              <div class="setting-row">
+                <div class="setting-label">${t("enabled")}</div>
+                <ha-switch
+                  .checked=${supply.enabled !== false}
+                  @change=${(e: Event) =>
+                    patch(index, { enabled: (e.target as any).checked })}
+                ></ha-switch>
+              </div>
+              ${this._actionBtn(
+                mdiDelete,
+                t("delete"),
+                () => save(supplies.filter((_, n) => n !== index)),
+                true,
+              )}
+            </div>
+          `,
+        )}
+        <div class="card-content">
+          ${this._actionBtn(mdiPlus, t("add"), () =>
+            save([
+              ...supplies,
+              {
+                // Chosen here and kept, so a zone's link survives a rename.
+                id: "supply_" + Math.random().toString(36).slice(2, 8),
+                name: "",
+                entities: [],
+                delay_before: 0,
+                delay_after: 0,
+                enabled: true,
+              },
+            ]),
+          )}
+        </div>
+      </ha-card>
+    `;
   }
 
   /** Change a seasonal adjustment through the service, which also updates the one in use. */

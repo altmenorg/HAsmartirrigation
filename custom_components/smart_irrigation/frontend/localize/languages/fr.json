@@ -580,6 +580,8 @@
         "drainage_rate": "Taux de drainage",
         "linked-entity": "Vanne/interrupteur lié",
         "linked-entity-hint": "La vanne ou l'interrupteur qui arrose cette zone. Smart Irrigation l'ouvre et la ferme quand le pilotage direct est activé. Avec l'arrosage observé activé, chacune de ses ouvertures (à la main, par une automatisation, ou par Smart Irrigation) crédite le réservoir d'après la durée d'arrosage et le débit de la zone.",
+        "supply": "Alimentation (pompe ou vanne générale)",
+        "supply-none": "Aucune",
         "flow-sensor": "Compteur de volume cumulé",
         "flow-sensor-hint": "Pour un comptage exact au lieu de débit x temps : un total de compteur d'eau cumulé (state class total_increasing), pas un débit instantané. L'unité est lue automatiquement (L, mL, m³, gal, ft³).",
         "safety-off-topic": "Topic MQTT de coupure de sécurité",
@@ -829,6 +831,20 @@
     "description": "Configure le nombre minimum de jours qui doivent s'écouler entre les événements d'irrigation. Cela aide à contrôler la fréquence d'arrosage pour la conservation de l'eau et la gestion de la santé des plantes.\n\nCas d'usage typiques:\n• Entretien de pelouse: intervalles de 1-2 jours préviennent l'arrosage excessif\n• Restrictions de sécheresse: intervalles de 6+ jours pour arrosage hebdomadaire\n• Plantes à racines profondes: intervalles de 3-7 jours pour arrosage moins fréquent\n• Conservation de l'eau: personnalisable selon le climat et les conditions du sol",
     "label": "Jours minimum entre irrigations",
     "help_text": "Définir à 0 pour désactiver cette fonction. Les valeurs de 1-365 jours sont prises en charge. Ce paramètre fonctionne avec la logique de prévision de précipitation existante. Une zone peut avoir son propre nombre de jours dans l'onglet Zones, qui remplace ce réglage pour elle."
+  },
+  "supplies": {
+    "title": "Pompes et vannes générales",
+    "description": "Une alimentation tourne pendant l'arrosage d'une zone qu'elle dessert : une pompe, ou une vanne générale placée devant les vannes de zone. On la choisit dans les réglages de chaque zone. Les délais sont en secondes, avec un signe.",
+    "name": "Nom",
+    "entities": "Entités",
+    "entities_hint": "séparer plusieurs entités par des virgules",
+    "delay_before": "Délai avant",
+    "delay_before_help": "Positif : l'alimentation démarre ce temps avant l'ouverture de la vanne de zone. Négatif : la vanne s'ouvre d'abord et l'alimentation démarre ce temps après.",
+    "delay_after": "Délai après",
+    "delay_after_help": "Positif : l'alimentation reste en marche ce temps après la fermeture de la vanne de zone. Négatif : l'alimentation s'arrête ce temps avant la fermeture de la vanne, pour qu'une pompe ne pousse jamais contre une vanne fermée.",
+    "enabled": "Activée",
+    "add": "Ajouter une alimentation",
+    "delete": "Supprimer"
   },
   "observed_watering": {
     "title": "Arrosage observé (boucle fermée)",

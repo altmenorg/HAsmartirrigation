@@ -115,6 +115,7 @@ class SmartIrrigationConfigView(HomeAssistantView):
                 vol.Optional(const.CONF_DIRECT_VALVE_CONTROL_ENABLED): cv.boolean,
                 vol.Optional(const.CONF_FULL_CONTROLLER): cv.boolean,
                 vol.Optional(const.CONF_PROGRAMS): vol.Coerce(list),
+                vol.Optional(const.CONF_SUPPLIES): vol.Coerce(list),
                 vol.Optional(const.CONF_ZONE_SEQUENCING): vol.In(
                     const.CONF_ZONE_SEQUENCING_OPTIONS
                 ),
@@ -332,6 +333,7 @@ class SmartIrrigationZoneView(HomeAssistantView):
                 vol.Optional(const.ZONE_LEAD_TIME): vol.Coerce(float),
                 vol.Optional(const.ZONE_SAFETY_OFF_TOPIC): vol.Any(str, None),
                 vol.Optional(const.ZONE_SAFETY_OFF_STATE_KEY): vol.Any(str, None),
+                vol.Optional(const.ZONE_SUPPLY_ID): vol.Any(str, None),
                 vol.Optional(const.ZONE_SOIL_TYPE): vol.Any(str, None),
                 vol.Optional(const.ZONE_PLANT_TYPE): vol.Any(str, None),
                 vol.Optional(const.ZONE_MAXIMUM_DURATION): vol.Coerce(float),

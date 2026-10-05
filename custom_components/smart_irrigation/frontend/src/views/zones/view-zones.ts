@@ -73,6 +73,7 @@ import {
   ZONE_LEAD_TIME,
   ZONE_LINKED_ENTITY,
   ZONE_SAFETY_OFF_TOPIC,
+  ZONE_SUPPLY_ID,
   ZONE_SAFETY_OFF_STATE_KEY,
   ZONE_MAPPING,
   ZONE_ALLOWED_DEPLETION,
@@ -1663,6 +1664,33 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           [ZONE_LINKED_ENTITY]: v || undefined,
                         }),
                       localize("panels.zones.labels.linked-entity-hint", lang),
+                    )
+                  : ""}
+                ${this.config?.full_controller &&
+                (this.config?.supplies || []).length
+                  ? this._selectRow(
+                      localize("panels.zones.labels.supply", lang),
+                      html`
+                        <option value="" ?selected=${!zone.supply_id}>
+                          ${localize("panels.zones.labels.supply-none", lang)}
+                        </option>
+                        ${(this.config?.supplies || []).map(
+                          (supply) => html`
+                            <option
+                              value=${supply.id || ""}
+                              ?selected=${zone.supply_id === supply.id}
+                            >
+                              ${supply.name}
+                            </option>
+                          `,
+                        )}
+                      `,
+                      (e: Event) =>
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_SUPPLY_ID]:
+                            (e.target as HTMLSelectElement).value || null,
+                        }),
                     )
                   : ""}
                 ${this.config?.direct_valve_control_enabled &&

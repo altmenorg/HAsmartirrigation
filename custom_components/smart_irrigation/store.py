@@ -70,6 +70,7 @@ from .const import (
     CONF_DEFAULT_SKIP_ON_WIND,
     CONF_DEFAULT_SOAK_MINUTES,
     CONF_DEFAULT_SOIL_MOISTURE_THRESHOLD,
+    CONF_DEFAULT_SUPPLIES,
     CONF_DEFAULT_USE_WEATHER_SERVICE,
     CONF_DEFAULT_WATERING_PASSES,
     CONF_DEFAULT_WEATHER_SERVICE,
@@ -105,6 +106,7 @@ from .const import (
     CONF_SKIP_ON_RAIN_SENSOR,
     CONF_SKIP_ON_WIND,
     CONF_SOAK_MINUTES,
+    CONF_SUPPLIES,
     CONF_UI_MODE,
     CONF_UI_MODE_ADVANCED,
     CONF_UI_MODE_STANDARD,
@@ -209,6 +211,7 @@ from .const import (
     ZONE_SOIL_TYPE,
     ZONE_STATE,
     ZONE_STATE_AUTOMATIC,
+    ZONE_SUPPLY_ID,
     ZONE_THROUGHPUT,
     ZONE_WATER_USED,
 )
@@ -297,6 +300,8 @@ class ZoneEntry:
     # off if Home Assistant dies mid-run. Empty = disabled (see const).
     safety_off_topic = attr.ib(type=str, default=None)
     safety_off_state_key = attr.ib(type=str, default=None)
+    # The supply (pump or main valve) that feeds this zone, by id (full controller).
+    supply_id = attr.ib(type=str, default=None)
     # How much of a deficit to let build up before watering, in the user's depth
     # unit. 0 keeps watering as soon as anything is missing (#815).
     irrigation_threshold = attr.ib(
@@ -654,6 +659,7 @@ class Config:
     # Full controller mode and its programs (see programs.py).
     full_controller = attr.ib(type=bool, default=CONF_DEFAULT_FULL_CONTROLLER)
     programs = attr.ib(type=list, default=CONF_DEFAULT_PROGRAMS)
+    supplies = attr.ib(type=list, default=CONF_DEFAULT_SUPPLIES)
     zone_sequencing = attr.ib(type=str, default=CONF_DEFAULT_ZONE_SEQUENCING)
     # Cycle and soak, and the pause between two zones of a sequential run.
     watering_passes = attr.ib(type=int, default=CONF_DEFAULT_WATERING_PASSES)
@@ -989,6 +995,7 @@ class SmartIrrigationStorage:
             recalculate_before_start=CONF_DEFAULT_RECALCULATE_BEFORE_START,
             full_controller=CONF_DEFAULT_FULL_CONTROLLER,
             programs=[],
+            supplies=[],
             sensor_debounce=CONF_DEFAULT_SENSOR_DEBOUNCE,
             calc_log_enabled=CONF_DEFAULT_CALC_LOG_ENABLED,
         )
@@ -1139,6 +1146,9 @@ class SmartIrrigationStorage:
                 programs=list(
                     data["config"].get(CONF_PROGRAMS, CONF_DEFAULT_PROGRAMS) or []
                 ),
+                supplies=list(
+                    data["config"].get(CONF_SUPPLIES, CONF_DEFAULT_SUPPLIES) or []
+                ),
                 zone_sequencing=data["config"].get(
                     CONF_ZONE_SEQUENCING, CONF_DEFAULT_ZONE_SEQUENCING
                 ),
@@ -1217,6 +1227,7 @@ class SmartIrrigationStorage:
                         ),
                         safety_off_topic=zone.get(ZONE_SAFETY_OFF_TOPIC, None),
                         safety_off_state_key=zone.get(ZONE_SAFETY_OFF_STATE_KEY, None),
+                        supply_id=zone.get(ZONE_SUPPLY_ID, None),
                         flow_sensor=zone.get(ZONE_FLOW_SENSOR, None),
                         soil_moisture_sensor=zone.get(ZONE_SOIL_MOISTURE_SENSOR, None),
                         soil_moisture_threshold=zone.get(

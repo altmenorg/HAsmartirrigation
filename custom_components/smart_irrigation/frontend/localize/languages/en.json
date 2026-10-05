@@ -593,6 +593,8 @@
         "drainage_rate": "Drainage rate",
         "linked-entity": "Linked valve/switch",
         "linked-entity-hint": "The valve or switch that waters this zone. Smart Irrigation opens and closes it when direct valve control is on. With observed watering on, any run of it (a manual tap, an automation, or Smart Irrigation itself) credits the bucket from the run time and the zone's throughput.",
+        "supply": "Supply (pump or main valve)",
+        "supply-none": "None",
         "flow-sensor": "Cumulative volume meter",
         "flow-sensor-hint": "For exact crediting instead of throughput x time: a cumulative water-meter total (state class total_increasing), not an instant flow rate. The unit is read automatically (L, mL, m³, gal, ft³).",
         "safety-off-topic": "Safety off MQTT topic",
@@ -829,6 +831,20 @@
     "description": "Configure the minimum number of days that must pass between irrigation events. This helps control watering frequency for water conservation and plant health management.\n\nTypical real-world use cases:\n• Lawn care: 1-2 day intervals prevent overwatering\n• Drought restrictions: 6+ day intervals for weekly watering\n• Deep-rooted plants: 3-7 day intervals for less frequent watering\n• Water conservation: Customizable based on climate and soil conditions",
     "label": "Minimum days between irrigation",
     "help_text": "Set to 0 to disable this feature. Values from 1-365 days are supported. This setting works alongside existing precipitation forecasting logic. A zone can have its own number of days in the Zones tab, which replaces this setting for that zone."
+  },
+  "supplies": {
+    "title": "Pumps and main valves",
+    "description": "A supply runs while a zone it feeds is being watered: a pump, or a main valve in front of the zone valves. Pick it in each zone's settings. The delays are in seconds and signed.",
+    "name": "Name",
+    "entities": "Entities",
+    "entities_hint": "separate several with commas",
+    "delay_before": "Delay before",
+    "delay_before_help": "Positive: the supply comes on this long before the zone valve opens. Negative: the valve opens first and the supply comes on this long after.",
+    "delay_after": "Delay after",
+    "delay_after_help": "Positive: the supply stays on this long after the zone valve closes. Negative: the supply goes off this long before the valve closes, so a pump never pushes against a closed valve.",
+    "enabled": "Enabled",
+    "add": "Add a supply",
+    "delete": "Delete"
   },
   "observed_watering": {
     "title": "Observed watering (closed loop)",
