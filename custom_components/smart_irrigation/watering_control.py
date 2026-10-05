@@ -53,11 +53,24 @@ class WateringControlMixin:
     def watering_paused(self) -> bool:
         return self._pause_events()[0].is_set()
 
+    def paused_seconds_total(self) -> float:
+        """Every second spent paused since startup, on the loop clock.
+
+        A run's progress is its time less the pauses that fell inside it.
+        """
+        total = getattr(self, "_paused_total", 0.0)
+        since = getattr(self, "_paused_since", None)
+        if since is not None:
+            total += max(0.0, self.hass.loop.time() - since)
+        return total
+
     async def async_pause_watering(self, minutes: float | None = None) -> None:
         """Close the open valves and hold everything until resumed."""
         pause, resume = self._pause_events()
         minutes = DEFAULT_PAUSE_MINUTES if minutes is None else float(minutes)
         minutes = max(1.0, min(minutes, float(MAX_PAUSE_MINUTES)))
+        if not pause.is_set():
+            self._paused_since = self.hass.loop.time()
         resume.clear()
         pause.set()
         timer = getattr(self, "_pause_timer", None)
@@ -82,6 +95,12 @@ class WateringControlMixin:
         self._pause_timer = None
         if not pause.is_set():
             return
+        since = getattr(self, "_paused_since", None)
+        if since is not None:
+            self._paused_total = getattr(self, "_paused_total", 0.0) + max(
+                0.0, self.hass.loop.time() - since
+            )
+            self._paused_since = None
         pause.clear()
         resume.set()
         _LOGGER.info("Watering resumed")

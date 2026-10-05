@@ -912,6 +912,7 @@
     "max_litres": "Volume limit",
     "max_litres_help": "A zone of this step stops once its water meter has counted this many litres. 0: no limit. The meter reports every so often, so the volume is not exact. A zone without a meter ignores it.",
     "new_program": "Program",
+    "main_name": "Main program",
     "run_now": "Run now"
   },
   "supplies": {

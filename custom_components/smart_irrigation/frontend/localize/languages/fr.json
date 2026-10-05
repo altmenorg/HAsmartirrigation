@@ -912,6 +912,7 @@
     "max_litres": "Limite de volume",
     "max_litres_help": "Une zone de cette étape s'arrête quand son compteur d'eau a compté ce nombre de litres. 0 : pas de limite. Le compteur ne rapporte que de temps en temps, le volume n'est donc pas exact. Une zone sans compteur l'ignore.",
     "new_program": "Programme",
+    "main_name": "Programme principal",
     "run_now": "Lancer maintenant"
   },
   "supplies": {

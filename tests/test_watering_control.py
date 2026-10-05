@@ -302,3 +302,18 @@ async def test_a_zone_that_cannot_be_watered_is_not(monkeypatch):
     assert await coord.async_water_zone_now(1, seconds=60) is False
     assert await coord.async_water_zone_now(9, seconds=60) is False
     assert _log(hass) == []
+
+
+async def test_the_time_paused_is_counted_apart(monkeypatch):
+    hass, coord, sleeps = _setup(monkeypatch)
+    clock = {"t": 100.0}
+    hass.loop.time = lambda: clock["t"]
+
+    await coord.async_pause_watering()
+    clock["t"] += 30
+    assert coord.paused_seconds_total() == 30
+    await coord.async_resume_watering()
+    clock["t"] += 50
+
+    # Fifty more seconds went by, but not paused.
+    assert coord.paused_seconds_total() == 30

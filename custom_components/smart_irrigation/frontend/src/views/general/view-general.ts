@@ -631,7 +631,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         hour: "2-digit",
         minute: "2-digit",
       }).format(new Date(iso));
-    const minutes = (seconds: number) => `${Math.round(seconds / 60)} min`;
+    const minutes = (seconds: number) =>
+      seconds < 60
+        ? `${Math.round(seconds)} s`
+        : `${Math.round(seconds / 60)} min`;
     const planning = this.planning || [];
     return html`
       <ha-card header="${t("title")}">
@@ -789,7 +792,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         ${step.mode === "fixed"
           ? this._numRow(
               t("seconds"),
-              localize("units.seconds", lang),
+              localize("common.units.seconds", lang),
               step.seconds,
               (v) => patchStep({ seconds: num(v) }),
             )
@@ -803,7 +806,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         <div class="setting-note">${t("max_litres_help")}</div>
         ${this._textRow(
           t("step_delay"),
-          localize("units.seconds", lang),
+          localize("common.units.seconds", lang),
           step.delay === null || step.delay === undefined ? "" : step.delay,
           (v) => patchStep({ delay: v.trim() === "" ? null : num(v) }),
         )}
@@ -897,7 +900,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             )
           : this._numRow(
               t("schedule_offset"),
-              localize("units.minutes", lang),
+              localize("common.units.minutes", lang),
               schedule.offset_minutes,
               (v) => patchSchedule({ offset_minutes: Math.round(num(v)) }),
             )}
@@ -1079,7 +1082,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             ? html`
                 <div class="card-content">
                   <div class="setting-note">
-                    <strong>${program.name}</strong>
+                    <strong
+                      >${program.name === "Main program"
+                        ? t("main_name")
+                        : program.name}</strong
+                    >
                   </div>
                   <div class="setting-note">${t("main_description")}</div>
                   <div class="setting-row">
@@ -1150,7 +1157,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   )}
                   ${this._numRow(
                     t("delay"),
-                    localize("units.seconds", lang),
+                    localize("common.units.seconds", lang),
                     program.delay ?? 0,
                     (v) => patch(index, { delay: num(v) }),
                   )}
@@ -1247,14 +1254,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               )}
               ${this._numRow(
                 t("delay_before"),
-                localize("units.seconds", lang),
+                localize("common.units.seconds", lang),
                 supply.delay_before,
                 (v) => patch(index, { delay_before: seconds(v) }),
               )}
               <div class="setting-note">${t("delay_before_help")}</div>
               ${this._numRow(
                 t("delay_after"),
-                localize("units.seconds", lang),
+                localize("common.units.seconds", lang),
                 supply.delay_after,
                 (v) => patch(index, { delay_after: seconds(v) }),
               )}

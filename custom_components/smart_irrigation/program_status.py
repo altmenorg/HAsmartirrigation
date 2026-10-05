@@ -69,8 +69,16 @@ class ProgramStatusMixin:
         programs = []
         for run in self._program_registry().values():
             running = run.running_since is not None
+            # The time paused is not progress.
             elapsed = (
-                max(0.0, self.hass.loop.time() - run.running_since) if running else 0.0
+                max(
+                    0.0,
+                    self.hass.loop.time()
+                    - run.running_since
+                    - (self.paused_seconds_total() - run.paused_at_start),
+                )
+                if running
+                else 0.0
             )
             total = run.total_seconds or 0.0
             programs.append(

@@ -52,6 +52,8 @@ class ProgramRun:
         self.steps = 0
         self.total_seconds = 0.0
         self.running_since: float | None = None
+        # The pauses that had been taken when the run began.
+        self.paused_at_start = 0.0
         # Zones stopped by name: not watered by the later steps either.
         self.excluded: set = set()
         # The zones of the current step that have started, for the resume.
@@ -142,12 +144,17 @@ class ProgramRunnerMixin:
                     _LOGGER.info("Program %s has nothing to water", run.program_id)
                     return
                 run.plan = plan
+                # Known before anything says the run has started.
+                run.tours = len(plan)
+                run.steps = len(plan[tour]) if tour < len(plan) else 0
+                run.tour, run.step = tour, step
                 self._announce_program(run, plan[tour:] or plan, resumed)
                 self._notify_programs()
                 run.total_seconds = plan_wall_seconds(
                     plan, self._soak_seconds() if hasattr(self, "_soak_seconds") else 0
                 )
                 run.running_since = self.hass.loop.time()
+                run.paused_at_start = self.paused_seconds_total()
                 await self._execute_plan(run, plan, tour, step)
                 self._report_program_finished(run)
         except asyncio.CancelledError:
