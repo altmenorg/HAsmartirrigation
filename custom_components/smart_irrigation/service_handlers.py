@@ -14,12 +14,20 @@ import re
 from datetime import datetime, timedelta
 
 import homeassistant.util.dt as dt_util
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
 from .exceptions import SmartIrrigationError
+from .programs import find_program
 from .units import depth_from_display, zone_from_display
+from .watering_control import (
+    MAX_SUSPEND_HOURS,
+    MAX_WATER_ZONE_SECONDS,
+    finite_number,
+    parse_suspend_until,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -216,12 +224,39 @@ class ServiceHandlersMixin:
         """End the zones of the step a program is on, and go on to the next."""
         await self.async_skip_step()
 
+    @staticmethod
+    def _check_suspend_input(hours, until) -> None:
+        try:
+            if until is not None:
+                parse_suspend_until(until)
+            elif hours is not None and hours != "":
+                finite_number(hours, 0, MAX_SUSPEND_HOURS, "hours")
+        except ValueError as e:
+            raise ServiceValidationError(str(e)) from None
+
+    def _known_program(self, program_id, lifting: bool) -> bool:
+        """Whether a suspension may be set for this program id.
+
+        An id that is no program is ignored, so that a typo does not leave a
+        suspension behind that waits for a program of that name. Lifting is
+        allowed for what is already recorded.
+        """
+        programs = getattr(self.store.config, const.CONF_PROGRAMS, None)
+        if find_program(programs, str(program_id)) is not None:
+            return True
+        if lifting and f"{const.SUSPEND_PROGRAM}:{program_id}" in self._suspensions():
+            return True
+        _LOGGER.warning("suspend: %s is not a program, ignored", program_id)
+        return False
+
     async def handle_suspend(self, call):
         """Keep a zone or a program from watering for a while, or lift that."""
         hours = call.data.get("hours")
         until = call.data.get("until")
         program_id = call.data.get(const.ATTR_PROGRAM_ID)
-        if program_id:
+        # Refused as a whole before anything is changed.
+        self._check_suspend_input(hours, until)
+        if program_id and self._known_program(program_id, lifting=not (hours or until)):
             await self.async_suspend(
                 const.SUSPEND_PROGRAM, str(program_id), hours=hours, until=until
             )
@@ -240,7 +275,15 @@ class ServiceHandlersMixin:
         """Water a zone now, for a time, or when it is its turn."""
         eid = call.data.get(const.SERVICE_ENTITY_ID)
         seconds = call.data.get(const.ATTR_SECONDS)
-        for entity in eid if isinstance(eid, list) else ([eid] if eid else []):
+        if seconds is not None:
+            # Checked here: a run is spawned, and an error in it reaches no one.
+            try:
+                seconds = finite_number(seconds, 1, MAX_WATER_ZONE_SECONDS, "seconds")
+            except ValueError as e:
+                raise ServiceValidationError(str(e)) from None
+        if isinstance(eid, str):
+            eid = [eid]
+        for entity in eid or []:
             state = self.hass.states.get(entity)
             zone_id = state.attributes.get(const.ZONE_ID) if state else None
             if zone_id is None:

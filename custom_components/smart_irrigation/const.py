@@ -144,6 +144,10 @@ CONF_PROGRAM_LAST_RUNS = "program_last_runs"
 # What is suspended until when: {"zone:3": iso, "program:evening": iso}. Kept apart
 # from the zones and the programs, which the panel sends back whole.
 CONF_SUSPENSIONS = "suspensions"
+# What direct valve control was when the full controller was switched on (which
+# forces it on), so that switching the controller off puts it back. None when the
+# controller was never switched on, or the value was already used.
+CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER = "direct_valve_control_before_full_controller"
 SUSPEND_ZONE = "zone"
 SUSPEND_PROGRAM = "program"
 # A cycle older than this is not resumed: it belongs to another day's watering.

@@ -15,7 +15,14 @@ What the learning from the fork this was modelled on says is done here:
 * every timer is cancelled when the coordinator is torn down, so a reload cannot
   leave a second one behind (N reloads, N+1 runs);
 * a schedule is read again from the configuration when its timer fires, so an
-  edit made meanwhile is the one that counts.
+  edit made meanwhile is the one that counts;
+* an occurrence whose start has gone by while its moment has not (it "catches
+  up": starts now, late but in time) is only started after a startup or a
+  reload, or when its timer was armed and missed. Arming again because a
+  program was edited or a calculation changed the run's length never starts one:
+  an edit at 05:50 of a "done by 06:00" schedule must not water at once;
+* what fires is checked against the record at the moment it fires, so two
+  arming passes cannot start the same occurrence twice.
 
 The weather gate is the one the start trigger uses: the same decision, made once
 a day, and the same holds on the zones the run is about to water.
@@ -30,7 +37,7 @@ from homeassistant.helpers.event import async_track_point_in_utc_time
 from homeassistant.helpers.sun import get_astral_event_date
 
 from . import const
-from .programs import find_program, plan_program, plan_wall_seconds, restrict_plan
+from .programs import find_program, plan_program, plan_wall_seconds
 from .schedules import next_fire
 
 _LOGGER = logging.getLogger(__name__)
@@ -59,6 +66,13 @@ class ProgramSchedulerMixin:
         """Arm the next occurrence of every schedule, cancelling what was armed."""
         self.async_teardown_program_schedules()
         self._notify_programs()
+        # The first arming of this coordinator is a startup or a reload, where
+        # an occurrence that came due during the downtime is still caught up.
+        first = not getattr(self, "_program_schedules_armed_once", False)
+        self._program_schedules_armed_once = True
+        previous = getattr(self, "_armed_program_fires", None) or {}
+        armed: dict = {}
+        self._armed_program_fires = armed
         config = self.store.config
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
             return
@@ -93,8 +107,42 @@ class ProgramSchedulerMixin:
                 ) as e:  # noqa: BLE001 - one schedule must not stop the rest
                     _LOGGER.warning("Schedule %s could not be placed: %s", key, e)
                     continue
+                if upcoming is not None and upcoming["catch_up"]:
+                    was = previous.get(key)
+                    missed = (
+                        was is not None
+                        and was[0] == upcoming["target"]
+                        and was[1] <= now
+                    )
+                    if not (first or missed):
+                        # Armed again by an edit or a recalculation: the start
+                        # is not owed to anyone, so the occurrence is let go.
+                        _LOGGER.info(
+                            "Program %s: schedule %s no longer has time to run "
+                            "before %s, passed over",
+                            program_id,
+                            schedule_id,
+                            dt_util.as_local(upcoming["target"]).strftime("%H:%M"),
+                        )
+                        try:
+                            upcoming = next_fire(
+                                schedule,
+                                now,
+                                total,
+                                upcoming["target"],
+                                self._sun_moment,
+                                tz,
+                            )
+                        except Exception as e:  # noqa: BLE001
+                            _LOGGER.warning(
+                                "Schedule %s could not be placed: %s", key, e
+                            )
+                            continue
+                        if upcoming is not None and upcoming["catch_up"]:
+                            continue
                 if upcoming is None:
                     continue
+                armed[key] = (upcoming["target"], upcoming["fire"])
                 if upcoming["catch_up"]:
                     _LOGGER.warning(
                         "Program %s: its start has gone by and the run can still "
@@ -129,6 +177,21 @@ class ProgramSchedulerMixin:
     async def _fire_program_schedule(self, program_id, schedule_id, target) -> None:
         """A schedule is due: remember it, arm the next one, then run the program."""
         config = self.store.config
+        key = f"{program_id}:{schedule_id}"
+        # An occurrence fires once: not if it was recorded already (a catch-up
+        # task queued by an arming pass that another has since repeated), nor if
+        # it is on its way now.
+        recorded = dt_util.parse_datetime(
+            (getattr(config, const.CONF_PROGRAM_LAST_RUNS, None) or {}).get(key) or ""
+        )
+        fired = getattr(self, "_program_fires_in_flight", None)
+        if fired is None:
+            fired = self._program_fires_in_flight = {}
+        if (recorded is not None and target <= recorded) or (
+            key in fired and target <= fired[key]
+        ):
+            _LOGGER.debug("Schedule %s already ran for %s", key, target.isoformat())
+            return
         program = find_program(getattr(config, const.CONF_PROGRAMS, None), program_id)
         schedule = next(
             (
@@ -149,8 +212,9 @@ class ProgramSchedulerMixin:
             return
         suspended = self.is_suspended(const.SUSPEND_PROGRAM, program_id)
         # Before anything else: whatever happens next, this occurrence has run.
+        fired[key] = target
         last_runs = dict(getattr(config, const.CONF_PROGRAM_LAST_RUNS, None) or {})
-        last_runs[f"{program_id}:{schedule_id}"] = target.isoformat()
+        last_runs[key] = target.isoformat()
         await self.store.async_update_config({const.CONF_PROGRAM_LAST_RUNS: last_runs})
         await self.register_program_schedules()
 
@@ -158,7 +222,17 @@ class ProgramSchedulerMixin:
         if suspended:
             _LOGGER.info("Program %s is suspended, its schedule passes", program_id)
             return
+        registry = (
+            self._program_registry() if hasattr(self, "_program_registry") else {}
+        )
+        if program_id in registry:
+            # Nothing starts, so nothing is counted and no weather is judged.
+            _LOGGER.info("Program %s is already running or waiting", program_id)
+            return
         only_zones = None
+        # The weather is judged now, on the day the run starts, and not on the
+        # day of the schedule's moment: a "done by Monday 01:00" run that starts
+        # on Sunday evening is held back or not by Sunday's skip decision.
         if schedule.get(const.SCHEDULE_WEATHER) is not False:
             try:
                 go, sheltered = await self._prepare_watering_for_today(
@@ -183,15 +257,14 @@ class ProgramSchedulerMixin:
             if not go:
                 return
             only_zones = sheltered or None
-        # Counted now, for the zones the run is about to water.
-        zones = await self.store.async_get_zones()
-        plan = plan_program(program, zones)
-        if only_zones is not None:
-            plan = restrict_plan(plan, only_zones)
-        await self._note_watering_day(
-            name,
-            zone_ids={
-                m["zone_id"] for tour in plan for step in tour for m in step["zones"]
-            },
+
+        async def _count_the_day(zone_ids):
+            await self._note_watering_day(name, zone_ids=zone_ids)
+
+        # The day is counted when a step really starts, for the zones it waters.
+        await self.async_run_program(
+            program_id,
+            manual=False,
+            only_zones=only_zones,
+            note_day=_count_the_day,
         )
-        await self.async_run_program(program_id, manual=False, only_zones=only_zones)

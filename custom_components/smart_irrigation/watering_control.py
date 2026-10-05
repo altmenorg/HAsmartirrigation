@@ -20,9 +20,13 @@ one zone for ten minutes whatever the plan says.
 
 import asyncio
 import logging
-from datetime import timedelta
+import math
+from datetime import datetime, timedelta
 
 import homeassistant.util.dt as dt_util
+import voluptuous as vol
+from homeassistant.exceptions import ServiceValidationError
+from homeassistant.helpers import config_validation as cv
 
 from . import const
 
@@ -34,6 +38,89 @@ MAX_PAUSE_MINUTES = 24 * 60
 
 SUSPEND_ZONE = "zone"
 SUSPEND_PROGRAM = "program"
+
+MAX_SUSPEND_HOURS = 8760
+MAX_WATER_ZONE_SECONDS = 86400
+
+
+def finite_number(value, low: float, high: float, what: str = "value") -> float:
+    """A finite number within bounds, or ``ValueError`` saying what is wrong.
+
+    Strings are accepted when they read as a number; NaN, infinity, booleans and
+    anything out of range are not (``float("1e999")`` is infinity, and an
+    infinite number of hours cannot become a date).
+    """
+    if isinstance(value, bool):
+        raise ValueError(f"{what} must be a number")
+    try:
+        number = float(value)
+    except (TypeError, ValueError, OverflowError):
+        raise ValueError(f"{what} must be a number, not {value!r}") from None
+    if not math.isfinite(number) or not low <= number <= high:
+        raise ValueError(f"{what} must be between {low:g} and {high:g}")
+    return number
+
+
+def _number_validator(low: float, high: float, what: str):
+    def _validate(value):
+        try:
+            return finite_number(value, low, high, what)
+        except ValueError as e:
+            raise vol.Invalid(str(e)) from None
+
+    return _validate
+
+
+def parse_suspend_until(value) -> datetime:
+    """A moment, from a datetime or an ISO string; ``ValueError`` if it is none."""
+    if isinstance(value, datetime):
+        moment = value
+    else:
+        moment = dt_util.parse_datetime(str(value).strip()) if value else None
+    if moment is None:
+        raise ValueError(f"until must be a date and time, not {value!r}")
+    return moment
+
+
+def _until_validator(value):
+    try:
+        parse_suspend_until(value)
+    except ValueError as e:
+        raise vol.Invalid(str(e)) from None
+    return value
+
+
+# The shapes of the services below. Extra keys pass: the target selector adds
+# device and area ids next to the entity ids.
+RUN_PROGRAM_SCHEMA = vol.Schema(
+    {vol.Required(const.ATTR_PROGRAM_ID): cv.string}, extra=vol.ALLOW_EXTRA
+)
+PAUSE_WATERING_SCHEMA = vol.Schema(
+    {
+        vol.Optional("minutes"): vol.Any(
+            None, _number_validator(1, MAX_PAUSE_MINUTES, "minutes")
+        )
+    },
+    extra=vol.ALLOW_EXTRA,
+)
+SUSPEND_SCHEMA = vol.Schema(
+    {
+        vol.Optional(const.ATTR_PROGRAM_ID): vol.Any(None, cv.string),
+        vol.Optional("hours"): vol.Any(
+            None, _number_validator(0, MAX_SUSPEND_HOURS, "hours")
+        ),
+        vol.Optional("until"): vol.Any(None, _until_validator),
+    },
+    extra=vol.ALLOW_EXTRA,
+)
+WATER_ZONE_SCHEMA = vol.Schema(
+    {
+        vol.Optional(const.ATTR_SECONDS): vol.Any(
+            None, _number_validator(1, MAX_WATER_ZONE_SECONDS, "seconds")
+        )
+    },
+    extra=vol.ALLOW_EXTRA,
+)
 
 
 class WateringControlMixin:
@@ -67,8 +154,13 @@ class WateringControlMixin:
     async def async_pause_watering(self, minutes: float | None = None) -> None:
         """Close the open valves and hold everything until resumed."""
         pause, resume = self._pause_events()
-        minutes = DEFAULT_PAUSE_MINUTES if minutes is None else float(minutes)
-        minutes = max(1.0, min(minutes, float(MAX_PAUSE_MINUTES)))
+        if minutes is None:
+            minutes = float(DEFAULT_PAUSE_MINUTES)
+        else:
+            try:
+                minutes = finite_number(minutes, 1, MAX_PAUSE_MINUTES, "minutes")
+            except ValueError as e:
+                raise ServiceValidationError(str(e)) from None
         if not pause.is_set():
             self._paused_since = self.hass.loop.time()
         resume.clear()
@@ -175,22 +267,31 @@ class WateringControlMixin:
     async def async_suspend(self, kind: str, ident, hours=None, until=None) -> object:
         """Keep a zone or a program from watering. Returns the end, or None if lifted.
 
-        ``hours`` of 0, or neither ``hours`` nor ``until``, lifts it.
+        ``hours`` of 0, or neither ``hours`` nor ``until``, lifts it. Input that
+        cannot be understood (hours that are not a number or are too many, an
+        ``until`` that is no date) is refused with ``ServiceValidationError`` and
+        changes nothing: a typo must never lift a suspension.
         """
         suspensions = self._suspensions()
         key = f"{kind}:{ident}"
         end = None
-        if until is not None:
-            end = (
-                dt_util.parse_datetime(str(until)) if isinstance(until, str) else until
-            )
-        elif hours:
-            try:
-                end = dt_util.utcnow() + timedelta(hours=float(hours))
-            except (TypeError, ValueError):
-                end = None
-        if end is not None and end.tzinfo is None:
-            end = end.replace(tzinfo=dt_util.get_default_time_zone())
+        try:
+            if until is not None:
+                end = parse_suspend_until(until)
+            elif hours is not None and hours != "":
+                number = finite_number(hours, 0, MAX_SUSPEND_HOURS, "hours")
+                if number:
+                    end = dt_util.utcnow() + timedelta(hours=number)
+            if end is not None and end.tzinfo is None:
+                end = end.replace(tzinfo=dt_util.get_default_time_zone())
+            if end is not None and end > dt_util.utcnow() + timedelta(
+                hours=MAX_SUSPEND_HOURS
+            ):
+                raise ValueError(
+                    f"until must be within {MAX_SUSPEND_HOURS} hours from now"
+                )
+        except (ValueError, OverflowError) as e:
+            raise ServiceValidationError(str(e)) from None
         if end is None or end <= dt_util.utcnow():
             suspensions.pop(key, None)
             end = None
@@ -252,7 +353,14 @@ class WateringControlMixin:
             if seconds is None:
                 duration = float(zone.get(const.ZONE_DURATION) or 0.0)
             else:
-                duration = max(0.0, float(seconds)) + lead
+                try:
+                    seconds = finite_number(
+                        seconds, 0, MAX_WATER_ZONE_SECONDS, "seconds"
+                    )
+                except ValueError as e:
+                    _LOGGER.warning("Zone %s not watered: %s", zone_id, e)
+                    return False
+                duration = seconds + lead
             if duration <= 0:
                 return False
             zone[const.ZONE_DURATION] = duration

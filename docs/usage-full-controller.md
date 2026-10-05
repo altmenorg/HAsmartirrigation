@@ -22,7 +22,7 @@ Switching it on:
 - creates a **main program**, which is what runs today: your start trigger, the sequencing, the pause between zones and cycle and soak, all as you set them. Nothing is copied: change those settings and the main program follows;
 - shows the cards below.
 
-Switching it off brings back exactly the previous behaviour. Your programs and supplies stay stored for the day you switch it on again.
+Switching it off brings back the previous behaviour: direct valve control returns to what it was before you switched the full controller on (off if it was off), unless you set it yourself in the same change. Your programs and supplies stay stored for the day you switch it on again. If you switched the full controller on with an older version, nothing was remembered, and direct valve control stays on.
 
 One thing is different from the moment it is on: **a valve found open at startup that no run of ours owns is closed.** After a crash or a restart, a valve left open by a run nobody resumes would water until someone noticed. A reading that says nothing (`unavailable`, `unknown`) is never taken for an open valve.
 
@@ -63,11 +63,13 @@ For the program:
 
 A program has any number of schedules, each a **moment** and the **days** it applies to.
 
-- **The moment** is a time of day, or sunrise or sunset with an offset in minutes. It is either when the program **starts** or when it **must be done**. With the second, the start is worked back from the length of what the program has to water (its steps, waits, passes and soaks). A start that has gone by while its moment is still ahead begins at once rather than losing the day.
-- **The days** are filters, and all of them have to hold: days of the week; *every N days* with a shift (three programs with N = 3 and shifts 0, 1 and 2 take turns and never share a day); even or odd days of the month; months; and a period of the year, which may run over New Year (`11-01` to `03-01`).
+- **The moment** is a time of day, or sunrise or sunset with an offset in minutes. It is either when the program **starts** or when it **must be done**. With the second, the start is worked back from the length of what the program has to water (its steps, waits, passes and soaks). A start that has gone by while its moment is still ahead begins at once rather than losing the day, but only after a restart or a reload of Home Assistant, or when its timer was missed. Editing a program, or a calculation that makes the run longer, never starts a run on the spot: an edit at 05:50 of a "done by 06:00" schedule that now needs 20 minutes waits for tomorrow.
+- **The days** are filters, and all of them have to hold: they apply to the day of the **moment**. A run that must be done by Monday 01:00 and takes two hours starts on Sunday at 23:00, and "Monday" is the day that counts. The weather, on the other hand, is judged when the run starts, so that run asks Sunday's conditions. The filters are: days of the week; *every N days* with a shift (three programs with N = 3 and shifts 0, 1 and 2 take turns and never share a day); even or odd days of the month; months; and a period of the year, which may run over New Year (`11-01` to `03-01`).
 - **Take the weather into account**, on by default: the same skip conditions as the start trigger apply (rain, frost, wind, a wet soil, postponed days), with the same decision made once a day. On a day when rain is forecast, only the zones the rain cannot reach run. Turn it off for a greenhouse drip line that does not care.
 
 Good to know: the weather holds work on the zones' calculated durations, which all programs share. On a day a weather-aware start has held a zone back, a program that ignores the weather but waters that zone for its *calculated* duration finds nothing to water. For a zone that must be watered whatever the weather says, give its step a *fixed* duration.
+
+A schedule that comes due while its program is already running or waiting starts nothing and counts no watering day; the days between irrigations are only reset for the zones that really start. A program deleted, disabled or suspended while it runs stops before its next step. Deleting a program or a schedule also clears what was remembered of its last run, so a new schedule never inherits it.
 
 The Smart Irrigation schedules are armed when a setting changes, after a calculation and at a new day, like the start trigger.
 
@@ -83,7 +85,7 @@ The buttons of the Programs card, and these [services](usage-services.md):
 | `smart_irrigation.resume_watering` | Goes on from where the pause stopped. |
 | `smart_irrigation.next_step` | Ends the zones of the step a program is on, and lets it go on. |
 | `smart_irrigation.stop_watering` | Stops now: every valve is closed, each zone is credited for the water it delivered, programs and waiting zones end. With zones chosen, only those. It also ends a pause. |
-| `smart_irrigation.suspend` | Keeps a zone or a program from watering for some hours or until a date. Zero hours lifts it. |
+| `smart_irrigation.suspend` | Keeps a zone or a program from watering for some hours or until a date. Zero hours lifts it. Hours are limited to 8760, a date that cannot be read is refused (it never lifts a suspension), and an unknown program id is ignored. |
 | `smart_irrigation.use_measured_throughput` | Takes the flow a zone's meter measured as its throughput. The measurement is advice and is never applied on its own. |
 
 ## Seeing what is going on

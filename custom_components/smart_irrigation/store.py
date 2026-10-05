@@ -77,6 +77,7 @@ from .const import (
     CONF_DEFAULT_WEATHER_SERVICE,
     CONF_DEFAULT_ZONE_INPUT_METHOD,
     CONF_DEFAULT_ZONE_SEQUENCING,
+    CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER,
     CONF_DIRECT_VALVE_CONTROL_ENABLED,
     CONF_EFFECTIVE_RAIN,
     CONF_FORECAST_RAIN_CREDIT,
@@ -664,19 +665,25 @@ class Config:
     )
     # Full controller mode and its programs (see programs.py).
     full_controller = attr.ib(type=bool, default=CONF_DEFAULT_FULL_CONTROLLER)
-    programs = attr.ib(type=list, default=CONF_DEFAULT_PROGRAMS)
-    supplies = attr.ib(type=list, default=CONF_DEFAULT_SUPPLIES)
+    programs = attr.ib(
+        type=list, default=attr.Factory(lambda: list(CONF_DEFAULT_PROGRAMS))
+    )
+    supplies = attr.ib(
+        type=list, default=attr.Factory(lambda: list(CONF_DEFAULT_SUPPLIES))
+    )
     zone_sequencing = attr.ib(type=str, default=CONF_DEFAULT_ZONE_SEQUENCING)
     # Cycle and soak, and the pause between two zones of a sequential run.
     watering_passes = attr.ib(type=int, default=CONF_DEFAULT_WATERING_PASSES)
     soak_minutes = attr.ib(type=float, default=CONF_DEFAULT_SOAK_MINUTES)
     pause_between_zones = attr.ib(type=float, default=CONF_DEFAULT_PAUSE_BETWEEN_ZONES)
     # In-flight direct-control runs, persisted so a reboot can resume them.
-    active_valve_runs = attr.ib(type=list, default=[])
+    active_valve_runs = attr.ib(type=list, default=attr.Factory(list))
     active_cycle = attr.ib(type=dict, default=None)
     active_program_run = attr.ib(type=dict, default=None)
     program_last_runs = attr.ib(type=dict, default=None)
     suspensions = attr.ib(type=dict, default=None)
+    # Direct valve control as it was before the full controller forced it on.
+    direct_valve_control_before_full_controller = attr.ib(type=bool, default=None)
 
 
 class MigratableStore(Store):
@@ -1175,6 +1182,9 @@ class SmartIrrigationStorage:
                 active_program_run=data["config"].get(CONF_ACTIVE_PROGRAM_RUN),
                 program_last_runs=data["config"].get(CONF_PROGRAM_LAST_RUNS),
                 suspensions=data["config"].get(CONF_SUSPENSIONS),
+                direct_valve_control_before_full_controller=data["config"].get(
+                    CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER
+                ),
             )
 
             if "zones" in data:

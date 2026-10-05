@@ -35,8 +35,11 @@ _LOGGER = logging.getLogger(__name__)
 class ProgramRun:
     """A run of a program, from the moment it is asked for to its end."""
 
-    def __init__(self, program_id: str, name: str, manual: bool) -> None:
+    def __init__(self, program_id: str, name: str, manual: bool, note_day=None) -> None:
         self.program_id = program_id
+        # Called with the zones about to be watered, when a step really starts
+        # (the scheduler counts the day then, and not when the run was asked for).
+        self.note_day = note_day
         self.name = name
         self.manual = manual
         self.stop = asyncio.Event()
@@ -80,12 +83,25 @@ class ProgramRunnerMixin:
 
     # --- asking for a run ----------------------------------------------------
 
+    def _program_allowed(self, program_id) -> bool:
+        """Whether the program may water: it is there, enabled, not suspended."""
+        config = self.store.config
+        if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
+            return False
+        program = find_program(getattr(config, const.CONF_PROGRAMS, None), program_id)
+        return (
+            program is not None
+            and program.get(const.PROGRAM_ENABLED) is not False
+            and not self.is_suspended(const.SUSPEND_PROGRAM, program_id)
+        )
+
     async def async_run_program(
-        self, program_id, manual: bool = True, only_zones=None
+        self, program_id, manual: bool = True, only_zones=None, note_day=None
     ) -> bool:
         """Run a program now, or as soon as it is its turn. False if not started.
 
         ``only_zones`` keeps the run to those zones (the ones the rain cannot reach).
+        ``note_day`` is awaited with the zones of each step that is about to water.
         """
         config = self.store.config
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
@@ -111,14 +127,17 @@ class ProgramRunnerMixin:
             _LOGGER.info("Program %s is already running or waiting", program_id)
             return False
         run = ProgramRun(
-            program_id, program.get(const.PROGRAM_NAME) or program_id, manual
+            program_id,
+            program.get(const.PROGRAM_NAME) or program_id,
+            manual,
+            note_day,
         )
 
         async def _plan():
             fresh = find_program(
                 getattr(self.store.config, const.CONF_PROGRAMS, None), program_id
             )
-            if fresh is None or fresh.get(const.PROGRAM_ENABLED) is False:
+            if fresh is None or not self._program_allowed(program_id):
                 return None, 0, 0
             zones = await self.store.async_get_zones()
             plan = plan_program(fresh, zones)
@@ -179,6 +198,16 @@ class ProgramRunnerMixin:
                     return
                 if not await self._wait_run_resume(run):
                     return
+                if not self._program_allowed(run.program_id):
+                    # Deleted, disabled or suspended while it ran, or the full
+                    # controller switched off: no further step opens a valve.
+                    _LOGGER.info(
+                        "Program %s can no longer run, stopped before its step %s",
+                        run.program_id,
+                        index + 1,
+                    )
+                    run.stop.set()
+                    return
                 if not (tour == tour0 and index == step0 and run.started_zones):
                     run.started_zones = set()
                 await self._persist_program_run(run, plan, tour, index)
@@ -199,7 +228,7 @@ class ProgramRunnerMixin:
 
     async def _run_step(self, run: ProgramRun, step: dict) -> list:
         """Water the zones of a step together, each as it is now."""
-        jobs = []
+        members = []
         for member in step["zones"]:
             zone_id = int(member["zone_id"])
             zone = self.store.get_zone(zone_id)
@@ -225,16 +254,26 @@ class ProgramRunnerMixin:
                 continue
             zone = dict(zone)
             zone[const.ZONE_DURATION] = float(member["seconds"])
-            jobs.append(
-                self._run_program_zone(
-                    run,
-                    zone,
-                    int(member["passes"]),
-                    float(member.get("max_litres") or 0.0),
-                )
-            )
-        if not jobs:
+            members.append((zone, member))
+        if not members:
             return []
+        if run.note_day is not None:
+            # Only now is it certain these zones water: counted for them alone.
+            try:
+                await run.note_day({int(z[const.ZONE_ID]) for z, _ in members})
+            except asyncio.CancelledError:
+                raise
+            except Exception as e:  # noqa: BLE001 - the counters are not the run
+                _LOGGER.warning("Program %s: could not count the day: %s", run.name, e)
+        jobs = [
+            self._run_program_zone(
+                run,
+                zone,
+                int(member["passes"]),
+                float(member.get("max_litres") or 0.0),
+            )
+            for zone, member in members
+        ]
         return [r for r in await asyncio.gather(*jobs) if r]
 
     async def _run_program_zone(
@@ -280,20 +319,37 @@ class ProgramRunnerMixin:
             }
         )
 
-    async def _resume_program(self, record: dict, resumed: list) -> None:
-        """Go on with the steps a restart interrupted, after the open run's end."""
+    async def _drop_program_record(self) -> None:
         await self.store.async_update_config({const.CONF_ACTIVE_PROGRAM_RUN: None})
+
+    async def _resume_program(self, record: dict, resumed: list) -> None:
+        """Go on with the steps a restart interrupted, after the open run's end.
+
+        The record stays where it is until the first step writes it again (or the
+        run is dropped on purpose), so that a second crash in between does not
+        lose the program.
+        """
         started = dt_util.parse_datetime((record or {}).get("started") or "")
         if started is None or (dt_util.utcnow() - started) > timedelta(
             seconds=const.CYCLE_RESUME_MAX_AGE_SECONDS
         ):
             _LOGGER.info("The interrupted program run is too old, dropped")
+            await self._drop_program_record()
             return
         if resumed:
             await asyncio.gather(*resumed, return_exceptions=True)
         plan = record.get("plan") or []
         program_id = record.get("program_id")
         if not plan or not program_id or program_id in self._program_registry():
+            await self._drop_program_record()
+            return
+        if not self._program_allowed(program_id):
+            _LOGGER.info(
+                "Program %s can no longer run (deleted, disabled, suspended or the "
+                "full controller is off), its interrupted run is dropped",
+                program_id,
+            )
+            await self._drop_program_record()
             return
         run = ProgramRun(
             program_id, record.get("name") or program_id, bool(record.get("manual"))
@@ -306,13 +362,21 @@ class ProgramRunnerMixin:
             tour = int(record.get("tour") or 0)
             step = int(record.get("step") or 0)
             started = {int(z) for z in record.get("started_zones") or []}
-            if 0 <= tour < len(plan) and 0 <= step < len(plan[tour]):
-                current = plan[tour][step]
-                left = [m for m in current["zones"] if int(m["zone_id"]) not in started]
-                if left:
-                    plan[tour][step] = {**current, "zones": left}
-                    return plan, tour, step
-            return plan, tour, step + 1
+            if not (0 <= tour < len(plan) and 0 <= step < len(plan[tour])):
+                return None, 0, 0
+            current = plan[tour][step]
+            left = [m for m in current["zones"] if int(m["zone_id"]) not in started]
+            if left:
+                plan[tour][step] = {**current, "zones": left}
+                return plan, tour, step
+            # The step is over: on to the next, which may be in the next tour,
+            # or there is none and nothing is left to do.
+            step += 1
+            if step >= len(plan[tour]):
+                tour, step = tour + 1, 0
+            if tour >= len(plan):
+                return None, 0, 0
+            return plan, tour, step
 
         _LOGGER.info("Going on with program %s after the restart", program_id)
         await self._drive_program(run, _remaining, resumed=True)

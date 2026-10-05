@@ -12,7 +12,11 @@ time (a day is a local date, not 24 hours: the clock changes twice a year).
   water balance says, and "done by sunrise" is placed from the end.
 * **The days** are filters, all of which have to hold: days of the week, every
   N days (with an offset, to turn groups A, B and C), even or odd days of the
-  month, months, and a period of the year that may wrap over New Year.
+  month, months, and a period of the year that may wrap over New Year. They
+  apply to the day of the schedule's **moment**: for a run that must be done by
+  Monday 01:00, "Monday" is the day that counts, although the valves open on
+  Sunday evening. The weather is another matter: it is judged when the run
+  starts (program_scheduler.py), on the day the water actually flows first.
 * **Weather**: whether the skip conditions (rain, frost, wind, a moist soil)
   apply to the run. They do by default, since that is what Smart Irrigation is
   for; a greenhouse drip line can turn them off.
@@ -61,7 +65,7 @@ def _int(value, default: int, low: int, high: int) -> int:
         number = float(value)
     except (TypeError, ValueError):
         return default
-    if math.isnan(number):
+    if not math.isfinite(number):
         return default
     return max(low, min(high, int(number)))
 
@@ -93,17 +97,34 @@ def _month_day(value) -> str | None:
     return f"{month:02d}-{day:02d}"
 
 
-def normalize_schedule(schedule, used: set, position: int = 0) -> dict | None:
-    """One schedule as it is stored, or None if it is not one."""
+def _clean_id(value) -> str:
+    return _ID_UNSAFE.sub("_", str(value or "").lower()).strip("_")
+
+
+def _auto_id(position: int, taken: set) -> str:
+    """``schedule_N`` for the first N from the position on that nobody has."""
+    n = position + 1
+    while f"schedule_{n}" in taken:
+        n += 1
+    return f"schedule_{n}"
+
+
+def normalize_schedule(
+    schedule, used: set, position: int = 0, avoid: set | None = None
+) -> dict | None:
+    """One schedule as it is stored, or None if it is not one.
+
+    A schedule that has no id of its own is given ``schedule_N``, skipping the
+    ids in ``used`` and in ``avoid`` (the ones the program has had).
+    """
     if not isinstance(schedule, dict):
         return None
     schedule_type = schedule.get(const.SCHEDULE_TYPE)
     if schedule_type not in SCHEDULE_TYPES:
         schedule_type = SCHEDULE_TYPE_TIME
-    wanted = _ID_UNSAFE.sub(
-        "_", str(schedule.get(const.SCHEDULE_ID) or f"schedule_{position + 1}").lower()
-    ).strip("_")
-    base = wanted or f"schedule_{position + 1}"
+    base = _clean_id(schedule.get(const.SCHEDULE_ID)) or _auto_id(
+        position, used | (avoid or set())
+    )
     schedule_id, n = base, 2
     while schedule_id in used:
         schedule_id, n = f"{base}_{n}", n + 1
@@ -141,12 +162,24 @@ def normalize_schedule(schedule, used: set, position: int = 0) -> dict | None:
     }
 
 
-def normalize_schedules(schedules) -> list:
-    """The schedules of a program as they are stored."""
+def normalize_schedules(schedules, reserved_ids=None) -> list:
+    """The schedules of a program as they are stored.
+
+    The ids that were given are kept first, so that a schedule without one
+    never takes the id of another that comes later in the list. A new id is
+    never one of ``reserved_ids``, which a deleted schedule may have left marks
+    under (its last run), and the new schedule would otherwise inherit them.
+    """
+    reserved = {str(i) for i in (reserved_ids or ())}
+    given = {
+        _clean_id(s.get(const.SCHEDULE_ID))
+        for s in (schedules or [])
+        if isinstance(s, dict) and _clean_id(s.get(const.SCHEDULE_ID))
+    }
     used: set = set()
     cleaned = []
     for position, raw in enumerate(schedules or []):
-        schedule = normalize_schedule(raw, used, position)
+        schedule = normalize_schedule(raw, used, position, reserved | given)
         if schedule is not None:
             cleaned.append(schedule)
     return cleaned

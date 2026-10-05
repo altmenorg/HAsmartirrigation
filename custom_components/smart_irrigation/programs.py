@@ -141,14 +141,22 @@ def normalize_step(step, used: set, position: int = 0) -> dict | None:
     }
 
 
-def normalize_programs(programs) -> list:
+def normalize_programs(programs, reserved_schedule_ids=None) -> list:
     """The programs as they are stored: well formed, ids unique, main kept.
 
     What the panel sends is cleaned rather than refused. The main program keeps
-    its id and carries no steps; any other program gets one if it has none.
+    its id and carries no steps; any other program gets one if it has none. The
+    id ``main`` belongs to the main program alone: a program named "Main" that
+    comes without an id gets another one, and the real main is never displaced.
+
+    ``reserved_schedule_ids`` maps a program id to the schedule ids it has had
+    (stored, or with a mark of its last run): a new schedule is never given one
+    of them, so it cannot inherit what was recorded for a schedule long gone.
     """
     cleaned = []
-    used = set()
+    used = {MAIN_PROGRAM_ID}
+    main_seen = False
+    reserved_schedule_ids = reserved_schedule_ids or {}
     for position, program in enumerate(programs or []):
         if not isinstance(program, dict):
             continue
@@ -158,9 +166,9 @@ def normalize_programs(programs) -> list:
         )
         name = str(program.get(const.PROGRAM_NAME) or "").strip()
         if is_main:
-            if MAIN_PROGRAM_ID in used:
+            if main_seen:
                 continue
-            used.add(MAIN_PROGRAM_ID)
+            main_seen = True
             cleaned.append(
                 {
                     const.PROGRAM_ID: MAIN_PROGRAM_ID,
@@ -197,7 +205,8 @@ def normalize_programs(programs) -> list:
                     program.get(const.PROGRAM_TOURS), 1, MAX_TOURS
                 ),
                 const.PROGRAM_SCHEDULES: normalize_schedules(
-                    program.get(const.PROGRAM_SCHEDULES)
+                    program.get(const.PROGRAM_SCHEDULES),
+                    reserved_schedule_ids.get(program_id),
                 ),
             }
         )

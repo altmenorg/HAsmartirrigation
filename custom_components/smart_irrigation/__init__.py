@@ -79,6 +79,12 @@ from .supplies import normalize_supplies
 from .triggers import TriggersMixin
 from .valve_runner import ValveRunnerMixin
 from .watering_calendar import WateringCalendarMixin
+from .watering_control import (
+    PAUSE_WATERING_SCHEMA,
+    RUN_PROGRAM_SCHEMA,
+    SUSPEND_SCHEMA,
+    WATER_ZONE_SCHEMA,
+)
 from .weathermodules.OpenMeteoClient import OpenMeteoClient
 from .weathermodules.OWMClient import OWMClient
 from .weathermodules.PirateWeatherClient import PirateWeatherClient
@@ -731,25 +737,87 @@ class SmartIrrigationCoordinator(
 
         It drives the valves itself, so direct valve control goes on, and it
         needs its main program, made from the settings that run the watering
-        today. Switching it off changes nothing else: the programs stay stored
-        for the day it is switched on again, and what ran before runs again.
+        today. Switching it off puts direct valve control back as it was before
+        (the programs stay stored for the day it is switched on again), and what
+        ran before runs again.
         """
+        config = self.store.config
+        was_on = getattr(config, const.CONF_FULL_CONTROLLER, False) is True
         if data.get(const.CONF_FULL_CONTROLLER) is not True:
-            stays_on = const.CONF_FULL_CONTROLLER not in data and (
-                getattr(self.store.config, const.CONF_FULL_CONTROLLER, False) is True
-            )
+            stays_on = const.CONF_FULL_CONTROLLER not in data and was_on
             if stays_on and data.get(const.CONF_DIRECT_VALVE_CONTROL_ENABLED) is False:
                 # The full controller drives the valves: switching that off on
                 # its own would leave programs running with no valves to open.
                 data = dict(data)
                 data[const.CONF_DIRECT_VALVE_CONTROL_ENABLED] = True
+            elif data.get(const.CONF_FULL_CONTROLLER) is False and was_on:
+                before = getattr(
+                    config, const.CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER, None
+                )
+                if before is True or before is False:
+                    data = dict(data)
+                    # A value sent along with the switch is the user's own.
+                    data.setdefault(const.CONF_DIRECT_VALVE_CONTROL_ENABLED, before)
+                    data[const.CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER] = None
             return data
         data = dict(data)
+        if not was_on:
+            # Remembered once, when the controller goes on, to be put back.
+            current = getattr(config, const.CONF_DIRECT_VALVE_CONTROL_ENABLED, False)
+            data[const.CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER] = current is True
         data[const.CONF_DIRECT_VALVE_CONTROL_ENABLED] = True
         stored = getattr(self.store.config, const.CONF_PROGRAMS, None)
         data[const.CONF_PROGRAMS] = ensure_main_program(
             data.get(const.CONF_PROGRAMS, stored)
         )
+        return data
+
+    def _programs_changes(self, data: dict) -> dict:
+        """The programs as they are stored, with the marks of the ones that went.
+
+        A program saved is cleaned, and its new schedules get ids that no
+        schedule of it has had. The marks kept apart from the programs (when each
+        schedule ran last, what is suspended) are dropped for the programs and
+        schedules that are not there any more, so that the list does not grow and
+        a new schedule cannot inherit the run of an old one.
+        """
+        config = self.store.config
+        last_runs = getattr(config, const.CONF_PROGRAM_LAST_RUNS, None)
+        last_runs = last_runs if isinstance(last_runs, dict) else {}
+        old_programs = getattr(config, const.CONF_PROGRAMS, None)
+        reserved: dict = {}
+        for program in old_programs if isinstance(old_programs, list) else []:
+            if isinstance(program, dict):
+                reserved.setdefault(program.get(const.PROGRAM_ID), set()).update(
+                    s.get(const.SCHEDULE_ID)
+                    for s in program.get(const.PROGRAM_SCHEDULES) or []
+                    if isinstance(s, dict)
+                )
+        for key in last_runs:
+            program_id, _, schedule_id = str(key).partition(":")
+            reserved.setdefault(program_id, set()).add(schedule_id)
+        programs = normalize_programs(data[const.CONF_PROGRAMS], reserved)
+        data = {**data, const.CONF_PROGRAMS: programs}
+        alive = {
+            f"{p.get(const.PROGRAM_ID)}:{s.get(const.SCHEDULE_ID)}"
+            for p in programs
+            for s in p.get(const.PROGRAM_SCHEDULES) or []
+        }
+        if const.CONF_PROGRAM_LAST_RUNS not in data:
+            kept = {k: v for k, v in last_runs.items() if k in alive}
+            if kept != last_runs:
+                data[const.CONF_PROGRAM_LAST_RUNS] = kept
+        suspensions = getattr(config, const.CONF_SUSPENSIONS, None)
+        if isinstance(suspensions, dict) and const.CONF_SUSPENSIONS not in data:
+            program_ids = {p.get(const.PROGRAM_ID) for p in programs}
+            kept = {
+                k: v
+                for k, v in suspensions.items()
+                if not k.startswith(f"{const.SUSPEND_PROGRAM}:")
+                or k.partition(":")[2] in program_ids
+            }
+            if kept != suspensions:
+                data[const.CONF_SUSPENSIONS] = kept
         return data
 
     async def async_update_config(self, data):  # noqa: D102
@@ -786,10 +854,7 @@ class SmartIrrigationCoordinator(
 
         data = self._full_controller_changes(data)
         if const.CONF_PROGRAMS in data:
-            data = {
-                **data,
-                const.CONF_PROGRAMS: normalize_programs(data[const.CONF_PROGRAMS]),
-            }
+            data = self._programs_changes(data)
         if const.CONF_SUPPLIES in data:
             data = {
                 **data,
@@ -2390,13 +2455,19 @@ def register_services(hass: HomeAssistant):
     )
 
     hass.services.async_register(
-        const.DOMAIN, const.SERVICE_RUN_PROGRAM, coordinator.handle_run_program
+        const.DOMAIN,
+        const.SERVICE_RUN_PROGRAM,
+        coordinator.handle_run_program,
+        schema=RUN_PROGRAM_SCHEMA,
     )
     hass.services.async_register(
         const.DOMAIN, const.SERVICE_STOP_WATERING, coordinator.handle_stop_watering
     )
     hass.services.async_register(
-        const.DOMAIN, const.SERVICE_PAUSE_WATERING, coordinator.handle_pause_watering
+        const.DOMAIN,
+        const.SERVICE_PAUSE_WATERING,
+        coordinator.handle_pause_watering,
+        schema=PAUSE_WATERING_SCHEMA,
     )
     hass.services.async_register(
         const.DOMAIN, const.SERVICE_RESUME_WATERING, coordinator.handle_resume_watering
@@ -2405,10 +2476,16 @@ def register_services(hass: HomeAssistant):
         const.DOMAIN, const.SERVICE_NEXT_STEP, coordinator.handle_next_step
     )
     hass.services.async_register(
-        const.DOMAIN, const.SERVICE_SUSPEND, coordinator.handle_suspend
+        const.DOMAIN,
+        const.SERVICE_SUSPEND,
+        coordinator.handle_suspend,
+        schema=SUSPEND_SCHEMA,
     )
     hass.services.async_register(
-        const.DOMAIN, const.SERVICE_WATER_ZONE, coordinator.handle_water_zone
+        const.DOMAIN,
+        const.SERVICE_WATER_ZONE,
+        coordinator.handle_water_zone,
+        schema=WATER_ZONE_SCHEMA,
     )
     hass.services.async_register(
         const.DOMAIN,
