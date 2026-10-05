@@ -23,6 +23,7 @@ import math
 import re
 
 from . import const
+from .schedules import normalize_schedules
 
 MAIN_PROGRAM_ID = "main"
 MAIN_PROGRAM_NAME = "Main program"
@@ -192,6 +193,9 @@ def normalize_programs(programs) -> list:
                 const.PROGRAM_TOURS: _count(
                     program.get(const.PROGRAM_TOURS), 1, MAX_TOURS
                 ),
+                const.PROGRAM_SCHEDULES: normalize_schedules(
+                    program.get(const.PROGRAM_SCHEDULES)
+                ),
             }
         )
     # The main program, when there is one, always comes first.
@@ -270,6 +274,11 @@ def plan_program(program: dict, zones) -> list:
                             "zone_id": int(zone_id),
                             "seconds": seconds,
                             "passes": max(1, int(step.get(const.STEP_PASSES) or 1)),
+                            # What fills the pipe, paid again on every pass.
+                            "lead": min(
+                                max(0.0, float(zone.get(const.ZONE_LEAD_TIME) or 0.0)),
+                                seconds,
+                            ),
                         }
                     )
             if not members:
@@ -285,3 +294,48 @@ def plan_program(program: dict, zones) -> list:
         if steps:
             plan.append(steps)
     return plan
+
+
+def plan_wall_seconds(plan: list, soak_seconds: float = 0.0) -> float:
+    """How long a plan takes from the first valve to the last, waits included.
+
+    A step lasts as long as its slowest zone: the seconds it is held, the lead
+    time it pays again on every extra pass, and the soak between passes. The
+    delay after a step is waited unless it is the last of the last tour. This is
+    what a schedule that must be done by a given moment works back from.
+    """
+    total = 0.0
+    for tour_index, steps in enumerate(plan):
+        for step_index, step in enumerate(steps):
+            longest = 0.0
+            for member in step["zones"]:
+                extra = max(0, int(member.get("passes") or 1) - 1)
+                longest = max(
+                    longest,
+                    float(member["seconds"])
+                    + extra * (float(member.get("lead") or 0.0) + soak_seconds),
+                )
+            total += longest
+            last = tour_index == len(plan) - 1 and step_index == len(steps) - 1
+            if not last:
+                total += float(step.get("delay") or 0.0)
+    return total
+
+
+def restrict_plan(plan: list, zone_ids) -> list:
+    """The plan with only the given zones in it; steps left empty drop out.
+
+    For a day when the forecast holds the run back for every zone the rain can
+    reach: the ones that are sheltered still run.
+    """
+    allowed = {int(z) for z in zone_ids}
+    restricted = []
+    for steps in plan:
+        kept = []
+        for step in steps:
+            members = [m for m in step["zones"] if int(m["zone_id"]) in allowed]
+            if members:
+                kept.append({**step, "zones": members})
+        if kept:
+            restricted.append(kept)
+    return restricted

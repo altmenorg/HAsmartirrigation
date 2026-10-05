@@ -69,6 +69,7 @@ from .hourly_et import solar_elevation_sin
 from .live_estimate import LiveEstimateMixin
 from .observed_watering import ObservedWateringMixin
 from .panel import async_register_panel, remove_panel
+from .program_scheduler import ProgramSchedulerMixin
 from .programs import ensure_main_program, normalize_programs
 from .scheduler import RecurringScheduleManager, SeasonalAdjustmentManager
 from .service_handlers import ServiceHandlersMixin
@@ -455,6 +456,7 @@ class SmartIrrigationCoordinator(
     FlowCalibrationMixin,
     LiveEstimateMixin,
     ValveRunnerMixin,
+    ProgramSchedulerMixin,
     SkipConditionsMixin,
     ServiceHandlersMixin,
     TriggersMixin,
@@ -800,6 +802,9 @@ class SmartIrrigationCoordinator(
         # registered at setup kept the old schedule, so the change took effect
         # at the next restart (or the next zone edit / calculation, which do
         # re-register). Re-register when the trigger configuration changed (#800).
+        if const.CONF_PROGRAMS in data or const.CONF_FULL_CONTROLLER in data:
+            # A program, or its schedules, was edited, or the mode was switched.
+            await self.register_program_schedules()
         if (
             const.CONF_IRRIGATION_START_TRIGGERS in data
             or const.CONF_ACTIVE_START_TRIGGER in data
@@ -2329,6 +2334,9 @@ class SmartIrrigationCoordinator(
 
         # cancel any in-flight direct valve runs
         self.async_teardown_valve_runs()
+
+        # and the timers of the programs' schedules
+        self.async_teardown_program_schedules()
 
     async def async_delete_config(self):
         """Wipe Smart Irrigation storage."""

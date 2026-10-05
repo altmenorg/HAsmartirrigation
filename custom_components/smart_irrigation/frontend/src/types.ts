@@ -159,6 +159,29 @@ export interface SmartIrrigationStep {
   enabled: boolean;
 }
 
+/** When a program runs: which days, and at which moment. */
+export interface SmartIrrigationSchedule {
+  id?: string;
+  enabled: boolean;
+  type: "time" | "sun";
+  time: string;
+  event: "sunrise" | "sunset";
+  offset_minutes: number;
+  /** Whether the moment is when the program starts or when it must be done. */
+  anchor: "start" | "end";
+  /** Monday is 0. Empty: every day. */
+  weekdays: number[];
+  every_n_days: number;
+  every_offset: number;
+  parity: "any" | "even" | "odd";
+  /** January is 1. Empty: every month. */
+  months: number[];
+  from_date: string | null;
+  until_date: string | null;
+  /** Whether the skip conditions (rain, frost, wind, soil) apply. */
+  weather: boolean;
+}
+
 /** A program of the full controller. The main one has no steps of its own. */
 export interface SmartIrrigationProgram {
   id?: string;
@@ -168,6 +191,7 @@ export interface SmartIrrigationProgram {
   steps?: SmartIrrigationStep[];
   delay?: number;
   tours?: number;
+  schedules?: SmartIrrigationSchedule[];
 }
 
 /** A pump or a main valve that runs while a zone it feeds is being watered. */

@@ -158,6 +158,13 @@ class TriggersMixin:
         #            sun_rise = datetime.strptime(sun_rise, "%Y-%m-%dT%H:%M:%S.%f%z")
         #        except(ValueError):
         #            sun_rise = datetime.strptime(sun_rise, "%Y-%m-%dT%H:%M:%S%z")
+        # The programs' schedules are armed at the same moments as the start
+        # trigger (a setting changed, a calculation done, a new day), which is
+        # when what they depend on may have changed.
+        try:
+            await self.register_program_schedules()
+        except Exception as ex:  # noqa: BLE001 - the start trigger comes first
+            _LOGGER.error("Could not arm the programs' schedules: %s", ex)
         total_duration = await self._planned_run_seconds()
         self.start_trigger_armed = False
         if self._track_sunrise_event_unsub:
@@ -619,116 +626,11 @@ class TriggersMixin:
                 ),
             }
             try:
-                # Decide once per day whether today is a watering day.
-                if self._watering_decision_today is None:
-                    # Fresh numbers first, when the user asked for them: the
-                    # skip checks and the durations below should rest on them.
-                    await self._recalculate_before_start()
-                    # One structured evaluation rather than two booleans, so
-                    # what the panel shows and what the runner decides come from
-                    # the same call (#794).
-                    evaluation = await self.async_evaluate_skip_conditions()
-                    # Stamp it: the panel shows this next to the live preview,
-                    # and "what it decided" is only meaningful with "when".
-                    self._last_skip_evaluation = {
-                        **evaluation,
-                        "evaluated_at": dt_util.now().isoformat(),
-                    }
-                    skip_reason = evaluation["reason"]
-                    self._watering_decision_today = not evaluation["should_skip"]
-                    # Decided with the day: the first run resets the counters,
-                    # and a second trigger must not read that as "just watered".
-                    try:
-                        self._zones_held_by_days_between = (
-                            await self.async_zones_held_by_days_between()
-                        )
-                    except Exception as e:  # noqa: BLE001 - an extra, not the decision
-                        self._zones_held_by_days_between = set()
-                        _LOGGER.warning(
-                            "Could not work out the zones held by their days "
-                            "between irrigation: %s",
-                            e,
-                        )
-                    # Count the days the forecast holds the run back, so that
-                    # showers forecast day after day cannot hold it back for
-                    # ever (skip_conditions.py).
-                    if skip_reason == "precipitation":
-                        await self._count_precipitation_skip()
-                    if skip_reason is not None:
-                        _LOGGER.info(
-                            "Today is not a watering day (%s); start triggers "
-                            "will not fire",
-                            skip_reason,
-                        )
-                        # Do NOT increment days-since-irrigation here: the
-                        # midnight reset already counts every calendar day
-                        # exactly once, skipped days included. Counting again
-                        # here advanced the counter by 2 per skipped day, so a
-                        # days-between setting of 5 watered every 3 days (#802).
-
-                sheltered = set()
-                if not self._watering_decision_today:
-                    # A rain forecast is a statement about the sky, so it has
-                    # nothing to say about zones under glass. When some of them
-                    # are sheltered the run goes ahead for those, and only the
-                    # zones the rain can actually reach are held back.
-                    if (
-                        self._last_skip_evaluation
-                        and self._last_skip_evaluation.get("reason") == "precipitation"
-                    ):
-                        sheltered = await self.async_zones_sheltered_from_rain()
-                    if not sheltered:
-                        # Nothing is sheltered, so this is a skip day exactly as
-                        # before: no event, and no automation of the user's runs
-                        # against zeroed durations it may not think to check.
-                        _LOGGER.info(
-                            "Trigger '%s' reached but today is a skip day; not "
-                            "firing event",
-                            name,
-                        )
-                        # Say so. A skipped day used to be the absence of an
-                        # event, which an automation cannot listen for: users
-                        # ended up polling their zones hours later to find out
-                        # nothing had run (#841).
-                        self.hass.bus.fire(
-                            f"{const.DOMAIN}_{const.EVENT_IRRIGATE_SKIPPED}",
-                            {
-                                **event_data,
-                                "reason": (self._last_skip_evaluation or {}).get(
-                                    "reason"
-                                ),
-                                "checks": (self._last_skip_evaluation or {}).get(
-                                    "checks", []
-                                ),
-                            },
-                        )
-                        return
-                    _LOGGER.info(
-                        "Rain is forecast, so only the %s sheltered zone(s) run",
-                        len(sheltered),
-                    )
-                    await self._hold_back_zones_exposed_to_rain(sheltered)
-
-                # A zone that has to wait longer between two irrigations sits
-                # this run out, whatever the other zones do (#875).
-                await self._hold_back_zones_held_by_days_between(
-                    getattr(self, "_zones_held_by_days_between", None) or set()
+                go, _sheltered = await self._prepare_watering_for_today(
+                    name, event_data
                 )
-
-                # A zone whose own soil is already moist sits this run out.
-                await self._hold_back_zones_with_moist_soil()
-
-                # Rain between the calculation and now shortens the run.
-                await self._apply_rain_since_calculation()
-
-                # Rain forecast for the day ahead shortens it as well, when the
-                # user asked for that.
-                await self._apply_forecast_rain_credit()
-
-                # And, for a zone with no rain gauge and no service to give it
-                # millimetres, what a binary rain sensor says about the last few
-                # days shortens it too.
-                self._last_rain_history = await self._apply_rain_history_suppression()
+                if not go:
+                    return
 
                 # Fire the event with the trigger's identity.
                 self.hass.bus.fire(event_to_fire, event_data)
@@ -748,32 +650,7 @@ class TriggersMixin:
                 ):
                     self._spawn_valve_run(self.async_run_direct_valves())
 
-                # Only a run that waters something makes today a watering day
-                # for days-between. A start with every duration at zero, or
-                # every zone held back above, used to reset the counter too, so
-                # the first day with a real deficit was vetoed and watering
-                # slipped by up to days-between each time.
-                if await self._any_zone_to_water():
-                    # The general counter belongs to the zones that follow the
-                    # general setting: a zone with days of its own, watered every
-                    # day, must not keep the others from ever being due (#875).
-                    if await self._any_zone_to_water(general_setting_only=True):
-                        await self._reset_days_since_irrigation()
-                    await self._reset_zone_days_since_irrigation()
-                    await self.store.async_update_config(
-                        {const.CONF_PRECIPITATION_SKIPS_IN_A_ROW: 0}
-                    )
-                else:
-                    _LOGGER.info(
-                        "Trigger '%s' fired with nothing to water; the days since "
-                        "the last irrigation keep counting",
-                        name,
-                    )
-                if not self._start_event_fired_today:
-                    self._start_event_fired_today = True
-                    await self.store.async_update_config(
-                        {const.START_EVENT_FIRED_TODAY: True}
-                    )
+                await self._note_watering_day(name)
             except Exception as e:
                 # Fail safe, not fail open (#804): if we cannot tell whether
                 # today is a watering day, not watering is recoverable (one
@@ -788,6 +665,160 @@ class TriggersMixin:
                 )
 
         self.hass.async_create_task(check_and_fire())
+
+    async def _note_watering_day(self, name) -> bool:
+        """Count today as a watering day if a start left something to water.
+
+        Only a run that waters something makes today a watering day for
+        days-between. A start with every duration at zero, or every zone held
+        back, used to reset the counter too, so the first day with a real deficit
+        was vetoed and watering slipped by up to days-between each time. Called
+        right after the start, while the durations are still the ones the run
+        will use.
+        """
+        watering = await self._any_zone_to_water()
+        if watering:
+            # The general counter belongs to the zones that follow the general
+            # setting: a zone with days of its own, watered every day, must not
+            # keep the others from ever being due (#875).
+            if await self._any_zone_to_water(general_setting_only=True):
+                await self._reset_days_since_irrigation()
+            await self._reset_zone_days_since_irrigation()
+            await self.store.async_update_config(
+                {const.CONF_PRECIPITATION_SKIPS_IN_A_ROW: 0}
+            )
+        else:
+            _LOGGER.info(
+                "Trigger '%s' fired with nothing to water; the days since "
+                "the last irrigation keep counting",
+                name,
+            )
+        if not self._start_event_fired_today:
+            self._start_event_fired_today = True
+            await self.store.async_update_config({const.START_EVENT_FIRED_TODAY: True})
+        return watering
+
+    async def _prepare_watering_for_today(self, name, event_data):
+        """Decide whether today is a watering day, and prepare the day's run.
+
+        ``(go, sheltered)``: whether to water, and the zones that are sheltered
+        from the rain when the forecast says rain (only those run then).
+
+        The decision is made once a day and shared by whatever starts the
+        watering: the start trigger, or a program's schedule. The holds that
+        follow it (zones that wait longer, a moist soil, the rain since the
+        calculation or forecast for the day ahead) change the durations the
+        zones are watered for, so they are made once a day too: the first start
+        of the day makes them and the ones after it find the durations as they
+        left them.
+        """
+        # Decide once per day whether today is a watering day.
+        if self._watering_decision_today is None:
+            # Fresh numbers first, when the user asked for them: the
+            # skip checks and the durations below should rest on them.
+            await self._recalculate_before_start()
+            # One structured evaluation rather than two booleans, so
+            # what the panel shows and what the runner decides come from
+            # the same call (#794).
+            evaluation = await self.async_evaluate_skip_conditions()
+            # Stamp it: the panel shows this next to the live preview,
+            # and "what it decided" is only meaningful with "when".
+            self._last_skip_evaluation = {
+                **evaluation,
+                "evaluated_at": dt_util.now().isoformat(),
+            }
+            skip_reason = evaluation["reason"]
+            self._watering_decision_today = not evaluation["should_skip"]
+            # Decided with the day: the first run resets the counters,
+            # and a second trigger must not read that as "just watered".
+            try:
+                self._zones_held_by_days_between = (
+                    await self.async_zones_held_by_days_between()
+                )
+            except Exception as e:  # noqa: BLE001 - an extra, not the decision
+                self._zones_held_by_days_between = set()
+                _LOGGER.warning(
+                    "Could not work out the zones held by their days "
+                    "between irrigation: %s",
+                    e,
+                )
+            # Count the days the forecast holds the run back, so that
+            # showers forecast day after day cannot hold it back for
+            # ever (skip_conditions.py).
+            if skip_reason == "precipitation":
+                await self._count_precipitation_skip()
+            if skip_reason is not None:
+                _LOGGER.info(
+                    "Today is not a watering day (%s); start triggers " "will not fire",
+                    skip_reason,
+                )
+                # Do NOT increment days-since-irrigation here: the
+                # midnight reset already counts every calendar day
+                # exactly once, skipped days included. Counting again
+                # here advanced the counter by 2 per skipped day, so a
+                # days-between setting of 5 watered every 3 days (#802).
+
+        sheltered = set()
+        if not self._watering_decision_today:
+            # A rain forecast is a statement about the sky, so it has
+            # nothing to say about zones under glass. When some of them
+            # are sheltered the run goes ahead for those, and only the
+            # zones the rain can actually reach are held back.
+            if (
+                self._last_skip_evaluation
+                and self._last_skip_evaluation.get("reason") == "precipitation"
+            ):
+                sheltered = await self.async_zones_sheltered_from_rain()
+            if not sheltered:
+                # Nothing is sheltered, so this is a skip day exactly as
+                # before: no event, and no automation of the user's runs
+                # against zeroed durations it may not think to check.
+                _LOGGER.info(
+                    "Trigger '%s' reached but today is a skip day; not " "firing event",
+                    name,
+                )
+                # Say so. A skipped day used to be the absence of an
+                # event, which an automation cannot listen for: users
+                # ended up polling their zones hours later to find out
+                # nothing had run (#841).
+                self.hass.bus.fire(
+                    f"{const.DOMAIN}_{const.EVENT_IRRIGATE_SKIPPED}",
+                    {
+                        **event_data,
+                        "reason": (self._last_skip_evaluation or {}).get("reason"),
+                        "checks": (self._last_skip_evaluation or {}).get("checks", []),
+                    },
+                )
+                return False, set()
+            _LOGGER.info(
+                "Rain is forecast, so only the %s sheltered zone(s) run",
+                len(sheltered),
+            )
+            await self._hold_back_zones_exposed_to_rain(sheltered)
+
+        if not getattr(self, "_watering_prepared_today", False):
+            self._watering_prepared_today = True
+            # A zone that has to wait longer between two irrigations sits
+            # this run out, whatever the other zones do (#875).
+            await self._hold_back_zones_held_by_days_between(
+                getattr(self, "_zones_held_by_days_between", None) or set()
+            )
+
+            # A zone whose own soil is already moist sits this run out.
+            await self._hold_back_zones_with_moist_soil()
+
+            # Rain between the calculation and now shortens the run.
+            await self._apply_rain_since_calculation()
+
+            # Rain forecast for the day ahead shortens it as well, when the
+            # user asked for that.
+            await self._apply_forecast_rain_credit()
+
+            # And, for a zone with no rain gauge and no service to give it
+            # millimetres, what a binary rain sensor says about the last few
+            # days shortens it too.
+            self._last_rain_history = await self._apply_rain_history_suppression()
+        return True, sheltered
 
     async def _count_precipitation_skip(self) -> None:
         """One more day held back by the forecast. Bookkeeping only: a failure
@@ -1232,6 +1263,7 @@ class TriggersMixin:
         # recomputed on the next trigger that is reached.
         self._fired_triggers_today.clear()
         self._watering_decision_today = None
+        self._watering_prepared_today = False
         if self._start_event_fired_today:
             _LOGGER.info("Resetting start event fired today tracker")
             self._start_event_fired_today = False

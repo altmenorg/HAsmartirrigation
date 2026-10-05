@@ -12,6 +12,7 @@ import "../../dialogs/trigger-dialog";
 import {
   SmartIrrigationConfig,
   SmartIrrigationProgram,
+  SmartIrrigationSchedule,
   SmartIrrigationStep,
   SmartIrrigationSupply,
   SmartIrrigationZone,
@@ -662,6 +663,231 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       `;
     };
 
+    const weekdayName = (i: number) =>
+      new Intl.DateTimeFormat(lang, { weekday: "short" }).format(
+        new Date(2024, 0, 1 + i),
+      );
+    const monthName = (i: number) =>
+      new Intl.DateTimeFormat(lang, { month: "short" }).format(
+        new Date(2024, i, 1),
+      );
+
+    const renderSchedule = (
+      program: SmartIrrigationProgram,
+      index: number,
+      schedule: SmartIrrigationSchedule,
+      scheduleIndex: number,
+    ) => {
+      const patchSchedule = (changes: Partial<SmartIrrigationSchedule>) =>
+        patch(index, {
+          schedules: (program.schedules || []).map((s, n) =>
+            n === scheduleIndex ? { ...s, ...changes } : s,
+          ),
+        });
+      const toggle = (
+        list: number[] | undefined,
+        value: number,
+        on: boolean,
+      ) => {
+        const rest = (list || []).filter((v) => v !== value);
+        return on ? [...rest, value].sort((a, b) => a - b) : rest;
+      };
+      return html`
+        <div class="setting-note">
+          <strong>${t("schedule")} ${scheduleIndex + 1}</strong>
+        </div>
+        ${this._selectRow(
+          t("schedule_moment"),
+          html`
+            <option value="time" ?selected=${schedule.type === "time"}>
+              ${t("moment_time")}
+            </option>
+            <option
+              value="sunrise"
+              ?selected=${schedule.type === "sun" &&
+              schedule.event === "sunrise"}
+            >
+              ${t("moment_sunrise")}
+            </option>
+            <option
+              value="sunset"
+              ?selected=${schedule.type === "sun" &&
+              schedule.event === "sunset"}
+            >
+              ${t("moment_sunset")}
+            </option>
+          `,
+          (e: Event) => {
+            const value = (e.target as HTMLSelectElement).value;
+            patchSchedule(
+              value === "time"
+                ? { type: "time" }
+                : { type: "sun", event: value as "sunrise" | "sunset" },
+            );
+          },
+        )}
+        ${schedule.type === "time"
+          ? this._timeRow(t("schedule_time"), schedule.time, (v) =>
+              patchSchedule({ time: v }),
+            )
+          : this._numRow(
+              t("schedule_offset"),
+              localize("units.minutes", lang),
+              schedule.offset_minutes,
+              (v) => patchSchedule({ offset_minutes: Math.round(num(v)) }),
+            )}
+        ${this._selectRow(
+          t("schedule_anchor"),
+          html`
+            <option value="start" ?selected=${schedule.anchor !== "end"}>
+              ${t("anchor_start")}
+            </option>
+            <option value="end" ?selected=${schedule.anchor === "end"}>
+              ${t("anchor_end")}
+            </option>
+          `,
+          (e: Event) =>
+            patchSchedule({
+              anchor: (e.target as HTMLSelectElement).value as "start" | "end",
+            }),
+        )}
+        <div class="setting-note">${t("schedule_anchor_help")}</div>
+        <div class="setting-row">
+          <div class="setting-label">${t("schedule_weekdays")}</div>
+          <div>
+            ${[0, 1, 2, 3, 4, 5, 6].map(
+              (day) => html`
+                <label style="margin-right: 10px; white-space: nowrap;">
+                  <input
+                    type="checkbox"
+                    .checked=${(schedule.weekdays || []).includes(day)}
+                    @change=${(e: Event) =>
+                      patchSchedule({
+                        weekdays: toggle(
+                          schedule.weekdays,
+                          day,
+                          (e.target as HTMLInputElement).checked,
+                        ),
+                      })}
+                  />
+                  ${weekdayName(day)}
+                </label>
+              `,
+            )}
+          </div>
+        </div>
+        <div class="setting-note">${t("schedule_weekdays_help")}</div>
+        ${this._numRow(
+          t("schedule_every"),
+          t("schedule_days"),
+          schedule.every_n_days ?? 1,
+          (v) =>
+            patchSchedule({ every_n_days: Math.max(1, Math.round(num(v, 1))) }),
+        )}
+        ${(schedule.every_n_days ?? 1) > 1
+          ? this._numRow(
+              t("schedule_every_offset"),
+              t("schedule_days"),
+              schedule.every_offset ?? 0,
+              (v) =>
+                patchSchedule({
+                  every_offset: Math.max(0, Math.round(num(v))),
+                }),
+            )
+          : ""}
+        <div class="setting-note">${t("schedule_every_help")}</div>
+        ${this._selectRow(
+          t("schedule_parity"),
+          html`
+            <option
+              value="any"
+              ?selected=${schedule.parity !== "even" &&
+              schedule.parity !== "odd"}
+            >
+              ${t("parity_any")}
+            </option>
+            <option value="even" ?selected=${schedule.parity === "even"}>
+              ${t("parity_even")}
+            </option>
+            <option value="odd" ?selected=${schedule.parity === "odd"}>
+              ${t("parity_odd")}
+            </option>
+          `,
+          (e: Event) =>
+            patchSchedule({
+              parity: (e.target as HTMLSelectElement)
+                .value as SmartIrrigationSchedule["parity"],
+            }),
+        )}
+        <div class="setting-row">
+          <div class="setting-label">${t("schedule_months")}</div>
+          <div>
+            ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(
+              (month) => html`
+                <label style="margin-right: 10px; white-space: nowrap;">
+                  <input
+                    type="checkbox"
+                    .checked=${(schedule.months || []).includes(month + 1)}
+                    @change=${(e: Event) =>
+                      patchSchedule({
+                        months: toggle(
+                          schedule.months,
+                          month + 1,
+                          (e.target as HTMLInputElement).checked,
+                        ),
+                      })}
+                  />
+                  ${monthName(month)}
+                </label>
+              `,
+            )}
+          </div>
+        </div>
+        <div class="setting-note">${t("schedule_months_help")}</div>
+        ${this._textRow(
+          t("schedule_from"),
+          "MM-DD",
+          schedule.from_date ?? "",
+          (v) => patchSchedule({ from_date: v.trim() || null }),
+        )}
+        ${this._textRow(
+          t("schedule_until"),
+          "MM-DD",
+          schedule.until_date ?? "",
+          (v) => patchSchedule({ until_date: v.trim() || null }),
+        )}
+        <div class="setting-note">${t("schedule_period_help")}</div>
+        <div class="setting-row">
+          <div class="setting-label">${t("schedule_weather")}</div>
+          <ha-switch
+            .checked=${schedule.weather !== false}
+            @change=${(e: Event) =>
+              patchSchedule({ weather: (e.target as any).checked })}
+          ></ha-switch>
+        </div>
+        <div class="setting-note">${t("schedule_weather_help")}</div>
+        <div class="setting-row">
+          <div class="setting-label">${t("enabled")}</div>
+          <ha-switch
+            .checked=${schedule.enabled !== false}
+            @change=${(e: Event) =>
+              patchSchedule({ enabled: (e.target as any).checked })}
+          ></ha-switch>
+        </div>
+        ${this._actionBtn(
+          mdiDelete,
+          t("delete_schedule"),
+          () =>
+            patch(index, {
+              schedules: (program.schedules || []).filter(
+                (_, n) => n !== scheduleIndex,
+              ),
+            }),
+          true,
+        )}
+      `;
+    };
+
     return html`
       <ha-card header="${t("title")}">
         <div class="card-content">${t("description")}</div>
@@ -711,6 +937,33 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       ],
                     }),
                   )}
+                  ${(program.schedules || []).map((schedule, scheduleIndex) =>
+                    renderSchedule(program, index, schedule, scheduleIndex),
+                  )}
+                  ${this._actionBtn(mdiPlus, t("add_schedule"), () =>
+                    patch(index, {
+                      schedules: [
+                        ...(program.schedules || []),
+                        {
+                          id: "schedule_" + random(),
+                          enabled: true,
+                          type: "time",
+                          time: "06:00",
+                          event: "sunrise",
+                          offset_minutes: 0,
+                          anchor: "start",
+                          weekdays: [],
+                          every_n_days: 1,
+                          every_offset: 0,
+                          parity: "any",
+                          months: [],
+                          from_date: null,
+                          until_date: null,
+                          weather: true,
+                        },
+                      ],
+                    }),
+                  )}
                   ${this._numRow(
                     t("delay"),
                     localize("units.seconds", lang),
@@ -753,6 +1006,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 steps: [],
                 delay: 0,
                 tours: 1,
+                schedules: [],
               },
             ]),
           )}

@@ -95,6 +95,7 @@ from .const import (
     CONF_PAUSE_BETWEEN_ZONES,
     CONF_POSTPONE_UNTIL,
     CONF_PRECIPITATION_THRESHOLD_MM,
+    CONF_PROGRAM_LAST_RUNS,
     CONF_PROGRAMS,
     CONF_RAIN_HISTORY_ENABLED,
     CONF_RAIN_SENSOR,
@@ -670,6 +671,7 @@ class Config:
     active_valve_runs = attr.ib(type=list, default=[])
     active_cycle = attr.ib(type=dict, default=None)
     active_program_run = attr.ib(type=dict, default=None)
+    program_last_runs = attr.ib(type=dict, default=None)
 
 
 class MigratableStore(Store):
@@ -1166,6 +1168,7 @@ class SmartIrrigationStorage:
                 active_valve_runs=data["config"].get(CONF_ACTIVE_VALVE_RUNS, []),
                 active_cycle=data["config"].get(CONF_ACTIVE_CYCLE),
                 active_program_run=data["config"].get(CONF_ACTIVE_PROGRAM_RUN),
+                program_last_runs=data["config"].get(CONF_PROGRAM_LAST_RUNS),
             )
 
             if "zones" in data:

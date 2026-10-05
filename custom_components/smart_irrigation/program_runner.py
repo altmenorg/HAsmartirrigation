@@ -22,7 +22,7 @@ from datetime import timedelta
 import homeassistant.util.dt as dt_util
 
 from . import const
-from .programs import find_program, plan_program
+from .programs import find_program, plan_program, restrict_plan
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -59,8 +59,13 @@ class ProgramRunnerMixin:
 
     # --- asking for a run ----------------------------------------------------
 
-    async def async_run_program(self, program_id, manual: bool = True) -> bool:
-        """Run a program now, or as soon as it is its turn. False if not started."""
+    async def async_run_program(
+        self, program_id, manual: bool = True, only_zones=None
+    ) -> bool:
+        """Run a program now, or as soon as it is its turn. False if not started.
+
+        ``only_zones`` keeps the run to those zones (the ones the rain cannot reach).
+        """
         config = self.store.config
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
             _LOGGER.warning(
@@ -92,7 +97,10 @@ class ProgramRunnerMixin:
             if fresh is None or fresh.get(const.PROGRAM_ENABLED) is False:
                 return None, 0, 0
             zones = await self.store.async_get_zones()
-            return plan_program(fresh, zones), 0, 0
+            plan = plan_program(fresh, zones)
+            if only_zones is not None:
+                plan = restrict_plan(plan, only_zones)
+            return plan, 0, 0
 
         await self._drive_program(run, _plan, resumed=False)
         return True

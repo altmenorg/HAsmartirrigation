@@ -137,6 +137,10 @@ CONF_ACTIVE_CYCLE = "active_cycle"
 # The program run under way: its plan and where it has got to, kept so a restart
 # goes on with the steps still to do.
 CONF_ACTIVE_PROGRAM_RUN = "active_program_run"
+# The target of the occurrence each program schedule ran last, by "program:schedule".
+# Kept apart from the programs, which the panel sends back whole: a copy of them
+# read before a run would write the old marks over it.
+CONF_PROGRAM_LAST_RUNS = "program_last_runs"
 # A cycle older than this is not resumed: it belongs to another day's watering.
 CYCLE_RESUME_MAX_AGE_SECONDS = 6 * 3600
 # Keys inside an active-run record.
@@ -154,6 +158,7 @@ PROGRAM_STEPS = "steps"
 PROGRAM_DELAY = "delay"
 # The whole list watered this many times, each with its share of the water.
 PROGRAM_TOURS = "tours"
+PROGRAM_SCHEDULES = "schedules"
 # Keys inside a step of a program (see programs.py).
 STEP_ID = "id"
 STEP_ZONES = "zones"
@@ -164,6 +169,22 @@ STEP_SECONDS = "seconds"
 STEP_PASSES = "passes"
 STEP_DELAY = "delay"
 STEP_ENABLED = "enabled"
+# Keys inside a schedule of a program (see schedules.py).
+SCHEDULE_ID = "id"
+SCHEDULE_ENABLED = "enabled"
+SCHEDULE_TYPE = "type"
+SCHEDULE_TIME = "time"
+SCHEDULE_EVENT = "event"
+SCHEDULE_OFFSET_MINUTES = "offset_minutes"
+SCHEDULE_ANCHOR = "anchor"
+SCHEDULE_WEEKDAYS = "weekdays"
+SCHEDULE_EVERY_N_DAYS = "every_n_days"
+SCHEDULE_EVERY_OFFSET = "every_offset"
+SCHEDULE_PARITY = "parity"
+SCHEDULE_MONTHS = "months"
+SCHEDULE_FROM = "from_date"
+SCHEDULE_UNTIL = "until_date"
+SCHEDULE_WEATHER = "weather"
 # Keys inside a supply of the full controller (see supplies.py).
 SUPPLY_ID = "id"
 SUPPLY_NAME = "name"
