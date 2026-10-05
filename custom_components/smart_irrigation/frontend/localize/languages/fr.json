@@ -926,7 +926,15 @@
     "run_now": "Lancer maintenant",
     "main_settings": "Programme principal : départ et enchaînement",
     "main_settings_description": "Comment le programme principal arrose : les zones l'une après l'autre ou ensemble, la pause entre deux zones et le cycle-and-soak. Son déclencheur est plus bas.",
-    "mode_off": "Le contrôleur complet est désactivé. Active-le dans Réglages, Général."
+    "mode_off": "Le contrôleur complet est désactivé. Active-le dans Réglages, Général.",
+    "no_zone": "aucune zone",
+    "mode_calculated_short": "calculée",
+    "every_day": "tous les jours",
+    "anchor_start_short": "démarre à",
+    "anchor_end_short": "fini à",
+    "steps_count": "étape(s)",
+    "schedules_count": "planning(s)",
+    "off": "désactivé"
   },
   "supplies": {
     "title": "Pompes et vannes générales",

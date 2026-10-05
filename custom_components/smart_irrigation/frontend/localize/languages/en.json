@@ -926,7 +926,15 @@
     "run_now": "Run now",
     "main_settings": "Main program: start and sequencing",
     "main_settings_description": "How the main program waters: the zones one after the other or together, the pause between two zones and cycle and soak. Its start trigger is below.",
-    "mode_off": "The full controller is off. Turn it on in Settings, General."
+    "mode_off": "The full controller is off. Turn it on in Settings, General.",
+    "no_zone": "no zone",
+    "mode_calculated_short": "calculated",
+    "every_day": "every day",
+    "anchor_start_short": "starts at",
+    "anchor_end_short": "done by",
+    "steps_count": "step(s)",
+    "schedules_count": "schedule(s)",
+    "off": "off"
   },
   "supplies": {
     "title": "Pumps and main valves",

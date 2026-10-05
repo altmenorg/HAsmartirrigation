@@ -139,6 +139,25 @@ export const modernStyle = css`
   .row-hint {
     margin: -6px 0 12px 0;
   }
+  /* Folded blocks of the Programs page: a program, a step, a schedule. */
+  details.fold {
+    border: 1px solid var(--divider-color);
+    border-radius: 8px;
+    margin: 8px 0;
+    padding: 0 12px;
+  }
+  details.fold > summary {
+    cursor: pointer;
+    padding: 10px 0;
+    list-style-position: inside;
+  }
+  details.fold[open] > summary {
+    border-bottom: 1px solid var(--divider-color);
+    margin-bottom: 8px;
+  }
+  .fold-title {
+    font-weight: 500;
+  }
   .setting-hint {
     font-size: 0.8rem;
     font-weight: normal;
