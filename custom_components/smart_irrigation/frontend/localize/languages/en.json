@@ -934,7 +934,9 @@
     "anchor_end_short": "done by",
     "steps_count": "step(s)",
     "schedules_count": "schedule(s)",
-    "off": "off"
+    "off": "off",
+    "steps_title": "Steps",
+    "schedules_title": "Schedules"
   },
   "supplies": {
     "title": "Pumps and main valves",

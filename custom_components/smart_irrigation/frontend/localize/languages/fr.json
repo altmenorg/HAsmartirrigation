@@ -934,7 +934,9 @@
     "anchor_end_short": "fini à",
     "steps_count": "étape(s)",
     "schedules_count": "planning(s)",
-    "off": "désactivé"
+    "off": "désactivé",
+    "steps_title": "Étapes",
+    "schedules_title": "Plannings"
   },
   "supplies": {
     "title": "Pompes et vannes générales",

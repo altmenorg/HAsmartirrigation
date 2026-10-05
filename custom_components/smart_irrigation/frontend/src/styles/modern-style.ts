@@ -155,6 +155,17 @@ export const modernStyle = css`
     border-bottom: 1px solid var(--divider-color);
     margin-bottom: 8px;
   }
+  /* Inside a folded block: room under its last buttons, and titled sections. */
+  .fold-body {
+    padding-bottom: 12px;
+  }
+  .si-actions:not(:last-child) {
+    margin-bottom: 12px;
+  }
+  .fold-section {
+    font-weight: 500;
+    margin: 16px 0 4px 0;
+  }
   .fold-title {
     font-weight: 500;
   }
@@ -300,6 +311,10 @@ export const modernStyle = css`
     margin-top: 0;
     padding-top: 0;
     border-top: 0;
+  }
+  /* The row just above a group of buttons gives up its line to theirs. */
+  .setting-row:has(+ .si-actions) {
+    border-bottom: 0;
   }
   .si-actions ha-button {
     width: 100%;

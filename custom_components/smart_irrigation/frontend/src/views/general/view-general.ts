@@ -701,21 +701,23 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           ${t("description")} ${this.renderLiveState()}
         </div>
         <div class="card-content">
-          ${this._actionBtn(mdiPause, tc("pause"), () =>
-            control("pause_watering"),
-          )}
-          ${this._actionBtn(mdiPlay, tc("resume"), () =>
-            control("resume_watering"),
-          )}
-          ${this._actionBtn(mdiSkipNext, tc("next_step"), () =>
-            control("next_step"),
-          )}
-          ${this._actionBtn(
-            mdiStop,
-            tc("stop"),
-            () => control("stop_watering"),
-            true,
-          )}
+          <div class="si-actions">
+            ${this._actionBtn(mdiPause, tc("pause"), () =>
+              control("pause_watering"),
+            )}
+            ${this._actionBtn(mdiPlay, tc("resume"), () =>
+              control("resume_watering"),
+            )}
+            ${this._actionBtn(mdiSkipNext, tc("next_step"), () =>
+              control("next_step"),
+            )}
+            ${this._actionBtn(
+              mdiStop,
+              tc("stop"),
+              () => control("stop_watering"),
+              true,
+            )}
+          </div>
           <div class="setting-hint row-hint">${tc("controls_help")}</div>
         </div>
 
@@ -952,15 +954,19 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 patchStep({ enabled: (e.target as any).checked })}
             ></ha-switch>
           </div>
-          ${this._actionBtn(
-            mdiDelete,
-            t("delete_step"),
-            () =>
-              patch(index, {
-                steps: (program.steps || []).filter((_, n) => n !== stepIndex),
-              }),
-            true,
-          )}
+          <div class="si-actions">
+            ${this._actionBtn(
+              mdiDelete,
+              t("delete_step"),
+              () =>
+                patch(index, {
+                  steps: (program.steps || []).filter(
+                    (_, n) => n !== stepIndex,
+                  ),
+                }),
+              true,
+            )}
+          </div>
         `,
       );
     };
@@ -1176,17 +1182,19 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 patchSchedule({ enabled: (e.target as any).checked })}
             ></ha-switch>
           </div>
-          ${this._actionBtn(
-            mdiDelete,
-            t("delete_schedule"),
-            () =>
-              patch(index, {
-                schedules: (program.schedules || []).filter(
-                  (_, n) => n !== scheduleIndex,
-                ),
-              }),
-            true,
-          )}
+          <div class="si-actions">
+            ${this._actionBtn(
+              mdiDelete,
+              t("delete_schedule"),
+              () =>
+                patch(index, {
+                  schedules: (program.schedules || []).filter(
+                    (_, n) => n !== scheduleIndex,
+                  ),
+                }),
+              true,
+            )}
+          </div>
         `,
       );
     };
@@ -1214,9 +1222,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         patch(index, { enabled: (e.target as any).checked })}
                     ></ha-switch>
                   </div>
-                  ${this._actionBtn(mdiPlay, t("run_now"), () =>
-                    run(program.id),
-                  )}
+                  <div class="si-actions">
+                    ${this._actionBtn(mdiPlay, t("run_now"), () =>
+                      run(program.id),
+                    )}
+                  </div>
                 </div>
               `
             : html`
@@ -1233,27 +1243,31 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       ${this._textRow(t("name"), "", program.name, (v) =>
                         patch(index, { name: v }),
                       )}
+                      <div class="fold-section">${t("steps_title")}</div>
                       ${(program.steps || []).map((step, stepIndex) =>
                         renderStep(program, index, step, stepIndex),
                       )}
-                      ${this._actionBtn(mdiPlus, t("add_step"), () =>
-                        patch(index, {
-                          steps: [
-                            ...(program.steps || []),
-                            {
-                              id: this._openNew("step", "step_" + random()),
-                              zones: [],
-                              mode: "calculated",
-                              percent: 100,
-                              seconds: 0,
-                              passes: 1,
-                              max_litres: 0,
-                              delay: null,
-                              enabled: true,
-                            },
-                          ],
-                        }),
-                      )}
+                      <div class="si-actions">
+                        ${this._actionBtn(mdiPlus, t("add_step"), () =>
+                          patch(index, {
+                            steps: [
+                              ...(program.steps || []),
+                              {
+                                id: this._openNew("step", "step_" + random()),
+                                zones: [],
+                                mode: "calculated",
+                                percent: 100,
+                                seconds: 0,
+                                passes: 1,
+                                max_litres: 0,
+                                delay: null,
+                                enabled: true,
+                              },
+                            ],
+                          }),
+                        )}
+                      </div>
+                      <div class="fold-section">${t("schedules_title")}</div>
                       ${(program.schedules || []).map(
                         (schedule, scheduleIndex) =>
                           renderSchedule(
@@ -1263,33 +1277,35 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                             scheduleIndex,
                           ),
                       )}
-                      ${this._actionBtn(mdiPlus, t("add_schedule"), () =>
-                        patch(index, {
-                          schedules: [
-                            ...(program.schedules || []),
-                            {
-                              id: this._openNew(
-                                "schedule",
-                                "schedule_" + random(),
-                              ),
-                              enabled: true,
-                              type: "time",
-                              time: "06:00",
-                              event: "sunrise",
-                              offset_minutes: 0,
-                              anchor: "start",
-                              weekdays: [],
-                              every_n_days: 1,
-                              every_offset: 0,
-                              parity: "any",
-                              months: [],
-                              from_date: null,
-                              until_date: null,
-                              weather: true,
-                            },
-                          ],
-                        }),
-                      )}
+                      <div class="si-actions">
+                        ${this._actionBtn(mdiPlus, t("add_schedule"), () =>
+                          patch(index, {
+                            schedules: [
+                              ...(program.schedules || []),
+                              {
+                                id: this._openNew(
+                                  "schedule",
+                                  "schedule_" + random(),
+                                ),
+                                enabled: true,
+                                type: "time",
+                                time: "06:00",
+                                event: "sunrise",
+                                offset_minutes: 0,
+                                anchor: "start",
+                                weekdays: [],
+                                every_n_days: 1,
+                                every_offset: 0,
+                                parity: "any",
+                                months: [],
+                                from_date: null,
+                                until_date: null,
+                                weather: true,
+                              },
+                            ],
+                          }),
+                        )}
+                      </div>
                       ${this._numRow(
                         t("delay"),
                         localize("common.units.seconds", lang),
@@ -1317,35 +1333,39 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                             })}
                         ></ha-switch>
                       </div>
-                      ${this._actionBtn(mdiPlay, t("run_now"), () =>
-                        run(program.id),
-                      )}
-                      ${this._actionBtn(
-                        mdiDelete,
-                        t("delete"),
-                        () => save(programs.filter((_, n) => n !== index)),
-                        true,
-                      )}
+                      <div class="si-actions">
+                        ${this._actionBtn(mdiPlay, t("run_now"), () =>
+                          run(program.id),
+                        )}
+                        ${this._actionBtn(
+                          mdiDelete,
+                          t("delete"),
+                          () => save(programs.filter((_, n) => n !== index)),
+                          true,
+                        )}
+                      </div>
                     `,
                   )}
                 </div>
               `,
         )}
         <div class="card-content">
-          ${this._actionBtn(mdiPlus, t("add"), () =>
-            save([
-              ...programs,
-              {
-                id: this._openNew("program", "program_" + random()),
-                name: `${t("new_program")} ${programs.length}`,
-                enabled: true,
-                steps: [],
-                delay: 0,
-                tours: 1,
-                schedules: [],
-              },
-            ]),
-          )}
+          <div class="si-actions">
+            ${this._actionBtn(mdiPlus, t("add"), () =>
+              save([
+                ...programs,
+                {
+                  id: this._openNew("program", "program_" + random()),
+                  name: `${t("new_program")} ${programs.length}`,
+                  enabled: true,
+                  steps: [],
+                  delay: 0,
+                  tours: 1,
+                  schedules: [],
+                },
+              ]),
+            )}
+          </div>
         </div>
       </ha-card>
     `;
@@ -1419,30 +1439,34 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     patch(index, { enabled: (e.target as any).checked })}
                 ></ha-switch>
               </div>
-              ${this._actionBtn(
-                mdiDelete,
-                t("delete"),
-                () => save(supplies.filter((_, n) => n !== index)),
-                true,
-              )}
+              <div class="si-actions">
+                ${this._actionBtn(
+                  mdiDelete,
+                  t("delete"),
+                  () => save(supplies.filter((_, n) => n !== index)),
+                  true,
+                )}
+              </div>
             </div>
           `,
         )}
         <div class="card-content">
-          ${this._actionBtn(mdiPlus, t("add"), () =>
-            save([
-              ...supplies,
-              {
-                // Chosen here and kept, so a zone's link survives a rename.
-                id: "supply_" + Math.random().toString(36).slice(2, 8),
-                name: "",
-                entities: [],
-                delay_before: 0,
-                delay_after: 0,
-                enabled: true,
-              },
-            ]),
-          )}
+          <div class="si-actions">
+            ${this._actionBtn(mdiPlus, t("add"), () =>
+              save([
+                ...supplies,
+                {
+                  // Chosen here and kept, so a zone's link survives a rename.
+                  id: "supply_" + Math.random().toString(36).slice(2, 8),
+                  name: "",
+                  entities: [],
+                  delay_before: 0,
+                  delay_after: 0,
+                  enabled: true,
+                },
+              ]),
+            )}
+          </div>
         </div>
       </ha-card>
     `;
