@@ -196,6 +196,33 @@ class ServiceHandlersMixin:
         _LOGGER.info("Irrigation resumed")
         async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated")
 
+    async def handle_run_program(self, call):
+        """Run a program of the full controller, or take its turn if one is running."""
+        program_id = call.data.get(const.ATTR_PROGRAM_ID)
+        if not program_id:
+            return
+        # The run takes as long as the watering: the service does not wait for it.
+        self._spawn_valve_run(self.async_run_program(str(program_id)))
+
+    async def handle_stop_watering(self, call):
+        """Stop the watering now: every zone, or the ones named."""
+        eid = call.data.get(const.SERVICE_ENTITY_ID)
+        if eid is None:
+            await self.async_stop_watering()
+            return
+        if not isinstance(eid, list):
+            eid = [eid]
+        zone_ids = []
+        for entity in eid:
+            state = self.hass.states.get(entity)
+            zone_id = state.attributes.get(const.ZONE_ID) if state else None
+            if zone_id is None:
+                _LOGGER.warning("stop_watering: %s is not a zone", entity)
+                continue
+            zone_ids.append(int(zone_id))
+        if zone_ids:
+            await self.async_stop_watering(zone_ids)
+
     async def handle_credit_watering(self, call):
         """Credit a zone with the water a run of its own actually delivered.
 

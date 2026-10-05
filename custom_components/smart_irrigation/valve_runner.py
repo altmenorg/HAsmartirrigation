@@ -36,6 +36,7 @@ import homeassistant.util.dt as dt_util
 
 from . import const
 from .observed_watering import NO_FLOW_GRACE
+from .program_runner import ProgramRunnerMixin
 from .supply_runner import SupplyRunnerMixin
 
 _LOGGER = logging.getLogger(__name__)
@@ -117,7 +118,12 @@ def pass_plan(config, duration: float) -> list:
     passes = int(
         setting(config, const.CONF_WATERING_PASSES, const.CONF_DEFAULT_WATERING_PASSES)
     )
-    passes = max(1, min(passes, const.CONF_MAX_WATERING_PASSES))
+    return split_into_passes(passes, duration)
+
+
+def split_into_passes(passes: int, duration: float) -> list:
+    """``duration`` seconds of water in ``passes`` equal passes, never too short."""
+    passes = max(1, min(int(passes), const.CONF_MAX_WATERING_PASSES))
     while passes > 1 and duration / passes < const.MIN_PASS_SECONDS:
         passes -= 1
     return [duration / passes] * passes
@@ -151,7 +157,7 @@ def wall_clock_seconds(config, duration: float, lead: float = 0.0) -> float:
     return duration + (soak_seconds(config) + lead) * extra
 
 
-class ValveRunnerMixin(SupplyRunnerMixin):
+class ValveRunnerMixin(SupplyRunnerMixin, ProgramRunnerMixin):
     """Open/close linked valves directly and credit the bucket for the run."""
 
     def _run_controls(self) -> dict:
@@ -171,10 +177,15 @@ class ValveRunnerMixin(SupplyRunnerMixin):
         if control is None:
             await asyncio.sleep(seconds)
             return False
-        if control.stop.is_set():
+        return await self._sleep_or_stop(control.stop, seconds)
+
+    @staticmethod
+    async def _sleep_or_stop(stop: asyncio.Event, seconds: float) -> bool:
+        """Wait ``seconds`` or until ``stop`` is set. True if it was set."""
+        if stop.is_set():
             return True
         sleeper = asyncio.ensure_future(asyncio.sleep(seconds))
-        stopper = asyncio.ensure_future(control.stop.wait())
+        stopper = asyncio.ensure_future(stop.wait())
         try:
             await asyncio.wait({sleeper, stopper}, return_when=asyncio.FIRST_COMPLETED)
         finally:
@@ -182,7 +193,7 @@ class ValveRunnerMixin(SupplyRunnerMixin):
             for task in (sleeper, stopper):
                 if not task.done():
                     task.cancel()
-        return control.stop.is_set()
+        return stop.is_set()
 
     async def async_stop_watering(self, zone_ids=None) -> list:
         """Stop the zones being watered or waiting their turn. Returns their ids.
@@ -206,6 +217,10 @@ class ValveRunnerMixin(SupplyRunnerMixin):
                     keep.append(queued)
             cycle["queue"] = keep
             await self._persist_cycle()
+        if target is None:
+            # Everything: the programs waiting or running end after the zone.
+            for run in self._program_registry().values():
+                run.stop.set()
         for zone_id, control in self._run_controls().items():
             if target is None or zone_id in target:
                 control.stop.set()
@@ -625,10 +640,22 @@ class ValveRunnerMixin(SupplyRunnerMixin):
         return added
 
     async def async_run_direct_valves(self, zone_ids=None) -> None:
-        """Open/run/close every eligible zone, sequentially or in parallel."""
+        """Open/run/close every eligible zone, sequentially or in parallel.
+
+        In full controller mode a cycle takes its turn behind a program that is
+        running (and the other way round): one at a time, whatever starts them.
+        """
         cfg = self.store.config
         if getattr(cfg, const.CONF_DIRECT_VALVE_CONTROL_ENABLED, False) is not True:
             return
+        if getattr(cfg, const.CONF_FULL_CONTROLLER, False) is True:
+            async with self._executor_lock():
+                await self._run_direct_valves(zone_ids)
+            return
+        await self._run_direct_valves(zone_ids)
+
+    async def _run_direct_valves(self, zone_ids=None) -> None:
+        cfg = self.store.config
         # The moment this cycle starts, on the loop clock. A zone watered by
         # another cycle while this one waits its turn is not watered again:
         # pressing "irrigate now" on a zone queued behind others used to run it
@@ -806,8 +833,10 @@ class ValveRunnerMixin(SupplyRunnerMixin):
             },
         )
 
-    async def _run_one_valve(self, zone: dict):
+    async def _run_one_valve(self, zone: dict, passes: int | None = None):
         """Water one zone for its duration, in one pass or several, and credit.
+
+        ``passes`` overrides the general setting (a step of a program sets its own).
 
         Returns a result dict ``{zone_id, zone, seconds, ran, problem}`` used to
         build the end-of-watering summary, or None when there was nothing to do.
@@ -828,12 +857,14 @@ class ValveRunnerMixin(SupplyRunnerMixin):
         claimed.add(zone_id)
         self._run_controls()[zone_id] = RunControl()
         try:
-            return await self._run_claimed_valve(zone, entity_id, duration)
+            return await self._run_claimed_valve(zone, entity_id, duration, passes)
         finally:
             claimed.discard(zone_id)
             self._run_controls().pop(zone_id, None)
 
-    async def _run_claimed_valve(self, zone: dict, entity_id: str, duration: float):
+    async def _run_claimed_valve(
+        self, zone: dict, entity_id: str, duration: float, passes: int | None = None
+    ):
         """The body of ``_run_one_valve``, once the zone is claimed."""
         zone_id = int(zone.get(const.ZONE_ID))
         zone_name = zone.get(const.ZONE_NAME)
@@ -843,7 +874,11 @@ class ValveRunnerMixin(SupplyRunnerMixin):
         # only the water. Crediting the lead as water left a phantom surplus
         # after every run.
         lead = self._lead_seconds(zone, duration)
-        plan = self._pass_plan(duration - lead)
+        plan = (
+            split_into_passes(passes, duration - lead)
+            if passes
+            else self._pass_plan(duration - lead)
+        )
         soak = self._soak_seconds() if len(plan) > 1 else 0.0
         # Suppress the observer from the moment we send the first open command
         # until the last pass has closed, soaking time included. Each pass
@@ -1173,7 +1208,8 @@ class ValveRunnerMixin(SupplyRunnerMixin):
         """Resume or close direct runs that were in flight before a restart."""
         runs = list(getattr(self.store.config, const.CONF_ACTIVE_VALVE_RUNS, []) or [])
         cycle = getattr(self.store.config, const.CONF_ACTIVE_CYCLE, None)
-        if not runs and not cycle:
+        program_run = getattr(self.store.config, const.CONF_ACTIVE_PROGRAM_RUN, None)
+        if not runs and not cycle and not program_run:
             return
         if runs:
             _LOGGER.info(
@@ -1193,6 +1229,8 @@ class ValveRunnerMixin(SupplyRunnerMixin):
         resumed = [self._spawn_valve_run(self._resume_one(run)) for run in runs]
         if cycle:
             self._spawn_valve_run(self._resume_cycle(cycle, resumed))
+        if program_run:
+            self._spawn_valve_run(self._resume_program(program_run, resumed))
 
     async def _resume_cycle(self, cycle: dict, resumed: list) -> None:
         """Go on with the zones a restart interrupted the cycle before.

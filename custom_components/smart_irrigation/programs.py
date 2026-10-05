@@ -4,7 +4,7 @@ A program is what Irrigation Unlimited calls a sequence: an ordered list of
 steps (a zone, or several zones at once), watered when its schedules say so.
 Everything here is plain data and pure functions, so it can be tested without
 Home Assistant; the coordinator stores the list in the configuration
-(``const.CONF_PROGRAMS``) and the runner executes it.
+(``const.CONF_PROGRAMS``) and the runner (program_runner.py) executes it.
 
 Smart Irrigation's difference is that a step takes the duration its water
 balance calculated unless told otherwise (``DURATION_CALCULATED``), which is
@@ -13,11 +13,14 @@ what Irrigation Unlimited users did with two automations and its
 
 The main program is the one the full controller creates when it is switched on,
 from the settings that already run the watering (the start trigger, the
-sequencing, the pause between zones, the passes). It carries no copy of them:
-until the user adds a second program, nothing runs differently from before.
+sequencing, the pause between zones, the passes). It carries no steps of its
+own: until the user adds a second program, nothing runs differently from before.
 """
 
 from __future__ import annotations
+
+import math
+import re
 
 from . import const
 
@@ -26,9 +29,16 @@ MAIN_PROGRAM_NAME = "Main program"
 
 # How a step decides how long to water.
 DURATION_CALCULATED = "calculated"  # the zone's calculated duration
-DURATION_PERCENT = "percent"  # the calculated duration times a percentage
-DURATION_FIXED = "fixed"  # a number of seconds
+DURATION_PERCENT = "percent"  # the calculated water times a percentage
+DURATION_FIXED = "fixed"  # a number of seconds of water
 DURATION_MODES = (DURATION_CALCULATED, DURATION_PERCENT, DURATION_FIXED)
+
+MAX_PERCENT = 1000.0
+MAX_PASSES = 6
+MAX_TOURS = 6
+MAX_DELAY_SECONDS = 6 * 3600
+
+_ID_UNSAFE = re.compile(r"[^a-z0-9_]+")
 
 
 def default_main_program() -> dict:
@@ -59,3 +69,219 @@ def find_program(programs, program_id) -> dict | None:
         if isinstance(program, dict) and program.get(const.PROGRAM_ID) == program_id:
             return program
     return None
+
+
+# --- what is stored ----------------------------------------------------------
+
+
+def _number(value, default: float, low: float, high: float) -> float:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return default
+    if math.isnan(number):
+        return default
+    return max(low, min(high, number))
+
+
+def _count(value, default: int, high: int) -> int:
+    return int(_number(value, default, 1, high))
+
+
+def _unique_id(wanted, fallback: str, used: set) -> str:
+    base = _ID_UNSAFE.sub("_", str(wanted or fallback).strip().lower()).strip("_")
+    base = base or fallback
+    unique, n = base, 2
+    while unique in used:
+        unique, n = f"{base}_{n}", n + 1
+    used.add(unique)
+    return unique
+
+
+def normalize_step(step, used: set, position: int = 0) -> dict | None:
+    """One step as it is stored, or None if it is not one."""
+    if not isinstance(step, dict):
+        return None
+    zones = []
+    for zone_id in step.get(const.STEP_ZONES) or []:
+        try:
+            zone_id = int(zone_id)
+        except (TypeError, ValueError):
+            continue
+        if zone_id not in zones:
+            zones.append(zone_id)
+    mode = step.get(const.STEP_MODE)
+    if mode not in DURATION_MODES:
+        mode = DURATION_CALCULATED
+    delay = step.get(const.STEP_DELAY)
+    return {
+        const.STEP_ID: _unique_id(
+            step.get(const.STEP_ID), f"step_{position + 1}", used
+        ),
+        const.STEP_ZONES: zones,
+        const.STEP_MODE: mode,
+        const.STEP_PERCENT: _number(
+            step.get(const.STEP_PERCENT), 100.0, 0.0, MAX_PERCENT
+        ),
+        const.STEP_SECONDS: _number(
+            step.get(const.STEP_SECONDS), 0.0, 0.0, 24 * 3600.0
+        ),
+        const.STEP_PASSES: _count(step.get(const.STEP_PASSES), 1, MAX_PASSES),
+        # None follows the program's delay.
+        const.STEP_DELAY: (
+            None
+            if delay in (None, "")
+            else _number(delay, 0.0, 0.0, float(MAX_DELAY_SECONDS))
+        ),
+        const.STEP_ENABLED: step.get(const.STEP_ENABLED) is not False,
+    }
+
+
+def normalize_programs(programs) -> list:
+    """The programs as they are stored: well formed, ids unique, main kept.
+
+    What the panel sends is cleaned rather than refused. The main program keeps
+    its id and carries no steps; any other program gets one if it has none.
+    """
+    cleaned = []
+    used = set()
+    for position, program in enumerate(programs or []):
+        if not isinstance(program, dict):
+            continue
+        is_main = (
+            program.get(const.PROGRAM_ID) == MAIN_PROGRAM_ID
+            or program.get(const.PROGRAM_MAIN) is True
+        )
+        name = str(program.get(const.PROGRAM_NAME) or "").strip()
+        if is_main:
+            if MAIN_PROGRAM_ID in used:
+                continue
+            used.add(MAIN_PROGRAM_ID)
+            cleaned.append(
+                {
+                    const.PROGRAM_ID: MAIN_PROGRAM_ID,
+                    const.PROGRAM_NAME: name or MAIN_PROGRAM_NAME,
+                    const.PROGRAM_ENABLED: program.get(const.PROGRAM_ENABLED)
+                    is not False,
+                    const.PROGRAM_MAIN: True,
+                }
+            )
+            continue
+        program_id = _unique_id(
+            program.get(const.PROGRAM_ID) or name, f"program_{position + 1}", used
+        )
+        step_ids: set = set()
+        steps = [
+            s
+            for s in (
+                normalize_step(raw, step_ids, n)
+                for n, raw in enumerate(program.get(const.PROGRAM_STEPS) or [])
+            )
+            if s is not None
+        ]
+        cleaned.append(
+            {
+                const.PROGRAM_ID: program_id,
+                const.PROGRAM_NAME: name or f"Program {position + 1}",
+                const.PROGRAM_ENABLED: program.get(const.PROGRAM_ENABLED) is not False,
+                const.PROGRAM_MAIN: False,
+                const.PROGRAM_STEPS: steps,
+                const.PROGRAM_DELAY: _number(
+                    program.get(const.PROGRAM_DELAY), 0.0, 0.0, float(MAX_DELAY_SECONDS)
+                ),
+                const.PROGRAM_TOURS: _count(
+                    program.get(const.PROGRAM_TOURS), 1, MAX_TOURS
+                ),
+            }
+        )
+    # The main program, when there is one, always comes first.
+    cleaned.sort(key=lambda p: 0 if p.get(const.PROGRAM_MAIN) else 1)
+    return cleaned
+
+
+# --- turning a program into what to water ------------------------------------
+
+
+def step_seconds(step: dict, zone: dict, tours: int = 1) -> float:
+    """How long a zone's valve is held for one pass of one tour of a step.
+
+    The zone's duration holds the water and one lead time (what fills the pipe),
+    and the runner puts the lead back on every pass. So the water is what
+    percent and tours work on, and a fixed number is seconds of water:
+
+    * calculated: the zone's own duration, lead time and all;
+    * percent: the calculated water times the percentage, plus the lead time;
+    * fixed: that many seconds of water, plus the lead time.
+
+    A zone that needs no water gets none in the first two modes. A fixed step
+    waters regardless, which is the point of fixing it. Tours divide the water
+    between them; the lead time is paid once per tour.
+    """
+    try:
+        lead = max(0.0, float(zone.get(const.ZONE_LEAD_TIME) or 0.0))
+        duration = max(0.0, float(zone.get(const.ZONE_DURATION) or 0.0))
+    except (TypeError, ValueError):
+        return 0.0
+    mode = step.get(const.STEP_MODE, DURATION_CALCULATED)
+    lead = min(lead, duration) if duration else lead
+    if mode == DURATION_FIXED:
+        water = max(0.0, float(step.get(const.STEP_SECONDS) or 0.0))
+    else:
+        water = max(0.0, duration - lead)
+        if mode == DURATION_PERCENT:
+            water *= max(0.0, float(step.get(const.STEP_PERCENT) or 0.0)) / 100.0
+    if water <= 0:
+        return 0.0
+    return water / max(1, int(tours)) + lead
+
+
+def plan_program(program: dict, zones) -> list:
+    """What a program waters, as tours of steps of zones with their seconds.
+
+    Returns ``[tour, ...]`` where a tour is ``[step, ...]`` and a step is
+    ``{"id", "zones": [{"zone_id", "seconds", "passes"}], "delay"}``. Zones that
+    do not exist, are disabled or have no linked entity are left out, and so are
+    steps that end up with no zone to water. The delay of a step is the one it
+    sets or else the program's, and is what is waited after it, unless it is
+    the last of the tour.
+    """
+    by_id = {int(z[const.ZONE_ID]): z for z in zones if const.ZONE_ID in z}
+    tours = max(1, int(program.get(const.PROGRAM_TOURS) or 1))
+    default_delay = float(program.get(const.PROGRAM_DELAY) or 0.0)
+    plan = []
+    for _tour in range(tours):
+        steps = []
+        for step in program.get(const.PROGRAM_STEPS) or []:
+            if step.get(const.STEP_ENABLED) is False:
+                continue
+            members = []
+            for zone_id in step.get(const.STEP_ZONES) or []:
+                zone = by_id.get(int(zone_id))
+                if (
+                    zone is None
+                    or not zone.get(const.ZONE_LINKED_ENTITY)
+                    or zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED
+                ):
+                    continue
+                seconds = step_seconds(step, zone, tours)
+                if seconds > 0:
+                    members.append(
+                        {
+                            "zone_id": int(zone_id),
+                            "seconds": seconds,
+                            "passes": max(1, int(step.get(const.STEP_PASSES) or 1)),
+                        }
+                    )
+            if not members:
+                continue
+            delay = step.get(const.STEP_DELAY)
+            steps.append(
+                {
+                    "id": step.get(const.STEP_ID),
+                    "zones": members,
+                    "delay": default_delay if delay is None else float(delay),
+                }
+            )
+        if steps:
+            plan.append(steps)
+    return plan

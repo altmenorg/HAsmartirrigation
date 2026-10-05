@@ -63,7 +63,10 @@ async def test_switching_it_on_keeps_the_programs_already_stored():
 
     written = await _update(_coordinator(stored), {const.CONF_FULL_CONTROLLER: True})
 
-    assert written[const.CONF_PROGRAMS] == stored
+    # Cleaned on the way in, but nobody is dropped or renamed.
+    programs = written[const.CONF_PROGRAMS]
+    assert [p[const.PROGRAM_ID] for p in programs] == [MAIN_PROGRAM_ID, "evening"]
+    assert programs[0][const.PROGRAM_NAME] == "Mine"
 
 
 @pytest.mark.asyncio

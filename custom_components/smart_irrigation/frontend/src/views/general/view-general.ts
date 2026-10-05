@@ -3,7 +3,7 @@ import { property, customElement } from "lit/decorators.js";
 import { HomeAssistant, fireEvent } from "custom-card-helpers";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 
-import { fetchConfig, saveConfig } from "../../data/websockets";
+import { fetchConfig, fetchZones, saveConfig } from "../../data/websockets";
 import { SubscribeMixin } from "../../subscribe-mixin";
 import { localize } from "../../../localize/localize";
 import { output_unit, pick, handleError } from "../../helpers";
@@ -11,7 +11,10 @@ import { loadHaForm } from "../../load-ha-elements";
 import "../../dialogs/trigger-dialog";
 import {
   SmartIrrigationConfig,
+  SmartIrrigationProgram,
+  SmartIrrigationStep,
   SmartIrrigationSupply,
+  SmartIrrigationZone,
   IrrigationStartTrigger,
 } from "../../types";
 import { globalStyle } from "../../styles/global-style";
@@ -43,7 +46,14 @@ import {
   TRIGGER_TYPE_SOLAR_AZIMUTH,
   DOMAIN,
 } from "../../const";
-import { mdiPlus, mdiPencil, mdiDelete, mdiMenuDown, mdiMinus } from "@mdi/js";
+import {
+  mdiPlus,
+  mdiPencil,
+  mdiDelete,
+  mdiMenuDown,
+  mdiMinus,
+  mdiPlay,
+} from "@mdi/js";
 
 @customElement("smart-irrigation-view-general")
 export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
@@ -53,6 +63,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
   @property() data?: Partial<SmartIrrigationConfig>;
   @property() config?: SmartIrrigationConfig;
+  // The zones a step can water (full controller programs).
+  @property({ attribute: false }) zones: SmartIrrigationZone[] = [];
 
   @property({ type: Boolean })
   private isLoading = true;
@@ -157,6 +169,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         CONF_MANUAL_ELEVATION,
         CONF_DAYS_BETWEEN_IRRIGATION,
       ]);
+      try {
+        this.zones = await fetchZones(this.hass);
+      } catch (error) {
+        console.error("Error fetching zones:", error);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
       // Handle error gracefully - keep existing data if fetch fails
@@ -495,6 +512,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
       // Pumps and main valves (full controller).
       const r14 = this.renderSuppliesCard();
+      const r15 = this.renderProgramsCard();
 
       // The way to the setup assistant, which is no longer a tab. It comes first:
       // it is where somebody who has nothing set up wants to start.
@@ -508,10 +526,239 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           </div> </ha-card
         >${r12}${r11}${r2}${r1}${showContinuous
           ? r4
-          : ""}${r5}${r6}${r7}${r8}${r9}${r14}${r10}${r13}`;
+          : ""}${r5}${r6}${r7}${r8}${r9}${r15}${r14}${r10}${r13}`;
 
       return r;
     }
+  }
+
+  /**
+   * Programs: what is watered, in what order, for how long.
+   *
+   * Only in full controller mode. The main program is made from the settings
+   * above and has nothing to edit here. A step is one or several zones watered
+   * together; by default it takes the duration Smart Irrigation calculated.
+   */
+  renderProgramsCard() {
+    if (!this.config || !this.hass || this.config.full_controller !== true) {
+      return html``;
+    }
+    const lang = this.hass.language;
+    const t = (key: string) => localize(`programs.${key}`, lang);
+    const programs: SmartIrrigationProgram[] = this.config.programs || [];
+    const save = (next: SmartIrrigationProgram[]) =>
+      this.handleConfigChange({ programs: next });
+    const patch = (index: number, changes: Partial<SmartIrrigationProgram>) =>
+      save(programs.map((p, n) => (n === index ? { ...p, ...changes } : p)));
+    const num = (v: string, fallback = 0) => {
+      const n = parseFloat(v);
+      return isNaN(n) ? fallback : n;
+    };
+    const run = (id?: string) =>
+      this.hass!.callService(DOMAIN, "run_program", { program_id: id });
+    const random = () => Math.random().toString(36).slice(2, 8);
+
+    const renderStep = (
+      program: SmartIrrigationProgram,
+      index: number,
+      step: SmartIrrigationStep,
+      stepIndex: number,
+    ) => {
+      const patchStep = (changes: Partial<SmartIrrigationStep>) =>
+        patch(index, {
+          steps: (program.steps || []).map((s, n) =>
+            n === stepIndex ? { ...s, ...changes } : s,
+          ),
+        });
+      const toggleZone = (zoneId: number, on: boolean) => {
+        const zones = (step.zones || []).filter((z) => z !== zoneId);
+        patchStep({ zones: on ? [...zones, zoneId] : zones });
+      };
+      return html`
+        <div class="setting-note">
+          <strong>${t("step")} ${stepIndex + 1}</strong>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">${t("step_zones")}</div>
+          <div>
+            ${this.zones.map(
+              (zone) => html`
+                <label style="margin-right: 12px; white-space: nowrap;">
+                  <input
+                    type="checkbox"
+                    .checked=${(step.zones || []).includes(zone.id as number)}
+                    @change=${(e: Event) =>
+                      toggleZone(
+                        zone.id as number,
+                        (e.target as HTMLInputElement).checked,
+                      )}
+                  />
+                  ${zone.name}
+                </label>
+              `,
+            )}
+          </div>
+        </div>
+        <div class="setting-note">${t("step_zones_help")}</div>
+        ${this._selectRow(
+          t("step_duration"),
+          html`
+            <option value="calculated" ?selected=${step.mode === "calculated"}>
+              ${t("mode_calculated")}
+            </option>
+            <option value="percent" ?selected=${step.mode === "percent"}>
+              ${t("mode_percent")}
+            </option>
+            <option value="fixed" ?selected=${step.mode === "fixed"}>
+              ${t("mode_fixed")}
+            </option>
+          `,
+          (e: Event) =>
+            patchStep({
+              mode: (e.target as HTMLSelectElement)
+                .value as SmartIrrigationStep["mode"],
+            }),
+        )}
+        ${step.mode === "percent"
+          ? this._numRow(t("percent"), "%", step.percent, (v) =>
+              patchStep({ percent: num(v, 100) }),
+            )
+          : ""}
+        ${step.mode === "fixed"
+          ? this._numRow(
+              t("seconds"),
+              localize("units.seconds", lang),
+              step.seconds,
+              (v) => patchStep({ seconds: num(v) }),
+            )
+          : ""}
+        ${this._numRow(t("passes"), "", step.passes, (v) =>
+          patchStep({ passes: Math.max(1, Math.round(num(v, 1))) }),
+        )}
+        ${this._textRow(
+          t("step_delay"),
+          localize("units.seconds", lang),
+          step.delay === null || step.delay === undefined ? "" : step.delay,
+          (v) => patchStep({ delay: v.trim() === "" ? null : num(v) }),
+        )}
+        <div class="setting-note">${t("step_delay_help")}</div>
+        <div class="setting-row">
+          <div class="setting-label">${t("enabled")}</div>
+          <ha-switch
+            .checked=${step.enabled !== false}
+            @change=${(e: Event) =>
+              patchStep({ enabled: (e.target as any).checked })}
+          ></ha-switch>
+        </div>
+        ${this._actionBtn(
+          mdiDelete,
+          t("delete_step"),
+          () =>
+            patch(index, {
+              steps: (program.steps || []).filter((_, n) => n !== stepIndex),
+            }),
+          true,
+        )}
+      `;
+    };
+
+    return html`
+      <ha-card header="${t("title")}">
+        <div class="card-content">${t("description")}</div>
+        ${programs.map((program, index) =>
+          program.main
+            ? html`
+                <div class="card-content">
+                  <div class="setting-note">
+                    <strong>${program.name}</strong>
+                  </div>
+                  <div class="setting-note">${t("main_description")}</div>
+                  <div class="setting-row">
+                    <div class="setting-label">${t("enabled")}</div>
+                    <ha-switch
+                      .checked=${program.enabled !== false}
+                      @change=${(e: Event) =>
+                        patch(index, { enabled: (e.target as any).checked })}
+                    ></ha-switch>
+                  </div>
+                  ${this._actionBtn(mdiPlay, t("run_now"), () =>
+                    run(program.id),
+                  )}
+                </div>
+              `
+            : html`
+                <div class="card-content">
+                  ${this._textRow(t("name"), "", program.name, (v) =>
+                    patch(index, { name: v }),
+                  )}
+                  ${(program.steps || []).map((step, stepIndex) =>
+                    renderStep(program, index, step, stepIndex),
+                  )}
+                  ${this._actionBtn(mdiPlus, t("add_step"), () =>
+                    patch(index, {
+                      steps: [
+                        ...(program.steps || []),
+                        {
+                          id: "step_" + random(),
+                          zones: [],
+                          mode: "calculated",
+                          percent: 100,
+                          seconds: 0,
+                          passes: 1,
+                          delay: null,
+                          enabled: true,
+                        },
+                      ],
+                    }),
+                  )}
+                  ${this._numRow(
+                    t("delay"),
+                    localize("units.seconds", lang),
+                    program.delay ?? 0,
+                    (v) => patch(index, { delay: num(v) }),
+                  )}
+                  <div class="setting-note">${t("delay_help")}</div>
+                  ${this._numRow(t("tours"), "", program.tours ?? 1, (v) =>
+                    patch(index, { tours: Math.max(1, Math.round(num(v, 1))) }),
+                  )}
+                  <div class="setting-note">${t("tours_help")}</div>
+                  <div class="setting-row">
+                    <div class="setting-label">${t("enabled")}</div>
+                    <ha-switch
+                      .checked=${program.enabled !== false}
+                      @change=${(e: Event) =>
+                        patch(index, { enabled: (e.target as any).checked })}
+                    ></ha-switch>
+                  </div>
+                  ${this._actionBtn(mdiPlay, t("run_now"), () =>
+                    run(program.id),
+                  )}
+                  ${this._actionBtn(
+                    mdiDelete,
+                    t("delete"),
+                    () => save(programs.filter((_, n) => n !== index)),
+                    true,
+                  )}
+                </div>
+              `,
+        )}
+        <div class="card-content">
+          ${this._actionBtn(mdiPlus, t("add"), () =>
+            save([
+              ...programs,
+              {
+                id: "program_" + random(),
+                name: "",
+                enabled: true,
+                steps: [],
+                delay: 0,
+                tours: 1,
+              },
+            ]),
+          )}
+        </div>
+      </ha-card>
+    `;
   }
 
   /**

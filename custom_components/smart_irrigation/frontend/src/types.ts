@@ -37,6 +37,7 @@ export class SmartIrrigationConfig {
   seasonal_adjustments?: SmartIrrigationSeasonalAdjustment[];
   /** Pumps or main valves of the full controller. */
   supplies?: SmartIrrigationSupply[];
+  programs?: SmartIrrigationProgram[];
   recalculate_before_start?: boolean;
   /** How much of the panel is shown: "standard" or "advanced". */
   ui_mode?: string;
@@ -145,6 +146,30 @@ export interface SmartIrrigationSeasonalAdjustment {
 }
 
 //export type SmartIrrigationZone = {
+/** One step of a program: zones watered together, and how long. */
+export interface SmartIrrigationStep {
+  id?: string;
+  zones: number[];
+  mode: "calculated" | "percent" | "fixed";
+  percent: number;
+  seconds: number;
+  passes: number;
+  /** Seconds waited after the step; null follows the program's. */
+  delay: number | null;
+  enabled: boolean;
+}
+
+/** A program of the full controller. The main one has no steps of its own. */
+export interface SmartIrrigationProgram {
+  id?: string;
+  name: string;
+  enabled: boolean;
+  main?: boolean;
+  steps?: SmartIrrigationStep[];
+  delay?: number;
+  tours?: number;
+}
+
 /** A pump or a main valve that runs while a zone it feeds is being watered. */
 export interface SmartIrrigationSupply {
   id?: string;

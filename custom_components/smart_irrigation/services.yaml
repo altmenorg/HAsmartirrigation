@@ -85,6 +85,29 @@ credit_watering:
           min: 0
           max: 86400
           unit_of_measurement: s
+run_program:
+  name: Run program
+  description: >-
+    Run a program of the full controller now, or as soon as it is its turn when
+    another one is running. The program waters its zones with the durations
+    Smart Irrigation calculated, unless its steps say otherwise.
+  fields:
+    program_id:
+      name: Program
+      required: true
+      example: evening
+      description: The id of the program, as shown in its settings.
+      selector:
+        text:
+stop_watering:
+  name: Stop watering
+  description: >-
+    Stop the watering now. Every valve Smart Irrigation opened is closed, each
+    zone is credited for the water it delivered, and the programs and the zones
+    still waiting are ended. With zones chosen, only those are stopped.
+  target:
+    entity:
+      domain: sensor
 reset_all_buckets:
   name: Reset all buckets
   description: Reset the water bucket value for all zones.

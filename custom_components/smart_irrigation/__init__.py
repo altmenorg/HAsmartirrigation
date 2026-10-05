@@ -69,7 +69,7 @@ from .hourly_et import solar_elevation_sin
 from .live_estimate import LiveEstimateMixin
 from .observed_watering import ObservedWateringMixin
 from .panel import async_register_panel, remove_panel
-from .programs import ensure_main_program
+from .programs import ensure_main_program, normalize_programs
 from .scheduler import RecurringScheduleManager, SeasonalAdjustmentManager
 from .service_handlers import ServiceHandlersMixin
 from .skip_conditions import SkipConditionsMixin, thresholds_for_storage
@@ -775,6 +775,11 @@ class SmartIrrigationCoordinator(
                     )
 
         data = self._full_controller_changes(data)
+        if const.CONF_PROGRAMS in data:
+            data = {
+                **data,
+                const.CONF_PROGRAMS: normalize_programs(data[const.CONF_PROGRAMS]),
+            }
         if const.CONF_SUPPLIES in data:
             data = {
                 **data,
@@ -2366,6 +2371,13 @@ def register_services(hass: HomeAssistant):
         const.DOMAIN,
         const.SERVICE_CREDIT_WATERING,
         coordinator.handle_credit_watering,
+    )
+
+    hass.services.async_register(
+        const.DOMAIN, const.SERVICE_RUN_PROGRAM, coordinator.handle_run_program
+    )
+    hass.services.async_register(
+        const.DOMAIN, const.SERVICE_STOP_WATERING, coordinator.handle_stop_watering
     )
 
     hass.services.async_register(

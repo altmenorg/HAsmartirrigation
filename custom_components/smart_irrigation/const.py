@@ -134,6 +134,9 @@ CONF_ACTIVE_VALVE_RUNS = "active_valve_runs"
 # The sequential cycle under way (the zones still to water, in order), kept so a
 # restart goes on with them instead of leaving them dry.
 CONF_ACTIVE_CYCLE = "active_cycle"
+# The program run under way: its plan and where it has got to, kept so a restart
+# goes on with the steps still to do.
+CONF_ACTIVE_PROGRAM_RUN = "active_program_run"
 # A cycle older than this is not resumed: it belongs to another day's watering.
 CYCLE_RESUME_MAX_AGE_SECONDS = 6 * 3600
 # Keys inside an active-run record.
@@ -146,6 +149,21 @@ PROGRAM_ID = "id"
 PROGRAM_NAME = "name"
 PROGRAM_ENABLED = "enabled"
 PROGRAM_MAIN = "main"
+PROGRAM_STEPS = "steps"
+# Seconds waited after a step, unless the step sets its own.
+PROGRAM_DELAY = "delay"
+# The whole list watered this many times, each with its share of the water.
+PROGRAM_TOURS = "tours"
+# Keys inside a step of a program (see programs.py).
+STEP_ID = "id"
+STEP_ZONES = "zones"
+STEP_MODE = "mode"
+STEP_PERCENT = "percent"
+STEP_SECONDS = "seconds"
+# A zone watered in this many passes inside the step (cycle and soak).
+STEP_PASSES = "passes"
+STEP_DELAY = "delay"
+STEP_ENABLED = "enabled"
 # Keys inside a supply of the full controller (see supplies.py).
 SUPPLY_ID = "id"
 SUPPLY_NAME = "name"
@@ -734,6 +752,9 @@ EVENT_IRRIGATE_START = "start_irrigation_all_zones"
 # Fired (as smart_irrigation_irrigation_started) when direct valve control
 # begins running the zones, with the list about to be watered.
 EVENT_IRRIGATE_STARTED = "irrigation_started"
+# A program of the full controller started or ended, whoever started it.
+EVENT_PROGRAM_STARTED = "program_started"
+EVENT_PROGRAM_FINISHED = "program_finished"
 # Fired (as smart_irrigation_irrigation_finished) once direct valve control has
 # finished running every eligible zone, with a per-zone summary, so a single
 # automation can send an end-of-watering report.
@@ -811,6 +832,9 @@ SERVICE_UPDATE_ALL_ZONES = "update_all_zones"
 SERVICE_UPDATE_ZONE = "update_zone"
 SERVICE_RESET_BUCKET = "reset_bucket"
 SERVICE_CREDIT_WATERING = "credit_watering"
+SERVICE_RUN_PROGRAM = "run_program"
+SERVICE_STOP_WATERING = "stop_watering"
+ATTR_PROGRAM_ID = "program_id"
 ATTR_SECONDS = "seconds"
 SERVICE_RESET_ALL_BUCKETS = "reset_all_buckets"
 SERVICE_SET_BUCKET = "set_bucket"

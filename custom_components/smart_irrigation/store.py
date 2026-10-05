@@ -17,6 +17,7 @@ from .const import (
     ATTR_NEW_BUCKET_VALUE,
     ATTR_NEW_MULTIPLIER_VALUE,
     CONF_ACTIVE_CYCLE,
+    CONF_ACTIVE_PROGRAM_RUN,
     CONF_ACTIVE_START_TRIGGER,
     CONF_ACTIVE_VALVE_RUNS,
     CONF_AUTO_CALC_ENABLED,
@@ -668,6 +669,7 @@ class Config:
     # In-flight direct-control runs, persisted so a reboot can resume them.
     active_valve_runs = attr.ib(type=list, default=[])
     active_cycle = attr.ib(type=dict, default=None)
+    active_program_run = attr.ib(type=dict, default=None)
 
 
 class MigratableStore(Store):
@@ -1163,6 +1165,7 @@ class SmartIrrigationStorage:
                 ),
                 active_valve_runs=data["config"].get(CONF_ACTIVE_VALVE_RUNS, []),
                 active_cycle=data["config"].get(CONF_ACTIVE_CYCLE),
+                active_program_run=data["config"].get(CONF_ACTIVE_PROGRAM_RUN),
             )
 
             if "zones" in data:
@@ -1499,7 +1502,11 @@ class SmartIrrigationStorage:
         old = self.config
         changes.pop("id", None)
         new = self.config = attr.evolve(old, **changes)
-        if CONF_ACTIVE_VALVE_RUNS in changes or CONF_ACTIVE_CYCLE in changes:
+        if (
+            CONF_ACTIVE_VALVE_RUNS in changes
+            or CONF_ACTIVE_CYCLE in changes
+            or CONF_ACTIVE_PROGRAM_RUN in changes
+        ):
             await self._save_now()
         else:
             self.async_schedule_save()
