@@ -595,6 +595,8 @@
         "linked-entity-hint": "The valve or switch that waters this zone. Smart Irrigation opens and closes it when direct valve control is on. With observed watering on, any run of it (a manual tap, an automation, or Smart Irrigation itself) credits the bucket from the run time and the zone's throughput.",
         "supply": "Supply (pump or main valve)",
         "supply-none": "None",
+        "extra-valves": "Other valves of the zone",
+        "extra-valves-hint": "opened and closed together with it; separate with commas",
         "flow-sensor": "Cumulative volume meter",
         "flow-sensor-hint": "For exact crediting instead of throughput x time: a cumulative water-meter total (state class total_increasing), not an instant flow rate. The unit is read automatically (L, mL, m³, gal, ft³).",
         "safety-off-topic": "Safety off MQTT topic",

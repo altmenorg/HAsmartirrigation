@@ -74,6 +74,7 @@ import {
   ZONE_LINKED_ENTITY,
   ZONE_SAFETY_OFF_TOPIC,
   ZONE_SUPPLY_ID,
+  ZONE_EXTRA_ENTITIES,
   ZONE_SAFETY_OFF_STATE_KEY,
   ZONE_MAPPING,
   ZONE_ALLOWED_DEPLETION,
@@ -1657,13 +1658,37 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       localize("panels.zones.labels.linked-entity", lang),
                       localize("panels.zones.labels.optional", lang),
                       zone.linked_entity,
-                      ["switch", "valve", "input_boolean", "binary_sensor"],
+                      this.config?.full_controller
+                        ? [
+                            "switch",
+                            "valve",
+                            "input_boolean",
+                            "binary_sensor",
+                            "light",
+                            "cover",
+                          ]
+                        : ["switch", "valve", "input_boolean", "binary_sensor"],
                       (v) =>
                         this.handleEditZone(index, {
                           ...zone,
                           [ZONE_LINKED_ENTITY]: v || undefined,
                         }),
                       localize("panels.zones.labels.linked-entity-hint", lang),
+                    )
+                  : ""}
+                ${this.config?.full_controller && zone.linked_entity
+                  ? this._textRow(
+                      localize("panels.zones.labels.extra-valves", lang),
+                      localize("panels.zones.labels.extra-valves-hint", lang),
+                      (zone.extra_entities || []).join(", "),
+                      (v) =>
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_EXTRA_ENTITIES]: v
+                            .split(",")
+                            .map((e) => e.trim())
+                            .filter((e) => e),
+                        }),
                     )
                   : ""}
                 ${this.config?.full_controller &&

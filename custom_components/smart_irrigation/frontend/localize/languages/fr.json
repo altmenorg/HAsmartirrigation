@@ -582,6 +582,8 @@
         "linked-entity-hint": "La vanne ou l'interrupteur qui arrose cette zone. Smart Irrigation l'ouvre et la ferme quand le pilotage direct est activé. Avec l'arrosage observé activé, chacune de ses ouvertures (à la main, par une automatisation, ou par Smart Irrigation) crédite le réservoir d'après la durée d'arrosage et le débit de la zone.",
         "supply": "Alimentation (pompe ou vanne générale)",
         "supply-none": "Aucune",
+        "extra-valves": "Autres vannes de la zone",
+        "extra-valves-hint": "ouvertes et fermées avec elle ; séparer par des virgules",
         "flow-sensor": "Compteur de volume cumulé",
         "flow-sensor-hint": "Pour un comptage exact au lieu de débit x temps : un total de compteur d'eau cumulé (state class total_increasing), pas un débit instantané. L'unité est lue automatiquement (L, mL, m³, gal, ft³).",
         "safety-off-topic": "Topic MQTT de coupure de sécurité",

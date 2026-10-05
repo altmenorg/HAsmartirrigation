@@ -190,6 +190,14 @@ class SupplyRunnerMixin:
                     )
                     if attempt == 0 and not on:
                         await asyncio.sleep(SUPPLY_OFF_RETRY_DELAY)
+            if not failed:
+                self._fire_valve_event(
+                    const.EVENT_VALVE_ON if on else const.EVENT_VALVE_OFF,
+                    entity_id,
+                    kind="supply",
+                    supply_id=supply.get(const.SUPPLY_ID),
+                    supply=supply.get(const.SUPPLY_NAME),
+                )
             if failed:
                 ok = False
                 self._report_supply_problem(

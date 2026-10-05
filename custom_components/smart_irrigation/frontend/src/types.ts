@@ -237,6 +237,7 @@ export class SmartIrrigationZone {
   safety_off_topic?: string;
   safety_off_state_key?: string;
   supply_id?: string | null;
+  extra_entities?: string[] | null;
   flow_sensor?: string;
   soil_moisture_sensor?: string;
   soil_moisture_threshold?: number;

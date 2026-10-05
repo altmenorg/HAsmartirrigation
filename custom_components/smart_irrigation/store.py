@@ -184,6 +184,7 @@ from .const import (
     ZONE_ET_DEFICIENCY,
     ZONE_ETO,
     ZONE_EXPLANATION,
+    ZONE_EXTRA_ENTITIES,
     ZONE_FLOW_SENSOR,
     ZONE_ID,
     ZONE_INPUT_METHOD,
@@ -305,6 +306,8 @@ class ZoneEntry:
     safety_off_state_key = attr.ib(type=str, default=None)
     # The supply (pump or main valve) that feeds this zone, by id (full controller).
     supply_id = attr.ib(type=str, default=None)
+    # Other valves that open and close with the linked one (full controller).
+    extra_entities = attr.ib(type=list, default=None)
     # How much of a deficit to let build up before watering, in the user's depth
     # unit. 0 keeps watering as soon as anything is missing (#815).
     irrigation_threshold = attr.ib(
@@ -1237,6 +1240,7 @@ class SmartIrrigationStorage:
                         safety_off_topic=zone.get(ZONE_SAFETY_OFF_TOPIC, None),
                         safety_off_state_key=zone.get(ZONE_SAFETY_OFF_STATE_KEY, None),
                         supply_id=zone.get(ZONE_SUPPLY_ID, None),
+                        extra_entities=zone.get(ZONE_EXTRA_ENTITIES, None),
                         flow_sensor=zone.get(ZONE_FLOW_SENSOR, None),
                         soil_moisture_sensor=zone.get(ZONE_SOIL_MOISTURE_SENSOR, None),
                         soil_moisture_threshold=zone.get(

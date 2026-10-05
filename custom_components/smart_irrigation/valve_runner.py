@@ -62,6 +62,13 @@ VALVE_CLOSE_TIMEOUT = 5.0
 VALVE_CLOSE_POLL = 1.0
 VALVE_CLOSE_RETRY_DELAY = 3.0
 
+# In full controller mode the wait is longer and the open is sent again on the
+# way: a slow valve (a battery one on Zigbee, a Z-Wave one) can take more than
+# eight seconds to say it is open, and one that lost the command has not heard.
+# Only a valve that stays closed after all that is a failure.
+VALVE_CONFIRM_TIMEOUT_FULL = 30.0
+VALVE_OPEN_RESEND_AT = (10.0, 20.0)
+
 # Entity states that count as "the valve actually opened".
 _VALVE_ON_STATES = ("on", "open", "opening")
 # States that mean "no usable reading" (a write-only valve we cannot verify).
@@ -349,6 +356,85 @@ class ValveRunnerMixin(
                 e,
             )
 
+    def _full_controller(self) -> bool:
+        return getattr(self.store.config, const.CONF_FULL_CONTROLLER, False) is True
+
+    def _zone_entities(self, zone: dict, primary: str | None = None) -> list:
+        """The valves that open and close with a zone: its linked one, then the rest.
+
+        The other valves are only honoured in full controller mode, so a zone
+        edited there and then taken back to the plain mode waters as it always did.
+        """
+        primary = primary or zone.get(const.ZONE_LINKED_ENTITY)
+        entities = [primary] if primary else []
+        if self._full_controller():
+            for entity_id in zone.get(const.ZONE_EXTRA_ENTITIES) or []:
+                if entity_id and entity_id not in entities:
+                    entities.append(entity_id)
+        return entities
+
+    def _fire_valve_event(self, event: str, entity_id: str, **data) -> None:
+        """Say a valve or a supply was switched, in full controller mode."""
+        if not self._full_controller():
+            return
+        self.hass.bus.async_fire(
+            f"{const.DOMAIN}_{event}", {"entity_id": entity_id, **data}
+        )
+
+    async def _open_zone_valves(self, zone: dict, primary: str) -> None:
+        """Open every valve of the zone. One that fails to open does not stop the others."""
+        entities = self._zone_entities(zone, primary)
+        for index, entity_id in enumerate(entities):
+            domain, on_svc, _off = self._valve_services(entity_id)
+            try:
+                await self._async_call_valve_service(domain, on_svc, entity_id)
+            except asyncio.CancelledError:
+                raise
+            except Exception as e:  # noqa: BLE001 - the primary's failure is the run's
+                if index == 0:
+                    raise
+                _LOGGER.error(
+                    "Opening %s (zone %s) failed: %s",
+                    entity_id,
+                    zone.get(const.ZONE_ID),
+                    e,
+                )
+                self._report_valve_problem(zone, entity_id, PROBLEM_DID_NOT_OPEN)
+            self._fire_valve_event(
+                const.EVENT_VALVE_ON,
+                entity_id,
+                kind="zone",
+                zone_id=zone.get(const.ZONE_ID),
+                zone=zone.get(const.ZONE_NAME),
+            )
+
+    async def _confirm_zone_valves(self, zone: dict, primary: str):
+        """Confirm every valve of the zone opened. False if one stays closed."""
+        result = None
+        for entity_id in self._zone_entities(zone, primary):
+            answer = await self._confirm_valve_running(entity_id)
+            if answer is False:
+                return False
+            if answer is True:
+                result = True
+        return result
+
+    async def _close_zone_valves(self, zone: dict, primary: str) -> bool:
+        """Close every valve of the zone. Whether all are closed, or not known open."""
+        ok = True
+        for entity_id in self._zone_entities(zone, primary):
+            closed = await self._close_valve(zone, entity_id)
+            ok = ok and closed
+            self._fire_valve_event(
+                const.EVENT_VALVE_OFF,
+                entity_id,
+                kind="zone",
+                zone_id=zone.get(const.ZONE_ID),
+                zone=zone.get(const.ZONE_NAME),
+                closed=closed,
+            )
+        return ok
+
     async def _confirm_valve_running(self, entity_id: str):
         """Wait briefly for a freshly-opened valve to report an on-state.
 
@@ -357,11 +443,28 @@ class ValveRunnerMixin(
         is unreadable (a write-only valve we cannot verify, so do not penalise
         it -- proceed as usual).
         """
-        deadline = self.hass.loop.time() + VALVE_CONFIRM_TIMEOUT
+        full = self._full_controller()
+        started = self.hass.loop.time()
+        deadline = started + (
+            VALVE_CONFIRM_TIMEOUT_FULL if full else VALVE_CONFIRM_TIMEOUT
+        )
+        resends = list(VALVE_OPEN_RESEND_AT) if full else []
         while self.hass.loop.time() < deadline:
             state = self.hass.states.get(entity_id)
             if state is not None and state.state in _VALVE_ON_STATES:
                 return True
+            if resends and self.hass.loop.time() - started >= resends[0]:
+                resends.pop(0)
+                _LOGGER.warning(
+                    "Direct valve control: %s is not open yet, asking again", entity_id
+                )
+                domain, on_svc, _off = self._valve_services(entity_id)
+                try:
+                    await self._async_call_valve_service(domain, on_svc, entity_id)
+                except asyncio.CancelledError:
+                    raise
+                except Exception as e:  # noqa: BLE001 - the confirmation goes on
+                    _LOGGER.error("Opening %s again failed: %s", entity_id, e)
             await asyncio.sleep(VALVE_CONFIRM_POLL)
         state = self.hass.states.get(entity_id)
         if state is None or state.state in _VALVE_UNUSABLE:
@@ -1057,16 +1160,16 @@ class ValveRunnerMixin(
                     if control is not None:
                         control.delivered = 0.0
                     return None
-            await self._async_call_valve_service(domain, on_svc, entity_id)
+            await self._open_zone_valves(zone, entity_id)
 
             # Confirm the valve actually opened before counting/crediting: a
             # valve that never opens would otherwise clear the deficit while
             # running dry (and the missed water silently rolls over to the next
             # day). Only an explicit "still off" aborts; an unverifiable
             # (write-only) valve runs.
-            if await self._confirm_valve_running(entity_id) is False:
+            if await self._confirm_zone_valves(zone, entity_id) is False:
                 closed = True
-                await self._close_valve(zone, entity_id)
+                await self._close_zone_valves(zone, entity_id)
                 self._report_valve_problem(zone, entity_id, PROBLEM_DID_NOT_OPEN)
                 return PROBLEM_DID_NOT_OPEN
 
@@ -1100,7 +1203,7 @@ class ValveRunnerMixin(
             raise
         finally:
             if not closed:
-                close_ok = await self._close_valve(zone, entity_id)
+                close_ok = await self._close_zone_valves(zone, entity_id)
             # Cleared even when something above raised: a run left recorded
             # made the zone "already running" at every start until a restart.
             # Cleared before crediting: a crash in this window then loses at
@@ -1243,24 +1346,22 @@ class ValveRunnerMixin(
         if getattr(self.store.config, const.CONF_FULL_CONTROLLER, False) is not True:
             return
         for zone in await self.store.async_get_zones():
-            entity_id = zone.get(const.ZONE_LINKED_ENTITY)
-            if not entity_id:
-                continue
             zone_id = int(zone.get(const.ZONE_ID))
             if self._run_in_flight(zone_id):
                 continue
-            state = self.hass.states.get(entity_id)
-            if state is None or state.state not in _VALVE_ON_STATES:
-                continue
-            _LOGGER.warning(
-                "Full controller: %s (zone %s) is open and no run of ours has it, "
-                "closing it",
-                entity_id,
-                zone_id,
-            )
-            # Our close is not an external watering to credit.
-            self._note_si_valve(zone_id)
-            await self._close_valve(zone, entity_id)
+            for entity_id in self._zone_entities(zone):
+                state = self.hass.states.get(entity_id)
+                if state is None or state.state not in _VALVE_ON_STATES:
+                    continue
+                _LOGGER.warning(
+                    "Full controller: %s (zone %s) is open and no run of ours has "
+                    "it, closing it",
+                    entity_id,
+                    zone_id,
+                )
+                # Our close is not an external watering to credit.
+                self._note_si_valve(zone_id)
+                await self._close_valve(zone, entity_id)
         await self._align_supplies()
 
     # --- reboot resume ------------------------------------------------------
@@ -1378,7 +1479,7 @@ class ValveRunnerMixin(
             held = elapsed if still_open else duration
             # The close never raises (a failed one is reported), so the run is
             # always cleared; only a cancellation leaves it for the next start.
-            await self._close_valve(self._zone_or_stub(zone_id), entity_id)
+            await self._close_zone_valves(self._zone_or_stub(zone_id), entity_id)
             await self._remove_active_run(zone_id)
             self._direct_run_finished[zone_id] = self.hass.loop.time()
             zone = self.store.get_zone(zone_id) or {}
@@ -1409,10 +1510,13 @@ class ValveRunnerMixin(
                 acquired = True
                 await self._supply_before_open(supply, token, zone_id)
                 await self._supply_ensure_on(supply)
-            await self._async_call_valve_service(domain, on_svc, entity_id)
-            if await self._confirm_valve_running(entity_id) is False:
+            await self._open_zone_valves(self._zone_or_stub(zone_id), entity_id)
+            if (
+                await self._confirm_zone_valves(self._zone_or_stub(zone_id), entity_id)
+                is False
+            ):
                 closed = True
-                await self._close_valve(self._zone_or_stub(zone_id), entity_id)
+                await self._close_zone_valves(self._zone_or_stub(zone_id), entity_id)
                 self._report_valve_problem(
                     self._zone_or_stub(zone_id), entity_id, PROBLEM_DID_NOT_OPEN
                 )
@@ -1437,7 +1541,7 @@ class ValveRunnerMixin(
             raise
         finally:
             if not closed:
-                await self._close_valve(self._zone_or_stub(zone_id), entity_id)
+                await self._close_zone_valves(self._zone_or_stub(zone_id), entity_id)
             if not cancelled:
                 await self._remove_active_run(zone_id)
             if acquired:

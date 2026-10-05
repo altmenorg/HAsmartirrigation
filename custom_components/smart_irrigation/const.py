@@ -565,6 +565,9 @@ ZONE_LINKED_ENTITY = "linked_entity"
 ZONE_SAFETY_OFF_TOPIC = "safety_off_topic"
 # The supply (pump or main valve) a zone is fed from, by id. None: none.
 ZONE_SUPPLY_ID = "supply_id"
+# Other valves opened and closed together with the zone's linked one (full
+# controller): a zone whose water comes through several valves.
+ZONE_EXTRA_ENTITIES = "extra_entities"
 # The state property the device expects in that payload; "state" for a
 # single-channel device, "state_l1".."state_l4" for a multi-channel one.
 ZONE_SAFETY_OFF_STATE_KEY = "safety_off_state_key"
@@ -790,6 +793,9 @@ EVENT_IRRIGATE_FINISHED = "irrigation_finished"
 EVENT_ZONE_PROBLEM = "zone_problem"
 # A supply (pump or main valve) that did not do what it was told.
 EVENT_SUPPLY_PROBLEM = "supply_problem"
+# Every switch of a valve or a supply by the full controller.
+EVENT_VALVE_ON = "valve_on"
+EVENT_VALVE_OFF = "valve_off"
 # Fired (as smart_irrigation_irrigation_skipped) when a start trigger is reached
 # and the day is a skip day, so a skipped run is something an automation can see
 # rather than an event that simply never arrives (#841).
