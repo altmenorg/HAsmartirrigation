@@ -242,6 +242,7 @@ export class SmartIrrigationZone {
   linked_entity?: string;
   safety_off_topic?: string;
   safety_off_state_key?: string;
+  safety_off_mode?: string;
   supply_id?: string | null;
   extra_entities?: string[] | null;
   measured_throughput?: number | null;

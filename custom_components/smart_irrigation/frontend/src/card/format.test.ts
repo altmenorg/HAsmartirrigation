@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  anyProgramActive,
+  programsPollDelay,
   deficitOf,
   depthLabel,
   durationLabel,
@@ -211,5 +213,20 @@ describe("retryDelay", () => {
   it("settles on the normal beat rather than hammering", () => {
     expect(retryDelay(4, 120000)).toBe(120000);
     expect(retryDelay(50, 120000)).toBe(120000);
+  });
+});
+
+describe("programs polling", () => {
+  it("is fast while a program is on the move and slow otherwise", () => {
+    expect(anyProgramActive([{ state: "idle" }, { state: "running" }])).toBe(
+      true,
+    );
+    expect(anyProgramActive([{ state: "paused" }])).toBe(true);
+    expect(anyProgramActive([{ state: "idle" }, { state: "disabled" }])).toBe(
+      false,
+    );
+    expect(anyProgramActive(undefined)).toBe(false);
+    expect(programsPollDelay(true)).toBe(5000);
+    expect(programsPollDelay(false)).toBe(60000);
   });
 });

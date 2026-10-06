@@ -163,3 +163,16 @@ export const retryDelay = (failures: number, beat: number): number => {
   const steps = [3000, 10000, 30000];
   return failures <= steps.length ? steps[failures - 1] : beat;
 };
+
+/** The states of a program that is on the move: it is being watched closely. */
+const ACTIVE_PROGRAM_STATES = ["running", "waiting", "paused"];
+
+/** Whether any program is watering, waiting its turn or paused. */
+export const anyProgramActive = (
+  programs: { state?: string }[] | undefined,
+): boolean =>
+  !!programs?.some((p) => ACTIVE_PROGRAM_STATES.includes(p.state ?? ""));
+
+/** How often the programs are asked for: fast while one runs, slow otherwise. */
+export const programsPollDelay = (active: boolean): number =>
+  active ? 5000 : 60000;

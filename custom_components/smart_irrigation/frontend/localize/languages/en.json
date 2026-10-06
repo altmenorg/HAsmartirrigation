@@ -605,6 +605,11 @@
         "flow-sensor-hint": "For exact crediting instead of throughput x time: a cumulative water-meter total (state class total_increasing), not an instant flow rate. The unit is read automatically (L, mL, m³, gal, ft³).",
         "safety-off-topic": "Safety off MQTT topic",
         "safety-off-state-key": "Safety off state key",
+        "safety-off-mode": "Safety off mode",
+        "safety-off-mode-auto": "Automatic (MQTT topic if set)",
+        "safety-off-mode-zha": "ZHA timed off",
+        "safety-off-mode-off": "Off (no dead-man)",
+        "safety-off-mode-help": "Automatic uses the MQTT topic above when there is one, and nothing otherwise. ZHA timed off sends the ZHA on-with-timed-off command to a ZHA valve; a Sonoff SWV on ZHA ignores it. Off never arms a hardware dead-man for this zone.",
         "safety-off-topic-help": "Optional hardware dead-man. An MQTT set-topic (e.g. zigbee2mqtt/my_valve/set) the valve's device listens on. Smart Irrigation publishes an \"on with timed off\" there so the device shuts the valve off by itself if Home Assistant stops mid-run and never sends the close. The state key is the device's on/off property (\"state\", or \"state_l1\"…\"state_l4\" for a multi-channel device). Support depends on the device firmware (on_time) — test it before relying on it. Leave empty to disable.",
         "optional": "optional",
         "irrigation-threshold": "Irrigation threshold",
@@ -1048,11 +1053,32 @@
       "soil_moisture": "soil moisture",
       "postponed": "postponed"
     },
+    "programs": {
+      "title": "Programs",
+      "start": "Start",
+      "stop": "Stop",
+      "confirm_stop": "Tap again to stop",
+      "pause": "Pause",
+      "resume": "Resume",
+      "next_step": "Next step",
+      "step_of": "step {step}/{steps}",
+      "remaining": "{time} left",
+      "until": "until {when}",
+      "states": {
+        "idle": "idle",
+        "running": "running",
+        "waiting": "waiting",
+        "paused": "paused",
+        "suspended": "suspended",
+        "disabled": "disabled"
+      }
+    },
     "editor": {
       "title": "Title",
       "zones": "Zones (all of them when empty)",
       "show_next_start": "Show the next start",
-      "compact": "Only the zones that would water"
+      "compact": "Only the zones that would water",
+      "show_programs": "Show the programs (full controller)"
     }
   }
 }

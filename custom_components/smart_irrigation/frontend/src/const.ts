@@ -186,6 +186,7 @@ export const ZONE_SAFETY_OFF_TOPIC = "safety_off_topic";
 export const ZONE_SUPPLY_ID = "supply_id";
 export const ZONE_EXTRA_ENTITIES = "extra_entities";
 export const ZONE_SAFETY_OFF_STATE_KEY = "safety_off_state_key";
+export const ZONE_SAFETY_OFF_MODE = "safety_off_mode";
 export const ZONE_FLOW_SENSOR = "flow_sensor";
 export const ZONE_SOIL_MOISTURE_SENSOR = "soil_moisture_sensor";
 export const ZONE_SOIL_MOISTURE_THRESHOLD = "soil_moisture_threshold";

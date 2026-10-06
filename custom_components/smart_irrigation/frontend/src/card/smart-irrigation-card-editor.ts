@@ -18,6 +18,7 @@ interface EditorConfig {
   zones?: number[];
   show_next_start?: boolean;
   compact?: boolean;
+  show_programs?: boolean;
 }
 
 @customElement("smart-irrigation-card-editor")
@@ -31,7 +32,12 @@ export class SmartIrrigationCardEditor extends LitElement {
   public setConfig(config: EditorConfig): void {
     // The card's own defaults, so a switch does not read as off for something
     // the card is in fact doing.
-    this._config = { show_next_start: true, compact: false, ...config };
+    this._config = {
+      show_next_start: true,
+      compact: false,
+      show_programs: true,
+      ...config,
+    };
   }
 
   protected updated(changed: Map<string, unknown>): void {
@@ -77,6 +83,7 @@ export class SmartIrrigationCardEditor extends LitElement {
       },
       { name: "show_next_start", selector: { boolean: {} } },
       { name: "compact", selector: { boolean: {} } },
+      { name: "show_programs", selector: { boolean: {} } },
     ];
   }
 

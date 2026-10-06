@@ -43,6 +43,20 @@ describe("card strings", () => {
     expect(cardString("de", "water_now")).toBe("Water now");
   });
 
+  it("has the programs block words, with English as the fallback", async () => {
+    vi.stubGlobal(
+      "fetch",
+      respondWith({ card: { programs: { start: "Démarrer" } } }),
+    );
+    const { cardString, loadCardStrings } = await fresh();
+    expect(
+      cardString("en", "programs.step_of", { step: "1", steps: "2" }),
+    ).toBe("step 1/2");
+    await loadCardStrings("fr");
+    expect(cardString("fr", "programs.start")).toBe("Démarrer");
+    expect(cardString("fr", "programs.states.paused")).toBe("paused");
+  });
+
   it("translates a skip reason", async () => {
     const { cardString } = await fresh();
     expect(cardString("en", "reasons.precipitation")).toBe("rain forecast");

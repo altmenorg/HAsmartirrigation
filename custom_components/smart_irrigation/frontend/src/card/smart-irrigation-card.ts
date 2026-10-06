@@ -13,6 +13,8 @@ import { LitElement, html, css, TemplateResult, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 
 import {
+  anyProgramActive,
+  programsPollDelay,
   deficitOf,
   depthLabel,
   durationLabel,
@@ -45,6 +47,25 @@ interface CardConfig {
   show_next_start?: boolean;
   /** Show only the zones that would water. */
   compact?: boolean;
+  /** The programs block, shown only when the full controller is on. */
+  show_programs?: boolean;
+}
+
+interface Program {
+  program_id: string;
+  name: string;
+  state: string;
+  next_start?: string | null;
+  last_run?: string | null;
+  suspended_until?: string | null;
+  live?: {
+    step: number;
+    steps: number;
+    tour?: number;
+    tours?: number;
+    percent: number;
+    remaining_seconds?: number | null;
+  } | null;
 }
 
 interface Zone {
@@ -72,6 +93,14 @@ export class SmartIrrigationCard extends LitElement {
   /** The zone whose "water now" is waiting for a second tap. */
   @state() private _confirming: number | null = null;
   private _confirmTimer?: number;
+  /** The programs of the full controller: empty when it is off. */
+  @state() private _programs: Program[] = [];
+  /** The program whose stop is waiting for a second tap. */
+  @state() private _confirmingStop: string | null = null;
+  private _confirmStopTimer?: number;
+  private _programsTimer?: number;
+  private _programsUnsupported = false;
+  private _programsStarted = false;
 
   private _unsubscribe?: () => void;
   private _timer?: number;
@@ -89,7 +118,8 @@ export class SmartIrrigationCard extends LitElement {
   }
 
   public setConfig(config: CardConfig): void {
-    this._config = { show_next_start: true, ...config };
+    this._config = { show_next_start: true, show_programs: true, ...config };
+    if (this.hass && this._programsStarted) this._loadPrograms();
   }
 
   public getCardSize(): number {
@@ -105,6 +135,10 @@ export class SmartIrrigationCard extends LitElement {
       if (document.visibilityState === "visible") this._load();
     }, REFRESH_MS);
     document.addEventListener("visibilitychange", this._onVisible);
+    if (this.hass && !this._programsStarted) {
+      this._programsStarted = true;
+      this._loadPrograms();
+    }
   }
 
   public disconnectedCallback(): void {
@@ -112,19 +146,91 @@ export class SmartIrrigationCard extends LitElement {
     if (this._timer) window.clearInterval(this._timer);
     if (this._confirmTimer) window.clearTimeout(this._confirmTimer);
     if (this._retryTimer) window.clearTimeout(this._retryTimer);
+    if (this._confirmStopTimer) window.clearTimeout(this._confirmStopTimer);
+    if (this._programsTimer) window.clearTimeout(this._programsTimer);
+    this._programsTimer = undefined;
+    this._programsStarted = false;
     document.removeEventListener("visibilitychange", this._onVisible);
     this._unsubscribe?.();
     this._unsubscribe = undefined;
   }
 
   private _onVisible = (): void => {
-    if (document.visibilityState === "visible") this._load();
+    if (document.visibilityState === "visible") {
+      this._load();
+      this._loadPrograms();
+    }
   };
+
+  /**
+   * The programs' state, on its own beat: every 5 s while one is on the move,
+   * every 60 s otherwise. It chains one timer after each answer, so a slow
+   * server is never asked twice at once, and a hidden tab is not asked.
+   */
+  private async _loadPrograms(): Promise<void> {
+    if (this._programsTimer) window.clearTimeout(this._programsTimer);
+    this._programsTimer = undefined;
+    if (!this.hass || !this.isConnected) return;
+    if (this._config?.show_programs === false || this._programsUnsupported) {
+      return;
+    }
+    if (document.visibilityState === "visible") {
+      try {
+        const result = await this.hass.callWS({
+          type: `${DOMAIN}/programs_state`,
+        });
+        this._programs = result?.programs ?? [];
+      } catch (_e) {
+        // Keep what is on screen. A server that does not know the command is
+        // an older integration: stop asking.
+        if ((_e as any)?.code === "unknown_command") {
+          this._programsUnsupported = true;
+          this._programs = [];
+          return;
+        }
+      }
+    }
+    if (!this.isConnected) return;
+    this._programsTimer = window.setTimeout(
+      () => this._loadPrograms(),
+      programsPollDelay(anyProgramActive(this._programs)),
+    );
+  }
+
+  private async _programAction(
+    service: string,
+    data: Record<string, unknown> = {},
+  ): Promise<void> {
+    try {
+      await this.hass.callService(DOMAIN, service, data);
+    } finally {
+      // Show the new state without waiting for the next beat.
+      this._loadPrograms();
+    }
+  }
+
+  private _stopPressed(program: Program): void {
+    if (this._confirmingStop !== program.program_id) {
+      this._confirmingStop = program.program_id;
+      if (this._confirmStopTimer) window.clearTimeout(this._confirmStopTimer);
+      this._confirmStopTimer = window.setTimeout(() => {
+        this._confirmingStop = null;
+      }, 5000);
+      return;
+    }
+    if (this._confirmStopTimer) window.clearTimeout(this._confirmStopTimer);
+    this._confirmingStop = null;
+    this._programAction("stop_watering");
+  }
 
   protected updated(changed: PropertyValues): void {
     if (changed.has("hass") && this.hass && !this._unsubscribe) {
       this._subscribe();
       this._load();
+    }
+    if (changed.has("hass") && this.hass && !this._programsStarted) {
+      this._programsStarted = true;
+      this._loadPrograms();
     }
     if (changed.has("hass") && !cardStringsLoaded(this.hass?.language)) {
       // English until the language is in, then once more in the language.
@@ -371,13 +477,135 @@ export class SmartIrrigationCard extends LitElement {
     `;
   }
 
+  private _programButton(
+    icon: string,
+    label: string,
+    onClick: () => void,
+    confirming = false,
+  ): TemplateResult {
+    return html`<ha-icon-button
+      class=${confirming ? "confirming" : ""}
+      .label=${label}
+      title=${label}
+      @click=${onClick}
+    >
+      <ha-icon icon=${icon}></ha-icon>
+    </ha-icon-button>`;
+  }
+
+  private _programRow(program: Program): TemplateResult {
+    const live = program.live;
+    const running = program.state === "running";
+    const paused = program.state === "paused";
+    const waiting = program.state === "waiting";
+    const active = running || paused || waiting;
+    const startable = !active && program.state === "idle";
+    const stopping = this._confirmingStop === program.program_id;
+    let detail = "";
+    if (running || paused) {
+      const parts: string[] = [];
+      if (live && live.steps) {
+        parts.push(
+          this._t("programs.step_of", {
+            step: String(live.step),
+            steps: String(live.steps),
+          }),
+        );
+      }
+      if (live) parts.push(`${live.percent}%`);
+      if (live && live.remaining_seconds != null) {
+        parts.push(
+          this._t("programs.remaining", {
+            time: this._duration(live.remaining_seconds),
+          }),
+        );
+      }
+      detail = parts.join(" · ");
+    } else if (program.state === "suspended" && program.suspended_until) {
+      detail = this._t("programs.until", {
+        when: this._moment(program.suspended_until),
+      });
+    } else if (program.state !== "disabled") {
+      detail = program.next_start
+        ? `${this._t("next_start")} ${this._moment(program.next_start)}`
+        : this._t("no_start");
+    }
+    return html`
+      <div class="zone program">
+        <div class="zone-name">
+          ${program.name}
+          <span class="chip ${running ? "on" : ""}"
+            >${this._t(`programs.states.${program.state}`)}</span
+          >
+        </div>
+        <div class="zone-state ${running ? "needed" : ""}">${detail}</div>
+        ${running && live
+          ? html`<progress
+              class="program-bar"
+              max="100"
+              .value=${live.percent}
+            ></progress>`
+          : ""}
+        <div class="actions">
+          ${startable
+            ? this._programButton("mdi:play", this._t("programs.start"), () =>
+                this._programAction("run_program", {
+                  program_id: program.program_id,
+                }),
+              )
+            : ""}
+          ${running
+            ? this._programButton("mdi:pause", this._t("programs.pause"), () =>
+                this._programAction("pause_watering"),
+              )
+            : ""}
+          ${paused
+            ? this._programButton(
+                "mdi:play-pause",
+                this._t("programs.resume"),
+                () => this._programAction("resume_watering"),
+              )
+            : ""}
+          ${running || paused
+            ? this._programButton(
+                "mdi:skip-next",
+                this._t("programs.next_step"),
+                () => this._programAction("next_step"),
+              )
+            : ""}
+          ${active
+            ? this._programButton(
+                stopping ? "mdi:check" : "mdi:stop",
+                this._t(stopping ? "programs.confirm_stop" : "programs.stop"),
+                () => this._stopPressed(program),
+                stopping,
+              )
+            : ""}
+        </div>
+      </div>
+    `;
+  }
+
+  /** Nothing at all when the full controller is off or has no program. */
+  private _programsBlock(): TemplateResult {
+    if (this._config?.show_programs === false || !this._programs.length) {
+      return html``;
+    }
+    return html`
+      <div class="programs">
+        <div class="programs-title">${this._t("programs.title")}</div>
+        ${this._programs.map((program) => this._programRow(program))}
+      </div>
+    `;
+  }
+
   protected render(): TemplateResult {
     if (!this._config || !this.hass) return html``;
     const zones = this._zonesToShow();
     return html`
       <ha-card .header=${this._config.title ?? "Smart Irrigation"}>
         <div class="content">
-          ${this._nextStart()}
+          ${this._nextStart()} ${this._programsBlock()}
           ${zones.length
             ? zones.map((zone) => this._zoneRow(zone))
             : html`<div class="empty">
@@ -458,6 +686,32 @@ export class SmartIrrigationCard extends LitElement {
       color: var(--secondary-text-color);
       font-size: 0.75em;
       font-weight: 400;
+    }
+    .programs {
+      border-bottom: 1px solid var(--divider-color);
+    }
+    .programs-title {
+      padding: 10px 0 0 0;
+      font-size: 0.85em;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--secondary-text-color);
+    }
+    .program {
+      grid-template-areas: "name button" "state button" "bar button";
+    }
+    .program:last-child {
+      border-bottom: none;
+    }
+    .chip.on {
+      background: var(--primary-color);
+      color: var(--text-primary-color, #fff);
+    }
+    .program-bar {
+      grid-area: bar;
+      width: 100%;
+      height: 6px;
+      margin-top: 4px;
     }
     .empty {
       padding: 12px 0;

@@ -76,6 +76,7 @@ import {
   ZONE_SUPPLY_ID,
   ZONE_EXTRA_ENTITIES,
   ZONE_SAFETY_OFF_STATE_KEY,
+  ZONE_SAFETY_OFF_MODE,
   ZONE_MAPPING,
   ZONE_ALLOWED_DEPLETION,
   ZONE_AVAILABLE_WATER,
@@ -1771,9 +1772,41 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                               }),
                           )
                         : ""}
+                      ${this._selectRow(
+                        localize("panels.zones.labels.safety-off-mode", lang),
+                        html`
+                          ${["auto", "zha", "off"].map(
+                            (m) => html`
+                              <option
+                                value=${m}
+                                ?selected=${(zone.safety_off_mode || "auto") ===
+                                m}
+                              >
+                                ${localize(
+                                  `panels.zones.labels.safety-off-mode-${m}`,
+                                  lang,
+                                )}
+                              </option>
+                            `,
+                          )}
+                        `,
+                        (e: Event) =>
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_SAFETY_OFF_MODE]: (
+                              e.target as HTMLSelectElement
+                            ).value,
+                          }),
+                      )}
                       <div class="setting-help">
                         ${localize(
                           "panels.zones.labels.safety-off-topic-help",
+                          lang,
+                        )}
+                      </div>
+                      <div class="setting-help">
+                        ${localize(
+                          "panels.zones.labels.safety-off-mode-help",
                           lang,
                         )}
                       </div>

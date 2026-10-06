@@ -86,7 +86,7 @@ Direct valve control fires events you can use to notify or react, so you do not 
 
 - `smart_irrigation_irrigation_started` when a run begins. Data: `sequencing` (`sequential`/`parallel`) and `zones`, a list of `{zone_id, zone, seconds}` about to be watered.
 - `smart_irrigation_irrigation_finished` when the whole run is done. Data: `zones`, a list of `{zone_id, zone, seconds, volume_l, bucket}` that ran (volume delivered and the new bucket level), and `problems`, a list of `{zone_id, zone, reason}` for zones whose valve did not open.
-- `smart_irrigation_zone_problem` the moment something goes wrong with a valve. Data: `zone_id`, `zone`, `entity_id`, `reason`: `valve_did_not_open`, `valve_did_not_close` (the close failed or the valve still reads open, retried once), or `no_flow` (the valve opened but the zone's flow meter did not move, so the run is not credited).
+- `smart_irrigation_zone_problem` the moment something goes wrong with a valve. Data: `zone_id`, `zone`, `entity_id`, `reason`: `valve_did_not_open`, `valve_did_not_close` (the close failed or the valve still reads open, retried once), or `no_flow` (the valve opened but the zone's flow meter did not move, so the run is not credited), `valve_closed_early` (full controller: the valve read `off` or `closed` while it should have been open, so the zone's run ends and is credited for the time it was open), or `supply_did_not_turn_on` (full controller: the pump or main valve the zone depends on never came on, so the zone's valve stays shut).
 
 Example: a single end-of-watering report for all zones.
 

@@ -592,6 +592,11 @@
         "flow-sensor-hint": "Pour un comptage exact au lieu de débit x temps : un total de compteur d'eau cumulé (state class total_increasing), pas un débit instantané. L'unité est lue automatiquement (L, mL, m³, gal, ft³).",
         "safety-off-topic": "Topic MQTT de coupure de sécurité",
         "safety-off-state-key": "Clé d'état de coupure de sécurité",
+        "safety-off-mode": "Mode de coupure de sécurité",
+        "safety-off-mode-auto": "Automatique (topic MQTT s'il y en a un)",
+        "safety-off-mode-zha": "Arrêt temporisé ZHA",
+        "safety-off-mode-off": "Désactivé (pas de dead-man)",
+        "safety-off-mode-help": "Automatique utilise le topic MQTT ci-dessus s'il y en a un, sinon rien. Arrêt temporisé ZHA envoie la commande ZHA « allumé avec arrêt temporisé » à une vanne ZHA ; une Sonoff SWV sur ZHA l'ignore. Désactivé n'arme jamais de dead-man matériel pour cette zone.",
         "safety-off-topic-help": "Sécurité matérielle facultative (dead-man). Un topic MQTT de commande (par exemple zigbee2mqtt/ma_vanne/set) que l'appareil de la vanne écoute. Smart Irrigation y publie un « allumé avec arrêt temporisé » pour que l'appareil ferme la vanne tout seul si Home Assistant s'arrête en plein arrosage sans jamais envoyer la fermeture. La clé d'état est la propriété marche/arrêt de l'appareil (« state », ou « state_l1 » à « state_l4 » pour un appareil multicanal). La prise en charge dépend du micrologiciel de l'appareil (on_time) : teste-la avant de t'y fier. Laisse vide pour désactiver.",
         "optional": "option",
         "irrigation-threshold": "Seuil d'arrosage",
@@ -1048,11 +1053,32 @@
       "soil_moisture": "humidité du sol",
       "postponed": "reporté par toi"
     },
+    "programs": {
+      "title": "Programmes",
+      "start": "Démarrer",
+      "stop": "Arrêter",
+      "confirm_stop": "Touche encore pour arrêter",
+      "pause": "Pause",
+      "resume": "Reprendre",
+      "next_step": "Étape suivante",
+      "step_of": "étape {step}/{steps}",
+      "remaining": "{time} restant",
+      "until": "jusqu'à {when}",
+      "states": {
+        "idle": "au repos",
+        "running": "en cours",
+        "waiting": "en attente",
+        "paused": "en pause",
+        "suspended": "suspendu",
+        "disabled": "désactivé"
+      }
+    },
     "editor": {
       "title": "Titre",
       "zones": "Zones (toutes si vide)",
       "show_next_start": "Afficher le prochain départ",
-      "compact": "Seulement les zones qui arroseraient"
+      "compact": "Seulement les zones qui arroseraient",
+      "show_programs": "Afficher les programmes (contrôleur complet)"
     }
   }
 }

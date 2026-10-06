@@ -44,6 +44,17 @@ The estimate is computed on the server for every zone, so the card asks for it e
 | --- | --- |
 | Water now (drop) | Runs that zone's valve for the calculated duration, and credits the bucket when it finishes. It takes **two taps**: the first arms it, the second runs it, and it disarms itself after five seconds. It only appears for a zone that has a [linked valve](configuration-zones.md). |
 | Calculate (calculator) | Runs the calculation for that zone now and commits it, as the panel's own button does. |
+| Start (play) | On a program row: runs the program now, or as soon as it is its turn. Only on an idle program. |
+| Pause / Resume | On a running or paused program: holds the watering and goes on from where it stopped. |
+| Next step (skip) | Ends the zones of the step in progress and goes on to the next step. |
+| Stop (square) | Stops the watering and closes the valves. It takes **two taps**, like Water now. |
+
+
+## Programs
+
+When the [full controller](usage-full-controller.md) is on and has programs, a block above the zones lists one row per program: its name, its state (idle, running, waiting, paused, suspended or disabled) and its next start. While a program runs, the row shows the step (for example 2/3), the percentage done and the time left. The card asks for this every 5 seconds while a program is running, paused or waiting, and every 60 seconds otherwise, and not at all while the tab is hidden. With the full controller off, or no program, nothing is shown and the card looks as before. Hide the block with `show_programs: false`.
+
+Stop acts on the whole watering, not on one program, because the controller waters one program at a time.
 
 ## Options
 
@@ -55,6 +66,7 @@ All of them are in the visual editor, and this is what they are called in YAML:
 | `zones` | every zone | The zone ids to show. Use it for a card per area, or to keep the greenhouse on its own dashboard. |
 | `show_next_start` | `true` | The next start line above the zones. |
 | `compact` | `false` | Only the zones that would water now. The card then says "Nothing to water right now" when none would. |
+| `show_programs` | `true` | The programs block, shown only when the [full controller](usage-full-controller.md) is on and has at least one program. Set it to `false` to hide it. |
 
 ```yaml
 type: custom:smart-irrigation-card
@@ -63,7 +75,7 @@ zones: [0, 2]
 compact: true
 ```
 
-> The card speaks English and French. It is built as its own file, separate from the panel, and it does not read the panel's translations: that is why its own words are not translated with the rest yet.
+> The card reads its words from the language files, with English as the fallback. The programs block has English and French so far.
 
 > Main page: [Usage](usage.md)<br/>
 > Previous: [Info and History](usage-info.md)<br/>
