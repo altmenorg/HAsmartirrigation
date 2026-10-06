@@ -5291,8 +5291,20 @@ s.version="2.31.0",i(ii),s.fn=bn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=yn,s.
         :host {
           color: var(--primary-text-color);
           --paper-card-header-color: var(--primary-text-color);
+          /* The panel fills the screen and the page below the tabs is the one
+             scroller. A fixed height guessed from the header sizes (it was
+             100vh - 112px) overshot the screen, so Home Assistant's own
+             container scrolled as well: two scrollbars, and on a phone a
+             flick that stopped before the end of the page. */
+          display: flex;
+          flex-direction: column;
+          /* Home Assistant gives a custom panel no height of its own, so the
+             screen height is used (dvh follows the mobile address bar). */
+          height: 100vh;
+          height: 100dvh;
         }
         .header {
+          flex: none;
           background-color: var(--app-header-background-color);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
@@ -5383,6 +5395,7 @@ s.version="2.31.0",i(ii),s.fn=bn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=yn,s.
            it, because this says where you are inside a section rather than
            offering a choice between sections. */
         .sub-tabs {
+          flex: none;
           display: flex;
           gap: 8px;
           padding: 8px max(env(safe-area-inset-left), 24px);
@@ -5418,7 +5431,8 @@ s.version="2.31.0",i(ii),s.fn=bn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=yn,s.
         }
 
         .view {
-          height: calc(100vh - 112px);
+          flex: 1 1 auto;
+          min-height: 0;
           display: flex;
           justify-content: center;
           overflow-y: auto;
