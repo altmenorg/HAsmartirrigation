@@ -67,6 +67,7 @@ from .helpers import (
 )
 from .hourly_et import solar_elevation_sin
 from .live_estimate import LiveEstimateMixin
+from .liveness import WeatherLivenessMixin
 from .observed_watering import ObservedWateringMixin
 from .panel import async_register_panel, remove_panel
 from .program_scheduler import ProgramSchedulerMixin
@@ -367,6 +368,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # Closed-loop bucket: start watching linked valves if the feature is enabled.
     await coordinator.async_setup_observed_watering()
 
+    # Tell the user when a weather sensor stops reporting.
+    await coordinator.async_setup_weather_liveness()
+
     # Direct valve control: resume any run that was in flight before a restart.
     await coordinator.async_resume_valve_runs()
     # Full controller: once everything is up, a valve left open that no run owns
@@ -461,6 +465,7 @@ class SmartIrrigationCoordinator(
     ObservedWateringMixin,
     FlowCalibrationMixin,
     LiveEstimateMixin,
+    WeatherLivenessMixin,
     ValveRunnerMixin,
     ProgramSchedulerMixin,
     SkipConditionsMixin,
@@ -2418,6 +2423,9 @@ class SmartIrrigationCoordinator(
 
         # stop watching linked valves (closed-loop bucket)
         self.async_teardown_observed_watering()
+
+        # and the silent-sensor watch, with the notices it raised
+        self.async_teardown_weather_liveness()
 
         # cancel any in-flight direct valve runs
         cancelled_runs = self.async_teardown_valve_runs()

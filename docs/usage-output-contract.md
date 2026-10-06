@@ -45,7 +45,10 @@ If you want a value that moves with the weather through the day, that is the **L
 | `smart_irrigation_irrigation_skipped` | A start trigger is reached and today is not | The trigger's identity, `reason`, and `checks`, the same detail the Home page shows |
 | `smart_irrigation_irrigation_started` | Direct valve control begins a run | `sequencing`, and `zones`: `{zone_id, zone, seconds}` |
 | `smart_irrigation_irrigation_finished` | Direct valve control finishes | `zones`: `{zone_id, zone, seconds, volume_l, bucket}`, and `problems`: `{zone_id, zone, reason}` |
-| `smart_irrigation_zone_problem` | A valve did not open, did not close, or opened with no water flowing | `zone_id`, `zone`, `entity_id`, `reason` (`valve_did_not_open`, `valve_did_not_close`, `no_flow`) |
+| `smart_irrigation_zone_problem` | A valve did not open, did not close, or opened with no water flowing | `zone_id`, `zone`, `entity_id`, `reason` (`valve_did_not_open`, `valve_did_not_close`, `no_flow`, and, in the full controller, `valve_closed_early`) |
+| `smart_irrigation_valve_out_of_sync` | Full controller: a valve held open reads closed (checked every 60 seconds); it is not opened again | `zone_id`, `zone`, `entity_id`, `expected` (`open`), `actual` (`off`, `closed`...), `reason` (`closed_early`) |
+| `smart_irrigation_weather_stale` | A temperature, humidity or dew point source of a sensor group has not reported for 6 hours; fired once per silence | `mapping_id`, `mapping`, `fields` (the fields that just went silent), `since` (ISO time of the last report) |
+| `smart_irrigation_weather_recovered` | Fields that were silent report again | `mapping_id`, `mapping`, `fields` |
 
 The skip event exists because the absence of an event is not something an automation can listen for.
 

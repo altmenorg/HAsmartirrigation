@@ -209,6 +209,7 @@ from .const import (
     ZONE_PLANT_TYPE,
     ZONE_PRECIPITATION_RATE,
     ZONE_PRECIPITATION_SUPERSEDED,
+    ZONE_SAFETY_OFF_MODE,
     ZONE_SAFETY_OFF_STATE_KEY,
     ZONE_SAFETY_OFF_TOPIC,
     ZONE_SIZE,
@@ -306,6 +307,7 @@ class ZoneEntry:
     # off if Home Assistant dies mid-run. Empty = disabled (see const).
     safety_off_topic = attr.ib(type=str, default=None)
     safety_off_state_key = attr.ib(type=str, default=None)
+    safety_off_mode = attr.ib(type=str, default=None)
     # The supply (pump or main valve) that feeds this zone, by id (full controller).
     supply_id = attr.ib(type=str, default=None)
     # Other valves that open and close with the linked one (full controller).
@@ -1252,6 +1254,7 @@ class SmartIrrigationStorage:
                         ),
                         safety_off_topic=zone.get(ZONE_SAFETY_OFF_TOPIC, None),
                         safety_off_state_key=zone.get(ZONE_SAFETY_OFF_STATE_KEY, None),
+                        safety_off_mode=zone.get(ZONE_SAFETY_OFF_MODE, None),
                         supply_id=zone.get(ZONE_SUPPLY_ID, None),
                         extra_entities=zone.get(ZONE_EXTRA_ENTITIES, None),
                         flow_sensor=zone.get(ZONE_FLOW_SENSOR, None),

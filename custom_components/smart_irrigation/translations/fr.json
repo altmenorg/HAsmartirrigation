@@ -287,6 +287,10 @@
     }
   },
   "issues": {
+    "weather_silent": {
+      "title": "Groupe de capteurs {mapping} : un capteur météo ne répond plus",
+      "description": "Rien n'a été reçu depuis plus de {hours} heures de : **{sensors}**. Le dernier relevé date du {since}.\n\nUne mesure aussi ancienne est écartée du calcul : les zones de ce groupe sont donc calculées avec ce qui reste, ou pas du tout.\n\nVérifie la pile du capteur, sa connexion et son entité dans Home Assistant. L'avis disparaît tout seul dès qu'il répond de nouveau."
+    },
     "throughput_mismatch": {
       "title": "Zone {zone} : le débit mesuré ne correspond pas au débit configuré",
       "description": "Sur les {samples} derniers arrosages, le compteur de la zone **{zone}** a mesuré environ **{measured}** alors que la zone est configurée à **{configured}**, soit {percentage}% d'écart.\n\nToutes les durées d'arrosage sont calculées à partir du débit configuré : elles sont donc toutes fausses dans la même proportion.\n\nSi la mesure te paraît juste, reporte-la dans le débit de la zone. Sinon, vérifie que le compteur ne mesure que cette zone et que la pression est celle attendue. Smart Irrigation ne modifie jamais la valeur à ta place."

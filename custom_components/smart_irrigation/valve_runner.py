@@ -33,6 +33,7 @@ from datetime import datetime, timedelta
 from functools import partial
 
 import homeassistant.util.dt as dt_util
+from homeassistant.helpers import entity_registry as er
 
 from . import const
 from .observed_watering import NO_FLOW_GRACE
@@ -94,6 +95,17 @@ STOP_VOLUME_LIMIT = "volume_limit"
 VOLUME_WATCH_INTERVAL = 5.0
 VOLUME_WATCH_DEAD_READS = 4
 
+# Full controller: how often a valve held open is read, to catch one that
+# closed by itself (a water-shortage auto-close, a timed-off that expired, a
+# close by hand at the device). The time a zone is credited for is then only
+# known to that precision, unless the valve's own state change carries a time.
+VALVE_VERIFY_INTERVAL = 60.0
+# What a valve that is no longer open reads as. Anything else (unknown,
+# unavailable, no state) is "cannot tell", never "closed".
+_VALVE_OFF_STATES = ("off", "closed", "closing")
+PROBLEM_CLOSED_EARLY = "valve_closed_early"
+STOP_VALVE_CLOSED_EARLY = "valve_closed_early"
+
 
 class RunControl:
     """What can be asked of a zone's run while it is under way.
@@ -113,6 +125,8 @@ class RunControl:
         self.delivered: float | None = None
         # Why the run was stopped, when it was not by a person: "volume_limit".
         self.stop_reason: str | None = None
+        # When the valve was found closed before its time: the water stopped then.
+        self.closed_early_at: datetime | None = None
         # Litres the meter counted over the passes so far.
         self.litres = 0.0
 
@@ -347,7 +361,92 @@ class ValveRunnerMixin(
         )
         task.add_done_callback(partial(self._log_late_valve_service, entity_id))
 
-    async def _arm_safety_off(self, zone: dict, held: float) -> None:
+    def _zha_target(self, entity_id: str | None) -> tuple[str, int] | None:
+        """The (ieee, endpoint id) of a ZHA valve entity, or None.
+
+        Read from the entity registry: only an entity of the ``zha`` platform
+        qualifies. ZHA builds the unique id of an entity from the device's IEEE
+        address and the endpoint, "<ieee>-<endpoint>", with more parts after
+        them for entities tied to a cluster ("<ieee>-<endpoint>-<cluster>").
+        """
+        if not entity_id:
+            return None
+        try:
+            entry = er.async_get(self.hass).async_get(entity_id)
+        except Exception:  # noqa: BLE001 - no registry, no dead-man
+            return None
+        if entry is None or getattr(entry, "platform", None) != const.ZHA_PLATFORM:
+            return None
+        parts = str(getattr(entry, "unique_id", "") or "").split("-")
+        if len(parts) < 2:
+            return None
+        ieee = parts[0]
+        # An IEEE address is eight colon-separated bytes.
+        octets = ieee.split(":")
+        if len(octets) != 8 or not all(
+            len(o) == 2 and all(c in "0123456789abcdefABCDEF" for c in o)
+            for o in octets
+        ):
+            return None
+        try:
+            return ieee, int(parts[1])
+        except ValueError:
+            return None
+
+    def _safety_off_failed(self, key, message: str, *args) -> None:
+        """Say a dead-man could not be armed: at warning once per zone, then debug."""
+        warned = getattr(self, "_safety_off_warned", None)
+        if warned is None:
+            warned = self._safety_off_warned = set()
+        if key in warned:
+            _LOGGER.debug(message, *args)
+            return
+        warned.add(key)
+        _LOGGER.warning(message, *args)
+
+    async def _arm_zha_safety_off(
+        self, zone: dict, held: float, entity_id: str | None
+    ) -> None:
+        """Arm the dead-man of a ZHA valve: "on with timed off" on its On/Off cluster."""
+        target = self._zha_target(entity_id)
+        if target is None:
+            return
+        ieee, endpoint_id = target
+        # The command's on time is in tenths of a second, a 16-bit value.
+        on_time = int(math.ceil(max(0.0, held))) + const.SAFETY_OFF_TIME_MARGIN
+        tenths = min(on_time * 10, 0xFFFF)
+        try:
+            await self.hass.services.async_call(
+                "zha",
+                "issue_zigbee_cluster_command",
+                {
+                    "ieee": ieee,
+                    "endpoint_id": endpoint_id,
+                    "cluster_id": const.ZHA_ON_OFF_CLUSTER,
+                    "cluster_type": "in",
+                    "command": const.ZHA_ON_WITH_TIMED_OFF,
+                    "command_type": "server",
+                    "args": [0, tenths, 0],
+                },
+                blocking=True,
+            )
+            _LOGGER.debug(
+                "Direct valve control: armed safety off_time %ss on %s (ZHA)",
+                on_time,
+                entity_id,
+            )
+        except Exception as e:  # noqa: BLE001 - safety must never break a run
+            self._safety_off_failed(
+                zone.get(const.ZONE_ID, entity_id),
+                "Direct valve control: could not arm safety off_time on %s "
+                "(ZHA unavailable?): %s",
+                entity_id,
+                e,
+            )
+
+    async def _arm_safety_off(
+        self, zone: dict, held: float, entity_id: str | None = None
+    ) -> None:
         """Arm a hardware dead-man on the zone's valve, if one is configured.
 
         Publishes an "on with timed off" to the zone's MQTT set-topic so the
@@ -356,12 +455,22 @@ class ValveRunnerMixin(
         net alongside the normal close in ``_run_one_pass``'s finally block: the
         run is still driven by Home Assistant, the on_time only bounds it.
 
+        Without a topic, a valve that belongs to ZHA gets the same thing as a
+        ZHA cluster command (on with timed off), found through the entity
+        registry. A valve of any other platform gets none. The zone's
+        ``safety_off_mode`` set to "off" disables both.
+
         A missing topic, an MQTT stack that is not set up, or any publish error
         must never break the run (the close still happens the usual way), so the
         whole thing is best-effort and swallows its failures with a warning.
         """
+        if zone.get(const.ZONE_SAFETY_OFF_MODE) == const.SAFETY_OFF_MODE_OFF:
+            return
         topic = zone.get(const.ZONE_SAFETY_OFF_TOPIC)
         if not topic:
+            await self._arm_zha_safety_off(
+                zone, held, entity_id or zone.get(const.ZONE_LINKED_ENTITY)
+            )
             return
         key = (
             zone.get(const.ZONE_SAFETY_OFF_STATE_KEY)
@@ -1300,6 +1409,7 @@ class ValveRunnerMixin(
         acquired = False
         lag = 0.0
         watcher = None
+        verifier = None
         # The valves of the pass, taken once: the mode switched off meanwhile
         # must still close every valve this pass opened.
         entities = self._zone_entities(zone, entity_id)
@@ -1350,7 +1460,7 @@ class ValveRunnerMixin(
             await self._add_active_run(zone_id, entity_id, started, held)
             # Hardware dead-man: tell the device to shut itself off after the
             # pass, in case Home Assistant never sends the close below.
-            await self._arm_safety_off(zone, held)
+            await self._arm_safety_off(zone, held, entity_id)
             control_here = self._run_controls().get(zone_id)
             if (
                 max_litres
@@ -1363,13 +1473,21 @@ class ValveRunnerMixin(
                         control_here, flow_sensor, meter_start, max_litres
                     )
                 )
+            if self._full_controller() and control_here is not None:
+                verifier = asyncio.ensure_future(
+                    self._verify_valve_open(zone, entity_id, control_here, started)
+                )
             stopped = await self._hold_valve(zone_id, held, supply, token, lag)
             if stopped:
                 # Counted now, before the close takes its own seconds: the water
                 # is what flowed until the stop, not until the valve was shut.
-                delivered = min(
-                    held, max(0.0, (dt_util.utcnow() - started).total_seconds())
-                )
+                # A valve found closed by itself stopped the water when it
+                # closed, not when it was noticed.
+                control_stop = self._run_controls().get(zone_id)
+                ended = dt_util.utcnow()
+                if control_stop is not None and control_stop.closed_early_at:
+                    ended = min(ended, control_stop.closed_early_at)
+                delivered = min(held, max(0.0, (ended - started).total_seconds()))
                 control = self._run_controls().get(zone_id)
                 if control is not None:
                     control.delivered = delivered
@@ -1387,6 +1505,8 @@ class ValveRunnerMixin(
         finally:
             if watcher is not None and not watcher.done():
                 watcher.cancel()
+            if verifier is not None and not verifier.done():
+                verifier.cancel()
             if not closed:
                 close_ok = await self._close_zone_valves(zone, entity_id, entities)
             if cancelled and delivered_at_cancel is not None:
@@ -1471,6 +1591,71 @@ class ValveRunnerMixin(
                 control.stop_reason = STOP_VOLUME_LIMIT
                 control.stop.set()
                 return
+
+    async def _verify_valve_open(
+        self, zone: dict, entity_id: str, control, started: datetime
+    ) -> None:
+        """While the valve is held open, check now and then that it still is.
+
+        Full controller only. A valve can close by itself: a water-shortage
+        auto-close, a timed-off that ran out, somebody turning it off at the
+        device. Every ``VALVE_VERIFY_INTERVAL`` the linked valve is read. One
+        that reads off or closed is reported (``valve_out_of_sync`` and a
+        ``zone_problem`` with ``valve_closed_early``) and the zone's run is
+        stopped, so what it is credited for is the time it was really open. It
+        is never opened again: a valve that shut for lack of water must stay
+        shut. A state that cannot be read (unknown, unavailable) is not "closed"
+        and is only logged.
+
+        The time the valve closed is its state's own ``last_changed`` when that
+        falls within the pass, otherwise the moment it was noticed, so the credit
+        is only exact to the check interval in that case.
+        """
+        while True:
+            # A timeout on the stop event rather than a sleep: the wait is a
+            # real one, and ends with the run if it is stopped.
+            try:
+                await asyncio.wait_for(control.stop.wait(), VALVE_VERIFY_INTERVAL)
+            except asyncio.TimeoutError:
+                pass
+            else:
+                return
+            state = self.hass.states.get(entity_id)
+            actual = None if state is None else state.state
+            if actual not in _VALVE_OFF_STATES:
+                if actual in _VALVE_UNUSABLE:
+                    _LOGGER.debug(
+                        "Valve check: %s cannot be read (%s), still checking",
+                        entity_id,
+                        actual,
+                    )
+                continue
+            now = dt_util.utcnow()
+            changed = getattr(state, "last_changed", None)
+            if isinstance(changed, datetime) and started <= changed <= now:
+                now = changed
+            _LOGGER.warning(
+                "Direct valve control: %s reads %s while zone %s holds it open",
+                entity_id,
+                actual,
+                zone.get(const.ZONE_ID),
+            )
+            self.hass.bus.async_fire(
+                f"{const.DOMAIN}_{const.EVENT_VALVE_OUT_OF_SYNC}",
+                {
+                    "zone_id": zone.get(const.ZONE_ID),
+                    "zone": zone.get(const.ZONE_NAME),
+                    "entity_id": entity_id,
+                    "expected": "open",
+                    "actual": actual,
+                    "reason": "closed_early",
+                },
+            )
+            self._report_valve_problem(zone, entity_id, PROBLEM_CLOSED_EARLY)
+            control.closed_early_at = now
+            control.stop_reason = STOP_VALVE_CLOSED_EARLY
+            control.stop.set()
+            return
 
     async def _note_metered_litres(
         self, zone_id: int, flow_sensor, meter_start, held: float

@@ -74,6 +74,14 @@ Please note:
 ## Weather service history
 The table of the weather service history only shows values supplied by the weather service. A field whose source is a sensor appears as `-` there.
 
+## Silent sensors
+When a temperature, humidity or dew point source of a sensor group stops reporting for more than 6 hours, Smart Irrigation says so instead of calculating on old data without a word. Every 15 minutes it looks at the groups that automatic zones use:
+
+- A **notice appears in Settings > Repairs**, one per sensor group, naming the silent sensors and since when. It disappears by itself when they report again.
+- The event `smart_irrigation_weather_stale` is fired once when a field goes silent, and `smart_irrigation_weather_recovered` once when it is back, so an automation can notify you. See the [output contract](usage-output-contract.md).
+- A sensor counts as reporting when its entity state was updated. A field read from the weather service counts as reporting when the group last received data from it successfully.
+- Fields mapped to nothing or to a static value are not watched. After a restart of Home Assistant, a weather service is given the full 6 hours again before it can be called silent.
+
 ## Deleting a sensor group
 ![](assets/images/configuration-sensor-groups-1.png)
 

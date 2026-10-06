@@ -587,6 +587,17 @@ CONF_DEFAULT_SAFETY_OFF_STATE_KEY = "state"
 # Seconds added to a pass's own length for the on_time value, so the device's
 # own auto-off lands just after Home Assistant's close rather than before it.
 SAFETY_OFF_TIME_MARGIN = 30
+# How the dead-man is chosen for a zone: "auto" uses the MQTT topic when there is
+# one, else the ZHA on-with-timed-off when the valve is a ZHA entity, else none;
+# "off" never arms one.
+ZONE_SAFETY_OFF_MODE = "safety_off_mode"
+SAFETY_OFF_MODE_AUTO = "auto"
+SAFETY_OFF_MODE_OFF = "off"
+SAFETY_OFF_MODES = (SAFETY_OFF_MODE_AUTO, SAFETY_OFF_MODE_OFF)
+# ZHA: the On/Off cluster and its "on with timed off" command.
+ZHA_PLATFORM = "zha"
+ZHA_ON_OFF_CLUSTER = 6
+ZHA_ON_WITH_TIMED_OFF = 0x42
 # Optional cumulative volume/flow meter; credits the bucket by measured volume.
 ZONE_FLOW_SENSOR = "flow_sensor"
 # A soil moisture sensor, in %, and the moisture at or above which the zone
@@ -808,10 +819,17 @@ EVENT_SUPPLY_PROBLEM = "supply_problem"
 # Every switch of a valve or a supply by the full controller.
 EVENT_VALVE_ON = "valve_on"
 EVENT_VALVE_OFF = "valve_off"
+# A valve that was held open reads closed before its time (full controller).
+EVENT_VALVE_OUT_OF_SYNC = "valve_out_of_sync"
 # Fired (as smart_irrigation_irrigation_skipped) when a start trigger is reached
 # and the day is a skip day, so a skipped run is something an automation can see
 # rather than an event that simply never arrives (#841).
 EVENT_IRRIGATE_SKIPPED = "irrigation_skipped"
+# Fired (as smart_irrigation_weather_stale) once when a weather field of a sensor
+# group stops reporting, and (as smart_irrigation_weather_recovered) once when it
+# is back.
+EVENT_WEATHER_STALE = "weather_stale"
+EVENT_WEATHER_RECOVERED = "weather_recovered"
 
 UNIT_M2 = "m<sup>2</sup>"
 UNIT_SQ_FT = "sq ft"

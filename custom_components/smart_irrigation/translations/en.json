@@ -287,6 +287,10 @@
     }
   },
   "issues": {
+    "weather_silent": {
+      "title": "Sensor group {mapping}: a weather sensor stopped reporting",
+      "description": "Nothing has been received for over {hours} hours from: **{sensors}**. The last report was on {since}.\n\nA reading that old is left out of the calculation, so the zones of this sensor group are calculated on what remains, or not at all.\n\nCheck the sensor's battery, its connection and its entity in Home Assistant. The notice clears by itself as soon as it reports again."
+    },
     "missing_input": {
       "title": "Zone {zone}: nothing could be calculated",
       "description": "The evapotranspiration of zone **{zone}** could not be calculated because the weather data had no value for: **{missing}**.\n\nUntil it does, the zone's deficit does not move and it is not watered, which looks exactly like a zone with no need.\n\nCheck that the sensors mapped to those fields are available, or that the weather service still sends them. The issue clears at the next calculation that can be done."

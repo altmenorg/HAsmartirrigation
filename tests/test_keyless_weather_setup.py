@@ -43,6 +43,7 @@ async def test_setup_entry_accepts_keyless_open_meteo(
     coordinator.update_subscriptions = AsyncMock()
     coordinator.async_setup_observed_watering = AsyncMock()
     coordinator.async_resume_valve_runs = AsyncMock()
+    coordinator.async_setup_weather_liveness = AsyncMock()
 
     with (
         patch("custom_components.smart_irrigation.async_get_registry") as registry,
