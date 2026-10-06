@@ -80,6 +80,13 @@ import {
  */
 const UNFOLDED = new Set<string>();
 
+/** What is typed next to "Run now" and in the adjust block, by program id. */
+const RUN_OPTIONS: Record<string, { seconds?: string; replace?: boolean }> = {};
+const ADJUST_OPTIONS: Record<
+  string,
+  { percent?: string; seconds?: string; hours?: string }
+> = {};
+
 @customElement("smart-irrigation-view-general")
 export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   hass?: HomeAssistant;
@@ -827,8 +834,139 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       const n = parseFloat(v);
       return isNaN(n) ? fallback : n;
     };
-    const run = (id?: string) =>
-      this.hass!.callService(DOMAIN, "run_program", { program_id: id });
+    const run = (id?: string) => {
+      // Optional total duration and the replace mode, typed next to the button.
+      const opts = RUN_OPTIONS[id ?? ""] || {};
+      const seconds = Math.round(parseFloat(opts.seconds ?? ""));
+      const data: Record<string, unknown> = { program_id: id };
+      if (seconds > 0) data.seconds = Math.min(seconds, 86400);
+      if (opts.replace) data.mode = "replace";
+      return this.hass!.callService(DOMAIN, "run_program", data);
+    };
+    const runOptions = (id: string | undefined) => html`
+      <div class="setting-row">
+        <div class="setting-label">
+          ${t("run_seconds")}
+          <span class="unit">(${localize("common.units.seconds", lang)})</span>
+        </div>
+        <input
+          class="field"
+          type="number"
+          min="1"
+          max="86400"
+          .value=${RUN_OPTIONS[id ?? ""]?.seconds ?? ""}
+          @input=${(e: Event) => {
+            const o = (RUN_OPTIONS[id ?? ""] ||= {});
+            o.seconds = (e.target as HTMLInputElement).value;
+          }}
+        />
+      </div>
+      <div class="setting-hint row-hint">${t("run_seconds_help")}</div>
+      <div class="setting-row">
+        <div class="setting-label">${t("run_replace")}</div>
+        <input
+          type="checkbox"
+          .checked=${RUN_OPTIONS[id ?? ""]?.replace === true}
+          @change=${(e: Event) => {
+            const o = (RUN_OPTIONS[id ?? ""] ||= {});
+            o.replace = (e.target as HTMLInputElement).checked;
+          }}
+        />
+      </div>
+      <div class="setting-hint row-hint">${t("run_replace_help")}</div>
+    `;
+    const stateOf = (id: string | undefined) =>
+      (this.programsState?.programs || []).find(
+        (p: any) => p.program_id === id,
+      );
+    const stopProgram = (program: SmartIrrigationProgram) => {
+      if (!confirm(t("confirm_stop_program").replace("{name}", program.name)))
+        return;
+      this.hass!.callService(DOMAIN, "stop_program", {
+        program_id: program.id,
+      }).then(() => this._fetchLive(false));
+    };
+    const adjustBlock = (program: SmartIrrigationProgram) => {
+      const id = program.id ?? "";
+      const o = (ADJUST_OPTIONS[id] ||= {});
+      const active = stateOf(program.id)?.adjustment as
+        | { percent?: number; seconds?: number; until?: string | null }
+        | null
+        | undefined;
+      const summary = active
+        ? t("adjust_active")
+            .replace("{percent}", String(active.percent ?? 100))
+            .replace("{seconds}", String(active.seconds ?? 0))
+            .replace(
+              "{until}",
+              active.until
+                ? new Date(active.until).toLocaleString(lang)
+                : t("adjust_until_reset"),
+            )
+        : t("adjust_none");
+      const field = (
+        label: string,
+        unit: string,
+        key: "percent" | "seconds" | "hours",
+        placeholder: string,
+      ) => html`
+        <div class="setting-row">
+          <div class="setting-label">
+            ${label}${unit ? html` <span class="unit">(${unit})</span>` : ""}
+          </div>
+          <input
+            class="field"
+            type="number"
+            placeholder=${placeholder}
+            .value=${o[key] ?? ""}
+            @input=${(e: Event) => {
+              o[key] = (e.target as HTMLInputElement).value;
+            }}
+          />
+        </div>
+      `;
+      const call = (data: Record<string, unknown>) =>
+        this.hass!.callService(DOMAIN, "adjust_program", {
+          program_id: program.id,
+          ...data,
+        }).then(() => this._fetchLive(false));
+      return html`
+        <div class="fold-section">${t("adjust_title")}</div>
+        <div class="setting-note">${summary}</div>
+        ${field(t("adjust_percent"), "%", "percent", "100")}
+        ${field(
+          t("adjust_seconds"),
+          localize("common.units.seconds", lang),
+          "seconds",
+          "0",
+        )}
+        ${field(t("adjust_hours"), "h", "hours", "")}
+        <div class="setting-hint row-hint">${t("adjust_help")}</div>
+        <div class="si-actions">
+          ${this._actionBtn(mdiPlay, t("adjust_apply"), () => {
+            const data: Record<string, unknown> = {};
+            const percent = parseFloat(o.percent ?? "");
+            const seconds = parseFloat(o.seconds ?? "");
+            const hours = parseFloat(o.hours ?? "");
+            if (!isNaN(percent)) data.percent = percent;
+            if (!isNaN(seconds)) data.seconds = Math.round(seconds);
+            if (!isNaN(hours) && hours >= 1) data.hours = Math.round(hours);
+            if (data.percent === undefined && data.seconds === undefined)
+              return;
+            call(data);
+          })}
+          ${this._actionBtn(
+            mdiDelete,
+            t("adjust_reset"),
+            () => {
+              if (!confirm(t("confirm_reset_adjustment"))) return;
+              call({ reset: true });
+            },
+            true,
+          )}
+        </div>
+      `;
+    };
     const control = (service: string) =>
       this.hass!.callService(DOMAIN, service, {});
     const random = () => Math.random().toString(36).slice(2, 8);
@@ -999,6 +1137,31 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               }),
           )}
           <div class="setting-hint row-hint">${t("max_litres_help")}</div>
+          ${this._numRow(
+            t("min_seconds"),
+            localize("common.units.seconds", lang),
+            step.min_seconds ?? 0,
+            (v) => patchStep({ min_seconds: Math.max(0, Math.round(num(v))) }),
+          )}
+          ${this._numRow(
+            t("max_seconds"),
+            localize("common.units.seconds", lang),
+            step.max_seconds ?? 0,
+            (v) => patchStep({ max_seconds: Math.max(0, Math.round(num(v))) }),
+          )}
+          ${this._numRow(
+            t("adjust_seconds"),
+            localize("common.units.seconds", lang),
+            step.adjust_seconds ?? 0,
+            (v) =>
+              patchStep({
+                adjust_seconds: Math.max(
+                  -21600,
+                  Math.min(21600, Math.round(num(v))),
+                ),
+              }),
+          )}
+          <div class="setting-hint row-hint">${t("step_bounds_help")}</div>
           ${this._textRow(
             t("step_delay"),
             localize("common.units.seconds", lang),
@@ -1321,6 +1484,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         patch(index, { enabled: (e.target as any).checked })}
                     ></ha-switch>
                   </div>
+                  ${runOptions(program.id)}
                   <div class="si-actions">
                     ${this._actionBtn(mdiPlay, t("run_now"), () =>
                       run(program.id),
@@ -1359,6 +1523,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                                 seconds: 0,
                                 passes: 1,
                                 max_litres: 0,
+                                min_seconds: 0,
+                                max_seconds: 0,
+                                adjust_seconds: 0,
                                 delay: null,
                                 enabled: true,
                               },
@@ -1432,10 +1599,21 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                             })}
                         ></ha-switch>
                       </div>
+                      ${adjustBlock(program)} ${runOptions(program.id)}
                       <div class="si-actions">
                         ${this._actionBtn(mdiPlay, t("run_now"), () =>
                           run(program.id),
                         )}
+                        ${["running", "waiting"].includes(
+                          stateOf(program.id)?.state,
+                        )
+                          ? this._actionBtn(
+                              mdiStop,
+                              t("stop_program"),
+                              () => stopProgram(program),
+                              true,
+                            )
+                          : ""}
                         ${this._actionBtn(
                           mdiDelete,
                           t("delete"),

@@ -156,6 +156,11 @@ export interface SmartIrrigationStep {
   passes: number;
   /** Litres after which a zone of the step stops, by its meter; 0 is no limit. */
   max_litres?: number;
+  /** Floor and cap of the step's water in seconds; 0 is none. */
+  min_seconds?: number;
+  max_seconds?: number;
+  /** Signed seconds added after the percentage; a zero water stays zero. */
+  adjust_seconds?: number;
   /** Seconds waited after the step; null follows the program's. */
   delay: number | null;
   enabled: boolean;
