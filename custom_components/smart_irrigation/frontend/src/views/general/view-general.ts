@@ -78,6 +78,17 @@ import {
  * Kept outside the element: each tab renders its own template, so switching
  * tabs creates a new element and an instance field would fold everything back.
  */
+// The skip condition ids of a schedule, as in const.py SKIP_CONDITION_IDS.
+const SKIP_CONDITION_IDS = [
+  "postponed",
+  "rain_sensor",
+  "freeze",
+  "wind",
+  "precipitation",
+  "days_between",
+  "soil_moisture",
+];
+
 const UNFOLDED = new Set<string>();
 
 /** What is typed next to "Run now" and in the adjust block, by program id. */
@@ -771,11 +782,33 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       <div class="setting-note">
                         ${n + 1}.
                         ${step.zones
-                          .map((z: any) => `${z.zone} ${minutes(z.seconds)}`)
+                          .map(
+                            (z: any) =>
+                              `${z.zone} ${minutes(z.expected_seconds ?? z.seconds)}`,
+                          )
                           .join(" + ")}
                       </div>
                     `,
                   )}
+                  ${item.expected_seconds
+                    ? html`<div class="setting-note">
+                        ${t("expected")} ${minutes(item.expected_seconds)}
+                      </div>`
+                    : ""}
+                  ${item.skipped_reason
+                    ? html`<div
+                        class="setting-note"
+                        style="opacity: 0.6; font-style: italic;"
+                      >
+                        ${t("expected_skipped_precipitation").replace(
+                          "{mm}",
+                          String(
+                            Math.round((item.forecast?.forecast_mm ?? 0) * 10) /
+                              10,
+                          ),
+                        )}
+                      </div>`
+                    : ""}
                   ${item.tours > 1
                     ? html`<div class="setting-note">
                         ${item.tours} ${t("tours")}
@@ -1162,6 +1195,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               }),
           )}
           <div class="setting-hint row-hint">${t("step_bounds_help")}</div>
+          ${this._numRow(
+            t("min_deficit_mm"),
+            "mm",
+            step.min_deficit_mm ?? 0,
+            (v) => patchStep({ min_deficit_mm: Math.max(0, num(v)) }),
+          )}
+          <div class="setting-hint row-hint">${t("min_deficit_mm_help")}</div>
           ${this._textRow(
             t("step_delay"),
             localize("common.units.seconds", lang),
@@ -1294,6 +1334,26 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               }),
           )}
           <div class="setting-hint row-hint">${t("schedule_anchor_help")}</div>
+          ${schedule.anchor === "end"
+            ? html`
+                <div class="setting-row">
+                  <label>
+                    <input
+                      type="checkbox"
+                      .checked=${schedule.hard_deadline === true}
+                      @change=${(e: Event) =>
+                        patchSchedule({
+                          hard_deadline: (e.target as HTMLInputElement).checked,
+                        })}
+                    />
+                    ${t("schedule_hard_deadline")}
+                  </label>
+                </div>
+                <div class="setting-hint row-hint">
+                  ${t("schedule_hard_deadline_help")}
+                </div>
+              `
+            : ""}
           <div class="setting-row">
             <div class="setting-label">${t("schedule_weekdays")}</div>
             <div>
@@ -1434,6 +1494,46 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             ></ha-switch>
           </div>
           <div class="setting-hint row-hint">${t("schedule_weather_help")}</div>
+          ${schedule.weather !== false
+            ? html`
+                <details style="margin: 4px 0 8px;">
+                  <summary>${t("schedule_conditions")}</summary>
+                  <div class="setting-hint row-hint">
+                    ${t("schedule_conditions_help")}
+                  </div>
+                  ${SKIP_CONDITION_IDS.map((id) => {
+                    const always = id === "postponed";
+                    const active =
+                      schedule.skip_conditions ?? SKIP_CONDITION_IDS;
+                    return html`
+                      <div>
+                        <label style="white-space: nowrap;">
+                          <input
+                            type="checkbox"
+                            .checked=${always || active.includes(id)}
+                            ?disabled=${always}
+                            @change=${(e: Event) => {
+                              const on = (e.target as HTMLInputElement).checked;
+                              const next = SKIP_CONDITION_IDS.filter((c) =>
+                                c === id ? on : active.includes(c),
+                              );
+                              // All of them is the default: stored as no field.
+                              patchSchedule({
+                                skip_conditions:
+                                  next.length === SKIP_CONDITION_IDS.length
+                                    ? undefined
+                                    : next,
+                              });
+                            }}
+                          />
+                          ${t(`condition_${id}`)}
+                        </label>
+                      </div>
+                    `;
+                  })}
+                </details>
+              `
+            : ""}
           <div class="setting-row">
             <div class="setting-label">${t("enabled")}</div>
             <ha-switch

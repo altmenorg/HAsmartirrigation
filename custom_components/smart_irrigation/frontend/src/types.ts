@@ -161,6 +161,8 @@ export interface SmartIrrigationStep {
   max_seconds?: number;
   /** Signed seconds added after the percentage; a zero water stays zero. */
   adjust_seconds?: number;
+  /** Water only when the zone's deficit is at least this many mm; 0 is always. */
+  min_deficit_mm?: number;
   /** Seconds waited after the step; null follows the program's. */
   delay: number | null;
   enabled: boolean;
@@ -191,6 +193,10 @@ export interface SmartIrrigationSchedule {
   until_date: string | null;
   /** Whether the skip conditions (rain, frost, wind, soil) apply. */
   weather: boolean;
+  /** Skip condition ids to apply; absent: all of them. */
+  skip_conditions?: string[];
+  /** End-anchored schedules: cut the run at the end target. */
+  hard_deadline?: boolean;
 }
 
 /** A program of the full controller. The main one has no steps of its own. */
