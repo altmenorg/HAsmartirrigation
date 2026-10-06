@@ -212,6 +212,42 @@ class ValveRunnerMixin(
             controls = self._zone_run_controls = {}
         return controls
 
+    def _meter_users(self) -> dict:
+        """The zones holding each flow meter open right now: entity -> zone ids."""
+        users = getattr(self, "_flow_meter_users", None)
+        if users is None:
+            users = self._flow_meter_users = {}
+        return users
+
+    def _join_meter(self, flow_sensor: str, zone_id) -> None:
+        """Register a pass on a meter; passes that overlap on one are 'shared'.
+
+        Two zones of a parallel step can be linked to the same flow meter. The
+        meter then counts both zones' water, and nobody can tell which litre
+        went where, so a pass that overlaps another one on the same meter
+        neither feeds the zone's measured flow nor credits its metered litres
+        (it keeps the time-based credit), and its volume limit counts the
+        meter's delta divided by the number of zones on it.
+        """
+        users = self._meter_users().setdefault(flow_sensor, {})
+        if users:
+            # Everyone already on the meter, and this pass, are now shared.
+            for other in users:
+                users[other] = True
+            users[zone_id] = True
+        else:
+            users[zone_id] = False
+
+    def _leave_meter(self, flow_sensor: str, zone_id) -> bool:
+        """Take a pass off its meter; True when it shared it with another."""
+        users = self._meter_users().get(flow_sensor)
+        if not users:
+            return False
+        shared = bool(users.pop(zone_id, False))
+        if not users:
+            self._meter_users().pop(flow_sensor, None)
+        return shared
+
     async def _wait_or_stop(self, zone_id, seconds: float) -> bool:
         """Wait ``seconds``, or less if the zone's run is stopped. True if stopped.
 
@@ -1405,6 +1441,8 @@ class ValveRunnerMixin(
         close_ok = True
         flow_sensor = zone.get(const.ZONE_FLOW_SENSOR)
         meter_start = None
+        metered = False
+        shared_meter = False
         stopped = False
         supply = self._supply_for_zone(zone)
         token = object()
@@ -1456,6 +1494,9 @@ class ValveRunnerMixin(
             started = dt_util.utcnow()
             if flow_sensor:
                 meter_start = self._read_volume_litres(flow_sensor)
+                if meter_start is not None:
+                    metered = True
+                    self._join_meter(flow_sensor, zone_id)
             # Set before the await: the record is in memory as soon as the
             # call starts, and has to be cleared whatever happens after.
             recorded = True
@@ -1472,7 +1513,7 @@ class ValveRunnerMixin(
             ):
                 watcher = asyncio.ensure_future(
                     self._watch_volume_limit(
-                        control_here, flow_sensor, meter_start, max_litres
+                        control_here, flow_sensor, meter_start, max_litres, zone_id
                     )
                 )
             if self._full_controller() and control_here is not None:
@@ -1509,6 +1550,8 @@ class ValveRunnerMixin(
                 watcher.cancel()
             if verifier is not None and not verifier.done():
                 verifier.cancel()
+            if metered:
+                shared_meter = self._leave_meter(flow_sensor, zone_id)
             if not closed:
                 close_ok = await self._close_zone_valves(zone, entity_id, entities)
             if cancelled and delivered_at_cancel is not None:
@@ -1543,7 +1586,9 @@ class ValveRunnerMixin(
                     except Exception as e:  # noqa: BLE001 - never hide how it ended
                         _LOGGER.error("Supply release failed: %s", e)
         self._direct_run_finished[zone_id] = self.hass.loop.time()
-        await self._note_metered_litres(zone_id, flow_sensor, meter_start, held)
+        await self._note_metered_litres(
+            zone_id, flow_sensor, meter_start, held, shared=shared_meter
+        )
         if flow_sensor and self._meter_saw_no_flow(
             flow_sensor, meter_start, started + timedelta(seconds=lead + NO_FLOW_GRACE)
         ):
@@ -1559,7 +1604,12 @@ class ValveRunnerMixin(
         return None if close_ok else PROBLEM_DID_NOT_CLOSE
 
     async def _watch_volume_limit(
-        self, control, flow_sensor: str, meter_start: float, limit_l: float
+        self,
+        control,
+        flow_sensor: str,
+        meter_start: float,
+        limit_l: float,
+        zone_id=None,
     ) -> None:
         """Stop the zone's run once the meter has counted its litres.
 
@@ -1584,11 +1634,15 @@ class ValveRunnerMixin(
                     return
                 continue
             dead = 0
-            if litres - meter_start >= limit_l:
+            # Zones sharing the meter split what it counts (equally: the best
+            # that can be said without a meter per zone).
+            sharing = max(1, len(self._meter_users().get(flow_sensor, ())))
+            counted = (litres - meter_start) / sharing
+            if counted >= limit_l:
                 _LOGGER.info(
                     "Volume limit reached on %s (%.1f L), stopping the zone",
                     flow_sensor,
-                    litres - meter_start,
+                    counted,
                 )
                 control.stop_reason = STOP_VOLUME_LIMIT
                 control.stop.set()
@@ -1660,11 +1714,34 @@ class ValveRunnerMixin(
             return
 
     async def _note_metered_litres(
-        self, zone_id: int, flow_sensor, meter_start, held: float
+        self,
+        zone_id: int,
+        flow_sensor,
+        meter_start,
+        held: float,
+        shared: bool = False,
     ) -> None:
         """What the meter counted over the pass: toward the run's total and the
-        zone's measured throughput, which the observed runs already feed."""
+        zone's measured throughput, which the observed runs already feed.
+
+        A meter shared with another zone running at the same time counts both:
+        the pass is then credited by time and the calibration is left alone,
+        rather than crediting or calibrating with the other zone's water.
+        """
         if not flow_sensor or meter_start is None:
+            return
+        if shared:
+            warned = getattr(self, "_shared_meter_warned", None)
+            if warned is None:
+                warned = self._shared_meter_warned = set()
+            if flow_sensor not in warned:
+                warned.add(flow_sensor)
+                _LOGGER.info(
+                    "Flow meter %s is shared by zones running together: their "
+                    "litres are not credited from it and their flow is not "
+                    "calibrated, they are credited by time",
+                    flow_sensor,
+                )
             return
         litres_now = self._read_volume_litres(flow_sensor)
         if litres_now is None or litres_now < meter_start:
