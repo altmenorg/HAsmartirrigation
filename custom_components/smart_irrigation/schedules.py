@@ -12,11 +12,18 @@ time (a day is a local date, not 24 hours: the clock changes twice a year).
   water balance says, and "done by sunrise" is placed from the end.
 * **The days** are filters, all of which have to hold: days of the week, every
   N days (with an offset, to turn groups A, B and C), even or odd days of the
-  month, months, and a period of the year that may wrap over New Year. They
+  month, named days of the month (1, 15, the last one), months, and a period of the year that may wrap over New Year. They
   apply to the day of the schedule's **moment**: for a run that must be done by
   Monday 01:00, "Monday" is the day that counts, although the valves open on
   Sunday evening. The weather is another matter: it is judged when the run
   starts (program_scheduler.py), on the day the water actually flows first.
+* **Polar day and night**: a sun schedule has no moment on a day without a
+  sunrise or sunset. With a ``fallback_time`` (``"HH:MM"``, or ``"previous"``
+  for the time of the last sunrise or sunset that was seen) it falls back to
+  that instead of skipping the day. Without one the day is skipped.
+* **Late starts**: a start-anchored schedule whose start was missed (Home
+  Assistant was down) is caught up when it is at most ``CATCH_UP_GRACE_SECONDS``
+  late, and passed over beyond that.
 * **Weather**: whether the skip conditions (rain, frost, wind, a moist soil)
   apply to the run. They do by default, since that is what Smart Irrigation is
   for; a greenhouse drip line can turn them off.
@@ -50,6 +57,12 @@ SUN_EVENTS = ("sunrise", "sunset")
 
 MAX_OFFSET_MINUTES = 12 * 60
 MAX_EVERY_N_DAYS = 60
+# How late a start-anchored occurrence may still be caught up (2 hours).
+CATCH_UP_GRACE_SECONDS = 2 * 3600
+DAY_LAST = "last"
+FALLBACK_PREVIOUS = "previous"
+# How far back "previous" looks for a sunrise or sunset that was seen.
+MAX_PREVIOUS_LOOKBACK_DAYS = 60
 DEFAULT_TIME = "06:00"
 
 _TIME = re.compile(r"^([01]?\d|2[0-3]):([0-5]\d)$")
@@ -84,6 +97,17 @@ def _int_list(value, low: int, high: int) -> list:
     return sorted(found)
 
 
+def _days_of_month(value) -> list:
+    """Days 1 to 31 (sorted) then ``"last"``, from a list or ``"1, 15, last"``."""
+    if isinstance(value, str):
+        value = [p for p in re.split(r"[,;\s]+", value) if p]
+    if not isinstance(value, (list, tuple)):
+        return []
+    last = any(str(i).strip().lower() == DAY_LAST for i in value)
+    days = _int_list([i for i in value if str(i).strip().lower() != DAY_LAST], 1, 31)
+    return days + [DAY_LAST] if last else days
+
+
 def _month_day(value) -> str | None:
     """``"MM-DD"`` if it is a real day of the year (29 February included)."""
     match = _MONTH_DAY.match(str(value or "").strip())
@@ -95,6 +119,15 @@ def _month_day(value) -> str | None:
     except ValueError:
         return None
     return f"{month:02d}-{day:02d}"
+
+
+def _fallback_time(value) -> str | None:
+    """``"HH:MM"`` or ``"previous"``, or None."""
+    text = str(value or "").strip().lower()
+    if text == FALLBACK_PREVIOUS:
+        return text
+    match = _TIME.match(text)
+    return f"{int(match.group(1)):02d}:{match.group(2)}" if match else None
 
 
 def _clean_id(value) -> str:
@@ -136,7 +169,7 @@ def normalize_schedule(
     every = _int(schedule.get(const.SCHEDULE_EVERY_N_DAYS), 1, 1, MAX_EVERY_N_DAYS)
     parity = schedule.get(const.SCHEDULE_PARITY)
     anchor = schedule.get(const.SCHEDULE_ANCHOR)
-    return {
+    stored = {
         const.SCHEDULE_ID: schedule_id,
         const.SCHEDULE_ENABLED: schedule.get(const.SCHEDULE_ENABLED) is not False,
         const.SCHEDULE_TYPE: schedule_type,
@@ -160,6 +193,14 @@ def normalize_schedule(
         const.SCHEDULE_UNTIL: _month_day(schedule.get(const.SCHEDULE_UNTIL)),
         const.SCHEDULE_WEATHER: schedule.get(const.SCHEDULE_WEATHER) is not False,
     }
+    # Stored only when set, so that a schedule that uses neither stays as it was.
+    days_of_month = _days_of_month(schedule.get(const.SCHEDULE_DAYS_OF_MONTH))
+    if days_of_month:
+        stored[const.SCHEDULE_DAYS_OF_MONTH] = days_of_month
+    fallback = _fallback_time(schedule.get(const.SCHEDULE_FALLBACK_TIME))
+    if fallback:
+        stored[const.SCHEDULE_FALLBACK_TIME] = fallback
+    return stored
 
 
 def normalize_schedules(schedules, reserved_ids=None) -> list:
@@ -219,6 +260,13 @@ def occurs_on(schedule: dict, day: date) -> bool:
         return False
     if parity == PARITY_ODD and not day.day % 2:
         return False
+    days_of_month = schedule.get(const.SCHEDULE_DAYS_OF_MONTH) or []
+    if days_of_month:
+        # A month shorter than the day asked has no such day: it is skipped
+        # (31 in April), except for "last", which is every month's own.
+        is_last = (day + timedelta(days=1)).day == 1
+        if day.day not in days_of_month and not (DAY_LAST in days_of_month and is_last):
+            return False
     every = int(schedule.get(const.SCHEDULE_EVERY_N_DAYS) or 1)
     if every > 1:
         offset = int(schedule.get(const.SCHEDULE_EVERY_OFFSET) or 0) % every
@@ -237,9 +285,10 @@ def target_on(schedule: dict, day: date, sun, tz) -> datetime | None:
     None (polar day and night); ``tz`` is the local time zone.
     """
     if schedule.get(const.SCHEDULE_TYPE) == SCHEDULE_TYPE_SUN:
-        moment = sun(schedule.get(const.SCHEDULE_EVENT) or "sunrise", day)
+        event = schedule.get(const.SCHEDULE_EVENT) or "sunrise"
+        moment = sun(event, day)
         if moment is None:
-            return None
+            return _polar_target(schedule, event, day, sun, tz)
         offset = timedelta(
             minutes=int(schedule.get(const.SCHEDULE_OFFSET_MINUTES) or 0)
         )
@@ -247,6 +296,26 @@ def target_on(schedule: dict, day: date, sun, tz) -> datetime | None:
     match = _TIME.match(str(schedule.get(const.SCHEDULE_TIME) or DEFAULT_TIME))
     at = time(int(match.group(1)), int(match.group(2))) if match else time(6, 0)
     return datetime.combine(day, at, tzinfo=tz).astimezone(timezone.utc)
+
+
+def _polar_target(schedule: dict, event: str, day: date, sun, tz) -> datetime | None:
+    """The moment on a day without a sunrise or sunset, or None (skip the day)."""
+    fallback = schedule.get(const.SCHEDULE_FALLBACK_TIME)
+    if not fallback:
+        return None
+    if fallback != FALLBACK_PREVIOUS:
+        match = _TIME.match(str(fallback))
+        if not match:
+            return None
+        at = time(int(match.group(1)), int(match.group(2)))
+        return datetime.combine(day, at, tzinfo=tz).astimezone(timezone.utc)
+    offset = timedelta(minutes=int(schedule.get(const.SCHEDULE_OFFSET_MINUTES) or 0))
+    for back in range(1, MAX_PREVIOUS_LOOKBACK_DAYS + 1):
+        earlier = sun(event, day - timedelta(days=back))
+        if earlier is not None:
+            seen = (earlier + offset).astimezone(tz).time().replace(tzinfo=None)
+            return datetime.combine(day, seen, tzinfo=tz).astimezone(timezone.utc)
+    return None
 
 
 def next_fire(
@@ -269,7 +338,9 @@ def next_fire(
     An occurrence whose start has passed while its moment has not (the run
     became longer than the time left, or Home Assistant was restarting) is
     ``catch_up``: it starts now, late but in time, rather than losing the day.
-    An occurrence missed altogether is passed over.
+    An occurrence missed altogether is passed over. A start-anchored occurrence
+    that is at most ``CATCH_UP_GRACE_SECONDS`` late (Home Assistant was down at
+    its moment) is caught up the same way, and later than that it is passed over.
     """
     now = now.astimezone(timezone.utc)
     if schedule.get(const.SCHEDULE_ENABLED) is False:
@@ -292,6 +363,10 @@ def next_fire(
         if fire > now:
             return {"fire": fire, "target": target, "catch_up": False}
         if end_anchored and fire <= now < target:
+            return {"fire": now, "target": target, "catch_up": True}
+        if not end_anchored and target <= now < target + timedelta(
+            seconds=CATCH_UP_GRACE_SECONDS
+        ):
             return {"fire": now, "target": target, "catch_up": True}
     return None
 

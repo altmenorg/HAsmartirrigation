@@ -11,6 +11,7 @@ import pytest
 
 from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.schedules import (
+    CATCH_UP_GRACE_SECONDS,
     next_fire,
     normalize_schedules,
     occurs_on,
@@ -232,7 +233,7 @@ def test_the_next_start_is_today_if_it_has_not_come():
 
 
 def test_the_next_start_is_tomorrow_once_today_has_passed():
-    now = _local(2026, 6, 1, 6, 30)
+    now = _local(2026, 6, 1, 8, 30)  # beyond the catch-up window
 
     assert _next(_schedule(time="06:00"), now)["fire"] == _local(2026, 6, 2, 6, 0)
 
@@ -328,7 +329,7 @@ def test_an_end_anchored_schedule_with_nothing_to_water_has_no_start():
 def test_the_day_the_clock_changes_is_one_local_day():
     """Last Sunday of March 2026: 06:00 local is 04:00 UTC then, not 05:00."""
     schedule = _schedule(time="06:00")
-    now = _local(2026, 3, 28, 7, 0)
+    now = _local(2026, 3, 28, 9, 0)
 
     saturday = _next(schedule, now)
     sunday = _next(
@@ -357,3 +358,169 @@ def test_a_schedule_that_never_occurs_has_no_next():
     assert _next(schedule, _local(2026, 6, 1)) is not None
     never = _schedule(months=[4], from_date="05-01", until_date="05-02")
     assert _next(never, _local(2026, 6, 1)) is None
+
+
+# --- days of the month ---------------------------------------------------------
+
+
+def test_named_days_of_the_month():
+    schedule = _schedule(days_of_month=[15, 1, "last", 15, 0, 40, "x"])
+
+    assert schedule[const.SCHEDULE_DAYS_OF_MONTH] == [1, 15, "last"]
+    assert occurs_on(schedule, date(2026, 6, 1))
+    assert occurs_on(schedule, date(2026, 6, 15))
+    assert occurs_on(schedule, date(2026, 6, 30))
+    assert not occurs_on(schedule, date(2026, 6, 29))
+
+
+def test_days_of_the_month_may_be_typed_as_text():
+    schedule = _schedule(days_of_month="1, 15 ,Last")
+
+    assert schedule[const.SCHEDULE_DAYS_OF_MONTH] == [1, 15, "last"]
+
+
+def test_last_day_follows_the_length_of_the_month():
+    schedule = _schedule(days_of_month=["last"])
+
+    assert occurs_on(schedule, date(2026, 2, 28))
+    assert not occurs_on(schedule, date(2024, 2, 28))
+    assert occurs_on(schedule, date(2024, 2, 29))  # leap year
+    assert occurs_on(schedule, date(2026, 12, 31))
+    assert not occurs_on(schedule, date(2026, 12, 30))
+
+
+def test_a_month_too_short_for_the_day_is_skipped():
+    schedule = _schedule(days_of_month=[31])
+
+    assert occurs_on(schedule, date(2026, 5, 31))
+    assert not any(occurs_on(schedule, date(2026, 4, d)) for d in range(1, 31))
+    result = _next(schedule, _local(2026, 4, 1, 0, 0))
+    assert result["fire"] == _local(2026, 5, 31, 6, 0)
+
+
+def test_days_of_the_month_stay_cumulative_with_the_other_filters():
+    schedule = _schedule(days_of_month=[1, 15], weekdays=[0])  # and a Monday
+
+    assert occurs_on(schedule, date(2026, 6, 1))  # Monday the 1st
+    assert occurs_on(schedule, date(2026, 6, 15))  # Monday
+    assert not occurs_on(schedule, date(2026, 7, 15))  # Wednesday
+
+
+def test_no_days_of_the_month_adds_nothing_to_what_is_stored():
+    schedule = _schedule()
+
+    assert const.SCHEDULE_DAYS_OF_MONTH not in schedule
+    assert const.SCHEDULE_FALLBACK_TIME not in schedule
+
+
+# --- a start that was missed -------------------------------------------------
+
+
+def test_a_missed_start_is_caught_up_within_the_window():
+    schedule = _schedule(time="06:00")
+    now = _local(2026, 6, 1, 7, 30)
+
+    result = _next(schedule, now)
+
+    assert result["catch_up"] is True
+    assert result["fire"] == now
+    assert result["target"] == _local(2026, 6, 1, 6, 0)
+
+
+def test_a_missed_start_beyond_the_window_is_passed_over():
+    schedule = _schedule(time="06:00")
+    now = _local(2026, 6, 1, 6, 0) + timedelta(seconds=CATCH_UP_GRACE_SECONDS + 1)
+
+    result = _next(schedule, now)
+
+    assert result["catch_up"] is False
+    assert result["target"] == _local(2026, 6, 2, 6, 0)
+
+
+def test_a_start_that_ran_is_not_caught_up():
+    schedule = _schedule(time="06:00")
+    ran = _local(2026, 6, 1, 6, 0)
+
+    result = _next(schedule, _local(2026, 6, 1, 6, 30), last=ran)
+
+    assert result["catch_up"] is False
+    assert result["target"] == _local(2026, 6, 2, 6, 0)
+
+
+def test_a_catch_up_over_midnight_is_still_found():
+    schedule = _schedule(time="23:30")
+    now = _local(2026, 6, 2, 0, 45)
+
+    result = _next(schedule, now)
+
+    assert result["catch_up"] is True
+    assert result["target"] == _local(2026, 6, 1, 23, 30)
+
+
+def test_the_catch_up_window_holds_on_the_day_the_clock_changes():
+    """02:30 does not exist on 29 March 2026 in Paris: the target is 03:30."""
+    schedule = _schedule(time="02:30")
+    now = _local(2026, 3, 29, 4, 0)
+
+    result = _next(schedule, now)
+
+    assert result["catch_up"] is True
+    assert result["target"] == _local(2026, 3, 29, 2, 30)
+
+
+# --- polar day and night -------------------------------------------------------
+
+
+def _no_sun(event, day):
+    return None
+
+
+def test_a_polar_day_is_skipped_without_a_fallback():
+    schedule = _schedule(type="sun")
+
+    assert target_on(schedule, date(2026, 6, 21), _no_sun, PARIS) is None
+    assert _next_with(schedule, _no_sun, _local(2026, 6, 21)) is None
+
+
+def _next_with(schedule, sun, now):
+    return next_fire(schedule, now, 0, None, sun, PARIS, horizon_days=5)
+
+
+def test_a_polar_day_uses_the_fallback_time():
+    schedule = _schedule(type="sun", offset_minutes=-30, fallback_time="5:45")
+
+    assert schedule[const.SCHEDULE_FALLBACK_TIME] == "05:45"
+    assert target_on(schedule, date(2026, 6, 21), _no_sun, PARIS) == _local(
+        2026, 6, 21, 5, 45
+    )
+    result = _next_with(schedule, _no_sun, _local(2026, 6, 21, 0, 0))
+    assert result["fire"] == _local(2026, 6, 21, 5, 45)
+
+
+def test_the_fallback_is_not_used_while_the_sun_rises():
+    schedule = _schedule(type="sun", fallback_time="05:45")
+
+    assert target_on(schedule, date(2026, 6, 1), _sun, PARIS) == _local(
+        2026, 6, 1, 7, 30
+    )
+
+
+def test_previous_uses_the_last_event_time_seen():
+    def sun(event, day):
+        return _sun(event, day) if day < date(2026, 6, 10) else None
+
+    schedule = _schedule(type="sun", offset_minutes=10, fallback_time="previous")
+
+    assert target_on(schedule, date(2026, 6, 20), sun, PARIS) == _local(
+        2026, 6, 20, 7, 40
+    )
+
+
+def test_previous_with_no_event_to_remember_skips_the_day():
+    schedule = _schedule(type="sun", fallback_time="previous")
+
+    assert target_on(schedule, date(2026, 6, 20), _no_sun, PARIS) is None
+
+
+def test_a_bad_fallback_time_is_dropped():
+    assert const.SCHEDULE_FALLBACK_TIME not in _schedule(fallback_time="soon")

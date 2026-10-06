@@ -1100,6 +1100,19 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 schedule.offset_minutes,
                 (v) => patchSchedule({ offset_minutes: Math.round(num(v)) }),
               )}
+          ${schedule.type === "sun"
+            ? html`
+                ${this._textRow(
+                  t("schedule_fallback_time"),
+                  "HH:MM",
+                  schedule.fallback_time ?? "",
+                  (v) => patchSchedule({ fallback_time: v.trim() || null }),
+                )}
+                <div class="setting-hint row-hint">
+                  ${t("schedule_fallback_time_help")}
+                </div>
+              `
+            : ""}
           ${this._selectRow(
             t("schedule_anchor"),
             html`
@@ -1189,6 +1202,28 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   .value as SmartIrrigationSchedule["parity"],
               }),
           )}
+          ${this._textRow(
+            t("schedule_days_of_month"),
+            "1, 15, last",
+            (schedule.days_of_month || []).join(", "),
+            (v) =>
+              patchSchedule({
+                days_of_month: v
+                  .split(/[,;\s]+/)
+                  .map((part) => part.trim().toLowerCase())
+                  .filter(
+                    (part) =>
+                      part === "last" ||
+                      (/^\d+$/.test(part) &&
+                        Number(part) >= 1 &&
+                        Number(part) <= 31),
+                  )
+                  .map((part) => (part === "last" ? part : Number(part))),
+              }),
+          )}
+          <div class="setting-hint row-hint">
+            ${t("schedule_days_of_month_help")}
+          </div>
           <div class="setting-row">
             <div class="setting-label">${t("schedule_months")}</div>
             <div>

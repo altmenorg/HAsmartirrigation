@@ -10,6 +10,13 @@ network and what a manual run asked for during a program is owed. The plan is
 worked out after the turn comes, not when the run was asked for, since the
 zones may well have been watered or changed meanwhile.
 
+A negative delay after a step overlaps it with the next: the next step starts
+that many seconds before the current one ends (never more than it has to run),
+as a task alongside it. Each zone holds its own supply, so a pump stays on until
+the last step using it is done. Stop and pause act on every open zone; the run
+record is the later step's, the earlier one being finished by its own valve
+record after a restart.
+
 The plan and where it has got to are recorded at every step, and a restart goes
 on with the steps still to do (the run that was open is finished by its own
 record first, as for any run).
@@ -24,9 +31,11 @@ import homeassistant.util.dt as dt_util
 from . import const
 from .programs import (
     find_program,
+    overlap_seconds,
     plan_program,
     plan_wall_seconds,
     restrict_plan,
+    step_wall_seconds,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -200,6 +209,44 @@ class ProgramRunnerMixin:
     # --- walking the plan ----------------------------------------------------
 
     async def _execute_plan(self, run: ProgramRun, plan: list, tour0: int, step0: int):
+        # Steps started ahead of the end of the one before (a negative delay),
+        # still open: (task, zone ids). Empty unless some delay is negative.
+        inflight: list = []
+        done = False
+        try:
+            await self._walk_plan(run, plan, tour0, step0, inflight)
+            done = True
+        finally:
+            run.current_zones = []
+            if not done:
+                # A reload or a restart: nothing is left running behind the run.
+                for task, _ in inflight:
+                    if not task.done():
+                        task.cancel()
+            await self._collect_inflight(run, inflight)
+
+    async def _collect_inflight(self, run: ProgramRun, inflight: list) -> None:
+        """Wait for the overlapped steps still open and keep what they did."""
+        if not inflight:
+            return
+        outcomes = await asyncio.gather(
+            *(task for task, _ in inflight), return_exceptions=True
+        )
+        for outcome in outcomes:
+            if isinstance(outcome, asyncio.CancelledError):
+                continue
+            if isinstance(outcome, BaseException):
+                _LOGGER.error("Program %s: a step failed: %s", run.program_id, outcome)
+            else:
+                run.results.extend(outcome)
+        inflight.clear()
+
+    async def _walk_plan(
+        self, run: ProgramRun, plan: list, tour0: int, step0: int, inflight: list
+    ):
+        def _live() -> list:
+            return [z for task, zones in inflight if not task.done() for z in zones]
+
         for tour in range(tour0, len(plan)):
             steps = plan[tour]
             for index in range(step0 if tour == tour0 else 0, len(steps)):
@@ -221,19 +268,72 @@ class ProgramRunnerMixin:
                     run.started_zones = set()
                 await self._persist_program_run(run, plan, tour, index)
                 step = steps[index]
-                run.current_zones = [int(m["zone_id"]) for m in step["zones"]]
+                zones = [int(m["zone_id"]) for m in step["zones"]]
+                # The next-step control ends every step that is open, an overlap
+                # included.
+                run.current_zones = zones + _live()
                 run.tour, run.step = tour, index
                 self._notify_programs()
                 run.tours, run.steps = len(plan), len(steps)
+                last = tour == len(plan) - 1 and index == len(steps) - 1
+                delay = float(step.get("delay") or 0.0)
+                if delay < 0 and not last:
+                    # Overlap: the step runs on its own while the next one starts
+                    # `overlap` seconds before it ends. The overlap is worked out
+                    # from what the step has to run, so it is never longer.
+                    soak = self._soak_seconds() if hasattr(self, "_soak_seconds") else 0
+                    wall = step_wall_seconds(step, soak)
+                    ahead = overlap_seconds(delay, wall)
+                    task = asyncio.ensure_future(self._run_step(run, step))
+                    inflight.append((task, zones))
+                    if not await self._wait_overlap(run, task, wall - ahead):
+                        return
+                    continue
                 try:
                     run.results.extend(await self._run_step(run, step))
                 finally:
-                    run.current_zones = []
-                last = tour == len(plan) - 1 and index == len(steps) - 1
-                delay = float(step.get("delay") or 0.0)
+                    run.current_zones = _live()
                 if delay > 0 and not last:
                     if await self._sleep_or_stop(run.stop, delay):
                         return
+
+    async def _wait_overlap(
+        self, run: ProgramRun, task: asyncio.Future, seconds: float
+    ) -> bool:
+        """Let an overlapped step run for ``seconds``, or less if it ends sooner.
+
+        A pause stops the count (the valves are closed meanwhile) and goes on
+        after the resume. Returns False if the run was stopped. The step's own
+        task is only watched here, never cancelled.
+        """
+        remaining = float(seconds)
+        pause, _ = self._pause_events()
+        while remaining > 0 and not task.done():
+            if run.stop.is_set():
+                return False
+            if pause.is_set():
+                if not await self._wait_run_resume(run):
+                    return False
+                continue
+            began = self.hass.loop.time()
+            sleeper = asyncio.ensure_future(asyncio.sleep(remaining))
+            extras = [
+                asyncio.ensure_future(run.stop.wait()),
+                asyncio.ensure_future(pause.wait()),
+            ]
+            try:
+                await asyncio.wait(
+                    [sleeper, task, *extras], return_when=asyncio.FIRST_COMPLETED
+                )
+            finally:
+                for waiter in (sleeper, *extras):
+                    if not waiter.done():
+                        waiter.cancel()
+            if sleeper.done() and not sleeper.cancelled():
+                remaining = 0.0
+            else:
+                remaining -= max(0.0, self.hass.loop.time() - began)
+        return not run.stop.is_set()
 
     async def _run_step(self, run: ProgramRun, step: dict) -> list:
         """Water the zones of a step together, each as it is now."""

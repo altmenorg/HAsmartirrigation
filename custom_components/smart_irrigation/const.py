@@ -201,6 +201,8 @@ SCHEDULE_PARITY = "parity"
 SCHEDULE_MONTHS = "months"
 SCHEDULE_FROM = "from_date"
 SCHEDULE_UNTIL = "until_date"
+SCHEDULE_DAYS_OF_MONTH = "days_of_month"
+SCHEDULE_FALLBACK_TIME = "fallback_time"
 SCHEDULE_WEATHER = "weather"
 # Keys inside a supply of the full controller (see supplies.py).
 SUPPLY_ID = "id"

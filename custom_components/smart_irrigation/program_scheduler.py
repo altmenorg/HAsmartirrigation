@@ -18,7 +18,9 @@ What the learning from the fork this was modelled on says is done here:
   edit made meanwhile is the one that counts;
 * an occurrence whose start has gone by while its moment has not (it "catches
   up": starts now, late but in time) is only started after a startup or a
-  reload, or when its timer was armed and missed. Arming again because a
+  reload, or when its timer was armed and missed. A schedule that starts at
+  its moment is caught up the same way when it is at most two hours late
+  (CATCH_UP_GRACE_SECONDS in schedules.py). Arming again because a
   program was edited or a calculation changed the run's length never starts one:
   an edit at 05:50 of a "done by 06:00" schedule must not water at once;
 * what fires is checked against the record at the moment it fires, so two
@@ -145,8 +147,8 @@ class ProgramSchedulerMixin:
                 armed[key] = (upcoming["target"], upcoming["fire"])
                 if upcoming["catch_up"]:
                     _LOGGER.warning(
-                        "Program %s: its start has gone by and the run can still "
-                        "finish by %s, so it starts now",
+                        "Program %s: its start (%s) has gone by but is still "
+                        "within the catch-up window, so it starts now",
                         program_id,
                         dt_util.as_local(upcoming["target"]).strftime("%H:%M"),
                     )

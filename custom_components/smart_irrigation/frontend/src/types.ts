@@ -176,6 +176,10 @@ export interface SmartIrrigationSchedule {
   every_n_days: number;
   every_offset: number;
   parity: "any" | "even" | "odd";
+  /** Days 1 to 31, and "last". Empty or absent: any day. */
+  days_of_month?: (number | "last")[];
+  /** Sun schedules: "HH:MM" or "previous", for a day without sunrise or sunset. */
+  fallback_time?: string | null;
   /** January is 1. Empty: every month. */
   months: number[];
   from_date: string | null;

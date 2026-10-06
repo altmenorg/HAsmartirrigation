@@ -38,6 +38,10 @@ MAX_PERCENT = 1000.0
 MAX_PASSES = 6
 MAX_TOURS = 6
 MAX_DELAY_SECONDS = 6 * 3600
+# A negative delay overlaps two steps: the next starts this long before the
+# current one ends (never more than the current one has to run, see
+# overlap_seconds).
+MAX_OVERLAP_SECONDS = 3600
 
 _ID_UNSAFE = re.compile(r"[^a-z0-9_]+")
 
@@ -132,7 +136,9 @@ def normalize_step(step, used: set, position: int = 0) -> dict | None:
         const.STEP_DELAY: (
             None
             if delay in (None, "")
-            else _number(delay, 0.0, 0.0, float(MAX_DELAY_SECONDS))
+            else _number(
+                delay, 0.0, -float(MAX_OVERLAP_SECONDS), float(MAX_DELAY_SECONDS)
+            )
         ),
         const.STEP_MAX_LITRES: _number(
             step.get(const.STEP_MAX_LITRES), 0.0, 0.0, 100000.0
@@ -199,7 +205,10 @@ def normalize_programs(programs, reserved_schedule_ids=None) -> list:
                 const.PROGRAM_MAIN: False,
                 const.PROGRAM_STEPS: steps,
                 const.PROGRAM_DELAY: _number(
-                    program.get(const.PROGRAM_DELAY), 0.0, 0.0, float(MAX_DELAY_SECONDS)
+                    program.get(const.PROGRAM_DELAY),
+                    0.0,
+                    -float(MAX_OVERLAP_SECONDS),
+                    float(MAX_DELAY_SECONDS),
                 ),
                 const.PROGRAM_TOURS: _count(
                     program.get(const.PROGRAM_TOURS), 1, MAX_TOURS
@@ -259,7 +268,7 @@ def plan_program(program: dict, zones) -> list:
     do not exist, are disabled or have no linked entity are left out, and so are
     steps that end up with no zone to water. The delay of a step is the one it
     sets or else the program's, and is what is waited after it, unless it is
-    the last of the tour.
+    the last of the tour. A negative delay overlaps the next step with this one.
     """
     by_id = {int(z[const.ZONE_ID]): z for z in zones if const.ZONE_ID in z}
     tours = max(1, int(program.get(const.PROGRAM_TOURS) or 1))
@@ -309,29 +318,50 @@ def plan_program(program: dict, zones) -> list:
     return plan
 
 
+def step_wall_seconds(step: dict, soak_seconds: float = 0.0) -> float:
+    """How long a step lasts: its slowest zone, extra passes and soaks included."""
+    longest = 0.0
+    for member in step["zones"]:
+        extra = max(0, int(member.get("passes") or 1) - 1)
+        longest = max(
+            longest,
+            float(member["seconds"])
+            + extra * (float(member.get("lead") or 0.0) + soak_seconds),
+        )
+    return longest
+
+
+def overlap_seconds(delay: float, running: float) -> float:
+    """How long the next step starts before the current one ends.
+
+    ``delay`` is the wait after the step, negative for an overlap. An overlap is
+    never longer than the step has to run (``running``) nor than
+    ``MAX_OVERLAP_SECONDS``, so two steps never overlap by more than what is
+    actually open. 0 for a delay of zero or more.
+    """
+    if delay >= 0:
+        return 0.0
+    return max(0.0, min(-float(delay), float(MAX_OVERLAP_SECONDS), float(running)))
+
+
 def plan_wall_seconds(plan: list, soak_seconds: float = 0.0) -> float:
     """How long a plan takes from the first valve to the last, waits included.
 
     A step lasts as long as its slowest zone: the seconds it is held, the lead
     time it pays again on every extra pass, and the soak between passes. The
-    delay after a step is waited unless it is the last of the last tour. This is
-    what a schedule that must be done by a given moment works back from.
+    delay after a step is waited unless it is the last of the last tour; a
+    negative one (an overlap) takes off what overlaps. This is what a schedule
+    that must be done by a given moment works back from.
     """
     total = 0.0
     for tour_index, steps in enumerate(plan):
         for step_index, step in enumerate(steps):
-            longest = 0.0
-            for member in step["zones"]:
-                extra = max(0, int(member.get("passes") or 1) - 1)
-                longest = max(
-                    longest,
-                    float(member["seconds"])
-                    + extra * (float(member.get("lead") or 0.0) + soak_seconds),
-                )
+            longest = step_wall_seconds(step, soak_seconds)
             total += longest
             last = tour_index == len(plan) - 1 and step_index == len(steps) - 1
             if not last:
-                total += float(step.get("delay") or 0.0)
+                delay = float(step.get("delay") or 0.0)
+                total += delay if delay >= 0 else -overlap_seconds(delay, longest)
     return total
 
 
