@@ -287,6 +287,10 @@
     }
   },
   "issues": {
+    "dry_zone_not_watered": {
+      "title": "Zone {zone} : sèche, et aucun programme ne l'arrosera",
+      "description": "Le seau de la zone **{zone}** est sec depuis {days} jours, et chaque programme qui l'inclut est désactivé, suspendu ou sans planning activé.\n\nRéactive un programme qui arrose cette zone, active l'un de ses plannings ou lève sa suspension. L'avis disparaît tout seul dès que la zone est arrosée ou qu'un programme la couvre de nouveau."
+    },
     "weather_silent": {
       "title": "Groupe de capteurs {mapping} : un capteur météo ne répond plus",
       "description": "Rien n'a été reçu depuis plus de {hours} heures de : **{sensors}**. Le dernier relevé date du {since}.\n\nUne mesure aussi ancienne est écartée du calcul : les zones de ce groupe sont donc calculées avec ce qui reste, ou pas du tout.\n\nVérifie la pile du capteur, sa connexion et son entité dans Home Assistant. L'avis disparaît tout seul dès qu'il répond de nouveau."

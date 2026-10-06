@@ -40,7 +40,7 @@ from homeassistant.helpers.sun import get_astral_event_date
 
 from . import const
 from .programs import find_program, plan_program, plan_wall_seconds
-from .schedules import ANCHOR_END, next_fire
+from .schedules import ANCHOR_END, next_fire, schedule_skip_conditions
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -178,6 +178,44 @@ class ProgramSchedulerMixin:
             self._fire_program_schedule(program_id, schedule_id, target)
         )
 
+    async def _prepare_program_watering(self, name, event_data, conditions):
+        """``(go, sheltered)`` for a schedule that takes the weather into account.
+
+        ``conditions`` None is the day's shared decision, as it always was. A list
+        is the schedule's own choice of skip conditions: they are judged now and
+        the result stands in for the day's decision only while the rest of the
+        preparation (the event of a skipped day, the sheltered zones, the holds)
+        runs, then the shared decision is put back as it was.
+        """
+        if conditions is None:
+            return await self._prepare_watering_for_today(name, event_data)
+        evaluation = await self.async_evaluate_skip_conditions(only=conditions)
+        saved = (
+            self._watering_decision_today,
+            self._last_skip_evaluation,
+            getattr(self, "_zones_held_by_days_between", None),
+        )
+        try:
+            self._last_skip_evaluation = {
+                **evaluation,
+                "evaluated_at": dt_util.now().isoformat(),
+            }
+            self._watering_decision_today = not evaluation["should_skip"]
+            self._zones_held_by_days_between = (
+                await self.async_zones_held_by_days_between()
+                if "days_between" in conditions
+                else set()
+            )
+            if evaluation["reason"] == "precipitation":
+                await self._count_precipitation_skip()
+            return await self._prepare_watering_for_today(name, event_data)
+        finally:
+            (
+                self._watering_decision_today,
+                self._last_skip_evaluation,
+                self._zones_held_by_days_between,
+            ) = saved
+
     async def _fire_program_schedule(self, program_id, schedule_id, target) -> None:
         """A schedule is due: remember it, arm the next one, then run the program."""
         config = self.store.config
@@ -239,7 +277,7 @@ class ProgramSchedulerMixin:
         # on Sunday evening is held back or not by Sunday's skip decision.
         if schedule.get(const.SCHEDULE_WEATHER) is not False:
             try:
-                go, sheltered = await self._prepare_watering_for_today(
+                go, sheltered = await self._prepare_program_watering(
                     name,
                     {
                         "trigger_name": name,
@@ -247,6 +285,7 @@ class ProgramSchedulerMixin:
                         "program_id": program_id,
                         "schedule_id": schedule_id,
                     },
+                    schedule_skip_conditions(schedule),
                 )
             except (
                 Exception

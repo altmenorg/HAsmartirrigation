@@ -40,6 +40,8 @@ MAX_PERCENT = 1000.0
 MAX_PASSES = 6
 MAX_STEP_SECONDS = 24 * 3600.0
 MAX_ADJUST_SECONDS = 6 * 3600.0
+# The most a step can ask of a zone's water deficit, in mm.
+MAX_MIN_DEFICIT_MM = 100.0
 MAX_TOURS = 6
 MAX_DELAY_SECONDS = 6 * 3600
 # A negative delay overlaps two steps: the next starts this long before the
@@ -123,7 +125,7 @@ def normalize_step(step, used: set, position: int = 0) -> dict | None:
     if mode not in DURATION_MODES:
         mode = DURATION_CALCULATED
     delay = step.get(const.STEP_DELAY)
-    return {
+    normalized = {
         const.STEP_ID: _unique_id(
             step.get(const.STEP_ID), f"step_{position + 1}", used
         ),
@@ -162,6 +164,12 @@ def normalize_step(step, used: set, position: int = 0) -> dict | None:
             MAX_ADJUST_SECONDS,
         ),
     }
+    # A zone below this water deficit (mm) sits the step out. Stored only when
+    # set, so that a step without a threshold stays as it was.
+    deficit = _number(step.get(const.STEP_MIN_DEFICIT_MM), 0.0, 0.0, MAX_MIN_DEFICIT_MM)
+    if deficit > 0:
+        normalized[const.STEP_MIN_DEFICIT_MM] = deficit
+    return normalized
 
 
 def normalize_programs(programs, reserved_schedule_ids=None) -> list:
@@ -350,6 +358,36 @@ def active_adjustment(adjustments, program_id, now) -> dict | None:
     return adjustment
 
 
+def deficit_threshold(step: dict) -> float:
+    """The water deficit (mm) a zone needs for the step to water it; 0 for none.
+
+    Only calculated and percent steps have one: a fixed step is watered whatever
+    the zone's deficit, which is the point of fixing it.
+    """
+    if step.get(const.STEP_MODE, DURATION_CALCULATED) == DURATION_FIXED:
+        return 0.0
+    try:
+        return max(0.0, float(step.get(const.STEP_MIN_DEFICIT_MM) or 0.0))
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def below_deficit(member: dict, zone: dict) -> bool:
+    """Whether a zone is under the deficit its step asks for (so it is skipped).
+
+    The deficit is the bucket below zero, in mm: a zone at or above field
+    capacity (bucket 0 or more) has none.
+    """
+    threshold = float(member.get("min_deficit_mm") or 0.0)
+    if threshold <= 0:
+        return False
+    try:
+        bucket = float(zone.get(const.ZONE_BUCKET) or 0.0)
+    except (TypeError, ValueError):
+        bucket = 0.0
+    return max(0.0, -bucket) < threshold
+
+
 def plan_program(program: dict, zones, adjustment: dict | None = None) -> list:
     """What a program waters, as tours of steps of zones with their seconds.
 
@@ -380,8 +418,10 @@ def plan_program(program: dict, zones, adjustment: dict | None = None) -> list:
                     continue
                 seconds = step_seconds(step, zone, tours, adjustment)
                 if seconds > 0:
+                    threshold = deficit_threshold(step)
                     members.append(
                         {
+                            **({"min_deficit_mm": threshold} if threshold else {}),
                             "zone_id": int(zone_id),
                             "seconds": seconds,
                             "passes": max(1, int(step.get(const.STEP_PASSES) or 1)),

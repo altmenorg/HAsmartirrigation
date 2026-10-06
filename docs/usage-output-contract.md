@@ -49,6 +49,7 @@ If you want a value that moves with the weather through the day, that is the **L
 | `smart_irrigation_valve_out_of_sync` | Full controller: a valve held open reads closed (checked every 60 seconds); it is not opened again | `zone_id`, `zone`, `entity_id`, `expected` (`open`), `actual` (`off`, `closed`...), `reason` (`closed_early`) |
 | `smart_irrigation_weather_stale` | A temperature, humidity or dew point source of a sensor group has not reported for 6 hours; fired once per silence | `mapping_id`, `mapping`, `fields` (the fields that just went silent), `since` (ISO time of the last report) |
 | `smart_irrigation_weather_recovered` | Fields that were silent report again | `mapping_id`, `mapping`, `fields` |
+| `smart_irrigation_zone_unwatered` | Full controller: a zone has been dry for over 3 days and no program will water it; fired once, with a repair notice | `zone_id`, `zone`, `days`, `deficit_mm` |
 
 The skip event exists because the absence of an event is not something an automation can listen for.
 

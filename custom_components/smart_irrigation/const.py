@@ -208,6 +208,11 @@ STEP_MAX_LITRES = "max_litres"
 STEP_MIN_SECONDS = "min_seconds"
 STEP_MAX_SECONDS = "max_seconds"
 STEP_ADJUST_SECONDS = "adjust_seconds"
+# The step waters a zone only when its water deficit is at least this many mm (0: no
+# threshold). Calculated and percent steps only; a fixed step always waters.
+STEP_MIN_DEFICIT_MM = "min_deficit_mm"
+# Why a step left a zone out of the run.
+STEP_SKIP_BELOW_DEFICIT = "below_deficit"
 # Keys inside a schedule of a program (see schedules.py).
 SCHEDULE_ID = "id"
 SCHEDULE_ENABLED = "enabled"
@@ -226,6 +231,21 @@ SCHEDULE_UNTIL = "until_date"
 SCHEDULE_DAYS_OF_MONTH = "days_of_month"
 SCHEDULE_FALLBACK_TIME = "fallback_time"
 SCHEDULE_WEATHER = "weather"
+# The skip conditions a schedule applies when it takes the weather into account
+# (a list of ids from SKIP_CONDITION_IDS; absent: all of them).
+SCHEDULE_SKIP_CONDITIONS = "skip_conditions"
+# The ids of the skip conditions (see skip_conditions.py), in the order they are checked.
+SKIP_CONDITION_IDS = (
+    "postponed",
+    "rain_sensor",
+    "freeze",
+    "wind",
+    "precipitation",
+    "days_between",
+    "soil_moisture",
+)
+# The user's own "not now": it applies whenever the weather is taken into account.
+SKIP_CONDITION_ALWAYS = "postponed"
 # An end-anchored schedule whose finish is a hard limit: the run is cut there.
 SCHEDULE_HARD_DEADLINE = "hard_deadline"
 # Why a run was cut short, in the program_finished event and the log.
@@ -965,3 +985,14 @@ SERVICE_DELETE_SEASONAL_ADJUSTMENT = "delete_seasonal_adjustment"
 # Events
 EVENT_RECURRING_SCHEDULE_TRIGGERED = "recurring_schedule_triggered"
 EVENT_SEASONAL_ADJUSTMENT_APPLIED = "seasonal_adjustment_applied"
+
+# A zone whose bucket stays dry while no program will water it (full controller).
+# "Dry" is a deficit of at least this share of the zone's maximum bucket, or the
+# zone's irrigation threshold when that is larger; a floor keeps a zone with
+# neither set from alerting on a trace of deficit.
+DRY_ZONE_DEFICIT_SHARE = 0.5
+DRY_ZONE_MIN_DEFICIT_MM = 1.0
+# Dry and uncovered for more than this many days before the notice is raised.
+DRY_ZONE_AFTER_DAYS = 3
+# Fired (as smart_irrigation_zone_unwatered) when the notice is first raised.
+EVENT_ZONE_UNWATERED = "zone_unwatered"

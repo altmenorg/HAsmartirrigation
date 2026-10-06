@@ -287,6 +287,10 @@
     }
   },
   "issues": {
+    "dry_zone_not_watered": {
+      "title": "Zone {zone} is dry and nothing will water it",
+      "description": "The bucket of zone **{zone}** has been dry for {days} days, and every program that includes it is disabled, suspended or has no enabled schedule.\n\nTurn a program that waters this zone back on, enable one of its schedules, or lift its suspension. The notice clears by itself once the zone is watered or a program covers it again."
+    },
     "weather_silent": {
       "title": "Sensor group {mapping}: a weather sensor stopped reporting",
       "description": "Nothing has been received for over {hours} hours from: **{sensors}**. The last report was on {since}.\n\nA reading that old is left out of the calculation, so the zones of this sensor group are calculated on what remains, or not at all.\n\nCheck the sensor's battery, its connection and its entity in Home Assistant. The notice clears by itself as soon as it reports again."

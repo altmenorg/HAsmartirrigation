@@ -162,7 +162,7 @@ class SkipConditionsMixin:
             ) * (len(lengths) - 1)
         return int(sum(lengths) + pauses)
 
-    async def async_evaluate_skip_conditions(self, run_start=None) -> dict:
+    async def async_evaluate_skip_conditions(self, run_start=None, only=None) -> dict:
         """Evaluate every skip condition and say which one vetoes watering.
 
         The runner needs one boolean, but a panel that only knows *that* a run
@@ -178,24 +178,44 @@ class SkipConditionsMixin:
 
         ``run_start`` is the start being decided, for a preview of a run still
         to come; None is a run starting now. Only the forecast reads it.
+
+        ``only`` is a list of condition ids (``const.SKIP_CONDITION_IDS``): just
+        those are evaluated, plus the user's own postponement, which always
+        applies. None evaluates them all, as it always did.
         """
+        wanted = None if only is None else {*only, const.SKIP_CONDITION_ALWAYS}
+
+        def applies(check_id):
+            return wanted is None or check_id in wanted
+
         # What is happening now first, then what is forecast, then the
         # calendar: the first check that vetoes is the reason given, and "it is
         # raining" is a better answer than "it will rain".
-        checks = [
-            # First, because it is the user saying "not now" in as many words.
-            await self._guarded("postponed", self._evaluate_postponed),
-            await self._guarded("rain_sensor", self._evaluate_rain_sensor),
-            await self._guarded("freeze", self._evaluate_freeze),
-            await self._guarded("wind", self._evaluate_wind),
-            await (
-                self._evaluate_precipitation_forecast()
-                if run_start is None
-                else self._evaluate_precipitation_forecast(run_start=run_start)
-            ),
-            await self._evaluate_days_between_irrigation(),
-            await self._guarded("soil_moisture", self._evaluate_soil_moisture),
-        ]
+        checks = []
+        # First, because it is the user saying "not now" in as many words.
+        checks.append(await self._guarded("postponed", self._evaluate_postponed))
+        if applies("rain_sensor"):
+            checks.append(
+                await self._guarded("rain_sensor", self._evaluate_rain_sensor)
+            )
+        if applies("freeze"):
+            checks.append(await self._guarded("freeze", self._evaluate_freeze))
+        if applies("wind"):
+            checks.append(await self._guarded("wind", self._evaluate_wind))
+        if applies("precipitation"):
+            checks.append(
+                await (
+                    self._evaluate_precipitation_forecast()
+                    if run_start is None
+                    else self._evaluate_precipitation_forecast(run_start=run_start)
+                )
+            )
+        if applies("days_between"):
+            checks.append(await self._evaluate_days_between_irrigation())
+        if applies("soil_moisture"):
+            checks.append(
+                await self._guarded("soil_moisture", self._evaluate_soil_moisture)
+            )
         vetoing = next((check for check in checks if check["skip"]), None)
         return {
             "should_skip": vetoing is not None,

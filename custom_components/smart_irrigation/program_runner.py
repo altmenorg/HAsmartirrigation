@@ -30,6 +30,7 @@ import homeassistant.util.dt as dt_util
 
 from . import const
 from .programs import (
+    below_deficit,
     find_program,
     overlap_seconds,
     plan_program,
@@ -53,6 +54,8 @@ class ProgramRun:
         self.manual = manual
         self.stop = asyncio.Event()
         self.results: list = []
+        # The zones a step left out and why ({"zone_id", "step", "reason"}).
+        self.skipped: list = []
         # When the run began (kept in its record, so a restart knows its age).
         self.started: str | None = None
         # The zones of the step under way, for the next-step control.
@@ -573,6 +576,22 @@ class ProgramRunnerMixin:
                     "Program %s: zone %s is already being watered, skipped",
                     run.program_id,
                     zone_id,
+                )
+                continue
+            if below_deficit(member, zone):
+                _LOGGER.info(
+                    "Program %s: zone %s skipped (%s): its deficit is under %s mm",
+                    run.program_id,
+                    zone_id,
+                    const.STEP_SKIP_BELOW_DEFICIT,
+                    member.get("min_deficit_mm"),
+                )
+                run.skipped.append(
+                    {
+                        "zone_id": zone_id,
+                        "step": step.get("id"),
+                        "reason": const.STEP_SKIP_BELOW_DEFICIT,
+                    }
                 )
                 continue
             zone = dict(zone)

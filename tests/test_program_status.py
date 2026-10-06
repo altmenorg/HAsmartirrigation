@@ -87,7 +87,7 @@ async def test_the_planning_lists_every_start_over_the_next_days():
     first = planned[0]
     assert first["program_id"] == "evening"
     assert first["steps"][0]["zones"] == [
-        {"zone_id": 0, "zone": "Zone 0", "seconds": 300}
+        {"zone_id": 0, "zone": "Zone 0", "seconds": 300, "expected_seconds": 300}
     ]
     # Two steps of five minutes, one after the other.
     assert first["end"] == (_utc(1, 6) + timedelta(seconds=600)).isoformat()

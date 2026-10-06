@@ -123,6 +123,27 @@ def _month_day(value) -> str | None:
     return f"{month:02d}-{day:02d}"
 
 
+def normalize_skip_conditions(value) -> list | None:
+    """The skip conditions a schedule applies, or None for all of them.
+
+    None (or anything that is not a list) keeps the meaning of the ``weather``
+    flag as it was. A list is cleaned to the known ids, in their usual order and
+    without repeats; an empty list applies none (the user's own postponement
+    still does, whenever the weather is taken into account).
+    """
+    if not isinstance(value, (list, tuple, set)):
+        return None
+    wanted = {str(v) for v in value}
+    return [c for c in const.SKIP_CONDITION_IDS if c in wanted]
+
+
+def schedule_skip_conditions(schedule: dict) -> list | None:
+    """The explicit list of a stored schedule, or None (all conditions)."""
+    return normalize_skip_conditions(
+        (schedule or {}).get(const.SCHEDULE_SKIP_CONDITIONS)
+    )
+
+
 def _fallback_time(value) -> str | None:
     """``"HH:MM"`` or ``"previous"``, or None."""
     text = str(value or "").strip().lower()
@@ -205,6 +226,10 @@ def normalize_schedule(
         and stored[const.SCHEDULE_ANCHOR] == ANCHOR_END
     ):
         stored[const.SCHEDULE_HARD_DEADLINE] = True
+    # Stored only when a list was given: absent keeps "all of them".
+    conditions = normalize_skip_conditions(schedule.get(const.SCHEDULE_SKIP_CONDITIONS))
+    if conditions is not None:
+        stored[const.SCHEDULE_SKIP_CONDITIONS] = conditions
     fallback = _fallback_time(schedule.get(const.SCHEDULE_FALLBACK_TIME))
     if fallback:
         stored[const.SCHEDULE_FALLBACK_TIME] = fallback

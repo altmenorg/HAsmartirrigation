@@ -31,6 +31,10 @@ STATE_PAUSED = "paused"
 STATE_SUSPENDED = "suspended"
 STATE_DISABLED = "disabled"
 
+# How far ahead of now a planned start still has a rain forecast to read: the
+# hourly window of the skip check. Beyond it no reason is given.
+PLANNING_FORECAST_HOURS = 48
+
 
 class ProgramStatusMixin:
     """The live state, overview and planning of the programs."""
@@ -273,6 +277,8 @@ class ProgramStatusMixin:
         until = now + timedelta(days=max(1, min(int(days), 14)))
         tz = dt_util.get_default_time_zone()
         planned = []
+        forecasts: dict = {}
+        sheltered = await self._planning_sheltered_zones()
         for program in getattr(config, const.CONF_PROGRAMS, None) or []:
             if program.get(const.PROGRAM_MAIN) or (
                 program.get(const.PROGRAM_ENABLED) is False
@@ -289,6 +295,9 @@ class ProgramStatusMixin:
                             "zone_id": m["zone_id"],
                             "zone": names.get(m["zone_id"]),
                             "seconds": int(m["seconds"]),
+                            # What the zone is expected to water for, the
+                            # same number under the name the panel shows.
+                            "expected_seconds": int(m["seconds"]),
                         }
                         for m in step["zones"]
                     ]
@@ -306,6 +315,9 @@ class ProgramStatusMixin:
                     schedule, now, total, last, self._sun_moment, tz, until
                 ):
                     start = result["fire"]
+                    prediction = await self._planning_prediction(
+                        schedule, start, now, plan, sheltered, forecasts
+                    )
                     planned.append(
                         {
                             "program_id": program_id,
@@ -318,8 +330,69 @@ class ProgramStatusMixin:
                             "weather": schedule.get(const.SCHEDULE_WEATHER)
                             is not False,
                             "tours": len(plan),
+                            "expected_seconds": int(total),
                             "steps": steps,
+                            **prediction,
                         }
                     )
         planned.sort(key=lambda item: item["start"])
         return planned
+
+    async def _planning_sheltered_zones(self) -> set:
+        """Zones the rain forecast cannot reach (under glass), or none."""
+        fetch = getattr(self, "async_zones_sheltered_from_rain", None)
+        if fetch is None:
+            return set()
+        try:
+            return {int(z) for z in await fetch()}
+        except Exception as e:  # noqa: BLE001 - a display must not fail
+            _LOGGER.debug("Could not read the sheltered zones: %s", e)
+            return set()
+
+    async def _planning_prediction(
+        self, schedule, start, now, plan, sheltered, cache
+    ) -> dict:
+        """What the forecast says about a planned run: will it be held back?
+
+        ``skipped_reason`` is the id of the condition that would hold the run
+        back (``precipitation``) and ``forecast`` the numbers behind it; both are
+        None when the run would go ahead, when the schedule ignores the weather,
+        or when the start lies beyond what the forecast covers
+        (``PLANNING_FORECAST_HOURS``). Only forecast conditions are predicted:
+        a sensor reading now says nothing about the day after tomorrow.
+        """
+        none = {
+            "skipped_reason": None,
+            "forecast": None,
+            "forecast_known": False,
+            "sheltered_zone_ids": [],
+        }
+        if schedule.get(const.SCHEDULE_WEATHER) is False:
+            return none
+        if start - now > timedelta(hours=PLANNING_FORECAST_HOURS):
+            return none
+        evaluate = getattr(self, "_evaluate_precipitation_forecast", None)
+        if evaluate is None:
+            return none
+        key = start.isoformat()
+        if key not in cache:
+            try:
+                cache[key] = await evaluate(run_start=dt_util.as_local(start))
+            except Exception as e:  # noqa: BLE001 - a display must not fail
+                _LOGGER.debug("No forecast for the planning of %s: %s", key, e)
+                cache[key] = None
+        check = cache[key]
+        if not check or not check.get("enabled") or not check.get("available"):
+            return none
+        zone_ids = {m["zone_id"] for step in plan[0] for m in step["zones"]}
+        held = bool(check.get("skip")) and not zone_ids <= sheltered
+        return {
+            "skipped_reason": check.get("id") if held else None,
+            "forecast": {
+                name: check.get(name)
+                for name in ("forecast_mm", "expected_mm", "threshold_mm")
+            },
+            "forecast_known": True,
+            # The zones the rain does not reach water anyway.
+            "sheltered_zone_ids": sorted(zone_ids & sheltered) if held else [],
+        }

@@ -49,6 +49,7 @@ from homeassistant.util import slugify
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const, illuminance
+from .alerts import ZoneUnwateredMixin
 from .blueprint_install import async_install_bundled_blueprints
 from .calc_log import CalculationLogger
 from .calculation import CalculationMixin
@@ -376,6 +377,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # Tell the user when a weather sensor stops reporting.
     await coordinator.async_setup_weather_liveness()
 
+    # Full controller: tell the user when a dry zone no program will water.
+    await coordinator.async_setup_zone_unwatered_watch()
+
     # Full controller: the pause and the waiting manual runs a restart interrupted
     # come back first, so the runs resumed below find the pause.
     await coordinator.async_restore_pause_and_queue()
@@ -474,6 +478,7 @@ class SmartIrrigationCoordinator(
     FlowCalibrationMixin,
     LiveEstimateMixin,
     WeatherLivenessMixin,
+    ZoneUnwateredMixin,
     ValveRunnerMixin,
     ProgramSchedulerMixin,
     SkipConditionsMixin,
@@ -913,6 +918,15 @@ class SmartIrrigationCoordinator(
         if const.CONF_PROGRAMS in data or const.CONF_FULL_CONTROLLER in data:
             # A program, or its schedules, was edited, or the mode was switched.
             await self.register_program_schedules()
+        if (
+            const.CONF_FULL_CONTROLLER in data
+            and (data.get(const.CONF_FULL_CONTROLLER) is True) != was_full
+        ):
+            # The mode was switched: start or stop the dry-zone watch.
+            await self.async_setup_zone_unwatered_watch()
+        elif const.CONF_PROGRAMS in data and was_full:
+            # Programs changed: a zone may be covered again, look right away.
+            await self.async_check_zone_unwatered()
         if (
             const.CONF_IRRIGATION_START_TRIGGERS in data
             or const.CONF_ACTIVE_START_TRIGGER in data
@@ -2442,6 +2456,9 @@ class SmartIrrigationCoordinator(
 
         # and the silent-sensor watch, with the notices it raised
         self.async_teardown_weather_liveness()
+
+        # and the watch over the dry zones nothing waters
+        self.async_teardown_zone_unwatered_watch()
 
         # cancel any in-flight direct valve runs
         cancelled_runs = self.async_teardown_valve_runs()
