@@ -204,12 +204,28 @@ async def test_a_failing_zha_call_never_breaks_the_run_and_warns_once(caplog):
     assert levels == ["WARNING", "DEBUG"]
 
 
-async def test_the_zha_time_fits_the_16_bits_of_the_command():
+async def test_a_zha_time_that_fits_the_16_bits_is_armed():
     runner = _runner(_entry())
 
-    await _arm(runner, ZONE, 100000)
+    await _arm(runner, ZONE, 6000)
 
-    assert runner.hass.services.async_call.call_args[0][2]["args"] == [0, 0xFFFF, 0]
+    args = runner.hass.services.async_call.call_args[0][2]["args"]
+    assert args[1] <= 0xFFFF and args[1] > 6000 * 10
+
+
+async def test_a_pass_too_long_for_the_zha_timer_arms_no_dead_man_and_warns_once(
+    caplog,
+):
+    runner = _runner(_entry())
+
+    with caplog.at_level("DEBUG"):
+        await _arm(runner, ZONE, 7000)
+        await _arm(runner, ZONE, 7000)
+
+    # A timer clamped at 0xFFFF tenths would shut the valve at 109 minutes.
+    runner.hass.services.async_call.assert_not_called()
+    levels = [r.levelname for r in caplog.records if "safety off_time" in r.message]
+    assert levels == ["WARNING", "DEBUG"]
 
 
 async def test_a_pass_arms_the_zha_dead_man_after_the_normal_open(monkeypatch):

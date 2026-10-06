@@ -224,7 +224,7 @@ class WateringControlMixin:
         except asyncio.CancelledError:
             raise
         except Exception as e:  # noqa: BLE001 - the record must not undo the pause
-            _LOGGER.debug("Could not record the pause: %s", e)
+            _LOGGER.warning("Could not record the pause: %s", e)
 
     async def _restore_pause(self, until: datetime) -> None:
         """Hold the watering again after a restart, until ``until``.

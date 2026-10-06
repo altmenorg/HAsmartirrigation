@@ -30,6 +30,7 @@ The weather gate is the one the start trigger uses: the same decision, made once
 a day, and the same holds on the zones the run is about to water.
 """
 
+import asyncio
 import logging
 from functools import partial
 
@@ -186,7 +187,19 @@ class ProgramSchedulerMixin:
         the result stands in for the day's decision only while the rest of the
         preparation (the event of a skipped day, the sheltered zones, the holds)
         runs, then the shared decision is put back as it was.
+
+        One preparation at a time: the swap spans awaits, so two schedules
+        firing together would otherwise see each other's decision.
         """
+        lock = getattr(self, "_prepare_watering_lock", None)
+        if lock is None:
+            lock = self._prepare_watering_lock = asyncio.Lock()
+        async with lock:
+            return await self._prepare_program_watering_locked(
+                name, event_data, conditions
+            )
+
+    async def _prepare_program_watering_locked(self, name, event_data, conditions):
         if conditions is None:
             return await self._prepare_watering_for_today(name, event_data)
         evaluation = await self.async_evaluate_skip_conditions(only=conditions)

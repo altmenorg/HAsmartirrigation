@@ -323,6 +323,10 @@ class ValveRunnerMixin(
             else:
                 # Those zones are not watered by the program's later steps either.
                 run.excluded.update(target)
+        if target is None:
+            # The runs that wait are cancelled: the stored queue follows now, not
+            # when their turn would have come (a restart must not ask again).
+            await self._persist_manual_queue()
         for zone_id, control in self._run_controls().items():
             if target is None or zone_id in target:
                 control.stop.set()
@@ -450,7 +454,18 @@ class ValveRunnerMixin(
         ieee, endpoint_id = target
         # The command's on time is in tenths of a second, a 16-bit value.
         on_time = int(math.ceil(max(0.0, held))) + const.SAFETY_OFF_TIME_MARGIN
-        tenths = min(on_time * 10, 0xFFFF)
+        tenths = on_time * 10
+        if tenths > 0xFFFF:
+            # The device would shut the valve itself at 0xFFFF tenths (about 109
+            # minutes), cutting a longer pass short: no dead-man is better.
+            self._safety_off_failed(
+                ("zha-too-long", zone.get(const.ZONE_ID, entity_id)),
+                "Direct valve control: no ZHA safety off_time armed on %s, a pass "
+                "of %ss is longer than the 6553s the device can time",
+                entity_id,
+                on_time,
+            )
+            return
         try:
             await self.hass.services.async_call(
                 "zha",
@@ -1993,6 +2008,39 @@ class ValveRunnerMixin(
         """The stored zone, or enough of it to name it in a problem report."""
         return self.store.get_zone(zone_id) or {const.ZONE_ID: zone_id}
 
+    async def _hold_resumed_run_for_pause(
+        self, run, zone_id: int, entity_id, duration, elapsed, started
+    ) -> bool:
+        """Hold an interrupted run while the restored pause lasts.
+
+        Closes the valve (and the pump, if nothing holds it) without opening
+        anything, then waits for the resume. True: the pause ended, go on with
+        the remainder (the record is untouched, so the water delivered before the
+        restart is credited once, when the pass ends). False: the run was
+        stopped meanwhile; what was delivered before the restart is credited and
+        the record cleared.
+        """
+        zone = self._zone_or_stub(zone_id)
+        _LOGGER.info(
+            "Direct valve control: zone %s held by the pause, %.0fs of %.0fs left",
+            zone_id,
+            max(0.0, duration - elapsed),
+            duration,
+        )
+        await self._close_zone_valves(zone, entity_id)
+        await self._supply_after_expired_run(zone_id)
+        control = self._run_controls().get(zone_id)
+        if control is not None and await self._wait_resume(control):
+            return True
+        delivered = min(duration, max(0.0, elapsed))
+        await self._remove_active_run(zone_id)
+        self._direct_run_finished[zone_id] = self.hass.loop.time()
+        if delivered > 0:
+            stored = self.store.get_zone(zone_id) or {}
+            water = max(0.0, delivered - self._lead_seconds(stored, delivered))
+            await self._credit_direct_run(zone_id, water, started, held=delivered)
+        return False
+
     async def _resume_claimed(self, run: dict, zone_id: int) -> None:
         entity_id = run.get(const.RUN_ENTITY_ID)
         duration = float(run.get(const.RUN_DURATION) or 0)
@@ -2084,6 +2132,17 @@ class ValveRunnerMixin(
             remaining,
             duration,
         )
+        if self.watering_paused():
+            # The pause came back with the restart: nothing is opened under it.
+            # What the valve may still have open is closed, the record and the
+            # owed remainder are kept, and the pass goes on when the pause ends.
+            if not await self._hold_resumed_run_for_pause(
+                run, zone_id, entity_id, duration, elapsed, started
+            ):
+                return
+            resume_t0 = dt_util.utcnow()
+            remaining = duration - elapsed
+            self._note_si_valve(zone_id, remaining + VALVE_CONFIRM_TIMEOUT)
         # Re-assert open: the valve should still be on after an HA reboot, but a
         # power cut may have reset it. Confirm before finishing/crediting. The
         # try starts with the open, as in _run_one_pass.
@@ -2112,47 +2171,69 @@ class ValveRunnerMixin(
                     return
                 if lead_over is None:
                     # Stopped or paused during the supply's lead: the valve
-                    # (open before the restart) is shut by the finally.
-                    return
-                await self._supply_ensure_on(supply)
-            failed = await self._open_zone_valves(
-                self._zone_or_stub(zone_id), entity_id, entities
-            )
-            if (
-                await self._confirm_zone_valves(
-                    self._zone_or_stub(zone_id), entity_id, failed, entities
-                )
-                is False
-            ):
-                closed = True
-                await self._close_zone_valves(
+                    # (open before the restart) is shut by the finally, and
+                    # what it delivered until now is credited, not lost.
+                    held_override = min(
+                        duration,
+                        max(
+                            0.0,
+                            elapsed + (dt_util.utcnow() - resume_t0).total_seconds(),
+                        ),
+                    )
+                    control = self._run_controls().get(zone_id)
+                    paused = bool(
+                        control is not None
+                        and control.pause.is_set()
+                        and not control.stop.is_set()
+                    )
+            if held_override is None:
+                if supply is not None:
+                    await self._supply_ensure_on(supply)
+                failed = await self._open_zone_valves(
                     self._zone_or_stub(zone_id), entity_id, entities
                 )
-                self._report_valve_problem(
-                    self._zone_or_stub(zone_id), entity_id, PROBLEM_DID_NOT_OPEN
+                if (
+                    await self._confirm_zone_valves(
+                        self._zone_or_stub(zone_id), entity_id, failed, entities
+                    )
+                    is False
+                ):
+                    closed = True
+                    await self._close_zone_valves(
+                        self._zone_or_stub(zone_id), entity_id, entities
+                    )
+                    self._report_valve_problem(
+                        self._zone_or_stub(zone_id), entity_id, PROBLEM_DID_NOT_OPEN
+                    )
+                    return
+                # The open and its confirmation take time of their own: what is
+                # left is counted from the start again, so the run is not held
+                # longer than planned.
+                remaining = max(
+                    0.0,
+                    duration - elapsed - (dt_util.utcnow() - resume_t0).total_seconds(),
                 )
-                return
-            # The open and its confirmation take time of their own: what is
-            # left is counted from the start again, so the run is not held
-            # longer than planned.
-            remaining = max(
-                0.0, duration - elapsed - (dt_util.utcnow() - resume_t0).total_seconds()
-            )
-            # Re-arm the hardware dead-man for the remaining time after a restart.
-            await self._arm_safety_off(self.store.get_zone(zone_id) or {}, remaining)
-            if await self._wait_or_stop(zone_id, remaining):
-                # Stopped or paused: credit what the valve delivered until now.
-                delivered = min(
-                    duration,
-                    max(0.0, elapsed + (dt_util.utcnow() - resume_t0).total_seconds()),
+                # Re-arm the hardware dead-man for the remaining time after a
+                # restart.
+                await self._arm_safety_off(
+                    self.store.get_zone(zone_id) or {}, remaining
                 )
-                held_override = delivered
-                control = self._run_controls().get(zone_id)
-                paused = bool(
-                    control is not None
-                    and control.pause.is_set()
-                    and not control.stop.is_set()
-                )
+                if await self._wait_or_stop(zone_id, remaining):
+                    # Stopped or paused: credit what the valve delivered until now.
+                    delivered = min(
+                        duration,
+                        max(
+                            0.0,
+                            elapsed + (dt_util.utcnow() - resume_t0).total_seconds(),
+                        ),
+                    )
+                    held_override = delivered
+                    control = self._run_controls().get(zone_id)
+                    paused = bool(
+                        control is not None
+                        and control.pause.is_set()
+                        and not control.stop.is_set()
+                    )
         except asyncio.CancelledError:
             # Shutting down again: the persisted run stays for the next start.
             cancelled = True

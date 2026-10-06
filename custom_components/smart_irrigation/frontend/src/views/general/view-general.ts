@@ -872,29 +872,34 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       const opts = RUN_OPTIONS[id ?? ""] || {};
       const seconds = Math.round(parseFloat(opts.seconds ?? ""));
       const data: Record<string, unknown> = { program_id: id };
-      if (seconds > 0) data.seconds = Math.min(seconds, 86400);
+      if (seconds > 0 && id !== "main") data.seconds = Math.min(seconds, 86400);
       if (opts.replace) data.mode = "replace";
       return this.hass!.callService(DOMAIN, "run_program", data);
     };
+    // The main program has no steps to share a total over: it takes no duration.
     const runOptions = (id: string | undefined) => html`
-      <div class="setting-row">
-        <div class="setting-label">
-          ${t("run_seconds")}
-          <span class="unit">(${localize("common.units.seconds", lang)})</span>
-        </div>
-        <input
-          class="field"
-          type="number"
-          min="1"
-          max="86400"
-          .value=${RUN_OPTIONS[id ?? ""]?.seconds ?? ""}
-          @input=${(e: Event) => {
-            const o = (RUN_OPTIONS[id ?? ""] ||= {});
-            o.seconds = (e.target as HTMLInputElement).value;
-          }}
-        />
-      </div>
-      <div class="setting-hint row-hint">${t("run_seconds_help")}</div>
+      ${id === "main"
+        ? ""
+        : html`<div class="setting-row">
+              <div class="setting-label">
+                ${t("run_seconds")}
+                <span class="unit"
+                  >(${localize("common.units.seconds", lang)})</span
+                >
+              </div>
+              <input
+                class="field"
+                type="number"
+                min="1"
+                max="86400"
+                .value=${RUN_OPTIONS[id ?? ""]?.seconds ?? ""}
+                @input=${(e: Event) => {
+                  const o = (RUN_OPTIONS[id ?? ""] ||= {});
+                  o.seconds = (e.target as HTMLInputElement).value;
+                }}
+              />
+            </div>
+            <div class="setting-hint row-hint">${t("run_seconds_help")}</div>`}
       <div class="setting-row">
         <div class="setting-label">${t("run_replace")}</div>
         <input

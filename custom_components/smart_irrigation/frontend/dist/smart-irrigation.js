@@ -1334,22 +1334,24 @@ function ve(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                 </div>
               `})):W`<div class="card-content">${t("nothing_planned")}</div>`}
       </ha-card>
-    `}async _fetchLive(e){var t;if(this.hass&&!0===(null===(t=this.config)||void 0===t?void 0:t.full_controller))try{this.programsState=await this.hass.callWS({type:ns+"/programs_state"}),e&&(this.planning=await this.hass.callWS({type:ns+"/planning",days:3})),this._scheduleUpdate()}catch(e){console.error("Error fetching the programs' state:",e)}}renderProgramsCard(){if(!this.config||!this.hass||!0!==this.config.full_controller)return W``;const e=this.hass.language,t=t=>es(`programs.${t}`,e),s=this.config.programs||[],i=e=>{this.config=Object.assign(Object.assign({},this.config),{programs:e}),this.handleConfigChange({programs:e}),this._scheduleUpdate()},a=(e,t)=>i(s.map(((s,i)=>i===e?Object.assign(Object.assign({},s),t):s))),n=(e,t=0)=>{const s=parseFloat(e);return isNaN(s)?t:s},r=e=>{var t;const s=Ha[null!=e?e:""]||{},i=Math.round(parseFloat(null!==(t=s.seconds)&&void 0!==t?t:"")),a={program_id:e};return i>0&&(a.seconds=Math.min(i,86400)),s.replace&&(a.mode="replace"),this.hass.callService(ns,"run_program",a)},o=s=>{var i,a,n;return W`
-      <div class="setting-row">
-        <div class="setting-label">
-          ${t("run_seconds")}
-          <span class="unit">(${es("common.units.seconds",e)})</span>
-        </div>
-        <input
-          class="field"
-          type="number"
-          min="1"
-          max="86400"
-          .value=${null!==(a=null===(i=Ha[null!=s?s:""])||void 0===i?void 0:i.seconds)&&void 0!==a?a:""}
-          @input=${e=>{var t;(Ha[t=null!=s?s:""]||(Ha[t]={})).seconds=e.target.value}}
-        />
-      </div>
-      <div class="setting-hint row-hint">${t("run_seconds_help")}</div>
+    `}async _fetchLive(e){var t;if(this.hass&&!0===(null===(t=this.config)||void 0===t?void 0:t.full_controller))try{this.programsState=await this.hass.callWS({type:ns+"/programs_state"}),e&&(this.planning=await this.hass.callWS({type:ns+"/planning",days:3})),this._scheduleUpdate()}catch(e){console.error("Error fetching the programs' state:",e)}}renderProgramsCard(){if(!this.config||!this.hass||!0!==this.config.full_controller)return W``;const e=this.hass.language,t=t=>es(`programs.${t}`,e),s=this.config.programs||[],i=e=>{this.config=Object.assign(Object.assign({},this.config),{programs:e}),this.handleConfigChange({programs:e}),this._scheduleUpdate()},a=(e,t)=>i(s.map(((s,i)=>i===e?Object.assign(Object.assign({},s),t):s))),n=(e,t=0)=>{const s=parseFloat(e);return isNaN(s)?t:s},r=e=>{var t;const s=Ha[null!=e?e:""]||{},i=Math.round(parseFloat(null!==(t=s.seconds)&&void 0!==t?t:"")),a={program_id:e};return i>0&&"main"!==e&&(a.seconds=Math.min(i,86400)),s.replace&&(a.mode="replace"),this.hass.callService(ns,"run_program",a)},o=s=>{var i,a,n;return W`
+      ${"main"===s?"":W`<div class="setting-row">
+              <div class="setting-label">
+                ${t("run_seconds")}
+                <span class="unit"
+                  >(${es("common.units.seconds",e)})</span
+                >
+              </div>
+              <input
+                class="field"
+                type="number"
+                min="1"
+                max="86400"
+                .value=${null!==(a=null===(i=Ha[null!=s?s:""])||void 0===i?void 0:i.seconds)&&void 0!==a?a:""}
+                @input=${e=>{var t;(Ha[t=null!=s?s:""]||(Ha[t]={})).seconds=e.target.value}}
+              />
+            </div>
+            <div class="setting-hint row-hint">${t("run_seconds_help")}</div>`}
       <div class="setting-row">
         <div class="setting-label">${t("run_replace")}</div>
         <input

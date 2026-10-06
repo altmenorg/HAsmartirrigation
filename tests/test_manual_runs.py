@@ -318,6 +318,13 @@ def test_the_schemas_take_a_mode_and_the_new_services_their_fields():
         SET_PROGRAM_ENABLED_SCHEMA({"program_id": "a", "enabled": "maybe"})
 
 
+async def test_the_main_program_takes_no_duration(monkeypatch):
+    hass, handlers = _handlers(monkeypatch, _two_programs())
+
+    with pytest.raises(ServiceValidationError, match="main program"):
+        await handlers.handle_run_program(_call(program_id="main", seconds=60))
+
+
 async def test_the_handlers_refuse_a_bad_mode_or_seconds_before_a_task_exists(
     monkeypatch,
 ):
@@ -419,20 +426,28 @@ async def test_a_step_and_a_schedule_are_switched_by_service(monkeypatch):
     assert handlers.rearmed == 2
 
 
-async def test_unknown_ids_and_a_controller_that_is_off_change_nothing(monkeypatch):
+async def test_unknown_ids_are_refused_and_a_controller_that_is_off_changes_nothing(
+    monkeypatch,
+):
     program = _program(steps=[{"id": "s1", "zones": [0]}])
     hass, handlers = _handlers(monkeypatch, [program])
 
-    await handlers.handle_set_program_enabled(_call(program_id="nope", enabled=False))
-    await handlers.handle_set_step_enabled(
-        _call(program_id="evening", step_id="nope", enabled=False)
-    )
-    await handlers.handle_set_step_enabled(
-        _call(program_id="nope", step_id="s1", enabled=False)
-    )
-    await handlers.handle_set_schedule_enabled(
-        _call(program_id="evening", schedule_id="nope", enabled=False)
-    )
+    with pytest.raises(ServiceValidationError):
+        await handlers.handle_set_program_enabled(
+            _call(program_id="nope", enabled=False)
+        )
+    with pytest.raises(ServiceValidationError):
+        await handlers.handle_set_step_enabled(
+            _call(program_id="evening", step_id="nope", enabled=False)
+        )
+    with pytest.raises(ServiceValidationError):
+        await handlers.handle_set_step_enabled(
+            _call(program_id="nope", step_id="s1", enabled=False)
+        )
+    with pytest.raises(ServiceValidationError):
+        await handlers.handle_set_schedule_enabled(
+            _call(program_id="evening", schedule_id="nope", enabled=False)
+        )
     handlers.store.config.full_controller = False
     await handlers.handle_set_program_enabled(
         _call(program_id="evening", enabled=False)

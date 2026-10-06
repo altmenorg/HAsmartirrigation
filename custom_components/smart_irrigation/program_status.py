@@ -59,7 +59,7 @@ class ProgramStatusMixin:
         except asyncio.CancelledError:
             raise
         except Exception as e:  # noqa: BLE001 - a display must never stop a run
-            _LOGGER.debug("Could not record the start of %s: %s", program_id, e)
+            _LOGGER.warning("Could not record the start of %s: %s", program_id, e)
 
     async def _note_main_program_started(self) -> None:
         """The main program is the cycle the start triggers run."""

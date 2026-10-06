@@ -194,6 +194,8 @@ class ProgramRunnerMixin:
             # Waiting: out of the queue now, it ends the moment its turn comes.
             registry.pop(program_id, None)
             self._notify_programs()
+            # The stored queue must not ask for it again after a restart.
+            await self._persist_manual_queue()
             _LOGGER.info("Program %s taken out of the queue", program_id)
             return "dequeued"
         for zone_id in list(run.current_zones or ()):
@@ -694,7 +696,7 @@ class ProgramRunnerMixin:
         except asyncio.CancelledError:
             raise
         except Exception as e:  # noqa: BLE001 - the record is not the run
-            _LOGGER.debug("Could not record the queued runs: %s", e)
+            _LOGGER.warning("Could not record the queued runs: %s", e)
 
     async def async_restore_pause_and_queue(self) -> None:
         """Put back the pause and the queued manual runs a restart interrupted.
@@ -740,13 +742,30 @@ class ProgramRunnerMixin:
             _LOGGER.info("Putting %d queued manual run(s) back in line", len(keep))
             self._spawn_valve_run(self._ask_again(keep))
 
+    def _resumed_run_pending(self) -> bool:
+        """Whether something a restart interrupted is still being finished.
+
+        A program (its record or its resume), a plain valve run or a cycle: the
+        last two take no turn at the executor lock, so a queued program asked for
+        meanwhile would open alongside them.
+        """
+        config = self.store.config
+        return bool(
+            getattr(config, const.CONF_ACTIVE_PROGRAM_RUN, None)
+            or self._programs_resuming()
+            or getattr(config, const.CONF_ACTIVE_VALVE_RUNS, None)
+            or getattr(config, const.CONF_ACTIVE_CYCLE, None)
+            or self._active_valve_runs
+            or self._claimed_zone_ids()
+            or self._sequential_cycle is not None
+        )
+
     async def _ask_again(self, entries: list) -> None:
         """Ask for the queued runs again, in their order, once a resumed run is over."""
         waited = 0
         while (
-            getattr(self.store.config, const.CONF_ACTIVE_PROGRAM_RUN, None)
-            or self._programs_resuming()
-        ) and waited < const.CYCLE_RESUME_MAX_AGE_SECONDS:
+            self._resumed_run_pending() and waited < const.CYCLE_RESUME_MAX_AGE_SECONDS
+        ):
             await asyncio.sleep(1)
             waited += 1
         tasks = []

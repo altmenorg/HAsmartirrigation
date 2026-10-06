@@ -21,7 +21,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 from . import const
 from .exceptions import SmartIrrigationError
 from .program_adjust import ProgramAdjustMixin
-from .programs import find_program
+from .programs import MAIN_PROGRAM_ID, find_program
 from .units import depth_from_display, zone_from_display
 from .watering_control import (
     MAX_SUSPEND_HOURS,
@@ -211,6 +211,11 @@ class ServiceHandlersMixin(ProgramAdjustMixin):
         if not program_id:
             return
         seconds = self._checked_seconds(call.data.get(const.ATTR_SECONDS))
+        if seconds is not None and str(program_id) == MAIN_PROGRAM_ID:
+            raise ServiceValidationError(
+                "The main program takes no duration: it waters the zones for the "
+                "durations Smart Irrigation calculated."
+            )
         mode = self._checked_mode(call.data.get(const.ATTR_MODE))
         if seconds is None and mode == const.RUN_MODE_QUEUE:
             # The run takes as long as the watering: the service does not wait.
@@ -251,27 +256,60 @@ class ServiceHandlersMixin(ProgramAdjustMixin):
             return
         await self.async_stop_program(str(program_id))
 
+    def _require_known_target(self, program_id, step_id=None, schedule_id=None):
+        """Refuse an id that is no program, step or schedule (full controller on).
+
+        With the full controller off the call changes nothing, as it always did.
+        """
+        config = self.store.config
+        if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
+            return
+        program = find_program(getattr(config, const.CONF_PROGRAMS, None), program_id)
+        if program is None:
+            raise ServiceValidationError(f"{program_id} is not a program")
+        if step_id is not None:
+            items, id_key, kind, ident = (
+                program.get(const.PROGRAM_STEPS),
+                const.STEP_ID,
+                "step",
+                step_id,
+            )
+        elif schedule_id is not None:
+            items, id_key, kind, ident = (
+                program.get(const.PROGRAM_SCHEDULES),
+                const.SCHEDULE_ID,
+                "schedule",
+                schedule_id,
+            )
+        else:
+            return
+        if not any(isinstance(i, dict) and i.get(id_key) == ident for i in items or []):
+            raise ServiceValidationError(
+                f"{ident} is not a {kind} of program {program_id}"
+            )
+
     async def handle_set_program_enabled(self, call):
         """Enable or disable a program."""
-        await self.async_set_enabled(
-            str(call.data.get(const.ATTR_PROGRAM_ID)),
-            call.data.get(const.ATTR_ENABLED),
-        )
+        program_id = str(call.data.get(const.ATTR_PROGRAM_ID))
+        self._require_known_target(program_id)
+        await self.async_set_enabled(program_id, call.data.get(const.ATTR_ENABLED))
 
     async def handle_set_step_enabled(self, call):
         """Enable or disable one step of a program."""
+        program_id = str(call.data.get(const.ATTR_PROGRAM_ID))
+        step_id = str(call.data.get(const.ATTR_STEP_ID))
+        self._require_known_target(program_id, step_id=step_id)
         await self.async_set_enabled(
-            str(call.data.get(const.ATTR_PROGRAM_ID)),
-            call.data.get(const.ATTR_ENABLED),
-            step_id=str(call.data.get(const.ATTR_STEP_ID)),
+            program_id, call.data.get(const.ATTR_ENABLED), step_id=step_id
         )
 
     async def handle_set_schedule_enabled(self, call):
         """Enable or disable one schedule of a program."""
+        program_id = str(call.data.get(const.ATTR_PROGRAM_ID))
+        schedule_id = str(call.data.get(const.ATTR_SCHEDULE_ID))
+        self._require_known_target(program_id, schedule_id=schedule_id)
         await self.async_set_enabled(
-            str(call.data.get(const.ATTR_PROGRAM_ID)),
-            call.data.get(const.ATTR_ENABLED),
-            schedule_id=str(call.data.get(const.ATTR_SCHEDULE_ID)),
+            program_id, call.data.get(const.ATTR_ENABLED), schedule_id=schedule_id
         )
 
     async def handle_pause_watering(self, call):
