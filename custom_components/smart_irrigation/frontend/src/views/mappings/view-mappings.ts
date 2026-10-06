@@ -863,7 +863,9 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
             ?selected=${currentSource === MAPPING_CONF_SOURCE_WEATHER_SERVICE}
           >
             ${localize(
-              "panels.mappings.cards.mapping.sources.weather_service",
+              value === MAPPING_EVAPOTRANSPIRATION
+                ? "panels.mappings.cards.mapping.sources.weather_service_et"
+                : "panels.mappings.cards.mapping.sources.weather_service",
               this.hass.language,
             )}${viaOpenMeteo ? " (via Open-Meteo)" : ""}
           </option>`
@@ -874,7 +876,9 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
             ?selected=${currentSource === MAPPING_CONF_SOURCE_NONE}
           >
             ${localize(
-              "panels.mappings.cards.mapping.sources.none",
+              value === MAPPING_EVAPOTRANSPIRATION
+                ? "panels.mappings.cards.mapping.sources.none_et"
+                : "panels.mappings.cards.mapping.sources.none",
               this.hass.language,
             )}
           </option>`

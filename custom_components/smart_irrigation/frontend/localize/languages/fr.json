@@ -436,7 +436,7 @@
             "solar radiation": "L'énergie du soleil, premier moteur de l'évaporation. Sans elle, le calcul l'estime à partir de l'écart de température du jour. Sous verre, utilise un capteur de rayonnement ou de luminosité.",
             "precipitation": "Pluie tombée, en cumul, d'un pluviomètre à toi qui additionne. Avec un service météo, laisse sur Aucun.",
             "current precipitation": "Pluie qui tombe en ce moment, en débit. Le service météo la fournit ; un capteur de pluie à toi est plus précis.",
-            "evapotranspiration": "L'eau perdue par les plantes, déjà calculée par ton capteur ou ton service. Utilisée par les zones réglées sur fournie par un capteur ou un service."
+            "evapotranspiration": "Une évapotranspiration (ET₀) toute faite, de ton propre capteur ou du service météo. Seules les zones réglées sur fournie par un capteur ou un service la lisent. Pour une zone calculée par Smart Irrigation, cette ligne n'est pas utilisée : le service météo ne fournit alors que les données (température, humidité, vent, rayonnement) du calcul de Smart Irrigation."
           },
           "items": {
             "dewpoint": "Point de rosée",
@@ -463,7 +463,9 @@
           "source": "Source",
           "sources": {
             "none": "Aucun",
+            "none_et": "Aucun (Smart Irrigation la calcule)",
             "weather_service": "Weather service",
+            "weather_service_et": "ET₀ toute faite du service météo",
             "sensor": "Capteur",
             "static": "Valeur statique",
             "radiation_sensor": "Capteur de rayonnement",
@@ -874,9 +876,9 @@
     "seconds": "Secondes d'eau",
     "passes": "Passes (cycle and soak)",
     "step_delay": "Attente après cette étape",
-    "step_delay_help": "Vide : l'attente du programme.",
+    "step_delay_help": "Vide : l'attente du programme. Négatif : l'étape suivante démarre ce temps avant la fin de celle-ci.",
     "delay": "Attente entre les étapes",
-    "delay_help": "Secondes d'attente après chaque étape, pour la pression du réseau ou une vanne lente.",
+    "delay_help": "Secondes d'attente après chaque étape, pour la pression du réseau ou une vanne lente. Négatif : chaque étape démarre ce temps avant la fin de la précédente (elles se chevauchent).",
     "tours": "Tours d'arrosage",
     "tours_help": "Toute la liste est arrosée ce nombre de fois, chaque tour avec sa part de l'eau, pour que le sol ait le temps d'absorber entre deux.",
     "enabled": "Activé",
@@ -907,6 +909,10 @@
     "parity_any": "Tous",
     "parity_even": "Jours pairs",
     "parity_odd": "Jours impairs",
+    "schedule_days_of_month": "Jours précis du mois",
+    "schedule_days_of_month_help": "Des numéros de jour séparés par des virgules, et « last » pour le dernier jour du mois (par exemple 1, 15, last). Un mois trop court pour un jour l'ignore. Vide : tous les jours. S'ajoute aux autres filtres.",
+    "schedule_fallback_time": "S'il n'y a ni lever ni coucher",
+    "schedule_fallback_time_help": "Un jour sans lever ni coucher du soleil (jour ou nuit polaire), démarrer à cette heure (HH:MM), ou écrire « previous » pour reprendre l'heure du dernier vu. Vide : ce jour est sauté.",
     "schedule_months": "Mois",
     "schedule_months_help": "Aucun coché : tous les mois.",
     "schedule_from": "Du",

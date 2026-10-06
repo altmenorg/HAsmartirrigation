@@ -436,7 +436,7 @@
             "solar radiation": "The energy of the sun, the main driver of evaporation. Without it the calculation estimates it from the day's temperature range. Under glass, use a radiation sensor or a light sensor.",
             "precipitation": "Rain that fell, as a total, from a rain gauge of your own that adds up. With a weather service, leave it on None.",
             "current precipitation": "Rain falling now, as a rate. The weather service provides it; a rain sensor of your own is more precise.",
-            "evapotranspiration": "The water the plants lost, already calculated by your sensor or service. Used by the zones set to provided by a sensor or a service."
+            "evapotranspiration": "A ready-made evapotranspiration (ET₀), from your own sensor or from the weather service. Only the zones set to provided by a sensor or a service read it. For a zone calculated by Smart Irrigation this line is not used: the weather service then only supplies the inputs (temperature, humidity, wind, radiation) of Smart Irrigation's own calculation."
           },
           "items": {
             "dewpoint": "Dewpoint",
@@ -463,7 +463,9 @@
           "source": "Source",
           "sources": {
             "none": "None",
+            "none_et": "None (Smart Irrigation calculates it)",
             "weather_service": "Weather service",
+            "weather_service_et": "Ready-made ET₀ from the weather service",
             "sensor": "Sensor",
             "static": "Static value",
             "radiation_sensor": "Radiation sensor",
@@ -874,9 +876,9 @@
     "seconds": "Seconds of water",
     "passes": "Passes (cycle and soak)",
     "step_delay": "Wait after this step",
-    "step_delay_help": "Empty: the program's wait.",
+    "step_delay_help": "Empty: the program's wait. Negative: the next step starts that long before this one ends.",
     "delay": "Wait between steps",
-    "delay_help": "Seconds waited after each step, for line pressure or a slow valve.",
+    "delay_help": "Seconds waited after each step, for line pressure or a slow valve. Negative: each step starts that long before the previous one ends (they overlap).",
     "tours": "Rounds",
     "tours_help": "The whole list is watered this many times, each round with its share of the water, so the soil can take it in between.",
     "enabled": "Enabled",
@@ -907,6 +909,10 @@
     "parity_any": "All",
     "parity_even": "Even days",
     "parity_odd": "Odd days",
+    "schedule_days_of_month": "Specific days of the month",
+    "schedule_days_of_month_help": "Day numbers separated by commas, and \"last\" for the last day of the month (for example 1, 15, last). A month too short for a day skips it. Empty: any day. It adds to the other filters.",
+    "schedule_fallback_time": "If there is no sunrise or sunset",
+    "schedule_fallback_time_help": "On a day without a sunrise or sunset (polar day or night), start at this time (HH:MM), or write \"previous\" to reuse the time of the last one seen. Empty: that day is skipped.",
     "schedule_months": "Months",
     "schedule_months_help": "None ticked: every month.",
     "schedule_from": "From",

@@ -18,7 +18,7 @@ Apart from changing the name, you can specify the source where to retrieve the w
 
 It's recommended to use actual sensor sources as much as you can and only rely on weather services as needed. If your zone is covered (such as a green house), of course you can set the total precipitation to 0.
 
-The group's **Evapotranspiration** source is always the first field, and it decides what else is asked. Left on *None*, the zones calculate evapotranspiration from the weather, so the readings it needs are asked: temperature, dew point, humidity, pressure, wind speed and solar radiation. Given ready-made, by a weather service or a sensor, the other readings are not asked (a note says how many); rain stays. A plain sentence under each source explains what it does.
+The group's **Evapotranspiration** source is always the first field, and it decides what else is asked. Left on *None*, the zones calculate evapotranspiration from the weather, so the readings it needs are asked: temperature, dew point, humidity, pressure, wind speed and solar radiation. Given ready-made, by a weather service or a sensor, the other readings are not asked (a note says how many); rain stays. A plain sentence under each source explains what it does. The two choices are worded to tell them apart: **None (Smart Irrigation calculates it)** means the weather service, or your sensors, only supply the inputs of Smart Irrigation's own calculation, and **Ready-made ET₀ from the weather service** (or a sensor) means the value is taken as it comes and the other readings are not used.
 
 The group also says when its zones and its source disagree: a zone calculated from the weather ignores a provided value, and a zone set to *provided* needs a source.
 
