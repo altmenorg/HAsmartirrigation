@@ -1,4 +1,79 @@
 {
+  "entity": {
+    "sensor": {
+      "duration": {
+        "name": "Duur"
+      },
+      "bucket": {
+        "name": "Emmer"
+      },
+      "et_value": {
+        "name": "Toegepaste ET"
+      },
+      "et_deficiency": {
+        "name": "Dagelijks ET-tekort"
+      },
+      "current_drainage": {
+        "name": "Huidige drainage"
+      },
+      "last_irrigation": {
+        "name": "Laatste bewatering"
+      },
+      "water_used": {
+        "name": "Waterverbruik"
+      },
+      "live_bucket": {
+        "name": "Live emmer"
+      }
+    },
+    "number": {
+      "multiplier": {
+        "name": "Vermenigvuldiger"
+      },
+      "precipitation_threshold": {
+        "name": "Neerslagdrempel"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Berekenen"
+      },
+      "reset_bucket": {
+        "name": "Emmer terugzetten"
+      },
+      "reset_usage": {
+        "name": "Waterverbruik terugzetten"
+      },
+      "irrigate_now": {
+        "name": "Nu bewateren"
+      },
+      "calculate_all": {
+        "name": "Alle zones berekenen"
+      },
+      "update_weather": {
+        "name": "Weer verversen"
+      },
+      "irrigate_all": {
+        "name": "Alle zones bewateren"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Bewatering nodig"
+      },
+      "watering_now": {
+        "name": "Bewatert nu"
+      },
+      "problem": {
+        "name": "Probleem"
+      }
+    },
+    "switch": {
+      "skip_on_precipitation": {
+        "name": "Overslaan bij neerslag"
+      }
+    }
+  },
   "config": {
     "abort": {
       "single_instance_allowed": "Slechts een enkele installatie van Smart Irrigation is toegestaan."
@@ -211,82 +286,23 @@
       }
     }
   },
-  "entity": {
-    "number": {
-      "multiplier": {
-        "name": "Vermenigvuldiger"
-      },
-      "precipitation_threshold": {
-        "name": "Neerslagdrempel"
-      }
-    },
-    "switch": {
-      "skip_on_precipitation": {
-        "name": "Overslaan bij neerslag"
-      }
-    },
-    "sensor": {
-      "duration": {
-        "name": "Duur"
-      },
-      "bucket": {
-        "name": "Emmer"
-      },
-      "et_value": {
-        "name": "Toegepaste ET"
-      },
-      "et_deficiency": {
-        "name": "Dagelijks ET-tekort"
-      },
-      "current_drainage": {
-        "name": "Huidige drainage"
-      },
-      "last_irrigation": {
-        "name": "Laatste bewatering"
-      },
-      "water_used": {
-        "name": "Waterverbruik"
-      },
-      "live_bucket": {
-        "name": "Live emmer"
-      }
-    },
-    "button": {
-      "calculate": {
-        "name": "Berekenen"
-      },
-      "reset_bucket": {
-        "name": "Emmer terugzetten"
-      },
-      "reset_usage": {
-        "name": "Waterverbruik terugzetten"
-      },
-      "irrigate_now": {
-        "name": "Nu bewateren"
-      },
-      "calculate_all": {
-        "name": "Alle zones berekenen"
-      },
-      "update_weather": {
-        "name": "Weer verversen"
-      },
-      "irrigate_all": {
-        "name": "Alle zones bewateren"
-      }
-    },
-    "binary_sensor": {
-      "irrigation_needed": {
-        "name": "Bewatering nodig"
-      },
-      "watering_now": {
-        "name": "Bewatert nu"
-      },
-      "problem": {
-        "name": "Probleem"
-      }
-    }
-  },
   "issues": {
+    "dry_zone_not_watered": {
+      "title": "Zone {zone} is droog en niets zal haar bewateren",
+      "description": "De voorraad van zone **{zone}** is al {days} dagen droog, en elk programma dat haar bevat is uitgeschakeld, opgeschort of heeft geen ingeschakeld schema.\n\nZet een programma dat deze zone bewatert weer aan, schakel een van zijn schema's in, of hef de opschorting op. De melding verdwijnt vanzelf zodra de zone is bewaterd of een programma haar weer dekt."
+    },
+    "weather_silent": {
+      "title": "Sensorgroep {mapping}: een weersensor meldt zich niet meer",
+      "description": "Er is al meer dan {hours} uur niets ontvangen van: **{sensors}**. De laatste melding was op {since}.\n\nEen zo oude meting wordt buiten de berekening gelaten, dus de zones van deze sensorgroep worden berekend op wat overblijft, of helemaal niet.\n\nControleer de batterij van de sensor, zijn verbinding en zijn entiteit in Home Assistant. De melding verdwijnt vanzelf zodra hij zich weer meldt."
+    },
+    "missing_input": {
+      "title": "Zone {zone}: er kon niets berekend worden",
+      "description": "De verdamping van zone **{zone}** kon niet worden berekend omdat de weergegevens geen waarde hadden voor: **{missing}**.\n\nZolang dat zo is, beweegt het tekort van de zone niet en wordt ze niet bewaterd, wat er precies uitziet als een zone zonder behoefte.\n\nControleer of de sensoren die aan die velden zijn gekoppeld beschikbaar zijn, of dat de weerdienst ze nog steeds verstuurt. Het probleem verdwijnt bij de volgende berekening die kan worden gedaan."
+    },
+    "undersized_zone": {
+      "title": "Zone {zone}: één beurt kan niet bewateren wat ze verliest",
+      "description": "De langste beurt van zone **{zone}** levert ongeveer **{capacity} mm**, maar de zone verliest ongeveer **{need} mm** tussen twee bewateringen ({days} dag(en)). Haar tekort blijft groeien zolang het weer zo blijft.\n\nDe limiet is de maximale duur van de zone. Verhoog die, geef de zone meer druppelaars of een hoger debiet, of verlaag de dagen tussen bewateringen. Als de limiet bewust is, kun je dit negeren."
+    },
     "throughput_mismatch": {
       "title": "Zone {zone}: het gemeten debiet komt niet overeen met het ingestelde debiet",
       "description": "Over de laatste {samples} rondes heeft de debietmeter van zone **{zone}** ongeveer **{measured}** gemeten, terwijl de zone is ingesteld op **{configured}**, dus {percentage}% ernaast.\n\nElke bewateringsduur wordt uit het ingestelde debiet afgeleid, dus zitten ze er allemaal ongeveer evenveel naast.\n\nAls de meting klopt, zet het debiet van de zone daarop. Zo niet, controleer dan of de meter alleen deze zone telt en of de leidingdruk is wat je verwacht. Smart Irrigation verandert de waarde nooit zelf."

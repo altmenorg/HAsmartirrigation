@@ -1,4 +1,79 @@
 {
+  "entity": {
+    "sensor": {
+      "duration": {
+        "name": "Czas"
+      },
+      "bucket": {
+        "name": "Zapas"
+      },
+      "et_value": {
+        "name": "Zastosowana ET"
+      },
+      "et_deficiency": {
+        "name": "Dzienny deficyt ET"
+      },
+      "current_drainage": {
+        "name": "Bieżący drenaż"
+      },
+      "last_irrigation": {
+        "name": "Ostatnie nawadnianie"
+      },
+      "water_used": {
+        "name": "Zużycie wody"
+      },
+      "live_bucket": {
+        "name": "Zapas na bieżąco"
+      }
+    },
+    "number": {
+      "multiplier": {
+        "name": "Mnożnik"
+      },
+      "precipitation_threshold": {
+        "name": "Próg opadów"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Policz"
+      },
+      "reset_bucket": {
+        "name": "Zeruj zapas"
+      },
+      "reset_usage": {
+        "name": "Zeruj zużycie wody"
+      },
+      "irrigate_now": {
+        "name": "Podlej teraz"
+      },
+      "calculate_all": {
+        "name": "Policz wszystkie strefy"
+      },
+      "update_weather": {
+        "name": "Pobierz pogodę ponownie"
+      },
+      "irrigate_all": {
+        "name": "Podlej wszystkie strefy"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Nawadnianie potrzebne"
+      },
+      "watering_now": {
+        "name": "Właśnie podlewa"
+      },
+      "problem": {
+        "name": "Problem"
+      }
+    },
+    "switch": {
+      "skip_on_precipitation": {
+        "name": "Pomiń przy opadach"
+      }
+    }
+  },
   "config": {
     "abort": {
       "single_instance_allowed": "Dozwolona jest tylko jedna konfiguracja Smart Irrigation."
@@ -211,82 +286,23 @@
       }
     }
   },
-  "entity": {
-    "number": {
-      "multiplier": {
-        "name": "Mnożnik"
-      },
-      "precipitation_threshold": {
-        "name": "Próg opadów"
-      }
-    },
-    "switch": {
-      "skip_on_precipitation": {
-        "name": "Pomiń przy opadach"
-      }
-    },
-    "sensor": {
-      "duration": {
-        "name": "Czas"
-      },
-      "bucket": {
-        "name": "Zapas"
-      },
-      "et_value": {
-        "name": "Zastosowana ET"
-      },
-      "et_deficiency": {
-        "name": "Dzienny deficyt ET"
-      },
-      "current_drainage": {
-        "name": "Bieżący drenaż"
-      },
-      "last_irrigation": {
-        "name": "Ostatnie nawadnianie"
-      },
-      "water_used": {
-        "name": "Zużycie wody"
-      },
-      "live_bucket": {
-        "name": "Zapas na bieżąco"
-      }
-    },
-    "button": {
-      "calculate": {
-        "name": "Policz"
-      },
-      "reset_bucket": {
-        "name": "Zeruj zapas"
-      },
-      "reset_usage": {
-        "name": "Zeruj zużycie wody"
-      },
-      "irrigate_now": {
-        "name": "Podlej teraz"
-      },
-      "calculate_all": {
-        "name": "Policz wszystkie strefy"
-      },
-      "update_weather": {
-        "name": "Pobierz pogodę ponownie"
-      },
-      "irrigate_all": {
-        "name": "Podlej wszystkie strefy"
-      }
-    },
-    "binary_sensor": {
-      "irrigation_needed": {
-        "name": "Nawadnianie potrzebne"
-      },
-      "watering_now": {
-        "name": "Właśnie podlewa"
-      },
-      "problem": {
-        "name": "Problem"
-      }
-    }
-  },
   "issues": {
+    "dry_zone_not_watered": {
+      "title": "Strefa {zone} jest sucha i nic jej nie podleje",
+      "description": "Bucket strefy **{zone}** jest suchy od {days} dni, a każdy program, który ją obejmuje, jest wyłączony, zawieszony lub nie ma włączonego harmonogramu.\n\nWłącz ponownie program podlewający tę strefę, włącz jeden z jego harmonogramów albo zdejmij jego zawieszenie. Powiadomienie zniknie samo, gdy strefa zostanie podlana lub program znów ją obejmie."
+    },
+    "weather_silent": {
+      "title": "Grupa czujników {mapping}: czujnik pogodowy przestał raportować",
+      "description": "Od ponad {hours} godz. nic nie nadeszło z: **{sensors}**. Ostatni raport był {since}.\n\nTak stary odczyt jest pomijany w obliczeniach, więc strefy tej grupy czujników są liczone na podstawie tego, co zostało, albo wcale.\n\nSprawdź baterię czujnika, jego połączenie i jego encję w Home Assistant. Powiadomienie zniknie samo, gdy tylko znów zacznie raportować."
+    },
+    "missing_input": {
+      "title": "Strefa {zone}: nic nie dało się obliczyć",
+      "description": "Ewapotranspiracji strefy **{zone}** nie dało się obliczyć, ponieważ dane pogodowe nie miały wartości dla: **{missing}**.\n\nDopóki jej nie mają, deficyt strefy się nie zmienia i strefa nie jest podlewana, co wygląda dokładnie jak strefa bez potrzeb.\n\nSprawdź, czy czujniki przypisane do tych pól są dostępne albo czy usługa pogodowa nadal je wysyła. Problem zniknie przy następnym obliczeniu, które da się wykonać."
+    },
+    "undersized_zone": {
+      "title": "Strefa {zone}: jedno uruchomienie nie podleje tego, co strefa traci",
+      "description": "Najdłuższe uruchomienie strefy **{zone}** dostarcza około **{capacity} mm**, ale strefa traci około **{need} mm** między dwoma podlewaniami ({days} dni). Jej deficyt będzie rósł, dopóki pogoda pozostanie taka sama.\n\nLimitem jest maksymalny czas trwania strefy. Zwiększ go, daj strefie więcej emiterów lub większy przepływ, albo zmniejsz liczbę dni między nawadnianiami. Jeśli limit jest celowy, możesz to zignorować."
+    },
     "throughput_mismatch": {
       "title": "Strefa {zone}: zmierzony przepływ nie zgadza się z ustawionym",
       "description": "Przez ostatnie {samples} nawadniania przepływomierz strefy **{zone}** zmierzył około **{measured}**, gdy strefa jest ustawiona na **{configured}**, czyli {percentage}% obok.\n\nKażdy czas nawadniania wyprowadzany jest z ustawionego przepływu, więc wszystkie są przesunięte o tyle samo.\n\nJeśli pomiar wygląda poprawnie, ustaw przepływ strefy na tę wartość. Jeśli nie, sprawdź, czy licznik liczy tylko tę strefę i czy ciśnienie w instalacji jest takie, jakiego się spodziewasz. Smart Irrigation nigdy nie zmienia tej wartości za ciebie."

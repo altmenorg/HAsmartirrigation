@@ -1,4 +1,79 @@
 {
+  "entity": {
+    "sensor": {
+      "duration": {
+        "name": "Dauer"
+      },
+      "bucket": {
+        "name": "Vorrat"
+      },
+      "et_value": {
+        "name": "Angewandte ET"
+      },
+      "et_deficiency": {
+        "name": "Täglicher ET-Mangel"
+      },
+      "current_drainage": {
+        "name": "Aktuelle Drainage"
+      },
+      "last_irrigation": {
+        "name": "Letzte Bewässerung"
+      },
+      "water_used": {
+        "name": "Wasserverbrauch"
+      },
+      "live_bucket": {
+        "name": "Vorrat in Echtzeit"
+      }
+    },
+    "number": {
+      "multiplier": {
+        "name": "Multiplikator"
+      },
+      "precipitation_threshold": {
+        "name": "Niederschlagsschwelle"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Berechnen"
+      },
+      "reset_bucket": {
+        "name": "Vorrat zurücksetzen"
+      },
+      "reset_usage": {
+        "name": "Wasserverbrauch zurücksetzen"
+      },
+      "irrigate_now": {
+        "name": "Jetzt bewässern"
+      },
+      "calculate_all": {
+        "name": "Alle Zonen berechnen"
+      },
+      "update_weather": {
+        "name": "Wetter aktualisieren"
+      },
+      "irrigate_all": {
+        "name": "Alle Zonen bewässern"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Bewässerung nötig"
+      },
+      "watering_now": {
+        "name": "Bewässert gerade"
+      },
+      "problem": {
+        "name": "Problem"
+      }
+    },
+    "switch": {
+      "skip_on_precipitation": {
+        "name": "Bei Niederschlag überspringen"
+      }
+    }
+  },
   "config": {
     "abort": {
       "single_instance_allowed": "Es ist nur eine Integration für Smart Irrigation zulässig."
@@ -211,82 +286,23 @@
       }
     }
   },
-  "entity": {
-    "number": {
-      "multiplier": {
-        "name": "Multiplikator"
-      },
-      "precipitation_threshold": {
-        "name": "Niederschlagsschwelle"
-      }
-    },
-    "switch": {
-      "skip_on_precipitation": {
-        "name": "Bei Niederschlag überspringen"
-      }
-    },
-    "sensor": {
-      "duration": {
-        "name": "Dauer"
-      },
-      "bucket": {
-        "name": "Vorrat"
-      },
-      "et_value": {
-        "name": "Angewandte ET"
-      },
-      "et_deficiency": {
-        "name": "Täglicher ET-Mangel"
-      },
-      "current_drainage": {
-        "name": "Aktuelle Drainage"
-      },
-      "last_irrigation": {
-        "name": "Letzte Bewässerung"
-      },
-      "water_used": {
-        "name": "Wasserverbrauch"
-      },
-      "live_bucket": {
-        "name": "Vorrat in Echtzeit"
-      }
-    },
-    "button": {
-      "calculate": {
-        "name": "Berechnen"
-      },
-      "reset_bucket": {
-        "name": "Vorrat zurücksetzen"
-      },
-      "reset_usage": {
-        "name": "Wasserverbrauch zurücksetzen"
-      },
-      "irrigate_now": {
-        "name": "Jetzt bewässern"
-      },
-      "calculate_all": {
-        "name": "Alle Zonen berechnen"
-      },
-      "update_weather": {
-        "name": "Wetter aktualisieren"
-      },
-      "irrigate_all": {
-        "name": "Alle Zonen bewässern"
-      }
-    },
-    "binary_sensor": {
-      "irrigation_needed": {
-        "name": "Bewässerung nötig"
-      },
-      "watering_now": {
-        "name": "Bewässert gerade"
-      },
-      "problem": {
-        "name": "Problem"
-      }
-    }
-  },
   "issues": {
+    "dry_zone_not_watered": {
+      "title": "Zone {zone} ist trocken und nichts wird sie bewässern",
+      "description": "Der Vorrat der Zone **{zone}** ist seit {days} Tagen leer, und jedes Programm, das sie enthält, ist deaktiviert, ausgesetzt oder hat keinen aktiven Zeitplan.\n\nSchalte ein Programm, das diese Zone bewässert, wieder ein, aktiviere einen seiner Zeitpläne oder hebe seine Aussetzung auf. Der Hinweis verschwindet von selbst, sobald die Zone bewässert wird oder ein Programm sie wieder abdeckt."
+    },
+    "weather_silent": {
+      "title": "Sensorgruppe {mapping}: Ein Wettersensor meldet sich nicht mehr",
+      "description": "Seit über {hours} Stunden ist nichts mehr eingegangen von: **{sensors}**. Die letzte Meldung kam am {since}.\n\nEin so alter Wert wird aus der Berechnung ausgeschlossen, daher werden die Zonen dieser Sensorgruppe mit dem berechnet, was übrig bleibt, oder gar nicht.\n\nPrüfe die Batterie des Sensors, seine Verbindung und seine Entität in Home Assistant. Der Hinweis verschwindet von selbst, sobald er wieder meldet."
+    },
+    "missing_input": {
+      "title": "Zone {zone}: Nichts konnte berechnet werden",
+      "description": "Die Evapotranspiration der Zone **{zone}** konnte nicht berechnet werden, weil die Wetterdaten keinen Wert für Folgendes hatten: **{missing}**.\n\nSolange das so bleibt, bewegt sich das Defizit der Zone nicht und sie wird nicht bewässert, was genau wie eine Zone ohne Bedarf aussieht.\n\nPrüfe, ob die diesen Feldern zugeordneten Sensoren verfügbar sind oder ob der Wetterdienst sie noch sendet. Das Problem verschwindet bei der nächsten möglichen Berechnung."
+    },
+    "undersized_zone": {
+      "title": "Zone {zone}: Ein Lauf kann nicht bewässern, was sie verliert",
+      "description": "Der längste Lauf der Zone **{zone}** liefert etwa **{capacity} mm**, aber die Zone verliert etwa **{need} mm** zwischen zwei Bewässerungen ({days} Tag(e)). Ihr Defizit wächst weiter, solange das Wetter so bleibt.\n\nDie Grenze ist die maximale Dauer der Zone. Erhöhe sie, gib der Zone mehr Tropfer oder einen höheren Durchfluss, oder verringere die Tage zwischen den Bewässerungen. Wenn die Grenze Absicht ist, kannst du das ignorieren."
+    },
     "throughput_mismatch": {
       "title": "Zone {zone}: der gemessene Durchfluss passt nicht zum eingestellten Durchfluss",
       "description": "Über die letzten {samples} Durchläufe hat der Durchflussmesser der Zone **{zone}** etwa **{measured}** gemessen, während die Zone auf **{configured}** eingestellt ist, also {percentage}% daneben.\n\nJede Bewässerungsdauer wird aus dem eingestellten Durchfluss abgeleitet, also sind alle um etwa denselben Betrag falsch.\n\nWenn die Messung stimmt, setze den Durchfluss der Zone darauf. Wenn nicht, prüfe, ob der Zähler nur diese Zone zählt und ob der Leitungsdruck dem entspricht, was du erwartest. Smart Irrigation ändert den Wert nie von selbst."

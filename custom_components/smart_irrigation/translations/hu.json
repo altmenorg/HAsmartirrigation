@@ -1,4 +1,79 @@
 {
+  "entity": {
+    "sensor": {
+      "duration": {
+        "name": "Időtartam"
+      },
+      "bucket": {
+        "name": "Tartalék"
+      },
+      "et_value": {
+        "name": "Alkalmazott ET"
+      },
+      "et_deficiency": {
+        "name": "Napi ET-hiány"
+      },
+      "current_drainage": {
+        "name": "Jelenlegi vízelvezetés"
+      },
+      "last_irrigation": {
+        "name": "Utolsó öntözés"
+      },
+      "water_used": {
+        "name": "Vízfogyás"
+      },
+      "live_bucket": {
+        "name": "Tartalék élőben"
+      }
+    },
+    "number": {
+      "multiplier": {
+        "name": "Szorzó"
+      },
+      "precipitation_threshold": {
+        "name": "Csapadékküszöb"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Számítás"
+      },
+      "reset_bucket": {
+        "name": "Tartalék nullázása"
+      },
+      "reset_usage": {
+        "name": "Vízfogyás nullázása"
+      },
+      "irrigate_now": {
+        "name": "Öntözés most"
+      },
+      "calculate_all": {
+        "name": "Összes zóna számítása"
+      },
+      "update_weather": {
+        "name": "Időjárás újratöltése"
+      },
+      "irrigate_all": {
+        "name": "Összes zóna öntözése"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Öntözés szükséges"
+      },
+      "watering_now": {
+        "name": "Most öntöz"
+      },
+      "problem": {
+        "name": "Probléma"
+      }
+    },
+    "switch": {
+      "skip_on_precipitation": {
+        "name": "Kihagyás csapadék esetén"
+      }
+    }
+  },
   "config": {
     "abort": {
       "single_instance_allowed": "A Smart Irrigation csak egyetlen konfigurációja engedélyezett."
@@ -211,82 +286,23 @@
       }
     }
   },
-  "entity": {
-    "number": {
-      "multiplier": {
-        "name": "Szorzó"
-      },
-      "precipitation_threshold": {
-        "name": "Csapadékküszöb"
-      }
-    },
-    "switch": {
-      "skip_on_precipitation": {
-        "name": "Kihagyás csapadék esetén"
-      }
-    },
-    "sensor": {
-      "duration": {
-        "name": "Időtartam"
-      },
-      "bucket": {
-        "name": "Tartalék"
-      },
-      "et_value": {
-        "name": "Alkalmazott ET"
-      },
-      "et_deficiency": {
-        "name": "Napi ET-hiány"
-      },
-      "current_drainage": {
-        "name": "Jelenlegi vízelvezetés"
-      },
-      "last_irrigation": {
-        "name": "Utolsó öntözés"
-      },
-      "water_used": {
-        "name": "Vízfogyás"
-      },
-      "live_bucket": {
-        "name": "Tartalék élőben"
-      }
-    },
-    "button": {
-      "calculate": {
-        "name": "Számítás"
-      },
-      "reset_bucket": {
-        "name": "Tartalék nullázása"
-      },
-      "reset_usage": {
-        "name": "Vízfogyás nullázása"
-      },
-      "irrigate_now": {
-        "name": "Öntözés most"
-      },
-      "calculate_all": {
-        "name": "Összes zóna számítása"
-      },
-      "update_weather": {
-        "name": "Időjárás újratöltése"
-      },
-      "irrigate_all": {
-        "name": "Összes zóna öntözése"
-      }
-    },
-    "binary_sensor": {
-      "irrigation_needed": {
-        "name": "Öntözés szükséges"
-      },
-      "watering_now": {
-        "name": "Most öntöz"
-      },
-      "problem": {
-        "name": "Probléma"
-      }
-    }
-  },
   "issues": {
+    "dry_zone_not_watered": {
+      "title": "A(z) {zone} zóna száraz, és semmi sem fogja öntözni",
+      "description": "A(z) **{zone}** zóna vödre {days} napja üres, és minden program, amely tartalmazza, le van tiltva, fel van függesztve, vagy nincs engedélyezett ütemezése.\n\nKapcsolj vissza egy programot, amely ezt a zónát öntözi, engedélyezd az egyik ütemezését, vagy szüntesd meg a felfüggesztését. Az értesítés magától eltűnik, amint a zónát öntözik, vagy egy program újra lefedi."
+    },
+    "weather_silent": {
+      "title": "{mapping} érzékelőcsoport: egy időjárás-érzékelő nem jelent többé",
+      "description": "Több mint {hours} órája nem érkezett semmi ezektől: **{sensors}**. Az utolsó jelentés ekkor volt: {since}.\n\nAz ilyen régi értéket kihagyja a számításból, így az érzékelőcsoport zónáit abból számolja, ami megmaradt, vagy egyáltalán nem.\n\nEllenőrizd az érzékelő elemét, a kapcsolatát és az entitását a Home Assistantban. Az értesítés magától eltűnik, amint újra jelent."
+    },
+    "missing_input": {
+      "title": "{zone} zóna: semmit sem lehetett kiszámolni",
+      "description": "A(z) **{zone}** zóna evapotranszspirációját nem lehetett kiszámolni, mert az időjárási adatokban nem volt érték ehhez: **{missing}**.\n\nAmíg nincs, a zóna hiánya nem mozdul és nem öntöz, ami pontosan úgy néz ki, mint egy zóna szükséglet nélkül.\n\nEllenőrizd, hogy az ezekhez a mezőkhöz rendelt érzékelők elérhetők-e, vagy hogy az időjárás-szolgáltató még küldi-e őket. A probléma a következő elvégezhető számításnál megszűnik."
+    },
+    "undersized_zone": {
+      "title": "{zone} zóna: egy futás nem tudja öntözni, amit elveszít",
+      "description": "A(z) **{zone}** zóna leghosszabb futása nagyjából **{capacity} mm**-t juttat ki, de a zóna nagyjából **{need} mm**-t veszít két öntözés között ({days} nap). A hiánya tovább nő, amíg az időjárás ilyen marad.\n\nA korlát a zóna maximális időtartama. Emeld meg, adj a zónának több kibocsátót vagy nagyobb átfolyást, vagy csökkentsd az öntözések közti napokat. Ha a korlát szándékos, ezt figyelmen kívül hagyhatod."
+    },
     "throughput_mismatch": {
       "title": "{zone} zóna: a mért átfolyás nem egyezik a beállítottal",
       "description": "Az utolsó {samples} öntözés során a **{zone}** zóna áramlásmérője körülbelül **{measured}** értéket mért, míg a zóna **{configured}** értékre van beállítva, ami {percentage}% eltérés.\n\nMinden öntözési idő a beállított átfolyásból vezet le, így mindegyik körülbelül ugyanannyival téved.\n\nHa a mérés helyesnek tűnik, állítsd a zóna átfolyását arra. Ha nem, ellenőrizd, hogy a mérő csak ezt a zónát számolja, és hogy a hálózati nyomás az, amire számítasz. A Smart Irrigation soha nem módosítja helyetted az értéket."

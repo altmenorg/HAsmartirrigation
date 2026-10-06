@@ -1,4 +1,79 @@
 {
+  "entity": {
+    "sensor": {
+      "duration": {
+        "name": "时长"
+      },
+      "bucket": {
+        "name": "水量余额"
+      },
+      "et_value": {
+        "name": "已采用的 ET"
+      },
+      "et_deficiency": {
+        "name": "每日 ET 亏缺"
+      },
+      "current_drainage": {
+        "name": "当前排水"
+      },
+      "last_irrigation": {
+        "name": "上次浇水"
+      },
+      "water_used": {
+        "name": "用水量"
+      },
+      "live_bucket": {
+        "name": "实时水量余额"
+      }
+    },
+    "number": {
+      "multiplier": {
+        "name": "倍数"
+      },
+      "precipitation_threshold": {
+        "name": "降水阈值"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "计算"
+      },
+      "reset_bucket": {
+        "name": "重置水量余额"
+      },
+      "reset_usage": {
+        "name": "重置用水量"
+      },
+      "irrigate_now": {
+        "name": "立即浇水"
+      },
+      "calculate_all": {
+        "name": "计算所有区域"
+      },
+      "update_weather": {
+        "name": "刷新天气"
+      },
+      "irrigate_all": {
+        "name": "浇灌所有区域"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "需要浇水"
+      },
+      "watering_now": {
+        "name": "正在浇水"
+      },
+      "problem": {
+        "name": "问题"
+      }
+    },
+    "switch": {
+      "skip_on_precipitation": {
+        "name": "有降水时跳过"
+      }
+    }
+  },
   "config": {
     "abort": {
       "single_instance_allowed": "只允许配置一个 Smart Irrigation 实例。"
@@ -211,82 +286,23 @@
       }
     }
   },
-  "entity": {
-    "number": {
-      "multiplier": {
-        "name": "倍数"
-      },
-      "precipitation_threshold": {
-        "name": "降水阈值"
-      }
-    },
-    "switch": {
-      "skip_on_precipitation": {
-        "name": "有降水时跳过"
-      }
-    },
-    "sensor": {
-      "duration": {
-        "name": "时长"
-      },
-      "bucket": {
-        "name": "水量余额"
-      },
-      "et_value": {
-        "name": "已采用的 ET"
-      },
-      "et_deficiency": {
-        "name": "每日 ET 亏缺"
-      },
-      "current_drainage": {
-        "name": "当前排水"
-      },
-      "last_irrigation": {
-        "name": "上次浇水"
-      },
-      "water_used": {
-        "name": "用水量"
-      },
-      "live_bucket": {
-        "name": "实时水量余额"
-      }
-    },
-    "button": {
-      "calculate": {
-        "name": "计算"
-      },
-      "reset_bucket": {
-        "name": "重置水量余额"
-      },
-      "reset_usage": {
-        "name": "重置用水量"
-      },
-      "irrigate_now": {
-        "name": "立即浇水"
-      },
-      "calculate_all": {
-        "name": "计算所有区域"
-      },
-      "update_weather": {
-        "name": "刷新天气"
-      },
-      "irrigate_all": {
-        "name": "浇灌所有区域"
-      }
-    },
-    "binary_sensor": {
-      "irrigation_needed": {
-        "name": "需要浇水"
-      },
-      "watering_now": {
-        "name": "正在浇水"
-      },
-      "problem": {
-        "name": "问题"
-      }
-    }
-  },
   "issues": {
+    "dry_zone_not_watered": {
+      "title": "区域 {zone} 已干涸，且没有任何程序会给它浇水",
+      "description": "区域 **{zone}** 的 bucket 已干了 {days} 天，而包含它的每个程序都被禁用、挂起，或没有已启用的计划。\n\n请重新启用一个会浇这个区域的程序，启用它的某个计划，或解除它的挂起。一旦该区域被浇水或有程序再次覆盖它，此通知会自行消失。"
+    },
+    "weather_silent": {
+      "title": "传感器组 {mapping}：有天气传感器停止上报",
+      "description": "已超过 {hours} 小时没有收到来自以下传感器的任何数据：**{sensors}**。最近一次上报是在 {since}。\n\n如此陈旧的读数会被排除在计算之外，因此该传感器组的区域将根据剩余的数据计算，或完全无法计算。\n\n请检查传感器的电池、连接以及它在 Home Assistant 中的实体。它一旦重新上报，此通知就会自行消失。"
+    },
+    "missing_input": {
+      "title": "区域 {zone}：无法计算任何结果",
+      "description": "无法计算区域 **{zone}** 的蒸散量，因为天气数据中没有以下字段的值：**{missing}**。\n\n在有值之前，该区域的亏缺不会变化，也不会浇水，这看起来与一个不需要浇水的区域一模一样。\n\n请检查映射到这些字段的传感器是否可用，或天气服务是否仍在发送它们。下一次能够完成的计算时，此问题就会消失。"
+    },
+    "undersized_zone": {
+      "title": "区域 {zone}：一次浇水补不上它损失的水量",
+      "description": "区域 **{zone}** 最长的一次浇水约提供 **{capacity} mm**，但该区域在两次浇水之间（{days} 天）约损失 **{need} mm**。只要天气保持现状，它的亏缺就会持续增大。\n\n上限是该区域的最大时长。请调高它，给该区域增加滴头或提高流量，或缩短灌溉间隔的天数。如果设置上限是有意为之，可以忽略此提示。"
+    },
     "throughput_mismatch": {
       "title": "区域 {zone}：实测流量与配置的流量不一致",
       "description": "在最近 {samples} 次浇水中，区域 **{zone}** 的流量计测得约 **{measured}**，而该区域配置为 **{configured}**，相差 {percentage}%。\n\n每个浇水时长都是由配置的流量推算出来的，所以它们全都偏了差不多同样的幅度。\n\n如果实测值看起来没错，就把区域的流量改成它。如果不对，请检查这个流量计是否只统计这一个区域，以及自来水压力是否符合预期。Smart Irrigation 绝不会替你改这个值。"

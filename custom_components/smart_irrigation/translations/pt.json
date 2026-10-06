@@ -1,4 +1,79 @@
 {
+  "entity": {
+    "sensor": {
+      "duration": {
+        "name": "Duração"
+      },
+      "bucket": {
+        "name": "Reservatório"
+      },
+      "et_value": {
+        "name": "ET aplicada"
+      },
+      "et_deficiency": {
+        "name": "Défice de ET diário"
+      },
+      "current_drainage": {
+        "name": "Drenagem atual"
+      },
+      "last_irrigation": {
+        "name": "Última rega"
+      },
+      "water_used": {
+        "name": "Água usada"
+      },
+      "live_bucket": {
+        "name": "Reservatório em direto"
+      }
+    },
+    "number": {
+      "multiplier": {
+        "name": "Multiplicador"
+      },
+      "precipitation_threshold": {
+        "name": "Limiar de precipitação"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Calcular"
+      },
+      "reset_bucket": {
+        "name": "Reiniciar o reservatório"
+      },
+      "reset_usage": {
+        "name": "Reiniciar a água usada"
+      },
+      "irrigate_now": {
+        "name": "Regar agora"
+      },
+      "calculate_all": {
+        "name": "Calcular todas as zonas"
+      },
+      "update_weather": {
+        "name": "Atualizar o tempo"
+      },
+      "irrigate_all": {
+        "name": "Regar todas as zonas"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Rega necessária"
+      },
+      "watering_now": {
+        "name": "A regar agora"
+      },
+      "problem": {
+        "name": "Problema"
+      }
+    },
+    "switch": {
+      "skip_on_precipitation": {
+        "name": "Ignorar com precipitação"
+      }
+    }
+  },
   "config": {
     "abort": {
       "single_instance_allowed": "Só é permitida uma única configuração do Smart Irrigation."
@@ -211,82 +286,23 @@
       }
     }
   },
-  "entity": {
-    "number": {
-      "multiplier": {
-        "name": "Multiplicador"
-      },
-      "precipitation_threshold": {
-        "name": "Limiar de precipitação"
-      }
-    },
-    "switch": {
-      "skip_on_precipitation": {
-        "name": "Ignorar com precipitação"
-      }
-    },
-    "sensor": {
-      "duration": {
-        "name": "Duração"
-      },
-      "bucket": {
-        "name": "Reservatório"
-      },
-      "et_value": {
-        "name": "ET aplicada"
-      },
-      "et_deficiency": {
-        "name": "Défice de ET diário"
-      },
-      "current_drainage": {
-        "name": "Drenagem atual"
-      },
-      "last_irrigation": {
-        "name": "Última rega"
-      },
-      "water_used": {
-        "name": "Água usada"
-      },
-      "live_bucket": {
-        "name": "Reservatório em direto"
-      }
-    },
-    "button": {
-      "calculate": {
-        "name": "Calcular"
-      },
-      "reset_bucket": {
-        "name": "Reiniciar o reservatório"
-      },
-      "reset_usage": {
-        "name": "Reiniciar a água usada"
-      },
-      "irrigate_now": {
-        "name": "Regar agora"
-      },
-      "calculate_all": {
-        "name": "Calcular todas as zonas"
-      },
-      "update_weather": {
-        "name": "Atualizar o tempo"
-      },
-      "irrigate_all": {
-        "name": "Regar todas as zonas"
-      }
-    },
-    "binary_sensor": {
-      "irrigation_needed": {
-        "name": "Rega necessária"
-      },
-      "watering_now": {
-        "name": "A regar agora"
-      },
-      "problem": {
-        "name": "Problema"
-      }
-    }
-  },
   "issues": {
+    "dry_zone_not_watered": {
+      "title": "A zona {zone} está seca e nada a vai regar",
+      "description": "O bucket da zona **{zone}** está seco há {days} dias, e todos os programas que a incluem estão desativados, suspensos ou sem agendamento ativado.\n\nReative um programa que regue esta zona, ative um dos seus agendamentos ou retire a suspensão. O aviso desaparece por si assim que a zona for regada ou um programa voltar a cobri-la."
+    },
+    "weather_silent": {
+      "title": "Grupo de sensores {mapping}: um sensor meteorológico deixou de comunicar",
+      "description": "Não é recebido nada há mais de {hours} horas de: **{sensors}**. O último relatório foi em {since}.\n\nUma leitura tão antiga fica fora do cálculo, pelo que as zonas deste grupo de sensores são calculadas com o que resta, ou não são calculadas de todo.\n\nVerifique a bateria do sensor, a ligação e a sua entidade no Home Assistant. O aviso desaparece por si assim que voltar a comunicar."
+    },
+    "missing_input": {
+      "title": "Zona {zone}: não foi possível calcular nada",
+      "description": "A evapotranspiração da zona **{zone}** não pôde ser calculada porque os dados meteorológicos não tinham valor para: **{missing}**.\n\nEnquanto não tiverem, o défice da zona não se move e ela não é regada, o que parece exatamente uma zona sem necessidade.\n\nVerifique se os sensores associados a esses campos estão disponíveis, ou se o serviço meteorológico ainda os envia. O problema desaparece no próximo cálculo que for possível fazer."
+    },
+    "undersized_zone": {
+      "title": "Zona {zone}: uma execução não consegue regar o que ela perde",
+      "description": "A execução mais longa da zona **{zone}** fornece cerca de **{capacity} mm**, mas a zona perde cerca de **{need} mm** entre duas regas ({days} dia(s)). O seu défice vai continuar a crescer enquanto o tempo se mantiver como está.\n\nO limite é a duração máxima da zona. Aumente-o, dê à zona mais emissores ou um caudal superior, ou reduza os dias entre regas. Se o limite for intencional, pode ignorar isto."
+    },
     "throughput_mismatch": {
       "title": "Zona {zone}: o caudal medido não corresponde ao caudal configurado",
       "description": "Nos últimos {samples} ciclos, o caudalímetro da zona **{zone}** mediu cerca de **{measured}** quando a zona está configurada para **{configured}**, um desvio de {percentage}%.\n\nCada duração de rega é derivada do caudal configurado, por isso estão todas desviadas mais ou menos o mesmo.\n\nSe a medição parecer correta, defina o caudal da zona para esse valor. Se não, verifique se o contador conta apenas esta zona e se a pressão da rede é a que espera. O Smart Irrigation nunca altera o valor por você."

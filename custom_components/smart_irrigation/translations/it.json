@@ -287,6 +287,22 @@
     }
   },
   "issues": {
+    "dry_zone_not_watered": {
+      "title": "La zona {zone} è asciutta e nulla la irrigherà",
+      "description": "Il secchio della zona **{zone}** è asciutto da {days} giorni, e ogni programma che la include è disattivato, sospeso o senza pianificazione attiva.\n\nRiattiva un programma che irriga questa zona, attiva una delle sue pianificazioni, oppure togli la sua sospensione. L'avviso scompare da solo quando la zona viene irrigata o un programma la copre di nuovo."
+    },
+    "weather_silent": {
+      "title": "Gruppo di sensori {mapping}: un sensore meteo ha smesso di riportare",
+      "description": "Non si riceve nulla da oltre {hours} ore da: **{sensors}**. L'ultimo rapporto risale a {since}.\n\nUna lettura così vecchia viene esclusa dal calcolo, quindi le zone di questo gruppo di sensori vengono calcolate con ciò che resta, o per niente.\n\nControlla la batteria del sensore, la sua connessione e la sua entità in Home Assistant. L'avviso scompare da solo non appena riporta di nuovo."
+    },
+    "missing_input": {
+      "title": "Zona {zone}: non è stato possibile calcolare nulla",
+      "description": "L'evapotraspirazione della zona **{zone}** non ha potuto essere calcolata perché i dati meteo non avevano alcun valore per: **{missing}**.\n\nFinché non lo avranno, il deficit della zona non si muove e non viene irrigata, il che sembra esattamente una zona senza bisogno.\n\nControlla che i sensori associati a quei campi siano disponibili, o che il servizio meteo li invii ancora. Il problema scompare al prossimo calcolo possibile."
+    },
+    "undersized_zone": {
+      "title": "Zona {zone}: un ciclo non può irrigare ciò che perde",
+      "description": "Il ciclo più lungo della zona **{zone}** eroga circa **{capacity} mm**, ma la zona perde circa **{need} mm** tra due irrigazioni ({days} giorno/i). Il suo deficit continuerà a crescere finché il meteo resta così.\n\nIl limite è la durata massima della zona. Alzala, dai alla zona più erogatori o una portata maggiore, oppure riduci i giorni tra le irrigazioni. Se il limite è voluto, puoi ignorare questo avviso."
+    },
     "throughput_mismatch": {
       "title": "Zona {zone}: la portata misurata non corrisponde a quella configurata",
       "description": "Negli ultimi {samples} cicli il misuratore di portata della zona **{zone}** ha misurato circa **{measured}** mentre la zona è configurata per **{configured}**, uno scarto del {percentage}%.\n\nOgni durata di irrigazione deriva dalla portata configurata, quindi sono tutte sbagliate più o meno della stessa quantità.\n\nSe la misura sembra giusta, imposta la portata della zona su quel valore. Se non lo è, verifica che il contatore conti solo questa zona e che la pressione di rete sia quella che ti aspetti. Smart Irrigation non cambia mai il valore per te."

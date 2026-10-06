@@ -1,4 +1,79 @@
 {
+  "entity": {
+    "sensor": {
+      "duration": {
+        "name": "Kesto"
+      },
+      "bucket": {
+        "name": "Varanto"
+      },
+      "et_value": {
+        "name": "Käytetty ET"
+      },
+      "et_deficiency": {
+        "name": "Päivittäinen ET-alijäämä"
+      },
+      "current_drainage": {
+        "name": "Nykyinen kuivatus"
+      },
+      "last_irrigation": {
+        "name": "Viimeisin kastelu"
+      },
+      "water_used": {
+        "name": "Veden kulutus"
+      },
+      "live_bucket": {
+        "name": "Varanto juuri nyt"
+      }
+    },
+    "number": {
+      "multiplier": {
+        "name": "Kerroin"
+      },
+      "precipitation_threshold": {
+        "name": "Sademäärän raja"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Laske"
+      },
+      "reset_bucket": {
+        "name": "Nollaa varanto"
+      },
+      "reset_usage": {
+        "name": "Nollaa veden kulutus"
+      },
+      "irrigate_now": {
+        "name": "Kastele nyt"
+      },
+      "calculate_all": {
+        "name": "Laske kaikki alueet"
+      },
+      "update_weather": {
+        "name": "Hae sää uudelleen"
+      },
+      "irrigate_all": {
+        "name": "Kastele kaikki alueet"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Kastelu tarpeen"
+      },
+      "watering_now": {
+        "name": "Kastelee nyt"
+      },
+      "problem": {
+        "name": "Ongelma"
+      }
+    },
+    "switch": {
+      "skip_on_precipitation": {
+        "name": "Ohita sateella"
+      }
+    }
+  },
   "config": {
     "abort": {
       "single_instance_allowed": "Vain yksi Smart Irrigation -määritys on sallittu."
@@ -211,82 +286,23 @@
       }
     }
   },
-  "entity": {
-    "number": {
-      "multiplier": {
-        "name": "Kerroin"
-      },
-      "precipitation_threshold": {
-        "name": "Sademäärän raja"
-      }
-    },
-    "switch": {
-      "skip_on_precipitation": {
-        "name": "Ohita sateella"
-      }
-    },
-    "sensor": {
-      "duration": {
-        "name": "Kesto"
-      },
-      "bucket": {
-        "name": "Varanto"
-      },
-      "et_value": {
-        "name": "Käytetty ET"
-      },
-      "et_deficiency": {
-        "name": "Päivittäinen ET-alijäämä"
-      },
-      "current_drainage": {
-        "name": "Nykyinen kuivatus"
-      },
-      "last_irrigation": {
-        "name": "Viimeisin kastelu"
-      },
-      "water_used": {
-        "name": "Veden kulutus"
-      },
-      "live_bucket": {
-        "name": "Varanto juuri nyt"
-      }
-    },
-    "button": {
-      "calculate": {
-        "name": "Laske"
-      },
-      "reset_bucket": {
-        "name": "Nollaa varanto"
-      },
-      "reset_usage": {
-        "name": "Nollaa veden kulutus"
-      },
-      "irrigate_now": {
-        "name": "Kastele nyt"
-      },
-      "calculate_all": {
-        "name": "Laske kaikki alueet"
-      },
-      "update_weather": {
-        "name": "Hae sää uudelleen"
-      },
-      "irrigate_all": {
-        "name": "Kastele kaikki alueet"
-      }
-    },
-    "binary_sensor": {
-      "irrigation_needed": {
-        "name": "Kastelu tarpeen"
-      },
-      "watering_now": {
-        "name": "Kastelee nyt"
-      },
-      "problem": {
-        "name": "Ongelma"
-      }
-    }
-  },
   "issues": {
+    "dry_zone_not_watered": {
+      "title": "Vyöhyke {zone} on kuiva, eikä mikään kastele sitä",
+      "description": "Vyöhykkeen **{zone}** bucket on ollut kuiva {days} päivää, ja jokainen sen sisältävä ohjelma on poistettu käytöstä, keskeytetty tai siinä ei ole yhtään käytössä olevaa aikataulua.\n\nOta käyttöön uudelleen ohjelma, joka kastelee tätä vyöhykettä, ota käyttöön jokin sen aikatauluista tai poista sen keskeytys. Ilmoitus poistuu itsestään, kun vyöhyke kastellaan tai jokin ohjelma kattaa sen taas."
+    },
+    "weather_silent": {
+      "title": "Anturiryhmä {mapping}: säänanturi lakkasi raportoimasta",
+      "description": "Mitään ei ole vastaanotettu yli {hours} tuntiin näiltä: **{sensors}**. Viimeinen raportti oli {since}.\n\nNiin vanha lukema jätetään laskennan ulkopuolelle, joten tämän anturiryhmän vyöhykkeet lasketaan sillä, mitä on jäljellä, tai ei lainkaan.\n\nTarkista anturin paristo, sen yhteys ja sen entiteetti Home Assistantissa. Ilmoitus poistuu itsestään heti, kun se raportoi taas."
+    },
+    "missing_input": {
+      "title": "Vyöhyke {zone}: mitään ei voitu laskea",
+      "description": "Vyöhykkeen **{zone}** haihdunnan laskeminen ei onnistunut, koska säätiedoissa ei ollut arvoa kohteelle: **{missing}**.\n\nKunnes sellainen on, vyöhykkeen vajaus ei muutu eikä sitä kastella, mikä näyttää täsmälleen vyöhykkeeltä, joka ei tarvitse mitään.\n\nTarkista, että näihin kenttiin yhdistetyt anturit ovat saatavilla tai että säätiedon tarjoaja lähettää ne yhä. Ongelma poistuu seuraavassa laskennassa, joka voidaan tehdä."
+    },
+    "undersized_zone": {
+      "title": "Vyöhyke {zone}: yksi ajo ei kastele sitä, minkä vyöhyke menettää",
+      "description": "Vyöhykkeen **{zone}** pisin ajo antaa noin **{capacity} mm**, mutta vyöhyke menettää noin **{need} mm** kahden kastelun välillä ({days} päivää). Sen vajaus kasvaa edelleen niin kauan kuin sää pysyy samana.\n\nRaja on vyöhykkeen enimmäiskesto. Nosta sitä, anna vyöhykkeelle lisää suuttimia tai suurempi läpäisy tai vähennä päiviä kastelujen välillä. Jos raja on tarkoituksellinen, voit ohittaa tämän."
+    },
     "throughput_mismatch": {
       "title": "Alue {zone}: mitattu virtaama ei vastaa asetettua",
       "description": "Viimeisten {samples} kastelun aikana alueen **{zone}** virtausmittari mittasi noin **{measured}**, kun alue on asetettu arvoon **{configured}**, eli {percentage}% sivussa.\n\nJokainen kastelun kesto johdetaan asetetusta virtaamasta, joten ne ovat kaikki väärässä suunnilleen saman verran.\n\nJos mittaus näyttää oikealta, aseta alueen virtaama siihen. Jos ei, tarkista, että mittari laskee vain tämän alueen ja että verkkopaine on odotettu. Smart Irrigation ei koskaan muuta arvoa puolestasi."

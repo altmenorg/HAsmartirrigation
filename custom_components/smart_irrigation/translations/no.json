@@ -1,4 +1,79 @@
 {
+  "entity": {
+    "sensor": {
+      "duration": {
+        "name": "Varighet"
+      },
+      "bucket": {
+        "name": "Beholdning"
+      },
+      "et_value": {
+        "name": "Anvendt ET"
+      },
+      "et_deficiency": {
+        "name": "Daglig ET-underskudd"
+      },
+      "current_drainage": {
+        "name": "Nåværende drenering"
+      },
+      "last_irrigation": {
+        "name": "Siste vanning"
+      },
+      "water_used": {
+        "name": "Vannforbruk"
+      },
+      "live_bucket": {
+        "name": "Beholdning nå"
+      }
+    },
+    "number": {
+      "multiplier": {
+        "name": "Multiplikator"
+      },
+      "precipitation_threshold": {
+        "name": "Nedbørsterskel"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Beregn"
+      },
+      "reset_bucket": {
+        "name": "Nullstill beholdningen"
+      },
+      "reset_usage": {
+        "name": "Nullstill vannforbruket"
+      },
+      "irrigate_now": {
+        "name": "Vann nå"
+      },
+      "calculate_all": {
+        "name": "Beregn alle soner"
+      },
+      "update_weather": {
+        "name": "Hent været på nytt"
+      },
+      "irrigate_all": {
+        "name": "Vann alle soner"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Vanning nødvendig"
+      },
+      "watering_now": {
+        "name": "Vanner nå"
+      },
+      "problem": {
+        "name": "Problem"
+      }
+    },
+    "switch": {
+      "skip_on_precipitation": {
+        "name": "Hopp over ved nedbør"
+      }
+    }
+  },
   "config": {
     "abort": {
       "single_instance_allowed": "Kun én konfigurasjon av Smart Irrigation er tillatt."
@@ -211,82 +286,23 @@
       }
     }
   },
-  "entity": {
-    "number": {
-      "multiplier": {
-        "name": "Multiplikator"
-      },
-      "precipitation_threshold": {
-        "name": "Nedbørsterskel"
-      }
-    },
-    "switch": {
-      "skip_on_precipitation": {
-        "name": "Hopp over ved nedbør"
-      }
-    },
-    "sensor": {
-      "duration": {
-        "name": "Varighet"
-      },
-      "bucket": {
-        "name": "Beholdning"
-      },
-      "et_value": {
-        "name": "Anvendt ET"
-      },
-      "et_deficiency": {
-        "name": "Daglig ET-underskudd"
-      },
-      "current_drainage": {
-        "name": "Nåværende drenering"
-      },
-      "last_irrigation": {
-        "name": "Siste vanning"
-      },
-      "water_used": {
-        "name": "Vannforbruk"
-      },
-      "live_bucket": {
-        "name": "Beholdning nå"
-      }
-    },
-    "button": {
-      "calculate": {
-        "name": "Beregn"
-      },
-      "reset_bucket": {
-        "name": "Nullstill beholdningen"
-      },
-      "reset_usage": {
-        "name": "Nullstill vannforbruket"
-      },
-      "irrigate_now": {
-        "name": "Vann nå"
-      },
-      "calculate_all": {
-        "name": "Beregn alle soner"
-      },
-      "update_weather": {
-        "name": "Hent været på nytt"
-      },
-      "irrigate_all": {
-        "name": "Vann alle soner"
-      }
-    },
-    "binary_sensor": {
-      "irrigation_needed": {
-        "name": "Vanning nødvendig"
-      },
-      "watering_now": {
-        "name": "Vanner nå"
-      },
-      "problem": {
-        "name": "Problem"
-      }
-    }
-  },
   "issues": {
+    "dry_zone_not_watered": {
+      "title": "Sone {zone} er tørr og ingenting kommer til å vanne den",
+      "description": "Bøtten til sone **{zone}** har vært tørr i {days} dager, og alle programmer som inkluderer den er deaktivert, suspendert eller har ingen aktivert tidsplan.\n\nSlå på et program som vanner denne sonen igjen, aktiver en av tidsplanene eller opphev suspensjonen. Varselet forsvinner av seg selv så snart sonen er vannet eller et program dekker den igjen."
+    },
+    "weather_silent": {
+      "title": "Sensorgruppe {mapping}: en værsensor har sluttet å rapportere",
+      "description": "Det er ikke mottatt noe på over {hours} timer fra: **{sensors}**. Siste rapport var {since}.\n\nEn så gammel måling utelates fra beregningen, så sonene i denne sensorgruppen beregnes på det som er igjen, eller ikke i det hele tatt.\n\nSjekk sensorens batteri, tilkoblingen og entiteten i Home Assistant. Varselet forsvinner av seg selv så snart den rapporterer igjen."
+    },
+    "missing_input": {
+      "title": "Sone {zone}: ingenting kunne beregnes",
+      "description": "Fordampningen i sone **{zone}** kunne ikke beregnes fordi værdataene ikke hadde noen verdi for: **{missing}**.\n\nInntil den har det, flytter sonens underskudd seg ikke og den vannes ikke, noe som ser nøyaktig ut som en sone uten behov.\n\nSjekk at sensorene som er koblet til disse feltene er tilgjengelige, eller at værtjenesten fortsatt sender dem. Problemet forsvinner ved neste beregning som kan gjøres."
+    },
+    "undersized_zone": {
+      "title": "Sone {zone}: én kjøring kan ikke vanne det den mister",
+      "description": "Den lengste kjøringen i sone **{zone}** leverer omtrent **{capacity} mm**, men sonen mister omtrent **{need} mm** mellom to vanninger ({days} dag(er)). Underskuddet vil fortsette å vokse så lenge været er som det er.\n\nGrensen er sonens maksimale varighet. Øk den, gi sonen flere dryppere eller en høyere gjennomstrømning, eller reduser dagene mellom vanninger. Hvis grensen er bevisst, kan du ignorere dette."
+    },
     "throughput_mismatch": {
       "title": "Sone {zone}: den målte vannmengden stemmer ikke med den innstilte",
       "description": "Over de siste {samples} vanningene målte strømningsmåleren på sone **{zone}** rundt **{measured}**, der sonen er satt til **{configured}**, altså {percentage}% ved siden av.\n\nHver vanningstid utledes fra den innstilte vannmengden, så de er alle feil med omtrent det samme.\n\nHvis målingen ser riktig ut, sett sonens vannmengde til den. Hvis den ikke gjør det, sjekk at måleren bare teller denne sonen, og at trykket i ledningen er som forventet. Smart Irrigation endrer aldri verdien for deg."

@@ -1,4 +1,79 @@
 {
+  "entity": {
+    "sensor": {
+      "duration": {
+        "name": "Čas"
+      },
+      "bucket": {
+        "name": "Zásobník"
+      },
+      "et_value": {
+        "name": "Použitá ET"
+      },
+      "et_deficiency": {
+        "name": "Denný deficit ET"
+      },
+      "current_drainage": {
+        "name": "Aktuálna drenáž"
+      },
+      "last_irrigation": {
+        "name": "Posledné zavlažovanie"
+      },
+      "water_used": {
+        "name": "Spotreba vody"
+      },
+      "live_bucket": {
+        "name": "Zásobník práve teraz"
+      }
+    },
+    "number": {
+      "multiplier": {
+        "name": "Násobiteľ"
+      },
+      "precipitation_threshold": {
+        "name": "Prah zrážok"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Spočítať"
+      },
+      "reset_bucket": {
+        "name": "Vynulovať zásobník"
+      },
+      "reset_usage": {
+        "name": "Vynulovať spotrebu vody"
+      },
+      "irrigate_now": {
+        "name": "Zaliať teraz"
+      },
+      "calculate_all": {
+        "name": "Spočítať všetky zóny"
+      },
+      "update_weather": {
+        "name": "Načítať počasie znova"
+      },
+      "irrigate_all": {
+        "name": "Zaliať všetky zóny"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Potrebné zavlažiť"
+      },
+      "watering_now": {
+        "name": "Práve zalieva"
+      },
+      "problem": {
+        "name": "Problém"
+      }
+    },
+    "switch": {
+      "skip_on_precipitation": {
+        "name": "Vynechať pri zrážkach"
+      }
+    }
+  },
   "config": {
     "abort": {
       "single_instance_allowed": "Je povolená iba jedna konfigurácia inteligentného zavlažovania."
@@ -211,82 +286,23 @@
       }
     }
   },
-  "entity": {
-    "number": {
-      "multiplier": {
-        "name": "Násobiteľ"
-      },
-      "precipitation_threshold": {
-        "name": "Prah zrážok"
-      }
-    },
-    "switch": {
-      "skip_on_precipitation": {
-        "name": "Vynechať pri zrážkach"
-      }
-    },
-    "sensor": {
-      "duration": {
-        "name": "Čas"
-      },
-      "bucket": {
-        "name": "Zásobník"
-      },
-      "et_value": {
-        "name": "Použitá ET"
-      },
-      "et_deficiency": {
-        "name": "Denný deficit ET"
-      },
-      "current_drainage": {
-        "name": "Aktuálna drenáž"
-      },
-      "last_irrigation": {
-        "name": "Posledné zavlažovanie"
-      },
-      "water_used": {
-        "name": "Spotreba vody"
-      },
-      "live_bucket": {
-        "name": "Zásobník práve teraz"
-      }
-    },
-    "button": {
-      "calculate": {
-        "name": "Spočítať"
-      },
-      "reset_bucket": {
-        "name": "Vynulovať zásobník"
-      },
-      "reset_usage": {
-        "name": "Vynulovať spotrebu vody"
-      },
-      "irrigate_now": {
-        "name": "Zaliať teraz"
-      },
-      "calculate_all": {
-        "name": "Spočítať všetky zóny"
-      },
-      "update_weather": {
-        "name": "Načítať počasie znova"
-      },
-      "irrigate_all": {
-        "name": "Zaliať všetky zóny"
-      }
-    },
-    "binary_sensor": {
-      "irrigation_needed": {
-        "name": "Potrebné zavlažiť"
-      },
-      "watering_now": {
-        "name": "Práve zalieva"
-      },
-      "problem": {
-        "name": "Problém"
-      }
-    }
-  },
   "issues": {
+    "dry_zone_not_watered": {
+      "title": "Zóna {zone} je suchá a nič ju nezaleje",
+      "description": "Vedro zóny **{zone}** je suché už {days} dní a každý program, ktorý ju zahŕňa, je vypnutý, pozastavený alebo nemá zapnutý plán.\n\nZapnite program, ktorý túto zónu zalieva, zapnite jeden z jeho plánov alebo zrušte jeho pozastavenie. Upozornenie zmizne samo, keď sa zóna zaleje alebo ju znova pokryje nejaký program."
+    },
+    "weather_silent": {
+      "title": "Skupina senzorov {mapping}: meteorologický senzor prestal hlásiť",
+      "description": "Už viac ako {hours} h nebolo prijaté nič od: **{sensors}**. Posledné hlásenie prišlo {since}.\n\nTaká stará hodnota sa z výpočtu vynecháva, takže zóny tejto skupiny senzorov sa počítajú z toho, čo zostalo, alebo vôbec.\n\nSkontrolujte batériu senzora, jeho pripojenie a jeho entitu v Home Assistant. Upozornenie zmizne samo, hneď ako senzor znova začne hlásiť."
+    },
+    "missing_input": {
+      "title": "Zóna {zone}: nič sa nedalo vypočítať",
+      "description": "Evapotranspiráciu zóny **{zone}** sa nepodarilo vypočítať, pretože údaje o počasí nemali hodnotu pre: **{missing}**.\n\nKým ju nebudú mať, deficit zóny sa nehýbe a zóna sa nezalieva, čo vyzerá presne ako zóna bez potreby.\n\nSkontrolujte, či sú senzory namapované na tieto polia dostupné, alebo či ich meteorologická služba stále posiela. Problém zmizne pri najbližšom výpočte, ktorý sa dá urobiť."
+    },
+    "undersized_zone": {
+      "title": "Zóna {zone}: jedno zavlažovanie nezaleje to, čo zóna stratí",
+      "description": "Najdlhšie zavlažovanie zóny **{zone}** dodá približne **{capacity} mm**, ale zóna stratí približne **{need} mm** medzi dvoma zavlažovaniami ({days} dní). Jej deficit bude naďalej rásť, kým zostane počasie také, aké je.\n\nLimitom je maximálne trvanie zóny. Zvýšte ho, dajte zóne viac kvapkovačov alebo vyššiu priepustnosť, alebo skráťte dni medzi zavlažovaniami. Ak je limit zámerný, môžete to ignorovať."
+    },
     "throughput_mismatch": {
       "title": "Zóna {zone}: meraný prietok nezodpovedá nastavenému",
       "description": "Za posledných {samples} zavlažovaní nameral prietokomer na zóne **{zone}** asi **{measured}**, pričom zóna je nastavená na **{configured}**, teda o {percentage}% vedľa.\n\nKaždý čas zavlažovania sa odvodzuje z nastaveného prietoku, takže sú všetky zlé približne rovnako.\n\nAk meranie vyzerá správne, nastavte prietok zóny naň. Ak nie, skontrolujte, či merač počíta len túto zónu a či je tlak v potrubí taký, aký očakávate. Smart Irrigation hodnotu nikdy nemení za vás."

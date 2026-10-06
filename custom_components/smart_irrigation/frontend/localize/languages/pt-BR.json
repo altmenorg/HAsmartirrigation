@@ -53,6 +53,8 @@
       "explanation": {
         "formatting-note": "Observação: esta explicação usa '.' como separador decimal e mostra valores arredondados e métricos.",
         "module-returned-evapotranspiration-deficiency": "O módulo retornou a deficiência de evapotranspiração ( = et0 * hour_multiplier * Kc + precipitação) de",
+        "module-returned-hourly-evapotranspiration-deficiency": "O módulo somou o déficit de evapotranspiração da cultura hora a hora ( = soma das et0 horárias * Kc + precipitação) ao longo de",
+        "crop-factor-is": "O fator de cultura é",
         "bucket-was": "O bucket era",
         "new-bucket-values-is": "O novo valor do bucket é",
         "bucket": "bucket",
@@ -62,6 +64,7 @@
         "bucket-less-than-zero-irrigation-necessary": "Como bucket < 0, a irrigação é necessária",
         "steps-taken-to-calculate-duration": "Para calcular a duração exata, os seguintes passos foram executados",
         "precipitation-rate-defined-as": "A taxa de precipitação é definida como",
+        "precipitation-rate-is": "A taxa de precipitação é",
         "duration-is-calculated-as": "A duração é calculada como",
         "drainage": "drainage",
         "drainage-rate": "drainage_rate",
@@ -78,9 +81,6 @@
         "drainage-rate-is": "A taxa de drenagem quando saturado (bucket no máximo) é",
         "current-drainage-is": "A drenagem atual é calculada como",
         "no-drainage": "A drenagem atual é 0 porque",
-        "module-returned-hourly-evapotranspiration-deficiency": "O módulo somou o déficit de evapotranspiração da cultura hora a hora ( = soma das et0 horárias * Kc + precipitação) ao longo de",
-        "crop-factor-is": "O fator de cultura é",
-        "precipitation-rate-is": "A taxa de precipitação é",
         "below-irrigation-threshold": "O déficit ainda não atingiu o limite de irrigação desta zona, então não é necessário irrigar e a duração é definida como 0. Déficit / limite:"
       }
     }
@@ -97,7 +97,73 @@
     }
   },
   "panels": {
+    "setup": {
+      "title": "Configuração",
+      "description": "Um caminho guiado para criar sua primeira zona. Ele faz uma pergunta por vez, e só as perguntas que suas respostas anteriores deixam em aberto.",
+      "next": "Avançar",
+      "back": "Voltar",
+      "create": "Criar",
+      "creating": "Criando...",
+      "failed": "Algo deu errado e nada foi criado. As outras abas continuam lá se você preferir configurar na mão.",
+      "done": "Sua zona está pronta.",
+      "done-note": "Ela aparece em Zonas, com o grupo de sensores dela em Grupos de sensores. Nada aqui é especial: edite qualquer um dos dois como faria com outro. Rode uma atualização e um cálculo depois que seus sensores tiverem informado, e a zona começa a dar uma duração.",
+      "steps": {
+        "zone": {
+          "question": "O que você está irrigando?",
+          "help": "Uma zona é uma válvula, irrigando uma área.",
+          "name": "Nome",
+          "size": "Área",
+          "throughput": "Vazão",
+          "throughput-help": "Quanta água esta zona entrega por minuto. Meça se puder, em vez de tirar de uma ficha técnica: é daí que sai cada duração, e é a forma mais silenciosa de irrigar o dobro do tempo que você pretendia."
+        },
+        "environment": {
+          "question": "Onde isso cresce?",
+          "outdoors": "Ao ar livre",
+          "outdoors-help": "Ar livre. A chuva chega nela, e vale perguntar sobre o céu.",
+          "under-glass": "Sob vidro ou plástico",
+          "under-glass-help": "Uma estufa, um túnel de plástico, uma varanda fechada. Não chega chuva, e uma previsão descreve um tempo que essas plantas nunca veem."
+        },
+        "weather": {
+          "question": "De onde deve vir o número da evaporação?",
+          "service": "O serviço de meteorologia que você configurou",
+          "service-help": "Nada mais para instalar. O Smart Irrigation pega o tempo da sua localização e calcula a evapotranspiração a partir dele.",
+          "no-service-indoors": "Um serviço de meteorologia não é oferecido aqui: ele descreve o céu, e essas plantas não estão sob ele.",
+          "sensors": "Meus próprios sensores meteorológicos",
+          "sensors-help": "Você tem sensores de temperatura, umidade e o resto. A opção mais precisa, porque mede onde as plantas realmente estão.",
+          "et": "Um sensor que já informa a evapotranspiração",
+          "et-help": "Outra coisa já calcula, e o Smart Irrigation deve usar esse número como está.",
+          "static": "Uma quantidade fixa por dia",
+          "static-help": "Sem sensores e sem serviço. Você dá um número e ele é usado todo dia. É grosseiro, mas ainda acompanha o que você já irrigou."
+        },
+        "sensors": {
+          "question": "Quais entidades ela deve ler?",
+          "help": "Só são pedidos os que o cálculo realmente usa.",
+          "lux-hint": "Sob vidro, um sensor de luz pode substituir a radiação solar: escolha aqui sua entidade de iluminância e depois, no grupo de sensores, defina a fonte dela como Sensor de luz (lux).",
+          "static-question": "Quanto evapora por dia?",
+          "static-help": "Uma altura de água, na unidade que suas zonas usam. Algo em torno de 4 a 5 mm por dia é comum para um verão temperado.",
+          "static-label": "Evaporação por dia"
+        },
+        "review": {
+          "question": "Pronto para criar",
+          "zone": "Zona",
+          "environment": "Ambiente",
+          "engine": "Motor de cálculo",
+          "sources": "Fontes",
+          "from-the-service": "do serviço de meteorologia",
+          "help": "Isso cria um módulo de cálculo, um grupo de sensores e uma zona, exatamente como as outras abas fariam. Depois nada fica travado."
+        }
+      },
+      "step": "etapa"
+    },
     "weatherservice": {
+      "history": {
+        "title": "Histórico",
+        "refresh": "Atualizar",
+        "last-update": "Última atualização",
+        "time": "Obtido",
+        "sensor-group": "Grupo de sensores",
+        "no-data": "Nenhum dado foi obtido do serviço de meteorologia ainda."
+      },
       "title": "Serviço de meteorologia",
       "description": "Visualize e altere o serviço de meteorologia usado para obter dados meteorológicos — sem precisar reinstalar a integração. A chave de API é validada e a alteração é aplicada imediatamente.",
       "labels": {
@@ -114,14 +180,6 @@
         "saved": "Serviço de meteorologia atualizado e aplicado.",
         "reload-note": "Salvar valida a chave de API junto ao serviço e aplica a alteração imediatamente.",
         "owm-onecall-hint": "O OpenWeatherMap precisa do plano One Call API 3.0 (One Call by Call). É gratuito até 1000 chamadas por dia, mas precisa ser ativado com um cartão, e uma chave nova pode levar algumas horas para funcionar. Uma chave padrão comum é rejeitada."
-      },
-      "history": {
-        "title": "Histórico",
-        "refresh": "Atualizar",
-        "last-update": "Última atualização",
-        "time": "Obtido",
-        "sensor-group": "Grupo de sensores",
-        "no-data": "Nenhum dado foi obtido do serviço de meteorologia ainda."
       }
     },
     "backuprestore": {
@@ -405,7 +463,9 @@
           "source": "Fonte",
           "sources": {
             "none": "Nenhuma",
+            "none_et": "Nenhuma (o Smart Irrigation calcula)",
             "weather_service": "Serviço de meteorologia",
+            "weather_service_et": "ET₀ pronta do serviço meteorológico",
             "sensor": "Sensor",
             "static": "Valor estático",
             "radiation_sensor": "Sensor de radiação",
@@ -500,12 +560,26 @@
       "description": "Especifique uma ou mais zonas de irrigação aqui. A duração da irrigação é calculada por zona, dependendo do tamanho, da vazão, do estado, do módulo e do grupo de sensores.",
       "labels": {
         "bucket": "Bucket",
+        "et-deficiency": "Déficit de ET diário",
         "duration": "Duração",
         "lead-time": "Tempo de antecedência",
         "mapping": "Grupo de sensores",
         "maximum-duration": "Duração máxima",
         "multiplier": "Multiplicador",
         "name": "Nome",
+        "input-method": "Método de entrada",
+        "input-methods": {
+          "throughput": "Vazão e área",
+          "direct": "Taxa de precipitação"
+        },
+        "input-method-hint": "Como se sabe a água entregue: pela área e pela vazão da zona, ou diretamente como taxa de precipitação, se você a mediu.",
+        "state-hint": "Automático: o Smart Irrigation calcula a duração a partir do balanço hídrico e irriga no início. Manual: só irriga quando você pede, pela duração que digitar. Desativado: nunca é irrigada, e o balanço dela não é mantido.",
+        "mapping-hint": "O grupo de sensores de onde esta zona lê o tempo: um serviço de meteorologia, seus próprios sensores, ou ambos.",
+        "bucket-hint": "O balanço hídrico da zona. Negativo: falta água. Zero: tem o que precisa. A irrigação o traz de volta a zero.",
+        "maximum-bucket-hint": "O máximo de água que se considera que o solo retém. Um balanço positivo nunca passa disso: o excedente se perde.",
+        "irrigation-threshold-hint": "O déficit a partir do qual a zona é irrigada. Abaixo dele, a zona é deixada em paz e o déficit passa para o próximo cálculo.",
+        "drainage_rate-hint": "Com que rapidez o solo deixa escapar o excesso de água. Deixe em 0 se você não conhece o seu solo.",
+        "precipitation-rate": "Taxa de precipitação",
         "size": "Tamanho",
         "state": "Estado",
         "states": {
@@ -521,26 +595,23 @@
         "drainage_rate": "Taxa de drenagem",
         "linked-entity": "Válvula/interruptor vinculado",
         "linked-entity-hint": "A válvula ou interruptor que rega esta zona. Sempre que for acionado (uma torneira manual, uma automação ou o próprio Smart Irrigation quando o controle direto da válvula está ativo), o balde é creditado a partir do tempo de funcionamento e da vazão da zona. Necessário para os recursos de malha fechada.",
+        "supply": "Alimentação (bomba ou válvula principal)",
+        "supply-none": "Nenhuma",
+        "measured-flow-help": "Ao longo de várias execuções, o medidor de vazão da zona mediu uma vazão diferente da definida acima. É uma sugestão, nunca aplicada sozinha.",
+        "use-measured-flow": "Usar a vazão medida",
+        "extra-valves": "Outras válvulas da zona",
+        "extra-valves-hint": "abertas e fechadas junto com ela; separe com vírgulas",
         "flow-sensor": "Medidor de volume acumulado",
         "flow-sensor-hint": "Para crédito exato em vez de vazão x tempo: um total acumulado de hidrômetro (classe de estado total_increasing), não uma taxa de vazão instantânea. A unidade é lida automaticamente (L, mL, m³, gal, ft³).",
         "safety-off-topic": "Tópico MQTT de desligamento de segurança",
         "safety-off-state-key": "Chave de estado do desligamento de segurança",
+        "safety-off-mode": "Modo de desligamento de segurança",
+        "safety-off-mode-auto": "Automático (tópico MQTT, se definido)",
+        "safety-off-mode-zha": "Desligamento temporizado ZHA",
+        "safety-off-mode-off": "Desligado (sem dead-man)",
+        "safety-off-mode-help": "Automático usa o tópico MQTT acima quando há um, e nada caso contrário. Desligamento temporizado ZHA envia o comando on-with-timed-off do ZHA a uma válvula ZHA; um Sonoff SWV no ZHA o ignora. Desligado nunca arma um dead-man de hardware para esta zona.",
         "safety-off-topic-help": "Dispositivo de segurança opcional em hardware. Um tópico MQTT de set (por exemplo zigbee2mqtt/my_valve/set) no qual o dispositivo da válvula escuta. O Smart Irrigation publica ali um comando \"ligar com desligamento temporizado\" para que o dispositivo feche a válvula sozinho se o Home Assistant parar no meio de um ciclo e nunca enviar o fechamento. A chave de estado é a propriedade liga/desliga do dispositivo (\"state\", ou de \"state_l1\" a \"state_l4\" para um dispositivo multicanal). O suporte depende do firmware do dispositivo (on_time): teste antes de confiar nele. Deixe vazio para desativar.",
         "optional": "opcional",
-        "et-deficiency": "Déficit de ET diário",
-        "input-method": "Método de entrada",
-        "input-methods": {
-          "throughput": "Vazão e área",
-          "direct": "Taxa de precipitação"
-        },
-        "input-method-hint": "Como se sabe a água entregue: pela área e pela vazão da zona, ou diretamente como taxa de precipitação, se você a mediu.",
-        "state-hint": "Automático: o Smart Irrigation calcula a duração a partir do balanço hídrico e irriga no início. Manual: só irriga quando você pede, pela duração que digitar. Desativado: nunca é irrigada, e o balanço dela não é mantido.",
-        "mapping-hint": "O grupo de sensores de onde esta zona lê o tempo: um serviço de meteorologia, seus próprios sensores, ou ambos.",
-        "bucket-hint": "O balanço hídrico da zona. Negativo: falta água. Zero: tem o que precisa. A irrigação o traz de volta a zero.",
-        "maximum-bucket-hint": "O máximo de água que se considera que o solo retém. Um balanço positivo nunca passa disso: o excedente se perde.",
-        "irrigation-threshold-hint": "O déficit a partir do qual a zona é irrigada. Abaixo dele, a zona é deixada em paz e o déficit passa para o próximo cálculo.",
-        "drainage_rate-hint": "Com que rapidez o solo deixa escapar o excesso de água. Deixe em 0 se você não conhece o seu solo.",
-        "precipitation-rate": "Taxa de precipitação",
         "irrigation-threshold": "Limite de irrigação",
         "days": "dias",
         "days-between-irrigation": "Dias entre irrigações",
@@ -634,64 +705,6 @@
         "error": "Não foi possível gerar o calendário"
       }
     },
-    "setup": {
-      "title": "Configuração",
-      "description": "Um caminho guiado para criar sua primeira zona. Ele faz uma pergunta por vez, e só as perguntas que suas respostas anteriores deixam em aberto.",
-      "next": "Avançar",
-      "back": "Voltar",
-      "create": "Criar",
-      "creating": "Criando...",
-      "failed": "Algo deu errado e nada foi criado. As outras abas continuam lá se você preferir configurar na mão.",
-      "done": "Sua zona está pronta.",
-      "done-note": "Ela aparece em Zonas, com o grupo de sensores dela em Grupos de sensores. Nada aqui é especial: edite qualquer um dos dois como faria com outro. Rode uma atualização e um cálculo depois que seus sensores tiverem informado, e a zona começa a dar uma duração.",
-      "steps": {
-        "zone": {
-          "question": "O que você está irrigando?",
-          "help": "Uma zona é uma válvula, irrigando uma área.",
-          "name": "Nome",
-          "size": "Área",
-          "throughput": "Vazão",
-          "throughput-help": "Quanta água esta zona entrega por minuto. Meça se puder, em vez de tirar de uma ficha técnica: é daí que sai cada duração, e é a forma mais silenciosa de irrigar o dobro do tempo que você pretendia."
-        },
-        "environment": {
-          "question": "Onde isso cresce?",
-          "outdoors": "Ao ar livre",
-          "outdoors-help": "Ar livre. A chuva chega nela, e vale perguntar sobre o céu.",
-          "under-glass": "Sob vidro ou plástico",
-          "under-glass-help": "Uma estufa, um túnel de plástico, uma varanda fechada. Não chega chuva, e uma previsão descreve um tempo que essas plantas nunca veem."
-        },
-        "weather": {
-          "question": "De onde deve vir o número da evaporação?",
-          "service": "O serviço de meteorologia que você configurou",
-          "service-help": "Nada mais para instalar. O Smart Irrigation pega o tempo da sua localização e calcula a evapotranspiração a partir dele.",
-          "no-service-indoors": "Um serviço de meteorologia não é oferecido aqui: ele descreve o céu, e essas plantas não estão sob ele.",
-          "sensors": "Meus próprios sensores meteorológicos",
-          "sensors-help": "Você tem sensores de temperatura, umidade e o resto. A opção mais precisa, porque mede onde as plantas realmente estão.",
-          "et": "Um sensor que já informa a evapotranspiração",
-          "et-help": "Outra coisa já calcula, e o Smart Irrigation deve usar esse número como está.",
-          "static": "Uma quantidade fixa por dia",
-          "static-help": "Sem sensores e sem serviço. Você dá um número e ele é usado todo dia. É grosseiro, mas ainda acompanha o que você já irrigou."
-        },
-        "sensors": {
-          "question": "Quais entidades ela deve ler?",
-          "help": "Só são pedidos os que o cálculo realmente usa.",
-          "lux-hint": "Sob vidro, um sensor de luz pode substituir a radiação solar: escolha aqui sua entidade de iluminância e depois, no grupo de sensores, defina a fonte dela como Sensor de luz (lux).",
-          "static-question": "Quanto evapora por dia?",
-          "static-help": "Uma altura de água, na unidade que suas zonas usam. Algo em torno de 4 a 5 mm por dia é comum para um verão temperado.",
-          "static-label": "Evaporação por dia"
-        },
-        "review": {
-          "question": "Pronto para criar",
-          "zone": "Zona",
-          "environment": "Ambiente",
-          "engine": "Motor de cálculo",
-          "sources": "Fontes",
-          "from-the-service": "do serviço de meteorologia",
-          "help": "Isso cria um módulo de cálculo, um grupo de sensores e uma zona, exatamente como as outras abas fariam. Depois nada fica travado."
-        }
-      },
-      "step": "etapa"
-    },
     "history": {
       "title": "Histórico",
       "description": "Cada ciclo de irrigação que o Smart Irrigation atribuiu a uma zona: quando começou, quanto tempo irrigou e quanta água usou. Os ciclos são registrados pelo controle direto de válvulas e pela irrigação observada, e ficam guardados por 90 dias.",
@@ -715,13 +728,26 @@
       "home": "Início",
       "zones": "Zonas",
       "data": "Dados",
-      "settings": "Configurações"
+      "settings": "Configurações",
+      "watering": "Irrigação"
+    },
+    "planning": {
+      "title": "Planejamento"
+    },
+    "programs": {
+      "title": "Programas"
+    },
+    "supplies": {
+      "title": "Bombas"
     }
   },
   "title": "Smart Irrigation",
   "irrigation_start_triggers": {
     "title": "Gatilhos de início de irrigação",
     "description": "Configure quando a irrigação deve começar com base em eventos solares. Você pode adicionar vários gatilhos para diferentes agendamentos. Para gatilhos de nascer do sol, deixar o deslocamento em 0 usará automaticamente a duração total de todas as zonas ativadas.",
+    "active_label": "Gatilho ativo",
+    "active_default": "Padrão (nascer do sol menos a duração total de rega)",
+    "active_hint": "Apenas o gatilho selecionado inicia a irrigação, então ela é executada uma vez por dia. \"Padrão\" cronometra a execução para terminar exatamente ao nascer do sol. Adicione gatilhos personalizados (pôr do sol, azimute, deslocamentos) abaixo e depois escolha um aqui.",
     "usage_before": "Quando um gatilho dispara, o Smart Irrigation emite o evento ",
     "usage_after": " — escute-o em uma automação para iniciar a irrigação. Os dados do evento incluem trigger_name, trigger_type e offset_minutes, para que você possa reagir de forma diferente por gatilho. As configurações de pular por precipitação e de dias entre irrigações continuam valendo: em um dia de pulo, nenhum evento é disparado.",
     "add_trigger": "Adicionar gatilho",
@@ -784,10 +810,7 @@
       "multiple_triggers": "Você pode configurar vários gatilhos. Cada gatilho ativado agendará os inícios de irrigação de forma independente."
     },
     "active_none": "Nenhum (o Smart Irrigation não inicia nenhuma irrigação)",
-    "none_selected": "Nenhum gatilho está ativo: o Smart Irrigation não inicia nenhuma irrigação, seja qual for o clima. As durações continuam sendo calculadas; inicie a irrigação você mesmo ou por uma automação sua.",
-    "active_label": "Gatilho ativo",
-    "active_default": "Padrão (nascer do sol menos a duração total de rega)",
-    "active_hint": "Apenas o gatilho selecionado inicia a irrigação, então ela é executada uma vez por dia. \"Padrão\" cronometra a execução para terminar exatamente ao nascer do sol. Adicione gatilhos personalizados (pôr do sol, azimute, deslocamentos) abaixo e depois escolha um aqui."
+    "none_selected": "Nenhum gatilho está ativo: o Smart Irrigation não inicia nenhuma irrigação, seja qual for o clima. As durações continuam sendo calculadas; inicie a irrigação você mesmo ou por uma automação sua."
   },
   "seasonal_adjustments": {
     "title": "Ajustes sazonais",
@@ -830,12 +853,165 @@
     "label": "Mínimo de dias entre irrigações",
     "help_text": "Defina como 0 para desativar este recurso. Valores de 1 a 365 dias são suportados. Esta configuração funciona em conjunto com a lógica de previsão de precipitação existente."
   },
+  "planning": {
+    "title": "Planejamento",
+    "description": "O que os programas vão irrigar nos próximos três dias. O clima não é conhecido com tanta antecedência: uma execução acontece se nada a impedir.",
+    "nothing_planned": "Nenhum programa planejado. Adicione um agendamento a um programa.",
+    "expected": "Duração prevista:",
+    "expected_skipped_precipitation": "Previsto ser ignorado: chuva prevista ({mm} mm)",
+    "nothing_now": "Nada está irrigando agora.",
+    "paused": "Pausado",
+    "waiting": "aguardando a vez",
+    "step": "etapa",
+    "tour": "rodada",
+    "tours": "rodadas",
+    "remaining": "restante"
+  },
+  "programs": {
+    "title": "Programas",
+    "description": "Um programa irriga suas etapas uma após a outra. Uma etapa é uma zona, ou várias irrigadas juntas, e por padrão dura o tempo que o Smart Irrigation calculou para ela. Vários programas nunca rodam ao mesmo tempo: o próximo espera a sua vez.",
+    "main_description": "O programa principal irriga todas as zonas com o gatilho de início, o sequenciamento e as pausas definidos no cartão mais abaixo nesta página.",
+    "name": "Nome",
+    "step": "Etapa",
+    "step_zones": "Zonas",
+    "step_zones_help": "As zonas marcadas na mesma etapa são irrigadas ao mesmo tempo.",
+    "step_duration": "Duração",
+    "mode_calculated": "Calculada pelo Smart Irrigation",
+    "mode_percent": "Calculada, vezes uma porcentagem",
+    "mode_fixed": "Fixa",
+    "percent": "Porcentagem da água calculada",
+    "seconds": "Segundos de água",
+    "passes": "Passagens (cycle and soak)",
+    "step_delay": "Espera após esta etapa",
+    "step_delay_help": "Vazio: a espera do programa. Negativa: a próxima etapa começa tanto tempo antes do fim desta.",
+    "delay": "Espera entre etapas",
+    "delay_help": "Segundos de espera após cada etapa, para a pressão da linha ou uma válvula lenta. Negativa: cada etapa começa tanto tempo antes do fim da anterior (elas se sobrepõem).",
+    "tours": "Rodadas",
+    "tours_help": "A lista inteira é irrigada esse número de vezes, cada rodada com sua parte da água, para que o solo possa absorvê-la entre elas.",
+    "enabled": "Ativado",
+    "add_step": "Adicionar uma etapa",
+    "delete_step": "Excluir a etapa",
+    "add": "Adicionar um programa",
+    "delete": "Excluir o programa",
+    "schedule": "Agendamento",
+    "add_schedule": "Adicionar um agendamento",
+    "delete_schedule": "Excluir o agendamento",
+    "schedule_moment": "Às",
+    "moment_time": "Um horário do dia",
+    "moment_sunrise": "Nascer do sol",
+    "moment_sunset": "Pôr do sol",
+    "schedule_time": "Horário",
+    "schedule_offset": "Deslocamento em relação ao sol",
+    "schedule_anchor": "Esse momento é quando o programa",
+    "anchor_start": "começa",
+    "anchor_end": "deve estar concluído",
+    "schedule_anchor_help": "Com \"deve estar concluído\", o programa começa cedo o bastante, com base na duração do que precisa irrigar, para terminar nesse momento.",
+    "schedule_weekdays": "Dias da semana",
+    "schedule_weekdays_help": "Nenhum marcado: todos os dias.",
+    "schedule_every": "A cada",
+    "schedule_days": "dias",
+    "schedule_every_offset": "Deslocado em",
+    "schedule_every_help": "A cada 3 dias com um deslocamento de 0, 1 ou 2 permite que três programas se revezem, um dia em três, nunca no mesmo dia.",
+    "schedule_parity": "Dias do mês",
+    "parity_any": "Todos",
+    "parity_even": "Dias pares",
+    "parity_odd": "Dias ímpares",
+    "schedule_days_of_month": "Dias específicos do mês",
+    "schedule_days_of_month_help": "Números dos dias separados por vírgulas, e \"last\" para o último dia do mês (por exemplo 1, 15, last). Um mês curto demais para um dia o ignora. Vazio: qualquer dia. Soma-se aos outros filtros.",
+    "schedule_fallback_time": "Se não houver nascer ou pôr do sol",
+    "schedule_fallback_time_help": "Em um dia sem nascer ou pôr do sol (dia ou noite polar), inicia neste horário (HH:MM), ou escreva \"previous\" para reutilizar o horário do último visto. Vazio: esse dia é ignorado.",
+    "schedule_months": "Meses",
+    "schedule_months_help": "Nenhum marcado: todos os meses.",
+    "schedule_from": "De",
+    "schedule_until": "Até",
+    "schedule_period_help": "Um período do ano, que pode atravessar o Ano Novo (11-01 a 03-01). Vazio: o ano inteiro.",
+    "schedule_weather": "Levar o clima em conta",
+    "schedule_hard_deadline": "Interromper a execução no horário final",
+    "schedule_hard_deadline_help": "A execução é interrompida no horário final: as zonas abertas são fechadas e creditadas pelo que irrigaram, e o que não começou é ignorado.",
+    "schedule_conditions": "Quais condições",
+    "schedule_conditions_help": "Desmarque uma condição para ignorá-la neste agendamento. Os dias que você adiou sempre valem.",
+    "condition_postponed": "Dias adiados (sempre ativo)",
+    "condition_rain_sensor": "Sensor de chuva",
+    "condition_freeze": "Geada",
+    "condition_wind": "Vento",
+    "condition_precipitation": "Previsão de chuva",
+    "condition_days_between": "Dias desde a última irrigação",
+    "condition_soil_moisture": "Umidade do solo",
+    "schedule_weather_help": "Chuva, geada, vento, solo molhado e os dias que você adiou podem segurar a execução ou encurtá-la. Desative para uma linha de gotejamento em estufa que não se importa.",
+    "pause": "Pausar",
+    "resume": "Retomar",
+    "next_step": "Próxima etapa",
+    "stop": "Parar",
+    "confirm_stop": "Parar toda a irrigação agora? Todas as válvulas são fechadas e as execuções em andamento terminam.",
+    "confirm_delete_program": "Excluir o programa \"{name}\", com suas etapas e agendamentos?",
+    "confirm_delete_step": "Excluir esta etapa?",
+    "confirm_delete_schedule": "Excluir este agendamento?",
+    "deleted_zone": "(zona excluída)",
+    "controls_help": "Para uma irrigação em andamento. Pausar fecha as válvulas e segura tudo; o resto é irrigado depois da retomada. Próxima etapa encerra as zonas em que o programa está. Parar encerra tudo.",
+    "max_litres": "Limite de volume",
+    "max_litres_help": "Uma zona desta etapa para quando seu medidor de água tiver contado esse volume, em litros ou galões conforme o painel mostra os volumes. 0: sem limite. O medidor informa de tempos em tempos, então o volume não é exato. Uma zona sem medidor o ignora.",
+    "new_program": "Programa",
+    "main_name": "Programa principal",
+    "run_now": "Executar agora",
+    "run_seconds": "Duração total",
+    "run_seconds_help": "Opcional. Vazio: as durações planejadas. Caso contrário, o programa inteiro dura esse tempo, dividido entre suas etapas em proporção às durações planejadas.",
+    "run_replace": "Substituir o que está em execução",
+    "run_replace_help": "Desativado: o programa espera a sua vez atrás do que está irrigando. Ativado: o que está irrigando é parado de forma limpa primeiro.",
+    "stop_program": "Parar este programa",
+    "confirm_stop_program": "Parar o programa \"{name}\"? Suas zonas abertas são fechadas, ou ele sai da fila se estiver esperando.",
+    "min_seconds": "Água mínima",
+    "max_seconds": "Água máxima",
+    "adjust_seconds": "Deslocamento",
+    "step_bounds_help": "Ordem de aplicação: primeiro a porcentagem, depois o deslocamento (segundos com sinal somados), depois o mínimo e o máximo. 0 para o mínimo ou o máximo: nenhum. Uma etapa que não precisa de água fica em zero: o mínimo nunca a inicia.",
+    "min_deficit_mm": "Irrigar apenas quando o déficit for de pelo menos",
+    "min_deficit_mm_help": "Em mm, 0 para sempre irrigar. Etapas de duração fixa são sempre irrigadas.",
+    "adjust_title": "Ajustar durações",
+    "adjust_none": "Nenhum ajuste em vigor.",
+    "adjust_active": "Em vigor: {percent} % e {seconds} s por etapa, até {until}.",
+    "adjust_until_reset": "ser redefinido",
+    "adjust_percent": "Porcentagem",
+    "adjust_hours": "Válido por",
+    "adjust_help": "Faz este programa irrigar por mais ou menos tempo nas execuções que começam depois de definido. Substitui o ajuste anterior. Horas vazio: até ser redefinido.",
+    "adjust_apply": "Aplicar",
+    "adjust_reset": "Redefinir",
+    "confirm_reset_adjustment": "Remover o ajuste deste programa?",
+    "main_settings": "Programa principal: início e sequenciamento",
+    "main_settings_description": "Como o programa principal irriga: as zonas uma após a outra ou juntas, a pausa entre duas zonas e cycle and soak. O gatilho de início dele está abaixo.",
+    "mode_off": "O controlador completo está desligado. Ative em Configurações, Geral.",
+    "no_zone": "nenhuma zona",
+    "mode_calculated_short": "calculada",
+    "every_day": "todos os dias",
+    "anchor_start_short": "começa às",
+    "anchor_end_short": "concluído até",
+    "steps_count": "etapa(s)",
+    "schedules_count": "agendamento(s)",
+    "off": "desligado",
+    "steps_title": "Etapas",
+    "schedules_title": "Agendamentos"
+  },
+  "supplies": {
+    "title": "Bombas e válvulas principais",
+    "description": "Uma alimentação funciona enquanto uma zona que ela abastece está sendo irrigada: uma bomba, ou uma válvula principal antes das válvulas das zonas. Escolha-a nas configurações de cada zona. Os atrasos são em segundos e com sinal.",
+    "name": "Nome",
+    "entities": "Entidades",
+    "entities_hint": "separe várias com vírgulas",
+    "delay_before": "Atraso antes",
+    "delay_before_help": "Positivo: a alimentação liga tanto tempo antes de a válvula da zona abrir. Negativo: a válvula abre primeiro e a alimentação liga tanto tempo depois.",
+    "delay_after": "Atraso depois",
+    "delay_after_help": "Positivo: a alimentação continua ligada por esse tempo depois de a válvula da zona fechar. Negativo: a alimentação desliga tanto tempo antes de a válvula fechar, para que uma bomba nunca empurre contra uma válvula fechada.",
+    "enabled": "Ativada",
+    "add": "Adicionar uma alimentação",
+    "delete": "Excluir",
+    "confirm_delete": "Excluir a alimentação \"{name}\"? As zonas que a usam ficarão sem nenhuma."
+  },
   "observed_watering": {
     "title": "Rega observada (malha fechada)",
     "description": "Credite o balde de cada zona automaticamente a partir da irrigação real, em vez de zerar o balde por uma automação. Depois de ativado, escolha uma entidade de válvula/interruptor por zona na aba Zonas: enquanto estiver aberta, o balde é creditado a partir do tempo de funcionamento e da vazão da zona. Para uma contabilização exata, você também pode escolher um medidor de volume acumulado (um total no estilo de hidrômetro) por zona, e o volume medido é usado em vez disso. Importante: quando isto está ativo, é a única coisa que credita o balde, então remova qualquer chamada reset_bucket da sua automação de irrigação para evitar contagem dupla.",
     "enabled_label": "Ativar rega observada",
     "direct_control_label": "Permitir que o Smart Irrigation controle a válvula",
     "direct_control_description": "Quando ativo, o Smart Irrigation abre a válvula vinculada de cada zona, aguarda a duração calculada e depois a fecha - nenhuma automação necessária. Uma execução em andamento é retomada após uma reinicialização. Segurança: se o Home Assistant ficar fora do ar por muito tempo durante uma execução, a válvula permanece aberta e continua regando, então dê à sua válvula um mecanismo de segurança em hardware (um tempo máximo de funcionamento).",
+    "full_controller_label": "Controlador completo: o Smart Irrigation cuida de toda a minha irrigação",
+    "full_controller_description": "Ativa o controle das válvulas e adiciona uma aba Irrigação: programas, planejamento e bombas. O gatilho de início, o sequenciamento, a pausa entre zonas e cycle and soak vão para lá, como configurações do programa principal, e continuam funcionando como antes até você adicionar outro programa. Desativar restaura exatamente o comportamento anterior. Uma válvula encontrada aberta na inicialização que nenhuma execução nossa controla é fechada.",
     "sequencing_label": "Sequenciamento de zonas",
     "sequencing": {
       "sequential": "Sequencial (uma zona por vez)",
@@ -848,7 +1024,8 @@
     "pause_between_zones_label": "Pausa entre zonas",
     "pause_between_zones_description": "Uma espera entre duas zonas de um ciclo sequencial: tempo para a pressão da linha se recuperar, ou para uma válvula lenta terminar de fechar antes de a próxima abrir.",
     "minutes": "minutos",
-    "seconds": "segundos"
+    "seconds": "segundos",
+    "direct_control_locked": "O controlador completo comanda as válvulas: desative-o primeiro para alterar isto."
   },
   "calculation_log": {
     "title": "Registro de cálculo",
@@ -911,11 +1088,32 @@
       "soil_moisture": "umidade do solo",
       "postponed": "adiado por você"
     },
+    "programs": {
+      "title": "Programas",
+      "start": "Iniciar",
+      "stop": "Parar",
+      "confirm_stop": "Toque de novo para parar",
+      "pause": "Pausar",
+      "resume": "Retomar",
+      "next_step": "Próxima etapa",
+      "step_of": "etapa {step}/{steps}",
+      "remaining": "{time} restantes",
+      "until": "até {when}",
+      "states": {
+        "idle": "inativo",
+        "running": "em execução",
+        "waiting": "aguardando",
+        "paused": "pausado",
+        "suspended": "suspenso",
+        "disabled": "desativado"
+      }
+    },
     "editor": {
       "title": "Título",
       "zones": "Zonas (todas se vazio)",
       "show_next_start": "Mostrar o próximo início",
-      "compact": "Somente as zonas que irrigariam"
+      "compact": "Somente as zonas que irrigariam",
+      "show_programs": "Mostrar os programas (controlador completo)"
     }
   }
 }

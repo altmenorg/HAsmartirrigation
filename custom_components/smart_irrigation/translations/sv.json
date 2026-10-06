@@ -1,4 +1,79 @@
 {
+  "entity": {
+    "sensor": {
+      "duration": {
+        "name": "Längd"
+      },
+      "bucket": {
+        "name": "Förråd"
+      },
+      "et_value": {
+        "name": "Använd ET"
+      },
+      "et_deficiency": {
+        "name": "Dagligt ET-underskott"
+      },
+      "current_drainage": {
+        "name": "Aktuell dränering"
+      },
+      "last_irrigation": {
+        "name": "Senaste vattning"
+      },
+      "water_used": {
+        "name": "Vattenförbrukning"
+      },
+      "live_bucket": {
+        "name": "Förråd just nu"
+      }
+    },
+    "number": {
+      "multiplier": {
+        "name": "Multiplikator"
+      },
+      "precipitation_threshold": {
+        "name": "Nederbördströskel"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Beräkna"
+      },
+      "reset_bucket": {
+        "name": "Nollställ förrådet"
+      },
+      "reset_usage": {
+        "name": "Nollställ vattenförbrukningen"
+      },
+      "irrigate_now": {
+        "name": "Vattna nu"
+      },
+      "calculate_all": {
+        "name": "Beräkna alla zoner"
+      },
+      "update_weather": {
+        "name": "Hämta vädret igen"
+      },
+      "irrigate_all": {
+        "name": "Vattna alla zoner"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Vattning behövs"
+      },
+      "watering_now": {
+        "name": "Vattnar nu"
+      },
+      "problem": {
+        "name": "Problem"
+      }
+    },
+    "switch": {
+      "skip_on_precipitation": {
+        "name": "Hoppa över vid nederbörd"
+      }
+    }
+  },
   "config": {
     "abort": {
       "single_instance_allowed": "Endast en enda konfiguration av Smart Irrigation tillåts."
@@ -211,82 +286,23 @@
       }
     }
   },
-  "entity": {
-    "number": {
-      "multiplier": {
-        "name": "Multiplikator"
-      },
-      "precipitation_threshold": {
-        "name": "Nederbördströskel"
-      }
-    },
-    "switch": {
-      "skip_on_precipitation": {
-        "name": "Hoppa över vid nederbörd"
-      }
-    },
-    "sensor": {
-      "duration": {
-        "name": "Längd"
-      },
-      "bucket": {
-        "name": "Förråd"
-      },
-      "et_value": {
-        "name": "Använd ET"
-      },
-      "et_deficiency": {
-        "name": "Dagligt ET-underskott"
-      },
-      "current_drainage": {
-        "name": "Aktuell dränering"
-      },
-      "last_irrigation": {
-        "name": "Senaste vattning"
-      },
-      "water_used": {
-        "name": "Vattenförbrukning"
-      },
-      "live_bucket": {
-        "name": "Förråd just nu"
-      }
-    },
-    "button": {
-      "calculate": {
-        "name": "Beräkna"
-      },
-      "reset_bucket": {
-        "name": "Nollställ förrådet"
-      },
-      "reset_usage": {
-        "name": "Nollställ vattenförbrukningen"
-      },
-      "irrigate_now": {
-        "name": "Vattna nu"
-      },
-      "calculate_all": {
-        "name": "Beräkna alla zoner"
-      },
-      "update_weather": {
-        "name": "Hämta vädret igen"
-      },
-      "irrigate_all": {
-        "name": "Vattna alla zoner"
-      }
-    },
-    "binary_sensor": {
-      "irrigation_needed": {
-        "name": "Vattning behövs"
-      },
-      "watering_now": {
-        "name": "Vattnar nu"
-      },
-      "problem": {
-        "name": "Problem"
-      }
-    }
-  },
   "issues": {
+    "dry_zone_not_watered": {
+      "title": "Zon {zone} är torr och inget kommer att vattna den",
+      "description": "Bucket för zon **{zone}** har varit torr i {days} dagar, och varje program som omfattar den är avstängt, uppskjutet eller saknar aktiverat schema.\n\nSlå på ett program som vattnar den här zonen, aktivera ett av dess scheman eller häv uppskjutningen. Aviseringen försvinner av sig själv när zonen vattnats eller ett program åter omfattar den."
+    },
+    "weather_silent": {
+      "title": "Sensorgrupp {mapping}: en vädersensor har slutat rapportera",
+      "description": "Inget har tagits emot på över {hours} timmar från: **{sensors}**. Den senaste rapporten kom {since}.\n\nEtt så gammalt värde utelämnas från beräkningen, så den här sensorgruppens zoner beräknas på det som återstår, eller inte alls.\n\nKontrollera sensorns batteri, dess anslutning och dess entitet i Home Assistant. Aviseringen försvinner av sig själv så snart den rapporterar igen."
+    },
+    "missing_input": {
+      "title": "Zon {zone}: inget kunde beräknas",
+      "description": "Evapotranspirationen för zon **{zone}** kunde inte beräknas eftersom väderdata saknade värde för: **{missing}**.\n\nTills det finns rör sig inte zonens underskott och den vattnas inte, vilket ser precis ut som en zon utan behov.\n\nKontrollera att sensorerna som är mappade till de fälten är tillgängliga, eller att vädertjänsten fortfarande skickar dem. Problemet försvinner vid nästa beräkning som kan göras."
+    },
+    "undersized_zone": {
+      "title": "Zon {zone}: en körning kan inte vattna det zonen förlorar",
+      "description": "Den längsta körningen för zon **{zone}** ger cirka **{capacity} mm**, men zonen förlorar cirka **{need} mm** mellan två vattningar ({days} dag(ar)). Dess underskott fortsätter att växa så länge vädret förblir som det är.\n\nTaket är zonens maximala varaktighet. Höj det, ge zonen fler droppare eller ett högre flöde, eller minska dagarna mellan bevattningarna. Om taket är avsiktligt kan du ignorera detta."
+    },
     "throughput_mismatch": {
       "title": "Zon {zone}: det uppmätta flödet stämmer inte med det inställda",
       "description": "Över de senaste {samples} körningarna mätte flödesmätaren på zon **{zone}** omkring **{measured}**, där zonen är inställd på **{configured}**, alltså {percentage}% fel.\n\nVarje vattningslängd härleds ur det inställda flödet, så de är alla fel med ungefär lika mycket.\n\nOm mätningen ser rätt ut, sätt zonens flöde till den. Om den inte gör det, kontrollera att mätaren bara räknar den här zonen och att trycket i ledningen är det du tror. Smart Irrigation ändrar aldrig värdet för dig."
