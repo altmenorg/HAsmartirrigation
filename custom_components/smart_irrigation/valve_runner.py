@@ -455,10 +455,11 @@ class ValveRunnerMixin(
         net alongside the normal close in ``_run_one_pass``'s finally block: the
         run is still driven by Home Assistant, the on_time only bounds it.
 
-        Without a topic, a valve that belongs to ZHA gets the same thing as a
-        ZHA cluster command (on with timed off), found through the entity
-        registry. A valve of any other platform gets none. The zone's
-        ``safety_off_mode`` set to "off" disables both.
+        Without a topic, a valve gets a ZHA cluster command (on with timed off,
+        found through the entity registry) only when the zone's
+        ``safety_off_mode`` is "zha": it is never automatic, because a Sonoff
+        SWV on ZHA opens on that command and ignores the timer. A valve of any
+        other platform gets none. "off" disables the topic as well.
 
         A missing topic, an MQTT stack that is not set up, or any publish error
         must never break the run (the close still happens the usual way), so the
@@ -468,9 +469,10 @@ class ValveRunnerMixin(
             return
         topic = zone.get(const.ZONE_SAFETY_OFF_TOPIC)
         if not topic:
-            await self._arm_zha_safety_off(
-                zone, held, entity_id or zone.get(const.ZONE_LINKED_ENTITY)
-            )
+            if zone.get(const.ZONE_SAFETY_OFF_MODE) == const.SAFETY_OFF_MODE_ZHA:
+                await self._arm_zha_safety_off(
+                    zone, held, entity_id or zone.get(const.ZONE_LINKED_ENTITY)
+                )
             return
         key = (
             zone.get(const.ZONE_SAFETY_OFF_STATE_KEY)

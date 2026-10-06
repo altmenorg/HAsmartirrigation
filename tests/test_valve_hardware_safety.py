@@ -64,7 +64,12 @@ def _entry(platform="zha", unique_id=f"{IEEE}-1"):
     return SimpleNamespace(platform=platform, unique_id=unique_id)
 
 
-ZONE = {const.ZONE_ID: 1, const.ZONE_LINKED_ENTITY: ENTITY}
+# ZHA is opt-in: a Sonoff SWV ignores the timed off, so "auto" never sends it.
+ZONE = {
+    const.ZONE_ID: 1,
+    const.ZONE_LINKED_ENTITY: ENTITY,
+    const.ZONE_SAFETY_OFF_MODE: const.SAFETY_OFF_MODE_ZHA,
+}
 
 
 # --- B1: the ZHA dead-man ---------------------------------------------------
@@ -164,12 +169,13 @@ async def test_the_mode_off_never_arms_anything():
     publish.assert_not_called()
 
 
-async def test_the_mode_auto_is_the_default_and_names_itself():
+@pytest.mark.parametrize("mode", [None, "auto"])
+async def test_a_zha_valve_is_not_armed_unless_the_mode_says_zha(mode):
     runner = _runner(_entry())
 
-    await _arm(runner, {**ZONE, const.ZONE_SAFETY_OFF_MODE: "auto"}, 60)
+    await _arm(runner, {**ZONE, const.ZONE_SAFETY_OFF_MODE: mode}, 60)
 
-    runner.hass.services.async_call.assert_awaited_once()
+    runner.hass.services.async_call.assert_not_called()
 
 
 async def test_a_configured_topic_still_goes_to_mqtt_only():
@@ -208,7 +214,17 @@ async def test_the_zha_time_fits_the_16_bits_of_the_command():
 
 async def test_a_pass_arms_the_zha_dead_man_after_the_normal_open(monkeypatch):
     hass = make_hass()
-    store = make_store([zone(0, **{const.ZONE_LINKED_ENTITY: ENTITY})])
+    store = make_store(
+        [
+            zone(
+                0,
+                **{
+                    const.ZONE_LINKED_ENTITY: ENTITY,
+                    const.ZONE_SAFETY_OFF_MODE: const.SAFETY_OFF_MODE_ZHA,
+                },
+            )
+        ]
+    )
     coord = Coordinator(hass, store)
     registry = MagicMock()
     registry.async_get.return_value = _entry()

@@ -593,7 +593,10 @@ SAFETY_OFF_TIME_MARGIN = 30
 ZONE_SAFETY_OFF_MODE = "safety_off_mode"
 SAFETY_OFF_MODE_AUTO = "auto"
 SAFETY_OFF_MODE_OFF = "off"
-SAFETY_OFF_MODES = (SAFETY_OFF_MODE_AUTO, SAFETY_OFF_MODE_OFF)
+# Opt in to the ZHA "on with timed off" command. Not automatic: a Sonoff SWV on
+# ZHA opens on it but ignores the timer, so sending it would only look safe.
+SAFETY_OFF_MODE_ZHA = "zha"
+SAFETY_OFF_MODES = (SAFETY_OFF_MODE_AUTO, SAFETY_OFF_MODE_OFF, SAFETY_OFF_MODE_ZHA)
 # ZHA: the On/Off cluster and its "on with timed off" command.
 ZHA_PLATFORM = "zha"
 ZHA_ON_OFF_CLUSTER = 6
