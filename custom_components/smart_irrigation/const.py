@@ -144,6 +144,15 @@ CONF_PROGRAM_LAST_RUNS = "program_last_runs"
 # When each program last really started watering, scheduled, manual or main:
 # {"evening": iso}. The marks above say when a schedule fired, not when water ran.
 CONF_PROGRAM_LAST_STARTED = "program_last_started"
+# A runtime adjustment of the duration of a program, set by the adjust_program
+# service: {"evening": {"percent": 120.0, "seconds": None, "until": iso}}. Kept
+# apart from the programs, which the panel sends back whole.
+CONF_PROGRAM_ADJUSTMENTS = "program_adjustments"
+ADJUST_PERCENT = "percent"
+ADJUST_SECONDS = "seconds"
+ADJUST_UNTIL = "until"
+SERVICE_ADJUST_PROGRAM = "adjust_program"
+ATTR_RESET = "reset"
 # What is suspended until when: {"zone:3": iso, "program:evening": iso}. Kept apart
 # from the zones and the programs, which the panel sends back whole.
 CONF_SUSPENSIONS = "suspensions"
@@ -186,6 +195,11 @@ STEP_DELAY = "delay"
 STEP_ENABLED = "enabled"
 # A zone of the step stops once this many litres have gone through its meter (0: no limit).
 STEP_MAX_LITRES = "max_litres"
+# Bounds and offset of the water of a step, in seconds (0: no bound). The offset is
+# signed and added after the percentage, before the bounds.
+STEP_MIN_SECONDS = "min_seconds"
+STEP_MAX_SECONDS = "max_seconds"
+STEP_ADJUST_SECONDS = "adjust_seconds"
 # Keys inside a schedule of a program (see schedules.py).
 SCHEDULE_ID = "id"
 SCHEDULE_ENABLED = "enabled"
@@ -907,6 +921,17 @@ SERVICE_NEXT_STEP = "next_step"
 SERVICE_SUSPEND = "suspend"
 SERVICE_WATER_ZONE = "water_zone"
 SERVICE_USE_MEASURED_THROUGHPUT = "use_measured_throughput"
+SERVICE_STOP_PROGRAM = "stop_program"
+SERVICE_SET_PROGRAM_ENABLED = "set_program_enabled"
+SERVICE_SET_STEP_ENABLED = "set_step_enabled"
+SERVICE_SET_SCHEDULE_ENABLED = "set_schedule_enabled"
+ATTR_MODE = "mode"
+ATTR_STEP_ID = "step_id"
+ATTR_SCHEDULE_ID = "schedule_id"
+ATTR_ENABLED = "enabled"
+# What a manual run does when something is already watering.
+RUN_MODE_QUEUE = "queue"
+RUN_MODE_REPLACE = "replace"
 ATTR_PROGRAM_ID = "program_id"
 ATTR_SECONDS = "seconds"
 SERVICE_RESET_ALL_BUCKETS = "reset_all_buckets"

@@ -19,6 +19,7 @@ one zone for ten minutes whatever the plan says.
 """
 
 import asyncio
+import copy
 import logging
 import math
 from datetime import datetime, timedelta
@@ -29,6 +30,7 @@ from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 
 from . import const
+from .programs import find_program
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -92,8 +94,42 @@ def _until_validator(value):
 
 # The shapes of the services below. Extra keys pass: the target selector adds
 # device and area ids next to the entity ids.
+_RUN_MODE = vol.In((const.RUN_MODE_QUEUE, const.RUN_MODE_REPLACE))
 RUN_PROGRAM_SCHEMA = vol.Schema(
+    {
+        vol.Required(const.ATTR_PROGRAM_ID): cv.string,
+        vol.Optional(const.ATTR_SECONDS): vol.Any(
+            None, _number_validator(1, MAX_WATER_ZONE_SECONDS, "seconds")
+        ),
+        vol.Optional(const.ATTR_MODE): vol.Any(None, _RUN_MODE),
+    },
+    extra=vol.ALLOW_EXTRA,
+)
+STOP_PROGRAM_SCHEMA = vol.Schema(
     {vol.Required(const.ATTR_PROGRAM_ID): cv.string}, extra=vol.ALLOW_EXTRA
+)
+SET_PROGRAM_ENABLED_SCHEMA = vol.Schema(
+    {
+        vol.Required(const.ATTR_PROGRAM_ID): cv.string,
+        vol.Required(const.ATTR_ENABLED): cv.boolean,
+    },
+    extra=vol.ALLOW_EXTRA,
+)
+SET_STEP_ENABLED_SCHEMA = vol.Schema(
+    {
+        vol.Required(const.ATTR_PROGRAM_ID): cv.string,
+        vol.Required(const.ATTR_STEP_ID): cv.string,
+        vol.Required(const.ATTR_ENABLED): cv.boolean,
+    },
+    extra=vol.ALLOW_EXTRA,
+)
+SET_SCHEDULE_ENABLED_SCHEMA = vol.Schema(
+    {
+        vol.Required(const.ATTR_PROGRAM_ID): cv.string,
+        vol.Required(const.ATTR_SCHEDULE_ID): cv.string,
+        vol.Required(const.ATTR_ENABLED): cv.boolean,
+    },
+    extra=vol.ALLOW_EXTRA,
 )
 PAUSE_WATERING_SCHEMA = vol.Schema(
     {
@@ -117,7 +153,8 @@ WATER_ZONE_SCHEMA = vol.Schema(
     {
         vol.Optional(const.ATTR_SECONDS): vol.Any(
             None, _number_validator(1, MAX_WATER_ZONE_SECONDS, "seconds")
-        )
+        ),
+        vol.Optional(const.ATTR_MODE): vol.Any(None, _RUN_MODE),
     },
     extra=vol.ALLOW_EXTRA,
 )
@@ -314,13 +351,76 @@ class WateringControlMixin:
         )
         return end
 
+    # --- switching a program, a step or a schedule on or off ------------------------------
+
+    async def async_set_enabled(
+        self, program_id, enabled: bool, step_id=None, schedule_id=None
+    ) -> bool:
+        """Change the ``enabled`` flag of a program, one of its steps or schedules.
+
+        The change goes through the coordinator's configuration update, as a save
+        from the panel does: the programs are normalized, stored, the schedules
+        armed again and the panel told. Returns True when a flag was changed;
+        False when the full controller is off or the id is unknown (nothing is
+        written then).
+        """
+        config = self.store.config
+        if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
+            _LOGGER.warning("Nothing changed: the full controller is off")
+            return False
+        programs = copy.deepcopy(getattr(config, const.CONF_PROGRAMS, None) or [])
+        program = find_program(programs, program_id)
+        if program is None:
+            _LOGGER.warning("Program %s does not exist", program_id)
+            return False
+        target, key, kind, ident = program, const.PROGRAM_ENABLED, "Program", program_id
+        if step_id is not None:
+            kind, key, ident = "Step", const.STEP_ENABLED, step_id
+            items, id_key = program.get(const.PROGRAM_STEPS), const.STEP_ID
+        elif schedule_id is not None:
+            kind, key, ident = "Schedule", const.SCHEDULE_ENABLED, schedule_id
+            items, id_key = program.get(const.PROGRAM_SCHEDULES), const.SCHEDULE_ID
+        if kind != "Program":
+            target = next(
+                (
+                    i
+                    for i in items or []
+                    if isinstance(i, dict) and i.get(id_key) == ident
+                ),
+                None,
+            )
+            if target is None:
+                _LOGGER.warning(
+                    "%s %s does not exist in program %s", kind, ident, program_id
+                )
+                return False
+        enabled = bool(enabled)
+        if (target.get(key) is not False) == enabled:
+            return False
+        target[key] = enabled
+        await self.async_update_config({const.CONF_PROGRAMS: programs})
+        _LOGGER.info(
+            "%s %s %s",
+            kind,
+            program_id if kind == "Program" else f"{program_id}/{ident}",
+            "enabled" if enabled else "disabled",
+        )
+        return True
+
     # --- water a zone now ---------------------------------------------------------------
 
-    async def async_water_zone_now(self, zone_id, seconds=None) -> bool:
+    async def async_water_zone_now(
+        self, zone_id, seconds=None, mode=const.RUN_MODE_QUEUE
+    ) -> bool:
         """Water one zone now, or as soon as it is its turn.
 
         ``seconds`` is seconds of water; without it the zone's own calculated
         duration. A zone with no linked valve, or disabled, is not watered.
+
+        ``mode`` is what to do when something is already watering: ``queue``
+        (the default) takes the turn behind it, ``replace`` stops what is
+        running and waiting first (cleanly: the valves close and what was
+        delivered is credited), then waters this zone.
         """
         zone = self.store.get_zone(zone_id)
         config = self.store.config
@@ -330,6 +430,8 @@ class WateringControlMixin:
             is not True
         ):
             return False
+        if mode == const.RUN_MODE_REPLACE:
+            await self.async_stop_watering()
         generation = getattr(self, "_stop_generation", 0)
         # A cycle of the plain mode does not take the turn: wait for it to end,
         # so the manual run is not watered on top of it.

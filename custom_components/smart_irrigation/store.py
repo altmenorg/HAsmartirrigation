@@ -96,6 +96,7 @@ from .const import (
     CONF_PAUSE_BETWEEN_ZONES,
     CONF_POSTPONE_UNTIL,
     CONF_PRECIPITATION_THRESHOLD_MM,
+    CONF_PROGRAM_ADJUSTMENTS,
     CONF_PROGRAM_LAST_RUNS,
     CONF_PROGRAM_LAST_STARTED,
     CONF_PROGRAMS,
@@ -685,6 +686,7 @@ class Config:
     active_program_run = attr.ib(type=dict, default=None)
     program_last_runs = attr.ib(type=dict, default=None)
     program_last_started = attr.ib(type=dict, default=None)
+    program_adjustments = attr.ib(type=dict, default=None)
     suspensions = attr.ib(type=dict, default=None)
     # Direct valve control as it was before the full controller forced it on.
     direct_valve_control_before_full_controller = attr.ib(type=bool, default=None)
@@ -1186,6 +1188,7 @@ class SmartIrrigationStorage:
                 active_program_run=data["config"].get(CONF_ACTIVE_PROGRAM_RUN),
                 program_last_runs=data["config"].get(CONF_PROGRAM_LAST_RUNS),
                 program_last_started=data["config"].get(CONF_PROGRAM_LAST_STARTED),
+                program_adjustments=data["config"].get(CONF_PROGRAM_ADJUSTMENTS),
                 suspensions=data["config"].get(CONF_SUSPENSIONS),
                 direct_valve_control_before_full_controller=data["config"].get(
                     CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER

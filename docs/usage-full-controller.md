@@ -48,6 +48,7 @@ A **program** is an ordered list of **steps**. A step is one zone, or several zo
 For each step:
 
 - **Duration**: *calculated by Smart Irrigation* (the default), *calculated times a percentage* (110 % in a heat wave, 50 % for a plant that needs less), or *fixed* (seconds of water). The lead time that fills the pipe is kept in every mode. A zone that needs no water gets none, unless the step is fixed.
+- **Minimum, maximum and offset** (`min_seconds`, `max_seconds`, `adjust_seconds`): the water of a step is raised to the minimum or capped at the maximum (0 means none), after the percentage and after the offset, a signed number of seconds (-6 h to +6 h) added to it. A minimum never turns a zone that needs no water into watering: a calculated duration of zero stays zero. The lead time is added on top of these bounds.
 - **Passes**: the zone waters in this many passes with a soak between them (cycle and soak).
 - **Wait after this step**: seconds before the next step. Empty follows the program. A **negative** wait overlaps the steps: the next one starts that many seconds before this one ends, so the valves and the pump of both are open together for that time (up to an hour, and never longer than this step runs).
 - **Volume limit**: a zone stops once its water meter has counted this many litres. The meter reports every so often, so it is not exact. A zone without a meter ignores it.
@@ -80,13 +81,16 @@ The buttons of the Programs card, and these [services](usage-services.md):
 
 | Service | What it does |
 | --- | --- |
-| `smart_irrigation.run_program` | Runs a program now, or when it is its turn. |
-| `smart_irrigation.water_zone` | Waters a zone for a number of seconds of water, or for its calculated duration. Takes its turn like everything else. |
+| `smart_irrigation.run_program` | Runs a program now, or when it is its turn. Optional `seconds` (1 to 86400) is a total for the whole program, shared between its steps in proportion to their planned durations (the main program ignores it); left out, the planned durations. Optional `mode`: `queue` (default) takes the turn behind what is running, `replace` first stops what runs and waits, cleanly (valves closed, delivered water credited), then runs the program. |
+| `smart_irrigation.water_zone` | Waters a zone for a number of seconds of water, or for its calculated duration. With `mode: queue` (default) it takes its turn like everything else; with `mode: replace` it first stops what is running and waiting. With several zones, only the first replaces, the others follow it. |
+| `smart_irrigation.stop_program` | Stops one program: if it runs, its open zones close the normal way and are credited for what they delivered, and no further step starts; if it waits for its turn, it is taken out of the queue. An unknown id does nothing. The main program is stopped with `stop_watering`. |
+| `smart_irrigation.set_program_enabled`, `set_step_enabled`, `set_schedule_enabled` | Switch a program, one of its steps (`step_id`) or one of its schedules (`schedule_id`) on or off (`enabled`), as the panel does: the schedules are armed again and the panel refreshes. Refused when the full controller is off; an unknown id changes nothing. |
 | `smart_irrigation.pause_watering` | Closes the open valves and holds everything, the zones waiting included. The clock stops: what was delivered is credited and, after the resume, the part of the pass still owed is watered. A pause that is not lifted ends by itself after an hour (or the `minutes` given). |
 | `smart_irrigation.resume_watering` | Goes on from where the pause stopped. |
 | `smart_irrigation.next_step` | Ends the zones of the step a program is on, and lets it go on. With overlapping steps, it ends every step that is open. |
 | `smart_irrigation.stop_watering` | Stops now: every valve is closed, each zone is credited for the water it delivered, programs and waiting zones end. With zones chosen, only those. It also ends a pause. |
 | `smart_irrigation.suspend` | Keeps a zone or a program from watering for some hours or until a date. Zero hours lifts it. Hours are limited to 8760, a date that cannot be read is refused (it never lifts a suspension), and an unknown program id is ignored. |
+| `smart_irrigation.adjust_program` | Makes a program water longer or shorter for a while (Irrigation Unlimited's `adjust_time`): a `percent` (0 to 1000) of every step's water, and/or `seconds` added to it, for `hours` (1 to 8760) or until reset. It replaces the previous adjustment instead of adding to it, applies to the runs that start after it is set (not to the one under way), survives a restart, and `reset: true` clears it. Refused when the full controller is off. The program's sensor shows it in the `adjustment` attribute. |
 | `smart_irrigation.use_measured_throughput` | Takes the flow a zone's meter measured as its throughput. The measurement is advice and is never applied on its own. |
 
 ## Seeing what is going on

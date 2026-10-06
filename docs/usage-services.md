@@ -30,7 +30,7 @@ After installation, the following services are available:
 |`Smart Irrigation: create_recurring_schedule` / `update_recurring_schedule` / `delete_recurring_schedule`|Schedules of your own that calculate, update or start irrigation. See [enhanced scheduling](usage-enhanced-scheduling-integration.md).|
 |`Smart Irrigation: create_seasonal_adjustment` / `update_seasonal_adjustment` / `delete_seasonal_adjustment`|Scale the crop factor, and shift the irrigation threshold, over a range of months.|
 |`Smart Irrigation: use_measured_throughput`|Sets a zone's throughput to the flow its water meter measured over its runs. The measurement is advice, never applied on its own: this is how to accept it.|
-|`Smart Irrigation: run_program` / `water_zone` / `pause_watering` / `resume_watering` / `next_step` / `stop_watering` / `suspend`|Drive the watering of the [full controller](usage-full-controller.md#driving-the-watering): run a program or a zone now, pause, skip a step, stop, or set a zone or a program aside. `water_zone` and `stop_watering` also work with direct valve control alone.|
+|`Smart Irrigation: run_program` / `water_zone` / `pause_watering` / `resume_watering` / `next_step` / `stop_watering` / `stop_program` / `suspend` / `set_program_enabled` / `set_step_enabled` / `set_schedule_enabled`|Drive the watering of the [full controller](usage-full-controller.md#driving-the-watering): run a program or a zone now, pause, skip a step, stop, or set a zone or a program aside. `water_zone` and `stop_watering` also work with direct valve control alone.|
 
 ## Dry run
 

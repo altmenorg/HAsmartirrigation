@@ -79,6 +79,7 @@ class SmartIrrigationProgramSensor(SensorEntity):
             "next_start": overview.get("next_start"),
             "last_run": overview.get("last_run"),
             "suspended_until": overview.get("suspended_until"),
+            "adjustment": overview.get("adjustment"),
         }
         live = overview.get("live")
         if live:

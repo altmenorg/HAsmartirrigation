@@ -71,10 +71,97 @@ class ProgramRun:
         # The zones of the current step that have started, for the resume.
         self.started_zones: set = set()
         self.plan: list = []
+        # Set when the run is over (or taken out of the queue), for a replacing run.
+        self.finished = asyncio.Event()
+        # Whether the run has taken its turn at the valves.
+        self.turn_taken = False
+
+
+def scale_plan_to_total(plan: list, total_seconds) -> list:
+    """The plan with every duration scaled so the program lasts ``total_seconds``.
+
+    The seconds of a step are its longest zone (the zones of a step water
+    together); the program's planned duration is the sum of its steps over its
+    tours, waits left out. Every zone keeps its share of the total in proportion
+    to what was planned, as Irrigation Unlimited shares a run time. A plan with
+    nothing planned is returned as it is.
+    """
+    planned = sum(
+        max((float(m["seconds"]) for m in step["zones"]), default=0.0)
+        for steps in plan
+        for step in steps
+    )
+    if planned <= 0 or total_seconds is None:
+        return plan
+    factor = float(total_seconds) / planned
+    return [
+        [
+            {
+                **step,
+                "zones": [
+                    {
+                        **member,
+                        "seconds": float(member["seconds"]) * factor,
+                        **(
+                            {"lead": float(member["lead"]) * factor}
+                            if "lead" in member
+                            else {}
+                        ),
+                    }
+                    for member in step["zones"]
+                ],
+            }
+            for step in steps
+        ]
+        for steps in plan
+    ]
 
 
 class ProgramRunnerMixin:
     """Run the programs of the full controller."""
+
+    async def _stop_for_replacement(self, program_id) -> None:
+        """Stop what runs and waits so that a run that replaces it can start.
+
+        Everything ends the clean way (valves closed, delivered water credited).
+        A run of the same program is waited for, so the new one is not refused
+        as "already running".
+        """
+        old = self._program_registry().get(program_id)
+        await self.async_stop_watering()
+        if old is not None:
+            try:
+                await asyncio.wait_for(old.finished.wait(), 120)
+            except asyncio.TimeoutError:
+                _LOGGER.warning("Program %s did not stop in time", program_id)
+
+    async def async_stop_program(self, program_id) -> str | None:
+        """Stop one program: end it if it runs, take it out of the queue if it waits.
+
+        A running program closes its open zones the normal way (each is credited
+        for what it delivered) and starts no further step. Returns ``"stopped"``,
+        ``"dequeued"``, or None for a program that neither runs nor waits (an
+        unknown id included: nothing happens). The main program has no run of its
+        own; ``stop_watering`` stops it.
+        """
+        registry = self._program_registry()
+        run = registry.get(program_id)
+        if run is None:
+            _LOGGER.debug("stop_program: %s is neither running nor waiting", program_id)
+            return None
+        run.stop.set()
+        if not run.turn_taken:
+            # Waiting: out of the queue now, it ends the moment its turn comes.
+            registry.pop(program_id, None)
+            self._notify_programs()
+            _LOGGER.info("Program %s taken out of the queue", program_id)
+            return "dequeued"
+        for zone_id in list(run.current_zones or ()):
+            control = self._run_controls().get(int(zone_id))
+            if control is not None:
+                control.stop.set()
+        _LOGGER.info("Program %s stopped", program_id)
+        return "stopped"
 
     def _executor_lock(self) -> asyncio.Lock:
         """The one turn at the valves, shared by programs and cycles."""
@@ -112,12 +199,22 @@ class ProgramRunnerMixin:
         )
 
     async def async_run_program(
-        self, program_id, manual: bool = True, only_zones=None, note_day=None
+        self,
+        program_id,
+        manual: bool = True,
+        only_zones=None,
+        note_day=None,
+        seconds=None,
+        mode=const.RUN_MODE_QUEUE,
     ) -> bool:
         """Run a program now, or as soon as it is its turn. False if not started.
 
         ``only_zones`` keeps the run to those zones (the ones the rain cannot reach).
         ``note_day`` is awaited with the zones of each step that is about to water.
+        ``seconds`` is a total for the whole program, shared between its steps in
+        proportion to their planned durations; without it the planned durations.
+        ``mode`` is ``queue`` (take the turn behind what runs) or ``replace``
+        (stop what runs and waits, cleanly, then run this one).
         """
         config = self.store.config
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
@@ -135,6 +232,8 @@ class ProgramRunnerMixin:
         if self.is_suspended(const.SUSPEND_PROGRAM, program_id):
             _LOGGER.info("Program %s is suspended, not run", program_id)
             return False
+        if mode == const.RUN_MODE_REPLACE:
+            await self._stop_for_replacement(program_id)
         if program.get(const.PROGRAM_MAIN):
             await self.async_run_direct_valves()
             return True
@@ -156,9 +255,12 @@ class ProgramRunnerMixin:
             if fresh is None or not self._program_allowed(program_id):
                 return None, 0, 0
             zones = await self.store.async_get_zones()
-            plan = plan_program(fresh, zones)
+            # The adjustment in force when the run takes its turn.
+            plan = plan_program(fresh, zones, self.program_adjustment(program_id))
             if only_zones is not None:
                 plan = restrict_plan(plan, only_zones)
+            if seconds is not None:
+                plan = scale_plan_to_total(plan, seconds)
             return plan, 0, 0
 
         await self._drive_program(run, _plan, resumed=False)
@@ -173,6 +275,7 @@ class ProgramRunnerMixin:
             async with self._executor_lock():
                 if run.stop.is_set():
                     return
+                run.turn_taken = True
                 run.started = run.started or dt_util.utcnow().isoformat()
                 plan, tour, step = await make_plan()
                 if not plan:
@@ -199,7 +302,11 @@ class ProgramRunnerMixin:
             cancelled = True
             raise
         finally:
-            registry.pop(run.program_id, None)
+            # Not a newer run of the same id (this one may have been taken out of
+            # the queue, and the program asked for again).
+            if registry.get(run.program_id) is run:
+                registry.pop(run.program_id, None)
+            run.finished.set()
             self._notify_programs()
             if not cancelled:
                 await self.store.async_update_config(
@@ -393,6 +500,9 @@ class ProgramRunnerMixin:
         # where watering it again in full could double what it got.
         run.started_zones.add(int(zone.get(const.ZONE_ID)))
         await self._persist_program_run(run, run.plan, run.tour, run.step)
+        if run.stop.is_set():
+            # Stopped while the record was written: no valve opens for it.
+            return None
         try:
             return await self._run_one_valve(
                 zone, passes=passes, max_litres=max_litres or None

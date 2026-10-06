@@ -19,7 +19,7 @@ import homeassistant.util.dt as dt_util
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 
 from . import const
-from .programs import plan_program, plan_wall_seconds
+from .programs import active_adjustment, plan_program, plan_wall_seconds
 from .schedules import next_fire, upcoming
 
 _LOGGER = logging.getLogger(__name__)
@@ -157,8 +157,18 @@ class ProgramStatusMixin:
 
     # --- overview ---------------------------------------------------------------------
 
+    def program_adjustment(self, program_id) -> dict | None:
+        """The runtime adjustment in force for a program, or None."""
+        return active_adjustment(
+            getattr(self.store.config, const.CONF_PROGRAM_ADJUSTMENTS, None),
+            program_id,
+            dt_util.utcnow(),
+        )
+
     def _program_totals(self, program: dict, zones) -> tuple:
-        plan = plan_program(program, zones)
+        plan = plan_program(
+            program, zones, self.program_adjustment(program.get(const.PROGRAM_ID))
+        )
         soak = float(getattr(self.store.config, const.CONF_SOAK_MINUTES, 0) or 0) * 60.0
         return plan, plan_wall_seconds(plan, soak)
 
@@ -229,6 +239,8 @@ class ProgramStatusMixin:
                     "last_run": max(stamps).isoformat() if stamps else None,
                     "suspended_until": suspended.isoformat() if suspended else None,
                     "live": running.get(program_id),
+                    # The runtime adjustment in force, or None.
+                    "adjustment": self.program_adjustment(program_id),
                 }
             )
         return overview

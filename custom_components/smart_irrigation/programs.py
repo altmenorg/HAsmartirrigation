@@ -22,6 +22,8 @@ from __future__ import annotations
 import math
 import re
 
+import homeassistant.util.dt as dt_util
+
 from . import const
 from .schedules import normalize_schedules
 
@@ -36,6 +38,8 @@ DURATION_MODES = (DURATION_CALCULATED, DURATION_PERCENT, DURATION_FIXED)
 
 MAX_PERCENT = 1000.0
 MAX_PASSES = 6
+MAX_STEP_SECONDS = 24 * 3600.0
+MAX_ADJUST_SECONDS = 6 * 3600.0
 MAX_TOURS = 6
 MAX_DELAY_SECONDS = 6 * 3600
 # A negative delay overlaps two steps: the next starts this long before the
@@ -144,6 +148,19 @@ def normalize_step(step, used: set, position: int = 0) -> dict | None:
             step.get(const.STEP_MAX_LITRES), 0.0, 0.0, 100000.0
         ),
         const.STEP_ENABLED: step.get(const.STEP_ENABLED) is not False,
+        # Bounds of the water of the step (0: none) and a signed offset.
+        const.STEP_MIN_SECONDS: _number(
+            step.get(const.STEP_MIN_SECONDS), 0.0, 0.0, MAX_STEP_SECONDS
+        ),
+        const.STEP_MAX_SECONDS: _number(
+            step.get(const.STEP_MAX_SECONDS), 0.0, 0.0, MAX_STEP_SECONDS
+        ),
+        const.STEP_ADJUST_SECONDS: _number(
+            step.get(const.STEP_ADJUST_SECONDS),
+            0.0,
+            -MAX_ADJUST_SECONDS,
+            MAX_ADJUST_SECONDS,
+        ),
     }
 
 
@@ -227,7 +244,9 @@ def normalize_programs(programs, reserved_schedule_ids=None) -> list:
 # --- turning a program into what to water ------------------------------------
 
 
-def step_seconds(step: dict, zone: dict, tours: int = 1) -> float:
+def step_seconds(
+    step: dict, zone: dict, tours: int = 1, adjustment: dict | None = None
+) -> float:
     """How long a zone's valve is held for one pass of one tour of a step.
 
     The zone's duration holds the water and one lead time (what fills the pipe),
@@ -256,11 +275,82 @@ def step_seconds(step: dict, zone: dict, tours: int = 1) -> float:
         if mode == DURATION_PERCENT:
             water *= max(0.0, float(step.get(const.STEP_PERCENT) or 0.0)) / 100.0
     if water <= 0:
+        # Nothing to water stays nothing: no offset or minimum turns it into water.
+        return 0.0
+    water = adjusted_water(water, step, adjustment)
+    if water <= 0:
         return 0.0
     return water / max(1, int(tours)) + lead
 
 
-def plan_program(program: dict, zones) -> list:
+def adjusted_water(water: float, step: dict, adjustment: dict | None = None) -> float:
+    """The water of a step once its percentage, offsets and bounds are applied.
+
+    Order: the runtime adjustment's percentage, then the step's offset and the
+    runtime adjustment's seconds, then the step's minimum and maximum. The
+    bounds are on the water, not on the lead time the runner adds. The caller
+    only passes water above zero; a result at or below zero is 0.
+    """
+    adjustment = adjustment or {}
+    percent = adjustment.get(const.ADJUST_PERCENT)
+    if percent is not None:
+        water *= max(0.0, float(percent)) / 100.0
+    water += float(step.get(const.STEP_ADJUST_SECONDS) or 0.0)
+    water += float(adjustment.get(const.ADJUST_SECONDS) or 0.0)
+    lowest = float(step.get(const.STEP_MIN_SECONDS) or 0.0)
+    highest = float(step.get(const.STEP_MAX_SECONDS) or 0.0)
+    if water <= 0:
+        return 0.0
+    if lowest > 0:
+        water = max(water, lowest)
+    if highest > 0:
+        water = min(water, highest)
+    return min(water, MAX_STEP_SECONDS)
+
+
+def normalize_adjustment(raw) -> dict | None:
+    """One stored runtime adjustment, cleaned, or None if it adjusts nothing."""
+    if not isinstance(raw, dict):
+        return None
+    percent = raw.get(const.ADJUST_PERCENT)
+    seconds = raw.get(const.ADJUST_SECONDS)
+    cleaned = {
+        const.ADJUST_PERCENT: (
+            None if percent is None else _number(percent, 100.0, 0.0, MAX_PERCENT)
+        ),
+        const.ADJUST_SECONDS: (
+            None
+            if seconds is None
+            else _number(seconds, 0.0, -MAX_ADJUST_SECONDS, MAX_ADJUST_SECONDS)
+        ),
+        const.ADJUST_UNTIL: raw.get(const.ADJUST_UNTIL) or None,
+    }
+    if cleaned[const.ADJUST_PERCENT] is None and cleaned[const.ADJUST_SECONDS] is None:
+        return None
+    return cleaned
+
+
+def active_adjustment(adjustments, program_id, now) -> dict | None:
+    """The runtime adjustment of a program that is in force at ``now``, or None.
+
+    One that has a validity and is past it is not in force (it is dropped from
+    the stored record the next time one is set). An unreadable validity counts
+    as expired rather than as forever.
+    """
+    if not isinstance(adjustments, dict):
+        return None
+    adjustment = normalize_adjustment(adjustments.get(program_id))
+    if adjustment is None:
+        return None
+    until = adjustment.get(const.ADJUST_UNTIL)
+    if until:
+        moment = dt_util.parse_datetime(str(until))
+        if moment is None or moment <= now:
+            return None
+    return adjustment
+
+
+def plan_program(program: dict, zones, adjustment: dict | None = None) -> list:
     """What a program waters, as tours of steps of zones with their seconds.
 
     Returns ``[tour, ...]`` where a tour is ``[step, ...]`` and a step is
@@ -288,7 +378,7 @@ def plan_program(program: dict, zones) -> list:
                     or zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED
                 ):
                     continue
-                seconds = step_seconds(step, zone, tours)
+                seconds = step_seconds(step, zone, tours, adjustment)
                 if seconds > 0:
                     members.append(
                         {

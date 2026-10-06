@@ -70,6 +70,7 @@ from .live_estimate import LiveEstimateMixin
 from .liveness import WeatherLivenessMixin
 from .observed_watering import ObservedWateringMixin
 from .panel import async_register_panel, remove_panel
+from .program_adjust import ADJUST_PROGRAM_SCHEMA
 from .program_scheduler import ProgramSchedulerMixin
 from .programs import ensure_main_program, normalize_programs
 from .scheduler import RecurringScheduleManager, SeasonalAdjustmentManager
@@ -83,6 +84,10 @@ from .watering_calendar import WateringCalendarMixin
 from .watering_control import (
     PAUSE_WATERING_SCHEMA,
     RUN_PROGRAM_SCHEMA,
+    SET_PROGRAM_ENABLED_SCHEMA,
+    SET_SCHEDULE_ENABLED_SCHEMA,
+    SET_STEP_ENABLED_SCHEMA,
+    STOP_PROGRAM_SCHEMA,
     SUSPEND_SCHEMA,
     WATER_ZONE_SCHEMA,
 )
@@ -820,6 +825,14 @@ class SmartIrrigationCoordinator(
             kept = {k: v for k, v in last_started.items() if k in program_ids}
             if kept != last_started:
                 data[const.CONF_PROGRAM_LAST_STARTED] = kept
+        adjustments = getattr(config, const.CONF_PROGRAM_ADJUSTMENTS, None)
+        if isinstance(adjustments, dict) and (
+            const.CONF_PROGRAM_ADJUSTMENTS not in data
+        ):
+            program_ids = {p.get(const.PROGRAM_ID) for p in programs}
+            kept = {k: v for k, v in adjustments.items() if k in program_ids}
+            if kept != adjustments:
+                data[const.CONF_PROGRAM_ADJUSTMENTS] = kept
         suspensions = getattr(config, const.CONF_SUSPENSIONS, None)
         if isinstance(suspensions, dict) and const.CONF_SUSPENSIONS not in data:
             program_ids = {p.get(const.PROGRAM_ID) for p in programs}
@@ -2492,6 +2505,30 @@ def register_services(hass: HomeAssistant):
     )
     hass.services.async_register(
         const.DOMAIN,
+        const.SERVICE_STOP_PROGRAM,
+        coordinator.handle_stop_program,
+        schema=STOP_PROGRAM_SCHEMA,
+    )
+    hass.services.async_register(
+        const.DOMAIN,
+        const.SERVICE_SET_PROGRAM_ENABLED,
+        coordinator.handle_set_program_enabled,
+        schema=SET_PROGRAM_ENABLED_SCHEMA,
+    )
+    hass.services.async_register(
+        const.DOMAIN,
+        const.SERVICE_SET_STEP_ENABLED,
+        coordinator.handle_set_step_enabled,
+        schema=SET_STEP_ENABLED_SCHEMA,
+    )
+    hass.services.async_register(
+        const.DOMAIN,
+        const.SERVICE_SET_SCHEDULE_ENABLED,
+        coordinator.handle_set_schedule_enabled,
+        schema=SET_SCHEDULE_ENABLED_SCHEMA,
+    )
+    hass.services.async_register(
+        const.DOMAIN,
         const.SERVICE_PAUSE_WATERING,
         coordinator.handle_pause_watering,
         schema=PAUSE_WATERING_SCHEMA,
@@ -2507,6 +2544,12 @@ def register_services(hass: HomeAssistant):
         const.SERVICE_SUSPEND,
         coordinator.handle_suspend,
         schema=SUSPEND_SCHEMA,
+    )
+    hass.services.async_register(
+        const.DOMAIN,
+        const.SERVICE_ADJUST_PROGRAM,
+        coordinator.handle_adjust_program,
+        schema=ADJUST_PROGRAM_SCHEMA,
     )
     hass.services.async_register(
         const.DOMAIN,

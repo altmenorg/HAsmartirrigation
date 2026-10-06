@@ -91,6 +91,8 @@ Never both, and never a blueprint that resets the bucket on top of a closed-loop
 - Depths in the entities follow Home Assistant's unit system; internally everything is metric and converted at the edges only.
 - The start event fires once per trigger, and either it or the skip event fires when a trigger is reached.
 - The duration published when the start event fires already accounts for rain since the calculation.
+- The zone sensors never carry a runtime adjustment. With the optional [full controller](usage-full-controller.md), `smart_irrigation.adjust_program` changes how long a program's steps water (a percentage and/or seconds, for a while); it is applied by the controller to the runs it starts, and shown in the `adjustment` attribute of the program's sensor, not in the zone's number.
+- The same controller's run services leave the zone's number alone too: `run_program` and `water_zone` take an optional `seconds` and a `mode` (`queue`, the default, or `replace`), `stop_program` ends one program, and `set_program_enabled`, `set_step_enabled` and `set_schedule_enabled` switch a program, a step or a schedule on or off. See [driving the watering](usage-full-controller.md#driving-the-watering).
 
 **Not promised.**
 

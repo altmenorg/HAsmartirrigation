@@ -99,6 +99,118 @@ run_program:
       description: The id of the program, as shown in its settings.
       selector:
         text:
+    seconds:
+      name: Seconds
+      required: false
+      example: 1800
+      description: >-
+        A total duration for the whole program, shared between its steps in
+        proportion to their planned durations. Left empty, the planned
+        durations.
+      selector:
+        number:
+          min: 1
+          max: 86400
+          unit_of_measurement: s
+    mode:
+      name: Mode
+      required: false
+      default: queue
+      description: >-
+        What to do when something is already watering. Queue takes the turn
+        behind it; replace stops it cleanly first.
+      selector:
+        select:
+          options:
+            - queue
+            - replace
+stop_program:
+  name: Stop program
+  description: >-
+    Stop one program. If it is running, its open zones are closed the normal
+    way and credited for what they delivered; if it is waiting for its turn, it
+    is taken out of the queue. An unknown program does nothing. The main
+    program is stopped with stop_watering.
+  fields:
+    program_id:
+      name: Program
+      required: true
+      example: evening
+      description: The id of the program.
+      selector:
+        text:
+set_program_enabled:
+  name: Enable or disable a program
+  description: >-
+    Switch a program of the full controller on or off, as the switch in its
+    settings does.
+  fields:
+    program_id:
+      name: Program
+      required: true
+      example: evening
+      description: The id of the program.
+      selector:
+        text:
+    enabled:
+      name: Enabled
+      required: true
+      default: true
+      description: On to enable it, off to disable it.
+      selector:
+        boolean:
+set_step_enabled:
+  name: Enable or disable a step
+  description: Switch one step of a program on or off.
+  fields:
+    program_id:
+      name: Program
+      required: true
+      example: evening
+      description: The id of the program.
+      selector:
+        text:
+    step_id:
+      name: Step
+      required: true
+      example: step_1
+      description: The id of the step, as shown in the program.
+      selector:
+        text:
+    enabled:
+      name: Enabled
+      required: true
+      default: true
+      description: On to enable it, off to disable it.
+      selector:
+        boolean:
+set_schedule_enabled:
+  name: Enable or disable a schedule
+  description: >-
+    Switch one schedule of a program on or off. The schedules are armed again
+    at once.
+  fields:
+    program_id:
+      name: Program
+      required: true
+      example: evening
+      description: The id of the program.
+      selector:
+        text:
+    schedule_id:
+      name: Schedule
+      required: true
+      example: schedule_1
+      description: The id of the schedule, as shown in the program.
+      selector:
+        text:
+    enabled:
+      name: Enabled
+      required: true
+      default: true
+      description: On to enable it, off to disable it.
+      selector:
+        boolean:
 stop_watering:
   name: Stop watering
   description: >-
@@ -163,6 +275,56 @@ suspend:
       required: false
       selector:
         datetime:
+adjust_program:
+  name: Adjust a program
+  description: >-
+    Make a program of the full controller water longer or shorter, for a
+    while. The adjustment replaces the previous one (it never adds up), applies
+    to the runs that start after it is set, and ends after the hours given.
+  fields:
+    program_id:
+      name: Program
+      description: The id of the program to adjust.
+      required: true
+      selector:
+        text:
+    percent:
+      name: Percent
+      description: Multiplies the water of each step (120 waters 20 % longer).
+      required: false
+      example: 120
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: "%"
+    seconds:
+      name: Seconds
+      description: Seconds of water added to each step (negative to take off).
+      required: false
+      example: 30
+      selector:
+        number:
+          min: -21600
+          max: 21600
+          unit_of_measurement: s
+    hours:
+      name: Hours
+      description: How long the adjustment lasts. Left empty, until it is reset.
+      required: false
+      example: 48
+      selector:
+        number:
+          min: 1
+          max: 8760
+          unit_of_measurement: h
+    reset:
+      name: Reset
+      description: Remove the adjustment of this program.
+      required: false
+      default: false
+      selector:
+        boolean:
 water_zone:
   name: Water a zone
   description: >-
@@ -183,6 +345,18 @@ water_zone:
           min: 1
           max: 86400
           unit_of_measurement: s
+    mode:
+      name: Mode
+      required: false
+      default: queue
+      description: >-
+        What to do when something is already watering. Queue takes the turn
+        behind it; replace stops it cleanly first.
+      selector:
+        select:
+          options:
+            - queue
+            - replace
 use_measured_throughput:
   name: Use the measured throughput
   description: >-

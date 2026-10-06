@@ -20,6 +20,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
 from .exceptions import SmartIrrigationError
+from .program_adjust import ProgramAdjustMixin
 from .programs import find_program
 from .units import depth_from_display, zone_from_display
 from .watering_control import (
@@ -84,7 +85,7 @@ def _entity_ids(call) -> list:
     return list(eid)
 
 
-class ServiceHandlersMixin:
+class ServiceHandlersMixin(ProgramAdjustMixin):
     """Service-call handlers for ``SmartIrrigationCoordinator``.
 
     Mixed into the coordinator; methods use ``self`` to reach coordinator state
@@ -209,8 +210,69 @@ class ServiceHandlersMixin:
         program_id = call.data.get(const.ATTR_PROGRAM_ID)
         if not program_id:
             return
-        # The run takes as long as the watering: the service does not wait for it.
-        self._spawn_valve_run(self.async_run_program(str(program_id)))
+        seconds = self._checked_seconds(call.data.get(const.ATTR_SECONDS))
+        mode = self._checked_mode(call.data.get(const.ATTR_MODE))
+        if seconds is None and mode == const.RUN_MODE_QUEUE:
+            # The run takes as long as the watering: the service does not wait.
+            self._spawn_valve_run(self.async_run_program(str(program_id)))
+            return
+        self._spawn_valve_run(
+            self.async_run_program(str(program_id), seconds=seconds, mode=mode)
+        )
+
+    @staticmethod
+    def _checked_seconds(seconds):
+        """The seconds of a service call, or None; refused if out of bounds.
+
+        Checked here: a run is spawned, and an error in it reaches no one.
+        """
+        if seconds is None:
+            return None
+        try:
+            return finite_number(seconds, 1, MAX_WATER_ZONE_SECONDS, "seconds")
+        except ValueError as e:
+            raise ServiceValidationError(str(e)) from None
+
+    @staticmethod
+    def _checked_mode(mode) -> str:
+        """``queue`` (the default) or ``replace``; anything else is refused."""
+        if mode is None:
+            return const.RUN_MODE_QUEUE
+        if mode not in (const.RUN_MODE_QUEUE, const.RUN_MODE_REPLACE):
+            raise ServiceValidationError(
+                f"mode must be {const.RUN_MODE_QUEUE} or {const.RUN_MODE_REPLACE}"
+            )
+        return mode
+
+    async def handle_stop_program(self, call):
+        """Stop one program, or take it out of the queue; an unknown id is ignored."""
+        program_id = call.data.get(const.ATTR_PROGRAM_ID)
+        if not program_id:
+            return
+        await self.async_stop_program(str(program_id))
+
+    async def handle_set_program_enabled(self, call):
+        """Enable or disable a program."""
+        await self.async_set_enabled(
+            str(call.data.get(const.ATTR_PROGRAM_ID)),
+            call.data.get(const.ATTR_ENABLED),
+        )
+
+    async def handle_set_step_enabled(self, call):
+        """Enable or disable one step of a program."""
+        await self.async_set_enabled(
+            str(call.data.get(const.ATTR_PROGRAM_ID)),
+            call.data.get(const.ATTR_ENABLED),
+            step_id=str(call.data.get(const.ATTR_STEP_ID)),
+        )
+
+    async def handle_set_schedule_enabled(self, call):
+        """Enable or disable one schedule of a program."""
+        await self.async_set_enabled(
+            str(call.data.get(const.ATTR_PROGRAM_ID)),
+            call.data.get(const.ATTR_ENABLED),
+            schedule_id=str(call.data.get(const.ATTR_SCHEDULE_ID)),
+        )
 
     async def handle_pause_watering(self, call):
         """Close the open valves and hold the watering until it is resumed."""
@@ -274,13 +336,8 @@ class ServiceHandlersMixin:
     async def handle_water_zone(self, call):
         """Water a zone now, for a time, or when it is its turn."""
         eid = call.data.get(const.SERVICE_ENTITY_ID)
-        seconds = call.data.get(const.ATTR_SECONDS)
-        if seconds is not None:
-            # Checked here: a run is spawned, and an error in it reaches no one.
-            try:
-                seconds = finite_number(seconds, 1, MAX_WATER_ZONE_SECONDS, "seconds")
-            except ValueError as e:
-                raise ServiceValidationError(str(e)) from None
+        seconds = self._checked_seconds(call.data.get(const.ATTR_SECONDS))
+        mode = self._checked_mode(call.data.get(const.ATTR_MODE))
         if isinstance(eid, str):
             eid = [eid]
         for entity in eid or []:
@@ -290,7 +347,15 @@ class ServiceHandlersMixin:
                 _LOGGER.warning("water_zone: %s is not a zone", entity)
                 continue
             # Runs as long as the watering does: the service does not wait.
-            self._spawn_valve_run(self.async_water_zone_now(int(zone_id), seconds))
+            if mode == const.RUN_MODE_QUEUE:
+                self._spawn_valve_run(self.async_water_zone_now(int(zone_id), seconds))
+            else:
+                self._spawn_valve_run(
+                    self.async_water_zone_now(int(zone_id), seconds, mode)
+                )
+                # Only the first zone replaces what runs: the next ones of the
+                # same call take their turn behind it, not instead of it.
+                mode = const.RUN_MODE_QUEUE
 
     async def handle_use_measured_throughput(self, call):
         """Take the flow the meter measured as the zone's throughput.
