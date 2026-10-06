@@ -208,6 +208,42 @@ class WateringControlMixin:
         self._pause_timer = self._spawn_valve_run(self._lift_pause_later(minutes * 60))
         _LOGGER.info("Watering paused for at most %.0f minutes", minutes)
         self._notify_programs()
+        await self._persist_pause(
+            (dt_util.utcnow() + timedelta(minutes=minutes)).isoformat()
+        )
+
+    async def _persist_pause(self, until) -> None:
+        """Keep the end of the pause (or None) for a restart; full controller only."""
+        config = self.store.config
+        if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
+            return
+        if getattr(config, const.CONF_PAUSE_UNTIL, None) == until:
+            return
+        try:
+            await self.store.async_update_config({const.CONF_PAUSE_UNTIL: until})
+        except asyncio.CancelledError:
+            raise
+        except Exception as e:  # noqa: BLE001 - the record must not undo the pause
+            _LOGGER.debug("Could not record the pause: %s", e)
+
+    async def _restore_pause(self, until: datetime) -> None:
+        """Hold the watering again after a restart, until ``until``.
+
+        The valves that were open stay closed; programs and zones waiting go on
+        from the resume as they do after any pause.
+        """
+        pause, resume = self._pause_events()
+        if not pause.is_set():
+            self._paused_since = self.hass.loop.time()
+        resume.clear()
+        pause.set()
+        timer = getattr(self, "_pause_timer", None)
+        if timer is not None and not timer.done():
+            timer.cancel()
+        seconds = max(1.0, (until - dt_util.utcnow()).total_seconds())
+        self._pause_timer = self._spawn_valve_run(self._lift_pause_later(seconds))
+        _LOGGER.info("The pause goes on after the restart, for %.0f seconds", seconds)
+        self._notify_programs()
 
     async def _lift_pause_later(self, seconds: float) -> None:
         await asyncio.sleep(seconds)
@@ -222,6 +258,7 @@ class WateringControlMixin:
         if timer is not None and not timer.done() and timer is not current:
             timer.cancel()
         self._pause_timer = None
+        await self._persist_pause(None)
         if not pause.is_set():
             return
         since = getattr(self, "_paused_since", None)

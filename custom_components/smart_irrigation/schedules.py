@@ -24,6 +24,8 @@ time (a day is a local date, not 24 hours: the clock changes twice a year).
 * **Late starts**: a start-anchored schedule whose start was missed (Home
   Assistant was down) is caught up when it is at most ``CATCH_UP_GRACE_SECONDS``
   late, and passed over beyond that.
+* **Hard deadline**: an end-anchored schedule may set ``hard_deadline``. Its
+  finish is then a limit, not a target: the run is cut there (program_runner.py).
 * **Weather**: whether the skip conditions (rain, frost, wind, a moist soil)
   apply to the run. They do by default, since that is what Smart Irrigation is
   for; a greenhouse drip line can turn them off.
@@ -197,6 +199,12 @@ def normalize_schedule(
     days_of_month = _days_of_month(schedule.get(const.SCHEDULE_DAYS_OF_MONTH))
     if days_of_month:
         stored[const.SCHEDULE_DAYS_OF_MONTH] = days_of_month
+    # Only for a schedule anchored at its end, and only when on.
+    if (
+        schedule.get(const.SCHEDULE_HARD_DEADLINE) is True
+        and stored[const.SCHEDULE_ANCHOR] == ANCHOR_END
+    ):
+        stored[const.SCHEDULE_HARD_DEADLINE] = True
     fallback = _fallback_time(schedule.get(const.SCHEDULE_FALLBACK_TIME))
     if fallback:
         stored[const.SCHEDULE_FALLBACK_TIME] = fallback

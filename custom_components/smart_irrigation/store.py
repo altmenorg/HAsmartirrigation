@@ -94,12 +94,14 @@ from .const import (
     CONF_METRIC,
     CONF_OBSERVED_WATERING_ENABLED,
     CONF_PAUSE_BETWEEN_ZONES,
+    CONF_PAUSE_UNTIL,
     CONF_POSTPONE_UNTIL,
     CONF_PRECIPITATION_THRESHOLD_MM,
     CONF_PROGRAM_ADJUSTMENTS,
     CONF_PROGRAM_LAST_RUNS,
     CONF_PROGRAM_LAST_STARTED,
     CONF_PROGRAMS,
+    CONF_QUEUED_MANUAL_RUNS,
     CONF_RAIN_HISTORY_ENABLED,
     CONF_RAIN_SENSOR,
     CONF_RECALCULATE_BEFORE_START,
@@ -686,6 +688,8 @@ class Config:
     active_program_run = attr.ib(type=dict, default=None)
     program_last_runs = attr.ib(type=dict, default=None)
     program_last_started = attr.ib(type=dict, default=None)
+    pause_until = attr.ib(type=str, default=None)
+    queued_manual_runs = attr.ib(type=list, default=None)
     program_adjustments = attr.ib(type=dict, default=None)
     suspensions = attr.ib(type=dict, default=None)
     # Direct valve control as it was before the full controller forced it on.
@@ -1188,6 +1192,8 @@ class SmartIrrigationStorage:
                 active_program_run=data["config"].get(CONF_ACTIVE_PROGRAM_RUN),
                 program_last_runs=data["config"].get(CONF_PROGRAM_LAST_RUNS),
                 program_last_started=data["config"].get(CONF_PROGRAM_LAST_STARTED),
+                pause_until=data["config"].get(CONF_PAUSE_UNTIL),
+                queued_manual_runs=data["config"].get(CONF_QUEUED_MANUAL_RUNS),
                 program_adjustments=data["config"].get(CONF_PROGRAM_ADJUSTMENTS),
                 suspensions=data["config"].get(CONF_SUSPENSIONS),
                 direct_valve_control_before_full_controller=data["config"].get(
@@ -1535,6 +1541,8 @@ class SmartIrrigationStorage:
             CONF_ACTIVE_VALVE_RUNS in changes
             or CONF_ACTIVE_CYCLE in changes
             or CONF_ACTIVE_PROGRAM_RUN in changes
+            or CONF_PAUSE_UNTIL in changes
+            or CONF_QUEUED_MANUAL_RUNS in changes
         ):
             await self._save_now()
         else:

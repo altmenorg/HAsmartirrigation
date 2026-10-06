@@ -144,6 +144,14 @@ CONF_PROGRAM_LAST_RUNS = "program_last_runs"
 # When each program last really started watering, scheduled, manual or main:
 # {"evening": iso}. The marks above say when a schedule fired, not when water ran.
 CONF_PROGRAM_LAST_STARTED = "program_last_started"
+# Until when the watering is paused (iso, UTC), kept so a restart goes on with
+# the pause while it is still ahead. None when not paused.
+CONF_PAUSE_UNTIL = "pause_until"
+# The manual program runs waiting for their turn, kept so a restart does not lose
+# them: [{"program_id": "evening", "seconds": None, "requested": iso}].
+CONF_QUEUED_MANUAL_RUNS = "queued_manual_runs"
+# A queued run older than this is dropped at startup (it is not wanted any more).
+QUEUED_RUN_MAX_AGE_SECONDS = 6 * 3600
 # A runtime adjustment of the duration of a program, set by the adjust_program
 # service: {"evening": {"percent": 120.0, "seconds": None, "until": iso}}. Kept
 # apart from the programs, which the panel sends back whole.
@@ -218,6 +226,10 @@ SCHEDULE_UNTIL = "until_date"
 SCHEDULE_DAYS_OF_MONTH = "days_of_month"
 SCHEDULE_FALLBACK_TIME = "fallback_time"
 SCHEDULE_WEATHER = "weather"
+# An end-anchored schedule whose finish is a hard limit: the run is cut there.
+SCHEDULE_HARD_DEADLINE = "hard_deadline"
+# Why a run was cut short, in the program_finished event and the log.
+CUT_REASON_DEADLINE = "deadline"
 # Keys inside a supply of the full controller (see supplies.py).
 SUPPLY_ID = "id"
 SUPPLY_NAME = "name"

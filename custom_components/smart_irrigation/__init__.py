@@ -376,6 +376,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # Tell the user when a weather sensor stops reporting.
     await coordinator.async_setup_weather_liveness()
 
+    # Full controller: the pause and the waiting manual runs a restart interrupted
+    # come back first, so the runs resumed below find the pause.
+    await coordinator.async_restore_pause_and_queue()
     # Direct valve control: resume any run that was in flight before a restart.
     await coordinator.async_resume_valve_runs()
     # Full controller: once everything is up, a valve left open that no run owns

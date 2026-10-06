@@ -215,7 +215,21 @@ class ProgramStatusMixin:
                         or ""
                     )
                     found = next_fire(schedule, now, total, last, self._sun_moment, tz)
-                    if found:
+                    # A start inside the catch-up window is "now" for next_fire,
+                    # but nothing fires it outside a startup or a reload: show
+                    # the next occurrence that really will.
+                    for _ in range(3):
+                        if not (found and found.get("catch_up")):
+                            break
+                        found = next_fire(
+                            schedule,
+                            now,
+                            total,
+                            found["target"],
+                            self._sun_moment,
+                            tz,
+                        )
+                    if found and not found.get("catch_up"):
                         fire = found["fire"]
                         if next_start is None or fire < next_start:
                             next_start = fire

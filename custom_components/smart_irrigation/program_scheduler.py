@@ -40,7 +40,7 @@ from homeassistant.helpers.sun import get_astral_event_date
 
 from . import const
 from .programs import find_program, plan_program, plan_wall_seconds
-from .schedules import next_fire
+from .schedules import ANCHOR_END, next_fire
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -265,10 +265,18 @@ class ProgramSchedulerMixin:
         async def _count_the_day(zone_ids):
             await self._note_watering_day(name, zone_ids=zone_ids)
 
+        extra = {}
+        if (
+            schedule.get(const.SCHEDULE_HARD_DEADLINE) is True
+            and schedule.get(const.SCHEDULE_ANCHOR) == ANCHOR_END
+        ):
+            # The finish is a limit: the run is cut there.
+            extra["deadline"] = target
         # The day is counted when a step really starts, for the zones it waters.
         await self.async_run_program(
             program_id,
             manual=False,
             only_zones=only_zones,
             note_day=_count_the_day,
+            **extra,
         )

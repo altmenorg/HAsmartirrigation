@@ -75,6 +75,43 @@ class ProgramRun:
         self.finished = asyncio.Event()
         # Whether the run has taken its turn at the valves.
         self.turn_taken = False
+        # A hard limit: the moment the run is cut if it is still going (a
+        # datetime), or None. ``cut`` is set when that happened.
+        self.deadline = None
+        self.cut = False
+        # The seconds asked for, and when: kept for a manual run waiting for its
+        # turn, so a restart can ask for it again. ``queued`` says it is recorded.
+        self.seconds = None
+        self.requested: str | None = None
+        self.queued = False
+
+
+def order_driest_first(plan: list, zones) -> list:
+    """The plan with the zones of every step ordered driest first.
+
+    Only the order of the zones inside a step changes (the driest is the one
+    with the lowest bucket, the largest water deficit; ties keep their order).
+    Steps stay in their order and no zone is added or removed. The zones of a
+    step open together, so this decides which opens first, and in a program
+    whose steps hold one zone each it changes nothing.
+    """
+    bucket = {
+        int(z[const.ZONE_ID]): float(z.get(const.ZONE_BUCKET) or 0.0)
+        for z in zones
+        if const.ZONE_ID in z
+    }
+    return [
+        [
+            {
+                **step,
+                "zones": sorted(
+                    step["zones"], key=lambda m: bucket.get(int(m["zone_id"]), 0.0)
+                ),
+            }
+            for step in steps
+        ]
+        for steps in plan
+    ]
 
 
 def scale_plan_to_total(plan: list, total_seconds) -> list:
@@ -206,8 +243,13 @@ class ProgramRunnerMixin:
         note_day=None,
         seconds=None,
         mode=const.RUN_MODE_QUEUE,
+        deadline=None,
     ) -> bool:
         """Run a program now, or as soon as it is its turn. False if not started.
+
+        ``deadline`` (a datetime) is a hard limit: a run still going then is cut,
+        its open zones closed the normal way, and the zones of each step are
+        ordered driest first. None keeps the run as it is.
 
         ``only_zones`` keeps the run to those zones (the ones the rain cannot reach).
         ``note_day`` is awaited with the zones of each step that is about to water.
@@ -247,6 +289,12 @@ class ProgramRunnerMixin:
             manual,
             note_day,
         )
+        run.deadline = deadline
+        run.seconds = seconds
+        run.requested = dt_util.utcnow().isoformat()
+        if manual and self._executor_lock().locked():
+            # It will have to wait: recorded, so a restart does not lose it.
+            run.queued = True
 
         async def _plan():
             fresh = find_program(
@@ -261,6 +309,8 @@ class ProgramRunnerMixin:
                 plan = restrict_plan(plan, only_zones)
             if seconds is not None:
                 plan = scale_plan_to_total(plan, seconds)
+            if deadline is not None and plan:
+                plan = order_driest_first(plan, zones)
             return plan, 0, 0
 
         await self._drive_program(run, _plan, resumed=False)
@@ -271,15 +321,32 @@ class ProgramRunnerMixin:
         registry = self._program_registry()
         registry[run.program_id] = run
         cancelled = False
+        watcher = None
         try:
+            if run.queued:
+                await self._persist_manual_queue()
             async with self._executor_lock():
                 if run.stop.is_set():
                     return
                 run.turn_taken = True
+                if run.queued:
+                    # Its turn: it is no longer waiting.
+                    await self._persist_manual_queue()
                 run.started = run.started or dt_util.utcnow().isoformat()
                 plan, tour, step = await make_plan()
                 if not plan:
                     _LOGGER.info("Program %s has nothing to water", run.program_id)
+                    return
+                if run.deadline is not None and dt_util.utcnow() >= run.deadline:
+                    # No time left at all: nothing opens, and the record says why.
+                    _LOGGER.warning(
+                        "Program %s: its deadline has passed before its turn, "
+                        "not run",
+                        run.program_id,
+                    )
+                    run.cut = True
+                    run.stop.set()
+                    self._report_program_finished(run)
                     return
                 run.plan = plan
                 # Known before anything says the run has started.
@@ -295,6 +362,8 @@ class ProgramRunnerMixin:
                 run.paused_at_start = self.paused_seconds_total()
                 if not resumed:
                     await self._note_program_started(run.program_id)
+                if run.deadline is not None:
+                    watcher = asyncio.ensure_future(self._watch_deadline(run))
                 await self._execute_plan(run, plan, tour, step)
                 self._report_program_finished(run)
         except asyncio.CancelledError:
@@ -302,6 +371,8 @@ class ProgramRunnerMixin:
             cancelled = True
             raise
         finally:
+            if watcher is not None and not watcher.done():
+                watcher.cancel()
             # Not a newer run of the same id (this one may have been taken out of
             # the queue, and the program asked for again).
             if registry.get(run.program_id) is run:
@@ -312,6 +383,38 @@ class ProgramRunnerMixin:
                 await self.store.async_update_config(
                     {const.CONF_ACTIVE_PROGRAM_RUN: None}
                 )
+                if run.queued:
+                    # Stopped or dequeued while it waited: out of the record too.
+                    await self._persist_manual_queue()
+
+    # --- the hard deadline ---------------------------------------------------
+
+    async def _watch_deadline(self, run: ProgramRun) -> None:
+        """Cut the run when its deadline comes, if it is still going."""
+        seconds = (run.deadline - dt_util.utcnow()).total_seconds()
+        if seconds > 0:
+            try:
+                await asyncio.wait_for(run.finished.wait(), timeout=seconds)
+                return
+            except asyncio.TimeoutError:
+                pass
+        await self._cut_at_deadline(run)
+
+    async def _cut_at_deadline(self, run: ProgramRun) -> None:
+        """End the run now: open zones close the normal way, no step starts."""
+        if run.cut or run.finished.is_set() or not run.turn_taken:
+            return
+        run.cut = True
+        _LOGGER.warning(
+            "Program %s reached its deadline and is cut: the zones still open are "
+            "closed, the steps not started are dropped",
+            run.program_id,
+        )
+        run.stop.set()
+        for zone_id in list(run.current_zones or ()):
+            control = self._run_controls().get(int(zone_id))
+            if control is not None:
+                control.stop.set()
 
     # --- walking the plan ----------------------------------------------------
 
@@ -360,6 +463,10 @@ class ProgramRunnerMixin:
                 if run.stop.is_set():
                     return
                 if not await self._wait_run_resume(run):
+                    return
+                if run.deadline is not None and dt_util.utcnow() >= run.deadline:
+                    # A late start, a pause or a longer plan: no time for this step.
+                    await self._cut_at_deadline(run)
                     return
                 if not self._program_allowed(run.program_id):
                     # Deleted, disabled or suspended while it ran, or the full
@@ -534,9 +641,117 @@ class ProgramRunnerMixin:
                     "step": step,
                     "started_zones": sorted(run.started_zones),
                     "started": run.started or dt_util.utcnow().isoformat(),
+                    **(
+                        {"deadline": run.deadline.isoformat()}
+                        if run.deadline is not None
+                        else {}
+                    ),
                 }
             }
         )
+
+    # --- the queue of manual runs and the pause, across a restart ---------------
+
+    async def _persist_manual_queue(self) -> None:
+        """Record the manual runs waiting for their turn (only when it changed)."""
+        waiting = [
+            {
+                "program_id": run.program_id,
+                "seconds": run.seconds,
+                "requested": run.requested,
+            }
+            for run in self._program_registry().values()
+            if run.queued and not run.turn_taken and not run.stop.is_set()
+        ]
+        stored = list(
+            getattr(self.store.config, const.CONF_QUEUED_MANUAL_RUNS, None) or []
+        )
+        if waiting == stored:
+            return
+        try:
+            await self.store.async_update_config(
+                {const.CONF_QUEUED_MANUAL_RUNS: waiting}
+            )
+        except asyncio.CancelledError:
+            raise
+        except Exception as e:  # noqa: BLE001 - the record is not the run
+            _LOGGER.debug("Could not record the queued runs: %s", e)
+
+    async def async_restore_pause_and_queue(self) -> None:
+        """Put back the pause and the queued manual runs a restart interrupted.
+
+        Call it before the runs in flight are resumed, so that they find the
+        pause. A pause still ahead is held again until its end (the valves that
+        were open are not reopened by it: the program goes on as it does after
+        any resume). Queued runs older than six hours, or of a program that is
+        gone, disabled or suspended, are dropped; the others take their turn,
+        behind a program that is being resumed. Nothing happens with the full
+        controller off.
+        """
+        config = self.store.config
+        if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
+            return
+        until = dt_util.parse_datetime(
+            getattr(config, const.CONF_PAUSE_UNTIL, None) or ""
+        )
+        if getattr(config, const.CONF_PAUSE_UNTIL, None):
+            if until is not None and until > dt_util.utcnow():
+                await self._restore_pause(until)
+            else:
+                await self.store.async_update_config({const.CONF_PAUSE_UNTIL: None})
+        stored = list(getattr(config, const.CONF_QUEUED_MANUAL_RUNS, None) or [])
+        if not stored:
+            return
+        now = dt_util.utcnow()
+        keep = []
+        for entry in stored:
+            if not isinstance(entry, dict):
+                continue
+            requested = dt_util.parse_datetime(entry.get("requested") or "")
+            if requested is None or (now - requested) > timedelta(
+                seconds=const.QUEUED_RUN_MAX_AGE_SECONDS
+            ):
+                continue
+            if not self._program_allowed(entry.get("program_id")):
+                continue
+            keep.append(entry)
+        if keep != stored:
+            await self.store.async_update_config({const.CONF_QUEUED_MANUAL_RUNS: keep})
+        if keep:
+            _LOGGER.info("Putting %d queued manual run(s) back in line", len(keep))
+            self._spawn_valve_run(self._ask_again(keep))
+
+    async def _ask_again(self, entries: list) -> None:
+        """Ask for the queued runs again, in their order, once a resumed run is over."""
+        waited = 0
+        while (
+            getattr(self.store.config, const.CONF_ACTIVE_PROGRAM_RUN, None)
+            or self._programs_resuming()
+        ) and waited < const.CYCLE_RESUME_MAX_AGE_SECONDS:
+            await asyncio.sleep(1)
+            waited += 1
+        tasks = []
+        for entry in entries:
+            program_id = entry.get("program_id")
+            seconds = entry.get("seconds")
+            # Each takes the turn in the order asked: the next is asked for when
+            # the previous has registered (it waits on the lock, or runs).
+            task = asyncio.ensure_future(
+                self.async_run_program(program_id, manual=True, seconds=seconds)
+            )
+            tasks.append(task)
+            for _ in range(20):
+                if program_id in self._program_registry() or task.done():
+                    break
+                await asyncio.sleep(0)
+            # The record now says what is still waiting, and nothing more.
+            await self._persist_manual_queue()
+        try:
+            await asyncio.gather(*tasks, return_exceptions=True)
+        except asyncio.CancelledError:
+            for task in tasks:
+                task.cancel()
+            raise
 
     async def _drop_program_record(self) -> None:
         await self.store.async_update_config({const.CONF_ACTIVE_PROGRAM_RUN: None})
@@ -586,6 +801,7 @@ class ProgramRunnerMixin:
             program_id, record.get("name") or program_id, bool(record.get("manual"))
         )
         run.started = record.get("started")
+        run.deadline = dt_util.parse_datetime(record.get("deadline") or "")
 
         async def _remaining():
             # The zones of the interrupted step that had started are finished by
@@ -675,5 +891,11 @@ class ProgramRunnerMixin:
                 "zones": list(by_zone.values()),
                 "problems": problems,
                 "stopped": run.stop.is_set(),
+                # Only a cut run says so, the others keep their payload as it was.
+                **(
+                    {"cut": True, "reason": const.CUT_REASON_DEADLINE}
+                    if run.cut
+                    else {}
+                ),
             },
         )
