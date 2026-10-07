@@ -1251,11 +1251,17 @@ class ValveRunnerMixin(
         )
 
     async def _run_one_valve(
-        self, zone: dict, passes: int | None = None, max_litres: float | None = None
+        self,
+        zone: dict,
+        passes: int | None = None,
+        max_litres: float | None = None,
+        owed: tuple | None = None,
     ):
         """Water one zone for its duration, in one pass or several, and credit.
 
         ``passes`` overrides the general setting (a step of a program sets its own).
+        ``owed`` is ``(pending, lead)``: the passes a pause interrupted, watered as
+        they are instead of a fresh plan (see ``_resume_owed``).
 
         Returns a result dict ``{zone_id, zone, seconds, ran, problem}`` used to
         build the end-of-watering summary, or None when there was nothing to do.
@@ -1277,7 +1283,7 @@ class ValveRunnerMixin(
         self._run_controls()[zone_id] = RunControl(*self._pause_events())
         try:
             return await self._run_claimed_valve(
-                zone, entity_id, duration, passes, max_litres
+                zone, entity_id, duration, passes, max_litres, owed
             )
         finally:
             claimed.discard(zone_id)
@@ -1290,6 +1296,7 @@ class ValveRunnerMixin(
         duration: float,
         passes: int | None = None,
         max_litres: float | None = None,
+        owed: tuple | None = None,
     ):
         """The body of ``_run_one_valve``, once the zone is claimed."""
         zone_id = int(zone.get(const.ZONE_ID))
@@ -1299,12 +1306,15 @@ class ValveRunnerMixin(
         # fill it again: split the water, add the lead to each pass, and credit
         # only the water. Crediting the lead as water left a phantom surplus
         # after every run.
-        lead = self._lead_seconds(zone, duration)
-        plan = (
-            split_into_passes(passes, duration - lead)
-            if passes
-            else self._pass_plan(duration - lead)
-        )
+        if owed is not None:
+            plan, lead = list(owed[0]), float(owed[1])
+        else:
+            lead = self._lead_seconds(zone, duration)
+            plan = (
+                split_into_passes(passes, duration - lead)
+                if passes
+                else self._pass_plan(duration - lead)
+            )
         soak = self._soak_seconds() if len(plan) > 1 else 0.0
         # Suppress the observer from the moment we send the first open command
         # until the last pass has closed, soaking time included. Each pass
@@ -1340,10 +1350,17 @@ class ValveRunnerMixin(
                 control is not None
                 and control.pause.is_set()
                 and not control.stop.is_set()
-                and not await self._wait_resume(control)
             ):
-                stopped = True
-                break
+                # What the pause leaves owed is kept, so a reload or a restart
+                # while it lasts does not lose it (the pause itself is kept).
+                await self._persist_owed(zone_id, entity_id, pending, lead, watered)
+                resumed = await self._wait_resume(control)
+                # Not reached when the wait is cancelled by a reload: the record
+                # stays for the next start.
+                await self._clear_owed(zone_id)
+                if not resumed:
+                    stopped = True
+                    break
             if control is not None and control.stop.is_set():
                 stopped = True
                 break
@@ -1924,7 +1941,8 @@ class ValveRunnerMixin(
         runs = list(getattr(self.store.config, const.CONF_ACTIVE_VALVE_RUNS, []) or [])
         cycle = getattr(self.store.config, const.CONF_ACTIVE_CYCLE, None)
         program_run = getattr(self.store.config, const.CONF_ACTIVE_PROGRAM_RUN, None)
-        if not runs and not cycle and not program_run:
+        owed = self._owed_records()
+        if not runs and not cycle and not program_run and not owed:
             return
         if runs:
             _LOGGER.info(
@@ -1947,10 +1965,112 @@ class ValveRunnerMixin(
                 ),
             }
         resumed = [self._spawn_valve_run(self._resume_one(run)) for run in runs]
+        # What a pause owed the zones it interrupted: waters first (after the
+        # pause), before the program or the cycle goes on with what comes next.
+        resumed += [self._spawn_valve_run(self._resume_owed(rec)) for rec in owed]
         if cycle:
             self._spawn_valve_run(self._resume_cycle(cycle, resumed))
         if program_run:
             self._spawn_valve_run(self._resume_program(program_run, resumed))
+
+    # --- the water a pause owes, across a reload or a restart -----------------
+
+    def _owed_records(self) -> list:
+        records = getattr(self.store.config, const.CONF_PAUSED_OWED, None) or []
+        return [r for r in records if isinstance(r, dict)]
+
+    async def _persist_owed(self, zone_id, entity_id, pending, lead, credited) -> None:
+        """Keep what a pause leaves owed to a zone (full controller only).
+
+        ``credited`` is the water already credited to the zone by this run: the
+        record only says what is still to water, so it is never credited twice.
+        """
+        if not self._full_controller():
+            return
+        zone_id = int(zone_id)
+        record = {
+            "zone_id": zone_id,
+            "entity": entity_id,
+            "pending": [float(s) for s in pending],
+            "lead": float(lead),
+            "credited": float(credited or 0.0),
+            "since": dt_util.utcnow().isoformat(),
+        }
+        records = [r for r in self._owed_records() if r.get("zone_id") != zone_id]
+        records.append(record)
+        try:
+            await self.store.async_update_config({const.CONF_PAUSED_OWED: records})
+        except asyncio.CancelledError:
+            raise
+        except Exception as e:  # noqa: BLE001 - the record is not the run
+            _LOGGER.warning("Could not record the water a pause owes: %s", e)
+
+    async def _clear_owed(self, zone_id) -> None:
+        zone_id = int(zone_id)
+        records = self._owed_records()
+        kept = [r for r in records if r.get("zone_id") != zone_id]
+        if len(kept) == len(records):
+            return
+        try:
+            await self.store.async_update_config({const.CONF_PAUSED_OWED: kept or None})
+        except asyncio.CancelledError:
+            raise
+        except Exception as e:  # noqa: BLE001 - the record is not the run
+            _LOGGER.warning("Could not clear the water a pause owed: %s", e)
+
+    async def _resume_owed(self, record: dict):
+        """Water what a pause owed a zone before a reload or a restart.
+
+        Goes through the same pass loop as an in-memory resume: it waits for the
+        pause to end, then waters the owed passes, crediting only that water (the
+        part delivered before the pause was credited when the pause closed it).
+        Returns the zone's result, or None when nothing is owed any more.
+        """
+        try:
+            zone_id = int(record.get("zone_id"))
+            pending = [float(s) for s in record.get("pending") or []]
+            lead = float(record.get("lead") or 0.0)
+        except (TypeError, ValueError):
+            return None
+        since = dt_util.parse_datetime(record.get("since") or "")
+        zone = self.store.get_zone(zone_id)
+        too_old = (
+            since is None
+            or (dt_util.utcnow() - since).total_seconds()
+            > const.OWED_RESUME_MAX_AGE_SECONDS
+        )
+        if (
+            too_old
+            or not pending
+            or zone is None
+            or not zone.get(const.ZONE_LINKED_ENTITY)
+            or zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED
+            or not self._full_controller()
+        ):
+            _LOGGER.info(
+                "The water a pause owed zone %s is dropped (too old, or the zone "
+                "or the mode changed)",
+                zone_id,
+            )
+            await self._clear_owed(zone_id)
+            return None
+        _LOGGER.info(
+            "Going on with the %.0fs a pause owed zone %s", sum(pending), zone_id
+        )
+        zone = dict(zone)
+        zone[const.ZONE_DURATION] = sum(pending) + lead
+        try:
+            return await self._run_one_valve(zone, owed=(pending, lead))
+        except asyncio.CancelledError:
+            raise
+        except Exception as e:  # noqa: BLE001 - one zone is one zone
+            _LOGGER.error("Zone %s: the owed water failed: %s", zone_id, e)
+            return None
+        finally:
+            # A reload cancels the run in its wait: the record has to stay then.
+            current = asyncio.current_task()
+            if current is None or not current.cancelling():
+                await self._clear_owed(zone_id)
 
     async def _resume_cycle(self, cycle: dict, resumed: list) -> None:
         """Go on with the zones a restart interrupted the cycle before.
@@ -2268,11 +2388,13 @@ class ValveRunnerMixin(
                 lead = self._lead_seconds(zone, duration)
                 owed = max(0.0, duration - lead) - water
                 control = self._run_controls().get(zone_id)
-                if (
-                    owed >= 1.0
-                    and control is not None
-                    and await self._wait_resume(control)
-                ):
+                if owed >= 1.0 and control is not None:
+                    await self._persist_owed(zone_id, entity_id, [owed], lead, water)
+                    resumed_again = await self._wait_resume(control)
+                    await self._clear_owed(zone_id)
+                else:
+                    resumed_again = False
+                if resumed_again:
                     control.delivered = None
                     await self._run_one_pass(
                         self._zone_or_stub(zone_id), entity_id, owed, lead

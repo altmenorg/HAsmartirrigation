@@ -147,6 +147,12 @@ CONF_PROGRAM_LAST_STARTED = "program_last_started"
 # Until when the watering is paused (iso, UTC), kept so a restart goes on with
 # the pause while it is still ahead. None when not paused.
 CONF_PAUSE_UNTIL = "pause_until"
+# The water a pause still owes the zones it interrupted, kept so a reload or a
+# restart during the pause does not lose it: [{"zone_id": 1, "entity": "valve.x",
+# "pending": [11.0], "lead": 0.0, "credited": 9.0, "since": iso}].
+CONF_PAUSED_OWED = "paused_owed"
+# A record of owed water older than this (the longest pause plus a cycle) is dropped.
+OWED_RESUME_MAX_AGE_SECONDS = 30 * 3600
 # The manual program runs waiting for their turn, kept so a restart does not lose
 # them: [{"program_id": "evening", "seconds": None, "requested": iso}].
 CONF_QUEUED_MANUAL_RUNS = "queued_manual_runs"

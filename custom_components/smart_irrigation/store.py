@@ -95,6 +95,7 @@ from .const import (
     CONF_OBSERVED_WATERING_ENABLED,
     CONF_PAUSE_BETWEEN_ZONES,
     CONF_PAUSE_UNTIL,
+    CONF_PAUSED_OWED,
     CONF_POSTPONE_UNTIL,
     CONF_PRECIPITATION_THRESHOLD_MM,
     CONF_PROGRAM_ADJUSTMENTS,
@@ -689,6 +690,7 @@ class Config:
     program_last_runs = attr.ib(type=dict, default=None)
     program_last_started = attr.ib(type=dict, default=None)
     pause_until = attr.ib(type=str, default=None)
+    paused_owed = attr.ib(type=list, default=None)
     queued_manual_runs = attr.ib(type=list, default=None)
     program_adjustments = attr.ib(type=dict, default=None)
     suspensions = attr.ib(type=dict, default=None)
@@ -1193,6 +1195,7 @@ class SmartIrrigationStorage:
                 program_last_runs=data["config"].get(CONF_PROGRAM_LAST_RUNS),
                 program_last_started=data["config"].get(CONF_PROGRAM_LAST_STARTED),
                 pause_until=data["config"].get(CONF_PAUSE_UNTIL),
+                paused_owed=data["config"].get(CONF_PAUSED_OWED),
                 queued_manual_runs=data["config"].get(CONF_QUEUED_MANUAL_RUNS),
                 program_adjustments=data["config"].get(CONF_PROGRAM_ADJUSTMENTS),
                 suspensions=data["config"].get(CONF_SUSPENSIONS),
@@ -1542,6 +1545,7 @@ class SmartIrrigationStorage:
             or CONF_ACTIVE_CYCLE in changes
             or CONF_ACTIVE_PROGRAM_RUN in changes
             or CONF_PAUSE_UNTIL in changes
+            or CONF_PAUSED_OWED in changes
             or CONF_QUEUED_MANUAL_RUNS in changes
         ):
             await self._save_now()

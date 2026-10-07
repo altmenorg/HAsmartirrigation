@@ -755,6 +755,7 @@ class ProgramRunnerMixin:
             or self._programs_resuming()
             or getattr(config, const.CONF_ACTIVE_VALVE_RUNS, None)
             or getattr(config, const.CONF_ACTIVE_CYCLE, None)
+            or getattr(config, const.CONF_PAUSED_OWED, None)
             or self._active_valve_runs
             or self._claimed_zone_ids()
             or self._sequential_cycle is not None
@@ -819,9 +820,10 @@ class ProgramRunnerMixin:
                 "manual": bool(record.get("manual")),
             }
             self._notify_programs()
+        outcomes: list = []
         try:
             if resumed:
-                await asyncio.gather(*resumed, return_exceptions=True)
+                outcomes = await asyncio.gather(*resumed, return_exceptions=True)
         finally:
             resuming.pop(program_id, None)
         if not plan or not program_id or program_id in self._program_registry():
@@ -840,6 +842,9 @@ class ProgramRunnerMixin:
         )
         run.started = record.get("started")
         run.deadline = dt_util.parse_datetime(record.get("deadline") or "")
+        # The water a pause owed the zones of the interrupted step is part of
+        # this program's report (only that kind of resumed run returns a result).
+        run.results.extend(o for o in outcomes if isinstance(o, dict))
 
         async def _remaining():
             # The zones of the interrupted step that had started are finished by
