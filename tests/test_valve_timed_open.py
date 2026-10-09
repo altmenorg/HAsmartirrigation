@@ -121,12 +121,12 @@ async def test_a_failing_command_falls_back_to_turn_on_then_arm_and_warns_once(
         await coord._run_one_pass(store.get_zone(0), ENTITY, 60)
 
     assert opens(hass) == [ENTITY, ENTITY]
-    # Per pass: the failed timed open (2 attempts), then the old arm attempt
+    # Per pass: the failed timed open (one attempt), then the old arm attempt
     # (also failing).
-    assert len(hass.zha_calls) == 6
+    assert len(hass.zha_calls) == 4
     order = _order(hass)
     assert order[0] == ("zha", "issue_zigbee_cluster_command")
-    assert order[2] == ("switch", "turn_on")
+    assert order[1] == ("switch", "turn_on")
     levels = [r.levelname for r in caplog.records if "its own timer" in r.getMessage()]
     assert levels == ["WARNING", "DEBUG"]
 
@@ -146,6 +146,8 @@ def _hang_first(hass, hanging):
 
 async def test_a_timed_attempt_that_times_out_is_retried_once(monkeypatch):
     hass, coord, store = _setup(monkeypatch)
+    # One attempt is the default; the retry itself is kept working when raised.
+    monkeypatch.setattr(const, "TIMED_OPEN_ATTEMPTS", 2)
     monkeypatch.setattr(const, "TIMED_OPEN_ATTEMPT_SECONDS", 0.01)
     _hang_first(hass, 1)
 
@@ -162,6 +164,7 @@ async def test_two_timeouts_fall_back_to_turn_on_and_arm_with_one_warning(
     monkeypatch, caplog
 ):
     hass, coord, store = _setup(monkeypatch)
+    monkeypatch.setattr(const, "TIMED_OPEN_ATTEMPTS", 2)
     monkeypatch.setattr(const, "TIMED_OPEN_ATTEMPT_SECONDS", 0.01)
     monkeypatch.setattr(const, "ARM_ATTEMPT_SECONDS", 0.01)
     _hang_first(hass, 100)
