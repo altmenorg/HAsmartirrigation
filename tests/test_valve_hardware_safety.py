@@ -52,19 +52,44 @@ def _runner(entry=None, *, raises=False):
     return runner
 
 
-async def _arm(runner, zone_data, held=600.2, entity_id=None):
-    with patch(
-        "custom_components.smart_irrigation.valve_runner.er.async_get",
-        return_value=runner._registry,
+async def _arm(runner, zone_data, held=600.2, entity_id=None, device="unset"):
+    """Arm; the device registry returns ``device`` (default: an unknown model)."""
+    if device == "unset":
+        device = _device("Acme", "Valve-9")
+    devices = MagicMock()
+    devices.async_get.return_value = device
+    if device == "raises":
+        devices.async_get.side_effect = RuntimeError("no device registry")
+    with (
+        patch(
+            "custom_components.smart_irrigation.valve_runner.er.async_get",
+            return_value=runner._registry,
+        ),
+        patch(
+            "custom_components.smart_irrigation.valve_runner.dr.async_get",
+            return_value=devices,
+        ),
     ):
         await runner._arm_safety_off(zone_data, held, entity_id)
 
 
-def _entry(platform="zha", unique_id=f"{IEEE}-1"):
-    return SimpleNamespace(platform=platform, unique_id=unique_id)
+def _entry(platform="zha", unique_id=f"{IEEE}-1", device_id="dev1"):
+    return SimpleNamespace(platform=platform, unique_id=unique_id, device_id=device_id)
 
 
-# ZHA is opt-in: a Sonoff SWV ignores the timed off, so "auto" never sends it.
+def _device(manufacturer, model):
+    return SimpleNamespace(manufacturer=manufacturer, model=model)
+
+
+SWV = _device("SONOFF", "SWV")
+AUTO_ZONE = {
+    const.ZONE_ID: 1,
+    const.ZONE_LINKED_ENTITY: ENTITY,
+    const.ZONE_SAFETY_OFF_MODE: const.SAFETY_OFF_MODE_AUTO,
+}
+
+# "zha" arms any ZHA valve (tenths for an unknown model); "auto" only a known
+# seconds-counting model such as the Sonoff SWV.
 ZONE = {
     const.ZONE_ID: 1,
     const.ZONE_LINKED_ENTITY: ENTITY,
@@ -170,10 +195,116 @@ async def test_the_mode_off_never_arms_anything():
 
 
 @pytest.mark.parametrize("mode", [None, "auto"])
-async def test_a_zha_valve_is_not_armed_unless_the_mode_says_zha(mode):
+async def test_auto_does_not_arm_an_unknown_zha_model(mode):
     runner = _runner(_entry())
 
     await _arm(runner, {**ZONE, const.ZONE_SAFETY_OFF_MODE: mode}, 60)
+
+    runner.hass.services.async_call.assert_not_called()
+
+
+@pytest.mark.parametrize("mode", [None, "auto"])
+async def test_auto_arms_a_sonoff_swv_in_seconds(mode):
+    runner = _runner(_entry())
+
+    await _arm(runner, {**ZONE, const.ZONE_SAFETY_OFF_MODE: mode}, 600.2, device=SWV)
+
+    data = runner.hass.services.async_call.call_args[0][2]
+    assert data["args"] == [0, 601 + const.SAFETY_OFF_TIME_MARGIN, 0]
+
+
+@pytest.mark.parametrize(
+    "manufacturer, model", [("sonoff", "swv"), (" Sonoff ", "SWV")]
+)
+async def test_the_model_match_ignores_case(manufacturer, model):
+    runner = _runner(_entry())
+
+    await _arm(runner, AUTO_ZONE, 60, device=_device(manufacturer, model))
+
+    runner.hass.services.async_call.assert_awaited_once()
+
+
+@pytest.mark.parametrize(
+    "device",
+    [
+        _device("SONOFF", "ZBMINI"),
+        _device("Other", "SWV"),
+        _device(None, None),
+        None,
+        "raises",
+    ],
+)
+async def test_auto_arms_nothing_for_another_model_or_a_failed_lookup(device):
+    runner = _runner(_entry())
+
+    await _arm(runner, AUTO_ZONE, 60, device=device)
+
+    runner.hass.services.async_call.assert_not_called()
+
+
+async def test_auto_arms_nothing_when_the_entity_has_no_device():
+    runner = _runner(_entry(device_id=None))
+
+    await _arm(runner, AUTO_ZONE, 60, device=SWV)
+
+    runner.hass.services.async_call.assert_not_called()
+
+
+async def test_zha_mode_arms_a_swv_in_seconds_too():
+    runner = _runner(_entry())
+
+    await _arm(runner, ZONE, 60, device=SWV)
+
+    args = runner.hass.services.async_call.call_args[0][2]["args"]
+    assert args == [0, 60 + const.SAFETY_OFF_TIME_MARGIN, 0]
+
+
+async def test_zha_mode_arms_an_unknown_model_in_tenths():
+    runner = _runner(_entry())
+
+    await _arm(runner, ZONE, 60)
+
+    args = runner.hass.services.async_call.call_args[0][2]["args"]
+    assert args == [0, (60 + const.SAFETY_OFF_TIME_MARGIN) * 10, 0]
+
+
+async def test_a_swv_time_is_clamped_to_16_bits():
+    runner = _runner(_entry())
+
+    await _arm(runner, AUTO_ZONE, 100000, device=SWV)
+
+    args = runner.hass.services.async_call.call_args[0][2]["args"]
+    assert args == [0, 0xFFFF, 0]
+
+
+async def test_a_swv_long_pass_still_gets_seconds_beyond_6553():
+    runner = _runner(_entry())
+
+    await _arm(runner, AUTO_ZONE, 7000, device=SWV)
+
+    args = runner.hass.services.async_call.call_args[0][2]["args"]
+    assert args == [0, 7000 + const.SAFETY_OFF_TIME_MARGIN, 0]
+
+
+async def test_a_topic_wins_over_a_swv_in_auto():
+    runner = _runner(_entry())
+
+    with patch("homeassistant.components.mqtt.async_publish", AsyncMock()) as publish:
+        await _arm(
+            runner,
+            {**AUTO_ZONE, const.ZONE_SAFETY_OFF_TOPIC: "z2m/valve/set"},
+            60,
+            device=SWV,
+        )
+
+    publish.assert_awaited_once()
+    runner.hass.services.async_call.assert_not_called()
+
+
+async def test_the_mode_off_does_not_arm_a_swv():
+    runner = _runner(_entry())
+
+    await _arm(runner, {**AUTO_ZONE, const.ZONE_SAFETY_OFF_MODE: "off"}, 60, device=SWV)
 
     runner.hass.services.async_call.assert_not_called()
 

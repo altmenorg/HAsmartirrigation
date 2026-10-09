@@ -647,14 +647,22 @@ SAFETY_OFF_TIME_MARGIN = 30
 ZONE_SAFETY_OFF_MODE = "safety_off_mode"
 SAFETY_OFF_MODE_AUTO = "auto"
 SAFETY_OFF_MODE_OFF = "off"
-# Opt in to the ZHA "on with timed off" command. Not automatic: a Sonoff SWV on
-# ZHA opens on it but ignores the timer, so sending it would only look safe.
+# Opt in to the ZHA "on with timed off" command for any ZHA valve. In "auto" only
+# the models of ZHA_SECONDS_VALVES are armed, since the unit of the on time
+# differs between devices.
 SAFETY_OFF_MODE_ZHA = "zha"
 SAFETY_OFF_MODES = (SAFETY_OFF_MODE_AUTO, SAFETY_OFF_MODE_OFF, SAFETY_OFF_MODE_ZHA)
 # ZHA: the On/Off cluster and its "on with timed off" command.
 ZHA_PLATFORM = "zha"
 ZHA_ON_OFF_CLUSTER = 6
 ZHA_ON_WITH_TIMED_OFF = 0x42
+# (manufacturer, model) of ZHA valves verified to count the on time of that command
+# in SECONDS, not in tenths of a second as the ZCL spec says (compared case
+# insensitively). Sonoff SWV, firmware 1.0.04, tested on a real valve. Add models
+# here once verified; "auto" arms only these.
+ZHA_SECONDS_VALVES = (("SONOFF", "SWV"),)
+# The on time is a 16-bit value.
+ZHA_MAX_ON_TIME = 0xFFFF
 # Optional cumulative volume/flow meter; credits the bucket by measured volume.
 ZONE_FLOW_SENSOR = "flow_sensor"
 # A soil moisture sensor, in %, and the moisture at or above which the zone

@@ -33,6 +33,7 @@ from datetime import datetime, timedelta
 from functools import partial
 
 import homeassistant.util.dt as dt_util
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 
 from . import const
@@ -444,18 +445,59 @@ class ValveRunnerMixin(
         warned.add(key)
         _LOGGER.warning(message, *args)
 
+    def _zha_counts_seconds(self, entity_id: str | None) -> bool:
+        """Whether the valve is a known model that counts the on time in seconds.
+
+        Entity -> device -> manufacturer and model, compared case insensitively
+        with ``const.ZHA_SECONDS_VALVES``. Any failure of the lookup is False.
+        """
+        if not entity_id:
+            return False
+        try:
+            entry = er.async_get(self.hass).async_get(entity_id)
+            device_id = getattr(entry, "device_id", None)
+            if not device_id:
+                return False
+            device = dr.async_get(self.hass).async_get(device_id)
+            if device is None:
+                return False
+            known = (
+                str(getattr(device, "manufacturer", "") or "").strip().casefold(),
+                str(getattr(device, "model", "") or "").strip().casefold(),
+            )
+        except Exception:  # noqa: BLE001 - no lookup, unknown device
+            return False
+        return any(
+            known == (manufacturer.casefold(), model.casefold())
+            for manufacturer, model in const.ZHA_SECONDS_VALVES
+        )
+
     async def _arm_zha_safety_off(
-        self, zone: dict, held: float, entity_id: str | None
+        self,
+        zone: dict,
+        held: float,
+        entity_id: str | None,
+        *,
+        known_only: bool = False,
     ) -> None:
-        """Arm the dead-man of a ZHA valve: "on with timed off" on its On/Off cluster."""
+        """Arm the dead-man of a ZHA valve: "on with timed off" on its On/Off cluster.
+
+        A known model that counts seconds gets the time in seconds; any other
+        gets the ZCL unit (tenths of a second). ``known_only`` (the "auto" mode)
+        arms nothing for a model that is not known.
+        """
         target = self._zha_target(entity_id)
         if target is None:
             return
+        seconds = self._zha_counts_seconds(entity_id)
+        if known_only and not seconds:
+            return
         ieee, endpoint_id = target
-        # The command's on time is in tenths of a second, a 16-bit value.
         on_time = int(math.ceil(max(0.0, held))) + const.SAFETY_OFF_TIME_MARGIN
-        tenths = on_time * 10
-        if tenths > 0xFFFF:
+        # Seconds are clamped to the 16 bits (about 18 hours); tenths are not
+        # clamped, a pass too long for them arms nothing (below).
+        device_time = min(on_time, const.ZHA_MAX_ON_TIME) if seconds else on_time * 10
+        if device_time > const.ZHA_MAX_ON_TIME:
             # The device would shut the valve itself at 0xFFFF tenths (about 109
             # minutes), cutting a longer pass short: no dead-man is better.
             self._safety_off_failed(
@@ -477,7 +519,7 @@ class ValveRunnerMixin(
                     "cluster_type": "in",
                     "command": const.ZHA_ON_WITH_TIMED_OFF,
                     "command_type": "server",
-                    "args": [0, tenths, 0],
+                    "args": [0, device_time, 0],
                 },
                 blocking=True,
             )
@@ -506,11 +548,12 @@ class ValveRunnerMixin(
         net alongside the normal close in ``_run_one_pass``'s finally block: the
         run is still driven by Home Assistant, the on_time only bounds it.
 
-        Without a topic, a valve gets a ZHA cluster command (on with timed off,
-        found through the entity registry) only when the zone's
-        ``safety_off_mode`` is "zha": it is never automatic, because a Sonoff
-        SWV on ZHA opens on that command and ignores the timer. A valve of any
-        other platform gets none. "off" disables the topic as well.
+        Without a topic, a ZHA valve gets a ZHA cluster command (on with timed
+        off, found through the entity registry). In "auto" only a model known
+        to count the on time in seconds (a Sonoff SWV, see
+        ``const.ZHA_SECONDS_VALVES``) is armed; "zha" arms any ZHA valve, in
+        the ZCL unit (tenths) for an unknown model. A valve of any other
+        platform gets none. "off" disables the topic as well.
 
         A missing topic, an MQTT stack that is not set up, or any publish error
         must never break the run (the close still happens the usual way), so the
@@ -520,10 +563,13 @@ class ValveRunnerMixin(
             return
         topic = zone.get(const.ZONE_SAFETY_OFF_TOPIC)
         if not topic:
-            if zone.get(const.ZONE_SAFETY_OFF_MODE) == const.SAFETY_OFF_MODE_ZHA:
-                await self._arm_zha_safety_off(
-                    zone, held, entity_id or zone.get(const.ZONE_LINKED_ENTITY)
-                )
+            await self._arm_zha_safety_off(
+                zone,
+                held,
+                entity_id or zone.get(const.ZONE_LINKED_ENTITY),
+                known_only=zone.get(const.ZONE_SAFETY_OFF_MODE)
+                != const.SAFETY_OFF_MODE_ZHA,
+            )
             return
         key = (
             zone.get(const.ZONE_SAFETY_OFF_STATE_KEY)
