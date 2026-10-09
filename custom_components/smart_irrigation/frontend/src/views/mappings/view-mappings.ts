@@ -798,6 +798,15 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     }
 
     const mappingline = mapping.mappings[value];
+    // The evapotranspiration of a group is read only by the zones set to
+    // "provided by a sensor or a service". When none of the zones of the group
+    // reads it, the line is greyed out and says why.
+    const use =
+      value === MAPPING_EVAPOTRANSPIRATION
+        ? this.etUseOfZones(mapping.id)
+        : { provided: 0, calculated: 0 };
+    const etUnused = use.calculated > 0 && use.provided === 0;
+    const etNeeded = use.provided > 0 && use.calculated === 0;
 
     return html`
       <div class="si-subgroup">
@@ -812,10 +821,46 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
           localize("panels.mappings.cards.mapping.source", this.hass.language),
           this.renderSimpleRadioOptions(index, value, mappingline),
           (e: Event) => this.handleSimpleSourceChange(index, value, e),
+          etUnused,
         )}
+        ${etUnused
+          ? html`<div class="weather-note">
+              ${localize(
+                "panels.mappings.cards.mapping.et_unused",
+                this.hass.language,
+              )}
+            </div>`
+          : ""}
+        ${etNeeded
+          ? html`<div class="weather-note">
+              ${localize(
+                "panels.mappings.cards.mapping.et_needed",
+                this.hass.language,
+              )}
+            </div>`
+          : ""}
         ${this.renderMappingInputs(index, value, mappingline)}
       </div>
     `;
+  }
+
+  // How many zones of a group read its evapotranspiration ("provided", the
+  // pass-through engine) and how many calculate it themselves. A zone without
+  // an engine yet counts for neither.
+  private etUseOfZones(mappingId: any): {
+    provided: number;
+    calculated: number;
+  } {
+    let provided = 0;
+    let calculated = 0;
+    for (const zone of this.zones) {
+      if (zone.mapping !== mappingId) continue;
+      const engine = this.modules.find((m) => m.id === zone.module)?.name;
+      if (!engine) continue;
+      if (engine === "Passthrough") provided += 1;
+      else calculated += 1;
+    }
+    return { provided, calculated };
   }
 
   // One plain sentence under the title of a source: what it is, and what
@@ -850,6 +895,17 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     const offerWeatherService =
       !!this.config.use_weather_service && !isPrecipitationDepth;
     const offerNone = isSpecialMapping || isPrecipitationDepth;
+    // Every zone of the group waits for a ready-made evapotranspiration: None
+    // would leave them without one, so it cannot be chosen (a group already on
+    // None keeps showing it, and the note says what is missing).
+    const etUse =
+      value === MAPPING_EVAPOTRANSPIRATION
+        ? this.etUseOfZones(this.mappings[index]?.id)
+        : { provided: 0, calculated: 0 };
+    const noneBlocked =
+      etUse.provided > 0 &&
+      etUse.calculated === 0 &&
+      currentSource !== MAPPING_CONF_SOURCE_NONE;
     // Show "(via Open-Meteo)" when the value will actually come from the
     // Open-Meteo fallback rather than the chosen service.
     const viaOpenMeteo =
@@ -874,6 +930,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         ? html`<option
             value="${MAPPING_CONF_SOURCE_NONE}"
             ?selected=${currentSource === MAPPING_CONF_SOURCE_NONE}
+            ?disabled=${noneBlocked}
           >
             ${localize(
               value === MAPPING_EVAPOTRANSPIRATION
@@ -1708,12 +1765,13 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     label: string,
     options: TemplateResult,
     onChange: (e: Event) => void,
+    disabled = false,
   ): TemplateResult {
     return html`
       <div class="setting-row">
         <div class="setting-label">${label}</div>
         <div class="select-wrap">
-          <select class="field" @change=${onChange}>
+          <select class="field" ?disabled=${disabled} @change=${onChange}>
             ${options}
           </select>
           <svg class="chev" viewBox="0 0 24 24">

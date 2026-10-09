@@ -427,6 +427,8 @@
           "hidden_sources": "{n} reading(s) not asked: the evapotranspiration is given ready-made, they would only serve to recalculate it.",
           "et_ignored": "Zone(s) {zones} are calculated from the weather and do not read this evapotranspiration. Set them to provided by a sensor or a service on the zone.",
           "et_missing": "Zone(s) {zones} expect a ready-made evapotranspiration: choose a source for it above.",
+          "et_unused": "Not used: every zone of this group is calculated by Smart Irrigation, which works the evapotranspiration out from the other readings. Set a zone to provided by a sensor or a service to give a ready-made value here.",
+          "et_needed": "A ready-made value is needed here: the zones of this group are set to provided by a sensor or a service, so None is not offered.",
           "hints": {
             "temperature": "Air temperature, in the shade. The day's minimum and maximum are taken from it.",
             "dewpoint": "The temperature at which the air would be saturated, which tells how much vapour it holds. The weather service is fine here.",

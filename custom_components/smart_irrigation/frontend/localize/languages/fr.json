@@ -427,6 +427,8 @@
           "hidden_sources": "{n} mesure(s) non demandée(s) : l'évapotranspiration est fournie toute faite, elles ne serviraient qu'à la recalculer.",
           "et_ignored": "La ou les zones {zones} sont calculées à partir de la météo et ne lisent pas cette évapotranspiration. Règle-les sur fournie par un capteur ou un service, dans la zone.",
           "et_missing": "La ou les zones {zones} attendent une évapotranspiration toute faite : choisis une source pour elle ci-dessus.",
+          "et_unused": "Non utilisée : toutes les zones de ce groupe sont calculées par Smart Irrigation, qui déduit l'évapotranspiration des autres mesures. Règle une zone sur fournie par un capteur ou un service pour donner une valeur toute faite ici.",
+          "et_needed": "Une valeur toute faite est nécessaire ici : les zones de ce groupe sont réglées sur fournie par un capteur ou un service, donc Aucun n'est pas proposé.",
           "hints": {
             "temperature": "Température de l'air, à l'ombre. Le minimum et le maximum de la journée en sont tirés.",
             "dewpoint": "La température à laquelle l'air serait saturé : elle dit combien de vapeur il contient. Le service météo convient ici.",
