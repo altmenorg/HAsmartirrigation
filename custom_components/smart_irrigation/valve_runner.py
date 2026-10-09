@@ -594,6 +594,75 @@ class ValveRunnerMixin(
                 e,
             )
 
+    def _timed_open_data(self, zone: dict, held: float, entity_id: str | None):
+        """The ZHA command that opens a valve and bounds it, or None.
+
+        Only a known model that counts seconds (``const.ZHA_SECONDS_VALVES``),
+        in the "auto" mode, without an MQTT topic: for any other valve the
+        normal open followed by the separate arm stays.
+        """
+        mode = zone.get(const.ZONE_SAFETY_OFF_MODE)
+        if mode in (const.SAFETY_OFF_MODE_OFF, const.SAFETY_OFF_MODE_ZHA):
+            return None
+        if zone.get(const.ZONE_SAFETY_OFF_TOPIC):
+            return None
+        target = self._zha_target(entity_id)
+        if target is None or not self._zha_counts_seconds(entity_id):
+            return None
+        ieee, endpoint_id = target
+        on_time = int(math.ceil(max(0.0, held))) + const.SAFETY_OFF_TIME_MARGIN
+        return {
+            "ieee": ieee,
+            "endpoint_id": endpoint_id,
+            "cluster_id": const.ZHA_ON_OFF_CLUSTER,
+            "cluster_type": "in",
+            "command": const.ZHA_ON_WITH_TIMED_OFF,
+            "command_type": "server",
+            "args": [0, min(on_time, const.ZHA_MAX_ON_TIME), 0],
+        }
+
+    def _timed_opens(self) -> dict:
+        """The timed-open commands of the passes under way, by zone id."""
+        opened = getattr(self, "_timed_open_commands", None)
+        if opened is None:
+            opened = self._timed_open_commands = {}
+        return opened
+
+    async def _open_with_timer(self, zone: dict, entity_id: str, held: float) -> bool:
+        """Open a known seconds-counting ZHA valve with its own timer, in one command.
+
+        "On with timed off" both opens the valve and arms the device's own
+        close, so there is no moment when it is open without a timer. True when
+        the valve was opened that way (the separate arm is then skipped);
+        False when it is not such a valve or the command failed, and the
+        caller opens the normal way. A failure never prevents the watering.
+        """
+        data = self._timed_open_data(zone, held, entity_id)
+        if data is None:
+            return False
+        try:
+            await self.hass.services.async_call(
+                "zha", "issue_zigbee_cluster_command", data, blocking=True
+            )
+        except asyncio.CancelledError:
+            raise
+        except Exception as e:  # noqa: BLE001 - the normal open follows
+            self._safety_off_failed(
+                zone.get(const.ZONE_ID, entity_id),
+                "Direct valve control: could not open %s with its own timer "
+                "(ZHA unavailable?), opening it the normal way: %s",
+                entity_id,
+                e,
+            )
+            return False
+        self._timed_opens()[zone.get(const.ZONE_ID)] = data
+        _LOGGER.debug(
+            "Direct valve control: opened %s with a timer of %ss (ZHA)",
+            entity_id,
+            data["args"][1],
+        )
+        return True
+
     def _full_controller(self) -> bool:
         return getattr(self.store.config, const.CONF_FULL_CONTROLLER, False) is True
 
@@ -620,7 +689,11 @@ class ValveRunnerMixin(
         )
 
     async def _open_zone_valves(
-        self, zone: dict, primary: str, entities: list | None = None
+        self,
+        zone: dict,
+        primary: str,
+        entities: list | None = None,
+        timer_seconds: float | None = None,
     ) -> set:
         """Open every valve of the zone. One that fails to open does not stop the others.
 
@@ -628,14 +701,27 @@ class ValveRunnerMixin(
         failing raises, as it always did). ``entities`` is the list a pass took
         once at its start: the close uses the same one, so the mode being
         switched mid-pass cannot leave an extra valve open.
+
+        With ``timer_seconds``, the linked valve is opened by ``_open_with_timer``
+        when it is a valve that can be (the others always take the normal
+        service call); the command is then in ``_timed_opens`` until the pass
+        takes it after the confirmation.
         """
         failed = set()
+        self._timed_opens().pop(zone.get(const.ZONE_ID), None)
         if entities is None:
             entities = self._zone_entities(zone, primary)
         for index, entity_id in enumerate(entities):
             domain, on_svc, _off = self._valve_services(entity_id)
             try:
-                await self._async_call_valve_service(domain, on_svc, entity_id)
+                if (
+                    index == 0
+                    and timer_seconds is not None
+                    and await self._open_with_timer(zone, entity_id, timer_seconds)
+                ):
+                    pass
+                else:
+                    await self._async_call_valve_service(domain, on_svc, entity_id)
             except asyncio.CancelledError:
                 raise
             except Exception as e:  # noqa: BLE001 - the primary's failure is the run's
@@ -669,7 +755,13 @@ class ValveRunnerMixin(
         """
         if entities is None:
             entities = self._zone_entities(zone, primary)
-        result = await self._confirm_valve_running(entities[0]) if entities else None
+        result = None
+        if entities:
+            timed = self._timed_opens().get(zone.get(const.ZONE_ID))
+            if timed is None:
+                result = await self._confirm_valve_running(entities[0])
+            else:
+                result = await self._confirm_valve_running(entities[0], timed)
         if result is False:
             return False
         for entity_id in entities[1:]:
@@ -702,8 +794,11 @@ class ValveRunnerMixin(
             )
         return ok
 
-    async def _confirm_valve_running(self, entity_id: str):
+    async def _confirm_valve_running(self, entity_id: str, timed_open=None):
         """Wait briefly for a freshly-opened valve to report an on-state.
+
+        ``timed_open`` is the ZHA command that opened the valve with its own
+        timer: an open that has to be asked again sends that same command.
 
         Returns True if it reaches an on-state, False if it stays explicitly off
         (a real failure: the run must not be credited), or None when the entity
@@ -727,7 +822,15 @@ class ValveRunnerMixin(
                 )
                 domain, on_svc, _off = self._valve_services(entity_id)
                 try:
-                    await self._async_call_valve_service(domain, on_svc, entity_id)
+                    if timed_open is not None:
+                        await self.hass.services.async_call(
+                            "zha",
+                            "issue_zigbee_cluster_command",
+                            timed_open,
+                            blocking=True,
+                        )
+                    else:
+                        await self._async_call_valve_service(domain, on_svc, entity_id)
                 except asyncio.CancelledError:
                     raise
                 except Exception as e:  # noqa: BLE001 - the confirmation goes on
@@ -1552,17 +1655,23 @@ class ValveRunnerMixin(
                     if control is not None:
                         control.delivered = 0.0
                     return None
-            failed = await self._open_zone_valves(zone, entity_id, entities)
+            failed = await self._open_zone_valves(
+                zone, entity_id, entities, timer_seconds=held
+            )
 
             # Confirm the valve actually opened before counting/crediting: a
             # valve that never opens would otherwise clear the deficit while
             # running dry (and the missed water silently rolls over to the next
             # day). Only an explicit "still off" aborts; an unverifiable
             # (write-only) valve runs.
-            if (
-                await self._confirm_zone_valves(zone, entity_id, failed, entities)
-                is False
-            ):
+            confirmed = await self._confirm_zone_valves(
+                zone, entity_id, failed, entities
+            )
+            # A valve opened with its own timer needs no separate arm.
+            timed_open = (
+                self._timed_opens().pop(zone.get(const.ZONE_ID), None) is not None
+            )
+            if confirmed is False:
                 closed = True
                 await self._close_zone_valves(zone, entity_id, entities)
                 self._report_valve_problem(zone, entity_id, PROBLEM_DID_NOT_OPEN)
@@ -1581,7 +1690,8 @@ class ValveRunnerMixin(
             await self._add_active_run(zone_id, entity_id, started, held)
             # Hardware dead-man: tell the device to shut itself off after the
             # pass, in case Home Assistant never sends the close below.
-            await self._arm_safety_off(zone, held, entity_id)
+            if not timed_open:
+                await self._arm_safety_off(zone, held, entity_id)
             control_here = self._run_controls().get(zone_id)
             if (
                 max_litres
@@ -2355,15 +2465,26 @@ class ValveRunnerMixin(
             if held_override is None:
                 if supply is not None:
                     await self._supply_ensure_on(supply)
+                resume_zone = self._zone_or_stub(zone_id)
                 failed = await self._open_zone_valves(
-                    self._zone_or_stub(zone_id), entity_id, entities
+                    resume_zone,
+                    entity_id,
+                    entities,
+                    timer_seconds=max(
+                        0.0,
+                        duration
+                        - elapsed
+                        - (dt_util.utcnow() - resume_t0).total_seconds(),
+                    ),
                 )
-                if (
-                    await self._confirm_zone_valves(
-                        self._zone_or_stub(zone_id), entity_id, failed, entities
-                    )
-                    is False
-                ):
+                confirmed = await self._confirm_zone_valves(
+                    resume_zone, entity_id, failed, entities
+                )
+                timed_open = (
+                    self._timed_opens().pop(resume_zone.get(const.ZONE_ID), None)
+                    is not None
+                )
+                if confirmed is False:
                     closed = True
                     await self._close_zone_valves(
                         self._zone_or_stub(zone_id), entity_id, entities
@@ -2381,9 +2502,10 @@ class ValveRunnerMixin(
                 )
                 # Re-arm the hardware dead-man for the remaining time after a
                 # restart.
-                await self._arm_safety_off(
-                    self.store.get_zone(zone_id) or {}, remaining
-                )
+                if not timed_open:
+                    await self._arm_safety_off(
+                        self.store.get_zone(zone_id) or {}, remaining
+                    )
                 if await self._wait_or_stop(zone_id, remaining):
                     # Stopped or paused: credit what the valve delivered until now.
                     delivered = min(

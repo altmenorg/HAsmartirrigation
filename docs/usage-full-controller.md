@@ -112,6 +112,8 @@ A **pause** survives a restart while its end is still ahead: the watering is hel
 
 A valve that is slow to say it is open, a battery valve on Zigbee for instance, is given 30 seconds instead of 8 and is asked to open again at 10 and 20 seconds. Only one that stays closed after that is a failure, reported as `valve_did_not_open`.
 
+A **Sonoff SWV on ZHA** is opened with one command, ZHA's *on with timed off*, which opens the valve and bounds it at the same time: the time is the pass length plus a 30-second margin, so the valve closes itself even if Home Assistant dies right after opening. Smart Irrigation still closes it at the normal time, and a repeated open (above) sends the same command. If that command fails, a warning is logged once for the zone and the valve is opened the normal way. See [closed-loop control](configuration-closed-loop.md) for the details and the other valves.
+
 ## Limitations
 
 - A flow meter shared by zones that water at the same time cannot tell their water apart. While they overlap, their **volume limit** counts the meter's litres divided equally by the number of zones on it (an approximation), and their litres are **not** credited from the meter nor used to calibrate the measured flow: they are credited by time, and a line in the log says so once. Give each zone its own meter for exact limits and calibration.
