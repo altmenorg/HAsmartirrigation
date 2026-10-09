@@ -5,7 +5,9 @@ outside, and a hot greenhouse day reached the clear-sky cap: ET about 40% too
 high. The daily engine now dims an estimated sun by the glass's transmission.
 """
 
-from unittest.mock import MagicMock
+import datetime
+from types import SimpleNamespace
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -20,6 +22,36 @@ HOT_DAY = {
     const.MAPPING_WINDSPEED: 0.5,
     const.MAPPING_PRESSURE: 1013.0,
 }
+
+
+class _Noon(datetime.datetime):
+    @classmethod
+    def now(cls, tz=None):
+        return cls(2026, 7, 15, 12, 0, 0)
+
+
+class _Today(datetime.date):
+    @classmethod
+    def today(cls):
+        return cls(2026, 7, 15)
+
+
+@pytest.fixture(autouse=True)
+def _a_summer_day():
+    """The sun the module estimates depends on the day of the year: pin it.
+
+    On an autumn day the ratio of the dimmed figure to the outdoor one sat on the
+    edge of the bound below, and the test failed on the calendar, not on the code.
+    """
+    fake = SimpleNamespace(
+        datetime=_Noon,
+        date=_Today,
+        timedelta=datetime.timedelta,
+        timezone=datetime.timezone,
+        time=datetime.time,
+    )
+    with patch("custom_components.smart_irrigation.calcmodules.pyeto.datetime", fake):
+        yield
 
 
 def _module():
