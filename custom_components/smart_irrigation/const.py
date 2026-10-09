@@ -1010,3 +1010,10 @@ DRY_ZONE_MIN_DEFICIT_MM = 1.0
 DRY_ZONE_AFTER_DAYS = 3
 # Fired (as smart_irrigation_zone_unwatered) when the notice is first raised.
 EVENT_ZONE_UNWATERED = "zone_unwatered"
+# A ZHA timed-off command is bounded per attempt: a battery valve is a sleepy end
+# device and an unanswered blocking call takes about 16 s. Zigbee indirect messages
+# expire in about 8 s, so a command given up on is not delivered late. The timed
+# open is tried TIMED_OPEN_ATTEMPTS times before the normal open; the arm is one try.
+TIMED_OPEN_ATTEMPT_SECONDS = 6.0
+TIMED_OPEN_ATTEMPTS = 2
+ARM_ATTEMPT_SECONDS = 8.0

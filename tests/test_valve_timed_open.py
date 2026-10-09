@@ -93,7 +93,11 @@ async def test_a_swv_opens_with_one_timed_command_in_seconds(monkeypatch):
     data = hass.zha_calls[0]
     assert data["ieee"] == IEEE
     assert data["command"] == const.ZHA_ON_WITH_TIMED_OFF
-    assert data["args"] == [0, 101 + const.SAFETY_OFF_TIME_MARGIN, 0]
+    assert data["params"] == {
+        "on_off_control": 0,
+        "on_time": 101 + const.SAFETY_OFF_TIME_MARGIN,
+        "off_wait_time": 0,
+    }
     # The close is the normal one.
     assert closes(hass) == [ENTITY]
     assert _order(hass)[-1] == ("switch", "turn_off")
@@ -104,7 +108,7 @@ async def test_the_timed_time_is_clamped(monkeypatch):
 
     await coord._run_one_pass(store.get_zone(0), ENTITY, 90000)
 
-    assert hass.zha_calls[0]["args"][1] == const.ZHA_MAX_ON_TIME
+    assert hass.zha_calls[0]["params"]["on_time"] == const.ZHA_MAX_ON_TIME
 
 
 async def test_a_failing_command_falls_back_to_turn_on_then_arm_and_warns_once(
@@ -117,13 +121,100 @@ async def test_a_failing_command_falls_back_to_turn_on_then_arm_and_warns_once(
         await coord._run_one_pass(store.get_zone(0), ENTITY, 60)
 
     assert opens(hass) == [ENTITY, ENTITY]
-    # Per pass: the failed timed open, then the old arm attempt (also failing).
-    assert len(hass.zha_calls) == 4
+    # Per pass: the failed timed open (2 attempts), then the old arm attempt
+    # (also failing).
+    assert len(hass.zha_calls) == 6
     order = _order(hass)
     assert order[0] == ("zha", "issue_zigbee_cluster_command")
-    assert order[1] == ("switch", "turn_on")
+    assert order[2] == ("switch", "turn_on")
     levels = [r.levelname for r in caplog.records if "its own timer" in r.getMessage()]
     assert levels == ["WARNING", "DEBUG"]
+
+
+def _hang_first(hass, hanging):
+    """Make the first ``hanging`` ZHA calls never answer (a sleeping valve)."""
+    inner = hass.services.async_call.side_effect
+
+    async def _call(domain, service, data, **kwargs):
+        if domain == "zha" and len(hass.zha_calls) < hanging:
+            hass.zha_calls.append(data)
+            await REAL_SLEEP(30)
+        await inner(domain, service, data, **kwargs)
+
+    hass.services.async_call = AsyncMock(side_effect=_call)
+
+
+async def test_a_timed_attempt_that_times_out_is_retried_once(monkeypatch):
+    hass, coord, store = _setup(monkeypatch)
+    monkeypatch.setattr(const, "TIMED_OPEN_ATTEMPT_SECONDS", 0.01)
+    _hang_first(hass, 1)
+
+    await coord._run_one_pass(store.get_zone(0), ENTITY, 60)
+
+    # The second attempt carried the same payload and opened the valve.
+    assert len(hass.zha_calls) == 2
+    assert hass.zha_calls[0] == hass.zha_calls[1]
+    assert opens(hass) == []
+    assert closes(hass) == [ENTITY]
+
+
+async def test_two_timeouts_fall_back_to_turn_on_and_arm_with_one_warning(
+    monkeypatch, caplog
+):
+    hass, coord, store = _setup(monkeypatch)
+    monkeypatch.setattr(const, "TIMED_OPEN_ATTEMPT_SECONDS", 0.01)
+    monkeypatch.setattr(const, "ARM_ATTEMPT_SECONDS", 0.01)
+    _hang_first(hass, 100)
+
+    with caplog.at_level("DEBUG"):
+        await coord._run_one_pass(store.get_zone(0), ENTITY, 60)
+        await coord._run_one_pass(store.get_zone(0), ENTITY, 60)
+
+    assert opens(hass) == [ENTITY, ENTITY]
+    order = _order(hass)
+    assert order[:3] == [
+        ("zha", "issue_zigbee_cluster_command"),
+        ("zha", "issue_zigbee_cluster_command"),
+        ("switch", "turn_on"),
+    ]
+    # Then the old arm, bounded too.
+    assert order[3] == ("zha", "issue_zigbee_cluster_command")
+    records = [r for r in caplog.records if "its own timer" in r.getMessage()]
+    assert [r.levelname for r in records] == ["WARNING", "DEBUG"]
+    assert "after 2 attempts" in records[0].getMessage()
+
+
+async def test_params_refused_falls_back_to_args_and_remembers(monkeypatch):
+    import voluptuous as vol
+
+    hass, coord, store = _setup(monkeypatch)
+    inner = hass.services.async_call.side_effect
+
+    async def _call(domain, service, data, **kwargs):
+        if domain == "zha" and "params" in data:
+            hass.zha_calls.append(data)
+            raise vol.Invalid("extra keys not allowed @ data['params']")
+        await inner(domain, service, data, **kwargs)
+
+    hass.services.async_call = AsyncMock(side_effect=_call)
+
+    await coord._run_one_pass(store.get_zone(0), ENTITY, 60)
+    await coord._run_one_pass(store.get_zone(0), ENTITY, 60)
+
+    sent = [c for c in hass.zha_calls if "args" in c]
+    assert [c["args"] for c in sent] == [[0, 60 + const.SAFETY_OFF_TIME_MARGIN, 0]] * 2
+    # Only the very first command tried params.
+    assert len([c for c in hass.zha_calls if "params" in c]) == 1
+    assert opens(hass) == []
+
+
+async def test_another_error_is_not_taken_for_a_refused_params(monkeypatch):
+    hass, coord, store = _setup(monkeypatch, zha_raises=True)
+
+    await coord._run_one_pass(store.get_zone(0), ENTITY, 60)
+
+    assert all("args" not in c for c in hass.zha_calls)
+    assert not getattr(coord, "_zha_args_only", False)
 
 
 @pytest.mark.parametrize(
@@ -144,7 +235,7 @@ async def test_other_valves_keep_turn_on_and_no_timed_open(monkeypatch, kwargs):
     assert _order(hass)[0] == ("switch", "turn_on")
     # No timed open: a command with a 0x42 and a SWV-style time never first.
     assert all(
-        not (c["args"][1] == 60 + const.SAFETY_OFF_TIME_MARGIN and i == 0)
+        not (c["params"]["on_time"] == 60 + const.SAFETY_OFF_TIME_MARGIN and i == 0)
         for i, c in enumerate(hass.zha_calls)
     )
 
@@ -162,7 +253,10 @@ async def test_explicit_zha_mode_on_an_unknown_model_is_unchanged(monkeypatch):
     assert order[0] == ("switch", "turn_on")
     assert order[1] == ("zha", "issue_zigbee_cluster_command")
     # Tenths of a second, after the open.
-    assert hass.zha_calls[0]["args"][1] == (60 + const.SAFETY_OFF_TIME_MARGIN) * 10
+    assert (
+        hass.zha_calls[0]["params"]["on_time"]
+        == (60 + const.SAFETY_OFF_TIME_MARGIN) * 10
+    )
 
 
 async def test_a_swv_in_explicit_zha_mode_keeps_the_old_path(monkeypatch):
@@ -202,7 +296,7 @@ async def test_cycle_and_soak_restarts_the_timer_every_pass(monkeypatch):
     await coord._run_one_pass(store.get_zone(0), ENTITY, 60)
     await coord._run_one_pass(store.get_zone(0), ENTITY, 40)
 
-    assert [c["args"][1] for c in hass.zha_calls] == [
+    assert [c["params"]["on_time"] for c in hass.zha_calls] == [
         60 + const.SAFETY_OFF_TIME_MARGIN,
         40 + const.SAFETY_OFF_TIME_MARGIN,
     ]
@@ -246,7 +340,7 @@ async def test_resume_opens_with_the_remaining_seconds(monkeypatch):
 
     assert opens(hass) == []
     assert len(hass.zha_calls) == 1
-    on_time = hass.zha_calls[0]["args"][1]
+    on_time = hass.zha_calls[0]["params"]["on_time"]
     # About 60 s remained, plus the margin; and no second arm.
     assert (
         55 + const.SAFETY_OFF_TIME_MARGIN

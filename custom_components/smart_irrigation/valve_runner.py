@@ -33,6 +33,8 @@ from datetime import datetime, timedelta
 from functools import partial
 
 import homeassistant.util.dt as dt_util
+import voluptuous as vol
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 
@@ -509,32 +511,26 @@ class ValveRunnerMixin(
             )
             return
         try:
-            await self.hass.services.async_call(
-                "zha",
-                "issue_zigbee_cluster_command",
-                {
-                    "ieee": ieee,
-                    "endpoint_id": endpoint_id,
-                    "cluster_id": const.ZHA_ON_OFF_CLUSTER,
-                    "cluster_type": "in",
-                    "command": const.ZHA_ON_WITH_TIMED_OFF,
-                    "command_type": "server",
-                    "args": [0, device_time, 0],
-                },
-                blocking=True,
+            # One bounded attempt: a silent (asleep) device must not hold the
+            # start of a pass for the 16 s the blocking call would take.
+            await self._send_zha_command(
+                self._zha_timed_off_data(ieee, endpoint_id, device_time),
+                const.ARM_ATTEMPT_SECONDS,
             )
             _LOGGER.debug(
                 "Direct valve control: armed safety off_time %ss on %s (ZHA)",
                 on_time,
                 entity_id,
             )
+        except asyncio.CancelledError:
+            raise
         except Exception as e:  # noqa: BLE001 - safety must never break a run
             self._safety_off_failed(
                 zone.get(const.ZONE_ID, entity_id),
                 "Direct valve control: could not arm safety off_time on %s "
-                "(ZHA unavailable?): %s",
+                "(ZHA unavailable or the valve asleep?): %s",
                 entity_id,
-                e,
+                repr(e) if not str(e) else e,
             )
 
     async def _arm_safety_off(
@@ -611,15 +607,9 @@ class ValveRunnerMixin(
             return None
         ieee, endpoint_id = target
         on_time = int(math.ceil(max(0.0, held))) + const.SAFETY_OFF_TIME_MARGIN
-        return {
-            "ieee": ieee,
-            "endpoint_id": endpoint_id,
-            "cluster_id": const.ZHA_ON_OFF_CLUSTER,
-            "cluster_type": "in",
-            "command": const.ZHA_ON_WITH_TIMED_OFF,
-            "command_type": "server",
-            "args": [0, min(on_time, const.ZHA_MAX_ON_TIME), 0],
-        }
+        return self._zha_timed_off_data(
+            ieee, endpoint_id, min(on_time, const.ZHA_MAX_ON_TIME)
+        )
 
     def _timed_opens(self) -> dict:
         """The timed-open commands of the passes under way, by zone id."""
@@ -640,28 +630,121 @@ class ValveRunnerMixin(
         data = self._timed_open_data(zone, held, entity_id)
         if data is None:
             return False
-        try:
-            await self.hass.services.async_call(
-                "zha", "issue_zigbee_cluster_command", data, blocking=True
-            )
-        except asyncio.CancelledError:
-            raise
-        except Exception as e:  # noqa: BLE001 - the normal open follows
+        # Each attempt is short on purpose: a battery valve is a sleepy end
+        # device, and an unanswered command blocks the service call for about
+        # 16 s. Zigbee indirect messages expire in about 8 s, so an attempt we
+        # gave up on is not delivered late behind the retry or the normal open.
+        error: Exception | None = None
+        for _attempt in range(const.TIMED_OPEN_ATTEMPTS):
+            try:
+                data = await self._send_zha_command(
+                    data, const.TIMED_OPEN_ATTEMPT_SECONDS
+                )
+            except asyncio.CancelledError:
+                raise
+            except Exception as e:  # noqa: BLE001 - retried, then the normal open
+                error = e
+                continue
+            error = None
+            break
+        if error is not None:
             self._safety_off_failed(
                 zone.get(const.ZONE_ID, entity_id),
                 "Direct valve control: could not open %s with its own timer "
-                "(ZHA unavailable?), opening it the normal way: %s",
+                "after %s attempts (ZHA unavailable or the valve asleep?), "
+                "opening it the normal way: %s",
                 entity_id,
-                e,
+                const.TIMED_OPEN_ATTEMPTS,
+                repr(error) if not str(error) else error,
             )
             return False
         self._timed_opens()[zone.get(const.ZONE_ID)] = data
         _LOGGER.debug(
             "Direct valve control: opened %s with a timer of %ss (ZHA)",
             entity_id,
-            data["args"][1],
+            self._zha_command_time(data),
         )
         return True
+
+    @staticmethod
+    def _zha_command_time(data: dict):
+        """The on time of a timed-off command, whichever form it was built in."""
+        params = data.get("params")
+        if isinstance(params, dict):
+            return params.get("on_time")
+        args = data.get("args") or []
+        return args[1] if len(args) > 1 else None
+
+    def _zha_timed_off_data(
+        self, ieee: str, endpoint_id: int, device_time: int
+    ) -> dict:
+        """The cluster command "on with timed off", with named params.
+
+        ZHA deprecated the positional ``args``; a Home Assistant too old to
+        know ``params`` is remembered per coordinator and gets ``args``.
+        """
+        data = {
+            "ieee": ieee,
+            "endpoint_id": endpoint_id,
+            "cluster_id": const.ZHA_ON_OFF_CLUSTER,
+            "cluster_type": "in",
+            "command": const.ZHA_ON_WITH_TIMED_OFF,
+            "command_type": "server",
+        }
+        if getattr(self, "_zha_args_only", False):
+            data["args"] = [0, device_time, 0]
+        else:
+            data["params"] = {
+                "on_off_control": 0,
+                "on_time": device_time,
+                "off_wait_time": 0,
+            }
+        return data
+
+    @staticmethod
+    def _zha_params_refused(error: Exception) -> bool:
+        """Whether a service call was refused for not knowing the ``params`` field."""
+        if not isinstance(error, (vol.Invalid, HomeAssistantError)):
+            return False
+        text = str(error).lower()
+        return "params" in text or "extra keys" in text
+
+    async def _send_zha_command(self, data: dict, timeout: float) -> dict:
+        """Send a ZHA cluster command, each attempt bounded by ``timeout`` seconds.
+
+        Returns the data that went through: when this Home Assistant refuses
+        ``params``, the command is sent once more with ``args`` and that form
+        is kept for the next commands. A timeout raises TimeoutError; the
+        cancellation of the caller is never swallowed.
+        """
+        try:
+            await asyncio.wait_for(
+                self.hass.services.async_call(
+                    "zha", "issue_zigbee_cluster_command", data, blocking=True
+                ),
+                timeout,
+            )
+        except asyncio.CancelledError:
+            raise
+        except Exception as e:
+            params = data.get("params")
+            if not isinstance(params, dict) or not self._zha_params_refused(e):
+                raise
+            _LOGGER.debug("ZHA does not know the params field, using args: %s", e)
+            self._zha_args_only = True
+            data = {k: v for k, v in data.items() if k != "params"}
+            data["args"] = [
+                params["on_off_control"],
+                params["on_time"],
+                params["off_wait_time"],
+            ]
+            await asyncio.wait_for(
+                self.hass.services.async_call(
+                    "zha", "issue_zigbee_cluster_command", data, blocking=True
+                ),
+                timeout,
+            )
+        return data
 
     def _full_controller(self) -> bool:
         return getattr(self.store.config, const.CONF_FULL_CONTROLLER, False) is True
@@ -823,11 +906,8 @@ class ValveRunnerMixin(
                 domain, on_svc, _off = self._valve_services(entity_id)
                 try:
                     if timed_open is not None:
-                        await self.hass.services.async_call(
-                            "zha",
-                            "issue_zigbee_cluster_command",
-                            timed_open,
-                            blocking=True,
+                        await self._send_zha_command(
+                            timed_open, const.TIMED_OPEN_ATTEMPT_SECONDS
                         )
                     else:
                         await self._async_call_valve_service(domain, on_svc, entity_id)

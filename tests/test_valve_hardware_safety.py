@@ -116,7 +116,11 @@ async def test_a_zha_valve_is_told_to_switch_itself_off():
             "command": 0x42,
             "command_type": "server",
             # (601 s + the margin) in tenths of a second.
-            "args": [0, (601 + const.SAFETY_OFF_TIME_MARGIN) * 10, 0],
+            "params": {
+                "on_off_control": 0,
+                "on_time": (601 + const.SAFETY_OFF_TIME_MARGIN) * 10,
+                "off_wait_time": 0,
+            },
         },
         blocking=True,
     )
@@ -210,7 +214,12 @@ async def test_auto_arms_a_sonoff_swv_in_seconds(mode):
     await _arm(runner, {**ZONE, const.ZONE_SAFETY_OFF_MODE: mode}, 600.2, device=SWV)
 
     data = runner.hass.services.async_call.call_args[0][2]
-    assert data["args"] == [0, 601 + const.SAFETY_OFF_TIME_MARGIN, 0]
+    assert data["params"] == {
+        "on_off_control": 0,
+        "on_time": 601 + const.SAFETY_OFF_TIME_MARGIN,
+        "off_wait_time": 0,
+    }
+    assert "args" not in data
 
 
 @pytest.mark.parametrize(
@@ -255,8 +264,8 @@ async def test_zha_mode_arms_a_swv_in_seconds_too():
 
     await _arm(runner, ZONE, 60, device=SWV)
 
-    args = runner.hass.services.async_call.call_args[0][2]["args"]
-    assert args == [0, 60 + const.SAFETY_OFF_TIME_MARGIN, 0]
+    args = runner.hass.services.async_call.call_args[0][2]["params"]
+    assert args["on_time"] == 60 + const.SAFETY_OFF_TIME_MARGIN
 
 
 async def test_zha_mode_arms_an_unknown_model_in_tenths():
@@ -264,8 +273,8 @@ async def test_zha_mode_arms_an_unknown_model_in_tenths():
 
     await _arm(runner, ZONE, 60)
 
-    args = runner.hass.services.async_call.call_args[0][2]["args"]
-    assert args == [0, (60 + const.SAFETY_OFF_TIME_MARGIN) * 10, 0]
+    args = runner.hass.services.async_call.call_args[0][2]["params"]
+    assert args["on_time"] == (60 + const.SAFETY_OFF_TIME_MARGIN) * 10
 
 
 async def test_a_swv_time_is_clamped_to_16_bits():
@@ -273,8 +282,8 @@ async def test_a_swv_time_is_clamped_to_16_bits():
 
     await _arm(runner, AUTO_ZONE, 100000, device=SWV)
 
-    args = runner.hass.services.async_call.call_args[0][2]["args"]
-    assert args == [0, 0xFFFF, 0]
+    args = runner.hass.services.async_call.call_args[0][2]["params"]
+    assert args["on_time"] == 0xFFFF
 
 
 async def test_a_swv_long_pass_still_gets_seconds_beyond_6553():
@@ -282,8 +291,8 @@ async def test_a_swv_long_pass_still_gets_seconds_beyond_6553():
 
     await _arm(runner, AUTO_ZONE, 7000, device=SWV)
 
-    args = runner.hass.services.async_call.call_args[0][2]["args"]
-    assert args == [0, 7000 + const.SAFETY_OFF_TIME_MARGIN, 0]
+    args = runner.hass.services.async_call.call_args[0][2]["params"]
+    assert args["on_time"] == 7000 + const.SAFETY_OFF_TIME_MARGIN
 
 
 async def test_a_topic_wins_over_a_swv_in_auto():
@@ -340,8 +349,8 @@ async def test_a_zha_time_that_fits_the_16_bits_is_armed():
 
     await _arm(runner, ZONE, 6000)
 
-    args = runner.hass.services.async_call.call_args[0][2]["args"]
-    assert args[1] <= 0xFFFF and args[1] > 6000 * 10
+    args = runner.hass.services.async_call.call_args[0][2]["params"]
+    assert 6000 * 10 < args["on_time"] <= 0xFFFF
 
 
 async def test_a_pass_too_long_for_the_zha_timer_arms_no_dead_man_and_warns_once(
@@ -568,3 +577,23 @@ async def test_without_the_full_controller_the_valve_is_not_checked(monkeypatch)
 
     assert _fired(hass, const.EVENT_VALVE_OUT_OF_SYNC) == []
     assert problems(hass) == []
+
+
+async def test_a_silent_device_cannot_hold_the_arm_and_it_counts_as_a_failure(
+    monkeypatch, caplog
+):
+    runner = _runner(_entry())
+    monkeypatch.setattr(const, "ARM_ATTEMPT_SECONDS", 0.01)
+
+    async def _hang(*args, **kwargs):
+        await REAL_SLEEP(5)
+
+    runner.hass.services.async_call.side_effect = _hang
+
+    with caplog.at_level("DEBUG"):
+        await _arm(runner, ZONE, 60)
+        await _arm(runner, ZONE, 60)
+
+    assert runner.hass.services.async_call.await_count == 2
+    levels = [r.levelname for r in caplog.records if "safety off_time" in r.message]
+    assert levels == ["WARNING", "DEBUG"]
