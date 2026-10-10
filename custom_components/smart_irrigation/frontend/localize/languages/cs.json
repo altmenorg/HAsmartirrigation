@@ -368,6 +368,8 @@
           },
           "hidden_sources": "{n} hodnot(a) se nevyžaduje: evapotranspirace je zadána hotová, sloužily by jen k jejímu přepočtu.",
           "et_ignored": "Zóny {zones} se počítají z počasí a tuto evapotranspiraci nečtou. Nastavte je na zadanou senzorem nebo službou v nastavení zóny.",
+          "et_unused": "Nepoužívá se: všechny zóny této skupiny počítá Smart Irrigation, která evapotranspiraci odvozuje z ostatních měření. Nastavte zónu na zadanou senzorem nebo službou, abyste zde mohli uvést hotovou hodnotu.",
+          "et_needed": "Zde je potřeba hotová hodnota: zóny této skupiny jsou nastaveny na zadanou senzorem nebo službou, proto se možnost Žádný nenabízí.",
           "et_missing": "Zóny {zones} očekávají hotovou evapotranspiraci: vyberte pro ni nahoře zdroj.",
           "hints": {
             "temperature": "Teplota vzduchu ve stínu. Denní minimum a maximum se berou z ní.",

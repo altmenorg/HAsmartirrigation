@@ -368,6 +368,8 @@
           },
           "hidden_sources": "{n} lettura/e non richiesta/e: l'evapotraspirazione è fornita già calcolata, servirebbero solo a ricalcolarla.",
           "et_ignored": "La/le zona/e {zones} sono calcolate dal meteo e non leggono questa evapotraspirazione. Impostale su fornita da un sensore o da un servizio nella zona.",
+          "et_unused": "Non utilizzata: tutte le zone di questo gruppo sono calcolate da Smart Irrigation, che ricava l'evapotraspirazione dalle altre letture. Imposta una zona su fornita da un sensore o da un servizio per dare qui un valore già calcolato.",
+          "et_needed": "Qui serve un valore già calcolato: le zone di questo gruppo sono impostate su fornita da un sensore o da un servizio, quindi Nessuna non è proposta.",
           "et_missing": "La/le zona/e {zones} si aspettano un'evapotraspirazione già calcolata: scegli qui sopra una sorgente per essa.",
           "hints": {
             "temperature": "Temperatura dell'aria, all'ombra. Da essa si ricavano il minimo e il massimo del giorno.",

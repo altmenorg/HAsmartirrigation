@@ -368,6 +368,8 @@
           },
           "hidden_sources": "{n} måling(er) ikke spurt om: evapotranspirasjonen oppgis ferdig, de ville bare brukes til å beregne den på nytt.",
           "et_ignored": "Sone(r) {zones} beregnes ut fra været og leser ikke denne evapotranspirasjonen. Sett dem til levert av en sensor eller en tjeneste på sonen.",
+          "et_unused": "Brukes ikke: alle soner i denne gruppen beregnes av Smart Irrigation, som utleder evapotranspirasjonen fra de andre målingene. Sett en sone til levert av en sensor eller en tjeneste for å gi en ferdig verdi her.",
+          "et_needed": "Det trengs en ferdig verdi her: sonene i denne gruppen er satt til levert av en sensor eller en tjeneste, så Ingen tilbys ikke.",
           "et_missing": "Sone(r) {zones} forventer en ferdig evapotranspirasjon: velg en kilde til den ovenfor.",
           "hints": {
             "temperature": "Lufttemperatur, i skyggen. Dagens minimum og maksimum hentes fra den.",

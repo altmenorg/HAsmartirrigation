@@ -368,6 +368,8 @@
           },
           "hidden_sources": "{n} leitura(s) não pedida(s): a evapotranspiração é fornecida pronta, elas serviriam apenas para recalculá-la.",
           "et_ignored": "A(s) zona(s) {zones} são calculadas a partir do tempo e não leem esta evapotranspiração. Defina-as como fornecida por um sensor ou um serviço na zona.",
+          "et_unused": "Não usada: todas as zonas deste grupo são calculadas pelo Smart Irrigation, que deduz a evapotranspiração das outras leituras. Defina uma zona como fornecida por um sensor ou um serviço para dar aqui um valor pronto.",
+          "et_needed": "Aqui é preciso um valor pronto: as zonas deste grupo estão definidas como fornecida por um sensor ou um serviço, então Nenhuma não é oferecida.",
           "et_missing": "A(s) zona(s) {zones} esperam uma evapotranspiração pronta: escolha uma fonte para ela acima.",
           "hints": {
             "temperature": "Temperatura do ar, à sombra. As mínimas e máximas do dia são tiradas dela.",

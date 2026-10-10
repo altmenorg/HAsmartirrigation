@@ -368,6 +368,8 @@
           },
           "hidden_sources": "Nevyžiadané merania: {n}. Evapotranspirácia sa zadáva hotová, slúžili by len na jej prepočet.",
           "et_ignored": "Zóny {zones} sa počítajú z počasia a túto evapotranspiráciu nečítajú. Nastavte ich v zóne na možnosť poskytuje senzor alebo služba.",
+          "et_unused": "Nepoužíva sa: všetky zóny tejto skupiny počíta Smart Irrigation, ktorá evapotranspiráciu odvodzuje z ostatných meraní. Nastavte zónu na možnosť poskytuje senzor alebo služba, aby ste tu mohli zadať hotovú hodnotu.",
+          "et_needed": "Tu je potrebná hotová hodnota: zóny tejto skupiny sú nastavené na možnosť poskytuje senzor alebo služba, preto sa možnosť Nie je neponúka.",
           "et_missing": "Zóny {zones} očakávajú hotovú evapotranspiráciu: vyberte pre ňu zdroj vyššie.",
           "hints": {
             "temperature": "Teplota vzduchu v tieni. Z nej sa berie denné minimum a maximum.",

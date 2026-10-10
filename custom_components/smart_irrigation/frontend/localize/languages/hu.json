@@ -387,6 +387,8 @@
           },
           "hidden_sources": "{n} mérés nincs kérve: az evapotranszpirációt készen kapja, ezek csak az újraszámítására szolgálnának.",
           "et_ignored": "A(z) {zones} zóna(k) az időjárásból számolnak, és nem olvassák ezt az evapotranszpirációt. Állítsd őket a zónán érzékelő vagy szolgáltatás adja értékre.",
+          "et_unused": "Nincs használatban: ennek a csoportnak minden zónáját a Smart Irrigation számolja, amely az evapotranszpirációt a többi mérésből vezeti le. Állíts egy zónát érzékelő vagy szolgáltatás adja értékre, hogy itt kész értéket adhass meg.",
+          "et_needed": "Itt kész értékre van szükség: a csoport zónái érzékelő vagy szolgáltatás adja értékre vannak állítva, ezért a Nincs nem választható.",
           "et_missing": "A(z) {zones} zóna(k) kész evapotranszpirációt várnak: válassz hozzá forrást fent.",
           "hints": {
             "temperature": "A levegő hőmérséklete árnyékban. A nap minimuma és maximuma ebből származik.",

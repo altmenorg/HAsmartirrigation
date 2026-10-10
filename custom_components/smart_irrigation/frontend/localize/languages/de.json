@@ -368,6 +368,8 @@
           },
           "hidden_sources": "{n} Messwert(e) nicht abgefragt: Die Verdunstung wird fertig geliefert, sie würden nur dazu dienen, sie neu zu berechnen.",
           "et_ignored": "Zone(n) {zones} werden aus dem Wetter berechnet und lesen diese Verdunstung nicht. Stelle sie in der Zone auf von einem Sensor oder Dienst geliefert.",
+          "et_unused": "Nicht verwendet: Alle Zonen dieser Gruppe werden von Smart Irrigation berechnet, das die Verdunstung aus den übrigen Messwerten ableitet. Stelle eine Zone auf von einem Sensor oder Dienst geliefert, um hier einen fertigen Wert anzugeben.",
+          "et_needed": "Hier wird ein fertiger Wert benötigt: Die Zonen dieser Gruppe sind auf von einem Sensor oder Dienst geliefert gestellt, daher wird Keine nicht angeboten.",
           "et_missing": "Zone(n) {zones} erwarten eine fertige Verdunstung: Wähle oben eine Quelle dafür.",
           "hints": {
             "temperature": "Lufttemperatur im Schatten. Daraus werden das Minimum und das Maximum des Tages genommen.",

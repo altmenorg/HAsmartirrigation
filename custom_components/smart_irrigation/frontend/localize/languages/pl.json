@@ -368,6 +368,8 @@
           },
           "hidden_sources": "Nie wymagane odczyty: {n}. Ewapotranspiracja jest podawana gotowa, służyłyby tylko do jej ponownego obliczenia.",
           "et_ignored": "Strefy {zones} są obliczane na podstawie pogody i nie czytają tej ewapotranspiracji. Ustaw w strefie opcję dostarczane przez czujnik lub usługę.",
+          "et_unused": "Nieużywane: wszystkie strefy tej grupy oblicza Smart Irrigation, który wyprowadza ewapotranspirację z pozostałych odczytów. Ustaw w strefie opcję dostarczane przez czujnik lub usługę, aby podać tutaj gotową wartość.",
+          "et_needed": "Potrzebna jest tu gotowa wartość: strefy tej grupy mają ustawioną opcję dostarczane przez czujnik lub usługę, więc opcja Brak nie jest dostępna.",
           "et_missing": "Strefy {zones} oczekują gotowej ewapotranspiracji: wybierz dla niej źródło powyżej.",
           "hints": {
             "temperature": "Temperatura powietrza w cieniu. Z niej brane są minimum i maksimum dnia.",
