@@ -14,9 +14,17 @@ After installation, the following events are available:
 | Event | Description|
 | --- | --- |
 |`smart_irrigation_start_irrigation_all_zones`|Fired when an [irrigation start trigger](configuration-general.md) is reached. Listen to it to start your irrigation. See [automations](usage-automations.md) for examples.|
-|`smart_irrigation_irrigation_skipped`|Fired when a start trigger is reached and the day is a skip day, so nothing is watered. Data: the trigger's identity, plus `reason` (`precipitation` or `days_between`) and `checks`, the same detail the Home page shows.|
+|`smart_irrigation_irrigation_skipped`|Fired when a start trigger is reached and the day is a skip day, so nothing is watered. Data: the trigger's identity, plus `reason` and `checks`, the same detail the Home page shows. The reason is the skip condition that held the day back: `postponed`, `rain_sensor`, `freeze`, `wind`, `precipitation`, `days_between` or `soil_moisture`. With the [full controller](usage-full-controller.md), a trigger reached while the main program is off or suspended fires it with the reason `main_program_disabled` or `main_program_suspended` (and no `checks`).|
 
-Direct valve control fires three more, described in [closed-loop irrigation](configuration-closed-loop.md). The [full controller](usage-full-controller.md#seeing-what-is-going-on) adds its own: `program_started`, `program_finished`, `valve_on`, `valve_off` and `supply_problem`.
+Direct valve control fires three more, described in [closed-loop irrigation](configuration-closed-loop.md). The [full controller](usage-full-controller.md#seeing-what-is-going-on) adds its own, with the data of each described there: `program_started`, `program_finished`, `valve_on`, `valve_off`, `valve_out_of_sync` and `supply_problem`. These three are also fired:
+
+| Event | Description|
+| --- | --- |
+|`smart_irrigation_zone_unwatered`|A zone has been dry for more than 3 days and no program will water it; fired once per zone, together with a repair notice. Data: `zone_id`, `zone`, `days`, `deficit_mm`. See [the dry zone notice](usage-full-controller.md#dry-zone-notice).|
+|`smart_irrigation_weather_stale`|A temperature, humidity or dew point source of a sensor group has not reported for 6 hours; fired once per silence. Data: `mapping_id`, `mapping`, `fields` (the fields that just went silent) and `since` (the time of the last report).|
+|`smart_irrigation_weather_recovered`|Fields that were silent report again. Data: `mapping_id`, `mapping`, `fields`.|
+
+Only `zone_unwatered` needs the full controller; `weather_stale` and `weather_recovered` do not.
 
 ### Knowing a run was skipped
 
@@ -53,7 +61,7 @@ The event carries the identity of the trigger that fired, so a single automation
 | field | meaning |
 | --- | --- |
 | `trigger_name` | the name you gave the trigger |
-| `trigger_type` | `sunrise`, `sunset`, `solar_azimuth` or `time` |
+| `trigger_type` | `sunrise`, `sunset`, `solar_azimuth` or `time`. With the full controller, a skip decided for a program's schedule has `program`, and carries `program_id` and `schedule_id` too |
 | `at` | for a `time` trigger, the clock time it is set to |
 | `offset_minutes` | the configured offset, in minutes |
 | `account_for_duration` | whether timing is shifted so watering finishes at the target moment |

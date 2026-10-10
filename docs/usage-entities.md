@@ -64,6 +64,26 @@ Each zone is also grouped as a **device** in Home Assistant (named after the zon
 
 The **Smart Irrigation hub device** also carries global action buttons: *calculate all zones*, *refresh weather*, and (with direct valve control) *irrigate all zones*.
 
+## Program sensors
+
+With the [full controller](usage-full-controller.md) on, each program, the main program included, has one sensor on the hub device: `sensor.smart_irrigation_program_<id>`, named "Program <name>". A program that is added gets its sensor, and one that is deleted loses it. The state is one of `idle`, `waiting`, `running`, `paused`, `suspended` or `disabled`. The attributes:
+
+| Attribute | Description |
+| --- | --- |
+|`program_id`|the id of the program, which is also in the entity id.|
+|`main`|`true` for the main program.|
+|`next_start`|the next time a schedule starts it, or empty. Always empty for the main program, which follows the start trigger.|
+|`last_run`|when it last started.|
+|`suspended_until`|the end of its suspension, or empty.|
+|`adjustment`|the [`adjust_program`](usage-services.md) adjustment in force (`percent`, `seconds` and `until`), or empty.|
+|`manual`|while it waits or runs: `true` when it was asked for by hand rather than by a schedule.|
+|`tour`, `tours`|while it runs: the round it is on and how many rounds it has (both count from 1; `tour` is 0 while it waits).|
+|`step`, `steps`|while it runs: the step it is on and how many steps the round has (`step` is 0 while it waits).|
+|`percent`|while it runs: how far along it is, 0 to 100.|
+|`remaining_seconds`|while it runs: the time left, paused time excluded.|
+
+The attributes from `manual` down are only there while the program waits or runs.
+
 These entities are **additive**: nothing was removed. The duration sensor keeps its `entity_id`, recorded history and attributes, so existing dashboards, automations and templates keep working. A one-time registry migration moves the duration sensor's internal `unique_id` to a stable per-zone scheme; the `entity_id` and history carry over.
 
 The per-zone device/entity layout is inspired by [JustChr's Smart Irrigation fork](https://github.com/JustChr/HAsmartirrigation) (MIT).
