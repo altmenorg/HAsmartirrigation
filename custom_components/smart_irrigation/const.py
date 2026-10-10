@@ -581,6 +581,11 @@ MAPPING_DATA_DAY = "data_day"
 # calculation works in. A reading outside is a glitch (a Zigbee sensor reporting
 # 85 C, a gauge reporting -1 mm), and one such reading set a whole day's maximum
 # temperature. It is dropped, with a warning, instead of being recorded.
+# Solar radiation is stored in MJ/day/m2, and a reading in W/m2 is converted
+# with the factor of a 24 hour mean (0.0864): a bright noon reading, which is
+# an instantaneous value, comes out far above the 40 MJ of a whole clear day.
+# The bound is therefore that of the instantaneous sun, the 1,500 W/m2 a sensor
+# can read at the most (the sun outside the atmosphere is 1,361), not of a day.
 PLAUSIBLE_RANGES = {
     "Temperature": (-60.0, 60.0),
     "Minimum Temperature": (-60.0, 60.0),
@@ -589,7 +594,7 @@ PLAUSIBLE_RANGES = {
     "Humidity": (0.0, 105.0),
     "Pressure": (300.0, 1100.0),
     "Windspeed": (0.0, 75.0),
-    "Solar Radiation": (0.0, 50.0),
+    "Solar Radiation": (0.0, 130.0),
     "Precipitation": (0.0, 100000.0),
     "Current Precipitation": (0.0, 500.0),
     "Evapotranspiration": (0.0, 25.0),
