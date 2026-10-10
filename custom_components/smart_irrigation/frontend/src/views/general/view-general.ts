@@ -5,6 +5,7 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 
 import {
   fetchConfig,
+  fetchIrrigationInfo,
   fetchZones,
   saveConfig,
   saveZone,
@@ -114,6 +115,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   // What the programs are doing, and what they will do (full controller).
   @property({ attribute: false }) planning: any[] = [];
   @property({ attribute: false }) programsState?: any;
+  // What starts the main program, from the `info` data: "trigger" (the start
+  // trigger) or "main_schedules" (the main program's own schedules).
+  @property({ attribute: false }) startSource?: string;
   private _liveTimer?: number;
   private _unfolded = UNFOLDED;
 
@@ -649,6 +653,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       <ha-card header="${localize("programs.main_settings", lang)}">
         <div class="card-content">
           ${localize("programs.main_settings_description", lang)}
+          ${this.startSource === "main_schedules"
+            ? html`<div class="setting-note">
+                <strong
+                  >${localize("programs.main_schedules_active", lang)}</strong
+                >
+              </div>`
+            : ""}
         </div>
         <div class="card-content">
           ${this.renderExecutionSettings(lang, true)}
@@ -833,6 +844,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           type: DOMAIN + "/planning",
           days: 3,
         });
+        await this._fetchStartSource();
       }
       this._scheduleUpdate();
     } catch (error) {
@@ -840,11 +852,24 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     }
   }
 
+  /** Whether the start trigger or the main program's schedules start it. */
+  private async _fetchStartSource(): Promise<void> {
+    if (!this.hass || this.config?.full_controller !== true) return;
+    try {
+      const info = await fetchIrrigationInfo(this.hass);
+      this.startSource = info?.start_source ?? "trigger";
+      this._scheduleUpdate();
+    } catch (error) {
+      console.error("Error fetching what starts the main program:", error);
+    }
+  }
+
   /**
    * Programs: what is watered, in what order, for how long.
    *
    * Only in full controller mode. The main program is made from the settings
-   * above and has nothing to edit here. A step is one or several zones watered
+   * below; only its schedules are edited here (when one is enabled they start it
+   * in place of the start trigger). A step is one or several zones watered
    * together; by default it takes the duration Smart Irrigation calculated.
    */
   renderProgramsCard() {
@@ -1339,7 +1364,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               }),
           )}
           <div class="setting-hint row-hint">${t("schedule_anchor_help")}</div>
-          ${schedule.anchor === "end"
+          ${schedule.anchor === "end" && !program.main
             ? html`
                 <div class="setting-row">
                   <label>
@@ -1566,6 +1591,42 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       );
     };
 
+    // A program's schedules and the button that adds one.
+    const renderSchedules = (
+      program: SmartIrrigationProgram,
+      index: number,
+    ) => html`
+      ${(program.schedules || []).map((schedule, scheduleIndex) =>
+        renderSchedule(program, index, schedule, scheduleIndex),
+      )}
+      <div class="si-actions">
+        ${this._actionBtn(mdiPlus, t("add_schedule"), () =>
+          patch(index, {
+            schedules: [
+              ...(program.schedules || []),
+              {
+                id: this._openNew("schedule", "schedule_" + random()),
+                enabled: true,
+                type: "time",
+                time: "06:00",
+                event: "sunrise",
+                offset_minutes: 0,
+                anchor: "start",
+                weekdays: [],
+                every_n_days: 1,
+                every_offset: 0,
+                parity: "any",
+                months: [],
+                from_date: null,
+                until_date: null,
+                weather: true,
+              },
+            ],
+          }),
+        )}
+      </div>
+    `;
+
     return html`
       <ha-card header="${t("title")}">
         <div class="card-content">${t("description")}</div>
@@ -1589,7 +1650,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         patch(index, { enabled: (e.target as any).checked })}
                     ></ha-switch>
                   </div>
-                  ${runOptions(program.id)}
+                  <div class="fold-section">${t("schedules_title")}</div>
+                  <div class="setting-hint row-hint">
+                    ${t("main_schedules_hint")}
+                  </div>
+                  ${renderSchedules(program, index)} ${runOptions(program.id)}
                   <div class="si-actions">
                     ${this._actionBtn(mdiPlay, t("run_now"), () =>
                       run(program.id),
@@ -1639,44 +1704,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         )}
                       </div>
                       <div class="fold-section">${t("schedules_title")}</div>
-                      ${(program.schedules || []).map(
-                        (schedule, scheduleIndex) =>
-                          renderSchedule(
-                            program,
-                            index,
-                            schedule,
-                            scheduleIndex,
-                          ),
-                      )}
-                      <div class="si-actions">
-                        ${this._actionBtn(mdiPlus, t("add_schedule"), () =>
-                          patch(index, {
-                            schedules: [
-                              ...(program.schedules || []),
-                              {
-                                id: this._openNew(
-                                  "schedule",
-                                  "schedule_" + random(),
-                                ),
-                                enabled: true,
-                                type: "time",
-                                time: "06:00",
-                                event: "sunrise",
-                                offset_minutes: 0,
-                                anchor: "start",
-                                weekdays: [],
-                                every_n_days: 1,
-                                every_offset: 0,
-                                parity: "any",
-                                months: [],
-                                from_date: null,
-                                until_date: null,
-                                weather: true,
-                              },
-                            ],
-                          }),
-                        )}
-                      </div>
+                      ${renderSchedules(program, index)}
                       ${this._numRow(
                         t("delay"),
                         localize("common.units.seconds", lang),
@@ -3036,6 +3064,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       this._scheduleUpdate();
 
       await saveConfig(this.hass, this.data);
+      // Adding, switching or removing a schedule of the main program changes
+      // what starts it: read that again rather than wait for the next refresh.
+      if ("programs" in changes) {
+        this._fetchStartSource();
+      }
     } catch (error) {
       // Save failed: no _config_updated echo will arrive, so clear the guard
       // (otherwise it would swallow the next genuine external refresh).

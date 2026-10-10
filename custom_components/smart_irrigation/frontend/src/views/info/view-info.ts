@@ -42,6 +42,9 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
   @property({ type: Array })
   private zones: SmartIrrigationZone[] = [];
 
+  // The main program's next start when its own schedules start it.
+  private mainScheduleStart: string | null = null;
+
   @property({ type: Boolean })
   private isLoading = true;
 
@@ -99,6 +102,20 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       this.info = info;
       this.zones = zones;
       this._fetchRetries = 0;
+      // Started by the main program's schedules, the next start is theirs, not
+      // the one worked out from the start trigger.
+      this.mainScheduleStart = null;
+      if ((info as any)?.start_source === "main_schedules") {
+        try {
+          const state = await this.hass!.callWS<any>({
+            type: DOMAIN + "/programs_state",
+          });
+          const main = (state?.programs || []).find((p: any) => p.main);
+          this.mainScheduleStart = main?.next_start ?? null;
+        } catch (error) {
+          console.error("Error fetching the main program's next start:", error);
+        }
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
       // The backend answers "not ready" while the integration reloads: ask
@@ -381,8 +398,14 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
     const skipped = info?.skip_preview?.should_skip
       ? info?.skip_preview?.reason
       : null;
-    const start = info?.next_irrigation_start
-      ? localizedDateTime(info.next_irrigation_start, this.hass, {
+    // The main program's own schedules start it in place of the trigger: the
+    // trigger is not armed and its start time is not the one that counts.
+    const bySchedules = (info as any)?.start_source === "main_schedules";
+    const startAt = bySchedules
+      ? this.mainScheduleStart
+      : info?.next_irrigation_start;
+    const start = startAt
+      ? localizedDateTime(startAt, this.hass, {
           weekday: "long",
           day: "numeric",
           month: "short",
@@ -397,7 +420,8 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       ? this.t("cards.next-run.sub-nothing", "{start}", start)
       : this.t("cards.next-run.no-start");
 
-    const noTrigger = (info as any)?.active_start_trigger === "none";
+    const noTrigger =
+      !bySchedules && (info as any)?.active_start_trigger === "none";
     if (noTrigger) {
       icon = "mdi:calendar-remove-outline";
       headline = this.t("cards.next-run.headline-no-trigger");
@@ -430,6 +454,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
     // (#841). When a run is owed and nothing is scheduled, say that instead.
     const armed = (info as any)?.start_trigger_armed !== false;
     if (
+      !bySchedules &&
       !noTrigger &&
       !armed &&
       !postponed &&
@@ -452,13 +477,16 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
           </div>
         </div>
         <div class="card-content hero-detail">
-          <span>
-            ${this.t("cards.next-run.labels.trigger")}:
-            ${info?.trigger_name ?? this.t("cards.next-run.trigger-default")}
-            ${info?.trigger_accounts_for_duration
-              ? `(${this.t("cards.next-run.accounts-for-duration")})`
-              : ""}
-          </span>
+          ${bySchedules
+            ? html`<span>${this.t("cards.next-run.main-schedules")}</span>`
+            : html`<span>
+                ${this.t("cards.next-run.labels.trigger")}:
+                ${info?.trigger_name ??
+                this.t("cards.next-run.trigger-default")}
+                ${info?.trigger_accounts_for_duration
+                  ? `(${this.t("cards.next-run.accounts-for-duration")})`
+                  : ""}
+              </span>`}
           ${zones.length
             ? html`<span
                 >${this.t("cards.next-run.labels.zones")}:
