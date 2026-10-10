@@ -15,4 +15,4 @@ aiofiles
 # that cannot be satisfied, which is how the install step broke outright when a
 # floor was raised on one of them (#740). Let it drive.
 homeassistant>=2026.9.4
-pytest-homeassistant-custom-component>=0.13.367
+pytest-homeassistant-custom-component>=0.13.370
