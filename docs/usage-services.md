@@ -18,10 +18,10 @@ After installation, the following services are available:
 |`Smart Irrigation: reset_all_buckets`|Resets all buckets to 0.|
 |`Smart Irrigation: credit_watering`|Credits a zone with the water a run of your own delivered: its precipitation rate times `seconds` (the zone's duration when left out), less its lead time. Use it at the end of an irrigation automation rather than `reset_bucket`: a run cut short by the zone's maximum duration keeps the deficit it did not water.|
 |`Smart Irrigation: reset_bucket`|Resets one specific bucket to 0. It says the soil is back at field capacity, whatever the run delivered: `credit_watering` is the better end to an irrigation automation.|
-|`Smart Irrigation: set_all_buckets`|Sets all buckets to a specific `new_bucket_value` (default is 0).|
-|`Smart Irrigation: set_all_multipliers`|Sets all multipliers to a specific `new_multiplier_value` (default is 1.0).|
-|`Smart Irrigation: set_bucket`|Sets a specific bucket to to a specific `new_bucket_value` (default is 0).|
-|`Smart Irrigation: set_multiplier`|Sets a specific multiplier to a specific `new_multiplier_value` (default is 1.0).|
+|`Smart Irrigation: set_all_buckets`|Sets all buckets to a specific `new_bucket_value` (required; the form suggests 0).|
+|`Smart Irrigation: set_all_multipliers`|Sets all multipliers to a specific `new_multiplier_value` (required; the form suggests 1.0).|
+|`Smart Irrigation: set_bucket`|Sets a specific bucket to to a specific `new_bucket_value` (required; the form suggests 0).|
+|`Smart Irrigation: set_multiplier`|Sets a specific multiplier to a specific `new_multiplier_value` (required; the form suggests 1.0).|
 |`Smart Irrigation: set_zone`| Allows configuration for bucket (with `new_bucket_value` (default 0)), multiplier (with `new_multiplier_value` (default 1.0)), duration (with `new_duration_value` (default 0)), state (with `new_state_value` (default 'automatic')) and throughput (with `new_throughput_value` (default 50)) settings for a zone.|
 |`Smart Irrigation: update_all_zones`|Updates all automatic zones with weather data|
 |`Smart Irrigation: update_zone`|Updates one specific zone with weather data|

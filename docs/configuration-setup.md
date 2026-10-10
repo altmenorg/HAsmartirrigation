@@ -16,8 +16,8 @@ installation that has nothing yet, and a tab inviting one with three zones to
 set itself up was in the way. Use it for a first zone, another one, or a fresh
 start.
 
-You do not have to use it. Everything it does can be done by hand on the other
-tabs, and nothing it creates is locked afterwards.
+You do not have to use it. Everything it does can be done by hand in the panel
+(zones under Zones, sensor groups under Data), and nothing it creates is locked afterwards.
 
 ## What it asks
 
@@ -48,9 +48,9 @@ this step entirely.
 
 ## What it creates
 
-A calculation module, a sensor group and a zone, exactly as the
-[Modules](configuration-modules.md), [Sensor groups](configuration-sensor-groups.md)
-and [Zones](configuration-zones.md) tabs would have created them. The recap on
+A calculation module, a sensor group and a zone, exactly as you would have
+created them by hand: [modules](configuration-modules.md),
+[sensor groups](configuration-sensor-groups.md) and [zones](configuration-zones.md). The recap on
 the last step lists what is about to be created before anything is written.
 
 Afterwards, the zone is an ordinary zone: change the mode, repoint the sensors,

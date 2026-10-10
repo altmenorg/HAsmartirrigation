@@ -21,6 +21,16 @@ Each entity will have the following attributes:
 |`precipitation_rate`|the directly entered precipitation rate in mm/h or in/h, when `input_method` is `direct`.|
 |`state`|disabled, manual, automatic |
 |`bucket`|the bucket size in mm or inch|
+|`bucket_unit`, `size_unit`, `throughput_unit`, `drainage_rate_unit`, `current_drainage_unit`, `maximum_bucket_unit`, `precipitation_rate_unit`, `et_value_unit`, `et_deficiency_unit`, `eto_unit`|the unit each figure is shown in, following the unit system of Home Assistant (mm or inch, m<sup>2</sup> or sq ft, liter or gallon per minute).|
+|`multiplier`|the zone's crop factor (Kc).|
+|`lead_time`|the lead time of the zone, in seconds.|
+|`maximum_duration`|the maximum duration of a run for the zone, in seconds.|
+|`drainage_rate`|how fast a saturated root zone drains, per hour (see `drainage_rate_unit`).|
+|`current_drainage`|the water drained at the last calculation.|
+|`maximum_bucket`|the most water the root zone holds above field capacity.|
+|`last_updated`|when weather data was last retrieved for the zone.|
+|`last_calculated`|when the zone was last calculated.|
+|`number_of_data_points`|how many readings the last calculation worked from.|
 |`et_value`|the **net precipitation** applied to the bucket by the last calculation, in mm or inch: the water need over the interval with the precipitation already subtracted from it. It is positive on a day where more rain fell than water evaporated. Despite its name this is not the evapotranspiration.|
 |`et_deficiency`|what this zone needs, per day, before the interval scaling and before precipitation, in mm or inch. Negative, because it is what the soil lost. It carries the zone's crop factor, so it is `ETc = ET0 x Kc` and it agrees with the bucket beside it. Unlike the bucket it does not depend on the calculation interval or on bucket resets, so this is the value to compare when trying out configurations.|
 |`eto`|the reference evapotranspiration of the same run, positive, with no crop factor. This is the number the literature and the weather services quote, so it is the one to hold against an external ET0 figure.|
@@ -48,7 +58,7 @@ Each zone is also grouped as a **device** in Home Assistant (named after the zon
 | Duration (`sensor.smart_irrigation_[zone]`) | sensor | Calculated watering duration (seconds). This is the original entity: its `entity_id`, recorded history and attributes are preserved. |
 | Bucket | sensor | Current soil water balance (mm/inch); negative means deficit. This is the value the last calculation committed. |
 | Live bucket | sensor | Where the zone stands **now**: the same calculation run over the readings collected since the last one, without committing anything. Recomputed as the zone's readings arrive, at most every thirty seconds. Its `live` attribute is `false` when there is nothing to estimate from yet (just after a calculation), and the value is then the committed bucket; `since`, `as_of` and `duration` say what the estimate covers and the run it implies. |
-| Applied ET | sensor | ET applied to the bucket at the last calculation (daily et0 x elapsed interval + rain). |
+| Applied ET | sensor | The same figure as the `et_value` attribute: the net precipitation applied to the bucket at the last calculation (the water need over the interval, `et0 x interval`, with the rain already subtracted). Positive when more rain fell than water evaporated. Despite its name it is not the evapotranspiration; for that see Daily ET deficiency and the `eto` attribute. |
 | Daily ET deficiency | sensor | This zone's daily need, crop factor included, independent of the interval and of rain. |
 | Current drainage | sensor | Water drained as runoff at the last calculation. |
 | Last irrigation | sensor (timestamp) | When the zone was last credited for a run. |
@@ -62,7 +72,7 @@ Each zone is also grouped as a **device** in Home Assistant (named after the zon
 | Reset usage | button | Zero the cumulative water-used counter. |
 | Irrigate now | button | Run this zone's valve for its calculated duration (only shown with direct valve control). The run credits the bucket, so the delivered water is accounted for and the next calculation irrigates less. |
 
-The **Smart Irrigation hub device** also carries global action buttons: *calculate all zones*, *refresh weather*, and (with direct valve control) *irrigate all zones*.
+The **Smart Irrigation hub device** also carries global action buttons: *calculate all zones*, *refresh weather*, and (with direct valve control) *irrigate all zones*. It also has a switch, **Skip on precipitation**, and a number, **Precipitation threshold**: the rain forecast skip of the [general settings](configuration-general.md#skipping-a-run), which you can change from an automation or a dashboard. The number is in mm, or inch with the imperial unit system.
 
 ## Program sensors
 

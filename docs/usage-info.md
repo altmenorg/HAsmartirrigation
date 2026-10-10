@@ -53,9 +53,10 @@ still there afterwards. The same thing is available as the
 
 ### Will it be skipped
 
-The two conditions that can hold a day back, each with its own state and its
-own numbers: the rain forecast against your threshold, and the days since the
-last irrigation against the interval you set.
+The seven checks that can hold a day back, each with its own state and its
+own numbers: whether you postponed the run, the rain sensor, the freeze, the
+wind, the rain forecast against your threshold, the days since the last
+irrigation against the interval you set, and the soil moisture of the zones.
 
 This is a **preview, not a promise**. It is evaluated now, and a forecast can
 change before the start. That is also why a projected skip does not move the
@@ -92,7 +93,7 @@ The **History** tab lists what actually ran, grouped by day: which zone, when,
 for how long and how much water. A run appears whether Smart Irrigation drove
 the valve itself or observed one being driven by something else.
 
-The **Weather service** tab keeps its own history of what was retrieved and
+The **Weather service** page, under **Data**, keeps its own history of what was retrieved and
 when, which is the place to look when a calculation used a value you did not
 expect.
 

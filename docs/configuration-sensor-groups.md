@@ -30,7 +30,7 @@ The following data can be provided:
 |---|---|---|---|--|--|
 |**Current precipitation**|No|Weather Service<br/>Sensor<br/>Static value|in/h<br/>mm/h|Average|Riemann Sum|
 |**Dewpoint**|Yes|Weather Service<br/>Sensor<br/>Static value|°C<br/>°F|Average|Last|
-|**Evapotranspiration**|No|None (module will calculate it)<br/>Sensor<br/>Static value|in<br/>mm|Average|Last|
+|**Evapotranspiration**|No|None (module will calculate it)<br/>Ready-made ET0 from the weather service<br/>Sensor<br/>Static value|in<br/>mm|Average|Last|
 |**Humidity**|Yes|Weather Service<br/>Sensor<br/>Static value|%|Average|Last|
 |**Total precipitation**|No|Sensor<br/>Static value|in<br/>mm|Delta|Delta|
 |**Pressure** (*see notes below the table)|Yes|Weather Service<br/>Sensor<br/>Static value|hPa<br/>inch Hg<br/>millibar<br/>psi|Average|Last|
@@ -52,7 +52,7 @@ Please note:
   Two other things to set for a greenhouse, which the integration does not infer for you: put Wind speed on a **static value** near 0, since the FAO-56 aerodynamic term assumes open air, and leave precipitation unmapped or static at 0, since it does not rain indoors.
 
   If you would rather not use this, a template sensor that converts your lux entity and is reported as `W/m2` reaches the same result through the Radiation sensor source.
-- Wind speed needs to be measured at 2 meters height. If you are using Open Weather Map this is automatically done for you, but if you do not, you need to make sure the input sensor returns the wind speed at the correct height. You can use a template sensor like the following for this:
+- Wind speed is used at 2 meters height. If you are using a weather service this is done for you. For a wind sensor, the sensor group has an **Anemometer height** field: enter the height in metres at which your anemometer is mounted, and the reading is brought down to 2 m with the FAO-56 wind profile (equation 47). Leave it empty if the sensor is already at 2 m; a height of 2 m, or of 0.5 m or less, leaves the reading as it is. The sensor groups made before this field existed are left as they were. Instead of the field, you can still make the sensor return the wind speed at 2 m yourself, with a template sensor like the following:
    ```yaml
    sensor:
      - platform: template

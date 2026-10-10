@@ -14,6 +14,8 @@ The integration's **Configure** dialog is used to set **manual coordinates** —
 3. ![](assets/images/installation-options-1.png) Under 'Integration entities' click `Configure`.
 4. Toggle **Use manual coordinates** on to enter a latitude, longitude and elevation; leave it off to inherit your Home Assistant location.
 
+The [manual coordinates page](MANUAL_COORDINATES.md) explains the fields, the order in which the coordinates are chosen and the checks on the values.
+
 > To change the **weather service** or update an API key, use the **Weather service** settings in the Smart Irrigation panel instead — see [Configuring the weather service](installation-weatherservice.md).
 
 > Main page: [Installation](installation.md)<br/>

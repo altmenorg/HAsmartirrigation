@@ -95,7 +95,7 @@ Please follow the procedure below for each installed instance of V1, before upgr
 - each zone has a property called 'size'. This is the same as the `area` from your diagnostics file for that zone.
 - sensor groups are where you decide what sources to use (Open Weather Map, Sensors, Static values (new in V2) or a mix). Use the true/false values and sensors from your diagnostics file to figure out what set up you had.
 
-If you need help, please reach out by [opening an issue](https://github.com/jeroenterheerdt/HAsmartirrigation/issues).
+If you need help, please reach out by [opening an issue](https://github.com/altmenorg/HAsmartirrigation/issues).
 
 
 > Main page: [Installation](installation.md)<br/>

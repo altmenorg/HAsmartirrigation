@@ -48,11 +48,15 @@ the next start would be skipped and why, and what the last real decision was.
 
 ## When does it fire?
 
-The event fires when a configured **start trigger** is reached: a solar event (sunrise, sunset or solar azimuth), optionally shifted by an offset, or a fixed clock time. A fixed time suits irrigation that has to be done by a certain hour whatever the season, rather than following the sun. If you configure no triggers, the legacy default applies: it fires early enough before sunrise that watering finishes at sunrise (`sunrise - sum(duration of all enabled zones)`).
+The event fires when the **active start trigger** is reached. You can define several triggers, but only the one selected as active starts the watering, so the run happens once per day. The **Start triggers** card on the [General page](configuration-general.md) has the choice:
+
+* **A trigger you defined.** A solar event (sunrise, sunset or solar azimuth), optionally shifted by an offset, or a fixed clock time. A fixed time suits irrigation that has to be done by a certain hour whatever the season, rather than following the sun.
+* **Default.** Used whenever Default is selected, even if you have defined triggers. It starts early enough before sunrise that watering finishes at sunrise: sunrise minus the planned length of the run. That length is how long the run really takes, so with zones in parallel it is the longest zone rather than the sum, and the soak and pauses between zones are counted when Smart Irrigation opens the valves itself.
+* **None.** Nothing starts the watering, whatever the weather. The durations are still calculated. It is the way to keep Smart Irrigation from starting a run.
 
 With **account for duration** on, a trigger works back from its moment so watering *finishes* then; with it off, watering *starts* then. That applies to a fixed time as well: set 06:30 with it on and an hour-long run starts at 05:30.
 
-Each enabled trigger fires **independently**. The precipitation-skip and "days between irrigation" settings still apply: on a skip day no event is fired.
+The skip conditions still apply: on a skip day no start event is fired, and the skipped event above is fired instead.
 
 ## Event data
 
