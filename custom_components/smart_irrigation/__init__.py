@@ -55,6 +55,7 @@ from .calc_log import CalculationLogger
 from .calculation import CalculationMixin
 from .card import async_register_card
 from .engine_binding import EngineBindingMixin
+from .entity import device_by_identifier
 from .exceptions import SmartIrrigationError
 from .flow_calibration import FlowCalibrationMixin
 from .helpers import (
@@ -2408,12 +2409,13 @@ class SmartIrrigationCoordinator(
         self.hass.data[const.DOMAIN]["zones"].pop(zone_id, None)
 
         # Remove the per-zone device, which drops all of its child entities too.
-        device_registry = dr.async_get(self.hass)
-        device = device_registry.async_get_device(
-            identifiers={(const.DOMAIN, f"{self.id}_zone_{zone_id}")}
+        # Looked up the way this Home Assistant asks for: async_get_device by
+        # identifiers goes in 2027.8.
+        device = device_by_identifier(
+            self.hass, (const.DOMAIN, f"{self.id}_zone_{zone_id}")
         )
         if device is not None:
-            device_registry.async_remove_device(device.id)
+            dr.async_get(self.hass).async_remove_device(device.id)
 
     async def async_unload(self):
         """Remove all Smart Irrigation objects."""

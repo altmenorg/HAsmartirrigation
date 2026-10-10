@@ -39,8 +39,8 @@ def _config_entry_id(hass: HomeAssistant) -> str | None:
     return getattr(getattr(coordinator, "entry", None), "entry_id", None)
 
 
-def _hub_device(hass: HomeAssistant, hub: tuple[str, str]):
-    """The hub device, looked up the way this Home Assistant asks for.
+def device_by_identifier(hass: HomeAssistant, identifier: tuple[str, str]):
+    """One of our devices, looked up the way this Home Assistant asks for.
 
     ``async_get_device`` is deprecated too, and goes at the same time as
     ``via_device``: identifiers are no longer unique across config entries, so
@@ -54,10 +54,10 @@ def _hub_device(hass: HomeAssistant, hub: tuple[str, str]):
     entry_id = _config_entry_id(hass)
     if by_identifier is not None and entry_id is not None:
         try:
-            return by_identifier(identifier=hub, config_entry_id=entry_id)
+            return by_identifier(identifier=identifier, config_entry_id=entry_id)
         except TypeError:  # pragma: no cover - a third shape of the same call
             _LOGGER.debug("async_get_device_by_identifier has an unexpected signature")
-    return registry.async_get_device(identifiers={hub})
+    return registry.async_get_device(identifiers={identifier})
 
 
 def _parent_of(hass: HomeAssistant, hub: tuple[str, str]) -> dict:
@@ -66,7 +66,7 @@ def _parent_of(hass: HomeAssistant, hub: tuple[str, str]) -> dict:
         # The hub device is created in async_setup_entry, before any platform,
         # so it is there to be found. If it somehow is not, the deprecated form
         # still links the device on every version that has not removed it.
-        device = _hub_device(hass, hub)
+        device = device_by_identifier(hass, hub)
         if device is not None:
             return {"via_device_id": device.id}
     return {"via_device": hub}
