@@ -427,6 +427,8 @@
           "hidden_sources": "{n} meting(en) niet gevraagd: de verdamping wordt kant-en-klaar geleverd, ze zouden alleen dienen om haar opnieuw te berekenen.",
           "et_ignored": "Zone(s) {zones} worden uit het weer berekend en lezen deze verdamping niet. Zet ze op geleverd door een sensor of een dienst bij de zone.",
           "et_missing": "Zone(s) {zones} verwachten een kant-en-klare verdamping: kies hierboven een bron ervoor.",
+          "et_unused": "Niet gebruikt: alle zones van deze groep worden door Smart Irrigation berekend, dat de verdamping uit de andere metingen afleidt. Zet een zone op geleverd door een sensor of een dienst om hier een kant-en-klare waarde te geven.",
+          "et_needed": "Hier is een kant-en-klare waarde nodig: de zones van deze groep staan op geleverd door een sensor of een dienst, dus Geen wordt niet aangeboden.",
           "hints": {
             "temperature": "Luchttemperatuur, in de schaduw. De minimum- en maximumtemperatuur van de dag worden eruit afgeleid.",
             "dewpoint": "De temperatuur waarbij de lucht verzadigd zou zijn, wat aangeeft hoeveel damp ze bevat. De weerdienst volstaat hier.",

@@ -427,6 +427,8 @@
           "hidden_sources": "{n} lukemaa ei kysytä: haihdunta annetaan valmiina, ne palvelisivat vain sen uudelleenlaskentaa.",
           "et_ignored": "Alueet {zones} lasketaan säästä eivätkä lue tätä haihduntaa. Aseta ne alueella arvoon anturin tai palvelun antama.",
           "et_missing": "Alueet {zones} odottavat valmiiksi laskettua haihduntaa: valitse sille lähde yllä.",
+          "et_unused": "Ei käytössä: Smart Irrigation laskee tämän ryhmän kaikki alueet ja johtaa haihdunnan muista mittauksista. Aseta alue arvoon anturin tai palvelun antama, jos haluat antaa tähän valmiin arvon.",
+          "et_needed": "Tähän tarvitaan valmis arvo: tämän ryhmän alueet on asetettu arvoon anturin tai palvelun antama, joten vaihtoehtoa Ei mitään ei tarjota.",
           "hints": {
             "temperature": "Ilman lämpötila varjossa. Päivän minimi ja maksimi otetaan siitä.",
             "dewpoint": "Lämpötila, jossa ilma kyllästyisi, mikä kertoo kuinka paljon höyryä se sisältää. Sääpalvelu käy tähän hyvin.",

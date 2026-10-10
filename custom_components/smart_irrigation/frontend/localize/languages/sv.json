@@ -427,6 +427,8 @@
           "hidden_sources": "{n} mätvärde(n) efterfrågas inte: evapotranspirationen anges färdig, de skulle bara användas för att räkna om den.",
           "et_ignored": "Zon(erna) {zones} beräknas ur vädret och läser inte den här evapotranspirationen. Ställ in dem på levererad av en sensor eller en tjänst i zonen.",
           "et_missing": "Zon(erna) {zones} väntar sig en färdig evapotranspiration: välj en källa för den ovan.",
+          "et_unused": "Används inte: alla zoner i den här gruppen beräknas av Smart Irrigation, som härleder evapotranspirationen ur de andra mätvärdena. Ställ in en zon på levererad av en sensor eller en tjänst för att ange ett färdigt värde här.",
+          "et_needed": "Ett färdigt värde behövs här: zonerna i den här gruppen är inställda på levererad av en sensor eller en tjänst, så Ingen erbjuds inte.",
           "hints": {
             "temperature": "Lufttemperatur, i skuggan. Dygnets lägsta och högsta värde tas ur den.",
             "dewpoint": "Temperaturen då luften skulle vara mättad, vilket visar hur mycket ånga den håller. Vädertjänsten duger här.",
