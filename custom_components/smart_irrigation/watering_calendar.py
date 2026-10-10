@@ -6,6 +6,7 @@ for planning estimates. The methods live on a mixin the coordinator inherits;
 their bodies are unchanged and still use ``self`` to reach coordinator state.
 """
 
+import calendar
 import logging
 import math
 from datetime import date, datetime
@@ -129,6 +130,7 @@ class WateringCalendarMixin:
             month_data = monthly_data[month - 1]
 
             try:
+                days_in_month = calendar.monthrange(2024, month)[1]
                 # Calculate ET and watering needs for this month using the zone's module
                 if modinst.name == "PyETO":
                     et_estimate = self._calculate_monthly_et_pyeto(
@@ -137,20 +139,22 @@ class WateringCalendarMixin:
                 elif modinst.name == "Static":
                     # The static delta is a daily deficit, negative when it
                     # dries; the month needs its magnitude over the month.
-                    import calendar
-
-                    et_estimate = abs(modinst.calculate()) * (
-                        calendar.monthrange(2024, month)[1]
-                    )
+                    et_estimate = abs(modinst.calculate()) * days_in_month
                 else:
                     # For other modules like Passthrough, use a simple estimation
                     et_estimate = (
-                        month_data.get("average_daily_et", 3.0) * 30
+                        month_data.get("average_daily_et", 3.0) * days_in_month
                     )  # mm/month
 
-                # Calculate watering volume based on zone parameters
+                # Calculate watering volume based on zone parameters. The
+                # calculation books no rain for a static zone: its delta is
+                # all there is.
                 watering_volume = self._calculate_monthly_watering_volume(
-                    zone, et_estimate, month_data
+                    zone,
+                    et_estimate,
+                    month_data,
+                    month,
+                    counts_rain=modinst.name != "Static",
                 )
 
                 monthly_estimates.append(
@@ -294,9 +298,6 @@ class WateringCalendarMixin:
         mid_month = date(date.today().year, month, 15)
         daily_et_delta = modinst.calculate_et_for_day(weather_data, mid_month)
 
-        # Get days in month
-        import calendar
-
         days_in_month = calendar.monthrange(2024, month)[
             1
         ]  # Use 2024 as reference year
@@ -306,21 +307,34 @@ class WateringCalendarMixin:
         # the need equal to the evaporation whatever it rained.
         return abs(daily_et_delta) * days_in_month
 
-    def _calculate_monthly_watering_volume(self, zone, et_mm, month_data):
+    def _calculate_monthly_watering_volume(
+        self, zone, et_mm, month_data, month=None, counts_rain=True
+    ):
         """Calculate monthly watering volume in liters for a zone.
 
         Args:
             zone: Zone configuration dictionary.
             et_mm: Monthly evapotranspiration in mm.
             month_data: Monthly climate data.
+            month: Month number (1-12), for the factors set by month; None
+                keeps the zone's single crop factor.
+            counts_rain: Whether the zone's engine credits rain at all.
 
         Returns:
             float: Watering volume in liters.
 
         """
         zone_size_m2 = zone.get(const.ZONE_SIZE, 1.0)  # Default 1 m²
-        multiplier = zone.get(const.ZONE_MULTIPLIER, 1.0)
-        precipitation_mm = month_data.get("precipitation", 0.0)
+        multiplier = zone.get(const.ZONE_MULTIPLIER)
+        if multiplier is None:
+            multiplier = 1.0
+        # The crop factor of that month and the seasonal multiplier, as the
+        # calculation applies them: the zone's single factor alone ignored a
+        # crop factor set month by month.
+        if month is not None:
+            multiplier = self._crop_factor_of_the_month(zone, month, multiplier)
+            multiplier *= self._seasonal_factors(zone, month=month)[0]
+        precipitation_mm = month_data.get("precipitation", 0.0) if counts_rain else 0.0
 
         # The size is stored in m2 (units.py).
 
