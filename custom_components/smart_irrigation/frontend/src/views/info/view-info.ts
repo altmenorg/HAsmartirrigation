@@ -45,6 +45,8 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
   @property({ type: Boolean })
   private isLoading = true;
 
+  private _fetchRetries = 0;
+
   // Prevent excessive re-renders
   private _updateScheduled = false;
   private _scheduleUpdate() {
@@ -96,8 +98,17 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       this.config = config;
       this.info = info;
       this.zones = zones;
+      this._fetchRetries = 0;
     } catch (error) {
       console.error("Error fetching data:", error);
+      // The backend answers "not ready" while the integration reloads: ask
+      // again a few times rather than stay on "Loading..." for good.
+      if (this._fetchRetries < 10) {
+        this._fetchRetries += 1;
+        setTimeout(() => {
+          this._fetchData().catch(() => undefined);
+        }, 3000);
+      }
     } finally {
       this.isLoading = false;
       this._scheduleUpdate();

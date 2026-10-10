@@ -757,7 +757,12 @@ def _preview_run_start(next_start) -> dict:
 @async_response
 async def websocket_get_irrigation_info(hass: HomeAssistant, connection, msg):
     """Publish irrigation information."""
-    coordinator = hass.data[const.DOMAIN]["coordinator"]
+    coordinator = (hass.data.get(const.DOMAIN) or {}).get("coordinator")
+    if coordinator is None:
+        # A reload is under way: a clean answer the panel can retry on, not an
+        # unknown error from a KeyError.
+        connection.send_error(msg["id"], "not_ready", "Smart Irrigation is loading")
+        return
     _LOGGER.debug("websocket_get_irrigation_info called")
 
     try:
