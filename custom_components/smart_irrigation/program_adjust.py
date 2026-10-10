@@ -100,3 +100,7 @@ class ProgramAdjustMixin:
             {const.CONF_PROGRAM_ADJUSTMENTS: adjustments}
         )
         self._notify_programs()
+        # The "done by" starts are placed for the length of the adjusted run.
+        register = getattr(self, "register_program_schedules", None)
+        if register is not None:
+            await register()

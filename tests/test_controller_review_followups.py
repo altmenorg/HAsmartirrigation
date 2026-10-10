@@ -273,7 +273,7 @@ class _Scheduler(ProgramSchedulerMixin):
     async def _count_precipitation_skip(self):
         return None
 
-    async def _prepare_watering_for_today(self, name, event_data):
+    async def _prepare_watering_for_today(self, name, event_data, soil_moisture=True):
         await REAL_SLEEP(0)
         await REAL_SLEEP(0)
         self.seen[name] = self._watering_decision_today

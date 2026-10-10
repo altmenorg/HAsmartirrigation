@@ -902,7 +902,11 @@ class SmartIrrigationCoordinator(
         # handle auto clear changes
         await self.set_up_auto_clear_time(data)
         was_full = getattr(self.store.config, const.CONF_FULL_CONTROLLER, False) is True
+        # Who starts the main program's cycle (its own schedules, or the start
+        # trigger) before and after this change.
+        was_scheduled = self.main_program_uses_schedules()
         await self.store.async_update_config(data)
+        start_source_changed = self.main_program_uses_schedules() != was_scheduled
         if was_full and data.get(const.CONF_FULL_CONTROLLER) is False:
             # Switched off: the extra valves of the zones not running are
             # closed once, the alignment having nothing to do while it is off.
@@ -918,6 +922,9 @@ class SmartIrrigationCoordinator(
         if const.CONF_PROGRAMS in data or const.CONF_FULL_CONTROLLER in data:
             # A program, or its schedules, was edited, or the mode was switched.
             await self.register_program_schedules()
+            if start_source_changed:
+                # The start trigger is armed again, or let go of, to match.
+                await self.register_start_event()
         if (
             const.CONF_FULL_CONTROLLER in data
             and (data.get(const.CONF_FULL_CONTROLLER) is True) != was_full

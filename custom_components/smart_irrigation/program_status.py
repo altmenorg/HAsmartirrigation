@@ -176,6 +176,68 @@ class ProgramStatusMixin:
         soak = float(getattr(self.store.config, const.CONF_SOAK_MINUTES, 0) or 0) * 60.0
         return plan, plan_wall_seconds(plan, soak)
 
+    async def _main_program_plan(self, zones) -> tuple:
+        """``(plan, total)`` of the classic cycle the main program runs.
+
+        The main program has no steps: it waters every eligible zone for its
+        duration, one after the other or all at once as the sequencing setting
+        says. The plan has the shape of any program's, so the planning shows it
+        the same way. With the recalculation before the start on, the durations
+        are the live estimates (what the zones will be when it starts), and the
+        total is the one the schedules are placed with.
+        """
+        config = self.store.config
+        durations = {}
+        if getattr(config, const.CONF_RECALCULATE_BEFORE_START, False):
+            try:
+                estimates = await self.async_estimate_all_zones_now() or {}
+            except Exception as e:  # noqa: BLE001 - a display must not fail
+                _LOGGER.debug("No live estimate for the main program: %s", e)
+                estimates = {}
+            for zone in zones:
+                estimate = estimates.get(str(zone.get(const.ZONE_ID)))
+                if (
+                    zone.get(const.ZONE_STATE) == const.ZONE_STATE_AUTOMATIC
+                    and isinstance(estimate, dict)
+                    and estimate.get("duration") is not None
+                ):
+                    durations[zone.get(const.ZONE_ID)] = estimate["duration"]
+        members = []
+        for zone in zones:
+            seconds = durations.get(
+                zone.get(const.ZONE_ID), zone.get(const.ZONE_DURATION)
+            )
+            if (
+                not zone.get(const.ZONE_LINKED_ENTITY)
+                or zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED
+                or not isinstance(seconds, (int, float))
+                or seconds <= 0
+            ):
+                continue
+            members.append(
+                {
+                    "zone_id": int(zone.get(const.ZONE_ID)),
+                    "seconds": float(seconds),
+                    "passes": 1,
+                    "max_litres": 0.0,
+                    "lead": 0.0,
+                }
+            )
+        if not members:
+            return [], 0.0
+        sequencing = getattr(
+            config, const.CONF_ZONE_SEQUENCING, const.CONF_DEFAULT_ZONE_SEQUENCING
+        )
+        if sequencing == const.CONF_ZONE_SEQUENCING_PARALLEL:
+            steps = [{"id": "main", "zones": members, "delay": 0.0}]
+        else:
+            steps = [
+                {"id": f"zone_{m['zone_id']}", "zones": [m], "delay": 0.0}
+                for m in members
+            ]
+        total = await self._planned_run_seconds()
+        return [steps], float(total)
+
     async def async_program_overview(self) -> list:
         """Each program's state and next start."""
         config = self.store.config
@@ -209,8 +271,15 @@ class ProgramStatusMixin:
             else:
                 state = STATE_IDLE
             next_start = None
-            if not main and state != STATE_DISABLED:
-                _plan, total = self._program_totals(program, zones)
+            # The main program has a next start only when schedules of its own
+            # start it; otherwise it is the start trigger's.
+            if state != STATE_DISABLED and (
+                not main or self.main_program_uses_schedules()
+            ):
+                if main:
+                    total = (await self._main_program_plan(zones))[1]
+                else:
+                    _plan, total = self._program_totals(program, zones)
                 for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
                     if schedule.get(const.SCHEDULE_ENABLED) is False:
                         continue
@@ -280,12 +349,16 @@ class ProgramStatusMixin:
         forecasts: dict = {}
         sheltered = await self._planning_sheltered_zones()
         for program in getattr(config, const.CONF_PROGRAMS, None) or []:
-            if program.get(const.PROGRAM_MAIN) or (
-                program.get(const.PROGRAM_ENABLED) is False
+            main = bool(program.get(const.PROGRAM_MAIN))
+            if program.get(const.PROGRAM_ENABLED) is False or (
+                main and not self.main_program_uses_schedules()
             ):
                 continue
             program_id = program.get(const.PROGRAM_ID)
-            plan, total = self._program_totals(program, zones)
+            if main:
+                plan, total = await self._main_program_plan(zones)
+            else:
+                plan, total = self._program_totals(program, zones)
             if not plan:
                 continue
             steps = [

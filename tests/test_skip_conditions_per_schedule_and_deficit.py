@@ -119,7 +119,7 @@ class Scheduler(ProgramSchedulerMixin):
         self._count_precipitation_skip = AsyncMock()
         self.seen = []
 
-        async def prepare(name, data):
+        async def prepare(name, data, soil_moisture=True):
             self.seen.append(
                 (
                     self._watering_decision_today,

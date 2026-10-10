@@ -1769,6 +1769,7 @@ class CalculationMixin:
         if not dry_run:
             # New durations: the holds of the day are owed to them again.
             self._watering_prepared_today = False
+            self._soil_moisture_hold_applied = False
             _LOGGER.debug("calling register start event from async_calculate_all")
             await self.register_start_event()
         return results

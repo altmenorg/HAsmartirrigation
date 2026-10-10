@@ -1034,6 +1034,14 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
             "start_trigger_armed": bool(
                 getattr(coordinator, "start_trigger_armed", False)
             ),
+            # What starts the main program's cycle: the start trigger above, or
+            # the schedules of the main program (full controller only).
+            "start_source": (
+                "main_schedules"
+                if getattr(coordinator, "main_program_uses_schedules", lambda: False)()
+                is True
+                else "trigger"
+            ),
             # Why nothing would water, when that is the case. See
             # delivery_gap().
             "delivery_gap": delivery_gap(config, zones),
@@ -1066,6 +1074,7 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
             "trigger_accounts_for_duration": None,
             "zone_sequencing": None,
             "start_trigger_armed": False,
+            "start_source": "trigger",
             "error": str(e),
             "zone_estimates": {},
             "skip_preview": None,

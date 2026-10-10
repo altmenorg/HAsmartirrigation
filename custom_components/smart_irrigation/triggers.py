@@ -32,6 +32,7 @@ from .helpers import (
     find_next_solar_azimuth_time,
     normalize_azimuth_angle,
 )
+from .programs import main_has_enabled_schedules
 from .rain_history import MAX_FACTOR, MIN_FACTOR, rain_suppression
 from .units import depth_from_display
 
@@ -60,6 +61,17 @@ class TriggersMixin:
     coordinator state (store, hass, the skip-condition checks, the trigger
     bookkeeping attributes, and the direct-valve runner).
     """
+
+    def main_program_uses_schedules(self) -> bool:
+        """Whether the main program's own schedules start the cycle.
+
+        True only with the full controller on and at least one enabled schedule
+        on the main program. Otherwise the historical start trigger does.
+        """
+        config = self.store.config
+        if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
+            return False
+        return main_has_enabled_schedules(getattr(config, const.CONF_PROGRAMS, None))
 
     async def _planned_run_seconds(self) -> int:
         """How long the run is expected to take, for placing the start.
@@ -167,7 +179,10 @@ class TriggersMixin:
                 await register()
         except Exception as ex:  # noqa: BLE001 - the start trigger comes first
             _LOGGER.error("Could not arm the programs' schedules: %s", ex)
-        total_duration = await self._planned_run_seconds()
+        # The main program's own schedules, when it has any switched on, start
+        # the cycle in place of the trigger (program_scheduler.py).
+        schedules_start = self.main_program_uses_schedules()
+        total_duration = 0 if schedules_start else await self._planned_run_seconds()
         self.start_trigger_armed = False
         if self._track_sunrise_event_unsub:
             self._track_sunrise_event_unsub()
@@ -176,6 +191,13 @@ class TriggersMixin:
         for unsub in self._track_irrigation_triggers_unsub:
             unsub()
         self._track_irrigation_triggers_unsub.clear()
+
+        if schedules_start:
+            _LOGGER.info(
+                "The main program has schedules of its own; the start trigger "
+                "is not armed"
+            )
+            return
 
         # Get triggers configuration and the single active trigger. The defined
         # triggers are just the pool of options; only the selected one starts
@@ -618,7 +640,6 @@ class TriggersMixin:
         self._fired_triggers_today.add(name)
 
         async def check_and_fire():
-            event_to_fire = f"{const.DOMAIN}_{const.EVENT_IRRIGATE_START}"
             event_data = {
                 "trigger_name": name,
                 "trigger_type": trigger_info.get(const.TRIGGER_CONF_TYPE),
@@ -647,25 +668,7 @@ class TriggersMixin:
                 if not go:
                     return
 
-                # Fire the event with the trigger's identity.
-                self.hass.bus.fire(event_to_fire, event_data)
-                _LOGGER.info(
-                    "Fired start event %s for trigger '%s'", event_to_fire, name
-                )
-
-                # Optional executor: if direct valve control is on, SI drives the
-                # valves itself (the event above still fires for external setups).
-                if (
-                    getattr(
-                        self.store.config,
-                        const.CONF_DIRECT_VALVE_CONTROL_ENABLED,
-                        False,
-                    )
-                    is True
-                ):
-                    self._spawn_valve_run(self.async_run_direct_valves())
-
-                await self._note_watering_day(name)
+                await self._release_main_cycle(name, event_data)
             except Exception as e:
                 # Fail safe, not fail open (#804): if we cannot tell whether
                 # today is a watering day, not watering is recoverable (one
@@ -680,6 +683,33 @@ class TriggersMixin:
                 )
 
         self.hass.async_create_task(check_and_fire())
+
+    async def _release_main_cycle(self, name, event_data) -> None:
+        """Start the classic cycle once the day has been judged a watering day.
+
+        Shared by the start trigger and by the schedules of the main program, so
+        that both run the zones in exactly the same way: the start event for the
+        executors of your own, then the valves driven by Smart Irrigation when
+        direct valve control is on, then the day counted.
+        """
+        event_to_fire = f"{const.DOMAIN}_{const.EVENT_IRRIGATE_START}"
+        # Fire the event with the trigger's identity.
+        self.hass.bus.fire(event_to_fire, event_data)
+        _LOGGER.info("Fired start event %s for trigger '%s'", event_to_fire, name)
+
+        # Optional executor: if direct valve control is on, SI drives the
+        # valves itself (the event above still fires for external setups).
+        if (
+            getattr(
+                self.store.config,
+                const.CONF_DIRECT_VALVE_CONTROL_ENABLED,
+                False,
+            )
+            is True
+        ):
+            self._spawn_valve_run(self.async_run_direct_valves())
+
+        await self._note_watering_day(name)
 
     def _main_program_held(self):
         """Why the main program must not run ("disabled", "suspended"), or None.
@@ -762,8 +792,13 @@ class TriggersMixin:
             await self.store.async_update_config({const.START_EVENT_FIRED_TODAY: True})
         return watering
 
-    async def _prepare_watering_for_today(self, name, event_data):
+    async def _prepare_watering_for_today(self, name, event_data, soil_moisture=True):
         """Decide whether today is a watering day, and prepare the day's run.
+
+        ``soil_moisture`` False leaves out the hold on zones whose soil reads
+        moist: a schedule that did not choose that condition does not apply it.
+        The hold changes the zones' durations for the whole day, so it cannot be
+        undone for a schedule that comes after one that applied it.
 
         ``(go, sheltered)``: whether to water, and the zones that are sheltered
         from the rain when the forecast says rain (only those run then).
@@ -870,8 +905,11 @@ class TriggersMixin:
                 getattr(self, "_zones_held_by_days_between", None) or set()
             )
 
-            # A zone whose own soil is already moist sits this run out.
-            await self._hold_back_zones_with_moist_soil()
+            # A zone whose own soil is already moist sits this run out, unless
+            # the schedule that starts this run left that condition out.
+            if soil_moisture:
+                await self._hold_back_zones_with_moist_soil()
+                self._soil_moisture_hold_applied = True
 
             # Rain between the calculation and now shortens the run.
             await self._apply_rain_since_calculation()
@@ -887,6 +925,11 @@ class TriggersMixin:
             # Marked only once all of them went through: one that raised leaves
             # the next start to make them again rather than skip them.
             self._watering_prepared_today = True
+        elif soil_moisture and not getattr(self, "_soil_moisture_hold_applied", False):
+            # The earlier preparation of the day was for a schedule that did not
+            # apply the moist soil hold; this one does.
+            await self._hold_back_zones_with_moist_soil()
+            self._soil_moisture_hold_applied = True
         return True, sheltered
 
     async def _count_precipitation_skip(self) -> None:
@@ -1333,6 +1376,7 @@ class TriggersMixin:
         self._fired_triggers_today.clear()
         self._watering_decision_today = None
         self._watering_prepared_today = False
+        self._soil_moisture_hold_applied = False
         if self._start_event_fired_today:
             _LOGGER.info("Resetting start event fired today tracker")
             self._start_event_fired_today = False

@@ -11,13 +11,14 @@ import pytest
 from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.program_scheduler import ProgramSchedulerMixin
 from custom_components.smart_irrigation.programs import normalize_programs
+from custom_components.smart_irrigation.triggers import TriggersMixin
 from tests.runner_doubles import Coordinator, make_hass, make_store, zone
 
 PARIS = ZoneInfo("Europe/Paris")
 UTC = timezone.utc
 
 
-class Status(ProgramSchedulerMixin, Coordinator):
+class Status(ProgramSchedulerMixin, TriggersMixin, Coordinator):
     def _sun_moment(self, event, day):
         hour = 7 if event == "sunrise" else 20
         return datetime(day.year, day.month, day.day, hour, 30, tzinfo=PARIS)

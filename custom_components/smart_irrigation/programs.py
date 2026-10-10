@@ -82,6 +82,23 @@ def find_program(programs, program_id) -> dict | None:
     return None
 
 
+def main_has_enabled_schedules(programs) -> bool:
+    """Whether the main program has at least one schedule that is switched on.
+
+    When it does, those schedules start the main program and the historical
+    start trigger stays unarmed. The program being disabled or suspended is a
+    different matter (it holds the schedules back, it does not hand the start
+    back to the trigger).
+    """
+    main = find_program(programs, MAIN_PROGRAM_ID)
+    if main is None:
+        return False
+    return any(
+        isinstance(s, dict) and s.get(const.SCHEDULE_ENABLED) is not False
+        for s in main.get(const.PROGRAM_SCHEDULES) or []
+    )
+
+
 # --- what is stored ----------------------------------------------------------
 
 
@@ -200,15 +217,24 @@ def normalize_programs(programs, reserved_schedule_ids=None) -> list:
             if main_seen:
                 continue
             main_seen = True
-            cleaned.append(
-                {
-                    const.PROGRAM_ID: MAIN_PROGRAM_ID,
-                    const.PROGRAM_NAME: name or MAIN_PROGRAM_NAME,
-                    const.PROGRAM_ENABLED: program.get(const.PROGRAM_ENABLED)
-                    is not False,
-                    const.PROGRAM_MAIN: True,
-                }
+            main = {
+                const.PROGRAM_ID: MAIN_PROGRAM_ID,
+                const.PROGRAM_NAME: name or MAIN_PROGRAM_NAME,
+                const.PROGRAM_ENABLED: program.get(const.PROGRAM_ENABLED) is not False,
+                const.PROGRAM_MAIN: True,
+            }
+            # Optional schedules of its own, stored only when there are some, so
+            # that a main program without any stays exactly as it was.
+            schedules = normalize_schedules(
+                program.get(const.PROGRAM_SCHEDULES),
+                reserved_schedule_ids.get(MAIN_PROGRAM_ID),
             )
+            for schedule in schedules:
+                # The classic cycle has no deadline to cut it at.
+                schedule.pop(const.SCHEDULE_HARD_DEADLINE, None)
+            if schedules:
+                main[const.PROGRAM_SCHEDULES] = schedules
+            cleaned.append(main)
             continue
         program_id = _unique_id(
             program.get(const.PROGRAM_ID) or name, f"program_{position + 1}", used
