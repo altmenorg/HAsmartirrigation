@@ -221,20 +221,6 @@
         }
       }
     },
-    "set_state": {
-      "name": "Definir o estado de uma zona",
-      "description": "Definir o estado de uma zona com um valor específico",
-      "fields": {
-        "entity": {
-          "name": "Entidade",
-          "description": "Zona para a qual definir o estado"
-        },
-        "new_state_value": {
-          "name": "Novo valor do estado",
-          "description": "Novo valor do estado"
-        }
-      }
-    },
     "set_zone": {
       "name": "Definir os valores de uma zona",
       "description": "Definir todos os valores configuráveis de uma zona",

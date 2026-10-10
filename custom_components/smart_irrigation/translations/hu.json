@@ -221,20 +221,6 @@
         }
       }
     },
-    "set_state": {
-      "name": "Egy zóna állapotának beállítása",
-      "description": "Egy zóna állapotának beállítása egy adott értékre",
-      "fields": {
-        "entity": {
-          "name": "Entitás",
-          "description": "A zóna, amelynek az állapotát beállítja"
-        },
-        "new_state_value": {
-          "name": "Új állapotérték",
-          "description": "Az állapot új értéke"
-        }
-      }
-    },
     "set_zone": {
       "name": "Egy zóna értékeinek beállítása",
       "description": "Egy zóna összes konfigurálható értékének beállítása",

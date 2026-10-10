@@ -221,20 +221,6 @@
         }
       }
     },
-    "set_state": {
-      "name": "Aseta vyöhykkeen tila",
-      "description": "Aseta vyöhykkeen tila tiettyyn arvoon",
-      "fields": {
-        "entity": {
-          "name": "Entiteetti",
-          "description": "Vyöhyke, jonka tila asetetaan"
-        },
-        "new_state_value": {
-          "name": "Uusi tilan arvo",
-          "description": "Tilan uusi arvo"
-        }
-      }
-    },
     "set_zone": {
       "name": "Aseta vyöhykkeen arvot",
       "description": "Aseta kaikki vyöhykkeen määritettävät arvot",

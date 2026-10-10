@@ -221,20 +221,6 @@
         }
       }
     },
-    "set_state": {
-      "name": "Impostare lo stato di una zona",
-      "description": "Impostare lo stato di una zona su un valore specifico",
-      "fields": {
-        "entity": {
-          "name": "Entità",
-          "description": "Zona per impostare lo stato per"
-        },
-        "new_state_value": {
-          "name": "Valore del nuovo stato",
-          "description": "Nuovo valore dello stato"
-        }
-      }
-    },
     "set_zone": {
       "name": "Imposta i valori di una zona",
       "description": "Imposta tutti i valori configurabili di una zona",

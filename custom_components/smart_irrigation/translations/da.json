@@ -221,20 +221,6 @@
         }
       }
     },
-    "set_state": {
-      "name": "Indstil tilstanden for en zone",
-      "description": "Indstil tilstanden for en zone til en bestemt værdi",
-      "fields": {
-        "entity": {
-          "name": "Entitet",
-          "description": "Zone som tilstand skal indstilles for"
-        },
-        "new_state_value": {
-          "name": "Ny tilstandsværdi",
-          "description": "Ny værdi for tilstanden"
-        }
-      }
-    },
     "set_zone": {
       "name": "Indstil værdierne for en zone",
       "description": "Indstil alle konfigurerbare værdier for en zone",

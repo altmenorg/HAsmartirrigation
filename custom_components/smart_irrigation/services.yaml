@@ -433,17 +433,6 @@ clear_all_weather_data:
   target:
     entity:
       domain: sensor
-set_state:
-  name: Set the state of a zone
-  description: Set the state of a zone to a specific value.
-  target:
-    entity:
-      domain: sensor
-  fields:
-    new_state_value:
-      required: true
-      example: "automatic"
-      default: "automatic"
 generate_watering_calendar:
   name: Generate watering calendar
   description: Generate a 12-month watering calendar for irrigation zones based on representative climate data.

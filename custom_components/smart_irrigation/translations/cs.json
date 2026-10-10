@@ -221,20 +221,6 @@
         }
       }
     },
-    "set_state": {
-      "name": "Nastavit stav zóny",
-      "description": "Nastavit stav zóny na konkrétní hodnotu",
-      "fields": {
-        "entity": {
-          "name": "Entita",
-          "description": "Zóna, pro kterou se nastaví stav"
-        },
-        "new_state_value": {
-          "name": "Nová hodnota stavu",
-          "description": "Nová hodnota stavu"
-        }
-      }
-    },
     "set_zone": {
       "name": "Nastavit hodnoty zóny",
       "description": "Nastavit všechny konfigurovatelné hodnoty zóny",

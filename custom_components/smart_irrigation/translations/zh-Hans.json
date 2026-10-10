@@ -221,20 +221,6 @@
         }
       }
     },
-    "set_state": {
-      "name": "设置区域的状态",
-      "description": "将某个区域的状态设置为特定值",
-      "fields": {
-        "entity": {
-          "name": "实体",
-          "description": "要设置状态的区域"
-        },
-        "new_state_value": {
-          "name": "新的状态值",
-          "description": "状态的新值"
-        }
-      }
-    },
     "set_zone": {
       "name": "设置区域的值",
       "description": "设置某个区域的所有可配置值",

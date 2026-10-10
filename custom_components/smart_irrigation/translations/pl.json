@@ -221,20 +221,6 @@
         }
       }
     },
-    "set_state": {
-      "name": "Ustaw stan strefy",
-      "description": "Ustaw stan strefy na określoną wartość",
-      "fields": {
-        "entity": {
-          "name": "Encja",
-          "description": "Strefa, dla której ustawić stan"
-        },
-        "new_state_value": {
-          "name": "Nowa wartość stanu",
-          "description": "Nowa wartość stanu"
-        }
-      }
-    },
     "set_zone": {
       "name": "Ustaw wartości strefy",
       "description": "Ustaw wszystkie konfigurowalne wartości strefy",

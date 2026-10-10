@@ -221,20 +221,6 @@
         }
       }
     },
-    "set_state": {
-      "name": "Ställ in en zons tillstånd",
-      "description": "Ställ in en zons tillstånd till ett specifikt värde",
-      "fields": {
-        "entity": {
-          "name": "Entitet",
-          "description": "Zon att ställa in tillstånd för"
-        },
-        "new_state_value": {
-          "name": "Nytt tillståndsvärde",
-          "description": "Nytt värde för tillståndet"
-        }
-      }
-    },
     "set_zone": {
       "name": "Ställ in en zons värden",
       "description": "Ställ in alla konfigurerbara värden för en zon",
