@@ -580,7 +580,7 @@
         "bucket-hint": "The water balance of the zone. Negative: it is short of water. Zero: it has what it needs. Watering brings it back to zero.",
         "maximum-bucket-hint": "The most water the soil is taken to hold. A positive balance never goes above it: the surplus is lost.",
         "irrigation-threshold-hint": "The deficit from which the zone is watered. Under it, the zone is left alone and the deficit rolls over to the next calculation.",
-        "drainage_rate-hint": "How fast the soil lets surplus water go. Leave it at 0 if you do not know your soil.",
+        "drainage_rate-hint": "How fast the soil lets surplus water go. Leave the default if you do not know your soil: 0 means the surplus never drains.",
         "precipitation-rate": "Precipitation rate",
         "size": "Size",
         "state": "State",
@@ -809,7 +809,7 @@
       "sunrise_offset": "For sunrise triggers: Use negative values to start before sunrise, positive to start after. Set to 0 to automatically start early enough to complete all zones before sunrise.",
       "sunset_offset": "For sunset triggers: Use negative values to start before sunset, positive to start after sunset.",
       "azimuth_explanation": "Solar azimuth is the compass direction of the sun. 0°=North, 90°=East, 180°=South, 270°=West. You can enter any angle value (e.g., 450° = 90°, -30° = 330°). Use this to trigger irrigation when the sun reaches a specific position.",
-      "multiple_triggers": "You can configure multiple triggers. Each enabled trigger will independently schedule irrigation starts."
+      "multiple_triggers": "You can create several triggers, but only the one selected as active starts irrigation. The others are kept for later."
     },
     "active_none": "None (Smart Irrigation starts no watering)",
     "none_selected": "No trigger is active: Smart Irrigation starts no watering, whatever the weather. The durations are still calculated; start the watering yourself or from an automation of your own."

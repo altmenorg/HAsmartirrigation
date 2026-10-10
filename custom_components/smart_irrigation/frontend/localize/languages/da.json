@@ -580,7 +580,7 @@
         "bucket-hint": "Zonens vandbalance. Negativ: den mangler vand. Nul: den har, hvad den skal bruge. Vanding bringer den tilbage til nul.",
         "maximum-bucket-hint": "Det meste vand, jorden antages at kunne holde. En positiv balance kommer aldrig over dette: overskuddet går tabt.",
         "irrigation-threshold-hint": "Det underskud, hvorfra zonen vandes. Under det lades zonen i fred, og underskuddet overføres til næste beregning.",
-        "drainage_rate-hint": "Hvor hurtigt jorden lader overskydende vand slippe væk. Lad den stå på 0, hvis du ikke kender din jord.",
+        "drainage_rate-hint": "Hvor hurtigt jorden lader overskydende vand slippe væk. Behold standardværdien, hvis du ikke kender din jord: 0 betyder, at overskuddet aldrig dræner væk.",
         "precipitation-rate": "Nedbørsintensitet",
         "size": "Størrelse",
         "state": "Tilstand",
@@ -809,7 +809,7 @@
       "sunrise_offset": "For solopgangsudløsere: Brug negative værdier for at starte før solopgang, positive for at starte efter. Sæt til 0 for automatisk at starte tidligt nok til at fuldføre alle zoner før solopgang.",
       "sunset_offset": "For solnedgangsudløsere: Brug negative værdier for at starte før solnedgang, positive for at starte efter solnedgang.",
       "azimuth_explanation": "Solens azimut er solens kompasretning. 0°=Nord, 90°=Øst, 180°=Syd, 270°=Vest. Du kan indtaste en hvilken som helst vinkelværdi (f.eks. 450° = 90°, -30° = 330°). Brug dette til at udløse vanding, når solen når en bestemt position.",
-      "multiple_triggers": "Du kan konfigurere flere udløsere. Hver aktiveret udløser planlægger vandingsstarter uafhængigt."
+      "multiple_triggers": "Du kan oprette flere udløsere, men kun den, der er valgt som aktiv, starter vanding. De andre gemmes til senere."
     },
     "active_none": "Ingen (Smart Irrigation starter ingen vanding)",
     "none_selected": "Ingen udløser er aktiv: Smart Irrigation starter ingen vanding, uanset vejret. Varighederne beregnes stadig; start vandingen selv eller fra en egen automatisering."

@@ -580,7 +580,7 @@
         "bucket-hint": "Die Wasserbilanz der Zone. Negativ: Ihr fehlt Wasser. Null: Sie hat, was sie braucht. Bewässern bringt sie auf null zurück.",
         "maximum-bucket-hint": "Das meiste Wasser, das der Boden nach Annahme halten kann. Eine positive Bilanz geht nie darüber: Der Überschuss geht verloren.",
         "irrigation-threshold-hint": "Das Defizit, ab dem die Zone bewässert wird. Darunter wird die Zone in Ruhe gelassen und das Defizit wird auf die nächste Berechnung übertragen.",
-        "drainage_rate-hint": "Wie schnell der Boden überschüssiges Wasser abfließen lässt. Lass es auf 0, wenn du deinen Boden nicht kennst.",
+        "drainage_rate-hint": "Wie schnell der Boden überschüssiges Wasser abfließen lässt. Lass den Standardwert, wenn du deinen Boden nicht kennst: 0 bedeutet, dass der Überschuss nie abfließt.",
         "precipitation-rate": "Niederschlagsrate",
         "size": "Größe",
         "state": "Berechnung",
@@ -809,7 +809,7 @@
       "sunrise_offset": "Für Sonnenaufgangs-Auslöser: Verwenden Sie negative Werte, um vor Sonnenaufgang zu starten, positive für danach. Setzen Sie auf 0, um automatisch früh genug zu starten, damit alle Zonen vor Sonnenaufgang fertig sind.",
       "sunset_offset": "Für Sonnenuntergangs-Auslöser: Verwenden Sie negative Werte, um vor Sonnenuntergang zu starten, positive für nach Sonnenuntergang.",
       "azimuth_explanation": "Das Sonnenazimut ist die Himmelsrichtung der Sonne. 0°=Nord, 90°=Ost, 180°=Süd, 270°=West. Sie können einen beliebigen Winkelwert eingeben (z. B. 450°=90°, -30°=330°). Damit lösen Sie die Bewässerung aus, wenn die Sonne eine bestimmte Position erreicht.",
-      "multiple_triggers": "Sie können mehrere Auslöser konfigurieren. Jeder aktivierte Auslöser plant Bewässerungsstarts unabhängig."
+      "multiple_triggers": "Sie können mehrere Auslöser anlegen, aber nur der als aktiv gewählte startet die Bewässerung. Die anderen bleiben für später erhalten."
     },
     "active_none": "Keiner (Smart Irrigation startet keine Bewässerung)",
     "none_selected": "Kein Auslöser ist aktiv: Smart Irrigation startet keine Bewässerung, egal wie das Wetter ist. Die Dauern werden weiterhin berechnet; starten Sie die Bewässerung selbst oder über eine eigene Automatisierung."

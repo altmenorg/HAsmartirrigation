@@ -580,7 +580,7 @@
         "bucket-hint": "O balanço hídrico da zona. Negativo: falta-lhe água. Zero: tem o que precisa. A rega repõe-no a zero.",
         "maximum-bucket-hint": "O máximo de água que se considera que o solo retém. Um balanço positivo nunca o ultrapassa: o excedente perde-se.",
         "irrigation-threshold-hint": "O défice a partir do qual a zona é regada. Abaixo dele, a zona é deixada em paz e o défice passa para o cálculo seguinte.",
-        "drainage_rate-hint": "A rapidez com que o solo deixa escapar o excesso de água. Deixe em 0 se não conhece o seu solo.",
+        "drainage_rate-hint": "A rapidez com que o solo deixa escapar o excesso de água. Deixe o valor predefinido se não conhece o seu solo: 0 significa que o excedente nunca drena.",
         "precipitation-rate": "Taxa de precipitação",
         "size": "Tamanho",
         "state": "Estado",
@@ -809,7 +809,7 @@
       "sunrise_offset": "Para acionadores ao nascer do sol: use valores negativos para começar antes do nascer do sol, positivos para começar depois. Defina como 0 para começar automaticamente com antecedência suficiente para concluir todas as zonas antes do nascer do sol.",
       "sunset_offset": "Para acionadores ao pôr do sol: use valores negativos para começar antes do pôr do sol, positivos para começar depois do pôr do sol.",
       "azimuth_explanation": "O azimute solar é a direção da bússola do sol. 0°=Norte, 90°=Este, 180°=Sul, 270°=Oeste. Pode introduzir qualquer valor de ângulo (por exemplo, 450° = 90°, -30° = 330°). Use isto para acionar a irrigação quando o sol atinge uma posição específica.",
-      "multiple_triggers": "Pode configurar vários acionadores. Cada acionador ativado agendará independentemente os inícios de irrigação."
+      "multiple_triggers": "Pode criar vários acionadores, mas apenas o escolhido como ativo inicia a rega. Os outros ficam guardados para mais tarde."
     },
     "active_none": "Nenhum (o Smart Irrigation não inicia nenhuma rega)",
     "none_selected": "Nenhum acionador está ativo: o Smart Irrigation não inicia nenhuma rega, seja qual for o tempo. As durações continuam a ser calculadas; inicie a rega você mesmo ou a partir de uma automação sua."

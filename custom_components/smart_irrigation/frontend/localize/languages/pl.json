@@ -580,7 +580,7 @@
         "bucket-hint": "Bilans wodny strefy. Ujemny: brakuje jej wody. Zero: ma to, czego potrzebuje. Podlewanie przywraca go do zera.",
         "maximum-bucket-hint": "Najwięcej wody, jaką gleba może zatrzymać. Dodatni bilans nigdy jej nie przekracza: nadwyżka przepada.",
         "irrigation-threshold-hint": "Deficyt, od którego strefa jest podlewana. Poniżej niego strefa zostaje w spokoju, a deficyt przechodzi do następnego obliczenia.",
-        "drainage_rate-hint": "Jak szybko gleba oddaje nadmiar wody. Zostaw 0, jeśli nie znasz swojej gleby.",
+        "drainage_rate-hint": "Jak szybko gleba oddaje nadmiar wody. Zostaw wartość domyślną, jeśli nie znasz swojej gleby: 0 oznacza, że nadmiar nigdy nie odpływa.",
         "precipitation-rate": "Intensywność opadu",
         "size": "Rozmiar",
         "state": "Stan",
@@ -809,7 +809,7 @@
       "sunrise_offset": "Dla wyzwalaczy wschodu słońca: użyj wartości ujemnych, aby rozpocząć przed wschodem słońca, dodatnich, aby rozpocząć po nim. Ustaw na 0, aby automatycznie rozpocząć odpowiednio wcześnie, by ukończyć wszystkie strefy przed wschodem słońca.",
       "sunset_offset": "Dla wyzwalaczy zachodu słońca: użyj wartości ujemnych, aby rozpocząć przed zachodem słońca, dodatnich, aby rozpocząć po zachodzie słońca.",
       "azimuth_explanation": "Azymut słońca to kierunek kompasowy słońca. 0°=Północ, 90°=Wschód, 180°=Południe, 270°=Zachód. Możesz wprowadzić dowolną wartość kąta (np. 450° = 90°, -30° = 330°). Użyj tego, aby wyzwolić nawadnianie, gdy słońce osiągnie określone położenie.",
-      "multiple_triggers": "Możesz skonfigurować wiele wyzwalaczy. Każdy włączony wyzwalacz będzie niezależnie planował starty nawadniania."
+      "multiple_triggers": "Możesz utworzyć wiele wyzwalaczy, ale nawadnianie uruchamia tylko ten wybrany jako aktywny. Pozostałe są zachowane na później."
     },
     "active_none": "Brak (Smart Irrigation nie uruchamia podlewania)",
     "none_selected": "Żaden wyzwalacz nie jest aktywny: Smart Irrigation nie uruchamia podlewania, niezależnie od pogody. Czasy są nadal obliczane; uruchom podlewanie samodzielnie lub z własnej automatyzacji."

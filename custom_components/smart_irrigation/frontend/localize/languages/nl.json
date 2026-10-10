@@ -580,7 +580,7 @@
         "bucket-hint": "De waterbalans van de zone. Negatief: ze komt water tekort. Nul: ze heeft wat ze nodig heeft. Bewateren brengt haar terug naar nul.",
         "maximum-bucket-hint": "Het meeste water dat de bodem geacht wordt vast te houden. Een positieve balans komt er nooit boven: het overschot gaat verloren.",
         "irrigation-threshold-hint": "Het tekort vanaf wanneer de zone wordt bewaterd. Eronder blijft de zone met rust en gaat het tekort mee naar de volgende berekening.",
-        "drainage_rate-hint": "Hoe snel de bodem overtollig water laat gaan. Laat het op 0 staan als je je bodem niet kent.",
+        "drainage_rate-hint": "Hoe snel de bodem overtollig water laat gaan. Laat de standaardwaarde staan als je je bodem niet kent: 0 betekent dat het overschot nooit wegzakt.",
         "precipitation-rate": "Neerslagintensiteit",
         "size": "Afmeting",
         "state": "Status",
@@ -809,7 +809,7 @@
       "sunrise_offset": "Voor zonsopgang-triggers: gebruik negatieve waarden om vóór zonsopgang te starten, positieve om erna te starten. Stel in op 0 om automatisch vroeg genoeg te starten zodat alle zones vóór zonsopgang klaar zijn.",
       "sunset_offset": "Voor zonsondergang-triggers: gebruik negatieve waarden om vóór zonsondergang te starten, positieve om na zonsondergang te starten.",
       "azimuth_explanation": "Het zonne-azimut is de kompasrichting van de zon. 0°=Noord, 90°=Oost, 180°=Zuid, 270°=West. Je kunt elke hoekwaarde invoeren (bijv. 450°=90°, -30°=330°). Gebruik dit om de irrigatie te starten wanneer de zon een specifieke positie bereikt.",
-      "multiple_triggers": "Je kunt meerdere triggers configureren. Elke ingeschakelde trigger plant irrigatiestarts onafhankelijk."
+      "multiple_triggers": "Je kunt meerdere triggers aanmaken, maar alleen de trigger die als actief is gekozen start de irrigatie. De andere blijven bewaard voor later."
     },
     "active_none": "Geen (Smart Irrigation start geen bewatering)",
     "none_selected": "Geen trigger is actief: Smart Irrigation start geen bewatering, wat het weer ook doet. De duren worden nog wel berekend; start de bewatering zelf of vanuit een eigen automatisering."

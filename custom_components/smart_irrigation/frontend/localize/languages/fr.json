@@ -679,7 +679,7 @@
         "bucket-hint": "Le bilan en eau de la zone. Négatif : il lui manque de l'eau. Zéro : elle a ce qu'il lui faut. L'arrosage le ramène à zéro.",
         "maximum-bucket-hint": "Le plus d'eau que le sol est supposé retenir. Un bilan positif ne le dépasse jamais : le surplus est perdu.",
         "irrigation-threshold-hint": "Le déficit à partir duquel la zone est arrosée. En dessous, la zone est laissée tranquille et le déficit passe au calcul suivant.",
-        "drainage_rate-hint": "La vitesse à laquelle le sol laisse partir l'eau en trop. Laisse 0 si tu ne connais pas ton sol.",
+        "drainage_rate-hint": "La vitesse à laquelle le sol laisse partir l'eau en trop. Garde la valeur par défaut si tu ne connais pas ton sol : 0 veut dire que le surplus ne s'écoule jamais.",
         "precipitation-rate": "Taux de précipitation"
       },
       "no_items": "Il n'y a pas encore de zone définie.",
@@ -809,7 +809,7 @@
       "sunrise_offset": "Pour les déclencheurs au lever du soleil : utilise des valeurs négatives pour démarrer avant le lever, positives pour démarrer après. Règle sur 0 pour démarrer automatiquement assez tôt afin de terminer toutes les zones avant le lever du soleil.",
       "sunset_offset": "Pour les déclencheurs au coucher du soleil : utilise des valeurs négatives pour démarrer avant le coucher, positives pour démarrer après le coucher.",
       "azimuth_explanation": "L'azimut solaire est la direction de la boussole vers le soleil. 0°=Nord, 90°=Est, 180°=Sud, 270°=Ouest. Tu peux saisir n'importe quelle valeur d'angle (p. ex. 450°=90°, -30°=330°). Utilise-le pour déclencher l'irrigation lorsque le soleil atteint une position précise.",
-      "multiple_triggers": "Tu peux configurer plusieurs déclencheurs. Chaque déclencheur activé planifiera indépendamment les démarrages d'irrigation."
+      "multiple_triggers": "Tu peux créer plusieurs déclencheurs, mais seul celui choisi comme actif démarre l'irrigation. Les autres sont gardés pour plus tard."
     },
     "active_none": "Aucun (Smart Irrigation ne lance aucun arrosage)",
     "none_selected": "Aucun déclencheur n'est actif : Smart Irrigation ne lance aucun arrosage, quelle que soit la météo. Les durées d'arrosage sont toujours calculées ; lance l'arrosage toi-même ou depuis une automatisation à toi."

@@ -580,7 +580,7 @@
         "bucket-hint": "Alueen vesitasapaino. Negatiivinen: vettä puuttuu. Nolla: sillä on tarpeeksi. Kastelu palauttaa sen nollaan.",
         "maximum-bucket-hint": "Suurin vesimäärä, jonka maan oletetaan pidättävän. Positiivinen tasapaino ei koskaan ylitä sitä: ylimäärä menee hukkaan.",
         "irrigation-threshold-hint": "Alijäämä, josta alkaen aluetta kastellaan. Sen alapuolella aluetta ei kasteta ja alijäämä siirtyy seuraavaan laskentaan.",
-        "drainage_rate-hint": "Kuinka nopeasti maa päästää ylimääräisen veden pois. Jätä arvoon 0, jos et tunne maatasi.",
+        "drainage_rate-hint": "Kuinka nopeasti maa päästää ylimääräisen veden pois. Jätä oletusarvo, jos et tunne maatasi: 0 tarkoittaa, ettei ylimäärä koskaan valu pois.",
         "precipitation-rate": "Sateen voimakkuus",
         "size": "Koko",
         "state": "Tila",
@@ -809,7 +809,7 @@
       "sunrise_offset": "Auringonnousuliipaisimissa: Käytä negatiivisia arvoja aloittaaksesi ennen auringonnousua, positiivisia aloittaaksesi sen jälkeen. Aseta arvoon 0 aloittaaksesi automaattisesti riittävän aikaisin, jotta kaikki vyöhykkeet ehtivät valmistua ennen auringonnousua.",
       "sunset_offset": "Auringonlaskuliipaisimissa: Käytä negatiivisia arvoja aloittaaksesi ennen auringonlaskua, positiivisia aloittaaksesi auringonlaskun jälkeen.",
       "azimuth_explanation": "Auringon atsimuutti on auringon kompassisuunta. 0°=Pohjoinen, 90°=Itä, 180°=Etelä, 270°=Länsi. Voit syöttää minkä tahansa kulma-arvon (esim. 450° = 90°, -30° = 330°). Käytä tätä laukaistaksesi kastelun, kun aurinko saavuttaa tietyn aseman.",
-      "multiple_triggers": "Voit määrittää useita liipaisimia. Jokainen käytössä oleva liipaisin ajoittaa kastelun aloitukset itsenäisesti."
+      "multiple_triggers": "Voit luoda useita liipaisimia, mutta vain aktiiviseksi valittu käynnistää kastelun. Muut säilytetään myöhempää varten."
     },
     "active_none": "Ei mitään (Smart Irrigation ei aloita kastelua)",
     "none_selected": "Mikään liipaisin ei ole käytössä: Smart Irrigation ei aloita kastelua säästä riippumatta. Kestot lasketaan silti; aloita kastelu itse tai oman automaatiosi avulla."

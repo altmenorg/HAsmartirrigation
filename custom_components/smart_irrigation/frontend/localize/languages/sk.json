@@ -580,7 +580,7 @@
         "bucket-hint": "Vodná bilancia zóny. Záporná: vody je málo. Nula: má, čo potrebuje. Zavlažovanie ju vráti na nulu.",
         "maximum-bucket-hint": "Najviac vody, ktorú pôda podľa predpokladu udrží. Kladná bilancia nikdy nepresiahne túto hodnotu: prebytok sa stráca.",
         "irrigation-threshold-hint": "Deficit, od ktorého sa zóna zalieva. Pod ním sa zóna nechá na pokoji a deficit sa prenesie do ďalšieho výpočtu.",
-        "drainage_rate-hint": "Ako rýchlo pôda odvádza prebytočnú vodu. Nechajte 0, ak svoju pôdu nepoznáte.",
+        "drainage_rate-hint": "Ako rýchlo pôda odvádza prebytočnú vodu. Ak svoju pôdu nepoznáte, nechajte predvolenú hodnotu: 0 znamená, že sa prebytok nikdy neodvádza.",
         "precipitation-rate": "Intenzita zrážok",
         "size": "Veľkosť",
         "state": "Stav",
@@ -809,7 +809,7 @@
       "sunrise_offset": "Pre spúšťače východu slnka: použite záporné hodnoty na spustenie pred východom slnka, kladné na spustenie po ňom. Nastavte na 0, aby sa spustenie automaticky začalo dostatočne skoro a všetky zóny sa dokončili pred východom slnka.",
       "sunset_offset": "Pre spúšťače západu slnka: použite záporné hodnoty na spustenie pred západom slnka, kladné na spustenie po západe slnka.",
       "azimuth_explanation": "Slnečný azimut je smer kompasu k slnku. 0°=Sever, 90°=Východ, 180°=Juh, 270°=Západ. Môžete zadať akúkoľvek hodnotu uhla (napr. 450°=90°, -30°=330°). Použite to na spustenie zavlažovania, keď slnko dosiahne konkrétnu polohu.",
-      "multiple_triggers": "Môžete nakonfigurovať viacero spúšťačov. Každý povolený spúšťač naplánuje spustenie zavlažovania nezávisle."
+      "multiple_triggers": "Môžete vytvoriť viac spúšťačov, ale zavlažovanie spúšťa len ten, ktorý je vybraný ako aktívny. Ostatné sa uchovajú na neskôr."
     },
     "active_none": "Žiadny (Smart Irrigation nespúšťa žiadne zavlažovanie)",
     "none_selected": "Žiadny spúšťač nie je aktívny: Smart Irrigation nespúšťa žiadne zavlažovanie, nech je počasie akékoľvek. Doby sa stále vypočítavajú; zavlažovanie spustite sami alebo z vlastnej automatizácie."

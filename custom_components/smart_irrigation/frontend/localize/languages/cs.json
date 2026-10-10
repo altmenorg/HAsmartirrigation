@@ -580,7 +580,7 @@
         "bucket-hint": "Vodní bilance zóny. Záporná: chybí jí voda. Nula: má, co potřebuje. Zalévání ji vrací na nulu.",
         "maximum-bucket-hint": "Nejvíce vody, které půda údajně udrží. Kladná bilance nikdy nepřekročí tuto hodnotu: přebytek se ztrácí.",
         "irrigation-threshold-hint": "Deficit, od kterého se zóna zalévá. Pod ním se zóna nechá být a deficit se přenáší do dalšího výpočtu.",
-        "drainage_rate-hint": "Jak rychle půda propouští přebytečnou vodu. Nechte 0, pokud svou půdu neznáte.",
+        "drainage_rate-hint": "Jak rychle půda propouští přebytečnou vodu. Pokud svou půdu neznáte, ponechte výchozí hodnotu: 0 znamená, že se přebytek nikdy neodvádí.",
         "precipitation-rate": "Intenzita srážek",
         "size": "Velikost",
         "state": "Stav",
@@ -809,7 +809,7 @@
       "sunrise_offset": "U spouštěčů východu slunce: Použijte záporné hodnoty pro spuštění před východem slunce, kladné pro spuštění po něm. Nastavte na 0 pro automatické spuštění dostatečně brzy, aby se všechny zóny dokončily před východem slunce.",
       "sunset_offset": "U spouštěčů západu slunce: Použijte záporné hodnoty pro spuštění před západem slunce, kladné pro spuštění po západu slunce.",
       "azimuth_explanation": "Solární azimut je směr slunce podle kompasu. 0°=Sever, 90°=Východ, 180°=Jih, 270°=Západ. Můžete zadat libovolnou hodnotu úhlu (např. 450° = 90°, -30° = 330°). Použijte toto pro spuštění zavlažování, když slunce dosáhne konkrétní polohy.",
-      "multiple_triggers": "Můžete nakonfigurovat více spouštěčů. Každý povolený spouštěč bude nezávisle plánovat zahájení zavlažování."
+      "multiple_triggers": "Můžete vytvořit více spouštěčů, ale zavlažování spouští pouze ten, který je vybrán jako aktivní. Ostatní se uchovají pro později."
     },
     "active_none": "Žádný (Smart Irrigation nespouští žádné zavlažování)",
     "none_selected": "Žádný spouštěč není aktivní: Smart Irrigation nespouští žádné zavlažování, ať je počasí jakékoli. Doby se přesto počítají; zavlažování spusťte sami nebo z vlastní automatizace."

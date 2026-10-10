@@ -580,7 +580,7 @@
         "bucket-hint": "Zonens vattenbalans. Negativ: den saknar vatten. Noll: den har vad den behöver. Vattning för tillbaka den till noll.",
         "maximum-bucket-hint": "Det mesta vatten som marken antas hålla. En positiv balans går aldrig över det: överskottet går förlorat.",
         "irrigation-threshold-hint": "Underskottet från vilket zonen vattnas. Under det lämnas zonen ifred och underskottet förs över till nästa beräkning.",
-        "drainage_rate-hint": "Hur snabbt marken släpper ifrån sig överskottsvatten. Låt det vara 0 om du inte känner till din jord.",
+        "drainage_rate-hint": "Hur snabbt marken släpper ifrån sig överskottsvatten. Behåll standardvärdet om du inte känner till din jord: 0 betyder att överskottet aldrig dräneras bort.",
         "precipitation-rate": "Nedbördsintensitet",
         "size": "Storlek",
         "state": "Tillstånd",
@@ -809,7 +809,7 @@
       "sunrise_offset": "För soluppgångsutlösare: Använd negativa värden för att starta före soluppgången, positiva för att starta efter. Ställ in på 0 för att automatiskt starta tillräckligt tidigt för att slutföra alla zoner före soluppgången.",
       "sunset_offset": "För solnedgångsutlösare: Använd negativa värden för att starta före solnedgången, positiva för att starta efter solnedgången.",
       "azimuth_explanation": "Solens azimut är solens kompassriktning. 0°=Norr, 90°=Öst, 180°=Söder, 270°=Väst. Du kan ange vilket vinkelvärde som helst (t.ex. 450° = 90°, -30° = 330°). Använd detta för att utlösa bevattning när solen når en specifik position.",
-      "multiple_triggers": "Du kan konfigurera flera utlösare. Varje aktiverad utlösare schemalägger bevattningsstarter oberoende av varandra."
+      "multiple_triggers": "Du kan skapa flera utlösare, men bara den som är vald som aktiv startar bevattningen. De andra sparas till senare."
     },
     "active_none": "Ingen (Smart Irrigation startar ingen bevattning)",
     "none_selected": "Ingen utlösare är aktiv: Smart Irrigation startar ingen bevattning, oavsett väder. Tiderna beräknas fortfarande; starta bevattningen själv eller från en egen automation."

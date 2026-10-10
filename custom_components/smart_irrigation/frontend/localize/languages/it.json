@@ -580,7 +580,7 @@
         "bucket-hint": "Il bilancio idrico della zona. Negativo: manca acqua. Zero: ha quello che le serve. L'irrigazione lo riporta a zero.",
         "maximum-bucket-hint": "La massima quantità d'acqua che si considera il terreno trattenga. Un bilancio positivo non la supera mai: il surplus va perso.",
         "irrigation-threshold-hint": "Il deficit a partire dal quale la zona viene irrigata. Sotto di esso la zona resta com'è e il deficit passa al calcolo successivo.",
-        "drainage_rate-hint": "Quanto in fretta il terreno lascia andare l'acqua in eccesso. Lascia 0 se non conosci il tuo terreno.",
+        "drainage_rate-hint": "Quanto in fretta il terreno lascia andare l'acqua in eccesso. Lascia il valore predefinito se non conosci il tuo terreno: 0 significa che il surplus non drena mai.",
         "precipitation-rate": "Tasso di precipitazione",
         "size": "Misura",
         "state": "Stato",
@@ -809,7 +809,7 @@
       "sunrise_offset": "Per i trigger all'alba: usa valori negativi per iniziare prima dell'alba, positivi per iniziare dopo. Imposta 0 per iniziare automaticamente abbastanza presto da completare tutte le zone prima dell'alba.",
       "sunset_offset": "Per i trigger al tramonto: usa valori negativi per iniziare prima del tramonto, positivi per iniziare dopo il tramonto.",
       "azimuth_explanation": "L'azimut solare è la direzione bussola del sole. 0°=Nord, 90°=Est, 180°=Sud, 270°=Ovest. Puoi inserire qualsiasi valore di angolo (es. 450°=90°, -30°=330°). Usalo per avviare l'irrigazione quando il sole raggiunge una posizione specifica.",
-      "multiple_triggers": "Puoi configurare più trigger. Ogni trigger attivo pianificherà gli avvii di irrigazione in modo indipendente."
+      "multiple_triggers": "Puoi creare più trigger, ma solo quello scelto come attivo avvia l'irrigazione. Gli altri vengono conservati per dopo."
     },
     "active_none": "Nessuno (Smart Irrigation non avvia alcuna irrigazione)",
     "none_selected": "Nessun trigger è attivo: Smart Irrigation non avvia alcuna irrigazione, qualunque sia il meteo. Le durate vengono comunque calcolate; avvia l'irrigazione tu stesso o da un'automazione tua."

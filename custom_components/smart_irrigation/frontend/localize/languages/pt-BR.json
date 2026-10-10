@@ -580,7 +580,7 @@
         "bucket-hint": "O balanço hídrico da zona. Negativo: falta água. Zero: tem o que precisa. A irrigação o traz de volta a zero.",
         "maximum-bucket-hint": "O máximo de água que se considera que o solo retém. Um balanço positivo nunca passa disso: o excedente se perde.",
         "irrigation-threshold-hint": "O déficit a partir do qual a zona é irrigada. Abaixo dele, a zona é deixada em paz e o déficit passa para o próximo cálculo.",
-        "drainage_rate-hint": "Com que rapidez o solo deixa escapar o excesso de água. Deixe em 0 se você não conhece o seu solo.",
+        "drainage_rate-hint": "Com que rapidez o solo deixa escapar o excesso de água. Deixe o valor padrão se você não conhece o seu solo: 0 significa que o excedente nunca drena.",
         "precipitation-rate": "Taxa de precipitação",
         "size": "Tamanho",
         "state": "Estado",
@@ -809,7 +809,7 @@
       "sunrise_offset": "Para gatilhos de nascer do sol: use valores negativos para começar antes do nascer do sol, positivos para começar depois. Defina como 0 para começar automaticamente cedo o suficiente para concluir todas as zonas antes do nascer do sol.",
       "sunset_offset": "Para gatilhos de pôr do sol: use valores negativos para começar antes do pôr do sol, positivos para começar depois do pôr do sol.",
       "azimuth_explanation": "O azimute solar é a direção do sol na bússola. 0°=Norte, 90°=Leste, 180°=Sul, 270°=Oeste. Você pode inserir qualquer valor de ângulo (por exemplo, 450° = 90°, -30° = 330°). Use isto para acionar a irrigação quando o sol atingir uma posição específica.",
-      "multiple_triggers": "Você pode configurar vários gatilhos. Cada gatilho ativado agendará os inícios de irrigação de forma independente."
+      "multiple_triggers": "Você pode criar vários gatilhos, mas apenas o escolhido como ativo inicia a irrigação. Os outros ficam guardados para depois."
     },
     "active_none": "Nenhum (o Smart Irrigation não inicia nenhuma irrigação)",
     "none_selected": "Nenhum gatilho está ativo: o Smart Irrigation não inicia nenhuma irrigação, seja qual for o clima. As durações continuam sendo calculadas; inicie a irrigação você mesmo ou por uma automação sua."

@@ -580,7 +580,7 @@
         "bucket-hint": "A zóna vízmérlege. Negatív: vízhiányos. Nulla: megvan, amire szüksége van. Az öntözés visszaviszi nullára.",
         "maximum-bucket-hint": "A legtöbb víz, amelyet a talaj tartani képesnek tekintünk. A pozitív mérleg soha nem megy fölé: a felesleg elvész.",
         "irrigation-threshold-hint": "A hiány, amelytől a zónát öntözik. Alatta a zóna békén marad, és a hiány átkerül a következő számításra.",
-        "drainage_rate-hint": "Milyen gyorsan engedi el a talaj a felesleges vizet. Hagyd 0-n, ha nem ismered a talajodat.",
+        "drainage_rate-hint": "Milyen gyorsan engedi el a talaj a felesleges vizet. Hagyd az alapértéket, ha nem ismered a talajodat: a 0 azt jelenti, hogy a felesleg soha nem szivárog el.",
         "precipitation-rate": "Csapadékintenzitás",
         "size": "Méret",
         "state": "Állapot",
@@ -809,7 +809,7 @@
       "sunrise_offset": "Napkelte triggereknél: Használjon negatív értékeket a napkelte előtti indításhoz, pozitívat a napkelte utánihoz. Állítsa 0-ra, hogy automatikusan elég korán induljon az összes zóna befejezéséhez napkelte előtt.",
       "sunset_offset": "Napnyugta triggereknél: Használjon negatív értékeket a napnyugta előtti indításhoz, pozitívat a napnyugta utánihoz.",
       "azimuth_explanation": "A nap azimutja a nap iránytű szerinti iránya. 0°=Észak, 90°=Kelet, 180°=Dél, 270°=Nyugat. Bármilyen szögértéket megadhat (pl. 450° = 90°, -30° = 330°). Ezzel akkor indíthatja az öntözést, amikor a nap egy adott pozíciót ér el.",
-      "multiple_triggers": "Több triggert is konfigurálhat. Minden engedélyezett trigger önállóan ütemezi az öntözések indítását."
+      "multiple_triggers": "Több triggert is létrehozhat, de csak az aktívként kiválasztott indítja az öntözést. A többit későbbre megőrzi a rendszer."
     },
     "active_none": "Nincs (a Smart Irrigation nem indít öntözést)",
     "none_selected": "Egyetlen kiváltó sem aktív: a Smart Irrigation nem indít öntözést, bármilyen is az időjárás. Az időtartamok ettől még kiszámolódnak; indítsd el az öntözést magad vagy saját automatizálásból."

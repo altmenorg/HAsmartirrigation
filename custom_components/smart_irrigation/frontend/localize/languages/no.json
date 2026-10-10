@@ -580,7 +580,7 @@
         "bucket-hint": "Vannbalansen til sonen. Negativ: den mangler vann. Null: den har det den trenger. Vanning bringer den tilbake til null.",
         "maximum-bucket-hint": "Det meste vannet jorda antas å holde. En positiv balanse går aldri over det: overskuddet går tapt.",
         "irrigation-threshold-hint": "Underskuddet sonen vannes fra. Under det blir sonen i fred, og underskuddet går videre til neste beregning.",
-        "drainage_rate-hint": "Hvor raskt jorda slipper fra seg overskuddsvann. La det stå på 0 hvis du ikke kjenner jorda di.",
+        "drainage_rate-hint": "Hvor raskt jorda slipper fra seg overskuddsvann. La standardverdien stå hvis du ikke kjenner jorda di: 0 betyr at overskuddet aldri dreneres bort.",
         "precipitation-rate": "Nedbørsintensitet",
         "size": "Størrelse",
         "state": "Tilstand",
@@ -809,7 +809,7 @@
       "sunrise_offset": "For soloppgangsutløsere: bruk negative verdier for å starte før soloppgang, positive for å starte etter. Sett til 0 for å starte automatisk tidlig nok til å fullføre alle soner før soloppgang.",
       "sunset_offset": "For solnedgangsutløsere: bruk negative verdier for å starte før solnedgang, positive for å starte etter solnedgang.",
       "azimuth_explanation": "Solazimut er solens kompassretning. 0°=Nord, 90°=Øst, 180°=Sør, 270°=Vest. Du kan angi en hvilken som helst vinkelverdi (f.eks. 450°=90°, -30°=330°). Bruk dette til å utløse vanning når solen når en bestemt posisjon.",
-      "multiple_triggers": "Du kan konfigurere flere utløsere. Hver aktivert utløser planlegger vanningsstart uavhengig."
+      "multiple_triggers": "Du kan opprette flere utløsere, men bare den som er valgt som aktiv, starter vanning. De andre lagres til senere."
     },
     "active_none": "Ingen (Smart Irrigation starter ingen vanning)",
     "none_selected": "Ingen utløser er aktiv: Smart Irrigation starter ingen vanning, uansett vær. Varighetene beregnes likevel; start vanningen selv eller fra en egen automasjon."

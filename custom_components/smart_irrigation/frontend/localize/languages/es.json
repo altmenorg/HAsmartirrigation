@@ -580,7 +580,7 @@
         "bucket-hint": "El balance hídrico de la zona. Negativo: le falta agua. Cero: tiene lo que necesita. El riego lo devuelve a cero.",
         "maximum-bucket-hint": "La mayor cantidad de agua que se considera que retiene el suelo. Un balance positivo nunca la supera: el excedente se pierde.",
         "irrigation-threshold-hint": "El déficit a partir del cual se riega la zona. Por debajo, la zona se deja en paz y el déficit pasa al siguiente cálculo.",
-        "drainage_rate-hint": "Con qué rapidez deja salir el suelo el agua sobrante. Déjalo en 0 si no conoces tu suelo.",
+        "drainage_rate-hint": "Con qué rapidez deja salir el suelo el agua sobrante. Deja el valor predeterminado si no conoces tu suelo: 0 significa que el excedente nunca drena.",
         "precipitation-rate": "Tasa de precipitación",
         "size": "Tamaño",
         "state": "Estado",
@@ -809,7 +809,7 @@
       "sunrise_offset": "Para los disparadores de amanecer: usa valores negativos para empezar antes del amanecer y positivos para después. Pon 0 para empezar automáticamente con suficiente antelación para completar todas las zonas antes del amanecer.",
       "sunset_offset": "Para los disparadores de atardecer: usa valores negativos para empezar antes del atardecer y positivos para después del atardecer.",
       "azimuth_explanation": "El azimut solar es la dirección de la brújula hacia el sol. 0°=Norte, 90°=Este, 180°=Sur, 270°=Oeste. Puedes introducir cualquier valor de ángulo (p. ej., 450°=90°, -30°=330°). Úsalo para activar el riego cuando el sol alcance una posición concreta.",
-      "multiple_triggers": "Puedes configurar varios disparadores. Cada disparador activado programará los inicios de riego de forma independiente."
+      "multiple_triggers": "Puedes crear varios disparadores, pero solo el elegido como activo inicia el riego. Los demás se guardan para más adelante."
     },
     "active_none": "Ninguno (Smart Irrigation no inicia ningún riego)",
     "none_selected": "Ningún disparador está activo: Smart Irrigation no inicia ningún riego, sea cual sea el tiempo. Las duraciones se siguen calculando; inicia el riego tú mismo o desde una automatización propia."
