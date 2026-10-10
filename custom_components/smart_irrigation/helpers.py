@@ -4,7 +4,7 @@ import importlib
 import logging
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from homeassistant import exceptions
@@ -846,7 +846,7 @@ def calculate_solar_azimuth(
     from astral.sun import azimuth
 
     if timestamp.tzinfo is None:
-        timestamp = timestamp.replace(tzinfo=timezone.utc)
+        timestamp = timestamp.replace(tzinfo=UTC)
     return azimuth(Observer(latitude=latitude, longitude=longitude), timestamp)
 
 

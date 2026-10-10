@@ -253,9 +253,7 @@ def _naive_local_from_timestamp(stamp, tz=None, tz_offset_h=0.0):
     machine's own, which is how a forecast series stamped with
     ``datetime.timestamp()`` round-trips exactly wherever the tests run.
     """
-    utc = datetime.datetime.fromtimestamp(stamp, datetime.timezone.utc).replace(
-        tzinfo=None
-    )
+    utc = datetime.datetime.fromtimestamp(stamp, datetime.UTC).replace(tzinfo=None)
     if tz is not None:
         # Two passes: the offset is a function of local time, so read it once
         # against the UTC instant to land in the right day, then again against
