@@ -968,6 +968,7 @@ async def test_the_info_says_what_starts_the_main_program():
     for uses, expected in ((False, "trigger"), (True, "main_schedules")):
         coordinator = MagicMock()
         coordinator.main_program_uses_schedules = lambda uses=uses: uses
+        coordinator.async_main_program_next_start = AsyncMock(return_value=None)
         coordinator.store.async_get_zones = AsyncMock(return_value=[])
         coordinator.store.async_get_config = AsyncMock(return_value={})
         coordinator.store.config = SimpleNamespace(full_controller=uses, programs=[])
@@ -998,3 +999,182 @@ async def test_setting_an_adjustment_arms_the_schedules_again():
     )
 
     adjuster.register_program_schedules.assert_awaited_once()
+
+
+# --- found by the dry test on a real Home Assistant -------------------------------------
+#
+# The trigger was armed again 10 s after the schedules took over: a registration
+# started before the save (an update of the weather, which places the start again
+# when the zones are calculated before it) was still waiting on the live estimate
+# when the save let the trigger go, and armed it afterwards. Both would have run.
+
+
+@pytest.mark.asyncio
+async def test_an_armed_legacy_trigger_is_cancelled_by_the_schedules_and_comes_back(
+    caplog,
+):
+    coordinator = _trigger_coordinator([_main()])
+    unsubs = []
+
+    def _track(*args, **kwargs):
+        unsubs.append(MagicMock())
+        return unsubs[-1]
+
+    with patch(
+        "custom_components.smart_irrigation.triggers.async_track_sunrise",
+        side_effect=_track,
+    ):
+        await coordinator.register_start_event()
+        assert coordinator.start_trigger_armed is True
+        assert coordinator._track_sunrise_event_unsub is unsubs[0]
+
+        coordinator.store.config.programs = normalize_programs(
+            [_main([{"time": "03:30"}])]
+        )
+        await coordinator.register_start_event()
+
+        # The listener that was armed is cancelled, not merely left alone.
+        unsubs[0].assert_called_once()
+        assert coordinator._track_sunrise_event_unsub is None
+        assert coordinator.start_trigger_armed is False
+        assert len(unsubs) == 1
+
+        caplog.clear()
+        with caplog.at_level("INFO"):
+            coordinator.store.config.programs = normalize_programs([_main([])])
+            await coordinator.register_start_event()
+
+    assert len(unsubs) == 2
+    assert coordinator._track_sunrise_event_unsub is unsubs[1]
+    assert coordinator.start_trigger_armed is True
+    assert "Legacy start irrigation event" in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_a_registration_begun_before_the_schedules_cannot_arm_after_them():
+    coordinator = _trigger_coordinator([_main()])
+    estimate_running = asyncio.Event()
+    estimate_done = asyncio.Event()
+    calls = {"n": 0}
+
+    async def _slow_total(*args):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            # The live estimate of the first registration takes its time.
+            estimate_running.set()
+            await estimate_done.wait()
+        return 1800
+
+    coordinator.get_total_duration_all_enabled_zones = AsyncMock(
+        side_effect=_slow_total
+    )
+    unsubs = []
+
+    def _track(*args, **kwargs):
+        unsubs.append(MagicMock())
+        return unsubs[-1]
+
+    with patch(
+        "custom_components.smart_irrigation.triggers.async_track_sunrise",
+        side_effect=_track,
+    ):
+        before = asyncio.ensure_future(coordinator.register_start_event())
+        await estimate_running.wait()
+        # The save: the schedules take over, and the start is registered again.
+        coordinator.store.config.programs = normalize_programs(
+            [_main([{"time": "03:30"}])]
+        )
+        after = asyncio.ensure_future(coordinator.register_start_event())
+        await asyncio.sleep(0)
+        estimate_done.set()
+        await asyncio.gather(before, after)
+
+    assert coordinator.start_trigger_armed is False
+    assert coordinator._track_sunrise_event_unsub is None
+    assert all(unsub.call_count == 1 for unsub in unsubs)
+
+
+async def test_the_overview_places_a_done_by_start_with_nothing_stored_to_water():
+    # The zones were watered this morning: nothing stored, so the planning lists
+    # nothing, but the start the scheduler arms is placed for the planned run.
+    hass, coord = _status_with([_main([{"time": "07:00", "anchor": "end"}])])
+    for stored in coord.store.by_id.values():
+        stored[const.ZONE_DURATION] = 0
+    coord._planned_run_seconds = AsyncMock(return_value=900)
+
+    assert await coord.async_planning(1) == []
+    [overview] = await coord.async_program_overview()
+
+    assert overview["next_start"] == _utc(1, 6, 45).isoformat()
+
+
+async def test_the_overview_of_a_start_anchored_main_program_skips_the_estimate():
+    # Worked out twice per refresh, the live estimate held the sensor back by
+    # 20 s on a real installation; a schedule that starts at its time needs none.
+    hass, coord = _status_with([_main([{"time": "03:30"}])])
+    coord.store.config.recalculate_before_start = True
+    coord.async_estimate_all_zones_now = AsyncMock(return_value={})
+    for stored in coord.store.by_id.values():
+        stored[const.ZONE_DURATION] = 0
+
+    [overview] = await coord.async_program_overview()
+
+    assert overview["next_start"] == _utc(2, 3, 30).isoformat()
+    coord._planned_run_seconds.assert_not_awaited()
+    coord.async_estimate_all_zones_now.assert_not_awaited()
+
+
+async def test_the_main_programs_next_start_is_its_schedules_or_none():
+    hass, coord = _status_with([_main([{"time": "03:30"}, {"time": "22:00"}])])
+    assert await coord.async_main_program_next_start() == _utc(1, 22)
+
+    hass, coord = _status_with([_main()])
+    assert await coord.async_main_program_next_start() is None
+
+    hass, coord = _status_with([_main([{"time": "03:30"}], enabled=False)])
+    assert await coord.async_main_program_next_start() is None
+
+
+async def test_the_state_page_never_gives_the_main_program_the_triggers_time():
+    from custom_components.smart_irrigation import websockets
+    from tests.test_controller_gaps import _call
+
+    # Done by 07:00 with nothing to water: no start, and not the trigger's.
+    hass, coord = _status_with([_main([{"time": "07:00", "anchor": "end"}])])
+    coord._planned_run_seconds = AsyncMock(return_value=0)
+    hass.data = {const.DOMAIN: {"coordinator": coord}}
+    with patch.object(
+        websockets,
+        "build_irrigation_info",
+        AsyncMock(return_value={"next_irrigation_start": "trigger"}),
+    ) as info:
+        connection = await _call(hass, websockets.websocket_get_programs_state)
+
+    [main] = connection.send_result.call_args.args[1]["programs"]
+    assert main["next_start"] is None
+    info.assert_not_awaited()
+
+
+async def test_the_info_gives_the_main_programs_next_schedule_start():
+    from custom_components.smart_irrigation import websockets
+
+    hass, coord = _status_with([_main([{"time": "03:30"}])])
+    coord.store.async_get_config = AsyncMock(return_value={})
+    coord.get_total_duration_all_enabled_zones = AsyncMock(return_value=1705)
+    coord.async_estimate_all_zones_now = AsyncMock(return_value={})
+    coord.async_evaluate_skip_conditions = AsyncMock(
+        return_value={"should_skip": False, "reason": None, "checks": []}
+    )
+    ha = MagicMock()
+    ha.states.get.return_value = None
+
+    with patch.object(websockets, "_forecast_days", AsyncMock(return_value=[])):
+        info = await websockets.build_irrigation_info(ha, coord)
+
+    assert info.get("error") is None
+    assert info["start_source"] == "main_schedules"
+    assert info["next_irrigation_start"] == _utc(2, 3, 30).isoformat()
+    assert info["next_irrigation_duration"] == 1705
+    # The skip preview is read for that start.
+    run_start = coord.async_evaluate_skip_conditions.call_args.kwargs["run_start"]
+    assert run_start == _utc(2, 3, 30)

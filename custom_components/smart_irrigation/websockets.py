@@ -783,7 +783,12 @@ async def websocket_get_programs_state(hass: HomeAssistant, connection, msg):
         return
     programs = await coordinator.async_program_overview()
     main = [p for p in programs if p.get("main") and not p.get("next_start")]
-    if main and p_state_allows_start(main[0]):
+    # Started by schedules of its own, the main program's next start is
+    # theirs, none included: the trigger is not armed, its time is not one.
+    by_schedules = (
+        getattr(coordinator, "main_program_uses_schedules", lambda: False)() is True
+    )
+    if main and not by_schedules and p_state_allows_start(main[0]):
         # The main program starts at the active start trigger, which the Info
         # page already works out: the same time is shown here.
         info = await build_irrigation_info(hass, coordinator)
@@ -942,6 +947,15 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
                 next_irrigation_start = exact
                 base_name = selected_type
 
+        # The main program's own schedules start the cycle in place of the
+        # trigger (full controller): the next start is the soonest of theirs,
+        # or none, never the trigger's, which is not armed.
+        by_schedules = (
+            getattr(coordinator, "main_program_uses_schedules", lambda: False)() is True
+        )
+        if by_schedules:
+            next_irrigation_start = await coordinator.async_main_program_next_start()
+
         # What the skip conditions say, and what they said at the last real
         # decision. The preview is evaluated live, so a forecast can still
         # change before the run: it says what would happen, not what will
@@ -966,9 +980,15 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
                 const.CONF_DAYS_BETWEEN_IRRIGATION,
                 const.CONF_DEFAULT_DAYS_BETWEEN_IRRIGATION,
             )
-            if (days_between and days_between > 0) or any(
-                (zone.get(const.ZONE_DAYS_BETWEEN_IRRIGATION) or 0) > 0
-                for zone in zones
+            # Not for the main program's schedules: the start shown is the
+            # occurrence that fires, which need not be daily; the zones the
+            # restriction holds back are held when it does.
+            if not by_schedules and (
+                (days_between and days_between > 0)
+                or any(
+                    (zone.get(const.ZONE_DAYS_BETWEEN_IRRIGATION) or 0) > 0
+                    for zone in zones
+                )
             ):
                 # The next trigger evaluates days_since_last against
                 # days_between and only fires once it has caught up, so the
@@ -1036,12 +1056,7 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
             ),
             # What starts the main program's cycle: the start trigger above, or
             # the schedules of the main program (full controller only).
-            "start_source": (
-                "main_schedules"
-                if getattr(coordinator, "main_program_uses_schedules", lambda: False)()
-                is True
-                else "trigger"
-            ),
+            "start_source": "main_schedules" if by_schedules else "trigger",
             # Why nothing would water, when that is the case. See
             # delivery_gap().
             "delivery_gap": delivery_gap(config, zones),

@@ -20,7 +20,7 @@ from homeassistant.helpers.dispatcher import async_dispatcher_send
 
 from . import const
 from .programs import active_adjustment, plan_program, plan_wall_seconds
-from .schedules import next_fire, upcoming
+from .schedules import ANCHOR_END, next_fire, upcoming
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -238,6 +238,72 @@ class ProgramStatusMixin:
         total = await self._planned_run_seconds()
         return [steps], float(total)
 
+    async def _main_program_total(self, program: dict) -> float:
+        """The length the main program's "done by" starts are placed for.
+
+        The figure the scheduler arms them with (``_planned_run_seconds``), so
+        what is shown is what is armed, whatever the zones have stored: after a
+        morning watering they have nothing, while the run is planned on the
+        estimate. Only a schedule anchored at its end needs it, and the
+        estimate is slow, so it is not worked out for the others.
+        """
+        if not any(
+            schedule.get(const.SCHEDULE_ENABLED) is not False
+            and schedule.get(const.SCHEDULE_ANCHOR) == ANCHOR_END
+            for schedule in program.get(const.PROGRAM_SCHEDULES) or []
+        ):
+            return 0.0
+        return float(await self._planned_run_seconds() or 0)
+
+    def _schedules_next_start(self, program: dict, total, last_runs, now, tz):
+        """The soonest start of the program's enabled schedules, or None."""
+        program_id = program.get(const.PROGRAM_ID)
+        next_start = None
+        for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
+            if schedule.get(const.SCHEDULE_ENABLED) is False:
+                continue
+            last = dt_util.parse_datetime(
+                last_runs.get(f"{program_id}:{schedule.get(const.SCHEDULE_ID)}") or ""
+            )
+            found = next_fire(schedule, now, total, last, self._sun_moment, tz)
+            # A start inside the catch-up window is "now" for next_fire, but
+            # nothing fires it outside a startup or a reload: show the next
+            # occurrence that really will.
+            for _ in range(3):
+                if not (found and found.get("catch_up")):
+                    break
+                found = next_fire(
+                    schedule, now, total, found["target"], self._sun_moment, tz
+                )
+            if found and not found.get("catch_up"):
+                fire = found["fire"]
+                if next_start is None or fire < next_start:
+                    next_start = fire
+        return next_start
+
+    async def async_main_program_next_start(self):
+        """When the main program's own schedules start it next, or None.
+
+        None when they do not start it (the start trigger does), when it is
+        disabled, or when no occurrence is to come.
+        """
+        if not self.main_program_uses_schedules():
+            return None
+        config = self.store.config
+        for program in getattr(config, const.CONF_PROGRAMS, None) or []:
+            if not program.get(const.PROGRAM_MAIN):
+                continue
+            if program.get(const.PROGRAM_ENABLED) is False:
+                return None
+            return self._schedules_next_start(
+                program,
+                await self._main_program_total(program),
+                dict(getattr(config, const.CONF_PROGRAM_LAST_RUNS, None) or {}),
+                dt_util.utcnow(),
+                dt_util.get_default_time_zone(),
+            )
+        return None
+
     async def async_program_overview(self) -> list:
         """Each program's state and next start."""
         config = self.store.config
@@ -272,40 +338,19 @@ class ProgramStatusMixin:
                 state = STATE_IDLE
             next_start = None
             # The main program has a next start only when schedules of its own
-            # start it; otherwise it is the start trigger's.
+            # start it; otherwise it is the start trigger's. It does not depend
+            # on there being anything to water: a run with nothing to water
+            # still starts (and finds nothing), the planning lists nothing.
             if state != STATE_DISABLED and (
                 not main or self.main_program_uses_schedules()
             ):
                 if main:
-                    total = (await self._main_program_plan(zones))[1]
+                    total = await self._main_program_total(program)
                 else:
                     _plan, total = self._program_totals(program, zones)
-                for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
-                    if schedule.get(const.SCHEDULE_ENABLED) is False:
-                        continue
-                    last = dt_util.parse_datetime(
-                        last_runs.get(f"{program_id}:{schedule.get(const.SCHEDULE_ID)}")
-                        or ""
-                    )
-                    found = next_fire(schedule, now, total, last, self._sun_moment, tz)
-                    # A start inside the catch-up window is "now" for next_fire,
-                    # but nothing fires it outside a startup or a reload: show
-                    # the next occurrence that really will.
-                    for _ in range(3):
-                        if not (found and found.get("catch_up")):
-                            break
-                        found = next_fire(
-                            schedule,
-                            now,
-                            total,
-                            found["target"],
-                            self._sun_moment,
-                            tz,
-                        )
-                    if found and not found.get("catch_up"):
-                        fire = found["fire"]
-                        if next_start is None or fire < next_start:
-                            next_start = fire
+                next_start = self._schedules_next_start(
+                    program, total, last_runs, now, tz
+                )
             stamps = [
                 dt_util.parse_datetime(v or "")
                 for k, v in last_runs.items()

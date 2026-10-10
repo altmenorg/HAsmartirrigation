@@ -79,3 +79,52 @@ def test_it_writes_its_state_only_when_something_changed():
     sensor.set_overview(_overview(state="running"))
     sensor.async_write_ha_state.assert_called_once()
     assert sensor.native_value == "running"
+
+
+async def test_a_refresh_that_ends_after_a_newer_one_does_not_put_back_the_old():
+    # On a real installation the sensor showed the main program's next start,
+    # then lost it to a refresh that had begun before the change was made.
+    import asyncio
+    from unittest.mock import patch
+
+    from custom_components.smart_irrigation import const
+    from custom_components.smart_irrigation.program_sensor import (
+        async_setup_program_sensors,
+    )
+
+    release_old = asyncio.Event()
+    answers = [
+        ("now", [_overview(next_start=None)]),
+        ("old", [_overview(next_start=None)]),
+        ("new", [_overview(next_start="2026-10-11T01:30:00+00:00")]),
+    ]
+
+    async def _overview_of_the_moment():
+        name, overview = answers.pop(0)
+        if name == "old":
+            await release_old.wait()
+        return overview
+
+    coordinator = MagicMock()
+    coordinator.async_program_overview = _overview_of_the_moment
+    hass = MagicMock()
+    hass.data = {const.DOMAIN: {"coordinator": coordinator}}
+    tasks = []
+    hass.async_create_task = lambda coro: tasks.append(asyncio.ensure_future(coro))
+    added = []
+    with patch(
+        "custom_components.smart_irrigation.program_sensor.async_dispatcher_connect"
+    ) as connect:
+        await async_setup_program_sensors(hass, MagicMock(), added.extend)
+    changed = connect.call_args.args[2]
+    [sensor] = added
+    sensor.hass = None  # not written to a state machine here
+
+    changed()  # begins, and waits
+    await asyncio.sleep(0)
+    changed()  # begins later, ends first
+    await tasks[1]
+    release_old.set()
+    await tasks[0]
+
+    assert sensor.extra_state_attributes["next_start"] == "2026-10-11T01:30:00+00:00"

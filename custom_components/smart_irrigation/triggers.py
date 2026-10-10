@@ -8,6 +8,7 @@ reset. The methods live on a mixin the coordinator inherits; their bodies are
 unchanged and still use ``self`` to reach coordinator state.
 """
 
+import asyncio
 import logging
 from datetime import datetime, timedelta
 from functools import partial
@@ -162,14 +163,19 @@ class TriggersMixin:
         anything was scheduled to happen at it, which is what a countdown that
         reaches zero and rolls over to tomorrow looks like (#841).
         """
-        # sun_state = self.hass.states.get("sun.sun")
-        # if sun_state is not None:
-        #    sun_rise = sun_state.attributes.get("next_rising")
-        #    if sun_rise is not None:
-        #        try:
-        #            sun_rise = datetime.strptime(sun_rise, "%Y-%m-%dT%H:%M:%S.%f%z")
-        #        except(ValueError):
-        #            sun_rise = datetime.strptime(sun_rise, "%Y-%m-%dT%H:%M:%S%z")
+        # One registration at a time, in the order they were asked for. Placing
+        # the start waits on the live estimate, seconds long: a registration
+        # begun before a save (a weather update places the start again) read
+        # the configuration then, and armed the trigger after the save's own
+        # registration had let it go for the main program's schedules. Both
+        # would have run. In turn, the last one asked for decides.
+        lock = getattr(self, "_register_start_event_lock", None)
+        if lock is None:
+            lock = self._register_start_event_lock = asyncio.Lock()
+        async with lock:
+            await self._register_start_event_locked()
+
+    async def _register_start_event_locked(self):
         # The programs' schedules are armed at the same moments as the start
         # trigger (a setting changed, a calculation done, a new day), which is
         # when what they depend on may have changed.

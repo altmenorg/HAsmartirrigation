@@ -113,15 +113,25 @@ async def async_setup_program_sensors(
 ) -> None:
     """Keep one sensor per program, following the programs as they change."""
 
+    # Refreshes overlap (a save asks for several), and one that began earlier
+    # can end later: it would put back what was true before. Only a refresh
+    # newer than the last one shown is shown.
+    order = {"asked": 0, "shown": 0}
+
     async def _sync() -> None:
         coordinator = hass.data.get(const.DOMAIN, {}).get("coordinator")
         if coordinator is None:
             return
+        order["asked"] += 1
+        mine = order["asked"]
         try:
             overview = await coordinator.async_program_overview()
         except Exception as e:  # noqa: BLE001 - a display must not break setup
             _LOGGER.debug("Program overview unavailable: %s", e)
             return
+        if mine < order["shown"]:
+            return
+        order["shown"] = mine
         registered = hass.data[const.DOMAIN].setdefault("program_sensors", {})
         wanted = {item["program_id"]: item for item in overview}
         added = []
