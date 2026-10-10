@@ -62,6 +62,29 @@ def test_a_glitch_is_rejected():
         )
 
 
+def test_a_bright_noon_reading_in_watts_is_not_a_glitch():
+    # 889 W/m2 on a clear day at noon: converted with the factor of a daily
+    # mean it is 76.8 MJ/day/m2, which a bound made for daily totals rejected,
+    # so no solar data was stored and no zone was ever calculated.
+    coordinator = _coordinator({})
+    line = {**_sensor("sensor.sun"), const.MAPPING_CONF_UNIT: const.UNIT_W_M2}
+    assert coordinator._sensor_reading_to_metric(
+        const.MAPPING_SOLRAD, line, "889"
+    ) == pytest.approx(889 * const.W_TO_MJ_DAY_FACTOR)
+
+
+def test_a_solar_reading_beyond_the_sun_is_still_a_glitch():
+    coordinator = _coordinator({})
+    line = {**_sensor("sensor.sun"), const.MAPPING_CONF_UNIT: const.UNIT_W_M2}
+    with pytest.raises(ValueError):
+        coordinator._sensor_reading_to_metric(const.MAPPING_SOLRAD, line, "1700")
+    # A daily total in MJ is far below the bound, as before.
+    daily = {**_sensor("sensor.sun"), const.MAPPING_CONF_UNIT: const.UNIT_MJ_DAY_M2}
+    assert coordinator._sensor_reading_to_metric(
+        const.MAPPING_SOLRAD, daily, "22"
+    ) == pytest.approx(22.0)
+
+
 def test_a_plausible_reading_passes():
     coordinator = _coordinator({})
     assert coordinator._sensor_reading_to_metric(
