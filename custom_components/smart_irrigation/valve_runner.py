@@ -1940,7 +1940,7 @@ class ValveRunnerMixin(
             # real one, and ends with the run if it is stopped.
             try:
                 await asyncio.wait_for(control.stop.wait(), VALVE_VERIFY_INTERVAL)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass
             else:
                 return

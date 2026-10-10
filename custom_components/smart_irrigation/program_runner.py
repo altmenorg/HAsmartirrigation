@@ -172,7 +172,7 @@ class ProgramRunnerMixin:
         if old is not None:
             try:
                 await asyncio.wait_for(old.finished.wait(), 120)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 _LOGGER.warning("Program %s did not stop in time", program_id)
 
     async def async_stop_program(self, program_id) -> str | None:
@@ -401,7 +401,7 @@ class ProgramRunnerMixin:
             try:
                 await asyncio.wait_for(run.finished.wait(), timeout=seconds)
                 return
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass
         await self._cut_at_deadline(run)
 

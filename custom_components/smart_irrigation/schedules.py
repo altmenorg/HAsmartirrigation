@@ -41,7 +41,7 @@ from __future__ import annotations
 
 import math
 import re
-from datetime import date, datetime, time, timedelta, timezone
+from datetime import UTC, date, datetime, time, timedelta
 
 from . import const
 
@@ -325,10 +325,10 @@ def target_on(schedule: dict, day: date, sun, tz) -> datetime | None:
         offset = timedelta(
             minutes=int(schedule.get(const.SCHEDULE_OFFSET_MINUTES) or 0)
         )
-        return (moment + offset).astimezone(timezone.utc)
+        return (moment + offset).astimezone(UTC)
     match = _TIME.match(str(schedule.get(const.SCHEDULE_TIME) or DEFAULT_TIME))
     at = time(int(match.group(1)), int(match.group(2))) if match else time(6, 0)
-    return datetime.combine(day, at, tzinfo=tz).astimezone(timezone.utc)
+    return datetime.combine(day, at, tzinfo=tz).astimezone(UTC)
 
 
 def _polar_target(schedule: dict, event: str, day: date, sun, tz) -> datetime | None:
@@ -341,13 +341,13 @@ def _polar_target(schedule: dict, event: str, day: date, sun, tz) -> datetime | 
         if not match:
             return None
         at = time(int(match.group(1)), int(match.group(2)))
-        return datetime.combine(day, at, tzinfo=tz).astimezone(timezone.utc)
+        return datetime.combine(day, at, tzinfo=tz).astimezone(UTC)
     offset = timedelta(minutes=int(schedule.get(const.SCHEDULE_OFFSET_MINUTES) or 0))
     for back in range(1, MAX_PREVIOUS_LOOKBACK_DAYS + 1):
         earlier = sun(event, day - timedelta(days=back))
         if earlier is not None:
             seen = (earlier + offset).astimezone(tz).time().replace(tzinfo=None)
-            return datetime.combine(day, seen, tzinfo=tz).astimezone(timezone.utc)
+            return datetime.combine(day, seen, tzinfo=tz).astimezone(UTC)
     return None
 
 
@@ -375,7 +375,7 @@ def next_fire(
     that is at most ``CATCH_UP_GRACE_SECONDS`` late (Home Assistant was down at
     its moment) is caught up the same way, and later than that it is passed over.
     """
-    now = now.astimezone(timezone.utc)
+    now = now.astimezone(UTC)
     if schedule.get(const.SCHEDULE_ENABLED) is False:
         return None
     end_anchored = schedule.get(const.SCHEDULE_ANCHOR) == ANCHOR_END
@@ -390,7 +390,7 @@ def next_fire(
         target = target_on(schedule, day, sun, tz)
         if target is None:
             continue
-        if last_target is not None and target <= last_target.astimezone(timezone.utc):
+        if last_target is not None and target <= last_target.astimezone(UTC):
             continue
         fire = target - timedelta(seconds=total_seconds) if end_anchored else target
         if fire > now:
