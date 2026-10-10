@@ -4,7 +4,7 @@ This document describes the enhanced scheduling capabilities and how Smart Irrig
 
 ## Overview
 
-Smart Irrigation now includes advanced scheduling capabilities and seamless integration with the Irrigation Unlimited integration, providing users with more flexible and powerful irrigation management options.
+Smart Irrigation includes recurring schedules and seasonal adjustments of its own, and hands its calculated run times to Irrigation Unlimited and Irrigation-V5 through blueprints and automations.
 
 ## Enhanced Native Scheduling
 
@@ -46,7 +46,7 @@ Automatically adjust irrigation parameters based on the season or time of year.
 
 #### Adjustment Types
 
-1. **Multiplier Adjustments**: Modify the irrigation multiplier for zones
+1. **Multiplier Adjustments**: Scale the crop factor of the zones, which scales the evapotranspiration (1 changes nothing)
 2. **Threshold Adjustments**: Adjust the irrigation threshold (bucket level)
 
 #### Example Configuration
@@ -67,18 +67,7 @@ data:
 
 ### Overview
 
-The integration provides bidirectional communication between Smart Irrigation and Irrigation Unlimited, allowing:
-
-- Automatic zone synchronization
-- Schedule sharing and conversion
-- Real-time data exchange
-- Unified irrigation control
-
-### Configuration
-
-Smart Irrigation v2 is a UI-only integration — there is no `configuration.yaml` block to add. Adding one will cause a setup error on restart.
-
-Enable the Irrigation Unlimited integration from the Smart Irrigation panel in the Home Assistant UI (Settings → Integrations → Smart Irrigation → Configure). The relevant options are stored internally by the integration.
+Smart Irrigation calculates how long each zone should water, and Irrigation Unlimited runs the valves. The two do not talk to each other directly: the duration is handed over by a [blueprint](usage-automations.md) or an automation that calls Irrigation Unlimited's own `adjust_time` action. There is nothing to enable in either integration, and no `configuration.yaml` block to add for Smart Irrigation, which is UI-only (adding one causes a setup error on restart).
 
 ### The sync services are gone
 
@@ -100,7 +89,7 @@ It also worked by guessing which Irrigation Unlimited entity belonged to which z
 ### Recommended Workflow
 
 1. **Smart Irrigation**: Calculate irrigation needs based on weather and ET
-2. **Integration**: Automatically sync calculated durations to Irrigation Unlimited
+2. **Blueprint or automation**: Hand the calculated durations to Irrigation Unlimited with `adjust_time`
 3. **Irrigation Unlimited**: Execute irrigation schedules with hardware control
 4. **Feedback**: Monitor execution and adjust parameters as needed
 
@@ -174,10 +163,9 @@ See [the blueprints page](usage-automations.md) for the full list and which one 
 
 ### Common Issues
 
-1. **Zones Not Syncing**: Check entity name patterns and zone ID matching
-2. **Schedules Not Running**: Verify schedule configuration and enabled status
-3. **Seasonal Adjustments Not Applied**: Check month ranges and zone specifications
-4. **IU Integration Not Working**: Verify Irrigation Unlimited is installed and entities exist
+1. **Schedules Not Running**: Verify schedule configuration and enabled status
+2. **Seasonal Adjustments Not Applied**: Check month ranges and zone specifications
+3. **Irrigation Unlimited Not Getting the Duration**: Check that the blueprint or automation runs, and that its Irrigation Unlimited entity exists (a `binary_sensor`)
 
 ### Debug Logging
 
@@ -187,12 +175,7 @@ Enable debug logging for detailed information:
 logger:
   logs:
     custom_components.smart_irrigation.scheduler: debug
-    custom_components.smart_irrigation.irrigation_unlimited: debug
 ```
-
-### Entity Matching
-
-If automatic zone matching fails, you can implement custom matching logic in your automations or use manual zone mapping.
 
 ## Migration and Compatibility
 

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Usage: Entities
+title: Usage: Automations
 ---
 # Automations
 
@@ -32,7 +32,7 @@ Pick the one that matches how your valves are actually driven:
 
 | Blueprint | Use it when | |
 | --- | --- | --- |
-| [`standard-irrigation.yaml`](https://github.com/altmenorg/HAsmartirrigation/blob/master/custom_components/smart_irrigation/blueprints/automation/standard-irrigation.yaml) | A plain switch, valve or input_boolean per zone. Turns it on for the calculated duration, then resets the bucket. Has an optional pause switch. | [Import](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Faltmenorg%2FHAsmartirrigation%2Fblob%2Fmaster%2Fcustom_components%2Fsmart_irrigation%2Fblueprints%2Fautomation%2Fstandard-irrigation.yaml) |
+| [`standard-irrigation.yaml`](https://github.com/altmenorg/HAsmartirrigation/blob/master/custom_components/smart_irrigation/blueprints/automation/standard-irrigation.yaml) | A plain switch, valve or input_boolean per zone. Turns it on for the calculated duration, then credits the run to the bucket (`credit_watering`). Has an optional pause switch. | [Import](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Faltmenorg%2FHAsmartirrigation%2Fblob%2Fmaster%2Fcustom_components%2Fsmart_irrigation%2Fblueprints%2Fautomation%2Fstandard-irrigation.yaml) |
 | [`esphome.yaml`](https://github.com/altmenorg/HAsmartirrigation/blob/master/custom_components/smart_irrigation/blueprints/automation/esphome.yaml) | An ESPHome device that takes the duration itself. | [Import](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Faltmenorg%2FHAsmartirrigation%2Fblob%2Fmaster%2Fcustom_components%2Fsmart_irrigation%2Fblueprints%2Fautomation%2Fesphome.yaml) |
 | [`simple-scheduler.yaml`](https://github.com/altmenorg/HAsmartirrigation/blob/master/custom_components/smart_irrigation/blueprints/script/simple-scheduler.yaml) | A script rather than an automation, if you prefer to call irrigation from elsewhere. | [Import](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Faltmenorg%2FHAsmartirrigation%2Fblob%2Fmaster%2Fcustom_components%2Fsmart_irrigation%2Fblueprints%2Fscript%2Fsimple-scheduler.yaml) |
 | [`irrigation-unlimited-adjust-time-single-zone.yaml`](https://github.com/altmenorg/HAsmartirrigation/blob/master/custom_components/smart_irrigation/blueprints/automation/irrigation-unlimited-adjust-time-single-zone.yaml) | Irrigation Unlimited runs your schedule and you want Smart Irrigation to set the run time of one zone through `adjust_time`. | [Import](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2Faltmenorg%2FHAsmartirrigation%2Fblob%2Fmaster%2Fcustom_components%2Fsmart_irrigation%2Fblueprints%2Fautomation%2Firrigation-unlimited-adjust-time-single-zone.yaml) |
@@ -52,7 +52,7 @@ Pick the one that matches how your valves are actually driven:
 
 With Irrigation Unlimited, note that it exposes **binary sensors**, not switches: Smart Irrigation tells it how long to run through `adjust_time` and IU does the running. Do not drive the valve yourself in parallel, or the two will fight.
 
-If you use **observed watering** or **direct valve control** (see [closed loop](configuration-closed-loop.md)), turn off the blueprint's option to credit the run (or do not use a blueprint that calls `reset_bucket`): the integration credits the bucket itself and the two would count twice.
+If you use **observed watering** or **direct valve control** (see [closed loop](configuration-closed-loop.md)), turn off the blueprint's option "Credit the run to the bucket" (the Rain Bird, Hydrawise, Rachio, OpenSprinkler and B-hyve blueprints have it; the standard one always credits, so leave it out): the integration credits the bucket itself and the two would count twice. The ESPHome blueprint, the `simple-scheduler` script, the Irrigation Unlimited reset blueprint and the example automations below still call `reset_bucket`, which sets the bucket to 0 instead of crediting the run.
 
 ### Example 1: one valve, once per week irrigation if duration > 0 or if the bucket < - 25 mm:
 

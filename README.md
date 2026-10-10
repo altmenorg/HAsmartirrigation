@@ -28,7 +28,7 @@ Multiple zones are supported, each zone having its own configuration and set up.
 - 🌍 **19 languages, out of the box.** The panel *and* the config flow are fully translated: English, French, German, Spanish, Italian, Dutch, Norwegian, Slovak, Polish, Portuguese, Brazilian Portuguese, Czech, Russian, Ukrainian, Simplified Chinese, Swedish, Danish, Finnish and Hungarian. Everything except English and French was machine-translated, so if yours reads oddly, [correct it on Weblate](https://hosted.weblate.org/engage/smart-irrigation/), in the browser and with no account on GitHub, or [in the JSON file directly](CONTRIBUTING.md#translations).
 - 🌦️ **Switch weather service on the fly** between Open-Meteo, OpenWeatherMap and Pirate Weather, and update the API key, without removing and re-adding the integration.
 - 💾 **One-click Backup / Restore** of your entire configuration as a JSON file.
-- ⏰ **Flexible start triggers** around sunrise, sunset or solar azimuth, each firing its own identifiable event for your automations.
+- ⏰ **Flexible start triggers** around sunrise, sunset, solar azimuth or a fixed time, with one active at a time, firing an identifiable event for your automations.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/images/panel-zones.png" alt="Smart Irrigation — Zones panel (Home Assistant-native UI)" width="860">
@@ -53,7 +53,7 @@ Full documentation: **[altmenorg.github.io/HAsmartirrigation](https://altmenorg.
 
 ## Recent improvements
 
-Since the project moved here in June 2026, the stable v2026.10.1 gathered seven betas and three release candidates:
+Since the project moved here in June 2026, the stable v2026.10.2 gathered seven betas and three release candidates:
 
 - A **four-tab panel** (Home, Zones, Data, Settings) with a **standard and an advanced mode**, a setup assistant, and a **dashboard card** that can water a zone on demand.
 - **Direct valve control** with cycle and soak, a pause between zones and a valve watchdog, and **controller blueprints** for Rain Bird, Hydrawise, Rachio, OpenSprinkler and B-hyve.
@@ -64,14 +64,15 @@ Since the project moved here in June 2026, the stable v2026.10.1 gathered seven 
 
 ## Irrigation start triggers
 
-Smart Irrigation computes irrigation **durations**, and either opens the valves itself (direct valve control) or leaves the watering to your own automation. A **start trigger** schedules a start relative to a solar event (sunrise, sunset, or solar azimuth, ± an offset) and fires the Home Assistant event `smart_irrigation_start_irrigation_all_zones` so an automation can react.
+Smart Irrigation computes irrigation **durations**, and either opens the valves itself (direct valve control) or leaves the watering to your own automation. A **start trigger** schedules a start relative to a solar event (sunrise, sunset or solar azimuth, ± an offset) or at a fixed clock time, and fires the Home Assistant event `smart_irrigation_start_irrigation_all_zones` so an automation can react.
 
-Each trigger fires independently, and the event data identifies which one fired:
+You can define several triggers, but only the one selected as active starts the watering, once per day. Besides your own triggers, the choice offers **Default** (finish at sunrise: sunrise minus the planned length of the run) and **None** (Smart Irrigation starts no watering). The event data identifies which trigger fired:
 
 | field | meaning |
 |-------|---------|
 | `trigger_name` | the name you gave the trigger |
-| `trigger_type` | `sunrise`, `sunset` or `solar_azimuth` |
+| `trigger_type` | `sunrise`, `sunset`, `solar_azimuth` or `time` |
+| `at` | for a `time` trigger, the clock time it is set to |
 | `offset_minutes` | the configured offset |
 | `account_for_duration` | whether timing is shifted so watering finishes at the target moment |
 
@@ -95,7 +96,7 @@ These features are driven by **services and blueprints**:
 
 - 🔁 **Recurring schedules** — daily / weekly / monthly / interval-based schedules via the `smart_irrigation.create_recurring_schedule` service.
 - 🍂 **Seasonal adjustments** — adjust the crop factor and the threshold by month, in the panel (advanced mode) or with services.
-- 🔗 **Irrigation Unlimited integration** — bidirectional integration with the [Irrigation Unlimited](https://github.com/rgc99/irrigation_unlimited) component.
+- 🔗 **Irrigation Unlimited**: Smart Irrigation hands its calculated durations to the [Irrigation Unlimited](https://github.com/rgc99/irrigation_unlimited) component through blueprints and automations (`adjust_time`).
 - 📐 **Automation blueprints** — ready-to-use blueprints, installed with the integration, for plain valves, ESPHome, Irrigation Unlimited and off-the-shelf controllers (Rain Bird, Hydrawise, Rachio, OpenSprinkler, B-hyve): see the [automations](docs/usage-automations.md) and [controllers](docs/usage-controllers.md) pages.
 
 See the [enhanced scheduling documentation](docs/usage-enhanced-scheduling-integration.md) for details and examples.

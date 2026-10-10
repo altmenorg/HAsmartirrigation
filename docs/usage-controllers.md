@@ -37,7 +37,7 @@ The blueprints are copied into your own `blueprints/` folder when the integratio
 2. Click *Create automation* and fill in the three fields:
    - **Smart Irrigation zone**: the zone's duration sensor, `sensor.smart_irrigation_<zone name>`. The list only offers Smart Irrigation duration sensors.
    - **Controller zone**: the entity of the controller zone that waters it. Which entity that is depends on the brand, see the [notes below](#per-controller-notes). The list is filtered to that integration.
-   - **Reset the bucket after the run**: leave it on, unless [observed watering](configuration-closed-loop.md) already watches this controller zone. In that case turn it off, or the run is credited twice.
+   - **Credit the run to the bucket**: leave it on, unless [observed watering](configuration-closed-loop.md) already watches this controller zone. In that case turn it off, or the run is credited twice.
 3. Save, give the automation the zone's name, and repeat for every zone.
 
 One automation per zone is deliberate: each zone has its own duration and its own bucket.
@@ -49,11 +49,11 @@ When the start trigger is reached, every automation created from these blueprint
 1. **Checks the duration.** If the zone's duration is 0, nothing happens. On a [skip day](configuration-general.md) the start event is not fired at all, so nothing happens either.
 2. **Converts the duration** to what the controller takes. Smart Irrigation counts in seconds. Rain Bird, Hydrawise, Rachio and B-hyve take whole minutes, so the run is **rounded up** (a calculated 3 min 10 s becomes 4 min: a little too much water is better than a deficit left behind) and is **at least 1 minute**. OpenSprinkler takes seconds and gets them as they are. Every run is capped at the longest run the controller accepts, see the table above. Rachio's cap of 3 hours is the one you may actually hit: if a zone regularly needs more, check its throughput and precipitation rate on the [zones page](configuration-zones.md).
 3. **Starts the controller zone** for that time. The controller runs its own timer and stops the valve itself.
-4. **Waits the same time**, then **resets the bucket** of the zone, so the next calculation starts from a full soil. If you turned the reset off, the automation just ends.
+4. **Waits the same time**, then **credits the run to the bucket** of the zone (the `credit_watering` action, with the time it ran), so the next calculation starts from what the soil really received. A run cut short by the zone's maximum duration keeps the deficit it did not water. If you turned the credit off, the automation just ends.
 
 The automation runs in `single` mode: a second start event while a run is in progress is ignored.
 
-**The controller's own rain sensor or rain delay.** If your controller cancels or shortens a run on its own (a wired rain sensor, a rain delay set in the app), the blueprint does not know: it waits the full time and resets the bucket as if the water had gone in. Two ways to keep the books right. Either turn that feature off on the controller and let Smart Irrigation decide, since it already accounts for rain, or use [observed watering](configuration-closed-loop.md) on the controller zone and turn the blueprint's reset off, so the bucket is credited with what actually ran.
+**The controller's own rain sensor or rain delay.** If your controller cancels or shortens a run on its own (a wired rain sensor, a rain delay set in the app), the blueprint does not know: it waits the full time and credits the bucket as if the water had gone in. Two ways to keep the books right. Either turn that feature off on the controller and let Smart Irrigation decide, since it already accounts for rain, or use [observed watering](configuration-closed-loop.md) on the controller zone and turn the blueprint's credit off, so the bucket is credited with what actually ran.
 
 ## Several zones
 

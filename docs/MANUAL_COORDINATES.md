@@ -1,3 +1,7 @@
+---
+layout: default
+title: Manual coordinates
+---
 # Manual Coordinate Configuration
 
 This feature allows users to manually set coordinates (latitude, longitude, and elevation) for weather data retrieval, rather than inheriting them from the Home Assistant global settings by default.
@@ -15,11 +19,10 @@ By default, Smart Irrigation uses your Home Assistant's configured location coor
 
 ### Initial Setup (Options Flow)
 
-When configuring Smart Irrigation for the first time or updating settings:
+The **Configure** dialog of the integration (Settings > Devices & services > Smart Irrigation) holds only the coordinates. The weather service and its API key are set in the Smart Irrigation panel (see [Configuring the weather service](installation-weatherservice.md)).
 
-1. **Weather Service Setup**: First configure your weather service (Open-Meteo, OpenWeatherMap or Pirate Weather)
-2. **Coordinate Configuration**: After weather service setup, you'll see a coordinate configuration step
-3. **Choose Coordinate Source**:
+1. Open **Configure** on the Smart Irrigation integration.
+2. **Choose Coordinate Source**:
    - **Use Home Assistant location** (default): Uses your HA's configured coordinates
    - **Use manual coordinates**: Allows you to specify custom coordinates
 
@@ -94,15 +97,7 @@ Your HA location is correct but elevation is wrong or missing:
 
 ## Internationalization
 
-The coordinate configuration feature is fully localized in:
-- German (de)
-- English (en) 
-- Spanish (es)
-- French (fr)
-- Italian (it)
-- Dutch (nl)
-- Norwegian (no)
-- Slovak (sk)
+The coordinate configuration feature is localized in the 19 languages of the panel.
 
 ## Troubleshooting
 
