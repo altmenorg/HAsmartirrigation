@@ -132,6 +132,31 @@ def test_the_hub_device_has_no_parent_of_its_own():
     assert "via_device_id" not in info
 
 
+def test_removing_a_zone_finds_its_device_with_the_new_lookup():
+    """The deletion of a zone used the lookup that goes in 2027.8."""
+    from custom_components.smart_irrigation import SmartIrrigationCoordinator
+
+    hass = _hass()
+    hass.data[const.DOMAIN]["zones"] = {}
+    coordinator = SmartIrrigationCoordinator.__new__(SmartIrrigationCoordinator)
+    coordinator.hass = hass
+    coordinator.id = "abc123"
+    registry = _NewRegistry(device_id="zonedev")
+    registry.async_remove_device = Mock()
+
+    with (
+        patch.object(entity.dr, "async_get", return_value=registry),
+        patch("custom_components.smart_irrigation.er.async_get"),
+        patch("custom_components.smart_irrigation.dr.async_get", return_value=registry),
+    ):
+        import asyncio
+
+        asyncio.run(coordinator.async_remove_entity(3))
+
+    assert registry.calls == [((const.DOMAIN, "abc123_zone_3"), "entry1")]
+    registry.async_remove_device.assert_called_once_with("zonedev")
+
+
 def test_the_support_check_reads_the_running_home_assistant():
     """Whatever this version declares, the check follows it rather than a
     version number, which is what keeps the two forms mutually exclusive."""
