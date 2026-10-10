@@ -426,6 +426,8 @@
           },
           "hidden_sources": "{n} mesure(s) non demandée(s) : l'évapotranspiration est fournie toute faite, elles ne serviraient qu'à la recalculer.",
           "et_ignored": "La ou les zones {zones} sont calculées à partir de la météo et ne lisent pas cette évapotranspiration. Règle-les sur fournie par un capteur ou un service, dans la zone.",
+          "et_unused": "Non utilisée : toutes les zones de ce groupe sont calculées par Smart Irrigation, qui déduit l'évapotranspiration des autres mesures. Règle une zone sur fournie par un capteur ou un service pour donner une valeur toute faite ici.",
+          "et_needed": "Une valeur toute faite est nécessaire ici : les zones de ce groupe sont réglées sur fournie par un capteur ou un service, donc Aucun n'est pas proposé.",
           "et_missing": "La ou les zones {zones} attendent une évapotranspiration toute faite : choisis une source pour elle ci-dessus.",
           "hints": {
             "temperature": "Température de l'air, à l'ombre. Le minimum et le maximum de la journée en sont tirés.",
@@ -436,7 +438,7 @@
             "solar radiation": "L'énergie du soleil, premier moteur de l'évaporation. Sans elle, le calcul l'estime à partir de l'écart de température du jour. Sous verre, utilise un capteur de rayonnement ou de luminosité.",
             "precipitation": "Pluie tombée, en cumul, d'un pluviomètre à toi qui additionne. Avec un service météo, laisse sur Aucun.",
             "current precipitation": "Pluie qui tombe en ce moment, en débit. Le service météo la fournit ; un capteur de pluie à toi est plus précis.",
-            "evapotranspiration": "L'eau perdue par les plantes, déjà calculée par ton capteur ou ton service. Utilisée par les zones réglées sur fournie par un capteur ou un service."
+            "evapotranspiration": "Une évapotranspiration (ET₀) toute faite, de ton propre capteur ou du service météo. Seules les zones réglées sur fournie par un capteur ou un service la lisent. Pour une zone calculée par Smart Irrigation, cette ligne n'est pas utilisée : le service météo ne fournit alors que les données (température, humidité, vent, rayonnement) du calcul de Smart Irrigation."
           },
           "items": {
             "dewpoint": "Point de rosée",
@@ -463,7 +465,9 @@
           "source": "Source",
           "sources": {
             "none": "Aucun",
+            "none_et": "Aucun (Smart Irrigation la calcule)",
             "weather_service": "Weather service",
+            "weather_service_et": "ET₀ toute faite du service météo",
             "sensor": "Capteur",
             "static": "Valeur statique",
             "radiation_sensor": "Capteur de rayonnement",
