@@ -70,6 +70,86 @@ def test_the_evaporation_is_the_engines_alone():
     assert et == pytest.approx(daily * 31)
 
 
+def test_the_month_takes_its_own_crop_factor_and_the_seasonal_multiplier():
+    coordinator = _coordinator()
+    coordinator.seasonal_adjustment_manager = MagicMock()
+    coordinator.seasonal_adjustment_manager.seasonal_factors.side_effect = (
+        lambda zone_id, month: ((2.0, 0.0) if month == 7 else (1.0, 0.0))
+    )
+    table = [1.0] * 12
+    table[6] = 0.5
+    zone = {**ZONE, const.ZONE_ID: 1, const.ZONE_CROP_FACTOR_BY_MONTH: table}
+    dry = {"precipitation": 0.0}
+
+    # July: 0.5 from the table, times 2 from the season.
+    assert coordinator._calculate_monthly_watering_volume(
+        zone, 100.0, dry, 7
+    ) == pytest.approx(100.0)
+    # June: the table's 1.0 and no season.
+    assert coordinator._calculate_monthly_watering_volume(
+        zone, 100.0, dry, 6
+    ) == pytest.approx(100.0)
+    table[5] = 0.8
+    assert coordinator._calculate_monthly_watering_volume(
+        zone, 100.0, dry, 6
+    ) == pytest.approx(80.0)
+
+
+def test_rain_is_not_credited_where_the_calculation_books_none():
+    coordinator = _coordinator()
+    wet = {"precipitation": 40.0}
+
+    assert coordinator._calculate_monthly_watering_volume(
+        ZONE, 100.0, wet, 7
+    ) == pytest.approx(60.0)
+    assert coordinator._calculate_monthly_watering_volume(
+        ZONE, 100.0, wet, 7, counts_rain=False
+    ) == pytest.approx(100.0)
+
+
+@pytest.mark.asyncio
+async def test_a_passthrough_month_has_its_own_number_of_days():
+    coordinator = _coordinator()
+    coordinator.module_id_for_zone = lambda zone: 1
+    module = MagicMock()
+    module.name = "Passthrough"
+
+    async def _module(_id):
+        return module
+
+    coordinator.getModuleInstanceByID = _module
+    zone = {**ZONE, const.ZONE_ID: 1, const.ZONE_MAPPING: 1}
+
+    months = await coordinator._calculate_monthly_watering_for_zone(zone)
+    data = coordinator._generate_monthly_climate_data()
+
+    assert months[1]["estimated_et_mm"] == pytest.approx(
+        round(data[1]["average_daily_et"] * 29, 2)
+    )
+    assert months[6]["estimated_et_mm"] == pytest.approx(
+        round(data[6]["average_daily_et"] * 31, 2)
+    )
+
+
+@pytest.mark.asyncio
+async def test_a_static_month_credits_no_rain():
+    coordinator = _coordinator()
+    coordinator.module_id_for_zone = lambda zone: 1
+    module = MagicMock()
+    module.name = "Static"
+    module.calculate.return_value = -2.0
+
+    async def _module(_id):
+        return module
+
+    coordinator.getModuleInstanceByID = _module
+    zone = {**ZONE, const.ZONE_ID: 1, const.ZONE_MAPPING: 1}
+
+    months = await coordinator._calculate_monthly_watering_for_zone(zone)
+
+    assert months[0]["estimated_watering_volume_liters"] == pytest.approx(62.0)
+
+
 @pytest.mark.parametrize(
     ("latitude", "winter", "summer"), [(47.0, 1, 7), (-40.0, 7, 1)]
 )
