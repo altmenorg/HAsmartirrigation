@@ -1485,7 +1485,18 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           }),
                         0.1,
                       )
-                    : ""
+                    : // In the advanced mode it is still shown, read-only: the
+                      // crop factor by month falls back on it (#905).
+                      this._adv(
+                        this._numRow(
+                          localize("panels.zones.labels.multiplier", lang),
+                          "",
+                          zone.multiplier,
+                          () => {},
+                          0.1,
+                          true,
+                        ),
+                      )
                 }
                 ${this._selectRow(
                   this._labelWithHint("state", lang),
