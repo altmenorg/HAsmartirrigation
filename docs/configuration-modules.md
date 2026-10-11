@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Configuration: Modules
+title: "Configuration: Modules"
 ---
 # Module configuration
 

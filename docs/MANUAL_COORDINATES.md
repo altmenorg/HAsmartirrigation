@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Manual coordinates
+title: "Manual coordinates"
 ---
 # Manual Coordinate Configuration
 

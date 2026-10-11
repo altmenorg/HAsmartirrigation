@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Installation: Download
+title: "Installation: Download"
 ---
 # Installation: Download
 

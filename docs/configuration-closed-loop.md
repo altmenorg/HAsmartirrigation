@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Closed-loop watering
+title: "Closed-loop watering"
 ---
 # Closed-loop watering
 

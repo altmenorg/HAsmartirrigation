@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Usage: Automations
+title: "Usage: Automations"
 ---
 # Automations
 

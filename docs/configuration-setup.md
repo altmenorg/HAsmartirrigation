@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Configuration: Guided setup
+title: "Configuration: Guided setup"
 ---
 # Guided setup
 

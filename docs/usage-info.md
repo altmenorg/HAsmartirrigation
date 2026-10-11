@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Usage: Info and history
+title: "Usage: Info and history"
 ---
 # Info and history
 

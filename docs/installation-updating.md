@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Installation: Updating
+title: "Installation: Updating"
 ---
 # Updating
 

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Configuration: General
+title: "Configuration: General"
 ---
 # General configuration
 

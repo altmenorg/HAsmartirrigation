@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Introduction
+title: "Introduction"
 ---
 <p align="center">
   <img src="assets/images/logo.svg" alt="Smart Irrigation" width="720">

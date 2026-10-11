@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Usage: The output contract
+title: "Usage: The output contract"
 ---
 # The output contract
 

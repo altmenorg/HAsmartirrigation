@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Configuration: Sensor groups
+title: "Configuration: Sensor groups"
 ---
 # Sensor group configuration
 
