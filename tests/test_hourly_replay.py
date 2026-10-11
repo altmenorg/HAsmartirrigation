@@ -173,24 +173,35 @@ def test_the_totals_do_not_depend_on_the_profiles():
     assert new == pytest.approx(-11.0)
 
 
-def test_the_sun_puts_the_evapotranspiration_in_the_day():
-    end = datetime(2026, 7, 1, 0, 0)  # a day of July in Paris, ending at midnight
+def _longitude_of_local_noon():
+    """A longitude whose solar noon is near noon on this machine's clock.
 
-    profile = sun_profile(end, 24.0, 48.85, 2.35)
+    The buffer's stamps are on the machine's local clock, which is UTC in CI
+    and Paris here, so the test places its site where the sun follows the
+    clock it runs on.
+    """
+    offset = datetime(2026, 7, 1, 12, 0).astimezone().utcoffset()
+    return 15.0 * offset.total_seconds() / 3600
+
+
+def test_the_sun_puts_the_evapotranspiration_in_the_day():
+    end = datetime(2026, 7, 2, 0, 0)  # the 1st of July, midnight to midnight
+
+    profile = sun_profile(end, 24.0, 48.85, _longitude_of_local_noon())
 
     assert sum(profile) == pytest.approx(1.0)
-    assert profile[2] == 0  # 2 AM
-    assert profile[22] == 0  # 10 PM
-    assert max(profile) == profile[13]  # solar noon is near 1:50 PM in summer
-    assert profile[13] > profile[8] > profile[5]
+    assert profile[0] == profile[1] == profile[2] == 0  # the night
+    assert profile[22] == profile[23] == 0
+    assert profile.index(max(profile)) in (11, 12)  # around noon
+    assert profile[12] > profile[8] > profile[5] > 0
 
 
 def test_the_sun_profile_needs_coordinates_and_a_sun():
-    end = datetime(2026, 7, 1, 4, 0)
+    end = datetime(2026, 7, 2, 2, 0)
 
     assert sun_profile(end, 24.0, None, 2.35) is None
-    # 11 PM to 4 AM in Paris: the sun never rises over it.
-    assert sun_profile(end, 5.0, 48.85, 2.35) is None
+    # 11 PM to 2 AM: the sun never rises over it.
+    assert sun_profile(end, 3.0, 48.85, _longitude_of_local_noon()) is None
 
 
 def test_the_hourly_equation_hands_back_its_hours():
