@@ -2646,7 +2646,7 @@ s.version="2.31.0",i(ii),s.fn=bn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=yn,s.
                         </option>
                       `}))}
                   `,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{plant_type:s.target.value}))))}
-                ${"custom"===(null!==(r=e.plant_type)&&void 0!==r?r:"custom")?this._numRow(es("panels.zones.labels.multiplier",_),"",e.multiplier,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[li]:parseFloat(s)}))),.1):""}
+                ${"custom"===(null!==(r=e.plant_type)&&void 0!==r?r:"custom")?this._numRow(es("panels.zones.labels.multiplier",_),"",e.multiplier,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[li]:parseFloat(s)}))),.1):this._adv(this._numRow(es("panels.zones.labels.multiplier",_),"",e.multiplier,(()=>{}),.1,!0))}
                 ${this._selectRow(this._labelWithHint("state",_),W`
                     <option
                       value="${Va.Automatic}"
