@@ -80,6 +80,7 @@
         "maximum-bucket-is": "Der maximale Vorrat ist",
         "drainage-rate-is": "Die Entwässerungsrate bei Sättigung (Bucket am Maximum) beträgt",
         "current-drainage-is": "Die aktuelle Entwässerung wird berechnet als",
+        "drainage-replayed": "Der Zeitraum wurde Stunde für Stunde nachgerechnet, sodass jeder Regen erst ab der Stunde versickert, in der er fiel. Entwässerung über",
         "no-drainage": "Die aktuelle Entwässerung beträgt 0, weil",
         "below-irrigation-threshold": "Das Defizit hat den Bewässerungsschwellwert dieser Zone noch nicht erreicht, es ist also keine Bewässerung nötig und die Dauer wird auf 0 gesetzt. Defizit / Schwellwert:"
       }

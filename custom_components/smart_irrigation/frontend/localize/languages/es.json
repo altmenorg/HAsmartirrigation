@@ -80,6 +80,7 @@
         "maximum-bucket-is": "El tamaño máximo de cubo es",
         "drainage-rate-is": "La tasa de drenaje en saturación (bucket al máximo) es",
         "current-drainage-is": "El drenaje actual se calcula como",
+        "drainage-replayed": "El periodo se recalculó hora a hora, de modo que cada lluvia solo drena desde la hora en que cayó. Drenaje en",
         "no-drainage": "El drenaje actual es 0 porque",
         "below-irrigation-threshold": "El déficit aún no ha alcanzado el umbral de riego de esta zona, así que no hace falta riego y la duración se pone a 0. Déficit / umbral:"
       }

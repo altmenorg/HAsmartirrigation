@@ -27,6 +27,7 @@ from .hourly_rows import (
 )
 from .hourly_solar_estimate import estimated_solar_series
 from .localize import localize
+from .water_balance import drainage_over, rain_profile, replay
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -560,7 +561,9 @@ class CalculationMixin:
         }
 
     @staticmethod
-    def _cumulative_change(values, stamps=None, start=None, start_stamp=None):
+    def _cumulative_change(
+        values, stamps=None, start=None, start_stamp=None, increments=None
+    ):
         """The rain a cumulative gauge counted, from its successive totals.
 
         The gauge reports a running total, so only a reading above the highest
@@ -591,6 +594,9 @@ class CalculationMixin:
         same in a container left on UTC: read there, a revision just after
         UTC midnight was booked as a reset and its rain counted twice, and the
         real reset at local midnight was taken for a revision and lost.
+
+        ``increments``, when a list, receives ``[timestamp, mm]`` for every
+        reading that counted rain, which is when that rain was seen (#783).
         """
 
         def _day(stamp):
@@ -618,10 +624,12 @@ class CalculationMixin:
             start, start_stamp = values[0], (stamps[0] if stamps else None)
         mark, previous_day, total = start, _day(start_stamp), 0.0
         for index, value in enumerate(values):
-            day = _day(stamps[index]) if index < len(stamps) else None
+            stamp = stamps[index] if index < len(stamps) else None
+            day = _day(stamp)
             crossed_midnight = (
                 day is not None and previous_day is not None and day > previous_day
             )
+            counted = total
             if value >= mark:
                 total += value - mark
                 mark = value
@@ -649,9 +657,31 @@ class CalculationMixin:
                     value,
                     mark,
                 )
+            if increments is not None and total > counted:
+                increments.append([stamp, total - counted])
             if day is not None:
                 previous_day = day
         return total
+
+    @staticmethod
+    def _record_rain_timing(resultdata, key, readings) -> None:
+        """Keep when a rain field showed rain, for the hourly replay (#783).
+
+        ``readings`` are ``(timestamp, amount)`` pairs; only the ones that show
+        rain are kept, as JSON-safe ``[str, float]`` lists.
+        """
+        kept = []
+        for stamp, amount in readings:
+            try:
+                amount = float(amount)
+            except (TypeError, ValueError):
+                continue
+            if stamp is None or amount <= 0:
+                continue
+            kept.append(
+                [stamp.isoformat() if isinstance(stamp, datetime) else stamp, amount]
+            )
+        resultdata.setdefault(const.MAPPING_DATA_RAIN_TIMING, {})[key] = kept
 
     def _group_data_by_sensor(self, data):
         """Group mapping data by sensor key, keeping each value's timestamp.
@@ -1027,6 +1057,12 @@ class CalculationMixin:
 
             if key == const.MAPPING_CURRENT_PRECIPITATION:
                 resultdata[const.MAPPING_CURRENT_PRECIPITATION_SAMPLES] = len(d)
+                # A rate says when it rained, whatever it is aggregated into.
+                self._record_rain_timing(
+                    resultdata,
+                    key,
+                    zip((timestamps_by_sensor or {}).get(key) or [], d, strict=False),
+                )
 
             aggregate = const.MAPPING_CONF_AGGREGATE_OPTIONS_DEFAULT
             if key == const.MAPPING_PRECIPITATION:
@@ -1073,9 +1109,16 @@ class CalculationMixin:
                 except (TypeError, ValueError):
                     last_calc_value = d[0]
                     start_stamp = stamps[0] if stamps else None
+                increments = [] if key == const.MAPPING_PRECIPITATION else None
                 result = self._cumulative_change(
-                    d, stamps, start=last_calc_value, start_stamp=start_stamp
+                    d,
+                    stamps,
+                    start=last_calc_value,
+                    start_stamp=start_stamp,
+                    increments=increments,
                 )
+                if increments is not None:
+                    self._record_rain_timing(resultdata, key, increments)
                 _LOGGER.debug(
                     "[_aggregate_sensor_data]: last calc value: %s change: %s",
                     last_calc_value,
@@ -1088,6 +1131,19 @@ class CalculationMixin:
                     resultdata[const.MAPPING_MAX_TEMP] = d[0]
                     resultdata[const.MAPPING_MIN_TEMP] = d[0]
                 resultdata[key] = d[0]
+                if (
+                    key == const.MAPPING_PRECIPITATION
+                    and aggregate == const.MAPPING_CONF_AGGREGATE_SUM
+                ):
+                    self._record_rain_timing(
+                        resultdata,
+                        key,
+                        zip(
+                            (timestamps_by_sensor or {}).get(key) or [],
+                            d,
+                            strict=False,
+                        ),
+                    )
 
             elif aggregate == const.MAPPING_CONF_AGGREGATE_AVERAGE:
                 resultdata[key] = self._time_weighted_mean(
@@ -1105,6 +1161,17 @@ class CalculationMixin:
                 resultdata[key] = statistics.median(d)
             elif aggregate == const.MAPPING_CONF_AGGREGATE_SUM:
                 resultdata[key] = sum(d)
+                if key == const.MAPPING_PRECIPITATION:
+                    # Each reading is the rain of its own interval.
+                    self._record_rain_timing(
+                        resultdata,
+                        key,
+                        zip(
+                            (timestamps_by_sensor or {}).get(key) or [],
+                            d,
+                            strict=False,
+                        ),
+                    )
             elif aggregate == const.MAPPING_CONF_AGGREGATE_RIEMANNSUM:
                 # apply the riemann sum to the data in d
                 # Use the trapezoidal rule for Riemann sum approximation
@@ -2101,32 +2168,48 @@ class CalculationMixin:
         if drainage_rate is None:
             drainage_rate = 0.0
         _LOGGER.debug("[calculate-module]: drainage_rate: %s", drainage_rate)
-        # drainage only applies above field capacity (bucket > 0)
+        hours = hour_multiplier * 24
+        # With rain in the window, the window is replayed hour by hour: the
+        # rain is only drained from the hour it fell, where one step added it
+        # at the start and drained it over the whole window (#783). Without
+        # rain the single step is the same balance, and is kept as it was.
+        replayed = precip > 0 and hours > 0
         drainage = 0
-        if newbucket > 0:
-            hours = hour_multiplier * 24
-            if maximum_bucket is not None and maximum_bucket > 0:
-                # Brooks-Corey: the drainage rate is the full rate at saturation
-                # (maximum_bucket) scaled by (bucket / maximum_bucket)^n, so it is
-                # a rate law, dB/dt = -r (B/M)^n, and it falls as the surplus
-                # drains. It used to be evaluated once, at the bucket after the
-                # interval's rain, and applied over the whole interval: one
-                # 24-hour step on a curve that steep drained an 8 mm surplus
-                # completely where the law itself drains 3.7 mm and leaves 4.3.
-                # The law has an exact solution for a constant rate, so use it.
-                # gamma is set by uniformity of soil particle size, but 2 is a
-                # reasonable approximation, which makes n = 4.
-                gamma = 2
-                n = (2 + 3 * gamma) / gamma
-                if drainage_rate > 0 and hours > 0:
-                    remaining = (
-                        newbucket ** (1 - n)
-                        + (n - 1) * drainage_rate * hours / maximum_bucket**n
-                    ) ** (1 / (1 - n))
-                    drainage = newbucket - remaining
-            else:
-                # No saturation reference to scale by: drain at a constant rate.
-                drainage = drainage_rate * hours
+        if replayed:
+            timing = weatherdata.get(const.MAPPING_DATA_RAIN_TIMING) or {}
+            rain_field = (
+                const.MAPPING_PRECIPITATION
+                if weatherdata.get(const.MAPPING_PRECIPITATION) is not None
+                else const.MAPPING_CURRENT_PRECIPITATION
+            )
+            window_end = weatherdata.get(const.MAPPING_DATA_WINDOW_END)
+            profile = rain_profile(timing.get(rain_field), window_end, hours)
+            if profile is None and rain_field == const.MAPPING_PRECIPITATION:
+                # A depth that cannot say when it fell, a rate sensor can.
+                profile = rain_profile(
+                    timing.get(const.MAPPING_CURRENT_PRECIPITATION), window_end, hours
+                )
+            # Nothing says when it rained: spread evenly over the window, the
+            # neutral guess, rather than all of it at the start.
+            newbucket, drainage, _peak = replay(
+                bucket,
+                et_part,
+                precip,
+                hours,
+                profile,
+                maximum_bucket,
+                drainage_rate,
+                available_water,
+            )
+            _LOGGER.debug(
+                "[calculate-module]: replayed %.2f h hour by hour (%s): drainage %s",
+                hours,
+                "rain timed" if profile is not None else "rain spread evenly",
+                drainage,
+            )
+        elif newbucket > 0:
+            # drainage only applies above field capacity (bucket > 0)
+            drainage = drainage_over(newbucket, hours, drainage_rate, maximum_bucket)
             _LOGGER.debug("[calculate-module]: current_drainage: %s", drainage)
             newbucket = max(0, newbucket - drainage)
 
@@ -2224,7 +2307,22 @@ class CalculationMixin:
             self.hass.config.language,
         )
 
-        if bucket_plus_delta_capped <= 0:
+        if replayed:
+            # One formula cannot show an hour-by-hour replay, so say what was
+            # done and give its totals.
+            explanation += (
+                await localize(
+                    "module.calculation.explanation.drainage-replayed",
+                    self.hass.config.language,
+                )
+                + f" {hours:.2f} {hours_loc}: {drainage:.2f} mm.<br/>"
+                + await localize(
+                    "module.calculation.explanation.new-bucket-values-is",
+                    self.hass.config.language,
+                )
+                + f" {newbucket:.2f} mm.<br/>"
+            )
+        elif bucket_plus_delta_capped <= 0:
             explanation += (
                 await localize(
                     "module.calculation.explanation.no-drainage",
@@ -2248,12 +2346,15 @@ class CalculationMixin:
                     f" + 3 * {drainage_rate:.1f} * {24 * hour_multiplier:.2f}"
                     f" / {maximum_bucket:.1f}^4)^(-1/3) = {drainage:.2f} mm"
                 )
-        explanation += ".<br/>" + await localize(
-            "module.calculation.explanation.new-bucket-values-is",
-            self.hass.config.language,
-        )
+        if not replayed:
+            explanation += ".<br/>" + await localize(
+                "module.calculation.explanation.new-bucket-values-is",
+                self.hass.config.language,
+            )
 
-        if bucket_plus_delta_capped <= 0:
+        if replayed:
+            pass
+        elif bucket_plus_delta_capped <= 0:
             # Deficit: drainage and the max(0, ...) clamp do not apply (see the
             # `if newbucket > 0` guard above), so the bucket stays negative.
             # Show the formula that was actually used, without max(0)/min/drainage.
@@ -2746,6 +2847,7 @@ class CalculationMixin:
                         const.MAPPING_DATA_WINDOW_END,
                         const.MAPPING_DATA_SOLRAD_FACTOR,
                         const.MAPPING_DATA_DAYS,
+                        const.MAPPING_DATA_RAIN_TIMING,
                     )
                 },
                 "forecast_records": len(forecastdata) if forecastdata else 0,

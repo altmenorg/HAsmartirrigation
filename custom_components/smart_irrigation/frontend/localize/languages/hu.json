@@ -80,6 +80,7 @@
         "maximum-bucket-is": "A maximális vödörméret",
         "drainage-rate-is": "A telített állapotú elvezetési sebesség (a vödör maximumon) ",
         "current-drainage-is": "Az aktuális elvezetés a következőképpen kerül kiszámításra",
+        "drainage-replayed": "Az időszakot óránként újraszámoltuk, így minden eső csak attól az órától szivárog el, amikor esett. Elszivárgás",
         "no-drainage": "Az aktuális elvezetés 0, mert",
         "below-irrigation-threshold": "A hiány még nem érte el ennek a zónának az öntözési küszöbét, így öntözésre nincs szükség, és az idő 0-ra áll. Hiány / küszöb:"
       }

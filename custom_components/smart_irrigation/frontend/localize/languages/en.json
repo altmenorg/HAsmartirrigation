@@ -80,6 +80,7 @@
         "maximum-bucket-is": "Maximum bucket size is",
         "drainage-rate-is": "Drainage rate when saturated (bucket at max) is",
         "current-drainage-is": "Current drainage is calculated as",
+        "drainage-replayed": "The window was replayed hour by hour, so each rain drained only from the hour it fell. Drainage over",
         "no-drainage": "Current drainage is 0 because",
         "below-irrigation-threshold": "The deficit has not reached this zone's irrigation threshold yet, so no irrigation is necessary and the duration is set to 0. Deficit / threshold:"
       }

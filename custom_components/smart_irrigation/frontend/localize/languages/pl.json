@@ -80,6 +80,7 @@
         "maximum-bucket-is": "Maksymalny rozmiar bucket wynosi",
         "drainage-rate-is": "Natężenie drenażu przy nasyceniu (bucket na maksimum) wynosi",
         "current-drainage-is": "Bieżący drenaż jest obliczany jako",
+        "drainage-replayed": "Okres przeliczono godzina po godzinie, więc każdy deszcz odpływa dopiero od godziny, w której spadł. Odpływ w ciągu",
         "no-drainage": "Bieżący drenaż wynosi 0, ponieważ",
         "below-irrigation-threshold": "Deficyt nie osiągnął jeszcze progu nawadniania tej strefy, więc nawadnianie nie jest potrzebne i czas zostaje ustawiony na 0. Deficyt / próg:"
       }

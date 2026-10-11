@@ -80,6 +80,7 @@
         "maximum-bucket-is": "Bucketin enimmäiskoko on",
         "drainage-rate-is": "Valumisnopeus kyllästyneenä (bucket maksimissa) on",
         "current-drainage-is": "Nykyinen valuminen lasketaan seuraavasti",
+        "drainage-replayed": "Jakso laskettiin uudelleen tunti tunnilta, joten kukin sade valuu pois vasta siitä tunnista, jona se satoi. Valunta",
         "no-drainage": "Nykyinen valuminen on 0, koska",
         "below-irrigation-threshold": "Alijäämä ei ole vielä saavuttanut tämän alueen kastelurajaa, joten kastelua ei tarvita ja kesto asetetaan nollaan. Alijäämä / raja:"
       }

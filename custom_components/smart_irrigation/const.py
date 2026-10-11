@@ -791,6 +791,10 @@ MAPPING_DATA_MULTIPLIER = "data_multiplier"
 # zone's watermark is set to it, so a reading arriving during the calculation
 # is left for the next window instead of falling between the two.
 MAPPING_DATA_WINDOW_END = "data_window_end"
+# When the window's rain fell, per rain field: [timestamp, mm or mm/h] for each
+# reading that showed rain. The calculation replays the window hour by hour
+# with it, so rain is only drained from the hour it fell (#783).
+MAPPING_DATA_RAIN_TIMING = "data_rain_timing"
 MAPPING_MAPPINGS = "mappings"
 MAPPING_TIMESTAMP = "timestamp"
 MAPPING_DEWPOINT = "Dewpoint"

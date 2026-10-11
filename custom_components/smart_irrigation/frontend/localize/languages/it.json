@@ -80,6 +80,7 @@
         "maximum-bucket-is": "la dimensione massima del secchio è",
         "drainage-rate-is": "Il tasso di drenaggio in condizioni di saturazione (secchio al massimo) è di",
         "current-drainage-is": "Il drenaggio attuale è calcolato come",
+        "drainage-replayed": "Il periodo è stato ricalcolato ora per ora, così ogni pioggia drena solo dall'ora in cui è caduta. Drenaggio su",
         "no-drainage": "Il drenaggio attuale è 0 perché",
         "below-irrigation-threshold": "Il deficit non ha ancora raggiunto la soglia di irrigazione di questa zona, quindi non serve irrigare e la durata viene messa a 0. Deficit / soglia:"
       }

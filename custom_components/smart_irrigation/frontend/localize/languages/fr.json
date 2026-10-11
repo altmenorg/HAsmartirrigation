@@ -79,6 +79,7 @@
         "maximum-bucket-is": "la taille du seau (bucket) maximale est",
         "drainage-rate-is": "Le taux de drainage à saturation (bucket au max) est de",
         "current-drainage-is": "Le drainage actuel est calculé comme",
+        "drainage-replayed": "La période a été rejouée heure par heure : chaque pluie ne draine qu'à partir de l'heure où elle est tombée. Drainage sur",
         "no-drainage": "Le drainage actuel est de 0 car",
         "below-irrigation-threshold": "Le déficit n'a pas encore atteint le seuil d'arrosage de cette zone, donc aucun arrosage n'est nécessaire et la durée d'arrosage est mise à 0. Déficit / seuil :",
         "precipitation-rate-is": "Le taux de précipitation est"

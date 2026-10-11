@@ -80,6 +80,7 @@
         "maximum-bucket-is": "Maximální velikost bucket je",
         "drainage-rate-is": "Rychlost odvodnění při nasycení (bucket na maximu) je",
         "current-drainage-is": "Aktuální odvodnění se vypočítá jako",
+        "drainage-replayed": "Období bylo přepočítáno hodinu po hodině, takže každý déšť odtéká až od hodiny, kdy spadl. Odtok za",
         "no-drainage": "Aktuální odvodnění je 0, protože",
         "below-irrigation-threshold": "Deficit ještě nedosáhl prahu zavlažování této zóny, takže zavlažování není potřeba a doba se nastaví na 0. Deficit / prah:"
       }

@@ -80,6 +80,7 @@
         "maximum-bucket-is": "maksimum bucket stærrelse er",
         "drainage-rate-is": "Dreneringsraten ved metning (bucket på maks) er",
         "current-drainage-is": "Nåværende drenering beregnes som",
+        "drainage-replayed": "Perioden ble regnet ut på nytt time for time, så hver regnskur bare drenerer fra timen den falt. Drenering over",
         "no-drainage": "Nåværende drenering er 0 fordi",
         "below-irrigation-threshold": "Underskuddet har ennå ikke nådd vanningsgrensen for denne sonen, så det er ikke behov for vanning, og varigheten settes til 0. Underskudd / grense:"
       }

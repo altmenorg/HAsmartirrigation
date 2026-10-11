@@ -80,6 +80,7 @@
         "maximum-bucket-is": "最大 bucket 容量为",
         "drainage-rate-is": "饱和时（bucket 处于最大值）的排水速率为",
         "current-drainage-is": "当前排水量的计算方式为",
+        "drainage-replayed": "该时段已按小时逐一重算，每次降雨只从降落的那一小时开始排水。排水时长",
         "no-drainage": "当前排水量为 0，原因是",
         "below-irrigation-threshold": "亏缺尚未达到该区域的灌溉阈值，因此不需要浇水，时长设为 0。亏缺 / 阈值："
       }
