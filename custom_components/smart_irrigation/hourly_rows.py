@@ -738,6 +738,7 @@ def summed_hourly_eto(
     tz_offset_h=0.0,
     tz=None,
     solar_series=None,
+    per_hour=None,
 ):
     """``(millimetres, hours)`` over the window, or None.
 
@@ -745,6 +746,9 @@ def summed_hourly_eto(
     scale them by the interval again the way the daily figure is scaled. The
     hours are returned because the caller needs them: to report the window, and
     to turn the sum into a rate per day when forecast days are averaged in.
+
+    ``per_hour``, when a list, receives ``[middle of the hour, mm]`` for each
+    hour, which is when the window's evapotranspiration happened.
     """
     rows = build_hourly_rows(
         readings,
@@ -772,7 +776,18 @@ def summed_hourly_eto(
         return None
     if any(value is None for value in priced):
         return None
+    _keep_per_hour(per_hour, rows, priced)
     return sum(priced), hours
+
+
+def _keep_per_hour(per_hour, rows, priced) -> None:
+    """Hand each priced hour back to a caller that asked, at its middle."""
+    if per_hour is None:
+        return
+    for row, millimetres in zip(rows, priced, strict=True):
+        start = row.get("hour_start")
+        if isinstance(start, datetime.datetime):
+            per_hour.append([start + datetime.timedelta(minutes=30), millimetres])
 
 
 def _row_from_entry(entry, tz=None, tz_offset_h=0.0):
@@ -840,6 +855,7 @@ def summed_hourly_eto_from_history(
     elevation=0.0,
     tz=None,
     tz_offset_h=0.0,
+    per_hour=None,
 ):
     """``(millimetres, hours)`` of the window, priced on a service's hourly history.
 
@@ -865,6 +881,7 @@ def summed_hourly_eto_from_history(
         return None
     if any(value is None for value in priced):
         return None
+    _keep_per_hour(per_hour, rows, priced)
     return sum(priced), hours
 
 

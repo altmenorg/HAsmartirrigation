@@ -7,8 +7,9 @@ order matters: 2 mm that fell an hour ago were drained as if they had been in
 the soil since the window opened, 17 hours too long for a rain at 4 PM after a
 calculation at 11 PM the night before (#783).
 
-Here the window is cut into hours. Each hour gets its share of the
-evapotranspiration, the rain that fell in it, then the drainage of that hour,
+Here the window is cut into hours. Each hour gets the evapotranspiration of
+that hour (the hourly equation's own figure when it ran, else in proportion to
+the sun), the rain that fell in it, then the drainage of that hour,
 with the exact solution of the drainage law the single step already used. The
 totals do not change: the same evapotranspiration and the same rain are
 booked, only when they happen does.
@@ -24,6 +25,7 @@ from datetime import datetime, timedelta
 import homeassistant.util.dt as dt_util
 
 from .helpers import parse_datetime
+from .hourly_et import solar_elevation_sin
 
 # The exponent of the drainage law: Brooks-Corey with a pore size index of 2,
 # n = (2 + 3 * gamma) / gamma.
@@ -88,15 +90,16 @@ def hour_slots(hours: float) -> list[float]:
     return [1.0] * (count - 1) + [hours - (count - 1)]
 
 
-def rain_profile(timing, window_end, hours: float) -> list[float] | None:
-    """The share of the window's rain that fell in each of its hours.
+def time_profile(timing, window_end, hours: float) -> list[float] | None:
+    """The share of a quantity that happened in each hour of the window.
 
     ``timing`` is a list of ``(timestamp, weight)``: when a reading showed
-    rain, and how much. A reading before the window belongs to the previous
-    one; one after the end (a clock that moved) counts in the last hour.
+    rain and how much, or an hour of evapotranspiration and its millimetres. A
+    reading before the window belongs to the previous one; one after the end
+    (a clock that moved) counts in the last hour.
 
-    None when nothing tells when it rained: no readings in the window, or
-    readings that all weigh nothing.
+    None when nothing tells when: no readings in the window, or readings that
+    all weigh nothing.
     """
     slots = hour_slots(hours)
     if not slots or not timing or window_end is None:
@@ -122,6 +125,50 @@ def rain_profile(timing, window_end, hours: float) -> list[float] | None:
     return [weight / total for weight in weights]
 
 
+# When it rained, from the rain readings.
+rain_profile = time_profile
+
+
+def sun_profile(
+    window_end, hours: float, latitude: float | None, longitude: float | None
+) -> list[float] | None:
+    """The share of the window's evapotranspiration in each hour, by the sun.
+
+    When no hour-by-hour figure exists, the evapotranspiration is placed where
+    the energy that drives it is: in proportion to how high the sun stands at
+    the middle of each hour (FAO-56 Annex 3, Eq. 3-15), nothing at night. None
+    without coordinates, or for a window the sun never rises over, and the
+    replay then spreads it evenly.
+    """
+    slots = hour_slots(hours)
+    end = _naive_local(window_end)
+    if not slots or end is None or latitude is None or longitude is None:
+        return None
+    start = end - timedelta(hours=hours)
+    weights = []
+    offset = 0.0
+    for length in slots:
+        middle = start + timedelta(hours=offset + length / 2)
+        offset += length
+        try:
+            utc_offset = middle.astimezone().utcoffset()
+            tz_offset_h = utc_offset.total_seconds() / 3600 if utc_offset else 0.0
+            sine = solar_elevation_sin(
+                float(latitude),
+                float(longitude),
+                middle.timetuple().tm_yday,
+                middle.hour + middle.minute / 60,
+                tz_offset_h,
+            )
+        except (ArithmeticError, OSError, OverflowError, TypeError, ValueError):
+            return None
+        weights.append(max(0.0, sine) * length)
+    total = sum(weights)
+    if total <= 0:
+        return None
+    return [weight / total for weight in weights]
+
+
 def replay(
     bucket: float,
     et_mm: float,
@@ -131,12 +178,14 @@ def replay(
     maximum_bucket: float | None,
     drainage_rate: float,
     available_water: float | None = None,
+    et_profile: list[float] | None = None,
 ) -> tuple[float, float, float]:
     """The bucket at the end of the window, replayed hour by hour.
 
     ``et_mm`` is the evapotranspiration part of the window's change (negative
-    when the soil dries), spread evenly over its hours. ``rain_mm`` is spread
-    by ``profile``, evenly when there is none. Each hour, in this order:
+    when the soil dries), spread by ``et_profile``. ``rain_mm`` is spread by
+    ``profile``. Either is spread evenly over the hours when it has no
+    profile. Each hour, in this order:
 
     - its evapotranspiration and its rain are added;
     - the deficit is floored at the available water, the surplus capped at
@@ -150,17 +199,16 @@ def replay(
     slots = hour_slots(hours)
     if not slots:
         slots = [0.0]
-    if profile is None or len(profile) != len(slots):
-        span = sum(slots)
-        profile = [
-            (length / span) if span > 0 else 1.0 / len(slots) for length in slots
-        ]
     span = sum(slots)
+    even = [(length / span) if span > 0 else 1.0 / len(slots) for length in slots]
+    if profile is None or len(profile) != len(slots):
+        profile = even
+    if et_profile is None or len(et_profile) != len(slots):
+        et_profile = even
     drained_total = 0.0
     peak = None
-    for length, share in zip(slots, profile, strict=True):
-        et_share = et_mm * (length / span) if span > 0 else et_mm / len(slots)
-        bucket = bucket + et_share + rain_mm * share
+    for length, share, et_share in zip(slots, profile, et_profile, strict=True):
+        bucket = bucket + et_mm * et_share + rain_mm * share
         if available_water and available_water > 0 and bucket < -available_water:
             bucket = -float(available_water)
         if maximum_bucket is not None and bucket > maximum_bucket:

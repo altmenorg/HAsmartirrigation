@@ -27,7 +27,13 @@ from .hourly_rows import (
 )
 from .hourly_solar_estimate import estimated_solar_series
 from .localize import localize
-from .water_balance import drainage_over, rain_profile, replay
+from .water_balance import (
+    drainage_over,
+    rain_profile,
+    replay,
+    sun_profile,
+    time_profile,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -1395,8 +1401,11 @@ class CalculationMixin:
             return None
         return await self.hass.async_add_executor_job(fetch, days)
 
-    async def _hourly_reference_et(self, zone, modinst):
+    async def _hourly_reference_et(self, zone, modinst, per_hour=None):
         """Reference ET summed hour by hour over the zone's window, or None.
+
+        ``per_hour``, when a list, receives each hour of the window and its
+        millimetres, which the replay of a rainy window follows (#783).
 
         ``(total_mm, hours)`` when the hourly calculation is switched on and the
         window supports it. None in every other case, and then the caller runs
@@ -1434,7 +1443,9 @@ class CalculationMixin:
         # A group fed by Open-Meteo alone is priced on Open-Meteo's own hourly
         # history: the polled readings are one value an hour standing in for the
         # hour around them.
-        history = await self._open_meteo_history_total(zone, mapping, since)
+        history = await self._open_meteo_history_total(
+            zone, mapping, since, per_hour=per_hour
+        )
         if history is not None:
             self._hourly_solar_estimated = False
             forecast_days = getattr(modinst, "forecast_days", 0) or 0
@@ -1466,6 +1477,7 @@ class CalculationMixin:
             elevation=getattr(self, "_effective_elevation", None) or 0.0,
             tz=SystemLocalTime(),
             solar_series=solar_series,
+            per_hour=per_hour,
         )
         if result is None:
             _LOGGER.debug(
@@ -1528,7 +1540,7 @@ class CalculationMixin:
         self._hourly_solar_estimated = False
         return (total, (now - since).total_seconds() / 3600)
 
-    async def _open_meteo_history_total(self, zone, mapping, since):
+    async def _open_meteo_history_total(self, zone, mapping, since, per_hour=None):
         """``(mm, hours)`` of the window on Open-Meteo's hourly history, or None.
 
         Only for a sensor group whose every source is the weather service and
@@ -1566,6 +1578,7 @@ class CalculationMixin:
                 longitude=getattr(self, "_effective_longitude", None),
                 elevation=getattr(self, "_effective_elevation", None) or 0.0,
                 tz=SystemLocalTime(),
+                per_hour=per_hour,
             )
             if result is not None:
                 _LOGGER.debug(
@@ -2040,8 +2053,13 @@ class CalculationMixin:
         # Set when the ET below already covers the whole window, as the hourly
         # sum does. Scaling it by the interval again would count it twice.
         hourly = None
+        # The evapotranspiration of each hour of the window, when the hourly
+        # equation works it out: the replay of a rainy window follows it.
+        et_per_hour = []
         if m[const.MODULE_NAME] == "PyETO":
-            hourly = await self._hourly_reference_et(zone, modinst)
+            hourly = await self._hourly_reference_et(
+                zone, modinst, per_hour=et_per_hour
+            )
             if hourly is not None:
                 delta = -hourly[0]
             else:
@@ -2191,6 +2209,16 @@ class CalculationMixin:
                 )
             # Nothing says when it rained: spread evenly over the window, the
             # neutral guess, rather than all of it at the start.
+            # The evapotranspiration follows the hourly equation's own hours,
+            # else the sun: it is the sun's energy that drives it.
+            et_profile = time_profile(et_per_hour, window_end, hours)
+            if et_profile is None:
+                et_profile = sun_profile(
+                    window_end,
+                    hours,
+                    getattr(self, "_effective_latitude", None),
+                    getattr(self, "_effective_longitude", None),
+                )
             newbucket, drainage, _peak = replay(
                 bucket,
                 et_part,
@@ -2200,11 +2228,22 @@ class CalculationMixin:
                 maximum_bucket,
                 drainage_rate,
                 available_water,
+                et_profile=et_profile,
             )
             _LOGGER.debug(
-                "[calculate-module]: replayed %.2f h hour by hour (%s): drainage %s",
+                "[calculate-module]: replayed %.2f h hour by hour (%s, %s): "
+                "drainage %s",
                 hours,
                 "rain timed" if profile is not None else "rain spread evenly",
+                (
+                    "evapotranspiration hour by hour"
+                    if et_per_hour
+                    else (
+                        "evapotranspiration by the sun"
+                        if et_profile is not None
+                        else "evapotranspiration spread evenly"
+                    )
+                ),
                 drainage,
             )
         elif newbucket > 0:

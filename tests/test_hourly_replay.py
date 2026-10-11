@@ -24,6 +24,8 @@ from custom_components.smart_irrigation.water_balance import (
     hour_slots,
     rain_profile,
     replay,
+    sun_profile,
+    time_profile,
 )
 
 # Megalos' lawn, from the diagnostics in #783.
@@ -133,6 +135,92 @@ def test_the_constant_rate_without_a_maximum_bucket():
 
     assert drained == pytest.approx(0.5)
     assert new == pytest.approx(4.5)
+
+
+# --- when the soil dried -------------------------------------------------------
+
+
+def test_the_evapotranspiration_of_the_day_meets_the_rain_of_the_day():
+    """Rain at 6 AM on a soil at field capacity, 3 mm of drying over the day.
+
+    Spread evenly, a quarter of the drying happened during the night, before
+    the rain, and the rain arrived on a soil 0.75 mm short: a smaller surplus,
+    less drainage. The sun only starts drying at dawn, so the rain finds the
+    soil full and more of it drains.
+    """
+    day = [0.0] * 6 + [1 / 12] * 12 + [0.0] * 6  # 6 AM to 6 PM
+    rain_at_dawn = [0.0] * 6 + [1.0] + [0.0] * 17
+
+    _, drained_by_day, peak_by_day = replay(
+        0.0, -3.0, 3.0, 24.0, rain_at_dawn, MAXIMUM, RATE, None, day
+    )
+    _, drained_even, peak_even = replay(
+        0.0, -3.0, 3.0, 24.0, rain_at_dawn, MAXIMUM, RATE
+    )
+
+    assert peak_by_day == pytest.approx(2.75)
+    assert peak_even == pytest.approx(2.125)
+    assert drained_by_day > drained_even
+
+
+def test_the_totals_do_not_depend_on_the_profiles():
+    """Without drainage or limits, only the order changes, never the sum."""
+    day = [0.0] * 6 + [1 / 12] * 12 + [0.0] * 6
+    rain = [0.0] * 20 + [1.0] + [0.0] * 3
+
+    new, _, _ = replay(-10.0, -4.0, 3.0, 24.0, rain, None, 0.0, None, day)
+
+    assert new == pytest.approx(-11.0)
+
+
+def test_the_sun_puts_the_evapotranspiration_in_the_day():
+    end = datetime(2026, 7, 1, 0, 0)  # a day of July in Paris, ending at midnight
+
+    profile = sun_profile(end, 24.0, 48.85, 2.35)
+
+    assert sum(profile) == pytest.approx(1.0)
+    assert profile[2] == 0  # 2 AM
+    assert profile[22] == 0  # 10 PM
+    assert max(profile) == profile[13]  # solar noon is near 1:50 PM in summer
+    assert profile[13] > profile[8] > profile[5]
+
+
+def test_the_sun_profile_needs_coordinates_and_a_sun():
+    end = datetime(2026, 7, 1, 4, 0)
+
+    assert sun_profile(end, 24.0, None, 2.35) is None
+    # 11 PM to 4 AM in Paris: the sun never rises over it.
+    assert sun_profile(end, 5.0, 48.85, 2.35) is None
+
+
+def test_the_hourly_equation_hands_back_its_hours():
+    from custom_components.smart_irrigation.hourly_rows import _keep_per_hour
+
+    rows = [
+        {"hour_start": datetime(2026, 7, 1, 12, 0)},
+        {"hour_start": datetime(2026, 7, 1, 13, 0)},
+    ]
+    per_hour = []
+
+    _keep_per_hour(per_hour, rows, [0.4, 0.5])
+
+    assert per_hour == [
+        [datetime(2026, 7, 1, 12, 30), 0.4],
+        [datetime(2026, 7, 1, 13, 30), 0.5],
+    ]
+    _keep_per_hour(None, rows, [0.4, 0.5])  # nobody asked, nothing to do
+
+
+def test_the_hours_of_evapotranspiration_become_its_profile():
+    end = datetime(2026, 7, 1, 14, 0)
+    per_hour = [
+        [datetime(2026, 7, 1, 12, 30), 0.3],
+        [datetime(2026, 7, 1, 13, 30), 0.1],
+    ]
+
+    profile = time_profile(per_hour, end, 2.0)
+
+    assert profile == pytest.approx([0.75, 0.25])
 
 
 # --- when it rained ---------------------------------------------------------
@@ -315,3 +403,46 @@ async def test_a_window_without_rain_keeps_the_single_step():
     data = await _calculate(weather)
 
     assert data[const.ZONE_BUCKET] == pytest.approx(_single_step(START, 0.0, WINDOW))
+
+
+@pytest.mark.asyncio
+async def test_the_calculation_dries_the_soil_by_the_sun():
+    """With coordinates, a daily figure is placed in the hours of the sun."""
+    end = datetime(2026, 7, 1, 18, 0)
+    weather = {
+        const.MAPPING_EVAPOTRANSPIRATION: 4.8,
+        const.MAPPING_PRECIPITATION: 3.0,
+        const.MAPPING_DATA_MULTIPLIER: 1.0,
+        const.MAPPING_DATA_WINDOW_END: end,
+        const.MAPPING_DATA_RAIN_TIMING: {
+            const.MAPPING_PRECIPITATION: [
+                [datetime(2026, 7, 1, 6, 10).isoformat(), 3.0]
+            ]
+        },
+    }
+    coordinator = _Coordinator()
+    coordinator._effective_latitude = 48.85
+    coordinator._effective_longitude = 2.35
+    with patch(
+        "custom_components.smart_irrigation.calculation.localize",
+        new=AsyncMock(return_value=""),
+    ):
+        data = await coordinator.calculate_module(_zone(), weather, None)
+
+    rain = rain_profile(
+        weather[const.MAPPING_DATA_RAIN_TIMING][const.MAPPING_PRECIPITATION], end, 24.0
+    )
+    by_sun, _, _ = replay(
+        START,
+        -4.8,
+        3.0,
+        24.0,
+        rain,
+        MAXIMUM,
+        RATE,
+        None,
+        sun_profile(end, 24.0, 48.85, 2.35),
+    )
+    evenly, _, _ = replay(START, -4.8, 3.0, 24.0, rain, MAXIMUM, RATE)
+    assert data[const.ZONE_BUCKET] == pytest.approx(by_sun)
+    assert by_sun != pytest.approx(evenly)
