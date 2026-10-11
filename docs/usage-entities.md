@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Usage: Entities
+title: "Usage: Entities"
 ---
 # Entities
 

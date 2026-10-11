@@ -1,6 +1,6 @@
 ---
 layout: default
-title: From nothing to a watered garden
+title: "From nothing to a watered garden"
 ---
 # From nothing to a watered garden
 

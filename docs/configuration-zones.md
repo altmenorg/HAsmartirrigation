@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Configuration: Zones
+title: "Configuration: Zones"
 ---
 # Zone configuration
 

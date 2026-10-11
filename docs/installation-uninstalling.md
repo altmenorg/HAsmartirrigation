@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Installation: Uninstalling
+title: "Installation: Uninstalling"
 ---
 # Uninstalling
 

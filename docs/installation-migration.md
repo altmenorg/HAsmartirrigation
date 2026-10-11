@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Installation: Migration
+title: "Installation: Migration"
 ---
 # Installation: Migration from V1 (0.0.X) to V2 (202X.X.X)
 

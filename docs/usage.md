@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Usage
+title: "Usage"
 ---
 # Usage
 

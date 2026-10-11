@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Usage: Full controller
+title: "Usage: Full controller"
 ---
 # Full controller
 

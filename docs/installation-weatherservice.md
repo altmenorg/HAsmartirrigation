@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Installation: Configuring weather service
+title: "Installation: Configuring weather service"
 ---
 # Configuring the weather service
 

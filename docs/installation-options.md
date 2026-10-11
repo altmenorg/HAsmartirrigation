@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Installation: Options
+title: "Installation: Options"
 ---
 # Installation: Options (manual coordinates)
 

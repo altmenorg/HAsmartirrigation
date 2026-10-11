@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Usage: Events
+title: "Usage: Events"
 ---
 
 # Events

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Usage: Off-the-shelf controllers
+title: "Usage: Off-the-shelf controllers"
 ---
 # Off-the-shelf controllers
 

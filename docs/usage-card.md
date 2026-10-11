@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Usage: Dashboard card
+title: "Usage: Dashboard card"
 ---
 # The dashboard card
 

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Configuration: Help
+title: "Configuration: Help"
 ---
 # Help
 
