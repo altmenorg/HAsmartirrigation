@@ -271,6 +271,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     hass.data[const.DOMAIN]["coordinator"] = coordinator
     hass.data[const.DOMAIN]["zones"] = {}
 
+    # Zones added on the zones page before #907 was fixed have no engine and
+    # were never calculated; they get the one their card showed.
+    await coordinator.async_bind_engineless_zones()
+
     # Set up unit system change listener
     async def handle_core_config_change(event):
         """Handle Home Assistant core configuration changes, specifically unit system changes."""

@@ -18,6 +18,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 from . import const
 from .calc_log import timestamps as calc_log_timestamps
 from .calcmodules.consumes import sourced_fields
+from .engine_binding import zone_has_engine
 from .helpers import loadModules, parse_datetime
 from .hourly_rows import (
     SystemLocalTime,
@@ -1880,6 +1881,15 @@ class CalculationMixin:
         """
         _LOGGER.debug("async_calculate_zone: Calculating zone %s", zone_id)
         zone = self.store.get_zone(zone_id)
+        if zone and not zone_has_engine(self.store, zone):
+            # Said as it is: the generic message below sent people looking for
+            # an evapotranspiration source they had never configured (#907).
+            _LOGGER.warning(
+                "Zone %s could not be calculated: it has no calculation engine. "
+                "Choose how it is calculated on its card",
+                zone.get(const.ZONE_NAME, zone_id),
+            )
+            return None
 
         # make sure we convert forecast data pressure to absolute!
         calc_data = await self.calculate_module(

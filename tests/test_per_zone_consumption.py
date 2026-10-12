@@ -45,6 +45,7 @@ def _zone(zone_id, consumed_minutes_ago=None, state=const.ZONE_STATE_AUTOMATIC):
         const.ZONE_NAME: f"Zone {zone_id}",
         const.ZONE_STATE: state,
         const.ZONE_MAPPING: 1,
+        const.ZONE_MODULE: 0,
         const.ZONE_LAST_CONSUMED_AT: (
             None
             if consumed_minutes_ago is None

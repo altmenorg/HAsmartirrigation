@@ -39,6 +39,18 @@ def method_of_engine(engine_name: str | None) -> str | None:
     return METHOD_BY_ENGINE.get(engine_name)
 
 
+def zone_has_engine(store, zone) -> bool:
+    """Whether something can calculate this zone: its own engine, or its group's."""
+    candidates = [zone.get(const.ZONE_MODULE)]
+    if zone.get(const.ZONE_MAPPING) is not None:
+        mapping = store.get_mapping(zone.get(const.ZONE_MAPPING)) or {}
+        candidates.append(mapping.get(const.MAPPING_MODULE))
+    return any(
+        module_id is not None and store.get_module(module_id) is not None
+        for module_id in candidates
+    )
+
+
 class EngineBindingMixin:
     """Bind a zone to an engine instance, creating one when there is none."""
 
@@ -114,6 +126,34 @@ class EngineBindingMixin:
 
         _LOGGER.error("No calculation engine named %s is installed", engine_name)
         return None
+
+    async def async_bind_engineless_zones(self) -> list[int]:
+        """Give every zone that has no engine the one the panel says it has.
+
+        A zone added on the zones page was saved without an engine, and a
+        sensor group created by hand has none to lend it, so nothing could ever
+        calculate the zone, while its card said "calculated from the weather",
+        which is what the panel shows for a zone without one (#907). That is
+        the method these zones are bound to, so what the card said becomes
+        true.
+
+        The list is taken before binding anything: binding a zone lets its
+        group adopt that zone's engine, and the next zone of the group would
+        then look as if it had one, sharing it instead of getting its own.
+        """
+        engineless = [
+            zone[const.ZONE_ID]
+            for zone in await self.store.async_get_zones()
+            if not zone_has_engine(self.store, zone)
+        ]
+        for zone_id in engineless:
+            await self.async_set_zone_method(zone_id, METHOD_FROM_WEATHER)
+            _LOGGER.info(
+                "Zone %s had no calculation engine; it is now calculated from "
+                "the weather, as its card showed",
+                zone_id,
+            )
+        return engineless
 
     async def async_set_zone_method(self, zone_id: int, method: str, config=None):
         """Point a zone at the engine that calculates ``method``.
