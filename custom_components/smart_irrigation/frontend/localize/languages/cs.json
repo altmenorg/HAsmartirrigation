@@ -637,7 +637,7 @@
         },
         "available-water": "Dostupná voda",
         "allowed-depletion": "Povolené vyčerpání",
-        "available-water-help": "Kolik vody půda této zóny pro rostliny udrží, v mm (hloubka kořenů v mm krát to, co půda udrží na mm: asi 1,5 pro písek, 2 pro hlínu, 2,5 pro jíl). Nechte prázdné, pokud nic měnit nechcete. Když je nastaveno, deficit nemůže klesnout pod tuto hodnotu a jakmile rostliny spotřebují povolený podíl (50 %, pokud ho nezměníte), odebírají méně vody, takže deficit neroste tak rychle.",
+        "available-water-help": "Kolik vody půda této zóny pro rostliny udrží, v mm (hloubka kořenů v metrech krát to, co půda udrží na metr: asi 50 až 110 mm pro písek, 130 až 180 pro hlínu, 120 až 200 pro jíl, podle FAO-56). Nechte prázdné, pokud nic měnit nechcete. Když je nastaveno, deficit nemůže klesnout pod tuto hodnotu a jakmile rostliny spotřebují povolený podíl (50 %, pokud ho nezměníte), odebírají méně vody, takže deficit neroste tak rychle.",
         "distribution-efficiency": "Účinnost distribuce",
         "distribution-efficiency-help": "Podíl vody vycházející z výtoků, který se dostane k rostlinám, v %. Postřikovače ve větru nebo na svahu část ztrácejí, kapková závlaha téměř nic. Nechte prázdné pro 100 %. Zóna na 80 % zalévá o 25 % déle pro stejnou výšku vody a připočítá si jen 80 % toho, co dodá.",
         "days-between-irrigation-help": "Nechte prázdné, aby se držela obecného nastavení (Nastavení, Dny mezi zaléváním). Číslo nahradí obecné nastavení jen pro tuto zónu: 1 ji zalévá každý den, pokud potřebuje vodu, 3 nejvýše každý třetí den, 0 omezení ruší. Dny se počítají od posledního zalití této zóny.",

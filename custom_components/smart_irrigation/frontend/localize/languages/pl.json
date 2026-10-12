@@ -637,7 +637,7 @@
         },
         "available-water": "Woda dostępna",
         "allowed-depletion": "Dozwolone wyczerpanie",
-        "available-water-help": "Ile wody gleba tej strefy zatrzymuje dla roślin, w mm (głębokość korzeni w mm razy to, ile gleba zatrzymuje na mm: około 1,5 dla piasku, 2 dla gliny piaszczystej, 2,5 dla iłu). Zostaw puste, aby nic nie zmieniać. Po ustawieniu deficyt nie może spaść poniżej tej wartości, a gdy rośliny zużyją dozwoloną jej część (50%, o ile tego nie zmienisz), pobierają mniej wody, więc deficyt przestaje rosnąć tak szybko.",
+        "available-water-help": "Ile wody gleba tej strefy zatrzymuje dla roślin, w mm (głębokość korzeni w metrach razy to, ile gleba zatrzymuje na metr: około 50–110 mm dla piasku, 130–180 dla gliny piaszczystej, 120–200 dla iłu, według FAO-56). Zostaw puste, aby nic nie zmieniać. Po ustawieniu deficyt nie może spaść poniżej tej wartości, a gdy rośliny zużyją dozwoloną jej część (50%, o ile tego nie zmienisz), pobierają mniej wody, więc deficyt przestaje rosnąć tak szybko.",
         "distribution-efficiency": "Sprawność rozprowadzania",
         "distribution-efficiency-help": "Część wody opuszczającej zraszacze, która dociera do roślin, w %. Zraszacze na wietrze lub na zboczu tracą część, kroplowanie prawie nic. Zostaw puste dla 100%. Strefa przy 80% podlewa o 25% dłużej dla tej samej głębokości i zalicza tylko 80% tego, co dostarcza.",
         "days-between-irrigation-help": "Zostaw puste, aby stosować ustawienie ogólne (Ustawienia, Dni między nawadnianiami). Liczba zastępuje ustawienie ogólne tylko dla tej strefy: 1 podlewa ją codziennie, jeśli potrzebuje wody, 3 najwyżej co trzeci dzień, 0 usuwa ograniczenie. Dni liczone są od ostatniego podlania tej strefy.",

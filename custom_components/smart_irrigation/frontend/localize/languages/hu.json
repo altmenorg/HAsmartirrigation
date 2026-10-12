@@ -637,7 +637,7 @@
         },
         "available-water": "Hasznosítható víz",
         "allowed-depletion": "Megengedett kimerülés",
-        "available-water-help": "Mennyi vizet tart a zóna talaja a növények számára, mm-ben (a gyökérmélység mm-ben szorozva azzal, amit a talaj milliméterenként tart: kb. 1,5 homokra, 2 vályogra, 2,5 agyagra). Hagyd üresen, ha nem akarsz változtatni. Beállítva a hiány nem mehet alá, és miután a növények felhasználták a megengedett részét (50%, hacsak nem változtatod), kevesebb vizet vesznek fel, így a hiány már nem nő olyan gyorsan.",
+        "available-water-help": "Mennyi vizet tart a zóna talaja a növények számára, mm-ben (a gyökérmélység méterben szorozva azzal, amit a talaj méterenként tart: kb. 50–110 mm homokra, 130–180 vályogra, 120–200 agyagra, a FAO-56 szerint). Hagyd üresen, ha nem akarsz változtatni. Beállítva a hiány nem mehet alá, és miután a növények felhasználták a megengedett részét (50%, hacsak nem változtatod), kevesebb vizet vesznek fel, így a hiány már nem nő olyan gyorsan.",
         "distribution-efficiency": "Elosztási hatásfok",
         "distribution-efficiency-help": "A kifolyókból kijövő víz azon része, amely eljut a növényekhez, %-ban. A szélben vagy lejtőn működő szórófejek veszítenek valamennyit, a csepegtetés szinte semennyit. Hagyd üresen 100%-hoz. Egy 80%-os zóna 25%-kal tovább öntöz ugyanazon vízrétegért, és a kijuttatott víznek csak 80%-át számolja el.",
         "days-between-irrigation-help": "Hagyd üresen az általános beállítás követéséhez (Beállítások, Öntözések közötti napok). Egy szám csak erre a zónára írja felül az általános beállítást: az 1 minden nap öntözi, ha vízre van szüksége, a 3 legfeljebb háromnaponta, a 0 megszünteti a korlátozást. A napokat a zóna utolsó öntözésétől számoljuk.",

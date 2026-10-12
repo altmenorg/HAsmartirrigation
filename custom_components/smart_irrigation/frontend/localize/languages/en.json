@@ -637,7 +637,7 @@
         },
         "available-water": "Available water",
         "allowed-depletion": "Allowed depletion",
-        "available-water-help": "How much water the soil of this zone holds for the plants, in mm (the root depth in mm times what the soil holds per mm: about 1.5 for sand, 2 for loam, 2.5 for clay). Leave empty to leave things as they are. When set, the deficit cannot go below it, and once the plants have used up the allowed share of it (50% unless you change it) they draw less water, so the deficit stops growing as fast.",
+        "available-water-help": "How much water the soil of this zone holds for the plants, in mm (the root depth in metres times what the soil holds per metre: about 50 to 110 mm for sand, 130 to 180 for loam, 120 to 200 for clay, from FAO-56). Leave empty to leave things as they are. When set, the deficit cannot go below it, and once the plants have used up the allowed share of it (50% unless you change it) they draw less water, so the deficit stops growing as fast.",
         "distribution-efficiency": "Distribution efficiency",
         "distribution-efficiency-help": "The share of the water leaving the emitters that reaches the plants, in %. Sprinklers in wind or on a slope lose some, drip loses almost none. Leave empty for 100%. A zone at 80% waters 25% longer for the same depth, and credits only 80% of what it delivers.",
         "days-between-irrigation-help": "Leave empty to follow the general setting (Settings, Days between irrigation). A number replaces the general setting for this zone alone: 1 waters it every day if it needs water, 3 at most every third day, 0 removes the restriction. The days are counted from the last time this zone was watered.",

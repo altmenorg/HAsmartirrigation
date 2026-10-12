@@ -637,7 +637,7 @@
         },
         "available-water": "Tilgjengelig vann",
         "allowed-depletion": "Tillatt uttømming",
-        "available-water-help": "Hvor mye vann jorda i denne sonen holder for plantene, i mm (rotdybden i mm ganger det jorda holder per mm: omtrent 1,5 for sand, 2 for moldjord, 2,5 for leire). La stå tomt for å la alt være som det er. Når det er satt, kan underskuddet ikke gå under det, og når plantene har brukt opp den tillatte andelen av det (50 % med mindre du endrer det), trekker de mindre vann, så underskuddet vokser ikke like raskt.",
+        "available-water-help": "Hvor mye vann jorda i denne sonen holder for plantene, i mm (rotdybden i meter ganger det jorda holder per meter: omtrent 50 til 110 mm for sand, 130 til 180 for moldjord, 120 til 200 for leire, ifølge FAO-56). La stå tomt for å la alt være som det er. Når det er satt, kan underskuddet ikke gå under det, og når plantene har brukt opp den tillatte andelen av det (50 % med mindre du endrer det), trekker de mindre vann, så underskuddet vokser ikke like raskt.",
         "distribution-efficiency": "Fordelingseffektivitet",
         "distribution-efficiency-help": "Andelen av vannet som forlater dysene og når plantene, i %. Spredere i vind eller i skråning mister noe, drypp nesten ingenting. La stå tomt for 100 %. En sone på 80 % vanner 25 % lenger for samme dybde, og krediterer bare 80 % av det den leverer.",
         "days-between-irrigation-help": "La stå tomt for å følge den generelle innstillingen (Innstillinger, Dager mellom vanninger). Et tall erstatter den generelle innstillingen for denne sonen alene: 1 vanner den hver dag hvis den trenger vann, 3 høyst hver tredje dag, 0 fjerner begrensningen. Dagene telles fra forrige gang denne sonen ble vannet.",

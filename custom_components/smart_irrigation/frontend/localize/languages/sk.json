@@ -637,7 +637,7 @@
         },
         "available-water": "Dostupná voda",
         "allowed-depletion": "Povolené vyčerpanie",
-        "available-water-help": "Koľko vody pôda tejto zóny drží pre rastliny, v mm (hĺbka koreňov v mm krát to, čo pôda drží na mm: asi 1,5 pre piesok, 2 pre hlinu, 2,5 pre íl). Nechajte prázdne, aby všetko zostalo ako je. Keď je nastavené, deficit nemôže klesnúť pod túto hodnotu a keď rastliny spotrebujú povolený podiel (50 %, pokiaľ ho nezmeníte), čerpajú menej vody, takže deficit rastie pomalšie.",
+        "available-water-help": "Koľko vody pôda tejto zóny drží pre rastliny, v mm (hĺbka koreňov v metroch krát to, čo pôda drží na meter: asi 50 až 110 mm pre piesok, 130 až 180 pre hlinu, 120 až 200 pre íl, podľa FAO-56). Nechajte prázdne, aby všetko zostalo ako je. Keď je nastavené, deficit nemôže klesnúť pod túto hodnotu a keď rastliny spotrebujú povolený podiel (50 %, pokiaľ ho nezmeníte), čerpajú menej vody, takže deficit rastie pomalšie.",
         "distribution-efficiency": "Účinnosť distribúcie",
         "distribution-efficiency-help": "Podiel vody vychádzajúcej z výtokov, ktorý sa dostane k rastlinám, v %. Postrekovače vo vetre alebo na svahu časť strácajú, kvapkové takmer nič. Nechajte prázdne pre 100 %. Zóna s 80 % zalieva o 25 % dlhšie pre rovnakú výšku a pripíše len 80 % z dodaného.",
         "days-between-irrigation-help": "Nechajte prázdne, aby sa použilo všeobecné nastavenie (Nastavenia, Dni medzi zavlažovaniami). Číslo nahradí všeobecné nastavenie len pre túto zónu: 1 ju zalieva každý deň, ak potrebuje vodu, 3 najviac každý tretí deň, 0 odstráni obmedzenie. Dni sa počítajú od posledného zavlažovania tejto zóny.",
