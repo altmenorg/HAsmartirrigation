@@ -25,7 +25,12 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 from . import const
 from .calcmodules.consumes import consumed_mappings, idle_options
 from .delivery import delivery_gap, stale_zones
-from .engine_binding import ENGINE_BY_METHOD, method_of_engine
+from .engine_binding import (
+    ENGINE_BY_METHOD,
+    METHOD_FROM_WEATHER,
+    method_of_engine,
+    zone_has_engine,
+)
 from .presets import apply_preset, describe_zone
 from .skip_conditions import SkipConditionsMixin, thresholds_for_display
 from .units import zone_from_display, zone_to_display
@@ -412,6 +417,20 @@ class SmartIrrigationZoneView(HomeAssistantView):
             # without it the options were dropped and the old value came back
             # on the next refresh (#851).
             method = _zone_method(coordinator, coordinator.store.get_zone(int(zone_id)))
+        if method is None and zone is None and zone_id is not None:
+            # A zone added on the zones page arrives without a method, and
+            # without one it had no engine at all unless its group lent it
+            # one: it was never calculated, while its card said "from the
+            # weather" (#907). It gets its own engine, of the kind the card
+            # shows, with the options of the group's when it borrowed that one.
+            # An engine we do not recognise is left as it is.
+            new_zone = coordinator.store.get_zone(int(zone_id))
+            if new_zone and not zone_has_engine(coordinator.store, new_zone):
+                method = METHOD_FROM_WEATHER
+            elif new_zone:
+                method = _zone_method(coordinator, new_zone)
+                if method is not None and method_config is None:
+                    method_config = _zone_method_config(coordinator, new_zone) or None
         if method is not None and zone_id is not None:
             await coordinator.async_set_zone_method(int(zone_id), method, method_config)
         async_dispatcher_send(hass, const.DOMAIN + "_update_frontend")

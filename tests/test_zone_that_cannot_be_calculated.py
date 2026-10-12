@@ -127,7 +127,7 @@ async def test_an_engine_that_returns_nothing_is_not_an_exception():
     calc = CalculationMixin()
     calc.store = MagicMock()
     calc.store.get_zone = MagicMock(
-        return_value={const.ZONE_ID: 1, const.ZONE_NAME: "Test"}
+        return_value={const.ZONE_ID: 1, const.ZONE_NAME: "Test", const.ZONE_MODULE: 0}
     )
     calc.calculate_module = AsyncMock(return_value=None)
     calc.seasonal_adjustment_manager = MagicMock()
@@ -142,7 +142,11 @@ async def test_and_it_says_which_zone_and_why():
     calc = CalculationMixin()
     calc.store = MagicMock()
     calc.store.get_zone = MagicMock(
-        return_value={const.ZONE_ID: 1, const.ZONE_NAME: "Potager"}
+        return_value={
+            const.ZONE_ID: 1,
+            const.ZONE_NAME: "Potager",
+            const.ZONE_MODULE: 0,
+        }
     )
     calc.calculate_module = AsyncMock(return_value=None)
 
