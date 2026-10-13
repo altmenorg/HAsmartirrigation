@@ -78,6 +78,7 @@ import {
   mdiMinus,
 } from "@mdi/js";
 import moment from "moment";
+import { readingsNotNeeded } from "./readings";
 
 @customElement("smart-irrigation-view-mappings")
 class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
@@ -97,6 +98,11 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean })
   private isSaving = false;
+
+  // The name typed for a new group: the add button waits for one, where it
+  // used to do nothing at all, and say nothing, on an empty name (#909).
+  @property({ type: String })
+  private newMappingName = "";
 
   // True once the first data load has completed. Avoids tearing the whole view
   // down to a "loading" card on every background refresh (focus/scroll loss).
@@ -470,6 +476,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
       .then(() => {
         // Clear the input field on successful save
         this.mappingNameInput.value = "";
+        this.newMappingName = "";
         // Refresh data to get the server-assigned ID
         return this._fetchData();
       })
@@ -817,12 +824,18 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
           )}
         </div>
         ${this.renderSourceHint(value)}
-        ${this._selectRow(
-          localize("panels.mappings.cards.mapping.source", this.hass.language),
-          this.renderSimpleRadioOptions(index, value, mappingline),
-          (e: Event) => this.handleSimpleSourceChange(index, value, e),
-          etUnused,
-        )}
+        ${
+          // Never locked: the note below says it is not used, and a source
+          // that cannot be changed is a setting nobody can fix (#909).
+          this._selectRow(
+            localize(
+              "panels.mappings.cards.mapping.source",
+              this.hass.language,
+            ),
+            this.renderSimpleRadioOptions(index, value, mappingline),
+            (e: Event) => this.handleSimpleSourceChange(index, value, e),
+          )
+        }
         ${etUnused
           ? html`<div class="weather-note">
               ${localize(
@@ -1844,13 +1857,20 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
                 this.hass.language,
               )}
             </div>
-            <input id="mappingNameInput" class="field" type="text" />
+            <input
+              id="mappingNameInput"
+              class="field"
+              type="text"
+              @input=${(e: Event) => {
+                this.newMappingName = (e.target as HTMLInputElement).value;
+              }}
+            />
           </div>
           <div class="si-form-actions">
             <ha-button
               appearance="filled"
               @click="${this.handleAddMapping}"
-              ?disabled="${this.isSaving}"
+              ?disabled="${this.isSaving || !this.newMappingName.trim()}"
             >
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
               ${this.isSaving
@@ -2044,18 +2064,16 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
             value !== MAPPING_CURRENT_PRECIPITATION)) &&
         (advanced || value !== MAPPING_PRECIPITATION || !totalUnused(value)),
     );
-    // The evapotranspiration decides. Given ready-made, by a sensor or by the
-    // weather service, the other readings only serve to recalculate it, so
-    // they are not asked. Left on None, the zones work it out from the weather
-    // and those readings are exactly what is needed. The field itself always
-    // stays, first: it is the question.
+    // The zones decide which readings are asked (see readingsNotNeeded). The
+    // evapotranspiration field itself always stays, first: it is the question.
     const et = mapping.mappings[MAPPING_EVAPOTRANSPIRATION];
     const etSource = typeof et === "string" ? et : et?.[MAPPING_CONF_SOURCE];
     const provided = !!etSource && etSource !== MAPPING_CONF_SOURCE_NONE;
+    const leaveOut = readingsNotNeeded(this.etUseOfZones(mapping.id), provided);
     const settingsEntries = afterGreenhouse
       .filter(
         ([value]) =>
-          !provided ||
+          !leaveOut ||
           value === MAPPING_EVAPOTRANSPIRATION ||
           value === MAPPING_PRECIPITATION ||
           value === MAPPING_CURRENT_PRECIPITATION,
