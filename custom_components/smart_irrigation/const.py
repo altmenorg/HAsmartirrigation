@@ -28,6 +28,7 @@ SUPPORTED_LANGUAGES = [
     "pt",
     "ru",
     "sk",
+    "sl",
     "sv",
     "uk",
 ]

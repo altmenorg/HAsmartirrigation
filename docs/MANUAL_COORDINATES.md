@@ -97,7 +97,7 @@ Your HA location is correct but elevation is wrong or missing:
 
 ## Internationalization
 
-The coordinate configuration feature is localized in the 19 languages of the panel.
+The coordinate configuration feature is localized in the 20 languages of the panel.
 
 ## Troubleshooting
 

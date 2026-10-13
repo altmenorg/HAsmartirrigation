@@ -1,0 +1,297 @@
+{
+  "entity": {
+    "sensor": {
+      "duration": {
+        "name": "Trajanje"
+      },
+      "bucket": {
+        "name": "Vodna bilanca"
+      },
+      "et_value": {
+        "name": "Uporabljena ET"
+      },
+      "et_deficiency": {
+        "name": "Dnevni primanjkljaj ET"
+      },
+      "current_drainage": {
+        "name": "Trenutna drenaža"
+      },
+      "last_irrigation": {
+        "name": "Zadnje namakanje"
+      },
+      "water_used": {
+        "name": "Porabljena voda"
+      },
+      "live_bucket": {
+        "name": "Vodna bilanca v živo"
+      }
+    },
+    "number": {
+      "multiplier": {
+        "name": "Množitelj"
+      },
+      "precipitation_threshold": {
+        "name": "Prag padavin"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "Izračunaj"
+      },
+      "reset_bucket": {
+        "name": "Ponastavi vodno bilanco"
+      },
+      "reset_usage": {
+        "name": "Ponastavi porabo vode"
+      },
+      "irrigate_now": {
+        "name": "Namakaj zdaj"
+      },
+      "calculate_all": {
+        "name": "Izračunaj vse cone"
+      },
+      "update_weather": {
+        "name": "Osveži vreme"
+      },
+      "irrigate_all": {
+        "name": "Namakaj vse cone"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "Potrebno namakanje"
+      },
+      "watering_now": {
+        "name": "Namakanje poteka"
+      },
+      "problem": {
+        "name": "Težava"
+      }
+    },
+    "switch": {
+      "skip_on_precipitation": {
+        "name": "Preskoči ob padavinah"
+      }
+    }
+  },
+  "config": {
+    "abort": {
+      "single_instance_allowed": "Dovoljena je samo ena konfiguracija Smart Irrigation."
+    },
+    "error": {
+      "name": "Vnesi edinstveno ime za integracijo."
+    },
+    "step": {
+      "user": {
+        "title": "Splošne nastavitve",
+        "description": "Če potrebuješ pomoč pri konfiguraciji, si oglej dokumentacijo. Vremensko storitev nastaviš pozneje v plošči Smart Irrigation.",
+        "data": {
+          "name": "Edinstveno ime integracije"
+        }
+      }
+    }
+  },
+  "options": {
+    "error": {
+      "invalid_coordinates": "Neveljavne koordinate. Preveri zemljepisno širino (-90 do 90) in dolžino (-180 do 180)."
+    },
+    "step": {
+      "coordinates": {
+        "title": "Koordinate lokacije",
+        "description": "Nastavi koordinate lokacije za pridobivanje vremenskih podatkov. Po potrebi lahko uporabiš ročne koordinate, ki se razlikujejo od lokacije v Home Assistant.",
+        "data": {
+          "manual_coordinates_enabled": "Uporabi ročne koordinate namesto lokacije Home Assistant",
+          "manual_latitude": "Zemljepisna širina (decimalne stopinje, -90 do 90)",
+          "manual_longitude": "Zemljepisna dolžina (decimalne stopinje, -180 do 180)",
+          "manual_elevation": "Nadmorska višina (metri, neobvezno)"
+        }
+      }
+    }
+  },
+  "services": {
+    "calculate_all_zones": {
+      "name": "Izračunaj vse cone",
+      "description": "Izračunaj vse cone v samodejnem načinu",
+      "fields": {
+        "delete_weather_data": {
+          "name": "Izbriši vremenske podatke",
+          "description": "Po izračunu izbriši vremenske podatke"
+        },
+        "dry_run": {
+          "name": "Poskusni zagon",
+          "description": "Sporoči, kaj bi izračun naredil, ne da bi spremenil vodno bilanco, cono ali zbrane vremenske podatke"
+        }
+      }
+    },
+    "calculate_zone": {
+      "name": "Izračunaj cono",
+      "description": "Izračunaj izbrano cono",
+      "fields": {
+        "entity": {
+          "name": "Entiteta",
+          "description": "Cona za izračun"
+        },
+        "delete_weather_data": {
+          "name": "Izbriši vremenske podatke",
+          "description": "Po izračunu izbriši vremenske podatke cone"
+        },
+        "dry_run": {
+          "name": "Poskusni zagon",
+          "description": "Sporoči, kaj bi izračun naredil, ne da bi spremenil vodno bilanco, cono ali zbrane vremenske podatke"
+        }
+      }
+    },
+    "update_all_zones": {
+      "name": "Posodobi vse cone",
+      "description": "Posodobi vremenske podatke za vse cone v samodejnem načinu"
+    },
+    "update_zone": {
+      "name": "Posodobi cono",
+      "description": "Posodobi vremenske podatke za izbrano cono",
+      "fields": {
+        "entity": {
+          "name": "Entiteta",
+          "description": "Cona za posodobitev"
+        }
+      }
+    },
+    "set_bucket": {
+      "name": "Nastavi vodno bilanco",
+      "description": "Nastavi vodno bilanco cone na določeno vrednost",
+      "fields": {
+        "entity": {
+          "name": "Entiteta",
+          "description": "Cona, ki ji nastaviš vodno bilanco"
+        },
+        "new_bucket_value": {
+          "name": "Nova vrednost vodne bilance",
+          "description": "nova vrednost vodne bilance"
+        }
+      }
+    },
+    "set_all_buckets": {
+      "name": "Nastavi vse vodne bilance",
+      "description": "Nastavi vodne bilance vseh con na določeno vrednost",
+      "fields": {
+        "new_bucket_value": {
+          "name": "Nova vrednost vodne bilance",
+          "description": "nova vrednost vodne bilance"
+        }
+      }
+    },
+    "reset_bucket": {
+      "name": "Ponastavi vodno bilanco",
+      "description": "Ponastavi vodno bilanco cone na 0",
+      "fields": {
+        "entity": {
+          "name": "Entiteta",
+          "description": "Cona, ki ji ponastaviš vodno bilanco"
+        }
+      }
+    },
+    "reset_all_buckets": {
+      "name": "Ponastavi vse vodne bilance",
+      "description": "Ponastavi vodne bilance vseh con na 0"
+    },
+    "clear_all_weather_data": {
+      "name": "Počisti vse vremenske podatke",
+      "description": "Počisti vremenske podatke vseh con"
+    },
+    "set_multiplier": {
+      "name": "Nastavi množitelj",
+      "description": "Nastavi množitelj cone na določeno vrednost",
+      "fields": {
+        "entity": {
+          "name": "Entiteta",
+          "description": "Cona, ki ji nastaviš množitelj"
+        },
+        "new_multiplier_value": {
+          "name": "Nova vrednost množitelja",
+          "description": "nova vrednost množitelja"
+        }
+      }
+    },
+    "set_all_multipliers": {
+      "name": "Nastavi vse množitelje",
+      "description": "Nastavi množitelje vseh con na določeno vrednost",
+      "fields": {
+        "new_multiplier_value": {
+          "name": "Nova vrednost množitelja",
+          "description": "nova vrednost množitelja"
+        }
+      }
+    },
+    "set_zone": {
+      "name": "Nastavi vrednosti cone",
+      "description": "Nastavi vse nastavljive vrednosti cone",
+      "fields": {
+        "entity": {
+          "name": "Entiteta",
+          "description": "Cona, ki ji nastaviš vrednosti"
+        },
+        "new_bucket_value": {
+          "name": "Nova vrednost vodne bilance",
+          "description": "Nova vrednost vodne bilance"
+        },
+        "new_multiplier_value": {
+          "name": "Nova vrednost množitelja",
+          "description": "Nova vrednost množitelja"
+        },
+        "new_duration_value": {
+          "name": "Nova vrednost trajanja",
+          "description": "Nova vrednost trajanja"
+        },
+        "new_state_value": {
+          "name": "Nova vrednost stanja",
+          "description": "Nova vrednost stanja"
+        },
+        "new_throughput_value": {
+          "name": "Nova vrednost pretoka",
+          "description": "Nova vrednost pretoka"
+        }
+      }
+    },
+    "generate_watering_calendar": {
+      "name": "Ustvari koledar namakanja",
+      "description": "Ustvari 12-mesečni koledar namakanja za cone na podlagi reprezentativnih podnebnih podatkov",
+      "fields": {
+        "entity": {
+          "name": "Entiteta",
+          "description": "Cona, za katero ustvariš koledar namakanja"
+        }
+      }
+    },
+    "credit_watering": {
+      "name": "Upoštevaj namakanje",
+      "description": "Vodni bilanci cone prišteje vodo, ki jo je zagon dejansko dovedel, namesto da jo nastavi na 0.",
+      "fields": {
+        "seconds": {
+          "name": "Sekunde",
+          "description": "Koliko časa je cona tekla, v sekundah. Prazno: trajanje cone."
+        }
+      }
+    }
+  },
+  "issues": {
+    "dry_zone_not_watered": {
+      "title": "Cona {zone} je suha in je nič ne bo namakalo",
+      "description": "Vodna bilanca cone **{zone}** je suha že {days} dni, vsak program, ki jo vsebuje, pa je onemogočen, začasno ustavljen ali nima omogočenega urnika.\n\nPonovno vklopi program, ki namaka to cono, omogoči enega od njegovih urnikov ali odpravi njegovo začasno ustavitev. Obvestilo izgine samo, ko je cona namakana ali jo program spet pokriva."
+    },
+    "weather_silent": {
+      "title": "Skupina senzorjev {mapping}: vremenski senzor se ne oglaša več",
+      "description": "Že več kot {hours} ur ni prišlo nič od: **{sensors}**. Zadnje poročilo je bilo {since}.\n\nTako stara meritev se izpusti iz izračuna, zato se cone te skupine senzorjev izračunajo s tem, kar ostane, ali pa sploh ne.\n\nPreveri baterijo senzorja, njegovo povezavo in njegovo entiteto v Home Assistant. Obvestilo izgine samo, takoj ko se senzor spet oglasi."
+    },
+    "missing_input": {
+      "title": "Cona {zone}: ničesar ni bilo mogoče izračunati",
+      "description": "Evapotranspiracije cone **{zone}** ni bilo mogoče izračunati, ker vremenski podatki niso imeli vrednosti za: **{missing}**.\n\nDokler je ne dobijo, se primanjkljaj cone ne spreminja in cona se ne namaka, kar je videti povsem kot cona brez potrebe.\n\nPreveri, ali so senzorji, dodeljeni tem poljem, na voljo oziroma ali jih vremenska storitev še pošilja. Težava izgine ob naslednjem izračunu, ki ga je mogoče izvesti."
+    },
+    "undersized_zone": {
+      "title": "Cona {zone}: en zagon ne more nadomestiti tega, kar izgubi",
+      "description": "Najdaljši zagon cone **{zone}** dovede približno **{capacity} mm**, cona pa med dvema namakanjema ({days} dan/dni) izgubi približno **{need} mm**. Njen primanjkljaj bo rasel, dokler bo vreme takšno.\n\nOmejitev je največje trajanje cone. Povečaj ga, dodaj coni več kapljačev ali večji pretok, ali pa zmanjšaj število dni med namakanji. Če je omejitev namerna, lahko to prezreš."
+    },
+    "throughput_mismatch": {
+      "title": "Cona {zone}: izmerjeni pretok se ne ujema z nastavljenim",
+      "description": "V zadnjih {samples} zagonih je merilnik pretoka cone **{zone}** izmeril približno **{measured}**, cona pa je nastavljena na **{configured}**, kar je {percentage}% odstopanja.\n\nVsako trajanje namakanja izhaja iz nastavljenega pretoka, zato vsa odstopajo za približno enako mero.\n\nČe se meritev zdi pravilna, nastavi pretok cone nanjo. Če ne, preveri, ali merilnik šteje samo to cono in ali je tlak v vodovodu tak, kot pričakuješ. Smart Irrigation vrednosti nikoli ne spremeni namesto tebe."
+    }
+  }
+}

@@ -177,7 +177,7 @@ jq -c 'select(.zone.name == "Lawn") | {t: .timestamp, eto: .module.days[0].eto, 
 ```
 
 ### Language
-The panel and the configuration flow are available in 19 languages, all complete. The French is written with "tu".
+The panel and the configuration flow are available in 20 languages, all complete. The French is written with "tu".
 
 ### Unit System Responsiveness
 Smart Irrigation automatically detects and responds to changes in your Home Assistant unit system setting (metric/imperial). When you change the unit system in Home Assistant:
