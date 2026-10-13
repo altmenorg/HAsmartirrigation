@@ -38,6 +38,7 @@ export const FETCHABLE_LANGUAGES = [
   "pt-BR",
   "ru",
   "sk",
+  "sl",
   "sv",
   "uk",
   "zh-Hans",

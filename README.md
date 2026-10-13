@@ -25,7 +25,7 @@ Multiple zones are supported, each zone having its own configuration and set up.
 - 🌱 **Greenhouse mode.** Under glass the sky is not what reaches the plant: a lux sensor inside answers it, and without one the glass dims the sun.
 - 🛑 **Skip conditions.** A rain sensor, frost, wind, a soil moisture sensor per zone and the rain forecast can each hold a run back, and the Info page says which one and on what numbers.
 - 📐 **Controller blueprints** for Rain Bird, Hydrawise, Rachio, OpenSprinkler and B-hyve, besides plain valves, ESPHome and Irrigation Unlimited.
-- 🌍 **19 languages, out of the box.** The panel *and* the config flow are fully translated: English, French, German, Spanish, Italian, Dutch, Norwegian, Slovak, Polish, Portuguese, Brazilian Portuguese, Czech, Russian, Ukrainian, Simplified Chinese, Swedish, Danish, Finnish and Hungarian. Everything except English and French was machine-translated, so if yours reads oddly, [correct it on Weblate](https://hosted.weblate.org/engage/smart-irrigation/), in the browser and with no account on GitHub, or [in the JSON file directly](CONTRIBUTING.md#translations).
+- 🌍 **20 languages, out of the box.** The panel *and* the config flow are fully translated: English, French, German, Spanish, Italian, Dutch, Norwegian, Slovak, Slovenian, Polish, Portuguese, Brazilian Portuguese, Czech, Russian, Ukrainian, Simplified Chinese, Swedish, Danish, Finnish and Hungarian. Everything except English and French was machine-translated, so if yours reads oddly, [correct it on Weblate](https://hosted.weblate.org/engage/smart-irrigation/), in the browser and with no account on GitHub, or [in the JSON file directly](CONTRIBUTING.md#translations).
 - 🌦️ **Switch weather service on the fly** between Open-Meteo, OpenWeatherMap and Pirate Weather, and update the API key, without removing and re-adding the integration.
 - 💾 **One-click Backup / Restore** of your entire configuration as a JSON file.
 - ⏰ **Flexible start triggers** around sunrise, sunset, solar azimuth or a fixed time, with one active at a time, firing an identifiable event for your automations.
@@ -60,7 +60,7 @@ Since the project moved here in June 2026, the stable v2026.10.2 gathered seven 
 - **Hour-by-hour FAO-56 evapotranspiration**, a **greenhouse mode**, and **skip conditions** (rain sensor, frost, wind, soil moisture, forecast rain).
 - **Per-zone settings**: days between irrigation, crop factor by month, soil and crop chosen by name, and seasonal adjustments edited in the panel.
 - Several corrections to the water balance, among them the saturation vapour pressure (the evapotranspiration was too low for everybody), rain counters, and recurring schedules that never ran. The [v2026.10.1 release notes](https://github.com/altmenorg/HAsmartirrigation/releases/tag/v2026.10.1) list them with the changes in amounts.
-- **19 languages**, with corrections welcome on [Hosted Weblate](https://hosted.weblate.org/engage/smart-irrigation/).
+- **20 languages**, with corrections welcome on [Hosted Weblate](https://hosted.weblate.org/engage/smart-irrigation/).
 
 ## Irrigation start triggers
 
@@ -109,7 +109,7 @@ The full documentation is published at **[altmenorg.github.io/HAsmartirrigation]
 
 You do not need to write code to help, and the most useful contributions right now are not code.
 
-- **Translate.** The interface comes in 19 languages, and apart from English and French they were machine-translated: nobody who speaks them has read them yet. If yours reads oddly, correct it on **[Hosted Weblate](https://hosted.weblate.org/engage/smart-irrigation/)**, in the browser, with no Git and no build tools. One word in one string is welcome. A language that is missing can be requested there too.
+- **Translate.** The interface comes in 20 languages, and apart from English and French they were machine-translated: nobody who speaks them has read them yet. If yours reads oddly, correct it on **[Hosted Weblate](https://hosted.weblate.org/engage/smart-irrigation/)**, in the browser, with no Git and no build tools. One word in one string is welcome. A language that is missing can be requested there too.
 
   [![Translation status](https://hosted.weblate.org/widget/smart-irrigation/multi-auto.svg)](https://hosted.weblate.org/engage/smart-irrigation/)
 

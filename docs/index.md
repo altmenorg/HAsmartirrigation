@@ -27,7 +27,7 @@ It is the official Smart Irrigation integration for Home Assistant, available by
 - **It can open the valves itself.** Direct valve control runs the zones in turn, with cycle and soak so clay takes the water in, a pause between zones and a watchdog that closes a valve left open. Or it hands the durations to your own automation.
 - **It drives whatever you have.** A switch, a valve, Irrigation Unlimited, Irrigation-V5, or a Rain Bird, Hydrawise, Rachio, OpenSprinkler or B-hyve controller, through a [blueprint per brand](usage-controllers.md).
 - **It has a dashboard card.** [The card](usage-card.md) shows where each zone stands and can run one on demand.
-- **It speaks your language.** The panel and everything Home Assistant shows for it come in 19 languages. Most were machine-translated and wait for a native speaker: [you can correct them on Weblate](help.md#help-translate), in the browser.
+- **It speaks your language.** The panel and everything Home Assistant shows for it come in 20 languages. Most were machine-translated and wait for a native speaker: [you can correct them on Weblate](help.md#help-translate), in the browser.
 
 <p align="center">
   <img src="assets/images/panel-info.png" alt="The Info page: the next start and the conditions that would hold it back" width="420">

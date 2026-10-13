@@ -75,7 +75,7 @@ zones: [0, 2]
 compact: true
 ```
 
-> The card reads its words from the language files, with English as the fallback. The programs block is translated in all 19 languages.
+> The card reads its words from the language files, with English as the fallback. The programs block is translated in all 20 languages.
 
 > Main page: [Usage](usage.md)<br/>
 > Previous: [Info and History](usage-info.md)<br/>

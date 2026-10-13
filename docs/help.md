@@ -14,7 +14,7 @@ If that does not help, open an [issue](https://github.com/altmenorg/HAsmartirrig
 
 ## Help translate {#help-translate}
 
-The panel and the names Home Assistant shows for the integration (entities, buttons, services, the setup dialog) come in 19 languages. Apart from English and French, those translations were machine-made and nobody who speaks the language has read them yet, so some will read oddly.
+The panel and the names Home Assistant shows for the integration (entities, buttons, services, the setup dialog) come in 20 languages. Apart from English and French, those translations were machine-made and nobody who speaks the language has read them yet, so some will read oddly.
 
 If yours does, you can fix it on **[Hosted Weblate](https://hosted.weblate.org/engage/smart-irrigation/)**, in the browser: pick the language, correct the string, save. No Git, no build tools. The corrections reach the repository as a pull request and ship with the next release. One word in one string is a welcome contribution.
 

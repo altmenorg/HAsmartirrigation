@@ -34,6 +34,7 @@ const FILES = [
   "pt-BR",
   "ru",
   "sk",
+  "sl",
   "sv",
   "uk",
   "zh-Hans",
