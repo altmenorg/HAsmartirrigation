@@ -411,7 +411,9 @@
             "sensor": "Sensor",
             "static": "Statiskt värde",
             "radiation_sensor": "Strålningssensor",
-            "illuminance": "Ljussensor (lux)"
+            "illuminance": "Ljussensor (lux)",
+            "none_et": "Ingen (Smart Irrigation beräknar den)",
+            "weather_service_et": "Färdig ET₀ från vädertjänsten"
           },
           "greenhouse": "Växthus",
           "greenhouse_description": "En sluten miljö: ett växthus, en plasttunnel, allt under glas eller plast. Inget regn når dessa zoner, så nedbörd hålls utanför deras vattenbalans och dess fält göms. Två saker måste du sätta själv, eftersom de inte går att gissa: ge Vindhastighet ett fast värde nära 0, eftersom beräkningen utgår från fri luft, och använd en ljussensor för Solinstrålning, eftersom glaset filtrerar himlen.",

@@ -411,7 +411,9 @@
             "sensor": "传感器",
             "static": "静态值",
             "radiation_sensor": "辐射传感器",
-            "illuminance": "光照传感器（勒克斯）"
+            "illuminance": "光照传感器（勒克斯）",
+            "none_et": "无（由 Smart Irrigation 计算）",
+            "weather_service_et": "天气服务提供的现成 ET₀"
           },
           "greenhouse": "温室",
           "greenhouse_description": "封闭环境：温室、塑料大棚，以及任何玻璃或塑料覆盖之下的地方。雨到不了这些区域，因此降水不计入它们的水量平衡，相关字段也会隐藏。有两项需要你自己设置，因为无法推测：给风速一个接近 0 的静态值，因为计算假定的是露天；太阳辐射用光照传感器，因为覆盖材料会过滤天空。",

@@ -411,7 +411,9 @@
             "sensor": "Senzor",
             "static": "Statická hodnota",
             "radiation_sensor": "Senzor záření",
-            "illuminance": "Světelný senzor (lux)"
+            "illuminance": "Světelný senzor (lux)",
+            "none_et": "Žádná (Smart Irrigation ji vypočítá)",
+            "weather_service_et": "Hotová ET₀ z meteorologické služby"
           },
           "greenhouse": "Skleník",
           "greenhouse_description": "Uzavřené prostředí: skleník, fóliovník, cokoli pod sklem nebo fólií. K těmto zónám se déšť nedostane, takže srážky zůstávají mimo jejich vodní bilanci a jejich pole se skryjí. Dvě věci musíte nastavit sami, protože je nelze odhadnout: dejte Rychlosti větru statickou hodnotu blízkou 0, protože výpočet předpokládá volný vzduch, a pro Solární radiaci použijte světelný senzor, protože zasklení filtruje nebe.",

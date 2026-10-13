@@ -411,7 +411,9 @@
             "sensor": "Anturi",
             "static": "Staattinen arvo",
             "radiation_sensor": "Säteilyanturi",
-            "illuminance": "Valoanturi (lux)"
+            "illuminance": "Valoanturi (lux)",
+            "none_et": "Ei mitään (Smart Irrigation laskee sen)",
+            "weather_service_et": "Valmis ET₀ säätiedon tarjoajalta"
           },
           "greenhouse": "Kasvihuone",
           "greenhouse_description": "Suljettu ympäristö: kasvihuone, muovitunneli, mikä tahansa lasin tai muovin alla. Näille alueille ei tule sadetta, joten sade jätetään niiden vesitasapainon ulkopuolelle ja sen kentät piilotetaan. Kaksi asiaa sinun on asetettava itse, koska niitä ei voi arvata: anna Tuulen nopeudelle kiinteä arvo lähellä nollaa, koska laskenta olettaa vapaan ilman, ja käytä Auringon säteilylle valoanturia, koska lasitus suodattaa taivaan.",

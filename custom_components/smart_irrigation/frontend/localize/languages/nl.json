@@ -411,7 +411,9 @@
             "sensor": "Sensor",
             "static": "Vaste waarde",
             "radiation_sensor": "Stralingssensor",
-            "illuminance": "Lichtsensor (lux)"
+            "illuminance": "Lichtsensor (lux)",
+            "none_et": "Geen (Smart Irrigation berekent het)",
+            "weather_service_et": "Kant-en-klare ET₀ van de weerdienst"
           },
           "greenhouse": "Serre",
           "greenhouse_description": "Een afgesloten omgeving: een serre, een folietunnel, alles onder glas of plastic. Er komt geen regen bij deze zones, dus neerslag blijft buiten hun waterbalans en de velden ervan worden verborgen. Twee dingen moet je zelf zetten, want ze zijn niet te raden: geef Windsnelheid een statische waarde dicht bij 0, want de berekening gaat uit van open lucht, en gebruik een lichtsensor voor Zonnestraling, want het glas filtert de lucht.",

@@ -411,7 +411,9 @@
             "sensor": "Sensor",
             "static": "Fester Wert",
             "radiation_sensor": "Strahlungssensor",
-            "illuminance": "Lichtsensor (Lux)"
+            "illuminance": "Lichtsensor (Lux)",
+            "none_et": "Keine (Smart Irrigation berechnet sie)",
+            "weather_service_et": "Fertige ET₀ vom Wetterdienst"
           },
           "greenhouse": "Gewächshaus",
           "greenhouse_description": "Eine geschlossene Umgebung: ein Gewächshaus, ein Folientunnel, alles unter Glas oder Folie. Zu diesen Zonen kommt kein Regen, der Niederschlag bleibt daher aus ihrer Wasserbilanz heraus und seine Felder werden ausgeblendet. Zwei Dinge musst du selbst setzen, weil sie nicht zu erraten sind: gib der Windgeschwindigkeit einen statischen Wert nahe 0, da die Berechnung freie Luft annimmt, und nutze einen Lichtsensor für die Sonnenstrahlung, da die Verglasung den Himmel filtert.",

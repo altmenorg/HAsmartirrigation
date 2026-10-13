@@ -411,7 +411,9 @@
             "sensor": "Sensore",
             "static": "Valore statico",
             "radiation_sensor": "Sensore di radiazione",
-            "illuminance": "Sensore di luce (lux)"
+            "illuminance": "Sensore di luce (lux)",
+            "none_et": "Nessuna (la calcola Smart Irrigation)",
+            "weather_service_et": "ET₀ già pronta dal servizio meteo"
           },
           "greenhouse": "Serra",
           "greenhouse_description": "Un ambiente chiuso: una serra, un tunnel di plastica, qualsiasi cosa sotto vetro o plastica. A queste zone non arriva pioggia, quindi la precipitazione resta fuori dal loro bilancio idrico e i suoi campi vengono nascosti. Due cose da impostare a mano, perché non si possono indovinare: dai alla Velocità del vento un valore statico vicino a 0, perché il calcolo presuppone aria libera, e usa un sensore di luce per la Radiazione solare, perché la copertura filtra il cielo.",

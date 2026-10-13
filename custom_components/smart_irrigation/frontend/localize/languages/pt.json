@@ -411,7 +411,9 @@
             "sensor": "Sensor",
             "static": "Valor estático",
             "radiation_sensor": "Sensor de radiação",
-            "illuminance": "Sensor de luz (lux)"
+            "illuminance": "Sensor de luz (lux)",
+            "none_et": "Nenhuma (o Smart Irrigation calcula-a)",
+            "weather_service_et": "ET₀ já pronta do serviço meteorológico"
           },
           "greenhouse": "Estufa",
           "greenhouse_description": "Um ambiente fechado: uma estufa, um túnel de plástico, qualquer coisa sob vidro ou plástico. A chuva não chega a estas zonas, por isso a precipitação fica fora do seu balanço hídrico e os seus campos são escondidos. Duas coisas para definir por si, porque não se adivinham: dê à Velocidade do vento um valor estático perto de 0, porque o cálculo assume ar livre, e use um sensor de luz para a Radiação solar, porque a cobertura filtra o céu.",

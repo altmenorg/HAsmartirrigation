@@ -430,7 +430,9 @@
             "sensor": "Érzékelő",
             "static": "Statikus érték",
             "radiation_sensor": "Sugárzásérzékelő",
-            "illuminance": "Fényérzékelő (lux)"
+            "illuminance": "Fényérzékelő (lux)",
+            "none_et": "Nincs (a Smart Irrigation számolja ki)",
+            "weather_service_et": "Kész ET₀ az időjárás-szolgáltatótól"
           },
           "greenhouse": "Üvegház",
           "greenhouse_description": "Zárt környezet: üvegház, fóliasátor, bármi üveg vagy fólia alatt. Ezekhez a zónákhoz nem ér el eső, így a csapadék kimarad a vízmérlegükből, és a mezői rejtve vannak. Két dolgot magadnak kell beállítanod, mert nem kitalálhatók: adj a Szélsebességnek 0-hoz közeli állandó értéket, mert a számítás szabad levegőt feltételez, és használj fényérzékelőt a Napsugárzáshoz, mert az üvegezés szűri az eget.",
