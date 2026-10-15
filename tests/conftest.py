@@ -42,6 +42,22 @@ def auto_enable_custom_integrations(enable_custom_integrations):
     yield
 
 
+@pytest.fixture(autouse=True)
+def _open_meteo_gate():
+    """Each test starts with Open-Meteo neither paused nor answered yet.
+
+    The gate is shared by the whole process (#911), so a refusal one test
+    simulates would otherwise pause Open-Meteo for the tests after it.
+    """
+    from custom_components.smart_irrigation.weathermodules.OpenMeteoClient import (
+        reset_gate,
+    )
+
+    reset_gate()
+    yield
+    reset_gate()
+
+
 @pytest.fixture
 def mock_hass():
     """Return a mock Home Assistant instance."""

@@ -5,6 +5,7 @@ import json
 import logging
 import math
 import sys
+import threading
 import time
 
 import requests
@@ -30,6 +31,35 @@ _LOGGER = logging.getLogger(__name__)
 OpenMeteo_URL = "https://api.open-meteo.com/v1/forecast"
 
 RETRY_TIMES = 3
+
+# One gate for every client of the process. They all reach the same API from
+# the same address, the service's own client, the one that fills radiation and
+# evapotranspiration in for another service, and the key check alike, so the
+# answers they share and the pause after a refusal are the process's (#911).
+_GATE = threading.Lock()
+# The same request asked again within this many seconds gets the answer the
+# first one had: zones, sensor groups and the live estimate ask for the same
+# hours one after the other, and from several threads at once.
+RECENT_SECONDS = 60
+# After a refusal Open-Meteo is left alone for a while rather than asked again
+# by the next caller: a rate limit is only lifted by not asking. A Retry-After
+# header, when it comes, says how long.
+PAUSE_AFTER_RATE_LIMIT = 900
+PAUSE_AFTER_FAILURE = 300
+MAX_PAUSE = 3600
+_recent: dict = {}
+_paused_until = 0.0
+_failing = False
+
+
+def reset_gate() -> None:
+    """Forget the shared answers and any pause (tests, a changed location)."""
+    global _paused_until, _failing  # noqa: PLW0603
+    with _GATE:
+        _recent.clear()
+        _paused_until = 0.0
+        _failing = False
+
 
 # Hourly variables we request (used for "current" snapshot and to derive the
 # daily aggregates Open-Meteo does not expose for humidity/pressure/dew point).
@@ -172,11 +202,75 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
         return params
 
     def _request(self, params):
-        """GET the forecast endpoint, retrying; the decoded response or None.
+        """GET the forecast endpoint through the shared gate; the response or None.
 
-        Retried only when another try can help: a timeout, a server error or
-        a rate limit, and after a growing pause. Retrying at once hit a rate
-        limit again straight away, and a request error cannot change.
+        One request at a time for the whole process. The same request made
+        within ``RECENT_SECONDS`` gets the answer already received, and after
+        a refusal nothing is asked until the pause is over: callers get None
+        at once and fall back on what they have, as they do for any failure.
+        A run of failures is logged once, as a warning, and its end once.
+        Every caller used to retry on its own and log an error each time: a
+        rate limit (429) answered every one of them, and kept itself going
+        (#911).
+        """
+        global _paused_until, _failing  # noqa: PLW0603
+        key = json.dumps(params, sort_keys=True, default=str)
+        with _GATE:
+            now = time.monotonic()
+            hit = _recent.get(key)
+            if (
+                hit is not None
+                and now - hit[0] < RECENT_SECONDS
+                and not getattr(self, "override_cache", False)
+            ):
+                return hit[1]
+            if now < _paused_until:
+                _LOGGER.debug(
+                    "Open-Meteo is paused for %.0f s more, not asked",
+                    _paused_until - now,
+                )
+                return None
+            doc, status, retry_after = self._fetch(params)
+            now = time.monotonic()
+            if doc is None:
+                pause = retry_after or (
+                    PAUSE_AFTER_RATE_LIMIT if status == 429 else PAUSE_AFTER_FAILURE
+                )
+                pause = min(float(pause), MAX_PAUSE)
+                _paused_until = now + pause
+                if not _failing:
+                    _LOGGER.warning(
+                        "Open-Meteo did not answer (%s). It is not asked again for "
+                        "%d minutes; what it supplies (the weather of this "
+                        "service, or the radiation and evapotranspiration "
+                        "another service lacks) waits until then",
+                        (
+                            "too many requests, HTTP 429"
+                            if status == 429
+                            else (f"HTTP {status}" if status else "no response")
+                        ),
+                        round(pause / 60),
+                    )
+                else:
+                    _LOGGER.debug("Open-Meteo still not answering (%s)", status)
+                _failing = True
+                return None
+            if _failing:
+                _LOGGER.info("Open-Meteo answers again")
+            _failing = False
+            for stale in [
+                k for k, v in _recent.items() if now - v[0] >= RECENT_SECONDS
+            ]:
+                del _recent[stale]
+            _recent[key] = (now, doc)
+            return doc
+
+    @staticmethod
+    def _fetch(params):
+        """``(doc, status, retry_after)``: one request, retried only when it can help.
+
+        A timeout or a server error is tried again after a growing pause; a
+        rate limit is not, another try a second later only meets it again.
         """
         req = None
         for attempt in range(RETRY_TIMES):
@@ -184,23 +278,28 @@ class OpenMeteoClient:  # pylint: disable=invalid-name
                 req = requests.get(OpenMeteo_URL, params=params, timeout=60)
             except requests.RequestException as ex:
                 req = None
-                _LOGGER.warning("Open-Meteo request failed: %s", ex)
+                _LOGGER.debug("Open-Meteo request failed: %s", ex)
             else:
-                if req.status_code == 200:
-                    break
-                if req.status_code < 500 and req.status_code != 429:
+                if req.status_code == 200 or req.status_code < 500:
                     break
             if attempt < RETRY_TIMES - 1:
                 time.sleep(2**attempt)
-        if req is None or req.status_code != 200:
-            _LOGGER.error(
-                "Open-Meteo API returned error status code: %s",
-                None if req is None else req.status_code,
-            )
-            return None
-        doc = json.loads(req.text)
+        if req is None:
+            return None, None, None
+        if req.status_code != 200:
+            retry_after = None
+            try:
+                raw = (getattr(req, "headers", None) or {}).get("Retry-After")
+                retry_after = int(raw) if raw is not None else None
+            except (TypeError, ValueError):
+                retry_after = None
+            return None, req.status_code, retry_after
+        try:
+            doc = json.loads(req.text)
+        except (TypeError, ValueError):
+            return None, req.status_code, None
         _LOGGER.debug("OpenMeteoClient called API %s and received %s", req.url, doc)
-        return doc
+        return doc, 200, None
 
     def _get_doc(self):
         """Fetch (and cache) the combined current+hourly+daily response."""

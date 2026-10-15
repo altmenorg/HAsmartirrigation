@@ -44,6 +44,7 @@ def _response(status):
     response = MagicMock()
     response.status_code = status
     response.text = "{}"
+    response.headers = {}
     return response
 
 
@@ -51,16 +52,54 @@ def _client():
     return om.OpenMeteoClient.__new__(om.OpenMeteoClient)
 
 
-def test_a_rate_limit_is_retried_after_a_pause():
+def test_a_rate_limit_pauses_open_meteo_instead_of_asking_again():
+    """A second later only meets the limit again, and every caller retrying
+    on its own kept it going (#911): the gate pauses for everyone."""
     with (
         patch.object(
             om.requests, "get", side_effect=[_response(429), _response(200)]
         ) as get,
         patch.object(om.time, "sleep") as sleep,
     ):
-        assert _client()._request({}) == {}
+        assert _client()._request({}) is None
+        assert _client()._request({"other": 1}) is None  # paused, not asked
+    assert get.call_count == 1
+    sleep.assert_not_called()
+
+
+def test_the_pause_ends_and_open_meteo_is_asked_again():
+    with (
+        patch.object(
+            om.requests, "get", side_effect=[_response(503)] * 3 + [_response(200)]
+        ) as get,
+        patch.object(om.time, "sleep"),
+        patch.object(om.time, "monotonic", side_effect=[0.0, 1.0, 400.0, 401.0]),
+    ):
+        assert _client()._request({}) is None  # three tries, then a pause
+        assert _client()._request({}) == {}  # after PAUSE_AFTER_FAILURE
+    assert get.call_count == 4
+
+
+def test_a_retry_after_header_sets_the_pause():
+    limited = _response(429)
+    limited.headers = {"Retry-After": "120"}
+    with (
+        patch.object(om.requests, "get", side_effect=[limited, _response(200)]),
+        patch.object(om.time, "sleep"),
+        patch.object(om.time, "monotonic", side_effect=[0.0, 1.0, 100.0, 122.0, 123.0]),
+    ):
+        assert _client()._request({}) is None
+        assert _client()._request({}) is None  # 100 s: still paused
+        assert _client()._request({}) == {}  # 122 s: over
+
+
+def test_the_same_request_at_the_same_moment_is_asked_once():
+    with patch.object(om.requests, "get", return_value=_response(200)) as get:
+        first = _client()._request({"hourly": "x"})
+        second = _client()._request({"hourly": "x"})
+        _client()._request({"hourly": "y"})
+    assert first == second == {}
     assert get.call_count == 2
-    sleep.assert_called_once_with(1)
 
 
 def test_a_request_error_is_not_retried():
@@ -82,3 +121,29 @@ def test_a_timeout_is_retried_rather_than_raised():
         patch.object(om.time, "sleep"),
     ):
         assert _client()._request({}) == {}
+
+
+def test_a_run_of_failures_is_logged_once_and_its_end_too(caplog):
+    caplog.set_level("DEBUG", logger=om.__name__)
+    with (
+        patch.object(
+            om.requests,
+            "get",
+            side_effect=[_response(429), _response(429), _response(200)],
+        ),
+        patch.object(om.time, "sleep"),
+        patch.object(
+            om.time, "monotonic", side_effect=[0.0, 1.0, 2000.0, 2001.0, 4000.0, 4001.0]
+        ),
+    ):
+        assert _client()._request({}) is None
+        assert _client()._request({}) is None  # the pause was over, asked again
+        assert _client()._request({}) == {}
+
+    warnings = [r for r in caplog.records if r.levelname == "WARNING"]
+    errors = [r for r in caplog.records if r.levelname == "ERROR"]
+    infos = [r.getMessage() for r in caplog.records if r.levelname == "INFO"]
+    assert len(warnings) == 1
+    assert "429" in warnings[0].getMessage()
+    assert not errors
+    assert infos == ["Open-Meteo answers again"]
