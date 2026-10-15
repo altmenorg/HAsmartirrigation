@@ -40,7 +40,7 @@ from homeassistant.helpers.event import async_track_point_in_utc_time
 from homeassistant.helpers.sun import get_astral_event_date
 
 from . import const
-from .programs import find_program, plan_program, plan_wall_seconds
+from .programs import find_program, needs_run_length, plan_program, plan_wall_seconds
 from .schedules import ANCHOR_END, next_fire, schedule_skip_conditions
 
 _LOGGER = logging.getLogger(__name__)
@@ -82,7 +82,11 @@ class ProgramSchedulerMixin:
         programs = getattr(config, const.CONF_PROGRAMS, None) or []
         if not programs:
             return
+        # The durations the runs will water, as the planning shows them (#912);
+        # only a "done by" start depends on them, and the estimate is slow.
         zones = await self.store.async_get_zones()
+        if needs_run_length(programs):
+            zones = await self.zones_as_planned(zones)
         soak = float(getattr(config, const.CONF_SOAK_MINUTES, 0) or 0) * 60.0
         last_runs = dict(getattr(config, const.CONF_PROGRAM_LAST_RUNS, None) or {})
         now = dt_util.utcnow()
@@ -336,6 +340,14 @@ class ProgramSchedulerMixin:
             if not go:
                 return
             only_zones = sheltered or None
+        else:
+            # The weather is not judged, but the durations are still brought up
+            # to date when the setting asks for it, as the main program does:
+            # the preparation above is what did it, and a schedule that ignores
+            # the weather skipped it (#912).
+            recalculate = getattr(self, "_recalculate_before_start", None)
+            if recalculate is not None:
+                await recalculate()
 
         async def _count_the_day(zone_ids):
             await self._note_watering_day(name, zone_ids=zone_ids)

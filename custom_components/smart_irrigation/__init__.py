@@ -2216,6 +2216,41 @@ class SmartIrrigationCoordinator(
             const.ZONE_PRECIPITATION_SUPERSEDED: 0.0,
         }
 
+    def _with_duration_of_bucket(self, zone_id, data: dict) -> dict:
+        """The changes, with the duration the bucket set in them calls for.
+
+        The duration is what the last calculation left. A bucket set by hand
+        moved the deficit and left it behind: a zone at -9 mm past its 7 mm
+        threshold read "irrigation needed" with a duration of 0, and a program
+        step that waters the calculated duration watered nothing (#912). The
+        bucket to duration maths of the calculation is applied to the new value,
+        for an automatic zone, unless the change sets a duration itself.
+        """
+        if const.ZONE_DURATION in data:
+            return data
+        key = next(
+            (
+                k
+                for k in (const.ATTR_NEW_BUCKET_VALUE, const.ZONE_BUCKET)
+                if data.get(k) is not None
+            ),
+            None,
+        )
+        zone = self.store.get_zone(zone_id) if zone_id is not None else None
+        if key is None or not zone:
+            return data
+        merged = {**zone, **data}
+        if merged.get(const.ZONE_STATE) != const.ZONE_STATE_AUTOMATIC:
+            return data
+        try:
+            bucket = float(data[key])
+        except (TypeError, ValueError):
+            return data
+        maximum = merged.get(const.ZONE_MAXIMUM_BUCKET)
+        if maximum is not None and bucket > maximum:
+            bucket = float(maximum)
+        return {**data, const.ZONE_DURATION: self.duration_from_bucket(merged, bucket)}
+
     async def async_update_zone_config(
         self, zone_id: int | None = None, data: dict | None = None
     ):
@@ -2353,6 +2388,7 @@ class SmartIrrigationCoordinator(
         elif zone_id is not None and self.store.get_zone(zone_id):
             # modify a zone
             data = await self._start_window_at_bucket_assertion(zone_id, data)
+            data = self._with_duration_of_bucket(zone_id, data)
             entry = await self.store.async_update_zone(zone_id, data)
             async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated", zone_id)
             await self.update_subscriptions()

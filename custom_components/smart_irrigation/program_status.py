@@ -19,7 +19,12 @@ import homeassistant.util.dt as dt_util
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 
 from . import const
-from .programs import active_adjustment, plan_program, plan_wall_seconds
+from .programs import (
+    active_adjustment,
+    needs_run_length,
+    plan_program,
+    plan_wall_seconds,
+)
 from .schedules import ANCHOR_END, next_fire, upcoming
 
 _LOGGER = logging.getLogger(__name__)
@@ -176,37 +181,50 @@ class ProgramStatusMixin:
         soak = float(getattr(self.store.config, const.CONF_SOAK_MINUTES, 0) or 0) * 60.0
         return plan, plan_wall_seconds(plan, soak)
 
+    async def zones_as_planned(self, zones) -> list:
+        """The zones with the durations their next run will water.
+
+        The durations the last calculation stored, or, with the recalculation
+        before the start on, the live estimate of each automatic zone: what the
+        calculation will find when the run starts. One answer for every program,
+        the main one and the others, and for everything that shows or arms them
+        (the planning, the next starts, the schedules), so they cannot disagree:
+        the steps of the other programs used to read the stored durations
+        whatever the setting said (#912).
+        """
+        config = self.store.config
+        if not getattr(config, const.CONF_RECALCULATE_BEFORE_START, False):
+            return zones
+        try:
+            estimates = await self.async_estimate_all_zones_now() or {}
+        except Exception as e:  # noqa: BLE001 - a display must not fail
+            _LOGGER.debug("No live estimate for the planned durations: %s", e)
+            return zones
+        planned = []
+        for zone in zones:
+            estimate = estimates.get(str(zone.get(const.ZONE_ID)))
+            if (
+                zone.get(const.ZONE_STATE) == const.ZONE_STATE_AUTOMATIC
+                and isinstance(estimate, dict)
+                and estimate.get("duration") is not None
+            ):
+                zone = {**zone, const.ZONE_DURATION: estimate["duration"]}
+            planned.append(zone)
+        return planned
+
     async def _main_program_plan(self, zones) -> tuple:
         """``(plan, total)`` of the classic cycle the main program runs.
 
         The main program has no steps: it waters every eligible zone for its
         duration, one after the other or all at once as the sequencing setting
         says. The plan has the shape of any program's, so the planning shows it
-        the same way. With the recalculation before the start on, the durations
-        are the live estimates (what the zones will be when it starts), and the
-        total is the one the schedules are placed with.
+        the same way. ``zones`` carry the durations of ``zones_as_planned``, and
+        the total is the one the schedules are placed with.
         """
         config = self.store.config
-        durations = {}
-        if getattr(config, const.CONF_RECALCULATE_BEFORE_START, False):
-            try:
-                estimates = await self.async_estimate_all_zones_now() or {}
-            except Exception as e:  # noqa: BLE001 - a display must not fail
-                _LOGGER.debug("No live estimate for the main program: %s", e)
-                estimates = {}
-            for zone in zones:
-                estimate = estimates.get(str(zone.get(const.ZONE_ID)))
-                if (
-                    zone.get(const.ZONE_STATE) == const.ZONE_STATE_AUTOMATIC
-                    and isinstance(estimate, dict)
-                    and estimate.get("duration") is not None
-                ):
-                    durations[zone.get(const.ZONE_ID)] = estimate["duration"]
         members = []
         for zone in zones:
-            seconds = durations.get(
-                zone.get(const.ZONE_ID), zone.get(const.ZONE_DURATION)
-            )
+            seconds = zone.get(const.ZONE_DURATION)
             if (
                 not zone.get(const.ZONE_LINKED_ENTITY)
                 or zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED
@@ -224,7 +242,9 @@ class ProgramStatusMixin:
                 }
             )
         if not members:
-            return [], 0.0
+            # Nothing to water still has a start, placed for the length the
+            # scheduler arms it with.
+            return [], float(await self._planned_run_seconds() or 0)
         sequencing = getattr(
             config, const.CONF_ZONE_SEQUENCING, const.CONF_DEFAULT_ZONE_SEQUENCING
         )
@@ -311,6 +331,10 @@ class ProgramStatusMixin:
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
             return []
         zones = await self.store.async_get_zones()
+        # The planned durations only move a "done by" start; the estimate is
+        # slow, so it is not worked out for schedules that start at their time.
+        if needs_run_length(programs):
+            zones = await self.zones_as_planned(zones)
         last_runs = dict(getattr(config, const.CONF_PROGRAM_LAST_RUNS, None) or {})
         started_at = dict(getattr(config, const.CONF_PROGRAM_LAST_STARTED, None) or {})
         live = self.async_live_state()
@@ -384,7 +408,7 @@ class ProgramStatusMixin:
         config = self.store.config
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
             return []
-        zones = await self.store.async_get_zones()
+        zones = await self.zones_as_planned(await self.store.async_get_zones())
         names = {int(z[const.ZONE_ID]): z.get(const.ZONE_NAME) for z in zones}
         last_runs = dict(getattr(config, const.CONF_PROGRAM_LAST_RUNS, None) or {})
         now = dt_util.utcnow()
@@ -404,8 +428,12 @@ class ProgramStatusMixin:
                 plan, total = await self._main_program_plan(zones)
             else:
                 plan, total = self._program_totals(program, zones)
-            if not plan:
-                continue
+            # A start with nothing to water is still a start: the schedule fires
+            # and finds nothing. Leaving it out said "no program is planned"
+            # under a schedule that was, and hid the reason (#912). It is listed
+            # with nothing in it, where the scheduler places it.
+            nothing = not plan
+            placed_at_moment = nothing and total <= 0
             steps = [
                 {
                     "zones": [
@@ -420,7 +448,7 @@ class ProgramStatusMixin:
                         for m in step["zones"]
                     ]
                 }
-                for step in plan[0]
+                for step in (plan[0] if plan else [])
             ]
             for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
                 if schedule.get(const.SCHEDULE_ENABLED) is False:
@@ -429,12 +457,29 @@ class ProgramStatusMixin:
                 last = dt_util.parse_datetime(
                     last_runs.get(f"{program_id}:{schedule_id}") or ""
                 )
+                # next_fire places no "done by" start without a length; a
+                # second before the moment lists it at its moment.
                 for result in upcoming(
-                    schedule, now, total, last, self._sun_moment, tz, until
+                    schedule,
+                    now,
+                    1.0 if placed_at_moment else total,
+                    last,
+                    self._sun_moment,
+                    tz,
+                    until,
                 ):
-                    start = result["fire"]
-                    prediction = await self._planning_prediction(
-                        schedule, start, now, plan, sheltered, forecasts
+                    start = result["target"] if placed_at_moment else result["fire"]
+                    prediction = (
+                        await self._planning_prediction(
+                            schedule, start, now, plan, sheltered, forecasts
+                        )
+                        if plan
+                        else {
+                            "skipped_reason": None,
+                            "forecast": None,
+                            "forecast_known": False,
+                            "sheltered_zone_ids": [],
+                        }
                     )
                     planned.append(
                         {
@@ -450,6 +495,7 @@ class ProgramStatusMixin:
                             "tours": len(plan),
                             "expected_seconds": int(total),
                             "steps": steps,
+                            "nothing_to_water": nothing,
                             **prediction,
                         }
                     )

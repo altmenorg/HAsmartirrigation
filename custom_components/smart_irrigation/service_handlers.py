@@ -612,6 +612,7 @@ class ServiceHandlersMixin(ProgramAdjustMixin):
                             ),
                         },
                     )
+                    zone_data = self._with_duration_of_bucket(zone_id, zone_data)
                 await self.store.async_update_zone(zone_id, zone_data)
                 async_dispatcher_send(
                     self.hass,

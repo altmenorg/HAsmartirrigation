@@ -25,7 +25,7 @@ import re
 import homeassistant.util.dt as dt_util
 
 from . import const
-from .schedules import normalize_schedules
+from .schedules import ANCHOR_END, normalize_schedules
 
 MAIN_PROGRAM_ID = "main"
 MAIN_PROGRAM_NAME = "Main program"
@@ -96,6 +96,28 @@ def main_has_enabled_schedules(programs) -> bool:
     return any(
         isinstance(s, dict) and s.get(const.SCHEDULE_ENABLED) is not False
         for s in main.get(const.PROGRAM_SCHEDULES) or []
+    )
+
+
+def needs_run_length(programs) -> bool:
+    """Whether a program other than the main one has a "done by" schedule.
+
+    Only such a schedule is placed from the length of its run, so only then
+    are the planned durations worth working out for the programs' starts: the
+    live estimate behind them is slow. The main program's length has its own
+    path (``_planned_run_seconds``).
+    """
+    return any(
+        isinstance(p, dict)
+        and not p.get(const.PROGRAM_MAIN)
+        and p.get(const.PROGRAM_ENABLED) is not False
+        and any(
+            isinstance(s, dict)
+            and s.get(const.SCHEDULE_ENABLED) is not False
+            and s.get(const.SCHEDULE_ANCHOR) == ANCHOR_END
+            for s in p.get(const.PROGRAM_SCHEDULES) or []
+        )
+        for p in programs or []
     )
 
 

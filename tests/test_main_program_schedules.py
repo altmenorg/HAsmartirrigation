@@ -826,12 +826,18 @@ async def test_in_parallel_the_zones_are_one_step():
     assert [z["zone_id"] for z in first["steps"][0]["zones"]] == [0, 1]
 
 
-async def test_a_zone_with_nothing_to_water_is_not_in_the_main_plan():
+async def test_a_start_with_nothing_to_water_is_listed_and_says_so():
+    """The start still happens and finds nothing: leaving it out read as "no
+    program is planned" under a schedule that was (#912)."""
     hass, coord = _status_with([_main([{"time": "06:00"}])])
     coord.store.by_id[1][const.ZONE_DURATION] = 0
     coord.store.by_id[0][const.ZONE_LINKED_ENTITY] = None
 
-    assert await coord.async_planning(1) == []
+    [planned] = await coord.async_planning(1)
+
+    assert planned["nothing_to_water"] is True
+    assert planned["steps"] == []
+    assert planned["start"] == _utc(1, 6).isoformat()
 
 
 async def test_the_planning_has_no_main_program_without_schedules():
@@ -1095,16 +1101,19 @@ async def test_a_registration_begun_before_the_schedules_cannot_arm_after_them()
 
 
 async def test_the_overview_places_a_done_by_start_with_nothing_stored_to_water():
-    # The zones were watered this morning: nothing stored, so the planning lists
-    # nothing, but the start the scheduler arms is placed for the planned run.
+    # The zones were watered this morning: nothing stored, so the planning has
+    # nothing to list in the run, but it shows the start where the scheduler
+    # arms it, placed for the planned run (#912).
     hass, coord = _status_with([_main([{"time": "07:00", "anchor": "end"}])])
     for stored in coord.store.by_id.values():
         stored[const.ZONE_DURATION] = 0
     coord._planned_run_seconds = AsyncMock(return_value=900)
 
-    assert await coord.async_planning(1) == []
+    [planned] = await coord.async_planning(1)
     [overview] = await coord.async_program_overview()
 
+    assert planned["nothing_to_water"] is True
+    assert planned["start"] == _utc(1, 6, 45).isoformat()
     assert overview["next_start"] == _utc(1, 6, 45).isoformat()
 
 

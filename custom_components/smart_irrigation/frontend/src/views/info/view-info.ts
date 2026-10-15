@@ -44,6 +44,8 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
 
   // The main program's next start when its own schedules start it.
   private mainScheduleStart: string | null = null;
+  // The soonest start of any program, with the full controller.
+  private nextProgram: { name: string; start: string } | null = null;
 
   @property({ type: Boolean })
   private isLoading = true;
@@ -105,15 +107,37 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       // Started by the main program's schedules, the next start is theirs, not
       // the one worked out from the start trigger.
       this.mainScheduleStart = null;
-      if ((info as any)?.start_source === "main_schedules") {
+      this.nextProgram = null;
+      if ((config as any)?.full_controller === true) {
         try {
           const state = await this.hass!.callWS<any>({
             type: DOMAIN + "/programs_state",
           });
-          const main = (state?.programs || []).find((p: any) => p.main);
-          this.mainScheduleStart = main?.next_start ?? null;
+          const programs = state?.programs || [];
+          const main = programs.find((p: any) => p.main);
+          if ((info as any)?.start_source === "main_schedules") {
+            this.mainScheduleStart = main?.next_start ?? null;
+          }
+          // The card above is the main program's run. Another program may
+          // start sooner, and was not mentioned anywhere on this page (#912):
+          // the soonest start of any program is named under it.
+          const soonest = programs
+            .filter((p: any) => p.next_start)
+            .sort(
+              (a: any, b: any) =>
+                Date.parse(a.next_start) - Date.parse(b.next_start),
+            )[0];
+          this.nextProgram = soonest
+            ? {
+                name:
+                  soonest.main && soonest.name === "Main program"
+                    ? localize("programs.main_name", this._lang)
+                    : soonest.name,
+                start: soonest.next_start,
+              }
+            : null;
         } catch (error) {
-          console.error("Error fetching the main program's next start:", error);
+          console.error("Error fetching the programs' next starts:", error);
         }
       }
     } catch (error) {
@@ -477,6 +501,23 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
           </div>
         </div>
         <div class="card-content hero-detail">
+          ${this.nextProgram
+            ? html`<span
+                >${this.t(
+                  "cards.next-run.next-program",
+                  "{program}",
+                  this.nextProgram.name,
+                  "{start}",
+                  localizedDateTime(this.nextProgram.start, this.hass, {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "short",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }),
+                )}</span
+              >`
+            : ""}
           ${bySchedules
             ? html`<span>${this.t("cards.next-run.main-schedules")}</span>`
             : html`<span>

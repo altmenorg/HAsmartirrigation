@@ -801,11 +801,18 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       </div>
                     `,
                   )}
-                  ${item.expected_seconds
-                    ? html`<div class="setting-note">
-                        ${t("expected")} ${minutes(item.expected_seconds)}
+                  ${item.nothing_to_water
+                    ? html`<div
+                        class="setting-note"
+                        style="opacity: 0.6; font-style: italic;"
+                      >
+                        ${t("nothing_to_water")}
                       </div>`
-                    : ""}
+                    : item.expected_seconds
+                      ? html`<div class="setting-note">
+                          ${t("expected")} ${minutes(item.expected_seconds)}
+                        </div>`
+                      : ""}
                   ${item.skipped_reason
                     ? html`<div
                         class="setting-note"
