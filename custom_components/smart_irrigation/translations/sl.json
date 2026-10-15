@@ -221,6 +221,20 @@
         }
       }
     },
+    "set_state": {
+      "name": "Nastavi stanje cone",
+      "description": "Nastavi stanje cone na določeno vrednost",
+      "fields": {
+        "entity": {
+          "name": "Entiteta",
+          "description": "Cona, ki ji nastaviš stanje"
+        },
+        "new_state_value": {
+          "name": "Nova vrednost stanja",
+          "description": "Nova vrednost stanja"
+        }
+      }
+    },
     "set_zone": {
       "name": "Nastavi vrednosti cone",
       "description": "Nastavi vse nastavljive vrednosti cone",
@@ -273,14 +287,6 @@
     }
   },
   "issues": {
-    "dry_zone_not_watered": {
-      "title": "Cona {zone} je suha in je nič ne bo namakalo",
-      "description": "Vodna bilanca cone **{zone}** je suha že {days} dni, vsak program, ki jo vsebuje, pa je onemogočen, začasno ustavljen ali nima omogočenega urnika.\n\nPonovno vklopi program, ki namaka to cono, omogoči enega od njegovih urnikov ali odpravi njegovo začasno ustavitev. Obvestilo izgine samo, ko je cona namakana ali jo program spet pokriva."
-    },
-    "weather_silent": {
-      "title": "Skupina senzorjev {mapping}: vremenski senzor se ne oglaša več",
-      "description": "Že več kot {hours} ur ni prišlo nič od: **{sensors}**. Zadnje poročilo je bilo {since}.\n\nTako stara meritev se izpusti iz izračuna, zato se cone te skupine senzorjev izračunajo s tem, kar ostane, ali pa sploh ne.\n\nPreveri baterijo senzorja, njegovo povezavo in njegovo entiteto v Home Assistant. Obvestilo izgine samo, takoj ko se senzor spet oglasi."
-    },
     "missing_input": {
       "title": "Cona {zone}: ničesar ni bilo mogoče izračunati",
       "description": "Evapotranspiracije cone **{zone}** ni bilo mogoče izračunati, ker vremenski podatki niso imeli vrednosti za: **{missing}**.\n\nDokler je ne dobijo, se primanjkljaj cone ne spreminja in cona se ne namaka, kar je videti povsem kot cona brez potrebe.\n\nPreveri, ali so senzorji, dodeljeni tem poljem, na voljo oziroma ali jih vremenska storitev še pošilja. Težava izgine ob naslednjem izračunu, ki ga je mogoče izvesti."
