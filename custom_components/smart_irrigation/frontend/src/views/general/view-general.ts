@@ -604,8 +604,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
       // Pumps and main valves (full controller).
       const r14 = this.renderSuppliesCard();
-      const r15 = this.renderProgramsCard();
-      const r16 = this.renderPlanningCard();
 
       // The way to the setup assistant, which is no longer a tab. It comes first:
       // it is where somebody who has nothing set up wants to start.
@@ -642,30 +640,19 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         </div>
       </ha-card>`;
     }
-    const lang = this.hass.language;
     if (this.section === "planning") {
       return html`${this.renderPlanningCard()}`;
     }
     if (this.section === "supplies") {
       return html`${this.renderSuppliesCard()}`;
     }
-    return html`${this.renderProgramsCard()}
-      <ha-card header="${localize("programs.main_settings", lang)}">
-        <div class="card-content">
-          ${localize("programs.main_settings_description", lang)}
-          ${this.startSource === "main_schedules"
-            ? html`<div class="setting-note">
-                <strong
-                  >${localize("programs.main_schedules_active", lang)}</strong
-                >
-              </div>`
-            : ""}
-        </div>
-        <div class="card-content">
-          ${this.renderExecutionSettings(lang, true)}
-        </div>
-      </ha-card>
-      ${triggers}`;
+    // The main program, everything of it in one card (how it starts, the order
+    // and pauses of its zones, running it), then the start trigger it uses
+    // when it has no schedule of its own, then the other programs. Its
+    // settings used to come after all the other programs, and nothing showed
+    // which "Run now" belonged to which program (#893).
+    return html`${this.renderProgramsCard("main")} ${triggers}
+    ${this.renderProgramsCard("others")}`;
   }
 
   /** What the programs are doing now, one line each, and the valves that are open. */
@@ -879,7 +866,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
    * in place of the start trigger). A step is one or several zones watered
    * together; by default it takes the duration Smart Irrigation calculated.
    */
-  renderProgramsCard() {
+  renderProgramsCard(part: "main" | "others" = "others") {
     if (!this.config || !this.hass || this.config.full_controller !== true) {
       return html``;
     }
@@ -899,14 +886,44 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       const n = parseFloat(v);
       return isNaN(n) ? fallback : n;
     };
-    const run = (id?: string) => {
+    const programName = (program: SmartIrrigationProgram) =>
+      program.main && program.name === "Main program"
+        ? t("main_name")
+        : program.name;
+    const toast = (message: string) =>
+      fireEvent(this, "hass-notification" as any, { message } as any);
+    const run = async (program: SmartIrrigationProgram) => {
+      const id = program.id;
+      const name = programName(program);
+      // It opens real valves, and nothing on the page used to say it had:
+      // asked first, then told what came of it (#893).
+      if (!confirm(t("confirm_run").replace("{name}", name))) return;
       // Optional total duration and the replace mode, typed next to the button.
       const opts = RUN_OPTIONS[id ?? ""] || {};
       const seconds = Math.round(parseFloat(opts.seconds ?? ""));
       const data: Record<string, unknown> = { program_id: id };
       if (seconds > 0 && id !== "main") data.seconds = Math.min(seconds, 86400);
       if (opts.replace) data.mode = "replace";
-      return this.hass!.callService(DOMAIN, "run_program", data);
+      try {
+        await this.hass!.callService(DOMAIN, "run_program", data);
+      } catch (err: any) {
+        toast(
+          t("run_failed")
+            .replace("{name}", name)
+            .replace("{error}", err?.message ?? String(err)),
+        );
+        return;
+      }
+      await this._fetchLive(false);
+      const state = stateOf(id)?.state;
+      toast(
+        (state === "running"
+          ? t("run_started")
+          : state === "waiting"
+            ? t("run_queued")
+            : t("run_nothing")
+        ).replace("{name}", name),
+      );
     };
     // The main program has no steps to share a total over: it takes no duration.
     const runOptions = (id: string | undefined) => html`
@@ -934,14 +951,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             <div class="setting-hint row-hint">${t("run_seconds_help")}</div>`}
       <div class="setting-row">
         <div class="setting-label">${t("run_replace")}</div>
-        <input
-          type="checkbox"
+        <ha-switch
           .checked=${RUN_OPTIONS[id ?? ""]?.replace === true}
           @change=${(e: Event) => {
             const o = (RUN_OPTIONS[id ?? ""] ||= {});
-            o.replace = (e.target as HTMLInputElement).checked;
+            o.replace = (e.target as any).checked;
           }}
-        />
+        ></ha-switch>
       </div>
       <div class="setting-hint row-hint">${t("run_replace_help")}</div>
     `;
@@ -1181,20 +1197,35 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               }),
           )}
           ${step.mode === "percent"
-            ? this._numRow(t("percent"), "%", step.percent, (v) =>
-                patchStep({ percent: num(v, 100) }),
+            ? this._numRow(
+                t("percent"),
+                "%",
+                step.percent,
+                (v) => patchStep({ percent: Math.max(0, num(v, 100)) }),
+                1,
+                false,
+                0,
               )
             : ""}
           ${step.mode === "fixed"
             ? this._numRow(
                 t("seconds"),
-                localize("common.units.seconds", lang),
+                "",
                 step.seconds,
-                (v) => patchStep({ seconds: num(v) }),
+                (v) => patchStep({ seconds: Math.max(0, num(v)) }),
+                1,
+                false,
+                0,
               )
             : ""}
-          ${this._numRow(t("passes"), "", step.passes, (v) =>
-            patchStep({ passes: Math.max(1, Math.round(num(v, 1))) }),
+          ${this._numRow(
+            t("passes"),
+            "",
+            step.passes,
+            (v) => patchStep({ passes: Math.max(1, Math.round(num(v, 1))) }),
+            1,
+            false,
+            1,
           )}
           ${this._numRow(
             t("max_litres"),
@@ -1205,6 +1236,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               patchStep({
                 max_litres: Math.max(0, storedVolume(num(v), this.config)),
               }),
+            1,
+            false,
+            0,
           )}
           <div class="setting-hint row-hint">${t("max_litres_help")}</div>
           ${this._numRow(
@@ -1212,12 +1246,18 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             localize("common.units.seconds", lang),
             step.min_seconds ?? 0,
             (v) => patchStep({ min_seconds: Math.max(0, Math.round(num(v))) }),
+            1,
+            false,
+            0,
           )}
           ${this._numRow(
             t("max_seconds"),
             localize("common.units.seconds", lang),
             step.max_seconds ?? 0,
             (v) => patchStep({ max_seconds: Math.max(0, Math.round(num(v))) }),
+            1,
+            false,
+            0,
           )}
           ${this._numRow(
             t("adjust_seconds"),
@@ -1237,6 +1277,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             "mm",
             step.min_deficit_mm ?? 0,
             (v) => patchStep({ min_deficit_mm: Math.max(0, num(v)) }),
+            1,
+            false,
+            0,
           )}
           <div class="setting-hint row-hint">${t("min_deficit_mm_help")}</div>
           ${this._textRow(
@@ -1374,17 +1417,16 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           ${schedule.anchor === "end" && !program.main
             ? html`
                 <div class="setting-row">
-                  <label>
-                    <input
-                      type="checkbox"
-                      .checked=${schedule.hard_deadline === true}
-                      @change=${(e: Event) =>
-                        patchSchedule({
-                          hard_deadline: (e.target as HTMLInputElement).checked,
-                        })}
-                    />
+                  <div class="setting-label">
                     ${t("schedule_hard_deadline")}
-                  </label>
+                  </div>
+                  <ha-switch
+                    .checked=${schedule.hard_deadline === true}
+                    @change=${(e: Event) =>
+                      patchSchedule({
+                        hard_deadline: (e.target as any).checked,
+                      })}
+                  ></ha-switch>
                 </div>
                 <div class="setting-hint row-hint">
                   ${t("schedule_hard_deadline_help")}
@@ -1537,6 +1579,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   <summary>${t("schedule_conditions")}</summary>
                   <div class="setting-hint row-hint">
                     ${t("schedule_conditions_help")}
+                    ${t("schedule_conditions_where")}
                   </div>
                   ${SKIP_CONDITION_IDS.map((id) => {
                     const always = id === "postponed";
@@ -1634,41 +1677,50 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       </div>
     `;
 
+    if (part === "main") {
+      const index = programs.findIndex((p) => p.main);
+      const program = programs[index];
+      if (!program) return html``;
+      return html`
+        <ha-card header="${programName(program)}">
+          <div class="card-content">
+            <div class="setting-note">${t("main_description")}</div>
+            <div class="setting-row">
+              <div class="setting-label">${t("enabled")}</div>
+              <ha-switch
+                .checked=${program.enabled !== false}
+                @change=${(e: Event) =>
+                  patch(index, { enabled: (e.target as any).checked })}
+              ></ha-switch>
+            </div>
+            <div class="fold-section">${t("schedules_title")}</div>
+            <div class="setting-hint row-hint">${t("main_schedules_hint")}</div>
+            ${this.startSource === "main_schedules"
+              ? html`<div class="setting-note">
+                  <strong>${t("main_schedules_active")}</strong>
+                </div>`
+              : ""}
+            ${renderSchedules(program, index)}
+            <div class="fold-section">${t("sequencing_title")}</div>
+            <div class="setting-hint row-hint">
+              ${t("main_settings_description")}
+            </div>
+            ${this.renderExecutionSettings(lang, true)}
+            ${runOptions(program.id)}
+            <div class="si-actions">
+              ${this._actionBtn(mdiPlay, t("run_now"), () => run(program))}
+            </div>
+          </div>
+        </ha-card>
+      `;
+    }
+
     return html`
-      <ha-card header="${t("title")}">
+      <ha-card header="${t("others_title")}">
         <div class="card-content">${t("description")}</div>
         ${programs.map((program, index) =>
           program.main
-            ? html`
-                <div class="card-content">
-                  <div class="setting-note">
-                    <strong
-                      >${program.name === "Main program"
-                        ? t("main_name")
-                        : program.name}</strong
-                    >
-                  </div>
-                  <div class="setting-note">${t("main_description")}</div>
-                  <div class="setting-row">
-                    <div class="setting-label">${t("enabled")}</div>
-                    <ha-switch
-                      .checked=${program.enabled !== false}
-                      @change=${(e: Event) =>
-                        patch(index, { enabled: (e.target as any).checked })}
-                    ></ha-switch>
-                  </div>
-                  <div class="fold-section">${t("schedules_title")}</div>
-                  <div class="setting-hint row-hint">
-                    ${t("main_schedules_hint")}
-                  </div>
-                  ${renderSchedules(program, index)} ${runOptions(program.id)}
-                  <div class="si-actions">
-                    ${this._actionBtn(mdiPlay, t("run_now"), () =>
-                      run(program.id),
-                    )}
-                  </div>
-                </div>
-              `
+            ? ""
             : html`
                 <div class="card-content">
                   ${fold(
@@ -1721,10 +1773,17 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       <div class="setting-hint row-hint">
                         ${t("delay_help")}
                       </div>
-                      ${this._numRow(t("tours"), "", program.tours ?? 1, (v) =>
-                        patch(index, {
-                          tours: Math.max(1, Math.round(num(v, 1))),
-                        }),
+                      ${this._numRow(
+                        t("tours"),
+                        "",
+                        program.tours ?? 1,
+                        (v) =>
+                          patch(index, {
+                            tours: Math.max(1, Math.round(num(v, 1))),
+                          }),
+                        1,
+                        false,
+                        1,
                       )}
                       <div class="setting-hint row-hint">
                         ${t("tours_help")}
@@ -1742,7 +1801,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       ${adjustBlock(program)} ${runOptions(program.id)}
                       <div class="si-actions">
                         ${this._actionBtn(mdiPlay, t("run_now"), () =>
-                          run(program.id),
+                          run(program),
                         )}
                         ${["running", "waiting"].includes(
                           stateOf(program.id)?.state,
@@ -3166,11 +3225,19 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     onCommit: (v: string) => void,
     step = 1,
     readonly = false,
+    min: number | null = null,
   ): TemplateResult {
     const decimals = (String(step).split(".")[1] || "").length;
+    // The value the field shows is the one kept: a figure below the minimum
+    // used to be stored clamped while the field still showed it, and the
+    // minus button went on below it.
+    const floor = (value: number) =>
+      min !== null && value < min ? min : value;
     const bump = (input: HTMLInputElement, dir: number) => {
       const cur = parseFloat(input.value);
-      const next = +((isNaN(cur) ? 0 : cur) + dir * step).toFixed(decimals);
+      const next = floor(
+        +((isNaN(cur) ? 0 : cur) + dir * step).toFixed(decimals),
+      );
       input.value = String(next);
       onCommit(String(next));
     };
@@ -3191,8 +3258,15 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               if ((e.target as HTMLElement).matches(":focus"))
                 e.preventDefault();
             }}
-            @change=${(e: Event) =>
-              onCommit((e.target as HTMLInputElement).value)}
+            min=${min ?? ""}
+            @change=${(e: Event) => {
+              const input = e.target as HTMLInputElement;
+              const value = parseFloat(input.value);
+              if (!isNaN(value) && floor(value) !== value) {
+                input.value = String(floor(value));
+              }
+              onCommit(input.value);
+            }}
           />
           <ha-icon-button
             class="step-btn"
