@@ -376,6 +376,14 @@ class PyETO(SmartIrrigationCalculationModule):
                 _LOGGER.debug("[pyETO: calculate_et_for_day] eto: %s", eto)
                 if eto is None:
                     eto = 0
+                # Not below zero, as the hourly form already has it
+                # (hourly_et.py): a negative day is the radiation term going
+                # negative on a dark, cold and humid day. Condensation at most,
+                # dew on the leaves and not water in the root zone, and mostly
+                # the estimate of a dark sky: it credited the bucket with water
+                # that never fell. The raw figure stays in the trace.
+                eto_raw = eto
+                eto = max(0.0, eto)
                 delta = -eto
 
                 self.last_day_trace = {
@@ -404,6 +412,7 @@ class PyETO(SmartIrrigationCalculationModule):
                     "net_rad": net_radvar,
                     "mean_temp": temp_c,
                     "eto": eto,
+                    "eto_raw": eto_raw,
                     "delta": delta,
                 }
                 _LOGGER.debug("[pyETO: calculate_et_for_day] delta returned: %s", delta)
