@@ -231,6 +231,7 @@ class SmartIrrigationMappingView(HomeAssistantView):
                 # server remains authoritative.
                 vol.Optional(const.MAPPING_DATA): object,
                 vol.Optional(const.MAPPING_DATA_LAST_UPDATED): object,
+                vol.Optional(const.MAPPING_DATA_LAST_SERVICE_FETCH): object,
                 vol.Optional(const.MAPPING_DATA_LAST_ENTRY): object,
                 vol.Optional(const.MAPPING_DATA_LAST_CALCULATION): object,
             }
@@ -253,6 +254,7 @@ class SmartIrrigationMappingView(HomeAssistantView):
             not in (
                 const.MAPPING_DATA,
                 const.MAPPING_DATA_LAST_UPDATED,
+                const.MAPPING_DATA_LAST_SERVICE_FETCH,
                 const.MAPPING_DATA_LAST_ENTRY,
                 const.MAPPING_DATA_LAST_CALCULATION,
             )

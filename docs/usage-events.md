@@ -22,7 +22,7 @@ Direct valve control fires three more, described in [closed-loop irrigation](con
 | --- | --- |
 |`smart_irrigation_zone_unwatered`|A zone has been dry for more than 3 days and no program will water it; fired once per zone, together with a repair notice. Data: `zone_id`, `zone`, `days`, `deficit_mm`. See [the dry zone notice](usage-full-controller.md#dry-zone-notice).|
 |`smart_irrigation_weather_stale`|A temperature, humidity or dew point source of a sensor group has not reported for 6 hours; fired once per silence. Data: `mapping_id`, `mapping`, `fields` (the fields that just went silent) and `since` (the time of the last report).|
-|`smart_irrigation_weather_recovered`|Fields that were silent report again. Data: `mapping_id`, `mapping`, `fields`.|
+|`smart_irrigation_weather_recovered`|Fields that were silent report again, or the outage stops being watched. Data: `mapping_id`, `mapping`, `fields`, and `reason` when it is not a recovery: `unloaded` (the integration was reloaded, disabled or removed) or `unwatched` (no automatic zone uses the group any more).|
 
 Only `zone_unwatered` needs the full controller; `weather_stale` and `weather_recovered` do not.
 

@@ -1729,17 +1729,49 @@ class SmartIrrigationCoordinator(
             static_in_mapping,
         ) = self.check_mapping_sources(mapping_id=mapping_id)
         weatherdata = None
+        service_fetched = False
         if self.use_weather_service and owm_in_mapping:
-            weatherdata = await self.hass.async_add_executor_job(
-                self._WeatherServiceClient.get_data
-            )
+            try:
+                weatherdata = await self.hass.async_add_executor_job(
+                    self._WeatherServiceClient.get_data
+                )
+            except Exception as e:  # noqa: BLE001 - the sensors are still read
+                # OpenWeatherMap raises where the others return None: the
+                # group's own sensors were lost with it for that poll.
+                if not (sensor_in_mapping or static_in_mapping):
+                    raise
+                _LOGGER.warning(
+                    "[update] sensor group %s: the weather service failed (%s); "
+                    "its own sensors are still recorded",
+                    mapping_id,
+                    e,
+                )
+                weatherdata = None
             if weatherdata is not None:
+                service_fetched = True
                 # A copy: OpenWeatherMap and Pirate Weather hand back their
                 # cached dict itself, the same object for every group read in
                 # the same pass. Each group then edited it (its sensors merged
                 # in, sensor-sourced keys removed, the timestamp) and stored it,
                 # so one group's record could carry another's greenhouse sensor.
                 weatherdata = dict(weatherdata)
+                # Rain the group does not take from anywhere is not taken from
+                # the service either: a field set to "none" kept the service's
+                # rain in the record, and the calculation, which reads what the
+                # record holds, booked it.
+                sources = mapping.get(const.MAPPING_MAPPINGS) or {}
+                for key in (
+                    const.MAPPING_PRECIPITATION,
+                    const.MAPPING_CURRENT_PRECIPITATION,
+                ):
+                    conf = sources.get(key)
+                    source = (
+                        conf.get(const.MAPPING_CONF_SOURCE)
+                        if isinstance(conf, dict)
+                        else conf
+                    )
+                    if source == const.MAPPING_CONF_SOURCE_NONE:
+                        weatherdata.pop(key, None)
 
         if sensor_in_mapping:
             sensor_values = self.build_sensor_values_for_mapping(mapping)
@@ -1810,10 +1842,16 @@ class SmartIrrigationCoordinator(
         _LOGGER.debug(
             "[update] sensor group %s new weatherdata: %s", mapping_id, weatherdata
         )
-        await self.store.async_update_mapping(
-            mapping_id,
-            {const.MAPPING_DATA: mapping_data, const.MAPPING_DATA_LAST_UPDATED: now},
-        )
+        changes = {
+            const.MAPPING_DATA: mapping_data,
+            const.MAPPING_DATA_LAST_UPDATED: now,
+        }
+        if service_fetched:
+            # The service's own stamp: the group's last update also moves when
+            # only its sensors were read, and a service that had stopped
+            # answering looked alive in a group that has sensors too.
+            changes[const.MAPPING_DATA_LAST_SERVICE_FETCH] = now
+        await self.store.async_update_mapping(mapping_id, changes)
         # The buffer is the group's, so every zone reading it is refreshed.
         for zone_id in await self._get_zones_that_use_this_mapping(mapping_id):
             # The readings this zone has not read yet. The buffer also keeps

@@ -100,6 +100,33 @@ def diff_silent(previous: set[str], silent) -> tuple[list[SilentField], list[str
     return newly, recovered
 
 
+def service_silent_after(config: dict | None) -> timedelta:
+    """How long the weather service may stay quiet before it counts as silent.
+
+    Twice the time between two automatic updates, and never less than the
+    sensors' threshold: polled once a day, a service that answered nine hours
+    ago is on time, and was reported silent at six. Without automatic updates
+    it is asked at the daily calculation, so two days.
+    """
+    config = config or {}
+    poll = timedelta(days=1)
+    if config.get(const.CONF_AUTO_UPDATE_ENABLED, True):
+        try:
+            count = max(1, int(config.get(const.CONF_AUTO_UPDATE_INTERVAL, 1)))
+        except (TypeError, ValueError):
+            count = 1
+        unit = config.get(
+            const.CONF_AUTO_UPDATE_SCHEDULE, const.CONF_DEFAULT_AUTO_UPDATE_SCHEDULE
+        )
+        if unit == const.CONF_AUTO_UPDATE_MINUTELY:
+            poll = timedelta(minutes=count)
+        elif unit == const.CONF_AUTO_UPDATE_DAILY:
+            poll = timedelta(days=count)
+        else:
+            poll = timedelta(hours=count)
+    return max(SILENT_AFTER, 2 * poll)
+
+
 def _as_utc(value) -> datetime | None:
     """A stored or live timestamp as an aware UTC datetime, or None."""
     if isinstance(value, str):
@@ -146,7 +173,24 @@ class WeatherLivenessMixin:
                 ir.async_delete_issue(
                     self.hass, const.DOMAIN, self._liveness_issue_id(mapping_id)
                 )
+                # The outage is no longer watched: it ends here for whoever
+                # listens, as the notice does. Without it, an automation saw a
+                # start and never an end, and a reload, which watches again
+                # from scratch, sent a second start.
+                self._liveness_end(mapping_id, list(state[mapping_id]), "unloaded")
         state.clear()
+
+    def _liveness_end(self, mapping_id, fields: list, reason: str) -> None:
+        """Fire the end of an outage that stops being watched, not recovered."""
+        mapping = (
+            self.store.get_mapping(mapping_id)
+            if getattr(self, "store", None) is not None
+            else None
+        ) or {const.MAPPING_ID: mapping_id}
+        self.hass.bus.async_fire(
+            f"{const.DOMAIN}_{const.EVENT_WEATHER_RECOVERED}",
+            self._liveness_event(mapping, fields) | {"reason": reason},
+        )
 
     def _liveness_reports(self, mapping: dict) -> list[FieldReport]:
         """The reports of the fields of one group that are worth watching.
@@ -181,11 +225,14 @@ class WeatherLivenessMixin:
             elif source == const.MAPPING_CONF_SOURCE_WEATHER_SERVICE:
                 if not getattr(self, "use_weather_service", False):
                     continue
+                # The service's own stamp: the group's last update also moves
+                # when only its sensors were read, which hid a service that had
+                # stopped answering in a group that has sensors too.
                 reports.append(
                     FieldReport(
                         key,
                         WEATHER_SERVICE_LABEL,
-                        _as_utc(mapping.get(const.MAPPING_DATA_LAST_UPDATED)),
+                        _as_utc(mapping.get(const.MAPPING_DATA_LAST_SERVICE_FETCH)),
                         started,
                     )
                 )
@@ -206,12 +253,25 @@ class WeatherLivenessMixin:
         for mapping_id in list(state):
             if mapping_id not in watched:
                 self._liveness_clear(mapping_id)
+                self._liveness_end(mapping_id, list(state[mapping_id]), "unwatched")
                 state.pop(mapping_id, None)
         for mapping_id in watched:
             mapping = self.store.get_mapping(mapping_id)
             if mapping is None:
                 continue
-            silent = silent_fields(self._liveness_reports(mapping), now)
+            reports = self._liveness_reports(mapping)
+            service_after = service_silent_after(
+                self.store.get_config() if hasattr(self.store, "get_config") else None
+            )
+            silent = silent_fields(
+                reports,
+                now,
+                {
+                    report.field: service_after
+                    for report in reports
+                    if report.source == WEATHER_SERVICE_LABEL
+                },
+            )
             previous = state.get(mapping_id, {})
             newly, recovered = diff_silent(set(previous), silent)
             if silent:

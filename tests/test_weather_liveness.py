@@ -205,7 +205,7 @@ def test_the_weather_service_counts_from_its_last_successful_fetch():
         const.MAPPING_ID: 1,
         const.MAPPING_NAME: "Garden",
         # Stored as the naive local time the integration stamps with.
-        const.MAPPING_DATA_LAST_UPDATED: dt_util.as_local(
+        const.MAPPING_DATA_LAST_SERVICE_FETCH: dt_util.as_local(
             NOW - timedelta(hours=9)
         ).replace(tzinfo=None),
         const.MAPPING_MAPPINGS: {
@@ -253,3 +253,128 @@ def test_setup_starts_one_timer_and_teardown_cancels_it_and_the_notices():
         )
     assert c._weather_silent == {}
     assert c._weather_liveness_unsub is None
+
+
+def test_unloading_ends_an_open_outage_for_its_listeners():
+    """The notice goes with the unload, and the outage ends for whoever
+    listens: an automation used to see a start and never an end."""
+    mapping = _mapping(Temperature="sensor.t")
+    c = _coordinator(mapping, {"sensor.t": _state(8)})
+    _check(c)
+    c.hass.bus.async_fire.reset_mock()
+
+    with patch("custom_components.smart_irrigation.liveness.ir"):
+        c.async_teardown_weather_liveness()
+
+    [event] = _fired(c)
+    assert event[0] == "smart_irrigation_weather_recovered"
+    assert event[1]["fields"] == ["Temperature"]
+    assert event[1]["mapping_id"] == 1
+    assert event[1]["reason"] == "unloaded"
+
+
+def test_unloading_with_nothing_open_fires_nothing():
+    mapping = _mapping(Temperature="sensor.t")
+    c = _coordinator(mapping, {"sensor.t": _state(1)})
+    _check(c)
+
+    with patch("custom_components.smart_irrigation.liveness.ir"):
+        c.async_teardown_weather_liveness()
+
+    assert c.hass.bus.async_fire.call_count == 0
+
+
+def test_a_reload_gives_an_end_then_a_start_not_two_starts():
+    mapping = _mapping(Temperature="sensor.t")
+    c = _coordinator(mapping, {"sensor.t": _state(8)})
+    _check(c)
+    with patch("custom_components.smart_irrigation.liveness.ir"):
+        c.async_teardown_weather_liveness()
+    _check(c)
+
+    assert [e[0] for e in _fired(c)] == [
+        "smart_irrigation_weather_stale",
+        "smart_irrigation_weather_recovered",
+        "smart_irrigation_weather_stale",
+    ]
+
+
+def test_a_group_that_stops_being_watched_ends_its_outage():
+    mapping = _mapping(Temperature="sensor.t")
+    c = _coordinator(mapping, {"sensor.t": _state(8)})
+    _check(c)
+    c.store.async_get_zones = AsyncMock(
+        return_value=[
+            {const.ZONE_STATE: const.ZONE_STATE_MANUAL, const.ZONE_MAPPING: 1}
+        ]
+    )
+    c.hass.bus.async_fire.reset_mock()
+
+    ir = _check(c)
+
+    ir.async_delete_issue.assert_called()
+    [event] = _fired(c)
+    assert event[0] == "smart_irrigation_weather_recovered"
+    assert event[1]["reason"] == "unwatched"
+
+
+def test_a_mixed_group_does_not_hide_a_silent_service():
+    """Its sensors keep the group's last update fresh; the service's own stamp
+    is what says it stopped answering."""
+    mapping = {
+        const.MAPPING_ID: 1,
+        const.MAPPING_NAME: "Garden",
+        const.MAPPING_DATA_LAST_UPDATED: dt_util.as_local(NOW).replace(tzinfo=None),
+        const.MAPPING_DATA_LAST_SERVICE_FETCH: dt_util.as_local(
+            NOW - timedelta(hours=9)
+        ).replace(tzinfo=None),
+        const.MAPPING_MAPPINGS: {
+            "Temperature": {
+                const.MAPPING_CONF_SOURCE: const.MAPPING_CONF_SOURCE_WEATHER_SERVICE
+            },
+            "Humidity": {
+                const.MAPPING_CONF_SOURCE: const.MAPPING_CONF_SOURCE_SENSOR,
+                const.MAPPING_CONF_SENSOR: "sensor.h",
+            },
+        },
+    }
+    c = _coordinator(mapping, {"sensor.h": _state(0.1)})
+    c.use_weather_service = True
+    c.store.get_config = lambda: {}
+    _check(c)
+
+    [event] = _fired(c)
+    assert event[0] == "smart_irrigation_weather_stale"
+    assert event[1]["fields"] == ["Temperature"]
+
+
+def test_a_service_polled_daily_is_not_silent_after_nine_hours():
+    mapping = {
+        const.MAPPING_ID: 1,
+        const.MAPPING_NAME: "Garden",
+        const.MAPPING_DATA_LAST_SERVICE_FETCH: dt_util.as_local(
+            NOW - timedelta(hours=9)
+        ).replace(tzinfo=None),
+        const.MAPPING_MAPPINGS: {
+            "Temperature": {
+                const.MAPPING_CONF_SOURCE: const.MAPPING_CONF_SOURCE_WEATHER_SERVICE
+            }
+        },
+    }
+    c = _coordinator(mapping, {})
+    c.use_weather_service = True
+    # Watched for longer than both: the silence is counted from the fetch.
+    c._weather_liveness_started = NOW - timedelta(hours=60)
+    c.store.get_config = lambda: {
+        const.CONF_AUTO_UPDATE_ENABLED: True,
+        const.CONF_AUTO_UPDATE_SCHEDULE: const.CONF_AUTO_UPDATE_DAILY,
+        const.CONF_AUTO_UPDATE_INTERVAL: "1",
+    }
+    _check(c)
+    assert _fired(c) == []
+
+    mapping[const.MAPPING_DATA_LAST_SERVICE_FETCH] = dt_util.as_local(
+        NOW - timedelta(hours=49)
+    ).replace(tzinfo=None)
+    _check(c)
+    assert [e[0] for e in _fired(c)] == ["smart_irrigation_weather_stale"]

@@ -147,6 +147,7 @@ from .const import (
     MAPPING_DATA,
     MAPPING_DATA_LAST_CALCULATION,
     MAPPING_DATA_LAST_ENTRY,
+    MAPPING_DATA_LAST_SERVICE_FETCH,
     MAPPING_DATA_LAST_UPDATED,
     MAPPING_DEWPOINT,
     MAPPING_EVAPOTRANSPIRATION,
@@ -554,6 +555,8 @@ class MappingEntry:
     # which every reader then had to recognise as "empty" (#846).
     data = attr.ib(type=list, factory=list)
     data_last_updated = attr.ib(type=datetime, default=None)
+    # When the weather service last answered for this group (liveness).
+    data_last_service_fetch = attr.ib(type=datetime, default=None)
     data_last_entry = attr.ib(type=str, default={})
     data_last_calculation = attr.ib(type=str, default={})
     # An enclosed environment: no rain reaches these zones and the weather
@@ -1329,6 +1332,9 @@ class SmartIrrigationStorage:
                         mappings=the_map,
                         data=as_reading_list(mapping.get(MAPPING_DATA)),
                         data_last_updated=mapping.get(MAPPING_DATA_LAST_UPDATED, None),
+                        data_last_service_fetch=mapping.get(
+                            MAPPING_DATA_LAST_SERVICE_FETCH, None
+                        ),
                         data_last_entry=mapping.get(MAPPING_DATA_LAST_ENTRY, {}),
                         data_last_calculation=mapping.get(
                             MAPPING_DATA_LAST_CALCULATION, {}

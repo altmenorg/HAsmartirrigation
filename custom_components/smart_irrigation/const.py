@@ -726,6 +726,9 @@ MAPPING_ID = "id"
 MAPPING_NAME = "name"
 MAPPING_DATA = "data"
 MAPPING_DATA_LAST_UPDATED = "data_last_updated"
+# When the weather service last answered for the group, which its last update
+# does not say: that also moves when only the group's sensors were read.
+MAPPING_DATA_LAST_SERVICE_FETCH = "data_last_service_fetch"
 MAPPING_DATA_LAST_ENTRY = "data_last_entry"
 MAPPING_DATA_LAST_CALCULATION = "data_last_calculation"
 # A sensor group describing an enclosed environment: a greenhouse, a polytunnel,
