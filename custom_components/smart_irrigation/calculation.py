@@ -32,6 +32,15 @@ from .localize import localize
 _LOGGER = logging.getLogger(__name__)
 
 
+def _lead_time_seconds(zone: dict) -> float:
+    """A zone's lead time in seconds, 0 when it has none.
+
+    A zone stores ``None`` until one is typed (the setup assistant creates its
+    zone without it), and every other reader already takes that as 0.
+    """
+    return float(zone.get(const.ZONE_LEAD_TIME) or 0.0)
+
+
 # A drop to below this share of the previous total is a counter reset even
 # away from midnight (see _cumulative_change).
 _RESET_RATIO = 0.5
@@ -2406,14 +2415,15 @@ class CalculationMixin:
 
             # add the lead time but only if duration is > 0 at this point
             if duration > 0.0:
-                duration = round(zone.get(const.ZONE_LEAD_TIME) + duration)
+                lead_time = _lead_time_seconds(zone)
+                duration = round(lead_time + duration)
                 explanation += (
                     "<li>"
                     + await localize(
                         "module.calculation.explanation.lead-time-is-applied",
                         self.hass.config.language,
                     )
-                    + f" {zone.get(const.ZONE_LEAD_TIME)} s.</li></ol>"
+                    + f" {lead_time:g} s.</li></ol>"
                 )
                 explanation += (
                     await localize(
@@ -2856,5 +2866,5 @@ class CalculationMixin:
             duration = maximum_duration
 
         if duration > 0.0:
-            duration = round(zone.get(const.ZONE_LEAD_TIME) + duration)
+            duration = round(_lead_time_seconds(zone) + duration)
         return duration
