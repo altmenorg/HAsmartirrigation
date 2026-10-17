@@ -139,6 +139,8 @@
         "sensors": {
           "question": "Welche Entitäten soll sie lesen?",
           "help": "Es wird nur nach denen gefragt, die die Berechnung wirklich nutzt.",
+          "help-optional": "Als optional markierte Felder kannst du leer lassen: Fehlende Wetterwerte werden geschätzt, und ohne Regensensor wird kein Regen gutgeschrieben.",
+          "optional": "optional",
           "lux-hint": "Unter Glas kann ein Lichtsensor die Sonnenstrahlung ersetzen: wähle hier deine Beleuchtungsstärke-Entität und setze ihre Quelle danach in der Sensorgruppe auf Lichtsensor (Lux).",
           "static-question": "Wie viel verdunstet pro Tag?",
           "static-help": "Eine Wasserhöhe, in der Einheit deiner Zonen. Etwa 4 bis 5 mm pro Tag ist für einen gemäßigten Sommer üblich.",

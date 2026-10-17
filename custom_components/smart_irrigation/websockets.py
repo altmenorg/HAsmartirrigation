@@ -23,7 +23,7 @@ from homeassistant.util import dt as dt_util
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
-from .calcmodules.consumes import consumed_mappings, idle_options
+from .calcmodules.consumes import consumed_mappings, idle_options, required_mappings
 from .delivery import delivery_gap, stale_zones
 from .engine_binding import (
     ENGINE_BY_METHOD,
@@ -602,6 +602,7 @@ async def websocket_get_modules(hass: HomeAssistant, connection, msg):
             {
                 **module,
                 "consumes": consumed_mappings(module.get("name")),
+                "requires": required_mappings(module.get("name")),
                 "idle_options": idle_options(
                     module.get("name"),
                     _mappings_feeding(module.get(const.MODULE_ID), mappings, zones),
@@ -640,10 +641,26 @@ def _mappings_feeding(module_id, mappings, zones) -> list:
 
 @async_response
 async def websocket_get_all_modules(hass: HomeAssistant, connection, msg):
-    """Publish all module data. This is not retrieved from the store."""
+    """Publish all module data. This is not retrieved from the store.
+
+    These are the engines that can be created, and the setup assistant decides
+    from them which sources to ask for: ``consumes`` and ``requires`` travel with
+    each one, as they do with the installed modules. Without them the assistant
+    asked for every source there is, and made each one mandatory.
+    """
     coordinator = hass.data[const.DOMAIN]["coordinator"]
     modules = await coordinator.async_get_all_modules()
-    connection.send_result(msg["id"], modules)
+    connection.send_result(
+        msg["id"],
+        [
+            {
+                **module,
+                "consumes": consumed_mappings(module.get("name")),
+                "requires": required_mappings(module.get("name")),
+            }
+            for module in modules
+        ],
+    )
 
 
 @async_response

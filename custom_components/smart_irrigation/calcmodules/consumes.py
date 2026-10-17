@@ -39,6 +39,18 @@ CONSUMED_BY_ENGINE = {
     "Static": _STATIC,
 }
 
+# What each engine cannot do without. A source it consumes but does not require
+# makes the result better when it is there and is estimated when it is not:
+# PyETO falls back from the dew point to the humidity and then to the minimum
+# temperature, takes the pressure from the elevation and the radiation from the
+# temperature range (FAO-56), but prices a day at 0 without temperature or wind.
+# The setup assistant asks for these and lets the user skip the rest.
+REQUIRED_BY_ENGINE = {
+    "PyETO": (const.MAPPING_TEMPERATURE, const.MAPPING_WINDSPEED),
+    "Passthrough": (const.MAPPING_EVAPOTRANSPIRATION,),
+    "Static": (),
+}
+
 # Rain is subtracted from whatever evapotranspiration the engine produced, so
 # it matters to all of them. A greenhouse group hides these separately: there
 # the rain is absent from the physical world, not from the engine.
@@ -61,6 +73,16 @@ def consumed_mappings(engine_name: str | None) -> list[str]:
     for sources in CONSUMED_BY_ENGINE.values():
         every.update(sources)
     return sorted(every) + list(ALWAYS_CONSUMED)
+
+
+def required_mappings(engine_name: str | None) -> list[str]:
+    """The sources a group feeding ``engine_name`` cannot leave empty.
+
+    Rain is not among them: it matters to every engine, but a zone without it
+    still works, it just never credits rain. An unknown engine requires nothing,
+    so that a third-party engine is never blocked by a guess made here.
+    """
+    return list(REQUIRED_BY_ENGINE.get(engine_name, ()))
 
 
 # Options an engine offers that only do something in one situation, with the

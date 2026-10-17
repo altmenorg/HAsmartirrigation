@@ -14,6 +14,7 @@ from custom_components.smart_irrigation.calcmodules.consumes import (
     ALWAYS_CONSUMED,
     CONSUMED_BY_ENGINE,
     consumed_mappings,
+    required_mappings,
 )
 
 CALCMODULES = Path("custom_components/smart_irrigation/calcmodules")
@@ -79,3 +80,61 @@ def test_an_unknown_engine_hides_nothing():
     for declared in CONSUMED_BY_ENGINE.values():
         for source in declared:
             assert source in sources
+
+
+def test_pyeto_requires_only_temperature_and_wind():
+    """Every other input has an FAO-56 fallback in the engine.
+
+    Dew point falls back to humidity and then to the minimum temperature,
+    pressure to the elevation, radiation to the temperature range. Without
+    temperature or wind PyETO prices the day at 0.
+    """
+    assert set(required_mappings("PyETO")) == {
+        const.MAPPING_TEMPERATURE,
+        const.MAPPING_WINDSPEED,
+    }
+
+
+def test_passthrough_requires_its_evapotranspiration():
+    assert required_mappings("Passthrough") == [const.MAPPING_EVAPOTRANSPIRATION]
+
+
+def test_static_and_unknown_engines_require_nothing():
+    assert required_mappings("Static") == []
+    assert required_mappings("Not one of ours") == []
+
+
+def test_what_is_required_is_also_consumed():
+    for engine in ("PyETO", "Passthrough", "Static"):
+        assert set(required_mappings(engine)) <= set(consumed_mappings(engine))
+
+
+async def test_the_engine_templates_carry_what_they_read_and_require():
+    """The setup assistant reads the templates, not the installed modules.
+
+    Without ``consumes`` on them it fell back to every source there is, and
+    asked a PyETO zone for an evapotranspiration sensor and every other field,
+    each of them mandatory.
+    """
+    from unittest.mock import AsyncMock, MagicMock
+
+    from custom_components.smart_irrigation.websockets import (
+        websocket_get_all_modules,
+    )
+
+    coordinator = MagicMock()
+    coordinator.async_get_all_modules = AsyncMock(
+        return_value=[{"name": "PyETO", "description": "d", "config": {}}]
+    )
+    hass = MagicMock()
+    hass.data = {const.DOMAIN: {"coordinator": coordinator}}
+    connection = MagicMock()
+
+    await websocket_get_all_modules.__wrapped__(hass, connection, {"id": 1})
+
+    (template,) = connection.send_result.call_args[0][1]
+    assert template["consumes"] == consumed_mappings("PyETO")
+    assert set(template["requires"]) == {
+        const.MAPPING_TEMPERATURE,
+        const.MAPPING_WINDSPEED,
+    }

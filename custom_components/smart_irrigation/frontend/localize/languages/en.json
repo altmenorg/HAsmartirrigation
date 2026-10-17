@@ -139,6 +139,8 @@
         "sensors": {
           "question": "Which entities should it read?",
           "help": "Only the ones the calculation actually uses are asked for.",
+          "help-optional": "Fields marked optional can stay empty: missing weather values are estimated, and without a rain sensor no rain is credited.",
+          "optional": "optional",
           "lux-hint": "Under glass a light sensor can stand in for solar radiation: pick your illuminance entity here and set its source to Light sensor (lux) afterwards, in the sensor group.",
           "static-question": "How much does it evaporate per day?",
           "static-help": "A depth of water, in the unit your zones use. Somewhere around 4 to 5 mm a day is common for a temperate summer.",
