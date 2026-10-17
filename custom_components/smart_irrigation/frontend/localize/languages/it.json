@@ -877,6 +877,8 @@
     "title": "Programmi",
     "description": "Un programma irriga i suoi passi uno dopo l'altro. Un passo è una zona, o più zone irrigate insieme, e per impostazione predefinita dura quanto calcolato da Smart Irrigation per esso. Più programmi non girano mai contemporaneamente: il successivo aspetta il suo turno.",
     "main_description": "Irriga tutte le zone, una dopo l'altra o insieme come impostato più in basso. Viene avviato dal trigger di avvio, o dalle sue pianificazioni appena una è attiva.",
+    "more_options": "Altre opzioni",
+    "more_options_set": "con altre regole",
     "sequencing_title": "Ordine delle zone e pause",
     "others_title": "Altri programmi",
     "confirm_run": "Avviare {name} ora? Le sue valvole si aprono subito.",

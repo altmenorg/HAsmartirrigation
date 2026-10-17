@@ -877,6 +877,8 @@
     "title": "Programmer",
     "description": "Et program vanner trinnene sine etter hverandre. Et trinn er én sone, eller flere som vannes samtidig, og varer som standard så lenge som Smart Irrigation har beregnet for det. Flere programmer kjører aldri samtidig: det neste venter på tur.",
     "main_description": "Vanner alle sonene, én etter én eller samtidig slik det er satt nedenfor. Det startes av starttriggeren, eller av sine egne tidsplaner så snart én er aktivert.",
+    "more_options": "Flere valg",
+    "more_options_set": "med flere regler",
     "sequencing_title": "Rekkefølge på sonene og pauser",
     "others_title": "Andre programmer",
     "confirm_run": "Kjøre {name} nå? Ventilene åpner med en gang.",

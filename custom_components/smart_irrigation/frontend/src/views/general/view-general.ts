@@ -91,6 +91,9 @@ const SKIP_CONDITION_IDS = [
 ];
 
 const UNFOLDED = new Set<string>();
+// "More options" that hold a setting open by themselves; one closed by
+// hand stays closed.
+const FOLDED_BY_HAND = new Set<string>();
 
 /** What is typed next to "Run now" and in the adjust block, by program id. */
 const RUN_OPTIONS: Record<string, { seconds?: string; replace?: boolean }> = {};
@@ -1094,7 +1097,20 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           : (schedule.every_n_days ?? 1) > 1
             ? `${t("schedule_every")} ${schedule.every_n_days} ${t("schedule_days")}`
             : t("every_day");
-      return `${days} · ${t(schedule.anchor === "end" ? "anchor_end_short" : "anchor_start_short")} ${at}`;
+      // Days of the month, months or a period narrow it down: said, rather
+      // than reading as every day.
+      const narrowed =
+        ((schedule.every_n_days ?? 1) > 1 &&
+          (schedule.weekdays || []).length > 0) ||
+        schedule.parity === "even" ||
+        schedule.parity === "odd" ||
+        (schedule.days_of_month || []).length > 0 ||
+        (schedule.months || []).length > 0 ||
+        !!schedule.from_date ||
+        !!schedule.until_date;
+      return `${days} · ${t(schedule.anchor === "end" ? "anchor_end_short" : "anchor_start_short")} ${at}${
+        narrowed ? ` · ${t("more_options_set")}` : ""
+      }`;
     };
     const fold = (key: string, summary: unknown, body: unknown) => html`
       <details
@@ -1105,6 +1121,29 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       >
         <summary>${summary}</summary>
         <div class="fold-body">${body}</div>
+      </details>
+    `;
+
+    // The settings most steps and schedules never need, folded under "More
+    // options". It opens by itself when one of them is set, so nothing that
+    // acts on the watering is out of sight (#893).
+    const more = (key: string, set: boolean, body: unknown) => html`
+      <details
+        class="more"
+        ?open=${this._isOpen(key) || (set && !FOLDED_BY_HAND.has(key))}
+        @toggle=${(e: Event) => {
+          const open = (e.target as HTMLDetailsElement).open;
+          this._setOpen(key, open);
+          if (open) FOLDED_BY_HAND.delete(key);
+          else FOLDED_BY_HAND.add(key);
+        }}
+      >
+        <summary>
+          ${t("more_options")}${set
+            ? html` · <em>${t("more_options_set")}</em>`
+            : ""}
+        </summary>
+        <div class="more-body">${body}</div>
       </details>
     `;
 
@@ -1227,68 +1266,85 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             false,
             1,
           )}
-          ${this._numRow(
-            t("max_litres"),
-            unit_text(this.config, ZONE_WATER_VOLUME),
-            // Stored in litres, shown and typed in the unit of the panel.
-            +displayVolume(step.max_litres ?? 0, this.config).toFixed(2),
-            (v) =>
-              patchStep({
-                max_litres: Math.max(0, storedVolume(num(v), this.config)),
-              }),
-            1,
-            false,
-            0,
+          ${more(
+            `more:step:${step.id}`,
+            (step.max_litres ?? 0) > 0 ||
+              (step.min_seconds ?? 0) > 0 ||
+              (step.max_seconds ?? 0) > 0 ||
+              (step.adjust_seconds ?? 0) !== 0 ||
+              (step.min_deficit_mm ?? 0) > 0 ||
+              (step.delay !== null && step.delay !== undefined),
+            html`
+              ${this._numRow(
+                t("max_litres"),
+                unit_text(this.config, ZONE_WATER_VOLUME),
+                // Stored in litres, shown and typed in the unit of the panel.
+                +displayVolume(step.max_litres ?? 0, this.config).toFixed(2),
+                (v) =>
+                  patchStep({
+                    max_litres: Math.max(0, storedVolume(num(v), this.config)),
+                  }),
+                1,
+                false,
+                0,
+              )}
+              <div class="setting-hint row-hint">${t("max_litres_help")}</div>
+              ${this._numRow(
+                t("min_seconds"),
+                localize("common.units.seconds", lang),
+                step.min_seconds ?? 0,
+                (v) =>
+                  patchStep({ min_seconds: Math.max(0, Math.round(num(v))) }),
+                1,
+                false,
+                0,
+              )}
+              ${this._numRow(
+                t("max_seconds"),
+                localize("common.units.seconds", lang),
+                step.max_seconds ?? 0,
+                (v) =>
+                  patchStep({ max_seconds: Math.max(0, Math.round(num(v))) }),
+                1,
+                false,
+                0,
+              )}
+              ${this._numRow(
+                t("adjust_seconds"),
+                localize("common.units.seconds", lang),
+                step.adjust_seconds ?? 0,
+                (v) =>
+                  patchStep({
+                    adjust_seconds: Math.max(
+                      -21600,
+                      Math.min(21600, Math.round(num(v))),
+                    ),
+                  }),
+              )}
+              <div class="setting-hint row-hint">${t("step_bounds_help")}</div>
+              ${this._numRow(
+                t("min_deficit_mm"),
+                "mm",
+                step.min_deficit_mm ?? 0,
+                (v) => patchStep({ min_deficit_mm: Math.max(0, num(v)) }),
+                1,
+                false,
+                0,
+              )}
+              <div class="setting-hint row-hint">
+                ${t("min_deficit_mm_help")}
+              </div>
+              ${this._textRow(
+                t("step_delay"),
+                localize("common.units.seconds", lang),
+                step.delay === null || step.delay === undefined
+                  ? ""
+                  : step.delay,
+                (v) => patchStep({ delay: v.trim() === "" ? null : num(v) }),
+              )}
+              <div class="setting-hint row-hint">${t("step_delay_help")}</div>
+            `,
           )}
-          <div class="setting-hint row-hint">${t("max_litres_help")}</div>
-          ${this._numRow(
-            t("min_seconds"),
-            localize("common.units.seconds", lang),
-            step.min_seconds ?? 0,
-            (v) => patchStep({ min_seconds: Math.max(0, Math.round(num(v))) }),
-            1,
-            false,
-            0,
-          )}
-          ${this._numRow(
-            t("max_seconds"),
-            localize("common.units.seconds", lang),
-            step.max_seconds ?? 0,
-            (v) => patchStep({ max_seconds: Math.max(0, Math.round(num(v))) }),
-            1,
-            false,
-            0,
-          )}
-          ${this._numRow(
-            t("adjust_seconds"),
-            localize("common.units.seconds", lang),
-            step.adjust_seconds ?? 0,
-            (v) =>
-              patchStep({
-                adjust_seconds: Math.max(
-                  -21600,
-                  Math.min(21600, Math.round(num(v))),
-                ),
-              }),
-          )}
-          <div class="setting-hint row-hint">${t("step_bounds_help")}</div>
-          ${this._numRow(
-            t("min_deficit_mm"),
-            "mm",
-            step.min_deficit_mm ?? 0,
-            (v) => patchStep({ min_deficit_mm: Math.max(0, num(v)) }),
-            1,
-            false,
-            0,
-          )}
-          <div class="setting-hint row-hint">${t("min_deficit_mm_help")}</div>
-          ${this._textRow(
-            t("step_delay"),
-            localize("common.units.seconds", lang),
-            step.delay === null || step.delay === undefined ? "" : step.delay,
-            (v) => patchStep({ delay: v.trim() === "" ? null : num(v) }),
-          )}
-          <div class="setting-hint row-hint">${t("step_delay_help")}</div>
           <div class="setting-row">
             <div class="setting-label">${t("enabled")}</div>
             <ha-switch
@@ -1383,19 +1439,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 schedule.offset_minutes,
                 (v) => patchSchedule({ offset_minutes: Math.round(num(v)) }),
               )}
-          ${schedule.type === "sun"
-            ? html`
-                ${this._textRow(
-                  t("schedule_fallback_time"),
-                  "HH:MM",
-                  schedule.fallback_time ?? "",
-                  (v) => patchSchedule({ fallback_time: v.trim() || null }),
-                )}
-                <div class="setting-hint row-hint">
-                  ${t("schedule_fallback_time_help")}
-                </div>
-              `
-            : ""}
           ${this._selectRow(
             t("schedule_anchor"),
             html`
@@ -1414,25 +1457,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               }),
           )}
           <div class="setting-hint row-hint">${t("schedule_anchor_help")}</div>
-          ${schedule.anchor === "end" && !program.main
-            ? html`
-                <div class="setting-row">
-                  <div class="setting-label">
-                    ${t("schedule_hard_deadline")}
-                  </div>
-                  <ha-switch
-                    .checked=${schedule.hard_deadline === true}
-                    @change=${(e: Event) =>
-                      patchSchedule({
-                        hard_deadline: (e.target as any).checked,
-                      })}
-                  ></ha-switch>
-                </div>
-                <div class="setting-hint row-hint">
-                  ${t("schedule_hard_deadline_help")}
-                </div>
-              `
-            : ""}
           <div class="setting-row">
             <div class="setting-label">${t("schedule_weekdays")}</div>
             <div>
@@ -1460,110 +1484,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           <div class="setting-hint row-hint">
             ${t("schedule_weekdays_help")}
           </div>
-          ${this._numRow(
-            t("schedule_every"),
-            t("schedule_days"),
-            schedule.every_n_days ?? 1,
-            (v) =>
-              patchSchedule({
-                every_n_days: Math.max(1, Math.round(num(v, 1))),
-              }),
-          )}
-          ${(schedule.every_n_days ?? 1) > 1
-            ? this._numRow(
-                t("schedule_every_offset"),
-                t("schedule_days"),
-                schedule.every_offset ?? 0,
-                (v) =>
-                  patchSchedule({
-                    every_offset: Math.max(0, Math.round(num(v))),
-                  }),
-              )
-            : ""}
-          <div class="setting-hint row-hint">${t("schedule_every_help")}</div>
-          ${this._selectRow(
-            t("schedule_parity"),
-            html`
-              <option
-                value="any"
-                ?selected=${schedule.parity !== "even" &&
-                schedule.parity !== "odd"}
-              >
-                ${t("parity_any")}
-              </option>
-              <option value="even" ?selected=${schedule.parity === "even"}>
-                ${t("parity_even")}
-              </option>
-              <option value="odd" ?selected=${schedule.parity === "odd"}>
-                ${t("parity_odd")}
-              </option>
-            `,
-            (e: Event) =>
-              patchSchedule({
-                parity: (e.target as HTMLSelectElement)
-                  .value as SmartIrrigationSchedule["parity"],
-              }),
-          )}
-          ${this._textRow(
-            t("schedule_days_of_month"),
-            "1, 15, last",
-            (schedule.days_of_month || []).join(", "),
-            (v) =>
-              patchSchedule({
-                days_of_month: v
-                  .split(/[,;\s]+/)
-                  .map((part) => part.trim().toLowerCase())
-                  .filter(
-                    (part) =>
-                      part === "last" ||
-                      (/^\d+$/.test(part) &&
-                        Number(part) >= 1 &&
-                        Number(part) <= 31),
-                  )
-                  .map((part) => (part === "last" ? part : Number(part))),
-              }),
-          )}
-          <div class="setting-hint row-hint">
-            ${t("schedule_days_of_month_help")}
-          </div>
-          <div class="setting-row">
-            <div class="setting-label">${t("schedule_months")}</div>
-            <div>
-              ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(
-                (month) => html`
-                  <label style="margin-right: 10px; white-space: nowrap;">
-                    <input
-                      type="checkbox"
-                      .checked=${(schedule.months || []).includes(month + 1)}
-                      @change=${(e: Event) =>
-                        patchSchedule({
-                          months: toggle(
-                            schedule.months,
-                            month + 1,
-                            (e.target as HTMLInputElement).checked,
-                          ),
-                        })}
-                    />
-                    ${monthName(month)}
-                  </label>
-                `,
-              )}
-            </div>
-          </div>
-          <div class="setting-hint row-hint">${t("schedule_months_help")}</div>
-          ${this._textRow(
-            t("schedule_from"),
-            "MM-DD",
-            schedule.from_date ?? "",
-            (v) => patchSchedule({ from_date: v.trim() || null }),
-          )}
-          ${this._textRow(
-            t("schedule_until"),
-            "MM-DD",
-            schedule.until_date ?? "",
-            (v) => patchSchedule({ until_date: v.trim() || null }),
-          )}
-          <div class="setting-hint row-hint">${t("schedule_period_help")}</div>
           <div class="setting-row">
             <div class="setting-label">${t("schedule_weather")}</div>
             <ha-switch
@@ -1573,47 +1493,207 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             ></ha-switch>
           </div>
           <div class="setting-hint row-hint">${t("schedule_weather_help")}</div>
-          ${schedule.weather !== false
-            ? html`
-                <details style="margin: 4px 0 8px;">
-                  <summary>${t("schedule_conditions")}</summary>
-                  <div class="setting-hint row-hint">
-                    ${t("schedule_conditions_help")}
-                    ${t("schedule_conditions_where")}
-                  </div>
-                  ${SKIP_CONDITION_IDS.map((id) => {
-                    const always = id === "postponed";
-                    const active =
-                      schedule.skip_conditions ?? SKIP_CONDITION_IDS;
-                    return html`
-                      <div>
-                        <label style="white-space: nowrap;">
-                          <input
-                            type="checkbox"
-                            .checked=${always || active.includes(id)}
-                            ?disabled=${always}
-                            @change=${(e: Event) => {
-                              const on = (e.target as HTMLInputElement).checked;
-                              const next = SKIP_CONDITION_IDS.filter((c) =>
-                                c === id ? on : active.includes(c),
-                              );
-                              // All of them is the default: stored as no field.
-                              patchSchedule({
-                                skip_conditions:
-                                  next.length === SKIP_CONDITION_IDS.length
-                                    ? undefined
-                                    : next,
-                              });
-                            }}
-                          />
-                          ${t(`condition_${id}`)}
-                        </label>
+          ${more(
+            `more:schedule:${schedule.id}`,
+            !!schedule.fallback_time ||
+              schedule.hard_deadline === true ||
+              (schedule.every_n_days ?? 1) > 1 ||
+              schedule.parity === "even" ||
+              schedule.parity === "odd" ||
+              (schedule.days_of_month || []).length > 0 ||
+              (schedule.months || []).length > 0 ||
+              !!schedule.from_date ||
+              !!schedule.until_date ||
+              schedule.skip_conditions !== undefined,
+            html`
+              ${this._numRow(
+                t("schedule_every"),
+                t("schedule_days"),
+                schedule.every_n_days ?? 1,
+                (v) =>
+                  patchSchedule({
+                    every_n_days: Math.max(1, Math.round(num(v, 1))),
+                  }),
+              )}
+              ${(schedule.every_n_days ?? 1) > 1
+                ? this._numRow(
+                    t("schedule_every_offset"),
+                    t("schedule_days"),
+                    schedule.every_offset ?? 0,
+                    (v) =>
+                      patchSchedule({
+                        every_offset: Math.max(0, Math.round(num(v))),
+                      }),
+                  )
+                : ""}
+              <div class="setting-hint row-hint">
+                ${t("schedule_every_help")}
+              </div>
+              ${this._selectRow(
+                t("schedule_parity"),
+                html`
+                  <option
+                    value="any"
+                    ?selected=${schedule.parity !== "even" &&
+                    schedule.parity !== "odd"}
+                  >
+                    ${t("parity_any")}
+                  </option>
+                  <option value="even" ?selected=${schedule.parity === "even"}>
+                    ${t("parity_even")}
+                  </option>
+                  <option value="odd" ?selected=${schedule.parity === "odd"}>
+                    ${t("parity_odd")}
+                  </option>
+                `,
+                (e: Event) =>
+                  patchSchedule({
+                    parity: (e.target as HTMLSelectElement)
+                      .value as SmartIrrigationSchedule["parity"],
+                  }),
+              )}
+              ${this._textRow(
+                t("schedule_days_of_month"),
+                "1, 15, last",
+                (schedule.days_of_month || []).join(", "),
+                (v) =>
+                  patchSchedule({
+                    days_of_month: v
+                      .split(/[,;\s]+/)
+                      .map((part) => part.trim().toLowerCase())
+                      .filter(
+                        (part) =>
+                          part === "last" ||
+                          (/^\d+$/.test(part) &&
+                            Number(part) >= 1 &&
+                            Number(part) <= 31),
+                      )
+                      .map((part) => (part === "last" ? part : Number(part))),
+                  }),
+              )}
+              <div class="setting-hint row-hint">
+                ${t("schedule_days_of_month_help")}
+              </div>
+              <div class="setting-row">
+                <div class="setting-label">${t("schedule_months")}</div>
+                <div>
+                  ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(
+                    (month) => html`
+                      <label style="margin-right: 10px; white-space: nowrap;">
+                        <input
+                          type="checkbox"
+                          .checked=${(schedule.months || []).includes(
+                            month + 1,
+                          )}
+                          @change=${(e: Event) =>
+                            patchSchedule({
+                              months: toggle(
+                                schedule.months,
+                                month + 1,
+                                (e.target as HTMLInputElement).checked,
+                              ),
+                            })}
+                        />
+                        ${monthName(month)}
+                      </label>
+                    `,
+                  )}
+                </div>
+              </div>
+              <div class="setting-hint row-hint">
+                ${t("schedule_months_help")}
+              </div>
+              ${this._textRow(
+                t("schedule_from"),
+                "MM-DD",
+                schedule.from_date ?? "",
+                (v) => patchSchedule({ from_date: v.trim() || null }),
+              )}
+              ${this._textRow(
+                t("schedule_until"),
+                "MM-DD",
+                schedule.until_date ?? "",
+                (v) => patchSchedule({ until_date: v.trim() || null }),
+              )}
+              <div class="setting-hint row-hint">
+                ${t("schedule_period_help")}
+              </div>
+              ${schedule.type === "sun"
+                ? html`
+                    ${this._textRow(
+                      t("schedule_fallback_time"),
+                      "HH:MM",
+                      schedule.fallback_time ?? "",
+                      (v) => patchSchedule({ fallback_time: v.trim() || null }),
+                    )}
+                    <div class="setting-hint row-hint">
+                      ${t("schedule_fallback_time_help")}
+                    </div>
+                  `
+                : ""}
+              ${schedule.anchor === "end" && !program.main
+                ? html`
+                    <div class="setting-row">
+                      <div class="setting-label">
+                        ${t("schedule_hard_deadline")}
                       </div>
-                    `;
-                  })}
-                </details>
-              `
-            : ""}
+                      <ha-switch
+                        .checked=${schedule.hard_deadline === true}
+                        @change=${(e: Event) =>
+                          patchSchedule({
+                            hard_deadline: (e.target as any).checked,
+                          })}
+                      ></ha-switch>
+                    </div>
+                    <div class="setting-hint row-hint">
+                      ${t("schedule_hard_deadline_help")}
+                    </div>
+                  `
+                : ""}
+              ${schedule.weather !== false
+                ? html`
+                    <div class="setting-label" style="margin-top: 8px;">
+                      ${t("schedule_conditions")}
+                    </div>
+                    <div class="setting-hint row-hint">
+                      ${t("schedule_conditions_help")}
+                      ${t("schedule_conditions_where")}
+                    </div>
+                    ${SKIP_CONDITION_IDS.map((id) => {
+                      const always = id === "postponed";
+                      const active =
+                        schedule.skip_conditions ?? SKIP_CONDITION_IDS;
+                      return html`
+                        <div>
+                          <label style="white-space: nowrap;">
+                            <input
+                              type="checkbox"
+                              .checked=${always || active.includes(id)}
+                              ?disabled=${always}
+                              @change=${(e: Event) => {
+                                const on = (e.target as HTMLInputElement)
+                                  .checked;
+                                const next = SKIP_CONDITION_IDS.filter((c) =>
+                                  c === id ? on : active.includes(c),
+                                );
+                                // All of them is the default: stored as no field.
+                                patchSchedule({
+                                  skip_conditions:
+                                    next.length === SKIP_CONDITION_IDS.length
+                                      ? undefined
+                                      : next,
+                                });
+                              }}
+                            />
+                            ${t(`condition_${id}`)}
+                          </label>
+                        </div>
+                      `;
+                    })}
+                  `
+                : ""}
+            `,
+          )}
           <div class="setting-row">
             <div class="setting-label">${t("enabled")}</div>
             <ha-switch

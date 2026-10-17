@@ -877,6 +877,8 @@
     "title": "Programas",
     "description": "Um programa rega as suas etapas uma a seguir à outra. Uma etapa é uma zona, ou várias regadas em conjunto, e por predefinição dura o tempo que o Smart Irrigation calculou para ela. Vários programas nunca funcionam ao mesmo tempo: o seguinte aguarda a sua vez.",
     "main_description": "Rega todas as zonas, uma após a outra ou em conjunto, como definido mais abaixo. É iniciado pelo acionador de início, ou pelos seus próprios agendamentos assim que um é ativado.",
+    "more_options": "Mais opções",
+    "more_options_set": "com mais regras",
     "sequencing_title": "Ordem das zonas e pausas",
     "others_title": "Outros programas",
     "confirm_run": "Executar {name} agora? As suas válvulas abrem de imediato.",

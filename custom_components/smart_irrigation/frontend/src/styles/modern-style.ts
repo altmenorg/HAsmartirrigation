@@ -155,6 +155,21 @@ export const modernStyle = css`
     border-bottom: 1px solid var(--divider-color);
     margin-bottom: 8px;
   }
+  /* "More options" inside a step or a schedule: lighter than a fold, a line
+     to open and the rarely used settings under it. */
+  details.more {
+    margin: 8px 0;
+  }
+  details.more > summary {
+    cursor: pointer;
+    padding: 6px 0;
+    color: var(--primary-color);
+    list-style-position: inside;
+  }
+  details.more > .more-body {
+    border-left: 2px solid var(--divider-color);
+    padding-left: 12px;
+  }
   /* Inside a folded block: room under its last buttons, and titled sections. */
   .fold-body {
     padding-bottom: 12px;

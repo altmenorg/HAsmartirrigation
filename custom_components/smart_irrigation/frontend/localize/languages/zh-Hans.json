@@ -877,6 +877,8 @@
     "title": "程序",
     "description": "程序会依次浇它的各个步骤。一个步骤是一个区域，或同时浇水的多个区域，默认使用 Smart Irrigation 为它计算出的时长。多个程序绝不会同时运行：下一个会等待轮到它。",
     "main_description": "按下方的设置依次或同时浇所有区域。它由启动触发器启动，或者在启用了一个计划后由它自己的计划启动。",
+    "more_options": "更多选项",
+    "more_options_set": "另有规则",
     "sequencing_title": "区域顺序和暂停",
     "others_title": "其他程序",
     "confirm_run": "立即运行{name}吗？它的阀门会马上打开。",

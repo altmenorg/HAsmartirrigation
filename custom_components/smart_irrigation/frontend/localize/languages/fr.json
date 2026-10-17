@@ -877,6 +877,8 @@
     "title": "Programmes",
     "description": "Un programme arrose ses étapes l'une après l'autre. Une étape est une zone, ou plusieurs arrosées en même temps, et prend par défaut la durée calculée par Smart Irrigation. Deux programmes ne tournent jamais en même temps : le suivant attend son tour.",
     "main_description": "Arrose toutes les zones, l'une après l'autre ou ensemble comme réglé plus bas. Il est lancé par le déclencheur de départ, ou par ses propres plannings dès qu'un est activé.",
+    "more_options": "Plus d'options",
+    "more_options_set": "avec d'autres règles",
     "sequencing_title": "Ordre des zones et pauses",
     "others_title": "Autres programmes",
     "confirm_run": "Lancer {name} maintenant ? Ses vannes s'ouvrent tout de suite.",

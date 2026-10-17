@@ -877,6 +877,8 @@
     "title": "Programok",
     "description": "Egy program egymás után öntözi a lépéseit. Egy lépés egy zóna, vagy több együtt öntözött zóna, és alapértelmezés szerint annyi ideig tart, amennyit a Smart Irrigation kiszámolt hozzá. Több program sosem fut egyszerre: a következő megvárja a sorát.",
     "main_description": "Minden zónát öntöz, egymás után vagy együtt, ahogy lejjebb be van állítva. Az indítási kiváltó indítja, vagy a saját ütemezései, amint egy be van kapcsolva.",
+    "more_options": "További beállítások",
+    "more_options_set": "további szabályokkal",
     "sequencing_title": "A zónák sorrendje és a szünetek",
     "others_title": "További programok",
     "confirm_run": "Most futtatod a(z) {name} programot? A szelepei azonnal kinyílnak.",

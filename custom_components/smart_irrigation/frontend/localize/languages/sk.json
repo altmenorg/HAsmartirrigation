@@ -877,6 +877,8 @@
     "title": "Programy",
     "description": "Program zalieva svoje kroky jeden za druhým. Krok je jedna zóna alebo viac zón zavlažovaných spolu a štandardne má trvanie, ktoré preňho vypočítala Smart Irrigation. Viac programov nikdy nebeží naraz: ďalší čaká na rad.",
     "main_description": "Zalieva všetky zóny, jednu po druhej alebo spolu podľa nastavenia nižšie. Spúšťa ho spúšťač štartu, alebo jeho vlastné plány, hneď ako je jeden zapnutý.",
+    "more_options": "Ďalšie možnosti",
+    "more_options_set": "s ďalšími pravidlami",
     "sequencing_title": "Poradie zón a pauzy",
     "others_title": "Ďalšie programy",
     "confirm_run": "Spustiť {name} teraz? Jeho ventily sa otvoria okamžite.",
