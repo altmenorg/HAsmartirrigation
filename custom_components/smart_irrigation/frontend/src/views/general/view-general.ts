@@ -608,6 +608,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // Pumps and main valves (full controller).
       const r14 = this.renderSuppliesCard();
 
+      // The full controller, right after how much of the panel to show.
+      const r15 = this.renderFullControllerCard();
+
       // The way to the setup assistant, which is no longer a tab. It comes first:
       // it is where somebody who has nothing set up wants to start.
       const r12 = this.renderSetupAssistantCard();
@@ -625,7 +628,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           <div class="card-content">
             ${localize("panels.general.description", this.hass.language)}
           </div> </ha-card
-        >${r12}${r11}${r2}${r1}${showContinuous ? r4 : ""}${full
+        >${r12}${r11}${r15}${r2}${r1}${showContinuous ? r4 : ""}${full
           ? ""
           : r5}${r6}${r7}${r8}${r9}${r10}${r13}`;
 
@@ -736,7 +739,18 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       }).format(new Date(iso));
     const tc = (key: string) => localize(`programs.${key}`, lang);
     const control = (service: string) =>
-      this.hass!.callService(DOMAIN, service, {});
+      this.hass!.callService(DOMAIN, service, {}).then(() =>
+        this._fetchLive(false),
+      );
+    // Each button only when it can act: they were all live with nothing
+    // watering, and pressing one did nothing that could be seen (#893).
+    const live = this.programsState?.live || {};
+    const paused = live.paused === true;
+    const running =
+      (live.programs || []).some((p: any) => p.state === "running") ||
+      (live.valves || []).length > 0 ||
+      !!live.cycle;
+    const anything = paused || running || (live.programs || []).length > 0;
     const minutes = (seconds: number) =>
       seconds < 60
         ? `${Math.round(seconds)} s`
@@ -749,14 +763,26 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         </div>
         <div class="card-content">
           <div class="si-actions">
-            ${this._actionBtn(mdiPause, tc("pause"), () =>
-              control("pause_watering"),
+            ${this._actionBtn(
+              mdiPause,
+              tc("pause"),
+              () => control("pause_watering"),
+              false,
+              !running || paused,
             )}
-            ${this._actionBtn(mdiPlay, tc("resume"), () =>
-              control("resume_watering"),
+            ${this._actionBtn(
+              mdiPlay,
+              tc("resume"),
+              () => control("resume_watering"),
+              false,
+              !paused,
             )}
-            ${this._actionBtn(mdiSkipNext, tc("next_step"), () =>
-              control("next_step"),
+            ${this._actionBtn(
+              mdiSkipNext,
+              tc("next_step"),
+              () => control("next_step"),
+              false,
+              !running || paused,
             )}
             ${this._actionBtn(
               mdiStop,
@@ -765,6 +791,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 if (confirm(tc("confirm_stop"))) control("stop_watering");
               },
               true,
+              !anything,
             )}
           </div>
           <div class="setting-hint row-hint">${tc("controls_help")}</div>
@@ -1052,6 +1079,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               call({ reset: true });
             },
             true,
+            // Nothing to reset while no adjustment is in force.
+            !active,
           )}
         </div>
       `;
@@ -1972,18 +2001,47 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               ${this._textRow(t("name"), "", supply.name, (v) =>
                 patch(index, { name: v }),
               )}
-              ${this._textRow(
-                t("entities"),
-                t("entities_hint"),
-                (supply.entities || []).join(", "),
-                (v) =>
-                  patch(index, {
-                    entities: v
-                      .split(",")
-                      .map((e) => e.trim())
-                      .filter((e) => e),
-                  }),
-              )}
+              ${
+                // One picker per entity, and an empty one to add another:
+                // entity ids typed by hand and separated by commas were
+                // checked by nothing until a run tried to switch them (#893).
+                [...(supply.entities || []), ""].map(
+                  (entityId, n, all) => html`
+                    <div class="setting-row">
+                      <div class="setting-label">
+                        ${n === 0 ? t("entities") : ""}
+                      </div>
+                      <ha-entity-picker
+                        class="entity-field"
+                        .hass=${this.hass}
+                        .value=${entityId}
+                        .includeDomains=${[
+                          "switch",
+                          "valve",
+                          "input_boolean",
+                          "light",
+                        ]}
+                        allow-custom-entity
+                        @value-changed=${(e: CustomEvent) => {
+                          const value = (e.detail?.value || "").trim();
+                          const next = all.slice(0, -1);
+                          if (n < next.length) {
+                            if (value) next[n] = value;
+                            else next.splice(n, 1);
+                          } else if (value) {
+                            next.push(value);
+                          }
+                          patch(index, {
+                            entities: next.filter(
+                              (id, i) => id && next.indexOf(id) === i,
+                            ),
+                          });
+                        }}
+                      ></ha-entity-picker>
+                    </div>
+                  `,
+                )
+              }
               ${this._numRow(
                 t("delay_before"),
                 localize("common.units.seconds", lang),
@@ -2808,7 +2866,29 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 </div>
               `
             : ""}
+          ${this.config.full_controller === true
+            ? ""
+            : this.renderExecutionSettings(lang, false)}
+        </div>
+      </ha-card>
+    `;
+  }
 
+  /**
+   * The full controller, on a card of its own near the top of the page.
+   *
+   * It was the last switch of the card about observed watering, whose text is
+   * about crediting the bucket: the main feature of the release was hard to
+   * find, and switched on without a word although it closes valves (#893).
+   */
+  renderFullControllerCard(): TemplateResult {
+    if (!this.config || !this.hass) return html``;
+    const lang = this.hass.language;
+    return html`
+      <ha-card
+        header="${localize("observed_watering.full_controller_title", lang)}"
+      >
+        <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
               ${localize("observed_watering.full_controller_label", lang)}
@@ -2816,15 +2896,26 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             <ha-switch
               .checked=${this.config.full_controller === true}
               @change=${(e: Event) => {
-                // The main program the backend creates comes back with a reload,
-                // once the save is done rather than after a guessed delay.
+                const target = e.target as any;
+                const on = target.checked === true;
+                if (
+                  on &&
+                  !confirm(
+                    localize("observed_watering.confirm_full_controller", lang),
+                  )
+                ) {
+                  target.checked = false;
+                  return;
+                }
+                // The main program the backend creates comes back with a
+                // reload, once the save is done rather than after a guessed
+                // delay.
                 this.handleConfigChange({
-                  full_controller: (e.target as any).checked,
-                  // Switching it on drives the valves, which the backend turns
-                  // on too; mirrored here since our own save is not echoed back.
-                  ...((e.target as any).checked
-                    ? { direct_valve_control_enabled: true }
-                    : {}),
+                  full_controller: on,
+                  // Switching it on drives the valves, which the backend
+                  // turns on too; mirrored here since our own save is not
+                  // echoed back.
+                  ...(on ? { direct_valve_control_enabled: true } : {}),
                 })
                   .then(() => this._fetchData())
                   .catch(() => undefined);
@@ -2834,10 +2925,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           <div class="setting-note">
             ${localize("observed_watering.full_controller_description", lang)}
           </div>
-
-          ${this.config.full_controller === true
-            ? ""
-            : this.renderExecutionSettings(lang, false)}
         </div>
       </ha-card>
     `;
@@ -3406,9 +3493,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     danger = false,
     disabled = false,
   ): TemplateResult {
+    // A destructive action is outlined in red, not filled: it weighed as much
+    // as the action next to it, "Delete" beside "Run now" (#893).
     return html`
       <ha-button
-        appearance=${danger ? "accent" : "filled"}
+        appearance=${danger ? "outlined" : "filled"}
         variant=${danger ? "danger" : "brand"}
         ?disabled=${disabled}
         @click=${onClick}
