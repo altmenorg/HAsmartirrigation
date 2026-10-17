@@ -605,7 +605,7 @@
         "measured-flow-help": "V več zagonih je vodomer cone izmeril pretok, ki se razlikuje od zgoraj nastavljenega. To je nasvet, nikoli se ne uporabi samodejno.",
         "use-measured-flow": "Uporabi izmerjeni pretok",
         "extra-valves": "Drugi ventili cone",
-        "extra-valves-hint": "odpirajo in zapirajo se skupaj z njim; loči jih z vejicami",
+        "extra-valves-hint": "odpirajo in zapirajo se skupaj z njim",
         "flow-sensor": "Števec skupne prostornine",
         "flow-sensor-hint": "Za natančno upoštevanje namesto pretok x čas: skupni seštevek vodomera (razred stanja total_increasing), ne trenutni pretok. Enota se prebere samodejno (L, mL, m³, gal, ft³).",
         "safety-off-topic": "Tema MQTT za varnostni izklop",

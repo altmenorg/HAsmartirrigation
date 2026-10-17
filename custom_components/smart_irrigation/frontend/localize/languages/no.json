@@ -605,7 +605,7 @@
         "measured-flow-help": "Over flere kjøringer målte sonens strømningsmåler en strømning som avviker fra den som er satt ovenfor. Det er et råd, og det brukes aldri av seg selv.",
         "use-measured-flow": "Bruk den målte strømningen",
         "extra-valves": "Sonens andre ventiler",
-        "extra-valves-hint": "åpnes og lukkes sammen med den; skill med komma",
+        "extra-valves-hint": "åpnes og lukkes sammen med den",
         "flow-sensor": "Kumulativ volummåler",
         "flow-sensor-hint": "For nøyaktig kreditering i stedet for kapasitet x tid: en kumulativ vannmålertotal (tilstandsklasse total_increasing), ikke en momentan strømningshastighet. Enheten leses automatisk (L, mL, m³, gal, ft³).",
         "safety-off-topic": "MQTT-topic for sikkerhetsavslag",

@@ -605,7 +605,7 @@
         "measured-flow-help": "Ao longo de várias execuções, o contador de caudal da zona mediu um caudal diferente do definido acima. É uma sugestão, nunca aplicada automaticamente.",
         "use-measured-flow": "Usar o caudal medido",
         "extra-valves": "Outras válvulas da zona",
-        "extra-valves-hint": "abertas e fechadas em conjunto com ela; separe com vírgulas",
+        "extra-valves-hint": "abertas e fechadas em conjunto com ela",
         "flow-sensor": "Medidor de volume acumulado",
         "flow-sensor-hint": "Para um crédito exato em vez de débito x tempo: um total de contador de água acumulado (classe de estado total_increasing), não um caudal instantâneo. A unidade é lida automaticamente (L, mL, m³, gal, ft³).",
         "safety-off-topic": "Tópico MQTT de desligamento de segurança",

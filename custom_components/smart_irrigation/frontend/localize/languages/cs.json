@@ -605,7 +605,7 @@
         "measured-flow-help": "Během několika běhů naměřil průtokoměr zóny průtok, který se liší od nastaveného výše. Je to jen doporučení, nikdy se neuplatní samo.",
         "use-measured-flow": "Použít naměřený průtok",
         "extra-valves": "Další ventily zóny",
-        "extra-valves-hint": "otevírají se a zavírají společně s ní; oddělte čárkami",
+        "extra-valves-hint": "otevírají se a zavírají společně s ní",
         "flow-sensor": "Měřič kumulativního objemu",
         "flow-sensor-hint": "Pro přesné připisování místo průtok x čas: kumulativní celkový stav vodoměru (třída stavu total_increasing), nikoli okamžitý průtok. Jednotka se načte automaticky (L, mL, m³, gal, ft³).",
         "safety-off-topic": "Téma MQTT pro bezpečnostní vypnutí",

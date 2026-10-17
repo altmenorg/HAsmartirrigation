@@ -605,7 +605,7 @@
         "measured-flow-help": "Over several runs the zone's flow meter measured a flow that differs from the one set above. It is advice, never applied on its own.",
         "use-measured-flow": "Use the measured flow",
         "extra-valves": "Other valves of the zone",
-        "extra-valves-hint": "opened and closed together with it; separate with commas",
+        "extra-valves-hint": "opened and closed together with it",
         "flow-sensor": "Cumulative volume meter",
         "flow-sensor-hint": "For exact crediting instead of throughput x time: a cumulative water-meter total (state class total_increasing), not an instant flow rate. The unit is read automatically (L, mL, m³, gal, ft³).",
         "safety-off-topic": "Safety off MQTT topic",

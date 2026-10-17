@@ -605,7 +605,7 @@
         "measured-flow-help": "Podczas kilku uruchomień przepływomierz strefy zmierzył przepływ różny od ustawionego powyżej. To tylko wskazówka, nigdy nie jest stosowana sama.",
         "use-measured-flow": "Użyj zmierzonego przepływu",
         "extra-valves": "Inne zawory strefy",
-        "extra-valves-hint": "otwierane i zamykane razem z nim; oddziel przecinkami",
+        "extra-valves-hint": "otwierane i zamykane razem z nim",
         "flow-sensor": "Licznik skumulowanej objętości",
         "flow-sensor-hint": "Dla dokładnego zaliczania zamiast przepływu x czas: skumulowana suma wodomierza (klasa stanu total_increasing), a nie chwilowe natężenie przepływu. Jednostka jest odczytywana automatycznie (L, mL, m³, gal, ft³).",
         "safety-off-topic": "Temat MQTT wyłączenia awaryjnego",

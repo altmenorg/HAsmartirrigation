@@ -605,7 +605,7 @@
         "measured-flow-help": "经过几次浇水后，该区域的流量计测得的流量与上面设定的不同。这只是建议，绝不会自动应用。",
         "use-measured-flow": "使用测得的流量",
         "extra-valves": "该区域的其他阀门",
-        "extra-valves-hint": "与它一同打开和关闭；用逗号分隔",
+        "extra-valves-hint": "与它一同打开和关闭",
         "flow-sensor": "累计水量计",
         "flow-sensor-hint": "若需精确计量而非以流量×时间估算：请提供一个累计用水总量（状态类别为 total_increasing），而非瞬时流速。单位会自动读取（L、mL、m³、gal、ft³）。",
         "safety-off-topic": "安全关闭 MQTT 主题",

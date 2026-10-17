@@ -605,7 +605,7 @@
         "measured-flow-help": "Over meerdere beurten mat de debietmeter van de zone een debiet dat afwijkt van het hierboven ingestelde. Het is een advies, nooit vanzelf toegepast.",
         "use-measured-flow": "Gebruik het gemeten debiet",
         "extra-valves": "Andere ventielen van de zone",
-        "extra-valves-hint": "samen ermee geopend en gesloten; scheid met komma's",
+        "extra-valves-hint": "samen ermee geopend en gesloten",
         "flow-sensor": "Cumulatieve volumemeter",
         "flow-sensor-hint": "Voor exacte verrekening in plaats van doorvoer x tijd: een cumulatief watermetertotaal (state class total_increasing), geen momentaan debiet. De eenheid wordt automatisch uitgelezen (L, mL, m³, gal, ft³).",
         "safety-off-topic": "MQTT-topic voor veiligheidsuitschakeling",

@@ -605,7 +605,7 @@
         "measured-flow-help": "Over flere kørsler har zonens flowmåler målt et flow, der afviger fra det, der er angivet ovenfor. Det er kun et råd, og det anvendes aldrig af sig selv.",
         "use-measured-flow": "Brug det målte flow",
         "extra-valves": "Zonens andre ventiler",
-        "extra-valves-hint": "åbnes og lukkes sammen med den; adskil med kommaer",
+        "extra-valves-hint": "åbnes og lukkes sammen med den",
         "flow-sensor": "Akkumuleret volumenmåler",
         "flow-sensor-hint": "Til nøjagtig kreditering i stedet for gennemstrømning x tid: en akkumuleret samlet vandmåler (tilstandsklasse total_increasing), ikke en øjeblikkelig gennemstrømningshastighed. Enheden aflæses automatisk (L, mL, m³, gal, ft³).",
         "safety-off-topic": "MQTT-emne for sikkerhedsluk",

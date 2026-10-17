@@ -605,7 +605,7 @@
         "measured-flow-help": "Ao longo de várias execuções, o medidor de vazão da zona mediu uma vazão diferente da definida acima. É uma sugestão, nunca aplicada sozinha.",
         "use-measured-flow": "Usar a vazão medida",
         "extra-valves": "Outras válvulas da zona",
-        "extra-valves-hint": "abertas e fechadas junto com ela; separe com vírgulas",
+        "extra-valves-hint": "abertas e fechadas junto com ela",
         "flow-sensor": "Medidor de volume acumulado",
         "flow-sensor-hint": "Para crédito exato em vez de vazão x tempo: um total acumulado de hidrômetro (classe de estado total_increasing), não uma taxa de vazão instantânea. A unidade é lida automaticamente (L, mL, m³, gal, ft³).",
         "safety-off-topic": "Tópico MQTT de desligamento de segurança",

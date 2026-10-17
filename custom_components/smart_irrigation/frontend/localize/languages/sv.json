@@ -605,7 +605,7 @@
         "measured-flow-help": "Under flera körningar mätte zonens flödesmätare ett flöde som skiljer sig från det som angetts ovan. Det är ett råd som aldrig tillämpas av sig självt.",
         "use-measured-flow": "Använd det uppmätta flödet",
         "extra-valves": "Zonens övriga ventiler",
-        "extra-valves-hint": "öppnas och stängs tillsammans med den; separera med kommatecken",
+        "extra-valves-hint": "öppnas och stängs tillsammans med den",
         "flow-sensor": "Kumulativ volymmätare",
         "flow-sensor-hint": "För exakt kreditering i stället för flöde x tid: en kumulativ vattenmätarsumma (tillståndsklass total_increasing), inte ett momentant flöde. Enheten läses av automatiskt (L, mL, m³, gal, ft³).",
         "safety-off-topic": "MQTT-topic för säkerhetsavstängning",

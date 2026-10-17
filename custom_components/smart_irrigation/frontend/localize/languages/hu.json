@@ -605,7 +605,7 @@
         "measured-flow-help": "Több futás alatt a zóna átfolyásmérője a fent beállítottól eltérő átfolyást mért. Ez csak tanács, soha nem alkalmazódik magától.",
         "use-measured-flow": "A mért átfolyás használata",
         "extra-valves": "A zóna további szelepei",
-        "extra-valves-hint": "vele együtt nyílnak és záródnak; vesszővel válaszd el őket",
+        "extra-valves-hint": "vele együtt nyílnak és záródnak",
         "flow-sensor": "Kumulatív térfogatmérő",
         "flow-sensor-hint": "Az átfolyás x idő helyett pontos feltöltéshez: egy kumulatív vízmérő összérték (total_increasing állapotosztály), nem pillanatnyi átfolyási sebesség. A mértékegység automatikusan beolvasásra kerül (L, mL, m³, gal, ft³).",
         "safety-off-topic": "Biztonsági kikapcsolás MQTT-topicja",

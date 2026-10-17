@@ -592,7 +592,7 @@
         "measured-flow-help": "Sur plusieurs arrosages, le compteur de la zone a mesuré un débit différent de celui réglé ci-dessus. C'est un conseil, jamais appliqué tout seul.",
         "use-measured-flow": "Utiliser le débit mesuré",
         "extra-valves": "Autres vannes de la zone",
-        "extra-valves-hint": "ouvertes et fermées avec elle ; séparer par des virgules",
+        "extra-valves-hint": "ouvertes et fermées avec elle",
         "flow-sensor": "Compteur de volume cumulé",
         "flow-sensor-hint": "Pour un comptage exact au lieu de débit x temps : un total de compteur d'eau cumulé (state class total_increasing), pas un débit instantané. L'unité est lue automatiquement (L, mL, m³, gal, ft³).",
         "safety-off-topic": "Topic MQTT de coupure de sécurité",

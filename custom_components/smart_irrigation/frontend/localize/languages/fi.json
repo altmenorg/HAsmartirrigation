@@ -605,7 +605,7 @@
         "measured-flow-help": "Usean ajon aikana vyöhykkeen virtausmittari mittasi virtauksen, joka poikkeaa yllä asetetusta. Se on vain neuvo, eikä sitä oteta koskaan käyttöön itsestään.",
         "use-measured-flow": "Käytä mitattua virtausta",
         "extra-valves": "Vyöhykkeen muut venttiilit",
-        "extra-valves-hint": "avataan ja suljetaan sen mukana; erota pilkuilla",
+        "extra-valves-hint": "avataan ja suljetaan sen mukana",
         "flow-sensor": "Kumulatiivinen tilavuusmittari",
         "flow-sensor-hint": "Tarkkaa hyvitystä varten läpäisyn ja ajan sijaan: kumulatiivinen vesimittarin kokonaislukema (tilaluokka total_increasing), ei hetkellinen virtausnopeus. Yksikkö luetaan automaattisesti (L, mL, m³, gal, ft³).",
         "safety-off-topic": "Turvasammutuksen MQTT-topic",

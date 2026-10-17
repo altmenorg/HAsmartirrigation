@@ -605,7 +605,7 @@
         "measured-flow-help": "Über mehrere Läufe hat der Durchflusszähler der Zone einen Durchfluss gemessen, der vom oben eingestellten abweicht. Das ist nur ein Hinweis und wird nie von selbst übernommen.",
         "use-measured-flow": "Gemessenen Durchfluss verwenden",
         "extra-valves": "Weitere Ventile der Zone",
-        "extra-valves-hint": "werden zusammen mit ihr geöffnet und geschlossen; mit Kommas trennen",
+        "extra-valves-hint": "werden zusammen mit ihr geöffnet und geschlossen",
         "flow-sensor": "Kumulativer Volumenzähler",
         "flow-sensor-hint": "Für eine exakte Gutschrift anstelle von Durchsatz x Zeit: ein kumulativer Wasserzählerstand (Statusklasse total_increasing), keine momentane Durchflussrate. Die Einheit wird automatisch ausgelesen (L, mL, m³, gal, ft³).",
         "safety-off-topic": "MQTT-Topic für Sicherheitsabschaltung",

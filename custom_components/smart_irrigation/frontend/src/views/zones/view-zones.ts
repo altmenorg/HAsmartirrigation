@@ -1714,17 +1714,15 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                     )
                   : ""}
                 ${this.config?.full_controller && zone.linked_entity
-                  ? this._textRow(
+                  ? this._entitiesRows(
                       localize("panels.zones.labels.extra-valves", lang),
                       localize("panels.zones.labels.extra-valves-hint", lang),
-                      (zone.extra_entities || []).join(", "),
-                      (v) =>
+                      zone.extra_entities || [],
+                      ["switch", "valve", "input_boolean", "light", "cover"],
+                      (entities) =>
                         this.handleEditZone(index, {
                           ...zone,
-                          [ZONE_EXTRA_ENTITIES]: v
-                            .split(",")
-                            .map((e) => e.trim())
-                            .filter((e) => e),
+                          [ZONE_EXTRA_ENTITIES]: entities,
                         }),
                     )
                   : ""}
@@ -2128,6 +2126,50 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         ></ha-entity-picker>
       </div>
     `;
+  }
+
+  /**
+   * A list of entities: one picker for each, and an empty one to add another.
+   * Entity ids used to be typed by hand and separated by commas, and nothing
+   * checked them until a run tried to switch them (#893).
+   */
+  private _entitiesRows(
+    label: string,
+    hint: string,
+    values: string[],
+    includeDomains: string[],
+    onCommit: (entities: string[]) => void,
+  ): TemplateResult {
+    return html`${[...values, ""].map(
+      (entityId, n) => html`
+        <div class="setting-row">
+          <div class="setting-label">
+            ${n === 0
+              ? html`${label}
+                ${hint ? html`<div class="setting-hint">${hint}</div>` : ""}`
+              : ""}
+          </div>
+          <ha-entity-picker
+            class="entity-field"
+            .hass=${this.hass}
+            .value=${entityId}
+            .includeDomains=${includeDomains}
+            allow-custom-entity
+            @value-changed=${(e: CustomEvent) => {
+              const value = (e.detail?.value || "").trim();
+              const next = [...values];
+              if (n < next.length) {
+                if (value) next[n] = value;
+                else next.splice(n, 1);
+              } else if (value) {
+                next.push(value);
+              }
+              onCommit(next.filter((id, i) => id && next.indexOf(id) === i));
+            }}
+          ></ha-entity-picker>
+        </div>
+      `,
+    )}`;
   }
 
   // Action button: native ha-button, light "filled" appearance,

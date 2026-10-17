@@ -605,7 +605,7 @@
         "measured-flow-help": "Su più cicli il contatore di portata della zona ha misurato una portata diversa da quella impostata sopra. È un consiglio, non viene mai applicato da solo.",
         "use-measured-flow": "Usa la portata misurata",
         "extra-valves": "Altre valvole della zona",
-        "extra-valves-hint": "aperte e chiuse insieme ad essa; separale con virgole",
+        "extra-valves-hint": "aperte e chiuse insieme ad essa",
         "flow-sensor": "Contatore di volume cumulativo",
         "flow-sensor-hint": "Per un accredito esatto invece di portata x tempo: un totale cumulativo del contatore d'acqua (classe di stato total_increasing), non una portata istantanea. L'unità viene letta automaticamente (L, mL, m³, gal, ft³).",
         "safety-off-topic": "Topic MQTT di spegnimento di sicurezza",
