@@ -139,6 +139,8 @@
         "sensors": {
           "question": "Welke entiteiten moet ze lezen?",
           "help": "Er wordt alleen gevraagd naar de sensoren die de berekening echt gebruikt.",
+          "help-optional": "Velden gemarkeerd als optioneel mogen leeg blijven: ontbrekende weerwaarden worden geschat, en zonder regensensor wordt geen regen meegeteld.",
+          "optional": "optioneel",
           "lux-hint": "Onder glas kan een lichtsensor de zonnestraling vervangen: kies hier je verlichtingssterkte-entiteit en zet haar bron daarna in de sensorgroep op Lichtsensor (lux).",
           "static-question": "Hoeveel verdampt er per dag?",
           "static-help": "Een waterhoogte, in de eenheid die je zones gebruiken. Zo'n 4 tot 5 mm per dag is gebruikelijk voor een gematigde zomer.",

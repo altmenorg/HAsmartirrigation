@@ -139,6 +139,8 @@
         "sensors": {
           "question": "Které entity má číst?",
           "help": "Ptáme se jen na ty, které výpočet skutečně používá.",
+          "help-optional": "Pole označená jako volitelná můžete nechat prázdná: chybějící meteorologické hodnoty se odhadnou a bez srážkoměru se žádný déšť nezapočítá.",
+          "optional": "volitelné",
           "lux-hint": "Pod sklem může světelný senzor zastoupit solární radiaci: vyberte zde svou entitu osvětlenosti a potom jí ve skupině senzorů nastavte zdroj na Světelný senzor (lux).",
           "static-question": "Kolik se vypaří za den?",
           "static-help": "Výška vodního sloupce, v jednotce, kterou vaše zóny používají. Někde kolem 4 až 5 mm za den je pro mírné léto běžné.",

@@ -139,6 +139,8 @@
         "sensors": {
           "question": "Hvilke entiteter skal den læse?",
           "help": "Der spørges kun om dem beregningen faktisk bruger.",
+          "help-optional": "Felter markeret som valgfrie kan stå tomme: manglende vejrværdier anslås, og uden regnsensor krediteres ingen regn.",
+          "optional": "valgfri",
           "lux-hint": "Under glas kan en lyssensor stå i stedet for solindstråling: vælg din belysningsstyrke-entitet her, og sæt bagefter dens kilde til Lyssensor (lux) i sensorgruppen.",
           "static-question": "Hvor meget fordamper der pr. dag?",
           "static-help": "En vanddybde, i den enhed dine zoner bruger. Omkring 4 til 5 mm om dagen er almindeligt for en tempereret sommer.",

@@ -139,6 +139,8 @@
         "sensors": {
           "question": "Mitä entiteettejä sen pitäisi lukea?",
           "help": "Kysytään vain niitä, joita laskenta todella käyttää.",
+          "help-optional": "Valinnaisiksi merkityt kentät voi jättää tyhjiksi: puuttuvat säätiedot arvioidaan, eikä ilman sademittaria sadetta hyvitetä.",
+          "optional": "valinnainen",
           "lux-hint": "Lasin alla valoanturi voi korvata auringon säteilyn: valitse valoisuusentiteettisi tässä ja aseta sen lähde jälkeenpäin anturiryhmässä arvoon Valoanturi (lux).",
           "static-question": "Kuinka paljon haihtuu päivässä?",
           "static-help": "Vesikerroksen paksuus, alueidesi käyttämässä yksikössä. Noin 4 - 5 mm päivässä on tavallista lauhkealle kesälle.",

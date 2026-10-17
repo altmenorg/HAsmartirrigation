@@ -139,6 +139,8 @@
         "sensors": {
           "question": "¿Qué entidades debe leer?",
           "help": "Solo se piden los que el cálculo usa de verdad.",
+          "help-optional": "Los campos marcados como opcionales pueden quedar vacíos: los valores meteorológicos que falten se estiman, y sin sensor de lluvia no se acredita lluvia.",
+          "optional": "opcional",
           "lux-hint": "Bajo cristal, un sensor de luz puede sustituir a la radiación solar: elige aquí tu entidad de iluminancia y después, en el grupo de sensores, pon su fuente en Sensor de luz (lux).",
           "static-question": "¿Cuánto se evapora al día?",
           "static-help": "Una altura de agua, en la unidad que usan tus zonas. Alrededor de 4 o 5 mm al día es habitual para un verano templado.",

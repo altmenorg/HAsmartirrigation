@@ -139,6 +139,8 @@
         "sensors": {
           "question": "Quali entità deve leggere?",
           "help": "Vengono chiesti solo quelli che il calcolo usa davvero.",
+          "help-optional": "I campi contrassegnati come facoltativi possono restare vuoti: i valori meteo mancanti vengono stimati e, senza sensore di pioggia, nessuna pioggia viene accreditata.",
+          "optional": "facoltativo",
           "lux-hint": "Sotto vetro un sensore di luce può sostituire la radiazione solare: scegli qui la tua entità di illuminamento e poi, nel gruppo di sensori, imposta la sua sorgente su Sensore di luce (lux).",
           "static-question": "Quanto evapora al giorno?",
           "static-help": "Un'altezza d'acqua, nell'unità che usano le tue zone. Intorno ai 4 o 5 mm al giorno è normale per un'estate temperata.",

@@ -139,6 +139,8 @@
         "sensors": {
           "question": "Vilka entiteter ska den läsa?",
           "help": "Bara de som beräkningen faktiskt använder efterfrågas.",
+          "help-optional": "Fält markerade som valfria kan lämnas tomma: saknade vädervärden uppskattas, och utan regnsensor räknas inget regn in.",
+          "optional": "valfritt",
           "lux-hint": "Under glas kan en ljussensor ersätta solinstrålningen: välj din belysningsstyrke-entitet här och sätt sedan dess källa till Ljussensor (lux) i sensorgruppen.",
           "static-question": "Hur mycket avdunstar per dag?",
           "static-help": "En vattenmängd i höjd, i den enhet dina zoner använder. Runt 4 till 5 mm om dagen är vanligt för en tempererad sommar.",

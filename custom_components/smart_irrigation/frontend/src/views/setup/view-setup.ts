@@ -165,16 +165,16 @@ class SmartIrrigationViewSetup extends LitElement {
     return ENGINE_FOR[this.weather];
   }
 
-  /**
-   * The sources to ask about: what the engine reads, minus what this
-   * environment makes meaningless. Under glass no rain arrives, so asking for a
-   * rain gauge would collect a number that describes somewhere else.
-   */
   /** The engine the answers imply, as the backend describes it. */
   private get engine(): SmartIrrigationModule | undefined {
     return this.allModules.find((m) => m.name === this.engineName);
   }
 
+  /**
+   * The sources to ask about: what the engine reads, minus what this
+   * environment makes meaningless. Under glass no rain arrives, so asking for a
+   * rain gauge would collect a number that describes somewhere else.
+   */
   private get sourcesToAsk(): string[] {
     const consumes = this.engine?.consumes ?? ALL_SOURCES;
     return ALL_SOURCES.filter(
