@@ -6,7 +6,7 @@ Smart Irrigation is the official integration, listed by default in HACS and used
 
 - **Bugs**: open an issue with what you expected, what you got, and if you can, the diagnostics file (Settings > Devices & Services > Smart Irrigation > Download diagnostics). It redacts your coordinates and API key.
 - **Ideas**: open a discussion first for anything larger than a fix, so we can agree on the design before you spend time on code.
-- **Scope**: Smart Irrigation decides *whether and how long* to water, and can drive one valve per zone. Controlling hardware beyond that (master valves, pumps, pressure, third-party controllers) belongs to other integrations; bridges to them, such as blueprints, are welcome.
+- **Scope**: Smart Irrigation decides *whether and how long* to water, and can drive the watering itself: a valve per zone, and with the full controller (opt-in) programs, several valves per zone, and pumps or main valves. It works on Home Assistant's standard entities (`valve`, `switch`, sensors with a device class) and stays brand-agnostic: what a particular device can do belongs in that device's own integration, so we keep per-brand device logic out of Smart Irrigation. Third-party irrigation controllers are bridged through blueprints, which are welcome.
 
 ## Setting up
 
