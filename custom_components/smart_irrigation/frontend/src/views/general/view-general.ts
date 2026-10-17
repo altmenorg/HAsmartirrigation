@@ -686,7 +686,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       ...(live.programs || []).map(
         (p: any) => html`
           <div class="setting-note">
-            <strong>${p.name}</strong>
+            <strong>${this._programLabel(p.program_id, p.name)}</strong>
             ${p.state === "waiting"
               ? html` - ${t("waiting")}`
               : html` - ${t("step")}
@@ -804,7 +804,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               (item: any) => html`
                 <div class="card-content">
                   <div class="setting-note">
-                    <strong>${dayTime(item.start)}</strong> ${item.program}
+                    <strong>${dayTime(item.start)}</strong>
+                    ${this._programLabel(item.program_id, item.program)}
                     (${clock(item.start)} - ${clock(item.end)})
                   </div>
                   ${item.steps.map(
@@ -919,9 +920,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       return isNaN(n) ? fallback : n;
     };
     const programName = (program: SmartIrrigationProgram) =>
-      program.main && program.name === "Main program"
-        ? t("main_name")
-        : program.name;
+      this._programLabel(program.main ? "main" : program.id, program.name);
     const toast = (message: string) =>
       fireEvent(this, "hass-notification" as any, { message } as any);
     const run = async (program: SmartIrrigationProgram) => {
@@ -3515,6 +3514,17 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
   // Action button: native ha-button, light "filled" appearance,
   // "danger" variant turns it red.
+  /**
+   * A program's name as shown: the main program's stored English default in
+   * the user's language. The planning and the live state showed "Main
+   * program" in a French panel.
+   */
+  private _programLabel(id: string | undefined, name: string | undefined) {
+    return id === "main" && (!name || name === "Main program")
+      ? localize("programs.main_name", this.hass?.language ?? "en")
+      : (name ?? id ?? "");
+  }
+
   /** Asks in a Home Assistant dialog; true to go ahead. */
   private _ask(text: string, destructive = false): Promise<boolean> {
     return askConfirmation(this.hass, { text, destructive });
