@@ -1188,3 +1188,38 @@ async def test_the_info_gives_the_main_programs_next_schedule_start():
     # The skip preview is read for that start.
     run_start = coord.async_evaluate_skip_conditions.call_args.kwargs["run_start"]
     assert run_start == _utc(2, 3, 30)
+
+
+async def test_what_a_zone_would_water_is_the_planned_run():
+    """The Info card said 10 min where the planning said 9: the forecast rain."""
+    from custom_components.smart_irrigation import websockets
+
+    coordinator = MagicMock()
+    coordinator.main_program_uses_schedules = lambda: False
+    coordinator.async_main_program_next_start = AsyncMock(return_value=None)
+    coordinator.store.async_get_zones = AsyncMock(
+        return_value=[
+            {
+                const.ZONE_ID: 1,
+                const.ZONE_NAME: "Potager",
+                const.ZONE_STATE: const.ZONE_STATE_AUTOMATIC,
+            }
+        ]
+    )
+    coordinator.store.async_get_config = AsyncMock(return_value={})
+    coordinator.store.config = SimpleNamespace(full_controller=False, programs=[])
+    coordinator.get_total_duration_all_enabled_zones = AsyncMock(return_value=540)
+    estimate = {"duration": 600, "bucket": -2.0}
+    coordinator.async_estimate_all_zones_now = AsyncMock(return_value={"1": estimate})
+    coordinator._planned_durations = AsyncMock(return_value={1: 540})
+    coordinator.async_evaluate_skip_conditions = AsyncMock(
+        return_value={"should_skip": False, "reason": None, "checks": []}
+    )
+    hass = MagicMock()
+    hass.states.get.return_value = None
+
+    info = await websockets.build_irrigation_info(hass, coordinator)
+
+    assert info["zone_estimates"]["1"]["duration"] == 540
+    # The shared estimate itself is left as it was.
+    assert estimate["duration"] == 600

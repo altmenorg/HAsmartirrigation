@@ -31,6 +31,12 @@ import { DOMAIN, ZONE_BUCKET } from "../../const";
  * manufacture prose. Where there is nothing to report it says so, rather than
  * filling the space with a sentence that reads like information.
  */
+/** One decimal, and a balance a hair below zero shown as 0.0 rather than -0.0. */
+function oneDecimal(value: unknown): string {
+  const text = Number(value).toFixed(1);
+  return text === "-0.0" ? "0.0" : text;
+}
+
 @customElement("smart-irrigation-view-info")
 class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
   hass?: HomeAssistant;
@@ -728,7 +734,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                             >${this.t("cards.estimate.labels.now")}:</span
                           >
                           <span class="value"
-                            >${Number(estimate.bucket).toFixed(1)} ${unit}</span
+                            >${oneDecimal(estimate.bucket)} ${unit}</span
                           >
                         </div>
                         <div class="pair">
@@ -748,7 +754,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                               : ""}:</span
                           >
                           <span class="value"
-                            >${Number(zone.bucket).toFixed(1)} ${unit}</span
+                            >${oneDecimal(zone.bucket)} ${unit}</span
                           >
                         </div>
                         <div class="pair">

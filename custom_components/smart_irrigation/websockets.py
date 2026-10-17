@@ -892,6 +892,17 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
         # The same durations the start is placed with and the planning shows,
         # forecast rain credited: the page said 28 min where they said 26.
         estimated_durations = await coordinator._planned_durations() or {}
+        # What each zone "would water" is that same run, not the estimate before
+        # the forecast rain: 10 min there, 9 in the planning. New dicts, the
+        # estimates are shared with the other readers.
+        zone_estimates = {
+            zone_id: (
+                {**estimate, "duration": estimated_durations[int(zone_id)]}
+                if isinstance(estimate, dict) and int(zone_id) in estimated_durations
+                else estimate
+            )
+            for zone_id, estimate in (zone_estimates or {}).items()
+        }
 
         # Calculate total duration and get enabled zones that need irrigation
         total_duration = await coordinator.get_total_duration_all_enabled_zones(

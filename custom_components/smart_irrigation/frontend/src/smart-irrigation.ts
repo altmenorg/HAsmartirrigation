@@ -651,6 +651,9 @@ export class SmartIrrigationPanel extends LitElement {
           );
           border-bottom: 1px solid var(--divider-color);
           overflow-x: auto;
+          /* On a phone the last chip was cut in half, with nothing saying the
+             row scrolls: the chips go to a second line instead. */
+          flex-wrap: wrap;
         }
 
         .sub-tab {
