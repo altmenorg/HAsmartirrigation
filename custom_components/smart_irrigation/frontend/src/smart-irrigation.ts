@@ -204,8 +204,11 @@ export class SmartIrrigationPanel extends LitElement {
       !path.page ||
       !Object.values(EMenuItems).includes(path.page as EMenuItems)
     ) {
+      // No return: the rest of the setup (the mode that shows the Watering
+      // tab, its subscription) is needed on this first page too. Opening the
+      // panel from the sidebar lands here, and returning left the tab hidden
+      // for the whole visit, even once the full controller was switched on.
       navigate(this, exportPath(EMenuItems.Info));
-      return;
     }
 
     window.addEventListener("location-changed", () => {

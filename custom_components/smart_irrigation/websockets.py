@@ -808,8 +808,24 @@ async def websocket_get_planning(hass: HomeAssistant, connection, msg):
         connection.send_error(msg["id"], "not_ready", "Smart Irrigation is loading")
         return
     connection.send_result(
-        msg["id"], await coordinator.async_planning(msg.get("days", 3))
+        msg["id"],
+        await coordinator.async_planning(
+            msg.get("days", 3), trigger_start=await _trigger_start(hass, coordinator)
+        ),
     )
+
+
+async def _trigger_start(hass: HomeAssistant, coordinator):
+    """When the start trigger runs the main program next, as Info says, or None.
+
+    None when the main program has schedules of its own: the trigger is then
+    not armed, and its time is not a start.
+    """
+    if getattr(coordinator, "main_program_uses_schedules", lambda: False)() is True:
+        return None
+    info = await build_irrigation_info(hass, coordinator)
+    start = None if info.get("error") else info.get("next_irrigation_start")
+    return dt_util.parse_datetime(start) if start else None
 
 
 @async_response

@@ -3,6 +3,7 @@ import { property, customElement, state } from "lit/decorators.js";
 import { HomeAssistant } from "custom-card-helpers";
 import { mdiClose } from "@mdi/js";
 import { localize } from "../../localize/localize";
+import { askConfirmation } from "./confirmation-dialog";
 import { IrrigationStartTrigger, TriggerType } from "../types";
 import { dialogStyle } from "../styles/global-style";
 import {
@@ -60,6 +61,8 @@ export class TriggerDialog extends LitElement {
   //@state() private _params?: TriggerDialogParams;
   @property({ attribute: false }) public params?: TriggerDialogParams;
   @state() private _trigger?: IrrigationStartTrigger;
+  /** Why the last save was refused, shown in the dialog. */
+  @state() private _error?: string;
 
   /*public async showDialog(params: TriggerDialogParams): Promise<void> {
     this._params = params;
@@ -84,6 +87,7 @@ export class TriggerDialog extends LitElement {
 
   public async showDialog(params: TriggerDialogParams): Promise<void> {
     this.params = params;
+    this._error = undefined;
 
     if (params.createTrigger) {
       this._trigger = {
@@ -107,6 +111,7 @@ export class TriggerDialog extends LitElement {
 
   private _closeDialog() {
     this.params = undefined;
+    this._error = undefined;
     this._trigger = undefined;
   }
 
@@ -146,11 +151,9 @@ export class TriggerDialog extends LitElement {
 
     // Validate trigger data
     if (!this._trigger.name?.trim()) {
-      alert(
-        localize(
-          "irrigation_start_triggers.validation.name_required",
-          this.hass.language,
-        ),
+      this._error = localize(
+        "irrigation_start_triggers.validation.name_required",
+        this.hass.language,
       );
       return;
     }
@@ -159,11 +162,9 @@ export class TriggerDialog extends LitElement {
       this._trigger.type === TRIGGER_TYPE_TIME &&
       !/^\d{1,2}:\d{2}$/.test(this._trigger.at ?? "")
     ) {
-      alert(
-        localize(
-          "irrigation_start_triggers.validation.time_invalid",
-          this.hass.language,
-        ),
+      this._error = localize(
+        "irrigation_start_triggers.validation.time_invalid",
+        this.hass.language,
       );
       return;
     }
@@ -173,11 +174,9 @@ export class TriggerDialog extends LitElement {
         this._trigger.azimuth_angle === undefined ||
         isNaN(this._trigger.azimuth_angle)
       ) {
-        alert(
-          localize(
-            "irrigation_start_triggers.validation.azimuth_invalid",
-            this.hass.language,
-          ),
+        this._error = localize(
+          "irrigation_start_triggers.validation.azimuth_invalid",
+          this.hass.language,
         );
         return;
       }
@@ -202,16 +201,22 @@ export class TriggerDialog extends LitElement {
     this._closeDialog();
   }
 
-  private _deleteTrigger() {
+  /** Asks in a Home Assistant dialog; true to go ahead. */
+  private _ask(text: string, destructive = false): Promise<boolean> {
+    return askConfirmation(this.hass, { text, destructive });
+  }
+
+  private async _deleteTrigger() {
     if (!this.params || this.params.createTrigger) return;
     // Asked, as the delete icon of the list does: this button deleted at once.
     if (
-      !confirm(
+      !(await this._ask(
         localize(
           "irrigation_start_triggers.confirm_delete",
           this.hass?.language ?? "en",
         ).replace("{name}", this._trigger?.name ?? ""),
-      )
+        true,
+      ))
     )
       return;
 
@@ -265,6 +270,9 @@ export class TriggerDialog extends LitElement {
         </div>
 
         <div class="wrapper">
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
           <div class="dialog-help">
             ${localize(
               "irrigation_start_triggers.dialog.help",

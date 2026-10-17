@@ -403,8 +403,14 @@ class ProgramStatusMixin:
 
     # --- planning ---------------------------------------------------------------------
 
-    async def async_planning(self, days: int = 3) -> list:
-        """Every start of every schedule over the next days, soonest first."""
+    async def async_planning(self, days: int = 3, trigger_start=None) -> list:
+        """Every start of every schedule over the next days, soonest first.
+
+        ``trigger_start`` is when the start trigger runs the main program next,
+        as the Info page works it out. A main program without schedules of its
+        own is started by that trigger alone, and the planning used to leave it
+        out: "no program is planned" above a garden watered every morning.
+        """
         config = self.store.config
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
             return []
@@ -419,8 +425,11 @@ class ProgramStatusMixin:
         sheltered = await self._planning_sheltered_zones()
         for program in getattr(config, const.CONF_PROGRAMS, None) or []:
             main = bool(program.get(const.PROGRAM_MAIN))
-            if program.get(const.PROGRAM_ENABLED) is False or (
-                main and not self.main_program_uses_schedules()
+            if program.get(const.PROGRAM_ENABLED) is False:
+                continue
+            by_trigger = main and not self.main_program_uses_schedules()
+            if by_trigger and not (
+                trigger_start is not None and now <= trigger_start <= until
             ):
                 continue
             program_id = program.get(const.PROGRAM_ID)
@@ -450,6 +459,30 @@ class ProgramStatusMixin:
                 }
                 for step in (plan[0] if plan else [])
             ]
+            if by_trigger:
+                planned.append(
+                    {
+                        "program_id": program_id,
+                        "program": program.get(const.PROGRAM_NAME) or program_id,
+                        "schedule_id": None,
+                        "start": trigger_start.isoformat(),
+                        "end": (trigger_start + timedelta(seconds=total)).isoformat(),
+                        "target": trigger_start.isoformat(),
+                        "anchor": None,
+                        "weather": True,
+                        "tours": len(plan),
+                        "expected_seconds": int(total),
+                        "steps": steps,
+                        "nothing_to_water": nothing,
+                        # The Info page says whether the trigger's run will be
+                        # skipped, with every condition: not guessed here.
+                        "skipped_reason": None,
+                        "forecast": None,
+                        "forecast_known": False,
+                        "sheltered_zone_ids": [],
+                    }
+                )
+                continue
             for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
                 if schedule.get(const.SCHEDULE_ENABLED) is False:
                     continue

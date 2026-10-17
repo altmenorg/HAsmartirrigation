@@ -398,20 +398,6 @@ export function IsEqual(
   return true;
 }
 
-export function showConfirmationDialog(
-  ev: Event | HTMLElement,
-  message: string | TemplateResult,
-  target: number,
-) {
-  const elem = ev.hasOwnProperty("tagName")
-    ? (ev as HTMLElement)
-    : ((ev as Event).target as HTMLElement);
-  fireEvent(elem, "show-dialog", {
-    dialogTag: "smart-irrigation-confirmation-dialog",
-    dialogImport: () => import("./dialogs/confirmation-dialog"),
-    dialogParams: { target: target, message: message },
-  });
-}
 export function showErrorDialog(
   ev: Event | HTMLElement,
   error: string | TemplateResult,

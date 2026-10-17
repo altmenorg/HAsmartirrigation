@@ -741,13 +741,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     if (!this.hass) {
       return;
     }
-    /*showConfirmationDialog(
-      ev,
-      "Are you sure you want to delete this zone?",
-      index
-    );*/
-    //const dialog = new ConfirmationDialog();
-    //dialog.showDialog("{'message':'Test!'}");
     const zoneid = this.zones[index].id;
     const zone = this.zones[index];
     if (!zone || zoneid == undefined) {

@@ -160,11 +160,33 @@ export const modernStyle = css`
   details.more {
     margin: 8px 0;
   }
+  /* A chevron, as Home Assistant's own expandable rows have, rather than the
+     browser's triangle: that one reads as a play icon, and sat right above the
+     Run now button, which has one. */
   details.more > summary {
     cursor: pointer;
     padding: 6px 0;
     color: var(--primary-color);
-    list-style-position: inside;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  details.more > summary::-webkit-details-marker {
+    display: none;
+  }
+  details.more > summary::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    margin-left: 2px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(-45deg);
+    transition: transform 0.15s;
+  }
+  details.more[open] > summary::before {
+    transform: rotate(45deg);
   }
   details.more > .more-body {
     border-left: 2px solid var(--divider-color);

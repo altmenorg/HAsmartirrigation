@@ -22,6 +22,7 @@ import {
 } from "../../helpers";
 import { loadHaForm } from "../../load-ha-elements";
 import "../../dialogs/trigger-dialog";
+import { askConfirmation } from "../../dialogs/confirmation-dialog";
 import {
   SmartIrrigationConfig,
   SmartIrrigationProgram,
@@ -787,8 +788,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             ${this._actionBtn(
               mdiStop,
               tc("stop"),
-              () => {
-                if (confirm(tc("confirm_stop"))) control("stop_watering");
+              async () => {
+                if (await this._ask(tc("confirm_stop"), true))
+                  control("stop_watering");
               },
               true,
               !anything,
@@ -927,7 +929,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       const name = programName(program);
       // It opens real valves, and nothing on the page used to say it had:
       // asked first, then told what came of it (#893).
-      if (!confirm(t("confirm_run").replace("{name}", name))) return;
+      if (!(await this._ask(t("confirm_run").replace("{name}", name)))) return;
       // Optional total duration and the replace mode, typed next to the button.
       const opts = RUN_OPTIONS[id ?? ""] || {};
       const seconds = Math.round(parseFloat(opts.seconds ?? ""));
@@ -1004,8 +1006,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       (this.programsState?.programs || []).find(
         (p: any) => p.program_id === id,
       );
-    const stopProgram = (program: SmartIrrigationProgram) => {
-      if (!confirm(t("confirm_stop_program").replace("{name}", program.name)))
+    const stopProgram = async (program: SmartIrrigationProgram) => {
+      if (
+        !(await this._ask(
+          t("confirm_stop_program").replace("{name}", program.name),
+          true,
+        ))
+      )
         return;
       this.hass!.callService(DOMAIN, "stop_program", {
         program_id: program.id,
@@ -1086,8 +1093,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           ${this._actionBtn(
             mdiDelete,
             t("adjust_reset"),
-            () => {
-              if (!confirm(t("confirm_reset_adjustment"))) return;
+            async () => {
+              if (!(await this._ask(t("confirm_reset_adjustment"), true)))
+                return;
               call({ reset: true });
             },
             true,
@@ -1398,8 +1406,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             ${this._actionBtn(
               mdiDelete,
               t("delete_step"),
-              () => {
-                if (!confirm(t("confirm_delete_step"))) return;
+              async () => {
+                if (!(await this._ask(t("confirm_delete_step"), true))) return;
                 patch(index, {
                   steps: (program.steps || []).filter(
                     (_, n) => n !== stepIndex,
@@ -1747,8 +1755,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             ${this._actionBtn(
               mdiDelete,
               t("delete_schedule"),
-              () => {
-                if (!confirm(t("confirm_delete_schedule"))) return;
+              async () => {
+                if (!(await this._ask(t("confirm_delete_schedule"), true)))
+                  return;
                 patch(index, {
                   schedules: (program.schedules || []).filter(
                     (_, n) => n !== scheduleIndex,
@@ -1937,14 +1946,15 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         ${this._actionBtn(
                           mdiDelete,
                           t("delete"),
-                          () => {
+                          async () => {
                             if (
-                              !confirm(
+                              !(await this._ask(
                                 t("confirm_delete_program").replace(
                                   "{name}",
                                   program.name,
                                 ),
-                              )
+                                true,
+                              ))
                             )
                               return;
                             save(programs.filter((_, n) => n !== index));
@@ -2080,14 +2090,15 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 ${this._actionBtn(
                   mdiDelete,
                   t("delete"),
-                  () => {
+                  async () => {
                     if (
-                      !confirm(
+                      !(await this._ask(
                         t("confirm_delete").replace(
                           "{name}",
                           supply.name || supply.id || "",
                         ),
-                      )
+                        true,
+                      ))
                     )
                       return;
                     save(supplies.filter((_, n) => n !== index));
@@ -2510,17 +2521,18 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _deleteTrigger(index: number) {
+  private async _deleteTrigger(index: number) {
     if (!this.config?.irrigation_start_triggers || !this.hass) return;
 
     const triggerName =
       this.config.irrigation_start_triggers[index]?.name || "Unknown";
     if (
-      confirm(
+      await this._ask(
         localize(
           "irrigation_start_triggers.confirm_delete",
           this.hass.language,
         ).replace("{name}", triggerName),
+        true,
       )
     ) {
       const triggers = [...this.config.irrigation_start_triggers];
@@ -2912,14 +2924,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             </div>
             <ha-switch
               .checked=${this.config.full_controller === true}
-              @change=${(e: Event) => {
+              @change=${async (e: Event) => {
                 const target = e.target as any;
                 const on = target.checked === true;
                 if (
                   on &&
-                  !confirm(
+                  !(await this._ask(
                     localize("observed_watering.confirm_full_controller", lang),
-                  )
+                  ))
                 ) {
                   target.checked = false;
                   return;
@@ -3503,6 +3515,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
   // Action button: native ha-button, light "filled" appearance,
   // "danger" variant turns it red.
+  /** Asks in a Home Assistant dialog; true to go ahead. */
+  private _ask(text: string, destructive = false): Promise<boolean> {
+    return askConfirmation(this.hass, { text, destructive });
+  }
+
   private _actionBtn(
     icon: string,
     label: string,
