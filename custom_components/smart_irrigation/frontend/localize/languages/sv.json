@@ -877,6 +877,8 @@
     "title": "Program",
     "description": "Ett program vattnar sina steg ett efter ett. Ett steg är en zon, eller flera som vattnas tillsammans, och får som standard den varaktighet som Smart Irrigation beräknat för det. Flera program körs aldrig samtidigt: nästa väntar på sin tur.",
     "main_description": "Vattnar alla zoner, en i taget eller tillsammans enligt inställningen nedan. Det startas av starttriggern, eller av sina egna scheman så snart ett är aktiverat.",
+    "run_options": "Startalternativ",
+    "adjust_empty": "Ange en procentsats eller sekunder för att justera tiderna.",
     "more_options": "Fler alternativ",
     "more_options_set": "med fler regler",
     "sequencing_title": "Zonernas ordning och pauser",

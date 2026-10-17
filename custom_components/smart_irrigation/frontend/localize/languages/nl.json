@@ -877,6 +877,8 @@
     "title": "Programma's",
     "description": "Een programma bewatert zijn stappen na elkaar. Een stap is één zone, of meerdere zones die samen worden bewaterd, en duurt standaard zo lang als Smart Irrigation ervoor berekende. Meerdere programma's draaien nooit tegelijk: het volgende wacht op zijn beurt.",
     "main_description": "Bewatert alle zones, na elkaar of samen zoals hieronder ingesteld. Het wordt gestart door de starttrigger, of door zijn eigen schema's zodra er één is ingeschakeld.",
+    "run_options": "Startopties",
+    "adjust_empty": "Vul een percentage of seconden in om de duur aan te passen.",
     "more_options": "Meer opties",
     "more_options_set": "met meer regels",
     "sequencing_title": "Volgorde van de zones en pauzes",

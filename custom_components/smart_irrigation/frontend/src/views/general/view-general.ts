@@ -956,40 +956,49 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       );
     };
     // The main program has no steps to share a total over: it takes no duration.
+    // What a manual run can be asked for: kept for the next press only, not
+    // saved, so folded away rather than shown among the saved settings (#893).
     const runOptions = (id: string | undefined) => html`
-      ${id === "main"
-        ? ""
-        : html`<div class="setting-row">
-              <div class="setting-label">
-                ${t("run_seconds")}
-                <span class="unit"
-                  >(${localize("common.units.seconds", lang)})</span
-                >
-              </div>
-              <input
-                class="field"
-                type="number"
-                min="1"
-                max="86400"
-                .value=${RUN_OPTIONS[id ?? ""]?.seconds ?? ""}
-                @input=${(e: Event) => {
-                  const o = (RUN_OPTIONS[id ?? ""] ||= {});
-                  o.seconds = (e.target as HTMLInputElement).value;
-                }}
-              />
-            </div>
-            <div class="setting-hint row-hint">${t("run_seconds_help")}</div>`}
-      <div class="setting-row">
-        <div class="setting-label">${t("run_replace")}</div>
-        <ha-switch
-          .checked=${RUN_OPTIONS[id ?? ""]?.replace === true}
-          @change=${(e: Event) => {
-            const o = (RUN_OPTIONS[id ?? ""] ||= {});
-            o.replace = (e.target as any).checked;
-          }}
-        ></ha-switch>
-      </div>
-      <div class="setting-hint row-hint">${t("run_replace_help")}</div>
+      <details class="more">
+        <summary>${t("run_options")}</summary>
+        <div class="more-body">
+          ${id === "main"
+            ? ""
+            : html`<div class="setting-row">
+                  <div class="setting-label">
+                    ${t("run_seconds")}
+                    <span class="unit"
+                      >(${localize("common.units.seconds", lang)})</span
+                    >
+                  </div>
+                  <input
+                    class="field"
+                    type="number"
+                    min="1"
+                    max="86400"
+                    .value=${RUN_OPTIONS[id ?? ""]?.seconds ?? ""}
+                    @input=${(e: Event) => {
+                      const o = (RUN_OPTIONS[id ?? ""] ||= {});
+                      o.seconds = (e.target as HTMLInputElement).value;
+                    }}
+                  />
+                </div>
+                <div class="setting-hint row-hint">
+                  ${t("run_seconds_help")}
+                </div>`}
+          <div class="setting-row">
+            <div class="setting-label">${t("run_replace")}</div>
+            <ha-switch
+              .checked=${RUN_OPTIONS[id ?? ""]?.replace === true}
+              @change=${(e: Event) => {
+                const o = (RUN_OPTIONS[id ?? ""] ||= {});
+                o.replace = (e.target as any).checked;
+              }}
+            ></ha-switch>
+          </div>
+          <div class="setting-hint row-hint">${t("run_replace_help")}</div>
+        </div>
+      </details>
     `;
     const stateOf = (id: string | undefined) =>
       (this.programsState?.programs || []).find(
@@ -1067,8 +1076,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             if (!isNaN(percent)) data.percent = percent;
             if (!isNaN(seconds)) data.seconds = Math.round(seconds);
             if (!isNaN(hours) && hours >= 1) data.hours = Math.round(hours);
-            if (data.percent === undefined && data.seconds === undefined)
+            if (data.percent === undefined && data.seconds === undefined) {
+              // It did nothing, and said nothing (#893).
+              toast(t("adjust_empty"));
               return;
+            }
             call(data);
           })}
           ${this._actionBtn(
@@ -2307,16 +2319,21 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           )}
         </div>
 
-        <div class="card-content trigger-usage">
-          ${localize(
-            "irrigation_start_triggers.usage_before",
-            this.hass.language,
-          )}
-          <code>smart_irrigation_start_irrigation_all_zones</code>${localize(
-            "irrigation_start_triggers.usage_after",
-            this.hass.language,
-          )}
-        </div>
+        ${this.config?.full_controller === true
+          ? // The full controller starts the watering itself: an automation
+            // started on this event as well would water a second time.
+            ""
+          : html`<div class="card-content trigger-usage">
+              ${localize(
+                "irrigation_start_triggers.usage_before",
+                this.hass.language,
+              )}
+              <code>smart_irrigation_start_irrigation_all_zones</code
+              >${localize(
+                "irrigation_start_triggers.usage_after",
+                this.hass.language,
+              )}
+            </div>`}
 
         <div class="card-content">
           <div class="setting-row">

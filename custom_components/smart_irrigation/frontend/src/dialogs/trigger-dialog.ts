@@ -204,6 +204,16 @@ export class TriggerDialog extends LitElement {
 
   private _deleteTrigger() {
     if (!this.params || this.params.createTrigger) return;
+    // Asked, as the delete icon of the list does: this button deleted at once.
+    if (
+      !confirm(
+        localize(
+          "irrigation_start_triggers.confirm_delete",
+          this.hass?.language ?? "en",
+        ).replace("{name}", this._trigger?.name ?? ""),
+      )
+    )
+      return;
 
     // Dispatch delete event
     this.dispatchEvent(

@@ -877,6 +877,8 @@
     "title": "Programas",
     "description": "Un programa riega sus pasos uno tras otro. Un paso es una zona, o varias regadas a la vez, y por defecto dura lo que Smart Irrigation calculó para él. Varios programas nunca se ejecutan a la vez: el siguiente espera su turno.",
     "main_description": "Riega todas las zonas, una tras otra o juntas según lo definido más abajo. Lo inicia el disparador de inicio, o sus propios horarios en cuanto se activa uno.",
+    "run_options": "Opciones de inicio",
+    "adjust_empty": "Indica un porcentaje o segundos para ajustar las duraciones.",
     "more_options": "Más opciones",
     "more_options_set": "con más reglas",
     "sequencing_title": "Orden de las zonas y pausas",

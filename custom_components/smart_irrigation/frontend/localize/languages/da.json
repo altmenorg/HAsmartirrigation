@@ -877,6 +877,8 @@
     "title": "Programmer",
     "description": "Et program vander sine trin et efter et. Et trin er én zone, eller flere der vandes samtidig, og varer som standard den tid, Smart Irrigation har beregnet til det. Flere programmer kører aldrig samtidig: det næste venter på sin tur.",
     "main_description": "Vander hver zone, én efter én eller samtidig som angivet nedenfor. Det startes af startudløseren, eller af sine egne tidsplaner, så snart én er aktiveret.",
+    "run_options": "Startindstillinger",
+    "adjust_empty": "Angiv en procentdel eller sekunder for at justere varighederne.",
     "more_options": "Flere indstillinger",
     "more_options_set": "med flere regler",
     "sequencing_title": "Zonernes rækkefølge og pauser",

@@ -877,6 +877,8 @@
     "title": "Programme",
     "description": "Ein Programm bewässert seine Schritte nacheinander. Ein Schritt ist eine Zone oder mehrere, die zusammen bewässert werden, und dauert standardmäßig so lange, wie Smart Irrigation es für ihn berechnet hat. Mehrere Programme laufen nie gleichzeitig: Das nächste wartet, bis es an der Reihe ist.",
     "main_description": "Bewässert jede Zone, nacheinander oder gemeinsam, wie unten eingestellt. Es wird vom Startauslöser gestartet, oder von seinen eigenen Zeitplänen, sobald einer aktiviert ist.",
+    "run_options": "Startoptionen",
+    "adjust_empty": "Gib einen Prozentsatz oder Sekunden ein, um die Dauern anzupassen.",
     "more_options": "Weitere Optionen",
     "more_options_set": "mit weiteren Regeln",
     "sequencing_title": "Reihenfolge der Zonen und Pausen",

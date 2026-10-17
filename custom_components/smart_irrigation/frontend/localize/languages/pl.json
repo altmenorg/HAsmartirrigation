@@ -877,6 +877,8 @@
     "title": "Programy",
     "description": "Program podlewa swoje kroki jeden po drugim. Krok to jedna strefa lub kilka podlewanych razem i domyślnie trwa tyle, ile Smart Irrigation dla niego obliczył. Kilka programów nigdy nie działa jednocześnie: następny czeka na swoją kolej.",
     "main_description": "Podlewa wszystkie strefy, jedną po drugiej albo razem, jak ustawiono niżej. Uruchamia go wyzwalacz startu albo jego własne harmonogramy, gdy tylko jeden jest włączony.",
+    "run_options": "Opcje uruchomienia",
+    "adjust_empty": "Podaj procent lub sekundy, aby dostosować czasy.",
     "more_options": "Więcej opcji",
     "more_options_set": "z dodatkowymi regułami",
     "sequencing_title": "Kolejność stref i przerwy",

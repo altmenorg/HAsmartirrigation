@@ -877,6 +877,8 @@
     "title": "Ohjelmat",
     "description": "Ohjelma kastelee vaiheensa yksi kerrallaan. Vaihe on yksi vyöhyke tai useampi yhtä aikaa kasteltava, ja se kestää oletuksena sen ajan, jonka Smart Irrigation on sille laskenut. Useita ohjelmia ei koskaan ajeta yhtä aikaa: seuraava odottaa vuoroaan.",
     "main_description": "Kastelee jokaisen vyöhykkeen, peräkkäin tai yhtä aikaa alla asetetulla tavalla. Sen käynnistää aloitusliipaisin, tai sen omat aikataulut heti kun yksi on käytössä.",
+    "run_options": "Käynnistysasetukset",
+    "adjust_empty": "Anna prosentti tai sekunnit kestojen säätämiseksi.",
     "more_options": "Lisää asetuksia",
     "more_options_set": "lisäsäännöin",
     "sequencing_title": "Vyöhykkeiden järjestys ja tauot",

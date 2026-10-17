@@ -756,8 +756,8 @@
     "usage_before": "When a trigger fires, Smart Irrigation emits the event ",
     "usage_after": " — listen to it in an automation to start watering. The event data includes trigger_name, trigger_type and offset_minutes, so you can react differently per trigger. The precipitation skip and days-between-irrigation settings still apply: on a skip day no event is fired.",
     "add_trigger": "Add trigger",
-    "edit_trigger": "Edit Trigger",
-    "delete_trigger": "Delete Trigger",
+    "edit_trigger": "Edit trigger",
+    "delete_trigger": "Delete trigger",
     "trigger_types": {
       "sunrise": "Sunrise",
       "sunset": "Sunset",
@@ -766,11 +766,11 @@
     },
     "fields": {
       "name": {
-        "name": "Trigger Name",
+        "name": "Trigger name",
         "description": "A descriptive name to identify this trigger"
       },
       "type": {
-        "name": "Trigger Type",
+        "name": "Trigger type",
         "description": "The type of solar event to trigger on"
       },
       "enabled": {
@@ -782,11 +782,11 @@
         "description": "Minutes before (-) or after (+) the solar event. For sunrise triggers, use 0 for automatic timing based on total zone duration."
       },
       "azimuth_angle": {
-        "name": "Azimuth Angle (degrees)",
+        "name": "Azimuth angle (degrees)",
         "description": "Solar azimuth angle in degrees where 0=North, 90=East, 180=South, 270=West"
       },
       "account_for_duration": {
-        "name": "Account for Duration",
+        "name": "Account for duration",
         "description": "When enabled, irrigation will start early enough to finish at the specified time. When disabled, irrigation will start exactly at the specified time."
       },
       "at": {
@@ -877,6 +877,8 @@
     "title": "Programs",
     "description": "A program waters its steps one after the other. A step is one zone, or several watered together, and by default takes the duration Smart Irrigation calculated for it. Several programs never run at the same time: the next one waits its turn.",
     "main_description": "Waters every zone, one after the other or together as set below. It is started by the start trigger, or by its own schedules once one is enabled.",
+    "run_options": "Run options",
+    "adjust_empty": "Enter a percentage or seconds to adjust the durations.",
     "more_options": "More options",
     "more_options_set": "with more rules",
     "sequencing_title": "Order of the zones and pauses",

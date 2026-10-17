@@ -877,6 +877,8 @@
     "title": "Programi",
     "description": "Program zaliva svoje korake drug za drugim. Korak je ena cona ali več con, ki se zalivajo skupaj, in privzeto traja toliko, kot je zanj izračunal Smart Irrigation. Več programov nikoli ne teče hkrati: naslednji počaka na vrsto.",
     "main_description": "Zaliva vse cone, eno za drugo ali skupaj, kot je nastavljeno spodaj. Zažene ga sprožilec zagona ali njegovi lastni urniki, takoj ko je en vklopljen.",
+    "run_options": "Možnosti zagona",
+    "adjust_empty": "Vnesi odstotek ali sekunde, da prilagodiš trajanja.",
     "more_options": "Več možnosti",
     "more_options_set": "z dodatnimi pravili",
     "sequencing_title": "Vrstni red con in premori",
