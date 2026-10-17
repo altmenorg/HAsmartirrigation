@@ -259,19 +259,7 @@ class WeatherLivenessMixin:
             mapping = self.store.get_mapping(mapping_id)
             if mapping is None:
                 continue
-            reports = self._liveness_reports(mapping)
-            service_after = service_silent_after(
-                self.store.get_config() if hasattr(self.store, "get_config") else None
-            )
-            silent = silent_fields(
-                reports,
-                now,
-                {
-                    report.field: service_after
-                    for report in reports
-                    if report.source == WEATHER_SERVICE_LABEL
-                },
-            )
+            silent = self._silent_fields_of(mapping, now)
             previous = state.get(mapping_id, {})
             newly, recovered = diff_silent(set(previous), silent)
             if silent:
@@ -291,6 +279,22 @@ class WeatherLivenessMixin:
                     f"{const.DOMAIN}_{const.EVENT_WEATHER_RECOVERED}",
                     self._liveness_event(mapping, recovered),
                 )
+
+    def _silent_fields_of(self, mapping: dict, now=None) -> list[SilentField]:
+        """The watched fields of one group whose source is silent right now."""
+        reports = self._liveness_reports(mapping)
+        service_after = service_silent_after(
+            self.store.get_config() if hasattr(self.store, "get_config") else None
+        )
+        return silent_fields(
+            reports,
+            now or dt_util.utcnow(),
+            {
+                report.field: service_after
+                for report in reports
+                if report.source == WEATHER_SERVICE_LABEL
+            },
+        )
 
     @staticmethod
     def _liveness_event(mapping: dict, fields: list) -> dict:

@@ -1666,6 +1666,11 @@ class CalculationMixin:
         ``Current Precipitation`` and the migration leaves ``Precipitation``
         without a source. The 0.0 it last held kept being carried over, and a
         depth takes precedence over a rate, so every drop was discarded.
+
+        Nor a field whose source has gone silent: a dead thermometer's last
+        reading would otherwise stand in for every later day, while the repair
+        notice says it stopped. The same threshold decides both, so what the
+        calculation leaves out is what the notice names.
         """
         last_entry = mapping.get(const.MAPPING_DATA_LAST_ENTRY)
         _LOGGER.debug(
@@ -1676,11 +1681,21 @@ class CalculationMixin:
         if not last_entry:
             return
         sourced = self._sourced_fields(mapping)
+        silent_of = getattr(self, "_silent_fields_of", None)
+        silent = {item.field for item in silent_of(mapping)} if silent_of else set()
         for key, val in last_entry.items():
             if key not in data_by_sensor and key not in sourced:
                 _LOGGER.debug(
                     "[_fill_missing_from_last_entry]: %s has no source on this sensor "
                     "group any more, not carrying its last value (%s) over",
+                    key,
+                    val,
+                )
+                continue
+            if key not in data_by_sensor and key in silent:
+                _LOGGER.debug(
+                    "[_fill_missing_from_last_entry]: the source of %s is silent, "
+                    "not carrying its last value (%s) over",
                     key,
                     val,
                 )

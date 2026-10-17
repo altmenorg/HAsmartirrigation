@@ -13,12 +13,15 @@ so it takes precedence over the rate. Rain stopped reaching the bucket
 entirely, with no error and nothing missing from the panel (#834).
 """
 
+from datetime import timedelta
 from unittest.mock import MagicMock
 
+import homeassistant.util.dt as dt_util
 import pytest
 
 from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.calculation import CalculationMixin
+from custom_components.smart_irrigation.liveness import WeatherLivenessMixin
 
 
 class _Coordinator(CalculationMixin):
@@ -118,3 +121,54 @@ class TestWhatTheCalculationThenSees:
 
         # One hour observed at 2 mm/h, not the 0.0 mm the old depth asserted.
         assert precip == pytest.approx(2.0)
+
+
+class TestASilentSourceIsNotCarriedOver:
+    """A dead thermometer's last reading must not stand in for every later day.
+
+    With continuous updates, a field missing from the window takes the group's
+    last entry, which used to have no age limit: one sensor outage and the
+    last temperature it sent fed every calculation after it, while the repair
+    notice already said the sensor had stopped. The same threshold now decides
+    both.
+    """
+
+    class _Live(CalculationMixin, WeatherLivenessMixin):
+        def __init__(self, reported_hours_ago):
+            self.store = MagicMock()
+            self.store.get_config = MagicMock(return_value={})
+            self.hass = MagicMock()
+            state = MagicMock()
+            state.last_reported = dt_util.utcnow() - timedelta(hours=reported_hours_ago)
+            self.hass.states.get = MagicMock(return_value=state)
+
+    @staticmethod
+    def _mapping():
+        return {
+            const.MAPPING_ID: 1,
+            const.MAPPING_NAME: "Garden",
+            const.MAPPING_MAPPINGS: {
+                const.MAPPING_TEMPERATURE: {
+                    const.MAPPING_CONF_SOURCE: const.MAPPING_CONF_SOURCE_SENSOR,
+                    const.MAPPING_CONF_SENSOR: "sensor.garden_temperature",
+                },
+            },
+            const.MAPPING_DATA_LAST_ENTRY: {const.MAPPING_TEMPERATURE: 21.0},
+        }
+
+    def test_a_sensor_silent_beyond_the_threshold_is_left_out(self):
+        coord = self._Live(reported_hours_ago=const.STALE_AFTER_HOURS + 4)
+        data_by_sensor = {}
+
+        coord._fill_missing_from_last_entry(self._mapping(), data_by_sensor)
+
+        assert const.MAPPING_TEMPERATURE not in data_by_sensor
+
+    def test_a_sensor_that_reported_recently_still_carries_over(self):
+        """A steady temperature sends no new state, and must keep counting."""
+        coord = self._Live(reported_hours_ago=1)
+        data_by_sensor = {}
+
+        coord._fill_missing_from_last_entry(self._mapping(), data_by_sensor)
+
+        assert data_by_sensor[const.MAPPING_TEMPERATURE] == [21.0]
