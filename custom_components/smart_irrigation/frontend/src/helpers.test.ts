@@ -19,6 +19,7 @@ import {
   displayTemperature,
   displayVolume,
   getOptionsForMappingType,
+  missingRequiredSources,
 } from "./helpers";
 
 /**
@@ -150,5 +151,53 @@ describe("what the watering calendar shows", () => {
   it("reads a missing value as zero rather than NaN", () => {
     expect(displayDepth(undefined as any, imperial)).toBe(0);
     expect(displayTemperature(null as any, imperial)).toBe(32);
+  });
+});
+
+/**
+ * The setup assistant used to make every source it asked for mandatory, so a
+ * PyETO zone could not be created without a sensor for each of them, though
+ * the engine estimates all but temperature and wind.
+ */
+describe("missingRequiredSources", () => {
+  const asked = [
+    MAPPING_TEMPERATURE,
+    MAPPING_DEWPOINT,
+    MAPPING_HUMIDITY,
+    MAPPING_PRESSURE,
+    MAPPING_WINDSPEED,
+    MAPPING_SOLRAD,
+    MAPPING_PRECIPITATION,
+  ];
+  const requires = [MAPPING_TEMPERATURE, MAPPING_WINDSPEED];
+
+  it("lets the assistant go on once the required sources are chosen", () => {
+    expect(
+      missingRequiredSources(asked, requires, {
+        [MAPPING_TEMPERATURE]: "sensor.t",
+        [MAPPING_WINDSPEED]: "sensor.w",
+      }),
+    ).toEqual([]);
+  });
+
+  it("names a required source that is still missing", () => {
+    expect(
+      missingRequiredSources(asked, requires, {
+        [MAPPING_TEMPERATURE]: "sensor.t",
+        [MAPPING_HUMIDITY]: "sensor.h",
+      }),
+    ).toEqual([MAPPING_WINDSPEED]);
+  });
+
+  it("requires every source asked for when the backend does not say", () => {
+    expect(
+      missingRequiredSources(
+        [MAPPING_TEMPERATURE, MAPPING_HUMIDITY],
+        undefined,
+        {
+          [MAPPING_TEMPERATURE]: "sensor.t",
+        },
+      ),
+    ).toEqual([MAPPING_HUMIDITY]);
   });
 });

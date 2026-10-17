@@ -139,6 +139,8 @@
         "sensors": {
           "question": "Quelles entités doit-il lire ?",
           "help": "Seules celles que le calcul utilise vraiment te sont demandées.",
+          "help-optional": "Les champs marqués facultatifs peuvent rester vides : les valeurs météo manquantes sont estimées, et sans capteur de pluie aucune pluie n'est créditée.",
+          "optional": "facultatif",
           "lux-hint": "Sous verre, un capteur de luminosité peut remplacer un capteur de rayonnement : choisis ici ton entité d'illuminance, puis règle sa source sur Capteur de luminosité (lux) dans le groupe de capteurs.",
           "static-question": "Combien s'évapore-t-il par jour ?",
           "static-help": "Une hauteur d'eau, dans l'unité de tes zones. Autour de 4 à 5 mm par jour est courant pour un été tempéré.",

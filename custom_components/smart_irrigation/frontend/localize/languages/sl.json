@@ -139,6 +139,8 @@
         "sensors": {
           "question": "Katere entitete naj bere?",
           "help": "Sprašuje samo po tistih, ki jih izračun dejansko uporablja.",
+          "help-optional": "Polja, označena kot neobvezna, lahko ostanejo prazna: manjkajoče vremenske vrednosti se ocenijo, brez senzorja dežja pa se dež ne upošteva.",
+          "optional": "neobvezno",
           "lux-hint": "Pod steklom lahko senzor svetlobe nadomesti sončno sevanje: tu izberi svojo entiteto osvetljenosti, nato pa v skupini senzorjev nastavi njen vir na Senzor svetlobe (lux).",
           "static-question": "Koliko izhlapi na dan?",
           "static-help": "Višina vode v enoti, ki jo uporabljajo tvoje cone. Za zmerno poletje so običajne vrednosti okoli 4 do 5 mm na dan.",

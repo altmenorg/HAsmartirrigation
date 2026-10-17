@@ -318,6 +318,11 @@ export class SmartIrrigationModule {
    * disagree about what a group needs.
    */
   consumes?: string[];
+  /**
+   * The sources among those it cannot do without; the others are estimated
+   * when they are missing. Sent by the backend beside ``consumes``.
+   */
+  requires?: string[];
   /** Options this engine offers that do nothing for the groups feeding it. */
   idle_options?: string[];
   //duration: number;

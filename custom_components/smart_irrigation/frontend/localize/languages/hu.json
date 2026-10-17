@@ -139,6 +139,8 @@
         "sensors": {
           "question": "Mely entitásokat olvassa?",
           "help": "Csak azokat kérdezzük, amelyeket a számítás valóban használ.",
+          "help-optional": "A nem kötelezőként jelölt mezők üresen maradhatnak: a hiányzó időjárási értékek becslése megtörténik, esőérzékelő nélkül pedig nem kerül jóváírásra eső.",
+          "optional": "nem kötelező",
           "lux-hint": "Üveg alatt egy fényérzékelő helyettesítheti a napsugárzást: válaszd ki itt a megvilágítás entitásodat, majd az érzékelőcsoportban állítsd a forrását Fényérzékelő (lux) értékre.",
           "static-question": "Mennyi párolog el naponta?",
           "static-help": "Vízmagasság, a zónáid által használt egységben. Mérsékelt nyáron körülbelül napi 4 - 5 mm a szokásos.",

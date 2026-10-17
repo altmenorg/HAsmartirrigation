@@ -488,6 +488,22 @@ const ENGINE_MODES: Record<string, string> = {
   PyETO: "advanced",
 };
 
+/**
+ * The asked-for sources still missing that the engine cannot do without.
+ *
+ * Only ``requires`` blocks the setup assistant: a source an engine merely
+ * reads is estimated when it is left empty. When the backend does not say what
+ * is required (an older one), every source asked for is, as it was before.
+ */
+export function missingRequiredSources(
+  asked: string[],
+  requires: string[] | undefined,
+  chosen: Record<string, string>,
+): string[] {
+  const required = requires ? asked.filter((s) => requires.includes(s)) : asked;
+  return required.filter((source) => !chosen[source]);
+}
+
 export function engineModeLabel(
   engineName: string | undefined,
   lang: string,

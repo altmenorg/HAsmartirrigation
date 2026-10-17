@@ -139,6 +139,8 @@
         "sensors": {
           "question": "Ktoré entity má čítať?",
           "help": "Pýtame sa len na tie, ktoré výpočet skutočne používa.",
+          "help-optional": "Polia označené ako voliteľné môžete nechať prázdne: chýbajúce meteorologické hodnoty sa odhadnú a bez zrážkomera sa žiadny dážď nezapočíta.",
+          "optional": "voliteľné",
           "lux-hint": "Pod sklom môže svetelný senzor zastúpiť solárnu radiáciu: vyberte tu svoju entitu osvetlenia a potom jej v skupine senzorov nastavte zdroj na Svetelný senzor (lux).",
           "static-question": "Koľko sa vyparí za deň?",
           "static-help": "Výška vodného stĺpca, v jednotke, ktorú vaše zóny používajú. Niekde okolo 4 až 5 mm za deň je pre mierne leto bežné.",

@@ -20,7 +20,11 @@ import {
   SmartIrrigationMapping,
   SmartIrrigationModule,
 } from "../../types";
-import { engineModeLabel, output_unit } from "../../helpers";
+import {
+  engineModeLabel,
+  missingRequiredSources,
+  output_unit,
+} from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
@@ -161,14 +165,18 @@ class SmartIrrigationViewSetup extends LitElement {
     return ENGINE_FOR[this.weather];
   }
 
+  /** The engine the answers imply, as the backend describes it. */
+  private get engine(): SmartIrrigationModule | undefined {
+    return this.allModules.find((m) => m.name === this.engineName);
+  }
+
   /**
    * The sources to ask about: what the engine reads, minus what this
    * environment makes meaningless. Under glass no rain arrives, so asking for a
    * rain gauge would collect a number that describes somewhere else.
    */
   private get sourcesToAsk(): string[] {
-    const engine = this.allModules.find((m) => m.name === this.engineName);
-    const consumes = engine?.consumes ?? ALL_SOURCES;
+    const consumes = this.engine?.consumes ?? ALL_SOURCES;
     return ALL_SOURCES.filter(
       (source) =>
         consumes.includes(source) &&
@@ -188,6 +196,13 @@ class SmartIrrigationViewSetup extends LitElement {
     // The weather service supplies everything it can; rain indoors is not a
     // thing, and nothing else needs asking.
     return [];
+  }
+
+  /** Sources asked for that may stay empty: the engine estimates them. */
+  private get optionalToAsk(): string[] {
+    const requires = this.engine?.requires;
+    if (!requires) return [];
+    return this.sensorsToAsk.filter((s) => !requires.includes(s));
   }
 
   private get steps(): string[] {
@@ -213,7 +228,13 @@ class SmartIrrigationViewSetup extends LitElement {
         );
       case "sensors":
         if (this.weather === "static") return Number(this.staticDelta) > 0;
-        return this.sensorsToAsk.every((s) => (this.sensors[s] ?? "") !== "");
+        return (
+          missingRequiredSources(
+            this.sensorsToAsk,
+            this.engine?.requires,
+            this.sensors,
+          ).length === 0
+        );
       default:
         return true;
     }
@@ -438,13 +459,22 @@ class SmartIrrigationViewSetup extends LitElement {
     return html`
       <h3>${this.t("steps.sensors.question")}</h3>
       <div class="note">${this.t("steps.sensors.help")}</div>
+      ${this.optionalToAsk.length
+        ? html`<div class="note">${this.t("steps.sensors.help-optional")}</div>`
+        : ""}
       ${this.underGlass && this.sensorsToAsk.includes(MAPPING_SOLRAD)
         ? html`<div class="note">${this.t("steps.sensors.lux-hint")}</div>`
         : ""}
       ${this.sensorsToAsk.map(
         (source) => html`
           <div class="setting-row">
-            <div class="setting-label">${source}</div>
+            <div class="setting-label">
+              ${source}${this.optionalToAsk.includes(source)
+                ? html` <span class="step-count"
+                    >(${this.t("steps.sensors.optional")})</span
+                  >`
+                : ""}
+            </div>
             <ha-entity-picker
               class="entity-field"
               .hass=${this.hass}

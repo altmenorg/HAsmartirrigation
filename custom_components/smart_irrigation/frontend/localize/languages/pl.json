@@ -139,6 +139,8 @@
         "sensors": {
           "question": "Które encje ma czytać?",
           "help": "Pytamy tylko o te, których obliczenie naprawdę używa.",
+          "help-optional": "Pola oznaczone jako opcjonalne mogą pozostać puste: brakujące wartości pogodowe są szacowane, a bez czujnika deszczu opady nie są zaliczane.",
+          "optional": "opcjonalne",
           "lux-hint": "Pod szkłem czujnik światła może zastąpić promieniowanie słoneczne: wybierz tu swoją encję natężenia światła, a potem w grupie czujników ustaw jej źródło na Czujnik światła (lux).",
           "static-question": "Ile paruje na dobę?",
           "static-help": "Wysokość słupa wody, w jednostce używanej przez twoje strefy. Gdzieś około 4 do 5 mm na dobę to typowa wartość dla umiarkowanego lata.",
