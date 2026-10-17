@@ -3,7 +3,7 @@
     "loading": "Wird geladen",
     "saving": "Wird gespeichert",
     "actions": {
-      "delete": "Lösche"
+      "delete": "Löschen"
     },
     "labels": {
       "module": "Modul",
@@ -1139,5 +1139,13 @@
       "compact": "Nur Zonen, die bewässern würden",
       "show_programs": "Die Programme anzeigen (volle Steuerung)"
     }
+  },
+  "confirm": {
+    "delete_zone": "Die Zone „{name}“ löschen? Ihre Einstellungen und ihre Wasserbilanz gehen verloren.",
+    "delete_mapping": "Die Sensorgruppe „{name}“ löschen? Die Zonen, die sie nutzen, haben dann keine Wetterdaten.",
+    "delete_module": "Das Modul „{name}“ löschen? Die Zonen, die es nutzen, können nicht mehr berechnet werden.",
+    "reset_bucket": "Die Wasserbilanz von „{name}“ auf null zurücksetzen?",
+    "reset_all_buckets": "Die Wasserbilanz aller Zonen auf null zurücksetzen?",
+    "clear_all_weather": "Alle gesammelten Wetterdaten löschen? Die nächste Berechnung hat nur die danach folgenden Messwerte."
   }
 }

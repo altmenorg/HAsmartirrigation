@@ -1139,5 +1139,13 @@
       "compact": "Csak az öntöző zónák",
       "show_programs": "A programok megjelenítése (teljes vezérlő)"
     }
+  },
+  "confirm": {
+    "delete_zone": "Törlöd a(z) „{name}” zónát? A beállításai és a vízmérlege elvesznek.",
+    "delete_mapping": "Törlöd a(z) „{name}” érzékelőcsoportot? Az ezt használó zónáknak nem lesz időjárási adata.",
+    "delete_module": "Törlöd a(z) „{name}” modult? Az ezt használó zónák többé nem számolhatók.",
+    "reset_bucket": "Nullázod a(z) „{name}” vízmérlegét?",
+    "reset_all_buckets": "Nullázod az összes zóna vízmérlegét?",
+    "clear_all_weather": "Törlöd az összes gyűjtött időjárási adatot? A következő számításban csak az utána érkező mérések lesznek."
   }
 }

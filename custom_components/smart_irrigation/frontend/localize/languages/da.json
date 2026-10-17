@@ -1139,5 +1139,13 @@
       "compact": "Kun zoner, der ville vande",
       "show_programs": "Vis programmerne (fuld styring)"
     }
+  },
+  "confirm": {
+    "delete_zone": "Slet zonen \"{name}\"? Dens indstillinger og vandbalance går tabt.",
+    "delete_mapping": "Slet sensorgruppen \"{name}\"? De zoner, der bruger den, får ingen vejrdata.",
+    "delete_module": "Slet modulet \"{name}\"? De zoner, der bruger det, kan ikke længere beregnes.",
+    "reset_bucket": "Nulstil vandbalancen for \"{name}\"?",
+    "reset_all_buckets": "Nulstil vandbalancen for alle zoner?",
+    "clear_all_weather": "Slet alle indsamlede vejrdata? Den næste beregning har kun de efterfølgende målinger."
   }
 }

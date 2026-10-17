@@ -1139,5 +1139,13 @@
       "compact": "Vain vyöhykkeet, jotka kastelisivat",
       "show_programs": "Näytä ohjelmat (täysi ohjain)"
     }
+  },
+  "confirm": {
+    "delete_zone": "Poistetaanko vyöhyke \"{name}\"? Sen asetukset ja vesitase menetetään.",
+    "delete_mapping": "Poistetaanko anturiryhmä \"{name}\"? Sitä käyttävät vyöhykkeet jäävät ilman säätietoja.",
+    "delete_module": "Poistetaanko moduuli \"{name}\"? Sitä käyttäviä vyöhykkeitä ei voi enää laskea.",
+    "reset_bucket": "Nollataanko vyöhykkeen \"{name}\" vesitase?",
+    "reset_all_buckets": "Nollataanko kaikkien vyöhykkeiden vesitase?",
+    "clear_all_weather": "Tyhjennetäänkö kaikki kerätyt säätiedot? Seuraavassa laskennassa on vain sen jälkeiset mittaukset."
   }
 }

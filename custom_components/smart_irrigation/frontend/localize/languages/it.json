@@ -1139,5 +1139,13 @@
       "compact": "Solo le zone che irrigherebbero",
       "show_programs": "Mostra i programmi (controller completo)"
     }
+  },
+  "confirm": {
+    "delete_zone": "Eliminare la zona «{name}»? Le sue impostazioni e il suo bilancio idrico vanno persi.",
+    "delete_mapping": "Eliminare il gruppo di sensori «{name}»? Le zone che lo usano resteranno senza dati meteo.",
+    "delete_module": "Eliminare il modulo «{name}»? Le zone che lo usano non potranno più essere calcolate.",
+    "reset_bucket": "Azzerare il bilancio idrico di «{name}»?",
+    "reset_all_buckets": "Azzerare il bilancio idrico di tutte le zone?",
+    "clear_all_weather": "Cancellare tutti i dati meteo raccolti? Il prossimo calcolo avrà solo le letture successive."
   }
 }

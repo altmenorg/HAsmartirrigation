@@ -26,6 +26,7 @@ import {
 import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
+import { askConfirmation } from "../../dialogs/confirmation-dialog";
 import {
   DOMAIN,
   MAPPING_CONF_AGGREGATE,
@@ -491,12 +492,19 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
       });
   }
 
-  private handleRemoveMapping(ev: Event, index: number): void {
+  private async handleRemoveMapping(ev: Event, index: number): Promise<void> {
     //get the mapping id for the mapping at this index
     const mappingid = this.mappings[index].id;
     if (mappingid == undefined) {
       return;
     }
+    // It deleted at once, and the zones reading it lost their weather.
+    const text = localize(
+      "confirm.delete_mapping",
+      this.hass?.language ?? "en",
+    ).replace("{name}", this.mappings[index].name ?? "");
+    if (!(await askConfirmation(this.hass, { text, destructive: true })))
+      return;
 
     // Store original for potential rollback
     const originalMappings = [...this.mappings];
@@ -1806,7 +1814,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
   ): TemplateResult {
     return html`
       <ha-button
-        appearance=${danger ? "accent" : "filled"}
+        appearance=${danger ? "outlined" : "filled"}
         variant=${danger ? "danger" : "brand"}
         ?disabled=${disabled}
         @click=${onClick}

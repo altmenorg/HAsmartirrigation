@@ -57,6 +57,7 @@ import {
 } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
 import { localize } from "../../../localize/localize";
+import { askConfirmation } from "../../dialogs/confirmation-dialog";
 import {
   CONF_METRIC,
   DOMAIN,
@@ -283,6 +284,15 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     }
   }
 
+  /** Asks before something that cannot be undone; true to go ahead. */
+  private _ask(key: string, name?: string): Promise<boolean> {
+    const text = localize(key, this.hass?.language ?? "en").replace(
+      "{name}",
+      name ?? "",
+    );
+    return askConfirmation(this.hass, { text, destructive: true });
+  }
+
   private handleCalculateAllZones(): void {
     if (!this.hass) {
       return;
@@ -313,10 +323,11 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       });
   }
 
-  private handleResetAllBuckets(): void {
+  private async handleResetAllBuckets(): Promise<void> {
     if (!this.hass) {
       return;
     }
+    if (!(await this._ask("confirm.reset_all_buckets"))) return;
     this.isSaving = true;
     resetAllBuckets(this.hass)
       .catch((error) => {
@@ -328,10 +339,11 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       });
   }
 
-  private handleClearAllWeatherdata(): void {
+  private async handleClearAllWeatherdata(): Promise<void> {
     if (!this.hass) {
       return;
     }
+    if (!(await this._ask("confirm.clear_all_weather"))) return;
     this.isSaving = true;
     clearAllWeatherdata(this.hass)
       .catch((error) => {
@@ -737,7 +749,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     this._scheduleUpdate();
   }
 
-  private handleRemoveZone(ev: Event, index: number): void {
+  private async handleRemoveZone(ev: Event, index: number): Promise<void> {
     if (!this.hass) {
       return;
     }
@@ -746,6 +758,8 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     if (!zone || zoneid == undefined) {
       return;
     }
+    // It deleted at once, the zone's water balance with it.
+    if (!(await this._ask("confirm.delete_zone", zone.name))) return;
 
     // Store original for potential rollback
     const originalZones = [...this.zones];
@@ -1933,8 +1947,13 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 ${this._actionBtn(
                   mdiPailRemove,
                   localize("panels.zones.actions.reset-bucket", lang),
-                  () =>
-                    this.handleEditZone(index, { ...zone, [ZONE_BUCKET]: 0.0 }),
+                  async () => {
+                    if (await this._ask("confirm.reset_bucket", zone.name))
+                      this.handleEditZone(index, {
+                        ...zone,
+                        [ZONE_BUCKET]: 0.0,
+                      });
+                  },
                 )}
                 ${zone.mapping != undefined
                   ? this._actionBtn(
@@ -2176,7 +2195,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
   ): TemplateResult {
     return html`
       <ha-button
-        appearance=${danger ? "accent" : "filled"}
+        appearance=${danger ? "outlined" : "filled"}
         variant=${danger ? "danger" : "brand"}
         ?disabled=${disabled}
         @click=${onClick}

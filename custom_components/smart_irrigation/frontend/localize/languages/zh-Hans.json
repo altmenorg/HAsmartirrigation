@@ -1139,5 +1139,13 @@
       "compact": "仅显示需要浇水的区域",
       "show_programs": "显示程序（完整控制器）"
     }
+  },
+  "confirm": {
+    "delete_zone": "删除区域“{name}”？它的设置和水分平衡将会丢失。",
+    "delete_mapping": "删除传感器组“{name}”？使用它的区域将没有天气数据。",
+    "delete_module": "删除模块“{name}”？使用它的区域将无法再计算。",
+    "reset_bucket": "将“{name}”的水分平衡归零？",
+    "reset_all_buckets": "将所有区域的水分平衡归零？",
+    "clear_all_weather": "清除所有已收集的天气数据？下一次计算只会使用之后的读数。"
   }
 }

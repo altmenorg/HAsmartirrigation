@@ -1139,5 +1139,13 @@
       "compact": "Samo cone, ki bi zalivale",
       "show_programs": "Prikaži programe (celoten krmilnik)"
     }
+  },
+  "confirm": {
+    "delete_zone": "Izbrišem cono »{name}«? Njene nastavitve in vodna bilanca se izgubijo.",
+    "delete_mapping": "Izbrišem skupino senzorjev »{name}«? Cone, ki jo uporabljajo, ne bodo imele vremenskih podatkov.",
+    "delete_module": "Izbrišem modul »{name}«? Con, ki ga uporabljajo, ne bo več mogoče izračunati.",
+    "reset_bucket": "Ponastavim vodno bilanco cone »{name}« na nič?",
+    "reset_all_buckets": "Ponastavim vodno bilanco vseh con na nič?",
+    "clear_all_weather": "Izbrišem vse zbrane vremenske podatke? Naslednji izračun bo imel le poznejše meritve."
   }
 }

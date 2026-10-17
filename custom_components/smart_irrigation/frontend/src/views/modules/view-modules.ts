@@ -23,6 +23,7 @@ import {
 import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
+import { askConfirmation } from "../../dialogs/confirmation-dialog";
 import { DOMAIN } from "../../const";
 import { prettyPrint, getPart } from "../../helpers";
 import {
@@ -232,6 +233,13 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
     if (this.isSaving) {
       return;
     }
+    // It deleted at once, and the zones using it could no longer calculate.
+    const text = localize(
+      "confirm.delete_module",
+      this.hass?.language ?? "en",
+    ).replace("{name}", this.modules[index]?.name ?? "");
+    if (!(await askConfirmation(this.hass, { text, destructive: true })))
+      return;
 
     this.isSaving = true;
     this._scheduleUpdate();
@@ -617,7 +625,7 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
   ): TemplateResult {
     return html`
       <ha-button
-        appearance=${danger ? "accent" : "filled"}
+        appearance=${danger ? "outlined" : "filled"}
         variant=${danger ? "danger" : "brand"}
         ?disabled=${disabled}
         @click=${onClick}

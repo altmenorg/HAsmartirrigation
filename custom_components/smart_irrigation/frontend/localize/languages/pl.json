@@ -1139,5 +1139,13 @@
       "compact": "Tylko strefy, które by podlewały",
       "show_programs": "Pokaż programy (pełny kontroler)"
     }
+  },
+  "confirm": {
+    "delete_zone": "Usunąć strefę „{name}”? Jej ustawienia i bilans wodny zostaną utracone.",
+    "delete_mapping": "Usunąć grupę czujników „{name}”? Strefy, które z niej korzystają, nie będą miały danych pogodowych.",
+    "delete_module": "Usunąć moduł „{name}”? Strefy, które z niego korzystają, nie będą mogły być obliczane.",
+    "reset_bucket": "Wyzerować bilans wodny strefy „{name}”?",
+    "reset_all_buckets": "Wyzerować bilans wodny wszystkich stref?",
+    "clear_all_weather": "Wyczyścić wszystkie zebrane dane pogodowe? Następne obliczenie będzie miało tylko późniejsze odczyty."
   }
 }

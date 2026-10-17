@@ -1139,5 +1139,13 @@
       "compact": "Bara zoner som skulle bevattna",
       "show_programs": "Visa programmen (fullständig styrenhet)"
     }
+  },
+  "confirm": {
+    "delete_zone": "Ta bort zonen \"{name}\"? Dess inställningar och vattenbalans går förlorade.",
+    "delete_mapping": "Ta bort sensorgruppen \"{name}\"? Zonerna som använder den får inga väderdata.",
+    "delete_module": "Ta bort modulen \"{name}\"? Zonerna som använder den kan inte längre beräknas.",
+    "reset_bucket": "Nollställa vattenbalansen för \"{name}\"?",
+    "reset_all_buckets": "Nollställa vattenbalansen för alla zoner?",
+    "clear_all_weather": "Rensa alla insamlade väderdata? Nästa beräkning har bara mätningarna som kommer efteråt."
   }
 }

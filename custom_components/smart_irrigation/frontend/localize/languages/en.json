@@ -1139,5 +1139,13 @@
       "compact": "Only the zones that would water",
       "show_programs": "Show the programs (full controller)"
     }
+  },
+  "confirm": {
+    "delete_zone": "Delete the zone \"{name}\"? Its settings and water balance are lost.",
+    "delete_mapping": "Delete the sensor group \"{name}\"? The zones that use it will have no weather data.",
+    "delete_module": "Delete the module \"{name}\"? The zones that use it can no longer be calculated.",
+    "reset_bucket": "Set the water balance of \"{name}\" back to zero?",
+    "reset_all_buckets": "Set the water balance of every zone back to zero?",
+    "clear_all_weather": "Clear all the weather data collected? The next calculation only has the readings that come after."
   }
 }

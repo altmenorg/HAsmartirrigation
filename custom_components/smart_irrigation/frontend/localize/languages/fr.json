@@ -3,7 +3,7 @@
     "loading": "Chargement",
     "saving": "Enregistrement",
     "actions": {
-      "delete": "Suppression"
+      "delete": "Supprimer"
     },
     "labels": {
       "module": "Module",
@@ -1139,5 +1139,13 @@
       "compact": "Seulement les zones qui arroseraient",
       "show_programs": "Afficher les programmes (contrôleur complet)"
     }
+  },
+  "confirm": {
+    "delete_zone": "Supprimer la zone « {name} » ? Ses réglages et son bilan hydrique sont perdus.",
+    "delete_mapping": "Supprimer le groupe de capteurs « {name} » ? Les zones qui l'utilisent n'auront plus de données météo.",
+    "delete_module": "Supprimer le module « {name} » ? Les zones qui l'utilisent ne pourront plus être calculées.",
+    "reset_bucket": "Remettre à zéro le bilan hydrique de « {name} » ?",
+    "reset_all_buckets": "Remettre à zéro le bilan hydrique de toutes les zones ?",
+    "clear_all_weather": "Effacer toutes les données météo collectées ? Le prochain calcul n'aura que les relevés qui suivent."
   }
 }

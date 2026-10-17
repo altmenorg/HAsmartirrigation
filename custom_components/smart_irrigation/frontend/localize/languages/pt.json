@@ -1139,5 +1139,13 @@
       "compact": "Apenas as zonas que regariam",
       "show_programs": "Mostrar os programas (controlador completo)"
     }
+  },
+  "confirm": {
+    "delete_zone": "Eliminar a zona «{name}»? As suas definições e o seu balanço hídrico perdem-se.",
+    "delete_mapping": "Eliminar o grupo de sensores «{name}»? As zonas que o usam ficam sem dados meteorológicos.",
+    "delete_module": "Eliminar o módulo «{name}»? As zonas que o usam deixam de poder ser calculadas.",
+    "reset_bucket": "Repor a zero o balanço hídrico de «{name}»?",
+    "reset_all_buckets": "Repor a zero o balanço hídrico de todas as zonas?",
+    "clear_all_weather": "Apagar todos os dados meteorológicos recolhidos? O próximo cálculo só terá as leituras seguintes."
   }
 }

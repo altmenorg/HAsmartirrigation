@@ -1139,5 +1139,13 @@
       "compact": "Bare soner som ville vannet",
       "show_programs": "Vis programmene (full kontroller)"
     }
+  },
+  "confirm": {
+    "delete_zone": "Slette sonen «{name}»? Innstillingene og vannbalansen går tapt.",
+    "delete_mapping": "Slette sensorgruppen «{name}»? Sonene som bruker den, får ingen værdata.",
+    "delete_module": "Slette modulen «{name}»? Sonene som bruker den, kan ikke lenger beregnes.",
+    "reset_bucket": "Nullstille vannbalansen for «{name}»?",
+    "reset_all_buckets": "Nullstille vannbalansen for alle soner?",
+    "clear_all_weather": "Slette alle innsamlede værdata? Neste beregning har bare målingene som kommer etterpå."
   }
 }

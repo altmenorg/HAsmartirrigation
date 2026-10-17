@@ -1139,5 +1139,13 @@
       "compact": "Alleen zones die zouden beregenen",
       "show_programs": "Programma's tonen (volledige controller)"
     }
+  },
+  "confirm": {
+    "delete_zone": "De zone \"{name}\" verwijderen? De instellingen en de waterbalans gaan verloren.",
+    "delete_mapping": "De sensorgroep \"{name}\" verwijderen? De zones die hem gebruiken hebben dan geen weergegevens.",
+    "delete_module": "De module \"{name}\" verwijderen? De zones die hem gebruiken kunnen niet meer worden berekend.",
+    "reset_bucket": "De waterbalans van \"{name}\" op nul zetten?",
+    "reset_all_buckets": "De waterbalans van alle zones op nul zetten?",
+    "clear_all_weather": "Alle verzamelde weergegevens wissen? De volgende berekening heeft alleen de metingen die daarna komen."
   }
 }

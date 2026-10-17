@@ -1139,5 +1139,13 @@
       "compact": "Len zóny, ktoré by zavlažovali",
       "show_programs": "Zobraziť programy (plný ovládač)"
     }
+  },
+  "confirm": {
+    "delete_zone": "Odstrániť zónu „{name}“? Jej nastavenia a vodná bilancia sa stratia.",
+    "delete_mapping": "Odstrániť skupinu senzorov „{name}“? Zóny, ktoré ju používajú, nebudú mať údaje o počasí.",
+    "delete_module": "Odstrániť modul „{name}“? Zóny, ktoré ho používajú, už nebude možné vypočítať.",
+    "reset_bucket": "Vynulovať vodnú bilanciu zóny „{name}“?",
+    "reset_all_buckets": "Vynulovať vodnú bilanciu všetkých zón?",
+    "clear_all_weather": "Vymazať všetky zozbierané údaje o počasí? Ďalší výpočet bude mať len nasledujúce merania."
   }
 }
