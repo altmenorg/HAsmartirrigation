@@ -889,17 +889,9 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
         # Calculated again just before the first start, the zones are not
         # going to water what they hold now: the stored durations belong to the
         # last calculation, the live estimate to the one the start will run.
-        early_config = await coordinator.store.async_get_config()
-        estimated_durations = {}
-        if early_config.get(const.CONF_RECALCULATE_BEFORE_START, False):
-            for zone in zones:
-                estimate = (zone_estimates or {}).get(str(zone.get(const.ZONE_ID)))
-                if (
-                    zone.get(const.ZONE_STATE) == const.ZONE_STATE_AUTOMATIC
-                    and isinstance(estimate, dict)
-                    and estimate.get("duration") is not None
-                ):
-                    estimated_durations[zone.get(const.ZONE_ID)] = estimate["duration"]
+        # The same durations the start is placed with and the planning shows,
+        # forecast rain credited: the page said 28 min where they said 26.
+        estimated_durations = await coordinator._planned_durations() or {}
 
         # Calculate total duration and get enabled zones that need irrigation
         total_duration = await coordinator.get_total_duration_all_enabled_zones(

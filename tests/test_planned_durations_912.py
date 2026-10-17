@@ -55,6 +55,9 @@ async def test_a_schedule_with_water_says_it_has_some():
 async def test_the_programs_plan_on_the_estimate_when_the_start_recalculates():
     hass, coord = _status([_program([{"time": "20:25"}], steps=[{"zones": [0]}])])
     coord.store.config.recalculate_before_start = True
+    coord.store.async_get_config = AsyncMock(
+        return_value={const.CONF_RECALCULATE_BEFORE_START: True}
+    )
     coord.async_estimate_all_zones_now = AsyncMock(
         return_value={"0": {"duration": 900}, "1": {"duration": 0}}
     )
@@ -62,6 +65,25 @@ async def test_the_programs_plan_on_the_estimate_when_the_start_recalculates():
     [planned] = await coord.async_planning(1)
 
     assert planned["steps"][0]["zones"][0]["seconds"] == 900
+
+
+async def test_the_planning_shows_the_run_the_start_is_placed_for():
+    """Forecast rain credited, as the start is: the page said 28 min, the
+    planning's total 26, and its zones added up to 29."""
+    hass, coord = _status([_program([{"time": "20:25"}], steps=[{"zones": [0]}])])
+    coord.store.config.recalculate_before_start = True
+    coord.store.async_get_config = AsyncMock(
+        return_value={const.CONF_RECALCULATE_BEFORE_START: True}
+    )
+    coord.async_estimate_all_zones_now = AsyncMock(
+        return_value={"0": {"duration": 900, "bucket": -3.0}}
+    )
+    coord._planned_forecast_credit = AsyncMock(return_value=(1.0, set()))
+    coord._duration_with_forecast_rain = lambda zone, bucket_mm, mm: 600
+
+    [planned] = await coord.async_planning(1)
+
+    assert planned["steps"][0]["zones"][0]["seconds"] == 600
 
 
 async def test_without_the_recalculation_the_stored_durations_stand():

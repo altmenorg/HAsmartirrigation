@@ -195,6 +195,20 @@ class ProgramStatusMixin:
         config = self.store.config
         if not getattr(config, const.CONF_RECALCULATE_BEFORE_START, False):
             return zones
+        planned_durations = getattr(self, "_planned_durations", None)
+        if planned_durations is not None:
+            # The durations the start is placed with, forecast rain credited.
+            planned = await planned_durations()
+            if planned is None:
+                return zones
+            return [
+                (
+                    {**zone, const.ZONE_DURATION: planned[zone.get(const.ZONE_ID)]}
+                    if zone.get(const.ZONE_ID) in planned
+                    else zone
+                )
+                for zone in zones
+            ]
         try:
             estimates = await self.async_estimate_all_zones_now() or {}
         except Exception as e:  # noqa: BLE001 - a display must not fail

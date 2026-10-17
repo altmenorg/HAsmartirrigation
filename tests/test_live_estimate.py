@@ -167,3 +167,45 @@ async def test_an_estimate_leaves_a_pending_calculation_record_alone():
     await coordinator.async_estimate_zone_now({const.ZONE_MAPPING: 1})
 
     assert coordinator._pending_calc_record == {"real": True}
+
+
+def _keyed_store(zones):
+    store = _store(mapping_data=[{"evapotranspiration": 3.0}], zones=zones)
+    store.async_get_modules = AsyncMock(return_value=[])
+    store.async_get_config = AsyncMock(return_value={})
+    return store
+
+
+async def test_the_estimates_are_reused_while_nothing_changed():
+    """The planning asked for them four times per refresh, seconds apiece."""
+    coord = _Coordinator(_keyed_store([_zone()]))
+
+    first = await coord.async_estimate_all_zones_now()
+    second = await coord.async_estimate_all_zones_now()
+
+    assert first == second
+    assert coord.calculate_module.await_count == 1
+
+
+async def test_a_change_in_a_zone_computes_them_again():
+    zones = [_zone()]
+    coord = _Coordinator(_keyed_store(zones))
+
+    await coord.async_estimate_all_zones_now()
+    zones[0][const.ZONE_LAST_CALCULATED] = "2026-10-17T23:00:00"
+    await coord.async_estimate_all_zones_now()
+
+    assert coord.calculate_module.await_count == 2
+
+
+async def test_callers_at_the_same_time_share_one_computation():
+    import asyncio
+
+    coord = _Coordinator(_keyed_store([_zone()]))
+
+    first, second = await asyncio.gather(
+        coord.async_estimate_all_zones_now(), coord.async_estimate_all_zones_now()
+    )
+
+    assert first == second
+    assert coord.calculate_module.await_count == 1

@@ -89,10 +89,23 @@ class TriggersMixin:
         rain as it will be when it starts, so the start is placed for the run
         that will be made rather than a longer one.
         """
-        stored = await self.get_total_duration_all_enabled_zones()
+        planned = await self._planned_durations()
+        if planned is None:
+            return await self.get_total_duration_all_enabled_zones()
+        return await self.get_total_duration_all_enabled_zones(planned)
+
+    async def _planned_durations(self) -> dict | None:
+        """What each automatic zone will water at the next start, by zone id.
+
+        None when the zones are not calculated again before the start: their
+        stored durations are then the run. Otherwise the live estimate, less
+        the forecast rain when that is credited, which is what the calculation
+        at the start will find. The start is placed with it, and the planning
+        and the Info page show it, so the three cannot disagree.
+        """
         config = await self.store.async_get_config()
         if not config.get(const.CONF_RECALCULATE_BEFORE_START, False):
-            return stored
+            return None
         try:
             estimates = await self.async_estimate_all_zones_now()
             zones = await self.store.async_get_zones()
@@ -108,10 +121,10 @@ class TriggersMixin:
                     replaced[zone.get(const.ZONE_ID)] = self._planned_credited(
                         zone, estimate, credit
                     )
-            return await self.get_total_duration_all_enabled_zones(replaced)
+            return replaced
         except Exception as ex:  # noqa: BLE001 - arming must not fail over this
             _LOGGER.debug("Live estimate unavailable to place the start: %s", ex)
-            return stored
+            return None
 
     async def _planned_forecast_credit(self, config):
         """(expected mm, sheltered zone ids) to credit the planned run, or None.

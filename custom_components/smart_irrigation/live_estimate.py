@@ -23,8 +23,11 @@ Two limits worth knowing, both stated rather than hidden:
   calculation will commit.
 """
 
+import asyncio
 import datetime
+import json
 import logging
+import time
 
 import homeassistant.util.dt as dt_util
 from homeassistant.util.unit_system import METRIC_SYSTEM
@@ -35,6 +38,11 @@ from .hourly_rows import SystemLocalTime
 from .units import depth_to_display
 
 _LOGGER = logging.getLogger(__name__)
+
+# How long a set of estimates is reused while nothing it depends on changed.
+# Several readers ask within one panel refresh (the start placement, the
+# planning, the Info page), each used to compute them again, seconds apiece.
+ESTIMATE_REUSE_SECONDS = 60
 
 
 def _aware_iso(moment):
@@ -145,9 +153,70 @@ class LiveEstimateMixin:
             return None
 
     async def async_estimate_all_zones_now(self) -> dict:
-        """Live estimates for every zone that is not disabled, keyed by zone id."""
+        """Live estimates for every zone that is not disabled, keyed by zone id.
+
+        Reused while the zones, their sensor groups' readings, the modules and
+        the configuration are what they were, for at most a minute: the planning
+        alone asked for them four times per refresh, a few seconds each, and
+        the panel refreshes every few seconds. Callers asking at the same time
+        share one computation.
+        """
+        zones = await self.store.async_get_zones()
+        key = await self._estimate_key(zones)
+        cached = getattr(self, "_estimate_cache", None)
+        if (
+            key is not None
+            and cached is not None
+            and cached[0] == key
+            and time.monotonic() - cached[1] < ESTIMATE_REUSE_SECONDS
+        ):
+            return dict(cached[2])
+        inflight = getattr(self, "_estimate_inflight", None)
+        if key is not None and inflight is not None and inflight[0] == key:
+            return dict(await asyncio.shield(inflight[1]))
+        task = asyncio.ensure_future(self._estimate_all_zones(zones))
+        self._estimate_inflight = (key, task)
+        try:
+            estimates = await asyncio.shield(task)
+        finally:
+            if getattr(self, "_estimate_inflight", None) == (key, task):
+                self._estimate_inflight = None
+        self._estimate_cache = (key, time.monotonic(), estimates)
+        return dict(estimates)
+
+    async def _estimate_key(self, zones) -> str | None:
+        """What the estimates depend on, compared rather than watched."""
+        try:
+            mappings = {}
+            for zone in zones:
+                mapping_id = zone.get(const.ZONE_MAPPING)
+                mapping = self.store.get_mapping(mapping_id) if mapping_id else None
+                if not mapping:
+                    continue
+                data = mapping.get(const.MAPPING_DATA) or []
+                mappings[str(mapping_id)] = (
+                    len(data),
+                    data[-1] if data else None,
+                    mapping.get(const.MAPPING_MAPPINGS),
+                    mapping.get(const.MAPPING_DATA_LAST_ENTRY),
+                )
+            return json.dumps(
+                [
+                    zones,
+                    mappings,
+                    await self.store.async_get_modules(),
+                    await self.store.async_get_config(),
+                ],
+                sort_keys=True,
+                default=str,
+            )
+        except Exception:  # noqa: BLE001 - no key, no reuse: computed afresh
+            _LOGGER.debug("No key for the live estimates", exc_info=True)
+            return None
+
+    async def _estimate_all_zones(self, zones) -> dict:
         estimates = {}
-        for zone in await self.store.async_get_zones():
+        for zone in zones:
             if zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED:
                 continue
             estimate = await self.async_estimate_zone_now(zone)

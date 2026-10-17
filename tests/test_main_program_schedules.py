@@ -979,6 +979,7 @@ async def test_the_info_says_what_starts_the_main_program():
         coordinator.store.async_get_config = AsyncMock(return_value={})
         coordinator.store.config = SimpleNamespace(full_controller=uses, programs=[])
         coordinator.get_total_duration_all_enabled_zones = AsyncMock(return_value=0)
+        coordinator._planned_durations = AsyncMock(return_value=None)
         coordinator.async_evaluate_skip_conditions = AsyncMock(
             return_value={"should_skip": False, "reason": None, "checks": []}
         )
