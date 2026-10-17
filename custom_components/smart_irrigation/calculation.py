@@ -2566,7 +2566,7 @@ class CalculationMixin:
                         "module.calculation.explanation.lead-time-is-applied",
                         self.hass.config.language,
                     )
-                    + f" {lead_time} s.</li></ol>"
+                    + f" {lead_time:g} s.</li></ol>"
                 )
                 explanation += (
                     await localize(
