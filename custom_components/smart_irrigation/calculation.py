@@ -1586,6 +1586,10 @@ class CalculationMixin:
         ``Current Precipitation`` and the migration leaves ``Precipitation``
         without a source. The 0.0 it last held kept being carried over, and a
         depth takes precedence over a rate, so every drop was discarded.
+
+        Nor a field whose sensor has gone silent: a dead thermometer's last
+        reading would otherwise stand in for every later day. The age limit is
+        the one a new reading must meet to be recorded at all.
         """
         last_entry = mapping.get(const.MAPPING_DATA_LAST_ENTRY)
         _LOGGER.debug(
@@ -1605,6 +1609,14 @@ class CalculationMixin:
                     val,
                 )
                 continue
+            if key not in data_by_sensor and self._sensor_is_silent(mapping, key):
+                _LOGGER.debug(
+                    "[_fill_missing_from_last_entry]: the sensor of %s is silent, "
+                    "not carrying its last value (%s) over",
+                    key,
+                    val,
+                )
+                continue
             if key not in data_by_sensor and val is not None:
                 _LOGGER.debug(
                     "[_fill_missing_from_last_entry]: %s is missing from data_by_sensor, adding %s from last entry",
@@ -1614,6 +1626,21 @@ class CalculationMixin:
                 data_by_sensor[key] = [val]
                 if audit is not None:
                     audit["carried_over"].append(key)
+
+    def _sensor_is_silent(self, mapping, key) -> bool:
+        """Whether the sensor feeding ``key`` has not reported for too long."""
+        the_map = (mapping.get(const.MAPPING_MAPPINGS) or {}).get(key)
+        if not isinstance(the_map, dict):
+            return False
+        if the_map.get(const.MAPPING_CONF_SOURCE) not in (
+            const.MAPPING_CONF_SENSOR_BACKED_SOURCES
+        ):
+            return False
+        entity_id = the_map.get(const.MAPPING_CONF_SENSOR)
+        is_stale = getattr(self, "_is_stale", None)
+        if not entity_id or is_stale is None:
+            return False
+        return is_stale(key, self.hass.states.get(entity_id))
 
     async def _async_clear_all_weatherdata(self, *args):
         _LOGGER.info("Clearing all weatherdata")
