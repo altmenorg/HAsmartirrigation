@@ -430,6 +430,31 @@ def adopt_module_from_zones(mappings: dict, zones: dict) -> dict:
     return mappings
 
 
+def static_delta_dries(name, config):
+    """A fixed-amount engine's delta, as the drying it was typed for.
+
+    The Static engine adds its delta to the bucket, so a zone dries by a
+    negative one. The zone card and the setup assistant asked for the
+    evaporation per day and stored it as typed: 4 mm of evaporation added 4 mm
+    of water every day, and the zone was never watered, with nothing to say so.
+    A positive delta never means anything else, so it is turned around.
+    """
+    if name != "Static" or not isinstance(config, dict):
+        return config
+    try:
+        delta = float(config.get("delta"))
+    except (TypeError, ValueError):
+        return config
+    if delta <= 0:
+        return config
+    _LOGGER.warning(
+        "A fixed-amount engine added %s mm of water a day instead of removing "
+        "it; it now dries the zone by that amount",
+        delta,
+    )
+    return {**config, "delta": -delta}
+
+
 def move_service_precipitation_to_the_rate(the_map: dict) -> dict:
     """Move a weather-service precipitation mapping onto the rate field.
 
@@ -1220,7 +1245,9 @@ class SmartIrrigationStorage:
                     schema_from_code = None
                     modconfig = None
                     if MODULE_CONFIG in module:
-                        modconfig = module[MODULE_CONFIG]
+                        modconfig = static_delta_dries(
+                            module.get(MODULE_NAME), module[MODULE_CONFIG]
+                        )
                     # load the calc modules and set up the schema
                     mods = await self.hass.async_add_executor_job(
                         loadModules, MODULE_DIR
