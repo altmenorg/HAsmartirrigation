@@ -154,7 +154,6 @@ describe("what the watering calendar shows", () => {
   });
 });
 
-
 /**
  * The setup assistant saves its zone with the method it is calculated by, and
  * lets the integration bind the engine. Creating the engine itself reused the

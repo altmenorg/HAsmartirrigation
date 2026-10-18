@@ -18,11 +18,7 @@ import {
   SmartIrrigationMapping,
   SmartIrrigationModule,
 } from "../../types";
-import {
-  engineModeLabel,
-  output_unit,
-  setupZoneMethod,
-} from "../../helpers";
+import { engineModeLabel, output_unit, setupZoneMethod } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
