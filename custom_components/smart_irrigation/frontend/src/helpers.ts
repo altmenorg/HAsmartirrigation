@@ -490,6 +490,53 @@ export function missingRequiredSources(
   return required.filter((source) => !chosen[source]);
 }
 
+/** The method a zone states, and the engine the integration binds for it. */
+const ENGINE_METHODS: Record<string, string> = {
+  from_weather: "PyETO",
+  provided: "Passthrough",
+  fixed: "Static",
+};
+
+/**
+ * The fixed-amount engine's delta for an evaporation per day.
+ *
+ * The Static engine adds its delta to the bucket, negative when it dries (as
+ * the watering calendar reads it), while the panel asks how much evaporates.
+ * Stored as typed, 4.5 mm of evaporation added 4.5 mm of water a day.
+ */
+export function deltaOfEvaporation(evaporation: unknown): number {
+  return -Math.abs(Number(evaporation) || 0);
+}
+
+/** The evaporation per day a fixed-amount engine's delta stands for. */
+export function evaporationOfDelta(delta: unknown): number {
+  return Math.abs(Number(delta) || 0);
+}
+
+/**
+ * The calculation method, and its options, that a zone made by the setup
+ * assistant is saved with. The integration binds the zone's own engine from
+ * them, as it does for a zone added on the zones page; an engine the panel
+ * created itself was the first of its kind, reused with whatever it held, so a
+ * fixed amount typed in the assistant was never stored.
+ */
+export function setupZoneMethod(
+  engineName: string,
+  staticDelta?: string,
+): { calculation_method?: string; method_config?: Record<string, number> } {
+  const method = Object.entries(ENGINE_METHODS).find(
+    ([, engine]) => engine === engineName,
+  )?.[0];
+  if (!method) return {};
+  if (method === "fixed") {
+    return {
+      calculation_method: method,
+      method_config: { delta: deltaOfEvaporation(staticDelta) },
+    };
+  }
+  return { calculation_method: method };
+}
+
 export function engineModeLabel(
   engineName: string | undefined,
   lang: string,
