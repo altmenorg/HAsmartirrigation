@@ -12,7 +12,7 @@ requests>=2.34.2
 python-dotenv>=1.2.4
 
 # Home Assistant development (useful for local testing)
-homeassistant>=2026.9.4
+homeassistant>=2026.10.1
 
 # Development tools (matches CI pipeline)
 black>=26.10.1
