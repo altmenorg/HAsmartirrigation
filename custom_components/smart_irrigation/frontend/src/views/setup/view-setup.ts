@@ -7,11 +7,9 @@ import {
   fetchAllModules,
   fetchConfig,
   fetchMappings,
-  fetchModules,
   fetchWeatherService,
   fetchZones,
   saveMapping,
-  saveModule,
   saveZone,
 } from "../../data/websockets";
 
@@ -20,7 +18,11 @@ import {
   SmartIrrigationMapping,
   SmartIrrigationModule,
 } from "../../types";
-import { engineModeLabel, output_unit } from "../../helpers";
+import {
+  engineModeLabel,
+  output_unit,
+  setupZoneMethod,
+} from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
@@ -39,7 +41,6 @@ import {
   MAPPING_DEWPOINT,
   MAPPING_EVAPOTRANSPIRATION,
   MAPPING_HUMIDITY,
-  MAPPING_MODULE,
   MAPPING_PRECIPITATION,
   MAPPING_PRESSURE,
   MAPPING_SOLRAD,
@@ -99,7 +100,6 @@ class SmartIrrigationViewSetup extends LitElement {
 
   @state() private step = 0;
   @state() private allModules: SmartIrrigationModule[] = [];
-  @state() private modules: SmartIrrigationModule[] = [];
   @state() private isSaving = false;
   @state() private error?: string;
   @state() private done = false;
@@ -121,15 +121,13 @@ class SmartIrrigationViewSetup extends LitElement {
 
   private async _load(): Promise<void> {
     if (!this.hass) return;
-    const [config, allModules, modules, service] = await Promise.all([
+    const [config, allModules, service] = await Promise.all([
       fetchConfig(this.hass),
       fetchAllModules(this.hass),
-      fetchModules(this.hass),
       fetchWeatherService(this.hass).catch(() => undefined),
     ]);
     this.config = config;
     this.allModules = allModules;
-    this.modules = modules;
     this.serviceSuppliesEt = !!(service as any)?.supplies_evapotranspiration;
     // Without a weather service there is nothing for that answer to mean.
     if (!this.usesWeatherService) {
@@ -488,9 +486,11 @@ class SmartIrrigationViewSetup extends LitElement {
         <div class="setting-row">
           <div class="setting-label">${this.t("steps.review.sources")}</div>
           <div class="review-value">
-            ${this.sensorsToAsk.length
-              ? this.sensorsToAsk.join(", ")
-              : this.t("steps.review.from-the-service")}
+            ${this.weather === "static"
+              ? `${this.t("steps.sensors.static-label")}: ${this.staticDelta}`
+              : this.sensorsToAsk.length
+                ? this.sensorsToAsk.join(", ")
+                : this.t("steps.review.from-the-service")}
           </div>
         </div>
       </div>
@@ -549,7 +549,8 @@ class SmartIrrigationViewSetup extends LitElement {
   }
 
   /**
-   * Create the module, the sensor group and the zone, in that order.
+   * Create the sensor group and the zone, in that order; the integration binds
+   * the zone's engine from the method it is saved with.
    *
    * Each one is what the corresponding tab would have produced, so nothing here
    * is a special wizard-only object: the result can be edited afterwards like
@@ -561,40 +562,18 @@ class SmartIrrigationViewSetup extends LitElement {
     this.error = undefined;
 
     try {
-      // Reuse an engine of the right kind rather than adding a second one.
-      let engine = this.modules.find((m) => m.name === this.engineName);
-      if (!engine) {
-        const template = this.allModules.find(
-          (m) => m.name === this.engineName,
-        );
-        if (!template) {
-          throw new Error(`Unknown calculation engine ${this.engineName}`);
-        }
-        const config =
-          this.weather === "static"
-            ? {
-                ...(template.config as object),
-                delta: Number(this.staticDelta),
-              }
-            : template.config;
-        await saveModule(this.hass, {
-          name: template.name,
-          description: template.description,
-          config,
-          schema: template.schema,
-        } as SmartIrrigationModule);
-        const modules = await fetchModules(this.hass);
-        this.modules = modules;
-        engine = modules.find((m) => m.name === this.engineName);
-      }
-
+      // The engine is not created here. The zone is saved with the method it
+      // is calculated by, and the integration gives it an engine of its own
+      // with the options that go with it, exactly as for a zone added on the
+      // zones page. Creating one here instead reused the first engine of that
+      // kind: the fixed amount a user typed was then never stored, because
+      // the factory "Static" engine was reused as it was.
       const mapping: SmartIrrigationMapping = {
         name: this.zoneName.trim(),
         mappings: Object.fromEntries(
           ALL_SOURCES.map((source) => [source, this.sourceFor(source)]),
         ),
         greenhouse: this.underGlass,
-        [MAPPING_MODULE]: engine?.id,
       } as SmartIrrigationMapping;
       await saveMapping(this.hass, mapping);
 
@@ -607,6 +586,7 @@ class SmartIrrigationViewSetup extends LitElement {
         throughput: Number(this.zoneThroughput),
         state: "automatic",
         [ZONE_MAPPING]: created?.id,
+        ...setupZoneMethod(this.engineName, this.staticDelta),
       } as any);
 
       await fetchZones(this.hass);

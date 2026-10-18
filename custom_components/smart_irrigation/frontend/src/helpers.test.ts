@@ -19,6 +19,7 @@ import {
   displayTemperature,
   displayVolume,
   getOptionsForMappingType,
+  setupZoneMethod,
 } from "./helpers";
 
 /**
@@ -150,5 +151,33 @@ describe("what the watering calendar shows", () => {
   it("reads a missing value as zero rather than NaN", () => {
     expect(displayDepth(undefined as any, imperial)).toBe(0);
     expect(displayTemperature(null as any, imperial)).toBe(32);
+  });
+});
+
+
+/**
+ * The setup assistant saves its zone with the method it is calculated by, and
+ * lets the integration bind the engine. Creating the engine itself reused the
+ * first one of the kind, so the fixed amount typed in the assistant was lost.
+ */
+describe("setupZoneMethod", () => {
+  it("states the method that goes with each engine", () => {
+    expect(setupZoneMethod("PyETO")).toEqual({
+      calculation_method: "from_weather",
+    });
+    expect(setupZoneMethod("Passthrough")).toEqual({
+      calculation_method: "provided",
+    });
+  });
+
+  it("carries the evaporation typed as the fixed method's drying delta", () => {
+    expect(setupZoneMethod("Static", "4.5")).toEqual({
+      calculation_method: "fixed",
+      method_config: { delta: -4.5 },
+    });
+  });
+
+  it("leaves an engine it does not know to the integration", () => {
+    expect(setupZoneMethod("SomethingElse")).toEqual({});
   });
 });
