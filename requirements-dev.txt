@@ -18,7 +18,7 @@ homeassistant>=2026.9.4
 black>=26.10.0
 ruff>=0.16.10
 isort>=9.0.2
-pre-commit>=4.6.2
+pre-commit>=4.7.0
 
 # Documentation
 markdown>=3.11
