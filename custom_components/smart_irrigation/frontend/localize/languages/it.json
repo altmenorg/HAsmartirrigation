@@ -660,7 +660,7 @@
         },
         "forecast-days": "Guardare avanti",
         "forecast-days-help": "0: la zona irriga quello che il tempo ha effettivamente preso. 1: si tiene conto anche di domani, 2: domani e dopodomani, e così via. Più caldi sono i giorni che vengono, più si irriga oggi. Questo non è il salto per pioggia, che è un'impostazione a sé.",
-        "fixed-amount": "Quantità fissa",
+        "fixed-amount": "Evaporazione al giorno",
         "engine-shared-help": "Questa impostazione appartiene solo a questa zona: ogni zona ha la sua, e cambiarla qui non cambia niente altrove.",
         "soil-type": "Terreno",
         "plant-type": "Cosa cresce qui",

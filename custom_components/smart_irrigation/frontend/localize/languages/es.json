@@ -660,7 +660,7 @@
         },
         "forecast-days": "Mirar hacia delante",
         "forecast-days-help": "0: la zona riega lo que el tiempo se ha llevado de verdad. 1: también se tiene en cuenta mañana, 2: mañana y pasado mañana, y así. Cuanto más calurosos sean los días que vienen, más se riega hoy. Esto no es la omisión por lluvia, que es un ajuste aparte.",
-        "fixed-amount": "Cantidad fija",
+        "fixed-amount": "Evaporación por día",
         "engine-shared-help": "Este ajuste pertenece solo a esta zona: cada zona tiene el suyo, y cambiarlo aquí no cambia nada en ningún otro sitio.",
         "soil-type": "Suelo",
         "plant-type": "Qué crece aquí",

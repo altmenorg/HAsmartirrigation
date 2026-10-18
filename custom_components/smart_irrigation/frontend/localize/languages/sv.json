@@ -660,7 +660,7 @@
         },
         "forecast-days": "Se framåt",
         "forecast-days-help": "0: zonen vattnar det vädret faktiskt tog. 1: morgondagen räknas också in, 2: i morgon och dagen därpå, och så vidare. Ju varmare dagarna framåt är, desto mer vattnas i dag. Det här är inte överhoppningen vid regn, som är en egen inställning.",
-        "fixed-amount": "Fast mängd",
+        "fixed-amount": "Avdunstning per dag",
         "engine-shared-help": "Den här inställningen hör bara till den här zonen: varje zon har sin egen, och att ändra den här ändrar inget någon annanstans.",
         "soil-type": "Jord",
         "plant-type": "Vad som växer här",

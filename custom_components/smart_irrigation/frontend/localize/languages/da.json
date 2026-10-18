@@ -660,7 +660,7 @@
         },
         "forecast-days": "Se fremad",
         "forecast-days-help": "0: zonen vander hvad vejret faktisk tog. 1: i morgen regnes også med, 2: i morgen og dagen efter, og så videre. Jo varmere de kommende dage er, jo mere vandes der i dag. Dette er ikke overspringet ved regn, som er en indstilling for sig.",
-        "fixed-amount": "Fast mængde",
+        "fixed-amount": "Fordampning pr. dag",
         "engine-shared-help": "Denne indstilling hører kun til denne zone: hver zone har sin egen, og at ændre den her ændrer intet andet sted.",
         "soil-type": "Jord",
         "plant-type": "Hvad der vokser her",

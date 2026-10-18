@@ -660,7 +660,7 @@
         },
         "forecast-days": "Vooruitkijken",
         "forecast-days-help": "0: de zone bewatert wat het weer echt heeft genomen. 1: morgen wordt meegerekend, 2: morgen en overmorgen, en zo verder. Hoe heter de komende dagen, hoe meer er vandaag bewaterd wordt. Dit is niet het overslaan bij regen, dat een eigen instelling heeft.",
-        "fixed-amount": "Vast bedrag",
+        "fixed-amount": "Verdamping per dag",
         "engine-shared-help": "Deze instelling hoort bij deze zone alleen: elke zone heeft haar eigen, en dit hier veranderen verandert nergens anders iets.",
         "soil-type": "Bodem",
         "plant-type": "Wat hier groeit",

@@ -660,7 +660,7 @@
         },
         "forecast-days": "Výhled dopředu",
         "forecast-days-help": "0: zóna zalévá to, co počasí skutečně vzalo. 1: bere se v potaz i zítřek, 2: zítřek a pozítří, a tak dále. Čím teplejší jsou příští dny, tím více se zalévá dnes. Není to vynechání kvůli dešti, které je samostatné nastavení.",
-        "fixed-amount": "Pevné množství",
+        "fixed-amount": "Odpar za den",
         "engine-shared-help": "Toto nastavení patří jen této zóně: každá zóna má své vlastní a změna zde nic jinde nemění.",
         "soil-type": "Půda",
         "plant-type": "Co tu roste",

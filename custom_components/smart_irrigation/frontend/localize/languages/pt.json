@@ -660,7 +660,7 @@
         },
         "forecast-days": "Olhar para a frente",
         "forecast-days-help": "0: a zona rega o que o tempo realmente levou. 1: amanhã também é tido em conta, 2: amanhã e depois de amanhã, e assim por diante. Quanto mais quentes forem os dias que vêm, mais se rega hoje. Isto não é a omissão por chuva, que é uma definição própria.",
-        "fixed-amount": "Quantidade fixa",
+        "fixed-amount": "Evaporação por dia",
         "engine-shared-help": "Esta definição pertence só a esta zona: cada zona tem a sua, e mudá-la aqui não muda nada em mais nenhum sítio.",
         "soil-type": "Solo",
         "plant-type": "O que cresce aqui",

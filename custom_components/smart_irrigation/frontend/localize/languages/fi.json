@@ -660,7 +660,7 @@
         },
         "forecast-days": "Katso eteenpäin",
         "forecast-days-help": "0: alue kastelee sen, minkä sää todella otti. 1: myös huominen otetaan huomioon, 2: huominen ja sitä seuraava päivä, ja niin edelleen. Mitä kuumemmat tulevat päivät ovat, sitä enemmän kastellaan tänään. Tämä ei ole sateen takia ohittaminen, joka on oma asetuksensa.",
-        "fixed-amount": "Kiinteä määrä",
+        "fixed-amount": "Haihdunta päivässä",
         "engine-shared-help": "Tämä asetus kuuluu vain tälle alueelle: jokaisella alueella on omansa, eikä sen muuttaminen tässä muuta mitään muualla.",
         "soil-type": "Maaperä",
         "plant-type": "Mitä täällä kasvaa",

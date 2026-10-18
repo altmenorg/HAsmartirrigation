@@ -652,7 +652,7 @@
         },
         "forecast-days": "Anticiper les jours à venir",
         "forecast-days-help": "0 : la zone arrose ce que la météo a réellement pris. 1 : on tient compte aussi de demain, 2 : de demain et après-demain, et ainsi de suite. Plus les jours à venir sont chauds, plus on arrose aujourd'hui. Ce n'est pas le saut d'arrosage sur pluie prévue, qui est un réglage à part.",
-        "fixed-amount": "Valeur fixe",
+        "fixed-amount": "Évaporation par jour",
         "engine-shared-help": "Ce réglage n'appartient qu'à cette zone : chacune a le sien, et le modifier ici ne change rien ailleurs.",
         "soil-type": "Sol",
         "plant-type": "Ce qui pousse ici",
