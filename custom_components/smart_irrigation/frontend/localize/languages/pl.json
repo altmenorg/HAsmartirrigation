@@ -586,7 +586,7 @@
         },
         "forecast-days": "Patrz w przód",
         "forecast-days-help": "0: strefa podlewa to, co pogoda naprawdę zabrała. 1: brany jest w rachubę także dzień następny, 2: jutro i pojutrze, i tak dalej. Im cieplejsze są kolejne dni, tym więcej podlewa się dziś. To nie jest pomijanie z powodu deszczu, które ma własne ustawienie.",
-        "fixed-amount": "Stała ilość",
+        "fixed-amount": "Parowanie na dzień",
         "engine-shared-help": "To ustawienie należy tylko do tej strefy: każda strefa ma własne, a zmiana tutaj nie zmienia nic w innym miejscu.",
         "soil-type": "Gleba",
         "plant-type": "Co tu rośnie",

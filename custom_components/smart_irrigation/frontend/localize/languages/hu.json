@@ -605,7 +605,7 @@
         },
         "forecast-days": "Előretekintés",
         "forecast-days-help": "0: a zóna azt öntözi, amit az időjárás valóban elvitt. 1: a holnap is beleszámít, 2: holnap és holnapután, és így tovább. Minél melegebbek az elkövetkező napok, annál többet öntöz ma. Ez nem az eső miatti kihagyás, aminek saját beállítása van.",
-        "fixed-amount": "Fix mennyiség",
+        "fixed-amount": "Párolgás naponta",
         "engine-shared-help": "Ez a beállítás csak ehhez a zónához tartozik: minden zónának megvan a sajátja, és itt megváltoztatni semmit nem változtat máshol.",
         "soil-type": "Talaj",
         "plant-type": "Mi nő itt",

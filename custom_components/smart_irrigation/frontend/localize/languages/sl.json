@@ -644,7 +644,7 @@
         },
         "forecast-days": "Pogled naprej",
         "forecast-days-help": "0: cona zalije, kar je vreme dejansko odvzelo. 1: upošteva se tudi jutri, 2: jutri in pojutrišnjem, in tako naprej. Bolj vroči kot so prihodnji dnevi, več se zalije danes. To ni preskok zaradi dežja, ki je ločena nastavitev.",
-        "fixed-amount": "Stalna količina",
+        "fixed-amount": "Izhlapevanje na dan",
         "engine-shared-help": "Ta nastavitev pripada samo tej coni: vsaka cona ima svojo, in sprememba tukaj ne spremeni ničesar drugje.",
         "soil-type": "Tla",
         "plant-type": "Kaj tu raste",

@@ -30,7 +30,7 @@ If you are unsure, **Standard** with Open-Meteo is the shortest path to somethin
 
 ### Manual
 
-A fixed amount of evaporation per day, which you set yourself in the **Delta** box. No sensors and no weather service.
+A fixed amount of evaporation per day, which you set yourself on the zone card (**Evaporation per day**), as a positive number: 4 means the zone loses 4 mm a day. No sensors and no weather service. Underneath, the engine stores it as the change to the bucket, -4; a positive value stored before v2026.10.7 added water every day instead, and is turned around when Smart Irrigation starts.
 
 It is coarser than the other two, but it is not the same as no integration at all: rain still counts against it, the water balance still tracks what you have already applied, and the duration still follows from your zone's size and throughput. Somewhere around 4 to 5 mm a day is a common starting point for a temperate summer, and worth adjusting by season.
 

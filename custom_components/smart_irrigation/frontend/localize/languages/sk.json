@@ -586,7 +586,7 @@
         },
         "forecast-days": "Výhľad dopredu",
         "forecast-days-help": "0: zóna zalieva to, čo počasie skutočne vzalo. 1: berie sa do úvahy aj zajtrajšok, 2: zajtrajšok a pozajtra, a tak ďalej. Čím teplejšie sú ďalšie dni, tým viac sa zalieva dnes. Nie je to vynechanie kvôli dažďu, ktoré je samostatné nastavenie.",
-        "fixed-amount": "Pevné množstvo",
+        "fixed-amount": "Výpar za deň",
         "engine-shared-help": "Toto nastavenie patrí len tejto zóne: každá zóna má svoje vlastné a zmena tu nič inde nemení.",
         "soil-type": "Pôda",
         "plant-type": "Čo tu rastie",

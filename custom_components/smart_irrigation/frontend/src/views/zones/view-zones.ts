@@ -47,9 +47,11 @@ import {
 } from "../../types";
 import {
   changedFields,
+  deltaOfEvaporation,
   displayDepth,
   displayTemperature,
   displayVolume,
+  evaporationOfDelta,
   formatDuration,
   output_unit,
   unit_text,
@@ -441,8 +443,10 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         ${this._numRow(
           localize("panels.zones.labels.fixed-amount", lang),
           output_unit(this.config, ZONE_BUCKET),
-          config.delta ?? 0,
-          (v) => save({ delta: parseFloat(v) || 0 }),
+          // Asked as the evaporation it is, stored as the drying the engine
+          // adds to the bucket: typed as is, 4 mm watered nothing, ever.
+          evaporationOfDelta(config.delta),
+          (v) => save({ delta: deltaOfEvaporation(v) }),
         )}
         <div class="setting-help">
           ${localize("panels.zones.labels.engine-shared-help", lang)}

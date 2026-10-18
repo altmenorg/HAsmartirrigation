@@ -586,7 +586,7 @@
         },
         "forecast-days": "Vorausschau",
         "forecast-days-help": "0: die Zone bewässert, was das Wetter tatsächlich genommen hat. 1: morgen wird mitgerechnet, 2: morgen und übermorgen, und so weiter. Je heißer die kommenden Tage, desto mehr wird heute bewässert. Das ist nicht das Überspringen bei Regen, das eine eigene Einstellung hat.",
-        "fixed-amount": "Fester Betrag",
+        "fixed-amount": "Verdunstung pro Tag",
         "engine-shared-help": "Diese Einstellung gehört allein zu dieser Zone: jede Zone hat ihre eigene, und eine Änderung hier ändert nirgends sonst etwas.",
         "soil-type": "Boden",
         "plant-type": "Was hier wächst",

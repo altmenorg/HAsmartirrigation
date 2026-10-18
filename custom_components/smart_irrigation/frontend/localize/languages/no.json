@@ -586,7 +586,7 @@
         },
         "forecast-days": "Se framover",
         "forecast-days-help": "0: sonen vanner det været faktisk tok. 1: i morgen regnes også med, 2: i morgen og dagen etter, og så videre. Jo varmere dagene framover er, jo mer vannes i dag. Dette er ikke oversprangen ved regn, som er en egen innstilling.",
-        "fixed-amount": "Fast mengde",
+        "fixed-amount": "Fordampning per dag",
         "engine-shared-help": "Denne innstillingen hører bare til denne sonen: hver sone har sin egen, og å endre den her endrer ingenting andre steder.",
         "soil-type": "Jord",
         "plant-type": "Hva som vokser her",
