@@ -169,3 +169,22 @@ def test_bound_variables_are_not_quoted_inside_states(path):
     ]
 
     assert not offenders, f"entity-id variables quoted inside states(): {offenders}"
+
+
+@pytest.mark.parametrize("path", BLUEPRINTS, ids=lambda p: p.name)
+def test_home_assistant_accepts_the_blueprint(path):
+    """Validated with Home Assistant's own schema, as `blueprint/list` does.
+
+    A key the schema does not know, such as `required: false` on an input,
+    makes Home Assistant reject the whole file: the weather blueprint was never
+    offered to anyone because of one (#926).
+    """
+    from homeassistant.components.blueprint.models import Blueprint
+    from homeassistant.components.blueprint.schemas import BLUEPRINT_SCHEMA
+    from homeassistant.util.yaml import load_yaml
+
+    data = load_yaml(str(path))
+
+    Blueprint(
+        data, expected_domain=data["blueprint"]["domain"], schema=BLUEPRINT_SCHEMA
+    )

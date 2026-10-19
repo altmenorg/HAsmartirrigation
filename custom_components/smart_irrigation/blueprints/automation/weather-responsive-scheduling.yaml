@@ -22,7 +22,9 @@ blueprint:
     rain_sensor:
       name: Rain Sensor (Optional)
       description: Rain sensor to skip irrigation when raining
-      required: false
+      # An input is optional when it has a default; `required` is not a key
+      # of a blueprint input and makes Home Assistant reject the whole file.
+      default:
       selector:
         entity:
           domain: binary_sensor
