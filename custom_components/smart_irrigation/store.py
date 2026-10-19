@@ -180,6 +180,7 @@ from .const import (
     ZONE_ALLOWED_DEPLETION,
     ZONE_AVAILABLE_WATER,
     ZONE_BUCKET,
+    ZONE_CONFIRM_TIMEOUT,
     ZONE_CROP_FACTOR_BY_MONTH,
     ZONE_CURRENT_DRAINAGE,
     ZONE_DAYS_BETWEEN_IRRIGATION,
@@ -211,6 +212,7 @@ from .const import (
     ZONE_MULTIPLIER,
     ZONE_NAME,
     ZONE_NUMBER_OF_DATA_POINTS,
+    ZONE_OPEN_RESENDS,
     ZONE_PLANT_TYPE,
     ZONE_PRECIPITATION_RATE,
     ZONE_PRECIPITATION_SUPERSEDED,
@@ -313,6 +315,10 @@ class ZoneEntry:
     safety_off_topic = attr.ib(type=str, default=None)
     safety_off_state_key = attr.ib(type=str, default=None)
     safety_off_mode = attr.ib(type=str, default=None)
+    # How long the valves are given to confirm, and how often the open is sent
+    # again meanwhile (see ZONE_CONFIRM_TIMEOUT). None keeps the defaults.
+    confirm_timeout = attr.ib(type=float, default=None)
+    open_resends = attr.ib(type=int, default=None)
     # The supply (pump or main valve) that feeds this zone, by id (full controller).
     supply_id = attr.ib(type=str, default=None)
     # Other valves that open and close with the linked one (full controller).
@@ -1295,6 +1301,8 @@ class SmartIrrigationStorage:
                         safety_off_topic=zone.get(ZONE_SAFETY_OFF_TOPIC, None),
                         safety_off_state_key=zone.get(ZONE_SAFETY_OFF_STATE_KEY, None),
                         safety_off_mode=zone.get(ZONE_SAFETY_OFF_MODE, None),
+                        confirm_timeout=zone.get(ZONE_CONFIRM_TIMEOUT, None),
+                        open_resends=zone.get(ZONE_OPEN_RESENDS, None),
                         supply_id=zone.get(ZONE_SUPPLY_ID, None),
                         extra_entities=zone.get(ZONE_EXTRA_ENTITIES, None),
                         flow_sensor=zone.get(ZONE_FLOW_SENSOR, None),

@@ -153,6 +153,61 @@ def setting(config, key: str, default: float) -> float:
         return float(default)
 
 
+def _zone_number(zone, key: str, cast):
+    """A zone's own confirmation setting, or None when it has none (or a bad one)."""
+    if not zone:
+        return None
+    value = zone.get(key)
+    if value is None or value == "":
+        return None
+    try:
+        return cast(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def confirm_plan(zone, full: bool) -> tuple[float, list[float]]:
+    """How long to wait for an open to be confirmed, and when to send it again.
+
+    The zone's own wait (``confirm_timeout``) and number of resends
+    (``open_resends``) when it has them, else the defaults: 8 seconds and no
+    resend, or 30 seconds and two with the full controller. The resends are
+    spread evenly over the wait, so the defaults come out as they always were
+    (10 and 20 of 30 seconds). 0 resends never sends the open again.
+    """
+    timeout = _zone_number(zone, const.ZONE_CONFIRM_TIMEOUT, float)
+    if timeout is None:
+        timeout = VALVE_CONFIRM_TIMEOUT_FULL if full else VALVE_CONFIRM_TIMEOUT
+    timeout = max(float(const.CONFIRM_TIMEOUT_MIN), timeout)
+    resends = _zone_number(zone, const.ZONE_OPEN_RESENDS, int)
+    if resends is None:
+        resends = len(VALVE_OPEN_RESEND_AT) if full else 0
+    resends = max(0, min(resends, const.OPEN_RESENDS_MAX))
+    return timeout, [timeout * i / (resends + 1) for i in range(1, resends + 1)]
+
+
+def confirm_window(zone) -> float:
+    """The confirmation time a run's observer window allows for, per pass.
+
+    The default 8 seconds as before, or the zone's own wait when it is longer,
+    so a slow valve's confirmation is not taken for a run of somebody else's.
+    """
+    own = _zone_number(zone, const.ZONE_CONFIRM_TIMEOUT, float)
+    return max(VALVE_CONFIRM_TIMEOUT, own or 0.0)
+
+
+def close_timeout(zone) -> float:
+    """How long a closed valve of this zone is given to say so.
+
+    The zone's own wait when it has one, which a cloud valve needs as much for
+    the close as for the open, else the 5 seconds a close has always had.
+    """
+    timeout = _zone_number(zone, const.ZONE_CONFIRM_TIMEOUT, float)
+    if timeout is None:
+        return VALVE_CLOSE_TIMEOUT
+    return max(float(const.CONFIRM_TIMEOUT_MIN), timeout)
+
+
 def pass_plan(config, duration: float) -> list:
     """The passes a run of ``duration`` seconds is watered in.
 
@@ -841,16 +896,13 @@ class ValveRunnerMixin(
         result = None
         if entities:
             timed = self._timed_opens().get(zone.get(const.ZONE_ID))
-            if timed is None:
-                result = await self._confirm_valve_running(entities[0])
-            else:
-                result = await self._confirm_valve_running(entities[0], timed)
+            result = await self._confirm_valve_running(entities[0], timed, zone)
         if result is False:
             return False
         for entity_id in entities[1:]:
             if entity_id in failed:
                 continue
-            if await self._confirm_valve_running(entity_id) is False:
+            if await self._confirm_valve_running(entity_id, zone=zone) is False:
                 self._report_valve_problem(zone, entity_id, PROBLEM_DID_NOT_OPEN)
         return result
 
@@ -877,23 +929,21 @@ class ValveRunnerMixin(
             )
         return ok
 
-    async def _confirm_valve_running(self, entity_id: str, timed_open=None):
+    async def _confirm_valve_running(self, entity_id: str, timed_open=None, zone=None):
         """Wait briefly for a freshly-opened valve to report an on-state.
 
         ``timed_open`` is the ZHA command that opened the valve with its own
         timer: an open that has to be asked again sends that same command.
+        ``zone`` brings the zone's own wait and resends (see ``confirm_plan``).
 
         Returns True if it reaches an on-state, False if it stays explicitly off
         (a real failure: the run must not be credited), or None when the entity
         is unreadable (a write-only valve we cannot verify, so do not penalise
         it -- proceed as usual).
         """
-        full = self._full_controller()
+        timeout, resends = confirm_plan(zone, self._full_controller())
         started = self.hass.loop.time()
-        deadline = started + (
-            VALVE_CONFIRM_TIMEOUT_FULL if full else VALVE_CONFIRM_TIMEOUT
-        )
-        resends = list(VALVE_OPEN_RESEND_AT) if full else []
+        deadline = started + timeout
         while self.hass.loop.time() < deadline:
             state = self.hass.states.get(entity_id)
             if state is not None and state.state in _VALVE_ON_STATES:
@@ -937,9 +987,11 @@ class ValveRunnerMixin(
             return False
         return changed <= moment
 
-    async def _still_open_after_close(self, entity_id: str, asked) -> bool:
+    async def _still_open_after_close(
+        self, entity_id: str, asked, timeout: float = VALVE_CLOSE_TIMEOUT
+    ) -> bool:
         """Give a closed valve a few seconds to report it, and say if it did not."""
-        deadline = self.hass.loop.time() + VALVE_CLOSE_TIMEOUT
+        deadline = self.hass.loop.time() + timeout
         while self._reads_open_since(entity_id, asked):
             if self.hass.loop.time() >= deadline:
                 return True
@@ -969,7 +1021,9 @@ class ValveRunnerMixin(
                 _LOGGER.error(
                     "Direct valve control: closing %s failed: %s", entity_id, e
                 )
-            if not failed and not await self._still_open_after_close(entity_id, asked):
+            if not failed and not await self._still_open_after_close(
+                entity_id, asked, close_timeout(zone)
+            ):
                 return True
             if attempt == 0:
                 _LOGGER.warning(
@@ -1552,7 +1606,7 @@ class ValveRunnerMixin(
             zone_id,
             duration
             + (lead + soak) * (len(plan) - 1)
-            + VALVE_CONFIRM_TIMEOUT * len(plan),
+            + confirm_window(zone) * len(plan),
         )
         if len(plan) > 1:
             _LOGGER.info(
@@ -1685,7 +1739,7 @@ class ValveRunnerMixin(
         # Renew the observer's suppression for this pass: the window set for
         # the whole run could run out before the last pass of a slow valve,
         # and the observer then credited that pass a second time.
-        self._note_si_valve(zone_id, held + VALVE_CONFIRM_TIMEOUT)
+        self._note_si_valve(zone_id, held + confirm_window(zone))
         _LOGGER.info(
             "Direct valve control: opening %s for zone %s (%.0fs)",
             entity_id,
@@ -2481,7 +2535,9 @@ class ValveRunnerMixin(
             return
 
         remaining = duration - elapsed
-        self._note_si_valve(zone_id, remaining + VALVE_CONFIRM_TIMEOUT)
+        self._note_si_valve(
+            zone_id, remaining + confirm_window(self.store.get_zone(zone_id))
+        )
         _LOGGER.info(
             "Direct valve control: zone %s resuming, %.0fs of %.0fs remaining",
             zone_id,
@@ -2498,7 +2554,9 @@ class ValveRunnerMixin(
                 return
             resume_t0 = dt_util.utcnow()
             remaining = duration - elapsed
-            self._note_si_valve(zone_id, remaining + VALVE_CONFIRM_TIMEOUT)
+            self._note_si_valve(
+                zone_id, remaining + confirm_window(self.store.get_zone(zone_id))
+            )
         # Re-assert open: the valve should still be on after an HA reboot, but a
         # power cut may have reset it. Confirm before finishing/crediting. The
         # try starts with the open, as in _run_one_pass.

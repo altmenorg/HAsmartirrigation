@@ -46,9 +46,9 @@ async def test_a_resumed_run_counts_the_time_its_confirm_took(sleeps, monkeypatc
     coord = Coordinator(hass, make_store([zone(0)]))
     original = coord._confirm_valve_running
 
-    async def _slow_confirm(entity_id):
+    async def _slow_confirm(entity_id, *args, **kwargs):
         now["t"] += datetime.timedelta(seconds=30)
-        return await original(entity_id)
+        return await original(entity_id, *args, **kwargs)
 
     coord._confirm_valve_running = _slow_confirm
     run = {
@@ -76,9 +76,9 @@ async def test_a_resumed_run_whose_time_ran_out_while_reopening_waits_nothing(
     coord = Coordinator(hass, make_store([zone(0)]))
     original = coord._confirm_valve_running
 
-    async def _very_slow_confirm(entity_id):
+    async def _very_slow_confirm(entity_id, *args, **kwargs):
         now["t"] += datetime.timedelta(seconds=60)
-        return await original(entity_id)
+        return await original(entity_id, *args, **kwargs)
 
     coord._confirm_valve_running = _very_slow_confirm
     run = {

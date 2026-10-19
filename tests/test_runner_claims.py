@@ -71,11 +71,11 @@ async def test_a_dispatch_while_the_valve_is_confirmed_open_is_skipped(sleeps):
     original = coord._confirm_valve_running
     pressed = []
 
-    async def _confirm(entity_id):
+    async def _confirm(entity_id, *args, **kwargs):
         if not pressed:
             pressed.append(True)
             await coord.async_run_direct_valves([0])
-        return await original(entity_id)
+        return await original(entity_id, *args, **kwargs)
 
     coord._confirm_valve_running = _confirm
 
