@@ -82,3 +82,45 @@ def test_bundled_blueprint_declares_its_domain(source):
     """HA refuses a blueprint whose `blueprint:` block has no matching domain."""
     text = source.read_text(encoding="utf-8")
     assert f"domain: {source.parent.name}" in text
+
+
+# --- a copy we shipped broken is replaced (#926) -------------------------------
+
+BROKEN_926 = (
+    Path(__file__).parent
+    / "fixtures/blueprints/weather-responsive-scheduling.broken-926.yaml"
+)
+WEATHER = "weather-responsive-scheduling.yaml"
+
+
+def _installed_weather(tmp_path, content: bytes) -> Path:
+    target_dir = tmp_path / "blueprints" / "automation" / "smart_irrigation"
+    target_dir.mkdir(parents=True)
+    target = target_dir / WEATHER
+    target.write_bytes(content)
+    return target
+
+
+@pytest.mark.parametrize("crlf", [False, True], ids=["lf", "crlf"])
+def test_the_broken_weather_blueprint_we_shipped_is_replaced(tmp_path, crlf):
+    """Home Assistant rejected it, so nobody can be using that copy, and
+    without this the corrected file never reached anyone who had it."""
+    broken = BROKEN_926.read_bytes().replace(b"\r\n", b"\n")
+    if crlf:
+        broken = broken.replace(b"\n", b"\r\n")
+    target = _installed_weather(tmp_path, broken)
+
+    install_bundled_blueprints(str(tmp_path))
+
+    source = BUNDLED_BLUEPRINTS / "automation" / WEATHER
+    assert target.read_bytes() == source.read_bytes()
+    assert b"required: false" not in target.read_bytes()
+
+
+def test_the_broken_one_edited_by_hand_is_left_alone(tmp_path):
+    edited = BROKEN_926.read_bytes() + b"# my change\n"
+    target = _installed_weather(tmp_path, edited)
+
+    install_bundled_blueprints(str(tmp_path))
+
+    assert target.read_bytes() == edited

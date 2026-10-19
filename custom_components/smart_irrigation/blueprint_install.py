@@ -15,6 +15,7 @@ Every filesystem error is logged and swallowed: failing to lay down an example
 automation must never stop the integration from setting up.
 """
 
+import hashlib
 import logging
 import shutil
 from pathlib import Path
@@ -26,6 +27,29 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 BUNDLED_BLUEPRINTS = Path(__file__).parent / "blueprints"
+
+# Copies we shipped that Home Assistant rejects, by file name and by the SHA-256
+# of their text with line endings normalised. Nobody can be using one, so an
+# exact match is replaced by the corrected file; a copy edited by hand no longer
+# matches and is left alone, as every other existing file is.
+BROKEN_SHIPPED_COPIES = {
+    # `required: false` on an input, not a blueprint key (#926).
+    "weather-responsive-scheduling.yaml": {
+        "f3c1f4b3d8a2f9128129c2c1cd8baa88b71dd075f55ee01119f62a27433aaf16",
+    },
+}
+
+
+def _is_broken_shipped_copy(target: Path) -> bool:
+    """Whether this file is, byte for byte, one we shipped broken."""
+    known = BROKEN_SHIPPED_COPIES.get(target.name)
+    if not known:
+        return False
+    try:
+        text = target.read_bytes().replace(b"\r\n", b"\n")
+    except OSError:
+        return False
+    return hashlib.sha256(text).hexdigest() in known
 
 
 def install_bundled_blueprints(config_dir: str) -> int:
@@ -46,7 +70,7 @@ def install_bundled_blueprints(config_dir: str) -> int:
         target_dir = Path(config_dir) / "blueprints" / domain_dir.name / DOMAIN
         for source in sorted(domain_dir.glob("*.yaml")):
             target = target_dir / source.name
-            if target.exists():
+            if target.exists() and not _is_broken_shipped_copy(target):
                 continue
             try:
                 target_dir.mkdir(parents=True, exist_ok=True)
