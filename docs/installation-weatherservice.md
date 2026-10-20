@@ -16,8 +16,9 @@ To set it up:
 2. Go to the **Weather service** settings.
 3. Toggle **Use a weather service** on, then pick the service you want:
    - **Open-Meteo** (the default) is keyless and works worldwide — no API key required.
+   - **A weather entity in Home Assistant** reads one of your weather entities (DWD, Met.no, KNMI, ...): pick the entity instead of a key. It reports no rain that fell, so each sensor group needs a rain sensor (see [weather services](weather-services.md#a-weather-entity-in-home-assistant)).
    - **Open Weather Map** and **Pirate Weather** require an API key (see below).
-4. Enter the API key if the chosen service needs one, then save. If the key is valid you will see a success message; otherwise double check the key.
+4. Enter the API key if the chosen service needs one, or pick the weather entity, then save. If the key is valid you will see a success message; otherwise double check the key.
 
 If you turn the weather service **off**, forecasting is unavailable and you must provide all weather data from another source, such as your own weather station sensors, configured in your [sensor groups](configuration-sensor-groups.md).
 

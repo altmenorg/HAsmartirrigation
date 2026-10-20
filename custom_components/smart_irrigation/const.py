@@ -387,13 +387,22 @@ CONF_DEFAULT_REFERENCE_ET = 0.0
 CONF_WEATHER_SERVICE_OWM = "Open Weather Map"
 CONF_WEATHER_SERVICE_PW = "Pirate Weather"
 CONF_WEATHER_SERVICE_OM = "Open-Meteo"
+# A weather entity of Home Assistant itself (DWD, Met.no, KNMI, ...), read
+# through its attributes and weather.get_forecasts (see HAWeatherEntityClient).
+CONF_WEATHER_SERVICE_HA = "Home Assistant weather entity"
+# The weather entity that service reads.
+CONF_WEATHER_SERVICE_ENTITY = "weather_service_entity"
 # Services that do NOT need an API key (free, keyless).
-CONF_WEATHER_SERVICES_NO_API_KEY = [CONF_WEATHER_SERVICE_OM]
+CONF_WEATHER_SERVICES_NO_API_KEY = [CONF_WEATHER_SERVICE_OM, CONF_WEATHER_SERVICE_HA]
+# Services that report no rain that fell: a weather entity has a forecast of
+# rain, never a measurement, so its groups take the rain from a sensor.
+CONF_WEATHER_SERVICES_WITHOUT_RAIN = [CONF_WEATHER_SERVICE_HA]
 # Services that can additionally provide solar radiation and reference ET0
 # (so those fields may be sourced from the weather service in the UI).
 CONF_WEATHER_SERVICES_WITH_SOLRAD_ET = [CONF_WEATHER_SERVICE_OM]
 CONF_WEATHER_SERVICES = [
     CONF_WEATHER_SERVICE_OM,
+    CONF_WEATHER_SERVICE_HA,
     CONF_WEATHER_SERVICE_OWM,
     CONF_WEATHER_SERVICE_PW,
 ]

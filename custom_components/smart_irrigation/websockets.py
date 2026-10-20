@@ -1477,7 +1477,15 @@ async def websocket_get_weather_service(hass: HomeAssistant, connection, msg):
             const.CONF_WEATHER_SERVICE_API_KEY: data.get(
                 const.CONF_WEATHER_SERVICE_API_KEY
             ),
+            const.CONF_WEATHER_SERVICE_ENTITY: data.get(
+                const.CONF_WEATHER_SERVICE_ENTITY
+            ),
             "services": const.CONF_WEATHER_SERVICES,
+            "services_without_api_key": const.CONF_WEATHER_SERVICES_NO_API_KEY,
+            # Whether the service reports the rain that fell. A weather entity
+            # does not: its groups take the rain from a sensor.
+            "supplies_rain": data.get(const.CONF_WEATHER_SERVICE)
+            not in const.CONF_WEATHER_SERVICES_WITHOUT_RAIN,
             # Whether this service hands us a reference ET0 directly. When it
             # does, the recommended path is to take that figure rather than
             # recompute Penman-Monteith from its individual weather fields.
@@ -1504,6 +1512,10 @@ async def websocket_set_weather_service(hass: HomeAssistant, connection, msg):
     service = service.strip() if isinstance(service, str) else None
     api_key = msg.get(const.CONF_WEATHER_SERVICE_API_KEY)
     api_key = api_key.strip() if isinstance(api_key, str) else None
+    entity = msg.get(const.CONF_WEATHER_SERVICE_ENTITY)
+    entity = entity.strip() if isinstance(entity, str) else None
+    if service != const.CONF_WEATHER_SERVICE_HA:
+        entity = None
 
     entries = hass.config_entries.async_entries(const.DOMAIN)
     if not entries:
@@ -1519,7 +1531,18 @@ async def websocket_set_weather_service(hass: HomeAssistant, connection, msg):
                 msg["id"], "invalid_service", "Please choose a valid weather service."
             )
             return
-        if not api_key and service not in const.CONF_WEATHER_SERVICES_NO_API_KEY:
+        if service == const.CONF_WEATHER_SERVICE_HA:
+            state = hass.states.get(entity) if entity else None
+            if state is None or not entity.startswith("weather."):
+                connection.send_error(
+                    msg["id"],
+                    "invalid_entity",
+                    "Please choose a weather entity.",
+                )
+                return
+            # No key to check: the entity is there, which is all it needs.
+            api_key = None
+        elif not api_key and service not in const.CONF_WEATHER_SERVICES_NO_API_KEY:
             connection.send_error(
                 msg["id"],
                 "missing_api_key",
@@ -1527,7 +1550,8 @@ async def websocket_set_weather_service(hass: HomeAssistant, connection, msg):
             )
             return
         try:
-            await validate_api_key(hass, service, api_key)
+            if service != const.CONF_WEATHER_SERVICE_HA:
+                await validate_api_key(hass, service, api_key)
         except InvalidAuth:
             connection.send_error(
                 msg["id"],
@@ -1550,7 +1574,7 @@ async def websocket_set_weather_service(hass: HomeAssistant, connection, msg):
     coordinator = hass.data.get(const.DOMAIN, {}).get("coordinator")
     if coordinator is not None:
         await coordinator.async_apply_weather_service(
-            use, service if use else None, api_key if use else None
+            use, service if use else None, api_key if use else None, entity
         )
 
     # Persist to the config entry so the choice survives restarts. Suppress the
@@ -1560,12 +1584,14 @@ async def websocket_set_weather_service(hass: HomeAssistant, connection, msg):
     new_data[const.CONF_USE_WEATHER_SERVICE] = use
     new_data[const.CONF_WEATHER_SERVICE] = service if use else None
     new_data[const.CONF_WEATHER_SERVICE_API_KEY] = api_key if use else None
+    new_data[const.CONF_WEATHER_SERVICE_ENTITY] = entity if use else None
     if any(
         entry.data.get(k) != new_data.get(k)
         for k in (
             const.CONF_USE_WEATHER_SERVICE,
             const.CONF_WEATHER_SERVICE,
             const.CONF_WEATHER_SERVICE_API_KEY,
+            const.CONF_WEATHER_SERVICE_ENTITY,
         )
     ):
         # Drop any weather-service keys an earlier Reconfigure left in options, so
@@ -1580,6 +1606,7 @@ async def websocket_set_weather_service(hass: HomeAssistant, connection, msg):
                 const.CONF_WEATHER_SERVICE,
                 const.CONF_WEATHER_SERVICE_API_KEY,
                 const.CONF_WEATHER_SERVICE_API_VERSION,
+                const.CONF_WEATHER_SERVICE_ENTITY,
             )
         }
         hass.data.setdefault(const.DOMAIN, {})["_suppress_options_reload"] = True
@@ -1786,6 +1813,9 @@ async def async_register_websockets(hass: HomeAssistant):
                 vol.Required(const.CONF_USE_WEATHER_SERVICE): cv.boolean,
                 vol.Optional(const.CONF_WEATHER_SERVICE): vol.Any(None, cv.string),
                 vol.Optional(const.CONF_WEATHER_SERVICE_API_KEY): vol.Any(
+                    None, cv.string
+                ),
+                vol.Optional(const.CONF_WEATHER_SERVICE_ENTITY): vol.Any(
                     None, cv.string
                 ),
             }

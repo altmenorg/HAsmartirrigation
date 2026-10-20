@@ -93,6 +93,7 @@ from .watering_control import (
     SUSPEND_SCHEMA,
     WATER_ZONE_SCHEMA,
 )
+from .weathermodules.HAWeatherEntityClient import HAWeatherEntityClient
 from .weathermodules.OpenMeteoClient import OpenMeteoClient
 from .weathermodules.OWMClient import OWMClient
 from .weathermodules.PirateWeatherClient import PirateWeatherClient
@@ -219,6 +220,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                         entry.data.get(const.CONF_WEATHER_SERVICE_API_KEY)
                     )
                 )
+            hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_ENTITY] = entry.data.get(
+                const.CONF_WEATHER_SERVICE_ENTITY
+            )
             hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_API_VERSION] = (
                 entry.data.get(const.CONF_WEATHER_SERVICE_API_VERSION)
             )
@@ -245,6 +249,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 _normalize_api_key(
                     entry.options.get(const.CONF_WEATHER_SERVICE_API_KEY)
                 )
+            )
+        if const.CONF_WEATHER_SERVICE_ENTITY in entry.options:
+            hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_ENTITY] = (
+                entry.options.get(const.CONF_WEATHER_SERVICE_ENTITY)
             )
         if const.CONF_WEATHER_SERVICE_API_VERSION in entry.options:
             hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_API_VERSION] = (
@@ -422,6 +430,10 @@ async def options_update_listener(hass: HomeAssistant, config_entry):
                         config_entry.options.get(const.CONF_WEATHER_SERVICE_API_KEY)
                     )
                 )
+            if const.CONF_WEATHER_SERVICE_ENTITY in config_entry.options:
+                hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_ENTITY] = (
+                    config_entry.options.get(const.CONF_WEATHER_SERVICE_ENTITY)
+                )
             hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_API_VERSION] = (
                 config_entry.options.get(const.CONF_WEATHER_SERVICE_API_VERSION)
             )
@@ -429,6 +441,7 @@ async def options_update_listener(hass: HomeAssistant, config_entry):
             hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE] = None
             hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_API_KEY] = None
             hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_API_VERSION] = None
+            hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_ENTITY] = None
         await hass.config_entries.async_reload(config_entry.entry_id)
 
 
@@ -526,6 +539,12 @@ class SmartIrrigationCoordinator(
                     longitude=effective_lon,
                     elevation=effective_elev,
                 )
+            # So is a weather entity: it needs the entity instead.
+            elif self.weather_service == const.CONF_WEATHER_SERVICE_HA:
+                self._WeatherServiceClient = self._weather_entity_client(
+                    hass.data[const.DOMAIN].get(const.CONF_WEATHER_SERVICE_ENTITY),
+                    effective_elev,
+                )
             elif not api_key:
                 _LOGGER.warning(
                     "Weather service '%s' is enabled but no API key is set; "
@@ -557,6 +576,7 @@ class SmartIrrigationCoordinator(
             if self._WeatherServiceClient is not None and self.weather_service in (
                 const.CONF_WEATHER_SERVICE_OWM,
                 const.CONF_WEATHER_SERVICE_PW,
+                const.CONF_WEATHER_SERVICE_HA,
             ):
                 self._WeatherServiceClient = SolarRadiationFallbackClient(
                     self._WeatherServiceClient,
@@ -947,12 +967,58 @@ class SmartIrrigationCoordinator(
             await self.register_start_event()
         async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated")
 
-    async def async_apply_weather_service(self, use, service, api_key):
+    def _warn_rain_from_a_service_without_it(self, mapping) -> None:
+        """Say once, per group, that its rain is taken from a service that has none.
+
+        A weather entity reports no rain that fell, only a forecast of it. A
+        group whose rain stays on the weather service then records no rain at
+        all, and its zones are watered after every shower.
+        """
+        if (
+            getattr(self, "weather_service", None)
+            not in const.CONF_WEATHER_SERVICES_WITHOUT_RAIN
+        ):
+            return
+        warned = getattr(self, "_warned_rain_without_service", None)
+        if warned is None:
+            warned = self._warned_rain_without_service = set()
+        sources = mapping.get(const.MAPPING_MAPPINGS) or {}
+        for key in (const.MAPPING_PRECIPITATION, const.MAPPING_CURRENT_PRECIPITATION):
+            the_map = sources.get(key)
+            if (
+                isinstance(the_map, dict)
+                and the_map.get(const.MAPPING_CONF_SOURCE)
+                == const.MAPPING_CONF_SOURCE_WEATHER_SERVICE
+                and mapping.get(const.MAPPING_ID) not in warned
+            ):
+                warned.add(mapping.get(const.MAPPING_ID))
+                _LOGGER.warning(
+                    "Sensor group %s takes its rain from the weather service, but "
+                    "a weather entity reports no rain that fell: no rain is "
+                    "recorded. Choose a rain sensor for it",
+                    mapping.get(const.MAPPING_NAME) or mapping.get(const.MAPPING_ID),
+                )
+                return
+
+    def _weather_entity_client(self, entity_id, elevation):
+        """The client for a weather entity as the service, or None without one."""
+        if not entity_id:
+            _LOGGER.warning(
+                "The weather service is a weather entity, but none is chosen; "
+                "skipping weather client setup"
+            )
+            return None
+        return HAWeatherEntityClient(
+            hass=self.hass, entity_id=entity_id, elevation=elevation
+        )
+
+    async def async_apply_weather_service(self, use, service, api_key, entity=None):
         """Apply a weather-service change at runtime (no entry reload).
 
         Rebuilds the weather client and updates hass.data + store so the change
         takes effect immediately. Persistence across restarts is handled by the
-        caller writing the values to the config entry data.
+        caller writing the values to the config entry data. ``entity`` is the
+        weather entity, for that service.
         """
         self.use_weather_service = bool(use)
         self.weather_service = service if use else None
@@ -962,6 +1028,9 @@ class SmartIrrigationCoordinator(
         self.hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE] = self.weather_service
         self.hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_API_KEY] = (
             api_key if use else None
+        )
+        self.hass.data[const.DOMAIN][const.CONF_WEATHER_SERVICE_ENTITY] = (
+            entity if use else None
         )
 
         self._WeatherServiceClient = None
@@ -974,6 +1043,8 @@ class SmartIrrigationCoordinator(
                     longitude=lon,
                     elevation=elev,
                 )
+            elif self.weather_service == const.CONF_WEATHER_SERVICE_HA:
+                self._WeatherServiceClient = self._weather_entity_client(entity, elev)
             elif self.weather_service == const.CONF_WEATHER_SERVICE_OWM:
                 self._WeatherServiceClient = OWMClient(
                     api_key=api_key,
@@ -997,6 +1068,7 @@ class SmartIrrigationCoordinator(
             if self._WeatherServiceClient is not None and self.weather_service in (
                 const.CONF_WEATHER_SERVICE_OWM,
                 const.CONF_WEATHER_SERVICE_PW,
+                const.CONF_WEATHER_SERVICE_HA,
             ):
                 self._WeatherServiceClient = SolarRadiationFallbackClient(
                     self._WeatherServiceClient,
@@ -1749,6 +1821,7 @@ class SmartIrrigationCoordinator(
                 weatherdata = None
             if weatherdata is not None:
                 service_fetched = True
+                self._warn_rain_from_a_service_without_it(mapping)
                 # A copy: OpenWeatherMap and Pirate Weather hand back their
                 # cached dict itself, the same object for every group read in
                 # the same pass. Each group then edited it (its sensors merged

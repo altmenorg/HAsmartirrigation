@@ -172,7 +172,9 @@
       "labels": {
         "use-weather-service": "Use a weather service",
         "service": "Weather service",
-        "api-key": "API key"
+        "api-key": "API key",
+        "ha-weather-entity": "A weather entity in Home Assistant",
+        "weather-entity": "Weather entity"
       },
       "actions": {
         "save": "Save",
@@ -182,7 +184,8 @@
         "no-service": "No weather service is used — weather data comes from your own sensors only.",
         "saved": "Weather service updated and applied.",
         "reload-note": "Saving validates the API key against the service and applies the change immediately.",
-        "owm-onecall-hint": "OpenWeatherMap needs the One Call API 3.0 plan (One Call by Call). It is free up to 1000 calls/day but must be activated with a card, and a new key can take up to a couple of hours to work. A plain default key is rejected."
+        "owm-onecall-hint": "OpenWeatherMap needs the One Call API 3.0 plan (One Call by Call). It is free up to 1000 calls/day but must be activated with a card, and a new key can take up to a couple of hours to work. A plain default key is rejected.",
+        "ha-entity-hint": "The current values and the forecast come from this entity (DWD, Met.no, KNMI, ...), in the units Home Assistant shows them in. It reports no rain that fell, only a forecast: give each sensor group a rain sensor under Current precipitation. Solar radiation and reference ET come from Open-Meteo."
       }
     },
     "backuprestore": {
@@ -483,7 +486,8 @@
           "module": "Calculation engine",
           "module_description": "This group only offers the sources this engine reads. The zones using it inherit the choice.",
           "module_undecided": "No engine chosen yet, so every source is offered and each zone using this group keeps its own. Pick one to see only the sources it reads.",
-          "wind_height": "Anemometer height (empty: taken at 2 m)"
+          "wind_height": "Anemometer height (empty: taken at 2 m)",
+          "rain_not_from_entity": "The weather entity reports no rain that fell, only a forecast: choose a rain sensor here, or the zones are watered after every shower."
         }
       },
       "description": "Add one or more sensor groups that retrieve weather data from Weather service, from sensors or a combination of these. You can map each sensor group to one or more zones",

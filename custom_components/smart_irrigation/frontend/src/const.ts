@@ -88,8 +88,14 @@ export const WEATHER_SERVICE_OPEN_METEO = "Open-Meteo";
 // OpenWeatherMap: needs the One Call API 3.0 subscription, so the panel shows a
 // contextual hint when it is selected (see #762).
 export const WEATHER_SERVICE_OWM = "Open Weather Map";
+// A weather entity of Home Assistant itself: chosen by entity, no key, and it
+// reports no rain that fell (a sensor brings the rain).
+export const WEATHER_SERVICE_HA = "Home Assistant weather entity";
 // Weather services that need no API key (free / keyless).
-export const WEATHER_SERVICES_NO_API_KEY = [WEATHER_SERVICE_OPEN_METEO];
+export const WEATHER_SERVICES_NO_API_KEY = [
+  WEATHER_SERVICE_OPEN_METEO,
+  WEATHER_SERVICE_HA,
+];
 
 export const MAPPING_CONF_SOURCE_WEATHER_SERVICE = "weather_service";
 export const MAPPING_CONF_SOURCE_SENSOR = "sensor";

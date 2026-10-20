@@ -56,6 +56,7 @@ import {
   MAPPING_PRECIPITATION,
   MAPPING_PRESSURE,
   MAPPING_SOLRAD,
+  WEATHER_SERVICE_HA,
   WEATHER_SERVICE_OPEN_METEO,
   MAPPING_TEMPERATURE,
   MAPPING_WINDSPEED,
@@ -860,6 +861,17 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
               )}
             </div>`
           : ""}
+        ${value === MAPPING_CURRENT_PRECIPITATION &&
+        this.config?.use_weather_service &&
+        this.config?.weather_service === WEATHER_SERVICE_HA &&
+        mappingline[MAPPING_CONF_SOURCE] === MAPPING_CONF_SOURCE_WEATHER_SERVICE
+          ? html`<div class="weather-note">
+              ${localize(
+                "panels.mappings.cards.mapping.rain_not_from_entity",
+                this.hass.language,
+              )}
+            </div>`
+          : ""}
         ${this.renderMappingInputs(index, value, mappingline)}
       </div>
     `;
@@ -913,8 +925,17 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     // Solar Radiation and Evapotranspiration can be sourced from the weather
     // service on any provider: for services that don't supply them (OWM /
     // Pirate Weather) the integration fills them from Open-Meteo.
+    // A weather entity reports no rain that fell, only a forecast of it, so
+    // it is not offered for the rain either. A group already on it keeps
+    // seeing it, greyed out, so the select does not pretend another source.
+    const serviceWithoutRain =
+      this.config.weather_service === WEATHER_SERVICE_HA &&
+      value === MAPPING_CURRENT_PRECIPITATION;
     const offerWeatherService =
-      !!this.config.use_weather_service && !isPrecipitationDepth;
+      !!this.config.use_weather_service &&
+      !isPrecipitationDepth &&
+      (!serviceWithoutRain ||
+        currentSource === MAPPING_CONF_SOURCE_WEATHER_SERVICE);
     const offerNone = isSpecialMapping || isPrecipitationDepth;
     // Every zone of the group waits for a ready-made evapotranspiration: None
     // would leave them without one, so it cannot be chosen (a group already on
@@ -938,6 +959,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         ? html`<option
             value="${MAPPING_CONF_SOURCE_WEATHER_SERVICE}"
             ?selected=${currentSource === MAPPING_CONF_SOURCE_WEATHER_SERVICE}
+            ?disabled=${serviceWithoutRain}
           >
             ${localize(
               value === MAPPING_EVAPOTRANSPIRATION

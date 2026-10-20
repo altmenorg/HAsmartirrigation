@@ -172,7 +172,9 @@
       "labels": {
         "use-weather-service": "Einen Wetterdienst verwenden",
         "service": "Wetterdienst",
-        "api-key": "API-Schlüssel"
+        "api-key": "API-Schlüssel",
+        "ha-weather-entity": "Eine Wetter-Entität in Home Assistant",
+        "weather-entity": "Wetter-Entität"
       },
       "actions": {
         "save": "Speichern",
@@ -182,7 +184,8 @@
         "no-service": "Es wird kein Wetterdienst verwendet — die Wetterdaten stammen ausschließlich von Ihren eigenen Sensoren.",
         "saved": "Wetterdienst aktualisiert und angewendet.",
         "reload-note": "Beim Speichern wird der API-Schlüssel mit dem Dienst validiert und die Änderung sofort angewendet.",
-        "owm-onecall-hint": "OpenWeatherMap benötigt den Tarif One Call API 3.0 (One Call by Call). Er ist bis 1000 Aufrufe/Tag kostenlos, muss aber mit einer Karte aktiviert werden, und ein neuer Schlüssel kann ein paar Stunden brauchen, bis er funktioniert. Ein einfacher Standardschlüssel wird abgelehnt."
+        "owm-onecall-hint": "OpenWeatherMap benötigt den Tarif One Call API 3.0 (One Call by Call). Er ist bis 1000 Aufrufe/Tag kostenlos, muss aber mit einer Karte aktiviert werden, und ein neuer Schlüssel kann ein paar Stunden brauchen, bis er funktioniert. Ein einfacher Standardschlüssel wird abgelehnt.",
+        "ha-entity-hint": "Die aktuellen Werte und die Vorhersage kommen von dieser Entität (DWD, Met.no, KNMI, ...), in den Einheiten, in denen Home Assistant sie anzeigt. Gefallenen Regen meldet sie nicht, nur eine Vorhersage: Gib jeder Sensorgruppe unter Aktueller Niederschlag einen Regensensor. Strahlung und Referenz-ET kommen von Open-Meteo."
       }
     },
     "backuprestore": {
@@ -483,7 +486,8 @@
           "module": "Berechnungs-Engine",
           "module_description": "Diese Gruppe bietet nur die Quellen an, die diese Engine liest. Die Zonen, die sie nutzen, übernehmen die Wahl.",
           "module_undecided": "Noch keine Engine gewählt, daher wird jede Quelle angeboten und jede Zone, die diese Gruppe nutzt, behält ihre eigene. Wähle eine, um nur die Quellen zu sehen, die sie liest.",
-          "wind_height": "Höhe des Windmessers (leer: auf 2 m)"
+          "wind_height": "Höhe des Windmessers (leer: auf 2 m)",
+          "rain_not_from_entity": "Die Wetter-Entität meldet keinen gefallenen Regen, nur eine Vorhersage: Wähle hier einen Regensensor, sonst wird nach jedem Schauer bewässert."
         }
       },
       "description": "Füge eine oder mehrere Sensorgruppen hinzu, die Wetterdaten von Weather service, Sensoren oder einer Kombination daraus abrufen. Jede Sensorgruppe kann für eine oder mehrere Zonen verwendet werden",
