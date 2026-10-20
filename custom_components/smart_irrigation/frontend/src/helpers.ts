@@ -623,3 +623,20 @@ export function sameDeviceSensors(
     .map((e) => ({ entity_id: e.entity_id, disabled: !!e.disabled_by }))
     .sort((a, b) => Number(a.disabled) - Number(b.disabled));
 }
+
+/**
+ * What the assistant asks for when evapotranspiration comes from a sensor.
+ *
+ * The evapotranspiration, and the rain: an engine that takes the ET as it is
+ * still has the rain subtracted from it, and the engine lists it among what it
+ * reads. Only the evapotranspiration was asked for, so such a zone never had
+ * any rain. ``sources`` is what the engine reads, under glass without the rain;
+ * a backend that does not say what an engine reads is asked for the ET alone,
+ * as before.
+ */
+export function setupSourcesForEt(
+  sources: string[],
+  engineSaysWhatItReads: boolean,
+): string[] {
+  return engineSaysWhatItReads ? sources : [MAPPING_EVAPOTRANSPIRATION];
+}

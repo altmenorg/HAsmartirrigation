@@ -22,6 +22,7 @@ import {
   missingRequiredSources,
   sameDeviceSensors,
   setupRainToAsk,
+  setupSourcesForEt,
   setupZoneMethod,
 } from "./helpers";
 
@@ -309,5 +310,32 @@ describe("sameDeviceSensors", () => {
     expect(
       sameDeviceSensors(registry, "weather.other", "precipitation_intensity"),
     ).toEqual([]);
+  });
+});
+
+/**
+ * A zone whose evapotranspiration comes from a sensor was asked for that
+ * sensor only, and never had any rain.
+ */
+describe("setupSourcesForEt", () => {
+  it("asks for the rain too, as the engine reads it", () => {
+    expect(
+      setupSourcesForEt(
+        [
+          MAPPING_EVAPOTRANSPIRATION,
+          MAPPING_PRECIPITATION,
+          MAPPING_CURRENT_PRECIPITATION,
+        ],
+        true,
+      ),
+    ).toEqual([
+      MAPPING_EVAPOTRANSPIRATION,
+      MAPPING_PRECIPITATION,
+      MAPPING_CURRENT_PRECIPITATION,
+    ]);
+  });
+
+  it("asks for the evapotranspiration alone when the engine says nothing", () => {
+    expect(setupSourcesForEt([], false)).toEqual([MAPPING_EVAPOTRANSPIRATION]);
   });
 });

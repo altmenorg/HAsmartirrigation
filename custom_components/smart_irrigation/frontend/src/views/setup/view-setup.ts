@@ -26,6 +26,7 @@ import {
   RegistryEntry,
   sameDeviceSensors,
   setupRainToAsk,
+  setupSourcesForEt,
   setupZoneMethod,
 } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
@@ -212,7 +213,8 @@ class SmartIrrigationViewSetup extends LitElement {
   /** Sources the user has to point at an entity, given how they answered. */
   private get sensorsToAsk(): string[] {
     if (this.weather === "static") return [];
-    if (this.weather === "et") return [MAPPING_EVAPOTRANSPIRATION];
+    if (this.weather === "et")
+      return setupSourcesForEt(this.sourcesToAsk, !!this.engine?.consumes);
     if (this.weather === "sensors") return this.sourcesToAsk;
     // The weather service supplies everything it can; rain indoors is not a
     // thing, and nothing else needs asking, but the rain of a service that
