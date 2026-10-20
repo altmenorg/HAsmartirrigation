@@ -567,3 +567,59 @@ export function changedFields(
   }
   return changes;
 }
+
+/**
+ * The rain fields the setup assistant asks a sensor for on the weather-service
+ * path: both, outdoors, when the service reports no rain that fell (a weather
+ * entity of Home Assistant only forecasts it). Either one is enough. Any other
+ * service brings its own rain, and under glass there is none to ask for.
+ */
+export function setupRainToAsk(
+  weather: string,
+  underGlass: boolean,
+  serviceHasRain: boolean,
+): string[] {
+  if (weather !== "service" || underGlass || serviceHasRain) return [];
+  return [MAPPING_CURRENT_PRECIPITATION, MAPPING_PRECIPITATION];
+}
+
+/** The device class of the sensors that can stand for each rain field. */
+export const RAIN_DEVICE_CLASS: Record<string, string> = {
+  [MAPPING_CURRENT_PRECIPITATION]: "precipitation_intensity",
+  [MAPPING_PRECIPITATION]: "precipitation",
+};
+
+/** One entry of Home Assistant's entity registry, as far as it is read here. */
+export interface RegistryEntry {
+  entity_id: string;
+  device_id?: string | null;
+  disabled_by?: string | null;
+  device_class?: string | null;
+  original_device_class?: string | null;
+}
+
+/**
+ * Sensors of a given device class on the same device as a weather entity.
+ *
+ * A weather integration often puts its separate sensors on the device of its
+ * weather entity: DWD has a rain sensor there, and a radar one. Found by the
+ * standard device class, not by knowing the integration, and disabled ones
+ * too, so the assistant can say to enable one. Enabled ones first.
+ */
+export function sameDeviceSensors(
+  registry: RegistryEntry[],
+  weatherEntity: string | null | undefined,
+  deviceClass: string,
+): { entity_id: string; disabled: boolean }[] {
+  const device = registry.find((e) => e.entity_id === weatherEntity)?.device_id;
+  if (!device) return [];
+  return registry
+    .filter(
+      (e) =>
+        e.device_id === device &&
+        e.entity_id.startsWith("sensor.") &&
+        (e.device_class || e.original_device_class) === deviceClass,
+    )
+    .map((e) => ({ entity_id: e.entity_id, disabled: !!e.disabled_by }))
+    .sort((a, b) => Number(a.disabled) - Number(b.disabled));
+}

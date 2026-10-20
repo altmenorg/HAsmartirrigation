@@ -144,7 +144,10 @@
           "lux-hint": "Under glass a light sensor can stand in for solar radiation: pick your illuminance entity here and set its source to Light sensor (lux) afterwards, in the sensor group.",
           "static-question": "How much does it evaporate per day?",
           "static-help": "A depth of water, in the unit your zones use. Somewhere around 4 to 5 mm a day is common for a temperate summer.",
-          "static-label": "Evaporation per day"
+          "static-label": "Evaporation per day",
+          "rain-help-entity": "The weather entity reports no rain that fell, only a forecast. Choose a rain sensor for one of the two: the rate (mm/h) or the total of a rain gauge (mm). Without one, choose Open-Meteo as the weather service instead: it reports the rain.",
+          "suggested": "On the device of the weather entity",
+          "suggested-disabled": "disabled: enable it first under Settings, Entities"
         },
         "review": {
           "question": "Ready to create",

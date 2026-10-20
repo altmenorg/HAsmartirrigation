@@ -144,7 +144,10 @@
           "lux-hint": "Unter Glas kann ein Lichtsensor die Sonnenstrahlung ersetzen: wähle hier deine Beleuchtungsstärke-Entität und setze ihre Quelle danach in der Sensorgruppe auf Lichtsensor (Lux).",
           "static-question": "Wie viel verdunstet pro Tag?",
           "static-help": "Eine Wasserhöhe, in der Einheit deiner Zonen. Etwa 4 bis 5 mm pro Tag ist für einen gemäßigten Sommer üblich.",
-          "static-label": "Verdunstung pro Tag"
+          "static-label": "Verdunstung pro Tag",
+          "rain-help-entity": "Die Wetter-Entität meldet keinen gefallenen Regen, nur eine Vorhersage. Wähle für eines der beiden einen Regensensor: die Rate (mm/h) oder die Summe eines Regenmessers (mm). Hast du keinen, nimm als Wetterdienst Open-Meteo: Er meldet den Regen.",
+          "suggested": "Am Gerät der Wetter-Entität",
+          "suggested-disabled": "deaktiviert: zuerst unter Einstellungen, Entitäten aktivieren"
         },
         "review": {
           "question": "Bereit zum Erstellen",

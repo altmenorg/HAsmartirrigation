@@ -20,6 +20,8 @@ import {
   displayVolume,
   getOptionsForMappingType,
   missingRequiredSources,
+  sameDeviceSensors,
+  setupRainToAsk,
   setupZoneMethod,
 } from "./helpers";
 
@@ -227,5 +229,85 @@ describe("setupZoneMethod", () => {
 
   it("leaves an engine it does not know to the integration", () => {
     expect(setupZoneMethod("SomethingElse")).toEqual({});
+  });
+});
+
+/**
+ * A weather entity reports no rain that fell. On the weather-service path the
+ * assistant then asks for a rain sensor, and offers the ones of the same
+ * device.
+ */
+describe("setupRainToAsk", () => {
+  it("asks for rain on the service path when the service has none", () => {
+    expect(setupRainToAsk("service", false, false)).toEqual([
+      MAPPING_CURRENT_PRECIPITATION,
+      MAPPING_PRECIPITATION,
+    ]);
+  });
+
+  it("asks nothing more of a service that brings its own rain", () => {
+    expect(setupRainToAsk("service", false, true)).toEqual([]);
+  });
+
+  it("asks nothing under glass, or on the other paths", () => {
+    expect(setupRainToAsk("service", true, false)).toEqual([]);
+    for (const weather of ["sensors", "et", "static"]) {
+      expect(setupRainToAsk(weather, false, false)).toEqual([]);
+    }
+  });
+});
+
+describe("sameDeviceSensors", () => {
+  const registry = [
+    { entity_id: "weather.home", device_id: "dwd" },
+    {
+      entity_id: "sensor.home_radar_precipitation",
+      device_id: "dwd",
+      original_device_class: "precipitation_intensity",
+    },
+    {
+      entity_id: "sensor.home_precipitation",
+      device_id: "dwd",
+      original_device_class: "precipitation_intensity",
+      disabled_by: "integration",
+    },
+    {
+      entity_id: "sensor.home_temperature",
+      device_id: "dwd",
+      original_device_class: "temperature",
+    },
+    {
+      entity_id: "sensor.garden_rain_rate",
+      device_id: "garden",
+      original_device_class: "precipitation_intensity",
+    },
+    {
+      entity_id: "sensor.home_renamed",
+      device_id: "dwd",
+      device_class: "precipitation_intensity",
+      original_device_class: "precipitation",
+    },
+  ];
+
+  it("finds the sensors of that class on the entity's device, enabled first", () => {
+    expect(
+      sameDeviceSensors(registry, "weather.home", "precipitation_intensity"),
+    ).toEqual([
+      { entity_id: "sensor.home_radar_precipitation", disabled: false },
+      { entity_id: "sensor.home_renamed", disabled: false },
+      { entity_id: "sensor.home_precipitation", disabled: true },
+    ]);
+  });
+
+  it("follows a device class the user set over the original one", () => {
+    expect(
+      sameDeviceSensors(registry, "weather.home", "precipitation"),
+    ).toEqual([]);
+  });
+
+  it("finds nothing for an entity without a device", () => {
+    expect(
+      sameDeviceSensors(registry, "weather.other", "precipitation_intensity"),
+    ).toEqual([]);
   });
 });
