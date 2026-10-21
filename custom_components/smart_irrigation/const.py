@@ -776,7 +776,10 @@ PLAUSIBLE_RANGES = {
 # sensor that stopped, not a value that held: a dead thermometer keeping its
 # last state was recorded every hour, a flat day with maximum equal to minimum.
 # Fields that can legitimately stay put for days (a rain total) are not checked.
-STALE_FIELDS = ("Temperature", "Humidity", "Dewpoint")
+# Wind and pressure are: Home Assistant stamps every report, an unchanged one
+# included, so a calm day or a steady barometer still reports, and a dead one's
+# last value was reused in every later calculation.
+STALE_FIELDS = ("Temperature", "Humidity", "Dewpoint", "Windspeed", "Pressure")
 STALE_AFTER_HOURS = 6
 # The share of the sky's sun that reaches the plants under glass, for a
 # greenhouse group with no radiation or illuminance sensor of its own: the sun is

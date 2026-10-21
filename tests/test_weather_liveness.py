@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import homeassistant.util.dt as dt_util
+import pytest
 
 from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.liveness import (
@@ -164,18 +165,36 @@ def test_recovery_clears_the_notice_and_fires_once():
 
 
 def test_fields_the_group_does_not_use_never_alert():
+    """A rain total can legitimately stay put for days, so it is not watched."""
     mapping = _mapping(Temperature="sensor.t", Humidity=None, Dewpoint=None)
-    mapping[const.MAPPING_MAPPINGS]["Pressure"] = {
+    mapping[const.MAPPING_MAPPINGS]["Precipitation"] = {
         const.MAPPING_CONF_SOURCE: const.MAPPING_CONF_SOURCE_SENSOR,
-        const.MAPPING_CONF_SENSOR: "sensor.p",
+        const.MAPPING_CONF_SENSOR: "sensor.rain",
     }
-    states = {"sensor.t": _state(1), "sensor.p": _state(48)}
+    states = {"sensor.t": _state(1), "sensor.rain": _state(48)}
     c = _coordinator(mapping, states)
 
     ir = _check(c)
 
     ir.async_create_issue.assert_not_called()
     assert _fired(c) == []
+
+
+@pytest.mark.parametrize("field", ["Windspeed", "Pressure"])
+def test_a_silent_wind_or_pressure_sensor_alerts(field):
+    """Their last value was reused in every later calculation without a word."""
+    mapping = _mapping(Temperature="sensor.t", Humidity=None, Dewpoint=None)
+    mapping[const.MAPPING_MAPPINGS][field] = {
+        const.MAPPING_CONF_SOURCE: const.MAPPING_CONF_SOURCE_SENSOR,
+        const.MAPPING_CONF_SENSOR: "sensor.x",
+    }
+    states = {"sensor.t": _state(1), "sensor.x": _state(48)}
+    c = _coordinator(mapping, states)
+
+    ir = _check(c)
+
+    ir.async_create_issue.assert_called_once()
+    assert [item.field for item in c._silent_fields_of(mapping, NOW)] == [field]
 
 
 def test_a_group_no_automatic_zone_uses_is_not_watched():
