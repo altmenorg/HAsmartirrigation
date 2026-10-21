@@ -1444,10 +1444,13 @@ class CalculationMixin:
         if not mapping or not mapping.get(const.MAPPING_DATA):
             return None
         sourced = self._sourced_fields(mapping)
+        # The same rule as the daily path: nothing silent is carried over.
+        not_to_carry = getattr(self, "_fields_not_to_carry", None)
+        silent = not_to_carry(mapping) if not_to_carry else set()
         last_entry = {
             key: value
             for key, value in (mapping.get(const.MAPPING_DATA_LAST_ENTRY) or {}).items()
-            if key in sourced
+            if key in sourced and key not in silent
         }
         since = self.zone_window_start(zone)
         # A group fed by Open-Meteo alone is priced on Open-Meteo's own hourly
@@ -1670,7 +1673,10 @@ class CalculationMixin:
         Nor a field whose source has gone silent: a dead thermometer's last
         reading would otherwise stand in for every later day, while the repair
         notice says it stopped. The same threshold decides both, so what the
-        calculation leaves out is what the notice names.
+        calculation leaves out is what the notice names. A silent weather
+        service takes every field it supplies with it, not only the three the
+        notice watches: its wind, pressure, radiation and rain rate were still
+        reused, day after day.
         """
         last_entry = mapping.get(const.MAPPING_DATA_LAST_ENTRY)
         _LOGGER.debug(
@@ -1681,8 +1687,8 @@ class CalculationMixin:
         if not last_entry:
             return
         sourced = self._sourced_fields(mapping)
-        silent_of = getattr(self, "_silent_fields_of", None)
-        silent = {item.field for item in silent_of(mapping)} if silent_of else set()
+        not_to_carry = getattr(self, "_fields_not_to_carry", None)
+        silent = not_to_carry(mapping) if not_to_carry else set()
         for key, val in last_entry.items():
             if key not in data_by_sensor and key not in sourced:
                 _LOGGER.debug(

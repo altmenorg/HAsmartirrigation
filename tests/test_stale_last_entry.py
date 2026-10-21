@@ -172,3 +172,84 @@ class TestASilentSourceIsNotCarriedOver:
         coord._fill_missing_from_last_entry(self._mapping(), data_by_sensor)
 
         assert data_by_sensor[const.MAPPING_TEMPERATURE] == [21.0]
+
+
+class TestASilentServiceTakesAllItsFieldsWithIt:
+    """A weather service that stops answering supplies nothing more at all.
+
+    The notice watches temperature, humidity and dew point, and the carry-over
+    used to stop only those: the service's last wind, pressure, radiation and
+    rain rate were reused in every later calculation, in a group that still
+    recorded its own sensors, with nothing on screen to say so.
+    """
+
+    SERVICE_FIELDS = (
+        const.MAPPING_TEMPERATURE,
+        const.MAPPING_WINDSPEED,
+        const.MAPPING_PRESSURE,
+        const.MAPPING_SOLRAD,
+        const.MAPPING_CURRENT_PRECIPITATION,
+    )
+
+    class _Live(CalculationMixin, WeatherLivenessMixin):
+        def __init__(self):
+            self.store = MagicMock()
+            # Polled every hour: silent after the six-hour floor.
+            self.store.get_config = MagicMock(return_value={})
+            self.hass = MagicMock()
+            state = MagicMock()
+            state.last_reported = dt_util.utcnow()
+            self.hass.states.get = MagicMock(return_value=state)
+            self.use_weather_service = True
+
+    @classmethod
+    def _mapping(cls, fetched_hours_ago):
+        mappings = {
+            key: {const.MAPPING_CONF_SOURCE: const.MAPPING_CONF_SOURCE_WEATHER_SERVICE}
+            for key in cls.SERVICE_FIELDS
+        }
+        # A sensor of its own: it keeps carrying over whatever the service does.
+        mappings[const.MAPPING_HUMIDITY] = {
+            const.MAPPING_CONF_SOURCE: const.MAPPING_CONF_SOURCE_SENSOR,
+            const.MAPPING_CONF_SENSOR: "sensor.garden_humidity",
+        }
+        last_entry = {key: 1.0 for key in cls.SERVICE_FIELDS}
+        last_entry[const.MAPPING_HUMIDITY] = 70.0
+        return {
+            const.MAPPING_ID: 1,
+            const.MAPPING_NAME: "Garden",
+            const.MAPPING_MAPPINGS: mappings,
+            const.MAPPING_DATA_LAST_ENTRY: last_entry,
+            const.MAPPING_DATA_LAST_SERVICE_FETCH: (
+                dt_util.utcnow() - timedelta(hours=fetched_hours_ago)
+            ).isoformat(),
+        }
+
+    def test_nothing_the_silent_service_supplied_is_carried_over(self):
+        data_by_sensor = {}
+
+        self._Live()._fill_missing_from_last_entry(
+            self._mapping(fetched_hours_ago=72), data_by_sensor
+        )
+
+        for key in self.SERVICE_FIELDS:
+            assert key not in data_by_sensor, key
+        assert data_by_sensor[const.MAPPING_HUMIDITY] == [70.0]
+
+    def test_a_service_that_answered_recently_still_carries_over(self):
+        data_by_sensor = {}
+
+        self._Live()._fill_missing_from_last_entry(
+            self._mapping(fetched_hours_ago=1), data_by_sensor
+        )
+
+        for key in self.SERVICE_FIELDS:
+            assert data_by_sensor[key] == [1.0], key
+
+    def test_without_a_weather_service_in_use_nothing_changes(self):
+        coord = self._Live()
+        coord.use_weather_service = False
+
+        blocked = coord._fields_not_to_carry(self._mapping(fetched_hours_ago=72))
+
+        assert blocked == set()

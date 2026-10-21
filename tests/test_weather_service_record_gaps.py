@@ -90,6 +90,29 @@ async def test_rain_set_to_none_is_not_taken_from_the_service():
 
 
 @pytest.mark.asyncio
+async def test_a_rain_depth_set_to_none_is_not_taken_from_the_service_either():
+    """Our clients only send the rate today; the depth follows the same rule
+    so a client that sends it one day does not bring the bug back."""
+    coordinator, mapping = _coordinator(
+        MagicMock(
+            return_value={
+                const.MAPPING_TEMPERATURE: 18.0,
+                const.MAPPING_PRECIPITATION: 5.0,
+            }
+        ),
+        {
+            const.MAPPING_TEMPERATURE: _source(SERVICE),
+            const.MAPPING_PRECIPITATION: _source(NONE),
+        },
+    )
+
+    await coordinator._async_record_weather_for_mapping(GROUP)
+
+    [record] = mapping[const.MAPPING_DATA]
+    assert const.MAPPING_PRECIPITATION not in record
+
+
+@pytest.mark.asyncio
 async def test_rain_from_the_service_is_still_taken_when_set_to_it():
     coordinator, mapping = _coordinator(
         MagicMock(return_value={const.MAPPING_CURRENT_PRECIPITATION: 2.0}),

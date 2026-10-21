@@ -296,6 +296,47 @@ class WeatherLivenessMixin:
             },
         )
 
+    def _fields_not_to_carry(self, mapping: dict, now=None) -> set[str]:
+        """The fields whose last value must not stand in for a missing one.
+
+        The silent fields the notice names, and, while the weather service is
+        silent, every field the group takes from it. The notice watches the
+        three fields that matter most, which is enough to tell someone; the
+        calculation must not reuse a dead service's wind, pressure, radiation
+        or rain rate either, day after day, with nothing on screen to say so.
+        """
+        now = now or dt_util.utcnow()
+        blocked = {item.field for item in self._silent_fields_of(mapping, now)}
+        if not getattr(self, "use_weather_service", False):
+            return blocked
+        from_service = [
+            key
+            for key, conf in (mapping.get(const.MAPPING_MAPPINGS) or {}).items()
+            if isinstance(conf, dict)
+            and conf.get(const.MAPPING_CONF_SOURCE)
+            == const.MAPPING_CONF_SOURCE_WEATHER_SERVICE
+        ]
+        if not from_service:
+            return blocked
+        service_after = service_silent_after(
+            self.store.get_config() if hasattr(self.store, "get_config") else None
+        )
+        silent = silent_fields(
+            [
+                FieldReport(
+                    "service",
+                    WEATHER_SERVICE_LABEL,
+                    _as_utc(mapping.get(const.MAPPING_DATA_LAST_SERVICE_FETCH)),
+                    getattr(self, "_weather_liveness_started", None),
+                )
+            ],
+            now,
+            default=service_after,
+        )
+        if silent:
+            blocked.update(from_service)
+        return blocked
+
     @staticmethod
     def _liveness_event(mapping: dict, fields: list) -> dict:
         return {
