@@ -30,7 +30,7 @@ _DAYS = [{"i": 0}, {"i": 1}, {"i": 2}]
 def _prime(client):
     """Populate the forecast cache and keep it fresh so the cached branch runs."""
     client._cached_forecast_data = list(_DAYS)
-    client._last_time_called = datetime.datetime.now()
+    client._forecast_called_at = datetime.datetime.now()
 
 
 def test_owm_forecast_excludes_today_by_default() -> None:

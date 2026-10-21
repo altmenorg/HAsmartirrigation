@@ -19,6 +19,7 @@ from ..const import (
     MAPPING_WINDSPEED,
 )
 from .atmosphere import sea_level_to_station_pressure
+from .gate import RequestGate
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -126,7 +127,11 @@ class OWMClient:  # pylint: disable=invalid-name
         # The coordinator sets cache_seconds to the update interval, so one fetch
         # per cycle is reused instead of hitting the API on every lookup.
         self.override_cache = override_cache
-        self._last_time_called = datetime.datetime(1900, 1, 1, 0, 0, 0)
+        # Each answer has its own time: the poll's get_data every interval used
+        # to make the forecast look fresh, so it was never asked again.
+        self._data_called_at = datetime.datetime(1900, 1, 1, 0, 0, 0)
+        self._forecast_called_at = datetime.datetime(1900, 1, 1, 0, 0, 0)
+        self._gate = RequestGate("OpenWeatherMap")
         self._cached_data = None
         self._cached_forecast_data = None
 
@@ -143,10 +148,16 @@ class OWMClient:  # pylint: disable=invalid-name
             self._cached_forecast_data is None
             or self.override_cache
             or datetime.datetime.now()
-            >= self._last_time_called + datetime.timedelta(seconds=self.cache_seconds)
+            >= self._forecast_called_at + datetime.timedelta(seconds=self.cache_seconds)
         ):
             try:
-                req = requests.get(self.url, timeout=60)  # 60 seconds timeout
+                req = self._gate.get(
+                    self.url,
+                    lambda: requests.get(self.url, timeout=60),
+                    fresh=self.override_cache,
+                ).response
+                if req is None:
+                    return None
                 doc = json.loads(req.text)
                 _LOGGER.debug(
                     "OWMClient get_forecast_data called API %s and received %s",
@@ -246,7 +257,7 @@ class OWMClient:  # pylint: disable=invalid-name
                             parsed_data["date"] = day
                         parsed_data_total.append(parsed_data)
                     self._cached_forecast_data = parsed_data_total
-                    self._last_time_called = datetime.datetime.now()
+                    self._forecast_called_at = datetime.datetime.now()
                     return parsed_data_total if include_today else parsed_data_total[1:]
                 _LOGGER.warning(
                     "Ignoring OWM input: missing required key 'daily' in OWM API return"
@@ -280,16 +291,37 @@ class OWMClient:  # pylint: disable=invalid-name
         """The pressure at the site from the reported sea-level pressure."""
         return sea_level_to_station_pressure(pressure, height)
 
+    def _request_or_raise(self):
+        """The API's answer (a 200) through the client's gate, or an error.
+
+        get_data has always raised when OpenWeatherMap refused: an OSError
+        for a refusal, which the key check reports as an invalid key, and the
+        request's own error when nothing answered. It still does, and also
+        while the gate is in its pause after a failure, without asking.
+        """
+        answer = self._gate.get(
+            self.url,
+            lambda: requests.get(self.url, timeout=60),
+            fresh=self.override_cache,
+        )
+        if answer.response is not None:
+            return answer.response
+        if answer.paused:
+            raise OSError("OpenWeatherMap is not asked again yet after a failure")
+        if answer.status is None:
+            raise requests.ConnectionError("No answer from OpenWeatherMap")
+        self.raiseHTTPError()
+
     def get_data(self):
         """Validate and return data."""
         if (
             self._cached_data is None
             or self.override_cache
             or datetime.datetime.now()
-            >= self._last_time_called + datetime.timedelta(seconds=self.cache_seconds)
+            >= self._data_called_at + datetime.timedelta(seconds=self.cache_seconds)
         ):
             try:
-                req = requests.get(self.url, timeout=60)  # 60 seconds timeout
+                req = self._request_or_raise()
                 doc = json.loads(req.text)
                 _LOGGER.debug(
                     "OWMClient get_data called API %s and received %s",
@@ -361,7 +393,7 @@ class OWMClient:  # pylint: disable=invalid-name
                     )
 
                     self._cached_data = parsed_data
-                    self._last_time_called = datetime.datetime.now()
+                    self._data_called_at = datetime.datetime.now()
                     return parsed_data
                 _LOGGER.warning(
                     "Ignoring OWM input: missing required key 'current' and 'daily' in OWM API return"

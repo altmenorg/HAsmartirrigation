@@ -22,13 +22,13 @@ from ..const import (
     MAPPING_WINDSPEED,
 )
 from .atmosphere import sea_level_to_station_pressure
+from .gate import RequestGate
 
 _LOGGER = logging.getLogger(__name__)
 
 # Open Weather Map URL
 PirateWeather_URL = "https://api.pirateweather.net/forecast/{}/{},{}?units={}&version={}&exclude=minutely,hourly,alerts"
 
-RETRY_TIMES = 3
 # Required PirateWeather keys for validation
 PirateWeather_wind_speed_key_name = "windSpeed"
 PirateWeather_pressure_key_name = "pressure"
@@ -135,7 +135,11 @@ class PirateWeatherClient:  # pylint: disable=invalid-name
         # The coordinator sets cache_seconds to the update interval, so one fetch
         # per cycle is reused instead of hitting the API on every lookup.
         self.override_cache = override_cache
-        self._last_time_called = datetime.datetime(1900, 1, 1, 0, 0, 0)
+        # Each answer has its own time: the poll's get_data every interval used
+        # to make the forecast look fresh, so it was never asked again.
+        self._data_called_at = datetime.datetime(1900, 1, 1, 0, 0, 0)
+        self._forecast_called_at = datetime.datetime(1900, 1, 1, 0, 0, 0)
+        self._gate = RequestGate("Pirate Weather")
         self._cached_data = None
         self._cached_forecast_data = None
 
@@ -152,19 +156,11 @@ class PirateWeatherClient:  # pylint: disable=invalid-name
             self._cached_forecast_data is None
             or self.override_cache
             or datetime.datetime.now()
-            >= self._last_time_called + datetime.timedelta(seconds=self.cache_seconds)
+            >= self._forecast_called_at + datetime.timedelta(seconds=self.cache_seconds)
         ):
             try:
-                for i in range(RETRY_TIMES):
-                    req = requests.get(self.url, timeout=60)  # 60 seconds timeout
-                    if req.status_code == 200:
-                        break
-                    i = i + 1
-                if req.status_code != 200:
-                    _LOGGER.error(
-                        "PirateWeather API returned error status code: %s",
-                        req.status_code,
-                    )
+                req = self._request()
+                if req is None:
                     return None
                 doc = json.loads(req.text)
                 _LOGGER.debug(
@@ -228,7 +224,7 @@ class PirateWeatherClient:  # pylint: disable=invalid-name
                             parsed_data["date"] = day
                         parsed_data_total.append(parsed_data)
                     self._cached_forecast_data = parsed_data_total
-                    self._last_time_called = datetime.datetime.now()
+                    self._forecast_called_at = datetime.datetime.now()
                     return parsed_data_total if include_today else parsed_data_total[1:]
                 _LOGGER.warning(
                     "Ignoring PirateWeather input: missing required key '%s' in PirateWeather API return",
@@ -265,25 +261,29 @@ class PirateWeatherClient:  # pylint: disable=invalid-name
         """The pressure at the site from the reported sea-level pressure."""
         return sea_level_to_station_pressure(pressure, height)
 
+    def _request(self):
+        """The API's answer (a 200), or None, through the client's gate.
+
+        The current conditions and the forecast come from the same URL, so a
+        forecast asked right after a poll gets the poll's answer.
+        """
+        return self._gate.get(
+            self.url,
+            lambda: requests.get(self.url, timeout=60),
+            fresh=self.override_cache,
+        ).response
+
     def get_data(self):
         """Validate and return data."""
         if (
             self._cached_data is None
             or self.override_cache
             or datetime.datetime.now()
-            >= self._last_time_called + datetime.timedelta(seconds=self.cache_seconds)
+            >= self._data_called_at + datetime.timedelta(seconds=self.cache_seconds)
         ):
             try:
-                for i in range(RETRY_TIMES):
-                    req = requests.get(self.url, timeout=60)  # 60 seconds timeout
-                    if req.status_code == 200:
-                        break
-                    i = i + 1
-                if req.status_code != 200:
-                    _LOGGER.error(
-                        "PirateWeather API returned error status code: %s",
-                        req.status_code,
-                    )
+                req = self._request()
+                if req is None:
                     return None
                 doc = json.loads(req.text)
                 _LOGGER.debug(
@@ -359,7 +359,7 @@ class PirateWeatherClient:  # pylint: disable=invalid-name
                     )
 
                     self._cached_data = parsed_data
-                    self._last_time_called = datetime.datetime.now()
+                    self._data_called_at = datetime.datetime.now()
                     return parsed_data
                 _LOGGER.warning(
                     "Ignoring PirateWeather input: missing required key '%s' and '%s' in PirateWeather API return",
