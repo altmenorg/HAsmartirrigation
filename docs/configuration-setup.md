@@ -46,8 +46,8 @@ wizard picks the mode for you.
 sources the mode you chose actually reads. Choosing the weather service skips
 this step, except when the service is [a weather entity of Home
 Assistant](weather-services.md#a-weather-entity-in-home-assistant): it reports
-no rain that fell, so outdoors the wizard asks for a rain sensor (the rate, or
-a gauge's total), and offers the ones on the weather entity's own device.
+no rain that fell, so outdoors the wizard asks for a sensor that measures rain
+(the rate, or a gauge's total).
 
 ## What it creates
 

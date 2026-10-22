@@ -53,7 +53,7 @@ If you already have your national weather service in Home Assistant (DWD, Met.no
 
 - **Current values** come from the entity's attributes: temperature, humidity, pressure, wind, and the dew point when the entity has one. They are read in the units Home Assistant shows them in and converted for the calculation. The wind is taken as measured at the standard 10 m and brought to 2 m, the pressure as reported at sea level and brought to your elevation, as for the online services.
 - **The forecast** comes from `weather.get_forecasts`: the daily forecast, or else the twice-daily or the hourly one, folded into days. The hourly one, when the entity has it, also gives the rain expected in the hours ahead of a run.
-- **No rain that fell.** A weather entity only forecasts rain, and a forecast never enters the water balance. Give each sensor group a rain sensor under **Current precipitation**: a gauge, or a rain sensor of the same integration when it has one. The panel does not offer the weather service for the rain with this choice, and the log says so for a group that still takes its rain from it.
+- **No rain that fell.** A weather entity only forecasts rain, and a forecast never enters the water balance. Give each sensor group a rain sensor under **Current precipitation**: a gauge, or a sensor that measures rain. Check that it is a measurement: some weather integrations also offer next-hour or nowcast sensors with the same device class, and those are forecasts. The panel does not offer the weather service for the rain with this choice, and a new sensor group starts with no rain source. After switching, the weather service page names the groups that still take their rain from it, and the log says so for each of them.
 - **Solar radiation and reference ET0** come from Open-Meteo, as with OpenWeatherMap and Pirate Weather.
 - One entity per installation, since the weather service is a general setting. A field can still read any sensor of its own.
 
@@ -76,7 +76,7 @@ Open-Meteo also returns a finished FAO-56 ET0. If you would rather not run the c
 
 ## Switching service at any time
 
-You can change the weather service whenever you like from the **Weather service** page under **Data**, without reinstalling the integration. The API-key field is hidden for keyless services such as Open-Meteo, and the key is validated against the service before the change is applied.
+You can change the weather service whenever you like from the **Weather service** page under **Data**, without reinstalling the integration. The API-key field is hidden for keyless services such as Open-Meteo, and the key is validated against the service before the change is applied. For a weather entity, Save stays disabled until one is picked.
 
 ## Which should I pick?
 
