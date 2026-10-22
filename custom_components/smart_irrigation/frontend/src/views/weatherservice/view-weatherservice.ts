@@ -169,11 +169,24 @@ export class SmartIrrigationViewWeatherService extends LitElement {
       this._rainGroups = await this._groupsLeftWithoutRain();
       // Applied in-place on the backend; refresh the displayed state to confirm.
       window.setTimeout(() => this._load(), 800);
-    } catch (e) {
-      this._error = this._errText(e);
+    } catch (e: any) {
+      // The one refusal the panel can explain in the user's language: an
+      // entity that is gone or is not a weather entity.
+      this._error =
+        e?.code === "invalid_entity"
+          ? localize(
+              "panels.weatherservice.messages.invalid-entity",
+              this.hass.language,
+            )
+          : this._errText(e);
     } finally {
       this._saving = false;
     }
+  }
+
+  /** A weather entity is the service but none is chosen yet: nothing to save. */
+  private get _entityMissing(): boolean {
+    return this._use && this._service === WEATHER_SERVICE_HA && !this._entity;
   }
 
   /**
@@ -363,7 +376,7 @@ export class SmartIrrigationViewWeatherService extends LitElement {
           <div class="ws-actions">
             <ha-button
               appearance="filled"
-              ?disabled=${this._saving}
+              ?disabled=${this._saving || this._entityMissing}
               @click=${this._save}
             >
               ${this._saving
@@ -372,7 +385,12 @@ export class SmartIrrigationViewWeatherService extends LitElement {
             </ha-button>
           </div>
           <div class="ws-note ws-reload-note">
-            ${localize("panels.weatherservice.messages.reload-note", lang)}
+            ${localize(
+              this._use && this._service === WEATHER_SERVICE_HA
+                ? "panels.weatherservice.messages.reload-note-entity"
+                : "panels.weatherservice.messages.reload-note",
+              lang,
+            )}
           </div>
         </div>
         ${this._renderHistory(lang)}

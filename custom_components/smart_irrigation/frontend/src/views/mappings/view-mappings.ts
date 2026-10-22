@@ -65,6 +65,7 @@ import {
   MAPPING_CONF_PRESSURE_ABSOLUTE,
   MAPPING_CONF_PRESSURE_RELATIVE,
   MAPPING_CURRENT_PRECIPITATION,
+  WEATHER_SERVICES_WITHOUT_RAIN,
 } from "../../const";
 import {
   engineModeLabel,
@@ -887,8 +888,18 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
   // happens when it is left to the weather service.
   private renderSourceHint(value: string): TemplateResult {
     if (!this.hass) return html``;
+    // The usual rain hint says the weather service provides it, which a
+    // weather entity does not.
+    const rainOnlyForecast =
+      value === MAPPING_CURRENT_PRECIPITATION &&
+      !!this.config?.use_weather_service &&
+      WEATHER_SERVICES_WITHOUT_RAIN.includes(
+        this.config?.weather_service ?? "",
+      );
     const hint = localize(
-      `panels.mappings.cards.mapping.hints.${value.toLowerCase()}`,
+      rainOnlyForecast
+        ? "panels.mappings.cards.mapping.rain_hint_entity"
+        : `panels.mappings.cards.mapping.hints.${value.toLowerCase()}`,
       this.hass.language,
     );
     return hint ? html`<div class="setting-hint">${hint}</div>` : html``;
