@@ -860,6 +860,11 @@
     "enabled_label": "Invoer van de berekening naar een bestand loggen",
     "file_hint": "Wordt geschreven naar config/smart_irrigation/calc_log.jsonl, één JSON-record per regel. De meest recente records zitten ook in de diagnose-download (coördinaten afgerond, entiteit-id's verwijderd), zodat je ze in één stap aan een issue kunt hangen."
   },
+  "blueprints": {
+    "title": "Blueprints",
+    "install_label": "Voorbeeld-blueprints installeren",
+    "install_help": "Smart Irrigation kopieert zijn voorbeeld-blueprints naar je blueprintmap, elk maar één keer: een blueprint die je verwijdert, wordt niet teruggezet. Zet dit uit om er helemaal geen te kopiëren; de blueprints die er al staan, blijven zoals ze zijn."
+  },
   "measured_skip": {
     "title": "Overslaan op gemeten omstandigheden",
     "description": "Wordt gecontroleerd aan het begin van elke ronde, vanuit een sensor of de weerdienst. Een sensor die niet gelezen kan worden houdt een ronde nooit tegen.",

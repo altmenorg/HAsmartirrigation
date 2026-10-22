@@ -66,6 +66,7 @@ export class SmartIrrigationConfig {
   soak_minutes?: number;
   pause_between_zones?: number;
   calc_log_enabled: boolean;
+  install_blueprints?: boolean;
 
   constructor() {
     this.calctime = "23:00";

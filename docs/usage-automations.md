@@ -26,7 +26,7 @@ A blueprint is a parameterised mould for an automation: you import it once, pick
 
 **You already have them.** Smart Irrigation copies the blueprints below into your own `blueprints/` folder when it starts, so they are waiting for you under *Settings > Automations & scenes > Blueprints*, grouped as Smart Irrigation. Nothing to download.
 
-Existing files are never overwritten, so anything you have edited stays yours. That also means an improved blueprint does not reach you on its own: use the **Import** link in the table below to pull the current version, or delete your copy and restart. You can also browse [the whole folder](https://github.com/altmenorg/HAsmartirrigation/tree/master/custom_components/smart_irrigation/blueprints).
+Existing files are never overwritten, so anything you have edited stays yours. That also means an improved blueprint does not reach you on its own: use the **Import** link in the table below to pull the current version. Each blueprint is copied once: one you delete is not put back at the next start. To copy none at all, switch off **Install the example blueprints** in the **Blueprints** card of the General page; the ones already in your folder are left as they are. You can also browse [the whole folder](https://github.com/altmenorg/HAsmartirrigation/tree/master/custom_components/smart_irrigation/blueprints).
 
 Pick the one that matches how your valves are actually driven:
 

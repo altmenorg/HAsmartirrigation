@@ -860,6 +860,11 @@
     "enabled_label": "Skriv beräkningens underlag till en fil",
     "file_hint": "Skrivs till config/smart_irrigation/calc_log.jsonl, en JSON-post per rad. De senaste posterna följer också med i diagnostiknedladdningen (koordinater avrundade, entitets-id borttagna), så du kan bifoga dem till en felrapport i ett steg."
   },
+  "blueprints": {
+    "title": "Blueprints",
+    "install_label": "Installera exempel-blueprints",
+    "install_help": "Smart Irrigation kopierar sina exempel-blueprints till din blueprint-mapp, var och en bara en gång: en blueprint som du tar bort läggs inte tillbaka. Stäng av för att inte kopiera någon alls; de som redan finns där lämnas som de är."
+  },
   "measured_skip": {
     "title": "Hoppa över vid uppmätta förhållanden",
     "description": "Kontrolleras i början av varje körning, från en sensor eller från vädertjänsten. En sensor som inte går att läsa stoppar aldrig en körning.",

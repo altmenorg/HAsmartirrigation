@@ -860,6 +860,11 @@
     "enabled_label": "Gravar os dados de entrada do cálculo em um arquivo",
     "file_hint": "Gravado em config/smart_irrigation/calc_log.jsonl, um registro JSON por linha. Os registros mais recentes também vão no download de diagnóstico (coordenadas arredondadas, ids de entidades removidos), então você pode anexá-los a um issue em uma única etapa."
   },
+  "blueprints": {
+    "title": "Blueprints",
+    "install_label": "Instalar os blueprints de exemplo",
+    "install_help": "O Smart Irrigation copia seus blueprints de exemplo para a sua pasta de blueprints, cada um uma única vez: um blueprint que você apagar não é recolocado. Desative para não copiar nenhum; os que já estão lá ficam como estão."
+  },
   "measured_skip": {
     "title": "Pular com base nas condições medidas",
     "description": "Verificado no início de cada ciclo, a partir de um sensor ou do serviço de meteorologia. Um sensor que não pode ser lido nunca impede um ciclo.",

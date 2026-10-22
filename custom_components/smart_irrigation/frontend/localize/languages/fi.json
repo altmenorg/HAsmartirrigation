@@ -860,6 +860,11 @@
     "enabled_label": "Kirjoita laskennan lähtötiedot tiedostoon",
     "file_hint": "Kirjoitetaan tiedostoon config/smart_irrigation/calc_log.jsonl, yksi JSON-tietue riviä kohden. Uusimmat tietueet ovat mukana myös vianmäärityksen latauksessa (koordinaatit pyöristetty, entiteettien tunnukset poistettu), joten voit liittää ne vikailmoitukseen yhdellä kertaa."
   },
+  "blueprints": {
+    "title": "Blueprintit",
+    "install_label": "Asenna esimerkkiblueprintit",
+    "install_help": "Smart Irrigation kopioi esimerkkiblueprinttinsä blueprint-kansioosi, kunkin vain kerran: poistamaasi blueprinttia ei palauteta. Kytke pois, jos et halua kopioida yhtään; jo olemassa olevat jäävät ennalleen."
+  },
   "measured_skip": {
     "title": "Ohita mitattujen olosuhteiden perusteella",
     "description": "Tarkistetaan jokaisen kastelun alussa, anturista tai sääpalvelusta. Anturi, jota ei saada luettua, ei koskaan estä kastelua.",

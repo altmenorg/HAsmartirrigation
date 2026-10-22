@@ -483,6 +483,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // Calculation audit log Card
       const r10 = this.renderCalculationLogCard();
 
+      // Whether the bundled blueprints are copied (#930).
+      const r16 = this.renderBlueprintsCard();
+
       // How much of the panel to show.
       const r11 = this.renderPanelModeCard();
 
@@ -501,7 +504,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           </div> </ha-card
         >${r12}${r11}${r2}${r1}${showContinuous
           ? r4
-          : ""}${r5}${r6}${r7}${r8}${r9}${r10}${r13}`;
+          : ""}${r5}${r6}${r7}${r8}${r9}${r10}${r16}${r13}`;
 
       return r;
     }
@@ -1388,6 +1391,33 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         </div>
       </div>
     </ha-card>`;
+  }
+
+  /** Whether Smart Irrigation lays its example blueprints down (#930). */
+  renderBlueprintsCard() {
+    if (!this.config || !this.hass) return html``;
+    const lang = this.hass.language;
+    return html`
+      <ha-card header="${localize("blueprints.title", lang)}">
+        <div class="card-content">
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize("blueprints.install_label", lang)}
+            </div>
+            <ha-switch
+              .checked=${this.config.install_blueprints !== false}
+              @change=${(e: Event) =>
+                this.handleConfigChange({
+                  install_blueprints: (e.target as any).checked,
+                })}
+            ></ha-switch>
+          </div>
+          <div class="setting-help">
+            ${localize("blueprints.install_help", lang)}
+          </div>
+        </div>
+      </ha-card>
+    `;
   }
 
   renderCalculationLogCard() {
