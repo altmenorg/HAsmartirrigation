@@ -24,6 +24,10 @@ def _coordinator(total_duration, trigger):
     )
     coordinator._register_trigger = AsyncMock()
     coordinator._register_legacy_sunrise_trigger = AsyncMock()
+    # A run whose start has gone by while its moment is still ahead is caught
+    # up at once. That is not what these tests are about, and it made the last
+    # one fail for the few minutes of each day when it applies.
+    coordinator._catch_up_missed_start = MagicMock()
     coordinator.store = MagicMock()
     coordinator.store.async_get_config = AsyncMock(
         return_value={
