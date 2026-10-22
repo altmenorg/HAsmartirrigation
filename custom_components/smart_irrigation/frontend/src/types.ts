@@ -254,6 +254,8 @@ export class SmartIrrigationZone {
   safety_off_topic?: string;
   safety_off_state_key?: string;
   safety_off_mode?: string;
+  confirm_timeout?: number | null;
+  open_resends?: number | null;
   supply_id?: string | null;
   extra_entities?: string[] | null;
   measured_throughput?: number | null;

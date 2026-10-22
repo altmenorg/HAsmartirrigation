@@ -653,6 +653,16 @@ SAFETY_OFF_MODE_OFF = "off"
 # differs between devices.
 SAFETY_OFF_MODE_ZHA = "zha"
 SAFETY_OFF_MODES = (SAFETY_OFF_MODE_AUTO, SAFETY_OFF_MODE_OFF, SAFETY_OFF_MODE_ZHA)
+# How long this zone's valves are given to say they opened or closed, in
+# seconds, and how many times the open is sent again in that time. None keeps
+# the runner's defaults: 8 s and no resend, or 30 s and two resends with the
+# full controller, and 5 s for a close. A cloud valve that confirms slowly wants
+# a longer wait, and one whose every command costs quota no resend at all (0).
+ZONE_CONFIRM_TIMEOUT = "confirm_timeout"
+ZONE_OPEN_RESENDS = "open_resends"
+CONFIRM_TIMEOUT_MIN = 1
+CONFIRM_TIMEOUT_MAX = 600
+OPEN_RESENDS_MAX = 10
 # ZHA: the On/Off cluster and its "on with timed off" command.
 ZHA_PLATFORM = "zha"
 ZHA_ON_OFF_CLUSTER = 6

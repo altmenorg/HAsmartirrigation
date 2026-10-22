@@ -327,9 +327,9 @@ async def test_valve_service_is_awaited_before_the_run_continues():
     coord = _Coordinator(hass, _make_store(_zone()))
     original = coord._confirm_valve_running
 
-    async def _confirm(entity_id):
+    async def _confirm(entity_id, *args, **kwargs):
         order.append("confirm started")
-        return await original(entity_id)
+        return await original(entity_id, *args, **kwargs)
 
     coord._confirm_valve_running = _confirm
 

@@ -80,6 +80,8 @@ import {
   ZONE_EXTRA_ENTITIES,
   ZONE_SAFETY_OFF_STATE_KEY,
   ZONE_SAFETY_OFF_MODE,
+  ZONE_CONFIRM_TIMEOUT,
+  ZONE_OPEN_RESENDS,
   ZONE_MAPPING,
   ZONE_ALLOWED_DEPLETION,
   ZONE_AVAILABLE_WATER,
@@ -1767,6 +1769,44 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 ${this.config?.direct_valve_control_enabled &&
                 zone.linked_entity
                   ? this._adv(html`
+                      ${this._numRow(
+                        localize("panels.zones.labels.confirm-timeout", lang),
+                        "s",
+                        zone.confirm_timeout,
+                        (v) => {
+                          // Empty keeps the default wait.
+                          const seconds = parseFloat(v);
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_CONFIRM_TIMEOUT]: isNaN(seconds)
+                              ? null
+                              : Math.min(600, Math.max(1, seconds)),
+                          });
+                        },
+                        1,
+                      )}
+                      ${this._numRow(
+                        localize("panels.zones.labels.open-resends", lang),
+                        "",
+                        zone.open_resends,
+                        (v) => {
+                          // Empty keeps the default; 0 never sends it again.
+                          const times = parseInt(v, 10);
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_OPEN_RESENDS]: isNaN(times)
+                              ? null
+                              : Math.min(10, Math.max(0, times)),
+                          });
+                        },
+                        1,
+                      )}
+                      <div class="setting-help">
+                        ${localize(
+                          "panels.zones.labels.confirm-timeout-help",
+                          lang,
+                        )}
+                      </div>
                       ${this._textRow(
                         localize("panels.zones.labels.safety-off-topic", lang),
                         localize("panels.zones.labels.optional", lang),

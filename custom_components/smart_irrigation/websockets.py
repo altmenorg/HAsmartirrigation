@@ -343,6 +343,21 @@ class SmartIrrigationZoneView(HomeAssistantView):
                 vol.Optional(const.ZONE_SAFETY_OFF_MODE): vol.Any(
                     vol.In(const.SAFETY_OFF_MODES), None
                 ),
+                vol.Optional(const.ZONE_CONFIRM_TIMEOUT): vol.Any(
+                    None,
+                    vol.All(
+                        vol.Coerce(float),
+                        vol.Range(
+                            min=const.CONFIRM_TIMEOUT_MIN, max=const.CONFIRM_TIMEOUT_MAX
+                        ),
+                    ),
+                ),
+                vol.Optional(const.ZONE_OPEN_RESENDS): vol.Any(
+                    None,
+                    vol.All(
+                        vol.Coerce(int), vol.Range(min=0, max=const.OPEN_RESENDS_MAX)
+                    ),
+                ),
                 vol.Optional(const.ZONE_SUPPLY_ID): vol.Any(str, None),
                 vol.Optional(const.ZONE_EXTRA_ENTITIES): vol.Any([str], None),
                 vol.Optional(const.ZONE_SOIL_TYPE): vol.Any(str, None),
