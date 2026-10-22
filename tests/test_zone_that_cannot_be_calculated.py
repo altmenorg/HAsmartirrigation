@@ -161,3 +161,59 @@ async def test_and_it_says_which_zone_and_why():
     warning = " ".join(str(call) for call in logger.warning.call_args_list)
     assert "Potager" in warning
     assert "provided" in warning
+
+
+# --- and a forecast that cannot be read ----------------------------------------
+
+
+def _looking_ahead(calc, get_forecast_data):
+    """Zones calculated by PyETO with a look-ahead, from a weather service."""
+    engine = MagicMock()
+    engine.name = "PyETO"
+    engine.forecast_days = 2
+    calc.getModuleInstanceByID = AsyncMock(return_value=engine)
+    calc.use_weather_service = True
+    calc._WeatherServiceClient = MagicMock()
+    calc._WeatherServiceClient.get_forecast_data = get_forecast_data
+
+    async def run(fn, *args):
+        return fn(*args)
+
+    calc.hass.async_add_executor_job = run
+
+
+async def test_a_forecast_that_raises_does_not_take_the_night():
+    """A refused key, or a weather entity that is unavailable, raised out of
+    the forecast fetch, which sat outside every guard: no zone was
+    calculated, nothing pruned, no start armed."""
+    calc = _calculator([_zone(0, "Lawn"), _zone(1, "Beds")])
+    _looking_ahead(calc, MagicMock(side_effect=OSError("unavailable")))
+
+    results = await calc._async_calculate_all(delete_weather_data=True)
+
+    assert set(results) == {0, 1}
+    # Calculated on the day alone.
+    for call in calc.async_calculate_zone.await_args_list:
+        assert call.args[2] is None
+    calc.prune_consumed_readings.assert_awaited()
+    calc.register_start_event.assert_awaited()
+
+
+async def test_a_failed_forecast_is_asked_once_per_run():
+    fetch = MagicMock(side_effect=OSError("unavailable"))
+    calc = _calculator([_zone(0, "Lawn"), _zone(1, "Beds"), _zone(2, "Hedge")])
+    _looking_ahead(calc, fetch)
+
+    await calc._async_calculate_all(delete_weather_data=True)
+
+    assert fetch.call_count == 1
+
+
+async def test_a_forecast_that_answers_still_reaches_the_zones():
+    forecast = [{"date": "2026-10-23"}]
+    calc = _calculator([_zone(0, "Lawn")])
+    _looking_ahead(calc, MagicMock(return_value=forecast))
+
+    await calc._async_calculate_all(delete_weather_data=True)
+
+    assert calc.async_calculate_zone.await_args.args[2] == forecast

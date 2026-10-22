@@ -1735,6 +1735,28 @@ class CalculationMixin:
                 },
             )
 
+    async def _async_forecast_or_none(self):
+        """The weather service's forecast, or None when it cannot give one.
+
+        A zone that looks ahead is then calculated on the day alone, as the
+        engine does whenever there is no forecast. The fetch used to sit
+        outside every guard: a service that raised (OpenWeatherMap on a
+        refused key, a weather entity that was unavailable) ended the whole
+        night's run, every zone, not only the ones looking ahead.
+        """
+        client = getattr(self, "_WeatherServiceClient", None)
+        if client is None:
+            return None
+        try:
+            return await self.hass.async_add_executor_job(client.get_forecast_data)
+        except Exception as e:  # noqa: BLE001 - no forecast is an answer
+            _LOGGER.warning(
+                "The weather service's forecast could not be read (%s); the zones "
+                "that look ahead are calculated on the day alone",
+                e,
+            )
+            return None
+
     async def _async_calculate_all(self, delete_weather_data=True, dry_run=False):
         """Calculate every automatic zone.
 
@@ -1802,18 +1824,18 @@ class CalculationMixin:
 
         # loop over zones and calculate
         forecastdata = None
+        forecast_asked = False
         results = {}
         for zone in zones:
             # get forecast data if needed (once)
             modinst = await self.getModuleInstanceByID(self.module_id_for_zone(zone))
             if modinst and modinst.name == "PyETO" and modinst.forecast_days > 0:
                 if self.use_weather_service:
-                    # get forecast info from OWM
-                    if forecastdata is None:
-                        forecastdata = await self.hass.async_add_executor_job(
-                            self._WeatherServiceClient.get_forecast_data
-                        )
-                    # _LOGGER.debug("Retrieved forecast data: %s", forecastdata)
+                    # Asked once per run, even when the answer is nothing: a
+                    # service that failed is not asked again for every zone.
+                    if not forecast_asked:
+                        forecastdata = await self._async_forecast_or_none()
+                        forecast_asked = True
                 else:
                     _LOGGER.error(
                         "Error calculating zone %s: You have configured forecasting but there is no OWM API configured. Either configure the OWM API or stop using forecasting on the PyETO module",
