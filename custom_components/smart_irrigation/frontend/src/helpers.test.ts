@@ -29,7 +29,6 @@ import {
   groupsWithRainFromService,
   missingRequiredSources,
   newGroupSource,
-  sameDeviceSensors,
   setupRainToAsk,
   setupSourcesForEt,
   setupZoneMethod,
@@ -264,61 +263,6 @@ describe("setupRainToAsk", () => {
     for (const weather of ["sensors", "et", "static"]) {
       expect(setupRainToAsk(weather, false, false)).toEqual([]);
     }
-  });
-});
-
-describe("sameDeviceSensors", () => {
-  const registry = [
-    { entity_id: "weather.home", device_id: "dwd" },
-    {
-      entity_id: "sensor.home_radar_precipitation",
-      device_id: "dwd",
-      original_device_class: "precipitation_intensity",
-    },
-    {
-      entity_id: "sensor.home_precipitation",
-      device_id: "dwd",
-      original_device_class: "precipitation_intensity",
-      disabled_by: "integration",
-    },
-    {
-      entity_id: "sensor.home_temperature",
-      device_id: "dwd",
-      original_device_class: "temperature",
-    },
-    {
-      entity_id: "sensor.garden_rain_rate",
-      device_id: "garden",
-      original_device_class: "precipitation_intensity",
-    },
-    {
-      entity_id: "sensor.home_renamed",
-      device_id: "dwd",
-      device_class: "precipitation_intensity",
-      original_device_class: "precipitation",
-    },
-  ];
-
-  it("finds the sensors of that class on the entity's device, enabled first", () => {
-    expect(
-      sameDeviceSensors(registry, "weather.home", "precipitation_intensity"),
-    ).toEqual([
-      { entity_id: "sensor.home_radar_precipitation", disabled: false },
-      { entity_id: "sensor.home_renamed", disabled: false },
-      { entity_id: "sensor.home_precipitation", disabled: true },
-    ]);
-  });
-
-  it("follows a device class the user set over the original one", () => {
-    expect(
-      sameDeviceSensors(registry, "weather.home", "precipitation"),
-    ).toEqual([]);
-  });
-
-  it("finds nothing for an entity without a device", () => {
-    expect(
-      sameDeviceSensors(registry, "weather.other", "precipitation_intensity"),
-    ).toEqual([]);
   });
 });
 

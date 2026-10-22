@@ -22,9 +22,6 @@ import {
   engineModeLabel,
   missingRequiredSources,
   output_unit,
-  RAIN_DEVICE_CLASS,
-  RegistryEntry,
-  sameDeviceSensors,
   setupRainToAsk,
   setupSourcesForEt,
   setupZoneMethod,
@@ -120,10 +117,9 @@ class SmartIrrigationViewSetup extends LitElement {
   @state() private staticDelta = "";
   @state() private serviceSuppliesEt = false;
   // A weather entity as the service reports no rain that fell: the rain is
-  // asked for, and the sensors of its device are offered for it.
+  // asked for. No sensor is suggested: a weather integration's own rain
+  // sensors can be a nowcast, which is the forecast this path keeps out.
   @state() private serviceHasRain = true;
-  @state() private weatherEntity: string | null = null;
-  @state() private registry: RegistryEntry[] = [];
 
   firstUpdated() {
     loadHaForm().catch(() => undefined);
@@ -141,14 +137,6 @@ class SmartIrrigationViewSetup extends LitElement {
     this.allModules = allModules;
     this.serviceSuppliesEt = !!(service as any)?.supplies_evapotranspiration;
     this.serviceHasRain = (service as any)?.supplies_rain !== false;
-    this.weatherEntity = (service as any)?.weather_service_entity ?? null;
-    if (!this.serviceHasRain && this.weatherEntity) {
-      // The full registry, disabled entities included: a rain sensor a
-      // weather integration ships disabled is still worth pointing at.
-      this.registry = await this.hass
-        .callWS<RegistryEntry[]>({ type: "config/entity_registry/list" })
-        .catch(() => []);
-    }
     // Without a weather service there is nothing for that answer to mean.
     if (!this.usesWeatherService) {
       this.weather = "sensors";
@@ -432,7 +420,11 @@ class SmartIrrigationViewSetup extends LitElement {
         ? this.choice(
             this.weather === "service",
             this.t("steps.weather.service"),
-            this.t("steps.weather.service-help"),
+            this.t(
+              this.serviceHasRain
+                ? "steps.weather.service-help"
+                : "steps.weather.service-help-entity",
+            ),
             () => (this.weather = "service"),
           )
         : ""}
@@ -521,45 +513,8 @@ class SmartIrrigationViewSetup extends LitElement {
               }}
             ></ha-entity-picker>
           </div>
-          ${this.renderSuggestions(source)}
         `,
       )}
-    `;
-  }
-
-  /**
-   * The sensors of the weather entity's own device that can stand for this
-   * rain field: one click for an enabled one, and how to enable a disabled one.
-   */
-  private renderSuggestions(source: string): TemplateResult | string {
-    const deviceClass = RAIN_DEVICE_CLASS[source];
-    if (!this.rainFromSensors.includes(source) || !deviceClass) return "";
-    const found = sameDeviceSensors(
-      this.registry,
-      this.weatherEntity,
-      deviceClass,
-    );
-    if (!found.length) return "";
-    return html`
-      <div class="note">
-        ${this.t("steps.sensors.suggested")}:
-        ${found.map((s) =>
-          s.disabled
-            ? html`<span class="suggestion disabled"
-                >${s.entity_id}
-                (${this.t("steps.sensors.suggested-disabled")})</span
-              >`
-            : html`<button
-                class="suggestion"
-                @click=${() => {
-                  this.sensors = { ...this.sensors, [source]: s.entity_id };
-                }}
-              >
-                ${this.hass?.states[s.entity_id]?.attributes?.friendly_name ??
-                s.entity_id}
-              </button>`,
-        )}
-      </div>
     `;
   }
 
@@ -783,23 +738,6 @@ class SmartIrrigationViewSetup extends LitElement {
       .review span {
         color: var(--secondary-text-color);
         margin-right: 8px;
-      }
-
-      /* The sensors of the weather entity's device, under a rain field. */
-      .suggestion {
-        margin: 2px 4px;
-        padding: 2px 8px;
-        border: 1px solid var(--divider-color);
-        border-radius: 12px;
-        background: none;
-        color: var(--primary-color);
-        font: inherit;
-        cursor: pointer;
-      }
-      .suggestion.disabled {
-        color: var(--secondary-text-color);
-        cursor: default;
-        display: inline-block;
       }
 
       .error {

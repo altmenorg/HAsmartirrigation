@@ -134,7 +134,8 @@
           "et": "Ein Sensor, der die Evapotranspiration schon meldet",
           "et-help": "Etwas anderes berechnet sie bereits, und Smart Irrigation soll diese Zahl so übernehmen, wie sie ist.",
           "static": "Ein fester Betrag pro Tag",
-          "static-help": "Keine Sensoren und kein Dienst. Du gibst eine Zahl an, und sie wird jeden Tag verwendet. Grob, aber es verfolgt trotzdem, was du schon bewässert hast."
+          "static-help": "Keine Sensoren und kein Dienst. Du gibst eine Zahl an, und sie wird jeden Tag verwendet. Grob, aber es verfolgt trotzdem, was du schon bewässert hast.",
+          "service-help-entity": "Die aktuellen Werte und die Vorhersage kommen von deiner Wetter-Entität, Smart Irrigation berechnet daraus die Evapotranspiration. Der Regen kommt von einem eigenen Regensensor, nach dem der nächste Schritt fragt."
         },
         "sensors": {
           "question": "Welche Entitäten soll sie lesen?",
@@ -145,9 +146,7 @@
           "static-question": "Wie viel verdunstet pro Tag?",
           "static-help": "Eine Wasserhöhe, in der Einheit deiner Zonen. Etwa 4 bis 5 mm pro Tag ist für einen gemäßigten Sommer üblich.",
           "static-label": "Verdunstung pro Tag",
-          "rain-help-entity": "Die Wetter-Entität meldet keinen gefallenen Regen, nur eine Vorhersage. Wähle für eines der beiden einen Regensensor: die Rate (mm/h) oder die Summe eines Regenmessers (mm). Hast du keinen, nimm als Wetterdienst Open-Meteo: Er meldet den Regen.",
-          "suggested": "Am Gerät der Wetter-Entität",
-          "suggested-disabled": "deaktiviert: zuerst unter Einstellungen, Entitäten aktivieren"
+          "rain-help-entity": "Diese Wetter-Entität sagt Regen nur vorher. Wähle für eines dieser Felder einen Sensor, der Regen misst: eine Rate oder die Summe eines Regenmessers. Kein Regensensor? Nimm stattdessen Open-Meteo."
         },
         "review": {
           "question": "Bereit zum Erstellen",

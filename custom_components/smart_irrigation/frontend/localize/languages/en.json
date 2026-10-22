@@ -134,7 +134,8 @@
           "et": "A sensor that already reports evapotranspiration",
           "et-help": "Something else already computes it, and Smart Irrigation should use that figure as it stands.",
           "static": "A fixed amount per day",
-          "static-help": "No sensors and no service. You give one number and it is used every day. Rough, but it still tracks what you have already watered."
+          "static-help": "No sensors and no service. You give one number and it is used every day. Rough, but it still tracks what you have already watered.",
+          "service-help-entity": "The current values and the forecast come from your weather entity, and Smart Irrigation computes evapotranspiration from them. The rain comes from a rain sensor of yours, asked for in the next step."
         },
         "sensors": {
           "question": "Which entities should it read?",
@@ -145,9 +146,7 @@
           "static-question": "How much does it evaporate per day?",
           "static-help": "A depth of water, in the unit your zones use. Somewhere around 4 to 5 mm a day is common for a temperate summer.",
           "static-label": "Evaporation per day",
-          "rain-help-entity": "The weather entity reports no rain that fell, only a forecast. Choose a rain sensor for one of the two: the rate (mm/h) or the total of a rain gauge (mm). Without one, choose Open-Meteo as the weather service instead: it reports the rain.",
-          "suggested": "On the device of the weather entity",
-          "suggested-disabled": "disabled: enable it first under Settings, Entities"
+          "rain-help-entity": "This weather entity only forecasts rain. Pick a sensor that measures rain for one of these fields: a rate or a gauge total. No rain sensor? Use Open-Meteo instead."
         },
         "review": {
           "question": "Ready to create",
