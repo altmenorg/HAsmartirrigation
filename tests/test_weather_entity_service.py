@@ -266,6 +266,62 @@ async def test_called_on_the_event_loop_it_gives_up_rather_than_hang():
     assert hass.asked == []
 
 
+@pytest.mark.parametrize("state", [None, "unavailable", "unknown"])
+async def test_an_entity_that_cannot_be_read_has_no_forecast(state):
+    """Missing or unavailable: no forecast, never an error.
+
+    As the docstrings promise for an entity without a forecast. Raising here
+    once ended the nightly run of every zone (fixed on that side in cea3069).
+    """
+    hass = _hass(
+        None if state is None else _attrs(),
+        state=state or "sunny",
+        forecasts={"daily": [{"datetime": _day(1), "temperature": 18.0}]},
+        loop=asyncio.get_running_loop(),
+    )
+    client = HAWeatherEntityClient(hass, ENTITY, ELEVATION)
+    start = dt_util.now()
+
+    assert await _in_executor(client.get_forecast_data, True) is None
+    assert await _in_executor(client.get_forecast_data) is None
+    assert (
+        await _in_executor(
+            client.get_expected_rain_ahead,
+            start,
+            start + datetime.timedelta(hours=2),
+        )
+        is None
+    )
+    assert hass.asked == []
+
+
+async def test_through_the_radiation_wrapper_an_unreadable_entity_has_no_forecast():
+    """As the coordinator holds it: wrapped for radiation from Open-Meteo."""
+    from custom_components.smart_irrigation.weathermodules.SolarRadiationFallback import (
+        SolarRadiationFallbackClient,
+    )
+
+    hass = _hass(_attrs(), state="unavailable", loop=asyncio.get_running_loop())
+    client = SolarRadiationFallbackClient(
+        HAWeatherEntityClient(hass, ENTITY, ELEVATION),
+        latitude=49.45,
+        longitude=11.08,
+        elevation=ELEVATION,
+    )
+    client._fallback.get_forecast_data = Mock(side_effect=AssertionError)
+    start = dt_util.now()
+
+    assert await _in_executor(client.get_forecast_data) is None
+    assert (
+        await _in_executor(
+            client.get_expected_rain_ahead,
+            start,
+            start + datetime.timedelta(hours=2),
+        )
+        is None
+    )
+
+
 # The rain to expect ahead of a run
 
 

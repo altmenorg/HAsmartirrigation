@@ -355,9 +355,15 @@ class HAWeatherEntityClient:  # pylint: disable=invalid-name
         """The coming days, today first when ``include_today``, else from tomorrow.
 
         Each row carries its ``date``, so a forecast that starts tomorrow is
-        never read as today. None when the entity has no forecast.
+        never read as today. None when the entity has no forecast, or cannot be
+        read: a missing or unavailable entity is no forecast, like one without
+        any, so no caller needs a guard of its own.
         """
-        rows = self._daily_rows()
+        try:
+            rows = self._daily_rows()
+        except OSError as ex:
+            _LOGGER.warning("No forecast from the weather entity: %s", ex)
+            return None
         self._cached_rows = rows
         if not rows:
             return None
@@ -382,8 +388,9 @@ class HAWeatherEntityClient:  # pylint: disable=invalid-name
         millimetres weighted by its probability when it gives one, and an hour
         only partly inside the window counted for the share that is (as the
         Open-Meteo client does). An entry is the hour starting at its time.
-        None when there is no hourly forecast or it does not reach the end of
-        the window: the caller then reads the daily forecast.
+        None when there is no hourly forecast, it does not reach the end of
+        the window, or the entity cannot be read: the caller then reads the
+        daily forecast.
         """
         try:
             start_ts = start.timestamp()
@@ -392,12 +399,16 @@ class HAWeatherEntityClient:  # pylint: disable=invalid-name
             return None
         if end_ts <= start_ts:
             return 0.0
-        if not self._supported() & FORECAST_HOURLY:
+        try:
+            if not self._supported() & FORECAST_HOURLY:
+                return None
+            forecast = self._forecast("hourly")
+            if not forecast:
+                return None
+            units = self._units(dict(self._state().attributes))
+        except OSError as ex:
+            _LOGGER.warning("No rain forecast from the weather entity: %s", ex)
             return None
-        forecast = self._forecast("hourly")
-        if not forecast:
-            return None
-        units = self._units(dict(self._state().attributes))
         series = []
         for entry in forecast:
             if not isinstance(entry, dict):
