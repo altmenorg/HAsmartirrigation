@@ -2128,10 +2128,7 @@ class SmartIrrigationCoordinator(
             modinst = await self.getModuleInstanceByID(self.module_id_for_zone(zone))
             if modinst and modinst.name == "PyETO" and modinst.forecast_days > 0:
                 if self.use_weather_service:
-                    # get forecast info from OWM
-                    forecastdata = await self.hass.async_add_executor_job(
-                        self._WeatherServiceClient.get_forecast_data
-                    )
+                    forecastdata = await self._async_forecast_or_none()
                 else:
                     _LOGGER.error(
                         "[async_update_zone_config] Error calculating zone %s: You have configured forecasting but there is no OWM API configured. Either configure the OWM API or stop using forecasting on the PyETO module",
