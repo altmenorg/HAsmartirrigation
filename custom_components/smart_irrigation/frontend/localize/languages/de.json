@@ -1060,6 +1060,11 @@
     "enabled_label": "Berechnungseingaben in eine Datei schreiben",
     "file_hint": "Wird nach config/smart_irrigation/calc_log.jsonl geschrieben, ein JSON-Datensatz je Zeile. Die neuesten Datensätze liegen auch im Diagnose-Download (Koordinaten gerundet, Entitäts-IDs entfernt), du kannst sie also in einem Schritt an ein Issue anhängen."
   },
+  "blueprints": {
+    "title": "Blueprints",
+    "install_label": "Beispiel-Blueprints installieren",
+    "install_help": "Smart Irrigation kopiert seine Beispiel-Blueprints in deinen Blueprint-Ordner, jeden nur einmal: Ein Blueprint, den du löschst, wird nicht wiederhergestellt. Schalte dies aus, damit gar keiner kopiert wird; die bereits vorhandenen bleiben, wie sie sind."
+  },
   "measured_skip": {
     "title": "Bei gemessenen Bedingungen überspringen",
     "description": "Wird zu Beginn jedes Durchlaufs geprüft, aus einem Sensor oder dem Wetterdienst. Ein Sensor, der nicht gelesen werden kann, verhindert nie einen Durchlauf.",

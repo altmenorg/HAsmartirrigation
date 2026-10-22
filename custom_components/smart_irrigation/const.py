@@ -486,6 +486,12 @@ CONF_DEFAULT_SENSOR_DEBOUNCE = 100  # milliseconds, 0 = disabled
 # the file is size-capped and rotated so it can be left on for a season.
 CONF_CALC_LOG_ENABLED = "calc_log_enabled"
 CONF_DEFAULT_CALC_LOG_ENABLED = False
+# Whether the bundled blueprints are copied into the blueprint folders at all
+# (#930), and the ones that were, as "domain/file.yaml": a blueprint the user
+# deleted is not laid down again. None until the first run that records them.
+CONF_INSTALL_BLUEPRINTS = "install_blueprints"
+CONF_DEFAULT_INSTALL_BLUEPRINTS = True
+CONF_INSTALLED_BLUEPRINTS = "installed_blueprints"
 CALC_LOG_DIR = DOMAIN  # <config>/smart_irrigation/
 CALC_LOG_FILENAME = "calc_log.jsonl"
 CALC_LOG_MAX_BYTES = 2 * 1024 * 1024  # rotate at 2 MB, one backup kept

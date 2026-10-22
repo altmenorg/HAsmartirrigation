@@ -1060,6 +1060,11 @@
     "enabled_label": "Zapisuj dane wejściowe obliczenia do pliku",
     "file_hint": "Zapisywane do config/smart_irrigation/calc_log.jsonl, jeden rekord JSON na wiersz. Najnowsze rekordy są też w pobieranej diagnostyce (współrzędne zaokrąglone, identyfikatory encji usunięte), więc można je dołączyć do zgłoszenia w jednym kroku."
   },
+  "blueprints": {
+    "title": "Blueprinty",
+    "install_label": "Instaluj przykładowe blueprinty",
+    "install_help": "Smart Irrigation kopiuje swoje przykładowe blueprinty do twojego folderu blueprintów, każdy tylko raz: usunięty blueprint nie zostanie przywrócony. Wyłącz, aby nie kopiować żadnego; te, które już tam są, pozostają bez zmian."
+  },
   "measured_skip": {
     "title": "Pomiń według zmierzonych warunków",
     "description": "Sprawdzane na początku każdego nawadniania, z czujnika albo z serwisu pogodowego. Czujnik, którego nie da się odczytać, nigdy nie zatrzymuje nawadniania.",

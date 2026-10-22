@@ -1060,6 +1060,11 @@
     "enabled_label": "Zapisuj vhode izračuna v datoteko",
     "file_hint": "Zapisano v config/smart_irrigation/calc_log.jsonl, en zapis JSON na vrstico. Najnovejši zapisi so vključeni tudi v prenos diagnostike (koordinate zaokrožene, ID-ji entitet odstranjeni), zato jih lahko v enem koraku priložiš zahtevku."
   },
+  "blueprints": {
+    "title": "Načrti (blueprints)",
+    "install_label": "Namesti primere načrtov",
+    "install_help": "Smart Irrigation kopira svoje primere načrtov v vašo mapo načrtov, vsakega samo enkrat: načrt, ki ga izbrišete, se ne vrne. Izklopite, če ne želite kopirati nobenega; tisti, ki so že tam, ostanejo nespremenjeni."
+  },
   "measured_skip": {
     "title": "Preskok glede na izmerjene razmere",
     "description": "Preveri se ob začetku vsakega zagona, iz senzorja ali vremenske storitve. Senzor, ki ga ni mogoče prebrati, nikoli ne ustavi zagona.",

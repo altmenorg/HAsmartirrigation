@@ -1060,6 +1060,11 @@
     "enabled_label": "把计算输入写入文件",
     "file_hint": "写入 config/smart_irrigation/calc_log.jsonl，每行一条 JSON 记录。最近的记录也包含在诊断下载里（坐标已取整，实体 ID 已移除），所以可以一步就附到问题报告上。"
   },
+  "blueprints": {
+    "title": "蓝图",
+    "install_label": "安装示例蓝图",
+    "install_help": "Smart Irrigation 会将示例蓝图复制到你的蓝图文件夹中，每个只复制一次：你删除的蓝图不会再被放回。关闭此项则完全不复制；已有的蓝图保持不变。"
+  },
   "measured_skip": {
     "title": "按实测条件跳过",
     "description": "每次浇水开始时检查，来自传感器或天气服务。读不到的传感器绝不会阻止浇水。",

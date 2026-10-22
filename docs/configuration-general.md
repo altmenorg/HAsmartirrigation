@@ -176,6 +176,10 @@ To compare two days, for example with [`jq`](https://jqlang.github.io/jq/):
 jq -c 'select(.zone.name == "Lawn") | {t: .timestamp, eto: .module.days[0].eto, sol_rad: .module.days[0].sol_rad, estimated: .module.days[0].sol_rad_estimated, bucket: .outputs.bucket_after, duration: .outputs.duration}' calc_log.jsonl
 ```
 
+### Blueprints
+
+Smart Irrigation copies its [example blueprints](usage-automations.md#blueprints-we-provide) into your `blueprints/` folder when it starts, each one once: a blueprint you delete is not put back. Switch off **Install the example blueprints** to copy none at all. The ones already in the folder are left as they are; delete them by hand if you do not want them.
+
 ### Language
 The panel and the configuration flow are available in 20 languages, all complete. The French is written with "tu".
 

@@ -1060,6 +1060,11 @@
     "enabled_label": "Zapisovat vstupy výpočtu do souboru",
     "file_hint": "Zapisuje se do config/smart_irrigation/calc_log.jsonl, jeden záznam JSON na řádek. Nejnovější záznamy jsou také součástí diagnostického souboru ke stažení (souřadnice zaokrouhlené, id entit odstraněna), takže je můžete k hlášení přiložit v jednom kroku."
   },
+  "blueprints": {
+    "title": "Blueprinty",
+    "install_label": "Instalovat ukázkové blueprinty",
+    "install_help": "Smart Irrigation kopíruje své ukázkové blueprinty do vaší složky s blueprinty, každý jen jednou: blueprint, který smažete, se nevrátí. Vypněte, pokud nechcete kopírovat žádný; ty, které už tam jsou, zůstanou beze změny."
+  },
   "measured_skip": {
     "title": "Vynechat podle měřených podmínek",
     "description": "Kontroluje se na začátku každého zavlažování, ze senzoru nebo z meteoslužby. Senzor, který nelze přečíst, zavlažování nikdy nezastaví.",

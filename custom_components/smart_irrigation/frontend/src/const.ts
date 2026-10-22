@@ -21,6 +21,7 @@ export const CONF_EFFECTIVE_RAIN = "effective_rain";
 export const CONF_RECALCULATE_BEFORE_START = "recalculate_before_start";
 export const CONF_SENSOR_DEBOUNCE = "sensor_debounce";
 export const CONF_CALC_LOG_ENABLED = "calc_log_enabled";
+export const CONF_INSTALL_BLUEPRINTS = "install_blueprints";
 
 // Manual coordinate configuration
 export const CONF_MANUAL_COORDINATES_ENABLED = "manual_coordinates_enabled";

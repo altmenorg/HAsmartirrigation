@@ -124,3 +124,100 @@ def test_the_broken_one_edited_by_hand_is_left_alone(tmp_path):
     install_bundled_blueprints(str(tmp_path))
 
     assert target.read_bytes() == edited
+
+
+# --- each blueprint once, and a switch to copy none (#930) ---------------------
+
+from custom_components.smart_irrigation import const  # noqa: E402
+from custom_components.smart_irrigation.blueprint_install import (  # noqa: E402
+    async_install_bundled_blueprints,
+    bundled_blueprint_names,
+)
+
+
+class _Store:
+    def __init__(self, config=None, zones=None):
+        self.config = dict(config or {})
+        self.zones = zones or {}
+        self.updates = []
+
+    def get_config(self):
+        return dict(self.config)
+
+    async def async_update_config(self, changes):
+        self.updates.append(changes)
+        self.config.update(changes)
+
+
+def _target(config_dir, name):
+    domain, file = name.split("/")
+    return Path(config_dir) / "blueprints" / domain / "smart_irrigation" / file
+
+
+async def test_a_fresh_install_gets_every_blueprint_and_remembers_them(hass, tmp_path):
+    hass.config.config_dir = str(tmp_path)
+    store = _Store()
+
+    written = await async_install_bundled_blueprints(hass, store)
+
+    assert written == len(_bundled())
+    assert store.config[const.CONF_INSTALLED_BLUEPRINTS] == bundled_blueprint_names()
+
+
+async def test_a_blueprint_the_user_deleted_is_not_put_back(hass, tmp_path):
+    """The request: deleted by hand, back at every restart."""
+    hass.config.config_dir = str(tmp_path)
+    store = _Store()
+    await async_install_bundled_blueprints(hass, store)
+    gone = bundled_blueprint_names()[0]
+    _target(tmp_path, gone).unlink()
+
+    written = await async_install_bundled_blueprints(hass, store)
+
+    assert written == 0
+    assert not _target(tmp_path, gone).exists()
+
+
+async def test_an_existing_install_keeps_what_was_deleted_before_this_version(
+    hass, tmp_path
+):
+    """No record yet, but our folder is there: what is missing was deleted."""
+    hass.config.config_dir = str(tmp_path)
+    install_bundled_blueprints(str(tmp_path))
+    gone = bundled_blueprint_names()[0]
+    _target(tmp_path, gone).unlink()
+    store = _Store()
+
+    written = await async_install_bundled_blueprints(hass, store)
+
+    assert written == 0
+    assert not _target(tmp_path, gone).exists()
+    assert gone in store.config[const.CONF_INSTALLED_BLUEPRINTS]
+
+
+async def test_an_install_with_zones_but_no_folder_is_not_refilled(hass, tmp_path):
+    """Somebody who deleted the whole folder already: it stays deleted."""
+    hass.config.config_dir = str(tmp_path)
+    store = _Store(zones={0: object()})
+
+    assert await async_install_bundled_blueprints(hass, store) == 0
+    assert not (tmp_path / "blueprints").exists()
+
+
+async def test_switched_off_nothing_is_copied(hass, tmp_path):
+    hass.config.config_dir = str(tmp_path)
+    store = _Store({const.CONF_INSTALL_BLUEPRINTS: False})
+
+    assert await async_install_bundled_blueprints(hass, store) == 0
+    assert not (tmp_path / "blueprints").exists()
+    assert store.updates == []
+
+
+async def test_the_broken_copy_is_still_replaced_with_a_record(hass, tmp_path):
+    hass.config.config_dir = str(tmp_path)
+    target = _installed_weather(tmp_path, BROKEN_926.read_bytes())
+    store = _Store({const.CONF_INSTALLED_BLUEPRINTS: bundled_blueprint_names()})
+
+    await async_install_bundled_blueprints(hass, store)
+
+    assert b"required: false" not in target.read_bytes()

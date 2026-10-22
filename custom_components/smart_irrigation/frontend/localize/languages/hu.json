@@ -1060,6 +1060,11 @@
     "enabled_label": "Számítási bemenetek naplózása fájlba",
     "file_hint": "A config/smart_irrigation/calc_log.jsonl fájlba kerül, soronként egy JSON rekord. A legutóbbi rekordok a diagnosztikai letöltésben is szerepelnek (kerekített koordinátákkal, entitásazonosítók nélkül), így egy lépésben csatolhatók egy hibajegyhez."
   },
+  "blueprints": {
+    "title": "Blueprintek",
+    "install_label": "Példa blueprintek telepítése",
+    "install_help": "A Smart Irrigation a példa blueprintjeit a blueprint mappádba másolja, mindegyiket csak egyszer: egy általad törölt blueprint nem kerül vissza. Kapcsold ki, ha egyet sem szeretnél másolni; a már meglévők változatlanok maradnak."
+  },
   "measured_skip": {
     "title": "Kihagyás mért körülmények alapján",
     "description": "Minden öntözés elején ellenőrzésre kerül, érzékelőből vagy az időjárás-szolgáltatásból. Egy érzékelő, amit nem lehet kiolvasni, soha nem akadályoz meg öntözést.",

@@ -52,6 +52,7 @@ from .const import (
     CONF_DEFAULT_FULL_CONTROLLER,
     CONF_DEFAULT_GREENHOUSE,
     CONF_DEFAULT_HOURLY_CALCULATION,
+    CONF_DEFAULT_INSTALL_BLUEPRINTS,
     CONF_DEFAULT_IRRIGATION_START_TRIGGERS,
     CONF_DEFAULT_IRRIGATION_THRESHOLD,
     CONF_DEFAULT_MAXIMUM_BUCKET,
@@ -86,6 +87,8 @@ from .const import (
     CONF_FULL_CONTROLLER,
     CONF_HOURLY_CALCULATION,
     CONF_IMPERIAL,
+    CONF_INSTALL_BLUEPRINTS,
+    CONF_INSTALLED_BLUEPRINTS,
     CONF_IRRIGATION_START_TRIGGERS,
     CONF_MANUAL_COORDINATES_ENABLED,
     CONF_MANUAL_ELEVATION,
@@ -656,6 +659,11 @@ class Config:
     # Opt-in calculation audit log (#12): append every calculation's inputs,
     # intermediates and outputs to a JSON Lines file so days can be diffed.
     calc_log_enabled = attr.ib(type=bool, default=CONF_DEFAULT_CALC_LOG_ENABLED)
+    # Whether the bundled blueprints are copied at all, and the ones that were
+    # (blueprint_install.py): a blueprint somebody deleted is not laid down
+    # again. None until the first run that records them.
+    install_blueprints = attr.ib(type=bool, default=CONF_DEFAULT_INSTALL_BLUEPRINTS)
+    installed_blueprints = attr.ib(type=list, default=None)
     irrigation_start_triggers = attr.ib(
         type=list, default=CONF_DEFAULT_IRRIGATION_START_TRIGGERS
     )
@@ -1131,6 +1139,10 @@ class SmartIrrigationStorage:
                 calc_log_enabled=data["config"].get(
                     CONF_CALC_LOG_ENABLED, CONF_DEFAULT_CALC_LOG_ENABLED
                 ),
+                install_blueprints=data["config"].get(
+                    CONF_INSTALL_BLUEPRINTS, CONF_DEFAULT_INSTALL_BLUEPRINTS
+                ),
+                installed_blueprints=data["config"].get(CONF_INSTALLED_BLUEPRINTS),
                 # These two are configuration the user entered, not state the
                 # integration derives, and they were never read back here: a
                 # restart replaced them with the empty defaults and the next

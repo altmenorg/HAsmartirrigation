@@ -185,13 +185,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     _LOGGER.info("async_setup_entry called for %s", entry.entry_id)
 
-    # Lay down the example blueprints so they are one click away in the UI.
-    # Copy-if-missing, and it can never fail hard, so it is safe this early.
-    await async_install_bundled_blueprints(hass)
-
     session = async_get_clientsession(hass)
 
     store = await async_get_registry(hass)
+    # Lay down the example blueprints so they are one click away in the UI:
+    # each once, unless the general setting says not to (#930). It can never
+    # fail hard, so it is safe this early.
+    await async_install_bundled_blueprints(hass, store)
     # store Weather Service info in hass.data
     hass.data.setdefault(const.DOMAIN, {})
     # load store info into hass.data[const.DOMAIN]
