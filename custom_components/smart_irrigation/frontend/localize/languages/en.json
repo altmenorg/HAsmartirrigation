@@ -181,14 +181,16 @@
       },
       "actions": {
         "save": "Save",
-        "saving": "Saving…"
+        "saving": "Saving…",
+        "open-sensor-groups": "Open sensor groups"
       },
       "messages": {
         "no-service": "No weather service is used — weather data comes from your own sensors only.",
         "saved": "Weather service updated and applied.",
         "reload-note": "Saving validates the API key against the service and applies the change immediately.",
         "owm-onecall-hint": "OpenWeatherMap needs the One Call API 3.0 plan (One Call by Call). It is free up to 1000 calls/day but must be activated with a card, and a new key can take up to a couple of hours to work. A plain default key is rejected.",
-        "ha-entity-hint": "The current values and the forecast come from this entity (DWD, Met.no, KNMI, ...), in the units Home Assistant shows them in. It reports no rain that fell, only a forecast: give each sensor group a rain sensor under Current precipitation. Solar radiation and reference ET come from Open-Meteo."
+        "ha-entity-hint": "The current values and the forecast come from this entity (DWD, Met.no, KNMI, ...), in the units Home Assistant shows them in. It reports no rain that fell, only a forecast: give each sensor group a rain sensor under Current precipitation. Solar radiation and reference ET come from Open-Meteo.",
+        "rain-groups-on-service": "{count, plural, one {# sensor group still takes its} other {# sensor groups still take their}} rain from the weather service, which reports none: {groups}. Choose a rain sensor under Current precipitation, or the zones are watered after every shower."
       }
     },
     "backuprestore": {

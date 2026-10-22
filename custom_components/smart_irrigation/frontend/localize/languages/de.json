@@ -181,14 +181,16 @@
       },
       "actions": {
         "save": "Speichern",
-        "saving": "Wird gespeichert…"
+        "saving": "Wird gespeichert…",
+        "open-sensor-groups": "Sensorgruppen öffnen"
       },
       "messages": {
         "no-service": "Es wird kein Wetterdienst verwendet — die Wetterdaten stammen ausschließlich von Ihren eigenen Sensoren.",
         "saved": "Wetterdienst aktualisiert und angewendet.",
         "reload-note": "Beim Speichern wird der API-Schlüssel mit dem Dienst validiert und die Änderung sofort angewendet.",
         "owm-onecall-hint": "OpenWeatherMap benötigt den Tarif One Call API 3.0 (One Call by Call). Er ist bis 1000 Aufrufe/Tag kostenlos, muss aber mit einer Karte aktiviert werden, und ein neuer Schlüssel kann ein paar Stunden brauchen, bis er funktioniert. Ein einfacher Standardschlüssel wird abgelehnt.",
-        "ha-entity-hint": "Die aktuellen Werte und die Vorhersage kommen von dieser Entität (DWD, Met.no, KNMI, ...), in den Einheiten, in denen Home Assistant sie anzeigt. Gefallenen Regen meldet sie nicht, nur eine Vorhersage: Gib jeder Sensorgruppe unter Aktueller Niederschlag einen Regensensor. Strahlung und Referenz-ET kommen von Open-Meteo."
+        "ha-entity-hint": "Die aktuellen Werte und die Vorhersage kommen von dieser Entität (DWD, Met.no, KNMI, ...), in den Einheiten, in denen Home Assistant sie anzeigt. Gefallenen Regen meldet sie nicht, nur eine Vorhersage: Gib jeder Sensorgruppe unter Aktueller Niederschlag einen Regensensor. Strahlung und Referenz-ET kommen von Open-Meteo.",
+        "rain-groups-on-service": "{count, plural, one {# Sensorgruppe nimmt} other {# Sensorgruppen nehmen}} den Regen noch vom Wetterdienst, der keinen meldet: {groups}. Wähle unter Aktueller Niederschlag einen Regensensor, sonst wird nach jedem Schauer bewässert."
       }
     },
     "backuprestore": {

@@ -55,7 +55,7 @@ import {
   ZONE_THROUGHPUT,
   ZONE_WATER_VOLUME,
 } from "./const";
-import { Dictionary } from "./types";
+import { Dictionary, SmartIrrigationMapping } from "./types";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
 export function getDomain(entity: string | HassEntity) {
@@ -669,4 +669,28 @@ export function newGroupSource(
   return notFromTheService
     ? MAPPING_CONF_SOURCE_NONE
     : MAPPING_CONF_SOURCE_WEATHER_SERVICE;
+}
+
+/**
+ * The sensor groups that still take their rain from the weather service.
+ *
+ * Shown after switching to a service that reports no rain that fell (a weather
+ * entity): every existing group took its rain from the service, and from now
+ * on none arrives there, so the zones would be watered after every shower.
+ * A group under glass is left out, since no rain reaches it anyway.
+ */
+export function groupsWithRainFromService(
+  mappings: SmartIrrigationMapping[],
+): string[] {
+  return mappings
+    .filter(
+      (mapping) =>
+        !mapping.greenhouse &&
+        [MAPPING_CURRENT_PRECIPITATION, MAPPING_PRECIPITATION].some(
+          (field) =>
+            (mapping.mappings as Record<string, any>)?.[field]?.source ===
+            MAPPING_CONF_SOURCE_WEATHER_SERVICE,
+        ),
+    )
+    .map((mapping) => mapping.name);
 }

@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import { localize } from "../localize/localize";
+
 import {
   CONF_IMPERIAL,
   CONF_METRIC,
@@ -24,6 +26,7 @@ import {
   displayTemperature,
   displayVolume,
   getOptionsForMappingType,
+  groupsWithRainFromService,
   missingRequiredSources,
   newGroupSource,
   sameDeviceSensors,
@@ -382,5 +385,43 @@ describe("newGroupSource", () => {
     expect(
       newGroupSource(MAPPING_CURRENT_PRECIPITATION, false, WEATHER_SERVICE_HA),
     ).toBe(MAPPING_CONF_SOURCE_SENSOR);
+  });
+});
+
+describe("groupsWithRainFromService", () => {
+  const group = (name: string, rate: string, depth = "none", extra = {}) => ({
+    name,
+    mappings: {
+      [MAPPING_CURRENT_PRECIPITATION]: { source: rate },
+      [MAPPING_PRECIPITATION]: { source: depth },
+    },
+    ...extra,
+  });
+
+  it("names the groups whose rain is left on the service", () => {
+    expect(
+      groupsWithRainFromService([
+        group("Lawn", MAPPING_CONF_SOURCE_WEATHER_SERVICE),
+        group("Hedge", MAPPING_CONF_SOURCE_SENSOR),
+        group("Beds", "none", MAPPING_CONF_SOURCE_WEATHER_SERVICE),
+        group("Greenhouse", MAPPING_CONF_SOURCE_WEATHER_SERVICE, "none", {
+          greenhouse: true,
+        }),
+      ]),
+    ).toEqual(["Lawn", "Beds"]);
+  });
+
+  it("says how many, in a sentence that agrees with the number", () => {
+    const say = (count: number) =>
+      localize(
+        "panels.weatherservice.messages.rain-groups-on-service",
+        "en",
+        "{count}",
+        count,
+        "{groups}",
+        "Lawn",
+      );
+    expect(say(1)).toMatch(/^1 sensor group still takes its rain/);
+    expect(say(2)).toMatch(/^2 sensor groups still take their rain/);
   });
 });
