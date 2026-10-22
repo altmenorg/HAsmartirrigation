@@ -3,6 +3,9 @@ import { describe, expect, it } from "vitest";
 import {
   CONF_IMPERIAL,
   CONF_METRIC,
+  MAPPING_CONF_SOURCE_NONE,
+  MAPPING_CONF_SOURCE_SENSOR,
+  MAPPING_CONF_SOURCE_WEATHER_SERVICE,
   MAPPING_CURRENT_PRECIPITATION,
   MAPPING_DEWPOINT,
   MAPPING_EVAPOTRANSPIRATION,
@@ -12,6 +15,8 @@ import {
   MAPPING_SOLRAD,
   MAPPING_TEMPERATURE,
   MAPPING_WINDSPEED,
+  WEATHER_SERVICE_HA,
+  WEATHER_SERVICE_OPEN_METEO,
 } from "./const";
 import {
   changedFields,
@@ -20,6 +25,7 @@ import {
   displayVolume,
   getOptionsForMappingType,
   missingRequiredSources,
+  newGroupSource,
   sameDeviceSensors,
   setupRainToAsk,
   setupSourcesForEt,
@@ -337,5 +343,44 @@ describe("setupSourcesForEt", () => {
 
   it("asks for the evapotranspiration alone when the engine says nothing", () => {
     expect(setupSourcesForEt([], false)).toEqual([MAPPING_EVAPOTRANSPIRATION]);
+  });
+});
+
+describe("newGroupSource", () => {
+  it("starts the rain rate on none with a weather entity", () => {
+    expect(
+      newGroupSource(MAPPING_CURRENT_PRECIPITATION, true, WEATHER_SERVICE_HA),
+    ).toBe(MAPPING_CONF_SOURCE_NONE);
+    expect(newGroupSource(MAPPING_TEMPERATURE, true, WEATHER_SERVICE_HA)).toBe(
+      MAPPING_CONF_SOURCE_WEATHER_SERVICE,
+    );
+  });
+
+  it("keeps the rain rate on a service that reports rain", () => {
+    expect(
+      newGroupSource(
+        MAPPING_CURRENT_PRECIPITATION,
+        true,
+        WEATHER_SERVICE_OPEN_METEO,
+      ),
+    ).toBe(MAPPING_CONF_SOURCE_WEATHER_SERVICE);
+  });
+
+  it("never takes evapotranspiration, radiation or the rain depth from it", () => {
+    for (const name of [
+      MAPPING_EVAPOTRANSPIRATION,
+      MAPPING_SOLRAD,
+      MAPPING_PRECIPITATION,
+    ]) {
+      expect(newGroupSource(name, true, WEATHER_SERVICE_OPEN_METEO)).toBe(
+        MAPPING_CONF_SOURCE_NONE,
+      );
+    }
+  });
+
+  it("asks a sensor for everything without a weather service", () => {
+    expect(
+      newGroupSource(MAPPING_CURRENT_PRECIPITATION, false, WEATHER_SERVICE_HA),
+    ).toBe(MAPPING_CONF_SOURCE_SENSOR);
   });
 });

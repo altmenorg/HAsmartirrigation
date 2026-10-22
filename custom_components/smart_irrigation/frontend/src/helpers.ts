@@ -6,6 +6,9 @@ import {
   CONF_IMPERIAL,
   CONF_METRIC,
   CONF_PRECIPITATION_THRESHOLD_MM,
+  MAPPING_CONF_SOURCE_NONE,
+  MAPPING_CONF_SOURCE_SENSOR,
+  MAPPING_CONF_SOURCE_WEATHER_SERVICE,
   MAPPING_CURRENT_PRECIPITATION,
   MAPPING_DEWPOINT,
   MAPPING_EVAPOTRANSPIRATION,
@@ -44,6 +47,7 @@ import {
   UNIT_SQ_FT,
   UNIT_W_M2,
   UNIT_W_SQFT,
+  WEATHER_SERVICES_WITHOUT_RAIN,
   ZONE_BUCKET,
   ZONE_DRAINAGE_RATE,
   ZONE_PRECIPITATION_RATE,
@@ -639,4 +643,30 @@ export function setupSourcesForEt(
   engineSaysWhatItReads: boolean,
 ): string[] {
   return engineSaysWhatItReads ? sources : [MAPPING_EVAPOTRANSPIRATION];
+}
+
+/**
+ * The source a field of a new sensor group starts on.
+ *
+ * Evapotranspiration, solar radiation and the rain depth are never taken
+ * straight from the weather service, so they start on none with one and on a
+ * sensor without. Everything else starts on the service when there is one,
+ * except the rain rate of a service that reports no rain that fell (a weather
+ * entity): it starts on none, as the store does, until a sensor is chosen.
+ */
+export function newGroupSource(
+  name: string,
+  useWeatherService: boolean,
+  weatherService: string | null | undefined,
+): string {
+  const notFromTheService =
+    name === MAPPING_EVAPOTRANSPIRATION ||
+    name === MAPPING_SOLRAD ||
+    name === MAPPING_PRECIPITATION ||
+    (name === MAPPING_CURRENT_PRECIPITATION &&
+      WEATHER_SERVICES_WITHOUT_RAIN.includes(weatherService ?? ""));
+  if (!useWeatherService) return MAPPING_CONF_SOURCE_SENSOR;
+  return notFromTheService
+    ? MAPPING_CONF_SOURCE_NONE
+    : MAPPING_CONF_SOURCE_WEATHER_SERVICE;
 }

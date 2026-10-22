@@ -487,6 +487,62 @@ async def test_the_panel_is_told_the_entity_and_that_it_has_no_rain():
     assert const.CONF_WEATHER_SERVICE_HA in result["services_without_api_key"]
 
 
+# A new sensor group
+
+
+def test_a_new_group_does_not_start_with_its_rain_on_the_entity():
+    from custom_components.smart_irrigation.store import default_mapping_entry
+
+    def source(key, service):
+        return default_mapping_entry(key, True, service)[const.MAPPING_CONF_SOURCE]
+
+    assert source(
+        const.MAPPING_CURRENT_PRECIPITATION, const.CONF_WEATHER_SERVICE_HA
+    ) == (const.MAPPING_CONF_SOURCE_NONE)
+    assert source(const.MAPPING_TEMPERATURE, const.CONF_WEATHER_SERVICE_HA) == (
+        const.MAPPING_CONF_SOURCE_WEATHER_SERVICE
+    )
+    # Every other service brings its rain, and so does a group without one.
+    assert source(
+        const.MAPPING_CURRENT_PRECIPITATION, const.CONF_WEATHER_SERVICE_OM
+    ) == (const.MAPPING_CONF_SOURCE_WEATHER_SERVICE)
+    assert source(const.MAPPING_CURRENT_PRECIPITATION, None) == (
+        const.MAPPING_CONF_SOURCE_WEATHER_SERVICE
+    )
+
+
+async def test_a_group_created_without_sources_follows_the_service_in_use(hass):
+    import attr
+
+    from custom_components.smart_irrigation.store import SmartIrrigationStorage
+
+    store = SmartIrrigationStorage(hass)
+    store.config = attr.evolve(store.config, use_weather_service=True)
+    store.async_schedule_save = Mock()
+    hass.data[const.DOMAIN] = {
+        const.CONF_USE_WEATHER_SERVICE: True,
+        const.CONF_WEATHER_SERVICE: const.CONF_WEATHER_SERVICE_HA,
+    }
+
+    created = await store.async_create_mapping(
+        {
+            const.MAPPING_NAME: "Garden",
+            const.MAPPING_MAPPINGS: {
+                const.MAPPING_CURRENT_PRECIPITATION: "",
+                const.MAPPING_TEMPERATURE: "",
+            },
+        }
+    )
+
+    the_map = created[const.MAPPING_MAPPINGS]
+    assert the_map[const.MAPPING_CURRENT_PRECIPITATION][const.MAPPING_CONF_SOURCE] == (
+        const.MAPPING_CONF_SOURCE_NONE
+    )
+    assert the_map[const.MAPPING_TEMPERATURE][const.MAPPING_CONF_SOURCE] == (
+        const.MAPPING_CONF_SOURCE_WEATHER_SERVICE
+    )
+
+
 # A group left with its rain on the service
 
 

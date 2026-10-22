@@ -70,6 +70,7 @@ import {
   engineModeLabel,
   getOptionsForMappingType,
   handleError,
+  newGroupSource,
 } from "../../helpers";
 import {
   mdiConsoleNetworkOutline,
@@ -424,22 +425,8 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     // shows "weather service" as its first option, so a group stored without
     // any source looks configured while nothing is ever fetched for it.
     const useWeatherService = !!this.config?.use_weather_service;
-    const defaultSource = (name: string) => {
-      // Evapotranspiration and solar radiation are not delivered by the
-      // configured weather service directly.
-      if (
-        name === MAPPING_EVAPOTRANSPIRATION ||
-        name === MAPPING_SOLRAD ||
-        name === MAPPING_PRECIPITATION
-      ) {
-        return useWeatherService
-          ? MAPPING_CONF_SOURCE_NONE
-          : MAPPING_CONF_SOURCE_SENSOR;
-      }
-      return useWeatherService
-        ? MAPPING_CONF_SOURCE_WEATHER_SERVICE
-        : MAPPING_CONF_SOURCE_SENSOR;
-    };
+    const defaultSource = (name: string) =>
+      newGroupSource(name, useWeatherService, this.config?.weather_service);
     const the_mappings = Object.fromEntries(
       [
         MAPPING_DEWPOINT,
@@ -936,7 +923,10 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
       !isPrecipitationDepth &&
       (!serviceWithoutRain ||
         currentSource === MAPPING_CONF_SOURCE_WEATHER_SERVICE);
-    const offerNone = isSpecialMapping || isPrecipitationDepth;
+    // The rain rate of a weather entity has nothing to come from until a
+    // sensor is chosen, which is what None says.
+    const offerNone =
+      isSpecialMapping || isPrecipitationDepth || serviceWithoutRain;
     // Every zone of the group waits for a ready-made evapotranspiration: None
     // would leave them without one, so it cannot be chosen (a group already on
     // None keeps showing it, and the note says what is missing).

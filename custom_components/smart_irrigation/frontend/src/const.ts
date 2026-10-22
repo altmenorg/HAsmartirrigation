@@ -96,6 +96,8 @@ export const WEATHER_SERVICES_NO_API_KEY = [
   WEATHER_SERVICE_OPEN_METEO,
   WEATHER_SERVICE_HA,
 ];
+// Weather services that report no rain that fell, only a forecast of it.
+export const WEATHER_SERVICES_WITHOUT_RAIN = [WEATHER_SERVICE_HA];
 
 export const MAPPING_CONF_SOURCE_WEATHER_SERVICE = "weather_service";
 export const MAPPING_CONF_SOURCE_SENSOR = "sensor";

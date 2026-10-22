@@ -127,6 +127,7 @@ from .const import (
     CONF_WATERING_PASSES,
     CONF_WEATHER_SERVICE,
     CONF_WEATHER_SERVICE_OWM,
+    CONF_WEATHER_SERVICES_WITHOUT_RAIN,
     CONF_WIND_SENSOR,
     CONF_WIND_THRESHOLD,
     CONF_ZONE_ENGINES_SPLIT,
@@ -384,7 +385,9 @@ class ModuleEntry:
     schema = attr.ib(type=str, default=None)
 
 
-def default_mapping_entry(mapping_key: str, use_weather_service: bool) -> dict:
+def default_mapping_entry(
+    mapping_key: str, use_weather_service: bool, weather_service: str | None = None
+) -> dict:
     """Return the default source configuration for a single sensor group field.
 
     Evapotranspiration and solar radiation are never delivered by the configured
@@ -393,9 +396,15 @@ def default_mapping_entry(mapping_key: str, use_weather_service: bool) -> dict:
     Precipitation (#764), and the depth is for a rain gauge of one's own. Those
     three default to "none" when a weather service is in use and to a sensor
     otherwise. Every other field defaults to the weather service when there is
-    one.
+    one, except the rain rate of a service that reports no rain that fell (a
+    weather entity): taken from it, no rain would ever be recorded, so it
+    starts on "none" until a sensor is chosen.
     """
-    if mapping_key in (
+    rain_from_nowhere = (
+        mapping_key == MAPPING_CURRENT_PRECIPITATION
+        and weather_service in CONF_WEATHER_SERVICES_WITHOUT_RAIN
+    )
+    if rain_from_nowhere or mapping_key in (
         MAPPING_EVAPOTRANSPIRATION,
         MAPPING_SOLRAD,
         MAPPING_PRECIPITATION,
@@ -537,7 +546,9 @@ def move_service_precipitation_to_the_rate(the_map: dict) -> dict:
     return the_map
 
 
-def normalize_mapping_conf(the_map: dict, use_weather_service: bool) -> dict:
+def normalize_mapping_conf(
+    the_map: dict, use_weather_service: bool, weather_service: str | None = None
+) -> dict:
     """Replace sourceless sensor group fields by their default configuration.
 
     Sensor groups created from the panel used to store a plain empty string for
@@ -551,7 +562,7 @@ def normalize_mapping_conf(the_map: dict, use_weather_service: bool) -> dict:
     for mapping_key, value in the_map.items():
         if not isinstance(value, dict):
             the_map[mapping_key] = default_mapping_entry(
-                mapping_key, use_weather_service
+                mapping_key, use_weather_service, weather_service
             )
     return the_map
 
@@ -1492,7 +1503,9 @@ class SmartIrrigationStorage:
         ]
         conf = {
             mapping_key: default_mapping_entry(
-                mapping_key, self.config.use_weather_service
+                mapping_key,
+                self.config.use_weather_service,
+                self.weather_service_in_use(),
             )
             for mapping_key in mappings
         }
@@ -1753,13 +1766,26 @@ class SmartIrrigationStorage:
 
         return [attr.asdict(val) for val in self.mappings.values()]
 
+    def weather_service_in_use(self) -> str | None:
+        """The weather service in use, as the integration runs it, or None.
+
+        Read where the coordinator keeps it: the panel changes it in place
+        there, and the store's own config only learns of it on such a change.
+        """
+        data = self.hass.data.get(DOMAIN) if self.hass else None
+        if not isinstance(data, dict) or not data.get(CONF_USE_WEATHER_SERVICE):
+            return None
+        return data.get(CONF_WEATHER_SERVICE)
+
     async def async_create_mapping(self, data: dict) -> MappingEntry:
         """Create a new MappingEntry."""
         if isinstance(data.get(MAPPING_MAPPINGS), dict):
             data = {
                 **data,
                 MAPPING_MAPPINGS: normalize_mapping_conf(
-                    dict(data[MAPPING_MAPPINGS]), self.config.use_weather_service
+                    dict(data[MAPPING_MAPPINGS]),
+                    self.config.use_weather_service,
+                    self.weather_service_in_use(),
                 ),
             }
         if MAPPING_DATA in data:
@@ -1791,7 +1817,9 @@ class SmartIrrigationStorage:
         changes.pop("id", None)
         if isinstance(changes.get(MAPPING_MAPPINGS), dict):
             changes[MAPPING_MAPPINGS] = normalize_mapping_conf(
-                dict(changes[MAPPING_MAPPINGS]), self.config.use_weather_service
+                dict(changes[MAPPING_MAPPINGS]),
+                self.config.use_weather_service,
+                self.weather_service_in_use(),
             )
         if MAPPING_DATA in changes:
             changes[MAPPING_DATA] = as_reading_list(changes[MAPPING_DATA])
