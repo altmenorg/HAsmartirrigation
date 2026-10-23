@@ -134,7 +134,8 @@
           "et": "Un sensor que ya informa de la evapotranspiración",
           "et-help": "Otra cosa ya la calcula, y Smart Irrigation debería usar esa cifra tal cual.",
           "static": "Una cantidad fija por día",
-          "static-help": "Sin sensores y sin servicio. Das un número y se usa todos los días. Es tosco, pero sigue llevando la cuenta de lo que ya has regado."
+          "static-help": "Sin sensores y sin servicio. Das un número y se usa todos los días. Es tosco, pero sigue llevando la cuenta de lo que ya has regado.",
+          "service-help-entity": "Los valores actuales y el pronóstico vienen de tu entidad meteorológica, y Smart Irrigation calcula con ellos la evapotranspiración. La lluvia viene de un sensor de lluvia tuyo, que se pide en el siguiente paso."
         },
         "sensors": {
           "question": "¿Qué entidades debe leer?",
@@ -144,7 +145,8 @@
           "lux-hint": "Bajo cristal, un sensor de luz puede sustituir a la radiación solar: elige aquí tu entidad de iluminancia y después, en el grupo de sensores, pon su fuente en Sensor de luz (lux).",
           "static-question": "¿Cuánto se evapora al día?",
           "static-help": "Una altura de agua, en la unidad que usan tus zonas. Alrededor de 4 o 5 mm al día es habitual para un verano templado.",
-          "static-label": "Evaporación por día"
+          "static-label": "Evaporación por día",
+          "rain-help-entity": "Esta entidad meteorológica solo pronostica la lluvia. Elige un sensor que mida la lluvia para uno de estos campos: una intensidad o el total de un pluviómetro. ¿Sin sensor de lluvia? Usa Open-Meteo."
         },
         "review": {
           "question": "Listo para crear",
@@ -172,17 +174,24 @@
       "labels": {
         "use-weather-service": "Usar un servicio meteorológico",
         "service": "Servicio meteorológico",
-        "api-key": "Clave API"
+        "api-key": "Clave API",
+        "ha-weather-entity": "Una entidad meteorológica de Home Assistant",
+        "weather-entity": "Entidad meteorológica"
       },
       "actions": {
         "save": "Guardar",
-        "saving": "Guardando…"
+        "saving": "Guardando…",
+        "open-sensor-groups": "Abrir los grupos de sensores"
       },
       "messages": {
         "no-service": "No se usa ningún servicio meteorológico — los datos del tiempo provienen solo de tus propios sensores.",
         "saved": "Servicio meteorológico actualizado y aplicado.",
         "reload-note": "Al guardar se valida la clave API con el servicio y se aplica el cambio de inmediato.",
-        "owm-onecall-hint": "OpenWeatherMap necesita el plan One Call API 3.0 (One Call by Call). Es gratuito hasta 1000 llamadas al día, pero hay que activarlo con una tarjeta, y una clave nueva puede tardar un par de horas en funcionar. Una clave por defecto normal se rechaza."
+        "owm-onecall-hint": "OpenWeatherMap necesita el plan One Call API 3.0 (One Call by Call). Es gratuito hasta 1000 llamadas al día, pero hay que activarlo con una tarjeta, y una clave nueva puede tardar un par de horas en funcionar. Una clave por defecto normal se rechaza.",
+        "ha-entity-hint": "Los valores actuales y el pronóstico vienen de esta entidad, la radiación solar y la ET de referencia de Open-Meteo. Solo pronostica la lluvia: da a cada grupo de sensores un sensor de lluvia en Precipitación actual.",
+        "rain-groups-on-service": "{count, plural, one {# grupo de sensores sigue tomando su} other {# grupos de sensores siguen tomando su}} lluvia del servicio meteorológico, que no la da: {groups}. Elige un sensor de lluvia en Precipitación actual, o las zonas se regarán después de cada chaparrón.",
+        "reload-note-entity": "Al guardar se comprueba que la entidad existe y el cambio se aplica de inmediato.",
+        "invalid-entity": "Elige una entidad meteorológica: esta ya no existe, o no es una entidad meteorológica."
       }
     },
     "backuprestore": {
@@ -483,7 +492,9 @@
           "module": "Motor de cálculo",
           "module_description": "Este grupo solo ofrece las fuentes que lee este motor. Las zonas que lo usan heredan la elección.",
           "module_undecided": "Todavía no se ha elegido un motor, así que se ofrecen todas las fuentes y cada zona que usa este grupo conserva la suya. Elige uno para ver solo las fuentes que lee.",
-          "wind_height": "Altura del anemómetro (vacío: a 2 m)"
+          "wind_height": "Altura del anemómetro (vacío: a 2 m)",
+          "rain_not_from_entity": "La entidad meteorológica no da la lluvia caída, solo un pronóstico: elige aquí un sensor de lluvia, o las zonas se regarán después de cada chaparrón.",
+          "rain_hint_entity": "La lluvia que cae ahora, como intensidad. La entidad meteorológica solo la pronostica: elige un sensor que mida la lluvia."
         }
       },
       "description": "Añada uno o más grupos de sensores que recuperen datos meteorológicos de Weather service, de sensores o de una combinación de éstos. Puede asignar cada grupo de sensores a una o más zonas",

@@ -134,7 +134,8 @@
           "et": "已经在上报蒸散量的传感器",
           "et-help": "已经有别的东西算好了，Smart Irrigation 应该直接采用那个数值。",
           "static": "每天固定一个量",
-          "static-help": "既没有传感器，也没有服务。你给一个数字，每天都用它。比较粗糙，但仍然会跟踪你已经浇过的水。"
+          "static-help": "既没有传感器，也没有服务。你给一个数字，每天都用它。比较粗糙，但仍然会跟踪你已经浇过的水。",
+          "service-help-entity": "当前数值和预报来自你的天气实体，Smart Irrigation 据此计算蒸散量。降雨来自你自己的雨量传感器，将在下一步询问。"
         },
         "sensors": {
           "question": "它该读取哪些实体？",
@@ -144,7 +145,8 @@
           "lux-hint": "在玻璃之下，光照传感器可以代替太阳辐射：在这里选择你的照度实体，之后到传感器组里把它的来源设为「光照传感器（勒克斯）」。",
           "static-question": "每天蒸发多少？",
           "static-help": "以水深表示，单位与你的区域一致。温带的夏天，每天 4 到 5 毫米左右是常见值。",
-          "static-label": "每天的蒸发量"
+          "static-label": "每天的蒸发量",
+          "rain-help-entity": "此天气实体只预报降雨。请为其中一个字段选择一个测量降雨的传感器：降雨强度或雨量计累计值。没有雨量传感器？请改用 Open-Meteo。"
         },
         "review": {
           "question": "可以创建了",
@@ -172,17 +174,24 @@
       "labels": {
         "use-weather-service": "使用天气服务",
         "service": "天气服务",
-        "api-key": "API 密钥"
+        "api-key": "API 密钥",
+        "ha-weather-entity": "Home Assistant 中的天气实体",
+        "weather-entity": "天气实体"
       },
       "actions": {
         "save": "保存",
-        "saving": "正在保存…"
+        "saving": "正在保存…",
+        "open-sensor-groups": "打开传感器组"
       },
       "messages": {
         "no-service": "未使用任何天气服务——天气数据仅来自您自己的传感器。",
         "saved": "天气服务已更新并应用。",
         "reload-note": "保存时会针对该服务验证 API 密钥并立即应用更改。",
-        "owm-onecall-hint": "OpenWeatherMap 需要 One Call API 3.0 套餐（One Call by Call）。每天 1000 次调用以内免费，但必须绑卡激活，而且新密钥可能要过一两个小时才能生效。普通的默认密钥会被拒绝。"
+        "owm-onecall-hint": "OpenWeatherMap 需要 One Call API 3.0 套餐（One Call by Call）。每天 1000 次调用以内免费，但必须绑卡激活，而且新密钥可能要过一两个小时才能生效。普通的默认密钥会被拒绝。",
+        "ha-entity-hint": "当前数值和预报来自此实体，太阳辐射和参考 ET 来自 Open-Meteo。它只预报降雨：请在“当前降水”下为每个传感器组选择一个雨量传感器。",
+        "rain-groups-on-service": "{count, plural, other {# 个传感器组}}仍从不提供降雨的天气服务获取降雨：{groups}。请在“当前降水”下选择雨量传感器，否则每场阵雨后区域都会被浇水。",
+        "reload-note-entity": "保存时会检查实体是否存在，并立即应用更改。",
+        "invalid-entity": "请选择天气实体：此实体已不存在，或不是天气实体。"
       }
     },
     "backuprestore": {
@@ -483,7 +492,9 @@
           "module": "计算引擎",
           "module_description": "该组只提供这个引擎会读取的数据源。使用它的区域会继承这一选择。",
           "module_undecided": "还没有选择引擎，所以会提供全部数据源，使用该组的每个区域都保留各自的选择。选定一个后，就只会看到它会读取的数据源。",
-          "wind_height": "风速计高度（留空：按 2 米）"
+          "wind_height": "风速计高度（留空：按 2 米）",
+          "rain_not_from_entity": "天气实体不提供已降的雨，只提供预报：请在此选择雨量传感器，否则每场阵雨后区域都会被浇水。",
+          "rain_hint_entity": "当前正在下的雨，以强度表示。天气实体只预报降雨：请选择一个测量降雨的传感器。"
         }
       },
       "description": "添加一个或多个传感器组，从天气服务、传感器或两者的组合中获取天气数据。您可以将每个传感器组映射到一个或多个区域",

@@ -134,7 +134,8 @@
           "et": "Un capteur qui donne déjà l'évapotranspiration",
           "et-help": "Autre chose la calcule déjà, et Smart Irrigation doit reprendre cette valeur telle quelle.",
           "static": "Une quantité fixe par jour",
-          "static-help": "Ni capteurs ni service. Tu donnes un chiffre, utilisé chaque jour. Grossier, mais cela suit tout de même ce que tu as déjà arrosé."
+          "static-help": "Ni capteurs ni service. Tu donnes un chiffre, utilisé chaque jour. Grossier, mais cela suit tout de même ce que tu as déjà arrosé.",
+          "service-help-entity": "Les valeurs actuelles et la prévision viennent de ton entité météo, et Smart Irrigation en calcule l'évapotranspiration. La pluie vient d'un capteur de pluie à toi, demandé à l'étape suivante."
         },
         "sensors": {
           "question": "Quelles entités doit-il lire ?",
@@ -144,7 +145,8 @@
           "lux-hint": "Sous verre, un capteur de luminosité peut remplacer un capteur de rayonnement : choisis ici ton entité d'illuminance, puis règle sa source sur Capteur de luminosité (lux) dans le groupe de capteurs.",
           "static-question": "Combien s'évapore-t-il par jour ?",
           "static-help": "Une hauteur d'eau, dans l'unité de tes zones. Autour de 4 à 5 mm par jour est courant pour un été tempéré.",
-          "static-label": "Évaporation par jour"
+          "static-label": "Évaporation par jour",
+          "rain-help-entity": "Cette entité météo ne fait que prévoir la pluie. Choisis un capteur qui mesure la pluie pour l'un de ces champs : un débit ou un cumul de pluviomètre. Pas de capteur de pluie ? Prends plutôt Open-Meteo."
         },
         "review": {
           "question": "Prêt à créer",
@@ -172,17 +174,24 @@
       "labels": {
         "use-weather-service": "Utiliser un service météo",
         "service": "Service météo",
-        "api-key": "Clé API"
+        "api-key": "Clé API",
+        "ha-weather-entity": "Une entité météo de Home Assistant",
+        "weather-entity": "Entité météo"
       },
       "actions": {
         "save": "Enregistrer",
-        "saving": "Enregistrement…"
+        "saving": "Enregistrement…",
+        "open-sensor-groups": "Ouvrir les groupes de capteurs"
       },
       "messages": {
         "no-service": "Aucun service météo utilisé — les données proviennent uniquement de tes capteurs.",
         "saved": "Service météo mis à jour et appliqué.",
         "reload-note": "L'enregistrement valide la clé API auprès du service et applique le changement immédiatement.",
-        "owm-onecall-hint": "OpenWeatherMap exige le forfait One Call API 3.0 (One Call by Call). Il est gratuit jusqu'à 1000 appels par jour mais doit être activé avec une carte, et une nouvelle clé peut mettre une ou deux heures à fonctionner. Une simple clé par défaut est refusée."
+        "owm-onecall-hint": "OpenWeatherMap exige le forfait One Call API 3.0 (One Call by Call). Il est gratuit jusqu'à 1000 appels par jour mais doit être activé avec une carte, et une nouvelle clé peut mettre une ou deux heures à fonctionner. Une simple clé par défaut est refusée.",
+        "ha-entity-hint": "Les valeurs actuelles et la prévision viennent de cette entité, le rayonnement solaire et l'ET de référence d'Open-Meteo. Elle ne fait que prévoir la pluie : donne à chaque groupe de capteurs un capteur de pluie sous Précipitations actuelles.",
+        "rain-groups-on-service": "{count, plural, one {# groupe de capteurs prend encore sa} other {# groupes de capteurs prennent encore leur}} pluie au service météo, qui n'en fournit pas : {groups}. Choisis un capteur de pluie sous Précipitations actuelles, sinon les zones seront arrosées après chaque averse.",
+        "reload-note-entity": "L'enregistrement vérifie que l'entité existe et applique le changement immédiatement.",
+        "invalid-entity": "Choisis une entité météo : celle-ci n'existe plus, ou ce n'est pas une entité météo."
       }
     },
     "backuprestore": {
@@ -483,7 +492,9 @@
           "module": "Moteur de calcul",
           "module_description": "Ce groupe ne propose que les sources lues par ce moteur. Les zones qui l'utilisent héritent du choix.",
           "module_undecided": "Aucun moteur choisi, donc toutes les sources sont proposées et chaque zone utilisant ce groupe garde le sien. Choisis-en un pour ne voir que les sources qu'il lit.",
-          "wind_height": "Hauteur de l'anémomètre (vide : pris à 2 m)"
+          "wind_height": "Hauteur de l'anémomètre (vide : pris à 2 m)",
+          "rain_not_from_entity": "L'entité météo ne donne pas la pluie tombée, seulement une prévision : choisis ici un capteur de pluie, sinon les zones seront arrosées après chaque averse.",
+          "rain_hint_entity": "La pluie qui tombe en ce moment, en débit. L'entité météo ne fait que la prévoir : choisis un capteur qui mesure la pluie."
         }
       },
       "description": "Ajouter un ou plusieurs groupes de capteurs qui récupèrent les données météo de Weather service, de capteurs locaux ou d'une combinaison de tous ceux-ci. Tu peux associer chaque groupe de capteurs avec une ou plusieurs zones",

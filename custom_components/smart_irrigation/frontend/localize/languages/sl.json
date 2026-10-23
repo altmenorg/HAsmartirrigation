@@ -134,7 +134,8 @@
           "et": "Senzor, ki že poroča evapotranspiracijo",
           "et-help": "Nekaj drugega jo že izračuna in Smart Irrigation naj uporabi to vrednost takšno, kot je.",
           "static": "Stalna količina na dan",
-          "static-help": "Brez senzorjev in brez storitve. Vneseš eno število, ki se uporablja vsak dan. Grobo, a še vedno upošteva, kar si že zalil."
+          "static-help": "Brez senzorjev in brez storitve. Vneseš eno število, ki se uporablja vsak dan. Grobo, a še vedno upošteva, kar si že zalil.",
+          "service-help-entity": "Trenutne vrednosti in napoved prihajajo iz tvoje vremenske entitete, Smart Irrigation pa iz njih izračuna evapotranspiracijo. Dež prihaja iz tvojega senzorja dežja, ki ga vpraša naslednji korak."
         },
         "sensors": {
           "question": "Katere entitete naj bere?",
@@ -144,7 +145,8 @@
           "lux-hint": "Pod steklom lahko senzor svetlobe nadomesti sončno sevanje: tu izberi svojo entiteto osvetljenosti, nato pa v skupini senzorjev nastavi njen vir na Senzor svetlobe (lux).",
           "static-question": "Koliko izhlapi na dan?",
           "static-help": "Višina vode v enoti, ki jo uporabljajo tvoje cone. Za zmerno poletje so običajne vrednosti okoli 4 do 5 mm na dan.",
-          "static-label": "Izhlapevanje na dan"
+          "static-label": "Izhlapevanje na dan",
+          "rain-help-entity": "Ta vremenska entiteta dež samo napoveduje. Za eno od teh polj izberi senzor, ki meri dež: intenzivnost ali vsoto dežemera. Nimaš senzorja dežja? Uporabi Open-Meteo."
         },
         "review": {
           "question": "Pripravljeno za ustvarjanje",
@@ -172,17 +174,24 @@
       "labels": {
         "use-weather-service": "Uporabi vremensko storitev",
         "service": "Vremenska storitev",
-        "api-key": "Ključ API"
+        "api-key": "Ključ API",
+        "ha-weather-entity": "Vremenska entiteta v Home Assistantu",
+        "weather-entity": "Vremenska entiteta"
       },
       "actions": {
         "save": "Shrani",
-        "saving": "Shranjevanje …"
+        "saving": "Shranjevanje …",
+        "open-sensor-groups": "Odpri skupine senzorjev"
       },
       "messages": {
         "no-service": "Vremenska storitev se ne uporablja: vremenski podatki prihajajo samo iz tvojih lastnih senzorjev.",
         "saved": "Vremenska storitev je posodobljena in uveljavljena.",
         "reload-note": "Ob shranjevanju se ključ API preveri pri storitvi in sprememba se uveljavi takoj.",
-        "owm-onecall-hint": "OpenWeatherMap potrebuje paket One Call API 3.0 (One Call by Call). Do 1000 klicev na dan je brezplačen, vendar ga je treba aktivirati s kartico, nov ključ pa lahko začne delovati šele po nekaj urah. Navaden privzeti ključ je zavrnjen."
+        "owm-onecall-hint": "OpenWeatherMap potrebuje paket One Call API 3.0 (One Call by Call). Do 1000 klicev na dan je brezplačen, vendar ga je treba aktivirati s kartico, nov ključ pa lahko začne delovati šele po nekaj urah. Navaden privzeti ključ je zavrnjen.",
+        "ha-entity-hint": "Trenutne vrednosti in napoved prihajajo iz te entitete, sončno sevanje in referenčna ET iz Open-Meteo. Dež samo napoveduje: vsaki skupini senzorjev dodaj senzor dežja pod Trenutne padavine.",
+        "rain-groups-on-service": "{count, plural, one {# skupina senzorjev še vedno jemlje} two {# skupini senzorjev še vedno jemljeta} few {# skupine senzorjev še vedno jemljejo} other {# skupin senzorjev še vedno jemlje}} dež iz vremenske storitve, ki ga ne daje: {groups}. Izberi senzor dežja pod Trenutne padavine, sicer bodo cone zalite po vsaki plohi.",
+        "reload-note-entity": "Shranjevanje preveri, da entiteta obstaja, in spremembo takoj uveljavi.",
+        "invalid-entity": "Izberi vremensko entiteto: ta ne obstaja več ali ni vremenska entiteta."
       }
     },
     "backuprestore": {
@@ -483,7 +492,9 @@
           "module": "Računski modul",
           "module_description": "Ta skupina ponuja samo vire, ki jih ta modul bere. Cone, ki jo uporabljajo, podedujejo izbiro.",
           "module_undecided": "Modul še ni izbran, zato so na voljo vsi viri in vsaka cona, ki uporablja to skupino, ohrani svojega. Izberi enega, da vidiš samo vire, ki jih bere.",
-          "wind_height": "Višina anemometra (prazno: merjeno na 2 m)"
+          "wind_height": "Višina anemometra (prazno: merjeno na 2 m)",
+          "rain_not_from_entity": "Vremenska entiteta ne daje padlega dežja, samo napoved: tukaj izberi senzor dežja, sicer bodo cone zalite po vsaki plohi.",
+          "rain_hint_entity": "Dež, ki pada zdaj, kot intenzivnost. Vremenska entiteta ga samo napoveduje: izberi senzor, ki meri dež."
         }
       },
       "description": "Dodaj eno ali več skupin senzorjev, ki pridobivajo vremenske podatke iz vremenske storitve, iz senzorjev ali iz kombinacije obojega. Vsako skupino senzorjev lahko dodeliš eni ali več conam",
