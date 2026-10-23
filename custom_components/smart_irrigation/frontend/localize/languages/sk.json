@@ -134,7 +134,8 @@
           "et": "Senzor, ktorý evapotranspiráciu už hlási",
           "et-help": "Niečo iné ju už počíta a Smart Irrigation má tú hodnotu použiť tak, ako je.",
           "static": "Pevné množstvo za deň",
-          "static-help": "Žiadne senzory a žiadna služba. Zadáte jedno číslo a použije sa každý deň. Hrubé, ale aj tak to sleduje, čo ste už zaliali."
+          "static-help": "Žiadne senzory a žiadna služba. Zadáte jedno číslo a použije sa každý deň. Hrubé, ale aj tak to sleduje, čo ste už zaliali.",
+          "service-help-entity": "Aktuálne hodnoty a predpoveď pochádzajú z vašej entity počasia a Smart Irrigation z nich počíta evapotranspiráciu. Dážď pochádza z vášho vlastného zrážkomera, na ktorý sa spýta ďalší krok."
         },
         "sensors": {
           "question": "Ktoré entity má čítať?",
@@ -144,7 +145,8 @@
           "lux-hint": "Pod sklom môže svetelný senzor zastúpiť solárnu radiáciu: vyberte tu svoju entitu osvetlenia a potom jej v skupine senzorov nastavte zdroj na Svetelný senzor (lux).",
           "static-question": "Koľko sa vyparí za deň?",
           "static-help": "Výška vodného stĺpca, v jednotke, ktorú vaše zóny používajú. Niekde okolo 4 až 5 mm za deň je pre mierne leto bežné.",
-          "static-label": "Výpar za deň"
+          "static-label": "Výpar za deň",
+          "rain-help-entity": "Táto entita počasia dážď iba predpovedá. Pre jedno z týchto polí zvoľte senzor, ktorý dážď meria: intenzitu alebo úhrn zrážkomera. Nemáte zrážkomer? Použite Open-Meteo."
         },
         "review": {
           "question": "Pripravené na vytvorenie",
@@ -172,17 +174,24 @@
       "labels": {
         "use-weather-service": "Použiť poveternostnú službu",
         "service": "Poveternostná služba",
-        "api-key": "API kľúč"
+        "api-key": "API kľúč",
+        "ha-weather-entity": "Entita počasia v Home Assistant",
+        "weather-entity": "Entita počasia"
       },
       "actions": {
         "save": "Uložiť",
-        "saving": "Ukladá sa…"
+        "saving": "Ukladá sa…",
+        "open-sensor-groups": "Otvoriť skupiny senzorov"
       },
       "messages": {
         "no-service": "Nepoužíva sa žiadna poveternostná služba — meteorologické údaje pochádzajú iba z vašich vlastných senzorov.",
         "saved": "Poveternostná služba aktualizovaná a použitá.",
         "reload-note": "Pri uložení sa API kľúč overí voči službe a zmena sa použije okamžite.",
-        "owm-onecall-hint": "OpenWeatherMap potrebuje tarif One Call API 3.0 (One Call by Call). Do 1000 volaní denne je zdarma, ale musí byť aktivovaný kartou, a nový kľúč môže začať fungovať až po pár hodinách. Obyčajný predvolený kľúč je odmietnutý."
+        "owm-onecall-hint": "OpenWeatherMap potrebuje tarif One Call API 3.0 (One Call by Call). Do 1000 volaní denne je zdarma, ale musí byť aktivovaný kartou, a nový kľúč môže začať fungovať až po pár hodinách. Obyčajný predvolený kľúč je odmietnutý.",
+        "ha-entity-hint": "Aktuálne hodnoty a predpoveď pochádzajú z tejto entity, slnečné žiarenie a referenčná ET z Open-Meteo. Dážď iba predpovedá: dajte každej skupine senzorov zrážkomer v poli Aktuálne zrážky.",
+        "rain-groups-on-service": "{count, plural, one {# skupina senzorov stále berie} few {# skupiny senzorov stále berú} other {# skupín senzorov stále berie}} dážď zo služby počasia, ktorá ho neposkytuje: {groups}. Zvoľte zrážkomer v poli Aktuálne zrážky, inak sa zóny budú polievať po každej prehánke.",
+        "reload-note-entity": "Uloženie overí, že entita existuje, a zmenu hneď použije.",
+        "invalid-entity": "Zvoľte entitu počasia: táto už neexistuje, alebo to nie je entita počasia."
       }
     },
     "backuprestore": {
@@ -483,7 +492,9 @@
           "module": "Výpočtové jadro",
           "module_description": "Táto skupina ponúka len zdroje, ktoré toto jadro číta. Zóny, ktoré ju používajú, voľbu preberajú.",
           "module_undecided": "Jadro ešte nebolo vybrané, takže sa ponúkajú všetky zdroje a každá zóna používajúca túto skupinu si drží svoje. Vyberte jedno, aby ste videli len zdroje, ktoré číta.",
-          "wind_height": "Výška anemometra (prázdne: 2 m)"
+          "wind_height": "Výška anemometra (prázdne: 2 m)",
+          "rain_not_from_entity": "Entita počasia neposkytuje spadnutý dážď, iba predpoveď: zvoľte tu zrážkomer, inak sa zóny budú polievať po každej prehánke.",
+          "rain_hint_entity": "Dážď, ktorý práve padá, ako intenzita. Entita počasia ho iba predpovedá: zvoľte senzor, ktorý dážď meria."
         }
       },
       "description": "Pridajte jednu alebo viac skupín senzorov, ktoré získavajú údaje o počasí z Weather service, zo senzorov alebo ich kombinácie. Každú skupinu senzorov môžete namapovať na jednu alebo viac zón",

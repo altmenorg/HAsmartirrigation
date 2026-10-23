@@ -134,7 +134,8 @@
           "et": "Een sensor die de verdamping al meldt",
           "et-help": "Iets anders berekent haar al, en Smart Irrigation moet dat getal overnemen zoals het is.",
           "static": "Een vast bedrag per dag",
-          "static-help": "Geen sensoren en geen dienst. Je geeft één getal en dat wordt elke dag gebruikt. Grof, maar het houdt nog steeds bij wat je al bewaterd hebt."
+          "static-help": "Geen sensoren en geen dienst. Je geeft één getal en dat wordt elke dag gebruikt. Grof, maar het houdt nog steeds bij wat je al bewaterd hebt.",
+          "service-help-entity": "De actuele waarden en de voorspelling komen van je weerentiteit, en Smart Irrigation berekent er de verdamping uit. De regen komt van een eigen regensensor, die in de volgende stap wordt gevraagd."
         },
         "sensors": {
           "question": "Welke entiteiten moet ze lezen?",
@@ -144,7 +145,8 @@
           "lux-hint": "Onder glas kan een lichtsensor de zonnestraling vervangen: kies hier je verlichtingssterkte-entiteit en zet haar bron daarna in de sensorgroep op Lichtsensor (lux).",
           "static-question": "Hoeveel verdampt er per dag?",
           "static-help": "Een waterhoogte, in de eenheid die je zones gebruiken. Zo'n 4 tot 5 mm per dag is gebruikelijk voor een gematigde zomer.",
-          "static-label": "Verdamping per dag"
+          "static-label": "Verdamping per dag",
+          "rain-help-entity": "Deze weerentiteit voorspelt regen alleen. Kies voor een van deze velden een sensor die regen meet: een intensiteit of een regenmetertotaal. Geen regensensor? Kies dan Open-Meteo."
         },
         "review": {
           "question": "Klaar om aan te maken",
@@ -172,17 +174,24 @@
       "labels": {
         "use-weather-service": "Een weerdienst gebruiken",
         "service": "Weerdienst",
-        "api-key": "API-sleutel"
+        "api-key": "API-sleutel",
+        "ha-weather-entity": "Een weerentiteit in Home Assistant",
+        "weather-entity": "Weerentiteit"
       },
       "actions": {
         "save": "Opslaan",
-        "saving": "Opslaan…"
+        "saving": "Opslaan…",
+        "open-sensor-groups": "Sensorgroepen openen"
       },
       "messages": {
         "no-service": "Er wordt geen weerdienst gebruikt — de weergegevens komen alleen van je eigen sensoren.",
         "saved": "Weerdienst bijgewerkt en toegepast.",
         "reload-note": "Bij het opslaan wordt de API-sleutel bij de dienst gevalideerd en de wijziging direct toegepast.",
-        "owm-onecall-hint": "OpenWeatherMap heeft het One Call API 3.0-abonnement nodig (One Call by Call). Het is gratis tot 1000 aanroepen per dag, maar moet met een kaart geactiveerd worden, en een nieuwe sleutel kan een paar uur nodig hebben voordat hij werkt. Een gewone standaardsleutel wordt geweigerd."
+        "owm-onecall-hint": "OpenWeatherMap heeft het One Call API 3.0-abonnement nodig (One Call by Call). Het is gratis tot 1000 aanroepen per dag, maar moet met een kaart geactiveerd worden, en een nieuwe sleutel kan een paar uur nodig hebben voordat hij werkt. Een gewone standaardsleutel wordt geweigerd.",
+        "ha-entity-hint": "De actuele waarden en de voorspelling komen van deze entiteit, de zonnestraling en de referentieverdamping van Open-Meteo. Ze voorspelt regen alleen: geef elke sensorgroep een regensensor onder Huidige neerslag.",
+        "rain-groups-on-service": "{count, plural, one {# sensorgroep haalt zijn} other {# sensorgroepen halen hun}} regen nog bij de weerdienst, die er geen geeft: {groups}. Kies een regensensor onder Huidige neerslag, anders worden de zones na elke bui besproeid.",
+        "reload-note-entity": "Opslaan controleert of de entiteit bestaat en past de wijziging meteen toe.",
+        "invalid-entity": "Kies een weerentiteit: deze bestaat niet meer, of is geen weerentiteit."
       }
     },
     "backuprestore": {
@@ -483,7 +492,9 @@
           "module": "Berekeningsengine",
           "module_description": "Deze groep biedt alleen de bronnen die deze engine leest. De zones die haar gebruiken nemen de keuze over.",
           "module_undecided": "Nog geen engine gekozen, dus elke bron wordt aangeboden en elke zone die deze groep gebruikt houdt haar eigen. Kies er een om alleen de bronnen te zien die ze leest.",
-          "wind_height": "Hoogte van de windmeter (leeg: op 2 m)"
+          "wind_height": "Hoogte van de windmeter (leeg: op 2 m)",
+          "rain_not_from_entity": "De weerentiteit geeft geen gevallen regen, alleen een voorspelling: kies hier een regensensor, anders worden de zones na elke bui besproeid.",
+          "rain_hint_entity": "Regen die nu valt, als intensiteit. De weerentiteit voorspelt die alleen: kies een sensor die regen meet."
         }
       },
       "description": "Voeg een of meer sensorgroepen toe die weergegevens ophalen van Weather service, van sensoren of een combinatie. Elke sensorgroep kan worden gebruikt voor een of meerdere zones",

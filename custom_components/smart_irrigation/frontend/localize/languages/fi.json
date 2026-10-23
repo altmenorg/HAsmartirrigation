@@ -134,7 +134,8 @@
           "et": "Anturi, joka jo ilmoittaa haihdunnan",
           "et-help": "Jokin muu laskee sen jo, ja Smart Irrigationin pitäisi käyttää sitä lukua sellaisenaan.",
           "static": "Kiinteä määrä päivässä",
-          "static-help": "Ei antureita eikä palvelua. Annat yhden luvun ja sitä käytetään joka päivä. Karkea, mutta se seuraa silti sitä, mitä olet jo kastellut."
+          "static-help": "Ei antureita eikä palvelua. Annat yhden luvun ja sitä käytetään joka päivä. Karkea, mutta se seuraa silti sitä, mitä olet jo kastellut.",
+          "service-help-entity": "Nykyiset arvot ja ennuste tulevat sääentiteetistäsi, ja Smart Irrigation laskee niistä haihdunnan. Sade tulee omasta sadeanturistasi, jota kysytään seuraavassa vaiheessa."
         },
         "sensors": {
           "question": "Mitä entiteettejä sen pitäisi lukea?",
@@ -144,7 +145,8 @@
           "lux-hint": "Lasin alla valoanturi voi korvata auringon säteilyn: valitse valoisuusentiteettisi tässä ja aseta sen lähde jälkeenpäin anturiryhmässä arvoon Valoanturi (lux).",
           "static-question": "Kuinka paljon haihtuu päivässä?",
           "static-help": "Vesikerroksen paksuus, alueidesi käyttämässä yksikössä. Noin 4 - 5 mm päivässä on tavallista lauhkealle kesälle.",
-          "static-label": "Haihdunta päivässä"
+          "static-label": "Haihdunta päivässä",
+          "rain-help-entity": "Tämä sääentiteetti vain ennustaa sateen. Valitse jollekin näistä kentistä anturi, joka mittaa sadetta: intensiteetti tai sademittarin kertymä. Ei sadeanturia? Käytä Open-Meteoa."
         },
         "review": {
           "question": "Valmis luomaan",
@@ -172,17 +174,24 @@
       "labels": {
         "use-weather-service": "Käytä sääpalvelua",
         "service": "Sääpalvelu",
-        "api-key": "API-avain"
+        "api-key": "API-avain",
+        "ha-weather-entity": "Home Assistantin sääentiteetti",
+        "weather-entity": "Sääentiteetti"
       },
       "actions": {
         "save": "Tallenna",
-        "saving": "Tallennetaan…"
+        "saving": "Tallennetaan…",
+        "open-sensor-groups": "Avaa anturiryhmät"
       },
       "messages": {
         "no-service": "Sääpalvelua ei käytetä — säätiedot tulevat vain omilta antureiltasi.",
         "saved": "Sääpalvelu päivitetty ja otettu käyttöön.",
         "reload-note": "Tallennus vahvistaa API-avaimen palvelua vasten ja ottaa muutoksen käyttöön välittömästi.",
-        "owm-onecall-hint": "OpenWeatherMap vaatii One Call API 3.0 -tilauksen (One Call by Call). Se on maksuton 1000 kutsuun päivässä, mutta se täytyy aktivoida kortilla, ja uusi avain voi vaatia parikin tuntia ennen kuin se toimii. Tavallinen oletusavain hylätään."
+        "owm-onecall-hint": "OpenWeatherMap vaatii One Call API 3.0 -tilauksen (One Call by Call). Se on maksuton 1000 kutsuun päivässä, mutta se täytyy aktivoida kortilla, ja uusi avain voi vaatia parikin tuntia ennen kuin se toimii. Tavallinen oletusavain hylätään.",
+        "ha-entity-hint": "Nykyiset arvot ja ennuste tulevat tästä entiteetistä, auringon säteily ja vertailuhaihdunta Open-Meteosta. Se vain ennustaa sateen: anna jokaiselle anturiryhmälle sadeanturi kohtaan Nykyinen sade.",
+        "rain-groups-on-service": "{count, plural, one {# anturiryhmä ottaa yhä} other {# anturiryhmää ottaa yhä}} sateensa säätiedolta, joka ei sitä anna: {groups}. Valitse sadeanturi kohtaan Nykyinen sade, muuten vyöhykkeet kastellaan jokaisen sadekuuron jälkeen.",
+        "reload-note-entity": "Tallennus tarkistaa, että entiteetti on olemassa, ja ottaa muutoksen heti käyttöön.",
+        "invalid-entity": "Valitse sääentiteetti: tätä ei enää ole, tai se ei ole sääentiteetti."
       }
     },
     "backuprestore": {
@@ -483,7 +492,9 @@
           "module": "Laskentamoottori",
           "module_description": "Tämä ryhmä tarjoaa vain ne lähteet, joita tämä moottori lukee. Sitä käyttävät alueet perivät valinnan.",
           "module_undecided": "Moottoria ei ole vielä valittu, joten kaikki lähteet tarjotaan ja jokainen tätä ryhmää käyttävä alue pitää omansa. Valitse yksi nähdäksesi vain ne lähteet, joita se lukee.",
-          "wind_height": "Tuulimittarin korkeus (tyhjä: 2 m)"
+          "wind_height": "Tuulimittarin korkeus (tyhjä: 2 m)",
+          "rain_not_from_entity": "Sääentiteetti ei anna satanutta sadetta, vain ennusteen: valitse tähän sadeanturi, muuten vyöhykkeet kastellaan jokaisen sadekuuron jälkeen.",
+          "rain_hint_entity": "Juuri nyt satava sade, intensiteettinä. Sääentiteetti vain ennustaa sen: valitse anturi, joka mittaa sadetta."
         }
       },
       "description": "Lisää yksi tai useampi anturiryhmä, joka hakee säätietoja sääpalvelusta, antureista tai näiden yhdistelmästä. Voit liittää kunkin anturiryhmän yhteen tai useampaan vyöhykkeeseen",

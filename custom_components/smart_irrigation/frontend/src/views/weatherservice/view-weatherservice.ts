@@ -7,7 +7,8 @@ import { localize } from "../../../localize/localize";
 import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { loadHaForm } from "../../load-ha-elements";
-import { Path } from "../../common/navigation";
+import { exportPath, Path } from "../../common/navigation";
+import { groupsWithRainFromService, navigate } from "../../helpers";
 import {
   MAPPING_CURRENT_PRECIPITATION,
   MAPPING_DEWPOINT,
@@ -27,11 +28,14 @@ import {
   UNIT_MMH,
   UNIT_MS,
   UNIT_PERCENT,
+  WEATHER_SERVICE_HA,
   WEATHER_SERVICE_OPEN_METEO,
   WEATHER_SERVICE_OWM,
   WEATHER_SERVICES_NO_API_KEY,
+  WEATHER_SERVICES_WITHOUT_RAIN,
 } from "../../const";
 import {
+  fetchMappings,
   fetchWeatherService,
   fetchWeatherServiceHistory,
   setWeatherService,
@@ -71,10 +75,14 @@ export class SmartIrrigationViewWeatherService extends LitElement {
   @state() private _use = false;
   @state() private _service: string | null = null;
   @state() private _apiKey = "";
+  @state() private _entity = "";
   @state() private _loading = true;
   @state() private _saving = false;
   @state() private _error = "";
   @state() private _saved = false;
+  // The sensor groups still taking their rain from a service that has none,
+  // found after saving such a service.
+  @state() private _rainGroups: string[] = [];
   @state() private _history?: WeatherServiceHistory;
   @state() private _historyLoading = false;
   @state() private _historyError = "";
@@ -104,6 +112,7 @@ export class SmartIrrigationViewWeatherService extends LitElement {
             ? info.services[0]
             : null);
       this._apiKey = info.weather_service_api_key || "";
+      this._entity = info.weather_service_entity || "";
       this._error = "";
     } catch (e) {
       this._error = this._errText(e);
@@ -145,19 +154,59 @@ export class SmartIrrigationViewWeatherService extends LitElement {
     this._saving = true;
     this._error = "";
     this._saved = false;
+    this._rainGroups = [];
     try {
       await setWeatherService(this.hass, {
         use_weather_service: this._use,
         weather_service: this._use ? this._service : null,
         weather_service_api_key: this._use ? this._apiKey : null,
+        weather_service_entity:
+          this._use && this._service === WEATHER_SERVICE_HA
+            ? this._entity
+            : null,
       });
       this._saved = true;
+      this._rainGroups = await this._groupsLeftWithoutRain();
       // Applied in-place on the backend; refresh the displayed state to confirm.
       window.setTimeout(() => this._load(), 800);
-    } catch (e) {
-      this._error = this._errText(e);
+    } catch (e: any) {
+      // The one refusal the panel can explain in the user's language: an
+      // entity that is gone or is not a weather entity.
+      this._error =
+        e?.code === "invalid_entity"
+          ? localize(
+              "panels.weatherservice.messages.invalid-entity",
+              this.hass.language,
+            )
+          : this._errText(e);
     } finally {
       this._saving = false;
+    }
+  }
+
+  /** A weather entity is the service but none is chosen yet: nothing to save. */
+  private get _entityMissing(): boolean {
+    return this._use && this._service === WEATHER_SERVICE_HA && !this._entity;
+  }
+
+  /**
+   * With a service that reports no rain that fell, the groups whose rain was
+   * left on it: nothing arrives there any more, and nothing else on screen
+   * says so.
+   */
+  private async _groupsLeftWithoutRain(): Promise<string[]> {
+    if (
+      !this.hass ||
+      !this._use ||
+      !WEATHER_SERVICES_WITHOUT_RAIN.includes(this._service ?? "")
+    ) {
+      return [];
+    }
+    try {
+      return groupsWithRainFromService(await fetchMappings(this.hass));
+    } catch (e) {
+      console.error("Weather service: could not read the sensor groups", e);
+      return [];
     }
   }
 
@@ -219,7 +268,12 @@ export class SmartIrrigationViewWeatherService extends LitElement {
                             value="${s}"
                             ?selected=${this._service === s}
                           >
-                            ${s}
+                            ${s === WEATHER_SERVICE_HA
+                              ? localize(
+                                  "panels.weatherservice.labels.ha-weather-entity",
+                                  lang,
+                                )
+                              : s}
                           </option>`,
                       )}
                     </select>
@@ -249,6 +303,32 @@ export class SmartIrrigationViewWeatherService extends LitElement {
                         }}
                       />
                     </div>`}
+                ${this._service === WEATHER_SERVICE_HA
+                  ? html`<div class="setting-row">
+                        <div class="setting-label">
+                          ${localize(
+                            "panels.weatherservice.labels.weather-entity",
+                            lang,
+                          )}
+                        </div>
+                        <ha-entity-picker
+                          class="entity-field"
+                          .hass=${this.hass}
+                          .value=${this._entity}
+                          .includeDomains=${["weather"]}
+                          @value-changed=${(e: CustomEvent) => {
+                            this._entity = e.detail?.value || "";
+                            this._saved = false;
+                          }}
+                        ></ha-entity-picker>
+                      </div>
+                      <div class="ws-note ws-note--hint">
+                        ${localize(
+                          "panels.weatherservice.messages.ha-entity-hint",
+                          lang,
+                        )}
+                      </div>`
+                  : ""}
                 ${this._service === WEATHER_SERVICE_OWM
                   ? html`<div class="ws-note ws-note--hint">
                       ${localize(
@@ -269,11 +349,34 @@ export class SmartIrrigationViewWeatherService extends LitElement {
                 ${localize("panels.weatherservice.messages.saved", lang)}
               </div>`
             : ""}
+          ${this._saved && this._rainGroups.length
+            ? html`<div class="ws-msg ws-msg--warning">
+                ${localize(
+                  "panels.weatherservice.messages.rain-groups-on-service",
+                  lang,
+                  "{count}",
+                  this._rainGroups.length,
+                  "{groups}",
+                  this._rainGroups.join(", "),
+                )}
+                <div class="ws-msg-actions">
+                  <ha-button
+                    appearance="plain"
+                    @click=${() => navigate(this, exportPath("mappings"))}
+                  >
+                    ${localize(
+                      "panels.weatherservice.actions.open-sensor-groups",
+                      lang,
+                    )}
+                  </ha-button>
+                </div>
+              </div>`
+            : ""}
 
           <div class="ws-actions">
             <ha-button
               appearance="filled"
-              ?disabled=${this._saving}
+              ?disabled=${this._saving || this._entityMissing}
               @click=${this._save}
             >
               ${this._saving
@@ -282,7 +385,12 @@ export class SmartIrrigationViewWeatherService extends LitElement {
             </ha-button>
           </div>
           <div class="ws-note ws-reload-note">
-            ${localize("panels.weatherservice.messages.reload-note", lang)}
+            ${localize(
+              this._use && this._service === WEATHER_SERVICE_HA
+                ? "panels.weatherservice.messages.reload-note-entity"
+                : "panels.weatherservice.messages.reload-note",
+              lang,
+            )}
           </div>
         </div>
         ${this._renderHistory(lang)}
@@ -448,6 +556,13 @@ export class SmartIrrigationViewWeatherService extends LitElement {
       .ws-msg--error {
         background: rgba(var(--rgb-error-color, 244, 67, 54), 0.12);
         color: var(--error-color);
+      }
+      .ws-msg--warning {
+        background: rgba(var(--rgb-warning-color, 255, 166, 0), 0.16);
+        color: var(--primary-text-color);
+      }
+      .ws-msg-actions {
+        margin-top: 6px;
       }
       .ws-msg--success {
         background: rgba(var(--rgb-success-color, 67, 160, 71), 0.16);

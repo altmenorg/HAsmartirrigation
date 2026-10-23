@@ -134,7 +134,8 @@
           "et": "En sensor som redan rapporterar avdunstning",
           "et-help": "Något annat räknar redan ut den, och Smart Irrigation ska använda det talet som det är.",
           "static": "En fast mängd per dag",
-          "static-help": "Inga sensorer och ingen tjänst. Du anger ett tal och det används varje dag. Grovt, men det håller ändå reda på vad du redan har vattnat."
+          "static-help": "Inga sensorer och ingen tjänst. Du anger ett tal och det används varje dag. Grovt, men det håller ändå reda på vad du redan har vattnat.",
+          "service-help-entity": "De aktuella värdena och prognosen kommer från din väderentitet, och Smart Irrigation beräknar avdunstningen från dem. Regnet kommer från din egen regnsensor, som du blir tillfrågad om i nästa steg."
         },
         "sensors": {
           "question": "Vilka entiteter ska den läsa?",
@@ -144,7 +145,8 @@
           "lux-hint": "Under glas kan en ljussensor ersätta solinstrålningen: välj din belysningsstyrke-entitet här och sätt sedan dess källa till Ljussensor (lux) i sensorgruppen.",
           "static-question": "Hur mycket avdunstar per dag?",
           "static-help": "En vattenmängd i höjd, i den enhet dina zoner använder. Runt 4 till 5 mm om dagen är vanligt för en tempererad sommar.",
-          "static-label": "Avdunstning per dag"
+          "static-label": "Avdunstning per dag",
+          "rain-help-entity": "Den här väderentiteten förutspår bara regn. Välj en sensor som mäter regn för ett av de här fälten: en intensitet eller en regnmätares totala mängd. Ingen regnsensor? Använd Open-Meteo i stället."
         },
         "review": {
           "question": "Klart att skapa",
@@ -172,17 +174,24 @@
       "labels": {
         "use-weather-service": "Använd en vädertjänst",
         "service": "Vädertjänst",
-        "api-key": "API-nyckel"
+        "api-key": "API-nyckel",
+        "ha-weather-entity": "En väderentitet i Home Assistant",
+        "weather-entity": "Väderentitet"
       },
       "actions": {
         "save": "Spara",
-        "saving": "Sparar…"
+        "saving": "Sparar…",
+        "open-sensor-groups": "Öppna sensorgrupper"
       },
       "messages": {
         "no-service": "Ingen vädertjänst används — väderdata kommer enbart från dina egna sensorer.",
         "saved": "Vädertjänsten uppdaterad och tillämpad.",
         "reload-note": "När du sparar valideras API-nyckeln mot tjänsten och ändringen tillämpas omedelbart.",
-        "owm-onecall-hint": "OpenWeatherMap kräver planen One Call API 3.0 (One Call by Call). Den är gratis upp till 1000 anrop per dag men måste aktiveras med ett kort, och en ny nyckel kan behöva ett par timmar innan den fungerar. En vanlig standardnyckel avvisas."
+        "owm-onecall-hint": "OpenWeatherMap kräver planen One Call API 3.0 (One Call by Call). Den är gratis upp till 1000 anrop per dag men måste aktiveras med ett kort, och en ny nyckel kan behöva ett par timmar innan den fungerar. En vanlig standardnyckel avvisas.",
+        "ha-entity-hint": "De aktuella värdena och prognosen kommer från den här entiteten, solinstrålningen och referens-ET från Open-Meteo. Den förutspår bara regn: ge varje sensorgrupp en regnsensor under Aktuell nederbörd.",
+        "rain-groups-on-service": "{count, plural, one {# sensorgrupp tar fortfarande sitt} other {# sensorgrupper tar fortfarande sitt}} regn från vädertjänsten, som inte ger något: {groups}. Välj en regnsensor under Aktuell nederbörd, annars vattnas zonerna efter varje skur.",
+        "reload-note-entity": "Att spara kontrollerar att entiteten finns och tillämpar ändringen direkt.",
+        "invalid-entity": "Välj en väderentitet: den här finns inte längre, eller är ingen väderentitet."
       }
     },
     "backuprestore": {
@@ -483,7 +492,9 @@
           "module": "Beräkningsmotor",
           "module_description": "Den här gruppen erbjuder bara de källor som motorn läser. Zonerna som använder den ärver valet.",
           "module_undecided": "Ingen motor är vald än, så alla källor erbjuds och varje zon som använder den här gruppen behåller sin egen. Välj en för att bara se de källor den läser.",
-          "wind_height": "Vindmätarens höjd (tomt: 2 m)"
+          "wind_height": "Vindmätarens höjd (tomt: 2 m)",
+          "rain_not_from_entity": "Väderentiteten ger inte regnet som har fallit, bara en prognos: välj en regnsensor här, annars vattnas zonerna efter varje skur.",
+          "rain_hint_entity": "Regn som faller nu, som intensitet. Väderentiteten förutspår det bara: välj en sensor som mäter regn."
         }
       },
       "description": "Lägg till en eller flera sensorgrupper som hämtar väderdata från en vädertjänst, från sensorer eller en kombination av dessa. Du kan koppla varje sensorgrupp till en eller flera zoner",

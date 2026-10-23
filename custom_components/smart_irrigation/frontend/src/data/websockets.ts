@@ -35,7 +35,9 @@ export interface WeatherServiceInfo {
   use_weather_service: boolean;
   weather_service: string | null;
   weather_service_api_key: string | null;
+  weather_service_entity?: string | null;
   services: string[];
+  supplies_rain?: boolean;
 }
 
 export const fetchWeatherService = (
@@ -51,6 +53,7 @@ export const setWeatherService = (
     use_weather_service: boolean;
     weather_service?: string | null;
     weather_service_api_key?: string | null;
+    weather_service_entity?: string | null;
   },
 ): Promise<{ success: boolean }> =>
   hass.callWS({

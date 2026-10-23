@@ -22,6 +22,8 @@ import {
   engineModeLabel,
   missingRequiredSources,
   output_unit,
+  setupRainToAsk,
+  setupSourcesForEt,
   setupZoneMethod,
 } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
@@ -114,6 +116,10 @@ class SmartIrrigationViewSetup extends LitElement {
   @state() private sensors: Record<string, string> = {};
   @state() private staticDelta = "";
   @state() private serviceSuppliesEt = false;
+  // A weather entity as the service reports no rain that fell: the rain is
+  // asked for. No sensor is suggested: a weather integration's own rain
+  // sensors can be a nowcast, which is the forecast this path keeps out.
+  @state() private serviceHasRain = true;
 
   firstUpdated() {
     loadHaForm().catch(() => undefined);
@@ -130,6 +136,7 @@ class SmartIrrigationViewSetup extends LitElement {
     this.config = config;
     this.allModules = allModules;
     this.serviceSuppliesEt = !!(service as any)?.supplies_evapotranspiration;
+    this.serviceHasRain = (service as any)?.supplies_rain !== false;
     // Without a weather service there is nothing for that answer to mean.
     if (!this.usesWeatherService) {
       this.weather = "sensors";
@@ -183,21 +190,33 @@ class SmartIrrigationViewSetup extends LitElement {
     );
   }
 
+  /**
+   * The rain a sensor has to bring on the weather-service path, when the
+   * service reports none (a weather entity). Either field is enough.
+   */
+  private get rainFromSensors(): string[] {
+    return setupRainToAsk(this.weather, this.underGlass, this.serviceHasRain);
+  }
+
   /** Sources the user has to point at an entity, given how they answered. */
   private get sensorsToAsk(): string[] {
     if (this.weather === "static") return [];
-    if (this.weather === "et") return [MAPPING_EVAPOTRANSPIRATION];
+    if (this.weather === "et")
+      return setupSourcesForEt(this.sourcesToAsk, !!this.engine?.consumes);
     if (this.weather === "sensors") return this.sourcesToAsk;
     // The weather service supplies everything it can; rain indoors is not a
-    // thing, and nothing else needs asking.
-    return [];
+    // thing, and nothing else needs asking, but the rain of a service that
+    // has none.
+    return this.rainFromSensors;
   }
 
   /** Sources asked for that may stay empty: the engine estimates them. */
   private get optionalToAsk(): string[] {
     const requires = this.engine?.requires;
     if (!requires) return [];
-    return this.sensorsToAsk.filter((s) => !requires.includes(s));
+    return this.sensorsToAsk.filter(
+      (s) => !requires.includes(s) && !this.rainFromSensors.includes(s),
+    );
   }
 
   private get steps(): string[] {
@@ -228,7 +247,9 @@ class SmartIrrigationViewSetup extends LitElement {
             this.sensorsToAsk,
             this.engine?.requires,
             this.sensors,
-          ).length === 0
+          ).length === 0 &&
+          (!this.rainFromSensors.length ||
+            this.rainFromSensors.some((s) => !!this.sensors[s]))
         );
       default:
         return true;
@@ -399,7 +420,11 @@ class SmartIrrigationViewSetup extends LitElement {
         ? this.choice(
             this.weather === "service",
             this.t("steps.weather.service"),
-            this.t("steps.weather.service-help"),
+            this.t(
+              this.serviceHasRain
+                ? "steps.weather.service-help"
+                : "steps.weather.service-help-entity",
+            ),
             () => (this.weather = "service"),
           )
         : ""}
@@ -456,6 +481,11 @@ class SmartIrrigationViewSetup extends LitElement {
       <div class="note">${this.t("steps.sensors.help")}</div>
       ${this.optionalToAsk.length
         ? html`<div class="note">${this.t("steps.sensors.help-optional")}</div>`
+        : ""}
+      ${this.rainFromSensors.length
+        ? html`<div class="note">
+            ${this.t("steps.sensors.rain-help-entity")}
+          </div>`
         : ""}
       ${this.underGlass && this.sensorsToAsk.includes(MAPPING_SOLRAD)
         ? html`<div class="note">${this.t("steps.sensors.lux-hint")}</div>`
@@ -515,9 +545,16 @@ class SmartIrrigationViewSetup extends LitElement {
           <div class="review-value">
             ${this.weather === "static"
               ? `${this.t("steps.sensors.static-label")}: ${this.staticDelta}`
-              : this.sensorsToAsk.length
-                ? this.sensorsToAsk.join(", ")
-                : this.t("steps.review.from-the-service")}
+              : this.weather === "service"
+                ? [
+                    this.t("steps.review.from-the-service"),
+                    ...this.rainFromSensors
+                      .filter((s) => !!this.sensors[s])
+                      .map((s) => `${s}: ${this.sensors[s]}`),
+                  ].join(", ")
+                : this.sensorsToAsk.length
+                  ? this.sensorsToAsk.join(", ")
+                  : this.t("steps.review.from-the-service")}
           </div>
         </div>
       </div>
@@ -548,7 +585,12 @@ class SmartIrrigationViewSetup extends LitElement {
         [MAPPING_CONF_UNIT]: "",
       };
     }
-    if (this.weather === "service" && this.sourcesToAsk.includes(quantity)) {
+    if (
+      this.weather === "service" &&
+      this.sourcesToAsk.includes(quantity) &&
+      // A service without rain is not asked for it: a sensor brings it.
+      !this.rainFromSensors.includes(quantity)
+    ) {
       return {
         [MAPPING_CONF_SOURCE]: MAPPING_CONF_SOURCE_WEATHER_SERVICE,
         [MAPPING_CONF_SENSOR]: "",

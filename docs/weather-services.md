@@ -8,17 +8,18 @@ title: "Weather services"
 
 Smart Irrigation needs weather data to estimate evapotranspiration (ET) and, from it, how long to run each zone. That data can come from a **weather service**, from your **own sensors**, or from a mix of both (configured per field in a [sensor group](configuration-sensor-groups.md)).
 
-Three weather services are supported.
+Four weather services are supported: three online services, and a weather entity of Home Assistant itself.
 
-## The three services at a glance
+## The services at a glance
 
 | Service | API key | Solar radiation | Reference ET0 (FAO-56) | Cost |
 |---|---|---|---|---|
 | **Open-Meteo** *(default)* | **None** | ✅ yes | ✅ yes | Free |
 | OpenWeatherMap | Required | ❌ no | ❌ no | Free tier + paid |
 | Pirate Weather | Required | ❌ no | ❌ no | Free tier + paid |
+| A weather entity in Home Assistant | **None** | ❌ no | ❌ no | Free |
 
-All three provide temperature, humidity, dew point, pressure, wind and precipitation. The difference that matters for accuracy is **solar radiation**.
+The online services provide temperature, humidity, dew point, pressure, wind and precipitation. A weather entity provides temperature, humidity, pressure and wind, a dew point when its integration has one, and never the rain that fell (see [below](#a-weather-entity-in-home-assistant)). The difference that matters for accuracy is **solar radiation**.
 
 ## Why solar radiation matters
 
@@ -46,9 +47,19 @@ These services do not provide solar radiation themselves, but you still have two
 
 Without either, ET falls back to the temperature-based estimate described above.
 
+### A weather entity in Home Assistant
+
+If you already have your national weather service in Home Assistant (DWD, Met.no, KNMI, the NWS, ...) or a station of your own with a forecast, choose **A weather entity in Home Assistant** and pick the entity. No API key, no second provider, and a run is skipped on the forecast you see in Home Assistant.
+
+- **Current values** come from the entity's attributes: temperature, humidity, pressure, wind, and the dew point when the entity has one. They are read in the units Home Assistant shows them in and converted for the calculation. The wind is taken as measured at the standard 10 m and brought to 2 m, the pressure as reported at sea level and brought to your elevation, as for the online services.
+- **The forecast** comes from `weather.get_forecasts`: the daily forecast, or else the twice-daily or the hourly one, folded into days. The hourly one, when the entity has it, also gives the rain expected in the hours ahead of a run.
+- **No rain that fell.** A weather entity only forecasts rain, and a forecast never enters the water balance. Give each sensor group a rain sensor under **Current precipitation**: a gauge, or a sensor that measures rain. Check that it is a measurement: some weather integrations also offer next-hour or nowcast sensors with the same device class, and those are forecasts. The panel does not offer the weather service for the rain with this choice, and a new sensor group starts with no rain source. After switching, the weather service page names the groups that still take their rain from it, and the log says so for each of them.
+- **Solar radiation and reference ET0** come from Open-Meteo, as with OpenWeatherMap and Pirate Weather.
+- One entity per installation, since the weather service is a general setting. A field can still read any sensor of its own.
+
 ## What reads from Open-Meteo, whatever service you pick
 
-Open-Meteo is the default service and also the one Smart Irrigation turns to for the data the others do not publish. With OpenWeatherMap or Pirate Weather, these still come from Open-Meteo, keyless and free:
+Open-Meteo is the default service and also the one Smart Irrigation turns to for the data the others do not publish. With OpenWeatherMap, Pirate Weather or a weather entity, these still come from Open-Meteo, keyless and free:
 
 - **the sun**, hour by hour, for the hourly calculation when no radiation sensor is mapped, and the daily radiation and reference ET0;
 - **the hours of the days ahead**, for a zone whose engine looks ahead.
@@ -65,10 +76,11 @@ Open-Meteo also returns a finished FAO-56 ET0. If you would rather not run the c
 
 ## Switching service at any time
 
-You can change the weather service whenever you like from the **Weather service** page under **Data**, without reinstalling the integration. The API-key field is hidden for keyless services such as Open-Meteo, and the key is validated against the service before the change is applied.
+You can change the weather service whenever you like from the **Weather service** page under **Data**, without reinstalling the integration. The API-key field is hidden for keyless services such as Open-Meteo, and the key is validated against the service before the change is applied. For a weather entity, Save stays disabled until one is picked.
 
 ## Which should I pick?
 
 - **Want it to just work, accurately, for free?** Use **Open-Meteo** (the default), source Solar Radiation from the weather service, done.
 - **Already invested in OpenWeatherMap or Pirate Weather and want full accuracy?** Source Solar Radiation from the weather service (filled from Open-Meteo automatically), or add a dedicated radiation sensor.
+- **Already have your national weather service in Home Assistant?** Choose **A weather entity in Home Assistant**, and give each sensor group a rain sensor.
 - **No radiation source at all?** It still works, on a temperature-based estimate, which is good enough for many gardens.

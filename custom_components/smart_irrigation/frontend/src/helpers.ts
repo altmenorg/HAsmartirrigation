@@ -6,6 +6,9 @@ import {
   CONF_IMPERIAL,
   CONF_METRIC,
   CONF_PRECIPITATION_THRESHOLD_MM,
+  MAPPING_CONF_SOURCE_NONE,
+  MAPPING_CONF_SOURCE_SENSOR,
+  MAPPING_CONF_SOURCE_WEATHER_SERVICE,
   MAPPING_CURRENT_PRECIPITATION,
   MAPPING_DEWPOINT,
   MAPPING_EVAPOTRANSPIRATION,
@@ -44,6 +47,7 @@ import {
   UNIT_SQ_FT,
   UNIT_W_M2,
   UNIT_W_SQFT,
+  WEATHER_SERVICES_WITHOUT_RAIN,
   ZONE_BUCKET,
   ZONE_DRAINAGE_RATE,
   ZONE_PRECIPITATION_RATE,
@@ -51,7 +55,7 @@ import {
   ZONE_THROUGHPUT,
   ZONE_WATER_VOLUME,
 } from "./const";
-import { Dictionary } from "./types";
+import { Dictionary, SmartIrrigationMapping } from "./types";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 
 export function getDomain(entity: string | HassEntity) {
@@ -566,4 +570,86 @@ export function changedFields(
     }
   }
   return changes;
+}
+
+/**
+ * The rain fields the setup assistant asks a sensor for on the weather-service
+ * path: both, outdoors, when the service reports no rain that fell (a weather
+ * entity of Home Assistant only forecasts it). Either one is enough. Any other
+ * service brings its own rain, and under glass there is none to ask for.
+ */
+export function setupRainToAsk(
+  weather: string,
+  underGlass: boolean,
+  serviceHasRain: boolean,
+): string[] {
+  if (weather !== "service" || underGlass || serviceHasRain) return [];
+  return [MAPPING_CURRENT_PRECIPITATION, MAPPING_PRECIPITATION];
+}
+
+/**
+ * What the assistant asks for when evapotranspiration comes from a sensor.
+ *
+ * The evapotranspiration, and the rain: an engine that takes the ET as it is
+ * still has the rain subtracted from it, and the engine lists it among what it
+ * reads. Only the evapotranspiration was asked for, so such a zone never had
+ * any rain. ``sources`` is what the engine reads, under glass without the rain;
+ * a backend that does not say what an engine reads is asked for the ET alone,
+ * as before.
+ */
+export function setupSourcesForEt(
+  sources: string[],
+  engineSaysWhatItReads: boolean,
+): string[] {
+  return engineSaysWhatItReads ? sources : [MAPPING_EVAPOTRANSPIRATION];
+}
+
+/**
+ * The source a field of a new sensor group starts on.
+ *
+ * Evapotranspiration, solar radiation and the rain depth are never taken
+ * straight from the weather service, so they start on none with one and on a
+ * sensor without. Everything else starts on the service when there is one,
+ * except the rain rate of a service that reports no rain that fell (a weather
+ * entity): it starts on none, as the store does, until a sensor is chosen.
+ */
+export function newGroupSource(
+  name: string,
+  useWeatherService: boolean,
+  weatherService: string | null | undefined,
+): string {
+  const notFromTheService =
+    name === MAPPING_EVAPOTRANSPIRATION ||
+    name === MAPPING_SOLRAD ||
+    name === MAPPING_PRECIPITATION ||
+    (name === MAPPING_CURRENT_PRECIPITATION &&
+      WEATHER_SERVICES_WITHOUT_RAIN.includes(weatherService ?? ""));
+  if (!useWeatherService) return MAPPING_CONF_SOURCE_SENSOR;
+  return notFromTheService
+    ? MAPPING_CONF_SOURCE_NONE
+    : MAPPING_CONF_SOURCE_WEATHER_SERVICE;
+}
+
+/**
+ * The sensor groups that still take their rain from the weather service.
+ *
+ * Shown after switching to a service that reports no rain that fell (a weather
+ * entity): every existing group took its rain from the service, and from now
+ * on none arrives there, so the zones would be watered after every shower.
+ * A group under glass is left out, since no rain reaches it anyway.
+ */
+export function groupsWithRainFromService(
+  mappings: SmartIrrigationMapping[],
+): string[] {
+  return mappings
+    .filter(
+      (mapping) =>
+        !mapping.greenhouse &&
+        [MAPPING_CURRENT_PRECIPITATION, MAPPING_PRECIPITATION].some(
+          (field) =>
+            (mapping.mappings as Record<string, any>)?.[field]?.source ===
+            MAPPING_CONF_SOURCE_WEATHER_SERVICE,
+        ),
+    )
+    .map((mapping) => mapping.name);
 }

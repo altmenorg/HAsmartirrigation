@@ -134,7 +134,8 @@
           "et": "Czujnik, który już podaje evapotranspirację",
           "et-help": "Coś innego już ją liczy, a Smart Irrigation ma użyć tej liczby tak, jak jest.",
           "static": "Stała ilość na dobę",
-          "static-help": "Bez czujników i bez serwisu. Podajesz jedną liczbę i jest używana codziennie. Zgrubne, ale nadal śledzi to, co już podlałeś."
+          "static-help": "Bez czujników i bez serwisu. Podajesz jedną liczbę i jest używana codziennie. Zgrubne, ale nadal śledzi to, co już podlałeś.",
+          "service-help-entity": "Bieżące wartości i prognoza pochodzą z Twojej encji pogody, a Smart Irrigation liczy z nich ewapotranspirację. Deszcz pochodzi z Twojego czujnika deszczu, o który zapyta następny krok."
         },
         "sensors": {
           "question": "Które encje ma czytać?",
@@ -144,7 +145,8 @@
           "lux-hint": "Pod szkłem czujnik światła może zastąpić promieniowanie słoneczne: wybierz tu swoją encję natężenia światła, a potem w grupie czujników ustaw jej źródło na Czujnik światła (lux).",
           "static-question": "Ile paruje na dobę?",
           "static-help": "Wysokość słupa wody, w jednostce używanej przez twoje strefy. Gdzieś około 4 do 5 mm na dobę to typowa wartość dla umiarkowanego lata.",
-          "static-label": "Parowanie na dobę"
+          "static-label": "Parowanie na dobę",
+          "rain-help-entity": "Ta encja pogody tylko prognozuje deszcz. Wybierz czujnik mierzący deszcz dla jednego z tych pól: natężenie lub sumę deszczomierza. Nie masz czujnika deszczu? Użyj Open-Meteo."
         },
         "review": {
           "question": "Gotowe do utworzenia",
@@ -172,17 +174,24 @@
       "labels": {
         "use-weather-service": "Użyj usługi pogodowej",
         "service": "Usługa pogodowa",
-        "api-key": "Klucz API"
+        "api-key": "Klucz API",
+        "ha-weather-entity": "Encja pogody w Home Assistant",
+        "weather-entity": "Encja pogody"
       },
       "actions": {
         "save": "Zapisz",
-        "saving": "Zapisywanie…"
+        "saving": "Zapisywanie…",
+        "open-sensor-groups": "Otwórz grupy czujników"
       },
       "messages": {
         "no-service": "Nie jest używana żadna usługa pogodowa — dane pogodowe pochodzą wyłącznie z Twoich własnych czujników.",
         "saved": "Usługa pogodowa zaktualizowana i zastosowana.",
         "reload-note": "Zapisanie weryfikuje klucz API w usłudze i stosuje zmianę natychmiast.",
-        "owm-onecall-hint": "OpenWeatherMap wymaga planu One Call API 3.0 (One Call by Call). Jest darmowy do 1000 wywołań na dobę, ale musi zostać aktywowany kartą, a nowy klucz może zacząć działać po paru godzinach. Zwykły klucz domyślny jest odrzucany."
+        "owm-onecall-hint": "OpenWeatherMap wymaga planu One Call API 3.0 (One Call by Call). Jest darmowy do 1000 wywołań na dobę, ale musi zostać aktywowany kartą, a nowy klucz może zacząć działać po paru godzinach. Zwykły klucz domyślny jest odrzucany.",
+        "ha-entity-hint": "Bieżące wartości i prognoza pochodzą z tej encji, promieniowanie słoneczne i referencyjna ET z Open-Meteo. Tylko prognozuje deszcz: daj każdej grupie czujników czujnik deszczu w polu Bieżące opady.",
+        "rain-groups-on-service": "{count, plural, one {# grupa czujników wciąż bierze} few {# grupy czujników wciąż biorą} other {# grup czujników wciąż bierze}} deszcz z serwisu pogodowego, który go nie podaje: {groups}. Wybierz czujnik deszczu w polu Bieżące opady, inaczej strefy będą podlewane po każdej ulewie.",
+        "reload-note-entity": "Zapisanie sprawdza, czy encja istnieje, i od razu stosuje zmianę.",
+        "invalid-entity": "Wybierz encję pogody: ta już nie istnieje albo nie jest encją pogody."
       }
     },
     "backuprestore": {
@@ -483,7 +492,9 @@
           "module": "Silnik obliczeniowy",
           "module_description": "Ta grupa oferuje tylko źródła, które czyta ten silnik. Strefy, które jej używają, przejmują ten wybór.",
           "module_undecided": "Silnik nie został jeszcze wybrany, więc oferowane są wszystkie źródła, a każda strefa używająca tej grupy zostaje przy swoim. Wybierz jeden, żeby widzieć tylko źródła, które czyta.",
-          "wind_height": "Wysokość anemometru (puste: 2 m)"
+          "wind_height": "Wysokość anemometru (puste: 2 m)",
+          "rain_not_from_entity": "Encja pogody nie podaje deszczu, który spadł, tylko prognozę: wybierz tu czujnik deszczu, inaczej strefy będą podlewane po każdej ulewie.",
+          "rain_hint_entity": "Deszcz padający teraz, jako natężenie. Encja pogody tylko go prognozuje: wybierz czujnik mierzący deszcz."
         }
       },
       "description": "Dodaj jedną lub więcej grup czujników, które pobierają dane pogodowe z usługi pogodowej, z czujników lub ich kombinacji. Każdą grupę czujników możesz przypisać do jednej lub więcej stref",

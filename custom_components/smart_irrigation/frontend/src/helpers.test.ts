@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
 
+import { localize } from "../localize/localize";
+
 import {
   CONF_IMPERIAL,
   CONF_METRIC,
+  MAPPING_CONF_SOURCE_NONE,
+  MAPPING_CONF_SOURCE_SENSOR,
+  MAPPING_CONF_SOURCE_WEATHER_SERVICE,
   MAPPING_CURRENT_PRECIPITATION,
   MAPPING_DEWPOINT,
   MAPPING_EVAPOTRANSPIRATION,
@@ -12,6 +17,8 @@ import {
   MAPPING_SOLRAD,
   MAPPING_TEMPERATURE,
   MAPPING_WINDSPEED,
+  WEATHER_SERVICE_HA,
+  WEATHER_SERVICE_OPEN_METEO,
 } from "./const";
 import {
   changedFields,
@@ -19,7 +26,11 @@ import {
   displayTemperature,
   displayVolume,
   getOptionsForMappingType,
+  groupsWithRainFromService,
   missingRequiredSources,
+  newGroupSource,
+  setupRainToAsk,
+  setupSourcesForEt,
   setupZoneMethod,
 } from "./helpers";
 
@@ -227,5 +238,134 @@ describe("setupZoneMethod", () => {
 
   it("leaves an engine it does not know to the integration", () => {
     expect(setupZoneMethod("SomethingElse")).toEqual({});
+  });
+});
+
+/**
+ * A weather entity reports no rain that fell. On the weather-service path the
+ * assistant then asks for a rain sensor, and offers the ones of the same
+ * device.
+ */
+describe("setupRainToAsk", () => {
+  it("asks for rain on the service path when the service has none", () => {
+    expect(setupRainToAsk("service", false, false)).toEqual([
+      MAPPING_CURRENT_PRECIPITATION,
+      MAPPING_PRECIPITATION,
+    ]);
+  });
+
+  it("asks nothing more of a service that brings its own rain", () => {
+    expect(setupRainToAsk("service", false, true)).toEqual([]);
+  });
+
+  it("asks nothing under glass, or on the other paths", () => {
+    expect(setupRainToAsk("service", true, false)).toEqual([]);
+    for (const weather of ["sensors", "et", "static"]) {
+      expect(setupRainToAsk(weather, false, false)).toEqual([]);
+    }
+  });
+});
+
+/**
+ * A zone whose evapotranspiration comes from a sensor was asked for that
+ * sensor only, and never had any rain.
+ */
+describe("setupSourcesForEt", () => {
+  it("asks for the rain too, as the engine reads it", () => {
+    expect(
+      setupSourcesForEt(
+        [
+          MAPPING_EVAPOTRANSPIRATION,
+          MAPPING_PRECIPITATION,
+          MAPPING_CURRENT_PRECIPITATION,
+        ],
+        true,
+      ),
+    ).toEqual([
+      MAPPING_EVAPOTRANSPIRATION,
+      MAPPING_PRECIPITATION,
+      MAPPING_CURRENT_PRECIPITATION,
+    ]);
+  });
+
+  it("asks for the evapotranspiration alone when the engine says nothing", () => {
+    expect(setupSourcesForEt([], false)).toEqual([MAPPING_EVAPOTRANSPIRATION]);
+  });
+});
+
+describe("newGroupSource", () => {
+  it("starts the rain rate on none with a weather entity", () => {
+    expect(
+      newGroupSource(MAPPING_CURRENT_PRECIPITATION, true, WEATHER_SERVICE_HA),
+    ).toBe(MAPPING_CONF_SOURCE_NONE);
+    expect(newGroupSource(MAPPING_TEMPERATURE, true, WEATHER_SERVICE_HA)).toBe(
+      MAPPING_CONF_SOURCE_WEATHER_SERVICE,
+    );
+  });
+
+  it("keeps the rain rate on a service that reports rain", () => {
+    expect(
+      newGroupSource(
+        MAPPING_CURRENT_PRECIPITATION,
+        true,
+        WEATHER_SERVICE_OPEN_METEO,
+      ),
+    ).toBe(MAPPING_CONF_SOURCE_WEATHER_SERVICE);
+  });
+
+  it("never takes evapotranspiration, radiation or the rain depth from it", () => {
+    for (const name of [
+      MAPPING_EVAPOTRANSPIRATION,
+      MAPPING_SOLRAD,
+      MAPPING_PRECIPITATION,
+    ]) {
+      expect(newGroupSource(name, true, WEATHER_SERVICE_OPEN_METEO)).toBe(
+        MAPPING_CONF_SOURCE_NONE,
+      );
+    }
+  });
+
+  it("asks a sensor for everything without a weather service", () => {
+    expect(
+      newGroupSource(MAPPING_CURRENT_PRECIPITATION, false, WEATHER_SERVICE_HA),
+    ).toBe(MAPPING_CONF_SOURCE_SENSOR);
+  });
+});
+
+describe("groupsWithRainFromService", () => {
+  const group = (name: string, rate: string, depth = "none", extra = {}) => ({
+    name,
+    mappings: {
+      [MAPPING_CURRENT_PRECIPITATION]: { source: rate },
+      [MAPPING_PRECIPITATION]: { source: depth },
+    },
+    ...extra,
+  });
+
+  it("names the groups whose rain is left on the service", () => {
+    expect(
+      groupsWithRainFromService([
+        group("Lawn", MAPPING_CONF_SOURCE_WEATHER_SERVICE),
+        group("Hedge", MAPPING_CONF_SOURCE_SENSOR),
+        group("Beds", "none", MAPPING_CONF_SOURCE_WEATHER_SERVICE),
+        group("Greenhouse", MAPPING_CONF_SOURCE_WEATHER_SERVICE, "none", {
+          greenhouse: true,
+        }),
+      ]),
+    ).toEqual(["Lawn", "Beds"]);
+  });
+
+  it("says how many, in a sentence that agrees with the number", () => {
+    const say = (count: number) =>
+      localize(
+        "panels.weatherservice.messages.rain-groups-on-service",
+        "en",
+        "{count}",
+        count,
+        "{groups}",
+        "Lawn",
+      );
+    expect(say(1)).toMatch(/^1 sensor group still takes its rain/);
+    expect(say(2)).toMatch(/^2 sensor groups still take their rain/);
   });
 });

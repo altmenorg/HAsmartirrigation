@@ -134,7 +134,8 @@
           "et": "Érzékelő, amely már jelenti az evapotranszpirációt",
           "et-help": "Valami más már kiszámolja, és a Smart Irrigation azt a számot használja, ahogy van.",
           "static": "Napi fix mennyiség",
-          "static-help": "Se érzékelő, se szolgáltatás. Megadsz egy számot, és az használatban van minden nap. Durva, de azért nyomon követi, amit már megöntöztél."
+          "static-help": "Se érzékelő, se szolgáltatás. Megadsz egy számot, és az használatban van minden nap. Durva, de azért nyomon követi, amit már megöntöztél.",
+          "service-help-entity": "Az aktuális értékek és az előrejelzés az időjárás-entitásodból jönnek, és a Smart Irrigation ezekből számolja a párolgást. Az eső a saját esőérzékelődből jön, amit a következő lépés kér."
         },
         "sensors": {
           "question": "Mely entitásokat olvassa?",
@@ -144,7 +145,8 @@
           "lux-hint": "Üveg alatt egy fényérzékelő helyettesítheti a napsugárzást: válaszd ki itt a megvilágítás entitásodat, majd az érzékelőcsoportban állítsd a forrását Fényérzékelő (lux) értékre.",
           "static-question": "Mennyi párolog el naponta?",
           "static-help": "Vízmagasság, a zónáid által használt egységben. Mérsékelt nyáron körülbelül napi 4 - 5 mm a szokásos.",
-          "static-label": "Párolgás naponta"
+          "static-label": "Párolgás naponta",
+          "rain-help-entity": "Ez az időjárás-entitás csak előre jelzi az esőt. Válassz esőt mérő érzékelőt az egyik mezőhöz: intenzitást vagy csapadékmérő összeget. Nincs esőérzékelőd? Használd inkább az Open-Meteót."
         },
         "review": {
           "question": "Kész a létrehozásra",
@@ -172,17 +174,24 @@
       "labels": {
         "use-weather-service": "Időjárás-szolgáltatás használata",
         "service": "Időjárás-szolgáltatás",
-        "api-key": "API-kulcs"
+        "api-key": "API-kulcs",
+        "ha-weather-entity": "Egy Home Assistant időjárás-entitás",
+        "weather-entity": "Időjárás-entitás"
       },
       "actions": {
         "save": "Mentés",
-        "saving": "Mentés…"
+        "saving": "Mentés…",
+        "open-sensor-groups": "Érzékelőcsoportok megnyitása"
       },
       "messages": {
         "no-service": "Nincs használatban időjárás-szolgáltatás — az időjárási adatok kizárólag a saját érzékelőiből származnak.",
         "saved": "Az időjárás-szolgáltatás frissítve és alkalmazva.",
         "reload-note": "A mentés ellenőrzi az API-kulcsot a szolgáltatásnál, és azonnal alkalmazza a változást.",
-        "owm-onecall-hint": "Az OpenWeatherMap a One Call API 3.0 csomagot igényli (One Call by Call). Napi 1000 hívásig ingyenes, de kártyával kell aktiválni, és egy új kulcs pár órát is igénybe vehet, míg működni kezd. Egy sima alapértelmezett kulcs visszautasításra kerül."
+        "owm-onecall-hint": "Az OpenWeatherMap a One Call API 3.0 csomagot igényli (One Call by Call). Napi 1000 hívásig ingyenes, de kártyával kell aktiválni, és egy új kulcs pár órát is igénybe vehet, míg működni kezd. Egy sima alapértelmezett kulcs visszautasításra kerül.",
+        "ha-entity-hint": "Az aktuális értékek és az előrejelzés ebből az entitásból jönnek, a napsugárzás és a referencia-párolgás az Open-Meteóból. Csak előre jelzi az esőt: adj minden érzékelőcsoportnak esőérzékelőt az Aktuális csapadék alatt.",
+        "rain-groups-on-service": "{count, plural, one {# érzékelőcsoport még mindig} other {# érzékelőcsoport még mindig}} az időjárás-szolgáltatástól veszi az esőt, amely nem ad ilyet: {groups}. Válassz esőérzékelőt az Aktuális csapadék alatt, különben a zónák minden zápor után öntözve lesznek.",
+        "reload-note-entity": "A mentés ellenőrzi, hogy az entitás létezik-e, és azonnal alkalmazza a változást.",
+        "invalid-entity": "Válassz időjárás-entitást: ez már nem létezik, vagy nem időjárás-entitás."
       }
     },
     "backuprestore": {
@@ -483,7 +492,9 @@
           "module": "Számítási motor",
           "module_description": "Ez a csoport csak azokat a forrásokat ajánlja, amelyeket ez a motor olvas. Az őt használó zónák átveszik a választást.",
           "module_undecided": "Még nincs motor kiválasztva, így minden forrás felajánlásra kerül, és minden zóna, amely ezt a csoportot használja, a sajátját tartja. Válassz egyet, hogy csak az általa olvasott forrásokat lásd.",
-          "wind_height": "Szélmérő magassága (üres: 2 m)"
+          "wind_height": "Szélmérő magassága (üres: 2 m)",
+          "rain_not_from_entity": "Az időjárás-entitás nem adja meg a lehullott esőt, csak előrejelzést: válassz itt esőérzékelőt, különben a zónák minden zápor után öntözve lesznek.",
+          "rain_hint_entity": "Az éppen hulló eső, intenzitásként. Az időjárás-entitás csak előre jelzi: válassz esőt mérő érzékelőt."
         }
       },
       "description": "Adjon hozzá egy vagy több érzékelőcsoportot, amelyek időjárási adatokat kérnek le az időjárás-szolgáltatásból, érzékelőkből vagy ezek kombinációjából. Minden érzékelőcsoportot egy vagy több zónához rendelhet",

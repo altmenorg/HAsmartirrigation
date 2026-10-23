@@ -134,7 +134,8 @@
           "et": "A sensor that already reports evapotranspiration",
           "et-help": "Something else already computes it, and Smart Irrigation should use that figure as it stands.",
           "static": "A fixed amount per day",
-          "static-help": "No sensors and no service. You give one number and it is used every day. Rough, but it still tracks what you have already watered."
+          "static-help": "No sensors and no service. You give one number and it is used every day. Rough, but it still tracks what you have already watered.",
+          "service-help-entity": "The current values and the forecast come from your weather entity, and Smart Irrigation computes evapotranspiration from them. The rain comes from a rain sensor of yours, asked for in the next step."
         },
         "sensors": {
           "question": "Which entities should it read?",
@@ -144,7 +145,8 @@
           "lux-hint": "Under glass a light sensor can stand in for solar radiation: pick your illuminance entity here and set its source to Light sensor (lux) afterwards, in the sensor group.",
           "static-question": "How much does it evaporate per day?",
           "static-help": "A depth of water, in the unit your zones use. Somewhere around 4 to 5 mm a day is common for a temperate summer.",
-          "static-label": "Evaporation per day"
+          "static-label": "Evaporation per day",
+          "rain-help-entity": "This weather entity only forecasts rain. Pick a sensor that measures rain for one of these fields: a rate or a gauge total. No rain sensor? Use Open-Meteo instead."
         },
         "review": {
           "question": "Ready to create",
@@ -172,17 +174,24 @@
       "labels": {
         "use-weather-service": "Use a weather service",
         "service": "Weather service",
-        "api-key": "API key"
+        "api-key": "API key",
+        "ha-weather-entity": "A weather entity in Home Assistant",
+        "weather-entity": "Weather entity"
       },
       "actions": {
         "save": "Save",
-        "saving": "Saving…"
+        "saving": "Saving…",
+        "open-sensor-groups": "Open sensor groups"
       },
       "messages": {
         "no-service": "No weather service is used — weather data comes from your own sensors only.",
         "saved": "Weather service updated and applied.",
         "reload-note": "Saving validates the API key against the service and applies the change immediately.",
-        "owm-onecall-hint": "OpenWeatherMap needs the One Call API 3.0 plan (One Call by Call). It is free up to 1000 calls/day but must be activated with a card, and a new key can take up to a couple of hours to work. A plain default key is rejected."
+        "owm-onecall-hint": "OpenWeatherMap needs the One Call API 3.0 plan (One Call by Call). It is free up to 1000 calls/day but must be activated with a card, and a new key can take up to a couple of hours to work. A plain default key is rejected.",
+        "ha-entity-hint": "Current values and the forecast come from this entity, solar radiation and reference ET from Open-Meteo. It only forecasts rain: give each sensor group a rain sensor under Current precipitation.",
+        "rain-groups-on-service": "{count, plural, one {# sensor group still takes its} other {# sensor groups still take their}} rain from the weather service, which reports none: {groups}. Choose a rain sensor under Current precipitation, or the zones are watered after every shower.",
+        "reload-note-entity": "Saving checks that the entity exists and applies the change immediately.",
+        "invalid-entity": "Choose a weather entity: this one does not exist any more, or is not a weather entity."
       }
     },
     "backuprestore": {
@@ -483,7 +492,9 @@
           "module": "Calculation engine",
           "module_description": "This group only offers the sources this engine reads. The zones using it inherit the choice.",
           "module_undecided": "No engine chosen yet, so every source is offered and each zone using this group keeps its own. Pick one to see only the sources it reads.",
-          "wind_height": "Anemometer height (empty: taken at 2 m)"
+          "wind_height": "Anemometer height (empty: taken at 2 m)",
+          "rain_not_from_entity": "The weather entity reports no rain that fell, only a forecast: choose a rain sensor here, or the zones are watered after every shower.",
+          "rain_hint_entity": "Rain falling now, as a rate. The weather entity only forecasts it: choose a sensor that measures rain."
         }
       },
       "description": "Add one or more sensor groups that retrieve weather data from Weather service, from sensors or a combination of these. You can map each sensor group to one or more zones",
