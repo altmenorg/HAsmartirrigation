@@ -6,8 +6,10 @@ had been in the soil since the window opened: 2 mm at 4 PM, seen at 5:40 PM
 after a calculation at 11 PM the night before, raised the live bucket of
 Megalos' lawn by about 0.4 mm where it should have raised it by about 1.7.
 
-Now each hour gets its share of the evapotranspiration, the rain that fell in
-it, then that hour's drainage. The totals booked do not change.
+Now each five-minute step gets its share of the evapotranspiration, the rain
+that fell in it, then that step's drainage. The totals booked do not change.
+Steps of an hour still put an hour's rain at its start (#931): a reading's rain
+is now placed between it and the reading before it.
 """
 
 from datetime import datetime, timedelta
@@ -23,6 +25,7 @@ from custom_components.smart_irrigation.water_balance import (
     drainage_over,
     hour_slots,
     rain_profile,
+    rain_spans,
     replay,
     sun_profile,
     time_profile,
@@ -54,16 +57,26 @@ def _integrated(bucket, hours, steps=100_000):
 
 
 def test_the_reported_case():
+    """Rain at 4 PM: about 1.7 mm kept, where one step kept 0.6.
+
+    Known only to its hour, the rain falls through that hour and keeps a little
+    more than placed at the hour's start, which drained it the whole hour.
+    """
     without_rain = _single_step(START, 0.0, WINDOW)
     profile = [0.0] * 19
     profile[RAIN_HOUR] = 1.0
+    at_four = [(float(RAIN_HOUR), float(RAIN_HOUR), 1.0)]
 
     old = _single_step(START, 2.0, WINDOW)
-    new, drained, _ = replay(START, 0.0, 2.0, WINDOW, profile, MAXIMUM, RATE)
+    timed, drained, _ = replay(
+        START, 0.0, 2.0, WINDOW, profile, MAXIMUM, RATE, spans=at_four
+    )
+    in_the_hour, _, _ = replay(START, 0.0, 2.0, WINDOW, profile, MAXIMUM, RATE)
 
     assert old - without_rain == pytest.approx(0.58, abs=0.02)
-    assert new - without_rain == pytest.approx(1.69, abs=0.02)
-    assert drained == pytest.approx(START + 2.0 - new)
+    assert timed - without_rain == pytest.approx(1.69, abs=0.02)
+    assert in_the_hour > timed
+    assert drained == pytest.approx(START + 2.0 - timed)
 
 
 def test_rain_at_the_start_drains_as_one_step_did():
@@ -71,7 +84,9 @@ def test_rain_at_the_start_drains_as_one_step_did():
     replay must agree with the drainage law over the whole window."""
     profile = [1.0] + [0.0] * 23
 
-    new, _, _ = replay(START, 0.0, 6.0, 24.0, profile, MAXIMUM, RATE)
+    new, _, _ = replay(
+        START, 0.0, 6.0, 24.0, profile, MAXIMUM, RATE, spans=[(0.0, 0.0, 1.0)]
+    )
 
     assert new == pytest.approx(_integrated(START + 6.0, 24.0), rel=1e-3)
     assert new == pytest.approx(_single_step(START, 6.0, 24.0), rel=1e-9)
@@ -105,10 +120,19 @@ def test_a_rain_on_a_dry_soil_only_fills_the_deficit():
 
 
 def test_each_hour_is_capped_at_the_maximum_bucket():
-    """A downpour above the maximum runs off in the hour it falls."""
+    """A downpour above the maximum runs off in the step it falls."""
     profile = [0.0] * 23 + [1.0]
 
-    new, _, peak = replay(MAXIMUM - 1.0, 0.0, 30.0, 24.0, profile, MAXIMUM, RATE)
+    new, _, peak = replay(
+        MAXIMUM - 1.0,
+        0.0,
+        30.0,
+        24.0,
+        profile,
+        MAXIMUM,
+        RATE,
+        spans=[(24.0, 24.0, 1.0)],
+    )
 
     assert peak == pytest.approx(MAXIMUM)
     assert new <= MAXIMUM
@@ -150,16 +174,19 @@ def test_the_evapotranspiration_of_the_day_meets_the_rain_of_the_day():
     """
     day = [0.0] * 6 + [1 / 12] * 12 + [0.0] * 6  # 6 AM to 6 PM
     rain_at_dawn = [0.0] * 6 + [1.0] + [0.0] * 17
+    at_six = [(6.0, 6.0, 1.0)]
 
     _, drained_by_day, peak_by_day = replay(
-        0.0, -3.0, 3.0, 24.0, rain_at_dawn, MAXIMUM, RATE, None, day
+        0.0, -3.0, 3.0, 24.0, rain_at_dawn, MAXIMUM, RATE, None, day, at_six
     )
     _, drained_even, peak_even = replay(
-        0.0, -3.0, 3.0, 24.0, rain_at_dawn, MAXIMUM, RATE
+        0.0, -3.0, 3.0, 24.0, rain_at_dawn, MAXIMUM, RATE, spans=at_six
     )
 
-    assert peak_by_day == pytest.approx(2.75)
-    assert peak_even == pytest.approx(2.125)
+    # The rain meets the first five minutes of the day's drying, by the sun
+    # 0.25 mm an hour, evenly 0.125 mm an hour after 0.75 mm overnight.
+    assert peak_by_day == pytest.approx(3.0 - 0.25 / 12)
+    assert peak_even == pytest.approx(3.0 - 0.75 - 0.125 / 12)
     assert drained_by_day > drained_even
 
 
@@ -291,8 +318,8 @@ def test_a_cumulative_gauge_says_when_each_millimetre_was_seen():
 
     assert total == pytest.approx(2.0)
     assert increments == [
-        ["2026-10-10T16:10:00", pytest.approx(1.5)],
-        ["2026-10-10T16:40:00", pytest.approx(0.5)],
+        ["2026-10-10T16:10:00", pytest.approx(1.5), "2026-10-10T08:00:00"],
+        ["2026-10-10T16:40:00", pytest.approx(0.5), "2026-10-10T16:10:00"],
     ]
 
 
@@ -305,8 +332,8 @@ def test_a_reset_counts_as_rain_seen_at_the_reset():
     )
 
     assert increments == [
-        ["2026-10-09T23:50:00", pytest.approx(1.0)],
-        ["2026-10-10T00:10:00", pytest.approx(0.4)],
+        ["2026-10-09T23:50:00", pytest.approx(1.0), None],
+        ["2026-10-10T00:10:00", pytest.approx(0.4), "2026-10-09T23:50:00"],
     ]
 
 
@@ -440,9 +467,9 @@ async def test_the_calculation_dries_the_soil_by_the_sun():
     ):
         data = await coordinator.calculate_module(_zone(), weather, None)
 
-    rain = rain_profile(
-        weather[const.MAPPING_DATA_RAIN_TIMING][const.MAPPING_PRECIPITATION], end, 24.0
-    )
+    timing = weather[const.MAPPING_DATA_RAIN_TIMING][const.MAPPING_PRECIPITATION]
+    rain = rain_profile(timing, end, 24.0)
+    spans = rain_spans(timing, end, 24.0)
     by_sun, _, _ = replay(
         START,
         -4.8,
@@ -453,7 +480,97 @@ async def test_the_calculation_dries_the_soil_by_the_sun():
         RATE,
         None,
         sun_profile(end, 24.0, 48.85, 2.35),
+        spans,
     )
-    evenly, _, _ = replay(START, -4.8, 3.0, 24.0, rain, MAXIMUM, RATE)
+    evenly, _, _ = replay(START, -4.8, 3.0, 24.0, rain, MAXIMUM, RATE, spans=spans)
     assert data[const.ZONE_BUCKET] == pytest.approx(by_sun)
     assert by_sun != pytest.approx(evenly)
+
+
+# --- within the hour (#931) ---------------------------------------------------
+
+
+def test_rain_seen_at_the_end_of_its_hour_drains_less():
+    """Megalos' point: the hour's rain is not all there from its first minute."""
+    profile = [0.0] * 23 + [1.0]
+    early = [(23.0, 23.0, 1.0)]
+    late = [(23.0 + 55 / 60, 23.0 + 55 / 60, 1.0)]
+
+    kept_early, drained_early, _ = replay(
+        2.0, 0.0, 5.0, 24.0, profile, MAXIMUM, RATE, spans=early
+    )
+    kept_late, drained_late, _ = replay(
+        2.0, 0.0, 5.0, 24.0, profile, MAXIMUM, RATE, spans=late
+    )
+
+    assert kept_late > kept_early
+    assert drained_late < drained_early
+
+
+def test_a_reading_spreads_its_rain_back_to_the_reading_before():
+    end = datetime(2026, 10, 23, 20, 0)
+    timing = [
+        [
+            datetime(2026, 10, 23, 19, 30).isoformat(),
+            2.0,
+            datetime(2026, 10, 23, 19, 0).isoformat(),
+        ]
+    ]
+
+    assert rain_spans(timing, end, 2.0) == [
+        (pytest.approx(1.0), pytest.approx(1.5), 2.0)
+    ]
+
+
+def test_a_gauge_silent_for_hours_spreads_its_rain_over_an_hour_at_most():
+    """A gauge that reports only when it tips: the tip before was at noon."""
+    end = datetime(2026, 10, 23, 20, 0)
+    timing = [
+        [
+            datetime(2026, 10, 23, 19, 30).isoformat(),
+            0.2,
+            datetime(2026, 10, 23, 12, 0).isoformat(),
+        ]
+    ]
+
+    assert rain_spans(timing, end, 10.0) == [
+        (pytest.approx(8.5), pytest.approx(9.5), 0.2)
+    ]
+
+
+def test_a_reading_recorded_before_this_change_is_a_moment():
+    end = datetime(2026, 10, 23, 20, 0)
+    timing = [[datetime(2026, 10, 23, 19, 30).isoformat(), 1.0]]
+
+    assert rain_spans(timing, end, 2.0) == [
+        (pytest.approx(1.5), pytest.approx(1.5), 1.0)
+    ]
+
+
+def test_the_timed_rain_is_all_booked():
+    """Wherever it falls in the window, the replay books every millimetre."""
+    spans = [(0.5, 1.5, 1.0), (3.0, 3.0, 2.0), (23.5, 24.0, 1.0)]
+
+    new, _, _ = replay(-20.0, 0.0, 4.0, 24.0, None, None, 0.0, spans=spans)
+
+    assert new == pytest.approx(-16.0)
+
+
+def test_a_rate_sensor_says_when_its_previous_reading_was():
+    resultdata = {}
+    stamps = [
+        datetime(2026, 10, 23, 18, 0),
+        datetime(2026, 10, 23, 18, 5),
+        datetime(2026, 10, 23, 18, 10),
+    ]
+
+    CalculationMixin._record_rain_timing(
+        resultdata, const.MAPPING_CURRENT_PRECIPITATION, zip(stamps, [0.0, 2.4, 1.2])
+    )
+
+    assert resultdata[const.MAPPING_DATA_RAIN_TIMING][
+        const.MAPPING_CURRENT_PRECIPITATION
+    ] == [
+        [stamps[1].isoformat(), 2.4, stamps[0].isoformat()],
+        [stamps[2].isoformat(), 1.2, stamps[1].isoformat()],
+    ]

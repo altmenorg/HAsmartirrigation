@@ -31,6 +31,7 @@ from .localize import localize
 from .water_balance import (
     drainage_over,
     rain_profile,
+    rain_spans,
     replay,
     sun_profile,
     time_profile,
@@ -611,8 +612,10 @@ class CalculationMixin:
         UTC midnight was booked as a reset and its rain counted twice, and the
         real reset at local midnight was taken for a revision and lost.
 
-        ``increments``, when a list, receives ``[timestamp, mm]`` for every
-        reading that counted rain, which is when that rain was seen (#783).
+        ``increments``, when a list, receives ``[timestamp, mm, previous]`` for
+        every reading that counted rain: when that rain was seen (#783), and
+        when the reading before it was taken, so the replay can place the rain
+        between the two rather than at the hour's start (#931).
         """
 
         def _day(stamp):
@@ -639,6 +642,7 @@ class CalculationMixin:
         if start is None:
             start, start_stamp = values[0], (stamps[0] if stamps else None)
         mark, previous_day, total = start, _day(start_stamp), 0.0
+        previous_stamp = start_stamp
         for index, value in enumerate(values):
             stamp = stamps[index] if index < len(stamps) else None
             day = _day(stamp)
@@ -674,29 +678,44 @@ class CalculationMixin:
                     mark,
                 )
             if increments is not None and total > counted:
-                increments.append([stamp, total - counted])
+                increments.append([stamp, total - counted, previous_stamp])
             if day is not None:
                 previous_day = day
+            if stamp is not None:
+                previous_stamp = stamp
         return total
 
     @staticmethod
     def _record_rain_timing(resultdata, key, readings) -> None:
         """Keep when a rain field showed rain, for the hourly replay (#783).
 
-        ``readings`` are ``(timestamp, amount)`` pairs; only the ones that show
-        rain are kept, as JSON-safe ``[str, float]`` lists.
+        ``readings`` are ``(timestamp, amount)`` pairs, or ``(timestamp,
+        amount, previous)`` when the reading before is known otherwise; only the
+        ones that show rain are kept, as JSON-safe ``[str, float, str]`` lists.
+        The last item is when the reading before was taken, the readings in
+        between included: the rain was seen between the two (#931).
         """
+
+        def _text(stamp):
+            return stamp.isoformat() if isinstance(stamp, datetime) else stamp
+
         kept = []
-        for stamp, amount in readings:
+        before = None
+        for reading in readings:
+            stamp, amount = reading[0], reading[1]
+            previous = reading[2] if len(reading) > 2 else before
+            if stamp is not None:
+                before = stamp
             try:
                 amount = float(amount)
             except (TypeError, ValueError):
                 continue
             if stamp is None or amount <= 0:
                 continue
-            kept.append(
-                [stamp.isoformat() if isinstance(stamp, datetime) else stamp, amount]
-            )
+            entry = [_text(stamp), amount]
+            if previous is not None:
+                entry.append(_text(previous))
+            kept.append(entry)
         resultdata.setdefault(const.MAPPING_DATA_RAIN_TIMING, {})[key] = kept
 
     def _group_data_by_sensor(self, data):
@@ -2263,12 +2282,17 @@ class CalculationMixin:
                 else const.MAPPING_CURRENT_PRECIPITATION
             )
             window_end = weatherdata.get(const.MAPPING_DATA_WINDOW_END)
-            profile = rain_profile(timing.get(rain_field), window_end, hours)
-            if profile is None and rain_field == const.MAPPING_PRECIPITATION:
+            rain_timing = timing.get(rain_field)
+            if (
+                rain_profile(rain_timing, window_end, hours) is None
+                and rain_field == const.MAPPING_PRECIPITATION
+            ):
                 # A depth that cannot say when it fell, a rate sensor can.
-                profile = rain_profile(
-                    timing.get(const.MAPPING_CURRENT_PRECIPITATION), window_end, hours
-                )
+                rain_timing = timing.get(const.MAPPING_CURRENT_PRECIPITATION)
+            profile = rain_profile(rain_timing, window_end, hours)
+            # Within the hour too: between the reading that saw the rain and
+            # the one before it, not all of it at the hour's start (#931).
+            spans = rain_spans(rain_timing, window_end, hours)
             # Nothing says when it rained: spread evenly over the window, the
             # neutral guess, rather than all of it at the start.
             # The evapotranspiration follows the hourly equation's own hours,
@@ -2291,9 +2315,10 @@ class CalculationMixin:
                 drainage_rate,
                 available_water,
                 et_profile=et_profile,
+                spans=spans,
             )
             _LOGGER.debug(
-                "[calculate-module]: replayed %.2f h hour by hour (%s, %s): "
+                "[calculate-module]: replayed %.2f h in five-minute steps (%s, %s): "
                 "drainage %s",
                 hours,
                 "rain timed" if profile is not None else "rain spread evenly",
