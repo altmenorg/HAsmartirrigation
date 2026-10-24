@@ -1452,9 +1452,21 @@ class CalculationMixin:
         if not config.get(const.CONF_HOURLY_CALCULATION):
             return None
         mapping = self.store.get_mapping(zone.get(const.ZONE_MAPPING))
+        et_conf = ((mapping or {}).get(const.MAPPING_MAPPINGS) or {}).get(
+            const.MAPPING_EVAPOTRANSPIRATION
+        )
+        et_source = (
+            et_conf.get(const.MAPPING_CONF_SOURCE)
+            if isinstance(et_conf, dict)
+            else et_conf
+        )
+        # Only an ET the service quotes has hours to follow. This used to ask
+        # whether the field had any source at all, and the service is one: the
+        # very zones it was written for always fell back to the daily figure,
+        # spread evenly, and their live bucket fell in a straight line (#878).
         if (
             not mapping
-            or const.MAPPING_EVAPOTRANSPIRATION in self._sourced_fields(mapping)
+            or et_source != const.MAPPING_CONF_SOURCE_WEATHER_SERVICE
             or not getattr(self, "use_weather_service", False)
         ):
             return None
