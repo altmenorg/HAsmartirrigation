@@ -261,7 +261,7 @@
         },
         "continuousupdates": {
           "header": "Kontinuierliche Updates für Sensoren",
-          "description": "Diese Funktion aktualisiert die Sensordaten kontinuierlich. Das ist nützlich für Sensorgruppen, die Quellen mit kontinuierlichen Daten verwenden, etwa Wetterstationen. Diese Funktion kann nicht für Sensorgruppen verwendet werden, die zumindest teilweise auf Wetterdiensten beruhen, da kontinuierliches Abfragen von APIs Kosten verursacht. Beachten Sie, dass dies experimentell ist und möglicherweise nicht wie erwartet funktioniert. Verwendung auf eigenes Risiko.",
+          "description": "Zeichnet jede Änderung eines Sensors der Gruppe auf, statt eines Messwerts pro Aktualisierung. Die stündliche Berechnung, der Regenmesser und die Nachrechnung des Regens werden dadurch genauer: Ein Regenmesser, der alle zehn Minuten meldet, verortet seinen Regen auf zehn Minuten genau. Die Zonen werden nicht bei jeder Änderung neu berechnet; das macht die geplante Berechnung einmal aus den aufgezeichneten Werten. In einer Gruppe, die auch einen Wetterdienst nutzt, werden ihre Sensoren bei jeder Änderung aufgezeichnet und der Dienst weiterhin einmal pro Aktualisierung abgefragt: keine zusätzlichen Anfragen.",
           "labels": {
             "continuousupdates": "Kontinuierliche Updates aktivieren",
             "sensor_debounce": "Sensor-Entprellung"

@@ -261,7 +261,7 @@
         },
         "continuousupdates": {
           "header": "Kontinuerlige oppdateringer for sensorer (eksperimentell)",
-          "description": "Denne eksperimentelle funksjonen oppdaterer sensordataene kontinuerlig. Dette er nyttig for sensorgrupper som bruker kilder med kontinuerlige data, som værstasjoner. Denne funksjonen kan ikke brukes for sensorgrupper som i det minste delvis er avhengige av værtjenester, ettersom kontinuerlig spørring av API-er medfører kostnader. Husk at dette er eksperimentelt og kanskje ikke fungerer som forventet. Bruk på eget ansvar.",
+          "description": "Registrerer hver endring av en sensor i gruppen i stedet for én måling per oppdatering. Timeberegningen, regnmåleren og gjenavspillingen av regnet blir mer presise: en regnmåler som melder hvert tiende minutt, plasserer regnet sitt med ti minutters nøyaktighet. Sonene beregnes ikke på nytt ved hver endring; den planlagte beregningen gjør det én gang ut fra de registrerte målingene. I en gruppe som også bruker en værtjeneste, registreres sensorene ved hver endring, og tjenesten leses fortsatt én gang per oppdatering: ingen ekstra forespørsler.",
           "labels": {
             "continuousupdates": "Aktiver kontinuerlige oppdateringer",
             "sensor_debounce": "Sensor-debounce"

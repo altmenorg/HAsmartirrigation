@@ -261,7 +261,7 @@
         },
         "continuousupdates": {
           "header": "Jatkuvat päivitykset antureille (kokeellinen)",
-          "description": "Tämä kokeellinen ominaisuus päivittää anturitietoja jatkuvasti. Tästä on hyötyä anturiryhmille, jotka käyttävät jatkuvaa dataa tarjoavia lähteitä, kuten sääasemia. Tätä ominaisuutta ei voi käyttää anturiryhmille, jotka ainakin osittain hyödyntävät sääpalveluita, koska API-rajapintojen jatkuva kysely aiheuttaa kustannuksia. Pidä mielessä, että tämä on kokeellinen ja ei välttämättä toimi odotetusti. Käyttö omalla vastuulla.",
+          "description": "Tallentaa jokaisen ryhmän anturin muutoksen yhden päivityskohtaisen lukeman sijaan. Tuntilaskenta, sademittari ja sateen uudelleentoisto tarkentuvat: kymmenen minuutin välein raportoiva sademittari sijoittaa sateensa kymmenen minuutin tarkkuudella. Vyöhykkeitä ei lasketa uudelleen jokaisella muutoksella; ajastettu laskenta tekee sen kerran tallennetuista lukemista. Ryhmässä, joka käyttää myös säätietopalvelua, sen anturit tallennetaan jokaisella muutoksella ja palvelua luetaan yhä kerran päivitystä kohden: ei lisäpyyntöjä.",
           "labels": {
             "continuousupdates": "Ota jatkuvat päivitykset käyttöön",
             "sensor_debounce": "Anturin debounce"

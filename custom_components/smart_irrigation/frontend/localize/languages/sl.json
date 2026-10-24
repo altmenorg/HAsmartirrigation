@@ -261,7 +261,7 @@
         },
         "continuousupdates": {
           "header": "Neprekinjene posodobitve senzorjev",
-          "description": "Zabeleži vsako spremembo senzorja v skupini, namesto ene meritve na posodobitev. Urni izračun in dežemer dobita iz tega natančnejša povprečja. Con ne izračuna več ob vsaki spremembi: to stori načrtovani izračun, enkrat, iz zabeleženih meritev. Ne more se uporabljati za skupine senzorjev, ki se vsaj deloma zanašajo na vremensko storitev, ker bi neprestano poizvedovanje po API-ju povzročalo stroške.",
+          "description": "Zabeleži vsako spremembo senzorja skupine namesto ene meritve na posodobitev. Urni izračun, dežemer in ponovitev dežja postanejo natančnejši: dežemer, ki poroča vsakih deset minut, umesti svoj dež na deset minut natančno. Cone se ob vsaki spremembi ne preračunajo; to stori načrtovani izračun enkrat iz zabeleženih meritev. V skupini, ki uporablja tudi vremensko storitev, se njeni senzorji zabeležijo ob vsaki spremembi, storitev pa se še vedno prebere enkrat na posodobitev: brez dodatnih zahtev.",
           "labels": {
             "continuousupdates": "Vklopi neprekinjene posodobitve",
             "sensor_debounce": "Umirjanje senzorja (debounce)"

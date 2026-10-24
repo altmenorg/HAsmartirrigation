@@ -261,7 +261,7 @@
         },
         "continuousupdates": {
           "header": "Průběžné aktualizace senzorů",
-          "description": "Tato funkce bude průběžně aktualizovat data senzorů. To je užitečné pro skupiny senzorů, které používají zdroje poskytující průběžná data, jako jsou meteorologické stanice. Tuto funkci nelze použít pro skupiny senzorů, které se alespoň částečně spoléhají na meteorologické služby, protože průběžné dotazování API bude generovat náklady. Mějte na paměti, že je to experimentální a nemusí to fungovat podle očekávání. Používáte na vlastní riziko.",
+          "description": "Zaznamenává každou změnu senzoru skupiny místo jednoho měření na aktualizaci. Hodinový výpočet, srážkoměr i přehrání deště jsou díky tomu přesnější: srážkoměr, který hlásí každých deset minut, umístí svůj déšť s přesností na deset minut. Zóny se při každé změně nepřepočítávají; to udělá plánovaný výpočet jednou ze zaznamenaných měření. Ve skupině, která používá i službu počasí, se její senzory zaznamenávají při každé změně a služba se dál čte jednou za aktualizaci: žádné požadavky navíc.",
           "labels": {
             "continuousupdates": "Povolit průběžné aktualizace",
             "sensor_debounce": "Debounce senzoru"

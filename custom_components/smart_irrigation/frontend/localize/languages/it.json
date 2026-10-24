@@ -261,7 +261,7 @@
         },
         "continuousupdates": {
           "header": "Aggiornamenti continui per i sensori (sperimentale)",
-          "description": "Questa funzione sperimentale aggiorna continuamente i dati dei sensori. È utile per i gruppi di sensori che utilizzano fonti che forniscono dati continui, come le stazioni meteorologiche. Questa funzione non può essere utilizzata per i gruppi di sensori che si affidano almeno in parte ai servizi meteo, poiché il polling continuo delle API comporta dei costi. Tenere presente che si tratta di una funzione sperimentale e che potrebbe non funzionare come previsto. Utilizzatela a vostro rischio e pericolo.",
+          "description": "Registra ogni variazione di un sensore del gruppo, invece di una lettura per aggiornamento. Il calcolo orario, il pluviometro e la riproduzione della pioggia diventano più precisi: un pluviometro che si aggiorna ogni dieci minuti colloca la sua pioggia con dieci minuti di precisione. Le zone non vengono ricalcolate a ogni variazione; lo fa il calcolo programmato, una volta, dalle letture registrate. In un gruppo che usa anche un servizio meteo, i suoi sensori vengono registrati a ogni variazione e il servizio viene sempre letto una volta per aggiornamento: nessuna richiesta in più.",
           "labels": {
             "continuousupdates": "Abilita gli aggiornamenti continui",
             "sensor_debounce": "Rimbalzo del sensore"

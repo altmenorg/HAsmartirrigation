@@ -261,7 +261,7 @@
         },
         "continuousupdates": {
           "header": "Ciągłe aktualizacje dla czujników (eksperymentalne)",
-          "description": "Ta eksperymentalna funkcja będzie ciągle aktualizować dane czujników. Jest to przydatne dla grup czujników korzystających ze źródeł dostarczających dane ciągłe, takich jak stacje pogodowe. Tej funkcji nie można używać dla grup czujników, które przynajmniej częściowo polegają na usługach pogodowych, ponieważ ciągłe odpytywanie API wiąże się z kosztami. Pamiętaj, że jest to funkcja eksperymentalna i może nie działać zgodnie z oczekiwaniami. Korzystasz z niej na własne ryzyko.",
+          "description": "Zapisuje każdą zmianę czujnika grupy zamiast jednego odczytu na aktualizację. Obliczenie godzinowe, deszczomierz i odtwarzanie deszczu stają się dokładniejsze: deszczomierz raportujący co dziesięć minut umieszcza swój deszcz z dokładnością do dziesięciu minut. Strefy nie są przeliczane przy każdej zmianie; robi to raz zaplanowane obliczenie na podstawie zapisanych odczytów. W grupie, która używa też serwisu pogodowego, jej czujniki są zapisywane przy każdej zmianie, a serwis nadal jest odczytywany raz na aktualizację: żadnych dodatkowych zapytań.",
           "labels": {
             "continuousupdates": "Włącz ciągłe aktualizacje",
             "sensor_debounce": "Opóźnienie czujnika (debounce)"

@@ -261,7 +261,7 @@
         },
         "continuousupdates": {
           "header": "Folyamatos frissítések az érzékelőkhöz (kísérleti)",
-          "description": "Ez a kísérleti funkció folyamatosan frissíti az érzékelőadatokat. Ez hasznos azoknál az érzékelőcsoportoknál, amelyek folyamatos adatot szolgáltató forrásokat használnak, például időjárás-állomásokat. Ez a funkció nem használható olyan érzékelőcsoportoknál, amelyek legalább részben időjárás-szolgáltatásokra támaszkodnak, mivel az API-k folyamatos lekérdezése költségekkel jár. Ne feledje, hogy ez kísérleti, és előfordulhat, hogy nem a várt módon működik. A használata saját felelősségre történik.",
+          "description": "A csoport érzékelőinek minden változását rögzíti, frissítésenként egy mérés helyett. Az órás számítás, az esőmérő és az eső visszajátszása pontosabb lesz: a tízpercenként jelentő esőmérő tíz perc pontossággal helyezi el az esőt. A zónák nem számolódnak újra minden változáskor; az ütemezett számítás egyszer teszi meg a rögzített mérésekből. Az időjárás-szolgáltatást is használó csoportban az érzékelők minden változáskor rögzülnek, a szolgáltatást pedig továbbra is frissítésenként egyszer olvassa: nincs többletkérés.",
           "labels": {
             "continuousupdates": "Folyamatos frissítések engedélyezése",
             "sensor_debounce": "Érzékelő-pergésmentesítés"
