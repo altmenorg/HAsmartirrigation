@@ -309,3 +309,25 @@ async def test_a_restart_in_another_unit_does_not_bring_it_back():
     await sensor._async_restore_estimate()
 
     assert sensor.extra_state_attributes["live"] is False
+
+
+@pytest.mark.asyncio
+async def test_a_restart_comes_back_with_the_since_the_estimate_really_writes():
+    """``since`` carries its offset for the browser, the stored stamp does not.
+
+    Compared as text they never matched, so after every restart the entity fell
+    back to the committed bucket until the first estimate went through (#869).
+    """
+    from custom_components.smart_irrigation.live_estimate import _aware_iso
+
+    sensor, _coordinator, _tasks, _clock, _connect = _sensor(None, zone=CALCULATED)
+    written = _aware_iso(CALCULATED[const.ZONE_LAST_CALCULATED])
+    assert written != CALCULATED[const.ZONE_LAST_CALCULATED]
+    sensor.async_get_last_state = AsyncMock(
+        return_value=_last_state(-7.5, live=True, since=written)
+    )
+
+    await sensor._async_restore_estimate()
+
+    assert sensor.native_value == pytest.approx(-7.5)
+    assert sensor.extra_state_attributes["live"] is True
