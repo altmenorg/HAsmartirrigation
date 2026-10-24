@@ -81,7 +81,34 @@ def test_the_fallback_wrapper_asks_open_meteo():
     wrapper._fallback.get_hourly_et0.assert_called_once_with(_at(6), _at(9))
 
 
-def _coordinator(*, hourly=True, sourced=(), use_service=True, total=0.9):
+def _group(et_source=const.MAPPING_CONF_SOURCE_WEATHER_SERVICE):
+    """A sensor group as the store holds it, not a stand-in for its sources.
+
+    The rain from a gauge of one's own and the rest from the service, as in
+    #878: a mock of the sourced fields had hidden that the service counts as a
+    source, so the hourly figure was never used for the zones it was for.
+    """
+    return {
+        const.MAPPING_NAME: "Outside",
+        const.MAPPING_MAPPINGS: {
+            const.MAPPING_EVAPOTRANSPIRATION: {const.MAPPING_CONF_SOURCE: et_source},
+            const.MAPPING_TEMPERATURE: {
+                const.MAPPING_CONF_SOURCE: const.MAPPING_CONF_SOURCE_WEATHER_SERVICE
+            },
+            const.MAPPING_PRECIPITATION: {
+                const.MAPPING_CONF_SOURCE: const.MAPPING_CONF_SOURCE_SENSOR
+            },
+        },
+    }
+
+
+def _coordinator(
+    *,
+    hourly=True,
+    et_source=const.MAPPING_CONF_SOURCE_WEATHER_SERVICE,
+    use_service=True,
+    total=0.9,
+):
     class _Coordinator(CalculationMixin):
         pass
 
@@ -93,8 +120,7 @@ def _coordinator(*, hourly=True, sourced=(), use_service=True, total=0.9):
     coordinator.use_weather_service = use_service
     coordinator.store = MagicMock()
     coordinator.store.get_config.return_value = {const.CONF_HOURLY_CALCULATION: hourly}
-    coordinator.store.get_mapping.return_value = {const.MAPPING_NAME: "Outside"}
-    coordinator._sourced_fields = Mock(return_value=set(sourced))
+    coordinator.store.get_mapping.return_value = _group(et_source)
     coordinator.zone_window_start = Mock(
         return_value=datetime.datetime.now() - datetime.timedelta(hours=3)
     )
@@ -116,7 +142,9 @@ async def test_the_hourly_sum_is_used_for_a_service_provided_et():
     "kwargs",
     [
         {"hourly": False},
-        {"sourced": (const.MAPPING_EVAPOTRANSPIRATION,)},
+        # An ET from a sensor of one's own has no hours to follow.
+        {"et_source": const.MAPPING_CONF_SOURCE_SENSOR},
+        {"et_source": const.MAPPING_CONF_SOURCE_NONE},
         {"use_service": False},
     ],
 )
