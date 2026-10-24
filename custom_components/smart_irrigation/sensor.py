@@ -20,6 +20,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
 from .entity import zone_device_info
+from .live_estimate import _aware_iso
 from .performance import async_timer
 from .units import depth_to_display, zone_to_display
 
@@ -793,9 +794,13 @@ class SmartIrrigationZoneLiveBucketSensor(
             value = float(last.state)
         except (KeyError, AttributeError, TypeError, ValueError):
             return
+        # Compared as moments: ``since`` is written with its offset for the
+        # browser, the stored calculation time without one, so as text they
+        # never matched and no estimate ever came back (#869).
         if (
             not zone
-            or last.attributes.get("since") != self._calculated_at(zone)
+            or _aware_iso(last.attributes.get("since"))
+            != _aware_iso(zone.get(const.ZONE_LAST_CALCULATED))
             or last.attributes.get("unit_of_measurement")
             != self.native_unit_of_measurement
         ):
