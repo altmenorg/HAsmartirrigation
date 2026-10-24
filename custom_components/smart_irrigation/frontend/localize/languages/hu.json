@@ -999,7 +999,7 @@
     "adjust_seconds": "Eltolás",
     "step_bounds_help": "Az alkalmazás sorrendje: először a százalék, aztán az eltolás (előjeles hozzáadott másodpercek), aztán a minimum és a maximum. 0 a minimumnál vagy maximumnál: nincs. Az a lépés, amelyiknek nem kell víz, nulla marad: a minimum sosem indítja el.",
     "min_deficit_mm": "Csak akkor öntözzön, ha a hiány legalább",
-    "min_deficit_mm_help": "mm-ben, 0 esetén mindig öntöz. A fix időtartamú lépések mindig öntöznek.",
+    "min_deficit_mm_help": "Mm-ben, 0 esetén mindig öntöz. Ha meg van adva, ennél a lépésnél a zóna saját küszöbét váltja fel. A rögzített idejű lépések mindig öntöznek.",
     "adjust_title": "Időtartamok módosítása",
     "adjust_none": "Nincs érvényben módosítás.",
     "adjust_active": "Érvényben: {percent} % és {seconds} s lépésenként, eddig: {until}.",

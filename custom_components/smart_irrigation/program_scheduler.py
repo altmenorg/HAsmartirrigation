@@ -110,9 +110,12 @@ class ProgramSchedulerMixin:
                 # in force included, so a "done by" start is placed for the
                 # run that will really be made.
                 adjust = getattr(self, "program_adjustment", None)
+                for_programs = getattr(self, "zones_for_programs", None)
                 total = plan_wall_seconds(
                     plan_program(
-                        program, zones, adjust(program_id) if adjust else None
+                        program,
+                        for_programs(zones) if for_programs else zones,
+                        adjust(program_id) if adjust else None,
                     ),
                     soak,
                 )

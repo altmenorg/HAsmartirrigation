@@ -3056,7 +3056,9 @@ class CalculationMixin:
             }
         await self.calc_logger.async_log(record)
 
-    def duration_from_bucket(self, zone: dict, bucket_native: float) -> float:
+    def duration_from_bucket(
+        self, zone: dict, bucket_native: float, *, ignore_threshold: bool = False
+    ) -> float:
         """Duration (seconds) implied by a zone's current bucket value.
 
         Mirrors the bucket -> duration maths in ``calculate_module`` so callers
@@ -3065,13 +3067,15 @@ class CalculationMixin:
         A bucket at or above zero means no irrigation is needed, so 0.
 
         ``bucket_native`` is in mm, like the stored ``ZONE_BUCKET``.
+        ``ignore_threshold`` leaves the zone's own threshold out, for a program
+        step that sets a minimum deficit of its own (#912).
         """
         bucket_mm = bucket_native
         if bucket_mm >= 0:
             return 0
         # Below the allowed depletion there is nothing to do yet, so that the
         # water builds up into one deep run instead of a trickle every day.
-        if abs(bucket_mm) < self.irrigation_threshold_mm(zone):
+        if not ignore_threshold and abs(bucket_mm) < self.irrigation_threshold_mm(zone):
             return 0
 
         precipitation_rate, _tput, _sz = self._zone_precipitation_rate(zone)

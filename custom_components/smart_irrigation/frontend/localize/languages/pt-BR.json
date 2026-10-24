@@ -999,7 +999,7 @@
     "adjust_seconds": "Deslocamento",
     "step_bounds_help": "Ordem de aplicação: primeiro a porcentagem, depois o deslocamento (segundos com sinal somados), depois o mínimo e o máximo. 0 para o mínimo ou o máximo: nenhum. Uma etapa que não precisa de água fica em zero: o mínimo nunca a inicia.",
     "min_deficit_mm": "Irrigar apenas quando o déficit for de pelo menos",
-    "min_deficit_mm_help": "Em mm, 0 para sempre irrigar. Etapas de duração fixa são sempre irrigadas.",
+    "min_deficit_mm_help": "Em mm, 0 para sempre irrigar. Se definido, substitui o limite da própria zona nesta etapa. Etapas de duração fixa são sempre irrigadas.",
     "adjust_title": "Ajustar durações",
     "adjust_none": "Nenhum ajuste em vigor.",
     "adjust_active": "Em vigor: {percent} % e {seconds} s por etapa, até {until}.",

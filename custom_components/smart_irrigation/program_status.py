@@ -20,6 +20,7 @@ from homeassistant.helpers.dispatcher import async_dispatcher_send
 
 from . import const
 from .programs import (
+    DURATION_IGNORING_THRESHOLD,
     active_adjustment,
     needs_run_length,
     plan_program,
@@ -174,9 +175,35 @@ class ProgramStatusMixin:
             dt_util.utcnow(),
         )
 
+    def zones_for_programs(self, zones) -> list:
+        """The zones as a program's steps read them.
+
+        Each automatic zone also carries the run its bucket implies without its
+        own threshold: a step with a minimum deficit of its own decides on that
+        instead of the zone's threshold, which used to hold such a step at
+        nothing to water while its own minimum was met (#912).
+        """
+        from_bucket = getattr(self, "duration_from_bucket", None)
+        if from_bucket is None:
+            return list(zones)
+        result = []
+        for zone in zones:
+            if zone.get(const.ZONE_STATE) == const.ZONE_STATE_AUTOMATIC:
+                try:
+                    bucket = float(zone.get(const.ZONE_BUCKET) or 0.0)
+                    seconds = from_bucket(zone, bucket, ignore_threshold=True)
+                except (TypeError, ValueError):
+                    seconds = None
+                if seconds:
+                    zone = {**zone, DURATION_IGNORING_THRESHOLD: seconds}
+            result.append(zone)
+        return result
+
     def _program_totals(self, program: dict, zones) -> tuple:
         plan = plan_program(
-            program, zones, self.program_adjustment(program.get(const.PROGRAM_ID))
+            program,
+            self.zones_for_programs(zones),
+            self.program_adjustment(program.get(const.PROGRAM_ID)),
         )
         soak = float(getattr(self.store.config, const.CONF_SOAK_MINUTES, 0) or 0) * 60.0
         return plan, plan_wall_seconds(plan, soak)

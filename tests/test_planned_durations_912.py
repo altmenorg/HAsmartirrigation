@@ -200,3 +200,66 @@ async def test_without_a_trigger_time_the_main_program_is_not_invented():
     assert await coord.async_planning(1) == []
     # Beyond the days asked for, it is not listed either.
     assert await coord.async_planning(1, trigger_start=_utc(5, 8)) == []
+
+
+# --- the step's minimum deficit decides, not the zone's threshold (#912) ------
+
+from custom_components.smart_irrigation.programs import (  # noqa: E402
+    DURATION_IGNORING_THRESHOLD,
+    below_deficit,
+    plan_program,
+)
+
+
+def _step_program(min_deficit=None):
+    step = {"zones": [0]}
+    if min_deficit is not None:
+        step[const.STEP_MIN_DEFICIT_MM] = min_deficit
+    return {"id": "p1", "name": "Program 1", "steps": [step]}
+
+
+def _held_back_zone():
+    """Megalos' Test zone: -15 mm, a zone threshold of 20 mm, so no duration."""
+    return zone(
+        0,
+        **{
+            const.ZONE_BUCKET: -15.0,
+            const.ZONE_DURATION: 0,
+            const.ZONE_IRRIGATION_THRESHOLD: 20.0,
+            DURATION_IGNORING_THRESHOLD: 4500,
+        },
+    )
+
+
+def test_a_step_with_its_own_minimum_waters_a_zone_its_threshold_holds_back():
+    [[step]] = plan_program(_step_program(min_deficit=7.0), [_held_back_zone()])
+
+    [member] = step["zones"]
+    assert member["seconds"] == 4500
+    assert not below_deficit(member, _held_back_zone())
+
+
+def test_without_a_minimum_of_its_own_the_zone_threshold_still_applies():
+    assert plan_program(_step_program(), [_held_back_zone()]) == []
+
+
+def test_a_minimum_the_zone_does_not_reach_still_skips_it():
+    [[step]] = plan_program(_step_program(min_deficit=18.0), [_held_back_zone()])
+
+    assert below_deficit(step["zones"][0], _held_back_zone())
+
+
+def test_the_coordinator_hands_the_threshold_free_run_to_the_planner():
+    coord = _coordinator(
+        [zone(0, **{const.ZONE_BUCKET: -15.0, const.ZONE_IRRIGATION_THRESHOLD: 20})]
+    )
+    coord.store.get_config = lambda: {}
+    coord._seasonal_factors = lambda zone: (1.0, 0.0)
+
+    assert coord.duration_from_bucket(coord.store.get_zone(0), -15.0) == 0
+    [planned] = SmartIrrigationCoordinator.zones_for_programs(
+        coord, [coord.store.get_zone(0)]
+    )
+
+    # 15 mm at 12 mm/h is 4500 s, within the zone's maximum duration of 3600.
+    assert planned[DURATION_IGNORING_THRESHOLD] == 3600

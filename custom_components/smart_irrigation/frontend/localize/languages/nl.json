@@ -999,7 +999,7 @@
     "adjust_seconds": "Correctie",
     "step_bounds_help": "Volgorde van toepassing: eerst het percentage, dan de correctie (seconden met teken erbij opgeteld), dan het minimum en het maximum. 0 voor het minimum of maximum: geen. Een stap die geen water nodig heeft, blijft op nul: het minimum start hem nooit.",
     "min_deficit_mm": "Alleen bewateren als het tekort minstens",
-    "min_deficit_mm_help": "In mm, 0 om altijd te bewateren. Stappen met vaste duur worden altijd bewaterd.",
+    "min_deficit_mm_help": "In mm, 0 om altijd te sproeien. Ingesteld vervangt hij voor deze stap de eigen drempel van de zone. Stappen met een vaste duur worden altijd besproeid.",
     "adjust_title": "Duren aanpassen",
     "adjust_none": "Geen aanpassing van kracht.",
     "adjust_active": "Van kracht: {percent} % en {seconds} s per stap, tot {until}.",

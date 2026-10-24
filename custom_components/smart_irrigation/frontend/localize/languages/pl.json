@@ -999,7 +999,7 @@
     "adjust_seconds": "Korekta",
     "step_bounds_help": "Kolejność stosowania: najpierw procent, potem korekta (dodane sekundy ze znakiem), potem minimum i maksimum. 0 dla minimum lub maksimum: brak. Krok, który nie potrzebuje wody, zostaje na zerze: minimum nigdy go nie uruchamia.",
     "min_deficit_mm": "Podlewaj tylko, gdy deficyt wynosi co najmniej",
-    "min_deficit_mm_help": "W mm, 0 aby podlewać zawsze. Kroki o stałym czasie trwania są zawsze podlewane.",
+    "min_deficit_mm_help": "W mm, 0, aby zawsze podlewać. Jeśli ustawiony, zastępuje w tym kroku własny próg strefy. Kroki o stałym czasie są zawsze podlewane.",
     "adjust_title": "Dostosuj czasy trwania",
     "adjust_none": "Brak obowiązującej korekty.",
     "adjust_active": "Obowiązuje: {percent} % i {seconds} s na krok, do {until}.",

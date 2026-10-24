@@ -999,7 +999,7 @@
     "adjust_seconds": "Offset",
     "step_bounds_help": "Order of application: the percentage first, then the offset (signed seconds added), then the minimum and the maximum. 0 for the minimum or maximum: none. A step that needs no water stays at zero: the minimum never starts it.",
     "min_deficit_mm": "Only water when the deficit is at least",
-    "min_deficit_mm_help": "In mm, 0 to always water. Fixed-duration steps are always watered.",
+    "min_deficit_mm_help": "In mm, 0 to always water. Set, it replaces the zone's own threshold for this step. Fixed-duration steps are always watered.",
     "adjust_title": "Adjust durations",
     "adjust_none": "No adjustment in force.",
     "adjust_active": "In force: {percent} % and {seconds} s per step, until {until}.",

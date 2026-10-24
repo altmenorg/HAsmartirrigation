@@ -999,7 +999,7 @@
     "adjust_seconds": "Justering",
     "step_bounds_help": "Rekkefølge for bruk: først prosenten, så justeringen (sekunder med fortegn lagt til), så minimum og maksimum. 0 for minimum eller maksimum: ingen. Et trinn som ikke trenger vann forblir på null: minimum starter det aldri.",
     "min_deficit_mm": "Vann bare når underskuddet er minst",
-    "min_deficit_mm_help": "I mm, 0 for alltid å vanne. Trinn med fast varighet vannes alltid.",
+    "min_deficit_mm_help": "I mm, 0 for å alltid vanne. Satt erstatter den sonens egen terskel for dette trinnet. Trinn med fast varighet vannes alltid.",
     "adjust_title": "Juster varighetene",
     "adjust_none": "Ingen justering gjelder.",
     "adjust_active": "Gjelder: {percent} % og {seconds} s per trinn, til {until}.",

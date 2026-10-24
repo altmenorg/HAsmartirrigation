@@ -999,7 +999,7 @@
     "adjust_seconds": "Förskjutning",
     "step_bounds_help": "Ordning för tillämpning: först procentsatsen, sedan förskjutningen (tecknade sekunder som läggs till), sedan minimum och maximum. 0 för minimum eller maximum: inget. Ett steg som inte behöver något vatten förblir på noll: minimum startar det aldrig.",
     "min_deficit_mm": "Vattna bara när underskottet är minst",
-    "min_deficit_mm_help": "I mm, 0 för att alltid vattna. Steg med fast varaktighet vattnas alltid.",
+    "min_deficit_mm_help": "I mm, 0 för att alltid vattna. Angiven ersätter den zonens egen tröskel för det här steget. Steg med fast längd vattnas alltid.",
     "adjust_title": "Justera varaktigheter",
     "adjust_none": "Ingen justering gäller.",
     "adjust_active": "Gäller: {percent} % och {seconds} s per steg, till {until}.",

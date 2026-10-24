@@ -999,7 +999,7 @@
     "adjust_seconds": "Posun",
     "step_bounds_help": "Pořadí použití: nejprve procento, potom posun (přičtené sekundy se znaménkem), potom minimum a maximum. 0 pro minimum nebo maximum: žádné. Krok, který nepotřebuje vodu, zůstane na nule: minimum jej nikdy nespustí.",
     "min_deficit_mm": "Zavlažovat, jen když je deficit alespoň",
-    "min_deficit_mm_help": "V mm, 0 pro zavlažování vždy. Kroky s pevnou dobou trvání se zavlažují vždy.",
+    "min_deficit_mm_help": "V mm, 0 pro zalévání vždy. Je-li nastaven, nahrazuje pro tento krok vlastní práh zóny. Kroky s pevnou dobou se zalévají vždy.",
     "adjust_title": "Upravit doby trvání",
     "adjust_none": "Žádná úprava není v platnosti.",
     "adjust_active": "V platnosti: {percent} % a {seconds} s na krok, do {until}.",

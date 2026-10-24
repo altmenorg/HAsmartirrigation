@@ -999,7 +999,7 @@
     "adjust_seconds": "Siirtymä",
     "step_bounds_help": "Soveltamisjärjestys: ensin prosentti, sitten siirtymä (etumerkilliset lisättävät sekunnit), sitten vähimmäis- ja enimmäisarvo. 0 vähimmäis- tai enimmäisarvolle: ei rajaa. Vaihe, joka ei tarvitse vettä, pysyy nollassa: vähimmäisarvo ei koskaan käynnistä sitä.",
     "min_deficit_mm": "Kastele vain, kun vajaus on vähintään",
-    "min_deficit_mm_help": "Millimetreinä, 0 kastelee aina. Kiinteän keston vaiheet kastellaan aina.",
+    "min_deficit_mm_help": "Millimetreinä, 0 kastelee aina. Asetettuna se korvaa vyöhykkeen oman kynnyksen tässä vaiheessa. Kiinteän keston vaiheet kastellaan aina.",
     "adjust_title": "Säädä kestoja",
     "adjust_none": "Mitään säätöä ei ole voimassa.",
     "adjust_active": "Voimassa: {percent} % ja {seconds} s vaihetta kohden, kunnes {until}.",

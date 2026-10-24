@@ -999,7 +999,7 @@
     "adjust_seconds": "Versatz",
     "step_bounds_help": "Reihenfolge der Anwendung: zuerst der Prozentsatz, dann der Versatz (vorzeichenbehaftete Sekunden, die addiert werden), dann das Minimum und das Maximum. 0 für Minimum oder Maximum: keine Grenze. Ein Schritt, der kein Wasser braucht, bleibt bei null: Das Minimum startet ihn nie.",
     "min_deficit_mm": "Nur bewässern, wenn das Defizit mindestens",
-    "min_deficit_mm_help": "In mm, 0 für immer bewässern. Schritte mit fester Dauer werden immer bewässert.",
+    "min_deficit_mm_help": "In mm, 0 bewässert immer. Gesetzt, ersetzt er für diesen Schritt die eigene Schwelle der Zone. Schritte mit fester Dauer werden immer bewässert.",
     "adjust_title": "Dauern anpassen",
     "adjust_none": "Keine Anpassung aktiv.",
     "adjust_active": "Aktiv: {percent} % und {seconds} s pro Schritt, bis {until}.",

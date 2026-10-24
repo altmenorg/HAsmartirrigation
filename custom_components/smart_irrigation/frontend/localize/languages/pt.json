@@ -999,7 +999,7 @@
     "adjust_seconds": "Desvio",
     "step_bounds_help": "Ordem de aplicação: primeiro a percentagem, depois o desvio (segundos com sinal somados), depois o mínimo e o máximo. 0 para o mínimo ou o máximo: nenhum. Uma etapa que não precisa de água fica a zero: o mínimo nunca a inicia.",
     "min_deficit_mm": "Regar apenas quando o défice for de, pelo menos,",
-    "min_deficit_mm_help": "Em mm, 0 para regar sempre. As etapas de duração fixa são sempre regadas.",
+    "min_deficit_mm_help": "Em mm, 0 para regar sempre. Se definido, substitui o limiar da própria zona neste passo. Os passos de duração fixa são sempre regados.",
     "adjust_title": "Ajustar durações",
     "adjust_none": "Nenhum ajuste em vigor.",
     "adjust_active": "Em vigor: {percent} % e {seconds} s por etapa, até {until}.",

@@ -999,7 +999,7 @@
     "adjust_seconds": "Scostamento",
     "step_bounds_help": "Ordine di applicazione: prima la percentuale, poi lo scostamento (secondi con segno aggiunti), poi il minimo e il massimo. 0 per il minimo o il massimo: nessuno. Un passo che non ha bisogno di acqua resta a zero: il minimo non lo avvia mai.",
     "min_deficit_mm": "Irriga solo quando il deficit è almeno",
-    "min_deficit_mm_help": "In mm, 0 per irrigare sempre. I passi a durata fissa vengono sempre irrigati.",
+    "min_deficit_mm_help": "In mm, 0 per irrigare sempre. Se impostato, sostituisce la soglia della zona per questo passo. I passi a durata fissa vengono sempre irrigati.",
     "adjust_title": "Regola le durate",
     "adjust_none": "Nessuna regolazione in vigore.",
     "adjust_active": "In vigore: {percent} % e {seconds} s per passo, fino a {until}.",

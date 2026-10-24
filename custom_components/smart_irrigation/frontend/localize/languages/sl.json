@@ -999,7 +999,7 @@
     "adjust_seconds": "Zamik",
     "step_bounds_help": "Vrstni red uporabe: najprej odstotek, nato zamik (prištete sekunde s predznakom), nato najmanj in največ. 0 za najmanj ali največ: brez. Korak, ki ne potrebuje vode, ostane na nič: najmanjša vrednost ga nikoli ne zažene.",
     "min_deficit_mm": "Zalivaj samo, ko je primanjkljaj vsaj",
-    "min_deficit_mm_help": "V mm, 0 za vedno zalivanje. Koraki s stalnim trajanjem se vedno zalivajo.",
+    "min_deficit_mm_help": "V mm, 0 za vedno zalivanje. Če je nastavljen, za ta korak nadomesti lasten prag cone. Koraki s fiksnim trajanjem se vedno zalivajo.",
     "adjust_title": "Prilagodi trajanja",
     "adjust_none": "Nobena prilagoditev ne velja.",
     "adjust_active": "Velja: {percent} % in {seconds} s na korak, do {until}.",

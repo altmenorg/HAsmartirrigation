@@ -999,7 +999,7 @@
     "adjust_seconds": "Forskydning",
     "step_bounds_help": "Rækkefølge: først procenten, så forskydningen (sekunder med fortegn, der lægges til), så minimum og maksimum. 0 for minimum eller maksimum: ingen. Et trin, der ikke har brug for vand, bliver på nul: minimum starter det aldrig.",
     "min_deficit_mm": "Vand kun, når underskuddet er mindst",
-    "min_deficit_mm_help": "I mm, 0 for altid at vande. Trin med fast varighed vandes altid.",
+    "min_deficit_mm_help": "I mm, 0 for altid at vande. Sat, erstatter den zonens egen tærskel for dette trin. Trin med fast varighed vandes altid.",
     "adjust_title": "Juster varigheder",
     "adjust_none": "Ingen justering er gældende.",
     "adjust_active": "Gældende: {percent} % og {seconds} s pr. trin, indtil {until}.",

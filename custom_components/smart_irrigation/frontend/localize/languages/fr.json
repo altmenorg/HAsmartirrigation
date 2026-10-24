@@ -999,7 +999,7 @@
     "adjust_seconds": "Décalage",
     "step_bounds_help": "Ordre d'application : le pourcentage d'abord, puis le décalage (secondes signées ajoutées), puis le minimum et le maximum. 0 pour le minimum ou le maximum : aucun. Une étape qui n'a besoin d'aucune eau reste à zéro : le minimum ne la déclenche jamais.",
     "min_deficit_mm": "N'arroser que si le déficit atteint au moins",
-    "min_deficit_mm_help": "En mm, 0 pour toujours arroser. Les étapes à durée fixe sont toujours arrosées.",
+    "min_deficit_mm_help": "En mm, 0 pour toujours arroser. S'il est renseigné, il remplace le seuil de la zone pour cette étape. Les étapes à durée fixe sont toujours arrosées.",
     "adjust_title": "Ajuster les durées",
     "adjust_none": "Aucun ajustement en cours.",
     "adjust_active": "En vigueur : {percent} % et {seconds} s par étape, jusqu'à {until}.",

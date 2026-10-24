@@ -308,8 +308,13 @@ class ProgramRunnerMixin:
             if fresh is None or not self._program_allowed(program_id):
                 return None, 0, 0
             zones = await self.store.async_get_zones()
+            for_programs = getattr(self, "zones_for_programs", None)
             # The adjustment in force when the run takes its turn.
-            plan = plan_program(fresh, zones, self.program_adjustment(program_id))
+            plan = plan_program(
+                fresh,
+                for_programs(zones) if for_programs else zones,
+                self.program_adjustment(program_id),
+            )
             if only_zones is not None:
                 plan = restrict_plan(plan, only_zones)
             if seconds is not None:

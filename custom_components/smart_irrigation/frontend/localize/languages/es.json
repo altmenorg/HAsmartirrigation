@@ -999,7 +999,7 @@
     "adjust_seconds": "Desfase",
     "step_bounds_help": "Orden de aplicación: primero el porcentaje, luego el desfase (segundos con signo que se suman), luego el mínimo y el máximo. 0 para el mínimo o el máximo: ninguno. Un paso que no necesita agua se queda en cero: el mínimo nunca lo inicia.",
     "min_deficit_mm": "Regar solo cuando el déficit sea al menos de",
-    "min_deficit_mm_help": "En mm, 0 para regar siempre. Los pasos de duración fija se riegan siempre.",
+    "min_deficit_mm_help": "En mm, 0 para regar siempre. Si se indica, sustituye el umbral propio de la zona en este paso. Los pasos de duración fija siempre se riegan.",
     "adjust_title": "Ajustar las duraciones",
     "adjust_none": "Ningún ajuste en vigor.",
     "adjust_active": "En vigor: {percent} % y {seconds} s por paso, hasta {until}.",

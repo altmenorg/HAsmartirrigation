@@ -42,6 +42,10 @@ MAX_STEP_SECONDS = 24 * 3600.0
 MAX_ADJUST_SECONDS = 6 * 3600.0
 # The most a step can ask of a zone's water deficit, in mm.
 MAX_MIN_DEFICIT_MM = 100.0
+# The run a zone's bucket implies without its own threshold, handed to the
+# planner with the zone (never stored): a step with a minimum deficit of its
+# own waters on that, not on the zone's threshold (#912).
+DURATION_IGNORING_THRESHOLD = "_duration_ignoring_threshold"
 MAX_TOURS = 6
 MAX_DELAY_SECONDS = 6 * 3600
 # A negative delay overlaps two steps: the next starts this long before the
@@ -320,6 +324,11 @@ def step_seconds(
     try:
         lead = max(0.0, float(zone.get(const.ZONE_LEAD_TIME) or 0.0))
         duration = max(0.0, float(zone.get(const.ZONE_DURATION) or 0.0))
+        if not duration and deficit_threshold(step) > 0:
+            # The step's own minimum deficit decides, not the zone's threshold:
+            # a zone held back by its threshold still has the run its bucket
+            # implies, and below_deficit judges it against the step's (#912).
+            duration = max(0.0, float(zone.get(DURATION_IGNORING_THRESHOLD) or 0.0))
     except (TypeError, ValueError):
         return 0.0
     mode = step.get(const.STEP_MODE, DURATION_CALCULATED)

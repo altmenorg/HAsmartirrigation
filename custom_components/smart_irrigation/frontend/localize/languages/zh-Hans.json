@@ -999,7 +999,7 @@
     "adjust_seconds": "偏移",
     "step_bounds_help": "应用顺序：先是百分比，然后是偏移（加上的带符号秒数），最后是最小值和最大值。最小值或最大值为 0：不限制。不需要水的步骤保持为零：最小值绝不会启动它。",
     "min_deficit_mm": "仅当亏缺至少为以下值时才浇水",
-    "min_deficit_mm_help": "单位为 mm，0 表示始终浇水。固定时长的步骤始终会浇水。",
+    "min_deficit_mm_help": "单位为毫米，0 表示始终浇水。设置后，此步骤将以它代替区域自身的阈值。固定时长的步骤始终浇水。",
     "adjust_title": "调整时长",
     "adjust_none": "当前没有生效的调整。",
     "adjust_active": "生效中：每个步骤 {percent} % 和 {seconds} 秒，直到 {until}。",
