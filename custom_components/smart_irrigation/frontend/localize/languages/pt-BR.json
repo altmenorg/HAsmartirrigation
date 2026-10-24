@@ -191,7 +191,7 @@
         },
         "continuousupdates": {
           "header": "Atualizações contínuas para sensores",
-          "description": "Este recurso atualizará continuamente os dados dos sensores. Isto é útil para grupos de sensores que usam fontes que fornecem dados contínuos, como estações meteorológicas. Este recurso não pode ser usado para grupos de sensores que dependem, pelo menos em parte, de serviços de meteorologia, pois a consulta contínua de APIs gera custos. Tenha em mente que isto é experimental e pode não funcionar como esperado. Use por sua conta e risco.",
+          "description": "Registra cada mudança de um sensor do grupo, em vez de uma leitura por atualização. O cálculo horário, o pluviômetro e a reprodução da chuva ficam mais precisos: um pluviômetro que reporta a cada dez minutos situa sua chuva com dez minutos de precisão. As zonas não são recalculadas a cada mudança; o cálculo agendado faz isso uma vez, a partir das leituras registradas. Em um grupo que também usa um serviço de clima, seus sensores são registrados a cada mudança e o serviço continua sendo lido uma vez por atualização: nenhuma requisição a mais.",
           "labels": {
             "continuousupdates": "Ativar atualizações contínuas",
             "sensor_debounce": "Debounce do sensor"

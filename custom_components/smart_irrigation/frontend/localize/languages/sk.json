@@ -191,7 +191,7 @@
         },
         "continuousupdates": {
           "header": "Nepretržité aktualizácie pre senzory",
-          "description": "Táto funkcia nepretržite aktualizuje údaje senzorov. Je užitočná pre skupiny senzorov, ktoré používajú zdroje s nepretržitými údajmi, ako sú meteorologické stanice. Túto funkciu nemožno použiť pre skupiny senzorov, ktoré sa aspoň čiastočne spoliehajú na poveternostné služby, pretože nepretržité dopytovanie API spôsobuje náklady. Majte na pamäti, že je to experimentálne a nemusí to fungovať podľa očakávania. Použitie na vlastné riziko.",
+          "description": "Zaznamenáva každú zmenu senzora skupiny namiesto jedného merania na aktualizáciu. Hodinový výpočet, zrážkomer aj prehratie dažďa sú vďaka tomu presnejšie: zrážkomer, ktorý hlási každých desať minút, umiestni svoj dážď s presnosťou na desať minút. Zóny sa pri každej zmene neprepočítavajú; urobí to plánovaný výpočet raz zo zaznamenaných meraní. V skupine, ktorá používa aj službu počasia, sa jej senzory zaznamenávajú pri každej zmene a služba sa stále číta raz za aktualizáciu: žiadne požiadavky navyše.",
           "labels": {
             "continuousupdates": "Povoliť nepretržité aktualizácie",
             "sensor_debounce": "Debounce senzora"
