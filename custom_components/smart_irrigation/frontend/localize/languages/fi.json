@@ -499,7 +499,8 @@
       },
       "description": "Lisää yksi tai useampi anturiryhmä, joka hakee säätietoja sääpalvelusta, antureista tai näiden yhdistelmästä. Voit liittää kunkin anturiryhmän yhteen tai useampaan vyöhykkeeseen",
       "labels": {
-        "mapping-name": "Nimi"
+        "mapping-name": "Nimi",
+        "show-more": "{count, plural, one {Näytä # anturiryhmä lisää} other {Näytä # anturiryhmää lisää}}"
       },
       "no_items": "Anturiryhmiä ei ole vielä määritetty.",
       "title": "Anturiryhmät",
