@@ -425,7 +425,8 @@
       },
       "description": "Añada uno o más grupos de sensores que recuperen datos meteorológicos de Weather service, de sensores o de una combinación de éstos. Puede asignar cada grupo de sensores a una o más zonas",
       "labels": {
-        "mapping-name": "Nombre del grupo de sensores"
+        "mapping-name": "Nombre del grupo de sensores",
+        "show-more": "{count, plural, one {Mostrar # grupo de sensores más} other {Mostrar # grupos de sensores más}}"
       },
       "no_items": "Aún no hay grupos de sensores definidos.",
       "title": "Grupos de sensores",

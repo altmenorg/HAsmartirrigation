@@ -483,7 +483,8 @@
       },
       "description": "Ajouter un ou plusieurs groupes de capteurs qui récupèrent les données météo de Weather service, de capteurs locaux ou d'une combinaison de tous ceux-ci. Tu peux associer chaque groupe de capteurs avec une ou plusieurs zones",
       "labels": {
-        "mapping-name": "Nom"
+        "mapping-name": "Nom",
+        "show-more": "{count, plural, one {Afficher # autre groupe de capteurs} other {Afficher # autres groupes de capteurs}}"
       },
       "no_items": "Il n'y a pas encore de groupe de capteurs définis.",
       "title": "Groupes de capteurs",

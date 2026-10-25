@@ -425,7 +425,8 @@
       },
       "description": "添加一个或多个传感器组，从天气服务、传感器或两者的组合中获取天气数据。您可以将每个传感器组映射到一个或多个区域",
       "labels": {
-        "mapping-name": "名称"
+        "mapping-name": "名称",
+        "show-more": "{count, plural, other {再显示 # 个传感器组}}"
       },
       "no_items": "尚未定义任何传感器组。",
       "title": "传感器组",

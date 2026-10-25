@@ -425,7 +425,8 @@
       },
       "description": "Füge eine oder mehrere Sensorgruppen hinzu, die Wetterdaten von Weather service, Sensoren oder einer Kombination daraus abrufen. Jede Sensorgruppe kann für eine oder mehrere Zonen verwendet werden",
       "labels": {
-        "mapping-name": "Name"
+        "mapping-name": "Name",
+        "show-more": "{count, plural, one {# weitere Sensorgruppe anzeigen} other {# weitere Sensorgruppen anzeigen}}"
       },
       "no_items": "Es ist noch keine Sensorgruppe angelegt.",
       "title": "Sensorgruppen",

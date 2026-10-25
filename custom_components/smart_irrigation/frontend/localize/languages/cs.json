@@ -425,7 +425,8 @@
       },
       "description": "Přidejte jednu nebo více skupin senzorů, které získávají meteorologická data z meteorologické služby, ze senzorů nebo z jejich kombinace. Každou skupinu senzorů můžete přiřadit k jedné nebo více zónám",
       "labels": {
-        "mapping-name": "Název"
+        "mapping-name": "Název",
+        "show-more": "{count, plural, one {Zobrazit # další skupinu senzorů} few {Zobrazit # další skupiny senzorů} other {Zobrazit # dalších skupin senzorů}}"
       },
       "no_items": "Zatím nejsou definovány žádné skupiny senzorů.",
       "title": "Skupiny senzorů",

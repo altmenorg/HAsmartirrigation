@@ -425,7 +425,8 @@
       },
       "description": "Lägg till en eller flera sensorgrupper som hämtar väderdata från en vädertjänst, från sensorer eller en kombination av dessa. Du kan koppla varje sensorgrupp till en eller flera zoner",
       "labels": {
-        "mapping-name": "Namn"
+        "mapping-name": "Namn",
+        "show-more": "{count, plural, one {Visa # sensorgrupp till} other {Visa # sensorgrupper till}}"
       },
       "no_items": "Det finns inga sensorgrupper definierade ännu.",
       "title": "Sensorgrupper",

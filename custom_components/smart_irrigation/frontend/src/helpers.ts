@@ -553,3 +553,21 @@ export function changedFields(
   }
   return changes;
 }
+
+/** How many sensor groups the panel draws before it is asked for the rest. */
+export const GROUPS_SHOWN_AT_FIRST = 10;
+
+/**
+ * The groups to draw, and how many are left for the "show more" button.
+ *
+ * All of them once the button was used (or a group was just added), else the
+ * first few: drawing every card at once was slow with many groups.
+ */
+export function visibleGroups<T>(
+  groups: T[],
+  showAll: boolean,
+  limit: number = GROUPS_SHOWN_AT_FIRST,
+): { shown: T[]; hidden: number } {
+  const shown = showAll ? groups : groups.slice(0, limit);
+  return { shown, hidden: groups.length - shown.length };
+}

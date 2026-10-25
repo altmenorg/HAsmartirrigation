@@ -483,7 +483,8 @@
       },
       "description": "Add one or more sensor groups that retrieve weather data from Weather service, from sensors or a combination of these. You can map each sensor group to one or more zones",
       "labels": {
-        "mapping-name": "Name"
+        "mapping-name": "Name",
+        "show-more": "{count, plural, one {Show # more sensor group} other {Show # more sensor groups}}"
       },
       "no_items": "There are no sensor group defined yet.",
       "title": "Sensor groups",

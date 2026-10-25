@@ -425,7 +425,8 @@
       },
       "description": "Voeg een of meer sensorgroepen toe die weergegevens ophalen van Weather service, van sensoren of een combinatie. Elke sensorgroep kan worden gebruikt voor een of meerdere zones",
       "labels": {
-        "mapping-name": "Name"
+        "mapping-name": "Name",
+        "show-more": "{count, plural, one {Nog # sensorgroep tonen} other {Nog # sensorgroepen tonen}}"
       },
       "no_items": "Er zijn nog geen sensorgroepen.",
       "title": "Sensorgroepen",

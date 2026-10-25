@@ -483,7 +483,8 @@
       },
       "description": "Dodaj eno ali več skupin senzorjev, ki pridobivajo vremenske podatke iz vremenske storitve, iz senzorjev ali iz kombinacije obojega. Vsako skupino senzorjev lahko dodeliš eni ali več conam",
       "labels": {
-        "mapping-name": "Ime"
+        "mapping-name": "Ime",
+        "show-more": "{count, plural, one {Prikaži še # skupino senzorjev} two {Prikaži še # skupini senzorjev} few {Prikaži še # skupine senzorjev} other {Prikaži še # skupin senzorjev}}"
       },
       "no_items": "Nobena skupina senzorjev še ni določena.",
       "title": "Skupine senzorjev",

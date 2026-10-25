@@ -425,7 +425,8 @@
       },
       "description": "Dodaj jedną lub więcej grup czujników, które pobierają dane pogodowe z usługi pogodowej, z czujników lub ich kombinacji. Każdą grupę czujników możesz przypisać do jednej lub więcej stref",
       "labels": {
-        "mapping-name": "Nazwa"
+        "mapping-name": "Nazwa",
+        "show-more": "{count, plural, one {Pokaż # kolejną grupę czujników} few {Pokaż # kolejne grupy czujników} other {Pokaż # kolejnych grup czujników}}"
       },
       "no_items": "Nie zdefiniowano jeszcze żadnej grupy czujników.",
       "title": "Grupy czujników",

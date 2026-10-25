@@ -425,7 +425,8 @@
       },
       "description": "Adicione um ou mais grupos de sensores que obtêm dados meteorológicos do serviço de meteorologia, de sensores ou de uma combinação destes. Você pode mapear cada grupo de sensores para uma ou mais zonas",
       "labels": {
-        "mapping-name": "Nome"
+        "mapping-name": "Nome",
+        "show-more": "{count, plural, one {Mostrar mais # grupo de sensores} other {Mostrar mais # grupos de sensores}}"
       },
       "no_items": "Ainda não há nenhum grupo de sensores definido.",
       "title": "Grupos de sensores",

@@ -425,7 +425,8 @@
       },
       "description": "Tilføj en eller flere sensorgrupper, der henter vejrdata fra vejrtjeneste, fra sensorer eller en kombination af disse. Du kan tilknytte hver sensorgruppe til en eller flere zoner",
       "labels": {
-        "mapping-name": "Navn"
+        "mapping-name": "Navn",
+        "show-more": "{count, plural, one {Vis # sensorgruppe mere} other {Vis # sensorgrupper mere}}"
       },
       "no_items": "Der er endnu ikke defineret nogen sensorgruppe.",
       "title": "Sensorgrupper",
