@@ -1,0 +1,53 @@
+default_config:
+
+irrigation_unlimited:
+  testing:
+    enabled: true
+    speed: 1.0
+    output_events: false
+    show_log: false
+    autoplay: false
+    times:
+      - name: "1-Sequence 1"
+        start: "2024-07-16 06:00"
+        end: "2024-07-16 07:00"
+        results:
+          - {t: '2024-07-16 06:05:00', c: 1, z: 0, s: 1}
+          - {t: '2024-07-16 06:05:00', c: 1, z: 1, s: 1}
+          - {t: '2024-07-16 06:11:00', c: 1, z: 1, s: 0}
+          - {t: '2024-07-16 06:11:00', c: 1, z: 0, s: 0}
+          - {t: '2024-07-16 06:12:00', c: 1, z: 0, s: 1}
+          - {t: '2024-07-16 06:12:00', c: 1, z: 2, s: 1}
+          - {t: '2024-07-16 06:24:00', c: 1, z: 2, s: 0}
+          - {t: '2024-07-16 06:24:00', c: 1, z: 0, s: 0}
+      - name: "2-Manual run"
+        start: "2024-07-23 08:00"
+        end: "2024-07-23 09:00"
+        results:
+          - {t: '2024-07-23 08:05:01', c: 1, z: 0, s: 1}
+          - {t: '2024-07-23 08:05:01', c: 1, z: 1, s: 1}
+          - {t: '2024-07-23 08:11:01', c: 1, z: 1, s: 0}
+          - {t: '2024-07-23 08:11:01', c: 1, z: 0, s: 0}
+          - {t: '2024-07-23 08:12:01', c: 1, z: 0, s: 1}
+          - {t: '2024-07-23 08:12:01', c: 1, z: 2, s: 1}
+          - {t: '2024-07-23 08:24:01', c: 1, z: 2, s: 0}
+          - {t: '2024-07-23 08:24:01', c: 1, z: 0, s: 0}
+  controllers:
+    - name: "Test controller 1"
+      all_zones_config:
+        show:
+          timeline: true
+      zones:
+        - name: "Zone 1"
+        - name: "Zone 2"
+      sequences:
+        - name: "Sequence 1"
+          delay: "0:01:00"
+          schedules:
+            - time: "06:05"
+            - time: "18:05"
+          zones:
+            - zone_id: 1
+              duration: "0:06:00"
+            - zone_id: 2
+              duration: "0:12:00"

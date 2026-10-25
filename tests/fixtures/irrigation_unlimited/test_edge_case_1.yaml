@@ -1,0 +1,31 @@
+irrigation_unlimited:
+  controllers:
+    - name: "Szklarnia"
+      preamble: "00:00:04"
+      postamble: "00:00:04"
+      zones:
+        - name: "Szklarnia"
+          zone_id: szklarnia
+      sequences:
+        - name: "Wiosna, jesień"
+          delay: "00:00:02"
+          schedules:
+            - time: "5:00"
+              month: [apr, may, jun, jul, aug, sep]
+          zones:
+            - zone_id: szklarnia
+              duration: "00:04"
+  testing:
+    enabled: true
+    output_events: false
+    show_log: false
+    autoplay: false
+    times:
+      - name: "1-Normal run"
+        start: "2025-09-02 04:30"
+        end: "2025-09-02 05:30"
+        results:
+          - {t: '2025-09-02 04:59:56', c: 1, z: 0, s: 1}
+          - {t: '2025-09-02 05:00:00', c: 1, z: 1, s: 1}
+          - {t: '2025-09-02 05:04:00', c: 1, z: 1, s: 0}
+          - {t: '2025-09-02 05:04:04', c: 1, z: 0, s: 0}

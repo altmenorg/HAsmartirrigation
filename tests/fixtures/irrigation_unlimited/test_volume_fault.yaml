@@ -1,0 +1,87 @@
+default_config:
+
+homeassistant:
+  unit_system: metric
+  time_zone: Australia/Sydney
+  name: Opera House
+  latitude: -33.85951127367736
+  longitude: 151.22225761413577
+  elevation: 0
+
+# Dummy sensor
+input_text:
+  dummy_sensor:
+    name: Dummy Sensor
+    initial: 4.6
+
+irrigation_unlimited:
+  controllers:
+    - name: Green House
+      # entity_id: switch.vp_master_esp_valve
+      preamble: "0:00:10"
+      postamble: "0:00:10"
+      volume:
+        entity_id: "input_text.dummy_sensor"
+      all_zones_config:
+        volume:
+          entity_id: "input_text.dummy_sensor"
+          volume_scale: 1
+          volume_precision: 3
+          flow_rate_scale: 60
+          flow_rate_precision: 3
+      zones:
+        - name: Pot Plants
+          zone_id: pot_plants
+        - name: "-"
+        - name: Upper Beds
+          zone_id: upper_beds
+        - name: Lower Beds
+          zone_id: lower_beds
+        - name: "-"
+        - name: "-"
+        - name: "-"
+        - name: "-"
+      sequences:
+        - name: Pots
+          sequence_id: pots
+          delay: 0:00:10
+          schedules:
+            - name: Dawn
+              schedule_id: pots_dawn
+              time: 05:45:24
+          zones:
+            - zone_id: pot_plants
+              duration: 0:01:00
+        - name: Vege Beds
+          sequence_id: vege_beds
+          delay: 0:00:10
+          schedules:
+            - name: Dawn
+              schedule_id: vege_beds_dawn
+              time: 04:45
+          zones:
+            - zone_id: upper_beds
+              duration: 0:20:00
+            - zone_id: lower_beds
+              duration: 0:20:00
+  testing:
+    enabled: true
+    speed: 1.0
+    output_events: false
+    show_log: false
+    autoplay: false
+    times:
+      - name: "1-Normal run"
+        start: "2025-10-31 04:00"
+        end: "2025-10-31 06:00"
+        results:
+          - {t: '2025-10-31 04:44:50', c: 1, z: 0, s: 1}
+          - {t: '2025-10-31 04:45:00', c: 1, z: 3, s: 1}
+          - {t: '2025-10-31 05:03:24', c: 1, z: 3, s: 0}
+          - {t: '2025-10-31 05:03:34', c: 1, z: 4, s: 1}
+          - {t: '2025-10-31 05:21:58', c: 1, z: 4, s: 0}
+          - {t: '2025-10-31 05:22:08', c: 1, z: 0, s: 0}
+          - {t: '2025-10-31 05:45:14', c: 1, z: 0, s: 1}
+          - {t: '2025-10-31 05:45:24', c: 1, z: 1, s: 1}
+          - {t: '2025-10-31 05:46:14', c: 1, z: 1, s: 0}
+          - {t: '2025-10-31 05:46:24', c: 1, z: 0, s: 0}

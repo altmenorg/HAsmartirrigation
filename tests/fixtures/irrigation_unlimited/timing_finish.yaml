@@ -1,0 +1,72 @@
+default_config:
+
+irrigation_unlimited:
+  granularity: 10
+  refresh_interval: 2000
+  testing:
+    enabled: true
+    speed: 1.0
+    output_events: false
+    show_log: false
+    autoplay: false
+    times:
+      - name: '1-Zone finish at'
+        start: '2021-01-04 03:00'
+        end: '2021-01-04 04:00'
+        results:
+          - {t: '2021-01-04 03:10:00', c: 1, z: 0, s: 1}
+          - {t: '2021-01-04 03:10:00', c: 1, z: 1, s: 1}
+          - {t: '2021-01-04 03:15:00', c: 1, z: 2, s: 1}
+          - {t: '2021-01-04 03:20:00', c: 1, z: 1, s: 0}
+          - {t: '2021-01-04 03:25:00', c: 1, z: 2, s: 0}
+          - {t: '2021-01-04 03:25:00', c: 1, z: 0, s: 0}
+      - name: '2-Sequence finish at'
+        start: '2021-01-04 06:00'
+        end: '2021-01-04 07:00'
+        results:
+          - {t: '2021-01-04 06:19:00', c: 1, z: 0, s: 1}
+          - {t: '2021-01-04 06:19:00', c: 1, z: 1, s: 1}
+          - {t: '2021-01-04 06:24:00', c: 1, z: 1, s: 0}
+          - {t: '2021-01-04 06:24:00', c: 1, z: 0, s: 0}
+          - {t: '2021-01-04 06:25:00', c: 1, z: 0, s: 1}
+          - {t: '2021-01-04 06:25:00', c: 1, z: 2, s: 1}
+          - {t: '2021-01-04 06:30:00', c: 1, z: 2, s: 0}
+          - {t: '2021-01-04 06:30:00', c: 1, z: 0, s: 0}
+      - name: '3-Sequence finish at with duration'
+        start: '2021-01-04 07:00'
+        end: '2021-01-04 08:00'
+        results:
+          - {t: '2021-01-04 07:15:00', c: 1, z: 0, s: 1}
+          - {t: '2021-01-04 07:15:00', c: 1, z: 1, s: 1}
+          - {t: '2021-01-04 07:22:00', c: 1, z: 1, s: 0}
+          - {t: '2021-01-04 07:22:00', c: 1, z: 0, s: 0}
+          - {t: '2021-01-04 07:23:00', c: 1, z: 0, s: 1}
+          - {t: '2021-01-04 07:23:00', c: 1, z: 2, s: 1}
+          - {t: '2021-01-04 07:30:00', c: 1, z: 2, s: 0}
+          - {t: '2021-01-04 07:30:00', c: 1, z: 0, s: 0}
+  controllers:
+    - name: 'Hauptventil'
+      zones:
+        - name: 'Zone 1'
+          schedules:
+            - time: "03:20"
+              anchor: finish
+              duration: "00:10"
+        - name: 'Zone 2'
+          schedules:
+            - time: "03:25"
+              anchor: finish
+              duration: "00:10"
+      sequences:
+        - name: "Multi zone"
+          duration: "00:05"
+          delay: "00:01"
+          schedules:
+            - time: "06:30"
+              anchor: finish
+            - time: "07:30"
+              anchor: finish
+              duration: "00:15"
+          zones:
+            - zone_id: 1
+            - zone_id: 2

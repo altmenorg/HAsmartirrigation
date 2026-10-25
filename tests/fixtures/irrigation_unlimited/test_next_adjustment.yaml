@@ -1,0 +1,77 @@
+irrigation_unlimited:
+  controllers:
+    - name: "Rain Bird RC2"
+      enabled: true
+      zones:
+        - name: "Rasen Eingang"
+          enabled: true
+          # entity_id: "switch.rain_bird_z1_rasen_eingang"
+        - name: "Rasen Feige"
+          enabled: true
+          # entity_id: "switch.rain_bird_z2_rasen_feige"
+        - name: "Rasen Magnolie"
+          enabled: true
+          # entity_id: "switch.rain_bird_z3_rasen_magnolie"
+        - name: "Rasen vorne"
+          enabled: true
+          # entity_id: "switch.rain_bird_z4_rasen_vorne"
+        - name: "Rasen hinten"
+          enabled: true
+          # entity_id: "switch.rain_bird_z5_rasen_hinten"
+        - name: "Hecken Treppe"
+          enabled: true
+          # entity_id: "switch.rain_bird_z6_hecken_treppe"
+        - name: "Beet oben"
+          enabled: true
+          # entity_id: "switch.rain_bird_z7_beet_oben"
+        - name: "Beet unten"
+          enabled: true
+          # entity_id: "switch.rain_bird_z8_beet_unten"
+      sequences:
+        - name: "Rasen"
+          enabled: true
+          schedules:
+            - time: "06:00"
+              duration: "00:50"
+          zones:
+            - zone_id: 1
+              enabled: true
+              duration: "00:10"
+            - zone_id: 2
+              enabled: true
+              duration: "00:10"
+            - zone_id: 3
+              enabled: true
+              duration: "00:10"
+            - zone_id: 4
+              enabled: true
+              duration: "00:10"
+            - zone_id: 5
+              enabled: true
+              duration: "00:10"
+        - name: "Beete"
+          enabled: true
+          schedules:
+            - time: "05:00"
+              duration: "01:00"
+          zones:
+            - zone_id: 6
+              enabled: true
+              duration: "00:20"
+            - zone_id: 7
+              enabled: true
+              duration: "00:20"
+            - zone_id: 8
+              enabled: true
+              duration: "00:20"
+  testing:
+    enabled: true
+    speed: 1.0
+    output_events: false
+    show_log: false
+    autoplay: false
+    times:
+      - name: "1-Normal run"
+        start: "2023-08-09 08:38"
+        end: "2023-08-09 10:00"
+        results: []

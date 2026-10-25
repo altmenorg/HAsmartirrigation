@@ -1,0 +1,49 @@
+default_config:
+
+irrigation_unlimited:
+  refresh_interval: 2000
+  testing:
+    enabled: true
+    speed: 1.0
+    output_events: false
+    show_log: false
+    autoplay: false
+    times:
+      - name: "1-Sequence 1"
+        start: "2023-10-24 06:00"
+        end: "2023-10-24 07:00"
+        results:
+          - {t: '2023-10-24 06:05', c: 1, z: 0, s: 1}
+          - {t: '2023-10-24 06:05', c: 1, z: 1, s: 1}
+          - {t: '2023-10-24 06:11', c: 1, z: 1, s: 0}
+          - {t: '2023-10-24 06:11', c: 1, z: 0, s: 0}
+          - {t: '2023-10-24 06:12', c: 1, z: 0, s: 1}
+          - {t: '2023-10-24 06:12', c: 1, z: 2, s: 1}
+          - {t: '2023-10-24 06:24', c: 1, z: 2, s: 0}
+          - {t: '2023-10-24 06:24', c: 1, z: 0, s: 0}
+  controllers:
+    - name: "Test controller 1"
+      user:
+        area: My Farm
+        picture: /my_pic.jpg
+      all_zones_config:
+        user:
+          actuator: KNX 6.1
+      zones:
+        - name: "Zone 1"
+          user:
+            area: Eastern Pastures
+            flow_rate_gallon_per_minute: 25
+            picture: /my_pic.jpg
+            gps: 42.746635,-75.770045
+        - name: "Zone 2"
+      sequences:
+        - name: "Sequence 1"
+          delay: "0:01:00"
+          schedules:
+            - time: "06:05"
+          zones:
+            - zone_id: 1
+              duration: "0:06:00"
+            - zone_id: 2
+              duration: "0:12:00"

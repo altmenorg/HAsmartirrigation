@@ -1,0 +1,40 @@
+default_config:
+
+irrigation_unlimited:
+  controllers:
+    - name: "Garden"
+      zones:
+        - name: "East"
+          schedules:
+            - name: "East schedule"
+              time:
+                cron: "60 * * * *"
+              duration: "00:10"
+        - name: "South"
+        - name: "North"
+      sequences:
+        schedules:
+          - name: "Sequence schedule"
+            time:
+              cron: "* 60 * * *"
+        duration: "00:10"
+        delay: "00:02"
+        zones:
+          - zone_id: 1
+          - zone_id: 2
+          - zone_id: 3
+  testing:
+    enabled: true
+    speed: 600.0
+    output_events: false
+    show_log: false
+    autoplay: false
+    times:
+      - name: "1-Zone 1"
+        start: "2021-01-04 01:00"
+        end: "2021-01-04 06:00"
+        results: []
+      - name: "2-Sequence 1"
+        start: "2021-01-04 06:00"
+        end: "2021-01-04 11:00"
+        results: []

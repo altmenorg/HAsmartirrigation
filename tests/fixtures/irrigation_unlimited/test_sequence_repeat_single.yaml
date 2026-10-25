@@ -1,0 +1,32 @@
+irrigation_unlimited:
+  controllers:
+    - name: "Controleur 1"
+      zones:
+        - name: Zone 1
+      sequences:
+        - name: jour
+          duration: "00:05"
+          delay: "00:01"
+          repeat: 2
+          schedules:
+            - time: "12:00"
+          zones:
+            - zone_id: 1
+  testing:
+    enabled: true
+    output_events: false
+    show_log: false
+    autoplay: false
+    times:
+      - name: "1-Normal run"
+        start: "2024-11-11 11:55"
+        end: "2024-11-11 12:30"
+        results:
+          - {t: '2024-11-11 12:00:00', c: 1, z: 0, s: 1}
+          - {t: '2024-11-11 12:00:00', c: 1, z: 1, s: 1}
+          - {t: '2024-11-11 12:05:00', c: 1, z: 1, s: 0}
+          - {t: '2024-11-11 12:05:00', c: 1, z: 0, s: 0}
+          - {t: '2024-11-11 12:06:00', c: 1, z: 0, s: 1}
+          - {t: '2024-11-11 12:06:00', c: 1, z: 1, s: 1}
+          - {t: '2024-11-11 12:11:00', c: 1, z: 1, s: 0}
+          - {t: '2024-11-11 12:11:00', c: 1, z: 0, s: 0}

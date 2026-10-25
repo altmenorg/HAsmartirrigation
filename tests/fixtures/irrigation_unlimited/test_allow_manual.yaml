@@ -1,0 +1,74 @@
+default_config:
+
+irrigation_unlimited:
+  refresh_interval: 2000
+  testing:
+    enabled: true
+    speed: 1.0
+    output_events: false
+    show_log: false
+    autoplay: false
+    times:
+      - name: "1-Zone 1 Manual Run"
+        start: "2021-01-04 08:00"
+        end: "2021-01-04 09:00"
+        results:
+          - {t: '2021-01-04 08:00:01', c: 1, z: 0, s: 1}
+          - {t: '2021-01-04 08:00:01', c: 1, z: 1, s: 1}
+          - {t: '2021-01-04 08:10:01', c: 1, z: 1, s: 0}
+          - {t: '2021-01-04 08:10:01', c: 1, z: 0, s: 0}
+      - name: "2-Zone 2 Manual Run"
+        start: "2021-01-04 08:00"
+        end: "2021-01-04 09:00"
+        results: []
+      - name: "3-Zone 3 Manual Run"
+        start: "2021-01-04 08:00"
+        end: "2021-01-04 09:00"
+        results:
+          - {t: '2021-01-04 08:00:01', c: 1, z: 0, s: 1}
+          - {t: '2021-01-04 08:00:01', c: 1, z: 3, s: 1}
+          - {t: '2021-01-04 08:10:01', c: 1, z: 3, s: 0}
+          - {t: '2021-01-04 08:10:01', c: 1, z: 0, s: 0}
+      - name: "4-Zone 3 Manual Run - Controller off"
+        start: "2021-01-04 08:00"
+        end: "2021-01-04 09:00"
+        results:
+          - {t: '2021-01-04 08:00:01', c: 1, z: 0, s: 1}
+          - {t: '2021-01-04 08:00:01', c: 1, z: 3, s: 1}
+          - {t: '2021-01-04 08:10:01', c: 1, z: 3, s: 0}
+          - {t: '2021-01-04 08:10:01', c: 1, z: 0, s: 0}
+      - name: "5-Sequence 1 Manual Run - Controller off"
+        start: "2021-01-04 08:00"
+        end: "2021-01-04 09:00"
+        results:
+          - {t: '2021-01-04 08:00:01', c: 1, z: 0, s: 1}
+          - {t: '2021-01-04 08:00:01', c: 1, z: 1, s: 1}
+          - {t: '2021-01-04 08:06:01', c: 1, z: 1, s: 0}
+          - {t: '2021-01-04 08:06:01', c: 1, z: 0, s: 0}
+          - {t: '2021-01-04 08:07:01', c: 1, z: 0, s: 1}
+          - {t: '2021-01-04 08:07:01', c: 1, z: 3, s: 1}
+          - {t: '2021-01-04 08:25:01', c: 1, z: 3, s: 0}
+          - {t: '2021-01-04 08:25:01', c: 1, z: 0, s: 0}
+  controllers:
+    - name: "Test controller 1"
+      all_zones_config:
+        allow_manual: true
+      zones:
+        - name: "Zone 1"
+          enabled: false
+        - name: "Zone 2"
+          enabled: false
+          allow_manual: false
+        - name: "Zone 3"
+      sequences:
+        - name: "Sequence 1"
+          delay: "0:01:00"
+          schedules:
+            - time: '06:00'
+          zones:
+            - zone_id: 1
+              duration: "0:06:00"
+            - zone_id: 2
+              duration: "0:12:00"
+            - zone_id: 3
+              duration: "0:18:00"

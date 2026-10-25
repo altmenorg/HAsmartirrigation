@@ -1,0 +1,73 @@
+default_config:
+
+# Dummy switches
+input_boolean:
+  dummy_switch_c1_m:
+    name: Dummy Master Switch
+
+  dummy_switch_c1_z1:
+    name: Dummy Zone Switch 1
+
+  dummy_switch_c1_z2:
+    name: Dummy Zone Switch 2
+
+  dummy_switch_c1_z3:
+    name: Dummy Zone Switch 3
+
+  dummy_switch_c1_z4:
+    name: Dummy Zone Switch 4
+
+irrigation_unlimited:
+  testing:
+    enabled: true
+    speed: 1.0
+    output_events: false
+    show_log: false
+    autoplay: false
+    times:
+      - name: "1-Sequence 1"
+        start: "2025-09-21 06:00"
+        end: "2025-09-21 07:00"
+        results:
+          - {t: '2025-09-21 06:05:00', c: 1, z: 0, s: 1}
+          - {t: '2025-09-21 06:05:00', c: 1, z: 1, s: 1}
+          - {t: '2025-09-21 06:11:00', c: 1, z: 1, s: 0}
+          - {t: '2025-09-21 06:11:00', c: 1, z: 2, s: 1}
+          - {t: '2025-09-21 06:11:00', c: 1, z: 3, s: 1}
+          - {t: '2025-09-21 06:23:00', c: 1, z: 2, s: 0}
+          - {t: '2025-09-21 06:23:00', c: 1, z: 3, s: 0}
+          - {t: '2025-09-21 06:23:00', c: 1, z: 4, s: 1}
+          - {t: '2025-09-21 06:51:00', c: 1, z: 4, s: 0}
+          - {t: '2025-09-21 06:51:00', c: 1, z: 0, s: 0}
+  controllers:
+    - name: "Test controller 1"
+      entity_id: input_boolean.dummy_switch_c1_m
+      entity_states: "all"
+      all_zones_config:
+        entity_states: none
+      zones:
+        - name: "Zone 1"
+          entity_id: input_boolean.dummy_switch_c1_z1
+          entity_states: "on"
+        - name: "Zone 2"
+          entity_id: input_boolean.dummy_switch_c1_z2
+          entity_states: "off"
+        - name: "Zone 3"
+          entity_id: input_boolean.dummy_switch_c1_z3
+        - name: "Zone 4"
+          entity_id: input_boolean.dummy_switch_c1_z4
+          entity_states: "on"
+          schedules:
+            - time: "06:31"
+              duration: "0:20:00"
+      sequences:
+        - name: "Seq 1"
+          schedules:
+            - time: "06:05"
+          zones:
+            - zone_id: 1
+              duration: "0:06:00"
+            - zone_id: [2, 3]
+              duration: "0:12:00"
+            - zone_id: 4
+              duration: "0:18:00"

@@ -1,0 +1,79 @@
+default_config:
+
+irrigation_unlimited:
+  controllers:
+    - name: Controller 1
+      zones:
+        - name: "Zone 1"
+          schedules:
+            - name: "Never 1"
+              schedule_id: "schedule_1"
+              time: '06:10'
+              duration: '00:10'
+              month: [feb]
+              day: [31]
+        - name: "Zone 2"
+          zone_id: "1" # Conflicts with Zone 1
+          schedules:
+            - name: "Never 2"
+              schedule_id: "schedule_2"
+              time: '06:30'
+              duration: '00:20'
+              month: [feb]
+              day: [31]
+        - name: "Zone 3"
+          zone_id: "zone_3"
+          schedules:
+            - name: "Never 3"
+              schedule_id: "schedule_3"
+              time: '06:30'
+              duration: '00:20'
+              month: [feb]
+              day: [31]
+        - name: "Zone 4"
+          zone_id: "zone_3" # Conflicts with Zone 3
+      sequences:
+        - name: "Sequence 1"
+          sequence_id: "sequence_1"
+          schedules:
+            - name: Never
+              schedule_id: "schedule_2" # Conflicts with Zone 2, Schedule 1
+              time: "21:00"
+              month: [feb]
+              day: [31]
+          zones:
+            - zone_id: 1
+            - zone_id: [1, "no_zone"] # Orphaned
+        - name: "Sequence 2"
+          sequence_id: "sequence_1" # Conflicts with Sequence 1
+          zones:
+            - zone_id: 1
+    - name: Controller 2
+      controller_id: "1" # Conflicts with controller 1
+      zones:
+        - name: "Zone 1"
+      sequences:
+        - name: "Sequence 1"
+          schedules:
+            - name: Never
+              schedule_id: "controller_2_schedule_2"
+              time: "21:00"
+              month: [feb]
+              day: [31]
+          zones:
+            - zone_id: 1
+    - name: Controller 3
+      controller_id: "controller_3"
+      zones:
+        - name: "Zone 1"
+    - name: Controller 4
+      controller_id: "controller_3" # Conflicts with controller 3
+      zones:
+        - name: "Zone 1"
+          schedules:
+            - name: "Never again"
+              schedule_id: "schedule_1" # Conflicts with controller 1, zone 1, schedule 1
+              time: '07:10'
+              duration: '00:05'
+              month: [feb]
+              day: [31]

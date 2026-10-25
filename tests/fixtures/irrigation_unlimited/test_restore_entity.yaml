@@ -1,0 +1,13 @@
+irrigation_unlimited:
+  controllers:
+    - name: "Test controller 1"
+      zones:
+        - name: "Zone 1"
+        - name: "Zone 2"
+      sequences:
+        - zones:
+          - zone_id: 1
+          - zone_id: 2
+        - zones:
+          - zone_id: 1
+          - zone_id: 2
