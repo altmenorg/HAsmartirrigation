@@ -16,12 +16,12 @@ homeassistant>=2026.9.4
 
 # Development tools (matches CI pipeline)
 black>=26.10.1
-ruff>=0.16.10
+ruff>=0.17.1
 isort>=9.0.2
 pre-commit>=4.7.0
 
 # Documentation
-markdown>=3.11.1
+markdown>=3.11.2
 
 # Testing dependencies
 pytest
