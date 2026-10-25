@@ -77,6 +77,10 @@ compact: true
 
 > The card reads its words from the language files, with English as the fallback. The programs block is translated in all 20 languages.
 
+## A card from the community
+
+[Irrigation Zone Card](https://github.com/lweberru/ha_irrigation_zone_card), by [@lweberru](https://github.com/lweberru), is a visual card for one zone at a time: the soil moisture as a ring, the live water balance on a scale with its zero point, the calculated duration, the water used and an optional valve control; the same installation adds Irrigation Overview, a card for the planning, rain and frost protection and the integration-wide actions. It finds a zone's entities from the integration's stable ids, so renamed entities keep working. It is installed from HACS as a custom repository (type Dashboard) and maintained by its author; questions about it go to [its repository](https://github.com/lweberru/ha_irrigation_zone_card).
+
 > Main page: [Usage](usage.md)<br/>
 > Previous: [Info and History](usage-info.md)<br/>
 > Next: [Entities](usage-entities.md)
