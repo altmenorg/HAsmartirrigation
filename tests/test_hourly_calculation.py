@@ -252,7 +252,13 @@ async def test_on_the_crop_factor_scales_the_et_and_not_the_rain(kc):
     data = await _run(coordinator, zone=_zone(**{const.ZONE_MULTIPLIER: kc}))
     total, _ = _expected_hourly(readings)
 
-    assert data[const.ZONE_DELTA] == pytest.approx(-total * kc + 3.0, rel=1e-4)
+    # Relative and absolute: the day's ET times 1.2 can land within a hundredth
+    # of a millimetre of the 3 mm of rain, depending on the day the test runs,
+    # and a relative tolerance on a result that close to zero asked for
+    # millionths of a millimetre, which the moment of reading alone moves.
+    assert data[const.ZONE_DELTA] == pytest.approx(
+        -total * kc + 3.0, rel=1e-4, abs=1e-4
+    )
 
 
 @pytest.mark.asyncio
