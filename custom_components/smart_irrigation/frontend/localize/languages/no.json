@@ -499,7 +499,8 @@
       },
       "description": "Legg til en eller flere sensorgupper som henter værdata fra Weather service, fra sensorer eller en kombinasjon av disse. Du kan tilordne hver sensorguppe til en eller flere soner",
       "labels": {
-        "mapping-name": "Navn"
+        "mapping-name": "Navn",
+        "show-more": "{count, plural, one {Vis # sensorgruppe til} other {Vis # sensorgrupper til}}"
       },
       "no_items": "Det er ingen definerte sensorgupper ennå.",
       "title": "Sensorgupper",

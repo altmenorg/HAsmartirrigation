@@ -499,7 +499,8 @@
       },
       "description": "Pridajte jednu alebo viac skupín senzorov, ktoré získavajú údaje o počasí z Weather service, zo senzorov alebo ich kombinácie. Každú skupinu senzorov môžete namapovať na jednu alebo viac zón",
       "labels": {
-        "mapping-name": "Názov"
+        "mapping-name": "Názov",
+        "show-more": "{count, plural, one {Zobraziť # ďalšiu skupinu senzorov} few {Zobraziť # ďalšie skupiny senzorov} other {Zobraziť # ďalších skupín senzorov}}"
       },
       "no_items": "Zatiaľ nie je definovaná žiadna skupina senzorov.",
       "title": "Skupiny senzorov",
