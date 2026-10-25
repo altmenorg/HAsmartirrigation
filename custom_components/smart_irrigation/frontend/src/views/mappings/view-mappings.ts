@@ -72,6 +72,7 @@ import {
   getOptionsForMappingType,
   handleError,
   newGroupSource,
+  visibleGroups,
 } from "../../helpers";
 import {
   mdiConsoleNetworkOutline,
@@ -120,6 +121,10 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
   // The groups edited since the last save, by id, each at its latest state.
   private _pendingMappings = new Map<number, SmartIrrigationMapping>();
   private globalDebounceTimer: number | null = null;
+
+  // Only the first groups are drawn until asked for the rest; a group added
+  // here is shown even when it lands beyond them.
+  private showAllMappings = false;
 
   // Cache for rendered mapping cards to avoid re-rendering unchanged ones
   private mappingCache = new Map<string, TemplateResult>();
@@ -467,6 +472,8 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         // Clear the input field on successful save
         this.mappingNameInput.value = "";
         this.newMappingName = "";
+        // The new group goes to the end of the list: show it.
+        this.showAllMappings = true;
         // Refresh data to get the server-assigned ID
         return this._fetchData();
       })
@@ -1921,24 +1928,28 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
 
   private renderMappingsList(): TemplateResult {
     // Batch render mappings to avoid blocking the main thread
-    const mappingsToRender = this.mappings.slice(
-      0,
-      Math.min(this.mappings.length, 10),
+    const { shown, hidden } = visibleGroups(
+      this.mappings,
+      this.showAllMappings,
     );
-    const remainingMappings = this.mappings.slice(10);
 
     return html`
       ${repeat(
-        mappingsToRender,
+        shown,
         (mapping) => mapping.id ?? mapping.name,
         (mapping, index) => this.renderMappingCard(mapping, index),
       )}
-      ${remainingMappings.length > 0
+      ${hidden > 0
         ? html`
             <div class="si-form-actions">
               ${this._actionBtn(
                 mdiPlus,
-                `Load ${remainingMappings.length} more mappings...`,
+                localize(
+                  "panels.mappings.labels.show-more",
+                  this.hass!.language,
+                  "{count}",
+                  hidden,
+                ),
                 () => this.loadMoreMappings(),
               )}
             </div>
@@ -2163,8 +2174,9 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
   }
 
   private loadMoreMappings(): void {
-    // This would implement pagination/virtual scrolling
-    // For now, just render all mappings
+    // Only scheduling an update drew the same first groups again, so a group
+    // beyond them could not be reached at all.
+    this.showAllMappings = true;
     this._scheduleUpdate();
   }
 

@@ -29,6 +29,7 @@ import {
   groupsWithRainFromService,
   missingRequiredSources,
   newGroupSource,
+  visibleGroups,
   setupRainToAsk,
   setupSourcesForEt,
   setupZoneMethod,
@@ -367,5 +368,36 @@ describe("groupsWithRainFromService", () => {
       );
     expect(say(1)).toMatch(/^1 sensor group still takes its rain/);
     expect(say(2)).toMatch(/^2 sensor groups still take their rain/);
+  });
+});
+
+describe("visibleGroups", () => {
+  const groups = Array.from({ length: 12 }, (_, i) => i);
+
+  it("draws the first ten and counts the rest", () => {
+    expect(visibleGroups(groups, false)).toEqual({
+      shown: groups.slice(0, 10),
+      hidden: 2,
+    });
+  });
+
+  it("draws every group once asked, the eleventh included", () => {
+    const { shown, hidden } = visibleGroups(groups, true);
+    expect(shown).toContain(10);
+    expect(shown).toHaveLength(12);
+    expect(hidden).toBe(0);
+  });
+
+  it("has nothing to show more of with ten groups or fewer", () => {
+    expect(visibleGroups(groups.slice(0, 10), false).hidden).toBe(0);
+  });
+
+  it("names the button for what it shows", () => {
+    expect(
+      localize("panels.mappings.labels.show-more", "en", "{count}", 1),
+    ).toBe("Show 1 more sensor group");
+    expect(
+      localize("panels.mappings.labels.show-more", "en", "{count}", 2),
+    ).toBe("Show 2 more sensor groups");
   });
 });
