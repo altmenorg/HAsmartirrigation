@@ -4,39 +4,39 @@
      * Copyright 2019 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
      */
-const i=globalThis,a=i.ShadowRoot&&(void 0===i.ShadyCSS||i.ShadyCSS.nativeShadow)&&"adoptedStyleSheets"in Document.prototype&&"replace"in CSSStyleSheet.prototype,n=Symbol(),r=new WeakMap;let o=class{constructor(e,t,s){if(this._$cssResult$=!0,s!==n)throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");this.cssText=e,this.t=t}get styleSheet(){let e=this.o;const t=this.t;if(a&&void 0===e){const s=void 0!==t&&1===t.length;s&&(e=r.get(t)),void 0===e&&((this.o=e=new CSSStyleSheet).replaceSync(this.cssText),s&&r.set(t,e))}return e}toString(){return this.cssText}};const l=(e,...t)=>{const s=1===e.length?e[0]:t.reduce(((t,s,i)=>t+(e=>{if(!0===e._$cssResult$)return e.cssText;if("number"==typeof e)return e;throw Error("Value passed to 'css' function must be a 'css' function result: "+e+". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.")})(s)+e[i+1]),e[0]);return new o(s,e,n)},h=a?e=>e:e=>e instanceof CSSStyleSheet?(e=>{let t="";for(const s of e.cssRules)t+=s.cssText;return(e=>new o("string"==typeof e?e:e+"",void 0,n))(t)})(e):e
+const i=globalThis,a=i.ShadowRoot&&(void 0===i.ShadyCSS||i.ShadyCSS.nativeShadow)&&"adoptedStyleSheets"in Document.prototype&&"replace"in CSSStyleSheet.prototype,n=Symbol(),r=new WeakMap;let o=class{constructor(e,t,s){if(this._$cssResult$=!0,s!==n)throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");this.cssText=e,this.t=t}get styleSheet(){let e=this.o;const t=this.t;if(a&&void 0===e){const s=void 0!==t&&1===t.length;s&&(e=r.get(t)),void 0===e&&((this.o=e=new CSSStyleSheet).replaceSync(this.cssText),s&&r.set(t,e))}return e}toString(){return this.cssText}};const l=(e,...t)=>{const s=1===e.length?e[0]:t.reduce((t,s,i)=>t+(e=>{if(!0===e._$cssResult$)return e.cssText;if("number"==typeof e)return e;throw Error("Value passed to 'css' function must be a 'css' function result: "+e+". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.")})(s)+e[i+1],e[0]);return new o(s,e,n)},h=a?e=>e:e=>e instanceof CSSStyleSheet?(e=>{let t="";for(const s of e.cssRules)t+=s.cssText;return(e=>new o("string"==typeof e?e:e+"",void 0,n))(t)})(e):e,{is:d,defineProperty:c,getOwnPropertyDescriptor:u,getOwnPropertyNames:p,getOwnPropertySymbols:g,getPrototypeOf:m}=Object,v=globalThis,f=v.trustedTypes,_=f?f.emptyScript:"",y=v.reactiveElementPolyfillSupport,b=(e,t)=>e,w={toAttribute(e,t){switch(t){case Boolean:e=e?_:null;break;case Object:case Array:e=null==e?e:JSON.stringify(e)}return e},fromAttribute(e,t){let s=e;switch(t){case Boolean:s=null!==e;break;case Number:s=null===e?null:Number(e);break;case Object:case Array:try{s=JSON.parse(e)}catch(e){s=null}}return s}},$=(e,t)=>!d(e,t),x={attribute:!0,type:String,converter:w,reflect:!1,useDefault:!1,hasChanged:$};
 /**
      * @license
      * Copyright 2017 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
-     */,{is:d,defineProperty:c,getOwnPropertyDescriptor:u,getOwnPropertyNames:p,getOwnPropertySymbols:g,getPrototypeOf:m}=Object,v=globalThis,f=v.trustedTypes,_=f?f.emptyScript:"",y=v.reactiveElementPolyfillSupport,b=(e,t)=>e,w={toAttribute(e,t){switch(t){case Boolean:e=e?_:null;break;case Object:case Array:e=null==e?e:JSON.stringify(e)}return e},fromAttribute(e,t){let s=e;switch(t){case Boolean:s=null!==e;break;case Number:s=null===e?null:Number(e);break;case Object:case Array:try{s=JSON.parse(e)}catch(e){s=null}}return s}},$=(e,t)=>!d(e,t),x={attribute:!0,type:String,converter:w,reflect:!1,useDefault:!1,hasChanged:$};Symbol.metadata??=Symbol("metadata"),v.litPropertyMetadata??=new WeakMap;let k=class extends HTMLElement{static addInitializer(e){this._$Ei(),(this.l??=[]).push(e)}static get observedAttributes(){return this.finalize(),this._$Eh&&[...this._$Eh.keys()]}static createProperty(e,t=x){if(t.state&&(t.attribute=!1),this._$Ei(),this.prototype.hasOwnProperty(e)&&((t=Object.create(t)).wrapped=!0),this.elementProperties.set(e,t),!t.noAccessor){const s=Symbol(),i=this.getPropertyDescriptor(e,s,t);void 0!==i&&c(this.prototype,e,i)}}static getPropertyDescriptor(e,t,s){const{get:i,set:a}=u(this.prototype,e)??{get(){return this[t]},set(e){this[t]=e}};return{get:i,set(t){const n=i?.call(this);a?.call(this,t),this.requestUpdate(e,n,s)},configurable:!0,enumerable:!0}}static getPropertyOptions(e){return this.elementProperties.get(e)??x}static _$Ei(){if(this.hasOwnProperty(b("elementProperties")))return;const e=m(this);e.finalize(),void 0!==e.l&&(this.l=[...e.l]),this.elementProperties=new Map(e.elementProperties)}static finalize(){if(this.hasOwnProperty(b("finalized")))return;if(this.finalized=!0,this._$Ei(),this.hasOwnProperty(b("properties"))){const e=this.properties,t=[...p(e),...g(e)];for(const s of t)this.createProperty(s,e[s])}const e=this[Symbol.metadata];if(null!==e){const t=litPropertyMetadata.get(e);if(void 0!==t)for(const[e,s]of t)this.elementProperties.set(e,s)}this._$Eh=new Map;for(const[e,t]of this.elementProperties){const s=this._$Eu(e,t);void 0!==s&&this._$Eh.set(s,e)}this.elementStyles=this.finalizeStyles(this.styles)}static finalizeStyles(e){const t=[];if(Array.isArray(e)){const s=new Set(e.flat(1/0).reverse());for(const e of s)t.unshift(h(e))}else void 0!==e&&t.push(h(e));return t}static _$Eu(e,t){const s=t.attribute;return!1===s?void 0:"string"==typeof s?s:"string"==typeof e?e.toLowerCase():void 0}constructor(){super(),this._$Ep=void 0,this.isUpdatePending=!1,this.hasUpdated=!1,this._$Em=null,this._$Ev()}_$Ev(){this._$ES=new Promise((e=>this.enableUpdating=e)),this._$AL=new Map,this._$E_(),this.requestUpdate(),this.constructor.l?.forEach((e=>e(this)))}addController(e){(this._$EO??=new Set).add(e),void 0!==this.renderRoot&&this.isConnected&&e.hostConnected?.()}removeController(e){this._$EO?.delete(e)}_$E_(){const e=new Map,t=this.constructor.elementProperties;for(const s of t.keys())this.hasOwnProperty(s)&&(e.set(s,this[s]),delete this[s]);e.size>0&&(this._$Ep=e)}createRenderRoot(){const e=this.shadowRoot??this.attachShadow(this.constructor.shadowRootOptions);return((e,t)=>{if(a)e.adoptedStyleSheets=t.map((e=>e instanceof CSSStyleSheet?e:e.styleSheet));else for(const s of t){const t=document.createElement("style"),a=i.litNonce;void 0!==a&&t.setAttribute("nonce",a),t.textContent=s.cssText,e.appendChild(t)}})(e,this.constructor.elementStyles),e}connectedCallback(){this.renderRoot??=this.createRenderRoot(),this.enableUpdating(!0),this._$EO?.forEach((e=>e.hostConnected?.()))}enableUpdating(e){}disconnectedCallback(){this._$EO?.forEach((e=>e.hostDisconnected?.()))}attributeChangedCallback(e,t,s){this._$AK(e,s)}_$ET(e,t){const s=this.constructor.elementProperties.get(e),i=this.constructor._$Eu(e,s);if(void 0!==i&&!0===s.reflect){const a=(void 0!==s.converter?.toAttribute?s.converter:w).toAttribute(t,s.type);this._$Em=e,null==a?this.removeAttribute(i):this.setAttribute(i,a),this._$Em=null}}_$AK(e,t){const s=this.constructor,i=s._$Eh.get(e);if(void 0!==i&&this._$Em!==i){const e=s.getPropertyOptions(i),a="function"==typeof e.converter?{fromAttribute:e.converter}:void 0!==e.converter?.fromAttribute?e.converter:w;this._$Em=i;const n=a.fromAttribute(t,e.type);this[i]=n??this._$Ej?.get(i)??n,this._$Em=null}}requestUpdate(e,t,s,i=!1,a){if(void 0!==e){const n=this.constructor;if(!1===i&&(a=this[e]),s??=n.getPropertyOptions(e),!((s.hasChanged??$)(a,t)||s.useDefault&&s.reflect&&a===this._$Ej?.get(e)&&!this.hasAttribute(n._$Eu(e,s))))return;this.C(e,t,s)}!1===this.isUpdatePending&&(this._$ES=this._$EP())}C(e,t,{useDefault:s,reflect:i,wrapped:a},n){s&&!(this._$Ej??=new Map).has(e)&&(this._$Ej.set(e,n??t??this[e]),!0!==a||void 0!==n)||(this._$AL.has(e)||(this.hasUpdated||s||(t=void 0),this._$AL.set(e,t)),!0===i&&this._$Em!==e&&(this._$Eq??=new Set).add(e))}async _$EP(){this.isUpdatePending=!0;try{await this._$ES}catch(e){Promise.reject(e)}const e=this.scheduleUpdate();return null!=e&&await e,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){if(!this.isUpdatePending)return;if(!this.hasUpdated){if(this.renderRoot??=this.createRenderRoot(),this._$Ep){for(const[e,t]of this._$Ep)this[e]=t;this._$Ep=void 0}const e=this.constructor.elementProperties;if(e.size>0)for(const[t,s]of e){const{wrapped:e}=s,i=this[t];!0!==e||this._$AL.has(t)||void 0===i||this.C(t,void 0,s,i)}}let e=!1;const t=this._$AL;try{e=this.shouldUpdate(t),e?(this.willUpdate(t),this._$EO?.forEach((e=>e.hostUpdate?.())),this.update(t)):this._$EM()}catch(t){throw e=!1,this._$EM(),t}e&&this._$AE(t)}willUpdate(e){}_$AE(e){this._$EO?.forEach((e=>e.hostUpdated?.())),this.hasUpdated||(this.hasUpdated=!0,this.firstUpdated(e)),this.updated(e)}_$EM(){this._$AL=new Map,this.isUpdatePending=!1}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$ES}shouldUpdate(e){return!0}update(e){this._$Eq&&=this._$Eq.forEach((e=>this._$ET(e,this[e]))),this._$EM()}updated(e){}firstUpdated(e){}};k.elementStyles=[],k.shadowRootOptions={mode:"open"},k[b("elementProperties")]=new Map,k[b("finalized")]=new Map,y?.({ReactiveElement:k}),(v.reactiveElementVersions??=[]).push("2.1.2");
-/**
-     * @license
-     * Copyright 2017 Google LLC
-     * SPDX-License-Identifier: BSD-3-Clause
-     */
-const S=globalThis,z=S.trustedTypes,M=z?z.createPolicy("lit-html",{createHTML:e=>e}):void 0,T="$lit$",O=`lit$${Math.random().toFixed(9).slice(2)}$`,A="?"+O,E=`<${A}>`,C=document,H=()=>C.createComment(""),D=e=>null===e||"object"!=typeof e&&"function"!=typeof e,N=Array.isArray,R="[ \t\n\f\r]",P=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,j=/-->/g,L=/>/g,I=RegExp(`>|${R}(?:([^\\s"'>=/]+)(${R}*=${R}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),F=/'/g,B=/"/g,U=/^(?:script|style|textarea|title)$/i,Y=e=>(t,...s)=>({_$litType$:e,strings:t,values:s}),W=Y(1),V=Y(2),Z=Symbol.for("lit-noChange"),G=Symbol.for("lit-nothing"),q=new WeakMap,K=C.createTreeWalker(C,129);function J(e,t){if(!N(e)||!e.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==M?M.createHTML(t):t}class X{constructor({strings:e,_$litType$:t},s){let i;this.parts=[];let a=0,n=0;const r=e.length-1,o=this.parts,[l,h]=((e,t)=>{const s=e.length-1,i=[];let a,n=2===t?"<svg>":3===t?"<math>":"",r=P;for(let t=0;t<s;t++){const s=e[t];let o,l,h=-1,d=0;for(;d<s.length&&(r.lastIndex=d,l=r.exec(s),null!==l);)d=r.lastIndex,r===P?"!--"===l[1]?r=j:void 0!==l[1]?r=L:void 0!==l[2]?(U.test(l[2])&&(a=RegExp("</"+l[2],"g")),r=I):void 0!==l[3]&&(r=I):r===I?">"===l[0]?(r=a??P,h=-1):void 0===l[1]?h=-2:(h=r.lastIndex-l[2].length,o=l[1],r=void 0===l[3]?I:'"'===l[3]?B:F):r===B||r===F?r=I:r===j||r===L?r=P:(r=I,a=void 0);const c=r===I&&e[t+1].startsWith("/>")?" ":"";n+=r===P?s+E:h>=0?(i.push(o),s.slice(0,h)+T+s.slice(h)+O+c):s+O+(-2===h?t:c)}return[J(e,n+(e[s]||"<?>")+(2===t?"</svg>":3===t?"</math>":"")),i]})(e,t);if(this.el=X.createElement(l,s),K.currentNode=this.el.content,2===t||3===t){const e=this.el.content.firstChild;e.replaceWith(...e.childNodes)}for(;null!==(i=K.nextNode())&&o.length<r;){if(1===i.nodeType){if(i.hasAttributes())for(const e of i.getAttributeNames())if(e.endsWith(T)){const t=h[n++],s=i.getAttribute(e).split(O),r=/([.?@])?(.*)/.exec(t);o.push({type:1,index:a,name:r[2],strings:s,ctor:"."===r[1]?ie:"?"===r[1]?ae:"@"===r[1]?ne:se}),i.removeAttribute(e)}else e.startsWith(O)&&(o.push({type:6,index:a}),i.removeAttribute(e));if(U.test(i.tagName)){const e=i.textContent.split(O),t=e.length-1;if(t>0){i.textContent=z?z.emptyScript:"";for(let s=0;s<t;s++)i.append(e[s],H()),K.nextNode(),o.push({type:2,index:++a});i.append(e[t],H())}}}else if(8===i.nodeType)if(i.data===A)o.push({type:2,index:a});else{let e=-1;for(;-1!==(e=i.data.indexOf(O,e+1));)o.push({type:7,index:a}),e+=O.length-1}a++}}static createElement(e,t){const s=C.createElement("template");return s.innerHTML=e,s}}function Q(e,t,s=e,i){if(t===Z)return t;let a=void 0!==i?s._$Co?.[i]:s._$Cl;const n=D(t)?void 0:t._$litDirective$;return a?.constructor!==n&&(a?._$AO?.(!1),void 0===n?a=void 0:(a=new n(e),a._$AT(e,s,i)),void 0!==i?(s._$Co??=[])[i]=a:s._$Cl=a),void 0!==a&&(t=Q(e,a._$AS(e,t.values),a,i)),t}class ee{constructor(e,t){this._$AV=[],this._$AN=void 0,this._$AD=e,this._$AM=t}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(e){const{el:{content:t},parts:s}=this._$AD,i=(e?.creationScope??C).importNode(t,!0);K.currentNode=i;let a=K.nextNode(),n=0,r=0,o=s[0];for(;void 0!==o;){if(n===o.index){let t;2===o.type?t=new te(a,a.nextSibling,this,e):1===o.type?t=new o.ctor(a,o.name,o.strings,this,e):6===o.type&&(t=new re(a,this,e)),this._$AV.push(t),o=s[++r]}n!==o?.index&&(a=K.nextNode(),n++)}return K.currentNode=C,i}p(e){let t=0;for(const s of this._$AV)void 0!==s&&(void 0!==s.strings?(s._$AI(e,s,t),t+=s.strings.length-2):s._$AI(e[t])),t++}}class te{get _$AU(){return this._$AM?._$AU??this._$Cv}constructor(e,t,s,i){this.type=2,this._$AH=G,this._$AN=void 0,this._$AA=e,this._$AB=t,this._$AM=s,this.options=i,this._$Cv=i?.isConnected??!0}get parentNode(){let e=this._$AA.parentNode;const t=this._$AM;return void 0!==t&&11===e?.nodeType&&(e=t.parentNode),e}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(e,t=this){e=Q(this,e,t),D(e)?e===G||null==e||""===e?(this._$AH!==G&&this._$AR(),this._$AH=G):e!==this._$AH&&e!==Z&&this._(e):void 0!==e._$litType$?this.$(e):void 0!==e.nodeType?this.T(e):(e=>N(e)||"function"==typeof e?.[Symbol.iterator])(e)?this.k(e):this._(e)}O(e){return this._$AA.parentNode.insertBefore(e,this._$AB)}T(e){this._$AH!==e&&(this._$AR(),this._$AH=this.O(e))}_(e){this._$AH!==G&&D(this._$AH)?this._$AA.nextSibling.data=e:this.T(C.createTextNode(e)),this._$AH=e}$(e){const{values:t,_$litType$:s}=e,i="number"==typeof s?this._$AC(e):(void 0===s.el&&(s.el=X.createElement(J(s.h,s.h[0]),this.options)),s);if(this._$AH?._$AD===i)this._$AH.p(t);else{const e=new ee(i,this),s=e.u(this.options);e.p(t),this.T(s),this._$AH=e}}_$AC(e){let t=q.get(e.strings);return void 0===t&&q.set(e.strings,t=new X(e)),t}k(e){N(this._$AH)||(this._$AH=[],this._$AR());const t=this._$AH;let s,i=0;for(const a of e)i===t.length?t.push(s=new te(this.O(H()),this.O(H()),this,this.options)):s=t[i],s._$AI(a),i++;i<t.length&&(this._$AR(s&&s._$AB.nextSibling,i),t.length=i)}_$AR(e=this._$AA.nextSibling,t){for(this._$AP?.(!1,!0,t);e!==this._$AB;){const t=e.nextSibling;e.remove(),e=t}}setConnected(e){void 0===this._$AM&&(this._$Cv=e,this._$AP?.(e))}}class se{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(e,t,s,i,a){this.type=1,this._$AH=G,this._$AN=void 0,this.element=e,this.name=t,this._$AM=i,this.options=a,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=G}_$AI(e,t=this,s,i){const a=this.strings;let n=!1;if(void 0===a)e=Q(this,e,t,0),n=!D(e)||e!==this._$AH&&e!==Z,n&&(this._$AH=e);else{const i=e;let r,o;for(e=a[0],r=0;r<a.length-1;r++)o=Q(this,i[s+r],t,r),o===Z&&(o=this._$AH[r]),n||=!D(o)||o!==this._$AH[r],o===G?e=G:e!==G&&(e+=(o??"")+a[r+1]),this._$AH[r]=o}n&&!i&&this.j(e)}j(e){e===G?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,e??"")}}class ie extends se{constructor(){super(...arguments),this.type=3}j(e){this.element[this.name]=e===G?void 0:e}}class ae extends se{constructor(){super(...arguments),this.type=4}j(e){this.element.toggleAttribute(this.name,!!e&&e!==G)}}class ne extends se{constructor(e,t,s,i,a){super(e,t,s,i,a),this.type=5}_$AI(e,t=this){if((e=Q(this,e,t,0)??G)===Z)return;const s=this._$AH,i=e===G&&s!==G||e.capture!==s.capture||e.once!==s.once||e.passive!==s.passive,a=e!==G&&(s===G||i);i&&this.element.removeEventListener(this.name,this,s),a&&this.element.addEventListener(this.name,this,e),this._$AH=e}handleEvent(e){"function"==typeof this._$AH?this._$AH.call(this.options?.host??this.element,e):this._$AH.handleEvent(e)}}class re{constructor(e,t,s){this.element=e,this.type=6,this._$AN=void 0,this._$AM=t,this.options=s}get _$AU(){return this._$AM._$AU}_$AI(e){Q(this,e)}}const oe={I:te},le=S.litHtmlPolyfillSupport;le?.(X,te),(S.litHtmlVersions??=[]).push("3.3.3");const he=globalThis;
-/**
-     * @license
-     * Copyright 2017 Google LLC
-     * SPDX-License-Identifier: BSD-3-Clause
-     */let de=class extends k{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0}createRenderRoot(){const e=super.createRenderRoot();return this.renderOptions.renderBefore??=e.firstChild,e}update(e){const t=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(e),this._$Do=((e,t,s)=>{const i=s?.renderBefore??t;let a=i._$litPart$;if(void 0===a){const e=s?.renderBefore??null;i._$litPart$=a=new te(t.insertBefore(H(),e),e,void 0,s??{})}return a._$AI(e),a})(t,this.renderRoot,this.renderOptions)}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0)}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1)}render(){return Z}};de._$litElement$=!0,de.finalized=!0,he.litElementHydrateSupport?.({LitElement:de});const ce=he.litElementPolyfillSupport;ce?.({LitElement:de}),(he.litElementVersions??=[]).push("4.2.2");
+     */Symbol.metadata??=Symbol("metadata"),v.litPropertyMetadata??=new WeakMap;let k=class extends HTMLElement{static addInitializer(e){this._$Ei(),(this.l??=[]).push(e)}static get observedAttributes(){return this.finalize(),this._$Eh&&[...this._$Eh.keys()]}static createProperty(e,t=x){if(t.state&&(t.attribute=!1),this._$Ei(),this.prototype.hasOwnProperty(e)&&((t=Object.create(t)).wrapped=!0),this.elementProperties.set(e,t),!t.noAccessor){const s=Symbol(),i=this.getPropertyDescriptor(e,s,t);void 0!==i&&c(this.prototype,e,i)}}static getPropertyDescriptor(e,t,s){const{get:i,set:a}=u(this.prototype,e)??{get(){return this[t]},set(e){this[t]=e}};return{get:i,set(t){const n=i?.call(this);a?.call(this,t),this.requestUpdate(e,n,s)},configurable:!0,enumerable:!0}}static getPropertyOptions(e){return this.elementProperties.get(e)??x}static _$Ei(){if(this.hasOwnProperty(b("elementProperties")))return;const e=m(this);e.finalize(),void 0!==e.l&&(this.l=[...e.l]),this.elementProperties=new Map(e.elementProperties)}static finalize(){if(this.hasOwnProperty(b("finalized")))return;if(this.finalized=!0,this._$Ei(),this.hasOwnProperty(b("properties"))){const e=this.properties,t=[...p(e),...g(e)];for(const s of t)this.createProperty(s,e[s])}const e=this[Symbol.metadata];if(null!==e){const t=litPropertyMetadata.get(e);if(void 0!==t)for(const[e,s]of t)this.elementProperties.set(e,s)}this._$Eh=new Map;for(const[e,t]of this.elementProperties){const s=this._$Eu(e,t);void 0!==s&&this._$Eh.set(s,e)}this.elementStyles=this.finalizeStyles(this.styles)}static finalizeStyles(e){const t=[];if(Array.isArray(e)){const s=new Set(e.flat(1/0).reverse());for(const e of s)t.unshift(h(e))}else void 0!==e&&t.push(h(e));return t}static _$Eu(e,t){const s=t.attribute;return!1===s?void 0:"string"==typeof s?s:"string"==typeof e?e.toLowerCase():void 0}constructor(){super(),this._$Ep=void 0,this.isUpdatePending=!1,this.hasUpdated=!1,this._$Em=null,this._$Ev()}_$Ev(){this._$ES=new Promise(e=>this.enableUpdating=e),this._$AL=new Map,this._$E_(),this.requestUpdate(),this.constructor.l?.forEach(e=>e(this))}addController(e){(this._$EO??=new Set).add(e),void 0!==this.renderRoot&&this.isConnected&&e.hostConnected?.()}removeController(e){this._$EO?.delete(e)}_$E_(){const e=new Map,t=this.constructor.elementProperties;for(const s of t.keys())this.hasOwnProperty(s)&&(e.set(s,this[s]),delete this[s]);e.size>0&&(this._$Ep=e)}createRenderRoot(){const e=this.shadowRoot??this.attachShadow(this.constructor.shadowRootOptions);return((e,t)=>{if(a)e.adoptedStyleSheets=t.map(e=>e instanceof CSSStyleSheet?e:e.styleSheet);else for(const s of t){const t=document.createElement("style"),a=i.litNonce;void 0!==a&&t.setAttribute("nonce",a),t.textContent=s.cssText,e.appendChild(t)}})(e,this.constructor.elementStyles),e}connectedCallback(){this.renderRoot??=this.createRenderRoot(),this.enableUpdating(!0),this._$EO?.forEach(e=>e.hostConnected?.())}enableUpdating(e){}disconnectedCallback(){this._$EO?.forEach(e=>e.hostDisconnected?.())}attributeChangedCallback(e,t,s){this._$AK(e,s)}_$ET(e,t){const s=this.constructor.elementProperties.get(e),i=this.constructor._$Eu(e,s);if(void 0!==i&&!0===s.reflect){const a=(void 0!==s.converter?.toAttribute?s.converter:w).toAttribute(t,s.type);this._$Em=e,null==a?this.removeAttribute(i):this.setAttribute(i,a),this._$Em=null}}_$AK(e,t){const s=this.constructor,i=s._$Eh.get(e);if(void 0!==i&&this._$Em!==i){const e=s.getPropertyOptions(i),a="function"==typeof e.converter?{fromAttribute:e.converter}:void 0!==e.converter?.fromAttribute?e.converter:w;this._$Em=i;const n=a.fromAttribute(t,e.type);this[i]=n??this._$Ej?.get(i)??n,this._$Em=null}}requestUpdate(e,t,s,i=!1,a){if(void 0!==e){const n=this.constructor;if(!1===i&&(a=this[e]),s??=n.getPropertyOptions(e),!((s.hasChanged??$)(a,t)||s.useDefault&&s.reflect&&a===this._$Ej?.get(e)&&!this.hasAttribute(n._$Eu(e,s))))return;this.C(e,t,s)}!1===this.isUpdatePending&&(this._$ES=this._$EP())}C(e,t,{useDefault:s,reflect:i,wrapped:a},n){s&&!(this._$Ej??=new Map).has(e)&&(this._$Ej.set(e,n??t??this[e]),!0!==a||void 0!==n)||(this._$AL.has(e)||(this.hasUpdated||s||(t=void 0),this._$AL.set(e,t)),!0===i&&this._$Em!==e&&(this._$Eq??=new Set).add(e))}async _$EP(){this.isUpdatePending=!0;try{await this._$ES}catch(e){Promise.reject(e)}const e=this.scheduleUpdate();return null!=e&&await e,!this.isUpdatePending}scheduleUpdate(){return this.performUpdate()}performUpdate(){if(!this.isUpdatePending)return;if(!this.hasUpdated){if(this.renderRoot??=this.createRenderRoot(),this._$Ep){for(const[e,t]of this._$Ep)this[e]=t;this._$Ep=void 0}const e=this.constructor.elementProperties;if(e.size>0)for(const[t,s]of e){const{wrapped:e}=s,i=this[t];!0!==e||this._$AL.has(t)||void 0===i||this.C(t,void 0,s,i)}}let e=!1;const t=this._$AL;try{e=this.shouldUpdate(t),e?(this.willUpdate(t),this._$EO?.forEach(e=>e.hostUpdate?.()),this.update(t)):this._$EM()}catch(t){throw e=!1,this._$EM(),t}e&&this._$AE(t)}willUpdate(e){}_$AE(e){this._$EO?.forEach(e=>e.hostUpdated?.()),this.hasUpdated||(this.hasUpdated=!0,this.firstUpdated(e)),this.updated(e)}_$EM(){this._$AL=new Map,this.isUpdatePending=!1}get updateComplete(){return this.getUpdateComplete()}getUpdateComplete(){return this._$ES}shouldUpdate(e){return!0}update(e){this._$Eq&&=this._$Eq.forEach(e=>this._$ET(e,this[e])),this._$EM()}updated(e){}firstUpdated(e){}};k.elementStyles=[],k.shadowRootOptions={mode:"open"},k[b("elementProperties")]=new Map,k[b("finalized")]=new Map,y?.({ReactiveElement:k}),(v.reactiveElementVersions??=[]).push("2.1.2");
 /**
      * @license
      * Copyright 2017 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
      */
-const ue=e=>(t,s)=>{void 0!==s?s.addInitializer((()=>{customElements.define(e,t)})):customElements.define(e,t)}
+const S=globalThis,z=e=>e,M=S.trustedTypes,T=M?M.createPolicy("lit-html",{createHTML:e=>e}):void 0,O="$lit$",A=`lit$${Math.random().toFixed(9).slice(2)}$`,E="?"+A,C=`<${E}>`,H=document,D=()=>H.createComment(""),N=e=>null===e||"object"!=typeof e&&"function"!=typeof e,R=Array.isArray,P="[ \t\n\f\r]",j=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,L=/-->/g,I=/>/g,F=RegExp(`>|${P}(?:([^\\s"'>=/]+)(${P}*=${P}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),B=/'/g,U=/"/g,Y=/^(?:script|style|textarea|title)$/i,W=e=>(t,...s)=>({_$litType$:e,strings:t,values:s}),V=W(1),Z=W(2),G=Symbol.for("lit-noChange"),q=Symbol.for("lit-nothing"),K=new WeakMap,J=H.createTreeWalker(H,129);function X(e,t){if(!R(e)||!e.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==T?T.createHTML(t):t}class Q{constructor({strings:e,_$litType$:t},s){let i;this.parts=[];let a=0,n=0;const r=e.length-1,o=this.parts,[l,h]=((e,t)=>{const s=e.length-1,i=[];let a,n=2===t?"<svg>":3===t?"<math>":"",r=j;for(let t=0;t<s;t++){const s=e[t];let o,l,h=-1,d=0;for(;d<s.length&&(r.lastIndex=d,l=r.exec(s),null!==l);)d=r.lastIndex,r===j?"!--"===l[1]?r=L:void 0!==l[1]?r=I:void 0!==l[2]?(Y.test(l[2])&&(a=RegExp("</"+l[2],"g")),r=F):void 0!==l[3]&&(r=F):r===F?">"===l[0]?(r=a??j,h=-1):void 0===l[1]?h=-2:(h=r.lastIndex-l[2].length,o=l[1],r=void 0===l[3]?F:'"'===l[3]?U:B):r===U||r===B?r=F:r===L||r===I?r=j:(r=F,a=void 0);const c=r===F&&e[t+1].startsWith("/>")?" ":"";n+=r===j?s+C:h>=0?(i.push(o),s.slice(0,h)+O+s.slice(h)+A+c):s+A+(-2===h?t:c)}return[X(e,n+(e[s]||"<?>")+(2===t?"</svg>":3===t?"</math>":"")),i]})(e,t);if(this.el=Q.createElement(l,s),J.currentNode=this.el.content,2===t||3===t){const e=this.el.content.firstChild;e.replaceWith(...e.childNodes)}for(;null!==(i=J.nextNode())&&o.length<r;){if(1===i.nodeType){if(i.hasAttributes())for(const e of i.getAttributeNames())if(e.endsWith(O)){const t=h[n++],s=i.getAttribute(e).split(A),r=/([.?@])?(.*)/.exec(t);o.push({type:1,index:a,name:r[2],strings:s,ctor:"."===r[1]?ae:"?"===r[1]?ne:"@"===r[1]?re:ie}),i.removeAttribute(e)}else e.startsWith(A)&&(o.push({type:6,index:a}),i.removeAttribute(e));if(Y.test(i.tagName)){const e=i.textContent.split(A),t=e.length-1;if(t>0){i.textContent=M?M.emptyScript:"";for(let s=0;s<t;s++)i.append(e[s],D()),J.nextNode(),o.push({type:2,index:++a});i.append(e[t],D())}}}else if(8===i.nodeType)if(i.data===E)o.push({type:2,index:a});else{let e=-1;for(;-1!==(e=i.data.indexOf(A,e+1));)o.push({type:7,index:a}),e+=A.length-1}a++}}static createElement(e,t){const s=H.createElement("template");return s.innerHTML=e,s}}function ee(e,t,s=e,i){if(t===G)return t;let a=void 0!==i?s._$Co?.[i]:s._$Cl;const n=N(t)?void 0:t._$litDirective$;return a?.constructor!==n&&(a?._$AO?.(!1),void 0===n?a=void 0:(a=new n(e),a._$AT(e,s,i)),void 0!==i?(s._$Co??=[])[i]=a:s._$Cl=a),void 0!==a&&(t=ee(e,a._$AS(e,t.values),a,i)),t}class te{constructor(e,t){this._$AV=[],this._$AN=void 0,this._$AD=e,this._$AM=t}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(e){const{el:{content:t},parts:s}=this._$AD,i=(e?.creationScope??H).importNode(t,!0);J.currentNode=i;let a=J.nextNode(),n=0,r=0,o=s[0];for(;void 0!==o;){if(n===o.index){let t;2===o.type?t=new se(a,a.nextSibling,this,e):1===o.type?t=new o.ctor(a,o.name,o.strings,this,e):6===o.type&&(t=new oe(a,this,e)),this._$AV.push(t),o=s[++r]}n!==o?.index&&(a=J.nextNode(),n++)}return J.currentNode=H,i}p(e){let t=0;for(const s of this._$AV)void 0!==s&&(void 0!==s.strings?(s._$AI(e,s,t),t+=s.strings.length-2):s._$AI(e[t])),t++}}class se{get _$AU(){return this._$AM?._$AU??this._$Cv}constructor(e,t,s,i){this.type=2,this._$AH=q,this._$AN=void 0,this._$AA=e,this._$AB=t,this._$AM=s,this.options=i,this._$Cv=i?.isConnected??!0}get parentNode(){let e=this._$AA.parentNode;const t=this._$AM;return void 0!==t&&11===e?.nodeType&&(e=t.parentNode),e}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(e,t=this){e=ee(this,e,t),N(e)?e===q||null==e||""===e?(this._$AH!==q&&this._$AR(),this._$AH=q):e!==this._$AH&&e!==G&&this._(e):void 0!==e._$litType$?this.$(e):void 0!==e.nodeType?this.T(e):(e=>R(e)||"function"==typeof e?.[Symbol.iterator])(e)?this.k(e):this._(e)}O(e){return this._$AA.parentNode.insertBefore(e,this._$AB)}T(e){this._$AH!==e&&(this._$AR(),this._$AH=this.O(e))}_(e){this._$AH!==q&&N(this._$AH)?this._$AA.nextSibling.data=e:this.T(H.createTextNode(e)),this._$AH=e}$(e){const{values:t,_$litType$:s}=e,i="number"==typeof s?this._$AC(e):(void 0===s.el&&(s.el=Q.createElement(X(s.h,s.h[0]),this.options)),s);if(this._$AH?._$AD===i)this._$AH.p(t);else{const e=new te(i,this),s=e.u(this.options);e.p(t),this.T(s),this._$AH=e}}_$AC(e){let t=K.get(e.strings);return void 0===t&&K.set(e.strings,t=new Q(e)),t}k(e){R(this._$AH)||(this._$AH=[],this._$AR());const t=this._$AH;let s,i=0;for(const a of e)i===t.length?t.push(s=new se(this.O(D()),this.O(D()),this,this.options)):s=t[i],s._$AI(a),i++;i<t.length&&(this._$AR(s&&s._$AB.nextSibling,i),t.length=i)}_$AR(e=this._$AA.nextSibling,t){for(this._$AP?.(!1,!0,t);e!==this._$AB;){const t=z(e).nextSibling;z(e).remove(),e=t}}setConnected(e){void 0===this._$AM&&(this._$Cv=e,this._$AP?.(e))}}class ie{get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}constructor(e,t,s,i,a){this.type=1,this._$AH=q,this._$AN=void 0,this.element=e,this.name=t,this._$AM=i,this.options=a,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=q}_$AI(e,t=this,s,i){const a=this.strings;let n=!1;if(void 0===a)e=ee(this,e,t,0),n=!N(e)||e!==this._$AH&&e!==G,n&&(this._$AH=e);else{const i=e;let r,o;for(e=a[0],r=0;r<a.length-1;r++)o=ee(this,i[s+r],t,r),o===G&&(o=this._$AH[r]),n||=!N(o)||o!==this._$AH[r],o===q?e=q:e!==q&&(e+=(o??"")+a[r+1]),this._$AH[r]=o}n&&!i&&this.j(e)}j(e){e===q?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,e??"")}}class ae extends ie{constructor(){super(...arguments),this.type=3}j(e){this.element[this.name]=e===q?void 0:e}}class ne extends ie{constructor(){super(...arguments),this.type=4}j(e){this.element.toggleAttribute(this.name,!!e&&e!==q)}}class re extends ie{constructor(e,t,s,i,a){super(e,t,s,i,a),this.type=5}_$AI(e,t=this){if((e=ee(this,e,t,0)??q)===G)return;const s=this._$AH,i=e===q&&s!==q||e.capture!==s.capture||e.once!==s.once||e.passive!==s.passive,a=e!==q&&(s===q||i);i&&this.element.removeEventListener(this.name,this,s),a&&this.element.addEventListener(this.name,this,e),this._$AH=e}handleEvent(e){"function"==typeof this._$AH?this._$AH.call(this.options?.host??this.element,e):this._$AH.handleEvent(e)}}class oe{constructor(e,t,s){this.element=e,this.type=6,this._$AN=void 0,this._$AM=t,this.options=s}get _$AU(){return this._$AM._$AU}_$AI(e){ee(this,e)}}const le={I:se},he=S.litHtmlPolyfillSupport;he?.(Q,se),(S.litHtmlVersions??=[]).push("3.3.3");const de=globalThis;
 /**
      * @license
      * Copyright 2017 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
-     */,pe={attribute:!0,type:String,converter:w,reflect:!1,hasChanged:$},ge=(e=pe,t,s)=>{const{kind:i,metadata:a}=s;let n=globalThis.litPropertyMetadata.get(a);if(void 0===n&&globalThis.litPropertyMetadata.set(a,n=new Map),"setter"===i&&((e=Object.create(e)).wrapped=!0),n.set(s.name,e),"accessor"===i){const{name:i}=s;return{set(s){const a=t.get.call(this);t.set.call(this,s),this.requestUpdate(i,a,e,!0,s)},init(t){return void 0!==t&&this.C(i,void 0,e,t),t}}}if("setter"===i){const{name:i}=s;return function(s){const a=this[i];t.call(this,s),this.requestUpdate(i,a,e,!0,s)}}throw Error("Unsupported decorator location: "+i)};function me(e){return(t,s)=>"object"==typeof s?ge(e,t,s):((e,t,s)=>{const i=t.hasOwnProperty(s);return t.constructor.createProperty(s,e),i?Object.getOwnPropertyDescriptor(t,s):void 0})(e,t,s)
+     */let ce=class extends k{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0}createRenderRoot(){const e=super.createRenderRoot();return this.renderOptions.renderBefore??=e.firstChild,e}update(e){const t=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(e),this._$Do=((e,t,s)=>{const i=s?.renderBefore??t;let a=i._$litPart$;if(void 0===a){const e=s?.renderBefore??null;i._$litPart$=a=new se(t.insertBefore(D(),e),e,void 0,s??{})}return a._$AI(e),a})(t,this.renderRoot,this.renderOptions)}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(!0)}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(!1)}render(){return G}};ce._$litElement$=!0,ce.finalized=!0,de.litElementHydrateSupport?.({LitElement:ce});const ue=de.litElementPolyfillSupport;ue?.({LitElement:ce}),(de.litElementVersions??=[]).push("4.2.2");
 /**
      * @license
      * Copyright 2017 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
-     */}function ve(e){return me({...e,state:!0,attribute:!1})}
+     */
+const pe=e=>(t,s)=>{void 0!==s?s.addInitializer(()=>{customElements.define(e,t)}):customElements.define(e,t)},ge={attribute:!0,type:String,converter:w,reflect:!1,hasChanged:$},me=(e=ge,t,s)=>{const{kind:i,metadata:a}=s;let n=globalThis.litPropertyMetadata.get(a);if(void 0===n&&globalThis.litPropertyMetadata.set(a,n=new Map),"setter"===i&&((e=Object.create(e)).wrapped=!0),n.set(s.name,e),"accessor"===i){const{name:i}=s;return{set(s){const a=t.get.call(this);t.set.call(this,s),this.requestUpdate(i,a,e,!0,s)},init(t){return void 0!==t&&this.C(i,void 0,e,t),t}}}if("setter"===i){const{name:i}=s;return function(s){const a=this[i];t.call(this,s),this.requestUpdate(i,a,e,!0,s)}}throw Error("Unsupported decorator location: "+i)};
+/**
+     * @license
+     * Copyright 2017 Google LLC
+     * SPDX-License-Identifier: BSD-3-Clause
+     */function ve(e){return(t,s)=>"object"==typeof s?me(e,t,s):((e,t,s)=>{const i=t.hasOwnProperty(s);return t.constructor.createProperty(s,e),i?Object.getOwnPropertyDescriptor(t,s):void 0})(e,t,s)}
+/**
+     * @license
+     * Copyright 2017 Google LLC
+     * SPDX-License-Identifier: BSD-3-Clause
+     */function fe(e){return ve({...e,state:!0,attribute:!1})}
 /**
      * @license
      * Copyright 2017 Google LLC
@@ -47,14 +47,14 @@ const ue=e=>(t,s)=>{void 0!==s?s.addInitializer((()=>{customElements.define(e,t)
      * Copyright 2017 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
      */
-function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Reflect.decorate&&"object"!=typeof t&&Object.defineProperty(e,t,s),s))(t,s,{get(){return(t=>t.renderRoot?.querySelector(e)??null)(this)}})}let _e=!1,ye=null;const be=async()=>{if(_e&&ye)return ye;if(customElements.get("ha-checkbox")&&customElements.get("ha-slider")&&customElements.get("ha-panel-config"))return Promise.resolve();_e=!0,ye=async function(){try{await new Promise((e=>{"requestIdleCallback"in window?requestIdleCallback((()=>e())):setTimeout((()=>e()),0)})),await customElements.whenDefined("partial-panel-resolver");const e=document.createDocumentFragment(),t=document.createElement("partial-panel-resolver");e.appendChild(t),t.hass={panels:[{url_path:"tmp",component_name:"config"}]},await new Promise((e=>queueMicrotask((()=>e())))),t._updateRoutes(),await t.routerOptions.routes.tmp.load(),await customElements.whenDefined("ha-panel-config"),await new Promise((e=>queueMicrotask((()=>e()))));const s=document.createElement("ha-panel-config");e.appendChild(s),await s.routerOptions.routes.automation.load(),e.textContent=""}catch(e){console.error("Failed to load HA form elements:",e)}}();try{await ye}finally{_e=!1,ye=null}};var we={loading:"Loading",saving:"Saving",actions:{delete:"Delete"},labels:{module:"Module",no:"No",select:"Select",yes:"Yes",enabled:"Enabled",disabled:"Disabled",before:"before",after:"after"},units:{seconds:"seconds",minutes:"min",hours:"h"},attributes:{size:"size",throughput:"throughput",state:"state",bucket:"bucket",last_updated:"last updated",last_calculated:"last calculated",number_of_data_points:"number of data points"},"loading-messages":{configuration:"Loading configuration...",modules:"Loading modules...",general:"Loading..."},"saving-messages":{adding:"Adding...",saving:"Saving..."},modes:{manual:"Manual",standard:"Standard",advanced:"Advanced"}},$e={"default-zone":"Default zone","default-mapping":"Default sensor group"},xe={calculation:{explanation:{"formatting-note":"Note: this explanation uses '.' as decimal separator, shows rounded and metric values.","module-returned-evapotranspiration-deficiency":"Module returned Crop evapotranspiration deficiency ( = et0 * hour_multiplier * Kc + precipitation) of","module-returned-hourly-evapotranspiration-deficiency":"Module summed the Crop evapotranspiration deficiency hour by hour ( = sum of hourly et0 * Kc + precipitation) over","crop-factor-is":"Crop factor is","bucket-was":"Bucket was","new-bucket-values-is":"New bucket value is",bucket:"bucket","old-bucket-variable":"old_bucket","max-bucket-variable":"max_bucket",delta:"delta","bucket-less-than-zero-irrigation-necessary":"Since bucket < 0, irrigation is necessary","steps-taken-to-calculate-duration":"To calculate the exact duration, the following steps were taken","precipitation-rate-defined-as":"The precipitation rate is defined as","precipitation-rate-is":"The precipitation rate is","duration-is-calculated-as":"The duration is calculated as",drainage:"drainage","drainage-rate":"drainage_rate",hours:"hours","precipitation-rate-variable":"precipitation_rate","multiplier-is-applied":"Now, the multiplier is applied. The multiplier is","duration-after-multiplier-is":"hence the duration is","maximum-duration-is-applied":"Then, the maximum duration is applied. The maximum duration is","duration-after-maximum-duration-is":"hence the duration is","lead-time-is-applied":"Finally, the lead time is applied. The lead time is","duration-after-lead-time-is":"hence the final duration is","bucket-larger-than-or-equal-to-zero-no-irrigation-necessary":"Since bucket >= 0, no irrigation is necessary and duration is set to","maximum-bucket-is":"Maximum bucket size is","drainage-rate-is":"Drainage rate when saturated (bucket at max) is","current-drainage-is":"Current drainage is calculated as","drainage-replayed":"The window was replayed hour by hour, so each rain drained only from the hour it fell. Drainage over","no-drainage":"Current drainage is 0 because","below-irrigation-threshold":"The deficit has not reached this zone's irrigation threshold yet, so no irrigation is necessary and the duration is set to 0. Deficit / threshold:"}}},ke={pyeto:{description:"The full calculation, from your own weather sensors: temperature, humidity, pressure, wind and solar radiation. The most accurate option, and the one that asks for the most."},static:{description:"A fixed amount of evaporation per day, which you set yourself. No sensors and no weather service."},passthrough:{description:"Takes an evapotranspiration figure that already exists, from a sensor or from a weather service that publishes one. The recommended path when you have one."}},Se={setup:{title:"Setup",description:"A guided way to create your first zone. It asks one question at a time, and only the questions your previous answers leave open.",next:"Next",back:"Back",create:"Create it",creating:"Creating...",failed:"Something went wrong and nothing was created. The other tabs are still there if you would rather set it up by hand.",done:"Your zone is ready.","done-note":"It appears under Zones, with its sensor group under Sensor groups. Nothing here is special: edit either of them as you would any other. Run an update and a calculation once your sensors have reported, and the zone will start producing a duration.",steps:{zone:{question:"What are you watering?",help:"One zone is one valve, watering one area.",name:"Name",size:"Area",throughput:"Throughput","throughput-help":"How much water this zone delivers per minute. Measure it if you can, rather than taking it from a datasheet: it is what every duration is derived from, and it is the quietest way to water twice as long as you meant to."},environment:{question:"Where does it grow?",outdoors:"Outdoors","outdoors-help":"Open air. Rain reaches it, and the sky is worth asking about.","under-glass":"Under glass or plastic","under-glass-help":"A greenhouse, a polytunnel, a conservatory. No rain arrives, and a forecast describes weather these plants never see."},weather:{question:"Where should the evaporation figure come from?",service:"The weather service you configured","service-help":"Nothing else to install. Smart Irrigation takes the weather for your location and computes evapotranspiration from it.","no-service-indoors":"A weather service is not offered here: it describes the sky, which these plants are not under.",sensors:"My own weather sensors","sensors-help":"You have sensors for temperature, humidity and the rest. The most accurate option, because it measures where the plants actually are.",et:"A sensor that already reports evapotranspiration","et-help":"Something else already computes it, and Smart Irrigation should use that figure as it stands.",static:"A fixed amount per day","static-help":"No sensors and no service. You give one number and it is used every day. Rough, but it still tracks what you have already watered.","service-help-entity":"The current values and the forecast come from your weather entity, and Smart Irrigation computes evapotranspiration from them. The rain comes from a rain sensor of yours, asked for in the next step."},sensors:{question:"Which entities should it read?",help:"Only the ones the calculation actually uses are asked for.","help-optional":"Fields marked optional can stay empty: missing weather values are estimated, and without a rain sensor no rain is credited.",optional:"optional","lux-hint":"Under glass a light sensor can stand in for solar radiation: pick your illuminance entity here and set its source to Light sensor (lux) afterwards, in the sensor group.","static-question":"How much does it evaporate per day?","static-help":"A depth of water, in the unit your zones use. Somewhere around 4 to 5 mm a day is common for a temperate summer.","static-label":"Evaporation per day","rain-help-entity":"This weather entity only forecasts rain. Pick a sensor that measures rain for one of these fields: a rate or a gauge total. No rain sensor? Use Open-Meteo instead."},review:{question:"Ready to create",zone:"Zone",environment:"Environment",engine:"Calculation engine",sources:"Sources","from-the-service":"from the weather service",help:"This creates a calculation module, a sensor group and a zone, exactly as the other tabs would. Nothing is locked afterwards."}},step:"step"},weatherservice:{history:{title:"History",refresh:"Refresh","last-update":"Last update",time:"Retrieved","sensor-group":"Sensor group","no-data":"No data has been retrieved from the weather service yet."},title:"Weather service",description:"View and change the weather service used to fetch weather data — no need to reinstall the integration. The API key is validated and the change is applied immediately.",labels:{"use-weather-service":"Use a weather service",service:"Weather service","api-key":"API key","ha-weather-entity":"A weather entity in Home Assistant","weather-entity":"Weather entity"},actions:{save:"Save",saving:"Saving…","open-sensor-groups":"Open sensor groups"},messages:{"no-service":"No weather service is used — weather data comes from your own sensors only.",saved:"Weather service updated and applied.","reload-note":"Saving validates the API key against the service and applies the change immediately.","owm-onecall-hint":"OpenWeatherMap needs the One Call API 3.0 plan (One Call by Call). It is free up to 1000 calls/day but must be activated with a card, and a new key can take up to a couple of hours to work. A plain default key is rejected.","ha-entity-hint":"Current values and the forecast come from this entity, solar radiation and reference ET from Open-Meteo. It only forecasts rain: give each sensor group a rain sensor under Current precipitation.","rain-groups-on-service":"{count, plural, one {# sensor group still takes its} other {# sensor groups still take their}} rain from the weather service, which reports none: {groups}. Choose a rain sensor under Current precipitation, or the zones are watered after every shower.","reload-note-entity":"Saving checks that the entity exists and applies the change immediately.","invalid-entity":"Choose a weather entity: this one does not exist any more, or is not a weather entity."}},backuprestore:{title:"Backup / restore",description:"Export the full Smart Irrigation configuration to a JSON file, or restore it from a previous backup.",cards:{backup:{title:"Backup",description:"Download the complete configuration (general settings, zones, modules and sensor groups) as a JSON file."},restore:{title:"Restore",description:"Load a previously exported JSON file to replace the current configuration."}},actions:{export:"Export to JSON","choose-file":"Choose a backup file…",restore:"Restore this backup",restoring:"Restoring…"},messages:{exported:"Backup file downloaded.",restored:"Configuration restored — reloading the integration.","invalid-file":"This file is not a valid Smart Irrigation backup.","confirm-title":"Replace the entire configuration?",summary:"This backup contains","confirm-warning":"Restoring overwrites all current general settings, zones, modules and sensor groups. This cannot be undone.","reload-note":"Restoring replaces everything and reloads the integration to apply the change."}},general:{cards:{"automatic-duration-calculation":{header:"Calculating the watering duration",description:"The watering duration of each zone comes from its water balance: what the weather took out of the soil, minus the rain. Here you choose when it is calculated. What starts the watering is decided elsewhere, by the start trigger.",labels:{"calc-when":"Watering duration calculated","calc-when-time":"At a fixed time","calc-when-start":"Just before each start","calc-when-manual":"Only when I ask","calc-when-hint":"Just before each start: at the time of the start trigger, with the freshest weather. The right choice when Smart Irrigation starts the watering (direct valve control or the start event). At a fixed time: every day at the time below, for something other than Smart Irrigation that starts the watering and reads the durations when it likes (Irrigation Unlimited, a schedule of your own). Only when I ask: nothing is calculated by itself, use the calculate buttons or the services.","calc-time":"Calculate at","calc-time-hint":"The daily calculation: the water lost is added to the bucket of each zone and the watering durations are set.","hourly-calculation":"Calculate evapotranspiration hour by hour","hourly-calculation-hint":"Sums the FAO-56 hourly equation over each hour since the last calculation, instead of applying the daily equation to the averages, which hides whether the sun and the heat came together. A new installation starts on it; an installation set up before it arrived keeps the daily equation until you switch, because the two give different numbers and your watering should not change on an update. The sun of each hour comes from a radiation or illuminance sensor, from the weather service's own hourly history, or from the day's temperature range. It is worth having when readings arrive through the day: one update a day leaves a single reading held across twenty-four hours, and neither form is trustworthy then. A greenhouse with no sensor of its own keeps the daily equation."}},"automatic-update":{errors:{"warning-update-time-on-or-after-calc-time":"Warning: weather data update time on or after calculation time"},header:"Automatic weather data update",description:"Collect and store weather data automatically. Weather data is required to calculate zone buckets and durations.",labels:{"auto-update-enabled":"Automatically update weather data","auto-update-schedule":"Update schedule","auto-update-time":"Update at","auto-update-interval":"Update sensor data every","auto-update-delay":"Update delay"},options:{minutes:"minutes",hours:"hours",days:"days"}},continuousupdates:{header:"Continuous updates for sensors",description:"Records every change of a sensor of the group, instead of one reading per update. The hourly calculation, the rain gauge and the replay of the rain get finer from it: a gauge that reports every ten minutes places its rain within ten minutes. It does not calculate the zones again at each change; the scheduled calculation does that, once, from the readings recorded. In a group that also uses a weather service, its sensors are recorded as they change and the service is still read once per update, so it costs no extra requests.",labels:{continuousupdates:"Enable continuous updates",sensor_debounce:"Sensor debounce"}},"panel-mode":{header:"Panel",labels:{advanced:"Advanced settings","advanced-hint":"Shows the settings that tune the model: drainage, thresholds, multiplier, how far ahead a zone looks. They have sound defaults; leave this off unless you know you need them. Your values are kept either way."}},"setup-assistant":{description:"Four questions at most, and it creates a sensor group and a zone for you, choosing what each needs. For a first zone, another one, or a fresh start.",open:"Open the assistant"}},description:"This page provides global settings.",title:"General"},help:{title:"Help",cards:{"how-to-get-help":{title:"How to get help","first-read-the":"First, read the",wiki:"Wiki","if-you-still-need-help":"If you still need help reach out on the","community-forum":"Community forum","or-open-a":"or open a","github-issue":"Github Issue","english-only":"English only"},translate:{title:"Help translate",text:"Apart from English and French, the translations of this panel were machine-made and nobody who speaks the language has checked them yet. If a word or a sentence reads oddly in yours, you can correct it in your browser, with no technical knowledge needed.",link:"Translate on Weblate"}}},info:{title:"Info",description:"What will happen at the next start, and why.","configuration-not-available":"Configuration not available.",cards:{"next-run":{title:"Next run",labels:{start:"Starts",duration:"Total duration",zones:"Zones watering",trigger:"Trigger"},"no-start":"No start time could be worked out yet.","nothing-to-water":"Nothing to water: no zone has reached its irrigation threshold.","trigger-default":"Default, finishing at sunrise","main-schedules":"Started by the main program's schedules (the start trigger is not used for now)","accounts-for-duration":"counted back so the run finishes then","starts-at-trigger":"starts at that moment","sequencing-sequential":"one zone at a time, so the total is every zone added up",estimated:"Estimated: the zones are calculated again just before the start.","sequencing-parallel":"all zones at once, so the total is the longest zone","headline-nothing":"Nothing to water","sub-nothing":"No zone is short enough of water yet. The next start would be {start}.","next-program":"Next program: {program}, {start}","headline-watering":"Watering {start}","headline-watering-soon":"Watering at the next start","sub-watering":"{count} zone(s), {duration} in all.","headline-postponed":"Watering is held back","sub-postponed":"You postponed it. It resumes by itself, and nothing is lost: a zone that is short of water still is.","headline-skipped":"No watering today","headline-not-scheduled":"A run is owed, and nothing is scheduled to start it","sub-not-scheduled":"The time above is when it would start. No start trigger is armed right now, which happens when the active trigger is disabled or was not registered. Check the trigger under Settings, and if it looks right, a calculation re-arms it.","headline-no-trigger":"No trigger is active","sub-no-trigger":"Smart Irrigation starts no watering. Choose a start trigger in the settings to have it water."},decision:{title:"Will it be skipped?","will-run":"Nothing is holding the run back.","will-skip":"The run would be skipped.","preview-note":"Evaluated just now. A forecast can still change before the start.",unavailable:"The skip conditions could not be evaluated.","last-title":"Last real decision","last-none":"No run has been decided yet.","last-skipped":"Skipped","last-ran":"Went ahead","check-precipitation":"Rain forecast","check-days_between":"Days between irrigation","state-off":"Off","state-unavailable":"Could not be checked","state-passing":"Not blocking","state-blocking":"Blocking","detail-forecast":"Forecast","detail-threshold":"Threshold","detail-days-since":"Days since last run","detail-days-required":"Days required","check-rain_sensor":"Rain sensor","check-freeze":"Freeze","check-wind":"Wind","check-soil_moisture":"Soil moisture","detail-now":"Now","detail-weather-service":"weather service","detail-raining":"It is raining","detail-dry":"Not raining","detail-held":"sits out this run","check-postponed":"Postponed by you"},estimate:{title:"Where each zone stands now",note:"Estimated by running the calculation on the readings collected since it last ran. Nothing is committed: a zone keeps the value from its last calculation until the next one.",none:"No zone can be estimated yet.",labels:{now:"Now","at-last-calculation":"At last calculation","would-water":"Would water","last-irrigation":"Last watered"},nothing:"nothing","never-watered":"never"},postpone:{prompt:"Rain the forecast missed, or a reason of your own?","for-24":"Hold for 24 h","for-48":"Hold for 48 h",until:"Watering is held back until",resume:"Resume now"},forecast:{today:"Today"},stale:{title:"A zone is no longer being calculated",body:"Its water need is older than the others, so it is watering on old weather. Check that its sensor group still receives data, and look at the log for what the calculation said about it.",never:"never calculated"}},gaps:{auto_calc_off:{title:"No watering duration is being calculated",body:'The watering duration is set to "Only when I ask", so the zones\' durations never update by themselves. Choose "At a fixed time" or "Just before each start" under Settings, or calculate by hand when you want a run.'},no_automatic_zone:{title:"No zone waters on its own",body:"Every zone is manual or disabled, so a start reaches nothing. Set a zone to automatic for it to be watered by the schedule."},no_valve_path:{title:"Nothing here opens a valve",body:"Smart Irrigation calculates how long to water; something has to act on it. Either link a valve to a zone and turn on direct valve control, or write an automation on the start event (the blueprints do this for you). If an automation already does it, there is nothing to change."}}},mappings:{cards:{"add-mapping":{actions:{add:"Add sensor group"},header:"Add sensor groups"},mapping:{aggregates:{average:"Average",first:"First",last:"Last",maximum:"Maximum",median:"Median",minimum:"Minimum",riemannsum:"Riemann sum",sum:"Sum",delta:"Delta"},errors:{"cannot-delete-mapping-because-zones-use-it":"You cannot delete this sensor group because there is at least one zone using it.",invalid_source:"Invalid source",source_does_not_exist:"Source does not exist. Please enter a valid source, such as 'sensor.mysensor'."},hidden_sources:"{n} reading(s) not asked: the evapotranspiration is given ready-made, they would only serve to recalculate it.",et_ignored:"Zone(s) {zones} are calculated from the weather and do not read this evapotranspiration. Set them to provided by a sensor or a service on the zone.",et_missing:"Zone(s) {zones} expect a ready-made evapotranspiration: choose a source for it above.",et_unused:"Not used: every zone of this group is calculated by Smart Irrigation, which works the evapotranspiration out from the other readings. Set a zone to provided by a sensor or a service to give a ready-made value here.",et_needed:"A ready-made value is needed here: the zones of this group are set to provided by a sensor or a service, so None is not offered.",hints:{temperature:"Air temperature, in the shade. The day's minimum and maximum are taken from it.",dewpoint:"The temperature at which the air would be saturated, which tells how much vapour it holds. The weather service is fine here.",humidity:"Relative humidity of the air. Dry air draws more water out of the plants.",pressure:"Atmospheric pressure. It changes the result very little: the weather service is enough.",windspeed:"Wind carries the humidity away from the leaves. Under glass, set a fixed value near 0.","solar radiation":"The energy of the sun, the main driver of evaporation. Without it the calculation estimates it from the day's temperature range. Under glass, use a radiation sensor or a light sensor.",precipitation:"Rain that fell, as a total, from a rain gauge of your own that adds up. With a weather service, leave it on None.","current precipitation":"Rain falling now, as a rate. The weather service provides it; a rain sensor of your own is more precise.",evapotranspiration:"A ready-made evapotranspiration (ET₀), from your own sensor or from the weather service. Only the zones set to provided by a sensor or a service read it. For a zone calculated by Smart Irrigation this line is not used: the weather service then only supplies the inputs (temperature, humidity, wind, radiation) of Smart Irrigation's own calculation."},items:{dewpoint:"Dewpoint",evapotranspiration:"Evapotranspiration",humidity:"Humidity","maximum temperature":"Maximum temperature","minimum temperature":"Minimum temperature",precipitation:"Total precipitation","current precipitation":"Current precipitation",pressure:"Pressure","solar radiation":"Solar radiation",temperature:"Temperature",windspeed:"Wind speed"},pressure_types:{absolute:"absolute",relative:"relative"},"pressure-type":"Pressure is","sensor-aggregate-use-the":"How the readings are combined","sensor-entity":"Sensor entity",static_value:"Value","input-units":"Input provides values in",source:"Source",sources:{none:"None",none_et:"None (Smart Irrigation calculates it)",weather_service:"Weather service",weather_service_et:"Ready-made ET₀ from the weather service",sensor:"Sensor",static:"Static value",radiation_sensor:"Radiation sensor",illuminance:"Light sensor (lux)"},greenhouse:"Greenhouse",greenhouse_description:"An enclosed environment: a greenhouse, a polytunnel, anything under glass or plastic. No rain reaches these zones, so precipitation is left out of their water balance and its fields are hidden. Two things to set yourself, because they cannot be guessed: give Wind speed a static value near 0, since the calculation assumes open air, and use a light sensor for Solar Radiation, since the glazing filters the sky.",module:"Calculation engine",module_description:"This group only offers the sources this engine reads. The zones using it inherit the choice.",module_undecided:"No engine chosen yet, so every source is offered and each zone using this group keeps its own. Pick one to see only the sources it reads.",wind_height:"Anemometer height (empty: taken at 2 m)",rain_not_from_entity:"The weather entity reports no rain that fell, only a forecast: choose a rain sensor here, or the zones are watered after every shower.",rain_hint_entity:"Rain falling now, as a rate. The weather entity only forecasts it: choose a sensor that measures rain."}},description:"Add one or more sensor groups that retrieve weather data from Weather service, from sensors or a combination of these. You can map each sensor group to one or more zones",labels:{"mapping-name":"Name"},no_items:"There are no sensor group defined yet.",title:"Sensor groups","weather-records":{title:"Weather records (last 10)",timestamp:"Time",temperature:"Temp",humidity:"Humidity",precipitation:"Precip","retrieval-time":"Retrieved","no-data":"No weather data available for this sensor group"},summary:{"sources-one":"{n} source","sources-other":"{n} sources","zones-one":"{n} zone","zones-other":"{n} zones"}},modules:{cards:{"add-module":{actions:{add:"Add module"},header:"Add module"},module:{errors:{"cannot-delete-module-because-zones-use-it":"You cannot delete this module because there is at least one zone using it."},labels:{configuration:"Configuration",required:"indicates a required field"},"translated-options":{DontEstimate:"Do not estimate",EstimateFromSunHours:"Estimate from sun hours",EstimateFromTemp:"Estimate from temperature",EstimateFromSunHoursAndTemperature:"Estimate from average of sun hours and temperature"}}},description:"Add one or more modules that calculate irrigation duration. Each module comes with its own configuration and can be used to calculate duration for one or more zones.",no_items:"There are no modules defined yet.",title:"Modules"},zones:{actions:{add:"Add",calculate:"Calculate",information:"Information",update:"Update","reset-bucket":"Reset bucket","view-weather-info":"View weather data","view-weather-info-message":"Weather data available for","view-watering-calendar":"View watering calendar"},cards:{"add-zone":{actions:{add:"Add zone"},header:"Add zone"},"zone-actions":{actions:{"calculate-all":"Calculate all zones","update-all":"Update all zones","reset-all-buckets":"Reset all buckets","clear-all-weatherdata":"Clear all weather data"},header:"Actions on all zones"}},description:"Specify one or more irrigation zones here. The irrigation duration is calculated per zone, depending on size, throughput, state, module and sensor group.",labels:{bucket:"Bucket","et-deficiency":"Daily ET deficiency",duration:"Duration","lead-time":"Lead time",mapping:"Sensor Group","maximum-duration":"Maximum duration",multiplier:"Crop factor (Kc)",name:"Name","input-method":"Input method","input-methods":{throughput:"Throughput & area",direct:"Precipitation rate"},"input-method-hint":"How the water delivered is known: from the area and the flow of the zone, or directly as a precipitation rate if you have measured it.","state-hint":"Automatic: Smart Irrigation calculates the duration from the water balance and waters at the start. Manual: it waters only when you ask, for the duration you type. Disabled: never watered, and its balance is not followed.","mapping-hint":"The group of sensors this zone reads its weather from: a weather service, your own sensors, or both.","bucket-hint":"The water balance of the zone. Negative: it is short of water. Zero: it has what it needs. Watering brings it back to zero.","maximum-bucket-hint":"The most water the soil is taken to hold. A positive balance never goes above it: the surplus is lost.","irrigation-threshold-hint":"The deficit from which the zone is watered. Under it, the zone is left alone and the deficit rolls over to the next calculation.","drainage_rate-hint":"How fast the soil lets surplus water go. Leave the default if you do not know your soil: 0 means the surplus never drains.","precipitation-rate":"Precipitation rate",size:"Size",state:"State",states:{automatic:"Automatic",disabled:"Disabled",manual:"Manual"},throughput:"Throughput","maximum-bucket":"Maximum bucket",last_calculated:"Last calculated","data-last-updated":"Data last updated","data-number-of-data-points":"Number of data points",drainage_rate:"Drainage rate","linked-entity":"Linked valve/switch","linked-entity-hint":"The valve or switch that waters this zone. Smart Irrigation opens and closes it when direct valve control is on. With observed watering on, any run of it (a manual tap, an automation, or Smart Irrigation itself) credits the bucket from the run time and the zone's throughput.",supply:"Pump or main valve","supply-none":"None","measured-flow-help":"Over several runs the zone's flow meter measured a flow that differs from the one set above. It is advice, never applied on its own.","use-measured-flow":"Use the measured flow","extra-valves":"Other valves of the zone","extra-valves-hint":"opened and closed together with it","flow-sensor":"Cumulative volume meter","flow-sensor-hint":"For exact crediting instead of throughput x time: a cumulative water-meter total (state class total_increasing), not an instant flow rate. The unit is read automatically (L, mL, m³, gal, ft³).","confirm-timeout":"Wait for the valve to confirm","open-resends":"Send the open again","confirm-timeout-help":"How long the valve has to report that it opened or closed, and how many times the open is sent again in that time. Empty keeps the defaults: 8 seconds without a resend, or 30 seconds and two resends with the full controller, and 5 seconds for a close. A cloud valve such as Gardena confirms slowly and counts every command against a quota: give it a longer wait and 0 resends. A close is always tried a second time.","safety-off-topic":"Safety off MQTT topic","safety-off-state-key":"Safety off state key","safety-off-mode":"Safety off mode","safety-off-mode-auto":"Automatic (MQTT topic, or a Sonoff SWV on ZHA)","safety-off-mode-zha":"ZHA timed off","safety-off-mode-off":"Off (no dead-man)","safety-off-mode-help":"The valve closes by itself if Home Assistant stops in the middle of a run. Automatic uses the MQTT topic above when there is one, and a Sonoff SWV on ZHA is armed on its own. ZHA timed off also arms any other ZHA valve with the standard timed-off command, which is not verified on other models. Off never arms a hardware dead-man for this zone.","safety-off-topic-help":'Optional hardware dead-man. An MQTT set-topic (e.g. zigbee2mqtt/my_valve/set) the valve\'s device listens on. Smart Irrigation publishes an "on with timed off" there so the device shuts the valve off by itself if Home Assistant stops mid-run and never sends the close. The state key is the device\'s on/off property ("state", or "state_l1"…"state_l4" for a multi-channel device). Support depends on the device firmware (on_time) — test it before relying on it. Leave empty to disable.',optional:"optional","irrigation-threshold":"Irrigation threshold",days:"days","days-between-irrigation":"Days between irrigation","crop-factor-by-month":"Crop factor by month","crop-factor-by-month-help":"For a crop whose water use follows its growth: the crop factor (Kc) of each month, January first. A month left empty uses the crop factor above, and all twelve empty is that crop factor all year. Seasonal adjustments still apply on top.",months:{1:"Jan",2:"Feb",3:"Mar",4:"Apr",5:"May",6:"Jun",7:"Jul",8:"Aug",9:"Sep",10:"Oct",11:"Nov",12:"Dec"},"available-water":"Available water","allowed-depletion":"Allowed depletion","available-water-help":"How much water the soil of this zone holds for the plants, in mm (the root depth in metres times what the soil holds per metre: about 50 to 110 mm for sand, 130 to 180 for loam, 120 to 200 for clay, from FAO-56). Leave empty to leave things as they are. When set, the deficit cannot go below it, and once the plants have used up the allowed share of it (50% unless you change it) they draw less water, so the deficit stops growing as fast.","distribution-efficiency":"Distribution efficiency","distribution-efficiency-help":"The share of the water leaving the emitters that reaches the plants, in %. Sprinklers in wind or on a slope lose some, drip loses almost none. Leave empty for 100%. A zone at 80% waters 25% longer for the same depth, and credits only 80% of what it delivers.","days-between-irrigation-help":"Leave empty to follow the general setting (Settings, Days between irrigation). A number replaces the general setting for this zone alone: 1 waters it every day if it needs water, 3 at most every third day, 0 removes the restriction. The days are counted from the last time this zone was watered.","soil-moisture-sensor":"Soil moisture sensor","soil-moisture-sensor-hint":"The zone sits out a run while the soil is at or above the threshold. The bucket is kept.","soil-moisture-threshold":"Skip at or above","calculation-method":"Evapotranspiration","calculation-method-help":{from_weather:"From your measurements: temperature, humidity, wind, sun.",provided:"You already have an evapotranspiration in mm; it is taken as it is.",fixed:"So many mm a day, whatever the weather."},"calculation-methods":{from_weather:"Calculated by Smart Irrigation",provided:"Provided by a sensor or a service",fixed:"A fixed amount"},"forecast-days":"Look ahead","forecast-days-help":"0: the zone waters what the weather actually took. 1: tomorrow is taken into account as well, 2: tomorrow and the day after, and so on. The hotter the days ahead, the more is watered today. This is not the rain skip, which is a setting of its own.","fixed-amount":"Evaporation per day","engine-shared-help":"This setting belongs to this zone alone: each zone has its own, and changing it here changes nothing anywhere else.","soil-type":"Soil","plant-type":"What grows here","soil-types":{sand:"Sandy",sandy_loam:"Sandy loam",loam:"Loam",clay_loam:"Clay loam",clay:"Clay",custom:"I set the drainage rate myself"},"plant-types":{lawn:"Lawn",vegetables:"Vegetables",flowers:"Flowers",shrubs:"Shrubs",hedge:"Hedge",fruit_trees:"Fruit trees",vines:"Vines",ground_cover:"Ground cover",custom:"I set the crop coefficient myself"},"duration-readonly-automatic":"Calculated for you: this zone's run comes from its water balance. Set it to manual to type a duration yourself.","duration-readonly-disabled":"A disabled zone is never watered, so it has no run time.","et-deficiency-help":"What this zone needs per day: ETc, the reference evapotranspiration times the crop factor, seasonal adjustment included. Before the interval scaling and before rain, which is what makes it comparable from one configuration to the next. The zone sensor also carries the reference figure on its own, as the `eto` attribute, for holding against what a weather service publishes."},no_items:"There are no zones defined yet.",title:"Zones","module-comes-from-the-group":"The calculation engine comes from this zone's sensor group. Change it there, and every zone using that group follows.",status:{estimate:"Short by {short}: about {duration} ({volume}) at the next calculation.","will-water":"Will water {duration} at the next start.",idle:"Nothing to water: {short} short.",satisfied:"Nothing to water: this zone has what it needs.","under-threshold":"Nothing to water yet: {short} short, under this zone's threshold.",manual:"Waters only when you ask.",disabled:"Disabled: never watered, and its balance is not kept.",threshold:"threshold"},calendar:{title:"Watering calendar (12 months, estimated)",caveat:"A planning estimate, not your weather: the months are modelled from your latitude and a typical seasonal pattern, so a continental summer reads hotter and drier than it is. It influences nothing, calculates nothing and waters nothing.",month:"Month",et:"ET",precipitation:"Precipitation",watering:"Watering","avg-temp":"Avg temp",none:"No watering calendar data available for this zone",error:"Could not generate the calendar"}},history:{title:"History",description:"Every irrigation run Smart Irrigation has credited to a zone: when it started, how long it watered and how much water it used. Runs are recorded by direct valve control and by observed watering, and are kept for 90 days.",refresh:"Refresh","no-data":"No irrigation runs have been recorded yet.",table:{title:"Irrigation runs",start:"Start",zone:"Zone",duration:"Duration",water:"Water used",truncated:"Showing the {count} most recent runs out of {total}."},charts:{"total-title":"Total water used per day (last 30 days)","per-zone-title":"Water used per day, per zone (last 30 days)","no-data":"No water was used in this period."}},groups:{home:"Home",zones:"Zones",data:"Data",settings:"Settings",watering:"Watering"},planning:{title:"Planning"},programs:{title:"Programs"},supplies:{title:"Pumps and valves"}},ze="Smart Irrigation",Me={title:"Start triggers",description:"When the watering starts. By default it finishes at sunrise; add a trigger for another moment: sunset, an azimuth or a time, with an offset.",active_label:"Active trigger",active_default:"Default (sunrise minus total watering duration)",active_hint:"Only the selected trigger starts the watering, once a day.",usage_before:"When a trigger fires, Smart Irrigation emits the event ",usage_after:" — listen to it in an automation to start watering. The event data includes trigger_name, trigger_type and offset_minutes, so you can react differently per trigger. The precipitation skip and days-between-irrigation settings still apply: on a skip day no event is fired.",add_trigger:"Add trigger",edit_trigger:"Edit trigger",delete_trigger:"Delete trigger",trigger_types:{sunrise:"Sunrise",sunset:"Sunset",solar_azimuth:"Solar Azimuth",time:"Fixed time"},fields:{name:{name:"Trigger name",description:"A descriptive name to identify this trigger"},type:{name:"Trigger type",description:"The type of solar event to trigger on"},enabled:{name:"Enabled",description:"Whether this trigger is currently active"},offset_minutes:{name:"Offset (minutes)",description:"Minutes before (-) or after (+) the solar event. For sunrise triggers, use 0 for automatic timing based on total zone duration."},azimuth_angle:{name:"Azimuth angle (degrees)",description:"Solar azimuth angle in degrees where 0=North, 90=East, 180=South, 270=West"},account_for_duration:{name:"Account for duration",description:"When enabled, irrigation will start early enough to finish at the specified time. When disabled, irrigation will start exactly at the specified time."},at:{name:"Time"}},dialog:{add_title:"Add Irrigation Start Trigger",edit_title:"Edit Irrigation Start Trigger",cancel:"Cancel",save:"Save",delete:"Delete",help:"When this trigger fires, Smart Irrigation emits the following event — use it in an automation to start watering. The event data includes this trigger's name (and type/offset), so you can react to it specifically:"},offset_auto:"Auto (calculated from total zone duration)",confirm_delete:"Are you sure you want to delete the trigger '{name}'?",validation:{name_required:"Trigger name is required",azimuth_invalid:"Azimuth angle must be a valid number",time_invalid:"Please enter a valid time as HH:MM."},help:{sunrise_offset:"For sunrise triggers: Use negative values to start before sunrise, positive to start after. Set to 0 to automatically start early enough to complete all zones before sunrise.",sunset_offset:"For sunset triggers: Use negative values to start before sunset, positive to start after sunset.",azimuth_explanation:"Solar azimuth is the compass direction of the sun. 0°=North, 90°=East, 180°=South, 270°=West. You can enter any angle value (e.g., 450° = 90°, -30° = 330°). Use this to trigger irrigation when the sun reaches a specific position.",multiple_triggers:"You can create several triggers, but only the one selected as active starts irrigation. The others are kept for later."},active_none:"None (Smart Irrigation starts no watering)",none_selected:"No trigger is active: Smart Irrigation starts no watering, whatever the weather. The durations are still calculated; start the watering yourself or from an automation of your own."},Te={title:"Seasonal adjustments",description:"A crop factor and a threshold that follow the season. Each adjustment covers a range of months and some zones; several covering the same month multiply. The multiplier scales the zone's crop factor (1 changes nothing, 0.5 halves the water use) and the threshold adds to its irrigation threshold. A month-by-month crop factor can also be set in each zone.",add:"Add an adjustment",delete:"Delete",new_name:"New adjustment",name:"Name",month_start:"From month",month_end:"To month",multiplier:"Crop factor multiplier",threshold:"Threshold offset",zones:"Zones",zones_hint:"all, or the numbers of the zones, separated by commas.",enabled:"Enabled"},Oe={title:"Rain forecast",description:"When rain is forecast, Smart Irrigation waters less. This feature requires a weather service to be configured.",threshold_label:"Skip the run from",threshold_description:"Minimum amount of precipitation (in mm) forecasted for today and tomorrow to skip irrigation.",effective_rain_label:"Count only rain that reaches the roots",effective_rain_description:"Ignore a shower smaller than a fifth of the evapotranspiration of the period: it wets the leaves and evaporates. It is judged on the whole period between two calculations.",forecast_label:"Take the forecast rain into account",forecast_description:"Below the threshold, each zone is watered for its deficit less the rain forecast for the next 24 hours, weighted by the probability the weather service gives: 4 mm forecast against a 10 mm deficit waters 6 mm. At or above the threshold, the run is skipped for the zones in the open. Zones in a greenhouse are not affected."},Ae={title:"Location coordinates",description:"Configure location coordinates for weather data retrieval. You can use manual coordinates different from your Home Assistant location if needed.",manual_enabled:"Use manual coordinates",use_ha_location:"Use Home Assistant location",latitude:"Latitude (decimal degrees)",longitude:"Longitude (decimal degrees)",elevation:"Elevation (meters above sea level)",current_ha_coords:"Current Home Assistant coordinates"},Ee={title:"Days between irrigation",description:"Configure the minimum number of days that must pass between irrigation events. This helps control watering frequency for water conservation and plant health management.\n\nTypical real-world use cases:\n• Lawn care: 1-2 day intervals prevent overwatering\n• Drought restrictions: 6+ day intervals for weekly watering\n• Deep-rooted plants: 3-7 day intervals for less frequent watering\n• Water conservation: Customizable based on climate and soil conditions",label:"Minimum days between irrigation",help_text:"Set to 0 to disable this feature. Values from 1-365 days are supported. This setting works alongside existing precipitation forecasting logic. A zone can have its own number of days in the Zones tab, which replaces this setting for that zone."},Ce={title:"Planning",description:"What the programs will water over the next three days. The weather is not known that far ahead: a run goes ahead if nothing holds it back.",nothing_planned:"No program is planned. Add a schedule to a program.",nothing_to_water:"Nothing to water for now: no zone of this run is short enough of water.",expected:"Expected duration:",expected_skipped_precipitation:"Expected to be skipped: rain forecast ({mm} mm)",nothing_now:"Nothing is watering now.",paused:"Paused",waiting:"waiting for its turn",step:"step",tour:"round",tours:"rounds",remaining:"left"},He={title:"Programs",description:"A program waters its steps one after the other. A step is one zone, or several watered together, and by default takes the duration Smart Irrigation calculated for it. Several programs never run at the same time: the next one waits its turn.",main_description:"Waters every zone, one after the other or together as set below. It is started by the start trigger, or by its own schedules once one is enabled.",run_options:"Run options",adjust_empty:"Enter a percentage or seconds to adjust the durations.",more_options:"More options",more_options_set:"with more rules",sequencing_title:"Order of the zones and pauses",others_title:"Other programs",confirm_run:"Run {name} now? Its valves open straight away.",run_started:"{name} has started.",run_queued:"{name} is queued: it starts when what is watering now has finished.",run_nothing:"{name} found nothing to water.",run_failed:"{name} could not start: {error}",schedule_conditions_where:"The conditions themselves, their sensors and thresholds, are set in Settings, General: here you only choose which of them this schedule obeys.",main_schedules_hint:"With no enabled schedule, the start trigger set further down this page starts the main program. As soon as one schedule is enabled, the schedules replace that trigger. Its settings are kept, and it comes back if the schedules are disabled or removed.",name:"Name",step:"Step",step_zones:"Zones",step_zones_help:"Zones ticked in the same step are watered at the same time.",step_duration:"Duration",mode_calculated:"Calculated by Smart Irrigation",mode_percent:"Calculated, times a percentage",mode_fixed:"Fixed",percent:"Percentage of the calculated water",seconds:"Seconds of water",passes:"Passes (cycle and soak)",step_delay:"Wait after this step",step_delay_help:"Empty: the program's wait. Negative: the next step starts that long before this one ends.",delay:"Wait between steps",delay_help:"Seconds waited after each step, for line pressure or a slow valve. Negative: each step starts that long before the previous one ends (they overlap).",tours:"Rounds",tours_help:"The whole list is watered this many times, each round with its share of the water, so the soil can take it in between.",enabled:"Enabled",add_step:"Add a step",delete_step:"Delete the step",add:"Add a program",delete:"Delete the program",schedule:"Schedule",add_schedule:"Add a schedule",delete_schedule:"Delete the schedule",schedule_moment:"At",moment_time:"A time of day",moment_sunrise:"Sunrise",moment_sunset:"Sunset",schedule_time:"Time",schedule_offset:"Offset from the sun",schedule_anchor:"That moment is when the program",anchor_start:"starts",anchor_end:"must be done",schedule_anchor_help:'With "must be done", the program starts early enough, from the length of what it has to water, to finish at that moment.',schedule_weekdays:"Days of the week",schedule_weekdays_help:"None ticked: every day.",schedule_every:"Every",schedule_days:"days",schedule_every_offset:"Shifted by",schedule_every_help:"Every 3 days with a shift of 0, 1 or 2 lets three programs take turns, one day in three, never on the same day.",schedule_parity:"Days of the month",parity_any:"All",parity_even:"Even days",parity_odd:"Odd days",schedule_days_of_month:"Specific days of the month",schedule_days_of_month_help:'Day numbers separated by commas, and "last" for the last day of the month (for example 1, 15, last). A month too short for a day skips it. Empty: any day. It adds to the other filters.',schedule_fallback_time:"If there is no sunrise or sunset",schedule_fallback_time_help:'On a day without a sunrise or sunset (polar day or night), start at this time (HH:MM), or write "previous" to reuse the time of the last one seen. Empty: that day is skipped.',schedule_months:"Months",schedule_months_help:"None ticked: every month.",schedule_from:"From",schedule_until:"Until",schedule_period_help:"A period of the year, which may run over New Year (11-01 to 03-01). Empty: the whole year.",schedule_weather:"Take the weather into account",schedule_hard_deadline:"Cut the run at the end time",schedule_hard_deadline_help:"The run is cut at the end target: the zones that are open are closed and credited for what they watered, and what did not start is skipped.",schedule_conditions:"Which conditions",schedule_conditions_help:"Untick a condition to ignore it for this schedule. Your postponed days always apply.",condition_postponed:"Postponed days (always on)",condition_rain_sensor:"Rain sensor",condition_freeze:"Frost",condition_wind:"Wind",condition_precipitation:"Rain forecast",condition_days_between:"Days since the last watering",condition_soil_moisture:"Soil moisture",schedule_weather_help:"Rain,frost, wind, a wet soil and the days you postponed can hold the run back or shorten it. Turn it off for a greenhouse drip line that does not care.",pause:"Pause",resume:"Resume",next_step:"Next step",stop:"Stop",confirm_stop:"Stop all watering now? Every valve is closed and the runs under way end.",confirm_delete_program:'Delete the program "{name}", with its steps and schedules?',confirm_delete_step:"Delete this step?",confirm_delete_schedule:"Delete this schedule?",deleted_zone:"(deleted zone)",controls_help:"For a watering that is under way. Pause closes the valves and holds everything; the rest is watered after the resume. Next step ends the zones the program is on. Stop ends everything.",max_litres:"Volume limit",max_litres_help:"A zone of this step stops once its water meter has counted this volume, in litres or gallons as the panel shows volumes. 0: no limit. The meter reports every so often, so the volume is not exact. A zone without a meter ignores it.",new_program:"Program",main_name:"Main program",run_now:"Run now",run_seconds:"Total duration",run_seconds_help:"Optional. Empty: the planned durations. Otherwise the whole program lasts this long, shared between its steps in proportion to their planned durations.",run_replace:"Replace what is running",run_replace_help:"Off: the program waits for its turn behind what is watering. On: what is watering is stopped cleanly first.",stop_program:"Stop this program",confirm_stop_program:'Stop the program "{name}"? Its open zones are closed, or it leaves the queue if it is waiting.',min_seconds:"Minimum water",max_seconds:"Maximum water",adjust_seconds:"Offset",step_bounds_help:"Order of application: the percentage first, then the offset (signed seconds added), then the minimum and the maximum. 0 for the minimum or maximum: none. A step that needs no water stays at zero: the minimum never starts it.",min_deficit_mm:"Only water when the deficit is at least",min_deficit_mm_help:"In mm, 0 to always water. Set, it replaces the zone's own threshold for this step. Fixed-duration steps are always watered.",adjust_title:"Adjust durations",adjust_none:"No adjustment in force.",adjust_active:"In force: {percent} % and {seconds} s per step, until {until}.",adjust_until_reset:"it is reset",adjust_percent:"Percent",adjust_hours:"Valid for",adjust_help:"Makes this program water longer or shorter for the runs that start after it is set. It replaces the previous adjustment. Hours empty: until it is reset.",adjust_apply:"Apply",adjust_reset:"Reset",confirm_reset_adjustment:"Remove the adjustment of this program?",main_settings:"Main program: start and sequencing",main_settings_description:"How the main program waters: the zones one after the other or together, the pause between two zones and cycle and soak. Its start trigger is below.",main_schedules_active:"For now the main program's schedules start the watering: the start trigger below is not used. It stays editable, and it comes back if those schedules are disabled or removed.",mode_off:"The full controller is off. Turn it on in Settings, General.",no_zone:"no zone",mode_calculated_short:"calculated",every_day:"every day",anchor_start_short:"starts at",anchor_end_short:"done by",steps_count:"step(s)",schedules_count:"schedule(s)",off:"off",steps_title:"Steps",schedules_title:"Schedules"},De={title:"Pumps and main valves",description:"A pump or a main valve in front of the zone valves runs while a zone it feeds is being watered. Pick it in each zone's settings. The delays are in seconds and signed.",name:"Name",entities:"Entities",entities_hint:"separate several with commas",delay_before:"Delay before",delay_before_help:"Positive: the pump or main valve comes on this long before the zone valve opens. Negative: the zone valve opens first, and the pump or main valve comes on this long after.",delay_after:"Delay after",delay_after_help:"Positive: the pump or main valve stays on this long after the zone valve closes. Negative: it goes off this long before the zone valve closes, so a pump never pushes against a closed valve.",enabled:"Enabled",add:"Add a pump or main valve",delete:"Delete",confirm_delete:'Delete "{name}"? The zones that use it will no longer have a pump or main valve.'},Ne={title:"Observed watering (closed loop)",description:"Credit each zone's bucket automatically from real irrigation, instead of resetting the bucket from an automation. Once enabled, pick a valve/switch entity per zone in the Zones tab: while it is open, the bucket is credited from the run time and the zone's throughput. For exact accounting you can also pick a cumulative volume meter (a water-meter style total) per zone, and the measured volume is used instead. Important: when this is on it is the only thing crediting the bucket, so remove any reset_bucket call from your irrigation automation to avoid double counting.",enabled_label:"Enable observed watering",direct_control_label:"Let Smart Irrigation control the valve",direct_control_description:"When on, Smart Irrigation opens each zone's linked valve, waits the calculated duration, then closes it, with no automation needed. A run under way resumes after a restart. Safety: a valve that can close by itself is given the length of the run when it opens (a Sonoff SWV on ZHA, or a valve with an MQTT safety topic set in its zone), so it closes even if Home Assistant goes down. Any other valve keeps watering until Home Assistant is back: give it a hardware failsafe (a maximum runtime).",full_controller_label:"Full controller: Smart Irrigation runs all my watering",full_controller_title:"Full controller",confirm_full_controller:"Turn on the full controller? Smart Irrigation will drive the valves and start the watering itself. A valve found open at startup that no run of ours owns is closed.",full_controller_description:"Turns on valve control and adds a Watering tab: programs, planning and pumps. The start trigger, the sequencing, the pause between zones and cycle and soak move there, as the main program's settings, and keep working as before until you add another program. Switching it off brings back exactly the previous behaviour. A valve found open at startup that no run of ours owns is closed.",sequencing_label:"Zone sequencing",sequencing:{sequential:"Sequential (one zone at a time)",parallel:"Parallel (all zones at once)"},sequencing_description:"How your zones are watered. This sets what a start trigger works back from when it has to finish at sunrise: one after another takes the sum of every zone's run time, all at once takes the longest of them. It applies whether Smart Irrigation opens the valves itself or an automation of your own does.",passes_label:"Water in several passes",passes_description:"Cycle and soak: the same water, split into shorter passes with a pause between them, so heavy soil takes it in instead of letting it run off. One pass waters in a single go, which is the default. A run too short to split is left alone.",soak_label:"Soak between passes",pause_between_zones_label:"Pause between zones",pause_between_zones_description:"A wait between two zones of a sequential run: time for the line pressure to recover, or for a slow valve to finish closing before the next one opens.",minutes:"minutes",seconds:"seconds",direct_control_locked:"The full controller drives the valves: switch it off first to change this."},Re={title:"Calculation log",description:"Write the complete input of every calculation to a file, so two days that look alike but water very differently can be compared afterwards. Each calculation appends one line: the sensor group records and how they were aggregated, the module intermediates (solar radiation, net radiation, ET0), and the resulting bucket, duration and volume. Off by default; the file is capped in size and rotated, so it can be left on for a season.",enabled_label:"Log calculation inputs to a file",file_hint:"Written to config/smart_irrigation/calc_log.jsonl, one JSON record per line. The most recent records are also included in the diagnostics download (coordinates rounded, entity ids removed), so you can attach them to an issue in one step."},Pe={title:"Blueprints",install_label:"Install the example blueprints",install_help:"Smart Irrigation copies its example blueprints into your blueprints folder, each one once: a blueprint you delete is not put back. Switch this off to copy none at all; the ones already there are left as they are."},je={title:"Skip on measured conditions",description:"Checked at the start of each run, from a sensor or the weather service. A sensor that cannot be read never stops a run.",enabled:"Enabled",threshold:"Threshold",sensor:"Sensor","sensor-optional":"Sensor (optional)",rain:{title:"Rain sensor",description:"Skip the run while a rain sensor says it is raining.","sensor-hint":"A binary sensor that is on while it rains.","history-label":"Shorten runs after recent rain","history-description":"For a zone that has no rain in millimetres at all: no gauge, and a weather service that gives none. The sensor's own history over the last five days is read, weighted so that yesterday counts for more than four days ago, and the run is shortened by it. A day of reported rain today takes the whole run; four days ago takes a tenth of it. It never touches the water balance, because it does not know how many millimetres fell: the deficit stays and is watered off once the weather turns. A zone whose sensor group does report rain in millimetres is left alone, since the balance already has it. This needs a sensor that stays on while it rains rather than one that pulses per tip."},freeze:{title:"Freeze",description:"Skip the run when the temperature is at or below the threshold.","sensor-hint":"Empty: the weather service's current temperature."},wind:{title:"Wind",description:"Skip the run when the wind is at or above the threshold: a sprinkler in strong wind waters the path, not the bed.","sensor-hint":"Empty: the weather service's current wind, at 10 m."}},Le={next_start:"Next start",no_start:"No start scheduled",skipped:"Held back",short_by:"short {value}",no_need:"no watering needed",runs_for:"would run {duration}",never_watered:"never watered",last_watered:"last watered {when}",calculate:"Calculate now",water_now:"Water now",confirm_water:"Tap again to water now",watering:"Watering",nothing_to_water:"Nothing to water right now",loading:"Reading the zones…",manual:"manual",disabled:"disabled",no_zones:"No zones yet. Open the Smart Irrigation panel to add one.",tomorrow:"tomorrow",yesterday:"yesterday",live_since:"Estimated now, from the readings since {when}",reasons:{precipitation:"rain forecast",days_between:"days between irrigation",rain_sensor:"rain sensor",freeze:"freeze",wind:"wind",soil_moisture:"soil moisture",postponed:"postponed"},programs:{title:"Programs",start:"Start",stop:"Stop",confirm_stop:"Tap again to stop",pause:"Pause",resume:"Resume",next_step:"Next step",step_of:"step {step}/{steps}",remaining:"{time} left",until:"until {when}",states:{idle:"idle",running:"running",waiting:"waiting",paused:"paused",suspended:"suspended",disabled:"disabled"}},editor:{title:"Title",zones:"Zones (all of them when empty)",show_next_start:"Show the next start",compact:"Only the zones that would water",show_programs:"Show the programs (full controller)"}},Ie={delete_zone:'Delete the zone "{name}"? Its settings and water balance are lost.',delete_mapping:'Delete the sensor group "{name}"? The zones that use it will have no weather data.',delete_module:'Delete the module "{name}"? The zones that use it can no longer be calculated.',reset_bucket:'Set the water balance of "{name}" back to zero?',reset_all_buckets:"Set the water balance of every zone back to zero?",clear_all_weather:"Clear all the weather data collected? The next calculation only has the readings that come after."},Fe={common:we,defaults:$e,module:xe,calcmodules:ke,panels:Se,title:ze,irrigation_start_triggers:Me,seasonal_adjustments:Te,weather_skip:Oe,coordinate_config:Ae,days_between_irrigation:Ee,planning:Ce,programs:He,supplies:De,observed_watering:Ne,calculation_log:Re,blueprints:Pe,measured_skip:je,card:Le,confirm:Ie},Be=Object.freeze({__proto__:null,blueprints:Pe,calcmodules:ke,calculation_log:Re,card:Le,common:we,confirm:Ie,coordinate_config:Ae,days_between_irrigation:Ee,default:Fe,defaults:$e,irrigation_start_triggers:Me,measured_skip:je,module:xe,observed_watering:Ne,panels:Se,planning:Ce,programs:He,seasonal_adjustments:Te,supplies:De,title:ze,weather_skip:Oe});function Ue(e,t){const s=t&&t.cache?t.cache:Ke,i=t&&t.serializer?t.serializer:Ge;return(t&&t.strategy?t.strategy:Ze)(e,{cache:s,serializer:i})}function Ye(e,t,s,i){const a=null==(n=i)||"number"==typeof n||"boolean"==typeof n?i:s(i);var n;let r=t.get(a);return void 0===r&&(r=e.call(this,i),t.set(a,r)),r}function We(e,t,s){const i=Array.prototype.slice.call(arguments,3),a=s(i);let n=t.get(a);return void 0===n&&(n=e.apply(this,i),t.set(a,n)),n}function Ve(e,t,s,i,a){return s.bind(t,e,i,a)}function Ze(e,t){return Ve(e,this,1===e.length?Ye:We,t.cache.create(),t.serializer)}const Ge=function(){return JSON.stringify(arguments)};var qe=class{constructor(){this.cache=Object.create(null)}get(e){return this.cache[e]}set(e,t){this.cache[e]=t}};const Ke={create:function(){return new qe}},Je={variadic:function(e,t){return Ve(e,this,We,t.cache.create(),t.serializer)}},Xe=/(?:[Eec]{1,6}|G{1,5}|[Qq]{1,5}|(?:[yYur]+|U{1,5})|[ML]{1,5}|d{1,2}|D{1,3}|F{1}|[abB]{1,5}|[hkHK]{1,2}|w{1,2}|W{1}|m{1,2}|s{1,2}|[zZOvVxX]{1,4})(?=([^']*'[^']*')*[^']*$)/g;function Qe(e){const t={};return e.replace(Xe,(e=>{const s=e.length;switch(e[0]){case"G":t.era=4===s?"long":5===s?"narrow":"short";break;case"y":t.year=2===s?"2-digit":"numeric";break;case"Y":case"u":case"U":case"r":throw new RangeError("`Y/u/U/r` (year) patterns are not supported, use `y` instead");case"q":case"Q":throw new RangeError("`q/Q` (quarter) patterns are not supported");case"M":case"L":t.month=["numeric","2-digit","short","long","narrow"][s-1];break;case"w":case"W":throw new RangeError("`w/W` (week) patterns are not supported");case"d":t.day=["numeric","2-digit"][s-1];break;case"D":case"F":case"g":throw new RangeError("`D/F/g` (day) patterns are not supported, use `d` instead");case"E":t.weekday=4===s?"long":5===s?"narrow":"short";break;case"e":if(s<4)throw new RangeError("`e..eee` (weekday) patterns are not supported");t.weekday=["short","long","narrow","short"][s-3];break;case"c":if(s<4)throw new RangeError("`c..ccc` (weekday) patterns are not supported");t.weekday=["short","long","narrow","short"][s-3];break;case"a":t.hour12=!0;break;case"b":case"B":throw new RangeError("`b/B` (period) patterns are not supported, use `a` instead");case"h":t.hourCycle="h12",t.hour=["numeric","2-digit"][s-1];break;case"H":t.hourCycle="h23",t.hour=["numeric","2-digit"][s-1];break;case"K":t.hourCycle="h11",t.hour=["numeric","2-digit"][s-1];break;case"k":t.hourCycle="h24",t.hour=["numeric","2-digit"][s-1];break;case"j":case"J":case"C":throw new RangeError("`j/J/C` (hour) patterns are not supported, use `h/H/K/k` instead");case"m":t.minute=["numeric","2-digit"][s-1];break;case"s":t.second=["numeric","2-digit"][s-1];break;case"S":case"A":throw new RangeError("`S/A` (second) patterns are not supported, use `s` instead");case"z":t.timeZoneName=s<4?"short":"long";break;case"Z":case"O":case"v":case"V":case"X":case"x":throw new RangeError("`Z/O/v/V/X/x` (timeZone) patterns are not supported, use `z` instead")}return""})),t}const et=/[\t-\r \x85\u200E\u200F\u2028\u2029]/i;const tt=/^\.(?:(0+)(\*)?|(#+)|(0+)(#+))$/g,st=/^(@+)?(\+|#+)?[rs]?$/g,it=/(\*)(0+)|(#+)(0+)|(0+)/g,at=/^(0+)$/;function nt(e){const t={};return"r"===e[e.length-1]?t.roundingPriority="morePrecision":"s"===e[e.length-1]&&(t.roundingPriority="lessPrecision"),e.replace(st,(function(e,s,i){return"string"!=typeof i?(t.minimumSignificantDigits=s.length,t.maximumSignificantDigits=s.length):"+"===i?t.minimumSignificantDigits=s.length:"#"===s[0]?t.maximumSignificantDigits=s.length:(t.minimumSignificantDigits=s.length,t.maximumSignificantDigits=s.length+("string"==typeof i?i.length:0)),""})),t}function rt(e){switch(e){case"sign-auto":return{signDisplay:"auto"};case"sign-accounting":case"()":return{currencySign:"accounting"};case"sign-always":case"+!":return{signDisplay:"always"};case"sign-accounting-always":case"()!":return{signDisplay:"always",currencySign:"accounting"};case"sign-except-zero":case"+?":return{signDisplay:"exceptZero"};case"sign-accounting-except-zero":case"()?":return{signDisplay:"exceptZero",currencySign:"accounting"};case"sign-never":case"+_":return{signDisplay:"never"}}}function ot(e){let t;if("E"===e[0]&&"E"===e[1]?(t={notation:"engineering"},e=e.slice(2)):"E"===e[0]&&(t={notation:"scientific"},e=e.slice(1)),t){const s=e.slice(0,2);if("+!"===s?(t.signDisplay="always",e=e.slice(2)):"+?"===s&&(t.signDisplay="exceptZero",e=e.slice(2)),!at.test(e))throw new Error("Malformed concise eng/scientific notation");t.minimumIntegerDigits=e.length}return t}function lt(e){const t=rt(e);return t||{}}function ht(e){let t={};for(const s of e){switch(s.stem){case"percent":case"%":t.style="percent";continue;case"%x100":t.style="percent",t.scale=100;continue;case"currency":t.style="currency",t.currency=s.options[0];continue;case"group-off":case",_":t.useGrouping=!1;continue;case"precision-integer":case".":t.maximumFractionDigits=0;continue;case"measure-unit":case"unit":t.style="unit",t.unit=s.options[0].replace(/^(.*?)-/,"");continue;case"compact-short":case"K":t.notation="compact",t.compactDisplay="short";continue;case"compact-long":case"KK":t.notation="compact",t.compactDisplay="long";continue;case"scientific":t={...t,notation:"scientific",...s.options.reduce(((e,t)=>({...e,...lt(t)})),{})};continue;case"engineering":t={...t,notation:"engineering",...s.options.reduce(((e,t)=>({...e,...lt(t)})),{})};continue;case"notation-simple":t.notation="standard";continue;case"unit-width-narrow":t.currencyDisplay="narrowSymbol",t.unitDisplay="narrow";continue;case"unit-width-short":t.currencyDisplay="code",t.unitDisplay="short";continue;case"unit-width-full-name":t.currencyDisplay="name",t.unitDisplay="long";continue;case"unit-width-iso-code":t.currencyDisplay="symbol";continue;case"scale":t.scale=parseFloat(s.options[0]);continue;case"rounding-mode-floor":t.roundingMode="floor";continue;case"rounding-mode-ceiling":t.roundingMode="ceil";continue;case"rounding-mode-down":t.roundingMode="trunc";continue;case"rounding-mode-up":t.roundingMode="expand";continue;case"rounding-mode-half-even":t.roundingMode="halfEven";continue;case"rounding-mode-half-down":t.roundingMode="halfTrunc";continue;case"rounding-mode-half-up":t.roundingMode="halfExpand";continue;case"integer-width":if(s.options.length>1)throw new RangeError("integer-width stems only accept a single optional option");s.options[0].replace(it,(function(e,s,i,a,n,r){if(s)t.minimumIntegerDigits=i.length;else{if(a&&n)throw new Error("We currently do not support maximum integer digits");if(r)throw new Error("We currently do not support exact integer digits")}return""}));continue}if(at.test(s.stem)){t.minimumIntegerDigits=s.stem.length;continue}if(tt.test(s.stem)){if(s.options.length>1)throw new RangeError("Fraction-precision stems only accept a single optional option");s.stem.replace(tt,(function(e,s,i,a,n,r){return"*"===i?t.minimumFractionDigits=s.length:a&&"#"===a[0]?t.maximumFractionDigits=a.length:n&&r?(t.minimumFractionDigits=n.length,t.maximumFractionDigits=n.length+r.length):(t.minimumFractionDigits=s.length,t.maximumFractionDigits=s.length),""}));const e=s.options[0];"w"===e?t={...t,trailingZeroDisplay:"stripIfInteger"}:e&&(t={...t,...nt(e)});continue}if(st.test(s.stem)){t={...t,...nt(s.stem)};continue}const e=rt(s.stem);e&&(t={...t,...e});const i=ot(s.stem);i&&(t={...t,...i})}return t}let dt=function(e){return e[e.EXPECT_ARGUMENT_CLOSING_BRACE=1]="EXPECT_ARGUMENT_CLOSING_BRACE",e[e.EMPTY_ARGUMENT=2]="EMPTY_ARGUMENT",e[e.MALFORMED_ARGUMENT=3]="MALFORMED_ARGUMENT",e[e.EXPECT_ARGUMENT_TYPE=4]="EXPECT_ARGUMENT_TYPE",e[e.INVALID_ARGUMENT_TYPE=5]="INVALID_ARGUMENT_TYPE",e[e.EXPECT_ARGUMENT_STYLE=6]="EXPECT_ARGUMENT_STYLE",e[e.INVALID_NUMBER_SKELETON=7]="INVALID_NUMBER_SKELETON",e[e.INVALID_DATE_TIME_SKELETON=8]="INVALID_DATE_TIME_SKELETON",e[e.EXPECT_NUMBER_SKELETON=9]="EXPECT_NUMBER_SKELETON",e[e.EXPECT_DATE_TIME_SKELETON=10]="EXPECT_DATE_TIME_SKELETON",e[e.UNCLOSED_QUOTE_IN_ARGUMENT_STYLE=11]="UNCLOSED_QUOTE_IN_ARGUMENT_STYLE",e[e.EXPECT_SELECT_ARGUMENT_OPTIONS=12]="EXPECT_SELECT_ARGUMENT_OPTIONS",e[e.EXPECT_PLURAL_ARGUMENT_OFFSET_VALUE=13]="EXPECT_PLURAL_ARGUMENT_OFFSET_VALUE",e[e.INVALID_PLURAL_ARGUMENT_OFFSET_VALUE=14]="INVALID_PLURAL_ARGUMENT_OFFSET_VALUE",e[e.EXPECT_SELECT_ARGUMENT_SELECTOR=15]="EXPECT_SELECT_ARGUMENT_SELECTOR",e[e.EXPECT_PLURAL_ARGUMENT_SELECTOR=16]="EXPECT_PLURAL_ARGUMENT_SELECTOR",e[e.EXPECT_SELECT_ARGUMENT_SELECTOR_FRAGMENT=17]="EXPECT_SELECT_ARGUMENT_SELECTOR_FRAGMENT",e[e.EXPECT_PLURAL_ARGUMENT_SELECTOR_FRAGMENT=18]="EXPECT_PLURAL_ARGUMENT_SELECTOR_FRAGMENT",e[e.INVALID_PLURAL_ARGUMENT_SELECTOR=19]="INVALID_PLURAL_ARGUMENT_SELECTOR",e[e.DUPLICATE_PLURAL_ARGUMENT_SELECTOR=20]="DUPLICATE_PLURAL_ARGUMENT_SELECTOR",e[e.DUPLICATE_SELECT_ARGUMENT_SELECTOR=21]="DUPLICATE_SELECT_ARGUMENT_SELECTOR",e[e.MISSING_OTHER_CLAUSE=22]="MISSING_OTHER_CLAUSE",e[e.INVALID_TAG=23]="INVALID_TAG",e[e.INVALID_TAG_NAME=25]="INVALID_TAG_NAME",e[e.UNMATCHED_CLOSING_TAG=26]="UNMATCHED_CLOSING_TAG",e[e.UNCLOSED_TAG=27]="UNCLOSED_TAG",e}({});function ct(e){return 0===e.type}function ut(e){return 1===e.type}function pt(e){return 2===e.type}function gt(e){return 3===e.type}function mt(e){return 4===e.type}function vt(e){return 5===e.type}function ft(e){return 6===e.type}function _t(e){return 7===e.type}function yt(e){return 8===e.type}function bt(e){return!(!e||"object"!=typeof e||0!==e.type)}function wt(e){return!(!e||"object"!=typeof e||1!==e.type)}const $t=/[ \xA0\u1680\u2000-\u200A\u202F\u205F\u3000]/,xt=/([^\t-\r -\/:-@\[-\^`\{-~\x85\xA0-\xA7\xA9\xAB\xAC\xAE\xB0\xB1\xB6\xBB\xBF\xD7\xF7\u1680\u2000-\u200A\u2010-\u2029\u202F-\u203E\u2041-\u2053\u2055-\u205F\u2190-\u245F\u2500-\u2775\u2794-\u2BFF\u2E00-\u2E7F\u3000-\u3003\u3008-\u3020\u3030\uFD3E\uFD3F\uFE45\uFE46]*)/g,kt={"001":["H","h"],419:["h","H","hB","hb"],AC:["H","h","hb","hB"],AD:["H","hB"],AE:["h","hB","hb","H"],AF:["H","hb","hB","h"],AG:["h","hb","H","hB"],AI:["H","h","hb","hB"],AL:["h","H","hB"],AM:["H","hB"],AO:["H","hB"],AR:["h","H","hB","hb"],AS:["h","H"],AT:["H","hB"],AU:["h","hb","H","hB"],AW:["H","hB"],AX:["H"],AZ:["H","hB","h"],BA:["H","hB","h"],BB:["h","hb","H","hB"],BD:["h","hB","H"],BE:["H","hB"],BF:["H","hB"],BG:["H","hB","h"],BH:["h","hB","hb","H"],BI:["H","h"],BJ:["H","hB"],BL:["H","hB"],BM:["h","hb","H","hB"],BN:["hb","hB","h","H"],BO:["h","H","hB","hb"],BQ:["H"],BR:["H","hB"],BS:["h","hb","H","hB"],BT:["h","H"],BW:["H","h","hb","hB"],BY:["H","h"],BZ:["H","h","hb","hB"],CA:["h","hb","H","hB"],CC:["H","h","hb","hB"],CD:["hB","H"],CF:["H","h","hB"],CG:["H","hB"],CH:["H","hB","h"],CI:["H","hB"],CK:["H","h","hb","hB"],CL:["h","H","hB","hb"],CM:["H","h","hB"],CN:["H","hB","hb","h"],CO:["h","H","hB","hb"],CP:["H"],CR:["h","H","hB","hb"],CU:["h","H","hB","hb"],CV:["H","hB"],CW:["H","hB"],CX:["H","h","hb","hB"],CY:["h","H","hb","hB"],CZ:["H"],DE:["H","hB"],DG:["H","h","hb","hB"],DJ:["h","H"],DK:["H"],DM:["h","hb","H","hB"],DO:["h","H","hB","hb"],DZ:["h","hB","hb","H"],EA:["H","h","hB","hb"],EC:["h","H","hB","hb"],EE:["H","hB"],EG:["h","hB","hb","H"],EH:["h","hB","hb","H"],ER:["h","H"],ES:["H","hB","h","hb"],ET:["hB","hb","h","H"],FI:["H"],FJ:["h","hb","H","hB"],FK:["H","h","hb","hB"],FM:["h","hb","H","hB"],FO:["H","h"],FR:["H","hB"],GA:["H","hB"],GB:["H","h","hb","hB"],GD:["h","hb","H","hB"],GE:["H","hB","h"],GF:["H","hB"],GG:["H","h","hb","hB"],GH:["h","H"],GI:["H","h","hb","hB"],GL:["H","h"],GM:["h","hb","H","hB"],GN:["H","hB"],GP:["H","hB"],GQ:["H","hB","h","hb"],GR:["h","H","hb","hB"],GS:["H","h","hb","hB"],GT:["h","H","hB","hb"],GU:["h","hb","H","hB"],GW:["H","hB"],GY:["h","hb","H","hB"],HK:["h","hB","hb","H"],HN:["h","H","hB","hb"],HR:["H","hB"],HU:["H","h"],IC:["H","h","hB","hb"],ID:["H"],IE:["H","h","hb","hB"],IL:["H","hB"],IM:["H","h","hb","hB"],IN:["h","H"],IO:["H","h","hb","hB"],IQ:["h","hB","hb","H"],IR:["hB","H"],IS:["H"],IT:["H","hB"],JE:["H","h","hb","hB"],JM:["h","hb","H","hB"],JO:["h","hB","hb","H"],JP:["H","K","h"],KE:["hB","hb","H","h"],KG:["H","h","hB","hb"],KH:["hB","h","H","hb"],KI:["h","hb","H","hB"],KM:["H","h","hB","hb"],KN:["h","hb","H","hB"],KP:["h","H","hB","hb"],KR:["h","H","hB","hb"],KW:["h","hB","hb","H"],KY:["h","hb","H","hB"],KZ:["H","hB"],LA:["H","hb","hB","h"],LB:["h","hB","hb","H"],LC:["h","hb","H","hB"],LI:["H","hB","h"],LK:["H","h","hB","hb"],LR:["h","hb","H","hB"],LS:["h","H"],LT:["H","h","hb","hB"],LU:["H","h","hB"],LV:["H","hB","hb","h"],LY:["h","hB","hb","H"],MA:["H","h","hB","hb"],MC:["H","hB"],MD:["H","hB"],ME:["H","hB","h"],MF:["H","hB"],MG:["H","h"],MH:["h","hb","H","hB"],MK:["H","h","hb","hB"],ML:["H"],MM:["hB","hb","H","h"],MN:["H","h","hb","hB"],MO:["h","hB","hb","H"],MP:["h","hb","H","hB"],MQ:["H","hB"],MR:["h","hB","hb","H"],MS:["H","h","hb","hB"],MT:["H","h"],MU:["H","h"],MV:["H","h"],MW:["h","hb","H","hB"],MX:["h","H","hB","hb"],MY:["hb","hB","h","H"],MZ:["H","hB"],NA:["h","H","hB","hb"],NC:["H","hB"],NE:["H"],NF:["H","h","hb","hB"],NG:["H","h","hb","hB"],NI:["h","H","hB","hb"],NL:["H","hB"],NO:["H","h"],NP:["H","h","hB"],NR:["H","h","hb","hB"],NU:["H","h","hb","hB"],NZ:["h","hb","H","hB"],OM:["h","hB","hb","H"],PA:["h","H","hB","hb"],PE:["h","H","hB","hb"],PF:["H","h","hB"],PG:["h","H"],PH:["h","hB","hb","H"],PK:["h","hB","H"],PL:["H","h"],PM:["H","hB"],PN:["H","h","hb","hB"],PR:["h","H","hB","hb"],PS:["h","hB","hb","H"],PT:["H","hB"],PW:["h","H"],PY:["h","H","hB","hb"],QA:["h","hB","hb","H"],RE:["H","hB"],RO:["H","hB"],RS:["H","hB","h"],RU:["H"],RW:["H","h"],SA:["h","hB","hb","H"],SB:["h","hb","H","hB"],SC:["H","h","hB"],SD:["h","hB","hb","H"],SE:["H"],SG:["h","hb","H","hB"],SH:["H","h","hb","hB"],SI:["H","hB"],SJ:["H"],SK:["H"],SL:["h","hb","H","hB"],SM:["H","h","hB"],SN:["H","h","hB"],SO:["h","H"],SR:["H","hB"],SS:["h","hb","H","hB"],ST:["H","hB"],SV:["h","H","hB","hb"],SX:["H","h","hb","hB"],SY:["h","hB","hb","H"],SZ:["h","hb","H","hB"],TA:["H","h","hb","hB"],TC:["h","hb","H","hB"],TD:["h","H","hB"],TF:["H","h","hB"],TG:["H","hB"],TH:["H","h"],TJ:["H","h"],TL:["H","hB","hb","h"],TM:["H","h"],TN:["h","hB","hb","H"],TO:["h","H"],TR:["H","hB"],TT:["h","hb","H","hB"],TW:["hB","hb","h","H"],TZ:["hB","hb","H","h"],UA:["H","hB","h"],UG:["hB","hb","H","h"],UM:["h","hb","H","hB"],US:["h","hb","H","hB"],UY:["h","H","hB","hb"],UZ:["H","hB","h"],VA:["H","h","hB"],VC:["h","hb","H","hB"],VE:["h","H","hB","hb"],VG:["h","hb","H","hB"],VI:["h","hb","H","hB"],VN:["H","h"],VU:["h","H"],WF:["H","hB"],WS:["h","H"],XK:["H","hB","h"],YE:["h","hB","hb","H"],YT:["H","hB"],ZA:["H","h","hb","hB"],ZM:["h","hb","H","hB"],ZW:["H","h"],"af-ZA":["H","h","hB","hb"],"ar-001":["h","hB","hb","H"],"ca-ES":["H","h","hB"],"en-001":["h","hb","H","hB"],"en-HK":["h","hb","H","hB"],"en-IL":["H","h","hb","hB"],"en-MY":["h","hb","H","hB"],"es-BR":["H","h","hB","hb"],"es-ES":["H","h","hB","hb"],"es-GQ":["H","h","hB","hb"],"fr-CA":["H","h","hB"],"gl-ES":["H","h","hB"],"gu-IN":["hB","hb","h","H"],"hi-IN":["hB","h","H"],"it-CH":["H","h","hB"],"it-IT":["H","h","hB"],"kn-IN":["hB","h","H"],"ku-SY":["H","hB"],"ml-IN":["hB","h","H"],"mr-IN":["hB","hb","h","H"],"pa-IN":["hB","hb","h","H"],"ta-IN":["hB","h","hb","H"],"te-IN":["hB","h","H"],"zu-ZA":["H","hB","hb","h"]};function St(e){let t=e.hourCycle;if(void 0===t){const s=e;t=s.getHourCycles?.()[0]??s.hourCycles?.[0]}if(t)switch(t){case"h24":return"k";case"h23":return"H";case"h12":return"h";case"h11":return"K";default:throw new Error("Invalid hourCycle")}const s=e.language;let i;return"root"!==s&&(i=e.maximize().region),(kt[`${s}-${i}`]||kt[i||""]||kt[s||""]||kt[`${s}-001`]||kt["001"])[0].charAt(0)}const zt=new RegExp(`^${$t.source}*`),Mt=new RegExp(`${$t.source}*$`);function Tt(e,t){return{start:e,end:t}}const Ot=!!Object.fromEntries,At=!!String.prototype.trimStart,Et=!!String.prototype.trimEnd,Ct=Ot?Object.fromEntries:function(e){const t={};for(const[s,i]of e)t[s]=i;return t},Ht=At?function(e){return e.trimStart()}:function(e){return e.replace(zt,"")},Dt=Et?function(e){return e.trimEnd()}:function(e){return e.replace(Mt,"")};let Nt=function(){try{const e=new RegExp("([^\\p{White_Space}\\p{Pattern_Syntax}]*)","yu");if("a"===e.exec("a ")?.[1])return e}catch{}return xt}();var Rt=class{constructor(e,t={}){this.message=e,this.position={offset:0,line:1,column:1},this.ignoreTag=!!t.ignoreTag,this.locale=t.locale,this.requiresOtherClause=!!t.requiresOtherClause,this.shouldParseSkeletons=!!t.shouldParseSkeletons}parse(){if(0!==this.offset())throw Error("parser can only be used once");if(this.message.length>0){const e=this.message.charCodeAt(0);if(35!==e&&39!==e&&60!==e&&123!==e&&125!==e){const e=function(e){if(0===e.length)return null;let t=1,s=1;for(let i=0;i<e.length;){const a=e.charCodeAt(i);switch(a){case 35:case 39:case 60:case 123:case 125:return null}if(10===a)t++,s=1,i++;else if(s++,a>=55296&&a<=56319&&i+1<e.length){const t=e.charCodeAt(i+1);i+=t>=56320&&t<=57343?2:1}else i++}return{offset:e.length,line:t,column:s}}(this.message);if(e){const t=this.clonePosition();return this.position=e,{val:[{type:0,value:this.message,location:Tt(t,this.clonePosition())}],err:null}}}}return this.parseMessage(0,"",!1)}parseMessage(e,t,s){let i=[];for(;!this.isEOF();){const a=this.char();if(123===a){const t=this.parseArgument(e,s);if(t.err)return t;i.push(t.val)}else{if(125===a&&e>0)break;if(35!==a||"plural"!==t&&"selectordinal"!==t){if(60===a&&!this.ignoreTag&&47===this.peek()){if(s)break;return this.error(26,Tt(this.clonePosition(),this.clonePosition()))}if(60===a&&!this.ignoreTag&&Pt(this.peek()||0)){const s=this.parseTag(e,t);if(s.err)return s;i.push(s.val)}else{const s=this.parseLiteral(e,t);if(s.err)return s;i.push(s.val)}}else{const e=this.clonePosition();this.bump(),i.push({type:7,location:Tt(e,this.clonePosition())})}}}return{val:i,err:null}}parseTag(e,t){const s=this.clonePosition();this.bump();const i=this.parseTagName();if(this.bumpSpace(),this.bumpIf("/>"))return{val:{type:0,value:`<${i}/>`,location:Tt(s,this.clonePosition())},err:null};if(this.bumpIf(">")){const a=this.parseMessage(e+1,t,!0);if(a.err)return a;const n=a.val,r=this.clonePosition();if(this.bumpIf("</")){if(this.isEOF()||!Pt(this.char()))return this.error(23,Tt(r,this.clonePosition()));const e=this.clonePosition();return i!==this.parseTagName()?this.error(26,Tt(e,this.clonePosition())):(this.bumpSpace(),this.bumpIf(">")?{val:{type:8,value:i,children:n,location:Tt(s,this.clonePosition())},err:null}:this.error(23,Tt(r,this.clonePosition())))}return this.error(27,Tt(s,this.clonePosition()))}return this.error(23,Tt(s,this.clonePosition()))}parseTagName(){const e=this.offset();for(this.bump();!this.isEOF()&&jt(this.char());)this.bump();return this.message.slice(e,this.offset())}parseLiteral(e,t){const s=this.clonePosition();let i="";for(;;){const s=this.tryParseQuote(t);if(s){i+=s;continue}const a=this.tryParseUnquoted(e,t);if(a){i+=a;continue}const n=this.tryParseLeftAngleBracket();if(!n)break;i+=n}return{val:{type:0,value:i,location:Tt(s,this.clonePosition())},err:null}}tryParseLeftAngleBracket(){return this.isEOF()||60!==this.char()||!this.ignoreTag&&(Pt(e=this.peek()||0)||47===e)?null:(this.bump(),"<");var e}tryParseQuote(e){if(this.isEOF()||39!==this.char())return null;switch(this.peek()){case 39:return this.bump(),this.bump(),"'";case 123:case 60:case 62:case 125:break;case 35:if("plural"===e||"selectordinal"===e)break;return null;default:return null}this.bump();const t=[this.char()];for(this.bump();!this.isEOF();){const e=this.char();if(39===e){if(39!==this.peek()){this.bump();break}t.push(39),this.bump()}else t.push(e);this.bump()}return String.fromCodePoint(...t)}tryParseUnquoted(e,t){if(this.isEOF())return null;const s=this.char();return 60===s||123===s||35===s&&("plural"===t||"selectordinal"===t)||125===s&&e>0?null:(this.bump(),String.fromCodePoint(s))}parseArgument(e,t){const s=this.clonePosition();if(this.bump(),this.bumpSpace(),this.isEOF())return this.error(1,Tt(s,this.clonePosition()));if(125===this.char())return this.bump(),this.error(2,Tt(s,this.clonePosition()));let i=this.parseIdentifierIfPossible().value;if(!i)return this.error(3,Tt(s,this.clonePosition()));if(this.bumpSpace(),this.isEOF())return this.error(1,Tt(s,this.clonePosition()));switch(this.char()){case 125:return this.bump(),{val:{type:1,value:i,location:Tt(s,this.clonePosition())},err:null};case 44:return this.bump(),this.bumpSpace(),this.isEOF()?this.error(1,Tt(s,this.clonePosition())):this.parseArgumentOptions(e,t,i,s);default:return this.error(3,Tt(s,this.clonePosition()))}}parseIdentifierIfPossible(){const e=this.clonePosition(),t=this.offset(),s=function(e,t){return Nt.lastIndex=t,Nt.exec(e)[1]??""}(this.message,t),i=t+s.length;return this.bumpTo(i),{value:s,location:Tt(e,this.clonePosition())}}parseArgumentOptions(e,t,s,i){let a=this.clonePosition(),n=this.parseIdentifierIfPossible().value,r=this.clonePosition();switch(n){case"":return this.error(4,Tt(a,r));case"number":case"date":case"time":{this.bumpSpace();let e=null;if(this.bumpIf(",")){this.bumpSpace();const t=this.clonePosition(),s=this.parseSimpleArgStyleIfPossible();if(s.err)return s;const i=Dt(s.val);if(0===i.length)return this.error(6,Tt(this.clonePosition(),this.clonePosition()));e={style:i,styleLocation:Tt(t,this.clonePosition())}}const t=this.tryParseArgumentClose(i);if(t.err)return t;const a=Tt(i,this.clonePosition());if(e&&e.style.startsWith("::")){let t=Ht(e.style.slice(2));if("number"===n){const i=this.parseNumberSkeletonFromString(t,e.styleLocation);return i.err?i:{val:{type:2,value:s,location:a,style:i.val},err:null}}{if(0===t.length)return this.error(10,a);let i=t;this.locale&&(i=function(e,t){let s="";for(let i=0;i<e.length;i++){const a=e.charAt(i);if("j"===a){let n=0;for(;i+1<e.length&&e.charAt(i+1)===a;)n++,i++;let r=1+(1&n),o=n<2?1:3+(n>>1),l="a",h=St(t);for("H"!=h&&"k"!=h||(o=0);o-- >0;)s+=l;for(;r-- >0;)s=h+s}else s+="J"===a?"H":a}return s}(t,this.locale));return{val:{type:"date"===n?3:4,value:s,location:a,style:{type:1,pattern:i,location:e.styleLocation,parsedOptions:this.shouldParseSkeletons?Qe(i):{}}},err:null}}}return{val:{type:"number"===n?2:"date"===n?3:4,value:s,location:a,style:e?.style??null},err:null}}case"plural":case"selectordinal":case"select":{const a=this.clonePosition();if(this.bumpSpace(),!this.bumpIf(","))return this.error(12,Tt(a,{...a}));this.bumpSpace();let r=this.parseIdentifierIfPossible(),o=0;if("select"!==n&&"offset"===r.value){if(!this.bumpIf(":"))return this.error(13,Tt(this.clonePosition(),this.clonePosition()));this.bumpSpace();const e=this.tryParseDecimalInteger(13,14);if(e.err)return e;this.bumpSpace(),r=this.parseIdentifierIfPossible(),o=e.val}const l=this.tryParsePluralOrSelectOptions(e,n,t,r);if(l.err)return l;const h=this.tryParseArgumentClose(i);if(h.err)return h;const d=Tt(i,this.clonePosition());return"select"===n?{val:{type:5,value:s,options:Ct(l.val),location:d},err:null}:{val:{type:6,value:s,options:Ct(l.val),offset:o,pluralType:"plural"===n?"cardinal":"ordinal",location:d},err:null}}default:return this.error(5,Tt(a,r))}}tryParseArgumentClose(e){return this.isEOF()||125!==this.char()?this.error(1,Tt(e,this.clonePosition())):(this.bump(),{val:!0,err:null})}parseSimpleArgStyleIfPossible(){let e=0;const t=this.clonePosition();for(;!this.isEOF();)switch(this.char()){case 39:{this.bump();let e=this.clonePosition();if(!this.bumpUntil("'"))return this.error(11,Tt(e,this.clonePosition()));this.bump();break}case 123:e+=1,this.bump();break;case 125:if(!(e>0))return{val:this.message.slice(t.offset,this.offset()),err:null};e-=1;break;default:this.bump()}return{val:this.message.slice(t.offset,this.offset()),err:null}}parseNumberSkeletonFromString(e,t){let s=[];try{s=function(e){if(0===e.length)throw new Error("Number skeleton cannot be empty");const t=e.split(et).filter((e=>e.length>0)),s=[];for(const e of t){let t=e.split("/");if(0===t.length)throw new Error("Invalid number skeleton");const[i,...a]=t;for(const e of a)if(0===e.length)throw new Error("Invalid number skeleton");s.push({stem:i,options:a})}return s}(e)}catch{return this.error(7,t)}return{val:{type:0,tokens:s,location:t,parsedOptions:this.shouldParseSkeletons?ht(s):{}},err:null}}tryParsePluralOrSelectOptions(e,t,s,i){let a=!1;const n=[],r=new Set;let{value:o,location:l}=i;for(;;){if(0===o.length){const e=this.clonePosition();if("select"===t||!this.bumpIf("="))break;{const t=this.tryParseDecimalInteger(16,19);if(t.err)return t;l=Tt(e,this.clonePosition()),o=this.message.slice(e.offset,this.offset())}}if(r.has(o))return this.error("select"===t?21:20,l);"other"===o&&(a=!0),this.bumpSpace();const i=this.clonePosition();if(!this.bumpIf("{"))return this.error("select"===t?17:18,Tt(this.clonePosition(),this.clonePosition()));const h=this.parseMessage(e+1,t,s);if(h.err)return h;const d=this.tryParseArgumentClose(i);if(d.err)return d;n.push([o,{value:h.val,location:Tt(i,this.clonePosition())}]),r.add(o),this.bumpSpace(),({value:o,location:l}=this.parseIdentifierIfPossible())}return 0===n.length?this.error("select"===t?15:16,Tt(this.clonePosition(),this.clonePosition())):this.requiresOtherClause&&!a?this.error(22,Tt(this.clonePosition(),this.clonePosition())):{val:n,err:null}}tryParseDecimalInteger(e,t){let s=1;const i=this.clonePosition();this.bumpIf("+")||this.bumpIf("-")&&(s=-1);let a=!1,n=0;for(;!this.isEOF();){const e=this.char();if(!(e>=48&&e<=57))break;a=!0,n=10*n+(e-48),this.bump()}const r=Tt(i,this.clonePosition());return a?(n*=s,Number.isSafeInteger(n)?{val:n,err:null}:this.error(t,r)):this.error(e,r)}offset(){return this.position.offset}isEOF(){return this.offset()===this.message.length}clonePosition(){return{offset:this.position.offset,line:this.position.line,column:this.position.column}}char(){const e=this.position.offset;if(e>=this.message.length)throw Error("out of bound");const t=this.message.codePointAt(e);if(void 0===t)throw Error(`Offset ${e} is at invalid UTF-16 code unit boundary`);return t}error(e,t){return{val:null,err:{kind:e,message:this.message,location:t}}}bump(){if(this.isEOF())return;const e=this.char();10===e?(this.position.line+=1,this.position.column=1,this.position.offset+=1):(this.position.column+=1,this.position.offset+=e<65536?1:2)}bumpIf(e){const t=this.offset();if(this.message.slice(t,t+e.length)===e){for(let t=0;t<e.length;t++)this.bump();return!0}return!1}bumpUntil(e){const t=this.offset(),s=this.message.indexOf(e,t);return s>=0?(this.bumpTo(s),!0):(this.bumpTo(this.message.length),!1)}bumpTo(e){if(this.offset()>e)throw Error(`targetOffset ${e} must be greater than or equal to the current offset ${this.offset()}`);for(e=Math.min(e,this.message.length);;){const t=this.offset();if(t===e)break;if(t>e)throw Error(`targetOffset ${e} is at invalid UTF-16 code unit boundary`);if(this.bump(),this.isEOF())break}}bumpSpace(){for(;!this.isEOF()&&Lt(this.char());)this.bump()}peek(){if(this.isEOF())return null;const e=this.char(),t=this.offset();return this.message.charCodeAt(t+(e>=65536?2:1))??null}};function Pt(e){return e>=97&&e<=122||e>=65&&e<=90}function jt(e){return 45===e||46===e||e>=48&&e<=57||95===e||e>=97&&e<=122||e>=65&&e<=90||183==e||e>=192&&e<=214||e>=216&&e<=246||e>=248&&e<=893||e>=895&&e<=8191||e>=8204&&e<=8205||e>=8255&&e<=8256||e>=8304&&e<=8591||e>=11264&&e<=12271||e>=12289&&e<=55295||e>=63744&&e<=64975||e>=65008&&e<=65533||e>=65536&&e<=983039}function Lt(e){return e>=9&&e<=13||32===e||133===e||e>=8206&&e<=8207||8232===e||8233===e}function It(e){e.forEach((e=>{if(delete e.location,vt(e)||ft(e))for(const t in e.options)delete e.options[t].location,It(e.options[t].value);else pt(e)&&bt(e.style)||(gt(e)||mt(e))&&wt(e.style)?delete e.style.location:yt(e)&&It(e.children)}))}function Ft(e,t={}){t={shouldParseSkeletons:!0,requiresOtherClause:!0,...t};const s=new Rt(e,t).parse();if(s.err){const e=SyntaxError(dt[s.err.kind]);throw e.location=s.err.location,e.originalMessage=s.err.message,e}return t?.captureLocation||It(s.val),s.val}var Bt=class extends Error{constructor(e,t,s){super(e),this.code=t,this.originalMessage=s}toString(){return`[formatjs Error: ${this.code}] ${this.message}`}},Ut=class extends Bt{constructor(e,t,s,i){super(`Invalid values for "${e}": "${t}". Options are "${Object.keys(s).join('", "')}"`,"INVALID_VALUE",i)}},Yt=class extends Bt{constructor(e,t,s){super(`Value for "${e}" must be of type ${t}`,"INVALID_VALUE",s)}},Wt=class extends Bt{constructor(e,t){super(`The intl string context variable "${e}" was not provided to the string "${t}"`,"MISSING_VALUE",t)}};function Vt(e){return"function"==typeof e}function Zt(e,t,s,i,a,n,r){if(1===e.length&&ct(e[0]))return[{type:0,value:e[0].value}];const o=[];for(const l of e){if(ct(l)){o.push({type:0,value:l.value});continue}if(_t(l)){"number"==typeof n&&o.push({type:0,value:s.getNumberFormat(t).format(n)});continue}const{value:e}=l;if(!a||!(e in a))throw new Wt(e,r);let h=a[e];if(ut(l))h&&"string"!=typeof h&&"number"!=typeof h&&"bigint"!=typeof h||(h="string"==typeof h||"number"==typeof h||"bigint"==typeof h?String(h):""),o.push({type:"string"==typeof h?0:1,value:h});else if(gt(l)){const e="string"==typeof l.style?i.date[l.style]:wt(l.style)?l.style.parsedOptions:void 0;o.push({type:0,value:s.getDateTimeFormat(t,e).format(h)})}else if(mt(l)){const e="string"==typeof l.style?i.time[l.style]:wt(l.style)?l.style.parsedOptions:i.time.medium;o.push({type:0,value:s.getDateTimeFormat(t,e).format(h)})}else if(pt(l)){const e="string"==typeof l.style?i.number[l.style]:bt(l.style)?l.style.parsedOptions:void 0;if(e&&e.scale){const t=e.scale||1;if("bigint"==typeof h){if(!Number.isInteger(t))throw new TypeError(`Cannot apply fractional scale ${t} to bigint value. Scale must be an integer when formatting bigint.`);h*=BigInt(t)}else h*=t}o.push({type:0,value:s.getNumberFormat(t,e).format(h)})}else{if(yt(l)){const{children:e,value:h}=l,d=a[h];if(!Vt(d))throw new Yt(h,"function",r);let c=d(Zt(e,t,s,i,a,n).map((e=>e.value)));Array.isArray(c)||(c=[c]),o.push(...c.map((e=>({type:"string"==typeof e?0:1,value:e}))))}if(vt(l)){const e=h,n=(Object.prototype.hasOwnProperty.call(l.options,e)?l.options[e]:void 0)||l.options.other;if(!n)throw new Ut(l.value,h,Object.keys(l.options),r);o.push(...Zt(n.value,t,s,i,a))}else if(ft(l)){const e=`=${h}`;let n=Object.prototype.hasOwnProperty.call(l.options,e)?l.options[e]:void 0;if(!n){if(!Intl.PluralRules)throw new Bt('Intl.PluralRules is not available in this environment.\nTry polyfilling it using "@formatjs/intl-pluralrules"\n',"MISSING_INTL_API",r);const e="bigint"==typeof h?Number(h):h,i=s.getPluralRules(t,{type:l.pluralType}).select(e-(l.offset||0));n=(Object.prototype.hasOwnProperty.call(l.options,i)?l.options[i]:void 0)||l.options.other}if(!n)throw new Ut(l.value,h,Object.keys(l.options),r);const d="bigint"==typeof h?Number(h):h;o.push(...Zt(n.value,t,s,i,a,d-(l.offset||0)))}else;}}return(l=o).length<2?l:l.reduce(((e,t)=>{const s=e[e.length-1];return s&&0===s.type&&0===t.type?s.value+=t.value:e.push(t),e}),[]);var l}function Gt(e,t){return t?Object.keys(e).reduce(((s,i)=>{var a,n;return s[i]=(a=e[i],(n=t[i])?{...a,...n,...Object.keys(a).reduce(((e,t)=>(e[t]={...a[t],...n[t]},e)),{})}:a),s}),{...e}):e}function qt(e){return{create:()=>({get:t=>e[t],set(t,s){e[t]=s}})}}var Kt=class e{constructor(t,s=e.defaultLocale,i,a){if(this.formatterCache={number:{},dateTime:{},pluralRules:{}},this.format=e=>{const t=this.formatToParts(e);if(1===t.length)return t[0].value;const s=t.reduce(((e,t)=>(e.length&&0===t.type&&"string"==typeof e[e.length-1]?e[e.length-1]+=t.value:e.push(t.value),e)),[]);return s.length<=1?s[0]||"":s},this.formatToParts=e=>Zt(this.ast,this.locales,this.formatters,this.formats,e,void 0,this.message),this.resolvedOptions=()=>({locale:this.resolvedLocale?.toString()||Intl.NumberFormat.supportedLocalesOf(this.locales)[0]}),this.getAst=()=>this.ast,this.locales=s,this.resolvedLocale=e.resolveLocale(s),"string"==typeof t){if(this.message=t,!e.__parse)throw new TypeError("IntlMessageFormat.__parse must be set to process `message` of type `string`");const{...s}=a||{};this.ast=e.__parse(t,{...s,locale:this.resolvedLocale})}else this.ast=t;if(!Array.isArray(this.ast))throw new TypeError("A message must be provided as a String or AST.");this.formats=Gt(e.formats,i),this.formatters=a&&a.formatters||function(e={number:{},dateTime:{},pluralRules:{}}){return{getNumberFormat:Ue(((...e)=>new Intl.NumberFormat(...e)),{cache:qt(e.number),strategy:Je.variadic}),getDateTimeFormat:Ue(((...e)=>new Intl.DateTimeFormat(...e)),{cache:qt(e.dateTime),strategy:Je.variadic}),getPluralRules:Ue(((...e)=>new Intl.PluralRules(...e)),{cache:qt(e.pluralRules),strategy:Je.variadic})}}(this.formatterCache)}static{this.memoizedDefaultLocale=null}static get defaultLocale(){return e.memoizedDefaultLocale||(e.memoizedDefaultLocale=(new Intl.NumberFormat).resolvedOptions().locale),e.memoizedDefaultLocale}static{this.resolveLocale=e=>{if(void 0===Intl.Locale)return;const t=Intl.NumberFormat.supportedLocalesOf(e);return t.length>0?new Intl.Locale(t[0]):new Intl.Locale("string"==typeof e?e:e[0])}}static{this.__parse=Ft}static{this.formats={number:{integer:{maximumFractionDigits:0},currency:{style:"currency"},percent:{style:"percent"}},date:{short:{month:"numeric",day:"numeric",year:"2-digit"},medium:{month:"short",day:"numeric",year:"numeric"},long:{month:"long",day:"numeric",year:"numeric"},full:{weekday:"long",month:"long",day:"numeric",year:"numeric"}},time:{short:{hour:"numeric",minute:"numeric"},medium:{hour:"numeric",minute:"numeric",second:"numeric"},long:{hour:"numeric",minute:"numeric",second:"numeric",timeZoneName:"short"},full:{hour:"numeric",minute:"numeric",second:"numeric",timeZoneName:"short"}}}}};const Jt="/api/smart_irrigation/languages",Xt=["cs","da","de","es","fi","fr","hu","it","nl","no","pl","pt","pt-BR","ru","sk","sl","sv","uk","zh-Hans"],Qt={en:Be},es={};function ts(e){return(e||"").replace(/['"]+/g,"")}function ss(e,t,...s){const i=ts(t);let a;try{a=e.split(".").reduce(((e,t)=>e[t]),Qt[i])}catch(t){a=e.split(".").reduce(((e,t)=>e[t]),Qt.en)}if(void 0===a&&(a=e.split(".").reduce(((e,t)=>e[t]),Qt.en)),!s.length)return a;const n={};for(let e=0;e<s.length;e+=2){let t=s[e];t=t.replace(/^{([^}]+)?}$/,"$1"),n[t]=s[e+1]}try{return new Kt(a,t).format(n)}catch(e){return"Translation "+e}}var is,as;!function(e){e.language="language",e.system="system",e.comma_decimal="comma_decimal",e.decimal_comma="decimal_comma",e.space_comma="space_comma",e.none="none"}(is||(is={})),function(e){e.language="language",e.system="system",e.am_pm="12",e.twenty_four="24"}(as||(as={}));const ns=(e,t,s,i)=>{i=i||{},s=null==s?{}:s;const a=new Event(t,{bubbles:void 0===i.bubbles||i.bubbles,cancelable:Boolean(i.cancelable),composed:void 0===i.composed||i.composed});return a.detail=s,e.dispatchEvent(a),a},rs="v2026.11.0-alpha3",os="smart_irrigation",ls="precipitation_threshold_mm",hs="irrigation_start_triggers",ds="sunrise",cs="solar_azimuth",us="time",ps="minutes",gs="hours",ms="days",vs="imperial",fs="metric",_s="Dewpoint",ys="Evapotranspiration",bs="Humidity",ws="Maximum Temperature",$s="Minimum Temperature",xs="Precipitation",ks="module",Ss="Current Precipitation",zs="Pressure",Ms="Solar Radiation",Ts="Temperature",Os="Windspeed",As="Open-Meteo",Es="Home Assistant weather entity",Cs=[As,Es],Hs=[Es],Ds="weather_service",Ns="sensor",Rs="static",Ps="illuminance",js="pressure_type",Ls="wind_height",Is="absolute",Fs="relative",Bs="none",Us="source",Ys="sensorentity",Ws="static_value",Vs="unit",Zs="aggregate",Gs=["average","first","last","maximum","median","minimum","riemannsum","sum","delta"],qs="sq ft",Ks="l/minute",Js="gal/minute",Xs="°C",Qs="mm",ei="in",ti="meter/s",si="MJ/day/m2",ii="mm/h",ai="in/h",ni="name",ri="size",oi="throughput",li="state",hi="duration",di="water_volume",ci="bucket",ui="multiplier",pi="mapping",gi="lead_time",mi="maximum_duration",vi="maximum_bucket",fi="irrigation_threshold",_i="drainage_rate",yi="linked_entity",bi="days_between_irrigation",wi="available_water",$i="crop_factor_by_month",xi="allowed_depletion",ki="distribution_efficiency",Si="safety_off_topic",zi="supply_id",Mi="extra_entities",Ti="safety_off_state_key",Oi="safety_off_mode",Ai="confirm_timeout",Ei="open_resends",Ci="flow_sensor",Hi="soil_moisture_sensor",Di="soil_moisture_threshold",Ni="input_method",Ri="throughput",Pi="direct",ji="precipitation_rate",Li=2,Ii=e=>(...t)=>({_$litDirective$:e,values:t});let Fi=class{constructor(e){}get _$AU(){return this._$AM._$AU}_$AT(e,t,s){this._$Ct=e,this._$AM=t,this._$Ci=s}_$AS(e,t){return this.update(e,t)}update(e,t){return this.render(...t)}};
+function _e(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Reflect.decorate&&"object"!=typeof t&&Object.defineProperty(e,t,s),s))(t,s,{get(){return(t=>t.renderRoot?.querySelector(e)??null)(this)}})}let ye=!1,be=null;const we=async()=>{if(ye&&be)return be;if(customElements.get("ha-checkbox")&&customElements.get("ha-slider")&&customElements.get("ha-panel-config"))return Promise.resolve();ye=!0,be=async function(){try{await new Promise(e=>{"requestIdleCallback"in window?requestIdleCallback(()=>e()):setTimeout(()=>e(),0)}),await customElements.whenDefined("partial-panel-resolver");const e=document.createDocumentFragment(),t=document.createElement("partial-panel-resolver");e.appendChild(t),t.hass={panels:[{url_path:"tmp",component_name:"config"}]},await new Promise(e=>queueMicrotask(()=>e())),t._updateRoutes(),await t.routerOptions.routes.tmp.load(),await customElements.whenDefined("ha-panel-config"),await new Promise(e=>queueMicrotask(()=>e()));const s=document.createElement("ha-panel-config");e.appendChild(s),await s.routerOptions.routes.automation.load(),e.textContent=""}catch(e){console.error("Failed to load HA form elements:",e)}}();try{await be}finally{ye=!1,be=null}};var $e={loading:"Loading",saving:"Saving",actions:{delete:"Delete"},labels:{module:"Module",no:"No",select:"Select",yes:"Yes",enabled:"Enabled",disabled:"Disabled",before:"before",after:"after"},units:{seconds:"seconds",minutes:"min",hours:"h"},attributes:{size:"size",throughput:"throughput",state:"state",bucket:"bucket",last_updated:"last updated",last_calculated:"last calculated",number_of_data_points:"number of data points"},"loading-messages":{configuration:"Loading configuration...",modules:"Loading modules...",general:"Loading..."},"saving-messages":{adding:"Adding...",saving:"Saving..."},modes:{manual:"Manual",standard:"Standard",advanced:"Advanced"}},xe={"default-zone":"Default zone","default-mapping":"Default sensor group"},ke={calculation:{explanation:{"formatting-note":"Note: this explanation uses '.' as decimal separator, shows rounded and metric values.","module-returned-evapotranspiration-deficiency":"Module returned Crop evapotranspiration deficiency ( = et0 * hour_multiplier * Kc + precipitation) of","module-returned-hourly-evapotranspiration-deficiency":"Module summed the Crop evapotranspiration deficiency hour by hour ( = sum of hourly et0 * Kc + precipitation) over","crop-factor-is":"Crop factor is","bucket-was":"Bucket was","new-bucket-values-is":"New bucket value is",bucket:"bucket","old-bucket-variable":"old_bucket","max-bucket-variable":"max_bucket",delta:"delta","bucket-less-than-zero-irrigation-necessary":"Since bucket < 0, irrigation is necessary","steps-taken-to-calculate-duration":"To calculate the exact duration, the following steps were taken","precipitation-rate-defined-as":"The precipitation rate is defined as","precipitation-rate-is":"The precipitation rate is","duration-is-calculated-as":"The duration is calculated as",drainage:"drainage","drainage-rate":"drainage_rate",hours:"hours","precipitation-rate-variable":"precipitation_rate","multiplier-is-applied":"Now, the multiplier is applied. The multiplier is","duration-after-multiplier-is":"hence the duration is","maximum-duration-is-applied":"Then, the maximum duration is applied. The maximum duration is","duration-after-maximum-duration-is":"hence the duration is","lead-time-is-applied":"Finally, the lead time is applied. The lead time is","duration-after-lead-time-is":"hence the final duration is","bucket-larger-than-or-equal-to-zero-no-irrigation-necessary":"Since bucket >= 0, no irrigation is necessary and duration is set to","maximum-bucket-is":"Maximum bucket size is","drainage-rate-is":"Drainage rate when saturated (bucket at max) is","current-drainage-is":"Current drainage is calculated as","drainage-replayed":"The window was replayed hour by hour, so each rain drained only from the hour it fell. Drainage over","no-drainage":"Current drainage is 0 because","below-irrigation-threshold":"The deficit has not reached this zone's irrigation threshold yet, so no irrigation is necessary and the duration is set to 0. Deficit / threshold:"}}},Se={pyeto:{description:"The full calculation, from your own weather sensors: temperature, humidity, pressure, wind and solar radiation. The most accurate option, and the one that asks for the most."},static:{description:"A fixed amount of evaporation per day, which you set yourself. No sensors and no weather service."},passthrough:{description:"Takes an evapotranspiration figure that already exists, from a sensor or from a weather service that publishes one. The recommended path when you have one."}},ze={setup:{title:"Setup",description:"A guided way to create your first zone. It asks one question at a time, and only the questions your previous answers leave open.",next:"Next",back:"Back",create:"Create it",creating:"Creating...",failed:"Something went wrong and nothing was created. The other tabs are still there if you would rather set it up by hand.",done:"Your zone is ready.","done-note":"It appears under Zones, with its sensor group under Sensor groups. Nothing here is special: edit either of them as you would any other. Run an update and a calculation once your sensors have reported, and the zone will start producing a duration.",steps:{zone:{question:"What are you watering?",help:"One zone is one valve, watering one area.",name:"Name",size:"Area",throughput:"Throughput","throughput-help":"How much water this zone delivers per minute. Measure it if you can, rather than taking it from a datasheet: it is what every duration is derived from, and it is the quietest way to water twice as long as you meant to."},environment:{question:"Where does it grow?",outdoors:"Outdoors","outdoors-help":"Open air. Rain reaches it, and the sky is worth asking about.","under-glass":"Under glass or plastic","under-glass-help":"A greenhouse, a polytunnel, a conservatory. No rain arrives, and a forecast describes weather these plants never see."},weather:{question:"Where should the evaporation figure come from?",service:"The weather service you configured","service-help":"Nothing else to install. Smart Irrigation takes the weather for your location and computes evapotranspiration from it.","no-service-indoors":"A weather service is not offered here: it describes the sky, which these plants are not under.",sensors:"My own weather sensors","sensors-help":"You have sensors for temperature, humidity and the rest. The most accurate option, because it measures where the plants actually are.",et:"A sensor that already reports evapotranspiration","et-help":"Something else already computes it, and Smart Irrigation should use that figure as it stands.",static:"A fixed amount per day","static-help":"No sensors and no service. You give one number and it is used every day. Rough, but it still tracks what you have already watered.","service-help-entity":"The current values and the forecast come from your weather entity, and Smart Irrigation computes evapotranspiration from them. The rain comes from a rain sensor of yours, asked for in the next step."},sensors:{question:"Which entities should it read?",help:"Only the ones the calculation actually uses are asked for.","help-optional":"Fields marked optional can stay empty: missing weather values are estimated, and without a rain sensor no rain is credited.",optional:"optional","lux-hint":"Under glass a light sensor can stand in for solar radiation: pick your illuminance entity here and set its source to Light sensor (lux) afterwards, in the sensor group.","static-question":"How much does it evaporate per day?","static-help":"A depth of water, in the unit your zones use. Somewhere around 4 to 5 mm a day is common for a temperate summer.","static-label":"Evaporation per day","rain-help-entity":"This weather entity only forecasts rain. Pick a sensor that measures rain for one of these fields: a rate or a gauge total. No rain sensor? Use Open-Meteo instead."},review:{question:"Ready to create",zone:"Zone",environment:"Environment",engine:"Calculation engine",sources:"Sources","from-the-service":"from the weather service",help:"This creates a calculation module, a sensor group and a zone, exactly as the other tabs would. Nothing is locked afterwards."}},step:"step"},weatherservice:{history:{title:"History",refresh:"Refresh","last-update":"Last update",time:"Retrieved","sensor-group":"Sensor group","no-data":"No data has been retrieved from the weather service yet."},title:"Weather service",description:"View and change the weather service used to fetch weather data — no need to reinstall the integration. The API key is validated and the change is applied immediately.",labels:{"use-weather-service":"Use a weather service",service:"Weather service","api-key":"API key","ha-weather-entity":"A weather entity in Home Assistant","weather-entity":"Weather entity"},actions:{save:"Save",saving:"Saving…","open-sensor-groups":"Open sensor groups"},messages:{"no-service":"No weather service is used — weather data comes from your own sensors only.",saved:"Weather service updated and applied.","reload-note":"Saving validates the API key against the service and applies the change immediately.","owm-onecall-hint":"OpenWeatherMap needs the One Call API 3.0 plan (One Call by Call). It is free up to 1000 calls/day but must be activated with a card, and a new key can take up to a couple of hours to work. A plain default key is rejected.","ha-entity-hint":"Current values and the forecast come from this entity, solar radiation and reference ET from Open-Meteo. It only forecasts rain: give each sensor group a rain sensor under Current precipitation.","rain-groups-on-service":"{count, plural, one {# sensor group still takes its} other {# sensor groups still take their}} rain from the weather service, which reports none: {groups}. Choose a rain sensor under Current precipitation, or the zones are watered after every shower.","reload-note-entity":"Saving checks that the entity exists and applies the change immediately.","invalid-entity":"Choose a weather entity: this one does not exist any more, or is not a weather entity."}},backuprestore:{title:"Backup / restore",description:"Export the full Smart Irrigation configuration to a JSON file, or restore it from a previous backup.",cards:{backup:{title:"Backup",description:"Download the complete configuration (general settings, zones, modules and sensor groups) as a JSON file."},restore:{title:"Restore",description:"Load a previously exported JSON file to replace the current configuration."}},actions:{export:"Export to JSON","choose-file":"Choose a backup file…",restore:"Restore this backup",restoring:"Restoring…"},messages:{exported:"Backup file downloaded.",restored:"Configuration restored — reloading the integration.","invalid-file":"This file is not a valid Smart Irrigation backup.","confirm-title":"Replace the entire configuration?",summary:"This backup contains","confirm-warning":"Restoring overwrites all current general settings, zones, modules and sensor groups. This cannot be undone.","reload-note":"Restoring replaces everything and reloads the integration to apply the change."}},general:{cards:{"automatic-duration-calculation":{header:"Calculating the watering duration",description:"The watering duration of each zone comes from its water balance: what the weather took out of the soil, minus the rain. Here you choose when it is calculated. What starts the watering is decided elsewhere, by the start trigger.",labels:{"calc-when":"Watering duration calculated","calc-when-time":"At a fixed time","calc-when-start":"Just before each start","calc-when-manual":"Only when I ask","calc-when-hint":"Just before each start: at the time of the start trigger, with the freshest weather. The right choice when Smart Irrigation starts the watering (direct valve control or the start event). At a fixed time: every day at the time below, for something other than Smart Irrigation that starts the watering and reads the durations when it likes (Irrigation Unlimited, a schedule of your own). Only when I ask: nothing is calculated by itself, use the calculate buttons or the services.","calc-time":"Calculate at","calc-time-hint":"The daily calculation: the water lost is added to the bucket of each zone and the watering durations are set.","hourly-calculation":"Calculate evapotranspiration hour by hour","hourly-calculation-hint":"Sums the FAO-56 hourly equation over each hour since the last calculation, instead of applying the daily equation to the averages, which hides whether the sun and the heat came together. A new installation starts on it; an installation set up before it arrived keeps the daily equation until you switch, because the two give different numbers and your watering should not change on an update. The sun of each hour comes from a radiation or illuminance sensor, from the weather service's own hourly history, or from the day's temperature range. It is worth having when readings arrive through the day: one update a day leaves a single reading held across twenty-four hours, and neither form is trustworthy then. A greenhouse with no sensor of its own keeps the daily equation."}},"automatic-update":{errors:{"warning-update-time-on-or-after-calc-time":"Warning: weather data update time on or after calculation time"},header:"Automatic weather data update",description:"Collect and store weather data automatically. Weather data is required to calculate zone buckets and durations.",labels:{"auto-update-enabled":"Automatically update weather data","auto-update-schedule":"Update schedule","auto-update-time":"Update at","auto-update-interval":"Update sensor data every","auto-update-delay":"Update delay"},options:{minutes:"minutes",hours:"hours",days:"days"}},continuousupdates:{header:"Continuous updates for sensors",description:"Records every change of a sensor of the group, instead of one reading per update. The hourly calculation, the rain gauge and the replay of the rain get finer from it: a gauge that reports every ten minutes places its rain within ten minutes. It does not calculate the zones again at each change; the scheduled calculation does that, once, from the readings recorded. In a group that also uses a weather service, its sensors are recorded as they change and the service is still read once per update, so it costs no extra requests.",labels:{continuousupdates:"Enable continuous updates",sensor_debounce:"Sensor debounce"}},"panel-mode":{header:"Panel",labels:{advanced:"Advanced settings","advanced-hint":"Shows the settings that tune the model: drainage, thresholds, multiplier, how far ahead a zone looks. They have sound defaults; leave this off unless you know you need them. Your values are kept either way."}},"setup-assistant":{description:"Four questions at most, and it creates a sensor group and a zone for you, choosing what each needs. For a first zone, another one, or a fresh start.",open:"Open the assistant"}},description:"This page provides global settings.",title:"General"},help:{title:"Help",cards:{"how-to-get-help":{title:"How to get help","first-read-the":"First, read the",wiki:"Wiki","if-you-still-need-help":"If you still need help reach out on the","community-forum":"Community forum","or-open-a":"or open a","github-issue":"Github Issue","english-only":"English only"},translate:{title:"Help translate",text:"Apart from English and French, the translations of this panel were machine-made and nobody who speaks the language has checked them yet. If a word or a sentence reads oddly in yours, you can correct it in your browser, with no technical knowledge needed.",link:"Translate on Weblate"}}},info:{title:"Info",description:"What will happen at the next start, and why.","configuration-not-available":"Configuration not available.",cards:{"next-run":{title:"Next run",labels:{start:"Starts",duration:"Total duration",zones:"Zones watering",trigger:"Trigger"},"no-start":"No start time could be worked out yet.","nothing-to-water":"Nothing to water: no zone has reached its irrigation threshold.","trigger-default":"Default, finishing at sunrise","main-schedules":"Started by the main program's schedules (the start trigger is not used for now)","accounts-for-duration":"counted back so the run finishes then","starts-at-trigger":"starts at that moment","sequencing-sequential":"one zone at a time, so the total is every zone added up",estimated:"Estimated: the zones are calculated again just before the start.","sequencing-parallel":"all zones at once, so the total is the longest zone","headline-nothing":"Nothing to water","sub-nothing":"No zone is short enough of water yet. The next start would be {start}.","next-program":"Next program: {program}, {start}","headline-watering":"Watering {start}","headline-watering-soon":"Watering at the next start","sub-watering":"{count} zone(s), {duration} in all.","headline-postponed":"Watering is held back","sub-postponed":"You postponed it. It resumes by itself, and nothing is lost: a zone that is short of water still is.","headline-skipped":"No watering today","headline-not-scheduled":"A run is owed, and nothing is scheduled to start it","sub-not-scheduled":"The time above is when it would start. No start trigger is armed right now, which happens when the active trigger is disabled or was not registered. Check the trigger under Settings, and if it looks right, a calculation re-arms it.","headline-no-trigger":"No trigger is active","sub-no-trigger":"Smart Irrigation starts no watering. Choose a start trigger in the settings to have it water."},decision:{title:"Will it be skipped?","will-run":"Nothing is holding the run back.","will-skip":"The run would be skipped.","preview-note":"Evaluated just now. A forecast can still change before the start.",unavailable:"The skip conditions could not be evaluated.","last-title":"Last real decision","last-none":"No run has been decided yet.","last-skipped":"Skipped","last-ran":"Went ahead","check-precipitation":"Rain forecast","check-days_between":"Days between irrigation","state-off":"Off","state-unavailable":"Could not be checked","state-passing":"Not blocking","state-blocking":"Blocking","detail-forecast":"Forecast","detail-threshold":"Threshold","detail-days-since":"Days since last run","detail-days-required":"Days required","check-rain_sensor":"Rain sensor","check-freeze":"Freeze","check-wind":"Wind","check-soil_moisture":"Soil moisture","detail-now":"Now","detail-weather-service":"weather service","detail-raining":"It is raining","detail-dry":"Not raining","detail-held":"sits out this run","check-postponed":"Postponed by you"},estimate:{title:"Where each zone stands now",note:"Estimated by running the calculation on the readings collected since it last ran. Nothing is committed: a zone keeps the value from its last calculation until the next one.",none:"No zone can be estimated yet.",labels:{now:"Now","at-last-calculation":"At last calculation","would-water":"Would water","last-irrigation":"Last watered"},nothing:"nothing","never-watered":"never"},postpone:{prompt:"Rain the forecast missed, or a reason of your own?","for-24":"Hold for 24 h","for-48":"Hold for 48 h",until:"Watering is held back until",resume:"Resume now"},forecast:{today:"Today"},stale:{title:"A zone is no longer being calculated",body:"Its water need is older than the others, so it is watering on old weather. Check that its sensor group still receives data, and look at the log for what the calculation said about it.",never:"never calculated"}},gaps:{auto_calc_off:{title:"No watering duration is being calculated",body:'The watering duration is set to "Only when I ask", so the zones\' durations never update by themselves. Choose "At a fixed time" or "Just before each start" under Settings, or calculate by hand when you want a run.'},no_automatic_zone:{title:"No zone waters on its own",body:"Every zone is manual or disabled, so a start reaches nothing. Set a zone to automatic for it to be watered by the schedule."},no_valve_path:{title:"Nothing here opens a valve",body:"Smart Irrigation calculates how long to water; something has to act on it. Either link a valve to a zone and turn on direct valve control, or write an automation on the start event (the blueprints do this for you). If an automation already does it, there is nothing to change."}}},mappings:{cards:{"add-mapping":{actions:{add:"Add sensor group"},header:"Add sensor groups"},mapping:{aggregates:{average:"Average",first:"First",last:"Last",maximum:"Maximum",median:"Median",minimum:"Minimum",riemannsum:"Riemann sum",sum:"Sum",delta:"Delta"},errors:{"cannot-delete-mapping-because-zones-use-it":"You cannot delete this sensor group because there is at least one zone using it.",invalid_source:"Invalid source",source_does_not_exist:"Source does not exist. Please enter a valid source, such as 'sensor.mysensor'."},hidden_sources:"{n} reading(s) not asked: the evapotranspiration is given ready-made, they would only serve to recalculate it.",et_ignored:"Zone(s) {zones} are calculated from the weather and do not read this evapotranspiration. Set them to provided by a sensor or a service on the zone.",et_missing:"Zone(s) {zones} expect a ready-made evapotranspiration: choose a source for it above.",et_unused:"Not used: every zone of this group is calculated by Smart Irrigation, which works the evapotranspiration out from the other readings. Set a zone to provided by a sensor or a service to give a ready-made value here.",et_needed:"A ready-made value is needed here: the zones of this group are set to provided by a sensor or a service, so None is not offered.",hints:{temperature:"Air temperature, in the shade. The day's minimum and maximum are taken from it.",dewpoint:"The temperature at which the air would be saturated, which tells how much vapour it holds. The weather service is fine here.",humidity:"Relative humidity of the air. Dry air draws more water out of the plants.",pressure:"Atmospheric pressure. It changes the result very little: the weather service is enough.",windspeed:"Wind carries the humidity away from the leaves. Under glass, set a fixed value near 0.","solar radiation":"The energy of the sun, the main driver of evaporation. Without it the calculation estimates it from the day's temperature range. Under glass, use a radiation sensor or a light sensor.",precipitation:"Rain that fell, as a total, from a rain gauge of your own that adds up. With a weather service, leave it on None.","current precipitation":"Rain falling now, as a rate. The weather service provides it; a rain sensor of your own is more precise.",evapotranspiration:"A ready-made evapotranspiration (ET₀), from your own sensor or from the weather service. Only the zones set to provided by a sensor or a service read it. For a zone calculated by Smart Irrigation this line is not used: the weather service then only supplies the inputs (temperature, humidity, wind, radiation) of Smart Irrigation's own calculation."},items:{dewpoint:"Dewpoint",evapotranspiration:"Evapotranspiration",humidity:"Humidity","maximum temperature":"Maximum temperature","minimum temperature":"Minimum temperature",precipitation:"Total precipitation","current precipitation":"Current precipitation",pressure:"Pressure","solar radiation":"Solar radiation",temperature:"Temperature",windspeed:"Wind speed"},pressure_types:{absolute:"absolute",relative:"relative"},"pressure-type":"Pressure is","sensor-aggregate-use-the":"How the readings are combined","sensor-entity":"Sensor entity",static_value:"Value","input-units":"Input provides values in",source:"Source",sources:{none:"None",none_et:"None (Smart Irrigation calculates it)",weather_service:"Weather service",weather_service_et:"Ready-made ET₀ from the weather service",sensor:"Sensor",static:"Static value",radiation_sensor:"Radiation sensor",illuminance:"Light sensor (lux)"},greenhouse:"Greenhouse",greenhouse_description:"An enclosed environment: a greenhouse, a polytunnel, anything under glass or plastic. No rain reaches these zones, so precipitation is left out of their water balance and its fields are hidden. Two things to set yourself, because they cannot be guessed: give Wind speed a static value near 0, since the calculation assumes open air, and use a light sensor for Solar Radiation, since the glazing filters the sky.",module:"Calculation engine",module_description:"This group only offers the sources this engine reads. The zones using it inherit the choice.",module_undecided:"No engine chosen yet, so every source is offered and each zone using this group keeps its own. Pick one to see only the sources it reads.",wind_height:"Anemometer height (empty: taken at 2 m)",rain_not_from_entity:"The weather entity reports no rain that fell, only a forecast: choose a rain sensor here, or the zones are watered after every shower.",rain_hint_entity:"Rain falling now, as a rate. The weather entity only forecasts it: choose a sensor that measures rain."}},description:"Add one or more sensor groups that retrieve weather data from Weather service, from sensors or a combination of these. You can map each sensor group to one or more zones",labels:{"mapping-name":"Name"},no_items:"There are no sensor group defined yet.",title:"Sensor groups","weather-records":{title:"Weather records (last 10)",timestamp:"Time",temperature:"Temp",humidity:"Humidity",precipitation:"Precip","retrieval-time":"Retrieved","no-data":"No weather data available for this sensor group"},summary:{"sources-one":"{n} source","sources-other":"{n} sources","zones-one":"{n} zone","zones-other":"{n} zones"}},modules:{cards:{"add-module":{actions:{add:"Add module"},header:"Add module"},module:{errors:{"cannot-delete-module-because-zones-use-it":"You cannot delete this module because there is at least one zone using it."},labels:{configuration:"Configuration",required:"indicates a required field"},"translated-options":{DontEstimate:"Do not estimate",EstimateFromSunHours:"Estimate from sun hours",EstimateFromTemp:"Estimate from temperature",EstimateFromSunHoursAndTemperature:"Estimate from average of sun hours and temperature"}}},description:"Add one or more modules that calculate irrigation duration. Each module comes with its own configuration and can be used to calculate duration for one or more zones.",no_items:"There are no modules defined yet.",title:"Modules"},zones:{actions:{add:"Add",calculate:"Calculate",information:"Information",update:"Update","reset-bucket":"Reset bucket","view-weather-info":"View weather data","view-weather-info-message":"Weather data available for","view-watering-calendar":"View watering calendar"},cards:{"add-zone":{actions:{add:"Add zone"},header:"Add zone"},"zone-actions":{actions:{"calculate-all":"Calculate all zones","update-all":"Update all zones","reset-all-buckets":"Reset all buckets","clear-all-weatherdata":"Clear all weather data"},header:"Actions on all zones"}},description:"Specify one or more irrigation zones here. The irrigation duration is calculated per zone, depending on size, throughput, state, module and sensor group.",labels:{bucket:"Bucket","et-deficiency":"Daily ET deficiency",duration:"Duration","lead-time":"Lead time",mapping:"Sensor Group","maximum-duration":"Maximum duration",multiplier:"Crop factor (Kc)",name:"Name","input-method":"Input method","input-methods":{throughput:"Throughput & area",direct:"Precipitation rate"},"input-method-hint":"How the water delivered is known: from the area and the flow of the zone, or directly as a precipitation rate if you have measured it.","state-hint":"Automatic: Smart Irrigation calculates the duration from the water balance and waters at the start. Manual: it waters only when you ask, for the duration you type. Disabled: never watered, and its balance is not followed.","mapping-hint":"The group of sensors this zone reads its weather from: a weather service, your own sensors, or both.","bucket-hint":"The water balance of the zone. Negative: it is short of water. Zero: it has what it needs. Watering brings it back to zero.","maximum-bucket-hint":"The most water the soil is taken to hold. A positive balance never goes above it: the surplus is lost.","irrigation-threshold-hint":"The deficit from which the zone is watered. Under it, the zone is left alone and the deficit rolls over to the next calculation.","drainage_rate-hint":"How fast the soil lets surplus water go. Leave the default if you do not know your soil: 0 means the surplus never drains.","precipitation-rate":"Precipitation rate",size:"Size",state:"State",states:{automatic:"Automatic",disabled:"Disabled",manual:"Manual"},throughput:"Throughput","maximum-bucket":"Maximum bucket",last_calculated:"Last calculated","data-last-updated":"Data last updated","data-number-of-data-points":"Number of data points",drainage_rate:"Drainage rate","linked-entity":"Linked valve/switch","linked-entity-hint":"The valve or switch that waters this zone. Smart Irrigation opens and closes it when direct valve control is on. With observed watering on, any run of it (a manual tap, an automation, or Smart Irrigation itself) credits the bucket from the run time and the zone's throughput.",supply:"Pump or main valve","supply-none":"None","measured-flow-help":"Over several runs the zone's flow meter measured a flow that differs from the one set above. It is advice, never applied on its own.","use-measured-flow":"Use the measured flow","extra-valves":"Other valves of the zone","extra-valves-hint":"opened and closed together with it","flow-sensor":"Cumulative volume meter","flow-sensor-hint":"For exact crediting instead of throughput x time: a cumulative water-meter total (state class total_increasing), not an instant flow rate. The unit is read automatically (L, mL, m³, gal, ft³).","confirm-timeout":"Wait for the valve to confirm","open-resends":"Send the open again","confirm-timeout-help":"How long the valve has to report that it opened or closed, and how many times the open is sent again in that time. Empty keeps the defaults: 8 seconds without a resend, or 30 seconds and two resends with the full controller, and 5 seconds for a close. A cloud valve such as Gardena confirms slowly and counts every command against a quota: give it a longer wait and 0 resends. A close is always tried a second time.","safety-off-topic":"Safety off MQTT topic","safety-off-state-key":"Safety off state key","safety-off-mode":"Safety off mode","safety-off-mode-auto":"Automatic (MQTT topic, or a Sonoff SWV on ZHA)","safety-off-mode-zha":"ZHA timed off","safety-off-mode-off":"Off (no dead-man)","safety-off-mode-help":"The valve closes by itself if Home Assistant stops in the middle of a run. Automatic uses the MQTT topic above when there is one, and a Sonoff SWV on ZHA is armed on its own. ZHA timed off also arms any other ZHA valve with the standard timed-off command, which is not verified on other models. Off never arms a hardware dead-man for this zone.","safety-off-topic-help":'Optional hardware dead-man. An MQTT set-topic (e.g. zigbee2mqtt/my_valve/set) the valve\'s device listens on. Smart Irrigation publishes an "on with timed off" there so the device shuts the valve off by itself if Home Assistant stops mid-run and never sends the close. The state key is the device\'s on/off property ("state", or "state_l1"…"state_l4" for a multi-channel device). Support depends on the device firmware (on_time) — test it before relying on it. Leave empty to disable.',optional:"optional","irrigation-threshold":"Irrigation threshold",days:"days","days-between-irrigation":"Days between irrigation","crop-factor-by-month":"Crop factor by month","crop-factor-by-month-help":"For a crop whose water use follows its growth: the crop factor (Kc) of each month, January first. A month left empty uses the crop factor above, and all twelve empty is that crop factor all year. Seasonal adjustments still apply on top.",months:{1:"Jan",2:"Feb",3:"Mar",4:"Apr",5:"May",6:"Jun",7:"Jul",8:"Aug",9:"Sep",10:"Oct",11:"Nov",12:"Dec"},"available-water":"Available water","allowed-depletion":"Allowed depletion","available-water-help":"How much water the soil of this zone holds for the plants, in mm (the root depth in metres times what the soil holds per metre: about 50 to 110 mm for sand, 130 to 180 for loam, 120 to 200 for clay, from FAO-56). Leave empty to leave things as they are. When set, the deficit cannot go below it, and once the plants have used up the allowed share of it (50% unless you change it) they draw less water, so the deficit stops growing as fast.","distribution-efficiency":"Distribution efficiency","distribution-efficiency-help":"The share of the water leaving the emitters that reaches the plants, in %. Sprinklers in wind or on a slope lose some, drip loses almost none. Leave empty for 100%. A zone at 80% waters 25% longer for the same depth, and credits only 80% of what it delivers.","days-between-irrigation-help":"Leave empty to follow the general setting (Settings, Days between irrigation). A number replaces the general setting for this zone alone: 1 waters it every day if it needs water, 3 at most every third day, 0 removes the restriction. The days are counted from the last time this zone was watered.","soil-moisture-sensor":"Soil moisture sensor","soil-moisture-sensor-hint":"The zone sits out a run while the soil is at or above the threshold. The bucket is kept.","soil-moisture-threshold":"Skip at or above","calculation-method":"Evapotranspiration","calculation-method-help":{from_weather:"From your measurements: temperature, humidity, wind, sun.",provided:"You already have an evapotranspiration in mm; it is taken as it is.",fixed:"So many mm a day, whatever the weather."},"calculation-methods":{from_weather:"Calculated by Smart Irrigation",provided:"Provided by a sensor or a service",fixed:"A fixed amount"},"forecast-days":"Look ahead","forecast-days-help":"0: the zone waters what the weather actually took. 1: tomorrow is taken into account as well, 2: tomorrow and the day after, and so on. The hotter the days ahead, the more is watered today. This is not the rain skip, which is a setting of its own.","fixed-amount":"Evaporation per day","engine-shared-help":"This setting belongs to this zone alone: each zone has its own, and changing it here changes nothing anywhere else.","soil-type":"Soil","plant-type":"What grows here","soil-types":{sand:"Sandy",sandy_loam:"Sandy loam",loam:"Loam",clay_loam:"Clay loam",clay:"Clay",custom:"I set the drainage rate myself"},"plant-types":{lawn:"Lawn",vegetables:"Vegetables",flowers:"Flowers",shrubs:"Shrubs",hedge:"Hedge",fruit_trees:"Fruit trees",vines:"Vines",ground_cover:"Ground cover",custom:"I set the crop coefficient myself"},"duration-readonly-automatic":"Calculated for you: this zone's run comes from its water balance. Set it to manual to type a duration yourself.","duration-readonly-disabled":"A disabled zone is never watered, so it has no run time.","et-deficiency-help":"What this zone needs per day: ETc, the reference evapotranspiration times the crop factor, seasonal adjustment included. Before the interval scaling and before rain, which is what makes it comparable from one configuration to the next. The zone sensor also carries the reference figure on its own, as the `eto` attribute, for holding against what a weather service publishes."},no_items:"There are no zones defined yet.",title:"Zones","module-comes-from-the-group":"The calculation engine comes from this zone's sensor group. Change it there, and every zone using that group follows.",status:{estimate:"Short by {short}: about {duration} ({volume}) at the next calculation.","will-water":"Will water {duration} at the next start.",idle:"Nothing to water: {short} short.",satisfied:"Nothing to water: this zone has what it needs.","under-threshold":"Nothing to water yet: {short} short, under this zone's threshold.",manual:"Waters only when you ask.",disabled:"Disabled: never watered, and its balance is not kept.",threshold:"threshold"},calendar:{title:"Watering calendar (12 months, estimated)",caveat:"A planning estimate, not your weather: the months are modelled from your latitude and a typical seasonal pattern, so a continental summer reads hotter and drier than it is. It influences nothing, calculates nothing and waters nothing.",month:"Month",et:"ET",precipitation:"Precipitation",watering:"Watering","avg-temp":"Avg temp",none:"No watering calendar data available for this zone",error:"Could not generate the calendar"}},history:{title:"History",description:"Every irrigation run Smart Irrigation has credited to a zone: when it started, how long it watered and how much water it used. Runs are recorded by direct valve control and by observed watering, and are kept for 90 days.",refresh:"Refresh","no-data":"No irrigation runs have been recorded yet.",table:{title:"Irrigation runs",start:"Start",zone:"Zone",duration:"Duration",water:"Water used",truncated:"Showing the {count} most recent runs out of {total}."},charts:{"total-title":"Total water used per day (last 30 days)","per-zone-title":"Water used per day, per zone (last 30 days)","no-data":"No water was used in this period."}},groups:{home:"Home",zones:"Zones",data:"Data",settings:"Settings",watering:"Watering"},planning:{title:"Planning"},programs:{title:"Programs"},supplies:{title:"Pumps and valves"}},Me="Smart Irrigation",Te={title:"Start triggers",description:"When the watering starts. By default it finishes at sunrise; add a trigger for another moment: sunset, an azimuth or a time, with an offset.",active_label:"Active trigger",active_default:"Default (sunrise minus total watering duration)",active_hint:"Only the selected trigger starts the watering, once a day.",usage_before:"When a trigger fires, Smart Irrigation emits the event ",usage_after:" — listen to it in an automation to start watering. The event data includes trigger_name, trigger_type and offset_minutes, so you can react differently per trigger. The precipitation skip and days-between-irrigation settings still apply: on a skip day no event is fired.",add_trigger:"Add trigger",edit_trigger:"Edit trigger",delete_trigger:"Delete trigger",trigger_types:{sunrise:"Sunrise",sunset:"Sunset",solar_azimuth:"Solar Azimuth",time:"Fixed time"},fields:{name:{name:"Trigger name",description:"A descriptive name to identify this trigger"},type:{name:"Trigger type",description:"The type of solar event to trigger on"},enabled:{name:"Enabled",description:"Whether this trigger is currently active"},offset_minutes:{name:"Offset (minutes)",description:"Minutes before (-) or after (+) the solar event. For sunrise triggers, use 0 for automatic timing based on total zone duration."},azimuth_angle:{name:"Azimuth angle (degrees)",description:"Solar azimuth angle in degrees where 0=North, 90=East, 180=South, 270=West"},account_for_duration:{name:"Account for duration",description:"When enabled, irrigation will start early enough to finish at the specified time. When disabled, irrigation will start exactly at the specified time."},at:{name:"Time"}},dialog:{add_title:"Add Irrigation Start Trigger",edit_title:"Edit Irrigation Start Trigger",cancel:"Cancel",save:"Save",delete:"Delete",help:"When this trigger fires, Smart Irrigation emits the following event — use it in an automation to start watering. The event data includes this trigger's name (and type/offset), so you can react to it specifically:"},offset_auto:"Auto (calculated from total zone duration)",confirm_delete:"Are you sure you want to delete the trigger '{name}'?",validation:{name_required:"Trigger name is required",azimuth_invalid:"Azimuth angle must be a valid number",time_invalid:"Please enter a valid time as HH:MM."},help:{sunrise_offset:"For sunrise triggers: Use negative values to start before sunrise, positive to start after. Set to 0 to automatically start early enough to complete all zones before sunrise.",sunset_offset:"For sunset triggers: Use negative values to start before sunset, positive to start after sunset.",azimuth_explanation:"Solar azimuth is the compass direction of the sun. 0°=North, 90°=East, 180°=South, 270°=West. You can enter any angle value (e.g., 450° = 90°, -30° = 330°). Use this to trigger irrigation when the sun reaches a specific position.",multiple_triggers:"You can create several triggers, but only the one selected as active starts irrigation. The others are kept for later."},active_none:"None (Smart Irrigation starts no watering)",none_selected:"No trigger is active: Smart Irrigation starts no watering, whatever the weather. The durations are still calculated; start the watering yourself or from an automation of your own."},Oe={title:"Seasonal adjustments",description:"A crop factor and a threshold that follow the season. Each adjustment covers a range of months and some zones; several covering the same month multiply. The multiplier scales the zone's crop factor (1 changes nothing, 0.5 halves the water use) and the threshold adds to its irrigation threshold. A month-by-month crop factor can also be set in each zone.",add:"Add an adjustment",delete:"Delete",new_name:"New adjustment",name:"Name",month_start:"From month",month_end:"To month",multiplier:"Crop factor multiplier",threshold:"Threshold offset",zones:"Zones",zones_hint:"all, or the numbers of the zones, separated by commas.",enabled:"Enabled"},Ae={title:"Rain forecast",description:"When rain is forecast, Smart Irrigation waters less. This feature requires a weather service to be configured.",threshold_label:"Skip the run from",threshold_description:"Minimum amount of precipitation (in mm) forecasted for today and tomorrow to skip irrigation.",effective_rain_label:"Count only rain that reaches the roots",effective_rain_description:"Ignore a shower smaller than a fifth of the evapotranspiration of the period: it wets the leaves and evaporates. It is judged on the whole period between two calculations.",forecast_label:"Take the forecast rain into account",forecast_description:"Below the threshold, each zone is watered for its deficit less the rain forecast for the next 24 hours, weighted by the probability the weather service gives: 4 mm forecast against a 10 mm deficit waters 6 mm. At or above the threshold, the run is skipped for the zones in the open. Zones in a greenhouse are not affected."},Ee={title:"Location coordinates",description:"Configure location coordinates for weather data retrieval. You can use manual coordinates different from your Home Assistant location if needed.",manual_enabled:"Use manual coordinates",use_ha_location:"Use Home Assistant location",latitude:"Latitude (decimal degrees)",longitude:"Longitude (decimal degrees)",elevation:"Elevation (meters above sea level)",current_ha_coords:"Current Home Assistant coordinates"},Ce={title:"Days between irrigation",description:"Configure the minimum number of days that must pass between irrigation events. This helps control watering frequency for water conservation and plant health management.\n\nTypical real-world use cases:\n• Lawn care: 1-2 day intervals prevent overwatering\n• Drought restrictions: 6+ day intervals for weekly watering\n• Deep-rooted plants: 3-7 day intervals for less frequent watering\n• Water conservation: Customizable based on climate and soil conditions",label:"Minimum days between irrigation",help_text:"Set to 0 to disable this feature. Values from 1-365 days are supported. This setting works alongside existing precipitation forecasting logic. A zone can have its own number of days in the Zones tab, which replaces this setting for that zone."},He={title:"Planning",description:"What the programs will water over the next three days. The weather is not known that far ahead: a run goes ahead if nothing holds it back.",nothing_planned:"No program is planned. Add a schedule to a program.",nothing_to_water:"Nothing to water for now: no zone of this run is short enough of water.",expected:"Expected duration:",expected_skipped_precipitation:"Expected to be skipped: rain forecast ({mm} mm)",nothing_now:"Nothing is watering now.",paused:"Paused",waiting:"waiting for its turn",step:"step",tour:"round",tours:"rounds",remaining:"left"},De={title:"Programs",description:"A program waters its steps one after the other. A step is one zone, or several watered together, and by default takes the duration Smart Irrigation calculated for it. Several programs never run at the same time: the next one waits its turn.",main_description:"Waters every zone, one after the other or together as set below. It is started by the start trigger, or by its own schedules once one is enabled.",run_options:"Run options",adjust_empty:"Enter a percentage or seconds to adjust the durations.",more_options:"More options",more_options_set:"with more rules",sequencing_title:"Order of the zones and pauses",others_title:"Other programs",confirm_run:"Run {name} now? Its valves open straight away.",run_started:"{name} has started.",run_queued:"{name} is queued: it starts when what is watering now has finished.",run_nothing:"{name} found nothing to water.",run_failed:"{name} could not start: {error}",schedule_conditions_where:"The conditions themselves, their sensors and thresholds, are set in Settings, General: here you only choose which of them this schedule obeys.",main_schedules_hint:"With no enabled schedule, the start trigger set further down this page starts the main program. As soon as one schedule is enabled, the schedules replace that trigger. Its settings are kept, and it comes back if the schedules are disabled or removed.",name:"Name",step:"Step",step_zones:"Zones",step_zones_help:"Zones ticked in the same step are watered at the same time.",step_duration:"Duration",mode_calculated:"Calculated by Smart Irrigation",mode_percent:"Calculated, times a percentage",mode_fixed:"Fixed",percent:"Percentage of the calculated water",seconds:"Seconds of water",passes:"Passes (cycle and soak)",step_delay:"Wait after this step",step_delay_help:"Empty: the program's wait. Negative: the next step starts that long before this one ends.",delay:"Wait between steps",delay_help:"Seconds waited after each step, for line pressure or a slow valve. Negative: each step starts that long before the previous one ends (they overlap).",tours:"Rounds",tours_help:"The whole list is watered this many times, each round with its share of the water, so the soil can take it in between.",enabled:"Enabled",add_step:"Add a step",delete_step:"Delete the step",add:"Add a program",delete:"Delete the program",schedule:"Schedule",add_schedule:"Add a schedule",delete_schedule:"Delete the schedule",schedule_moment:"At",moment_time:"A time of day",moment_sunrise:"Sunrise",moment_sunset:"Sunset",schedule_time:"Time",schedule_offset:"Offset from the sun",schedule_anchor:"That moment is when the program",anchor_start:"starts",anchor_end:"must be done",schedule_anchor_help:'With "must be done", the program starts early enough, from the length of what it has to water, to finish at that moment.',schedule_weekdays:"Days of the week",schedule_weekdays_help:"None ticked: every day.",schedule_every:"Every",schedule_days:"days",schedule_every_offset:"Shifted by",schedule_every_help:"Every 3 days with a shift of 0, 1 or 2 lets three programs take turns, one day in three, never on the same day.",schedule_parity:"Days of the month",parity_any:"All",parity_even:"Even days",parity_odd:"Odd days",schedule_days_of_month:"Specific days of the month",schedule_days_of_month_help:'Day numbers separated by commas, and "last" for the last day of the month (for example 1, 15, last). A month too short for a day skips it. Empty: any day. It adds to the other filters.',schedule_fallback_time:"If there is no sunrise or sunset",schedule_fallback_time_help:'On a day without a sunrise or sunset (polar day or night), start at this time (HH:MM), or write "previous" to reuse the time of the last one seen. Empty: that day is skipped.',schedule_months:"Months",schedule_months_help:"None ticked: every month.",schedule_from:"From",schedule_until:"Until",schedule_period_help:"A period of the year, which may run over New Year (11-01 to 03-01). Empty: the whole year.",schedule_weather:"Take the weather into account",schedule_hard_deadline:"Cut the run at the end time",schedule_hard_deadline_help:"The run is cut at the end target: the zones that are open are closed and credited for what they watered, and what did not start is skipped.",schedule_conditions:"Which conditions",schedule_conditions_help:"Untick a condition to ignore it for this schedule. Your postponed days always apply.",condition_postponed:"Postponed days (always on)",condition_rain_sensor:"Rain sensor",condition_freeze:"Frost",condition_wind:"Wind",condition_precipitation:"Rain forecast",condition_days_between:"Days since the last watering",condition_soil_moisture:"Soil moisture",schedule_weather_help:"Rain,frost, wind, a wet soil and the days you postponed can hold the run back or shorten it. Turn it off for a greenhouse drip line that does not care.",pause:"Pause",resume:"Resume",next_step:"Next step",stop:"Stop",confirm_stop:"Stop all watering now? Every valve is closed and the runs under way end.",confirm_delete_program:'Delete the program "{name}", with its steps and schedules?',confirm_delete_step:"Delete this step?",confirm_delete_schedule:"Delete this schedule?",deleted_zone:"(deleted zone)",controls_help:"For a watering that is under way. Pause closes the valves and holds everything; the rest is watered after the resume. Next step ends the zones the program is on. Stop ends everything.",max_litres:"Volume limit",max_litres_help:"A zone of this step stops once its water meter has counted this volume, in litres or gallons as the panel shows volumes. 0: no limit. The meter reports every so often, so the volume is not exact. A zone without a meter ignores it.",new_program:"Program",main_name:"Main program",run_now:"Run now",run_seconds:"Total duration",run_seconds_help:"Optional. Empty: the planned durations. Otherwise the whole program lasts this long, shared between its steps in proportion to their planned durations.",run_replace:"Replace what is running",run_replace_help:"Off: the program waits for its turn behind what is watering. On: what is watering is stopped cleanly first.",stop_program:"Stop this program",confirm_stop_program:'Stop the program "{name}"? Its open zones are closed, or it leaves the queue if it is waiting.',min_seconds:"Minimum water",max_seconds:"Maximum water",adjust_seconds:"Offset",step_bounds_help:"Order of application: the percentage first, then the offset (signed seconds added), then the minimum and the maximum. 0 for the minimum or maximum: none. A step that needs no water stays at zero: the minimum never starts it.",min_deficit_mm:"Only water when the deficit is at least",min_deficit_mm_help:"In mm, 0 to always water. Set, it replaces the zone's own threshold for this step. Fixed-duration steps are always watered.",adjust_title:"Adjust durations",adjust_none:"No adjustment in force.",adjust_active:"In force: {percent} % and {seconds} s per step, until {until}.",adjust_until_reset:"it is reset",adjust_percent:"Percent",adjust_hours:"Valid for",adjust_help:"Makes this program water longer or shorter for the runs that start after it is set. It replaces the previous adjustment. Hours empty: until it is reset.",adjust_apply:"Apply",adjust_reset:"Reset",confirm_reset_adjustment:"Remove the adjustment of this program?",main_settings:"Main program: start and sequencing",main_settings_description:"How the main program waters: the zones one after the other or together, the pause between two zones and cycle and soak. Its start trigger is below.",main_schedules_active:"For now the main program's schedules start the watering: the start trigger below is not used. It stays editable, and it comes back if those schedules are disabled or removed.",mode_off:"The full controller is off. Turn it on in Settings, General.",no_zone:"no zone",mode_calculated_short:"calculated",every_day:"every day",anchor_start_short:"starts at",anchor_end_short:"done by",steps_count:"step(s)",schedules_count:"schedule(s)",off:"off",steps_title:"Steps",schedules_title:"Schedules"},Ne={title:"Pumps and main valves",description:"A pump or a main valve in front of the zone valves runs while a zone it feeds is being watered. Pick it in each zone's settings. The delays are in seconds and signed.",name:"Name",entities:"Entities",entities_hint:"separate several with commas",delay_before:"Delay before",delay_before_help:"Positive: the pump or main valve comes on this long before the zone valve opens. Negative: the zone valve opens first, and the pump or main valve comes on this long after.",delay_after:"Delay after",delay_after_help:"Positive: the pump or main valve stays on this long after the zone valve closes. Negative: it goes off this long before the zone valve closes, so a pump never pushes against a closed valve.",enabled:"Enabled",add:"Add a pump or main valve",delete:"Delete",confirm_delete:'Delete "{name}"? The zones that use it will no longer have a pump or main valve.'},Re={title:"Observed watering (closed loop)",description:"Credit each zone's bucket automatically from real irrigation, instead of resetting the bucket from an automation. Once enabled, pick a valve/switch entity per zone in the Zones tab: while it is open, the bucket is credited from the run time and the zone's throughput. For exact accounting you can also pick a cumulative volume meter (a water-meter style total) per zone, and the measured volume is used instead. Important: when this is on it is the only thing crediting the bucket, so remove any reset_bucket call from your irrigation automation to avoid double counting.",enabled_label:"Enable observed watering",direct_control_label:"Let Smart Irrigation control the valve",direct_control_description:"When on, Smart Irrigation opens each zone's linked valve, waits the calculated duration, then closes it, with no automation needed. A run under way resumes after a restart. Safety: a valve that can close by itself is given the length of the run when it opens (a Sonoff SWV on ZHA, or a valve with an MQTT safety topic set in its zone), so it closes even if Home Assistant goes down. Any other valve keeps watering until Home Assistant is back: give it a hardware failsafe (a maximum runtime).",full_controller_label:"Full controller: Smart Irrigation runs all my watering",full_controller_title:"Full controller",confirm_full_controller:"Turn on the full controller? Smart Irrigation will drive the valves and start the watering itself. A valve found open at startup that no run of ours owns is closed.",full_controller_description:"Turns on valve control and adds a Watering tab: programs, planning and pumps. The start trigger, the sequencing, the pause between zones and cycle and soak move there, as the main program's settings, and keep working as before until you add another program. Switching it off brings back exactly the previous behaviour. A valve found open at startup that no run of ours owns is closed.",sequencing_label:"Zone sequencing",sequencing:{sequential:"Sequential (one zone at a time)",parallel:"Parallel (all zones at once)"},sequencing_description:"How your zones are watered. This sets what a start trigger works back from when it has to finish at sunrise: one after another takes the sum of every zone's run time, all at once takes the longest of them. It applies whether Smart Irrigation opens the valves itself or an automation of your own does.",passes_label:"Water in several passes",passes_description:"Cycle and soak: the same water, split into shorter passes with a pause between them, so heavy soil takes it in instead of letting it run off. One pass waters in a single go, which is the default. A run too short to split is left alone.",soak_label:"Soak between passes",pause_between_zones_label:"Pause between zones",pause_between_zones_description:"A wait between two zones of a sequential run: time for the line pressure to recover, or for a slow valve to finish closing before the next one opens.",minutes:"minutes",seconds:"seconds",direct_control_locked:"The full controller drives the valves: switch it off first to change this."},Pe={title:"Calculation log",description:"Write the complete input of every calculation to a file, so two days that look alike but water very differently can be compared afterwards. Each calculation appends one line: the sensor group records and how they were aggregated, the module intermediates (solar radiation, net radiation, ET0), and the resulting bucket, duration and volume. Off by default; the file is capped in size and rotated, so it can be left on for a season.",enabled_label:"Log calculation inputs to a file",file_hint:"Written to config/smart_irrigation/calc_log.jsonl, one JSON record per line. The most recent records are also included in the diagnostics download (coordinates rounded, entity ids removed), so you can attach them to an issue in one step."},je={title:"Blueprints",install_label:"Install the example blueprints",install_help:"Smart Irrigation copies its example blueprints into your blueprints folder, each one once: a blueprint you delete is not put back. Switch this off to copy none at all; the ones already there are left as they are."},Le={title:"Skip on measured conditions",description:"Checked at the start of each run, from a sensor or the weather service. A sensor that cannot be read never stops a run.",enabled:"Enabled",threshold:"Threshold",sensor:"Sensor","sensor-optional":"Sensor (optional)",rain:{title:"Rain sensor",description:"Skip the run while a rain sensor says it is raining.","sensor-hint":"A binary sensor that is on while it rains.","history-label":"Shorten runs after recent rain","history-description":"For a zone that has no rain in millimetres at all: no gauge, and a weather service that gives none. The sensor's own history over the last five days is read, weighted so that yesterday counts for more than four days ago, and the run is shortened by it. A day of reported rain today takes the whole run; four days ago takes a tenth of it. It never touches the water balance, because it does not know how many millimetres fell: the deficit stays and is watered off once the weather turns. A zone whose sensor group does report rain in millimetres is left alone, since the balance already has it. This needs a sensor that stays on while it rains rather than one that pulses per tip."},freeze:{title:"Freeze",description:"Skip the run when the temperature is at or below the threshold.","sensor-hint":"Empty: the weather service's current temperature."},wind:{title:"Wind",description:"Skip the run when the wind is at or above the threshold: a sprinkler in strong wind waters the path, not the bed.","sensor-hint":"Empty: the weather service's current wind, at 10 m."}},Ie={next_start:"Next start",no_start:"No start scheduled",skipped:"Held back",short_by:"short {value}",no_need:"no watering needed",runs_for:"would run {duration}",never_watered:"never watered",last_watered:"last watered {when}",calculate:"Calculate now",water_now:"Water now",confirm_water:"Tap again to water now",watering:"Watering",nothing_to_water:"Nothing to water right now",loading:"Reading the zones…",manual:"manual",disabled:"disabled",no_zones:"No zones yet. Open the Smart Irrigation panel to add one.",tomorrow:"tomorrow",yesterday:"yesterday",live_since:"Estimated now, from the readings since {when}",reasons:{precipitation:"rain forecast",days_between:"days between irrigation",rain_sensor:"rain sensor",freeze:"freeze",wind:"wind",soil_moisture:"soil moisture",postponed:"postponed"},programs:{title:"Programs",start:"Start",stop:"Stop",confirm_stop:"Tap again to stop",pause:"Pause",resume:"Resume",next_step:"Next step",step_of:"step {step}/{steps}",remaining:"{time} left",until:"until {when}",states:{idle:"idle",running:"running",waiting:"waiting",paused:"paused",suspended:"suspended",disabled:"disabled"}},editor:{title:"Title",zones:"Zones (all of them when empty)",show_next_start:"Show the next start",compact:"Only the zones that would water",show_programs:"Show the programs (full controller)"}},Fe={delete_zone:'Delete the zone "{name}"? Its settings and water balance are lost.',delete_mapping:'Delete the sensor group "{name}"? The zones that use it will have no weather data.',delete_module:'Delete the module "{name}"? The zones that use it can no longer be calculated.',reset_bucket:'Set the water balance of "{name}" back to zero?',reset_all_buckets:"Set the water balance of every zone back to zero?",clear_all_weather:"Clear all the weather data collected? The next calculation only has the readings that come after."},Be={common:$e,defaults:xe,module:ke,calcmodules:Se,panels:ze,title:Me,irrigation_start_triggers:Te,seasonal_adjustments:Oe,weather_skip:Ae,coordinate_config:Ee,days_between_irrigation:Ce,planning:He,programs:De,supplies:Ne,observed_watering:Re,calculation_log:Pe,blueprints:je,measured_skip:Le,card:Ie,confirm:Fe},Ue=Object.freeze({__proto__:null,blueprints:je,calcmodules:Se,calculation_log:Pe,card:Ie,common:$e,confirm:Fe,coordinate_config:Ee,days_between_irrigation:Ce,default:Be,defaults:xe,irrigation_start_triggers:Te,measured_skip:Le,module:ke,observed_watering:Re,panels:ze,planning:He,programs:De,seasonal_adjustments:Oe,supplies:Ne,title:Me,weather_skip:Ae});function Ye(e,t){const s=t&&t.cache?t.cache:Je,i=t&&t.serializer?t.serializer:qe;return(t&&t.strategy?t.strategy:Ge)(e,{cache:s,serializer:i})}function We(e,t,s,i){const a=null==(n=i)||"number"==typeof n||"boolean"==typeof n?i:s(i);var n;let r=t.get(a);return void 0===r&&(r=e.call(this,i),t.set(a,r)),r}function Ve(e,t,s){const i=Array.prototype.slice.call(arguments,3),a=s(i);let n=t.get(a);return void 0===n&&(n=e.apply(this,i),t.set(a,n)),n}function Ze(e,t,s,i,a){return s.bind(t,e,i,a)}function Ge(e,t){return Ze(e,this,1===e.length?We:Ve,t.cache.create(),t.serializer)}const qe=function(){return JSON.stringify(arguments)};var Ke=class{constructor(){this.cache=Object.create(null)}get(e){return this.cache[e]}set(e,t){this.cache[e]=t}};const Je={create:function(){return new Ke}},Xe={variadic:function(e,t){return Ze(e,this,Ve,t.cache.create(),t.serializer)}},Qe=/(?:[Eec]{1,6}|G{1,5}|[Qq]{1,5}|(?:[yYur]+|U{1,5})|[ML]{1,5}|d{1,2}|D{1,3}|F{1}|[abB]{1,5}|[hkHK]{1,2}|w{1,2}|W{1}|m{1,2}|s{1,2}|[zZOvVxX]{1,4})(?=([^']*'[^']*')*[^']*$)/g;function et(e){const t={};return e.replace(Qe,e=>{const s=e.length;switch(e[0]){case"G":t.era=4===s?"long":5===s?"narrow":"short";break;case"y":t.year=2===s?"2-digit":"numeric";break;case"Y":case"u":case"U":case"r":throw new RangeError("`Y/u/U/r` (year) patterns are not supported, use `y` instead");case"q":case"Q":throw new RangeError("`q/Q` (quarter) patterns are not supported");case"M":case"L":t.month=["numeric","2-digit","short","long","narrow"][s-1];break;case"w":case"W":throw new RangeError("`w/W` (week) patterns are not supported");case"d":t.day=["numeric","2-digit"][s-1];break;case"D":case"F":case"g":throw new RangeError("`D/F/g` (day) patterns are not supported, use `d` instead");case"E":t.weekday=4===s?"long":5===s?"narrow":"short";break;case"e":if(s<4)throw new RangeError("`e..eee` (weekday) patterns are not supported");t.weekday=["short","long","narrow","short"][s-3];break;case"c":if(s<4)throw new RangeError("`c..ccc` (weekday) patterns are not supported");t.weekday=["short","long","narrow","short"][s-3];break;case"a":t.hour12=!0;break;case"b":case"B":throw new RangeError("`b/B` (period) patterns are not supported, use `a` instead");case"h":t.hourCycle="h12",t.hour=["numeric","2-digit"][s-1];break;case"H":t.hourCycle="h23",t.hour=["numeric","2-digit"][s-1];break;case"K":t.hourCycle="h11",t.hour=["numeric","2-digit"][s-1];break;case"k":t.hourCycle="h24",t.hour=["numeric","2-digit"][s-1];break;case"j":case"J":case"C":throw new RangeError("`j/J/C` (hour) patterns are not supported, use `h/H/K/k` instead");case"m":t.minute=["numeric","2-digit"][s-1];break;case"s":t.second=["numeric","2-digit"][s-1];break;case"S":case"A":throw new RangeError("`S/A` (second) patterns are not supported, use `s` instead");case"z":t.timeZoneName=s<4?"short":"long";break;case"Z":case"O":case"v":case"V":case"X":case"x":throw new RangeError("`Z/O/v/V/X/x` (timeZone) patterns are not supported, use `z` instead")}return""}),t}const tt=/[\t-\r \x85\u200E\u200F\u2028\u2029]/i;function st(e){return e.replace(/^(.*?)-/,"")}const it=/^\.(?:(0+)(\*)?|(#+)|(0+)(#+))$/g,at=/^(@+)?(\+|#+)?[rs]?$/g,nt=/(\*)(0+)|(#+)(0+)|(0+)/g,rt=/^(0+)$/;function ot(e){const t={};return"r"===e[e.length-1]?t.roundingPriority="morePrecision":"s"===e[e.length-1]&&(t.roundingPriority="lessPrecision"),e.replace(at,function(e,s,i){return"string"!=typeof i?(t.minimumSignificantDigits=s.length,t.maximumSignificantDigits=s.length):"+"===i?t.minimumSignificantDigits=s.length:"#"===s[0]?t.maximumSignificantDigits=s.length:(t.minimumSignificantDigits=s.length,t.maximumSignificantDigits=s.length+("string"==typeof i?i.length:0)),""}),t}function lt(e){switch(e){case"sign-auto":return{signDisplay:"auto"};case"sign-accounting":case"()":return{currencySign:"accounting"};case"sign-always":case"+!":return{signDisplay:"always"};case"sign-accounting-always":case"()!":return{signDisplay:"always",currencySign:"accounting"};case"sign-except-zero":case"+?":return{signDisplay:"exceptZero"};case"sign-accounting-except-zero":case"()?":return{signDisplay:"exceptZero",currencySign:"accounting"};case"sign-never":case"+_":return{signDisplay:"never"}}}function ht(e){let t;if("E"===e[0]&&"E"===e[1]?(t={notation:"engineering"},e=e.slice(2)):"E"===e[0]&&(t={notation:"scientific"},e=e.slice(1)),t){const s=e.slice(0,2);if("+!"===s?(t.signDisplay="always",e=e.slice(2)):"+?"===s&&(t.signDisplay="exceptZero",e=e.slice(2)),!rt.test(e))throw new Error("Malformed concise eng/scientific notation");t.minimumIntegerDigits=e.length}return t}function dt(e){const t=lt(e);return t||{}}function ct(e){let t={};for(const s of e){switch(s.stem){case"percent":case"%":t.style="percent";continue;case"%x100":t.style="percent",t.scale=100;continue;case"currency":t.style="currency",t.currency=s.options[0];continue;case"group-off":case",_":t.useGrouping=!1;continue;case"precision-integer":case".":t.maximumFractionDigits=0;continue;case"measure-unit":case"unit":t.style="unit",t.unit=st(s.options[0]);continue;case"compact-short":case"K":t.notation="compact",t.compactDisplay="short";continue;case"compact-long":case"KK":t.notation="compact",t.compactDisplay="long";continue;case"scientific":t={...t,notation:"scientific",...s.options.reduce((e,t)=>({...e,...dt(t)}),{})};continue;case"engineering":t={...t,notation:"engineering",...s.options.reduce((e,t)=>({...e,...dt(t)}),{})};continue;case"notation-simple":t.notation="standard";continue;case"unit-width-narrow":t.currencyDisplay="narrowSymbol",t.unitDisplay="narrow";continue;case"unit-width-short":t.currencyDisplay="code",t.unitDisplay="short";continue;case"unit-width-full-name":t.currencyDisplay="name",t.unitDisplay="long";continue;case"unit-width-iso-code":t.currencyDisplay="symbol";continue;case"scale":t.scale=parseFloat(s.options[0]);continue;case"rounding-mode-floor":t.roundingMode="floor";continue;case"rounding-mode-ceiling":t.roundingMode="ceil";continue;case"rounding-mode-down":t.roundingMode="trunc";continue;case"rounding-mode-up":t.roundingMode="expand";continue;case"rounding-mode-half-even":t.roundingMode="halfEven";continue;case"rounding-mode-half-down":t.roundingMode="halfTrunc";continue;case"rounding-mode-half-up":t.roundingMode="halfExpand";continue;case"integer-width":if(s.options.length>1)throw new RangeError("integer-width stems only accept a single optional option");s.options[0].replace(nt,function(e,s,i,a,n,r){if(s)t.minimumIntegerDigits=i.length;else{if(a&&n)throw new Error("We currently do not support maximum integer digits");if(r)throw new Error("We currently do not support exact integer digits")}return""});continue}if(rt.test(s.stem)){t.minimumIntegerDigits=s.stem.length;continue}if(it.test(s.stem)){if(s.options.length>1)throw new RangeError("Fraction-precision stems only accept a single optional option");s.stem.replace(it,function(e,s,i,a,n,r){return"*"===i?t.minimumFractionDigits=s.length:a&&"#"===a[0]?t.maximumFractionDigits=a.length:n&&r?(t.minimumFractionDigits=n.length,t.maximumFractionDigits=n.length+r.length):(t.minimumFractionDigits=s.length,t.maximumFractionDigits=s.length),""});const e=s.options[0];"w"===e?t={...t,trailingZeroDisplay:"stripIfInteger"}:e&&(t={...t,...ot(e)});continue}if(at.test(s.stem)){t={...t,...ot(s.stem)};continue}const e=lt(s.stem);e&&(t={...t,...e});const i=ht(s.stem);i&&(t={...t,...i})}return t}let ut=function(e){return e[e.EXPECT_ARGUMENT_CLOSING_BRACE=1]="EXPECT_ARGUMENT_CLOSING_BRACE",e[e.EMPTY_ARGUMENT=2]="EMPTY_ARGUMENT",e[e.MALFORMED_ARGUMENT=3]="MALFORMED_ARGUMENT",e[e.EXPECT_ARGUMENT_TYPE=4]="EXPECT_ARGUMENT_TYPE",e[e.INVALID_ARGUMENT_TYPE=5]="INVALID_ARGUMENT_TYPE",e[e.EXPECT_ARGUMENT_STYLE=6]="EXPECT_ARGUMENT_STYLE",e[e.INVALID_NUMBER_SKELETON=7]="INVALID_NUMBER_SKELETON",e[e.INVALID_DATE_TIME_SKELETON=8]="INVALID_DATE_TIME_SKELETON",e[e.EXPECT_NUMBER_SKELETON=9]="EXPECT_NUMBER_SKELETON",e[e.EXPECT_DATE_TIME_SKELETON=10]="EXPECT_DATE_TIME_SKELETON",e[e.UNCLOSED_QUOTE_IN_ARGUMENT_STYLE=11]="UNCLOSED_QUOTE_IN_ARGUMENT_STYLE",e[e.EXPECT_SELECT_ARGUMENT_OPTIONS=12]="EXPECT_SELECT_ARGUMENT_OPTIONS",e[e.EXPECT_PLURAL_ARGUMENT_OFFSET_VALUE=13]="EXPECT_PLURAL_ARGUMENT_OFFSET_VALUE",e[e.INVALID_PLURAL_ARGUMENT_OFFSET_VALUE=14]="INVALID_PLURAL_ARGUMENT_OFFSET_VALUE",e[e.EXPECT_SELECT_ARGUMENT_SELECTOR=15]="EXPECT_SELECT_ARGUMENT_SELECTOR",e[e.EXPECT_PLURAL_ARGUMENT_SELECTOR=16]="EXPECT_PLURAL_ARGUMENT_SELECTOR",e[e.EXPECT_SELECT_ARGUMENT_SELECTOR_FRAGMENT=17]="EXPECT_SELECT_ARGUMENT_SELECTOR_FRAGMENT",e[e.EXPECT_PLURAL_ARGUMENT_SELECTOR_FRAGMENT=18]="EXPECT_PLURAL_ARGUMENT_SELECTOR_FRAGMENT",e[e.INVALID_PLURAL_ARGUMENT_SELECTOR=19]="INVALID_PLURAL_ARGUMENT_SELECTOR",e[e.DUPLICATE_PLURAL_ARGUMENT_SELECTOR=20]="DUPLICATE_PLURAL_ARGUMENT_SELECTOR",e[e.DUPLICATE_SELECT_ARGUMENT_SELECTOR=21]="DUPLICATE_SELECT_ARGUMENT_SELECTOR",e[e.MISSING_OTHER_CLAUSE=22]="MISSING_OTHER_CLAUSE",e[e.INVALID_TAG=23]="INVALID_TAG",e[e.INVALID_TAG_NAME=25]="INVALID_TAG_NAME",e[e.UNMATCHED_CLOSING_TAG=26]="UNMATCHED_CLOSING_TAG",e[e.UNCLOSED_TAG=27]="UNCLOSED_TAG",e}({});function pt(e){return 0===e.type}function gt(e){return 1===e.type}function mt(e){return 2===e.type}function vt(e){return 3===e.type}function ft(e){return 4===e.type}function _t(e){return 5===e.type}function yt(e){return 6===e.type}function bt(e){return 7===e.type}function wt(e){return 8===e.type}function $t(e){return!(!e||"object"!=typeof e||0!==e.type)}function xt(e){return!(!e||"object"!=typeof e||1!==e.type)}const kt=/[ \xA0\u1680\u2000-\u200A\u202F\u205F\u3000]/,St=/([^\t-\r -\/:-@\[-\^`\{-~\x85\xA0-\xA7\xA9\xAB\xAC\xAE\xB0\xB1\xB6\xBB\xBF\xD7\xF7\u1680\u2000-\u200A\u2010-\u2029\u202F-\u203E\u2041-\u2053\u2055-\u205F\u2190-\u245F\u2500-\u2775\u2794-\u2BFF\u2E00-\u2E7F\u3000-\u3003\u3008-\u3020\u3030\uFD3E\uFD3F\uFE45\uFE46]*)/g,zt={"001":["H","h"],419:["h","H","hB","hb"],AC:["H","h","hb","hB"],AD:["H","hB"],AE:["h","hB","hb","H"],AF:["H","hb","hB","h"],AG:["h","hb","H","hB"],AI:["H","h","hb","hB"],AL:["h","H","hB"],AM:["H","hB"],AO:["H","hB"],AR:["h","H","hB","hb"],AS:["h","H"],AT:["H","hB"],AU:["h","hb","H","hB"],AW:["H","hB"],AX:["H"],AZ:["H","hB","h"],BA:["H","hB","h"],BB:["h","hb","H","hB"],BD:["h","hB","H"],BE:["H","hB"],BF:["H","hB"],BG:["H","hB","h"],BH:["h","hB","hb","H"],BI:["H","h"],BJ:["H","hB"],BL:["H","hB"],BM:["h","hb","H","hB"],BN:["hb","hB","h","H"],BO:["h","H","hB","hb"],BQ:["H"],BR:["H","hB"],BS:["h","hb","H","hB"],BT:["h","H"],BW:["H","h","hb","hB"],BY:["H","h"],BZ:["H","h","hb","hB"],CA:["h","hb","H","hB"],CC:["H","h","hb","hB"],CD:["hB","H"],CF:["H","h","hB"],CG:["H","hB"],CH:["H","hB","h"],CI:["H","hB"],CK:["H","h","hb","hB"],CL:["h","H","hB","hb"],CM:["H","h","hB"],CN:["H","hB","hb","h"],CO:["h","H","hB","hb"],CP:["H"],CR:["h","H","hB","hb"],CU:["h","H","hB","hb"],CV:["H","hB"],CW:["H","hB"],CX:["H","h","hb","hB"],CY:["h","H","hb","hB"],CZ:["H"],DE:["H","hB"],DG:["H","h","hb","hB"],DJ:["h","H"],DK:["H"],DM:["h","hb","H","hB"],DO:["h","H","hB","hb"],DZ:["h","hB","hb","H"],EA:["H","h","hB","hb"],EC:["h","H","hB","hb"],EE:["H","hB"],EG:["h","hB","hb","H"],EH:["h","hB","hb","H"],ER:["h","H"],ES:["H","hB","h","hb"],ET:["hB","hb","h","H"],FI:["H"],FJ:["h","hb","H","hB"],FK:["H","h","hb","hB"],FM:["h","hb","H","hB"],FO:["H","h"],FR:["H","hB"],GA:["H","hB"],GB:["H","h","hb","hB"],GD:["h","hb","H","hB"],GE:["H","hB","h"],GF:["H","hB"],GG:["H","h","hb","hB"],GH:["h","H"],GI:["H","h","hb","hB"],GL:["H","h"],GM:["h","hb","H","hB"],GN:["H","hB"],GP:["H","hB"],GQ:["H","hB","h","hb"],GR:["h","H","hb","hB"],GS:["H","h","hb","hB"],GT:["h","H","hB","hb"],GU:["h","hb","H","hB"],GW:["H","hB"],GY:["h","hb","H","hB"],HK:["h","hB","hb","H"],HN:["h","H","hB","hb"],HR:["H","hB"],HU:["H","h"],IC:["H","h","hB","hb"],ID:["H"],IE:["H","h","hb","hB"],IL:["H","hB"],IM:["H","h","hb","hB"],IN:["h","H"],IO:["H","h","hb","hB"],IQ:["h","hB","hb","H"],IR:["hB","H"],IS:["H"],IT:["H","hB"],JE:["H","h","hb","hB"],JM:["h","hb","H","hB"],JO:["h","hB","hb","H"],JP:["H","K","h"],KE:["hB","hb","H","h"],KG:["H","h","hB","hb"],KH:["hB","h","H","hb"],KI:["h","hb","H","hB"],KM:["H","h","hB","hb"],KN:["h","hb","H","hB"],KP:["h","H","hB","hb"],KR:["h","H","hB","hb"],KW:["h","hB","hb","H"],KY:["h","hb","H","hB"],KZ:["H","hB"],LA:["H","hb","hB","h"],LB:["h","hB","hb","H"],LC:["h","hb","H","hB"],LI:["H","hB","h"],LK:["H","h","hB","hb"],LR:["h","hb","H","hB"],LS:["h","H"],LT:["H","h","hb","hB"],LU:["H","h","hB"],LV:["H","hB","hb","h"],LY:["h","hB","hb","H"],MA:["H","h","hB","hb"],MC:["H","hB"],MD:["H","hB"],ME:["H","hB","h"],MF:["H","hB"],MG:["H","h"],MH:["h","hb","H","hB"],MK:["H","h","hb","hB"],ML:["H"],MM:["hB","hb","H","h"],MN:["H","h","hb","hB"],MO:["h","hB","hb","H"],MP:["h","hb","H","hB"],MQ:["H","hB"],MR:["h","hB","hb","H"],MS:["H","h","hb","hB"],MT:["H","h"],MU:["H","h"],MV:["H","h"],MW:["h","hb","H","hB"],MX:["h","H","hB","hb"],MY:["hb","hB","h","H"],MZ:["H","hB"],NA:["h","H","hB","hb"],NC:["H","hB"],NE:["H"],NF:["H","h","hb","hB"],NG:["H","h","hb","hB"],NI:["h","H","hB","hb"],NL:["H","hB"],NO:["H","h"],NP:["H","h","hB"],NR:["H","h","hb","hB"],NU:["H","h","hb","hB"],NZ:["h","hb","H","hB"],OM:["h","hB","hb","H"],PA:["h","H","hB","hb"],PE:["h","H","hB","hb"],PF:["H","h","hB"],PG:["h","H"],PH:["h","hB","hb","H"],PK:["h","hB","H"],PL:["H","h"],PM:["H","hB"],PN:["H","h","hb","hB"],PR:["h","H","hB","hb"],PS:["h","hB","hb","H"],PT:["H","hB"],PW:["h","H"],PY:["h","H","hB","hb"],QA:["h","hB","hb","H"],RE:["H","hB"],RO:["H","hB"],RS:["H","hB","h"],RU:["H"],RW:["H","h"],SA:["h","hB","hb","H"],SB:["h","hb","H","hB"],SC:["H","h","hB"],SD:["h","hB","hb","H"],SE:["H"],SG:["h","hb","H","hB"],SH:["H","h","hb","hB"],SI:["H","hB"],SJ:["H"],SK:["H"],SL:["h","hb","H","hB"],SM:["H","h","hB"],SN:["H","h","hB"],SO:["h","H"],SR:["H","hB"],SS:["h","hb","H","hB"],ST:["H","hB"],SV:["h","H","hB","hb"],SX:["H","h","hb","hB"],SY:["h","hB","hb","H"],SZ:["h","hb","H","hB"],TA:["H","h","hb","hB"],TC:["h","hb","H","hB"],TD:["h","H","hB"],TF:["H","h","hB"],TG:["H","hB"],TH:["H","h"],TJ:["H","h"],TL:["H","hB","hb","h"],TM:["H","h"],TN:["h","hB","hb","H"],TO:["h","H"],TR:["H","hB"],TT:["h","hb","H","hB"],TW:["hB","hb","h","H"],TZ:["hB","hb","H","h"],UA:["H","hB","h"],UG:["hB","hb","H","h"],UM:["h","hb","H","hB"],US:["h","hb","H","hB"],UY:["h","H","hB","hb"],UZ:["H","hB","h"],VA:["H","h","hB"],VC:["h","hb","H","hB"],VE:["h","H","hB","hb"],VG:["h","hb","H","hB"],VI:["h","hb","H","hB"],VN:["H","h"],VU:["h","H"],WF:["H","hB"],WS:["h","H"],XK:["H","hB","h"],YE:["h","hB","hb","H"],YT:["H","hB"],ZA:["H","h","hb","hB"],ZM:["h","hb","H","hB"],ZW:["H","h"],"af-ZA":["H","h","hB","hb"],"ar-001":["h","hB","hb","H"],"ca-ES":["H","h","hB"],"en-001":["h","hb","H","hB"],"en-HK":["h","hb","H","hB"],"en-IL":["H","h","hb","hB"],"en-MY":["h","hb","H","hB"],"es-BR":["H","h","hB","hb"],"es-ES":["H","h","hB","hb"],"es-GQ":["H","h","hB","hb"],"fr-CA":["H","h","hB"],"gl-ES":["H","h","hB"],"gu-IN":["hB","hb","h","H"],"hi-IN":["hB","h","H"],"it-CH":["H","h","hB"],"it-IT":["H","h","hB"],"kn-IN":["hB","h","H"],"ku-SY":["H","hB"],"ml-IN":["hB","h","H"],"mr-IN":["hB","hb","h","H"],"pa-IN":["hB","hb","h","H"],"ta-IN":["hB","h","hb","H"],"te-IN":["hB","h","H"],"zu-ZA":["H","hB","hb","h"]};function Mt(e){let t=e.hourCycle;if(void 0===t){const s=e;t=s.getHourCycles?.()[0]??s.hourCycles?.[0]}if(t)switch(t){case"h24":return"k";case"h23":return"H";case"h12":return"h";case"h11":return"K";default:throw new Error("Invalid hourCycle")}const s=e.language;let i;return"root"!==s&&(i=e.maximize().region),(zt[`${s}-${i}`]||zt[i||""]||zt[s||""]||zt[`${s}-001`]||zt["001"])[0].charAt(0)}const Tt=new RegExp(`^${kt.source}*`),Ot=new RegExp(`${kt.source}*$`);function At(e,t){return{start:e,end:t}}const Et=!!Object.fromEntries,Ct=!!String.prototype.trimStart,Ht=!!String.prototype.trimEnd,Dt=Et?Object.fromEntries:function(e){const t={};for(const[s,i]of e)t[s]=i;return t},Nt=Ct?function(e){return e.trimStart()}:function(e){return e.replace(Tt,"")},Rt=Ht?function(e){return e.trimEnd()}:function(e){return e.replace(Ot,"")};let Pt=function(){try{const e=new RegExp("([^\\p{White_Space}\\p{Pattern_Syntax}]*)","yu");if("a"===e.exec("a ")?.[1])return e}catch{}return St}();var jt=class{constructor(e,t={}){this.message=e,this.position={offset:0,line:1,column:1},this.ignoreTag=!!t.ignoreTag,this.locale=t.locale,this.requiresOtherClause=!!t.requiresOtherClause,this.shouldParseSkeletons=!!t.shouldParseSkeletons}parse(){if(0!==this.offset())throw Error("parser can only be used once");if(this.message.length>0){const e=this.message.charCodeAt(0);if(35!==e&&39!==e&&60!==e&&123!==e&&125!==e){const e=function(e){if(0===e.length)return null;let t=1,s=1;for(let i=0;i<e.length;){const a=e.charCodeAt(i);switch(a){case 35:case 39:case 60:case 123:case 125:return null}if(10===a)t++,s=1,i++;else if(s++,a>=55296&&a<=56319&&i+1<e.length){const t=e.charCodeAt(i+1);i+=t>=56320&&t<=57343?2:1}else i++}return{offset:e.length,line:t,column:s}}(this.message);if(e){const t=this.clonePosition();return this.position=e,{val:[{type:0,value:this.message,location:At(t,this.clonePosition())}],err:null}}}}return this.parseMessage(0,"",!1)}parseMessage(e,t,s){let i=[];for(;!this.isEOF();){const a=this.char();if(123===a){const t=this.parseArgument(e,s);if(t.err)return t;i.push(t.val)}else{if(125===a&&e>0)break;if(35!==a||"plural"!==t&&"selectordinal"!==t){if(60===a&&!this.ignoreTag&&47===this.peek()){if(s)break;return this.error(26,At(this.clonePosition(),this.clonePosition()))}if(60===a&&!this.ignoreTag&&Lt(this.peek()||0)){const s=this.parseTag(e,t);if(s.err)return s;i.push(s.val)}else{const s=this.parseLiteral(e,t);if(s.err)return s;i.push(s.val)}}else{const e=this.clonePosition();this.bump(),i.push({type:7,location:At(e,this.clonePosition())})}}}return{val:i,err:null}}parseTag(e,t){const s=this.clonePosition();this.bump();const i=this.parseTagName();if(this.bumpSpace(),this.bumpIf("/>"))return{val:{type:0,value:`<${i}/>`,location:At(s,this.clonePosition())},err:null};if(this.bumpIf(">")){const a=this.parseMessage(e+1,t,!0);if(a.err)return a;const n=a.val,r=this.clonePosition();if(this.bumpIf("</")){if(this.isEOF()||!Lt(this.char()))return this.error(23,At(r,this.clonePosition()));const e=this.clonePosition();return i!==this.parseTagName()?this.error(26,At(e,this.clonePosition())):(this.bumpSpace(),this.bumpIf(">")?{val:{type:8,value:i,children:n,location:At(s,this.clonePosition())},err:null}:this.error(23,At(r,this.clonePosition())))}return this.error(27,At(s,this.clonePosition()))}return this.error(23,At(s,this.clonePosition()))}parseTagName(){const e=this.offset();for(this.bump();!this.isEOF()&&It(this.char());)this.bump();return this.message.slice(e,this.offset())}parseLiteral(e,t){const s=this.clonePosition();let i="";for(;;){const s=this.tryParseQuote(t);if(s){i+=s;continue}const a=this.tryParseUnquoted(e,t);if(a){i+=a;continue}const n=this.tryParseLeftAngleBracket();if(!n)break;i+=n}return{val:{type:0,value:i,location:At(s,this.clonePosition())},err:null}}tryParseLeftAngleBracket(){return this.isEOF()||60!==this.char()||!this.ignoreTag&&(Lt(e=this.peek()||0)||47===e)?null:(this.bump(),"<");var e}tryParseQuote(e){if(this.isEOF()||39!==this.char())return null;switch(this.peek()){case 39:return this.bump(),this.bump(),"'";case 123:case 60:case 62:case 125:break;case 35:if("plural"===e||"selectordinal"===e)break;return null;default:return null}this.bump();const t=[this.char()];for(this.bump();!this.isEOF();){const e=this.char();if(39===e){if(39!==this.peek()){this.bump();break}t.push(39),this.bump()}else t.push(e);this.bump()}return String.fromCodePoint(...t)}tryParseUnquoted(e,t){if(this.isEOF())return null;const s=this.char();return 60===s||123===s||35===s&&("plural"===t||"selectordinal"===t)||125===s&&e>0?null:(this.bump(),String.fromCodePoint(s))}parseArgument(e,t){const s=this.clonePosition();if(this.bump(),this.bumpSpace(),this.isEOF())return this.error(1,At(s,this.clonePosition()));if(125===this.char())return this.bump(),this.error(2,At(s,this.clonePosition()));let i=this.parseIdentifierIfPossible().value;if(!i)return this.error(3,At(s,this.clonePosition()));if(this.bumpSpace(),this.isEOF())return this.error(1,At(s,this.clonePosition()));switch(this.char()){case 125:return this.bump(),{val:{type:1,value:i,location:At(s,this.clonePosition())},err:null};case 44:return this.bump(),this.bumpSpace(),this.isEOF()?this.error(1,At(s,this.clonePosition())):this.parseArgumentOptions(e,t,i,s);default:return this.error(3,At(s,this.clonePosition()))}}parseIdentifierIfPossible(){const e=this.clonePosition(),t=this.offset(),s=function(e,t){return Pt.lastIndex=t,Pt.exec(e)[1]??""}(this.message,t),i=t+s.length;return this.bumpTo(i),{value:s,location:At(e,this.clonePosition())}}parseArgumentOptions(e,t,s,i){let a=this.clonePosition(),n=this.parseIdentifierIfPossible().value,r=this.clonePosition();switch(n){case"":return this.error(4,At(a,r));case"number":case"date":case"time":{this.bumpSpace();let e=null;if(this.bumpIf(",")){this.bumpSpace();const t=this.clonePosition(),s=this.parseSimpleArgStyleIfPossible();if(s.err)return s;const i=Rt(s.val);if(0===i.length)return this.error(6,At(this.clonePosition(),this.clonePosition()));e={style:i,styleLocation:At(t,this.clonePosition())}}const t=this.tryParseArgumentClose(i);if(t.err)return t;const a=At(i,this.clonePosition());if(e&&e.style.startsWith("::")){let t=Nt(e.style.slice(2));if("number"===n){const i=this.parseNumberSkeletonFromString(t,e.styleLocation);return i.err?i:{val:{type:2,value:s,location:a,style:i.val},err:null}}{if(0===t.length)return this.error(10,a);let i=t;this.locale&&(i=function(e,t){let s="";for(let i=0;i<e.length;i++){const a=e.charAt(i);if("j"===a){let n=0;for(;i+1<e.length&&e.charAt(i+1)===a;)n++,i++;let r=1+(1&n),o=n<2?1:3+(n>>1),l="a",h=Mt(t);for("H"!=h&&"k"!=h||(o=0);o-- >0;)s+=l;for(;r-- >0;)s=h+s}else s+="J"===a?"H":a}return s}(t,this.locale));return{val:{type:"date"===n?3:4,value:s,location:a,style:{type:1,pattern:i,location:e.styleLocation,parsedOptions:this.shouldParseSkeletons?et(i):{}}},err:null}}}return{val:{type:"number"===n?2:"date"===n?3:4,value:s,location:a,style:e?.style??null},err:null}}case"plural":case"selectordinal":case"select":{const a=this.clonePosition();if(this.bumpSpace(),!this.bumpIf(","))return this.error(12,At(a,{...a}));this.bumpSpace();let r=this.parseIdentifierIfPossible(),o=0;if("select"!==n&&"offset"===r.value){if(!this.bumpIf(":"))return this.error(13,At(this.clonePosition(),this.clonePosition()));this.bumpSpace();const e=this.tryParseDecimalInteger(13,14);if(e.err)return e;this.bumpSpace(),r=this.parseIdentifierIfPossible(),o=e.val}const l=this.tryParsePluralOrSelectOptions(e,n,t,r);if(l.err)return l;const h=this.tryParseArgumentClose(i);if(h.err)return h;const d=At(i,this.clonePosition());return"select"===n?{val:{type:5,value:s,options:Dt(l.val),location:d},err:null}:{val:{type:6,value:s,options:Dt(l.val),offset:o,pluralType:"plural"===n?"cardinal":"ordinal",location:d},err:null}}default:return this.error(5,At(a,r))}}tryParseArgumentClose(e){return this.isEOF()||125!==this.char()?this.error(1,At(e,this.clonePosition())):(this.bump(),{val:!0,err:null})}parseSimpleArgStyleIfPossible(){let e=0;const t=this.clonePosition();for(;!this.isEOF();)switch(this.char()){case 39:{this.bump();let e=this.clonePosition();if(!this.bumpUntil("'"))return this.error(11,At(e,this.clonePosition()));this.bump();break}case 123:e+=1,this.bump();break;case 125:if(!(e>0))return{val:this.message.slice(t.offset,this.offset()),err:null};e-=1;break;default:this.bump()}return{val:this.message.slice(t.offset,this.offset()),err:null}}parseNumberSkeletonFromString(e,t){let s=[];try{s=function(e){if(0===e.length)throw new Error("Number skeleton cannot be empty");const t=e.split(tt).filter(e=>e.length>0),s=[];for(const e of t){let t=e.split("/");if(0===t.length)throw new Error("Invalid number skeleton");const[i,...a]=t;for(const e of a)if(0===e.length)throw new Error("Invalid number skeleton");s.push({stem:i,options:a})}return s}(e)}catch{return this.error(7,t)}return{val:{type:0,tokens:s,location:t,parsedOptions:this.shouldParseSkeletons?ct(s):{}},err:null}}tryParsePluralOrSelectOptions(e,t,s,i){let a=!1;const n=[],r=new Set;let{value:o,location:l}=i;for(;;){if(0===o.length){const e=this.clonePosition();if("select"===t||!this.bumpIf("="))break;{const t=this.tryParseDecimalInteger(16,19);if(t.err)return t;l=At(e,this.clonePosition()),o=this.message.slice(e.offset,this.offset())}}if(r.has(o))return this.error("select"===t?21:20,l);"other"===o&&(a=!0),this.bumpSpace();const i=this.clonePosition();if(!this.bumpIf("{"))return this.error("select"===t?17:18,At(this.clonePosition(),this.clonePosition()));const h=this.parseMessage(e+1,t,s);if(h.err)return h;const d=this.tryParseArgumentClose(i);if(d.err)return d;n.push([o,{value:h.val,location:At(i,this.clonePosition())}]),r.add(o),this.bumpSpace(),({value:o,location:l}=this.parseIdentifierIfPossible())}return 0===n.length?this.error("select"===t?15:16,At(this.clonePosition(),this.clonePosition())):this.requiresOtherClause&&!a?this.error(22,At(this.clonePosition(),this.clonePosition())):{val:n,err:null}}tryParseDecimalInteger(e,t){let s=1;const i=this.clonePosition();this.bumpIf("+")||this.bumpIf("-")&&(s=-1);let a=!1,n=0;for(;!this.isEOF();){const e=this.char();if(!(e>=48&&e<=57))break;a=!0,n=10*n+(e-48),this.bump()}const r=At(i,this.clonePosition());return a?(n*=s,Number.isSafeInteger(n)?{val:n,err:null}:this.error(t,r)):this.error(e,r)}offset(){return this.position.offset}isEOF(){return this.offset()===this.message.length}clonePosition(){return{offset:this.position.offset,line:this.position.line,column:this.position.column}}char(){const e=this.position.offset;if(e>=this.message.length)throw Error("out of bound");const t=this.message.codePointAt(e);if(void 0===t)throw Error(`Offset ${e} is at invalid UTF-16 code unit boundary`);return t}error(e,t){return{val:null,err:{kind:e,message:this.message,location:t}}}bump(){if(this.isEOF())return;const e=this.char();10===e?(this.position.line+=1,this.position.column=1,this.position.offset+=1):(this.position.column+=1,this.position.offset+=e<65536?1:2)}bumpIf(e){const t=this.offset();if(this.message.slice(t,t+e.length)===e){for(let t=0;t<e.length;t++)this.bump();return!0}return!1}bumpUntil(e){const t=this.offset(),s=this.message.indexOf(e,t);return s>=0?(this.bumpTo(s),!0):(this.bumpTo(this.message.length),!1)}bumpTo(e){if(this.offset()>e)throw Error(`targetOffset ${e} must be greater than or equal to the current offset ${this.offset()}`);for(e=Math.min(e,this.message.length);;){const t=this.offset();if(t===e)break;if(t>e)throw Error(`targetOffset ${e} is at invalid UTF-16 code unit boundary`);if(this.bump(),this.isEOF())break}}bumpSpace(){for(;!this.isEOF()&&Ft(this.char());)this.bump()}peek(){if(this.isEOF())return null;const e=this.char(),t=this.offset();return this.message.charCodeAt(t+(e>=65536?2:1))??null}};function Lt(e){return e>=97&&e<=122||e>=65&&e<=90}function It(e){return 45===e||46===e||e>=48&&e<=57||95===e||e>=97&&e<=122||e>=65&&e<=90||183==e||e>=192&&e<=214||e>=216&&e<=246||e>=248&&e<=893||e>=895&&e<=8191||e>=8204&&e<=8205||e>=8255&&e<=8256||e>=8304&&e<=8591||e>=11264&&e<=12271||e>=12289&&e<=55295||e>=63744&&e<=64975||e>=65008&&e<=65533||e>=65536&&e<=983039}function Ft(e){return e>=9&&e<=13||32===e||133===e||e>=8206&&e<=8207||8232===e||8233===e}function Bt(e){e.forEach(e=>{if(delete e.location,_t(e)||yt(e))for(const t in e.options)delete e.options[t].location,Bt(e.options[t].value);else mt(e)&&$t(e.style)||(vt(e)||ft(e))&&xt(e.style)?delete e.style.location:wt(e)&&Bt(e.children)})}function Ut(e,t={}){t={shouldParseSkeletons:!0,requiresOtherClause:!0,...t};const s=new jt(e,t).parse();if(s.err){const e=SyntaxError(ut[s.err.kind]);throw e.location=s.err.location,e.originalMessage=s.err.message,e}return t?.captureLocation||Bt(s.val),s.val}var Yt=class extends Error{constructor(e,t,s){super(e),this.code=t,this.originalMessage=s}toString(){return`[formatjs Error: ${this.code}] ${this.message}`}},Wt=class extends Yt{constructor(e,t,s,i){super(`Invalid values for "${e}": "${t}". Options are "${Object.keys(s).join('", "')}"`,"INVALID_VALUE",i)}},Vt=class extends Yt{constructor(e,t,s){super(`Value for "${e}" must be of type ${t}`,"INVALID_VALUE",s)}},Zt=class extends Yt{constructor(e,t){super(`The intl string context variable "${e}" was not provided to the string "${t}"`,"MISSING_VALUE",t)}};function Gt(e){return"function"==typeof e}function qt(e,t,s,i,a,n,r){if(1===e.length&&pt(e[0]))return[{type:0,value:e[0].value}];const o=[];for(const l of e){if(pt(l)){o.push({type:0,value:l.value});continue}if(bt(l)){"number"==typeof n&&o.push({type:0,value:s.getNumberFormat(t).format(n)});continue}const{value:e}=l;if(!a||!(e in a))throw new Zt(e,r);let h=a[e];if(gt(l))h&&"string"!=typeof h&&"number"!=typeof h&&"bigint"!=typeof h||(h="string"==typeof h||"number"==typeof h||"bigint"==typeof h?String(h):""),o.push({type:"string"==typeof h?0:1,value:h});else{if(vt(l)){const e="string"==typeof l.style?i.date[l.style]:xt(l.style)?l.style.parsedOptions:void 0;o.push({type:0,value:s.getDateTimeFormat(t,e).format(h)});continue}if(ft(l)){const e="string"==typeof l.style?i.time[l.style]:xt(l.style)?l.style.parsedOptions:i.time.medium;o.push({type:0,value:s.getDateTimeFormat(t,e).format(h)});continue}if(mt(l)){const e="string"==typeof l.style?i.number[l.style]:$t(l.style)?l.style.parsedOptions:void 0;if(e&&e.scale){const t=e.scale||1;if("bigint"==typeof h){if(!Number.isInteger(t))throw new TypeError(`Cannot apply fractional scale ${t} to bigint value. Scale must be an integer when formatting bigint.`);h*=BigInt(t)}else h*=t}o.push({type:0,value:s.getNumberFormat(t,e).format(h)});continue}if(wt(l)){const{children:e,value:h}=l,d=a[h];if(!Gt(d))throw new Vt(h,"function",r);let c=d(qt(e,t,s,i,a,n).map(e=>e.value));Array.isArray(c)||(c=[c]),o.push(...c.map(e=>({type:"string"==typeof e?0:1,value:e})))}if(_t(l)){const e=h,n=(Object.prototype.hasOwnProperty.call(l.options,e)?l.options[e]:void 0)||l.options.other;if(!n)throw new Wt(l.value,h,Object.keys(l.options),r);o.push(...qt(n.value,t,s,i,a));continue}if(yt(l)){const e=`=${h}`;let n=Object.prototype.hasOwnProperty.call(l.options,e)?l.options[e]:void 0;if(!n){if(!Intl.PluralRules)throw new Yt('Intl.PluralRules is not available in this environment.\nTry polyfilling it using "@formatjs/intl-pluralrules"\n',"MISSING_INTL_API",r);const e="bigint"==typeof h?Number(h):h,i=s.getPluralRules(t,{type:l.pluralType}).select(e-(l.offset||0));n=(Object.prototype.hasOwnProperty.call(l.options,i)?l.options[i]:void 0)||l.options.other}if(!n)throw new Wt(l.value,h,Object.keys(l.options),r);const d="bigint"==typeof h?Number(h):h;o.push(...qt(n.value,t,s,i,a,d-(l.offset||0)));continue}}}return(l=o).length<2?l:l.reduce((e,t)=>{const s=e[e.length-1];return s&&0===s.type&&0===t.type?s.value+=t.value:e.push(t),e},[]);var l}function Kt(e,t){return t?Object.keys(e).reduce((s,i)=>{var a,n;return s[i]=(a=e[i],(n=t[i])?{...a,...n,...Object.keys(a).reduce((e,t)=>(e[t]={...a[t],...n[t]},e),{})}:a),s},{...e}):e}function Jt(e){return{create:()=>({get:t=>e[t],set(t,s){e[t]=s}})}}var Xt=class e{constructor(t,s=e.defaultLocale,i,a){if(this.formatterCache={number:{},dateTime:{},pluralRules:{}},this.format=e=>{const t=this.formatToParts(e);if(1===t.length)return t[0].value;const s=t.reduce((e,t)=>(e.length&&0===t.type&&"string"==typeof e[e.length-1]?e[e.length-1]+=t.value:e.push(t.value),e),[]);return s.length<=1?s[0]||"":s},this.formatToParts=e=>qt(this.ast,this.locales,this.formatters,this.formats,e,void 0,this.message),this.resolvedOptions=()=>({locale:this.resolvedLocale?.toString()||Intl.NumberFormat.supportedLocalesOf(this.locales)[0]}),this.getAst=()=>this.ast,this.locales=s,this.resolvedLocale=e.resolveLocale(s),"string"==typeof t){if(this.message=t,!e.__parse)throw new TypeError("IntlMessageFormat.__parse must be set to process `message` of type `string`");const{...s}=a||{};this.ast=e.__parse(t,{...s,locale:this.resolvedLocale})}else this.ast=t;if(!Array.isArray(this.ast))throw new TypeError("A message must be provided as a String or AST.");this.formats=Kt(e.formats,i),this.formatters=a&&a.formatters||function(e={number:{},dateTime:{},pluralRules:{}}){return{getNumberFormat:Ye((...e)=>new Intl.NumberFormat(...e),{cache:Jt(e.number),strategy:Xe.variadic}),getDateTimeFormat:Ye((...e)=>new Intl.DateTimeFormat(...e),{cache:Jt(e.dateTime),strategy:Xe.variadic}),getPluralRules:Ye((...e)=>new Intl.PluralRules(...e),{cache:Jt(e.pluralRules),strategy:Xe.variadic})}}(this.formatterCache)}static{this.memoizedDefaultLocale=null}static get defaultLocale(){return e.memoizedDefaultLocale||(e.memoizedDefaultLocale=(new Intl.NumberFormat).resolvedOptions().locale),e.memoizedDefaultLocale}static{this.resolveLocale=e=>{if(void 0===Intl.Locale)return;const t=Intl.NumberFormat.supportedLocalesOf(e);return t.length>0?new Intl.Locale(t[0]):new Intl.Locale("string"==typeof e?e:e[0])}}static{this.__parse=Ut}static{this.formats={number:{integer:{maximumFractionDigits:0},currency:{style:"currency"},percent:{style:"percent"}},date:{short:{month:"numeric",day:"numeric",year:"2-digit"},medium:{month:"short",day:"numeric",year:"numeric"},long:{month:"long",day:"numeric",year:"numeric"},full:{weekday:"long",month:"long",day:"numeric",year:"numeric"}},time:{short:{hour:"numeric",minute:"numeric"},medium:{hour:"numeric",minute:"numeric",second:"numeric"},long:{hour:"numeric",minute:"numeric",second:"numeric",timeZoneName:"short"},full:{hour:"numeric",minute:"numeric",second:"numeric",timeZoneName:"short"}}}}};const Qt="/api/smart_irrigation/languages",es=["cs","da","de","es","fi","fr","hu","it","nl","no","pl","pt","pt-BR","ru","sk","sl","sv","uk","zh-Hans"],ts={en:Ue},ss={};function is(e){return(e||"").replace(/['"]+/g,"")}function as(e,t,...s){const i=is(t);let a;try{a=e.split(".").reduce((e,t)=>e[t],ts[i])}catch(t){a=e.split(".").reduce((e,t)=>e[t],ts.en)}if(void 0===a&&(a=e.split(".").reduce((e,t)=>e[t],ts.en)),!s.length)return a;const n={};for(let e=0;e<s.length;e+=2){let t=s[e];t=t.replace(/^{([^}]+)?}$/,"$1"),n[t]=s[e+1]}try{return new Xt(a,t).format(n)}catch(e){return"Translation "+e}}var ns,rs;!function(e){e.language="language",e.system="system",e.comma_decimal="comma_decimal",e.decimal_comma="decimal_comma",e.space_comma="space_comma",e.none="none"}(ns||(ns={})),function(e){e.language="language",e.system="system",e.am_pm="12",e.twenty_four="24"}(rs||(rs={}));const os=(e,t,s,i)=>{i=i||{},s=null==s?{}:s;const a=new Event(t,{bubbles:void 0===i.bubbles||i.bubbles,cancelable:Boolean(i.cancelable),composed:void 0===i.composed||i.composed});return a.detail=s,e.dispatchEvent(a),a},ls="v2026.11.0-alpha3",hs="smart_irrigation",ds="precipitation_threshold_mm",cs="irrigation_start_triggers",us="sunrise",ps="solar_azimuth",gs="time",ms="minutes",vs="hours",fs="days",_s="imperial",ys="metric",bs="Dewpoint",ws="Evapotranspiration",$s="Humidity",xs="Maximum Temperature",ks="Minimum Temperature",Ss="Precipitation",zs="module",Ms="Current Precipitation",Ts="Pressure",Os="Solar Radiation",As="Temperature",Es="Windspeed",Cs="Open-Meteo",Hs="Home Assistant weather entity",Ds=[Cs,Hs],Ns=[Hs],Rs="weather_service",Ps="sensor",js="static",Ls="illuminance",Is="pressure_type",Fs="wind_height",Bs="absolute",Us="relative",Ys="none",Ws="source",Vs="sensorentity",Zs="static_value",Gs="unit",qs="aggregate",Ks=["average","first","last","maximum","median","minimum","riemannsum","sum","delta"],Js="sq ft",Xs="l/minute",Qs="gal/minute",ei="°C",ti="mm",si="in",ii="meter/s",ai="MJ/day/m2",ni="mm/h",ri="in/h",oi="name",li="size",hi="throughput",di="state",ci="duration",ui="water_volume",pi="bucket",gi="multiplier",mi="mapping",vi="lead_time",fi="maximum_duration",_i="maximum_bucket",yi="irrigation_threshold",bi="drainage_rate",wi="linked_entity",$i="days_between_irrigation",xi="available_water",ki="crop_factor_by_month",Si="allowed_depletion",zi="distribution_efficiency",Mi="safety_off_topic",Ti="supply_id",Oi="extra_entities",Ai="safety_off_state_key",Ei="safety_off_mode",Ci="confirm_timeout",Hi="open_resends",Di="flow_sensor",Ni="soil_moisture_sensor",Ri="soil_moisture_threshold",Pi="input_method",ji="throughput",Li="direct",Ii="precipitation_rate",Fi=2,Bi=e=>(...t)=>({_$litDirective$:e,values:t});let Ui=class{constructor(e){}get _$AU(){return this._$AM._$AU}_$AT(e,t,s){this._$Ct=e,this._$AM=t,this._$Ci=s}_$AS(e,t){return this.update(e,t)}update(e,t){return this.render(...t)}};
 /**
      * @license
      * Copyright 2017 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
-     */class Bi extends Fi{constructor(e){if(super(e),this.it=G,e.type!==Li)throw Error(this.constructor.directiveName+"() can only be used in child bindings")}render(e){if(e===G||null==e)return this._t=void 0,this.it=e;if(e===Z)return e;if("string"!=typeof e)throw Error(this.constructor.directiveName+"() called with a non-string value");if(e===this.it)return this._t;this.it=e;const t=[e];return t.raw=t,this._t={_$litType$:this.constructor.resultType,strings:t,values:[]}}}Bi.directiveName="unsafeHTML",Bi.resultType=1;const Ui=Ii(Bi);function Yi(e,t){return(e=e.toString()).split(",")[t]}function Wi(e,t,s){var i,a,n;const r=new Date(e);if(isNaN(r.getTime()))return"-";const o=null!==(n=null!==(a=null===(i=null==t?void 0:t.locale)||void 0===i?void 0:i.language)&&void 0!==a?a:null==t?void 0:t.language)&&void 0!==n?n:navigator.language;try{return new Intl.DateTimeFormat(o,s).format(r)}catch(e){return r.toLocaleString()}}function Vi(e,t){const s=(null==e?void 0:e.units)==fs;switch(t){case _i:case ji:return s?ii:ai;case ls:case ci:return s?Qs:ei;case ri:return s?"m²":qs;case oi:return s?Ks:Js;case di:return s?"L":"gal";default:return""}}function Zi(e,t){switch(t){case _i:case ji:return e.units==fs?W`${Ui(ii)}`:W`${Ui(ai)}`;case ls:case ci:return e.units==fs?W`${Ui(Qs)}`:W`${Ui(ei)}`;case ri:return e.units==fs?W`${Ui("m<sup>2</sup>")}`:W`${Ui(qs)}`;case oi:return e.units==fs?W`${Ui(Ks)}`:W`${Ui(Js)}`;case di:return e.units==fs?W`${Ui("L")}`:W`${Ui("gal")}`;default:return W``}}function Gi(e){const t=Math.max(0,Math.round(Number(e)||0)),s=Math.floor(t/3600),i=Math.floor(t%3600/60),a=t%60,n=e=>String(e).padStart(2,"0");return`${n(s)}:${n(i)}:${n(a)}`}function qi(e,t){const s=Number(e)||0,i=Number(t)||0;return s<=0||i<=0?0:s/60*i}const Ki=3.785411784;function Ji(e,t){const s=Number(e)||0;return(null==t?void 0:t.units)===fs?s:s/Ki}function Xi(e,t){const s=Number(e)||0,i=(null==t?void 0:t.units)===fs?s:s*Ki;return Math.round(100*i)/100}function Qi(e,t){const s=Number(e)||0;return(null==t?void 0:t.units)===fs?s:s/25.4}function ea(e){switch(e){case _s:case Ts:return[{unit:Xs,system:fs},{unit:"°F",system:vs}];case xs:case ys:return[{unit:Qs,system:fs},{unit:ei,system:vs}];case Ss:return[{unit:ii,system:fs},{unit:ai,system:vs}];case bs:return[{unit:"%",system:[fs,vs]}];case zs:return[{unit:"millibar",system:fs},{unit:"hPa",system:fs},{unit:"psi",system:vs},{unit:"inch Hg",system:vs}];case Os:return[{unit:"km/h",system:fs},{unit:ti,system:fs},{unit:"mile/h",system:vs},{unit:"knot",system:[fs,vs]}];case Ms:return[{unit:"W/m2",system:fs},{unit:si,system:fs},{unit:"W/sq ft",system:vs},{unit:"MJ/day/sq ft",system:vs}];default:return[]}}function ta(e,t){!function(e,t){ns(e,"show-dialog",{dialogTag:"smart-irrigation-error-dialog",dialogImport:()=>Promise.resolve().then((function(){return Ln})),dialogParams:{error:t}})}(t,W`
-    ${e.error}:${e.body.message?W` ${e.body.message} `:""}
-  `)}const sa=(e,t,s=!1)=>{s?history.replaceState(null,"",t):history.pushState(null,"",t),ns(window,"location-changed",{replace:s})},ia={Static:"manual",Passthrough:"standard",PyETO:"advanced"};const aa={from_weather:"PyETO",provided:"Passthrough",fixed:"Static"};function na(e){return-Math.abs(Number(e)||0)}function ra(e,t){if(!e)return"";const s=ia[e];return s?ss(`common.modes.${s}`,t):e}const oa=e=>e.callWS({type:os+"/config"}),la=e=>e.callWS({type:os+"/weatherservice"}),ha=e=>e.callWS({type:os+"/zones"}),da=(e,t)=>e.callApi("POST",os+"/zones",t),ca=e=>e.callWS({type:os+"/modules"}),ua=e=>e.callWS({type:os+"/allmodules"}),pa=e=>e.callWS({type:os+"/mappings"}),ga=(e,t)=>e.callApi("POST",os+"/mappings",t),ma=e=>e.callWS({type:os+"/info"}),va=(e,t,s=10)=>e.callWS({type:os+"/weather_records",mapping_id:t,limit:s}),fa=(e,t=500)=>e.callWS({type:os+"/irrigation_history",limit:t}),_a=e=>{class t extends e{connectedCallback(){super.connectedCallback(),this.__checkSubscribed()}disconnectedCallback(){if(super.disconnectedCallback(),this.__unsubs){for(;this.__unsubs.length;){const e=this.__unsubs.pop();e instanceof Promise?e.then((e=>e())):e()}this.__unsubs=void 0}}updated(e){super.updated(e),e.has("hass")&&this.__checkSubscribed()}hassSubscribe(){return[]}__checkSubscribed(){void 0===this.__unsubs&&this.isConnected&&void 0!==this.hass&&(this.__unsubs=this.hassSubscribe())}}return s([me({attribute:!1})],t.prototype,"hass",void 0),t};var ya="M7,2H17A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H7A2,2 0 0,1 5,20V4A2,2 0 0,1 7,2M7,4V8H17V4H7M7,10V12H9V10H7M11,10V12H13V10H11M15,10V12H17V10H15M7,14V16H9V14H7M11,14V16H13V14H11M15,14V16H17V14H15M7,18V20H9V18H7M11,18V20H13V18H11M15,18V20H17V18H15Z",ba="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z",wa="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z",$a="M6.5 20Q4.22 20 2.61 18.43 1 16.85 1 14.58 1 12.63 2.17 11.1 3.35 9.57 5.25 9.15 5.88 6.85 7.75 5.43 9.63 4 12 4 14.93 4 16.96 6.04 19 8.07 19 11 20.73 11.2 21.86 12.5 23 13.78 23 15.5 23 17.38 21.69 18.69 20.38 20 18.5 20M6.5 18H18.5Q19.55 18 20.27 17.27 21 16.55 21 15.5 21 14.45 20.27 13.73 19.55 13 18.5 13H17V11Q17 8.93 15.54 7.46 14.08 6 12 6 9.93 6 8.46 7.46 7 8.93 7 11H6.5Q5.05 11 4.03 12.03 3 13.05 3 14.5 3 15.95 4.03 17 5.05 18 6.5 18M12 12Z",xa="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z",ka="M7,10L12,15L17,10H7Z",Sa="M19,13H5V11H19V13Z",za="M12.5 9.36L4.27 14.11C3.79 14.39 3.18 14.23 2.9 13.75C2.62 13.27 2.79 12.66 3.27 12.38L11.5 7.63C11.97 7.35 12.58 7.5 12.86 8C13.14 8.47 12.97 9.09 12.5 9.36M13 19C13 15.82 15.47 13.23 18.6 13L20 6H21V4H3V6H4L4.76 9.79L10.71 6.36C11.09 6.13 11.53 6 12 6C13.38 6 14.5 7.12 14.5 8.5C14.5 9.44 14 10.26 13.21 10.69L5.79 14.97L7 21H13.35C13.13 20.37 13 19.7 13 19M21.12 15.46L19 17.59L16.88 15.46L15.47 16.88L17.59 19L15.47 21.12L16.88 22.54L19 20.41L21.12 22.54L22.54 21.12L20.41 19L22.54 16.88L21.12 15.46Z",Ma="M8,5.14V19.14L19,12.14L8,5.14Z",Ta="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z",Oa="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z",Aa="M18,18H6V6H18V18Z",Ea="M21,10.12H14.22L16.96,7.3C14.23,4.6 9.81,4.5 7.08,7.2C4.35,9.91 4.35,14.28 7.08,17C9.81,19.7 14.23,19.7 16.96,17C18.32,15.65 19,14.08 19,12.1H21C21,14.08 20.12,16.65 18.36,18.39C14.85,21.87 9.15,21.87 5.64,18.39C2.14,14.92 2.11,9.28 5.62,5.81C9.13,2.34 14.76,2.34 18.27,5.81L21,3V10.12M12.5,8V12.25L16,14.33L15.28,15.54L11,13V8H12.5Z",Ca="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z";let Ha=class extends de{showDialog(e){return this._options=e,new Promise((e=>this._resolve=e))}_answer(e){const t=this._resolve;this._resolve=void 0,this._options=void 0,null==t||t(e)}render(){if(!this._options)return W``;const e=(e,t)=>{var s,i;return(null===(i=null===(s=this.hass)||void 0===s?void 0:s.localize)||void 0===i?void 0:i.call(s,e))||t};return W`
+     */class Yi extends Ui{constructor(e){if(super(e),this.it=q,e.type!==Fi)throw Error(this.constructor.directiveName+"() can only be used in child bindings")}render(e){if(e===q||null==e)return this._t=void 0,this.it=e;if(e===G)return e;if("string"!=typeof e)throw Error(this.constructor.directiveName+"() called with a non-string value");if(e===this.it)return this._t;this.it=e;const t=[e];return t.raw=t,this._t={_$litType$:this.constructor.resultType,strings:t,values:[]}}}Yi.directiveName="unsafeHTML",Yi.resultType=1;const Wi=Bi(Yi);function Vi(e,t){return(e=e.toString()).split(",")[t]}function Zi(e,t,s){var i,a,n;const r=new Date(e);if(isNaN(r.getTime()))return"-";const o=null!==(n=null!==(a=null===(i=null==t?void 0:t.locale)||void 0===i?void 0:i.language)&&void 0!==a?a:null==t?void 0:t.language)&&void 0!==n?n:navigator.language;try{return new Intl.DateTimeFormat(o,s).format(r)}catch(e){return r.toLocaleString()}}function Gi(e,t){const s=(null==e?void 0:e.units)==ys;switch(t){case bi:case Ii:return s?ni:ri;case ds:case pi:return s?ti:si;case li:return s?"m²":Js;case hi:return s?Xs:Qs;case ui:return s?"L":"gal";default:return""}}function qi(e,t){switch(t){case bi:case Ii:return e.units==ys?V`${Wi(ni)}`:V`${Wi(ri)}`;case ds:case pi:return e.units==ys?V`${Wi(ti)}`:V`${Wi(si)}`;case li:return e.units==ys?V`${Wi("m<sup>2</sup>")}`:V`${Wi(Js)}`;case hi:return e.units==ys?V`${Wi(Xs)}`:V`${Wi(Qs)}`;case ui:return e.units==ys?V`${Wi("L")}`:V`${Wi("gal")}`;default:return V``}}function Ki(e){const t=Math.max(0,Math.round(Number(e)||0)),s=Math.floor(t/3600),i=Math.floor(t%3600/60),a=t%60,n=e=>String(e).padStart(2,"0");return`${n(s)}:${n(i)}:${n(a)}`}function Ji(e,t){const s=Number(e)||0,i=Number(t)||0;return s<=0||i<=0?0:s/60*i}const Xi=3.785411784;function Qi(e,t){const s=Number(e)||0;return(null==t?void 0:t.units)===ys?s:s/Xi}function ea(e,t){const s=Number(e)||0,i=(null==t?void 0:t.units)===ys?s:s*Xi;return Math.round(100*i)/100}function ta(e,t){const s=Number(e)||0;return(null==t?void 0:t.units)===ys?s:s/25.4}function sa(e){switch(e){case bs:case As:return[{unit:ei,system:ys},{unit:"°F",system:_s}];case Ss:case ws:return[{unit:ti,system:ys},{unit:si,system:_s}];case Ms:return[{unit:ni,system:ys},{unit:ri,system:_s}];case $s:return[{unit:"%",system:[ys,_s]}];case Ts:return[{unit:"millibar",system:ys},{unit:"hPa",system:ys},{unit:"psi",system:_s},{unit:"inch Hg",system:_s}];case Es:return[{unit:"km/h",system:ys},{unit:ii,system:ys},{unit:"mile/h",system:_s},{unit:"knot",system:[ys,_s]}];case Os:return[{unit:"W/m2",system:ys},{unit:ai,system:ys},{unit:"W/sq ft",system:_s},{unit:"MJ/day/sq ft",system:_s}];default:return[]}}function ia(e,t){!function(e,t){os(e,"show-dialog",{dialogTag:"smart-irrigation-error-dialog",dialogImport:()=>Promise.resolve().then(function(){return Un}),dialogParams:{error:t}})}(t,V`
+    ${e.error}:${e.body.message?V` ${e.body.message} `:""}
+  `)}const aa=(e,t,s=!1)=>{s?history.replaceState(null,"",t):history.pushState(null,"",t),os(window,"location-changed",{replace:s})},na={Static:"manual",Passthrough:"standard",PyETO:"advanced"};const ra={from_weather:"PyETO",provided:"Passthrough",fixed:"Static"};function oa(e){return-Math.abs(Number(e)||0)}function la(e,t){if(!e)return"";const s=na[e];return s?as(`common.modes.${s}`,t):e}const ha=e=>e.callWS({type:hs+"/config"}),da=e=>e.callWS({type:hs+"/weatherservice"}),ca=e=>e.callWS({type:hs+"/zones"}),ua=(e,t)=>e.callApi("POST",hs+"/zones",t),pa=e=>e.callWS({type:hs+"/modules"}),ga=e=>e.callWS({type:hs+"/allmodules"}),ma=e=>e.callWS({type:hs+"/mappings"}),va=(e,t)=>e.callApi("POST",hs+"/mappings",t),fa=e=>e.callWS({type:hs+"/info"}),_a=(e,t,s=10)=>e.callWS({type:hs+"/weather_records",mapping_id:t,limit:s}),ya=(e,t=500)=>e.callWS({type:hs+"/irrigation_history",limit:t}),ba=(e,t)=>e.callWS({type:hs+"/watering_calendar",zone_id:t}),wa=e=>{class t extends e{connectedCallback(){super.connectedCallback(),this.__checkSubscribed()}disconnectedCallback(){if(super.disconnectedCallback(),this.__unsubs){for(;this.__unsubs.length;){const e=this.__unsubs.pop();e instanceof Promise?e.then(e=>e()):e()}this.__unsubs=void 0}}updated(e){super.updated(e),e.has("hass")&&this.__checkSubscribed()}hassSubscribe(){return[]}__checkSubscribed(){void 0===this.__unsubs&&this.isConnected&&void 0!==this.hass&&(this.__unsubs=this.hassSubscribe())}}return s([ve({attribute:!1})],t.prototype,"hass",void 0),t};var $a="M7,2H17A2,2 0 0,1 19,4V20A2,2 0 0,1 17,22H7A2,2 0 0,1 5,20V4A2,2 0 0,1 7,2M7,4V8H17V4H7M7,10V12H9V10H7M11,10V12H13V10H11M15,10V12H17V10H15M7,14V16H9V14H7M11,14V16H13V14H11M15,14V16H17V14H15M7,18V20H9V18H7M11,18V20H13V18H11M15,18V20H17V18H15Z",xa="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z",ka="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z",Sa="M6.5 20Q4.22 20 2.61 18.43 1 16.85 1 14.58 1 12.63 2.17 11.1 3.35 9.57 5.25 9.15 5.88 6.85 7.75 5.43 9.63 4 12 4 14.93 4 16.96 6.04 19 8.07 19 11 20.73 11.2 21.86 12.5 23 13.78 23 15.5 23 17.38 21.69 18.69 20.38 20 18.5 20M6.5 18H18.5Q19.55 18 20.27 17.27 21 16.55 21 15.5 21 14.45 20.27 13.73 19.55 13 18.5 13H17V11Q17 8.93 15.54 7.46 14.08 6 12 6 9.93 6 8.46 7.46 7 8.93 7 11H6.5Q5.05 11 4.03 12.03 3 13.05 3 14.5 3 15.95 4.03 17 5.05 18 6.5 18M12 12Z",za="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z",Ma="M7,10L12,15L17,10H7Z",Ta="M19,13H5V11H19V13Z",Oa="M12.5 9.36L4.27 14.11C3.79 14.39 3.18 14.23 2.9 13.75C2.62 13.27 2.79 12.66 3.27 12.38L11.5 7.63C11.97 7.35 12.58 7.5 12.86 8C13.14 8.47 12.97 9.09 12.5 9.36M13 19C13 15.82 15.47 13.23 18.6 13L20 6H21V4H3V6H4L4.76 9.79L10.71 6.36C11.09 6.13 11.53 6 12 6C13.38 6 14.5 7.12 14.5 8.5C14.5 9.44 14 10.26 13.21 10.69L5.79 14.97L7 21H13.35C13.13 20.37 13 19.7 13 19M21.12 15.46L19 17.59L16.88 15.46L15.47 16.88L17.59 19L15.47 21.12L16.88 22.54L19 20.41L21.12 22.54L22.54 21.12L20.41 19L22.54 16.88L21.12 15.46Z",Aa="M8,5.14V19.14L19,12.14L8,5.14Z",Ea="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z",Ca="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z",Ha="M18,18H6V6H18V18Z",Da="M21,10.12H14.22L16.96,7.3C14.23,4.6 9.81,4.5 7.08,7.2C4.35,9.91 4.35,14.28 7.08,17C9.81,19.7 14.23,19.7 16.96,17C18.32,15.65 19,14.08 19,12.1H21C21,14.08 20.12,16.65 18.36,18.39C14.85,21.87 9.15,21.87 5.64,18.39C2.14,14.92 2.11,9.28 5.62,5.81C9.13,2.34 14.76,2.34 18.27,5.81L21,3V10.12M12.5,8V12.25L16,14.33L15.28,15.54L11,13V8H12.5Z",Na="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z";let Ra=class extends ce{showDialog(e){return this._options=e,new Promise(e=>this._resolve=e)}_answer(e){const t=this._resolve;this._resolve=void 0,this._options=void 0,null==t||t(e)}render(){if(!this._options)return V``;const e=(e,t)=>{var s,i;return(null===(i=null===(s=this.hass)||void 0===s?void 0:s.localize)||void 0===i?void 0:i.call(s,e))||t};return V`
       <ha-dialog
         open
         .heading=${e("ui.dialogs.generic.default_confirmation_title","Are you sure?")}
@@ -84,7 +84,7 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
         color: var(--primary-text-color);
         white-space: pre-line;
       }
-    `}};async function Da(e,t){const s=document.createElement("smart-irrigation-confirmation-dialog");s.hass=e,document.body.appendChild(s);try{return await s.showDialog(t)}finally{s.remove()}}s([me({attribute:!1})],Ha.prototype,"hass",void 0),s([ve()],Ha.prototype,"_options",void 0),Ha=s([ue("smart-irrigation-confirmation-dialog")],Ha);const Na=l`
+    `}};async function Pa(e,t){const s=document.createElement("smart-irrigation-confirmation-dialog");s.hass=e,document.body.appendChild(s);try{return await s.showDialog(t)}finally{s.remove()}}s([ve({attribute:!1})],Ra.prototype,"hass",void 0),s([fe()],Ra.prototype,"_options",void 0),Ra=s([pe("smart-irrigation-confirmation-dialog")],Ra);const ja=l`
   /* Existing common styles */
   ha-card {
     display: flex;
@@ -550,7 +550,7 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
     color: var(--primary-text-color);
     white-space: nowrap;
   }
-`,Ra=l`
+`,La=l`
   /* ha-dialog styles */
   ha-dialog {
     --mdc-dialog-min-width: 400px;
@@ -577,26 +577,26 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
   ha-dialog div.description {
     margin-bottom: 10px;
   }
-`,Pa="06:00";let ja=class extends de{async showDialog(e){if(this.params=e,this._error=void 0,e.createTrigger)this._trigger={type:ds,name:"",enabled:!0,offset_minutes:0,azimuth_angle:90,account_for_duration:!0};else if(e.trigger){const t=e.trigger;this._trigger=function(e){var t,s,i,a,n,r;const o={type:e.type,name:null!==(t=e.name)&&void 0!==t?t:"",enabled:null===(s=e.enabled)||void 0===s||s,offset_minutes:null!==(i=e.offset_minutes)&&void 0!==i?i:0,account_for_duration:null===(a=e.account_for_duration)||void 0===a||a};return e.type===cs?Object.assign(Object.assign({},o),{azimuth_angle:null!==(n=e.azimuth_angle)&&void 0!==n?n:90}):e.type===us?Object.assign(Object.assign({},o),{at:null!==(r=e.at)&&void 0!==r?r:Pa}):o}(t)}else this._trigger=void 0;await this.updateComplete}_closeDialog(){this.params=void 0,this._error=void 0,this._trigger=void 0}_saveTrigger(){var e,s,i,a,n,r,o;if(!this._trigger||!this.params)return;const l=null===(e=this.shadowRoot)||void 0===e?void 0:e.querySelector("ha-select");if(l){const e=null!==(i=null!==(s=l.value)&&void 0!==s?s:l.selected)&&void 0!==i?i:void 0;if(e&&e!==this._trigger.type){if(e===cs)this._trigger=Object.assign(Object.assign({},this._trigger),{type:e,azimuth_angle:null!==(a=this._trigger.azimuth_angle)&&void 0!==a?a:90});else if(e===us){const s=this._trigger,{azimuth_angle:i}=s,a=t(s,["azimuth_angle"]);this._trigger=Object.assign(Object.assign({},a),{type:e,at:null!==(n=this._trigger.at)&&void 0!==n?n:Pa})}else{const s=this._trigger,{azimuth_angle:i,at:a}=s,n=t(s,["azimuth_angle","at"]);this._trigger=Object.assign(Object.assign({},n),{type:e})}this.requestUpdate()}}if(null===(r=this._trigger.name)||void 0===r?void 0:r.trim())if(this._trigger.type!==us||/^\d{1,2}:\d{2}$/.test(null!==(o=this._trigger.at)&&void 0!==o?o:"")){if(this._trigger.type===cs){if(void 0===this._trigger.azimuth_angle||isNaN(this._trigger.azimuth_angle))return void(this._error=ss("irrigation_start_triggers.validation.azimuth_invalid",this.hass.language));this._trigger.azimuth_angle=this._trigger.azimuth_angle%360,this._trigger.azimuth_angle<0&&(this._trigger.azimuth_angle+=360)}this.dispatchEvent(new CustomEvent("trigger-save",{detail:{trigger:this._trigger,isNew:this.params.createTrigger,index:this.params.triggerIndex},bubbles:!0,composed:!0})),this._closeDialog()}else this._error=ss("irrigation_start_triggers.validation.time_invalid",this.hass.language);else this._error=ss("irrigation_start_triggers.validation.name_required",this.hass.language)}_ask(e,t=!1){return Da(this.hass,{text:e,destructive:t})}async _deleteTrigger(){var e,t,s,i;this.params&&!this.params.createTrigger&&await this._ask(ss("irrigation_start_triggers.confirm_delete",null!==(t=null===(e=this.hass)||void 0===e?void 0:e.language)&&void 0!==t?t:"en").replace("{name}",null!==(i=null===(s=this._trigger)||void 0===s?void 0:s.name)&&void 0!==i?i:""),!0)&&(this.dispatchEvent(new CustomEvent("trigger-delete",{detail:{index:this.params.triggerIndex},bubbles:!0,composed:!0})),this._closeDialog())}_updateTrigger(e){this._trigger?(this._trigger=Object.assign(Object.assign({},this._trigger),e),this.requestUpdate()):console.warn("_updateTrigger called with undefined _trigger",e)}render(){var e,t;if(!this.params||!this._trigger)return W``;const s=this.params.createTrigger,i=ss(s?"irrigation_start_triggers.dialog.add_title":"irrigation_start_triggers.dialog.edit_title",this.hass.language);return W`
+`,Ia="06:00";let Fa=class extends ce{async showDialog(e){if(this.params=e,this._error=void 0,e.createTrigger)this._trigger={type:us,name:"",enabled:!0,offset_minutes:0,azimuth_angle:90,account_for_duration:!0};else if(e.trigger){const t=e.trigger;this._trigger=function(e){var t,s,i,a,n,r;const o={type:e.type,name:null!==(t=e.name)&&void 0!==t?t:"",enabled:null===(s=e.enabled)||void 0===s||s,offset_minutes:null!==(i=e.offset_minutes)&&void 0!==i?i:0,account_for_duration:null===(a=e.account_for_duration)||void 0===a||a};return e.type===ps?Object.assign(Object.assign({},o),{azimuth_angle:null!==(n=e.azimuth_angle)&&void 0!==n?n:90}):e.type===gs?Object.assign(Object.assign({},o),{at:null!==(r=e.at)&&void 0!==r?r:Ia}):o}(t)}else this._trigger=void 0;await this.updateComplete}_closeDialog(){this.params=void 0,this._error=void 0,this._trigger=void 0}_saveTrigger(){var e,s,i,a,n,r,o;if(!this._trigger||!this.params)return;const l=null===(e=this.shadowRoot)||void 0===e?void 0:e.querySelector("ha-select");if(l){const e=null!==(i=null!==(s=l.value)&&void 0!==s?s:l.selected)&&void 0!==i?i:void 0;if(e&&e!==this._trigger.type){if(e===ps)this._trigger=Object.assign(Object.assign({},this._trigger),{type:e,azimuth_angle:null!==(a=this._trigger.azimuth_angle)&&void 0!==a?a:90});else if(e===gs){const s=this._trigger,{azimuth_angle:i}=s,a=t(s,["azimuth_angle"]);this._trigger=Object.assign(Object.assign({},a),{type:e,at:null!==(n=this._trigger.at)&&void 0!==n?n:Ia})}else{const s=this._trigger,{azimuth_angle:i,at:a}=s,n=t(s,["azimuth_angle","at"]);this._trigger=Object.assign(Object.assign({},n),{type:e})}this.requestUpdate()}}if(null===(r=this._trigger.name)||void 0===r?void 0:r.trim())if(this._trigger.type!==gs||/^\d{1,2}:\d{2}$/.test(null!==(o=this._trigger.at)&&void 0!==o?o:"")){if(this._trigger.type===ps){if(void 0===this._trigger.azimuth_angle||isNaN(this._trigger.azimuth_angle))return void(this._error=as("irrigation_start_triggers.validation.azimuth_invalid",this.hass.language));this._trigger.azimuth_angle=this._trigger.azimuth_angle%360,this._trigger.azimuth_angle<0&&(this._trigger.azimuth_angle+=360)}this.dispatchEvent(new CustomEvent("trigger-save",{detail:{trigger:this._trigger,isNew:this.params.createTrigger,index:this.params.triggerIndex},bubbles:!0,composed:!0})),this._closeDialog()}else this._error=as("irrigation_start_triggers.validation.time_invalid",this.hass.language);else this._error=as("irrigation_start_triggers.validation.name_required",this.hass.language)}_ask(e,t=!1){return Pa(this.hass,{text:e,destructive:t})}async _deleteTrigger(){var e,t,s,i;this.params&&!this.params.createTrigger&&await this._ask(as("irrigation_start_triggers.confirm_delete",null!==(t=null===(e=this.hass)||void 0===e?void 0:e.language)&&void 0!==t?t:"en").replace("{name}",null!==(i=null===(s=this._trigger)||void 0===s?void 0:s.name)&&void 0!==i?i:""),!0)&&(this.dispatchEvent(new CustomEvent("trigger-delete",{detail:{index:this.params.triggerIndex},bubbles:!0,composed:!0})),this._closeDialog())}_updateTrigger(e){this._trigger?(this._trigger=Object.assign(Object.assign({},this._trigger),e),this.requestUpdate()):console.warn("_updateTrigger called with undefined _trigger",e)}render(){var e,t;if(!this.params||!this._trigger)return V``;const s=this.params.createTrigger,i=as(s?"irrigation_start_triggers.dialog.add_title":"irrigation_start_triggers.dialog.edit_title",this.hass.language);return V`
       <ha-dialog open .heading=${!0}>
         <div slot="heading" class="dialog-header-bar">
           <ha-icon-button
             dialogAction="cancel"
-            .path=${wa}
+            .path=${ka}
             class="dialog-close"
           ></ha-icon-button>
           <span class="dialog-header">${i}</span>
         </div>
 
         <div class="wrapper">
-          ${this._error?W`<ha-alert alert-type="error">${this._error}</ha-alert>`:""}
+          ${this._error?V`<ha-alert alert-type="error">${this._error}</ha-alert>`:""}
           <div class="dialog-help">
-            ${ss("irrigation_start_triggers.dialog.help",this.hass.language)}
+            ${as("irrigation_start_triggers.dialog.help",this.hass.language)}
             <code>smart_irrigation_start_irrigation_all_zones</code>
           </div>
           <div class="form-group">
             <label class="form-label"
-              >${ss("irrigation_start_triggers.fields.name.name",this.hass.language)}</label
+              >${as("irrigation_start_triggers.fields.name.name",this.hass.language)}</label
             >
             <input
               class="form-input"
@@ -609,28 +609,28 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
 
           <div class="form-group">
             <ha-select
-              .label=${ss("irrigation_start_triggers.fields.type.name",this.hass.language)}
+              .label=${as("irrigation_start_triggers.fields.type.name",this.hass.language)}
               .value=${this._trigger.type}
               @selected=${this._typeChanged}
             >
-              <ha-dropdown-item value=${ds}>
-                ${ss("irrigation_start_triggers.trigger_types.sunrise",this.hass.language)}
+              <ha-dropdown-item value=${us}>
+                ${as("irrigation_start_triggers.trigger_types.sunrise",this.hass.language)}
               </ha-dropdown-item>
               <ha-dropdown-item value=${"sunset"}>
-                ${ss("irrigation_start_triggers.trigger_types.sunset",this.hass.language)}
+                ${as("irrigation_start_triggers.trigger_types.sunset",this.hass.language)}
               </ha-dropdown-item>
-              <ha-dropdown-item value=${cs}>
-                ${ss("irrigation_start_triggers.trigger_types.solar_azimuth",this.hass.language)}
+              <ha-dropdown-item value=${ps}>
+                ${as("irrigation_start_triggers.trigger_types.solar_azimuth",this.hass.language)}
               </ha-dropdown-item>
-              <ha-dropdown-item value=${us}>
-                ${ss("irrigation_start_triggers.trigger_types.time",this.hass.language)}
+              <ha-dropdown-item value=${gs}>
+                ${as("irrigation_start_triggers.trigger_types.time",this.hass.language)}
               </ha-dropdown-item>
             </ha-select>
           </div>
 
           <div class="form-group">
             <ha-formfield
-              .label=${ss("irrigation_start_triggers.fields.enabled.name",this.hass.language)}
+              .label=${as("irrigation_start_triggers.fields.enabled.name",this.hass.language)}
             >
               <ha-switch
                 .checked=${this._trigger.enabled}
@@ -641,7 +641,7 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
 
           <div class="form-group">
             <label class="form-label"
-              >${ss("irrigation_start_triggers.fields.offset_minutes.name",this.hass.language)}</label
+              >${as("irrigation_start_triggers.fields.offset_minutes.name",this.hass.language)}</label
             >
             <input
               class="form-input"
@@ -656,7 +656,7 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
 
           <div class="form-group">
             <ha-formfield
-              .label=${ss("irrigation_start_triggers.fields.account_for_duration.name",this.hass.language)}
+              .label=${as("irrigation_start_triggers.fields.account_for_duration.name",this.hass.language)}
             >
               <ha-switch
                 .checked=${this._trigger.account_for_duration}
@@ -665,23 +665,23 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
             </ha-formfield>
           </div>
 
-          ${this._trigger.type===us?W`
+          ${this._trigger.type===gs?V`
                 <div class="form-group">
                   <label class="form-label"
-                    >${ss("irrigation_start_triggers.fields.at.name",this.hass.language)}</label
+                    >${as("irrigation_start_triggers.fields.at.name",this.hass.language)}</label
                   >
                   <input
                     class="form-input"
                     type="time"
-                    .value=${this._trigger.at||Pa}
+                    .value=${this._trigger.at||Ia}
                     @input=${this._atChanged}
                   />
                 </div>
               `:""}
-          ${this._trigger.type===cs?W`
+          ${this._trigger.type===ps?V`
                 <div class="form-group">
                   <label class="form-label"
-                    >${ss("irrigation_start_triggers.fields.azimuth_angle.name",this.hass.language)}</label
+                    >${as("irrigation_start_triggers.fields.azimuth_angle.name",this.hass.language)}</label
                   >
                   <input
                     class="form-input"
@@ -702,16 +702,16 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
             appearance="plain"
             @click=${this._closeDialog}
           >
-            ${ss("irrigation_start_triggers.dialog.cancel",this.hass.language)}
+            ${as("irrigation_start_triggers.dialog.cancel",this.hass.language)}
           </ha-button>
-          ${s?"":W`
+          ${s?"":V`
                 <ha-button
                   slot="secondaryAction"
                   appearance="plain"
                   variant="danger"
                   @click=${this._deleteTrigger}
                 >
-                  ${ss("irrigation_start_triggers.dialog.delete",this.hass.language)}
+                  ${as("irrigation_start_triggers.dialog.delete",this.hass.language)}
                 </ha-button>
               `}
           <ha-button
@@ -719,11 +719,11 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
             appearance="accent"
             @click=${this._saveTrigger}
           >
-            ${ss("irrigation_start_triggers.dialog.save",this.hass.language)}
+            ${as("irrigation_start_triggers.dialog.save",this.hass.language)}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
-    `}_nameChanged(e){const t=e.target;this._updateTrigger({name:t.value})}_typeChanged(e){var t,s,i,a,n,r,o,l,h,d,c,u,p,g,m,v,f,_,y,b,w,$,x,k;const S=null!==(a=null!==(s=null===(t=null==e?void 0:e.detail)||void 0===t?void 0:t.value)&&void 0!==s?s:null===(i=e.target)||void 0===i?void 0:i.value)&&void 0!==a?a:null===(r=null===(n=this.shadowRoot)||void 0===n?void 0:n.querySelector("ha-select"))||void 0===r?void 0:r.value,z=String(S);let M;M=z===cs?{type:cs,name:null!==(l=null===(o=this._trigger)||void 0===o?void 0:o.name)&&void 0!==l?l:"",enabled:null===(d=null===(h=this._trigger)||void 0===h?void 0:h.enabled)||void 0===d||d,offset_minutes:null!==(u=null===(c=this._trigger)||void 0===c?void 0:c.offset_minutes)&&void 0!==u?u:0,azimuth_angle:null!==(g=null===(p=this._trigger)||void 0===p?void 0:p.azimuth_angle)&&void 0!==g?g:90,account_for_duration:null===(v=null===(m=this._trigger)||void 0===m?void 0:m.account_for_duration)||void 0===v||v}:{type:z,name:null!==(_=null===(f=this._trigger)||void 0===f?void 0:f.name)&&void 0!==_?_:"",enabled:null===(b=null===(y=this._trigger)||void 0===y?void 0:y.enabled)||void 0===b||b,offset_minutes:null!==($=null===(w=this._trigger)||void 0===w?void 0:w.offset_minutes)&&void 0!==$?$:0,account_for_duration:null===(k=null===(x=this._trigger)||void 0===x?void 0:x.account_for_duration)||void 0===k||k},this._trigger=M,this.requestUpdate()}_enabledChanged(e){const t=e.target;this._updateTrigger({enabled:t.checked})}_offsetChanged(e){const t=e.target;this._updateTrigger({offset_minutes:parseInt(t.value)||0})}_accountForDurationChanged(e){const t=e.target;this._updateTrigger({account_for_duration:t.checked})}_atChanged(e){const t=e.target.value;this._trigger=Object.assign(Object.assign({},this._trigger),{at:t})}_azimuthChanged(e){var t;if((null===(t=this._trigger)||void 0===t?void 0:t.type)!==cs)return;const s=e.target;let i=parseInt(s.value,10);isNaN(i)&&(i=90),this._updateTrigger({azimuth_angle:i})}static get styles(){return[Ra,l`
+    `}_nameChanged(e){const t=e.target;this._updateTrigger({name:t.value})}_typeChanged(e){var t,s,i,a,n,r,o,l,h,d,c,u,p,g,m,v,f,_,y,b,w,$,x,k;const S=null!==(a=null!==(s=null===(t=null==e?void 0:e.detail)||void 0===t?void 0:t.value)&&void 0!==s?s:null===(i=e.target)||void 0===i?void 0:i.value)&&void 0!==a?a:null===(r=null===(n=this.shadowRoot)||void 0===n?void 0:n.querySelector("ha-select"))||void 0===r?void 0:r.value,z=String(S);let M;M=z===ps?{type:ps,name:null!==(l=null===(o=this._trigger)||void 0===o?void 0:o.name)&&void 0!==l?l:"",enabled:null===(d=null===(h=this._trigger)||void 0===h?void 0:h.enabled)||void 0===d||d,offset_minutes:null!==(u=null===(c=this._trigger)||void 0===c?void 0:c.offset_minutes)&&void 0!==u?u:0,azimuth_angle:null!==(g=null===(p=this._trigger)||void 0===p?void 0:p.azimuth_angle)&&void 0!==g?g:90,account_for_duration:null===(v=null===(m=this._trigger)||void 0===m?void 0:m.account_for_duration)||void 0===v||v}:{type:z,name:null!==(_=null===(f=this._trigger)||void 0===f?void 0:f.name)&&void 0!==_?_:"",enabled:null===(b=null===(y=this._trigger)||void 0===y?void 0:y.enabled)||void 0===b||b,offset_minutes:null!==($=null===(w=this._trigger)||void 0===w?void 0:w.offset_minutes)&&void 0!==$?$:0,account_for_duration:null===(k=null===(x=this._trigger)||void 0===x?void 0:x.account_for_duration)||void 0===k||k},this._trigger=M,this.requestUpdate()}_enabledChanged(e){const t=e.target;this._updateTrigger({enabled:t.checked})}_offsetChanged(e){const t=e.target;this._updateTrigger({offset_minutes:parseInt(t.value)||0})}_accountForDurationChanged(e){const t=e.target;this._updateTrigger({account_for_duration:t.checked})}_atChanged(e){const t=e.target.value;this._trigger=Object.assign(Object.assign({},this._trigger),{at:t})}_azimuthChanged(e){var t;if((null===(t=this._trigger)||void 0===t?void 0:t.type)!==ps)return;const s=e.target;let i=parseInt(s.value,10);isNaN(i)&&(i=90),this._updateTrigger({azimuth_angle:i})}static get styles(){return[La,l`
         .wrapper {
           color: var(--primary-text-color);
         }
@@ -812,7 +812,7 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
         .dialog-close {
           margin-right: 8px;
         }
-      `]}};s([me({attribute:!1})],ja.prototype,"hass",void 0),s([me({attribute:!1})],ja.prototype,"params",void 0),s([ve()],ja.prototype,"_trigger",void 0),s([ve()],ja.prototype,"_error",void 0),ja=s([ue("smart-irrigation-trigger-dialog")],ja);const La=l`
+      `]}};s([ve({attribute:!1})],Fa.prototype,"hass",void 0),s([ve({attribute:!1})],Fa.prototype,"params",void 0),s([fe()],Fa.prototype,"_trigger",void 0),s([fe()],Fa.prototype,"_error",void 0),Fa=s([pe("smart-irrigation-trigger-dialog")],Fa);const Ba=l`
   /* --- collapsible card: a plain ha-card with a clickable header --- */
   .si-card {
     overflow: hidden;
@@ -1190,38 +1190,38 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
       max-width: 100%;
     }
   }
-`,Ia=["postponed","rain_sensor","freeze","wind","precipitation","days_between","soil_moisture"],Fa=new Set,Ba=new Set,Ua={},Ya={};let Wa=class extends(_a(de)){constructor(){super(...arguments),this.zones=[],this.planning=[],this._unfolded=Fa,this.isLoading=!0,this.isSaving=!1,this._hasLoadedOnce=!1,this._suppressNextConfigUpdate=!1,this._updateScheduled=!1,this.debouncedSave=(()=>{let e=null,t={},s=[];return i=>{t=Object.assign(Object.assign({},t),i),e&&clearTimeout(e);const a=new Promise((e=>s.push(e)));return e=window.setTimeout((()=>{const i=t,a=s;t={},s=[],e=null,this.saveData(i).catch((()=>{})).then((()=>a.forEach((e=>e()))))}),500),a}})()}_isOpen(e){return this._unfolded.has(e)}_openNew(e,t){return this._unfolded.add(`${e}:${t}`),t}_setOpen(e,t){t?this._unfolded.add(e):this._unfolded.delete(e)}_scheduleUpdate(){this._updateScheduled||(this._updateScheduled=!0,requestAnimationFrame((()=>{this._updateScheduled=!1,this.requestUpdate()})))}hassSubscribe(){return this._fetchData().catch((e=>{console.error("Failed to fetch initial data:",e)})),[this.hass.connection.subscribeMessage((()=>{this._suppressNextConfigUpdate?this._suppressNextConfigUpdate=!1:this._fetchData().catch((e=>{console.error("Failed to fetch data on config update:",e)}))}),{type:os+"_config_updated"})]}async _fetchData(){if(this.hass){this._hasLoadedOnce||(this.isLoading=!0,this._scheduleUpdate());try{this.config=await oa(this.hass),this.data=(e=this.config,t=["calctime","autocalcenabled","autoupdateenabled","autoupdateschedule","autoupdatefirsttime","autoupdateinterval","continuousupdates","sensor_debounce","calc_log_enabled","manual_coordinates_enabled","manual_latitude","manual_longitude","manual_elevation","days_between_irrigation"],e?Object.entries(e).filter((([e])=>t.includes(e))).reduce(((e,[t,s])=>Object.assign(e,{[t]:s})),{}):{});try{this.zones=await ha(this.hass)}catch(e){console.error("Error fetching zones:",e)}this._fetchLive(!0)}catch(e){console.error("Error fetching data:",e)}finally{this.isLoading=!1,this._hasLoadedOnce=!0,this._scheduleUpdate()}var e,t}}connectedCallback(){super.connectedCallback();let e=0;this._liveTimer=window.setInterval((()=>{e+=1,this._fetchLive(e%6==0)}),5e3)}firstUpdated(){this._fetchLive(!0),be().catch((e=>{console.error("Failed to load HA form:",e)}))}render(){var e,t,s;if(!this.hass||!this.config||!this.data)return W`<div class="loading-indicator">
-        ${ss("common.loading-messages.configuration",null!==(t=null===(e=this.hass)||void 0===e?void 0:e.language)&&void 0!==t?t:"en")}
-      </div>`;if(this.isLoading)return W`<div class="loading-indicator">
-        ${ss("common.loading-messages.general",this.hass.language)}
-      </div>`;{const e="panels.general.cards.automatic-duration-calculation.labels",t=this.config.recalculate_before_start?"start":this.config.autocalcenabled?"time":"manual";let i=W` <div class="card-content">
-          ${ss("panels.general.cards.automatic-duration-calculation.description",this.hass.language)}
+`,Ua=["postponed","rain_sensor","freeze","wind","precipitation","days_between","soil_moisture"],Ya=new Set,Wa=new Set,Va={},Za={};let Ga=class extends(wa(ce)){constructor(){super(...arguments),this.zones=[],this.planning=[],this._unfolded=Ya,this.isLoading=!0,this.isSaving=!1,this._hasLoadedOnce=!1,this._suppressNextConfigUpdate=!1,this._updateScheduled=!1,this.debouncedSave=(()=>{let e=null,t={},s=[];return i=>{t=Object.assign(Object.assign({},t),i),e&&clearTimeout(e);const a=new Promise(e=>s.push(e));return e=window.setTimeout(()=>{const i=t,a=s;t={},s=[],e=null,this.saveData(i).catch(()=>{}).then(()=>a.forEach(e=>e()))},500),a}})()}_isOpen(e){return this._unfolded.has(e)}_openNew(e,t){return this._unfolded.add(`${e}:${t}`),t}_setOpen(e,t){t?this._unfolded.add(e):this._unfolded.delete(e)}_scheduleUpdate(){this._updateScheduled||(this._updateScheduled=!0,requestAnimationFrame(()=>{this._updateScheduled=!1,this.requestUpdate()}))}hassSubscribe(){return this._fetchData().catch(e=>{console.error("Failed to fetch initial data:",e)}),[this.hass.connection.subscribeMessage(()=>{this._suppressNextConfigUpdate?this._suppressNextConfigUpdate=!1:this._fetchData().catch(e=>{console.error("Failed to fetch data on config update:",e)})},{type:hs+"_config_updated"})]}async _fetchData(){if(this.hass){this._hasLoadedOnce||(this.isLoading=!0,this._scheduleUpdate());try{this.config=await ha(this.hass),this.data=(e=this.config,t=["calctime","autocalcenabled","autoupdateenabled","autoupdateschedule","autoupdatefirsttime","autoupdateinterval","continuousupdates","sensor_debounce","calc_log_enabled","manual_coordinates_enabled","manual_latitude","manual_longitude","manual_elevation","days_between_irrigation"],e?Object.entries(e).filter(([e])=>t.includes(e)).reduce((e,[t,s])=>Object.assign(e,{[t]:s}),{}):{});try{this.zones=await ca(this.hass)}catch(e){console.error("Error fetching zones:",e)}this._fetchLive(!0)}catch(e){console.error("Error fetching data:",e)}finally{this.isLoading=!1,this._hasLoadedOnce=!0,this._scheduleUpdate()}var e,t}}connectedCallback(){super.connectedCallback();let e=0;this._liveTimer=window.setInterval(()=>{e+=1,this._fetchLive(e%6==0)},5e3)}firstUpdated(){this._fetchLive(!0),we().catch(e=>{console.error("Failed to load HA form:",e)})}render(){var e,t,s;if(!this.hass||!this.config||!this.data)return V`<div class="loading-indicator">
+        ${as("common.loading-messages.configuration",null!==(t=null===(e=this.hass)||void 0===e?void 0:e.language)&&void 0!==t?t:"en")}
+      </div>`;if(this.isLoading)return V`<div class="loading-indicator">
+        ${as("common.loading-messages.general",this.hass.language)}
+      </div>`;{const e="panels.general.cards.automatic-duration-calculation.labels",t=this.config.recalculate_before_start?"start":this.config.autocalcenabled?"time":"manual";let i=V` <div class="card-content">
+          ${as("panels.general.cards.automatic-duration-calculation.description",this.hass.language)}
         </div>
         <div class="card-content">
-          ${this._selectRow(W`${ss(`${e}.calc-when`,this.hass.language)}
+          ${this._selectRow(V`${as(`${e}.calc-when`,this.hass.language)}
               <div class="setting-hint">
-                ${ss(`${e}.calc-when-hint`,this.hass.language)}
-              </div>`,W`
+                ${as(`${e}.calc-when-hint`,this.hass.language)}
+              </div>`,V`
               <option value="time" ?selected=${"time"===t}>
-                ${ss(`${e}.calc-when-time`,this.hass.language)}
+                ${as(`${e}.calc-when-time`,this.hass.language)}
               </option>
               <option value="start" ?selected=${"start"===t}>
-                ${ss(`${e}.calc-when-start`,this.hass.language)}
+                ${as(`${e}.calc-when-start`,this.hass.language)}
               </option>
               <option value="manual" ?selected=${"manual"===t}>
-                ${ss(`${e}.calc-when-manual`,this.hass.language)}
+                ${as(`${e}.calc-when-manual`,this.hass.language)}
               </option>
-            `,(e=>{const t=e.target.value;this.handleConfigChange({autocalcenabled:"time"===t,recalculate_before_start:"start"===t})}))}
-        </div>`;"time"===t&&(i=W`${i}
+            `,e=>{const t=e.target.value;this.handleConfigChange({autocalcenabled:"time"===t,recalculate_before_start:"start"===t})})}
+        </div>`;"time"===t&&(i=V`${i}
           <div class="card-content">
-            ${this._timeRow(ss(`${e}.calc-time`,this.hass.language),this.config.calctime,(e=>this.handleConfigChange({calctime:e})),ss(`${e}.calc-time-hint`,this.hass.language))}
-          </div>`),i=W`${i}
+            ${this._timeRow(as(`${e}.calc-time`,this.hass.language),this.config.calctime,e=>this.handleConfigChange({calctime:e}),as(`${e}.calc-time-hint`,this.hass.language))}
+          </div>`),i=V`${i}
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${ss(`${e}.hourly-calculation`,this.hass.language)}
+              ${as(`${e}.hourly-calculation`,this.hass.language)}
               <div class="setting-hint">
-                ${ss(`${e}.hourly-calculation-hint`,this.hass.language)}
+                ${as(`${e}.hourly-calculation-hint`,this.hass.language)}
               </div>
             </div>
             <ha-switch
@@ -1229,11 +1229,11 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
               @change=${e=>this.handleConfigChange({hourly_calculation:e.target.checked})}
             ></ha-switch>
           </div>
-          ${"advanced"!==this.config.ui_mode&&this.config.effective_rain?"":W`<div class="setting-row">
+          ${"advanced"!==this.config.ui_mode&&this.config.effective_rain?"":V`<div class="setting-row">
                   <div class="setting-label">
-                    ${ss("weather_skip.effective_rain_label",this.hass.language)}
+                    ${as("weather_skip.effective_rain_label",this.hass.language)}
                     <div class="setting-hint">
-                      ${ss("weather_skip.effective_rain_description",this.hass.language)}
+                      ${as("weather_skip.effective_rain_description",this.hass.language)}
                     </div>
                   </div>
                   <ha-switch
@@ -1241,28 +1241,28 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                     @change=${e=>this.handleConfigChange({effective_rain:e.target.checked})}
                   ></ha-switch>
                 </div>`}
-        </div>`,i=W`<ha-card
-        header="${ss("panels.general.cards.automatic-duration-calculation.header",this.hass.language)}"
+        </div>`,i=V`<ha-card
+        header="${as("panels.general.cards.automatic-duration-calculation.header",this.hass.language)}"
       >
         ${i}</ha-card
-      >`;let a=W` <div class="card-content">
-          ${ss("panels.general.cards.automatic-update.description",this.hass.language)}
+      >`;let a=V` <div class="card-content">
+          ${as("panels.general.cards.automatic-update.description",this.hass.language)}
         </div>
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${ss("panels.general.cards.automatic-update.labels.auto-update-enabled",this.hass.language)}
+              ${as("panels.general.cards.automatic-update.labels.auto-update-enabled",this.hass.language)}
             </div>
             <ha-switch
               .checked=${this.config.autoupdateenabled}
               @change=${e=>this.saveData({autoupdateenabled:e.target.checked})}
             ></ha-switch>
           </div>
-        </div>`;this.data.autoupdateenabled&&(a=W`${a}
+        </div>`;this.data.autoupdateenabled&&(a=V`${a}
           <div class="card-content">
             <div class="setting-row">
               <div class="setting-label">
-                ${ss("panels.general.cards.automatic-update.labels.auto-update-interval",this.hass.language)}
+                ${as("panels.general.cards.automatic-update.labels.auto-update-interval",this.hass.language)}
               </div>
               <div class="combo-field">
                 <input
@@ -1279,136 +1279,136 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                     @change=${e=>this.saveData({autoupdateschedule:e.target.value})}
                   >
                     <option
-                      value="${ps}"
-                      ?selected=${this.data.autoupdateschedule===ps}
-                    >
-                      ${ss("panels.general.cards.automatic-update.options.minutes",this.hass.language)}
-                    </option>
-                    <option
-                      value="${gs}"
-                      ?selected=${this.data.autoupdateschedule===gs}
-                    >
-                      ${ss("panels.general.cards.automatic-update.options.hours",this.hass.language)}
-                    </option>
-                    <option
                       value="${ms}"
                       ?selected=${this.data.autoupdateschedule===ms}
                     >
-                      ${ss("panels.general.cards.automatic-update.options.days",this.hass.language)}
+                      ${as("panels.general.cards.automatic-update.options.minutes",this.hass.language)}
+                    </option>
+                    <option
+                      value="${vs}"
+                      ?selected=${this.data.autoupdateschedule===vs}
+                    >
+                      ${as("panels.general.cards.automatic-update.options.hours",this.hass.language)}
+                    </option>
+                    <option
+                      value="${fs}"
+                      ?selected=${this.data.autoupdateschedule===fs}
+                    >
+                      ${as("panels.general.cards.automatic-update.options.days",this.hass.language)}
                     </option>
                   </select>
                   <svg class="chev" viewBox="0 0 24 24">
-                    <path d=${ka}></path>
+                    <path d=${Ma}></path>
                   </svg>
                 </div>
               </div>
             </div>
-          </div>`),this.data.autoupdateenabled&&(a=W`${a}
+          </div>`),this.data.autoupdateenabled&&(a=V`${a}
           <div class="card-content">
-            ${this._numRow(ss("panels.general.cards.automatic-update.labels.auto-update-delay",this.hass.language),"s",this.config.autoupdatedelay,(e=>this.saveData({autoupdatedelay:parseInt(e)})),1)}
-          </div>`),a=W`<ha-card header="${ss("panels.general.cards.automatic-update.header",this.hass.language)}",
-      this.hass.language)}">${a}</ha-card>`;const n="advanced"===this.config.ui_mode||!!this.config.continuousupdates;let r=W`<div class="card-content">
-          ${ss("panels.general.cards.continuousupdates.description",this.hass.language)}
+            ${this._numRow(as("panels.general.cards.automatic-update.labels.auto-update-delay",this.hass.language),"s",this.config.autoupdatedelay,e=>this.saveData({autoupdatedelay:parseInt(e)}),1)}
+          </div>`),a=V`<ha-card header="${as("panels.general.cards.automatic-update.header",this.hass.language)}",
+      this.hass.language)}">${a}</ha-card>`;const n="advanced"===this.config.ui_mode||!!this.config.continuousupdates;let r=V`<div class="card-content">
+          ${as("panels.general.cards.continuousupdates.description",this.hass.language)}
         </div>
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${ss("panels.general.cards.continuousupdates.labels.continuousupdates",this.hass.language)}
+              ${as("panels.general.cards.continuousupdates.labels.continuousupdates",this.hass.language)}
             </div>
             <ha-switch
               .checked=${this.config.continuousupdates}
               @change=${e=>this.handleConfigChange({continuousupdates:e.target.checked})}
             ></ha-switch>
           </div>
-        </div>`;this.data.continuousupdates&&(r=W`${r}
+        </div>`;this.data.continuousupdates&&(r=V`${r}
           <div class="card-content">
-            ${this._numRow(ss("panels.general.cards.continuousupdates.labels.sensor_debounce",this.hass.language),"ms",this.config.sensor_debounce,(e=>this.handleConfigChange({sensor_debounce:parseInt(e)})),1)}
-          </div>`),r=W`<ha-card
-        header="${ss("panels.general.cards.continuousupdates.header",this.hass.language)}"
+            ${this._numRow(as("panels.general.cards.continuousupdates.labels.sensor_debounce",this.hass.language),"ms",this.config.sensor_debounce,e=>this.handleConfigChange({sensor_debounce:parseInt(e)}),1)}
+          </div>`),r=V`<ha-card
+        header="${as("panels.general.cards.continuousupdates.header",this.hass.language)}"
         >${r}</ha-card
-      > `;const o=this.renderTriggersCard(),l=this.renderWeatherSkipCard(),h=this.renderCoordinateCard(),d=this.renderDaysBetweenIrrigationCard(),c=this.renderObservedWateringCard(),u=this.renderCalculationLogCard(),p=this.renderBlueprintsCard(),g=this.renderPanelModeCard(),m=this.renderSeasonalAdjustmentsCard();this.renderSuppliesCard();const v=this.renderFullControllerCard(),f=this.renderSetupAssistantCard();if(this.section)return this.renderWateringSection(o);const _=!0===this.config.full_controller;return W`<ha-card
-          header="${ss("panels.general.title",this.hass.language)}"
+      > `;const o=this.renderTriggersCard(),l=this.renderWeatherSkipCard(),h=this.renderCoordinateCard(),d=this.renderDaysBetweenIrrigationCard(),c=this.renderObservedWateringCard(),u=this.renderCalculationLogCard(),p=this.renderBlueprintsCard(),g=this.renderPanelModeCard(),m=this.renderSeasonalAdjustmentsCard();this.renderSuppliesCard();const v=this.renderFullControllerCard(),f=this.renderSetupAssistantCard();if(this.section)return this.renderWateringSection(o);const _=!0===this.config.full_controller;return V`<ha-card
+          header="${as("panels.general.title",this.hass.language)}"
         >
           <div class="card-content">
-            ${ss("panels.general.description",this.hass.language)}
+            ${as("panels.general.description",this.hass.language)}
           </div> </ha-card
-        >${f}${g}${v}${a}${i}${n?r:""}${_?"":o}${l}${h}${d}${c}${u}${p}${m}`}}renderWateringSection(e){return this.config&&this.hass?!0!==this.config.full_controller?W`<ha-card>
+        >${f}${g}${v}${a}${i}${n?r:""}${_?"":o}${l}${h}${d}${c}${u}${p}${m}`}}renderWateringSection(e){return this.config&&this.hass?!0!==this.config.full_controller?V`<ha-card>
         <div class="card-content">
-          ${ss("programs.mode_off",this.hass.language)}
+          ${as("programs.mode_off",this.hass.language)}
         </div>
-      </ha-card>`:"planning"===this.section?W`${this.renderPlanningCard()}`:"supplies"===this.section?W`${this.renderSuppliesCard()}`:W`${this.renderProgramsCard("main")} ${e}
-    ${this.renderProgramsCard("others")}`:W``}renderLiveState(){const e=this.programsState;if(!this.hass||!e)return W``;const t=this.hass.language,s=e=>ss(`planning.${e}`,t),i=e.live;if(!i)return W``;const a=e=>{const t=Math.floor(e/60),s=Math.round(e%60);return`${t}:${String(s).padStart(2,"0")}`},n=[...i.paused?[W`<div class="setting-note">
+      </ha-card>`:"planning"===this.section?V`${this.renderPlanningCard()}`:"supplies"===this.section?V`${this.renderSuppliesCard()}`:V`${this.renderProgramsCard("main")} ${e}
+    ${this.renderProgramsCard("others")}`:V``}renderLiveState(){const e=this.programsState;if(!this.hass||!e)return V``;const t=this.hass.language,s=e=>as(`planning.${e}`,t),i=e.live;if(!i)return V``;const a=e=>{const t=Math.floor(e/60),s=Math.round(e%60);return`${t}:${String(s).padStart(2,"0")}`},n=[...i.paused?[V`<div class="setting-note">
               <strong>${s("paused")}</strong>
-            </div>`]:[],...(i.programs||[]).map((e=>W`
+            </div>`]:[],...(i.programs||[]).map(e=>V`
           <div class="setting-note">
             <strong>${this._programLabel(e.program_id,e.name)}</strong>
-            ${"waiting"===e.state?W` - ${s("waiting")}`:W` - ${s("step")}
-                ${e.step}/${e.steps}${e.tours>1?W`, ${s("tour")} ${e.tour}/${e.tours}`:""},
+            ${"waiting"===e.state?V` - ${s("waiting")}`:V` - ${s("step")}
+                ${e.step}/${e.steps}${e.tours>1?V`, ${s("tour")} ${e.tour}/${e.tours}`:""},
                 ${e.percent} %, ${s("remaining")}
                 ${a(e.remaining_seconds||0)}`}
           </div>
-        `)),...(i.valves||[]).map((e=>W`
+        `),...(i.valves||[]).map(e=>V`
           <div class="setting-note">
             ${e.zone}: ${s("remaining")} ${a(e.remaining_seconds)}
             (${e.percent} %)
           </div>
-        `))];return n.length?W`${n}`:W`<div class="setting-note">${s("nothing_now")}</div>`}renderPlanningCard(){var e;if(!this.config||!this.hass||!0!==this.config.full_controller)return W``;const t=this.hass.language,s=e=>ss(`planning.${e}`,t),i=e=>new Intl.DateTimeFormat(t,{hour:"2-digit",minute:"2-digit"}).format(new Date(e)),a=e=>ss(`programs.${e}`,t),n=e=>this.hass.callService(os,e,{}).then((()=>this._fetchLive(!1))),r=(null===(e=this.programsState)||void 0===e?void 0:e.live)||{},o=!0===r.paused,l=(r.programs||[]).some((e=>"running"===e.state))||(r.valves||[]).length>0||!!r.cycle,h=o||l||(r.programs||[]).length>0,d=e=>e<60?`${Math.round(e)} s`:`${Math.round(e/60)} min`,c=this.planning||[];return W`
+        `)];return n.length?V`${n}`:V`<div class="setting-note">${s("nothing_now")}</div>`}renderPlanningCard(){var e;if(!this.config||!this.hass||!0!==this.config.full_controller)return V``;const t=this.hass.language,s=e=>as(`planning.${e}`,t),i=e=>new Intl.DateTimeFormat(t,{hour:"2-digit",minute:"2-digit"}).format(new Date(e)),a=e=>as(`programs.${e}`,t),n=e=>this.hass.callService(hs,e,{}).then(()=>this._fetchLive(!1)),r=(null===(e=this.programsState)||void 0===e?void 0:e.live)||{},o=!0===r.paused,l=(r.programs||[]).some(e=>"running"===e.state)||(r.valves||[]).length>0||!!r.cycle,h=o||l||(r.programs||[]).length>0,d=e=>e<60?`${Math.round(e)} s`:`${Math.round(e/60)} min`,c=this.planning||[];return V`
       <ha-card header="${s("title")}">
         <div class="card-content">
           ${s("description")} ${this.renderLiveState()}
         </div>
         <div class="card-content">
           <div class="si-actions">
-            ${this._actionBtn("M14,19H18V5H14M6,19H10V5H6V19Z",a("pause"),(()=>n("pause_watering")),!1,!l||o)}
-            ${this._actionBtn(Ma,a("resume"),(()=>n("resume_watering")),!1,!o)}
-            ${this._actionBtn("M16,18H18V6H16M6,18L14.5,12L6,6V18Z",a("next_step"),(()=>n("next_step")),!1,!l||o)}
-            ${this._actionBtn(Aa,a("stop"),(async()=>{await this._ask(a("confirm_stop"),!0)&&n("stop_watering")}),!0,!h)}
+            ${this._actionBtn("M14,19H18V5H14M6,19H10V5H6V19Z",a("pause"),()=>n("pause_watering"),!1,!l||o)}
+            ${this._actionBtn(Aa,a("resume"),()=>n("resume_watering"),!1,!o)}
+            ${this._actionBtn("M16,18H18V6H16M6,18L14.5,12L6,6V18Z",a("next_step"),()=>n("next_step"),!1,!l||o)}
+            ${this._actionBtn(Ha,a("stop"),async()=>{await this._ask(a("confirm_stop"),!0)&&n("stop_watering")},!0,!h)}
           </div>
           <div class="setting-hint row-hint">${a("controls_help")}</div>
         </div>
 
-        ${c.length?c.map((e=>{var a,n,r;return W`
+        ${c.length?c.map(e=>{var a,n,r;return V`
                 <div class="card-content">
                   <div class="setting-note">
                     <strong>${r=e.start,new Intl.DateTimeFormat(t,{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}).format(new Date(r))}</strong>
                     ${this._programLabel(e.program_id,e.program)}
                     (${i(e.start)} - ${i(e.end)})
                   </div>
-                  ${e.steps.map(((e,t)=>W`
+                  ${e.steps.map((e,t)=>V`
                       <div class="setting-note">
                         ${t+1}.
-                        ${e.zones.map((e=>{var t;return`${e.zone} ${d(null!==(t=e.expected_seconds)&&void 0!==t?t:e.seconds)}`})).join(" + ")}
+                        ${e.zones.map(e=>{var t;return`${e.zone} ${d(null!==(t=e.expected_seconds)&&void 0!==t?t:e.seconds)}`}).join(" + ")}
                       </div>
-                    `))}
-                  ${e.nothing_to_water?W`<div
+                    `)}
+                  ${e.nothing_to_water?V`<div
                         class="setting-note"
                         style="opacity: 0.6; font-style: italic;"
                       >
                         ${s("nothing_to_water")}
-                      </div>`:e.expected_seconds?W`<div class="setting-note">
+                      </div>`:e.expected_seconds?V`<div class="setting-note">
                           ${s("expected")} ${d(e.expected_seconds)}
                         </div>`:""}
-                  ${e.skipped_reason?W`<div
+                  ${e.skipped_reason?V`<div
                         class="setting-note"
                         style="opacity: 0.6; font-style: italic;"
                       >
                         ${s("expected_skipped_precipitation").replace("{mm}",String(Math.round(10*(null!==(n=null===(a=e.forecast)||void 0===a?void 0:a.forecast_mm)&&void 0!==n?n:0))/10))}
                       </div>`:""}
-                  ${e.tours>1?W`<div class="setting-note">
+                  ${e.tours>1?V`<div class="setting-note">
                         ${e.tours} ${s("tours")}
                       </div>`:""}
                 </div>
-              `})):W`<div class="card-content">${s("nothing_planned")}</div>`}
+              `}):V`<div class="card-content">${s("nothing_planned")}</div>`}
       </ha-card>
-    `}async _fetchLive(e){var t;if(this.hass&&!0===(null===(t=this.config)||void 0===t?void 0:t.full_controller))try{this.programsState=await this.hass.callWS({type:os+"/programs_state"}),e&&(this.planning=await this.hass.callWS({type:os+"/planning",days:3}),await this._fetchStartSource()),this._scheduleUpdate()}catch(e){console.error("Error fetching the programs' state:",e)}}async _fetchStartSource(){var e,t;if(this.hass&&!0===(null===(e=this.config)||void 0===e?void 0:e.full_controller))try{const e=await ma(this.hass);this.startSource=null!==(t=null==e?void 0:e.start_source)&&void 0!==t?t:"trigger",this._scheduleUpdate()}catch(e){console.error("Error fetching what starts the main program:",e)}}renderProgramsCard(e="others"){if(!this.config||!this.hass||!0!==this.config.full_controller)return W``;const t=this.hass.language,s=e=>ss(`programs.${e}`,t),i=this.config.programs||[],a=e=>{this.config=Object.assign(Object.assign({},this.config),{programs:e}),this.handleConfigChange({programs:e}),this._scheduleUpdate()},n=(e,t)=>a(i.map(((s,i)=>i===e?Object.assign(Object.assign({},s),t):s))),r=(e,t=0)=>{const s=parseFloat(e);return isNaN(s)?t:s},o=e=>this._programLabel(e.main?"main":e.id,e.name),l=e=>ns(this,"hass-notification",{message:e}),h=async e=>{var t,i,a;const n=e.id,r=o(e);if(!await this._ask(s("confirm_run").replace("{name}",r)))return;const h=Ua[null!=n?n:""]||{},d=Math.round(parseFloat(null!==(t=h.seconds)&&void 0!==t?t:"")),u={program_id:n};d>0&&"main"!==n&&(u.seconds=Math.min(d,86400)),h.replace&&(u.mode="replace");try{await this.hass.callService(os,"run_program",u)}catch(e){return void l(s("run_failed").replace("{name}",r).replace("{error}",null!==(i=null==e?void 0:e.message)&&void 0!==i?i:String(e)))}await this._fetchLive(!1);const p=null===(a=c(n))||void 0===a?void 0:a.state;l(s("running"===p?"run_started":"waiting"===p?"run_queued":"run_nothing").replace("{name}",r))},d=e=>{var i,a,n;return W`
+    `}async _fetchLive(e){var t;if(this.hass&&!0===(null===(t=this.config)||void 0===t?void 0:t.full_controller))try{this.programsState=await this.hass.callWS({type:hs+"/programs_state"}),e&&(this.planning=await this.hass.callWS({type:hs+"/planning",days:3}),await this._fetchStartSource()),this._scheduleUpdate()}catch(e){console.error("Error fetching the programs' state:",e)}}async _fetchStartSource(){var e,t;if(this.hass&&!0===(null===(e=this.config)||void 0===e?void 0:e.full_controller))try{const e=await fa(this.hass);this.startSource=null!==(t=null==e?void 0:e.start_source)&&void 0!==t?t:"trigger",this._scheduleUpdate()}catch(e){console.error("Error fetching what starts the main program:",e)}}renderProgramsCard(e="others"){if(!this.config||!this.hass||!0!==this.config.full_controller)return V``;const t=this.hass.language,s=e=>as(`programs.${e}`,t),i=this.config.programs||[],a=e=>{this.config=Object.assign(Object.assign({},this.config),{programs:e}),this.handleConfigChange({programs:e}),this._scheduleUpdate()},n=(e,t)=>a(i.map((s,i)=>i===e?Object.assign(Object.assign({},s),t):s)),r=(e,t=0)=>{const s=parseFloat(e);return isNaN(s)?t:s},o=e=>this._programLabel(e.main?"main":e.id,e.name),l=e=>os(this,"hass-notification",{message:e}),h=async e=>{var t,i,a;const n=e.id,r=o(e);if(!await this._ask(s("confirm_run").replace("{name}",r)))return;const h=Va[null!=n?n:""]||{},d=Math.round(parseFloat(null!==(t=h.seconds)&&void 0!==t?t:"")),u={program_id:n};d>0&&"main"!==n&&(u.seconds=Math.min(d,86400)),h.replace&&(u.mode="replace");try{await this.hass.callService(hs,"run_program",u)}catch(e){return void l(s("run_failed").replace("{name}",r).replace("{error}",null!==(i=null==e?void 0:e.message)&&void 0!==i?i:String(e)))}await this._fetchLive(!1);const p=null===(a=c(n))||void 0===a?void 0:a.state;l(s("running"===p?"run_started":"waiting"===p?"run_queued":"run_nothing").replace("{name}",r))},d=e=>{var i,a,n;return V`
       <details class="more">
         <summary>${s("run_options")}</summary>
         <div class="more-body">
-          ${"main"===e?"":W`<div class="setting-row">
+          ${"main"===e?"":V`<div class="setting-row">
                   <div class="setting-label">
                     ${s("run_seconds")}
                     <span class="unit"
-                      >(${ss("common.units.seconds",t)})</span
+                      >(${as("common.units.seconds",t)})</span
                     >
                   </div>
                   <input
@@ -1416,8 +1416,8 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                     type="number"
                     min="1"
                     max="86400"
-                    .value=${null!==(a=null===(i=Ua[null!=e?e:""])||void 0===i?void 0:i.seconds)&&void 0!==a?a:""}
-                    @input=${t=>{var s;(Ua[s=null!=e?e:""]||(Ua[s]={})).seconds=t.target.value}}
+                    .value=${null!==(a=null===(i=Va[null!=e?e:""])||void 0===i?void 0:i.seconds)&&void 0!==a?a:""}
+                    @input=${t=>{var s;(Va[s=null!=e?e:""]||(Va[s]={})).seconds=t.target.value}}
                   />
                 </div>
                 <div class="setting-hint row-hint">
@@ -1426,17 +1426,17 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
           <div class="setting-row">
             <div class="setting-label">${s("run_replace")}</div>
             <ha-switch
-              .checked=${!0===(null===(n=Ua[null!=e?e:""])||void 0===n?void 0:n.replace)}
-              @change=${t=>{var s;(Ua[s=null!=e?e:""]||(Ua[s]={})).replace=t.target.checked}}
+              .checked=${!0===(null===(n=Va[null!=e?e:""])||void 0===n?void 0:n.replace)}
+              @change=${t=>{var s;(Va[s=null!=e?e:""]||(Va[s]={})).replace=t.target.checked}}
             ></ha-switch>
           </div>
           <div class="setting-hint row-hint">${s("run_replace_help")}</div>
         </div>
       </details>
-    `},c=e=>{var t;return((null===(t=this.programsState)||void 0===t?void 0:t.programs)||[]).find((t=>t.program_id===e))},u=async e=>{await this._ask(s("confirm_stop_program").replace("{name}",e.name),!0)&&this.hass.callService(os,"stop_program",{program_id:e.id}).then((()=>this._fetchLive(!1)))},p=e=>{var i,a,n,r;const o=null!==(i=e.id)&&void 0!==i?i:"",h=Ya[o]||(Ya[o]={}),d=null===(a=c(e.id))||void 0===a?void 0:a.adjustment,u=d?s("adjust_active").replace("{percent}",String(null!==(n=d.percent)&&void 0!==n?n:100)).replace("{seconds}",String(null!==(r=d.seconds)&&void 0!==r?r:0)).replace("{until}",d.until?new Date(d.until).toLocaleString(t):s("adjust_until_reset")):s("adjust_none"),p=(e,t,s,i)=>{var a;return W`
+    `},c=e=>{var t;return((null===(t=this.programsState)||void 0===t?void 0:t.programs)||[]).find(t=>t.program_id===e)},u=async e=>{await this._ask(s("confirm_stop_program").replace("{name}",e.name),!0)&&this.hass.callService(hs,"stop_program",{program_id:e.id}).then(()=>this._fetchLive(!1))},p=e=>{var i,a,n,r;const o=null!==(i=e.id)&&void 0!==i?i:"",h=Za[o]||(Za[o]={}),d=null===(a=c(e.id))||void 0===a?void 0:a.adjustment,u=d?s("adjust_active").replace("{percent}",String(null!==(n=d.percent)&&void 0!==n?n:100)).replace("{seconds}",String(null!==(r=d.seconds)&&void 0!==r?r:0)).replace("{until}",d.until?new Date(d.until).toLocaleString(t):s("adjust_until_reset")):s("adjust_none"),p=(e,t,s,i)=>{var a;return V`
         <div class="setting-row">
           <div class="setting-label">
-            ${e}${t?W` <span class="unit">(${t})</span>`:""}
+            ${e}${t?V` <span class="unit">(${t})</span>`:""}
           </div>
           <input
             class="field"
@@ -1446,18 +1446,18 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
             @input=${e=>{h[s]=e.target.value}}
           />
         </div>
-      `},g=t=>this.hass.callService(os,"adjust_program",Object.assign({program_id:e.id},t)).then((()=>this._fetchLive(!1)));return W`
+      `},g=t=>this.hass.callService(hs,"adjust_program",Object.assign({program_id:e.id},t)).then(()=>this._fetchLive(!1));return V`
         <div class="fold-section">${s("adjust_title")}</div>
         <div class="setting-note">${u}</div>
         ${p(s("adjust_percent"),"%","percent","100")}
-        ${p(s("adjust_seconds"),ss("common.units.seconds",t),"seconds","0")}
+        ${p(s("adjust_seconds"),as("common.units.seconds",t),"seconds","0")}
         ${p(s("adjust_hours"),"h","hours","")}
         <div class="setting-hint row-hint">${s("adjust_help")}</div>
         <div class="si-actions">
-          ${this._actionBtn(Ma,s("adjust_apply"),(()=>{var e,t,i;const a={},n=parseFloat(null!==(e=h.percent)&&void 0!==e?e:""),r=parseFloat(null!==(t=h.seconds)&&void 0!==t?t:""),o=parseFloat(null!==(i=h.hours)&&void 0!==i?i:"");isNaN(n)||(a.percent=n),isNaN(r)||(a.seconds=Math.round(r)),!isNaN(o)&&o>=1&&(a.hours=Math.round(o)),void 0!==a.percent||void 0!==a.seconds?g(a):l(s("adjust_empty"))}))}
-          ${this._actionBtn(xa,s("adjust_reset"),(async()=>{await this._ask(s("confirm_reset_adjustment"),!0)&&g({reset:!0})}),!0,!d)}
+          ${this._actionBtn(Aa,s("adjust_apply"),()=>{var e,t,i;const a={},n=parseFloat(null!==(e=h.percent)&&void 0!==e?e:""),r=parseFloat(null!==(t=h.seconds)&&void 0!==t?t:""),o=parseFloat(null!==(i=h.hours)&&void 0!==i?i:"");isNaN(n)||(a.percent=n),isNaN(r)||(a.seconds=Math.round(r)),!isNaN(o)&&o>=1&&(a.hours=Math.round(o)),void 0!==a.percent||void 0!==a.seconds?g(a):l(s("adjust_empty"))})}
+          ${this._actionBtn(za,s("adjust_reset"),async()=>{await this._ask(s("confirm_reset_adjustment"),!0)&&g({reset:!0})},!0,!d)}
         </div>
-      `},g=()=>Math.random().toString(36).slice(2,8),m=e=>new Intl.DateTimeFormat(t,{weekday:"short"}).format(new Date(2024,0,1+e)),v=e=>(e||[]).map((e=>{var t,i;return null!==(i=null===(t=this.zones.find((t=>t.id===e)))||void 0===t?void 0:t.name)&&void 0!==i?i:s("deleted_zone")})).join(" + ")||s("no_zone"),f=(e,t,s)=>W`
+      `},g=()=>Math.random().toString(36).slice(2,8),m=e=>new Intl.DateTimeFormat(t,{weekday:"short"}).format(new Date(2024,0,1+e)),v=e=>(e||[]).map(e=>{var t,i;return null!==(i=null===(t=this.zones.find(t=>t.id===e))||void 0===t?void 0:t.name)&&void 0!==i?i:s("deleted_zone")}).join(" + ")||s("no_zone"),f=(e,t,s)=>V`
       <details
         class="fold"
         ?open=${this._isOpen(e)}
@@ -1466,24 +1466,24 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
         <summary>${t}</summary>
         <div class="fold-body">${s}</div>
       </details>
-    `,_=(e,t,i)=>W`
+    `,_=(e,t,i)=>V`
       <details
         class="more"
-        ?open=${this._isOpen(e)||t&&!Ba.has(e)}
-        @toggle=${t=>{const s=t.target.open;this._setOpen(e,s),s?Ba.delete(e):Ba.add(e)}}
+        ?open=${this._isOpen(e)||t&&!Wa.has(e)}
+        @toggle=${t=>{const s=t.target.open;this._setOpen(e,s),s?Wa.delete(e):Wa.add(e)}}
       >
         <summary>
-          ${s("more_options")}${t?W` · <em>${s("more_options_set")}</em>`:""}
+          ${s("more_options")}${t?V` · <em>${s("more_options_set")}</em>`:""}
         </summary>
         <div class="more-body">${i}</div>
       </details>
-    `,y=(e,i,a,o)=>{var l,h,d,c,u,p,g,m,y,b;const w=t=>n(i,{steps:(e.steps||[]).map(((e,s)=>s===o?Object.assign(Object.assign({},e),t):e))}),$=(e,t)=>{const s=(a.zones||[]).filter((t=>t!==e));w({zones:t?[...s,e]:s})};return f(`step:${a.id}`,W`<strong>${s("step")} ${o+1}</strong> ·
+    `,y=(e,i,a,o)=>{var l,h,d,c,u,p,g,m,y,b;const w=t=>n(i,{steps:(e.steps||[]).map((e,s)=>s===o?Object.assign(Object.assign({},e),t):e)}),$=(e,t)=>{const s=(a.zones||[]).filter(t=>t!==e);w({zones:t?[...s,e]:s})};return f(`step:${a.id}`,V`<strong>${s("step")} ${o+1}</strong> ·
           ${v(a.zones)} ·
-          ${(e=>"fixed"===e.mode?`${e.seconds} s`:"percent"===e.mode?`${s("mode_calculated_short")} × ${e.percent} %`:s("mode_calculated_short"))(a)}${!1===a.enabled?W` · <em>${s("off")}</em>`:""}`,W`
+          ${(e=>"fixed"===e.mode?`${e.seconds} s`:"percent"===e.mode?`${s("mode_calculated_short")} × ${e.percent} %`:s("mode_calculated_short"))(a)}${!1===a.enabled?V` · <em>${s("off")}</em>`:""}`,V`
           <div class="setting-row">
             <div class="setting-label">${s("step_zones")}</div>
             <div>
-              ${(a.zones||[]).filter((e=>!this.zones.some((t=>t.id===e)))).map((e=>W`
+              ${(a.zones||[]).filter(e=>!this.zones.some(t=>t.id===e)).map(e=>V`
                     <label
                       style="margin-right: 12px; white-space: nowrap; color: var(--warning-color, #ff9800);"
                     >
@@ -1494,8 +1494,8 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                       />
                       &#9888; ${s("deleted_zone")}
                     </label>
-                  `))}
-              ${this.zones.map((e=>W`
+                  `)}
+              ${this.zones.map(e=>V`
                   <label style="margin-right: 12px; white-space: nowrap;">
                     <input
                       type="checkbox"
@@ -1504,11 +1504,11 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                     />
                     ${e.name}
                   </label>
-                `))}
+                `)}
             </div>
           </div>
           <div class="setting-hint row-hint">${s("step_zones_help")}</div>
-          ${this._selectRow(s("step_duration"),W`
+          ${this._selectRow(s("step_duration"),V`
               <option
                 value="calculated"
                 ?selected=${"calculated"===a.mode}
@@ -1521,22 +1521,22 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
               <option value="fixed" ?selected=${"fixed"===a.mode}>
                 ${s("mode_fixed")}
               </option>
-            `,(e=>w({mode:e.target.value})))}
-          ${"percent"===a.mode?this._numRow(s("percent"),"%",a.percent,(e=>w({percent:Math.max(0,r(e,100))})),1,!1,0):""}
-          ${"fixed"===a.mode?this._numRow(s("seconds"),"",a.seconds,(e=>w({seconds:Math.max(0,r(e))})),1,!1,0):""}
-          ${this._numRow(s("passes"),"",a.passes,(e=>w({passes:Math.max(1,Math.round(r(e,1)))})),1,!1,1)}
-          ${_(`more:step:${a.id}`,(null!==(l=a.max_litres)&&void 0!==l?l:0)>0||(null!==(h=a.min_seconds)&&void 0!==h?h:0)>0||(null!==(d=a.max_seconds)&&void 0!==d?d:0)>0||0!==(null!==(c=a.adjust_seconds)&&void 0!==c?c:0)||(null!==(u=a.min_deficit_mm)&&void 0!==u?u:0)>0||null!==a.delay&&void 0!==a.delay,W`
-              ${this._numRow(s("max_litres"),Vi(this.config,di),+Ji(null!==(p=a.max_litres)&&void 0!==p?p:0,this.config).toFixed(2),(e=>w({max_litres:Math.max(0,Xi(r(e),this.config))})),1,!1,0)}
+            `,e=>w({mode:e.target.value}))}
+          ${"percent"===a.mode?this._numRow(s("percent"),"%",a.percent,e=>w({percent:Math.max(0,r(e,100))}),1,!1,0):""}
+          ${"fixed"===a.mode?this._numRow(s("seconds"),"",a.seconds,e=>w({seconds:Math.max(0,r(e))}),1,!1,0):""}
+          ${this._numRow(s("passes"),"",a.passes,e=>w({passes:Math.max(1,Math.round(r(e,1)))}),1,!1,1)}
+          ${_(`more:step:${a.id}`,(null!==(l=a.max_litres)&&void 0!==l?l:0)>0||(null!==(h=a.min_seconds)&&void 0!==h?h:0)>0||(null!==(d=a.max_seconds)&&void 0!==d?d:0)>0||0!==(null!==(c=a.adjust_seconds)&&void 0!==c?c:0)||(null!==(u=a.min_deficit_mm)&&void 0!==u?u:0)>0||null!==a.delay&&void 0!==a.delay,V`
+              ${this._numRow(s("max_litres"),Gi(this.config,ui),+Qi(null!==(p=a.max_litres)&&void 0!==p?p:0,this.config).toFixed(2),e=>w({max_litres:Math.max(0,ea(r(e),this.config))}),1,!1,0)}
               <div class="setting-hint row-hint">${s("max_litres_help")}</div>
-              ${this._numRow(s("min_seconds"),ss("common.units.seconds",t),null!==(g=a.min_seconds)&&void 0!==g?g:0,(e=>w({min_seconds:Math.max(0,Math.round(r(e)))})),1,!1,0)}
-              ${this._numRow(s("max_seconds"),ss("common.units.seconds",t),null!==(m=a.max_seconds)&&void 0!==m?m:0,(e=>w({max_seconds:Math.max(0,Math.round(r(e)))})),1,!1,0)}
-              ${this._numRow(s("adjust_seconds"),ss("common.units.seconds",t),null!==(y=a.adjust_seconds)&&void 0!==y?y:0,(e=>w({adjust_seconds:Math.max(-21600,Math.min(21600,Math.round(r(e))))})))}
+              ${this._numRow(s("min_seconds"),as("common.units.seconds",t),null!==(g=a.min_seconds)&&void 0!==g?g:0,e=>w({min_seconds:Math.max(0,Math.round(r(e)))}),1,!1,0)}
+              ${this._numRow(s("max_seconds"),as("common.units.seconds",t),null!==(m=a.max_seconds)&&void 0!==m?m:0,e=>w({max_seconds:Math.max(0,Math.round(r(e)))}),1,!1,0)}
+              ${this._numRow(s("adjust_seconds"),as("common.units.seconds",t),null!==(y=a.adjust_seconds)&&void 0!==y?y:0,e=>w({adjust_seconds:Math.max(-21600,Math.min(21600,Math.round(r(e))))}))}
               <div class="setting-hint row-hint">${s("step_bounds_help")}</div>
-              ${this._numRow(s("min_deficit_mm"),"mm",null!==(b=a.min_deficit_mm)&&void 0!==b?b:0,(e=>w({min_deficit_mm:Math.max(0,r(e))})),1,!1,0)}
+              ${this._numRow(s("min_deficit_mm"),"mm",null!==(b=a.min_deficit_mm)&&void 0!==b?b:0,e=>w({min_deficit_mm:Math.max(0,r(e))}),1,!1,0)}
               <div class="setting-hint row-hint">
                 ${s("min_deficit_mm_help")}
               </div>
-              ${this._textRow(s("step_delay"),ss("common.units.seconds",t),null===a.delay||void 0===a.delay?"":a.delay,(e=>w({delay:""===e.trim()?null:r(e)})))}
+              ${this._textRow(s("step_delay"),as("common.units.seconds",t),null===a.delay||void 0===a.delay?"":a.delay,e=>w({delay:""===e.trim()?null:r(e)}))}
               <div class="setting-hint row-hint">${s("step_delay_help")}</div>
             `)}
           <div class="setting-row">
@@ -1547,11 +1547,11 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
             ></ha-switch>
           </div>
           <div class="si-actions">
-            ${this._actionBtn(xa,s("delete_step"),(async()=>{await this._ask(s("confirm_delete_step"),!0)&&n(i,{steps:(e.steps||[]).filter(((e,t)=>t!==o))})}),!0)}
+            ${this._actionBtn(za,s("delete_step"),async()=>{await this._ask(s("confirm_delete_step"),!0)&&n(i,{steps:(e.steps||[]).filter((e,t)=>t!==o)})},!0)}
           </div>
-        `)},b=(e,i,a,o)=>{var l,h,d,c,u,p,g;const v=t=>n(i,{schedules:(e.schedules||[]).map(((e,s)=>s===o?Object.assign(Object.assign({},e),t):e))}),y=(e,t,s)=>{const i=(e||[]).filter((e=>e!==t));return s?[...i,t].sort(((e,t)=>e-t)):i};return f(`schedule:${a.id}`,W`<strong>${s("schedule")} ${o+1}</strong> ·
-          ${(e=>{var t,i;const a="sun"===e.type?`${s("sunset"===e.event?"moment_sunset":"moment_sunrise")}${e.offset_minutes?` ${e.offset_minutes>0?"+":""}${e.offset_minutes} min`:""}`:e.time,n=(e.weekdays||[]).length>0?e.weekdays.map((e=>m(e))).join(", "):(null!==(t=e.every_n_days)&&void 0!==t?t:1)>1?`${s("schedule_every")} ${e.every_n_days} ${s("schedule_days")}`:s("every_day"),r=(null!==(i=e.every_n_days)&&void 0!==i?i:1)>1&&(e.weekdays||[]).length>0||"even"===e.parity||"odd"===e.parity||(e.days_of_month||[]).length>0||(e.months||[]).length>0||!!e.from_date||!!e.until_date;return`${n} · ${s("end"===e.anchor?"anchor_end_short":"anchor_start_short")} ${a}${r?` · ${s("more_options_set")}`:""}`})(a)}${!1===a.enabled?W` · <em>${s("off")}</em>`:""}`,W`
-          ${this._selectRow(s("schedule_moment"),W`
+        `)},b=(e,i,a,o)=>{var l,h,d,c,u,p,g;const v=t=>n(i,{schedules:(e.schedules||[]).map((e,s)=>s===o?Object.assign(Object.assign({},e),t):e)}),y=(e,t,s)=>{const i=(e||[]).filter(e=>e!==t);return s?[...i,t].sort((e,t)=>e-t):i};return f(`schedule:${a.id}`,V`<strong>${s("schedule")} ${o+1}</strong> ·
+          ${(e=>{var t,i;const a="sun"===e.type?`${s("sunset"===e.event?"moment_sunset":"moment_sunrise")}${e.offset_minutes?` ${e.offset_minutes>0?"+":""}${e.offset_minutes} min`:""}`:e.time,n=(e.weekdays||[]).length>0?e.weekdays.map(e=>m(e)).join(", "):(null!==(t=e.every_n_days)&&void 0!==t?t:1)>1?`${s("schedule_every")} ${e.every_n_days} ${s("schedule_days")}`:s("every_day"),r=(null!==(i=e.every_n_days)&&void 0!==i?i:1)>1&&(e.weekdays||[]).length>0||"even"===e.parity||"odd"===e.parity||(e.days_of_month||[]).length>0||(e.months||[]).length>0||!!e.from_date||!!e.until_date;return`${n} · ${s("end"===e.anchor?"anchor_end_short":"anchor_start_short")} ${a}${r?` · ${s("more_options_set")}`:""}`})(a)}${!1===a.enabled?V` · <em>${s("off")}</em>`:""}`,V`
+          ${this._selectRow(s("schedule_moment"),V`
               <option value="time" ?selected=${"time"===a.type}>
                 ${s("moment_time")}
               </option>
@@ -1567,21 +1567,21 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
               >
                 ${s("moment_sunset")}
               </option>
-            `,(e=>{const t=e.target.value;v("time"===t?{type:"time"}:{type:"sun",event:t})}))}
-          ${"time"===a.type?this._timeRow(s("schedule_time"),a.time,(e=>v({time:e}))):this._numRow(s("schedule_offset"),ss("common.units.minutes",t),a.offset_minutes,(e=>v({offset_minutes:Math.round(r(e))})))}
-          ${this._selectRow(s("schedule_anchor"),W`
+            `,e=>{const t=e.target.value;v("time"===t?{type:"time"}:{type:"sun",event:t})})}
+          ${"time"===a.type?this._timeRow(s("schedule_time"),a.time,e=>v({time:e})):this._numRow(s("schedule_offset"),as("common.units.minutes",t),a.offset_minutes,e=>v({offset_minutes:Math.round(r(e))}))}
+          ${this._selectRow(s("schedule_anchor"),V`
               <option value="start" ?selected=${"end"!==a.anchor}>
                 ${s("anchor_start")}
               </option>
               <option value="end" ?selected=${"end"===a.anchor}>
                 ${s("anchor_end")}
               </option>
-            `,(e=>v({anchor:e.target.value})))}
+            `,e=>v({anchor:e.target.value}))}
           <div class="setting-hint row-hint">${s("schedule_anchor_help")}</div>
           <div class="setting-row">
             <div class="setting-label">${s("schedule_weekdays")}</div>
             <div>
-              ${[0,1,2,3,4,5,6].map((e=>W`
+              ${[0,1,2,3,4,5,6].map(e=>V`
                   <label style="margin-right: 10px; white-space: nowrap;">
                     <input
                       type="checkbox"
@@ -1590,7 +1590,7 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                     />
                     ${m(e)}
                   </label>
-                `))}
+                `)}
             </div>
           </div>
           <div class="setting-hint row-hint">
@@ -1604,13 +1604,13 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
             ></ha-switch>
           </div>
           <div class="setting-hint row-hint">${s("schedule_weather_help")}</div>
-          ${_(`more:schedule:${a.id}`,!!a.fallback_time||!0===a.hard_deadline||(null!==(l=a.every_n_days)&&void 0!==l?l:1)>1||"even"===a.parity||"odd"===a.parity||(a.days_of_month||[]).length>0||(a.months||[]).length>0||!!a.from_date||!!a.until_date||void 0!==a.skip_conditions,W`
-              ${this._numRow(s("schedule_every"),s("schedule_days"),null!==(h=a.every_n_days)&&void 0!==h?h:1,(e=>v({every_n_days:Math.max(1,Math.round(r(e,1)))})))}
-              ${(null!==(d=a.every_n_days)&&void 0!==d?d:1)>1?this._numRow(s("schedule_every_offset"),s("schedule_days"),null!==(c=a.every_offset)&&void 0!==c?c:0,(e=>v({every_offset:Math.max(0,Math.round(r(e)))}))):""}
+          ${_(`more:schedule:${a.id}`,!!a.fallback_time||!0===a.hard_deadline||(null!==(l=a.every_n_days)&&void 0!==l?l:1)>1||"even"===a.parity||"odd"===a.parity||(a.days_of_month||[]).length>0||(a.months||[]).length>0||!!a.from_date||!!a.until_date||void 0!==a.skip_conditions,V`
+              ${this._numRow(s("schedule_every"),s("schedule_days"),null!==(h=a.every_n_days)&&void 0!==h?h:1,e=>v({every_n_days:Math.max(1,Math.round(r(e,1)))}))}
+              ${(null!==(d=a.every_n_days)&&void 0!==d?d:1)>1?this._numRow(s("schedule_every_offset"),s("schedule_days"),null!==(c=a.every_offset)&&void 0!==c?c:0,e=>v({every_offset:Math.max(0,Math.round(r(e)))})):""}
               <div class="setting-hint row-hint">
                 ${s("schedule_every_help")}
               </div>
-              ${this._selectRow(s("schedule_parity"),W`
+              ${this._selectRow(s("schedule_parity"),V`
                   <option
                     value="any"
                     ?selected=${"even"!==a.parity&&"odd"!==a.parity}
@@ -1623,15 +1623,15 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                   <option value="odd" ?selected=${"odd"===a.parity}>
                     ${s("parity_odd")}
                   </option>
-                `,(e=>v({parity:e.target.value})))}
-              ${this._textRow(s("schedule_days_of_month"),"1, 15, last",(a.days_of_month||[]).join(", "),(e=>v({days_of_month:e.split(/[,;\s]+/).map((e=>e.trim().toLowerCase())).filter((e=>"last"===e||/^\d+$/.test(e)&&Number(e)>=1&&Number(e)<=31)).map((e=>"last"===e?e:Number(e)))})))}
+                `,e=>v({parity:e.target.value}))}
+              ${this._textRow(s("schedule_days_of_month"),"1, 15, last",(a.days_of_month||[]).join(", "),e=>v({days_of_month:e.split(/[,;\s]+/).map(e=>e.trim().toLowerCase()).filter(e=>"last"===e||/^\d+$/.test(e)&&Number(e)>=1&&Number(e)<=31).map(e=>"last"===e?e:Number(e))}))}
               <div class="setting-hint row-hint">
                 ${s("schedule_days_of_month_help")}
               </div>
               <div class="setting-row">
                 <div class="setting-label">${s("schedule_months")}</div>
                 <div>
-                  ${[0,1,2,3,4,5,6,7,8,9,10,11].map((e=>W`
+                  ${[0,1,2,3,4,5,6,7,8,9,10,11].map(e=>V`
                       <label style="margin-right: 10px; white-space: nowrap;">
                         <input
                           type="checkbox"
@@ -1640,24 +1640,24 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                         />
                         ${(e=>new Intl.DateTimeFormat(t,{month:"short"}).format(new Date(2024,e,1)))(e)}
                       </label>
-                    `))}
+                    `)}
                 </div>
               </div>
               <div class="setting-hint row-hint">
                 ${s("schedule_months_help")}
               </div>
-              ${this._textRow(s("schedule_from"),"MM-DD",null!==(u=a.from_date)&&void 0!==u?u:"",(e=>v({from_date:e.trim()||null})))}
-              ${this._textRow(s("schedule_until"),"MM-DD",null!==(p=a.until_date)&&void 0!==p?p:"",(e=>v({until_date:e.trim()||null})))}
+              ${this._textRow(s("schedule_from"),"MM-DD",null!==(u=a.from_date)&&void 0!==u?u:"",e=>v({from_date:e.trim()||null}))}
+              ${this._textRow(s("schedule_until"),"MM-DD",null!==(p=a.until_date)&&void 0!==p?p:"",e=>v({until_date:e.trim()||null}))}
               <div class="setting-hint row-hint">
                 ${s("schedule_period_help")}
               </div>
-              ${"sun"===a.type?W`
-                    ${this._textRow(s("schedule_fallback_time"),"HH:MM",null!==(g=a.fallback_time)&&void 0!==g?g:"",(e=>v({fallback_time:e.trim()||null})))}
+              ${"sun"===a.type?V`
+                    ${this._textRow(s("schedule_fallback_time"),"HH:MM",null!==(g=a.fallback_time)&&void 0!==g?g:"",e=>v({fallback_time:e.trim()||null}))}
                     <div class="setting-hint row-hint">
                       ${s("schedule_fallback_time_help")}
                     </div>
                   `:""}
-              ${"end"!==a.anchor||e.main?"":W`
+              ${"end"!==a.anchor||e.main?"":V`
                     <div class="setting-row">
                       <div class="setting-label">
                         ${s("schedule_hard_deadline")}
@@ -1671,7 +1671,7 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                       ${s("schedule_hard_deadline_help")}
                     </div>
                   `}
-              ${!1!==a.weather?W`
+              ${!1!==a.weather?V`
                     <div class="setting-label" style="margin-top: 8px;">
                       ${s("schedule_conditions")}
                     </div>
@@ -1679,19 +1679,19 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                       ${s("schedule_conditions_help")}
                       ${s("schedule_conditions_where")}
                     </div>
-                    ${Ia.map((e=>{var t;const i="postponed"===e,n=null!==(t=a.skip_conditions)&&void 0!==t?t:Ia;return W`
+                    ${Ua.map(e=>{var t;const i="postponed"===e,n=null!==(t=a.skip_conditions)&&void 0!==t?t:Ua;return V`
                         <div>
                           <label style="white-space: nowrap;">
                             <input
                               type="checkbox"
                               .checked=${i||n.includes(e)}
                               ?disabled=${i}
-                              @change=${t=>{const s=t.target.checked,i=Ia.filter((t=>t===e?s:n.includes(t)));v({skip_conditions:i.length===Ia.length?void 0:i})}}
+                              @change=${t=>{const s=t.target.checked,i=Ua.filter(t=>t===e?s:n.includes(t));v({skip_conditions:i.length===Ua.length?void 0:i})}}
                             />
                             ${s(`condition_${e}`)}
                           </label>
                         </div>
-                      `}))}
+                      `})}
                   `:""}
             `)}
           <div class="setting-row">
@@ -1702,14 +1702,14 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
             ></ha-switch>
           </div>
           <div class="si-actions">
-            ${this._actionBtn(xa,s("delete_schedule"),(async()=>{await this._ask(s("confirm_delete_schedule"),!0)&&n(i,{schedules:(e.schedules||[]).filter(((e,t)=>t!==o))})}),!0)}
+            ${this._actionBtn(za,s("delete_schedule"),async()=>{await this._ask(s("confirm_delete_schedule"),!0)&&n(i,{schedules:(e.schedules||[]).filter((e,t)=>t!==o)})},!0)}
           </div>
-        `)},w=(e,t)=>W`
-      ${(e.schedules||[]).map(((s,i)=>b(e,t,s,i)))}
+        `)},w=(e,t)=>V`
+      ${(e.schedules||[]).map((s,i)=>b(e,t,s,i))}
       <div class="si-actions">
-        ${this._actionBtn(Ta,s("add_schedule"),(()=>n(t,{schedules:[...e.schedules||[],{id:this._openNew("schedule","schedule_"+g()),enabled:!0,type:"time",time:"06:00",event:"sunrise",offset_minutes:0,anchor:"start",weekdays:[],every_n_days:1,every_offset:0,parity:"any",months:[],from_date:null,until_date:null,weather:!0}]})))}
+        ${this._actionBtn(Ea,s("add_schedule"),()=>n(t,{schedules:[...e.schedules||[],{id:this._openNew("schedule","schedule_"+g()),enabled:!0,type:"time",time:"06:00",event:"sunrise",offset_minutes:0,anchor:"start",weekdays:[],every_n_days:1,every_offset:0,parity:"any",months:[],from_date:null,until_date:null,weather:!0}]}))}
       </div>
-    `;if("main"===e){const e=i.findIndex((e=>e.main)),a=i[e];return a?W`
+    `;if("main"===e){const e=i.findIndex(e=>e.main),a=i[e];return a?V`
         <ha-card header="${o(a)}">
           <div class="card-content">
             <div class="setting-note">${s("main_description")}</div>
@@ -1722,7 +1722,7 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
             </div>
             <div class="fold-section">${s("schedules_title")}</div>
             <div class="setting-hint row-hint">${s("main_schedules_hint")}</div>
-            ${"main_schedules"===this.startSource?W`<div class="setting-note">
+            ${"main_schedules"===this.startSource?V`<div class="setting-note">
                   <strong>${s("main_schedules_active")}</strong>
                 </div>`:""}
             ${w(a,e)}
@@ -1733,32 +1733,32 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
             ${this.renderExecutionSettings(t,!0)}
             ${d(a.id)}
             <div class="si-actions">
-              ${this._actionBtn(Ma,s("run_now"),(()=>h(a)))}
+              ${this._actionBtn(Aa,s("run_now"),()=>h(a))}
             </div>
           </div>
         </ha-card>
-      `:W``}return W`
+      `:V``}return V`
       <ha-card header="${s("others_title")}">
         <div class="card-content">${s("description")}</div>
-        ${i.map(((e,o)=>{var l,m,v;return e.main?"":W`
+        ${i.map((e,o)=>{var l,m,v;return e.main?"":V`
                 <div class="card-content">
-                  ${f(`program:${e.id}`,W`<span class="fold-title">${e.name}</span> ·
+                  ${f(`program:${e.id}`,V`<span class="fold-title">${e.name}</span> ·
                       ${(e.steps||[]).length} ${s("steps_count")} ·
                       ${(e.schedules||[]).length}
-                      ${s("schedules_count")}${!1===e.enabled?W` · <em>${s("off")}</em>`:""}`,W`
-                      ${this._textRow(s("name"),"",e.name,(e=>n(o,{name:e})))}
+                      ${s("schedules_count")}${!1===e.enabled?V` · <em>${s("off")}</em>`:""}`,V`
+                      ${this._textRow(s("name"),"",e.name,e=>n(o,{name:e}))}
                       <div class="fold-section">${s("steps_title")}</div>
-                      ${(e.steps||[]).map(((t,s)=>y(e,o,t,s)))}
+                      ${(e.steps||[]).map((t,s)=>y(e,o,t,s))}
                       <div class="si-actions">
-                        ${this._actionBtn(Ta,s("add_step"),(()=>n(o,{steps:[...e.steps||[],{id:this._openNew("step","step_"+g()),zones:[],mode:"calculated",percent:100,seconds:0,passes:1,max_litres:0,min_seconds:0,max_seconds:0,adjust_seconds:0,delay:null,enabled:!0}]})))}
+                        ${this._actionBtn(Ea,s("add_step"),()=>n(o,{steps:[...e.steps||[],{id:this._openNew("step","step_"+g()),zones:[],mode:"calculated",percent:100,seconds:0,passes:1,max_litres:0,min_seconds:0,max_seconds:0,adjust_seconds:0,delay:null,enabled:!0}]}))}
                       </div>
                       <div class="fold-section">${s("schedules_title")}</div>
                       ${w(e,o)}
-                      ${this._numRow(s("delay"),ss("common.units.seconds",t),null!==(l=e.delay)&&void 0!==l?l:0,(e=>n(o,{delay:r(e)})))}
+                      ${this._numRow(s("delay"),as("common.units.seconds",t),null!==(l=e.delay)&&void 0!==l?l:0,e=>n(o,{delay:r(e)}))}
                       <div class="setting-hint row-hint">
                         ${s("delay_help")}
                       </div>
-                      ${this._numRow(s("tours"),"",null!==(m=e.tours)&&void 0!==m?m:1,(e=>n(o,{tours:Math.max(1,Math.round(r(e,1)))})),1,!1,1)}
+                      ${this._numRow(s("tours"),"",null!==(m=e.tours)&&void 0!==m?m:1,e=>n(o,{tours:Math.max(1,Math.round(r(e,1)))}),1,!1,1)}
                       <div class="setting-hint row-hint">
                         ${s("tours_help")}
                       </div>
@@ -1771,26 +1771,26 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                       </div>
                       ${p(e)} ${d(e.id)}
                       <div class="si-actions">
-                        ${this._actionBtn(Ma,s("run_now"),(()=>h(e)))}
-                        ${["running","waiting"].includes(null===(v=c(e.id))||void 0===v?void 0:v.state)?this._actionBtn(Aa,s("stop_program"),(()=>u(e)),!0):""}
-                        ${this._actionBtn(xa,s("delete"),(async()=>{await this._ask(s("confirm_delete_program").replace("{name}",e.name),!0)&&a(i.filter(((e,t)=>t!==o)))}),!0)}
+                        ${this._actionBtn(Aa,s("run_now"),()=>h(e))}
+                        ${["running","waiting"].includes(null===(v=c(e.id))||void 0===v?void 0:v.state)?this._actionBtn(Ha,s("stop_program"),()=>u(e),!0):""}
+                        ${this._actionBtn(za,s("delete"),async()=>{await this._ask(s("confirm_delete_program").replace("{name}",e.name),!0)&&a(i.filter((e,t)=>t!==o))},!0)}
                       </div>
                     `)}
                 </div>
-              `}))}
+              `})}
         <div class="card-content">
           <div class="si-actions">
-            ${this._actionBtn(Ta,s("add"),(()=>a([...i,{id:this._openNew("program","program_"+g()),name:`${s("new_program")} ${i.length}`,enabled:!0,steps:[],delay:0,tours:1,schedules:[]}])))}
+            ${this._actionBtn(Ea,s("add"),()=>a([...i,{id:this._openNew("program","program_"+g()),name:`${s("new_program")} ${i.length}`,enabled:!0,steps:[],delay:0,tours:1,schedules:[]}]))}
           </div>
         </div>
       </ha-card>
-    `}renderSuppliesCard(){if(!this.config||!this.hass||!0!==this.config.full_controller)return W``;const e=this.hass.language,t=t=>ss(`supplies.${t}`,e),s=this.config.supplies||[],i=e=>{this.config=Object.assign(Object.assign({},this.config),{supplies:e}),this.handleConfigChange({supplies:e}),this._scheduleUpdate()},a=(e,t)=>i(s.map(((s,i)=>i===e?Object.assign(Object.assign({},s),t):s))),n=e=>{const t=parseFloat(e);return isNaN(t)?0:t};return W`
+    `}renderSuppliesCard(){if(!this.config||!this.hass||!0!==this.config.full_controller)return V``;const e=this.hass.language,t=t=>as(`supplies.${t}`,e),s=this.config.supplies||[],i=e=>{this.config=Object.assign(Object.assign({},this.config),{supplies:e}),this.handleConfigChange({supplies:e}),this._scheduleUpdate()},a=(e,t)=>i(s.map((s,i)=>i===e?Object.assign(Object.assign({},s),t):s)),n=e=>{const t=parseFloat(e);return isNaN(t)?0:t};return V`
       <ha-card header="${t("title")}">
         <div class="card-content">${t("description")}</div>
-        ${s.map(((r,o)=>W`
+        ${s.map((r,o)=>V`
             <div class="card-content">
-              ${this._textRow(t("name"),"",r.name,(e=>a(o,{name:e})))}
-              ${[...r.entities||[],""].map(((e,s,i)=>W`
+              ${this._textRow(t("name"),"",r.name,e=>a(o,{name:e}))}
+              ${[...r.entities||[],""].map((e,s,i)=>V`
                     <div class="setting-row">
                       <div class="setting-label">
                         ${0===s?t("entities"):""}
@@ -1801,13 +1801,13 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                         .value=${e}
                         .includeDomains=${["switch","valve","input_boolean","light"]}
                         allow-custom-entity
-                        @value-changed=${e=>{var t;const n=((null===(t=e.detail)||void 0===t?void 0:t.value)||"").trim(),r=i.slice(0,-1);s<r.length?n?r[s]=n:r.splice(s,1):n&&r.push(n),a(o,{entities:r.filter(((e,t)=>e&&r.indexOf(e)===t))})}}
+                        @value-changed=${e=>{var t;const n=((null===(t=e.detail)||void 0===t?void 0:t.value)||"").trim(),r=i.slice(0,-1);s<r.length?n?r[s]=n:r.splice(s,1):n&&r.push(n),a(o,{entities:r.filter((e,t)=>e&&r.indexOf(e)===t)})}}
                       ></ha-entity-picker>
                     </div>
-                  `))}
-              ${this._numRow(t("delay_before"),ss("common.units.seconds",e),r.delay_before,(e=>a(o,{delay_before:n(e)})))}
+                  `)}
+              ${this._numRow(t("delay_before"),as("common.units.seconds",e),r.delay_before,e=>a(o,{delay_before:n(e)}))}
               <div class="setting-hint row-hint">${t("delay_before_help")}</div>
-              ${this._numRow(t("delay_after"),ss("common.units.seconds",e),r.delay_after,(e=>a(o,{delay_after:n(e)})))}
+              ${this._numRow(t("delay_after"),as("common.units.seconds",e),r.delay_after,e=>a(o,{delay_after:n(e)}))}
               <div class="setting-hint row-hint">${t("delay_after_help")}</div>
               <div class="setting-row">
                 <div class="setting-label">${t("enabled")}</div>
@@ -1817,27 +1817,27 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                 ></ha-switch>
               </div>
               <div class="si-actions">
-                ${this._actionBtn(xa,t("delete"),(async()=>{await this._ask(t("confirm_delete").replace("{name}",r.name||r.id||""),!0)&&(i(s.filter(((e,t)=>t!==o))),this._clearSupplyFromZones(r.id))}),!0)}
+                ${this._actionBtn(za,t("delete"),async()=>{await this._ask(t("confirm_delete").replace("{name}",r.name||r.id||""),!0)&&(i(s.filter((e,t)=>t!==o)),this._clearSupplyFromZones(r.id))},!0)}
               </div>
             </div>
-          `))}
+          `)}
         <div class="card-content">
           <div class="si-actions">
-            ${this._actionBtn(Ta,t("add"),(()=>i([...s,{id:"supply_"+Math.random().toString(36).slice(2,8),name:"",entities:[],delay_before:0,delay_after:0,enabled:!0}])))}
+            ${this._actionBtn(Ea,t("add"),()=>i([...s,{id:"supply_"+Math.random().toString(36).slice(2,8),name:"",entities:[],delay_before:0,delay_after:0,enabled:!0}]))}
           </div>
         </div>
       </ha-card>
-    `}async _clearSupplyFromZones(e){if(e&&this.hass){for(const t of this.zones.filter((t=>t.supply_id===e)))try{await da(this.hass,Object.assign(Object.assign({},t),{supply_id:null}))}catch(e){console.error("Error clearing the supply of a zone:",e)}this.zones=this.zones.map((t=>t.supply_id===e?Object.assign(Object.assign({},t),{supply_id:null}):t))}}async _seasonalCall(e,t){if(this.hass){try{await this.hass.callService(os,e,t)}catch(t){console.error("Seasonal adjustment "+e+" failed:",t)}await this._fetchData()}}renderSeasonalAdjustmentsCard(){if(!this.config||!this.hass||"advanced"!==this.config.ui_mode)return W``;const e=this.hass.language,t=t=>ss(`seasonal_adjustments.${t}`,e),s=this.config.seasonal_adjustments||[],i=(e,t)=>this._seasonalCall("update_seasonal_adjustment",Object.assign({adjustment_id:e},t));return W`
+    `}async _clearSupplyFromZones(e){if(e&&this.hass){for(const t of this.zones.filter(t=>t.supply_id===e))try{await ua(this.hass,Object.assign(Object.assign({},t),{supply_id:null}))}catch(e){console.error("Error clearing the supply of a zone:",e)}this.zones=this.zones.map(t=>t.supply_id===e?Object.assign(Object.assign({},t),{supply_id:null}):t)}}async _seasonalCall(e,t){if(this.hass){try{await this.hass.callService(hs,e,t)}catch(t){console.error("Seasonal adjustment "+e+" failed:",t)}await this._fetchData()}}renderSeasonalAdjustmentsCard(){if(!this.config||!this.hass||"advanced"!==this.config.ui_mode)return V``;const e=this.hass.language,t=t=>as(`seasonal_adjustments.${t}`,e),s=this.config.seasonal_adjustments||[],i=(e,t)=>this._seasonalCall("update_seasonal_adjustment",Object.assign({adjustment_id:e},t));return V`
       <ha-card header="${t("title")}">
         <div class="card-content">${t("description")}</div>
-        ${s.map((e=>{var s,a,n;return W`
+        ${s.map(e=>{var s,a,n;return V`
             <div class="card-content si-subgroup">
-              ${this._textRow(t("name"),"",e.name,(t=>i(e.id,{name:t||e.name})))}
-              ${this._numRow(t("month_start"),"1-12",e.month_start,(t=>i(e.id,{month_start:Math.min(12,Math.max(1,parseInt(t,10)||1))})),1)}
-              ${this._numRow(t("month_end"),"1-12",e.month_end,(t=>i(e.id,{month_end:Math.min(12,Math.max(1,parseInt(t,10)||12))})),1)}
-              ${this._numRow(t("multiplier"),"x",null!==(s=e.multiplier_adjustment)&&void 0!==s?s:1,(t=>i(e.id,{multiplier_adjustment:Math.max(0,parseFloat(t)||0)})),.05)}
-              ${this._numRow(t("threshold"),Zi(this.config,ls),null!==(a=e.threshold_adjustment)&&void 0!==a?a:0,(t=>i(e.id,{threshold_adjustment:parseFloat(t)||0})),.5)}
-              ${this._textRow(t("zones"),"",Array.isArray(e.zones)?e.zones.join(", "):null!==(n=e.zones)&&void 0!==n?n:"all",(t=>i(e.id,{zones:t.trim()||"all"})))}
+              ${this._textRow(t("name"),"",e.name,t=>i(e.id,{name:t||e.name}))}
+              ${this._numRow(t("month_start"),"1-12",e.month_start,t=>i(e.id,{month_start:Math.min(12,Math.max(1,parseInt(t,10)||1))}),1)}
+              ${this._numRow(t("month_end"),"1-12",e.month_end,t=>i(e.id,{month_end:Math.min(12,Math.max(1,parseInt(t,10)||12))}),1)}
+              ${this._numRow(t("multiplier"),"x",null!==(s=e.multiplier_adjustment)&&void 0!==s?s:1,t=>i(e.id,{multiplier_adjustment:Math.max(0,parseFloat(t)||0)}),.05)}
+              ${this._numRow(t("threshold"),qi(this.config,ds),null!==(a=e.threshold_adjustment)&&void 0!==a?a:0,t=>i(e.id,{threshold_adjustment:parseFloat(t)||0}),.5)}
+              ${this._textRow(t("zones"),"",Array.isArray(e.zones)?e.zones.join(", "):null!==(n=e.zones)&&void 0!==n?n:"all",t=>i(e.id,{zones:t.trim()||"all"}))}
               <div class="setting-hint">${t("zones_hint")}</div>
               <div class="setting-row">
                 <div class="setting-label">${t("enabled")}</div>
@@ -1852,7 +1852,7 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                 ${t("delete")}
               </ha-button>
             </div>
-          `}))}
+          `})}
         <div class="card-actions">
           <ha-button
             @click=${()=>this._seasonalCall("create_seasonal_adjustment",{name:t("new_name"),month_start:6,month_end:8,multiplier_adjustment:1,threshold_adjustment:0,zones:"all",enabled:!0})}
@@ -1861,37 +1861,37 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
           </ha-button>
         </div>
       </ha-card>
-    `}renderSetupAssistantCard(){if(!this.hass)return W``;const e=this.hass.language;return W`
-      <ha-card header="${ss("panels.setup.title",e)}">
+    `}renderSetupAssistantCard(){if(!this.hass)return V``;const e=this.hass.language;return V`
+      <ha-card header="${as("panels.setup.title",e)}">
         <div class="card-content">
-          ${ss("panels.general.cards.setup-assistant.description",e)}
+          ${as("panels.general.cards.setup-assistant.description",e)}
         </div>
         <div class="card-actions">
           <ha-button
             @click=${()=>{window.history.pushState(null,"",`${window.location.pathname.split("/").slice(0,-1).join("/")}/setup`),window.dispatchEvent(new Event("location-changed"))}}
           >
-            ${ss("panels.general.cards.setup-assistant.open",e)}
+            ${as("panels.general.cards.setup-assistant.open",e)}
           </ha-button>
         </div>
       </ha-card>
-    `}renderTriggersCard(){var e;if(!this.config||!this.data||!this.hass)return W``;const t=this.config.irrigation_start_triggers||[];return W`
+    `}renderTriggersCard(){var e;if(!this.config||!this.data||!this.hass)return V``;const t=this.config.irrigation_start_triggers||[];return V`
       <ha-card
-        header="${ss("irrigation_start_triggers.title",this.hass.language)}"
+        header="${as("irrigation_start_triggers.title",this.hass.language)}"
       >
         <div class="card-content">
-          ${ss("irrigation_start_triggers.description",this.hass.language)}
+          ${as("irrigation_start_triggers.description",this.hass.language)}
         </div>
 
-        ${!0===(null===(e=this.config)||void 0===e?void 0:e.full_controller)?"":W`<div class="card-content trigger-usage">
-              ${ss("irrigation_start_triggers.usage_before",this.hass.language)}
+        ${!0===(null===(e=this.config)||void 0===e?void 0:e.full_controller)?"":V`<div class="card-content trigger-usage">
+              ${as("irrigation_start_triggers.usage_before",this.hass.language)}
               <code>smart_irrigation_start_irrigation_all_zones</code
-              >${ss("irrigation_start_triggers.usage_after",this.hass.language)}
+              >${as("irrigation_start_triggers.usage_after",this.hass.language)}
             </div>`}
 
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${ss("irrigation_start_triggers.active_label",this.hass.language)}
+              ${as("irrigation_start_triggers.active_label",this.hass.language)}
             </div>
             <select
               class="field"
@@ -1901,45 +1901,45 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                 value="default"
                 ?selected=${"default"===(this.config.active_start_trigger||"default")}
               >
-                ${ss("irrigation_start_triggers.active_default",this.hass.language)}
+                ${as("irrigation_start_triggers.active_default",this.hass.language)}
               </option>
-              ${t.map((e=>W`
+              ${t.map(e=>V`
                   <option
                     value="${e.name}"
                     ?selected=${this.config.active_start_trigger===e.name}
                   >
                     ${e.name}
                   </option>
-                `))}
+                `)}
               <option
                 value="none"
                 ?selected=${"none"===this.config.active_start_trigger}
               >
-                ${ss("irrigation_start_triggers.active_none",this.hass.language)}
+                ${as("irrigation_start_triggers.active_none",this.hass.language)}
               </option>
             </select>
           </div>
           <div class="trigger-active-hint">
-            ${ss("irrigation_start_triggers.active_hint",this.hass.language)}
+            ${as("irrigation_start_triggers.active_hint",this.hass.language)}
           </div>
         </div>
 
         <div class="card-content">
           <div class="triggers-list">
-            ${"none"===this.config.active_start_trigger?W`
+            ${"none"===this.config.active_start_trigger?V`
                   <div class="no-triggers">
-                    ${ss("irrigation_start_triggers.none_selected",this.hass.language)}
+                    ${as("irrigation_start_triggers.none_selected",this.hass.language)}
                   </div>
                 `:""}
-            ${t.map(((e,t)=>this.renderTriggerItem(e,t)))}
+            ${t.map((e,t)=>this.renderTriggerItem(e,t))}
           </div>
 
           <div class="add-trigger-section">
-            ${this._actionBtn(Ta,ss("irrigation_start_triggers.add_trigger",this.hass.language),(()=>this._addTrigger()))}
+            ${this._actionBtn(Ea,as("irrigation_start_triggers.add_trigger",this.hass.language),()=>this._addTrigger())}
           </div>
         </div>
       </ha-card>
-    `}renderTriggerItem(e,t){if(!this.hass)return W``;const s=ss(`irrigation_start_triggers.trigger_types.${e.type}`,this.hass.language);let i="";if(e.type===ds&&0===e.offset_minutes)i=ss("irrigation_start_triggers.offset_auto",this.hass.language);else{const t=Math.abs(e.offset_minutes),s=Math.floor(t/60),a=t%60,n=e.offset_minutes<0?ss("common.labels.before",this.hass.language):ss("common.labels.after",this.hass.language);i=s>0?`${s}h ${a}m ${n}`:`${a}m ${n}`}let a="";return e.type===cs&&void 0!==e.azimuth_angle&&(a=` (${e.azimuth_angle}°)`),W`
+    `}renderTriggerItem(e,t){if(!this.hass)return V``;const s=as(`irrigation_start_triggers.trigger_types.${e.type}`,this.hass.language);let i="";if(e.type===us&&0===e.offset_minutes)i=as("irrigation_start_triggers.offset_auto",this.hass.language);else{const t=Math.abs(e.offset_minutes),s=Math.floor(t/60),a=t%60,n=e.offset_minutes<0?as("common.labels.before",this.hass.language):as("common.labels.after",this.hass.language);i=s>0?`${s}h ${a}m ${n}`:`${a}m ${n}`}let a="";return e.type===ps&&void 0!==e.azimuth_angle&&(a=` (${e.azimuth_angle}°)`),V`
       <div class="trigger-item ${e.enabled?"enabled":"disabled"}">
         <div class="trigger-main">
           <div class="trigger-info">
@@ -1949,33 +1949,33 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
             </div>
           </div>
           <div class="trigger-status">
-            ${e.enabled?ss("common.labels.enabled",this.hass.language):ss("common.labels.disabled",this.hass.language)}
+            ${e.enabled?as("common.labels.enabled",this.hass.language):as("common.labels.disabled",this.hass.language)}
           </div>
         </div>
         <div class="trigger-actions">
           <ha-icon-button
             .path="${"M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z"}"
             @click="${()=>this._editTrigger(t)}"
-            title="${ss("irrigation_start_triggers.edit_trigger",this.hass.language)}"
+            title="${as("irrigation_start_triggers.edit_trigger",this.hass.language)}"
           ></ha-icon-button>
           <ha-icon-button
-            .path="${xa}"
+            .path="${za}"
             @click="${()=>this._deleteTrigger(t)}"
-            title="${ss("irrigation_start_triggers.delete_trigger",this.hass.language)}"
+            title="${as("irrigation_start_triggers.delete_trigger",this.hass.language)}"
           ></ha-icon-button>
         </div>
       </div>
-    `}_addTrigger(){this._showTriggerDialog({createTrigger:!0})}_editTrigger(e){var t,s;const i=null===(s=null===(t=this.config)||void 0===t?void 0:t.irrigation_start_triggers)||void 0===s?void 0:s[e];i&&this._showTriggerDialog({trigger:i,triggerIndex:e})}async _deleteTrigger(e){var t,s;if(!(null===(t=this.config)||void 0===t?void 0:t.irrigation_start_triggers)||!this.hass)return;const i=(null===(s=this.config.irrigation_start_triggers[e])||void 0===s?void 0:s.name)||"Unknown";if(await this._ask(ss("irrigation_start_triggers.confirm_delete",this.hass.language).replace("{name}",i),!0)){const t=[...this.config.irrigation_start_triggers];t.splice(e,1),this.config=Object.assign(Object.assign({},this.config),{irrigation_start_triggers:t}),this.saveData({[hs]:t}).catch((e=>{console.error("Error saving triggers:",e),this._fetchData().catch((()=>{}))}))}}async _showTriggerDialog(e){if(!this.hass)return;const t=document.createElement("smart-irrigation-trigger-dialog");t.hass=this.hass,t.addEventListener("trigger-save",(e=>{this._handleTriggerSave(e.detail)})),t.addEventListener("trigger-delete",(e=>{this._handleTriggerDelete(e.detail)})),document.body.appendChild(t),await t.showDialog(e),t.addEventListener("closed",(e=>{const s=e.target;s&&"ha-dialog"===s.tagName.toLowerCase()&&document.body.removeChild(t)}))}_handleTriggerSave(e){if(!this.config)return;const t=this.config.irrigation_start_triggers?[...this.config.irrigation_start_triggers]:[];e.isNew?t.push(e.trigger):void 0!==e.index&&(t[e.index]=e.trigger),this.config=Object.assign(Object.assign({},this.config),{irrigation_start_triggers:t}),this.saveData({[hs]:t}).catch((e=>{console.error("Error saving triggers:",e),this._fetchData().catch((()=>{}))}))}_handleTriggerDelete(e){var t;if(!(null===(t=this.config)||void 0===t?void 0:t.irrigation_start_triggers)||void 0===e.index)return;const s=[...this.config.irrigation_start_triggers];s.splice(e.index,1),this.config=Object.assign(Object.assign({},this.config),{irrigation_start_triggers:s}),this.saveData({[hs]:s}).catch((e=>{console.error("Error saving triggers:",e),this._fetchData().catch((()=>{}))}))}renderWeatherSkipCard(){return this.config&&this.data&&this.hass?W`
-      <ha-card header="${ss("weather_skip.title",this.hass.language)}">
+    `}_addTrigger(){this._showTriggerDialog({createTrigger:!0})}_editTrigger(e){var t,s;const i=null===(s=null===(t=this.config)||void 0===t?void 0:t.irrigation_start_triggers)||void 0===s?void 0:s[e];i&&this._showTriggerDialog({trigger:i,triggerIndex:e})}async _deleteTrigger(e){var t,s;if(!(null===(t=this.config)||void 0===t?void 0:t.irrigation_start_triggers)||!this.hass)return;const i=(null===(s=this.config.irrigation_start_triggers[e])||void 0===s?void 0:s.name)||"Unknown";if(await this._ask(as("irrigation_start_triggers.confirm_delete",this.hass.language).replace("{name}",i),!0)){const t=[...this.config.irrigation_start_triggers];t.splice(e,1),this.config=Object.assign(Object.assign({},this.config),{irrigation_start_triggers:t}),this.saveData({[cs]:t}).catch(e=>{console.error("Error saving triggers:",e),this._fetchData().catch(()=>{})})}}async _showTriggerDialog(e){if(!this.hass)return;const t=document.createElement("smart-irrigation-trigger-dialog");t.hass=this.hass,t.addEventListener("trigger-save",e=>{this._handleTriggerSave(e.detail)}),t.addEventListener("trigger-delete",e=>{this._handleTriggerDelete(e.detail)}),document.body.appendChild(t),await t.showDialog(e),t.addEventListener("closed",e=>{const s=e.target;s&&"ha-dialog"===s.tagName.toLowerCase()&&document.body.removeChild(t)})}_handleTriggerSave(e){if(!this.config)return;const t=this.config.irrigation_start_triggers?[...this.config.irrigation_start_triggers]:[];e.isNew?t.push(e.trigger):void 0!==e.index&&(t[e.index]=e.trigger),this.config=Object.assign(Object.assign({},this.config),{irrigation_start_triggers:t}),this.saveData({[cs]:t}).catch(e=>{console.error("Error saving triggers:",e),this._fetchData().catch(()=>{})})}_handleTriggerDelete(e){var t;if(!(null===(t=this.config)||void 0===t?void 0:t.irrigation_start_triggers)||void 0===e.index)return;const s=[...this.config.irrigation_start_triggers];s.splice(e.index,1),this.config=Object.assign(Object.assign({},this.config),{irrigation_start_triggers:s}),this.saveData({[cs]:s}).catch(e=>{console.error("Error saving triggers:",e),this._fetchData().catch(()=>{})})}renderWeatherSkipCard(){return this.config&&this.data&&this.hass?V`
+      <ha-card header="${as("weather_skip.title",this.hass.language)}">
         <div class="card-content">
-          ${ss("weather_skip.description",this.hass.language)}
+          ${as("weather_skip.description",this.hass.language)}
         </div>
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${ss("weather_skip.forecast_label",this.hass.language)}
+              ${as("weather_skip.forecast_label",this.hass.language)}
               <div class="setting-hint">
-                ${ss("weather_skip.forecast_description",this.hass.language)}
+                ${as("weather_skip.forecast_description",this.hass.language)}
               </div>
             </div>
             <ha-switch
@@ -1984,16 +1984,16 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
             ></ha-switch>
           </div>
 
-          ${this.config.skip_irrigation_on_precipitation||this.config.forecast_rain_credit?this._numRow(ss("weather_skip.threshold_label",this.hass.language),Zi(this.config,ls),this.config.precipitation_threshold_mm,(e=>this.handleConfigChange({precipitation_threshold_mm:parseFloat(e)})),.1):""}
+          ${this.config.skip_irrigation_on_precipitation||this.config.forecast_rain_credit?this._numRow(as("weather_skip.threshold_label",this.hass.language),qi(this.config,ds),this.config.precipitation_threshold_mm,e=>this.handleConfigChange({precipitation_threshold_mm:parseFloat(e)}),.1):""}
         </div>
       </ha-card>
       ${this.renderMeasuredSkipCard()}
-    `:W``}renderMeasuredSkipCard(){if(!this.config||!this.hass)return W``;const e=this.hass.language,t="imperial"!==this.config.units,s=t=>ss(`measured_skip.${t}`,e),i=(e,t)=>W`
+    `:V``}renderMeasuredSkipCard(){if(!this.config||!this.hass)return V``;const e=this.hass.language,t="imperial"!==this.config.units,s=t=>as(`measured_skip.${t}`,e),i=(e,t)=>V`
       <ha-switch
         .checked=${!!t}
         @change=${t=>this.handleConfigChange({[e]:t.target.checked})}
       ></ha-switch>
-    `,a=(e,t,s,i,a)=>W`
+    `,a=(e,t,s,i,a)=>V`
       <div class="setting-row">
         <div class="setting-label">
           ${i}
@@ -2008,23 +2008,23 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
           @value-changed=${t=>{var s;return this.handleConfigChange({[e]:(null===(s=t.detail)||void 0===s?void 0:s.value)||null})}}
         ></ha-entity-picker>
       </div>
-    `,n=(e,t,s)=>W`
+    `,n=(e,t,s)=>V`
       <div class="si-subgroup">
         <div class="si-subgroup-title">${e}</div>
         <div class="setting-hint">${t}</div>
         ${s}
       </div>
-    `,r=(e,t,i,a,n)=>this._numRow(s("threshold"),a,null!=t?t:i,(t=>this.handleConfigChange({[e]:""===t?null:parseFloat(t)})),n);return W`
+    `,r=(e,t,i,a,n)=>this._numRow(s("threshold"),a,null!=t?t:i,t=>this.handleConfigChange({[e]:""===t?null:parseFloat(t)}),n);return V`
       <ha-card header="${s("title")}">
         <div class="card-content">${s("description")}</div>
         <div class="card-content">
-          ${n(s("rain.title"),s("rain.description"),W`
+          ${n(s("rain.title"),s("rain.description"),V`
               <div class="setting-row">
                 <div class="setting-label">${s("enabled")}</div>
                 ${i("skip_on_rain_sensor",this.config.skip_on_rain_sensor)}
               </div>
-              ${this.config.skip_on_rain_sensor?W`${a("rain_sensor",this.config.rain_sensor,["binary_sensor"],s("sensor"),s("rain.sensor-hint"))}
-                  ${"advanced"===this.config.ui_mode?W`<div class="setting-row">
+              ${this.config.skip_on_rain_sensor?V`${a("rain_sensor",this.config.rain_sensor,["binary_sensor"],s("sensor"),s("rain.sensor-hint"))}
+                  ${"advanced"===this.config.ui_mode?V`<div class="setting-row">
                           <div class="setting-label">
                             ${s("rain.history-label")}
                           </div>
@@ -2034,33 +2034,33 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                           ${s("rain.history-description")}
                         </div>`:""}`:""}
             `)}
-          ${n(s("freeze.title"),s("freeze.description"),W`
+          ${n(s("freeze.title"),s("freeze.description"),V`
               <div class="setting-row">
                 <div class="setting-label">${s("enabled")}</div>
                 ${i("skip_on_freeze",this.config.skip_on_freeze)}
               </div>
-              ${this.config.skip_on_freeze?W`${r("freeze_threshold",this.config.freeze_threshold,t?2:36,t?"°C":"°F",.5)}
+              ${this.config.skip_on_freeze?V`${r("freeze_threshold",this.config.freeze_threshold,t?2:36,t?"°C":"°F",.5)}
                   ${a("freeze_sensor",this.config.freeze_sensor,["sensor"],s("sensor-optional"),s("freeze.sensor-hint"))}`:""}
             `)}
-          ${n(s("wind.title"),s("wind.description"),W`
+          ${n(s("wind.title"),s("wind.description"),V`
               <div class="setting-row">
                 <div class="setting-label">${s("enabled")}</div>
                 ${i("skip_on_wind",this.config.skip_on_wind)}
               </div>
-              ${this.config.skip_on_wind?W`${r("wind_threshold",this.config.wind_threshold,t?20:12,t?"km/h":"mph",1)}
+              ${this.config.skip_on_wind?V`${r("wind_threshold",this.config.wind_threshold,t?20:12,t?"km/h":"mph",1)}
                   ${a("wind_sensor",this.config.wind_sensor,["sensor"],s("sensor-optional"),s("wind.sensor-hint"))}`:""}
             `)}
         </div>
       </ha-card>
-    `}renderObservedWateringCard(){if(!this.config||!this.data||!this.hass)return W``;const e=this.hass.language;return W`
-      <ha-card header="${ss("observed_watering.title",e)}">
+    `}renderObservedWateringCard(){if(!this.config||!this.data||!this.hass)return V``;const e=this.hass.language;return V`
+      <ha-card header="${as("observed_watering.title",e)}">
         <div class="card-content">
-          ${ss("observed_watering.description",e)}
+          ${as("observed_watering.description",e)}
         </div>
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${ss("observed_watering.enabled_label",e)}
+              ${as("observed_watering.enabled_label",e)}
             </div>
             <ha-switch
               .checked=${this.config.observed_watering_enabled}
@@ -2070,7 +2070,7 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
 
           <div class="setting-row">
             <div class="setting-label">
-              ${ss("observed_watering.direct_control_label",e)}
+              ${as("observed_watering.direct_control_label",e)}
             </div>
             <ha-switch
               .checked=${this.config.direct_valve_control_enabled}
@@ -2079,41 +2079,41 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
             ></ha-switch>
           </div>
 
-          ${this.config.direct_valve_control_enabled?W`
+          ${this.config.direct_valve_control_enabled?V`
                 <div class="setting-note">
-                  ${ss("observed_watering.direct_control_description",e)}
-                  ${!0===this.config.full_controller?ss("observed_watering.direct_control_locked",e):""}
+                  ${as("observed_watering.direct_control_description",e)}
+                  ${!0===this.config.full_controller?as("observed_watering.direct_control_locked",e):""}
                 </div>
               `:""}
           ${!0===this.config.full_controller?"":this.renderExecutionSettings(e,!1)}
         </div>
       </ha-card>
-    `}renderFullControllerCard(){if(!this.config||!this.hass)return W``;const e=this.hass.language;return W`
+    `}renderFullControllerCard(){if(!this.config||!this.hass)return V``;const e=this.hass.language;return V`
       <ha-card
-        header="${ss("observed_watering.full_controller_title",e)}"
+        header="${as("observed_watering.full_controller_title",e)}"
       >
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${ss("observed_watering.full_controller_label",e)}
+              ${as("observed_watering.full_controller_label",e)}
             </div>
             <ha-switch
               .checked=${!0===this.config.full_controller}
-              @change=${async t=>{const s=t.target,i=!0===s.checked;!i||await this._ask(ss("observed_watering.confirm_full_controller",e))?this.handleConfigChange(Object.assign({full_controller:i},i?{direct_valve_control_enabled:!0}:{})).then((()=>this._fetchData())).catch((()=>{})):s.checked=!1}}
+              @change=${async t=>{const s=t.target,i=!0===s.checked;!i||await this._ask(as("observed_watering.confirm_full_controller",e))?this.handleConfigChange(Object.assign({full_controller:i},i?{direct_valve_control_enabled:!0}:{})).then(()=>this._fetchData()).catch(()=>{}):s.checked=!1}}
             ></ha-switch>
           </div>
           <div class="setting-note">
-            ${ss("observed_watering.full_controller_description",e)}
+            ${as("observed_watering.full_controller_description",e)}
           </div>
         </div>
       </ha-card>
-    `}renderExecutionSettings(e,t){return this.config?W`
+    `}renderExecutionSettings(e,t){return this.config?V`
       <!-- Sequencing also decides what a start trigger works back from to
                finish at sunrise, so it applies whether Smart Irrigation drives
                the valves or an automation of your own does. -->
       <div class="setting-row">
         <div class="setting-label">
-          ${ss("observed_watering.sequencing_label",e)}
+          ${as("observed_watering.sequencing_label",e)}
         </div>
         <select
           class="field"
@@ -2123,42 +2123,42 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
             value="sequential"
             ?selected=${"sequential"===this.config.zone_sequencing}
           >
-            ${ss("observed_watering.sequencing.sequential",e)}
+            ${as("observed_watering.sequencing.sequential",e)}
           </option>
           <option
             value="parallel"
             ?selected=${"parallel"===this.config.zone_sequencing}
           >
-            ${ss("observed_watering.sequencing.parallel",e)}
+            ${as("observed_watering.sequencing.parallel",e)}
           </option>
         </select>
       </div>
       <div class="setting-note">
-        ${ss("observed_watering.sequencing_description",e)}
+        ${as("observed_watering.sequencing_description",e)}
       </div>
 
       ${this.config.direct_valve_control_enabled&&(t||"advanced"===this.config.ui_mode)?this.renderCycleAndSoak(e):""}
-    `:W``}renderCycleAndSoak(e){var t,s,i;if(!this.config)return W``;const a=this.config,n=Number(null!==(t=a.watering_passes)&&void 0!==t?t:1)||1,r="parallel"!==a.zone_sequencing;return W`
-      ${this._numRow(ss("observed_watering.passes_label",e),"",n,(e=>this.handleConfigChange({watering_passes:Math.min(6,Math.max(1,parseInt(e)||1))})))}
-      ${n>1?W`${this._numRow(ss("observed_watering.soak_label",e),ss("observed_watering.minutes",e),null!==(s=a.soak_minutes)&&void 0!==s?s:15,(e=>this.handleConfigChange({soak_minutes:Math.max(0,parseFloat(e)||0)})))}
+    `:V``}renderCycleAndSoak(e){var t,s,i;if(!this.config)return V``;const a=this.config,n=Number(null!==(t=a.watering_passes)&&void 0!==t?t:1)||1,r="parallel"!==a.zone_sequencing;return V`
+      ${this._numRow(as("observed_watering.passes_label",e),"",n,e=>this.handleConfigChange({watering_passes:Math.min(6,Math.max(1,parseInt(e)||1))}))}
+      ${n>1?V`${this._numRow(as("observed_watering.soak_label",e),as("observed_watering.minutes",e),null!==(s=a.soak_minutes)&&void 0!==s?s:15,e=>this.handleConfigChange({soak_minutes:Math.max(0,parseFloat(e)||0)}))}
             <div class="card-content">
-              ${ss("observed_watering.passes_description",e)}
-            </div>`:W`<div class="card-content">
-            ${ss("observed_watering.passes_description",e)}
+              ${as("observed_watering.passes_description",e)}
+            </div>`:V`<div class="card-content">
+            ${as("observed_watering.passes_description",e)}
           </div>`}
-      ${r?W`${this._numRow(ss("observed_watering.pause_between_zones_label",e),ss("observed_watering.seconds",e),null!==(i=a.pause_between_zones)&&void 0!==i?i:0,(e=>this.handleConfigChange({pause_between_zones:Math.max(0,parseFloat(e)||0)})))}
+      ${r?V`${this._numRow(as("observed_watering.pause_between_zones_label",e),as("observed_watering.seconds",e),null!==(i=a.pause_between_zones)&&void 0!==i?i:0,e=>this.handleConfigChange({pause_between_zones:Math.max(0,parseFloat(e)||0)}))}
             <div class="card-content">
-              ${ss("observed_watering.pause_between_zones_description",e)}
+              ${as("observed_watering.pause_between_zones_description",e)}
             </div>`:""}
-    `}renderPanelModeCard(){if(!this.hass||!this.config)return W``;const e="advanced"===this.config.ui_mode;return W`<ha-card
-      header="${ss("panels.general.cards.panel-mode.header",this.hass.language)}"
+    `}renderPanelModeCard(){if(!this.hass||!this.config)return V``;const e="advanced"===this.config.ui_mode;return V`<ha-card
+      header="${as("panels.general.cards.panel-mode.header",this.hass.language)}"
     >
       <div class="card-content">
         <div class="setting-row">
           <div class="setting-label">
-            ${ss("panels.general.cards.panel-mode.labels.advanced",this.hass.language)}
+            ${as("panels.general.cards.panel-mode.labels.advanced",this.hass.language)}
             <div class="setting-hint">
-              ${ss("panels.general.cards.panel-mode.labels.advanced-hint",this.hass.language)}
+              ${as("panels.general.cards.panel-mode.labels.advanced-hint",this.hass.language)}
             </div>
           </div>
           <ha-switch
@@ -2167,12 +2167,12 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
           ></ha-switch>
         </div>
       </div>
-    </ha-card>`}renderBlueprintsCard(){if(!this.config||!this.hass)return W``;const e=this.hass.language;return W`
-      <ha-card header="${ss("blueprints.title",e)}">
+    </ha-card>`}renderBlueprintsCard(){if(!this.config||!this.hass)return V``;const e=this.hass.language;return V`
+      <ha-card header="${as("blueprints.title",e)}">
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${ss("blueprints.install_label",e)}
+              ${as("blueprints.install_label",e)}
             </div>
             <ha-switch
               .checked=${!1!==this.config.install_blueprints}
@@ -2180,44 +2180,44 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
             ></ha-switch>
           </div>
           <div class="setting-help">
-            ${ss("blueprints.install_help",e)}
+            ${as("blueprints.install_help",e)}
           </div>
         </div>
       </ha-card>
-    `}renderCalculationLogCard(){if(!this.config||!this.data||!this.hass)return W``;const e=this.hass.language;return W`
-      <ha-card header="${ss("calculation_log.title",e)}">
+    `}renderCalculationLogCard(){if(!this.config||!this.data||!this.hass)return V``;const e=this.hass.language;return V`
+      <ha-card header="${as("calculation_log.title",e)}">
         <div class="card-content">
-          ${ss("calculation_log.description",e)}
+          ${as("calculation_log.description",e)}
         </div>
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${ss("calculation_log.enabled_label",e)}
+              ${as("calculation_log.enabled_label",e)}
             </div>
             <ha-switch
               .checked=${this.config.calc_log_enabled}
               @change=${e=>this.handleConfigChange({calc_log_enabled:e.target.checked})}
             ></ha-switch>
           </div>
-          ${this.config.calc_log_enabled?W`<div
+          ${this.config.calc_log_enabled?V`<div
                 class="zoneline"
                 style="color: var(--secondary-text-color); font-style: italic;"
               >
-                ${ss("calculation_log.file_hint",e)}
+                ${as("calculation_log.file_hint",e)}
               </div>`:""}
         </div>
       </ha-card>
-    `}renderCoordinateCard(){if(!this.config||!this.data||!this.hass)return W``;const e=this.hass.config,t=(null==e?void 0:e.latitude)||0,s=(null==e?void 0:e.longitude)||0,i=(null==e?void 0:e.elevation)||0;return W`
+    `}renderCoordinateCard(){if(!this.config||!this.data||!this.hass)return V``;const e=this.hass.config,t=(null==e?void 0:e.latitude)||0,s=(null==e?void 0:e.longitude)||0,i=(null==e?void 0:e.elevation)||0;return V`
       <ha-card
-        header="${ss("coordinate_config.title",this.hass.language)}"
+        header="${as("coordinate_config.title",this.hass.language)}"
       >
         <div class="card-content">
-          ${ss("coordinate_config.description",this.hass.language)}
+          ${as("coordinate_config.description",this.hass.language)}
         </div>
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${ss("coordinate_config.manual_enabled",this.hass.language)}
+              ${as("coordinate_config.manual_enabled",this.hass.language)}
             </div>
             <ha-switch
               .checked=${this.data.manual_coordinates_enabled}
@@ -2225,21 +2225,21 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
             ></ha-switch>
           </div>
             <div class="card-content">
-            ${this.data.manual_coordinates_enabled?W`
-                    ${this._numRow(ss("coordinate_config.latitude",this.hass.language),"",this.data.manual_latitude||t,(e=>this.handleConfigChange({manual_latitude:parseFloat(e)})),.1)}
-                    ${this._numRow(ss("coordinate_config.longitude",this.hass.language),"",this.data.manual_longitude||s,(e=>this.handleConfigChange({manual_longitude:parseFloat(e)})),.1)}
-                    ${this._numRow(ss("coordinate_config.elevation",this.hass.language),"",this.data.manual_elevation||i,(e=>this.handleConfigChange({manual_elevation:parseFloat(e)})),1)}
-                  `:W`
+            ${this.data.manual_coordinates_enabled?V`
+                    ${this._numRow(as("coordinate_config.latitude",this.hass.language),"",this.data.manual_latitude||t,e=>this.handleConfigChange({manual_latitude:parseFloat(e)}),.1)}
+                    ${this._numRow(as("coordinate_config.longitude",this.hass.language),"",this.data.manual_longitude||s,e=>this.handleConfigChange({manual_longitude:parseFloat(e)}),.1)}
+                    ${this._numRow(as("coordinate_config.elevation",this.hass.language),"",this.data.manual_elevation||i,e=>this.handleConfigChange({manual_elevation:parseFloat(e)}),1)}
+                  `:V`
                     <div
                       class="zoneline"
                       style="color: var(--secondary-text-color); font-style: italic;"
                     >
-                      ${ss("coordinate_config.current_ha_coords",this.hass.language)}:<br />
-                      ${ss("coordinate_config.latitude",this.hass.language)}:
+                      ${as("coordinate_config.current_ha_coords",this.hass.language)}:<br />
+                      ${as("coordinate_config.latitude",this.hass.language)}:
                       ${t}<br />
-                      ${ss("coordinate_config.longitude",this.hass.language)}:
+                      ${as("coordinate_config.longitude",this.hass.language)}:
                       ${s}<br />
-                      ${ss("coordinate_config.elevation",this.hass.language)}:
+                      ${as("coordinate_config.elevation",this.hass.language)}:
                       ${i}m
                     </div>
                   `}
@@ -2247,29 +2247,29 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
           </div>
         </div>
       </ha-card>
-    `}renderDaysBetweenIrrigationCard(){return this.config&&this.data&&this.hass?W`
+    `}renderDaysBetweenIrrigationCard(){return this.config&&this.data&&this.hass?V`
       <ha-card
-        header="${ss("days_between_irrigation.title",this.hass.language)}"
+        header="${as("days_between_irrigation.title",this.hass.language)}"
       >
         <div class="card-content">
-          ${ss("days_between_irrigation.description",this.hass.language)}
+          ${as("days_between_irrigation.description",this.hass.language)}
         </div>
 
         <div class="card-content">
-          ${this._numRow(ss("days_between_irrigation.label",this.hass.language),"",this.config.days_between_irrigation||0,(e=>this.handleConfigChange({days_between_irrigation:parseInt(e)})),1)}
+          ${this._numRow(as("days_between_irrigation.label",this.hass.language),"",this.config.days_between_irrigation||0,e=>this.handleConfigChange({days_between_irrigation:parseInt(e)}),1)}
           <div class="card-content">
             <div
               style="color: var(--secondary-text-color); font-size: 0.875rem; margin-top: 8px;"
             >
-              ${ss("days_between_irrigation.help_text",this.hass.language)}
+              ${as("days_between_irrigation.help_text",this.hass.language)}
             </div>
           </div>
         </div>
       </ha-card>
-    `:W``}async saveData(e){if(this.hass&&this.data){this.isSaving=!0,this._scheduleUpdate(),this._suppressNextConfigUpdate=!0;try{this.data=Object.assign(Object.assign({},this.data),e),this.config=Object.assign(Object.assign({},this.config),e),this._scheduleUpdate(),await(t=this.hass,s=this.data,t.callApi("POST",os+"/config",s)),"programs"in e&&this._fetchStartSource()}catch(e){this._suppressNextConfigUpdate=!1,console.error("Error saving config:",e),ta(e,this.shadowRoot.querySelector("ha-card")),await this._fetchData()}finally{this.isSaving=!1,this._scheduleUpdate()}var t,s}}handleConfigChange(e){return this.debouncedSave(e)}disconnectedCallback(){super.disconnectedCallback(),void 0!==this._liveTimer&&(window.clearInterval(this._liveTimer),this._liveTimer=void 0)}_textRow(e,t,s,i){return W`
+    `:V``}async saveData(e){if(this.hass&&this.data){this.isSaving=!0,this._scheduleUpdate(),this._suppressNextConfigUpdate=!0;try{this.data=Object.assign(Object.assign({},this.data),e),this.config=Object.assign(Object.assign({},this.config),e),this._scheduleUpdate(),await(t=this.hass,s=this.data,t.callApi("POST",hs+"/config",s)),"programs"in e&&this._fetchStartSource()}catch(e){this._suppressNextConfigUpdate=!1,console.error("Error saving config:",e),ia(e,this.shadowRoot.querySelector("ha-card")),await this._fetchData()}finally{this.isSaving=!1,this._scheduleUpdate()}var t,s}}handleConfigChange(e){return this.debouncedSave(e)}disconnectedCallback(){super.disconnectedCallback(),void 0!==this._liveTimer&&(window.clearInterval(this._liveTimer),this._liveTimer=void 0)}_textRow(e,t,s,i){return V`
       <div class="setting-row">
         <div class="setting-label">
-          ${e}${t?W` <span class="unit">(${t})</span>`:""}
+          ${e}${t?V` <span class="unit">(${t})</span>`:""}
         </div>
         <input
           class="field"
@@ -2278,10 +2278,10 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
           @change=${e=>i(e.target.value)}
         />
       </div>
-    `}_timeRow(e,t,s,i=""){return W`
+    `}_timeRow(e,t,s,i=""){return V`
       <div class="setting-row">
         <div class="setting-label">
-          ${e}${i?W`<div class="setting-hint">${i}</div>`:""}
+          ${e}${i?V`<div class="setting-hint">${i}</div>`:""}
         </div>
         <input
           class="field"
@@ -2290,10 +2290,10 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
           @change=${e=>s(e.target.value)}
         />
       </div>
-    `}_numRow(e,t,s,i,a=1,n=!1,r=null){const o=(String(a).split(".")[1]||"").length,l=e=>null!==r&&e<r?r:e,h=(e,t)=>{const s=parseFloat(e.value),n=l(+((isNaN(s)?0:s)+t*a).toFixed(o));e.value=String(n),i(String(n))};return W`
+    `}_numRow(e,t,s,i,a=1,n=!1,r=null){const o=(String(a).split(".")[1]||"").length,l=e=>null!==r&&e<r?r:e,h=(e,t)=>{const s=parseFloat(e.value),n=l(+((isNaN(s)?0:s)+t*a).toFixed(o));e.value=String(n),i(String(n))};return V`
       <div class="setting-row">
         <div class="setting-label">
-          ${e}${t?W` <span class="unit">(${t})</span>`:""}
+          ${e}${t?V` <span class="unit">(${t})</span>`:""}
         </div>
         <div class="num-field">
           <input
@@ -2308,19 +2308,19 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
           />
           <ha-icon-button
             class="step-btn"
-            .path=${Sa}
+            .path=${Ta}
             ?disabled=${n}
             @click=${e=>h(e.currentTarget.parentElement.querySelector("input"),-1)}
           ></ha-icon-button>
           <ha-icon-button
             class="step-btn"
-            .path=${Ta}
+            .path=${Ea}
             ?disabled=${n}
             @click=${e=>h(e.currentTarget.parentElement.querySelector("input"),1)}
           ></ha-icon-button>
         </div>
       </div>
-    `}_selectRow(e,t,s){return W`
+    `}_selectRow(e,t,s){return V`
       <div class="setting-row">
         <div class="setting-label">${e}</div>
         <div class="select-wrap">
@@ -2328,11 +2328,11 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
             ${t}
           </select>
           <svg class="chev" viewBox="0 0 24 24">
-            <path d=${ka}></path>
+            <path d=${Ma}></path>
           </svg>
         </div>
       </div>
-    `}_programLabel(e,t){var s,i,a;return"main"!==e||t&&"Main program"!==t?null!==(a=null!=t?t:e)&&void 0!==a?a:"":ss("programs.main_name",null!==(i=null===(s=this.hass)||void 0===s?void 0:s.language)&&void 0!==i?i:"en")}_ask(e,t=!1){return Da(this.hass,{text:e,destructive:t})}_actionBtn(e,t,s,i=!1,a=!1){return W`
+    `}_programLabel(e,t){var s,i,a;return"main"!==e||t&&"Main program"!==t?null!==(a=null!=t?t:e)&&void 0!==a?a:"":as("programs.main_name",null!==(i=null===(s=this.hass)||void 0===s?void 0:s.language)&&void 0!==i?i:"en")}_ask(e,t=!1){return Pa(this.hass,{text:e,destructive:t})}_actionBtn(e,t,s,i=!1,a=!1){return V`
       <ha-button
         appearance=${i?"outlined":"filled"}
         variant=${i?"danger":"brand"}
@@ -2343,7 +2343,7 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
         ${t}
       </ha-button>
     `}static get styles(){return l`
-      ${Na} ${La} /* View-specific styles only - most common styles are now in globalStyle */
+      ${ja} ${Ba} /* View-specific styles only - most common styles are now in globalStyle */
 
       /* Drop the clickable (i) toggles and just always show the section
          descriptions (they're short and not in the way). */
@@ -2489,51 +2489,51 @@ function fe(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
       .add-trigger-section ha-icon {
         margin-right: 8px;
       }
-    `}};s([me()],Wa.prototype,"narrow",void 0),s([me()],Wa.prototype,"path",void 0),s([me()],Wa.prototype,"data",void 0),s([me()],Wa.prototype,"config",void 0),s([me()],Wa.prototype,"section",void 0),s([me({attribute:!1})],Wa.prototype,"zones",void 0),s([me({attribute:!1})],Wa.prototype,"planning",void 0),s([me({attribute:!1})],Wa.prototype,"programsState",void 0),s([me({attribute:!1})],Wa.prototype,"startSource",void 0),s([me({type:Boolean})],Wa.prototype,"isLoading",void 0),s([me({type:Boolean})],Wa.prototype,"isSaving",void 0),Wa=s([ue("smart-irrigation-view-general")],Wa);
+    `}};s([ve()],Ga.prototype,"narrow",void 0),s([ve()],Ga.prototype,"path",void 0),s([ve()],Ga.prototype,"data",void 0),s([ve()],Ga.prototype,"config",void 0),s([ve()],Ga.prototype,"section",void 0),s([ve({attribute:!1})],Ga.prototype,"zones",void 0),s([ve({attribute:!1})],Ga.prototype,"planning",void 0),s([ve({attribute:!1})],Ga.prototype,"programsState",void 0),s([ve({attribute:!1})],Ga.prototype,"startSource",void 0),s([ve({type:Boolean})],Ga.prototype,"isLoading",void 0),s([ve({type:Boolean})],Ga.prototype,"isSaving",void 0),Ga=s([pe("smart-irrigation-view-general")],Ga);
 /**
      * @license
      * Copyright 2020 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
      */
-const{I:Va}=oe,Za=()=>document.createComment(""),Ga=(e,t,s)=>{const i=e._$AA.parentNode,a=void 0===t?e._$AB:t._$AA;if(void 0===s){const t=i.insertBefore(Za(),a),n=i.insertBefore(Za(),a);s=new Va(t,n,e,e.options)}else{const t=s._$AB.nextSibling,n=s._$AM,r=n!==e;if(r){let t;s._$AQ?.(e),s._$AM=e,void 0!==s._$AP&&(t=e._$AU)!==n._$AU&&s._$AP(t)}if(t!==a||r){let e=s._$AA;for(;e!==t;){const t=e.nextSibling;i.insertBefore(e,a),e=t}}}return s},qa=(e,t,s=e)=>(e._$AI(t,s),e),Ka={},Ja=(e,t=Ka)=>e._$AH=t,Xa=e=>{e._$AR(),e._$AA.remove()},Qa=(e,t,s)=>{const i=new Map;for(let a=t;a<=s;a++)i.set(e[a],a);return i},en=Ii(class extends Fi{constructor(e){if(super(e),e.type!==Li)throw Error("repeat() can only be used in text expressions")}dt(e,t,s){let i;void 0===s?s=t:void 0!==t&&(i=t);const a=[],n=[];let r=0;for(const t of e)a[r]=i?i(t,r):r,n[r]=s(t,r),r++;return{values:n,keys:a}}render(e,t,s){return this.dt(e,t,s).values}update(e,[t,s,i]){const a=(e=>e._$AH)(e),{values:n,keys:r}=this.dt(t,s,i);if(!Array.isArray(a))return this.ut=r,n;const o=this.ut??=[],l=[];let h,d,c=0,u=a.length-1,p=0,g=n.length-1;for(;c<=u&&p<=g;)if(null===a[c])c++;else if(null===a[u])u--;else if(o[c]===r[p])l[p]=qa(a[c],n[p]),c++,p++;else if(o[u]===r[g])l[g]=qa(a[u],n[g]),u--,g--;else if(o[c]===r[g])l[g]=qa(a[c],n[g]),Ga(e,l[g+1],a[c]),c++,g--;else if(o[u]===r[p])l[p]=qa(a[u],n[p]),Ga(e,a[c],a[u]),u--,p++;else if(void 0===h&&(h=Qa(r,p,g),d=Qa(o,c,u)),h.has(o[c]))if(h.has(o[u])){const t=d.get(r[p]),s=void 0!==t?a[t]:null;if(null===s){const t=Ga(e,a[c]);qa(t,n[p]),l[p]=t}else l[p]=qa(s,n[p]),Ga(e,a[c],s),a[t]=null;p++}else Xa(a[u]),u--;else Xa(a[c]),c++;for(;p<=g;){const t=Ga(e,l[g+1]);qa(t,n[p]),l[p++]=t}for(;c<=u;){const e=a[c++];null!==e&&Xa(e)}return this.ut=r,Ja(e,l),Z}});
+const{I:qa}=le,Ka=e=>e,Ja=()=>document.createComment(""),Xa=(e,t,s)=>{const i=e._$AA.parentNode,a=void 0===t?e._$AB:t._$AA;if(void 0===s){const t=i.insertBefore(Ja(),a),n=i.insertBefore(Ja(),a);s=new qa(t,n,e,e.options)}else{const t=s._$AB.nextSibling,n=s._$AM,r=n!==e;if(r){let t;s._$AQ?.(e),s._$AM=e,void 0!==s._$AP&&(t=e._$AU)!==n._$AU&&s._$AP(t)}if(t!==a||r){let e=s._$AA;for(;e!==t;){const t=Ka(e).nextSibling;Ka(i).insertBefore(e,a),e=t}}}return s},Qa=(e,t,s=e)=>(e._$AI(t,s),e),en={},tn=(e,t=en)=>e._$AH=t,sn=e=>{e._$AR(),e._$AA.remove()},an=(e,t,s)=>{const i=new Map;for(let a=t;a<=s;a++)i.set(e[a],a);return i},nn=Bi(class extends Ui{constructor(e){if(super(e),e.type!==Fi)throw Error("repeat() can only be used in text expressions")}dt(e,t,s){let i;void 0===s?s=t:void 0!==t&&(i=t);const a=[],n=[];let r=0;for(const t of e)a[r]=i?i(t,r):r,n[r]=s(t,r),r++;return{values:n,keys:a}}render(e,t,s){return this.dt(e,t,s).values}update(e,[t,s,i]){const a=(e=>e._$AH)(e),{values:n,keys:r}=this.dt(t,s,i);if(!Array.isArray(a))return this.ut=r,n;const o=this.ut??=[],l=[];let h,d,c=0,u=a.length-1,p=0,g=n.length-1;for(;c<=u&&p<=g;)if(null===a[c])c++;else if(null===a[u])u--;else if(o[c]===r[p])l[p]=Qa(a[c],n[p]),c++,p++;else if(o[u]===r[g])l[g]=Qa(a[u],n[g]),u--,g--;else if(o[c]===r[g])l[g]=Qa(a[c],n[g]),Xa(e,l[g+1],a[c]),c++,g--;else if(o[u]===r[p])l[p]=Qa(a[u],n[p]),Xa(e,a[c],a[u]),u--,p++;else if(void 0===h&&(h=an(r,p,g),d=an(o,c,u)),h.has(o[c]))if(h.has(o[u])){const t=d.get(r[p]),s=void 0!==t?a[t]:null;if(null===s){const t=Xa(e,a[c]);Qa(t,n[p]),l[p]=t}else l[p]=Qa(s,n[p]),Xa(e,a[c],s),a[t]=null;p++}else sn(a[u]),u--;else sn(a[c]),c++;for(;p<=g;){const t=Xa(e,l[g+1]);Qa(t,n[p]),l[p++]=t}for(;c<=u;){const e=a[c++];null!==e&&sn(e)}return this.ut=r,tn(e,l),G}});
 /**
      * @license
      * Copyright 2017 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
-     */var tn,sn;function an(e){return e&&e.__esModule&&Object.prototype.hasOwnProperty.call(e,"default")?e.default:e}function nn(e){throw new Error('Could not dynamically require "'+e+'". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.')}!function(e){e.Sunrise="sunrise",e.Sunset="sunset",e.SolarAzimuth="solar_azimuth",e.Time="time"}(tn||(tn={})),function(e){e.Disabled="disabled",e.Manual="manual",e.Automatic="automatic"}(sn||(sn={}));var rn,on={exports:{}};var ln,hn=(rn||(rn=1,(ln=on).exports=function(){var e,t;function s(){return e.apply(null,arguments)}function i(t){e=t}function a(e){return e instanceof Array||"[object Array]"===Object.prototype.toString.call(e)}function n(e){return null!=e&&"[object Object]"===Object.prototype.toString.call(e)}function r(e,t){return Object.prototype.hasOwnProperty.call(e,t)}function o(e){if(Object.getOwnPropertyNames)return 0===Object.getOwnPropertyNames(e).length;var t;for(t in e)if(r(e,t))return!1;return!0}function l(e){return void 0===e}function h(e){return"number"==typeof e||"[object Number]"===Object.prototype.toString.call(e)}function d(e){return e instanceof Date||"[object Date]"===Object.prototype.toString.call(e)}function c(e,t){var s,i=[],a=e.length;for(s=0;s<a;++s)i.push(t(e[s],s));return i}function u(e,t){for(var s in t)r(t,s)&&(e[s]=t[s]);return r(t,"toString")&&(e.toString=t.toString),r(t,"valueOf")&&(e.valueOf=t.valueOf),e}function p(e,t,s,i){return si(e,t,s,i,!0).utc()}function g(){return{empty:!1,unusedTokens:[],unusedInput:[],overflow:-2,charsLeftOver:0,nullInput:!1,invalidEra:null,invalidMonth:null,invalidOffset:null,invalidFormat:!1,userInvalidated:!1,iso:!1,parsedDateParts:[],era:null,meridiem:null,rfc2822:!1,weekdayMismatch:!1}}function m(e){return null==e._pf&&(e._pf=g()),e._pf}function v(e){var s=null,i=!1,a=e._d&&!isNaN(e._d.getTime());return a&&(s=m(e),i=t.call(s.parsedDateParts,(function(e){return null!=e})),a=s.overflow<0&&!s.empty&&!s.invalidEra&&!s.invalidMonth&&!s.invalidOffset&&!s.invalidWeekday&&!s.weekdayMismatch&&!s.nullInput&&!s.invalidFormat&&!s.userInvalidated&&(!s.meridiem||s.meridiem&&i),e._strict&&(a=a&&0===s.charsLeftOver&&0===s.unusedTokens.length&&void 0===s.bigHour)),null!=Object.isFrozen&&Object.isFrozen(e)?a:(e._isValid=a,e._isValid)}function f(e){var t=p(NaN);return null!=e?u(m(t),e):m(t).userInvalidated=!0,t}t=Array.prototype.some?Array.prototype.some:function(e){var t,s=Object(this),i=s.length>>>0;for(t=0;t<i;t++)if(t in s&&e.call(this,s[t],t,s))return!0;return!1};var _=s.momentProperties=[],y=!1;function b(e,t){var s,i,a,n=_.length;if(l(t._isAMomentObject)||(e._isAMomentObject=t._isAMomentObject),l(t._i)||(e._i=t._i),l(t._f)||(e._f=t._f),l(t._l)||(e._l=t._l),l(t._strict)||(e._strict=t._strict),l(t._tzm)||(e._tzm=t._tzm),l(t._isUTC)||(e._isUTC=t._isUTC),l(t._offset)||(e._offset=t._offset),l(t._pf)||(e._pf=m(t)),l(t._locale)||(e._locale=t._locale),n>0)for(s=0;s<n;s++)l(a=t[i=_[s]])||(e[i]=a);return e}function w(e){b(this,e),this._d=new Date(null!=e._d?e._d.getTime():NaN),this.isValid()||(this._d=new Date(NaN)),!1===y&&(y=!0,s.updateOffset(this),y=!1)}function $(e){return e instanceof w||null!=e&&null!=e._isAMomentObject}function x(e){!1===s.suppressDeprecationWarnings&&"undefined"!=typeof console&&console.warn&&console.warn("Deprecation warning: "+e)}function k(e,t){var i=!0;return u((function(){if(null!=s.deprecationHandler&&s.deprecationHandler(null,e),i){var a,n,o,l=[],h=arguments.length;for(n=0;n<h;n++){if(a="","object"==typeof arguments[n]){for(o in a+="\n["+n+"] ",arguments[0])r(arguments[0],o)&&(a+=o+": "+arguments[0][o]+", ");a=a.slice(0,-2)}else a=arguments[n];l.push(a)}x(e+"\nArguments: "+Array.prototype.slice.call(l).join("")+"\n"+(new Error).stack),i=!1}return t.apply(this,arguments)}),t)}var S={};function z(e,t){null!=s.deprecationHandler&&s.deprecationHandler(e,t),S[e]||(x(t+"\n"+(new Error).stack),S[e]=!0)}function M(e){return"undefined"!=typeof Function&&e instanceof Function||"[object Function]"===Object.prototype.toString.call(e)}s.suppressDeprecationWarnings=!1,s.deprecationHandler=null;var T={D:"date",dates:"date",date:"date",d:"day",days:"day",day:"day",e:"weekday",weekdays:"weekday",weekday:"weekday",E:"isoWeekday",isoweekdays:"isoWeekday",isoweekday:"isoWeekday",DDD:"dayOfYear",dayofyears:"dayOfYear",dayofyear:"dayOfYear",h:"hour",hours:"hour",hour:"hour",ms:"millisecond",milliseconds:"millisecond",millisecond:"millisecond",m:"minute",minutes:"minute",minute:"minute",M:"month",months:"month",month:"month",Q:"quarter",quarters:"quarter",quarter:"quarter",s:"second",seconds:"second",second:"second",gg:"weekYear",weekyears:"weekYear",weekyear:"weekYear",GG:"isoWeekYear",isoweekyears:"isoWeekYear",isoweekyear:"isoWeekYear",w:"week",weeks:"week",week:"week",W:"isoWeek",isoweeks:"isoWeek",isoweek:"isoWeek",y:"year",years:"year",year:"year"};function O(e){return"string"==typeof e?T[e]||T[e.toLowerCase()]:void 0}function A(e){var t,s,i={};for(s in e)r(e,s)&&(t=O(s))&&(i[t]=e[s]);return i}var E={date:9,day:11,weekday:11,isoWeekday:11,dayOfYear:4,hour:13,millisecond:16,minute:14,month:8,quarter:7,second:15,weekYear:1,isoWeekYear:1,week:5,isoWeek:5,year:1};function C(e){var t,s=[];for(t in e)r(e,t)&&s.push({unit:t,priority:E[t]});return s.sort((function(e,t){return e.priority-t.priority})),s}function H(e,t,s){var i=""+Math.abs(e),a=t-i.length;return(e>=0?s?"+":"":"-")+Math.pow(10,Math.max(0,a)).toString().substr(1)+i}var D=/(\[[^\[]*\])|(\\e)|(\\)?(eHHmm|[Hh]mm(ss)?|Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|Qo?|N{1,5}|YYYYYY|YYYYY|YYYY|YY|y{2,4}|yo?|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|kk?|mm?|ss?|S{1,9}|x|X|zz?|ZZ?|.)/g,N=/(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g,R={},P={};function j(e,t,s,i){var a=i;"string"==typeof i&&(a=function(){return this[i]()}),e&&(P[e]=a),t&&(P[t[0]]=function(){return H(a.apply(this,arguments),t[1],t[2])}),s&&(P[s]=function(){return this.localeData().ordinal(a.apply(this,arguments),e)})}function L(e){return e.match(/\[[\s\S]/)?e.replace(/^\[|\]$/g,""):e.replace(/\\/g,"")}function I(e){var t,s,i=e.match(D);for(t=0,s=i.length;t<s;t++)P[i[t]]?i[t]=P[i[t]]:i[t]=L(i[t]);return function(t){var a,n="";for(a=0;a<s;a++)n+=M(i[a])?i[a].call(t,e):i[a];return n}}function F(e,t){if(!e.isValid())return e.localeData().invalidDate();var s="$"+(t=B(t,e.localeData()));return r(R,s)||(R[s]=I(t)),R[s](e)}function B(e,t){var s=5;function i(e){return t.longDateFormat(e)||e}for(N.lastIndex=0;s>=0&&N.test(e);)e=e.replace(N,i),N.lastIndex=0,s-=1;return e}var U,Y=/\d/,W=/\d\d/,V=/\d{3}/,Z=/\d{4}/,G=/[+-]?\d{6}/,q=/\d\d?/,K=/\d\d\d\d?/,J=/\d\d\d\d\d\d?/,X=/\d{1,3}/,Q=/\d{1,4}/,ee=/[+-]?\d{1,6}/,te=/\d+/,se=/[+-]?\d+/,ie=/Z|[+-]\d\d:?\d\d/gi,ae=/Z|[+-]\d\d(?::?\d\d)?/gi,ne=/[+-]?\d+(\.\d{1,3})?/,re=/[0-9]{0,256}['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFF07\uFF10-\uFFEF]{1,256}|[\u0600-\u06FF\/]{1,256}(\s*?[\u0600-\u06FF]{1,256}){1,2}/i,oe=/^[1-9]\d?/,le=/^([1-9]\d|\d)/;function he(e,t,s){U[e]=M(t)?t:function(e,i){return e&&s?s:t}}function de(e,t){return r(U,e)?U[e](t._strict,t._locale):new RegExp(ce(e))}function ce(e){return ue(e.replace("\\","").replace(/\\(\[)|\\(\])|\[([^\]\[]*)\]|\\(.)/g,(function(e,t,s,i,a){return t||s||i||a})))}function ue(e){return e.replace(/[-\/\\^$*+?.()|[\]{}]/g,"\\$&")}function pe(e){return e<0?Math.ceil(e)||0:Math.floor(e)}function ge(e){var t=+e,s=0;return 0!==t&&isFinite(t)&&(s=pe(t)),s}U={};var me={};function ve(e,t){var s,i,a=t;for("string"==typeof e&&(e=[e]),h(t)&&(a=function(e,s){s[t]=ge(e)}),i=e.length,s=0;s<i;s++)me[e[s]]=a}function fe(e,t){ve(e,(function(e,s,i,a){i._w=i._w||{},t(e,i._w,i,a)}))}function _e(e,t,s){null!=t&&r(me,e)&&me[e](t,s._a,s,e)}function ye(e){return e%4==0&&e%100!=0||e%400==0}var be=0,we=1,$e=2,xe=3,ke=4,Se=5,ze=6,Me=7,Te=8;function Oe(e){return ye(e)?366:365}j("Y",0,0,(function(){var e=this.year();return e<=9999?H(e,4):"+"+e})),j(0,["YY",2],0,(function(){return this.year()%100})),j(0,["YYYY",4],0,"year"),j(0,["YYYYY",5],0,"year"),j(0,["YYYYYY",6,!0],0,"year"),he("Y",se),he("YY",q,W),he("YYYY",Q,Z),he("YYYYY",ee,G),he("YYYYYY",ee,G),ve(["YYYYY","YYYYYY"],be),ve("YYYY",(function(e,t){t[be]=2===e.length?s.parseTwoDigitYear(e):ge(e)})),ve("YY",(function(e,t){t[be]=s.parseTwoDigitYear(e)})),ve("Y",(function(e,t){t[be]=parseInt(e,10)})),s.parseTwoDigitYear=function(e){return ge(e)+(ge(e)>68?1900:2e3)};var Ae,Ee=He("FullYear",!0);function Ce(){return ye(this.year())}function He(e,t){return function(i){return null!=i?(Ne(this,e,i),s.updateOffset(this,t),this):De(this,e)}}function De(e,t){if(!e.isValid())return NaN;var s=e._d,i=e._isUTC;switch(t){case"Milliseconds":return i?s.getUTCMilliseconds():s.getMilliseconds();case"Seconds":return i?s.getUTCSeconds():s.getSeconds();case"Minutes":return i?s.getUTCMinutes():s.getMinutes();case"Hours":return i?s.getUTCHours():s.getHours();case"Date":return i?s.getUTCDate():s.getDate();case"Day":return i?s.getUTCDay():s.getDay();case"Month":return i?s.getUTCMonth():s.getMonth();case"FullYear":return i?s.getUTCFullYear():s.getFullYear();default:return NaN}}function Ne(e,t,s){var i,a,n,r,o;if(e.isValid()&&!isNaN(s)){switch(i=e._d,a=e._isUTC,t){case"Milliseconds":return void(a?i.setUTCMilliseconds(s):i.setMilliseconds(s));case"Seconds":return void(a?i.setUTCSeconds(s):i.setSeconds(s));case"Minutes":return void(a?i.setUTCMinutes(s):i.setMinutes(s));case"Hours":return void(a?i.setUTCHours(s):i.setHours(s));case"Date":return void(a?i.setUTCDate(s):i.setDate(s));case"FullYear":break;default:return}n=s,r=e.month(),o=29!==(o=e.date())||1!==r||ye(n)?o:28,a?i.setUTCFullYear(n,r,o):i.setFullYear(n,r,o)}}function Re(e){return M(this[e=O(e)])?this[e]():this}function Pe(e,t){if("object"==typeof e){var s,i=C(e=A(e)),a=i.length;for(s=0;s<a;s++)this[i[s].unit](e[i[s].unit])}else if(M(this[e=O(e)]))return this[e](t);return this}function je(e,t){return(e%t+t)%t}function Le(e,t){if(isNaN(e)||isNaN(t))return NaN;var s=je(t,12);return e+=(t-s)/12,1===s?ye(e)?29:28:31-s%7%2}Ae=Array.prototype.indexOf?Array.prototype.indexOf:function(e){var t;for(t=0;t<this.length;++t)if(this[t]===e)return t;return-1},j("M",["MM",2],"Mo",(function(){return this.month()+1})),j("MMM",0,0,(function(e){return this.localeData().monthsShort(this,e)})),j("MMMM",0,0,(function(e){return this.localeData().months(this,e)})),he("M",q,oe),he("MM",q,W),he("MMM",(function(e,t){return t.monthsShortRegex(e)})),he("MMMM",(function(e,t){return t.monthsRegex(e)})),ve(["M","MM"],(function(e,t){t[we]=ge(e)-1})),ve(["MMM","MMMM"],(function(e,t,s,i){var a=s._locale.monthsParse(e,i,s._strict);null!=a?t[we]=a:m(s).invalidMonth=e}));var Ie="January_February_March_April_May_June_July_August_September_October_November_December".split("_"),Fe="Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec".split("_"),Be=/D[oD]?(\[[^\[\]]*\]|\s)+MMMM?/,Ue=re,Ye=re,We=["monthsParse","longMonthsParse","shortMonthsParse","monthsRegex","monthsShortRegex","monthsStrictRegex","monthsShortStrictRegex"];function Ve(e,t){var s,i;for(s=0;s<We.length;s++)r(t,i=We[s])||delete e["_"+i]}function Ze(e,t){return e?a(this._months)?this._months[e.month()]:this._months[(this._months.isFormat||Be).test(t)?"format":"standalone"][e.month()]:a(this._months)?this._months:this._months.standalone}function Ge(e,t){return e?a(this._monthsShort)?this._monthsShort[e.month()]:this._monthsShort[Be.test(t)?"format":"standalone"][e.month()]:a(this._monthsShort)?this._monthsShort:this._monthsShort.standalone}function qe(e,t,s){var i,a,n,r=e.toLocaleLowerCase();if(!this._monthsParse)for(this._monthsParse=[],this._longMonthsParse=[],this._shortMonthsParse=[],i=0;i<12;++i)n=p([2e3,i]),this._shortMonthsParse[i]=this.monthsShort(n,"").toLocaleLowerCase(),this._longMonthsParse[i]=this.months(n,"").toLocaleLowerCase();return s?"MMM"===t?-1!==(a=Ae.call(this._shortMonthsParse,r))?a:null:-1!==(a=Ae.call(this._longMonthsParse,r))?a:null:"MMM"===t?-1!==(a=Ae.call(this._shortMonthsParse,r))||-1!==(a=Ae.call(this._longMonthsParse,r))?a:null:-1!==(a=Ae.call(this._longMonthsParse,r))||-1!==(a=Ae.call(this._shortMonthsParse,r))?a:null}function Ke(e,t,s){var i,a,n;if(this._monthsParseExact)return qe.call(this,e,t,s);for(this._monthsParse||(this._monthsParse=[],this._longMonthsParse=[],this._shortMonthsParse=[]),i=0;i<12;i++){if(a=p([2e3,i]),s&&!this._longMonthsParse[i]&&(this._longMonthsParse[i]=new RegExp("^"+this.months(a,"").replace(".","")+"$","i"),this._shortMonthsParse[i]=new RegExp("^"+this.monthsShort(a,"").replace(".","")+"$","i")),s||this._monthsParse[i]||(n="^"+this.months(a,"")+"|^"+this.monthsShort(a,""),this._monthsParse[i]=new RegExp(n.replace(".",""),"i")),s&&"MMMM"===t&&this._longMonthsParse[i].test(e))return i;if(s&&"MMM"===t&&this._shortMonthsParse[i].test(e))return i;if(!s&&this._monthsParse[i].test(e))return i}}function Je(e,t){if(!e.isValid())return e;if("string"==typeof t)if(/^\d+$/.test(t))t=ge(t);else if(!h(t=e.localeData().monthsParse(t)))return e;var s=t,i=e.date();return i=i<29?i:Math.min(i,Le(e.year(),s)),e._isUTC?e._d.setUTCMonth(s,i):e._d.setMonth(s,i),e}function Xe(e){return null!=e?(Je(this,e),s.updateOffset(this,!0),this):De(this,"Month")}function Qe(){return Le(this.year(),this.month())}function et(e){return this._monthsParseExact?(r(this,"_monthsRegex")||st.call(this),e?this._monthsShortStrictRegex:this._monthsShortRegex):(r(this,"_monthsShortRegex")||(this._monthsShortRegex=Ue),this._monthsShortStrictRegex&&e?this._monthsShortStrictRegex:this._monthsShortRegex)}function tt(e){return this._monthsParseExact?(r(this,"_monthsRegex")||st.call(this),e?this._monthsStrictRegex:this._monthsRegex):(r(this,"_monthsRegex")||(this._monthsRegex=Ye),this._monthsStrictRegex&&e?this._monthsStrictRegex:this._monthsRegex)}function st(){function e(e,t){return t.length-e.length}var t,s,i,a,n=[],r=[],o=[];for(t=0;t<12;t++)s=p([2e3,t]),i=ue(this.monthsShort(s,"")),a=ue(this.months(s,"")),n.push(i),r.push(a),o.push(a),o.push(i);n.sort(e),r.sort(e),o.sort(e),this._monthsRegex=new RegExp("^("+o.join("|")+")","i"),this._monthsShortRegex=this._monthsRegex,this._monthsStrictRegex=new RegExp("^("+r.join("|")+")","i"),this._monthsShortStrictRegex=new RegExp("^("+n.join("|")+")","i")}function it(e,t){return"string"!=typeof e?e:isNaN(e)?"number"==typeof(e=t.weekdaysParse(e))?e:null:parseInt(e,10)}function at(e,t){return"string"==typeof e?t.weekdaysParse(e)%7||7:isNaN(e)?null:e}function nt(e,t){return e.slice(t,7).concat(e.slice(0,t))}j("d",0,"do","day"),j("dd",0,0,(function(e){return this.localeData().weekdaysMin(this,e)})),j("ddd",0,0,(function(e){return this.localeData().weekdaysShort(this,e)})),j("dddd",0,0,(function(e){return this.localeData().weekdays(this,e)})),j("e",0,0,"weekday"),j("E",0,0,"isoWeekday"),j("eHHmm",0,0,(function(){return""+this.weekday()+H(this.hours(),2)+H(this.minutes(),2)})),he("d",q),he("e",q),he("E",q),he("eHHmm",J),he("dd",(function(e,t){return t.weekdaysMinRegex(e)})),he("ddd",(function(e,t){return t.weekdaysShortRegex(e)})),he("dddd",(function(e,t){return t.weekdaysRegex(e)})),fe(["dd","ddd","dddd"],(function(e,t,s,i){var a=s._locale.weekdaysParse(e,i,s._strict);null!=a?t.d=a:m(s).invalidWeekday=e})),fe(["d","e","E"],(function(e,t,s,i){t[i]=ge(e)})),fe("eHHmm",(function(e,t,s){var i=e.length-4;t.e=ge(e.substr(0,i)),s._a[xe]=ge(e.substr(i,2)),s._a[ke]=ge(e.substr(i+2))}));var rt,ot="Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),lt="Sun_Mon_Tue_Wed_Thu_Fri_Sat".split("_"),ht="Su_Mo_Tu_We_Th_Fr_Sa".split("_"),dt=re,ct=re,ut=re,pt=["weekdaysParse","fullWeekdaysParse","shortWeekdaysParse","minWeekdaysParse","weekdaysRegex","weekdaysShortRegex","weekdaysMinRegex","weekdaysStrictRegex","weekdaysShortStrictRegex","weekdaysMinStrictRegex"];function gt(e,t){var s,i;for(s=0;s<pt.length;s++)r(t,i=pt[s])||delete e["_"+i]}function mt(e,t){var s=a(this._weekdays)?this._weekdays:this._weekdays[e&&!0!==e&&this._weekdays.isFormat.test(t)?"format":"standalone"];return!0===e?nt(s,this._week.dow):e?s[e.day()]:s}function vt(e){return!0===e?nt(this._weekdaysShort,this._week.dow):e?this._weekdaysShort[e.day()]:this._weekdaysShort}function ft(e){return!0===e?nt(this._weekdaysMin,this._week.dow):e?this._weekdaysMin[e.day()]:this._weekdaysMin}function _t(e,t,s){var i,a,n,r=e.toLocaleLowerCase();if(!this._weekdaysParse)for(this._weekdaysParse=[],this._shortWeekdaysParse=[],this._minWeekdaysParse=[],i=0;i<7;++i)n=p([2e3,1]).day(i),this._minWeekdaysParse[i]=this.weekdaysMin(n,"").toLocaleLowerCase(),this._shortWeekdaysParse[i]=this.weekdaysShort(n,"").toLocaleLowerCase(),this._weekdaysParse[i]=this.weekdays(n,"").toLocaleLowerCase();return s?"dddd"===t?-1!==(a=Ae.call(this._weekdaysParse,r))?a:null:"ddd"===t?-1!==(a=Ae.call(this._shortWeekdaysParse,r))?a:null:-1!==(a=Ae.call(this._minWeekdaysParse,r))?a:null:"dddd"===t?-1!==(a=Ae.call(this._weekdaysParse,r))||-1!==(a=Ae.call(this._shortWeekdaysParse,r))||-1!==(a=Ae.call(this._minWeekdaysParse,r))?a:null:"ddd"===t?-1!==(a=Ae.call(this._shortWeekdaysParse,r))||-1!==(a=Ae.call(this._weekdaysParse,r))||-1!==(a=Ae.call(this._minWeekdaysParse,r))?a:null:-1!==(a=Ae.call(this._minWeekdaysParse,r))||-1!==(a=Ae.call(this._weekdaysParse,r))||-1!==(a=Ae.call(this._shortWeekdaysParse,r))?a:null}function yt(e,t,s){var i,a,n;if(this._weekdaysParseExact)return _t.call(this,e,t,s);for(this._weekdaysParse||(this._weekdaysParse=[],this._minWeekdaysParse=[],this._shortWeekdaysParse=[],this._fullWeekdaysParse=[]),i=0;i<7;i++){if(a=p([2e3,1]).day(i),s&&!this._fullWeekdaysParse[i]&&(this._fullWeekdaysParse[i]=new RegExp("^"+this.weekdays(a,"").replace(".","\\.?")+"$","i"),this._shortWeekdaysParse[i]=new RegExp("^"+this.weekdaysShort(a,"").replace(".","\\.?")+"$","i"),this._minWeekdaysParse[i]=new RegExp("^"+this.weekdaysMin(a,"").replace(".","\\.?")+"$","i")),this._weekdaysParse[i]||(n="^"+this.weekdays(a,"")+"|^"+this.weekdaysShort(a,"")+"|^"+this.weekdaysMin(a,""),this._weekdaysParse[i]=new RegExp(n.replace(".",""),"i")),s&&"dddd"===t&&this._fullWeekdaysParse[i].test(e))return i;if(s&&"ddd"===t&&this._shortWeekdaysParse[i].test(e))return i;if(s&&"dd"===t&&this._minWeekdaysParse[i].test(e))return i;if(!s&&this._weekdaysParse[i].test(e))return i}}function bt(e){if(!this.isValid())return null!=e?this:NaN;var t=De(this,"Day");return null!=e?(e=it(e,this.localeData()),this.add(e-t,"d")):t}function wt(e){if(!this.isValid())return null!=e?this:NaN;var t=(this.day()+7-this.localeData()._week.dow)%7;return null==e?t:this.add(e-t,"d")}function $t(e){if(!this.isValid())return null!=e?this:NaN;if(null!=e){var t=at(e,this.localeData());return this.day(this.day()%7?t:t-7)}return this.day()||7}function xt(e){return this._weekdaysParseExact?(r(this,"_weekdaysRegex")||zt.call(this),e?this._weekdaysStrictRegex:this._weekdaysRegex):(r(this,"_weekdaysRegex")||(this._weekdaysRegex=dt),this._weekdaysStrictRegex&&e?this._weekdaysStrictRegex:this._weekdaysRegex)}function kt(e){return this._weekdaysParseExact?(r(this,"_weekdaysRegex")||zt.call(this),e?this._weekdaysShortStrictRegex:this._weekdaysShortRegex):(r(this,"_weekdaysShortRegex")||(this._weekdaysShortRegex=ct),this._weekdaysShortStrictRegex&&e?this._weekdaysShortStrictRegex:this._weekdaysShortRegex)}function St(e){return this._weekdaysParseExact?(r(this,"_weekdaysRegex")||zt.call(this),e?this._weekdaysMinStrictRegex:this._weekdaysMinRegex):(r(this,"_weekdaysMinRegex")||(this._weekdaysMinRegex=ut),this._weekdaysMinStrictRegex&&e?this._weekdaysMinStrictRegex:this._weekdaysMinRegex)}function zt(){function e(e,t){return t.length-e.length}var t,s,i,a,n,r=[],o=[],l=[],h=[];for(t=0;t<7;t++)s=p([2e3,1]).day(t),i=ue(this.weekdaysMin(s,"")),a=ue(this.weekdaysShort(s,"")),n=ue(this.weekdays(s,"")),r.push(i),o.push(a),l.push(n),h.push(i),h.push(a),h.push(n);r.sort(e),o.sort(e),l.sort(e),h.sort(e),this._weekdaysRegex=new RegExp("^("+h.join("|")+")","i"),this._weekdaysShortRegex=this._weekdaysRegex,this._weekdaysMinRegex=this._weekdaysRegex,this._weekdaysStrictRegex=new RegExp("^("+l.join("|")+")","i"),this._weekdaysShortStrictRegex=new RegExp("^("+o.join("|")+")","i"),this._weekdaysMinStrictRegex=new RegExp("^("+r.join("|")+")","i")}function Mt(e){var t,s;for(s in Ve(this,e),gt(this,e),e)r(e,s)&&(M(t=e[s])?this[s]=t:this["_"+s]=t);this._config=e,this._dayOfMonthOrdinalParseLenient=new RegExp((this._dayOfMonthOrdinalParse.source||this._ordinalParse.source)+"|"+/\d{1,2}/.source)}function Tt(e,t){var s,i=u({},e);for(s in t)r(t,s)&&(n(e[s])&&n(t[s])?(i[s]={},u(i[s],e[s]),u(i[s],t[s])):null!=t[s]?i[s]=t[s]:delete i[s]);for(s in e)r(e,s)&&!r(t,s)&&n(e[s])&&(i[s]=u({},i[s]));return i}function Ot(e){null!=e&&this.set(e)}rt=Object.keys?Object.keys:function(e){var t,s=[];for(t in e)r(e,t)&&s.push(t);return s};var At={sameDay:"[Today at] LT",nextDay:"[Tomorrow at] LT",nextWeek:"dddd [at] LT",lastDay:"[Yesterday at] LT",lastWeek:"[Last] dddd [at] LT",sameElse:"L"};function Et(e,t,s){var i=this._calendar[e]||this._calendar.sameElse;return M(i)?i.call(t,s):i}var Ct={LTS:"h:mm:ss A",LT:"h:mm A",L:"MM/DD/YYYY",LL:"MMMM D, YYYY",LLL:"MMMM D, YYYY h:mm A",LLLL:"dddd, MMMM D, YYYY h:mm A"};function Ht(e){var t=this._longDateFormat[e],s=this._longDateFormat[e.toUpperCase()],i=this._longDateFormatCache;return t||!s?t:i&&i[e]&&i[e].formatUpper===s?i[e].format:(t=s.match(D).map((function(e){return"MMMM"===e||"MM"===e||"DD"===e||"dddd"===e?e.slice(1):e})).join(""),i||(i=this._longDateFormatCache={}),i[e]={formatUpper:s,format:t},t)}var Dt="Invalid date";function Nt(){return this._invalidDate}var Rt="%d",Pt=/\d{1,2}/;function jt(e){return this._ordinal.replace("%d",e)}var Lt={future:"in %s",past:"%s ago",s:"a few seconds",ss:"%d seconds",m:"a minute",mm:"%d minutes",h:"an hour",hh:"%d hours",d:"a day",dd:"%d days",w:"a week",ww:"%d weeks",M:"a month",MM:"%d months",y:"a year",yy:"%d years"};function It(e,t,s,i){var a=this._relativeTime[s];return M(a)?a(e,t,s,i):a.replace(/%d/i,e)}function Ft(e,t,s,i){return this.postformat(It.call(this,e,t,s,i))}function Bt(e,t){var s=this._relativeTime[e>0?"future":"past"];return M(s)?s(t):s.replace(/%s/i,t)}function Ut(e,t){return this.postformat(Bt.call(this,e,t))}function Yt(e,t,s,i,a,n,r){var o;return e<100&&e>=0?(o=new Date(e+400,t,s,i,a,n,r),isFinite(o.getFullYear())&&o.setFullYear(e)):o=new Date(e,t,s,i,a,n,r),o}function Wt(e){var t,s;return e<100&&e>=0?((s=Array.prototype.slice.call(arguments))[0]=e+400,t=new Date(Date.UTC.apply(null,s)),isFinite(t.getUTCFullYear())&&t.setUTCFullYear(e)):t=new Date(Date.UTC.apply(null,arguments)),t}function Vt(e,t,s){var i=7+t-s;return-(7+Wt(e,0,i).getUTCDay()-t)%7+i-1}function Zt(e,t,s,i,a){var n,r,o=1+7*(t-1)+(7+s-i)%7+Vt(e,i,a);return o<=0?r=Oe(n=e-1)+o:o>Oe(e)?(n=e+1,r=o-Oe(e)):(n=e,r=o),{year:n,dayOfYear:r}}function Gt(e,t,s,i){var a,n,r=Vt(e,s,i),o=Math.floor((t-r-1)/7)+1;return o<1?a=o+Jt(n=e-1,s,i):o>Jt(e,s,i)?(a=o-Jt(e,s,i),n=e+1):(n=e,a=o),{week:a,year:n}}function qt(e,t,s){return Gt(e.year(),e.dayOfYear(),t,s)}function Kt(e,t,s,i,a){return Gt(e,Math.round((Wt(e,t,s)-Wt(e,0,1))/864e5)+1,i,a)}function Jt(e,t,s){var i=Vt(e,t,s),a=Vt(e+1,t,s);return(Oe(e)-i+a)/7}function Xt(e){return qt(e,this._week.dow,this._week.doy).week}j("w",["ww",2],"wo","week"),j("W",["WW",2],"Wo","isoWeek"),he("w",q,oe),he("ww",q,W),he("W",q,oe),he("WW",q,W),fe(["w","ww","W","WW"],(function(e,t,s,i){t[i.substr(0,1)]=ge(e)}));var Qt={dow:0,doy:6};function es(){return this._week.dow}function ts(){return this._week.doy}function ss(e){var t=this.localeData().week(this);return null==e?t:this.add(7*(e-t),"d")}function is(e){var t=qt(this,1,4).week;return null==e?t:this.add(7*(e-t),"d")}function as(){return this.hours()%12||12}function ns(){return this.hours()||24}function rs(e,t){j(e,0,0,(function(){return this.localeData().meridiem(this.hours(),this.minutes(),t)}))}function os(e,t){return t._meridiemParse}function ls(e){return"p"===(e+"").toLowerCase().charAt(0)}j("H",["HH",2],0,"hour"),j("h",["hh",2],0,as),j("k",["kk",2],0,ns),j("hmm",0,0,(function(){return""+as.apply(this)+H(this.minutes(),2)})),j("hmmss",0,0,(function(){return""+as.apply(this)+H(this.minutes(),2)+H(this.seconds(),2)})),j("Hmm",0,0,(function(){return""+this.hours()+H(this.minutes(),2)})),j("Hmmss",0,0,(function(){return""+this.hours()+H(this.minutes(),2)+H(this.seconds(),2)})),rs("a",!0),rs("A",!1),he("a",os),he("A",os),he("H",q,le),he("h",q,oe),he("k",q,oe),he("HH",q,W),he("hh",q,W),he("kk",q,W),he("hmm",K),he("hmmss",J),he("Hmm",K),he("Hmmss",J),ve(["H","HH"],xe),ve(["k","kk"],(function(e,t,s){var i=ge(e);t[xe]=24===i?0:i})),ve(["a","A"],(function(e,t,s){s._isPm=s._locale.isPM(e),s._meridiem=e})),ve(["h","hh"],(function(e,t,s){t[xe]=ge(e),m(s).bigHour=!0})),ve("hmm",(function(e,t,s){var i=e.length-2;t[xe]=ge(e.substr(0,i)),t[ke]=ge(e.substr(i)),m(s).bigHour=!0})),ve("hmmss",(function(e,t,s){var i=e.length-4,a=e.length-2;t[xe]=ge(e.substr(0,i)),t[ke]=ge(e.substr(i,2)),t[Se]=ge(e.substr(a)),m(s).bigHour=!0})),ve("Hmm",(function(e,t,s){var i=e.length-2;t[xe]=ge(e.substr(0,i)),t[ke]=ge(e.substr(i))})),ve("Hmmss",(function(e,t,s){var i=e.length-4,a=e.length-2;t[xe]=ge(e.substr(0,i)),t[ke]=ge(e.substr(i,2)),t[Se]=ge(e.substr(a))}));var hs=/[ap]\.?m?\.?/i,ds=He("Hours",!0);function cs(e,t,s){return e>11?s?"pm":"PM":s?"am":"AM"}var us,ps={calendar:At,longDateFormat:Ct,invalidDate:Dt,ordinal:Rt,dayOfMonthOrdinalParse:Pt,relativeTime:Lt,months:Ie,monthsShort:Fe,week:Qt,weekdays:ot,weekdaysMin:ht,weekdaysShort:lt,meridiemParse:hs},gs={},ms={};function vs(e,t){var s,i=Math.min(e.length,t.length);for(s=0;s<i;s+=1)if(e[s]!==t[s])return s;return i}function fs(e){return e?e.toLowerCase().replace("_","-"):e}function _s(e){for(var t,s,i,a,n=0;n<e.length;){for(t=(a=fs(e[n]).split("-")).length,s=(s=fs(e[n+1]))?s.split("-"):null;t>0;){if(i=bs(a.slice(0,t).join("-")))return i;if(s&&s.length>=t&&vs(a,s)>=t-1)break;t--}n++}return us}function ys(e){return"string"==typeof e&&/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(e)}function bs(e){var t,s=null;if(r(gs,e))return gs[e];if(t=fs(e),r(gs,t))return gs[t];if(ln&&ln.exports&&ys(t))try{s=us._abbr,nn("./locale/"+t),ws(s)}catch(e){gs[t]=null}return r(gs,t)?gs[t]:void 0}function ws(e,t){var s;return e&&((s=l(t)?ks(e):$s(e,t))?us=s:"undefined"!=typeof console&&console.warn&&console.warn("Locale "+e+" not found. Did you forget to load it?")),us._abbr}function $s(e,t){if(null!==t){var s,i=ps;if(t.abbr=e,null!=gs[e])z("defineLocaleOverride","use moment.updateLocale(localeName, config) to change an existing locale. moment.defineLocale(localeName, config) should only be used for creating a new locale See http://momentjs.com/guides/#/warnings/define-locale/ for more info."),i=gs[e]._config;else if(null!=t.parentLocale)if(null!=gs[t.parentLocale])i=gs[t.parentLocale]._config;else{if(null==(s=bs(t.parentLocale)))return ms[t.parentLocale]||(ms[t.parentLocale]=[]),ms[t.parentLocale].push({name:e,config:t}),null;i=s._config}return gs[e]=new Ot(Tt(i,t)),ms[e]&&ms[e].forEach((function(e){$s(e.name,e.config)})),ws(e),gs[e]}return delete gs[e],null}function xs(e,t){var s,i=bs(e),a=ps;return null!=i&&(e=i._abbr),null!=t?(null!=gs[e]&&null!=gs[e].parentLocale?gs[e].set(Tt(gs[e]._config,t)):(null!=i&&(a=i._config),t=Tt(a,t),null==i&&(t.abbr=e),(s=new Ot(t)).parentLocale=gs[e],gs[e]=s),ws(e)):null!=gs[e]&&(null!=gs[e].parentLocale?(gs[e]=gs[e].parentLocale,e===ws()&&ws(e)):null!=gs[e]&&delete gs[e]),gs[e]}function ks(e){var t;if(e&&e._locale&&e._locale._abbr&&(e=e._locale._abbr),!e)return us;if(!a(e)){if(t=bs(e))return t;e=[e]}return _s(e)}function Ss(){return rt(gs)}function zs(e){var t,s=e._a;return s&&-2===m(e).overflow&&(t=s[we]<0||s[we]>11?we:s[$e]<1||s[$e]>Le(s[be],s[we])?$e:s[xe]<0||s[xe]>24||24===s[xe]&&(0!==s[ke]||0!==s[Se]||0!==s[ze])?xe:s[ke]<0||s[ke]>59?ke:s[Se]<0||s[Se]>59?Se:s[ze]<0||s[ze]>999?ze:-1,m(e)._overflowDayOfYear&&(t<be||t>$e)&&(t=$e),m(e)._overflowWeeks&&-1===t&&(t=Me),m(e)._overflowWeekday&&-1===t&&(t=Te),m(e).overflow=t),e}var Ms=/^\s*((?:[+-]\d{6}|\d{4})-(?:\d\d-\d\d|W\d\d-\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?::\d\d(?::\d\d(?:[.,]\d+)?)?)?)([+-]\d\d(?::?\d\d)?|\s*Z)?)?$/,Ts=/^\s*((?:[+-]\d{6}|\d{4})(?:\d\d\d\d|W\d\d\d|W\d\d|\d\d\d|\d\d|))(?:(T| )(\d\d(?:\d\d(?:\d\d(?:[.,]\d+)?)?)?)([+-]\d\d(?::?\d\d)?|\s*Z)?)?$/,Os=/Z|[+-]\d\d(?::?\d\d)?/,As=[["YYYYYY-MM-DD",/[+-]\d{6}-\d\d-\d\d/],["YYYY-MM-DD",/\d{4}-\d\d-\d\d/],["GGGG-[W]WW-E",/\d{4}-W\d\d-\d/],["GGGG-[W]WW",/\d{4}-W\d\d/,!1],["YYYY-DDD",/\d{4}-\d{3}/],["YYYY-MM",/\d{4}-\d\d/,!1],["YYYYYYMMDD",/[+-]\d{10}/],["YYYYMMDD",/\d{8}/],["GGGG[W]WWE",/\d{4}W\d{3}/],["GGGG[W]WW",/\d{4}W\d{2}/,!1],["YYYYDDD",/\d{7}/],["YYYYMM",/\d{6}/,!1],["YYYY",/\d{4}/,!1]],Es=[["HH:mm:ss.SSSS",/\d\d:\d\d:\d\d\.\d+/],["HH:mm:ss,SSSS",/\d\d:\d\d:\d\d,\d+/],["HH:mm:ss",/\d\d:\d\d:\d\d/],["HH:mm",/\d\d:\d\d/],["HHmmss.SSSS",/\d\d\d\d\d\d\.\d+/],["HHmmss,SSSS",/\d\d\d\d\d\d,\d+/],["HHmmss",/\d\d\d\d\d\d/],["HHmm",/\d\d\d\d/],["HH",/\d\d/]],Cs=/^\/?Date\((-?\d+)/i,Hs=/^(?:(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d{1,2})\s(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(\d{2,4})\s(\d\d):(\d\d)(?::(\d\d))?\s(?:(UT|GMT|[ECMP][SD]T)|([Zz])|([+-]\d{4}))$/,Ds={UT:0,GMT:0,EDT:-240,EST:-300,CDT:-300,CST:-360,MDT:-360,MST:-420,PDT:-420,PST:-480};function Ns(e){var t,s,i,a,n,r,o=e._i,l=Ms.exec(o)||Ts.exec(o),h=As.length,d=Es.length;if(l){for(m(e).iso=!0,t=0,s=h;t<s;t++)if(As[t][1].exec(l[1])){a=As[t][0],i=!1!==As[t][2];break}if(null==a)return void(e._isValid=!1);if(l[3]){for(t=0,s=d;t<s;t++)if(Es[t][1].exec(l[3])){n=(l[2]||" ")+Es[t][0];break}if(null==n)return void(e._isValid=!1)}if(!i&&null!=n)return void(e._isValid=!1);if(l[4]){if(!Os.exec(l[4]))return void(e._isValid=!1);r="Z"}e._f=a+(n||"")+(r||""),qs(e)}else e._isValid=!1}function Rs(e,t,s,i,a,n){var r=[Ps(e),Fe.indexOf(t),parseInt(s,10),parseInt(i,10),parseInt(a,10)];return n&&r.push(parseInt(n,10)),r}function Ps(e){var t=parseInt(e,10);return t<=49?2e3+t:t<=999?1900+t:t}function js(e){return e.replace(/\([^()]*\)|[\n\t]/g," ").replace(/(\s\s+)/g," ").replace(/^\s\s*/,"").replace(/\s\s*$/,"")}function Ls(e,t,s){return!e||lt.indexOf(e)===new Date(t[0],t[1],t[2]).getDay()||(m(s).weekdayMismatch=!0,s._isValid=!1,!1)}function Is(e,t,s){if(e)return Ds[e];if(t)return 0;var i=parseInt(s,10),a=i%100;return(i-a)/100*60+a}function Fs(e){var t,s=Hs.exec(js(e._i));if(s){if(t=Rs(s[4],s[3],s[2],s[5],s[6],s[7]),!Ls(s[1],t,e))return;e._a=t,e._tzm=Is(s[8],s[9],s[10]),e._d=Wt.apply(null,e._a),e._d.setUTCMinutes(e._d.getUTCMinutes()-e._tzm),m(e).rfc2822=!0}else e._isValid=!1}function Bs(e){var t=Cs.exec(e._i);null===t?(Ns(e),!1===e._isValid&&(delete e._isValid,Fs(e),!1===e._isValid&&(delete e._isValid,e._strict?e._isValid=!1:s.createFromInputFallback(e)))):e._d=new Date(+t[1])}function Us(e,t,s){return null!=e?e:null!=t?t:s}function Ys(e,t,i){var a=Object.prototype.hasOwnProperty.call(e,"_isDefaultDatePartsForWeek"),n=e._isDefaultDatePartsForWeek;e._isDefaultDatePartsForWeek=!!i;try{return s._getDefaultDateParts(e,t,i)}finally{a?e._isDefaultDatePartsForWeek=n:delete e._isDefaultDatePartsForWeek}}function Ws(e){var t=e._defaultDatePartsNow;return t?(t.hasValue||(t.value=s.now(),t.hasValue=!0),t.value):s.now()}function Vs(e,t,s){var i=s||e._isDefaultDatePartsForWeek,a=i?ii(t):new Date(t);return i?[a.year(),a.month(),a.date()]:e._useUTC?[a.getUTCFullYear(),a.getUTCMonth(),a.getUTCDate()]:[a.getFullYear(),a.getMonth(),a.getDate()]}function Zs(e){var t,s,i,a,n,r,o,l=[];if(!e._d){for(null!=e._a[be]&&null!=e._a[we]&&null!=e._a[$e]||(a=Ys(e,i=Ws(e))),e._w&&null==e._a[$e]&&null==e._a[we]&&Gs(e,Ys(e,i,!0)),null!=e._dayOfYear&&(r=null!=e._a[be]?e._a[be]:a[be],(e._dayOfYear>Oe(r)||0===e._dayOfYear)&&(m(e)._overflowDayOfYear=!0),s=Wt(r,0,e._dayOfYear),e._a[we]=s.getUTCMonth(),e._a[$e]=s.getUTCDate()),o=null==e._a[be]||null==e._a[we]||null==e._a[$e],t=0;t<3&&null==e._a[t];++t)e._a[t]=l[t]=a[t];for(;t<7;t++)e._a[t]=l[t]=null==e._a[t]?2===t?1:0:e._a[t];24===e._a[xe]&&0===e._a[ke]&&0===e._a[Se]&&0===e._a[ze]&&(e._nextDay=!0,e._a[xe]=0),e._d=(e._useUTC?Wt:Yt).apply(null,l),n=e._useUTC?e._d.getUTCDay():e._d.getDay(),null!=e._tzm&&e._d.setUTCMinutes(e._d.getUTCMinutes()-e._tzm),e._nextDay&&(e._a[xe]=24),e._w&&void 0!==e._w.d&&!o&&e._w.d!==n&&(m(e).weekdayMismatch=!0)}}function Gs(e,t){var s,i,a,n,r,o,l,h,d;null!=(s=e._w).GG||null!=s.W||null!=s.E?(r=1,o=4,i=Us(s.GG,e._a[be],Kt(t[be],t[we],t[$e],1,4).year),a=Us(s.W,1),((n=Us(s.E,1))<1||n>7)&&(h=!0)):(r=e._locale._week.dow,o=e._locale._week.doy,d=Kt(t[be],t[we],t[$e],r,o),i=Us(s.gg,e._a[be],d.year),a=Us(s.w,d.week),null!=s.d?((n=s.d)<0||n>6)&&(h=!0):null!=s.e?(n=s.e+r,(s.e<0||s.e>6)&&(h=!0)):n=r),a<1||a>Jt(i,r,o)?m(e)._overflowWeeks=!0:null!=h?m(e)._overflowWeekday=!0:(l=Zt(i,a,n,r,o),e._a[be]=l.year,e._dayOfYear=l.dayOfYear)}function qs(e){if(e._f!==s.ISO_8601)if(e._f!==s.RFC_2822){e._a=[],m(e).empty=!0;var t,i,a,n,r,o,l,h=""+e._i,d=h.length,c=0;for(l=(a=B(e._f,e._locale).match(D)||[]).length,t=0;t<l;t++)n=a[t],(i=(h.match(de(n,e))||[])[0])&&((r=h.substr(0,h.indexOf(i))).length>0&&m(e).unusedInput.push(r),h=h.slice(h.indexOf(i)+i.length),c+=i.length),P[n]?(i?m(e).empty=!1:m(e).unusedTokens.push(n),_e(n,i,e)):e._strict&&!i&&m(e).unusedTokens.push(n);m(e).charsLeftOver=d-c,h.length>0&&m(e).unusedInput.push(h),e._a[xe]<=12&&!0===m(e).bigHour&&e._a[xe]>0&&(m(e).bigHour=void 0),m(e).parsedDateParts=e._a.slice(0),m(e).meridiem=e._meridiem,e._a[xe]=Ks(e._locale,e._a[xe],e._meridiem),null!==(o=m(e).era)&&(e._a[be]=e._locale.erasConvertYear(o,e._a[be])),Zs(e),zs(e)}else Fs(e);else Ns(e)}function Ks(e,t,s){var i;return null==s?t:null!=e.meridiemHour?e.meridiemHour(t,s):null!=e.isPM?((i=e.isPM(s))&&t<12&&(t+=12),i||12!==t||(t=0),t):t}function Js(e){var t,s,i,a,n,r,o=!1,l={},h=e._f.length;if(0===h)return m(e).invalidFormat=!0,void(e._d=new Date(NaN));for(a=0;a<h;a++)n=0,r=!1,t=b({},e),null!=e._useUTC&&(t._useUTC=e._useUTC),t._defaultDatePartsNow=l,t._f=e._f[a],qs(t),v(t)&&(r=!0),n+=m(t).charsLeftOver,n+=10*m(t).unusedTokens.length,m(t).score=n,o?n<i&&(i=n,s=t):(null==i||n<i||r)&&(i=n,s=t,r&&(o=!0));u(e,s||t)}function Xs(e){if(!e._d){var t=A(e._i),s=void 0===t.day?t.date:t.day;e._a=c([t.year,t.month,s,t.hour,t.minute,t.second,t.millisecond],(function(e){return e&&parseInt(e,10)})),Zs(e)}}function Qs(e){var t=new w(zs(ei(e)));return t._nextDay&&(t.add(1,"d"),t._nextDay=void 0),t}function ei(e){var t=e._i,s=e._f;return e._locale=e._locale||ks(e._l),null===t||void 0===s&&""===t?f({nullInput:!0}):("string"==typeof t&&(e._i=t=e._locale.preparse(t)),$(t)?new w(zs(t)):(d(t)?e._d=t:a(s)?Js(e):s?qs(e):ti(e),v(e)||(e._d=null),e))}function ti(e){var t=e._i;l(t)?e._d=new Date(s.now()):d(t)?e._d=new Date(t.valueOf()):"string"==typeof t?Bs(e):a(t)?(e._a=c(t.slice(0),(function(e){return parseInt(e,10)})),Zs(e)):n(t)?Xs(e):h(t)?e._d=new Date(t):s.createFromInputFallback(e)}function si(e,t,s,i,r){var l={};return!0!==t&&!1!==t||(i=t,t=void 0),!0!==s&&!1!==s||(i=s,s=void 0),(n(e)&&o(e)||a(e)&&0===e.length)&&(e=void 0),l._isAMomentObject=!0,l._useUTC=l._isUTC=r,l._l=s,l._i=e,l._f=t,l._strict=i,Qs(l)}function ii(e,t,s,i){return si(e,t,s,i,!1)}s.createFromInputFallback=k("value provided is not in a recognized RFC2822 or ISO format. moment construction falls back to js Date(), which is not reliable across all browsers and versions. Non RFC2822/ISO date formats are discouraged. Please refer to http://momentjs.com/guides/#/warnings/js-date/ for more info.",(function(e){e._d=new Date(e._i+(e._useUTC?" UTC":""))})),s._getDefaultDateParts=Vs,s.ISO_8601=function(){},s.RFC_2822=function(){};var ai=k("moment().min is deprecated, use moment.max instead. http://momentjs.com/guides/#/warnings/min-max/",(function(){var e=ii.apply(null,arguments);return this.isValid()&&e.isValid()?e<this?this:e:f()})),ni=k("moment().max is deprecated, use moment.min instead. http://momentjs.com/guides/#/warnings/min-max/",(function(){var e=ii.apply(null,arguments);return this.isValid()&&e.isValid()?e>this?this:e:f()}));function ri(e,t){var s,i;if(1===t.length&&a(t[0])&&(t=t[0]),!t.length)return ii();for(i=0;i<t.length;++i)if($(t[i])){s=t[i];break}if(!s)return f();for(++i;i<t.length;++i)!$(t[i])||t[i].isValid()&&!t[i][e](s)||(s=t[i]);return s}function oi(){return ri("isBefore",[].slice.call(arguments,0))}function li(){return ri("isAfter",[].slice.call(arguments,0))}var hi=function(){return Date.now?Date.now():+new Date},di=["year","quarter","month","week","day","hour","minute","second","millisecond"];function ci(e){var t,s,i=!1,a=di.length;for(t in e)if(r(e,t)&&(-1===Ae.call(di,t)||null!=e[t]&&isNaN(e[t])))return!1;for(s=0;s<a;++s)if(e[di[s]]){if(i)return!1;parseFloat(e[di[s]])!==ge(e[di[s]])&&(i=!0)}return!0}function ui(){return this._isValid}function pi(){return Ri(NaN)}function gi(e){var t=A(e),s=t.year||0,i=t.quarter||0,a=t.month||0,n=t.week||t.isoWeek||0,r=t.day||0,o=t.hour||0,l=t.minute||0,h=t.second||0,d=t.millisecond||0;this._isValid=ci(t),this._milliseconds=+d+1e3*h+6e4*l+1e3*o*60*60,this._days=+r+7*n,this._months=+a+3*i+12*s,this._data={},this._locale=ks(),this._bubble()}function mi(e){return e instanceof gi}function vi(e){return e<0?-1*Math.round(-1*e):Math.round(e)}function fi(e,t,s){var i,a=Math.min(e.length,t.length),n=Math.abs(e.length-t.length),r=0;for(i=0;i<a;i++)ge(e[i])!==ge(t[i])&&r++;return r+n}function _i(e,t){j(e,0,0,(function(){var e=this.utcOffset(),s="+";return e<0&&(e=-e,s="-"),s+H(~~(e/60),2)+t+H(~~e%60,2)}))}_i("Z",":"),_i("ZZ",""),he("Z",ae),he("ZZ",ae),ve(["Z","ZZ"],(function(e,t,s){var i=bi(ae,e);s._useUTC=!0,s._tzm=i,null===i&&(m(s).invalidOffset=e)}));var yi=/([\+\-]|\d\d)/gi;function bi(e,t){var s,i,a=(t||"").match(e);return null===a?null:(i=60*(s=((a[a.length-1]||[])+"").match(yi)||["-",0,0])[1]+ge(s[2]),ge(s[2])>59||("+"===s[0]?i>840:i>720)?null:0===i?0:"+"===s[0]?i:-i)}function wi(e,t){var i,a;return t._isUTC?(i=t.clone(),a=($(e)||d(e)?e.valueOf():ii(e).valueOf())-i.valueOf(),i._d.setTime(i._d.valueOf()+a),s.updateOffset(i,!1),i):ii(e).local()}function $i(e){return-Math.round(e._d.getTimezoneOffset())}function xi(e,t,i){var a,n=this._offset||0;if(!this.isValid())return null!=e?this:NaN;if(null!=e){if("string"==typeof e){if(null===(e=bi(ae,e)))return this}else Math.abs(e)<16&&!i&&(e*=60);return!this._isUTC&&t&&(a=$i(this)),this._offset=e,this._isUTC=!0,null!=a&&this.add(a,"m"),n!==e&&(!t||this._changeInProgress?Fi(this,Ri(e-n,"m"),1,!1):this._changeInProgress||(this._changeInProgress=!0,s.updateOffset(this,!0),this._changeInProgress=null)),this}return this._isUTC?n:$i(this)}function ki(e,t){return null!=e?("string"!=typeof e&&(e=-e),this.utcOffset(e,t),this):-this.utcOffset()}function Si(e){return this.utcOffset(0,e)}function zi(e){return this._isUTC&&(this.utcOffset(0,e),this._isUTC=!1,e&&this.subtract($i(this),"m")),this}function Mi(){if(null!=this._tzm)this.utcOffset(this._tzm,!1,!0);else if("string"==typeof this._i){var e=bi(ie,this._i);null!=e?this.utcOffset(e):this.utcOffset(0,!0)}return this}function Ti(e){return!!this.isValid()&&(e=e?ii(e).utcOffset():0,(this.utcOffset()-e)%60==0)}function Oi(){return this.utcOffset()>this.clone().month(0).utcOffset()||this.utcOffset()>this.clone().month(5).utcOffset()}function Ai(){if(!l(this._isDSTShifted))return this._isDSTShifted;var e,t={};return b(t,this),(t=ei(t))._a?(e=t._isUTC?p(t._a):ii(t._a),this._isDSTShifted=this.isValid()&&fi(t._a,e.toArray())>0):this._isDSTShifted=!1,this._isDSTShifted}function Ei(){return!!this.isValid()&&!this._isUTC}function Ci(){return!!this.isValid()&&this._isUTC}function Hi(){return!!this.isValid()&&this._isUTC&&0===this._offset}s.updateOffset=function(){};var Di=/^(-|\+)?(?:(\d*)[. ])?(\d+):(\d+)(?::(\d+)(\.\d*)?)?$/,Ni=/^(-|\+)?P(?:([-+]?[0-9,.]*)Y)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)W)?(?:([-+]?[0-9,.]*)D)?(?:T(?:([-+]?[0-9,.]*)H)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)S)?)?$/;function Ri(e,t){var s,i,a,n=e,o=null;return mi(e)?n={ms:e._milliseconds,d:e._days,M:e._months}:h(e)||!isNaN(+e)?(n={},t?n[t]=+e:n.milliseconds=+e):(o=Di.exec(e))?(s="-"===o[1]?-1:1,n={y:0,d:ge(o[$e])*s,h:ge(o[xe])*s,m:ge(o[ke])*s,s:ge(o[Se])*s,ms:ge(vi(1e3*o[ze]))*s}):(o=Ni.exec(e))?(s="-"===o[1]?-1:1,n={y:Pi(o[2],s),M:Pi(o[3],s),w:Pi(o[4],s),d:Pi(o[5],s),h:Pi(o[6],s),m:Pi(o[7],s),s:Pi(o[8],s)}):null==n?n={}:"object"==typeof n&&("from"in n||"to"in n)&&(a=Li(ii(n.from),ii(n.to)),(n={}).ms=a.milliseconds,n.M=a.months),i=new gi(n),mi(e)&&r(e,"_locale")&&(i._locale=e._locale),mi(e)&&r(e,"_isValid")&&(i._isValid=e._isValid),i}function Pi(e,t){var s=e&&parseFloat(e.replace(",","."));return(isNaN(s)?0:s)*t}function ji(e,t){var s={};return s.months=t.month()-e.month()+12*(t.year()-e.year()),e.clone().add(s.months,"M").isAfter(t)&&--s.months,s.milliseconds=+t-+e.clone().add(s.months,"M"),s}function Li(e,t){var s;return e.isValid()&&t.isValid()?(t=wi(t,e),e.isBefore(t)?s=ji(e,t):((s=ji(t,e)).milliseconds=-s.milliseconds,s.months=-s.months),s):{milliseconds:0,months:0}}function Ii(e,t){return function(s,i){var a;return null===i||isNaN(+i)||(z(t,"moment()."+t+"(period, number) is deprecated. Please use moment()."+t+"(number, period). See http://momentjs.com/guides/#/warnings/add-inverted-param/ for more info."),a=s,s=i,i=a),Fi(this,Ri(s,i),e),this}}function Fi(e,t,i,a){var n=t._milliseconds,r=vi(t._days),o=vi(t._months);e.isValid()&&(a=null==a||a,o&&Je(e,De(e,"Month")+o*i),r&&Ne(e,"Date",De(e,"Date")+r*i),n&&e._d.setTime(e._d.valueOf()+n*i),a&&s.updateOffset(e,r||o))}Ri.fn=gi.prototype,Ri.invalid=pi;var Bi=Ii(1,"add"),Ui=Ii(-1,"subtract");function Yi(e){return"string"==typeof e||e instanceof String}function Wi(e){return $(e)||d(e)||Yi(e)||h(e)||Zi(e)||Vi(e)||null==e}function Vi(e){var t,s,i=n(e)&&!o(e),a=!1,l=["years","year","y","months","month","M","days","day","d","dates","date","D","hours","hour","h","minutes","minute","m","seconds","second","s","milliseconds","millisecond","ms"],h=l.length;for(t=0;t<h;t+=1)s=l[t],a=a||r(e,s);return i&&a}function Zi(e){var t=a(e),s=!1;return t&&(s=0===e.filter((function(t){return!h(t)&&Yi(e)})).length),t&&s}function Gi(e){var t,s,i=n(e)&&!o(e),a=!1,l=["sameDay","nextDay","lastDay","nextWeek","lastWeek","sameElse"];for(t=0;t<l.length;t+=1)s=l[t],a=a||r(e,s);return i&&a}function qi(e,t){var s=e.diff(t,"days",!0);return s<-6?"sameElse":s<-1?"lastWeek":s<0?"lastDay":s<1?"sameDay":s<2?"nextDay":s<7?"nextWeek":"sameElse"}function Ki(e,t){1===arguments.length&&(arguments[0]?Wi(arguments[0])?(e=arguments[0],t=void 0):Gi(arguments[0])&&(t=arguments[0],e=void 0):(e=void 0,t=void 0));var i=e||ii(),a=wi(i,this).startOf("day"),n=s.calendarFormat(this,a)||"sameElse",r=t&&(M(t[n])?t[n].call(this,i):t[n]);return this.format(r||this.localeData().calendar(n,this,ii(i)))}function Ji(){return new w(this)}function Xi(e,t){var s=$(e)?e:ii(e);return!(!this.isValid()||!s.isValid())&&("millisecond"===(t=O(t)||"millisecond")?this.valueOf()>s.valueOf():s.valueOf()<this.clone().startOf(t).valueOf())}function Qi(e,t){var s=$(e)?e:ii(e);return!(!this.isValid()||!s.isValid())&&("millisecond"===(t=O(t)||"millisecond")?this.valueOf()<s.valueOf():this.clone().endOf(t).valueOf()<s.valueOf())}function ea(e,t,s,i){var a=$(e)?e:ii(e),n=$(t)?t:ii(t);return!!(this.isValid()&&a.isValid()&&n.isValid())&&("("===(i=i||"()")[0]?this.isAfter(a,s):!this.isBefore(a,s))&&(")"===i[1]?this.isBefore(n,s):!this.isAfter(n,s))}function ta(e,t){var s,i=$(e)?e:ii(e);return!(!this.isValid()||!i.isValid())&&("millisecond"===(t=O(t)||"millisecond")?this.valueOf()===i.valueOf():(s=i.valueOf(),this.clone().startOf(t).valueOf()<=s&&s<=this.clone().endOf(t).valueOf()))}function sa(e,t){return this.isSame(e,t)||this.isAfter(e,t)}function ia(e,t){return this.isSame(e,t)||this.isBefore(e,t)}function aa(e,t,s){var i,a,n;if(!this.isValid())return NaN;if(!(i=wi(e,this)).isValid())return NaN;switch(a=6e4*(i.utcOffset()-this.utcOffset()),t=O(t)){case"year":n=na(this,i)/12;break;case"month":n=na(this,i);break;case"quarter":n=na(this,i)/3;break;case"second":n=(this-i)/1e3;break;case"minute":n=(this-i)/6e4;break;case"hour":n=(this-i)/36e5;break;case"day":n=(this-i-a)/864e5;break;case"week":n=(this-i-a)/6048e5;break;default:n=this-i}return s?n:pe(n)}function na(e,t){if(e.date()<t.date())return-na(t,e);var s=12*(t.year()-e.year())+(t.month()-e.month()),i=e.clone().add(s,"months");return-(s+(t-i<0?(t-i)/(i-e.clone().add(s-1,"months")):(t-i)/(e.clone().add(s+1,"months")-i)))||0}function ra(){return this.clone().locale("en").format("ddd MMM DD YYYY HH:mm:ss [GMT]ZZ")}function oa(e){if(!this.isValid())return null;var t=!0!==e,s=t?this.clone().utc():this;return s.year()<0||s.year()>9999?F(s,t?"YYYYYY-MM-DD[T]HH:mm:ss.SSS[Z]":"YYYYYY-MM-DD[T]HH:mm:ss.SSSZ"):M(Date.prototype.toISOString)?t?this.toDate().toISOString():new Date(this.valueOf()+60*this.utcOffset()*1e3).toISOString().replace("Z",F(s,"Z")):F(s,t?"YYYY-MM-DD[T]HH:mm:ss.SSS[Z]":"YYYY-MM-DD[T]HH:mm:ss.SSSZ")}function la(){if(!this.isValid())return"moment.invalid(/* "+this._i+" */)";var e,t,s,i,a="moment",n="";return this.isLocal()||(a=0===this.utcOffset()?"moment.utc":"moment.parseZone",n="Z"),e="["+a+'("]',t=0<=this.year()&&this.year()<=9999?"YYYY":"YYYYYY",s="-MM-DD[T]HH:mm:ss.SSS",i=n+'[")]',this.format(e+t+s+i)}function ha(e){e||(e=this.isUtc()?s.defaultFormatUtc:s.defaultFormat);var t=F(this,e);return this.localeData().postformat(t)}function da(e,t){return this.isValid()&&($(e)&&e.isValid()||ii(e).isValid())?Ri({to:this,from:e}).locale(this.locale()).humanize(!t):this.localeData().invalidDate()}function ca(e){return this.from(ii(),e)}function ua(e,t){return this.isValid()&&($(e)&&e.isValid()||ii(e).isValid())?Ri({from:this,to:e}).locale(this.locale()).humanize(!t):this.localeData().invalidDate()}function pa(e){return this.to(ii(),e)}function ga(e){var t;return void 0===e?this._locale._abbr:(null!=(t=ks(e))&&(this._locale=t),this)}s.defaultFormat="YYYY-MM-DDTHH:mm:ssZ",s.defaultFormatUtc="YYYY-MM-DDTHH:mm:ss[Z]";var ma=k("moment().lang() is deprecated. Instead, use moment().localeData() to get the language configuration. Use moment().locale() to change languages.",(function(e){return void 0===e?this.localeData():this.locale(e)}));function va(){return this._locale}var fa=1e3,_a=60*fa,ya=60*_a,ba=3506328*ya;function wa(e,t){return(e%t+t)%t}function $a(e,t,s){return e<100&&e>=0?new Date(e+400,t,s)-ba:new Date(e,t,s).valueOf()}function xa(e,t,s){return e<100&&e>=0?Date.UTC(e+400,t,s)-ba:Date.UTC(e,t,s)}function ka(e){var t,i;if(void 0===(e=O(e))||"millisecond"===e||!this.isValid())return this;switch(i=this._isUTC?xa:$a,e){case"year":t=i(this.year(),0,1);break;case"quarter":t=i(this.year(),this.month()-this.month()%3,1);break;case"month":t=i(this.year(),this.month(),1);break;case"week":t=i(this.year(),this.month(),this.date()-this.weekday());break;case"isoWeek":t=i(this.year(),this.month(),this.date()-(this.isoWeekday()-1));break;case"day":case"date":t=i(this.year(),this.month(),this.date());break;case"hour":t=this._d.valueOf(),t-=wa(t+(this._isUTC?0:this.utcOffset()*_a),ya);break;case"minute":t=this._d.valueOf(),t-=wa(t,_a);break;case"second":t=this._d.valueOf(),t-=wa(t,fa)}return this._d.setTime(t),s.updateOffset(this,!0),this}function Sa(e){var t,i;if(void 0===(e=O(e))||"millisecond"===e||!this.isValid())return this;switch(i=this._isUTC?xa:$a,e){case"year":t=i(this.year()+1,0,1)-1;break;case"quarter":t=i(this.year(),this.month()-this.month()%3+3,1)-1;break;case"month":t=i(this.year(),this.month()+1,1)-1;break;case"week":t=i(this.year(),this.month(),this.date()-this.weekday()+7)-1;break;case"isoWeek":t=i(this.year(),this.month(),this.date()-(this.isoWeekday()-1)+7)-1;break;case"day":case"date":t=i(this.year(),this.month(),this.date()+1)-1;break;case"hour":t=this._d.valueOf(),t+=ya-wa(t+(this._isUTC?0:this.utcOffset()*_a),ya)-1;break;case"minute":t=this._d.valueOf(),t+=_a-wa(t,_a)-1;break;case"second":t=this._d.valueOf(),t+=fa-wa(t,fa)-1}return this._d.setTime(t),s.updateOffset(this,!0),this}function za(){return this._d.valueOf()-6e4*(this._offset||0)}function Ma(){return Math.floor(this.valueOf()/1e3)}function Ta(){return new Date(this.valueOf())}function Oa(){var e=this;return[e.year(),e.month(),e.date(),e.hour(),e.minute(),e.second(),e.millisecond()]}function Aa(){var e=this;return{years:e.year(),months:e.month(),date:e.date(),hours:e.hours(),minutes:e.minutes(),seconds:e.seconds(),milliseconds:e.milliseconds()}}function Ea(){return this.isValid()?this.toISOString():null}function Ca(){return v(this)}function Ha(){return u({},m(this))}function Da(){return m(this).overflow}function Na(){return{input:this._i,format:this._f,locale:this._locale,isUTC:this._isUTC,strict:this._strict}}function Ra(e,t){var i,a,n,r=this._eras||ks("en")._eras;for(i=0,a=r.length;i<a;++i)switch("string"==typeof r[i].since&&(n=s(r[i].since).startOf("day"),r[i].since=n.valueOf()),typeof r[i].until){case"undefined":r[i].until=1/0;break;case"string":n=s(r[i].until).startOf("day").valueOf(),r[i].until=n.valueOf()}return r}function Pa(e,t,s){var i,a,n,r,o,l=this.eras();for(e=e.toUpperCase(),i=0,a=l.length;i<a;++i)if(n=l[i].name.toUpperCase(),r=l[i].abbr.toUpperCase(),o=l[i].narrow.toUpperCase(),s)switch(t){case"N":case"NN":case"NNN":if(r===e)return l[i];break;case"NNNN":if(n===e)return l[i];break;case"NNNNN":if(o===e)return l[i]}else if([n,r,o].indexOf(e)>=0)return l[i]}function ja(e,t){var i=e.since<=e.until?1:-1;return void 0===t?s(e.since).year():s(e.since).year()+(t-e.offset)*i}function La(){var e,t,s,i=this.localeData().eras();for(e=0,t=i.length;e<t;++e){if(s=this.clone().startOf("day").valueOf(),i[e].since<=s&&s<=i[e].until)return i[e].name;if(i[e].until<=s&&s<=i[e].since)return i[e].name}return""}function Ia(){var e,t,s,i=this.localeData().eras();for(e=0,t=i.length;e<t;++e){if(s=this.clone().startOf("day").valueOf(),i[e].since<=s&&s<=i[e].until)return i[e].narrow;if(i[e].until<=s&&s<=i[e].since)return i[e].narrow}return""}function Fa(){var e,t,s,i=this.localeData().eras();for(e=0,t=i.length;e<t;++e){if(s=this.clone().startOf("day").valueOf(),i[e].since<=s&&s<=i[e].until)return i[e].abbr;if(i[e].until<=s&&s<=i[e].since)return i[e].abbr}return""}function Ba(){var e,t,i,a,n=this.localeData().eras();for(e=0,t=n.length;e<t;++e)if(i=n[e].since<=n[e].until?1:-1,a=this.clone().startOf("day").valueOf(),n[e].since<=a&&a<=n[e].until||n[e].until<=a&&a<=n[e].since)return(this.year()-s(n[e].since).year())*i+n[e].offset;return this.year()}function Ua(e){return r(this,"_erasNameRegex")||Ka.call(this),e?this._erasNameRegex:this._erasRegex}function Ya(e){return r(this,"_erasAbbrRegex")||Ka.call(this),e?this._erasAbbrRegex:this._erasRegex}function Wa(e){return r(this,"_erasNarrowRegex")||Ka.call(this),e?this._erasNarrowRegex:this._erasRegex}function Va(e,t){return t.erasAbbrRegex(e)}function Za(e,t){return t.erasNameRegex(e)}function Ga(e,t){return t.erasNarrowRegex(e)}function qa(e,t){return t._eraYearOrdinalRegex||te}function Ka(){var e,t,s,i,a,n=[],r=[],o=[],l=[],h=this.eras();for(e=0,t=h.length;e<t;++e)s=ue(h[e].name),i=ue(h[e].abbr),a=ue(h[e].narrow),r.push(s),n.push(i),o.push(a),l.push(s),l.push(i),l.push(a);this._erasRegex=new RegExp("^("+l.join("|")+")","i"),this._erasNameRegex=new RegExp("^("+r.join("|")+")","i"),this._erasAbbrRegex=new RegExp("^("+n.join("|")+")","i"),this._erasNarrowRegex=new RegExp("^("+o.join("|")+")","i")}function Ja(e,t){j(0,[e,e.length],0,t)}function Xa(e){return rn.call(this,e,this.week(),this.weekday()+this.localeData()._week.dow,this.localeData()._week.dow,this.localeData()._week.doy)}function Qa(e){return rn.call(this,e,this.isoWeek(),this.isoWeekday(),1,4)}function en(){return Jt(this.year(),1,4)}function tn(){return Jt(this.isoWeekYear(),1,4)}function sn(){var e=this.localeData()._week;return Jt(this.year(),e.dow,e.doy)}function an(){var e=this.localeData()._week;return Jt(this.weekYear(),e.dow,e.doy)}function rn(e,t,s,i,a){var n;return null==e?qt(this,i,a).year:(t>(n=Jt(e,i,a))&&(t=n),on.call(this,e,t,s,i,a))}function on(e,t,s,i,a){var n=Zt(e,t,s,i,a),r=Wt(n.year,0,n.dayOfYear);return this.year(r.getUTCFullYear()),this.month(r.getUTCMonth()),this.date(r.getUTCDate()),this}function hn(e){return null==e?Math.ceil((this.month()+1)/3):this.month(3*(e-1)+this.month()%3)}j("N",0,0,"eraAbbr"),j("NN",0,0,"eraAbbr"),j("NNN",0,0,"eraAbbr"),j("NNNN",0,0,"eraName"),j("NNNNN",0,0,"eraNarrow"),j("y",["y",1],"yo","eraYear"),j("y",["yy",2],0,"eraYear"),j("y",["yyy",3],0,"eraYear"),j("y",["yyyy",4],0,"eraYear"),he("N",Va),he("NN",Va),he("NNN",Va),he("NNNN",Za),he("NNNNN",Ga),ve(["N","NN","NNN","NNNN","NNNNN"],(function(e,t,s,i){var a=s._locale.erasParse(e,i,s._strict);a?m(s).era=a:m(s).invalidEra=e})),he("y",te),he("yy",te),he("yyy",te),he("yyyy",te),he("yo",qa),ve(["y","yy","yyy","yyyy"],be),ve(["yo"],(function(e,t,s,i){var a;s._locale._eraYearOrdinalRegex&&(a=e.match(s._locale._eraYearOrdinalRegex)),s._locale.eraYearOrdinalParse?t[be]=s._locale.eraYearOrdinalParse(e,a):t[be]=parseInt(e,10)})),j(0,["gg",2],0,(function(){return this.weekYear()%100})),j(0,["GG",2],0,(function(){return this.isoWeekYear()%100})),Ja("gggg","weekYear"),Ja("ggggg","weekYear"),Ja("GGGG","isoWeekYear"),Ja("GGGGG","isoWeekYear"),he("G",se),he("g",se),he("GG",q,W),he("gg",q,W),he("GGGG",Q,Z),he("gggg",Q,Z),he("GGGGG",ee,G),he("ggggg",ee,G),fe(["gggg","ggggg","GGGG","GGGGG"],(function(e,t,s,i){t[i.substr(0,2)]=ge(e)})),fe(["gg","GG"],(function(e,t,i,a){t[a]=s.parseTwoDigitYear(e)})),j("Q",0,"Qo","quarter"),he("Q",Y),ve("Q",(function(e,t){t[we]=3*(ge(e)-1)})),j("D",["DD",2],"Do","date"),he("D",q,oe),he("DD",q,W),he("Do",(function(e,t){return e?t._dayOfMonthOrdinalParse||t._ordinalParse:t._dayOfMonthOrdinalParseLenient})),ve(["D","DD"],$e),ve("Do",(function(e,t){t[$e]=ge(e.match(q)[0])}));var dn=He("Date",!0);function cn(e){var t=Math.round((this.clone().startOf("day")-this.clone().startOf("year"))/864e5)+1;return null==e?t:this.add(e-t,"d")}j("DDD",["DDDD",3],"DDDo","dayOfYear"),he("DDD",X),he("DDDD",V),ve(["DDD","DDDD"],(function(e,t,s){s._dayOfYear=ge(e)})),j("m",["mm",2],0,"minute"),he("m",q,le),he("mm",q,W),ve(["m","mm"],ke);var un=He("Minutes",!1);j("s",["ss",2],0,"second"),he("s",q,le),he("ss",q,W),ve(["s","ss"],Se);var pn,gn,mn=He("Seconds",!1);for(j("S",0,0,(function(){return~~(this.millisecond()/100)})),j(0,["SS",2],0,(function(){return~~(this.millisecond()/10)})),j(0,["SSS",3],0,"millisecond"),j(0,["SSSS",4],0,(function(){return 10*this.millisecond()})),j(0,["SSSSS",5],0,(function(){return 100*this.millisecond()})),j(0,["SSSSSS",6],0,(function(){return 1e3*this.millisecond()})),j(0,["SSSSSSS",7],0,(function(){return 1e4*this.millisecond()})),j(0,["SSSSSSSS",8],0,(function(){return 1e5*this.millisecond()})),j(0,["SSSSSSSSS",9],0,(function(){return 1e6*this.millisecond()})),he("S",X,Y),he("SS",X,W),he("SSS",X,V),pn="SSSS";pn.length<=9;pn+="S")he(pn,te);function vn(e,t){t[ze]=ge(1e3*("0."+e))}for(pn="S";pn.length<=9;pn+="S")ve(pn,vn);function fn(){return this._isUTC?"UTC":""}function _n(){return this._isUTC?"Coordinated Universal Time":""}gn=He("Milliseconds",!1),j("z",0,0,"zoneAbbr"),j("zz",0,0,"zoneName");var yn=w.prototype;function bn(e){return ii(1e3*e)}function wn(){return ii.apply(null,arguments).parseZone()}function $n(e){return e}yn.add=Bi,yn.calendar=Ki,yn.clone=Ji,yn.diff=aa,yn.endOf=Sa,yn.format=ha,yn.from=da,yn.fromNow=ca,yn.to=ua,yn.toNow=pa,yn.get=Re,yn.invalidAt=Da,yn.isAfter=Xi,yn.isBefore=Qi,yn.isBetween=ea,yn.isSame=ta,yn.isSameOrAfter=sa,yn.isSameOrBefore=ia,yn.isValid=Ca,yn.lang=ma,yn.locale=ga,yn.localeData=va,yn.max=ni,yn.min=ai,yn.parsingFlags=Ha,yn.set=Pe,yn.startOf=ka,yn.subtract=Ui,yn.toArray=Oa,yn.toObject=Aa,yn.toDate=Ta,yn.toISOString=oa,yn.inspect=la,"undefined"!=typeof Symbol&&null!=Symbol.for&&(yn[Symbol.for("nodejs.util.inspect.custom")]=function(){return"Moment<"+this.format()+">"}),yn.toJSON=Ea,yn.toString=ra,yn.unix=Ma,yn.valueOf=za,yn.creationData=Na,yn.eraName=La,yn.eraNarrow=Ia,yn.eraAbbr=Fa,yn.eraYear=Ba,yn.year=Ee,yn.isLeapYear=Ce,yn.weekYear=Xa,yn.isoWeekYear=Qa,yn.quarter=yn.quarters=hn,yn.month=Xe,yn.daysInMonth=Qe,yn.week=yn.weeks=ss,yn.isoWeek=yn.isoWeeks=is,yn.weeksInYear=sn,yn.weeksInWeekYear=an,yn.isoWeeksInYear=en,yn.isoWeeksInISOWeekYear=tn,yn.date=dn,yn.day=yn.days=bt,yn.weekday=wt,yn.isoWeekday=$t,yn.dayOfYear=cn,yn.hour=yn.hours=ds,yn.minute=yn.minutes=un,yn.second=yn.seconds=mn,yn.millisecond=yn.milliseconds=gn,yn.utcOffset=xi,yn.utc=Si,yn.local=zi,yn.parseZone=Mi,yn.hasAlignedHourOffset=Ti,yn.isDST=Oi,yn.isLocal=Ei,yn.isUtcOffset=Ci,yn.isUtc=Hi,yn.isUTC=Hi,yn.zoneAbbr=fn,yn.zoneName=_n,yn.dates=k("dates accessor is deprecated. Use date instead.",dn),yn.months=k("months accessor is deprecated. Use month instead",Xe),yn.years=k("years accessor is deprecated. Use year instead",Ee),yn.zone=k("moment().zone is deprecated, use moment().utcOffset instead. http://momentjs.com/guides/#/warnings/zone/",ki),yn.isDSTShifted=k("isDSTShifted is deprecated. See http://momentjs.com/guides/#/warnings/dst-shifted/ for more information",Ai);var xn=Ot.prototype;function kn(e,t,s,i){var a=ks(),n=p().set(i,t);return a[s](n,e)}function Sn(e,t,s){if(h(e)&&(t=e,e=void 0),e=e||"",null!=t)return kn(e,t,s,"month");var i,a=[];for(i=0;i<12;i++)a[i]=kn(e,i,s,"month");return a}function zn(e,t,s,i){"boolean"==typeof e?(h(t)&&(s=t,t=void 0),t=t||""):(s=t=e,e=!1,h(t)&&(s=t,t=void 0),t=t||"");var a,n=ks(),r=e?n._week.dow:0,o=[];if(null!=s)return kn(t,(s+r)%7,i,"day");for(a=0;a<7;a++)o[a]=kn(t,(a+r)%7,i,"day");return o}function Mn(e,t){return Sn(e,t,"months")}function Tn(e,t){return Sn(e,t,"monthsShort")}function On(e,t,s){return zn(e,t,s,"weekdays")}function An(e,t,s){return zn(e,t,s,"weekdaysShort")}function En(e,t,s){return zn(e,t,s,"weekdaysMin")}xn.calendar=Et,xn.longDateFormat=Ht,xn.invalidDate=Nt,xn.ordinal=jt,xn.preparse=$n,xn.postformat=$n,xn.relativeTime=Ft,xn.pastFuture=Ut,xn.set=Mt,xn.eras=Ra,xn.erasParse=Pa,xn.erasConvertYear=ja,xn.erasAbbrRegex=Ya,xn.erasNameRegex=Ua,xn.erasNarrowRegex=Wa,xn.months=Ze,xn.monthsShort=Ge,xn.monthsParse=Ke,xn.monthsRegex=tt,xn.monthsShortRegex=et,xn.week=Xt,xn.firstDayOfYear=ts,xn.firstDayOfWeek=es,xn.weekdays=mt,xn.weekdaysMin=ft,xn.weekdaysShort=vt,xn.weekdaysParse=yt,xn.weekdaysRegex=xt,xn.weekdaysShortRegex=kt,xn.weekdaysMinRegex=St,xn.isPM=ls,xn.meridiem=cs,ws("en",{eras:[{since:"0001-01-01",until:1/0,offset:1,name:"Anno Domini",narrow:"AD",abbr:"AD"},{since:"0000-12-31",until:-1/0,offset:1,name:"Before Christ",narrow:"BC",abbr:"BC"}],dayOfMonthOrdinalParse:/\d{1,2}(th|st|nd|rd)/,ordinal:function(e){var t=e%10;return e+(1===ge(e%100/10)?"th":1===t?"st":2===t?"nd":3===t?"rd":"th")}}),s.lang=k("moment.lang is deprecated. Use moment.locale instead.",ws),s.langData=k("moment.langData is deprecated. Use moment.localeData instead.",ks);var Cn=Math.abs;function Hn(){var e=this._data;return this._milliseconds=Cn(this._milliseconds),this._days=Cn(this._days),this._months=Cn(this._months),e.milliseconds=Cn(e.milliseconds),e.seconds=Cn(e.seconds),e.minutes=Cn(e.minutes),e.hours=Cn(e.hours),e.months=Cn(e.months),e.years=Cn(e.years),this}function Dn(e,t,s,i){var a=Ri(t,s);return e._milliseconds+=i*a._milliseconds,e._days+=i*a._days,e._months+=i*a._months,e._bubble()}function Nn(e,t){return Dn(this,e,t,1)}function Rn(e,t){return Dn(this,e,t,-1)}function Pn(e){return e<0?Math.floor(e):Math.ceil(e)}function jn(){var e,t,s,i,a,n=this._milliseconds,r=this._days,o=this._months,l=this._data;return n>=0&&r>=0&&o>=0||n<=0&&r<=0&&o<=0||(n+=864e5*Pn(In(o)+r),r=0,o=0),l.milliseconds=n%1e3,e=pe(n/1e3),l.seconds=e%60,t=pe(e/60),l.minutes=t%60,s=pe(t/60),l.hours=s%24,r+=pe(s/24),o+=a=pe(Ln(r)),r-=Pn(In(a)),i=pe(o/12),o%=12,l.days=r,l.months=o,l.years=i,this}function Ln(e){return 4800*e/146097}function In(e){return 146097*e/4800}function Fn(e){if(!this.isValid())return NaN;var t,s,i=this._milliseconds;if("month"===(e=O(e))||"quarter"===e||"year"===e)switch(t=this._days+i/864e5,s=this._months+Ln(t),e){case"month":return s;case"quarter":return s/3;case"year":return s/12}else switch(t=this._days+Math.round(In(this._months)),e){case"week":return t/7+i/6048e5;case"day":return t+i/864e5;case"hour":return 24*t+i/36e5;case"minute":return 1440*t+i/6e4;case"second":return 86400*t+i/1e3;case"millisecond":return Math.floor(864e5*t)+i;default:throw new Error("Unknown unit "+e)}}function Bn(e){return function(){return this.as(e)}}var Un=Bn("ms"),Yn=Bn("s"),Wn=Bn("m"),Vn=Bn("h"),Zn=Bn("d"),Gn=Bn("w"),qn=Bn("M"),Kn=Bn("Q"),Jn=Bn("y"),Xn=Un;function Qn(){return Ri(this)}function er(e){return e=O(e),this.isValid()?this[e+"s"]():NaN}function tr(e){return function(){return this.isValid()?this._data[e]:NaN}}var sr=tr("milliseconds"),ir=tr("seconds"),ar=tr("minutes"),nr=tr("hours"),rr=tr("days"),or=tr("months"),lr=tr("years");function hr(){return pe(this.days()/7)}var dr=Math.round,cr={ss:44,s:45,m:45,h:22,d:26,w:null,M:11};function ur(e,t,s,i,a){return It.call(a,t||1,!!s,e,i)}function pr(e,t,s,i){var a=Ri(e).abs(),n=dr(a.as("s")),r=dr(a.as("m")),o=dr(a.as("h")),l=dr(a.as("d")),h=dr(a.as("M")),d=dr(a.as("w")),c=dr(a.as("y")),u=n<=s.ss&&["s",n]||n<s.s&&["ss",n]||r<=1&&["m"]||r<s.m&&["mm",r]||o<=1&&["h"]||o<s.h&&["hh",o]||l<=1&&["d"]||l<s.d&&["dd",l];return null!=s.w&&(u=u||d<=1&&["w"]||d<s.w&&["ww",d]),(u=u||h<=1&&["M"]||h<s.M&&["MM",h]||c<=1&&["y"]||["yy",c])[2]=t,u[3]=+e>0,u[4]=i,ur.apply(null,u)}function gr(e){return void 0===e?dr:"function"==typeof e&&(dr=e,!0)}function mr(e,t){return void 0!==cr[e]&&(void 0===t?cr[e]:(cr[e]=t,"s"===e&&(cr.ss=t-1),!0))}function vr(e,t){if(!this.isValid())return this.localeData().invalidDate();var s,i,a=!1,n=cr;return"object"==typeof e&&(t=e,e=!1),"boolean"==typeof e&&(a=e),"object"==typeof t&&(n=u(u({},cr),t||{}),null!=t.s&&null==t.ss&&(n.ss=t.s-1)),i=pr(this,!a,n,s=this.localeData()),a&&(i=Bt.call(s,+this,i)),s.postformat(i)}var fr=Math.abs;function _r(e){return(e>0)-(e<0)||+e}function yr(){if(!this.isValid())return this.localeData().invalidDate();var e,t,s,i,a,n,r,o,l=fr(this._milliseconds)/1e3,h=fr(this._days),d=fr(this._months),c=this.asSeconds();return c?(e=pe(l/60),t=pe(e/60),l%=60,e%=60,s=pe(d/12),d%=12,i=l?l.toFixed(3).replace(/\.?0+$/,""):"",a=c<0?"-":"",n=_r(this._months)!==_r(c)?"-":"",r=_r(this._days)!==_r(c)?"-":"",o=_r(this._milliseconds)!==_r(c)?"-":"",a+"P"+(s?n+s+"Y":"")+(d?n+d+"M":"")+(h?r+h+"D":"")+(t||e||l?"T":"")+(t?o+t+"H":"")+(e?o+e+"M":"")+(l?o+i+"S":"")):"P0D"}var br=gi.prototype;return br.isValid=ui,br.abs=Hn,br.add=Nn,br.subtract=Rn,br.as=Fn,br.asMilliseconds=Un,br.asSeconds=Yn,br.asMinutes=Wn,br.asHours=Vn,br.asDays=Zn,br.asWeeks=Gn,br.asMonths=qn,br.asQuarters=Kn,br.asYears=Jn,br.valueOf=Xn,br._bubble=jn,br.clone=Qn,br.get=er,br.milliseconds=sr,br.seconds=ir,br.minutes=ar,br.hours=nr,br.days=rr,br.weeks=hr,br.months=or,br.years=lr,br.humanize=vr,br.toISOString=yr,br.toString=yr,br.toJSON=yr,br.locale=ga,br.localeData=va,br.toIsoString=k("toIsoString() is deprecated. Please use toISOString() instead (notice the capitals)",yr),br.lang=ma,j("X",0,0,"unix"),j("x",0,0,"valueOf"),he("x",se),he("X",ne),ve("X",(function(e,t,s){s._d=new Date(1e3*parseFloat(e))})),ve("x",(function(e,t,s){s._d=new Date(ge(e))})),
+     */var rn,on;function ln(e){return e&&e.__esModule&&Object.prototype.hasOwnProperty.call(e,"default")?e.default:e}function hn(e){throw new Error('Could not dynamically require "'+e+'". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.')}!function(e){e.Sunrise="sunrise",e.Sunset="sunset",e.SolarAzimuth="solar_azimuth",e.Time="time"}(rn||(rn={})),function(e){e.Disabled="disabled",e.Manual="manual",e.Automatic="automatic"}(on||(on={}));var dn,cn={exports:{}};var un,pn=(dn||(dn=1,(un=cn).exports=function(){var e,t;function s(){return e.apply(null,arguments)}function i(t){e=t}function a(e){return e instanceof Array||"[object Array]"===Object.prototype.toString.call(e)}function n(e){return null!=e&&"[object Object]"===Object.prototype.toString.call(e)}function r(e,t){return Object.prototype.hasOwnProperty.call(e,t)}function o(e){if(Object.getOwnPropertyNames)return 0===Object.getOwnPropertyNames(e).length;var t;for(t in e)if(r(e,t))return!1;return!0}function l(e){return void 0===e}function h(e){return"number"==typeof e||"[object Number]"===Object.prototype.toString.call(e)}function d(e){return e instanceof Date||"[object Date]"===Object.prototype.toString.call(e)}function c(e,t){var s,i=[],a=e.length;for(s=0;s<a;++s)i.push(t(e[s],s));return i}function u(e,t){for(var s in t)r(t,s)&&(e[s]=t[s]);return r(t,"toString")&&(e.toString=t.toString),r(t,"valueOf")&&(e.valueOf=t.valueOf),e}function p(e,t,s,i){return si(e,t,s,i,!0).utc()}function g(){return{empty:!1,unusedTokens:[],unusedInput:[],overflow:-2,charsLeftOver:0,nullInput:!1,invalidEra:null,invalidMonth:null,invalidOffset:null,invalidFormat:!1,userInvalidated:!1,iso:!1,parsedDateParts:[],era:null,meridiem:null,rfc2822:!1,weekdayMismatch:!1}}function m(e){return null==e._pf&&(e._pf=g()),e._pf}function v(e){var s=null,i=!1,a=e._d&&!isNaN(e._d.getTime());return a&&(s=m(e),i=t.call(s.parsedDateParts,function(e){return null!=e}),a=s.overflow<0&&!s.empty&&!s.invalidEra&&!s.invalidMonth&&!s.invalidOffset&&!s.invalidWeekday&&!s.weekdayMismatch&&!s.nullInput&&!s.invalidFormat&&!s.userInvalidated&&(!s.meridiem||s.meridiem&&i),e._strict&&(a=a&&0===s.charsLeftOver&&0===s.unusedTokens.length&&void 0===s.bigHour)),null!=Object.isFrozen&&Object.isFrozen(e)?a:(e._isValid=a,e._isValid)}function f(e){var t=p(NaN);return null!=e?u(m(t),e):m(t).userInvalidated=!0,t}t=Array.prototype.some?Array.prototype.some:function(e){var t,s=Object(this),i=s.length>>>0;for(t=0;t<i;t++)if(t in s&&e.call(this,s[t],t,s))return!0;return!1};var _=s.momentProperties=[],y=!1;function b(e,t){var s,i,a,n=_.length;if(l(t._isAMomentObject)||(e._isAMomentObject=t._isAMomentObject),l(t._i)||(e._i=t._i),l(t._f)||(e._f=t._f),l(t._l)||(e._l=t._l),l(t._strict)||(e._strict=t._strict),l(t._tzm)||(e._tzm=t._tzm),l(t._isUTC)||(e._isUTC=t._isUTC),l(t._offset)||(e._offset=t._offset),l(t._pf)||(e._pf=m(t)),l(t._locale)||(e._locale=t._locale),n>0)for(s=0;s<n;s++)l(a=t[i=_[s]])||(e[i]=a);return e}function w(e){b(this,e),this._d=new Date(null!=e._d?e._d.getTime():NaN),this.isValid()||(this._d=new Date(NaN)),!1===y&&(y=!0,s.updateOffset(this),y=!1)}function $(e){return e instanceof w||null!=e&&null!=e._isAMomentObject}function x(e){!1===s.suppressDeprecationWarnings&&"undefined"!=typeof console&&console.warn&&console.warn("Deprecation warning: "+e)}function k(e,t){var i=!0;return u(function(){if(null!=s.deprecationHandler&&s.deprecationHandler(null,e),i){var a,n,o,l=[],h=arguments.length;for(n=0;n<h;n++){if(a="","object"==typeof arguments[n]){for(o in a+="\n["+n+"] ",arguments[0])r(arguments[0],o)&&(a+=o+": "+arguments[0][o]+", ");a=a.slice(0,-2)}else a=arguments[n];l.push(a)}x(e+"\nArguments: "+Array.prototype.slice.call(l).join("")+"\n"+(new Error).stack),i=!1}return t.apply(this,arguments)},t)}var S={};function z(e,t){null!=s.deprecationHandler&&s.deprecationHandler(e,t),S[e]||(x(t+"\n"+(new Error).stack),S[e]=!0)}function M(e){return"undefined"!=typeof Function&&e instanceof Function||"[object Function]"===Object.prototype.toString.call(e)}s.suppressDeprecationWarnings=!1,s.deprecationHandler=null;var T={D:"date",dates:"date",date:"date",d:"day",days:"day",day:"day",e:"weekday",weekdays:"weekday",weekday:"weekday",E:"isoWeekday",isoweekdays:"isoWeekday",isoweekday:"isoWeekday",DDD:"dayOfYear",dayofyears:"dayOfYear",dayofyear:"dayOfYear",h:"hour",hours:"hour",hour:"hour",ms:"millisecond",milliseconds:"millisecond",millisecond:"millisecond",m:"minute",minutes:"minute",minute:"minute",M:"month",months:"month",month:"month",Q:"quarter",quarters:"quarter",quarter:"quarter",s:"second",seconds:"second",second:"second",gg:"weekYear",weekyears:"weekYear",weekyear:"weekYear",GG:"isoWeekYear",isoweekyears:"isoWeekYear",isoweekyear:"isoWeekYear",w:"week",weeks:"week",week:"week",W:"isoWeek",isoweeks:"isoWeek",isoweek:"isoWeek",y:"year",years:"year",year:"year"};function O(e){return"string"==typeof e?T[e]||T[e.toLowerCase()]:void 0}function A(e){var t,s,i={};for(s in e)r(e,s)&&(t=O(s))&&(i[t]=e[s]);return i}var E={date:9,day:11,weekday:11,isoWeekday:11,dayOfYear:4,hour:13,millisecond:16,minute:14,month:8,quarter:7,second:15,weekYear:1,isoWeekYear:1,week:5,isoWeek:5,year:1};function C(e){var t,s=[];for(t in e)r(e,t)&&s.push({unit:t,priority:E[t]});return s.sort(function(e,t){return e.priority-t.priority}),s}function H(e,t,s){var i=""+Math.abs(e),a=t-i.length;return(e>=0?s?"+":"":"-")+Math.pow(10,Math.max(0,a)).toString().substr(1)+i}var D=/(\[[^\[]*\])|(\\e)|(\\)?(eHHmm|[Hh]mm(ss)?|Mo|MM?M?M?|Do|DDDo|DD?D?D?|ddd?d?|do?|w[o|w]?|W[o|W]?|Qo?|N{1,5}|YYYYYY|YYYYY|YYYY|YY|y{2,4}|yo?|gg(ggg?)?|GG(GGG?)?|e|E|a|A|hh?|HH?|kk?|mm?|ss?|S{1,9}|x|X|zz?|ZZ?|.)/g,N=/(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g,R={},P={};function j(e,t,s,i){var a=i;"string"==typeof i&&(a=function(){return this[i]()}),e&&(P[e]=a),t&&(P[t[0]]=function(){return H(a.apply(this,arguments),t[1],t[2])}),s&&(P[s]=function(){return this.localeData().ordinal(a.apply(this,arguments),e)})}function L(e){return e.match(/\[[\s\S]/)?e.replace(/^\[|\]$/g,""):e.replace(/\\/g,"")}function I(e){var t,s,i=e.match(D);for(t=0,s=i.length;t<s;t++)P[i[t]]?i[t]=P[i[t]]:i[t]=L(i[t]);return function(t){var a,n="";for(a=0;a<s;a++)n+=M(i[a])?i[a].call(t,e):i[a];return n}}function F(e,t){if(!e.isValid())return e.localeData().invalidDate();var s="$"+(t=B(t,e.localeData()));return r(R,s)||(R[s]=I(t)),R[s](e)}function B(e,t){var s=5;function i(e){return t.longDateFormat(e)||e}for(N.lastIndex=0;s>=0&&N.test(e);)e=e.replace(N,i),N.lastIndex=0,s-=1;return e}var U,Y=/\d/,W=/\d\d/,V=/\d{3}/,Z=/\d{4}/,G=/[+-]?\d{6}/,q=/\d\d?/,K=/\d\d\d\d?/,J=/\d\d\d\d\d\d?/,X=/\d{1,3}/,Q=/\d{1,4}/,ee=/[+-]?\d{1,6}/,te=/\d+/,se=/[+-]?\d+/,ie=/Z|[+-]\d\d:?\d\d/gi,ae=/Z|[+-]\d\d(?::?\d\d)?/gi,ne=/[+-]?\d+(\.\d{1,3})?/,re=/[0-9]{0,256}['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFF07\uFF10-\uFFEF]{1,256}|[\u0600-\u06FF\/]{1,256}(\s*?[\u0600-\u06FF]{1,256}){1,2}/i,oe=/^[1-9]\d?/,le=/^([1-9]\d|\d)/;function he(e,t,s){U[e]=M(t)?t:function(e,i){return e&&s?s:t}}function de(e,t){return r(U,e)?U[e](t._strict,t._locale):new RegExp(ce(e))}function ce(e){return ue(e.replace("\\","").replace(/\\(\[)|\\(\])|\[([^\]\[]*)\]|\\(.)/g,function(e,t,s,i,a){return t||s||i||a}))}function ue(e){return e.replace(/[-\/\\^$*+?.()|[\]{}]/g,"\\$&")}function pe(e){return e<0?Math.ceil(e)||0:Math.floor(e)}function ge(e){var t=+e,s=0;return 0!==t&&isFinite(t)&&(s=pe(t)),s}U={};var me={};function ve(e,t){var s,i,a=t;for("string"==typeof e&&(e=[e]),h(t)&&(a=function(e,s){s[t]=ge(e)}),i=e.length,s=0;s<i;s++)me[e[s]]=a}function fe(e,t){ve(e,function(e,s,i,a){i._w=i._w||{},t(e,i._w,i,a)})}function _e(e,t,s){null!=t&&r(me,e)&&me[e](t,s._a,s,e)}function ye(e){return e%4==0&&e%100!=0||e%400==0}var be=0,we=1,$e=2,xe=3,ke=4,Se=5,ze=6,Me=7,Te=8;function Oe(e){return ye(e)?366:365}j("Y",0,0,function(){var e=this.year();return e<=9999?H(e,4):"+"+e}),j(0,["YY",2],0,function(){return this.year()%100}),j(0,["YYYY",4],0,"year"),j(0,["YYYYY",5],0,"year"),j(0,["YYYYYY",6,!0],0,"year"),he("Y",se),he("YY",q,W),he("YYYY",Q,Z),he("YYYYY",ee,G),he("YYYYYY",ee,G),ve(["YYYYY","YYYYYY"],be),ve("YYYY",function(e,t){t[be]=2===e.length?s.parseTwoDigitYear(e):ge(e)}),ve("YY",function(e,t){t[be]=s.parseTwoDigitYear(e)}),ve("Y",function(e,t){t[be]=parseInt(e,10)}),s.parseTwoDigitYear=function(e){return ge(e)+(ge(e)>68?1900:2e3)};var Ae,Ee=He("FullYear",!0);function Ce(){return ye(this.year())}function He(e,t){return function(i){return null!=i?(Ne(this,e,i),s.updateOffset(this,t),this):De(this,e)}}function De(e,t){if(!e.isValid())return NaN;var s=e._d,i=e._isUTC;switch(t){case"Milliseconds":return i?s.getUTCMilliseconds():s.getMilliseconds();case"Seconds":return i?s.getUTCSeconds():s.getSeconds();case"Minutes":return i?s.getUTCMinutes():s.getMinutes();case"Hours":return i?s.getUTCHours():s.getHours();case"Date":return i?s.getUTCDate():s.getDate();case"Day":return i?s.getUTCDay():s.getDay();case"Month":return i?s.getUTCMonth():s.getMonth();case"FullYear":return i?s.getUTCFullYear():s.getFullYear();default:return NaN}}function Ne(e,t,s){var i,a,n,r,o;if(e.isValid()&&!isNaN(s)){switch(i=e._d,a=e._isUTC,t){case"Milliseconds":return void(a?i.setUTCMilliseconds(s):i.setMilliseconds(s));case"Seconds":return void(a?i.setUTCSeconds(s):i.setSeconds(s));case"Minutes":return void(a?i.setUTCMinutes(s):i.setMinutes(s));case"Hours":return void(a?i.setUTCHours(s):i.setHours(s));case"Date":return void(a?i.setUTCDate(s):i.setDate(s));case"FullYear":break;default:return}n=s,r=e.month(),o=29!==(o=e.date())||1!==r||ye(n)?o:28,a?i.setUTCFullYear(n,r,o):i.setFullYear(n,r,o)}}function Re(e){return M(this[e=O(e)])?this[e]():this}function Pe(e,t){if("object"==typeof e){var s,i=C(e=A(e)),a=i.length;for(s=0;s<a;s++)this[i[s].unit](e[i[s].unit])}else if(M(this[e=O(e)]))return this[e](t);return this}function je(e,t){return(e%t+t)%t}function Le(e,t){if(isNaN(e)||isNaN(t))return NaN;var s=je(t,12);return e+=(t-s)/12,1===s?ye(e)?29:28:31-s%7%2}Ae=Array.prototype.indexOf?Array.prototype.indexOf:function(e){var t;for(t=0;t<this.length;++t)if(this[t]===e)return t;return-1},j("M",["MM",2],"Mo",function(){return this.month()+1}),j("MMM",0,0,function(e){return this.localeData().monthsShort(this,e)}),j("MMMM",0,0,function(e){return this.localeData().months(this,e)}),he("M",q,oe),he("MM",q,W),he("MMM",function(e,t){return t.monthsShortRegex(e)}),he("MMMM",function(e,t){return t.monthsRegex(e)}),ve(["M","MM"],function(e,t){t[we]=ge(e)-1}),ve(["MMM","MMMM"],function(e,t,s,i){var a=s._locale.monthsParse(e,i,s._strict);null!=a?t[we]=a:m(s).invalidMonth=e});var Ie="January_February_March_April_May_June_July_August_September_October_November_December".split("_"),Fe="Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec".split("_"),Be=/D[oD]?(\[[^\[\]]*\]|\s)+MMMM?/,Ue=re,Ye=re,We=["monthsParse","longMonthsParse","shortMonthsParse","monthsRegex","monthsShortRegex","monthsStrictRegex","monthsShortStrictRegex"];function Ve(e,t){var s,i;for(s=0;s<We.length;s++)r(t,i=We[s])||delete e["_"+i]}function Ze(e,t){return e?a(this._months)?this._months[e.month()]:this._months[(this._months.isFormat||Be).test(t)?"format":"standalone"][e.month()]:a(this._months)?this._months:this._months.standalone}function Ge(e,t){return e?a(this._monthsShort)?this._monthsShort[e.month()]:this._monthsShort[Be.test(t)?"format":"standalone"][e.month()]:a(this._monthsShort)?this._monthsShort:this._monthsShort.standalone}function qe(e,t,s){var i,a,n,r=e.toLocaleLowerCase();if(!this._monthsParse)for(this._monthsParse=[],this._longMonthsParse=[],this._shortMonthsParse=[],i=0;i<12;++i)n=p([2e3,i]),this._shortMonthsParse[i]=this.monthsShort(n,"").toLocaleLowerCase(),this._longMonthsParse[i]=this.months(n,"").toLocaleLowerCase();return s?"MMM"===t?-1!==(a=Ae.call(this._shortMonthsParse,r))?a:null:-1!==(a=Ae.call(this._longMonthsParse,r))?a:null:"MMM"===t?-1!==(a=Ae.call(this._shortMonthsParse,r))||-1!==(a=Ae.call(this._longMonthsParse,r))?a:null:-1!==(a=Ae.call(this._longMonthsParse,r))||-1!==(a=Ae.call(this._shortMonthsParse,r))?a:null}function Ke(e,t,s){var i,a,n;if(this._monthsParseExact)return qe.call(this,e,t,s);for(this._monthsParse||(this._monthsParse=[],this._longMonthsParse=[],this._shortMonthsParse=[]),i=0;i<12;i++){if(a=p([2e3,i]),s&&!this._longMonthsParse[i]&&(this._longMonthsParse[i]=new RegExp("^"+this.months(a,"").replace(".","")+"$","i"),this._shortMonthsParse[i]=new RegExp("^"+this.monthsShort(a,"").replace(".","")+"$","i")),s||this._monthsParse[i]||(n="^"+this.months(a,"")+"|^"+this.monthsShort(a,""),this._monthsParse[i]=new RegExp(n.replace(".",""),"i")),s&&"MMMM"===t&&this._longMonthsParse[i].test(e))return i;if(s&&"MMM"===t&&this._shortMonthsParse[i].test(e))return i;if(!s&&this._monthsParse[i].test(e))return i}}function Je(e,t){if(!e.isValid())return e;if("string"==typeof t)if(/^\d+$/.test(t))t=ge(t);else if(!h(t=e.localeData().monthsParse(t)))return e;var s=t,i=e.date();return i=i<29?i:Math.min(i,Le(e.year(),s)),e._isUTC?e._d.setUTCMonth(s,i):e._d.setMonth(s,i),e}function Xe(e){return null!=e?(Je(this,e),s.updateOffset(this,!0),this):De(this,"Month")}function Qe(){return Le(this.year(),this.month())}function et(e){return this._monthsParseExact?(r(this,"_monthsRegex")||st.call(this),e?this._monthsShortStrictRegex:this._monthsShortRegex):(r(this,"_monthsShortRegex")||(this._monthsShortRegex=Ue),this._monthsShortStrictRegex&&e?this._monthsShortStrictRegex:this._monthsShortRegex)}function tt(e){return this._monthsParseExact?(r(this,"_monthsRegex")||st.call(this),e?this._monthsStrictRegex:this._monthsRegex):(r(this,"_monthsRegex")||(this._monthsRegex=Ye),this._monthsStrictRegex&&e?this._monthsStrictRegex:this._monthsRegex)}function st(){function e(e,t){return t.length-e.length}var t,s,i,a,n=[],r=[],o=[];for(t=0;t<12;t++)s=p([2e3,t]),i=ue(this.monthsShort(s,"")),a=ue(this.months(s,"")),n.push(i),r.push(a),o.push(a),o.push(i);n.sort(e),r.sort(e),o.sort(e),this._monthsRegex=new RegExp("^("+o.join("|")+")","i"),this._monthsShortRegex=this._monthsRegex,this._monthsStrictRegex=new RegExp("^("+r.join("|")+")","i"),this._monthsShortStrictRegex=new RegExp("^("+n.join("|")+")","i")}function it(e,t){return"string"!=typeof e?e:isNaN(e)?"number"==typeof(e=t.weekdaysParse(e))?e:null:parseInt(e,10)}function at(e,t){return"string"==typeof e?t.weekdaysParse(e)%7||7:isNaN(e)?null:e}function nt(e,t){return e.slice(t,7).concat(e.slice(0,t))}j("d",0,"do","day"),j("dd",0,0,function(e){return this.localeData().weekdaysMin(this,e)}),j("ddd",0,0,function(e){return this.localeData().weekdaysShort(this,e)}),j("dddd",0,0,function(e){return this.localeData().weekdays(this,e)}),j("e",0,0,"weekday"),j("E",0,0,"isoWeekday"),j("eHHmm",0,0,function(){return""+this.weekday()+H(this.hours(),2)+H(this.minutes(),2)}),he("d",q),he("e",q),he("E",q),he("eHHmm",J),he("dd",function(e,t){return t.weekdaysMinRegex(e)}),he("ddd",function(e,t){return t.weekdaysShortRegex(e)}),he("dddd",function(e,t){return t.weekdaysRegex(e)}),fe(["dd","ddd","dddd"],function(e,t,s,i){var a=s._locale.weekdaysParse(e,i,s._strict);null!=a?t.d=a:m(s).invalidWeekday=e}),fe(["d","e","E"],function(e,t,s,i){t[i]=ge(e)}),fe("eHHmm",function(e,t,s){var i=e.length-4;t.e=ge(e.substr(0,i)),s._a[xe]=ge(e.substr(i,2)),s._a[ke]=ge(e.substr(i+2))});var rt,ot="Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),lt="Sun_Mon_Tue_Wed_Thu_Fri_Sat".split("_"),ht="Su_Mo_Tu_We_Th_Fr_Sa".split("_"),dt=re,ct=re,ut=re,pt=["weekdaysParse","fullWeekdaysParse","shortWeekdaysParse","minWeekdaysParse","weekdaysRegex","weekdaysShortRegex","weekdaysMinRegex","weekdaysStrictRegex","weekdaysShortStrictRegex","weekdaysMinStrictRegex"];function gt(e,t){var s,i;for(s=0;s<pt.length;s++)r(t,i=pt[s])||delete e["_"+i]}function mt(e,t){var s=a(this._weekdays)?this._weekdays:this._weekdays[e&&!0!==e&&this._weekdays.isFormat.test(t)?"format":"standalone"];return!0===e?nt(s,this._week.dow):e?s[e.day()]:s}function vt(e){return!0===e?nt(this._weekdaysShort,this._week.dow):e?this._weekdaysShort[e.day()]:this._weekdaysShort}function ft(e){return!0===e?nt(this._weekdaysMin,this._week.dow):e?this._weekdaysMin[e.day()]:this._weekdaysMin}function _t(e,t,s){var i,a,n,r=e.toLocaleLowerCase();if(!this._weekdaysParse)for(this._weekdaysParse=[],this._shortWeekdaysParse=[],this._minWeekdaysParse=[],i=0;i<7;++i)n=p([2e3,1]).day(i),this._minWeekdaysParse[i]=this.weekdaysMin(n,"").toLocaleLowerCase(),this._shortWeekdaysParse[i]=this.weekdaysShort(n,"").toLocaleLowerCase(),this._weekdaysParse[i]=this.weekdays(n,"").toLocaleLowerCase();return s?"dddd"===t?-1!==(a=Ae.call(this._weekdaysParse,r))?a:null:"ddd"===t?-1!==(a=Ae.call(this._shortWeekdaysParse,r))?a:null:-1!==(a=Ae.call(this._minWeekdaysParse,r))?a:null:"dddd"===t?-1!==(a=Ae.call(this._weekdaysParse,r))||-1!==(a=Ae.call(this._shortWeekdaysParse,r))||-1!==(a=Ae.call(this._minWeekdaysParse,r))?a:null:"ddd"===t?-1!==(a=Ae.call(this._shortWeekdaysParse,r))||-1!==(a=Ae.call(this._weekdaysParse,r))||-1!==(a=Ae.call(this._minWeekdaysParse,r))?a:null:-1!==(a=Ae.call(this._minWeekdaysParse,r))||-1!==(a=Ae.call(this._weekdaysParse,r))||-1!==(a=Ae.call(this._shortWeekdaysParse,r))?a:null}function yt(e,t,s){var i,a,n;if(this._weekdaysParseExact)return _t.call(this,e,t,s);for(this._weekdaysParse||(this._weekdaysParse=[],this._minWeekdaysParse=[],this._shortWeekdaysParse=[],this._fullWeekdaysParse=[]),i=0;i<7;i++){if(a=p([2e3,1]).day(i),s&&!this._fullWeekdaysParse[i]&&(this._fullWeekdaysParse[i]=new RegExp("^"+this.weekdays(a,"").replace(".","\\.?")+"$","i"),this._shortWeekdaysParse[i]=new RegExp("^"+this.weekdaysShort(a,"").replace(".","\\.?")+"$","i"),this._minWeekdaysParse[i]=new RegExp("^"+this.weekdaysMin(a,"").replace(".","\\.?")+"$","i")),this._weekdaysParse[i]||(n="^"+this.weekdays(a,"")+"|^"+this.weekdaysShort(a,"")+"|^"+this.weekdaysMin(a,""),this._weekdaysParse[i]=new RegExp(n.replace(".",""),"i")),s&&"dddd"===t&&this._fullWeekdaysParse[i].test(e))return i;if(s&&"ddd"===t&&this._shortWeekdaysParse[i].test(e))return i;if(s&&"dd"===t&&this._minWeekdaysParse[i].test(e))return i;if(!s&&this._weekdaysParse[i].test(e))return i}}function bt(e){if(!this.isValid())return null!=e?this:NaN;var t=De(this,"Day");return null!=e?(e=it(e,this.localeData()),this.add(e-t,"d")):t}function wt(e){if(!this.isValid())return null!=e?this:NaN;var t=(this.day()+7-this.localeData()._week.dow)%7;return null==e?t:this.add(e-t,"d")}function $t(e){if(!this.isValid())return null!=e?this:NaN;if(null!=e){var t=at(e,this.localeData());return this.day(this.day()%7?t:t-7)}return this.day()||7}function xt(e){return this._weekdaysParseExact?(r(this,"_weekdaysRegex")||zt.call(this),e?this._weekdaysStrictRegex:this._weekdaysRegex):(r(this,"_weekdaysRegex")||(this._weekdaysRegex=dt),this._weekdaysStrictRegex&&e?this._weekdaysStrictRegex:this._weekdaysRegex)}function kt(e){return this._weekdaysParseExact?(r(this,"_weekdaysRegex")||zt.call(this),e?this._weekdaysShortStrictRegex:this._weekdaysShortRegex):(r(this,"_weekdaysShortRegex")||(this._weekdaysShortRegex=ct),this._weekdaysShortStrictRegex&&e?this._weekdaysShortStrictRegex:this._weekdaysShortRegex)}function St(e){return this._weekdaysParseExact?(r(this,"_weekdaysRegex")||zt.call(this),e?this._weekdaysMinStrictRegex:this._weekdaysMinRegex):(r(this,"_weekdaysMinRegex")||(this._weekdaysMinRegex=ut),this._weekdaysMinStrictRegex&&e?this._weekdaysMinStrictRegex:this._weekdaysMinRegex)}function zt(){function e(e,t){return t.length-e.length}var t,s,i,a,n,r=[],o=[],l=[],h=[];for(t=0;t<7;t++)s=p([2e3,1]).day(t),i=ue(this.weekdaysMin(s,"")),a=ue(this.weekdaysShort(s,"")),n=ue(this.weekdays(s,"")),r.push(i),o.push(a),l.push(n),h.push(i),h.push(a),h.push(n);r.sort(e),o.sort(e),l.sort(e),h.sort(e),this._weekdaysRegex=new RegExp("^("+h.join("|")+")","i"),this._weekdaysShortRegex=this._weekdaysRegex,this._weekdaysMinRegex=this._weekdaysRegex,this._weekdaysStrictRegex=new RegExp("^("+l.join("|")+")","i"),this._weekdaysShortStrictRegex=new RegExp("^("+o.join("|")+")","i"),this._weekdaysMinStrictRegex=new RegExp("^("+r.join("|")+")","i")}function Mt(e){var t,s;for(s in Ve(this,e),gt(this,e),e)r(e,s)&&(M(t=e[s])?this[s]=t:this["_"+s]=t);this._config=e,this._dayOfMonthOrdinalParseLenient=new RegExp((this._dayOfMonthOrdinalParse.source||this._ordinalParse.source)+"|"+/\d{1,2}/.source)}function Tt(e,t){var s,i=u({},e);for(s in t)r(t,s)&&(n(e[s])&&n(t[s])?(i[s]={},u(i[s],e[s]),u(i[s],t[s])):null!=t[s]?i[s]=t[s]:delete i[s]);for(s in e)r(e,s)&&!r(t,s)&&n(e[s])&&(i[s]=u({},i[s]));return i}function Ot(e){null!=e&&this.set(e)}rt=Object.keys?Object.keys:function(e){var t,s=[];for(t in e)r(e,t)&&s.push(t);return s};var At={sameDay:"[Today at] LT",nextDay:"[Tomorrow at] LT",nextWeek:"dddd [at] LT",lastDay:"[Yesterday at] LT",lastWeek:"[Last] dddd [at] LT",sameElse:"L"};function Et(e,t,s){var i=this._calendar[e]||this._calendar.sameElse;return M(i)?i.call(t,s):i}var Ct={LTS:"h:mm:ss A",LT:"h:mm A",L:"MM/DD/YYYY",LL:"MMMM D, YYYY",LLL:"MMMM D, YYYY h:mm A",LLLL:"dddd, MMMM D, YYYY h:mm A"};function Ht(e){var t=this._longDateFormat[e],s=this._longDateFormat[e.toUpperCase()],i=this._longDateFormatCache;return t||!s?t:i&&i[e]&&i[e].formatUpper===s?i[e].format:(t=s.match(D).map(function(e){return"MMMM"===e||"MM"===e||"DD"===e||"dddd"===e?e.slice(1):e}).join(""),i||(i=this._longDateFormatCache={}),i[e]={formatUpper:s,format:t},t)}var Dt="Invalid date";function Nt(){return this._invalidDate}var Rt="%d",Pt=/\d{1,2}/;function jt(e){return this._ordinal.replace("%d",e)}var Lt={future:"in %s",past:"%s ago",s:"a few seconds",ss:"%d seconds",m:"a minute",mm:"%d minutes",h:"an hour",hh:"%d hours",d:"a day",dd:"%d days",w:"a week",ww:"%d weeks",M:"a month",MM:"%d months",y:"a year",yy:"%d years"};function It(e,t,s,i){var a=this._relativeTime[s];return M(a)?a(e,t,s,i):a.replace(/%d/i,e)}function Ft(e,t,s,i){return this.postformat(It.call(this,e,t,s,i))}function Bt(e,t){var s=this._relativeTime[e>0?"future":"past"];return M(s)?s(t):s.replace(/%s/i,t)}function Ut(e,t){return this.postformat(Bt.call(this,e,t))}function Yt(e,t,s,i,a,n,r){var o;return e<100&&e>=0?(o=new Date(e+400,t,s,i,a,n,r),isFinite(o.getFullYear())&&o.setFullYear(e)):o=new Date(e,t,s,i,a,n,r),o}function Wt(e){var t,s;return e<100&&e>=0?((s=Array.prototype.slice.call(arguments))[0]=e+400,t=new Date(Date.UTC.apply(null,s)),isFinite(t.getUTCFullYear())&&t.setUTCFullYear(e)):t=new Date(Date.UTC.apply(null,arguments)),t}function Vt(e,t,s){var i=7+t-s;return-(7+Wt(e,0,i).getUTCDay()-t)%7+i-1}function Zt(e,t,s,i,a){var n,r,o=1+7*(t-1)+(7+s-i)%7+Vt(e,i,a);return o<=0?r=Oe(n=e-1)+o:o>Oe(e)?(n=e+1,r=o-Oe(e)):(n=e,r=o),{year:n,dayOfYear:r}}function Gt(e,t,s,i){var a,n,r=Vt(e,s,i),o=Math.floor((t-r-1)/7)+1;return o<1?a=o+Jt(n=e-1,s,i):o>Jt(e,s,i)?(a=o-Jt(e,s,i),n=e+1):(n=e,a=o),{week:a,year:n}}function qt(e,t,s){return Gt(e.year(),e.dayOfYear(),t,s)}function Kt(e,t,s,i,a){return Gt(e,Math.round((Wt(e,t,s)-Wt(e,0,1))/864e5)+1,i,a)}function Jt(e,t,s){var i=Vt(e,t,s),a=Vt(e+1,t,s);return(Oe(e)-i+a)/7}function Xt(e){return qt(e,this._week.dow,this._week.doy).week}j("w",["ww",2],"wo","week"),j("W",["WW",2],"Wo","isoWeek"),he("w",q,oe),he("ww",q,W),he("W",q,oe),he("WW",q,W),fe(["w","ww","W","WW"],function(e,t,s,i){t[i.substr(0,1)]=ge(e)});var Qt={dow:0,doy:6};function es(){return this._week.dow}function ts(){return this._week.doy}function ss(e){var t=this.localeData().week(this);return null==e?t:this.add(7*(e-t),"d")}function is(e){var t=qt(this,1,4).week;return null==e?t:this.add(7*(e-t),"d")}function as(){return this.hours()%12||12}function ns(){return this.hours()||24}function rs(e,t){j(e,0,0,function(){return this.localeData().meridiem(this.hours(),this.minutes(),t)})}function os(e,t){return t._meridiemParse}function ls(e){return"p"===(e+"").toLowerCase().charAt(0)}j("H",["HH",2],0,"hour"),j("h",["hh",2],0,as),j("k",["kk",2],0,ns),j("hmm",0,0,function(){return""+as.apply(this)+H(this.minutes(),2)}),j("hmmss",0,0,function(){return""+as.apply(this)+H(this.minutes(),2)+H(this.seconds(),2)}),j("Hmm",0,0,function(){return""+this.hours()+H(this.minutes(),2)}),j("Hmmss",0,0,function(){return""+this.hours()+H(this.minutes(),2)+H(this.seconds(),2)}),rs("a",!0),rs("A",!1),he("a",os),he("A",os),he("H",q,le),he("h",q,oe),he("k",q,oe),he("HH",q,W),he("hh",q,W),he("kk",q,W),he("hmm",K),he("hmmss",J),he("Hmm",K),he("Hmmss",J),ve(["H","HH"],xe),ve(["k","kk"],function(e,t,s){var i=ge(e);t[xe]=24===i?0:i}),ve(["a","A"],function(e,t,s){s._isPm=s._locale.isPM(e),s._meridiem=e}),ve(["h","hh"],function(e,t,s){t[xe]=ge(e),m(s).bigHour=!0}),ve("hmm",function(e,t,s){var i=e.length-2;t[xe]=ge(e.substr(0,i)),t[ke]=ge(e.substr(i)),m(s).bigHour=!0}),ve("hmmss",function(e,t,s){var i=e.length-4,a=e.length-2;t[xe]=ge(e.substr(0,i)),t[ke]=ge(e.substr(i,2)),t[Se]=ge(e.substr(a)),m(s).bigHour=!0}),ve("Hmm",function(e,t,s){var i=e.length-2;t[xe]=ge(e.substr(0,i)),t[ke]=ge(e.substr(i))}),ve("Hmmss",function(e,t,s){var i=e.length-4,a=e.length-2;t[xe]=ge(e.substr(0,i)),t[ke]=ge(e.substr(i,2)),t[Se]=ge(e.substr(a))});var hs=/[ap]\.?m?\.?/i,ds=He("Hours",!0);function cs(e,t,s){return e>11?s?"pm":"PM":s?"am":"AM"}var us,ps={calendar:At,longDateFormat:Ct,invalidDate:Dt,ordinal:Rt,dayOfMonthOrdinalParse:Pt,relativeTime:Lt,months:Ie,monthsShort:Fe,week:Qt,weekdays:ot,weekdaysMin:ht,weekdaysShort:lt,meridiemParse:hs},gs={},ms={};function vs(e,t){var s,i=Math.min(e.length,t.length);for(s=0;s<i;s+=1)if(e[s]!==t[s])return s;return i}function fs(e){return e?e.toLowerCase().replace("_","-"):e}function _s(e){for(var t,s,i,a,n=0;n<e.length;){for(t=(a=fs(e[n]).split("-")).length,s=(s=fs(e[n+1]))?s.split("-"):null;t>0;){if(i=bs(a.slice(0,t).join("-")))return i;if(s&&s.length>=t&&vs(a,s)>=t-1)break;t--}n++}return us}function ys(e){return"string"==typeof e&&/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(e)}function bs(e){var t,s=null;if(r(gs,e))return gs[e];if(t=fs(e),r(gs,t))return gs[t];if(un&&un.exports&&ys(t))try{s=us._abbr,hn("./locale/"+t),ws(s)}catch(e){gs[t]=null}return r(gs,t)?gs[t]:void 0}function ws(e,t){var s;return e&&((s=l(t)?ks(e):$s(e,t))?us=s:"undefined"!=typeof console&&console.warn&&console.warn("Locale "+e+" not found. Did you forget to load it?")),us._abbr}function $s(e,t){if(null!==t){var s,i=ps;if(t.abbr=e,null!=gs[e])z("defineLocaleOverride","use moment.updateLocale(localeName, config) to change an existing locale. moment.defineLocale(localeName, config) should only be used for creating a new locale See http://momentjs.com/guides/#/warnings/define-locale/ for more info."),i=gs[e]._config;else if(null!=t.parentLocale)if(null!=gs[t.parentLocale])i=gs[t.parentLocale]._config;else{if(null==(s=bs(t.parentLocale)))return ms[t.parentLocale]||(ms[t.parentLocale]=[]),ms[t.parentLocale].push({name:e,config:t}),null;i=s._config}return gs[e]=new Ot(Tt(i,t)),ms[e]&&ms[e].forEach(function(e){$s(e.name,e.config)}),ws(e),gs[e]}return delete gs[e],null}function xs(e,t){var s,i=bs(e),a=ps;return null!=i&&(e=i._abbr),null!=t?(null!=gs[e]&&null!=gs[e].parentLocale?gs[e].set(Tt(gs[e]._config,t)):(null!=i&&(a=i._config),t=Tt(a,t),null==i&&(t.abbr=e),(s=new Ot(t)).parentLocale=gs[e],gs[e]=s),ws(e)):null!=gs[e]&&(null!=gs[e].parentLocale?(gs[e]=gs[e].parentLocale,e===ws()&&ws(e)):null!=gs[e]&&delete gs[e]),gs[e]}function ks(e){var t;if(e&&e._locale&&e._locale._abbr&&(e=e._locale._abbr),!e)return us;if(!a(e)){if(t=bs(e))return t;e=[e]}return _s(e)}function Ss(){return rt(gs)}function zs(e){var t,s=e._a;return s&&-2===m(e).overflow&&(t=s[we]<0||s[we]>11?we:s[$e]<1||s[$e]>Le(s[be],s[we])?$e:s[xe]<0||s[xe]>24||24===s[xe]&&(0!==s[ke]||0!==s[Se]||0!==s[ze])?xe:s[ke]<0||s[ke]>59?ke:s[Se]<0||s[Se]>59?Se:s[ze]<0||s[ze]>999?ze:-1,m(e)._overflowDayOfYear&&(t<be||t>$e)&&(t=$e),m(e)._overflowWeeks&&-1===t&&(t=Me),m(e)._overflowWeekday&&-1===t&&(t=Te),m(e).overflow=t),e}var Ms=/^\s*((?:[+-]\d{6}|\d{4})-(?:\d\d-\d\d|W\d\d-\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?::\d\d(?::\d\d(?:[.,]\d+)?)?)?)([+-]\d\d(?::?\d\d)?|\s*Z)?)?$/,Ts=/^\s*((?:[+-]\d{6}|\d{4})(?:\d\d\d\d|W\d\d\d|W\d\d|\d\d\d|\d\d|))(?:(T| )(\d\d(?:\d\d(?:\d\d(?:[.,]\d+)?)?)?)([+-]\d\d(?::?\d\d)?|\s*Z)?)?$/,Os=/Z|[+-]\d\d(?::?\d\d)?/,As=[["YYYYYY-MM-DD",/[+-]\d{6}-\d\d-\d\d/],["YYYY-MM-DD",/\d{4}-\d\d-\d\d/],["GGGG-[W]WW-E",/\d{4}-W\d\d-\d/],["GGGG-[W]WW",/\d{4}-W\d\d/,!1],["YYYY-DDD",/\d{4}-\d{3}/],["YYYY-MM",/\d{4}-\d\d/,!1],["YYYYYYMMDD",/[+-]\d{10}/],["YYYYMMDD",/\d{8}/],["GGGG[W]WWE",/\d{4}W\d{3}/],["GGGG[W]WW",/\d{4}W\d{2}/,!1],["YYYYDDD",/\d{7}/],["YYYYMM",/\d{6}/,!1],["YYYY",/\d{4}/,!1]],Es=[["HH:mm:ss.SSSS",/\d\d:\d\d:\d\d\.\d+/],["HH:mm:ss,SSSS",/\d\d:\d\d:\d\d,\d+/],["HH:mm:ss",/\d\d:\d\d:\d\d/],["HH:mm",/\d\d:\d\d/],["HHmmss.SSSS",/\d\d\d\d\d\d\.\d+/],["HHmmss,SSSS",/\d\d\d\d\d\d,\d+/],["HHmmss",/\d\d\d\d\d\d/],["HHmm",/\d\d\d\d/],["HH",/\d\d/]],Cs=/^\/?Date\((-?\d+)/i,Hs=/^(?:(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d{1,2})\s(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(\d{2,4})\s(\d\d):(\d\d)(?::(\d\d))?\s(?:(UT|GMT|[ECMP][SD]T)|([Zz])|([+-]\d{4}))$/,Ds={UT:0,GMT:0,EDT:-240,EST:-300,CDT:-300,CST:-360,MDT:-360,MST:-420,PDT:-420,PST:-480};function Ns(e){var t,s,i,a,n,r,o=e._i,l=Ms.exec(o)||Ts.exec(o),h=As.length,d=Es.length;if(l){for(m(e).iso=!0,t=0,s=h;t<s;t++)if(As[t][1].exec(l[1])){a=As[t][0],i=!1!==As[t][2];break}if(null==a)return void(e._isValid=!1);if(l[3]){for(t=0,s=d;t<s;t++)if(Es[t][1].exec(l[3])){n=(l[2]||" ")+Es[t][0];break}if(null==n)return void(e._isValid=!1)}if(!i&&null!=n)return void(e._isValid=!1);if(l[4]){if(!Os.exec(l[4]))return void(e._isValid=!1);r="Z"}e._f=a+(n||"")+(r||""),qs(e)}else e._isValid=!1}function Rs(e,t,s,i,a,n){var r=[Ps(e),Fe.indexOf(t),parseInt(s,10),parseInt(i,10),parseInt(a,10)];return n&&r.push(parseInt(n,10)),r}function Ps(e){var t=parseInt(e,10);return t<=49?2e3+t:t<=999?1900+t:t}function js(e){return e.replace(/\([^()]*\)|[\n\t]/g," ").replace(/(\s\s+)/g," ").replace(/^\s\s*/,"").replace(/\s\s*$/,"")}function Ls(e,t,s){return!e||lt.indexOf(e)===new Date(t[0],t[1],t[2]).getDay()||(m(s).weekdayMismatch=!0,s._isValid=!1,!1)}function Is(e,t,s){if(e)return Ds[e];if(t)return 0;var i=parseInt(s,10),a=i%100;return(i-a)/100*60+a}function Fs(e){var t,s=Hs.exec(js(e._i));if(s){if(t=Rs(s[4],s[3],s[2],s[5],s[6],s[7]),!Ls(s[1],t,e))return;e._a=t,e._tzm=Is(s[8],s[9],s[10]),e._d=Wt.apply(null,e._a),e._d.setUTCMinutes(e._d.getUTCMinutes()-e._tzm),m(e).rfc2822=!0}else e._isValid=!1}function Bs(e){var t=Cs.exec(e._i);null===t?(Ns(e),!1===e._isValid&&(delete e._isValid,Fs(e),!1===e._isValid&&(delete e._isValid,e._strict?e._isValid=!1:s.createFromInputFallback(e)))):e._d=new Date(+t[1])}function Us(e,t,s){return null!=e?e:null!=t?t:s}function Ys(e,t,i){var a=Object.prototype.hasOwnProperty.call(e,"_isDefaultDatePartsForWeek"),n=e._isDefaultDatePartsForWeek;e._isDefaultDatePartsForWeek=!!i;try{return s._getDefaultDateParts(e,t,i)}finally{a?e._isDefaultDatePartsForWeek=n:delete e._isDefaultDatePartsForWeek}}function Ws(e){var t=e._defaultDatePartsNow;return t?(t.hasValue||(t.value=s.now(),t.hasValue=!0),t.value):s.now()}function Vs(e,t,s){var i=s||e._isDefaultDatePartsForWeek,a=i?ii(t):new Date(t);return i?[a.year(),a.month(),a.date()]:e._useUTC?[a.getUTCFullYear(),a.getUTCMonth(),a.getUTCDate()]:[a.getFullYear(),a.getMonth(),a.getDate()]}function Zs(e){var t,s,i,a,n,r,o,l=[];if(!e._d){for(null!=e._a[be]&&null!=e._a[we]&&null!=e._a[$e]||(a=Ys(e,i=Ws(e))),e._w&&null==e._a[$e]&&null==e._a[we]&&Gs(e,Ys(e,i,!0)),null!=e._dayOfYear&&(r=null!=e._a[be]?e._a[be]:a[be],(e._dayOfYear>Oe(r)||0===e._dayOfYear)&&(m(e)._overflowDayOfYear=!0),s=Wt(r,0,e._dayOfYear),e._a[we]=s.getUTCMonth(),e._a[$e]=s.getUTCDate()),o=null==e._a[be]||null==e._a[we]||null==e._a[$e],t=0;t<3&&null==e._a[t];++t)e._a[t]=l[t]=a[t];for(;t<7;t++)e._a[t]=l[t]=null==e._a[t]?2===t?1:0:e._a[t];24===e._a[xe]&&0===e._a[ke]&&0===e._a[Se]&&0===e._a[ze]&&(e._nextDay=!0,e._a[xe]=0),e._d=(e._useUTC?Wt:Yt).apply(null,l),n=e._useUTC?e._d.getUTCDay():e._d.getDay(),null!=e._tzm&&e._d.setUTCMinutes(e._d.getUTCMinutes()-e._tzm),e._nextDay&&(e._a[xe]=24),e._w&&void 0!==e._w.d&&!o&&e._w.d!==n&&(m(e).weekdayMismatch=!0)}}function Gs(e,t){var s,i,a,n,r,o,l,h,d;null!=(s=e._w).GG||null!=s.W||null!=s.E?(r=1,o=4,i=Us(s.GG,e._a[be],Kt(t[be],t[we],t[$e],1,4).year),a=Us(s.W,1),((n=Us(s.E,1))<1||n>7)&&(h=!0)):(r=e._locale._week.dow,o=e._locale._week.doy,d=Kt(t[be],t[we],t[$e],r,o),i=Us(s.gg,e._a[be],d.year),a=Us(s.w,d.week),null!=s.d?((n=s.d)<0||n>6)&&(h=!0):null!=s.e?(n=s.e+r,(s.e<0||s.e>6)&&(h=!0)):n=r),a<1||a>Jt(i,r,o)?m(e)._overflowWeeks=!0:null!=h?m(e)._overflowWeekday=!0:(l=Zt(i,a,n,r,o),e._a[be]=l.year,e._dayOfYear=l.dayOfYear)}function qs(e){if(e._f!==s.ISO_8601)if(e._f!==s.RFC_2822){e._a=[],m(e).empty=!0;var t,i,a,n,r,o,l,h=""+e._i,d=h.length,c=0;for(l=(a=B(e._f,e._locale).match(D)||[]).length,t=0;t<l;t++)n=a[t],(i=(h.match(de(n,e))||[])[0])&&((r=h.substr(0,h.indexOf(i))).length>0&&m(e).unusedInput.push(r),h=h.slice(h.indexOf(i)+i.length),c+=i.length),P[n]?(i?m(e).empty=!1:m(e).unusedTokens.push(n),_e(n,i,e)):e._strict&&!i&&m(e).unusedTokens.push(n);m(e).charsLeftOver=d-c,h.length>0&&m(e).unusedInput.push(h),e._a[xe]<=12&&!0===m(e).bigHour&&e._a[xe]>0&&(m(e).bigHour=void 0),m(e).parsedDateParts=e._a.slice(0),m(e).meridiem=e._meridiem,e._a[xe]=Ks(e._locale,e._a[xe],e._meridiem),null!==(o=m(e).era)&&(e._a[be]=e._locale.erasConvertYear(o,e._a[be])),Zs(e),zs(e)}else Fs(e);else Ns(e)}function Ks(e,t,s){var i;return null==s?t:null!=e.meridiemHour?e.meridiemHour(t,s):null!=e.isPM?((i=e.isPM(s))&&t<12&&(t+=12),i||12!==t||(t=0),t):t}function Js(e){var t,s,i,a,n,r,o=!1,l={},h=e._f.length;if(0===h)return m(e).invalidFormat=!0,void(e._d=new Date(NaN));for(a=0;a<h;a++)n=0,r=!1,t=b({},e),null!=e._useUTC&&(t._useUTC=e._useUTC),t._defaultDatePartsNow=l,t._f=e._f[a],qs(t),v(t)&&(r=!0),n+=m(t).charsLeftOver,n+=10*m(t).unusedTokens.length,m(t).score=n,o?n<i&&(i=n,s=t):(null==i||n<i||r)&&(i=n,s=t,r&&(o=!0));u(e,s||t)}function Xs(e){if(!e._d){var t=A(e._i),s=void 0===t.day?t.date:t.day;e._a=c([t.year,t.month,s,t.hour,t.minute,t.second,t.millisecond],function(e){return e&&parseInt(e,10)}),Zs(e)}}function Qs(e){var t=new w(zs(ei(e)));return t._nextDay&&(t.add(1,"d"),t._nextDay=void 0),t}function ei(e){var t=e._i,s=e._f;return e._locale=e._locale||ks(e._l),null===t||void 0===s&&""===t?f({nullInput:!0}):("string"==typeof t&&(e._i=t=e._locale.preparse(t)),$(t)?new w(zs(t)):(d(t)?e._d=t:a(s)?Js(e):s?qs(e):ti(e),v(e)||(e._d=null),e))}function ti(e){var t=e._i;l(t)?e._d=new Date(s.now()):d(t)?e._d=new Date(t.valueOf()):"string"==typeof t?Bs(e):a(t)?(e._a=c(t.slice(0),function(e){return parseInt(e,10)}),Zs(e)):n(t)?Xs(e):h(t)?e._d=new Date(t):s.createFromInputFallback(e)}function si(e,t,s,i,r){var l={};return!0!==t&&!1!==t||(i=t,t=void 0),!0!==s&&!1!==s||(i=s,s=void 0),(n(e)&&o(e)||a(e)&&0===e.length)&&(e=void 0),l._isAMomentObject=!0,l._useUTC=l._isUTC=r,l._l=s,l._i=e,l._f=t,l._strict=i,Qs(l)}function ii(e,t,s,i){return si(e,t,s,i,!1)}s.createFromInputFallback=k("value provided is not in a recognized RFC2822 or ISO format. moment construction falls back to js Date(), which is not reliable across all browsers and versions. Non RFC2822/ISO date formats are discouraged. Please refer to http://momentjs.com/guides/#/warnings/js-date/ for more info.",function(e){e._d=new Date(e._i+(e._useUTC?" UTC":""))}),s._getDefaultDateParts=Vs,s.ISO_8601=function(){},s.RFC_2822=function(){};var ai=k("moment().min is deprecated, use moment.max instead. http://momentjs.com/guides/#/warnings/min-max/",function(){var e=ii.apply(null,arguments);return this.isValid()&&e.isValid()?e<this?this:e:f()}),ni=k("moment().max is deprecated, use moment.min instead. http://momentjs.com/guides/#/warnings/min-max/",function(){var e=ii.apply(null,arguments);return this.isValid()&&e.isValid()?e>this?this:e:f()});function ri(e,t){var s,i;if(1===t.length&&a(t[0])&&(t=t[0]),!t.length)return ii();for(i=0;i<t.length;++i)if($(t[i])){s=t[i];break}if(!s)return f();for(++i;i<t.length;++i)!$(t[i])||t[i].isValid()&&!t[i][e](s)||(s=t[i]);return s}function oi(){return ri("isBefore",[].slice.call(arguments,0))}function li(){return ri("isAfter",[].slice.call(arguments,0))}var hi=function(){return Date.now?Date.now():+new Date},di=["year","quarter","month","week","day","hour","minute","second","millisecond"];function ci(e){var t,s,i=!1,a=di.length;for(t in e)if(r(e,t)&&(-1===Ae.call(di,t)||null!=e[t]&&isNaN(e[t])))return!1;for(s=0;s<a;++s)if(e[di[s]]){if(i)return!1;parseFloat(e[di[s]])!==ge(e[di[s]])&&(i=!0)}return!0}function ui(){return this._isValid}function pi(){return Ri(NaN)}function gi(e){var t=A(e),s=t.year||0,i=t.quarter||0,a=t.month||0,n=t.week||t.isoWeek||0,r=t.day||0,o=t.hour||0,l=t.minute||0,h=t.second||0,d=t.millisecond||0;this._isValid=ci(t),this._milliseconds=+d+1e3*h+6e4*l+1e3*o*60*60,this._days=+r+7*n,this._months=+a+3*i+12*s,this._data={},this._locale=ks(),this._bubble()}function mi(e){return e instanceof gi}function vi(e){return e<0?-1*Math.round(-1*e):Math.round(e)}function fi(e,t,s){var i,a=Math.min(e.length,t.length),n=Math.abs(e.length-t.length),r=0;for(i=0;i<a;i++)ge(e[i])!==ge(t[i])&&r++;return r+n}function _i(e,t){j(e,0,0,function(){var e=this.utcOffset(),s="+";return e<0&&(e=-e,s="-"),s+H(~~(e/60),2)+t+H(~~e%60,2)})}_i("Z",":"),_i("ZZ",""),he("Z",ae),he("ZZ",ae),ve(["Z","ZZ"],function(e,t,s){var i=bi(ae,e);s._useUTC=!0,s._tzm=i,null===i&&(m(s).invalidOffset=e)});var yi=/([\+\-]|\d\d)/gi;function bi(e,t){var s,i,a=(t||"").match(e);return null===a?null:(i=60*(s=((a[a.length-1]||[])+"").match(yi)||["-",0,0])[1]+ge(s[2]),ge(s[2])>59||("+"===s[0]?i>840:i>720)?null:0===i?0:"+"===s[0]?i:-i)}function wi(e,t){var i,a;return t._isUTC?(i=t.clone(),a=($(e)||d(e)?e.valueOf():ii(e).valueOf())-i.valueOf(),i._d.setTime(i._d.valueOf()+a),s.updateOffset(i,!1),i):ii(e).local()}function $i(e){return-Math.round(e._d.getTimezoneOffset())}function xi(e,t,i){var a,n=this._offset||0;if(!this.isValid())return null!=e?this:NaN;if(null!=e){if("string"==typeof e){if(null===(e=bi(ae,e)))return this}else Math.abs(e)<16&&!i&&(e*=60);return!this._isUTC&&t&&(a=$i(this)),this._offset=e,this._isUTC=!0,null!=a&&this.add(a,"m"),n!==e&&(!t||this._changeInProgress?Fi(this,Ri(e-n,"m"),1,!1):this._changeInProgress||(this._changeInProgress=!0,s.updateOffset(this,!0),this._changeInProgress=null)),this}return this._isUTC?n:$i(this)}function ki(e,t){return null!=e?("string"!=typeof e&&(e=-e),this.utcOffset(e,t),this):-this.utcOffset()}function Si(e){return this.utcOffset(0,e)}function zi(e){return this._isUTC&&(this.utcOffset(0,e),this._isUTC=!1,e&&this.subtract($i(this),"m")),this}function Mi(){if(null!=this._tzm)this.utcOffset(this._tzm,!1,!0);else if("string"==typeof this._i){var e=bi(ie,this._i);null!=e?this.utcOffset(e):this.utcOffset(0,!0)}return this}function Ti(e){return!!this.isValid()&&(e=e?ii(e).utcOffset():0,(this.utcOffset()-e)%60==0)}function Oi(){return this.utcOffset()>this.clone().month(0).utcOffset()||this.utcOffset()>this.clone().month(5).utcOffset()}function Ai(){if(!l(this._isDSTShifted))return this._isDSTShifted;var e,t={};return b(t,this),(t=ei(t))._a?(e=t._isUTC?p(t._a):ii(t._a),this._isDSTShifted=this.isValid()&&fi(t._a,e.toArray())>0):this._isDSTShifted=!1,this._isDSTShifted}function Ei(){return!!this.isValid()&&!this._isUTC}function Ci(){return!!this.isValid()&&this._isUTC}function Hi(){return!!this.isValid()&&this._isUTC&&0===this._offset}s.updateOffset=function(){};var Di=/^(-|\+)?(?:(\d*)[. ])?(\d+):(\d+)(?::(\d+)(\.\d*)?)?$/,Ni=/^(-|\+)?P(?:([-+]?[0-9,.]*)Y)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)W)?(?:([-+]?[0-9,.]*)D)?(?:T(?:([-+]?[0-9,.]*)H)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)S)?)?$/;function Ri(e,t){var s,i,a,n=e,o=null;return mi(e)?n={ms:e._milliseconds,d:e._days,M:e._months}:h(e)||!isNaN(+e)?(n={},t?n[t]=+e:n.milliseconds=+e):(o=Di.exec(e))?(s="-"===o[1]?-1:1,n={y:0,d:ge(o[$e])*s,h:ge(o[xe])*s,m:ge(o[ke])*s,s:ge(o[Se])*s,ms:ge(vi(1e3*o[ze]))*s}):(o=Ni.exec(e))?(s="-"===o[1]?-1:1,n={y:Pi(o[2],s),M:Pi(o[3],s),w:Pi(o[4],s),d:Pi(o[5],s),h:Pi(o[6],s),m:Pi(o[7],s),s:Pi(o[8],s)}):null==n?n={}:"object"==typeof n&&("from"in n||"to"in n)&&(a=Li(ii(n.from),ii(n.to)),(n={}).ms=a.milliseconds,n.M=a.months),i=new gi(n),mi(e)&&r(e,"_locale")&&(i._locale=e._locale),mi(e)&&r(e,"_isValid")&&(i._isValid=e._isValid),i}function Pi(e,t){var s=e&&parseFloat(e.replace(",","."));return(isNaN(s)?0:s)*t}function ji(e,t){var s={};return s.months=t.month()-e.month()+12*(t.year()-e.year()),e.clone().add(s.months,"M").isAfter(t)&&--s.months,s.milliseconds=+t-+e.clone().add(s.months,"M"),s}function Li(e,t){var s;return e.isValid()&&t.isValid()?(t=wi(t,e),e.isBefore(t)?s=ji(e,t):((s=ji(t,e)).milliseconds=-s.milliseconds,s.months=-s.months),s):{milliseconds:0,months:0}}function Ii(e,t){return function(s,i){var a;return null===i||isNaN(+i)||(z(t,"moment()."+t+"(period, number) is deprecated. Please use moment()."+t+"(number, period). See http://momentjs.com/guides/#/warnings/add-inverted-param/ for more info."),a=s,s=i,i=a),Fi(this,Ri(s,i),e),this}}function Fi(e,t,i,a){var n=t._milliseconds,r=vi(t._days),o=vi(t._months);e.isValid()&&(a=null==a||a,o&&Je(e,De(e,"Month")+o*i),r&&Ne(e,"Date",De(e,"Date")+r*i),n&&e._d.setTime(e._d.valueOf()+n*i),a&&s.updateOffset(e,r||o))}Ri.fn=gi.prototype,Ri.invalid=pi;var Bi=Ii(1,"add"),Ui=Ii(-1,"subtract");function Yi(e){return"string"==typeof e||e instanceof String}function Wi(e){return $(e)||d(e)||Yi(e)||h(e)||Zi(e)||Vi(e)||null==e}function Vi(e){var t,s,i=n(e)&&!o(e),a=!1,l=["years","year","y","months","month","M","days","day","d","dates","date","D","hours","hour","h","minutes","minute","m","seconds","second","s","milliseconds","millisecond","ms"],h=l.length;for(t=0;t<h;t+=1)s=l[t],a=a||r(e,s);return i&&a}function Zi(e){var t=a(e),s=!1;return t&&(s=0===e.filter(function(t){return!h(t)&&Yi(e)}).length),t&&s}function Gi(e){var t,s,i=n(e)&&!o(e),a=!1,l=["sameDay","nextDay","lastDay","nextWeek","lastWeek","sameElse"];for(t=0;t<l.length;t+=1)s=l[t],a=a||r(e,s);return i&&a}function qi(e,t){var s=e.diff(t,"days",!0);return s<-6?"sameElse":s<-1?"lastWeek":s<0?"lastDay":s<1?"sameDay":s<2?"nextDay":s<7?"nextWeek":"sameElse"}function Ki(e,t){1===arguments.length&&(arguments[0]?Wi(arguments[0])?(e=arguments[0],t=void 0):Gi(arguments[0])&&(t=arguments[0],e=void 0):(e=void 0,t=void 0));var i=e||ii(),a=wi(i,this).startOf("day"),n=s.calendarFormat(this,a)||"sameElse",r=t&&(M(t[n])?t[n].call(this,i):t[n]);return this.format(r||this.localeData().calendar(n,this,ii(i)))}function Ji(){return new w(this)}function Xi(e,t){var s=$(e)?e:ii(e);return!(!this.isValid()||!s.isValid())&&("millisecond"===(t=O(t)||"millisecond")?this.valueOf()>s.valueOf():s.valueOf()<this.clone().startOf(t).valueOf())}function Qi(e,t){var s=$(e)?e:ii(e);return!(!this.isValid()||!s.isValid())&&("millisecond"===(t=O(t)||"millisecond")?this.valueOf()<s.valueOf():this.clone().endOf(t).valueOf()<s.valueOf())}function ea(e,t,s,i){var a=$(e)?e:ii(e),n=$(t)?t:ii(t);return!!(this.isValid()&&a.isValid()&&n.isValid())&&("("===(i=i||"()")[0]?this.isAfter(a,s):!this.isBefore(a,s))&&(")"===i[1]?this.isBefore(n,s):!this.isAfter(n,s))}function ta(e,t){var s,i=$(e)?e:ii(e);return!(!this.isValid()||!i.isValid())&&("millisecond"===(t=O(t)||"millisecond")?this.valueOf()===i.valueOf():(s=i.valueOf(),this.clone().startOf(t).valueOf()<=s&&s<=this.clone().endOf(t).valueOf()))}function sa(e,t){return this.isSame(e,t)||this.isAfter(e,t)}function ia(e,t){return this.isSame(e,t)||this.isBefore(e,t)}function aa(e,t,s){var i,a,n;if(!this.isValid())return NaN;if(!(i=wi(e,this)).isValid())return NaN;switch(a=6e4*(i.utcOffset()-this.utcOffset()),t=O(t)){case"year":n=na(this,i)/12;break;case"month":n=na(this,i);break;case"quarter":n=na(this,i)/3;break;case"second":n=(this-i)/1e3;break;case"minute":n=(this-i)/6e4;break;case"hour":n=(this-i)/36e5;break;case"day":n=(this-i-a)/864e5;break;case"week":n=(this-i-a)/6048e5;break;default:n=this-i}return s?n:pe(n)}function na(e,t){if(e.date()<t.date())return-na(t,e);var s=12*(t.year()-e.year())+(t.month()-e.month()),i=e.clone().add(s,"months");return-(s+(t-i<0?(t-i)/(i-e.clone().add(s-1,"months")):(t-i)/(e.clone().add(s+1,"months")-i)))||0}function ra(){return this.clone().locale("en").format("ddd MMM DD YYYY HH:mm:ss [GMT]ZZ")}function oa(e){if(!this.isValid())return null;var t=!0!==e,s=t?this.clone().utc():this;return s.year()<0||s.year()>9999?F(s,t?"YYYYYY-MM-DD[T]HH:mm:ss.SSS[Z]":"YYYYYY-MM-DD[T]HH:mm:ss.SSSZ"):M(Date.prototype.toISOString)?t?this.toDate().toISOString():new Date(this.valueOf()+60*this.utcOffset()*1e3).toISOString().replace("Z",F(s,"Z")):F(s,t?"YYYY-MM-DD[T]HH:mm:ss.SSS[Z]":"YYYY-MM-DD[T]HH:mm:ss.SSSZ")}function la(){if(!this.isValid())return"moment.invalid(/* "+this._i+" */)";var e,t,s,i,a="moment",n="";return this.isLocal()||(a=0===this.utcOffset()?"moment.utc":"moment.parseZone",n="Z"),e="["+a+'("]',t=0<=this.year()&&this.year()<=9999?"YYYY":"YYYYYY",s="-MM-DD[T]HH:mm:ss.SSS",i=n+'[")]',this.format(e+t+s+i)}function ha(e){e||(e=this.isUtc()?s.defaultFormatUtc:s.defaultFormat);var t=F(this,e);return this.localeData().postformat(t)}function da(e,t){return this.isValid()&&($(e)&&e.isValid()||ii(e).isValid())?Ri({to:this,from:e}).locale(this.locale()).humanize(!t):this.localeData().invalidDate()}function ca(e){return this.from(ii(),e)}function ua(e,t){return this.isValid()&&($(e)&&e.isValid()||ii(e).isValid())?Ri({from:this,to:e}).locale(this.locale()).humanize(!t):this.localeData().invalidDate()}function pa(e){return this.to(ii(),e)}function ga(e){var t;return void 0===e?this._locale._abbr:(null!=(t=ks(e))&&(this._locale=t),this)}s.defaultFormat="YYYY-MM-DDTHH:mm:ssZ",s.defaultFormatUtc="YYYY-MM-DDTHH:mm:ss[Z]";var ma=k("moment().lang() is deprecated. Instead, use moment().localeData() to get the language configuration. Use moment().locale() to change languages.",function(e){return void 0===e?this.localeData():this.locale(e)});function va(){return this._locale}var fa=1e3,_a=60*fa,ya=60*_a,ba=3506328*ya;function wa(e,t){return(e%t+t)%t}function $a(e,t,s){return e<100&&e>=0?new Date(e+400,t,s)-ba:new Date(e,t,s).valueOf()}function xa(e,t,s){return e<100&&e>=0?Date.UTC(e+400,t,s)-ba:Date.UTC(e,t,s)}function ka(e){var t,i;if(void 0===(e=O(e))||"millisecond"===e||!this.isValid())return this;switch(i=this._isUTC?xa:$a,e){case"year":t=i(this.year(),0,1);break;case"quarter":t=i(this.year(),this.month()-this.month()%3,1);break;case"month":t=i(this.year(),this.month(),1);break;case"week":t=i(this.year(),this.month(),this.date()-this.weekday());break;case"isoWeek":t=i(this.year(),this.month(),this.date()-(this.isoWeekday()-1));break;case"day":case"date":t=i(this.year(),this.month(),this.date());break;case"hour":t=this._d.valueOf(),t-=wa(t+(this._isUTC?0:this.utcOffset()*_a),ya);break;case"minute":t=this._d.valueOf(),t-=wa(t,_a);break;case"second":t=this._d.valueOf(),t-=wa(t,fa)}return this._d.setTime(t),s.updateOffset(this,!0),this}function Sa(e){var t,i;if(void 0===(e=O(e))||"millisecond"===e||!this.isValid())return this;switch(i=this._isUTC?xa:$a,e){case"year":t=i(this.year()+1,0,1)-1;break;case"quarter":t=i(this.year(),this.month()-this.month()%3+3,1)-1;break;case"month":t=i(this.year(),this.month()+1,1)-1;break;case"week":t=i(this.year(),this.month(),this.date()-this.weekday()+7)-1;break;case"isoWeek":t=i(this.year(),this.month(),this.date()-(this.isoWeekday()-1)+7)-1;break;case"day":case"date":t=i(this.year(),this.month(),this.date()+1)-1;break;case"hour":t=this._d.valueOf(),t+=ya-wa(t+(this._isUTC?0:this.utcOffset()*_a),ya)-1;break;case"minute":t=this._d.valueOf(),t+=_a-wa(t,_a)-1;break;case"second":t=this._d.valueOf(),t+=fa-wa(t,fa)-1}return this._d.setTime(t),s.updateOffset(this,!0),this}function za(){return this._d.valueOf()-6e4*(this._offset||0)}function Ma(){return Math.floor(this.valueOf()/1e3)}function Ta(){return new Date(this.valueOf())}function Oa(){var e=this;return[e.year(),e.month(),e.date(),e.hour(),e.minute(),e.second(),e.millisecond()]}function Aa(){var e=this;return{years:e.year(),months:e.month(),date:e.date(),hours:e.hours(),minutes:e.minutes(),seconds:e.seconds(),milliseconds:e.milliseconds()}}function Ea(){return this.isValid()?this.toISOString():null}function Ca(){return v(this)}function Ha(){return u({},m(this))}function Da(){return m(this).overflow}function Na(){return{input:this._i,format:this._f,locale:this._locale,isUTC:this._isUTC,strict:this._strict}}function Ra(e,t){var i,a,n,r=this._eras||ks("en")._eras;for(i=0,a=r.length;i<a;++i)switch("string"==typeof r[i].since&&(n=s(r[i].since).startOf("day"),r[i].since=n.valueOf()),typeof r[i].until){case"undefined":r[i].until=1/0;break;case"string":n=s(r[i].until).startOf("day").valueOf(),r[i].until=n.valueOf()}return r}function Pa(e,t,s){var i,a,n,r,o,l=this.eras();for(e=e.toUpperCase(),i=0,a=l.length;i<a;++i)if(n=l[i].name.toUpperCase(),r=l[i].abbr.toUpperCase(),o=l[i].narrow.toUpperCase(),s)switch(t){case"N":case"NN":case"NNN":if(r===e)return l[i];break;case"NNNN":if(n===e)return l[i];break;case"NNNNN":if(o===e)return l[i]}else if([n,r,o].indexOf(e)>=0)return l[i]}function ja(e,t){var i=e.since<=e.until?1:-1;return void 0===t?s(e.since).year():s(e.since).year()+(t-e.offset)*i}function La(){var e,t,s,i=this.localeData().eras();for(e=0,t=i.length;e<t;++e){if(s=this.clone().startOf("day").valueOf(),i[e].since<=s&&s<=i[e].until)return i[e].name;if(i[e].until<=s&&s<=i[e].since)return i[e].name}return""}function Ia(){var e,t,s,i=this.localeData().eras();for(e=0,t=i.length;e<t;++e){if(s=this.clone().startOf("day").valueOf(),i[e].since<=s&&s<=i[e].until)return i[e].narrow;if(i[e].until<=s&&s<=i[e].since)return i[e].narrow}return""}function Fa(){var e,t,s,i=this.localeData().eras();for(e=0,t=i.length;e<t;++e){if(s=this.clone().startOf("day").valueOf(),i[e].since<=s&&s<=i[e].until)return i[e].abbr;if(i[e].until<=s&&s<=i[e].since)return i[e].abbr}return""}function Ba(){var e,t,i,a,n=this.localeData().eras();for(e=0,t=n.length;e<t;++e)if(i=n[e].since<=n[e].until?1:-1,a=this.clone().startOf("day").valueOf(),n[e].since<=a&&a<=n[e].until||n[e].until<=a&&a<=n[e].since)return(this.year()-s(n[e].since).year())*i+n[e].offset;return this.year()}function Ua(e){return r(this,"_erasNameRegex")||Ka.call(this),e?this._erasNameRegex:this._erasRegex}function Ya(e){return r(this,"_erasAbbrRegex")||Ka.call(this),e?this._erasAbbrRegex:this._erasRegex}function Wa(e){return r(this,"_erasNarrowRegex")||Ka.call(this),e?this._erasNarrowRegex:this._erasRegex}function Va(e,t){return t.erasAbbrRegex(e)}function Za(e,t){return t.erasNameRegex(e)}function Ga(e,t){return t.erasNarrowRegex(e)}function qa(e,t){return t._eraYearOrdinalRegex||te}function Ka(){var e,t,s,i,a,n=[],r=[],o=[],l=[],h=this.eras();for(e=0,t=h.length;e<t;++e)s=ue(h[e].name),i=ue(h[e].abbr),a=ue(h[e].narrow),r.push(s),n.push(i),o.push(a),l.push(s),l.push(i),l.push(a);this._erasRegex=new RegExp("^("+l.join("|")+")","i"),this._erasNameRegex=new RegExp("^("+r.join("|")+")","i"),this._erasAbbrRegex=new RegExp("^("+n.join("|")+")","i"),this._erasNarrowRegex=new RegExp("^("+o.join("|")+")","i")}function Ja(e,t){j(0,[e,e.length],0,t)}function Xa(e){return nn.call(this,e,this.week(),this.weekday()+this.localeData()._week.dow,this.localeData()._week.dow,this.localeData()._week.doy)}function Qa(e){return nn.call(this,e,this.isoWeek(),this.isoWeekday(),1,4)}function en(){return Jt(this.year(),1,4)}function tn(){return Jt(this.isoWeekYear(),1,4)}function sn(){var e=this.localeData()._week;return Jt(this.year(),e.dow,e.doy)}function an(){var e=this.localeData()._week;return Jt(this.weekYear(),e.dow,e.doy)}function nn(e,t,s,i,a){var n;return null==e?qt(this,i,a).year:(t>(n=Jt(e,i,a))&&(t=n),rn.call(this,e,t,s,i,a))}function rn(e,t,s,i,a){var n=Zt(e,t,s,i,a),r=Wt(n.year,0,n.dayOfYear);return this.year(r.getUTCFullYear()),this.month(r.getUTCMonth()),this.date(r.getUTCDate()),this}function on(e){return null==e?Math.ceil((this.month()+1)/3):this.month(3*(e-1)+this.month()%3)}j("N",0,0,"eraAbbr"),j("NN",0,0,"eraAbbr"),j("NNN",0,0,"eraAbbr"),j("NNNN",0,0,"eraName"),j("NNNNN",0,0,"eraNarrow"),j("y",["y",1],"yo","eraYear"),j("y",["yy",2],0,"eraYear"),j("y",["yyy",3],0,"eraYear"),j("y",["yyyy",4],0,"eraYear"),he("N",Va),he("NN",Va),he("NNN",Va),he("NNNN",Za),he("NNNNN",Ga),ve(["N","NN","NNN","NNNN","NNNNN"],function(e,t,s,i){var a=s._locale.erasParse(e,i,s._strict);a?m(s).era=a:m(s).invalidEra=e}),he("y",te),he("yy",te),he("yyy",te),he("yyyy",te),he("yo",qa),ve(["y","yy","yyy","yyyy"],be),ve(["yo"],function(e,t,s,i){var a;s._locale._eraYearOrdinalRegex&&(a=e.match(s._locale._eraYearOrdinalRegex)),s._locale.eraYearOrdinalParse?t[be]=s._locale.eraYearOrdinalParse(e,a):t[be]=parseInt(e,10)}),j(0,["gg",2],0,function(){return this.weekYear()%100}),j(0,["GG",2],0,function(){return this.isoWeekYear()%100}),Ja("gggg","weekYear"),Ja("ggggg","weekYear"),Ja("GGGG","isoWeekYear"),Ja("GGGGG","isoWeekYear"),he("G",se),he("g",se),he("GG",q,W),he("gg",q,W),he("GGGG",Q,Z),he("gggg",Q,Z),he("GGGGG",ee,G),he("ggggg",ee,G),fe(["gggg","ggggg","GGGG","GGGGG"],function(e,t,s,i){t[i.substr(0,2)]=ge(e)}),fe(["gg","GG"],function(e,t,i,a){t[a]=s.parseTwoDigitYear(e)}),j("Q",0,"Qo","quarter"),he("Q",Y),ve("Q",function(e,t){t[we]=3*(ge(e)-1)}),j("D",["DD",2],"Do","date"),he("D",q,oe),he("DD",q,W),he("Do",function(e,t){return e?t._dayOfMonthOrdinalParse||t._ordinalParse:t._dayOfMonthOrdinalParseLenient}),ve(["D","DD"],$e),ve("Do",function(e,t){t[$e]=ge(e.match(q)[0])});var ln=He("Date",!0);function dn(e){var t=Math.round((this.clone().startOf("day")-this.clone().startOf("year"))/864e5)+1;return null==e?t:this.add(e-t,"d")}j("DDD",["DDDD",3],"DDDo","dayOfYear"),he("DDD",X),he("DDDD",V),ve(["DDD","DDDD"],function(e,t,s){s._dayOfYear=ge(e)}),j("m",["mm",2],0,"minute"),he("m",q,le),he("mm",q,W),ve(["m","mm"],ke);var cn=He("Minutes",!1);j("s",["ss",2],0,"second"),he("s",q,le),he("ss",q,W),ve(["s","ss"],Se);var pn,gn,mn=He("Seconds",!1);for(j("S",0,0,function(){return~~(this.millisecond()/100)}),j(0,["SS",2],0,function(){return~~(this.millisecond()/10)}),j(0,["SSS",3],0,"millisecond"),j(0,["SSSS",4],0,function(){return 10*this.millisecond()}),j(0,["SSSSS",5],0,function(){return 100*this.millisecond()}),j(0,["SSSSSS",6],0,function(){return 1e3*this.millisecond()}),j(0,["SSSSSSS",7],0,function(){return 1e4*this.millisecond()}),j(0,["SSSSSSSS",8],0,function(){return 1e5*this.millisecond()}),j(0,["SSSSSSSSS",9],0,function(){return 1e6*this.millisecond()}),he("S",X,Y),he("SS",X,W),he("SSS",X,V),pn="SSSS";pn.length<=9;pn+="S")he(pn,te);function vn(e,t){t[ze]=ge(1e3*("0."+e))}for(pn="S";pn.length<=9;pn+="S")ve(pn,vn);function fn(){return this._isUTC?"UTC":""}function _n(){return this._isUTC?"Coordinated Universal Time":""}gn=He("Milliseconds",!1),j("z",0,0,"zoneAbbr"),j("zz",0,0,"zoneName");var yn=w.prototype;function bn(e){return ii(1e3*e)}function wn(){return ii.apply(null,arguments).parseZone()}function $n(e){return e}yn.add=Bi,yn.calendar=Ki,yn.clone=Ji,yn.diff=aa,yn.endOf=Sa,yn.format=ha,yn.from=da,yn.fromNow=ca,yn.to=ua,yn.toNow=pa,yn.get=Re,yn.invalidAt=Da,yn.isAfter=Xi,yn.isBefore=Qi,yn.isBetween=ea,yn.isSame=ta,yn.isSameOrAfter=sa,yn.isSameOrBefore=ia,yn.isValid=Ca,yn.lang=ma,yn.locale=ga,yn.localeData=va,yn.max=ni,yn.min=ai,yn.parsingFlags=Ha,yn.set=Pe,yn.startOf=ka,yn.subtract=Ui,yn.toArray=Oa,yn.toObject=Aa,yn.toDate=Ta,yn.toISOString=oa,yn.inspect=la,"undefined"!=typeof Symbol&&null!=Symbol.for&&(yn[Symbol.for("nodejs.util.inspect.custom")]=function(){return"Moment<"+this.format()+">"}),yn.toJSON=Ea,yn.toString=ra,yn.unix=Ma,yn.valueOf=za,yn.creationData=Na,yn.eraName=La,yn.eraNarrow=Ia,yn.eraAbbr=Fa,yn.eraYear=Ba,yn.year=Ee,yn.isLeapYear=Ce,yn.weekYear=Xa,yn.isoWeekYear=Qa,yn.quarter=yn.quarters=on,yn.month=Xe,yn.daysInMonth=Qe,yn.week=yn.weeks=ss,yn.isoWeek=yn.isoWeeks=is,yn.weeksInYear=sn,yn.weeksInWeekYear=an,yn.isoWeeksInYear=en,yn.isoWeeksInISOWeekYear=tn,yn.date=ln,yn.day=yn.days=bt,yn.weekday=wt,yn.isoWeekday=$t,yn.dayOfYear=dn,yn.hour=yn.hours=ds,yn.minute=yn.minutes=cn,yn.second=yn.seconds=mn,yn.millisecond=yn.milliseconds=gn,yn.utcOffset=xi,yn.utc=Si,yn.local=zi,yn.parseZone=Mi,yn.hasAlignedHourOffset=Ti,yn.isDST=Oi,yn.isLocal=Ei,yn.isUtcOffset=Ci,yn.isUtc=Hi,yn.isUTC=Hi,yn.zoneAbbr=fn,yn.zoneName=_n,yn.dates=k("dates accessor is deprecated. Use date instead.",ln),yn.months=k("months accessor is deprecated. Use month instead",Xe),yn.years=k("years accessor is deprecated. Use year instead",Ee),yn.zone=k("moment().zone is deprecated, use moment().utcOffset instead. http://momentjs.com/guides/#/warnings/zone/",ki),yn.isDSTShifted=k("isDSTShifted is deprecated. See http://momentjs.com/guides/#/warnings/dst-shifted/ for more information",Ai);var xn=Ot.prototype;function kn(e,t,s,i){var a=ks(),n=p().set(i,t);return a[s](n,e)}function Sn(e,t,s){if(h(e)&&(t=e,e=void 0),e=e||"",null!=t)return kn(e,t,s,"month");var i,a=[];for(i=0;i<12;i++)a[i]=kn(e,i,s,"month");return a}function zn(e,t,s,i){"boolean"==typeof e?(h(t)&&(s=t,t=void 0),t=t||""):(s=t=e,e=!1,h(t)&&(s=t,t=void 0),t=t||"");var a,n=ks(),r=e?n._week.dow:0,o=[];if(null!=s)return kn(t,(s+r)%7,i,"day");for(a=0;a<7;a++)o[a]=kn(t,(a+r)%7,i,"day");return o}function Mn(e,t){return Sn(e,t,"months")}function Tn(e,t){return Sn(e,t,"monthsShort")}function On(e,t,s){return zn(e,t,s,"weekdays")}function An(e,t,s){return zn(e,t,s,"weekdaysShort")}function En(e,t,s){return zn(e,t,s,"weekdaysMin")}xn.calendar=Et,xn.longDateFormat=Ht,xn.invalidDate=Nt,xn.ordinal=jt,xn.preparse=$n,xn.postformat=$n,xn.relativeTime=Ft,xn.pastFuture=Ut,xn.set=Mt,xn.eras=Ra,xn.erasParse=Pa,xn.erasConvertYear=ja,xn.erasAbbrRegex=Ya,xn.erasNameRegex=Ua,xn.erasNarrowRegex=Wa,xn.months=Ze,xn.monthsShort=Ge,xn.monthsParse=Ke,xn.monthsRegex=tt,xn.monthsShortRegex=et,xn.week=Xt,xn.firstDayOfYear=ts,xn.firstDayOfWeek=es,xn.weekdays=mt,xn.weekdaysMin=ft,xn.weekdaysShort=vt,xn.weekdaysParse=yt,xn.weekdaysRegex=xt,xn.weekdaysShortRegex=kt,xn.weekdaysMinRegex=St,xn.isPM=ls,xn.meridiem=cs,ws("en",{eras:[{since:"0001-01-01",until:1/0,offset:1,name:"Anno Domini",narrow:"AD",abbr:"AD"},{since:"0000-12-31",until:-1/0,offset:1,name:"Before Christ",narrow:"BC",abbr:"BC"}],dayOfMonthOrdinalParse:/\d{1,2}(th|st|nd|rd)/,ordinal:function(e){var t=e%10;return e+(1===ge(e%100/10)?"th":1===t?"st":2===t?"nd":3===t?"rd":"th")}}),s.lang=k("moment.lang is deprecated. Use moment.locale instead.",ws),s.langData=k("moment.langData is deprecated. Use moment.localeData instead.",ks);var Cn=Math.abs;function Hn(){var e=this._data;return this._milliseconds=Cn(this._milliseconds),this._days=Cn(this._days),this._months=Cn(this._months),e.milliseconds=Cn(e.milliseconds),e.seconds=Cn(e.seconds),e.minutes=Cn(e.minutes),e.hours=Cn(e.hours),e.months=Cn(e.months),e.years=Cn(e.years),this}function Dn(e,t,s,i){var a=Ri(t,s);return e._milliseconds+=i*a._milliseconds,e._days+=i*a._days,e._months+=i*a._months,e._bubble()}function Nn(e,t){return Dn(this,e,t,1)}function Rn(e,t){return Dn(this,e,t,-1)}function Pn(e){return e<0?Math.floor(e):Math.ceil(e)}function jn(){var e,t,s,i,a,n=this._milliseconds,r=this._days,o=this._months,l=this._data;return n>=0&&r>=0&&o>=0||n<=0&&r<=0&&o<=0||(n+=864e5*Pn(In(o)+r),r=0,o=0),l.milliseconds=n%1e3,e=pe(n/1e3),l.seconds=e%60,t=pe(e/60),l.minutes=t%60,s=pe(t/60),l.hours=s%24,r+=pe(s/24),o+=a=pe(Ln(r)),r-=Pn(In(a)),i=pe(o/12),o%=12,l.days=r,l.months=o,l.years=i,this}function Ln(e){return 4800*e/146097}function In(e){return 146097*e/4800}function Fn(e){if(!this.isValid())return NaN;var t,s,i=this._milliseconds;if("month"===(e=O(e))||"quarter"===e||"year"===e)switch(t=this._days+i/864e5,s=this._months+Ln(t),e){case"month":return s;case"quarter":return s/3;case"year":return s/12}else switch(t=this._days+Math.round(In(this._months)),e){case"week":return t/7+i/6048e5;case"day":return t+i/864e5;case"hour":return 24*t+i/36e5;case"minute":return 1440*t+i/6e4;case"second":return 86400*t+i/1e3;case"millisecond":return Math.floor(864e5*t)+i;default:throw new Error("Unknown unit "+e)}}function Bn(e){return function(){return this.as(e)}}var Un=Bn("ms"),Yn=Bn("s"),Wn=Bn("m"),Vn=Bn("h"),Zn=Bn("d"),Gn=Bn("w"),qn=Bn("M"),Kn=Bn("Q"),Jn=Bn("y"),Xn=Un;function Qn(){return Ri(this)}function er(e){return e=O(e),this.isValid()?this[e+"s"]():NaN}function tr(e){return function(){return this.isValid()?this._data[e]:NaN}}var sr=tr("milliseconds"),ir=tr("seconds"),ar=tr("minutes"),nr=tr("hours"),rr=tr("days"),or=tr("months"),lr=tr("years");function hr(){return pe(this.days()/7)}var dr=Math.round,cr={ss:44,s:45,m:45,h:22,d:26,w:null,M:11};function ur(e,t,s,i,a){return It.call(a,t||1,!!s,e,i)}function pr(e,t,s,i){var a=Ri(e).abs(),n=dr(a.as("s")),r=dr(a.as("m")),o=dr(a.as("h")),l=dr(a.as("d")),h=dr(a.as("M")),d=dr(a.as("w")),c=dr(a.as("y")),u=n<=s.ss&&["s",n]||n<s.s&&["ss",n]||r<=1&&["m"]||r<s.m&&["mm",r]||o<=1&&["h"]||o<s.h&&["hh",o]||l<=1&&["d"]||l<s.d&&["dd",l];return null!=s.w&&(u=u||d<=1&&["w"]||d<s.w&&["ww",d]),(u=u||h<=1&&["M"]||h<s.M&&["MM",h]||c<=1&&["y"]||["yy",c])[2]=t,u[3]=+e>0,u[4]=i,ur.apply(null,u)}function gr(e){return void 0===e?dr:"function"==typeof e&&(dr=e,!0)}function mr(e,t){return void 0!==cr[e]&&(void 0===t?cr[e]:(cr[e]=t,"s"===e&&(cr.ss=t-1),!0))}function vr(e,t){if(!this.isValid())return this.localeData().invalidDate();var s,i,a=!1,n=cr;return"object"==typeof e&&(t=e,e=!1),"boolean"==typeof e&&(a=e),"object"==typeof t&&(n=u(u({},cr),t||{}),null!=t.s&&null==t.ss&&(n.ss=t.s-1)),i=pr(this,!a,n,s=this.localeData()),a&&(i=Bt.call(s,+this,i)),s.postformat(i)}var fr=Math.abs;function _r(e){return(e>0)-(e<0)||+e}function yr(){if(!this.isValid())return this.localeData().invalidDate();var e,t,s,i,a,n,r,o,l=fr(this._milliseconds)/1e3,h=fr(this._days),d=fr(this._months),c=this.asSeconds();return c?(e=pe(l/60),t=pe(e/60),l%=60,e%=60,s=pe(d/12),d%=12,i=l?l.toFixed(3).replace(/\.?0+$/,""):"",a=c<0?"-":"",n=_r(this._months)!==_r(c)?"-":"",r=_r(this._days)!==_r(c)?"-":"",o=_r(this._milliseconds)!==_r(c)?"-":"",a+"P"+(s?n+s+"Y":"")+(d?n+d+"M":"")+(h?r+h+"D":"")+(t||e||l?"T":"")+(t?o+t+"H":"")+(e?o+e+"M":"")+(l?o+i+"S":"")):"P0D"}var br=gi.prototype;return br.isValid=ui,br.abs=Hn,br.add=Nn,br.subtract=Rn,br.as=Fn,br.asMilliseconds=Un,br.asSeconds=Yn,br.asMinutes=Wn,br.asHours=Vn,br.asDays=Zn,br.asWeeks=Gn,br.asMonths=qn,br.asQuarters=Kn,br.asYears=Jn,br.valueOf=Xn,br._bubble=jn,br.clone=Qn,br.get=er,br.milliseconds=sr,br.seconds=ir,br.minutes=ar,br.hours=nr,br.days=rr,br.weeks=hr,br.months=or,br.years=lr,br.humanize=vr,br.toISOString=yr,br.toString=yr,br.toJSON=yr,br.locale=ga,br.localeData=va,br.toIsoString=k("toIsoString() is deprecated. Please use toISOString() instead (notice the capitals)",yr),br.lang=ma,j("X",0,0,"unix"),j("x",0,0,"valueOf"),he("x",se),he("X",ne),ve("X",function(e,t,s){s._d=new Date(1e3*parseFloat(e))}),ve("x",function(e,t,s){s._d=new Date(ge(e))}),
 //! moment.js
-s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.months=Mn,s.isDate=d,s.locale=ws,s.invalid=f,s.duration=Ri,s.isMoment=$,s.weekdays=On,s.parseZone=wn,s.localeData=ks,s.isDuration=mi,s.monthsShort=Tn,s.weekdaysMin=En,s.defineLocale=$s,s.updateLocale=xs,s.locales=Ss,s.weekdaysShort=An,s.normalizeUnits=O,s.relativeTimeRounding=gr,s.relativeTimeThreshold=mr,s.calendarFormat=qi,s.prototype=yn,s.HTML5_FMT={DATETIME_LOCAL:"YYYY-MM-DDTHH:mm",DATETIME_LOCAL_SECONDS:"YYYY-MM-DDTHH:mm:ss",DATETIME_LOCAL_MS:"YYYY-MM-DDTHH:mm:ss.SSS",DATE:"YYYY-MM-DD",TIME:"HH:mm",TIME_SECONDS:"HH:mm:ss",TIME_MS:"HH:mm:ss.SSS",WEEK:"GGGG-[W]WW",MONTH:"YYYY-MM"},s}()),on.exports),dn=an(hn);const cn=["sand","sandy_loam","loam","clay_loam","clay","custom"],un=["lawn","vegetables","flowers","shrubs","hedge","fruit_trees","vines","ground_cover","custom"];let pn=class extends(_a(de)){constructor(){super(...arguments),this.zones=[],this.modules=[],this.mappings=[],this.wateringCalendars=new Map,this.weatherRecords=new Map,this.isLoading=!0,this.isSaving=!1,this.isCreatingZone=!1,this._hasLoadedOnce=!1,this._suppressNextConfigUpdate=!1,this._updateScheduled=!1,this.globalDebounceTimer=null,this._pendingZoneChanges=new Map,this.zoneCache=new Map,this._expanded=new Set}_scheduleUpdate(){this._updateScheduled||(this._updateScheduled=!0,requestAnimationFrame((()=>{this._updateScheduled=!1,this.requestUpdate()})))}_toggleZone(e){null!=e&&(this._expanded.has(e)?this._expanded.delete(e):this._expanded.add(e),this._scheduleUpdate())}firstUpdated(){be().catch((e=>{console.error("Failed to load HA form:",e)}))}hassSubscribe(){return this._fetchData().catch((e=>{console.error("Failed to fetch initial data:",e)})),[this.hass.connection.subscribeMessage((()=>{this.isCreatingZone?console.debug("Skipping data refresh during zone creation"):this._suppressNextConfigUpdate?this._suppressNextConfigUpdate=!1:this._fetchData().catch((e=>{console.error("Failed to fetch data on config update:",e)}))}),{type:os+"_config_updated"})]}async _fetchData(){if(this.hass)try{this._hasLoadedOnce||(this.isLoading=!0);const[e,t,s,i]=await Promise.all([oa(this.hass),ha(this.hass),ca(this.hass),pa(this.hass)]);this.config=e,this.zones=t,this.modules=s,this.mappings=i,this._fetchWateringCalendars(),this._fetchWeatherRecords(),this.zoneCache.clear()}catch(e){console.error("Error fetching data:",e)}finally{this.isLoading=!1,this._hasLoadedOnce=!0,this._scheduleUpdate()}}_ask(e,t){var s,i;const a=ss(e,null!==(i=null===(s=this.hass)||void 0===s?void 0:s.language)&&void 0!==i?i:"en").replace("{name}",null!=t?t:"");return Da(this.hass,{text:a,destructive:!0})}handleCalculateAllZones(){var e;this.hass&&(this.isSaving=!0,(e=this.hass,e.callApi("POST",os+"/zones",{calculate_all:!0})).catch((e=>{console.error("Failed to calculate all zones:",e)})).finally((()=>{this.isSaving=!1,this._scheduleUpdate()})))}handleUpdateAllZones(){var e;this.hass&&(this.isSaving=!0,(e=this.hass,e.callApi("POST",os+"/zones",{update_all:!0})).catch((e=>{console.error("Failed to update all zones:",e)})).finally((()=>{this.isSaving=!1,this._scheduleUpdate()})))}async handleResetAllBuckets(){var e;this.hass&&(await this._ask("confirm.reset_all_buckets")&&(this.isSaving=!0,(e=this.hass,e.callApi("POST",os+"/zones",{reset_all_buckets:!0})).catch((e=>{console.error("Failed to reset all buckets:",e)})).finally((()=>{this.isSaving=!1,this._scheduleUpdate()}))))}async handleClearAllWeatherdata(){var e;this.hass&&(await this._ask("confirm.clear_all_weather")&&(this.isSaving=!0,(e=this.hass,e.callApi("POST",os+"/zones",{clear_all_weatherdata:!0})).catch((e=>{console.error("Failed to clear all weather data:",e)})).finally((()=>{this.isSaving=!1,this._scheduleUpdate()}))))}handleAddZone(){if(!this.nameInput.value.trim())return;this.isCreatingZone=!1;const e={name:this.nameInput.value.trim(),size:parseFloat(this.sizeInput.value)||0,throughput:parseFloat(this.throughputInput.value)||0,state:sn.Automatic,duration:0,bucket:0,module:void 0,delta:0,et_deficiency:0,explanation:"",multiplier:1,mapping:void 0,lead_time:0,maximum_duration:void 0,maximum_bucket:void 0,drainage_rate:void 0,current_drainage:0};this.zones=[...this.zones,e],this.isSaving=!0,this.saveToHA(e).then((()=>(this.nameInput.value="",this.sizeInput.value="",this.throughputInput.value="",this._fetchData()))).catch((e=>{console.error("Failed to add zone:",e),this.zones=this.zones.slice(0,-1)})).finally((()=>{this.isSaving=!1,this._scheduleUpdate()}))}_engineOptions(e,t,s){var i,a,n,r;const o=null!==(i=t.calculation_method)&&void 0!==i?i:"from_weather",l=null!==(a=t.method_config)&&void 0!==a?a:{},h=s=>this.handleEditZone(e,Object.assign(Object.assign({},t),{calculation_method:o,method_config:Object.assign(Object.assign({},l),s)}));return"from_weather"===o?"advanced"!==(null===(n=this.config)||void 0===n?void 0:n.ui_mode)?"":W`
-        ${this._numRow(ss("panels.zones.labels.forecast-days",s),"",null!==(r=l.forecast_days)&&void 0!==r?r:0,(e=>h({forecast_days:parseInt(e,10)||0})))}
+s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.months=Mn,s.isDate=d,s.locale=ws,s.invalid=f,s.duration=Ri,s.isMoment=$,s.weekdays=On,s.parseZone=wn,s.localeData=ks,s.isDuration=mi,s.monthsShort=Tn,s.weekdaysMin=En,s.defineLocale=$s,s.updateLocale=xs,s.locales=Ss,s.weekdaysShort=An,s.normalizeUnits=O,s.relativeTimeRounding=gr,s.relativeTimeThreshold=mr,s.calendarFormat=qi,s.prototype=yn,s.HTML5_FMT={DATETIME_LOCAL:"YYYY-MM-DDTHH:mm",DATETIME_LOCAL_SECONDS:"YYYY-MM-DDTHH:mm:ss",DATETIME_LOCAL_MS:"YYYY-MM-DDTHH:mm:ss.SSS",DATE:"YYYY-MM-DD",TIME:"HH:mm",TIME_SECONDS:"HH:mm:ss",TIME_MS:"HH:mm:ss.SSS",WEEK:"GGGG-[W]WW",MONTH:"YYYY-MM"},s}()),cn.exports),gn=ln(pn);const mn=["sand","sandy_loam","loam","clay_loam","clay","custom"],vn=["lawn","vegetables","flowers","shrubs","hedge","fruit_trees","vines","ground_cover","custom"];let fn=class extends(wa(ce)){constructor(){super(...arguments),this.zones=[],this.modules=[],this.mappings=[],this.wateringCalendars=new Map,this.weatherRecords=new Map,this.isLoading=!0,this.isSaving=!1,this.isCreatingZone=!1,this._hasLoadedOnce=!1,this._suppressNextConfigUpdate=!1,this._updateScheduled=!1,this.globalDebounceTimer=null,this._pendingZoneChanges=new Map,this.zoneCache=new Map,this._expanded=new Set}_scheduleUpdate(){this._updateScheduled||(this._updateScheduled=!0,requestAnimationFrame(()=>{this._updateScheduled=!1,this.requestUpdate()}))}_toggleZone(e){null!=e&&(this._expanded.has(e)?this._expanded.delete(e):this._expanded.add(e),this._scheduleUpdate())}firstUpdated(){we().catch(e=>{console.error("Failed to load HA form:",e)})}hassSubscribe(){return this._fetchData().catch(e=>{console.error("Failed to fetch initial data:",e)}),[this.hass.connection.subscribeMessage(()=>{this.isCreatingZone?console.debug("Skipping data refresh during zone creation"):this._suppressNextConfigUpdate?this._suppressNextConfigUpdate=!1:this._fetchData().catch(e=>{console.error("Failed to fetch data on config update:",e)})},{type:hs+"_config_updated"})]}async _fetchData(){if(this.hass)try{this._hasLoadedOnce||(this.isLoading=!0);const[e,t,s,i]=await Promise.all([ha(this.hass),ca(this.hass),pa(this.hass),ma(this.hass)]);this.config=e,this.zones=t,this.modules=s,this.mappings=i,this._fetchWateringCalendars(),this._fetchWeatherRecords(),this.zoneCache.clear()}catch(e){console.error("Error fetching data:",e)}finally{this.isLoading=!1,this._hasLoadedOnce=!0,this._scheduleUpdate()}}_ask(e,t){var s,i;const a=as(e,null!==(i=null===(s=this.hass)||void 0===s?void 0:s.language)&&void 0!==i?i:"en").replace("{name}",null!=t?t:"");return Pa(this.hass,{text:a,destructive:!0})}handleCalculateAllZones(){var e;this.hass&&(this.isSaving=!0,(e=this.hass,e.callApi("POST",hs+"/zones",{calculate_all:!0})).catch(e=>{console.error("Failed to calculate all zones:",e)}).finally(()=>{this.isSaving=!1,this._scheduleUpdate()}))}handleUpdateAllZones(){var e;this.hass&&(this.isSaving=!0,(e=this.hass,e.callApi("POST",hs+"/zones",{update_all:!0})).catch(e=>{console.error("Failed to update all zones:",e)}).finally(()=>{this.isSaving=!1,this._scheduleUpdate()}))}async handleResetAllBuckets(){var e;this.hass&&(await this._ask("confirm.reset_all_buckets")&&(this.isSaving=!0,(e=this.hass,e.callApi("POST",hs+"/zones",{reset_all_buckets:!0})).catch(e=>{console.error("Failed to reset all buckets:",e)}).finally(()=>{this.isSaving=!1,this._scheduleUpdate()})))}async handleClearAllWeatherdata(){var e;this.hass&&(await this._ask("confirm.clear_all_weather")&&(this.isSaving=!0,(e=this.hass,e.callApi("POST",hs+"/zones",{clear_all_weatherdata:!0})).catch(e=>{console.error("Failed to clear all weather data:",e)}).finally(()=>{this.isSaving=!1,this._scheduleUpdate()})))}handleAddZone(){if(!this.nameInput.value.trim())return;this.isCreatingZone=!1;const e={name:this.nameInput.value.trim(),size:parseFloat(this.sizeInput.value)||0,throughput:parseFloat(this.throughputInput.value)||0,state:on.Automatic,duration:0,bucket:0,module:void 0,delta:0,et_deficiency:0,explanation:"",multiplier:1,mapping:void 0,lead_time:0,maximum_duration:void 0,maximum_bucket:void 0,drainage_rate:void 0,current_drainage:0};this.zones=[...this.zones,e],this.isSaving=!0,this.saveToHA(e).then(()=>(this.nameInput.value="",this.sizeInput.value="",this.throughputInput.value="",this._fetchData())).catch(e=>{console.error("Failed to add zone:",e),this.zones=this.zones.slice(0,-1)}).finally(()=>{this.isSaving=!1,this._scheduleUpdate()})}_engineOptions(e,t,s){var i,a,n,r;const o=null!==(i=t.calculation_method)&&void 0!==i?i:"from_weather",l=null!==(a=t.method_config)&&void 0!==a?a:{},h=s=>this.handleEditZone(e,Object.assign(Object.assign({},t),{calculation_method:o,method_config:Object.assign(Object.assign({},l),s)}));return"from_weather"===o?"advanced"!==(null===(n=this.config)||void 0===n?void 0:n.ui_mode)?"":V`
+        ${this._numRow(as("panels.zones.labels.forecast-days",s),"",null!==(r=l.forecast_days)&&void 0!==r?r:0,e=>h({forecast_days:parseInt(e,10)||0}))}
         <div class="setting-help">
-          ${ss("panels.zones.labels.forecast-days-help",s)}
-          ${ss("panels.zones.labels.engine-shared-help",s)}
+          ${as("panels.zones.labels.forecast-days-help",s)}
+          ${as("panels.zones.labels.engine-shared-help",s)}
         </div>
-      `:"fixed"===o?W`
-        ${this._numRow(ss("panels.zones.labels.fixed-amount",s),Zi(this.config,ci),(d=l.delta,Math.abs(Number(d)||0)),(e=>h({delta:na(e)})))}
+      `:"fixed"===o?V`
+        ${this._numRow(as("panels.zones.labels.fixed-amount",s),qi(this.config,pi),(d=l.delta,Math.abs(Number(d)||0)),e=>h({delta:oa(e)}))}
         <div class="setting-help">
-          ${ss("panels.zones.labels.engine-shared-help",s)}
+          ${as("panels.zones.labels.engine-shared-help",s)}
         </div>
-      `:"";var d}_friendlyDuration(e){const t=Math.max(0,Math.round(e||0)),s=Math.floor(t/3600),i=Math.floor(t%3600/60),a=t%60;return s>0?`${s} h ${String(i).padStart(2,"0")} min`:i>0?a?`${i} min ${a} s`:`${i} min`:`${a} s`}_volumeText(e,t){return`${qi(e,t).toFixed(1)} ${Vi(this.config,di)}`}_liveEstimate(e){var t,s,i;const a=null!==(s=null===(t=this.hass)||void 0===t?void 0:t.states)&&void 0!==s?s:{};for(const t of Object.keys(a)){if(!t.endsWith("_live_bucket"))continue;const s=a[t],n=null!==(i=null==s?void 0:s.attributes)&&void 0!==i?i:{};if(String(n.zone_id)!==String(e.id))continue;if(!0!==n.live)return;const r=parseFloat(s.state);if(!Number.isFinite(r))return;return{bucket:r,duration:Number(n.duration)||0}}}_zoneStatus(e,t){var s,i,a;const n=(e,...s)=>ss(`panels.zones.status.${e}`,t,...s),r=this._liveEstimate(e),o=r?r.bucket:null!==(s=e.bucket)&&void 0!==s?s:0,l=Math.max(0,-o),h=null!==(i=e.irrigation_threshold)&&void 0!==i?i:0,d=Vi(this.config,ci),c=l>=.05?`${l.toFixed(1)} ${d}`:null;let u="idle",p=c?n("idle","{short}",c):n("satisfied");return e.state===sn.Disabled?(u="off",p=n("disabled")):e.state===sn.Manual?(u="off",p=n("manual")):(null!==(a=e.duration)&&void 0!==a?a:0)>0?(u="watering",p=n("will-water","{duration}",this._friendlyDuration(e.duration)).replace(/\.$/,"")+` (${this._volumeText(e.duration,e.throughput)}).`):r&&r.duration>0?(u="watering",p=n("estimate","{short}",null!=c?c:"","{duration}",this._friendlyDuration(r.duration),"{volume}",this._volumeText(r.duration,e.throughput))):c&&h>0&&(p=n("under-threshold","{short}",c)),W`
+      `:"";var d}_friendlyDuration(e){const t=Math.max(0,Math.round(e||0)),s=Math.floor(t/3600),i=Math.floor(t%3600/60),a=t%60;return s>0?`${s} h ${String(i).padStart(2,"0")} min`:i>0?a?`${i} min ${a} s`:`${i} min`:`${a} s`}_volumeText(e,t){return`${Ji(e,t).toFixed(1)} ${Gi(this.config,ui)}`}_liveEstimate(e){var t,s,i;const a=null!==(s=null===(t=this.hass)||void 0===t?void 0:t.states)&&void 0!==s?s:{};for(const t of Object.keys(a)){if(!t.endsWith("_live_bucket"))continue;const s=a[t],n=null!==(i=null==s?void 0:s.attributes)&&void 0!==i?i:{};if(String(n.zone_id)!==String(e.id))continue;if(!0!==n.live)return;const r=parseFloat(s.state);if(!Number.isFinite(r))return;return{bucket:r,duration:Number(n.duration)||0}}}_zoneStatus(e,t){var s,i,a;const n=(e,...s)=>as(`panels.zones.status.${e}`,t,...s),r=this._liveEstimate(e),o=r?r.bucket:null!==(s=e.bucket)&&void 0!==s?s:0,l=Math.max(0,-o),h=null!==(i=e.irrigation_threshold)&&void 0!==i?i:0,d=Gi(this.config,pi),c=l>=.05?`${l.toFixed(1)} ${d}`:null;let u="idle",p=c?n("idle","{short}",c):n("satisfied");return e.state===on.Disabled?(u="off",p=n("disabled")):e.state===on.Manual?(u="off",p=n("manual")):(null!==(a=e.duration)&&void 0!==a?a:0)>0?(u="watering",p=n("will-water","{duration}",this._friendlyDuration(e.duration)).replace(/\.$/,"")+` (${this._volumeText(e.duration,e.throughput)}).`):r&&r.duration>0?(u="watering",p=n("estimate","{short}",null!=c?c:"","{duration}",this._friendlyDuration(r.duration),"{volume}",this._volumeText(r.duration,e.throughput))):c&&h>0&&(p=n("under-threshold","{short}",c)),V`
       <div class="zone-status zone-status--${u}">
         <ha-icon
           icon=${"watering"===u?"mdi:water-outline":"off"===u?"mdi:pause-circle-outline":"mdi:check-circle-outline"}
         ></ha-icon>
         <span>${p}</span>
-        ${"off"!==u&&h>0?W`<span class="zone-status-numbers">
+        ${"off"!==u&&h>0?V`<span class="zone-status-numbers">
               ${n("threshold")}: ${h.toFixed(1)} ${d}
             </span>`:""}
       </div>
-    `}_cropFactorByMonth(e,t,s){const i=e.crop_factor_by_month&&12===e.crop_factor_by_month.length?e.crop_factor_by_month:new Array(12).fill(null),a=(s,a)=>{const n=[...i],r=parseFloat(a);n[s]=isNaN(r)||r<=0?null:r,this.handleEditZone(t,Object.assign(Object.assign({},e),{[$i]:n.every((e=>null===e))?null:n}))};return W`
+    `}_cropFactorByMonth(e,t,s){const i=e.crop_factor_by_month&&12===e.crop_factor_by_month.length?e.crop_factor_by_month:new Array(12).fill(null),a=(s,a)=>{const n=[...i],r=parseFloat(a);n[s]=isNaN(r)||r<=0?null:r,this.handleEditZone(t,Object.assign(Object.assign({},e),{[ki]:n.every(e=>null===e)?null:n}))};return V`
       <div class="setting-row">
         <div class="setting-label">
-          ${ss("panels.zones.labels.crop-factor-by-month",s)}
+          ${as("panels.zones.labels.crop-factor-by-month",s)}
         </div>
       </div>
       <div class="month-grid">
-        ${i.map(((e,t)=>W`
+        ${i.map((e,t)=>V`
             <label class="month-cell">
               <span class="unit"
-                >${ss(`panels.zones.labels.months.${t+1}`,s)}</span
+                >${as(`panels.zones.labels.months.${t+1}`,s)}</span
               >
               <input
                 class="field num-input"
@@ -2544,43 +2544,43 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
                 @change=${e=>a(t,e.target.value)}
               />
             </label>
-          `))}
+          `)}
       </div>
       <div class="setting-help">
-        ${ss("panels.zones.labels.crop-factor-by-month-help",s)}
+        ${as("panels.zones.labels.crop-factor-by-month-help",s)}
       </div>
-    `}_adv(e){var t;return"advanced"===(null===(t=this.config)||void 0===t?void 0:t.ui_mode)?e:""}handleEditZone(e,t){if(!this.hass)return;const s=this.zones[e],i=t.id,a=Object.assign(Object.assign({},void 0!==i?this._pendingZoneChanges.get(i):{}),function(e,t){const s={};for(const i of new Set([...Object.keys(null!=e?e:{}),...Object.keys(t)]))JSON.stringify(null==e?void 0:e[i])!==JSON.stringify(t[i])&&(s[i]=void 0===t[i]?null:t[i]);return s}(s,t));void 0!==i&&this._pendingZoneChanges.set(i,a),this.zones[e]=t,null!=t.id&&this.zoneCache.delete(t.id.toString()),this.globalDebounceTimer&&clearTimeout(this.globalDebounceTimer),this.globalDebounceTimer=window.setTimeout((()=>{const e=[...this._pendingZoneChanges.entries()];this._pendingZoneChanges.clear();const t=e.filter((([,e])=>Object.keys(e).length>0)).map((([e,t])=>Object.assign(Object.assign({},t),{id:e})));if(0===t.length)return void(this.globalDebounceTimer=null);this.isSaving=!0,this._suppressNextConfigUpdate=!0;const s=t.some((e=>"soil_type"in e||"plant_type"in e||"calculation_method"in e||"method_config"in e));Promise.all(t.map((e=>this.saveToHA(e)))).then((()=>s?this._fetchData():void 0)).catch((e=>{this._suppressNextConfigUpdate=!1,console.error("Failed to save zone:",e)})).finally((()=>{this.isSaving=!1,this._scheduleUpdate()})),this.globalDebounceTimer=null}),500),this._scheduleUpdate()}async handleRemoveZone(e,t){if(!this.hass)return;const s=this.zones[t].id,i=this.zones[t];if(!i||null==s)return;if(!await this._ask("confirm.delete_zone",i.name))return;const a=[...this.zones];var n,r;this.zones=this.zones.filter(((e,s)=>s!==t)),this.zoneCache.delete(s.toString()),this.isSaving=!0,(n=this.hass,r=s.toString(),n.callApi("POST",os+"/zones",{id:r,remove:!0})).catch((e=>{console.error("Failed to delete zone:",e),this.zones=a,this._fetchData().catch((e=>{console.error("Failed to refresh data after delete error:",e)}))})).finally((()=>{this.isSaving=!1,this._scheduleUpdate()}))}handleCalculateZone(e){const t=this.zones[e];var s,i;t&&null!=t.id&&(this.hass&&(s=this.hass,i=t.id.toString(),s.callApi("POST",os+"/zones",{id:i,calculate:!0,override_cache:!0})))}handleUpdateZone(e){const t=this.zones[e];var s,i;t&&null!=t.id&&(this.hass&&(s=this.hass,i=t.id.toString(),s.callApi("POST",os+"/zones",{id:i,update:!0})))}handleViewWeatherInfo(e){var t;const s=this.zones[e];if(!s||null==s.mapping)return;const i=`#weather-section-${s.id}`,a=null===(t=this.shadowRoot)||void 0===t?void 0:t.querySelector(i);a&&(a.hasAttribute("hidden")?a.removeAttribute("hidden"):a.setAttribute("hidden",""))}handleViewWateringCalendar(e){var t;const s=this.zones[e];if(!s||null==s.id)return;const i=`#calendar-section-${s.id}`,a=null===(t=this.shadowRoot)||void 0===t?void 0:t.querySelector(i);a&&(a.hasAttribute("hidden")?a.removeAttribute("hidden"):a.setAttribute("hidden",""))}async _fetchWeatherRecords(){if(this.hass){for(const e of this.zones)if(void 0!==e.id&&void 0!==e.mapping)try{const t=await va(this.hass,e.mapping.toString(),10);this.weatherRecords.set(e.id,t)}catch(t){console.error(`Failed to fetch weather records for zone ${e.id} (mapping ${e.mapping}):`,t)}this._scheduleUpdate()}}async _fetchWateringCalendars(){if(this.hass){for(const s of this.zones)if(void 0!==s.id)try{const i=await(e=this.hass,t=s.id.toString(),e.callWS({type:os+"/watering_calendar",zone_id:t}));this.wateringCalendars.set(s.id,i)}catch(e){console.error(`Failed to fetch watering calendar for zone ${s.id}:`,e)}var e,t;this._scheduleUpdate()}}renderWeatherRecords(e){if(!this.hass||"number"!=typeof e.id)return W``;const t=this.weatherRecords.get(e.id)||[];return W`
+    `}_adv(e){var t;return"advanced"===(null===(t=this.config)||void 0===t?void 0:t.ui_mode)?e:""}handleEditZone(e,t){if(!this.hass)return;const s=this.zones[e],i=t.id,a=Object.assign(Object.assign({},void 0!==i?this._pendingZoneChanges.get(i):{}),function(e,t){const s={};for(const i of new Set([...Object.keys(null!=e?e:{}),...Object.keys(t)]))JSON.stringify(null==e?void 0:e[i])!==JSON.stringify(t[i])&&(s[i]=void 0===t[i]?null:t[i]);return s}(s,t));void 0!==i&&this._pendingZoneChanges.set(i,a),this.zones[e]=t,null!=t.id&&this.zoneCache.delete(t.id.toString()),this.globalDebounceTimer&&clearTimeout(this.globalDebounceTimer),this.globalDebounceTimer=window.setTimeout(()=>{const e=[...this._pendingZoneChanges.entries()];this._pendingZoneChanges.clear();const t=e.filter(([,e])=>Object.keys(e).length>0).map(([e,t])=>Object.assign(Object.assign({},t),{id:e}));if(0===t.length)return void(this.globalDebounceTimer=null);this.isSaving=!0,this._suppressNextConfigUpdate=!0;const s=t.some(e=>"soil_type"in e||"plant_type"in e||"calculation_method"in e||"method_config"in e);Promise.all(t.map(e=>this.saveToHA(e))).then(()=>s?this._fetchData():void 0).catch(e=>{this._suppressNextConfigUpdate=!1,console.error("Failed to save zone:",e)}).finally(()=>{this.isSaving=!1,this._scheduleUpdate()}),this.globalDebounceTimer=null},500),this._scheduleUpdate()}async handleRemoveZone(e,t){if(!this.hass)return;const s=this.zones[t].id,i=this.zones[t];if(!i||null==s)return;if(!await this._ask("confirm.delete_zone",i.name))return;const a=[...this.zones];var n,r;this.zones=this.zones.filter((e,s)=>s!==t),this.zoneCache.delete(s.toString()),this.isSaving=!0,(n=this.hass,r=s.toString(),n.callApi("POST",hs+"/zones",{id:r,remove:!0})).catch(e=>{console.error("Failed to delete zone:",e),this.zones=a,this._fetchData().catch(e=>{console.error("Failed to refresh data after delete error:",e)})}).finally(()=>{this.isSaving=!1,this._scheduleUpdate()})}handleCalculateZone(e){const t=this.zones[e];var s,i;t&&null!=t.id&&(this.hass&&(s=this.hass,i=t.id.toString(),s.callApi("POST",hs+"/zones",{id:i,calculate:!0,override_cache:!0})))}handleUpdateZone(e){const t=this.zones[e];var s,i;t&&null!=t.id&&(this.hass&&(s=this.hass,i=t.id.toString(),s.callApi("POST",hs+"/zones",{id:i,update:!0})))}handleViewWeatherInfo(e){var t;const s=this.zones[e];if(!s||null==s.mapping)return;const i=`#weather-section-${s.id}`,a=null===(t=this.shadowRoot)||void 0===t?void 0:t.querySelector(i);a&&(a.hasAttribute("hidden")?a.removeAttribute("hidden"):a.setAttribute("hidden",""))}handleViewWateringCalendar(e){var t;const s=this.zones[e];if(!s||null==s.id)return;const i=`#calendar-section-${s.id}`,a=null===(t=this.shadowRoot)||void 0===t?void 0:t.querySelector(i);a&&(a.hasAttribute("hidden")?a.removeAttribute("hidden"):a.setAttribute("hidden",""))}async _fetchWeatherRecords(){if(this.hass){for(const e of this.zones)if(void 0!==e.id&&void 0!==e.mapping)try{const t=await _a(this.hass,e.mapping.toString(),10);this.weatherRecords.set(e.id,t)}catch(t){console.error(`Failed to fetch weather records for zone ${e.id} (mapping ${e.mapping}):`,t)}this._scheduleUpdate()}}async _fetchWateringCalendars(){if(this.hass){for(const e of this.zones)if(void 0!==e.id)try{const t=await ba(this.hass,e.id.toString());this.wateringCalendars.set(e.id,t)}catch(t){console.error(`Failed to fetch watering calendar for zone ${e.id}:`,t)}this._scheduleUpdate()}}renderWeatherRecords(e){if(!this.hass||"number"!=typeof e.id)return V``;const t=this.weatherRecords.get(e.id)||[];return V`
       <div class="weather-records">
         <h4>
-          ${ss("panels.mappings.weather-records.title",this.hass.language)}
+          ${as("panels.mappings.weather-records.title",this.hass.language)}
         </h4>
-        ${0===t.length?W`
+        ${0===t.length?V`
               <div class="weather-note">
-                ${ss("panels.mappings.weather-records.no-data",this.hass.language)}
+                ${as("panels.mappings.weather-records.no-data",this.hass.language)}
               </div>
-            `:W`
+            `:V`
               <div class="weather-table">
                 <div class="weather-header">
                   <span
-                    >${ss("panels.mappings.weather-records.timestamp",this.hass.language)}</span
+                    >${as("panels.mappings.weather-records.timestamp",this.hass.language)}</span
                   >
                   <span
-                    >${ss("panels.mappings.weather-records.temperature",this.hass.language)}</span
+                    >${as("panels.mappings.weather-records.temperature",this.hass.language)}</span
                   >
                   <span
-                    >${ss("panels.mappings.weather-records.humidity",this.hass.language)}</span
+                    >${as("panels.mappings.weather-records.humidity",this.hass.language)}</span
                   >
                   <span
-                    >${ss("panels.mappings.weather-records.precipitation",this.hass.language)}</span
+                    >${as("panels.mappings.weather-records.precipitation",this.hass.language)}</span
                   >
                   <span
-                    >${ss("panels.mappings.weather-records.retrieval-time",this.hass.language)}</span
+                    >${as("panels.mappings.weather-records.retrieval-time",this.hass.language)}</span
                   >
                 </div>
-                ${t.slice(0,10).map((e=>W`
+                ${t.slice(0,10).map(e=>V`
                     <div class="weather-row">
                       <span
-                        >${dn(e.timestamp).format("MM-DD HH:mm")}</span
+                        >${gn(e.timestamp).format("MM-DD HH:mm")}</span
                       >
                       <span
                         >${null!==e.temperature&&void 0!==e.temperature?e.temperature.toFixed(1)+"°C":"-"}</span
@@ -2592,74 +2592,74 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
                         >${null!==e.precipitation&&void 0!==e.precipitation?e.precipitation.toFixed(1)+"mm":"-"}</span
                       >
                       <span
-                        >${e.retrieval_time?dn(e.retrieval_time).format("MM-DD HH:mm"):"-"}</span
+                        >${e.retrieval_time?gn(e.retrieval_time).format("MM-DD HH:mm"):"-"}</span
                       >
                     </div>
-                  `))}
+                  `)}
               </div>
             `}
       </div>
-    `}renderWateringCalendar(e){var t;if(!this.hass||"number"!=typeof e.id)return W``;const s=this.wateringCalendars.get(e.id),i=s&&e.id in s?s[e.id]:null,a=(null==i?void 0:i.monthly_estimates)||[],n=this.hass.language,r=e=>ss(`panels.zones.calendar.${e}`,n);return W` <div class="watering-calendar">
+    `}renderWateringCalendar(e){var t;if(!this.hass||"number"!=typeof e.id)return V``;const s=this.wateringCalendars.get(e.id),i=s&&e.id in s?s[e.id]:null,a=(null==i?void 0:i.monthly_estimates)||[],n=this.hass.language,r=e=>as(`panels.zones.calendar.${e}`,n);return V` <div class="watering-calendar">
       <h4>${r("title")}</h4>
       <div class="calendar-note">${r("caveat")}</div>
-      ${0===a.length?W`
+      ${0===a.length?V`
             <div class="calendar-note">
               ${(null==i?void 0:i.error)?`${r("error")}: ${i.error}`:r("none")}
             </div>
-          `:W` <div class="calendar-table">
+          `:V` <div class="calendar-table">
               <div class="calendar-header">
                 <span>${r("month")}</span>
                 <span
-                  >${r("et")} (${Zi(this.config,ci)})</span
+                  >${r("et")} (${qi(this.config,pi)})</span
                 >
                 <span
                   >${r("precipitation")}
-                  (${Zi(this.config,ci)})</span
+                  (${qi(this.config,pi)})</span
                 >
                 <span
                   >${r("watering")}
-                  (${Zi(this.config,di)})</span
+                  (${qi(this.config,ui)})</span
                 >
                 <span
                   >${r("avg-temp")}
-                  (${(null===(t=this.config)||void 0===t?void 0:t.units)===fs?"°C":"°F"})</span
+                  (${(null===(t=this.config)||void 0===t?void 0:t.units)===ys?"°C":"°F"})</span
                 >
               </div>
-              ${a.map((e=>W`
+              ${a.map(e=>V`
                   <div class="calendar-row">
                     <span
                       >${e.month_name||`Month ${e.month}`||"-"}</span
                     >
                     <span
-                      >${null!==e.estimated_et_mm&&void 0!==e.estimated_et_mm?Qi(e.estimated_et_mm,this.config).toFixed(1):"-"}</span
+                      >${null!==e.estimated_et_mm&&void 0!==e.estimated_et_mm?ta(e.estimated_et_mm,this.config).toFixed(1):"-"}</span
                     >
                     <span
-                      >${null!==e.average_precipitation_mm&&void 0!==e.average_precipitation_mm?Qi(e.average_precipitation_mm,this.config).toFixed(1):"-"}</span
+                      >${null!==e.average_precipitation_mm&&void 0!==e.average_precipitation_mm?ta(e.average_precipitation_mm,this.config).toFixed(1):"-"}</span
                     >
                     <span
-                      >${null!==e.estimated_watering_volume_liters&&void 0!==e.estimated_watering_volume_liters?Ji(e.estimated_watering_volume_liters,this.config).toFixed(0):"-"}</span
+                      >${null!==e.estimated_watering_volume_liters&&void 0!==e.estimated_watering_volume_liters?Qi(e.estimated_watering_volume_liters,this.config).toFixed(0):"-"}</span
                     >
                     <span
-                      >${null!==e.average_temperature_c&&void 0!==e.average_temperature_c?function(e,t){const s=Number(e)||0;return(null==t?void 0:t.units)===fs?s:1.8*s+32}(e.average_temperature_c,this.config).toFixed(1):"-"}</span
+                      >${null!==e.average_temperature_c&&void 0!==e.average_temperature_c?function(e,t){const s=Number(e)||0;return(null==t?void 0:t.units)===ys?s:1.8*s+32}(e.average_temperature_c,this.config).toFixed(1):"-"}</span
                     >
                   </div>
-                `))}
+                `)}
             </div>
-            ${(null==i?void 0:i.calculation_method)?W`
+            ${(null==i?void 0:i.calculation_method)?V`
                   <div class="calendar-info">
-                    ${ss("panels.zones.labels.calculation-method",n)}:
-                    ${ss(`panels.zones.labels.calculation-methods.${i.calculation_method}`,n)}
+                    ${as("panels.zones.labels.calculation-method",n)}:
+                    ${as(`panels.zones.labels.calculation-methods.${i.calculation_method}`,n)}
                   </div>
                 `:""}`}
-    </div>`}async saveToHA(e){if(!this.hass)throw new Error("Home Assistant connection not available");await da(this.hass,e)}handleZoneFormFocus(){this.isCreatingZone=!0}handleZoneFormBlur(){var e,t,s,i;(null===(t=null===(e=this.nameInput)||void 0===e?void 0:e.value)||void 0===t?void 0:t.trim())||(null===(s=this.sizeInput)||void 0===s?void 0:s.value)||(null===(i=this.throughputInput)||void 0===i?void 0:i.value)||(this.isCreatingZone=!1)}renderTheOptions(e,t,s){if(this.hass){let i=W`<option value="" ?selected=${void 0===t}">---${ss("common.labels.select",this.hass.language)}---</option>`;return Object.entries(e).map((([e,a])=>i=W`${i}
+    </div>`}async saveToHA(e){if(!this.hass)throw new Error("Home Assistant connection not available");await ua(this.hass,e)}handleZoneFormFocus(){this.isCreatingZone=!0}handleZoneFormBlur(){var e,t,s,i;(null===(t=null===(e=this.nameInput)||void 0===e?void 0:e.value)||void 0===t?void 0:t.trim())||(null===(s=this.sizeInput)||void 0===s?void 0:s.value)||(null===(i=this.throughputInput)||void 0===i?void 0:i.value)||(this.isCreatingZone=!1)}renderTheOptions(e,t,s){if(this.hass){let i=V`<option value="" ?selected=${void 0===t}">---${as("common.labels.select",this.hass.language)}---</option>`;return Object.entries(e).map(([e,a])=>i=V`${i}
             <option
               value="${a.id}"
               ?selected="${t===a.id}"
             >
               ${s?s(a):`${a.id}: ${a.name}`}
-            </option>`)),i}return W``}renderZone(e,t){var s,i,a,n,r,o,l,h,d,c,u,p,g,m,v,f;if(!this.hass)return W``;const _=this.hass.language,y=e.state===sn.Automatic,b=e.state===sn.Disabled||e.state===sn.Automatic,w=null!=e.explanation&&e.explanation.length>0;if(null!=e.mapping){const t=this.mappings.filter((t=>t.id===e.mapping))[0];null!=t&&null!=t.data&&(e.number_of_data_points=t.data.length)}const $=ss("panels.zones.labels.states."+e.state,_),x=W`${Gi(e.duration)}
-    (${qi(e.duration,e.throughput).toFixed(1)}
-    ${Zi(this.config,di)})`,k=null!=e.id&&this._expanded.has(e.id);return W`
+            </option>`),i}return V``}renderZone(e,t){var s,i,a,n,r,o,l,h,d,c,u,p,g,m,v,f;if(!this.hass)return V``;const _=this.hass.language,y=e.state===on.Automatic,b=e.state===on.Disabled||e.state===on.Automatic,w=null!=e.explanation&&e.explanation.length>0;if(null!=e.mapping){const t=this.mappings.filter(t=>t.id===e.mapping)[0];null!=t&&null!=t.data&&(e.number_of_data_points=t.data.length)}const $=as("panels.zones.labels.states."+e.state,_),x=V`${Ki(e.duration)}
+    (${Ji(e.duration,e.throughput).toFixed(1)}
+    ${qi(this.config,ui)})`,k=null!=e.id&&this._expanded.has(e.id);return V`
       <ha-card class="zone-card">
         <div
           class="zone-head"
@@ -2676,35 +2676,35 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
                 >${$}</ha-label
               >
             </div>
-            ${e.state===sn.Manual?W`<div class="zone-sub">${x}</div>`:""}
+            ${e.state===on.Manual?V`<div class="zone-sub">${x}</div>`:""}
           </div>
           <ha-svg-icon
             class="zone-chevron ${k?"open":""}"
-            .path=${ba}
+            .path=${xa}
           ></ha-svg-icon>
         </div>
         ${this._zoneStatus(e,_)}
-        ${k?W` <div class="zone-body">
+        ${k?V` <div class="zone-body">
               <div class="zone-meta">
                 <div class="meta-item">
                   <span class="meta-label"
-                    >${ss("panels.zones.labels.last_calculated",_)}</span
+                    >${as("panels.zones.labels.last_calculated",_)}</span
                   >
                   <span class="meta-value"
-                    >${e.last_calculated?dn(e.last_calculated).format("YYYY-MM-DD HH:mm"):"—"}</span
+                    >${e.last_calculated?gn(e.last_calculated).format("YYYY-MM-DD HH:mm"):"—"}</span
                   >
                 </div>
                 <div class="meta-item">
                   <span class="meta-label"
-                    >${ss("panels.zones.labels.data-last-updated",_)}</span
+                    >${as("panels.zones.labels.data-last-updated",_)}</span
                   >
                   <span class="meta-value"
-                    >${e.last_updated?dn(e.last_updated).format("YYYY-MM-DD HH:mm"):"—"}</span
+                    >${e.last_updated?gn(e.last_updated).format("YYYY-MM-DD HH:mm"):"—"}</span
                   >
                 </div>
                 <div class="meta-item">
                   <span class="meta-label"
-                    >${ss("panels.zones.labels.data-number-of-data-points",_)}</span
+                    >${as("panels.zones.labels.data-number-of-data-points",_)}</span
                   >
                   <span class="meta-value"
                     >${null!==(s=e.number_of_data_points)&&void 0!==s?s:"—"}</span
@@ -2713,179 +2713,179 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
               </div>
 
               <div class="settings">
-                ${this._textRow(ss("panels.zones.labels.name",_),"",e.name,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[ni]:s}))))}
-                ${this._adv(this._selectRow(ss("panels.zones.labels.calculation-method",_),W`
-                      ${["from_weather","provided","fixed"].map((t=>{var s;return W`
+                ${this._textRow(as("panels.zones.labels.name",_),"",e.name,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[oi]:s})))}
+                ${this._adv(this._selectRow(as("panels.zones.labels.calculation-method",_),V`
+                      ${["from_weather","provided","fixed"].map(t=>{var s;return V`
                           <option
                             value="${t}"
                             ?selected=${(null!==(s=e.calculation_method)&&void 0!==s?s:"from_weather")===t}
                           >
-                            ${ss(`panels.zones.labels.calculation-methods.${t}`,_)}
+                            ${as(`panels.zones.labels.calculation-methods.${t}`,_)}
                           </option>
-                        `}))}
-                    `,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{calculation_method:s.target.value})))))}
-                ${this._adv(W`<div class="setting-help">
-                    ${ss(`panels.zones.labels.calculation-method-help.${null!==(i=e.calculation_method)&&void 0!==i?i:"from_weather"}`,_)}
+                        `})}
+                    `,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{calculation_method:s.target.value}))))}
+                ${this._adv(V`<div class="setting-help">
+                    ${as(`panels.zones.labels.calculation-method-help.${null!==(i=e.calculation_method)&&void 0!==i?i:"from_weather"}`,_)}
                   </div>`)}
                 ${this._engineOptions(t,e,_)}
-                ${this._selectRow(this._labelWithHint("input-method",_),W`
+                ${this._selectRow(this._labelWithHint("input-method",_),V`
                     <option
-                      value="${Ri}"
-                      ?selected=${(null!==(a=e.input_method)&&void 0!==a?a:Ri)===Ri}
+                      value="${ji}"
+                      ?selected=${(null!==(a=e.input_method)&&void 0!==a?a:ji)===ji}
                     >
-                      ${ss("panels.zones.labels.input-methods.throughput",_)}
+                      ${as("panels.zones.labels.input-methods.throughput",_)}
                     </option>
                     <option
-                      value="${Pi}"
-                      ?selected=${e.input_method===Pi}
+                      value="${Li}"
+                      ?selected=${e.input_method===Li}
                     >
-                      ${ss("panels.zones.labels.input-methods.direct",_)}
+                      ${as("panels.zones.labels.input-methods.direct",_)}
                     </option>
-                  `,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Ni]:s.target.value}))))}
-                ${e.input_method===Pi?this._numRow(ss("panels.zones.labels.precipitation-rate",_),Zi(this.config,ji),e.precipitation_rate,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[ji]:parseFloat(s)}))),.1):W`
-                      ${this._numRow(ss("panels.zones.labels.size",_),Zi(this.config,ri),e.size,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[ri]:parseFloat(s)}))),.1)}
-                      ${this._numRow(ss("panels.zones.labels.throughput",_),Zi(this.config,oi),e.throughput,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[oi]:parseFloat(s)}))),.1)}
-                      ${e.measured_throughput&&(e.measured_throughput_samples||0)>=3?W`
+                  `,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Pi]:s.target.value})))}
+                ${e.input_method===Li?this._numRow(as("panels.zones.labels.precipitation-rate",_),qi(this.config,Ii),e.precipitation_rate,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Ii]:parseFloat(s)})),.1):V`
+                      ${this._numRow(as("panels.zones.labels.size",_),qi(this.config,li),e.size,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[li]:parseFloat(s)})),.1)}
+                      ${this._numRow(as("panels.zones.labels.throughput",_),qi(this.config,hi),e.throughput,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[hi]:parseFloat(s)})),.1)}
+                      ${e.measured_throughput&&(e.measured_throughput_samples||0)>=3?V`
                             <div class="setting-help">
-                              ${ss("panels.zones.labels.measured-flow-help",_)}
+                              ${as("panels.zones.labels.measured-flow-help",_)}
                               <ha-button
                                 appearance="filled"
-                                @click=${()=>{var t;return null===(t=this.hass)||void 0===t?void 0:t.callService(os,"use_measured_throughput",{zone_id:e.id})}}
+                                @click=${()=>{var t;return null===(t=this.hass)||void 0===t?void 0:t.callService(hs,"use_measured_throughput",{zone_id:e.id})}}
                               >
-                                ${ss("panels.zones.labels.use-measured-flow",_)}
+                                ${as("panels.zones.labels.use-measured-flow",_)}
                               </ha-button>
                             </div>
                           `:""}
                     `}
-                ${this._selectRow(ss("panels.zones.labels.soil-type",_),W`
-                    ${cn.map((t=>{var s;return W`
+                ${this._selectRow(as("panels.zones.labels.soil-type",_),V`
+                    ${mn.map(t=>{var s;return V`
                         <option
                           value="${t}"
                           ?selected=${(null!==(s=e.soil_type)&&void 0!==s?s:"custom")===t}
                         >
-                          ${ss(`panels.zones.labels.soil-types.${t}`,_)}
+                          ${as(`panels.zones.labels.soil-types.${t}`,_)}
                         </option>
-                      `}))}
-                  `,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{soil_type:s.target.value}))))}
-                ${"custom"===(null!==(n=e.soil_type)&&void 0!==n?n:"custom")?this._numRow(this._labelWithHint("drainage_rate",_),Zi(this.config,_i),e.drainage_rate,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[_i]:parseFloat(s)}))),.1):""}
-                ${this._selectRow(ss("panels.zones.labels.plant-type",_),W`
-                    ${un.map((t=>{var s;return W`
+                      `})}
+                  `,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{soil_type:s.target.value})))}
+                ${"custom"===(null!==(n=e.soil_type)&&void 0!==n?n:"custom")?this._numRow(this._labelWithHint("drainage_rate",_),qi(this.config,bi),e.drainage_rate,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[bi]:parseFloat(s)})),.1):""}
+                ${this._selectRow(as("panels.zones.labels.plant-type",_),V`
+                    ${vn.map(t=>{var s;return V`
                         <option
                           value="${t}"
                           ?selected=${(null!==(s=e.plant_type)&&void 0!==s?s:"custom")===t}
                         >
-                          ${ss(`panels.zones.labels.plant-types.${t}`,_)}
+                          ${as(`panels.zones.labels.plant-types.${t}`,_)}
                         </option>
-                      `}))}
-                  `,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{plant_type:s.target.value}))))}
-                ${"custom"===(null!==(r=e.plant_type)&&void 0!==r?r:"custom")?this._numRow(ss("panels.zones.labels.multiplier",_),"",e.multiplier,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[ui]:parseFloat(s)}))),.1):this._adv(this._numRow(ss("panels.zones.labels.multiplier",_),"",e.multiplier,(()=>{}),.1,!0))}
-                ${this._selectRow(this._labelWithHint("state",_),W`
+                      `})}
+                  `,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{plant_type:s.target.value})))}
+                ${"custom"===(null!==(r=e.plant_type)&&void 0!==r?r:"custom")?this._numRow(as("panels.zones.labels.multiplier",_),"",e.multiplier,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[gi]:parseFloat(s)})),.1):this._adv(this._numRow(as("panels.zones.labels.multiplier",_),"",e.multiplier,()=>{},.1,!0))}
+                ${this._selectRow(this._labelWithHint("state",_),V`
                     <option
-                      value="${sn.Automatic}"
-                      ?selected=${e.state===sn.Automatic}
+                      value="${on.Automatic}"
+                      ?selected=${e.state===on.Automatic}
                     >
-                      ${ss("panels.zones.labels.states.automatic",_)}
+                      ${as("panels.zones.labels.states.automatic",_)}
                     </option>
                     <option
-                      value="${sn.Disabled}"
-                      ?selected=${e.state===sn.Disabled}
+                      value="${on.Disabled}"
+                      ?selected=${e.state===on.Disabled}
                     >
-                      ${ss("panels.zones.labels.states.disabled",_)}
+                      ${as("panels.zones.labels.states.disabled",_)}
                     </option>
                     <option
-                      value="${sn.Manual}"
-                      ?selected=${e.state===sn.Manual}
+                      value="${on.Manual}"
+                      ?selected=${e.state===on.Manual}
                     >
-                      ${ss("panels.zones.labels.states.manual",_)}
+                      ${as("panels.zones.labels.states.manual",_)}
                     </option>
-                  `,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[li]:s.target.value,[hi]:0}))))}
-                ${this._selectRow(this._labelWithHint("mapping",_),this.renderTheOptions(this.mappings,e.mapping),(s=>{const i=s.target.value;this.handleEditZone(t,Object.assign(Object.assign({},e),{[pi]:""===i?void 0:parseInt(i)}))}))}
-                ${this._numRow(this._labelWithHint("bucket",_),Zi(this.config,ci),Number(e.bucket).toFixed(1),(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[ci]:parseFloat(s)}))),.1)}
-                ${this._adv(this._numRow(this._labelWithHint("maximum-bucket",_),Zi(this.config,ci),Number(e.maximum_bucket).toFixed(1),(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[vi]:parseFloat(s)}))),.1))}
-                ${this._adv(this._numRow(this._labelWithHint("irrigation-threshold",_),Zi(this.config,ci),Number(null!==(o=e.irrigation_threshold)&&void 0!==o?o:0).toFixed(1),(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[fi]:parseFloat(s)}))),.1))}
-                ${this._adv(W`${this._numRow(ss("panels.zones.labels.days-between-irrigation",_),ss("panels.zones.labels.days",_),e.days_between_irrigation,(s=>{const i=parseInt(s,10);this.handleEditZone(t,Object.assign(Object.assign({},e),{[bi]:isNaN(i)?null:Math.max(0,i)}))}),1)}
+                  `,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[di]:s.target.value,[ci]:0})))}
+                ${this._selectRow(this._labelWithHint("mapping",_),this.renderTheOptions(this.mappings,e.mapping),s=>{const i=s.target.value;this.handleEditZone(t,Object.assign(Object.assign({},e),{[mi]:""===i?void 0:parseInt(i)}))})}
+                ${this._numRow(this._labelWithHint("bucket",_),qi(this.config,pi),Number(e.bucket).toFixed(1),s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[pi]:parseFloat(s)})),.1)}
+                ${this._adv(this._numRow(this._labelWithHint("maximum-bucket",_),qi(this.config,pi),Number(e.maximum_bucket).toFixed(1),s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[_i]:parseFloat(s)})),.1))}
+                ${this._adv(this._numRow(this._labelWithHint("irrigation-threshold",_),qi(this.config,pi),Number(null!==(o=e.irrigation_threshold)&&void 0!==o?o:0).toFixed(1),s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[yi]:parseFloat(s)})),.1))}
+                ${this._adv(V`${this._numRow(as("panels.zones.labels.days-between-irrigation",_),as("panels.zones.labels.days",_),e.days_between_irrigation,s=>{const i=parseInt(s,10);this.handleEditZone(t,Object.assign(Object.assign({},e),{[$i]:isNaN(i)?null:Math.max(0,i)}))},1)}
                     <div class="setting-help">
-                      ${ss("panels.zones.labels.days-between-irrigation-help",_)}
+                      ${as("panels.zones.labels.days-between-irrigation-help",_)}
                     </div>`)}
                 ${this._adv(this._cropFactorByMonth(e,t,_))}
-                ${this._adv(W`${this._numRow(ss("panels.zones.labels.available-water",_),Zi(this.config,ci),null!=e.available_water?Number(e.available_water).toFixed(1):"",(s=>{const i=parseFloat(s);this.handleEditZone(t,Object.assign(Object.assign({},e),{[wi]:isNaN(i)||i<=0?null:i}))}),1)}
-                    ${this._numRow(ss("panels.zones.labels.allowed-depletion",_),"%",null!=e.allowed_depletion?Number(e.allowed_depletion).toFixed(0):"",(s=>{const i=parseFloat(s);this.handleEditZone(t,Object.assign(Object.assign({},e),{[xi]:isNaN(i)?null:Math.min(95,Math.max(5,i))}))}),5)}
+                ${this._adv(V`${this._numRow(as("panels.zones.labels.available-water",_),qi(this.config,pi),null!=e.available_water?Number(e.available_water).toFixed(1):"",s=>{const i=parseFloat(s);this.handleEditZone(t,Object.assign(Object.assign({},e),{[xi]:isNaN(i)||i<=0?null:i}))},1)}
+                    ${this._numRow(as("panels.zones.labels.allowed-depletion",_),"%",null!=e.allowed_depletion?Number(e.allowed_depletion).toFixed(0):"",s=>{const i=parseFloat(s);this.handleEditZone(t,Object.assign(Object.assign({},e),{[Si]:isNaN(i)?null:Math.min(95,Math.max(5,i))}))},5)}
                     <div class="setting-help">
-                      ${ss("panels.zones.labels.available-water-help",_)}
+                      ${as("panels.zones.labels.available-water-help",_)}
                     </div>`)}
-                ${this._adv(W`${this._numRow(ss("panels.zones.labels.distribution-efficiency",_),"%",null!=e.distribution_efficiency?Number(e.distribution_efficiency).toFixed(0):"",(s=>{const i=parseFloat(s);this.handleEditZone(t,Object.assign(Object.assign({},e),{[ki]:isNaN(i)?null:Math.min(100,Math.max(5,i))}))}),5)}
+                ${this._adv(V`${this._numRow(as("panels.zones.labels.distribution-efficiency",_),"%",null!=e.distribution_efficiency?Number(e.distribution_efficiency).toFixed(0):"",s=>{const i=parseFloat(s);this.handleEditZone(t,Object.assign(Object.assign({},e),{[zi]:isNaN(i)?null:Math.min(100,Math.max(5,i))}))},5)}
                     <div class="setting-help">
-                      ${ss("panels.zones.labels.distribution-efficiency-help",_)}
+                      ${as("panels.zones.labels.distribution-efficiency-help",_)}
                     </div>`)}
-                ${this._numRow(ss("panels.zones.labels.et-deficiency",_),Zi(this.config,ci),null!=e.et_deficiency?Number(e.et_deficiency).toFixed(2):"",(()=>{}),.01,!0)}
+                ${this._numRow(as("panels.zones.labels.et-deficiency",_),qi(this.config,pi),null!=e.et_deficiency?Number(e.et_deficiency).toFixed(2):"",()=>{},.01,!0)}
                 <div class="setting-help">
-                  ${ss("panels.zones.labels.et-deficiency-help",_)}
+                  ${as("panels.zones.labels.et-deficiency-help",_)}
                 </div>
-                ${(null===(l=this.config)||void 0===l?void 0:l.observed_watering_enabled)||(null===(h=this.config)||void 0===h?void 0:h.direct_valve_control_enabled)?this._entityRow(ss("panels.zones.labels.linked-entity",_),ss("panels.zones.labels.optional",_),e.linked_entity,(null===(d=this.config)||void 0===d?void 0:d.full_controller)?["switch","valve","input_boolean","binary_sensor","light","cover"]:["switch","valve","input_boolean","binary_sensor"],(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[yi]:s||void 0}))),ss("panels.zones.labels.linked-entity-hint",_)):""}
-                ${(null===(c=this.config)||void 0===c?void 0:c.full_controller)&&e.linked_entity?this._entitiesRows(ss("panels.zones.labels.extra-valves",_),ss("panels.zones.labels.extra-valves-hint",_),e.extra_entities||[],["switch","valve","input_boolean","light","cover"],(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Mi]:s})))):""}
-                ${(null===(u=this.config)||void 0===u?void 0:u.full_controller)&&((null===(p=this.config)||void 0===p?void 0:p.supplies)||[]).length?this._selectRow(ss("panels.zones.labels.supply",_),W`
+                ${(null===(l=this.config)||void 0===l?void 0:l.observed_watering_enabled)||(null===(h=this.config)||void 0===h?void 0:h.direct_valve_control_enabled)?this._entityRow(as("panels.zones.labels.linked-entity",_),as("panels.zones.labels.optional",_),e.linked_entity,(null===(d=this.config)||void 0===d?void 0:d.full_controller)?["switch","valve","input_boolean","binary_sensor","light","cover"]:["switch","valve","input_boolean","binary_sensor"],s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[wi]:s||void 0})),as("panels.zones.labels.linked-entity-hint",_)):""}
+                ${(null===(c=this.config)||void 0===c?void 0:c.full_controller)&&e.linked_entity?this._entitiesRows(as("panels.zones.labels.extra-valves",_),as("panels.zones.labels.extra-valves-hint",_),e.extra_entities||[],["switch","valve","input_boolean","light","cover"],s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Oi]:s}))):""}
+                ${(null===(u=this.config)||void 0===u?void 0:u.full_controller)&&((null===(p=this.config)||void 0===p?void 0:p.supplies)||[]).length?this._selectRow(as("panels.zones.labels.supply",_),V`
                         <option value="" ?selected=${!e.supply_id}>
-                          ${ss("panels.zones.labels.supply-none",_)}
+                          ${as("panels.zones.labels.supply-none",_)}
                         </option>
-                        ${((null===(g=this.config)||void 0===g?void 0:g.supplies)||[]).map((t=>W`
+                        ${((null===(g=this.config)||void 0===g?void 0:g.supplies)||[]).map(t=>V`
                             <option
                               value=${t.id||""}
                               ?selected=${e.supply_id===t.id}
                             >
                               ${t.name}
                             </option>
-                          `))}
-                      `,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[zi]:s.target.value||null})))):""}
-                ${(null===(m=this.config)||void 0===m?void 0:m.direct_valve_control_enabled)&&e.linked_entity?this._adv(W`
-                      ${this._numRow(ss("panels.zones.labels.confirm-timeout",_),"s",e.confirm_timeout,(s=>{const i=parseFloat(s);this.handleEditZone(t,Object.assign(Object.assign({},e),{[Ai]:isNaN(i)?null:Math.min(600,Math.max(1,i))}))}),1)}
-                      ${this._numRow(ss("panels.zones.labels.open-resends",_),"",e.open_resends,(s=>{const i=parseInt(s,10);this.handleEditZone(t,Object.assign(Object.assign({},e),{[Ei]:isNaN(i)?null:Math.min(10,Math.max(0,i))}))}),1)}
+                          `)}
+                      `,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Ti]:s.target.value||null}))):""}
+                ${(null===(m=this.config)||void 0===m?void 0:m.direct_valve_control_enabled)&&e.linked_entity?this._adv(V`
+                      ${this._numRow(as("panels.zones.labels.confirm-timeout",_),"s",e.confirm_timeout,s=>{const i=parseFloat(s);this.handleEditZone(t,Object.assign(Object.assign({},e),{[Ci]:isNaN(i)?null:Math.min(600,Math.max(1,i))}))},1)}
+                      ${this._numRow(as("panels.zones.labels.open-resends",_),"",e.open_resends,s=>{const i=parseInt(s,10);this.handleEditZone(t,Object.assign(Object.assign({},e),{[Hi]:isNaN(i)?null:Math.min(10,Math.max(0,i))}))},1)}
                       <div class="setting-help">
-                        ${ss("panels.zones.labels.confirm-timeout-help",_)}
+                        ${as("panels.zones.labels.confirm-timeout-help",_)}
                       </div>
-                      ${this._textRow(ss("panels.zones.labels.safety-off-topic",_),ss("panels.zones.labels.optional",_),e.safety_off_topic,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Si]:s||void 0}))))}
-                      ${e.safety_off_topic?this._textRow(ss("panels.zones.labels.safety-off-state-key",_),"",e.safety_off_state_key,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Ti]:s||void 0})))):""}
-                      ${this._selectRow(ss("panels.zones.labels.safety-off-mode",_),W`
-                          ${["auto","zha","off"].map((t=>W`
+                      ${this._textRow(as("panels.zones.labels.safety-off-topic",_),as("panels.zones.labels.optional",_),e.safety_off_topic,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Mi]:s||void 0})))}
+                      ${e.safety_off_topic?this._textRow(as("panels.zones.labels.safety-off-state-key",_),"",e.safety_off_state_key,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Ai]:s||void 0}))):""}
+                      ${this._selectRow(as("panels.zones.labels.safety-off-mode",_),V`
+                          ${["auto","zha","off"].map(t=>V`
                               <option
                                 value=${t}
                                 ?selected=${(e.safety_off_mode||"auto")===t}
                               >
-                                ${ss(`panels.zones.labels.safety-off-mode-${t}`,_)}
+                                ${as(`panels.zones.labels.safety-off-mode-${t}`,_)}
                               </option>
-                            `))}
-                        `,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Oi]:s.target.value}))))}
+                            `)}
+                        `,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Ei]:s.target.value})))}
                       <div class="setting-help">
-                        ${ss("panels.zones.labels.safety-off-topic-help",_)}
+                        ${as("panels.zones.labels.safety-off-topic-help",_)}
                       </div>
                       <div class="setting-help">
-                        ${ss("panels.zones.labels.safety-off-mode-help",_)}
+                        ${as("panels.zones.labels.safety-off-mode-help",_)}
                       </div>
                     `):""}
-                ${this._adv((null===(v=this.config)||void 0===v?void 0:v.observed_watering_enabled)&&e.linked_entity?this._entityRow(ss("panels.zones.labels.flow-sensor",_),ss("panels.zones.labels.optional",_),e.flow_sensor,["sensor"],(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Ci]:s||void 0}))),ss("panels.zones.labels.flow-sensor-hint",_)):"")}
-                ${this._adv(this._entityRow(ss("panels.zones.labels.soil-moisture-sensor",_),ss("panels.zones.labels.optional",_),e.soil_moisture_sensor,["sensor"],(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Hi]:s||void 0}))),ss("panels.zones.labels.soil-moisture-sensor-hint",_)))}
-                ${e.soil_moisture_sensor?this._numRow(ss("panels.zones.labels.soil-moisture-threshold",_),"%",null!==(f=e.soil_moisture_threshold)&&void 0!==f?f:50,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Di]:parseFloat(s)}))),1):""}
-                ${this._adv(this._numRow(ss("panels.zones.labels.lead-time",_),"s",e.lead_time,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[gi]:parseInt(s,10)}))),1))}
-                ${this._adv(this._numRow(ss("panels.zones.labels.maximum-duration",_),"s",e.maximum_duration,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[mi]:parseInt(s,10)}))),1))}
-                ${this._numRow(ss("panels.zones.labels.duration",_),"s",e.duration,(s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[hi]:parseInt(s,10)}))),1,b)}
-                ${b?W`<div class="setting-help">
-                      ${ss(e.state===sn.Disabled?"panels.zones.labels.duration-readonly-disabled":"panels.zones.labels.duration-readonly-automatic",_)}
+                ${this._adv((null===(v=this.config)||void 0===v?void 0:v.observed_watering_enabled)&&e.linked_entity?this._entityRow(as("panels.zones.labels.flow-sensor",_),as("panels.zones.labels.optional",_),e.flow_sensor,["sensor"],s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Di]:s||void 0})),as("panels.zones.labels.flow-sensor-hint",_)):"")}
+                ${this._adv(this._entityRow(as("panels.zones.labels.soil-moisture-sensor",_),as("panels.zones.labels.optional",_),e.soil_moisture_sensor,["sensor"],s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Ni]:s||void 0})),as("panels.zones.labels.soil-moisture-sensor-hint",_)))}
+                ${e.soil_moisture_sensor?this._numRow(as("panels.zones.labels.soil-moisture-threshold",_),"%",null!==(f=e.soil_moisture_threshold)&&void 0!==f?f:50,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[Ri]:parseFloat(s)})),1):""}
+                ${this._adv(this._numRow(as("panels.zones.labels.lead-time",_),"s",e.lead_time,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[vi]:parseInt(s,10)})),1))}
+                ${this._adv(this._numRow(as("panels.zones.labels.maximum-duration",_),"s",e.maximum_duration,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[fi]:parseInt(s,10)})),1))}
+                ${this._numRow(as("panels.zones.labels.duration",_),"s",e.duration,s=>this.handleEditZone(t,Object.assign(Object.assign({},e),{[ci]:parseInt(s,10)})),1,b)}
+                ${b?V`<div class="setting-help">
+                      ${as(e.state===on.Disabled?"panels.zones.labels.duration-readonly-disabled":"panels.zones.labels.duration-readonly-automatic",_)}
                     </div>`:""}
               </div>
 
               <div class="zone-actions">
-                ${y?W`
-                      ${this._actionBtn(ya,ss("panels.zones.actions.calculate",_),(()=>this.handleCalculateZone(t)))}
-                      ${this._actionBtn(Ea,ss("panels.zones.actions.update",_),(()=>this.handleUpdateZone(t)))}
+                ${y?V`
+                      ${this._actionBtn($a,as("panels.zones.actions.calculate",_),()=>this.handleCalculateZone(t))}
+                      ${this._actionBtn(Da,as("panels.zones.actions.update",_),()=>this.handleUpdateZone(t))}
                     `:""}
-                ${this._actionBtn(za,ss("panels.zones.actions.reset-bucket",_),(async()=>{await this._ask("confirm.reset_bucket",e.name)&&this.handleEditZone(t,Object.assign(Object.assign({},e),{[ci]:0}))}))}
-                ${null!=e.mapping?this._actionBtn($a,ss("panels.zones.actions.view-weather-info",_),(()=>this.handleViewWeatherInfo(t))):""}
-                ${this._actionBtn("M19,19H5V8H19M16,1V3H8V1H6V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3H18V1M17,12H12V17H17V12Z",ss("panels.zones.actions.view-watering-calendar",_),(()=>this.handleViewWateringCalendar(t)))}
-                ${w?this._actionBtn("M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z",ss("panels.zones.actions.information",_),(()=>this.toggleExplanation(t))):""}
-                ${this._actionBtn(xa,ss("common.actions.delete",_),(e=>this.handleRemoveZone(e,t)),!0)}
+                ${this._actionBtn(Oa,as("panels.zones.actions.reset-bucket",_),async()=>{await this._ask("confirm.reset_bucket",e.name)&&this.handleEditZone(t,Object.assign(Object.assign({},e),{[pi]:0}))})}
+                ${null!=e.mapping?this._actionBtn(Sa,as("panels.zones.actions.view-weather-info",_),()=>this.handleViewWeatherInfo(t)):""}
+                ${this._actionBtn("M19,19H5V8H19M16,1V3H8V1H6V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3H18V1M17,12H12V17H17V12Z",as("panels.zones.actions.view-watering-calendar",_),()=>this.handleViewWateringCalendar(t))}
+                ${w?this._actionBtn("M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z",as("panels.zones.actions.information",_),()=>this.toggleExplanation(t)):""}
+                ${this._actionBtn(za,as("common.actions.delete",_),e=>this.handleRemoveZone(e,t),!0)}
               </div>
 
-              ${w?W`<label class="hidden" id="calcresults${t}"
-                    >${Ui("<br/>"+e.explanation)}</label
+              ${w?V`<label class="hidden" id="calcresults${t}"
+                    >${Wi("<br/>"+e.explanation)}</label
                   >`:""}
               <div id="calendar-section-${e.id}" hidden>
                 ${this.renderWateringCalendar(e)}
@@ -2895,10 +2895,10 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
               </div>
             </div>`:""}
       </ha-card>
-    `}_textRow(e,t,s,i){return W`
+    `}_textRow(e,t,s,i){return V`
       <div class="setting-row">
         <div class="setting-label">
-          ${e}${t?W` <span class="unit">(${t})</span>`:""}
+          ${e}${t?V` <span class="unit">(${t})</span>`:""}
         </div>
         <input
           class="field"
@@ -2907,10 +2907,10 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           @change=${e=>i(e.target.value)}
         />
       </div>
-    `}_numRow(e,t,s,i,a=1,n=!1){const r=(String(a).split(".")[1]||"").length,o=(e,t)=>{const s=parseFloat(e.value),n=+((isNaN(s)?0:s)+t*a).toFixed(r);e.value=String(n),i(String(n))};return W`
+    `}_numRow(e,t,s,i,a=1,n=!1){const r=(String(a).split(".")[1]||"").length,o=(e,t)=>{const s=parseFloat(e.value),n=+((isNaN(s)?0:s)+t*a).toFixed(r);e.value=String(n),i(String(n))};return V`
       <div class="setting-row">
         <div class="setting-label">
-          ${e}${t?W` <span class="unit">(${t})</span>`:""}
+          ${e}${t?V` <span class="unit">(${t})</span>`:""}
         </div>
         <div class="num-field">
           <input
@@ -2924,22 +2924,22 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           />
           <ha-icon-button
             class="step-btn"
-            .path=${Sa}
+            .path=${Ta}
             ?disabled=${n}
             @click=${e=>o(e.currentTarget.parentElement.querySelector("input"),-1)}
           ></ha-icon-button>
           <ha-icon-button
             class="step-btn"
-            .path=${Ta}
+            .path=${Ea}
             ?disabled=${n}
             @click=${e=>o(e.currentTarget.parentElement.querySelector("input"),1)}
           ></ha-icon-button>
         </div>
       </div>
-    `}_labelWithHint(e,t){return W`${ss(`panels.zones.labels.${e}`,t)}
+    `}_labelWithHint(e,t){return V`${as(`panels.zones.labels.${e}`,t)}
       <div class="setting-hint">
-        ${ss(`panels.zones.labels.${e}-hint`,t)}
-      </div>`}_selectRow(e,t,s){return W`
+        ${as(`panels.zones.labels.${e}-hint`,t)}
+      </div>`}_selectRow(e,t,s){return V`
       <div class="setting-row">
         <div class="setting-label">${e}</div>
         <div class="select-wrap">
@@ -2947,15 +2947,15 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
             ${t}
           </select>
           <svg class="chev" viewBox="0 0 24 24">
-            <path d=${ka}></path>
+            <path d=${Ma}></path>
           </svg>
         </div>
       </div>
-    `}_entityRow(e,t,s,i,a,n){return W`
+    `}_entityRow(e,t,s,i,a,n){return V`
       <div class="setting-row">
         <div class="setting-label">
-          ${e}${t?W` <span class="unit">(${t})</span>`:""}
-          ${n?W`<div class="setting-hint">${n}</div>`:""}
+          ${e}${t?V` <span class="unit">(${t})</span>`:""}
+          ${n?V`<div class="setting-hint">${n}</div>`:""}
         </div>
         <ha-entity-picker
           class="entity-field"
@@ -2966,11 +2966,11 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           @value-changed=${e=>{var t;return a((null===(t=e.detail)||void 0===t?void 0:t.value)||"")}}
         ></ha-entity-picker>
       </div>
-    `}_entitiesRows(e,t,s,i,a){return W`${[...s,""].map(((n,r)=>W`
+    `}_entitiesRows(e,t,s,i,a){return V`${[...s,""].map((n,r)=>V`
         <div class="setting-row">
           <div class="setting-label">
-            ${0===r?W`${e}
-                ${t?W`<div class="setting-hint">${t}</div>`:""}`:""}
+            ${0===r?V`${e}
+                ${t?V`<div class="setting-hint">${t}</div>`:""}`:""}
           </div>
           <ha-entity-picker
             class="entity-field"
@@ -2978,10 +2978,10 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
             .value=${n}
             .includeDomains=${i}
             allow-custom-entity
-            @value-changed=${e=>{var t;const i=((null===(t=e.detail)||void 0===t?void 0:t.value)||"").trim(),n=[...s];r<n.length?i?n[r]=i:n.splice(r,1):i&&n.push(i),a(n.filter(((e,t)=>e&&n.indexOf(e)===t)))}}
+            @value-changed=${e=>{var t;const i=((null===(t=e.detail)||void 0===t?void 0:t.value)||"").trim(),n=[...s];r<n.length?i?n[r]=i:n.splice(r,1):i&&n.push(i),a(n.filter((e,t)=>e&&n.indexOf(e)===t))}}
           ></ha-entity-picker>
         </div>
-      `))}`}_actionBtn(e,t,s,i=!1,a=!1){return W`
+      `)}`}_actionBtn(e,t,s,i=!1,a=!1){return V`
       <ha-button
         appearance=${i?"outlined":"filled"}
         variant=${i?"danger":"brand"}
@@ -2991,26 +2991,26 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
         <ha-svg-icon slot="start" .path=${e}></ha-svg-icon>
         ${t}
       </ha-button>
-    `}toggleExplanation(e){var t;const s=null===(t=this.shadowRoot)||void 0===t?void 0:t.querySelector("#calcresults"+e);s&&("hidden"!=s.className?s.className="hidden":s.className="explanation")}render(){return this.hass?this.isLoading?W`
-        <ha-card header="${ss("panels.zones.title",this.hass.language)}">
+    `}toggleExplanation(e){var t;const s=null===(t=this.shadowRoot)||void 0===t?void 0:t.querySelector("#calcresults"+e);s&&("hidden"!=s.className?s.className="hidden":s.className="explanation")}render(){return this.hass?this.isLoading?V`
+        <ha-card header="${as("panels.zones.title",this.hass.language)}">
           <div class="card-content">
-            ${ss("common.loading-messages.general",this.hass.language)}...
+            ${as("common.loading-messages.general",this.hass.language)}...
           </div>
         </ha-card>
-      `:W`
-      <ha-card header="${ss("panels.zones.title",this.hass.language)}">
+      `:V`
+      <ha-card header="${as("panels.zones.title",this.hass.language)}">
         <div class="card-content">
-          ${ss("panels.zones.description",this.hass.language)}
+          ${as("panels.zones.description",this.hass.language)}
         </div>
       </ha-card>
 
       <ha-card
-        header="${ss("panels.zones.cards.add-zone.header",this.hass.language)}"
+        header="${as("panels.zones.cards.add-zone.header",this.hass.language)}"
       >
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${ss("panels.zones.labels.name",this.hass.language)}
+              ${as("panels.zones.labels.name",this.hass.language)}
             </div>
             <input
               id="nameInput"
@@ -3022,8 +3022,8 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           </div>
           <div class="setting-row">
             <div class="setting-label">
-              ${ss("panels.zones.labels.size",this.hass.language)}
-              <span class="unit">(${Zi(this.config,ri)})</span>
+              ${as("panels.zones.labels.size",this.hass.language)}
+              <span class="unit">(${qi(this.config,li)})</span>
             </div>
             <input
               id="sizeInput"
@@ -3035,9 +3035,9 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           </div>
           <div class="setting-row">
             <div class="setting-label">
-              ${ss("panels.zones.labels.throughput",this.hass.language)}
+              ${as("panels.zones.labels.throughput",this.hass.language)}
               <span class="unit"
-                >(${Zi(this.config,oi)})</span
+                >(${qi(this.config,hi)})</span
               >
             </div>
             <input
@@ -3054,29 +3054,29 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
               @click="${this.handleAddZone}"
               ?disabled="${this.isSaving}"
             >
-              <ha-svg-icon slot="start" .path=${Ta}></ha-svg-icon>
-              ${this.isSaving?ss("common.saving-messages.adding",this.hass.language):ss("panels.zones.cards.add-zone.actions.add",this.hass.language)}
+              <ha-svg-icon slot="start" .path=${Ea}></ha-svg-icon>
+              ${this.isSaving?as("common.saving-messages.adding",this.hass.language):as("panels.zones.cards.add-zone.actions.add",this.hass.language)}
             </ha-button>
           </div>
         </div>
       </ha-card>
 
-      ${en(this.zones,(e=>{var t;return null!==(t=e.id)&&void 0!==t?t:e.name}),((e,t)=>this.renderZone(e,t)))}
+      ${nn(this.zones,e=>{var t;return null!==(t=e.id)&&void 0!==t?t:e.name},(e,t)=>this.renderZone(e,t))}
 
       <ha-card
-        header="${ss("panels.zones.cards.zone-actions.header",this.hass.language)}"
+        header="${as("panels.zones.cards.zone-actions.header",this.hass.language)}"
       >
         <div class="card-content">
           <div class="zone-actions-grid">
-            ${this._actionBtn(ya,ss("panels.zones.cards.zone-actions.actions.calculate-all",this.hass.language),(()=>this.handleCalculateAllZones()),!1,this.isSaving)}
-            ${this._actionBtn(Ea,ss("panels.zones.cards.zone-actions.actions.update-all",this.hass.language),(()=>this.handleUpdateAllZones()),!1,this.isSaving)}
-            ${this._actionBtn(za,ss("panels.zones.cards.zone-actions.actions.reset-all-buckets",this.hass.language),(()=>this.handleResetAllBuckets()),!1,this.isSaving)}
-            ${this._actionBtn($a,ss("panels.zones.cards.zone-actions.actions.clear-all-weatherdata",this.hass.language),(()=>this.handleClearAllWeatherdata()),!1,this.isSaving)}
+            ${this._actionBtn($a,as("panels.zones.cards.zone-actions.actions.calculate-all",this.hass.language),()=>this.handleCalculateAllZones(),!1,this.isSaving)}
+            ${this._actionBtn(Da,as("panels.zones.cards.zone-actions.actions.update-all",this.hass.language),()=>this.handleUpdateAllZones(),!1,this.isSaving)}
+            ${this._actionBtn(Oa,as("panels.zones.cards.zone-actions.actions.reset-all-buckets",this.hass.language),()=>this.handleResetAllBuckets(),!1,this.isSaving)}
+            ${this._actionBtn(Sa,as("panels.zones.cards.zone-actions.actions.clear-all-weatherdata",this.hass.language),()=>this.handleClearAllWeatherdata(),!1,this.isSaving)}
           </div>
         </div>
       </ha-card>
-    `:W``}disconnectedCallback(){super.disconnectedCallback(),this.globalDebounceTimer&&(clearTimeout(this.globalDebounceTimer),this.globalDebounceTimer=null),this.zoneCache.clear(),this.isCreatingZone=!1}static get styles(){return l`
-      ${Na}
+    `:V``}disconnectedCallback(){super.disconnectedCallback(),this.globalDebounceTimer&&(clearTimeout(this.globalDebounceTimer),this.globalDebounceTimer=null),this.zoneCache.clear(),this.isCreatingZone=!1}static get styles(){return l`
+      ${ja}
 
       /* --- Modern zone cards (HA-native look) --- */
       /* own collapsible: a plain ha-card (white surface like every HA card)
@@ -3428,7 +3428,7 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           max-width: 100%;
         }
       }
-    `}};s([me()],pn.prototype,"config",void 0),s([me({type:Array})],pn.prototype,"zones",void 0),s([me({type:Array})],pn.prototype,"modules",void 0),s([me({type:Array})],pn.prototype,"mappings",void 0),s([me({type:Map})],pn.prototype,"wateringCalendars",void 0),s([me({type:Map})],pn.prototype,"weatherRecords",void 0),s([me({type:Boolean})],pn.prototype,"isLoading",void 0),s([me({type:Boolean})],pn.prototype,"isSaving",void 0),s([me({type:Boolean})],pn.prototype,"isCreatingZone",void 0),s([fe("#nameInput")],pn.prototype,"nameInput",void 0),s([fe("#sizeInput")],pn.prototype,"sizeInput",void 0),s([fe("#throughputInput")],pn.prototype,"throughputInput",void 0),pn=s([ue("smart-irrigation-view-zones")],pn);let gn=class extends(_a(de)){constructor(){super(...arguments),this.zones=[],this.modules=[],this.allmodules=[],this.isLoading=!0,this.isSaving=!1,this._hasLoadedOnce=!1,this._suppressNextConfigUpdate=!1,this._updateScheduled=!1,this.globalDebounceTimer=null,this.moduleCache=new Map,this._expanded=new Set,this.debouncedSave=(()=>{let e=null;return t=>{e&&clearTimeout(e),e=window.setTimeout((()=>{this._suppressNextConfigUpdate=!0,this.saveToHA(t).catch((()=>{this._suppressNextConfigUpdate=!1})),e=null}),500)}})()}_scheduleUpdate(){this._updateScheduled||(this._updateScheduled=!0,requestAnimationFrame((()=>{this._updateScheduled=!1,this.requestUpdate()})))}_toggleItem(e){null!=e&&(this._expanded.has(e)?this._expanded.delete(e):this._expanded.add(e),this._scheduleUpdate())}firstUpdated(){be().catch((e=>{console.error("Failed to load HA form:",e)}))}hassSubscribe(){return this._fetchData().catch((e=>{console.error("Failed to fetch initial data:",e)})),[this.hass.connection.subscribeMessage((()=>{this._suppressNextConfigUpdate?this._suppressNextConfigUpdate=!1:this._fetchData().catch((e=>{console.error("Failed to fetch data on config update:",e)}))}),{type:os+"_config_updated"})]}async _fetchData(){if(this.hass){this._hasLoadedOnce||(this.isLoading=!0,this._scheduleUpdate());try{const[e,t,s,i]=await Promise.all([oa(this.hass),ha(this.hass),ca(this.hass),ua(this.hass)]);this.config=e,this.zones=t,this.modules=s,this.allmodules=i,this.moduleCache.clear()}catch(e){console.error("Error fetching data:",e)}finally{this.isLoading=!1,this._hasLoadedOnce=!0,this._scheduleUpdate()}}}async handleAddModule(){var e,t;if((null===(t=null===(e=this.moduleInput)||void 0===e?void 0:e.selectedOptions)||void 0===t?void 0:t[0])&&!this.isSaving){this.isSaving=!0,this._scheduleUpdate();try{const e=this.moduleInput.selectedOptions[0].text,t=this.allmodules.find((t=>t.name===e));if(!t)return;const s={name:e,description:t.description,config:t.config,schema:t.schema};this.modules=[...this.modules,s],this.moduleCache.clear(),this._scheduleUpdate(),await this.saveToHA(s),await this._fetchData()}catch(e){console.error("Error adding module:",e),await this._fetchData()}finally{this.isSaving=!1,this._scheduleUpdate()}}}async handleRemoveModule(e,t){var s,i,a,n;if(this.isSaving)return;const r=ss("confirm.delete_module",null!==(i=null===(s=this.hass)||void 0===s?void 0:s.language)&&void 0!==i?i:"en").replace("{name}",null!==(n=null===(a=this.modules[t])||void 0===a?void 0:a.name)&&void 0!==n?n:"");if(await Da(this.hass,{text:r,destructive:!0})){this.isSaving=!0,this._scheduleUpdate();try{const e=this.modules[t],s=null==e?void 0:e.id;this.modules;this.modules=this.modules.filter(((e,s)=>s!==t)),this.moduleCache.clear(),this._scheduleUpdate(),this.hass&&void 0!==s&&await(o=this.hass,l=s.toString(),o.callApi("POST",os+"/modules",{id:l,remove:!0}))}catch(e){console.error("Error removing module:",e),await this._fetchData()}finally{this.isSaving=!1,this._scheduleUpdate()}var o,l}}async saveToHA(e){var t,s;if(this.hass)try{await(t=this.hass,s=e,t.callApi("POST",os+"/modules",s))}catch(e){throw console.error("Error saving module:",e),e}}renderModule(e,t){var s,i;if(!this.hass)return W``;const a=this.zones.filter((t=>t.module===e.id)).length,n=null!==(s=e.id)&&void 0!==s?s:t,r=this._expanded.has(n),o=e.description||(null===(i=this.allmodules.find((t=>t.name===e.name)))||void 0===i?void 0:i.description)||"",l=`module-${e.id||t}-${r?"open":"closed"}-${JSON.stringify(e)}`;if(this.moduleCache.has(l))return this.moduleCache.get(l);const h=W`
+    `}};s([ve()],fn.prototype,"config",void 0),s([ve({type:Array})],fn.prototype,"zones",void 0),s([ve({type:Array})],fn.prototype,"modules",void 0),s([ve({type:Array})],fn.prototype,"mappings",void 0),s([ve({type:Map})],fn.prototype,"wateringCalendars",void 0),s([ve({type:Map})],fn.prototype,"weatherRecords",void 0),s([ve({type:Boolean})],fn.prototype,"isLoading",void 0),s([ve({type:Boolean})],fn.prototype,"isSaving",void 0),s([ve({type:Boolean})],fn.prototype,"isCreatingZone",void 0),s([_e("#nameInput")],fn.prototype,"nameInput",void 0),s([_e("#sizeInput")],fn.prototype,"sizeInput",void 0),s([_e("#throughputInput")],fn.prototype,"throughputInput",void 0),fn=s([pe("smart-irrigation-view-zones")],fn);let _n=class extends(wa(ce)){constructor(){super(...arguments),this.zones=[],this.modules=[],this.allmodules=[],this.isLoading=!0,this.isSaving=!1,this._hasLoadedOnce=!1,this._suppressNextConfigUpdate=!1,this._updateScheduled=!1,this.globalDebounceTimer=null,this.moduleCache=new Map,this._expanded=new Set,this.debouncedSave=(()=>{let e=null;return t=>{e&&clearTimeout(e),e=window.setTimeout(()=>{this._suppressNextConfigUpdate=!0,this.saveToHA(t).catch(()=>{this._suppressNextConfigUpdate=!1}),e=null},500)}})()}_scheduleUpdate(){this._updateScheduled||(this._updateScheduled=!0,requestAnimationFrame(()=>{this._updateScheduled=!1,this.requestUpdate()}))}_toggleItem(e){null!=e&&(this._expanded.has(e)?this._expanded.delete(e):this._expanded.add(e),this._scheduleUpdate())}firstUpdated(){we().catch(e=>{console.error("Failed to load HA form:",e)})}hassSubscribe(){return this._fetchData().catch(e=>{console.error("Failed to fetch initial data:",e)}),[this.hass.connection.subscribeMessage(()=>{this._suppressNextConfigUpdate?this._suppressNextConfigUpdate=!1:this._fetchData().catch(e=>{console.error("Failed to fetch data on config update:",e)})},{type:hs+"_config_updated"})]}async _fetchData(){if(this.hass){this._hasLoadedOnce||(this.isLoading=!0,this._scheduleUpdate());try{const[e,t,s,i]=await Promise.all([ha(this.hass),ca(this.hass),pa(this.hass),ga(this.hass)]);this.config=e,this.zones=t,this.modules=s,this.allmodules=i,this.moduleCache.clear()}catch(e){console.error("Error fetching data:",e)}finally{this.isLoading=!1,this._hasLoadedOnce=!0,this._scheduleUpdate()}}}async handleAddModule(){var e,t;if((null===(t=null===(e=this.moduleInput)||void 0===e?void 0:e.selectedOptions)||void 0===t?void 0:t[0])&&!this.isSaving){this.isSaving=!0,this._scheduleUpdate();try{const e=this.moduleInput.selectedOptions[0].text,t=this.allmodules.find(t=>t.name===e);if(!t)return;const s={name:e,description:t.description,config:t.config,schema:t.schema};this.modules=[...this.modules,s],this.moduleCache.clear(),this._scheduleUpdate(),await this.saveToHA(s),await this._fetchData()}catch(e){console.error("Error adding module:",e),await this._fetchData()}finally{this.isSaving=!1,this._scheduleUpdate()}}}async handleRemoveModule(e,t){var s,i,a,n;if(this.isSaving)return;const r=as("confirm.delete_module",null!==(i=null===(s=this.hass)||void 0===s?void 0:s.language)&&void 0!==i?i:"en").replace("{name}",null!==(n=null===(a=this.modules[t])||void 0===a?void 0:a.name)&&void 0!==n?n:"");if(await Pa(this.hass,{text:r,destructive:!0})){this.isSaving=!0,this._scheduleUpdate();try{const e=this.modules[t],s=null==e?void 0:e.id;this.modules;this.modules=this.modules.filter((e,s)=>s!==t),this.moduleCache.clear(),this._scheduleUpdate(),this.hass&&void 0!==s&&await(o=this.hass,l=s.toString(),o.callApi("POST",hs+"/modules",{id:l,remove:!0}))}catch(e){console.error("Error removing module:",e),await this._fetchData()}finally{this.isSaving=!1,this._scheduleUpdate()}var o,l}}async saveToHA(e){var t,s;if(this.hass)try{await(t=this.hass,s=e,t.callApi("POST",hs+"/modules",s))}catch(e){throw console.error("Error saving module:",e),e}}renderModule(e,t){var s,i;if(!this.hass)return V``;const a=this.zones.filter(t=>t.module===e.id).length,n=null!==(s=e.id)&&void 0!==s?s:t,r=this._expanded.has(n),o=e.description||(null===(i=this.allmodules.find(t=>t.name===e.name))||void 0===i?void 0:i.description)||"",l=`module-${e.id||t}-${r?"open":"closed"}-${JSON.stringify(e)}`;if(this.moduleCache.has(l))return this.moduleCache.get(l);const h=V`
       <ha-card class="si-card">
         <div
           class="si-head"
@@ -3448,28 +3448,28 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           </div>
           <ha-svg-icon
             class="si-chevron ${r?"open":""}"
-            .path=${ba}
+            .path=${xa}
           ></ha-svg-icon>
         </div>
-        ${r?W` <div class="si-body">
+        ${r?V` <div class="si-body">
               <div class="moduleconfig">
                 <label class="subheader"
-                  >${ss("panels.modules.cards.module.labels.configuration",this.hass.language)}
+                  >${as("panels.modules.cards.module.labels.configuration",this.hass.language)}
                   (*
-                  ${ss("panels.modules.cards.module.labels.required",this.hass.language)})</label
+                  ${as("panels.modules.cards.module.labels.required",this.hass.language)})</label
                 >
                 <div class="settings">
-                  ${e.schema?Object.entries(e.schema).filter((([,t])=>{var s;return!(null!==(s=e.idle_options)&&void 0!==s?s:[]).includes(null==t?void 0:t.name)})).map((([e])=>this.renderConfig(t,e))):null}
+                  ${e.schema?Object.entries(e.schema).filter(([,t])=>{var s;return!(null!==(s=e.idle_options)&&void 0!==s?s:[]).includes(null==t?void 0:t.name)}).map(([e])=>this.renderConfig(t,e)):null}
                 </div>
               </div>
-              ${a?W`<div class="weather-note">
-                    ${ss("panels.modules.cards.module.errors.cannot-delete-module-because-zones-use-it",this.hass.language)}
-                  </div>`:W`<div class="si-actions">
-                    ${this._actionBtn(xa,ss("common.actions.delete",this.hass.language),(e=>this.handleRemoveModule(e,t)),!0)}
+              ${a?V`<div class="weather-note">
+                    ${as("panels.modules.cards.module.errors.cannot-delete-module-because-zones-use-it",this.hass.language)}
+                  </div>`:V`<div class="si-actions">
+                    ${this._actionBtn(za,as("common.actions.delete",this.hass.language),e=>this.handleRemoveModule(e,t),!0)}
                   </div>`}
             </div>`:""}
       </ha-card>
-    `;return this.moduleCache.set(l,h),h}renderConfig(e,t){const s=Object.values(this.modules).at(e);if(!s||!this.hass)return;const i=s.schema[t],a=i.name,n=function(e){if(e)return(e=e.replace("_"," ")).charAt(0).toUpperCase()+e.slice(1)}(a);let r="";null==s.config&&(s.config=[]),a in s.config&&(r=s.config[a]);const o=i.required?`${n} *`:null!=n?n:"";if("boolean"==i.type)return W`
+    `;return this.moduleCache.set(l,h),h}renderConfig(e,t){const s=Object.values(this.modules).at(e);if(!s||!this.hass)return;const i=s.schema[t],a=i.name,n=function(e){if(e)return(e=e.replace("_"," ")).charAt(0).toUpperCase()+e.slice(1)}(a);let r="";null==s.config&&(s.config=[]),a in s.config&&(r=s.config[a]);const o=i.required?`${n} *`:null!=n?n:"";if("boolean"==i.type)return V`
         <div class="setting-row">
           <div class="setting-label">${o}</div>
           <input
@@ -3479,17 +3479,17 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
             @change="${t=>this.handleEditConfig(e,Object.assign(Object.assign({},s),{config:Object.assign(Object.assign({},s.config),{[a]:t.target.checked})}))}"
           />
         </div>
-      `;if("float"==i.type||"integer"==i.type)return this._numRow(o,"",s.config[a],(t=>this.handleEditConfig(e,Object.assign(Object.assign({},s),{config:Object.assign(Object.assign({},s.config),{[a]:t})}))),1);if("string"==i.type)return this._textRow(o,"",r,(t=>this.handleEditConfig(e,Object.assign(Object.assign({},s),{config:Object.assign(Object.assign({},s.config),{[a]:t})}))));if("select"==i.type){const t=this.hass.language,n=W`
-        ${Object.entries(i.options).map((([e,s])=>W`<option
-              value="${Yi(s,0)}"
-              ?selected="${r===Yi(s,0)}"
+      `;if("float"==i.type||"integer"==i.type)return this._numRow(o,"",s.config[a],t=>this.handleEditConfig(e,Object.assign(Object.assign({},s),{config:Object.assign(Object.assign({},s.config),{[a]:t})})),1);if("string"==i.type)return this._textRow(o,"",r,t=>this.handleEditConfig(e,Object.assign(Object.assign({},s),{config:Object.assign(Object.assign({},s.config),{[a]:t})})));if("select"==i.type){const t=this.hass.language,n=V`
+        ${Object.entries(i.options).map(([e,s])=>V`<option
+              value="${Vi(s,0)}"
+              ?selected="${r===Vi(s,0)}"
             >
-              ${ss("panels.modules.cards.module.translated-options."+Yi(s,1),t)}
-            </option>`))}
-      `;return this._selectRow(o,n,(t=>this.handleEditConfig(e,Object.assign(Object.assign({},s),{config:Object.assign(Object.assign({},s.config),{[a]:t.target.value})}))))}return W``}_textRow(e,t,s,i){return W`
+              ${as("panels.modules.cards.module.translated-options."+Vi(s,1),t)}
+            </option>`)}
+      `;return this._selectRow(o,n,t=>this.handleEditConfig(e,Object.assign(Object.assign({},s),{config:Object.assign(Object.assign({},s.config),{[a]:t.target.value})})))}return V``}_textRow(e,t,s,i){return V`
       <div class="setting-row">
         <div class="setting-label">
-          ${e}${t?W` <span class="unit">(${t})</span>`:""}
+          ${e}${t?V` <span class="unit">(${t})</span>`:""}
         </div>
         <input
           class="field"
@@ -3498,10 +3498,10 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           @change=${e=>i(e.target.value)}
         />
       </div>
-    `}_numRow(e,t,s,i,a=1,n=!1){const r=(String(a).split(".")[1]||"").length,o=(e,t)=>{const s=parseFloat(e.value),n=+((isNaN(s)?0:s)+t*a).toFixed(r);e.value=String(n),i(String(n))};return W`
+    `}_numRow(e,t,s,i,a=1,n=!1){const r=(String(a).split(".")[1]||"").length,o=(e,t)=>{const s=parseFloat(e.value),n=+((isNaN(s)?0:s)+t*a).toFixed(r);e.value=String(n),i(String(n))};return V`
       <div class="setting-row">
         <div class="setting-label">
-          ${e}${t?W` <span class="unit">(${t})</span>`:""}
+          ${e}${t?V` <span class="unit">(${t})</span>`:""}
         </div>
         <div class="num-field">
           <input
@@ -3515,19 +3515,19 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           />
           <ha-icon-button
             class="step-btn"
-            .path=${Sa}
+            .path=${Ta}
             ?disabled=${n}
             @click=${e=>o(e.currentTarget.parentElement.querySelector("input"),-1)}
           ></ha-icon-button>
           <ha-icon-button
             class="step-btn"
-            .path=${Ta}
+            .path=${Ea}
             ?disabled=${n}
             @click=${e=>o(e.currentTarget.parentElement.querySelector("input"),1)}
           ></ha-icon-button>
         </div>
       </div>
-    `}_selectRow(e,t,s){return W`
+    `}_selectRow(e,t,s){return V`
       <div class="setting-row">
         <div class="setting-label">${e}</div>
         <div class="select-wrap">
@@ -3535,11 +3535,11 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
             ${t}
           </select>
           <svg class="chev" viewBox="0 0 24 24">
-            <path d=${ka}></path>
+            <path d=${Ma}></path>
           </svg>
         </div>
       </div>
-    `}_actionBtn(e,t,s,i=!1,a=!1){return W`
+    `}_actionBtn(e,t,s,i=!1,a=!1){return V`
       <ha-button
         appearance=${i?"outlined":"filled"}
         variant=${i?"danger":"brand"}
@@ -3549,23 +3549,23 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
         <ha-svg-icon slot="start" .path=${e}></ha-svg-icon>
         ${t}
       </ha-button>
-    `}handleEditConfig(e,t){this.modules=Object.values(this.modules).map(((s,i)=>i===e?t:s)),this.moduleCache.clear(),this._scheduleUpdate(),this.debouncedSave(t)}renderOption(e,t){return this.hass?W`<option value="${e}>${t}</option>`:W``}render(){return this.hass?W`
-      <ha-card header="${ss("panels.modules.title",this.hass.language)}">
+    `}handleEditConfig(e,t){this.modules=Object.values(this.modules).map((s,i)=>i===e?t:s),this.moduleCache.clear(),this._scheduleUpdate(),this.debouncedSave(t)}renderOption(e,t){return this.hass?V`<option value="${e}>${t}</option>`:V``}render(){return this.hass?V`
+      <ha-card header="${as("panels.modules.title",this.hass.language)}">
         <div class="card-content">
-          ${ss("panels.modules.description",this.hass.language)}
+          ${as("panels.modules.description",this.hass.language)}
         </div>
       </ha-card>
 
       <ha-card
-        header="${ss("panels.modules.cards.add-module.header",this.hass.language)}"
+        header="${as("panels.modules.cards.add-module.header",this.hass.language)}"
       >
         <div class="card-content">
-          ${this.isLoading?W`<div class="loading-indicator">
-                ${ss("common.loading-messages.general",this.hass.language)}
-              </div>`:W`
+          ${this.isLoading?V`<div class="loading-indicator">
+                ${as("common.loading-messages.general",this.hass.language)}
+              </div>`:V`
                 <div class="setting-row">
                   <div class="setting-label">
-                    ${ss("common.labels.module",this.hass.language)}
+                    ${as("common.labels.module",this.hass.language)}
                   </div>
                   <div class="select-wrap">
                     <select
@@ -3573,12 +3573,12 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
                       class="field"
                       ?disabled="${this.isSaving}"
                     >
-                      ${Object.entries(this.allmodules).map((([e,t])=>W`<option value="${t.id}">
+                      ${Object.entries(this.allmodules).map(([e,t])=>V`<option value="${t.id}">
                             ${t.name}
-                          </option>`))}
+                          </option>`)}
                     </select>
                     <svg class="chev" viewBox="0 0 24 24">
-                      <path d=${ka}></path>
+                      <path d=${Ma}></path>
                     </svg>
                   </div>
                 </div>
@@ -3588,48 +3588,48 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
                     @click="${this.handleAddModule}"
                     ?disabled="${this.isSaving}"
                   >
-                    <ha-svg-icon slot="start" .path=${Ta}></ha-svg-icon>
-                    ${this.isSaving?ss("common.saving-messages.adding",this.hass.language):ss("panels.modules.cards.add-module.actions.add",this.hass.language)}
+                    <ha-svg-icon slot="start" .path=${Ea}></ha-svg-icon>
+                    ${this.isSaving?as("common.saving-messages.adding",this.hass.language):as("panels.modules.cards.add-module.actions.add",this.hass.language)}
                   </ha-button>
                 </div>
               `}
         </div>
       </ha-card>
 
-      ${this.isLoading?W`<div class="loading-indicator">
-            ${ss("common.loading-messages.modules",this.hass.language)}
-          </div>`:en(this.modules,(e=>{var t;return null!==(t=e.id)&&void 0!==t?t:e.name}),((e,t)=>this.renderModule(e,t)))}
-    `:W``}disconnectedCallback(){super.disconnectedCallback(),this.globalDebounceTimer&&(clearTimeout(this.globalDebounceTimer),this.globalDebounceTimer=null),this.moduleCache.clear()}static get styles(){return l`
-      ${Na} ${La} /* View-specific styles only - most common styles are now in globalStyle */
-    `}};s([me()],gn.prototype,"config",void 0),s([me({type:Array})],gn.prototype,"zones",void 0),s([me({type:Array})],gn.prototype,"modules",void 0),s([me({type:Array})],gn.prototype,"allmodules",void 0),s([me({type:Boolean})],gn.prototype,"isLoading",void 0),s([me({type:Boolean})],gn.prototype,"isSaving",void 0),s([fe("#moduleInput")],gn.prototype,"moduleInput",void 0),gn=s([ue("smart-irrigation-view-modules")],gn);let mn=class extends(_a(de)){constructor(){super(...arguments),this.zones=[],this.mappings=[],this.weatherRecords=new Map,this.isLoading=!0,this.isSaving=!1,this.newMappingName="",this._hasLoadedOnce=!1,this._suppressNextConfigUpdate=!1,this.debounceTimers=new Map,this._pendingMappings=new Map,this.globalDebounceTimer=null,this.mappingCache=new Map,this._updateScheduled=!1,this._lastUpdateTime=0,this._updateThrottleDelay=16,this._expanded=new Set,this.modules=[]}_scheduleUpdate(){if(this._updateScheduled)return;const e=performance.now()-this._lastUpdateTime;e<this._updateThrottleDelay?setTimeout((()=>{this._updateScheduled=!1,this._lastUpdateTime=performance.now(),this.requestUpdate()}),this._updateThrottleDelay-e):(this._updateScheduled=!0,requestAnimationFrame((()=>{this._updateScheduled=!1,this._lastUpdateTime=performance.now(),this.requestUpdate()})))}_toggleItem(e){null!=e&&(this._expanded.has(e)?this._expanded.delete(e):this._expanded.add(e),this._scheduleUpdate())}firstUpdated(){be().catch((e=>{console.error("Failed to load HA form:",e)}))}hassSubscribe(){return this._fetchData().catch((e=>{console.error("Failed to fetch initial data:",e)})),[this.hass.connection.subscribeMessage((()=>{this._suppressNextConfigUpdate?this._suppressNextConfigUpdate=!1:this._fetchData().catch((e=>{console.error("Failed to fetch data on config update:",e)}))}),{type:os+"_config_updated"})]}async _fetchData(){var e;if(this.hass)try{this._hasLoadedOnce||(this.isLoading=!0);const[e,t,s,i]=await Promise.all([oa(this.hass),ha(this.hass),pa(this.hass),ca(this.hass)]);this.config=e,this.zones=t,this.mappings=s,this.modules=i,this._fetchWeatherRecords(),this.mappingCache.clear()}catch(t){console.error("Error fetching data:",t),ta({body:{message:"Failed to load mapping data"},error:"Data fetch error"},null===(e=this.shadowRoot)||void 0===e?void 0:e.querySelector("ha-card"))}finally{this.isLoading=!1,this._hasLoadedOnce=!0,this._scheduleUpdate()}}async _fetchWeatherRecords(){if(this.hass){for(const e of this.mappings)if(void 0!==e.id)try{const t=await va(this.hass,e.id.toString(),10);this.weatherRecords.set(e.id,t)}catch(t){console.error(`Failed to fetch weather records for mapping ${e.id}:`,t),this.weatherRecords.set(e.id,[])}this._scheduleUpdate()}}renderWeatherRecords(e){if(!this.hass)return W``;const t=void 0!==e.id&&this.weatherRecords.get(e.id)||[];return W`
+      ${this.isLoading?V`<div class="loading-indicator">
+            ${as("common.loading-messages.modules",this.hass.language)}
+          </div>`:nn(this.modules,e=>{var t;return null!==(t=e.id)&&void 0!==t?t:e.name},(e,t)=>this.renderModule(e,t))}
+    `:V``}disconnectedCallback(){super.disconnectedCallback(),this.globalDebounceTimer&&(clearTimeout(this.globalDebounceTimer),this.globalDebounceTimer=null),this.moduleCache.clear()}static get styles(){return l`
+      ${ja} ${Ba} /* View-specific styles only - most common styles are now in globalStyle */
+    `}};s([ve()],_n.prototype,"config",void 0),s([ve({type:Array})],_n.prototype,"zones",void 0),s([ve({type:Array})],_n.prototype,"modules",void 0),s([ve({type:Array})],_n.prototype,"allmodules",void 0),s([ve({type:Boolean})],_n.prototype,"isLoading",void 0),s([ve({type:Boolean})],_n.prototype,"isSaving",void 0),s([_e("#moduleInput")],_n.prototype,"moduleInput",void 0),_n=s([pe("smart-irrigation-view-modules")],_n);let yn=class extends(wa(ce)){constructor(){super(...arguments),this.zones=[],this.mappings=[],this.weatherRecords=new Map,this.isLoading=!0,this.isSaving=!1,this.newMappingName="",this._hasLoadedOnce=!1,this._suppressNextConfigUpdate=!1,this.debounceTimers=new Map,this._pendingMappings=new Map,this.globalDebounceTimer=null,this.mappingCache=new Map,this._updateScheduled=!1,this._lastUpdateTime=0,this._updateThrottleDelay=16,this._expanded=new Set,this.modules=[]}_scheduleUpdate(){if(this._updateScheduled)return;const e=performance.now()-this._lastUpdateTime;e<this._updateThrottleDelay?setTimeout(()=>{this._updateScheduled=!1,this._lastUpdateTime=performance.now(),this.requestUpdate()},this._updateThrottleDelay-e):(this._updateScheduled=!0,requestAnimationFrame(()=>{this._updateScheduled=!1,this._lastUpdateTime=performance.now(),this.requestUpdate()}))}_toggleItem(e){null!=e&&(this._expanded.has(e)?this._expanded.delete(e):this._expanded.add(e),this._scheduleUpdate())}firstUpdated(){we().catch(e=>{console.error("Failed to load HA form:",e)})}hassSubscribe(){return this._fetchData().catch(e=>{console.error("Failed to fetch initial data:",e)}),[this.hass.connection.subscribeMessage(()=>{this._suppressNextConfigUpdate?this._suppressNextConfigUpdate=!1:this._fetchData().catch(e=>{console.error("Failed to fetch data on config update:",e)})},{type:hs+"_config_updated"})]}async _fetchData(){var e;if(this.hass)try{this._hasLoadedOnce||(this.isLoading=!0);const[e,t,s,i]=await Promise.all([ha(this.hass),ca(this.hass),ma(this.hass),pa(this.hass)]);this.config=e,this.zones=t,this.mappings=s,this.modules=i,this._fetchWeatherRecords(),this.mappingCache.clear()}catch(t){console.error("Error fetching data:",t),ia({body:{message:"Failed to load mapping data"},error:"Data fetch error"},null===(e=this.shadowRoot)||void 0===e?void 0:e.querySelector("ha-card"))}finally{this.isLoading=!1,this._hasLoadedOnce=!0,this._scheduleUpdate()}}async _fetchWeatherRecords(){if(this.hass){for(const e of this.mappings)if(void 0!==e.id)try{const t=await _a(this.hass,e.id.toString(),10);this.weatherRecords.set(e.id,t)}catch(t){console.error(`Failed to fetch weather records for mapping ${e.id}:`,t),this.weatherRecords.set(e.id,[])}this._scheduleUpdate()}}renderWeatherRecords(e){if(!this.hass)return V``;const t=void 0!==e.id&&this.weatherRecords.get(e.id)||[];return V`
       <div class="weather-records">
         <h4>
-          ${ss("panels.mappings.weather-records.title",this.hass.language)}
+          ${as("panels.mappings.weather-records.title",this.hass.language)}
         </h4>
-        ${0===t.length?W`
+        ${0===t.length?V`
               <div class="weather-note">
-                ${ss("panels.mappings.weather-records.no-data",this.hass.language)}
+                ${as("panels.mappings.weather-records.no-data",this.hass.language)}
               </div>
-            `:W`
+            `:V`
               <div class="weather-table">
                 <div class="weather-header">
                   <span
-                    >${ss("panels.mappings.weather-records.timestamp",this.hass.language)}</span
+                    >${as("panels.mappings.weather-records.timestamp",this.hass.language)}</span
                   >
                   <span
-                    >${ss("panels.mappings.weather-records.temperature",this.hass.language)}</span
+                    >${as("panels.mappings.weather-records.temperature",this.hass.language)}</span
                   >
                   <span
-                    >${ss("panels.mappings.weather-records.humidity",this.hass.language)}</span
+                    >${as("panels.mappings.weather-records.humidity",this.hass.language)}</span
                   >
                   <span
-                    >${ss("panels.mappings.weather-records.precipitation",this.hass.language)}</span
+                    >${as("panels.mappings.weather-records.precipitation",this.hass.language)}</span
                   >
                   <span
-                    >${ss("panels.mappings.weather-records.retrieval-time",this.hass.language)}</span
+                    >${as("panels.mappings.weather-records.retrieval-time",this.hass.language)}</span
                   >
                 </div>
-                ${t.slice(0,10).map((e=>{let t="-",s="-";try{if(e.timestamp&&null!==e.timestamp){const s=dn(e.timestamp);s.isValid()&&(t=s.format("MM-DD HH:mm"))}}catch(t){console.warn("Error formatting timestamp:",e.timestamp,t)}try{if(e.retrieval_time&&null!==e.retrieval_time){const t=dn(e.retrieval_time);t.isValid()&&(s=t.format("MM-DD HH:mm"))}}catch(t){console.warn("Error formatting retrieval_time:",e.retrieval_time,t)}return W`
+                ${t.slice(0,10).map(e=>{let t="-",s="-";try{if(e.timestamp&&null!==e.timestamp){const s=gn(e.timestamp);s.isValid()&&(t=s.format("MM-DD HH:mm"))}}catch(t){console.warn("Error formatting timestamp:",e.timestamp,t)}try{if(e.retrieval_time&&null!==e.retrieval_time){const t=gn(e.retrieval_time);t.isValid()&&(s=t.format("MM-DD HH:mm"))}}catch(t){console.warn("Error formatting retrieval_time:",e.retrieval_time,t)}return V`
                     <div class="weather-row">
                       <span>${t}</span>
                       <span
@@ -3643,16 +3643,16 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
                       >
                       <span>${s}</span>
                     </div>
-                  `}))}
+                  `})}
               </div>
             `}
       </div>
-    `}handleAddMapping(){var e;if(!this.mappingNameInput.value.trim())return;const t=!!(null===(e=this.config)||void 0===e?void 0:e.use_weather_service),s=e=>{var s;return function(e,t,s){const i=e===ys||e===Ms||e===xs||e===Ss&&Hs.includes(null!=s?s:"");return t?i?Bs:Ds:Ns}(e,t,null===(s=this.config)||void 0===s?void 0:s.weather_service)},i=Object.fromEntries([_s,ys,bs,xs,Ss,zs,Ms,Ts,Os].map((e=>[e,{[Us]:s(e),[Ys]:"",[Vs]:""}]))),a={name:this.mappingNameInput.value.trim(),mappings:i};this.mappings=[...this.mappings,a],this.isSaving=!0,this.saveToHA(a).then((()=>(this.mappingNameInput.value="",this.newMappingName="",this._fetchData()))).catch((e=>{console.error("Failed to add mapping:",e),this.mappings=this.mappings.slice(0,-1)})).finally((()=>{this.isSaving=!1,this._scheduleUpdate()}))}async handleRemoveMapping(e,t){var s,i,a;const n=this.mappings[t].id;if(null==n)return;const r=ss("confirm.delete_mapping",null!==(i=null===(s=this.hass)||void 0===s?void 0:s.language)&&void 0!==i?i:"en").replace("{name}",null!==(a=this.mappings[t].name)&&void 0!==a?a:"");if(!await Da(this.hass,{text:r,destructive:!0}))return;const o=[...this.mappings];var l,h;(this.mappings=this.mappings.filter(((e,s)=>s!==t)),this.mappingCache.delete(n.toString()),this.hass)&&(this.isSaving=!0,(l=this.hass,h=n.toString(),l.callApi("POST",os+"/mappings",{id:h,remove:!0})).catch((e=>{console.error("Failed to delete mapping:",e),this.mappings=o,this._fetchData().catch((e=>{console.error("Failed to refresh data after delete error:",e)}))})).finally((()=>{this.isSaving=!1,this._scheduleUpdate()})))}handleEditMapping(e,t){this.mappings[e]=t,t.id&&this.mappingCache.delete(t.id.toString()),void 0!==t.id&&this._pendingMappings.set(t.id,t),this.globalDebounceTimer&&clearTimeout(this.globalDebounceTimer),this.globalDebounceTimer=window.setTimeout((()=>{const e=[...this._pendingMappings.values()];this._pendingMappings.clear(),this.isSaving=!0,this._suppressNextConfigUpdate=!0,Promise.all(e.map((e=>this.saveToHA(e)))).catch((e=>{this._suppressNextConfigUpdate=!1,console.error("Failed to save mapping:",e)})).finally((()=>{this.isSaving=!1,this._scheduleUpdate()})),this.globalDebounceTimer=null}),500),this._scheduleUpdate()}async saveToHA(e){var t;if(!this.hass)throw new Error("Home Assistant connection not available");const s=[],i=this.hass.states;for(const t in e.mappings){const a=e.mappings[t].sensorentity;if(a&&""!==a.trim()){const n=a.trim();e.mappings[t].sensorentity=n,n in i||s.push(n)}}if(s.length>0){const e=null===(t=this.shadowRoot)||void 0===t?void 0:t.querySelector("ha-card");throw e&&ta({body:{message:ss("panels.mappings.cards.mapping.errors.source_does_not_exist",this.hass.language)+": "+s.join(", ")},error:ss("panels.mappings.cards.mapping.errors.invalid_source",this.hass.language)},e),new Error("Invalid sensor entities found")}const{id:a,name:n,mappings:r,greenhouse:o}=e;await ga(this.hass,{id:a,name:n,mappings:r,greenhouse:o})}consumedSources(e){var t;if(void 0===e.module||null===e.module)return null;const s=this.modules.find((t=>t.id===e.module));return null!==(t=null==s?void 0:s.consumes)&&void 0!==t?t:null}renderMapping(e,t){if(!this.hass)return W``;const s=`${e.id}_${JSON.stringify(e).slice(0,100)}`;if(this.mappingCache.has(s))return this.mappingCache.get(s);const i=this.zones.filter((t=>t.mapping===e.id)).length,a=W`
+    `}handleAddMapping(){var e;if(!this.mappingNameInput.value.trim())return;const t=!!(null===(e=this.config)||void 0===e?void 0:e.use_weather_service),s=e=>{var s;return function(e,t,s){const i=e===ws||e===Os||e===Ss||e===Ms&&Ns.includes(null!=s?s:"");return t?i?Ys:Rs:Ps}(e,t,null===(s=this.config)||void 0===s?void 0:s.weather_service)},i=Object.fromEntries([bs,ws,$s,Ss,Ms,Ts,Os,As,Es].map(e=>[e,{[Ws]:s(e),[Vs]:"",[Gs]:""}])),a={name:this.mappingNameInput.value.trim(),mappings:i};this.mappings=[...this.mappings,a],this.isSaving=!0,this.saveToHA(a).then(()=>(this.mappingNameInput.value="",this.newMappingName="",this._fetchData())).catch(e=>{console.error("Failed to add mapping:",e),this.mappings=this.mappings.slice(0,-1)}).finally(()=>{this.isSaving=!1,this._scheduleUpdate()})}async handleRemoveMapping(e,t){var s,i,a;const n=this.mappings[t].id;if(null==n)return;const r=as("confirm.delete_mapping",null!==(i=null===(s=this.hass)||void 0===s?void 0:s.language)&&void 0!==i?i:"en").replace("{name}",null!==(a=this.mappings[t].name)&&void 0!==a?a:"");if(!await Pa(this.hass,{text:r,destructive:!0}))return;const o=[...this.mappings];var l,h;(this.mappings=this.mappings.filter((e,s)=>s!==t),this.mappingCache.delete(n.toString()),this.hass)&&(this.isSaving=!0,(l=this.hass,h=n.toString(),l.callApi("POST",hs+"/mappings",{id:h,remove:!0})).catch(e=>{console.error("Failed to delete mapping:",e),this.mappings=o,this._fetchData().catch(e=>{console.error("Failed to refresh data after delete error:",e)})}).finally(()=>{this.isSaving=!1,this._scheduleUpdate()}))}handleEditMapping(e,t){this.mappings[e]=t,t.id&&this.mappingCache.delete(t.id.toString()),void 0!==t.id&&this._pendingMappings.set(t.id,t),this.globalDebounceTimer&&clearTimeout(this.globalDebounceTimer),this.globalDebounceTimer=window.setTimeout(()=>{const e=[...this._pendingMappings.values()];this._pendingMappings.clear(),this.isSaving=!0,this._suppressNextConfigUpdate=!0,Promise.all(e.map(e=>this.saveToHA(e))).catch(e=>{this._suppressNextConfigUpdate=!1,console.error("Failed to save mapping:",e)}).finally(()=>{this.isSaving=!1,this._scheduleUpdate()}),this.globalDebounceTimer=null},500),this._scheduleUpdate()}async saveToHA(e){var t;if(!this.hass)throw new Error("Home Assistant connection not available");const s=[],i=this.hass.states;for(const t in e.mappings){const a=e.mappings[t].sensorentity;if(a&&""!==a.trim()){const n=a.trim();e.mappings[t].sensorentity=n,n in i||s.push(n)}}if(s.length>0){const e=null===(t=this.shadowRoot)||void 0===t?void 0:t.querySelector("ha-card");throw e&&ia({body:{message:as("panels.mappings.cards.mapping.errors.source_does_not_exist",this.hass.language)+": "+s.join(", ")},error:as("panels.mappings.cards.mapping.errors.invalid_source",this.hass.language)},e),new Error("Invalid sensor entities found")}const{id:a,name:n,mappings:r,greenhouse:o}=e;await va(this.hass,{id:a,name:n,mappings:r,greenhouse:o})}consumedSources(e){var t;if(void 0===e.module||null===e.module)return null;const s=this.modules.find(t=>t.id===e.module);return null!==(t=null==s?void 0:s.consumes)&&void 0!==t?t:null}renderMapping(e,t){if(!this.hass)return V``;const s=`${e.id}_${JSON.stringify(e).slice(0,100)}`;if(this.mappingCache.has(s))return this.mappingCache.get(s);const i=this.zones.filter(t=>t.mapping===e.id).length,a=V`
       <ha-card header="${e.id}: ${e.name}">
         <div class="card-content">
           <div class="card-content">
             <label for="name${e.id}"
-              >${ss("panels.mappings.labels.mapping-name",this.hass.language)}:</label
+              >${as("panels.mappings.labels.mapping-name",this.hass.language)}:</label
             >
             <input
               id="name${e.id}"
@@ -3662,7 +3662,7 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
             />
             <div class="setting-row">
               <div class="setting-label">
-                ${ss("panels.mappings.cards.mapping.greenhouse",this.hass.language)}
+                ${as("panels.mappings.cards.mapping.greenhouse",this.hass.language)}
               </div>
               <ha-switch
                 .checked=${!!e.greenhouse}
@@ -3671,103 +3671,103 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
             </div>
             <div class="setting-row">
               <div class="setting-label">
-                ${ss("panels.mappings.cards.mapping.module",this.hass.language)}
+                ${as("panels.mappings.cards.mapping.module",this.hass.language)}
               </div>
               <select
-                @change=${s=>{const i=s.target.value;this.handleEditMapping(t,Object.assign(Object.assign({},e),{[ks]:""===i?void 0:parseInt(i)}))}}
+                @change=${s=>{const i=s.target.value;this.handleEditMapping(t,Object.assign(Object.assign({},e),{[zs]:""===i?void 0:parseInt(i)}))}}
               >
                 <option
                   value=""
                   ?selected=${void 0===e.module||null===e.module}
                 >
-                  ---${ss("common.labels.select",this.hass.language)}---
+                  ---${as("common.labels.select",this.hass.language)}---
                 </option>
-                ${this.modules.map((t=>W`<option
+                ${this.modules.map(t=>V`<option
                       value="${t.id}"
                       ?selected=${t.id===e.module}
                     >
-                      ${ra(t.name,this.hass.language)}
-                    </option>`))}
+                      ${la(t.name,this.hass.language)}
+                    </option>`)}
               </select>
             </div>
             <div class="weather-note">
-              ${ss(void 0===e.module||null===e.module?"panels.mappings.cards.mapping.module_undecided":"panels.mappings.cards.mapping.module_description",this.hass.language)}
+              ${as(void 0===e.module||null===e.module?"panels.mappings.cards.mapping.module_undecided":"panels.mappings.cards.mapping.module_description",this.hass.language)}
             </div>
-            ${e.greenhouse?W`<div class="weather-note">
-                  ${ss("panels.mappings.cards.mapping.greenhouse_description",this.hass.language)}
+            ${e.greenhouse?V`<div class="weather-note">
+                  ${as("panels.mappings.cards.mapping.greenhouse_description",this.hass.language)}
                 </div>`:""}
-            ${Object.entries(e.mappings).filter((([t])=>!e.greenhouse||t!==xs&&t!==Ss)).filter((([t])=>{const s=this.consumedSources(e);return null===s||s.includes(t)})).map((([e])=>this.renderMappingSetting(t,e)))}
-            ${i?W`<div class="weather-note">
-                  ${ss("panels.mappings.cards.mapping.errors.cannot-delete-mapping-because-zones-use-it",this.hass.language)}
-                </div>`:W` <div
+            ${Object.entries(e.mappings).filter(([t])=>!e.greenhouse||t!==Ss&&t!==Ms).filter(([t])=>{const s=this.consumedSources(e);return null===s||s.includes(t)}).map(([e])=>this.renderMappingSetting(t,e))}
+            ${i?V`<div class="weather-note">
+                  ${as("panels.mappings.cards.mapping.errors.cannot-delete-mapping-because-zones-use-it",this.hass.language)}
+                </div>`:V` <div
                   class="action-button"
                   @click="${e=>this.handleRemoveMapping(e,t)}"
                 >
                   <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-                    <path fill="#404040" d="${xa}" />
+                    <path fill="#404040" d="${za}" />
                   </svg>
                   <span class="action-button-label">
-                    ${ss("common.actions.delete",this.hass.language)}
+                    ${as("common.actions.delete",this.hass.language)}
                   </span>
                 </div>`}
           </div>
         </div>
       </ha-card>
-    `;return this.mappingCache.set(s,a),a}renderMappingSetting(e,t){var s,i;const a=this.mappings[e];if(!a||!this.hass)return W``;const n=a.mappings[t],r=t===ys?this.etUseOfZones(a.id):{provided:0,calculated:0},o=r.calculated>0&&0===r.provided,l=r.provided>0&&0===r.calculated;return W`
+    `;return this.mappingCache.set(s,a),a}renderMappingSetting(e,t){var s,i;const a=this.mappings[e];if(!a||!this.hass)return V``;const n=a.mappings[t],r=t===ws?this.etUseOfZones(a.id):{provided:0,calculated:0},o=r.calculated>0&&0===r.provided,l=r.provided>0&&0===r.calculated;return V`
       <div class="si-subgroup">
         <div class="si-subgroup-title">
-          ${ss(`panels.mappings.cards.mapping.items.${t.toLowerCase()}`,this.hass.language)}
+          ${as(`panels.mappings.cards.mapping.items.${t.toLowerCase()}`,this.hass.language)}
         </div>
         ${this.renderSourceHint(t)}
-        ${this._selectRow(ss("panels.mappings.cards.mapping.source",this.hass.language),this.renderSimpleRadioOptions(e,t,n),(s=>this.handleSimpleSourceChange(e,t,s)))}
-        ${o?W`<div class="weather-note">
-              ${ss("panels.mappings.cards.mapping.et_unused",this.hass.language)}
+        ${this._selectRow(as("panels.mappings.cards.mapping.source",this.hass.language),this.renderSimpleRadioOptions(e,t,n),s=>this.handleSimpleSourceChange(e,t,s))}
+        ${o?V`<div class="weather-note">
+              ${as("panels.mappings.cards.mapping.et_unused",this.hass.language)}
             </div>`:""}
-        ${l?W`<div class="weather-note">
-              ${ss("panels.mappings.cards.mapping.et_needed",this.hass.language)}
+        ${l?V`<div class="weather-note">
+              ${as("panels.mappings.cards.mapping.et_needed",this.hass.language)}
             </div>`:""}
-        ${t===Ss&&(null===(s=this.config)||void 0===s?void 0:s.use_weather_service)&&(null===(i=this.config)||void 0===i?void 0:i.weather_service)===Es&&n[Us]===Ds?W`<div class="weather-note">
-              ${ss("panels.mappings.cards.mapping.rain_not_from_entity",this.hass.language)}
+        ${t===Ms&&(null===(s=this.config)||void 0===s?void 0:s.use_weather_service)&&(null===(i=this.config)||void 0===i?void 0:i.weather_service)===Hs&&n[Ws]===Rs?V`<div class="weather-note">
+              ${as("panels.mappings.cards.mapping.rain_not_from_entity",this.hass.language)}
             </div>`:""}
         ${this.renderMappingInputs(e,t,n)}
       </div>
-    `}etUseOfZones(e){var t;let s=0,i=0;for(const a of this.zones){if(a.mapping!==e)continue;const n=null===(t=this.modules.find((e=>e.id===a.module)))||void 0===t?void 0:t.name;n&&("Passthrough"===n?s+=1:i+=1)}return{provided:s,calculated:i}}renderSourceHint(e){var t,s,i;if(!this.hass)return W``;const a=ss(e===Ss&&!!(null===(t=this.config)||void 0===t?void 0:t.use_weather_service)&&Hs.includes(null!==(i=null===(s=this.config)||void 0===s?void 0:s.weather_service)&&void 0!==i?i:"")?"panels.mappings.cards.mapping.rain_hint_entity":`panels.mappings.cards.mapping.hints.${e.toLowerCase()}`,this.hass.language);return a?W`<div class="setting-hint">${a}</div>`:W``}renderSimpleRadioOptions(e,t,s){var i;if(!this.hass||!this.config)return W``;const a=t===ys||t===Ms,n=s[Us],r=t===xs,o=this.config.weather_service===Es&&t===Ss,l=!(!this.config.use_weather_service||r||o&&n!==Ds),h=a||r||o,d=t===ys?this.etUseOfZones(null===(i=this.mappings[e])||void 0===i?void 0:i.id):{provided:0,calculated:0},c=d.provided>0&&0===d.calculated&&n!==Bs,u=a&&this.config.weather_service!==As;return W`
-      ${l?W`<option
-            value="${Ds}"
-            ?selected=${n===Ds}
+    `}etUseOfZones(e){var t;let s=0,i=0;for(const a of this.zones){if(a.mapping!==e)continue;const n=null===(t=this.modules.find(e=>e.id===a.module))||void 0===t?void 0:t.name;n&&("Passthrough"===n?s+=1:i+=1)}return{provided:s,calculated:i}}renderSourceHint(e){var t,s,i;if(!this.hass)return V``;const a=as(e===Ms&&!!(null===(t=this.config)||void 0===t?void 0:t.use_weather_service)&&Ns.includes(null!==(i=null===(s=this.config)||void 0===s?void 0:s.weather_service)&&void 0!==i?i:"")?"panels.mappings.cards.mapping.rain_hint_entity":`panels.mappings.cards.mapping.hints.${e.toLowerCase()}`,this.hass.language);return a?V`<div class="setting-hint">${a}</div>`:V``}renderSimpleRadioOptions(e,t,s){var i;if(!this.hass||!this.config)return V``;const a=t===ws||t===Os,n=s[Ws],r=t===Ss,o=this.config.weather_service===Hs&&t===Ms,l=!(!this.config.use_weather_service||r||o&&n!==Rs),h=a||r||o,d=t===ws?this.etUseOfZones(null===(i=this.mappings[e])||void 0===i?void 0:i.id):{provided:0,calculated:0},c=d.provided>0&&0===d.calculated&&n!==Ys,u=a&&this.config.weather_service!==Cs;return V`
+      ${l?V`<option
+            value="${Rs}"
+            ?selected=${n===Rs}
             ?disabled=${o}
           >
-            ${ss(t===ys?"panels.mappings.cards.mapping.sources.weather_service_et":"panels.mappings.cards.mapping.sources.weather_service",this.hass.language)}${u?" (via Open-Meteo)":""}
+            ${as(t===ws?"panels.mappings.cards.mapping.sources.weather_service_et":"panels.mappings.cards.mapping.sources.weather_service",this.hass.language)}${u?" (via Open-Meteo)":""}
           </option>`:""}
-      ${h?W`<option
-            value="${Bs}"
-            ?selected=${n===Bs}
+      ${h?V`<option
+            value="${Ys}"
+            ?selected=${n===Ys}
             ?disabled=${c}
           >
-            ${ss(t===ys?"panels.mappings.cards.mapping.sources.none_et":"panels.mappings.cards.mapping.sources.none",this.hass.language)}
+            ${as(t===ws?"panels.mappings.cards.mapping.sources.none_et":"panels.mappings.cards.mapping.sources.none",this.hass.language)}
           </option>`:""}
       <option
-        value="${Ns}"
-        ?selected=${n===Ns}
+        value="${Ps}"
+        ?selected=${n===Ps}
       >
-        ${ss(t===Ms?"panels.mappings.cards.mapping.sources.radiation_sensor":"panels.mappings.cards.mapping.sources.sensor",this.hass.language)}
+        ${as(t===Os?"panels.mappings.cards.mapping.sources.radiation_sensor":"panels.mappings.cards.mapping.sources.sensor",this.hass.language)}
       </option>
-      ${t===Ms?W`<option
-            value="${Ps}"
-            ?selected=${n===Ps}
+      ${t===Os?V`<option
+            value="${Ls}"
+            ?selected=${n===Ls}
           >
-            ${ss("panels.mappings.cards.mapping.sources.illuminance",this.hass.language)}
+            ${as("panels.mappings.cards.mapping.sources.illuminance",this.hass.language)}
           </option>`:""}
       <option
-        value="${Rs}"
-        ?selected=${n===Rs}
+        value="${js}"
+        ?selected=${n===js}
       >
-        ${ss("panels.mappings.cards.mapping.sources.static",this.hass.language)}
+        ${as("panels.mappings.cards.mapping.sources.static",this.hass.language)}
       </option>
-    `}handleSimpleSourceChange(e,t,s){const i=this.mappings[e],a=s.target.value;this.handleEditMapping(e,Object.assign(Object.assign({},i),{mappings:Object.assign(Object.assign({},i.mappings),{[t]:Object.assign(Object.assign({},i.mappings[t]),{[Us]:a,[Ys]:""})})}))}handleSimpleInputChange(e,t,s,i){const a=this.mappings[e],n=i.target.value;this.handleEditMapping(e,Object.assign(Object.assign({},a),{mappings:Object.assign(Object.assign({},a.mappings),{[t]:Object.assign(Object.assign({},a.mappings[t]),{[s]:n})})}))}renderSourceOptions(e,t,s){var i;if(!this.hass)return W``;const a=`${t}_${e}`,n=t===ys||t===Ms,r=!!(null===(i=this.config)||void 0===i?void 0:i.use_weather_service);return W`
+    `}handleSimpleSourceChange(e,t,s){const i=this.mappings[e],a=s.target.value;this.handleEditMapping(e,Object.assign(Object.assign({},i),{mappings:Object.assign(Object.assign({},i.mappings),{[t]:Object.assign(Object.assign({},i.mappings[t]),{[Ws]:a,[Vs]:""})})}))}handleSimpleInputChange(e,t,s,i){const a=this.mappings[e],n=i.target.value;this.handleEditMapping(e,Object.assign(Object.assign({},a),{mappings:Object.assign(Object.assign({},a.mappings),{[t]:Object.assign(Object.assign({},a.mappings[t]),{[s]:n})})}))}renderSourceOptions(e,t,s){var i;if(!this.hass)return V``;const a=`${t}_${e}`,n=t===ws||t===Os,r=!!(null===(i=this.config)||void 0===i?void 0:i.use_weather_service);return V`
       <div class="mappingsettingline">
         <label for="${a}_source">
-          ${ss("panels.mappings.cards.mapping.source",this.hass.language)}:
+          ${as("panels.mappings.cards.mapping.source",this.hass.language)}:
         </label>
       </div>
       <div class="radio-group">
@@ -3776,79 +3776,79 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
         ${this.renderSensorOption(e,t,s)}
         ${this.renderStaticValueOption(e,t,s)}
       </div>
-    `}renderWeatherServiceOption(e,t,s){if(!this.hass||!this.config)return W``;const i=`${t}_${e}`,a=!this.config.use_weather_service,n=this.config.use_weather_service&&s[Us]===Ds,r=(t===ys||t===Ms)&&this.config.weather_service!==As;return W`
+    `}renderWeatherServiceOption(e,t,s){if(!this.hass||!this.config)return V``;const i=`${t}_${e}`,a=!this.config.use_weather_service,n=this.config.use_weather_service&&s[Ws]===Rs,r=(t===ws||t===Os)&&this.config.weather_service!==Cs;return V`
       <label class="${a?"strikethrough":""}">
         <input
           type="radio"
           id="${i}_weather"
-          value="${Ds}"
+          value="${Rs}"
           name="${i}_source"
           ?checked="${n}"
           ?disabled="${a}"
           @change="${s=>this.handleSourceChange(e,t,s)}"
         />
-        ${ss("panels.mappings.cards.mapping.sources.weather_service",this.hass.language)}${r?" (via Open-Meteo)":""}
+        ${as("panels.mappings.cards.mapping.sources.weather_service",this.hass.language)}${r?" (via Open-Meteo)":""}
       </label>
-    `}renderNoneOption(e,t,s){if(!this.hass)return W``;const i=`${t}_${e}`,a=s[Us]===Bs;return W`
+    `}renderNoneOption(e,t,s){if(!this.hass)return V``;const i=`${t}_${e}`,a=s[Ws]===Ys;return V`
       <label>
         <input
           type="radio"
           id="${i}_none"
-          value="${Bs}"
+          value="${Ys}"
           name="${i}_source"
           ?checked="${a}"
           @change="${s=>this.handleSourceChange(e,t,s)}"
         />
-        ${ss("panels.mappings.cards.mapping.sources.none",this.hass.language)}
+        ${as("panels.mappings.cards.mapping.sources.none",this.hass.language)}
       </label>
-    `}renderSensorOption(e,t,s){if(!this.hass)return W``;const i=`${t}_${e}`,a=s[Us]===Ns;return W`
+    `}renderSensorOption(e,t,s){if(!this.hass)return V``;const i=`${t}_${e}`,a=s[Ws]===Ps;return V`
       <label>
         <input
           type="radio"
           id="${i}_sensor"
-          value="${Ns}"
+          value="${Ps}"
           name="${i}_source"
           ?checked="${a}"
           @change="${s=>this.handleSourceChange(e,t,s)}"
         />
-        ${ss("panels.mappings.cards.mapping.sources.sensor",this.hass.language)}
+        ${as("panels.mappings.cards.mapping.sources.sensor",this.hass.language)}
       </label>
-    `}renderStaticValueOption(e,t,s){if(!this.hass)return W``;const i=`${t}_${e}`,a=s[Us]===Rs;return W`
+    `}renderStaticValueOption(e,t,s){if(!this.hass)return V``;const i=`${t}_${e}`,a=s[Ws]===js;return V`
       <label>
         <input
           type="radio"
           id="${i}_static"
-          value="${Rs}"
+          value="${js}"
           name="${i}_source"
           ?checked="${a}"
           @change="${s=>this.handleSourceChange(e,t,s)}"
         />
-        ${ss("panels.mappings.cards.mapping.sources.static",this.hass.language)}
+        ${as("panels.mappings.cards.mapping.sources.static",this.hass.language)}
       </label>
-    `}handleSourceChange(e,t,s){const i=this.mappings[e],a=s.target.value;this.handleEditMapping(e,Object.assign(Object.assign({},i),{mappings:Object.assign(Object.assign({},i.mappings),{[t]:Object.assign(Object.assign({},i.mappings[t]),{[Us]:a,[Ys]:""})})}))}renderMappingInputs(e,t,s){if(!this.hass)return W``;const i=s[Us];return W`
-      ${i===Ns||i===Ps?this.renderSensorInput(e,t,s):""}
-      ${i===Rs?this.renderStaticValueInput(e,t,s):""}
-      ${i===Ns||i===Rs?this.renderUnitSelect(e,t,s):""}
-      ${t!==zs||i!==Ns&&i!==Rs?"":this.renderPressureTypeSelect(e,t,s)}
-      ${t===Os&&i===Ns?this.renderWindHeightInput(e,t,s):""}
-      ${i===Ns||i===Ps?this.renderAggregateSelect(e,t,s):""}
-    `}renderWindHeightInput(e,t,s){var i;return this.hass?this._numRow(ss("panels.mappings.cards.mapping.wind_height",this.hass.language),"m",null!==(i=s[Ls])&&void 0!==i?i:"",(s=>{const i=this.mappings[e],a=parseFloat(s);this.handleEditMapping(e,Object.assign(Object.assign({},i),{mappings:Object.assign(Object.assign({},i.mappings),{[t]:Object.assign(Object.assign({},i.mappings[t]),{[Ls]:Number.isFinite(a)?a:null})})}))}),.5):W``}renderSensorInput(e,t,s){return this.hass?W`
+    `}handleSourceChange(e,t,s){const i=this.mappings[e],a=s.target.value;this.handleEditMapping(e,Object.assign(Object.assign({},i),{mappings:Object.assign(Object.assign({},i.mappings),{[t]:Object.assign(Object.assign({},i.mappings[t]),{[Ws]:a,[Vs]:""})})}))}renderMappingInputs(e,t,s){if(!this.hass)return V``;const i=s[Ws];return V`
+      ${i===Ps||i===Ls?this.renderSensorInput(e,t,s):""}
+      ${i===js?this.renderStaticValueInput(e,t,s):""}
+      ${i===Ps||i===js?this.renderUnitSelect(e,t,s):""}
+      ${t!==Ts||i!==Ps&&i!==js?"":this.renderPressureTypeSelect(e,t,s)}
+      ${t===Es&&i===Ps?this.renderWindHeightInput(e,t,s):""}
+      ${i===Ps||i===Ls?this.renderAggregateSelect(e,t,s):""}
+    `}renderWindHeightInput(e,t,s){var i;return this.hass?this._numRow(as("panels.mappings.cards.mapping.wind_height",this.hass.language),"m",null!==(i=s[Fs])&&void 0!==i?i:"",s=>{const i=this.mappings[e],a=parseFloat(s);this.handleEditMapping(e,Object.assign(Object.assign({},i),{mappings:Object.assign(Object.assign({},i.mappings),{[t]:Object.assign(Object.assign({},i.mappings[t]),{[Fs]:Number.isFinite(a)?a:null})})}))},.5):V``}renderSensorInput(e,t,s){return this.hass?V`
       <div class="setting-row">
         <div class="setting-label">
-          ${ss("panels.mappings.cards.mapping.sensor-entity",this.hass.language)}
+          ${as("panels.mappings.cards.mapping.sensor-entity",this.hass.language)}
         </div>
         <ha-entity-picker
           class="entity-field"
           .hass=${this.hass}
-          .value=${s[Ys]||""}
+          .value=${s[Vs]||""}
           allow-custom-entity
           @value-changed=${s=>{var i;return this.handleSensorChange(e,t,{target:{value:(null===(i=s.detail)||void 0===i?void 0:i.value)||""}})}}
         ></ha-entity-picker>
       </div>
-    `:W``}renderStaticValueInput(e,t,s){return this.hass?this._numRow(ss("panels.mappings.cards.mapping.static_value",this.hass.language),"",s[Ws]||"",(s=>this.handleStaticValueChange(e,t,{target:{value:s}})),.1):W``}renderUnitSelect(e,t,s){if(!this.hass||!this.config)return W``;const i=this.reportedUnit(t,s);return!i||s[Vs]&&s[Vs]!==i?this._selectRow(ss("panels.mappings.cards.mapping.input-units",this.hass.language),this.renderUnitOptionsForMapping(t,s),(s=>this.handleUnitChange(e,t,s))):W``}reportedUnit(e,t){var s,i,a,n,r;if(t[Us]!==Ns)return;const o=(t[Ys]||"").trim(),l=null===(n=null===(a=null===(i=null===(s=this.hass)||void 0===s?void 0:s.states)||void 0===i?void 0:i[o])||void 0===a?void 0:a.attributes)||void 0===n?void 0:n.unit_of_measurement;if(!l)return;const h=null!==(r={"W/m²":"W/m2","m/s":"meter/s",mph:"mile/h",kn:"knot",inHg:"inch Hg",mbar:"millibar"}[l])&&void 0!==r?r:l;return ea(e).some((e=>e.unit===h))?h:void 0}renderPressureTypeSelect(e,t,s){return this.hass?this._selectRow(ss("panels.mappings.cards.mapping.pressure-type",this.hass.language),this.renderPressureTypes(t,s),(s=>this.handlePressureTypeChange(e,t,s))):W``}renderAggregateSelect(e,t,s){var i;return this.hass?"advanced"!==(null===(i=this.config)||void 0===i?void 0:i.ui_mode)?W``:W`
+    `:V``}renderStaticValueInput(e,t,s){return this.hass?this._numRow(as("panels.mappings.cards.mapping.static_value",this.hass.language),"",s[Zs]||"",s=>this.handleStaticValueChange(e,t,{target:{value:s}}),.1):V``}renderUnitSelect(e,t,s){if(!this.hass||!this.config)return V``;const i=this.reportedUnit(t,s);return!i||s[Gs]&&s[Gs]!==i?this._selectRow(as("panels.mappings.cards.mapping.input-units",this.hass.language),this.renderUnitOptionsForMapping(t,s),s=>this.handleUnitChange(e,t,s)):V``}reportedUnit(e,t){var s,i,a,n,r;if(t[Ws]!==Ps)return;const o=(t[Vs]||"").trim(),l=null===(n=null===(a=null===(i=null===(s=this.hass)||void 0===s?void 0:s.states)||void 0===i?void 0:i[o])||void 0===a?void 0:a.attributes)||void 0===n?void 0:n.unit_of_measurement;if(!l)return;const h=null!==(r={"W/m²":"W/m2","m/s":"meter/s",mph:"mile/h",kn:"knot",inHg:"inch Hg",mbar:"millibar"}[l])&&void 0!==r?r:l;return sa(e).some(e=>e.unit===h)?h:void 0}renderPressureTypeSelect(e,t,s){return this.hass?this._selectRow(as("panels.mappings.cards.mapping.pressure-type",this.hass.language),this.renderPressureTypes(t,s),s=>this.handlePressureTypeChange(e,t,s)):V``}renderAggregateSelect(e,t,s){var i;return this.hass?"advanced"!==(null===(i=this.config)||void 0===i?void 0:i.ui_mode)?V``:V`
       <div class="setting-row">
         <div class="setting-label">
-          ${ss("panels.mappings.cards.mapping.sensor-aggregate-use-the",this.hass.language)}
+          ${as("panels.mappings.cards.mapping.sensor-aggregate-use-the",this.hass.language)}
         </div>
         <div class="select-wrap">
           <select
@@ -3858,36 +3858,36 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
             ${this.renderAggregateOptionsForMapping(t,s)}
           </select>
           <svg class="chev" viewBox="0 0 24 24">
-            <path d=${ka}></path>
+            <path d=${Ma}></path>
           </svg>
         </div>
       </div>
-    `:W``}handleSensorChange(e,t,s){const i=this.mappings[e];this.handleEditMapping(e,Object.assign(Object.assign({},i),{mappings:Object.assign(Object.assign({},i.mappings),{[t]:Object.assign(Object.assign({},i.mappings[t]),{[Ys]:s.target.value})})}))}handleStaticValueChange(e,t,s){const i=this.mappings[e];this.handleEditMapping(e,Object.assign(Object.assign({},i),{mappings:Object.assign(Object.assign({},i.mappings),{[t]:Object.assign(Object.assign({},i.mappings[t]),{[Ws]:s.target.value})})}))}handleUnitChange(e,t,s){const i=this.mappings[e];this.handleEditMapping(e,Object.assign(Object.assign({},i),{mappings:Object.assign(Object.assign({},i.mappings),{[t]:Object.assign(Object.assign({},i.mappings[t]),{[Vs]:s.target.value})})}))}handlePressureTypeChange(e,t,s){const i=this.mappings[e];this.handleEditMapping(e,Object.assign(Object.assign({},i),{mappings:Object.assign(Object.assign({},i.mappings),{[t]:Object.assign(Object.assign({},i.mappings[t]),{[js]:s.target.value})})}))}handleAggregateChange(e,t,s){const i=this.mappings[e];this.handleEditMapping(e,Object.assign(Object.assign({},i),{mappings:Object.assign(Object.assign({},i.mappings),{[t]:Object.assign(Object.assign({},i.mappings[t]),{[Zs]:s.target.value})})}))}renderAggregateOptionsForMapping(e,t){if(!this.hass||!this.config)return W``;let s="average";return e===xs&&(s="delta"),e===Ss&&(s="average"),t[Zs]&&(s=t[Zs]),W`
-      ${Gs.map((e=>this.renderAggregateOption(e,s)))}
-    `}renderAggregateOption(e,t){if(this.hass&&this.config){return W`<option value="${e}" ?selected="${e===t}">
-        ${ss("panels.mappings.cards.mapping.aggregates."+e,this.hass.language)}
-      </option>`}return W``}renderPressureTypes(e,t){if(this.hass&&this.config){let e=W``;const s=t[js];return e=W`${e}
+    `:V``}handleSensorChange(e,t,s){const i=this.mappings[e];this.handleEditMapping(e,Object.assign(Object.assign({},i),{mappings:Object.assign(Object.assign({},i.mappings),{[t]:Object.assign(Object.assign({},i.mappings[t]),{[Vs]:s.target.value})})}))}handleStaticValueChange(e,t,s){const i=this.mappings[e];this.handleEditMapping(e,Object.assign(Object.assign({},i),{mappings:Object.assign(Object.assign({},i.mappings),{[t]:Object.assign(Object.assign({},i.mappings[t]),{[Zs]:s.target.value})})}))}handleUnitChange(e,t,s){const i=this.mappings[e];this.handleEditMapping(e,Object.assign(Object.assign({},i),{mappings:Object.assign(Object.assign({},i.mappings),{[t]:Object.assign(Object.assign({},i.mappings[t]),{[Gs]:s.target.value})})}))}handlePressureTypeChange(e,t,s){const i=this.mappings[e];this.handleEditMapping(e,Object.assign(Object.assign({},i),{mappings:Object.assign(Object.assign({},i.mappings),{[t]:Object.assign(Object.assign({},i.mappings[t]),{[Is]:s.target.value})})}))}handleAggregateChange(e,t,s){const i=this.mappings[e];this.handleEditMapping(e,Object.assign(Object.assign({},i),{mappings:Object.assign(Object.assign({},i.mappings),{[t]:Object.assign(Object.assign({},i.mappings[t]),{[qs]:s.target.value})})}))}renderAggregateOptionsForMapping(e,t){if(!this.hass||!this.config)return V``;let s="average";return e===Ss&&(s="delta"),e===Ms&&(s="average"),t[qs]&&(s=t[qs]),V`
+      ${Ks.map(e=>this.renderAggregateOption(e,s))}
+    `}renderAggregateOption(e,t){if(this.hass&&this.config){return V`<option value="${e}" ?selected="${e===t}">
+        ${as("panels.mappings.cards.mapping.aggregates."+e,this.hass.language)}
+      </option>`}return V``}renderPressureTypes(e,t){if(this.hass&&this.config){let e=V``;const s=t[Is];return e=V`${e}
         <option
-          value="${Is}"
-          ?selected="${s===Is}"
+          value="${Bs}"
+          ?selected="${s===Bs}"
         >
-          ${ss("panels.mappings.cards.mapping.pressure_types."+Is,this.hass.language)}
+          ${as("panels.mappings.cards.mapping.pressure_types."+Bs,this.hass.language)}
         </option>
         <option
-          value="${Fs}"
-          ?selected="${s===Fs}"
+          value="${Us}"
+          ?selected="${s===Us}"
         >
-          ${ss("panels.mappings.cards.mapping.pressure_types."+Fs,this.hass.language)}
-        </option>`,e}return W``}renderUnitOptionsForMapping(e,t){if(!this.hass||!this.config)return W``;const s=ea(e);let i=t[Vs];const a=this.config.units;if(!t[Vs])for(const e of s)if("string"==typeof e.system){if(a===e.system){i=e.unit;break}}else{for(const t of e.system)if(a===t.system){i=e.unit;break}if(i===e.unit)break}return W`
-      ${s.map((e=>W`
+          ${as("panels.mappings.cards.mapping.pressure_types."+Us,this.hass.language)}
+        </option>`,e}return V``}renderUnitOptionsForMapping(e,t){if(!this.hass||!this.config)return V``;const s=sa(e);let i=t[Gs];const a=this.config.units;if(!t[Gs])for(const e of s)if("string"==typeof e.system){if(a===e.system){i=e.unit;break}}else{for(const t of e.system)if(a===t.system){i=e.unit;break}if(i===e.unit)break}return V`
+      ${s.map(e=>V`
           <option value="${e.unit}" ?selected="${i===e.unit}">
             ${e.unit}
           </option>
-        `))}
-    `}_textRow(e,t,s,i){return W`
+        `)}
+    `}_textRow(e,t,s,i){return V`
       <div class="setting-row">
         <div class="setting-label">
-          ${e}${t?W` <span class="unit">(${t})</span>`:""}
+          ${e}${t?V` <span class="unit">(${t})</span>`:""}
         </div>
         <input
           class="field"
@@ -3896,10 +3896,10 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           @change=${e=>i(e.target.value)}
         />
       </div>
-    `}_numRow(e,t,s,i,a=1,n=!1){const r=(String(a).split(".")[1]||"").length,o=(e,t)=>{const s=parseFloat(e.value),n=+((isNaN(s)?0:s)+t*a).toFixed(r);e.value=String(n),i(String(n))};return W`
+    `}_numRow(e,t,s,i,a=1,n=!1){const r=(String(a).split(".")[1]||"").length,o=(e,t)=>{const s=parseFloat(e.value),n=+((isNaN(s)?0:s)+t*a).toFixed(r);e.value=String(n),i(String(n))};return V`
       <div class="setting-row">
         <div class="setting-label">
-          ${e}${t?W` <span class="unit">(${t})</span>`:""}
+          ${e}${t?V` <span class="unit">(${t})</span>`:""}
         </div>
         <div class="num-field">
           <input
@@ -3913,19 +3913,19 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           />
           <ha-icon-button
             class="step-btn"
-            .path=${Sa}
+            .path=${Ta}
             ?disabled=${n}
             @click=${e=>o(e.currentTarget.parentElement.querySelector("input"),-1)}
           ></ha-icon-button>
           <ha-icon-button
             class="step-btn"
-            .path=${Ta}
+            .path=${Ea}
             ?disabled=${n}
             @click=${e=>o(e.currentTarget.parentElement.querySelector("input"),1)}
           ></ha-icon-button>
         </div>
       </div>
-    `}_selectRow(e,t,s,i=!1){return W`
+    `}_selectRow(e,t,s,i=!1){return V`
       <div class="setting-row">
         <div class="setting-label">${e}</div>
         <div class="select-wrap">
@@ -3933,11 +3933,11 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
             ${t}
           </select>
           <svg class="chev" viewBox="0 0 24 24">
-            <path d=${ka}></path>
+            <path d=${Ma}></path>
           </svg>
         </div>
       </div>
-    `}_actionBtn(e,t,s,i=!1,a=!1){return W`
+    `}_actionBtn(e,t,s,i=!1,a=!1){return V`
       <ha-button
         appearance=${i?"outlined":"filled"}
         variant=${i?"danger":"brand"}
@@ -3947,30 +3947,30 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
         <ha-svg-icon slot="start" .path=${e}></ha-svg-icon>
         ${t}
       </ha-button>
-    `}render(){return this.hass?this.isLoading?W`
+    `}render(){return this.hass?this.isLoading?V`
         <ha-card
-          header="${ss("panels.mappings.title",this.hass.language)}"
+          header="${as("panels.mappings.title",this.hass.language)}"
         >
           <div class="card-content">
-            ${ss("common.loading-messages.general",this.hass.language)}
+            ${as("common.loading-messages.general",this.hass.language)}
           </div>
         </ha-card>
-      `:W`
+      `:V`
       <ha-card
-        header="${ss("panels.mappings.title",this.hass.language)}"
+        header="${as("panels.mappings.title",this.hass.language)}"
       >
         <div class="card-content">
-          ${ss("panels.mappings.description",this.hass.language)}
+          ${as("panels.mappings.description",this.hass.language)}
         </div>
       </ha-card>
 
       <ha-card
-        header="${ss("panels.mappings.cards.add-mapping.header",this.hass.language)}"
+        header="${as("panels.mappings.cards.add-mapping.header",this.hass.language)}"
       >
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${ss("panels.mappings.labels.mapping-name",this.hass.language)}
+              ${as("panels.mappings.labels.mapping-name",this.hass.language)}
             </div>
             <input
               id="mappingNameInput"
@@ -3985,22 +3985,22 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
               @click="${this.handleAddMapping}"
               ?disabled="${this.isSaving||!this.newMappingName.trim()}"
             >
-              <ha-svg-icon slot="start" .path=${Ta}></ha-svg-icon>
-              ${this.isSaving?ss("common.saving-messages.adding",this.hass.language):ss("panels.mappings.cards.add-mapping.actions.add",this.hass.language)}
+              <ha-svg-icon slot="start" .path=${Ea}></ha-svg-icon>
+              ${this.isSaving?as("common.saving-messages.adding",this.hass.language):as("panels.mappings.cards.add-mapping.actions.add",this.hass.language)}
             </ha-button>
           </div>
         </div>
       </ha-card>
 
       ${this.renderMappingsList()}
-    `:W``}renderMappingsList(){const e=this.mappings.slice(0,Math.min(this.mappings.length,10)),t=this.mappings.slice(10);return W`
-      ${en(e,(e=>{var t;return null!==(t=e.id)&&void 0!==t?t:e.name}),((e,t)=>this.renderMappingCard(e,t)))}
-      ${t.length>0?W`
+    `:V``}renderMappingsList(){const e=this.mappings.slice(0,Math.min(this.mappings.length,10)),t=this.mappings.slice(10);return V`
+      ${nn(e,e=>{var t;return null!==(t=e.id)&&void 0!==t?t:e.name},(e,t)=>this.renderMappingCard(e,t))}
+      ${t.length>0?V`
             <div class="si-form-actions">
-              ${this._actionBtn(Ta,`Load ${t.length} more mappings...`,(()=>this.loadMoreMappings()))}
+              ${this._actionBtn(Ea,`Load ${t.length} more mappings...`,()=>this.loadMoreMappings())}
             </div>
           `:""}
-    `}renderMappingCard(e,t){if(!this.hass)return W``;const s=this.hass.language,i=this.zones.filter((t=>t.mapping===e.id)).length,a=(e,t)=>ss(`panels.mappings.summary.${t}-${1===e?"one":"other"}`,s).replace("{n}",String(e)),n=[a(Object.values(e.mappings||{}).filter((e=>{const t="string"==typeof e?e:null==e?void 0:e.source;return!!t&&t!==Bs})).length,"sources")];i&&n.push(a(i,"zones"));const r=n.join(" · "),o=null!=e.id&&this._expanded.has(e.id);return W`
+    `}renderMappingCard(e,t){if(!this.hass)return V``;const s=this.hass.language,i=this.zones.filter(t=>t.mapping===e.id).length,a=(e,t)=>as(`panels.mappings.summary.${t}-${1===e?"one":"other"}`,s).replace("{n}",String(e)),n=[a(Object.values(e.mappings||{}).filter(e=>{const t="string"==typeof e?e:null==e?void 0:e.source;return!!t&&t!==Ys}).length,"sources")];i&&n.push(a(i,"zones"));const r=n.join(" · "),o=null!=e.id&&this._expanded.has(e.id);return V`
       <ha-card class="si-card">
         <div
           class="si-head"
@@ -4020,47 +4020,47 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           </div>
           <ha-svg-icon
             class="si-chevron ${o?"open":""}"
-            .path=${ba}
+            .path=${xa}
           ></ha-svg-icon>
         </div>
-        ${o?W`<div class="si-body">
+        ${o?V`<div class="si-body">
               <div class="settings">
-                ${this._textRow(ss("panels.mappings.labels.mapping-name",s),"",e.name,(s=>this.handleEditMapping(t,Object.assign(Object.assign({},e),{name:s}))))}
+                ${this._textRow(as("panels.mappings.labels.mapping-name",s),"",e.name,s=>this.handleEditMapping(t,Object.assign(Object.assign({},e),{name:s})))}
                 <div class="setting-row">
                   <div class="setting-label">
-                    ${ss("panels.mappings.cards.mapping.greenhouse",s)}
+                    ${as("panels.mappings.cards.mapping.greenhouse",s)}
                   </div>
                   <ha-switch
                     .checked=${!!e.greenhouse}
                     @change=${s=>this.handleEditMapping(t,Object.assign(Object.assign({},e),{greenhouse:s.target.checked}))}
                   ></ha-switch>
                 </div>
-                ${e.greenhouse?W`<div class="weather-note">
-                      ${ss("panels.mappings.cards.mapping.greenhouse_description",s)}
+                ${e.greenhouse?V`<div class="weather-note">
+                      ${as("panels.mappings.cards.mapping.greenhouse_description",s)}
                     </div>`:""}
                 ${this.renderMappingSettings(e,t)}
               </div>
               ${this.renderWeatherRecords(e)}
               <div class="si-actions">
-                ${i?W`<div class="weather-note">
-                      ${ss("panels.mappings.cards.mapping.errors.cannot-delete-mapping-because-zones-use-it",s)}
-                    </div>`:this._actionBtn(xa,ss("common.actions.delete",s),(e=>this.handleRemoveMapping(e,t)),!0)}
+                ${i?V`<div class="weather-note">
+                      ${as("panels.mappings.cards.mapping.errors.cannot-delete-mapping-because-zones-use-it",s)}
+                    </div>`:this._actionBtn(za,as("common.actions.delete",s),e=>this.handleRemoveMapping(e,t),!0)}
               </div>
             </div>`:""}
       </ha-card>
-    `}renderMappingSettings(e,t){var s;const i="advanced"===(null===(s=this.config)||void 0===s?void 0:s.ui_mode),a=Object.entries(e.mappings).filter((([t])=>(!e.greenhouse||t!==xs&&t!==Ss)&&(i||t!==xs||!(t=>{const s=e.mappings[t],i="string"==typeof s?s:null==s?void 0:s[Us];return!i||i===Bs})(t)))),n=e.mappings[ys],r="string"==typeof n?n:null==n?void 0:n[Us],o=!!r&&r!==Bs,l=(h=this.etUseOfZones(e.id),d=o,h.calculated+h.provided>0?0===h.calculated:d);var h,d;const c=a.filter((([e])=>!l||e===ys||e===xs||e===Ss)).sort((([e],[t])=>Number(t===ys)-Number(e===ys))),u=a.length-c.length,p=this.hass.language,g=t=>this.zones.filter((t=>t.mapping===e.id)).filter((e=>{var s;const i=null===(s=this.modules.find((t=>t.id===e.module)))||void 0===s?void 0:s.name;return!!i&&t(i)})).map((e=>e.name)).join(", "),m=o?g((e=>"Passthrough"!==e)):"",v=o?"":g((e=>"Passthrough"===e));return W`
-      ${c.map((([e])=>this.renderMappingSetting(t,e)))}
-      ${u>0?W`<div class="weather-note">
-            ${ss("panels.mappings.cards.mapping.hidden_sources",p).replace("{n}",String(u))}
+    `}renderMappingSettings(e,t){var s;const i="advanced"===(null===(s=this.config)||void 0===s?void 0:s.ui_mode),a=Object.entries(e.mappings).filter(([t])=>(!e.greenhouse||t!==Ss&&t!==Ms)&&(i||t!==Ss||!(t=>{const s=e.mappings[t],i="string"==typeof s?s:null==s?void 0:s[Ws];return!i||i===Ys})(t))),n=e.mappings[ws],r="string"==typeof n?n:null==n?void 0:n[Ws],o=!!r&&r!==Ys,l=(h=this.etUseOfZones(e.id),d=o,h.calculated+h.provided>0?0===h.calculated:d);var h,d;const c=a.filter(([e])=>!l||e===ws||e===Ss||e===Ms).sort(([e],[t])=>Number(t===ws)-Number(e===ws)),u=a.length-c.length,p=this.hass.language,g=t=>this.zones.filter(t=>t.mapping===e.id).filter(e=>{var s;const i=null===(s=this.modules.find(t=>t.id===e.module))||void 0===s?void 0:s.name;return!!i&&t(i)}).map(e=>e.name).join(", "),m=o?g(e=>"Passthrough"!==e):"",v=o?"":g(e=>"Passthrough"===e);return V`
+      ${c.map(([e])=>this.renderMappingSetting(t,e))}
+      ${u>0?V`<div class="weather-note">
+            ${as("panels.mappings.cards.mapping.hidden_sources",p).replace("{n}",String(u))}
           </div>`:""}
-      ${m?W`<div class="weather-note">
-            ${ss("panels.mappings.cards.mapping.et_ignored",p).replace("{zones}",m)}
+      ${m?V`<div class="weather-note">
+            ${as("panels.mappings.cards.mapping.et_ignored",p).replace("{zones}",m)}
           </div>`:""}
-      ${v?W`<div class="weather-note">
-            ${ss("panels.mappings.cards.mapping.et_missing",p).replace("{zones}",v)}
+      ${v?V`<div class="weather-note">
+            ${as("panels.mappings.cards.mapping.et_missing",p).replace("{zones}",v)}
           </div>`:""}
     `}loadMoreMappings(){this._scheduleUpdate()}static get styles(){return l`
-      ${Na} ${La}
+      ${ja} ${Ba}
 
       /* .si-subgroup / .si-subgroup-title now live in modern-style (shared) */
       /* source radios laid out inline like the other field controls */
@@ -4096,21 +4096,21 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           max-width: 100%;
         }
       }
-    `}disconnectedCallback(){super.disconnectedCallback(),this.debounceTimers.forEach((e=>{clearTimeout(e)})),this.debounceTimers.clear(),this.globalDebounceTimer&&(clearTimeout(this.globalDebounceTimer),this.globalDebounceTimer=null),this.mappingCache.clear()}};s([me()],mn.prototype,"config",void 0),s([me({type:Array})],mn.prototype,"zones",void 0),s([me({type:Array})],mn.prototype,"mappings",void 0),s([me({type:Map})],mn.prototype,"weatherRecords",void 0),s([me({type:Boolean})],mn.prototype,"isLoading",void 0),s([me({type:Boolean})],mn.prototype,"isSaving",void 0),s([me({type:String})],mn.prototype,"newMappingName",void 0),s([me({type:Array})],mn.prototype,"modules",void 0),s([fe("#mappingNameInput")],mn.prototype,"mappingNameInput",void 0),mn=s([ue("smart-irrigation-view-mappings")],mn);const vn=()=>{const e=e=>{let t={};for(let s=0;s<e.length;s+=2){const i=e[s],a=s<e.length?e[s+1]:void 0;t=Object.assign(Object.assign({},t),{[i]:a})}return t},t=window.location.pathname.split("/");let s={page:t[2]||"info",params:{}};if(t.length>3){let i=t.slice(3);if(t.includes("filter")){const t=i.findIndex((e=>"filter"==e)),a=i.slice(t+1);i=i.slice(0,t),s=Object.assign(Object.assign({},s),{filter:e(a)})}i.length&&(i.length%2&&(s=Object.assign(Object.assign({},s),{subpage:i.shift()})),i.length&&(s=Object.assign(Object.assign({},s),{params:e(i)})))}return s},fn=(e,...t)=>{let s={page:e,params:{}};t.forEach((e=>{"string"==typeof e?s=Object.assign(Object.assign({},s),{subpage:e}):"params"in e?s=Object.assign(Object.assign({},s),{params:e.params}):"filter"in e&&(s=Object.assign(Object.assign({},s),{filter:e.filter}))}));const i=e=>{let t=Object.keys(e);t=t.filter((t=>e[t])),t.sort();let s="";return t.forEach((t=>{const i=e[t];s=s.length?`${s}/${t}/${i}`:`${t}/${i}`})),s};let a=`/${os}/${s.page}`;return s.subpage&&(a=`${a}/${s.subpage}`),i(s.params).length&&(a=`${a}/${i(s.params)}`),s.filter&&(a=`${a}/filter/${i(s.filter)}`),a},_n={[Ts]:{unit:Xs,decimals:1},[$s]:{unit:Xs,decimals:1},[ws]:{unit:Xs,decimals:1},[_s]:{unit:Xs,decimals:1},[bs]:{unit:"%",decimals:0},[zs]:{unit:"hPa",decimals:0},[Os]:{unit:ti,decimals:1},[Ms]:{unit:si,decimals:2},[xs]:{unit:Qs,decimals:2},[Ss]:{unit:ii,decimals:2},[ys]:{unit:Qs,decimals:2}};let yn=class extends de{constructor(){super(...arguments),this._use=!1,this._service=null,this._apiKey="",this._entity="",this._loading=!0,this._saving=!1,this._error="",this._saved=!1,this._rainGroups=[],this._historyLoading=!1,this._historyError=""}firstUpdated(){be().catch((e=>{console.error("Failed to load HA form:",e)})),this._load()}async _load(){if(this.hass){try{const e=await la(this.hass);this._info=e,this._use=!!e.use_weather_service,this._service=e.weather_service||(e.services&&e.services.includes(As)?As:e.services&&e.services.length?e.services[0]:null),this._apiKey=e.weather_service_api_key||"",this._entity=e.weather_service_entity||"",this._error=""}catch(e){this._error=this._errText(e)}finally{this._loading=!1}this._loadHistory()}}async _loadHistory(){if(this.hass){this._historyLoading=!0;try{this._history=await((e,t=20)=>e.callWS({type:os+"/weatherservice_history",limit:t}))(this.hass,20),this._historyError=""}catch(e){this._historyError=this._errText(e)}finally{this._historyLoading=!1}}}_errText(e){return e&&(e.message||e.code)?e.message||e.code:String(e)}async _save(){if(this.hass){this._saving=!0,this._error="",this._saved=!1,this._rainGroups=[];try{await(e=this.hass,t={use_weather_service:this._use,weather_service:this._use?this._service:null,weather_service_api_key:this._use?this._apiKey:null,weather_service_entity:this._use&&this._service===Es?this._entity:null},e.callWS(Object.assign({type:os+"/set_weatherservice"},t))),this._saved=!0,this._rainGroups=await this._groupsLeftWithoutRain(),window.setTimeout((()=>this._load()),800)}catch(e){this._error="invalid_entity"===(null==e?void 0:e.code)?ss("panels.weatherservice.messages.invalid-entity",this.hass.language):this._errText(e)}finally{this._saving=!1}var e,t}}get _entityMissing(){return this._use&&this._service===Es&&!this._entity}async _groupsLeftWithoutRain(){var e;if(!this.hass||!this._use||!Hs.includes(null!==(e=this._service)&&void 0!==e?e:""))return[];try{return(await pa(this.hass)).filter((e=>!e.greenhouse&&[Ss,xs].some((t=>{var s,i;return(null===(i=null===(s=e.mappings)||void 0===s?void 0:s[t])||void 0===i?void 0:i.source)===Ds})))).map((e=>e.name))}catch(e){return console.error("Weather service: could not read the sensor groups",e),[]}}render(){var e;if(!this.hass)return W``;const t=this.hass.language;return this._loading&&!this._info?W`
-        <ha-card header="${ss("panels.weatherservice.title",t)}">
+    `}disconnectedCallback(){super.disconnectedCallback(),this.debounceTimers.forEach(e=>{clearTimeout(e)}),this.debounceTimers.clear(),this.globalDebounceTimer&&(clearTimeout(this.globalDebounceTimer),this.globalDebounceTimer=null),this.mappingCache.clear()}};s([ve()],yn.prototype,"config",void 0),s([ve({type:Array})],yn.prototype,"zones",void 0),s([ve({type:Array})],yn.prototype,"mappings",void 0),s([ve({type:Map})],yn.prototype,"weatherRecords",void 0),s([ve({type:Boolean})],yn.prototype,"isLoading",void 0),s([ve({type:Boolean})],yn.prototype,"isSaving",void 0),s([ve({type:String})],yn.prototype,"newMappingName",void 0),s([ve({type:Array})],yn.prototype,"modules",void 0),s([_e("#mappingNameInput")],yn.prototype,"mappingNameInput",void 0),yn=s([pe("smart-irrigation-view-mappings")],yn);const bn=()=>{const e=e=>{let t={};for(let s=0;s<e.length;s+=2){const i=e[s],a=s<e.length?e[s+1]:void 0;t=Object.assign(Object.assign({},t),{[i]:a})}return t},t=window.location.pathname.split("/");let s={page:t[2]||"info",params:{}};if(t.length>3){let i=t.slice(3);if(t.includes("filter")){const t=i.findIndex(e=>"filter"==e),a=i.slice(t+1);i=i.slice(0,t),s=Object.assign(Object.assign({},s),{filter:e(a)})}i.length&&(i.length%2&&(s=Object.assign(Object.assign({},s),{subpage:i.shift()})),i.length&&(s=Object.assign(Object.assign({},s),{params:e(i)})))}return s},wn=(e,...t)=>{let s={page:e,params:{}};t.forEach(e=>{"string"==typeof e?s=Object.assign(Object.assign({},s),{subpage:e}):"params"in e?s=Object.assign(Object.assign({},s),{params:e.params}):"filter"in e&&(s=Object.assign(Object.assign({},s),{filter:e.filter}))});const i=e=>{let t=Object.keys(e);t=t.filter(t=>e[t]),t.sort();let s="";return t.forEach(t=>{const i=e[t];s=s.length?`${s}/${t}/${i}`:`${t}/${i}`}),s};let a=`/${hs}/${s.page}`;return s.subpage&&(a=`${a}/${s.subpage}`),i(s.params).length&&(a=`${a}/${i(s.params)}`),s.filter&&(a=`${a}/filter/${i(s.filter)}`),a},$n={[As]:{unit:ei,decimals:1},[ks]:{unit:ei,decimals:1},[xs]:{unit:ei,decimals:1},[bs]:{unit:ei,decimals:1},[$s]:{unit:"%",decimals:0},[Ts]:{unit:"hPa",decimals:0},[Es]:{unit:ii,decimals:1},[Os]:{unit:ai,decimals:2},[Ss]:{unit:ti,decimals:2},[Ms]:{unit:ni,decimals:2},[ws]:{unit:ti,decimals:2}};let xn=class extends ce{constructor(){super(...arguments),this._use=!1,this._service=null,this._apiKey="",this._entity="",this._loading=!0,this._saving=!1,this._error="",this._saved=!1,this._rainGroups=[],this._historyLoading=!1,this._historyError=""}firstUpdated(){we().catch(e=>{console.error("Failed to load HA form:",e)}),this._load()}async _load(){if(this.hass){try{const e=await da(this.hass);this._info=e,this._use=!!e.use_weather_service,this._service=e.weather_service||(e.services&&e.services.includes(Cs)?Cs:e.services&&e.services.length?e.services[0]:null),this._apiKey=e.weather_service_api_key||"",this._entity=e.weather_service_entity||"",this._error=""}catch(e){this._error=this._errText(e)}finally{this._loading=!1}this._loadHistory()}}async _loadHistory(){if(this.hass){this._historyLoading=!0;try{this._history=await((e,t=20)=>e.callWS({type:hs+"/weatherservice_history",limit:t}))(this.hass,20),this._historyError=""}catch(e){this._historyError=this._errText(e)}finally{this._historyLoading=!1}}}_errText(e){return e&&(e.message||e.code)?e.message||e.code:String(e)}async _save(){if(this.hass){this._saving=!0,this._error="",this._saved=!1,this._rainGroups=[];try{await(e=this.hass,t={use_weather_service:this._use,weather_service:this._use?this._service:null,weather_service_api_key:this._use?this._apiKey:null,weather_service_entity:this._use&&this._service===Hs?this._entity:null},e.callWS(Object.assign({type:hs+"/set_weatherservice"},t))),this._saved=!0,this._rainGroups=await this._groupsLeftWithoutRain(),window.setTimeout(()=>this._load(),800)}catch(e){this._error="invalid_entity"===(null==e?void 0:e.code)?as("panels.weatherservice.messages.invalid-entity",this.hass.language):this._errText(e)}finally{this._saving=!1}var e,t}}get _entityMissing(){return this._use&&this._service===Hs&&!this._entity}async _groupsLeftWithoutRain(){var e;if(!this.hass||!this._use||!Ns.includes(null!==(e=this._service)&&void 0!==e?e:""))return[];try{return(await ma(this.hass)).filter(e=>!e.greenhouse&&[Ms,Ss].some(t=>{var s,i;return(null===(i=null===(s=e.mappings)||void 0===s?void 0:s[t])||void 0===i?void 0:i.source)===Rs})).map(e=>e.name)}catch(e){return console.error("Weather service: could not read the sensor groups",e),[]}}render(){var e;if(!this.hass)return V``;const t=this.hass.language;return this._loading&&!this._info?V`
+        <ha-card header="${as("panels.weatherservice.title",t)}">
           <div class="card-content">
-            ${ss("common.loading-messages.general",t)}...
+            ${as("common.loading-messages.general",t)}...
           </div>
         </ha-card>
-      `:W`
-      <ha-card header="${ss("panels.weatherservice.title",t)}">
+      `:V`
+      <ha-card header="${as("panels.weatherservice.title",t)}">
         <div class="card-content ws-description">
-          ${ss("panels.weatherservice.description",t)}
+          ${as("panels.weatherservice.description",t)}
         </div>
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${ss("panels.weatherservice.labels.use-weather-service",t)}
+              ${as("panels.weatherservice.labels.use-weather-service",t)}
             </div>
             <ha-switch
               .checked=${this._use}
@@ -4118,31 +4118,31 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
             ></ha-switch>
           </div>
 
-          ${this._use?W`
+          ${this._use?V`
                 <div class="setting-row">
                   <div class="setting-label">
-                    ${ss("panels.weatherservice.labels.service",t)}
+                    ${as("panels.weatherservice.labels.service",t)}
                   </div>
                   <div class="select-wrap">
                     <select
                       class="field"
                       @change=${e=>{this._service=e.target.value,this._saved=!1}}
                     >
-                      ${((null===(e=this._info)||void 0===e?void 0:e.services)||[]).map((e=>W`<option
+                      ${((null===(e=this._info)||void 0===e?void 0:e.services)||[]).map(e=>V`<option
                             value="${e}"
                             ?selected=${this._service===e}
                           >
-                            ${e===Es?ss("panels.weatherservice.labels.ha-weather-entity",t):e}
-                          </option>`))}
+                            ${e===Hs?as("panels.weatherservice.labels.ha-weather-entity",t):e}
+                          </option>`)}
                     </select>
                     <svg class="chev" viewBox="0 0 24 24">
-                      <path d=${ka}></path>
+                      <path d=${Ma}></path>
                     </svg>
                   </div>
                 </div>
-                ${this._service&&Cs.includes(this._service)?"":W`<div class="setting-row">
+                ${this._service&&Ds.includes(this._service)?"":V`<div class="setting-row">
                       <div class="setting-label">
-                        ${ss("panels.weatherservice.labels.api-key",t)}
+                        ${as("panels.weatherservice.labels.api-key",t)}
                       </div>
                       <input
                         class="field"
@@ -4152,9 +4152,9 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
                         @change=${e=>{this._apiKey=e.target.value,this._saved=!1}}
                       />
                     </div>`}
-                ${this._service===Es?W`<div class="setting-row">
+                ${this._service===Hs?V`<div class="setting-row">
                         <div class="setting-label">
-                          ${ss("panels.weatherservice.labels.weather-entity",t)}
+                          ${as("panels.weatherservice.labels.weather-entity",t)}
                         </div>
                         <ha-entity-picker
                           class="entity-field"
@@ -4165,26 +4165,26 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
                         ></ha-entity-picker>
                       </div>
                       <div class="ws-note ws-note--hint">
-                        ${ss("panels.weatherservice.messages.ha-entity-hint",t)}
+                        ${as("panels.weatherservice.messages.ha-entity-hint",t)}
                       </div>`:""}
-                ${"Open Weather Map"===this._service?W`<div class="ws-note ws-note--hint">
-                      ${ss("panels.weatherservice.messages.owm-onecall-hint",t)}
+                ${"Open Weather Map"===this._service?V`<div class="ws-note ws-note--hint">
+                      ${as("panels.weatherservice.messages.owm-onecall-hint",t)}
                     </div>`:""}
-              `:W`<div class="ws-note">
-                ${ss("panels.weatherservice.messages.no-service",t)}
+              `:V`<div class="ws-note">
+                ${as("panels.weatherservice.messages.no-service",t)}
               </div>`}
-          ${this._error?W`<div class="ws-msg ws-msg--error">${this._error}</div>`:""}
-          ${this._saved?W`<div class="ws-msg ws-msg--success">
-                ${ss("panels.weatherservice.messages.saved",t)}
+          ${this._error?V`<div class="ws-msg ws-msg--error">${this._error}</div>`:""}
+          ${this._saved?V`<div class="ws-msg ws-msg--success">
+                ${as("panels.weatherservice.messages.saved",t)}
               </div>`:""}
-          ${this._saved&&this._rainGroups.length?W`<div class="ws-msg ws-msg--warning">
-                ${ss("panels.weatherservice.messages.rain-groups-on-service",t,"{count}",this._rainGroups.length,"{groups}",this._rainGroups.join(", "))}
+          ${this._saved&&this._rainGroups.length?V`<div class="ws-msg ws-msg--warning">
+                ${as("panels.weatherservice.messages.rain-groups-on-service",t,"{count}",this._rainGroups.length,"{groups}",this._rainGroups.join(", "))}
                 <div class="ws-msg-actions">
                   <ha-button
                     appearance="plain"
-                    @click=${()=>sa(0,fn("mappings"))}
+                    @click=${()=>aa(0,wn("mappings"))}
                   >
-                    ${ss("panels.weatherservice.actions.open-sensor-groups",t)}
+                    ${as("panels.weatherservice.actions.open-sensor-groups",t)}
                   </ha-button>
                 </div>
               </div>`:""}
@@ -4195,35 +4195,35 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
               ?disabled=${this._saving||this._entityMissing}
               @click=${this._save}
             >
-              ${this._saving?ss("panels.weatherservice.actions.saving",t):ss("panels.weatherservice.actions.save",t)}
+              ${this._saving?as("panels.weatherservice.actions.saving",t):as("panels.weatherservice.actions.save",t)}
             </ha-button>
           </div>
           <div class="ws-note ws-reload-note">
-            ${ss(this._use&&this._service===Es?"panels.weatherservice.messages.reload-note-entity":"panels.weatherservice.messages.reload-note",t)}
+            ${as(this._use&&this._service===Hs?"panels.weatherservice.messages.reload-note-entity":"panels.weatherservice.messages.reload-note",t)}
           </div>
         </div>
         ${this._renderHistory(t)}
       </ha-card>
-    `}_renderHistory(e){var t,s;const i=(null===(t=this._history)||void 0===t?void 0:t.records)||[],a=((null===(s=this._history)||void 0===s?void 0:s.fields)||[]).filter((e=>i.some((t=>t.values&&void 0!==t.values[e]&&null!==t.values[e])))),n=new Set(i.map((e=>e.mapping_name))).size>1,r=["minmax(120px, auto)",...n?["minmax(100px, auto)"]:[],...a.map((()=>"minmax(76px, 1fr)"))].join(" "),o=i.length?this._formatTime(i[0]):"";return W`
+    `}_renderHistory(e){var t,s;const i=(null===(t=this._history)||void 0===t?void 0:t.records)||[],a=((null===(s=this._history)||void 0===s?void 0:s.fields)||[]).filter(e=>i.some(t=>t.values&&void 0!==t.values[e]&&null!==t.values[e])),n=new Set(i.map(e=>e.mapping_name)).size>1,r=["minmax(120px, auto)",...n?["minmax(100px, auto)"]:[],...a.map(()=>"minmax(76px, 1fr)")].join(" "),o=i.length?this._formatTime(i[0]):"";return V`
       <div class="card-content ws-history">
         <div class="ws-history-head">
-          <h4>${ss("panels.weatherservice.history.title",e)}</h4>
+          <h4>${as("panels.weatherservice.history.title",e)}</h4>
           <ha-button
             appearance="plain"
             ?disabled=${this._historyLoading}
             @click=${this._loadHistory}
           >
-            <ha-svg-icon slot="start" .path=${Oa}></ha-svg-icon>
-            ${ss("panels.weatherservice.history.refresh",e)}
+            <ha-svg-icon slot="start" .path=${Ca}></ha-svg-icon>
+            ${as("panels.weatherservice.history.refresh",e)}
           </ha-button>
         </div>
-        ${o?W`<div class="ws-note ws-history-last">
-              ${ss("panels.weatherservice.history.last-update",e)}:
+        ${o?V`<div class="ws-note ws-history-last">
+              ${as("panels.weatherservice.history.last-update",e)}:
               ${o}
             </div>`:""}
-        ${this._historyError?W`<div class="ws-msg ws-msg--error">${this._historyError}</div>`:0===i.length?W`<div class="ws-note">
-                ${this._historyLoading?ss("common.loading-messages.general",e)+"...":ss("panels.weatherservice.history.no-data",e)}
-              </div>`:W`
+        ${this._historyError?V`<div class="ws-msg ws-msg--error">${this._historyError}</div>`:0===i.length?V`<div class="ws-note">
+                ${this._historyLoading?as("common.loading-messages.general",e)+"...":as("panels.weatherservice.history.no-data",e)}
+              </div>`:V`
                 <div class="ws-history-scroll">
                   <div
                     class="weather-table"
@@ -4231,33 +4231,33 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
                   >
                     <div class="weather-header">
                       <span
-                        >${ss("panels.weatherservice.history.time",e)}</span
+                        >${as("panels.weatherservice.history.time",e)}</span
                       >
-                      ${n?W`<span
-                            >${ss("panels.weatherservice.history.sensor-group",e)}</span
+                      ${n?V`<span
+                            >${as("panels.weatherservice.history.sensor-group",e)}</span
                           >`:""}
-                      ${a.map((t=>{var s;return W`<span
-                            >${ss("panels.mappings.cards.mapping.items."+t.toLowerCase(),e)}
+                      ${a.map(t=>{var s;return V`<span
+                            >${as("panels.mappings.cards.mapping.items."+t.toLowerCase(),e)}
                             <span class="ws-history-unit"
-                              >${(null===(s=_n[t])||void 0===s?void 0:s.unit)||""}</span
+                              >${(null===(s=$n[t])||void 0===s?void 0:s.unit)||""}</span
                             ></span
-                          >`}))}
+                          >`})}
                     </div>
-                    ${i.map((e=>W`
+                    ${i.map(e=>V`
                         <div class="weather-row">
                           <span>${this._formatTime(e)}</span>
-                          ${n?W`<span>${e.mapping_name||"-"}</span>`:""}
-                          ${a.map((t=>{var s;return W`<span
+                          ${n?V`<span>${e.mapping_name||"-"}</span>`:""}
+                          ${a.map(t=>{var s;return V`<span
                                 >${this._formatValue(t,null===(s=e.values)||void 0===s?void 0:s[t])}</span
-                              >`}))}
+                              >`})}
                         </div>
-                      `))}
+                      `)}
                   </div>
                 </div>
               `}
       </div>
-    `}_formatTime(e){if(!e.retrieved)return"-";const t=dn(e.retrieved);return t.isValid()?t.format("YYYY-MM-DD HH:mm"):"-"}_formatValue(e,t){var s,i;return null==t||isNaN(t)?"-":t.toFixed(null!==(i=null===(s=_n[e])||void 0===s?void 0:s.decimals)&&void 0!==i?i:1)}static get styles(){return l`
-      ${Na} ${La}
+    `}_formatTime(e){if(!e.retrieved)return"-";const t=gn(e.retrieved);return t.isValid()?t.format("YYYY-MM-DD HH:mm"):"-"}_formatValue(e,t){var s,i;return null==t||isNaN(t)?"-":t.toFixed(null!==(i=null===(s=$n[e])||void 0===s?void 0:s.decimals)&&void 0!==i?i:1)}static get styles(){return l`
+      ${ja} ${Ba}
 
       .ws-description {
         /* description toujours en couleur de texte primaire, comme l'intro des
@@ -4338,25 +4338,25 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
         font-size: 0.85em;
         color: var(--secondary-text-color);
       }
-    `}};s([me()],yn.prototype,"narrow",void 0),s([me()],yn.prototype,"path",void 0),s([ve()],yn.prototype,"_info",void 0),s([ve()],yn.prototype,"_use",void 0),s([ve()],yn.prototype,"_service",void 0),s([ve()],yn.prototype,"_apiKey",void 0),s([ve()],yn.prototype,"_entity",void 0),s([ve()],yn.prototype,"_loading",void 0),s([ve()],yn.prototype,"_saving",void 0),s([ve()],yn.prototype,"_error",void 0),s([ve()],yn.prototype,"_saved",void 0),s([ve()],yn.prototype,"_rainGroups",void 0),s([ve()],yn.prototype,"_history",void 0),s([ve()],yn.prototype,"_historyLoading",void 0),s([ve()],yn.prototype,"_historyError",void 0),yn=s([ue("smart-irrigation-view-weatherservice")],yn);const bn=10,wn=8,$n=26,xn=46;let kn=class extends(_a(de)){constructor(){super(...arguments),this._records=[],this._loading=!0,this._error=""}firstUpdated(){be().catch((e=>{console.error("Failed to load HA form:",e)}))}hassSubscribe(){return this._fetchData().catch((e=>{console.error("Failed to fetch initial history:",e)})),[this.hass.connection.subscribeMessage((()=>{this._fetchData().catch((e=>{console.error("Failed to refresh history:",e)}))}),{type:os+"_config_updated"})]}async _fetchData(){if(this.hass)try{const[e,t]=await Promise.all([oa(this.hass),fa(this.hass,500)]);this._config=e,this._records=(null==t?void 0:t.records)||[],this._error=""}catch(e){this._error=(null==e?void 0:e.message)||(null==e?void 0:e.code)||String(e)}finally{this._loading=!1}}_chartDays(){const e=dn().startOf("day").subtract(29,"days"),t=[];for(let s=0;s<30;s++)t.push(e.clone().add(s,"days").format("YYYY-MM-DD"));return t}_daily(e,t){const s=new Map(e.map((e=>[e,0])));for(const e of this._records){if(!e.start||t&&!t(e))continue;const i=dn(e.start);if(!i.isValid())continue;const a=i.format("YYYY-MM-DD");s.has(a)&&s.set(a,s.get(a)+Ji(e.water_used,this._config))}return e.map((e=>({key:e,value:s.get(e)})))}_chartedZones(e){const t=e[0],s=new Map;for(const e of this._records){if(!e.start)continue;const i=dn(e.start);if(!i.isValid()||i.format("YYYY-MM-DD")<t)continue;const a=null!==e.zone_id?`#${e.zone_id}`:e.zone_name||"?";s.has(a)||s.set(a,{id:e.zone_id,name:e.zone_name||a})}return[...s.values()].sort(((e,t)=>e.name.localeCompare(t.name)))}render(){if(!this.hass)return W``;const e=this.hass.language;if(this._loading)return W`
-        <ha-card header="${ss("panels.history.title",e)}">
+    `}};s([ve()],xn.prototype,"narrow",void 0),s([ve()],xn.prototype,"path",void 0),s([fe()],xn.prototype,"_info",void 0),s([fe()],xn.prototype,"_use",void 0),s([fe()],xn.prototype,"_service",void 0),s([fe()],xn.prototype,"_apiKey",void 0),s([fe()],xn.prototype,"_entity",void 0),s([fe()],xn.prototype,"_loading",void 0),s([fe()],xn.prototype,"_saving",void 0),s([fe()],xn.prototype,"_error",void 0),s([fe()],xn.prototype,"_saved",void 0),s([fe()],xn.prototype,"_rainGroups",void 0),s([fe()],xn.prototype,"_history",void 0),s([fe()],xn.prototype,"_historyLoading",void 0),s([fe()],xn.prototype,"_historyError",void 0),xn=s([pe("smart-irrigation-view-weatherservice")],xn);const kn=10,Sn=8,zn=26,Mn=46;let Tn=class extends(wa(ce)){constructor(){super(...arguments),this._records=[],this._loading=!0,this._error=""}firstUpdated(){we().catch(e=>{console.error("Failed to load HA form:",e)})}hassSubscribe(){return this._fetchData().catch(e=>{console.error("Failed to fetch initial history:",e)}),[this.hass.connection.subscribeMessage(()=>{this._fetchData().catch(e=>{console.error("Failed to refresh history:",e)})},{type:hs+"_config_updated"})]}async _fetchData(){if(this.hass)try{const[e,t]=await Promise.all([ha(this.hass),ya(this.hass,500)]);this._config=e,this._records=(null==t?void 0:t.records)||[],this._error=""}catch(e){this._error=(null==e?void 0:e.message)||(null==e?void 0:e.code)||String(e)}finally{this._loading=!1}}_chartDays(){const e=gn().startOf("day").subtract(29,"days"),t=[];for(let s=0;s<30;s++)t.push(e.clone().add(s,"days").format("YYYY-MM-DD"));return t}_daily(e,t){const s=new Map(e.map(e=>[e,0]));for(const e of this._records){if(!e.start||t&&!t(e))continue;const i=gn(e.start);if(!i.isValid())continue;const a=i.format("YYYY-MM-DD");s.has(a)&&s.set(a,s.get(a)+Qi(e.water_used,this._config))}return e.map(e=>({key:e,value:s.get(e)}))}_chartedZones(e){const t=e[0],s=new Map;for(const e of this._records){if(!e.start)continue;const i=gn(e.start);if(!i.isValid()||i.format("YYYY-MM-DD")<t)continue;const a=null!==e.zone_id?`#${e.zone_id}`:e.zone_name||"?";s.has(a)||s.set(a,{id:e.zone_id,name:e.zone_name||a})}return[...s.values()].sort((e,t)=>e.name.localeCompare(t.name))}render(){if(!this.hass)return V``;const e=this.hass.language;if(this._loading)return V`
+        <ha-card header="${as("panels.history.title",e)}">
           <div class="card-content">
-            ${ss("common.loading-messages.general",e)}...
+            ${as("common.loading-messages.general",e)}...
           </div>
         </ha-card>
-      `;const t=this._chartDays(),s=this._chartedZones(t);return W`
-      <ha-card header="${ss("panels.history.title",e)}">
+      `;const t=this._chartDays(),s=this._chartedZones(t);return V`
+      <ha-card header="${as("panels.history.title",e)}">
         <div class="card-content">
           <div class="history-intro">
-            ${ss("panels.history.description",e)}
+            ${as("panels.history.description",e)}
           </div>
-          ${this._error?W`<div class="history-msg history-msg--error">
+          ${this._error?V`<div class="history-msg history-msg--error">
                 ${this._error}
               </div>`:""}
           <div class="history-actions">
             <ha-button appearance="plain" @click=${()=>this._fetchData()}>
-              <ha-svg-icon slot="start" .path=${Oa}></ha-svg-icon>
-              ${ss("panels.history.refresh",e)}
+              <ha-svg-icon slot="start" .path=${Ca}></ha-svg-icon>
+              ${as("panels.history.refresh",e)}
             </ha-button>
           </div>
         </div>
@@ -4364,102 +4364,102 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
 
       <!-- The config carries the unit system, so without it the volumes would
            be unlabelled: show the error above on its own instead. -->
-      ${this._config?W`${this._renderTable(e)} ${this._renderTotalChart(e,t)}
+      ${this._config?V`${this._renderTable(e)} ${this._renderTotalChart(e,t)}
           ${this._renderZoneCharts(e,t,s)}`:""}
-    `}_renderTable(e){const t=this._records.slice(0,100),s=Zi(this._config,di);return W`
-      <ha-card header="${ss("panels.history.table.title",e)}">
+    `}_renderTable(e){const t=this._records.slice(0,100),s=qi(this._config,ui);return V`
+      <ha-card header="${as("panels.history.table.title",e)}">
         <div class="card-content">
-          ${0===t.length?W`<div class="history-note">
-                ${ss("panels.history.no-data",e)}
-              </div>`:W`
+          ${0===t.length?V`<div class="history-note">
+                ${as("panels.history.no-data",e)}
+              </div>`:V`
                 <div class="history-scroll">
                   <div class="history-table">
                     <div class="history-header">
                       <span
-                        >${ss("panels.history.table.start",e)}</span
+                        >${as("panels.history.table.start",e)}</span
                       >
                       <span
-                        >${ss("panels.history.table.zone",e)}</span
+                        >${as("panels.history.table.zone",e)}</span
                       >
                       <span
-                        >${ss("panels.history.table.duration",e)}</span
+                        >${as("panels.history.table.duration",e)}</span
                       >
                       <span
-                        >${ss("panels.history.table.water",e)}
+                        >${as("panels.history.table.water",e)}
                         <span class="history-unit">(${s})</span></span
                       >
                     </div>
-                    ${t.map((e=>W`
+                    ${t.map(e=>V`
                         <div class="history-row">
                           <span>${this._formatStart(e.start)}</span>
                           <span>${e.zone_name||"-"}</span>
-                          <span>${Gi(e.duration)}</span>
+                          <span>${Ki(e.duration)}</span>
                           <span
-                            >${Ji(e.water_used,this._config).toFixed(1)}</span
+                            >${Qi(e.water_used,this._config).toFixed(1)}</span
                           >
                         </div>
-                      `))}
+                      `)}
                   </div>
                 </div>
-                ${this._records.length>100?W`<div class="history-note">
-                      ${ss("panels.history.table.truncated",e,"{count}",100,"{total}",this._records.length)}
+                ${this._records.length>100?V`<div class="history-note">
+                      ${as("panels.history.table.truncated",e,"{count}",100,"{total}",this._records.length)}
                     </div>`:""}
               `}
         </div>
       </ha-card>
-    `}_renderTotalChart(e,t){const s=this._daily(t);return W`
-      <ha-card header="${ss("panels.history.charts.total-title",e)}">
+    `}_renderTotalChart(e,t){const s=this._daily(t);return V`
+      <ha-card header="${as("panels.history.charts.total-title",e)}">
         <div class="card-content">${this._renderChart(s,e)}</div>
       </ha-card>
-    `}_renderZoneCharts(e,t,s){return 0===s.length?W``:W`
+    `}_renderZoneCharts(e,t,s){return 0===s.length?V``:V`
       <ha-card
-        header="${ss("panels.history.charts.per-zone-title",e)}"
+        header="${as("panels.history.charts.per-zone-title",e)}"
       >
         <div class="card-content">
-          ${s.map((s=>{const i=this._daily(t,(e=>null!==s.id?e.zone_id===s.id:e.zone_name===s.name));return W`
+          ${s.map(s=>{const i=this._daily(t,e=>null!==s.id?e.zone_id===s.id:e.zone_name===s.name);return V`
               <div class="zone-chart">
                 <h4>${s.name}</h4>
                 ${this._renderChart(i,e)}
               </div>
-            `}))}
+            `})}
         </div>
       </ha-card>
-    `}_renderChart(e,t){const s=Zi(this._config,di),i=Math.max(...e.map((e=>e.value)),0);if(i<=0)return W`<div class="history-note">
-        ${ss("panels.history.charts.no-data",t)}
-      </div>`;const a=this._niceMax(i),n=200-bn-$n,r=bn+n,o=(720-xn-wn)/e.length,l=Math.max(o-3,1),h=[0,.5,1].map((e=>{const t=r-e*n;return V`
+    `}_renderChart(e,t){const s=qi(this._config,ui),i=Math.max(...e.map(e=>e.value),0);if(i<=0)return V`<div class="history-note">
+        ${as("panels.history.charts.no-data",t)}
+      </div>`;const a=this._niceMax(i),n=200-kn-zn,r=kn+n,o=(720-Mn-Sn)/e.length,l=Math.max(o-3,1),h=[0,.5,1].map(e=>{const t=r-e*n;return Z`
         <line
           class="grid"
-          x1=${xn}
+          x1=${Mn}
           y1=${t}
-          x2=${720-wn}
+          x2=${720-Sn}
           y2=${t}
         ></line>
-        <text class="axis" x=${xn-6} y=${t+3.5} text-anchor="end">
+        <text class="axis" x=${Mn-6} y=${t+3.5} text-anchor="end">
           ${this._formatAxis(a*e)}
         </text>
-      `})),d=e.map(((e,t)=>{const s=e.value/a*n;return V`
+      `}),d=e.map((e,t)=>{const s=e.value/a*n;return Z`
         <rect
           class="bar"
-          x=${xn+t*o+(o-l)/2}
+          x=${Mn+t*o+(o-l)/2}
           y=${r-s}
           width=${l}
           height=${s}
           rx="1"
         >
           <title>
-            ${Wi(e.key,this.hass,{dateStyle:"long"})}: ${e.value.toFixed(1)}
+            ${Zi(e.key,this.hass,{dateStyle:"long"})}: ${e.value.toFixed(1)}
           </title>
         </rect>
-      `})),c=e.map(((t,s)=>s%5!=0&&s!==e.length-1?V``:V`
+      `}),c=e.map((t,s)=>s%5!=0&&s!==e.length-1?Z``:Z`
         <text
           class="axis"
-          x=${xn+s*o+o/2}
+          x=${Mn+s*o+o/2}
           y=${192}
           text-anchor="middle"
         >
-          ${Wi(t.key,this.hass,{day:"numeric",month:"short"})}
+          ${Zi(t.key,this.hass,{day:"numeric",month:"short"})}
         </text>
-      `));return W`
+      `);return V`
       <div class="chart-unit">${s}</div>
       <svg
         class="chart"
@@ -4469,8 +4469,8 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
       >
         ${h} ${d} ${c}
       </svg>
-    `}_niceMax(e){const t=Math.pow(10,Math.floor(Math.log10(e))),s=e/t;return(s<=1?1:s<=2?2:s<=5?5:10)*t}_formatAxis(e){return e>=100?e.toFixed(0):e.toFixed(1)}_formatStart(e){if(!e)return"-";const t=dn(e);return t.isValid()?t.format("YYYY-MM-DD HH:mm"):"-"}static get styles(){return l`
-      ${Na} ${La}
+    `}_niceMax(e){const t=Math.pow(10,Math.floor(Math.log10(e))),s=e/t;return(s<=1?1:s<=2?2:s<=5?5:10)*t}_formatAxis(e){return e>=100?e.toFixed(0):e.toFixed(1)}_formatStart(e){if(!e)return"-";const t=gn(e);return t.isValid()?t.format("YYYY-MM-DD HH:mm"):"-"}static get styles(){return l`
+      ${ja} ${Ba}
 
       .history-intro {
         color: var(--primary-text-color);
@@ -4565,21 +4565,21 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
         fill: var(--secondary-text-color);
         font-size: 10px;
       }
-    `}};s([me()],kn.prototype,"narrow",void 0),s([me()],kn.prototype,"path",void 0),s([ve()],kn.prototype,"_config",void 0),s([ve()],kn.prototype,"_records",void 0),s([ve()],kn.prototype,"_loading",void 0),s([ve()],kn.prototype,"_error",void 0),kn=s([ue("smart-irrigation-view-history")],kn);let Sn=class extends de{constructor(){super(...arguments),this._busy=!1,this._error="",this._message="",this._pendingName=""}firstUpdated(){be().catch((e=>{console.error("Failed to load HA form:",e)}))}_errText(e){return e&&(e.message||e.code)?e.message||e.code:String(e)}_reset(){this._error="",this._message="",this._pending=void 0,this._pendingName=""}async _export(){if(this.hass){this._reset(),this._busy=!0;try{const t=await(e=this.hass,e.callApi("GET",os+"/export")),s=JSON.stringify(t,null,2),i=new Blob([s],{type:"application/json"}),a=URL.createObjectURL(i),n=document.createElement("a");n.href=a;const r=(new Date).toISOString().slice(0,19).replace("T","_").replace(/:/g,"-");n.download=`smart_irrigation_backup_${r}.json`,n.click(),URL.revokeObjectURL(a),this._message=ss("panels.backuprestore.messages.exported",this.hass.language)}catch(e){this._error=this._errText(e)}finally{this._busy=!1}var e}}async _onFile(e){this._reset();const t=e.target,s=t.files&&t.files[0];if(s)try{const e=await s.text(),t=JSON.parse(e);if(!t||"object"!=typeof t||!t.config)throw new Error(ss("panels.backuprestore.messages.invalid-file",this.hass.language));this._pending=t,this._pendingName=s.name}catch(e){this._error=this._errText(e)}finally{t.value=""}}async _restore(){if(this.hass&&this._pending){this._busy=!0,this._error="",this._message="";try{const s=await(e=this.hass,t=this._pending,e.callApi("POST",os+"/restore",t));if(s&&!1===s.success)throw new Error(s.error||"restore failed");this._pending=void 0,this._pendingName="",this._message=ss("panels.backuprestore.messages.restored",this.hass.language)}catch(e){this._error=this._errText(e)}finally{this._busy=!1}var e,t}}_count(e){const t=this._pending&&this._pending[e];return Array.isArray(t)?t.length:0}render(){if(!this.hass)return W``;const e=this.hass.language;return W`
-      <ha-card header="${ss("panels.backuprestore.title",e)}">
+    `}};s([ve()],Tn.prototype,"narrow",void 0),s([ve()],Tn.prototype,"path",void 0),s([fe()],Tn.prototype,"_config",void 0),s([fe()],Tn.prototype,"_records",void 0),s([fe()],Tn.prototype,"_loading",void 0),s([fe()],Tn.prototype,"_error",void 0),Tn=s([pe("smart-irrigation-view-history")],Tn);let On=class extends ce{constructor(){super(...arguments),this._busy=!1,this._error="",this._message="",this._pendingName=""}firstUpdated(){we().catch(e=>{console.error("Failed to load HA form:",e)})}_errText(e){return e&&(e.message||e.code)?e.message||e.code:String(e)}_reset(){this._error="",this._message="",this._pending=void 0,this._pendingName=""}async _export(){if(this.hass){this._reset(),this._busy=!0;try{const t=await(e=this.hass,e.callApi("GET",hs+"/export")),s=JSON.stringify(t,null,2),i=new Blob([s],{type:"application/json"}),a=URL.createObjectURL(i),n=document.createElement("a");n.href=a;const r=(new Date).toISOString().slice(0,19).replace("T","_").replace(/:/g,"-");n.download=`smart_irrigation_backup_${r}.json`,n.click(),URL.revokeObjectURL(a),this._message=as("panels.backuprestore.messages.exported",this.hass.language)}catch(e){this._error=this._errText(e)}finally{this._busy=!1}var e}}async _onFile(e){this._reset();const t=e.target,s=t.files&&t.files[0];if(s)try{const e=await s.text(),t=JSON.parse(e);if(!t||"object"!=typeof t||!t.config)throw new Error(as("panels.backuprestore.messages.invalid-file",this.hass.language));this._pending=t,this._pendingName=s.name}catch(e){this._error=this._errText(e)}finally{t.value=""}}async _restore(){if(this.hass&&this._pending){this._busy=!0,this._error="",this._message="";try{const s=await(e=this.hass,t=this._pending,e.callApi("POST",hs+"/restore",t));if(s&&!1===s.success)throw new Error(s.error||"restore failed");this._pending=void 0,this._pendingName="",this._message=as("panels.backuprestore.messages.restored",this.hass.language)}catch(e){this._error=this._errText(e)}finally{this._busy=!1}var e,t}}_count(e){const t=this._pending&&this._pending[e];return Array.isArray(t)?t.length:0}render(){if(!this.hass)return V``;const e=this.hass.language;return V`
+      <ha-card header="${as("panels.backuprestore.title",e)}">
         <div class="card-content br-description">
-          ${ss("panels.backuprestore.description",e)}
+          ${as("panels.backuprestore.description",e)}
         </div>
       </ha-card>
 
       <ha-card
-        header="${ss("panels.backuprestore.cards.backup.title",e)}"
+        header="${as("panels.backuprestore.cards.backup.title",e)}"
       >
         <div class="card-content">
           <div class="br-description">
-            ${ss("panels.backuprestore.cards.backup.description",e)}
+            ${as("panels.backuprestore.cards.backup.description",e)}
           </div>
-          ${this._message?W`<div class="br-msg br-msg--success">${this._message}</div>`:""}
+          ${this._message?V`<div class="br-msg br-msg--success">${this._message}</div>`:""}
           <div class="br-actions">
             <ha-button
               appearance="filled"
@@ -4587,18 +4587,18 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
               @click=${this._export}
             >
               <ha-svg-icon slot="start" .path=${"M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"}></ha-svg-icon>
-              ${ss("panels.backuprestore.actions.export",e)}
+              ${as("panels.backuprestore.actions.export",e)}
             </ha-button>
           </div>
         </div>
       </ha-card>
 
       <ha-card
-        header="${ss("panels.backuprestore.cards.restore.title",e)}"
+        header="${as("panels.backuprestore.cards.restore.title",e)}"
       >
         <div class="card-content">
           <div class="br-description">
-            ${ss("panels.backuprestore.cards.restore.description",e)}
+            ${as("panels.backuprestore.cards.restore.description",e)}
           </div>
 
           <label class="br-file">
@@ -4607,52 +4607,52 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
               accept="application/json,.json"
               @change=${this._onFile}
             />
-            <ha-svg-icon .path=${Ca}></ha-svg-icon>
-            ${ss("panels.backuprestore.actions.choose-file",e)}
+            <ha-svg-icon .path=${Na}></ha-svg-icon>
+            ${as("panels.backuprestore.actions.choose-file",e)}
           </label>
 
-          ${this._pending?W`
+          ${this._pending?V`
                 <div class="br-warning">
                   <ha-svg-icon .path=${"M12,2L1,21H23M12,6L19.53,19H4.47M11,10V14H13V10M11,16V18H13V16"}></ha-svg-icon>
                   <div>
                     <div class="br-warning-title">
-                      ${ss("panels.backuprestore.messages.confirm-title",e)}
+                      ${as("panels.backuprestore.messages.confirm-title",e)}
                     </div>
                     <div class="br-file-name">${this._pendingName}</div>
                     <div class="br-summary">
-                      ${ss("panels.backuprestore.messages.summary",e)}:
+                      ${as("panels.backuprestore.messages.summary",e)}:
                       ${this._count("zones")}
-                      ${ss("panels.zones.title",e)} ·
+                      ${as("panels.zones.title",e)} ·
                       ${this._count("modules")}
-                      ${ss("panels.modules.title",e)} ·
+                      ${as("panels.modules.title",e)} ·
                       ${this._count("mappings")}
-                      ${ss("panels.mappings.title",e)}
+                      ${as("panels.mappings.title",e)}
                     </div>
                     <div class="br-warning-text">
-                      ${ss("panels.backuprestore.messages.confirm-warning",e)}
+                      ${as("panels.backuprestore.messages.confirm-warning",e)}
                     </div>
                   </div>
                 </div>
               `:""}
-          ${this._error?W`<div class="br-msg br-msg--error">${this._error}</div>`:""}
-          ${this._pending?W`<div class="br-actions">
+          ${this._error?V`<div class="br-msg br-msg--error">${this._error}</div>`:""}
+          ${this._pending?V`<div class="br-actions">
                 <ha-button
                   appearance="filled"
                   variant="danger"
                   ?disabled=${this._busy}
                   @click=${this._restore}
                 >
-                  <ha-svg-icon slot="start" .path=${Ca}></ha-svg-icon>
-                  ${this._busy?ss("panels.backuprestore.actions.restoring",e):ss("panels.backuprestore.actions.restore",e)}
+                  <ha-svg-icon slot="start" .path=${Na}></ha-svg-icon>
+                  ${this._busy?as("panels.backuprestore.actions.restoring",e):as("panels.backuprestore.actions.restore",e)}
                 </ha-button>
               </div>`:""}
           <div class="br-note">
-            ${ss("panels.backuprestore.messages.reload-note",e)}
+            ${as("panels.backuprestore.messages.reload-note",e)}
           </div>
         </div>
       </ha-card>
     `}static get styles(){return l`
-      ${Na} ${La}
+      ${ja} ${Ba}
 
       .br-description {
         color: var(--primary-text-color);
@@ -4729,13 +4729,13 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
       .br-warning-text {
         margin-top: 4px;
       }
-    `}};function zn(e){const t=Number(e).toFixed(1);return"-0.0"===t?"0.0":t}s([me()],Sn.prototype,"narrow",void 0),s([me()],Sn.prototype,"path",void 0),s([ve()],Sn.prototype,"_busy",void 0),s([ve()],Sn.prototype,"_error",void 0),s([ve()],Sn.prototype,"_message",void 0),s([ve()],Sn.prototype,"_pending",void 0),s([ve()],Sn.prototype,"_pendingName",void 0),Sn=s([ue("smart-irrigation-view-backuprestore")],Sn);let Mn=class extends(_a(de)){constructor(){super(...arguments),this.zones=[],this.mainScheduleStart=null,this.nextProgram=null,this.isLoading=!0,this._fetchRetries=0,this._updateScheduled=!1}_scheduleUpdate(){this._updateScheduled||(this._updateScheduled=!0,requestAnimationFrame((()=>{this._updateScheduled=!1,this.requestUpdate()})))}firstUpdated(){be().catch((e=>{console.error("Failed to load HA form:",e)}))}hassSubscribe(){return this._fetchData().catch((e=>{console.error("Failed to fetch initial data:",e)})),[this.hass.connection.subscribeMessage((()=>{this._fetchData().catch((e=>{console.error("Failed to fetch data on config update:",e)}))}),{type:os+"_config_updated"})]}async _fetchData(){var e;if(this.hass)try{this.isLoading=!0;const[t,s,i]=await Promise.all([oa(this.hass),ma(this.hass),ha(this.hass)]);if(this.config=t,this.info=s,this.zones=i,this._fetchRetries=0,this.mainScheduleStart=null,this.nextProgram=null,!0===(null==t?void 0:t.full_controller))try{const t=await this.hass.callWS({type:os+"/programs_state"}),i=(null==t?void 0:t.programs)||[],a=i.find((e=>e.main));"main_schedules"===(null==s?void 0:s.start_source)&&(this.mainScheduleStart=null!==(e=null==a?void 0:a.next_start)&&void 0!==e?e:null);const n=i.filter((e=>e.next_start)).sort(((e,t)=>Date.parse(e.next_start)-Date.parse(t.next_start)))[0];this.nextProgram=n?{name:n.main&&"Main program"===n.name?ss("programs.main_name",this._lang):n.name,start:n.next_start}:null}catch(e){console.error("Error fetching the programs' next starts:",e)}}catch(e){console.error("Error fetching data:",e),this._fetchRetries<10&&(this._fetchRetries+=1,setTimeout((()=>{this._fetchData().catch((()=>{}))}),3e3))}finally{this.isLoading=!1,this._scheduleUpdate()}}get _lang(){var e,t;return null!==(t=null===(e=this.hass)||void 0===e?void 0:e.language)&&void 0!==t?t:"en"}t(e,...t){return ss(`panels.info.${e}`,this._lang,...t)}formatDuration(e){const t=Math.max(0,Math.round(null!=e?e:0)),s=ss("common.units.hours",this._lang),i=ss("common.units.minutes",this._lang),a=ss("common.units.seconds",this._lang);if(t<60)return`${t} ${a}`;if(t<3600)return`${Math.round(t/60)} ${i}`;const n=Math.floor(t/3600),r=Math.round(t%3600/60);return r?`${n} ${s} ${r} ${i}`:`${n} ${s}`}render(){return this.hass?this.isLoading?W`
+    `}};function An(e){const t=Number(e).toFixed(1);return"-0.0"===t?"0.0":t}s([ve()],On.prototype,"narrow",void 0),s([ve()],On.prototype,"path",void 0),s([fe()],On.prototype,"_busy",void 0),s([fe()],On.prototype,"_error",void 0),s([fe()],On.prototype,"_message",void 0),s([fe()],On.prototype,"_pending",void 0),s([fe()],On.prototype,"_pendingName",void 0),On=s([pe("smart-irrigation-view-backuprestore")],On);let En=class extends(wa(ce)){constructor(){super(...arguments),this.zones=[],this.mainScheduleStart=null,this.nextProgram=null,this.isLoading=!0,this._fetchRetries=0,this._updateScheduled=!1}_scheduleUpdate(){this._updateScheduled||(this._updateScheduled=!0,requestAnimationFrame(()=>{this._updateScheduled=!1,this.requestUpdate()}))}firstUpdated(){we().catch(e=>{console.error("Failed to load HA form:",e)})}hassSubscribe(){return this._fetchData().catch(e=>{console.error("Failed to fetch initial data:",e)}),[this.hass.connection.subscribeMessage(()=>{this._fetchData().catch(e=>{console.error("Failed to fetch data on config update:",e)})},{type:hs+"_config_updated"})]}async _fetchData(){var e;if(this.hass)try{this.isLoading=!0;const[t,s,i]=await Promise.all([ha(this.hass),fa(this.hass),ca(this.hass)]);if(this.config=t,this.info=s,this.zones=i,this._fetchRetries=0,this.mainScheduleStart=null,this.nextProgram=null,!0===(null==t?void 0:t.full_controller))try{const t=await this.hass.callWS({type:hs+"/programs_state"}),i=(null==t?void 0:t.programs)||[],a=i.find(e=>e.main);"main_schedules"===(null==s?void 0:s.start_source)&&(this.mainScheduleStart=null!==(e=null==a?void 0:a.next_start)&&void 0!==e?e:null);const n=i.filter(e=>e.next_start).sort((e,t)=>Date.parse(e.next_start)-Date.parse(t.next_start))[0];this.nextProgram=n?{name:n.main&&"Main program"===n.name?as("programs.main_name",this._lang):n.name,start:n.next_start}:null}catch(e){console.error("Error fetching the programs' next starts:",e)}}catch(e){console.error("Error fetching data:",e),this._fetchRetries<10&&(this._fetchRetries+=1,setTimeout(()=>{this._fetchData().catch(()=>{})},3e3))}finally{this.isLoading=!1,this._scheduleUpdate()}}get _lang(){var e,t;return null!==(t=null===(e=this.hass)||void 0===e?void 0:e.language)&&void 0!==t?t:"en"}t(e,...t){return as(`panels.info.${e}`,this._lang,...t)}formatDuration(e){const t=Math.max(0,Math.round(null!=e?e:0)),s=as("common.units.hours",this._lang),i=as("common.units.minutes",this._lang),a=as("common.units.seconds",this._lang);if(t<60)return`${t} ${a}`;if(t<3600)return`${Math.round(t/60)} ${i}`;const n=Math.floor(t/3600),r=Math.round(t%3600/60);return r?`${n} ${s} ${r} ${i}`:`${n} ${s}`}render(){return this.hass?this.isLoading?V`
         <ha-card header="${this.t("title")}">
           <div class="card-content">
-            ${ss("common.loading",this._lang)}...
+            ${as("common.loading",this._lang)}...
           </div>
         </ha-card>
-      `:this.config?W`
+      `:this.config?V`
       <ha-card header="${this.t("title")}">
         <div class="card-content">${this.t("description")}</div>
       </ha-card>
@@ -4744,25 +4744,25 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
       ${this.renderStaleZones()} ${this.renderNextRun()}
       ${this.renderForecast()} ${this.renderDecision()}
       ${this.renderEstimates()}
-    `:W`
+    `:V`
         <ha-card header="${this.t("title")}">
           <div class="card-content">
             ${this.t("configuration-not-available")}
           </div>
         </ha-card>
-      `:W``}renderPostpone(){var e,t,s;const i=null===(s=null===(t=null===(e=this.info)||void 0===e?void 0:e.skip_preview)||void 0===t?void 0:t.checks)||void 0===s?void 0:s.find((e=>"postponed"===e.id&&e.skip));return W`
+      `:V``}renderPostpone(){var e,t,s;const i=null===(s=null===(t=null===(e=this.info)||void 0===e?void 0:e.skip_preview)||void 0===t?void 0:t.checks)||void 0===s?void 0:s.find(e=>"postponed"===e.id&&e.skip);return V`
       <ha-card>
         <div class="card-content postpone">
-          ${i?W`
+          ${i?V`
                 <ha-icon icon="mdi:pause-circle-outline"></ha-icon>
                 <span class="postpone-state">
                   ${this.t("cards.postpone.until")}
-                  ${Wi(i.until,this.hass,{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
+                  ${Zi(i.until,this.hass,{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}
                 </span>
                 <ha-button @click=${()=>this.resumeIrrigation()}>
                   ${this.t("cards.postpone.resume")}
                 </ha-button>
-              `:W`
+              `:V`
                 <ha-icon icon="mdi:weather-pouring"></ha-icon>
                 <span class="postpone-state">
                   ${this.t("cards.postpone.prompt")}
@@ -4776,13 +4776,13 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
               `}
         </div>
       </ha-card>
-    `}async postponeIrrigation(e){await this.hass.callService("smart_irrigation","postpone_irrigation",{hours:e}),await this._fetchData()}async resumeIrrigation(){await this.hass.callService("smart_irrigation","resume_irrigation",{}),await this._fetchData()}renderForecast(){var e,t,s,i,a;const n=null!==(t=null===(e=this.info)||void 0===e?void 0:e.forecast)&&void 0!==t?t:[];if(!n.length)return"";const r="mi"!==(null===(a=null===(i=null===(s=this.hass)||void 0===s?void 0:s.config)||void 0===i?void 0:i.unit_system)||void 0===a?void 0:a.length),o=e=>null==e?"—":r?`${Math.round(e)}°`:`${Math.round(1.8*e+32)}°`;return W`
+    `}async postponeIrrigation(e){await this.hass.callService("smart_irrigation","postpone_irrigation",{hours:e}),await this._fetchData()}async resumeIrrigation(){await this.hass.callService("smart_irrigation","resume_irrigation",{}),await this._fetchData()}renderForecast(){var e,t,s,i,a;const n=null!==(t=null===(e=this.info)||void 0===e?void 0:e.forecast)&&void 0!==t?t:[];if(!n.length)return"";const r="mi"!==(null===(a=null===(i=null===(s=this.hass)||void 0===s?void 0:s.config)||void 0===i?void 0:i.unit_system)||void 0===a?void 0:a.length),o=e=>null==e?"—":r?`${Math.round(e)}°`:`${Math.round(1.8*e+32)}°`;return V`
       <ha-card>
         <div class="card-content forecast">
-          ${n.map(((e,t)=>{var s;const i=(null!==(s=e.precipitation)&&void 0!==s?s:0)>0;return W`
+          ${n.map((e,t)=>{var s;const i=(null!==(s=e.precipitation)&&void 0!==s?s:0)>0;return V`
               <div class="forecast-day">
                 <div class="forecast-name">
-                  ${0===t?this.t("cards.forecast.today"):Wi(e.date,this.hass,{weekday:"short"})}
+                  ${0===t?this.t("cards.forecast.today"):Zi(e.date,this.hass,{weekday:"short"})}
                 </div>
                 <ha-icon
                   icon=${i?"mdi:weather-rainy":"mdi:weather-sunny"}
@@ -4794,10 +4794,10 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
                 </div>
                 <div class="forecast-rain">${a=e.precipitation,null==a||a<=0?"":r?`${a.toFixed(1)} mm`:`${(a/25.4).toFixed(2)} in`}</div>
               </div>
-            `;var a}))}
+            `;var a})}
         </div>
       </ha-card>
-    `}renderDeliveryGap(){var e;const t=null===(e=this.info)||void 0===e?void 0:e.delivery_gap;return t?W`
+    `}renderDeliveryGap(){var e;const t=null===(e=this.info)||void 0===e?void 0:e.delivery_gap;return t?V`
       <ha-card>
         <div class="card-content gap-banner">
           <ha-icon icon="mdi:water-alert-outline"></ha-icon>
@@ -4807,23 +4807,23 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           </div>
         </div>
       </ha-card>
-    `:""}renderStaleZones(){var e,t;const s=null!==(t=null===(e=this.info)||void 0===e?void 0:e.stale_zones)&&void 0!==t?t:[];return s.length?W`
+    `:""}renderStaleZones(){var e,t;const s=null!==(t=null===(e=this.info)||void 0===e?void 0:e.stale_zones)&&void 0!==t?t:[];return s.length?V`
       <ha-card>
         <div class="card-content gap-banner">
           <ha-icon icon="mdi:clock-alert-outline"></ha-icon>
           <div>
             <div class="gap-title">${this.t("cards.stale.title")}</div>
             <div class="info-note">${this.t("cards.stale.body")}</div>
-            ${s.map((e=>W`
+            ${s.map(e=>V`
                 <div class="info-note">
                   <b>${e.zone}</b>:
-                  ${e.last_calculated?Wi(e.last_calculated,this.hass,{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):this.t("cards.stale.never")}
+                  ${e.last_calculated?Zi(e.last_calculated,this.hass,{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):this.t("cards.stale.never")}
                 </div>
-              `))}
+              `)}
           </div>
         </div>
       </ha-card>
-    `:""}renderNextRun(){var e,t,s,i,a,n,r;const o=this.info,l=null!==(e=null==o?void 0:o.next_irrigation_zones)&&void 0!==e?e:[],h=null!==(t=null==o?void 0:o.next_irrigation_duration)&&void 0!==t?t:0,d=null===(i=null===(s=null==o?void 0:o.skip_preview)||void 0===s?void 0:s.checks)||void 0===i?void 0:i.find((e=>"postponed"===e.id&&e.skip)),c=(null===(a=null==o?void 0:o.skip_preview)||void 0===a?void 0:a.should_skip)?null===(n=null==o?void 0:o.skip_preview)||void 0===n?void 0:n.reason:null,u="main_schedules"===(null==o?void 0:o.start_source),p=u?this.mainScheduleStart:null==o?void 0:o.next_irrigation_start,g=p?Wi(p,this.hass,{weekday:"long",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):null;let m="mdi:water-off-outline",v=this.t("cards.next-run.headline-nothing"),f=g?this.t("cards.next-run.sub-nothing","{start}",g):this.t("cards.next-run.no-start");const _=!u&&"none"===(null==o?void 0:o.active_start_trigger);_?(m="mdi:calendar-remove-outline",v=this.t("cards.next-run.headline-no-trigger"),f=this.t("cards.next-run.sub-no-trigger")):d?(m="mdi:pause-circle-outline",v=this.t("cards.next-run.headline-postponed"),f=this.t("cards.next-run.sub-postponed")):c&&"postponed"!==c?(m="mdi:calendar-remove-outline",v=this.t("cards.next-run.headline-skipped"),f=this.t(`cards.decision.check-${c}`)):l.length&&h>0&&(m="mdi:water-outline",v=g?this.t("cards.next-run.headline-watering","{start}",g):this.t("cards.next-run.headline-watering-soon"),f=this.t("cards.next-run.sub-watering","{count}",String(l.length),"{duration}",this.formatDuration(h)));const y=!1!==(null==o?void 0:o.start_trigger_armed);return u||_||y||d||c||!l.length||!(h>0)||(m="mdi:calendar-alert",v=this.t("cards.next-run.headline-not-scheduled"),f=this.t("cards.next-run.sub-not-scheduled")),W`
+    `:""}renderNextRun(){var e,t,s,i,a,n,r;const o=this.info,l=null!==(e=null==o?void 0:o.next_irrigation_zones)&&void 0!==e?e:[],h=null!==(t=null==o?void 0:o.next_irrigation_duration)&&void 0!==t?t:0,d=null===(i=null===(s=null==o?void 0:o.skip_preview)||void 0===s?void 0:s.checks)||void 0===i?void 0:i.find(e=>"postponed"===e.id&&e.skip),c=(null===(a=null==o?void 0:o.skip_preview)||void 0===a?void 0:a.should_skip)?null===(n=null==o?void 0:o.skip_preview)||void 0===n?void 0:n.reason:null,u="main_schedules"===(null==o?void 0:o.start_source),p=u?this.mainScheduleStart:null==o?void 0:o.next_irrigation_start,g=p?Zi(p,this.hass,{weekday:"long",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):null;let m="mdi:water-off-outline",v=this.t("cards.next-run.headline-nothing"),f=g?this.t("cards.next-run.sub-nothing","{start}",g):this.t("cards.next-run.no-start");const _=!u&&"none"===(null==o?void 0:o.active_start_trigger);_?(m="mdi:calendar-remove-outline",v=this.t("cards.next-run.headline-no-trigger"),f=this.t("cards.next-run.sub-no-trigger")):d?(m="mdi:pause-circle-outline",v=this.t("cards.next-run.headline-postponed"),f=this.t("cards.next-run.sub-postponed")):c&&"postponed"!==c?(m="mdi:calendar-remove-outline",v=this.t("cards.next-run.headline-skipped"),f=this.t(`cards.decision.check-${c}`)):l.length&&h>0&&(m="mdi:water-outline",v=g?this.t("cards.next-run.headline-watering","{start}",g):this.t("cards.next-run.headline-watering-soon"),f=this.t("cards.next-run.sub-watering","{count}",String(l.length),"{duration}",this.formatDuration(h)));const y=!1!==(null==o?void 0:o.start_trigger_armed);return u||_||y||d||c||!l.length||!(h>0)||(m="mdi:calendar-alert",v=this.t("cards.next-run.headline-not-scheduled"),f=this.t("cards.next-run.sub-not-scheduled")),V`
       <ha-card>
         <div class="card-content hero">
           <ha-icon icon=${m}></ha-icon>
@@ -4833,42 +4833,42 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           </div>
         </div>
         <div class="card-content hero-detail">
-          ${this.nextProgram?W`<span
-                >${this.t("cards.next-run.next-program","{program}",this.nextProgram.name,"{start}",Wi(this.nextProgram.start,this.hass,{weekday:"long",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))}</span
+          ${this.nextProgram?V`<span
+                >${this.t("cards.next-run.next-program","{program}",this.nextProgram.name,"{start}",Zi(this.nextProgram.start,this.hass,{weekday:"long",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))}</span
               >`:""}
-          ${u?W`<span>${this.t("cards.next-run.main-schedules")}</span>`:W`<span>
+          ${u?V`<span>${this.t("cards.next-run.main-schedules")}</span>`:V`<span>
                 ${this.t("cards.next-run.labels.trigger")}:
                 ${null!==(r=null==o?void 0:o.trigger_name)&&void 0!==r?r:this.t("cards.next-run.trigger-default")}
                 ${(null==o?void 0:o.trigger_accounts_for_duration)?`(${this.t("cards.next-run.accounts-for-duration")})`:""}
               </span>`}
-          ${l.length?W`<span
+          ${l.length?V`<span
                 >${this.t("cards.next-run.labels.zones")}:
                 ${l.join(", ")}</span
               >`:""}
-          ${(null==o?void 0:o.zone_sequencing)?W`<span
+          ${(null==o?void 0:o.zone_sequencing)?V`<span
                 >${this.t(`cards.next-run.sequencing-${o.zone_sequencing}`)}</span
               >`:""}
-          ${(null==o?void 0:o.durations_estimated)?W`<span>${this.t("cards.next-run.estimated")}</span>`:""}
+          ${(null==o?void 0:o.durations_estimated)?V`<span>${this.t("cards.next-run.estimated")}</span>`:""}
         </div>
       </ha-card>
-    `}renderDecision(){var e;const t=null===(e=this.info)||void 0===e?void 0:e.skip_preview;return W`
+    `}renderDecision(){var e;const t=null===(e=this.info)||void 0===e?void 0:e.skip_preview;return V`
       <ha-card header="${this.t("cards.decision.title")}">
         <div class="card-content">
-          ${t?W`
+          ${t?V`
                 <div class="verdict ${t.should_skip?"skip":"run"}">
                   ${t.should_skip?this.t("cards.decision.will-skip"):this.t("cards.decision.will-run")}
                 </div>
-                ${t.checks.map((e=>this.renderCheck(e)))}
+                ${t.checks.map(e=>this.renderCheck(e))}
                 <div class="info-note">
                   ${this.t("cards.decision.preview-note")}
                 </div>
-              `:W`<div class="info-note">
+              `:V`<div class="info-note">
                 ${this.t("cards.decision.unavailable")}
               </div>`}
           ${this.renderLastDecision()}
         </div>
       </ha-card>
-    `}renderCheck(e){let t="passing";return e.enabled?e.available?e.skip&&(t="blocking"):t="unavailable":t="off",W`
+    `}renderCheck(e){let t="passing";return e.enabled?e.available?e.skip&&(t="blocking"):t="unavailable":t="off",V`
       <div class="check">
         <div class="check-head">
           <span class="check-name"
@@ -4878,11 +4878,11 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
             >${this.t(`cards.decision.state-${t}`)}</span
           >
         </div>
-        ${e.enabled&&e.available?W`<div class="check-detail">
+        ${e.enabled&&e.available?V`<div class="check-detail">
               ${this.renderCheckNumbers(e)}
             </div>`:""}
       </div>
-    `}renderCheckNumbers(e){var t,s,i,a,n,r,o,l,h,d;if("precipitation"===e.id)return W`
+    `}renderCheckNumbers(e){var t,s,i,a,n,r,o,l,h,d;if("precipitation"===e.id)return V`
         <span
           >${this.t("cards.decision.detail-forecast")}:
           ${null!==(s=null===(t=e.forecast_mm)||void 0===t?void 0:t.toFixed(1))&&void 0!==s?s:"-"} mm</span
@@ -4891,7 +4891,7 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           >${this.t("cards.decision.detail-threshold")}:
           ${null!==(a=null===(i=e.threshold_mm)||void 0===i?void 0:i.toFixed(1))&&void 0!==a?a:"-"} mm</span
         >
-      `;if("freeze"===e.id||"wind"===e.id){const t="weather_service"===e.source?this.t("cards.decision.detail-weather-service"):e.source;return W`
+      `;if("freeze"===e.id||"wind"===e.id){const t="weather_service"===e.source?this.t("cards.decision.detail-weather-service"):e.source;return V`
         <span
           >${this.t("cards.decision.detail-now")}: ${null!==(n=e.value)&&void 0!==n?n:"-"}
           ${null!==(r=e.unit)&&void 0!==r?r:""}</span
@@ -4901,12 +4901,12 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           ${null!==(o=e.threshold)&&void 0!==o?o:"-"} ${null!==(l=e.unit)&&void 0!==l?l:""}</span
         >
         <span>${null!=t?t:""}</span>
-      `}return"rain_sensor"===e.id?W`<span
+      `}return"rain_sensor"===e.id?V`<span
         >${e.raining?this.t("cards.decision.detail-raining"):this.t("cards.decision.detail-dry")}</span
-      >`:"soil_moisture"===e.id?W`${(e.zones||[]).map((e=>{var t;return W`<span
+      >`:"soil_moisture"===e.id?V`${(e.zones||[]).map(e=>{var t;return V`<span
             >${e.name}: ${null!==(t=e.moisture)&&void 0!==t?t:"-"} % / ${e.threshold} %
             ${e.held?`(${this.t("cards.decision.detail-held")})`:""}</span
-          >`}))}`:"days_between"===e.id?W`
+          >`})}`:"days_between"===e.id?V`
         <span
           >${this.t("cards.decision.detail-days-since")}:
           ${null!==(h=e.days_since)&&void 0!==h?h:"-"}</span
@@ -4915,22 +4915,22 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           >${this.t("cards.decision.detail-days-required")}:
           ${null!==(d=e.days_required)&&void 0!==d?d:"-"}</span
         >
-      `:W``}renderLastDecision(){var e;const t=null===(e=this.info)||void 0===e?void 0:e.last_skip_evaluation;return W`
+      `:V``}renderLastDecision(){var e;const t=null===(e=this.info)||void 0===e?void 0:e.last_skip_evaluation;return V`
       <div class="last-decision">
         <span class="check-name">${this.t("cards.decision.last-title")}</span>
-        ${t?W`<span class="value"
-              >${t.should_skip?this.t("cards.decision.last-skipped"):this.t("cards.decision.last-ran")}${t.evaluated_at?` (${Wi(t.evaluated_at,this.hass,{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})})`:""}</span
-            >`:W`<span class="value"
+        ${t?V`<span class="value"
+              >${t.should_skip?this.t("cards.decision.last-skipped"):this.t("cards.decision.last-ran")}${t.evaluated_at?` (${Zi(t.evaluated_at,this.hass,{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})})`:""}</span
+            >`:V`<span class="value"
               >${this.t("cards.decision.last-none")}</span
             >`}
       </div>
-    `}renderEstimates(){var e,t;const s=null!==(t=null===(e=this.info)||void 0===e?void 0:e.zone_estimates)&&void 0!==t?t:{},i=this.config?Zi(this.config,ci):"mm",a=this.zones.filter((e=>s[String(e.id)]));return W`
+    `}renderEstimates(){var e,t;const s=null!==(t=null===(e=this.info)||void 0===e?void 0:e.zone_estimates)&&void 0!==t?t:{},i=this.config?qi(this.config,pi):"mm",a=this.zones.filter(e=>s[String(e.id)]);return V`
       <ha-card header="${this.t("cards.estimate.title")}">
         <div class="card-content">
-          ${0===a.length?W`<div class="info-note">
+          ${0===a.length?V`<div class="info-note">
                 ${this.t("cards.estimate.none")}
-              </div>`:W`
-                ${a.map((e=>{const t=s[String(e.id)];return W`
+              </div>`:V`
+                ${a.map(e=>{const t=s[String(e.id)];return V`
                     <div class="zone-info">
                       <div class="zone-header">
                         <label class="zone-name">${e.name}</label>
@@ -4941,15 +4941,15 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
                             >${this.t("cards.estimate.labels.now")}:</span
                           >
                           <span class="value"
-                            >${zn(t.bucket)} ${i}</span
+                            >${An(t.bucket)} ${i}</span
                           >
                         </div>
                         <div class="pair">
                           <span class="label"
-                            >${this.t("cards.estimate.labels.at-last-calculation")}${e.last_calculated?` (${Wi(e.last_calculated,this.hass,{weekday:"short",hour:"2-digit",minute:"2-digit"})})`:""}:</span
+                            >${this.t("cards.estimate.labels.at-last-calculation")}${e.last_calculated?` (${Zi(e.last_calculated,this.hass,{weekday:"short",hour:"2-digit",minute:"2-digit"})})`:""}:</span
                           >
                           <span class="value"
-                            >${zn(e.bucket)} ${i}</span
+                            >${An(e.bucket)} ${i}</span
                           >
                         </div>
                         <div class="pair">
@@ -4965,18 +4965,18 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
                             >${this.t("cards.estimate.labels.last-irrigation")}:</span
                           >
                           <span class="value"
-                            >${e.last_irrigation?Wi(e.last_irrigation,this.hass,{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):this.t("cards.estimate.never-watered")}</span
+                            >${e.last_irrigation?Zi(e.last_irrigation,this.hass,{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):this.t("cards.estimate.never-watered")}</span
                           >
                         </div>
                       </div>
                     </div>
-                  `}))}
+                  `})}
                 <div class="info-note">${this.t("cards.estimate.note")}</div>
               `}
         </div>
       </ha-card>
     `}static get styles(){return l`
-      ${Na} ${La}
+      ${ja} ${Ba}
 
       .card-content {
         display: flex;
@@ -5237,40 +5237,40 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
         color: var(--primary-text-color);
         font-weight: 500;
       }
-    `}};s([me()],Mn.prototype,"config",void 0),s([me({type:Object})],Mn.prototype,"info",void 0),s([me({type:Array})],Mn.prototype,"zones",void 0),s([me({type:Boolean})],Mn.prototype,"isLoading",void 0),Mn=s([ue("smart-irrigation-view-info")],Mn);const Tn=[Ts,_s,bs,zs,Os,Ms,ys,xs,Ss],On={sensors:"PyETO",et:"Passthrough",static:"Static"};let An=class extends de{constructor(){super(...arguments),this.step=0,this.allModules=[],this.isSaving=!1,this.done=!1,this.zoneName="",this.zoneSize="",this.zoneThroughput="",this.underGlass=!1,this.weather="service",this.sensors={},this.staticDelta="",this.serviceSuppliesEt=!1,this.serviceHasRain=!0}firstUpdated(){be().catch((()=>{})),this._load().catch((e=>console.error("Setup wizard: load failed",e)))}async _load(){if(!this.hass)return;const[e,t,s]=await Promise.all([oa(this.hass),ua(this.hass),la(this.hass).catch((()=>{}))]);this.config=e,this.allModules=t,this.serviceSuppliesEt=!!(null==s?void 0:s.supplies_evapotranspiration),this.serviceHasRain=!1!==(null==s?void 0:s.supplies_rain),this.usesWeatherService||(this.weather="sensors")}get lng(){var e,t;return null!==(t=null===(e=this.hass)||void 0===e?void 0:e.language)&&void 0!==t?t:"en"}t(e){return ss(`panels.setup.${e}`,this.lng)}get usesWeatherService(){var e;return!!(null===(e=this.config)||void 0===e?void 0:e.use_weather_service)}get engineName(){return"service"===this.weather?this.serviceSuppliesEt?"Passthrough":"PyETO":On[this.weather]}get engine(){return this.allModules.find((e=>e.name===this.engineName))}get sourcesToAsk(){var e,t;const s=null!==(t=null===(e=this.engine)||void 0===e?void 0:e.consumes)&&void 0!==t?t:Tn;return Tn.filter((e=>s.includes(e)&&!(this.underGlass&&(e===xs||e===Ss))))}get rainFromSensors(){return e=this.weather,t=this.underGlass,s=this.serviceHasRain,"service"!==e||t||s?[]:[Ss,xs];var e,t,s}get sensorsToAsk(){var e,t;return"static"===this.weather?[]:"et"===this.weather?(t=this.sourcesToAsk,!!(null===(e=this.engine)||void 0===e?void 0:e.consumes)?t:[ys]):"sensors"===this.weather?this.sourcesToAsk:this.rainFromSensors}get optionalToAsk(){var e;const t=null===(e=this.engine)||void 0===e?void 0:e.requires;return t?this.sensorsToAsk.filter((e=>!t.includes(e)&&!this.rainFromSensors.includes(e))):[]}get steps(){const e=["zone","environment","weather"];return(this.sensorsToAsk.length||"static"===this.weather)&&e.push("sensors"),e.push("review"),e}get currentStep(){return this.steps[Math.min(this.step,this.steps.length-1)]}get canGoOn(){var e;switch(this.currentStep){case"zone":return""!==this.zoneName.trim()&&Number(this.zoneSize)>0&&Number(this.zoneThroughput)>0;case"sensors":return"static"===this.weather?Number(this.staticDelta)>0:0===function(e,t,s){const i=t?e.filter((e=>t.includes(e))):e;return i.filter((e=>!s[e]))}(this.sensorsToAsk,null===(e=this.engine)||void 0===e?void 0:e.requires,this.sensors).length&&(!this.rainFromSensors.length||this.rainFromSensors.some((e=>!!this.sensors[e])));default:return!0}}render(){return this.hass?this.done?W`
+    `}};s([ve()],En.prototype,"config",void 0),s([ve({type:Object})],En.prototype,"info",void 0),s([ve({type:Array})],En.prototype,"zones",void 0),s([ve({type:Boolean})],En.prototype,"isLoading",void 0),En=s([pe("smart-irrigation-view-info")],En);const Cn=[As,bs,$s,Ts,Es,Os,ws,Ss,Ms],Hn={sensors:"PyETO",et:"Passthrough",static:"Static"};let Dn=class extends ce{constructor(){super(...arguments),this.step=0,this.allModules=[],this.isSaving=!1,this.done=!1,this.zoneName="",this.zoneSize="",this.zoneThroughput="",this.underGlass=!1,this.weather="service",this.sensors={},this.staticDelta="",this.serviceSuppliesEt=!1,this.serviceHasRain=!0}firstUpdated(){we().catch(()=>{}),this._load().catch(e=>console.error("Setup wizard: load failed",e))}async _load(){if(!this.hass)return;const[e,t,s]=await Promise.all([ha(this.hass),ga(this.hass),da(this.hass).catch(()=>{})]);this.config=e,this.allModules=t,this.serviceSuppliesEt=!!(null==s?void 0:s.supplies_evapotranspiration),this.serviceHasRain=!1!==(null==s?void 0:s.supplies_rain),this.usesWeatherService||(this.weather="sensors")}get lng(){var e,t;return null!==(t=null===(e=this.hass)||void 0===e?void 0:e.language)&&void 0!==t?t:"en"}t(e){return as(`panels.setup.${e}`,this.lng)}get usesWeatherService(){var e;return!!(null===(e=this.config)||void 0===e?void 0:e.use_weather_service)}get engineName(){return"service"===this.weather?this.serviceSuppliesEt?"Passthrough":"PyETO":Hn[this.weather]}get engine(){return this.allModules.find(e=>e.name===this.engineName)}get sourcesToAsk(){var e,t;const s=null!==(t=null===(e=this.engine)||void 0===e?void 0:e.consumes)&&void 0!==t?t:Cn;return Cn.filter(e=>s.includes(e)&&!(this.underGlass&&(e===Ss||e===Ms)))}get rainFromSensors(){return e=this.weather,t=this.underGlass,s=this.serviceHasRain,"service"!==e||t||s?[]:[Ms,Ss];var e,t,s}get sensorsToAsk(){var e,t;return"static"===this.weather?[]:"et"===this.weather?(t=this.sourcesToAsk,!!(null===(e=this.engine)||void 0===e?void 0:e.consumes)?t:[ws]):"sensors"===this.weather?this.sourcesToAsk:this.rainFromSensors}get optionalToAsk(){var e;const t=null===(e=this.engine)||void 0===e?void 0:e.requires;return t?this.sensorsToAsk.filter(e=>!t.includes(e)&&!this.rainFromSensors.includes(e)):[]}get steps(){const e=["zone","environment","weather"];return(this.sensorsToAsk.length||"static"===this.weather)&&e.push("sensors"),e.push("review"),e}get currentStep(){return this.steps[Math.min(this.step,this.steps.length-1)]}get canGoOn(){var e;switch(this.currentStep){case"zone":return""!==this.zoneName.trim()&&Number(this.zoneSize)>0&&Number(this.zoneThroughput)>0;case"sensors":return"static"===this.weather?Number(this.staticDelta)>0:0===function(e,t,s){const i=t?e.filter(e=>t.includes(e)):e;return i.filter(e=>!s[e])}(this.sensorsToAsk,null===(e=this.engine)||void 0===e?void 0:e.requires,this.sensors).length&&(!this.rainFromSensors.length||this.rainFromSensors.some(e=>!!this.sensors[e]));default:return!0}}render(){return this.hass?this.done?V`
         <ha-card header="${this.t("title")}">
           <div class="card-content">
             <div class="done">${this.t("done")}</div>
             <div class="note">${this.t("done-note")}</div>
           </div>
         </ha-card>
-      `:W`
+      `:V`
       <ha-card header="${this.t("title")}">
         <div class="card-content">
           <div class="note">${this.t("description")}</div>
           ${this.renderStep()}
-          ${this.error?W`<div class="error">${this.error}</div>`:""}
+          ${this.error?V`<div class="error">${this.error}</div>`:""}
           <div class="si-form-actions">
             <span class="step-count"
               >(${this.t("step")}
               ${Math.min(this.step,this.steps.length-1)+1} /
               ${this.steps.length})</span
             >
-            ${this.step>0?W`<ha-button
+            ${this.step>0?V`<ha-button
                   appearance="plain"
                   @click=${()=>{this.step-=1,this.error=void 0}}
                 >
                   <ha-svg-icon slot="start" .path=${"M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"}></ha-svg-icon>
                   ${this.t("back")}
                 </ha-button>`:""}
-            ${"review"===this.currentStep?W`<ha-button
+            ${"review"===this.currentStep?V`<ha-button
                   appearance="filled"
                   ?disabled=${this.isSaving}
                   @click=${()=>this.create()}
                 >
                   <ha-svg-icon slot="start" .path=${"M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"}></ha-svg-icon>
                   ${this.isSaving?this.t("creating"):this.t("create")}
-                </ha-button>`:W`<ha-button
+                </ha-button>`:V`<ha-button
                   appearance="filled"
                   ?disabled=${!this.canGoOn}
                   @click=${()=>{this.step+=1,this.error=void 0}}
@@ -5281,7 +5281,7 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           </div>
         </div>
       </ha-card>
-    `:W``}renderStep(){switch(this.currentStep){case"zone":return this.renderZoneStep();case"environment":return this.renderEnvironmentStep();case"weather":return this.renderWeatherStep();case"sensors":return this.renderSensorsStep();default:return this.renderReviewStep()}}renderZoneStep(){return W`
+    `:V``}renderStep(){switch(this.currentStep){case"zone":return this.renderZoneStep();case"environment":return this.renderEnvironmentStep();case"weather":return this.renderWeatherStep();case"sensors":return this.renderSensorsStep();default:return this.renderReviewStep()}}renderZoneStep(){return V`
       <h3>${this.t("steps.zone.question")}</h3>
       <div class="note">${this.t("steps.zone.help")}</div>
       <div class="setting-row">
@@ -5296,8 +5296,8 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
       <div class="setting-row">
         <div class="setting-label">
           ${this.t("steps.zone.size")}
-          ${this.config?W`<span class="unit"
-                >(${Zi(this.config,ri)})</span
+          ${this.config?V`<span class="unit"
+                >(${qi(this.config,li)})</span
               >`:""}
         </div>
         <input
@@ -5311,8 +5311,8 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
       <div class="setting-row">
         <div class="setting-label">
           ${this.t("steps.zone.throughput")}
-          ${this.config?W`<span class="unit"
-                >(${Zi(this.config,oi)})</span
+          ${this.config?V`<span class="unit"
+                >(${qi(this.config,hi)})</span
               >`:""}
         </div>
         <input
@@ -5324,20 +5324,20 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
         />
       </div>
       <div class="note">${this.t("steps.zone.throughput-help")}</div>
-    `}renderEnvironmentStep(){return W`
+    `}renderEnvironmentStep(){return V`
       <h3>${this.t("steps.environment.question")}</h3>
-      ${this.choice(!this.underGlass,this.t("steps.environment.outdoors"),this.t("steps.environment.outdoors-help"),(()=>{this.underGlass=!1}))}
-      ${this.choice(this.underGlass,this.t("steps.environment.under-glass"),this.t("steps.environment.under-glass-help"),(()=>{this.underGlass=!0,"service"===this.weather&&(this.weather="sensors")}))}
-    `}renderWeatherStep(){return W`
+      ${this.choice(!this.underGlass,this.t("steps.environment.outdoors"),this.t("steps.environment.outdoors-help"),()=>{this.underGlass=!1})}
+      ${this.choice(this.underGlass,this.t("steps.environment.under-glass"),this.t("steps.environment.under-glass-help"),()=>{this.underGlass=!0,"service"===this.weather&&(this.weather="sensors")})}
+    `}renderWeatherStep(){return V`
       <h3>${this.t("steps.weather.question")}</h3>
-      ${this.usesWeatherService&&!this.underGlass?this.choice("service"===this.weather,this.t("steps.weather.service"),this.t(this.serviceHasRain?"steps.weather.service-help":"steps.weather.service-help-entity"),(()=>this.weather="service")):""}
-      ${this.underGlass?W`<div class="note">
+      ${this.usesWeatherService&&!this.underGlass?this.choice("service"===this.weather,this.t("steps.weather.service"),this.t(this.serviceHasRain?"steps.weather.service-help":"steps.weather.service-help-entity"),()=>this.weather="service"):""}
+      ${this.underGlass?V`<div class="note">
             ${this.t("steps.weather.no-service-indoors")}
           </div>`:""}
-      ${this.choice("sensors"===this.weather,this.t("steps.weather.sensors"),this.t("steps.weather.sensors-help"),(()=>this.weather="sensors"))}
-      ${this.choice("et"===this.weather,this.t("steps.weather.et"),this.t("steps.weather.et-help"),(()=>this.weather="et"))}
-      ${this.choice("static"===this.weather,this.t("steps.weather.static"),this.t("steps.weather.static-help"),(()=>this.weather="static"))}
-    `}renderSensorsStep(){return"static"===this.weather?W`
+      ${this.choice("sensors"===this.weather,this.t("steps.weather.sensors"),this.t("steps.weather.sensors-help"),()=>this.weather="sensors")}
+      ${this.choice("et"===this.weather,this.t("steps.weather.et"),this.t("steps.weather.et-help"),()=>this.weather="et")}
+      ${this.choice("static"===this.weather,this.t("steps.weather.static"),this.t("steps.weather.static-help"),()=>this.weather="static")}
+    `}renderSensorsStep(){return"static"===this.weather?V`
         <h3>${this.t("steps.sensors.static-question")}</h3>
         <div class="note">${this.t("steps.sensors.static-help")}</div>
         <div class="setting-row">
@@ -5353,18 +5353,18 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
             @input=${e=>this.staticDelta=e.target.value}
           />
         </div>
-      `:W`
+      `:V`
       <h3>${this.t("steps.sensors.question")}</h3>
       <div class="note">${this.t("steps.sensors.help")}</div>
-      ${this.optionalToAsk.length?W`<div class="note">${this.t("steps.sensors.help-optional")}</div>`:""}
-      ${this.rainFromSensors.length?W`<div class="note">
+      ${this.optionalToAsk.length?V`<div class="note">${this.t("steps.sensors.help-optional")}</div>`:""}
+      ${this.rainFromSensors.length?V`<div class="note">
             ${this.t("steps.sensors.rain-help-entity")}
           </div>`:""}
-      ${this.underGlass&&this.sensorsToAsk.includes(Ms)?W`<div class="note">${this.t("steps.sensors.lux-hint")}</div>`:""}
-      ${this.sensorsToAsk.map((e=>{var t;return W`
+      ${this.underGlass&&this.sensorsToAsk.includes(Os)?V`<div class="note">${this.t("steps.sensors.lux-hint")}</div>`:""}
+      ${this.sensorsToAsk.map(e=>{var t;return V`
           <div class="setting-row">
             <div class="setting-label">
-              ${e}${this.optionalToAsk.includes(e)?W` <span class="step-count"
+              ${e}${this.optionalToAsk.includes(e)?V` <span class="step-count"
                     >(${this.t("steps.sensors.optional")})</span
                   >`:""}
             </div>
@@ -5376,8 +5376,8 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
               @value-changed=${t=>{var s,i;this.sensors=Object.assign(Object.assign({},this.sensors),{[e]:null!==(i=null===(s=t.detail)||void 0===s?void 0:s.value)&&void 0!==i?i:""})}}
             ></ha-entity-picker>
           </div>
-        `}))}
-    `}renderReviewStep(){return W`
+        `})}
+    `}renderReviewStep(){return V`
       <h3>${this.t("steps.review.question")}</h3>
       <div class="settings">
         <div class="setting-row">
@@ -5393,24 +5393,24 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
         <div class="setting-row">
           <div class="setting-label">${this.t("steps.review.engine")}</div>
           <div class="review-value">
-            ${ra(this.engineName,this.lng)}
+            ${la(this.engineName,this.lng)}
           </div>
         </div>
         <div class="setting-row">
           <div class="setting-label">${this.t("steps.review.sources")}</div>
           <div class="review-value">
-            ${"static"===this.weather?`${this.t("steps.sensors.static-label")}: ${this.staticDelta}`:"service"===this.weather?[this.t("steps.review.from-the-service"),...this.rainFromSensors.filter((e=>!!this.sensors[e])).map((e=>`${e}: ${this.sensors[e]}`))].join(", "):this.sensorsToAsk.length?this.sensorsToAsk.join(", "):this.t("steps.review.from-the-service")}
+            ${"static"===this.weather?`${this.t("steps.sensors.static-label")}: ${this.staticDelta}`:"service"===this.weather?[this.t("steps.review.from-the-service"),...this.rainFromSensors.filter(e=>!!this.sensors[e]).map(e=>`${e}: ${this.sensors[e]}`)].join(", "):this.sensorsToAsk.length?this.sensorsToAsk.join(", "):this.t("steps.review.from-the-service")}
           </div>
         </div>
       </div>
       <div class="note">${this.t("steps.review.help")}</div>
-    `}choice(e,t,s,i){return W`
+    `}choice(e,t,s,i){return V`
       <div class="choice ${e?"selected":""}" @click=${i}>
         <div class="choice-title">${t}</div>
         <div class="choice-help">${s}</div>
       </div>
-    `}sourceFor(e){return this.sensors[e]?{[Us]:Ns,[Ys]:this.sensors[e],[Vs]:""}:"service"===this.weather&&this.sourcesToAsk.includes(e)&&!this.rainFromSensors.includes(e)?{[Us]:Ds,[Ys]:"",[Vs]:""}:!this.underGlass||e!==xs&&e!==Ss?{[Us]:Bs,[Ys]:"",[Vs]:""}:{[Us]:Rs,[Ys]:"",[Vs]:"",[Ws]:0}}async create(){if(this.hass&&!this.isSaving){this.isSaving=!0,this.error=void 0;try{const e={name:this.zoneName.trim(),mappings:Object.fromEntries(Tn.map((e=>[e,this.sourceFor(e)]))),greenhouse:this.underGlass};await ga(this.hass,e);const t=(await pa(this.hass)).find((t=>t.name===e.name));await da(this.hass,Object.assign({name:this.zoneName.trim(),size:Number(this.zoneSize),throughput:Number(this.zoneThroughput),state:"automatic",[pi]:null==t?void 0:t.id},function(e,t){var s;const i=null===(s=Object.entries(aa).find((([,t])=>t===e)))||void 0===s?void 0:s[0];return i?"fixed"===i?{calculation_method:i,method_config:{delta:na(t)}}:{calculation_method:i}:{}}(this.engineName,this.staticDelta))),await ha(this.hass),this.done=!0}catch(e){console.error("Setup wizard: could not create the zone",e),this.error=this.t("failed")}finally{this.isSaving=!1}}}static get styles(){return l`
-      ${Na} ${La}
+    `}sourceFor(e){return this.sensors[e]?{[Ws]:Ps,[Vs]:this.sensors[e],[Gs]:""}:"service"===this.weather&&this.sourcesToAsk.includes(e)&&!this.rainFromSensors.includes(e)?{[Ws]:Rs,[Vs]:"",[Gs]:""}:!this.underGlass||e!==Ss&&e!==Ms?{[Ws]:Ys,[Vs]:"",[Gs]:""}:{[Ws]:js,[Vs]:"",[Gs]:"",[Zs]:0}}async create(){if(this.hass&&!this.isSaving){this.isSaving=!0,this.error=void 0;try{const e={name:this.zoneName.trim(),mappings:Object.fromEntries(Cn.map(e=>[e,this.sourceFor(e)])),greenhouse:this.underGlass};await va(this.hass,e);const t=(await ma(this.hass)).find(t=>t.name===e.name);await ua(this.hass,Object.assign({name:this.zoneName.trim(),size:Number(this.zoneSize),throughput:Number(this.zoneThroughput),state:"automatic",[mi]:null==t?void 0:t.id},function(e,t){var s;const i=null===(s=Object.entries(ra).find(([,t])=>t===e))||void 0===s?void 0:s[0];return i?"fixed"===i?{calculation_method:i,method_config:{delta:oa(t)}}:{calculation_method:i}:{}}(this.engineName,this.staticDelta))),await ca(this.hass),this.done=!0}catch(e){console.error("Setup wizard: could not create the zone",e),this.error=this.t("failed")}finally{this.isSaving=!1}}}static get styles(){return l`
+      ${ja} ${Ba}
 
       h3 {
         margin: 12px 0 4px;
@@ -5489,156 +5489,156 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
         font-weight: 600;
         color: var(--success-color, var(--primary-text-color));
       }
-    `}};s([me()],An.prototype,"hass",void 0),s([me()],An.prototype,"config",void 0),s([ve()],An.prototype,"step",void 0),s([ve()],An.prototype,"allModules",void 0),s([ve()],An.prototype,"isSaving",void 0),s([ve()],An.prototype,"error",void 0),s([ve()],An.prototype,"done",void 0),s([ve()],An.prototype,"zoneName",void 0),s([ve()],An.prototype,"zoneSize",void 0),s([ve()],An.prototype,"zoneThroughput",void 0),s([ve()],An.prototype,"underGlass",void 0),s([ve()],An.prototype,"weather",void 0),s([ve()],An.prototype,"sensors",void 0),s([ve()],An.prototype,"staticDelta",void 0),s([ve()],An.prototype,"serviceSuppliesEt",void 0),s([ve()],An.prototype,"serviceHasRain",void 0),An=s([ue("smart-irrigation-view-setup")],An);const En=Na;var Cn;!function(e){e.Setup="setup",e.Info="info",e.General="general",e.Zones="zones",e.Modules="modules",e.Mappings="mappings",e.WeatherService="weatherservice",e.History="history",e.BackupRestore="backuprestore",e.Help="help",e.Planning="planning",e.Programs="programs",e.Supplies="supplies"}(Cn||(Cn={}));const Hn=[{id:"home",pages:[Cn.Info,Cn.History]},{id:"zones",pages:[Cn.Zones]},{id:"data",pages:[Cn.WeatherService,Cn.Mappings]},{id:"settings",pages:[Cn.General,Cn.BackupRestore,Cn.Help]}],Dn={[Cn.Modules]:"settings",[Cn.Setup]:"settings"},Nn={id:"watering",pages:[Cn.Planning,Cn.Programs,Cn.Supplies]},Rn=e=>e?[Hn[0],Hn[1],Nn,...Hn.slice(2)]:Hn,Pn=e=>{if(Nn.pages.includes(e))return Nn;const t=Hn.find((t=>t.pages.includes(e)));if(t)return t;const s=Dn[e];if(s){const t=Hn.find((e=>e.id===s));if(t)return Object.assign(Object.assign({},t),{pages:[...t.pages,e]})}return Hn[0]};e.SmartIrrigationPanel=class extends de{constructor(){super(...arguments),this._updateScheduled=!1,this._lastNavigationTime=0,this._navigationThrottleDelay=100,this._languageReady=!1,this._fullController=!1}_scheduleUpdate(){this._updateScheduled||(this._updateScheduled=!0,requestAnimationFrame((()=>{this._updateScheduled=!1,this.requestUpdate()})))}willUpdate(){var e;const t=null===(e=this.hass)||void 0===e?void 0:e.language;if(!t||this._languageRequested===t)return;if(this._languageRequested=t,function(e){return ts(e)in Qt}(t))return void(this._languageReady=!0);const s=()=>{this._languageReady=!0,this._refreshViews()},i=setTimeout(s,600);(async function(e,t=""){const s=ts(e);if(s in Qt)return;if(!Xt.includes(s))return;if(s in es)return es[s];const i=(async()=>{const e=new AbortController,i=setTimeout((()=>e.abort()),5e3);try{const i=t?`${Jt}/${s}.json?v=${encodeURIComponent(t)}`:`${Jt}/${s}.json`,a=await fetch(i,{signal:e.signal});if(!a.ok)throw new Error(`HTTP ${a.status}`);const n=await a.json();if(!n||"object"!=typeof n)throw new Error("not an object");Qt[s]=n}catch(e){console.warn(`Smart Irrigation: could not load the ${s} translation, falling back to English`,e)}finally{clearTimeout(i),delete es[s]}})();return es[s]=i,i})(t,rs).then((()=>{clearTimeout(i),s()}))}_refreshViews(){var e;this.requestUpdate(),null===(e=this.shadowRoot)||void 0===e||e.querySelectorAll("*").forEach((e=>{var t;return null===(t=e.requestUpdate)||void 0===t?void 0:t.call(e)}))}async firstUpdated(){const e=vn();e.page&&Object.values(Cn).includes(e.page)||sa(0,fn(Cn.Info)),window.addEventListener("location-changed",(()=>{if(!window.location.pathname.includes("smart_irrigation"))return;const e=performance.now();e-this._lastNavigationTime<this._navigationThrottleDelay||(this._lastNavigationTime=e,this._scheduleUpdate())})),this._readMode(),this.hass.connection.subscribeMessage((()=>this._readMode()),{type:os+"_config_updated"}).catch((()=>{})),be().then((()=>{this._scheduleUpdate()})).catch((e=>{console.error("Failed to load HA form elements:",e),this._scheduleUpdate()}))}render(){if(!this._languageReady)return W``;const e=vn(),t=!!customElements.get("ha-tab-group"),s=!!customElements.get("ha-tab-group-tab");return W`
+    `}};s([ve()],Dn.prototype,"hass",void 0),s([ve()],Dn.prototype,"config",void 0),s([fe()],Dn.prototype,"step",void 0),s([fe()],Dn.prototype,"allModules",void 0),s([fe()],Dn.prototype,"isSaving",void 0),s([fe()],Dn.prototype,"error",void 0),s([fe()],Dn.prototype,"done",void 0),s([fe()],Dn.prototype,"zoneName",void 0),s([fe()],Dn.prototype,"zoneSize",void 0),s([fe()],Dn.prototype,"zoneThroughput",void 0),s([fe()],Dn.prototype,"underGlass",void 0),s([fe()],Dn.prototype,"weather",void 0),s([fe()],Dn.prototype,"sensors",void 0),s([fe()],Dn.prototype,"staticDelta",void 0),s([fe()],Dn.prototype,"serviceSuppliesEt",void 0),s([fe()],Dn.prototype,"serviceHasRain",void 0),Dn=s([pe("smart-irrigation-view-setup")],Dn);const Nn=ja;var Rn;!function(e){e.Setup="setup",e.Info="info",e.General="general",e.Zones="zones",e.Modules="modules",e.Mappings="mappings",e.WeatherService="weatherservice",e.History="history",e.BackupRestore="backuprestore",e.Help="help",e.Planning="planning",e.Programs="programs",e.Supplies="supplies"}(Rn||(Rn={}));const Pn=[{id:"home",pages:[Rn.Info,Rn.History]},{id:"zones",pages:[Rn.Zones]},{id:"data",pages:[Rn.WeatherService,Rn.Mappings]},{id:"settings",pages:[Rn.General,Rn.BackupRestore,Rn.Help]}],jn={[Rn.Modules]:"settings",[Rn.Setup]:"settings"},Ln={id:"watering",pages:[Rn.Planning,Rn.Programs,Rn.Supplies]},In=e=>e?[Pn[0],Pn[1],Ln,...Pn.slice(2)]:Pn,Fn=e=>{if(Ln.pages.includes(e))return Ln;const t=Pn.find(t=>t.pages.includes(e));if(t)return t;const s=jn[e];if(s){const t=Pn.find(e=>e.id===s);if(t)return Object.assign(Object.assign({},t),{pages:[...t.pages,e]})}return Pn[0]};e.SmartIrrigationPanel=class extends ce{constructor(){super(...arguments),this._updateScheduled=!1,this._lastNavigationTime=0,this._navigationThrottleDelay=100,this._languageReady=!1,this._fullController=!1}_scheduleUpdate(){this._updateScheduled||(this._updateScheduled=!0,requestAnimationFrame(()=>{this._updateScheduled=!1,this.requestUpdate()}))}willUpdate(){var e;const t=null===(e=this.hass)||void 0===e?void 0:e.language;if(!t||this._languageRequested===t)return;if(this._languageRequested=t,function(e){return is(e)in ts}(t))return void(this._languageReady=!0);const s=()=>{this._languageReady=!0,this._refreshViews()},i=setTimeout(s,600);(async function(e,t=""){const s=is(e);if(s in ts)return;if(!es.includes(s))return;if(s in ss)return ss[s];const i=(async()=>{const e=new AbortController,i=setTimeout(()=>e.abort(),5e3);try{const i=t?`${Qt}/${s}.json?v=${encodeURIComponent(t)}`:`${Qt}/${s}.json`,a=await fetch(i,{signal:e.signal});if(!a.ok)throw new Error(`HTTP ${a.status}`);const n=await a.json();if(!n||"object"!=typeof n)throw new Error("not an object");ts[s]=n}catch(e){console.warn(`Smart Irrigation: could not load the ${s} translation, falling back to English`,e)}finally{clearTimeout(i),delete ss[s]}})();return ss[s]=i,i})(t,ls).then(()=>{clearTimeout(i),s()})}_refreshViews(){var e;this.requestUpdate(),null===(e=this.shadowRoot)||void 0===e||e.querySelectorAll("*").forEach(e=>{var t;return null===(t=e.requestUpdate)||void 0===t?void 0:t.call(e)})}async firstUpdated(){const e=bn();e.page&&Object.values(Rn).includes(e.page)||aa(0,wn(Rn.Info)),window.addEventListener("location-changed",()=>{if(!window.location.pathname.includes("smart_irrigation"))return;const e=performance.now();e-this._lastNavigationTime<this._navigationThrottleDelay||(this._lastNavigationTime=e,this._scheduleUpdate())}),this._readMode(),this.hass.connection.subscribeMessage(()=>this._readMode(),{type:hs+"_config_updated"}).catch(()=>{}),we().then(()=>{this._scheduleUpdate()}).catch(e=>{console.error("Failed to load HA form elements:",e),this._scheduleUpdate()})}render(){if(!this._languageReady)return V``;const e=bn(),t=!!customElements.get("ha-tab-group"),s=!!customElements.get("ha-tab-group-tab");return V`
       <div class="header">
         <div class="toolbar">
           <ha-menu-button
             .hass=${this.hass}
             .narrow=${this.narrow}
           ></ha-menu-button>
-          <div class="main-title">${ss("title",this.hass.language)}</div>
-          <div class="version">${rs}</div>
+          <div class="main-title">${as("title",this.hass.language)}</div>
+          <div class="version">${ls}</div>
         </div>
 
-        ${t&&s?W`
+        ${t&&s?V`
               <ha-tab-group @wa-tab-show=${this.handlePageSelected}>
-                ${Rn(this._fullController).map((t=>W`
+                ${In(this._fullController).map(t=>V`
                     <ha-tab-group-tab
                       slot="nav"
                       panel="${t.pages[0]}"
-                      .active=${Pn(e.page).id===t.id}
+                      .active=${Fn(e.page).id===t.id}
                     >
-                      ${ss(`panels.groups.${t.id}`,this.hass.language)}
+                      ${as(`panels.groups.${t.id}`,this.hass.language)}
                     </ha-tab-group-tab>
-                  `))}
+                  `)}
               </ha-tab-group>
-            `:W`
+            `:V`
               <div class="custom-tabs">
-                ${Rn(this._fullController).map((t=>W`
+                ${In(this._fullController).map(t=>V`
                     <button
-                      class="custom-tab ${Pn(e.page).id===t.id?"active":""}"
+                      class="custom-tab ${Fn(e.page).id===t.id?"active":""}"
                       @click=${()=>this.navigateToPage(t.pages[0])}
                     >
-                      ${ss(`panels.groups.${t.id}`,this.hass.language)}
+                      ${as(`panels.groups.${t.id}`,this.hass.language)}
                     </button>
-                  `))}
+                  `)}
               </div>
             `}
         ${this.renderSubTabs(e.page)}
       </div>
       <div class="view">${this.getView(e)}</div>
-    `}renderSubTabs(e){const t=Pn(e);return t.pages.length<2?"":W`
+    `}renderSubTabs(e){const t=Fn(e);return t.pages.length<2?"":V`
       <div class="sub-tabs">
-        ${t.pages.map((t=>W`
+        ${t.pages.map(t=>V`
             <button
               class="sub-tab ${e===t?"active":""}"
               @click=${()=>this.navigateToPage(t)}
             >
-              ${ss(`panels.${t}.title`,this.hass.language)}
+              ${as(`panels.${t}.title`,this.hass.language)}
             </button>
-          `))}
+          `)}
       </div>
-    `}getView(e){const t=e.page;switch(t){case"setup":return W`
+    `}getView(e){const t=e.page;switch(t){case"setup":return V`
           <smart-irrigation-view-setup
             .hass=${this.hass}
             .narrow=${this.narrow}
           ></smart-irrigation-view-setup>
-        `;case"info":return W`
+        `;case"info":return V`
           <smart-irrigation-view-info
             .hass=${this.hass}
             .narrow=${this.narrow}
             .path=${e}
           ></smart-irrigation-view-info>
-        `;case"planning":case"programs":case"supplies":return W`
+        `;case"planning":case"programs":case"supplies":return V`
           <smart-irrigation-view-general
             .hass=${this.hass}
             .narrow=${this.narrow}
             .path=${e}
             .section=${t}
           ></smart-irrigation-view-general>
-        `;case"general":return W`
+        `;case"general":return V`
           <smart-irrigation-view-general
             .hass=${this.hass}
             .narrow=${this.narrow}
             .path=${e}
           ></smart-irrigation-view-general>
-        `;case"zones":return W`
+        `;case"zones":return V`
           <smart-irrigation-view-zones
             .hass=${this.hass}
             .narrow=${this.narrow}
             .path=${e}
           ></smart-irrigation-view-zones>
-        `;case"modules":return W`
+        `;case"modules":return V`
           <smart-irrigation-view-modules
             .hass=${this.hass}
             .narrow=${this.narrow}
             .path=${e}
           ></smart-irrigation-view-modules>
-        `;case"mappings":return W`
+        `;case"mappings":return V`
           <smart-irrigation-view-mappings
             .hass=${this.hass}
             .narrow=${this.narrow}
             .path=${e}
           ></smart-irrigation-view-mappings>
-        `;case"weatherservice":return W`
+        `;case"weatherservice":return V`
           <smart-irrigation-view-weatherservice
             .hass=${this.hass}
             .narrow=${this.narrow}
             .path=${e}
           ></smart-irrigation-view-weatherservice>
-        `;case"history":return W`
+        `;case"history":return V`
           <smart-irrigation-view-history
             .hass=${this.hass}
             .narrow=${this.narrow}
             .path=${e}
           ></smart-irrigation-view-history>
-        `;case"backuprestore":return W`
+        `;case"backuprestore":return V`
           <smart-irrigation-view-backuprestore
             .hass=${this.hass}
             .narrow=${this.narrow}
             .path=${e}
           ></smart-irrigation-view-backuprestore>
-        `;case"help":return W`<div class="help-cards">
+        `;case"help":return V`<div class="help-cards">
           <ha-card
-            header="${ss("panels.help.cards.how-to-get-help.title",this.hass.language)}"
+            header="${as("panels.help.cards.how-to-get-help.title",this.hass.language)}"
           >
             <div class="card-content">
-              ${ss("panels.help.cards.how-to-get-help.first-read-the",this.hass.language)}
+              ${as("panels.help.cards.how-to-get-help.first-read-the",this.hass.language)}
               <a href="https://altmenorg.github.io/HAsmartirrigation/"
-                >${ss("panels.help.cards.how-to-get-help.wiki",this.hass.language)}</a
+                >${as("panels.help.cards.how-to-get-help.wiki",this.hass.language)}</a
               >.
-              ${ss("panels.help.cards.how-to-get-help.if-you-still-need-help",this.hass.language)}
+              ${as("panels.help.cards.how-to-get-help.if-you-still-need-help",this.hass.language)}
               <a
                 href="https://community.home-assistant.io/t/smart-irrigation-save-water-by-precisely-watering-your-lawn-garden"
-                >${ss("panels.help.cards.how-to-get-help.community-forum",this.hass.language)}</a
+                >${as("panels.help.cards.how-to-get-help.community-forum",this.hass.language)}</a
               >
-              ${ss("panels.help.cards.how-to-get-help.or-open-a",this.hass.language)}
+              ${as("panels.help.cards.how-to-get-help.or-open-a",this.hass.language)}
               <a href="https://github.com/altmenorg/HAsmartirrigation/issues"
-                >${ss("panels.help.cards.how-to-get-help.github-issue",this.hass.language)}</a
+                >${as("panels.help.cards.how-to-get-help.github-issue",this.hass.language)}</a
               >
-              (${ss("panels.help.cards.how-to-get-help.english-only",this.hass.language)}).
+              (${as("panels.help.cards.how-to-get-help.english-only",this.hass.language)}).
             </div></ha-card
           ><ha-card
-            header="${ss("panels.help.cards.translate.title",this.hass.language)}"
+            header="${as("panels.help.cards.translate.title",this.hass.language)}"
           >
             <div class="card-content">
-              ${ss("panels.help.cards.translate.text",this.hass.language)}
+              ${as("panels.help.cards.translate.text",this.hass.language)}
               <a
                 href="https://hosted.weblate.org/engage/smart-irrigation/"
                 target="_blank"
                 rel="noreferrer"
-                >${ss("panels.help.cards.translate.link",this.hass.language)}</a
+                >${as("panels.help.cards.translate.link",this.hass.language)}</a
               >.
             </div></ha-card
           >
-        </div>`;default:return W`
+        </div>`;default:return V`
           <ha-card header="Page not found">
             <div class="card-content">
               The page you are trying to reach cannot be found. Please select a
               page from the menu above to continue.
             </div>
           </ha-card>
-        `}}navigateToPage(e){if(e!==vn().page){const t=fn(e);sa(0,t),this.requestUpdate()}else scrollTo(0,0)}async _readMode(){try{const e=await oa(this.hass);this._fullController=!0===(null==e?void 0:e.full_controller)}catch(e){console.error("Could not read the configuration:",e)}}handlePageSelected(e){const t=e.detail.name;if(t!==vn().page){const e=fn(t);sa(0,e),this.requestUpdate()}else scrollTo(0,0)}static get styles(){return[En,l`
+        `}}navigateToPage(e){if(e!==bn().page){const t=wn(e);aa(0,t),this.requestUpdate()}else scrollTo(0,0)}async _readMode(){try{const e=await ha(this.hass);this._fullController=!0===(null==e?void 0:e.full_controller)}catch(e){console.error("Could not read the configuration:",e)}}handlePageSelected(e){const t=e.detail.name;if(t!==bn().page){const e=wn(t);aa(0,e),this.requestUpdate()}else scrollTo(0,0)}static get styles(){return[Nn,l`
         :host {
           color: var(--primary-text-color);
           --paper-card-header-color: var(--primary-text-color);
@@ -5818,7 +5818,7 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           font-weight: 500;
           color: rgba(var(--rgb-text-primary-color), 0.9);
         }
-      `]}},s([me({attribute:!1})],e.SmartIrrigationPanel.prototype,"hass",void 0),s([me({type:Boolean,reflect:!0})],e.SmartIrrigationPanel.prototype,"narrow",void 0),s([ve()],e.SmartIrrigationPanel.prototype,"_languageReady",void 0),s([ve()],e.SmartIrrigationPanel.prototype,"_fullController",void 0),e.SmartIrrigationPanel=s([ue("smart-irrigation")],e.SmartIrrigationPanel);let jn=class extends de{async showDialog(e){this._params=e,await this.updateComplete}async closeDialog(){this._params=void 0}render(){return this._params?W`
+      `]}},s([ve({attribute:!1})],e.SmartIrrigationPanel.prototype,"hass",void 0),s([ve({type:Boolean,reflect:!0})],e.SmartIrrigationPanel.prototype,"narrow",void 0),s([fe()],e.SmartIrrigationPanel.prototype,"_languageReady",void 0),s([fe()],e.SmartIrrigationPanel.prototype,"_fullController",void 0),e.SmartIrrigationPanel=s([pe("smart-irrigation")],e.SmartIrrigationPanel);let Bn=class extends ce{async showDialog(e){this._params=e,await this.updateComplete}async closeDialog(){this._params=void 0}render(){return this._params?V`
       <ha-dialog
         open
         .heading=${!0}
@@ -5830,7 +5830,7 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
             <ha-icon-button
               slot="navigationIcon"
               dialogAction="cancel"
-              .path=${wa}
+              .path=${ka}
             ></ha-icon-button>
             <span class="errortitle" slot="title">
               ${this.hass.localize("state_badge.default.error")}
@@ -5850,7 +5850,7 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
-    `:W``}static get styles(){return l`
+    `:V``}static get styles(){return l`
       div.wrapper {
         color: var(--primary-text-color);
       }
@@ -5859,5 +5859,5 @@ s.version="2.31.0",i(ii),s.fn=yn,s.min=oi,s.max=li,s.now=hi,s.utc=p,s.unix=bn,s.
         font-weight: bold;
         vertical-align: bottom;
       }
-    `}};s([me({attribute:!1})],jn.prototype,"hass",void 0),s([ve()],jn.prototype,"_params",void 0),jn=s([ue("smart-irrigation-error-dialog")],jn);var Ln=Object.freeze({__proto__:null,get ErrorDialog(){return jn}})}({});
+    `}};s([ve({attribute:!1})],Bn.prototype,"hass",void 0),s([fe()],Bn.prototype,"_params",void 0),Bn=s([pe("smart-irrigation-error-dialog")],Bn);var Un=Object.freeze({__proto__:null,get ErrorDialog(){return Bn}})}({});
 //# sourceMappingURL=smart-irrigation.js.map
