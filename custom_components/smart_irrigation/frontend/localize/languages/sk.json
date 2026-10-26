@@ -261,7 +261,7 @@
         },
         "continuousupdates": {
           "header": "Nepretržité aktualizácie pre senzory",
-          "description": "Zaznamenáva každú zmenu senzora skupiny namiesto jedného merania na aktualizáciu. Hodinový výpočet, zrážkomer aj prehratie dažďa sú vďaka tomu presnejšie: zrážkomer, ktorý hlási každých desať minút, umiestni svoj dážď s presnosťou na desať minút. Zóny sa pri každej zmene neprepočítavajú; urobí to plánovaný výpočet raz zo zaznamenaných meraní. V skupine, ktorá používa aj službu počasia, sa jej senzory zaznamenávajú pri každej zmene a služba sa stále číta raz za aktualizáciu: žiadne požiadavky navyše.",
+          "description": "Zaznamenáva každú zmenu senzora skupiny namiesto jedného merania na aktualizáciu: hodinový výpočet aj dážď tak pracujú s jemnejšími údajmi. Zrážkomer, ktorý hlási každých desať minút, sa číta každých desať minút. Zóny sa pri každej zmene neprepočítavajú; urobí to plánovaný výpočet raz zo zaznamenaných meraní. V skupine, ktorá používa aj službu počasia, sa jej senzory zaznamenávajú pri každej zmene a služba sa stále číta raz za aktualizáciu: žiadne požiadavky navyše.",
           "labels": {
             "continuousupdates": "Povoliť nepretržité aktualizácie",
             "sensor_debounce": "Debounce senzora"

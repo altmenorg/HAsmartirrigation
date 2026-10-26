@@ -261,7 +261,7 @@
         },
         "continuousupdates": {
           "header": "Aggiornamenti continui per i sensori (sperimentale)",
-          "description": "Registra ogni variazione di un sensore del gruppo, invece di una lettura per aggiornamento. Il calcolo orario, il pluviometro e la riproduzione della pioggia diventano più precisi: un pluviometro che si aggiorna ogni dieci minuti colloca la sua pioggia con dieci minuti di precisione. Le zone non vengono ricalcolate a ogni variazione; lo fa il calcolo programmato, una volta, dalle letture registrate. In un gruppo che usa anche un servizio meteo, i suoi sensori vengono registrati a ogni variazione e il servizio viene sempre letto una volta per aggiornamento: nessuna richiesta in più.",
+          "description": "Registra ogni variazione di un sensore del gruppo, invece di una lettura per aggiornamento: il calcolo orario e la pioggia lavorano così su dati più fini. Un pluviometro che si aggiorna ogni dieci minuti viene letto ogni dieci minuti. Le zone non vengono ricalcolate a ogni variazione; lo fa il calcolo programmato, una volta, dalle letture registrate. In un gruppo che usa anche un servizio meteo, i suoi sensori vengono registrati a ogni variazione e il servizio viene sempre letto una volta per aggiornamento: nessuna richiesta in più.",
           "labels": {
             "continuousupdates": "Abilita gli aggiornamenti continui",
             "sensor_debounce": "Rimbalzo del sensore"

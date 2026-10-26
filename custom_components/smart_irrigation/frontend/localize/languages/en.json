@@ -261,7 +261,7 @@
         },
         "continuousupdates": {
           "header": "Continuous updates for sensors",
-          "description": "Records every change of a sensor of the group, instead of one reading per update. The hourly calculation, the rain gauge and the replay of the rain get finer from it: a gauge that reports every ten minutes places its rain within ten minutes. It does not calculate the zones again at each change; the scheduled calculation does that, once, from the readings recorded. In a group that also uses a weather service, its sensors are recorded as they change and the service is still read once per update, so it costs no extra requests.",
+          "description": "Records every change of a sensor of the group, instead of one reading per update, so the hourly calculation and the rain work from finer data: a rain gauge that reports every ten minutes is read every ten minutes. The zones are not calculated again at each change; the scheduled calculation does that, once, from the readings recorded. In a group that also uses a weather service, its sensors are recorded as they change and the service is still read once per update, so it costs no extra requests.",
           "labels": {
             "continuousupdates": "Enable continuous updates",
             "sensor_debounce": "Sensor debounce"

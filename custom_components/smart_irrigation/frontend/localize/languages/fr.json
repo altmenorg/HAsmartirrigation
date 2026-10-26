@@ -261,7 +261,7 @@
         },
         "continuousupdates": {
           "header": "Mises à jour continues pour les capteurs",
-          "description": "Enregistre chaque changement d'un capteur du groupe, au lieu d'un relevé par mise à jour. Le calcul horaire, le pluviomètre et le rejeu de la pluie y gagnent en finesse : un pluviomètre qui se met à jour toutes les dix minutes place sa pluie à dix minutes près. Les zones ne sont pas recalculées à chaque changement ; le calcul programmé le fait, une fois, à partir des relevés enregistrés. Dans un groupe qui utilise aussi un service météo, ses capteurs sont enregistrés à chaque changement et le service est toujours lu une fois par mise à jour : aucune requête en plus.",
+          "description": "Enregistre chaque changement d'un capteur du groupe, au lieu d'un relevé par mise à jour : le calcul horaire et la pluie s'appuient ainsi sur des données plus fines. Un pluviomètre qui se met à jour toutes les dix minutes est lu toutes les dix minutes. Les zones ne sont pas recalculées à chaque changement ; le calcul programmé le fait, une fois, à partir des relevés enregistrés. Dans un groupe qui utilise aussi un service météo, ses capteurs sont enregistrés à chaque changement et le service est toujours lu une fois par mise à jour : aucune requête en plus.",
           "labels": {
             "continuousupdates": "Activer les mises à jour continues",
             "sensor_debounce": "Anti-rebond capteur"

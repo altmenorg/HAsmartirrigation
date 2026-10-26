@@ -261,7 +261,7 @@
         },
         "continuousupdates": {
           "header": "Continue updates voor sensoren",
-          "description": "Legt elke wijziging van een sensor van de groep vast, in plaats van één meting per update. De berekening per uur, de regenmeter en het naspelen van de regen worden er fijner door: een regenmeter die elke tien minuten meldt, plaatst zijn regen op tien minuten nauwkeurig. De zones worden niet bij elke wijziging opnieuw berekend; de geplande berekening doet dat één keer, uit de vastgelegde metingen. In een groep die ook een weerdienst gebruikt, worden de sensoren bij elke wijziging vastgelegd en wordt de dienst nog steeds één keer per update gelezen: geen extra verzoeken.",
+          "description": "Legt elke wijziging van een sensor van de groep vast, in plaats van één meting per update: de berekening per uur en de regen werken zo met fijnere gegevens. Een regenmeter die elke tien minuten meldt, wordt elke tien minuten gelezen. De zones worden niet bij elke wijziging opnieuw berekend; de geplande berekening doet dat één keer, uit de vastgelegde metingen. In een groep die ook een weerdienst gebruikt, worden de sensoren bij elke wijziging vastgelegd en wordt de dienst nog steeds één keer per update gelezen: geen extra verzoeken.",
           "labels": {
             "continuousupdates": "Continue updates inschakelen",
             "sensor_debounce": "Sensor-debounce"

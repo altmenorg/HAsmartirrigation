@@ -261,7 +261,7 @@
         },
         "continuousupdates": {
           "header": "Kontinuerliga uppdateringar för sensorer",
-          "description": "Registrerar varje ändring av en sensor i gruppen i stället för en mätning per uppdatering. Timberäkningen, regnmätaren och uppspelningen av regnet blir noggrannare: en regnmätare som rapporterar var tionde minut placerar sitt regn på tio minuter när. Zonerna beräknas inte om vid varje ändring; den schemalagda beräkningen gör det en gång utifrån de registrerade mätningarna. I en grupp som också använder en vädertjänst registreras dess sensorer vid varje ändring och tjänsten läses fortfarande en gång per uppdatering: inga extra förfrågningar.",
+          "description": "Registrerar varje ändring av en sensor i gruppen i stället för en mätning per uppdatering: timberäkningen och regnet arbetar därmed med finare data. En regnmätare som rapporterar var tionde minut läses var tionde minut. Zonerna beräknas inte om vid varje ändring; den schemalagda beräkningen gör det en gång utifrån de registrerade mätningarna. I en grupp som också använder en vädertjänst registreras dess sensorer vid varje ändring och tjänsten läses fortfarande en gång per uppdatering: inga extra förfrågningar.",
           "labels": {
             "continuousupdates": "Aktivera kontinuerliga uppdateringar",
             "sensor_debounce": "Sensor-debounce"
