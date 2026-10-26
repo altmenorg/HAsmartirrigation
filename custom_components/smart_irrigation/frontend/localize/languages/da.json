@@ -191,7 +191,7 @@
         },
         "continuousupdates": {
           "header": "Kontinuerlige opdateringer for sensorer (eksperimentel)",
-          "description": "Registrerer hver ændring af en sensor i gruppen i stedet for én måling pr. opdatering. Timeberegningen, regnmåleren og genafspilningen af regnen bliver mere præcise: en regnmåler, der melder hvert tiende minut, placerer sin regn med ti minutters nøjagtighed. Zonerne beregnes ikke igen ved hver ændring; den planlagte beregning gør det én gang ud fra de registrerede målinger. I en gruppe, der også bruger en vejrtjeneste, registreres dens sensorer ved hver ændring, og tjenesten læses stadig én gang pr. opdatering: ingen ekstra forespørgsler.",
+          "description": "Registrerer hver ændring af en sensor i gruppen i stedet for én måling pr. opdatering: timeberegningen og regnen arbejder dermed med finere data. En regnmåler, der melder hvert tiende minut, læses hvert tiende minut. Zonerne beregnes ikke igen ved hver ændring; den planlagte beregning gør det én gang ud fra de registrerede målinger. I en gruppe, der også bruger en vejrtjeneste, registreres dens sensorer ved hver ændring, og tjenesten læses stadig én gang pr. opdatering: ingen ekstra forespørgsler.",
           "labels": {
             "continuousupdates": "Aktivér kontinuerlige opdateringer",
             "sensor_debounce": "Sensor-debounce"

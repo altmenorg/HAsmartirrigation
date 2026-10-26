@@ -191,7 +191,7 @@
         },
         "continuousupdates": {
           "header": "Actualizaciones continuas para sensores",
-          "description": "Registra cada cambio de un sensor del grupo, en lugar de una lectura por actualización. El cálculo horario, el pluviómetro y la reproducción de la lluvia ganan precisión: un pluviómetro que informa cada diez minutos sitúa su lluvia con diez minutos de precisión. Las zonas no se recalculan en cada cambio; el cálculo programado lo hace una vez, con las lecturas registradas. En un grupo que también usa un servicio meteorológico, sus sensores se registran en cada cambio y el servicio se sigue leyendo una vez por actualización: ninguna petición más.",
+          "description": "Registra cada cambio de un sensor del grupo, en lugar de una lectura por actualización: el cálculo horario y la lluvia trabajan así con datos más finos. Un pluviómetro que informa cada diez minutos se lee cada diez minutos. Las zonas no se recalculan en cada cambio; el cálculo programado lo hace una vez, con las lecturas registradas. En un grupo que también usa un servicio meteorológico, sus sensores se registran en cada cambio y el servicio se sigue leyendo una vez por actualización: ninguna petición más.",
           "labels": {
             "continuousupdates": "Activar actualizaciones continuas",
             "sensor_debounce": "Antirrebote del sensor"

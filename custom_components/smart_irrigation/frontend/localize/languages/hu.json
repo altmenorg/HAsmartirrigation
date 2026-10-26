@@ -210,7 +210,7 @@
         },
         "continuousupdates": {
           "header": "Folyamatos frissítések az érzékelőkhöz (kísérleti)",
-          "description": "A csoport érzékelőinek minden változását rögzíti, frissítésenként egy mérés helyett. Az órás számítás, az esőmérő és az eső visszajátszása pontosabb lesz: a tízpercenként jelentő esőmérő tíz perc pontossággal helyezi el az esőt. A zónák nem számolódnak újra minden változáskor; az ütemezett számítás egyszer teszi meg a rögzített mérésekből. Az időjárás-szolgáltatást is használó csoportban az érzékelők minden változáskor rögzülnek, a szolgáltatást pedig továbbra is frissítésenként egyszer olvassa: nincs többletkérés.",
+          "description": "A csoport érzékelőinek minden változását rögzíti, frissítésenként egy mérés helyett: így az órás számítás és az eső finomabb adatokra épül. A tízpercenként jelentő esőmérőt tízpercenként olvassa. A zónák nem számolódnak újra minden változáskor; az ütemezett számítás egyszer teszi meg a rögzített mérésekből. Az időjárás-szolgáltatást is használó csoportban az érzékelők minden változáskor rögzülnek, a szolgáltatást pedig továbbra is frissítésenként egyszer olvassa: nincs többletkérés.",
           "labels": {
             "continuousupdates": "Folyamatos frissítések engedélyezése",
             "sensor_debounce": "Érzékelő-pergésmentesítés"

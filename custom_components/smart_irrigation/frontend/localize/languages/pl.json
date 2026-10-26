@@ -191,7 +191,7 @@
         },
         "continuousupdates": {
           "header": "Ciągłe aktualizacje dla czujników (eksperymentalne)",
-          "description": "Zapisuje każdą zmianę czujnika grupy zamiast jednego odczytu na aktualizację. Obliczenie godzinowe, deszczomierz i odtwarzanie deszczu stają się dokładniejsze: deszczomierz raportujący co dziesięć minut umieszcza swój deszcz z dokładnością do dziesięciu minut. Strefy nie są przeliczane przy każdej zmianie; robi to raz zaplanowane obliczenie na podstawie zapisanych odczytów. W grupie, która używa też serwisu pogodowego, jej czujniki są zapisywane przy każdej zmianie, a serwis nadal jest odczytywany raz na aktualizację: żadnych dodatkowych zapytań.",
+          "description": "Zapisuje każdą zmianę czujnika grupy zamiast jednego odczytu na aktualizację: obliczenie godzinowe i deszcz opierają się więc na dokładniejszych danych. Deszczomierz raportujący co dziesięć minut jest odczytywany co dziesięć minut. Strefy nie są przeliczane przy każdej zmianie; robi to raz zaplanowane obliczenie na podstawie zapisanych odczytów. W grupie, która używa też serwisu pogodowego, jej czujniki są zapisywane przy każdej zmianie, a serwis nadal jest odczytywany raz na aktualizację: żadnych dodatkowych zapytań.",
           "labels": {
             "continuousupdates": "Włącz ciągłe aktualizacje",
             "sensor_debounce": "Opóźnienie czujnika (debounce)"

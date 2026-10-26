@@ -191,7 +191,7 @@
         },
         "continuousupdates": {
           "header": "Průběžné aktualizace senzorů",
-          "description": "Zaznamenává každou změnu senzoru skupiny místo jednoho měření na aktualizaci. Hodinový výpočet, srážkoměr i přehrání deště jsou díky tomu přesnější: srážkoměr, který hlásí každých deset minut, umístí svůj déšť s přesností na deset minut. Zóny se při každé změně nepřepočítávají; to udělá plánovaný výpočet jednou ze zaznamenaných měření. Ve skupině, která používá i službu počasí, se její senzory zaznamenávají při každé změně a služba se dál čte jednou za aktualizaci: žádné požadavky navíc.",
+          "description": "Zaznamenává každou změnu senzoru skupiny místo jednoho měření na aktualizaci: hodinový výpočet i déšť tak pracují s jemnějšími daty. Srážkoměr, který hlásí každých deset minut, se čte každých deset minut. Zóny se při každé změně nepřepočítávají; to udělá plánovaný výpočet jednou ze zaznamenaných měření. Ve skupině, která používá i službu počasí, se její senzory zaznamenávají při každé změně a služba se dál čte jednou za aktualizaci: žádné požadavky navíc.",
           "labels": {
             "continuousupdates": "Povolit průběžné aktualizace",
             "sensor_debounce": "Debounce senzoru"

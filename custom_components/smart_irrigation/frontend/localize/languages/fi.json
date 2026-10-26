@@ -191,7 +191,7 @@
         },
         "continuousupdates": {
           "header": "Jatkuvat päivitykset antureille (kokeellinen)",
-          "description": "Tallentaa jokaisen ryhmän anturin muutoksen yhden päivityskohtaisen lukeman sijaan. Tuntilaskenta, sademittari ja sateen uudelleentoisto tarkentuvat: kymmenen minuutin välein raportoiva sademittari sijoittaa sateensa kymmenen minuutin tarkkuudella. Vyöhykkeitä ei lasketa uudelleen jokaisella muutoksella; ajastettu laskenta tekee sen kerran tallennetuista lukemista. Ryhmässä, joka käyttää myös säätietopalvelua, sen anturit tallennetaan jokaisella muutoksella ja palvelua luetaan yhä kerran päivitystä kohden: ei lisäpyyntöjä.",
+          "description": "Tallentaa jokaisen ryhmän anturin muutoksen yhden päivityskohtaisen lukeman sijaan: tuntilaskenta ja sade perustuvat näin tarkempiin tietoihin. Kymmenen minuutin välein raportoiva sademittari luetaan kymmenen minuutin välein. Vyöhykkeitä ei lasketa uudelleen jokaisella muutoksella; ajastettu laskenta tekee sen kerran tallennetuista lukemista. Ryhmässä, joka käyttää myös säätietopalvelua, sen anturit tallennetaan jokaisella muutoksella ja palvelua luetaan yhä kerran päivitystä kohden: ei lisäpyyntöjä.",
           "labels": {
             "continuousupdates": "Ota jatkuvat päivitykset käyttöön",
             "sensor_debounce": "Anturin debounce"
