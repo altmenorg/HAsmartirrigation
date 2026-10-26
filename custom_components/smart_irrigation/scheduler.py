@@ -17,6 +17,26 @@ from . import const
 _LOGGER = logging.getLogger(__name__)
 
 
+def normalize_schedule_time(schedule_data: dict[str, Any]) -> dict[str, Any]:
+    """The schedule with its time as ``HH:MM``.
+
+    The actions ask for the time with Home Assistant's time selector, which
+    gives ``HH:MM:SS``; the trackers and the check below read ``HH:MM``. So a
+    time set in the action editor was refused. Seconds are dropped: the
+    trackers fire on the minute.
+    """
+    value = schedule_data.get(const.SCHEDULE_CONF_TIME)
+    if not isinstance(value, str):
+        return schedule_data
+    for form in ("%H:%M:%S", "%H:%M"):
+        try:
+            moment = datetime.datetime.strptime(value.strip(), form)
+        except ValueError:
+            continue
+        return {**schedule_data, const.SCHEDULE_CONF_TIME: moment.strftime("%H:%M")}
+    return schedule_data
+
+
 class RecurringScheduleManager:
     """Manages recurring schedules for Smart Irrigation."""
 
@@ -35,6 +55,7 @@ class RecurringScheduleManager:
 
     async def async_create_schedule(self, schedule_data: dict[str, Any]) -> None:
         """Create a new recurring schedule."""
+        schedule_data = normalize_schedule_time(schedule_data)
         # Validate schedule data
         self._validate_schedule_data(schedule_data)
 
@@ -69,14 +90,19 @@ class RecurringScheduleManager:
         if schedule_index is None:
             raise ValueError(f"Schedule with ID {schedule_id} not found")
 
-        # Validate updated data
-        self._validate_schedule_data(schedule_data)
+        # An update carries what changes, and the action's own fields are all
+        # optional but the id: the schedule as it will be is what is checked.
+        # Checking the changes alone refused any update without a name and a
+        # type, switching a schedule off included.
+        changes = normalize_schedule_time(dict(schedule_data))
+        changes.pop(const.SCHEDULE_CONF_ID, None)
+        self._validate_schedule_data({**self._schedules[schedule_index], **changes})
 
         # Remove old tracker
         await self._remove_schedule_tracker(schedule_id)
 
         # Update schedule
-        self._schedules[schedule_index].update(schedule_data)
+        self._schedules[schedule_index].update(changes)
 
         # Save configuration
         await self._save_schedules()

@@ -57,3 +57,82 @@ async def test_a_schedule_is_created_saved_changed_and_deleted():
 
     await manager.async_delete_schedule(schedule_id)
     assert _saved(coordinator) == []
+
+
+@pytest.mark.asyncio
+async def test_a_schedule_can_be_switched_off_without_restating_it():
+    """The update action asks only for the id; name and type are optional."""
+    manager, coordinator = _manager()
+    with patch(
+        "custom_components.smart_irrigation.scheduler.async_track_time_change",
+        return_value=MagicMock(),
+    ):
+        await manager.async_create_schedule(
+            {
+                const.SCHEDULE_CONF_NAME: "Morning",
+                const.SCHEDULE_CONF_TYPE: const.SCHEDULE_TYPE_DAILY,
+                const.SCHEDULE_CONF_TIME: "06:30",
+            }
+        )
+        schedule_id = _saved(coordinator)[0][const.SCHEDULE_CONF_ID]
+
+        await manager.async_update_schedule(
+            schedule_id, {const.SCHEDULE_CONF_ENABLED: False}
+        )
+
+    saved = _saved(coordinator)[0]
+    assert saved[const.SCHEDULE_CONF_ENABLED] is False
+    assert saved[const.SCHEDULE_CONF_NAME] == "Morning"
+    assert saved[const.SCHEDULE_CONF_ID] == schedule_id
+
+
+@pytest.mark.asyncio
+async def test_the_time_selectors_seconds_are_accepted():
+    """Home Assistant's time selector gives HH:MM:SS; it is kept as HH:MM."""
+    manager, coordinator = _manager()
+    with patch(
+        "custom_components.smart_irrigation.scheduler.async_track_time_change",
+        return_value=MagicMock(),
+    ):
+        await manager.async_create_schedule(
+            {
+                const.SCHEDULE_CONF_NAME: "Morning",
+                const.SCHEDULE_CONF_TYPE: const.SCHEDULE_TYPE_DAILY,
+                const.SCHEDULE_CONF_TIME: "06:30:00",
+            }
+        )
+        schedule_id = _saved(coordinator)[0][const.SCHEDULE_CONF_ID]
+        assert _saved(coordinator)[0][const.SCHEDULE_CONF_TIME] == "06:30"
+
+        await manager.async_update_schedule(
+            schedule_id, {const.SCHEDULE_CONF_TIME: "05:45:00"}
+        )
+
+    assert _saved(coordinator)[0][const.SCHEDULE_CONF_TIME] == "05:45"
+
+
+@pytest.mark.asyncio
+async def test_a_bad_update_changes_nothing():
+    manager, coordinator = _manager()
+    with patch(
+        "custom_components.smart_irrigation.scheduler.async_track_time_change",
+        return_value=MagicMock(),
+    ):
+        await manager.async_create_schedule(
+            {
+                const.SCHEDULE_CONF_NAME: "Morning",
+                const.SCHEDULE_CONF_TYPE: const.SCHEDULE_TYPE_DAILY,
+                const.SCHEDULE_CONF_TIME: "06:30",
+            }
+        )
+        schedule_id = _saved(coordinator)[0][const.SCHEDULE_CONF_ID]
+        with pytest.raises(ValueError):
+            await manager.async_update_schedule(
+                schedule_id, {const.SCHEDULE_CONF_TIME: "half past six"}
+            )
+        with pytest.raises(ValueError):
+            await manager.async_update_schedule(
+                schedule_id, {const.SCHEDULE_CONF_TYPE: "fortnightly"}
+            )
+
+    assert _saved(coordinator)[0][const.SCHEDULE_CONF_TIME] == "06:30"
