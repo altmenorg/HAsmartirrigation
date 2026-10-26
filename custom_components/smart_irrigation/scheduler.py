@@ -444,11 +444,18 @@ class SeasonalAdjustmentManager:
         if adjustment_index is None:
             raise ValueError(f"Adjustment with ID {adjustment_id} not found")
 
-        # Validate updated data
-        self._validate_adjustment_data(adjustment_data)
+        # An update carries what changes, and the action's fields are all
+        # optional but the id: the adjustment as it will be is what is checked.
+        # Checking the changes alone refused any update without a name (#948),
+        # as it did for the recurring schedules (#951).
+        changes = dict(adjustment_data)
+        changes.pop(const.SEASONAL_CONF_ID, None)
+        self._validate_adjustment_data(
+            {**self._adjustments[adjustment_index], **changes}
+        )
 
         # Update adjustment
-        self._adjustments[adjustment_index].update(adjustment_data)
+        self._adjustments[adjustment_index].update(changes)
 
         # Save configuration
         await self._save_adjustments()

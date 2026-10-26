@@ -186,3 +186,38 @@ def test_the_season_is_the_month_the_water_was_used_in():
     assert CalculationMixin._window_month({}, hourly=(3.1, 24.0)) == 9
     # With no window to speak of, it is the month of now.
     assert CalculationMixin._window_month({}) == 10
+
+
+# --- changing an adjustment in part (#948) ------------------------------------
+
+
+def _stored(manager):
+    from unittest.mock import AsyncMock
+
+    manager._save_adjustments = AsyncMock()
+    return manager
+
+
+@pytest.mark.asyncio
+async def test_an_adjustment_can_be_changed_without_restating_its_name():
+    """The update action asks only for the id; the name is optional (#948)."""
+    manager = _stored(_manager(_adjustment(**{const.SEASONAL_CONF_ID: "a1"})))
+
+    await manager.async_update_adjustment(
+        "a1", {const.SEASONAL_CONF_MULTIPLIER_ADJUSTMENT: 1.3}
+    )
+
+    [adjustment] = manager._adjustments
+    assert adjustment[const.SEASONAL_CONF_MULTIPLIER_ADJUSTMENT] == 1.3
+    assert adjustment[const.SEASONAL_CONF_NAME] == "Summer"
+    assert adjustment[const.SEASONAL_CONF_ID] == "a1"
+
+
+@pytest.mark.asyncio
+async def test_a_bad_change_to_an_adjustment_changes_nothing():
+    manager = _stored(_manager(_adjustment(**{const.SEASONAL_CONF_ID: "a1"})))
+
+    with pytest.raises(ValueError):
+        await manager.async_update_adjustment("a1", {const.SEASONAL_CONF_MONTH_END: 13})
+
+    assert manager._adjustments[0][const.SEASONAL_CONF_MONTH_END] == 8
