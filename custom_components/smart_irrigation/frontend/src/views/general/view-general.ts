@@ -1317,6 +1317,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             false,
             1,
           )}
+          <div class="setting-hint row-hint">${t("passes_help")}</div>
           ${more(
             `more:step:${step.id}`,
             (step.max_litres ?? 0) > 0 ||
@@ -1654,29 +1655,64 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               <div class="setting-hint row-hint">
                 ${t("schedule_months_help")}
               </div>
-              ${this._textRow(
+              ${this._monthDayRow(
                 t("schedule_from"),
-                "MM-DD",
-                schedule.from_date ?? "",
-                (v) => patchSchedule({ from_date: v.trim() || null }),
+                schedule.from_date,
+                monthName,
+                (v) => patchSchedule({ from_date: v }),
               )}
-              ${this._textRow(
+              ${this._monthDayRow(
                 t("schedule_until"),
-                "MM-DD",
-                schedule.until_date ?? "",
-                (v) => patchSchedule({ until_date: v.trim() || null }),
+                schedule.until_date,
+                monthName,
+                (v) => patchSchedule({ until_date: v }),
               )}
               <div class="setting-hint row-hint">
                 ${t("schedule_period_help")}
               </div>
               ${schedule.type === "sun"
                 ? html`
-                    ${this._textRow(
+                    ${this._selectRow(
                       t("schedule_fallback_time"),
-                      "HH:MM",
-                      schedule.fallback_time ?? "",
-                      (v) => patchSchedule({ fallback_time: v.trim() || null }),
+                      html`
+                        <option value="" ?selected=${!schedule.fallback_time}>
+                          ${t("schedule_fallback_skip")}
+                        </option>
+                        <option
+                          value="previous"
+                          ?selected=${schedule.fallback_time === "previous"}
+                        >
+                          ${t("schedule_fallback_previous")}
+                        </option>
+                        <option
+                          value="at"
+                          ?selected=${!!schedule.fallback_time &&
+                          schedule.fallback_time !== "previous"}
+                        >
+                          ${t("schedule_fallback_at")}
+                        </option>
+                      `,
+                      (e: Event) => {
+                        const choice = (e.target as HTMLSelectElement).value;
+                        const fixed =
+                          schedule.fallback_time &&
+                          schedule.fallback_time !== "previous"
+                            ? schedule.fallback_time
+                            : "06:00";
+                        patchSchedule({
+                          fallback_time:
+                            choice === "at" ? fixed : choice || null,
+                        });
+                      },
                     )}
+                    ${schedule.fallback_time &&
+                    schedule.fallback_time !== "previous"
+                      ? this._timeRow(
+                          t("schedule_time"),
+                          schedule.fallback_time,
+                          (v) => patchSchedule({ fallback_time: v || null }),
+                        )
+                      : ""}
                     <div class="setting-hint row-hint">
                       ${t("schedule_fallback_time_help")}
                     </div>
@@ -3443,6 +3479,73 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     `;
   }
 
+  // A day of the year, stored "MM-DD", picked as a month and a day instead of
+  // typed. No month: none (the whole year). A day past the end of the month
+  // picked is brought back to its last day; 29 February is a real day.
+  private _monthDayRow(
+    label: string,
+    value: string | null | undefined,
+    monthName: (i: number) => string,
+    onCommit: (v: string | null) => void,
+  ): TemplateResult {
+    const match = /^(\d{2})-(\d{2})$/.exec(value ?? "");
+    const month = match ? Number(match[1]) : 0;
+    const day = match ? Number(match[2]) : 1;
+    const daysIn = (m: number) => new Date(2024, m, 0).getDate();
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const commit = (m: number, d: number) =>
+      onCommit(
+        m ? `${pad(m)}-${pad(Math.min(Math.max(d, 1), daysIn(m)))}` : null,
+      );
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">${label}</div>
+        <div class="combo-field">
+          <div class="select-wrap">
+            <select
+              class="field"
+              @change=${(e: Event) =>
+                commit(Number((e.target as HTMLSelectElement).value), day)}
+            >
+              <option value="0" ?selected=${!month}></option>
+              ${Array.from(
+                { length: 12 },
+                (_, i) => html`
+                  <option value=${i + 1} ?selected=${month === i + 1}>
+                    ${monthName(i)}
+                  </option>
+                `,
+              )}
+            </select>
+            <svg class="chev" viewBox="0 0 24 24">
+              <path d=${mdiMenuDown}></path>
+            </svg>
+          </div>
+          <div class="select-wrap day-select">
+            <select
+              class="field"
+              ?disabled=${!month}
+              @change=${(e: Event) =>
+                commit(month, Number((e.target as HTMLSelectElement).value))}
+            >
+              ${Array.from(
+                { length: month ? daysIn(month) : 31 },
+                (_, i) => html`
+                  <option value=${i + 1} ?selected=${day === i + 1}>
+                    ${i + 1}
+                  </option>
+                `,
+              )}
+            </select>
+            <svg class="chev" viewBox="0 0 24 24">
+              <path d=${mdiMenuDown}></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   private _numRow(
     label: string,
     unit: string | TemplateResult,
@@ -3619,6 +3722,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       .combo-field .select-wrap {
         width: 150px;
         max-width: none;
+      }
+      .combo-field .select-wrap.day-select {
+        width: 90px;
       }
       @media (max-width: 600px) {
         .combo-field {
