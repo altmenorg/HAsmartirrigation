@@ -22,7 +22,7 @@ from homeassistant.helpers.dispatcher import (
 from homeassistant.util import dt as dt_util
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
-from . import const
+from . import const, iu_import_ha
 from .calcmodules.consumes import consumed_mappings, idle_options, required_mappings
 from .delivery import delivery_gap, stale_zones
 from .engine_binding import (
@@ -1618,6 +1618,85 @@ async def websocket_set_weather_service(hass: HomeAssistant, connection, msg):
     connection.send_result(msg["id"], {"success": True})
 
 
+@websocket_api.require_admin
+@async_response
+async def websocket_iu_import_preview(hass: HomeAssistant, connection, msg):
+    """What importing an Irrigation Unlimited configuration would do.
+
+    Nothing is changed. The answer carries the configurations there are to
+    import, and a fingerprint that apply must be given back.
+    """
+    coordinator = _coordinator_or_none(hass)
+    if coordinator is None:
+        connection.send_error(msg["id"], "not_ready", "Smart Irrigation is not set up.")
+        return
+    try:
+        source, config = await iu_import_ha.async_read_source(
+            hass, msg.get("source"), msg.get("yaml")
+        )
+        preview = iu_import_ha.plan(
+            config,
+            coordinator.store,
+            iu_import_ha.links_from_automations(hass),
+            msg.get("matches"),
+            source,
+        )
+    except iu_import_ha.IUImportError as err:
+        connection.send_error(msg["id"], err.code, str(err))
+        return
+    preview["sources"] = await iu_import_ha.async_sources(hass)
+    connection.send_result(msg["id"], preview)
+
+
+@websocket_api.require_admin
+@async_response
+async def websocket_iu_import_sources(hass: HomeAssistant, connection, msg):
+    """The Irrigation Unlimited configurations there are to import."""
+    connection.send_result(
+        msg["id"], {"sources": await iu_import_ha.async_sources(hass)}
+    )
+
+
+@websocket_api.require_admin
+@async_response
+async def websocket_iu_import_apply(hass: HomeAssistant, connection, msg):
+    """Import an Irrigation Unlimited configuration, as its preview showed it.
+
+    The import is worked out again from the same source and choices, and
+    refused when it no longer matches the fingerprint of the preview.
+    """
+    coordinator = _coordinator_or_none(hass)
+    if coordinator is None:
+        connection.send_error(msg["id"], "not_ready", "Smart Irrigation is not set up.")
+        return
+    try:
+        async with iu_import_ha.import_lock(hass):
+            source, config = await iu_import_ha.async_read_source(
+                hass, msg.get("source"), msg.get("yaml")
+            )
+            preview = iu_import_ha.plan(
+                config,
+                coordinator.store,
+                iu_import_ha.links_from_automations(hass),
+                msg.get("matches"),
+                source,
+            )
+            if preview["fingerprint"] != msg["fingerprint"]:
+                connection.send_error(
+                    msg["id"],
+                    "changed",
+                    "The configuration or the zones changed since the preview. "
+                    "Look at the preview again.",
+                )
+                return
+            result = await iu_import_ha.async_apply(coordinator, preview)
+    except iu_import_ha.IUImportError as err:
+        connection.send_error(msg["id"], err.code, str(err))
+        return
+    async_dispatcher_send(hass, const.DOMAIN + "_update_frontend")
+    connection.send_result(msg["id"], result)
+
+
 class SmartIrrigationExportView(HomeAssistantView):
     """View to export the full Smart Irrigation configuration as JSON."""
 
@@ -1668,6 +1747,19 @@ class SmartIrrigationRestoreView(HomeAssistantView):
         hass.async_create_task(hass.config_entries.async_reload(entry.entry_id))
         _LOGGER.info("[restore] configuration restored, reloading entry")
         return self.json({"success": True})
+
+
+# Which zone an IU zone becomes: a zone id (a whole number), or "new".
+IU_IMPORT_MATCHES = vol.Any(
+    None,
+    {
+        cv.string: vol.Any(
+            iu_import_ha.NEW_ZONE,
+            vol.All(int, vol.Range(min=0)),
+            vol.All(str, vol.Match(r"^\d+$"), vol.Coerce(int)),
+        )
+    },
+)
 
 
 async def async_register_websockets(hass: HomeAssistant):
@@ -1818,6 +1910,41 @@ async def async_register_websockets(hass: HomeAssistant):
                 vol.Optional(const.CONF_WEATHER_SERVICE_ENTITY): vol.Any(
                     None, cv.string
                 ),
+            }
+        ),
+    )
+    async_register_command(
+        hass,
+        const.DOMAIN + "/iu_import/sources",
+        websocket_iu_import_sources,
+        websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend(
+            {vol.Required("type"): const.DOMAIN + "/iu_import/sources"}
+        ),
+    )
+    async_register_command(
+        hass,
+        const.DOMAIN + "/iu_import/preview",
+        websocket_iu_import_preview,
+        websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend(
+            {
+                vol.Required("type"): const.DOMAIN + "/iu_import/preview",
+                vol.Optional("source"): vol.Any(None, cv.string),
+                vol.Optional("yaml"): vol.Any(None, str),
+                vol.Optional("matches"): IU_IMPORT_MATCHES,
+            }
+        ),
+    )
+    async_register_command(
+        hass,
+        const.DOMAIN + "/iu_import/apply",
+        websocket_iu_import_apply,
+        websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend(
+            {
+                vol.Required("type"): const.DOMAIN + "/iu_import/apply",
+                vol.Required("fingerprint"): cv.string,
+                vol.Optional("source"): vol.Any(None, cv.string),
+                vol.Optional("yaml"): vol.Any(None, str),
+                vol.Optional("matches"): IU_IMPORT_MATCHES,
             }
         ),
     )

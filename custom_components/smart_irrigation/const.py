@@ -171,6 +171,10 @@ ATTR_RESET = "reset"
 # What is suspended until when: {"zone:3": iso, "program:evening": iso}. Kept apart
 # from the zones and the programs, which the panel sends back whole.
 CONF_SUSPENSIONS = "suspensions"
+# What the last import of an Irrigation Unlimited configuration created, so that
+# the next one updates it: {"zones": {"c1_z2": 7}, "programs": [...], "supplies":
+# [...], "source": "yaml", "at": iso}. See iu_import_ha.py.
+CONF_IU_IMPORT = "iu_import"
 # What direct valve control was when the full controller was switched on (which
 # forces it on), so that switching the controller off puts it back. None when the
 # controller was never switched on, or the value was already used.
