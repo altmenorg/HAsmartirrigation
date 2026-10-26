@@ -34,6 +34,7 @@ import {
   clearAllWeatherdata,
   fetchWateringCalendar,
   fetchMappingWeatherRecords,
+  fetchIrrigationInfo,
 } from "../../data/websockets";
 import { SubscribeMixin } from "../../subscribe-mixin";
 
@@ -140,6 +141,11 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
   @property({ type: Map })
   private weatherRecords = new Map<number, WeatherRecord[]>();
+
+  // What each zone will water at the next start, forecast rain credited, as
+  // the Info page and the planning count it (zone id -> seconds).
+  @property({ type: Map })
+  private plannedDurations = new Map<string, number>();
 
   @property({ type: Boolean })
   private isLoading = true;
@@ -275,6 +281,9 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
       // Fetch weather records for each zone that has a mapping
       this._fetchWeatherRecords();
+
+      // Not awaited: the estimates take a few seconds when nothing is cached.
+      this._fetchPlannedDurations();
 
       // Clear the cache when new data is loaded
       this.zoneCache.clear();
@@ -502,6 +511,22 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     )}`;
   }
 
+  private async _fetchPlannedDurations(): Promise<void> {
+    try {
+      const info = await fetchIrrigationInfo(this.hass!);
+      const planned = new Map<string, number>();
+      for (const [id, estimate] of Object.entries(
+        (info?.zone_estimates ?? {}) as Record<string, any>,
+      )) {
+        const duration = Number(estimate?.duration);
+        if (Number.isFinite(duration)) planned.set(String(id), duration);
+      }
+      this.plannedDurations = planned;
+    } catch (error) {
+      console.debug("Planned durations unavailable:", error);
+    }
+  }
+
   /** The zone's live estimate, from its live bucket sensor, when there is one. */
   private _liveEstimate(
     zone: SmartIrrigationZone,
@@ -528,6 +553,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     // while the zone has been drying out since. The live estimate, which the
     // zone's live bucket sensor carries, is where it stands now.
     const live = this._liveEstimate(zone);
+    const planned = this.plannedDurations.get(String(zone.id));
     const bucket = live ? live.bucket : (zone.bucket ?? 0);
     const deficit = Math.max(0, -bucket);
     const threshold = zone.irrigation_threshold ?? 0;
@@ -557,16 +583,19 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
           this._friendlyDuration(zone.duration),
         ).replace(/\.$/, "") +
         ` (${this._volumeText(zone.duration, zone.throughput)}).`;
-    } else if (live && live.duration > 0) {
+    } else if (live && (planned ?? live.duration) > 0) {
+      // The run the next start will make, as the planning shows it: the live
+      // estimate alone leaves out the rain in the forecast.
+      const duration = planned ?? live.duration;
       kind = "watering";
       text = t(
         "estimate",
         "{short}",
         short ?? "",
         "{duration}",
-        this._friendlyDuration(live.duration),
+        this._friendlyDuration(duration),
         "{volume}",
-        this._volumeText(live.duration, zone.throughput),
+        this._volumeText(duration, zone.throughput),
       );
     } else if (short && threshold > 0) {
       text = t("under-threshold", "{short}", short);

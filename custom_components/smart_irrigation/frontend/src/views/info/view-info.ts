@@ -866,6 +866,20 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
         padding: 4px 0;
       }
 
+      /* Six days of 62 px do not fit a phone: two rows of three, not a
+         line to scroll sideways. */
+      @media (max-width: 600px) {
+        .forecast {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          row-gap: 12px;
+          overflow-x: visible;
+        }
+        .forecast-day {
+          min-width: 0;
+        }
+      }
+
       .forecast-name {
         color: var(--secondary-text-color);
         font-size: 0.85em;
