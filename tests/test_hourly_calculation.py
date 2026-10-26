@@ -17,7 +17,7 @@ tests/test_fao56_example_19.py; what this file pins down is the wiring.
 """
 
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, tzinfo
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -47,13 +47,23 @@ SOURCED = (
 )
 
 
-def _clear_sky_mj_day(stamp):
+class _UTC(tzinfo):
+    """A clock with no offset and no summer time, whatever the host's."""
+
+    def utcoffset(self, dt):
+        return timedelta(0)
+
+    def dst(self, dt):
+        return timedelta(0)
+
+
+def _clear_sky_mj_day(stamp, tz=None):
     """Three quarters of the clear-sky radiation at ``stamp``, in MJ/m2/day.
 
     Taken from the real sun at the real date, since the window ends now: the
     builder rejects radiation the sky could not have delivered.
     """
-    offset = SystemLocalTime().utcoffset(stamp).total_seconds() / 3600.0
+    offset = (tz or SystemLocalTime()).utcoffset(stamp).total_seconds() / 3600.0
     hour = stamp.hour + stamp.minute / 60.0
     doy = stamp.timetuple().tm_yday
     ra = extraterrestrial_radiation_hourly(LAT, LON, doy, hour, offset)
@@ -62,9 +72,9 @@ def _clear_sky_mj_day(stamp):
     return 0.75 * max(0.0, rso) * 24.0
 
 
-def _day_of_readings(hours=24, step_min=30, solar=True):
+def _day_of_readings(hours=24, step_min=30, solar=True, end=None, tz=None):
     """A plausible dry day ending now: warm afternoons, humid nights."""
-    now = datetime.now()
+    now = end or datetime.now()
     readings = []
     steps = int(hours * 60 / step_min)
     for i in range(steps + 1):
@@ -78,7 +88,7 @@ def _day_of_readings(hours=24, step_min=30, solar=True):
             const.MAPPING_PRESSURE: 1000.0,
         }
         if solar:
-            row[const.MAPPING_SOLRAD] = _clear_sky_mj_day(stamp)
+            row[const.MAPPING_SOLRAD] = _clear_sky_mj_day(stamp, tz)
         readings.append(row)
     return readings
 
@@ -162,18 +172,18 @@ def _zone(**extra):
     return zone
 
 
-def _expected_hourly(readings):
+def _expected_hourly(readings, end=None, tz=None):
     # The window ends at "now", so it has moved a few milliseconds since the
     # calculation; the comparisons allow for that and nothing more.
     total, hours = summed_hourly_eto(
         readings,
         None,
-        now=datetime.now(),
+        now=end or datetime.now(),
         last_entry={},
         latitude=LAT,
         longitude=LON,
         elevation=ELEV,
-        tz=SystemLocalTime(),
+        tz=tz or SystemLocalTime(),
     )
     return total, hours
 
@@ -466,7 +476,10 @@ def test_over_one_clear_day_the_two_forms_are_close():
     assert 0.7 < total / eto_daily < 1.4
 
 
-def test_over_one_synthetic_clear_day_the_two_forms_agree_within_five_percent():
+@pytest.mark.parametrize("month", [1, 4, 7, 10])
+def test_over_one_synthetic_clear_day_the_two_forms_agree_within_five_percent(
+    month,
+):
     """The wide band above catches a slipped unit; this one catches drift.
 
     Both forms priced on the same synthetic clear day. The daily form is built
@@ -474,9 +487,15 @@ def test_over_one_synthetic_clear_day_the_two_forms_agree_within_five_percent():
     hourly one from the records themselves. They are not the same equation, so
     they differ, but on a clear day they stay within 5% of each other, and a
     change that moves the gap past that moved one of them.
+
+    The day is a fixed one in each season, on a clock without summer time: on
+    the real clock of the host, the day the clocks went back had 25 hours of
+    readings and its afternoon sun twice, and the test failed that day only.
     """
-    readings = _day_of_readings()
-    total, _ = _expected_hourly(readings)
+    tz = _UTC()
+    end = datetime(2026, month, 15, 22, 0)
+    readings = _day_of_readings(end=end, tz=tz)
+    total, _ = _expected_hourly(readings, end=end, tz=tz)
 
     temps = [r[const.MAPPING_TEMPERATURE] for r in readings]
     rh = sum(r[const.MAPPING_HUMIDITY] for r in readings) / len(readings)
@@ -494,6 +513,8 @@ def test_over_one_synthetic_clear_day_the_two_forms_agree_within_five_percent():
     }
     hass = MagicMock()
     hass.config.as_dict.return_value = {"latitude": LAT, "elevation": ELEV}
-    eto_daily = -PyETO(hass, "", {}).calculate(daily, [])
+    # Priced on the window's own day: without one, the daily form takes the sun
+    # of today.
+    eto_daily = -PyETO(hass, "", {}).calculate_et_for_day(daily, end.date())
 
     assert abs(total / eto_daily - 1.0) < 0.05
