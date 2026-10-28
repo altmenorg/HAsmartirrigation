@@ -53,7 +53,7 @@
       "explanation": {
         "formatting-note": "Megjegyzés: ez a magyarázat „.” jelet használ tizedesjelként, és kerekített, metrikus értékeket mutat.",
         "module-returned-evapotranspiration-deficiency": "A modul által visszaadott evapotranspirációs hiány ( = et0 * hour_multiplier * Kc + precipitation) értéke",
-        "module-returned-hourly-evapotranspiration-deficiency": "A modul óránként összegezte a növényi evapotranszpiráció hiányát ( = az óránkénti et0 * Kc + csapadék összege) ennyi idő alatt:",
+        "module-returned-hourly-evapotranspiration-deficiency": "A modul óránként összegezte a növényi evapotranszpiráció hiányát ( = az óránkénti et0 * Kc + csapadék összege) a következő időszakban",
         "crop-factor-is": "A növénytényező",
         "bucket-was": "A vödör értéke volt",
         "new-bucket-values-is": "Az új vödörérték",
@@ -66,10 +66,10 @@
         "precipitation-rate-defined-as": "A csapadékmennyiség a következőképpen van meghatározva",
         "precipitation-rate-is": "A csapadékintenzitás",
         "duration-is-calculated-as": "Az időtartam a következőképpen kerül kiszámításra",
-        "drainage": "drainage",
-        "drainage-rate": "drainage_rate",
+        "drainage": "vízelvezetés",
+        "drainage-rate": "víztelenítési sebesség",
         "hours": "óra",
-        "precipitation-rate-variable": "precipitation_rate",
+        "precipitation-rate-variable": "csapadékintenzitás",
         "multiplier-is-applied": "Most a szorzó kerül alkalmazásra. A szorzó",
         "duration-after-multiplier-is": "így az időtartam",
         "maximum-duration-is-applied": "Ezután a maximális időtartam kerül alkalmazásra. A maximális időtartam",
@@ -78,7 +78,7 @@
         "duration-after-lead-time-is": "így a végső időtartam",
         "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Mivel a vödör >= 0, öntözésre nincs szükség, és az időtartam beállítása",
         "maximum-bucket-is": "A maximális vödörméret",
-        "drainage-rate-is": "A telített állapotú elvezetési sebesség (a vödör maximumon) ",
+        "drainage-rate-is": "A vízelvezetési sebesség telített állapotban (a vödör maximumon)",
         "current-drainage-is": "Az aktuális elvezetés a következőképpen kerül kiszámításra",
         "drainage-replayed": "Az időszakot óránként újraszámoltuk, így minden eső csak attól az órától szivárog el, amikor esett. Elszivárgás",
         "no-drainage": "Az aktuális elvezetés 0, mert",
@@ -128,7 +128,7 @@
           "question": "Honnan jöjjön a párolgási szám?",
           "service": "A beállított időjárás-szolgáltatás",
           "service-help": "Nincs más telepítendő. A Smart Irrigation elhozza az időjárást a helyszínedre, és abból számolja az evapotranszpirációt.",
-          "no-service-indoors": "Itt nem ajánlunk időjárás-szolgáltatást: az az eget írja le, és ezek a növények nem alatta vannak.",
+          "no-service-indoors": "Itt nem ajánlunk időjárás-szolgáltatást: az eget írja le, amely alatt nem ezek a növények vannak.",
           "sensors": "A saját időjárás-érzékelőim",
           "sensors-help": "Van érzékelőd hőmérsékletre, páratartalomra és a többire. A legpontosabb választás, mert ott mér, ahol a növények valóban vannak.",
           "et": "Érzékelő, amely már jelenti az evapotranszpirációt",
@@ -260,7 +260,7 @@
           }
         },
         "continuousupdates": {
-          "header": "Folyamatos frissítések az érzékelőkhöz (kísérleti)",
+          "header": "Folyamatos frissítések az érzékelőkhöz",
           "description": "A csoport érzékelőinek minden változását rögzíti, frissítésenként egy mérés helyett: így az órás számítás és az eső finomabb adatokra épül. A tízpercenként jelentő esőmérőt tízpercenként olvassa. A zónák nem számolódnak újra minden változáskor; az ütemezett számítás egyszer teszi meg a rögzített mérésekből. Az időjárás-szolgáltatást is használó csoportban az érzékelők minden változáskor rögzülnek, a szolgáltatást pedig továbbra is frissítésenként egyszer olvassa: nincs többletkérés.",
           "labels": {
             "continuousupdates": "Folyamatos frissítések engedélyezése",
@@ -386,7 +386,7 @@
           "prompt": "Eső, amit az előrejelzés nem vett észre, vagy saját ok?",
           "for-24": "Visszatartás 24 órára",
           "for-48": "Visszatartás 48 órára",
-          "until": "Az öntözés vissza van tartva eddig:",
+          "until": "Az öntözés vissza van tartva eddig",
           "resume": "Folytatás most"
         },
         "forecast": {
@@ -451,8 +451,8 @@
             "windspeed": "A szél elviszi a páratartalmat a levelekről. Üveg alatt adj meg 0-hoz közeli állandó értéket.",
             "solar radiation": "A nap energiája, a párolgás fő hajtóereje. Nélküle a számítás a nap hőmérséklet-tartományából becsüli. Üveg alatt használj sugárzásérzékelőt vagy fényérzékelőt.",
             "precipitation": "A lehullott eső teljes mennyiségként, egy saját, összegző csapadékmérőből. Időjárás-szolgáltatás mellett hagyd Nincs értéken.",
-            "current precipitation": "Az éppen eső eső intenzitásként. Az időjárás-szolgáltatás megadja; egy saját esőérzékelő pontosabb.",
-            "evapotranspiration": "A növények által elvesztett víz, amelyet az érzékelőd vagy a szolgáltatásod már kiszámolt. Azok a zónák használják, amelyek értéke érzékelő vagy szolgáltatás adja."
+            "current precipitation": "Az eső intenzitása a jelen pillanatban. Ezt az adatot az időjárás-szolgálat biztosítja; a saját esőérzékelő azonban pontosabb.",
+            "evapotranspiration": "A kész evaporációs adat (ET₀), saját érzékelőből vagy időjárás szolgáltatótól származóan. Ezt az adatot csak azok a szónák használják fel, amelyeknél be van állítva, hogy az információt érzékelő vagy szolgáltatás biztosítja. Azoknál a zónáknál, amelyeknél az öntözést a Smart Irrigation számítja ki, ez az adat nem kerül közvetlen felhasználásra: az időjárási szolgáltató ilyenkor csupán a bemeneti adatokat (hőmérséklet, páratartalom, szél, napsugárzás) szolgáltatja az Smart Irrigation saját számítási folyamatához."
           },
           "items": {
             "dewpoint": "Harmatpont",
@@ -556,7 +556,7 @@
         "update": "Frissítés",
         "reset-bucket": "Vödör visszaállítása",
         "view-weather-info": "Időjárási adatok megtekintése",
-        "view-weather-info-message": "Időjárási adatok elérhetők ehhez:",
+        "view-weather-info-message": "Időjárási adatok elérhetők ehhez",
         "view-watering-calendar": "Öntözési naptár megtekintése"
       },
       "cards": {
@@ -722,7 +722,7 @@
         "et": "ET",
         "precipitation": "Csapadék",
         "watering": "Öntözés",
-        "avg-temp": "Átl. hőm.",
+        "avg-temp": "Átlag hőmérséklet",
         "none": "Ehhez a zónához nincs naptáradat",
         "error": "A naptárat nem lehetett előállítani"
       }
@@ -852,7 +852,7 @@
   "weather_skip": {
     "title": "Csapadék-előrejelzés",
     "description": "Ha csapadék van előrejelezve, a Smart Irrigation kevesebbet öntöz. Ehhez a funkcióhoz időjárás-szolgáltatás konfigurálása szükséges.",
-    "threshold_label": "Öntözés kihagyása ettől:",
+    "threshold_label": "Öntözés kihagyása ettől",
     "threshold_description": "A mai és holnapi napra előrejelzett csapadék minimális mennyisége (mm-ben) az öntözés kihagyásához.",
     "effective_rain_label": "Csak a gyökerekhez jutó esőt számold",
     "effective_rain_description": "Figyelmen kívül hagyja az időszak evapotranszpirációjának ötödénél kisebb zivatart: megnedvesíti a leveleket, és elpárolog. A két számítás közötti teljes időszak alapján ítéli meg.",
@@ -873,7 +873,7 @@
     "title": "Öntözések közötti napok",
     "description": "Állítsa be az öntözési események között eltelő napok minimális számát. Ez segít szabályozni az öntözés gyakoriságát a vízmegtakarítás és a növények egészségének megőrzése érdekében.\n\nTipikus valós felhasználási esetek:\n• Gyepápolás: az 1-2 napos időközök megakadályozzák a túlöntözést\n• Aszálykorlátozások: 6+ napos időközök a heti öntözéshez\n• Mélygyökerű növények: 3-7 napos időközök a ritkább öntözéshez\n• Vízmegtakarítás: az éghajlat és a talajviszonyok alapján testreszabható",
     "label": "Öntözések közötti minimális napok",
-    "help_text": "Állítsa 0-ra a funkció letiltásához. 1-365 nap közötti értékek támogatottak. Ez a beállítás a meglévő csapadék-előrejelzési logikával együtt működik."
+    "help_text": "Állítsa 0-ra a funkció letiltásához. 1-365 nap közötti értékek támogatottak. Ez a beállítás a meglévő csapadék-előrejelzési logikával együtt működik. A Zónák lapon egy zónához saját napok száma is hozzárendelhető, amely az adott zóna esetében felülírja ezt a beállítást."
   },
   "planning": {
     "title": "Tervezés",
@@ -1018,8 +1018,8 @@
     "no_zone": "nincs zóna",
     "mode_calculated_short": "számolt",
     "every_day": "minden nap",
-    "anchor_start_short": "indul:",
-    "anchor_end_short": "kész:",
+    "anchor_start_short": "indul",
+    "anchor_end_short": "kész",
     "steps_count": "lépés",
     "schedules_count": "ütemezés",
     "off": "ki",
