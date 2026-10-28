@@ -616,6 +616,8 @@ class SmartIrrigationCoordinator(
         self._track_auto_calc_time_unsub = None
         self._track_auto_update_time_unsub = None
         self._track_auto_update_delay_unsub = None
+        # The update schedule the timer was last set up for (#955).
+        self._auto_update_schedule = None
         self._track_auto_clear_time_unsub = None
         self._track_sunrise_event_unsub = None
         self._track_irrigation_triggers_unsub = []  # List to track multiple triggers
@@ -1160,6 +1162,25 @@ class SmartIrrigationCoordinator(
             #    raise ValueError("Time is not a valid time")
             # call update track time after waiting [update_delay] seconds
 
+            # Only a change to the update schedule itself sets it up again.
+            # Every save of the configuration came through here, a program
+            # edited in the panel included, and each one took a reading of
+            # every group at once and restarted the interval: 25 identical
+            # readings in three minutes while somebody edited (#955).
+            schedule = tuple(
+                str(settings.get(key))
+                for key in (
+                    const.CONF_AUTO_UPDATE_SCHEDULE,
+                    const.CONF_AUTO_UPDATE_INTERVAL,
+                    const.CONF_AUTO_UPDATE_DELAY,
+                )
+            )
+            if schedule == getattr(self, "_auto_update_schedule", None) and (
+                self._track_auto_update_time_unsub
+                or self._track_auto_update_delay_unsub
+            ):
+                return
+            self._auto_update_schedule = schedule
             delay = 0
             if const.CONF_AUTO_UPDATE_DELAY in data:
                 if int(data[const.CONF_AUTO_UPDATE_DELAY]) > 0:
@@ -1174,6 +1195,7 @@ class SmartIrrigationCoordinator(
                 self.hass, timedelta(seconds=delay), self.track_update_time
             )
         elif self._track_auto_update_time_unsub:
+            self._auto_update_schedule = None
             self._track_auto_update_time_unsub()
             self._track_auto_update_time_unsub = None
             await self.store.async_update_config(data)
