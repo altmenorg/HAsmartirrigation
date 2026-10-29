@@ -37,6 +37,7 @@ import copy
 import hashlib
 import json
 import logging
+import math
 import re
 from datetime import UTC, datetime
 from types import SimpleNamespace
@@ -147,7 +148,10 @@ _PastedLoader.add_multi_constructor("!", _tag_as_text)
 def check_size(config, limit: int = MAX_NODES) -> None:
     """Refuse a configuration of more than ``limit`` nodes, aliases expanded.
 
-    Counting stops at the limit, so an alias bomb costs ``limit`` steps.
+    Counting stops at the limit, so an alias bomb costs ``limit`` steps. A
+    number that is infinite or not a number (``.inf``, ``.nan`` in YAML) is
+    refused too: no duration, count or delay of IU can be one, and the
+    conversions would fail on it further in.
     """
     left = limit
     stack = [config]
@@ -165,6 +169,12 @@ def check_size(config, limit: int = MAX_NODES) -> None:
             left -= len(node)
         elif isinstance(node, list):
             stack.extend(node)
+        elif isinstance(node, float) and not math.isfinite(node):
+            raise IUImportError(
+                "not_finite",
+                "The configuration holds an infinite value or one that is not a "
+                "number (.inf or .nan): Irrigation Unlimited has none.",
+            )
 
 
 def parse_pasted(text: str) -> tuple[dict, list]:

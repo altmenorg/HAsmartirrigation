@@ -144,6 +144,23 @@ def test_pasted_yaml_never_reads_files_or_the_environment(tmp_path, monkeypatch)
     assert any("not followed" in i["note"] for i in preview["report"]["items"])
 
 
+@pytest.mark.parametrize(
+    "field", ["every_n_days", "repeat", "duration", "before", "delay"]
+)
+@pytest.mark.parametrize("value", [".inf", "-.inf", ".nan"])
+def test_an_infinite_value_is_refused_with_a_reason(field, value):
+    """Not a traceback and an unknown error: IU has no infinite value."""
+    text = (
+        "controllers:\n"
+        "  - name: Garden\n"
+        "    zones:\n"
+        f"      - name: Lawn\n        {field}: {value}\n"
+    )
+    with pytest.raises(iu_import_ha.IUImportError) as err:
+        iu_import_ha.parse_pasted(text)
+    assert err.value.code == "not_finite"
+
+
 def test_pasted_yaml_too_large_is_refused_before_it_is_walked():
     with pytest.raises(iu_import_ha.IUImportError) as err:
         iu_import_ha.parse_pasted("controllers: []\n" + "#" * 300_000)
