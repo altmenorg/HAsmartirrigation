@@ -29,6 +29,8 @@ import {
   describeStep,
   nameConflicts,
   reportGroups,
+  reportNote,
+  nextChoice,
   summary,
   withMatch,
   zoneConflicts,
@@ -347,8 +349,11 @@ export class SmartIrrigationViewIuImport extends LitElement {
     help: string | TemplateResult,
     pick: () => void,
     disabled = false,
+    tabStop = selected,
   ): TemplateResult {
     const off = disabled || this.busy;
+    // One tab stop for the group (the chosen card, or the first that can be
+    // chosen); the arrow keys move between the cards, as in a radio group.
     return html`
       <div
         class="choice ${selected ? "selected" : ""} ${disabled
@@ -357,7 +362,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
         role="radio"
         aria-checked=${selected ? "true" : "false"}
         aria-disabled=${off ? "true" : "false"}
-        tabindex=${disabled ? "-1" : "0"}
+        tabindex=${!disabled && tabStop ? "0" : "-1"}
         @click=${off ? undefined : pick}
         @keydown=${(e: KeyboardEvent) => {
           if (!off && (e.key === "Enter" || e.key === " ")) {
@@ -372,7 +377,30 @@ export class SmartIrrigationViewIuImport extends LitElement {
     `;
   }
 
+  /** Arrow keys, Home and End in a radio group: choose and focus that card. */
+  private moveChoice(e: KeyboardEvent): void {
+    const group = e.currentTarget as HTMLElement;
+    const cards = [
+      ...group.querySelectorAll<HTMLElement>(':scope > [role="radio"]'),
+    ];
+    const current = cards.indexOf(e.target as HTMLElement);
+    if (current < 0) return;
+    const next = nextChoice(
+      cards.map((c) => c.getAttribute("aria-disabled") !== "true"),
+      current,
+      e.key,
+    );
+    if (next === null) return;
+    e.preventDefault();
+    cards[next].click();
+    cards[next].focus();
+  }
+
   private renderSource(): TemplateResult {
+    const chosen =
+      this.source === PASTED ||
+      this.sources.some((s) => s.id === this.source && !s.error);
+    const first = this.sources.find((s) => !s.error)?.id ?? PASTED;
     return html`
       <h3 id="source-question">${this.t("source.question")}</h3>
       <div class="note">${this.t("source.help")}</div>
@@ -385,7 +413,11 @@ export class SmartIrrigationViewIuImport extends LitElement {
             )}
           </div>`
         : ""}
-      <div role="radiogroup" aria-labelledby="source-question">
+      <div
+        role="radiogroup"
+        aria-labelledby="source-question"
+        @keydown=${(e: KeyboardEvent) => this.moveChoice(e)}
+      >
         ${this.sources.map((source) =>
           this.choice(
             this.source === source.id,
@@ -401,6 +433,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
                 ),
             () => (this.source = source.id),
             !!source.error,
+            chosen ? this.source === source.id : first === source.id,
           ),
         )}
         ${this.loaded && !this.sources.some((s) => !s.error)
@@ -411,6 +444,8 @@ export class SmartIrrigationViewIuImport extends LitElement {
           this.t("source.paste"),
           this.t("source.paste-help"),
           () => (this.source = PASTED),
+          false,
+          chosen ? this.source === PASTED : first === PASTED,
         )}
       </div>
       ${this.source === PASTED
@@ -709,7 +744,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
                     html`<li>
                       ${item.subject
                         ? html`<b>${item.subject}</b>: `
-                        : ""}${item.note}
+                        : ""}${reportNote(item, this.t)}
                       ${item.path
                         ? html`<span class="path">(${item.path})</span>`
                         : ""}

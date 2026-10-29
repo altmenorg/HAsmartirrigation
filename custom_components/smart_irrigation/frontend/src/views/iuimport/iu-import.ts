@@ -203,6 +203,26 @@ export function summary(preview: IuImportPreview): {
 }
 
 /**
+ * A report note in the user's language.
+ *
+ * The backend sends each note in English with a code and its values; the code
+ * picks the text under ``notes`` and the values fill it. A code with no text
+ * (an older backend, a new note not translated yet) shows the English note.
+ */
+export function reportNote(item: IuImportReportItem, t: Translate): string {
+  if (!item.code) return item.note;
+  try {
+    const args = Object.entries(item.params ?? {}).flat();
+    const text = t(`notes.${item.code}`, ...args);
+    if (typeof text === "string" && text && !text.startsWith("Translation"))
+      return text;
+  } catch {
+    // No such text: the English note below.
+  }
+  return item.note;
+}
+
+/**
  * What the import picks by itself for each IU zone: the zones of a preview
  * asked for without any choice. A choice equal to it is no choice.
  */
@@ -234,4 +254,33 @@ export function nameConflicts(
   preview: IuImportPreview | undefined,
 ): IuImportConflict[] {
   return (preview?.conflicts ?? []).filter((c) => !("key" in c));
+}
+
+/**
+ * Where an arrow key moves in a group of radio cards: the next or previous
+ * one that can be chosen, round the ends, or the first or last with Home and
+ * End. ``null`` for any other key, or when none can be chosen.
+ */
+export function nextChoice(
+  enabled: boolean[],
+  current: number,
+  key: string,
+): number | null {
+  const open = enabled.map((on, i) => (on ? i : -1)).filter((i) => i >= 0);
+  if (!open.length) return null;
+  if (key === "Home") return open[0];
+  if (key === "End") return open[open.length - 1];
+  const step =
+    key === "ArrowDown" || key === "ArrowRight"
+      ? 1
+      : key === "ArrowUp" || key === "ArrowLeft"
+        ? -1
+        : 0;
+  if (!step) return null;
+  const n = enabled.length;
+  for (let k = 1; k <= n; k++) {
+    const i = (((current + step * k) % n) + n) % n;
+    if (enabled[i]) return i;
+  }
+  return null;
 }

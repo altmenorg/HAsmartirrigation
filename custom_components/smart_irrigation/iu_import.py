@@ -80,6 +80,18 @@ IU_CHECK_BACK_RETRIES = 3
 # A cron schedule is expanded into time schedules up to this many.
 MAX_CRON_TIMES = 24
 
+# Why a cron expression is not expanded, and the code the panel translates.
+CRON_FIELDS = "a cron expression has five fields"
+CRON_UNREADABLE = "this cron expression cannot be read"
+CRON_DAYS_BOTH = "days of the month and of the week together"
+CRON_TOO_MANY = f"more than {MAX_CRON_TIMES} times a day"
+CRON_WHY_CODES = {
+    CRON_FIELDS: "cron_fields",
+    CRON_UNREADABLE: "cron_unreadable",
+    CRON_DAYS_BOTH: "cron_days_both",
+    CRON_TOO_MANY: "cron_too_many",
+}
+
 WEEKDAYS = {
     "mon": 0,
     "tue": 1,
@@ -249,6 +261,25 @@ RULES: tuple = (
 
 _RULE_BY_PATH = {path: (rule, note) for path, rule, note in RULES}
 
+# The code of each rule the report lists by itself (approximated or not
+# carried), for the panel's translation of its note. The rules the mapping
+# reports itself (``_REPORTED_BY_THE_MAPPING``) have codes where it does.
+_ZONE_LIKE_CODES = {
+    "threshold": "rule_threshold",
+    "volume": "rule_zone_volume",
+    "duration": "rule_zone_duration",
+    "entity_states": "rule_entity_states",
+}
+RULE_CODES: dict = {
+    _C + "entity_states": "rule_entity_states",
+    _C + "check_back": "rule_master_check_back",
+    _C + "volume": "rule_master_volume",
+    _SZ + "repeat": "rule_step_repeat",
+    _SZ + "volume": "rule_step_volume",
+    **{_Z + key: code for key, code in _ZONE_LIKE_CODES.items()},
+    **{_AZ + key: code for key, code in _ZONE_LIKE_CODES.items()},
+}
+
 
 def classify(path: str) -> tuple[str | None, str, str]:
     """The rule for an option path such as ``controllers.zones.minimum``.
@@ -317,7 +348,8 @@ def seconds_of(value) -> float | None:
         return None
     try:
         return cv.time_period(value).total_seconds()
-    except vol.Invalid:
+    except (vol.Invalid, OverflowError):
+        # 1e300 or .inf seconds: no duration IU could have either.
         return None
 
 
@@ -386,12 +418,31 @@ class Report:
     items: list = field(default_factory=list)
     counted: dict = field(default_factory=dict)
 
-    def add(self, path: str, outcome: str, note: str, subject: str = "") -> None:
-        """One option or decision, counted, and listed when it matters."""
+    def add(
+        self,
+        path: str,
+        outcome: str,
+        note: str,
+        subject: str = "",
+        code: str = "",
+        params: dict | None = None,
+    ) -> None:
+        """One option or decision, counted, and listed when it matters.
+
+        ``note`` is the English text; ``code`` and ``params`` let the panel say
+        it in the user's language (``panels.iu_import.notes.<code>``).
+        """
         self.counted[outcome] = self.counted.get(outcome, 0) + 1
         if outcome in (APPROXIMATED, NOT_CARRIED, UNKNOWN):
             self.items.append(
-                {"path": path, "outcome": outcome, "note": note, "subject": subject}
+                {
+                    "path": path,
+                    "outcome": outcome,
+                    "note": note,
+                    "subject": subject,
+                    "code": code,
+                    "params": params or {},
+                }
             )
 
     def counts(self) -> dict:
@@ -437,12 +488,17 @@ def classify_options(config: dict, report: Report) -> None:
     for rule_path, where in _walk(config, "", ""):
         rule, outcome, note = classify(rule_path)
         if outcome == UNKNOWN:
-            report.add(where, UNKNOWN, "not an option Irrigation Unlimited knows")
+            report.add(
+                where,
+                UNKNOWN,
+                "not an option Irrigation Unlimited knows",
+                code="unknown_option",
+            )
         elif rule in _REPORTED_BY_THE_MAPPING:
             # The mapping says what it did with these, with the numbers.
             report.counted[outcome] = report.counted.get(outcome, 0) + 1
         elif outcome in (APPROXIMATED, NOT_CARRIED):
-            report.add(where, outcome, note)
+            report.add(where, outcome, note, code=RULE_CODES.get(rule, ""))
         else:
             report.add(where, outcome, "")
 
@@ -572,7 +628,13 @@ def _mapping(value, where: str, report: Report) -> dict:
     """
     if value is None or isinstance(value, dict):
         return value or {}
-    report.add(where, NOT_CARRIED, f"{value!r} is not a set of options")
+    report.add(
+        where,
+        NOT_CARRIED,
+        f"{value!r} is not a set of options",
+        code="not_options",
+        params={"value": repr(value)},
+    )
     return {}
 
 
@@ -583,10 +645,22 @@ def _litres(value, where: str, report: Report) -> float | None:
     try:
         litres = float(value)
     except (TypeError, ValueError):
-        report.add(where, NOT_CARRIED, f"{value!r} is not a number of litres")
+        report.add(
+            where,
+            NOT_CARRIED,
+            f"{value!r} is not a number of litres",
+            code="not_litres",
+            params={"value": repr(value)},
+        )
         return None
     if math.isnan(litres) or litres <= 0:
-        report.add(where, NOT_CARRIED, f"{value!r} is not a number of litres")
+        report.add(
+            where,
+            NOT_CARRIED,
+            f"{value!r} is not a number of litres",
+            code="not_litres",
+            params={"value": repr(value)},
+        )
         return None
     return litres
 
@@ -689,6 +763,8 @@ def read_config(config: dict, report: Report, granularity: float = 60) -> list:
                             f"{step_where}.zone_id",
                             NOT_CARRIED,
                             f"no zone with zone_id {ref!r} in this controller",
+                            code="no_zone_id",
+                            params={"ref": repr(ref)},
                         )
                         continue
                     if zone not in members:
@@ -783,18 +859,18 @@ def cron_schedules(text: str) -> tuple[list, str]:
     """
     fields = str(text or "").split()
     if len(fields) != 5:
-        return [], "a cron expression has five fields"
+        return [], CRON_FIELDS
     minutes = _cron_values(fields[0], 0, 59)
     hours = _cron_values(fields[1], 0, 23)
     days = _cron_values(fields[2], 1, 31)
     months = _cron_values(fields[3], 1, 12)
     weekdays = _cron_values(fields[4], 0, 7)
     if None in (minutes, hours, days, months, weekdays):
-        return [], "this cron expression cannot be read"
+        return [], CRON_UNREADABLE
     if fields[2] != "*" and fields[4] != "*":
-        return [], "days of the month and of the week together"
+        return [], CRON_DAYS_BOTH
     if len(minutes) * len(hours) > MAX_CRON_TIMES:
-        return [], f"more than {MAX_CRON_TIMES} times a day"
+        return [], CRON_TOO_MANY
     base: dict = {}
     if fields[2] != "*":
         base[const.SCHEDULE_DAYS_OF_MONTH] = days
@@ -822,6 +898,8 @@ def _minutes(seconds: float, where: str, what: str, report: Report) -> int:
             APPROXIMATED,
             f"{what} of {seconds:g} s is rounded to {whole} min: Smart "
             "Irrigation works in minutes there",
+            code="offset_rounded",
+            params={"seconds": seconds, "minutes": whole},
         )
     return whole
 
@@ -859,6 +937,11 @@ def convert_schedule(schedule: Schedule, report: Report, lead: float = 0.0) -> l
                 NOT_CARRIED,
                 f"{', '.join(repr(v) for v in unknown)} is no {option}"
                 + ("" if found else ": the schedule is disabled"),
+                code="unknown_values" if found else "unknown_values_off",
+                params={
+                    "values": ", ".join(repr(v) for v in unknown),
+                    "option": option,
+                },
             )
             if not found:
                 # Left without any, it would run on every one of them.
@@ -875,6 +958,8 @@ def convert_schedule(schedule: Schedule, report: Report, lead: float = 0.0) -> l
                 f"{where}.day.every_n_days",
                 NOT_CARRIED,
                 f"{day.get('every_n_days')!r} is not a number of days",
+                code="every_not_number",
+                params={"value": repr(day.get("every_n_days"))},
             )
             return []
         start = a_date(day.get("start_n_days"))
@@ -884,6 +969,8 @@ def convert_schedule(schedule: Schedule, report: Report, lead: float = 0.0) -> l
                 NOT_CARRIED,
                 f"every {every} days: Smart Irrigation goes up to "
                 f"{MAX_EVERY_N_DAYS}",
+                code="every_limit",
+                params={"every": every, "max": MAX_EVERY_N_DAYS},
             )
             return []
         common[const.SCHEDULE_EVERY_N_DAYS] = every
@@ -910,12 +997,19 @@ def convert_schedule(schedule: Schedule, report: Report, lead: float = 0.0) -> l
                 NOT_CARRIED,
                 f"the period {raw.get('from')!r} to {raw.get('until')!r} needs "
                 "both days: the schedule runs all year",
+                code="period_needs_both",
+                params={
+                    "from": str(raw.get("from") or "–"),
+                    "until": str(raw.get("until") or "–"),
+                },
             )
     if raw.get("name"):
         report.add(
             f"{where}.name",
             NOT_CARRIED,
             f"the schedule {raw['name']!r} keeps no name",
+            code="schedule_name",
+            params={"name": str(raw["name"])},
         )
 
     moment = raw.get("time")
@@ -926,6 +1020,8 @@ def convert_schedule(schedule: Schedule, report: Report, lead: float = 0.0) -> l
                 f"{where}.time.sun",
                 NOT_CARRIED,
                 f"{moment['sun']!r}: only sunrise and sunset are known",
+                code="sun_event",
+                params={"event": repr(moment["sun"])},
             )
             return []
         before = seconds_of(moment.get("before")) or 0.0
@@ -937,6 +1033,8 @@ def convert_schedule(schedule: Schedule, report: Report, lead: float = 0.0) -> l
                 NOT_CARRIED,
                 f"an offset of {offset} min: Smart Irrigation allows "
                 f"{MAX_OFFSET_MINUTES}",
+                code="offset_limit",
+                params={"offset": offset, "max": MAX_OFFSET_MINUTES},
             )
             return []
         return [
@@ -954,12 +1052,19 @@ def convert_schedule(schedule: Schedule, report: Report, lead: float = 0.0) -> l
                 f"{where}.time.cron",
                 NOT_CARRIED,
                 f"cron {moment['cron']!r}: {why}",
+                code=CRON_WHY_CODES.get(why, "cron_not_carried"),
+                params={
+                    "cron": str(moment["cron"]),
+                    **({"max": MAX_CRON_TIMES} if why == CRON_TOO_MANY else {}),
+                },
             )
             return []
         report.add(
             f"{where}.time.cron",
             APPROXIMATED,
             f"cron {moment['cron']!r} became {len(expanded)} time schedule(s)",
+            code="cron_expanded",
+            params={"cron": str(moment["cron"]), "count": len(expanded)},
         )
         made = []
         for n, entry in enumerate(expanded):
@@ -974,7 +1079,13 @@ def convert_schedule(schedule: Schedule, report: Report, lead: float = 0.0) -> l
         return made
     at = time_of_day(moment)
     if at is None:
-        report.add(f"{where}.time", NOT_CARRIED, f"no time of day in {moment!r}")
+        report.add(
+            f"{where}.time",
+            NOT_CARRIED,
+            f"no time of day in {moment!r}",
+            code="no_time",
+            params={"value": repr(moment)},
+        )
         return []
     at = _earlier(at, lead, where, report)
     if at.second:
@@ -983,6 +1094,8 @@ def convert_schedule(schedule: Schedule, report: Report, lead: float = 0.0) -> l
             APPROXIMATED,
             f"{at.isoformat()} is taken as {at.hour:02d}:{at.minute:02d}: "
             "Smart Irrigation starts on the minute",
+            code="seconds_dropped",
+            params={"time": at.isoformat(), "minute": f"{at.hour:02d}:{at.minute:02d}"},
         )
     return [
         {
@@ -1004,6 +1117,8 @@ def _earlier(at: time, lead: float, where: str, report: Report) -> time:
             APPROXIMATED,
             f"{at.isoformat()} is kept: moving it earlier by the supply's "
             f"lead of {lead:g} s would change the day",
+            code="lead_kept",
+            params={"time": at.isoformat(), "lead": lead},
         )
         return at
     return time(int(seconds // 3600), int(seconds % 3600 // 60), int(seconds % 60))
@@ -1142,7 +1257,12 @@ def plan_import(
     """
     report = Report()
     if not isinstance(config, dict):
-        report.add("", NOT_CARRIED, "no Irrigation Unlimited configuration")
+        report.add(
+            "",
+            NOT_CARRIED,
+            "no Irrigation Unlimited configuration",
+            code="no_configuration",
+        )
         return {"supplies": [], "zones": [], "programs": [], "report": _out(report)}
     classify_options(config, report)
     granularity = seconds_of(config.get("granularity")) or DEFAULT_GRANULARITY_SECONDS
@@ -1186,6 +1306,8 @@ def plan_import(
             APPROXIMATED,
             f"{len(controllers)} controllers: their programs run one after the "
             "other, as the full controller has one queue",
+            code="one_queue",
+            params={"count": len(controllers)},
         )
 
     for controller in controllers:
@@ -1200,6 +1322,8 @@ def plan_import(
                 "runs overlap, IU waters them at the same time, the full "
                 "controller one after the other",
                 controller.name,
+                code="overlap",
+                params={"count": scheduled},
             )
     zones = [
         _plan_zone(zone, controller, existing_zones, links, report)
@@ -1243,6 +1367,8 @@ def _not_negative(seconds: float, where: str, report: Report) -> float:
         where,
         APPROXIMATED,
         f"{seconds:g} s: the supply stays on until the last zone is done",
+        code="supply_stays_on",
+        params={"seconds": seconds},
     )
     return 0.0
 
@@ -1254,6 +1380,8 @@ def _bounded(seconds: float, limit: float, where: str, report: Report) -> float:
         where,
         APPROXIMATED,
         f"{seconds:g} s is held to {limit:g} s, the most Smart Irrigation allows",
+        code="held_to_limit",
+        params={"seconds": seconds, "limit": limit},
     )
     return math.copysign(limit, seconds)
 
@@ -1287,6 +1415,8 @@ def _plan_zone(
             f"zone {zone.name!r} has no valve: it is created, but not watered "
             "until one is linked",
             zone.name,
+            code="zone_no_valve",
+            params={"zone": zone.name},
         )
     fields: dict = {
         const.ZONE_NAME: zone.name,
@@ -1323,6 +1453,8 @@ def _plan_zone(
                 f"wait {wait:g} s with {resends} resend(s); "
                 f"{', '.join(lost)} not carried",
                 zone.name,
+                code="check_back_partial",
+                params={"wait": wait, "resends": resends, "lost": ", ".join(lost)},
             )
     if check_back.get("states") == "none":
         report.add(
@@ -1330,6 +1462,7 @@ def _plan_zone(
             NOT_CARRIED,
             "IU does not check this valve; Smart Irrigation always confirms it",
             zone.name,
+            code="check_back_states",
         )
     if zone.volume_entity:
         fields[const.ZONE_FLOW_SENSOR] = zone.volume_entity
@@ -1373,6 +1506,7 @@ def _plan_sequence(controller, sequence, fed_step, granularity, report) -> list:
             APPROXIMATED,
             "calculated durations: the durations of the schedules are not used",
             sequence.name,
+            code="calculated_schedule_durations",
         )
         groups = {None: [s for group in groups.values() for s in group]}
     tours = sequence.repeat
@@ -1382,6 +1516,8 @@ def _plan_sequence(controller, sequence, fed_step, granularity, report) -> list:
             APPROXIMATED,
             f"{tours} repeats are held to {MAX_TOURS}",
             sequence.name,
+            code="tours_held",
+            params={"repeats": tours, "max": MAX_TOURS},
         )
         tours = MAX_TOURS
     programs = []
@@ -1398,6 +1534,8 @@ def _plan_sequence(controller, sequence, fed_step, granularity, report) -> list:
                     APPROXIMATED,
                     f"{passes} repeats are held to {MAX_PASSES} passes",
                     sequence.name,
+                    code="passes_held",
+                    params={"repeats": passes, "max": MAX_PASSES},
                 )
                 passes = MAX_PASSES
             entry: dict = {
@@ -1470,6 +1608,7 @@ def _plan_sequence(controller, sequence, fed_step, granularity, report) -> list:
                 NOT_CARRIED,
                 "no step has a zone",
                 sequence.name,
+                code="no_step_zone",
             )
             continue
         program_schedules = _schedules_of(schedules, report, _lead(controller))
@@ -1501,6 +1640,8 @@ def _plan_sequence(controller, sequence, fed_step, granularity, report) -> list:
             APPROXIMATED,
             f"{len(programs)} programs, one per schedule duration",
             sequence.name,
+            code="program_per_duration",
+            params={"count": len(programs)},
         )
     return programs
 
@@ -1517,6 +1658,7 @@ def _plan_zone_schedules(controller, zone, fed_zone, report) -> list:
                 NOT_CARRIED,
                 "a zone's schedule needs a duration: it is not carried",
                 zone.name,
+                code="zone_schedule_duration",
             )
             continue
         groups.setdefault(schedule.duration, []).append(schedule)
@@ -1574,6 +1716,8 @@ def _report_lead(report: Report, sequence: Sequence, wait: float, lead: float) -
         f"after a wait of {wait:g} s the supply goes off and leads again: the "
         f"next zone opens up to {lead:g} s later than under IU",
         sequence.name,
+        code="supply_leads_again",
+        params={"wait": wait, "lead": lead},
     )
 
 
@@ -1609,6 +1753,7 @@ def _split_by_duration(
             step.where,
             APPROXIMATED,
             "its zones have different bounds; all of them water the longest time",
+            code="different_bounds",
         )
         return None
     split = []
@@ -1668,6 +1813,8 @@ def _clamp_delay(seconds: float, where: str, report: Report) -> float:
         where,
         APPROXIMATED,
         f"a wait of {seconds:g} s is held to {held:g} s",
+        code="wait_held",
+        params={"seconds": seconds, "held": held},
     )
     return float(held)
 

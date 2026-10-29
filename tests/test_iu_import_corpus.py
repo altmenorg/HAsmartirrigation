@@ -11,6 +11,7 @@ The switching is the controller's own: the programs run through
 (``iu_runner``), not through a model of them.
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 import pytest
@@ -168,3 +169,83 @@ def test_the_timing_check_is_the_runners_own():
         staticmethod(two_minutes_longer),
     ):
         assert not matches()
+
+
+# A configuration written for this test: none of IU's own has a master with a
+# lead and a delay after and expected times. Its results are IU's own, printed
+# by IU's test harness (see the file).
+WRITTEN = Path(__file__).parent / "fixtures" / "irrigation_unlimited_written"
+
+
+def _switches_as_iu(path, window_index: int) -> bool:
+    data = load(path)
+    iu = data["irrigation_unlimited"]
+    homeassistant = data.get("homeassistant") or {}
+    tz, _sun = location(homeassistant)
+    window = _windows(iu)[window_index]
+    events = simulate(
+        iu,
+        homeassistant,
+        moment_of(window["start"], tz),
+        moment_of(window["end"], tz),
+    )
+    return same(events, expected(iu, window, tz), 60.0)
+
+
+def test_a_pumps_lead_and_delay_after_switch_as_iu_does():
+    """The pump comes on its lead before the first zone and goes off its delay
+    after the last, in a zone's run and a sequence's, as IU switches it."""
+    path = WRITTEN / "supply_delays.yaml"
+    assert _switches_as_iu(path, 0)
+    assert _switches_as_iu(path, 1)
+
+
+def test_a_wait_longer_than_the_delay_after_is_the_reported_difference():
+    """A wait between zones longer than the pump's delay after: IU keeps the
+    pump on, the full controller puts it off and leads again, so the next zone
+    opens a lead later. The import says so; the times differ by just that."""
+    path = WRITTEN / "supply_delays.yaml"
+    data = load(path)
+    iu = data["irrigation_unlimited"]
+    tz, _sun = location(data.get("homeassistant") or {})
+    window = _windows(iu)[2]
+    got = simulate(
+        iu,
+        data.get("homeassistant") or {},
+        moment_of(window["start"], tz),
+        moment_of(window["end"], tz),
+    )
+    lead = timedelta(minutes=1)
+    pump_off, pump_on = moment_of("2023-06-10 07:12", tz), moment_of(
+        "2023-06-10 07:13", tz
+    )
+    # IU's times, but the pump off after its delay and on again, and from
+    # there on everything one lead later.
+    wanted = [
+        (moment if moment < pump_off else moment + lead, c, z, s)
+        for moment, c, z, s in expected(iu, window, tz)
+    ] + [(pump_off, 1, 0, 0), (pump_on, 1, 0, 1)]
+    assert sorted(got) == sorted(wanted)
+    items = plan_import(iu)["report"]["items"]
+    assert [i["params"] for i in items if i["code"] == "supply_leads_again"] == [
+        {"wait": 180.0, "lead": 60.0}
+    ]
+
+
+def test_the_pumps_delay_after_is_the_runners_own():
+    """A supply that goes off two minutes late is caught (IU's time step, a
+    minute, is the tolerance)."""
+    from unittest.mock import patch
+
+    from custom_components.smart_irrigation import supply_runner
+
+    path = WRITTEN / "supply_delays.yaml"
+    off_later = supply_runner.SupplyRunnerMixin._supply_off_later
+
+    async def two_minutes_late(self, supply, delay):
+        return await off_later(self, supply, delay + 120)
+
+    with patch.object(
+        supply_runner.SupplyRunnerMixin, "_supply_off_later", two_minutes_late
+    ):
+        assert not _switches_as_iu(path, 0)

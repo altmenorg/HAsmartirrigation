@@ -67,16 +67,23 @@ class VirtualClock:
     async def until(self, moment: dt.datetime) -> None:
         await self.sleep((moment - self.utcnow()).total_seconds())
 
-    async def run(self, tasks: list) -> None:
-        """Run the tasks to the end, moving the clock between their waits."""
+    async def run(self, tasks: list, until: float | None = None) -> None:
+        """Run the tasks to the end, moving the clock between their waits.
+
+        With ``until`` (seconds on this clock), what the runners left to do
+        after the tasks (a supply's delay before it goes off) runs too, up to
+        then.
+        """
         pending = [asyncio.ensure_future(t) for t in tasks]
-        while not all(t.done() for t in pending):
+        while True:
             for _ in range(200):
                 await REAL_SLEEP(0)
-            if all(t.done() for t in pending):
-                break
             while self._heap and self._heap[0][2].done():
                 heapq.heappop(self._heap)
+            if all(t.done() for t in pending) and (
+                until is None or not self._heap or self._heap[0][0] > until
+            ):
+                break
             if not self._heap:
                 raise RuntimeError("the runners wait for something that never comes")
             moment, _, future = heapq.heappop(self._heap)
@@ -190,7 +197,10 @@ async def _simulate(iu, homeassistant, start, end) -> list:
             lambda *args, **kwargs: None,
         ),
     ):
-        await clock.run([fire(moment, pid) for moment, pid in fires])
+        await clock.run(
+            [fire(moment, pid) for moment, pid in fires],
+            until=(window_end - since).total_seconds(),
+        )
 
     events = _without_repeats(events)
     # IU reports what is already on when a test starts, at the start.
