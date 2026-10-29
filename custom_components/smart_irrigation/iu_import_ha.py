@@ -1291,6 +1291,52 @@ def _imported_programs(config) -> dict:
     }
 
 
+def _zones_off_in_iu(hass: HomeAssistant, coordinator, record: dict, programs: dict):
+    """The zones IU runs switched off that water in an imported sequence here.
+
+    IU leaves a zone it has off out of its sequences; a step of the program
+    imported from that sequence waters it. That is said, not changed: whether
+    the zone should stay dry is the user's to decide (switch the step off).
+    A zone program and a whole sequence IU has off are left off at the switch
+    by themselves.
+    """
+    off = _iu_switched_off(hass)
+    if not off:
+        return []
+    sources = record.get(IU_SOURCE) if isinstance(record.get(IU_SOURCE), dict) else {}
+    recorded = record.get("zones") if isinstance(record.get("zones"), dict) else {}
+    keys_of: dict = {}
+    for key, entry in recorded.items():
+        if isinstance(entry, dict) and entry.get("zone") is not None:
+            keys_of.setdefault(entry["zone"], []).append(key)
+    names = {
+        zone_id: zone.get(const.ZONE_NAME)
+        for zone_id, zone in _zones_of(coordinator.store).items()
+    }
+    found = []
+    for program_id, program in programs.items():
+        source = sources.get(program_id)
+        if not isinstance(source, str) or "_s" not in source:
+            continue
+        if source in off:
+            # The whole sequence is off: its program stays off at the switch.
+            # (Its controller is not looked at: after the switch it is off by
+            # the switch's own doing.)
+            continue
+        for step in program.get(const.PROGRAM_STEPS) or []:
+            if not isinstance(step, dict) or step.get(const.STEP_ENABLED) is False:
+                continue
+            for zone_id in step.get(const.STEP_ZONES) or []:
+                if any(key in off for key in keys_of.get(zone_id, [])):
+                    entry = {
+                        "zone": names.get(zone_id) or str(zone_id),
+                        "program": program.get(const.PROGRAM_NAME) or program_id,
+                    }
+                    if entry not in found:
+                        found.append(entry)
+    return found
+
+
 def _on(program: dict) -> list:
     """The ids of a program's schedules that are on."""
     return [
@@ -1344,6 +1390,7 @@ async def async_status(hass: HomeAssistant, coordinator) -> dict:
         "controllers": controllers,
         "waters": waters,
         "both_on": waters == WATERS_BOTH,
+        "zones_off_in_iu": _zones_off_in_iu(hass, coordinator, record, programs),
         "follow_ups": follow_ups(hass),
     }
 

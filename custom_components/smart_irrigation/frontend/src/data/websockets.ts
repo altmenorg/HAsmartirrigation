@@ -391,6 +391,8 @@ export interface IuImportStatus {
   /** Who waters, read from what is on: IU's controllers, our schedules. */
   waters: "irrigation_unlimited" | "smart_irrigation" | "both" | "none";
   both_on: boolean;
+  /** Zones IU runs switched off that a step of an imported sequence waters. */
+  zones_off_in_iu?: { zone: string; program: string }[];
   follow_ups: IuFollowUp[];
 }
 

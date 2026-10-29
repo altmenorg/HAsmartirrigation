@@ -915,6 +915,7 @@
         "schedules-on": "{on} von {count} Zeitplänen an",
         "open-programs": "Sieh sie dir auf der Seite Programme an, bevor du umsteigst",
         "open-programs-after": "Zu den Programmen",
+        "zones-off": "Irrigation Unlimited hat diese Zonen ausgeschaltet und lässt sie in seinen Sequenzen aus; hier bewässern sie mit ihrem Programm: {list}. Schalte ihren Schritt im Programm aus, wenn sie trocken bleiben sollen.",
         "controllers": "Die Controller von Irrigation Unlimited",
         "iu-not-running": "Irrigation Unlimited läuft nicht: Es gibt nichts auszuschalten.",
         "no-controllers": "Keine gefunden.",

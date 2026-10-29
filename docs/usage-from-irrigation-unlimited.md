@@ -62,7 +62,7 @@ The schedules of new programs are created **switched off**, so IU keeps watering
 
 At the top of the import page, once something is imported:
 
-- **Switch over to Smart Irrigation** switches off IU's controllers that are on (`irrigation_unlimited.disable`, which IU keeps across a restart), then switches on the imported schedules that IU had on. A sequence or zone that IU runs switched off, or whose controller is off, stays off here too. IU is switched off first, so for a moment nothing waters rather than both.
+- **Switch over to Smart Irrigation** switches off IU's controllers that are on (`irrigation_unlimited.disable`, which IU keeps across a restart), then switches on the imported schedules that IU had on. A sequence or zone schedule that IU runs switched off, or whose controller is off, stays off here too. A zone that IU runs switched off inside a sequence is named on the page: IU leaves it out, but here its step waters it until you switch that step off. IU is switched off first, so for a moment nothing waters rather than both.
 - **Go back to Irrigation Unlimited** switches the imported schedules off first, then on again the controllers the switch turned off, and no others. Which schedules were on is kept: switching over again brings back those, including your own changes.
 - If a step fails, the one before it is undone, and the page says who waters.
 - Who waters is read from what is on, not from the buttons: if IU switches a controller on again (by hand, or because IU does not restore its state) while imported schedules are on, or you switch a schedule on by hand while IU waters, the page says that both would water and offers to switch IU off. It also says when nothing waters.

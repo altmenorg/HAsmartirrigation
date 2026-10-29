@@ -915,6 +915,7 @@
         "schedules-on": "{on} of {count} schedules on",
         "open-programs": "Look at them on the Programs page before you switch over",
         "open-programs-after": "Open the programs",
+        "zones-off": "Irrigation Unlimited has these zones switched off and leaves them out of its sequences; here they water with their program: {list}. Switch their step off in the program if they should stay dry.",
         "controllers": "Irrigation Unlimited's controllers",
         "iu-not-running": "Irrigation Unlimited is not running: there is nothing to switch off.",
         "no-controllers": "None found.",

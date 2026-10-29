@@ -1359,3 +1359,29 @@ async def test_iu_events_and_whole_entity_ids_count_as_uses(hass):
     found = {f["entity_id"]: f["uses"] for f in iu_import_ha.follow_ups(hass)}
     assert found["automation.tell_me"] == ["irrigation_unlimited_finish"]
     assert found["automation.ten"] == [z1 + "0"]
+
+
+async def test_a_zone_iu_has_off_in_a_sequence_is_named(hass):
+    """IU leaves a zone it runs switched off out of its sequences; here its step
+    would water it. The status names it, before and after the switch."""
+    await _iu_in(hass, (True,))
+    registry = er.async_get(hass)
+    beds = registry.async_get_or_create(
+        "binary_sensor", "irrigation_unlimited", "c1_z2"
+    ).entity_id
+    hass.states.async_set(beds, "off", {"enabled": False})
+    coordinator = await _imported()
+    status = await iu_import_ha.async_status(hass, coordinator)
+    assert status["zones_off_in_iu"] == [
+        {"zone": "Beds", "program": "Morning"},
+        {"zone": "Beds", "program": "Evening"},
+    ]
+    await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    status = await iu_import_ha.async_status(hass, coordinator)
+    assert len(status["zones_off_in_iu"]) == 2
+    # Its step switched off here: nothing left to say about that program.
+    programs = coordinator.programs()
+    programs["iu_c1_2"]["steps"][0]["enabled"] = False
+    await coordinator.async_update_config({"programs": list(programs.values())})
+    status = await iu_import_ha.async_status(hass, coordinator)
+    assert status["zones_off_in_iu"] == [{"zone": "Beds", "program": "Morning"}]
