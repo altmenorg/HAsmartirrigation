@@ -12,7 +12,7 @@ from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import attr
 import pytest
-from homeassistant.exceptions import Unauthorized
+from homeassistant.exceptions import HomeAssistantError, Unauthorized
 from homeassistant.helpers import entity_registry as er
 
 from custom_components.smart_irrigation import (
@@ -939,6 +939,8 @@ def test_the_matches_take_zone_ids_or_new(matches, ok):
         "websocket_iu_import_sources",
         "websocket_iu_import_preview",
         "websocket_iu_import_apply",
+        "websocket_iu_import_status",
+        "websocket_iu_import_cutover",
     ],
 )
 def test_only_an_administrator_imports(name):
@@ -948,3 +950,412 @@ def test_only_an_administrator_imports(name):
     hass.data = {const.DOMAIN: {}}
     with pytest.raises(Unauthorized):
         getattr(websockets, name)(hass, connection, {"id": 1})
+
+
+# --- the cut-over -----------------------------------------------------------------
+
+
+async def _iu_in(hass, enabled=(True,)):
+    """IU's controllers in the registry and their states, and IU's services."""
+    registry = er.async_get(hass)
+    calls = []
+    for n, on in enumerate(enabled, start=1):
+        entity_id = registry.async_get_or_create(
+            "binary_sensor", "irrigation_unlimited", f"c{n}_m"
+        ).entity_id
+        hass.states.async_set(entity_id, "off", {"enabled": on})
+
+    async def record(call):
+        calls.append((call.service, sorted(call.data["entity_id"])))
+        for entity_id in call.data["entity_id"]:
+            state = hass.states.get(entity_id)
+            hass.states.async_set(
+                entity_id, state.state, {"enabled": call.service == "enable"}
+            )
+
+    for service in ("enable", "disable"):
+        hass.services.async_register("irrigation_unlimited", service, record)
+    return calls
+
+
+async def _imported(config=CONFIG):
+    coordinator = FakeCoordinator()
+    config = copy.deepcopy(config)
+    # One schedule IU has off: it stays off at the cut-over.
+    config["controllers"][0]["sequences"][0]["schedules"].append(
+        {"time": "22:00", "enabled": False}
+    )
+    await _import(coordinator, config)
+    return coordinator
+
+
+def _schedules_on(coordinator):
+    return {
+        pid: [s["enabled"] for s in p["schedules"]]
+        for pid, p in coordinator.programs().items()
+    }
+
+
+async def test_the_import_remembers_which_schedules_iu_had_on():
+    coordinator = await _imported()
+    record = coordinator.store.config.iu_import
+    morning = coordinator.programs()["iu_c1_1"]["schedules"]
+    assert record["iu_on"]["iu_c1_1"] == [morning[0]["id"]]
+    assert _schedules_on(coordinator) == {
+        "iu_c1_1": [False, False],
+        "iu_c1_2": [False],
+    }
+
+
+async def test_switching_over_turns_iu_off_and_its_schedules_on_here(hass):
+    calls = await _iu_in(hass, (True, True))
+    coordinator = await _imported()
+    status = await iu_import_ha.async_status(hass, coordinator)
+    assert status["imported"] and not status["switched_over"]
+    assert status["schedules_on"] == 0
+    assert [c["enabled"] for c in status["controllers"]] == [True, True]
+
+    result = await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    controllers = [
+        "binary_sensor.irrigation_unlimited_c1_m",
+        "binary_sensor.irrigation_unlimited_c2_m",
+    ]
+    assert calls == [("disable", controllers)]
+    assert result["controllers"] == controllers
+    # IU's own off schedule stays off.
+    assert _schedules_on(coordinator) == {
+        "iu_c1_1": [True, False],
+        "iu_c1_2": [True],
+    }
+    status = await iu_import_ha.async_status(hass, coordinator)
+    assert status["switched_over"] and not status["both_on"]
+    assert [c["enabled"] for c in status["controllers"]] == [False, False]
+
+    # IU switched on again behind our back: both would water, and it is said.
+    hass.states.async_set(controllers[0], "off", {"enabled": True})
+    assert (await iu_import_ha.async_status(hass, coordinator))["both_on"]
+
+    await iu_import_ha.async_cutover(hass, coordinator, "irrigation_unlimited")
+    assert calls[-1] == ("enable", controllers)
+    assert _schedules_on(coordinator) == {
+        "iu_c1_1": [False, False],
+        "iu_c1_2": [False],
+    }
+    assert "cutover" not in coordinator.store.config.iu_import
+
+
+async def test_a_re_import_after_the_cut_over_keeps_it(hass):
+    await _iu_in(hass)
+    coordinator = await _imported()
+    await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    config = copy.deepcopy(CONFIG)
+    config["controllers"][0]["sequences"][0]["schedules"].append(
+        {"time": "22:00", "enabled": False}
+    )
+    await _import(coordinator, config)
+    assert coordinator.store.config.iu_import["cutover"]["controllers"]
+    assert _schedules_on(coordinator)["iu_c1_1"] == [True, False]
+    # A schedule switched off here stays off when imported again.
+    programs = coordinator.programs()
+    programs["iu_c1_2"]["schedules"][0]["enabled"] = False
+    await coordinator.async_update_config({"programs": list(programs.values())})
+    await _import(coordinator, config)
+    assert _schedules_on(coordinator)["iu_c1_2"] == [False]
+
+
+async def test_without_the_full_controller_nothing_is_switched(hass):
+    calls = await _iu_in(hass)
+    coordinator = await _imported()
+    coordinator.store.config = attr.evolve(
+        coordinator.store.config, full_controller=False
+    )
+    with pytest.raises(iu_import_ha.IUImportError) as err:
+        await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    assert err.value.code == "full_controller_off"
+    assert calls == []
+
+
+async def test_without_an_import_there_is_nothing_to_switch(hass):
+    with pytest.raises(iu_import_ha.IUImportError) as err:
+        await iu_import_ha.async_cutover(hass, FakeCoordinator(), "smart_irrigation")
+    assert err.value.code == "not_imported"
+
+
+async def test_with_iu_gone_the_schedules_still_come_on(hass):
+    """IU uninstalled: there is nothing to switch off, the rest goes ahead."""
+    coordinator = await _imported()
+    result = await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    assert result["controllers"] == []
+    assert _schedules_on(coordinator)["iu_c1_2"] == [True]
+    assert not (await iu_import_ha.async_status(hass, coordinator))["iu_running"]
+
+
+async def test_automations_and_scripts_that_still_use_iu_are_listed(hass):
+    from homeassistant.components.automation import DATA_COMPONENT
+
+    registry = er.async_get(hass)
+    lawn = registry.async_get_or_create(
+        "sensor", const.DOMAIN, "smart_irrigation_4_duration"
+    ).entity_id
+    iu_zone = registry.async_get_or_create(
+        "binary_sensor", "irrigation_unlimited", "c1_z1"
+    ).entity_id
+
+    def entity(entity_id, key, config, name=None):
+        return SimpleNamespace(
+            entity_id=entity_id, unique_id=key, raw_config=config, name=name
+        )
+
+    hass.data[DATA_COMPONENT] = SimpleNamespace(
+        entities=[
+            entity("automation.feed", "1001", _zone_blueprint(lawn, iu_zone)),
+            entity(
+                "automation.notify",
+                "1002",
+                {
+                    "trigger": [{"platform": "state", "entity_id": iu_zone}],
+                    "action": [{"action": "notify.phone"}],
+                },
+                "Tell me when the lawn waters",
+            ),
+            entity("automation.lights", "1003", {"action": [{"action": "light.on"}]}),
+        ]
+    )
+    hass.data["script"] = SimpleNamespace(
+        entities=[
+            entity(
+                "script.water_now",
+                "water_now",
+                {"sequence": [{"service": "irrigation_unlimited.manual_run"}]},
+            )
+        ]
+    )
+    found = {f["entity_id"]: f for f in iu_import_ha.follow_ups(hass)}
+    assert set(found) == {"automation.feed", "automation.notify", "script.water_now"}
+    assert found["automation.feed"]["adjust_time"] is True
+    assert found["automation.feed"]["edit"] == "/config/automation/edit/1001"
+    assert found["automation.notify"]["uses"] == [iu_zone]
+    assert found["automation.notify"]["name"] == "Tell me when the lawn waters"
+    assert found["script.water_now"]["uses"] == ["irrigation_unlimited.manual_run"]
+    assert found["script.water_now"]["edit"] == "/config/script/edit/water_now"
+
+
+async def test_status_and_cut_over_through_the_websocket():
+    coordinator = await _imported()
+    hass, connection = _ws(coordinator)
+    with (
+        patch.object(
+            iu_import_ha, "async_status", AsyncMock(return_value={"imported": True})
+        ),
+        patch.object(
+            iu_import_ha,
+            "async_cutover",
+            AsyncMock(
+                side_effect=iu_import_ha.IUImportError("full_controller_off", "x")
+            ),
+        ),
+    ):
+        await _call(websockets.websocket_iu_import_status, hass, connection)
+        assert connection.send_result.call_args.args[1] == {"imported": True}
+        await _call(
+            websockets.websocket_iu_import_cutover,
+            hass,
+            connection,
+            to="smart_irrigation",
+        )
+        assert connection.send_error.call_args.args[1] == "full_controller_off"
+
+
+# --- the cut-over: what the review of the first draft found -------------------
+
+
+async def test_only_the_controllers_iu_had_on_are_switched_and_back(hass):
+    """A controller the user had off stays off, at the switch and on the way
+    back."""
+    calls = await _iu_in(hass, (True, False))
+    coordinator = await _imported()
+    await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    await iu_import_ha.async_cutover(hass, coordinator, "irrigation_unlimited")
+    c1 = ["binary_sensor.irrigation_unlimited_c1_m"]
+    assert calls == [("disable", c1), ("enable", c1)]
+    enabled = {c["entity_id"]: c["enabled"] for c in iu_import_ha.iu_controllers(hass)}
+    assert enabled["binary_sensor.irrigation_unlimited_c2_m"] is False
+
+
+async def test_going_back_without_a_switch_is_refused(hass):
+    calls = await _iu_in(hass, (False,))
+    coordinator = await _imported()
+    with pytest.raises(iu_import_ha.IUImportError) as err:
+        await iu_import_ha.async_cutover(hass, coordinator, "irrigation_unlimited")
+    assert err.value.code == "not_switched"
+    assert calls == []
+    # A second "go back" is refused the same way.
+    await _iu_in(hass, (True,))
+    await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    await iu_import_ha.async_cutover(hass, coordinator, "irrigation_unlimited")
+    with pytest.raises(iu_import_ha.IUImportError):
+        await iu_import_ha.async_cutover(hass, coordinator, "irrigation_unlimited")
+
+
+async def test_iu_failing_on_the_way_back_leaves_ours_on(hass):
+    """The schedules come on again and the switch stays recorded: someone
+    waters, and the status says who."""
+    await _iu_in(hass, (True,))
+    coordinator = await _imported()
+    await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    on = _schedules_on(coordinator)
+
+    async def broken(call):
+        raise HomeAssistantError("IU says no")
+
+    hass.services.async_register("irrigation_unlimited", "enable", broken)
+    with pytest.raises(HomeAssistantError):
+        await iu_import_ha.async_cutover(hass, coordinator, "irrigation_unlimited")
+    assert _schedules_on(coordinator) == on
+    status = await iu_import_ha.async_status(hass, coordinator)
+    assert status["switched_over"] and status["waters"] == "smart_irrigation"
+
+
+async def test_a_failed_save_switches_iu_on_again(hass):
+    calls = await _iu_in(hass, (True,))
+    coordinator = await _imported()
+    save = coordinator.async_update_config
+
+    async def failing(data):
+        raise HomeAssistantError("disk full")
+
+    coordinator.async_update_config = failing
+    with pytest.raises(HomeAssistantError):
+        await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    coordinator.async_update_config = save
+    c1 = ["binary_sensor.irrigation_unlimited_c1_m"]
+    assert calls == [("disable", c1), ("enable", c1)]
+    status = await iu_import_ha.async_status(hass, coordinator)
+    assert not status["switched_over"] and status["waters"] == "irrigation_unlimited"
+
+
+async def test_who_waters_is_read_from_what_is_on(hass):
+    """A schedule switched on by hand while IU waters: both, switch or not;
+    everything off: nobody."""
+    await _iu_in(hass, (True,))
+    coordinator = await _imported()
+    assert (await iu_import_ha.async_status(hass, coordinator))["waters"] == (
+        "irrigation_unlimited"
+    )
+    programs = coordinator.programs()
+    programs["iu_c1_2"]["schedules"][0]["enabled"] = True
+    await coordinator.async_update_config({"programs": list(programs.values())})
+    status = await iu_import_ha.async_status(hass, coordinator)
+    assert status["waters"] == "both" and status["both_on"]
+    assert not status["switched_over"]
+
+    hass.states.async_set(
+        "binary_sensor.irrigation_unlimited_c1_m", "off", {"enabled": False}
+    )
+    programs["iu_c1_2"]["schedules"][0]["enabled"] = False
+    await coordinator.async_update_config({"programs": list(programs.values())})
+    assert (await iu_import_ha.async_status(hass, coordinator))["waters"] == "none"
+
+
+async def test_a_program_new_to_a_re_import_after_the_switch_waters(hass):
+    await _iu_in(hass, (True,))
+    coordinator = await _imported()
+    await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    config = copy.deepcopy(CONFIG)
+    config["controllers"][0]["sequences"].append(
+        {
+            "name": "Noon",
+            "schedules": [{"time": "12:00"}],
+            "zones": [{"zone_id": "lawn", "duration": "00:02"}],
+        }
+    )
+    preview, _ = await _import(coordinator, config)
+    assert all(p["schedules_on"] for p in preview["programs"])
+    noon = next(
+        p["program"]["id"]
+        for p in preview["programs"]
+        if p["program"]["name"] == "Noon"
+    )
+    assert _schedules_on(coordinator)[noon] == [True]
+
+
+async def test_the_users_own_schedules_are_kept_across_switches(hass):
+    """Switching IU off again leaves the schedules alone; going back and over
+    again brings back the ones that were on, not IU's."""
+    await _iu_in(hass, (True,))
+    coordinator = await _imported()
+    await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    programs = coordinator.programs()
+    programs["iu_c1_1"]["schedules"][0]["enabled"] = False
+    programs["iu_c1_1"]["schedules"][1]["enabled"] = True
+    await coordinator.async_update_config({"programs": list(programs.values())})
+    mine = _schedules_on(coordinator)
+
+    hass.states.async_set(
+        "binary_sensor.irrigation_unlimited_c1_m", "off", {"enabled": True}
+    )
+    await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    assert _schedules_on(coordinator) == mine
+
+    await iu_import_ha.async_cutover(hass, coordinator, "irrigation_unlimited")
+    assert not any(any(on) for on in _schedules_on(coordinator).values())
+    await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    assert _schedules_on(coordinator) == mine
+
+
+async def test_what_iu_has_off_while_running_stays_off(hass):
+    """A sequence IU runs switched off (its disable service) is not watered by
+    its program after the switch either."""
+    await _iu_in(hass, (True,))
+    evening = (
+        er.async_get(hass)
+        .async_get_or_create("binary_sensor", "irrigation_unlimited", "c1_s2")
+        .entity_id
+    )
+    hass.states.async_set(evening, "off", {"enabled": False})
+    coordinator = await _imported()
+    result = await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    assert result["left_off"] == ["iu_c1_2"]
+    assert _schedules_on(coordinator) == {
+        "iu_c1_1": [True, False],
+        "iu_c1_2": [False],
+    }
+
+
+async def test_iu_events_and_whole_entity_ids_count_as_uses(hass):
+    from homeassistant.components.automation import DATA_COMPONENT
+
+    registry = er.async_get(hass)
+    z1 = registry.async_get_or_create(
+        "binary_sensor", "irrigation_unlimited", "c1_z1"
+    ).entity_id
+    registry.async_get_or_create("binary_sensor", "irrigation_unlimited", "c1_z10")
+    hass.data[DATA_COMPONENT] = SimpleNamespace(
+        entities=[
+            SimpleNamespace(
+                entity_id="automation.tell_me",
+                unique_id="2001",
+                name="Tell me",
+                raw_config={
+                    "trigger": [
+                        {
+                            "trigger": "event",
+                            "event_type": "irrigation_unlimited_finish",
+                        }
+                    ],
+                    "action": [{"action": "notify.phone"}],
+                },
+            ),
+            SimpleNamespace(
+                entity_id="automation.ten",
+                unique_id="2002",
+                name="Ten",
+                raw_config={
+                    "trigger": [{"trigger": "state", "entity_id": z1 + "0"}],
+                },
+            ),
+        ]
+    )
+    found = {f["entity_id"]: f["uses"] for f in iu_import_ha.follow_ups(hass)}
+    assert found["automation.tell_me"] == ["irrigation_unlimited_finish"]
+    assert found["automation.ten"] == [z1 + "0"]

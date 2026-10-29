@@ -891,9 +891,9 @@
         "title": "Übernommen.",
         "zones": "Zonen: {created} neu, {updated} ergänzt",
         "programs": "{count, plural, one {# Programm} other {# Programme}}",
-        "next": "Die Zeitpläne neuer Programme sind ausgeschaltet, es bewässert also weiter Irrigation Unlimited. Wenn du so weit bist, schalte die Controller von Irrigation Unlimited aus und diese Zeitpläne auf der Seite Programme ein.",
+        "next": "Die Zeitpläne neuer Programme sind aus, es bewässert also weiter Irrigation Unlimited. Sieh dir die Programme an und steig dann oben auf dieser Seite um.",
         "open-programs": "Zu den Programmen",
-        "next-off": "Der vollständige Controller ist aus, diese Programme bewässern also noch nicht, und Irrigation Unlimited bewässert weiter. Schalte den vollständigen Controller in den Einstellungen ein, dann Irrigation Unlimited aus und diese Zeitpläne ein.",
+        "next-off": "Der vollständige Controller ist aus, diese Programme bewässern also noch nicht, und Irrigation Unlimited bewässert weiter. Schalte den vollständigen Controller in den Einstellungen ein und steig dann oben auf dieser Seite um.",
         "open-settings": "Zu den Einstellungen"
       },
       "conflicts": {
@@ -902,7 +902,50 @@
         "program_exists": "Ein Programm „{name}“ ({id}) ist im Weg: Keine Übernahme hat es angelegt. Benenne es zuerst unter Bewässerung, Programme um oder lösche es (mit eingeschaltetem vollständigem Controller).",
         "supply_exists": "Eine Pumpe „{name}“ ({id}) ist im Weg: Keine Übernahme hat sie angelegt. Benenne sie zuerst unter Bewässerung, „Pumpen und Ventile“ um oder lösche sie (mit eingeschaltetem vollständigem Controller)."
       },
-      "confirm_remove": "Diese Übernahme löscht, was eine frühere Übernahme angelegt hat und Irrigation Unlimited nicht mehr hat: {names}. Fortfahren?"
+      "confirm_remove": "Diese Übernahme löscht, was eine frühere Übernahme angelegt hat und Irrigation Unlimited nicht mehr hat: {names}. Fortfahren?",
+      "cutover": {
+        "title": "Wer bewässert: Irrigation Unlimited oder Smart Irrigation",
+        "iu-waters": "Irrigation Unlimited bewässert. Die übernommenen Zeitpläne bleiben aus, bis du umsteigst.",
+        "si-waters": "Smart Irrigation bewässert seit {at}. Die Controller von Irrigation Unlimited sind aus.",
+        "si-waters-now": "Smart Irrigation bewässert: Übernommene Zeitpläne sind an, und die Controller von Irrigation Unlimited sind aus.",
+        "nobody-waters": "Es bewässert nichts: Die Controller von Irrigation Unlimited sind aus, die übernommenen Zeitpläne auch.",
+        "both-on": "Beide würden bewässern: Irrigation Unlimited hat einen Controller an, und übernommene Zeitpläne sind auch an. Schalte Irrigation Unlimited aus oder die Zeitpläne.",
+        "full-controller-off": "Der vollständige Controller ist aus: Schalte ihn zuerst in den Einstellungen ein, sonst bewässern die übernommenen Programme nicht.",
+        "programs": "Die übernommenen Programme",
+        "schedules-on": "{on} von {count} Zeitplänen an",
+        "open-programs": "Sieh sie dir auf der Seite Programme an, bevor du umsteigst",
+        "open-programs-after": "Zu den Programmen",
+        "controllers": "Die Controller von Irrigation Unlimited",
+        "iu-not-running": "Irrigation Unlimited läuft nicht: Es gibt nichts auszuschalten.",
+        "no-controllers": "Keine gefunden.",
+        "on": "an",
+        "off": "aus",
+        "unknown": "unbekannt",
+        "over": "Zu Smart Irrigation umsteigen",
+        "back": "Zurück zu Irrigation Unlimited",
+        "iu-off-again": "Irrigation Unlimited wieder ausschalten",
+        "confirm-over": "Die Controller von Irrigation Unlimited werden ausgeschaltet, und die Zeitpläne, die Irrigation Unlimited an hatte, hier eingeschaltet. Ab dem nächsten Zeitplan bewässert Smart Irrigation. Du kannst jederzeit zurück.",
+        "confirm-back": "Die übernommenen Zeitpläne werden ausgeschaltet und die Controller von Irrigation Unlimited wieder eingeschaltet. Dann bewässert wieder Irrigation Unlimited.",
+        "errors": {
+          "generic": "Das hat nicht geklappt.",
+          "full_controller_off": "Schalte zuerst den vollständigen Controller ein: Ohne ihn bewässert nichts.",
+          "not_imported": "Es wurde noch nichts übernommen.",
+          "iu_failed": "Irrigation Unlimited hat das Umschalten nicht angenommen. Was dieser Schritt schon geändert hatte, ist zurückgenommen: Oben steht, wer bewässert.",
+          "not_switched": "Die Bewässerung wurde nicht an Smart Irrigation übergeben, es gibt also nichts zurückzuschalten.",
+          "iu_not_running": "Irrigation Unlimited läuft nicht: Es könnte nicht wieder bewässern. Starte es zuerst."
+        },
+        "follow-ups": {
+          "title": "Was Irrigation Unlimited noch nutzt",
+          "help": "Diese Automatisierungen und Skripte nennen Dienste oder Entitäten von Irrigation Unlimited. Ändere oder entferne sie, sobald du umgestiegen bist: Es wird nichts für dich geändert.",
+          "none": "Keine Automatisierung und kein Skript nutzt Irrigation Unlimited.",
+          "automation": "Automatisierung",
+          "script": "Skript",
+          "edit": "Bearbeiten",
+          "adjust-time": "Gibt Irrigation Unlimited eine von Smart Irrigation berechnete Dauer. Nach dem Umstieg hat sie nichts mehr zu tun: Die übernommenen Schritte werden hier berechnet. Entferne sie.",
+          "uses": "Nutzt {uses}."
+        },
+        "left-off": "Aus gelassen, weil Irrigation Unlimited sie ausgeschaltet hatte: {names}."
+      }
     }
   },
   "title": "Smart Irrigation",

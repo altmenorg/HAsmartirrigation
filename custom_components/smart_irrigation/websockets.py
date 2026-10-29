@@ -14,6 +14,7 @@ from homeassistant.components.websocket_api import (
     decorators,
 )
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.dispatcher import (
     async_dispatcher_connect,
@@ -1686,6 +1687,40 @@ async def websocket_iu_import_apply(hass: HomeAssistant, connection, msg):
     connection.send_result(msg["id"], result)
 
 
+@websocket_api.require_admin
+@async_response
+async def websocket_iu_import_status(hass: HomeAssistant, connection, msg):
+    """Where the move from Irrigation Unlimited stands."""
+    coordinator = _coordinator_or_none(hass)
+    if coordinator is None:
+        connection.send_error(msg["id"], "not_ready", "Smart Irrigation is not set up.")
+        return
+    connection.send_result(
+        msg["id"], await iu_import_ha.async_status(hass, coordinator)
+    )
+
+
+@websocket_api.require_admin
+@async_response
+async def websocket_iu_import_cutover(hass: HomeAssistant, connection, msg):
+    """Hand the watering to Smart Irrigation, or back to Irrigation Unlimited."""
+    coordinator = _coordinator_or_none(hass)
+    if coordinator is None:
+        connection.send_error(msg["id"], "not_ready", "Smart Irrigation is not set up.")
+        return
+    try:
+        async with iu_import_ha.import_lock(hass):
+            result = await iu_import_ha.async_cutover(hass, coordinator, msg["to"])
+    except iu_import_ha.IUImportError as err:
+        connection.send_error(msg["id"], err.code, str(err))
+        return
+    except HomeAssistantError as err:
+        connection.send_error(msg["id"], "iu_failed", str(err))
+        return
+    async_dispatcher_send(hass, const.DOMAIN + "_update_frontend")
+    connection.send_result(msg["id"], result)
+
+
 class SmartIrrigationExportView(HomeAssistantView):
     """View to export the full Smart Irrigation configuration as JSON."""
 
@@ -1934,6 +1969,30 @@ async def async_register_websockets(hass: HomeAssistant):
                 vol.Optional("source"): vol.Any(None, cv.string),
                 vol.Optional("yaml"): vol.Any(None, str),
                 vol.Optional("matches"): IU_IMPORT_MATCHES,
+            }
+        ),
+    )
+    async_register_command(
+        hass,
+        const.DOMAIN + "/iu_import/status",
+        websocket_iu_import_status,
+        websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend(
+            {vol.Required("type"): const.DOMAIN + "/iu_import/status"}
+        ),
+    )
+    async_register_command(
+        hass,
+        const.DOMAIN + "/iu_import/cutover",
+        websocket_iu_import_cutover,
+        websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend(
+            {
+                vol.Required("type"): const.DOMAIN + "/iu_import/cutover",
+                vol.Required("to"): vol.In(
+                    [
+                        iu_import_ha.TO_SMART_IRRIGATION,
+                        iu_import_ha.TO_IRRIGATION_UNLIMITED,
+                    ]
+                ),
             }
         ),
     )
