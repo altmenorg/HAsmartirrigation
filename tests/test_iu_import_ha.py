@@ -1385,3 +1385,32 @@ async def test_a_zone_iu_has_off_in_a_sequence_is_named(hass):
     await coordinator.async_update_config({"programs": list(programs.values())})
     status = await iu_import_ha.async_status(hass, coordinator)
     assert status["zones_off_in_iu"] == [{"zone": "Beds", "program": "Morning"}]
+
+
+async def test_a_zone_iu_has_off_is_not_named_where_it_waters_nothing_here(hass):
+    registry = er.async_get(hass)
+    beds = registry.async_get_or_create(
+        "binary_sensor", "irrigation_unlimited", "c1_z2"
+    ).entity_id
+    hass.states.async_set(beds, "off", {"enabled": False})
+
+    # The user has IU's whole controller off: the switch leaves its programs
+    # off, so there is nothing to say.
+    await _iu_in(hass, (False,))
+    coordinator = await _imported()
+    assert (await iu_import_ha.async_status(hass, coordinator))["zones_off_in_iu"] == []
+
+    # On again: named. After the switch, a program with no schedule on is not.
+    await _iu_in(hass, (True,))
+    await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    programs = coordinator.programs()
+    for schedule in programs["iu_c1_2"]["schedules"]:
+        schedule["enabled"] = False
+    await coordinator.async_update_config({"programs": list(programs.values())})
+    status = await iu_import_ha.async_status(hass, coordinator)
+    assert status["zones_off_in_iu"] == [{"zone": "Beds", "program": "Morning"}]
+
+    # The zone switched off here: it waters nothing, nothing to say.
+    zone_id = coordinator.store.config.iu_import["zones"]["c1_z2"]["zone"]
+    await coordinator.async_update_zone_config(zone_id, {"state": "disabled"})
+    assert (await iu_import_ha.async_status(hass, coordinator))["zones_off_in_iu"] == []

@@ -1297,39 +1297,54 @@ def _zones_off_in_iu(hass: HomeAssistant, coordinator, record: dict, programs: d
     IU leaves a zone it has off out of its sequences; a step of the program
     imported from that sequence waters it. That is said, not changed: whether
     the zone should stay dry is the user's to decide (switch the step off).
-    A zone program and a whole sequence IU has off are left off at the switch
-    by themselves.
+
+    Left out, as they water nothing here anyway: a program whose sequence IU
+    has off, or whose controller the user has off (the switch leaves those off;
+    a controller the switch itself turned off does not count); after the
+    switch, a program with no schedule on; a zone switched off here, or gone.
     """
     off = _iu_switched_off(hass)
     if not off:
         return []
+    cutover = record.get(CUTOVER) if isinstance(record.get(CUTOVER), dict) else None
+    ours = set((cutover or {}).get("controllers") or [])
+    registry = er.async_get(hass)
+    controllers_off = {
+        str(entry.unique_id).split("_")[0]
+        for entry in registry.entities.values()
+        if entry.platform == DOMAIN_IU
+        and str(entry.unique_id) in off
+        and re.fullmatch(r"c\d+_m", str(entry.unique_id))
+        and entry.entity_id not in ours
+    }
     sources = record.get(IU_SOURCE) if isinstance(record.get(IU_SOURCE), dict) else {}
     recorded = record.get("zones") if isinstance(record.get("zones"), dict) else {}
     keys_of: dict = {}
     for key, entry in recorded.items():
         if isinstance(entry, dict) and entry.get("zone") is not None:
             keys_of.setdefault(entry["zone"], []).append(key)
-    names = {
-        zone_id: zone.get(const.ZONE_NAME)
-        for zone_id, zone in _zones_of(coordinator.store).items()
-    }
+    zones = _zones_of(coordinator.store)
     found = []
     for program_id, program in programs.items():
         source = sources.get(program_id)
         if not isinstance(source, str) or "_s" not in source:
             continue
-        if source in off:
-            # The whole sequence is off: its program stays off at the switch.
-            # (Its controller is not looked at: after the switch it is off by
-            # the switch's own doing.)
+        if source in off or source.split("_")[0] in controllers_off:
+            continue
+        if cutover is not None and not _on(program):
             continue
         for step in program.get(const.PROGRAM_STEPS) or []:
             if not isinstance(step, dict) or step.get(const.STEP_ENABLED) is False:
                 continue
             for zone_id in step.get(const.STEP_ZONES) or []:
+                zone = zones.get(zone_id)
+                if zone is None:
+                    continue
+                if zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED:
+                    continue
                 if any(key in off for key in keys_of.get(zone_id, [])):
                     entry = {
-                        "zone": names.get(zone_id) or str(zone_id),
+                        "zone": zone.get(const.ZONE_NAME) or str(zone_id),
                         "program": program.get(const.PROGRAM_NAME) or program_id,
                     }
                     if entry not in found:
