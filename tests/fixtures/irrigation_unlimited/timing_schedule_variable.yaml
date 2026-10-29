@@ -1,0 +1,133 @@
+homeassistant:
+  name: Opera House
+  unit_system: metric
+  time_zone: Australia/Sydney
+  latitude: -33.85951127367736
+  longitude: 151.22225761413577
+  elevation: 0
+
+irrigation_unlimited:
+  granularity: 30
+  refresh_interval: 2000
+  clock:
+    mode: seer
+  testing:
+    enabled: true
+    speed: 1.0
+    output_events: false
+    show_log: false
+    autoplay: false
+    times:
+      - name: '1-Test 1'
+        start: '2021-01-04 06:00'
+        end: '2021-01-04 06:30'
+        results:
+          - {t: '2021-01-04 06:05:00', c: 1, z: 0, s: 1}
+          - {t: '2021-01-04 06:05:00', c: 1, z: 1, s: 1}
+          - {t: '2021-01-04 06:15:00', c: 1, z: 1, s: 0}
+          - {t: '2021-01-04 06:15:00', c: 1, z: 0, s: 0}
+      - name: '2-Test 2'
+        start: '2021-01-05 06:00'
+        end: '2021-01-05 06:30'
+        results: []
+      - name: '3-Test 3'
+        start: '2021-01-06 06:00'
+        end: '2021-01-06 07:30'
+        results:
+          - {t: '2021-01-06 06:05:00', c: 1, z: 0, s: 1}
+          - {t: '2021-01-06 06:05:00', c: 1, z: 1, s: 1}
+          - {t: '2021-01-06 06:15:00', c: 1, z: 1, s: 0}
+          - {t: '2021-01-06 06:15:00', c: 1, z: 0, s: 0}
+      - name: '4-Test 4 (Sunrise)'
+        start: '2021-02-16 06:00'
+        end: '2021-02-16 07:30'
+        results:
+          - {t: '2021-02-16 06:31:21', c: 1, z: 0, s: 1}
+          - {t: '2021-02-16 06:31:21', c: 1, z: 1, s: 1}
+          - {t: '2021-02-16 06:41:21', c: 1, z: 1, s: 0}
+          - {t: '2021-02-16 06:41:21', c: 1, z: 0, s: 0}
+      - name: '5-Test 5 (Sunrise)'
+        start: '2021-02-18 06:00'
+        end: '2021-02-18 07:30'
+        results:
+          - {t: '2021-02-18 06:33:12', c: 1, z: 0, s: 1}
+          - {t: '2021-02-18 06:33:12', c: 1, z: 1, s: 1}
+          - {t: '2021-02-18 06:43:12', c: 1, z: 1, s: 0}
+          - {t: '2021-02-18 06:43:12', c: 1, z: 0, s: 0}
+      - name: '6-Test 6 (Sunrise)'
+        start: '2021-03-18 06:00'
+        end: '2021-03-18 07:30'
+        results:
+          - {t: '2021-03-18 06:56:44', c: 1, z: 0, s: 1}
+          - {t: '2021-03-18 06:56:44', c: 1, z: 1, s: 1}
+          - {t: '2021-03-18 07:06:44', c: 1, z: 1, s: 0}
+          - {t: '2021-03-18 07:06:44', c: 1, z: 0, s: 0}
+      - name: '7-Test 7 (Predawn)'
+        start: '2021-04-23 06:00'
+        end: '2021-04-23 07:30'
+        results:
+          - {t: '2021-04-23 06:03:44', c: 1, z: 0, s: 1}
+          - {t: '2021-04-23 06:03:44', c: 1, z: 1, s: 1}
+          - {t: '2021-04-23 06:13:44', c: 1, z: 1, s: 0}
+          - {t: '2021-04-23 06:13:44', c: 1, z: 0, s: 0}
+      - name: '8-Test 8 (Predawn)'
+        start: '2021-05-21 06:00'
+        end: '2021-05-21 07:30'
+        results:
+          - {t: '2021-05-21 06:24:33', c: 1, z: 0, s: 1}
+          - {t: '2021-05-21 06:24:33', c: 1, z: 1, s: 1}
+          - {t: '2021-05-21 06:34:33', c: 1, z: 1, s: 0}
+          - {t: '2021-05-21 06:34:33', c: 1, z: 0, s: 0}
+      - name: '9-Test 9 (Sunset)'
+        start: '2021-06-06 17:00'
+        end: '2021-06-06 19:30'
+        results:
+          - {t: '2021-06-06 17:12:57', c: 1, z: 0, s: 1}
+          - {t: '2021-06-06 17:12:57', c: 1, z: 1, s: 1}
+          - {t: '2021-06-06 17:22:57', c: 1, z: 1, s: 0}
+          - {t: '2021-06-06 17:22:57', c: 1, z: 0, s: 0}
+      - name: '10-Test 10 (Sunset)'
+        start: '2021-08-08 17:00'
+        end: '2021-08-08 19:30'
+        results:
+          - {t: '2021-08-08 17:40:17', c: 1, z: 0, s: 1}
+          - {t: '2021-08-08 17:40:17', c: 1, z: 1, s: 1}
+          - {t: '2021-08-08 17:50:17', c: 1, z: 1, s: 0}
+          - {t: '2021-08-08 17:50:17', c: 1, z: 0, s: 0}
+  controllers:
+    - name: "Test controller 1"
+      all_zones_config:
+        show:
+          timeline: true
+          config: true
+      zones:
+        - schedules:
+          - name: 'Schedule 1'
+            time: "06:05"
+            duration: "00:10"
+            weekday: [mon, wed]
+            day: [4,5,6]
+            month: [jan,sep]
+          - name: 'Sunrise'
+            time:
+              sun: 'sunrise'
+            duration: '00:10'
+            weekday: [tue, thu]
+            day: [16,17,18]
+            month: [feb,mar,oct]
+          - name: 'Pre-dawn'
+            time:
+              sun: 'sunrise'
+              before: '00:20'
+            duration: '00:10'
+            weekday: [fri, sat]
+            day: [21,23]
+            month: [apr,may,nov]
+          - name: 'After sunset'
+            time:
+              sun: 'sunset'
+              after: '00:20'
+            duration: '00:10'
+            weekday: [sun]
+            day: [6,8]
+            month: [jun,jul,aug,dec]

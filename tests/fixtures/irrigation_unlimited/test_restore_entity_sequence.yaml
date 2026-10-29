@@ -1,0 +1,40 @@
+irrigation_unlimited:
+  granularity: 10
+  refresh_interval: 10
+  restore_from_entity: false
+  controllers:
+    - name: "Fundos"
+      zones:
+        - name: "Gramado"
+        - name: "Lateral"
+        - name: "Corredor"
+        - name: "Horta"
+      sequences:
+        - name: "Multi zone"
+          duration: "00:10"
+          delay: "0:00:20"
+          schedules:
+            - time: "05:05"
+              duration: "02:00"
+          zones:
+            - zone_id: 1
+            - zone_id: 2
+            - zone_id: 3
+        - name: "Outer zone"
+          duration: "00:15"
+          delay: "0:00:10"
+          schedules:
+            - time: "07:05"
+          zones:
+            - zone_id: 1
+            - zone_id: 2
+            - zone_id: [3,4]
+        - name: "Later zone"
+          duration: "00:12"
+          delay: "0:00:10"
+          schedules:
+            - time: "09:05"
+          zones:
+            - zone_id: 3
+            - zone_id: 2
+            - zone_id: 1

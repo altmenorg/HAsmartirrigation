@@ -1,0 +1,14 @@
+default_config:
+
+irrigation_unlimited:
+  rename_entities: true
+  controllers:
+    - name: Controller 1
+      controller_id: "my_garden"
+      zones:
+        - name: "Zone 1"
+          zone_id: "vege_patch"
+        - name: "Zone 2"
+          zone_id: "rose_bed"
+        - name: "Zone 3"
+          zone_id: "front_lawn"

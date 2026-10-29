@@ -1,0 +1,29 @@
+irrigation_unlimited:
+  testing:
+    enabled: true
+    speed: 1.0
+    output_events: false
+    show_log: false
+    autoplay: false
+    times:
+      - name: "1-Sequence 1"
+        start: "2025-09-21 06:00"
+        end: "2025-09-21 07:00"
+        results:
+          - {t: '2025-09-21 06:05:00', c: 1, z: 0, s: 1}
+          - {t: '2025-09-21 06:05:00', c: 1, z: 1, s: 1}
+          - {t: '2025-09-21 06:23:00', c: 1, z: 1, s: 0}
+          - {t: '2025-09-21 06:23:00', c: 1, z: 0, s: 0}
+  controllers:
+    - name: "Test controller 1"
+      zones:
+        - name: "Zone 1"
+      sequences:
+        - name: "Seq 1"
+          schedules:
+            - time: "06:05"
+          zones:
+            - zone_id: 1
+              duration: "0:06:00"
+            - zone_id: 1
+              duration: "0:12:00"

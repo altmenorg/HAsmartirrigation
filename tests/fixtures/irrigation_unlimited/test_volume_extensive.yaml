@@ -1,0 +1,192 @@
+default_config:
+
+homeassistant:
+  unit_system: metric
+  time_zone: Europe/Paris
+  name: Eiffel Tower
+  latitude: 48.864716
+  longitude: 2.349014
+  elevation: 0
+
+# Dummy sensor
+input_text:
+  dummy_sensor:
+    name: Dummy Sensor
+    initial: 259.485
+
+irrigation_unlimited:
+  controllers:
+    - name: "Controleur 1"
+      volume:
+        entity_id: "input_text.dummy_sensor"
+      all_zones_config:
+        show:
+          timeline: true
+        volume:
+          entity_id: "input_text.dummy_sensor"
+          volume_scale: 1000
+          volume_precision: 0
+          flow_rate_scale: 60
+          flow_rate_precision: 1
+        allow_manual: true
+        # duration: "0:10:00"
+      zones:
+        - name: Café François
+          zone_id: "1"
+          # entity_id: switch.vanne_atelier_gui
+          maximum: "00:45:00"
+        - name: Serre
+          zone_id: "2"
+          # entity_id: switch.vanne_maison_journalier_gui
+          maximum: "00:30:00"
+        - name: Pelouse
+          zone_id: "3"
+          # entity_id : switch.vanne_jardin_devant_gui
+          maximum: "01:10:00"
+        - name: Deux carrés
+          zone_id: "4"
+          # entity_id: switch.vanne_deux_carres_gui
+          maximum: "00:45:00"
+        - name: Un carré
+          zone_id: "5"
+          # entity_id: switch.vanne_un_carre_gui
+          maximum: "00:30:00"
+        - name: Petits fruits
+          zone_id: "6"
+          # entity_id: switch.vanne_petits_fruits_gui
+          maximum: "00:50:00"
+        - name: Haie - Céanothe - Fleurs
+          zone_id: "7"
+          # entity_id: switch.vanne_haie_gui
+          maximum: "01:00:00"
+        - name: Pommiers
+          zone_id: "8"
+          # entity_id: switch.vanne_pommiers_gui
+          maximum: "00:30:00"
+        - name: Pare-terre Julie
+          zone_id: "9"
+          # entity_id: switch.vanne_buanderie_grande_maison_gui
+          maximum: "00:45:00"
+        - name : Haies pelouses
+          zone_id: "10"
+          # entity_id: switch.718
+          maximum: "00:45:00"
+        - name: If Cour carrée
+          # entity_id: switch.vanne_salle_claudine_gui
+          zone_id: "11"
+          maximum: "00:20:00"
+        - name: Haie du fond
+          zone_id: "12"
+          # entity_id: switch.vanne_haie_fond_gui
+          maximum: "01:40:00"
+        - name: Tilleul
+          zone_id: "13"
+          # entity_id: switch.vanne_tilleul_gui
+          maximum: "00:40:00"
+      sequences:
+      - name: nuit
+        schedules:
+          - name: 1
+            time: "22:00"
+            schedule_id: "s1"
+        delay : 1
+        zones:
+          - zone_id: 1 # Café François
+            duration: "00:30"
+          - zone_id: 2 # Serre et autres
+            duration: "00:20"
+          - zone_id: 9 # Pare-terre Julie
+            duration: "00:30"
+          - zone_id: 4 # Deux carrés
+            duration: "00:30"
+          - zone_id: 5 # Un carré
+            duration: "00:20"
+          - zone_id: 6 # Petits fruits
+            duration: "00:40"
+          - zone_id: 7 # Haie - Céanothe
+            duration: "00:40"
+          - zone_id: 8 # Pommiers
+            duration: "00:30"
+          - zone_id: 10 # Haies pelouse
+            duration: "00:25"
+          - zone_id: 11 # If cour carrée
+            duration: "00:10"
+          - zone_id: 12 # Haie du fond
+            duration: "00:30"
+          - zone_id: 13 # Tilleul - Cerisier
+            duration: "00:30"
+          - zone_id: 3 # Pelouse
+            duration: "00:40"
+      - name: jour
+        duration: "00:05"
+        delay: "02:25"
+        repeat: 3
+        schedules:
+          - name: 2
+            time: "12:00"
+            schedule_id: "s2"
+        zones:
+          - zone_id: 2
+  testing:
+    enabled: true
+    speed: 1.0
+    output_events: false
+    show_log: false
+    autoplay: false
+    times:
+      - name: "1-Normal run"
+        start: "2023-10-13 21:55"
+        end: "2023-10-14 03:40"
+        results:
+          - {t: '2023-10-13 22:00:00', c: 1, z: 0, s: 1}
+          - {t: '2023-10-13 22:00:00', c: 1, z: 1, s: 1}
+          - {t: '2023-10-13 22:27:00', c: 1, z: 1, s: 0}
+          - {t: '2023-10-13 22:27:00', c: 1, z: 0, s: 0}
+          - {t: '2023-10-13 22:27:01', c: 1, z: 0, s: 1}
+          - {t: '2023-10-13 22:27:01', c: 1, z: 2, s: 1}
+          - {t: '2023-10-13 22:45:01', c: 1, z: 2, s: 0}
+          - {t: '2023-10-13 22:45:01', c: 1, z: 0, s: 0}
+          - {t: '2023-10-13 22:45:02', c: 1, z: 0, s: 1}
+          - {t: '2023-10-13 22:45:02', c: 1, z: 9, s: 1}
+          - {t: '2023-10-13 23:12:02', c: 1, z: 9, s: 0}
+          - {t: '2023-10-13 23:12:02', c: 1, z: 0, s: 0}
+          - {t: '2023-10-13 23:12:03', c: 1, z: 0, s: 1}
+          - {t: '2023-10-13 23:12:03', c: 1, z: 4, s: 1}
+          - {t: '2023-10-13 23:39:03', c: 1, z: 4, s: 0}
+          - {t: '2023-10-13 23:39:03', c: 1, z: 0, s: 0}
+          - {t: '2023-10-13 23:39:04', c: 1, z: 0, s: 1}
+          - {t: '2023-10-13 23:39:04', c: 1, z: 5, s: 1}
+          - {t: '2023-10-13 23:57:04', c: 1, z: 5, s: 0}
+          - {t: '2023-10-13 23:57:04', c: 1, z: 0, s: 0}
+          - {t: '2023-10-13 23:57:05', c: 1, z: 0, s: 1}
+          - {t: '2023-10-13 23:57:05', c: 1, z: 6, s: 1}
+          - {t: '2023-10-14 00:33:05', c: 1, z: 6, s: 0}
+          - {t: '2023-10-14 00:33:05', c: 1, z: 0, s: 0}
+          - {t: '2023-10-14 00:33:06', c: 1, z: 0, s: 1}
+          - {t: '2023-10-14 00:33:06', c: 1, z: 7, s: 1}
+          - {t: '2023-10-14 01:09:06', c: 1, z: 7, s: 0}
+          - {t: '2023-10-14 01:09:06', c: 1, z: 0, s: 0}
+          - {t: '2023-10-14 01:09:07', c: 1, z: 0, s: 1}
+          - {t: '2023-10-14 01:09:07', c: 1, z: 8, s: 1}
+          - {t: '2023-10-14 01:36:07', c: 1, z: 8, s: 0}
+          - {t: '2023-10-14 01:36:07', c: 1, z: 0, s: 0}
+          - {t: '2023-10-14 01:36:08', c: 1, z: 0, s: 1}
+          - {t: '2023-10-14 01:36:08', c: 1, z: 10, s: 1}
+          - {t: '2023-10-14 01:58:38', c: 1, z: 10, s: 0}
+          - {t: '2023-10-14 01:58:38', c: 1, z: 0, s: 0}
+          - {t: '2023-10-14 01:58:39', c: 1, z: 0, s: 1}
+          - {t: '2023-10-14 01:58:39', c: 1, z: 11, s: 1}
+          - {t: '2023-10-14 02:07:39', c: 1, z: 11, s: 0}
+          - {t: '2023-10-14 02:07:39', c: 1, z: 0, s: 0}
+          - {t: '2023-10-14 02:07:40', c: 1, z: 0, s: 1}
+          - {t: '2023-10-14 02:07:40', c: 1, z: 12, s: 1}
+          - {t: '2023-10-14 02:34:40', c: 1, z: 12, s: 0}
+          - {t: '2023-10-14 02:34:40', c: 1, z: 0, s: 0}
+          - {t: '2023-10-14 02:34:41', c: 1, z: 0, s: 1}
+          - {t: '2023-10-14 02:34:41', c: 1, z: 13, s: 1}
+          - {t: '2023-10-14 03:01:41', c: 1, z: 13, s: 0}
+          - {t: '2023-10-14 03:01:41', c: 1, z: 0, s: 0}
+          - {t: '2023-10-14 03:01:42', c: 1, z: 0, s: 1}
+          - {t: '2023-10-14 03:01:42', c: 1, z: 3, s: 1}
+          - {t: '2023-10-14 03:37:42', c: 1, z: 3, s: 0}
+          - {t: '2023-10-14 03:37:42', c: 1, z: 0, s: 0}

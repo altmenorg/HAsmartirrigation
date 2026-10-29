@@ -1,0 +1,40 @@
+homeassistant:
+  name: Eureka
+  unit_system: metric
+  latitude: 79.988889
+  longitude: -85.940833
+  elevation: 83
+
+irrigation_unlimited:
+  granularity: 60
+  refresh_interval: 2000
+  testing:
+    enabled: true
+    speed: 1.0
+    output_events: false
+    show_log: false
+    autoplay: false
+    times:
+      - name: '1-Sun never rises'
+        start: '2021-12-19 00:00'
+        end: '2021-12-26 23:59'
+        results: []
+      - name: '2-Sun never sets'
+        start: '2021-06-19 00:00'
+        end: '2021-06-26 23:59'
+        results: []
+  controllers:
+    - name: "Test controller 1"
+      zones:
+        - schedules:
+          - name: 'Sunrise'
+            time:
+              sun: 'sunrise'
+            month: [dec]
+            duration: '00:10'
+        - schedules:
+          - name: 'Sunset'
+            time:
+              sun: 'sunset'
+            month: [jun]
+            duration: '00:10'

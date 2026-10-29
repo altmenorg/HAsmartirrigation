@@ -1,0 +1,44 @@
+default_config:
+
+irrigation_unlimited:
+  global_zone_ids: true
+  global_sequence_ids: true
+  controllers:
+    - name: Controller 1
+      zones:
+        - name: Zone 1
+        - name: Zone 2
+        - name: Zone 3
+        - name: Zone 4
+      sequences:
+        - name: Sequence 1
+          zones:
+            - zone_id: 1
+        - name: Sequence 2
+          sequence_id: sequence_2
+          zones:
+            - zone_id: 1
+    - name: Controller 2
+      zones:
+        - name: Zone 1 # Conflicts with controller 1 zone 1
+        - name: Zone 2
+          zone_id: c2_z2
+      sequences:
+        - name: Sequence 1
+          sequence_id: c2_s1
+          zones:
+            - zone_id: 1
+        - name: Sequence 2
+          sequence_id: sequence_2 # Conflicts with controller 1 sequence 2
+          zones:
+            - zone_id: 1
+    - name: Controller 3
+      controller_id: controller_3
+      zones:
+        - name: Zone 1
+          zone_id: c3_z1
+      sequences:
+        - name: Sequence 1
+          sequence_id: c3_s1
+          zones:
+            - zone_id: c3_z1

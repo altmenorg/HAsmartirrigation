@@ -1,0 +1,46 @@
+irrigation_unlimited:
+  refresh_interval: 2000
+  controllers:
+    - name: 'My Garden'
+      enabled: true
+      zones:
+        - name: 'Front Lawn'
+        - name: 'Vege Patch'
+        - name: 'Roses'
+        - name: 'Back Yard'
+      sequences:
+        - name: 'Morning'
+          duration: '0:10:00'
+          delay: '0:00:10'
+          schedules:
+            - name: 'Dawn'
+              time: "06:05"
+          zones:
+            - zone_id: 1
+            - zone_id: 2
+            - zone_id: 4
+        - name: 'Evening'
+          duration: '0:10:00'
+          delay: '0:00:10'
+          schedules:
+            - name: 'Dusk'
+              time: "17:05"
+          zones:
+            - zone_id: 1
+            - zone_id: [2,3]
+            - zone_id: 4
+  testing:
+    enabled: true
+    speed: 1.0
+    output_events: false
+    show_log: false
+    autoplay: false
+    times:
+      - name: "1-Toggle sequence 1"
+        start: "2023-08-03 05:00"
+        end: "2023-08-03 06:00"
+        results: []
+      - name: "2-Toggle sequence 2"
+        start: "2023-08-03 16:00"
+        end: "2023-08-03 17:00"
+        results: []

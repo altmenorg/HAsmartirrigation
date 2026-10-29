@@ -1,0 +1,36 @@
+default_config:
+
+irrigation_unlimited:
+  granularity: 30
+  refresh_interval: 2000
+  testing:
+    enabled: true
+    speed: 1.0
+    output_events: false
+    show_log: false
+    autoplay: false
+    times:
+      - name: '1-Test 1'
+        start: '2021-01-04 06:00'
+        end: '2021-01-04 06:30'
+        results:
+          - {t: '2021-01-04 06:10:00', c: 1, z: 0, s: 1}
+          - {t: '2021-01-04 06:10:00', c: 1, z: 2, s: 1}
+          - {t: '2021-01-04 06:20:00', c: 1, z: 2, s: 0}
+          - {t: '2021-01-04 06:20:00', c: 1, z: 0, s: 0}
+  history:
+    enabled: false
+    span: 5
+    refresh_interval: 60
+  controllers:
+    - name: "Test controller 1"
+      all_zones_config:
+        show:
+          timeline: true
+      zones:
+        - schedules:
+          - time: "06:05"
+            duration: "00:10"
+        - schedules:
+          - time: "06:10"
+            duration: "00:10"

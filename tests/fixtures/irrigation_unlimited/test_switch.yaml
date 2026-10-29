@@ -1,0 +1,41 @@
+default_config:
+
+# Dummy switches
+input_boolean:
+  dummy_switch_c1_m:
+    name: Dummy Master Switch
+    initial: true
+
+  dummy_switch_c1_z1:
+    name: Dummy Zone Switch 1
+    initial: false
+
+  dummy_switch_c1_z2:
+    name: Dummy Zone Switch 2
+    initial: false
+
+  dummy_switch_c1_z3:
+    name: Dummy Zone Switch 3
+    initial: true
+
+  dummy_switch_c1_z4:
+    name: Dummy Zone Switch 4
+    initial: true
+
+irrigation_unlimited:
+  granularity: 10
+  refresh_interval: 10
+  sync_switches: true
+  controllers:
+    - name: 'My Garden'
+      entity_id: input_boolean.dummy_switch_c1_m
+      enabled: true
+      zones:
+        - name: 'Front Lawn'
+          entity_id: input_boolean.dummy_switch_c1_z1
+        - name: 'Vege Patch'
+          entity_id: input_boolean.dummy_switch_c1_z2
+        - name: 'Roses'
+          entity_id: input_boolean.dummy_switch_c1_z3
+        - name: 'Back Yard'
+          entity_id: input_boolean.dummy_switch_c1_z4

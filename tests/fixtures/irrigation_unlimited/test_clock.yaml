@@ -1,0 +1,53 @@
+default_config:
+
+homeassistant:
+  unit_system: metric
+  time_zone: Australia/Sydney
+  name: Opera House
+  latitude: -33.85951127367736
+  longitude: 151.22225761413577
+  elevation: 0
+
+irrigation_unlimited:
+  granularity: 30
+  refresh_interval: 20
+  clock:
+    mode: seer
+    max_log_entries: 100
+    show_log: true
+  testing:
+    enabled: true
+    speed: 600.0
+    output_events: false
+    show_log: false
+    autoplay: true
+    times:
+      - name: "1-Sequence 1"
+        start: "2021-01-04 06:00"
+        end: "2021-01-04 06:30"
+        results:
+          - {t: '2021-01-04 06:04:00', c: 1, z: 0, s: 1}
+          - {t: '2021-01-04 06:05:00', c: 1, z: 1, s: 1}
+          - {t: '2021-01-04 06:11:00', c: 1, z: 1, s: 0}
+          - {t: '2021-01-04 06:12:00', c: 1, z: 0, s: 0}
+          - {t: '2021-01-04 06:13:00', c: 1, z: 0, s: 1}
+          - {t: '2021-01-04 06:14:00', c: 1, z: 2, s: 1}
+          - {t: '2021-01-04 06:26:00', c: 1, z: 2, s: 0}
+          - {t: '2021-01-04 06:27:00', c: 1, z: 0, s: 0}
+  controllers:
+    - name: "Test controller 1"
+      preamble: '00:01'
+      postamble: '00:01'
+      zones:
+        - name: "Zone 1"
+        - name: "Zone 2"
+      sequences:
+        - name: "Sequence 1"
+          delay: "0:03:00"
+          schedules:
+            - time: "06:05"
+          zones:
+            - zone_id: 1
+              duration: "0:06:00"
+            - zone_id: 2
+              duration: "0:12:00"
