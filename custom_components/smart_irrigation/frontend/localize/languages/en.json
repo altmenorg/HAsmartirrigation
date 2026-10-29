@@ -277,6 +277,10 @@
         "setup-assistant": {
           "description": "Four questions at most, and it creates a sensor group and a zone for you, choosing what each needs. For a first zone, another one, or a fresh start.",
           "open": "Open the assistant"
+        },
+        "iu-import": {
+          "description": "Moving over from Irrigation Unlimited? Bring its zones, sequences and schedules here, with a preview of everything first.",
+          "open": "Import"
         }
       },
       "description": "This page provides global settings.",
@@ -767,6 +771,136 @@
     },
     "supplies": {
       "title": "Pumps and valves"
+    },
+    "iu_import": {
+      "title": "Import from Irrigation Unlimited",
+      "description": "Brings your Irrigation Unlimited configuration over: its zones, sequences and schedules become zones, programs and their schedules here. You see everything before anything is changed, and nothing waters until you switch the schedules on.",
+      "loading": "Looking for an Irrigation Unlimited configuration…",
+      "step": "Step",
+      "back": "Back",
+      "next": "Next",
+      "import": "Import",
+      "importing": "Importing…",
+      "source": {
+        "question": "Which configuration?",
+        "help": "Smart Irrigation reads the configuration Home Assistant loads, or the one Irrigation Unlimited's own dialogs keep. You can also paste its YAML.",
+        "yaml-help": "The irrigation_unlimited section Home Assistant loads, with its packages, !include and !secret.",
+        "entry-help": "What Irrigation Unlimited's own dialogs keep.",
+        "none-found": "No Irrigation Unlimited configuration was found. If Irrigation Unlimited is no longer installed and its configuration was in a package, Home Assistant does not load it: paste it below.",
+        "paste": "Paste YAML",
+        "paste-help": "The irrigation_unlimited section, or what is under it. !include, !secret and !env_var are not followed here: write those values out, or import from configuration.yaml.",
+        "previous": "Imported before on {at}. Importing again updates what that import made.",
+        "unreadable": "Home Assistant could not read it:"
+      },
+      "zones": {
+        "question": "What becomes of each zone?",
+        "help": "An Irrigation Unlimited zone becomes one of your zones, or a new one. An existing zone keeps its settings and calculation: only what it lacks is filled in.",
+        "none": "This configuration has no zones.",
+        "links": "{count, plural, one {# adjust-time automation feeds Irrigation Unlimited from Smart Irrigation: that step is calculated here.} other {# adjust-time automations feed Irrigation Unlimited from Smart Irrigation: those steps are calculated here.}}",
+        "becomes": "What {zone} becomes",
+        "new": "A new zone",
+        "creates": "A new zone is created, with its valve and pump.",
+        "uses": "Becomes {zone}: {reason}.",
+        "reason": {
+          "valve": "same valve",
+          "blueprint": "an adjust-time automation feeds it from this zone",
+          "name": "same name",
+          "imported": "made by the earlier import",
+          "chosen": "your choice"
+        },
+        "fills": "Filled in:",
+        "fields": {
+          "linked_entity": "valve",
+          "supply_id": "pump",
+          "extra_entities": "more valves",
+          "confirm_timeout": "confirmation wait (s)",
+          "open_resends": "resends",
+          "flow_sensor": "flow sensor"
+        },
+        "left": "No longer in Irrigation Unlimited, left as they are: {zones}."
+      },
+      "programs": {
+        "question": "The programs",
+        "help": "Each sequence becomes a program, and so does a zone with schedules of its own. A sequence whose schedules have different durations becomes one program per duration.",
+        "none": "This configuration has no schedules to bring over.",
+        "action": {
+          "create": "new",
+          "update": "updated"
+        },
+        "calculated": "calculated",
+        "passes": "{count} passes",
+        "step-off": "off",
+        "no-schedules": "No schedule.",
+        "schedules-off": "Its schedules are switched off until you switch them on.",
+        "schedules-stay-on": "You switched its schedules on: they stay as they are.",
+        "disabled": "Switched off in Irrigation Unlimited, and here too.",
+        "removed": "No longer in Irrigation Unlimited, removed: {programs}."
+      },
+      "supplies": {
+        "title": "Pumps and main valves",
+        "create": "New: {name} ({entities}).",
+        "update": "Updated: {name} ({entities}).",
+        "removed": "No longer in Irrigation Unlimited, removed: {supplies}."
+      },
+      "schedule": {
+        "sunrise": "Sunrise",
+        "sunset": "Sunset",
+        "done-by": "done by {time}",
+        "every": "every {count} days",
+        "odd": "odd days",
+        "even": "even days",
+        "days-of-month": "day {days} of the month",
+        "last": "last",
+        "off-in-iu": "off in Irrigation Unlimited"
+      },
+      "report": {
+        "question": "What does not come over exactly",
+        "help": "Every option of Irrigation Unlimited has a rule. These are the ones that are approximated or left out; everything else comes over as it is.",
+        "all-carried": "Everything comes over as it is.",
+        "outcome": {
+          "not_carried": "Not carried over",
+          "unknown": "Not known to the import",
+          "approximated": "Approximated"
+        },
+        "summary-title": "What the import does",
+        "summary": {
+          "zones": "Zones: {created} new, {filled} filled in, {used} used as they are",
+          "programs": "Programs: {created} new, {updated} updated, {removed} removed",
+          "supplies": "Pumps and main valves: {created} new, {updated} updated, {removed} removed"
+        },
+        "nothing-waters": "Nothing is watered by the import. Irrigation Unlimited keeps watering until you switch it off and these schedules on.",
+        "blocked": "Resolve what is marked in red first; until then nothing can be imported.",
+        "full-controller-off": "The full controller is off: the programs are imported, but they only water once it is on."
+      },
+      "errors": {
+        "generic": "The import did not go through.",
+        "changed": "The configuration or your zones changed since this preview. Here is what the import would do now: look again, then import.",
+        "no_source": "No Irrigation Unlimited configuration was found. Paste its YAML.",
+        "yaml_unreadable": "Home Assistant could not read its configuration.",
+        "yaml_invalid": "The pasted YAML could not be read.",
+        "yaml_missing": "Paste the YAML to import.",
+        "yaml_not_iu": "The pasted YAML is not an Irrigation Unlimited configuration.",
+        "unknown_zone": "That zone does not exist any more.",
+        "zone_not_created": "A zone could not be created.",
+        "not_ready": "Smart Irrigation is not ready yet.",
+        "conflicts": "Resolve what is marked in red first.",
+        "too_big": "This is far larger than an Irrigation Unlimited configuration, so it is not read."
+      },
+      "done": {
+        "title": "Imported.",
+        "zones": "Zones: {created} new, {updated} filled in",
+        "programs": "{count, plural, one {# program} other {# programs}}",
+        "next": "The schedules of new programs are switched off, so Irrigation Unlimited is still the one watering. When you are ready, switch Irrigation Unlimited's controllers off and these schedules on, on the Programs page.",
+        "open-programs": "Open the programs",
+        "next-off": "The full controller is off, so these programs do not water yet, and Irrigation Unlimited goes on watering. Switch the full controller on in the settings, then switch Irrigation Unlimited off and these schedules on.",
+        "open-settings": "Open the settings"
+      },
+      "conflicts": {
+        "zone_twice": "{zone} and {other} would both become {target}. Choose another zone for one of them.",
+        "calculated_needs_zone": "{zone} is calculated by Smart Irrigation today, from the zone an adjust-time automation feeds it from. Choose that zone or another existing one.",
+        "program_exists": "A program \"{name}\" ({id}) is in the way: no import made it. Rename or delete it on the Programs page first.",
+        "supply_exists": "A pump \"{name}\" ({id}) is in the way: no import made it. Rename or delete it on the Pumps and valves page first."
+      }
     }
   },
   "title": "Smart Irrigation",

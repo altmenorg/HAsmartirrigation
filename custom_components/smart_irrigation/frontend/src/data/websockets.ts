@@ -261,3 +261,107 @@ export const fetchWateringCalendar = (
     type: DOMAIN + "/watering_calendar",
     zone_id: zone_id,
   });
+
+/** One IU configuration there is to import. */
+export interface IuImportSource {
+  id: string;
+  title: string;
+  error?: string;
+}
+
+/** What an import does with one IU zone. */
+export interface IuImportZone {
+  key: string;
+  name: string;
+  action: "create" | "update" | "use";
+  zone_id: number | null;
+  zone_name?: string | null;
+  reason: "valve" | "blueprint" | "name" | "imported" | "chosen" | null;
+  fields: Record<string, unknown>;
+}
+
+export interface IuImportProgram {
+  action: "create" | "update";
+  schedules_on: boolean;
+  program: {
+    id: string;
+    name: string;
+    enabled: boolean;
+    steps: {
+      zones: string[];
+      mode: "fixed" | "calculated";
+      seconds?: number;
+      passes?: number;
+      enabled?: boolean;
+    }[];
+    schedules: Record<string, any>[];
+    delay?: number;
+    tours?: number;
+  };
+  zone_names: string[][];
+}
+
+export interface IuImportReportItem {
+  path: string;
+  outcome: "approximated" | "not_carried" | "unknown";
+  note: string;
+  subject: string;
+}
+
+export type IuImportConflict =
+  | { code: "zone_twice"; key: string; other: string; zone_id: number }
+  | { code: "calculated_needs_zone"; key: string }
+  | { code: "program_exists" | "supply_exists"; id: string; name: string };
+
+export interface IuImportPreview {
+  source: string;
+  supplies: {
+    action: "create" | "update";
+    supply: { id: string; name: string; entities: string[] };
+  }[];
+  zones: IuImportZone[];
+  programs: IuImportProgram[];
+  removed: { programs: string[]; supplies: string[] };
+  removed_names: { programs: string[]; supplies: string[] };
+  /** What stops the import until it is resolved; apply refuses meanwhile. */
+  conflicts: IuImportConflict[];
+  zones_left: number[];
+  links: number;
+  previous: { source?: string; at?: string };
+  report: { items: IuImportReportItem[]; counts: Record<string, number> };
+  fingerprint: string;
+}
+
+export interface IuImportRequest {
+  source?: string | null;
+  yaml?: string | null;
+  matches?: Record<string, number | "new">;
+}
+
+export interface IuImportResult {
+  zones_created: number[];
+  zones_updated: number[];
+  programs: string[];
+  programs_removed: string[];
+  supplies: string[];
+}
+
+/** The Irrigation Unlimited configurations there are to import. */
+export const iuImportSources = (
+  hass: HomeAssistant,
+): Promise<{ sources: IuImportSource[] }> =>
+  hass.callWS({ type: DOMAIN + "/iu_import/sources" });
+
+/** What importing an Irrigation Unlimited configuration would do. */
+export const iuImportPreview = (
+  hass: HomeAssistant,
+  request: IuImportRequest,
+): Promise<IuImportPreview> =>
+  hass.callWS({ type: DOMAIN + "/iu_import/preview", ...request });
+
+/** Import it, as the preview with this fingerprint showed it. */
+export const iuImportApply = (
+  hass: HomeAssistant,
+  request: IuImportRequest & { fingerprint: string },
+): Promise<IuImportResult> =>
+  hass.callWS({ type: DOMAIN + "/iu_import/apply", ...request });

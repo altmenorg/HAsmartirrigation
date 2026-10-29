@@ -277,6 +277,10 @@
         "setup-assistant": {
           "description": "Höchstens vier Fragen, und er erstellt eine Sensorgruppe und eine Zone für dich und wählt aus, was beide brauchen. Für eine erste Zone, eine weitere oder einen Neuanfang.",
           "open": "Assistenten öffnen"
+        },
+        "iu-import": {
+          "description": "Du kommst von Irrigation Unlimited? Übernimm seine Zonen, Sequenzen und Zeitpläne hierher, mit einer Vorschau auf alles vorab.",
+          "open": "Übernehmen"
         }
       },
       "description": "Diese Seite ist für allgemeine Einstellungen.",
@@ -767,6 +771,136 @@
     },
     "supplies": {
       "title": "Pumpen und Ventile"
+    },
+    "iu_import": {
+      "title": "Aus Irrigation Unlimited übernehmen",
+      "description": "Übernimmt deine Konfiguration aus Irrigation Unlimited: Aus Zonen, Sequenzen und Zeitplänen werden hier Zonen, Programme und deren Zeitpläne. Du siehst alles, bevor etwas geändert wird, und nichts bewässert, bis du die Zeitpläne einschaltest.",
+      "loading": "Suche nach einer Konfiguration von Irrigation Unlimited …",
+      "step": "Schritt",
+      "back": "Zurück",
+      "next": "Weiter",
+      "import": "Übernehmen",
+      "importing": "Wird übernommen …",
+      "source": {
+        "question": "Welche Konfiguration?",
+        "help": "Smart Irrigation liest die Konfiguration, die Home Assistant lädt, oder die, die Irrigation Unlimiteds eigene Dialoge speichern. Du kannst auch ihre YAML einfügen.",
+        "yaml-help": "Der Abschnitt irrigation_unlimited, wie Home Assistant ihn lädt, mit Packages, !include und !secret.",
+        "entry-help": "Was Irrigation Unlimiteds eigene Dialoge speichern.",
+        "none-found": "Es wurde keine Konfiguration von Irrigation Unlimited gefunden. Ist Irrigation Unlimited nicht mehr installiert und stand seine Konfiguration in einem Package, lädt Home Assistant sie nicht: Füge sie unten ein.",
+        "paste": "YAML einfügen",
+        "paste-help": "Der Abschnitt irrigation_unlimited oder was darunter steht. !include, !secret und !env_var werden hier nicht aufgelöst: Schreib diese Werte aus oder übernimm aus configuration.yaml.",
+        "previous": "Schon am {at} übernommen. Eine neue Übernahme aktualisiert, was die frühere angelegt hat.",
+        "unreadable": "Home Assistant konnte sie nicht lesen:"
+      },
+      "zones": {
+        "question": "Was wird aus jeder Zone?",
+        "help": "Eine Zone aus Irrigation Unlimited wird zu einer deiner Zonen oder zu einer neuen. Eine bestehende Zone behält ihre Einstellungen und ihre Berechnung: Ergänzt wird nur, was ihr fehlt.",
+        "none": "Diese Konfiguration hat keine Zonen.",
+        "links": "{count, plural, one {# Automatisierung zur Laufzeitanpassung versorgt Irrigation Unlimited aus Smart Irrigation: Dieser Schritt wird hier berechnet.} other {# Automatisierungen zur Laufzeitanpassung versorgen Irrigation Unlimited aus Smart Irrigation: Diese Schritte werden hier berechnet.}}",
+        "becomes": "Was aus {zone} wird",
+        "new": "Eine neue Zone",
+        "creates": "Eine neue Zone wird angelegt, mit Ventil und Pumpe.",
+        "uses": "Wird zu {zone}: {reason}.",
+        "reason": {
+          "valve": "dasselbe Ventil",
+          "blueprint": "eine Automatisierung zur Laufzeitanpassung versorgt sie aus dieser Zone",
+          "name": "derselbe Name",
+          "imported": "von der früheren Übernahme angelegt",
+          "chosen": "deine Wahl"
+        },
+        "fills": "Ergänzt:",
+        "fields": {
+          "linked_entity": "Ventil",
+          "supply_id": "Pumpe",
+          "extra_entities": "weitere Ventile",
+          "confirm_timeout": "Wartezeit auf Bestätigung (s)",
+          "open_resends": "Wiederholungen",
+          "flow_sensor": "Durchflusssensor"
+        },
+        "left": "Nicht mehr in Irrigation Unlimited, bleiben wie sie sind: {zones}."
+      },
+      "programs": {
+        "question": "Die Programme",
+        "help": "Jede Sequenz wird ein Programm, ebenso eine Zone mit eigenen Zeitplänen. Eine Sequenz, deren Zeitpläne verschiedene Dauern haben, wird ein Programm je Dauer.",
+        "none": "Diese Konfiguration hat keine Zeitpläne zu übernehmen.",
+        "action": {
+          "create": "neu",
+          "update": "aktualisiert"
+        },
+        "calculated": "berechnet",
+        "passes": "{count} Durchgänge",
+        "step-off": "aus",
+        "no-schedules": "Kein Zeitplan.",
+        "schedules-off": "Seine Zeitpläne bleiben aus, bis du sie einschaltest.",
+        "schedules-stay-on": "Du hast seine Zeitpläne eingeschaltet: Sie bleiben, wie sie sind.",
+        "disabled": "In Irrigation Unlimited ausgeschaltet, und hier auch.",
+        "removed": "Nicht mehr in Irrigation Unlimited, entfernt: {programs}."
+      },
+      "supplies": {
+        "title": "Pumpen und Hauptventile",
+        "create": "Neu: {name} ({entities}).",
+        "update": "Aktualisiert: {name} ({entities}).",
+        "removed": "Nicht mehr in Irrigation Unlimited, entfernt: {supplies}."
+      },
+      "schedule": {
+        "sunrise": "Sonnenaufgang",
+        "sunset": "Sonnenuntergang",
+        "done-by": "fertig um {time}",
+        "every": "alle {count} Tage",
+        "odd": "ungerade Tage",
+        "even": "gerade Tage",
+        "days-of-month": "Tag {days} des Monats",
+        "last": "letzter",
+        "off-in-iu": "in Irrigation Unlimited aus"
+      },
+      "report": {
+        "question": "Was nicht genau so übernommen wird",
+        "help": "Für jede Option von Irrigation Unlimited gibt es eine Regel. Hier stehen die, die angenähert oder weggelassen werden; alles andere wird übernommen, wie es ist.",
+        "all-carried": "Alles wird übernommen, wie es ist.",
+        "outcome": {
+          "not_carried": "Nicht übernommen",
+          "unknown": "Der Übernahme unbekannt",
+          "approximated": "Angenähert"
+        },
+        "summary-title": "Was die Übernahme tut",
+        "summary": {
+          "zones": "Zonen: {created} neu, {filled} ergänzt, {used} unverändert genutzt",
+          "programs": "Programme: {created} neu, {updated} aktualisiert, {removed} entfernt",
+          "supplies": "Pumpen und Hauptventile: {created} neu, {updated} aktualisiert, {removed} entfernt"
+        },
+        "nothing-waters": "Die Übernahme bewässert nichts. Irrigation Unlimited bewässert weiter, bis du es ausschaltest und diese Zeitpläne einschaltest.",
+        "blocked": "Löse zuerst, was rot markiert ist; bis dahin lässt sich nichts übernehmen.",
+        "full-controller-off": "Der vollständige Controller ist aus: Die Programme werden übernommen, bewässern aber erst, wenn er an ist."
+      },
+      "errors": {
+        "generic": "Die Übernahme hat nicht geklappt.",
+        "changed": "Die Konfiguration oder deine Zonen haben sich seit dieser Vorschau geändert. Hier steht, was die Übernahme jetzt tun würde: Schau es noch einmal an und übernimm dann.",
+        "no_source": "Es wurde keine Konfiguration von Irrigation Unlimited gefunden. Füge ihre YAML ein.",
+        "yaml_unreadable": "Home Assistant konnte seine Konfiguration nicht lesen.",
+        "yaml_invalid": "Die eingefügte YAML ließ sich nicht lesen.",
+        "yaml_missing": "Füge die YAML ein, die übernommen werden soll.",
+        "yaml_not_iu": "Die eingefügte YAML ist keine Konfiguration von Irrigation Unlimited.",
+        "unknown_zone": "Diese Zone gibt es nicht mehr.",
+        "zone_not_created": "Eine Zone konnte nicht angelegt werden.",
+        "not_ready": "Smart Irrigation ist noch nicht bereit.",
+        "conflicts": "Löse zuerst, was rot markiert ist.",
+        "too_big": "Das ist weit größer als eine Konfiguration von Irrigation Unlimited und wird deshalb nicht gelesen."
+      },
+      "done": {
+        "title": "Übernommen.",
+        "zones": "Zonen: {created} neu, {updated} ergänzt",
+        "programs": "{count, plural, one {# Programm} other {# Programme}}",
+        "next": "Die Zeitpläne neuer Programme sind ausgeschaltet, es bewässert also weiter Irrigation Unlimited. Wenn du so weit bist, schalte die Controller von Irrigation Unlimited aus und diese Zeitpläne auf der Seite Programme ein.",
+        "open-programs": "Zu den Programmen",
+        "next-off": "Der vollständige Controller ist aus, diese Programme bewässern also noch nicht, und Irrigation Unlimited bewässert weiter. Schalte den vollständigen Controller in den Einstellungen ein, dann Irrigation Unlimited aus und diese Zeitpläne ein.",
+        "open-settings": "Zu den Einstellungen"
+      },
+      "conflicts": {
+        "zone_twice": "{zone} und {other} würden beide zu {target}. Wähle für eine der beiden eine andere Zone.",
+        "calculated_needs_zone": "{zone} wird heute von Smart Irrigation berechnet, aus der Zone, aus der eine Automatisierung zur Laufzeitanpassung sie versorgt. Wähle diese oder eine andere bestehende Zone.",
+        "program_exists": "Ein Programm „{name}“ ({id}) ist im Weg: Keine Übernahme hat es angelegt. Benenne es zuerst auf der Seite Programme um oder lösche es.",
+        "supply_exists": "Eine Pumpe „{name}“ ({id}) ist im Weg: Keine Übernahme hat sie angelegt. Benenne sie zuerst auf der Seite „Pumpen und Ventile“ um oder lösche sie."
+      }
     }
   },
   "title": "Smart Irrigation",
