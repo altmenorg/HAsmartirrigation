@@ -452,7 +452,7 @@
             "solar radiation": "De energie van de zon, de belangrijkste drijfveer van verdamping. Zonder deze schat de berekening haar uit het temperatuurbereik van de dag. Gebruik onder glas een stralingssensor of een lichtsensor.",
             "precipitation": "Gevallen regen, als totaal, van een eigen regenmeter die optelt. Laat dit bij een weerdienst op Geen staan.",
             "current precipitation": "Regen die nu valt, als intensiteit. De weerdienst levert die; een eigen regensensor is nauwkeuriger.",
-            "evapotranspiration": "Het water dat de planten verloren hebben, al berekend door je sensor of dienst. Gebruikt door de zones die op geleverd door een sensor of een dienst staan."
+            "evapotranspiration": "Een kant-en-klare referentieverdamping (ET₀), afkomstig van je eigen sensor of van de weerdienst. Alleen zones die zijn ingesteld op 'Aangeleverd door een sensor of dienst' gebruiken deze waarde. Voor zones die zijn ingesteld op 'Berekend door Smart Irrigation' wordt deze waarde niet gebruikt. De weerdienst levert in dat geval alleen de invoergegevens (temperatuur, luchtvochtigheid, wind en straling) voor de eigen berekening van Smart Irrigation."
           },
           "items": {
             "dewpoint": "Dauwpunt",
@@ -873,7 +873,7 @@
     "title": "Dagen Tussen Irrigaties",
     "description": "Configureer het minimum aantal dagen dat moet verstrijken tussen irrigatie gebeurtenissen. Dit helpt bij het controleren van de bevloeiingsfrequentie voor waterbesparing en plantgezondheid beheer.\n\nTypische gebruikssituaties:\n• Gazonverzorging: 1-2 dag intervallen voorkomen overbewatering\n• Droogte beperkingen: 6+ dag intervallen voor wekelijkse bewatering\n• Diepwortelende planten: 3-7 dag intervallen voor minder frequente bewatering\n• Waterbesparing: aanpasbaar op basis van klimaat en bodemcondities",
     "label": "Minimum dagen tussen irrigaties",
-    "help_text": "Stel in op 0 om deze functie uit te schakelen. Waarden van 1-365 dagen worden ondersteund. Deze instelling werkt samen met de bestaande neerslagvoorspelling logica."
+    "help_text": "Stel in op 0 om deze functie uit te schakelen. Waarden van 1 tot 365 dagen worden ondersteund. Deze instelling werkt samen met de bestaande logica voor neerslagvoorspellingen. Voor een zone kan op het tabblad 'Zones' een afzonderlijk aantal dagen worden ingesteld. Deze waarde heeft voor die zone voorrang op de algemene instelling."
   },
   "planning": {
     "title": "Planning",
