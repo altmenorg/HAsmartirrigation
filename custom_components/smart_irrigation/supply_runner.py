@@ -137,6 +137,12 @@ class SupplyRunnerMixin:
         ok = False
         cancelled = False
         try:
+            kick = float(supply.get(const.SUPPLY_KICK_SECONDS) or 0.0)
+            if kick > 0:
+                # Off, a pause, then on: a pump whose pressure controller has
+                # tripped only starts again after its power has been cut.
+                await self._supply_switch(supply, False, quiet=True)
+                await asyncio.sleep(kick)
             ok = await self._supply_switch(supply, True)
         except asyncio.CancelledError:
             # The call may have gone through: it stays recorded as on, for the

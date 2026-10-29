@@ -1062,7 +1062,9 @@
     "enabled": "Attivata",
     "add": "Aggiungi una pompa o valvola principale",
     "delete": "Elimina",
-    "confirm_delete": "Eliminare \"{name}\"? Le zone che lo usano non avranno più né pompa né valvola principale."
+    "confirm_delete": "Eliminare \"{name}\"? Le zone che lo usano non avranno più né pompa né valvola principale.",
+    "kick_seconds": "Interruzione prima dell'avvio",
+    "kick_seconds_help": "Per una pompa il cui pressostato riparte solo dopo un'interruzione di corrente: viene spenta per questo tempo, poi accesa, prima di ogni avvio. 0: accesa direttamente (predefinito)."
   },
   "observed_watering": {
     "title": "Irrigazione osservata (anello chiuso)",

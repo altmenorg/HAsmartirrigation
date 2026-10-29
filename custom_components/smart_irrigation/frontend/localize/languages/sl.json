@@ -1062,7 +1062,9 @@
     "enabled": "Vklopljeno",
     "add": "Dodaj črpalko ali glavni ventil",
     "delete": "Izbriši",
-    "confirm_delete": "Izbrišem »{name}«? Cone, ki ga uporabljajo, ne bodo več imele črpalke ali glavnega ventila."
+    "confirm_delete": "Izbrišem »{name}«? Cone, ki ga uporabljajo, ne bodo več imele črpalke ali glavnega ventila.",
+    "kick_seconds": "Prekinitev napajanja pred zagonom",
+    "kick_seconds_help": "Za črpalko, katere tlačno stikalo se znova zažene šele po prekinitvi napajanja: pred vsakim zagonom se za ta čas izklopi in nato vklopi. 0: vklopi se neposredno (privzeto)."
   },
   "observed_watering": {
     "title": "Opazovano zalivanje (zaprta zanka)",

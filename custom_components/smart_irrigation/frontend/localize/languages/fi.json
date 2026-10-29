@@ -1062,7 +1062,9 @@
     "enabled": "Käytössä",
     "add": "Lisää pumppu tai pääventtiili",
     "delete": "Poista",
-    "confirm_delete": "Poistetaanko ”{name}”? Sitä käyttävillä vyöhykkeillä ei ole enää pumppua eikä pääventtiiliä."
+    "confirm_delete": "Poistetaanko ”{name}”? Sitä käyttävillä vyöhykkeillä ei ole enää pumppua eikä pääventtiiliä.",
+    "kick_seconds": "Virtakatko ennen käynnistystä",
+    "kick_seconds_help": "Pumpulle, jonka paineohjain käynnistyy uudelleen vasta virtakatkon jälkeen: se sammutetaan näin pitkäksi aikaa ja sitten käynnistetään ennen jokaista käynnistystä. 0: käynnistetään suoraan (oletus)."
   },
   "observed_watering": {
     "title": "Havaittu kastelu (suljettu silmukka)",

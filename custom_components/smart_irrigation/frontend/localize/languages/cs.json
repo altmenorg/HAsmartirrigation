@@ -1062,7 +1062,9 @@
     "enabled": "Zapnuto",
     "add": "Přidat čerpadlo nebo hlavní ventil",
     "delete": "Smazat",
-    "confirm_delete": "Smazat „{name}“? Zóny, které jej používají, už nebudou mít čerpadlo ani hlavní ventil."
+    "confirm_delete": "Smazat „{name}“? Zóny, které jej používají, už nebudou mít čerpadlo ani hlavní ventil.",
+    "kick_seconds": "Přerušení napájení před startem",
+    "kick_seconds_help": "Pro čerpadlo, jehož tlakový spínač se znovu rozběhne až po přerušení napájení: před každým startem se na tuto dobu vypne a pak zapne. 0: zapne se přímo (výchozí)."
   },
   "observed_watering": {
     "title": "Sledované zavlažování (uzavřená smyčka)",

@@ -1062,7 +1062,9 @@
     "enabled": "Ativada",
     "add": "Adicionar uma bomba ou válvula principal",
     "delete": "Eliminar",
-    "confirm_delete": "Eliminar \"{name}\"? As zonas que o utilizam ficarão sem bomba nem válvula principal."
+    "confirm_delete": "Eliminar \"{name}\"? As zonas que o utilizam ficarão sem bomba nem válvula principal.",
+    "kick_seconds": "Corte antes de arrancar",
+    "kick_seconds_help": "Para uma bomba cujo pressóstato só volta a arrancar após um corte de energia: é desligada durante este tempo e depois ligada, antes de cada arranque. 0: ligada diretamente (predefinição)."
   },
   "observed_watering": {
     "title": "Rega observada (circuito fechado)",

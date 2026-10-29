@@ -1062,7 +1062,9 @@
     "enabled": "Activée",
     "add": "Ajouter une pompe ou une vanne générale",
     "delete": "Supprimer",
-    "confirm_delete": "Supprimer « {name} » ? Les zones qui l'utilisent n'auront plus de pompe ni de vanne générale."
+    "confirm_delete": "Supprimer « {name} » ? Les zones qui l'utilisent n'auront plus de pompe ni de vanne générale.",
+    "kick_seconds": "Coupure avant démarrage",
+    "kick_seconds_help": "Pour une pompe dont le contrôleur de pression ne redémarre qu'après une coupure de courant : elle est coupée ce temps-là, puis allumée, avant chaque démarrage. 0 : allumée directement (par défaut)."
   },
   "observed_watering": {
     "title": "Arrosage observé (boucle fermée)",

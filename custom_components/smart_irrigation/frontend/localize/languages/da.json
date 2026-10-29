@@ -1062,7 +1062,9 @@
     "enabled": "Aktiveret",
     "add": "Tilføj en pumpe eller hovedventil",
     "delete": "Slet",
-    "confirm_delete": "Slet \"{name}\"? De zoner, der bruger den, har så ikke længere en pumpe eller hovedventil."
+    "confirm_delete": "Slet \"{name}\"? De zoner, der bruger den, har så ikke længere en pumpe eller hovedventil.",
+    "kick_seconds": "Strømafbrydelse før start",
+    "kick_seconds_help": "Til en pumpe, hvis trykstyring først starter igen efter en strømafbrydelse: den slukkes så længe og tændes så før hver start. 0: tændes direkte (standard)."
   },
   "observed_watering": {
     "title": "Observeret vanding (lukket sløjfe)",

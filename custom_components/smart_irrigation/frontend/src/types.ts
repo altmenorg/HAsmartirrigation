@@ -220,6 +220,8 @@ export interface SmartIrrigationSupply {
   /** Seconds, signed: positive, the supply leads; negative, the valve does. */
   delay_before: number;
   delay_after: number;
+  /** Seconds switched off before it is switched on; 0: no kick. */
+  kick_seconds?: number;
   enabled: boolean;
 }
 

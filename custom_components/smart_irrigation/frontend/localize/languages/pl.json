@@ -1062,7 +1062,9 @@
     "enabled": "Włączone",
     "add": "Dodaj pompę lub zawór główny",
     "delete": "Usuń",
-    "confirm_delete": "Usunąć „{name}”? Strefy, które go używają, nie będą już miały pompy ani zaworu głównego."
+    "confirm_delete": "Usunąć „{name}”? Strefy, które go używają, nie będą już miały pompy ani zaworu głównego.",
+    "kick_seconds": "Odcięcie zasilania przed startem",
+    "kick_seconds_help": "Dla pompy, której presostat uruchamia się ponownie dopiero po odcięciu zasilania: przed każdym startem jest wyłączana na ten czas, a potem włączana. 0: włączana od razu (domyślnie)."
   },
   "observed_watering": {
     "title": "Obserwowane nawadnianie (zamknięta pętla)",

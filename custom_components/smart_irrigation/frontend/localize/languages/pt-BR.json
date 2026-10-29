@@ -1062,7 +1062,9 @@
     "enabled": "Ativada",
     "add": "Adicionar uma bomba ou válvula principal",
     "delete": "Excluir",
-    "confirm_delete": "Excluir \"{name}\"? As zonas que o usam ficarão sem bomba nem válvula principal."
+    "confirm_delete": "Excluir \"{name}\"? As zonas que o usam ficarão sem bomba nem válvula principal.",
+    "kick_seconds": "Corte antes de ligar",
+    "kick_seconds_help": "Para uma bomba cujo pressostato só volta a funcionar após um corte de energia: ela é desligada por esse tempo e depois ligada, antes de cada partida. 0: ligada diretamente (padrão)."
   },
   "observed_watering": {
     "title": "Rega observada (malha fechada)",

@@ -143,6 +143,53 @@ async def test_a_pump_that_leads_waits_before_the_valve_and_after_it(monkeypatch
     ]
 
 
+async def test_a_kicked_pump_is_cut_then_switched_on(monkeypatch):
+    """A pump whose pressure controller only restarts after a power cut."""
+    hass, coord, _ = _setup(monkeypatch, supply=_supply(kick_seconds=3))
+
+    await coord.async_run_direct_valves()
+
+    assert _log(hass) == [
+        "pump off",
+        "wait 3",
+        "pump on",
+        "zone_0 on",
+        "wait 300",
+        "zone_0 off",
+        "pump off",
+    ]
+
+
+async def test_a_pump_already_on_for_another_zone_is_not_kicked(monkeypatch):
+    hass, coord, _ = _setup(
+        monkeypatch, zone_ids=(0, 1), supply=_supply(kick_seconds=3, delay_after=7)
+    )
+
+    await coord.async_run_direct_valves()
+    await _finish(hass)
+
+    # Kicked once, for the first zone: the second finds it on.
+    assert _log(hass)[:3] == ["pump off", "wait 3", "pump on"]
+    assert _log(hass).count("wait 3") == 1
+
+
+def test_the_kick_is_held_to_its_range():
+    from custom_components.smart_irrigation.supplies import normalize_supplies
+
+    kicks = [
+        s[const.SUPPLY_KICK_SECONDS]
+        for s in normalize_supplies(
+            [
+                _supply(kick_seconds=-5),
+                _supply(kick_seconds=600),
+                _supply(kick_seconds="x"),
+                _supply(),
+            ]
+        )
+    ]
+    assert kicks == [0.0, float(const.SUPPLY_MAX_KICK_SECONDS), 0.0, 0.0]
+
+
 async def test_a_valve_that_leads_opens_before_the_pump(monkeypatch):
     hass, coord, _ = _setup(monkeypatch, supply=_supply(delay_before=-4))
 

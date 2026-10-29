@@ -1062,7 +1062,9 @@
     "enabled": "Aktivert",
     "add": "Legg til en pumpe eller hovedventil",
     "delete": "Slett",
-    "confirm_delete": "Slette «{name}»? Sonene som bruker den vil ikke lenger ha noen pumpe eller hovedventil."
+    "confirm_delete": "Slette «{name}»? Sonene som bruker den vil ikke lenger ha noen pumpe eller hovedventil.",
+    "kick_seconds": "Strømbrudd før start",
+    "kick_seconds_help": "For en pumpe der trykkstyringen først starter igjen etter et strømbrudd: den slås av så lenge og deretter på før hver start. 0: slås på direkte (standard)."
   },
   "observed_watering": {
     "title": "Observert vanning (lukket sløyfe)",

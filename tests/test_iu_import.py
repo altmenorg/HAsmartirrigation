@@ -253,6 +253,7 @@ def test_the_controller_becomes_a_supply():
             "entities": ["switch.pump"],
             "delay_before": 120.0,
             "delay_after": 60.0,
+            "kick_seconds": 0.0,
             "enabled": True,
         }
     ]

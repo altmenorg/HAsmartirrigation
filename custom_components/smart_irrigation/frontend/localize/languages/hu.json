@@ -1062,7 +1062,9 @@
     "enabled": "Engedélyezve",
     "add": "Szivattyú vagy főszelep hozzáadása",
     "delete": "Törlés",
-    "confirm_delete": "Törlöd a(z) „{name}” elemet? Az azt használó zónáknak nem lesz többé szivattyújuk vagy főszelepük."
+    "confirm_delete": "Törlöd a(z) „{name}” elemet? Az azt használó zónáknak nem lesz többé szivattyújuk vagy főszelepük.",
+    "kick_seconds": "Áramszünet indulás előtt",
+    "kick_seconds_help": "Olyan szivattyúhoz, amelynek nyomáskapcsolója csak áramszünet után indul újra: minden indulás előtt ennyi időre kikapcsol, majd bekapcsol. 0: közvetlenül bekapcsol (alapértelmezett)."
   },
   "observed_watering": {
     "title": "Megfigyelt öntözés (zárt hurok)",

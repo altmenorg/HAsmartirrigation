@@ -36,6 +36,17 @@ def _delay(value) -> float:
     return max(-limit, min(limit, seconds))
 
 
+def _kick(value) -> float:
+    """The kick in seconds, 0 to the allowed maximum; 0 if it is no number."""
+    try:
+        seconds = float(value)
+    except (TypeError, ValueError):
+        return 0.0
+    if seconds != seconds:  # NaN
+        return 0.0
+    return max(0.0, min(float(const.SUPPLY_MAX_KICK_SECONDS), seconds))
+
+
 def _entities(value) -> list:
     """The entity ids of a supply, from a list or a comma-separated string."""
     if isinstance(value, str):
@@ -87,6 +98,7 @@ def normalize_supplies(supplies) -> list:
                     supply.get(const.SUPPLY_DELAY_BEFORE)
                 ),
                 const.SUPPLY_DELAY_AFTER: _delay(supply.get(const.SUPPLY_DELAY_AFTER)),
+                const.SUPPLY_KICK_SECONDS: _kick(supply.get(const.SUPPLY_KICK_SECONDS)),
                 const.SUPPLY_ENABLED: supply.get(const.SUPPLY_ENABLED) is not False,
             }
         )

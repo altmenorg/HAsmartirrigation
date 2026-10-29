@@ -2139,6 +2139,19 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 (v) => patch(index, { delay_after: seconds(v) }),
               )}
               <div class="setting-hint row-hint">${t("delay_after_help")}</div>
+              ${this._numRow(
+                t("kick_seconds"),
+                localize("common.units.seconds", lang),
+                supply.kick_seconds ?? 0,
+                (v) =>
+                  patch(index, {
+                    kick_seconds: Math.max(0, Math.min(60, Number(v) || 0)),
+                  }),
+                1,
+                false,
+                0,
+              )}
+              <div class="setting-hint row-hint">${t("kick_seconds_help")}</div>
               <div class="setting-row">
                 <div class="setting-label">${t("enabled")}</div>
                 <ha-switch
@@ -2183,6 +2196,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   entities: [],
                   delay_before: 0,
                   delay_after: 0,
+                  kick_seconds: 0,
                   enabled: true,
                 },
               ]),

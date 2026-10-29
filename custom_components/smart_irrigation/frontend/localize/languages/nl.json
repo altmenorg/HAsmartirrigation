@@ -1062,7 +1062,9 @@
     "enabled": "Ingeschakeld",
     "add": "Een pomp of hoofdventiel toevoegen",
     "delete": "Verwijderen",
-    "confirm_delete": "\"{name}\" verwijderen? De zones die het gebruiken hebben dan geen pomp of hoofdventiel meer."
+    "confirm_delete": "\"{name}\" verwijderen? De zones die het gebruiken hebben dan geen pomp of hoofdventiel meer.",
+    "kick_seconds": "Stroomonderbreking voor de start",
+    "kick_seconds_help": "Voor een pomp waarvan de drukregelaar pas na een stroomonderbreking weer start: hij wordt voor elke start zo lang uitgeschakeld en dan ingeschakeld. 0: direct ingeschakeld (standaard)."
   },
   "observed_watering": {
     "title": "Waargenomen bewatering (closed loop)",

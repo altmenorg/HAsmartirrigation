@@ -264,6 +264,10 @@ SUPPLY_ENTITIES = "entities"
 SUPPLY_DELAY_BEFORE = "delay_before"
 SUPPLY_DELAY_AFTER = "delay_after"
 SUPPLY_ENABLED = "enabled"
+# Seconds the supply is switched off before it is switched on, for a pump whose
+# pressure controller only starts again after a power cut. 0: no kick.
+SUPPLY_KICK_SECONDS = "kick_seconds"
+SUPPLY_MAX_KICK_SECONDS = 60
 # A delay, before or after, is held to this many seconds either way.
 SUPPLY_MAX_DELAY_SECONDS = 3600
 

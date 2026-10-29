@@ -1157,6 +1157,8 @@ def plan_import(
                     f"{controller.where}.postamble",
                     report,
                 ),
+                # IU has no power cut before starting.
+                const.SUPPLY_KICK_SECONDS: 0.0,
                 const.SUPPLY_ENABLED: controller.enabled,
             }
         )

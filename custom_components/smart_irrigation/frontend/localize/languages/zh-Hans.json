@@ -1062,7 +1062,9 @@
     "enabled": "已启用",
     "add": "添加水泵或总阀",
     "delete": "删除",
-    "confirm_delete": "删除“{name}”吗？使用它的区域将不再有水泵或总阀。"
+    "confirm_delete": "删除“{name}”吗？使用它的区域将不再有水泵或总阀。",
+    "kick_seconds": "启动前断电",
+    "kick_seconds_help": "适用于压力控制器只有在断电后才会重新启动的水泵：每次启动前先断电这段时间，再通电。0：直接通电（默认）。"
   },
   "observed_watering": {
     "title": "实测浇水（闭环）",

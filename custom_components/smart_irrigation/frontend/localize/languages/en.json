@@ -1062,7 +1062,9 @@
     "enabled": "Enabled",
     "add": "Add a pump or main valve",
     "delete": "Delete",
-    "confirm_delete": "Delete \"{name}\"? The zones that use it will no longer have a pump or main valve."
+    "confirm_delete": "Delete \"{name}\"? The zones that use it will no longer have a pump or main valve.",
+    "kick_seconds": "Power cut before starting",
+    "kick_seconds_help": "For a pump whose pressure controller only starts again after its power has been cut: it is switched off this long, then on, before each start. 0: switched on directly (the default)."
   },
   "observed_watering": {
     "title": "Observed watering (closed loop)",

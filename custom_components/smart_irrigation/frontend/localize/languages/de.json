@@ -1062,7 +1062,9 @@
     "enabled": "Aktiviert",
     "add": "Pumpe oder Hauptventil hinzufügen",
     "delete": "Löschen",
-    "confirm_delete": "„{name}“ löschen? Die Zonen, die diesen Eintrag nutzen, haben dann keine Pumpe und kein Hauptventil mehr."
+    "confirm_delete": "„{name}“ löschen? Die Zonen, die diesen Eintrag nutzen, haben dann keine Pumpe und kein Hauptventil mehr.",
+    "kick_seconds": "Stromunterbrechung vor dem Start",
+    "kick_seconds_help": "Für eine Pumpe, deren Druckschalter erst nach einer Stromunterbrechung wieder anläuft: Sie wird vor jedem Start so lange ausgeschaltet, dann eingeschaltet. 0: direkt eingeschaltet (Standard)."
   },
   "observed_watering": {
     "title": "Beobachtete Bewässerung (Closed Loop)",

@@ -1062,7 +1062,9 @@
     "enabled": "Aktiverad",
     "add": "Lägg till en pump eller huvudventil",
     "delete": "Ta bort",
-    "confirm_delete": "Ta bort ”{name}”? Zonerna som använder den har inte längre någon pump eller huvudventil."
+    "confirm_delete": "Ta bort ”{name}”? Zonerna som använder den har inte längre någon pump eller huvudventil.",
+    "kick_seconds": "Strömavbrott före start",
+    "kick_seconds_help": "För en pump vars tryckvakt bara startar igen efter ett strömavbrott: den stängs av så länge och slås sedan på före varje start. 0: slås på direkt (standard)."
   },
   "observed_watering": {
     "title": "Observerad bevattning (sluten slinga)",
