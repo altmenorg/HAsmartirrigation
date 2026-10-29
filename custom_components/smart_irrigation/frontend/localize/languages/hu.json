@@ -277,6 +277,10 @@
         "setup-assistant": {
           "description": "Legfeljebb négy kérdés, és létrehoz neked egy érzékelőcsoportot és egy zónát, kiválasztva azt, amire mindkettőnek szüksége van. Első zónához, egy továbbihoz, vagy új kezdéshez.",
           "open": "Segéd megnyitása"
+        },
+        "iu-import": {
+          "description": "Irrigation Unlimitedről váltasz? Hozd át ide a zónáit, szekvenciáit és ütemezéseit, előbb mindenről előnézettel.",
+          "open": "Importálás"
         }
       },
       "description": "Ez az oldal globális beállításokat biztosít.",
@@ -767,6 +771,138 @@
     },
     "supplies": {
       "title": "Szivattyúk és szelepek"
+    },
+    "iu_import": {
+      "title": "Importálás az Irrigation Unlimitedből",
+      "description": "Áthozza az Irrigation Unlimited konfigurációdat: a zónáiból, szekvenciáiból és ütemezéseiből itt zónák, programok és ezek ütemezései lesznek. Mindent látsz, mielőtt bármi megváltozna, és semmi sem öntöz, amíg be nem kapcsolod az ütemezéseket.",
+      "loading": "Irrigation Unlimited konfiguráció keresése…",
+      "step": "Lépés",
+      "back": "Vissza",
+      "next": "Tovább",
+      "import": "Importálás",
+      "importing": "Importálás…",
+      "source": {
+        "question": "Melyik konfiguráció?",
+        "help": "A Smart Irrigation azt a konfigurációt olvassa, amelyet a Home Assistant betölt, vagy amelyet az Irrigation Unlimited saját párbeszédablakai tárolnak. A YAML-jét be is illesztheted.",
+        "yaml-help": "Az irrigation_unlimited szakasz, ahogy a Home Assistant betölti, a packages, !include és !secret elemekkel.",
+        "entry-help": "Amit az Irrigation Unlimited saját párbeszédablakai tárolnak.",
+        "none-found": "Nem található Irrigation Unlimited konfiguráció. Ha az Irrigation Unlimited már nincs telepítve, és a konfigurációja egy package-ben volt, a Home Assistant nem tölti be: illeszd be lent.",
+        "paste": "YAML beillesztése",
+        "paste-help": "Az irrigation_unlimited szakasz, vagy ami alatta van. Az !include, !secret és !env_var hivatkozásokat itt nem követjük: írd ki ezeket az értékeket, vagy importálj a configuration.yaml fájlból.",
+        "previous": "Korábban importálva: {at}. Az újbóli importálás frissíti, amit az az importálás létrehozott.",
+        "unreadable": "A Home Assistant nem tudta beolvasni:"
+      },
+      "zones": {
+        "question": "Mi lesz az egyes zónákból?",
+        "help": "Egy Irrigation Unlimited zónából az egyik zónád lesz, vagy egy új. Egy meglévő zóna megtartja a beállításait és a számítását: csak a hiányzó adatok kerülnek kitöltésre.",
+        "none": "Ebben a konfigurációban nincs zóna.",
+        "links": "{count, plural, one {# időigazító automatizálás táplálja az Irrigation Unlimitedet a Smart Irrigationből: ezt a lépést itt számoljuk.} other {# időigazító automatizálás táplálja az Irrigation Unlimitedet a Smart Irrigationből: ezeket a lépéseket itt számoljuk.}}",
+        "becomes": "Mi lesz ebből: {zone}",
+        "new": "Új zóna",
+        "creates": "Új zóna jön létre a szelepével és a szivattyújával.",
+        "uses": "Ebből lesz: {zone} ({reason}).",
+        "reason": {
+          "valve": "ugyanaz a szelep",
+          "blueprint": "egy időigazító automatizálás táplálja ebből a zónából",
+          "name": "ugyanaz a név",
+          "imported": "a korábbi importálás hozta létre",
+          "chosen": "a te választásod"
+        },
+        "fills": "Kitöltve:",
+        "fields": {
+          "linked_entity": "szelep",
+          "supply_id": "szivattyú",
+          "extra_entities": "további szelepek",
+          "confirm_timeout": "várakozás a visszajelzésre (s)",
+          "open_resends": "újraküldések",
+          "flow_sensor": "térfogatmérő"
+        },
+        "left": "Már nincsenek az Irrigation Unlimitedben, változatlanul maradnak: {zones}."
+      },
+      "programs": {
+        "question": "A programok",
+        "help": "Minden szekvenciából program lesz, és a saját ütemezésekkel rendelkező zónákból is. Ha egy szekvencia ütemezéseinek eltérő az időtartama, időtartamonként egy program lesz belőle.",
+        "none": "Ebben a konfigurációban nincs áthozható ütemezés.",
+        "action": {
+          "create": "új",
+          "update": "frissítve"
+        },
+        "calculated": "számolt",
+        "passes": "{count} szakasz",
+        "step-off": "ki",
+        "no-schedules": "Nincs ütemezés.",
+        "schedules-off": "Az ütemezései kikapcsolva maradnak, amíg be nem kapcsolod őket.",
+        "schedules-stay-on": "Bekapcsoltad az ütemezéseit: változatlanul maradnak.",
+        "disabled": "Az Irrigation Unlimitedben ki van kapcsolva, és itt is.",
+        "removed": "Már nincsenek az Irrigation Unlimitedben, eltávolítva: {programs}."
+      },
+      "supplies": {
+        "title": "Szivattyúk és főszelepek",
+        "create": "Új: {name} ({entities}).",
+        "update": "Frissítve: {name} ({entities}).",
+        "removed": "Már nincsenek az Irrigation Unlimitedben, eltávolítva: {supplies}."
+      },
+      "schedule": {
+        "sunrise": "Napkelte",
+        "sunset": "Napnyugta",
+        "done-by": "kész: {time}",
+        "every": "{count} naponta",
+        "odd": "páratlan napok",
+        "even": "páros napok",
+        "days-of-month": "a hónap {days}. napja",
+        "last": "utolsó",
+        "off-in-iu": "az Irrigation Unlimitedben kikapcsolva"
+      },
+      "report": {
+        "question": "Ami nem pontosan így jön át",
+        "help": "Az Irrigation Unlimited minden beállításához tartozik egy szabály. Ezek azok, amelyek közelítve jönnek át vagy kimaradnak; minden más változatlanul átjön.",
+        "all-carried": "Minden változatlanul átjön.",
+        "outcome": {
+          "not_carried": "Nem jön át",
+          "unknown": "Az importálás nem ismeri",
+          "approximated": "Közelítve"
+        },
+        "summary-title": "Mit tesz az importálás",
+        "summary": {
+          "zones": "Zónák: {created} új, {filled} kitöltve, {used} változatlanul használva",
+          "programs": "Programok: {created} új, {updated} frissítve, {removed} eltávolítva",
+          "supplies": "Szivattyúk és főszelepek: {created} új, {updated} frissítve, {removed} eltávolítva"
+        },
+        "nothing-waters": "Az importálás semmit sem öntöz. Az Irrigation Unlimited tovább öntöz, amíg ki nem kapcsolod, és be nem kapcsolod ezeket az ütemezéseket.",
+        "blocked": "Előbb oldd meg, ami pirossal van jelölve; addig semmit sem lehet importálni.",
+        "full-controller-off": "A teljes vezérlő ki van kapcsolva: a programok importálódnak, de csak akkor öntöznek, ha bekapcsolod."
+      },
+      "errors": {
+        "generic": "Az importálás nem sikerült.",
+        "changed": "A konfiguráció vagy a zónáid megváltoztak az előnézet óta. Ezt tenné most az importálás: nézd át újra, aztán importálj.",
+        "no_source": "Nem található Irrigation Unlimited konfiguráció. Illeszd be a YAML-jét.",
+        "yaml_unreadable": "A Home Assistant nem tudta beolvasni a konfigurációját.",
+        "yaml_invalid": "A beillesztett YAML nem olvasható.",
+        "yaml_missing": "Illeszd be az importálandó YAML-t.",
+        "yaml_not_iu": "A beillesztett YAML nem Irrigation Unlimited konfiguráció.",
+        "unknown_zone": "Ez a zóna már nem létezik.",
+        "zone_not_created": "Egy zónát nem sikerült létrehozni.",
+        "not_ready": "A Smart Irrigation még nem áll készen.",
+        "conflicts": "Előbb oldd meg, ami pirossal van jelölve.",
+        "too_big": "Ez jóval nagyobb egy Irrigation Unlimited konfigurációnál, ezért nem olvassuk be.",
+        "not_finite": "A konfigurációban végtelen vagy nem számszerű érték (.inf vagy .nan) van, ilyen pedig az Irrigation Unlimitedben nincs."
+      },
+      "done": {
+        "title": "Importálva.",
+        "zones": "Zónák: {created} új, {updated} kitöltve",
+        "programs": "{count, plural, one {# program} other {# program}}",
+        "next": "Az új programok ütemezései ki vannak kapcsolva, így továbbra is az Irrigation Unlimited öntöz. Ha készen állsz, kapcsold ki az Irrigation Unlimited vezérlőit, és kapcsold be ezeket az ütemezéseket a Programok oldalon.",
+        "open-programs": "Programok megnyitása",
+        "next-off": "A teljes vezérlő ki van kapcsolva, így ezek a programok még nem öntöznek, az Irrigation Unlimited pedig tovább öntöz. Kapcsold be a teljes vezérlőt a beállításokban, majd kapcsold ki az Irrigation Unlimitedet, és kapcsold be ezeket az ütemezéseket.",
+        "open-settings": "Beállítások megnyitása"
+      },
+      "conflicts": {
+        "zone_twice": "{zone} és {other} is {target} lenne. Válassz másik zónát az egyiküknek.",
+        "calculated_needs_zone": "{zone} értékét ma a Smart Irrigation számolja abból a zónából, amelyből egy időigazító automatizálás táplálja. Válaszd azt a zónát vagy egy másik meglévőt.",
+        "program_exists": "Egy „{name}” ({id}) program útban van: egyik importálás sem hozta létre. Előbb nevezd át vagy töröld itt: Öntözés, Programok (bekapcsolt teljes vezérlővel).",
+        "supply_exists": "Egy „{name}” ({id}) szivattyú útban van: egyik importálás sem hozta létre. Előbb nevezd át vagy töröld itt: Öntözés, Szivattyúk és szelepek (bekapcsolt teljes vezérlővel)."
+      },
+      "confirm_remove": "Ez az importálás törli, amit egy korábbi importálás hozott létre, és ami már nincs meg az Irrigation Unlimitedben: {names}. Folytatod?"
     }
   },
   "title": "Smart Irrigation",

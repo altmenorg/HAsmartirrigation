@@ -619,6 +619,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // it is where somebody who has nothing set up wants to start.
       const r12 = this.renderSetupAssistantCard();
 
+      // Moving over from Irrigation Unlimited, right after it.
+      const r17 = this.renderIuImportCard();
+
       if (this.section) {
         return this.renderWateringSection(r5);
       }
@@ -632,7 +635,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           <div class="card-content">
             ${localize("panels.general.description", this.hass.language)}
           </div> </ha-card
-        >${r12}${r11}${r15}${r2}${r1}${showContinuous ? r4 : ""}${full
+        >${r12}${r17}${r11}${r15}${r2}${r1}${showContinuous ? r4 : ""}${full
           ? ""
           : r5}${r6}${r7}${r8}${r9}${r10}${r16}${r13}`;
 
@@ -2380,6 +2383,36 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             }}
           >
             ${localize("panels.general.cards.setup-assistant.open", lang)}
+          </ha-button>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  /**
+   * The way to the Irrigation Unlimited import (#946): for somebody moving
+   * over, once, so it sits beside the setup assistant rather than in a tab.
+   */
+  renderIuImportCard() {
+    if (!this.hass) return html``;
+    const lang = this.hass.language;
+    return html`
+      <ha-card header="${localize("panels.iu_import.title", lang)}">
+        <div class="card-content">
+          ${localize("panels.general.cards.iu-import.description", lang)}
+        </div>
+        <div class="card-actions">
+          <ha-button
+            @click=${() => {
+              window.history.pushState(
+                null,
+                "",
+                `${window.location.pathname.split("/").slice(0, -1).join("/")}/iu_import`,
+              );
+              window.dispatchEvent(new Event("location-changed"));
+            }}
+          >
+            ${localize("panels.general.cards.iu-import.open", lang)}
           </ha-button>
         </div>
       </ha-card>

@@ -277,6 +277,10 @@
         "setup-assistant": {
           "description": "Maximaal vier vragen, en hij maakt een sensorgroep en een zone voor je aan, met de keuzes die beide nodig hebben. Voor een eerste zone, nog een, of een frisse start.",
           "open": "Assistent openen"
+        },
+        "iu-import": {
+          "description": "Kom je van Irrigation Unlimited? Haal de zones, reeksen en schema's hierheen, met eerst een voorbeeld van alles.",
+          "open": "Importeren"
         }
       },
       "description": "Dit zijn de algemene instellingen.",
@@ -767,6 +771,138 @@
     },
     "supplies": {
       "title": "Pompen en kleppen"
+    },
+    "iu_import": {
+      "title": "Importeren uit Irrigation Unlimited",
+      "description": "Haalt je configuratie van Irrigation Unlimited over: de zones, reeksen en schema's worden hier zones, programma's en hun schema's. Je ziet alles voordat er iets verandert, en er wordt niets bewaterd tot je de schema's aanzet.",
+      "loading": "Zoeken naar een configuratie van Irrigation Unlimited…",
+      "step": "Stap",
+      "back": "Terug",
+      "next": "Volgende",
+      "import": "Importeren",
+      "importing": "Importeren…",
+      "source": {
+        "question": "Welke configuratie?",
+        "help": "Smart Irrigation leest de configuratie die Home Assistant laadt, of die de eigen dialogen van Irrigation Unlimited bewaren. Je kunt ook de YAML plakken.",
+        "yaml-help": "De sectie irrigation_unlimited die Home Assistant laadt, met packages, !include en !secret.",
+        "entry-help": "Wat de eigen dialogen van Irrigation Unlimited bewaren.",
+        "none-found": "Er is geen configuratie van Irrigation Unlimited gevonden. Is Irrigation Unlimited niet meer geïnstalleerd en stond de configuratie in een package, dan laadt Home Assistant die niet: plak hem hieronder.",
+        "paste": "YAML plakken",
+        "paste-help": "De sectie irrigation_unlimited, of wat eronder staat. !include, !secret en !env_var worden hier niet gevolgd: schrijf die waarden uit, of importeer uit configuration.yaml.",
+        "previous": "Al geïmporteerd op {at}. Opnieuw importeren werkt bij wat die import heeft aangemaakt.",
+        "unreadable": "Home Assistant kon hem niet lezen:"
+      },
+      "zones": {
+        "question": "Wat wordt elke zone?",
+        "help": "Een zone van Irrigation Unlimited wordt een van je zones, of een nieuwe. Een bestaande zone houdt haar instellingen en berekening: alleen wat ontbreekt wordt aangevuld.",
+        "none": "Deze configuratie heeft geen zones.",
+        "links": "{count, plural, one {# automatisering voor tijdaanpassing voedt Irrigation Unlimited vanuit Smart Irrigation: die stap wordt hier berekend.} other {# automatiseringen voor tijdaanpassing voeden Irrigation Unlimited vanuit Smart Irrigation: die stappen worden hier berekend.}}",
+        "becomes": "Wat {zone} wordt",
+        "new": "Een nieuwe zone",
+        "creates": "Er wordt een nieuwe zone aangemaakt, met klep en pomp.",
+        "uses": "Wordt {zone}: {reason}.",
+        "reason": {
+          "valve": "dezelfde klep",
+          "blueprint": "een automatisering voor tijdaanpassing voedt haar vanuit deze zone",
+          "name": "dezelfde naam",
+          "imported": "aangemaakt door de vorige import",
+          "chosen": "jouw keuze"
+        },
+        "fills": "Aangevuld:",
+        "fields": {
+          "linked_entity": "klep",
+          "supply_id": "pomp",
+          "extra_entities": "meer kleppen",
+          "confirm_timeout": "wachten op bevestiging (s)",
+          "open_resends": "herhalingen",
+          "flow_sensor": "volumemeter"
+        },
+        "left": "Niet meer in Irrigation Unlimited, blijven zoals ze zijn: {zones}."
+      },
+      "programs": {
+        "question": "De programma's",
+        "help": "Elke reeks wordt een programma, net als een zone met eigen schema's. Een reeks waarvan de schema's verschillende duren hebben, wordt een programma per duur.",
+        "none": "Deze configuratie heeft geen schema's om over te halen.",
+        "action": {
+          "create": "nieuw",
+          "update": "bijgewerkt"
+        },
+        "calculated": "berekend",
+        "passes": "{count} beurten",
+        "step-off": "uit",
+        "no-schedules": "Geen schema.",
+        "schedules-off": "De schema's blijven uit tot je ze aanzet.",
+        "schedules-stay-on": "Je hebt de schema's aangezet: ze blijven zoals ze zijn.",
+        "disabled": "Uitgeschakeld in Irrigation Unlimited, en hier ook.",
+        "removed": "Niet meer in Irrigation Unlimited, verwijderd: {programs}."
+      },
+      "supplies": {
+        "title": "Pompen en hoofdventielen",
+        "create": "Nieuw: {name} ({entities}).",
+        "update": "Bijgewerkt: {name} ({entities}).",
+        "removed": "Niet meer in Irrigation Unlimited, verwijderd: {supplies}."
+      },
+      "schedule": {
+        "sunrise": "Zonsopgang",
+        "sunset": "Zonsondergang",
+        "done-by": "klaar om {time}",
+        "every": "elke {count} dagen",
+        "odd": "oneven dagen",
+        "even": "even dagen",
+        "days-of-month": "dag {days} van de maand",
+        "last": "laatste",
+        "off-in-iu": "uit in Irrigation Unlimited"
+      },
+      "report": {
+        "question": "Wat niet precies zo meekomt",
+        "help": "Elke optie van Irrigation Unlimited heeft een regel. Dit zijn de opties die benaderd of weggelaten worden; al het andere komt mee zoals het is.",
+        "all-carried": "Alles komt mee zoals het is.",
+        "outcome": {
+          "not_carried": "Niet meegenomen",
+          "unknown": "Onbekend voor de import",
+          "approximated": "Benaderd"
+        },
+        "summary-title": "Wat de import doet",
+        "summary": {
+          "zones": "Zones: {created} nieuw, {filled} aangevuld, {used} gebruikt zoals ze zijn",
+          "programs": "Programma's: {created} nieuw, {updated} bijgewerkt, {removed} verwijderd",
+          "supplies": "Pompen en hoofdventielen: {created} nieuw, {updated} bijgewerkt, {removed} verwijderd"
+        },
+        "nothing-waters": "De import bewatert niets. Irrigation Unlimited blijft bewateren tot je het uitzet en deze schema's aanzet.",
+        "blocked": "Los eerst op wat rood gemarkeerd is; tot dan kan er niets geïmporteerd worden.",
+        "full-controller-off": "De volledige controller is uit: de programma's worden geïmporteerd, maar bewateren pas als hij aan staat."
+      },
+      "errors": {
+        "generic": "De import is niet gelukt.",
+        "changed": "De configuratie of je zones zijn veranderd sinds dit voorbeeld. Dit is wat de import nu zou doen: kijk het nog eens na en importeer dan.",
+        "no_source": "Er is geen configuratie van Irrigation Unlimited gevonden. Plak de YAML.",
+        "yaml_unreadable": "Home Assistant kon de configuratie niet lezen.",
+        "yaml_invalid": "De geplakte YAML kon niet gelezen worden.",
+        "yaml_missing": "Plak de YAML die je wilt importeren.",
+        "yaml_not_iu": "De geplakte YAML is geen configuratie van Irrigation Unlimited.",
+        "unknown_zone": "Die zone bestaat niet meer.",
+        "zone_not_created": "Een zone kon niet aangemaakt worden.",
+        "not_ready": "Smart Irrigation is nog niet klaar.",
+        "conflicts": "Los eerst op wat rood gemarkeerd is.",
+        "too_big": "Dit is veel groter dan een configuratie van Irrigation Unlimited, dus het wordt niet gelezen.",
+        "not_finite": "De configuratie bevat een oneindige waarde of een waarde die geen getal is (.inf of .nan), wat Irrigation Unlimited niet kent."
+      },
+      "done": {
+        "title": "Geïmporteerd.",
+        "zones": "Zones: {created} nieuw, {updated} aangevuld",
+        "programs": "{count, plural, one {# programma} other {# programma's}}",
+        "next": "De schema's van nieuwe programma's staan uit, dus Irrigation Unlimited bewatert nog steeds. Als je klaar bent, zet je de controllers van Irrigation Unlimited uit en deze schema's aan, op de pagina Programma's.",
+        "open-programs": "Programma's openen",
+        "next-off": "De volledige controller is uit, dus deze programma's bewateren nog niet en Irrigation Unlimited blijft bewateren. Zet de volledige controller aan in de instellingen, zet daarna Irrigation Unlimited uit en deze schema's aan.",
+        "open-settings": "Instellingen openen"
+      },
+      "conflicts": {
+        "zone_twice": "{zone} en {other} zouden allebei {target} worden. Kies een andere zone voor een van beide.",
+        "calculated_needs_zone": "{zone} wordt nu door Smart Irrigation berekend, vanuit de zone waaruit een automatisering voor tijdaanpassing haar voedt. Kies die zone of een andere bestaande.",
+        "program_exists": "Een programma \"{name}\" ({id}) zit in de weg: geen import heeft het aangemaakt. Hernoem of verwijder het eerst, in Bewatering, Programma's (met de volledige controller aan).",
+        "supply_exists": "Een pomp \"{name}\" ({id}) zit in de weg: geen import heeft hem aangemaakt. Hernoem of verwijder hem eerst, in Bewatering, Pompen en kleppen (met de volledige controller aan)."
+      },
+      "confirm_remove": "Deze import verwijdert wat een eerdere import heeft aangemaakt en Irrigation Unlimited niet meer heeft: {names}. Doorgaan?"
     }
   },
   "title": "Smart Irrigation",

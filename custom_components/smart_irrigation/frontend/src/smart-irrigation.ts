@@ -13,6 +13,7 @@ import "./views/history/view-history.ts";
 import "./views/backuprestore/view-backuprestore.ts";
 import "./views/info/view-info.ts";
 import "./views/setup/view-setup.ts";
+import "./views/iuimport/view-iuimport.ts";
 
 import { commonStyle } from "./styles";
 import { VERSION, PLATFORM, DOMAIN } from "./const";
@@ -30,6 +31,7 @@ const FIRST_PAINT_WAIT_MS = 600;
 
 enum EMenuItems {
   Setup = "setup",
+  IuImport = "iu_import",
   Info = "info",
   General = "general",
   Zones = "zones",
@@ -84,6 +86,8 @@ const TAB_GROUPS: { id: string; pages: EMenuItems[] }[] = [
 const UNLISTED_PAGE_GROUP: Record<string, string> = {
   [EMenuItems.Modules]: "settings",
   [EMenuItems.Setup]: "settings",
+  // Bringing an Irrigation Unlimited configuration over: once, from Settings.
+  [EMenuItems.IuImport]: "settings",
 };
 
 /**
@@ -345,6 +349,13 @@ export class SmartIrrigationPanel extends LitElement {
             .narrow=${this.narrow}
           ></smart-irrigation-view-setup>
         `;
+      case "iu_import":
+        return html`
+          <smart-irrigation-view-iuimport
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+          ></smart-irrigation-view-iuimport>
+        `;
       case "info":
         return html`
           <smart-irrigation-view-info
@@ -521,7 +532,14 @@ export class SmartIrrigationPanel extends LitElement {
 
   handlePageSelected(ev: CustomEvent) {
     const newPage = ev.detail.name;
-    if (newPage !== getPath().page) {
+    const page = getPath().page;
+    // A tab names its group's first page. When the page shown already belongs
+    // to that group, the tab was shown because a link opened that page (the
+    // import's "Open the programs"), not because it was clicked: stay there.
+    if (newPage !== page && groupOf(newPage).id === groupOf(page).id) {
+      return;
+    }
+    if (newPage !== page) {
       const newPath = exportPath(newPage);
       navigate(this, newPath);
       this.requestUpdate();

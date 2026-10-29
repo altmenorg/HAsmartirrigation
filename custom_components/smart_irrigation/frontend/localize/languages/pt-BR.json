@@ -277,6 +277,10 @@
         "setup-assistant": {
           "description": "No máximo quatro perguntas, e ele cria um grupo de sensores e uma zona para você, escolhendo o que cada um precisa. Para uma primeira zona, outra, ou um começo novo.",
           "open": "Abrir o assistente"
+        },
+        "iu-import": {
+          "description": "Vindo do Irrigation Unlimited? Traga para cá as zonas, sequências e agendamentos dele, com uma prévia de tudo antes.",
+          "open": "Importar"
         }
       },
       "description": "Esta página fornece configurações globais.",
@@ -767,6 +771,138 @@
     },
     "supplies": {
       "title": "Bombas e válvulas"
+    },
+    "iu_import": {
+      "title": "Importar do Irrigation Unlimited",
+      "description": "Traz a sua configuração do Irrigation Unlimited: as zonas, sequências e agendamentos dele viram aqui zonas, programas e seus agendamentos. Você vê tudo antes de qualquer mudança, e nada irriga até você ativar os agendamentos.",
+      "loading": "Procurando uma configuração do Irrigation Unlimited…",
+      "step": "Etapa",
+      "back": "Voltar",
+      "next": "Avançar",
+      "import": "Importar",
+      "importing": "Importando…",
+      "source": {
+        "question": "Qual configuração?",
+        "help": "O Smart Irrigation lê a configuração que o Home Assistant carrega, ou a que os diálogos do próprio Irrigation Unlimited guardam. Você também pode colar o YAML dele.",
+        "yaml-help": "A seção irrigation_unlimited que o Home Assistant carrega, com seus packages, !include e !secret.",
+        "entry-help": "O que os diálogos do próprio Irrigation Unlimited guardam.",
+        "none-found": "Nenhuma configuração do Irrigation Unlimited foi encontrada. Se o Irrigation Unlimited não está mais instalado e a configuração dele estava em um package, o Home Assistant não a carrega: cole-a abaixo.",
+        "paste": "Colar YAML",
+        "paste-help": "A seção irrigation_unlimited, ou o que está dentro dela. !include, !secret e !env_var não são seguidos aqui: escreva esses valores por extenso, ou importe a partir do configuration.yaml.",
+        "previous": "Já importado em {at}. Importar de novo atualiza o que essa importação criou.",
+        "unreadable": "O Home Assistant não conseguiu lê-la:"
+      },
+      "zones": {
+        "question": "O que cada zona vira?",
+        "help": "Uma zona do Irrigation Unlimited vira uma das suas zonas, ou uma nova. Uma zona existente mantém suas configurações e seu cálculo: só é preenchido o que falta nela.",
+        "none": "Esta configuração não tem zonas.",
+        "links": "{count, plural, one {# automação de ajuste de tempo alimenta o Irrigation Unlimited a partir do Smart Irrigation: essa etapa é calculada aqui.} other {# automações de ajuste de tempo alimentam o Irrigation Unlimited a partir do Smart Irrigation: essas etapas são calculadas aqui.}}",
+        "becomes": "O que {zone} vira",
+        "new": "Uma nova zona",
+        "creates": "Uma nova zona é criada, com sua válvula e bomba.",
+        "uses": "Vira {zone}: {reason}.",
+        "reason": {
+          "valve": "mesma válvula",
+          "blueprint": "uma automação de ajuste de tempo a alimenta a partir desta zona",
+          "name": "mesmo nome",
+          "imported": "criada pela importação anterior",
+          "chosen": "sua escolha"
+        },
+        "fills": "Preenchido:",
+        "fields": {
+          "linked_entity": "válvula",
+          "supply_id": "bomba",
+          "extra_entities": "mais válvulas",
+          "confirm_timeout": "espera da confirmação (s)",
+          "open_resends": "reenvios",
+          "flow_sensor": "medidor de volume"
+        },
+        "left": "Não estão mais no Irrigation Unlimited, ficam como estão: {zones}."
+      },
+      "programs": {
+        "question": "Os programas",
+        "help": "Cada sequência vira um programa, assim como uma zona com agendamentos próprios. Uma sequência cujos agendamentos têm durações diferentes vira um programa por duração.",
+        "none": "Esta configuração não tem agendamentos para trazer.",
+        "action": {
+          "create": "novo",
+          "update": "atualizado"
+        },
+        "calculated": "calculada",
+        "passes": "{count} passagens",
+        "step-off": "desligado",
+        "no-schedules": "Sem agendamento.",
+        "schedules-off": "Os agendamentos dele ficam desligados até você ativá-los.",
+        "schedules-stay-on": "Você ativou os agendamentos dele: eles ficam como estão.",
+        "disabled": "Desligado no Irrigation Unlimited, e aqui também.",
+        "removed": "Não estão mais no Irrigation Unlimited, removidos: {programs}."
+      },
+      "supplies": {
+        "title": "Bombas e válvulas principais",
+        "create": "Nova: {name} ({entities}).",
+        "update": "Atualizada: {name} ({entities}).",
+        "removed": "Não estão mais no Irrigation Unlimited, removidas: {supplies}."
+      },
+      "schedule": {
+        "sunrise": "Nascer do sol",
+        "sunset": "Pôr do sol",
+        "done-by": "concluído às {time}",
+        "every": "a cada {count} dias",
+        "odd": "dias ímpares",
+        "even": "dias pares",
+        "days-of-month": "dia {days} do mês",
+        "last": "último",
+        "off-in-iu": "desligado no Irrigation Unlimited"
+      },
+      "report": {
+        "question": "O que não vem exatamente igual",
+        "help": "Cada opção do Irrigation Unlimited tem uma regra. Estas são as que são aproximadas ou deixadas de fora; todo o resto vem como está.",
+        "all-carried": "Tudo vem como está.",
+        "outcome": {
+          "not_carried": "Não vem",
+          "unknown": "Desconhecido pela importação",
+          "approximated": "Aproximado"
+        },
+        "summary-title": "O que a importação faz",
+        "summary": {
+          "zones": "Zonas: {created} novas, {filled} preenchidas, {used} usadas como estão",
+          "programs": "Programas: {created} novos, {updated} atualizados, {removed} removidos",
+          "supplies": "Bombas e válvulas principais: {created} novas, {updated} atualizadas, {removed} removidas"
+        },
+        "nothing-waters": "A importação não irriga nada. O Irrigation Unlimited continua irrigando até você desligá-lo e ativar estes agendamentos.",
+        "blocked": "Resolva primeiro o que está marcado em vermelho; até lá nada pode ser importado.",
+        "full-controller-off": "O controlador completo está desligado: os programas são importados, mas só irrigam quando ele estiver ligado."
+      },
+      "errors": {
+        "generic": "A importação não foi concluída.",
+        "changed": "A configuração ou as suas zonas mudaram desde esta prévia. Veja o que a importação faria agora: revise e depois importe.",
+        "no_source": "Nenhuma configuração do Irrigation Unlimited foi encontrada. Cole o YAML dele.",
+        "yaml_unreadable": "O Home Assistant não conseguiu ler a configuração dele.",
+        "yaml_invalid": "Não foi possível ler o YAML colado.",
+        "yaml_missing": "Cole o YAML a importar.",
+        "yaml_not_iu": "O YAML colado não é uma configuração do Irrigation Unlimited.",
+        "unknown_zone": "Essa zona não existe mais.",
+        "zone_not_created": "Não foi possível criar uma zona.",
+        "not_ready": "O Smart Irrigation ainda não está pronto.",
+        "conflicts": "Resolva primeiro o que está marcado em vermelho.",
+        "too_big": "Isto é muito maior que uma configuração do Irrigation Unlimited, então não é lido.",
+        "not_finite": "A configuração contém um valor infinito ou que não é um número (.inf ou .nan), algo que o Irrigation Unlimited não tem."
+      },
+      "done": {
+        "title": "Importado.",
+        "zones": "Zonas: {created} novas, {updated} preenchidas",
+        "programs": "{count, plural, one {# programa} other {# programas}}",
+        "next": "Os agendamentos dos novos programas estão desligados, então quem irriga ainda é o Irrigation Unlimited. Quando estiver pronto, desligue os controladores do Irrigation Unlimited e ative estes agendamentos, na página Programas.",
+        "open-programs": "Abrir os programas",
+        "next-off": "O controlador completo está desligado, então estes programas ainda não irrigam e o Irrigation Unlimited continua irrigando. Ative o controlador completo nas configurações, depois desligue o Irrigation Unlimited e ative estes agendamentos.",
+        "open-settings": "Abrir as configurações"
+      },
+      "conflicts": {
+        "zone_twice": "{zone} e {other} virariam ambas {target}. Escolha outra zona para uma delas.",
+        "calculated_needs_zone": "{zone} hoje é calculada pelo Smart Irrigation, a partir da zona com que uma automação de ajuste de tempo a alimenta. Escolha essa zona ou outra existente.",
+        "program_exists": "Um programa \"{name}\" ({id}) está no caminho: nenhuma importação o criou. Renomeie ou exclua-o primeiro, em Irrigação, Programas (com o controlador completo ligado).",
+        "supply_exists": "Uma bomba \"{name}\" ({id}) está no caminho: nenhuma importação a criou. Renomeie ou exclua-a primeiro, em Irrigação, Bombas e válvulas (com o controlador completo ligado)."
+      },
+      "confirm_remove": "Esta importação exclui o que uma importação anterior criou e que o Irrigation Unlimited não tem mais: {names}. Continuar?"
     }
   },
   "title": "Smart Irrigation",

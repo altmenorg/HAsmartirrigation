@@ -277,6 +277,10 @@
         "setup-assistant": {
           "description": "最多四个问题，它就会为你创建一个传感器组和一个区域，并为两者选好所需的内容。适用于第一个区域、再加一个，或者重新开始。",
           "open": "打开向导"
+        },
+        "iu-import": {
+          "description": "从 Irrigation Unlimited 迁移过来？把它的区域、序列和时间表导入到这里，导入前可先预览全部内容。",
+          "open": "导入"
         }
       },
       "description": "此页面提供全局设置。",
@@ -767,6 +771,138 @@
     },
     "supplies": {
       "title": "水泵和阀门"
+    },
+    "iu_import": {
+      "title": "从 Irrigation Unlimited 导入",
+      "description": "导入你的 Irrigation Unlimited 配置：它的区域、序列和时间表在这里变为区域、程序及其时间表。在任何更改之前你都能看到全部内容，而且在你打开时间表之前不会浇水。",
+      "loading": "正在查找 Irrigation Unlimited 配置…",
+      "step": "步骤",
+      "back": "上一步",
+      "next": "下一步",
+      "import": "导入",
+      "importing": "正在导入…",
+      "source": {
+        "question": "哪个配置？",
+        "help": "Smart Irrigation 读取 Home Assistant 加载的配置，或 Irrigation Unlimited 自身对话框保存的配置。你也可以粘贴它的 YAML。",
+        "yaml-help": "Home Assistant 加载的 irrigation_unlimited 部分，包括 packages、!include 和 !secret。",
+        "entry-help": "Irrigation Unlimited 自身对话框保存的内容。",
+        "none-found": "未找到 Irrigation Unlimited 配置。如果 Irrigation Unlimited 已卸载，且其配置位于某个 package 中，Home Assistant 不会加载它：请将其粘贴到下方。",
+        "paste": "粘贴 YAML",
+        "paste-help": "irrigation_unlimited 部分，或其下的内容。这里不会解析 !include、!secret 和 !env_var：请直接写出这些值，或从 configuration.yaml 导入。",
+        "previous": "已于 {at} 导入过。再次导入会更新那次导入创建的内容。",
+        "unreadable": "Home Assistant 无法读取它："
+      },
+      "zones": {
+        "question": "每个区域变成什么？",
+        "help": "Irrigation Unlimited 的区域会变为你现有的某个区域，或一个新区域。现有区域保留其设置和计算：只补全它缺少的内容。",
+        "none": "此配置没有区域。",
+        "links": "{count, plural, other {# 个时长调整自动化从 Smart Irrigation 向 Irrigation Unlimited 提供数据：这些步骤在这里计算。}}",
+        "becomes": "{zone} 变成什么",
+        "new": "新区域",
+        "creates": "将创建一个新区域，带有其阀门和水泵。",
+        "uses": "变为 {zone}：{reason}。",
+        "reason": {
+          "valve": "相同阀门",
+          "blueprint": "有时长调整自动化从此区域为其提供数据",
+          "name": "相同名称",
+          "imported": "由之前的导入创建",
+          "chosen": "你的选择"
+        },
+        "fills": "已补全：",
+        "fields": {
+          "linked_entity": "阀门",
+          "supply_id": "水泵",
+          "extra_entities": "更多阀门",
+          "confirm_timeout": "确认等待（秒）",
+          "open_resends": "重发次数",
+          "flow_sensor": "水量计"
+        },
+        "left": "已不在 Irrigation Unlimited 中，保持原样：{zones}。"
+      },
+      "programs": {
+        "question": "程序",
+        "help": "每个序列变为一个程序，带有自己时间表的区域也是如此。如果一个序列的各时间表时长不同，则每种时长变为一个程序。",
+        "none": "此配置没有可导入的时间表。",
+        "action": {
+          "create": "新建",
+          "update": "已更新"
+        },
+        "calculated": "已计算",
+        "passes": "{count} 段",
+        "step-off": "关",
+        "no-schedules": "没有时间表。",
+        "schedules-off": "其时间表保持关闭，直到你打开它们。",
+        "schedules-stay-on": "你已打开其时间表：它们保持原样。",
+        "disabled": "在 Irrigation Unlimited 中已关闭，这里也一样。",
+        "removed": "已不在 Irrigation Unlimited 中，已删除：{programs}。"
+      },
+      "supplies": {
+        "title": "水泵和总阀",
+        "create": "新建：{name}（{entities}）。",
+        "update": "已更新：{name}（{entities}）。",
+        "removed": "已不在 Irrigation Unlimited 中，已删除：{supplies}。"
+      },
+      "schedule": {
+        "sunrise": "日出",
+        "sunset": "日落",
+        "done-by": "{time} 前完成",
+        "every": "每 {count} 天",
+        "odd": "奇数日",
+        "even": "偶数日",
+        "days-of-month": "每月 {days} 日",
+        "last": "最后",
+        "off-in-iu": "在 Irrigation Unlimited 中已关闭"
+      },
+      "report": {
+        "question": "无法原样导入的内容",
+        "help": "Irrigation Unlimited 的每个选项都有对应规则。以下是近似处理或被省略的选项；其余全部原样导入。",
+        "all-carried": "全部原样导入。",
+        "outcome": {
+          "not_carried": "不导入",
+          "unknown": "导入无法识别",
+          "approximated": "近似"
+        },
+        "summary-title": "导入将做什么",
+        "summary": {
+          "zones": "区域：新建 {created}，补全 {filled}，原样使用 {used}",
+          "programs": "程序：新建 {created}，更新 {updated}，删除 {removed}",
+          "supplies": "水泵和总阀：新建 {created}，更新 {updated}，删除 {removed}"
+        },
+        "nothing-waters": "导入不会浇水。Irrigation Unlimited 会继续浇水，直到你关闭它并打开这些时间表。",
+        "blocked": "请先解决标为红色的问题；在此之前无法导入。",
+        "full-controller-off": "完整控制器已关闭：程序会被导入，但只有在它打开后才会浇水。"
+      },
+      "errors": {
+        "generic": "导入未完成。",
+        "changed": "自此预览以来，配置或你的区域已发生变化。以下是导入现在会做的事：请再检查一遍，然后导入。",
+        "no_source": "未找到 Irrigation Unlimited 配置。请粘贴它的 YAML。",
+        "yaml_unreadable": "Home Assistant 无法读取它的配置。",
+        "yaml_invalid": "无法读取粘贴的 YAML。",
+        "yaml_missing": "请粘贴要导入的 YAML。",
+        "yaml_not_iu": "粘贴的 YAML 不是 Irrigation Unlimited 配置。",
+        "unknown_zone": "该区域已不存在。",
+        "zone_not_created": "无法创建区域。",
+        "not_ready": "Smart Irrigation 尚未就绪。",
+        "conflicts": "请先解决标为红色的问题。",
+        "too_big": "这远大于一个 Irrigation Unlimited 配置，因此不予读取。",
+        "not_finite": "配置中包含无穷值或非数字值（.inf 或 .nan），而 Irrigation Unlimited 没有这类值。"
+      },
+      "done": {
+        "title": "已导入。",
+        "zones": "区域：新建 {created}，补全 {updated}",
+        "programs": "{count, plural, other {# 个程序}}",
+        "next": "新程序的时间表处于关闭状态，所以仍由 Irrigation Unlimited 浇水。准备好后，请关闭 Irrigation Unlimited 的控制器，并在“程序”页面打开这些时间表。",
+        "open-programs": "打开程序",
+        "next-off": "完整控制器已关闭，所以这些程序还不会浇水，Irrigation Unlimited 会继续浇水。请在设置中打开完整控制器，然后关闭 Irrigation Unlimited 并打开这些时间表。",
+        "open-settings": "打开设置"
+      },
+      "conflicts": {
+        "zone_twice": "{zone} 和 {other} 都会变为 {target}。请为其中一个选择另一个区域。",
+        "calculated_needs_zone": "{zone} 目前由 Smart Irrigation 计算，数据来自某个时长调整自动化为其提供数据的区域。请选择该区域或另一个现有区域。",
+        "program_exists": "程序“{name}”（{id}）冲突：它不是由任何导入创建的。请先在浇水、程序中重命名或删除它（需打开完整控制器）。",
+        "supply_exists": "水泵“{name}”（{id}）冲突：它不是由任何导入创建的。请先在浇水、水泵和阀门中重命名或删除它（需打开完整控制器）。"
+      },
+      "confirm_remove": "此导入会删除之前的导入创建、而 Irrigation Unlimited 中已不存在的内容：{names}。继续吗？"
     }
   },
   "title": "Smart Irrigation",

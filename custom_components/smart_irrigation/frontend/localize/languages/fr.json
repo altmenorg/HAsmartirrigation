@@ -277,6 +277,10 @@
         "setup-assistant": {
           "description": "Quatre questions au maximum, et il crée pour toi un groupe de capteurs et une zone, en choisissant ce qu'il faut à chacun. Pour une première zone, une suivante, ou repartir de zéro.",
           "open": "Ouvrir l'assistant"
+        },
+        "iu-import": {
+          "description": "Tu viens d'Irrigation Unlimited ? Reprends ici ses zones, séquences et horaires, avec un aperçu de tout au préalable.",
+          "open": "Importer"
         }
       },
       "description": "Cette page fournit les réglages globaux.",
@@ -767,6 +771,138 @@
     },
     "supplies": {
       "title": "Pompes et vannes"
+    },
+    "iu_import": {
+      "title": "Importer depuis Irrigation Unlimited",
+      "description": "Reprend ta configuration Irrigation Unlimited : ses zones, séquences et horaires deviennent ici des zones, des programmes et leurs horaires. Tu vois tout avant que quoi que ce soit change, et rien n'arrose tant que tu n'as pas activé les horaires.",
+      "loading": "Recherche d'une configuration Irrigation Unlimited…",
+      "step": "Étape",
+      "back": "Retour",
+      "next": "Suivant",
+      "import": "Importer",
+      "importing": "Import en cours…",
+      "source": {
+        "question": "Quelle configuration ?",
+        "help": "Smart Irrigation lit la configuration que Home Assistant charge, ou celle que gardent les dialogues d'Irrigation Unlimited. Tu peux aussi coller son YAML.",
+        "yaml-help": "La section irrigation_unlimited que Home Assistant charge, avec ses packages, !include et !secret.",
+        "entry-help": "Ce que gardent les dialogues d'Irrigation Unlimited.",
+        "none-found": "Aucune configuration Irrigation Unlimited trouvée. Si Irrigation Unlimited n'est plus installé et que sa configuration était dans un package, Home Assistant ne la charge pas : colle-la ci-dessous.",
+        "paste": "Coller du YAML",
+        "paste-help": "La section irrigation_unlimited, ou ce qu'elle contient. !include, !secret et !env_var ne sont pas suivis ici : écris ces valeurs en clair, ou importe depuis configuration.yaml.",
+        "previous": "Déjà importé le {at}. Importer à nouveau met à jour ce que cet import a créé.",
+        "unreadable": "Home Assistant n'a pas pu la lire :"
+      },
+      "zones": {
+        "question": "Que devient chaque zone ?",
+        "help": "Une zone Irrigation Unlimited devient une de tes zones, ou une nouvelle. Une zone existante garde ses réglages et son calcul : seul ce qui lui manque est complété.",
+        "none": "Cette configuration n'a aucune zone.",
+        "links": "{count, plural, one {# automatisation d'ajustement de durée alimente Irrigation Unlimited depuis Smart Irrigation : cette étape est calculée ici.} other {# automatisations d'ajustement de durée alimentent Irrigation Unlimited depuis Smart Irrigation : ces étapes sont calculées ici.}}",
+        "becomes": "Ce que devient {zone}",
+        "new": "Une nouvelle zone",
+        "creates": "Une nouvelle zone est créée, avec sa vanne et sa pompe.",
+        "uses": "Devient {zone} : {reason}.",
+        "reason": {
+          "valve": "même vanne",
+          "blueprint": "une automatisation d'ajustement de durée l'alimente depuis cette zone",
+          "name": "même nom",
+          "imported": "créée par l'import précédent",
+          "chosen": "ton choix"
+        },
+        "fills": "Complété :",
+        "fields": {
+          "linked_entity": "vanne",
+          "supply_id": "pompe",
+          "extra_entities": "autres vannes",
+          "confirm_timeout": "attente de confirmation (s)",
+          "open_resends": "renvois",
+          "flow_sensor": "compteur de volume"
+        },
+        "left": "Plus dans Irrigation Unlimited, laissées telles quelles : {zones}."
+      },
+      "programs": {
+        "question": "Les programmes",
+        "help": "Chaque séquence devient un programme, de même qu'une zone qui a ses propres horaires. Une séquence dont les horaires ont des durées différentes devient un programme par durée.",
+        "none": "Cette configuration n'a aucun horaire à reprendre.",
+        "action": {
+          "create": "nouveau",
+          "update": "mis à jour"
+        },
+        "calculated": "calculée",
+        "passes": "{count} passes",
+        "step-off": "désactivée",
+        "no-schedules": "Aucun horaire.",
+        "schedules-off": "Ses horaires restent désactivés jusqu'à ce que tu les actives.",
+        "schedules-stay-on": "Tu as activé ses horaires : ils restent tels quels.",
+        "disabled": "Désactivé dans Irrigation Unlimited, et ici aussi.",
+        "removed": "Plus dans Irrigation Unlimited, supprimés : {programs}."
+      },
+      "supplies": {
+        "title": "Pompes et vannes générales",
+        "create": "Nouvelle : {name} ({entities}).",
+        "update": "Mise à jour : {name} ({entities}).",
+        "removed": "Plus dans Irrigation Unlimited, supprimées : {supplies}."
+      },
+      "schedule": {
+        "sunrise": "Lever du soleil",
+        "sunset": "Coucher du soleil",
+        "done-by": "fini à {time}",
+        "every": "tous les {count} jours",
+        "odd": "jours impairs",
+        "even": "jours pairs",
+        "days-of-month": "le {days} du mois",
+        "last": "dernier",
+        "off-in-iu": "désactivé dans Irrigation Unlimited"
+      },
+      "report": {
+        "question": "Ce qui n'est pas repris à l'identique",
+        "help": "Chaque option d'Irrigation Unlimited a une règle. Voici celles qui sont approchées ou laissées de côté ; tout le reste est repris tel quel.",
+        "all-carried": "Tout est repris tel quel.",
+        "outcome": {
+          "not_carried": "Non repris",
+          "unknown": "Inconnu de l'import",
+          "approximated": "Approché"
+        },
+        "summary-title": "Ce que fait l'import",
+        "summary": {
+          "zones": "Zones : {created} nouvelles, {filled} complétées, {used} utilisées telles quelles",
+          "programs": "Programmes : {created} nouveaux, {updated} mis à jour, {removed} supprimés",
+          "supplies": "Pompes et vannes générales : {created} nouvelles, {updated} mises à jour, {removed} supprimées"
+        },
+        "nothing-waters": "L'import n'arrose rien. Irrigation Unlimited continue d'arroser jusqu'à ce que tu le désactives et actives ces horaires.",
+        "blocked": "Règle d'abord ce qui est marqué en rouge ; d'ici là, rien ne peut être importé.",
+        "full-controller-off": "Le contrôleur complet est désactivé : les programmes sont importés, mais n'arrosent qu'une fois qu'il est activé."
+      },
+      "errors": {
+        "generic": "L'import n'a pas abouti.",
+        "changed": "La configuration ou tes zones ont changé depuis cet aperçu. Voici ce que l'import ferait maintenant : relis, puis importe.",
+        "no_source": "Aucune configuration Irrigation Unlimited trouvée. Colle son YAML.",
+        "yaml_unreadable": "Home Assistant n'a pas pu lire sa configuration.",
+        "yaml_invalid": "Le YAML collé n'a pas pu être lu.",
+        "yaml_missing": "Colle le YAML à importer.",
+        "yaml_not_iu": "Le YAML collé n'est pas une configuration Irrigation Unlimited.",
+        "unknown_zone": "Cette zone n'existe plus.",
+        "zone_not_created": "Une zone n'a pas pu être créée.",
+        "not_ready": "Smart Irrigation n'est pas encore prêt.",
+        "conflicts": "Règle d'abord ce qui est marqué en rouge.",
+        "too_big": "C'est bien plus gros qu'une configuration Irrigation Unlimited, ce n'est donc pas lu.",
+        "not_finite": "La configuration contient une valeur infinie ou qui n'est pas un nombre (.inf ou .nan), ce qu'Irrigation Unlimited n'a pas."
+      },
+      "done": {
+        "title": "Importé.",
+        "zones": "Zones : {created} nouvelles, {updated} complétées",
+        "programs": "{count, plural, one {# programme} other {# programmes}}",
+        "next": "Les horaires des nouveaux programmes sont désactivés : c'est donc toujours Irrigation Unlimited qui arrose. Quand tu es prêt, désactive les contrôleurs d'Irrigation Unlimited et active ces horaires, sur la page Programmes.",
+        "open-programs": "Ouvrir les programmes",
+        "next-off": "Le contrôleur complet est désactivé : ces programmes n'arrosent pas encore, et Irrigation Unlimited continue d'arroser. Active le contrôleur complet dans les réglages, puis désactive Irrigation Unlimited et active ces horaires.",
+        "open-settings": "Ouvrir les réglages"
+      },
+      "conflicts": {
+        "zone_twice": "{zone} et {other} deviendraient toutes les deux {target}. Choisis une autre zone pour l'une d'elles.",
+        "calculated_needs_zone": "{zone} est aujourd'hui calculée par Smart Irrigation, à partir de la zone depuis laquelle une automatisation d'ajustement de durée l'alimente. Choisis cette zone ou une autre zone existante.",
+        "program_exists": "Un programme « {name} » ({id}) gêne : aucun import ne l'a créé. Renomme-le ou supprime-le d'abord, dans Arrosage, Programmes (avec le contrôleur complet activé).",
+        "supply_exists": "Une pompe « {name} » ({id}) gêne : aucun import ne l'a créée. Renomme-la ou supprime-la d'abord, dans Arrosage, Pompes et vannes (avec le contrôleur complet activé)."
+      },
+      "confirm_remove": "Cet import supprime ce qu'un import précédent a créé et qu'Irrigation Unlimited n'a plus : {names}. Continuer ?"
     }
   },
   "title": "Smart Irrigation",

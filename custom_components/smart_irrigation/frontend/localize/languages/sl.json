@@ -277,6 +277,10 @@
         "setup-assistant": {
           "description": "Največ štiri vprašanja, nato zate ustvari skupino senzorjev in cono ter izbere, kar vsaka potrebuje. Za prvo cono, še eno ali svež začetek.",
           "open": "Odpri pomočnika"
+        },
+        "iu-import": {
+          "description": "Prehajaš z Irrigation Unlimited? Prenesi sem njegove cone, zaporedja in urnike, najprej s predogledom vsega.",
+          "open": "Uvozi"
         }
       },
       "description": "Ta stran vsebuje splošne nastavitve.",
@@ -767,6 +771,138 @@
     },
     "supplies": {
       "title": "Črpalke in ventili"
+    },
+    "iu_import": {
+      "title": "Uvoz iz Irrigation Unlimited",
+      "description": "Prenese tvojo konfiguracijo Irrigation Unlimited: njegove cone, zaporedja in urniki tukaj postanejo cone, programi in njihovi urniki. Vse vidiš, preden se karkoli spremeni, in nič ne zaliva, dokler ne vklopiš urnikov.",
+      "loading": "Iščem konfiguracijo Irrigation Unlimited…",
+      "step": "Korak",
+      "back": "Nazaj",
+      "next": "Naprej",
+      "import": "Uvozi",
+      "importing": "Uvažam…",
+      "source": {
+        "question": "Katera konfiguracija?",
+        "help": "Smart Irrigation prebere konfiguracijo, ki jo naloži Home Assistant, ali tisto, ki jo hranijo lastna pogovorna okna Irrigation Unlimited. Lahko tudi prilepiš njegov YAML.",
+        "yaml-help": "Razdelek irrigation_unlimited, kot ga naloži Home Assistant, s packages, !include in !secret.",
+        "entry-help": "Kar hranijo lastna pogovorna okna Irrigation Unlimited.",
+        "none-found": "Konfiguracije Irrigation Unlimited ni bilo mogoče najti. Če Irrigation Unlimited ni več nameščen in je bila njegova konfiguracija v package, je Home Assistant ne naloži: prilepi jo spodaj.",
+        "paste": "Prilepi YAML",
+        "paste-help": "Razdelek irrigation_unlimited ali to, kar je pod njim. !include, !secret in !env_var tukaj niso upoštevani: izpiši te vrednosti ali uvozi iz configuration.yaml.",
+        "previous": "Že uvoženo {at}. Ponoven uvoz posodobi to, kar je ustvaril ta uvoz.",
+        "unreadable": "Home Assistant je ni mogel prebrati:"
+      },
+      "zones": {
+        "question": "Kaj postane posamezna cona?",
+        "help": "Cona Irrigation Unlimited postane ena od tvojih con ali nova cona. Obstoječa cona obdrži svoje nastavitve in izračun: dopolni se le to, kar ji manjka.",
+        "none": "Ta konfiguracija nima con.",
+        "links": "{count, plural, one {# avtomatizacija prilagoditve časa napaja Irrigation Unlimited iz Smart Irrigation: ta korak se izračuna tukaj.} two {# avtomatizaciji prilagoditve časa napajata Irrigation Unlimited iz Smart Irrigation: ta koraka se izračunata tukaj.} few {# avtomatizacije prilagoditve časa napajajo Irrigation Unlimited iz Smart Irrigation: ti koraki se izračunajo tukaj.} other {# avtomatizacij prilagoditve časa napaja Irrigation Unlimited iz Smart Irrigation: ti koraki se izračunajo tukaj.}}",
+        "becomes": "Kaj postane {zone}",
+        "new": "Nova cona",
+        "creates": "Ustvari se nova cona, z ventilom in črpalko.",
+        "uses": "Postane {zone}: {reason}.",
+        "reason": {
+          "valve": "isti ventil",
+          "blueprint": "avtomatizacija prilagoditve časa jo napaja iz te cone",
+          "name": "isto ime",
+          "imported": "ustvaril prejšnji uvoz",
+          "chosen": "tvoja izbira"
+        },
+        "fills": "Dopolnjeno:",
+        "fields": {
+          "linked_entity": "ventil",
+          "supply_id": "črpalka",
+          "extra_entities": "dodatni ventili",
+          "confirm_timeout": "čakanje na potrditev (s)",
+          "open_resends": "ponovna pošiljanja",
+          "flow_sensor": "števec prostornine"
+        },
+        "left": "Niso več v Irrigation Unlimited, ostanejo, kot so: {zones}."
+      },
+      "programs": {
+        "question": "Programi",
+        "help": "Vsako zaporedje postane program, prav tako cona z lastnimi urniki. Zaporedje, katerega urniki imajo različna trajanja, postane en program za vsako trajanje.",
+        "none": "Ta konfiguracija nima urnikov za prenos.",
+        "action": {
+          "create": "nov",
+          "update": "posodobljen"
+        },
+        "calculated": "izračunano",
+        "passes": "prehodi: {count}",
+        "step-off": "izklopljeno",
+        "no-schedules": "Ni urnika.",
+        "schedules-off": "Njegovi urniki ostanejo izklopljeni, dokler jih ne vklopiš.",
+        "schedules-stay-on": "Vklopil si njegove urnike: ostanejo, kot so.",
+        "disabled": "Izklopljeno v Irrigation Unlimited, in tudi tukaj.",
+        "removed": "Niso več v Irrigation Unlimited, odstranjeni: {programs}."
+      },
+      "supplies": {
+        "title": "Črpalke in glavni ventili",
+        "create": "Novo: {name} ({entities}).",
+        "update": "Posodobljeno: {name} ({entities}).",
+        "removed": "Niso več v Irrigation Unlimited, odstranjeni: {supplies}."
+      },
+      "schedule": {
+        "sunrise": "Sončni vzhod",
+        "sunset": "Sončni zahod",
+        "done-by": "končano do {time}",
+        "every": "vsakih {count} dni",
+        "odd": "lihi dnevi",
+        "even": "sodi dnevi",
+        "days-of-month": "{days}. dan v mesecu",
+        "last": "zadnji",
+        "off-in-iu": "izklopljeno v Irrigation Unlimited"
+      },
+      "report": {
+        "question": "Kaj se ne prenese natančno",
+        "help": "Vsaka možnost Irrigation Unlimited ima pravilo. To so tiste, ki se prenesejo približno ali izpustijo; vse drugo se prenese, kot je.",
+        "all-carried": "Vse se prenese, kot je.",
+        "outcome": {
+          "not_carried": "Ni preneseno",
+          "unknown": "Uvozu neznano",
+          "approximated": "Približno"
+        },
+        "summary-title": "Kaj naredi uvoz",
+        "summary": {
+          "zones": "Cone: novih {created}, dopolnjenih {filled}, uporabljenih, kot so, {used}",
+          "programs": "Programi: novih {created}, posodobljenih {updated}, odstranjenih {removed}",
+          "supplies": "Črpalke in glavni ventili: novih {created}, posodobljenih {updated}, odstranjenih {removed}"
+        },
+        "nothing-waters": "Uvoz ničesar ne zaliva. Irrigation Unlimited zaliva naprej, dokler ga ne izklopiš in vklopiš teh urnikov.",
+        "blocked": "Najprej razreši, kar je označeno z rdečo; do takrat ni mogoče ničesar uvoziti.",
+        "full-controller-off": "Celoten krmilnik je izklopljen: programi se uvozijo, a zalivajo šele, ko je vklopljen."
+      },
+      "errors": {
+        "generic": "Uvoz ni uspel.",
+        "changed": "Konfiguracija ali tvoje cone so se od tega predogleda spremenile. Tole bi uvoz naredil zdaj: preglej znova, nato uvozi.",
+        "no_source": "Konfiguracije Irrigation Unlimited ni bilo mogoče najti. Prilepi njegov YAML.",
+        "yaml_unreadable": "Home Assistant ni mogel prebrati njegove konfiguracije.",
+        "yaml_invalid": "Prilepljenega YAML ni bilo mogoče prebrati.",
+        "yaml_missing": "Prilepi YAML za uvoz.",
+        "yaml_not_iu": "Prilepljeni YAML ni konfiguracija Irrigation Unlimited.",
+        "unknown_zone": "Ta cona ne obstaja več.",
+        "zone_not_created": "Cone ni bilo mogoče ustvariti.",
+        "not_ready": "Smart Irrigation še ni pripravljen.",
+        "conflicts": "Najprej razreši, kar je označeno z rdečo.",
+        "too_big": "To je veliko večje od konfiguracije Irrigation Unlimited, zato se ne prebere.",
+        "not_finite": "Konfiguracija vsebuje neskončno vrednost ali vrednost, ki ni število (.inf ali .nan), česar Irrigation Unlimited nima."
+      },
+      "done": {
+        "title": "Uvoženo.",
+        "zones": "Cone: novih {created}, dopolnjenih {updated}",
+        "programs": "{count, plural, one {# program} two {# programa} few {# programi} other {# programov}}",
+        "next": "Urniki novih programov so izklopljeni, zato še vedno zaliva Irrigation Unlimited. Ko boš pripravljen, izklopi krmilnike Irrigation Unlimited in vklopi te urnike na strani Programi.",
+        "open-programs": "Odpri programe",
+        "next-off": "Celoten krmilnik je izklopljen, zato ti programi še ne zalivajo in Irrigation Unlimited zaliva naprej. Vklopi celoten krmilnik v nastavitvah, nato izklopi Irrigation Unlimited in vklopi te urnike.",
+        "open-settings": "Odpri nastavitve"
+      },
+      "conflicts": {
+        "zone_twice": "{zone} in {other} bi obe postali {target}. Za eno od njiju izberi drugo cono.",
+        "calculated_needs_zone": "{zone} danes izračunava Smart Irrigation, iz cone, iz katere jo napaja avtomatizacija prilagoditve časa. Izberi to cono ali drugo obstoječo.",
+        "program_exists": "Program \"{name}\" ({id}) je v napoto: ustvaril ga ni noben uvoz. Najprej ga preimenuj ali izbriši v Zalivanje, Programi (z vklopljenim celotnim krmilnikom).",
+        "supply_exists": "Črpalka \"{name}\" ({id}) je v napoto: ustvaril je ni noben uvoz. Najprej jo preimenuj ali izbriši v Zalivanje, Črpalke in ventili (z vklopljenim celotnim krmilnikom)."
+      },
+      "confirm_remove": "Ta uvoz izbriše to, kar je ustvaril prejšnji uvoz in česar Irrigation Unlimited nima več: {names}. Nadaljujem?"
     }
   },
   "title": "Smart Irrigation",
