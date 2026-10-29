@@ -2,14 +2,18 @@
 
 ``iu_import.py`` turns an IU configuration into supplies, zones and programs,
 as plain data. This module finds that configuration in Home Assistant, finds the
-adjust-time blueprint automations that already feed IU from Smart Irrigation,
-says what an import would do (the preview) and does it (apply).
+automations that already feed IU durations from Smart Irrigation, says what an
+import would do (the preview) and does it (apply).
 
 * **Where the configuration comes from.** The YAML Home Assistant loads, with
   packages, ``!include`` and ``!secret`` resolved; or IU's own dialogs (a config
   entry, whose options take precedence over its data, as IU reads them); or YAML
   pasted by the user. The YAML is read as written, not through IU's schema: the
   importer applies IU's defaults itself, and IU need not be installed any more.
+* **Pasted YAML is the user's text.** It is read with a plain safe loader that
+  follows no tag (``!include``, ``!secret``, ``!env_var`` stay the text written,
+  and the report says so), it has a size limit, every configuration has a limit
+  on its values with aliases expanded, and the planning runs in an executor.
 * **Nothing is lost on a second import.** What an import created is recorded
   (``CONF_IU_IMPORT``). The next import updates those zones, supplies and
   programs in place, removes the programs and supplies IU no longer has, and
@@ -19,7 +23,8 @@ says what an import would do (the preview) and does it (apply).
   of its own. A program imported again keeps them on if it had any on.
 * **An existing zone is used as it is.** Only what it lacks is filled in: its
   valve, supply, extra valves, confirmation and flow sensor. Its state and its
-  calculation are not touched.
+  calculation are not touched. An IU zone switched off is left out of the
+  programs instead, and a lead time it has is reported for fixed steps.
 * **What is applied is what was shown.** The preview carries a fingerprint of
   what it would do; apply works it out again and refuses when it differs, which
   happens when the configuration or the zones changed in between.
@@ -32,14 +37,24 @@ import copy
 import hashlib
 import json
 import logging
+import re
 from datetime import UTC, datetime
+from types import SimpleNamespace
 
+import yaml
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import entity_registry as er
 
 from . import const
-from .iu_import import APPROXIMATED, DOMAIN_IU, NOT_CARRIED, Link, plan_import
+from .iu_import import (
+    APPROXIMATED,
+    DOMAIN_IU,
+    NOT_CARRIED,
+    Link,
+    as_list,
+    plan_import,
+)
 from .programs import DURATION_CALCULATED, MAIN_PROGRAM_ID, _unique_id
 
 _LOGGER = logging.getLogger(__name__)
@@ -48,8 +63,6 @@ SOURCE_YAML = "yaml"
 SOURCE_PASTED = "pasted"
 SOURCE_ENTRY = "entry:"
 
-BLUEPRINT_SEQUENCE = "irrigation-unlimited-adjust-time-sequence.yaml"
-BLUEPRINT_ZONE = "irrigation-unlimited-adjust-time-single-zone.yaml"
 
 # What an import fills in on an existing zone that lacks it.
 FILLED_FIELDS = (
@@ -99,27 +112,102 @@ def _entry_config(entry) -> dict:
     return dict(entry.options) if entry.options else dict(entry.data)
 
 
-def parse_pasted(text: str) -> dict:
-    """IU's configuration from pasted YAML, with or without its top-level key."""
-    from homeassistant.util.yaml import parse_yaml
+# Pasted YAML comes from the user: it is read with a plain safe loader, and a
+# configuration far larger than any IU configuration is refused before the
+# importer walks it on the event loop.
+MAX_PASTED_BYTES = 256 * 1024
+# Options, lists and values counted with aliases expanded: IU's largest test
+# configuration has under 2,000. An alias bomb parses in no time but expands
+# into millions.
+MAX_NODES = 20_000
 
-    try:
-        parsed = parse_yaml(text)
-    except HomeAssistantError as err:
+
+class _PastedLoader(yaml.SafeLoader):
+    """A safe loader that reads ``!include``, ``!secret`` and any other tag as
+    the plain text it is, so nothing outside the pasted text is ever read."""
+
+    def __init__(self, stream) -> None:
+        super().__init__(stream)
+        self.tags_seen: list[str] = []
+
+
+def _tag_as_text(loader: _PastedLoader, suffix: str, node) -> str:
+    tag = f"!{suffix}"
+    if tag not in loader.tags_seen:
+        loader.tags_seen.append(tag)
+    if isinstance(node, yaml.ScalarNode):
+        return f"{tag} {loader.construct_scalar(node)}".strip()
+    return tag
+
+
+_PastedLoader.add_multi_constructor("!", _tag_as_text)
+
+
+def check_size(config, limit: int = MAX_NODES) -> None:
+    """Refuse a configuration of more than ``limit`` nodes, aliases expanded.
+
+    Counting stops at the limit, so an alias bomb costs ``limit`` steps.
+    """
+    left = limit
+    stack = [config]
+    while stack:
+        node = stack.pop()
+        left -= 1
+        if left < 0:
+            raise IUImportError(
+                "too_big",
+                f"The configuration has more than {limit} values: that is not an "
+                "Irrigation Unlimited configuration.",
+            )
+        if isinstance(node, dict):
+            stack.extend(node.values())
+            left -= len(node)
+        elif isinstance(node, list):
+            stack.extend(node)
+
+
+def parse_pasted(text: str) -> tuple[dict, list]:
+    """IU's configuration from pasted YAML, and the report items it brings.
+
+    With or without its top-level key. Tags (``!include``, ``!secret``,
+    ``!env_var``) are not followed: their values stay text, and the report says
+    which were seen. Runs in an executor: it is the user's text.
+    """
+    if len(text.encode()) > MAX_PASTED_BYTES:
         raise IUImportError(
-            "yaml_invalid",
-            f"The pasted YAML could not be read: {err}. "
-            "!include and !secret cannot be used in pasted YAML.",
+            "too_big",
+            f"The pasted YAML is larger than {MAX_PASTED_BYTES // 1024} kB.",
+        )
+    loader = _PastedLoader(text)
+    try:
+        parsed = loader.get_single_data()
+    except yaml.YAMLError as err:
+        raise IUImportError(
+            "yaml_invalid", f"The pasted YAML could not be read: {err}"
         ) from err
+    finally:
+        loader.dispose()
     if isinstance(parsed, dict) and isinstance(parsed.get(DOMAIN_IU), dict):
-        return parsed[DOMAIN_IU]
-    if isinstance(parsed, dict) and "controllers" in parsed:
-        return parsed
-    raise IUImportError(
-        "yaml_not_iu",
-        "The pasted YAML is not an Irrigation Unlimited configuration: it has "
-        "neither irrigation_unlimited nor controllers.",
-    )
+        parsed = parsed[DOMAIN_IU]
+    elif not (isinstance(parsed, dict) and "controllers" in parsed):
+        raise IUImportError(
+            "yaml_not_iu",
+            "The pasted YAML is not an Irrigation Unlimited configuration: it has "
+            "neither irrigation_unlimited nor controllers.",
+        )
+    check_size(parsed)
+    notes = []
+    if loader.tags_seen:
+        notes.append(
+            _item(
+                "",
+                NOT_CARRIED,
+                f"{', '.join(loader.tags_seen)} is not followed in pasted YAML: "
+                "those values were read as the text written. Import from "
+                "configuration.yaml to have them resolved",
+            )
+        )
+    return parsed, notes
 
 
 async def async_sources(hass: HomeAssistant) -> list:
@@ -142,12 +230,14 @@ async def async_sources(hass: HomeAssistant) -> list:
 
 async def async_read_source(
     hass: HomeAssistant, source: str | None, text: str | None = None
-) -> tuple[str, dict]:
-    """The source chosen (the first there is when none is) and its configuration."""
+) -> tuple[str, dict, list]:
+    """The source chosen (the first there is when none is), its configuration,
+    and report items reading it brought."""
     if source == SOURCE_PASTED or (source is None and text):
         if not text or not text.strip():
             raise IUImportError("yaml_missing", "Paste the YAML to import.")
-        return SOURCE_PASTED, parse_pasted(text)
+        config, notes = await hass.async_add_executor_job(parse_pasted, text)
+        return SOURCE_PASTED, config, notes
     if source is None:
         usable = [s for s in await async_sources(hass) if "error" not in s]
         if not usable:
@@ -158,19 +248,47 @@ async def async_read_source(
                 "that is not installed.)",
             )
         source = usable[0]["id"]
+    config = None
     if source == SOURCE_YAML:
         config = await _yaml_config(hass)
         if config is None:
             raise IUImportError(
                 "no_source", "configuration.yaml has no irrigation_unlimited section."
             )
-        return source, config
-    if source.startswith(SOURCE_ENTRY):
+    elif source.startswith(SOURCE_ENTRY):
         entry_id = source[len(SOURCE_ENTRY) :]
         for entry in _entries(hass):
             if entry.entry_id == entry_id:
-                return source, _entry_config(entry)
-    raise IUImportError("no_source", f"There is no configuration {source!r}.")
+                config = _entry_config(entry)
+    if config is None:
+        raise IUImportError("no_source", f"There is no configuration {source!r}.")
+    check_size(config)
+    return source, config, []
+
+
+def _snapshot(store) -> SimpleNamespace:
+    """The zones and the configuration as they are now, for a plan made off the
+    event loop: the store itself goes on changing there."""
+    return SimpleNamespace(
+        zones={zone_id: dict(zone) for zone_id, zone in _zones_of(store).items()},
+        config=copy.deepcopy(store.config),
+    )
+
+
+async def async_preview(
+    hass: HomeAssistant,
+    coordinator,
+    source: str | None,
+    text: str | None,
+    matches: dict | None,
+) -> dict:
+    """Read the source and plan the import, the planning in an executor."""
+    source, config, notes = await async_read_source(hass, source, text)
+    links = links_from_automations(hass)
+    snapshot = _snapshot(coordinator.store)
+    return await hass.async_add_executor_job(
+        plan, config, snapshot, links, matches, source, notes
+    )
 
 
 # --- the blueprints that already feed IU -------------------------------------
@@ -214,7 +332,8 @@ def _si_zone_id(registry, entity_id) -> int | None:
 
 
 def _iu_key(registry, entity_id, kind: str) -> str | None:
-    """IU's ``c1_z2`` (``kind`` "z") or ``c1`` (``kind`` "m") of one of its entities."""
+    """IU's ``c1_z2`` (``kind`` "z"), ``c1_s2`` ("s") or ``c1`` ("m") of one of
+    its entities."""
     unique_id = _registry_unique_id(registry, entity_id, DOMAIN_IU)
     if unique_id is None and isinstance(entity_id, str):
         # IU names its entities after their unique ids; a registry without the
@@ -229,26 +348,57 @@ def _iu_key(registry, entity_id, kind: str) -> str | None:
         return None
     if kind == "m":
         return controller if rest == "m" else None
-    if rest.startswith("z") and _number(rest[1:]) is not None:
+    if rest.startswith(kind) and _number(rest[1:]) is not None:
         return unique_id
     return None
 
 
-def _blueprint_inputs(entity) -> tuple[str | None, dict]:
-    """The blueprint an automation uses, by file name, and its inputs."""
-    used = getattr(entity, "_blueprint_inputs", None)
-    if not isinstance(used, dict):
-        return None, {}
-    use = used.get("use_blueprint")
-    if not isinstance(use, dict):
-        return None, {}
-    path = str(use.get("path") or "")
-    inputs = use.get("input")
-    return path.rsplit("/", 1)[-1], inputs if isinstance(inputs, dict) else {}
+ADJUST_TIME = DOMAIN_IU + ".adjust_time"
+_SENSOR_ID = re.compile(r"\bsensor\.[a-z0-9_]+")
+
+
+def _strings(node):
+    """Every text in an automation's configuration: templates, variables, data."""
+    if isinstance(node, str):
+        yield node
+    elif isinstance(node, dict):
+        for value in node.values():
+            yield from _strings(value)
+    elif isinstance(node, list):
+        for value in node:
+            yield from _strings(value)
+
+
+def _adjust_time_calls(node):
+    """The ``irrigation_unlimited.adjust_time`` actions anywhere in a config."""
+    if isinstance(node, dict):
+        if ADJUST_TIME in (node.get("action"), node.get("service")):
+            yield node
+        for value in node.values():
+            yield from _adjust_time_calls(value)
+    elif isinstance(node, list):
+        for value in node:
+            yield from _adjust_time_calls(value)
+
+
+def _entity_ids(value) -> list:
+    if isinstance(value, str):
+        return [v.strip() for v in value.split(",") if v.strip()]
+    if isinstance(value, list):
+        return [v for v in value if isinstance(v, str)]
+    return []
 
 
 def links_from_automations(hass: HomeAssistant) -> list:
-    """The adjust-time automations made from Smart Irrigation's blueprints."""
+    """The automations that hand IU a duration Smart Irrigation calculated.
+
+    Read from each automation's configuration as Home Assistant holds it (a
+    blueprint's inputs substituted): an ``irrigation_unlimited.adjust_time``
+    action, and exactly one Smart Irrigation duration sensor anywhere in the
+    automation. That covers the adjust-time blueprints and automations
+    written by hand alike. A whole sequence adjusted at once is no link: IU
+    shares that time over its zones.
+    """
     from homeassistant.components.automation import DATA_COMPONENT
 
     component = hass.data.get(DATA_COMPONENT)
@@ -257,28 +407,51 @@ def links_from_automations(hass: HomeAssistant) -> list:
     registry = er.async_get(hass)
     links = []
     for entity in component.entities:
-        name, inputs = _blueprint_inputs(entity)
-        if name not in (BLUEPRINT_SEQUENCE, BLUEPRINT_ZONE):
+        config = getattr(entity, "raw_config", None)
+        if not isinstance(config, dict):
             continue
-        zone_id = _si_zone_id(registry, inputs.get("irrigation_zone"))
-        if zone_id is None:
+        calls = list(_adjust_time_calls(config))
+        if not calls:
             continue
-        if name == BLUEPRINT_ZONE:
-            key = _iu_key(registry, inputs.get("unlimited_zone"), "z")
-            if key:
-                links.append(Link(si_zone_id=zone_id, iu_zone=key))
+        zones = {
+            zone_id
+            for text in _strings(config)
+            for found in _SENSOR_ID.findall(text)
+            for zone_id in [_si_zone_id(registry, found)]
+            if zone_id is not None
+        }
+        if len(zones) != 1:
             continue
-        controller = _iu_key(registry, inputs.get("unlimited_sequence"), "m")
-        sequence = _number(inputs.get("unlimited_sequence_id"))
-        position = _number(inputs.get("unlimited_zone_ref"))
-        if controller and sequence and position:
-            links.append(
-                Link(
-                    si_zone_id=zone_id,
-                    iu_sequence=f"{controller}_s{sequence}",
-                    position=position,
-                )
+        zone_id = zones.pop()
+        for call in calls:
+            data = call.get("data") if isinstance(call.get("data"), dict) else {}
+            target = call.get("target") if isinstance(call.get("target"), dict) else {}
+            targets = _entity_ids(data.get("entity_id")) + _entity_ids(
+                target.get("entity_id")
             )
+            positions = [
+                n
+                for n in (
+                    _number(p) for p in as_list(data.get("zones")) if p is not None
+                )
+                if n
+            ]
+            for entity_id in targets:
+                if key := _iu_key(registry, entity_id, "z"):
+                    links.append(Link(si_zone_id=zone_id, iu_zone=key))
+                    continue
+                sequence = _iu_key(registry, entity_id, "s")
+                if sequence is None:
+                    controller = _iu_key(registry, entity_id, "m")
+                    number = _number(data.get("sequence_id"))
+                    if controller and number:
+                        sequence = f"{controller}_s{number}"
+                for position in positions if sequence else []:
+                    links.append(
+                        Link(
+                            si_zone_id=zone_id, iu_sequence=sequence, position=position
+                        )
+                    )
     return links
 
 
@@ -357,6 +530,7 @@ def plan(
     links: list,
     matches: dict | None = None,
     source: str | None = None,
+    notes: list | None = None,
 ) -> dict:
     """What importing ``iu_config`` into ``store`` would do, without doing it.
 
@@ -394,7 +568,7 @@ def plan(
         links,
     )
     report = raw["report"]
-    items = list(report["items"]) + extra
+    items = list(notes or []) + list(report["items"]) + extra
     previous_zones = (
         record.get("zones") if isinstance(record.get("zones"), dict) else {}
     )
@@ -508,16 +682,74 @@ def plan(
                 "identity": _identity(planned),
             }
         )
+    # A calculated step takes the duration of the zone it waters. When an
+    # automation fed IU from another zone (the valve matched first), the step
+    # is calculated from a zone the automation did not feed: say so.
+    by_key = {z["key"]: z for z in zones}
     for link in links:
-        zone = next((z for z in zones if z["key"] == link.iu_zone), None)
-        if zone and zone["zone_id"] not in (None, link.si_zone_id):
+        keys = [link.iu_zone] if link.iu_zone else _keys_at(raw["programs"], link)
+        for key in keys:
+            zone = by_key.get(key)
+            if zone and zone["zone_id"] not in (None, link.si_zone_id):
+                items.append(
+                    _item(
+                        key,
+                        APPROXIMATED,
+                        f"an automation feeds it from zone {link.si_zone_id}, "
+                        f"but it is matched to zone {zone['zone_id']}: its "
+                        "calculated duration is that zone's",
+                        zone["name"],
+                    )
+                )
+
+    # An IU zone switched off waters in none of IU's sequences. A new zone is
+    # created switched off and the runner passes it by; one of the user's own
+    # zones stays as it is, so the programs leave it out instead.
+    planned_by_key = {p["key"]: p for p in raw["zones"]}
+    off_in_iu = {
+        z["key"]
+        for z in zones
+        if z["zone_id"] is not None
+        and planned_by_key[z["key"]]["zone"].get(const.ZONE_STATE)
+        == const.ZONE_STATE_DISABLED
+    }
+    for key in sorted(off_in_iu):
+        zone = next(z for z in zones if z["key"] == key)
+        items.append(
+            _item(
+                key,
+                APPROXIMATED,
+                f"switched off in IU and matched to {zone['zone_name']!r}, which "
+                "stays as it is: the programs leave it out",
+                zone["name"],
+            )
+        )
+    raw_programs = [_without_zones(p, off_in_iu) for p in raw["programs"]]
+
+    # A zone of the user's with a lead time has it added to every fixed run;
+    # IU's durations are what the valve is open.
+    for z in zones:
+        lead = existing.get(z["zone_id"], {}).get(const.ZONE_LEAD_TIME)
+        try:
+            lead = float(lead or 0)
+        except (TypeError, ValueError):
+            lead = 0.0
+        fixed = any(
+            z["key"] in (step.get(const.STEP_ZONES) or [])
+            and step.get(const.STEP_MODE) != DURATION_CALCULATED
+            for program in raw_programs
+            for step in program.get(const.PROGRAM_STEPS) or []
+        )
+        if lead > 0 and fixed:
             items.append(
                 _item(
-                    link.iu_zone,
+                    z["key"],
                     APPROXIMATED,
-                    f"a blueprint feeds it from zone {link.si_zone_id}, "
-                    f"but it is matched to zone {zone['zone_id']}",
-                    zone["name"],
+                    f"zone {z['zone_name']!r} has a lead time of {lead:g} s, which "
+                    "Smart Irrigation adds to every fixed run: it waters that much "
+                    "longer than in IU, unless the lead time is set to 0 or the "
+                    "step shortened",
+                    z["name"],
                 )
             )
 
@@ -531,7 +763,7 @@ def plan(
     programs = []
     # The ids as the store keeps them: IU's own ids can carry capitals, spaces.
     used_ids = {MAIN_PROGRAM_ID}
-    for program in raw["programs"]:
+    for program in raw_programs:
         program = {
             **program,
             const.PROGRAM_ID: _unique_id(
@@ -644,6 +876,41 @@ def plan(
     return result
 
 
+def _keys_at(programs: list, link: Link) -> list:
+    """The IU zones of a sequence's step, by the step's position."""
+    step_id = f"step_{link.position}"
+    return sorted(
+        {
+            key
+            for program in programs
+            if program.get("source") == link.iu_sequence
+            for step in program.get(const.PROGRAM_STEPS) or []
+            if step.get(const.STEP_ID) == step_id
+            or str(step.get(const.STEP_ID, "")).startswith(step_id + "_")
+            for key in step.get(const.STEP_ZONES) or []
+        }
+    )
+
+
+def _without_zones(program: dict, keys: set) -> dict:
+    """The program without these IU zones; a step left with none is off."""
+    if not keys:
+        return program
+    program = copy.deepcopy(program)
+    steps = program.get(const.PROGRAM_STEPS) or []
+    for step in steps:
+        zones = step.get(const.STEP_ZONES) or []
+        kept = [k for k in zones if k not in keys]
+        if len(kept) != len(zones):
+            if kept:
+                step[const.STEP_ZONES] = kept
+            else:
+                step[const.STEP_ENABLED] = False
+    if steps and all(step.get(const.STEP_ENABLED) is False for step in steps):
+        program[const.PROGRAM_ENABLED] = False
+    return program
+
+
 def _calculated_keys(programs: list) -> set:
     return {
         key
@@ -676,9 +943,11 @@ def import_lock(hass: HomeAssistant) -> asyncio.Lock:
 async def async_apply(coordinator, preview: dict) -> dict:
     """Create and update what ``preview`` says, and record it.
 
-    The zones come first, one by one. The supplies, the programs and the record
-    are then stored together, in one change: an import that stops part way has
-    created zones, which the next one finds by their valves, and nothing else.
+    The supplies come first, recorded as the import's, so that the zones never
+    name a supply that is not there. The zones follow, one by one; then the
+    programs and the rest of the record, in one change. An import that stops
+    part way has made supplies the next one updates and zones it finds by their
+    valves, and no program.
     """
     if preview.get("conflicts"):
         raise IUImportError(
@@ -687,6 +956,25 @@ async def async_apply(coordinator, preview: dict) -> dict:
             + ", ".join(c["code"] for c in preview["conflicts"]),
         )
     store = coordinator.store
+    config = store.config
+    record = _record(config)
+
+    gone_supplies = set(preview["removed"]["supplies"])
+    planned_supplies = [s["supply"] for s in preview["supplies"]]
+    supply_ids = {s[const.SUPPLY_ID] for s in planned_supplies}
+    supplies = [
+        s
+        for s in getattr(config, const.CONF_SUPPLIES, None) or []
+        if isinstance(s, dict)
+        and s.get(const.SUPPLY_ID) not in gone_supplies
+        and s.get(const.SUPPLY_ID) not in supply_ids
+    ] + copy.deepcopy(planned_supplies)
+    await coordinator.async_update_config(
+        {
+            const.CONF_SUPPLIES: supplies,
+            const.CONF_IU_IMPORT: {**record, "supplies": sorted(supply_ids)},
+        }
+    )
 
     zone_ids: dict = {}
     created, updated = [], []
@@ -712,17 +1000,6 @@ async def async_apply(coordinator, preview: dict) -> dict:
     # Read again: the zones were saved in between.
     config = store.config
     record = _record(config)
-
-    gone_supplies = set(preview["removed"]["supplies"])
-    planned_supplies = [s["supply"] for s in preview["supplies"]]
-    supply_ids = {s[const.SUPPLY_ID] for s in planned_supplies}
-    supplies = [
-        s
-        for s in getattr(config, const.CONF_SUPPLIES, None) or []
-        if isinstance(s, dict)
-        and s.get(const.SUPPLY_ID) not in gone_supplies
-        and s.get(const.SUPPLY_ID) not in supply_ids
-    ] + copy.deepcopy(planned_supplies)
 
     stored = [
         p
@@ -795,11 +1072,7 @@ async def async_apply(coordinator, preview: dict) -> dict:
         "at": datetime.now(UTC).isoformat(timespec="seconds"),
     }
     await coordinator.async_update_config(
-        {
-            const.CONF_SUPPLIES: supplies,
-            const.CONF_PROGRAMS: merged,
-            const.CONF_IU_IMPORT: new_record,
-        }
+        {const.CONF_PROGRAMS: merged, const.CONF_IU_IMPORT: new_record}
     )
     _LOGGER.info(
         "Irrigation Unlimited imported: %d zone(s) created, %d updated, "

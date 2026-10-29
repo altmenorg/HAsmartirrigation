@@ -657,3 +657,165 @@ def test_cron_sundays_and_a_day_that_never_comes():
     assert made[0][const.SCHEDULE_WEEKDAYS] == [4, 5, 6]
     made, _ = _schedule({"time": "06:00", "day": [0]})
     assert made[0][const.SCHEDULE_ENABLED] is False
+
+
+# --- values IU's schema would have refused (pasted YAML has not been through it) ---
+
+
+def _one_controller(**controller):
+    return {"controllers": [{"name": "C", **controller}]}
+
+
+def test_options_that_are_not_mappings_are_reported_not_raised():
+    plan = plan_import(
+        _one_controller(
+            all_zones_config="nope",
+            zones=[{"name": "A", "entity_id": "valve.a", "check_back": "yes"}],
+        )
+    )
+    paths = [i["path"] for i in _items(plan, NOT_CARRIED)]
+    assert "controllers[0].all_zones_config" in paths
+    assert "controllers[0].zones[0].check_back" in paths
+    zone = plan["zones"][0]["zone"]
+    assert const.ZONE_CONFIRM_TIMEOUT not in zone
+
+
+@pytest.mark.parametrize("every", ["x", None, 0, "-3"])
+def test_every_n_days_that_is_no_number_is_reported(every):
+    made, report = _schedule(
+        {"time": "06:00", "duration": "00:05", "day": {"every_n_days": every}}
+    )
+    assert made == []
+    assert report.items[0]["path"].endswith("day.every_n_days")
+
+
+def test_a_cron_schedule_moves_earlier_by_the_supply_lead_like_a_time():
+    by_time, _ = _schedule({"time": "06:00"}, lead=120)
+    by_cron, _ = _schedule({"time": {"cron": "0 6 * * *"}}, lead=120)
+    assert by_time[0][const.SCHEDULE_TIME] == "05:58"
+    assert by_cron[0][const.SCHEDULE_TIME] == "05:58"
+    early, report = _schedule({"time": {"cron": "1 0 * * *"}}, lead=120)
+    assert early[0][const.SCHEDULE_TIME] == "00:01"
+    assert any("would change the day" in i["note"] for i in report.items)
+
+
+def test_a_zone_schedule_without_a_duration_is_reported_not_made_zero():
+    plan = plan_import(
+        _one_controller(
+            zones=[
+                {
+                    "name": "A",
+                    "entity_id": "valve.a",
+                    "schedules": [{"time": "06:00"}, {"time": "07:00", "duration": 60}],
+                }
+            ]
+        )
+    )
+    [program] = plan["programs"]
+    assert [s[const.SCHEDULE_TIME] for s in program["schedules"]] == ["07:00"]
+    assert program["steps"][0][const.STEP_SECONDS] == 60
+    assert any("needs a duration" in i["note"] for i in _items(plan, NOT_CARRIED))
+
+
+def test_a_negative_postamble_is_held_to_zero_and_said_so():
+    plan = plan_import(
+        _one_controller(
+            entity_id="switch.pump",
+            postamble="-0:01:00",
+            zones=[{"name": "A", "entity_id": "valve.a"}],
+        )
+    )
+    assert plan["supplies"][0][const.SUPPLY_DELAY_AFTER] == 0.0
+    assert any(
+        i["path"] == "controllers[0].postamble" for i in _items(plan, APPROXIMATED)
+    )
+
+
+def test_unknown_weekdays_and_months_are_reported():
+    made, report = _schedule({"time": "06:00", "weekday": ["mon", "funday"]})
+    assert made[0][const.SCHEDULE_WEEKDAYS] == [0]
+    assert made[0][const.SCHEDULE_ENABLED] is True
+    assert "'funday'" in report.items[0]["note"]
+    # None known: it would run every day, so it is off.
+    made, report = _schedule({"time": "06:00", "weekday": ["funday"]})
+    assert const.SCHEDULE_WEEKDAYS not in made[0]
+    assert made[0][const.SCHEDULE_ENABLED] is False
+    made, _ = _schedule({"time": "06:00", "month": ["smarch"]})
+    assert made[0][const.SCHEDULE_ENABLED] is False
+
+
+def test_only_sunrise_and_sunset_are_sun_events():
+    made, report = _schedule({"time": {"sun": "noon"}})
+    assert made == []
+    assert report.items[0]["path"].endswith("time.sun")
+    made, _ = _schedule({"time": {"sun": "Sunset"}})
+    assert made[0][const.SCHEDULE_EVENT] == "sunset"
+
+
+@pytest.mark.parametrize(
+    ("period", "kept"),
+    [
+        ({"from": "1 May"}, False),
+        ({"until": "30 Sep"}, False),
+        ({"from": "1 May", "until": "nope"}, False),
+        ({"from": "1 May", "until": "30 Sep"}, True),
+    ],
+)
+def test_a_period_needs_both_days(period, kept):
+    made, report = _schedule({"time": "06:00", **period})
+    assert (const.SCHEDULE_FROM in made[0]) is kept
+    assert (const.SCHEDULE_UNTIL in made[0]) is kept
+    if not kept:
+        assert made[0].get(const.SCHEDULE_UNTIL) is None
+        assert "needs both days" in report.items[0]["note"]
+
+
+def test_a_step_volume_is_litres_not_a_duration():
+    plan = plan_import(
+        _one_controller(
+            zones=[{"name": "A", "entity_id": "valve.a"}],
+            sequences=[
+                {
+                    "name": "S",
+                    "schedules": [{"time": "06:00"}],
+                    "zones": [{"zone_id": 1, "duration": "00:10", "volume": "10:00"}],
+                },
+                {
+                    "name": "T",
+                    "schedules": [{"time": "07:00"}],
+                    "zones": [{"zone_id": 1, "duration": "00:10", "volume": 40}],
+                },
+            ],
+        )
+    )
+    s, t = plan["programs"]
+    assert const.STEP_MAX_LITRES not in s["steps"][0]
+    assert t["steps"][0][const.STEP_MAX_LITRES] == 40
+    assert any("number of litres" in i["note"] for i in _items(plan, NOT_CARRIED))
+
+
+def test_zones_that_start_together_still_do_when_the_repeats_are_held_to_six():
+    plan = plan_import(
+        _one_controller(
+            zones=[
+                {"name": "A", "entity_id": "valve.a", "maximum": "00:05"},
+                {"name": "B", "entity_id": "valve.b", "minimum": "00:08"},
+            ],
+            sequences=[
+                {
+                    "name": "S",
+                    "repeat": 8,
+                    "schedules": [{"time": "06:00"}],
+                    "zones": [{"zone_id": [1, 2], "duration": "00:10"}],
+                }
+            ],
+        )
+    )
+    [program] = plan["programs"]
+    assert program["tours"] == 6
+    first, second = program["steps"]
+    # Each tour holds the shorter part for its stored water over six tours: the
+    # wait before the next part is that long, so the two still start together.
+    assert first[const.STEP_SECONDS] == 300 * 8
+    assert first[const.STEP_DELAY] == -(300 * 8 / 6)
+    assert second[const.STEP_SECONDS] == 480 * 8

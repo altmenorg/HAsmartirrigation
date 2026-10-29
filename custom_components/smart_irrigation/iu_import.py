@@ -625,6 +625,32 @@ def _count(value, default: int = 1) -> int:
         return default
 
 
+def _mapping(value, where: str, report: Report) -> dict:
+    """An option that holds options: a mapping, or nothing (and said so).
+
+    IU's schema refuses anything else; pasted YAML has not been through it.
+    """
+    if value is None or isinstance(value, dict):
+        return value or {}
+    report.add(where, NOT_CARRIED, f"{value!r} is not a set of options")
+    return {}
+
+
+def _litres(value, where: str, report: Report) -> float | None:
+    """A volume in litres: a number, as IU takes it; else nothing (and said so)."""
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        litres = float(value)
+    except (TypeError, ValueError):
+        report.add(where, NOT_CARRIED, f"{value!r} is not a number of litres")
+        return None
+    if math.isnan(litres) or litres <= 0:
+        report.add(where, NOT_CARRIED, f"{value!r} is not a number of litres")
+        return None
+    return litres
+
+
 def washed(value, granularity: float) -> float | None:
     """A duration as IU keeps it: truncated to its time step (``wash_td``)."""
     seconds = seconds_of(value)
@@ -648,13 +674,15 @@ def read_config(config: dict, report: Report, granularity: float = 60) -> list:
         if not isinstance(raw, dict):
             continue
         where = f"controllers[{c_index - 1}]"
-        all_zones = raw.get("all_zones_config") or {}
+        all_zones = _mapping(
+            raw.get("all_zones_config"), f"{where}.all_zones_config", report
+        )
         zones = []
         for z_index, zone_raw in enumerate(as_list(raw.get("zones")), start=1):
             if not isinstance(zone_raw, dict):
                 continue
-            volume = _zone_value(zone_raw, all_zones, "volume") or {}
             zone_where = f"{where}.zones[{z_index - 1}]"
+            volume = _zone_value(zone_raw, all_zones, "volume") or {}
             zones.append(
                 Zone(
                     controller=c_index,
@@ -670,8 +698,16 @@ def read_config(config: dict, report: Report, granularity: float = 60) -> list:
                         _zone_value(zone_raw, all_zones, "maximum"), granularity
                     ),
                     check_back={
-                        **(all_zones.get("check_back") or {}),
-                        **(zone_raw.get("check_back") or {}),
+                        **_mapping(
+                            all_zones.get("check_back"),
+                            f"{where}.all_zones_config.check_back",
+                            report,
+                        ),
+                        **_mapping(
+                            zone_raw.get("check_back"),
+                            f"{zone_where}.check_back",
+                            report,
+                        ),
                     }
                     or None,
                     volume_entity=(
@@ -731,7 +767,9 @@ def read_config(config: dict, report: Report, granularity: float = 60) -> list:
                         duration=washed(step_raw.get("duration"), granularity),
                         repeat=max(1, repeat),
                         enabled=step_raw.get("enabled") is not False and repeat > 0,
-                        volume=seconds_of(step_raw.get("volume")),
+                        volume=_litres(
+                            step_raw.get("volume"), f"{step_where}.volume", report
+                        ),
                         position=position,
                         where=step_where,
                     )
@@ -866,29 +904,39 @@ def convert_schedule(schedule: Schedule, report: Report, lead: float = 0.0) -> l
     }
     if raw.get("schedule_id"):
         common[const.SCHEDULE_ID] = str(raw["schedule_id"])
-    weekdays = sorted(
-        {
-            WEEKDAYS[str(day).lower()[:3]]
-            for day in as_list(raw.get("weekday"))
-            if str(day).lower()[:3] in WEEKDAYS
-        }
-    )
-    if weekdays:
-        common[const.SCHEDULE_WEEKDAYS] = weekdays
-    months = sorted(
-        {
-            MONTHS[str(m).lower()[:3]]
-            for m in as_list(raw.get("month"))
-            if str(m).lower()[:3] in MONTHS
-        }
-    )
-    if months:
-        common[const.SCHEDULE_MONTHS] = months
+    for option, known, stored_as in (
+        ("weekday", WEEKDAYS, const.SCHEDULE_WEEKDAYS),
+        ("month", MONTHS, const.SCHEDULE_MONTHS),
+    ):
+        given = as_list(raw.get(option))
+        found = sorted(
+            {known[str(v).lower()[:3]] for v in given if str(v).lower()[:3] in known}
+        )
+        unknown = [v for v in given if str(v).lower()[:3] not in known]
+        if unknown:
+            report.add(
+                f"{where}.{option}",
+                NOT_CARRIED,
+                f"{', '.join(repr(v) for v in unknown)} is no {option}"
+                + ("" if found else ": the schedule is disabled"),
+            )
+            if not found:
+                # Left without any, it would run on every one of them.
+                common[const.SCHEDULE_ENABLED] = False
+        if found:
+            common[stored_as] = found
     day = raw.get("day")
     if day in ("odd", "even"):
         common[const.SCHEDULE_PARITY] = PARITY_ODD if day == "odd" else PARITY_EVEN
     elif isinstance(day, dict):
-        every = int(day.get("every_n_days") or 1)
+        every = _count(day.get("every_n_days"), 0)
+        if every < 1:
+            report.add(
+                f"{where}.day.every_n_days",
+                NOT_CARRIED,
+                f"{day.get('every_n_days')!r} is not a number of days",
+            )
+            return []
         start = a_date(day.get("start_n_days"))
         if every > MAX_EVERY_N_DAYS:
             report.add(
@@ -910,9 +958,19 @@ def convert_schedule(schedule: Schedule, report: Report, lead: float = 0.0) -> l
             # Day 0 never comes: IU never runs such a schedule.
             report.add(f"{where}.day", CARRIED, "day 0 never comes: disabled")
             common[const.SCHEDULE_ENABLED] = False
-    if raw.get("from") is not None:
-        common[const.SCHEDULE_FROM] = month_day(raw.get("from"))
-        common[const.SCHEDULE_UNTIL] = month_day(raw.get("until"))
+    if raw.get("from") is not None or raw.get("until") is not None:
+        start, end = month_day(raw.get("from")), month_day(raw.get("until"))
+        if start and end:
+            common[const.SCHEDULE_FROM] = start
+            common[const.SCHEDULE_UNTIL] = end
+        else:
+            # IU wants both, and a day it can read.
+            report.add(
+                f"{where}.from",
+                NOT_CARRIED,
+                f"the period {raw.get('from')!r} to {raw.get('until')!r} needs "
+                "both days: the schedule runs all year",
+            )
     if raw.get("name"):
         report.add(
             f"{where}.name",
@@ -922,6 +980,14 @@ def convert_schedule(schedule: Schedule, report: Report, lead: float = 0.0) -> l
 
     moment = raw.get("time")
     if isinstance(moment, dict) and "sun" in moment:
+        event = str(moment["sun"]).strip().lower()
+        if event not in ("sunrise", "sunset"):
+            report.add(
+                f"{where}.time.sun",
+                NOT_CARRIED,
+                f"{moment['sun']!r}: only sunrise and sunset are known",
+            )
+            return []
         before = seconds_of(moment.get("before")) or 0.0
         after = seconds_of(moment.get("after")) or 0.0
         offset = _minutes(after - before - lead, f"{where}.time", "the offset", report)
@@ -937,7 +1003,7 @@ def convert_schedule(schedule: Schedule, report: Report, lead: float = 0.0) -> l
             {
                 **common,
                 const.SCHEDULE_TYPE: SCHEDULE_TYPE_SUN,
-                const.SCHEDULE_EVENT: str(moment["sun"]),
+                const.SCHEDULE_EVENT: event,
                 const.SCHEDULE_OFFSET_MINUTES: offset,
             }
         ]
@@ -957,6 +1023,10 @@ def convert_schedule(schedule: Schedule, report: Report, lead: float = 0.0) -> l
         )
         made = []
         for n, entry in enumerate(expanded):
+            at = _earlier(
+                time.fromisoformat(entry[const.SCHEDULE_TIME]), lead, where, report
+            )
+            entry = {**entry, const.SCHEDULE_TIME: f"{at.hour:02d}:{at.minute:02d}"}
             item = {**common, **entry}
             if const.SCHEDULE_ID in common and n:
                 item[const.SCHEDULE_ID] = f"{common[const.SCHEDULE_ID]}_{n + 1}"
@@ -966,19 +1036,7 @@ def convert_schedule(schedule: Schedule, report: Report, lead: float = 0.0) -> l
     if at is None:
         report.add(f"{where}.time", NOT_CARRIED, f"no time of day in {moment!r}")
         return []
-    if lead > 0:
-        seconds = at.hour * 3600 + at.minute * 60 + at.second - lead
-        if seconds < 0:
-            report.add(
-                f"{where}.time",
-                APPROXIMATED,
-                f"{at.isoformat()} is kept: moving it earlier by the supply's "
-                f"lead of {lead:g} s would change the day",
-            )
-        else:
-            at = time(
-                int(seconds // 3600), int(seconds % 3600 // 60), int(seconds % 60)
-            )
+    at = _earlier(at, lead, where, report)
     if at.second:
         report.add(
             f"{where}.time",
@@ -993,6 +1051,22 @@ def convert_schedule(schedule: Schedule, report: Report, lead: float = 0.0) -> l
             const.SCHEDULE_TIME: f"{at.hour:02d}:{at.minute:02d}",
         }
     ]
+
+
+def _earlier(at: time, lead: float, where: str, report: Report) -> time:
+    """The moment moved earlier by the supply's lead, unless it changes the day."""
+    if lead <= 0:
+        return at
+    seconds = at.hour * 3600 + at.minute * 60 + at.second - lead
+    if seconds < 0:
+        report.add(
+            f"{where}.time",
+            APPROXIMATED,
+            f"{at.isoformat()} is kept: moving it earlier by the supply's "
+            f"lead of {lead:g} s would change the day",
+        )
+        return at
+    return time(int(seconds // 3600), int(seconds % 3600 // 60), int(seconds % 60))
 
 
 # --- durations ---------------------------------------------------------------------
@@ -1152,7 +1226,9 @@ def plan_import(
                     report,
                 ),
                 const.SUPPLY_DELAY_AFTER: _bounded(
-                    controller.postamble,
+                    _not_negative(
+                        controller.postamble, f"{controller.where}.postamble", report
+                    ),
                     const.SUPPLY_MAX_DELAY_SECONDS,
                     f"{controller.where}.postamble",
                     report,
@@ -1214,6 +1290,19 @@ def plan_import(
 
 def _out(report: Report) -> dict:
     return {"items": report.items, "counts": report.counts()}
+
+
+def _not_negative(seconds: float, where: str, report: Report) -> float:
+    """A negative postamble switches IU's master off before the last zone; the
+    full controller keeps a supply on until its zones are done."""
+    if seconds >= 0:
+        return seconds
+    report.add(
+        where,
+        APPROXIMATED,
+        f"{seconds:g} s: the supply stays on until the last zone is done",
+    )
+    return 0.0
 
 
 def _bounded(seconds: float, limit: float, where: str, report: Report) -> float:
@@ -1387,7 +1476,9 @@ def _plan_sequence(controller, sequence, fed_step, granularity, report) -> list:
                     MAX_STEP_SECONDS, max(by_zone.values()) * runs
                 )
                 if len(set(by_zone.values())) > 1:
-                    split = _split_by_duration(entry, by_zone, step, runs, report)
+                    split = _split_by_duration(
+                        entry, by_zone, step, runs, report, tours
+                    )
                     if split:
                         if step.delay is not None:
                             split[-1][const.STEP_DELAY] = _clamp_delay(
@@ -1475,9 +1566,18 @@ def _plan_sequence(controller, sequence, fed_step, granularity, report) -> list:
 def _plan_zone_schedules(controller, zone, fed_zone, report) -> list:
     """A one-step program per distinct duration of a zone's own schedules."""
     groups: dict = {}
-    for schedule in zone.schedules:
-        groups.setdefault(schedule.duration, []).append(schedule)
     fed = zone.key in fed_zone
+    for schedule in zone.schedules:
+        if not fed and not schedule.duration:
+            # IU requires one; without it the step would water nothing.
+            report.add(
+                f"{schedule.where}.duration",
+                NOT_CARRIED,
+                "a zone's schedule needs a duration: it is not carried",
+                zone.name,
+            )
+            continue
+        groups.setdefault(schedule.duration, []).append(schedule)
     if fed and len(groups) > 1:
         groups = {None: [s for group in groups.values() for s in group]}
     programs = []
@@ -1536,7 +1636,12 @@ def _report_lead(report: Report, sequence: Sequence, wait: float, lead: float) -
 
 
 def _split_by_duration(
-    entry: dict, by_zone: dict, step: SequenceZone, runs: int, report: Report
+    entry: dict,
+    by_zone: dict,
+    step: SequenceZone,
+    runs: int,
+    report: Report,
+    tours: int = 1,
 ) -> list | None:
     """A step whose zones run for different times, as steps that start together.
 
@@ -1550,7 +1655,14 @@ def _split_by_duration(
     for key, seconds in by_zone.items():
         groups.setdefault(seconds, []).append(key)
     ordered = sorted(groups.items())
-    if step.repeat > 1 or any(sec > MAX_OVERLAP_SECONDS for sec, _ in ordered[:-1]):
+    # What one tour holds each part for: the stored water shared by the tours.
+    # It is IU's duration unless the repeats were more than the tours allowed.
+    per_tour = {
+        sec: min(MAX_STEP_SECONDS, sec * runs) / max(1, tours) for sec, _ in ordered
+    }
+    if step.repeat > 1 or any(
+        per_tour[sec] > MAX_OVERLAP_SECONDS for sec, _ in ordered[:-1]
+    ):
         report.add(
             step.where,
             APPROXIMATED,
@@ -1567,7 +1679,7 @@ def _split_by_duration(
         }
         part.pop(const.STEP_DELAY, None)
         if n < len(ordered) - 1:
-            part[const.STEP_DELAY] = -float(seconds)
+            part[const.STEP_DELAY] = -float(per_tour[seconds])
         split.append(part)
     return split
 

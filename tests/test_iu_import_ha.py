@@ -6,6 +6,7 @@ preview says, and what apply does, the first time and again.
 
 import copy
 import inspect
+import time
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
@@ -107,18 +108,65 @@ async def _import(coordinator, config=CONFIG, links=(), matches=None):
 
 def test_pasted_yaml_is_read_with_or_without_its_key():
     text = "controllers:\n  - name: G\n    zones:\n      - entity_id: valve.a\n"
-    assert iu_import_ha.parse_pasted(text)["controllers"][0]["name"] == "G"
+    config, notes = iu_import_ha.parse_pasted(text)
+    assert config["controllers"][0]["name"] == "G"
+    assert notes == []
     wrapped = "irrigation_unlimited:\n" + "".join(
         "  " + line + "\n" for line in text.splitlines()
     )
     assert iu_import_ha.parse_pasted(wrapped) == iu_import_ha.parse_pasted(text)
 
 
+def test_pasted_yaml_never_reads_files_or_the_environment(tmp_path, monkeypatch):
+    """!include, !env_var and !secret stay the text written, and are reported."""
+    secret = tmp_path / "secrets.yaml"
+    secret.write_text("token: hunter2\n")
+    monkeypatch.setenv("SUPERVISOR_TOKEN", "do-not-show")
+    text = (
+        "controllers:\n"
+        f"  - name: !include {secret}\n"
+        "    entity_id: !env_var SUPERVISOR_TOKEN\n"
+        "    zones:\n"
+        "      - name: !secret token\n"
+    )
+    config, notes = iu_import_ha.parse_pasted(text)
+    controller = config["controllers"][0]
+    assert controller["name"] == f"!include {secret}"
+    assert controller["entity_id"] == "!env_var SUPERVISOR_TOKEN"
+    assert controller["zones"][0]["name"] == "!secret token"
+    assert "hunter2" not in repr(config) and "do-not-show" not in repr(config)
+    assert "!include, !env_var, !secret" in notes[0]["note"]
+    # The report carries the note, and no supply is made of the tag.
+    preview = iu_import_ha.plan(
+        config, FakeCoordinator().store, [], None, "pasted", notes
+    )
+    assert preview["supplies"] == []
+    assert any("not followed" in i["note"] for i in preview["report"]["items"])
+
+
+def test_pasted_yaml_too_large_is_refused_before_it_is_walked():
+    with pytest.raises(iu_import_ha.IUImportError) as err:
+        iu_import_ha.parse_pasted("controllers: []\n" + "#" * 300_000)
+    assert err.value.code == "too_big"
+    # An alias bomb: a few hundred bytes, millions of values once expanded.
+    bomb = 'a: &a ["x","x","x","x","x","x","x","x","x","x"]\n'
+    for n in "bcdefgh":
+        prev = chr(ord(n) - 1)
+        bomb += f"{n}: &{n} [*{prev},*{prev},*{prev},*{prev},*{prev},*{prev},"
+        bomb += f"*{prev},*{prev},*{prev},*{prev}]\n"
+    bomb += "controllers: [*h]\n"
+    started = time.monotonic()
+    with pytest.raises(iu_import_ha.IUImportError) as err:
+        iu_import_ha.parse_pasted(bomb)
+    assert err.value.code == "too_big"
+    assert time.monotonic() - started < 1
+
+
 @pytest.mark.parametrize(
     ("text", "code"),
     [
         ("controllers: [", "yaml_invalid"),
-        ("zones: !secret valves\n", "yaml_invalid"),
+        ("zones: !secret valves\n", "yaml_not_iu"),
         ("switch:\n  - platform: template\n", "yaml_not_iu"),
     ],
 )
@@ -128,8 +176,13 @@ def test_pasted_yaml_that_is_no_iu_configuration_is_refused(text, code):
     assert err.value.code == code
 
 
+async def _in_executor(func, *args):
+    return func(*args)
+
+
 def _hass_with(yaml=None, entries=()):
     hass = MagicMock()
+    hass.async_add_executor_job = _in_executor
     hass.config_entries.async_entries.return_value = list(entries)
     loaded = {} if yaml is None else {"irrigation_unlimited": yaml}
     return hass, patch(
@@ -150,11 +203,16 @@ async def test_the_yaml_comes_first_then_iu_s_own_dialogs():
     with loader:
         sources = await iu_import_ha.async_sources(hass)
         assert [s["id"] for s in sources] == ["yaml", "entry:abc"]
-        assert await iu_import_ha.async_read_source(hass, None) == ("yaml", CONFIG)
+        assert await iu_import_ha.async_read_source(hass, None) == (
+            "yaml",
+            CONFIG,
+            [],
+        )
         # IU reads its options, which its dialogs write, over the first data.
         assert await iu_import_ha.async_read_source(hass, "entry:abc") == (
             "entry:abc",
             CONFIG,
+            [],
         )
 
 
@@ -165,10 +223,10 @@ async def test_without_any_configuration_it_asks_for_yaml():
         with pytest.raises(iu_import_ha.IUImportError) as err:
             await iu_import_ha.async_read_source(hass, None)
         assert err.value.code == "no_source"
-        source, config = await iu_import_ha.async_read_source(
+        source, config, notes = await iu_import_ha.async_read_source(
             hass, None, "controllers: []\n"
         )
-        assert (source, config) == ("pasted", {"controllers": []})
+        assert (source, config, notes) == ("pasted", {"controllers": []}, [])
 
 
 async def test_a_configuration_home_assistant_cannot_read_is_said_so():
@@ -187,15 +245,35 @@ async def test_a_configuration_home_assistant_cannot_read_is_said_so():
         assert err.value.code == "no_source"
 
 
-# --- the blueprints that already feed IU -------------------------------------
+# --- the automations that already feed IU ------------------------------------
 
 
-def _automation(blueprint, **inputs):
-    entity = Mock()
-    entity._blueprint_inputs = {
-        "use_blueprint": {"path": f"smart_irrigation/{blueprint}", "input": inputs}
+def _automation(config):
+    """An automation entity as Home Assistant holds it: its public raw_config,
+    a blueprint's inputs already substituted."""
+    return SimpleNamespace(raw_config=config)
+
+
+def _zone_blueprint(sensor, iu_zone):
+    """What the single-zone adjust-time blueprint becomes."""
+    return {
+        "variables": {"duration": sensor},
+        "condition": [
+            {
+                "condition": "template",
+                "value_template": "{{ (states(duration) | float(-1)) >= 0 }}",
+            }
+        ],
+        "action": [
+            {
+                "service": "irrigation_unlimited.adjust_time",
+                "data": {
+                    "actual": "{{ timedelta(seconds=states(duration) | int(0)) }}",
+                    "entity_id": iu_zone,
+                },
+            }
+        ],
     }
-    return entity
 
 
 async def test_the_adjust_time_automations_become_links(hass):
@@ -208,42 +286,75 @@ async def test_the_adjust_time_automations_become_links(hass):
     beds = registry.async_get_or_create(
         "sensor", const.DOMAIN, "smart_irrigation_7_duration"
     ).entity_id
+    bucket = registry.async_get_or_create(
+        "sensor", const.DOMAIN, "smart_irrigation_7_bucket"
+    ).entity_id
     iu_zone = registry.async_get_or_create(
         "binary_sensor", "irrigation_unlimited", "c1_z1"
     ).entity_id
     iu_controller = registry.async_get_or_create(
         "binary_sensor", "irrigation_unlimited", "c1_m"
     ).entity_id
-    other = Mock()
-    other._blueprint_inputs = None
+    iu_sequence = registry.async_get_or_create(
+        "binary_sensor", "irrigation_unlimited", "c2_s1"
+    ).entity_id
     hass.data[DATA_COMPONENT] = SimpleNamespace(
         entities=[
+            _automation(_zone_blueprint(lawn, iu_zone)),
+            # The sequence blueprint: the controller, the sequence's number and
+            # the zone's position in it.
             _automation(
-                iu_import_ha.BLUEPRINT_ZONE,
-                irrigation_zone=lawn,
-                unlimited_zone=iu_zone,
+                {
+                    "variables": {"duration": beds},
+                    "actions": [
+                        {
+                            "action": "irrigation_unlimited.adjust_time",
+                            "data": {
+                                "entity_id": iu_controller,
+                                "sequence_id": 2,
+                                "zones": 1,
+                            },
+                        }
+                    ],
+                }
             ),
+            # Written by hand: the sensor in a template, the sequence entity as
+            # the target, two positions, and a bucket sensor beside it.
             _automation(
-                iu_import_ha.BLUEPRINT_SEQUENCE,
-                irrigation_zone=beds,
-                unlimited_sequence=iu_controller,
-                unlimited_sequence_id=2,
-                unlimited_zone_ref="1",
+                {
+                    "actions": [
+                        {
+                            "action": "irrigation_unlimited.adjust_time",
+                            "target": {"entity_id": iu_sequence},
+                            "data": {
+                                "actual": "{{ states('" + beds + "') | int }}",
+                                "zones": [2, "3"],
+                                "note": "{{ states('" + bucket + "') }}",
+                            },
+                        }
+                    ]
+                }
             ),
             # IU is gone, its entity with it: its name still says which zone.
             _automation(
-                iu_import_ha.BLUEPRINT_ZONE,
-                irrigation_zone=beds,
-                unlimited_zone="binary_sensor.irrigation_unlimited_c2_z3",
+                _zone_blueprint(beds, "binary_sensor.irrigation_unlimited_c2_z3")
             ),
-            # Not one of ours, and one feeding a sensor of another integration.
-            _automation("other.yaml", irrigation_zone=lawn, unlimited_zone=iu_zone),
+            # The whole sequence at once: IU shares the time, no link.
             _automation(
-                iu_import_ha.BLUEPRINT_ZONE,
-                irrigation_zone="sensor.elsewhere",
-                unlimited_zone=iu_zone,
+                {
+                    "action": {
+                        "service": "irrigation_unlimited.adjust_time",
+                        "data": {"entity_id": iu_controller, "sequence_id": 1},
+                    },
+                    "variables": {"duration": lawn},
+                }
             ),
-            other,
+            # Two zones' sensors: which one feeds IU cannot be said.
+            _automation({**_zone_blueprint(lawn, iu_zone), "description": beds}),
+            # A sensor of another integration, and an automation without IU.
+            _automation(_zone_blueprint("sensor.elsewhere", iu_zone)),
+            _automation({"variables": {"duration": lawn}, "action": []}),
+            SimpleNamespace(raw_config=None),
         ]
     )
     links = iu_import_ha.links_from_automations(hass)
@@ -252,6 +363,8 @@ async def test_the_adjust_time_automations_become_links(hass):
     ] == [
         (4, "c1_z1", None, None),
         (7, None, "c1_s2", 1),
+        (7, None, "c2_s1", 2),
+        (7, None, "c2_s1", 3),
         (7, "c2_z3", None, None),
     ]
 
@@ -337,6 +450,12 @@ def test_a_blueprint_feeding_another_zone_than_the_match_is_reported():
     link = iu_import_ha.Link(si_zone_id=4, iu_zone="c1_z1")
     report = iu_import_ha.plan(CONFIG, coordinator.store, [link], None)["report"]
     assert any("feeds it from zone 4" in i["note"] for i in report["items"])
+    # The same through a sequence's step (#950): the valve won, so the step is
+    # calculated from zone 3, which the automation does not feed.
+    link = iu_import_ha.Link(si_zone_id=4, iu_sequence="c1_s1", position=1)
+    report = iu_import_ha.plan(CONFIG, coordinator.store, [link], None)["report"]
+    [item] = [i for i in report["items"] if "feeds it from zone 4" in i["note"]]
+    assert item["path"] == "c1_z1"
 
 
 def test_a_program_or_supply_no_import_made_is_not_overwritten():
@@ -351,6 +470,49 @@ def test_a_program_or_supply_no_import_made_is_not_overwritten():
         {"code": "program_exists", "id": "iu_c1_1", "name": "Mine"},
         {"code": "supply_exists", "id": "iu_c1_supply", "name": "My pump"},
     ]
+
+
+def test_a_zone_off_in_iu_matched_to_an_own_zone_is_left_out_of_the_programs():
+    config = copy.deepcopy(CONFIG)
+    config["controllers"][0]["zones"][1]["enabled"] = False
+    coordinator = FakeCoordinator(
+        [
+            _zone(0, "Lawn", linked_entity="valve.lawn"),
+            _zone(1, "Beds", linked_entity="valve.beds"),
+        ]
+    )
+    preview = iu_import_ha.plan(config, coordinator.store, [], None)
+    programs = {p["program"]["id"]: p["program"] for p in preview["programs"]}
+    morning = programs["iu_c1_1"]["steps"]
+    assert [s["zones"] for s in morning] == [["c1_z1"], ["c1_z2"]]
+    assert [s["enabled"] for s in morning] == [True, False]
+    # A program that waters only that zone is off as a whole.
+    assert programs["iu_c1_2"]["enabled"] is False
+    # Our zone keeps its state.
+    beds = next(z for z in preview["zones"] if z["key"] == "c1_z2")
+    assert "state" not in beds["fields"]
+    assert any("switched off in IU" in i["note"] for i in preview["report"]["items"])
+
+
+def test_a_zone_off_in_iu_and_created_is_created_off():
+    config = copy.deepcopy(CONFIG)
+    config["controllers"][0]["zones"][1]["enabled"] = False
+    preview = iu_import_ha.plan(config, FakeCoordinator().store, [], None)
+    beds = next(z for z in preview["zones"] if z["key"] == "c1_z2")
+    assert beds["fields"][const.ZONE_STATE] == const.ZONE_STATE_DISABLED
+
+
+def test_the_lead_time_of_an_own_zone_is_reported_for_fixed_steps():
+    coordinator = FakeCoordinator(
+        [_zone(0, "Lawn", linked_entity="valve.lawn", lead_time=20.0)]
+    )
+    preview = iu_import_ha.plan(CONFIG, coordinator.store, [], None)
+    notes = [i["note"] for i in preview["report"]["items"]]
+    assert any("lead time of 20 s" in n for n in notes)
+    # Calculated, the lead time is part of the zone's duration: nothing to say.
+    link = iu_import_ha.Link(si_zone_id=0, iu_sequence="c1_s1", position=1)
+    preview = iu_import_ha.plan(CONFIG, coordinator.store, [link], None)
+    assert not any("lead time" in i["note"] for i in preview["report"]["items"])
 
 
 def test_with_the_full_controller_off_the_preview_says_so():
@@ -600,7 +762,7 @@ def test_one_zone_feeding_two_iu_zones_is_a_conflict_to_resolve():
     assert resolved["conflicts"] == []
 
 
-async def test_an_import_that_stops_part_way_stores_only_zones():
+async def test_an_import_that_stops_part_way_leaves_no_zone_without_its_pump():
     coordinator = FakeCoordinator()
     real = coordinator.async_update_zone_config
     calls = []
@@ -614,12 +776,16 @@ async def test_an_import_that_stops_part_way_stores_only_zones():
     coordinator.async_update_zone_config = failing
     with pytest.raises(RuntimeError):
         await _import(coordinator)
-    assert coordinator.store.config.supplies == []
-    assert coordinator.store.config.iu_import is None
+    # The pump is there, recorded as the import's; the zone made names it.
+    assert [s["id"] for s in coordinator.store.config.supplies] == ["iu_c1_supply"]
+    assert coordinator.store.config.iu_import == {"supplies": ["iu_c1_supply"]}
+    assert coordinator.store.zones[0].supply_id == "iu_c1_supply"
     assert coordinator.programs() == {}
-    # The next import finds the zone made by its valve and goes through.
+    # The next import updates the pump, finds the zone by its valve, goes through.
     coordinator.async_update_zone_config = real
     preview, result = await _import(coordinator)
+    assert preview["conflicts"] == []
+    assert [s["action"] for s in preview["supplies"]] == ["update"]
     assert preview["zones"][0]["reason"] == "valve"
     assert result["zones_created"] == [1]
 
@@ -660,6 +826,7 @@ async def test_programs_of_the_user_are_kept_in_their_place():
 
 def _ws(coordinator):
     hass = MagicMock()
+    hass.async_add_executor_job = _in_executor
     hass.data = {const.DOMAIN: {"coordinator": coordinator}}
     connection = MagicMock()
     return hass, connection
@@ -677,14 +844,15 @@ async def test_preview_then_apply_through_the_websocket():
         patch.object(
             iu_import_ha,
             "async_read_source",
-            AsyncMock(return_value=("yaml", CONFIG)),
+            AsyncMock(return_value=("yaml", CONFIG, [])),
         ),
         patch.object(iu_import_ha, "async_sources", AsyncMock(return_value=sources)),
         patch.object(iu_import_ha, "links_from_automations", return_value=[]),
     ):
         await _call(websockets.websocket_iu_import_preview, hass, connection)
         preview = connection.send_result.call_args.args[1]
-        assert preview["sources"] == sources
+        # The sources come from their own command: the YAML is read once.
+        assert "sources" not in preview
         assert coordinator.programs() == {}
 
         await _call(

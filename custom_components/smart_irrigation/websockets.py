@@ -1623,28 +1623,20 @@ async def websocket_set_weather_service(hass: HomeAssistant, connection, msg):
 async def websocket_iu_import_preview(hass: HomeAssistant, connection, msg):
     """What importing an Irrigation Unlimited configuration would do.
 
-    Nothing is changed. The answer carries the configurations there are to
-    import, and a fingerprint that apply must be given back.
+    Nothing is changed. The answer carries a fingerprint that apply must be
+    given back. The configurations there are come from ``iu_import/sources``.
     """
     coordinator = _coordinator_or_none(hass)
     if coordinator is None:
         connection.send_error(msg["id"], "not_ready", "Smart Irrigation is not set up.")
         return
     try:
-        source, config = await iu_import_ha.async_read_source(
-            hass, msg.get("source"), msg.get("yaml")
-        )
-        preview = iu_import_ha.plan(
-            config,
-            coordinator.store,
-            iu_import_ha.links_from_automations(hass),
-            msg.get("matches"),
-            source,
+        preview = await iu_import_ha.async_preview(
+            hass, coordinator, msg.get("source"), msg.get("yaml"), msg.get("matches")
         )
     except iu_import_ha.IUImportError as err:
         connection.send_error(msg["id"], err.code, str(err))
         return
-    preview["sources"] = await iu_import_ha.async_sources(hass)
     connection.send_result(msg["id"], preview)
 
 
@@ -1671,15 +1663,12 @@ async def websocket_iu_import_apply(hass: HomeAssistant, connection, msg):
         return
     try:
         async with iu_import_ha.import_lock(hass):
-            source, config = await iu_import_ha.async_read_source(
-                hass, msg.get("source"), msg.get("yaml")
-            )
-            preview = iu_import_ha.plan(
-                config,
-                coordinator.store,
-                iu_import_ha.links_from_automations(hass),
+            preview = await iu_import_ha.async_preview(
+                hass,
+                coordinator,
+                msg.get("source"),
+                msg.get("yaml"),
                 msg.get("matches"),
-                source,
             )
             if preview["fingerprint"] != msg["fingerprint"]:
                 connection.send_error(
