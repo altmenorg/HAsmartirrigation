@@ -1134,14 +1134,16 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           ? `${t("mode_calculated_short")} × ${step.percent} %`
           : t("mode_calculated_short");
     const scheduleText = (schedule: SmartIrrigationSchedule) => {
-      const at =
+      const anchor = schedule.anchor === "end" ? "end" : "start";
+      const offset = schedule.offset_minutes
+        ? ` ${schedule.offset_minutes > 0 ? "+" : ""}${schedule.offset_minutes} min`
+        : "";
+      // "starts at sunrise", not "starts at Sunrise": the sun takes its own
+      // phrase in each language.
+      const moment =
         schedule.type === "sun"
-          ? `${t(schedule.event === "sunset" ? "moment_sunset" : "moment_sunrise")}${
-              schedule.offset_minutes
-                ? ` ${schedule.offset_minutes > 0 ? "+" : ""}${schedule.offset_minutes} min`
-                : ""
-            }`
-          : schedule.time;
+          ? `${t(`summary_${anchor}_${schedule.event === "sunset" ? "sunset" : "sunrise"}`)}${offset}`
+          : `${t(anchor === "end" ? "anchor_end_short" : "anchor_start_short")} ${schedule.time}`;
       const days =
         (schedule.weekdays || []).length > 0
           ? schedule.weekdays.map((d) => weekdayName(d)).join(", ")
@@ -1159,7 +1161,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         (schedule.months || []).length > 0 ||
         !!schedule.from_date ||
         !!schedule.until_date;
-      return `${days} · ${t(schedule.anchor === "end" ? "anchor_end_short" : "anchor_start_short")} ${at}${
+      return `${days} · ${moment}${
         narrowed ? ` · ${t("more_options_set")}` : ""
       }`;
     };
@@ -1606,13 +1608,19 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               )}
               ${this._textRow(
                 t("schedule_days_of_month"),
-                "1, 15, last",
-                (schedule.days_of_month || []).join(", "),
+                `1, 15, ${t("last_word")}`,
+                (schedule.days_of_month || [])
+                  .map((day) => (day === "last" ? t("last_word") : day))
+                  .join(", "),
                 (v) =>
                   patchSchedule({
                     days_of_month: v
                       .split(/[,;\s]+/)
                       .map((part) => part.trim().toLowerCase())
+                      // The word of the panel's language, or "last" as stored.
+                      .map((part) =>
+                        part === t("last_word").toLowerCase() ? "last" : part,
+                      )
                       .filter(
                         (part) =>
                           part === "last" ||
@@ -1744,19 +1752,30 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     </div>
                     <div class="setting-hint row-hint">
                       ${t("schedule_conditions_help")}
-                      ${t("schedule_conditions_where")}
                     </div>
+                    ${SKIP_CONDITION_IDS.every(
+                      (id) => id === "postponed" || !this._conditionSetting(id),
+                    )
+                      ? html`<div class="setting-hint row-hint">
+                          ${t("conditions_none")}
+                        </div>`
+                      : ""}
                     ${SKIP_CONDITION_IDS.map((id) => {
                       const always = id === "postponed";
                       const active =
                         schedule.skip_conditions ?? SKIP_CONDITION_IDS;
+                      // Off in Settings: nothing to obey or ignore here. The
+                      // schedule's choice is kept for when it is turned on.
+                      const setting = always
+                        ? t("cond_postponed")
+                        : this._conditionSetting(id);
                       return html`
-                        <div>
+                        <div class=${setting ? "" : "cond-off"}>
                           <label style="white-space: nowrap;">
                             <input
                               type="checkbox"
                               .checked=${always || active.includes(id)}
-                              ?disabled=${always}
+                              ?disabled=${always || !setting}
                               @change=${(e: Event) => {
                                 const on = (e.target as HTMLInputElement)
                                   .checked;
@@ -1774,6 +1793,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                             />
                             ${t(`condition_${id}`)}
                           </label>
+                          <span class="cond-setting">
+                            · ${setting || t("cond_off")}
+                          </span>
                         </div>
                       `;
                     })}
@@ -1853,6 +1875,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         <ha-card header="${programName(program)}">
           <div class="card-content">
             <div class="setting-note">${t("main_description")}</div>
+            <div class="setting-hint row-hint">${t("main_steps_hint")}</div>
             <div class="setting-row">
               <div class="setting-label">${t("enabled")}</div>
               <ha-switch
@@ -3479,6 +3502,67 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     `;
   }
 
+  /**
+   * What a skip condition is set to in Settings, General, in words, or "" when
+   * it is off there. Thresholds are stored metric and shown in the units of
+   * Home Assistant, as the Info page shows them.
+   */
+  private _conditionSetting(id: string): string {
+    const config = this.config;
+    if (!config || !this.hass) return "";
+    const lang = this.hass.language;
+    const t = (key: string, ...args: any[]) =>
+      localize(`programs.${key}`, lang, ...args);
+    const metric = (this.hass.config as any)?.unit_system?.temperature !== "°F";
+    const round = (value: number) => Math.round(value * 10) / 10;
+    switch (id) {
+      case "rain_sensor": {
+        if (!config.skip_on_rain_sensor || !config.rain_sensor) return "";
+        const state = (this.hass.states as any)?.[config.rain_sensor];
+        return state?.attributes?.friendly_name ?? config.rain_sensor;
+      }
+      case "freeze": {
+        if (!config.skip_on_freeze) return "";
+        const c = config.freeze_threshold ?? 2;
+        return t(
+          "cond_freeze",
+          "{value}",
+          metric ? `${round(c)} °C` : `${round((c * 9) / 5 + 32)} °F`,
+        );
+      }
+      case "wind": {
+        if (!config.skip_on_wind) return "";
+        const kmh = config.wind_threshold ?? 20;
+        return t(
+          "cond_wind",
+          "{value}",
+          metric ? `${round(kmh)} km/h` : `${round(kmh / 1.609344)} mph`,
+        );
+      }
+      case "precipitation": {
+        if (!config.skip_irrigation_on_precipitation) return "";
+        const mm = config.precipitation_threshold_mm ?? 2;
+        return t(
+          "cond_precipitation",
+          "{value}",
+          metric ? `${round(mm)} mm` : `${round(mm / 25.4)} in`,
+        );
+      }
+      case "days_between": {
+        const days = config.days_between_irrigation ?? 0;
+        return days > 0 ? t("cond_days_between", "{n}", String(days)) : "";
+      }
+      case "soil_moisture": {
+        const count = (this.zones || []).filter(
+          (zone) => !!zone.soil_moisture_sensor,
+        ).length;
+        return count > 0 ? t("cond_soil", "{n}", String(count)) : "";
+      }
+      default:
+        return "";
+    }
+  }
+
   // A day of the year, stored "MM-DD", picked as a month and a day instead of
   // typed. No month: none (the whole year). A day past the end of the month
   // picked is brought back to its last day; 29 February is a real day.
@@ -3725,6 +3809,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       }
       .combo-field .select-wrap.day-select {
         width: 90px;
+      }
+      .cond-off {
+        opacity: 0.55;
+      }
+      .cond-setting {
+        color: var(--secondary-text-color);
+        font-size: 0.9em;
       }
       @media (max-width: 600px) {
         .combo-field {
