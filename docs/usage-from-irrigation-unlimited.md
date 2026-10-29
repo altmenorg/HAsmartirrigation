@@ -10,7 +10,7 @@ title: "Usage: Coming from Irrigation Unlimited"
 
 [Irrigation Unlimited](https://github.com/rgc99/irrigation_unlimited) (IU) is a scheduler and a sequencer of valves with no water model: it does not know the weather, the evapotranspiration or how much water a zone has lost. Smart Irrigation does, and until now the two were joined by two automations written by hand (`adjust_time` into IU, `reset_bucket` at the end).
 
-The [full controller](usage-full-controller.md) does the scheduling and the running itself. This page says where each thing you used in IU went. It does not import a YAML configuration (that may come, if people ask for it): you rebuild it in the panel, which is usually quicker than it sounds.
+The [full controller](usage-full-controller.md) does the scheduling and the running itself. This page says where each thing you used in IU went. It can also bring your configuration over for you: see [Importing your configuration](#importing-your-configuration).
 
 ## The words
 
@@ -46,12 +46,23 @@ The [full controller](usage-full-controller.md) does the scheduling and the runn
 - **The default duration is the one Smart Irrigation calculated**, not a number you type.
 - **Nothing is configured in YAML.** It is all in the panel, and a restart goes on with the steps still to do instead of dropping a run that was under way.
 
+## Importing your configuration
+
+In **Settings, General**, the card **Import from Irrigation Unlimited** opens a wizard that reads your IU configuration and turns it into zones, programs, their schedules and supplies. It takes the configuration from where IU has it: your YAML (`configuration.yaml` and its includes, as Home Assistant loaded it), IU's own settings when it was set up in the interface, or YAML you paste. Pasted YAML is read as text: `!include`, `!secret` and `!env_var` are not followed, and the report says so.
+
+Nothing is changed before you have seen it all:
+
+1. **Zones**: each IU zone is matched to one of your zones (by the one you choose, then by its valve, the blueprint that feeds it, or its name) or created. A zone you already have keeps its settings and only gets the fields it had empty.
+2. **Programs and supplies**: what each IU sequence and controller becomes, step by step. A sequence fed by Smart Irrigation's durations (an adjust-time automation) waters the calculated duration; the others keep IU's fixed times.
+3. **The report**: what was carried over exactly, what was approximated (a cron expression turned into times, for example) and what has no equivalent here.
+
+The schedules of new programs are created **switched off**, so IU keeps watering until you are ready: switch IU's controllers off and these schedules on. Importing again later updates what the earlier import made, in place, and removes what IU no longer has; the wizard asks before it removes anything. Only an administrator can import.
+
 ## Not in Smart Irrigation
 
 - Cron schedules.
 - Several independent controllers, each with its own sequences. Several supplies are possible, and each zone picks its own, but there is one program queue.
 - Overlap of whole programs: only the steps of one program can overlap (negative wait), never two programs.
-- Import of an IU YAML configuration.
 - An adjustable granularity, renaming the entities IU creates, a built-in simulator.
 - IU's `entity_states` choice of which commands a timed valve receives.
 

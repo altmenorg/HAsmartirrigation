@@ -277,6 +277,10 @@
         "setup-assistant": {
           "description": "Høyst fire spørsmål, og den lager en sensorgruppe og en sone for deg og velger det hver av dem trenger. Til en første sone, én til, eller en ny start.",
           "open": "Åpne assistenten"
+        },
+        "iu-import": {
+          "description": "Kommer du fra Irrigation Unlimited? Hent sonene, sekvensene og tidsplanene hit, med en forhåndsvisning av alt først.",
+          "open": "Importer"
         }
       },
       "description": "Denne siden gir globale innstillinger.",
@@ -767,6 +771,138 @@
     },
     "supplies": {
       "title": "Pumper og ventiler"
+    },
+    "iu_import": {
+      "title": "Importer fra Irrigation Unlimited",
+      "description": "Henter over Irrigation Unlimited-konfigurasjonen din: sonene, sekvensene og tidsplanene blir her til soner, programmer og tidsplanene deres. Du ser alt før noe endres, og ingenting vanner før du slår på tidsplanene.",
+      "loading": "Ser etter en Irrigation Unlimited-konfigurasjon…",
+      "step": "Trinn",
+      "back": "Tilbake",
+      "next": "Neste",
+      "import": "Importer",
+      "importing": "Importerer…",
+      "source": {
+        "question": "Hvilken konfigurasjon?",
+        "help": "Smart Irrigation leser konfigurasjonen Home Assistant laster, eller den Irrigation Unlimiteds egne dialoger lagrer. Du kan også lime inn YAML-en.",
+        "yaml-help": "Seksjonen irrigation_unlimited slik Home Assistant laster den, med packages, !include og !secret.",
+        "entry-help": "Det Irrigation Unlimiteds egne dialoger lagrer.",
+        "none-found": "Fant ingen Irrigation Unlimited-konfigurasjon. Hvis Irrigation Unlimited ikke lenger er installert og konfigurasjonen lå i en package, laster ikke Home Assistant den: lim den inn nedenfor.",
+        "paste": "Lim inn YAML",
+        "paste-help": "Seksjonen irrigation_unlimited, eller det som står under den. !include, !secret og !env_var følges ikke her: skriv ut verdiene, eller importer fra configuration.yaml.",
+        "previous": "Importert før {at}. En ny import oppdaterer det den importen laget.",
+        "unreadable": "Home Assistant kunne ikke lese den:"
+      },
+      "zones": {
+        "question": "Hva blir hver sone til?",
+        "help": "En Irrigation Unlimited-sone blir en av sonene dine, eller en ny. En eksisterende sone beholder innstillingene og beregningen sin: bare det som mangler fylles inn.",
+        "none": "Denne konfigurasjonen har ingen soner.",
+        "links": "{count, plural, one {# automatisering for tidsjustering forsyner Irrigation Unlimited fra Smart Irrigation: det trinnet beregnes her.} other {# automatiseringer for tidsjustering forsyner Irrigation Unlimited fra Smart Irrigation: de trinnene beregnes her.}}",
+        "becomes": "Hva {zone} blir til",
+        "new": "En ny sone",
+        "creates": "En ny sone opprettes, med ventil og pumpe.",
+        "uses": "Blir {zone}: {reason}.",
+        "reason": {
+          "valve": "samme ventil",
+          "blueprint": "en automatisering for tidsjustering forsyner den fra denne sonen",
+          "name": "samme navn",
+          "imported": "laget av den forrige importen",
+          "chosen": "ditt valg"
+        },
+        "fills": "Fylt inn:",
+        "fields": {
+          "linked_entity": "ventil",
+          "supply_id": "pumpe",
+          "extra_entities": "flere ventiler",
+          "confirm_timeout": "venting på bekreftelse (s)",
+          "open_resends": "nye sendinger",
+          "flow_sensor": "volummåler"
+        },
+        "left": "Ikke lenger i Irrigation Unlimited, latt være som de er: {zones}."
+      },
+      "programs": {
+        "question": "Programmene",
+        "help": "Hver sekvens blir et program, og det gjør også en sone med egne tidsplaner. En sekvens der tidsplanene har ulik varighet, blir ett program per varighet.",
+        "none": "Denne konfigurasjonen har ingen tidsplaner å hente over.",
+        "action": {
+          "create": "ny",
+          "update": "oppdatert"
+        },
+        "calculated": "beregnet",
+        "passes": "{count} omganger",
+        "step-off": "av",
+        "no-schedules": "Ingen tidsplan.",
+        "schedules-off": "Tidsplanene er slått av til du slår dem på.",
+        "schedules-stay-on": "Du har slått på tidsplanene: de blir som de er.",
+        "disabled": "Slått av i Irrigation Unlimited, og her også.",
+        "removed": "Ikke lenger i Irrigation Unlimited, fjernet: {programs}."
+      },
+      "supplies": {
+        "title": "Pumper og hovedventiler",
+        "create": "Ny: {name} ({entities}).",
+        "update": "Oppdatert: {name} ({entities}).",
+        "removed": "Ikke lenger i Irrigation Unlimited, fjernet: {supplies}."
+      },
+      "schedule": {
+        "sunrise": "Soloppgang",
+        "sunset": "Solnedgang",
+        "done-by": "ferdig kl. {time}",
+        "every": "hver {count}. dag",
+        "odd": "oddetallsdager",
+        "even": "partallsdager",
+        "days-of-month": "dag {days} i måneden",
+        "last": "siste",
+        "off-in-iu": "av i Irrigation Unlimited"
+      },
+      "report": {
+        "question": "Det som ikke kommer helt likt over",
+        "help": "Hvert alternativ i Irrigation Unlimited har en regel. Her er de som tilnærmes eller utelates; alt annet kommer over som det er.",
+        "all-carried": "Alt kommer over som det er.",
+        "outcome": {
+          "not_carried": "Ikke med",
+          "unknown": "Ukjent for importen",
+          "approximated": "Tilnærmet"
+        },
+        "summary-title": "Hva importen gjør",
+        "summary": {
+          "zones": "Soner: {created} nye, {filled} fylt inn, {used} brukt som de er",
+          "programs": "Programmer: {created} nye, {updated} oppdatert, {removed} fjernet",
+          "supplies": "Pumper og hovedventiler: {created} nye, {updated} oppdatert, {removed} fjernet"
+        },
+        "nothing-waters": "Importen vanner ingenting. Irrigation Unlimited fortsetter å vanne til du slår den av og disse tidsplanene på.",
+        "blocked": "Løs først det som er merket med rødt; til da kan ingenting importeres.",
+        "full-controller-off": "Den fulle kontrolleren er av: programmene importeres, men vanner først når den er på."
+      },
+      "errors": {
+        "generic": "Importen gikk ikke gjennom.",
+        "changed": "Konfigurasjonen eller sonene dine er endret siden denne forhåndsvisningen. Her er hva importen ville gjort nå: se over igjen, og importer så.",
+        "no_source": "Fant ingen Irrigation Unlimited-konfigurasjon. Lim inn YAML-en.",
+        "yaml_unreadable": "Home Assistant kunne ikke lese konfigurasjonen.",
+        "yaml_invalid": "Den innlimte YAML-en kunne ikke leses.",
+        "yaml_missing": "Lim inn YAML-en som skal importeres.",
+        "yaml_not_iu": "Den innlimte YAML-en er ikke en Irrigation Unlimited-konfigurasjon.",
+        "unknown_zone": "Den sonen finnes ikke lenger.",
+        "zone_not_created": "En sone kunne ikke opprettes.",
+        "not_ready": "Smart Irrigation er ikke klar ennå.",
+        "conflicts": "Løs først det som er merket med rødt.",
+        "too_big": "Dette er langt større enn en Irrigation Unlimited-konfigurasjon, så det leses ikke.",
+        "not_finite": "Konfigurasjonen inneholder en uendelig verdi eller en som ikke er et tall (.inf eller .nan), noe Irrigation Unlimited ikke har."
+      },
+      "done": {
+        "title": "Importert.",
+        "zones": "Soner: {created} nye, {updated} fylt inn",
+        "programs": "{count, plural, one {# program} other {# programmer}}",
+        "next": "Tidsplanene til nye programmer er slått av, så det er fortsatt Irrigation Unlimited som vanner. Når du er klar, slår du av kontrollerne i Irrigation Unlimited og disse tidsplanene på, på siden Programmer.",
+        "open-programs": "Åpne programmene",
+        "next-off": "Den fulle kontrolleren er av, så disse programmene vanner ikke ennå, og Irrigation Unlimited fortsetter å vanne. Slå på den fulle kontrolleren i innstillingene, og slå deretter av Irrigation Unlimited og disse tidsplanene på.",
+        "open-settings": "Åpne innstillingene"
+      },
+      "conflicts": {
+        "zone_twice": "{zone} og {other} ville begge blitt {target}. Velg en annen sone for en av dem.",
+        "calculated_needs_zone": "{zone} beregnes i dag av Smart Irrigation, fra sonen en automatisering for tidsjustering forsyner den fra. Velg den sonen eller en annen eksisterende.",
+        "program_exists": "Et program «{name}» ({id}) står i veien: ingen import har laget det. Gi det nytt navn eller slett det først, under Vanning, Programmer (med den fulle kontrolleren på).",
+        "supply_exists": "En pumpe «{name}» ({id}) står i veien: ingen import har laget den. Gi den nytt navn eller slett den først, under Vanning, Pumper og ventiler (med den fulle kontrolleren på)."
+      },
+      "confirm_remove": "Denne importen sletter det en tidligere import laget og som Irrigation Unlimited ikke lenger har: {names}. Fortsette?"
     }
   },
   "title": "Smart Irrigation",

@@ -277,6 +277,10 @@
         "setup-assistant": {
           "description": "Enintään neljä kysymystä, ja se luo puolestasi anturiryhmän ja alueen valiten sen, mitä kumpikin tarvitsee. Ensimmäiselle alueelle, toiselle, tai puhtaalta pöydältä aloittamiseen.",
           "open": "Avaa avustaja"
+        },
+        "iu-import": {
+          "description": "Siirrytkö Irrigation Unlimitedistä? Tuo sen alueet, sekvenssit ja aikataulut tänne, ja näe esikatselu kaikesta ensin.",
+          "open": "Tuo"
         }
       },
       "description": "Tämä sivu tarjoaa yleiset asetukset.",
@@ -767,6 +771,138 @@
     },
     "supplies": {
       "title": "Pumput ja venttiilit"
+    },
+    "iu_import": {
+      "title": "Tuo Irrigation Unlimitedistä",
+      "description": "Tuo Irrigation Unlimited -määrityksesi: sen alueista, sekvensseistä ja aikatauluista tulee täällä alueita, ohjelmia ja niiden aikatauluja. Näet kaiken ennen kuin mitään muutetaan, eikä mikään kastele ennen kuin otat aikataulut käyttöön.",
+      "loading": "Etsitään Irrigation Unlimited -määritystä…",
+      "step": "Vaihe",
+      "back": "Takaisin",
+      "next": "Seuraava",
+      "import": "Tuo",
+      "importing": "Tuodaan…",
+      "source": {
+        "question": "Mikä määritys?",
+        "help": "Smart Irrigation lukee määrityksen, jonka Home Assistant lataa, tai sen, jonka Irrigation Unlimitedin omat valintaikkunat tallentavat. Voit myös liittää sen YAML:n.",
+        "yaml-help": "Home Assistantin lataama irrigation_unlimited-osio, packageineen, !include- ja !secret-viittauksineen.",
+        "entry-help": "Se, minkä Irrigation Unlimitedin omat valintaikkunat tallentavat.",
+        "none-found": "Irrigation Unlimited -määritystä ei löytynyt. Jos Irrigation Unlimited ei ole enää asennettuna ja sen määritys oli packagessa, Home Assistant ei lataa sitä: liitä se alle.",
+        "paste": "Liitä YAML",
+        "paste-help": "irrigation_unlimited-osio tai sen sisältö. !include-, !secret- ja !env_var-viittauksia ei seurata tässä: kirjoita arvot auki tai tuo tiedostosta configuration.yaml.",
+        "previous": "Tuotu aiemmin {at}. Uusi tuonti päivittää sen, mitä se tuonti loi.",
+        "unreadable": "Home Assistant ei voinut lukea sitä:"
+      },
+      "zones": {
+        "question": "Mitä kustakin alueesta tulee?",
+        "help": "Irrigation Unlimited -alueesta tulee yksi alueistasi tai uusi alue. Olemassa oleva alue säilyttää asetuksensa ja laskentansa: vain puuttuvat tiedot täydennetään.",
+        "none": "Tässä määrityksessä ei ole alueita.",
+        "links": "{count, plural, one {# ajan säätöautomaatio syöttää Irrigation Unlimitedia Smart Irrigationista: se vaihe lasketaan täällä.} other {# ajan säätöautomaatiota syöttää Irrigation Unlimitedia Smart Irrigationista: ne vaiheet lasketaan täällä.}}",
+        "becomes": "Mitä alueesta {zone} tulee",
+        "new": "Uusi alue",
+        "creates": "Luodaan uusi alue venttiileineen ja pumppuineen.",
+        "uses": "Siitä tulee {zone}: {reason}.",
+        "reason": {
+          "valve": "sama venttiili",
+          "blueprint": "ajan säätöautomaatio syöttää sitä tältä alueelta",
+          "name": "sama nimi",
+          "imported": "aiemman tuonnin luoma",
+          "chosen": "oma valintasi"
+        },
+        "fills": "Täydennetty:",
+        "fields": {
+          "linked_entity": "venttiili",
+          "supply_id": "pumppu",
+          "extra_entities": "lisää venttiilejä",
+          "confirm_timeout": "vahvistuksen odotus (s)",
+          "open_resends": "uudelleenlähetykset",
+          "flow_sensor": "tilavuusmittari"
+        },
+        "left": "Eivät ole enää Irrigation Unlimitedissä, jätetään ennalleen: {zones}."
+      },
+      "programs": {
+        "question": "Ohjelmat",
+        "help": "Jokaisesta sekvenssistä tulee ohjelma, samoin alueesta, jolla on omia aikatauluja. Sekvenssistä, jonka aikatauluilla on eri kestot, tulee yksi ohjelma kestoa kohden.",
+        "none": "Tässä määrityksessä ei ole tuotavia aikatauluja.",
+        "action": {
+          "create": "uusi",
+          "update": "päivitetty"
+        },
+        "calculated": "laskettu",
+        "passes": "{count} erää",
+        "step-off": "pois",
+        "no-schedules": "Ei aikataulua.",
+        "schedules-off": "Sen aikataulut ovat pois päältä, kunnes otat ne käyttöön.",
+        "schedules-stay-on": "Otit sen aikataulut käyttöön: ne pysyvät ennallaan.",
+        "disabled": "Pois päältä Irrigation Unlimitedissä, ja täälläkin.",
+        "removed": "Eivät ole enää Irrigation Unlimitedissä, poistettu: {programs}."
+      },
+      "supplies": {
+        "title": "Pumput ja pääventtiilit",
+        "create": "Uusi: {name} ({entities}).",
+        "update": "Päivitetty: {name} ({entities}).",
+        "removed": "Eivät ole enää Irrigation Unlimitedissä, poistettu: {supplies}."
+      },
+      "schedule": {
+        "sunrise": "Auringonnousu",
+        "sunset": "Auringonlasku",
+        "done-by": "valmis klo {time}",
+        "every": "{count} päivän välein",
+        "odd": "parittomat päivät",
+        "even": "parilliset päivät",
+        "days-of-month": "kuukauden päivä {days}",
+        "last": "viimeinen",
+        "off-in-iu": "pois päältä Irrigation Unlimitedissä"
+      },
+      "report": {
+        "question": "Mikä ei siirry täsmälleen",
+        "help": "Jokaisella Irrigation Unlimitedin asetuksella on sääntö. Tässä ovat ne, jotka siirtyvät likimääräisinä tai jätetään pois; kaikki muu siirtyy sellaisenaan.",
+        "all-carried": "Kaikki siirtyy sellaisenaan.",
+        "outcome": {
+          "not_carried": "Ei siirry",
+          "unknown": "Tuonnille tuntematon",
+          "approximated": "Likimääräinen"
+        },
+        "summary-title": "Mitä tuonti tekee",
+        "summary": {
+          "zones": "Alueet: {created} uutta, {filled} täydennetty, {used} käytetty sellaisenaan",
+          "programs": "Ohjelmat: {created} uutta, {updated} päivitetty, {removed} poistettu",
+          "supplies": "Pumput ja pääventtiilit: {created} uutta, {updated} päivitetty, {removed} poistettu"
+        },
+        "nothing-waters": "Tuonti ei kastele mitään. Irrigation Unlimited jatkaa kastelua, kunnes poistat sen käytöstä ja otat nämä aikataulut käyttöön.",
+        "blocked": "Ratkaise ensin punaisella merkityt kohdat; siihen asti mitään ei voi tuoda.",
+        "full-controller-off": "Täysi ohjain on pois päältä: ohjelmat tuodaan, mutta ne kastelevat vasta, kun se on päällä."
+      },
+      "errors": {
+        "generic": "Tuonti ei onnistunut.",
+        "changed": "Määritys tai alueesi ovat muuttuneet tämän esikatselun jälkeen. Tässä on, mitä tuonti tekisi nyt: katso uudelleen ja tuo sitten.",
+        "no_source": "Irrigation Unlimited -määritystä ei löytynyt. Liitä sen YAML.",
+        "yaml_unreadable": "Home Assistant ei voinut lukea sen määritystä.",
+        "yaml_invalid": "Liitettyä YAML:ää ei voitu lukea.",
+        "yaml_missing": "Liitä tuotava YAML.",
+        "yaml_not_iu": "Liitetty YAML ei ole Irrigation Unlimited -määritys.",
+        "unknown_zone": "Sitä aluetta ei ole enää.",
+        "zone_not_created": "Aluetta ei voitu luoda.",
+        "not_ready": "Smart Irrigation ei ole vielä valmis.",
+        "conflicts": "Ratkaise ensin punaisella merkityt kohdat.",
+        "too_big": "Tämä on paljon suurempi kuin Irrigation Unlimited -määritys, joten sitä ei lueta.",
+        "not_finite": "Määrityksessä on ääretön arvo tai arvo, joka ei ole luku (.inf tai .nan), eikä Irrigation Unlimitedissä ole sellaisia."
+      },
+      "done": {
+        "title": "Tuotu.",
+        "zones": "Alueet: {created} uutta, {updated} täydennetty",
+        "programs": "{count, plural, one {# ohjelma} other {# ohjelmaa}}",
+        "next": "Uusien ohjelmien aikataulut ovat pois päältä, joten Irrigation Unlimited kastelee yhä. Kun olet valmis, poista Irrigation Unlimitedin ohjaimet käytöstä ja ota nämä aikataulut käyttöön Ohjelmat-sivulla.",
+        "open-programs": "Avaa ohjelmat",
+        "next-off": "Täysi ohjain on pois päältä, joten nämä ohjelmat eivät vielä kastele ja Irrigation Unlimited jatkaa kastelua. Ota täysi ohjain käyttöön asetuksissa, poista sitten Irrigation Unlimited käytöstä ja ota nämä aikataulut käyttöön.",
+        "open-settings": "Avaa asetukset"
+      },
+      "conflicts": {
+        "zone_twice": "Sekä {zone} että {other} muuttuisivat alueeksi {target}. Valitse toiselle niistä eri alue.",
+        "calculated_needs_zone": "Smart Irrigation laskee nyt alueen {zone} siitä alueesta, jolta ajan säätöautomaatio sitä syöttää. Valitse se alue tai jokin muu olemassa oleva.",
+        "program_exists": "Ohjelma ”{name}” ({id}) on tiellä: mikään tuonti ei luonut sitä. Nimeä se uudelleen tai poista se ensin kohdassa Kastelu, Ohjelmat (täysi ohjain päällä).",
+        "supply_exists": "Pumppu ”{name}” ({id}) on tiellä: mikään tuonti ei luonut sitä. Nimeä se uudelleen tai poista se ensin kohdassa Kastelu, Pumput ja venttiilit (täysi ohjain päällä)."
+      },
+      "confirm_remove": "Tämä tuonti poistaa sen, minkä aiempi tuonti loi ja mitä Irrigation Unlimitedissä ei enää ole: {names}. Jatketaanko?"
     }
   },
   "title": "Smart Irrigation",

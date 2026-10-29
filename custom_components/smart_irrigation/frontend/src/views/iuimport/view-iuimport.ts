@@ -19,6 +19,7 @@ import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
 import { exportPath } from "../../common/navigation";
 import { navigate } from "../../helpers";
+import { askConfirmation } from "../../dialogs/confirmation-dialog";
 import {
   automaticMatch,
   baselineOf,
@@ -208,6 +209,22 @@ export class SmartIrrigationViewIuImport extends LitElement {
 
   private async apply(): Promise<void> {
     if (!this.hass || !this.preview || this.busy) return;
+    // What an earlier import made and IU no longer has is deleted: said once
+    // more, in a dialog, since the review step may have been scrolled past.
+    const removed = [
+      ...(this.preview.removed_names?.programs ??
+        this.preview.removed.programs),
+      ...(this.preview.removed_names?.supplies ??
+        this.preview.removed.supplies),
+    ];
+    if (
+      removed.length &&
+      !(await askConfirmation(this.hass, {
+        text: this.t("confirm_remove", "{names}", removed.join(", ")),
+        destructive: true,
+      }))
+    )
+      return;
     this.busy = true;
     this.error = undefined;
     this.notice = undefined;

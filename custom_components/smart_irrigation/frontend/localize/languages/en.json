@@ -884,7 +884,8 @@
         "zone_not_created": "A zone could not be created.",
         "not_ready": "Smart Irrigation is not ready yet.",
         "conflicts": "Resolve what is marked in red first.",
-        "too_big": "This is far larger than an Irrigation Unlimited configuration, so it is not read."
+        "too_big": "This is far larger than an Irrigation Unlimited configuration, so it is not read.",
+        "not_finite": "The configuration holds an infinite value or one that is not a number (.inf or .nan), which Irrigation Unlimited does not have."
       },
       "done": {
         "title": "Imported.",
@@ -898,9 +899,10 @@
       "conflicts": {
         "zone_twice": "{zone} and {other} would both become {target}. Choose another zone for one of them.",
         "calculated_needs_zone": "{zone} is calculated by Smart Irrigation today, from the zone an adjust-time automation feeds it from. Choose that zone or another existing one.",
-        "program_exists": "A program \"{name}\" ({id}) is in the way: no import made it. Rename or delete it on the Programs page first.",
-        "supply_exists": "A pump \"{name}\" ({id}) is in the way: no import made it. Rename or delete it on the Pumps and valves page first."
-      }
+        "program_exists": "A program \"{name}\" ({id}) is in the way: no import made it. Rename or delete it first, in Watering, Programs (with the full controller on).",
+        "supply_exists": "A pump \"{name}\" ({id}) is in the way: no import made it. Rename or delete it first, in Watering, Pumps and valves (with the full controller on)."
+      },
+      "confirm_remove": "This import deletes what an earlier import made and Irrigation Unlimited no longer has: {names}. Go ahead?"
     }
   },
   "title": "Smart Irrigation",

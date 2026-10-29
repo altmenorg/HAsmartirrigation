@@ -277,6 +277,10 @@
         "setup-assistant": {
           "description": "Najviac štyri otázky a vytvorí za vás skupinu senzorov a zónu a vyberie, čo každá z nich potrebuje. Pre prvú zónu, ďalšiu, alebo pre nový začiatok.",
           "open": "Otvoriť asistenta"
+        },
+        "iu-import": {
+          "description": "Prechádzate z Irrigation Unlimited? Prevezmite sem jeho zóny, sekvencie a rozvrhy, najprv s náhľadom všetkého.",
+          "open": "Importovať"
         }
       },
       "description": "Táto stránka poskytuje globálne nastavenia.",
@@ -767,6 +771,138 @@
     },
     "supplies": {
       "title": "Čerpadlá a ventily"
+    },
+    "iu_import": {
+      "title": "Import z Irrigation Unlimited",
+      "description": "Prevezme vašu konfiguráciu Irrigation Unlimited: z jeho zón, sekvencií a rozvrhov sa tu stanú zóny, programy a ich rozvrhy. Všetko uvidíte skôr, než sa čokoľvek zmení, a nič nezavlažuje, kým rozvrhy nezapnete.",
+      "loading": "Hľadá sa konfigurácia Irrigation Unlimited…",
+      "step": "Krok",
+      "back": "Späť",
+      "next": "Ďalej",
+      "import": "Importovať",
+      "importing": "Importuje sa…",
+      "source": {
+        "question": "Ktorá konfigurácia?",
+        "help": "Smart Irrigation číta konfiguráciu, ktorú načítava Home Assistant, alebo tú, ktorú si ukladajú vlastné dialógy Irrigation Unlimited. Môžete tiež vložiť jeho YAML.",
+        "yaml-help": "Sekcia irrigation_unlimited, ako ju načítava Home Assistant, vrátane packages, !include a !secret.",
+        "entry-help": "To, čo si ukladajú vlastné dialógy Irrigation Unlimited.",
+        "none-found": "Nenašla sa žiadna konfigurácia Irrigation Unlimited. Ak Irrigation Unlimited už nie je nainštalovaný a jeho konfigurácia bola v package, Home Assistant ju nenačíta: vložte ju nižšie.",
+        "paste": "Vložiť YAML",
+        "paste-help": "Sekcia irrigation_unlimited, alebo to, čo je pod ňou. !include, !secret a !env_var sa tu nesledujú: vypíšte tieto hodnoty, alebo importujte z configuration.yaml.",
+        "previous": "Už importované {at}. Nový import aktualizuje to, čo vytvoril tento import.",
+        "unreadable": "Home Assistant ju nedokázal prečítať:"
+      },
+      "zones": {
+        "question": "Čo sa stane s každou zónou?",
+        "help": "Zo zóny Irrigation Unlimited sa stane jedna z vašich zón, alebo nová zóna. Existujúca zóna si ponechá svoje nastavenia aj výpočet: doplní sa len to, čo jej chýba.",
+        "none": "Táto konfigurácia nemá žiadne zóny.",
+        "links": "{count, plural, one {# automatizácia úpravy času napája Irrigation Unlimited zo Smart Irrigation: tento krok sa počíta tu.} few {# automatizácie úpravy času napájajú Irrigation Unlimited zo Smart Irrigation: tieto kroky sa počítajú tu.} other {# automatizácií úpravy času napája Irrigation Unlimited zo Smart Irrigation: tieto kroky sa počítajú tu.}}",
+        "becomes": "Čím sa stane {zone}",
+        "new": "Nová zóna",
+        "creates": "Vytvorí sa nová zóna s ventilom a čerpadlom.",
+        "uses": "Stane sa z nej {zone}: {reason}.",
+        "reason": {
+          "valve": "rovnaký ventil",
+          "blueprint": "automatizácia úpravy času ju napája z tejto zóny",
+          "name": "rovnaký názov",
+          "imported": "vytvorené predchádzajúcim importom",
+          "chosen": "vaša voľba"
+        },
+        "fills": "Doplnené:",
+        "fields": {
+          "linked_entity": "ventil",
+          "supply_id": "čerpadlo",
+          "extra_entities": "ďalšie ventily",
+          "confirm_timeout": "čakanie na potvrdenie (s)",
+          "open_resends": "opakované odoslania",
+          "flow_sensor": "merač objemu"
+        },
+        "left": "Už nie sú v Irrigation Unlimited, ponechané bez zmeny: {zones}."
+      },
+      "programs": {
+        "question": "Programy",
+        "help": "Z každej sekvencie sa stane program, rovnako ako zo zóny s vlastnými rozvrhmi. Sekvencia, ktorej rozvrhy majú rôzne trvanie, sa stane jedným programom pre každé trvanie.",
+        "none": "Táto konfigurácia nemá žiadne rozvrhy na prevzatie.",
+        "action": {
+          "create": "nový",
+          "update": "aktualizované"
+        },
+        "calculated": "vypočítané",
+        "passes": "dávky: {count}",
+        "step-off": "vypnuté",
+        "no-schedules": "Žiadny rozvrh.",
+        "schedules-off": "Jeho rozvrhy zostanú vypnuté, kým ich nezapnete.",
+        "schedules-stay-on": "Jeho rozvrhy ste zapli: zostanú tak, ako sú.",
+        "disabled": "Vypnuté v Irrigation Unlimited, a tu tiež.",
+        "removed": "Už nie sú v Irrigation Unlimited, odstránené: {programs}."
+      },
+      "supplies": {
+        "title": "Čerpadlá a hlavné ventily",
+        "create": "Nové: {name} ({entities}).",
+        "update": "Aktualizované: {name} ({entities}).",
+        "removed": "Už nie sú v Irrigation Unlimited, odstránené: {supplies}."
+      },
+      "schedule": {
+        "sunrise": "Východ slnka",
+        "sunset": "Západ slnka",
+        "done-by": "hotovo do {time}",
+        "every": "každých {count} dní",
+        "odd": "nepárne dni",
+        "even": "párne dni",
+        "days-of-month": "{days}. deň v mesiaci",
+        "last": "posledný",
+        "off-in-iu": "vypnuté v Irrigation Unlimited"
+      },
+      "report": {
+        "question": "Čo sa neprevezme presne",
+        "help": "Každá voľba Irrigation Unlimited má svoje pravidlo. Toto sú tie, ktoré sa prevezmú približne alebo sa vynechajú; všetko ostatné sa prevezme tak, ako je.",
+        "all-carried": "Všetko sa prevezme tak, ako je.",
+        "outcome": {
+          "not_carried": "Neprevzaté",
+          "unknown": "Importu neznáme",
+          "approximated": "Približne"
+        },
+        "summary-title": "Čo import urobí",
+        "summary": {
+          "zones": "Zóny: nové {created}, doplnené {filled}, použité bez zmeny {used}",
+          "programs": "Programy: nové {created}, aktualizované {updated}, odstránené {removed}",
+          "supplies": "Čerpadlá a hlavné ventily: nové {created}, aktualizované {updated}, odstránené {removed}"
+        },
+        "nothing-waters": "Import nič nezalieva. Irrigation Unlimited zalieva ďalej, kým ho nevypnete a nezapnete tieto rozvrhy.",
+        "blocked": "Najprv vyriešte to, čo je označené červenou; dovtedy nemožno nič importovať.",
+        "full-controller-off": "Plný ovládač je vypnutý: programy sa naimportujú, ale zalievať budú až po jeho zapnutí."
+      },
+      "errors": {
+        "generic": "Import sa nepodaril.",
+        "changed": "Konfigurácia alebo vaše zóny sa od tohto náhľadu zmenili. Toto by import urobil teraz: prejdite si to znova a potom importujte.",
+        "no_source": "Nenašla sa žiadna konfigurácia Irrigation Unlimited. Vložte jeho YAML.",
+        "yaml_unreadable": "Home Assistant nedokázal prečítať jeho konfiguráciu.",
+        "yaml_invalid": "Vložený YAML sa nepodarilo prečítať.",
+        "yaml_missing": "Vložte YAML, ktorý chcete importovať.",
+        "yaml_not_iu": "Vložený YAML nie je konfigurácia Irrigation Unlimited.",
+        "unknown_zone": "Táto zóna už neexistuje.",
+        "zone_not_created": "Zónu sa nepodarilo vytvoriť.",
+        "not_ready": "Smart Irrigation ešte nie je pripravený.",
+        "conflicts": "Najprv vyriešte to, čo je označené červenou.",
+        "too_big": "Toto je oveľa väčšie než konfigurácia Irrigation Unlimited, preto sa to nečíta.",
+        "not_finite": "Konfigurácia obsahuje nekonečnú hodnotu alebo hodnotu, ktorá nie je číslo (.inf alebo .nan), čo Irrigation Unlimited nemá."
+      },
+      "done": {
+        "title": "Importované.",
+        "zones": "Zóny: nové {created}, doplnené {updated}",
+        "programs": "{count, plural, one {# program} few {# programy} other {# programov}}",
+        "next": "Rozvrhy nových programov sú vypnuté, takže zalieva stále Irrigation Unlimited. Keď budete pripravení, vypnite ovládače Irrigation Unlimited a zapnite tieto rozvrhy na stránke Programy.",
+        "open-programs": "Otvoriť programy",
+        "next-off": "Plný ovládač je vypnutý, takže tieto programy zatiaľ nezalievajú a Irrigation Unlimited zalieva ďalej. Zapnite plný ovládač v nastaveniach, potom vypnite Irrigation Unlimited a zapnite tieto rozvrhy.",
+        "open-settings": "Otvoriť nastavenia"
+      },
+      "conflicts": {
+        "zone_twice": "Z {zone} aj {other} by sa stala {target}. Vyberte pre jednu z nich inú zónu.",
+        "calculated_needs_zone": "{zone} dnes počíta Smart Irrigation, zo zóny, z ktorej ju napája automatizácia úpravy času. Vyberte túto zónu alebo inú existujúcu.",
+        "program_exists": "Program „{name}“ ({id}) prekáža: nevytvoril ho žiadny import. Najprv ho premenujte alebo odstráňte v Zavlažovanie, Programy (so zapnutým plným ovládačom).",
+        "supply_exists": "Čerpadlo „{name}“ ({id}) prekáža: nevytvoril ho žiadny import. Najprv ho premenujte alebo odstráňte v Zavlažovanie, Čerpadlá a ventily (so zapnutým plným ovládačom)."
+      },
+      "confirm_remove": "Tento import odstráni to, čo vytvoril skorší import a čo Irrigation Unlimited už nemá: {names}. Pokračovať?"
     }
   },
   "title": "Inteligentné zavlažovanie",

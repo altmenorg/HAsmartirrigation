@@ -884,7 +884,8 @@
         "zone_not_created": "Eine Zone konnte nicht angelegt werden.",
         "not_ready": "Smart Irrigation ist noch nicht bereit.",
         "conflicts": "Löse zuerst, was rot markiert ist.",
-        "too_big": "Das ist weit größer als eine Konfiguration von Irrigation Unlimited und wird deshalb nicht gelesen."
+        "too_big": "Das ist weit größer als eine Konfiguration von Irrigation Unlimited und wird deshalb nicht gelesen.",
+        "not_finite": "Die Konfiguration enthält einen unendlichen Wert oder keine Zahl (.inf oder .nan), was es bei Irrigation Unlimited nicht gibt."
       },
       "done": {
         "title": "Übernommen.",
@@ -898,9 +899,10 @@
       "conflicts": {
         "zone_twice": "{zone} und {other} würden beide zu {target}. Wähle für eine der beiden eine andere Zone.",
         "calculated_needs_zone": "{zone} wird heute von Smart Irrigation berechnet, aus der Zone, aus der eine Automatisierung zur Laufzeitanpassung sie versorgt. Wähle diese oder eine andere bestehende Zone.",
-        "program_exists": "Ein Programm „{name}“ ({id}) ist im Weg: Keine Übernahme hat es angelegt. Benenne es zuerst auf der Seite Programme um oder lösche es.",
-        "supply_exists": "Eine Pumpe „{name}“ ({id}) ist im Weg: Keine Übernahme hat sie angelegt. Benenne sie zuerst auf der Seite „Pumpen und Ventile“ um oder lösche sie."
-      }
+        "program_exists": "Ein Programm „{name}“ ({id}) ist im Weg: Keine Übernahme hat es angelegt. Benenne es zuerst unter Bewässerung, Programme um oder lösche es (mit eingeschaltetem vollständigem Controller).",
+        "supply_exists": "Eine Pumpe „{name}“ ({id}) ist im Weg: Keine Übernahme hat sie angelegt. Benenne sie zuerst unter Bewässerung, „Pumpen und Ventile“ um oder lösche sie (mit eingeschaltetem vollständigem Controller)."
+      },
+      "confirm_remove": "Diese Übernahme löscht, was eine frühere Übernahme angelegt hat und Irrigation Unlimited nicht mehr hat: {names}. Fortfahren?"
     }
   },
   "title": "Smart Irrigation",
