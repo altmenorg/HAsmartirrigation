@@ -54,8 +54,9 @@ from .iu_import import (
     Link,
     as_list,
     plan_import,
+    whole_number,
 )
-from .programs import DURATION_CALCULATED, MAIN_PROGRAM_ID, _unique_id
+from .programs import DURATION_CALCULATED, MAIN_PROGRAM_ID, unique_id
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -294,23 +295,6 @@ async def async_preview(
 # --- the blueprints that already feed IU -------------------------------------
 
 
-def _number(value) -> int | None:
-    try:
-        number = int(float(value))
-    except (TypeError, ValueError):
-        return None
-    return number if number > 0 else None
-
-
-def _zone_number(value) -> int | None:
-    """A zone id: zones are numbered from 0."""
-    try:
-        number = int(value)
-    except (TypeError, ValueError):
-        return None
-    return number if number >= 0 and str(number) == str(value).strip() else None
-
-
 def _registry_unique_id(registry, entity_id, platform: str) -> str | None:
     if not isinstance(entity_id, str):
         return None
@@ -322,34 +306,34 @@ def _registry_unique_id(registry, entity_id, platform: str) -> str | None:
 
 def _si_zone_id(registry, entity_id) -> int | None:
     """The zone of a Smart Irrigation duration sensor."""
-    unique_id = _registry_unique_id(registry, entity_id, const.DOMAIN)
+    uid = _registry_unique_id(registry, entity_id, const.DOMAIN)
     prefix, suffix = const.DOMAIN + "_", "_duration"
-    if not unique_id or not unique_id.startswith(prefix):
+    if not uid or not uid.startswith(prefix):
         return None
-    if not unique_id.endswith(suffix):
+    if not uid.endswith(suffix):
         return None
-    return _zone_number(unique_id[len(prefix) : -len(suffix)])
+    return whole_number(uid[len(prefix) : -len(suffix)])
 
 
 def _iu_key(registry, entity_id, kind: str) -> str | None:
     """IU's ``c1_z2`` (``kind`` "z"), ``c1_s2`` ("s") or ``c1`` ("m") of one of
     its entities."""
-    unique_id = _registry_unique_id(registry, entity_id, DOMAIN_IU)
-    if unique_id is None and isinstance(entity_id, str):
+    uid = _registry_unique_id(registry, entity_id, DOMAIN_IU)
+    if uid is None and isinstance(entity_id, str):
         # IU names its entities after their unique ids; a registry without the
         # entity (IU removed) still leaves the name.
         prefix = "binary_sensor." + DOMAIN_IU + "_"
         if entity_id.startswith(prefix):
-            unique_id = entity_id[len(prefix) :]
-    if not unique_id:
+            uid = entity_id[len(prefix) :]
+    if not uid:
         return None
-    controller, _, rest = unique_id.partition("_")
-    if not controller.startswith("c") or _number(controller[1:]) is None:
+    controller, _, rest = uid.partition("_")
+    if not controller.startswith("c") or not whole_number(controller[1:]):
         return None
     if kind == "m":
         return controller if rest == "m" else None
-    if rest.startswith(kind) and _number(rest[1:]) is not None:
-        return unique_id
+    if rest.startswith(kind) and whole_number(rest[1:]):
+        return uid
     return None
 
 
@@ -432,7 +416,7 @@ def links_from_automations(hass: HomeAssistant) -> list:
             positions = [
                 n
                 for n in (
-                    _number(p) for p in as_list(data.get("zones")) if p is not None
+                    whole_number(p) for p in as_list(data.get("zones")) if p is not None
                 )
                 if n
             ]
@@ -443,7 +427,7 @@ def links_from_automations(hass: HomeAssistant) -> list:
                 sequence = _iu_key(registry, entity_id, "s")
                 if sequence is None:
                     controller = _iu_key(registry, entity_id, "m")
-                    number = _number(data.get("sequence_id"))
+                    number = whole_number(data.get("sequence_id"))
                     if controller and number:
                         sequence = f"{controller}_s{number}"
                 for position in positions if sequence else []:
@@ -503,7 +487,7 @@ def _recorded_zone(recorded, planned: dict, existing: dict) -> int | None:
         same = recorded.get("valve") == now["valve"]
     else:
         same = not recorded.get("valve") and recorded.get("name") == now["name"]
-    zone_id = _zone_number(recorded.get("zone"))
+    zone_id = whole_number(recorded.get("zone"))
     zone = existing.get(zone_id)
     if not same or zone is None or "si_name" not in recorded:
         return None
@@ -588,8 +572,8 @@ def plan(
             chosen = matches[key]
             if chosen == NEW_ZONE:
                 zone_id, reason = None, "chosen"
-            elif _zone_number(chosen) in existing:
-                zone_id, reason = _zone_number(chosen), "chosen"
+            elif whole_number(chosen) in existing:
+                zone_id, reason = whole_number(chosen), "chosen"
             else:
                 raise IUImportError("unknown_zone", f"There is no zone {chosen!r}.")
         wanted[key] = (zone_id, reason)
@@ -766,7 +750,7 @@ def plan(
     for program in raw_programs:
         program = {
             **program,
-            const.PROGRAM_ID: _unique_id(
+            const.PROGRAM_ID: unique_id(
                 program[const.PROGRAM_ID], "iu_program", used_ids
             ),
         }
@@ -836,7 +820,7 @@ def plan(
             zone_id
             for recorded in previous_zones.values()
             if isinstance(recorded, dict)
-            for zone_id in [_zone_number(recorded.get("zone"))]
+            for zone_id in [whole_number(recorded.get("zone"))]
             if zone_id in existing and zone_id not in used
         }
     )

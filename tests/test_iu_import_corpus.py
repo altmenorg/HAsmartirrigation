@@ -5,6 +5,10 @@ licence). Each one is imported; every option it uses must have a rule. Where a
 configuration carries IU's expected on/off times, the full controller's plan for
 the imported configuration must switch the same, to within IU's time step, or
 the configuration is listed in ``DEVIATIONS`` with the reason.
+
+The switching is the controller's own: the programs run through
+``async_run_program`` and the valve and supply runners on a virtual clock
+(``iu_runner``), not through a model of them.
 """
 
 from pathlib import Path
@@ -13,7 +17,8 @@ import pytest
 
 from custom_components.smart_irrigation.iu_import import UNKNOWN, plan_import
 
-from .iu_timeline import expected, load, location, moment_of, same, simulate
+from .iu_corpus import expected, load, location, moment_of, same
+from .iu_runner import simulate
 
 FIXTURES = Path(__file__).parent / "fixtures" / "irrigation_unlimited"
 CONFIGS = sorted(FIXTURES.glob("*.yaml"))
@@ -31,7 +36,6 @@ DEVIATIONS = {
     "test_autoplay.yaml": OVERLAP,
     "test_check_back.yaml": SERVICES,
     "test_constraints.yaml": "IU's threshold is not carried over",
-    "test_cron.yaml": OVERLAP,
     "test_edge_case_2.yaml": SERVICES,
     "test_entity.yaml": OVERLAP,
     "test_event.yaml": SERVICES,
@@ -104,13 +108,13 @@ def test_the_imported_plan_switches_as_iu_expected(path):
     tolerance = max(float(iu.get("granularity") or 60), 60.0)
     differing = []
     for window in _windows(iu):
-        timeline = simulate(
+        events = simulate(
             iu,
             homeassistant,
             moment_of(window["start"], tz),
             moment_of(window["end"], tz),
         )
-        if not same(timeline.events, expected(iu, window, tz), tolerance):
+        if not same(events, expected(iu, window, tz), tolerance):
             differing.append(window.get("name"))
     if path.name in DEVIATIONS:
         # Kept honest: a configuration that starts to match comes off the list.
@@ -126,4 +130,41 @@ def test_most_configurations_with_expected_times_match():
     ]
     exact = [p for p in with_times if p.name not in DEVIATIONS]
     assert len(with_times) == 61
-    assert len(exact) == 28
+    assert len(exact) == 29
+
+
+def test_the_timing_check_is_the_runners_own():
+    """A runner that waits longer than it should is caught: the times above
+    come from the runners, not from a model of them."""
+    from unittest.mock import patch
+
+    from custom_components.smart_irrigation import valve_runner
+
+    path = FIXTURES / "timing_schedule_fixed.yaml"
+    data = load(path)
+    iu = data["irrigation_unlimited"]
+    homeassistant = data.get("homeassistant") or {}
+    tz, _sun = location(homeassistant)
+    window = _windows(iu)[0]
+
+    def matches():
+        events = simulate(
+            iu,
+            homeassistant,
+            moment_of(window["start"], tz),
+            moment_of(window["end"], tz),
+        )
+        return same(events, expected(iu, window, tz), 60.0)
+
+    assert matches()
+    wait = valve_runner.ValveRunnerMixin.__dict__["_sleep_or_stop"].__func__
+
+    async def two_minutes_longer(stop, seconds, pause=None):
+        return await wait(stop, seconds + 120, pause)
+
+    with patch.object(
+        valve_runner.ValveRunnerMixin,
+        "_sleep_or_stop",
+        staticmethod(two_minutes_longer),
+    ):
+        assert not matches()
