@@ -55,6 +55,15 @@
       },
       "irrigate_all": {
         "name": "Namakaj vse cone"
+      },
+      "postpone_24h": {
+        "name": "Odloži zalivanje za 24 h"
+      },
+      "postpone_48h": {
+        "name": "Odloži zalivanje za 48 h"
+      },
+      "resume_irrigation": {
+        "name": "Nadaljuj zalivanje"
       }
     },
     "binary_sensor": {
@@ -71,6 +80,11 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Preskoči ob padavinah"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "Zalivanje odloženo do"
       }
     }
   },

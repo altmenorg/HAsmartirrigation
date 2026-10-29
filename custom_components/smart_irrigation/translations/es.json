@@ -55,6 +55,15 @@
       },
       "irrigate_all": {
         "name": "Regar todas las zonas"
+      },
+      "postpone_24h": {
+        "name": "Aplazar el riego 24 h"
+      },
+      "postpone_48h": {
+        "name": "Aplazar el riego 48 h"
+      },
+      "resume_irrigation": {
+        "name": "Reanudar el riego"
       }
     },
     "binary_sensor": {
@@ -71,6 +80,11 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Omitir si hay precipitación"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "Riego aplazado hasta"
       }
     }
   },

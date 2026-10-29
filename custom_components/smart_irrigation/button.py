@@ -12,6 +12,7 @@ Per-zone and hub action entities inspired by JustChr's Smart Irrigation fork
 """
 
 import logging
+from datetime import timedelta
 
 from homeassistant.components.button import DOMAIN as BUTTON_PLATFORM
 from homeassistant.components.button import ButtonEntity
@@ -23,6 +24,7 @@ from homeassistant.helpers.dispatcher import (
 )
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.util import dt as dt_util
 from homeassistant.util import slugify
 
 from . import const
@@ -98,6 +100,9 @@ async def async_setup_entry(
     hub_buttons = [
         SmartIrrigationCalculateAllButton(hass),
         SmartIrrigationUpdateWeatherButton(hass),
+        SmartIrrigationPostponeButton(hass, 24),
+        SmartIrrigationPostponeButton(hass, 48),
+        SmartIrrigationResumeButton(hass),
     ]
     if _direct_valve_control_enabled(hass):
         hub_buttons.append(SmartIrrigationIrrigateAllButton(hass))
@@ -286,6 +291,39 @@ class SmartIrrigationUpdateWeatherButton(SmartIrrigationHubButton):
         coordinator = _coordinator(self._hass)
         if coordinator is not None:
             await coordinator._async_update_all()  # noqa: SLF001
+
+
+class SmartIrrigationPostponeButton(SmartIrrigationHubButton):
+    """Hold watering back for 24 or 48 hours, as the Info page's buttons do."""
+
+    _attr_icon = "mdi:timer-pause-outline"
+
+    def __init__(self, hass: HomeAssistant, hours: int) -> None:
+        """Initialize the button for ``hours`` of postponement."""
+        self.suffix = f"postpone_{hours}h"
+        self._hours = hours
+        super().__init__(hass)
+
+    async def async_press(self) -> None:
+        """Postpone from now, replacing a postponement in force."""
+        coordinator = _coordinator(self._hass)
+        if coordinator is not None:
+            await coordinator.async_postpone_until(
+                dt_util.utcnow() + timedelta(hours=self._hours)
+            )
+
+
+class SmartIrrigationResumeButton(SmartIrrigationHubButton):
+    """Lift a postponement, whatever is left of it."""
+
+    suffix = "resume_irrigation"
+    _attr_icon = "mdi:play-circle-outline"
+
+    async def async_press(self) -> None:
+        """Resume the watering."""
+        coordinator = _coordinator(self._hass)
+        if coordinator is not None:
+            await coordinator.handle_resume_irrigation()
 
 
 class SmartIrrigationIrrigateAllButton(SmartIrrigationHubButton):

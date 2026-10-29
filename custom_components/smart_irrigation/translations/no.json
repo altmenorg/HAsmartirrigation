@@ -55,6 +55,15 @@
       },
       "irrigate_all": {
         "name": "Vann alle soner"
+      },
+      "postpone_24h": {
+        "name": "Utsett vanning 24 t"
+      },
+      "postpone_48h": {
+        "name": "Utsett vanning 48 t"
+      },
+      "resume_irrigation": {
+        "name": "Gjenoppta vanning"
       }
     },
     "binary_sensor": {
@@ -71,6 +80,11 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Hopp over ved nedbør"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "Vanning utsatt til"
       }
     }
   },

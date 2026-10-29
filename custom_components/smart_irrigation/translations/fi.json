@@ -55,6 +55,15 @@
       },
       "irrigate_all": {
         "name": "Kastele kaikki alueet"
+      },
+      "postpone_24h": {
+        "name": "Lykkää kastelua 24 h"
+      },
+      "postpone_48h": {
+        "name": "Lykkää kastelua 48 h"
+      },
+      "resume_irrigation": {
+        "name": "Jatka kastelua"
       }
     },
     "binary_sensor": {
@@ -71,6 +80,11 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Ohita sateella"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "Kastelun lykkäys päättyy"
       }
     }
   },

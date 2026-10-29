@@ -55,6 +55,15 @@
       },
       "irrigate_all": {
         "name": "Regar todas as zonas"
+      },
+      "postpone_24h": {
+        "name": "Adiar a rega 24 h"
+      },
+      "postpone_48h": {
+        "name": "Adiar a rega 48 h"
+      },
+      "resume_irrigation": {
+        "name": "Retomar a rega"
       }
     },
     "binary_sensor": {
@@ -71,6 +80,11 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Ignorar com precipitação"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "Rega adiada até"
       }
     }
   },

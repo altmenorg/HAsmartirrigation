@@ -55,6 +55,15 @@
       },
       "irrigate_all": {
         "name": "Irrigate all zones"
+      },
+      "postpone_24h": {
+        "name": "Postpone watering 24 h"
+      },
+      "postpone_48h": {
+        "name": "Postpone watering 48 h"
+      },
+      "resume_irrigation": {
+        "name": "Resume watering"
       }
     },
     "binary_sensor": {
@@ -71,6 +80,11 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Skip on precipitation"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "Watering postponed until"
       }
     }
   },

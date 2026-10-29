@@ -55,6 +55,15 @@
       },
       "irrigate_all": {
         "name": "Alle zones bewateren"
+      },
+      "postpone_24h": {
+        "name": "Bewatering 24 u uitstellen"
+      },
+      "postpone_48h": {
+        "name": "Bewatering 48 u uitstellen"
+      },
+      "resume_irrigation": {
+        "name": "Bewatering hervatten"
       }
     },
     "binary_sensor": {
@@ -71,6 +80,11 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Overslaan bij neerslag"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "Bewatering uitgesteld tot"
       }
     }
   },

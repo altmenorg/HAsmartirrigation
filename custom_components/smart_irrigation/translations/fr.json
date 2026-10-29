@@ -55,6 +55,15 @@
       },
       "irrigate_all": {
         "name": "Arroser toutes les zones"
+      },
+      "postpone_24h": {
+        "name": "Reporter l'arrosage de 24 h"
+      },
+      "postpone_48h": {
+        "name": "Reporter l'arrosage de 48 h"
+      },
+      "resume_irrigation": {
+        "name": "Reprendre l'arrosage"
       }
     },
     "binary_sensor": {
@@ -71,6 +80,11 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Ignorer en cas de pluie"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "Arrosage reporté jusqu'au"
       }
     }
   },

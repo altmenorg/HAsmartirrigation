@@ -55,6 +55,15 @@
       },
       "irrigate_all": {
         "name": "Vand alle zoner"
+      },
+      "postpone_24h": {
+        "name": "Udsæt vanding 24 t"
+      },
+      "postpone_48h": {
+        "name": "Udsæt vanding 48 t"
+      },
+      "resume_irrigation": {
+        "name": "Genoptag vanding"
       }
     },
     "binary_sensor": {
@@ -71,6 +80,11 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Spring over ved nedbør"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "Vanding udsat til"
       }
     }
   },

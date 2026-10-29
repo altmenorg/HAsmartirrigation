@@ -3,7 +3,8 @@
 import contextlib
 import logging
 import math
-from datetime import datetime, timedelta
+from datetime import datetime as _datetime
+from datetime import timedelta
 
 import homeassistant.util.dt as dt_util
 from homeassistant.components.sensor import DOMAIN as PLATFORM
@@ -101,6 +102,10 @@ from .weathermodules.SolarRadiationFallback import SolarRadiationFallbackClient
 from .websockets import async_register_websockets
 
 _LOGGER = logging.getLogger(__name__)
+
+# "_datetime", not "datetime": the datetime platform is the submodule
+# smart_irrigation.datetime, and importing it rebinds the package's own
+# "datetime" name to that module.
 
 
 def _normalize_api_key(value):
@@ -353,7 +358,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     _LOGGER.info("Calling async_forward_entry_setups")
     await hass.config_entries.async_forward_entry_setups(
-        entry, [PLATFORM, "number", "button", "binary_sensor", "switch"]
+        entry, [PLATFORM, "number", "button", "binary_sensor", "switch", "datetime"]
     )
     _LOGGER.info("Finished calling async_forward_entry_setups")
 
@@ -454,6 +459,7 @@ async def async_unload_entry(hass: HomeAssistant, entry):
             hass.config_entries.async_forward_entry_unload(entry, "button"),
             hass.config_entries.async_forward_entry_unload(entry, "binary_sensor"),
             hass.config_entries.async_forward_entry_unload(entry, "switch"),
+            hass.config_entries.async_forward_entry_unload(entry, "datetime"),
         )
     )
     if not unload_ok:
@@ -1308,7 +1314,7 @@ class SmartIrrigationCoordinator(
         self, event: Event
     ) -> None:  # old signature: entity, old_state, new_state):
         """Handle a sensor state change event."""
-        timestamp = datetime.now()
+        timestamp = _datetime.now()
 
         # old_state_obj = event.data.get("old_state")
         new_state_obj: State | None = event.data.get("new_state")
@@ -1920,7 +1926,7 @@ class SmartIrrigationCoordinator(
             )
             return
 
-        now = datetime.now()
+        now = _datetime.now()
         weatherdata[const.RETRIEVED_AT] = now
         mapping_data = mapping.get(const.MAPPING_DATA)
         if not isinstance(mapping_data, list):
@@ -2240,7 +2246,7 @@ class SmartIrrigationCoordinator(
         stamp = getattr(state, "last_reported", None) or getattr(
             state, "last_updated", None
         )
-        if not isinstance(stamp, datetime):
+        if not isinstance(stamp, _datetime):
             return False
         age = dt_util.utcnow() - stamp
         return age > timedelta(hours=const.STALE_AFTER_HOURS)
@@ -2345,7 +2351,7 @@ class SmartIrrigationCoordinator(
             return data
         return {
             **data,
-            const.ZONE_LAST_CONSUMED_AT: datetime.now(),
+            const.ZONE_LAST_CONSUMED_AT: _datetime.now(),
             const.ZONE_PRECIPITATION_SUPERSEDED: 0.0,
         }
 

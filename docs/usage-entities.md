@@ -74,6 +74,8 @@ Each zone is also grouped as a **device** in Home Assistant (named after the zon
 
 The **Smart Irrigation hub device** also carries global action buttons: *calculate all zones*, *refresh weather*, and (with direct valve control) *irrigate all zones*. It also has a switch, **Skip on precipitation**, and a number, **Precipitation threshold**: the rain forecast skip of the [general settings](configuration-general.md#skipping-a-run), which you can change from an automation or a dashboard. The number is in mm, or inch with the imperial unit system.
 
+**Postponing from a dashboard.** The hub device also has two buttons, **Postpone watering 24 h** and **Postpone watering 48 h**, a **Resume watering** button, and a datetime entity, **Watering postponed until** (`datetime.smart_irrigation_postponed_until`). The datetime shows the end of the postponement in force, or nothing, and setting it holds the watering back until that moment: a date and time for the end of your holidays, for instance, from a dashboard or an automation. A moment already past lifts the postponement. They all do what the `postpone_irrigation` and `resume_irrigation` services do, and what the Postpone buttons of the Info page do.
+
 ## Program sensors
 
 With the [full controller](usage-full-controller.md) on, each program, the main program included, has one sensor on the hub device: `sensor.smart_irrigation_program_<id>`, named "Program <name>". A program that is added gets its sensor, and one that is deleted loses it. The state is one of `idle`, `waiting`, `running`, `paused`, `suspended` or `disabled`. The attributes:

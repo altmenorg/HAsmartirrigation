@@ -55,6 +55,15 @@
       },
       "irrigate_all": {
         "name": "浇灌所有区域"
+      },
+      "postpone_24h": {
+        "name": "推迟浇水 24 小时"
+      },
+      "postpone_48h": {
+        "name": "推迟浇水 48 小时"
+      },
+      "resume_irrigation": {
+        "name": "恢复浇水"
       }
     },
     "binary_sensor": {
@@ -71,6 +80,11 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "有降水时跳过"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "浇水推迟至"
       }
     }
   },

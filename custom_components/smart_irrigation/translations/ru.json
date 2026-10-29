@@ -55,6 +55,15 @@
       },
       "irrigate_all": {
         "name": "Полить все зоны"
+      },
+      "postpone_24h": {
+        "name": "Отложить полив на 24 ч"
+      },
+      "postpone_48h": {
+        "name": "Отложить полив на 48 ч"
+      },
+      "resume_irrigation": {
+        "name": "Возобновить полив"
       }
     },
     "binary_sensor": {
@@ -71,6 +80,11 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Пропускать при осадках"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "Полив отложен до"
       }
     }
   },

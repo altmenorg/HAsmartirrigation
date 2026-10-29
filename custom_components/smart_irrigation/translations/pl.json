@@ -55,6 +55,15 @@
       },
       "irrigate_all": {
         "name": "Podlej wszystkie strefy"
+      },
+      "postpone_24h": {
+        "name": "Odrocz podlewanie o 24 h"
+      },
+      "postpone_48h": {
+        "name": "Odrocz podlewanie o 48 h"
+      },
+      "resume_irrigation": {
+        "name": "Wznów podlewanie"
       }
     },
     "binary_sensor": {
@@ -71,6 +80,11 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Pomiń przy opadach"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "Podlewanie odroczone do"
       }
     }
   },

@@ -55,6 +55,15 @@
       },
       "irrigate_all": {
         "name": "Alle Zonen bewässern"
+      },
+      "postpone_24h": {
+        "name": "Bewässerung 24 h aufschieben"
+      },
+      "postpone_48h": {
+        "name": "Bewässerung 48 h aufschieben"
+      },
+      "resume_irrigation": {
+        "name": "Bewässerung fortsetzen"
       }
     },
     "binary_sensor": {
@@ -71,6 +80,11 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Bei Niederschlag überspringen"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "Bewässerung aufgeschoben bis"
       }
     }
   },

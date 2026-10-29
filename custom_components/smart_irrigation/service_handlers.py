@@ -192,7 +192,18 @@ class ServiceHandlersMixin(ProgramAdjustMixin):
         if hours <= 0:
             await self.handle_resume_irrigation(call)
             return
-        until = dt_util.utcnow() + timedelta(hours=hours)
+        await self.async_postpone_until(dt_util.utcnow() + timedelta(hours=hours))
+
+    async def async_postpone_until(self, until) -> None:
+        """Hold watering back until ``until`` (aware); a moment past lifts it.
+
+        The one way in for the service, the hub buttons and the "postponed
+        until" entity, so they cannot disagree on what a postponement is.
+        """
+        if until <= dt_util.utcnow():
+            await self.handle_resume_irrigation()
+            return
+        until = dt_util.as_utc(until)
         await self.store.async_update_config(
             {const.CONF_POSTPONE_UNTIL: until.isoformat()}
         )

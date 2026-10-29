@@ -55,6 +55,15 @@
       },
       "irrigate_all": {
         "name": "Összes zóna öntözése"
+      },
+      "postpone_24h": {
+        "name": "Öntözés halasztása 24 órával"
+      },
+      "postpone_48h": {
+        "name": "Öntözés halasztása 48 órával"
+      },
+      "resume_irrigation": {
+        "name": "Öntözés folytatása"
       }
     },
     "binary_sensor": {
@@ -71,6 +80,11 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Kihagyás csapadék esetén"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "Öntözés elhalasztva eddig"
       }
     }
   },

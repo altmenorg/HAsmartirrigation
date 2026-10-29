@@ -55,6 +55,15 @@
       },
       "irrigate_all": {
         "name": "Zalít všechny zóny"
+      },
+      "postpone_24h": {
+        "name": "Odložit zalévání o 24 h"
+      },
+      "postpone_48h": {
+        "name": "Odložit zalévání o 48 h"
+      },
+      "resume_irrigation": {
+        "name": "Obnovit zalévání"
       }
     },
     "binary_sensor": {
@@ -71,6 +80,11 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Vynechat při srážkách"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "Zalévání odloženo do"
       }
     }
   },

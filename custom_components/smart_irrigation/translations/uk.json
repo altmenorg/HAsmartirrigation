@@ -55,6 +55,15 @@
       },
       "irrigate_all": {
         "name": "Полити всі зони"
+      },
+      "postpone_24h": {
+        "name": "Відкласти полив на 24 год"
+      },
+      "postpone_48h": {
+        "name": "Відкласти полив на 48 год"
+      },
+      "resume_irrigation": {
+        "name": "Відновити полив"
       }
     },
     "binary_sensor": {
@@ -71,6 +80,11 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Пропускати за опадів"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "Полив відкладено до"
       }
     }
   },

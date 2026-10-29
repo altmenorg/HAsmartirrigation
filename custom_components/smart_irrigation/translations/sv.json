@@ -55,6 +55,15 @@
       },
       "irrigate_all": {
         "name": "Vattna alla zoner"
+      },
+      "postpone_24h": {
+        "name": "Skjut upp bevattning 24 h"
+      },
+      "postpone_48h": {
+        "name": "Skjut upp bevattning 48 h"
+      },
+      "resume_irrigation": {
+        "name": "Återuppta bevattning"
       }
     },
     "binary_sensor": {
@@ -71,6 +80,11 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Hoppa över vid nederbörd"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "Bevattning uppskjuten till"
       }
     }
   },
