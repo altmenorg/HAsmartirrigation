@@ -90,6 +90,7 @@ from .const import (
     CONF_INSTALL_BLUEPRINTS,
     CONF_INSTALLED_BLUEPRINTS,
     CONF_IRRIGATION_START_TRIGGERS,
+    CONF_IU_IMPORT,
     CONF_MANUAL_COORDINATES_ENABLED,
     CONF_MANUAL_ELEVATION,
     CONF_MANUAL_LATITUDE,
@@ -747,6 +748,8 @@ class Config:
     queued_manual_runs = attr.ib(type=list, default=None)
     program_adjustments = attr.ib(type=dict, default=None)
     suspensions = attr.ib(type=dict, default=None)
+    # What the last Irrigation Unlimited import created (iu_import_ha.py).
+    iu_import = attr.ib(type=dict, default=None)
     # Direct valve control as it was before the full controller forced it on.
     direct_valve_control_before_full_controller = attr.ib(type=bool, default=None)
 
@@ -1256,6 +1259,7 @@ class SmartIrrigationStorage:
                 queued_manual_runs=data["config"].get(CONF_QUEUED_MANUAL_RUNS),
                 program_adjustments=data["config"].get(CONF_PROGRAM_ADJUSTMENTS),
                 suspensions=data["config"].get(CONF_SUSPENSIONS),
+                iu_import=data["config"].get(CONF_IU_IMPORT),
                 direct_valve_control_before_full_controller=data["config"].get(
                     CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER
                 ),

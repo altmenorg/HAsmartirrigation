@@ -142,7 +142,9 @@ def _count(value, default: int, high: int) -> int:
     return int(_number(value, default, 1, high))
 
 
-def _unique_id(wanted, fallback: str, used: set) -> str:
+def unique_id(wanted, fallback: str, used: set) -> str:
+    """``wanted`` as an id (lower case, letters, digits and ``_``), made unique
+    against ``used`` with a number; ``fallback`` when nothing is left of it."""
     base = _ID_UNSAFE.sub("_", str(wanted or fallback).strip().lower()).strip("_")
     base = base or fallback
     unique, n = base, 2
@@ -169,9 +171,7 @@ def normalize_step(step, used: set, position: int = 0) -> dict | None:
         mode = DURATION_CALCULATED
     delay = step.get(const.STEP_DELAY)
     normalized = {
-        const.STEP_ID: _unique_id(
-            step.get(const.STEP_ID), f"step_{position + 1}", used
-        ),
+        const.STEP_ID: unique_id(step.get(const.STEP_ID), f"step_{position + 1}", used),
         const.STEP_ZONES: zones,
         const.STEP_MODE: mode,
         const.STEP_PERCENT: _number(
@@ -262,7 +262,7 @@ def normalize_programs(programs, reserved_schedule_ids=None) -> list:
                 main[const.PROGRAM_SCHEDULES] = schedules
             cleaned.append(main)
             continue
-        program_id = _unique_id(
+        program_id = unique_id(
             program.get(const.PROGRAM_ID) or name, f"program_{position + 1}", used
         )
         step_ids: set = set()
