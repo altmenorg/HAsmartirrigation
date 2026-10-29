@@ -335,6 +335,15 @@ water_zone:
     entity:
       domain: sensor
   fields:
+    zone_id:
+      name: Zone id
+      description: The id of the zone, instead of its entity.
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 999
+          mode: box
     seconds:
       name: Seconds
       description: Seconds of water. Left empty, the calculated duration.

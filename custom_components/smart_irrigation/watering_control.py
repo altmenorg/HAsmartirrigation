@@ -151,6 +151,7 @@ SUSPEND_SCHEMA = vol.Schema(
 )
 WATER_ZONE_SCHEMA = vol.Schema(
     {
+        vol.Optional("zone_id"): vol.All(vol.Coerce(int), vol.Range(min=0)),
         vol.Optional(const.ATTR_SECONDS): vol.Any(
             None, _number_validator(1, MAX_WATER_ZONE_SECONDS, "seconds")
         ),

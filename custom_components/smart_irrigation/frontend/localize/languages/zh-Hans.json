@@ -557,7 +557,8 @@
         "reset-bucket": "重置 bucket",
         "view-weather-info": "查看天气数据",
         "view-weather-info-message": "可用天气数据：",
-        "view-watering-calendar": "查看浇水日历"
+        "view-watering-calendar": "查看浇水日历",
+        "water": "浇水"
       },
       "cards": {
         "add-zone": {
@@ -725,6 +726,11 @@
         "avg-temp": "平均温度",
         "none": "该区域没有可用的日历数据",
         "error": "无法生成日历"
+      },
+      "water": {
+        "question": "现在为“{name}”浇水？阀门会立即打开；如果正在浇水，则排队等待。浇的水计入其水分平衡。",
+        "minutes": "分钟，留空则为计划中的 {calculated}",
+        "minutes-none": "分钟（计算结果无需浇水）"
       }
     },
     "history": {

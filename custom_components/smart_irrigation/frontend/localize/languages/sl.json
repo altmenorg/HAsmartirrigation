@@ -557,7 +557,8 @@
         "reset-bucket": "Ponastavi vodno bilanco",
         "view-weather-info": "Prikaži vremenske podatke",
         "view-weather-info-message": "Vremenski podatki na voljo za",
-        "view-watering-calendar": "Prikaži koledar zalivanja"
+        "view-watering-calendar": "Prikaži koledar zalivanja",
+        "water": "Zalij"
       },
       "cards": {
         "add-zone": {
@@ -725,6 +726,11 @@
         "avg-temp": "Povpr. temp.",
         "none": "Za to cono ni podatkov za koledar zalivanja",
         "error": "Koledarja ni bilo mogoče ustvariti"
+      },
+      "water": {
+        "question": "Zalijem \"{name}\" zdaj? Ventil se odpre takoj, ali ko pride na vrsto, če se že zaliva. Voda se šteje v bilanco.",
+        "minutes": "Minute, prazno za {calculated} iz načrta",
+        "minutes-none": "Minute (izračun nima česa zaliti)"
       }
     },
     "history": {

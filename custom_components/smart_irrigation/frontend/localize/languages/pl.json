@@ -557,7 +557,8 @@
         "reset-bucket": "Zeruj bucket",
         "view-weather-info": "Wyświetl dane pogodowe",
         "view-weather-info-message": "Dane pogodowe dostępne dla",
-        "view-watering-calendar": "Wyświetl kalendarz podlewania"
+        "view-watering-calendar": "Wyświetl kalendarz podlewania",
+        "water": "Podlej"
       },
       "cards": {
         "add-zone": {
@@ -725,6 +726,11 @@
         "avg-temp": "Śr. temp.",
         "none": "Brak danych kalendarza dla tej strefy",
         "error": "Nie udało się wygenerować kalendarza"
+      },
+      "water": {
+        "question": "Podlać „{name}” teraz? Zawór otworzy się od razu albo w swojej kolejce, jeśli coś już podlewa. Woda liczy się do bilansu.",
+        "minutes": "Minuty, puste dla {calculated} z planu",
+        "minutes-none": "Minuty (obliczenie nie przewiduje podlewania)"
       }
     },
     "history": {

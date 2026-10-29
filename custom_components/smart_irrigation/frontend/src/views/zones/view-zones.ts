@@ -18,6 +18,7 @@ import {
   mdiMenuDown,
   mdiPlus,
   mdiMinus,
+  mdiWater,
 } from "@mdi/js";
 import {
   deleteZone,
@@ -60,7 +61,7 @@ import {
 } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
 import { localize } from "../../../localize/localize";
-import { askConfirmation } from "../../dialogs/confirmation-dialog";
+import { askConfirmation, askNumber } from "../../dialogs/confirmation-dialog";
 import {
   CONF_METRIC,
   DOMAIN,
@@ -295,6 +296,42 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       // Trigger a re-render to ensure UI updates
       this._scheduleUpdate();
     }
+  }
+
+  /**
+   * Water one zone now, for the minutes typed or, left empty, for the run the
+   * planning shows. It takes its turn behind what is watering.
+   */
+  private async _waterZone(zone: SmartIrrigationZone): Promise<void> {
+    const lang = this.hass?.language ?? "en";
+    const t = (key: string, ...args: any[]) =>
+      localize(`panels.zones.water.${key}`, lang, ...args);
+    const planned =
+      this.plannedDurations.get(String(zone.id)) ?? zone.duration ?? 0;
+    const minutes = await askNumber(this.hass, {
+      text: t("question", "{name}", zone.name),
+      confirmText: localize("panels.zones.actions.water", lang),
+      number: {
+        label:
+          planned > 0
+            ? t("minutes", "{calculated}", this._friendlyDuration(planned))
+            : t("minutes-none"),
+        unit: "min",
+        min: 1,
+        max: 1440,
+      },
+    });
+    if (minutes === null) return;
+    // Empty: the run shown, sent as seconds, since the zone's stored duration
+    // can lag behind it (the live estimate, the forecast rain credited).
+    const seconds = isNaN(minutes)
+      ? Math.round(planned)
+      : Math.round(Math.min(minutes, 1440) * 60);
+    if (seconds <= 0) return;
+    await this.hass!.callService(DOMAIN, "water_zone", {
+      zone_id: zone.id,
+      seconds,
+    });
   }
 
   /** Asks before something that cannot be undone; true to go ahead. */
@@ -2016,6 +2053,15 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                         () => this.handleUpdateZone(index),
                       )}
                     `
+                  : ""}
+                ${this.config?.direct_valve_control_enabled &&
+                zone.linked_entity &&
+                zone.state !== SmartIrrigationZoneState.Disabled
+                  ? this._actionBtn(
+                      mdiWater,
+                      localize("panels.zones.actions.water", lang),
+                      () => this._waterZone(zone),
+                    )
                   : ""}
                 ${this._actionBtn(
                   mdiPailRemove,

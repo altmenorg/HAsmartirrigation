@@ -557,7 +557,8 @@
         "reset-bucket": "Resetovat bucket",
         "view-weather-info": "Zobrazit meteorologická data",
         "view-weather-info-message": "Meteorologická data k dispozici pro",
-        "view-watering-calendar": "Zobrazit zavlažovací kalendář"
+        "view-watering-calendar": "Zobrazit zavlažovací kalendář",
+        "water": "Zalít"
       },
       "cards": {
         "add-zone": {
@@ -725,6 +726,11 @@
         "avg-temp": "Prům. tepl.",
         "none": "Pro tuto zónu nejsou k dispozici data kalendáře",
         "error": "Kalendář nešlo vytvořit"
+      },
+      "water": {
+        "question": "Zalít „{name}“ hned? Ventil se otevře okamžitě, nebo až na něj přijde řada, pokud se právě zalévá. Voda se započítá do bilance.",
+        "minutes": "Minuty, prázdné pro {calculated} z plánu",
+        "minutes-none": "Minuty (výpočet nic nezalévá)"
       }
     },
     "history": {

@@ -557,7 +557,8 @@
         "reset-bucket": "Resetear cubo",
         "view-weather-info": "Ver datos meteorológicos",
         "view-weather-info-message": "Datos meteorológicos disponibles para",
-        "view-watering-calendar": "Ver el calendario de riego"
+        "view-watering-calendar": "Ver el calendario de riego",
+        "water": "Regar"
       },
       "cards": {
         "add-zone": {
@@ -725,6 +726,11 @@
         "avg-temp": "Temp. media",
         "none": "No hay datos de calendario de riego para esta zona",
         "error": "No se pudo generar el calendario"
+      },
+      "water": {
+        "question": "¿Regar «{name}» ahora? Su válvula se abre enseguida, o cuando le toque si algo está regando. El agua cuenta en su balance.",
+        "minutes": "Minutos, vacío para los {calculated} de la planificación",
+        "minutes-none": "Minutos (el cálculo no tiene nada que regar)"
       }
     },
     "history": {

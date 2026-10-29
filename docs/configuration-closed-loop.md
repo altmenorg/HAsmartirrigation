@@ -48,6 +48,10 @@ It stands on its own: the zone's **Linked valve/switch** can be set with direct 
 
 > **Safety:** if Home Assistant goes down for a long time during a run, the physical valve stays open and keeps watering, because Home Assistant is no longer there to close it. Give your valve a hardware failsafe (a maximum runtime on the device itself). Smart Irrigation also caps the credited time at the zone's maximum duration. For an MQTT valve, the integration can arm that failsafe for you on every run -- see below.
 
+### Watering one zone by hand
+
+With direct valve control on, each zone with a linked valve has a **Water** button on its card in the Zones page. It asks for minutes, and left empty it waters the run the planning shows. The valve opens straight away, or takes its turn behind what is watering, and the water is credited to the zone's balance like any run of ours. It is the `smart_irrigation.water_zone` action, which an automation can call with the zone's entity or its `zone_id`.
+
 ### Hardware auto-off (MQTT on_time dead-man)
 
 The closing of the valve normally happens in Home Assistant: the run opens the valve, waits, and closes it. If Home Assistant stops in that window and never comes back, nothing sends the close and the valve keeps watering. (A restart *does* recover: an in-flight run is resumed and closed when Home Assistant comes back. The gap is Home Assistant staying down.)

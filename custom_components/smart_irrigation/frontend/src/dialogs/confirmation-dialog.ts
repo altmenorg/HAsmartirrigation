@@ -9,6 +9,14 @@ export interface ConfirmationOptions {
   confirmText?: string;
   /** A red confirm button, for what cannot be undone. */
   destructive?: boolean;
+  /** A number to ask with the question; empty is allowed. */
+  number?: {
+    label: string;
+    unit?: string;
+    placeholder?: string;
+    min?: number;
+    max?: number;
+  };
 }
 
 /**
@@ -22,9 +30,12 @@ export class ConfirmationDialog extends LitElement {
 
   @state() private _options?: ConfirmationOptions;
   private _resolve?: (answer: boolean) => void;
+  /** What was typed in the number field, "" when nothing. */
+  public value = "";
 
   public showDialog(options: ConfirmationOptions): Promise<boolean> {
     this._options = options;
+    this.value = "";
     return new Promise((resolve) => (this._resolve = resolve));
   }
 
@@ -54,6 +65,29 @@ export class ConfirmationDialog extends LitElement {
         }}
       >
         <div class="text">${this._options.text}</div>
+        ${this._options.number
+          ? html`
+              <label class="number">
+                <span>${this._options.number.label}</span>
+                <span class="field">
+                  <input
+                    type="number"
+                    inputmode="decimal"
+                    .placeholder=${this._options.number.placeholder ?? ""}
+                    min=${this._options.number.min ?? ""}
+                    max=${this._options.number.max ?? ""}
+                    @input=${(ev: Event) =>
+                      (this.value = (ev.target as HTMLInputElement).value)}
+                  />
+                  ${this._options.number.unit
+                    ? html`<span class="unit"
+                        >${this._options.number.unit}</span
+                      >`
+                    : ""}
+                </span>
+              </label>
+            `
+          : ""}
         <ha-dialog-footer slot="footer">
           <ha-button
             slot="secondaryAction"
@@ -81,6 +115,38 @@ export class ConfirmationDialog extends LitElement {
         color: var(--primary-text-color);
         white-space: pre-line;
       }
+      .number {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 16px;
+        color: var(--secondary-text-color);
+        font-size: 0.9em;
+      }
+      .number .field {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .number input {
+        flex: 1;
+        min-width: 0;
+        padding: 10px 12px;
+        font: inherit;
+        font-size: 1rem;
+        color: var(--primary-text-color);
+        background: var(--secondary-background-color, transparent);
+        border: none;
+        border-bottom: 1px solid var(--secondary-text-color);
+        border-radius: 4px 4px 0 0;
+      }
+      .number input:focus {
+        outline: none;
+        border-bottom: 2px solid var(--primary-color);
+      }
+      .number .unit {
+        color: var(--secondary-text-color);
+      }
     `;
   }
 }
@@ -102,6 +168,30 @@ export async function askConfirmation(
   document.body.appendChild(dialog);
   try {
     return await dialog.showDialog(options);
+  } finally {
+    dialog.remove();
+  }
+}
+
+/**
+ * Asks a question with a number field: the number typed (NaN when left
+ * empty) to go ahead, null to cancel.
+ */
+export async function askNumber(
+  hass: HomeAssistant | undefined,
+  options: ConfirmationOptions & {
+    number: NonNullable<ConfirmationOptions["number"]>;
+  },
+): Promise<number | null> {
+  const dialog = document.createElement(
+    "smart-irrigation-confirmation-dialog",
+  ) as ConfirmationDialog;
+  dialog.hass = hass as HomeAssistant;
+  document.body.appendChild(dialog);
+  try {
+    const go = await dialog.showDialog(options);
+    if (!go) return null;
+    return dialog.value.trim() === "" ? NaN : Number(dialog.value);
   } finally {
     dialog.remove();
   }

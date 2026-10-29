@@ -557,7 +557,8 @@
         "reset-bucket": "Redefinir bucket",
         "view-weather-info": "Ver dados meteorológicos",
         "view-weather-info-message": "Dados meteorológicos disponíveis para",
-        "view-watering-calendar": "Ver calendário de irrigação"
+        "view-watering-calendar": "Ver calendário de irrigação",
+        "water": "Irrigar"
       },
       "cards": {
         "add-zone": {
@@ -725,6 +726,11 @@
         "avg-temp": "Temp. média",
         "none": "Não há dados de calendário de irrigação para esta zona",
         "error": "Não foi possível gerar o calendário"
+      },
+      "water": {
+        "question": "Irrigar \"{name}\" agora? A válvula abre na hora, ou na sua vez se algo estiver irrigando. A água entra no balanço.",
+        "minutes": "Minutos, vazio para os {calculated} do planejamento",
+        "minutes-none": "Minutos (o cálculo não tem nada a irrigar)"
       }
     },
     "history": {

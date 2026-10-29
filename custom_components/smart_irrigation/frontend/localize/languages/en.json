@@ -557,7 +557,8 @@
         "reset-bucket": "Reset bucket",
         "view-weather-info": "View weather data",
         "view-weather-info-message": "Weather data available for",
-        "view-watering-calendar": "View watering calendar"
+        "view-watering-calendar": "View watering calendar",
+        "water": "Water"
       },
       "cards": {
         "add-zone": {
@@ -725,6 +726,11 @@
         "avg-temp": "Avg temp",
         "none": "No watering calendar data available for this zone",
         "error": "Could not generate the calendar"
+      },
+      "water": {
+        "question": "Water \"{name}\" now? Its valve opens straight away, or takes its turn if something is watering. The water is counted in its balance.",
+        "minutes": "Minutes, empty for the {calculated} of the planning",
+        "minutes-none": "Minutes (the calculation has nothing to water)"
       }
     },
     "history": {

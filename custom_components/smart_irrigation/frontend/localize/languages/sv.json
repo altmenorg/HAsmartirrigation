@@ -557,7 +557,8 @@
         "reset-bucket": "Återställ bucket",
         "view-weather-info": "Visa väderdata",
         "view-weather-info-message": "Väderdata tillgänglig för",
-        "view-watering-calendar": "Visa bevattningskalender"
+        "view-watering-calendar": "Visa bevattningskalender",
+        "water": "Vattna"
       },
       "cards": {
         "add-zone": {
@@ -725,6 +726,11 @@
         "avg-temp": "Medeltemp.",
         "none": "Inga kalenderdata finns för den här zonen",
         "error": "Kalendern kunde inte skapas"
+      },
+      "water": {
+        "question": "Vattna ”{name}” nu? Ventilen öppnas direkt, eller i tur och ordning om något redan vattnar. Vattnet räknas i balansen.",
+        "minutes": "Minuter, tomt för planeringens {calculated}",
+        "minutes-none": "Minuter (beräkningen har inget att vattna)"
       }
     },
     "history": {

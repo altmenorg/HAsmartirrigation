@@ -360,6 +360,22 @@ async def test_only_the_first_zone_of_a_call_replaces(monkeypatch):
     ]
 
 
+async def test_the_panel_waters_a_zone_by_its_id(monkeypatch):
+    """The panel's Water button names the zone by id, not by an entity."""
+    hass, handlers = _handlers(monkeypatch, _two_programs())
+    handlers.async_water_zone_now = AsyncMock()
+
+    await handlers.handle_water_zone(_call(zone_id=1, seconds=300))
+    await asyncio.gather(*hass.created)
+
+    assert [c.args for c in handlers.async_water_zone_now.await_args_list] == [
+        (1, 300.0)
+    ]
+    assert WATER_ZONE_SCHEMA({"zone_id": "1"})["zone_id"] == 1
+    with pytest.raises(vol.Invalid):
+        WATER_ZONE_SCHEMA({"zone_id": -1})
+
+
 async def test_run_program_service_passes_its_total_and_mode(monkeypatch):
     hass, handlers = _handlers(monkeypatch, _two_programs())
     handlers.async_run_program = AsyncMock()

@@ -557,7 +557,8 @@
         "reset-bucket": "Mise à zéro du seau (bucket)",
         "view-weather-info": "Voir les données météo",
         "view-weather-info-message": "Données météo disponibles pour",
-        "view-watering-calendar": "Voir le calendrier d'arrosage"
+        "view-watering-calendar": "Voir le calendrier d'arrosage",
+        "water": "Arroser"
       },
       "cards": {
         "add-zone": {
@@ -725,6 +726,11 @@
         "avg-temp": "Temp. moy.",
         "none": "Aucune donnée de calendrier pour cette zone",
         "error": "Impossible de générer le calendrier"
+      },
+      "water": {
+        "question": "Arroser « {name} » maintenant ? Sa vanne s'ouvre tout de suite, ou à son tour si un arrosage est en cours. L'eau versée est comptée dans son bilan.",
+        "minutes": "Minutes, vide pour les {calculated} du planning",
+        "minutes-none": "Minutes (le calcul ne prévoit rien à arroser)"
       }
     },
     "history": {

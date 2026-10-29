@@ -557,7 +557,8 @@
         "reset-bucket": "Nulstil bucket",
         "view-weather-info": "Se vejrdata",
         "view-weather-info-message": "Vejrdata tilgængelige for",
-        "view-watering-calendar": "Se vandingskalender"
+        "view-watering-calendar": "Se vandingskalender",
+        "water": "Vand"
       },
       "cards": {
         "add-zone": {
@@ -725,6 +726,11 @@
         "avg-temp": "Gns. temp.",
         "none": "Der er ingen kalenderdata for denne zone",
         "error": "Kalenderen kunne ikke laves"
+      },
+      "water": {
+        "question": "Vand \"{name}\" nu? Ventilen åbner med det samme, eller når det er dens tur, hvis der allerede vandes. Vandet tælles i balancen.",
+        "minutes": "Minutter, tomt for planlægningens {calculated}",
+        "minutes-none": "Minutter (beregningen har intet at vande)"
       }
     },
     "history": {

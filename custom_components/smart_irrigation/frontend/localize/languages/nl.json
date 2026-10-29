@@ -557,7 +557,8 @@
         "reset-bucket": "Leeg voorraad",
         "view-weather-info": "Weergegevens bekijken",
         "view-weather-info-message": "Weergegevens beschikbaar voor",
-        "view-watering-calendar": "Irrigatiekalender bekijken"
+        "view-watering-calendar": "Irrigatiekalender bekijken",
+        "water": "Bewateren"
       },
       "cards": {
         "add-zone": {
@@ -725,6 +726,11 @@
         "avg-temp": "Gem. temp.",
         "none": "Geen kalendergegevens beschikbaar voor deze zone",
         "error": "De kalender kon niet gemaakt worden"
+      },
+      "water": {
+        "question": "\"{name}\" nu bewateren? De klep gaat meteen open, of op zijn beurt als er al bewaterd wordt. Het water telt mee in de balans.",
+        "minutes": "Minuten, leeg voor de {calculated} van de planning",
+        "minutes-none": "Minuten (de berekening heeft niets te bewateren)"
       }
     },
     "history": {

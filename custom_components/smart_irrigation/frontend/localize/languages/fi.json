@@ -557,7 +557,8 @@
         "reset-bucket": "Nollaa bucket",
         "view-weather-info": "Näytä säätiedot",
         "view-weather-info-message": "Säätietoja saatavilla:",
-        "view-watering-calendar": "Näytä kastelukalenteri"
+        "view-watering-calendar": "Näytä kastelukalenteri",
+        "water": "Kastele"
       },
       "cards": {
         "add-zone": {
@@ -725,6 +726,11 @@
         "avg-temp": "Keskilämpö",
         "none": "Tälle alueelle ei ole kalenteritietoja",
         "error": "Kalenteria ei voitu luoda"
+      },
+      "water": {
+        "question": "Kastellaanko ”{name}” nyt? Venttiili aukeaa heti, tai vuorollaan jos jotain kastellaan. Vesi lasketaan taseeseen.",
+        "minutes": "Minuutit, tyhjä = suunnitelman {calculated}",
+        "minutes-none": "Minuutit (laskenta ei kastele mitään)"
       }
     },
     "history": {

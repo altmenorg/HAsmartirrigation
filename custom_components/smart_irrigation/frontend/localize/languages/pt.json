@@ -557,7 +557,8 @@
         "reset-bucket": "Repor bucket",
         "view-weather-info": "Ver dados meteorológicos",
         "view-weather-info-message": "Dados meteorológicos disponíveis para",
-        "view-watering-calendar": "Ver calendário de rega"
+        "view-watering-calendar": "Ver calendário de rega",
+        "water": "Regar"
       },
       "cards": {
         "add-zone": {
@@ -725,6 +726,11 @@
         "avg-temp": "Temp. média",
         "none": "Não há dados de calendário de rega para esta zona",
         "error": "Não foi possível gerar o calendário"
+      },
+      "water": {
+        "question": "Regar \"{name}\" agora? A válvula abre logo, ou na sua vez se algo estiver a regar. A água conta no seu balanço.",
+        "minutes": "Minutos, vazio para os {calculated} do planeamento",
+        "minutes-none": "Minutos (o cálculo não tem nada a regar)"
       }
     },
     "history": {

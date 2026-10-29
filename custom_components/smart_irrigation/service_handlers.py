@@ -389,12 +389,18 @@ class ServiceHandlersMixin(ProgramAdjustMixin):
         mode = self._checked_mode(call.data.get(const.ATTR_MODE))
         if isinstance(eid, str):
             eid = [eid]
+        # The panel names the zone by its id; an automation, by an entity.
+        zone_ids = []
+        if call.data.get("zone_id") is not None:
+            zone_ids.append(call.data["zone_id"])
         for entity in eid or []:
             state = self.hass.states.get(entity)
             zone_id = state.attributes.get(const.ZONE_ID) if state else None
             if zone_id is None:
                 _LOGGER.warning("water_zone: %s is not a zone", entity)
                 continue
+            zone_ids.append(zone_id)
+        for zone_id in zone_ids:
             # Runs as long as the watering does: the service does not wait.
             if mode == const.RUN_MODE_QUEUE:
                 self._spawn_valve_run(self.async_water_zone_now(int(zone_id), seconds))

@@ -557,7 +557,8 @@
         "reset-bucket": "Reimposta il secchio",
         "view-weather-info": "Visualizza le informazioni meteo",
         "view-weather-info-message": "Informazioni meteo disponibili per",
-        "view-watering-calendar": "Visualizza il calendario delle irrigazioni"
+        "view-watering-calendar": "Visualizza il calendario delle irrigazioni",
+        "water": "Irriga"
       },
       "cards": {
         "add-zone": {
@@ -725,6 +726,11 @@
         "avg-temp": "Temp. media",
         "none": "Nessun dato di calendario disponibile per questa zona",
         "error": "Non è stato possibile generare il calendario"
+      },
+      "water": {
+        "question": "Irrigare \"{name}\" adesso? La valvola si apre subito, o al suo turno se si sta già irrigando. L'acqua viene contata nel suo bilancio.",
+        "minutes": "Minuti, vuoto per i {calculated} della pianificazione",
+        "minutes-none": "Minuti (il calcolo non prevede nulla da irrigare)"
       }
     },
     "history": {

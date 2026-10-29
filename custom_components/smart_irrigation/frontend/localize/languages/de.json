@@ -557,7 +557,8 @@
         "reset-bucket": "Vorrat zurücksetzen",
         "view-weather-info": "Wetterdaten anzeigen",
         "view-weather-info-message": "Wetterdaten verfügbar für",
-        "view-watering-calendar": "Bewässerungskalender anzeigen"
+        "view-watering-calendar": "Bewässerungskalender anzeigen",
+        "water": "Bewässern"
       },
       "cards": {
         "add-zone": {
@@ -725,6 +726,11 @@
         "avg-temp": "Mittl. Temp.",
         "none": "Für diese Zone liegen keine Kalenderdaten vor",
         "error": "Der Kalender konnte nicht erzeugt werden"
+      },
+      "water": {
+        "question": "„{name}“ jetzt bewässern? Das Ventil öffnet sofort oder, wenn gerade bewässert wird, wenn es an der Reihe ist. Das Wasser wird in der Bilanz gezählt.",
+        "minutes": "Minuten, leer für die {calculated} der Planung",
+        "minutes-none": "Minuten (die Berechnung sieht nichts vor)"
       }
     },
     "history": {

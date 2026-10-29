@@ -557,7 +557,8 @@
         "reset-bucket": "Vödör visszaállítása",
         "view-weather-info": "Időjárási adatok megtekintése",
         "view-weather-info-message": "Időjárási adatok elérhetők ehhez",
-        "view-watering-calendar": "Öntözési naptár megtekintése"
+        "view-watering-calendar": "Öntözési naptár megtekintése",
+        "water": "Öntözés"
       },
       "cards": {
         "add-zone": {
@@ -725,6 +726,11 @@
         "avg-temp": "Átlag hőmérséklet",
         "none": "Ehhez a zónához nincs naptáradat",
         "error": "A naptárat nem lehetett előállítani"
+      },
+      "water": {
+        "question": "Öntözzük most: „{name}”? A szelep azonnal nyit, vagy sorra kerül, ha éppen öntözés folyik. A víz beszámít a mérlegbe.",
+        "minutes": "Perc, üresen a tervezés {calculated} ideje",
+        "minutes-none": "Perc (a számítás szerint nincs mit öntözni)"
       }
     },
     "history": {
