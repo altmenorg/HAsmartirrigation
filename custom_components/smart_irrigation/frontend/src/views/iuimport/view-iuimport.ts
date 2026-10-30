@@ -20,6 +20,8 @@ import { localize } from "../../../localize/localize";
 import { exportPath } from "../../common/navigation";
 import { navigate } from "../../helpers";
 import { askConfirmation } from "../../dialogs/confirmation-dialog";
+import "./cutover-card";
+import type { SmartIrrigationIuCutover } from "./cutover-card";
 import {
   automaticMatch,
   baselineOf,
@@ -233,6 +235,10 @@ export class SmartIrrigationViewIuImport extends LitElement {
         ...this.requestFor(this.choices),
         fingerprint: this.preview.fingerprint,
       });
+      await this.updateComplete;
+      await this.renderRoot
+        .querySelector<SmartIrrigationIuCutover>("smart-irrigation-iu-cutover")
+        ?.reload();
     } catch (e) {
       if ((e as any)?.code === "changed") {
         // Show what it would do now, and let them look again.
@@ -248,8 +254,12 @@ export class SmartIrrigationViewIuImport extends LitElement {
 
   render(): TemplateResult {
     if (!this.hass) return html``;
-    if (this.result) return this.renderDone(this.result);
-    return html`
+    // Who waters, and the switch, once something has been imported.
+    const cutover = html`<smart-irrigation-iu-cutover
+      .hass=${this.hass}
+    ></smart-irrigation-iu-cutover>`;
+    if (this.result) return html`${cutover}${this.renderDone(this.result)}`;
+    return html`${cutover}
       <ha-card header="${this.t("title")}">
         <div class="card-content">
           <div class="note">${this.t("description")}</div>
@@ -264,8 +274,7 @@ export class SmartIrrigationViewIuImport extends LitElement {
           </div>
           ${this.renderActions()}
         </div>
-      </ha-card>
-    `;
+      </ha-card> `;
   }
 
   private get blocked(): boolean {
@@ -936,6 +945,10 @@ export class SmartIrrigationViewIuImport extends LitElement {
       .error {
         color: var(--error-color, #b71c1c);
         margin-top: 8px;
+      }
+      smart-irrigation-iu-cutover {
+        display: block;
+        margin-bottom: 16px;
       }
       .done {
         font-size: 1.1em;

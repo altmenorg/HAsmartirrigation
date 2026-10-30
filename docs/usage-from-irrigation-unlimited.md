@@ -29,7 +29,7 @@ The [full controller](usage-full-controller.md) does the scheduling and the runn
 | `cancel` | `smart_irrigation.stop_watering` |
 | Pause and resume | `smart_irrigation.pause_watering` and `resume_watering` |
 | Skip to the next step | `smart_irrigation.next_step` |
-| Schedule (time, sun, cron) | A program's **schedules**: time of day or sun (with an offset and a fallback time for polar days), with the days as filters. Cron is not supported. |
+| Schedule (time, sun, cron) | A program's **schedules**: time of day or sun (with an offset and a fallback time for polar days), with the days as filters. Cron is not supported as such; the import turns a cron line with a bounded set of times into time schedules. |
 | `anchor: start` and `anchor: finish` | The schedule's moment is when the program **starts**, or when it **must be done** (the start is worked back from the length of the run) |
 | Weekdays, day of the month, even/odd, `every_n_days`, months, `from`/`to` | The same filters, on each schedule: days of the week, every N days with a shift, even or odd days, named days of the month (`1, 15, last`), months, and a period of the year that may span New Year |
 | `entity_states` | Not the same feature. In IU it lets a timed valve receive only the on command, only the off, or neither. We have no such switch. The nearest things are the per-zone **safety off mode** (`auto`, `zha`, `off`), which can arm a hardware timed off (MQTT topic, or a ZHA command) as a dead-man behind the normal close, and [the check while a valve is open](usage-full-controller.md). The ZHA timed off is armed automatically for a Sonoff SWV (tested on a real valve, ZHA, firmware 1.0.04: it honours the command and counts the time in seconds); for any other ZHA model it is opt-in (`zha` mode) because the unit of the time is unverified. A Sonoff SWV in `auto` mode is now also *opened* by that timed command, so it never runs without its own timer. See [closed loop](configuration-closed-loop.md). |
@@ -56,11 +56,43 @@ Nothing is changed before you have seen it all:
 2. **Programs and supplies**: what each IU sequence and controller becomes, step by step. A sequence fed by Smart Irrigation's durations (an adjust-time automation) waters the calculated duration; the others keep IU's fixed times.
 3. **The report**: what was carried over exactly, what was approximated (a cron expression turned into times, for example) and what has no equivalent here.
 
-The schedules of new programs are created **switched off**, so IU keeps watering until you are ready: switch IU's controllers off and these schedules on. Importing again later updates what the earlier import made, in place, and removes what IU no longer has; the wizard asks before it removes anything. Only an administrator can import.
+The schedules of new programs are created **switched off**, so IU keeps watering until you are ready to [switch over](#switching-over). Importing again later updates what the earlier import made, in place, and removes what IU no longer has; the wizard asks before it removes anything. Only an administrator can import.
+
+### Switching over
+
+At the top of the import page, once something is imported:
+
+- **Switch over to Smart Irrigation** switches off IU's controllers that are on (`irrigation_unlimited.disable`, which IU keeps across a restart), then switches on the imported schedules that IU had on. A sequence or zone schedule that IU runs switched off, or whose controller is off, stays off here too. A zone that IU runs switched off inside a sequence is named on the page: IU leaves it out, but here its step waters it until you switch that step off. If the import has no record of which schedules IU had on (an import from before this was kept), none of that program's schedules comes on and the page says so: switch them on yourself, or go back, import again and switch over again. IU is switched off first, so for a moment nothing waters rather than both.
+- **Go back to Irrigation Unlimited** switches the imported schedules off first, then on again the controllers the switch turned off, and no others. Which schedules were on is kept: switching over again brings back those, including your own changes.
+- If a step fails, the one before it is undone, and the page says who waters.
+- Who waters is read from what is on, not from the buttons: if IU switches a controller on again (by hand, or because IU does not restore its state) while imported schedules are on, or you switch a schedule on by hand while IU waters, the page says that both would water and offers to switch IU off. It also says when nothing waters.
+- **What still uses Irrigation Unlimited** lists your automations and scripts that name IU's services, events (`irrigation_unlimited_start`, `_finish`, …) or entities, with a link to each. An adjust-time automation has nothing left to do: the steps are calculated here. Nothing is changed for you.
+
+After the switch, importing again keeps the on or off you gave each schedule, and a schedule new to the import comes with IU's own on and off, since IU no longer waters.
+
+### What the import does not carry over
+
+- Several controllers become one queue: their programs run one after the other.
+- Runs that IU overlapped run one after the other.
+- A step's `repeat` becomes passes: the water in parts with a soak between, not full runs.
+- `entity_states`, `threshold`, a zone's default duration for manual runs, the master's `check_back` and `volume`, an unbounded `cron`, a sun event other than sunrise and sunset.
+
+### By hand
+
+If you would rather rebuild than import:
+
+1. Switch on the [full controller](usage-full-controller.md).
+2. Add your pump or main valve as a supply, and pick it in each zone.
+3. Make a program per IU sequence: its steps are the sequence's zones, in order. Leave the duration on *calculated*.
+4. Add a schedule to each. If IU ran it to finish at sunrise, take *Sunrise*, *must be done*.
+5. Switch IU's own schedules off, and remove the two automations that handed it durations and reset the bucket.
+6. Look at the **Planning** card: it shows the next three days. Compare it with what IU would have done before you remove IU.
+
+> Previous: [Full controller](usage-full-controller.md)
 
 ## Not in Smart Irrigation
 
-- Cron schedules.
+- Cron schedules (the import expands a bounded one into time schedules).
 - Several independent controllers, each with its own sequences. Several supplies are possible, and each zone picks its own, but there is one program queue.
 - Overlap of whole programs: only the steps of one program can overlap (negative wait), never two programs.
 - An adjustable granularity, renaming the entities IU creates, a built-in simulator.
@@ -72,14 +104,3 @@ The schedules of new programs are created **switched off**, so IU keeps watering
 - Durations calculated from the weather, instead of typed.
 - Weather skip conditions (rain, frost, wind, wet soil) that can be set per schedule.
 - Hardware dead-man arming (MQTT or ZHA) and a check that a valve did not close by itself while it should be open.
-
-## Moving over
-
-1. Switch on the [full controller](usage-full-controller.md).
-2. Add your pump or main valve as a supply, and pick it in each zone.
-3. Make a program per IU sequence: its steps are the sequence's zones, in order. Leave the duration on *calculated*.
-4. Add a schedule to each. If IU ran it to finish at sunrise, take *Sunrise*, *must be done*.
-5. Switch IU's own schedules off, and remove the two automations that handed it durations and reset the bucket.
-6. Look at the **Planning** card: it shows the next three days. Compare it with what IU would have done before you remove IU.
-
-> Previous: [Full controller](usage-full-controller.md)

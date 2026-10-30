@@ -78,6 +78,12 @@ FILLED_FIELDS = (
 
 NEW_ZONE = "new"
 
+# In the record: IU's own schedules that were on, by program, and the cut-over.
+IU_ON = "iu_on"
+IU_SOURCE = "iu_source"
+SI_ON = "si_on"
+CUTOVER = "cutover"
+
 
 class IUImportError(HomeAssistantError):
     """An import that cannot go ahead, with a code the panel can translate."""
@@ -773,9 +779,14 @@ def plan(
                     "name": before.get(const.PROGRAM_NAME) or "",
                 }
             )
-        on = before is not None and any(
-            s.get(const.SCHEDULE_ENABLED) is not False
-            for s in before.get(const.PROGRAM_SCHEDULES) or []
+        # After the switch to Smart Irrigation IU no longer waters: a program
+        # new to the import comes with IU's own on and off too.
+        on = bool(record.get(CUTOVER)) or (
+            before is not None
+            and any(
+                s.get(const.SCHEDULE_ENABLED) is not False
+                for s in before.get(const.PROGRAM_SCHEDULES) or []
+            )
         )
         programs.append(
             {
@@ -1002,14 +1013,25 @@ async def async_apply(coordinator, preview: dict) -> dict:
     ]
     stored_by_id = {p.get(const.PROGRAM_ID): p for p in stored}
     programs = []
+    iu_on: dict = {}
+    sources: dict = {}
     for entry in preview["programs"]:
         program = copy.deepcopy(entry["program"])
-        program.pop("source", None)
+        source = program.pop("source", None)
+        if isinstance(source, str):
+            sources[program[const.PROGRAM_ID]] = source
         for step in program.get(const.PROGRAM_STEPS) or []:
             step[const.STEP_ZONES] = [
                 zone_ids[key] for key in step.get(const.STEP_ZONES) or []
             ]
         schedules = program.get(const.PROGRAM_SCHEDULES) or []
+        # Which schedules IU itself has on: those, and no others, are switched
+        # on at the cut-over.
+        iu_on[program[const.PROGRAM_ID]] = [
+            n
+            for n, schedule in enumerate(schedules)
+            if schedule.get(const.SCHEDULE_ENABLED) is not False
+        ]
         if not entry["schedules_on"]:
             for schedule in schedules:
                 schedule[const.SCHEDULE_ENABLED] = False
@@ -1027,6 +1049,19 @@ async def async_apply(coordinator, preview: dict) -> dict:
         for schedule in schedules:
             if not schedule.get(const.SCHEDULE_ID) and free:
                 schedule[const.SCHEDULE_ID] = free.pop(0)
+        if record.get(CUTOVER):
+            # Smart Irrigation waters: a schedule it had keeps the user's on
+            # or off; a new one comes with IU's.
+            was_on = {
+                s.get(const.SCHEDULE_ID): s.get(const.SCHEDULE_ENABLED) is not False
+                for s in before.get(const.PROGRAM_SCHEDULES) or []
+                if isinstance(s, dict) and s.get(const.SCHEDULE_ID)
+            }
+            for schedule in schedules:
+                if schedule.get(const.SCHEDULE_ID) in was_on:
+                    schedule[const.SCHEDULE_ENABLED] = was_on[
+                        schedule[const.SCHEDULE_ID]
+                    ]
         programs.append(program)
     gone_programs = set(preview["removed"]["programs"])
     program_ids = {p[const.PROGRAM_ID] for p in programs}
@@ -1065,8 +1100,30 @@ async def async_apply(coordinator, preview: dict) -> dict:
         "source": preview.get("source"),
         "at": datetime.now(UTC).isoformat(timespec="seconds"),
     }
+    if record.get(CUTOVER):
+        new_record[CUTOVER] = record[CUTOVER]
+    new_record[IU_SOURCE] = sources
     await coordinator.async_update_config(
         {const.CONF_PROGRAMS: merged, const.CONF_IU_IMPORT: new_record}
+    )
+    # The schedules have their ids now: IU's own on and off, by id.
+    saved = {
+        p.get(const.PROGRAM_ID): p
+        for p in getattr(store.config, const.CONF_PROGRAMS, None) or []
+        if isinstance(p, dict)
+    }
+    recorded_on = {
+        program_id: [
+            schedules[n].get(const.SCHEDULE_ID) for n in positions if n < len(schedules)
+        ]
+        for program_id, positions in iu_on.items()
+        for schedules in [saved.get(program_id, {}).get(const.PROGRAM_SCHEDULES) or []]
+    }
+    # A new record, not the saved one changed in place: the store holds that
+    # very dict, and a save that fails must leave it as it was saved. Without
+    # this record, the switch turns none of these schedules on (unrecorded).
+    await coordinator.async_update_config(
+        {const.CONF_IU_IMPORT: {**new_record, IU_ON: recorded_on}}
     )
     _LOGGER.info(
         "Irrigation Unlimited imported: %d zone(s) created, %d updated, "
@@ -1083,3 +1140,444 @@ async def async_apply(coordinator, preview: dict) -> dict:
         "programs_removed": sorted(gone_programs),
         "supplies": sorted(supply_ids),
     }
+
+
+# --- the cut-over -------------------------------------------------------------
+#
+# The import leaves IU watering and the imported schedules off. The switch to
+# Smart Irrigation turns IU's controllers that are on, off
+# (``irrigation_unlimited.disable``, which IU keeps across a restart), then the
+# imported schedules on; switching back turns ours off, then on again the
+# controllers the switch turned off, and no others. Either way, for a moment
+# nothing waters rather than both, and a step that fails undoes the one before.
+
+TO_SMART_IRRIGATION = "smart_irrigation"
+TO_IRRIGATION_UNLIMITED = "irrigation_unlimited"
+
+# Who waters, as the status says it.
+WATERS_IU = "irrigation_unlimited"
+WATERS_SI = "smart_irrigation"
+WATERS_BOTH = "both"
+WATERS_NONE = "none"
+
+# The events IU fires (``irrigation_unlimited_<type>``): an automation that
+# listens for them goes quiet once IU no longer waters.
+_IU_EVENTS = re.compile(
+    r"\birrigation_unlimited_(?:start|finish|incomplete|switch_error|sync_error"
+    r"|valve_on|valve_off)\b"
+)
+
+
+def iu_controllers(hass: HomeAssistant) -> list:
+    """IU's controllers: their entity, name, and whether IU has them on."""
+    registry = er.async_get(hass)
+    found = []
+    for entry in registry.entities.values():
+        if entry.platform != DOMAIN_IU:
+            continue
+        if not re.fullmatch(r"c\d+_m", str(entry.unique_id)):
+            continue
+        state = hass.states.get(entry.entity_id)
+        enabled = state.attributes.get("enabled") if state is not None else None
+        found.append(
+            {
+                "entity_id": entry.entity_id,
+                "name": (state and state.name) or entry.name or entry.entity_id,
+                "enabled": enabled if isinstance(enabled, bool) else None,
+            }
+        )
+    return sorted(found, key=lambda c: c["entity_id"])
+
+
+def _iu_switched_off(hass: HomeAssistant) -> set:
+    """The unique ids of IU's controllers, sequences and zones it has off now.
+
+    Its configuration may have them on while IU runs with them off (its
+    ``disable`` service, which it keeps across a restart): IU does not water
+    those, so neither should their programs after the switch.
+    """
+    registry = er.async_get(hass)
+    off = set()
+    for entry in registry.entities.values():
+        if entry.platform != DOMAIN_IU:
+            continue
+        state = hass.states.get(entry.entity_id)
+        if state is not None and state.attributes.get("enabled") is False:
+            off.add(str(entry.unique_id))
+    return off
+
+
+def _off_in_iu(source, off: set) -> bool:
+    """Whether IU has the sequence or zone a program came from off now, or
+    its controller."""
+    if not isinstance(source, str) or "_" not in source:
+        return False
+    return source in off or f"{source.split('_', 1)[0]}_m" in off
+
+
+def _uses_iu(config, iu_entities: set) -> list:
+    """The IU services, events and entities an automation or script names."""
+    used = set()
+    for text in _strings(config):
+        used.update(re.findall(r"\birrigation_unlimited\.[a-z_]+", text))
+        used.update(_IU_EVENTS.findall(text))
+        for entity_id in iu_entities:
+            # ``…_c1_z1`` is not named by ``…_c1_z10``.
+            if re.search(re.escape(entity_id) + r"(?![\w])", text):
+                used.add(entity_id)
+    for call in _calls(config):
+        service = call.get("action") or call.get("service")
+        if isinstance(service, str) and service.startswith(DOMAIN_IU + "."):
+            used.add(service)
+    return sorted(used)
+
+
+def _calls(node):
+    if isinstance(node, dict):
+        if "action" in node or "service" in node:
+            yield node
+        for value in node.values():
+            yield from _calls(value)
+    elif isinstance(node, list):
+        for value in node:
+            yield from _calls(value)
+
+
+def follow_ups(hass: HomeAssistant) -> list:
+    """The automations and scripts that still use IU, to change or remove.
+
+    An adjust-time automation (it hands IU a duration Smart Irrigation
+    calculated) has nothing left to do after the import: the steps are
+    calculated here. Anything else that uses IU may need doing over.
+    """
+    from homeassistant.components.automation import DATA_COMPONENT
+
+    registry = er.async_get(hass)
+    iu_entities = {
+        entry.entity_id
+        for entry in registry.entities.values()
+        if entry.platform == DOMAIN_IU
+    }
+    found = []
+    for kind, component in (
+        ("automation", hass.data.get(DATA_COMPONENT)),
+        ("script", hass.data.get("script")),
+    ):
+        for entity in getattr(component, "entities", None) or []:
+            config = getattr(entity, "raw_config", None)
+            if not isinstance(config, dict):
+                continue
+            uses = _uses_iu(config, iu_entities)
+            if not uses:
+                continue
+            key = getattr(entity, "unique_id", None)
+            found.append(
+                {
+                    "kind": kind,
+                    "entity_id": getattr(entity, "entity_id", None),
+                    "name": getattr(entity, "name", None)
+                    or config.get("alias")
+                    or getattr(entity, "entity_id", None),
+                    "edit": f"/config/{kind}/edit/{key}" if key else None,
+                    "uses": uses,
+                    "adjust_time": any(True for _ in _adjust_time_calls(config)),
+                }
+            )
+    return found
+
+
+def _imported_programs(config) -> dict:
+    record = _record(config)
+    ids = set(record.get("programs") or [])
+    return {
+        p.get(const.PROGRAM_ID): p
+        for p in getattr(config, const.CONF_PROGRAMS, None) or []
+        if isinstance(p, dict) and p.get(const.PROGRAM_ID) in ids
+    }
+
+
+def _zones_off_in_iu(hass: HomeAssistant, coordinator, record: dict, programs: dict):
+    """The zones IU runs switched off that water in an imported sequence here.
+
+    IU leaves a zone it has off out of its sequences; a step of the program
+    imported from that sequence waters it. That is said, not changed: whether
+    the zone should stay dry is the user's to decide (switch the step off).
+
+    Left out, as they water nothing here anyway: a program whose sequence IU
+    has off, or whose controller the user has off (the switch leaves those off;
+    a controller the switch itself turned off does not count); after the
+    switch, a program with no schedule on; a zone switched off here, or gone.
+    """
+    off = _iu_switched_off(hass)
+    if not off:
+        return []
+    cutover = record.get(CUTOVER) if isinstance(record.get(CUTOVER), dict) else None
+    ours = set((cutover or {}).get("controllers") or [])
+    registry = er.async_get(hass)
+    controllers_off = {
+        str(entry.unique_id).split("_")[0]
+        for entry in registry.entities.values()
+        if entry.platform == DOMAIN_IU
+        and str(entry.unique_id) in off
+        and re.fullmatch(r"c\d+_m", str(entry.unique_id))
+        and entry.entity_id not in ours
+    }
+    sources = record.get(IU_SOURCE) if isinstance(record.get(IU_SOURCE), dict) else {}
+    recorded = record.get("zones") if isinstance(record.get("zones"), dict) else {}
+    keys_of: dict = {}
+    for key, entry in recorded.items():
+        if isinstance(entry, dict) and entry.get("zone") is not None:
+            keys_of.setdefault(entry["zone"], []).append(key)
+    zones = _zones_of(coordinator.store)
+    found = []
+    for program_id, program in programs.items():
+        source = sources.get(program_id)
+        if not isinstance(source, str) or "_s" not in source:
+            continue
+        if source in off or source.split("_")[0] in controllers_off:
+            continue
+        if cutover is not None and not _on(program):
+            continue
+        for step in program.get(const.PROGRAM_STEPS) or []:
+            if not isinstance(step, dict) or step.get(const.STEP_ENABLED) is False:
+                continue
+            for zone_id in step.get(const.STEP_ZONES) or []:
+                zone = zones.get(zone_id)
+                if zone is None:
+                    continue
+                if zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED:
+                    continue
+                if any(key in off for key in keys_of.get(zone_id, [])):
+                    entry = {
+                        "zone": zone.get(const.ZONE_NAME) or str(zone_id),
+                        "program": program.get(const.PROGRAM_NAME) or program_id,
+                    }
+                    if entry not in found:
+                        found.append(entry)
+    return found
+
+
+def _on(program: dict) -> list:
+    """The ids of a program's schedules that are on."""
+    return [
+        s.get(const.SCHEDULE_ID)
+        for s in program.get(const.PROGRAM_SCHEDULES) or []
+        if isinstance(s, dict) and s.get(const.SCHEDULE_ENABLED) is not False
+    ]
+
+
+async def async_status(hass: HomeAssistant, coordinator) -> dict:
+    """Where the move from IU stands: what was imported, who waters now.
+
+    Who waters is read from what is on, not from the record of a switch: a
+    schedule switched on by hand, or a controller IU switched on again, counts.
+    """
+    config = coordinator.store.config
+    record = _record(config)
+    programs = _imported_programs(config)
+    controllers = iu_controllers(hass)
+    full_controller = getattr(config, const.CONF_FULL_CONTROLLER, False) is True
+    on = sum(len(_on(p)) for p in programs.values())
+    si_waters = full_controller and any(
+        _on(p) for p in programs.values() if p.get(const.PROGRAM_ENABLED, True)
+    )
+    iu_waters = any(c["enabled"] is True for c in controllers)
+    if si_waters and iu_waters:
+        waters = WATERS_BOTH
+    elif si_waters:
+        waters = WATERS_SI
+    elif iu_waters:
+        waters = WATERS_IU
+    else:
+        waters = WATERS_NONE
+    return {
+        "imported": bool(record.get("at")),
+        "at": record.get("at"),
+        "full_controller": full_controller,
+        "programs": [
+            {
+                "id": pid,
+                "name": p.get(const.PROGRAM_NAME) or pid,
+                "schedules": len(p.get(const.PROGRAM_SCHEDULES) or []),
+                "on": len(_on(p)),
+            }
+            for pid, p in programs.items()
+        ],
+        "schedules_on": on,
+        "switched_over": bool(record.get(CUTOVER)),
+        "switched_at": (record.get(CUTOVER) or {}).get("at"),
+        "iu_running": hass.services.has_service(DOMAIN_IU, "disable"),
+        "controllers": controllers,
+        "waters": waters,
+        "both_on": waters == WATERS_BOTH,
+        "zones_off_in_iu": _zones_off_in_iu(hass, coordinator, record, programs),
+        "follow_ups": follow_ups(hass),
+    }
+
+
+async def _switch_iu(hass: HomeAssistant, service: str, entity_ids: list) -> list:
+    """Switch IU's controllers on or off; the ones switched."""
+    if not entity_ids or not hass.services.has_service(DOMAIN_IU, service):
+        return []
+    await hass.services.async_call(
+        DOMAIN_IU, service, {"entity_id": list(entity_ids)}, blocking=True
+    )
+    return list(entity_ids)
+
+
+def _with_on(programs: list, wanted: dict) -> list:
+    """The programs with, for each program in ``wanted``, the schedules listed
+    there switched on; the others are left as they are, so one the user
+    switched on stays on."""
+    changed = copy.deepcopy(programs)
+    for program in changed:
+        program_id = program.get(const.PROGRAM_ID)
+        if program_id not in wanted:
+            continue
+        ids = wanted[program_id]
+        for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
+            if schedule.get(const.SCHEDULE_ID) in ids:
+                schedule[const.SCHEDULE_ENABLED] = True
+    return changed
+
+
+def _all_off(programs: list, ids: set) -> list:
+    """The programs with every schedule of those in ``ids`` off."""
+    changed = copy.deepcopy(programs)
+    for program in changed:
+        if program.get(const.PROGRAM_ID) in ids:
+            for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
+                schedule[const.SCHEDULE_ENABLED] = False
+    return changed
+
+
+async def _undo(what: str, step) -> None:
+    """Undo a step after the next one failed; a failure here is logged."""
+    try:
+        await step
+    except Exception:  # noqa: BLE001 - the first error is the one to report
+        _LOGGER.exception("Could not undo %s after a failed switch", what)
+
+
+async def async_cutover(hass: HomeAssistant, coordinator, to: str) -> dict:
+    """Hand the watering to Smart Irrigation, or back to IU."""
+    if to == TO_SMART_IRRIGATION:
+        return await _to_smart_irrigation(hass, coordinator)
+    if to == TO_IRRIGATION_UNLIMITED:
+        return await _to_irrigation_unlimited(hass, coordinator)
+    raise IUImportError("unknown_direction", f"Cannot switch to {to!r}.")
+
+
+async def _to_smart_irrigation(hass: HomeAssistant, coordinator) -> dict:
+    """IU's controllers that are on, off; then the schedules IU had on, on.
+
+    Switched over already (IU switched a controller on again), only IU is
+    switched off: the schedules are as the user has them.
+    """
+    store = coordinator.store
+    record = _record(store.config)
+    if not record.get("at"):
+        raise IUImportError("not_imported", "Nothing has been imported yet.")
+    if getattr(store.config, const.CONF_FULL_CONTROLLER, False) is not True:
+        raise IUImportError(
+            "full_controller_off",
+            "Switch the full controller on first: without it, nothing waters.",
+        )
+    off_in_iu = _iu_switched_off(hass)
+    on_now = [c["entity_id"] for c in iu_controllers(hass) if c["enabled"] is True]
+    disabled = await _switch_iu(hass, "disable", on_now)
+
+    # Read again: the programs may have changed while IU was being switched.
+    config = store.config
+    record = _record(config)
+    programs = getattr(config, const.CONF_PROGRAMS, None) or []
+    before = record.get(CUTOVER) if isinstance(record.get(CUTOVER), dict) else None
+    left_off: list = []
+    unrecorded: list = []
+    if before is None:
+        iu_on = record.get(IU_ON) if isinstance(record.get(IU_ON), dict) else {}
+        si_on = record.get(SI_ON) if isinstance(record.get(SI_ON), dict) else {}
+        sources = (
+            record.get(IU_SOURCE) if isinstance(record.get(IU_SOURCE), dict) else {}
+        )
+        wanted = {}
+        for program_id in record.get("programs") or []:
+            if program_id in si_on:
+                # On as they were when the watering went back to IU.
+                wanted[program_id] = si_on[program_id]
+            elif _off_in_iu(sources.get(program_id), off_in_iu):
+                left_off.append(program_id)
+            elif isinstance(iu_on.get(program_id), list):
+                wanted[program_id] = iu_on[program_id]
+            else:
+                # No record of which schedules IU had on (imported before it
+                # was kept, or its save failed): none is switched on, rather
+                # than one IU had off. Importing again records it.
+                unrecorded.append(program_id)
+        programs = _with_on(programs, wanted)
+    controllers = sorted(set((before or {}).get("controllers") or []) | set(disabled))
+    cutover = {
+        "at": (before or {}).get("at")
+        or datetime.now(UTC).isoformat(timespec="seconds"),
+        "controllers": controllers,
+    }
+    new_record = {k: v for k, v in record.items() if k != SI_ON}
+    new_record[CUTOVER] = cutover
+    try:
+        await coordinator.async_update_config(
+            {const.CONF_PROGRAMS: programs, const.CONF_IU_IMPORT: new_record}
+        )
+    except Exception:
+        await _undo("IU's controllers", _switch_iu(hass, "enable", disabled))
+        raise
+    _LOGGER.info(
+        "Watering handed over from Irrigation Unlimited: %d controller(s) "
+        "switched off, the imported schedules on",
+        len(disabled),
+    )
+    return {"controllers": disabled, "left_off": left_off, "unrecorded": unrecorded}
+
+
+async def _to_irrigation_unlimited(hass: HomeAssistant, coordinator) -> dict:
+    """The imported schedules off; then on again the controllers the switch
+    turned off. Which schedules were on is kept for the next switch."""
+    store = coordinator.store
+    config = store.config
+    record = _record(config)
+    cutover = record.get(CUTOVER) if isinstance(record.get(CUTOVER), dict) else None
+    if cutover is None:
+        raise IUImportError(
+            "not_switched", "The watering has not been handed to Smart Irrigation."
+        )
+    back = [c for c in cutover.get("controllers") or [] if isinstance(c, str)]
+    if back and not hass.services.has_service(DOMAIN_IU, "enable"):
+        raise IUImportError(
+            "iu_not_running",
+            "Irrigation Unlimited is not running: it could not water again.",
+        )
+    programs = getattr(config, const.CONF_PROGRAMS, None) or []
+    imported = _imported_programs(config)
+    new_record = {k: v for k, v in record.items() if k != CUTOVER}
+    new_record[SI_ON] = {pid: _on(p) for pid, p in imported.items()}
+    await coordinator.async_update_config(
+        {
+            const.CONF_PROGRAMS: _all_off(programs, set(imported)),
+            const.CONF_IU_IMPORT: new_record,
+        }
+    )
+    try:
+        enabled = await _switch_iu(hass, "enable", back)
+    except Exception:
+        await _undo(
+            "the imported schedules",
+            coordinator.async_update_config(
+                {const.CONF_PROGRAMS: programs, const.CONF_IU_IMPORT: record}
+            ),
+        )
+        raise
+    _LOGGER.info(
+        "Watering handed back to Irrigation Unlimited: the imported "
+        "schedules off, %d controller(s) switched on",
+        len(enabled),
+    )
+    return {"controllers": enabled}

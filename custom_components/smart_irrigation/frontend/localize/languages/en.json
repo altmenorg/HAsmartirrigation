@@ -891,9 +891,9 @@
         "title": "Imported.",
         "zones": "Zones: {created} new, {updated} filled in",
         "programs": "{count, plural, one {# program} other {# programs}}",
-        "next": "The schedules of new programs are switched off, so Irrigation Unlimited is still the one watering. When you are ready, switch Irrigation Unlimited's controllers off and these schedules on, on the Programs page.",
+        "next": "The schedules of new programs are off, so Irrigation Unlimited is still the one watering. Look at the programs, then switch over at the top of this page.",
         "open-programs": "Open the programs",
-        "next-off": "The full controller is off, so these programs do not water yet, and Irrigation Unlimited goes on watering. Switch the full controller on in the settings, then switch Irrigation Unlimited off and these schedules on.",
+        "next-off": "The full controller is off, so these programs do not water yet, and Irrigation Unlimited goes on watering. Switch the full controller on in the settings, then switch over at the top of this page.",
         "open-settings": "Open the settings"
       },
       "conflicts": {
@@ -902,7 +902,52 @@
         "program_exists": "A program \"{name}\" ({id}) is in the way: no import made it. Rename or delete it first, in Watering, Programs (with the full controller on).",
         "supply_exists": "A pump \"{name}\" ({id}) is in the way: no import made it. Rename or delete it first, in Watering, Pumps and valves (with the full controller on)."
       },
-      "confirm_remove": "This import deletes what an earlier import made and Irrigation Unlimited no longer has: {names}. Go ahead?"
+      "confirm_remove": "This import deletes what an earlier import made and Irrigation Unlimited no longer has: {names}. Go ahead?",
+      "cutover": {
+        "title": "Who waters: Irrigation Unlimited or Smart Irrigation",
+        "iu-waters": "Irrigation Unlimited waters. The imported schedules are off until you switch over.",
+        "si-waters": "Smart Irrigation waters since {at}. Irrigation Unlimited's controllers are off.",
+        "si-waters-now": "Smart Irrigation waters: imported schedules are on, and Irrigation Unlimited's controllers are off.",
+        "nobody-waters": "Nothing waters: Irrigation Unlimited's controllers are off, and so are the imported schedules.",
+        "both-on": "Both would water: Irrigation Unlimited has a controller on, and imported schedules are on too. Switch Irrigation Unlimited off, or the schedules.",
+        "full-controller-off": "The full controller is off: switch it on in the settings first, or the imported programs do not water.",
+        "programs": "The imported programs",
+        "schedules-on": "{on} of {count} schedules on",
+        "open-programs": "Look at them on the Programs page before you switch over",
+        "open-programs-after": "Open the programs",
+        "zones-off": "Irrigation Unlimited has these zones switched off and leaves them out of its sequences; here they water with their program: {list}. Switch their step off in the program if they should stay dry.",
+        "controllers": "Irrigation Unlimited's controllers",
+        "iu-not-running": "Irrigation Unlimited is not running: there is nothing to switch off.",
+        "no-controllers": "None found.",
+        "on": "on",
+        "off": "off",
+        "unknown": "unknown",
+        "over": "Switch over to Smart Irrigation",
+        "back": "Go back to Irrigation Unlimited",
+        "iu-off-again": "Switch Irrigation Unlimited off again",
+        "confirm-over": "Irrigation Unlimited's controllers are switched off, and the schedules Irrigation Unlimited had on are switched on here. From the next schedule on, Smart Irrigation waters. You can go back at any time.",
+        "confirm-back": "The imported schedules are switched off, and Irrigation Unlimited's controllers on again. Irrigation Unlimited waters again.",
+        "errors": {
+          "generic": "That did not work.",
+          "full_controller_off": "Switch the full controller on first: without it, nothing waters.",
+          "not_imported": "Nothing has been imported yet.",
+          "iu_failed": "Irrigation Unlimited did not take the switch. What this step had changed is undone: see above who waters.",
+          "not_switched": "The watering has not been handed to Smart Irrigation, so there is nothing to go back from.",
+          "iu_not_running": "Irrigation Unlimited is not running: it could not water again. Start it first."
+        },
+        "follow-ups": {
+          "title": "What still uses Irrigation Unlimited",
+          "help": "These automations and scripts name Irrigation Unlimited's services or entities. Once you have switched over, change or remove them: nothing is changed for you.",
+          "none": "No automation or script uses Irrigation Unlimited.",
+          "automation": "automation",
+          "script": "script",
+          "edit": "Edit",
+          "adjust-time": "Hands Irrigation Unlimited a duration Smart Irrigation calculated. After the switch it has nothing to do: the imported steps are calculated here. Remove it.",
+          "uses": "Uses {uses}."
+        },
+        "left-off": "Left off, as Irrigation Unlimited had them switched off: {names}.",
+        "unrecorded": "Left off, as the import has no record of which of their schedules Irrigation Unlimited had on: {names}. Switch their schedules on yourself, or go back to Irrigation Unlimited, import again (it records them) and switch over again."
+      }
     }
   },
   "title": "Smart Irrigation",

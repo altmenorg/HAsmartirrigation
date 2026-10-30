@@ -365,3 +365,48 @@ export const iuImportApply = (
   request: IuImportRequest & { fingerprint: string },
 ): Promise<IuImportResult> =>
   hass.callWS({ type: DOMAIN + "/iu_import/apply", ...request });
+
+/** An automation or script that still uses Irrigation Unlimited. */
+export interface IuFollowUp {
+  kind: "automation" | "script";
+  entity_id: string | null;
+  name: string | null;
+  edit: string | null;
+  uses: string[];
+  /** It hands IU a duration Smart Irrigation calculated: no longer needed. */
+  adjust_time: boolean;
+}
+
+/** Where the move from Irrigation Unlimited stands. */
+export interface IuImportStatus {
+  imported: boolean;
+  at: string | null;
+  full_controller: boolean;
+  programs: { id: string; name: string; schedules: number; on: number }[];
+  schedules_on: number;
+  switched_over: boolean;
+  switched_at: string | null;
+  iu_running: boolean;
+  controllers: { entity_id: string; name: string; enabled: boolean | null }[];
+  /** Who waters, read from what is on: IU's controllers, our schedules. */
+  waters: "irrigation_unlimited" | "smart_irrigation" | "both" | "none";
+  both_on: boolean;
+  /** Zones IU runs switched off that a step of an imported sequence waters. */
+  zones_off_in_iu?: { zone: string; program: string }[];
+  follow_ups: IuFollowUp[];
+}
+
+export const iuImportStatus = (hass: HomeAssistant): Promise<IuImportStatus> =>
+  hass.callWS({ type: DOMAIN + "/iu_import/status" });
+
+/** Hand the watering to Smart Irrigation, or back to Irrigation Unlimited. */
+export const iuImportCutover = (
+  hass: HomeAssistant,
+  to: "smart_irrigation" | "irrigation_unlimited",
+): Promise<{
+  controllers: string[];
+  /** Left off: IU had them switched off. */
+  left_off?: string[];
+  /** Left off: no record of which of their schedules IU had on. */
+  unrecorded?: string[];
+}> => hass.callWS({ type: DOMAIN + "/iu_import/cutover", to });
