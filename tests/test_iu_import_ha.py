@@ -1414,3 +1414,100 @@ async def test_a_zone_iu_has_off_is_not_named_where_it_waters_nothing_here(hass)
     zone_id = coordinator.store.config.iu_import["zones"]["c1_z2"]["zone"]
     await coordinator.async_update_zone_config(zone_id, {"state": "disabled"})
     assert (await iu_import_ha.async_status(hass, coordinator))["zones_off_in_iu"] == []
+
+
+async def test_the_cut_over_handlers_answer_every_way():
+    """Not set up, IU refusing the switch, and a switch that went through."""
+    coordinator = await _imported()
+    hass, connection = _ws(coordinator)
+    hass.data = {}
+    for handler, msg in (
+        (websockets.websocket_iu_import_status, {}),
+        (websockets.websocket_iu_import_cutover, {"to": "smart_irrigation"}),
+    ):
+        await _call(handler, hass, connection, **msg)
+        assert connection.send_error.call_args.args[1] == "not_ready"
+
+    hass, connection = _ws(coordinator)
+    with patch.object(
+        iu_import_ha,
+        "async_cutover",
+        AsyncMock(side_effect=HomeAssistantError("IU says no")),
+    ):
+        await _call(
+            websockets.websocket_iu_import_cutover,
+            hass,
+            connection,
+            to="smart_irrigation",
+        )
+    assert connection.send_error.call_args.args[1:] == ("iu_failed", "IU says no")
+
+    with (
+        patch.object(
+            iu_import_ha, "async_cutover", AsyncMock(return_value={"controllers": []})
+        ),
+        patch.object(websockets, "async_dispatcher_send") as dispatched,
+    ):
+        await _call(
+            websockets.websocket_iu_import_cutover,
+            hass,
+            connection,
+            to="smart_irrigation",
+        )
+    assert connection.send_result.call_args.args[1] == {"controllers": []}
+    dispatched.assert_called_once()
+
+
+async def test_a_switch_to_nowhere_is_refused(hass):
+    coordinator = await _imported()
+    with pytest.raises(iu_import_ha.IUImportError) as err:
+        await iu_import_ha.async_cutover(hass, coordinator, "somewhere")
+    assert err.value.code == "unknown_direction"
+
+
+async def test_going_back_needs_iu_running(hass):
+    """IU uninstalled after the switch: going back would leave nothing
+    watering, so it is refused and the schedules stay on."""
+    await _iu_in(hass, (True,))
+    coordinator = await _imported()
+    await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    on = _schedules_on(coordinator)
+    hass.services.async_remove("irrigation_unlimited", "enable")
+    with pytest.raises(iu_import_ha.IUImportError) as err:
+        await iu_import_ha.async_cutover(hass, coordinator, "irrigation_unlimited")
+    assert err.value.code == "iu_not_running"
+    assert _schedules_on(coordinator) == on
+
+
+async def test_an_undo_that_fails_too_is_logged_and_the_first_error_stands(
+    hass, caplog
+):
+    calls = await _iu_in(hass, (True,))
+    coordinator = await _imported()
+
+    async def failing(data):
+        raise HomeAssistantError("disk full")
+
+    async def broken(call):
+        raise HomeAssistantError("IU says no")
+
+    coordinator.async_update_config = failing
+    hass.services.async_register("irrigation_unlimited", "enable", broken)
+    with pytest.raises(HomeAssistantError, match="disk full"):
+        await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    assert calls == [("disable", ["binary_sensor.irrigation_unlimited_c1_m"])]
+    assert "Could not undo IU's controllers" in caplog.text
+
+
+async def test_a_step_with_a_deleted_zone_names_nothing(hass):
+    await _iu_in(hass, (True,))
+    beds = (
+        er.async_get(hass)
+        .async_get_or_create("binary_sensor", "irrigation_unlimited", "c1_z2")
+        .entity_id
+    )
+    hass.states.async_set(beds, "off", {"enabled": False})
+    coordinator = await _imported()
+    zone_id = coordinator.store.config.iu_import["zones"]["c1_z2"]["zone"]
+    coordinator.store.zones.pop(zone_id)
+    assert (await iu_import_ha.async_status(hass, coordinator))["zones_off_in_iu"] == []
