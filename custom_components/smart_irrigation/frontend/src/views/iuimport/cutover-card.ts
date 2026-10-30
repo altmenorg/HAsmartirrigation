@@ -40,6 +40,8 @@ export class SmartIrrigationIuCutover extends LitElement {
   @state() private error?: string;
   /** Programs the last switch left off, as IU had them off. */
   @state() private leftOff: string[] = [];
+  /** Programs the last switch left off, with no record of IU's on and off. */
+  @state() private unrecorded: string[] = [];
 
   firstUpdated(): void {
     this.reload().catch((e) => console.error("IU cut-over: load failed", e));
@@ -96,12 +98,16 @@ export class SmartIrrigationIuCutover extends LitElement {
     this.busy = true;
     this.error = undefined;
     this.leftOff = [];
+    this.unrecorded = [];
     try {
       const result = await iuImportCutover(this.hass, to);
       const names = new Map(
         (this.status?.programs ?? []).map((p) => [p.id, p.name]),
       );
       this.leftOff = (result.left_off ?? []).map((id) => names.get(id) ?? id);
+      this.unrecorded = (result.unrecorded ?? []).map(
+        (id) => names.get(id) ?? id,
+      );
     } catch (e) {
       this.error = this.errorText(e);
     } finally {
@@ -151,6 +157,11 @@ export class SmartIrrigationIuCutover extends LitElement {
           ${this.leftOff.length
             ? html`<div class="notice">
                 ${this.t("left-off", "names", this.leftOff.join(", "))}
+              </div>`
+            : ""}
+          ${this.unrecorded.length
+            ? html`<div class="notice">
+                ${this.t("unrecorded", "names", this.unrecorded.join(", "))}
               </div>`
             : ""}
           ${!status.full_controller

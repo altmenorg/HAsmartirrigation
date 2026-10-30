@@ -403,5 +403,10 @@ export const iuImportStatus = (hass: HomeAssistant): Promise<IuImportStatus> =>
 export const iuImportCutover = (
   hass: HomeAssistant,
   to: "smart_irrigation" | "irrigation_unlimited",
-): Promise<{ controllers: string[]; left_off?: string[] }> =>
-  hass.callWS({ type: DOMAIN + "/iu_import/cutover", to });
+): Promise<{
+  controllers: string[];
+  /** Left off: IU had them switched off. */
+  left_off?: string[];
+  /** Left off: no record of which of their schedules IU had on. */
+  unrecorded?: string[];
+}> => hass.callWS({ type: DOMAIN + "/iu_import/cutover", to });

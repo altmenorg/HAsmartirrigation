@@ -1112,14 +1112,19 @@ async def async_apply(coordinator, preview: dict) -> dict:
         for p in getattr(store.config, const.CONF_PROGRAMS, None) or []
         if isinstance(p, dict)
     }
-    new_record[IU_ON] = {
+    recorded_on = {
         program_id: [
             schedules[n].get(const.SCHEDULE_ID) for n in positions if n < len(schedules)
         ]
         for program_id, positions in iu_on.items()
         for schedules in [saved.get(program_id, {}).get(const.PROGRAM_SCHEDULES) or []]
     }
-    await coordinator.async_update_config({const.CONF_IU_IMPORT: new_record})
+    # A new record, not the saved one changed in place: the store holds that
+    # very dict, and a save that fails must leave it as it was saved. Without
+    # this record, the switch turns none of these schedules on (unrecorded).
+    await coordinator.async_update_config(
+        {const.CONF_IU_IMPORT: {**new_record, IU_ON: recorded_on}}
+    )
     _LOGGER.info(
         "Irrigation Unlimited imported: %d zone(s) created, %d updated, "
         "%d program(s), %d supply(ies)",
@@ -1422,8 +1427,8 @@ async def _switch_iu(hass: HomeAssistant, service: str, entity_ids: list) -> lis
 
 def _with_on(programs: list, wanted: dict) -> list:
     """The programs with, for each program in ``wanted``, the schedules listed
-    there switched on (``None``: all of them); the others are left as they are,
-    so one the user switched on stays on."""
+    there switched on; the others are left as they are, so one the user
+    switched on stays on."""
     changed = copy.deepcopy(programs)
     for program in changed:
         program_id = program.get(const.PROGRAM_ID)
@@ -1431,7 +1436,7 @@ def _with_on(programs: list, wanted: dict) -> list:
             continue
         ids = wanted[program_id]
         for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
-            if ids is None or schedule.get(const.SCHEDULE_ID) in ids:
+            if schedule.get(const.SCHEDULE_ID) in ids:
                 schedule[const.SCHEDULE_ENABLED] = True
     return changed
 
@@ -1487,7 +1492,8 @@ async def _to_smart_irrigation(hass: HomeAssistant, coordinator) -> dict:
     record = _record(config)
     programs = getattr(config, const.CONF_PROGRAMS, None) or []
     before = record.get(CUTOVER) if isinstance(record.get(CUTOVER), dict) else None
-    left_off = []
+    left_off: list = []
+    unrecorded: list = []
     if before is None:
         iu_on = record.get(IU_ON) if isinstance(record.get(IU_ON), dict) else {}
         si_on = record.get(SI_ON) if isinstance(record.get(SI_ON), dict) else {}
@@ -1501,9 +1507,13 @@ async def _to_smart_irrigation(hass: HomeAssistant, coordinator) -> dict:
                 wanted[program_id] = si_on[program_id]
             elif _off_in_iu(sources.get(program_id), off_in_iu):
                 left_off.append(program_id)
+            elif isinstance(iu_on.get(program_id), list):
+                wanted[program_id] = iu_on[program_id]
             else:
-                # A program imported before IU's flags were kept: all on.
-                wanted[program_id] = iu_on.get(program_id)
+                # No record of which schedules IU had on (imported before it
+                # was kept, or its save failed): none is switched on, rather
+                # than one IU had off. Importing again records it.
+                unrecorded.append(program_id)
         programs = _with_on(programs, wanted)
     controllers = sorted(set((before or {}).get("controllers") or []) | set(disabled))
     cutover = {
@@ -1525,7 +1535,7 @@ async def _to_smart_irrigation(hass: HomeAssistant, coordinator) -> dict:
         "switched off, the imported schedules on",
         len(disabled),
     )
-    return {"controllers": disabled, "left_off": left_off}
+    return {"controllers": disabled, "left_off": left_off, "unrecorded": unrecorded}
 
 
 async def _to_irrigation_unlimited(hass: HomeAssistant, coordinator) -> dict:

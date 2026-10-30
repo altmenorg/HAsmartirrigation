@@ -1511,3 +1511,39 @@ async def test_a_step_with_a_deleted_zone_names_nothing(hass):
     zone_id = coordinator.store.config.iu_import["zones"]["c1_z2"]["zone"]
     coordinator.store.zones.pop(zone_id)
     assert (await iu_import_ha.async_status(hass, coordinator))["zones_off_in_iu"] == []
+
+
+async def test_without_a_record_of_ious_on_and_off_nothing_is_switched_on(hass):
+    """The import's second save (IU's on and off by schedule id) failed, or
+    the programs were imported before it was kept: rather than every schedule,
+    including one IU had off, none comes on, and the switch says which."""
+    await _iu_in(hass, (True,))
+    coordinator = FakeCoordinator()
+    config = copy.deepcopy(CONFIG)
+    config["controllers"][0]["sequences"][0]["schedules"].append(
+        {"time": "22:00", "enabled": False}
+    )
+    save = coordinator.async_update_config
+
+    async def second_save_fails(data):
+        if "iu_on" in (data.get("iu_import") or {}):
+            raise HomeAssistantError("disk full")
+        await save(data)
+
+    coordinator.async_update_config = second_save_fails
+    with pytest.raises(HomeAssistantError):
+        await _import(coordinator, config)
+    coordinator.async_update_config = save
+    assert "iu_on" not in coordinator.store.config.iu_import
+
+    result = await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    assert result["unrecorded"] == ["iu_c1_1", "iu_c1_2"]
+    assert not any(any(on) for on in _schedules_on(coordinator).values())
+    # IU is off and nothing waters: the status says so.
+    assert (await iu_import_ha.async_status(hass, coordinator))["waters"] == "none"
+
+    # Back to IU, import again (it records them), over again: IU's own come on.
+    await iu_import_ha.async_cutover(hass, coordinator, "irrigation_unlimited")
+    await _import(coordinator, config)
+    await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
+    assert _schedules_on(coordinator) == {"iu_c1_1": [True, False], "iu_c1_2": [True]}

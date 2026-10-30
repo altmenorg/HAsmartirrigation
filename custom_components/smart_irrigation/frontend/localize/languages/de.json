@@ -945,7 +945,8 @@
           "adjust-time": "Gibt Irrigation Unlimited eine von Smart Irrigation berechnete Dauer. Nach dem Umstieg hat sie nichts mehr zu tun: Die übernommenen Schritte werden hier berechnet. Entferne sie.",
           "uses": "Nutzt {uses}."
         },
-        "left-off": "Aus gelassen, weil Irrigation Unlimited sie ausgeschaltet hatte: {names}."
+        "left-off": "Aus gelassen, weil Irrigation Unlimited sie ausgeschaltet hatte: {names}.",
+        "unrecorded": "Aus gelassen, weil die Übernahme nicht festgehalten hat, welche ihrer Zeitpläne Irrigation Unlimited an hatte: {names}. Schalte ihre Zeitpläne selbst ein, oder geh zurück zu Irrigation Unlimited, übernimm noch einmal (dabei wird es festgehalten) und steig erneut um."
       }
     }
   },

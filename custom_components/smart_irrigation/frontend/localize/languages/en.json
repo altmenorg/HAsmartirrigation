@@ -945,7 +945,8 @@
           "adjust-time": "Hands Irrigation Unlimited a duration Smart Irrigation calculated. After the switch it has nothing to do: the imported steps are calculated here. Remove it.",
           "uses": "Uses {uses}."
         },
-        "left-off": "Left off, as Irrigation Unlimited had them switched off: {names}."
+        "left-off": "Left off, as Irrigation Unlimited had them switched off: {names}.",
+        "unrecorded": "Left off, as the import has no record of which of their schedules Irrigation Unlimited had on: {names}. Switch their schedules on yourself, or go back to Irrigation Unlimited, import again (it records them) and switch over again."
       }
     }
   },
