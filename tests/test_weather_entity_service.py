@@ -326,7 +326,7 @@ async def test_through_the_radiation_wrapper_an_unreadable_entity_has_no_forecas
 
 
 async def test_the_rain_ahead_is_summed_from_the_hourly_forecast():
-    start = dt_util.start_of_local_day() + datetime.timedelta(days=1)
+    start = dt_util.as_utc(dt_util.start_of_local_day() + datetime.timedelta(days=1))
     hourly = [
         {
             "datetime": (start + datetime.timedelta(hours=hour)).isoformat(),
@@ -351,7 +351,7 @@ async def test_the_rain_ahead_is_summed_from_the_hourly_forecast():
 
 
 async def test_no_rain_ahead_when_the_forecast_does_not_reach_the_end():
-    start = dt_util.start_of_local_day() + datetime.timedelta(days=1)
+    start = dt_util.as_utc(dt_util.start_of_local_day() + datetime.timedelta(days=1))
     hourly = [{"datetime": start.isoformat(), "precipitation": 1.0}]
     hass = _hass(
         _attrs(), forecasts={"hourly": hourly}, loop=asyncio.get_running_loop()
@@ -695,7 +695,9 @@ async def test_no_rain_ahead_from_an_empty_hourly_forecast():
 
 
 async def test_hourly_entries_without_rain_are_skipped_in_the_rain_ahead():
-    start = dt_util.start_of_local_day() + datetime.timedelta(days=1)
+    # In UTC: added to a local time, an hour is an hour of the clock, and on
+    # the night the clocks go back "midnight + 2 h" is three real hours.
+    start = dt_util.as_utc(dt_util.start_of_local_day() + datetime.timedelta(days=1))
     hourly = [
         "not an entry",
         {"datetime": start.isoformat()},
