@@ -304,8 +304,12 @@ export interface IuImportProgram {
 export interface IuImportReportItem {
   path: string;
   outcome: "approximated" | "not_carried" | "unknown";
+  /** The note in English, as the backend writes it. */
   note: string;
   subject: string;
+  /** The note's code (``panels.iu_import.notes.<code>``) and its values. */
+  code?: string;
+  params?: Record<string, string | number>;
 }
 
 export type IuImportConflict =

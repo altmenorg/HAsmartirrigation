@@ -1,4 +1,8 @@
 import { describe, expect, it } from "vitest";
+import IntlMessageFormat from "intl-messageformat";
+import * as en from "../../../localize/languages/en.json";
+import * as de from "../../../localize/languages/de.json";
+import { localize } from "../../../localize/localize";
 import {
   automaticMatch,
   baselineOf,
@@ -7,6 +11,8 @@ import {
   describeSchedule,
   describeStep,
   reportGroups,
+  reportNote,
+  nextChoice,
   shortDuration,
   summary,
   weekdayNames,
@@ -241,5 +247,78 @@ describe("choices against the import's own picks", () => {
     expect(Object.keys(zoneConflicts(p)).sort()).toEqual(["back", "front"]);
     expect(nameConflicts(p).map((c) => c.code)).toEqual(["program_exists"]);
     expect(zoneConflicts(undefined)).toEqual({});
+  });
+});
+
+describe("reportNote", () => {
+  const item = {
+    path: "controllers.0.sequences.0.schedules.0.time.cron",
+    outcome: "approximated" as const,
+    note: "cron '25 6-9 * * *' became 4 time schedule(s)",
+    subject: "",
+    code: "cron_expanded",
+    params: { cron: "25 6-9 * * *", count: 4 },
+  };
+  const tr = (key: string, ...args: any[]) =>
+    localize(`panels.iu_import.${key}`, "en", ...args);
+
+  it("says a note by its code, with its values", () => {
+    expect(reportNote(item, tr)).toBe(
+      "cron 25 6-9 * * * became 4 time schedules",
+    );
+    expect(
+      reportNote({ ...item, params: { cron: "0 6 * * *", count: 1 } }, tr),
+    ).toBe("cron 0 6 * * * became 1 time schedule");
+  });
+
+  it("falls back to the English note without a code or a text for it", () => {
+    expect(reportNote({ ...item, code: undefined }, tr)).toBe(item.note);
+    expect(reportNote({ ...item, code: "not_a_code" }, tr)).toBe(item.note);
+  });
+
+  it("writes numbers as the language does", () => {
+    const german = (de as any).panels.iu_import.notes;
+    expect(
+      new IntlMessageFormat(german.wait_held, "de").format({
+        seconds: 4000.5,
+        held: 3600,
+      }),
+    ).toBe("eine Wartezeit von 4.000,5 s wird auf 3.600 s begrenzt");
+  });
+
+  it("has every note in English and German, and each reads", () => {
+    const english = (en as any).panels.iu_import.notes;
+    const german = (de as any).panels.iu_import.notes;
+    expect(Object.keys(german).sort()).toEqual(Object.keys(english).sort());
+    for (const [lang, notes] of [
+      ["en", english],
+      ["de", german],
+    ] as const) {
+      for (const [code, text] of Object.entries(notes)) {
+        const names = [...(text as string).matchAll(/\{(\w+)[,}]/g)].map(
+          (m) => m[1],
+        );
+        const values = Object.fromEntries(names.map((n) => [n, 2]));
+        const said = new IntlMessageFormat(text as string, lang).format(values);
+        expect(typeof said, `${lang} ${code}`).toBe("string");
+      }
+    }
+  });
+});
+
+describe("nextChoice", () => {
+  const open = [true, false, true, true];
+  it("moves to the next or previous card that can be chosen, round the ends", () => {
+    expect(nextChoice(open, 0, "ArrowDown")).toBe(2);
+    expect(nextChoice(open, 0, "ArrowRight")).toBe(2);
+    expect(nextChoice(open, 3, "ArrowDown")).toBe(0);
+    expect(nextChoice(open, 2, "ArrowUp")).toBe(0);
+    expect(nextChoice(open, 0, "ArrowLeft")).toBe(3);
+  });
+  it("goes to the first or last with Home and End, and ignores other keys", () => {
+    expect(nextChoice(open, 2, "Home")).toBe(0);
+    expect(nextChoice(open, 0, "End")).toBe(3);
+    expect(nextChoice(open, 0, "a")).toBeNull();
+    expect(nextChoice([false, false], 0, "ArrowDown")).toBeNull();
   });
 });

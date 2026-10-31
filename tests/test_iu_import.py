@@ -485,7 +485,9 @@ def test_a_reported_moment_stays_a_plain_datetime():
     # The report travels to the panel as JSON: only plain values in it.
     plan = plan_import(CONFIG)
     for item in plan["report"]["items"]:
+        params = item.pop("params")
         assert all(isinstance(v, str) for v in item.values())
+        assert all(isinstance(v, str | int | float) for v in params.values())
     assert not any(isinstance(v, datetime) for v in plan["report"]["counts"].values())
 
 

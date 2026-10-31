@@ -222,6 +222,8 @@ def parse_pasted(text: str) -> tuple[dict, list]:
                 f"{', '.join(loader.tags_seen)} is not followed in pasted YAML: "
                 "those values were read as the text written. Import from "
                 "configuration.yaml to have them resolved",
+                code="tags_not_followed",
+                params={"tags": ", ".join(loader.tags_seen)},
             )
         )
     return parsed, notes
@@ -520,8 +522,23 @@ def _empty(value) -> bool:
     return value is None or value == "" or value == []
 
 
-def _item(path: str, outcome: str, note: str, subject: str = "") -> dict:
-    return {"path": path, "outcome": outcome, "note": note, "subject": subject}
+def _item(
+    path: str,
+    outcome: str,
+    note: str,
+    subject: str = "",
+    code: str = "",
+    params: dict | None = None,
+) -> dict:
+    """A report entry made here, in the importer's form (``Report.add``)."""
+    return {
+        "path": path,
+        "outcome": outcome,
+        "note": note,
+        "subject": subject,
+        "code": code,
+        "params": params or {},
+    }
 
 
 def plan(
@@ -552,6 +569,8 @@ def plan(
                     APPROXIMATED,
                     f"a blueprint automation feeds it from zone {link.si_zone_id}, "
                     "which does not exist any more: it is not taken as calculated",
+                    code="blueprint_zone_gone",
+                    params={"zone": link.si_zone_id},
                 )
             )
     links = [link for link in links if link.si_zone_id in existing]
@@ -620,6 +639,8 @@ def plan(
                     f"zone {zone_id} is already {first['name']!r}'s: "
                     "it gets a zone of its own",
                     planned["name"],
+                    code="zone_taken",
+                    params={"zone": zone_id, "name": str(first["name"])},
                 )
             )
             zone_id, reason = None, None
@@ -668,6 +689,11 @@ def plan(
                     f"zone {current.get(const.ZONE_NAME)!r} keeps its own "
                     + ", ".join(kept),
                     planned["name"],
+                    code="zone_keeps_own",
+                    params={
+                        "zone": str(current.get(const.ZONE_NAME)),
+                        "kept": ", ".join(kept),
+                    },
                 )
             )
         zones.append(
@@ -699,6 +725,8 @@ def plan(
                         f"but it is matched to zone {zone['zone_id']}: its "
                         "calculated duration is that zone's",
                         zone["name"],
+                        code="feeds_other_zone",
+                        params={"from": link.si_zone_id, "to": zone["zone_id"]},
                     )
                 )
 
@@ -722,6 +750,8 @@ def plan(
                 f"switched off in IU and matched to {zone['zone_name']!r}, which "
                 "stays as it is: the programs leave it out",
                 zone["name"],
+                code="off_in_iu_matched",
+                params={"zone": str(zone["zone_name"])},
             )
         )
     raw_programs = [_without_zones(p, off_in_iu) for p in raw["programs"]]
@@ -750,6 +780,8 @@ def plan(
                     "longer than in IU, unless the lead time is set to 0 or the "
                     "step shortened",
                     z["name"],
+                    code="lead_time",
+                    params={"zone": str(z["zone_name"]), "lead": lead},
                 )
             )
 
@@ -852,6 +884,7 @@ def plan(
                 NOT_CARRIED,
                 "the full controller is off: the programs are imported, but they "
                 "water only once it is on",
+                code="full_controller_off",
             )
         )
 
