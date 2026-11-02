@@ -415,7 +415,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # instead, as a reload does, while the valves and the pumps can still be
     # switched; the next start resumes them as it does after a reload.
     async def _async_close_on_stop(_event) -> None:
-        await coordinator.async_wait_valve_runs(coordinator.async_teardown_valve_runs())
+        try:
+            await coordinator.async_wait_valve_runs(
+                coordinator.async_teardown_valve_runs()
+            )
+        except Exception as e:  # noqa: BLE001 - never hold up the stop
+            _LOGGER.warning("Could not close the runs on stop: %s", e)
 
     entry.async_on_unload(
         hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, _async_close_on_stop)
