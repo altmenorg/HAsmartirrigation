@@ -621,6 +621,8 @@ ZONE_CURRENT_DRAINAGE = "current_drainage"
 # (litres). Both set when a run credits the bucket (direct or observed).
 ZONE_LAST_IRRIGATION = "last_irrigation"
 ZONE_WATER_USED = "water_used"
+# The water the zone's last credited run delivered, in litres.
+ZONE_LAST_RUN_VOLUME = "last_run_volume"
 # Rain already accounted for by an asserted bucket value, subtracted at the next
 # calculation so it is not credited twice (#811).
 ZONE_PRECIPITATION_SUPERSEDED = "precipitation_superseded"

@@ -9,6 +9,11 @@ Per zone (on the zone device):
   Also on while an automatic zone cannot be calculated (calc_problem.py), for
   as long as that lasts; the reason is then the problem's code.
 
+For the whole install (on the hub device), one entity to automate or show
+instead of one per zone:
+- any_zone_needs_water: on while a zone's irrigation_needed is on.
+- any_problem: on while a zone's problem is on.
+
 Per-zone status entities inspired by JustChr's Smart Irrigation fork (MIT).
 """
 
@@ -20,6 +25,7 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
 )
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EVENT_STATE_CHANGED
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -28,7 +34,7 @@ from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.util import slugify
 
 from . import const
-from .entity import zone_device_info
+from .entity import hub_device_info, zone_device_info
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -71,6 +77,16 @@ async def async_setup_entry(
         async_dispatcher_connect(
             hass, const.DOMAIN + "_register_entity", async_add_binary_sensor_entity
         )
+    )
+    async_add_devices(
+        [
+            SmartIrrigationAnyZoneBinarySensor(
+                hass, "any_zone_needs_water", "irrigation_needed", "mdi:water-alert"
+            ),
+            SmartIrrigationAnyZoneBinarySensor(
+                hass, "any_problem", "problem", "mdi:alert-circle-outline"
+            ),
+        ]
     )
 
 
@@ -120,6 +136,106 @@ class SmartIrrigationZoneBinarySensor(BinarySensorEntity):
     def extra_state_attributes(self) -> dict:
         """Return zone identification attributes."""
         return {"zone_id": self._zone_id}
+
+
+class SmartIrrigationAnyZoneBinarySensor(BinarySensorEntity):
+    """On while any zone's sensor of one kind is on, on the hub device.
+
+    Reads the per-zone entities themselves, so it says exactly what they say
+    (the threshold of each zone, a valve or a calculation problem), and lists
+    the zones that are on.
+    """
+
+    _attr_has_entity_name = True
+    _attr_should_poll = False
+
+    def __init__(self, hass: HomeAssistant, key: str, suffix: str, icon: str):
+        """Initialize, for the per-zone sensors ending in ``suffix``."""
+        self._hass = hass
+        self._key = key
+        self._suffix = suffix
+        self.entity_id = f"{BINARY_PLATFORM}.{const.DOMAIN}_{key}"
+        self._attr_translation_key = key
+        self._attr_icon = icon
+        if key == "any_problem":
+            self._attr_device_class = BinarySensorDeviceClass.PROBLEM
+        self._attr_is_on = False
+        self._zones: list = []
+        # The entity ids of the per-zone sensors, as they are now: a zone
+        # added or an entity renamed changes them.
+        self._watched: set = set()
+
+    @property
+    def unique_id(self) -> str:
+        """Return a stable unique ID."""
+        return f"{const.DOMAIN}_{self._key}"
+
+    @property
+    def device_info(self) -> dict:
+        """On the hub device."""
+        return hub_device_info(self._hass)
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        """The zones whose sensor is on."""
+        return {"zones": self._zones}
+
+    def _members(self) -> list:
+        registered = (self._hass.data.get(const.DOMAIN) or {}).get(
+            "zone_binary_sensors"
+        ) or {}
+        return [
+            entity
+            for entities in registered.values()
+            for entity in entities
+            if getattr(entity, "suffix", None) == self._suffix
+            and entity.hass is not None
+        ]
+
+    @callback
+    def _recompute(self) -> None:
+        members = self._members()
+        self._watched = {entity.entity_id for entity in members}
+        on = [entity for entity in members if entity.is_on]
+        self._zones = [entity._zone_name for entity in on]  # noqa: SLF001
+        self._attr_is_on = bool(on)
+
+    async def async_added_to_hass(self) -> None:
+        """Follow the per-zone sensors: every state they write, the first
+        included, and the zones added since."""
+        await super().async_added_to_hass()
+        self._recompute()
+
+        # A zone just added is not among the members yet when its sensors
+        # write their first state: their default entity id says whose they are.
+        prefix = f"{BINARY_PLATFORM}.{const.DOMAIN}_"
+        ending = f"_{self._suffix}"
+
+        @callback
+        def _ours(event_data) -> bool:
+            entity_id = event_data.get("entity_id") or ""
+            return entity_id in self._watched or (
+                entity_id.startswith(prefix) and entity_id.endswith(ending)
+            )
+
+        self.async_on_remove(
+            self._hass.bus.async_listen(
+                EVENT_STATE_CHANGED, self._async_member_changed, event_filter=_ours
+            )
+        )
+        for signal in ("_register_entity", "_config_updated"):
+            self.async_on_remove(
+                async_dispatcher_connect(
+                    self._hass, const.DOMAIN + signal, self._async_member_changed
+                )
+            )
+
+    @callback
+    def _async_member_changed(self, *_args) -> None:
+        before = (self._attr_is_on, list(self._zones))
+        self._recompute()
+        if (self._attr_is_on, self._zones) != before:
+            self.async_write_ha_state()
 
 
 class SmartIrrigationZoneIrrigationNeededBinarySensor(SmartIrrigationZoneBinarySensor):

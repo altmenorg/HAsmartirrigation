@@ -494,6 +494,7 @@ class ObservedWateringMixin:
                 const.ZONE_DURATION: new_duration,
                 const.ZONE_LAST_IRRIGATION: dt_util.utcnow(),
                 const.ZONE_WATER_USED: round(prev_used + delivered_l, 3),
+                const.ZONE_LAST_RUN_VOLUME: round(delivered_l, 3),
             },
         )
         await self._record_irrigation_run(zone, delivered_l, seconds, started)

@@ -2616,6 +2616,11 @@ class SmartIrrigationCoordinator(
         if entity is not None:
             entity_registry.async_remove(entity.entity_id)
         self.hass.data[const.DOMAIN]["zones"].pop(zone_id, None)
+        # Forget its other entities too, or a zone added again under the same
+        # id would find them "already created", and the install-wide binary
+        # sensors would still read the deleted zone's.
+        for registry in ("zone_child_sensors", "zone_binary_sensors"):
+            (self.hass.data[const.DOMAIN].get(registry) or {}).pop(zone_id, None)
 
         # Remove the per-zone device, which drops all of its child entities too.
         # Looked up the way this Home Assistant asks for: async_get_device by
@@ -2640,6 +2645,9 @@ class SmartIrrigationCoordinator(
         # six child sensors of each zone stayed unavailable until a restart,
         # while the duration sensor beside them came back (#845).
         self.hass.data[const.DOMAIN].pop("zone_child_sensors", None)
+        # The per-zone binary sensors are guarded the same way, and stayed
+        # unavailable after a reload for the same reason.
+        self.hass.data[const.DOMAIN].pop("zone_binary_sensors", None)
 
         # remove subscriptions for coordinator
         while self._subscriptions:

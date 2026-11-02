@@ -24,6 +24,7 @@ from .live_estimate import _aware_iso
 from .performance import async_timer
 from .program_sensor import async_setup_program_sensors
 from .units import depth_to_display, zone_to_display
+from .zone_outlook import SIGNAL_OUTLOOK_UPDATED, ZoneOutlook
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -95,6 +96,14 @@ async def async_setup_entry(
             hass, const.DOMAIN + "_register_entity", async_add_sensor_entity
         )
     )
+    # When each zone is watered next, for its "next irrigation" sensor: worked
+    # out once for all of them (zone_outlook.py).
+    coordinator = hass.data.get(const.DOMAIN, {}).get("coordinator")
+    if coordinator is not None:
+        outlook = ZoneOutlook(hass, coordinator)
+        hass.data[const.DOMAIN]["zone_outlook"] = outlook
+        outlook.async_start()
+        config_entry.async_on_unload(outlook.async_stop)
     # "_platform_loaded" (which replays existing zones) is now fired from
     # __init__.async_setup_entry after ALL entity platforms have subscribed, so
     # the number platform receives the zones too. Firing it here would race it.
@@ -158,6 +167,26 @@ def _add_zone_child_sensors(hass: HomeAssistant, async_add_devices, config: dict
             zname,
             "water_used",
             const.ZONE_WATER_USED,
+        )
+    )
+    children.append(
+        SmartIrrigationZoneLastRunVolumeSensor(
+            hass,
+            f"{PLATFORM}.{base}_last_run_volume",
+            zid,
+            zname,
+            "last_run_volume",
+            const.ZONE_LAST_RUN_VOLUME,
+        )
+    )
+    children.append(
+        SmartIrrigationZoneNextIrrigationSensor(
+            hass,
+            f"{PLATFORM}.{base}_next_irrigation",
+            zid,
+            zname,
+            "next_irrigation",
+            None,
         )
     )
     registered[config["id"]] = children
@@ -831,3 +860,65 @@ class SmartIrrigationZoneWaterUsedSensor(SmartIrrigationZoneChildSensor):
     def native_unit_of_measurement(self):
         """Litres (the unit the run crediting works in)."""
         return UnitOfVolume.LITERS
+
+
+class SmartIrrigationZoneLastRunVolumeSensor(SmartIrrigationZoneWaterUsedSensor):
+    """The water this zone's last credited run delivered (litres)."""
+
+    _attr_state_class = None
+    _attr_icon = "mdi:water-check"
+
+
+class SmartIrrigationZoneNextIrrigationSensor(SmartIrrigationZoneChildSensor):
+    """When this zone is watered next, as the panel says (zone_outlook.py).
+
+    Unknown when no run to come waters it: nothing to water, or nothing
+    planned. A run the weather would hold back as things stand is still its
+    next run, with ``skip_expected`` saying so.
+    """
+
+    _attr_state_class = None
+    _attr_device_class = SensorDeviceClass.TIMESTAMP
+    _attr_icon = "mdi:calendar-clock"
+
+    def _read_value(self):
+        outlook = (self._hass.data.get(const.DOMAIN) or {}).get("zone_outlook")
+        if outlook is None:
+            return None
+        return outlook.runs.get(self._zone_id)
+
+    async def async_added_to_hass(self):
+        """Follow the outlook as well as the zone."""
+        await super().async_added_to_hass()
+        self.async_on_remove(
+            async_dispatcher_connect(
+                self._hass, SIGNAL_OUTLOOK_UPDATED, self._async_outlook_updated
+            )
+        )
+
+    @callback
+    def _async_outlook_updated(self):
+        self._value = self._read_value()
+        self.async_write_ha_state()
+
+    @property
+    def native_value(self):
+        """The start of the zone's next run."""
+        run = self._value
+        return run.get("start") if isinstance(run, dict) else None
+
+    @property
+    def native_unit_of_measurement(self):
+        """A timestamp has no unit."""
+        return None
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        """The zone, how long it is expected to water, and whether the weather
+        would hold the run back as things stand."""
+        run = self._value if isinstance(self._value, dict) else {}
+        return {
+            "zone_id": self._zone_id,
+            "expected_seconds": run.get("seconds"),
+            "skip_expected": run.get("skip"),
+        }

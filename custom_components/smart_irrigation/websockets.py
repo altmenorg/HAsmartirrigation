@@ -273,6 +273,7 @@ class SmartIrrigationMappingView(HomeAssistantView):
 # passes them through. Dropping them here keeps the store their sole writer.
 SERVER_OWNED_ZONE_FIELDS = (
     const.ZONE_WATER_USED,
+    const.ZONE_LAST_RUN_VOLUME,
     const.ZONE_LAST_IRRIGATION,
     const.ZONE_DAYS_SINCE_IRRIGATION,
     const.ZONE_MEASURED_THROUGHPUT,
@@ -408,6 +409,7 @@ class SmartIrrigationZoneView(HomeAssistantView):
                     None, str, datetime.datetime
                 ),
                 vol.Optional(const.ZONE_WATER_USED): vol.Or(float, int, None),
+                vol.Optional(const.ZONE_LAST_RUN_VOLUME): vol.Or(float, int, None),
                 vol.Optional(const.ZONE_PRECIPITATION_SUPERSEDED): vol.Or(
                     float, int, None
                 ),

@@ -24,6 +24,12 @@
       },
       "live_bucket": {
         "name": "Live bucket"
+      },
+      "last_run_volume": {
+        "name": "Last run volume"
+      },
+      "next_irrigation": {
+        "name": "Next irrigation"
       }
     },
     "number": {
@@ -74,6 +80,12 @@
         "name": "Watering now"
       },
       "problem": {
+        "name": "Problem"
+      },
+      "any_zone_needs_water": {
+        "name": "A zone needs water"
+      },
+      "any_problem": {
         "name": "Problem"
       }
     },

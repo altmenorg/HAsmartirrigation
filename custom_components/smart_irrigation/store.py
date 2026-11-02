@@ -206,6 +206,7 @@ from .const import (
     ZONE_LAST_CALCULATED,
     ZONE_LAST_CONSUMED_AT,
     ZONE_LAST_IRRIGATION,
+    ZONE_LAST_RUN_VOLUME,
     ZONE_LAST_UPDATED,
     ZONE_LEAD_TIME,
     ZONE_LINKED_ENTITY,
@@ -313,6 +314,8 @@ class ZoneEntry:
     # Timestamp of the last credited irrigation run + cumulative water (litres).
     last_irrigation = attr.ib(type=datetime, default=None)
     water_used = attr.ib(type=float, default=0.0)
+    # What the last credited run delivered (litres), None before the first.
+    last_run_volume = attr.ib(type=float, default=None)
     # Optional valve/switch entity watched to credit the bucket (closed-loop).
     linked_entity = attr.ib(type=str, default=None)
     # Optional MQTT dead-man for direct valve control: a set-topic the runner
@@ -1309,6 +1312,7 @@ class SmartIrrigationStorage:
                         current_drainage=zone.get(ZONE_CURRENT_DRAINAGE, None),
                         last_irrigation=zone.get(ZONE_LAST_IRRIGATION, None),
                         water_used=zone.get(ZONE_WATER_USED, 0.0),
+                        last_run_volume=zone.get(ZONE_LAST_RUN_VOLUME, None),
                         precipitation_superseded=zone.get(
                             ZONE_PRECIPITATION_SUPERSEDED, 0.0
                         ),
