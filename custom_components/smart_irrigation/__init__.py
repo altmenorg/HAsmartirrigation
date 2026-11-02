@@ -2450,7 +2450,11 @@ class SmartIrrigationCoordinator(
                     persist=not dry_run,
                     since=self.zone_window_start(zone),
                 )
-            else:
+            if weatherdata is None:
+                # A fixed amount per day reads no weather: it is calculated
+                # over the time since its last calculation, readings or not.
+                weatherdata = self.fixed_amount_window(zone)
+            if weatherdata is None and not mapping.get(const.MAPPING_DATA):
                 _LOGGER.error(
                     "[async_update_zone_config] Error calculating zone %s: no sensor data available",
                     zone.get(const.ZONE_NAME),
