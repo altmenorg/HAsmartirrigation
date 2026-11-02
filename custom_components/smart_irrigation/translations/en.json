@@ -306,6 +306,30 @@
     "throughput_mismatch": {
       "title": "Zone {zone}: measured flow does not match the configured throughput",
       "description": "Over the last {samples} runs, the flow meter on zone **{zone}** measured about **{measured}** where the zone is configured for **{configured}** - {percentage}% off.\n\nEvery irrigation duration is derived from the configured throughput, so they are all off by roughly the same amount.\n\nIf the measurement looks right, set the zone's throughput to it. If it does not, check that the meter only counts this zone, and that mains pressure is what you expect. Smart Irrigation never changes the value for you."
+    },
+    "zone_not_calculated_no_readings": {
+      "title": "Zone {zone} cannot be calculated: no weather readings",
+      "description": "Zone **{zone}** was not calculated: its sensor group has no readings to calculate from. Until it has, the zone's deficit does not move and it is not watered.\n\nCheck that the sensor group has sources and that they report, update the weather data, then calculate the zone. The notice clears by itself at the next calculation that succeeds."
+    },
+    "zone_not_calculated_no_engine": {
+      "title": "Zone {zone} cannot be calculated: no calculation engine",
+      "description": "Zone **{zone}** has no calculation engine, so it is not calculated and not watered.\n\nChoose how it is calculated on its card in the Zones tab. The notice clears by itself at the next calculation that succeeds."
+    },
+    "zone_not_calculated_nothing_from_engine": {
+      "title": "Zone {zone} cannot be calculated: no evapotranspiration",
+      "description": "Zone **{zone}** takes its evapotranspiration from a sensor or a weather service, and its sensor group had none to give. Until it has, the zone is not watered.\n\nCheck the sensor that provides the evapotranspiration, or the weather service. The notice clears by itself at the next calculation that succeeds."
+    },
+    "zone_not_calculated_forecast_without_service": {
+      "title": "Zone {zone} cannot be calculated: a forecast without a weather service",
+      "description": "The calculation engine of zone **{zone}** looks days ahead, which needs a weather service, and none is set up. The zone is not watered until it can be calculated.\n\nSet up a weather service, or set the engine's forecast days to 0. The notice clears by itself at the next calculation that succeeds."
+    },
+    "zone_not_calculated_error": {
+      "title": "Zone {zone} cannot be calculated: an error",
+      "description": "The calculation of zone **{zone}** failed: {detail}\n\nThe zone is not watered until it can be calculated. If it keeps failing, please open an issue with this message and the diagnostics file. The notice clears by itself at the next calculation that succeeds."
+    },
+    "zone_not_calculated_no_sensor_group": {
+      "title": "Zone {zone} cannot be calculated: no sensor group",
+      "description": "Zone **{zone}** has no sensor group, so there is nothing to calculate it from and it is not watered.\n\nChoose its sensor group on its card in the Zones tab, then calculate the zone. The notice clears by itself at the next calculation that succeeds."
     }
   }
 }

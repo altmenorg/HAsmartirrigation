@@ -290,6 +290,9 @@ SERVER_OWNED_ZONE_FIELDS = (
     const.ZONE_ETO,
     const.ZONE_CURRENT_DRAINAGE,
     const.ZONE_NUMBER_OF_DATA_POINTS,
+    # Why the last calculation failed: a stale copy would bring back a problem
+    # a calculation has since cleared (calc_problem.py).
+    const.ZONE_CALCULATION_PROBLEM,
 )
 
 
@@ -414,6 +417,7 @@ class SmartIrrigationZoneView(HomeAssistantView):
                 vol.Optional(const.ZONE_LAST_CONSUMED_AT): vol.Or(
                     None, str, datetime.datetime
                 ),
+                vol.Optional(const.ZONE_CALCULATION_PROBLEM): vol.Or(None, dict),
             }
         )
     )

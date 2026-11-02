@@ -609,6 +609,21 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     } else if (zone.state === SmartIrrigationZoneState.Manual) {
       kind = "off";
       text = t("manual");
+    } else if (zone.calculation_problem?.code) {
+      // The last calculation failed: whatever the bucket says, it is stale,
+      // and "has what it needs" would be a green tick on a zone that is not
+      // going to be watered.
+      kind = "problem";
+      const code = zone.calculation_problem.code;
+      const said = t(
+        `problem.${code}`,
+        "{detail}",
+        zone.calculation_problem.detail ?? "",
+      );
+      text =
+        typeof said === "string" && said && !said.startsWith("Translation")
+          ? said
+          : t("problem.error", "{detail}", code);
     } else if ((zone.duration ?? 0) > 0) {
       kind = "watering";
       // The volume is appended rather than a placeholder of the sentence: the
@@ -639,16 +654,21 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     }
 
     return html`
-      <div class="zone-status zone-status--${kind}">
+      <div
+        class="zone-status zone-status--${kind}"
+        role=${kind === "problem" ? "alert" : "status"}
+      >
         <ha-icon
           icon=${kind === "watering"
             ? "mdi:water-outline"
             : kind === "off"
               ? "mdi:pause-circle-outline"
-              : "mdi:check-circle-outline"}
+              : kind === "problem"
+                ? "mdi:alert-circle-outline"
+                : "mdi:check-circle-outline"}
         ></ha-icon>
         <span>${text}</span>
-        ${kind !== "off" && threshold > 0
+        ${kind !== "off" && kind !== "problem" && threshold > 0
           ? html`<span class="zone-status-numbers">
               ${t("threshold")}: ${threshold.toFixed(1)} ${unit}
             </span>`
@@ -2647,6 +2667,14 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
       .zone-status--idle ha-icon {
         color: var(--success-color, #43a047);
+      }
+
+      .zone-status--problem {
+        background: rgba(219, 68, 55, 0.12);
+      }
+
+      .zone-status--problem ha-icon {
+        color: var(--error-color, #db4437);
       }
 
       .zone-status-numbers {

@@ -718,7 +718,15 @@
         "under-threshold": "Nothing to water yet: {short} short, under this zone's threshold.",
         "manual": "Waters only when you ask.",
         "disabled": "Disabled: never watered, and its balance is not kept.",
-        "threshold": "threshold"
+        "threshold": "threshold",
+        "problem": {
+          "no_sensor_group": "Cannot be calculated: it has no sensor group. Choose one on this card; not watered until then.",
+          "no_readings": "Cannot be calculated: its sensor group has no readings. Not watered until it has.",
+          "no_engine": "Cannot be calculated: it has no calculation engine. Not watered until it has one.",
+          "nothing_from_engine": "Cannot be calculated: its sensor group gives no evapotranspiration. Not watered until it does.",
+          "forecast_without_service": "Cannot be calculated: its engine looks ahead, and no weather service is set up. Not watered.",
+          "error": "Cannot be calculated: {detail}. Not watered until it can be."
+        }
       },
       "calendar": {
         "title": "Watering calendar (12 months, estimated)",

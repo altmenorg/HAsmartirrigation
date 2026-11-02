@@ -237,6 +237,12 @@ export class SmartIrrigationZone {
   delta: number;
   et_deficiency: number;
   explanation: string;
+  /** Why the last calculation failed, until one succeeds (calc_problem.py). */
+  calculation_problem?: {
+    code: string;
+    detail?: string | null;
+    since?: string;
+  } | null;
   multiplier: number;
   mapping?: number;
   lead_time: number;
