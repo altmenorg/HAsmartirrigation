@@ -464,6 +464,18 @@ class SupplyRunnerMixin:
             },
         )
 
+    def _supply_reads_on(self, supply: dict) -> bool:
+        """Whether every entity of the supply reads on (a run resumed after a
+        restart finds it as it left it)."""
+        entities = supply.get(const.SUPPLY_ENTITIES) or []
+        if not entities:
+            return False
+        for entity_id in entities:
+            state = self.hass.states.get(entity_id)
+            if state is None or state.state not in _ON_STATES:
+                return False
+        return True
+
     async def _align_supplies(self, only=None, attempt: int = 0) -> None:
         """Switch off a supply that is running with nothing holding it.
 

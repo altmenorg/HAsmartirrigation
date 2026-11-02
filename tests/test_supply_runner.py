@@ -897,3 +897,41 @@ async def test_a_pump_that_still_reads_on_is_retried(monkeypatch):
     assert "pump" in runtime["retry_tasks"]
     for task in runtime["retry_tasks"].values():
         task.cancel()
+
+
+async def _resume(coord, seconds=100, elapsed=40):
+    from datetime import timedelta
+
+    import homeassistant.util.dt as dt_util
+
+    run = {
+        const.RUN_ENTITY_ID: "switch.zone_0",
+        const.RUN_DURATION: seconds,
+        const.RUN_STARTED: (dt_util.utcnow() - timedelta(seconds=elapsed)).isoformat(),
+    }
+    await coord._resume_claimed(run, 0)
+
+
+async def test_a_run_resumed_with_its_pump_still_on_does_not_kick_it(monkeypatch):
+    """After a restart the pump that was on is taken as on: kicking it cut the
+    pump mid-run, and its lead was waited out with the valve open."""
+    hass, coord, _ = _setup(monkeypatch, supply=_supply(kick_seconds=3, delay_before=5))
+    set_state(hass, PUMP, "on")
+    set_state(hass, "switch.zone_0", "on")
+
+    await _resume(coord)
+
+    log = _log(hass)
+    assert "wait 3" not in log
+    assert "wait 5" not in log
+    assert log[0] != "pump off"
+
+
+async def test_a_run_resumed_with_its_pump_off_starts_it_as_usual(monkeypatch):
+    hass, coord, _ = _setup(monkeypatch, supply=_supply(kick_seconds=3))
+    set_state(hass, PUMP, "off")
+    set_state(hass, "switch.zone_0", "on")
+
+    await _resume(coord)
+
+    assert _log(hass)[:3] == ["pump off", "wait 3", "pump on"]

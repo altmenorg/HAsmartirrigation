@@ -2572,6 +2572,12 @@ class ValveRunnerMixin(
         try:
             if supply is not None:
                 # The valve is open mid-run, so the supply is up with it: no lead.
+                # Which supplies are on is kept in memory and a restart empties
+                # it: one that reads on is taken as on, rather than started
+                # again, its kick cutting the pump mid-run and its lead waited
+                # out with the valve open.
+                if self._supply_reads_on(supply):
+                    self._supply_runtime()["on"].add(supply[const.SUPPLY_ID])
                 acquired = True
                 try:
                     lead_over = await self._supply_before_open(supply, token, zone_id)
