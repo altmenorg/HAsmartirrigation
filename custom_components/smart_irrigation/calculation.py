@@ -17,6 +17,14 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const
 from .calc_log import timestamps as calc_log_timestamps
+from .calc_problem import (
+    ERROR,
+    FORECAST_WITHOUT_SERVICE,
+    NO_ENGINE,
+    NO_READINGS,
+    NO_SENSOR_GROUP,
+    NOTHING_FROM_ENGINE,
+)
 from .calcmodules.consumes import sourced_fields
 from .engine_binding import zone_has_engine
 from .helpers import loadModules, parse_datetime
@@ -160,6 +168,20 @@ class CalculationMixin:
             if mapping:
                 return mapping.get(const.MAPPING_MODULE)
         return None
+
+    async def _calculation_failed(self, zone, code, detail=None, dry_run=False):
+        """Say that a zone could not be calculated (calc_problem.py).
+
+        Not for a dry run, which changes nothing; and only where the
+        coordinator keeps the problem (the calculation runs bare in tests).
+        """
+        say = getattr(self, "async_calculation_failed", None)
+        if dry_run or say is None:
+            return
+        try:
+            await say(zone, code, detail)
+        except Exception as e:  # noqa: BLE001 - saying so never costs the run
+            _LOGGER.debug("Could not record why a zone failed: %s", e)
 
     def fixed_amount_window(self, zone) -> dict | None:
         """The window of a zone calculated from a fixed amount per day, or None.
@@ -1946,6 +1968,15 @@ class CalculationMixin:
         forecast_asked = False
         results = {}
         for zone in zones:
+            if (
+                zone.get(const.ZONE_STATE) != const.ZONE_STATE_AUTOMATIC
+                and zone.get(const.ZONE_CALCULATION_PROBLEM)
+                and not dry_run
+                and hasattr(self, "async_calculation_problem_cleared")
+            ):
+                # Manual or disabled now: it is not calculated, so nothing
+                # stops it being calculated.
+                await self.async_calculation_problem_cleared(zone.get(const.ZONE_ID))
             # get forecast data if needed (once)
             modinst = await self.getModuleInstanceByID(self.module_id_for_zone(zone))
             if modinst and modinst.name == "PyETO" and modinst.forecast_days > 0:
@@ -1959,6 +1990,9 @@ class CalculationMixin:
                     _LOGGER.error(
                         "Error calculating zone %s: You have configured forecasting but there is no OWM API configured. Either configure the OWM API or stop using forecasting on the PyETO module",
                         zone.get(const.ZONE_NAME),
+                    )
+                    await self._calculation_failed(
+                        zone, FORECAST_WITHOUT_SERVICE, dry_run=dry_run
                     )
                     continue
             # calculate the zone
@@ -1983,10 +2017,24 @@ class CalculationMixin:
                     )
                 if not weatherdata:
                     weatherdata = self.fixed_amount_window(zone)
+                if not weatherdata and mapping and mapping.get(const.MAPPING_DATA):
+                    # The group has readings, all of which this zone has read
+                    # already (it was calculated by hand since, say): nothing
+                    # to calculate, which is not a failure. As by hand.
+                    _LOGGER.info(
+                        "[async_calculate_all] Zone %s: no readings since its last calculation",
+                        zone.get(const.ZONE_NAME),
+                    )
+                    continue
                 if not weatherdata:
                     _LOGGER.error(
                         "[async_calculate_all] Error calculating zone %s: no sensor data available",
                         zone.get(const.ZONE_NAME),
+                    )
+                    await self._calculation_failed(
+                        zone,
+                        NO_READINGS if mapping else NO_SENSOR_GROUP,
+                        dry_run=dry_run,
                     )
                     continue
                 try:
@@ -2006,6 +2054,9 @@ class CalculationMixin:
                     # (#867).
                     _LOGGER.error(
                         "Error calculating zone %s: %s", zone.get(const.ZONE_NAME), e
+                    )
+                    await self._calculation_failed(
+                        zone, ERROR, str(e) or type(e).__name__, dry_run=dry_run
                     )
                     continue
                 if calc_data is not None:
@@ -2062,6 +2113,7 @@ class CalculationMixin:
                 "Choose how it is calculated on its card",
                 zone.get(const.ZONE_NAME, zone_id),
             )
+            await self._calculation_failed(zone, NO_ENGINE, dry_run=dry_run)
             return None
 
         # make sure we convert forecast data pressure to absolute!
@@ -2106,6 +2158,7 @@ class CalculationMixin:
                 "in its sensor group",
                 (zone or {}).get(const.ZONE_NAME, zone_id),
             )
+            await self._calculation_failed(zone, NOTHING_FROM_ENGINE, dry_run=dry_run)
             return None
 
         # Apply seasonal adjustments before updating the zone
@@ -2115,6 +2168,8 @@ class CalculationMixin:
 
         calc_data[const.ZONE_LAST_CALCULATED] = datetime.now()
         calc_data[const.ZONE_LAST_UPDATED] = datetime.now()
+        # It calculates: whatever stopped it before is over (calc_problem.py).
+        calc_data[const.ZONE_CALCULATION_PROBLEM] = None
         # The window this calculation just consumed is the one an asserted
         # bucket value superseded part of, so the marker has done its job (#811).
         calc_data[const.ZONE_PRECIPITATION_SUPERSEDED] = 0.0
@@ -2149,6 +2204,9 @@ class CalculationMixin:
             ) or datetime.now()
 
         await self.store.async_update_zone(zone.get(const.ZONE_ID), calc_data)
+        clear = getattr(self, "async_clear_calculation_issue", None)
+        if clear is not None:
+            clear(zone.get(const.ZONE_ID))
 
         if delete_weather_data and prune:
             # What every zone of the group has passed can go. The all-zones

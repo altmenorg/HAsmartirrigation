@@ -631,6 +631,14 @@ class ServiceHandlersMixin(ProgramAdjustMixin):
                     )
                     zone_data = self._with_duration_of_bucket(zone_id, zone_data)
                 await self.store.async_update_zone(zone_id, zone_data)
+                updated = self.store.get_zone(zone_id) or {}
+                if (
+                    updated.get(const.ZONE_STATE) != const.ZONE_STATE_AUTOMATIC
+                    and updated.get(const.ZONE_CALCULATION_PROBLEM)
+                    and hasattr(self, "async_calculation_problem_cleared")
+                ):
+                    # Manual or disabled now: not calculated, so nothing stops it.
+                    await self.async_calculation_problem_cleared(zone_id)
                 async_dispatcher_send(
                     self.hass,
                     const.DOMAIN + "_config_updated",

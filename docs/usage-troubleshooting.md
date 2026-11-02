@@ -36,6 +36,29 @@ or that the weather service still sends them.
 A repair issue also appears when one run of a zone cannot water what the zone loses between
 two waterings (see *Maximum duration* in the [zone settings](configuration-zones.md)).
 
+## A zone says it cannot be calculated
+When the calculation of an automatic zone fails, the zone keeps its last bucket and is not
+watered. Smart Irrigation says so in three places until a calculation succeeds: the zone's
+line in the Zones tab (red, with the reason, instead of "nothing to water"), the zone's
+problem sensor (`binary_sensor.smart_irrigation_<zone>_problem`, on, with the reason in its
+`reason` and `calculation` attributes), and a repair notice. The reasons and what to do:
+
+- **No sensor group**: a zone added on the Zones tab has none until one is chosen. Choose
+  it on the zone's card.
+- **No weather readings**: the zone's sensor group has no readings. Check that it has
+  sources and that they report, update the weather data, then calculate the zone.
+- **No calculation engine**: choose how the zone is calculated on its card.
+- **No evapotranspiration**: the zone takes its evapotranspiration from a sensor or a
+  weather service, and the sensor group had none. Check that sensor or the service.
+- **A forecast without a weather service**: the engine looks days ahead, which needs a
+  weather service. Set one up, or set the engine's forecast days to 0.
+- **An error**: the message is shown. If it keeps happening, please open an issue with it
+  and the diagnostics file.
+
+A dry run changes nothing and says nothing. A calculation with nothing new to read (every
+reading was already used) is not a failure. A zone switched to manual or disabled is not
+calculated, so it shows no such problem.
+
 ## "The calculated duration looks wrong"
 The diagnostic file shows the current state, not how it was reached. To find out why a
 particular day watered the way it did, switch on the

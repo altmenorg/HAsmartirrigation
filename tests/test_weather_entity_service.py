@@ -764,6 +764,7 @@ async def test_the_entity_chosen_in_the_options_is_set_up(hass):
         "async_setup_weather_liveness",
         "async_bind_engineless_zones",
         "async_setup_zone_unwatered_watch",
+        "async_restore_calculation_issues",
     ):
         setattr(coordinator, name, AsyncMock())
     store = AsyncMock()

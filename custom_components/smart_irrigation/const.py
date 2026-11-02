@@ -610,6 +610,9 @@ ZONE_LAST_CALCULATED = "last_calculated"
 # calculates: each zone reads only what arrived after its own watermark, and
 # the buffer is pruned to the oldest one instead of wiped.
 ZONE_LAST_CONSUMED_AT = "last_consumed_at"
+# Why the zone's last calculation failed ({code, detail, since}), until one
+# succeeds; None while it calculates (calc_problem.py).
+ZONE_CALCULATION_PROBLEM = "calculation_problem"
 ZONE_LAST_UPDATED = "last_updated"
 ZONE_NUMBER_OF_DATA_POINTS = "number_of_data_points"
 ZONE_DRAINAGE_RATE = "drainage_rate"

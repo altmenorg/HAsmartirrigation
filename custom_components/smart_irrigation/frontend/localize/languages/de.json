@@ -718,7 +718,15 @@
         "under-threshold": "Noch nichts zu bewässern: {short} fehlen, unter dem Schwellwert dieser Zone.",
         "manual": "Bewässert nur, wenn du es verlangst.",
         "disabled": "Deaktiviert: wird nie bewässert, und ihre Bilanz wird nicht geführt.",
-        "threshold": "Schwellwert"
+        "threshold": "Schwellwert",
+        "problem": {
+          "no_sensor_group": "Lässt sich nicht berechnen: Sie hat keine Sensorgruppe. Wähle eine auf dieser Karte; bis dahin wird nicht bewässert.",
+          "no_readings": "Lässt sich nicht berechnen: Ihre Sensorgruppe hat keine Messwerte. Bis dahin wird nicht bewässert.",
+          "no_engine": "Lässt sich nicht berechnen: Es ist keine Berechnungsart gewählt. Bis dahin wird nicht bewässert.",
+          "nothing_from_engine": "Lässt sich nicht berechnen: Ihre Sensorgruppe liefert keine Verdunstung. Bis dahin wird nicht bewässert.",
+          "forecast_without_service": "Lässt sich nicht berechnen: Die Berechnung schaut voraus, und es ist kein Wetterdienst eingerichtet. Es wird nicht bewässert.",
+          "error": "Lässt sich nicht berechnen: {detail}. Bis dahin wird nicht bewässert."
+        }
       },
       "calendar": {
         "title": "Bewässerungskalender (12 Monate, geschätzt)",

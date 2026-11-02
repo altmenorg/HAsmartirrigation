@@ -185,6 +185,7 @@ from .const import (
     ZONE_ALLOWED_DEPLETION,
     ZONE_AVAILABLE_WATER,
     ZONE_BUCKET,
+    ZONE_CALCULATION_PROBLEM,
     ZONE_CONFIRM_TIMEOUT,
     ZONE_CROP_FACTOR_BY_MONTH,
     ZONE_CURRENT_DRAINAGE,
@@ -365,6 +366,8 @@ class ZoneEntry:
     # None means it has never consumed one, and its first calculation takes
     # everything there, which is what clearing the buffer used to leave behind.
     last_consumed_at = attr.ib(type=datetime, default=None)
+    # Why the last calculation failed, until one succeeds (calc_problem.py).
+    calculation_problem = attr.ib(type=dict, default=None)
     # What the flow meter says the zone actually delivers, smoothed over runs,
     # with the number of runs behind it. Advisory only (see const).
     measured_throughput = attr.ib(type=float, default=None)
@@ -1339,6 +1342,7 @@ class SmartIrrigationStorage:
                             CONF_DEFAULT_SOIL_MOISTURE_THRESHOLD,
                         ),
                         last_consumed_at=zone.get(ZONE_LAST_CONSUMED_AT, None),
+                        calculation_problem=zone.get(ZONE_CALCULATION_PROBLEM, None),
                         measured_throughput=zone.get(ZONE_MEASURED_THROUGHPUT, None),
                         measured_throughput_samples=zone.get(
                             ZONE_MEASURED_THROUGHPUT_SAMPLES, 0

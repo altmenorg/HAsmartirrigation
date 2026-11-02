@@ -53,6 +53,12 @@ from . import const, illuminance
 from .alerts import ZoneUnwateredMixin
 from .blueprint_install import async_install_bundled_blueprints
 from .calc_log import CalculationLogger
+from .calc_problem import (
+    FORECAST_WITHOUT_SERVICE,
+    NO_READINGS,
+    NO_SENSOR_GROUP,
+    CalculationProblemMixin,
+)
 from .calculation import CalculationMixin
 from .card import async_register_card
 from .engine_binding import EngineBindingMixin
@@ -398,6 +404,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # Full controller: tell the user when a dry zone no program will water.
     await coordinator.async_setup_zone_unwatered_watch()
 
+    # A zone that could not be calculated before the restart still says so.
+    await coordinator.async_restore_calculation_issues()
+
     # Full controller: the pause and the waiting manual runs a restart interrupted
     # come back first, so the runs resumed below find the pause.
     await coordinator.async_restore_pause_and_queue()
@@ -503,6 +512,7 @@ class SmartIrrigationCoordinator(
     LiveEstimateMixin,
     WeatherLivenessMixin,
     ZoneUnwateredMixin,
+    CalculationProblemMixin,
     ValveRunnerMixin,
     ProgramSchedulerMixin,
     SkipConditionsMixin,
@@ -2418,6 +2428,7 @@ class SmartIrrigationCoordinator(
             await self.async_remove_entity(zone_id)
             # Nothing left to advise about once the zone is gone.
             self.async_clear_throughput_issue(zone_id)
+            self.async_clear_calculation_issue(zone_id)
 
         elif const.ATTR_CALCULATE in data:
             # calculate a specific zone
@@ -2433,7 +2444,11 @@ class SmartIrrigationCoordinator(
             weatherdata = None
             zone = self.store.get_zone(zone_id)
             mapping_id = zone[const.ZONE_MAPPING]
-            mapping = self.store.get_mapping(mapping_id)
+            # A zone added on the Zones tab has no sensor group until one is
+            # chosen; reading it as one raised, and the panel got a 500.
+            mapping = (
+                self.store.get_mapping(mapping_id) if mapping_id is not None else None
+            ) or {}
             if mapping.get(const.MAPPING_DATA):
                 # Only this zone's own window. The group's buffer belongs to
                 # every zone reading it, so calculating one must not consume
@@ -2459,6 +2474,10 @@ class SmartIrrigationCoordinator(
                     "[async_update_zone_config] Error calculating zone %s: no sensor data available",
                     zone.get(const.ZONE_NAME),
                 )
+                if not dry_run:
+                    await self.async_calculation_failed(
+                        zone, NO_READINGS if mapping else NO_SENSOR_GROUP
+                    )
                 return
             if weatherdata is None:
                 # Every reading in the buffer is one this zone has already
@@ -2482,6 +2501,10 @@ class SmartIrrigationCoordinator(
                         "[async_update_zone_config] Error calculating zone %s: You have configured forecasting but there is no OWM API configured. Either configure the OWM API or stop using forecasting on the PyETO module",
                         zone.get(const.ZONE_NAME),
                     )
+                    if not dry_run:
+                        await self.async_calculation_failed(
+                            zone, FORECAST_WITHOUT_SERVICE
+                        )
                     return
 
             # By name: `prune` was added before `dry_run` in the signature, and
@@ -2530,6 +2553,12 @@ class SmartIrrigationCoordinator(
             data = await self._start_window_at_bucket_assertion(zone_id, data)
             data = self._with_duration_of_bucket(zone_id, data)
             entry = await self.store.async_update_zone(zone_id, data)
+            zone = self.store.get_zone(zone_id) or {}
+            if zone.get(const.ZONE_STATE) != const.ZONE_STATE_AUTOMATIC and zone.get(
+                const.ZONE_CALCULATION_PROBLEM
+            ):
+                # Manual or disabled now: not calculated, so nothing stops it.
+                await self.async_calculation_problem_cleared(zone_id)
             async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated", zone_id)
             await self.update_subscriptions()
             # make sure to update the HA entity here by listening to this in sensor.py.

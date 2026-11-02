@@ -306,6 +306,30 @@
     "throughput_mismatch": {
       "title": "Zone {zone}: der gemessene Durchfluss passt nicht zum eingestellten Durchfluss",
       "description": "Über die letzten {samples} Durchläufe hat der Durchflussmesser der Zone **{zone}** etwa **{measured}** gemessen, während die Zone auf **{configured}** eingestellt ist, also {percentage}% daneben.\n\nJede Bewässerungsdauer wird aus dem eingestellten Durchfluss abgeleitet, also sind alle um etwa denselben Betrag falsch.\n\nWenn die Messung stimmt, setze den Durchfluss der Zone darauf. Wenn nicht, prüfe, ob der Zähler nur diese Zone zählt und ob der Leitungsdruck dem entspricht, was du erwartest. Smart Irrigation ändert den Wert nie von selbst."
+    },
+    "zone_not_calculated_no_readings": {
+      "title": "Zone {zone} lässt sich nicht berechnen: keine Wetterdaten",
+      "description": "Zone **{zone}** wurde nicht berechnet: Ihre Sensorgruppe hat keine Messwerte, aus denen sich rechnen ließe. Bis sie welche hat, bleibt das Defizit der Zone stehen, und sie wird nicht bewässert.\n\nPrüfe, ob die Sensorgruppe Quellen hat und ob diese melden, aktualisiere die Wetterdaten und berechne dann die Zone. Der Hinweis verschwindet von selbst bei der nächsten Berechnung, die gelingt."
+    },
+    "zone_not_calculated_no_engine": {
+      "title": "Zone {zone} lässt sich nicht berechnen: keine Berechnungsart",
+      "description": "Zone **{zone}** hat keine Berechnungsart, deshalb wird sie nicht berechnet und nicht bewässert.\n\nWähle auf ihrer Karte unter Zonen, wie sie berechnet wird. Der Hinweis verschwindet von selbst bei der nächsten Berechnung, die gelingt."
+    },
+    "zone_not_calculated_nothing_from_engine": {
+      "title": "Zone {zone} lässt sich nicht berechnen: keine Verdunstung",
+      "description": "Zone **{zone}** übernimmt ihre Verdunstung von einem Sensor oder einem Wetterdienst, und ihre Sensorgruppe hatte keine. Bis sie eine hat, wird die Zone nicht bewässert.\n\nPrüfe den Sensor, der die Verdunstung liefert, oder den Wetterdienst. Der Hinweis verschwindet von selbst bei der nächsten Berechnung, die gelingt."
+    },
+    "zone_not_calculated_forecast_without_service": {
+      "title": "Zone {zone} lässt sich nicht berechnen: Vorhersage ohne Wetterdienst",
+      "description": "Die Berechnung von Zone **{zone}** schaut Tage voraus, dafür braucht sie einen Wetterdienst, und es ist keiner eingerichtet. Bis sie sich berechnen lässt, wird die Zone nicht bewässert.\n\nRichte einen Wetterdienst ein, oder setze die Vorhersagetage der Berechnung auf 0. Der Hinweis verschwindet von selbst bei der nächsten Berechnung, die gelingt."
+    },
+    "zone_not_calculated_error": {
+      "title": "Zone {zone} lässt sich nicht berechnen: ein Fehler",
+      "description": "Die Berechnung von Zone **{zone}** ist fehlgeschlagen: {detail}\n\nBis sie sich berechnen lässt, wird die Zone nicht bewässert. Wenn das so bleibt, öffne bitte ein Issue mit dieser Meldung und der Diagnosedatei. Der Hinweis verschwindet von selbst bei der nächsten Berechnung, die gelingt."
+    },
+    "zone_not_calculated_no_sensor_group": {
+      "title": "Zone {zone} lässt sich nicht berechnen: keine Sensorgruppe",
+      "description": "Zone **{zone}** hat keine Sensorgruppe, deshalb gibt es nichts, woraus sie berechnet werden könnte, und sie wird nicht bewässert.\n\nWähle ihre Sensorgruppe auf ihrer Karte unter Zonen und berechne dann die Zone. Der Hinweis verschwindet von selbst bei der nächsten Berechnung, die gelingt."
     }
   }
 }

@@ -6,6 +6,8 @@ Per zone (on the zone device):
 - problem: a valve problem was reported for the zone (e.g. it never opened);
   latches on the ``..._zone_problem`` event and clears on the next successful
   run (the ``..._zone_irrigated`` dispatch sent when the bucket is credited).
+  Also on while an automatic zone cannot be calculated (calc_problem.py), for
+  as long as that lasts; the reason is then the problem's code.
 
 Per-zone status entities inspired by JustChr's Smart Irrigation fork (MIT).
 """
@@ -248,7 +250,8 @@ class SmartIrrigationZoneWateringNowBinarySensor(SmartIrrigationZoneBinarySensor
 class SmartIrrigationZoneProblemBinarySensor(
     SmartIrrigationZoneBinarySensor, RestoreEntity
 ):
-    """On when a valve problem was reported; clears on the next successful run."""
+    """On when a valve problem was reported (until the next successful run), or
+    while the zone cannot be calculated (until it can)."""
 
     suffix = "problem"
     _attr_device_class = BinarySensorDeviceClass.PROBLEM
@@ -257,7 +260,23 @@ class SmartIrrigationZoneProblemBinarySensor(
     def __init__(self, hass, entity_id, zone_id, zone_name) -> None:
         """Initialize, with no reason yet."""
         super().__init__(hass, entity_id, zone_id, zone_name)
+        # The valve problem latched by the event; the calculation problem is
+        # read from the zone, where it is kept.
+        self._valve_on = False
         self._reason = None
+        self._calculation = None
+
+    def _calculation_problem(self) -> dict | None:
+        zone = self._zone()
+        if not zone or zone.get(const.ZONE_STATE) != const.ZONE_STATE_AUTOMATIC:
+            return None
+        problem = zone.get(const.ZONE_CALCULATION_PROBLEM)
+        return problem if isinstance(problem, dict) else None
+
+    @callback
+    def _update_state(self) -> None:
+        self._calculation = self._calculation_problem()
+        self._attr_is_on = self._valve_on or self._calculation is not None
 
     async def async_added_to_hass(self) -> None:
         """Listen for the zone-problem event and the zone-irrigated reset.
@@ -268,9 +287,24 @@ class SmartIrrigationZoneProblemBinarySensor(
         """
         await super().async_added_to_hass()
         last = await self.async_get_last_state()
-        if last is not None and last.state == "on":
-            self._attr_is_on = True
-            self._reason = last.attributes.get("reason")
+        if (
+            last is not None
+            and last.state == "on"
+            # ``valve_reason`` is None unless a valve problem was latched, also
+            # while a calculation problem is on; before it existed, ``reason``
+            # was the valve's.
+            and last.attributes.get("valve_reason", last.attributes.get("reason"))
+        ):
+            self._valve_on = True
+            self._reason = last.attributes.get(
+                "valve_reason", last.attributes.get("reason")
+            )
+        self._update_state()
+        self.async_on_remove(
+            async_dispatcher_connect(
+                self._hass, const.DOMAIN + "_config_updated", self._async_zone_changed
+            )
+        )
         self.async_on_remove(
             self._hass.bus.async_listen(
                 f"{const.DOMAIN}_{const.EVENT_ZONE_PROBLEM}", self._async_problem
@@ -285,18 +319,37 @@ class SmartIrrigationZoneProblemBinarySensor(
     @callback
     def _async_problem(self, event) -> None:
         if event.data.get("zone_id") == self._zone_id:
-            self._attr_is_on = True
+            self._valve_on = True
             self._reason = event.data.get("reason")
+            self._update_state()
             self.async_write_ha_state()
 
     @callback
     def _async_run_ok(self, zone_id=None) -> None:
-        if zone_id == self._zone_id and self._attr_is_on:
-            self._attr_is_on = False
+        if zone_id == self._zone_id and self._valve_on:
+            self._valve_on = False
             self._reason = None
+            self._update_state()
+            self.async_write_ha_state()
+
+    @callback
+    def _async_zone_changed(self, zone_id=None) -> None:
+        if zone_id is not None and zone_id != self._zone_id:
+            return
+        before = (self._attr_is_on, self._calculation)
+        self._update_state()
+        if (self._attr_is_on, self._calculation) != before:
             self.async_write_ha_state()
 
     @property
     def extra_state_attributes(self) -> dict:
-        """Return zone id and the last problem reason (if any)."""
-        return {"zone_id": self._zone_id, "reason": self._reason}
+        """Return zone id and the reason: the valve's, else the calculation's."""
+        calculation = self._calculation
+        return {
+            "zone_id": self._zone_id,
+            "reason": (
+                self._reason if self._valve_on else (calculation or {}).get("code")
+            ),
+            "valve_reason": self._reason if self._valve_on else None,
+            "calculation": calculation,
+        }
