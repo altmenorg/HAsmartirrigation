@@ -552,6 +552,30 @@ def plan_wall_seconds(plan: list, soak_seconds: float = 0.0) -> float:
     return total
 
 
+def drop_below_deficit(plan: list, zones) -> list:
+    """The plan without the zones their step will skip for a deficit under its own.
+
+    The run decides at each step, on the bucket of the moment (below_deficit);
+    the planning and the schedules ask beforehand, on the bucket of now, so
+    they do not show or place a run the step will not make (#971).
+    """
+    by_id = {int(z[const.ZONE_ID]): z for z in zones if const.ZONE_ID in z}
+    kept_plan = []
+    for steps in plan:
+        kept = []
+        for step in steps:
+            members = [
+                m
+                for m in step["zones"]
+                if not below_deficit(m, by_id.get(int(m["zone_id"])) or {})
+            ]
+            if members:
+                kept.append({**step, "zones": members})
+        if kept:
+            kept_plan.append(kept)
+    return kept_plan
+
+
 def restrict_plan(plan: list, zone_ids) -> list:
     """The plan with only the given zones in it; steps left empty drop out.
 

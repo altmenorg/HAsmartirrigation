@@ -22,6 +22,7 @@ from . import const
 from .programs import (
     DURATION_IGNORING_THRESHOLD,
     active_adjustment,
+    drop_below_deficit,
     needs_run_length,
     plan_program,
     plan_wall_seconds,
@@ -200,10 +201,14 @@ class ProgramStatusMixin:
         return result
 
     def _program_totals(self, program: dict, zones) -> tuple:
-        plan = plan_program(
-            program,
-            self.zones_for_programs(zones),
-            self.program_adjustment(program.get(const.PROGRAM_ID)),
+        for_programs = self.zones_for_programs(zones)
+        plan = drop_below_deficit(
+            plan_program(
+                program,
+                for_programs,
+                self.program_adjustment(program.get(const.PROGRAM_ID)),
+            ),
+            for_programs,
         )
         soak = float(getattr(self.store.config, const.CONF_SOAK_MINUTES, 0) or 0) * 60.0
         return plan, plan_wall_seconds(plan, soak)

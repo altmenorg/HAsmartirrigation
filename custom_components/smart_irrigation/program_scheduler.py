@@ -40,7 +40,13 @@ from homeassistant.helpers.event import async_track_point_in_utc_time
 from homeassistant.helpers.sun import get_astral_event_date
 
 from . import const
-from .programs import find_program, needs_run_length, plan_program, plan_wall_seconds
+from .programs import (
+    drop_below_deficit,
+    find_program,
+    needs_run_length,
+    plan_program,
+    plan_wall_seconds,
+)
 from .schedules import ANCHOR_END, next_fire, schedule_skip_conditions
 
 _LOGGER = logging.getLogger(__name__)
@@ -111,11 +117,13 @@ class ProgramSchedulerMixin:
                 # run that will really be made.
                 adjust = getattr(self, "program_adjustment", None)
                 for_programs = getattr(self, "zones_for_programs", None)
+                read = for_programs(zones) if for_programs else zones
                 total = plan_wall_seconds(
-                    plan_program(
-                        program,
-                        for_programs(zones) if for_programs else zones,
-                        adjust(program_id) if adjust else None,
+                    drop_below_deficit(
+                        plan_program(
+                            program, read, adjust(program_id) if adjust else None
+                        ),
+                        read,
                     ),
                     soak,
                 )

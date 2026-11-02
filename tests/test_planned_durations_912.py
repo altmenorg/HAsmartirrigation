@@ -263,3 +263,49 @@ def test_the_coordinator_hands_the_threshold_free_run_to_the_planner():
 
     # 15 mm at 12 mm/h is 4500 s, within the zone's maximum duration of 3600.
     assert planned[DURATION_IGNORING_THRESHOLD] == 3600
+
+
+# --- the planning skips what the step will skip (#971) ---------------------------
+
+from custom_components.smart_irrigation.programs import (  # noqa: E402
+    drop_below_deficit,
+)
+
+
+def test_a_zone_short_of_the_steps_minimum_is_dropped_from_the_plan():
+    """Megalos' Test zone on beta2: 0.4 mm dry, a step asking for 7 mm."""
+    shallow = zone(
+        0,
+        **{
+            const.ZONE_BUCKET: -0.4,
+            const.ZONE_DURATION: 0,
+            DURATION_IGNORING_THRESHOLD: 120,
+        },
+    )
+    plan = plan_program(_step_program(min_deficit=7.0), [shallow])
+    assert plan  # the run decides at the step, on the bucket of the moment
+
+    assert drop_below_deficit(plan, [shallow]) == []
+
+
+def test_a_zone_past_the_steps_minimum_stays_in_the_plan():
+    plan = plan_program(_step_program(min_deficit=7.0), [_held_back_zone()])
+
+    assert drop_below_deficit(plan, [_held_back_zone()]) == plan
+
+
+async def test_the_planning_says_nothing_to_water_under_the_steps_minimum():
+    hass, coord = _status(
+        [
+            _program(
+                [{"time": "06:57"}],
+                steps=[{"zones": [0], const.STEP_MIN_DEFICIT_MM: 7.0}],
+            )
+        ]
+    )
+    coord.store.by_id[0][const.ZONE_BUCKET] = -0.4
+
+    [planned] = await coord.async_planning(1)
+
+    assert planned["nothing_to_water"] is True
+    assert planned["steps"] == []
