@@ -830,11 +830,15 @@ class TriggersMixin:
         of the day makes them and the ones after it find the durations as they
         left them.
         """
+        # Fresh numbers first, when the user asked for them, before every
+        # start: the skip checks and the durations below rest on them. A second
+        # run of the day (a hot afternoon after a morning run) waters for what
+        # the zones lost since the first, not for the morning's numbers. The
+        # calculation clears the day's holds, so they are made again on its
+        # durations below.
+        await self._recalculate_before_start()
         # Decide once per day whether today is a watering day.
         if self._watering_decision_today is None:
-            # Fresh numbers first, when the user asked for them: the
-            # skip checks and the durations below should rest on them.
-            await self._recalculate_before_start()
             # One structured evaluation rather than two booleans, so
             # what the panel shows and what the runner decides come from
             # the same call (#794).
@@ -1017,7 +1021,7 @@ class TriggersMixin:
         async_dispatcher_send(self.hass, const.DOMAIN + "_update_frontend")
 
     async def _recalculate_before_start(self) -> None:
-        """Calculate the zones again just before the first start of the day.
+        """Calculate the zones again just before a start.
 
         Opt-in (``recalculate_before_start``): it only makes sense when Smart
         Irrigation itself starts the watering. Whatever else does, a schedule of
@@ -1052,7 +1056,7 @@ class TriggersMixin:
                             zone.get(const.ZONE_NAME),
                         )
                         return
-            _LOGGER.info("Calculating again before the first start of the day")
+            _LOGGER.info("Calculating again before the start")
             await self._async_calculate_all()
         except Exception as e:  # noqa: BLE001 - the run goes ahead on what it has
             _LOGGER.warning("Could not calculate again before the start: %s", e)
