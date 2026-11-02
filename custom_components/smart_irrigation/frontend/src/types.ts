@@ -383,6 +383,13 @@ export interface SkipCheck {
   skip: boolean;
   forecast_mm?: number | null;
   threshold_mm?: number | null;
+  /** Rain forecast: the forecast weighted by its probability, which is what
+   * the threshold is compared with. */
+  expected_mm?: number | null;
+  /** Rain forecast: set when the run goes ahead despite the threshold. */
+  overridden?: "deficit" | "skips_in_a_row" | null;
+  deficit_mm?: number | null;
+  skips_in_a_row?: number | null;
   days_since?: number | null;
   days_required?: number | null;
   /** Freeze and wind: the reading, its limit, and the unit of both. */

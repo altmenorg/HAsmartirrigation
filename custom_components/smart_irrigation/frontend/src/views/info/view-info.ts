@@ -614,15 +614,43 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
 
   private renderCheckNumbers(check: SkipCheck): TemplateResult {
     if (check.id === "precipitation") {
+      // The threshold is compared with the rain to expect (each forecast
+      // weighted by its probability), not with the raw total: showing only
+      // the total read as "8.1 mm over a 3 mm threshold, not blocking".
+      const weighted =
+        check.expected_mm != null &&
+        check.forecast_mm != null &&
+        Math.abs(check.expected_mm - check.forecast_mm) >= 0.05;
+      let anyway = "";
+      if (check.overridden === "deficit") {
+        anyway = this.t(
+          "cards.decision.detail-anyway-deficit",
+          "{deficit}",
+          (check.deficit_mm ?? 0).toFixed(1),
+        );
+      } else if (check.overridden === "skips_in_a_row") {
+        anyway = this.t(
+          "cards.decision.detail-anyway-skips",
+          "{days}",
+          String(check.skips_in_a_row ?? 0),
+        );
+      }
       return html`
         <span
           >${this.t("cards.decision.detail-forecast")}:
           ${check.forecast_mm?.toFixed(1) ?? "-"} mm</span
         >
+        ${weighted
+          ? html`<span
+              >${this.t("cards.decision.detail-expected")}:
+              ${check.expected_mm!.toFixed(1)} mm</span
+            >`
+          : ""}
         <span
           >${this.t("cards.decision.detail-threshold")}:
           ${check.threshold_mm?.toFixed(1) ?? "-"} mm</span
         >
+        ${anyway ? html`<span class="check-why">${anyway}</span>` : ""}
       `;
     }
     if (check.id === "freeze" || check.id === "wind") {
@@ -1002,6 +1030,10 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
         color: var(--primary-text-color);
         font-weight: 500;
       }
+      .check-why {
+        flex-basis: 100%;
+      }
+
       .check-detail {
         display: flex;
         flex-wrap: wrap;
