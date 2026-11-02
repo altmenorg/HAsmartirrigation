@@ -13,6 +13,7 @@ from homeassistant.const import (
     CONF_ELEVATION,
     CONF_LATITUDE,
     CONF_LONGITUDE,
+    EVENT_HOMEASSISTANT_STOP,
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
 )
@@ -406,6 +407,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     # A zone that could not be calculated before the restart still says so.
     await coordinator.async_restore_calculation_issues()
+
+    # Home Assistant stopping does not unload the entry: the runs were only
+    # cancelled at the very end, when a service call may no longer go through,
+    # and a pump's off-after-delay timer went with them. A pump could run with
+    # its valves shut until the next start. The runs are taken down here
+    # instead, as a reload does, while the valves and the pumps can still be
+    # switched; the next start resumes them as it does after a reload.
+    async def _async_close_on_stop(_event) -> None:
+        await coordinator.async_wait_valve_runs(coordinator.async_teardown_valve_runs())
+
+    entry.async_on_unload(
+        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, _async_close_on_stop)
+    )
 
     # Full controller: the pause and the waiting manual runs a restart interrupted
     # come back first, so the runs resumed below find the pause.
@@ -1210,10 +1224,20 @@ class SmartIrrigationCoordinator(
             self._track_auto_update_delay_unsub = async_call_later(
                 self.hass, timedelta(seconds=delay), self.track_update_time
             )
-        elif self._track_auto_update_time_unsub:
+        elif self._track_auto_update_time_unsub or self._track_auto_update_delay_unsub:
             self._auto_update_schedule = None
-            self._track_auto_update_time_unsub()
-            self._track_auto_update_time_unsub = None
+            if self._track_auto_update_time_unsub:
+                self._track_auto_update_time_unsub()
+                self._track_auto_update_time_unsub = None
+            # A first update still waiting for its delay would start the
+            # interval anyway.
+            if self._track_auto_update_delay_unsub:
+                self._track_auto_update_delay_unsub()
+                self._track_auto_update_delay_unsub = None
+            # The client cached each reading for the interval: with no interval
+            # left, an update asked for by hand got a reading up to that old.
+            if self._WeatherServiceClient:
+                self._WeatherServiceClient.cache_seconds = 0
             await self.store.async_update_config(data)
 
     async def update_subscriptions(self, config=None):

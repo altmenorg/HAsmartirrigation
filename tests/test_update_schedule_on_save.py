@@ -108,3 +108,22 @@ async def test_the_subscriptions_are_still_refreshed_on_every_save():
     await _save(coordinator, {const.CONF_PROGRAMS: []}, later)
 
     assert coordinator.update_subscriptions.await_count == 2
+
+
+@pytest.mark.asyncio
+async def test_switching_updates_off_stops_a_pending_first_update_and_the_cache():
+    """With no interval left, a pending first update would start one anyway,
+    and the client kept caching each reading for the old interval: an update
+    asked for by hand got a reading up to that old."""
+    coordinator = _coordinator()
+    coordinator._WeatherServiceClient = MagicMock()
+    coordinator._WeatherServiceClient.cache_seconds = 3599
+    later = _armed()
+
+    await _save(coordinator, {}, later)
+    pending = coordinator._track_auto_update_delay_unsub
+    await _save(coordinator, {const.CONF_AUTO_UPDATE_ENABLED: False}, later)
+
+    pending.assert_called_once()
+    assert coordinator._track_auto_update_delay_unsub is None
+    assert coordinator._WeatherServiceClient.cache_seconds == 0
