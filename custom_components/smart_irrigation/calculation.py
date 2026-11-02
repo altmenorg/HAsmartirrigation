@@ -49,6 +49,42 @@ def _lead_time_seconds(zone: dict) -> float:
     return float(zone.get(const.ZONE_LEAD_TIME) or 0.0)
 
 
+# The fields reference ET is worked out from. Rain is not one of them.
+ET_INPUTS = (
+    const.MAPPING_TEMPERATURE,
+    const.MAPPING_MAX_TEMP,
+    const.MAPPING_MIN_TEMP,
+    const.MAPPING_HUMIDITY,
+    const.MAPPING_DEWPOINT,
+    const.MAPPING_WINDSPEED,
+    const.MAPPING_PRESSURE,
+    const.MAPPING_SOLRAD,
+)
+
+
+def et_inputs_from_the_service(mapping) -> bool:
+    """Whether a sensor group reads every input of the ET it has a source for
+    from the weather service, and at least one.
+
+    An input with no source is fine: the service's history has it. One read
+    from a sensor or a static value is not, since the history would overrule
+    it. Whatever feeds the rain or another field is left out.
+    """
+    mappings = (mapping or {}).get(const.MAPPING_MAPPINGS) or {}
+    from_service = False
+    for field in ET_INPUTS:
+        the_map = mappings.get(field)
+        if not isinstance(the_map, dict):
+            continue
+        source = the_map.get(const.MAPPING_CONF_SOURCE)
+        if source in (None, const.MAPPING_CONF_SOURCE_NONE):
+            continue
+        if source != const.MAPPING_CONF_SOURCE_WEATHER_SERVICE:
+            return False
+        from_service = True
+    return from_service
+
+
 # A drop to below this share of the previous total is a counter reset even
 # away from midnight (see _cumulative_change).
 _RESET_RATIO = 0.5
@@ -1587,10 +1623,12 @@ class CalculationMixin:
     async def _open_meteo_history_total(self, zone, mapping, since, per_hour=None):
         """``(mm, hours)`` of the window on Open-Meteo's hourly history, or None.
 
-        Only for a sensor group whose every source is the weather service and
-        whose service is Open-Meteo: a group with a sensor of its own, a static
-        value, another service or a greenhouse keeps summing its own readings.
-        Any failure also falls back to them.
+        Only for a sensor group whose every input of the ET is read from the
+        weather service, and whose service is Open-Meteo. What feeds the rain
+        does not matter, since rain does not enter ET0 (#961). A group with a
+        sensor or a static value for one of those inputs, another service or a
+        greenhouse keeps summing its own readings: the history would overrule
+        them. Any failure also falls back to them.
         """
         if (
             since is None
@@ -1605,10 +1643,7 @@ class CalculationMixin:
         if fetch is None:
             return None
         try:
-            from_service, from_sensor, from_static = self.check_mapping_sources(
-                zone.get(const.ZONE_MAPPING)
-            )
-            if not from_service or from_sensor or from_static:
+            if not et_inputs_from_the_service(mapping):
                 return None
             now = datetime.now()
             entries = await self.hass.async_add_executor_job(fetch, since, now)

@@ -373,9 +373,7 @@ def test_without_a_position_nothing_is_priced():
 # --- when the coordinator uses it
 
 
-def _coordinator(
-    *, service=const.CONF_WEATHER_SERVICE_OM, sources=(True, False, False)
-):
+def _coordinator(*, service=const.CONF_WEATHER_SERVICE_OM):
     class _Coordinator(CalculationMixin):
         pass
 
@@ -386,7 +384,6 @@ def _coordinator(
     )
     coordinator.use_weather_service = True
     coordinator.weather_service = service
-    coordinator.check_mapping_sources = Mock(return_value=sources)
     coordinator._effective_latitude = LAT
     coordinator._effective_longitude = LON
     coordinator._effective_elevation = ELEV
@@ -401,36 +398,101 @@ def _coordinator(
 
 ZONE = {const.ZONE_ID: 0, const.ZONE_MAPPING: 1}
 
+SERVICE = const.MAPPING_CONF_SOURCE_WEATHER_SERVICE
+SENSOR = const.MAPPING_CONF_SOURCE_SENSOR
+STATIC = const.MAPPING_CONF_SOURCE_STATIC_VALUE
+NONE = const.MAPPING_CONF_SOURCE_NONE
+
+
+def _group(**changes):
+    """A sensor group fed by the weather service, but for ``changes``
+    (field: source)."""
+    sources = {
+        const.MAPPING_TEMPERATURE: SERVICE,
+        const.MAPPING_HUMIDITY: SERVICE,
+        const.MAPPING_WINDSPEED: SERVICE,
+        const.MAPPING_PRESSURE: SERVICE,
+        const.MAPPING_SOLRAD: SERVICE,
+        const.MAPPING_PRECIPITATION: SERVICE,
+        const.MAPPING_DEWPOINT: NONE,
+        **{getattr(const, key): value for key, value in changes.items()},
+    }
+    return {
+        const.MAPPING_NAME: "g",
+        const.MAPPING_MAPPINGS: {
+            field: {const.MAPPING_CONF_SOURCE: source}
+            for field, source in sources.items()
+        },
+    }
+
 
 async def test_a_group_fed_only_by_open_meteo_is_priced_on_its_history():
     coordinator, start, _end = _coordinator()
 
-    result = await coordinator._open_meteo_history_total(
-        ZONE, {const.MAPPING_NAME: "g"}, start
-    )
+    result = await coordinator._open_meteo_history_total(ZONE, _group(), start)
 
     assert result is not None
     coordinator._WeatherServiceClient.get_hourly_history.assert_called_once()
 
 
+async def test_another_service_keeps_the_readings():
+    coordinator, start, _end = _coordinator(service=const.CONF_WEATHER_SERVICE_OWM)
+
+    assert await coordinator._open_meteo_history_total(ZONE, _group(), start) is None
+
+
 @pytest.mark.parametrize(
-    "kwargs",
+    "changes",
     [
-        {"service": const.CONF_WEATHER_SERVICE_OWM},
-        {"sources": (True, True, False)},
-        {"sources": (True, False, True)},
-        {"sources": (False, True, False)},
+        {"MAPPING_TEMPERATURE": SENSOR},
+        {"MAPPING_HUMIDITY": STATIC},
+        {"MAPPING_SOLRAD": const.MAPPING_CONF_SOURCE_ILLUMINANCE},
+        {"MAPPING_MIN_TEMP": SENSOR},
     ],
 )
-async def test_another_service_or_a_sensor_or_a_static_value_keeps_the_readings(kwargs):
-    coordinator, start, _end = _coordinator(**kwargs)
+async def test_an_input_of_the_et_from_a_sensor_or_a_static_value_keeps_the_readings(
+    changes,
+):
+    """The history would overrule what the user measures."""
+    coordinator, start, _end = _coordinator()
 
     assert (
-        await coordinator._open_meteo_history_total(
-            ZONE, {const.MAPPING_NAME: "g"}, start
-        )
+        await coordinator._open_meteo_history_total(ZONE, _group(**changes), start)
         is None
     )
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"MAPPING_PRECIPITATION": SENSOR},
+        {"MAPPING_CURRENT_PRECIPITATION": SENSOR},
+        {"MAPPING_EVAPOTRANSPIRATION": SENSOR},
+        {"MAPPING_PRECIPITATION": STATIC},
+    ],
+)
+async def test_a_rain_gauge_of_its_own_still_reads_the_history(changes):
+    """Rain does not enter ET0: a local gauge never sends the ET back to the
+    polled readings (#961)."""
+    coordinator, start, _end = _coordinator()
+
+    result = await coordinator._open_meteo_history_total(ZONE, _group(**changes), start)
+
+    assert result is not None
+    coordinator._WeatherServiceClient.get_hourly_history.assert_called_once()
+
+
+async def test_a_group_with_no_input_of_the_et_from_the_service_keeps_the_readings():
+    coordinator, start, _end = _coordinator()
+    group = _group(
+        MAPPING_TEMPERATURE=NONE,
+        MAPPING_HUMIDITY=NONE,
+        MAPPING_WINDSPEED=NONE,
+        MAPPING_PRESSURE=NONE,
+        MAPPING_SOLRAD=NONE,
+    )
+
+    assert await coordinator._open_meteo_history_total(ZONE, group, start) is None
 
 
 async def test_a_greenhouse_keeps_the_readings():
@@ -438,7 +500,7 @@ async def test_a_greenhouse_keeps_the_readings():
 
     assert (
         await coordinator._open_meteo_history_total(
-            ZONE, {const.MAPPING_GREENHOUSE: True}, start
+            ZONE, {**_group(), const.MAPPING_GREENHOUSE: True}, start
         )
         is None
     )
@@ -448,12 +510,7 @@ async def test_no_history_keeps_the_readings():
     coordinator, start, _end = _coordinator()
     coordinator._WeatherServiceClient.get_hourly_history = Mock(return_value=None)
 
-    assert (
-        await coordinator._open_meteo_history_total(
-            ZONE, {const.MAPPING_NAME: "g"}, start
-        )
-        is None
-    )
+    assert await coordinator._open_meteo_history_total(ZONE, _group(), start) is None
 
 
 async def test_a_failing_history_never_breaks_the_calculation():
@@ -462,9 +519,4 @@ async def test_a_failing_history_never_breaks_the_calculation():
         side_effect=RuntimeError("down")
     )
 
-    assert (
-        await coordinator._open_meteo_history_total(
-            ZONE, {const.MAPPING_NAME: "g"}, start
-        )
-        is None
-    )
+    assert await coordinator._open_meteo_history_total(ZONE, _group(), start) is None

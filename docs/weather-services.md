@@ -66,7 +66,7 @@ Open-Meteo is the default service and also the one Smart Irrigation turns to for
 
 Your own service's rain is never replaced by Open-Meteo's. With Open-Meteo itself, one more use:
 
-- with **Open-Meteo itself and a sensor group fed only by the weather service**, the hourly calculation is priced on Open-Meteo's own hourly history instead of the readings Smart Irrigation took (see [the hourly calculation](configuration-general.md)).
+- with **Open-Meteo itself and a sensor group that reads every input of the ET from the weather service** (temperature, humidity or dew point, wind, pressure, solar radiation), the hourly calculation is priced on Open-Meteo's own hourly history instead of the readings Smart Irrigation took (see [the hourly calculation](configuration-general.md)). What feeds the rain doesn't matter, as rain doesn't enter the ET: a rain gauge of your own keeps the history. An input of the ET read from a sensor or a static value keeps the readings, since the history would overrule it.
 
 None of this is a single point of failure. When Open-Meteo cannot be reached, each of these falls back to what Smart Irrigation can do without it: the sun is estimated from the day's temperature range (FAO-56 Eq. 50) or read from your sensor, the rain comes from the readings, a forecast that is not available leaves the zone on the daily equation, and the hourly calculation sums the readings it recorded. A calculation is made, with a little less precision, and the log says what was missing.
 
