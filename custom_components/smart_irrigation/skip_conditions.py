@@ -199,7 +199,11 @@ class SkipConditionsMixin:
                 await self._guarded("rain_sensor", self._evaluate_rain_sensor)
             )
         if applies("freeze"):
-            checks.append(await self._guarded("freeze", self._evaluate_freeze))
+            checks.append(
+                await self._guarded(
+                    "freeze", lambda: self._evaluate_freeze(run_start=run_start)
+                )
+            )
         if applies("wind"):
             checks.append(await self._guarded("wind", self._evaluate_wind))
         if applies("precipitation"):
@@ -571,8 +575,13 @@ class SkipConditionsMixin:
             result["skip"] = True
         return result
 
-    async def _evaluate_freeze(self) -> dict:
-        """Report the freeze guard: no watering at or below the threshold."""
+    async def _evaluate_freeze(self, run_start=None) -> dict:
+        """Report the freeze guard: no watering at or below the threshold.
+
+        A run from noon on also reads the night ahead: the low the weather
+        service forecasts for it. An evening run on a mild afternoon ahead of
+        a frost night is the one the reading at the start never caught.
+        """
         system_unit = self.hass.config.units.temperature_unit
 
         def from_service(data):
@@ -583,7 +592,7 @@ class SkipConditionsMixin:
                 float(celsius), UnitOfTemperature.CELSIUS, system_unit
             )
 
-        return await self._evaluate_measured_limit(
+        result = await self._evaluate_measured_limit(
             check_id="freeze",
             enabled_key=const.CONF_SKIP_ON_FREEZE,
             threshold_key=const.CONF_FREEZE_THRESHOLD,
@@ -596,6 +605,65 @@ class SkipConditionsMixin:
             from_service=from_service,
             skips=lambda value, threshold: value <= threshold,
         )
+        if not result["enabled"] or result["skip"]:
+            return result
+        celsius = await self._forecast_low_of_the_night(run_start)
+        if celsius is None:
+            return result
+        low = TemperatureConverter.convert(
+            celsius, UnitOfTemperature.CELSIUS, system_unit
+        )
+        result["forecast_low"] = round(low, 1)
+        # The night can be read when the start cannot: the guard still answers.
+        result["available"] = True
+        if low <= result["threshold"]:
+            _LOGGER.info(
+                "Skipping irrigation (freeze): %.1f %s forecast tonight against "
+                "a threshold of %.1f",
+                low,
+                system_unit,
+                result["threshold"],
+            )
+            result["skip"] = True
+        return result
+
+    async def _forecast_low_of_the_night(self, run_start=None):
+        """The low forecast for the night after a run, in C, or None.
+
+        None for a run before noon, whose coming night is a day away, and
+        when the weather service is off or has no forecast. The night's low is
+        the next day's minimum: a daily low falls around dawn.
+        """
+        start = run_start if run_start is not None else dt_util.now()
+        try:
+            if dt_util.as_local(start).hour < 12:
+                return None
+        except (AttributeError, TypeError, ValueError, OverflowError):
+            return None
+        config = await self.store.async_get_config()
+        if not config.get(
+            const.CONF_USE_WEATHER_SERVICE, const.CONF_DEFAULT_USE_WEATHER_SERVICE
+        ):
+            return None
+        client = getattr(self, "_WeatherServiceClient", None)
+        if client is None:
+            return None
+        try:
+            forecast = await self.hass.async_add_executor_job(
+                client.get_forecast_data, True
+            )
+        except Exception as e:  # noqa: BLE001 - a check must not fail the run
+            _LOGGER.debug("No forecast for the freeze guard: %s", e)
+            return None
+        if not isinstance(forecast, list):
+            return None
+        days = _run_day_and_next(forecast, start)
+        if len(days) < 2 or not isinstance(days[1], dict):
+            return None
+        low = days[1].get(const.MAPPING_MIN_TEMP)
+        if isinstance(low, bool) or not isinstance(low, (int, float)):
+            return None
+        return float(low)
 
     async def _evaluate_wind(self) -> dict:
         """Report the wind guard: no watering at or above the threshold."""

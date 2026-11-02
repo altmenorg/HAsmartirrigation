@@ -393,6 +393,8 @@ export interface SkipCheck {
   days_since?: number | null;
   days_required?: number | null;
   /** Freeze and wind: the reading, its limit, and the unit of both. */
+  /** Freeze: the low forecast for the night after a run from noon on. */
+  forecast_low?: number | null;
   value?: number | null;
   threshold?: number | null;
   unit?: string | null;

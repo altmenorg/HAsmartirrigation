@@ -370,6 +370,7 @@
           "check-wind": "Wind",
           "check-soil_moisture": "Bodenfeuchte",
           "detail-now": "Jetzt",
+          "detail-tonight": "Heute Nacht (Tiefstwert laut Vorhersage)",
           "detail-weather-service": "Wetterdienst",
           "detail-raining": "Es regnet",
           "detail-dry": "Es regnet nicht",

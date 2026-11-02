@@ -370,6 +370,7 @@
           "check-wind": "Vent",
           "check-soil_moisture": "Humidité du sol",
           "detail-now": "Maintenant",
+          "detail-tonight": "Cette nuit (minimale prévue)",
           "detail-weather-service": "service météo",
           "detail-raining": "Il pleut",
           "detail-dry": "Il ne pleut pas",

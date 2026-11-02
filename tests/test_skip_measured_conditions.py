@@ -422,3 +422,137 @@ async def test_switching_to_imperial_keeps_the_threshold_meaning():
     freeze = _check(evaluation, "freeze")
     assert freeze["threshold"] == pytest.approx(35.6)
     assert freeze["skip"] is True
+
+
+# --- freeze: the night ahead ------------------------------------------------
+
+
+FREEZE_WITH_SERVICE = {**FREEZE, const.CONF_USE_WEATHER_SERVICE: True}
+
+
+def _with_forecast(coordinator, forecast):
+    client = coordinator._WeatherServiceClient or MagicMock()
+    client.get_forecast_data = MagicMock(return_value=forecast)
+    coordinator._WeatherServiceClient = client
+    return coordinator
+
+
+def _at(hour):
+    import homeassistant.util.dt as dt_util
+
+    return dt_util.now().replace(hour=hour, minute=0, second=0, microsecond=0)
+
+
+def _days(tonight):
+    return [
+        {const.MAPPING_MIN_TEMP: 8.0, "date": _at(12).date().isoformat()},
+        {
+            const.MAPPING_MIN_TEMP: tonight,
+            "date": (
+                _at(12).date().fromordinal(_at(12).date().toordinal() + 1)
+            ).isoformat(),
+        },
+    ]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("tonight", "skips"), [(-1.0, True), (2.0, True), (2.1, False)]
+)
+async def test_an_evening_run_reads_the_low_forecast_tonight(tonight, skips):
+    """A mild afternoon ahead of a frost night: the start alone never saw it."""
+    coordinator = _with_forecast(
+        _coordinator(
+            config=FREEZE_WITH_SERVICE, states={"sensor.t": _State("9", "°C")}
+        ),
+        _days(tonight),
+    )
+
+    evaluation = await coordinator.async_evaluate_skip_conditions(run_start=_at(20))
+
+    freeze = _check(evaluation, "freeze")
+    assert freeze["value"] == 9.0
+    assert freeze["forecast_low"] == tonight
+    assert freeze["skip"] is skips
+
+
+@pytest.mark.asyncio
+async def test_a_morning_run_does_not_read_a_night_a_day_away():
+    coordinator = _with_forecast(
+        _coordinator(
+            config=FREEZE_WITH_SERVICE, states={"sensor.t": _State("9", "°C")}
+        ),
+        _days(-3.0),
+    )
+
+    evaluation = await coordinator.async_evaluate_skip_conditions(run_start=_at(6))
+
+    freeze = _check(evaluation, "freeze")
+    assert "forecast_low" not in freeze
+    assert freeze["skip"] is False
+
+
+@pytest.mark.asyncio
+async def test_the_forecast_low_is_read_in_the_installs_unit():
+    """-1 C is 30.2 F, under the imperial default."""
+    coordinator = _with_forecast(
+        _coordinator(
+            config=FREEZE_WITH_SERVICE,
+            states={"sensor.t": _State("50", "°F")},
+            units=US_CUSTOMARY_SYSTEM,
+        ),
+        _days(-1.0),
+    )
+
+    evaluation = await coordinator.async_evaluate_skip_conditions(run_start=_at(19))
+
+    freeze = _check(evaluation, "freeze")
+    assert freeze["forecast_low"] == pytest.approx(30.2)
+    assert freeze["skip"] is True
+
+
+@pytest.mark.asyncio
+async def test_the_night_answers_when_the_sensor_cannot():
+    coordinator = _with_forecast(
+        _coordinator(config=FREEZE_WITH_SERVICE, states={}), _days(0.0)
+    )
+
+    evaluation = await coordinator.async_evaluate_skip_conditions(run_start=_at(18))
+
+    freeze = _check(evaluation, "freeze")
+    assert freeze["available"] is True
+    assert freeze["skip"] is True
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "forecast", [None, [], [{const.MAPPING_MIN_TEMP: -5.0}], "garbage"]
+)
+async def test_no_forecast_of_the_night_leaves_the_guard_as_it_was(forecast):
+    coordinator = _with_forecast(
+        _coordinator(
+            config=FREEZE_WITH_SERVICE, states={"sensor.t": _State("9", "°C")}
+        ),
+        forecast,
+    )
+
+    evaluation = await coordinator.async_evaluate_skip_conditions(run_start=_at(20))
+
+    freeze = _check(evaluation, "freeze")
+    assert freeze["skip"] is False
+    assert "forecast_low" not in freeze
+
+
+@pytest.mark.asyncio
+async def test_a_weather_service_switched_off_is_not_read_for_the_night():
+    coordinator = _with_forecast(
+        _coordinator(
+            config={**FREEZE, const.CONF_USE_WEATHER_SERVICE: False},
+            states={"sensor.t": _State("9", "°C")},
+        ),
+        _days(-5.0),
+    )
+
+    evaluation = await coordinator.async_evaluate_skip_conditions(run_start=_at(20))
+
+    assert _check(evaluation, "freeze")["skip"] is False

@@ -370,6 +370,7 @@
           "check-wind": "Wind",
           "check-soil_moisture": "Soil moisture",
           "detail-now": "Now",
+          "detail-tonight": "Tonight (forecast low)",
           "detail-weather-service": "weather service",
           "detail-raining": "It is raining",
           "detail-dry": "Not raining",

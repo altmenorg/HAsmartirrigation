@@ -667,6 +667,12 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
           >${this.t("cards.decision.detail-threshold")}:
           ${check.threshold ?? "-"} ${check.unit ?? ""}</span
         >
+        ${check.forecast_low != null
+          ? html`<span
+              >${this.t("cards.decision.detail-tonight")}: ${check.forecast_low}
+              ${check.unit ?? ""}</span
+            >`
+          : ""}
         <span>${source ?? ""}</span>
       `;
     }
