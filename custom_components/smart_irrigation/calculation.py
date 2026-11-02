@@ -39,6 +39,9 @@ from .water_balance import (
 
 _LOGGER = logging.getLogger(__name__)
 
+# The longest window a fixed amount per day is counted over, in days.
+FIXED_AMOUNT_MAX_DAYS = 7.0
+
 
 def _lead_time_seconds(zone: dict) -> float:
     """A zone's lead time in seconds, 0 when it has none.
@@ -121,6 +124,56 @@ class CalculationMixin:
             if mapping:
                 return mapping.get(const.MAPPING_MODULE)
         return None
+
+    def fixed_amount_window(self, zone) -> dict | None:
+        """The window of a zone calculated from a fixed amount per day, or None.
+
+        The fixed amount (the "Static" engine) reads no weather, so it needs no
+        readings: its window is the time since the zone was last calculated,
+        and one day for a zone calculated for the first time. Without this, a
+        zone whose sensor group has no source, which is what the setup
+        assistant makes on its "a fixed amount per day" path, was never
+        calculated: every run stopped at "no sensor data available".
+        """
+        module = self.store.get_module(self.module_id_for_zone(zone))
+        if not module or module.get(const.MODULE_NAME) != "Static":
+            return None
+        now = datetime.now()
+        # The window starts at the later of the last calculation and the last
+        # time the bucket was set (by hand, the set_bucket action or the soil
+        # moisture hold, which all move the zone's mark to then, #811): a
+        # bucket set at 15:00 already holds what the zone lost until then.
+        starts = [
+            stamp
+            for stamp in (
+                self._local_naive(zone.get(const.ZONE_LAST_CALCULATED)),
+                self._local_naive(zone.get(const.ZONE_LAST_CONSUMED_AT)),
+            )
+            if stamp is not None
+        ]
+        last = max(starts) if starts else None
+        days = 1.0 if last is None else max(0.0, (now - last).total_seconds() / 86400)
+        # At most a week, as a zone that reads the weather gets: its buffer
+        # keeps a week. A zone left manual all winter and made automatic again
+        # is not dried out by the months it was not calculated.
+        days = min(days, FIXED_AMOUNT_MAX_DAYS)
+        return {
+            const.MAPPING_DATA_MULTIPLIER: days,
+            const.MAPPING_DATA_WINDOW_END: now,
+        }
+
+    @staticmethod
+    def _local_naive(stamp):
+        """A stored time as naive local time, like ``datetime.now()``, or None."""
+        if stamp is None:
+            return None
+        try:
+            value = parse_datetime(stamp)
+        except (ValueError, TypeError):
+            return None
+        if value is not None and value.tzinfo is not None:
+            value = value.astimezone().replace(tzinfo=None)
+        return value
 
     @staticmethod
     def zone_window_start(zone):
@@ -1893,6 +1946,8 @@ class CalculationMixin:
                         persist=not dry_run,
                         since=self.zone_window_start(zone),
                     )
+                if not weatherdata:
+                    weatherdata = self.fixed_amount_window(zone)
                 if not weatherdata:
                     _LOGGER.error(
                         "[async_calculate_all] Error calculating zone %s: no sensor data available",
