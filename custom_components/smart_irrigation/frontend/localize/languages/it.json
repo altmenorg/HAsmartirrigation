@@ -718,7 +718,15 @@
         "under-threshold": "Ancora niente da irrigare: mancano {short}, sotto la soglia di questa zona.",
         "manual": "Irriga solo quando lo chiedi.",
         "disabled": "Disattivata: non viene mai irrigata, e il suo bilancio non viene tenuto.",
-        "threshold": "soglia"
+        "threshold": "soglia",
+        "problem": {
+          "no_sensor_group": "Impossibile calcolare: non presenta alcun gruppo di sensori. Sceglierne uno su questa scheda; fino ad allora non verrà irrigato.",
+          "no_readings": "Impossibile calcolare: il gruppo di sensori non fornisce letture. L'irrigazione non verrà avviata finché non saranno disponibili.",
+          "no_engine": "Non è possibile calcolarlo: non dispone di un motore di calcolo. Non verrà attivato finché non ne avrà uno.",
+          "nothing_from_engine": "Impossibile calcolare: il relativo gruppo di sensori non fornisce dati sull'evapotraspirazione. Non verrà irrigato finché non lo farà.",
+          "forecast_without_service": "Impossibile calcolarlo: il suo motore prevede le condizioni meteorologiche future e non è stato configurato alcun servizio meteorologico. Non è stato irrigato.",
+          "error": "Impossibile calcolare: {detail}. Non verrà irrigato finché non sarà possibile farlo."
+        }
       },
       "calendar": {
         "title": "Calendario di irrigazione (12 mesi, stimato)",

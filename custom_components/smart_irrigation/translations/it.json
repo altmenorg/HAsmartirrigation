@@ -306,6 +306,30 @@
     "throughput_mismatch": {
       "title": "Zona {zone}: la portata misurata non corrisponde a quella configurata",
       "description": "Negli ultimi {samples} cicli il misuratore di portata della zona **{zone}** ha misurato circa **{measured}** mentre la zona è configurata per **{configured}**, uno scarto del {percentage}%.\n\nOgni durata di irrigazione deriva dalla portata configurata, quindi sono tutte sbagliate più o meno della stessa quantità.\n\nSe la misura sembra giusta, imposta la portata della zona su quel valore. Se non lo è, verifica che il contatore conti solo questa zona e che la pressione di rete sia quella che ti aspetti. Smart Irrigation non cambia mai il valore per te."
+    },
+    "zone_not_calculated_no_readings": {
+      "title": "La zona {zone} non può essere calcolata: nessuna lettura meteo",
+      "description": "La zona **{zone}** non è stata calcolata: il relativo gruppo di sensori non dispone di letture su cui basare il calcolo. Finché non ne avrà, il deficit della zona rimarrà invariato e la zona non verrà irrigata.\n\nVerifica che il gruppo di sensori disponga di fonti e che queste trasmettano i dati, aggiorna i dati meteorologici, quindi ricalcola la zona. L'avviso scomparirà automaticamente al successivo calcolo andato a buon fine."
+    },
+    "zone_not_calculated_no_engine": {
+      "title": "Non è possibile calcolare la zona {zone}: nessun motore di calcolo",
+      "description": "La zona **{zone}** non dispone di un motore di calcolo, pertanto non viene calcolata né irrigata.\n\nScegli come calcolarla nella scheda “Zone” della relativa scheda. L'avviso scomparirà automaticamente al successivo calcolo andato a buon fine."
+    },
+    "zone_not_calculated_nothing_from_engine": {
+      "title": "Non è possibile calcolare la zona {zone}: nessuna evapotraspirazione",
+      "description": "La zona **{zone}** riceve i dati relativi all'evapotraspirazione da un sensore o da un servizio meteorologico, ma il suo gruppo di sensori non ne ha forniti. Finché ciò non avviene, la zona non viene irrigata.\n\nControllare il sensore che fornisce i dati relativi all'evapotraspirazione o il servizio meteorologico. L'avviso scompare automaticamente al successivo calcolo andato a buon fine."
+    },
+    "zone_not_calculated_forecast_without_service": {
+      "title": "Non è possibile calcolare la zona {zone}: previsione senza un servizio meteorologico",
+      "description": "Il motore di calcolo della zona **{zone}** effettua previsioni a giorni di distanza, il che richiede un servizio meteorologico, ma non ne è stato configurato nessuno. La zona non viene irrigata finché non sarà possibile effettuarne il calcolo.\n\nConfigurare un servizio meteorologico oppure impostare a 0 i giorni di previsione . L'avviso scomparirà automaticamente al successivo calcolo andato a buon fine."
+    },
+    "zone_not_calculated_error": {
+      "title": "Impossibile calcolare la zona {zone}: si è verificato un errore",
+      "description": "Il calcolo della zona **{zone}** non è andato a buon fine: {detail}\n\nLa zona non verrà irrigata finché non sarà possibile calcolarla. Se l'errore persiste, si prega di aprire un ticket allegando questo messaggio e il file di diagnostica. L'avviso scomparirà automaticamente al successivo calcolo andato a buon fine."
+    },
+    "zone_not_calculated_no_sensor_group": {
+      "title": "Non è possibile calcolare la zona {zone}: nessun gruppo di sensori",
+      "description": "La zona **{zone}** non ha alcun gruppo di sensori, quindi non c'è nulla su cui basare il calcolo e non viene irrigata.\n\nSeleziona il gruppo di sensori corrispondente nella scheda della zona, nella scheda “Zone”, quindi esegui il calcolo. L'avviso scomparirà automaticamente al successivo calcolo andato a buon fine."
     }
   }
 }
