@@ -112,10 +112,6 @@ class SmartIrrigationZoneMultiplierEntity(NumberEntity, RestoreEntity):
         self._zone_name = zone_name
         self._multiplier = multiplier
 
-        async_dispatcher_connect(
-            hass, const.DOMAIN + "_config_updated", self._async_update_multiplier
-        )
-
     @callback
     def _async_update_multiplier(self, zone_id=None) -> None:
         """Refresh when the zone config changes (e.g. edited from the panel)."""
@@ -174,6 +170,13 @@ class SmartIrrigationZoneMultiplierEntity(NumberEntity, RestoreEntity):
         calculation.
         """
         await super().async_added_to_hass()
+        self.async_on_remove(
+            async_dispatcher_connect(
+                self._hass,
+                const.DOMAIN + "_config_updated",
+                self._async_update_multiplier,
+            )
+        )
         stored = None
         with contextlib.suppress(KeyError, AttributeError, TypeError):
             zone = self.hass.data[const.DOMAIN]["coordinator"].store.get_zone(

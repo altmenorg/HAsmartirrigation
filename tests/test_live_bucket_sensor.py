@@ -16,10 +16,12 @@ says so, rather than going unavailable.
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from homeassistant.components.sensor import SensorEntity
 from homeassistant.util.unit_system import METRIC_SYSTEM, US_CUSTOMARY_SYSTEM
 
 from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.sensor import (
+    SmartIrrigationZoneChildSensor,
     SmartIrrigationZoneLiveBucketSensor,
 )
 
@@ -181,10 +183,24 @@ async def test_the_committed_fallback_is_converted():
 
 @pytest.mark.asyncio
 async def test_it_listens_to_the_signal_that_carries_new_readings():
-    _sensor_obj, _coordinator, _tasks, _clock, connect = _sensor(ESTIMATE)
+    """Once added, and for as long as it exists: subscribed in the constructor,
+    every reload left the old entity listening."""
+    sensor, _coordinator, tasks, _clock, connect = _sensor(ESTIMATE)
+    assert connect.call_args_list == []
+    sensor.async_on_remove = MagicMock()
+
+    with (
+        patch(
+            "custom_components.smart_irrigation.sensor.async_dispatcher_connect"
+        ) as connect,
+        patch.object(SensorEntity, "async_added_to_hass", AsyncMock()),
+    ):
+        await SmartIrrigationZoneChildSensor.async_added_to_hass(sensor)
 
     signals = [call.args[1] for call in connect.call_args_list]
     assert const.DOMAIN + "_config_updated" in signals
+    sensor.async_on_remove.assert_called_once_with(connect.return_value)
+    _close(tasks)
 
 
 @pytest.mark.asyncio

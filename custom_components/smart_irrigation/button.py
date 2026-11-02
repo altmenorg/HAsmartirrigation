@@ -129,8 +129,13 @@ class SmartIrrigationZoneButton(ButtonEntity):
         self._zone_name = zone_name
         self._attr_translation_key = self.suffix
 
-        async_dispatcher_connect(
-            hass, const.DOMAIN + "_config_updated", self._async_zone_updated
+    async def async_added_to_hass(self) -> None:
+        """Follow the zone's renames, for as long as the entity exists."""
+        await super().async_added_to_hass()
+        self.async_on_remove(
+            async_dispatcher_connect(
+                self.hass, const.DOMAIN + "_config_updated", self._async_zone_updated
+            )
         )
 
     @callback
