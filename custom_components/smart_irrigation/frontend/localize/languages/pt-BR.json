@@ -291,7 +291,16 @@
         }
       },
       "description": "Esta página fornece configurações globais.",
-      "title": "Geral"
+      "title": "Geral",
+      "sections": {
+        "calculation": "Cálculo",
+        "control": "Controle",
+        "system": "Sistema",
+        "calculation-sub": "Quanto cada zona precisa, e quando isso é calculado.",
+        "control-sub": "O que abre as válvulas, e o que inicia uma irrigação.",
+        "system-sub": "O painel, os blueprints, o assistente de configuração e a migração do Irrigation Unlimited."
+      },
+      "moved-to-weather": "O serviço de meteorologia, a localização, a frequência de leitura do clima e as verificações para pular estão nesta aba:"
     },
     "help": {
       "title": "Ajuda",
@@ -794,7 +803,7 @@
     "groups": {
       "home": "Início",
       "zones": "Zonas",
-      "data": "Dados",
+      "data": "Clima",
       "settings": "Configurações",
       "watering": "Irrigação"
     },
@@ -1040,6 +1049,12 @@
         "zone_schedule_duration": "um agendamento de zona precisa de uma duração: ele não vem",
         "zone_taken": "a zona {zone} já pertence a \"{name}\": ela ganha uma zona própria"
       }
+    },
+    "skip": {
+      "title": "Pular por causa do clima",
+      "description": "Uma irrigação é suspensa quando uma destas verificações se aplica: a chuva prevista, ou a chuva, a geada e o vento medidos no seu início.",
+      "soil-moisture": "A umidade do solo é definida por zona, já que cada zona tem seu próprio sensor.",
+      "open-zones": "Abrir as zonas"
     }
   },
   "title": "Smart Irrigation",
@@ -1245,7 +1260,7 @@
     "schedule_hard_deadline": "Interromper a execução no horário final",
     "schedule_hard_deadline_help": "A execução é interrompida no horário final: as zonas abertas são fechadas e creditadas pelo que irrigaram, e o que não começou é ignorado.",
     "schedule_conditions": "Quais condições",
-    "schedule_conditions_help": "O que pode impedir este horário de irrigar. As condições são definidas em Configurações, Geral, e este horário respeita todas; desmarque as que ele deve ignorar, a chuva para uma estufa por exemplo. Um adiamento que você pediu (24 h, 48 h) sempre se aplica.",
+    "schedule_conditions_help": "O que pode impedir este horário de irrigar. A chuva, a geada e o vento são definidos em Clima, Pular por causa do clima, os dias desde a última irrigação em Configurações, Geral, e a umidade do solo em cada zona. Este horário respeita todas; desmarque as que ele deve ignorar, a chuva para uma estufa por exemplo. Um adiamento que você pediu (24 h, 48 h) sempre se aplica.",
     "condition_postponed": "Dias adiados (sempre ativo)",
     "condition_rain_sensor": "Sensor de chuva",
     "condition_freeze": "Geada",
@@ -1315,9 +1330,9 @@
     "summary_end_sunrise": "concluído ao nascer do sol",
     "summary_end_sunset": "concluído ao pôr do sol",
     "last_word": "último",
-    "conditions_none": "Nenhuma condição está ativada: elas são definidas em Configurações, Geral.",
+    "conditions_none": "Nenhuma condição está ativada: a chuva, a geada e o vento são definidos em Clima, Pular por causa do clima, e os dias desde a última irrigação em Configurações, Geral.",
     "cond_postponed": "os botões Adiar da página inicial",
-    "cond_off": "desativada nas Configurações",
+    "cond_off": "desativada",
     "cond_freeze": "a {value} ou menos",
     "cond_wind": "a partir de {value}",
     "cond_precipitation": "a partir de {value} previstos",
@@ -1400,6 +1415,17 @@
       "title": "Vento",
       "description": "Pular o ciclo quando o vento estiver no limite ou acima dele: um aspersor com vento forte irriga o caminho, não o canteiro.",
       "sensor-hint": "Vazio: o vento atual do serviço de meteorologia, a 10 m."
+    },
+    "source": {
+      "sensor": "Lê {sensor}.",
+      "service": "Lê o valor atual do serviço de meteorologia.",
+      "nothing": "Sem sensor e sem serviço de meteorologia: esta verificação não impede nada.",
+      "same": "A mesma fonte do grupo de sensores {groups}, para a evaporação.",
+      "other": "Para a evaporação, os grupos de sensores leem este valor em outro lugar: {groups}.",
+      "service-short": "o serviço de meteorologia",
+      "static-short": "um valor fixo",
+      "group": "\"{group}\"",
+      "adopt": "Usar {sensor} aqui também"
     }
   },
   "card": {

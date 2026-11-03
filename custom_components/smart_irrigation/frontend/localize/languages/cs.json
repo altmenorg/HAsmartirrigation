@@ -291,7 +291,16 @@
         }
       },
       "description": "Tato stránka poskytuje globální nastavení.",
-      "title": "Obecné"
+      "title": "Obecné",
+      "sections": {
+        "calculation": "Výpočet",
+        "control": "Ovládání",
+        "system": "Systém",
+        "calculation-sub": "Kolik každá zóna potřebuje a kdy se to počítá.",
+        "control-sub": "Co otevírá ventily a co spouští zavlažování.",
+        "system-sub": "Panel, blueprinty, asistent nastavení a přechod z Irrigation Unlimited."
+      },
+      "moved-to-weather": "Meteorologická služba, poloha, jak často se čte počasí, a kontroly vynechání jsou na této záložce:"
     },
     "help": {
       "title": "Nápověda",
@@ -794,7 +803,7 @@
     "groups": {
       "home": "Domů",
       "zones": "Zóny",
-      "data": "Data",
+      "data": "Počasí",
       "settings": "Nastavení",
       "watering": "Zavlažování"
     },
@@ -1040,6 +1049,12 @@
         "zone_schedule_duration": "rozvrh zóny potřebuje dobu trvání: nepřevezme se",
         "zone_taken": "zóna {zone} už patří k „{name}“: dostane vlastní zónu"
       }
+    },
+    "skip": {
+      "title": "Vynechání podle počasí",
+      "description": "Zavlažování se odloží, když platí jedna z těchto kontrol: déšť v předpovědi, nebo déšť, mráz a vítr naměřené při jeho startu.",
+      "soil-moisture": "Vlhkost půdy se nastavuje pro každou zónu zvlášť, protože každá zóna má svůj vlastní senzor.",
+      "open-zones": "Otevřít zóny"
     }
   },
   "title": "Smart Irrigation",
@@ -1245,7 +1260,7 @@
     "schedule_hard_deadline": "Přerušit běh v čase konce",
     "schedule_hard_deadline_help": "Běh se přeruší v cílovém čase konce: otevřené zóny se zavřou a připíše se jim, co zavlažily, a co nezačalo, se přeskočí.",
     "schedule_conditions": "Které podmínky",
-    "schedule_conditions_help": "Co může tomuto rozvrhu zabránit v zalévání. Podmínky se nastavují v Nastavení, Obecné, a tento rozvrh dodržuje všechny; odškrtněte ty, které má ignorovat, například déšť pro skleník. Odklad, o který jste požádali (24 h, 48 h), platí vždy.",
+    "schedule_conditions_help": "Co může tomuto rozvrhu zabránit v zalévání. Déšť, mráz a vítr se nastavují v Počasí, Vynechání podle počasí, dny od posledního zalévání v Nastavení, Obecné a vlhkost půdy v každé zóně. Tento rozvrh dodržuje všechny; odškrtněte ty, které má ignorovat, například déšť pro skleník. Odklad, o který jste požádali (24 h, 48 h), platí vždy.",
     "condition_postponed": "Odložené dny (vždy zapnuto)",
     "condition_rain_sensor": "Senzor deště",
     "condition_freeze": "Mráz",
@@ -1315,9 +1330,9 @@
     "summary_end_sunrise": "hotovo při východu slunce",
     "summary_end_sunset": "hotovo při západu slunce",
     "last_word": "poslední",
-    "conditions_none": "Žádná podmínka není zapnutá: nastavují se v Nastavení, Obecné.",
+    "conditions_none": "Žádná podmínka není zapnutá: déšť, mráz a vítr se nastavují v Počasí, Vynechání podle počasí a dny od posledního zalévání v Nastavení, Obecné.",
     "cond_postponed": "tlačítka Odložit na úvodní stránce",
-    "cond_off": "vypnuto v Nastavení",
+    "cond_off": "vypnutá",
     "cond_freeze": "při {value} nebo méně",
     "cond_wind": "od {value}",
     "cond_precipitation": "od {value} v předpovědi",
@@ -1400,6 +1415,17 @@
       "title": "Vítr",
       "description": "Vynechat zavlažování, když je vítr na prahu nebo nad ním: postřikovač v silném větru zalévá cestu, ne záhon.",
       "sensor-hint": "Prázdné: aktuální vítr z meteoslužby, ve 10 m."
+    },
+    "source": {
+      "sensor": "Čte {sensor}.",
+      "service": "Čte aktuální hodnotu meteorologické služby.",
+      "nothing": "Žádný senzor ani meteorologická služba: tato kontrola nic nezadrží.",
+      "same": "Stejný zdroj jako skupina senzorů {groups}, pro výpar.",
+      "other": "Pro výpar čtou skupiny senzorů tuto hodnotu jinde: {groups}.",
+      "service-short": "meteorologická služba",
+      "static-short": "pevná hodnota",
+      "group": "„{group}“",
+      "adopt": "Použít {sensor} i zde"
     }
   },
   "card": {

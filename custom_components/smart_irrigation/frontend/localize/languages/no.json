@@ -291,7 +291,16 @@
         }
       },
       "description": "Denne siden gir globale innstillinger.",
-      "title": "Generelt"
+      "title": "Generelt",
+      "sections": {
+        "calculation": "Beregning",
+        "control": "Styring",
+        "system": "System",
+        "calculation-sub": "Hvor mye hver sone trenger, og når det regnes ut.",
+        "control-sub": "Hva som åpner ventilene, og hva som starter en vanning.",
+        "system-sub": "Panelet, blueprints, oppsettsassistenten og overgangen fra Irrigation Unlimited."
+      },
+      "moved-to-weather": "Værtjenesten, plasseringen, hvor ofte været leses, og kontrollene for å hoppe over er på denne fanen:"
     },
     "help": {
       "title": "Hjelp",
@@ -794,7 +803,7 @@
     "groups": {
       "home": "Start",
       "zones": "Soner",
-      "data": "Data",
+      "data": "Vær",
       "settings": "Innstillinger",
       "watering": "Vanning"
     },
@@ -1040,6 +1049,12 @@
         "zone_schedule_duration": "en tidsplan for en sone trenger en varighet: den kommer ikke med",
         "zone_taken": "sone {zone} hører allerede til «{name}»: den får en egen sone"
       }
+    },
+    "skip": {
+      "title": "Hopp over etter været",
+      "description": "En vanning holdes tilbake når en av disse kontrollene slår til: regnet i værvarselet, eller regn, frost og vind målt ved starten.",
+      "soil-moisture": "Jordfuktighet stilles inn per sone, siden hver sone har sin egen sensor.",
+      "open-zones": "Åpne sonene"
     }
   },
   "title": "Smart Irrigation",
@@ -1245,7 +1260,7 @@
     "schedule_hard_deadline": "Avbryt kjøringen ved sluttidspunktet",
     "schedule_hard_deadline_help": "Kjøringen avbrytes ved sluttmålet: sonene som er åpne lukkes og godskrives for det de har vannet, og det som ikke startet hoppes over.",
     "schedule_conditions": "Hvilke betingelser",
-    "schedule_conditions_help": "Hva som kan hindre denne tidsplanen i å vanne. Betingelsene stilles inn i Innstillinger, Generelt, og denne tidsplanen følger alle; fjern haken for dem den skal ignorere, for eksempel regnet for et drivhus. En utsettelse du har bedt om (24 t, 48 t), gjelder alltid.",
+    "schedule_conditions_help": "Hva som kan hindre denne tidsplanen i å vanne. Regn, frost og vind stilles inn i Vær, Hopp over etter været, dagene siden siste vanning i Innstillinger, Generelt, og jordfuktigheten i hver sone. Denne tidsplanen følger alle; fjern haken for dem den skal ignorere, for eksempel regnet for et drivhus. En utsettelse du har bedt om (24 t, 48 t), gjelder alltid.",
     "condition_postponed": "Utsatte dager (alltid på)",
     "condition_rain_sensor": "Regnsensor",
     "condition_freeze": "Frost",
@@ -1315,9 +1330,9 @@
     "summary_end_sunrise": "ferdig ved soloppgang",
     "summary_end_sunset": "ferdig ved solnedgang",
     "last_word": "siste",
-    "conditions_none": "Ingen betingelse er slått på: de stilles inn i Innstillinger, Generelt.",
+    "conditions_none": "Ingen betingelse er slått på: regn, frost og vind stilles inn i Vær, Hopp over etter været, og dagene siden siste vanning i Innstillinger, Generelt.",
     "cond_postponed": "Utsett-knappene på startsiden",
-    "cond_off": "slått av i Innstillinger",
+    "cond_off": "slått av",
     "cond_freeze": "ved {value} eller lavere",
     "cond_wind": "fra {value}",
     "cond_precipitation": "fra {value} i varselet",
@@ -1400,6 +1415,17 @@
       "title": "Vind",
       "description": "Hopp over vanningen når vinden er på eller over grensen: en spreder i sterk vind vanner stien, ikke bedet.",
       "sensor-hint": "Tom: værtjenestens nåværende vind, i 10 m."
+    },
+    "source": {
+      "sensor": "Leser {sensor}.",
+      "service": "Leser værtjenestens gjeldende verdi.",
+      "nothing": "Ingen sensor og ingen værtjeneste: denne kontrollen holder ingenting tilbake.",
+      "same": "Samme kilde som sensorgruppen {groups}, for fordampingen.",
+      "other": "For fordampingen leser sensorgruppene denne verdien et annet sted: {groups}.",
+      "service-short": "værtjenesten",
+      "static-short": "en fast verdi",
+      "group": "«{group}»",
+      "adopt": "Bruk {sensor} her også"
     }
   },
   "card": {

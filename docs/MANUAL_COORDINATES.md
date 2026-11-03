@@ -34,9 +34,9 @@ When manual coordinates are enabled, you can configure:
 - **Longitude**: Decimal degrees, range -180 to 180 (e.g., -74.0060 for New York)  
 - **Elevation**: Meters above sea level, range -1000 to 9000 (optional, defaults to 0)
 
-### General Settings UI
+### Panel UI
 
-In the Smart Irrigation general settings panel, you'll find a "Location Coordinates" card where you can:
+On the **Weather service** page of the **Weather** tab, under the weather service, you'll find a "Location Coordinates" card where you can:
 
 - Toggle between manual coordinates and Home Assistant location
 - View current Home Assistant coordinates when manual mode is disabled

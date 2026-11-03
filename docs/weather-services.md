@@ -76,7 +76,7 @@ Open-Meteo also returns a finished FAO-56 ET0. If you would rather not run the c
 
 ## Switching service at any time
 
-You can change the weather service whenever you like from the **Weather service** page under **Data**, without reinstalling the integration. The API-key field is hidden for keyless services such as Open-Meteo, and the key is validated against the service before the change is applied. For a weather entity, Save stays disabled until one is picked.
+You can change the weather service whenever you like from the **Weather service** page under **Weather**, without reinstalling the integration. The API-key field is hidden for keyless services such as Open-Meteo, and the key is validated against the service before the change is applied. For a weather entity, Save stays disabled until one is picked.
 
 ## Which should I pick?
 

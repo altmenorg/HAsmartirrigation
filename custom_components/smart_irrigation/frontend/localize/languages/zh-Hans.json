@@ -291,7 +291,16 @@
         }
       },
       "description": "此页面提供全局设置。",
-      "title": "常规"
+      "title": "常规",
+      "sections": {
+        "calculation": "计算",
+        "control": "控制",
+        "system": "系统",
+        "calculation-sub": "每个区域需要多少水，以及何时计算。",
+        "control-sub": "由什么打开阀门，由什么启动一次浇水。",
+        "system-sub": "面板、蓝图、设置向导，以及从 Irrigation Unlimited 迁移。"
+      },
+      "moved-to-weather": "天气服务、位置、读取天气的频率以及跳过检查都在此选项卡中："
     },
     "help": {
       "title": "帮助",
@@ -794,7 +803,7 @@
     "groups": {
       "home": "主页",
       "zones": "区域",
-      "data": "数据",
+      "data": "天气",
       "settings": "设置",
       "watering": "浇水"
     },
@@ -1040,6 +1049,12 @@
         "zone_schedule_duration": "区域的时间表需要时长：不导入",
         "zone_taken": "区域 {zone} 已属于“{name}”：它会获得自己的区域"
       }
+    },
+    "skip": {
+      "title": "因天气跳过",
+      "description": "当以下任一检查成立时，浇水会被暂缓：预报中的降雨，或在开始时测得的降雨、霜冻和风。",
+      "soil-moisture": "土壤湿度按区域设置，因为每个区域都有自己的传感器。",
+      "open-zones": "打开区域"
     }
   },
   "title": "Smart Irrigation",
@@ -1245,7 +1260,7 @@
     "schedule_hard_deadline": "在结束时间中断浇水",
     "schedule_hard_deadline_help": "浇水会在结束目标时间被中断：已打开的区域会被关闭并按已浇的量计入，尚未开始的则被跳过。",
     "schedule_conditions": "哪些条件",
-    "schedule_conditions_help": "可能阻止此计划浇水的条件。这些条件在“设置 > 常规”中设置，此计划默认全部遵守；取消勾选它应忽略的条件，例如温室可忽略降雨。你要求的推迟（24 小时、48 小时）始终有效。",
+    "schedule_conditions_help": "可能阻止此计划浇水的条件。降雨、霜冻和风在“天气 > 因天气跳过”中设置，距上次浇水的天数在“设置 > 常规”中设置，土壤湿度在各个区域中设置。此计划默认全部遵守；取消勾选它应忽略的条件，例如温室可忽略降雨。你要求的推迟（24 小时、48 小时）始终有效。",
     "condition_postponed": "推迟的日期（始终启用）",
     "condition_rain_sensor": "雨量传感器",
     "condition_freeze": "霜冻",
@@ -1315,9 +1330,9 @@
     "summary_end_sunrise": "日出前完成",
     "summary_end_sunset": "日落前完成",
     "last_word": "最后",
-    "conditions_none": "没有启用任何条件：它们在“设置 > 常规”中设置。",
+    "conditions_none": "没有启用任何条件：降雨、霜冻和风在“天气 > 因天气跳过”中设置，距上次浇水的天数在“设置 > 常规”中设置。",
     "cond_postponed": "首页的推迟按钮",
-    "cond_off": "已在设置中关闭",
+    "cond_off": "已关闭",
     "cond_freeze": "{value} 或以下",
     "cond_wind": "{value} 起",
     "cond_precipitation": "预报 {value} 起",
@@ -1400,6 +1415,17 @@
       "title": "风",
       "description": "当风速等于或高于阈值时跳过本次浇水：大风中的喷头浇的是小路，不是花坛。",
       "sensor-hint": "留空：使用天气服务的当前风速，10 米高度。"
+    },
+    "source": {
+      "sensor": "读取 {sensor}。",
+      "service": "读取天气服务的当前值。",
+      "nothing": "没有传感器，也没有天气服务：此检查不会阻止任何浇水。",
+      "same": "与传感器组 {groups} 的蒸发量使用相同的来源。",
+      "other": "对于蒸发量，传感器组从其他位置读取此值：{groups}。",
+      "service-short": "天气服务",
+      "static-short": "固定值",
+      "group": "“{group}”",
+      "adopt": "这里也使用 {sensor}"
     }
   },
   "card": {

@@ -291,7 +291,16 @@
         }
       },
       "description": "Táto stránka poskytuje globálne nastavenia.",
-      "title": "Všeobecné"
+      "title": "Všeobecné",
+      "sections": {
+        "calculation": "Výpočet",
+        "control": "Ovládanie",
+        "system": "Systém",
+        "calculation-sub": "Koľko potrebuje každá zóna a kedy sa to vypočíta.",
+        "control-sub": "Čo otvára ventily a čo spúšťa zavlažovanie.",
+        "system-sub": "Panel, blueprinty, asistent nastavenia a prechod z Irrigation Unlimited."
+      },
+      "moved-to-weather": "Meteoslužba, poloha, ako často sa číta počasie, a kontroly vynechania sú na tejto karte:"
     },
     "help": {
       "title": "Pomoc",
@@ -794,7 +803,7 @@
     "groups": {
       "home": "Domov",
       "zones": "Zóny",
-      "data": "Údaje",
+      "data": "Počasie",
       "settings": "Nastavenia",
       "watering": "Zavlažovanie"
     },
@@ -1040,6 +1049,12 @@
         "zone_schedule_duration": "rozvrh zóny potrebuje trvanie: neprevezme sa",
         "zone_taken": "zóna {zone} už patrí k „{name}“: dostane vlastnú zónu"
       }
+    },
+    "skip": {
+      "title": "Vynechanie podľa počasia",
+      "description": "Zavlažovanie sa zadrží, keď platí jedna z týchto kontrol: dážď v predpovedi, alebo dážď, mráz a vietor namerané pri jeho štarte.",
+      "soil-moisture": "Vlhkosť pôdy sa nastavuje pre každú zónu, pretože každá zóna má vlastný senzor.",
+      "open-zones": "Otvoriť zóny"
     }
   },
   "title": "Inteligentné zavlažovanie",
@@ -1245,7 +1260,7 @@
     "schedule_hard_deadline": "Prerušiť zavlažovanie v čase ukončenia",
     "schedule_hard_deadline_help": "Zavlažovanie sa preruší v cieľovom čase ukončenia: otvorené zóny sa zatvoria a pripíše sa im, čo stihli zaliať, a čo sa nezačalo, sa vynechá.",
     "schedule_conditions": "Ktoré podmienky",
-    "schedule_conditions_help": "Čo môže tomuto rozvrhu zabrániť v zalievaní. Podmienky sa nastavujú v Nastavenia, Všeobecné, a tento rozvrh dodržiava všetky; odškrtnite tie, ktoré má ignorovať, napríklad dážď pre skleník. Odklad, o ktorý ste požiadali (24 h, 48 h), platí vždy.",
+    "schedule_conditions_help": "Čo môže tomuto rozvrhu zabrániť v zalievaní. Dážď, mráz a vietor sa nastavujú v Počasie, Vynechanie podľa počasia, dni od posledného zalievania v Nastavenia, Všeobecné a vlhkosť pôdy v každej zóne. Tento rozvrh dodržiava všetky; odškrtnite tie, ktoré má ignorovať, napríklad dážď pre skleník. Odklad, o ktorý ste požiadali (24 h, 48 h), platí vždy.",
     "condition_postponed": "Odložené dni (vždy zapnuté)",
     "condition_rain_sensor": "Senzor dažďa",
     "condition_freeze": "Mráz",
@@ -1315,9 +1330,9 @@
     "summary_end_sunrise": "hotové pri východe slnka",
     "summary_end_sunset": "hotové pri západe slnka",
     "last_word": "posledný",
-    "conditions_none": "Žiadna podmienka nie je zapnutá: nastavujú sa v Nastavenia, Všeobecné.",
+    "conditions_none": "Žiadna podmienka nie je zapnutá: dážď, mráz a vietor sa nastavujú v Počasie, Vynechanie podľa počasia a dni od posledného zalievania v Nastavenia, Všeobecné.",
     "cond_postponed": "tlačidlá Odložiť na úvodnej stránke",
-    "cond_off": "vypnuté v Nastaveniach",
+    "cond_off": "vypnutá",
     "cond_freeze": "pri {value} alebo menej",
     "cond_wind": "od {value}",
     "cond_precipitation": "od {value} v predpovedi",
@@ -1400,6 +1415,17 @@
       "title": "Vietor",
       "description": "Vynechať zavlažovanie, keď je vietor na prahu alebo nad ním: postrekovač v silnom vetre zalieva cestu, nie záhon.",
       "sensor-hint": "Prázdne: aktuálny vietor z meteoslužby, v 10 m."
+    },
+    "source": {
+      "sensor": "Číta {sensor}.",
+      "service": "Číta aktuálnu hodnotu meteoslužby.",
+      "nothing": "Žiadny senzor ani meteoslužba: táto kontrola nič nezadrží.",
+      "same": "Rovnaký zdroj ako skupina senzorov {groups}, pre výpar.",
+      "other": "Pre výpar čítajú skupiny senzorov túto hodnotu inde: {groups}.",
+      "service-short": "meteoslužba",
+      "static-short": "pevná hodnota",
+      "group": "„{group}“",
+      "adopt": "Použiť {sensor} aj tu"
     }
   },
   "card": {

@@ -291,7 +291,16 @@
         }
       },
       "description": "Esta página provee configuraciones globales.",
-      "title": "General"
+      "title": "General",
+      "sections": {
+        "calculation": "Cálculo",
+        "control": "Control",
+        "system": "Sistema",
+        "calculation-sub": "Cuánto necesita cada zona y cuándo se calcula.",
+        "control-sub": "Qué abre las válvulas y qué inicia un riego.",
+        "system-sub": "El panel, los blueprints, el asistente de configuración y el paso desde Irrigation Unlimited."
+      },
+      "moved-to-weather": "El servicio meteorológico, la ubicación, la frecuencia con que se lee el tiempo y las comprobaciones para omitir están en esta pestaña:"
     },
     "help": {
       "title": "Ayuda",
@@ -794,7 +803,7 @@
     "groups": {
       "home": "Inicio",
       "zones": "Zonas",
-      "data": "Datos",
+      "data": "Tiempo",
       "settings": "Ajustes",
       "watering": "Riego"
     },
@@ -1040,6 +1049,12 @@
         "zone_schedule_duration": "un horario de zona necesita una duración: no se trae",
         "zone_taken": "la zona {zone} ya pertenece a «{name}»: recibe una zona propia"
       }
+    },
+    "skip": {
+      "title": "Omitir según el tiempo",
+      "description": "Un riego se retiene cuando se cumple una de estas comprobaciones: la lluvia prevista, o la lluvia, la helada y el viento medidos a su inicio.",
+      "soil-moisture": "La humedad del suelo se ajusta por zona, ya que cada zona tiene su propio sensor.",
+      "open-zones": "Abrir las zonas"
     }
   },
   "title": "Smart Irrigation",
@@ -1245,7 +1260,7 @@
     "schedule_hard_deadline": "Cortar la ejecución a la hora de fin",
     "schedule_hard_deadline_help": "La ejecución se corta en el objetivo de fin: las zonas abiertas se cierran y se acreditan por lo que regaron, y lo que no empezó se omite.",
     "schedule_conditions": "Qué condiciones",
-    "schedule_conditions_help": "Lo que puede impedir que este horario riegue. Las condiciones se ajustan en Ajustes, General, y este horario las respeta todas; desmarca las que debe ignorar, la lluvia para un invernadero por ejemplo. Un aplazamiento que pediste (24 h, 48 h) se aplica siempre.",
+    "schedule_conditions_help": "Lo que puede impedir que este horario riegue. La lluvia, la helada y el viento se ajustan en Tiempo, Omitir según el tiempo, los días desde el último riego en Ajustes, General, y la humedad del suelo en cada zona. Este horario las respeta todas; desmarca las que debe ignorar, la lluvia para un invernadero por ejemplo. Un aplazamiento que pediste (24 h, 48 h) se aplica siempre.",
     "condition_postponed": "Días aplazados (siempre activo)",
     "condition_rain_sensor": "Sensor de lluvia",
     "condition_freeze": "Helada",
@@ -1315,9 +1330,9 @@
     "summary_end_sunrise": "terminado al amanecer",
     "summary_end_sunset": "terminado al atardecer",
     "last_word": "último",
-    "conditions_none": "No hay ninguna condición activada: se ajustan en Ajustes, General.",
+    "conditions_none": "No hay ninguna condición activada: la lluvia, la helada y el viento se ajustan en Tiempo, Omitir según el tiempo, y los días desde el último riego en Ajustes, General.",
     "cond_postponed": "los botones Aplazar de la página de inicio",
-    "cond_off": "desactivada en Ajustes",
+    "cond_off": "desactivada",
     "cond_freeze": "a {value} o menos",
     "cond_wind": "desde {value}",
     "cond_precipitation": "desde {value} previstos",
@@ -1400,6 +1415,17 @@
       "title": "Viento",
       "description": "Omitir el ciclo cuando el viento esté en el umbral o por encima: un aspersor con viento fuerte riega el camino, no el bancal.",
       "sensor-hint": "Vacío: el viento actual del servicio meteorológico, a 10 m."
+    },
+    "source": {
+      "sensor": "Lee {sensor}.",
+      "service": "Lee el valor actual del servicio meteorológico.",
+      "nothing": "Sin sensor ni servicio meteorológico: esta comprobación no retiene nada.",
+      "same": "La misma fuente que el grupo de sensores {groups}, para la evaporación.",
+      "other": "Para la evaporación, los grupos de sensores leen este valor en otro lugar: {groups}.",
+      "service-short": "el servicio meteorológico",
+      "static-short": "un valor fijo",
+      "group": "\"{group}\"",
+      "adopt": "Usar {sensor} aquí también"
     }
   },
   "card": {

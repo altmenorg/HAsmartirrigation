@@ -291,7 +291,16 @@
         }
       },
       "description": "Tämä sivu tarjoaa yleiset asetukset.",
-      "title": "Yleiset"
+      "title": "Yleiset",
+      "sections": {
+        "calculation": "Laskenta",
+        "control": "Ohjaus",
+        "system": "Järjestelmä",
+        "calculation-sub": "Kuinka paljon kukin alue tarvitsee ja milloin se lasketaan.",
+        "control-sub": "Mikä avaa venttiilit ja mikä käynnistää kastelun.",
+        "system-sub": "Paneeli, blueprintit, asennusavustaja ja siirtyminen Irrigation Unlimitedistä."
+      },
+      "moved-to-weather": "Sääpalvelu, sijainti, kuinka usein sää luetaan, sekä ohitustarkistukset ovat tällä välilehdellä:"
     },
     "help": {
       "title": "Ohje",
@@ -794,7 +803,7 @@
     "groups": {
       "home": "Etusivu",
       "zones": "Alueet",
-      "data": "Tiedot",
+      "data": "Sää",
       "settings": "Asetukset",
       "watering": "Kastelu"
     },
@@ -1040,6 +1049,12 @@
         "zone_schedule_duration": "alueen aikataulu tarvitsee keston: sitä ei siirretä",
         "zone_taken": "alue {zone} kuuluu jo kohteelle ”{name}”: se saa oman alueen"
       }
+    },
+    "skip": {
+      "title": "Ohitus sään perusteella",
+      "description": "Kastelu jätetään odottamaan, kun jokin näistä tarkistuksista täyttyy: ennusteen sade tai sen alkaessa mitattu sade, pakkanen ja tuuli.",
+      "soil-moisture": "Maaperän kosteus asetetaan aluekohtaisesti, koska jokaisella alueella on oma anturinsa.",
+      "open-zones": "Avaa alueet"
     }
   },
   "title": "Smart Irrigation",
@@ -1245,7 +1260,7 @@
     "schedule_hard_deadline": "Katkaise ajo päättymisajankohtana",
     "schedule_hard_deadline_help": "Ajo katkaistaan päättymistavoitteessa: avoimet vyöhykkeet suljetaan ja niille hyvitetään se, minkä ne ehtivät kastella, ja se, mikä ei alkanut, ohitetaan.",
     "schedule_conditions": "Mitkä ehdot",
-    "schedule_conditions_help": "Mikä voi estää tätä aikataulua kastelemasta. Ehdot asetetaan kohdassa Asetukset, Yleiset, ja tämä aikataulu noudattaa niitä kaikkia; poista valinta niistä, jotka sen pitää ohittaa, esimerkiksi sade kasvihuoneelle. Pyytämäsi lykkäys (24 h, 48 h) pätee aina.",
+    "schedule_conditions_help": "Mikä voi estää tätä aikataulua kastelemasta. Sade, pakkanen ja tuuli asetetaan kohdassa Sää, Ohitus sään perusteella, päivät edellisestä kastelusta kohdassa Asetukset, Yleiset ja maaperän kosteus kullakin alueella. Tämä aikataulu noudattaa niitä kaikkia; poista valinta niistä, jotka sen pitää ohittaa, esimerkiksi sade kasvihuoneelle. Pyytämäsi lykkäys (24 h, 48 h) pätee aina.",
     "condition_postponed": "Lykätyt päivät (aina päällä)",
     "condition_rain_sensor": "Sadeanturi",
     "condition_freeze": "Pakkanen",
@@ -1315,9 +1330,9 @@
     "summary_end_sunrise": "valmis auringonnousuun mennessä",
     "summary_end_sunset": "valmis auringonlaskuun mennessä",
     "last_word": "viimeinen",
-    "conditions_none": "Mikään ehto ei ole päällä: ne asetetaan kohdassa Asetukset, Yleiset.",
+    "conditions_none": "Mikään ehto ei ole päällä: sade, pakkanen ja tuuli asetetaan kohdassa Sää, Ohitus sään perusteella, ja päivät edellisestä kastelusta kohdassa Asetukset, Yleiset.",
     "cond_postponed": "etusivun Lykkää-painikkeet",
-    "cond_off": "pois päältä asetuksissa",
+    "cond_off": "pois päältä",
     "cond_freeze": "{value} tai alle",
     "cond_wind": "{value} alkaen",
     "cond_precipitation": "{value} ennusteessa alkaen",
@@ -1400,6 +1415,17 @@
       "title": "Tuuli",
       "description": "Ohita kastelu, kun tuuli on rajassa tai sen yli: sadetin kovassa tuulessa kastelee käytävän, ei penkkiä.",
       "sensor-hint": "Tyhjä: sääpalvelun nykyinen tuuli, 10 m korkeudella."
+    },
+    "source": {
+      "sensor": "Lukee {sensor}.",
+      "service": "Lukee sääpalvelun nykyisen arvon.",
+      "nothing": "Ei anturia eikä sääpalvelua: tämä tarkistus ei estä mitään.",
+      "same": "Sama lähde kuin anturiryhmällä {groups}, haihduntaa varten.",
+      "other": "Haihduntaa varten anturiryhmät lukevat tämän arvon muualta: {groups}.",
+      "service-short": "sääpalvelu",
+      "static-short": "kiinteä arvo",
+      "group": "\"{group}\"",
+      "adopt": "Käytä {sensor} myös tässä"
     }
   },
   "card": {

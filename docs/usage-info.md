@@ -93,7 +93,7 @@ The **History** tab lists what actually ran, grouped by day: which zone, when,
 for how long and how much water. A run appears whether Smart Irrigation drove
 the valve itself or observed one being driven by something else.
 
-The **Weather service** page, under **Data**, keeps its own history of what was retrieved and
+The **Weather service** page, under **Weather**, keeps its own history of what was retrieved and
 when, which is the place to look when a calculation used a value you did not
 expect.
 

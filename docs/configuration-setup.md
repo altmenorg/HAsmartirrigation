@@ -11,13 +11,13 @@ The setup assistant exists because the other pages assume you already know what
 a sensor group is. It asks one question at a time, and only the questions your
 previous answers leave open, then creates the things a working zone needs.
 
-It is **not a tab**: it is the first card of **Settings > General**, because it is for an
+It is **not a tab**: it is a card of **Settings > General**, under System, because it is for an
 installation that has nothing yet, and a tab inviting one with three zones to
 set itself up was in the way. Use it for a first zone, another one, or a fresh
 start.
 
 You do not have to use it. Everything it does can be done by hand in the panel
-(zones under Zones, sensor groups under Data), and nothing it creates is locked afterwards.
+(zones under Zones, sensor groups under Weather), and nothing it creates is locked afterwards.
 
 ## What it asks
 

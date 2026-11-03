@@ -291,7 +291,16 @@
         }
       },
       "description": "Dit zijn de algemene instellingen.",
-      "title": "Algemeen"
+      "title": "Algemeen",
+      "sections": {
+        "calculation": "Berekening",
+        "control": "Aansturing",
+        "system": "Systeem",
+        "calculation-sub": "Hoeveel elke zone nodig heeft, en wanneer dat wordt berekend.",
+        "control-sub": "Wat de ventielen opent, en wat een ronde start.",
+        "system-sub": "Het paneel, de blueprints, de installatieassistent en de overstap van Irrigation Unlimited."
+      },
+      "moved-to-weather": "De weerdienst, de locatie, hoe vaak het weer wordt gelezen en de controles om over te slaan staan op dit tabblad:"
     },
     "help": {
       "title": "Hulp",
@@ -794,7 +803,7 @@
     "groups": {
       "home": "Start",
       "zones": "Zones",
-      "data": "Gegevens",
+      "data": "Weer",
       "settings": "Instellingen",
       "watering": "Bewatering"
     },
@@ -1040,6 +1049,12 @@
         "zone_schedule_duration": "een schema van een zone heeft een duur nodig: het komt niet mee",
         "zone_taken": "zone {zone} hoort al bij \"{name}\": ze krijgt een eigen zone"
       }
+    },
+    "skip": {
+      "title": "Overslaan op basis van het weer",
+      "description": "Een ronde wordt tegengehouden als een van deze controles opgaat: de regen in de voorspelling, of de regen, vorst en wind gemeten bij de start.",
+      "soil-moisture": "Bodemvocht wordt per zone ingesteld, omdat elke zone een eigen sensor heeft.",
+      "open-zones": "Zones openen"
     }
   },
   "title": "Smart Irrigation",
@@ -1245,7 +1260,7 @@
     "schedule_hard_deadline": "De ronde afbreken op de eindtijd",
     "schedule_hard_deadline_help": "De ronde wordt afgebroken op het eindmoment: de geopende zones worden gesloten en gecrediteerd voor wat ze bewaterd hebben, en wat niet gestart is, wordt overgeslagen.",
     "schedule_conditions": "Welke voorwaarden",
-    "schedule_conditions_help": "Wat dit schema kan tegenhouden. De voorwaarden worden ingesteld in Instellingen, Algemeen, en dit schema volgt ze allemaal; vink uit wat het moet negeren, de regen voor een kas bijvoorbeeld. Een uitstel dat je vroeg (24 u, 48 u) geldt altijd.",
+    "schedule_conditions_help": "Wat dit schema kan tegenhouden. De regen, vorst en wind worden ingesteld in Weer, Overslaan op basis van het weer, de dagen sinds de laatste bewatering in Instellingen, Algemeen, en het bodemvocht in elke zone. Dit schema volgt ze allemaal; vink uit wat het moet negeren, de regen voor een kas bijvoorbeeld. Een uitstel dat je vroeg (24 u, 48 u) geldt altijd.",
     "condition_postponed": "Uitgestelde dagen (altijd aan)",
     "condition_rain_sensor": "Regensensor",
     "condition_freeze": "Vorst",
@@ -1315,9 +1330,9 @@
     "summary_end_sunrise": "klaar bij zonsopgang",
     "summary_end_sunset": "klaar bij zonsondergang",
     "last_word": "laatste",
-    "conditions_none": "Er is geen voorwaarde ingeschakeld: ze worden ingesteld in Instellingen, Algemeen.",
+    "conditions_none": "Er is geen voorwaarde ingeschakeld: de regen, vorst en wind worden ingesteld in Weer, Overslaan op basis van het weer, en de dagen sinds de laatste bewatering in Instellingen, Algemeen.",
     "cond_postponed": "de Uitstellen-knoppen van de startpagina",
-    "cond_off": "uit in Instellingen",
+    "cond_off": "uitgeschakeld",
     "cond_freeze": "bij {value} of lager",
     "cond_wind": "vanaf {value}",
     "cond_precipitation": "vanaf {value} voorspeld",
@@ -1400,6 +1415,17 @@
       "title": "Wind",
       "description": "Sla de ronde over als de wind op of boven de drempel zit: een sproeier bewatert bij harde wind het pad, niet het bed.",
       "sensor-hint": "Leeg: de huidige wind van de weerdienst, op 10 m."
+    },
+    "source": {
+      "sensor": "Leest {sensor}.",
+      "service": "Leest de huidige waarde van de weerdienst.",
+      "nothing": "Geen sensor en geen weerdienst: deze controle houdt niets tegen.",
+      "same": "Dezelfde bron als de sensorgroep {groups}, voor de verdamping.",
+      "other": "Voor de verdamping lezen de sensorgroepen deze waarde ergens anders: {groups}.",
+      "service-short": "de weerdienst",
+      "static-short": "een vaste waarde",
+      "group": "\"{group}\"",
+      "adopt": "Gebruik {sensor} hier ook"
     }
   },
   "card": {

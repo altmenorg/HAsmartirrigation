@@ -291,7 +291,16 @@
         }
       },
       "description": "Cette page fournit les réglages globaux.",
-      "title": "Général"
+      "title": "Général",
+      "sections": {
+        "calculation": "Calcul",
+        "control": "Contrôle",
+        "system": "Système",
+        "calculation-sub": "Ce dont chaque zone a besoin, et quand c'est calculé.",
+        "control-sub": "Ce qui ouvre les vannes, et ce qui lance un arrosage.",
+        "system-sub": "Le panel, les blueprints, l'assistant de configuration et le passage depuis Irrigation Unlimited."
+      },
+      "moved-to-weather": "Le service météo, la localisation, la fréquence des relevés et les conditions pour sauter un arrosage sont dans cet onglet :"
     },
     "help": {
       "title": "Aide",
@@ -794,7 +803,7 @@
     "groups": {
       "home": "Accueil",
       "zones": "Zones",
-      "data": "Données",
+      "data": "Météo",
       "settings": "Réglages",
       "watering": "Arrosage"
     },
@@ -1040,6 +1049,12 @@
         "zone_schedule_duration": "un horaire de zone a besoin d'une durée : il n'est pas repris",
         "zone_taken": "la zone {zone} appartient déjà à « {name} » : elle reçoit sa propre zone"
       }
+    },
+    "skip": {
+      "title": "Sauter selon la météo",
+      "description": "Un arrosage est retenu quand l'une de ces conditions est remplie : la pluie prévue, ou la pluie, le gel et le vent mesurés à son départ.",
+      "soil-moisture": "L'humidité du sol se règle par zone, puisque chaque zone a son propre capteur.",
+      "open-zones": "Ouvrir les zones"
     }
   },
   "title": "Smart Irrigation",
@@ -1245,7 +1260,7 @@
     "schedule_hard_deadline": "Couper l'arrosage à l'heure de fin",
     "schedule_hard_deadline_help": "L'arrosage est coupé à l'heure de fin visée : les zones ouvertes sont fermées et créditées de ce qu'elles ont arrosé, et ce qui n'a pas commencé est sauté.",
     "schedule_conditions": "Quelles conditions",
-    "schedule_conditions_help": "Ce qui peut empêcher cet horaire d'arroser. Les conditions se règlent dans Réglages, Général, et cet horaire les respecte toutes ; décoche celles qu'il doit ignorer, la pluie pour une serre par exemple. Un report que tu as demandé (24 h, 48 h) s'applique toujours.",
+    "schedule_conditions_help": "Ce qui peut empêcher cet horaire d'arroser. La pluie, le gel et le vent se règlent dans Météo, Sauter selon la météo, les jours depuis le dernier arrosage dans Réglages, Général, et l'humidité du sol dans chaque zone. Cet horaire les respecte toutes ; décoche celles qu'il doit ignorer, la pluie pour une serre par exemple. Un report que tu as demandé (24 h, 48 h) s'applique toujours.",
     "condition_postponed": "Jours reportés (toujours actif)",
     "condition_rain_sensor": "Capteur de pluie",
     "condition_freeze": "Gel",
@@ -1315,9 +1330,9 @@
     "summary_end_sunrise": "fini au lever du soleil",
     "summary_end_sunset": "fini au coucher du soleil",
     "last_word": "dernier",
-    "conditions_none": "Aucune condition n'est activée : elles se règlent dans Réglages, Général.",
+    "conditions_none": "Aucune condition n'est activée : la pluie, le gel et le vent se règlent dans Météo, Sauter selon la météo, et les jours depuis le dernier arrosage dans Réglages, Général.",
     "cond_postponed": "les boutons Reporter de l'accueil",
-    "cond_off": "désactivée dans les Réglages",
+    "cond_off": "désactivée",
     "cond_freeze": "à {value} ou moins",
     "cond_wind": "à partir de {value}",
     "cond_precipitation": "à partir de {value} prévus",
@@ -1400,6 +1415,17 @@
       "title": "Vent",
       "description": "Ne pas arroser quand le vent atteint ou dépasse le seuil : par grand vent, l'arroseur mouille l'allée, pas le massif.",
       "sensor-hint": "Vide : le vent actuel du service météo, à 10 m."
+    },
+    "source": {
+      "sensor": "Lit {sensor}.",
+      "service": "Lit la valeur actuelle du service météo.",
+      "nothing": "Ni capteur ni service météo : cette condition ne retient rien.",
+      "same": "La même source que le groupe de capteurs {groups}, pour l'évaporation.",
+      "other": "Pour l'évaporation, les groupes de capteurs lisent cette valeur ailleurs : {groups}.",
+      "service-short": "le service météo",
+      "static-short": "une valeur fixe",
+      "group": "« {group} »",
+      "adopt": "Utiliser {sensor} ici aussi"
     }
   },
   "card": {

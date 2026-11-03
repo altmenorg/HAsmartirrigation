@@ -291,7 +291,16 @@
         }
       },
       "description": "Ta strona zawiera ustawienia globalne.",
-      "title": "Ogólne"
+      "title": "Ogólne",
+      "sections": {
+        "calculation": "Obliczenia",
+        "control": "Sterowanie",
+        "system": "System",
+        "calculation-sub": "Ile potrzebuje każda strefa i kiedy jest to obliczane.",
+        "control-sub": "Co otwiera zawory i co uruchamia podlewanie.",
+        "system-sub": "Panel, blueprinty, asystent konfiguracji i przejście z Irrigation Unlimited."
+      },
+      "moved-to-weather": "Serwis pogodowy, lokalizacja, częstotliwość odczytu pogody i kontrole pomijania są na tej karcie:"
     },
     "help": {
       "title": "Pomoc",
@@ -794,7 +803,7 @@
     "groups": {
       "home": "Start",
       "zones": "Strefy",
-      "data": "Dane",
+      "data": "Pogoda",
       "settings": "Ustawienia",
       "watering": "Podlewanie"
     },
@@ -1040,6 +1049,12 @@
         "zone_schedule_duration": "harmonogram strefy wymaga czasu trwania: nie jest przenoszony",
         "zone_taken": "strefa {zone} należy już do „{name}”: dostaje własną strefę"
       }
+    },
+    "skip": {
+      "title": "Pomijanie z powodu pogody",
+      "description": "Podlewanie jest wstrzymywane, gdy spełniona jest jedna z tych kontroli: deszcz w prognozie albo deszcz, przymrozek i wiatr zmierzone przy jego starcie.",
+      "soil-moisture": "Wilgotność gleby ustawia się dla każdej strefy, ponieważ każda strefa ma własny czujnik.",
+      "open-zones": "Otwórz strefy"
     }
   },
   "title": "Smart Irrigation",
@@ -1245,7 +1260,7 @@
     "schedule_hard_deadline": "Przerwij uruchomienie o godzinie końcowej",
     "schedule_hard_deadline_help": "Uruchomienie jest przerywane o docelowej godzinie końca: otwarte strefy są zamykane i zaliczane za to, co podlały, a to, co nie ruszyło, jest pomijane.",
     "schedule_conditions": "Które warunki",
-    "schedule_conditions_help": "Co może powstrzymać ten harmonogram przed podlewaniem. Warunki ustawia się w Ustawienia, Ogólne, a ten harmonogram przestrzega wszystkich; odznacz te, które ma ignorować, na przykład deszcz dla szklarni. Odroczenie, o które prosiłeś (24 h, 48 h), obowiązuje zawsze.",
+    "schedule_conditions_help": "Co może powstrzymać ten harmonogram przed podlewaniem. Deszcz, przymrozek i wiatr ustawia się w Pogoda, Pomijanie z powodu pogody, dni od ostatniego podlewania w Ustawienia, Ogólne, a wilgotność gleby w każdej strefie. Ten harmonogram przestrzega wszystkich; odznacz te, które ma ignorować, na przykład deszcz dla szklarni. Odroczenie, o które prosiłeś (24 h, 48 h), obowiązuje zawsze.",
     "condition_postponed": "Odłożone dni (zawsze włączone)",
     "condition_rain_sensor": "Czujnik deszczu",
     "condition_freeze": "Przymrozek",
@@ -1315,9 +1330,9 @@
     "summary_end_sunrise": "gotowe o wschodzie słońca",
     "summary_end_sunset": "gotowe o zachodzie słońca",
     "last_word": "ostatni",
-    "conditions_none": "Żaden warunek nie jest włączony: ustawia się je w Ustawienia, Ogólne.",
+    "conditions_none": "Żaden warunek nie jest włączony: deszcz, przymrozek i wiatr ustawia się w Pogoda, Pomijanie z powodu pogody, a dni od ostatniego podlewania w Ustawienia, Ogólne.",
     "cond_postponed": "przyciski Odrocz na stronie głównej",
-    "cond_off": "wyłączone w Ustawieniach",
+    "cond_off": "wyłączony",
     "cond_freeze": "przy {value} lub mniej",
     "cond_wind": "od {value}",
     "cond_precipitation": "od {value} w prognozie",
@@ -1400,6 +1415,17 @@
       "title": "Wiatr",
       "description": "Pomiń nawadnianie, gdy wiatr jest na progu lub powyżej: zraszacz przy silnym wiatrze podlewa ścieżkę, nie rabatę.",
       "sensor-hint": "Puste: bieżący wiatr z serwisu pogodowego, na 10 m."
+    },
+    "source": {
+      "sensor": "Odczytuje {sensor}.",
+      "service": "Odczytuje bieżącą wartość serwisu pogodowego.",
+      "nothing": "Brak czujnika i serwisu pogodowego: ta kontrola niczego nie wstrzymuje.",
+      "same": "To samo źródło co grupa czujników {groups}, dla parowania.",
+      "other": "Dla parowania grupy czujników odczytują tę wartość gdzie indziej: {groups}.",
+      "service-short": "serwis pogodowy",
+      "static-short": "stała wartość",
+      "group": "„{group}”",
+      "adopt": "Użyj {sensor} także tutaj"
     }
   },
   "card": {

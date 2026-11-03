@@ -291,7 +291,16 @@
         }
       },
       "description": "Esta página fornece definições globais.",
-      "title": "Geral"
+      "title": "Geral",
+      "sections": {
+        "calculation": "Cálculo",
+        "control": "Controlo",
+        "system": "Sistema",
+        "calculation-sub": "Quanto precisa cada zona, e quando isso é calculado.",
+        "control-sub": "O que abre as válvulas, e o que inicia uma rega.",
+        "system-sub": "O painel, os blueprints, o assistente de configuração e a mudança a partir do Irrigation Unlimited."
+      },
+      "moved-to-weather": "O serviço meteorológico, a localização, a frequência com que o tempo é lido e as verificações para ignorar estão neste separador:"
     },
     "help": {
       "title": "Ajuda",
@@ -794,7 +803,7 @@
     "groups": {
       "home": "Início",
       "zones": "Zonas",
-      "data": "Dados",
+      "data": "Tempo",
       "settings": "Definições",
       "watering": "Rega"
     },
@@ -1040,6 +1049,12 @@
         "zone_schedule_duration": "um agendamento de zona precisa de uma duração: não passa",
         "zone_taken": "a zona {zone} já pertence a \"{name}\": recebe uma zona própria"
       }
+    },
+    "skip": {
+      "title": "Ignorar devido ao tempo",
+      "description": "Uma rega é retida quando uma destas verificações se aplica: a chuva prevista, ou a chuva, a geada e o vento medidos no seu início.",
+      "soil-moisture": "A humidade do solo define-se por zona, pois cada zona tem o seu próprio sensor.",
+      "open-zones": "Abrir as zonas"
     }
   },
   "title": "Smart Irrigation",
@@ -1245,7 +1260,7 @@
     "schedule_hard_deadline": "Interromper a execução à hora final",
     "schedule_hard_deadline_help": "A execução é interrompida à hora final: as zonas abertas são fechadas e creditadas pelo que regaram, e o que não começou é ignorado.",
     "schedule_conditions": "Que condições",
-    "schedule_conditions_help": "O que pode impedir este horário de regar. As condições definem-se em Definições, Geral, e este horário respeita-as todas; desmarca as que deve ignorar, a chuva para uma estufa por exemplo. Um adiamento que pediste (24 h, 48 h) aplica-se sempre.",
+    "schedule_conditions_help": "O que pode impedir este horário de regar. A chuva, a geada e o vento definem-se em Tempo, Ignorar devido ao tempo, os dias desde a última rega em Definições, Geral, e a humidade do solo em cada zona. Este horário respeita-as todas; desmarca as que deve ignorar, a chuva para uma estufa por exemplo. Um adiamento que pediste (24 h, 48 h) aplica-se sempre.",
     "condition_postponed": "Dias adiados (sempre ativo)",
     "condition_rain_sensor": "Sensor de chuva",
     "condition_freeze": "Geada",
@@ -1315,9 +1330,9 @@
     "summary_end_sunrise": "concluído ao nascer do sol",
     "summary_end_sunset": "concluído ao pôr do sol",
     "last_word": "último",
-    "conditions_none": "Nenhuma condição está ativada: definem-se em Definições, Geral.",
+    "conditions_none": "Nenhuma condição está ativada: a chuva, a geada e o vento definem-se em Tempo, Ignorar devido ao tempo, e os dias desde a última rega em Definições, Geral.",
     "cond_postponed": "os botões Adiar da página inicial",
-    "cond_off": "desativada nas Definições",
+    "cond_off": "desativada",
     "cond_freeze": "a {value} ou menos",
     "cond_wind": "a partir de {value}",
     "cond_precipitation": "a partir de {value} previstos",
@@ -1400,6 +1415,17 @@
       "title": "Vento",
       "description": "Ignorar o ciclo quando o vento estiver no limite ou acima dele: um aspersor com vento forte rega o caminho, não o canteiro.",
       "sensor-hint": "Vazio: o vento atual do serviço meteorológico, a 10 m."
+    },
+    "source": {
+      "sensor": "Lê {sensor}.",
+      "service": "Lê o valor atual do serviço meteorológico.",
+      "nothing": "Sem sensor nem serviço meteorológico: esta verificação não retém nada.",
+      "same": "A mesma fonte que o grupo de sensores {groups}, para a evaporação.",
+      "other": "Para a evaporação, os grupos de sensores leem este valor noutro sítio: {groups}.",
+      "service-short": "o serviço meteorológico",
+      "static-short": "um valor fixo",
+      "group": "\"{group}\"",
+      "adopt": "Usar {sensor} aqui também"
     }
   },
   "card": {

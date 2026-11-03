@@ -291,7 +291,16 @@
         }
       },
       "description": "Questa pagina fornisce le impostazioni globali.",
-      "title": "Generale"
+      "title": "Generale",
+      "sections": {
+        "calculation": "Calcolo",
+        "control": "Controllo",
+        "system": "Sistema",
+        "calculation-sub": "Quanto serve a ogni zona e quando viene calcolato.",
+        "control-sub": "Cosa apre le valvole e cosa avvia un ciclo.",
+        "system-sub": "Il pannello, i blueprint, l'assistente di configurazione e il passaggio da Irrigation Unlimited."
+      },
+      "moved-to-weather": "Il servizio meteo, la posizione, la frequenza di lettura del meteo e i controlli di salto sono in questa scheda:"
     },
     "help": {
       "title": "Aiuto",
@@ -794,7 +803,7 @@
     "groups": {
       "home": "Inizio",
       "zones": "Zone",
-      "data": "Dati",
+      "data": "Meteo",
       "settings": "Impostazioni",
       "watering": "Irrigazione"
     },
@@ -1040,6 +1049,12 @@
         "zone_schedule_duration": "l'orario di una zona richiede una durata: non viene portato",
         "zone_taken": "la zona {zone} appartiene già a \"{name}\": riceve una zona propria"
       }
+    },
+    "skip": {
+      "title": "Salta per meteo",
+      "description": "Un ciclo viene trattenuto quando vale uno di questi controlli: la pioggia prevista, oppure la pioggia, il gelo e il vento misurati al suo avvio.",
+      "soil-moisture": "L'umidità del suolo si imposta per zona, perché ogni zona ha il suo sensore.",
+      "open-zones": "Apri le zone"
     }
   },
   "title": "Smart Irrigation",
@@ -1245,7 +1260,7 @@
     "schedule_hard_deadline": "Interrompi il ciclo all'ora di fine",
     "schedule_hard_deadline_help": "Il ciclo viene interrotto all'obiettivo di fine: le zone aperte vengono chiuse e accreditate per ciò che hanno irrigato, e ciò che non è partito viene saltato.",
     "schedule_conditions": "Quali condizioni",
-    "schedule_conditions_help": "Ciò che può impedire a questa programmazione di irrigare. Le condizioni si impostano in Impostazioni, Generale, e questa programmazione le rispetta tutte; togli la spunta a quelle da ignorare, la pioggia per una serra per esempio. Un rinvio che hai chiesto (24 h, 48 h) vale sempre.",
+    "schedule_conditions_help": "Ciò che può impedire a questa programmazione di irrigare. La pioggia, il gelo e il vento si impostano in Meteo, Salta per meteo, i giorni dall'ultima irrigazione in Impostazioni, Generale, e l'umidità del suolo in ogni zona. Questa programmazione le rispetta tutte; togli la spunta a quelle da ignorare, la pioggia per una serra per esempio. Un rinvio che hai chiesto (24 h, 48 h) vale sempre.",
     "condition_postponed": "Giorni rinviati (sempre attivo)",
     "condition_rain_sensor": "Sensore di pioggia",
     "condition_freeze": "Gelo",
@@ -1315,9 +1330,9 @@
     "summary_end_sunrise": "finito all'alba",
     "summary_end_sunset": "finito al tramonto",
     "last_word": "ultimo",
-    "conditions_none": "Nessuna condizione è attiva: si impostano in Impostazioni, Generale.",
+    "conditions_none": "Nessuna condizione è attiva: la pioggia, il gelo e il vento si impostano in Meteo, Salta per meteo, e i giorni dall'ultima irrigazione in Impostazioni, Generale.",
     "cond_postponed": "i pulsanti Rinvia della pagina iniziale",
-    "cond_off": "disattivata nelle Impostazioni",
+    "cond_off": "disattivata",
     "cond_freeze": "a {value} o meno",
     "cond_wind": "da {value}",
     "cond_precipitation": "da {value} previsti",
@@ -1400,6 +1415,17 @@
       "title": "Vento",
       "description": "Salta il ciclo quando il vento è pari o superiore alla soglia: un irrigatore con vento forte bagna il vialetto, non l'aiuola.",
       "sensor-hint": "Vuoto: il vento attuale del servizio meteo, a 10 m."
+    },
+    "source": {
+      "sensor": "Legge {sensor}.",
+      "service": "Legge il valore attuale del servizio meteo.",
+      "nothing": "Nessun sensore e nessun servizio meteo: questo controllo non trattiene nulla.",
+      "same": "La stessa fonte del gruppo di sensori {groups}, per l'evaporazione.",
+      "other": "Per l'evaporazione, i gruppi di sensori leggono questo valore altrove: {groups}.",
+      "service-short": "il servizio meteo",
+      "static-short": "un valore fisso",
+      "group": "\"{group}\"",
+      "adopt": "Usa {sensor} anche qui"
     }
   },
   "card": {

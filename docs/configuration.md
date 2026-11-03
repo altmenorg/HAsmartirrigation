@@ -21,13 +21,15 @@ works.
    with durations and volumes.
 2. **Zones** — [the zones](configuration-zones.md) of your irrigation system:
    what each waters, how it is calculated, and what it is short of.
-3. **Data** — where the numbers come from. [Weather
-   service](installation-weatherservice.md), then [sensor
-   groups](configuration-sensor-groups.md): which sensor or service provides
-   each value the calculation reads.
+3. **Weather** — where the numbers come from. [Weather
+   service](installation-weatherservice.md) with the location and how often it
+   is read, [sensor groups](configuration-sensor-groups.md): which sensor or
+   service provides each value the calculation reads, and the checks that
+   [skip a run](configuration-weather.md#skipping-a-run) on the weather.
 4. **Settings** — everything you set once.
-   [General](configuration-general.md): schedules, start triggers, the skip
-   conditions and the rest. Then **Backup / restore**, and **Help**.
+   [General](configuration-general.md): the master switch, then the
+   calculation, the control and the system. Then **Backup / restore**, and
+   **Help**.
 
 Two pages are in no tab, and both are reachable.
 

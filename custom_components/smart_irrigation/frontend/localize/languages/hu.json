@@ -291,7 +291,16 @@
         }
       },
       "description": "Ez az oldal globális beállításokat biztosít.",
-      "title": "Általános"
+      "title": "Általános",
+      "sections": {
+        "calculation": "Számítás",
+        "control": "Vezérlés",
+        "system": "Rendszer",
+        "calculation-sub": "Mennyi kell az egyes zónáknak, és mikor számolódik ki.",
+        "control-sub": "Mi nyitja a szelepeket, és mi indít el egy öntözést.",
+        "system-sub": "A panel, a blueprintek, a beállítási segéd és az átállás az Irrigation Unlimitedről."
+      },
+      "moved-to-weather": "Az időjárás-szolgáltatás, a hely, az időjárás leolvasásának gyakorisága és a kihagyási ellenőrzések ezen a lapon vannak:"
     },
     "help": {
       "title": "Súgó",
@@ -794,7 +803,7 @@
     "groups": {
       "home": "Kezdőlap",
       "zones": "Zónák",
-      "data": "Adatok",
+      "data": "Időjárás",
       "settings": "Beállítások",
       "watering": "Öntözés"
     },
@@ -1040,6 +1049,12 @@
         "zone_schedule_duration": "egy zóna ütemezéséhez időtartam kell: nem jön át",
         "zone_taken": "a(z) {zone} zóna már a(z) „{name}” zónáé: saját zónát kap"
       }
+    },
+    "skip": {
+      "title": "Kihagyás időjárás miatt",
+      "description": "Az öntözés visszatartásra kerül, ha az alábbi ellenőrzések egyike teljesül: az előrejelzett eső, vagy az induláskor mért eső, fagy és szél.",
+      "soil-moisture": "A talajnedvesség zónánként állítható, mivel minden zónának saját érzékelője van.",
+      "open-zones": "Zónák megnyitása"
     }
   },
   "title": "Smart Irrigation",
@@ -1245,7 +1260,7 @@
     "schedule_hard_deadline": "A futás megszakítása a befejezés idején",
     "schedule_hard_deadline_help": "A futás a befejezési célnál megszakad: a nyitott zónák bezáródnak és azt kapják jóváírva, amit öntöztek, ami pedig el sem indult, kimarad.",
     "schedule_conditions": "Mely feltételek",
-    "schedule_conditions_help": "Ami megakadályozhatja, hogy ez az ütemezés öntözzön. A feltételek a Beállítások, Általános részben állíthatók, és ez az ütemezés mindet betartja; vedd ki a pipát azokból, amelyeket figyelmen kívül kell hagynia, például az esőt egy üvegháznál. Az általad kért halasztás (24 ó, 48 ó) mindig érvényes.",
+    "schedule_conditions_help": "Ami megakadályozhatja, hogy ez az ütemezés öntözzön. Az eső, a fagy és a szél az Időjárás, Kihagyás időjárás miatt részben, az utolsó öntözés óta eltelt napok a Beállítások, Általános részben, a talajnedvesség pedig az egyes zónákban állítható. Ez az ütemezés mindet betartja; vedd ki a pipát azokból, amelyeket figyelmen kívül kell hagynia, például az esőt egy üvegháznál. Az általad kért halasztás (24 ó, 48 ó) mindig érvényes.",
     "condition_postponed": "Halasztott napok (mindig be)",
     "condition_rain_sensor": "Esőérzékelő",
     "condition_freeze": "Fagy",
@@ -1315,9 +1330,9 @@
     "summary_end_sunrise": "napkeltére kész",
     "summary_end_sunset": "napnyugtára kész",
     "last_word": "utolsó",
-    "conditions_none": "Egyik feltétel sincs bekapcsolva: a Beállítások, Általános részben állíthatók.",
+    "conditions_none": "Egyik feltétel sincs bekapcsolva: az eső, a fagy és a szél az Időjárás, Kihagyás időjárás miatt részben, az utolsó öntözés óta eltelt napok a Beállítások, Általános részben állíthatók.",
     "cond_postponed": "a kezdőlap Halasztás gombjai",
-    "cond_off": "kikapcsolva a Beállításokban",
+    "cond_off": "kikapcsolva",
     "cond_freeze": "{value} vagy alatta",
     "cond_wind": "{value} felett",
     "cond_precipitation": "{value} előrejelzéstől",
@@ -1400,6 +1415,17 @@
       "title": "Szél",
       "description": "Az öntözés kihagyása, ha a szél a küszöbön vagy fölötte van: az erős szélben szóró szórófej az utat öntözi, nem az ágyást.",
       "sensor-hint": "Üresen: az időjárás-szolgáltatás aktuális szele, 10 m magasságban."
+    },
+    "source": {
+      "sensor": "{sensor} értékét olvassa.",
+      "service": "Az időjárás-szolgáltatás aktuális értékét olvassa.",
+      "nothing": "Nincs érzékelő és nincs időjárás-szolgáltatás: ez az ellenőrzés semmit sem tart vissza.",
+      "same": "Ugyanaz a forrás, mint a(z) {groups} érzékelőcsoportnál, a párolgáshoz.",
+      "other": "A párolgáshoz az érzékelőcsoportok máshonnan olvassák ezt az értéket: {groups}.",
+      "service-short": "az időjárás-szolgáltatás",
+      "static-short": "rögzített érték",
+      "group": "„{group}”",
+      "adopt": "{sensor} használata itt is"
     }
   },
   "card": {

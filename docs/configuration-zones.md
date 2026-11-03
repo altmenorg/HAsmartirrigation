@@ -5,7 +5,7 @@ title: "Configuration: Zones"
 # Zone configuration
 
 > Main page: [Configuration](configuration.md)<br/>
-> Previous: [General configuration](configuration-general.md)<br/>
+> Previous: [Weather configuration](configuration-weather.md)<br/>
 > Next: [Module configuration](configuration-modules.md)
 
 Specify one or more irrigation zones here. The integration calculates irrigation duration per zone, depending on size, throughput, state, [module](configuration-modules.md) and [sensor group](configuration-sensor-groups.md). A zone can be:
@@ -83,7 +83,7 @@ You can change the following settings on a zone:
   A dry spell waters the same as it always did: the crop factor ends up multiplying the same total either way. What changes is a period with rain, where a factor below 1 used to credit only that fraction of the millimetres that fell and therefore over-watered, and the moment irrigation becomes necessary, which now arrives at the crop's rate of depletion rather than about `1/Kc` times too early.
 - **Soil**: the soil of the zone by name (sandy, sandy loam, loam, clay loam, clay), which stands for its drainage rate (see Drainage rate above). Choose "I set the drainage rate myself" to type the rate.
 - **What grows here**: the planting by name (lawn, vegetables, flowers, shrubs, hedge, fruit trees, vines, ground cover), which stands for its crop factor. Choose "I set the crop coefficient myself" to type the Crop factor (Kc) above.
-- **Soil moisture sensor** and **Skip at or above**: a sensor of the soil of this zone and the % from which the zone sits out a run. See [Skipping a run](configuration-general.md#skipping-a-run).
+- **Soil moisture sensor** and **Skip at or above**: a sensor of the soil of this zone and the % from which the zone sits out a run. See [Skipping a run](configuration-weather.md#skipping-a-run).
 - **Linked valve/switch**: the valve or switch that waters this zone. It is what [observed watering and direct valve control](configuration-closed-loop.md) watch or drive.
 - **Cumulative volume meter**: a water-meter total for the zone, for exact crediting instead of throughput x time. See [the volume meter](configuration-closed-loop.md#optional-a-cumulative-volume-meter-more-precise).
 - **Days between irrigation**: the minimum number of calendar days between two waterings of this zone alone. Empty, the default, follows the general [days between irrigation](configuration-general.md#days-between-irrigation-events) setting, which is what every installation did before this field existed. A number replaces the general setting for this zone: `1` waters it every day it needs water, `3` at most every third day, `0` removes the restriction for it. The days are counted from the last time *this zone* was watered, and the zone's deficit keeps building while it waits, so it is made up at the next run. Useful when one garden holds a lawn that wants infrequent deep watering and flower beds that want water daily.
@@ -102,5 +102,5 @@ The default of `0` is there to keep existing installs behaving exactly as before
 * delete the zone.
 
 > Main page: [Configuration](configuration.md)<br/>
-> Previous: [General configuration](configuration-general.md)<br/>
+> Previous: [Weather configuration](configuration-weather.md)<br/>
 > Next: [Module configuration](configuration-modules.md)

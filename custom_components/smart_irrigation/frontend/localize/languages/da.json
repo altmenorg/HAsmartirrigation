@@ -291,7 +291,16 @@
         }
       },
       "description": "Denne side indeholder globale indstillinger.",
-      "title": "Generelt"
+      "title": "Generelt",
+      "sections": {
+        "calculation": "Beregning",
+        "control": "Styring",
+        "system": "System",
+        "calculation-sub": "Hvor meget hver zone har brug for, og hvornår det beregnes.",
+        "control-sub": "Hvad der åbner ventilerne, og hvad der starter en vanding.",
+        "system-sub": "Panelet, blueprints, opsætningsassistenten og skiftet fra Irrigation Unlimited."
+      },
+      "moved-to-weather": "Vejrtjenesten, placeringen, hvor ofte vejret aflæses, og kontrollerne for at springe over findes på denne fane:"
     },
     "help": {
       "title": "Hjælp",
@@ -794,7 +803,7 @@
     "groups": {
       "home": "Start",
       "zones": "Zoner",
-      "data": "Data",
+      "data": "Vejr",
       "settings": "Indstillinger",
       "watering": "Vanding"
     },
@@ -1040,6 +1049,12 @@
         "zone_schedule_duration": "en zones tidsplan skal have en varighed: den kommer ikke med",
         "zone_taken": "zone {zone} tilhører allerede \"{name}\": den får sin egen zone"
       }
+    },
+    "skip": {
+      "title": "Spring over efter vejret",
+      "description": "En vanding holdes tilbage, når en af disse kontroller slår til: regnen i vejrudsigten, eller regn, frost og vind målt ved dens start.",
+      "soil-moisture": "Jordfugtighed indstilles pr. zone, da hver zone har sin egen sensor.",
+      "open-zones": "Åbn zonerne"
     }
   },
   "title": "Smart Irrigation",
@@ -1245,7 +1260,7 @@
     "schedule_hard_deadline": "Afbryd kørslen ved sluttidspunktet",
     "schedule_hard_deadline_help": "Kørslen afbrydes ved slutmålet: de åbne zoner lukkes og krediteres for det, de har vandet, og det, der ikke er startet, springes over.",
     "schedule_conditions": "Hvilke betingelser",
-    "schedule_conditions_help": "Hvad der kan holde denne tidsplan fra at vande. Betingelserne indstilles i Indstillinger, Generelt, og denne tidsplan følger dem alle; fjern fluebenet ved dem, den skal ignorere, for eksempel regnen for et drivhus. En udsættelse, du har bedt om (24 t, 48 t), gælder altid.",
+    "schedule_conditions_help": "Hvad der kan holde denne tidsplan fra at vande. Regn, frost og vind indstilles under Vejr, Spring over efter vejret, dagene siden sidste vanding under Indstillinger, Generelt, og jordfugtigheden i hver zone. Denne tidsplan følger dem alle; fjern fluebenet ved dem, den skal ignorere, for eksempel regnen for et drivhus. En udsættelse, du har bedt om (24 t, 48 t), gælder altid.",
     "condition_postponed": "Udskudte dage (altid aktive)",
     "condition_rain_sensor": "Regnsensor",
     "condition_freeze": "Frost",
@@ -1315,9 +1330,9 @@
     "summary_end_sunrise": "færdig ved solopgang",
     "summary_end_sunset": "færdig ved solnedgang",
     "last_word": "sidste",
-    "conditions_none": "Ingen betingelse er slået til: de indstilles i Indstillinger, Generelt.",
+    "conditions_none": "Ingen betingelse er slået til: regn, frost og vind indstilles under Vejr, Spring over efter vejret, og dagene siden sidste vanding under Indstillinger, Generelt.",
     "cond_postponed": "Udsæt-knapperne på startsiden",
-    "cond_off": "slået fra i Indstillinger",
+    "cond_off": "slået fra",
     "cond_freeze": "ved {value} eller derunder",
     "cond_wind": "fra {value}",
     "cond_precipitation": "fra {value} i prognosen",
@@ -1400,6 +1415,17 @@
       "title": "Vind",
       "description": "Spring vandingen over, når vinden er på eller over grænsen: en sprinkler i hård vind vander stien, ikke bedet.",
       "sensor-hint": "Tom: vejrtjenestens aktuelle vind, i 10 m."
+    },
+    "source": {
+      "sensor": "Læser {sensor}.",
+      "service": "Læser vejrtjenestens aktuelle værdi.",
+      "nothing": "Ingen sensor og ingen vejrtjeneste: denne kontrol holder intet tilbage.",
+      "same": "Samme kilde som sensorgruppen {groups}, til fordampningen.",
+      "other": "Til fordampningen læser sensorgrupperne denne værdi et andet sted: {groups}.",
+      "service-short": "vejrtjenesten",
+      "static-short": "en fast værdi",
+      "group": "\"{group}\"",
+      "adopt": "Brug også {sensor} her"
     }
   },
   "card": {
