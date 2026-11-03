@@ -108,16 +108,19 @@
       "single_instance_allowed": "Es ist nur eine Integration für Smart Irrigation zulässig."
     },
     "error": {
-      "name": "Gebe einen eindeutigen Namen für die Integration ein."
+      "name": "Gib der Integration einen eindeutigen Namen."
     },
     "step": {
       "user": {
-        "title": "Allgemein",
-        "description": "Falls du Hilfe benötigst, siehe die Dokumentation.",
+        "title": "Smart Irrigation einrichten",
+        "description": "Eingerichtet wird Smart Irrigation danach in seinem eigenen Panel in der Seitenleiste: Der Assistent legt dort mit dir eine Sensorgruppe und eine erste Zone an, und dort wählst du auch den Wetterdienst.",
         "data": {
-          "name": "Eindeutiger Namen der Integration"
+          "name": "Eindeutiger Name der Integration"
         }
       }
+    },
+    "create_entry": {
+      "default": "Smart Irrigation ist installiert. Öffne **Smart Irrigation** in der Seitenleiste: Der [Einrichtungsassistent](/smart_irrigation/setup) legt mit dir deine erste Zone an."
     }
   },
   "options": {

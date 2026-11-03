@@ -21,6 +21,7 @@ import {
 import {
   engineModeLabel,
   missingRequiredSources,
+  navigate,
   output_unit,
   setupRainToAsk,
   setupSourcesForEt,
@@ -30,6 +31,7 @@ import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
 import {
+  DOMAIN,
   MAPPING_CONF_SENSOR,
   MAPPING_CONF_SOURCE,
   MAPPING_CONF_SOURCE_NONE,
@@ -106,6 +108,8 @@ class SmartIrrigationViewSetup extends LitElement {
   @state() private isSaving = false;
   @state() private error?: string;
   @state() private done = false;
+  // The zone the assistant created, for the way to it.
+  @state() private createdZoneId?: number;
 
   // The answers.
   @state() private zoneName = "";
@@ -260,11 +264,38 @@ class SmartIrrigationViewSetup extends LitElement {
     if (!this.hass) return html``;
 
     if (this.done) {
+      // What comes next depends on the way the zone gets its weather: "once
+      // your sensors have reported" read oddly under a fixed amount, which
+      // reads none. And the page ended there, without a way on.
+      const next =
+        this.weather === "static"
+          ? "done-next-static"
+          : this.weather === "service"
+            ? "done-next-service"
+            : "done-next-sensors";
       return html`
         <ha-card header="${this.t("title")}">
           <div class="card-content">
             <div class="done">${this.t("done")}</div>
-            <div class="note">${this.t("done-note")}</div>
+            <div class="note">${this.t("done-note-zone")}</div>
+            <div class="note">${this.t(next)}</div>
+          </div>
+          <div class="card-actions">
+            ${this.createdZoneId != undefined
+              ? html`<ha-button
+                  appearance="filled"
+                  @click=${() =>
+                    navigate(
+                      this,
+                      `/${DOMAIN}/zones/zone/${this.createdZoneId}`,
+                    )}
+                >
+                  ${this.t("open-zone")}
+                </ha-button>`
+              : ""}
+            <ha-button appearance="plain" @click=${() => this._startOver()}>
+              ${this.t("another")}
+            </ha-button>
           </div>
         </ha-card>
       `;
@@ -658,7 +689,13 @@ class SmartIrrigationViewSetup extends LitElement {
         ...setupZoneMethod(this.engineName, this.staticDelta),
       } as any);
 
-      await fetchZones(this.hass);
+      const zones = await fetchZones(this.hass);
+      // The newest zone of that name: a second run of the assistant may
+      // reuse a name.
+      const ids = zones
+        .filter((zone) => zone.name === this.zoneName.trim())
+        .map((zone) => Number(zone.id));
+      this.createdZoneId = ids.length ? Math.max(...ids) : undefined;
       this.done = true;
     } catch (e) {
       console.error("Setup wizard: could not create the zone", e);
@@ -666,6 +703,21 @@ class SmartIrrigationViewSetup extends LitElement {
     } finally {
       this.isSaving = false;
     }
+  }
+
+  /** Back to the first question, for another zone. */
+  private _startOver(): void {
+    this.done = false;
+    this.createdZoneId = undefined;
+    this.step = 0;
+    this.error = undefined;
+    this.zoneName = "";
+    this.zoneSize = "";
+    this.zoneThroughput = "";
+    this.underGlass = false;
+    this.weather = this.usesWeatherService ? "service" : "sensors";
+    this.sensors = {};
+    this.staticDelta = "";
   }
 
   static get styles(): CSSResultGroup {

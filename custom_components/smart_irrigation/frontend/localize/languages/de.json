@@ -107,7 +107,6 @@
       "creating": "Wird erstellt...",
       "failed": "Etwas ist schiefgegangen und es wurde nichts erstellt. Die anderen Tabs sind weiterhin da, wenn du es lieber von Hand einrichtest.",
       "done": "Deine Zone ist fertig.",
-      "done-note": "Sie erscheint unter Zonen, ihre Sensorgruppe unter Sensorgruppen. Nichts daran ist besonders: bearbeite beide wie alle anderen. Führe eine Aktualisierung und eine Berechnung aus, sobald deine Sensoren gemeldet haben, dann liefert die Zone eine Dauer.",
       "steps": {
         "zone": {
           "question": "Was bewässerst du?",
@@ -158,7 +157,13 @@
           "help": "Damit werden ein Berechnungsmodul, eine Sensorgruppe und eine Zone erstellt, genau wie über die anderen Tabs. Danach ist nichts festgeschrieben."
         }
       },
-      "step": "Schritt"
+      "step": "Schritt",
+      "done-note-zone": "Sie erscheint unter Zonen, ihre Sensorgruppe unter Sensorgruppen. Nichts daran ist besonders: Bearbeite beide wie alle anderen.",
+      "done-next-static": "Mit einem festen Betrag pro Tag braucht sie keine Messwerte: Die nächste Berechnung ermittelt, was ihr fehlt.",
+      "done-next-service": "Ihr Wetter kommt vom Wetterdienst: Sobald er gemeldet hat, liefern eine Aktualisierung und eine Berechnung die Dauer der Zone.",
+      "done-next-sensors": "Führe eine Aktualisierung und eine Berechnung aus, sobald deine Sensoren gemeldet haben, dann liefert die Zone eine Dauer.",
+      "open-zone": "Zur Zone",
+      "another": "Noch eine Zone anlegen"
     },
     "weatherservice": {
       "history": {

@@ -108,16 +108,19 @@
       "single_instance_allowed": "Only a single configuration of Smart Irrigation is allowed."
     },
     "error": {
-      "name": "Specify an unique name for the integration."
+      "name": "Give the integration a unique name."
     },
     "step": {
       "user": {
-        "title": "General set up",
-        "description": "If you need help with the configuration, please see the documentation. The weather service is configured afterwards from the Smart Irrigation panel.",
+        "title": "Set up Smart Irrigation",
+        "description": "Smart Irrigation is set up afterwards in its own panel in the sidebar: its setup assistant creates a sensor group and a first zone with you, and the weather service is chosen there too.",
         "data": {
           "name": "Unique name of the integration"
         }
       }
+    },
+    "create_entry": {
+      "default": "Smart Irrigation is installed. Open **Smart Irrigation** in the sidebar: the [setup assistant](/smart_irrigation/setup) creates your first zone with you."
     }
   },
   "options": {
