@@ -29,6 +29,7 @@ import {
   groupsWithRainFromService,
   missingRequiredSources,
   newGroupSource,
+  readingUses,
   visibleGroups,
   setupRainToAsk,
   setupSourcesForEt,
@@ -399,5 +400,60 @@ describe("visibleGroups", () => {
     expect(
       localize("panels.mappings.labels.show-more", "en", "{count}", 2),
     ).toBe("Show 2 more sensor groups");
+  });
+});
+
+describe("readingUses", () => {
+  const groups = [
+    {
+      name: "Garden",
+      mappings: {
+        Windspeed: { source: "sensor", sensorentity: "sensor.wind" },
+        Temperature: { source: "weather_service" },
+      },
+    },
+    {
+      name: "Greenhouse",
+      mappings: {
+        Windspeed: { source: "none" },
+        Temperature: { source: "sensor", sensorentity: "sensor.inside" },
+      },
+    },
+  ];
+
+  it("finds the group that reads the same sensor", () => {
+    expect(readingUses(groups, "Windspeed", "sensor.wind")).toEqual([
+      { group: "Garden", same: true, source: "sensor", entity: "sensor.wind" },
+    ]);
+  });
+
+  it("tells a different sensor apart", () => {
+    expect(readingUses(groups, "Windspeed", "sensor.other")[0].same).toBe(
+      false,
+    );
+  });
+
+  it("matches the weather service when the check has no sensor", () => {
+    expect(readingUses(groups, "Temperature", null)).toEqual([
+      {
+        group: "Garden",
+        same: true,
+        source: "weather_service",
+        entity: undefined,
+      },
+      {
+        group: "Greenhouse",
+        same: false,
+        source: "sensor",
+        entity: "sensor.inside",
+      },
+    ]);
+  });
+
+  it("leaves out a group that does not read it", () => {
+    expect(readingUses(groups, "Windspeed", null).map((u) => u.group)).toEqual([
+      "Garden",
+    ]);
+    expect(readingUses(undefined, "Windspeed", null)).toEqual([]);
   });
 });

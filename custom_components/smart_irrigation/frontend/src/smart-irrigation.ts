@@ -38,6 +38,8 @@ enum EMenuItems {
   Modules = "modules",
   Mappings = "mappings",
   WeatherService = "weatherservice",
+  // The rain, freeze and wind checks, beside the weather they read (#972).
+  Skip = "skip",
   History = "history",
   BackupRestore = "backuprestore",
   Help = "help",
@@ -60,9 +62,14 @@ const TAB_GROUPS: { id: string; pages: EMenuItems[] }[] = [
   { id: "home", pages: [EMenuItems.Info, EMenuItems.History] },
   // What is watered.
   { id: "zones", pages: [EMenuItems.Zones] },
-  // Where the numbers come from: the service they are read from, and the
-  // sensors that report them.
-  { id: "data", pages: [EMenuItems.WeatherService, EMenuItems.Mappings] },
+  // The weather: the service it is read from, with the location and how
+  // often; the sensors that report it; and the checks that hold a run back on
+  // it, beside the sensors they read (#972). The id stays "data": it names the
+  // tab's label, not an address.
+  {
+    id: "data",
+    pages: [EMenuItems.WeatherService, EMenuItems.Mappings, EMenuItems.Skip],
+  },
   // Everything you set once.
   {
     id: "settings",
@@ -408,12 +415,31 @@ export class SmartIrrigationPanel extends LitElement {
           ></smart-irrigation-view-mappings>
         `;
       case "weatherservice":
+        // The service, then where it is read for and how often: the location
+        // and the update settings were three tabs away under Settings (#972).
         return html`
-          <smart-irrigation-view-weatherservice
+          <div class="stack">
+            <smart-irrigation-view-weatherservice
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+              .path=${path}
+            ></smart-irrigation-view-weatherservice>
+            <smart-irrigation-view-general
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+              .path=${path}
+              .section=${"weather"}
+            ></smart-irrigation-view-general>
+          </div>
+        `;
+      case "skip":
+        return html`
+          <smart-irrigation-view-general
             .hass=${this.hass}
             .narrow=${this.narrow}
             .path=${path}
-          ></smart-irrigation-view-weatherservice>
+            .section=${"skip"}
+          ></smart-irrigation-view-general>
         `;
       case "history":
         return html`
@@ -708,6 +734,11 @@ export class SmartIrrigationPanel extends LitElement {
         .view > * {
           width: 100%;
           max-width: 1100px;
+        }
+
+        /* Two views on one page, one under the other. */
+        .stack > * {
+          display: block;
         }
 
         .help-cards {

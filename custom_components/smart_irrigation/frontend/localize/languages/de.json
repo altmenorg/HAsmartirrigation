@@ -291,7 +291,13 @@
         }
       },
       "description": "Diese Seite ist für allgemeine Einstellungen.",
-      "title": "Allgemein"
+      "title": "Allgemein",
+      "sections": {
+        "calculation": "Berechnung",
+        "control": "Steuerung",
+        "system": "System"
+      },
+      "moved-to-weather": "Wetterdienst, Standort, wie oft das Wetter gelesen wird, und die Aussetz-Prüfungen stehen in diesem Tab:"
     },
     "help": {
       "title": "Hilfe",
@@ -794,7 +800,7 @@
     "groups": {
       "home": "Start",
       "zones": "Zonen",
-      "data": "Daten",
+      "data": "Wetter",
       "settings": "Einstellungen",
       "watering": "Bewässerung"
     },
@@ -1040,6 +1046,12 @@
         "zone_schedule_duration": "ein Zeitplan einer Zone braucht eine Dauer: Er wird nicht übernommen",
         "zone_taken": "Zone {zone} gehört schon zu „{name}“: Sie bekommt eine eigene Zone"
       }
+    },
+    "skip": {
+      "title": "Aussetzen bei Wetter",
+      "description": "Ein Durchlauf wird zurückgehalten, wenn eine dieser Prüfungen greift: der Regen in der Vorhersage oder Regen, Frost und Wind, gemessen zu seinem Beginn.",
+      "soil-moisture": "Die Bodenfeuchte wird je Zone eingestellt, denn jede Zone hat ihren eigenen Sensor.",
+      "open-zones": "Zu den Zonen"
     }
   },
   "title": "Smart Irrigation",
@@ -1400,6 +1412,15 @@
       "title": "Wind",
       "description": "Durchlauf überspringen, wenn der Wind den Schwellwert erreicht oder überschreitet: ein Sprinkler bei starkem Wind bewässert den Weg, nicht das Beet.",
       "sensor-hint": "Leer: der aktuelle Wind des Wetterdienstes, in 10 m Höhe."
+    },
+    "source": {
+      "sensor": "Liest {sensor}.",
+      "service": "Liest den aktuellen Wert des Wetterdienstes.",
+      "nothing": "Kein Sensor und kein Wetterdienst: Diese Prüfung hält nichts zurück.",
+      "same": "Dieselbe Quelle wie in der Sensorgruppe {groups}, die damit die Verdunstung rechnet.",
+      "other": "Für die Verdunstung lesen die Sensorgruppen diesen Wert anderswo: {groups}.",
+      "service-short": "Wetterdienst",
+      "static-short": "fester Wert"
     }
   },
   "card": {

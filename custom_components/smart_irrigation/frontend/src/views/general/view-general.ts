@@ -6,6 +6,7 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   fetchConfig,
   fetchIrrigationInfo,
+  fetchMappings,
   fetchZones,
   saveConfig,
   saveZone,
@@ -20,12 +21,14 @@ import {
   displayVolume,
   storedVolume,
   navigate,
+  readingUses,
 } from "../../helpers";
 import { loadHaForm } from "../../load-ha-elements";
 import "../../dialogs/trigger-dialog";
 import { askConfirmation } from "../../dialogs/confirmation-dialog";
 import {
   SmartIrrigationConfig,
+  SmartIrrigationMapping,
   SmartIrrigationProgram,
   SmartIrrigationSchedule,
   SmartIrrigationStep,
@@ -61,6 +64,8 @@ import {
   TRIGGER_TYPE_SUNSET,
   TRIGGER_TYPE_SOLAR_AZIMUTH,
   DOMAIN,
+  MAPPING_TEMPERATURE,
+  MAPPING_WINDSPEED,
   ZONE_WATER_VOLUME,
 } from "../../const";
 import {
@@ -115,6 +120,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   // Which page of the Watering tab this is (planning, programs, supplies);
   // unset, it is the General page of the settings.
   @property() section?: string;
+  // The sensor groups, for the skip page to say where a reading it shares
+  // with them comes from (#972).
+  @property({ attribute: false }) mappings: SmartIrrigationMapping[] = [];
   // The zones a step can water (full controller programs).
   @property({ attribute: false }) zones: SmartIrrigationZone[] = [];
   // What the programs are doing, and what they will do (full controller).
@@ -256,6 +264,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         this.zones = await fetchZones(this.hass);
       } catch (error) {
         console.error("Error fetching zones:", error);
+      }
+      if (this.section === "skip") {
+        try {
+          this.mappings = await fetchMappings(this.hass);
+        } catch (error) {
+          console.error("Error fetching sensor groups:", error);
+        }
       }
       // The planning and the live state need the configuration first.
       this._fetchLive(true);
@@ -626,22 +641,51 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // The master switch, above everything it switches.
       const r18 = this.renderMasterSwitchCard();
 
+      // Below the weather service: where it is read for, and how often.
+      if (this.section === "weather") {
+        return html`${r7}${r2}${showContinuous ? r4 : ""}`;
+      }
+      // The checks that hold a run back on the weather, beside the sensors
+      // they read.
+      if (this.section === "skip") {
+        return this.renderSkipPage(r6);
+      }
       if (this.section) {
         return this.renderWateringSection(r5);
       }
       // In full controller mode the start trigger is the main program's, and
       // lives with it in the Watering tab.
       const full = this.config.full_controller === true;
+      const lang = this.hass.language;
+      const heading = (key: string) =>
+        html`<h2 class="settings-section">
+          ${localize(`panels.general.sections.${key}`, lang)}
+        </h2>`;
 
+      // Three sections, each card in one (#972): what is worked out, what
+      // opens the valves, and the panel itself. The weather, its location and
+      // how often it is read are on the Weather tab, with the skip checks.
+      // The master switch stays above everything it switches.
       const r = html`<ha-card
-          header="${localize("panels.general.title", this.hass.language)}"
+          header="${localize("panels.general.title", lang)}"
         >
           <div class="card-content">
-            ${localize("panels.general.description", this.hass.language)}
+            ${localize("panels.general.description", lang)}
+          </div>
+          <div class="card-content moved-to-weather">
+            ${localize("panels.general.moved-to-weather", lang)}
+            <a
+              href="/${DOMAIN}/weatherservice"
+              @click=${(e: Event) => {
+                e.preventDefault();
+                navigate(this, `/${DOMAIN}/weatherservice`);
+              }}
+              >${localize("panels.groups.data", lang)}</a
+            >
           </div> </ha-card
-        >${r18}${r12}${r17}${r11}${r15}${r2}${r1}${showContinuous
-          ? r4
-          : ""}${full ? "" : r5}${r6}${r7}${r8}${r9}${r10}${r16}${r13}`;
+        >${r18} ${heading("calculation")}${r1}${r8}${r13}${r10}
+        ${heading("control")}${r15}${r9}${full ? "" : r5}
+        ${heading("system")}${r11}${r16}${r12}${r17}`;
 
       return r;
     }
@@ -896,6 +940,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
   private async _fetchLive(withPlanning: boolean): Promise<void> {
     if (!this.hass || this.config?.full_controller !== true) return;
+    // The weather pages show no program.
+    if (this.section === "weather" || this.section === "skip") return;
     try {
       this.programsState = await this.hass.callWS({
         type: DOMAIN + "/programs_state",
@@ -2946,6 +2992,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     ["sensor"],
                     t("sensor-optional"),
                     t("freeze.sensor-hint"),
+                  )}
+                  ${this._readingSource(
+                    MAPPING_TEMPERATURE,
+                    this.config.freeze_sensor,
                   )}`
                 : ""}
             `,
@@ -2972,6 +3022,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     ["sensor"],
                     t("sensor-optional"),
                     t("wind.sensor-hint"),
+                  )}
+                  ${this._readingSource(
+                    MAPPING_WINDSPEED,
+                    this.config.wind_sensor,
                   )}`
                 : ""}
             `,
@@ -2979,6 +3033,78 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         </div>
       </ha-card>
     `;
+  }
+
+  /** The Weather tab's skip page: the forecast, then what is measured. */
+  renderSkipPage(cards: TemplateResult) {
+    if (!this.hass) return html``;
+    const lang = this.hass.language;
+    return html`
+      <ha-card header="${localize("panels.skip.title", lang)}">
+        <div class="card-content">
+          ${localize("panels.skip.description", lang)}
+        </div>
+      </ha-card>
+      ${cards}
+      <ha-card>
+        <div class="card-content skip-soil">
+          ${localize("panels.skip.soil-moisture", lang)}
+          <a
+            href="/${DOMAIN}/zones"
+            @click=${(e: Event) => {
+              e.preventDefault();
+              navigate(this, `/${DOMAIN}/zones`);
+            }}
+            >${localize("panels.skip.open-zones", lang)}</a
+          >
+        </div>
+      </ha-card>
+    `;
+  }
+
+  /**
+   * Where a skip check reads its value, and whether a sensor group reads the
+   * same one (#972).
+   *
+   * The wind is read for the evaporation in a sensor group and again by the
+   * wind check, and the temperature by the freeze check: set up on two pages,
+   * with nothing to show they are the same sensor, or that they are not.
+   */
+  private _readingSource(
+    measurement: string,
+    sensor: string | null | undefined,
+  ): TemplateResult {
+    const lang = this.hass!.language;
+    const t = (key: string, ...args: any[]) =>
+      localize(`measured_skip.source.${key}`, lang, ...args);
+    const name = (entity?: string) =>
+      (entity && this.hass?.states?.[entity]?.attributes?.friendly_name) ||
+      entity ||
+      "";
+    const uses = readingUses(this.mappings, measurement, sensor);
+    const same = uses.filter((use) => use.same).map((use) => use.group);
+    const other = uses.filter((use) => !use.same);
+    const from = sensor
+      ? t("sensor", "{sensor}", name(sensor))
+      : this.config?.use_weather_service
+        ? t("service")
+        : t("nothing");
+    const elsewhere = other
+      .map(
+        (use) =>
+          `${use.group}: ${
+            use.source === "sensor"
+              ? name(use.entity)
+              : use.source === "weather_service"
+                ? t("service-short")
+                : t("static-short")
+          }`,
+      )
+      .join("; ");
+    return html`<div class="setting-hint reading-source">
+      ${from} ${same.length ? t("same", "{groups}", same.join(", ")) : ""}
+      ${!same.length && other.length ? t("other", "{groups}", elsewhere) : ""}
+    </div>`;
   }
 
   renderObservedWateringCard() {
@@ -3892,6 +4018,24 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         margin: 0 0 8px;
         color: var(--secondary-text-color);
         line-height: 1.4;
+      }
+
+      /* The three sections of the settings page (#972). */
+      .settings-section {
+        margin: 24px 4px 4px;
+        font-size: 1.1em;
+        font-weight: 500;
+        color: var(--secondary-text-color);
+      }
+
+      /* Where a skip check reads its value, under its sensor field. */
+      .reading-source {
+        margin: -4px 0 8px;
+      }
+
+      .skip-soil a,
+      .moved-to-weather a {
+        color: var(--primary-color);
       }
 
       /* The explanation under a setting: a nested .card-content has no
