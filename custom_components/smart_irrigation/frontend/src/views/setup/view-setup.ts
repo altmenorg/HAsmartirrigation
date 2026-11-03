@@ -147,6 +147,18 @@ class SmartIrrigationViewSetup extends LitElement {
     return this.hass?.language ?? "en";
   }
 
+  /**
+   * A source as the sensor groups page names it, in the user's language. The
+   * assistant printed the stored key: "Temperature", "Dewpoint", "Solar
+   * Radiation" on a German panel.
+   */
+  private sourceName(source: string): string {
+    return localize(
+      `panels.mappings.cards.mapping.items.${source.toLowerCase()}`,
+      this.lng,
+    );
+  }
+
   private t(key: string): string {
     return localize(`panels.setup.${key}`, this.lng);
   }
@@ -494,7 +506,7 @@ class SmartIrrigationViewSetup extends LitElement {
         (source) => html`
           <div class="setting-row">
             <div class="setting-label">
-              ${source}${this.optionalToAsk.includes(source)
+              ${this.sourceName(source)}${this.optionalToAsk.includes(source)
                 ? html` <span class="step-count"
                     >(${this.t("steps.sensors.optional")})</span
                   >`
@@ -550,10 +562,10 @@ class SmartIrrigationViewSetup extends LitElement {
                     this.t("steps.review.from-the-service"),
                     ...this.rainFromSensors
                       .filter((s) => !!this.sensors[s])
-                      .map((s) => `${s}: ${this.sensors[s]}`),
+                      .map((s) => `${this.sourceName(s)}: ${this.sensors[s]}`),
                   ].join(", ")
                 : this.sensorsToAsk.length
-                  ? this.sensorsToAsk.join(", ")
+                  ? this.sensorsToAsk.map((s) => this.sourceName(s)).join(", ")
                   : this.t("steps.review.from-the-service")}
           </div>
         </div>

@@ -84,13 +84,30 @@ def test_a_zone_is_described_by_the_numbers_it_holds():
     """So a zone set up before this still reads as what it is."""
     zone = {
         const.ZONE_DRAINAGE_RATE: SOIL_TYPES["clay"],
-        const.ZONE_MULTIPLIER: PLANT_TYPES["vegetables"],
+        const.ZONE_MULTIPLIER: PLANT_TYPES["lawn"],
     }
 
     assert describe_zone(zone) == {
         const.ZONE_SOIL_TYPE: "clay",
-        const.ZONE_PLANT_TYPE: "vegetables",
+        const.ZONE_PLANT_TYPE: "lawn",
     }
+
+
+def test_the_coefficient_every_zone_starts_with_is_no_planting():
+    """1.0 is where a zone starts, and the vegetables' coefficient too.
+
+    A zone nobody described read as "Vegetables" in the panel, a value never
+    chosen (UX review). Left at it, it is custom, and the number is shown.
+    """
+    zone = {const.ZONE_MULTIPLIER: 1.0}
+
+    assert describe_zone(zone)[const.ZONE_PLANT_TYPE] == CUSTOM
+
+
+def test_vegetables_chosen_by_name_stay_vegetables():
+    zone = {const.ZONE_PLANT_TYPE: "vegetables", const.ZONE_MULTIPLIER: 1.0}
+
+    assert describe_zone(zone)[const.ZONE_PLANT_TYPE] == "vegetables"
 
 
 def test_plantings_that_share_a_coefficient_are_read_as_one_of_them():
