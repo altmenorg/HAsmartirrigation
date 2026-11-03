@@ -317,7 +317,8 @@
             "start": "开始",
             "duration": "总时长",
             "zones": "将要浇水的区域",
-            "trigger": "触发器"
+            "trigger": "触发器",
+            "no-valve": "未关联阀门，因此不会浇水"
           },
           "no-start": "目前还无法推算出开始时间。",
           "nothing-to-water": "无需浇水：没有区域达到自己的灌溉阈值。",
@@ -340,7 +341,11 @@
           "headline-not-scheduled": "有一次浇水该做了，但没有任何安排会去启动它",
           "sub-not-scheduled": "上面的时间是它会开始的时刻。此刻没有任何启动触发器处于待发状态，这种情况会在活动触发器被停用或未注册时出现。请到设置里检查该触发器，如果看起来没问题，一次计算就会重新让它待发。",
           "headline-no-trigger": "没有活动的触发器",
-          "sub-no-trigger": "Smart Irrigation 不会启动任何浇水。请在设置中选择一个启动触发器，让它执行浇水。"
+          "sub-no-trigger": "Smart Irrigation 不会启动任何浇水。请在设置中选择一个启动触发器，让它执行浇水。",
+          "headline-no-valve": "不会浇任何区域",
+          "sub-no-valve": "缺水的区域没有关联阀门，因此不会浇水。请为每个区域关联一个阀门。",
+          "headline-no-zones": "还没有区域",
+          "sub-no-zones": "Smart Irrigation 为区域浇水。设置助手会和你一起设置第一个区域。"
         },
         "decision": {
           "title": "会被跳过吗？",
@@ -359,6 +364,9 @@
           "state-passing": "不阻止",
           "state-blocking": "正在阻止",
           "detail-forecast": "预报",
+          "detail-expected": "预计（按概率加权）",
+          "detail-anyway-deficit": "仍然浇水：一个要浇水的区域缺 {deficit} mm，超过预计降雨的两倍。",
+          "detail-anyway-skips": "仍然浇水：预报已连续 {days} 天推迟了这次浇水。",
           "detail-threshold": "阈值",
           "detail-days-since": "距上次浇水的天数",
           "detail-days-required": "所需天数",
@@ -367,6 +375,7 @@
           "check-wind": "风",
           "check-soil_moisture": "土壤湿度",
           "detail-now": "当前",
+          "detail-tonight": "今晚（预报最低温）",
           "detail-weather-service": "天气服务",
           "detail-raining": "正在下雨",
           "detail-dry": "没有下雨",
@@ -384,7 +393,8 @@
             "last-irrigation": "上次浇水"
           },
           "nothing": "不浇",
-          "never-watered": "从未"
+          "never-watered": "从未",
+          "no-valve": "不浇水，未关联阀门"
         },
         "postpone": {
           "prompt": "预报没算到的降雨，还是你自己的原因？",
@@ -562,7 +572,8 @@
         "view-weather-info": "查看天气数据",
         "view-weather-info-message": "可用天气数据：",
         "view-watering-calendar": "查看浇水日历",
-        "water": "浇水"
+        "water": "浇水",
+        "calculating": "正在计算…"
       },
       "cards": {
         "add-zone": {
@@ -718,7 +729,17 @@
         "under-threshold": "暂时无需浇水：还差 {short}，低于该区域的阈值。",
         "manual": "只在你要求时浇水。",
         "disabled": "已停用：永远不会浇水，也不为它记水量平衡。",
-        "threshold": "阈值"
+        "threshold": "阈值",
+        "problem": {
+          "no_sensor_group": "无法计算：没有传感器组。请在此卡片上选择一个；在此之前不会浇水。",
+          "no_readings": "无法计算：其传感器组没有读数。在有读数之前不会浇水。",
+          "no_engine": "无法计算：没有计算引擎。在设置之前不会浇水。",
+          "nothing_from_engine": "无法计算：其传感器组没有提供蒸散量。在提供之前不会浇水。",
+          "forecast_without_service": "无法计算：其引擎需要预报，但没有设置天气服务。不会浇水。",
+          "error": "无法计算：{detail}。在能够计算之前不会浇水。"
+        },
+        "no-valve": "未关联阀门，因此此区域不会浇水。",
+        "no-valve-action": "关联阀门"
       },
       "calendar": {
         "title": "浇水日历（12 个月，估算）",
@@ -735,6 +756,10 @@
         "question": "现在为“{name}”浇水？阀门会立即打开；如果正在浇水，则排队等待。浇的水计入其水分平衡。",
         "minutes": "分钟，留空则为计划中的 {calculated}",
         "minutes-none": "分钟（计算结果无需浇水）"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone}：自上次计算以来没有新读数，因此没有变化。",
+        "failed": "{zone}：计算失败（{error}）。"
       }
     },
     "history": {
@@ -1132,7 +1157,9 @@
     "step": "步骤",
     "tour": "轮",
     "tours": "轮",
-    "remaining": "剩余"
+    "remaining": "剩余",
+    "no_valve": "未关联阀门，因此不会浇水：",
+    "nothing_no_valve": "本次运行无需浇水：缺水的区域没有关联阀门："
   },
   "programs": {
     "title": "程序",
@@ -1421,7 +1448,10 @@
       "show_next_start": "显示下次启动",
       "compact": "仅显示需要浇水的区域",
       "show_programs": "显示程序（完整控制器）"
-    }
+    },
+    "no_valve": "未关联阀门，不浇水",
+    "no_trigger": "没有启动触发器",
+    "not_scheduled": "该浇水了，但未安排"
   },
   "confirm": {
     "delete_zone": "删除区域“{name}”？它的设置和水分平衡将会丢失。",

@@ -24,6 +24,12 @@
       },
       "live_bucket": {
         "name": "Zásobník právě teď"
+      },
+      "last_run_volume": {
+        "name": "Objem posledního běhu"
+      },
+      "next_irrigation": {
+        "name": "Další zavlažování"
       }
     },
     "number": {
@@ -74,6 +80,12 @@
         "name": "Právě zalévá"
       },
       "problem": {
+        "name": "Problém"
+      },
+      "any_zone_needs_water": {
+        "name": "Některá zóna potřebuje vodu"
+      },
+      "any_problem": {
         "name": "Problém"
       }
     },
@@ -306,6 +318,30 @@
     "throughput_mismatch": {
       "title": "Zóna {zone}: měřený průtok neodpovídá nastavenému",
       "description": "Za posledních {samples} zavlažování naměřil průtokoměr na zóně **{zone}** asi **{measured}**, přičemž zóna je nastavena na **{configured}**, tedy o {percentage}% vedle.\n\nKaždá doba zavlažování se odvozuje z nastaveného průtoku, takže jsou všechny špatně přibližně stejně.\n\nPokud měření vypadá správně, nastavte průtok zóny na něj. Pokud ne, zkontrolujte, že měřič počítá jen tuto zónu a že tlak v potrubí je takový, jaký očekáváte. Smart Irrigation hodnotu nikdy nemění za vás."
+    },
+    "zone_not_calculated_no_readings": {
+      "title": "Zónu {zone} nelze vypočítat: žádná meteorologická měření",
+      "description": "Zóna **{zone}** nebyla vypočítána: její skupina senzorů nemá žádná měření, ze kterých by šlo počítat. Dokud je mít nebude, deficit zóny se nehýbe a nezavlažuje se.\n\nZkontrolujte, že skupina senzorů má zdroje a že hlásí, aktualizujte data o počasí a pak zónu vypočítejte. Upozornění zmizí samo při příštím úspěšném výpočtu."
+    },
+    "zone_not_calculated_no_engine": {
+      "title": "Zónu {zone} nelze vypočítat: žádné výpočetní jádro",
+      "description": "Zóna **{zone}** nemá výpočetní jádro, takže se nepočítá a nezavlažuje.\n\nZvolte způsob výpočtu na její kartě na kartě Zóny. Upozornění zmizí samo při příštím úspěšném výpočtu."
+    },
+    "zone_not_calculated_nothing_from_engine": {
+      "title": "Zónu {zone} nelze vypočítat: žádná evapotranspirace",
+      "description": "Zóna **{zone}** bere evapotranspiraci ze senzoru nebo z meteoslužby a její skupina senzorů žádnou neměla. Dokud ji mít nebude, zóna se nezavlažuje.\n\nZkontrolujte senzor, který evapotranspiraci poskytuje, nebo meteoslužbu. Upozornění zmizí samo při příštím úspěšném výpočtu."
+    },
+    "zone_not_calculated_forecast_without_service": {
+      "title": "Zónu {zone} nelze vypočítat: předpověď bez meteoslužby",
+      "description": "Výpočetní jádro zóny **{zone}** hledí dny dopředu, což vyžaduje meteoslužbu, a žádná není nastavena. Zóna se nezavlažuje, dokud ji nepůjde vypočítat.\n\nNastavte meteoslužbu, nebo nastavte dny předpovědi jádra na 0. Upozornění zmizí samo při příštím úspěšném výpočtu."
+    },
+    "zone_not_calculated_error": {
+      "title": "Zónu {zone} nelze vypočítat: chyba",
+      "description": "Výpočet zóny **{zone}** selhal: {detail}\n\nZóna se nezavlažuje, dokud ji nepůjde vypočítat. Pokud chyba přetrvává, založte prosím issue s touto zprávou a diagnostickým souborem. Upozornění zmizí samo při příštím úspěšném výpočtu."
+    },
+    "zone_not_calculated_no_sensor_group": {
+      "title": "Zónu {zone} nelze vypočítat: žádná skupina senzorů",
+      "description": "Zóna **{zone}** nemá skupinu senzorů, takže ji není z čeho vypočítat a nezavlažuje se.\n\nZvolte její skupinu senzorů na její kartě na kartě Zóny a pak zónu vypočítejte. Upozornění zmizí samo při příštím úspěšném výpočtu."
     }
   }
 }

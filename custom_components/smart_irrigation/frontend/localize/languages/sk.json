@@ -317,7 +317,8 @@
             "start": "Začína",
             "duration": "Celkový čas",
             "zones": "Zóny, ktoré zalievajú",
-            "trigger": "Spúšťač"
+            "trigger": "Spúšťač",
+            "no-valve": "Nie je pripojený ventil, takže sa nezalieva"
           },
           "no-start": "Čas začiatku sa doteraz nepodarilo určiť.",
           "nothing-to-water": "Nie je čo zalievať: žiadna zóna nedosiahla svoj prah zavlažovania.",
@@ -340,7 +341,11 @@
           "headline-not-scheduled": "Zavlažovanie je na rade a nič nie je naplánované, aby ho spustilo",
           "sub-not-scheduled": "Čas vyššie je okamih, kedy by zavlažovanie začalo. Práve teraz nie je pripravený žiadny spúšťač štartu, čo sa stáva, keď je aktívny spúšťač vypnutý alebo nebol zaregistrovaný. Skontrolujte spúšťač v Nastaveniach, a ak vyzerá správne, výpočet ho znovu pripraví.",
           "headline-no-trigger": "Žiadny spúšťač nie je aktívny",
-          "sub-no-trigger": "Smart Irrigation nespúšťa žiadne zavlažovanie. Ak chcete, aby zavlažoval, vyberte v nastaveniach spúšťač štartu."
+          "sub-no-trigger": "Smart Irrigation nespúšťa žiadne zavlažovanie. Ak chcete, aby zavlažoval, vyberte v nastaveniach spúšťač štartu.",
+          "headline-no-valve": "Nič sa nezaleje",
+          "sub-no-valve": "Zóny, ktorým chýba voda, nemajú pripojený ventil, takže sa nezalievajú. Ku každej pripojte jeden.",
+          "headline-no-zones": "Zatiaľ žiadna zóna",
+          "sub-no-zones": "Smart Irrigation zalieva zóny. Asistent s vami nastaví prvú."
         },
         "decision": {
           "title": "Bude vynechané?",
@@ -359,6 +364,9 @@
           "state-passing": "Neblokuje",
           "state-blocking": "Blokuje",
           "detail-forecast": "Predpoveď",
+          "detail-expected": "Očakávané (vážené pravdepodobnosťou)",
+          "detail-anyway-deficit": "Zalieva sa aj tak: zóne, ktorá by sa zalievala, chýba {deficit} mm, viac ako dvojnásobok očakávaného dažďa.",
+          "detail-anyway-skips": "Zalieva sa aj tak: predpoveď už zavlažovanie odložila {days} dní po sebe.",
           "detail-threshold": "Prah",
           "detail-days-since": "Dni od posledného zavlažovania",
           "detail-days-required": "Požadované dni",
@@ -367,6 +375,7 @@
           "check-wind": "Vietor",
           "check-soil_moisture": "Vlhkosť pôdy",
           "detail-now": "Teraz",
+          "detail-tonight": "Dnes v noci (predpovedané minimum)",
           "detail-weather-service": "meteoslužba",
           "detail-raining": "Prší",
           "detail-dry": "Neprší",
@@ -384,7 +393,8 @@
             "last-irrigation": "Naposledy zalievané"
           },
           "nothing": "nič",
-          "never-watered": "nikdy"
+          "never-watered": "nikdy",
+          "no-valve": "nič, nie je pripojený ventil"
         },
         "postpone": {
           "prompt": "Dážď, ktorý predpoveď minula, alebo vlastný dôvod?",
@@ -562,7 +572,8 @@
         "view-weather-info": "Zobraziť meteorologické údaje",
         "view-weather-info-message": "Meteorologické údaje k dispozícii pre",
         "view-watering-calendar": "Zobraziť kalendár zavlažovania",
-        "water": "Zaliať"
+        "water": "Zaliať",
+        "calculating": "Počíta sa…"
       },
       "cards": {
         "add-zone": {
@@ -718,7 +729,17 @@
         "under-threshold": "Ešte nie je čo zalievať: chýba {short}, pod prahom tejto zóny.",
         "manual": "Zalieva len na vyžiadanie.",
         "disabled": "Vypnuté: nikdy sa nezalieva a jej bilancia sa nevedie.",
-        "threshold": "prah"
+        "threshold": "prah",
+        "problem": {
+          "no_sensor_group": "Nedá sa vypočítať: nemá skupinu senzorov. Vyberte ju na tejto karte; dovtedy sa nezalieva.",
+          "no_readings": "Nedá sa vypočítať: jej skupina senzorov nemá žiadne merania. Dovtedy sa nezalieva.",
+          "no_engine": "Nedá sa vypočítať: nemá výpočtové jadro. Kým ho nemá, nezalieva sa.",
+          "nothing_from_engine": "Nedá sa vypočítať: jej skupina senzorov nedáva žiadnu evapotranspiráciu. Dovtedy sa nezalieva.",
+          "forecast_without_service": "Nedá sa vypočítať: jej jadro sa pozerá dopredu a nie je nastavená žiadna meteoslužba. Nezalieva sa.",
+          "error": "Nedá sa vypočítať: {detail}. Kým sa nedá vypočítať, nezalieva sa."
+        },
+        "no-valve": "Nie je pripojený ventil, takže sa táto zóna nezalieva.",
+        "no-valve-action": "Pripojiť ventil"
       },
       "calendar": {
         "title": "Kalendár zalievania (12 mesiacov, odhad)",
@@ -735,6 +756,10 @@
         "question": "Zaliať „{name}“ teraz? Ventil sa otvorí hneď, alebo keď príde na rad, ak sa práve zalieva. Voda sa započíta do bilancie.",
         "minutes": "Minúty, prázdne pre {calculated} z plánu",
         "minutes-none": "Minúty (výpočet nič nezalieva)"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone}: od posledného výpočtu žiadne nové merania, takže sa nič nezmenilo.",
+        "failed": "{zone}: výpočet zlyhal ({error})."
       }
     },
     "history": {
@@ -1132,7 +1157,9 @@
     "step": "krok",
     "tour": "kolo",
     "tours": "kolá",
-    "remaining": "zostáva"
+    "remaining": "zostáva",
+    "no_valve": "Nie je pripojený ventil, takže sa nezalieva:",
+    "nothing_no_valve": "V tomto behu nie je čo zalievať: zóny, ktorým chýba voda, nemajú pripojený ventil:"
   },
   "programs": {
     "title": "Programy",
@@ -1421,7 +1448,10 @@
       "show_next_start": "Zobraziť ďalší štart",
       "compact": "Len zóny, ktoré by zavlažovali",
       "show_programs": "Zobraziť programy (plný ovládač)"
-    }
+    },
+    "no_valve": "nie je pripojený ventil, nezalieva sa",
+    "no_trigger": "Žiadny spúšťač štartu",
+    "not_scheduled": "Na rade, ale nenaplánované"
   },
   "confirm": {
     "delete_zone": "Odstrániť zónu „{name}“? Jej nastavenia a vodná bilancia sa stratia.",

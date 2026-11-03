@@ -24,6 +24,12 @@
       },
       "live_bucket": {
         "name": "Live emmer"
+      },
+      "last_run_volume": {
+        "name": "Volume laatste ronde"
+      },
+      "next_irrigation": {
+        "name": "Volgende bewatering"
       }
     },
     "number": {
@@ -74,6 +80,12 @@
         "name": "Bewatert nu"
       },
       "problem": {
+        "name": "Probleem"
+      },
+      "any_zone_needs_water": {
+        "name": "Een zone heeft water nodig"
+      },
+      "any_problem": {
         "name": "Probleem"
       }
     },
@@ -306,6 +318,30 @@
     "throughput_mismatch": {
       "title": "Zone {zone}: het gemeten debiet komt niet overeen met het ingestelde debiet",
       "description": "Over de laatste {samples} rondes heeft de debietmeter van zone **{zone}** ongeveer **{measured}** gemeten, terwijl de zone is ingesteld op **{configured}**, dus {percentage}% ernaast.\n\nElke bewateringsduur wordt uit het ingestelde debiet afgeleid, dus zitten ze er allemaal ongeveer evenveel naast.\n\nAls de meting klopt, zet het debiet van de zone daarop. Zo niet, controleer dan of de meter alleen deze zone telt en of de leidingdruk is wat je verwacht. Smart Irrigation verandert de waarde nooit zelf."
+    },
+    "zone_not_calculated_no_readings": {
+      "title": "Zone {zone} kan niet berekend worden: geen weermetingen",
+      "description": "Zone **{zone}** is niet berekend: haar sensorgroep heeft geen metingen om mee te rekenen. Zolang dat zo is, beweegt het tekort van de zone niet en wordt ze niet bewaterd.\n\nControleer of de sensorgroep bronnen heeft en of die gegevens doorgeven, werk de weergegevens bij en bereken daarna de zone. De melding verdwijnt vanzelf bij de volgende geslaagde berekening."
+    },
+    "zone_not_calculated_no_engine": {
+      "title": "Zone {zone} kan niet berekend worden: geen berekeningsengine",
+      "description": "Zone **{zone}** heeft geen berekeningsengine, dus wordt ze niet berekend en niet bewaterd.\n\nKies op haar kaart in het tabblad Zones hoe ze berekend wordt. De melding verdwijnt vanzelf bij de volgende geslaagde berekening."
+    },
+    "zone_not_calculated_nothing_from_engine": {
+      "title": "Zone {zone} kan niet berekend worden: geen verdamping",
+      "description": "Zone **{zone}** haalt haar verdamping uit een sensor of een weerdienst, en haar sensorgroep had er geen te geven. Zolang dat zo is, wordt de zone niet bewaterd.\n\nControleer de sensor die de verdamping levert, of de weerdienst. De melding verdwijnt vanzelf bij de volgende geslaagde berekening."
+    },
+    "zone_not_calculated_forecast_without_service": {
+      "title": "Zone {zone} kan niet berekend worden: een verwachting zonder weerdienst",
+      "description": "De berekeningsengine van zone **{zone}** kijkt dagen vooruit, wat een weerdienst vereist, en er is er geen ingesteld. De zone wordt niet bewaterd tot ze berekend kan worden.\n\nStel een weerdienst in, of zet de verwachtingsdagen van de engine op 0. De melding verdwijnt vanzelf bij de volgende geslaagde berekening."
+    },
+    "zone_not_calculated_error": {
+      "title": "Zone {zone} kan niet berekend worden: een fout",
+      "description": "De berekening van zone **{zone}** is mislukt: {detail}\n\nDe zone wordt niet bewaterd tot ze berekend kan worden. Blijft het mislukken, open dan een issue met dit bericht en het diagnosebestand. De melding verdwijnt vanzelf bij de volgende geslaagde berekening."
+    },
+    "zone_not_calculated_no_sensor_group": {
+      "title": "Zone {zone} kan niet berekend worden: geen sensorgroep",
+      "description": "Zone **{zone}** heeft geen sensorgroep, dus er is niets om haar mee te berekenen en ze wordt niet bewaterd.\n\nKies haar sensorgroep op haar kaart in het tabblad Zones en bereken daarna de zone. De melding verdwijnt vanzelf bij de volgende geslaagde berekening."
     }
   }
 }

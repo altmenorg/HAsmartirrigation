@@ -317,7 +317,8 @@
             "start": "Começa",
             "duration": "Duração total",
             "zones": "Zonas que regam",
-            "trigger": "Acionador"
+            "trigger": "Acionador",
+            "no-valve": "Sem válvula associada, por isso não são regadas"
           },
           "no-start": "Ainda não foi possível determinar uma hora de início.",
           "nothing-to-water": "Nada para regar: nenhuma zona atingiu o seu limite de rega.",
@@ -340,7 +341,11 @@
           "headline-not-scheduled": "Há um ciclo em atraso e nada está agendado para o iniciar",
           "sub-not-scheduled": "A hora acima é quando começaria. Neste momento não há nenhum acionador de início armado, o que acontece quando o acionador ativo está desligado ou não foi registado. Verifique o acionador em Definições; se estiver correto, um cálculo volta a armá-lo.",
           "headline-no-trigger": "Nenhum acionador está ativo",
-          "sub-no-trigger": "O Smart Irrigation não inicia nenhuma rega. Escolha um acionador de início nas definições para que regue."
+          "sub-no-trigger": "O Smart Irrigation não inicia nenhuma rega. Escolha um acionador de início nas definições para que regue.",
+          "headline-no-valve": "Nada vai ser regado",
+          "sub-no-valve": "As zonas com falta de água não têm nenhuma válvula associada, por isso não são regadas. Associe uma a cada uma delas.",
+          "headline-no-zones": "Ainda não há zonas",
+          "sub-no-zones": "O Smart Irrigation rega zonas. O assistente cria a primeira consigo."
         },
         "decision": {
           "title": "Vai ser ignorado?",
@@ -359,6 +364,9 @@
           "state-passing": "Não bloqueia",
           "state-blocking": "A bloquear",
           "detail-forecast": "Previsão",
+          "detail-expected": "Esperada (ponderada pela probabilidade)",
+          "detail-anyway-deficit": "Rega na mesma: a uma zona que seria regada faltam {deficit} mm, mais do dobro da chuva esperada.",
+          "detail-anyway-skips": "Rega na mesma: a previsão já travou o ciclo {days} dias seguidos.",
           "detail-threshold": "Limite",
           "detail-days-since": "Dias desde o último ciclo",
           "detail-days-required": "Dias necessários",
@@ -367,6 +375,7 @@
           "check-wind": "Vento",
           "check-soil_moisture": "Humidade do solo",
           "detail-now": "Agora",
+          "detail-tonight": "Esta noite (mínima prevista)",
           "detail-weather-service": "serviço meteorológico",
           "detail-raining": "Está a chover",
           "detail-dry": "Não está a chover",
@@ -384,7 +393,8 @@
             "last-irrigation": "Última rega"
           },
           "nothing": "nada",
-          "never-watered": "nunca"
+          "never-watered": "nunca",
+          "no-valve": "nada, sem válvula associada"
         },
         "postpone": {
           "prompt": "Chuva que a previsão não viu, ou uma razão sua?",
@@ -562,7 +572,8 @@
         "view-weather-info": "Ver dados meteorológicos",
         "view-weather-info-message": "Dados meteorológicos disponíveis para",
         "view-watering-calendar": "Ver calendário de rega",
-        "water": "Regar"
+        "water": "Regar",
+        "calculating": "A calcular…"
       },
       "cards": {
         "add-zone": {
@@ -718,7 +729,17 @@
         "under-threshold": "Ainda nada para regar: faltam {short}, abaixo do limite desta zona.",
         "manual": "Só rega quando pedir.",
         "disabled": "Desativada: nunca é regada, e o seu balanço não é mantido.",
-        "threshold": "limite"
+        "threshold": "limite",
+        "problem": {
+          "no_sensor_group": "Não pode ser calculada: não tem grupo de sensores. Escolha um neste cartão; até lá não é regada.",
+          "no_readings": "Não pode ser calculada: o seu grupo de sensores não tem leituras. Não é regada enquanto não as tiver.",
+          "no_engine": "Não pode ser calculada: não tem motor de cálculo. Não é regada enquanto não tiver um.",
+          "nothing_from_engine": "Não pode ser calculada: o seu grupo de sensores não dá evapotranspiração. Não é regada enquanto não a der.",
+          "forecast_without_service": "Não pode ser calculada: o seu motor olha para os próximos dias e não há nenhum serviço meteorológico configurado. Não é regada.",
+          "error": "Não pode ser calculada: {detail}. Não é regada enquanto não puder ser calculada."
+        },
+        "no-valve": "Sem válvula associada, por isso esta zona não é regada.",
+        "no-valve-action": "Associar uma válvula"
       },
       "calendar": {
         "title": "Calendário de rega (12 meses, estimado)",
@@ -735,6 +756,10 @@
         "question": "Regar \"{name}\" agora? A válvula abre logo, ou na sua vez se algo estiver a regar. A água conta no seu balanço.",
         "minutes": "Minutos, vazio para os {calculated} do planeamento",
         "minutes-none": "Minutos (o cálculo não tem nada a regar)"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone}: sem leituras novas desde o último cálculo, por isso nada mudou.",
+        "failed": "{zone}: o cálculo falhou ({error})."
       }
     },
     "history": {
@@ -1132,7 +1157,9 @@
     "step": "etapa",
     "tour": "ronda",
     "tours": "rondas",
-    "remaining": "restante"
+    "remaining": "restante",
+    "no_valve": "Sem válvula associada, por isso não são regadas:",
+    "nothing_no_valve": "Nada para regar neste ciclo: as zonas com falta de água não têm válvula associada:"
   },
   "programs": {
     "title": "Programas",
@@ -1421,7 +1448,10 @@
       "show_next_start": "Mostrar o próximo início",
       "compact": "Apenas as zonas que regariam",
       "show_programs": "Mostrar os programas (controlador completo)"
-    }
+    },
+    "no_valve": "sem válvula associada, não é regada",
+    "no_trigger": "Nenhum acionador de início",
+    "not_scheduled": "Em atraso, mas não agendada"
   },
   "confirm": {
     "delete_zone": "Eliminar a zona «{name}»? As suas definições e o seu balanço hídrico perdem-se.",

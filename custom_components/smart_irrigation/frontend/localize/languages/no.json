@@ -317,7 +317,8 @@
             "start": "Starter",
             "duration": "Samlet varighet",
             "zones": "Soner som vanner",
-            "trigger": "Utløser"
+            "trigger": "Utløser",
+            "no-valve": "Ingen ventil tilknyttet, så den vannes ikke"
           },
           "no-start": "Det kunne ennå ikke finnes et starttidspunkt.",
           "nothing-to-water": "Ingenting å vanne: ingen sone har nådd vanningsgrensen sin.",
@@ -340,7 +341,11 @@
           "headline-not-scheduled": "En vanning står igjen, og ingenting er planlagt å starte den",
           "sub-not-scheduled": "Tidspunktet over er når den ville begynt. Det er ingen startutløser klar nå, noe som skjer når den aktive utløseren er slått av eller ikke ble registrert. Sjekk utløseren under Innstillinger, og hvis den ser riktig ut, gjør en beregning den klar igjen.",
           "headline-no-trigger": "Ingen utløser er aktiv",
-          "sub-no-trigger": "Smart Irrigation starter ingen vanning. Velg en starttrigger i innstillingene for at den skal vanne."
+          "sub-no-trigger": "Smart Irrigation starter ingen vanning. Velg en starttrigger i innstillingene for at den skal vanne.",
+          "headline-no-valve": "Ingenting blir vannet",
+          "sub-no-valve": "Sonene som mangler vann, har ingen ventil tilknyttet, så de vannes ikke. Knytt en ventil til hver av dem.",
+          "headline-no-zones": "Ingen sone ennå",
+          "sub-no-zones": "Smart Irrigation vanner soner. Assistenten setter opp den første sammen med deg."
         },
         "decision": {
           "title": "Blir den hoppet over?",
@@ -359,6 +364,9 @@
           "state-passing": "Blokkerer ikke",
           "state-blocking": "Blokkerer",
           "detail-forecast": "Varsel",
+          "detail-expected": "Forventet (vektet etter sannsynlighet)",
+          "detail-anyway-deficit": "Vanner likevel: en sone som ville vannet, mangler {deficit} mm, mer enn dobbelt så mye som regnet som er ventet.",
+          "detail-anyway-skips": "Vanner likevel: varselet har allerede holdt vanningen tilbake {days} dager på rad.",
           "detail-threshold": "Grense",
           "detail-days-since": "Dager siden forrige vanning",
           "detail-days-required": "Dager som kreves",
@@ -367,6 +375,7 @@
           "check-wind": "Vind",
           "check-soil_moisture": "Jordfukt",
           "detail-now": "Nå",
+          "detail-tonight": "I natt (laveste i varselet)",
           "detail-weather-service": "værtjeneste",
           "detail-raining": "Det regner",
           "detail-dry": "Det regner ikke",
@@ -384,7 +393,8 @@
             "last-irrigation": "Sist vannet"
           },
           "nothing": "ingenting",
-          "never-watered": "aldri"
+          "never-watered": "aldri",
+          "no-valve": "ingenting, ingen ventil tilknyttet"
         },
         "postpone": {
           "prompt": "Regn varselet ikke fanget opp, eller en grunn du har selv?",
@@ -562,7 +572,8 @@
         "view-weather-info": "Vis værdata",
         "view-weather-info-message": "Værdata tilgjengelig for",
         "view-watering-calendar": "Vis vanningskalender",
-        "water": "Vann"
+        "water": "Vann",
+        "calculating": "Beregner…"
       },
       "cards": {
         "add-zone": {
@@ -718,7 +729,17 @@
         "under-threshold": "Ennå ingenting å vanne: det mangler {short}, under grensen for denne sonen.",
         "manual": "Vanner bare når du ber om det.",
         "disabled": "Slått av: vannes aldri, og balansen føres ikke.",
-        "threshold": "grense"
+        "threshold": "grense",
+        "problem": {
+          "no_sensor_group": "Kan ikke beregnes: den har ingen sensorgruppe. Velg en på dette kortet; den vannes ikke før det.",
+          "no_readings": "Kan ikke beregnes: sensorgruppen har ingen målinger. Den vannes ikke før den har det.",
+          "no_engine": "Kan ikke beregnes: den har ingen beregningsmotor. Den vannes ikke før den har en.",
+          "nothing_from_engine": "Kan ikke beregnes: sensorgruppen gir ingen fordampning. Den vannes ikke før den gjør det.",
+          "forecast_without_service": "Kan ikke beregnes: beregningsmotoren ser fremover, og ingen værtjeneste er satt opp. Den vannes ikke.",
+          "error": "Kan ikke beregnes: {detail}. Den vannes ikke før den kan beregnes."
+        },
+        "no-valve": "Ingen ventil tilknyttet, så denne sonen vannes ikke.",
+        "no-valve-action": "Knytt til en ventil"
       },
       "calendar": {
         "title": "Vanningskalender (12 måneder, anslått)",
@@ -735,6 +756,10 @@
         "question": "Vanne «{name}» nå? Ventilen åpner med en gang, eller når det er dens tur hvis noe vanner. Vannet telles i balansen.",
         "minutes": "Minutter, tomt for planens {calculated}",
         "minutes-none": "Minutter (beregningen har ingenting å vanne)"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone}: ingen nye målinger siden forrige beregning, så ingenting er endret.",
+        "failed": "{zone}: beregningen mislyktes ({error})."
       }
     },
     "history": {
@@ -1132,7 +1157,9 @@
     "step": "trinn",
     "tour": "runde",
     "tours": "runder",
-    "remaining": "igjen"
+    "remaining": "igjen",
+    "no_valve": "Ingen ventil tilknyttet, så de vannes ikke:",
+    "nothing_no_valve": "Ingenting å vanne i denne kjøringen: sonene som mangler vann, har ingen ventil tilknyttet:"
   },
   "programs": {
     "title": "Programmer",
@@ -1421,7 +1448,10 @@
       "show_next_start": "Vis neste start",
       "compact": "Bare soner som ville vannet",
       "show_programs": "Vis programmene (full kontroller)"
-    }
+    },
+    "no_valve": "ingen ventil tilknyttet, vannes ikke",
+    "no_trigger": "Ingen startutløser",
+    "not_scheduled": "Står igjen, men ikke planlagt"
   },
   "confirm": {
     "delete_zone": "Slette sonen «{name}»? Innstillingene og vannbalansen går tapt.",

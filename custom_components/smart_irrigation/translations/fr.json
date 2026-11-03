@@ -318,6 +318,30 @@
     "throughput_mismatch": {
       "title": "Zone {zone} : le débit mesuré ne correspond pas au débit configuré",
       "description": "Sur les {samples} derniers arrosages, le compteur de la zone **{zone}** a mesuré environ **{measured}** alors que la zone est configurée à **{configured}**, soit {percentage}% d'écart.\n\nToutes les durées d'arrosage sont calculées à partir du débit configuré : elles sont donc toutes fausses dans la même proportion.\n\nSi la mesure te paraît juste, reporte-la dans le débit de la zone. Sinon, vérifie que le compteur ne mesure que cette zone et que la pression est celle attendue. Smart Irrigation ne modifie jamais la valeur à ta place."
+    },
+    "zone_not_calculated_no_readings": {
+      "title": "Zone {zone} : calcul impossible, aucun relevé météo",
+      "description": "La zone **{zone}** n'a pas été calculée : son groupe de capteurs n'a aucun relevé sur lequel calculer. Tant que ce n'est pas le cas, le déficit de la zone ne bouge pas et elle n'est pas arrosée.\n\nVérifie que le groupe de capteurs a des sources et qu'elles envoient des valeurs, mets à jour les données météo, puis calcule la zone. L'avis disparaît tout seul au prochain calcul réussi."
+    },
+    "zone_not_calculated_no_engine": {
+      "title": "Zone {zone} : calcul impossible, aucun moteur de calcul",
+      "description": "La zone **{zone}** n'a pas de moteur de calcul : elle n'est donc ni calculée, ni arrosée.\n\nChoisis comment elle est calculée sur sa carte, dans l'onglet Zones. L'avis disparaît tout seul au prochain calcul réussi."
+    },
+    "zone_not_calculated_nothing_from_engine": {
+      "title": "Zone {zone} : calcul impossible, aucune évapotranspiration",
+      "description": "La zone **{zone}** prend son évapotranspiration d'un capteur ou d'un service météo, et son groupe de capteurs n'en avait aucune à donner. Tant que ce n'est pas le cas, la zone n'est pas arrosée.\n\nVérifie le capteur qui fournit l'évapotranspiration, ou le service météo. L'avis disparaît tout seul au prochain calcul réussi."
+    },
+    "zone_not_calculated_forecast_without_service": {
+      "title": "Zone {zone} : calcul impossible, une prévision sans service météo",
+      "description": "Le moteur de calcul de la zone **{zone}** regarde plusieurs jours à l'avance, ce qui demande un service météo, et aucun n'est configuré. La zone n'est pas arrosée tant qu'elle ne peut pas être calculée.\n\nConfigure un service météo, ou mets à 0 les jours de prévision du moteur. L'avis disparaît tout seul au prochain calcul réussi."
+    },
+    "zone_not_calculated_error": {
+      "title": "Zone {zone} : calcul impossible, une erreur",
+      "description": "Le calcul de la zone **{zone}** a échoué : {detail}\n\nLa zone n'est pas arrosée tant qu'elle ne peut pas être calculée. Si l'échec persiste, ouvre un ticket avec ce message et le fichier de diagnostic. L'avis disparaît tout seul au prochain calcul réussi."
+    },
+    "zone_not_calculated_no_sensor_group": {
+      "title": "Zone {zone} : calcul impossible, aucun groupe de capteurs",
+      "description": "La zone **{zone}** n'a pas de groupe de capteurs : il n'y a donc rien sur quoi la calculer, et elle n'est pas arrosée.\n\nChoisis son groupe de capteurs sur sa carte, dans l'onglet Zones, puis calcule la zone. L'avis disparaît tout seul au prochain calcul réussi."
     }
   }
 }

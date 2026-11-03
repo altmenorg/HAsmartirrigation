@@ -24,6 +24,12 @@
       },
       "live_bucket": {
         "name": "Tartalék élőben"
+      },
+      "last_run_volume": {
+        "name": "Utolsó futás vízmennyisége"
+      },
+      "next_irrigation": {
+        "name": "Következő öntözés"
       }
     },
     "number": {
@@ -74,6 +80,12 @@
         "name": "Most öntöz"
       },
       "problem": {
+        "name": "Probléma"
+      },
+      "any_zone_needs_water": {
+        "name": "Egy zónának vízre van szüksége"
+      },
+      "any_problem": {
         "name": "Probléma"
       }
     },
@@ -306,6 +318,30 @@
     "throughput_mismatch": {
       "title": "{zone} zóna: a mért átfolyás nem egyezik a beállítottal",
       "description": "Az utolsó {samples} öntözés során a **{zone}** zóna áramlásmérője körülbelül **{measured}** értéket mért, míg a zóna **{configured}** értékre van beállítva, ami {percentage}% eltérés.\n\nMinden öntözési idő a beállított átfolyásból vezet le, így mindegyik körülbelül ugyanannyival téved.\n\nHa a mérés helyesnek tűnik, állítsd a zóna átfolyását arra. Ha nem, ellenőrizd, hogy a mérő csak ezt a zónát számolja, és hogy a hálózati nyomás az, amire számítasz. A Smart Irrigation soha nem módosítja helyetted az értéket."
+    },
+    "zone_not_calculated_no_readings": {
+      "title": "A(z) {zone} zóna nem számítható: nincsenek időjárási mérések",
+      "description": "A(z) **{zone}** zóna nem lett kiszámítva: az érzékelőcsoportjának nincsenek mérései, amelyekből számolni lehetne. Amíg nincsenek, a zóna hiánya nem mozdul, és nem öntöz.\n\nEllenőrizd, hogy az érzékelőcsoportnak vannak-e forrásai, és hogy azok jelentenek-e, frissítsd az időjárási adatokat, majd számítsd ki a zónát. Az értesítés magától eltűnik a következő sikeres számításnál."
+    },
+    "zone_not_calculated_no_engine": {
+      "title": "A(z) {zone} zóna nem számítható: nincs számítási motor",
+      "description": "A(z) **{zone}** zónának nincs számítási motorja, így nem lesz kiszámítva, és nem öntöz.\n\nVálaszd ki, hogyan számítódjon, a kártyáján a Zónák lapon. Az értesítés magától eltűnik a következő sikeres számításnál."
+    },
+    "zone_not_calculated_nothing_from_engine": {
+      "title": "A(z) {zone} zóna nem számítható: nincs evapotranszpiráció",
+      "description": "A(z) **{zone}** zóna az evapotranszpirációját egy érzékelőből vagy időjárás-szolgáltatásból veszi, és az érzékelőcsoportja nem tudott ilyet adni. Amíg nem tud, a zóna nem öntöz.\n\nEllenőrizd az evapotranszpirációt szolgáltató érzékelőt vagy az időjárás-szolgáltatást. Az értesítés magától eltűnik a következő sikeres számításnál."
+    },
+    "zone_not_calculated_forecast_without_service": {
+      "title": "A(z) {zone} zóna nem számítható: előrejelzés időjárás-szolgáltatás nélkül",
+      "description": "A(z) **{zone}** zóna számítási motorja napokkal előre tekint, ehhez időjárás-szolgáltatás kell, de nincs beállítva. A zóna nem öntöz, amíg nem számítható.\n\nÁllíts be egy időjárás-szolgáltatást, vagy állítsd a motor előrejelzési napjait 0-ra. Az értesítés magától eltűnik a következő sikeres számításnál."
+    },
+    "zone_not_calculated_error": {
+      "title": "A(z) {zone} zóna nem számítható: hiba",
+      "description": "A(z) **{zone}** zóna számítása nem sikerült: {detail}\n\nA zóna nem öntöz, amíg nem számítható. Ha továbbra is hibát jelez, nyiss egy hibajegyet ezzel az üzenettel és a diagnosztikai fájllal. Az értesítés magától eltűnik a következő sikeres számításnál."
+    },
+    "zone_not_calculated_no_sensor_group": {
+      "title": "A(z) {zone} zóna nem számítható: nincs érzékelőcsoport",
+      "description": "A(z) **{zone}** zónának nincs érzékelőcsoportja, így nincs miből kiszámítani, és nem öntöz.\n\nVálaszd ki az érzékelőcsoportját a kártyáján a Zónák lapon, majd számítsd ki a zónát. Az értesítés magától eltűnik a következő sikeres számításnál."
     }
   }
 }

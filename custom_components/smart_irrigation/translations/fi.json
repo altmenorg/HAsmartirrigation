@@ -24,6 +24,12 @@
       },
       "live_bucket": {
         "name": "Varanto juuri nyt"
+      },
+      "last_run_volume": {
+        "name": "Viimeisimmän ajon määrä"
+      },
+      "next_irrigation": {
+        "name": "Seuraava kastelu"
       }
     },
     "number": {
@@ -74,6 +80,12 @@
         "name": "Kastelee nyt"
       },
       "problem": {
+        "name": "Ongelma"
+      },
+      "any_zone_needs_water": {
+        "name": "Vyöhyke tarvitsee vettä"
+      },
+      "any_problem": {
         "name": "Ongelma"
       }
     },
@@ -306,6 +318,30 @@
     "throughput_mismatch": {
       "title": "Alue {zone}: mitattu virtaama ei vastaa asetettua",
       "description": "Viimeisten {samples} kastelun aikana alueen **{zone}** virtausmittari mittasi noin **{measured}**, kun alue on asetettu arvoon **{configured}**, eli {percentage}% sivussa.\n\nJokainen kastelun kesto johdetaan asetetusta virtaamasta, joten ne ovat kaikki väärässä suunnilleen saman verran.\n\nJos mittaus näyttää oikealta, aseta alueen virtaama siihen. Jos ei, tarkista, että mittari laskee vain tämän alueen ja että verkkopaine on odotettu. Smart Irrigation ei koskaan muuta arvoa puolestasi."
+    },
+    "zone_not_calculated_no_readings": {
+      "title": "Vyöhykettä {zone} ei voida laskea: ei säälukemia",
+      "description": "Vyöhykettä **{zone}** ei laskettu: sen anturiryhmällä ei ole lukemia, joista laskea. Siihen asti vyöhykkeen vajaus ei muutu eikä sitä kastella.\n\nTarkista, että anturiryhmällä on lähteitä ja että ne raportoivat, päivitä säätiedot ja laske sitten vyöhyke. Ilmoitus poistuu itsestään seuraavan onnistuneen laskennan yhteydessä."
+    },
+    "zone_not_calculated_no_engine": {
+      "title": "Vyöhykettä {zone} ei voida laskea: ei laskentamoottoria",
+      "description": "Vyöhykkeellä **{zone}** ei ole laskentamoottoria, joten sitä ei lasketa eikä kastella.\n\nValitse laskentatapa sen kortilta Alueet-välilehdellä. Ilmoitus poistuu itsestään seuraavan onnistuneen laskennan yhteydessä."
+    },
+    "zone_not_calculated_nothing_from_engine": {
+      "title": "Vyöhykettä {zone} ei voida laskea: ei haihduntaa",
+      "description": "Vyöhyke **{zone}** saa haihduntansa anturilta tai sääpalvelulta, eikä sen anturiryhmällä ollut sitä antaa. Siihen asti vyöhykettä ei kastella.\n\nTarkista haihdunnan antava anturi tai sääpalvelu. Ilmoitus poistuu itsestään seuraavan onnistuneen laskennan yhteydessä."
+    },
+    "zone_not_calculated_forecast_without_service": {
+      "title": "Vyöhykettä {zone} ei voida laskea: ennuste ilman sääpalvelua",
+      "description": "Vyöhykkeen **{zone}** laskentamoottori katsoo päiviä eteenpäin, mikä vaatii sääpalvelun, eikä sellaista ole määritetty. Vyöhykettä ei kastella ennen kuin se voidaan laskea.\n\nMääritä sääpalvelu tai aseta moottorin ennustepäivät arvoon 0. Ilmoitus poistuu itsestään seuraavan onnistuneen laskennan yhteydessä."
+    },
+    "zone_not_calculated_error": {
+      "title": "Vyöhykettä {zone} ei voida laskea: virhe",
+      "description": "Vyöhykkeen **{zone}** laskenta epäonnistui: {detail}\n\nVyöhykettä ei kastella ennen kuin se voidaan laskea. Jos virhe toistuu, avaa issue tällä viestillä ja diagnostiikkatiedostolla. Ilmoitus poistuu itsestään seuraavan onnistuneen laskennan yhteydessä."
+    },
+    "zone_not_calculated_no_sensor_group": {
+      "title": "Vyöhykettä {zone} ei voida laskea: ei anturiryhmää",
+      "description": "Vyöhykkeellä **{zone}** ei ole anturiryhmää, joten sitä ei voi laskea mistään eikä sitä kastella.\n\nValitse sen anturiryhmä sen kortilta Alueet-välilehdellä ja laske sitten vyöhyke. Ilmoitus poistuu itsestään seuraavan onnistuneen laskennan yhteydessä."
     }
   }
 }

@@ -317,7 +317,8 @@
             "start": "Empieza",
             "duration": "Duración total",
             "zones": "Zonas que riegan",
-            "trigger": "Disparador"
+            "trigger": "Disparador",
+            "no-valve": "Sin válvula vinculada, así que no se riegan"
           },
           "no-start": "Todavía no se ha podido determinar una hora de inicio.",
           "nothing-to-water": "Nada que regar: ninguna zona ha alcanzado su umbral de riego.",
@@ -340,7 +341,11 @@
           "headline-not-scheduled": "Hay un ciclo pendiente, y no hay nada programado que lo inicie",
           "sub-not-scheduled": "La hora de arriba es cuando empezaría. Ahora mismo no hay ningún disparador de inicio armado, lo que ocurre cuando el disparador activo está desactivado o no se registró. Revisa el disparador en Ajustes, y si está bien, un cálculo lo vuelve a armar.",
           "headline-no-trigger": "Ningún disparador está activo",
-          "sub-no-trigger": "Smart Irrigation no inicia ningún riego. Elige un disparador de inicio en los ajustes para que riegue."
+          "sub-no-trigger": "Smart Irrigation no inicia ningún riego. Elige un disparador de inicio en los ajustes para que riegue.",
+          "headline-no-valve": "No se regará nada",
+          "sub-no-valve": "Las zonas a las que les falta agua no tienen ninguna válvula vinculada, así que no se riegan. Vincula una a cada una de ellas.",
+          "headline-no-zones": "Todavía no hay zonas",
+          "sub-no-zones": "Smart Irrigation riega zonas. El asistente crea la primera contigo."
         },
         "decision": {
           "title": "¿Se va a omitir?",
@@ -359,6 +364,9 @@
           "state-passing": "No bloquea",
           "state-blocking": "Bloquea",
           "detail-forecast": "Previsión",
+          "detail-expected": "Esperada (ponderada por la probabilidad)",
+          "detail-anyway-deficit": "Se riega igualmente: a una zona que regaría le faltan {deficit} mm, más del doble de la lluvia esperada.",
+          "detail-anyway-skips": "Se riega igualmente: la previsión ya ha retenido el ciclo {days} días seguidos.",
           "detail-threshold": "Umbral",
           "detail-days-since": "Días desde el último ciclo",
           "detail-days-required": "Días necesarios",
@@ -367,6 +375,7 @@
           "check-wind": "Viento",
           "check-soil_moisture": "Humedad del suelo",
           "detail-now": "Ahora",
+          "detail-tonight": "Esta noche (mínima prevista)",
           "detail-weather-service": "servicio meteorológico",
           "detail-raining": "Está lloviendo",
           "detail-dry": "No llueve",
@@ -384,7 +393,8 @@
             "last-irrigation": "Último riego"
           },
           "nothing": "nada",
-          "never-watered": "nunca"
+          "never-watered": "nunca",
+          "no-valve": "nada, sin válvula vinculada"
         },
         "postpone": {
           "prompt": "¿Lluvia que la previsión no vio, o un motivo propio?",
@@ -562,7 +572,8 @@
         "view-weather-info": "Ver datos meteorológicos",
         "view-weather-info-message": "Datos meteorológicos disponibles para",
         "view-watering-calendar": "Ver el calendario de riego",
-        "water": "Regar"
+        "water": "Regar",
+        "calculating": "Calculando…"
       },
       "cards": {
         "add-zone": {
@@ -718,7 +729,17 @@
         "under-threshold": "Todavía nada que regar: faltan {short}, por debajo del umbral de esta zona.",
         "manual": "Solo riega cuando lo pides.",
         "disabled": "Desactivada: nunca se riega, y su balance no se lleva.",
-        "threshold": "umbral"
+        "threshold": "umbral",
+        "problem": {
+          "no_sensor_group": "No se puede calcular: no tiene grupo de sensores. Elige uno en esta tarjeta; hasta entonces no se riega.",
+          "no_readings": "No se puede calcular: su grupo de sensores no tiene lecturas. No se riega hasta que las tenga.",
+          "no_engine": "No se puede calcular: no tiene motor de cálculo. No se riega hasta que tenga uno.",
+          "nothing_from_engine": "No se puede calcular: su grupo de sensores no da evapotranspiración. No se riega hasta que la dé.",
+          "forecast_without_service": "No se puede calcular: su motor mira los próximos días y no hay ningún servicio meteorológico configurado. No se riega.",
+          "error": "No se puede calcular: {detail}. No se riega hasta que se pueda calcular."
+        },
+        "no-valve": "Sin válvula vinculada, así que esta zona no se riega.",
+        "no-valve-action": "Vincular una válvula"
       },
       "calendar": {
         "title": "Calendario de riego (12 meses, estimado)",
@@ -735,6 +756,10 @@
         "question": "¿Regar «{name}» ahora? Su válvula se abre enseguida, o cuando le toque si algo está regando. El agua cuenta en su balance.",
         "minutes": "Minutos, vacío para los {calculated} de la planificación",
         "minutes-none": "Minutos (el cálculo no tiene nada que regar)"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone}: no hay lecturas nuevas desde el último cálculo, así que no ha cambiado nada.",
+        "failed": "{zone}: el cálculo ha fallado ({error})."
       }
     },
     "history": {
@@ -1132,7 +1157,9 @@
     "step": "paso",
     "tour": "vuelta",
     "tours": "vueltas",
-    "remaining": "restante"
+    "remaining": "restante",
+    "no_valve": "Sin válvula vinculada, así que no se riegan:",
+    "nothing_no_valve": "Nada que regar en este ciclo: las zonas a las que les falta agua no tienen válvula vinculada:"
   },
   "programs": {
     "title": "Programas",
@@ -1421,7 +1448,10 @@
       "show_next_start": "Mostrar el próximo inicio",
       "compact": "Solo las zonas que regarían",
       "show_programs": "Mostrar los programas (controlador completo)"
-    }
+    },
+    "no_valve": "sin válvula vinculada, no se riega",
+    "no_trigger": "Ningún disparador de inicio",
+    "not_scheduled": "Pendiente, pero sin programar"
   },
   "confirm": {
     "delete_zone": "¿Eliminar la zona «{name}»? Se pierden sus ajustes y su balance hídrico.",

@@ -24,6 +24,12 @@
       },
       "live_bucket": {
         "name": "Vodna bilanca v živo"
+      },
+      "last_run_volume": {
+        "name": "Količina zadnjega zagona"
+      },
+      "next_irrigation": {
+        "name": "Naslednje namakanje"
       }
     },
     "number": {
@@ -74,6 +80,12 @@
         "name": "Namakanje poteka"
       },
       "problem": {
+        "name": "Težava"
+      },
+      "any_zone_needs_water": {
+        "name": "Coni primanjkuje vode"
+      },
+      "any_problem": {
         "name": "Težava"
       }
     },
@@ -306,6 +318,30 @@
     "throughput_mismatch": {
       "title": "Cona {zone}: izmerjeni pretok se ne ujema z nastavljenim",
       "description": "V zadnjih {samples} zagonih je merilnik pretoka cone **{zone}** izmeril približno **{measured}**, cona pa je nastavljena na **{configured}**, kar je {percentage}% odstopanja.\n\nVsako trajanje namakanja izhaja iz nastavljenega pretoka, zato vsa odstopajo za približno enako mero.\n\nČe se meritev zdi pravilna, nastavi pretok cone nanjo. Če ne, preveri, ali merilnik šteje samo to cono in ali je tlak v vodovodu tak, kot pričakuješ. Smart Irrigation vrednosti nikoli ne spremeni namesto tebe."
+    },
+    "zone_not_calculated_no_readings": {
+      "title": "Cone {zone} ni mogoče izračunati: ni vremenskih meritev",
+      "description": "Cona **{zone}** ni bila izračunana: njena skupina senzorjev nima meritev, iz katerih bi lahko računala. Dokler jih nima, se primanjkljaj cone ne spreminja in cona se ne zaliva.\n\nPreveri, ali ima skupina senzorjev vire in ali ti poročajo, posodobi vremenske podatke in nato izračunaj cono. Obvestilo izgine samo ob naslednjem uspešnem izračunu."
+    },
+    "zone_not_calculated_no_engine": {
+      "title": "Cone {zone} ni mogoče izračunati: ni računskega modula",
+      "description": "Cona **{zone}** nima računskega modula, zato se ne izračuna in ne zaliva.\n\nNa njeni kartici v zavihku Cone izberi, kako naj se izračuna. Obvestilo izgine samo ob naslednjem uspešnem izračunu."
+    },
+    "zone_not_calculated_nothing_from_engine": {
+      "title": "Cone {zone} ni mogoče izračunati: ni evapotranspiracije",
+      "description": "Cona **{zone}** dobi evapotranspiracijo iz senzorja ali vremenske storitve, njena skupina senzorjev pa je ni imela. Dokler je nima, se cona ne zaliva.\n\nPreveri senzor, ki daje evapotranspiracijo, ali vremensko storitev. Obvestilo izgine samo ob naslednjem uspešnem izračunu."
+    },
+    "zone_not_calculated_forecast_without_service": {
+      "title": "Cone {zone} ni mogoče izračunati: napoved brez vremenske storitve",
+      "description": "Računski modul cone **{zone}** gleda dneve naprej, za kar potrebuje vremensko storitev, ta pa ni nastavljena. Cona se ne zaliva, dokler je ni mogoče izračunati.\n\nNastavi vremensko storitev ali nastavi dneve napovedi modula na 0. Obvestilo izgine samo ob naslednjem uspešnem izračunu."
+    },
+    "zone_not_calculated_error": {
+      "title": "Cone {zone} ni mogoče izračunati: napaka",
+      "description": "Izračun cone **{zone}** ni uspel: {detail}\n\nCona se ne zaliva, dokler je ni mogoče izračunati. Če se napaka ponavlja, odpri issue s tem sporočilom in datoteko z diagnostiko. Obvestilo izgine samo ob naslednjem uspešnem izračunu."
+    },
+    "zone_not_calculated_no_sensor_group": {
+      "title": "Cone {zone} ni mogoče izračunati: ni skupine senzorjev",
+      "description": "Cona **{zone}** nima skupine senzorjev, zato je ni iz česa izračunati in se ne zaliva.\n\nNa njeni kartici v zavihku Cone izberi njeno skupino senzorjev in nato izračunaj cono. Obvestilo izgine samo ob naslednjem uspešnem izračunu."
     }
   }
 }

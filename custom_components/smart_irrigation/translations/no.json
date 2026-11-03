@@ -24,6 +24,12 @@
       },
       "live_bucket": {
         "name": "Beholdning nå"
+      },
+      "last_run_volume": {
+        "name": "Mengde ved siste kjøring"
+      },
+      "next_irrigation": {
+        "name": "Neste vanning"
       }
     },
     "number": {
@@ -74,6 +80,12 @@
         "name": "Vanner nå"
       },
       "problem": {
+        "name": "Problem"
+      },
+      "any_zone_needs_water": {
+        "name": "En sone trenger vann"
+      },
+      "any_problem": {
         "name": "Problem"
       }
     },
@@ -306,6 +318,30 @@
     "throughput_mismatch": {
       "title": "Sone {zone}: den målte vannmengden stemmer ikke med den innstilte",
       "description": "Over de siste {samples} vanningene målte strømningsmåleren på sone **{zone}** rundt **{measured}**, der sonen er satt til **{configured}**, altså {percentage}% ved siden av.\n\nHver vanningstid utledes fra den innstilte vannmengden, så de er alle feil med omtrent det samme.\n\nHvis målingen ser riktig ut, sett sonens vannmengde til den. Hvis den ikke gjør det, sjekk at måleren bare teller denne sonen, og at trykket i ledningen er som forventet. Smart Irrigation endrer aldri verdien for deg."
+    },
+    "zone_not_calculated_no_readings": {
+      "title": "Sone {zone} kan ikke beregnes: ingen værmålinger",
+      "description": "Sone **{zone}** ble ikke beregnet: sensorgruppen har ingen målinger å beregne ut fra. Inntil den har det, flytter sonens underskudd seg ikke, og den vannes ikke.\n\nSjekk at sensorgruppen har kilder og at de rapporterer, oppdater værdataene, og beregn deretter sonen. Varselet forsvinner av seg selv ved neste vellykkede beregning."
+    },
+    "zone_not_calculated_no_engine": {
+      "title": "Sone {zone} kan ikke beregnes: ingen beregningsmotor",
+      "description": "Sone **{zone}** har ingen beregningsmotor, så den beregnes ikke og vannes ikke.\n\nVelg hvordan den skal beregnes på kortet i fanen Soner. Varselet forsvinner av seg selv ved neste vellykkede beregning."
+    },
+    "zone_not_calculated_nothing_from_engine": {
+      "title": "Sone {zone} kan ikke beregnes: ingen fordampning",
+      "description": "Sone **{zone}** henter fordampningen fra en sensor eller en værtjeneste, og sensorgruppen hadde ingen å gi. Inntil den har det, vannes ikke sonen.\n\nSjekk sensoren som gir fordampningen, eller værtjenesten. Varselet forsvinner av seg selv ved neste vellykkede beregning."
+    },
+    "zone_not_calculated_forecast_without_service": {
+      "title": "Sone {zone} kan ikke beregnes: et varsel uten værtjeneste",
+      "description": "Beregningsmotoren til sone **{zone}** ser dager fremover, noe som krever en værtjeneste, og ingen er satt opp. Sonen vannes ikke før den kan beregnes.\n\nSett opp en værtjeneste, eller sett motorens varseldager til 0. Varselet forsvinner av seg selv ved neste vellykkede beregning."
+    },
+    "zone_not_calculated_error": {
+      "title": "Sone {zone} kan ikke beregnes: en feil",
+      "description": "Beregningen av sone **{zone}** mislyktes: {detail}\n\nSonen vannes ikke før den kan beregnes. Hvis det fortsetter å feile, åpne en issue med denne meldingen og diagnosefilen. Varselet forsvinner av seg selv ved neste vellykkede beregning."
+    },
+    "zone_not_calculated_no_sensor_group": {
+      "title": "Sone {zone} kan ikke beregnes: ingen sensorgruppe",
+      "description": "Sone **{zone}** har ingen sensorgruppe, så det er ingenting å beregne den ut fra, og den vannes ikke.\n\nVelg sensorgruppen på kortet i fanen Soner, og beregn deretter sonen. Varselet forsvinner av seg selv ved neste vellykkede beregning."
     }
   }
 }

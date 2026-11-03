@@ -317,7 +317,8 @@
             "start": "Začetek",
             "duration": "Skupno trajanje",
             "zones": "Cone, ki se zalivajo",
-            "trigger": "Sprožilec"
+            "trigger": "Sprožilec",
+            "no-valve": "Ni povezanega ventila, zato se ne zaliva"
           },
           "no-start": "Časa zagona še ni bilo mogoče določiti.",
           "nothing-to-water": "Nič ni treba zaliti: nobena cona ni dosegla svojega praga namakanja.",
@@ -340,7 +341,11 @@
           "headline-not-scheduled": "Zalivanje je potrebno, a nič ni načrtovano, da bi ga zagnalo",
           "sub-not-scheduled": "Zgornji čas je čas, ko bi se začelo. Trenutno ni pripravljen noben sprožilec zagona, kar se zgodi, ko je aktivni sprožilec izklopljen ali ni bil registriran. Preveri sprožilec v Nastavitvah, in če se zdi pravilen, ga izračun ponovno pripravi.",
           "headline-no-trigger": "Noben sprožilec ni aktiven",
-          "sub-no-trigger": "Smart Irrigation ne zažene nobenega zalivanja. V nastavitvah izberi sprožilec zagona, da bo zalival."
+          "sub-no-trigger": "Smart Irrigation ne zažene nobenega zalivanja. V nastavitvah izberi sprožilec zagona, da bo zalival.",
+          "headline-no-valve": "Nič ne bo zalito",
+          "sub-no-valve": "Cone, ki jim primanjkuje vode, nimajo povezanega ventila, zato se ne zalivajo. Vsaki poveži enega.",
+          "headline-no-zones": "Še ni nobene cone",
+          "sub-no-zones": "Smart Irrigation zaliva cone. Pomočnik s tabo nastavi prvo."
         },
         "decision": {
           "title": "Bo preskočeno?",
@@ -359,6 +364,9 @@
           "state-passing": "Ne blokira",
           "state-blocking": "Blokira",
           "detail-forecast": "Napoved",
+          "detail-expected": "Pričakovano (uteženo z verjetnostjo)",
+          "detail-anyway-deficit": "Vseeno zaliva: coni, ki bi se zalivala, primanjkuje {deficit} mm, več kot dvakrat toliko kot pričakovanega dežja.",
+          "detail-anyway-skips": "Vseeno zaliva: napoved je zagon zadržala že {days} dni zapored.",
           "detail-threshold": "Prag",
           "detail-days-since": "Dni od zadnjega zagona",
           "detail-days-required": "Potrebni dnevi",
@@ -367,6 +375,7 @@
           "check-wind": "Veter",
           "check-soil_moisture": "Vlažnost tal",
           "detail-now": "Zdaj",
+          "detail-tonight": "Nocoj (napovedani minimum)",
           "detail-weather-service": "vremenska storitev",
           "detail-raining": "Dežuje",
           "detail-dry": "Ne dežuje",
@@ -384,7 +393,8 @@
             "last-irrigation": "Nazadnje zalito"
           },
           "nothing": "nič",
-          "never-watered": "nikoli"
+          "never-watered": "nikoli",
+          "no-valve": "nič, ni povezanega ventila"
         },
         "postpone": {
           "prompt": "Dež, ki ga napoved ni zaznala, ali kak tvoj razlog?",
@@ -562,7 +572,8 @@
         "view-weather-info": "Prikaži vremenske podatke",
         "view-weather-info-message": "Vremenski podatki na voljo za",
         "view-watering-calendar": "Prikaži koledar zalivanja",
-        "water": "Zalij"
+        "water": "Zalij",
+        "calculating": "Računanje…"
       },
       "cards": {
         "add-zone": {
@@ -718,7 +729,17 @@
         "under-threshold": "Še nič ni treba zaliti: primanjkuje {short}, pod pragom te cone.",
         "manual": "Zaliva samo, ko zahtevaš.",
         "disabled": "Izklopljeno: nikoli se ne zaliva in njena bilanca se ne vodi.",
-        "threshold": "prag"
+        "threshold": "prag",
+        "problem": {
+          "no_sensor_group": "Ni mogoče izračunati: nima skupine senzorjev. Izberi jo na tej kartici; do takrat se ne zaliva.",
+          "no_readings": "Ni mogoče izračunati: njena skupina senzorjev nima meritev. Do takrat se ne zaliva.",
+          "no_engine": "Ni mogoče izračunati: nima računskega modula. Dokler ga nima, se ne zaliva.",
+          "nothing_from_engine": "Ni mogoče izračunati: njena skupina senzorjev ne daje evapotranspiracije. Do takrat se ne zaliva.",
+          "forecast_without_service": "Ni mogoče izračunati: njen modul gleda naprej, vremenska storitev pa ni nastavljena. Se ne zaliva.",
+          "error": "Ni mogoče izračunati: {detail}. Dokler je ni mogoče izračunati, se ne zaliva."
+        },
+        "no-valve": "Ni povezanega ventila, zato se ta cona ne zaliva.",
+        "no-valve-action": "Poveži ventil"
       },
       "calendar": {
         "title": "Koledar zalivanja (12 mesecev, ocena)",
@@ -735,6 +756,10 @@
         "question": "Zalijem \"{name}\" zdaj? Ventil se odpre takoj, ali ko pride na vrsto, če se že zaliva. Voda se šteje v bilanco.",
         "minutes": "Minute, prazno za {calculated} iz načrta",
         "minutes-none": "Minute (izračun nima česa zaliti)"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone}: od zadnjega izračuna ni novih meritev, zato se ni nič spremenilo.",
+        "failed": "{zone}: izračun ni uspel ({error})."
       }
     },
     "history": {
@@ -1132,7 +1157,9 @@
     "step": "korak",
     "tour": "krog",
     "tours": "krogi",
-    "remaining": "preostalo"
+    "remaining": "preostalo",
+    "no_valve": "Ni povezanega ventila, zato se ne zaliva:",
+    "nothing_no_valve": "V tem zagonu ni kaj zalivati: cone, ki jim primanjkuje vode, nimajo povezanega ventila:"
   },
   "programs": {
     "title": "Programi",
@@ -1421,7 +1448,10 @@
       "show_next_start": "Prikaži naslednji zagon",
       "compact": "Samo cone, ki bi zalivale",
       "show_programs": "Prikaži programe (celoten krmilnik)"
-    }
+    },
+    "no_valve": "ni povezanega ventila, se ne zaliva",
+    "no_trigger": "Ni sprožilca zagona",
+    "not_scheduled": "Potrebno, a ni načrtovano"
   },
   "confirm": {
     "delete_zone": "Izbrišem cono »{name}«? Njene nastavitve in vodna bilanca se izgubijo.",

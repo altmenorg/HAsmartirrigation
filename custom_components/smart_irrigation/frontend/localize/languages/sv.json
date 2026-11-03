@@ -317,7 +317,8 @@
             "start": "Börjar",
             "duration": "Total längd",
             "zones": "Zoner som vattnar",
-            "trigger": "Utlösare"
+            "trigger": "Utlösare",
+            "no-valve": "Ingen ventil kopplad, så den vattnas inte"
           },
           "no-start": "Ingen starttid kunde räknas ut än.",
           "nothing-to-water": "Inget att vattna: ingen zon har nått sin vattningsgräns.",
@@ -340,7 +341,11 @@
           "headline-not-scheduled": "En körning väntar, och inget är schemalagt att starta den",
           "sub-not-scheduled": "Tiden ovan är när den skulle börja. Just nu finns ingen startutlösare i beredskap, vilket händer när den aktiva utlösaren är avstängd eller inte registrerades. Kontrollera utlösaren under Inställningar, och om den ser rätt ut gör en beräkning den redo igen.",
           "headline-no-trigger": "Ingen utlösare är aktiv",
-          "sub-no-trigger": "Smart Irrigation startar ingen bevattning. Välj en startutlösare i inställningarna för att den ska bevattna."
+          "sub-no-trigger": "Smart Irrigation startar ingen bevattning. Välj en startutlösare i inställningarna för att den ska bevattna.",
+          "headline-no-valve": "Inget kommer att vattnas",
+          "sub-no-valve": "Zonerna som saknar vatten har ingen ventil kopplad, så de vattnas inte. Koppla en ventil till var och en av dem.",
+          "headline-no-zones": "Ingen zon än",
+          "sub-no-zones": "Smart Irrigation vattnar zoner. Assistenten skapar den första tillsammans med dig."
         },
         "decision": {
           "title": "Kommer den att hoppas över?",
@@ -359,6 +364,9 @@
           "state-passing": "Blockerar inte",
           "state-blocking": "Blockerar",
           "detail-forecast": "Prognos",
+          "detail-expected": "Väntat (viktat efter sannolikhet)",
+          "detail-anyway-deficit": "Vattnar ändå: en zon som skulle vattnas saknar {deficit} mm, mer än dubbelt så mycket som det väntade regnet.",
+          "detail-anyway-skips": "Vattnar ändå: prognosen har redan hållit tillbaka körningen {days} dagar i rad.",
           "detail-threshold": "Gräns",
           "detail-days-since": "Dagar sedan förra körningen",
           "detail-days-required": "Dagar som krävs",
@@ -367,6 +375,7 @@
           "check-wind": "Vind",
           "check-soil_moisture": "Markfukt",
           "detail-now": "Nu",
+          "detail-tonight": "I natt (prognosens lägsta)",
           "detail-weather-service": "vädertjänst",
           "detail-raining": "Det regnar",
           "detail-dry": "Det regnar inte",
@@ -384,7 +393,8 @@
             "last-irrigation": "Senast vattnad"
           },
           "nothing": "inget",
-          "never-watered": "aldrig"
+          "never-watered": "aldrig",
+          "no-valve": "inget, ingen ventil kopplad"
         },
         "postpone": {
           "prompt": "Regn som prognosen missade, eller ett eget skäl?",
@@ -562,7 +572,8 @@
         "view-weather-info": "Visa väderdata",
         "view-weather-info-message": "Väderdata tillgänglig för",
         "view-watering-calendar": "Visa bevattningskalender",
-        "water": "Vattna"
+        "water": "Vattna",
+        "calculating": "Beräknar…"
       },
       "cards": {
         "add-zone": {
@@ -718,7 +729,17 @@
         "under-threshold": "Ännu inget att vattna: {short} saknas, under den här zonens gräns.",
         "manual": "Vattnar bara när du ber om det.",
         "disabled": "Avstängd: vattnas aldrig, och dess balans förs inte.",
-        "threshold": "gräns"
+        "threshold": "gräns",
+        "problem": {
+          "no_sensor_group": "Kan inte beräknas: den har ingen sensorgrupp. Välj en på det här kortet; den vattnas inte förrän dess.",
+          "no_readings": "Kan inte beräknas: dess sensorgrupp har inga mätvärden. Den vattnas inte förrän den har det.",
+          "no_engine": "Kan inte beräknas: den har ingen beräkningsmotor. Den vattnas inte förrän den har en.",
+          "nothing_from_engine": "Kan inte beräknas: dess sensorgrupp ger ingen evapotranspiration. Den vattnas inte förrän den gör det.",
+          "forecast_without_service": "Kan inte beräknas: dess beräkningsmotor tittar framåt, och ingen vädertjänst är inställd. Den vattnas inte.",
+          "error": "Kan inte beräknas: {detail}. Den vattnas inte förrän den kan beräknas."
+        },
+        "no-valve": "Ingen ventil kopplad, så den här zonen vattnas inte.",
+        "no-valve-action": "Koppla en ventil"
       },
       "calendar": {
         "title": "Vattningskalender (12 månader, uppskattad)",
@@ -735,6 +756,10 @@
         "question": "Vattna ”{name}” nu? Ventilen öppnas direkt, eller i tur och ordning om något redan vattnar. Vattnet räknas i balansen.",
         "minutes": "Minuter, tomt för planeringens {calculated}",
         "minutes-none": "Minuter (beräkningen har inget att vattna)"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone}: inga nya mätvärden sedan förra beräkningen, så inget har ändrats.",
+        "failed": "{zone}: beräkningen misslyckades ({error})."
       }
     },
     "history": {
@@ -1132,7 +1157,9 @@
     "step": "steg",
     "tour": "varv",
     "tours": "varv",
-    "remaining": "kvar"
+    "remaining": "kvar",
+    "no_valve": "Ingen ventil kopplad, så de vattnas inte:",
+    "nothing_no_valve": "Inget att vattna i den här körningen: zonerna som saknar vatten har ingen ventil kopplad:"
   },
   "programs": {
     "title": "Program",
@@ -1421,7 +1448,10 @@
       "show_next_start": "Visa nästa start",
       "compact": "Bara zoner som skulle bevattna",
       "show_programs": "Visa programmen (fullständig styrenhet)"
-    }
+    },
+    "no_valve": "ingen ventil kopplad, vattnas inte",
+    "no_trigger": "Ingen startutlösare",
+    "not_scheduled": "Väntar, men inte schemalagd"
   },
   "confirm": {
     "delete_zone": "Ta bort zonen \"{name}\"? Dess inställningar och vattenbalans går förlorade.",

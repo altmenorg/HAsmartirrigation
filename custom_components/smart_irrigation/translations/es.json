@@ -24,6 +24,12 @@
       },
       "live_bucket": {
         "name": "Depósito en vivo"
+      },
+      "last_run_volume": {
+        "name": "Volumen del último riego"
+      },
+      "next_irrigation": {
+        "name": "Próximo riego"
       }
     },
     "number": {
@@ -74,6 +80,12 @@
         "name": "Regando ahora"
       },
       "problem": {
+        "name": "Problema"
+      },
+      "any_zone_needs_water": {
+        "name": "Una zona necesita agua"
+      },
+      "any_problem": {
         "name": "Problema"
       }
     },
@@ -306,6 +318,30 @@
     "throughput_mismatch": {
       "title": "Zona {zone}: el caudal medido no coincide con el caudal configurado",
       "description": "En los últimos {samples} ciclos, el caudalímetro de la zona **{zone}** midió unos **{measured}** mientras que la zona está configurada para **{configured}**, un {percentage}% de desvío.\n\nCada duración de riego se deriva del caudal configurado, así que todas están desviadas más o menos lo mismo.\n\nSi la medición parece correcta, ajusta el caudal de la zona a ese valor. Si no, comprueba que el contador solo cuenta esta zona y que la presión de red es la que esperas. Smart Irrigation nunca cambia el valor por ti."
+    },
+    "zone_not_calculated_no_readings": {
+      "title": "La zona {zone} no se puede calcular: no hay lecturas meteorológicas",
+      "description": "La zona **{zone}** no se ha calculado: su grupo de sensores no tiene lecturas con las que calcular. Mientras no las tenga, el déficit de la zona no se mueve y no se riega.\n\nComprueba que el grupo de sensores tiene fuentes y que informan, actualiza los datos meteorológicos y luego calcula la zona. El aviso desaparece solo en el siguiente cálculo que salga bien."
+    },
+    "zone_not_calculated_no_engine": {
+      "title": "La zona {zone} no se puede calcular: no hay motor de cálculo",
+      "description": "La zona **{zone}** no tiene motor de cálculo, así que no se calcula ni se riega.\n\nElige cómo se calcula en su tarjeta de la pestaña Zonas. El aviso desaparece solo en el siguiente cálculo que salga bien."
+    },
+    "zone_not_calculated_nothing_from_engine": {
+      "title": "La zona {zone} no se puede calcular: no hay evapotranspiración",
+      "description": "La zona **{zone}** toma su evapotranspiración de un sensor o de un servicio meteorológico, y su grupo de sensores no tenía ninguna que dar. Mientras no la tenga, la zona no se riega.\n\nComprueba el sensor que proporciona la evapotranspiración, o el servicio meteorológico. El aviso desaparece solo en el siguiente cálculo que salga bien."
+    },
+    "zone_not_calculated_forecast_without_service": {
+      "title": "La zona {zone} no se puede calcular: una previsión sin servicio meteorológico",
+      "description": "El motor de cálculo de la zona **{zone}** mira varios días por delante, lo que necesita un servicio meteorológico, y no hay ninguno configurado. La zona no se riega hasta que se pueda calcular.\n\nConfigura un servicio meteorológico, o pon a 0 los días de previsión del motor. El aviso desaparece solo en el siguiente cálculo que salga bien."
+    },
+    "zone_not_calculated_error": {
+      "title": "La zona {zone} no se puede calcular: un error",
+      "description": "El cálculo de la zona **{zone}** ha fallado: {detail}\n\nLa zona no se riega hasta que se pueda calcular. Si sigue fallando, abre una incidencia con este mensaje y el archivo de diagnóstico. El aviso desaparece solo en el siguiente cálculo que salga bien."
+    },
+    "zone_not_calculated_no_sensor_group": {
+      "title": "La zona {zone} no se puede calcular: no hay grupo de sensores",
+      "description": "La zona **{zone}** no tiene grupo de sensores, así que no hay nada con lo que calcularla y no se riega.\n\nElige su grupo de sensores en su tarjeta de la pestaña Zonas y luego calcula la zona. El aviso desaparece solo en el siguiente cálculo que salga bien."
     }
   }
 }

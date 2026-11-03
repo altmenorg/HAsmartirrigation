@@ -317,7 +317,8 @@
             "start": "Começa",
             "duration": "Duração total",
             "zones": "Zonas que irrigam",
-            "trigger": "Acionador"
+            "trigger": "Acionador",
+            "no-valve": "Sem válvula vinculada, então não são irrigadas"
           },
           "no-start": "Ainda não foi possível determinar um horário de início.",
           "nothing-to-water": "Nada para irrigar: nenhuma zona atingiu seu limite de irrigação.",
@@ -340,7 +341,11 @@
           "headline-not-scheduled": "Há um ciclo em aberto, e nada está agendado para iniciá-lo",
           "sub-not-scheduled": "O horário acima é quando ele começaria. Neste momento nenhum acionador de início está armado, o que acontece quando o acionador ativo está desligado ou não foi registrado. Confira o acionador em Configurações; se estiver certo, um cálculo o rearma.",
           "headline-no-trigger": "Nenhum gatilho está ativo",
-          "sub-no-trigger": "O Smart Irrigation não inicia nenhuma irrigação. Escolha um gatilho de início nas configurações para que ele irrigue."
+          "sub-no-trigger": "O Smart Irrigation não inicia nenhuma irrigação. Escolha um gatilho de início nas configurações para que ele irrigue.",
+          "headline-no-valve": "Nada será irrigado",
+          "sub-no-valve": "As zonas com falta de água não têm nenhuma válvula vinculada, então não são irrigadas. Vincule uma a cada uma delas.",
+          "headline-no-zones": "Ainda não há zonas",
+          "sub-no-zones": "O Smart Irrigation irriga zonas. O assistente cria a primeira com você."
         },
         "decision": {
           "title": "Vai ser pulado?",
@@ -359,6 +364,9 @@
           "state-passing": "Não bloqueia",
           "state-blocking": "Bloqueando",
           "detail-forecast": "Previsão",
+          "detail-expected": "Esperada (ponderada pela probabilidade)",
+          "detail-anyway-deficit": "Irriga mesmo assim: faltam {deficit} mm a uma zona que seria irrigada, mais do que o dobro da chuva esperada.",
+          "detail-anyway-skips": "Irriga mesmo assim: a previsão já segurou o ciclo {days} dias seguidos.",
           "detail-threshold": "Limite",
           "detail-days-since": "Dias desde o último ciclo",
           "detail-days-required": "Dias necessários",
@@ -367,6 +375,7 @@
           "check-wind": "Vento",
           "check-soil_moisture": "Umidade do solo",
           "detail-now": "Agora",
+          "detail-tonight": "Esta noite (mínima prevista)",
           "detail-weather-service": "serviço de meteorologia",
           "detail-raining": "Está chovendo",
           "detail-dry": "Não está chovendo",
@@ -384,7 +393,8 @@
             "last-irrigation": "Última irrigação"
           },
           "nothing": "nada",
-          "never-watered": "nunca"
+          "never-watered": "nunca",
+          "no-valve": "nada, sem válvula vinculada"
         },
         "postpone": {
           "prompt": "Chuva que a previsão não pegou, ou um motivo seu?",
@@ -562,7 +572,8 @@
         "view-weather-info": "Ver dados meteorológicos",
         "view-weather-info-message": "Dados meteorológicos disponíveis para",
         "view-watering-calendar": "Ver calendário de irrigação",
-        "water": "Irrigar"
+        "water": "Irrigar",
+        "calculating": "Calculando…"
       },
       "cards": {
         "add-zone": {
@@ -718,7 +729,17 @@
         "under-threshold": "Ainda nada para irrigar: faltam {short}, abaixo do limite desta zona.",
         "manual": "Só irriga quando você pede.",
         "disabled": "Desativada: nunca é irrigada, e o balanço dela não é mantido.",
-        "threshold": "limite"
+        "threshold": "limite",
+        "problem": {
+          "no_sensor_group": "Não pode ser calculada: ela não tem grupo de sensores. Escolha um neste cartão; até lá ela não é irrigada.",
+          "no_readings": "Não pode ser calculada: o grupo de sensores dela não tem leituras. Ela não é irrigada enquanto não tiver.",
+          "no_engine": "Não pode ser calculada: ela não tem motor de cálculo. Ela não é irrigada enquanto não tiver um.",
+          "nothing_from_engine": "Não pode ser calculada: o grupo de sensores dela não fornece evapotranspiração. Ela não é irrigada enquanto não fornecer.",
+          "forecast_without_service": "Não pode ser calculada: o motor dela olha os próximos dias, e nenhum serviço meteorológico está configurado. Não é irrigada.",
+          "error": "Não pode ser calculada: {detail}. Ela não é irrigada enquanto não puder ser calculada."
+        },
+        "no-valve": "Sem válvula vinculada, então esta zona não é irrigada.",
+        "no-valve-action": "Vincular uma válvula"
       },
       "calendar": {
         "title": "Calendário de irrigação (12 meses, estimado)",
@@ -735,6 +756,10 @@
         "question": "Irrigar \"{name}\" agora? A válvula abre na hora, ou na sua vez se algo estiver irrigando. A água entra no balanço.",
         "minutes": "Minutos, vazio para os {calculated} do planejamento",
         "minutes-none": "Minutos (o cálculo não tem nada a irrigar)"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone}: nenhuma leitura nova desde o último cálculo, então nada mudou.",
+        "failed": "{zone}: o cálculo falhou ({error})."
       }
     },
     "history": {
@@ -1132,7 +1157,9 @@
     "step": "etapa",
     "tour": "rodada",
     "tours": "rodadas",
-    "remaining": "restante"
+    "remaining": "restante",
+    "no_valve": "Sem válvula vinculada, então não são irrigadas:",
+    "nothing_no_valve": "Nada para irrigar neste ciclo: as zonas com falta de água não têm válvula vinculada:"
   },
   "programs": {
     "title": "Programas",
@@ -1421,7 +1448,10 @@
       "show_next_start": "Mostrar o próximo início",
       "compact": "Somente as zonas que irrigariam",
       "show_programs": "Mostrar os programas (controlador completo)"
-    }
+    },
+    "no_valve": "sem válvula vinculada, não é irrigada",
+    "no_trigger": "Nenhum gatilho de início",
+    "not_scheduled": "Pendente, mas não agendada"
   },
   "confirm": {
     "delete_zone": "Excluir a zona \"{name}\"? As configurações e o balanço hídrico dela serão perdidos.",

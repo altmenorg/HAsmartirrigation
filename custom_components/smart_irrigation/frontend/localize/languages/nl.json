@@ -317,7 +317,8 @@
             "start": "Begint",
             "duration": "Totale duur",
             "zones": "Zones die bewateren",
-            "trigger": "Trigger"
+            "trigger": "Trigger",
+            "no-valve": "Geen ventiel gekoppeld, dus niet bewaterd"
           },
           "no-start": "Er kon nog geen starttijd bepaald worden.",
           "nothing-to-water": "Niets te bewateren: geen zone heeft haar irrigatiedrempel bereikt.",
@@ -340,7 +341,11 @@
           "headline-not-scheduled": "Er staat een ronde open, en niets is ingepland om die te starten",
           "sub-not-scheduled": "De tijd hierboven is wanneer de ronde zou beginnen. Er staat nu geen starttrigger klaar, wat gebeurt als de actieve trigger uit staat of niet geregistreerd is. Controleer de trigger onder Instellingen; als die goed lijkt, zet een berekening hem weer klaar.",
           "headline-no-trigger": "Geen trigger is actief",
-          "sub-no-trigger": "Smart Irrigation start geen bewatering. Kies een starttrigger in de instellingen om te laten bewateren."
+          "sub-no-trigger": "Smart Irrigation start geen bewatering. Kies een starttrigger in de instellingen om te laten bewateren.",
+          "headline-no-valve": "Er wordt niets bewaterd",
+          "sub-no-valve": "De zones die water tekortkomen hebben geen ventiel gekoppeld, dus worden ze niet bewaterd. Koppel er aan elk een.",
+          "headline-no-zones": "Nog geen zone",
+          "sub-no-zones": "Smart Irrigation bewatert zones. De assistent maakt de eerste samen met je aan."
         },
         "decision": {
           "title": "Wordt de ronde overgeslagen?",
@@ -359,6 +364,9 @@
           "state-passing": "Blokkeert niet",
           "state-blocking": "Blokkeert",
           "detail-forecast": "Verwachting",
+          "detail-expected": "Te verwachten (gewogen naar kans)",
+          "detail-anyway-deficit": "Gaat toch door: een zone die zou bewateren komt {deficit} mm tekort, meer dan het dubbele van de te verwachten regen.",
+          "detail-anyway-skips": "Gaat toch door: de verwachting heeft de ronde al {days} dagen op rij tegengehouden.",
           "detail-threshold": "Drempel",
           "detail-days-since": "Dagen sinds de laatste ronde",
           "detail-days-required": "Vereiste dagen",
@@ -367,6 +375,7 @@
           "check-wind": "Wind",
           "check-soil_moisture": "Bodemvochtigheid",
           "detail-now": "Nu",
+          "detail-tonight": "Vannacht (verwachte minimum)",
           "detail-weather-service": "weerdienst",
           "detail-raining": "Het regent",
           "detail-dry": "Het regent niet",
@@ -384,7 +393,8 @@
             "last-irrigation": "Laatst bewaterd"
           },
           "nothing": "niets",
-          "never-watered": "nooit"
+          "never-watered": "nooit",
+          "no-valve": "niets, geen ventiel gekoppeld"
         },
         "postpone": {
           "prompt": "Regen die de verwachting miste, of een eigen reden?",
@@ -562,7 +572,8 @@
         "view-weather-info": "Weergegevens bekijken",
         "view-weather-info-message": "Weergegevens beschikbaar voor",
         "view-watering-calendar": "Irrigatiekalender bekijken",
-        "water": "Bewateren"
+        "water": "Bewateren",
+        "calculating": "Berekenen…"
       },
       "cards": {
         "add-zone": {
@@ -718,7 +729,17 @@
         "under-threshold": "Nog niets te bewateren: {short} tekort, onder de drempel van deze zone.",
         "manual": "Bewatert alleen als je het vraagt.",
         "disabled": "Uitgeschakeld: wordt nooit bewaterd, en haar balans wordt niet bijgehouden.",
-        "threshold": "drempel"
+        "threshold": "drempel",
+        "problem": {
+          "no_sensor_group": "Kan niet berekend worden: ze heeft geen sensorgroep. Kies er een op deze kaart; tot dan wordt ze niet bewaterd.",
+          "no_readings": "Kan niet berekend worden: haar sensorgroep heeft geen metingen. Ze wordt niet bewaterd tot die er zijn.",
+          "no_engine": "Kan niet berekend worden: ze heeft geen berekeningsengine. Ze wordt niet bewaterd tot ze er een heeft.",
+          "nothing_from_engine": "Kan niet berekend worden: haar sensorgroep levert geen verdamping. Ze wordt niet bewaterd tot die dat wel doet.",
+          "forecast_without_service": "Kan niet berekend worden: haar engine kijkt vooruit, en er is geen weerdienst ingesteld. Niet bewaterd.",
+          "error": "Kan niet berekend worden: {detail}. Niet bewaterd tot het wel kan."
+        },
+        "no-valve": "Geen ventiel gekoppeld, dus deze zone wordt niet bewaterd.",
+        "no-valve-action": "Ventiel koppelen"
       },
       "calendar": {
         "title": "Bewateringskalender (12 maanden, schatting)",
@@ -735,6 +756,10 @@
         "question": "\"{name}\" nu bewateren? De klep gaat meteen open, of op zijn beurt als er al bewaterd wordt. Het water telt mee in de balans.",
         "minutes": "Minuten, leeg voor de {calculated} van de planning",
         "minutes-none": "Minuten (de berekening heeft niets te bewateren)"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone}: geen nieuwe metingen sinds de laatste berekening, dus er is niets veranderd.",
+        "failed": "{zone}: de berekening is mislukt ({error})."
       }
     },
     "history": {
@@ -1132,7 +1157,9 @@
     "step": "stap",
     "tour": "ronde",
     "tours": "rondes",
-    "remaining": "resterend"
+    "remaining": "resterend",
+    "no_valve": "Geen ventiel gekoppeld, dus niet bewaterd:",
+    "nothing_no_valve": "Niets te bewateren in deze ronde: de zones die water tekortkomen hebben geen ventiel gekoppeld:"
   },
   "programs": {
     "title": "Programma's",
@@ -1421,7 +1448,10 @@
       "show_next_start": "Volgende start tonen",
       "compact": "Alleen zones die zouden beregenen",
       "show_programs": "Programma's tonen (volledige controller)"
-    }
+    },
+    "no_valve": "geen ventiel gekoppeld, niet bewaterd",
+    "no_trigger": "Geen starttrigger",
+    "not_scheduled": "Nodig, maar niet ingepland"
   },
   "confirm": {
     "delete_zone": "De zone \"{name}\" verwijderen? De instellingen en de waterbalans gaan verloren.",

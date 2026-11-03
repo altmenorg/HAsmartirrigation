@@ -317,7 +317,8 @@
             "start": "Inizia",
             "duration": "Durata totale",
             "zones": "Zone che irrigano",
-            "trigger": "Trigger"
+            "trigger": "Trigger",
+            "no-valve": "Nessuna valvola collegata, quindi non irrigate"
           },
           "no-start": "Non è ancora stato possibile determinare un'ora di avvio.",
           "nothing-to-water": "Niente da irrigare: nessuna zona ha raggiunto la sua soglia di irrigazione.",
@@ -340,7 +341,11 @@
           "headline-not-scheduled": "C'è un ciclo dovuto, e non è pianificato niente che lo avvii",
           "sub-not-scheduled": "L'ora qui sopra è quando inizierebbe. In questo momento non c'è nessun trigger di avvio armato, cosa che succede quando il trigger attivo è disattivato o non è stato registrato. Controlla il trigger in Impostazioni; se sembra giusto, un calcolo lo riarma.",
           "headline-no-trigger": "Nessun trigger è attivo",
-          "sub-no-trigger": "Smart Irrigation non avvia alcuna irrigazione. Scegli un trigger di avvio nelle impostazioni perché irrighi."
+          "sub-no-trigger": "Smart Irrigation non avvia alcuna irrigazione. Scegli un trigger di avvio nelle impostazioni perché irrighi.",
+          "headline-no-valve": "Non verrà irrigato niente",
+          "sub-no-valve": "Le zone a cui manca acqua non hanno nessuna valvola collegata, quindi non vengono irrigate. Collegane una a ciascuna di esse.",
+          "headline-no-zones": "Ancora nessuna zona",
+          "sub-no-zones": "Smart Irrigation irriga delle zone. L'assistente crea la prima insieme a te."
         },
         "decision": {
           "title": "Verrà saltato?",
@@ -359,6 +364,9 @@
           "state-passing": "Non blocca",
           "state-blocking": "Blocca",
           "detail-forecast": "Previsione",
+          "detail-expected": "Attesa (ponderata per la probabilità)",
+          "detail-anyway-deficit": "Irriga comunque: a una zona da irrigare mancano {deficit} mm, più del doppio della pioggia attesa.",
+          "detail-anyway-skips": "Irriga comunque: la previsione ha già trattenuto il ciclo {days} giorni di fila.",
           "detail-threshold": "Soglia",
           "detail-days-since": "Giorni dall'ultimo ciclo",
           "detail-days-required": "Giorni richiesti",
@@ -367,6 +375,7 @@
           "check-wind": "Vento",
           "check-soil_moisture": "Umidità del terreno",
           "detail-now": "Adesso",
+          "detail-tonight": "Stanotte (minima prevista)",
           "detail-weather-service": "servizio meteo",
           "detail-raining": "Sta piovendo",
           "detail-dry": "Non piove",
@@ -384,7 +393,8 @@
             "last-irrigation": "Ultima irrigazione"
           },
           "nothing": "niente",
-          "never-watered": "mai"
+          "never-watered": "mai",
+          "no-valve": "niente, nessuna valvola collegata"
         },
         "postpone": {
           "prompt": "Pioggia che la previsione non ha visto, o un motivo tuo?",
@@ -562,7 +572,8 @@
         "view-weather-info": "Visualizza le informazioni meteo",
         "view-weather-info-message": "Informazioni meteo disponibili per",
         "view-watering-calendar": "Visualizza il calendario delle irrigazioni",
-        "water": "Irriga"
+        "water": "Irriga",
+        "calculating": "Calcolo in corso…"
       },
       "cards": {
         "add-zone": {
@@ -726,7 +737,9 @@
           "nothing_from_engine": "Impossibile calcolare: il relativo gruppo di sensori non fornisce dati sull'evapotraspirazione. Non verrà irrigato finché non lo farà.",
           "forecast_without_service": "Impossibile calcolarlo: il suo motore prevede le condizioni meteorologiche future e non è stato configurato alcun servizio meteorologico. Non è stato irrigato.",
           "error": "Impossibile calcolare: {detail}. Non verrà irrigato finché non sarà possibile farlo."
-        }
+        },
+        "no-valve": "Nessuna valvola collegata, quindi questa zona non viene irrigata.",
+        "no-valve-action": "Collega una valvola"
       },
       "calendar": {
         "title": "Calendario di irrigazione (12 mesi, stimato)",
@@ -743,6 +756,10 @@
         "question": "Irrigare \"{name}\" adesso? La valvola si apre subito, o al suo turno se si sta già irrigando. L'acqua viene contata nel suo bilancio.",
         "minutes": "Minuti, vuoto per i {calculated} della pianificazione",
         "minutes-none": "Minuti (il calcolo non prevede nulla da irrigare)"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone}: nessuna nuova lettura dall'ultimo calcolo, quindi non è cambiato niente.",
+        "failed": "{zone}: il calcolo non è riuscito ({error})."
       }
     },
     "history": {
@@ -1140,7 +1157,9 @@
     "step": "passo",
     "tour": "giro",
     "tours": "giri",
-    "remaining": "rimanente"
+    "remaining": "rimanente",
+    "no_valve": "Nessuna valvola collegata, quindi non irrigate:",
+    "nothing_no_valve": "Niente da irrigare in questo ciclo: le zone a cui manca acqua non hanno nessuna valvola collegata:"
   },
   "programs": {
     "title": "Programmi",
@@ -1429,7 +1448,10 @@
       "show_next_start": "Mostra il prossimo avvio",
       "compact": "Solo le zone che irrigherebbero",
       "show_programs": "Mostra i programmi (controller completo)"
-    }
+    },
+    "no_valve": "nessuna valvola collegata, non irrigata",
+    "no_trigger": "Nessun trigger di avvio",
+    "not_scheduled": "Dovuta, ma non pianificata"
   },
   "confirm": {
     "delete_zone": "Eliminare la zona «{name}»? Le sue impostazioni e il suo bilancio idrico vanno persi.",

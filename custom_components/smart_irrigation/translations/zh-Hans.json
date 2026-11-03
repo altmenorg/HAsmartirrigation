@@ -24,6 +24,12 @@
       },
       "live_bucket": {
         "name": "实时水量余额"
+      },
+      "last_run_volume": {
+        "name": "上次运行水量"
+      },
+      "next_irrigation": {
+        "name": "下次浇水"
       }
     },
     "number": {
@@ -74,6 +80,12 @@
         "name": "正在浇水"
       },
       "problem": {
+        "name": "问题"
+      },
+      "any_zone_needs_water": {
+        "name": "有区域需要浇水"
+      },
+      "any_problem": {
         "name": "问题"
       }
     },
@@ -306,6 +318,30 @@
     "throughput_mismatch": {
       "title": "区域 {zone}：实测流量与配置的流量不一致",
       "description": "在最近 {samples} 次浇水中，区域 **{zone}** 的流量计测得约 **{measured}**，而该区域配置为 **{configured}**，相差 {percentage}%。\n\n每个浇水时长都是由配置的流量推算出来的，所以它们全都偏了差不多同样的幅度。\n\n如果实测值看起来没错，就把区域的流量改成它。如果不对，请检查这个流量计是否只统计这一个区域，以及自来水压力是否符合预期。Smart Irrigation 绝不会替你改这个值。"
+    },
+    "zone_not_calculated_no_readings": {
+      "title": "区域 {zone} 无法计算：没有天气读数",
+      "description": "区域 **{zone}** 未被计算：其传感器组没有可用于计算的读数。在有读数之前，该区域的亏缺不会变化，也不会浇水。\n\n请检查传感器组是否有数据源且它们在上报，更新天气数据，然后计算该区域。下一次计算成功时，此通知会自行消失。"
+    },
+    "zone_not_calculated_no_engine": {
+      "title": "区域 {zone} 无法计算：没有计算引擎",
+      "description": "区域 **{zone}** 没有计算引擎，因此不会被计算，也不会浇水。\n\n请在“区域”选项卡中该区域的卡片上选择计算方式。下一次计算成功时，此通知会自行消失。"
+    },
+    "zone_not_calculated_nothing_from_engine": {
+      "title": "区域 {zone} 无法计算：没有蒸散量",
+      "description": "区域 **{zone}** 的蒸散量来自传感器或天气服务，而其传感器组没有提供。在提供之前，该区域不会浇水。\n\n请检查提供蒸散量的传感器或天气服务。下一次计算成功时，此通知会自行消失。"
+    },
+    "zone_not_calculated_forecast_without_service": {
+      "title": "区域 {zone} 无法计算：使用预报但没有天气服务",
+      "description": "区域 **{zone}** 的计算引擎会向前预看数天，这需要天气服务，但尚未设置。在能够计算之前，该区域不会浇水。\n\n请设置一个天气服务，或将引擎的预报天数设为 0。下一次计算成功时，此通知会自行消失。"
+    },
+    "zone_not_calculated_error": {
+      "title": "区域 {zone} 无法计算：出错",
+      "description": "区域 **{zone}** 的计算失败：{detail}\n\n在能够计算之前，该区域不会浇水。如果持续失败，请附上此消息和诊断文件提交一个 issue。下一次计算成功时，此通知会自行消失。"
+    },
+    "zone_not_calculated_no_sensor_group": {
+      "title": "区域 {zone} 无法计算：没有传感器组",
+      "description": "区域 **{zone}** 没有传感器组，因此无从计算，也不会浇水。\n\n请在“区域”选项卡中该区域的卡片上选择其传感器组，然后计算该区域。下一次计算成功时，此通知会自行消失。"
     }
   }
 }

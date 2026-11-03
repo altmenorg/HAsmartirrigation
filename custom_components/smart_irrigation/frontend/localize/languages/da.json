@@ -317,7 +317,8 @@
             "start": "Starter",
             "duration": "Samlet varighed",
             "zones": "Zoner der vander",
-            "trigger": "Udløser"
+            "trigger": "Udløser",
+            "no-valve": "Ingen ventil tilknyttet, så den vandes ikke"
           },
           "no-start": "Der kunne endnu ikke findes et starttidspunkt.",
           "nothing-to-water": "Intet at vande: ingen zone har nået sin vandingsgrænse.",
@@ -340,7 +341,11 @@
           "headline-not-scheduled": "Der mangler en vanding, og intet er planlagt til at starte den",
           "sub-not-scheduled": "Tidspunktet ovenfor er hvornår den ville begynde. Der er ingen startudløser klar lige nu, hvilket sker når den aktive udløser er slået fra eller ikke blev registreret. Tjek udløseren under Indstillinger, og hvis den ser rigtig ud, gør en beregning den klar igen.",
           "headline-no-trigger": "Ingen udløser er aktiv",
-          "sub-no-trigger": "Smart Irrigation starter ingen vanding. Vælg en startudløser i indstillingerne, så den vander."
+          "sub-no-trigger": "Smart Irrigation starter ingen vanding. Vælg en startudløser i indstillingerne, så den vander.",
+          "headline-no-valve": "Intet vil blive vandet",
+          "sub-no-valve": "Zonerne, der mangler vand, har ingen ventil tilknyttet, så de vandes ikke. Knyt en ventil til hver af dem.",
+          "headline-no-zones": "Ingen zone endnu",
+          "sub-no-zones": "Smart Irrigation vander zoner. Assistenten opretter den første sammen med dig."
         },
         "decision": {
           "title": "Bliver den sprunget over?",
@@ -359,6 +364,9 @@
           "state-passing": "Blokerer ikke",
           "state-blocking": "Blokerer",
           "detail-forecast": "Udsigt",
+          "detail-expected": "Forventet (vægtet efter sandsynlighed)",
+          "detail-anyway-deficit": "Vander alligevel: en zone, der ville vande, mangler {deficit} mm, mere end dobbelt så meget som den forventede regn.",
+          "detail-anyway-skips": "Vander alligevel: udsigten har allerede holdt vandingen tilbage {days} dage i træk.",
           "detail-threshold": "Grænse",
           "detail-days-since": "Dage siden sidste vanding",
           "detail-days-required": "Dage der kræves",
@@ -367,6 +375,7 @@
           "check-wind": "Vind",
           "check-soil_moisture": "Jordfugt",
           "detail-now": "Nu",
+          "detail-tonight": "I nat (laveste i udsigten)",
           "detail-weather-service": "vejrtjeneste",
           "detail-raining": "Det regner",
           "detail-dry": "Det regner ikke",
@@ -384,7 +393,8 @@
             "last-irrigation": "Sidst vandet"
           },
           "nothing": "intet",
-          "never-watered": "aldrig"
+          "never-watered": "aldrig",
+          "no-valve": "intet, ingen ventil tilknyttet"
         },
         "postpone": {
           "prompt": "Regn som udsigten ikke fangede, eller din egen grund?",
@@ -562,7 +572,8 @@
         "view-weather-info": "Se vejrdata",
         "view-weather-info-message": "Vejrdata tilgængelige for",
         "view-watering-calendar": "Se vandingskalender",
-        "water": "Vand"
+        "water": "Vand",
+        "calculating": "Beregner…"
       },
       "cards": {
         "add-zone": {
@@ -718,7 +729,17 @@
         "under-threshold": "Endnu intet at vande: der mangler {short}, under denne zones grænse.",
         "manual": "Vander kun når du beder om det.",
         "disabled": "Slået fra: vandes aldrig, og dens balance føres ikke.",
-        "threshold": "grænse"
+        "threshold": "grænse",
+        "problem": {
+          "no_sensor_group": "Kan ikke beregnes: den har ingen sensorgruppe. Vælg en på dette kort; den vandes ikke indtil da.",
+          "no_readings": "Kan ikke beregnes: dens sensorgruppe har ingen målinger. Den vandes ikke, før den har det.",
+          "no_engine": "Kan ikke beregnes: den har ingen beregningsmotor. Den vandes ikke, før den har en.",
+          "nothing_from_engine": "Kan ikke beregnes: dens sensorgruppe giver ingen evapotranspiration. Den vandes ikke, før den gør.",
+          "forecast_without_service": "Kan ikke beregnes: dens beregningsmotor ser fremad, og ingen vejrtjeneste er sat op. Den vandes ikke.",
+          "error": "Kan ikke beregnes: {detail}. Den vandes ikke, før den kan beregnes."
+        },
+        "no-valve": "Ingen ventil tilknyttet, så denne zone vandes ikke.",
+        "no-valve-action": "Tilknyt en ventil"
       },
       "calendar": {
         "title": "Vandingskalender (12 måneder, anslået)",
@@ -735,6 +756,10 @@
         "question": "Vand \"{name}\" nu? Ventilen åbner med det samme, eller når det er dens tur, hvis der allerede vandes. Vandet tælles i balancen.",
         "minutes": "Minutter, tomt for planlægningens {calculated}",
         "minutes-none": "Minutter (beregningen har intet at vande)"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone}: ingen nye målinger siden sidste beregning, så intet er ændret.",
+        "failed": "{zone}: beregningen mislykkedes ({error})."
       }
     },
     "history": {
@@ -1132,7 +1157,9 @@
     "step": "trin",
     "tour": "runde",
     "tours": "runder",
-    "remaining": "tilbage"
+    "remaining": "tilbage",
+    "no_valve": "Ingen ventil tilknyttet, så de vandes ikke:",
+    "nothing_no_valve": "Intet at vande i denne kørsel: zonerne, der mangler vand, har ingen ventil tilknyttet:"
   },
   "programs": {
     "title": "Programmer",
@@ -1421,7 +1448,10 @@
       "show_next_start": "Vis næste start",
       "compact": "Kun zoner, der ville vande",
       "show_programs": "Vis programmerne (fuld styring)"
-    }
+    },
+    "no_valve": "ingen ventil tilknyttet, vandes ikke",
+    "no_trigger": "Ingen startudløser",
+    "not_scheduled": "Skyldig, men ikke planlagt"
   },
   "confirm": {
     "delete_zone": "Slet zonen \"{name}\"? Dens indstillinger og vandbalance går tabt.",

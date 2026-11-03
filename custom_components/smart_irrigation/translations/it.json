@@ -24,6 +24,12 @@
       },
       "live_bucket": {
         "name": "Serbatoio in tempo reale"
+      },
+      "last_run_volume": {
+        "name": "Volume dell'ultima irrigazione"
+      },
+      "next_irrigation": {
+        "name": "Prossima irrigazione"
       }
     },
     "number": {
@@ -74,6 +80,12 @@
         "name": "In irrigazione"
       },
       "problem": {
+        "name": "Problema"
+      },
+      "any_zone_needs_water": {
+        "name": "Una zona ha bisogno d'acqua"
+      },
+      "any_problem": {
         "name": "Problema"
       }
     },

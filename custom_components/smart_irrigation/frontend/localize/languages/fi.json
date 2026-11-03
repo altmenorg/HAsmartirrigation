@@ -317,7 +317,8 @@
             "start": "Alkaa",
             "duration": "Kokonaiskesto",
             "zones": "Kastelevat alueet",
-            "trigger": "Liipaisin"
+            "trigger": "Liipaisin",
+            "no-valve": "Ei liitettyä venttiiliä, joten ei kastella"
           },
           "no-start": "Aloitusaikaa ei ole vielä voitu päätellä.",
           "nothing-to-water": "Ei kasteltavaa: yksikään alue ei ole saavuttanut kastelurajaansa.",
@@ -340,7 +341,11 @@
           "headline-not-scheduled": "Kastelu on jäänyt tekemättä, eikä mitään ole ajastettu aloittamaan sitä",
           "sub-not-scheduled": "Yllä oleva aika on se, jolloin kastelu alkaisi. Yksikään aloitusliipaisin ei ole juuri nyt viritetty, mikä tapahtuu kun aktiivinen liipaisin on pois päältä tai sitä ei rekisteröity. Tarkista liipaisin Asetuksista, ja jos se näyttää oikealta, laskenta virittää sen uudelleen.",
           "headline-no-trigger": "Mikään liipaisin ei ole käytössä",
-          "sub-no-trigger": "Smart Irrigation ei aloita kastelua. Valitse asetuksista aloitusliipaisin, jotta kastelu käynnistyy."
+          "sub-no-trigger": "Smart Irrigation ei aloita kastelua. Valitse asetuksista aloitusliipaisin, jotta kastelu käynnistyy.",
+          "headline-no-valve": "Mitään ei kastella",
+          "sub-no-valve": "Alueilla, joilta puuttuu vettä, ei ole liitettyä venttiiliä, joten niitä ei kastella. Liitä venttiili jokaiseen niistä.",
+          "headline-no-zones": "Ei vielä alueita",
+          "sub-no-zones": "Smart Irrigation kastelee alueita. Avustaja luo ensimmäisen kanssasi."
         },
         "decision": {
           "title": "Ohitetaanko se?",
@@ -359,6 +364,9 @@
           "state-passing": "Ei estä",
           "state-blocking": "Estää",
           "detail-forecast": "Ennuste",
+          "detail-expected": "Odotettavissa (painotettu todennäköisyydellä)",
+          "detail-anyway-deficit": "Kastellaan silti: alueelta, joka kastelisi, puuttuu {deficit} mm, yli kaksi kertaa odotettavissa oleva sade.",
+          "detail-anyway-skips": "Kastellaan silti: ennuste on jo pidätellyt kastelua {days} päivää peräkkäin.",
           "detail-threshold": "Raja",
           "detail-days-since": "Päiviä viime kastelusta",
           "detail-days-required": "Vaadittavat päivät",
@@ -367,6 +375,7 @@
           "check-wind": "Tuuli",
           "check-soil_moisture": "Maan kosteus",
           "detail-now": "Nyt",
+          "detail-tonight": "Tänä yönä (ennusteen alin)",
           "detail-weather-service": "sääpalvelu",
           "detail-raining": "Sataa",
           "detail-dry": "Ei sada",
@@ -384,7 +393,8 @@
             "last-irrigation": "Viimeksi kasteltu"
           },
           "nothing": "ei mitään",
-          "never-watered": "ei koskaan"
+          "never-watered": "ei koskaan",
+          "no-valve": "ei mitään, ei liitettyä venttiiliä"
         },
         "postpone": {
           "prompt": "Sade, jota ennuste ei nähnyt, vai oma syysi?",
@@ -562,7 +572,8 @@
         "view-weather-info": "Näytä säätiedot",
         "view-weather-info-message": "Säätietoja saatavilla:",
         "view-watering-calendar": "Näytä kastelukalenteri",
-        "water": "Kastele"
+        "water": "Kastele",
+        "calculating": "Lasketaan…"
       },
       "cards": {
         "add-zone": {
@@ -718,7 +729,17 @@
         "under-threshold": "Ei vielä kasteltavaa: {short} vajaa, tämän alueen rajan alle.",
         "manual": "Kastelee vain kun pyydät.",
         "disabled": "Pois päältä: ei kastella koskaan, eikä sen tasapainoa pidetä.",
-        "threshold": "raja"
+        "threshold": "raja",
+        "problem": {
+          "no_sensor_group": "Ei voida laskea: sillä ei ole anturiryhmää. Valitse se tältä kortilta; ei kastella siihen asti.",
+          "no_readings": "Ei voida laskea: sen anturiryhmällä ei ole lukemia. Ei kastella ennen kuin on.",
+          "no_engine": "Ei voida laskea: sillä ei ole laskentamoottoria. Ei kastella ennen kuin on.",
+          "nothing_from_engine": "Ei voida laskea: sen anturiryhmä ei anna haihduntaa. Ei kastella ennen kuin antaa.",
+          "forecast_without_service": "Ei voida laskea: sen laskentamoottori katsoo eteenpäin, eikä sääpalvelua ole määritetty. Ei kastella.",
+          "error": "Ei voida laskea: {detail}. Ei kastella ennen kuin laskenta onnistuu."
+        },
+        "no-valve": "Ei liitettyä venttiiliä, joten tätä aluetta ei kastella.",
+        "no-valve-action": "Liitä venttiili"
       },
       "calendar": {
         "title": "Kastelukalenteri (12 kuukautta, arvio)",
@@ -735,6 +756,10 @@
         "question": "Kastellaanko ”{name}” nyt? Venttiili aukeaa heti, tai vuorollaan jos jotain kastellaan. Vesi lasketaan taseeseen.",
         "minutes": "Minuutit, tyhjä = suunnitelman {calculated}",
         "minutes-none": "Minuutit (laskenta ei kastele mitään)"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone}: ei uusia lukemia edellisen laskennan jälkeen, joten mikään ei muuttunut.",
+        "failed": "{zone}: laskenta epäonnistui ({error})."
       }
     },
     "history": {
@@ -1132,7 +1157,9 @@
     "step": "vaihe",
     "tour": "kierros",
     "tours": "kierrosta",
-    "remaining": "jäljellä"
+    "remaining": "jäljellä",
+    "no_valve": "Ei liitettyä venttiiliä, joten ei kastella:",
+    "nothing_no_valve": "Ei kasteltavaa tässä ajossa: vyöhykkeillä, joilta puuttuu vettä, ei ole liitettyä venttiiliä:"
   },
   "programs": {
     "title": "Ohjelmat",
@@ -1421,7 +1448,10 @@
       "show_next_start": "Näytä seuraava käynnistys",
       "compact": "Vain vyöhykkeet, jotka kastelisivat",
       "show_programs": "Näytä ohjelmat (täysi ohjain)"
-    }
+    },
+    "no_valve": "ei liitettyä venttiiliä, ei kastella",
+    "no_trigger": "Ei aloitusliipaisinta",
+    "not_scheduled": "Erääntynyt, mutta ei ajastettu"
   },
   "confirm": {
     "delete_zone": "Poistetaanko vyöhyke \"{name}\"? Sen asetukset ja vesitase menetetään.",

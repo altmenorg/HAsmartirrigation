@@ -317,7 +317,8 @@
             "start": "Début",
             "duration": "Durée d'arrosage totale",
             "zones": "Zones arrosées",
-            "trigger": "Déclencheur"
+            "trigger": "Déclencheur",
+            "no-valve": "Aucune vanne liée, donc pas arrosées"
           },
           "no-start": "Aucune heure de départ n'a encore pu être établie.",
           "nothing-to-water": "Rien à arroser : aucune zone n'a atteint son seuil d'arrosage.",
@@ -340,7 +341,11 @@
           "headline-not-scheduled": "Un arrosage est dû, et rien n'est prévu pour le lancer",
           "sub-not-scheduled": "L'heure ci-dessus est celle à laquelle il démarrerait. Aucun déclencheur n'est armé en ce moment, ce qui arrive quand le déclencheur actif est désactivé ou n'a pas été enregistré. Vérifie-le dans Réglages ; s'il est correct, un calcul le réarme.",
           "headline-no-trigger": "Aucun déclencheur actif",
-          "sub-no-trigger": "Smart Irrigation ne lance aucun arrosage. Choisis un déclencheur de départ dans les réglages pour qu'il arrose."
+          "sub-no-trigger": "Smart Irrigation ne lance aucun arrosage. Choisis un déclencheur de départ dans les réglages pour qu'il arrose.",
+          "headline-no-valve": "Rien ne sera arrosé",
+          "sub-no-valve": "Les zones en déficit n'ont aucune vanne liée, elles ne sont donc pas arrosées. Lie une vanne à chacune d'elles.",
+          "headline-no-zones": "Pas encore de zone",
+          "sub-no-zones": "Smart Irrigation arrose des zones. L'assistant crée la première avec toi."
         },
         "decision": {
           "title": "L'arrosage sera-t-il annulé ?",
@@ -388,7 +393,8 @@
             "last-irrigation": "Dernier arrosage"
           },
           "nothing": "rien",
-          "never-watered": "jamais"
+          "never-watered": "jamais",
+          "no-valve": "rien, aucune vanne liée"
         },
         "postpone": {
           "prompt": "Une pluie que la prévision a ratée, ou une raison à toi ?",
@@ -566,7 +572,8 @@
         "view-weather-info": "Voir les données météo",
         "view-weather-info-message": "Données météo disponibles pour",
         "view-watering-calendar": "Voir le calendrier d'arrosage",
-        "water": "Arroser"
+        "water": "Arroser",
+        "calculating": "Calcul en cours…"
       },
       "cards": {
         "add-zone": {
@@ -722,7 +729,17 @@
         "under-threshold": "Rien à arroser pour l'instant : déficit de {short}, sous le seuil de cette zone.",
         "manual": "N'arrose que si tu le demandes.",
         "disabled": "Désactivée : jamais arrosée, et son bilan n'est pas suivi.",
-        "threshold": "seuil"
+        "threshold": "seuil",
+        "problem": {
+          "no_sensor_group": "Calcul impossible : elle n'a pas de groupe de capteurs. Choisis-en un sur cette carte ; pas d'arrosage d'ici là.",
+          "no_readings": "Calcul impossible : son groupe de capteurs n'a aucun relevé. Pas d'arrosage tant qu'il n'en a pas.",
+          "no_engine": "Calcul impossible : elle n'a pas de moteur de calcul. Pas d'arrosage tant qu'elle n'en a pas.",
+          "nothing_from_engine": "Calcul impossible : son groupe de capteurs ne donne aucune évapotranspiration. Pas d'arrosage tant qu'il n'en donne pas.",
+          "forecast_without_service": "Calcul impossible : son moteur regarde les jours à venir, et aucun service météo n'est configuré. Pas d'arrosage.",
+          "error": "Calcul impossible : {detail}. Pas d'arrosage tant que le calcul échoue."
+        },
+        "no-valve": "Aucune vanne liée : cette zone n'est donc pas arrosée.",
+        "no-valve-action": "Lier une vanne"
       },
       "calendar": {
         "title": "Calendrier d'arrosage (12 mois, estimé)",
@@ -739,6 +756,10 @@
         "question": "Arroser « {name} » maintenant ? Sa vanne s'ouvre tout de suite, ou à son tour si un arrosage est en cours. L'eau versée est comptée dans son bilan.",
         "minutes": "Minutes, vide pour les {calculated} du planning",
         "minutes-none": "Minutes (le calcul ne prévoit rien à arroser)"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone} : aucun nouveau relevé depuis le dernier calcul, rien n'a changé.",
+        "failed": "{zone} : le calcul a échoué ({error})."
       }
     },
     "history": {
@@ -1136,7 +1157,9 @@
     "step": "étape",
     "tour": "tour",
     "tours": "tours",
-    "remaining": "restant"
+    "remaining": "restant",
+    "no_valve": "Aucune vanne liée, donc pas arrosées :",
+    "nothing_no_valve": "Rien à arroser à ce départ : les zones en déficit n'ont aucune vanne liée :"
   },
   "programs": {
     "title": "Programmes",
@@ -1425,7 +1448,10 @@
       "show_next_start": "Afficher le prochain départ",
       "compact": "Seulement les zones qui arroseraient",
       "show_programs": "Afficher les programmes (contrôleur complet)"
-    }
+    },
+    "no_valve": "aucune vanne liée, pas arrosée",
+    "no_trigger": "Aucun déclencheur de départ",
+    "not_scheduled": "À arroser, mais aucun départ programmé"
   },
   "confirm": {
     "delete_zone": "Supprimer la zone « {name} » ? Ses réglages et son bilan hydrique sont perdus.",

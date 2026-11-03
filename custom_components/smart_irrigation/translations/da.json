@@ -24,6 +24,12 @@
       },
       "live_bucket": {
         "name": "Beholdning lige nu"
+      },
+      "last_run_volume": {
+        "name": "Mængde ved seneste kørsel"
+      },
+      "next_irrigation": {
+        "name": "Næste vanding"
       }
     },
     "number": {
@@ -74,6 +80,12 @@
         "name": "Vander nu"
       },
       "problem": {
+        "name": "Problem"
+      },
+      "any_zone_needs_water": {
+        "name": "En zone mangler vand"
+      },
+      "any_problem": {
         "name": "Problem"
       }
     },
@@ -306,6 +318,30 @@
     "throughput_mismatch": {
       "title": "Zone {zone}: den målte vandmængde passer ikke til den indstillede",
       "description": "Over de seneste {samples} vandinger målte flowmåleren på zone **{zone}** omkring **{measured}**, hvor zonen er sat til **{configured}**, altså {percentage}% ved siden af.\n\nHver vandingstid udledes af den indstillede vandmængde, så de er alle forkerte med omtrent det samme.\n\nHvis målingen ser rigtig ud, så sæt zonens vandmængde til den. Hvis den ikke gør, så tjek at måleren kun tæller denne zone, og at trykket i ledningen er som forventet. Smart Irrigation ændrer aldrig værdien for dig."
+    },
+    "zone_not_calculated_no_readings": {
+      "title": "Zone {zone} kan ikke beregnes: ingen vejrmålinger",
+      "description": "Zone **{zone}** blev ikke beregnet: dens sensorgruppe har ingen målinger at beregne ud fra. Indtil den har det, flytter zonens underskud sig ikke, og den vandes ikke.\n\nTjek, at sensorgruppen har kilder, og at de rapporterer, opdatér vejrdataene, og beregn så zonen. Meddelelsen forsvinder af sig selv ved næste vellykkede beregning."
+    },
+    "zone_not_calculated_no_engine": {
+      "title": "Zone {zone} kan ikke beregnes: ingen beregningsmotor",
+      "description": "Zone **{zone}** har ingen beregningsmotor, så den beregnes ikke og vandes ikke.\n\nVælg, hvordan den beregnes, på dens kort under fanen Zoner. Meddelelsen forsvinder af sig selv ved næste vellykkede beregning."
+    },
+    "zone_not_calculated_nothing_from_engine": {
+      "title": "Zone {zone} kan ikke beregnes: ingen evapotranspiration",
+      "description": "Zone **{zone}** får sin evapotranspiration fra en sensor eller en vejrtjeneste, og dens sensorgruppe havde ingen at give. Indtil den har det, vandes zonen ikke.\n\nTjek sensoren, der leverer evapotranspirationen, eller vejrtjenesten. Meddelelsen forsvinder af sig selv ved næste vellykkede beregning."
+    },
+    "zone_not_calculated_forecast_without_service": {
+      "title": "Zone {zone} kan ikke beregnes: en udsigt uden vejrtjeneste",
+      "description": "Beregningsmotoren for zone **{zone}** ser dage frem, hvilket kræver en vejrtjeneste, og ingen er sat op. Zonen vandes ikke, før den kan beregnes.\n\nSæt en vejrtjeneste op, eller sæt motorens udsigtsdage til 0. Meddelelsen forsvinder af sig selv ved næste vellykkede beregning."
+    },
+    "zone_not_calculated_error": {
+      "title": "Zone {zone} kan ikke beregnes: en fejl",
+      "description": "Beregningen af zone **{zone}** mislykkedes: {detail}\n\nZonen vandes ikke, før den kan beregnes. Hvis det bliver ved med at fejle, så opret et issue med denne meddelelse og diagnosticeringsfilen. Meddelelsen forsvinder af sig selv ved næste vellykkede beregning."
+    },
+    "zone_not_calculated_no_sensor_group": {
+      "title": "Zone {zone} kan ikke beregnes: ingen sensorgruppe",
+      "description": "Zone **{zone}** har ingen sensorgruppe, så der er intet at beregne den ud fra, og den vandes ikke.\n\nVælg dens sensorgruppe på dens kort under fanen Zoner, og beregn så zonen. Meddelelsen forsvinder af sig selv ved næste vellykkede beregning."
     }
   }
 }

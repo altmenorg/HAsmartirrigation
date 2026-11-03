@@ -317,7 +317,8 @@
             "start": "Kezdés",
             "duration": "Teljes időtartam",
             "zones": "Öntöző zónák",
-            "trigger": "Kiváltó"
+            "trigger": "Kiváltó",
+            "no-valve": "Nincs csatolt szelep, így nem öntöz"
           },
           "no-start": "Kezdési időt még nem lehetett meghatározni.",
           "nothing-to-water": "Nincs mit öntözni: egyetlen zóna sem érte el az öntözési küszöbét.",
@@ -340,7 +341,11 @@
           "headline-not-scheduled": "Egy öntözés esedékes, és semmi nincs beütemezve, ami elindítaná",
           "sub-not-scheduled": "A fenti idő az, amikor elkezdődne. Épp most egyetlen indítási esemény sincs élesítve, ami akkor fordul elő, ha az aktív kiváltó ki van kapcsolva vagy nem lett regisztrálva. Ellenőrizd a kiváltót a Beállításokban, és ha jónak tűnik, egy számítás újra élesíti.",
           "headline-no-trigger": "Egyetlen kiváltó sem aktív",
-          "sub-no-trigger": "A Smart Irrigation nem indít öntözést. Válassz indítási kiváltót a beállításokban, hogy öntözzön."
+          "sub-no-trigger": "A Smart Irrigation nem indít öntözést. Válassz indítási kiváltót a beállításokban, hogy öntözzön.",
+          "headline-no-valve": "Semmi nem lesz öntözve",
+          "sub-no-valve": "A vízhiányos zónákhoz nincs szelep csatolva, így nem öntöznek. Csatolj egyet mindegyikhez.",
+          "headline-no-zones": "Még nincs zóna",
+          "sub-no-zones": "A Smart Irrigation zónákat öntöz. A segéd veled együtt beállítja az elsőt."
         },
         "decision": {
           "title": "Ki lesz hagyva?",
@@ -359,6 +364,9 @@
           "state-passing": "Nem blokkol",
           "state-blocking": "Blokkol",
           "detail-forecast": "Előrejelzés",
+          "detail-expected": "Várható (valószínűséggel súlyozva)",
+          "detail-anyway-deficit": "Mégis öntöz: egy öntözendő zónából {deficit} mm hiányzik, több mint kétszerese a várható esőnek.",
+          "detail-anyway-skips": "Mégis öntöz: az előrejelzés már {days} napja egymás után visszatartotta az öntözést.",
           "detail-threshold": "Küszöb",
           "detail-days-since": "Napok az utolsó öntözés óta",
           "detail-days-required": "Szükséges napok",
@@ -367,6 +375,7 @@
           "check-wind": "Szél",
           "check-soil_moisture": "Talajnedvesség",
           "detail-now": "Most",
+          "detail-tonight": "Ma éjjel (előrejelzett minimum)",
           "detail-weather-service": "időjárás-szolgáltatás",
           "detail-raining": "Esik",
           "detail-dry": "Nem esik",
@@ -384,7 +393,8 @@
             "last-irrigation": "Utoljára öntözve"
           },
           "nothing": "semmit",
-          "never-watered": "soha"
+          "never-watered": "soha",
+          "no-valve": "semmit, nincs csatolt szelep"
         },
         "postpone": {
           "prompt": "Eső, amit az előrejelzés nem vett észre, vagy saját ok?",
@@ -562,7 +572,8 @@
         "view-weather-info": "Időjárási adatok megtekintése",
         "view-weather-info-message": "Időjárási adatok elérhetők ehhez",
         "view-watering-calendar": "Öntözési naptár megtekintése",
-        "water": "Öntözés"
+        "water": "Öntözés",
+        "calculating": "Számítás…"
       },
       "cards": {
         "add-zone": {
@@ -718,7 +729,17 @@
         "under-threshold": "Még nincs mit öntözni: {short} hiányzik, a zóna küszöbe alatt.",
         "manual": "Csak akkor öntöz, ha kéred.",
         "disabled": "Kikapcsolva: soha nem kap vizet, és a mérlege nincs vezetve.",
-        "threshold": "küszöb"
+        "threshold": "küszöb",
+        "problem": {
+          "no_sensor_group": "Nem számítható: nincs érzékelőcsoportja. Válassz egyet ezen a kártyán; addig nem öntöz.",
+          "no_readings": "Nem számítható: az érzékelőcsoportjának nincsenek mérései. Addig nem öntöz.",
+          "no_engine": "Nem számítható: nincs számítási motorja. Addig nem öntöz, amíg nem lesz.",
+          "nothing_from_engine": "Nem számítható: az érzékelőcsoportja nem ad evapotranszpirációt. Addig nem öntöz.",
+          "forecast_without_service": "Nem számítható: a motorja előre tekint, és nincs beállított időjárás-szolgáltatás. Nem öntöz.",
+          "error": "Nem számítható: {detail}. Addig nem öntöz, amíg nem számítható."
+        },
+        "no-valve": "Nincs csatolt szelep, így ez a zóna nem öntöz.",
+        "no-valve-action": "Szelep csatolása"
       },
       "calendar": {
         "title": "Öntözési naptár (12 hónap, becslés)",
@@ -735,6 +756,10 @@
         "question": "Öntözzük most: „{name}”? A szelep azonnal nyit, vagy sorra kerül, ha éppen öntözés folyik. A víz beszámít a mérlegbe.",
         "minutes": "Perc, üresen a tervezés {calculated} ideje",
         "minutes-none": "Perc (a számítás szerint nincs mit öntözni)"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone}: nincs új mérés a legutóbbi számítás óta, így semmi sem változott.",
+        "failed": "{zone}: a számítás nem sikerült ({error})."
       }
     },
     "history": {
@@ -1132,7 +1157,9 @@
     "step": "lépés",
     "tour": "kör",
     "tours": "kör",
-    "remaining": "van hátra"
+    "remaining": "van hátra",
+    "no_valve": "Nincs csatolt szelep, így nem öntöz:",
+    "nothing_no_valve": "Ebben a futásban nincs mit öntözni: a vízhiányos zónákhoz nincs szelep csatolva:"
   },
   "programs": {
     "title": "Programok",
@@ -1421,7 +1448,10 @@
       "show_next_start": "Következő indítás mutatása",
       "compact": "Csak az öntöző zónák",
       "show_programs": "A programok megjelenítése (teljes vezérlő)"
-    }
+    },
+    "no_valve": "nincs csatolt szelep, nem öntöz",
+    "no_trigger": "Nincs indítási kiváltó",
+    "not_scheduled": "Esedékes, de nincs beütemezve"
   },
   "confirm": {
     "delete_zone": "Törlöd a(z) „{name}” zónát? A beállításai és a vízmérlege elvesznek.",

@@ -317,7 +317,8 @@
             "start": "Zaczyna",
             "duration": "Czas całkowity",
             "zones": "Strefy, które podlewają",
-            "trigger": "Wyzwalacz"
+            "trigger": "Wyzwalacz",
+            "no-valve": "Brak powiązanego zaworu, więc nie jest podlewana"
           },
           "no-start": "Nie udało się jeszcze ustalić godziny startu.",
           "nothing-to-water": "Nie ma czego podlewać: żadna strefa nie osiągnęła swojego progu nawadniania.",
@@ -340,7 +341,11 @@
           "headline-not-scheduled": "Nawadnianie jest należne, a nic nie jest zaplanowane, by je uruchomić",
           "sub-not-scheduled": "Godzina powyżej to moment, w którym nawadnianie by się zaczęło. Żaden wyzwalacz startu nie jest teraz uzbrojony, co zdarza się, gdy aktywny wyzwalacz jest wyłączony albo nie został zarejestrowany. Sprawdź wyzwalacz w Ustawieniach, a jeśli wygląda poprawnie, obliczenie uzbroi go ponownie.",
           "headline-no-trigger": "Żaden wyzwalacz nie jest aktywny",
-          "sub-no-trigger": "Smart Irrigation nie uruchamia podlewania. Wybierz wyzwalacz startu w ustawieniach, aby podlewanie się odbywało."
+          "sub-no-trigger": "Smart Irrigation nie uruchamia podlewania. Wybierz wyzwalacz startu w ustawieniach, aby podlewanie się odbywało.",
+          "headline-no-valve": "Nic nie zostanie podlane",
+          "sub-no-valve": "Strefy, którym brakuje wody, nie mają powiązanego zaworu, więc nie są podlewane. Powiąż zawór z każdą z nich.",
+          "headline-no-zones": "Brak stref",
+          "sub-no-zones": "Smart Irrigation podlewa strefy. Asystent utworzy z tobą pierwszą."
         },
         "decision": {
           "title": "Czy zostanie pominięte?",
@@ -359,6 +364,9 @@
           "state-passing": "Nie blokuje",
           "state-blocking": "Blokuje",
           "detail-forecast": "Prognoza",
+          "detail-expected": "Oczekiwane (ważone prawdopodobieństwem)",
+          "detail-anyway-deficit": "Mimo to podlewa: strefie, która by podlewała, brakuje {deficit} mm, ponad dwa razy więcej niż oczekiwanego deszczu.",
+          "detail-anyway-skips": "Mimo to podlewa: prognoza wstrzymywała już nawadnianie {days} dni z rzędu.",
           "detail-threshold": "Próg",
           "detail-days-since": "Dni od ostatniego nawadniania",
           "detail-days-required": "Wymagane dni",
@@ -367,6 +375,7 @@
           "check-wind": "Wiatr",
           "check-soil_moisture": "Wilgotność gleby",
           "detail-now": "Teraz",
+          "detail-tonight": "Tej nocy (minimum z prognozy)",
           "detail-weather-service": "serwis pogodowy",
           "detail-raining": "Pada",
           "detail-dry": "Nie pada",
@@ -384,7 +393,8 @@
             "last-irrigation": "Ostatnio podlewane"
           },
           "nothing": "nic",
-          "never-watered": "nigdy"
+          "never-watered": "nigdy",
+          "no-valve": "nic, brak powiązanego zaworu"
         },
         "postpone": {
           "prompt": "Deszcz, którego prognoza nie zauważyła, czy własny powód?",
@@ -562,7 +572,8 @@
         "view-weather-info": "Wyświetl dane pogodowe",
         "view-weather-info-message": "Dane pogodowe dostępne dla",
         "view-watering-calendar": "Wyświetl kalendarz podlewania",
-        "water": "Podlej"
+        "water": "Podlej",
+        "calculating": "Obliczanie…"
       },
       "cards": {
         "add-zone": {
@@ -718,7 +729,17 @@
         "under-threshold": "Jeszcze nie ma czego podlewać: brakuje {short}, poniżej progu tej strefy.",
         "manual": "Podlewa tylko wtedy, gdy o to poprosisz.",
         "disabled": "Wyłączona: nigdy nie jest podlewana, a jej bilans nie jest prowadzony.",
-        "threshold": "próg"
+        "threshold": "próg",
+        "problem": {
+          "no_sensor_group": "Nie da się obliczyć: nie ma grupy czujników. Wybierz ją na tej karcie; do tego czasu nie jest podlewana.",
+          "no_readings": "Nie da się obliczyć: jej grupa czujników nie ma odczytów. Nie jest podlewana, dopóki ich nie będzie.",
+          "no_engine": "Nie da się obliczyć: nie ma silnika obliczeniowego. Nie jest podlewana, dopóki go nie dostanie.",
+          "nothing_from_engine": "Nie da się obliczyć: jej grupa czujników nie podaje ewapotranspiracji. Nie jest podlewana, dopóki jej nie poda.",
+          "forecast_without_service": "Nie da się obliczyć: jej silnik obliczeniowy patrzy naprzód, a żaden serwis pogodowy nie jest skonfigurowany. Nie jest podlewana.",
+          "error": "Nie da się obliczyć: {detail}. Nie jest podlewana, dopóki nie da się jej obliczyć."
+        },
+        "no-valve": "Brak powiązanego zaworu, więc ta strefa nie jest podlewana.",
+        "no-valve-action": "Powiąż zawór"
       },
       "calendar": {
         "title": "Kalendarz podlewania (12 miesięcy, szacunek)",
@@ -735,6 +756,10 @@
         "question": "Podlać „{name}” teraz? Zawór otworzy się od razu albo w swojej kolejce, jeśli coś już podlewa. Woda liczy się do bilansu.",
         "minutes": "Minuty, puste dla {calculated} z planu",
         "minutes-none": "Minuty (obliczenie nie przewiduje podlewania)"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone}: brak nowych odczytów od ostatniego obliczenia, więc nic się nie zmieniło.",
+        "failed": "{zone}: obliczenie nie powiodło się ({error})."
       }
     },
     "history": {
@@ -1132,7 +1157,9 @@
     "step": "krok",
     "tour": "runda",
     "tours": "rundy",
-    "remaining": "pozostało"
+    "remaining": "pozostało",
+    "no_valve": "Brak powiązanego zaworu, więc nie są podlewane:",
+    "nothing_no_valve": "Nie ma czego podlewać w tym uruchomieniu: strefy, którym brakuje wody, nie mają powiązanego zaworu:"
   },
   "programs": {
     "title": "Programy",
@@ -1421,7 +1448,10 @@
       "show_next_start": "Pokaż następny start",
       "compact": "Tylko strefy, które by podlewały",
       "show_programs": "Pokaż programy (pełny kontroler)"
-    }
+    },
+    "no_valve": "brak powiązanego zaworu, nie jest podlewana",
+    "no_trigger": "Brak wyzwalacza startu",
+    "not_scheduled": "Należne, ale niezaplanowane"
   },
   "confirm": {
     "delete_zone": "Usunąć strefę „{name}”? Jej ustawienia i bilans wodny zostaną utracone.",

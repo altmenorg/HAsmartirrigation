@@ -24,6 +24,12 @@
       },
       "live_bucket": {
         "name": "Zapas na bieżąco"
+      },
+      "last_run_volume": {
+        "name": "Objętość ostatniego uruchomienia"
+      },
+      "next_irrigation": {
+        "name": "Następne nawadnianie"
       }
     },
     "number": {
@@ -74,6 +80,12 @@
         "name": "Właśnie podlewa"
       },
       "problem": {
+        "name": "Problem"
+      },
+      "any_zone_needs_water": {
+        "name": "Strefa potrzebuje wody"
+      },
+      "any_problem": {
         "name": "Problem"
       }
     },
@@ -306,6 +318,30 @@
     "throughput_mismatch": {
       "title": "Strefa {zone}: zmierzony przepływ nie zgadza się z ustawionym",
       "description": "Przez ostatnie {samples} nawadniania przepływomierz strefy **{zone}** zmierzył około **{measured}**, gdy strefa jest ustawiona na **{configured}**, czyli {percentage}% obok.\n\nKażdy czas nawadniania wyprowadzany jest z ustawionego przepływu, więc wszystkie są przesunięte o tyle samo.\n\nJeśli pomiar wygląda poprawnie, ustaw przepływ strefy na tę wartość. Jeśli nie, sprawdź, czy licznik liczy tylko tę strefę i czy ciśnienie w instalacji jest takie, jakiego się spodziewasz. Smart Irrigation nigdy nie zmienia tej wartości za ciebie."
+    },
+    "zone_not_calculated_no_readings": {
+      "title": "Strefy {zone} nie da się obliczyć: brak odczytów pogodowych",
+      "description": "Strefa **{zone}** nie została obliczona: jej grupa czujników nie ma odczytów, z których można liczyć. Dopóki ich nie ma, deficyt strefy się nie zmienia i strefa nie jest podlewana.\n\nSprawdź, czy grupa czujników ma źródła i czy one raportują, zaktualizuj dane pogodowe, a następnie oblicz strefę. Powiadomienie zniknie samo przy następnym udanym obliczeniu."
+    },
+    "zone_not_calculated_no_engine": {
+      "title": "Strefy {zone} nie da się obliczyć: brak silnika obliczeniowego",
+      "description": "Strefa **{zone}** nie ma silnika obliczeniowego, więc nie jest obliczana ani podlewana.\n\nWybierz sposób obliczania na jej karcie w zakładce Strefy. Powiadomienie zniknie samo przy następnym udanym obliczeniu."
+    },
+    "zone_not_calculated_nothing_from_engine": {
+      "title": "Strefy {zone} nie da się obliczyć: brak ewapotranspiracji",
+      "description": "Strefa **{zone}** pobiera ewapotranspirację z czujnika lub serwisu pogodowego, a jej grupa czujników nie miała jej do przekazania. Dopóki jej nie ma, strefa nie jest podlewana.\n\nSprawdź czujnik, który dostarcza ewapotranspirację, lub serwis pogodowy. Powiadomienie zniknie samo przy następnym udanym obliczeniu."
+    },
+    "zone_not_calculated_forecast_without_service": {
+      "title": "Strefy {zone} nie da się obliczyć: prognoza bez serwisu pogodowego",
+      "description": "Silnik obliczeniowy strefy **{zone}** patrzy kilka dni naprzód, co wymaga serwisu pogodowego, a żaden nie jest skonfigurowany. Strefa nie jest podlewana, dopóki nie da się jej obliczyć.\n\nSkonfiguruj serwis pogodowy albo ustaw dni prognozy silnika na 0. Powiadomienie zniknie samo przy następnym udanym obliczeniu."
+    },
+    "zone_not_calculated_error": {
+      "title": "Strefy {zone} nie da się obliczyć: błąd",
+      "description": "Obliczenie strefy **{zone}** nie powiodło się: {detail}\n\nStrefa nie jest podlewana, dopóki nie da się jej obliczyć. Jeśli błąd się powtarza, zgłoś issue z tym komunikatem i plikiem diagnostyki. Powiadomienie zniknie samo przy następnym udanym obliczeniu."
+    },
+    "zone_not_calculated_no_sensor_group": {
+      "title": "Strefy {zone} nie da się obliczyć: brak grupy czujników",
+      "description": "Strefa **{zone}** nie ma grupy czujników, więc nie ma z czego jej obliczyć i nie jest podlewana.\n\nWybierz jej grupę czujników na jej karcie w zakładce Strefy, a następnie oblicz strefę. Powiadomienie zniknie samo przy następnym udanym obliczeniu."
     }
   }
 }
