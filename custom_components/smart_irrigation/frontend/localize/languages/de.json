@@ -1476,7 +1476,8 @@
         "paused": "pausiert",
         "suspended": "ausgesetzt",
         "disabled": "deaktiviert"
-      }
+      },
+      "main_name": "Hauptprogramm"
     },
     "editor": {
       "title": "Titel",
