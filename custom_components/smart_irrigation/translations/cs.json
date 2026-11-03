@@ -92,6 +92,9 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Vynechat při srážkách"
+      },
+      "irrigation_enabled": {
+        "name": "Aktivní"
       }
     },
     "datetime": {

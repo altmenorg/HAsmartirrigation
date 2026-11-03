@@ -92,6 +92,9 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Bei Niederschlag überspringen"
+      },
+      "irrigation_enabled": {
+        "name": "Aktiv"
       }
     },
     "datetime": {

@@ -92,6 +92,9 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Пропускати за опадів"
+      },
+      "irrigation_enabled": {
+        "name": "Активно"
       }
     },
     "datetime": {

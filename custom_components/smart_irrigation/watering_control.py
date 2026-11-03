@@ -30,6 +30,7 @@ from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 
 from . import const
+from .master_switch import irrigation_off
 from .programs import find_program
 
 _LOGGER = logging.getLogger(__name__)
@@ -467,6 +468,11 @@ class WateringControlMixin:
             or getattr(config, const.CONF_DIRECT_VALVE_CONTROL_ENABLED, False)
             is not True
         ):
+            return False
+        if irrigation_off(config):
+            _LOGGER.info(
+                "Smart Irrigation is switched off: zone %s is not watered", zone_id
+            )
             return False
         if mode == const.RUN_MODE_REPLACE:
             await self.async_stop_watering()

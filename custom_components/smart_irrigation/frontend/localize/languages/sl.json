@@ -281,6 +281,13 @@
         "iu-import": {
           "description": "Prehajaš z Irrigation Unlimited? Prenesi sem njegove cone, zaporedja in urnike, najprej s predogledom vsega.",
           "open": "Uvozi"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "Računaj in zalivaj",
+          "description": "Ko je izklopljen, Smart Irrigation še naprej zbira vremenske podatke in obdrži svoje senzorje, vendar ne računa ničesar, pusti vodno bilanco vsake cone nespremenjeno, ne odpre nobenega ventila in ne zažene nobenega programa. Ko ga znova vklopiš, se čas, ko je bil izklopljen, ne šteje.",
+          "off-note": "Izklopljeno: nič se ne računa in nič se ne zaliva. Vremenski podatki se še naprej zbirajo, čas izklopa pa se ne bo štel, ko ga znova vklopiš.",
+          "confirm-off": "Izklopim Smart Irrigation? Zalivanje, ki poteka, se takoj ustavi, in nič se ne računa ali zaliva, dokler ga znova ne vklopiš."
         }
       },
       "description": "Ta stran vsebuje splošne nastavitve.",
@@ -345,7 +352,10 @@
           "headline-no-valve": "Nič ne bo zalito",
           "sub-no-valve": "Cone, ki jim primanjkuje vode, nimajo povezanega ventila, zato se ne zalivajo. Vsaki poveži enega.",
           "headline-no-zones": "Še ni nobene cone",
-          "sub-no-zones": "Smart Irrigation zaliva cone. Pomočnik s tabo nastavi prvo."
+          "sub-no-zones": "Smart Irrigation zaliva cone. Pomočnik s tabo nastavi prvo.",
+          "headline-off": "Smart Irrigation je izklopljen",
+          "sub-off": "Še naprej zbira vremenske podatke, vendar ne računa in ne zaliva ničesar, dokler ga znova ne vklopiš.",
+          "open-settings": "Odpri nastavitve"
         },
         "decision": {
           "title": "Bo preskočeno?",
@@ -1451,7 +1461,8 @@
     },
     "no_valve": "ni povezanega ventila, se ne zaliva",
     "no_trigger": "Ni sprožilca zagona",
-    "not_scheduled": "Potrebno, a ni načrtovano"
+    "not_scheduled": "Potrebno, a ni načrtovano",
+    "off": "Izklopljeno"
   },
   "confirm": {
     "delete_zone": "Izbrišem cono »{name}«? Njene nastavitve in vodna bilanca se izgubijo.",

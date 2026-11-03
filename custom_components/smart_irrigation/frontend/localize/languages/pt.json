@@ -281,6 +281,13 @@
         "iu-import": {
           "description": "Vem do Irrigation Unlimited? Traga para aqui as suas zonas, sequências e agendamentos, com uma pré-visualização de tudo primeiro.",
           "open": "Importar"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "Calcular e regar",
+          "description": "Desligado, o Smart Irrigation continua a recolher os dados meteorológicos e mantém os seus sensores, mas não calcula nada, deixa o balanço hídrico de cada zona como está, não abre nenhuma válvula e não executa nenhum programa. Ao voltar a ligá-lo, o tempo em que esteve desligado não é contado.",
+          "off-note": "Desligado: nada é calculado e nada é regado. Os dados meteorológicos continuam a ser recolhidos, e o tempo em que estiver desligado não será contado quando o voltar a ligar.",
+          "confirm-off": "Desligar o Smart Irrigation? A rega em curso para já, e nada é calculado nem regado até voltar a ser ligado."
         }
       },
       "description": "Esta página fornece definições globais.",
@@ -345,7 +352,10 @@
           "headline-no-valve": "Nada vai ser regado",
           "sub-no-valve": "As zonas com falta de água não têm nenhuma válvula associada, por isso não são regadas. Associe uma a cada uma delas.",
           "headline-no-zones": "Ainda não há zonas",
-          "sub-no-zones": "O Smart Irrigation rega zonas. O assistente cria a primeira consigo."
+          "sub-no-zones": "O Smart Irrigation rega zonas. O assistente cria a primeira consigo.",
+          "headline-off": "O Smart Irrigation está desligado",
+          "sub-off": "Continua a recolher os dados meteorológicos, mas não calcula nem rega nada até voltar a ser ligado.",
+          "open-settings": "Abrir as definições"
         },
         "decision": {
           "title": "Vai ser ignorado?",
@@ -1451,7 +1461,8 @@
     },
     "no_valve": "sem válvula associada, não é regada",
     "no_trigger": "Nenhum acionador de início",
-    "not_scheduled": "Em atraso, mas não agendada"
+    "not_scheduled": "Em atraso, mas não agendada",
+    "off": "Desligado"
   },
   "confirm": {
     "delete_zone": "Eliminar a zona «{name}»? As suas definições e o seu balanço hídrico perdem-se.",

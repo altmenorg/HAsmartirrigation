@@ -281,6 +281,13 @@
         "iu-import": {
           "description": "Přecházíte z Irrigation Unlimited? Převezměte sem jeho zóny, sekvence a rozvrhy, nejprve s náhledem všeho.",
           "open": "Importovat"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "Počítat a zalévat",
+          "description": "Když je vypnuté, Smart Irrigation dál načítá meteorologická data a ponechává si své senzory, ale nic nepočítá, nechává vodní bilanci každé zóny beze změny, neotevírá žádný ventil a nespouští žádný program. Po opětovném zapnutí se doba, kdy bylo vypnuté, nezapočítává.",
+          "off-note": "Vypnuto: nic se nepočítá a nic se nezalévá. Meteorologická data se načítají dál a doba vypnutí se nezapočítá, až ho znovu zapnete.",
+          "confirm-off": "Vypnout Smart Irrigation? Probíhající zalévání se hned zastaví a nic se nepočítá ani nezalévá, dokud se znovu nezapne."
         }
       },
       "description": "Tato stránka poskytuje globální nastavení.",
@@ -345,7 +352,10 @@
           "headline-no-valve": "Nic se nebude zalévat",
           "sub-no-valve": "Zóny, kterým chybí voda, nemají propojený ventil, takže se nezalévají. Ke každé z nich přiřaďte ventil.",
           "headline-no-zones": "Zatím žádná zóna",
-          "sub-no-zones": "Smart Irrigation zalévá zóny. Asistent s vámi nastaví první z nich."
+          "sub-no-zones": "Smart Irrigation zalévá zóny. Asistent s vámi nastaví první z nich.",
+          "headline-off": "Smart Irrigation je vypnuté",
+          "sub-off": "Dál načítá meteorologická data, ale nic nepočítá a nic nezalévá, dokud se znovu nezapne.",
+          "open-settings": "Otevřít nastavení"
         },
         "decision": {
           "title": "Bude vynecháno?",
@@ -1451,7 +1461,8 @@
     },
     "no_valve": "žádný propojený ventil, nezalévá se",
     "no_trigger": "Žádný spouštěč startu",
-    "not_scheduled": "Na řadě, ale nenaplánováno"
+    "not_scheduled": "Na řadě, ale nenaplánováno",
+    "off": "Vypnuto"
   },
   "confirm": {
     "delete_zone": "Smazat zónu „{name}“? Její nastavení a vodní bilance se ztratí.",

@@ -281,6 +281,13 @@
         "iu-import": {
           "description": "Przechodzisz z Irrigation Unlimited? Przenieś tutaj jego strefy, sekwencje i harmonogramy, najpierw z podglądem wszystkiego.",
           "open": "Importuj"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "Obliczaj i podlewaj",
+          "description": "Po wyłączeniu Smart Irrigation nadal pobiera dane pogodowe i zachowuje swoje czujniki, ale niczego nie oblicza, zostawia bilans wodny każdej strefy bez zmian, nie otwiera żadnego zaworu i nie uruchamia żadnego programu. Po ponownym włączeniu czas wyłączenia nie jest liczony.",
+          "off-note": "Wyłączone: nic nie jest obliczane ani podlewane. Dane pogodowe są nadal pobierane, a czas wyłączenia nie zostanie policzony, gdy włączysz je ponownie.",
+          "confirm-off": "Wyłączyć Smart Irrigation? Trwające podlewanie zatrzyma się teraz, a nic nie będzie obliczane ani podlewane do ponownego włączenia."
         }
       },
       "description": "Ta strona zawiera ustawienia globalne.",
@@ -345,7 +352,10 @@
           "headline-no-valve": "Nic nie zostanie podlane",
           "sub-no-valve": "Strefy, którym brakuje wody, nie mają powiązanego zaworu, więc nie są podlewane. Powiąż zawór z każdą z nich.",
           "headline-no-zones": "Brak stref",
-          "sub-no-zones": "Smart Irrigation podlewa strefy. Asystent utworzy z tobą pierwszą."
+          "sub-no-zones": "Smart Irrigation podlewa strefy. Asystent utworzy z tobą pierwszą.",
+          "headline-off": "Smart Irrigation jest wyłączone",
+          "sub-off": "Nadal pobiera dane pogodowe, ale niczego nie oblicza i nie podlewa do ponownego włączenia.",
+          "open-settings": "Otwórz ustawienia"
         },
         "decision": {
           "title": "Czy zostanie pominięte?",
@@ -1451,7 +1461,8 @@
     },
     "no_valve": "brak powiązanego zaworu, nie jest podlewana",
     "no_trigger": "Brak wyzwalacza startu",
-    "not_scheduled": "Należne, ale niezaplanowane"
+    "not_scheduled": "Należne, ale niezaplanowane",
+    "off": "Wyłączone"
   },
   "confirm": {
     "delete_zone": "Usunąć strefę „{name}”? Jej ustawienia i bilans wodny zostaną utracone.",

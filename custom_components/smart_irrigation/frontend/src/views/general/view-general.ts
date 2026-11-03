@@ -623,6 +623,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // Moving over from Irrigation Unlimited, right after it.
       const r17 = this.renderIuImportCard();
 
+      // The master switch, above everything it switches.
+      const r18 = this.renderMasterSwitchCard();
+
       if (this.section) {
         return this.renderWateringSection(r5);
       }
@@ -636,9 +639,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           <div class="card-content">
             ${localize("panels.general.description", this.hass.language)}
           </div> </ha-card
-        >${r12}${r17}${r11}${r15}${r2}${r1}${showContinuous ? r4 : ""}${full
-          ? ""
-          : r5}${r6}${r7}${r8}${r9}${r10}${r16}${r13}`;
+        >${r18}${r12}${r17}${r11}${r15}${r2}${r1}${showContinuous
+          ? r4
+          : ""}${full ? "" : r5}${r6}${r7}${r8}${r9}${r10}${r16}${r13}`;
 
       return r;
     }
@@ -3043,6 +3046,40 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
    * about crediting the bucket: the main feature of the release was hard to
    * find, and switched on without a word although it closes valves (#893).
    */
+  renderMasterSwitchCard(): TemplateResult {
+    if (!this.config || !this.hass) return html``;
+    const lang = this.hass.language;
+    const t = (key: string) =>
+      localize(`panels.general.cards.master-switch.${key}`, lang);
+    const on = this.config.irrigation_enabled !== false;
+    return html`
+      <ha-card header="${t("title")}">
+        <div class="card-content">
+          <div class="setting-row">
+            <div class="setting-label">${t("label")}</div>
+            <ha-switch
+              .checked=${on}
+              @change=${async (e: Event) => {
+                const target = e.target as any;
+                const enable = target.checked === true;
+                if (!enable && !(await this._ask(t("confirm-off")))) {
+                  target.checked = true;
+                  return;
+                }
+                this.handleConfigChange({ irrigation_enabled: enable })
+                  .then(() => this._fetchData())
+                  .catch(() => undefined);
+              }}
+            ></ha-switch>
+          </div>
+          <div class="setting-note">
+            ${on ? t("description") : t("off-note")}
+          </div>
+        </div>
+      </ha-card>
+    `;
+  }
+
   renderFullControllerCard(): TemplateResult {
     if (!this.config || !this.hass) return html``;
     const lang = this.hass.language;

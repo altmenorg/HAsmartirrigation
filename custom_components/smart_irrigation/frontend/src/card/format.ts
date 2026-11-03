@@ -179,6 +179,7 @@ export const programsPollDelay = (active: boolean): number =>
 
 /** What the card's "next start" line says. */
 export type NextStartState =
+  | "off"
   | "no_trigger"
   | "skipped"
   | "not_scheduled"
@@ -196,6 +197,7 @@ export type NextStartState =
  * not that trigger, and their start is shown as it is.
  */
 export const nextStartState = (info: any): NextStartState => {
+  if (info?.irrigation_enabled === false) return "off";
   const bySchedules = info?.start_source === "main_schedules";
   if (!bySchedules && info?.active_start_trigger === "none") {
     return "no_trigger";

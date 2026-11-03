@@ -32,6 +32,7 @@ from .engine_binding import (
     method_of_engine,
     zone_has_engine,
 )
+from .master_switch import irrigation_off
 from .presets import apply_preset, describe_zone
 from .skip_conditions import SkipConditionsMixin, thresholds_for_display
 from .units import zone_from_display, zone_to_display
@@ -121,6 +122,7 @@ class SmartIrrigationConfigView(HomeAssistantView):
                 vol.Optional(const.CONF_OBSERVED_WATERING_ENABLED): cv.boolean,
                 vol.Optional(const.CONF_DIRECT_VALVE_CONTROL_ENABLED): cv.boolean,
                 vol.Optional(const.CONF_FULL_CONTROLLER): cv.boolean,
+                vol.Optional(const.CONF_IRRIGATION_ENABLED): cv.boolean,
                 vol.Optional(const.CONF_PROGRAMS): vol.Coerce(list),
                 vol.Optional(const.CONF_SUPPLIES): vol.Coerce(list),
                 vol.Optional(const.CONF_ZONE_SEQUENCING): vol.In(
@@ -861,6 +863,8 @@ def _armed_trigger_start(info: dict) -> str | None:
     """
     if info.get("error"):
         return None
+    if info.get("irrigation_enabled") is False:
+        return None
     if info.get("active_start_trigger") == const.START_TRIGGER_NONE:
         return None
     if info.get("start_trigger_armed") is False:
@@ -1143,6 +1147,8 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
         # which reads like information and is not. What the panel shows now is
         # the trigger, the arithmetic behind the total, and the skip checks.
         irrigation_info = {
+            # False while the master switch is off: nothing below will start.
+            "irrigation_enabled": not irrigation_off(coordinator.store),
             "next_irrigation_start": (
                 next_irrigation_start.isoformat() if next_irrigation_start else None
             ),

@@ -39,6 +39,7 @@ from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 
 from . import const
+from .master_switch import irrigation_off
 from .observed_watering import NO_FLOW_GRACE
 from .program_runner import ProgramRunnerMixin
 from .program_status import ProgramStatusMixin
@@ -1326,6 +1327,9 @@ class ValveRunnerMixin(
         cfg = self.store.config
         if getattr(cfg, const.CONF_DIRECT_VALVE_CONTROL_ENABLED, False) is not True:
             return
+        if irrigation_off(cfg):
+            _LOGGER.info("Smart Irrigation is switched off: no valve is opened")
+            return
         if getattr(cfg, const.CONF_FULL_CONTROLLER, False) is True:
             generation = getattr(self, "_stop_generation", 0)
             async with self._executor_lock():
@@ -2234,6 +2238,9 @@ class ValveRunnerMixin(
         owed = self._owed_records()
         if not runs and not cycle and not program_run and not owed:
             return
+        if irrigation_off(self.store):
+            await self._drop_interrupted_runs(runs)
+            return
         if runs:
             _LOGGER.info(
                 "Direct valve control: resuming %d in-flight run(s) after restart",
@@ -2262,6 +2269,38 @@ class ValveRunnerMixin(
             self._spawn_valve_run(self._resume_cycle(cycle, resumed))
         if program_run:
             self._spawn_valve_run(self._resume_program(program_run, resumed))
+
+    async def _drop_interrupted_runs(self, runs) -> None:
+        """Close what a restart interrupted, rather than resume it (switched off).
+
+        The valves that were open are closed, and the records of the runs, the
+        cycle, the program and the water a pause owed are let go: switched on
+        again, Smart Irrigation starts from its next start, not from these.
+        """
+        _LOGGER.info(
+            "Smart Irrigation is switched off: the %d run(s) a restart interrupted "
+            "are closed, not resumed",
+            len(runs),
+        )
+        for run in runs:
+            entity_id = run.get(const.RUN_ENTITY_ID)
+            if not entity_id:
+                continue
+            domain, _on, off = self._valve_services(entity_id)
+            try:
+                await self.hass.services.async_call(
+                    domain, off, {"entity_id": entity_id}, blocking=False
+                )
+            except Exception as e:  # noqa: BLE001 - the others still close
+                _LOGGER.warning("Could not close %s: %s", entity_id, e)
+        await self.store.async_update_config(
+            {
+                const.CONF_ACTIVE_VALVE_RUNS: [],
+                const.CONF_ACTIVE_CYCLE: None,
+                const.CONF_ACTIVE_PROGRAM_RUN: None,
+                const.CONF_PAUSED_OWED: [],
+            }
+        )
 
     # --- the water a pause owes, across a reload or a restart -----------------
 

@@ -29,6 +29,7 @@ from datetime import timedelta
 import homeassistant.util.dt as dt_util
 
 from . import const
+from .master_switch import irrigation_off
 from .programs import (
     below_deficit,
     find_program,
@@ -233,6 +234,8 @@ class ProgramRunnerMixin:
         config = self.store.config
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
             return False
+        if irrigation_off(config):
+            return False
         program = find_program(getattr(config, const.CONF_PROGRAMS, None), program_id)
         return (
             program is not None
@@ -267,6 +270,11 @@ class ProgramRunnerMixin:
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
             _LOGGER.warning(
                 "Program %s not run: the full controller is off", program_id
+            )
+            return False
+        if irrigation_off(config):
+            _LOGGER.info(
+                "Program %s not run: Smart Irrigation is switched off", program_id
             )
             return False
         program = find_program(getattr(config, const.CONF_PROGRAMS, None), program_id)

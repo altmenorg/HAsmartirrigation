@@ -20,6 +20,7 @@ from homeassistant.helpers.dispatcher import async_dispatcher_send
 
 from . import const
 from .delivery import zones_without_valve
+from .master_switch import irrigation_off
 from .programs import (
     DURATION_IGNORING_THRESHOLD,
     active_adjustment,
@@ -412,8 +413,10 @@ class ProgramStatusMixin:
             # start it; otherwise it is the start trigger's. It does not depend
             # on there being anything to water: a run with nothing to water
             # still starts (and finds nothing), the planning lists nothing.
-            if state != STATE_DISABLED and (
-                not main or self.main_program_uses_schedules()
+            if (
+                state != STATE_DISABLED
+                and not irrigation_off(self.store)
+                and (not main or self.main_program_uses_schedules())
             ):
                 if main:
                     total = await self._main_program_total(program)
@@ -460,6 +463,9 @@ class ProgramStatusMixin:
         """
         config = self.store.config
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
+            return []
+        if irrigation_off(config):
+            # Nothing will start: the panel says Smart Irrigation is off.
             return []
         zones = await self.zones_as_planned(await self.store.async_get_zones())
         names = {int(z[const.ZONE_ID]): z.get(const.ZONE_NAME) for z in zones}

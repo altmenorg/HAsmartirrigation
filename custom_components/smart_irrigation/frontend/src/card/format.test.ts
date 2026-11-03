@@ -246,6 +246,10 @@ describe("nextStartState", () => {
     expect(nextStartState(owed)).toBe("start");
   });
 
+  it("says Smart Irrigation is off before anything else", () => {
+    expect(nextStartState({ ...owed, irrigation_enabled: false })).toBe("off");
+  });
+
   it("says no trigger is active under the none trigger", () => {
     expect(nextStartState({ ...owed, active_start_trigger: "none" })).toBe(
       "no_trigger",

@@ -64,6 +64,9 @@ async def async_zone_next_runs(hass: HomeAssistant, coordinator) -> dict:
     info = await build_irrigation_info(hass, coordinator)
     if info.get("error"):
         raise RuntimeError(info["error"])
+    if info.get("irrigation_enabled") is False:
+        # Switched off: no zone has a next run.
+        return result
     by_schedules = (
         getattr(coordinator, "main_program_uses_schedules", lambda: False)() is True
     )

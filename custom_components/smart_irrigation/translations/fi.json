@@ -92,6 +92,9 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Ohita sateella"
+      },
+      "irrigation_enabled": {
+        "name": "Käytössä"
       }
     },
     "datetime": {

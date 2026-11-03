@@ -92,6 +92,9 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Omitir si hay precipitación"
+      },
+      "irrigation_enabled": {
+        "name": "Activo"
       }
     },
     "datetime": {

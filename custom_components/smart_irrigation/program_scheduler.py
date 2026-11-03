@@ -40,6 +40,7 @@ from homeassistant.helpers.event import async_track_point_in_utc_time
 from homeassistant.helpers.sun import get_astral_event_date
 
 from . import const
+from .master_switch import irrigation_off
 from .programs import (
     drop_below_deficit,
     find_program,
@@ -298,6 +299,17 @@ class ProgramSchedulerMixin:
             or schedule.get(const.SCHEDULE_ENABLED) is False
             or getattr(config, const.CONF_FULL_CONTROLLER, False) is not True
         ):
+            await self.register_program_schedules()
+            return
+        if irrigation_off(config):
+            # Placed again for its next occurrence, which may find it switched
+            # on; this one does not run.
+            _LOGGER.info(
+                "Program %s: schedule %s reached but Smart Irrigation is switched "
+                "off; not run",
+                program_id,
+                schedule_id,
+            )
             await self.register_program_schedules()
             return
         suspended = self.is_suspended(const.SUSPEND_PROGRAM, program_id)

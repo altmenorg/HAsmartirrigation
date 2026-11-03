@@ -281,6 +281,13 @@
         "iu-import": {
           "description": "Kommer du fra Irrigation Unlimited? Hent dens zoner, sekvenser og tidsplaner hertil, med en forhåndsvisning af det hele først.",
           "open": "Importér"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "Beregn og vand",
+          "description": "Slået fra bliver Smart Irrigation ved med at hente vejrdata og beholder sine sensorer, men beregner intet, lader hver zones vandbalance være, som den er, åbner ingen ventil og kører intet program. Når den slås til igen, tælles tiden, hvor den var slået fra, ikke med.",
+          "off-note": "Slået fra: intet beregnes, og intet vandes. Vejrdata hentes fortsat, og tiden, hvor den er slået fra, tælles ikke med, når du slår den til igen.",
+          "confirm-off": "Slå Smart Irrigation fra? Det, der vander, stopper nu, og intet beregnes eller vandes, før den slås til igen."
         }
       },
       "description": "Denne side indeholder globale indstillinger.",
@@ -345,7 +352,10 @@
           "headline-no-valve": "Intet vil blive vandet",
           "sub-no-valve": "Zonerne, der mangler vand, har ingen ventil tilknyttet, så de vandes ikke. Knyt en ventil til hver af dem.",
           "headline-no-zones": "Ingen zone endnu",
-          "sub-no-zones": "Smart Irrigation vander zoner. Assistenten opretter den første sammen med dig."
+          "sub-no-zones": "Smart Irrigation vander zoner. Assistenten opretter den første sammen med dig.",
+          "headline-off": "Smart Irrigation er slået fra",
+          "sub-off": "Den henter stadig vejrdata, men beregner og vander intet, før den slås til igen.",
+          "open-settings": "Åbn indstillingerne"
         },
         "decision": {
           "title": "Bliver den sprunget over?",
@@ -1451,7 +1461,8 @@
     },
     "no_valve": "ingen ventil tilknyttet, vandes ikke",
     "no_trigger": "Ingen startudløser",
-    "not_scheduled": "Skyldig, men ikke planlagt"
+    "not_scheduled": "Skyldig, men ikke planlagt",
+    "off": "Slået fra"
   },
   "confirm": {
     "delete_zone": "Slet zonen \"{name}\"? Dens indstillinger og vandbalance går tabt.",

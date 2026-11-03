@@ -63,6 +63,8 @@ export class SmartIrrigationConfig {
   direct_valve_control_enabled: boolean;
   // Full controller mode: Smart Irrigation runs the whole watering itself.
   full_controller?: boolean;
+  // The master switch: false stops every calculation and every watering.
+  irrigation_enabled?: boolean;
   zone_sequencing: string;
   // Shorten a run after recent rain, from a binary rain sensor's history.
   rain_history_enabled?: boolean;

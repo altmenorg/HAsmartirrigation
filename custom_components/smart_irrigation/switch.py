@@ -39,8 +39,13 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     async_add_devices: AddEntitiesCallback,
 ) -> None:
-    """Set up the global weather-based skip switch (created once, on the hub)."""
-    async_add_devices([SmartIrrigationSkipOnPrecipitationSwitch(hass)])
+    """Set up the hub's switches: the master switch and the weather-based skip."""
+    async_add_devices(
+        [
+            SmartIrrigationEnabledSwitch(hass),
+            SmartIrrigationSkipOnPrecipitationSwitch(hass),
+        ]
+    )
 
 
 class SmartIrrigationSkipOnPrecipitationSwitch(SwitchEntity):
@@ -50,16 +55,21 @@ class SmartIrrigationSkipOnPrecipitationSwitch(SwitchEntity):
     _attr_should_poll = False
     _attr_translation_key = "skip_on_precipitation"
     _attr_icon = "mdi:weather-pouring"
+    # The setting it stands for, and its value when it was never set.
+    _config_key = const.CONF_SKIP_IRRIGATION_ON_PRECIPITATION
+    _config_default = const.CONF_DEFAULT_SKIP_IRRIGATION_ON_PRECIPITATION
+    _object_id = "skip_on_precipitation"
+    _unique_suffix = "skip_irrigation_on_precipitation"
 
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the switch."""
         self._hass = hass
-        self.entity_id = f"{SWITCH_PLATFORM}.{const.DOMAIN}_skip_on_precipitation"
+        self.entity_id = f"{SWITCH_PLATFORM}.{const.DOMAIN}_{self._object_id}"
 
     @property
     def unique_id(self) -> str:
         """Return a stable unique ID."""
-        return f"{const.DOMAIN}_skip_irrigation_on_precipitation"
+        return f"{const.DOMAIN}_{self._unique_suffix}"
 
     @property
     def device_info(self) -> dict:
@@ -93,17 +103,14 @@ class SmartIrrigationSkipOnPrecipitationSwitch(SwitchEntity):
         """Read the current value from the store."""
         coordinator = _coordinator(self._hass)
         config = coordinator.store.get_config() if coordinator else {}
-        self._attr_is_on = config.get(
-            const.CONF_SKIP_IRRIGATION_ON_PRECIPITATION,
-            const.CONF_DEFAULT_SKIP_IRRIGATION_ON_PRECIPITATION,
-        )
+        self._attr_is_on = config.get(self._config_key, self._config_default)
 
     async def async_turn_on(self, **kwargs) -> None:
-        """Enable the weather-based skip."""
+        """Switch the setting on."""
         await self._async_set(True)
 
     async def async_turn_off(self, **kwargs) -> None:
-        """Disable the weather-based skip."""
+        """Switch the setting off."""
         await self._async_set(False)
 
     async def _async_set(self, value: bool) -> None:
@@ -111,9 +118,7 @@ class SmartIrrigationSkipOnPrecipitationSwitch(SwitchEntity):
         coordinator = _coordinator(self._hass)
         if coordinator is None:
             return
-        await coordinator.async_update_config(
-            {const.CONF_SKIP_IRRIGATION_ON_PRECIPITATION: value}
-        )
+        await coordinator.async_update_config({self._config_key: value})
         self._attr_is_on = value
         self.async_write_ha_state()
         # coordinator.async_update_config() already sent "_config_updated" for
@@ -121,3 +126,17 @@ class SmartIrrigationSkipOnPrecipitationSwitch(SwitchEntity):
         # (see websockets.py's SmartIrrigationConfigView.post for the same
         # pairing), so send that too to keep an open panel in sync.
         async_dispatcher_send(self._hass, const.DOMAIN + "_update_frontend")
+
+
+class SmartIrrigationEnabledSwitch(SmartIrrigationSkipOnPrecipitationSwitch):
+    """The master switch: off, nothing is calculated and nothing is watered.
+
+    The weather readings and the sensors carry on (see master_switch.py).
+    """
+
+    _attr_translation_key = "irrigation_enabled"
+    _attr_icon = "mdi:sprinkler-variant"
+    _config_key = const.CONF_IRRIGATION_ENABLED
+    _config_default = const.CONF_DEFAULT_IRRIGATION_ENABLED
+    _object_id = "irrigation_enabled"
+    _unique_suffix = "irrigation_enabled"

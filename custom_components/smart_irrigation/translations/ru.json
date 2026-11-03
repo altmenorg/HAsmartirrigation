@@ -92,6 +92,9 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Пропускать при осадках"
+      },
+      "irrigation_enabled": {
+        "name": "Активно"
       }
     },
     "datetime": {

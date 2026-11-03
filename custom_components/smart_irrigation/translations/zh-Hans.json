@@ -92,6 +92,9 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "有降水时跳过"
+      },
+      "irrigation_enabled": {
+        "name": "启用"
       }
     },
     "datetime": {

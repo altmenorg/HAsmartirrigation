@@ -100,6 +100,11 @@ CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED = False
 # as it was for whoever does not tick it.
 CONF_FULL_CONTROLLER = "full_controller"
 CONF_DEFAULT_FULL_CONTROLLER = False
+# The master switch (on by default): off, Smart Irrigation still takes its
+# weather readings and keeps its sensors, but calculates nothing, leaves every
+# bucket as it is, opens no valve and runs no program (see master_switch.py).
+CONF_IRRIGATION_ENABLED = "irrigation_enabled"
+CONF_DEFAULT_IRRIGATION_ENABLED = True
 # The programs of the full controller: an ordered list of dicts (see programs.py).
 CONF_PROGRAMS = "programs"
 CONF_DEFAULT_PROGRAMS = []

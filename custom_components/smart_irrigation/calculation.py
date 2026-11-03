@@ -36,6 +36,7 @@ from .hourly_rows import (
 )
 from .hourly_solar_estimate import estimated_solar_series
 from .localize import localize
+from .master_switch import irrigation_off
 from .water_balance import (
     drainage_over,
     rain_profile,
@@ -1914,6 +1915,11 @@ class CalculationMixin:
         """
         if dry_run:
             delete_weather_data = False
+        elif irrigation_off(self.store):
+            # The master switch is off: the readings are kept, nothing is
+            # calculated, and no bucket moves (a preview still answers).
+            _LOGGER.info("Smart Irrigation is switched off: no zone is calculated")
+            return {}
         _LOGGER.info(
             "Calculating all automatic zones%s", " (dry run)" if dry_run else ""
         )
@@ -2104,6 +2110,12 @@ class CalculationMixin:
 
         """
         _LOGGER.debug("async_calculate_zone: Calculating zone %s", zone_id)
+        if not dry_run and irrigation_off(self.store):
+            # The continuous updates and the panel come here directly.
+            _LOGGER.info(
+                "Smart Irrigation is switched off: zone %s is not calculated", zone_id
+            )
+            return None
         zone = self.store.get_zone(zone_id)
         if zone and not zone_has_engine(self.store, zone):
             # Said as it is: the generic message below sent people looking for

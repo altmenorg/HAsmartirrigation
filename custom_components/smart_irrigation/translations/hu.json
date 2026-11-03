@@ -92,6 +92,9 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Kihagyás csapadék esetén"
+      },
+      "irrigation_enabled": {
+        "name": "Aktív"
       }
     },
     "datetime": {

@@ -281,6 +281,13 @@
         "iu-import": {
           "description": "Kommer du från Irrigation Unlimited? Hämta hit dess zoner, sekvenser och scheman, med en förhandsvisning av allt först.",
           "open": "Importera"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "Beräkna och vattna",
+          "description": "Avslagen fortsätter Smart Irrigation att hämta väderdata och behåller sina sensorer, men beräknar ingenting, lämnar varje zons vattenbalans som den är, öppnar ingen ventil och kör inget program. När den slås på igen räknas inte tiden den var avslagen.",
+          "off-note": "Avslagen: ingenting beräknas och ingenting vattnas. Väderdata hämtas fortfarande, och tiden den är avslagen räknas inte när du slår på den igen.",
+          "confirm-off": "Slå av Smart Irrigation? Det som vattnar stoppas nu, och ingenting beräknas eller vattnas förrän den slås på igen."
         }
       },
       "description": "Den här sidan tillhandahåller globala inställningar.",
@@ -345,7 +352,10 @@
           "headline-no-valve": "Inget kommer att vattnas",
           "sub-no-valve": "Zonerna som saknar vatten har ingen ventil kopplad, så de vattnas inte. Koppla en ventil till var och en av dem.",
           "headline-no-zones": "Ingen zon än",
-          "sub-no-zones": "Smart Irrigation vattnar zoner. Assistenten skapar den första tillsammans med dig."
+          "sub-no-zones": "Smart Irrigation vattnar zoner. Assistenten skapar den första tillsammans med dig.",
+          "headline-off": "Smart Irrigation är avslagen",
+          "sub-off": "Den hämtar fortfarande väderdata, men beräknar och vattnar ingenting förrän den slås på igen.",
+          "open-settings": "Öppna inställningarna"
         },
         "decision": {
           "title": "Kommer den att hoppas över?",
@@ -1451,7 +1461,8 @@
     },
     "no_valve": "ingen ventil kopplad, vattnas inte",
     "no_trigger": "Ingen startutlösare",
-    "not_scheduled": "Väntar, men inte schemalagd"
+    "not_scheduled": "Väntar, men inte schemalagd",
+    "off": "Avslagen"
   },
   "confirm": {
     "delete_zone": "Ta bort zonen \"{name}\"? Dess inställningar och vattenbalans går förlorade.",

@@ -10,6 +10,18 @@ title: "Configuration: General"
 
 This page provides the following global settings:
 
+### Switching Smart Irrigation off
+The first card, **Smart Irrigation**, has one switch, **Calculate and water**. It is on unless you turn it off. Off, Smart Irrigation:
+
+* keeps taking its weather readings and keeps its sensors up to date;
+* calculates nothing, and leaves every zone's bucket as it is;
+* opens no valve, whether by direct valve control, the Water button of a zone or the hub's buttons, and runs no program of the [full controller](usage-full-controller.md). What is watering when you switch it off stops at once, and after a restart a run that was interrupted is closed rather than resumed;
+* fires no start event: a start trigger that is reached fires `smart_irrigation_irrigation_skipped` with the reason `irrigation_off` (see [events](usage-events.md)).
+
+Switched on again, the time it was off is not counted: each zone's next calculation starts at that moment, as after setting a bucket by hand, so the first run is not weeks of evaporation at once. The same switch is on the hub device as `switch.smart_irrigation_irrigation_enabled`, for an automation or a dashboard (the end of the season, for instance).
+
+It is not the same as postponing: a postponement holds the automatic watering back for a while and keeps calculating, so the zones are owed what the weather took meanwhile. This switch stops it all.
+
 ### Automatic weather data update
 If enabled, specify how often sensor update should happen (minutes, hours, days). You can also set up an update delay to be used to delay the first update. THis is useful in case your sensors do not provide a value immediately after Home Assistant starts.
 

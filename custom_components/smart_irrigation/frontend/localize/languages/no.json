@@ -281,6 +281,13 @@
         "iu-import": {
           "description": "Kommer du fra Irrigation Unlimited? Hent sonene, sekvensene og tidsplanene hit, med en forhåndsvisning av alt først.",
           "open": "Importer"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "Beregn og vann",
+          "description": "Slått av fortsetter Smart Irrigation å hente værdata og beholder sensorene sine, men beregner ingenting, lar vannbalansen i hver sone være som den er, åpner ingen ventil og kjører ingen program. Når den slås på igjen, telles ikke tiden den var av.",
+          "off-note": "Slått av: ingenting beregnes og ingenting vannes. Værdata hentes fortsatt, og tiden den er av telles ikke når du slår den på igjen.",
+          "confirm-off": "Slå av Smart Irrigation? Det som vanner nå stopper med en gang, og ingenting beregnes eller vannes før den slås på igjen."
         }
       },
       "description": "Denne siden gir globale innstillinger.",
@@ -345,7 +352,10 @@
           "headline-no-valve": "Ingenting blir vannet",
           "sub-no-valve": "Sonene som mangler vann, har ingen ventil tilknyttet, så de vannes ikke. Knytt en ventil til hver av dem.",
           "headline-no-zones": "Ingen sone ennå",
-          "sub-no-zones": "Smart Irrigation vanner soner. Assistenten setter opp den første sammen med deg."
+          "sub-no-zones": "Smart Irrigation vanner soner. Assistenten setter opp den første sammen med deg.",
+          "headline-off": "Smart Irrigation er slått av",
+          "sub-off": "Den henter fortsatt værdata, men beregner og vanner ingenting før den slås på igjen.",
+          "open-settings": "Åpne innstillingene"
         },
         "decision": {
           "title": "Blir den hoppet over?",
@@ -1451,7 +1461,8 @@
     },
     "no_valve": "ingen ventil tilknyttet, vannes ikke",
     "no_trigger": "Ingen startutløser",
-    "not_scheduled": "Står igjen, men ikke planlagt"
+    "not_scheduled": "Står igjen, men ikke planlagt",
+    "off": "Slått av"
   },
   "confirm": {
     "delete_zone": "Slette sonen «{name}»? Innstillingene og vannbalansen går tapt.",

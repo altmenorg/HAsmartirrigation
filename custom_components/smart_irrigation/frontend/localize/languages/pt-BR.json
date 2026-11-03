@@ -281,6 +281,13 @@
         "iu-import": {
           "description": "Vindo do Irrigation Unlimited? Traga para cá as zonas, sequências e agendamentos dele, com uma prévia de tudo antes.",
           "open": "Importar"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "Calcular e irrigar",
+          "description": "Desligado, o Smart Irrigation continua coletando os dados meteorológicos e mantém seus sensores, mas não calcula nada, deixa o balanço hídrico de cada zona como está, não abre nenhuma válvula e não executa nenhum programa. Ao ser religado, o tempo em que ficou desligado não é contado.",
+          "off-note": "Desligado: nada é calculado e nada é irrigado. Os dados meteorológicos continuam sendo coletados, e o tempo desligado não será contado quando você religá-lo.",
+          "confirm-off": "Desligar o Smart Irrigation? O que estiver irrigando para agora, e nada é calculado nem irrigado até ele ser religado."
         }
       },
       "description": "Esta página fornece configurações globais.",
@@ -345,7 +352,10 @@
           "headline-no-valve": "Nada será irrigado",
           "sub-no-valve": "As zonas com falta de água não têm nenhuma válvula vinculada, então não são irrigadas. Vincule uma a cada uma delas.",
           "headline-no-zones": "Ainda não há zonas",
-          "sub-no-zones": "O Smart Irrigation irriga zonas. O assistente cria a primeira com você."
+          "sub-no-zones": "O Smart Irrigation irriga zonas. O assistente cria a primeira com você.",
+          "headline-off": "O Smart Irrigation está desligado",
+          "sub-off": "Ele continua coletando os dados meteorológicos, mas não calcula nem irriga nada até ser religado.",
+          "open-settings": "Abrir as configurações"
         },
         "decision": {
           "title": "Vai ser pulado?",
@@ -1451,7 +1461,8 @@
     },
     "no_valve": "sem válvula vinculada, não é irrigada",
     "no_trigger": "Nenhum gatilho de início",
-    "not_scheduled": "Pendente, mas não agendada"
+    "not_scheduled": "Pendente, mas não agendada",
+    "off": "Desligado"
   },
   "confirm": {
     "delete_zone": "Excluir a zona \"{name}\"? As configurações e o balanço hídrico dela serão perdidos.",

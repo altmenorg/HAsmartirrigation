@@ -457,6 +457,28 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
         </ha-card>
       `;
     }
+    // Switched off: nothing is calculated and nothing starts, whatever the
+    // zones are owed.
+    if ((info as any)?.irrigation_enabled === false) {
+      return html`
+        <ha-card>
+          <div class="card-content hero">
+            <ha-icon icon="mdi:power-plug-off-outline"></ha-icon>
+            <div class="hero-text">
+              <div class="hero-headline">
+                ${this.t("cards.next-run.headline-off")}
+              </div>
+              <div class="hero-sub">${this.t("cards.next-run.sub-off")}</div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <ha-button @click=${() => this._open("general")}>
+              ${this.t("cards.next-run.open-settings")}
+            </ha-button>
+          </div>
+        </ha-card>
+      `;
+    }
     const zones = info?.next_irrigation_zones ?? [];
     // Owed a run under full control with no valve to open: left out of the run
     // above, and named, with a way to the zone (#969).

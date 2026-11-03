@@ -281,6 +281,13 @@
         "iu-import": {
           "description": "Tu viens d'Irrigation Unlimited ? Reprends ici ses zones, séquences et horaires, avec un aperçu de tout au préalable.",
           "open": "Importer"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "Calculer et arroser",
+          "description": "Désactivé, Smart Irrigation continue ses relevés météo et garde ses capteurs, mais ne calcule rien, laisse le seau de chaque zone tel quel, n'ouvre aucune vanne et ne lance aucun programme. Une fois réactivé, le temps passé à l'arrêt n'est pas compté.",
+          "off-note": "Désactivé : rien n'est calculé et rien n'est arrosé. Les relevés météo continuent, et le temps passé à l'arrêt ne sera pas compté quand tu le réactiveras.",
+          "confirm-off": "Désactiver Smart Irrigation ? Tout arrosage en cours s'arrête maintenant, et rien n'est calculé ni arrosé jusqu'à sa réactivation."
         }
       },
       "description": "Cette page fournit les réglages globaux.",
@@ -345,7 +352,10 @@
           "headline-no-valve": "Rien ne sera arrosé",
           "sub-no-valve": "Les zones en déficit n'ont aucune vanne liée, elles ne sont donc pas arrosées. Lie une vanne à chacune d'elles.",
           "headline-no-zones": "Pas encore de zone",
-          "sub-no-zones": "Smart Irrigation arrose des zones. L'assistant crée la première avec toi."
+          "sub-no-zones": "Smart Irrigation arrose des zones. L'assistant crée la première avec toi.",
+          "headline-off": "Smart Irrigation est désactivé",
+          "sub-off": "Il continue ses relevés météo, mais ne calcule rien et n'arrose rien jusqu'à sa réactivation.",
+          "open-settings": "Ouvrir les réglages"
         },
         "decision": {
           "title": "L'arrosage sera-t-il annulé ?",
@@ -1451,7 +1461,8 @@
     },
     "no_valve": "aucune vanne liée, pas arrosée",
     "no_trigger": "Aucun déclencheur de départ",
-    "not_scheduled": "À arroser, mais aucun départ programmé"
+    "not_scheduled": "À arroser, mais aucun départ programmé",
+    "off": "Désactivé"
   },
   "confirm": {
     "delete_zone": "Supprimer la zone « {name} » ? Ses réglages et son bilan hydrique sont perdus.",

@@ -281,6 +281,13 @@
         "iu-import": {
           "description": "Arrivi da Irrigation Unlimited? Porta qui le sue zone, sequenze e programmazioni, con un'anteprima di tutto prima.",
           "open": "Importa"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "Calcola e irriga",
+          "description": "Da disattivato, Smart Irrigation continua a raccogliere i dati meteo e mantiene i suoi sensori, ma non calcola nulla, lascia invariato il secchio di ogni zona, non apre nessuna valvola e non avvia nessun programma. Quando lo riattivi, il tempo in cui era spento non viene contato.",
+          "off-note": "Disattivato: non si calcola e non si irriga nulla. I dati meteo continuano a essere raccolti, e il tempo in cui resta spento non verrà contato quando lo riattivi.",
+          "confirm-off": "Disattivare Smart Irrigation? Qualsiasi irrigazione in corso si ferma subito, e nulla viene calcolato o irrigato finché non lo riattivi."
         }
       },
       "description": "Questa pagina fornisce le impostazioni globali.",
@@ -345,7 +352,10 @@
           "headline-no-valve": "Non verrà irrigato niente",
           "sub-no-valve": "Le zone a cui manca acqua non hanno nessuna valvola collegata, quindi non vengono irrigate. Collegane una a ciascuna di esse.",
           "headline-no-zones": "Ancora nessuna zona",
-          "sub-no-zones": "Smart Irrigation irriga delle zone. L'assistente crea la prima insieme a te."
+          "sub-no-zones": "Smart Irrigation irriga delle zone. L'assistente crea la prima insieme a te.",
+          "headline-off": "Smart Irrigation è disattivato",
+          "sub-off": "Continua a raccogliere i dati meteo, ma non calcola e non irriga nulla finché non lo riattivi.",
+          "open-settings": "Apri le impostazioni"
         },
         "decision": {
           "title": "Verrà saltato?",
@@ -1451,7 +1461,8 @@
     },
     "no_valve": "nessuna valvola collegata, non irrigata",
     "no_trigger": "Nessun trigger di avvio",
-    "not_scheduled": "Dovuta, ma non pianificata"
+    "not_scheduled": "Dovuta, ma non pianificata",
+    "off": "Disattivato"
   },
   "confirm": {
     "delete_zone": "Eliminare la zona «{name}»? Le sue impostazioni e il suo bilancio idrico vanno persi.",

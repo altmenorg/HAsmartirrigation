@@ -401,6 +401,7 @@ export class SmartIrrigationCard extends LitElement {
         ? this._moment(start)
         : this._t(
             {
+              off: "off",
               no_trigger: "no_trigger",
               skipped: "skipped",
               not_scheduled: "not_scheduled",

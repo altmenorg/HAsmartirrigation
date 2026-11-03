@@ -281,6 +281,13 @@
         "iu-import": {
           "description": "从 Irrigation Unlimited 迁移过来？把它的区域、序列和时间表导入到这里，导入前可先预览全部内容。",
           "open": "导入"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "计算并浇水",
+          "description": "关闭后，Smart Irrigation 仍会获取天气数据并保留其传感器，但不进行任何计算，各区域的 bucket 保持不变，不打开任何阀门，也不运行任何程序。重新打开后，关闭期间的时间不计入。",
+          "off-note": "已关闭：不计算，也不浇水。天气数据照常获取，重新打开时不会计入关闭期间的时间。",
+          "confirm-off": "关闭 Smart Irrigation？正在进行的浇水会立即停止，在重新打开之前不会计算或浇水。"
         }
       },
       "description": "此页面提供全局设置。",
@@ -345,7 +352,10 @@
           "headline-no-valve": "不会浇任何区域",
           "sub-no-valve": "缺水的区域没有关联阀门，因此不会浇水。请为每个区域关联一个阀门。",
           "headline-no-zones": "还没有区域",
-          "sub-no-zones": "Smart Irrigation 为区域浇水。设置助手会和你一起设置第一个区域。"
+          "sub-no-zones": "Smart Irrigation 为区域浇水。设置助手会和你一起设置第一个区域。",
+          "headline-off": "Smart Irrigation 已关闭",
+          "sub-off": "它仍会获取天气数据，但在重新打开之前不计算也不浇水。",
+          "open-settings": "打开设置"
         },
         "decision": {
           "title": "会被跳过吗？",
@@ -1451,7 +1461,8 @@
     },
     "no_valve": "未关联阀门，不浇水",
     "no_trigger": "没有启动触发器",
-    "not_scheduled": "该浇水了，但未安排"
+    "not_scheduled": "该浇水了，但未安排",
+    "off": "已关闭"
   },
   "confirm": {
     "delete_zone": "删除区域“{name}”？它的设置和水分平衡将会丢失。",

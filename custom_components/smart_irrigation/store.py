@@ -53,6 +53,7 @@ from .const import (
     CONF_DEFAULT_GREENHOUSE,
     CONF_DEFAULT_HOURLY_CALCULATION,
     CONF_DEFAULT_INSTALL_BLUEPRINTS,
+    CONF_DEFAULT_IRRIGATION_ENABLED,
     CONF_DEFAULT_IRRIGATION_START_TRIGGERS,
     CONF_DEFAULT_IRRIGATION_THRESHOLD,
     CONF_DEFAULT_MAXIMUM_BUCKET,
@@ -89,6 +90,7 @@ from .const import (
     CONF_IMPERIAL,
     CONF_INSTALL_BLUEPRINTS,
     CONF_INSTALLED_BLUEPRINTS,
+    CONF_IRRIGATION_ENABLED,
     CONF_IRRIGATION_START_TRIGGERS,
     CONF_IU_IMPORT,
     CONF_MANUAL_COORDINATES_ENABLED,
@@ -732,6 +734,7 @@ class Config:
     )
     # Full controller mode and its programs (see programs.py).
     full_controller = attr.ib(type=bool, default=CONF_DEFAULT_FULL_CONTROLLER)
+    irrigation_enabled = attr.ib(type=bool, default=CONF_DEFAULT_IRRIGATION_ENABLED)
     programs = attr.ib(
         type=list, default=attr.Factory(lambda: list(CONF_DEFAULT_PROGRAMS))
     )
@@ -1084,6 +1087,7 @@ class SmartIrrigationStorage:
             effective_rain=CONF_DEFAULT_EFFECTIVE_RAIN,
             recalculate_before_start=CONF_DEFAULT_RECALCULATE_BEFORE_START,
             full_controller=CONF_DEFAULT_FULL_CONTROLLER,
+            irrigation_enabled=CONF_DEFAULT_IRRIGATION_ENABLED,
             programs=[],
             supplies=[],
             sensor_debounce=CONF_DEFAULT_SENSOR_DEBOUNCE,
@@ -1233,6 +1237,9 @@ class SmartIrrigationStorage:
                 direct_valve_control_enabled=data["config"].get(
                     CONF_DIRECT_VALVE_CONTROL_ENABLED,
                     CONF_DEFAULT_DIRECT_VALVE_CONTROL_ENABLED,
+                ),
+                irrigation_enabled=data["config"].get(
+                    CONF_IRRIGATION_ENABLED, CONF_DEFAULT_IRRIGATION_ENABLED
                 ),
                 full_controller=data["config"].get(
                     CONF_FULL_CONTROLLER, CONF_DEFAULT_FULL_CONTROLLER

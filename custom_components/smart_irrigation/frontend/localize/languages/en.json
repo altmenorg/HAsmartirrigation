@@ -281,6 +281,13 @@
         "iu-import": {
           "description": "Moving over from Irrigation Unlimited? Bring its zones, sequences and schedules here, with a preview of everything first.",
           "open": "Import"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "Calculate and water",
+          "description": "Off, Smart Irrigation keeps taking its weather readings and keeps its sensors, but calculates nothing, leaves every bucket as it is, opens no valve and runs no program. Switched on again, the time it was off is not counted.",
+          "off-note": "Switched off: nothing is calculated and nothing is watered. The weather readings carry on, and the time it is off will not be counted when it is switched on again.",
+          "confirm-off": "Switch Smart Irrigation off? Whatever is watering stops now, and nothing is calculated or watered until it is switched on again."
         }
       },
       "description": "This page provides global settings.",
@@ -345,7 +352,10 @@
           "headline-no-valve": "Nothing will be watered",
           "sub-no-valve": "The zones short of water have no valve linked, so they aren't watered. Link one to each of them.",
           "headline-no-zones": "No zone yet",
-          "sub-no-zones": "Smart Irrigation waters zones. The assistant sets up the first one with you."
+          "sub-no-zones": "Smart Irrigation waters zones. The assistant sets up the first one with you.",
+          "headline-off": "Smart Irrigation is switched off",
+          "sub-off": "It keeps taking its weather readings, but calculates nothing and waters nothing until it is switched on again.",
+          "open-settings": "Open the settings"
         },
         "decision": {
           "title": "Will it be skipped?",
@@ -1451,7 +1461,8 @@
     },
     "no_valve": "no valve linked, not watered",
     "no_trigger": "No start trigger",
-    "not_scheduled": "Owed, but not scheduled"
+    "not_scheduled": "Owed, but not scheduled",
+    "off": "Switched off"
   },
   "confirm": {
     "delete_zone": "Delete the zone \"{name}\"? Its settings and water balance are lost.",

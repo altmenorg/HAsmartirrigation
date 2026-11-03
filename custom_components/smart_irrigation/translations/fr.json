@@ -92,6 +92,9 @@
     "switch": {
       "skip_on_precipitation": {
         "name": "Ignorer en cas de pluie"
+      },
+      "irrigation_enabled": {
+        "name": "Actif"
       }
     },
     "datetime": {

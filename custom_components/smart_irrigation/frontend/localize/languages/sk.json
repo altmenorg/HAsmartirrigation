@@ -281,6 +281,13 @@
         "iu-import": {
           "description": "Prechádzate z Irrigation Unlimited? Prevezmite sem jeho zóny, sekvencie a rozvrhy, najprv s náhľadom všetkého.",
           "open": "Importovať"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "Počítať a zalievať",
+          "description": "Keď je vypnuté, Smart Irrigation ďalej zbiera údaje o počasí a ponecháva si svoje senzory, ale nič nepočíta, necháva vedro každej zóny bez zmeny, neotvára žiadny ventil a nespúšťa žiadny program. Po opätovnom zapnutí sa čas, keď bolo vypnuté, nezapočítava.",
+          "off-note": "Vypnuté: nič sa nepočíta a nič sa nezalieva. Údaje o počasí sa zbierajú ďalej a čas vypnutia sa nezapočíta, keď ho znova zapnete.",
+          "confirm-off": "Vypnúť Smart Irrigation? Prebiehajúce zalievanie sa hneď zastaví a nič sa nepočíta ani nezalieva, kým sa znova nezapne."
         }
       },
       "description": "Táto stránka poskytuje globálne nastavenia.",
@@ -345,7 +352,10 @@
           "headline-no-valve": "Nič sa nezaleje",
           "sub-no-valve": "Zóny, ktorým chýba voda, nemajú pripojený ventil, takže sa nezalievajú. Ku každej pripojte jeden.",
           "headline-no-zones": "Zatiaľ žiadna zóna",
-          "sub-no-zones": "Smart Irrigation zalieva zóny. Asistent s vami nastaví prvú."
+          "sub-no-zones": "Smart Irrigation zalieva zóny. Asistent s vami nastaví prvú.",
+          "headline-off": "Smart Irrigation je vypnuté",
+          "sub-off": "Ďalej zbiera údaje o počasí, ale nič nepočíta a nič nezalieva, kým sa znova nezapne.",
+          "open-settings": "Otvoriť nastavenia"
         },
         "decision": {
           "title": "Bude vynechané?",
@@ -1451,7 +1461,8 @@
     },
     "no_valve": "nie je pripojený ventil, nezalieva sa",
     "no_trigger": "Žiadny spúšťač štartu",
-    "not_scheduled": "Na rade, ale nenaplánované"
+    "not_scheduled": "Na rade, ale nenaplánované",
+    "off": "Vypnuté"
   },
   "confirm": {
     "delete_zone": "Odstrániť zónu „{name}“? Jej nastavenia a vodná bilancia sa stratia.",

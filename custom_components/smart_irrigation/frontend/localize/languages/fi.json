@@ -281,6 +281,13 @@
         "iu-import": {
           "description": "Siirrytkö Irrigation Unlimitedistä? Tuo sen alueet, sekvenssit ja aikataulut tänne, ja näe esikatselu kaikesta ensin.",
           "open": "Tuo"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "Laske ja kastele",
+          "description": "Pois päältä Smart Irrigation hakee edelleen säätiedot ja pitää anturinsa, mutta ei laske mitään, jättää jokaisen vyöhykkeen vesitaseen ennalleen, ei avaa yhtään venttiiliä eikä aja yhtään ohjelmaa. Kun se kytketään taas päälle, pois päältä oltua aikaa ei lasketa.",
+          "off-note": "Pois päältä: mitään ei lasketa eikä mitään kastella. Säätietojen haku jatkuu, eikä pois päältä oltua aikaa lasketa, kun kytket sen taas päälle.",
+          "confirm-off": "Kytketäänkö Smart Irrigation pois päältä? Käynnissä oleva kastelu pysähtyy heti, eikä mitään lasketa tai kastella ennen kuin se kytketään taas päälle."
         }
       },
       "description": "Tämä sivu tarjoaa yleiset asetukset.",
@@ -345,7 +352,10 @@
           "headline-no-valve": "Mitään ei kastella",
           "sub-no-valve": "Alueilla, joilta puuttuu vettä, ei ole liitettyä venttiiliä, joten niitä ei kastella. Liitä venttiili jokaiseen niistä.",
           "headline-no-zones": "Ei vielä alueita",
-          "sub-no-zones": "Smart Irrigation kastelee alueita. Avustaja luo ensimmäisen kanssasi."
+          "sub-no-zones": "Smart Irrigation kastelee alueita. Avustaja luo ensimmäisen kanssasi.",
+          "headline-off": "Smart Irrigation on pois päältä",
+          "sub-off": "Se hakee edelleen säätiedot, mutta ei laske eikä kastele mitään ennen kuin se kytketään taas päälle.",
+          "open-settings": "Avaa asetukset"
         },
         "decision": {
           "title": "Ohitetaanko se?",
@@ -1451,7 +1461,8 @@
     },
     "no_valve": "ei liitettyä venttiiliä, ei kastella",
     "no_trigger": "Ei aloitusliipaisinta",
-    "not_scheduled": "Erääntynyt, mutta ei ajastettu"
+    "not_scheduled": "Erääntynyt, mutta ei ajastettu",
+    "off": "Pois päältä"
   },
   "confirm": {
     "delete_zone": "Poistetaanko vyöhyke \"{name}\"? Sen asetukset ja vesitase menetetään.",

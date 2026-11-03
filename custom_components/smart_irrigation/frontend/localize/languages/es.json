@@ -281,6 +281,13 @@
         "iu-import": {
           "description": "¿Vienes de Irrigation Unlimited? Trae aquí sus zonas, secuencias y horarios, con una vista previa de todo antes.",
           "open": "Importar"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "Calcular y regar",
+          "description": "Desactivado, Smart Irrigation sigue tomando sus lecturas meteorológicas y conserva sus sensores, pero no calcula nada, deja el cubo de cada zona tal como está, no abre ninguna válvula y no ejecuta ningún programa. Al volver a activarlo, el tiempo que estuvo desactivado no se cuenta.",
+          "off-note": "Desactivado: no se calcula ni se riega nada. Las lecturas meteorológicas continúan, y el tiempo que esté desactivado no se contará cuando lo vuelvas a activar.",
+          "confirm-off": "¿Desactivar Smart Irrigation? Lo que esté regando se detiene ahora, y no se calcula ni se riega nada hasta que se vuelva a activar."
         }
       },
       "description": "Esta página provee configuraciones globales.",
@@ -345,7 +352,10 @@
           "headline-no-valve": "No se regará nada",
           "sub-no-valve": "Las zonas a las que les falta agua no tienen ninguna válvula vinculada, así que no se riegan. Vincula una a cada una de ellas.",
           "headline-no-zones": "Todavía no hay zonas",
-          "sub-no-zones": "Smart Irrigation riega zonas. El asistente crea la primera contigo."
+          "sub-no-zones": "Smart Irrigation riega zonas. El asistente crea la primera contigo.",
+          "headline-off": "Smart Irrigation está desactivado",
+          "sub-off": "Sigue tomando sus lecturas meteorológicas, pero no calcula ni riega nada hasta que se vuelva a activar.",
+          "open-settings": "Abrir los ajustes"
         },
         "decision": {
           "title": "¿Se va a omitir?",
@@ -1451,7 +1461,8 @@
     },
     "no_valve": "sin válvula vinculada, no se riega",
     "no_trigger": "Ningún disparador de inicio",
-    "not_scheduled": "Pendiente, pero sin programar"
+    "not_scheduled": "Pendiente, pero sin programar",
+    "off": "Desactivado"
   },
   "confirm": {
     "delete_zone": "¿Eliminar la zona «{name}»? Se pierden sus ajustes y su balance hídrico.",

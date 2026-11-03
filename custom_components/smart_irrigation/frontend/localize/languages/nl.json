@@ -281,6 +281,13 @@
         "iu-import": {
           "description": "Kom je van Irrigation Unlimited? Haal de zones, reeksen en schema's hierheen, met eerst een voorbeeld van alles.",
           "open": "Importeren"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "Berekenen en beregenen",
+          "description": "Uitgeschakeld blijft Smart Irrigation weersinformatie verzamelen en houdt het zijn sensoren, maar berekent het niets, laat het de voorraad van elke zone zoals die is, opent het geen ventiel en voert het geen programma uit. Weer ingeschakeld telt de tijd dat het uit stond niet mee.",
+          "off-note": "Uitgeschakeld: er wordt niets berekend en niets beregend. De weersinformatie wordt verder verzameld, en de tijd dat het uit staat telt niet mee als je het weer inschakelt.",
+          "confirm-off": "Smart Irrigation uitschakelen? Wat nu beregent stopt meteen, en er wordt niets berekend of beregend tot het weer ingeschakeld wordt."
         }
       },
       "description": "Dit zijn de algemene instellingen.",
@@ -345,7 +352,10 @@
           "headline-no-valve": "Er wordt niets bewaterd",
           "sub-no-valve": "De zones die water tekortkomen hebben geen ventiel gekoppeld, dus worden ze niet bewaterd. Koppel er aan elk een.",
           "headline-no-zones": "Nog geen zone",
-          "sub-no-zones": "Smart Irrigation bewatert zones. De assistent maakt de eerste samen met je aan."
+          "sub-no-zones": "Smart Irrigation bewatert zones. De assistent maakt de eerste samen met je aan.",
+          "headline-off": "Smart Irrigation is uitgeschakeld",
+          "sub-off": "Het blijft weersinformatie verzamelen, maar berekent en beregent niets tot het weer ingeschakeld wordt.",
+          "open-settings": "Instellingen openen"
         },
         "decision": {
           "title": "Wordt de ronde overgeslagen?",
@@ -1451,7 +1461,8 @@
     },
     "no_valve": "geen ventiel gekoppeld, niet bewaterd",
     "no_trigger": "Geen starttrigger",
-    "not_scheduled": "Nodig, maar niet ingepland"
+    "not_scheduled": "Nodig, maar niet ingepland",
+    "off": "Uitgeschakeld"
   },
   "confirm": {
     "delete_zone": "De zone \"{name}\" verwijderen? De instellingen en de waterbalans gaan verloren.",

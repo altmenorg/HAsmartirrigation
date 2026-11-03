@@ -281,6 +281,13 @@
         "iu-import": {
           "description": "Du kommst von Irrigation Unlimited? Übernimm seine Zonen, Sequenzen und Zeitpläne hierher, mit einer Vorschau auf alles vorab.",
           "open": "Übernehmen"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "Berechnen und bewässern",
+          "description": "Ausgeschaltet erfasst Smart Irrigation weiter seine Wetterdaten und pflegt seine Sensoren, berechnet aber nichts, lässt jeden Wasserhaushalt unverändert, öffnet kein Ventil und führt kein Programm aus. Beim Wiedereinschalten wird die Zeit, in der es aus war, nicht mitgezählt.",
+          "off-note": "Ausgeschaltet: Es wird nichts berechnet und nichts bewässert. Die Wetterdaten werden weiter erfasst, und die Zeit, in der es aus ist, wird beim Wiedereinschalten nicht mitgezählt.",
+          "confirm-off": "Smart Irrigation ausschalten? Was gerade bewässert, stoppt sofort, und bis zum Wiedereinschalten wird nichts berechnet oder bewässert."
         }
       },
       "description": "Diese Seite ist für allgemeine Einstellungen.",
@@ -345,7 +352,10 @@
           "headline-no-valve": "Es wird nichts bewässert",
           "sub-no-valve": "Den Zonen, denen Wasser fehlt, ist kein Ventil verknüpft, daher werden sie nicht bewässert. Verknüpfe jeder ein Ventil.",
           "headline-no-zones": "Noch keine Zone",
-          "sub-no-zones": "Smart Irrigation bewässert Zonen. Der Assistent legt die erste mit dir an."
+          "sub-no-zones": "Smart Irrigation bewässert Zonen. Der Assistent legt die erste mit dir an.",
+          "headline-off": "Smart Irrigation ist ausgeschaltet",
+          "sub-off": "Es erfasst weiter seine Wetterdaten, berechnet und bewässert aber nichts, bis es wieder eingeschaltet wird.",
+          "open-settings": "Einstellungen öffnen"
         },
         "decision": {
           "title": "Wird übersprungen?",
@@ -1451,7 +1461,8 @@
     },
     "no_valve": "kein Ventil verknüpft, wird nicht bewässert",
     "no_trigger": "Kein Startauslöser",
-    "not_scheduled": "Fällig, aber nicht eingeplant"
+    "not_scheduled": "Fällig, aber nicht eingeplant",
+    "off": "Ausgeschaltet"
   },
   "confirm": {
     "delete_zone": "Die Zone „{name}“ löschen? Ihre Einstellungen und ihre Wasserbilanz gehen verloren.",

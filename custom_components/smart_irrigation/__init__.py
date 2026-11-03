@@ -78,6 +78,7 @@ from .helpers import (
 from .hourly_et import solar_elevation_sin
 from .live_estimate import LiveEstimateMixin
 from .liveness import WeatherLivenessMixin
+from .master_switch import irrigation_off
 from .observed_watering import ObservedWateringMixin
 from .panel import async_register_panel, remove_panel
 from .program_adjust import ADJUST_PROGRAM_SCHEMA
@@ -964,6 +965,11 @@ class SmartIrrigationCoordinator(
         # handle auto clear changes
         await self.set_up_auto_clear_time(data)
         was_full = getattr(self.store.config, const.CONF_FULL_CONTROLLER, False) is True
+        was_off = irrigation_off(self.store)
+        if was_off and data.get(const.CONF_IRRIGATION_ENABLED) is True:
+            # Switched on again: what the weather did while it was off is not
+            # counted, or the first calculation would take weeks at once.
+            await self._start_windows_now()
         # Who starts the main program's cycle (its own schedules, or the start
         # trigger) before and after this change.
         was_scheduled = self.main_program_uses_schedules()
@@ -1002,7 +1008,26 @@ class SmartIrrigationCoordinator(
         ):
             _LOGGER.debug("calling register start event from async_update_config")
             await self.register_start_event()
+        if not was_off and data.get(const.CONF_IRRIGATION_ENABLED) is False:
+            # Switched off: whatever is watering or waiting stops now.
+            _LOGGER.info("Smart Irrigation switched off: everything watering stops")
+            await self.async_stop_watering()
         async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated")
+
+    async def _start_windows_now(self) -> None:
+        """Start every zone's next window now, as a bucket set by hand does."""
+        now = _datetime.now()
+        for zone in await self.store.async_get_zones():
+            zone_id = zone.get(const.ZONE_ID)
+            if zone_id is None:
+                continue
+            await self.store.async_update_zone(
+                zone_id,
+                {
+                    const.ZONE_LAST_CONSUMED_AT: now,
+                    const.ZONE_PRECIPITATION_SUPERSEDED: 0.0,
+                },
+            )
 
     def _warn_rain_from_a_service_without_it(self, mapping) -> None:
         """Say once, per group, that its rain is taken from a service that has none.

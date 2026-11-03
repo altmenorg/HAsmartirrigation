@@ -33,6 +33,7 @@ from .helpers import (
     find_next_solar_azimuth_time,
     normalize_azimuth_angle,
 )
+from .master_switch import irrigation_off
 from .programs import main_has_enabled_schedules
 from .rain_history import MAX_FACTOR, MIN_FACTOR, rain_suppression
 from .units import depth_from_display
@@ -668,6 +669,17 @@ class TriggersMixin:
                 ),
             }
             try:
+                if irrigation_off(self.store):
+                    _LOGGER.info(
+                        "Trigger '%s' reached but Smart Irrigation is switched "
+                        "off; not firing event",
+                        name,
+                    )
+                    self.hass.bus.fire(
+                        f"{const.DOMAIN}_{const.EVENT_IRRIGATE_SKIPPED}",
+                        {**event_data, "reason": "irrigation_off", "checks": []},
+                    )
+                    return
                 held = self._main_program_held()
                 if held is not None:
                     _LOGGER.info(
@@ -711,6 +723,9 @@ class TriggersMixin:
         executors of your own, then the valves driven by Smart Irrigation when
         direct valve control is on, then the day counted.
         """
+        if irrigation_off(self.store):
+            # Switched off between the judgement and the start: nothing starts.
+            return
         event_to_fire = f"{const.DOMAIN}_{const.EVENT_IRRIGATE_START}"
         # Fire the event with the trigger's identity.
         self.hass.bus.fire(event_to_fire, event_data)
