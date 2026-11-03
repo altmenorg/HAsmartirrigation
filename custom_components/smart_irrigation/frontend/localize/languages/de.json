@@ -295,7 +295,10 @@
       "sections": {
         "calculation": "Berechnung",
         "control": "Steuerung",
-        "system": "System"
+        "system": "System",
+        "calculation-sub": "Wie viel jede Zone braucht, und wann das berechnet wird.",
+        "control-sub": "Was die Ventile öffnet und was einen Durchlauf startet.",
+        "system-sub": "Die Oberfläche, die Blueprints, der Einrichtungsassistent und der Umzug aus Irrigation Unlimited."
       },
       "moved-to-weather": "Wetterdienst, Standort, wie oft das Wetter gelesen wird, und die Aussetz-Prüfungen stehen in diesem Tab:"
     },
@@ -1417,10 +1420,12 @@
       "sensor": "Liest {sensor}.",
       "service": "Liest den aktuellen Wert des Wetterdienstes.",
       "nothing": "Kein Sensor und kein Wetterdienst: Diese Prüfung hält nichts zurück.",
-      "same": "Dieselbe Quelle wie in der Sensorgruppe {groups}, die damit die Verdunstung rechnet.",
+      "same": "Dieselbe Quelle wie die Sensorgruppe {groups} für die Verdunstung.",
       "other": "Für die Verdunstung lesen die Sensorgruppen diesen Wert anderswo: {groups}.",
       "service-short": "Wetterdienst",
-      "static-short": "fester Wert"
+      "static-short": "fester Wert",
+      "group": "„{group}“",
+      "adopt": "{sensor} auch hier verwenden"
     }
   },
   "card": {

@@ -295,7 +295,10 @@
       "sections": {
         "calculation": "Calculation",
         "control": "Control",
-        "system": "System"
+        "system": "System",
+        "calculation-sub": "How much each zone needs, and when it is worked out.",
+        "control-sub": "What opens the valves, and what starts a run.",
+        "system-sub": "The panel, the blueprints, the setup assistant and moving over from Irrigation Unlimited."
       },
       "moved-to-weather": "The weather service, the location, how often the weather is read and the skip checks are on this tab:"
     },
@@ -1417,10 +1420,12 @@
       "sensor": "Reads {sensor}.",
       "service": "Reads the current value of the weather service.",
       "nothing": "No sensor and no weather service: this check holds nothing back.",
-      "same": "The same source as the sensor group {groups}, which uses it for the evaporation.",
+      "same": "The same source as the sensor group {groups}, for the evaporation.",
       "other": "For the evaporation, the sensor groups read this value elsewhere: {groups}.",
       "service-short": "the weather service",
-      "static-short": "a fixed value"
+      "static-short": "a fixed value",
+      "group": "“{group}”",
+      "adopt": "Use {sensor} here too"
     }
   },
   "card": {

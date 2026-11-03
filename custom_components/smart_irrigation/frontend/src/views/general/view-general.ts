@@ -657,10 +657,21 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // lives with it in the Watering tab.
       const full = this.config.full_controller === true;
       const lang = this.hass.language;
+      const icons: Record<string, string> = {
+        calculation: "mdi:calculator-variant-outline",
+        control: "mdi:valve",
+        system: "mdi:cog-outline",
+      };
       const heading = (key: string) =>
-        html`<h2 class="settings-section">
-          ${localize(`panels.general.sections.${key}`, lang)}
-        </h2>`;
+        html`<div class="settings-section">
+          <ha-icon icon=${icons[key]}></ha-icon>
+          <div>
+            <h2>${localize(`panels.general.sections.${key}`, lang)}</h2>
+            <div class="settings-section-sub">
+              ${localize(`panels.general.sections.${key}-sub`, lang)}
+            </div>
+          </div>
+        </div>`;
 
       // Three sections, each card in one (#972): what is worked out, what
       // opens the valves, and the panel itself. The weather, its location and
@@ -2996,6 +3007,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   ${this._readingSource(
                     MAPPING_TEMPERATURE,
                     this.config.freeze_sensor,
+                    "freeze_sensor",
                   )}`
                 : ""}
             `,
@@ -3026,6 +3038,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   ${this._readingSource(
                     MAPPING_WINDSPEED,
                     this.config.wind_sensor,
+                    "wind_sensor",
                   )}`
                 : ""}
             `,
@@ -3073,6 +3086,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   private _readingSource(
     measurement: string,
     sensor: string | null | undefined,
+    key: string,
   ): TemplateResult {
     const lang = this.hass!.language;
     const t = (key: string, ...args: any[]) =>
@@ -3081,9 +3095,15 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       (entity && this.hass?.states?.[entity]?.attributes?.friendly_name) ||
       entity ||
       "";
+    const quoted = (group: string) => t("group", "{group}", group);
     const uses = readingUses(this.mappings, measurement, sensor);
-    const same = uses.filter((use) => use.same).map((use) => use.group);
+    const same = uses.filter((use) => use.same).map((use) => quoted(use.group));
     const other = uses.filter((use) => !use.same);
+    // A group that reads this value from a sensor of its own: one tap makes
+    // the check read that sensor too.
+    const adoptable = other.find(
+      (use) => use.source === "sensor" && use.entity && use.entity !== sensor,
+    );
     const from = sensor
       ? t("sensor", "{sensor}", name(sensor))
       : this.config?.use_weather_service
@@ -3092,7 +3112,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     const elsewhere = other
       .map(
         (use) =>
-          `${use.group}: ${
+          `${quoted(use.group)}: ${
             use.source === "sensor"
               ? name(use.entity)
               : use.source === "weather_service"
@@ -3104,6 +3124,18 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     return html`<div class="setting-hint reading-source">
       ${from} ${same.length ? t("same", "{groups}", same.join(", ")) : ""}
       ${!same.length && other.length ? t("other", "{groups}", elsewhere) : ""}
+      ${!same.length && adoptable
+        ? html`<div>
+            <ha-button
+              appearance="plain"
+              size="small"
+              @click=${() =>
+                this.handleConfigChange({ [key]: adoptable.entity } as any)}
+            >
+              ${t("adopt", "{sensor}", name(adoptable.entity))}
+            </ha-button>
+          </div>`
+        : ""}
     </div>`;
   }
 
@@ -4022,10 +4054,29 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
       /* The three sections of the settings page (#972). */
       .settings-section {
-        margin: 24px 4px 4px;
-        font-size: 1.1em;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin: 32px 4px 8px;
+        padding-top: 16px;
+        border-top: 1px solid var(--divider-color);
+      }
+      .settings-section ha-icon {
+        color: var(--primary-color);
+        margin-top: 2px;
+      }
+      .settings-section h2 {
+        margin: 0;
+        font-size: 1.3em;
         font-weight: 500;
+        color: var(--primary-text-color);
+      }
+      .settings-section-sub {
+        margin-top: 2px;
         color: var(--secondary-text-color);
+      }
+      .reading-source ha-button {
+        margin-top: 4px;
       }
 
       /* Where a skip check reads its value, under its sensor field. */
