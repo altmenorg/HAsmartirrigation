@@ -23,6 +23,7 @@ import {
 import {
   changedFields,
   displayDepth,
+  displayName,
   displayTemperature,
   displayVolume,
   getOptionsForMappingType,
@@ -455,5 +456,36 @@ describe("readingUses", () => {
       "Garden",
     ]);
     expect(readingUses(undefined, "Windspeed", null)).toEqual([]);
+  });
+});
+
+describe("displayName", () => {
+  const groups = [
+    { id: 0, name: "Standard Sensorgruppe" },
+    { id: 1, name: "Rasen Terrasse" },
+  ];
+
+  it("is the name alone, without the internal id", () => {
+    expect(displayName(groups[1], groups)).toBe("Rasen Terrasse");
+  });
+
+  it("adds the id when two share a name", () => {
+    const twins = [...groups, { id: 2, name: "Rasen Terrasse" }];
+    expect(displayName(twins[1], twins)).toBe("Rasen Terrasse (#1)");
+    expect(displayName(twins[2], twins)).toBe("Rasen Terrasse (#2)");
+    expect(displayName(twins[0], twins)).toBe("Standard Sensorgruppe");
+  });
+
+  it("reads a list given as an object, as the zones page keeps it", () => {
+    const byId = {
+      0: groups[0],
+      1: groups[1],
+      2: { id: 2, name: "Rasen Terrasse" },
+    };
+    expect(displayName(byId[1], byId)).toBe("Rasen Terrasse (#1)");
+  });
+
+  it("falls back to the id for an item without a name", () => {
+    expect(displayName({ id: 3, name: "" }, groups)).toBe("#3");
   });
 });

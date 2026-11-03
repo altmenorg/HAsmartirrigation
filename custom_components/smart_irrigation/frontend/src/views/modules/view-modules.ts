@@ -25,7 +25,7 @@ import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
 import { askConfirmation } from "../../dialogs/confirmation-dialog";
 import { DOMAIN } from "../../const";
-import { prettyPrint, getPart } from "../../helpers";
+import { prettyPrint, getPart, displayName } from "../../helpers";
 import {
   mdiDelete,
   mdiChevronDown,
@@ -332,11 +332,7 @@ class SmartIrrigationViewModules extends SubscribeMixin(LitElement) {
         >
           <div class="si-head-text">
             <div class="si-title-row">
-              <span class="si-title"
-                >${module.id != undefined
-                  ? `${module.id}: ${module.name}`
-                  : module.name}</span
-              >
+              <span class="si-title">${displayName(module, this.modules)}</span>
             </div>
             <div class="si-sub">${description}</div>
           </div>
