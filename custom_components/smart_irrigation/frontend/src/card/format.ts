@@ -2,6 +2,7 @@
  * What the card has to work out before it can say anything, kept out of the
  * element so it can be tested without a browser.
  */
+import { formatNumber } from "../number-format";
 
 export interface ZoneNow {
   bucket: number;
@@ -56,8 +57,15 @@ export const deficitOf = (bucket: number): number => {
  * A depth, labelled. The API answers in the unit system the viewer is shown,
  * so converting here would convert it twice.
  */
-export const depthLabel = (value: number, imperial: boolean): string =>
-  imperial ? `${value.toFixed(2)} in` : `${value.toFixed(1)} mm`;
+export const depthLabel = (
+  value: number,
+  imperial: boolean,
+  locale?: { language?: string; number_format?: string } | null,
+  language?: string,
+): string =>
+  imperial
+    ? `${formatNumber(value, 2, locale, language)} in`
+    : `${formatNumber(value, 1, locale, language)} mm`;
 
 /** A run length as hh:mm:ss, dropping the hours when there are none. */
 export const durationLabel = (seconds: number): string => {

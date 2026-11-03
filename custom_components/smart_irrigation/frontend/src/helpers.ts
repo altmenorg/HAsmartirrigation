@@ -707,3 +707,6 @@ export const readingUses = (
   }
   return uses;
 };
+
+// In its own module so the card can use it without the panel's helpers.
+export { formatNumber } from "./number-format";

@@ -25,6 +25,7 @@ import {
   displayDepth,
   displayTemperature,
   displayVolume,
+  formatNumber,
   getOptionsForMappingType,
   groupsWithRainFromService,
   missingRequiredSources,
@@ -455,5 +456,36 @@ describe("readingUses", () => {
       "Garden",
     ]);
     expect(readingUses(undefined, "Windspeed", null)).toEqual([]);
+  });
+});
+
+describe("formatNumber", () => {
+  it("writes the decimal comma in German", () => {
+    expect(formatNumber(9.5, 1, { language: "de" })).toBe("9,5");
+    expect(formatNumber(950, 1, { language: "de" })).toBe("950,0");
+  });
+
+  it("writes the decimal point in English", () => {
+    expect(formatNumber(9.5, 1, { language: "en" })).toBe("9.5");
+  });
+
+  it("follows the number setting over the language", () => {
+    expect(
+      formatNumber(9.5, 1, { language: "en", number_format: "comma_decimal" }),
+    ).toBe("9,5");
+    expect(
+      formatNumber(9.5, 1, { language: "de", number_format: "decimal_point" }),
+    ).toBe("9.5");
+    expect(
+      formatNumber(1234.5, 1, { language: "de", number_format: "none" }),
+    ).toBe("1234.5");
+  });
+
+  it("falls back to the language when there is no locale", () => {
+    expect(formatNumber(9.5, 1, null, "de")).toBe("9,5");
+  });
+
+  it("shows a hair below zero as zero", () => {
+    expect(formatNumber(-0.01, 1, { language: "de" })).toBe("0,0");
   });
 });

@@ -18,6 +18,7 @@ import { loadHaForm } from "../../load-ha-elements";
 import { SubscribeMixin } from "../../subscribe-mixin";
 import { Path } from "../../common/navigation";
 import {
+  formatNumber,
   displayVolume,
   formatDuration,
   localizedDateTime,
@@ -181,6 +182,15 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
     return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
   }
 
+  /** A number for reading, as the user's number setting writes it. */
+  private _n(value: number, decimals: number): string {
+    return formatNumber(
+      value,
+      decimals,
+      (this.hass as any)?.locale,
+      this.hass?.language,
+    );
+  }
   render(): TemplateResult {
     if (!this.hass) {
       return html``;
@@ -269,10 +279,10 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
                           <span>${record.zone_name || "-"}</span>
                           <span>${formatDuration(record.duration)}</span>
                           <span
-                            >${displayVolume(
-                              record.water_used,
-                              this._config,
-                            ).toFixed(1)}</span
+                            >${this._n(
+                              displayVolume(record.water_used, this._config),
+                              1,
+                            )}</span
                           >
                         </div>
                       `,
@@ -392,7 +402,7 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
           <title>
             ${localizedDateTime(bucket.key, this.hass, {
               dateStyle: "long",
-            })}: ${bucket.value.toFixed(1)}
+            })}: ${this._n(bucket.value, 1)}
           </title>
         </rect>
       `;
@@ -443,7 +453,7 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
   }
 
   private _formatAxis(value: number): string {
-    return value >= 100 ? value.toFixed(0) : value.toFixed(1);
+    return value >= 100 ? this._n(value, 0) : this._n(value, 1);
   }
 
   private _formatStart(start: string | null): string {

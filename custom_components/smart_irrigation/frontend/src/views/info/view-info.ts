@@ -17,7 +17,12 @@ import {
   SmartIrrigationInfo,
   SmartIrrigationZone,
 } from "../../types";
-import { localizedDateTime, navigate, output_unit } from "../../helpers";
+import {
+  formatNumber,
+  localizedDateTime,
+  navigate,
+  output_unit,
+} from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
@@ -31,11 +36,6 @@ import { DOMAIN, ZONE_BUCKET } from "../../const";
  * manufacture prose. Where there is nothing to report it says so, rather than
  * filling the space with a sentence that reads like information.
  */
-/** One decimal, and a balance a hair below zero shown as 0.0 rather than -0.0. */
-function oneDecimal(value: unknown): string {
-  const text = Number(value).toFixed(1);
-  return text === "-0.0" ? "0.0" : text;
-}
 
 @customElement("smart-irrigation-view-info")
 class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
@@ -196,6 +196,24 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
     return minutes ? `${hours} ${h} ${minutes} ${m}` : `${hours} ${h}`;
   }
 
+  /** A number for reading, as the user's number setting writes it. */
+  /** A reading as the backend sent it, with its own decimals, in the user's format. */
+  private _reading(value: unknown): string {
+    if (value === null || value === undefined || value === "") return "-";
+    const number = Number(value);
+    if (!Number.isFinite(number)) return String(value);
+    const decimals = Math.min(2, (String(value).split(".")[1] || "").length);
+    return this._n(number, decimals);
+  }
+
+  private _n(value: number, decimals: number): string {
+    return formatNumber(
+      value,
+      decimals,
+      (this.hass as any)?.locale,
+      this.hass?.language,
+    );
+  }
   render(): TemplateResult {
     if (!this.hass) {
       return html``;
@@ -314,8 +332,8 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       value == null || value <= 0
         ? ""
         : metric
-          ? `${value.toFixed(1)} mm`
-          : `${(value / 25.4).toFixed(2)} in`;
+          ? `${this._n(value, 1)} mm`
+          : `${this._n(value / 25.4, 2)} in`;
 
     return html`
       <ha-card>
@@ -711,7 +729,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
         anyway = this.t(
           "cards.decision.detail-anyway-deficit",
           "{deficit}",
-          (check.deficit_mm ?? 0).toFixed(1),
+          this._n(check.deficit_mm ?? 0, 1),
         );
       } else if (check.overridden === "skips_in_a_row") {
         anyway = this.t(
@@ -723,17 +741,19 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       return html`
         <span
           >${this.t("cards.decision.detail-forecast")}:
-          ${check.forecast_mm?.toFixed(1) ?? "-"} mm</span
+          ${check.forecast_mm != null ? this._n(check.forecast_mm, 1) : "-"}
+          mm</span
         >
         ${weighted
           ? html`<span
               >${this.t("cards.decision.detail-expected")}:
-              ${check.expected_mm!.toFixed(1)} mm</span
+              ${this._n(check.expected_mm!, 1)} mm</span
             >`
           : ""}
         <span
           >${this.t("cards.decision.detail-threshold")}:
-          ${check.threshold_mm?.toFixed(1) ?? "-"} mm</span
+          ${check.threshold_mm != null ? this._n(check.threshold_mm, 1) : "-"}
+          mm</span
         >
         ${anyway ? html`<span class="check-why">${anyway}</span>` : ""}
       `;
@@ -745,17 +765,17 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
           : check.source;
       return html`
         <span
-          >${this.t("cards.decision.detail-now")}: ${check.value ?? "-"}
+          >${this.t("cards.decision.detail-now")}: ${this._reading(check.value)}
           ${check.unit ?? ""}</span
         >
         <span
           >${this.t("cards.decision.detail-threshold")}:
-          ${check.threshold ?? "-"} ${check.unit ?? ""}</span
+          ${this._reading(check.threshold)} ${check.unit ?? ""}</span
         >
         ${check.forecast_low != null
           ? html`<span
-              >${this.t("cards.decision.detail-tonight")}: ${check.forecast_low}
-              ${check.unit ?? ""}</span
+              >${this.t("cards.decision.detail-tonight")}:
+              ${this._reading(check.forecast_low)} ${check.unit ?? ""}</span
             >`
           : ""}
         <span>${source ?? ""}</span>
@@ -772,7 +792,8 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       return html`${(check.zones || []).map(
         (zone) =>
           html`<span
-            >${zone.name}: ${zone.moisture ?? "-"} % / ${zone.threshold} %
+            >${zone.name}: ${this._reading(zone.moisture)} % /
+            ${this._reading(zone.threshold)} %
             ${zone.held
               ? `(${this.t("cards.decision.detail-held")})`
               : ""}</span
@@ -858,7 +879,8 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                             >${this.t("cards.estimate.labels.now")}:</span
                           >
                           <span class="value"
-                            >${oneDecimal(estimate.bucket)} ${unit}</span
+                            >${this._n(Number(estimate.bucket), 1)}
+                            ${unit}</span
                           >
                         </div>
                         <div class="pair">
@@ -878,7 +900,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                               : ""}:</span
                           >
                           <span class="value"
-                            >${oneDecimal(zone.bucket)} ${unit}</span
+                            >${this._n(Number(zone.bucket), 1)} ${unit}</span
                           >
                         </div>
                         <div class="pair">

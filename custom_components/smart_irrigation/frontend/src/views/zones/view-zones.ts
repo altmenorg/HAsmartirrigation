@@ -66,6 +66,7 @@ import {
   output_unit,
   unit_text,
   waterVolume,
+  formatNumber,
 } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
 import { localize } from "../../../localize/localize";
@@ -586,7 +587,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
   private _volumeText(seconds: number, throughput: number): string {
     // Plain text: this goes into a sentence, the markup form would print
     // as [object Object].
-    return `${waterVolume(seconds, throughput).toFixed(1)} ${unit_text(
+    return `${this._n(waterVolume(seconds, throughput), 1)} ${unit_text(
       this.config,
       ZONE_WATER_VOLUME,
     )}`;
@@ -671,7 +672,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
           : ""}
         ${kind !== "off" && kind !== "problem" && threshold > 0
           ? html`<span class="zone-status-numbers">
-              ${t("threshold")}: ${threshold.toFixed(1)} ${unit}
+              ${t("threshold")}: ${this._n(threshold, 1)} ${unit}
             </span>`
           : ""}
       </div>
@@ -699,7 +700,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
     // A zone that has just watered sits a hair below zero, and "short 0.0 mm"
     // says nothing true.
-    const short = deficit >= 0.05 ? `${deficit.toFixed(1)} ${unit}` : null;
+    const short = deficit >= 0.05 ? `${this._n(deficit, 1)} ${unit}` : null;
 
     let kind = "idle";
     let text = short ? t("idle", "{short}", short) : t("satisfied");
@@ -1185,19 +1186,19 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       <span
                         >${record.temperature !== null &&
                         record.temperature !== undefined
-                          ? record.temperature.toFixed(1) + "°C"
+                          ? this._n(record.temperature, 1) + "°C"
                           : "-"}</span
                       >
                       <span
                         >${record.humidity !== null &&
                         record.humidity !== undefined
-                          ? record.humidity.toFixed(1) + "%"
+                          ? this._n(record.humidity, 1) + "%"
                           : "-"}</span
                       >
                       <span
                         >${record.precipitation !== null &&
                         record.precipitation !== undefined
-                          ? record.precipitation.toFixed(1) + "mm"
+                          ? this._n(record.precipitation, 1) + "mm"
                           : "-"}</span
                       >
                       <span
@@ -1267,37 +1268,46 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                     <span
                       >${estimate.estimated_et_mm !== null &&
                       estimate.estimated_et_mm !== undefined
-                        ? displayDepth(
-                            estimate.estimated_et_mm,
-                            this.config,
-                          ).toFixed(1)
+                        ? this._n(
+                            displayDepth(estimate.estimated_et_mm, this.config),
+                            1,
+                          )
                         : "-"}</span
                     >
                     <span
                       >${estimate.average_precipitation_mm !== null &&
                       estimate.average_precipitation_mm !== undefined
-                        ? displayDepth(
-                            estimate.average_precipitation_mm,
-                            this.config,
-                          ).toFixed(1)
+                        ? this._n(
+                            displayDepth(
+                              estimate.average_precipitation_mm,
+                              this.config,
+                            ),
+                            1,
+                          )
                         : "-"}</span
                     >
                     <span
                       >${estimate.estimated_watering_volume_liters !== null &&
                       estimate.estimated_watering_volume_liters !== undefined
-                        ? displayVolume(
-                            estimate.estimated_watering_volume_liters,
-                            this.config,
-                          ).toFixed(0)
+                        ? this._n(
+                            displayVolume(
+                              estimate.estimated_watering_volume_liters,
+                              this.config,
+                            ),
+                            0,
+                          )
                         : "-"}</span
                     >
                     <span
                       >${estimate.average_temperature_c !== null &&
                       estimate.average_temperature_c !== undefined
-                        ? displayTemperature(
-                            estimate.average_temperature_c,
-                            this.config,
-                          ).toFixed(1)
+                        ? this._n(
+                            displayTemperature(
+                              estimate.average_temperature_c,
+                              this.config,
+                            ),
+                            1,
+                          )
                         : "-"}</span
                     >
                   </div>
@@ -1404,7 +1414,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     // "hh:mm:ss (12.3 L)" — the run time reads better than a raw second count,
     // and the volume it implies is what actually matters when watering.
     const durationText = html`${formatDuration(zone.duration)}
-    (${waterVolume(zone.duration, zone.throughput).toFixed(1)}
+    (${this._n(waterVolume(zone.duration, zone.throughput), 1)}
     ${output_unit(this.config, ZONE_WATER_VOLUME)})`;
 
     const expanded = zone.id != undefined && this._expanded.has(zone.id);
@@ -2497,6 +2507,15 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     }
   }
 
+  /** A number for reading, as the user's number setting writes it. */
+  private _n(value: number, decimals: number): string {
+    return formatNumber(
+      value,
+      decimals,
+      (this.hass as any)?.locale,
+      this.hass?.language,
+    );
+  }
   render(): TemplateResult {
     if (!this.hass) {
       return html``;

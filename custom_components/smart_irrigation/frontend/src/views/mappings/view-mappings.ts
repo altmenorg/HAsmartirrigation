@@ -68,6 +68,7 @@ import {
   WEATHER_SERVICES_WITHOUT_RAIN,
 } from "../../const";
 import {
+  formatNumber,
   engineModeLabel,
   getOptionsForMappingType,
   handleError,
@@ -397,19 +398,19 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
                       <span
                         >${record.temperature !== null &&
                         record.temperature !== undefined
-                          ? record.temperature.toFixed(1) + "°C"
+                          ? this._n(record.temperature, 1) + "°C"
                           : "-"}</span
                       >
                       <span
                         >${record.humidity !== null &&
                         record.humidity !== undefined
-                          ? record.humidity.toFixed(1) + "%"
+                          ? this._n(record.humidity, 1) + "%"
                           : "-"}</span
                       >
                       <span
                         >${record.precipitation !== null &&
                         record.precipitation !== undefined
-                          ? record.precipitation.toFixed(1) + "mm"
+                          ? this._n(record.precipitation, 1) + "mm"
                           : "-"}</span
                       >
                       <span>${retrievalTimeFormatted}</span>
@@ -1855,6 +1856,15 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     `;
   }
 
+  /** A number for reading, as the user's number setting writes it. */
+  private _n(value: number, decimals: number): string {
+    return formatNumber(
+      value,
+      decimals,
+      (this.hass as any)?.locale,
+      this.hass?.language,
+    );
+  }
   render(): TemplateResult {
     if (!this.hass) {
       return html``;

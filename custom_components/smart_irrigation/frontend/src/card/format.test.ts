@@ -63,6 +63,12 @@ describe("deficitOf", () => {
   });
 });
 
+describe("depthLabel in the user's number format", () => {
+  it("writes the decimal comma in German", () => {
+    expect(depthLabel(9.5, false, { language: "de" })).toBe("9,5 mm");
+  });
+});
+
 describe("depthLabel", () => {
   it("labels without converting, because the API already did", () => {
     expect(depthLabel(3.42, false)).toBe("3.4 mm");
