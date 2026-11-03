@@ -157,6 +157,34 @@ async def test_off_the_planning_lists_nothing():
     assert await coord.async_planning(3) == []
 
 
+async def test_off_the_info_announces_no_start():
+    from unittest.mock import MagicMock
+
+    from custom_components.smart_irrigation import websockets
+
+    coordinator = MagicMock()
+    coordinator.main_program_uses_schedules = lambda: False
+    coordinator.async_main_program_next_start = AsyncMock(return_value=None)
+    coordinator.store.async_get_zones = AsyncMock(return_value=[])
+    coordinator.store.async_get_config = AsyncMock(return_value={})
+    coordinator.store.config = SimpleNamespace(
+        full_controller=False, programs=[], irrigation_enabled=False
+    )
+    coordinator.get_total_duration_all_enabled_zones = AsyncMock(return_value=0)
+    coordinator._planned_durations = AsyncMock(return_value=None)
+    coordinator.async_evaluate_skip_conditions = AsyncMock(
+        return_value={"should_skip": False, "reason": None, "checks": []}
+    )
+    hass = MagicMock()
+    hass.states.get.return_value = None
+
+    info = await websockets.build_irrigation_info(hass, coordinator)
+
+    assert info["irrigation_enabled"] is False
+    assert info["next_irrigation_start"] is None
+    assert info["next_irrigation_zones"] == []
+
+
 # --- switching it ---------------------------------------------------------------------
 
 
@@ -169,6 +197,66 @@ async def test_switched_on_the_weather_of_the_time_off_is_not_counted():
     for stored in store.by_id.values():
         assert isinstance(stored[const.ZONE_LAST_CONSUMED_AT], datetime)
         assert stored[const.ZONE_PRECIPITATION_SUPERSEDED] == 0.0
+
+
+def _switching_coordinator(enabled):
+    """A coordinator whose store applies what it is given, as the real one does.
+
+    The schedulers store the changes before the coordinator looks at them,
+    which is what hid the switch on ha02: read after them, the setting had
+    already changed.
+    """
+    from unittest.mock import MagicMock
+
+    from homeassistant.util.unit_system import METRIC_SYSTEM
+
+    coordinator = SmartIrrigationCoordinator.__new__(SmartIrrigationCoordinator)
+    coordinator.hass = MagicMock()
+    coordinator.hass.config.units = METRIC_SYSTEM
+    config = SimpleNamespace(
+        irrigation_enabled=enabled, full_controller=False, programs=[]
+    )
+    coordinator.store = MagicMock()
+    coordinator.store.config = config
+
+    async def _store(changes):
+        for key, value in changes.items():
+            setattr(config, key, value)
+
+    coordinator.store.async_update_config = AsyncMock(side_effect=_store)
+    coordinator._track_auto_clear_time_unsub = None
+    coordinator.async_setup_observed_watering = AsyncMock()
+    coordinator.register_start_event = AsyncMock()
+    coordinator.set_up_auto_calc_time = AsyncMock(side_effect=_store)
+    coordinator.set_up_auto_update_time = AsyncMock()
+    coordinator._start_windows_now = AsyncMock()
+    coordinator.async_stop_watering = AsyncMock()
+    return coordinator
+
+
+async def _switch(coordinator, enabled):
+    from unittest.mock import patch
+
+    with patch("custom_components.smart_irrigation.async_dispatcher_send"):
+        await coordinator.async_update_config({const.CONF_IRRIGATION_ENABLED: enabled})
+
+
+async def test_switching_it_off_stops_what_is_watering():
+    coordinator = _switching_coordinator(True)
+
+    await _switch(coordinator, False)
+
+    coordinator.async_stop_watering.assert_awaited_once()
+    coordinator._start_windows_now.assert_not_awaited()
+
+
+async def test_switching_it_on_starts_the_windows_now():
+    coordinator = _switching_coordinator(False)
+
+    await _switch(coordinator, True)
+
+    coordinator._start_windows_now.assert_awaited_once()
+    coordinator.async_stop_watering.assert_not_awaited()
 
 
 async def test_the_switch_entity_reads_and_writes_the_setting():

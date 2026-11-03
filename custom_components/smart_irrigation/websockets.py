@@ -1201,6 +1201,12 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
             # about to do is half of what "will it water" depends on.
             "forecast": await _forecast_days(hass, coordinator),
         }
+        # Switched off, nothing starts: no start to announce, whatever the
+        # trigger would do (#960).
+        if not irrigation_info["irrigation_enabled"]:
+            irrigation_info["next_irrigation_start"] = None
+            irrigation_info["next_irrigation_duration"] = 0
+            irrigation_info["next_irrigation_zones"] = []
 
         _LOGGER.debug("Irrigation info calculated: %s", irrigation_info)
 
