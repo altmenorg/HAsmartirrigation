@@ -553,97 +553,111 @@ class ServiceHandlersMixin(ProgramAdjustMixin):
         data = call.data.copy()
         data.pop(const.SERVICE_ENTITY_ID)
 
-        for entity in eid:
-            _LOGGER.info("Set zone data service called with zone %s", entity)
+        # The panel's path re-arms the start after a zone change; this one
+        # wrote to the store and returned, so a bucket set by an automation
+        # after midnight left a duration owed and no start armed until the
+        # next midnight (#969). Once for the call, after every zone named,
+        # and also when a later zone of the call is refused.
+        changed = False
+        try:
+            for entity in eid:
+                _LOGGER.info("Set zone data service called with zone %s", entity)
 
-            # find entity zone id and call calculate on the zone
-            state = self.hass.states.get(entity)
-            if not state:
-                raise SmartIrrigationError(f"No state found for entity {entity}")
+                # find entity zone id and call calculate on the zone
+                state = self.hass.states.get(entity)
+                if not state:
+                    raise SmartIrrigationError(f"No state found for entity {entity}")
 
-            # find zone_id for zone with name
-            zone_id = state.attributes.get(const.ZONE_ID)
-            if zone_id is None:
-                raise SmartIrrigationError("No zone_id found in state attributes.")
+                # find zone_id for zone with name
+                zone_id = state.attributes.get(const.ZONE_ID)
+                if zone_id is None:
+                    raise SmartIrrigationError("No zone_id found in state attributes.")
 
-            zone = self.store.get_zone(zone_id)
-            metric = self.hass.config.units is METRIC_SYSTEM
-            zone_data = {}
-            count = 0
-            for v in data:
-                if (
-                    v not in const.LIST_SET_ZONE_ALLOWED_ARGS
-                    and v != const.SERVICE_ENTITY_ID
-                ):
-                    raise SmartIrrigationError(f"Argument ({v}) is not allowed")
+                zone = self.store.get_zone(zone_id)
+                metric = self.hass.config.units is METRIC_SYSTEM
+                zone_data = {}
+                count = 0
+                for v in data:
+                    if (
+                        v not in const.LIST_SET_ZONE_ALLOWED_ARGS
+                        and v != const.SERVICE_ENTITY_ID
+                    ):
+                        raise SmartIrrigationError(f"Argument ({v}) is not allowed")
 
-                if (
-                    v == const.ATTR_NEW_DURATION_VALUE
-                    and zone.get(const.ZONE_STATE) != const.ZONE_STATE_MANUAL
-                ):
-                    raise SmartIrrigationError(
-                        "Can only set duration if zone state is set to manual."
-                    )
-                # A zone may have no maximum bucket; comparing with None
-                # raised a TypeError instead of setting the value.
-                maximum = zone.get(const.ZONE_MAXIMUM_BUCKET)
-                if (
-                    v == const.ATTR_NEW_BUCKET_VALUE
-                    and maximum is not None
-                    and depth_from_display(data[v], metric) > maximum
-                ):
-                    raise SmartIrrigationError(
-                        "Bucket size is above maximmum bucket allowed value."
-                    )
-                # This checked the value against the key's own name, "state",
-                # as a substring, so it rejected nothing and a misspelt state
-                # left the zone outside every automatic and manual path.
-                if v == const.ATTR_NEW_STATE_VALUE and data[v] not in const.ZONE_STATES:
-                    raise SmartIrrigationError(
-                        f"Invalid value ({data[v]}) for zone state."
-                    )
+                    if (
+                        v == const.ATTR_NEW_DURATION_VALUE
+                        and zone.get(const.ZONE_STATE) != const.ZONE_STATE_MANUAL
+                    ):
+                        raise SmartIrrigationError(
+                            "Can only set duration if zone state is set to manual."
+                        )
+                    # A zone may have no maximum bucket; comparing with None
+                    # raised a TypeError instead of setting the value.
+                    maximum = zone.get(const.ZONE_MAXIMUM_BUCKET)
+                    if (
+                        v == const.ATTR_NEW_BUCKET_VALUE
+                        and maximum is not None
+                        and depth_from_display(data[v], metric) > maximum
+                    ):
+                        raise SmartIrrigationError(
+                            "Bucket size is above maximmum bucket allowed value."
+                        )
+                    # This checked the value against the key's own name, "state",
+                    # as a substring, so it rejected nothing and a misspelt state
+                    # left the zone outside every automatic and manual path.
+                    if (
+                        v == const.ATTR_NEW_STATE_VALUE
+                        and data[v] not in const.ZONE_STATES
+                    ):
+                        raise SmartIrrigationError(
+                            f"Invalid value ({data[v]}) for zone state."
+                        )
 
-                m = re.match("^new_(.+)_value$", v)
-                if m:
-                    zone_data[m.group(1)] = data[v]
-                    _LOGGER.info("Setting value for %s", m.group(1))
-                    count += 1
+                    m = re.match("^new_(.+)_value$", v)
+                    if m:
+                        zone_data[m.group(1)] = data[v]
+                        _LOGGER.info("Setting value for %s", m.group(1))
+                        count += 1
 
-            if count == 0:
-                raise SmartIrrigationError("No valid parameter provided")
+                if count == 0:
+                    raise SmartIrrigationError("No valid parameter provided")
 
-            if count > 0:
-                # Entered in the unit system, stored in metric (units.py).
-                zone_data = zone_from_display(zone_data, metric)
-                # A bucket set here asserts the soil's state as set_bucket
-                # does, so the weather before it must leave the zone's next
-                # window the same way; written straight to the store, it was
-                # counted again on top of the value set (#811).
-                if const.ZONE_BUCKET in zone_data:
-                    zone_data = await self._start_window_at_bucket_assertion(
+                if count > 0:
+                    # Entered in the unit system, stored in metric (units.py).
+                    zone_data = zone_from_display(zone_data, metric)
+                    # A bucket set here asserts the soil's state as set_bucket
+                    # does, so the weather before it must leave the zone's next
+                    # window the same way; written straight to the store, it was
+                    # counted again on top of the value set (#811).
+                    if const.ZONE_BUCKET in zone_data:
+                        zone_data = await self._start_window_at_bucket_assertion(
+                            zone_id,
+                            {
+                                **zone_data,
+                                const.ATTR_NEW_BUCKET_VALUE: zone_data.pop(
+                                    const.ZONE_BUCKET
+                                ),
+                            },
+                        )
+                        zone_data = self._with_duration_of_bucket(zone_id, zone_data)
+                    await self.store.async_update_zone(zone_id, zone_data)
+                    updated = self.store.get_zone(zone_id) or {}
+                    if (
+                        updated.get(const.ZONE_STATE) != const.ZONE_STATE_AUTOMATIC
+                        and updated.get(const.ZONE_CALCULATION_PROBLEM)
+                        and hasattr(self, "async_calculation_problem_cleared")
+                    ):
+                        # Manual or disabled now: not calculated, so nothing stops it.
+                        await self.async_calculation_problem_cleared(zone_id)
+                    async_dispatcher_send(
+                        self.hass,
+                        const.DOMAIN + "_config_updated",
                         zone_id,
-                        {
-                            **zone_data,
-                            const.ATTR_NEW_BUCKET_VALUE: zone_data.pop(
-                                const.ZONE_BUCKET
-                            ),
-                        },
                     )
-                    zone_data = self._with_duration_of_bucket(zone_id, zone_data)
-                await self.store.async_update_zone(zone_id, zone_data)
-                updated = self.store.get_zone(zone_id) or {}
-                if (
-                    updated.get(const.ZONE_STATE) != const.ZONE_STATE_AUTOMATIC
-                    and updated.get(const.ZONE_CALCULATION_PROBLEM)
-                    and hasattr(self, "async_calculation_problem_cleared")
-                ):
-                    # Manual or disabled now: not calculated, so nothing stops it.
-                    await self.async_calculation_problem_cleared(zone_id)
-                async_dispatcher_send(
-                    self.hass,
-                    const.DOMAIN + "_config_updated",
-                    zone_id,
-                )
+                    changed = True
+        finally:
+            if changed:
+                await self.register_start_event()
 
     async def handle_set_all_multipliers(self, call):
         """Reset all multipliers to new value."""
