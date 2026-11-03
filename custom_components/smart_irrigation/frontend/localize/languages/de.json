@@ -88,13 +88,13 @@
   },
   "calcmodules": {
     "pyeto": {
-      "description": "Die vollständige Berechnung aus Ihren eigenen Sensoren: Temperatur, Luftfeuchtigkeit, Luftdruck, Wind und Sonneneinstrahlung. Die genaueste Option, und die anspruchsvollste."
+      "description": "Die vollständige Berechnung aus deinen eigenen Sensoren: Temperatur, Luftfeuchtigkeit, Luftdruck, Wind und Sonneneinstrahlung. Die genaueste Option, und die anspruchsvollste."
     },
     "static": {
-      "description": "Eine feste Verdunstungsmenge pro Tag, die Sie selbst angeben. Keine Sensoren und kein Wetterdienst."
+      "description": "Eine feste Verdunstungsmenge pro Tag, die du selbst angibst. Keine Sensoren und kein Wetterdienst."
     },
     "passthrough": {
-      "description": "Übernimmt einen bereits vorhandenen Evapotranspirationswert, von einem Sensor oder von einem Wetterdienst, der ihn liefert. Der empfohlene Weg, wenn Sie einen haben."
+      "description": "Übernimmt einen bereits vorhandenen Evapotranspirationswert, von einem Sensor oder von einem Wetterdienst, der ihn liefert. Der empfohlene Weg, wenn du einen hast."
     }
   },
   "panels": {
@@ -170,7 +170,7 @@
         "no-data": "Es wurden noch keine Daten vom Wetterdienst abgerufen."
       },
       "title": "Wetterdienst",
-      "description": "Zeigen und ändern Sie den Wetterdienst, der zum Abrufen der Wetterdaten verwendet wird — ohne die Integration neu installieren zu müssen. Der API-Schlüssel wird validiert und die Änderung sofort angewendet.",
+      "description": "Zeige und ändere den Wetterdienst, der zum Abrufen der Wetterdaten verwendet wird, ohne die Integration neu installieren zu müssen. Der API-Schlüssel wird validiert und die Änderung sofort angewendet.",
       "labels": {
         "use-weather-service": "Einen Wetterdienst verwenden",
         "service": "Wetterdienst",
@@ -184,7 +184,7 @@
         "open-sensor-groups": "Sensorgruppen öffnen"
       },
       "messages": {
-        "no-service": "Es wird kein Wetterdienst verwendet — die Wetterdaten stammen ausschließlich von Ihren eigenen Sensoren.",
+        "no-service": "Es wird kein Wetterdienst verwendet — die Wetterdaten stammen ausschließlich von deinen eigenen Sensoren.",
         "saved": "Wetterdienst aktualisiert und angewendet.",
         "reload-note": "Beim Speichern wird der API-Schlüssel mit dem Dienst validiert und die Änderung sofort angewendet.",
         "owm-onecall-hint": "OpenWeatherMap benötigt den Tarif One Call API 3.0 (One Call by Call). Er ist bis 1000 Aufrufe/Tag kostenlos, muss aber mit einer Karte aktiviert werden, und ein neuer Schlüssel kann ein paar Stunden brauchen, bis er funktioniert. Ein einfacher Standardschlüssel wird abgelehnt.",
@@ -196,15 +196,15 @@
     },
     "backuprestore": {
       "title": "Sichern / Wiederherstellen",
-      "description": "Exportieren Sie die vollständige Smart Irrigation-Konfiguration in eine JSON-Datei oder stellen Sie sie aus einer früheren Sicherung wieder her.",
+      "description": "Exportiere die vollständige Smart-Irrigation-Konfiguration in eine JSON-Datei oder stelle sie aus einer früheren Sicherung wieder her.",
       "cards": {
         "backup": {
           "title": "Sicherung",
-          "description": "Laden Sie die vollständige Konfiguration (allgemeine Einstellungen, Zonen, Module und Sensorgruppen) als JSON-Datei herunter."
+          "description": "Lade die vollständige Konfiguration (allgemeine Einstellungen, Zonen, Module und Sensorgruppen) als JSON-Datei herunter."
         },
         "restore": {
           "title": "Wiederherstellen",
-          "description": "Laden Sie eine zuvor exportierte JSON-Datei, um die aktuelle Konfiguration zu ersetzen."
+          "description": "Lade eine zuvor exportierte JSON-Datei, um die aktuelle Konfiguration zu ersetzen."
         }
       },
       "actions": {
@@ -291,7 +291,16 @@
         }
       },
       "description": "Diese Seite ist für allgemeine Einstellungen.",
-      "title": "Allgemein"
+      "title": "Allgemein",
+      "sections": {
+        "calculation": "Berechnung",
+        "control": "Steuerung",
+        "system": "System",
+        "calculation-sub": "Wie viel jede Zone braucht, und wann das berechnet wird.",
+        "control-sub": "Was die Ventile öffnet und was einen Durchlauf startet.",
+        "system-sub": "Die Oberfläche, die Blueprints, der Einrichtungsassistent und der Umzug aus Irrigation Unlimited."
+      },
+      "moved-to-weather": "Wetterdienst, Standort, wie oft das Wetter gelesen wird, und die Aussetz-Prüfungen stehen in diesem Tab:"
     },
     "help": {
       "title": "Hilfe",
@@ -348,7 +357,7 @@
           "headline-not-scheduled": "Ein Durchlauf ist fällig, und nichts ist eingeplant, um ihn zu starten",
           "sub-not-scheduled": "Die Zeit oben ist der Zeitpunkt, zu dem er beginnen würde. Im Moment ist kein Startauslöser scharf, was vorkommt, wenn der aktive Auslöser deaktiviert ist oder nicht registriert wurde. Prüfe den Auslöser unter Einstellungen; wenn er stimmt, macht eine Berechnung ihn wieder scharf.",
           "headline-no-trigger": "Kein Auslöser ist aktiv",
-          "sub-no-trigger": "Smart Irrigation startet keine Bewässerung. Wählen Sie in den Einstellungen einen Startauslöser, damit bewässert wird.",
+          "sub-no-trigger": "Smart Irrigation startet keine Bewässerung. Wähle in den Einstellungen einen Startauslöser, damit bewässert wird.",
           "headline-no-valve": "Es wird nichts bewässert",
           "sub-no-valve": "Den Zonen, denen Wasser fehlt, ist kein Ventil verknüpft, daher werden sie nicht bewässert. Verknüpfe jeder ein Ventil.",
           "headline-no-zones": "Noch keine Zone",
@@ -425,7 +434,7 @@
       "gaps": {
         "auto_calc_off": {
           "title": "Es wird keine Bewässerungsdauer berechnet",
-          "body": "Die Bewässerungsdauer steht auf \"Nur auf Anfrage\", daher aktualisieren sich die Dauern der Zonen nie von selbst. Wählen Sie unter Einstellungen \"Zu einer festen Uhrzeit\" oder \"Kurz vor jedem Start\", oder berechnen Sie von Hand, wenn Sie einen Durchlauf wünschen."
+          "body": "Die Bewässerungsdauer steht auf \"Nur auf Anfrage\", daher aktualisieren sich die Dauern der Zonen nie von selbst. Wähle unter Einstellungen \"Zu einer festen Uhrzeit\" oder \"Kurz vor jedem Start\", oder berechne von Hand, wenn du einen Durchlauf willst."
         },
         "no_automatic_zone": {
           "title": "Keine Zone bewässert von selbst",
@@ -460,7 +469,7 @@
           "errors": {
             "cannot-delete-mapping-because-zones-use-it": "Diese Sensorgruppe kann nicht entfernt werden, da sie von mindestens einer Zone verwendet wird.",
             "invalid_source": "Ungültige Quelle",
-            "source_does_not_exist": "Die Quelle existiert nicht. Bitte geben Sie eine gültige Quelle an, z. B. \"sensor.mysensor\"."
+            "source_does_not_exist": "Die Quelle existiert nicht. Gib eine gültige Quelle an, z. B. \"sensor.mysensor\"."
           },
           "hidden_sources": "{n} Messwert(e) nicht abgefragt: Die Verdunstung wird fertig geliefert, sie würden nur dazu dienen, sie neu zu berechnen.",
           "et_ignored": "Zone(n) {zones} werden aus dem Wetter berechnet und lesen diese Verdunstung nicht. Stelle sie in der Zone auf von einem Sensor oder Dienst geliefert.",
@@ -794,7 +803,7 @@
     "groups": {
       "home": "Start",
       "zones": "Zonen",
-      "data": "Daten",
+      "data": "Wetter",
       "settings": "Einstellungen",
       "watering": "Bewässerung"
     },
@@ -1040,6 +1049,12 @@
         "zone_schedule_duration": "ein Zeitplan einer Zone braucht eine Dauer: Er wird nicht übernommen",
         "zone_taken": "Zone {zone} gehört schon zu „{name}“: Sie bekommt eine eigene Zone"
       }
+    },
+    "skip": {
+      "title": "Aussetzen bei Wetter",
+      "description": "Ein Durchlauf wird zurückgehalten, wenn eine dieser Prüfungen greift: der Regen in der Vorhersage oder Regen, Frost und Wind, gemessen zu seinem Beginn.",
+      "soil-moisture": "Die Bodenfeuchte wird je Zone eingestellt, denn jede Zone hat ihren eigenen Sensor.",
+      "open-zones": "Zu den Zonen"
     }
   },
   "title": "Smart Irrigation",
@@ -1050,7 +1065,7 @@
     "active_default": "Standard (Sonnenaufgang minus gesamte Bewässerungsdauer)",
     "active_hint": "Nur der gewählte Auslöser startet die Bewässerung, einmal am Tag.",
     "usage_before": "Wenn ein Auslöser ausgelöst wird, sendet Smart Irrigation das Ereignis ",
-    "usage_after": " — reagieren Sie darauf in einer Automatisierung, um die Bewässerung zu starten. Die Ereignisdaten enthalten trigger_name, trigger_type und offset_minutes, sodass Sie je Auslöser unterschiedlich reagieren können. Die Einstellungen für Niederschlagsüberspringung und Tage zwischen den Bewässerungen gelten weiterhin: an einem Überspringungstag wird kein Ereignis ausgelöst.",
+    "usage_after": " — reagiere darauf in einer Automatisierung, um die Bewässerung zu starten. Die Ereignisdaten enthalten trigger_name, trigger_type und offset_minutes, sodass du je Auslöser unterschiedlich reagieren kannst. Die Einstellungen für Niederschlagsüberspringung und Tage zwischen den Bewässerungen gelten weiterhin: an einem Überspringungstag wird kein Ereignis ausgelöst.",
     "add_trigger": "Auslöser hinzufügen",
     "edit_trigger": "Auslöser bearbeiten",
     "delete_trigger": "Auslöser löschen",
@@ -1075,7 +1090,7 @@
       },
       "offset_minutes": {
         "name": "Vor (-) oder nach (+), in Minuten",
-        "description": "Minuten vor (-) oder nach (+) dem Sonnenereignis. Verwenden Sie bei Sonnenaufgangs-Auslösern 0 für eine automatische Zeitsteuerung basierend auf der Gesamtdauer der Zonen."
+        "description": "Minuten vor (-) oder nach (+) dem Sonnenereignis. Verwende bei Sonnenaufgangs-Auslösern 0 für eine automatische Zeitsteuerung basierend auf der Gesamtdauer der Zonen."
       },
       "azimuth_angle": {
         "name": "Azimutwinkel (Grad)",
@@ -1095,23 +1110,23 @@
       "cancel": "Abbrechen",
       "save": "Speichern",
       "delete": "Löschen",
-      "help": "Wenn dieser Auslöser ausgelöst wird, sendet Smart Irrigation das folgende Ereignis — verwenden Sie es in einer Automatisierung, um die Bewässerung zu starten. Die Ereignisdaten enthalten den Namen dieses Auslösers (sowie Typ/Versatz), sodass Sie gezielt darauf reagieren können:"
+      "help": "Wenn dieser Auslöser ausgelöst wird, sendet Smart Irrigation das folgende Ereignis — verwende es in einer Automatisierung, um die Bewässerung zu starten. Die Ereignisdaten enthalten den Namen dieses Auslösers (sowie Typ/Versatz), sodass du gezielt darauf reagieren kannst:"
     },
     "offset_auto": "Automatisch (aus der Gesamtdauer der Zonen berechnet)",
-    "confirm_delete": "Möchten Sie den Auslöser \"{name}\" wirklich löschen?",
+    "confirm_delete": "Möchtest du den Auslöser \"{name}\" wirklich löschen?",
     "validation": {
       "name_required": "Der Auslösername ist erforderlich",
       "azimuth_invalid": "Der Azimutwinkel muss eine gültige Zahl sein",
       "time_invalid": "Bitte gib eine gültige Uhrzeit als HH:MM ein."
     },
     "help": {
-      "sunrise_offset": "Für Sonnenaufgangs-Auslöser: Verwenden Sie negative Werte, um vor Sonnenaufgang zu starten, positive für danach. Setzen Sie auf 0, um automatisch früh genug zu starten, damit alle Zonen vor Sonnenaufgang fertig sind.",
-      "sunset_offset": "Für Sonnenuntergangs-Auslöser: Verwenden Sie negative Werte, um vor Sonnenuntergang zu starten, positive für nach Sonnenuntergang.",
-      "azimuth_explanation": "Das Sonnenazimut ist die Himmelsrichtung der Sonne. 0°=Nord, 90°=Ost, 180°=Süd, 270°=West. Sie können einen beliebigen Winkelwert eingeben (z. B. 450°=90°, -30°=330°). Damit lösen Sie die Bewässerung aus, wenn die Sonne eine bestimmte Position erreicht.",
-      "multiple_triggers": "Sie können mehrere Auslöser anlegen, aber nur der als aktiv gewählte startet die Bewässerung. Die anderen bleiben für später erhalten."
+      "sunrise_offset": "Für Sonnenaufgangs-Auslöser: Verwende negative Werte, um vor Sonnenaufgang zu starten, positive für danach. Setze 0, um automatisch früh genug zu starten, damit alle Zonen vor Sonnenaufgang fertig sind.",
+      "sunset_offset": "Für Sonnenuntergangs-Auslöser: Verwende negative Werte, um vor Sonnenuntergang zu starten, positive für nach Sonnenuntergang.",
+      "azimuth_explanation": "Das Sonnenazimut ist die Himmelsrichtung der Sonne. 0°=Nord, 90°=Ost, 180°=Süd, 270°=West. Du kannst einen beliebigen Winkelwert eingeben (z. B. 450°=90°, -30°=330°). Damit löst du die Bewässerung aus, wenn die Sonne eine bestimmte Position erreicht.",
+      "multiple_triggers": "Du kannst mehrere Auslöser anlegen, aber nur der als aktiv gewählte startet die Bewässerung. Die anderen bleiben für später erhalten."
     },
     "active_none": "Keiner (Smart Irrigation startet keine Bewässerung)",
-    "none_selected": "Kein Auslöser ist aktiv: Smart Irrigation startet keine Bewässerung, egal wie das Wetter ist. Die Dauern werden weiterhin berechnet; starten Sie die Bewässerung selbst oder über eine eigene Automatisierung."
+    "none_selected": "Kein Auslöser ist aktiv: Smart Irrigation startet keine Bewässerung, egal wie das Wetter ist. Die Dauern werden weiterhin berechnet; starte die Bewässerung selbst oder über eine eigene Automatisierung."
   },
   "seasonal_adjustments": {
     "title": "Saisonale Anpassungen",
@@ -1140,7 +1155,7 @@
   },
   "coordinate_config": {
     "title": "Standortkoordinaten",
-    "description": "Konfigurieren Sie Standortkoordinaten für den Abruf von Wetterdaten. Sie können manuelle Koordinaten verwenden, die sich von Ihrem Home Assistant Standort unterscheiden.",
+    "description": "Lege die Standortkoordinaten für den Abruf der Wetterdaten fest. Du kannst eigene Koordinaten verwenden, die vom Standort deines Home Assistant abweichen.",
     "manual_enabled": "Manuelle Koordinaten verwenden",
     "use_ha_location": "Home Assistant Standort verwenden",
     "latitude": "Breitengrad (Dezimalgrad)",
@@ -1150,9 +1165,9 @@
   },
   "days_between_irrigation": {
     "title": "Tage zwischen Bewässerungen",
-    "description": "Konfigurieren Sie die Mindestanzahl von Tagen, die zwischen Bewässerungsereignissen vergehen müssen. Dies hilft bei der Kontrolle der Bewässerungshäufigkeit für Wassereinsparung und Pflanzengesundheit.\n\nTypische Anwendungsfälle:\n• Rasenpflege: 1-2 Tage Intervalle verhindern Überwässerung\n• Dürrebeschränkungen: 6+ Tage Intervalle für wöchentliche Bewässerung\n• Tiefwurzelnde Pflanzen: 3-7 Tage Intervalle für seltene Bewässerung\n• Wassereinsparung: Anpassbar je nach Klima und Bodenbedingungen",
+    "description": "Lege die Mindestanzahl von Tagen fest, die zwischen zwei Bewässerungen vergehen müssen. Dies hilft bei der Kontrolle der Bewässerungshäufigkeit für Wassereinsparung und Pflanzengesundheit.\n\nTypische Anwendungsfälle:\n• Rasenpflege: 1-2 Tage Intervalle verhindern Überwässerung\n• Dürrebeschränkungen: 6+ Tage Intervalle für wöchentliche Bewässerung\n• Tiefwurzelnde Pflanzen: 3-7 Tage Intervalle für seltene Bewässerung\n• Wassereinsparung: Anpassbar je nach Klima und Bodenbedingungen",
     "label": "Mindest-Tage zwischen Bewässerungen",
-    "help_text": "Setzen Sie auf 0, um diese Funktion zu deaktivieren. Werte von 1-365 Tagen werden unterstützt. Diese Einstellung funktioniert zusammen mit der bestehenden Niederschlagsprognose-Logik."
+    "help_text": "Setze 0, um diese Funktion abzuschalten. Werte von 1-365 Tagen werden unterstützt. Diese Einstellung funktioniert zusammen mit der bestehenden Niederschlagsprognose-Logik."
   },
   "planning": {
     "title": "Planung",
@@ -1343,7 +1358,7 @@
   },
   "observed_watering": {
     "title": "Beobachtete Bewässerung (Closed Loop)",
-    "description": "Schreibt den Eimer jeder Zone automatisch aus der tatsächlichen Bewässerung gut, anstatt den Eimer über eine Automatisierung zurückzusetzen. Nach der Aktivierung wählen Sie im Tab \"Zonen\" pro Zone ein Ventil/Schalter-Entity aus: Solange es geöffnet ist, wird der Eimer aus der Laufzeit und dem Durchsatz der Zone gutgeschrieben. Für eine exakte Abrechnung können Sie außerdem pro Zone einen kumulativen Volumenzähler (im Stil eines Wasserzählerstands) auswählen, dann wird das gemessene Volumen verwendet. Wichtig: Wenn diese Funktion aktiv ist, schreibt sie als Einzige den Eimer gut, entfernen Sie daher jeden reset_bucket-Aufruf aus Ihrer Bewässerungs-Automatisierung, um Doppelzählungen zu vermeiden.",
+    "description": "Schreibt den Eimer jeder Zone automatisch aus der tatsächlichen Bewässerung gut, anstatt den Eimer über eine Automatisierung zurückzusetzen. Nach der Aktivierung wählst du im Tab \"Zonen\" pro Zone ein Ventil/Schalter-Entity aus: Solange es geöffnet ist, wird der Eimer aus der Laufzeit und dem Durchsatz der Zone gutgeschrieben. Für eine exakte Abrechnung kannst du außerdem pro Zone einen kumulativen Volumenzähler (im Stil eines Wasserzählerstands) auswählen, dann wird das gemessene Volumen verwendet. Wichtig: Wenn diese Funktion aktiv ist, schreibt sie als Einzige den Eimer gut, entferne daher jeden reset_bucket-Aufruf aus deiner Bewässerungs-Automatisierung, um Doppelzählungen zu vermeiden.",
     "enabled_label": "Beobachtete Bewässerung aktivieren",
     "direct_control_label": "Smart Irrigation das Ventil steuern lassen",
     "direct_control_description": "Wenn aktiviert, öffnet Smart Irrigation das verknüpfte Ventil jeder Zone, wartet die berechnete Dauer ab und schließt es dann, ganz ohne Automatisierung. Ein laufender Vorgang wird nach einem Neustart fortgesetzt. Sicherheit: Ein Ventil, das sich selbst schließen kann, bekommt beim Öffnen die Dauer des Laufs mit (ein Sonoff SWV über ZHA oder ein Ventil, für dessen Zone ein MQTT-Sicherheitstopic eingestellt ist), sodass es auch schließt, wenn Home Assistant ausfällt. Jedes andere Ventil bewässert weiter, bis Home Assistant wieder läuft: Statte es mit einer Hardware-Ausfallsicherung aus (einer maximalen Laufzeit).",
@@ -1400,6 +1415,17 @@
       "title": "Wind",
       "description": "Durchlauf überspringen, wenn der Wind den Schwellwert erreicht oder überschreitet: ein Sprinkler bei starkem Wind bewässert den Weg, nicht das Beet.",
       "sensor-hint": "Leer: der aktuelle Wind des Wetterdienstes, in 10 m Höhe."
+    },
+    "source": {
+      "sensor": "Liest {sensor}.",
+      "service": "Liest den aktuellen Wert des Wetterdienstes.",
+      "nothing": "Kein Sensor und kein Wetterdienst: Diese Prüfung hält nichts zurück.",
+      "same": "Dieselbe Quelle wie die Sensorgruppe {groups} für die Verdunstung.",
+      "other": "Für die Verdunstung lesen die Sensorgruppen diesen Wert anderswo: {groups}.",
+      "service-short": "Wetterdienst",
+      "static-short": "fester Wert",
+      "group": "„{group}“",
+      "adopt": "{sensor} auch hier verwenden"
     }
   },
   "card": {

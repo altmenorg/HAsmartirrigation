@@ -671,3 +671,39 @@ export function visibleGroups<T>(
   const shown = showAll ? groups : groups.slice(0, limit);
   return { shown, hidden: groups.length - shown.length };
 }
+
+/** How one sensor group reads a measurement that a skip check reads too. */
+export interface ReadingUse {
+  group: string;
+  /** The source the skip check reads: the same sensor, or both the service. */
+  same: boolean;
+  source: string;
+  entity?: string;
+}
+
+/**
+ * The sensor groups that read ``measurement``, against the source a skip check
+ * reads it from: ``skipEntity``, or the weather service when it is empty.
+ *
+ * The wind is read for the evaporation in a sensor group and again by the
+ * wind check, set up on two pages with nothing linking them. Whether they are
+ * the same sensor could not be seen (#972).
+ */
+export const readingUses = (
+  mappings: { name: string; mappings?: object }[] | undefined,
+  measurement: string,
+  skipEntity: string | null | undefined,
+): ReadingUse[] => {
+  const uses: ReadingUse[] = [];
+  for (const mapping of mappings ?? []) {
+    const conf = (mapping.mappings as any)?.[measurement];
+    const source = conf?.source;
+    if (!source || source === "none") continue;
+    const entity = conf?.sensorentity || undefined;
+    const same = skipEntity
+      ? source === "sensor" && entity === skipEntity
+      : source === "weather_service";
+    uses.push({ group: mapping.name, same, source, entity });
+  }
+  return uses;
+};

@@ -291,7 +291,16 @@
         }
       },
       "description": "This page provides global settings.",
-      "title": "General"
+      "title": "General",
+      "sections": {
+        "calculation": "Calculation",
+        "control": "Control",
+        "system": "System",
+        "calculation-sub": "How much each zone needs, and when it is worked out.",
+        "control-sub": "What opens the valves, and what starts a run.",
+        "system-sub": "The panel, the blueprints, the setup assistant and moving over from Irrigation Unlimited."
+      },
+      "moved-to-weather": "The weather service, the location, how often the weather is read and the skip checks are on this tab:"
     },
     "help": {
       "title": "Help",
@@ -794,7 +803,7 @@
     "groups": {
       "home": "Home",
       "zones": "Zones",
-      "data": "Data",
+      "data": "Weather",
       "settings": "Settings",
       "watering": "Watering"
     },
@@ -1040,6 +1049,12 @@
         "zone_schedule_duration": "a zone's schedule needs a duration: it is not carried",
         "zone_taken": "zone {zone} already belongs to \"{name}\": it gets a zone of its own"
       }
+    },
+    "skip": {
+      "title": "Skip on weather",
+      "description": "A run is held back when one of these checks holds: the rain in the forecast, or the rain, frost and wind measured at its start.",
+      "soil-moisture": "Soil moisture is set per zone, since each zone has its own sensor.",
+      "open-zones": "Open the zones"
     }
   },
   "title": "Smart Irrigation",
@@ -1400,6 +1415,17 @@
       "title": "Wind",
       "description": "Skip the run when the wind is at or above the threshold: a sprinkler in strong wind waters the path, not the bed.",
       "sensor-hint": "Empty: the weather service's current wind, at 10 m."
+    },
+    "source": {
+      "sensor": "Reads {sensor}.",
+      "service": "Reads the current value of the weather service.",
+      "nothing": "No sensor and no weather service: this check holds nothing back.",
+      "same": "The same source as the sensor group {groups}, for the evaporation.",
+      "other": "For the evaporation, the sensor groups read this value elsewhere: {groups}.",
+      "service-short": "the weather service",
+      "static-short": "a fixed value",
+      "group": "“{group}”",
+      "adopt": "Use {sensor} here too"
     }
   },
   "card": {
