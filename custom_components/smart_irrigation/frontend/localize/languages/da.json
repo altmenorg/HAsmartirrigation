@@ -107,7 +107,6 @@
       "creating": "Opretter...",
       "failed": "Noget gik galt, og der blev ikke oprettet noget. De andre faner er stadig der, hvis du hellere vil sætte det op i hånden.",
       "done": "Din zone er klar.",
-      "done-note": "Den ligger under Zoner, med sin sensorgruppe under Sensorgrupper. Der er intet særligt ved den: ret i dem begge som i alle andre. Kør en opdatering og en beregning, når dine sensorer har meldt ind, og så begynder zonen at give en varighed.",
       "steps": {
         "zone": {
           "question": "Hvad vander du?",

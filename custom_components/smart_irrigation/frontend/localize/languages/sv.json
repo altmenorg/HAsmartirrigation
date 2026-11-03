@@ -107,7 +107,6 @@
       "creating": "Skapar...",
       "failed": "Något gick fel och inget skapades. De andra flikarna finns kvar om du hellre sätter upp det för hand.",
       "done": "Din zon är klar.",
-      "done-note": "Den syns under Zoner, med sin sensorgrupp under Sensorgrupper. Inget här är särskilt: redigera båda som vilka andra som helst. Kör en uppdatering och en beräkning när dina sensorer har rapporterat, då börjar zonen ge en längd.",
       "steps": {
         "zone": {
           "question": "Vad vattnar du?",

@@ -107,7 +107,6 @@
       "creating": "Vytvára sa...",
       "failed": "Niečo sa pokazilo a nič sa nevytvorilo. Ostatné panely sú stále k dispozícii, ak to chcete nastaviť ručne.",
       "done": "Vaša zóna je hotová.",
-      "done-note": "Objaví sa v Zónach, so svojou skupinou senzorov v Skupinách senzorov. Nie je na nich nič zvláštne: upravujte obe ako ktorékoľvek iné. Spustite aktualizáciu a výpočet, keď vaše senzory ohlásia hodnoty, a zóna začne dávať čas.",
       "steps": {
         "zone": {
           "question": "Čo zalievate?",

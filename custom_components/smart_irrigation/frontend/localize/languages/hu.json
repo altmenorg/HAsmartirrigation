@@ -107,7 +107,6 @@
       "creating": "Létrehozás...",
       "failed": "Valami félresikerült, és nem jött létre semmi. A többi fül továbbra is ott van, ha inkább kézzel állítanád be.",
       "done": "A zónád készen van.",
-      "done-note": "A Zónák alatt jelenik meg, az érzékelőcsoportja az Érzékelőcsoportok alatt. Nincs bennük semmi különös: mindkettőt úgy szerkesztheted, mint bármelyik másikat. Futtass egy frissítést és egy számítást, amint az érzékelőid jelentettek, és a zóna elkezd időt adni.",
       "steps": {
         "zone": {
           "question": "Mit öntözöl?",

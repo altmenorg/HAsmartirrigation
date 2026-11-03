@@ -107,7 +107,6 @@
       "creating": "Création...",
       "failed": "Quelque chose a échoué et rien n'a été créé. Les autres onglets restent disponibles si tu préfères configurer à la main.",
       "done": "Ta zone est prête.",
-      "done-note": "Elle apparaît dans Zones, avec son groupe de capteurs dans Groupes de capteurs. Rien n'est particulier ici : modifie-les comme n'importe quels autres. Lance une mise à jour puis un calcul une fois que tes capteurs auront remonté des valeurs, et la zone commencera à produire une durée d'arrosage.",
       "steps": {
         "zone": {
           "question": "Qu'arroses-tu ?",

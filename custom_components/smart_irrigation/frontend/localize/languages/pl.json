@@ -107,7 +107,6 @@
       "creating": "Tworzenie...",
       "failed": "Coś poszło nie tak i nic nie zostało utworzone. Pozostałe zakładki są nadal dostępne, jeśli wolisz ustawić to ręcznie.",
       "done": "Twoja strefa jest gotowa.",
-      "done-note": "Pojawia się w Strefach, ze swoją grupą czujników w Grupach czujników. Nie ma w nich nic szczególnego: edytuj jedną i drugą jak każde inne. Uruchom aktualizację i obliczenie, gdy twoje czujniki podadzą wartości, a strefa zacznie dawać czas.",
       "steps": {
         "zone": {
           "question": "Co podlewasz?",

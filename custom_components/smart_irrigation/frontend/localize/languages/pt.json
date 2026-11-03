@@ -107,7 +107,6 @@
       "creating": "A criar...",
       "failed": "Algo falhou e não foi criado nada. Os outros separadores continuam lá se preferir configurar à mão.",
       "done": "A sua zona está pronta.",
-      "done-note": "Aparece em Zonas, com o seu grupo de sensores em Grupos de sensores. Não há nada de especial aqui: edite qualquer um deles como faria com outro. Faça uma atualização e um cálculo quando os seus sensores tiverem comunicado, e a zona começa a dar uma duração.",
       "steps": {
         "zone": {
           "question": "O que está a regar?",

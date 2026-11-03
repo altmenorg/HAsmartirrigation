@@ -107,7 +107,6 @@
       "creating": "Ustvarjanje ...",
       "failed": "Nekaj je šlo narobe in nič ni bilo ustvarjeno. Ostali zavihki so še vedno tu, če bi raje vse nastavil ročno.",
       "done": "Tvoja cona je pripravljena.",
-      "done-note": "Prikaže se pod Cone, njena skupina senzorjev pa pod Skupine senzorjev. Nič tu ni posebnega: urejaš ju kot katero koli drugo. Ko tvoji senzorji pošljejo podatke, zaženi posodobitev in izračun, in cona bo začela dajati trajanje.",
       "steps": {
         "zone": {
           "question": "Kaj zalivaš?",
