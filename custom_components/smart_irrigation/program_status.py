@@ -19,6 +19,7 @@ import homeassistant.util.dt as dt_util
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 
 from . import const
+from .delivery import zones_without_valve
 from .programs import (
     DURATION_IGNORING_THRESHOLD,
     active_adjustment,
@@ -469,6 +470,13 @@ class ProgramStatusMixin:
         planned = []
         forecasts: dict = {}
         sheltered = await self._planning_sheltered_zones()
+        # The main program leaves a zone with no valve out of its run, and the
+        # planning said "no zone of this run is short enough of water" over a
+        # zone 10 mm dry (#969). It names them instead.
+        without_valve = [
+            {"zone_id": entry["id"], "zone": entry["name"]}
+            for entry in zones_without_valve(zones)
+        ]
         for program in getattr(config, const.CONF_PROGRAMS, None) or []:
             main = bool(program.get(const.PROGRAM_MAIN))
             if program.get(const.PROGRAM_ENABLED) is False:
@@ -489,6 +497,7 @@ class ProgramStatusMixin:
             # with nothing in it, where the scheduler places it.
             nothing = not plan
             placed_at_moment = nothing and total <= 0
+            no_valve = without_valve if main else []
             steps = [
                 {
                     "zones": [
@@ -520,6 +529,7 @@ class ProgramStatusMixin:
                         "expected_seconds": int(total),
                         "steps": steps,
                         "nothing_to_water": nothing,
+                        "zones_without_valve": no_valve,
                         # The Info page says whether the trigger's run will be
                         # skipped, with every condition: not guessed here.
                         "skipped_reason": None,
@@ -575,6 +585,7 @@ class ProgramStatusMixin:
                             "expected_seconds": int(total),
                             "steps": steps,
                             "nothing_to_water": nothing,
+                            "zones_without_valve": no_valve,
                             **prediction,
                         }
                     )

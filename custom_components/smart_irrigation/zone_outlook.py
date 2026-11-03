@@ -54,7 +54,10 @@ def _parse(stamp) -> datetime | None:
 
 async def async_zone_next_runs(hass: HomeAssistant, coordinator) -> dict:
     """``{zone_id: {"start": datetime, "seconds": int, "skip": bool} | None}``."""
-    from .websockets import build_irrigation_info  # noqa: PLC0415 - cycle
+    from .websockets import (  # noqa: PLC0415 - cycle
+        _armed_trigger_start,
+        build_irrigation_info,
+    )
 
     zones = await coordinator.store.async_get_zones()
     result = {int(z[const.ZONE_ID]): None for z in zones}
@@ -64,7 +67,9 @@ async def async_zone_next_runs(hass: HomeAssistant, coordinator) -> dict:
     by_schedules = (
         getattr(coordinator, "main_program_uses_schedules", lambda: False)() is True
     )
-    trigger_start = None if by_schedules else _parse(info.get("next_irrigation_start"))
+    # Not under the "none" trigger, nor while no trigger is armed: the time is
+    # then arithmetic, and nothing will start at it (#969).
+    trigger_start = None if by_schedules else _parse(_armed_trigger_start(info))
     skip_preview = info.get("skip_preview") or {}
     trigger_skips = bool(skip_preview.get("should_skip"))
 

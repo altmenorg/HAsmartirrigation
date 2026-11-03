@@ -19,6 +19,7 @@ import {
   handleError,
   displayVolume,
   storedVolume,
+  navigate,
 } from "../../helpers";
 import { loadHaForm } from "../../load-ha-elements";
 import "../../dialogs/trigger-dialog";
@@ -668,6 +669,21 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     ${this.renderProgramsCard("others")}`;
   }
 
+  /** Links to zones of the Zones page, each opening its zone (#969). */
+  private _zoneLinks(zones: { zone_id: number; zone: string }[]) {
+    return zones.map(
+      (z, index) =>
+        html`${index ? ", " : ""}<a
+            href="/${DOMAIN}/zones/zone/${z.zone_id}"
+            @click=${(e: Event) => {
+              e.preventDefault();
+              navigate(this, `/${DOMAIN}/zones/zone/${z.zone_id}`);
+            }}
+            >${z.zone}</a
+          >`,
+    );
+  }
+
   /** What the programs are doing now, one line each, and the valves that are open. */
   renderLiveState() {
     const state = this.programsState;
@@ -827,12 +843,21 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       </div>
                     `,
                   )}
+                  ${item.zones_without_valve?.length && !item.nothing_to_water
+                    ? html`<div class="setting-note planning-no-valve">
+                        ${t("no_valve")}
+                        ${this._zoneLinks(item.zones_without_valve)}
+                      </div>`
+                    : ""}
                   ${item.nothing_to_water
                     ? html`<div
                         class="setting-note"
                         style="opacity: 0.6; font-style: italic;"
                       >
-                        ${t("nothing_to_water")}
+                        ${item.zones_without_valve?.length
+                          ? html`${t("nothing_no_valve")}
+                            ${this._zoneLinks(item.zones_without_valve)}`
+                          : t("nothing_to_water")}
                       </div>`
                     : item.expected_seconds
                       ? html`<div class="setting-note">

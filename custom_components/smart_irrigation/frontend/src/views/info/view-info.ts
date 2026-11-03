@@ -17,7 +17,7 @@ import {
   SmartIrrigationInfo,
   SmartIrrigationZone,
 } from "../../types";
-import { localizedDateTime, output_unit } from "../../helpers";
+import { localizedDateTime, navigate, output_unit } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
@@ -160,6 +160,15 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       this.isLoading = false;
       this._scheduleUpdate();
     }
+  }
+
+  /** The address of a page of the panel, e.g. "setup" or "zones/zone/3". */
+  private _href(page: string): string {
+    return `/${DOMAIN}/${page}`;
+  }
+
+  private _open(page: string): void {
+    navigate(this, this._href(page));
   }
 
   private get _lang(): string {
@@ -420,7 +429,41 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
    */
   private renderNextRun(): TemplateResult {
     const info = this.info;
+    // No zone at all: "nothing to water, no zone is short of water yet" read
+    // like a garden that needs nothing, on an installation with no garden in
+    // it. The way in is the setup assistant (#969).
+    if (!this.zones.length) {
+      return html`
+        <ha-card>
+          <div class="card-content hero">
+            <ha-icon icon="mdi:sprout-outline"></ha-icon>
+            <div class="hero-text">
+              <div class="hero-headline">
+                ${this.t("cards.next-run.headline-no-zones")}
+              </div>
+              <div class="hero-sub">
+                ${this.t("cards.next-run.sub-no-zones")}
+              </div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <ha-button @click=${() => this._open("setup")}>
+              ${localize(
+                "panels.general.cards.setup-assistant.open",
+                this._lang,
+              )}
+            </ha-button>
+          </div>
+        </ha-card>
+      `;
+    }
     const zones = info?.next_irrigation_zones ?? [];
+    // Owed a run under full control with no valve to open: left out of the run
+    // above, and named, with a way to the zone (#969).
+    const withoutValve = ((info as any)?.zones_without_valve ?? []) as {
+      id: number;
+      name: string;
+    }[];
     const seconds = info?.next_irrigation_duration ?? 0;
     const postponed = (info as any)?.skip_preview?.checks?.find(
       (check: any) => check.id === "postponed" && check.skip,
@@ -464,6 +507,10 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       icon = "mdi:calendar-remove-outline";
       headline = this.t("cards.next-run.headline-skipped");
       sub = this.t(`cards.decision.check-${skipped}`);
+    } else if (!zones.length && withoutValve.length) {
+      icon = "mdi:water-off-outline";
+      headline = this.t("cards.next-run.headline-no-valve");
+      sub = this.t("cards.next-run.sub-no-valve");
     } else if (zones.length && seconds > 0) {
       icon = "mdi:water-outline";
       headline = start
@@ -538,6 +585,22 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
             ? html`<span
                 >${this.t("cards.next-run.labels.zones")}:
                 ${zones.join(", ")}</span
+              >`
+            : ""}
+          ${withoutValve.length
+            ? html`<span class="no-valve"
+                >${this.t("cards.next-run.labels.no-valve")}:
+                ${withoutValve.map(
+                  (zone, index) =>
+                    html`${index ? ", " : ""}<a
+                        href=${this._href(`zones/zone/${zone.id}`)}
+                        @click=${(e: Event) => {
+                          e.preventDefault();
+                          this._open(`zones/zone/${zone.id}`);
+                        }}
+                        >${zone.name}</a
+                      >`,
+                )}</span
               >`
             : ""}
           ${info?.zone_sequencing
@@ -746,6 +809,11 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
     const estimates = this.info?.zone_estimates ?? {};
     const unit = this.config ? output_unit(this.config, ZONE_BUCKET) : "mm";
     const rows = this.zones.filter((zone) => estimates[String(zone.id)]);
+    const withoutValve = new Set(
+      (((this.info as any)?.zones_without_valve ?? []) as { id: number }[]).map(
+        (zone) => zone.id,
+      ),
+    );
 
     return html`
       <ha-card header="${this.t("cards.estimate.title")}">
@@ -798,9 +866,11 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                             )}:</span
                           >
                           <span class="value"
-                            >${estimate.duration
-                              ? this.formatDuration(estimate.duration)
-                              : this.t("cards.estimate.nothing")}</span
+                            >${withoutValve.has(Number(zone.id))
+                              ? this.t("cards.estimate.no-valve")
+                              : estimate.duration
+                                ? this.formatDuration(estimate.duration)
+                                : this.t("cards.estimate.nothing")}</span
                           >
                         </div>
                         <div class="pair">
@@ -871,6 +941,10 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       .hero-sub {
         color: var(--secondary-text-color);
         margin-top: 4px;
+      }
+
+      .no-valve a {
+        color: var(--primary-color);
       }
 
       /* The trigger and the zones: true, and nobody's first question. */

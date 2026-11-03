@@ -7,9 +7,11 @@ import {
   depthLabel,
   durationLabel,
   momentLabel,
+  nextStartState,
   retryDelay,
   zoneActionEntity,
   zoneNow,
+  zoneWithoutValve,
 } from "./format";
 
 const WORDS = { tomorrow: "tomorrow", yesterday: "yesterday" };
@@ -228,5 +230,77 @@ describe("programs polling", () => {
     expect(anyProgramActive(undefined)).toBe(false);
     expect(programsPollDelay(true)).toBe(5000);
     expect(programsPollDelay(false)).toBe(60000);
+  });
+});
+
+describe("nextStartState", () => {
+  const owed = {
+    next_irrigation_start: "2026-11-03T05:13:00+00:00",
+    next_irrigation_zones: ["Lawn"],
+    start_trigger_armed: true,
+    active_start_trigger: "default",
+    start_source: "trigger",
+  };
+
+  it("shows the start when a trigger is armed for it", () => {
+    expect(nextStartState(owed)).toBe("start");
+  });
+
+  it("says no trigger is active under the none trigger", () => {
+    expect(nextStartState({ ...owed, active_start_trigger: "none" })).toBe(
+      "no_trigger",
+    );
+  });
+
+  it("says a run owed is not scheduled when nothing is armed", () => {
+    expect(nextStartState({ ...owed, start_trigger_armed: false })).toBe(
+      "not_scheduled",
+    );
+  });
+
+  it("says there is nothing to water when nothing is owed or armed", () => {
+    expect(
+      nextStartState({
+        ...owed,
+        start_trigger_armed: false,
+        next_irrigation_zones: [],
+      }),
+    ).toBe("nothing");
+  });
+
+  it("goes by the main program's schedules when they start the run", () => {
+    expect(
+      nextStartState({
+        ...owed,
+        start_source: "main_schedules",
+        start_trigger_armed: false,
+        active_start_trigger: "none",
+      }),
+    ).toBe("start");
+  });
+
+  it("says a run held back is held back", () => {
+    expect(
+      nextStartState({ ...owed, skip_preview: { should_skip: true } }),
+    ).toBe("skipped");
+  });
+
+  it("says there is no start when none could be worked out", () => {
+    expect(nextStartState({ ...owed, next_irrigation_start: null })).toBe(
+      "no_start",
+    );
+  });
+});
+
+describe("zoneWithoutValve", () => {
+  const info = { zones_without_valve: [{ id: 0, name: "Lawn" }] };
+
+  it("finds a zone the full controller leaves out", () => {
+    expect(zoneWithoutValve(info, 0)).toBe(true);
+    expect(zoneWithoutValve(info, 1)).toBe(false);
+  });
+
+  it("finds none in an older payload without the list", () => {
+    expect(zoneWithoutValve({}, 0)).toBe(false);
   });
 });

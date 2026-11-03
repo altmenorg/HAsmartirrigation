@@ -317,7 +317,8 @@
             "start": "Beginnt",
             "duration": "Gesamtdauer",
             "zones": "Zonen, die bewässern",
-            "trigger": "Auslöser"
+            "trigger": "Auslöser",
+            "no-valve": "Kein Ventil verknüpft, daher nicht bewässert"
           },
           "no-start": "Es konnte noch keine Startzeit ermittelt werden.",
           "nothing-to-water": "Nichts zu bewässern: keine Zone hat ihren Bewässerungsschwellwert erreicht.",
@@ -340,7 +341,11 @@
           "headline-not-scheduled": "Ein Durchlauf ist fällig, und nichts ist eingeplant, um ihn zu starten",
           "sub-not-scheduled": "Die Zeit oben ist der Zeitpunkt, zu dem er beginnen würde. Im Moment ist kein Startauslöser scharf, was vorkommt, wenn der aktive Auslöser deaktiviert ist oder nicht registriert wurde. Prüfe den Auslöser unter Einstellungen; wenn er stimmt, macht eine Berechnung ihn wieder scharf.",
           "headline-no-trigger": "Kein Auslöser ist aktiv",
-          "sub-no-trigger": "Smart Irrigation startet keine Bewässerung. Wählen Sie in den Einstellungen einen Startauslöser, damit bewässert wird."
+          "sub-no-trigger": "Smart Irrigation startet keine Bewässerung. Wählen Sie in den Einstellungen einen Startauslöser, damit bewässert wird.",
+          "headline-no-valve": "Es wird nichts bewässert",
+          "sub-no-valve": "Den Zonen, denen Wasser fehlt, ist kein Ventil verknüpft, daher werden sie nicht bewässert. Verknüpfe jeder ein Ventil.",
+          "headline-no-zones": "Noch keine Zone",
+          "sub-no-zones": "Smart Irrigation bewässert Zonen. Der Assistent legt die erste mit dir an."
         },
         "decision": {
           "title": "Wird übersprungen?",
@@ -388,7 +393,8 @@
             "last-irrigation": "Zuletzt bewässert"
           },
           "nothing": "nichts",
-          "never-watered": "nie"
+          "never-watered": "nie",
+          "no-valve": "nichts, kein Ventil verknüpft"
         },
         "postpone": {
           "prompt": "Regen, den die Vorhersage verpasst hat, oder ein eigener Grund?",
@@ -566,7 +572,8 @@
         "view-weather-info": "Wetterdaten anzeigen",
         "view-weather-info-message": "Wetterdaten verfügbar für",
         "view-watering-calendar": "Bewässerungskalender anzeigen",
-        "water": "Bewässern"
+        "water": "Bewässern",
+        "calculating": "Wird berechnet …"
       },
       "cards": {
         "add-zone": {
@@ -730,7 +737,9 @@
           "nothing_from_engine": "Lässt sich nicht berechnen: Ihre Sensorgruppe liefert keine Verdunstung. Bis dahin wird nicht bewässert.",
           "forecast_without_service": "Lässt sich nicht berechnen: Die Berechnung schaut voraus, und es ist kein Wetterdienst eingerichtet. Es wird nicht bewässert.",
           "error": "Lässt sich nicht berechnen: {detail}. Bis dahin wird nicht bewässert."
-        }
+        },
+        "no-valve": "Kein Ventil verknüpft, daher wird diese Zone nicht bewässert.",
+        "no-valve-action": "Ventil verknüpfen"
       },
       "calendar": {
         "title": "Bewässerungskalender (12 Monate, geschätzt)",
@@ -747,6 +756,10 @@
         "question": "„{name}“ jetzt bewässern? Das Ventil öffnet sofort oder, wenn gerade bewässert wird, wenn es an der Reihe ist. Das Wasser wird in der Bilanz gezählt.",
         "minutes": "Minuten, leer für die {calculated} der Planung",
         "minutes-none": "Minuten (die Berechnung sieht nichts vor)"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone}: Seit der letzten Berechnung gibt es keine neuen Messwerte, daher hat sich nichts geändert.",
+        "failed": "{zone}: Die Berechnung ist fehlgeschlagen ({error})."
       }
     },
     "history": {
@@ -1144,7 +1157,9 @@
     "step": "Schritt",
     "tour": "Durchgang",
     "tours": "Durchgänge",
-    "remaining": "übrig"
+    "remaining": "übrig",
+    "no_valve": "Kein Ventil verknüpft, daher nicht bewässert:",
+    "nothing_no_valve": "In diesem Lauf wird nichts bewässert: Den Zonen, denen Wasser fehlt, ist kein Ventil verknüpft:"
   },
   "programs": {
     "title": "Programme",
@@ -1433,7 +1448,10 @@
       "show_next_start": "Nächsten Start anzeigen",
       "compact": "Nur Zonen, die bewässern würden",
       "show_programs": "Die Programme anzeigen (volle Steuerung)"
-    }
+    },
+    "no_valve": "kein Ventil verknüpft, wird nicht bewässert",
+    "no_trigger": "Kein Startauslöser",
+    "not_scheduled": "Fällig, aber nicht eingeplant"
   },
   "confirm": {
     "delete_zone": "Die Zone „{name}“ löschen? Ihre Einstellungen und ihre Wasserbilanz gehen verloren.",
