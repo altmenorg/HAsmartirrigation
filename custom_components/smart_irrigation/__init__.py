@@ -958,21 +958,23 @@ class SmartIrrigationCoordinator(
                 const.CONF_SUPPLIES: normalize_supplies(data[const.CONF_SUPPLIES]),
             }
 
+        # What was set before this change, read before anything stores it: the
+        # schedulers below already write the changes to the store.
+        was_full = getattr(self.store.config, const.CONF_FULL_CONTROLLER, False) is True
+        was_off = irrigation_off(self.store)
+        # Who starts the main program's cycle (its own schedules, or the start
+        # trigger) before and after this change.
+        was_scheduled = self.main_program_uses_schedules()
         # handle auto calc changes
         await self.set_up_auto_calc_time(data)
         # handle auto update changes, includings updating OWMClient cache settings
         await self.set_up_auto_update_time(data)
         # handle auto clear changes
         await self.set_up_auto_clear_time(data)
-        was_full = getattr(self.store.config, const.CONF_FULL_CONTROLLER, False) is True
-        was_off = irrigation_off(self.store)
         if was_off and data.get(const.CONF_IRRIGATION_ENABLED) is True:
             # Switched on again: what the weather did while it was off is not
             # counted, or the first calculation would take weeks at once.
             await self._start_windows_now()
-        # Who starts the main program's cycle (its own schedules, or the start
-        # trigger) before and after this change.
-        was_scheduled = self.main_program_uses_schedules()
         await self.store.async_update_config(data)
         start_source_changed = self.main_program_uses_schedules() != was_scheduled
         if was_full and data.get(const.CONF_FULL_CONTROLLER) is False:

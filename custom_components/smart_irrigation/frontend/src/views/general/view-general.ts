@@ -3211,7 +3211,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       localize(`panels.general.cards.master-switch.${key}`, lang);
     const on = this.config.irrigation_enabled !== false;
     return html`
-      <ha-card header="${t("title")}">
+      <ha-card class="master-switch" header="${t("title")}">
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">${t("label")}</div>
@@ -4053,6 +4053,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       }
 
       /* The three sections of the settings page (#972). */
+      /* The master switch stands apart from the page's description. */
+      ha-card.master-switch {
+        margin-top: 16px;
+      }
+
       .settings-section {
         display: flex;
         align-items: flex-start;
