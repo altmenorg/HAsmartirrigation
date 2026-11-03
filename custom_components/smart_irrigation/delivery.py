@@ -58,6 +58,39 @@ def delivery_gap(config: dict, zones) -> str | None:
     return GAP_NO_VALVE_PATH
 
 
+def zones_without_valve(zones, durations=None) -> list[dict]:
+    """The zones owed a run that no valve of theirs can give (full control).
+
+    Under full control the main program opens a zone's linked valve, and a
+    zone with none is left out of its run. That is a setup that isn't finished,
+    not one to support (#969): the zone, the Info page, the card and the
+    planning promised it a run all the same, from its duration alone. The
+    start event still fires for it, as for every run.
+
+    ``durations`` replaces the stored duration of the zones it names, as the
+    next run will water them. Callers check that full control is on.
+    Returns ``[{"id": int, "name": str}]``, in the order of the zones.
+    """
+    durations = durations or {}
+    result = []
+    for zone in zones or []:
+        if zone.get(const.ZONE_LINKED_ENTITY):
+            continue
+        if zone.get(const.ZONE_STATE) == const.ZONE_STATE_DISABLED:
+            continue
+        zone_id = zone.get(const.ZONE_ID)
+        seconds = durations.get(zone_id, zone.get(const.ZONE_DURATION))
+        if not isinstance(seconds, (int, float)) or seconds <= 0:
+            continue
+        result.append(
+            {
+                "id": int(zone_id),
+                "name": zone.get(const.ZONE_NAME) or f"Zone {zone_id}",
+            }
+        )
+    return result
+
+
 # A zone that has stopped being calculated, while the installation as a whole
 # is working. Nothing ever said so: #847 spent five days with one zone frozen
 # on a panel that looked perfectly healthy, because the only trace was a line

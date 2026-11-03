@@ -317,7 +317,8 @@
             "start": "Starts",
             "duration": "Total duration",
             "zones": "Zones watering",
-            "trigger": "Trigger"
+            "trigger": "Trigger",
+            "no-valve": "No valve linked, so not watered"
           },
           "no-start": "No start time could be worked out yet.",
           "nothing-to-water": "Nothing to water: no zone has reached its irrigation threshold.",
@@ -340,7 +341,11 @@
           "headline-not-scheduled": "A run is owed, and nothing is scheduled to start it",
           "sub-not-scheduled": "The time above is when it would start. No start trigger is armed right now, which happens when the active trigger is disabled or was not registered. Check the trigger under Settings, and if it looks right, a calculation re-arms it.",
           "headline-no-trigger": "No trigger is active",
-          "sub-no-trigger": "Smart Irrigation starts no watering. Choose a start trigger in the settings to have it water."
+          "sub-no-trigger": "Smart Irrigation starts no watering. Choose a start trigger in the settings to have it water.",
+          "headline-no-valve": "Nothing will be watered",
+          "sub-no-valve": "The zones short of water have no valve linked, so they aren't watered. Link one to each of them.",
+          "headline-no-zones": "No zone yet",
+          "sub-no-zones": "Smart Irrigation waters zones. The assistant sets up the first one with you."
         },
         "decision": {
           "title": "Will it be skipped?",
@@ -388,7 +393,8 @@
             "last-irrigation": "Last watered"
           },
           "nothing": "nothing",
-          "never-watered": "never"
+          "never-watered": "never",
+          "no-valve": "nothing, no valve linked"
         },
         "postpone": {
           "prompt": "Rain the forecast missed, or a reason of your own?",
@@ -566,7 +572,8 @@
         "view-weather-info": "View weather data",
         "view-weather-info-message": "Weather data available for",
         "view-watering-calendar": "View watering calendar",
-        "water": "Water"
+        "water": "Water",
+        "calculating": "Calculating…"
       },
       "cards": {
         "add-zone": {
@@ -730,7 +737,9 @@
           "nothing_from_engine": "Cannot be calculated: its sensor group gives no evapotranspiration. Not watered until it does.",
           "forecast_without_service": "Cannot be calculated: its engine looks ahead, and no weather service is set up. Not watered.",
           "error": "Cannot be calculated: {detail}. Not watered until it can be."
-        }
+        },
+        "no-valve": "No valve linked, so this zone isn't watered.",
+        "no-valve-action": "Link a valve"
       },
       "calendar": {
         "title": "Watering calendar (12 months, estimated)",
@@ -747,6 +756,10 @@
         "question": "Water \"{name}\" now? Its valve opens straight away, or takes its turn if something is watering. The water is counted in its balance.",
         "minutes": "Minutes, empty for the {calculated} of the planning",
         "minutes-none": "Minutes (the calculation has nothing to water)"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone}: no new readings since the last calculation, so nothing changed.",
+        "failed": "{zone}: the calculation failed ({error})."
       }
     },
     "history": {
@@ -1144,7 +1157,9 @@
     "step": "step",
     "tour": "round",
     "tours": "rounds",
-    "remaining": "left"
+    "remaining": "left",
+    "no_valve": "No valve linked, so not watered:",
+    "nothing_no_valve": "Nothing to water in this run: the zones short of water have no valve linked:"
   },
   "programs": {
     "title": "Programs",
@@ -1433,7 +1448,10 @@
       "show_next_start": "Show the next start",
       "compact": "Only the zones that would water",
       "show_programs": "Show the programs (full controller)"
-    }
+    },
+    "no_valve": "no valve linked, not watered",
+    "no_trigger": "No start trigger",
+    "not_scheduled": "Owed, but not scheduled"
   },
   "confirm": {
     "delete_zone": "Delete the zone \"{name}\"? Its settings and water balance are lost.",

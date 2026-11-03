@@ -1,9 +1,17 @@
-import { TemplateResult, LitElement, html, CSSResultGroup, css } from "lit";
+import {
+  TemplateResult,
+  LitElement,
+  html,
+  CSSResultGroup,
+  css,
+  PropertyValues,
+} from "lit";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { repeat } from "lit/directives/repeat.js";
 import { query } from "lit/decorators.js";
 import { property, customElement } from "lit/decorators.js";
-import { HomeAssistant } from "custom-card-helpers";
+import { HomeAssistant, fireEvent } from "custom-card-helpers";
+import { Path } from "../../common/navigation";
 import { loadHaForm } from "../../load-ha-elements";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -129,6 +137,13 @@ const PLANT_TYPES = [
 class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
   hass?: HomeAssistant;
   @property() config?: SmartIrrigationConfig;
+  // The page's address. ``/zones/zone/<id>`` opens that zone: the Info page,
+  // the planning and the card link to a zone that has no valve (#969).
+  @property({ attribute: false }) path?: Path;
+  private _openedFromPath?: string;
+
+  // The zones being calculated, for the button to say so until the answer.
+  private _calculating: Set<number> = new Set();
 
   @property({ type: Array })
   private zones: SmartIrrigationZone[] = [];
@@ -214,6 +229,35 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     super();
     this._fetchData();
   }*/
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    // A link to one zone opens it once its card is there.
+    const wanted = this.path?.params?.zone;
+    if (wanted == undefined || wanted === this._openedFromPath) return;
+    const id = Number(wanted);
+    if (!this.zones.some((zone) => zone.id === id)) return;
+    this._openedFromPath = wanted;
+    this._focusZone(id);
+  }
+
+  /**
+   * Open a zone and bring it into view: at its valve field when it has no
+   * valve under full control, which is what a link to it is for (#969).
+   */
+  private _focusZone(id: number): void {
+    this._expanded.add(id);
+    this.requestUpdate();
+    this.updateComplete.then(() => {
+      const zone = this.zones.find((z) => z.id === id);
+      const root = this.shadowRoot;
+      const target =
+        (zone && this._noValve(zone)
+          ? root?.querySelector(`#zone-${id}-valve`)
+          : null) ?? root?.querySelector(`#zone-${id}`);
+      target?.scrollIntoView({ block: "start", behavior: "smooth" });
+    });
+  }
+
   firstUpdated() {
     loadHaForm().catch((error) => {
       console.error("Failed to load HA form:", error);
@@ -582,7 +626,63 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     return undefined;
   }
 
+  /**
+   * Whether full control leaves this zone out of its run for want of a valve.
+   *
+   * The main program opens a zone's linked valve, and a zone with none is not
+   * watered: a setup that isn't finished (#969). The line said "will water 51
+   * min at the next start" over it all the same.
+   */
+  private _noValve(zone: SmartIrrigationZone): boolean {
+    return (
+      this.config?.full_controller === true &&
+      !zone.linked_entity &&
+      zone.state !== SmartIrrigationZoneState.Disabled
+    );
+  }
+
   private _zoneStatus(zone: SmartIrrigationZone, lang: string) {
+    const { kind, text, noValve } = this._zoneStatusOf(zone, lang);
+    const t = (key: string) => localize(`panels.zones.status.${key}`, lang);
+    const threshold = zone.irrigation_threshold ?? 0;
+    const unit = unit_text(this.config, ZONE_BUCKET);
+    return html`
+      <div
+        class="zone-status zone-status--${kind}"
+        role=${kind === "problem" ? "alert" : "status"}
+      >
+        <ha-icon
+          icon=${kind === "watering"
+            ? "mdi:water-outline"
+            : kind === "off"
+              ? "mdi:pause-circle-outline"
+              : kind === "problem"
+                ? "mdi:alert-circle-outline"
+                : "mdi:check-circle-outline"}
+        ></ha-icon>
+        <span>${text}</span>
+        ${noValve && zone.id != undefined && !this._expanded.has(zone.id)
+          ? html`<button
+              class="zone-status-link"
+              @click=${() => this._focusZone(zone.id!)}
+            >
+              ${t("no-valve-action")}
+            </button>`
+          : ""}
+        ${kind !== "off" && kind !== "problem" && threshold > 0
+          ? html`<span class="zone-status-numbers">
+              ${t("threshold")}: ${threshold.toFixed(1)} ${unit}
+            </span>`
+          : ""}
+      </div>
+    `;
+  }
+
+  /** What the zone's status line says, and how it looks. */
+  private _zoneStatusOf(
+    zone: SmartIrrigationZone,
+    lang: string,
+  ): { kind: string; text: string; noValve: boolean } {
     const t = (key: string, ...args: any[]) =>
       localize(`panels.zones.status.${key}`, lang, ...args);
     // The stored bucket is the one the last calculation committed: right
@@ -624,6 +724,14 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         typeof said === "string" && said && !said.startsWith("Translation")
           ? said
           : t("problem.error", "{detail}", code);
+    } else if (
+      this._noValve(zone) &&
+      ((zone.duration ?? 0) > 0 || (live && (planned ?? live.duration) > 0))
+    ) {
+      // Owed a run that nothing opens a valve for.
+      kind = "problem";
+      text = t("no-valve");
+      return { kind, text, noValve: true };
     } else if ((zone.duration ?? 0) > 0) {
       kind = "watering";
       // The volume is appended rather than a placeholder of the sentence: the
@@ -652,29 +760,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     } else if (short && threshold > 0) {
       text = t("under-threshold", "{short}", short);
     }
-
-    return html`
-      <div
-        class="zone-status zone-status--${kind}"
-        role=${kind === "problem" ? "alert" : "status"}
-      >
-        <ha-icon
-          icon=${kind === "watering"
-            ? "mdi:water-outline"
-            : kind === "off"
-              ? "mdi:pause-circle-outline"
-              : kind === "problem"
-                ? "mdi:alert-circle-outline"
-                : "mdi:check-circle-outline"}
-        ></ha-icon>
-        <span>${text}</span>
-        ${kind !== "off" && kind !== "problem" && threshold > 0
-          ? html`<span class="zone-status-numbers">
-              ${t("threshold")}: ${threshold.toFixed(1)} ${unit}
-            </span>`
-          : ""}
-      </div>
-    `;
+    return { kind, text, noValve: false };
   }
 
   /**
@@ -883,17 +969,50 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       });
   }
 
-  private handleCalculateZone(index: number): void {
+  /**
+   * Calculate one zone, and say what came of it.
+   *
+   * This was fire-and-forget: no busy state, nothing after, and a failure only
+   * in the log (#969). The button now waits for the answer, and a toast says it
+   * in the zone's own words: the line its status shows, or that there was
+   * nothing new to read since the last calculation.
+   */
+  private async handleCalculateZone(index: number): Promise<void> {
     const zone = this.zones[index];
-    if (!zone || zone.id == undefined) {
+    if (!zone || zone.id == undefined || !this.hass) {
       return;
     }
-    if (!this.hass) {
-      return;
+    const id = zone.id;
+    if (this._calculating.has(id)) return;
+    const lang = this.hass.language;
+    const t = (key: string, ...args: any[]) =>
+      localize(`panels.zones.calculation-feedback.${key}`, lang, ...args);
+    const before = zone.last_calculated;
+    this._calculating.add(id);
+    this._scheduleUpdate();
+    let message: string;
+    try {
+      await calculateZone(this.hass, id.toString());
+      await this._fetchData();
+      const after = this.zones.find((z) => z.id === id) ?? zone;
+      message =
+        !after.calculation_problem?.code && after.last_calculated === before
+          ? t("nothing-new", "{zone}", after.name)
+          : `${after.name}: ${this._zoneStatusOf(after, lang).text}`;
+    } catch (error: any) {
+      console.error("Failed to calculate the zone:", error);
+      message = t(
+        "failed",
+        "{zone}",
+        zone.name,
+        "{error}",
+        String(error?.body?.message ?? error?.message ?? error),
+      );
+    } finally {
+      this._calculating.delete(id);
+      this._scheduleUpdate();
     }
-    //call the calculate method of the module for the zone
-    // Fire-and-forget: trigger zone calculation in background
-    void calculateZone(this.hass, zone.id.toString());
+    fireEvent(this, "hass-notification" as any, { message } as any);
   }
 
   private handleUpdateZone(index: number): void {
@@ -1291,7 +1410,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     const expanded = zone.id != undefined && this._expanded.has(zone.id);
 
     return html`
-      <ha-card class="zone-card">
+      <ha-card class="zone-card" id="zone-${zone.id}">
         <div
           class="zone-head"
           role="button"
@@ -1790,27 +1909,36 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 </div>
                 ${this.config?.observed_watering_enabled ||
                 this.config?.direct_valve_control_enabled
-                  ? this._entityRow(
-                      localize("panels.zones.labels.linked-entity", lang),
-                      localize("panels.zones.labels.optional", lang),
-                      zone.linked_entity,
-                      this.config?.full_controller
-                        ? [
-                            "switch",
-                            "valve",
-                            "input_boolean",
-                            "binary_sensor",
-                            "light",
-                            "cover",
-                          ]
-                        : ["switch", "valve", "input_boolean", "binary_sensor"],
-                      (v) =>
-                        this.handleEditZone(index, {
-                          ...zone,
-                          [ZONE_LINKED_ENTITY]: v || undefined,
-                        }),
-                      localize("panels.zones.labels.linked-entity-hint", lang),
-                    )
+                  ? html`<div id="zone-${zone.id}-valve"></div>
+                      ${this._entityRow(
+                        localize("panels.zones.labels.linked-entity", lang),
+                        localize("panels.zones.labels.optional", lang),
+                        zone.linked_entity,
+                        this.config?.full_controller
+                          ? [
+                              "switch",
+                              "valve",
+                              "input_boolean",
+                              "binary_sensor",
+                              "light",
+                              "cover",
+                            ]
+                          : [
+                              "switch",
+                              "valve",
+                              "input_boolean",
+                              "binary_sensor",
+                            ],
+                        (v) =>
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_LINKED_ENTITY]: v || undefined,
+                          }),
+                        localize(
+                          "panels.zones.labels.linked-entity-hint",
+                          lang,
+                        ),
+                      )}`
                   : ""}
                 ${this.config?.full_controller && zone.linked_entity
                   ? this._entitiesRows(
@@ -2064,8 +2192,15 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                   ? html`
                       ${this._actionBtn(
                         mdiCalculator,
-                        localize("panels.zones.actions.calculate", lang),
+                        localize(
+                          zone.id != undefined && this._calculating.has(zone.id)
+                            ? "panels.zones.actions.calculating"
+                            : "panels.zones.actions.calculate",
+                          lang,
+                        ),
                         () => this.handleCalculateZone(index),
+                        false,
+                        zone.id != undefined && this._calculating.has(zone.id),
                       )}
                       ${this._actionBtn(
                         mdiUpdate,
@@ -2675,6 +2810,16 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
       .zone-status--problem ha-icon {
         color: var(--error-color, #db4437);
+      }
+
+      .zone-status-link {
+        background: none;
+        border: none;
+        padding: 0;
+        font: inherit;
+        color: var(--primary-color);
+        text-decoration: underline;
+        cursor: pointer;
       }
 
       .zone-status-numbers {

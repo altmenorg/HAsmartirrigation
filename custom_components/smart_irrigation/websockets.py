@@ -25,7 +25,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const, iu_import_ha
 from .calcmodules.consumes import consumed_mappings, idle_options, required_mappings
-from .delivery import delivery_gap, stale_zones
+from .delivery import delivery_gap, stale_zones, zones_without_valve
 from .engine_binding import (
     ENGINE_BY_METHOD,
     METHOD_FROM_WEATHER,
@@ -847,8 +847,25 @@ async def _trigger_start(hass: HomeAssistant, coordinator):
     if getattr(coordinator, "main_program_uses_schedules", lambda: False)() is True:
         return None
     info = await build_irrigation_info(hass, coordinator)
-    start = None if info.get("error") else info.get("next_irrigation_start")
+    start = _armed_trigger_start(info)
     return dt_util.parse_datetime(start) if start else None
+
+
+def _armed_trigger_start(info: dict) -> str | None:
+    """The start trigger's next start, when something will act on it.
+
+    The time is worked out whatever the trigger: under the "none" trigger,
+    which starts nothing, and while no trigger is armed, it is arithmetic, and
+    the planning and the programs listed the main program at it (#969). The
+    Info page has said so since #841.
+    """
+    if info.get("error"):
+        return None
+    if info.get("active_start_trigger") == const.START_TRIGGER_NONE:
+        return None
+    if info.get("start_trigger_armed") is False:
+        return None
+    return info.get("next_irrigation_start")
 
 
 @async_response
@@ -869,9 +886,10 @@ async def websocket_get_programs_state(hass: HomeAssistant, connection, msg):
         # The main program starts at the active start trigger, which the Info
         # page already works out: the same time is shown here.
         info = await build_irrigation_info(hass, coordinator)
-        if not info.get("error"):
+        start = _armed_trigger_start(info)
+        if start:
             for program in main:
-                program["next_start"] = info.get("next_irrigation_start")
+                program["next_start"] = start
     connection.send_result(
         msg["id"],
         {
@@ -934,6 +952,31 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
         enabled_zones = []
         irrigation_zones = []
 
+        # Under full control a zone with no valve is left out of the run: it is
+        # a setup that isn't finished, and the page listed it among the zones
+        # the next run waters (#969). The start is still placed, and its event
+        # still fires, on the total above; what the run waters leaves it out.
+        full_controller = (
+            getattr(
+                getattr(coordinator.store, "config", None),
+                const.CONF_FULL_CONTROLLER,
+                False,
+            )
+            is True
+        )
+        without_valve = (
+            zones_without_valve(zones, estimated_durations) if full_controller else []
+        )
+        without_valve_ids = {entry["id"] for entry in without_valve}
+        watering_duration = total_duration
+        if without_valve_ids:
+            watering_duration = await coordinator.get_total_duration_all_enabled_zones(
+                {
+                    **estimated_durations,
+                    **{zone_id: 0 for zone_id in without_valve_ids},
+                }
+            )
+
         for zone in zones:
             zone_state = zone.get(const.ZONE_STATE)
             zone_duration = estimated_durations.get(
@@ -943,7 +986,10 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
             if zone_state in [const.ZONE_STATE_AUTOMATIC, const.ZONE_STATE_MANUAL]:
                 enabled_zones.append(zone)
                 # Zone needs irrigation if duration > 0 (bucket was negative)
-                if zone_duration > 0:
+                if (
+                    zone_duration > 0
+                    and zone.get(const.ZONE_ID) not in without_valve_ids
+                ):
                     irrigation_zones.append(
                         zone.get(const.ZONE_NAME, f"Zone {zone.get(const.ZONE_ID)}")
                     )
@@ -1100,8 +1146,10 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
             "next_irrigation_start": (
                 next_irrigation_start.isoformat() if next_irrigation_start else None
             ),
-            "next_irrigation_duration": int(total_duration),
+            "next_irrigation_duration": int(watering_duration),
             "next_irrigation_zones": irrigation_zones,
+            # The zones owed a run that no valve can give, under full control.
+            "zones_without_valve": without_valve,
             # True when those durations are the live estimate, because the zones
             # are calculated again just before the start.
             "durations_estimated": bool(estimated_durations),
@@ -1162,6 +1210,7 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
             "next_irrigation_start": sunrise_time.isoformat(),
             "next_irrigation_duration": 0,
             "next_irrigation_zones": [],
+            "zones_without_valve": [],
             "sunrise_time": sunrise_time.isoformat(),
             "trigger_name": None,
             "trigger_type": None,

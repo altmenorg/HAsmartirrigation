@@ -19,9 +19,11 @@ import {
   depthLabel,
   durationLabel,
   momentLabel,
+  nextStartState,
   retryDelay,
   zoneActionEntity,
   zoneNow,
+  zoneWithoutValve,
 } from "./format";
 import { cardString, cardStringsLoaded, loadCardStrings } from "./card-strings";
 
@@ -378,20 +380,40 @@ export class SmartIrrigationCard extends LitElement {
     }
   }
 
+  /** The panel's page of a zone, in the dashboard's own window. */
+  private _openZone(e: Event, zoneId: number): void {
+    e.preventDefault();
+    window.history.pushState(null, "", `/${DOMAIN}/zones/zone/${zoneId}`);
+    window.dispatchEvent(
+      new CustomEvent("location-changed", { detail: { replace: false } }),
+    );
+  }
+
   private _nextStart(): TemplateResult | typeof nothingLine {
     if (!this._config?.show_next_start || !this._info) return nothingLine;
-    const skipped = this._info.skip_preview?.should_skip;
+    // The time is arithmetic; whether a trigger will act on it is the state
+    // (#969). The Info page has said so since #841, the card said "06:13".
+    const state = nextStartState(this._info);
+    const skipped = state === "skipped";
     const start = this._info.next_irrigation_start;
-    const label = skipped
-      ? this._t("skipped")
-      : start
+    const label =
+      state === "start"
         ? this._moment(start)
-        : this._t("no_start");
+        : this._t(
+            {
+              no_trigger: "no_trigger",
+              skipped: "skipped",
+              not_scheduled: "not_scheduled",
+              nothing: "nothing_to_water",
+              no_start: "no_start",
+            }[state],
+          );
     const reason = skipped ? this._info.skip_preview?.reason : null;
+    const held = state !== "start" && state !== "nothing";
     return html`
-      <div class="next ${skipped ? "held" : ""}">
+      <div class="next ${held ? "held" : ""}">
         <ha-icon
-          icon=${skipped ? "mdi:calendar-remove" : "mdi:calendar-clock"}
+          icon=${held ? "mdi:calendar-remove" : "mdi:calendar-clock"}
         ></ha-icon>
         <span class="next-label">${this._t("next_start")}</span>
         <span class="next-value"
@@ -406,7 +428,10 @@ export class SmartIrrigationCard extends LitElement {
     const waterButton = this._waterButton(zone);
     const now = this._now(zone);
     const deficit = deficitOf(now.bucket);
-    const needed = deficit > threshold && now.duration > 0;
+    // Under full control a zone with no valve is left out of the run: say so,
+    // with the way to its valve, rather than how long it "would run" (#969).
+    const noValve = zoneWithoutValve(this._info, zone.id);
+    const needed = deficit > threshold && now.duration > 0 && !noValve;
     return html`
       <div class="zone">
         <div class="zone-name">
@@ -424,6 +449,15 @@ export class SmartIrrigationCard extends LitElement {
               ${this._t("runs_for", {
                 duration: this._duration(now.duration),
               })}`
+            : ""}
+          ${noValve
+            ? html`&middot;
+                <a
+                  class="no-valve"
+                  href="/${DOMAIN}/zones/zone/${zone.id}"
+                  @click=${(e: Event) => this._openZone(e, zone.id)}
+                  >${this._t("no_valve")}</a
+                >`
             : ""}
           ${now.live
             ? html`<ha-icon
@@ -656,6 +690,9 @@ export class SmartIrrigationCard extends LitElement {
     }
     .zone-state.needed {
       color: var(--primary-color);
+    }
+    .zone-state .no-valve {
+      color: var(--error-color, #db4437);
     }
     .live {
       --mdc-icon-size: 14px;

@@ -176,3 +176,41 @@ export const anyProgramActive = (
 /** How often the programs are asked for: fast while one runs, slow otherwise. */
 export const programsPollDelay = (active: boolean): number =>
   active ? 5000 : 60000;
+
+/** What the card's "next start" line says. */
+export type NextStartState =
+  | "no_trigger"
+  | "skipped"
+  | "not_scheduled"
+  | "nothing"
+  | "start"
+  | "no_start";
+
+/**
+ * The next start line, read as the Info page reads it (#841, #969).
+ *
+ * The time in the info payload is worked out arithmetically: it is there
+ * whether or not anything will act on it. The card printed it under the
+ * "none" trigger, which starts nothing, and while no trigger was armed. Only
+ * the start trigger is armed or not: the main program's own schedules are
+ * not that trigger, and their start is shown as it is.
+ */
+export const nextStartState = (info: any): NextStartState => {
+  const bySchedules = info?.start_source === "main_schedules";
+  if (!bySchedules && info?.active_start_trigger === "none") {
+    return "no_trigger";
+  }
+  if (info?.skip_preview?.should_skip) return "skipped";
+  if (!bySchedules && info?.start_trigger_armed === false) {
+    return (info?.next_irrigation_zones ?? []).length
+      ? "not_scheduled"
+      : "nothing";
+  }
+  return info?.next_irrigation_start ? "start" : "no_start";
+};
+
+/** Whether full control leaves this zone out of the run for want of a valve. */
+export const zoneWithoutValve = (info: any, zoneId: number): boolean =>
+  ((info?.zones_without_valve ?? []) as { id: number }[]).some(
+    (zone) => Number(zone.id) === Number(zoneId),
+  );
