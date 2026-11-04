@@ -260,8 +260,8 @@
           }
         },
         "continuousupdates": {
-          "header": "Kontinuierliche Updates für Sensoren",
-          "description": "Zeichnet jede Änderung eines Sensors der Gruppe auf, statt eines Messwerts pro Aktualisierung: Die stündliche Berechnung und der Regen arbeiten so mit feineren Daten. Ein Regenmesser, der alle zehn Minuten meldet, wird alle zehn Minuten gelesen. Die Zonen werden nicht bei jeder Änderung neu berechnet; das macht die geplante Berechnung einmal aus den aufgezeichneten Werten. In einer Gruppe, die auch einen Wetterdienst nutzt, werden ihre Sensoren bei jeder Änderung aufgezeichnet und der Dienst weiterhin einmal pro Aktualisierung abgefragt: keine zusätzlichen Anfragen.",
+          "header": "Kontinuierliche Updates für alle Sensorgruppen",
+          "description": "Eine Einstellung für alle Sensorgruppen darunter. Sie zeichnet jede Änderung eines Sensors der Gruppe auf, statt eines Messwerts pro Aktualisierung: Die stündliche Berechnung und der Regen arbeiten so mit feineren Daten. Ein Regenmesser, der alle zehn Minuten meldet, wird alle zehn Minuten gelesen. Die Zonen werden nicht bei jeder Änderung neu berechnet; das macht die geplante Berechnung einmal aus den aufgezeichneten Werten. In einer Gruppe, die auch einen Wetterdienst nutzt, werden ihre Sensoren bei jeder Änderung aufgezeichnet und der Dienst weiterhin einmal pro Aktualisierung abgefragt: keine zusätzlichen Anfragen.",
           "labels": {
             "continuousupdates": "Kontinuierliche Updates aktivieren",
             "sensor_debounce": "Sensor-Entprellung"

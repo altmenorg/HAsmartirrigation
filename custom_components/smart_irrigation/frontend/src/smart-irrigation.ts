@@ -407,12 +407,23 @@ export class SmartIrrigationPanel extends LitElement {
           ></smart-irrigation-view-modules>
         `;
       case "mappings":
+        // Continuous updates record the sensors of every group, and decide
+        // how a group combines its readings: above the groups, not with the
+        // weather service, which they leave alone.
         return html`
-          <smart-irrigation-view-mappings
-            .hass=${this.hass}
-            .narrow=${this.narrow}
-            .path=${path}
-          ></smart-irrigation-view-mappings>
+          <div class="stack">
+            <smart-irrigation-view-general
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+              .path=${path}
+              .section=${"sensors"}
+            ></smart-irrigation-view-general>
+            <smart-irrigation-view-mappings
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+              .path=${path}
+            ></smart-irrigation-view-mappings>
+          </div>
         `;
       case "weatherservice":
         // The service, then where it is read for and how often: the location
