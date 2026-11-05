@@ -617,7 +617,8 @@
             "reset-all-buckets": "Alle Vorräte zurücksetzen",
             "clear-all-weatherdata": "Alle Wetterdaten löschen"
           },
-          "header": "Aktionen für alle Zonen"
+          "header": "Aktionen für alle Zonen",
+          "reset-hint": "Diese beiden verwerfen Daten aller Zonen. Beide fragen vorher nach."
         }
       },
       "description": "Füge eine oder mehrere Zonen hinzu. Die Bewässerungsdauer wird pro Zone, abhängig von Größe, Durchsatz, Status, Modul und Sensorgruppe berechnet.",
