@@ -216,3 +216,22 @@ export const zoneWithoutValve = (info: any, zoneId: number): boolean =>
   ((info?.zones_without_valve ?? []) as { id: number }[]).some(
     (zone) => Number(zone.id) === Number(zoneId),
   );
+
+/** The name the main program is stored under until somebody renames it. */
+export const MAIN_PROGRAM_STORED_NAME = "Main program";
+
+/**
+ * A program's name as the card shows it.
+ *
+ * The main program is stored as "Main program", in English, whatever the
+ * language: the panel shows it in the user's language and the card showed
+ * the stored name. A name of the user's own is kept as it is.
+ */
+export const programLabel = (
+  program: { program_id: string; name?: string },
+  mainName: string,
+): string =>
+  program.program_id === "main" &&
+  (!program.name || program.name === MAIN_PROGRAM_STORED_NAME)
+    ? mainName
+    : (program.name ?? program.program_id);

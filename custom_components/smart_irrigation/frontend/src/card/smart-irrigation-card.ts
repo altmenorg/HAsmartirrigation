@@ -20,6 +20,7 @@ import {
   durationLabel,
   momentLabel,
   nextStartState,
+  programLabel,
   retryDelay,
   zoneActionEntity,
   zoneNow,
@@ -568,7 +569,7 @@ export class SmartIrrigationCard extends LitElement {
     return html`
       <div class="zone program">
         <div class="zone-name">
-          ${program.name}
+          ${programLabel(program, this._t("programs.main_name"))}
           <span class="chip ${running ? "on" : ""}"
             >${this._t(`programs.states.${program.state}`)}</span
           >

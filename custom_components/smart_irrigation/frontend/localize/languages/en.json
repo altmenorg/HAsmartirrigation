@@ -1476,7 +1476,8 @@
         "paused": "paused",
         "suspended": "suspended",
         "disabled": "disabled"
-      }
+      },
+      "main_name": "Main program"
     },
     "editor": {
       "title": "Title",

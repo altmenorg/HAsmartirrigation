@@ -8,6 +8,7 @@ import {
   durationLabel,
   momentLabel,
   nextStartState,
+  programLabel,
   retryDelay,
   zoneActionEntity,
   zoneNow,
@@ -306,5 +307,31 @@ describe("zoneWithoutValve", () => {
 
   it("finds none in an older payload without the list", () => {
     expect(zoneWithoutValve({}, 0)).toBe(false);
+  });
+});
+
+describe("programLabel", () => {
+  it("shows the main program in the user's language", () => {
+    expect(
+      programLabel(
+        { program_id: "main", name: "Main program" },
+        "Hauptprogramm",
+      ),
+    ).toBe("Hauptprogramm");
+    expect(programLabel({ program_id: "main" }, "Hauptprogramm")).toBe(
+      "Hauptprogramm",
+    );
+  });
+
+  it("keeps a name of the user's own", () => {
+    expect(
+      programLabel({ program_id: "main", name: "Garten" }, "Hauptprogramm"),
+    ).toBe("Garten");
+    expect(
+      programLabel(
+        { program_id: "evening", name: "Main program" },
+        "Hauptprogramm",
+      ),
+    ).toBe("Main program");
   });
 });
