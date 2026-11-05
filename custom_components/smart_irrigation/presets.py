@@ -42,6 +42,12 @@ PLANT_TYPES: dict[str, float] = {
 # What a zone whose numbers match no preset is called.
 CUSTOM = "custom"
 
+# The crop coefficient every zone starts with (store.ZoneEntry). It is also
+# the vegetables' one, so a zone nobody described read as "Vegetables": a
+# value never chosen. Left at it, the coefficient says nothing about the
+# planting.
+DEFAULT_MULTIPLIER = 1.0
+
 
 def drainage_rate_for(soil_type: str | None) -> float | None:
     """The drainage rate a soil implies, in mm/h, or None for none."""
@@ -65,6 +71,16 @@ def _matching(value, table) -> str | None:
     return None
 
 
+def _matching_unless_default(value, table, default) -> str | None:
+    """The preset the value matches, unless it is the value a zone starts with."""
+    try:
+        if abs(float(value) - default) < 1e-6:
+            return None
+    except (TypeError, ValueError):
+        return None
+    return _matching(value, table)
+
+
 def describe_zone(zone: dict) -> dict:
     """The soil and planting a zone's numbers correspond to.
 
@@ -76,8 +92,8 @@ def describe_zone(zone: dict) -> dict:
     soil = zone.get(const.ZONE_SOIL_TYPE) or _matching(
         zone.get(const.ZONE_DRAINAGE_RATE), SOIL_TYPES
     )
-    plant = zone.get(const.ZONE_PLANT_TYPE) or _matching(
-        zone.get(const.ZONE_MULTIPLIER), PLANT_TYPES
+    plant = zone.get(const.ZONE_PLANT_TYPE) or _matching_unless_default(
+        zone.get(const.ZONE_MULTIPLIER), PLANT_TYPES, DEFAULT_MULTIPLIER
     )
     return {
         const.ZONE_SOIL_TYPE: soil or CUSTOM,
