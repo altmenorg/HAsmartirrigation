@@ -9,7 +9,7 @@ import {
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { repeat } from "lit/directives/repeat.js";
 import { query } from "lit/decorators.js";
-import { property, customElement } from "lit/decorators.js";
+import { property, customElement, state } from "lit/decorators.js";
 import { HomeAssistant, fireEvent } from "custom-card-helpers";
 import { Path } from "../../common/navigation";
 import { loadHaForm } from "../../load-ha-elements";
@@ -68,6 +68,7 @@ import {
   unit_text,
   waterVolume,
   formatNumber,
+  navigate,
 } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
 import { localize } from "../../../localize/localize";
@@ -206,6 +207,8 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
   // Which zone cards are expanded (own collapsible — full control over styling)
   private _expanded: Set<number> = new Set();
+  // Whether the fields to add a zone are open (always, with no zone yet).
+  @state() private _addOpen = false;
   private _toggleZone(id?: number): void {
     if (id == undefined) {
       return;
@@ -244,16 +247,17 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
   /**
    * Open a zone and bring it into view: at its valve field when it has no
-   * valve under full control, which is what a link to it is for (#969).
+   * valve under full control, which is what a link to it is for (#969). A
+   * zone just added opens at its head: it has no valve yet by nature.
    */
-  private _focusZone(id: number): void {
+  private _focusZone(id: number, atValve = true): void {
     this._expanded.add(id);
     this.requestUpdate();
     this.updateComplete.then(() => {
       const zone = this.zones.find((z) => z.id === id);
       const root = this.shadowRoot;
       const target =
-        (zone && this._noValve(zone)
+        (atValve && zone && this._noValve(zone)
           ? root?.querySelector(`#zone-${id}-valve`)
           : null) ?? root?.querySelector(`#zone-${id}`);
       target?.scrollIntoView({ block: "start", behavior: "smooth" });
@@ -493,6 +497,22 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         this.throughputInput.value = "";
         // Refresh data to get the server-assigned ID
         return this._fetchData();
+      })
+      .then(() => {
+        // The fields close again, and the new zone opens where it now sits.
+        this._addOpen = false;
+        const added = this.zones
+          .filter((zone) => zone.name === newZone.name && zone.id != undefined)
+          .reduce<
+            SmartIrrigationZone | undefined
+          >((last, zone) => (!last || zone.id! > last.id! ? zone : last), undefined);
+        // After the fields have closed, so the page has its final length
+        // before it scrolls.
+        if (added) {
+          this.updateComplete.then(() =>
+            requestAnimationFrame(() => this._focusZone(added.id!, false)),
+          );
+        }
       })
       .catch((error) => {
         console.error("Failed to add zone:", error);
@@ -2516,6 +2536,119 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       this.hass?.language,
     );
   }
+  /**
+   * Adding a zone, after the zones.
+   *
+   * The page opened with this form, so everyone who came to look at their
+   * zones scrolled past it every time; on a phone the first zone started at
+   * the bottom of the screen (#982). It is a button now, which opens the same
+   * three fields. With no zone yet the fields are open, next to the way into
+   * the setup assistant.
+   */
+  private _renderAddZone(): TemplateResult {
+    const lang = this.hass!.language;
+    const empty = this.zones.length === 0;
+    if (!empty && !this._addOpen) {
+      return html`
+        <div class="add-zone-bar">
+          <ha-button appearance="outlined" @click=${() => this._openAddZone()}>
+            <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+            ${localize("panels.zones.cards.add-zone.header", lang)}
+          </ha-button>
+        </div>
+      `;
+    }
+    return html`
+      <ha-card header="${localize("panels.zones.cards.add-zone.header", lang)}">
+        <div class="card-content">
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize("panels.zones.labels.name", lang)}
+            </div>
+            <input
+              id="nameInput"
+              class="field"
+              type="text"
+              @focus="${this.handleZoneFormFocus}"
+              @blur="${this.handleZoneFormBlur}"
+            />
+          </div>
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize("panels.zones.labels.size", lang)}
+              <span class="unit">(${output_unit(this.config, ZONE_SIZE)})</span>
+            </div>
+            <input
+              id="sizeInput"
+              class="field"
+              type="number"
+              @focus="${this.handleZoneFormFocus}"
+              @blur="${this.handleZoneFormBlur}"
+            />
+          </div>
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize("panels.zones.labels.throughput", lang)}
+              <span class="unit"
+                >(${output_unit(this.config, ZONE_THROUGHPUT)})</span
+              >
+            </div>
+            <input
+              id="throughputInput"
+              class="field"
+              type="number"
+              @focus="${this.handleZoneFormFocus}"
+              @blur="${this.handleZoneFormBlur}"
+            />
+          </div>
+          <div class="add-zone-actions">
+            ${empty
+              ? html`<ha-button
+                  appearance="plain"
+                  @click=${() => navigate(this, "/smart_irrigation/setup")}
+                >
+                  ${localize(
+                    "panels.zones.cards.add-zone.actions.assistant",
+                    lang,
+                  )}
+                </ha-button>`
+              : html`<ha-button
+                  appearance="plain"
+                  @click=${() => {
+                    this._addOpen = false;
+                  }}
+                >
+                  ${localize(
+                    "panels.zones.cards.add-zone.actions.cancel",
+                    lang,
+                  )}
+                </ha-button>`}
+            <ha-button
+              appearance="filled"
+              @click="${this.handleAddZone}"
+              ?disabled="${this.isSaving}"
+            >
+              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+              ${this.isSaving
+                ? localize("common.saving-messages.adding", lang)
+                : localize("panels.zones.cards.add-zone.actions.add", lang)}
+            </ha-button>
+          </div>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  private _openAddZone(): void {
+    this._addOpen = true;
+    this.updateComplete.then(() => {
+      const name =
+        this.shadowRoot?.querySelector<HTMLInputElement>("#nameInput");
+      name?.scrollIntoView({ block: "center", behavior: "smooth" });
+      name?.focus();
+    });
+  }
+
   render(): TemplateResult {
     if (!this.hass) {
       return html``;
@@ -2541,76 +2674,12 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         </div>
       </ha-card>
 
-      <ha-card
-        header="${localize(
-          "panels.zones.cards.add-zone.header",
-          this.hass.language,
-        )}"
-      >
-        <div class="card-content">
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize("panels.zones.labels.name", this.hass.language)}
-            </div>
-            <input
-              id="nameInput"
-              class="field"
-              type="text"
-              @focus="${this.handleZoneFormFocus}"
-              @blur="${this.handleZoneFormBlur}"
-            />
-          </div>
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize("panels.zones.labels.size", this.hass.language)}
-              <span class="unit">(${output_unit(this.config, ZONE_SIZE)})</span>
-            </div>
-            <input
-              id="sizeInput"
-              class="field"
-              type="number"
-              @focus="${this.handleZoneFormFocus}"
-              @blur="${this.handleZoneFormBlur}"
-            />
-          </div>
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize("panels.zones.labels.throughput", this.hass.language)}
-              <span class="unit"
-                >(${output_unit(this.config, ZONE_THROUGHPUT)})</span
-              >
-            </div>
-            <input
-              id="throughputInput"
-              class="field"
-              type="number"
-              @focus="${this.handleZoneFormFocus}"
-              @blur="${this.handleZoneFormBlur}"
-            />
-          </div>
-          <div class="add-zone-actions">
-            <ha-button
-              appearance="filled"
-              @click="${this.handleAddZone}"
-              ?disabled="${this.isSaving}"
-            >
-              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-              ${this.isSaving
-                ? localize("common.saving-messages.adding", this.hass.language)
-                : localize(
-                    "panels.zones.cards.add-zone.actions.add",
-                    this.hass.language,
-                  )}
-            </ha-button>
-          </div>
-        </div>
-      </ha-card>
-
       ${repeat(
         this.zones,
         (zone) => zone.id ?? zone.name,
         (zone, index) => this.renderZone(zone, index),
       )}
+      ${this._renderAddZone()}
 
       <ha-card
         header="${localize(
@@ -3017,7 +3086,15 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       .add-zone-actions {
         display: flex;
         justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 8px;
         padding-top: 8px;
+      }
+      /* The way to add a zone, after the zones: a button, not a form. */
+      .add-zone-bar {
+        display: flex;
+        justify-content: flex-end;
+        margin: 8px;
       }
       /* native ha-button: appearance/variant handle the colors. 2-col grid,
          full-width cells, content left-aligned so the icon stays fixed left. */
