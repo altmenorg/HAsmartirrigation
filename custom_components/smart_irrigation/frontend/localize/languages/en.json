@@ -597,7 +597,9 @@
         "view-weather-info-message": "Weather data available for",
         "view-watering-calendar": "View watering calendar",
         "water": "Water",
-        "calculating": "Calculating…"
+        "calculating": "Calculating…",
+        "change": "Change",
+        "done": "Done"
       },
       "cards": {
         "add-zone": {
@@ -786,6 +788,11 @@
       "calculation-feedback": {
         "nothing-new": "{zone}: no new readings since the last calculation, so nothing changed.",
         "failed": "{zone}: the calculation failed ({error})."
+      },
+      "sections": {
+        "zone": "Zone and valve",
+        "need": "What it needs",
+        "status": "Where it stands"
       }
     },
     "history": {

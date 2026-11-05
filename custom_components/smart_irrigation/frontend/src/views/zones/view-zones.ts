@@ -209,6 +209,8 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
   private _expanded: Set<number> = new Set();
   // Whether the fields to add a zone are open (always, with no zone yet).
   @state() private _addOpen = false;
+  // Values opened for editing with "Change" ("bucket-<zone id>").
+  private _editing: Set<string> = new Set();
   private _toggleZone(id?: number): void {
     if (id == undefined) {
       return;
@@ -1514,6 +1516,9 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
               </div>
 
               <div class="settings">
+                <div class="zone-section">
+                  ${localize("panels.zones.sections.zone", lang)}
+                </div>
                 ${this._textRow(
                   localize("panels.zones.labels.name", lang),
                   "",
@@ -1521,44 +1526,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                   (v) =>
                     this.handleEditZone(index, { ...zone, [ZONE_NAME]: v }),
                 )}
-                ${this._adv(
-                  this._selectRow(
-                    localize("panels.zones.labels.calculation-method", lang),
-                    html`
-                      ${["from_weather", "provided", "fixed"].map(
-                        (method) => html`
-                          <option
-                            value="${method}"
-                            ?selected=${(zone.calculation_method ??
-                              "from_weather") === method}
-                          >
-                            ${localize(
-                              `panels.zones.labels.calculation-methods.${method}`,
-                              lang,
-                            )}
-                          </option>
-                        `,
-                      )}
-                    `,
-                    (e: Event) =>
-                      this.handleEditZone(index, {
-                        ...zone,
-                        calculation_method: (e.target as HTMLSelectElement)
-                          .value,
-                      }),
-                  ),
-                )}
-                ${this._adv(
-                  html`<div class="setting-help">
-                    ${localize(
-                      `panels.zones.labels.calculation-method-help.${
-                        zone.calculation_method ?? "from_weather"
-                      }`,
-                      lang,
-                    )}
-                  </div>`,
-                )}
-                ${this._engineOptions(index, zone, lang)}
                 ${this._selectRow(
                   this._labelWithHint("input-method", lang),
                   html`
@@ -1652,291 +1619,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           `
                         : ""}
                     `}
-                ${this._selectRow(
-                  localize("panels.zones.labels.soil-type", lang),
-                  html`
-                    ${SOIL_TYPES.map(
-                      (soil) => html`
-                        <option
-                          value="${soil}"
-                          ?selected=${(zone.soil_type ?? "custom") === soil}
-                        >
-                          ${localize(
-                            `panels.zones.labels.soil-types.${soil}`,
-                            lang,
-                          )}
-                        </option>
-                      `,
-                    )}
-                  `,
-                  (e: Event) =>
-                    this.handleEditZone(index, {
-                      ...zone,
-                      // The number the choice stands for is written server
-                      // side, and comes back on the next read.
-                      soil_type: (e.target as HTMLSelectElement).value,
-                    } as SmartIrrigationZone),
-                )}
-                ${
-                  // A soil picked by name already stands for a drainage rate.
-                  // The number is asked only when the soil is "set myself", in
-                  // either mode: that is the one case where it is the answer.
-                  (zone.soil_type ?? "custom") === "custom"
-                    ? this._numRow(
-                        this._labelWithHint("drainage_rate", lang),
-                        output_unit(this.config, ZONE_DRAINAGE_RATE),
-                        zone.drainage_rate,
-                        (v) =>
-                          this.handleEditZone(index, {
-                            ...zone,
-                            [ZONE_DRAINAGE_RATE]: parseFloat(v),
-                          }),
-                        0.1,
-                      )
-                    : ""
-                }
-                ${this._selectRow(
-                  localize("panels.zones.labels.plant-type", lang),
-                  html`
-                    ${PLANT_TYPES.map(
-                      (plant) => html`
-                        <option
-                          value="${plant}"
-                          ?selected=${(zone.plant_type ?? "custom") === plant}
-                        >
-                          ${localize(
-                            `panels.zones.labels.plant-types.${plant}`,
-                            lang,
-                          )}
-                        </option>
-                      `,
-                    )}
-                  `,
-                  (e: Event) =>
-                    this.handleEditZone(index, {
-                      ...zone,
-                      plant_type: (e.target as HTMLSelectElement).value,
-                    } as SmartIrrigationZone),
-                )}
-                ${
-                  // Same for the crop: a planting picked by name stands for its
-                  // crop factor, which is asked only when it is "set myself".
-                  (zone.plant_type ?? "custom") === "custom"
-                    ? this._numRow(
-                        localize("panels.zones.labels.multiplier", lang),
-                        "",
-                        zone.multiplier,
-                        (v) =>
-                          this.handleEditZone(index, {
-                            ...zone,
-                            [ZONE_MULTIPLIER]: parseFloat(v),
-                          }),
-                        0.1,
-                      )
-                    : // In the advanced mode it is still shown, read-only: the
-                      // crop factor by month falls back on it (#905).
-                      this._adv(
-                        this._numRow(
-                          localize("panels.zones.labels.multiplier", lang),
-                          "",
-                          zone.multiplier,
-                          () => {},
-                          0.1,
-                          true,
-                        ),
-                      )
-                }
-                ${this._selectRow(
-                  this._labelWithHint("state", lang),
-                  html`
-                    <option
-                      value="${SmartIrrigationZoneState.Automatic}"
-                      ?selected=${zone.state ===
-                      SmartIrrigationZoneState.Automatic}
-                    >
-                      ${localize("panels.zones.labels.states.automatic", lang)}
-                    </option>
-                    <option
-                      value="${SmartIrrigationZoneState.Disabled}"
-                      ?selected=${zone.state ===
-                      SmartIrrigationZoneState.Disabled}
-                    >
-                      ${localize("panels.zones.labels.states.disabled", lang)}
-                    </option>
-                    <option
-                      value="${SmartIrrigationZoneState.Manual}"
-                      ?selected=${zone.state ===
-                      SmartIrrigationZoneState.Manual}
-                    >
-                      ${localize("panels.zones.labels.states.manual", lang)}
-                    </option>
-                  `,
-                  (e: Event) =>
-                    this.handleEditZone(index, {
-                      ...zone,
-                      [ZONE_STATE]: (e.target as HTMLSelectElement)
-                        .value as SmartIrrigationZoneState,
-                      [ZONE_DURATION]: 0,
-                    }),
-                )}
-                ${this._selectRow(
-                  this._labelWithHint("mapping", lang),
-                  this.renderTheOptions(this.mappings, zone.mapping),
-                  (e: Event) => {
-                    const v = (e.target as HTMLSelectElement).value;
-                    this.handleEditZone(index, {
-                      ...zone,
-                      [ZONE_MAPPING]: v === "" ? undefined : parseInt(v),
-                    });
-                  },
-                )}
-                ${this._numRow(
-                  this._labelWithHint("bucket", lang),
-                  output_unit(this.config, ZONE_BUCKET),
-                  Number(zone.bucket).toFixed(1),
-                  (v) =>
-                    this.handleEditZone(index, {
-                      ...zone,
-                      [ZONE_BUCKET]: parseFloat(v),
-                    }),
-                  0.1,
-                )}
-                ${this._adv(
-                  this._numRow(
-                    this._labelWithHint("maximum-bucket", lang),
-                    output_unit(this.config, ZONE_BUCKET),
-                    Number(zone.maximum_bucket).toFixed(1),
-                    (v) =>
-                      this.handleEditZone(index, {
-                        ...zone,
-                        [ZONE_MAXIMUM_BUCKET]: parseFloat(v),
-                      }),
-                    0.1,
-                  ),
-                )}
-                ${this._adv(
-                  this._numRow(
-                    this._labelWithHint("irrigation-threshold", lang),
-                    output_unit(this.config, ZONE_BUCKET),
-                    Number(zone.irrigation_threshold ?? 0).toFixed(1),
-                    (v) =>
-                      this.handleEditZone(index, {
-                        ...zone,
-                        [ZONE_IRRIGATION_THRESHOLD]: parseFloat(v),
-                      }),
-                    0.1,
-                  ),
-                )}
-                ${this._adv(
-                  html`${this._numRow(
-                      localize(
-                        "panels.zones.labels.days-between-irrigation",
-                        lang,
-                      ),
-                      localize("panels.zones.labels.days", lang),
-                      zone.days_between_irrigation,
-                      (v) => {
-                        // Empty means "follow the general setting".
-                        const days = parseInt(v, 10);
-                        this.handleEditZone(index, {
-                          ...zone,
-                          [ZONE_DAYS_BETWEEN_IRRIGATION]: isNaN(days)
-                            ? null
-                            : Math.max(0, days),
-                        });
-                      },
-                      1,
-                    )}
-                    <div class="setting-help">
-                      ${localize(
-                        "panels.zones.labels.days-between-irrigation-help",
-                        lang,
-                      )}
-                    </div>`,
-                )}
-                ${this._adv(this._cropFactorByMonth(zone, index, lang))}
-                ${this._adv(
-                  html`${this._numRow(
-                      localize("panels.zones.labels.available-water", lang),
-                      output_unit(this.config, ZONE_BUCKET),
-                      zone.available_water != null
-                        ? Number(zone.available_water).toFixed(1)
-                        : "",
-                      (v) => {
-                        const mm = parseFloat(v);
-                        this.handleEditZone(index, {
-                          ...zone,
-                          [ZONE_AVAILABLE_WATER]:
-                            isNaN(mm) || mm <= 0 ? null : mm,
-                        });
-                      },
-                      1,
-                    )}
-                    ${this._numRow(
-                      localize("panels.zones.labels.allowed-depletion", lang),
-                      "%",
-                      zone.allowed_depletion != null
-                        ? Number(zone.allowed_depletion).toFixed(0)
-                        : "",
-                      (v) => {
-                        const pct = parseFloat(v);
-                        this.handleEditZone(index, {
-                          ...zone,
-                          [ZONE_ALLOWED_DEPLETION]: isNaN(pct)
-                            ? null
-                            : Math.min(95, Math.max(5, pct)),
-                        });
-                      },
-                      5,
-                    )}
-                    <div class="setting-help">
-                      ${localize(
-                        "panels.zones.labels.available-water-help",
-                        lang,
-                      )}
-                    </div>`,
-                )}
-                ${this._adv(
-                  html`${this._numRow(
-                      localize(
-                        "panels.zones.labels.distribution-efficiency",
-                        lang,
-                      ),
-                      "%",
-                      zone.distribution_efficiency != null
-                        ? Number(zone.distribution_efficiency).toFixed(0)
-                        : "",
-                      (v) => {
-                        const pct = parseFloat(v);
-                        this.handleEditZone(index, {
-                          ...zone,
-                          [ZONE_DISTRIBUTION_EFFICIENCY]: isNaN(pct)
-                            ? null
-                            : Math.min(100, Math.max(5, pct)),
-                        });
-                      },
-                      5,
-                    )}
-                    <div class="setting-help">
-                      ${localize(
-                        "panels.zones.labels.distribution-efficiency-help",
-                        lang,
-                      )}
-                    </div>`,
-                )}
-                ${this._numRow(
-                  localize("panels.zones.labels.et-deficiency", lang),
-                  output_unit(this.config, ZONE_BUCKET),
-                  zone.et_deficiency != null
-                    ? Number(zone.et_deficiency).toFixed(2)
-                    : "",
-                  () => {},
-                  0.01,
-                  true,
-                )}
-                <div class="setting-help">
-                  ${localize("panels.zones.labels.et-deficiency-help", lang)}
-                </div>
                 ${this.config?.observed_watering_enabled ||
                 this.config?.direct_valve_control_enabled
                   ? html`<div id="zone-${zone.id}-valve"></div>
@@ -2135,6 +1817,334 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                     : "",
                 )}
                 ${this._adv(
+                  this._numRow(
+                    localize("panels.zones.labels.lead-time", lang),
+                    "s",
+                    zone.lead_time,
+                    (v) =>
+                      this.handleEditZone(index, {
+                        ...zone,
+                        [ZONE_LEAD_TIME]: parseInt(v, 10),
+                      }),
+                    1,
+                  ),
+                )}
+                ${this._adv(
+                  this._numRow(
+                    localize("panels.zones.labels.maximum-duration", lang),
+                    "s",
+                    zone.maximum_duration,
+                    (v) =>
+                      this.handleEditZone(index, {
+                        ...zone,
+                        [ZONE_MAXIMUM_DURATION]: parseInt(v, 10),
+                      }),
+                    1,
+                  ),
+                )}
+                <div class="zone-section">
+                  ${localize("panels.zones.sections.need", lang)}
+                </div>
+                ${this._selectRow(
+                  this._labelWithHint("state", lang),
+                  html`
+                    <option
+                      value="${SmartIrrigationZoneState.Automatic}"
+                      ?selected=${zone.state ===
+                      SmartIrrigationZoneState.Automatic}
+                    >
+                      ${localize("panels.zones.labels.states.automatic", lang)}
+                    </option>
+                    <option
+                      value="${SmartIrrigationZoneState.Disabled}"
+                      ?selected=${zone.state ===
+                      SmartIrrigationZoneState.Disabled}
+                    >
+                      ${localize("panels.zones.labels.states.disabled", lang)}
+                    </option>
+                    <option
+                      value="${SmartIrrigationZoneState.Manual}"
+                      ?selected=${zone.state ===
+                      SmartIrrigationZoneState.Manual}
+                    >
+                      ${localize("panels.zones.labels.states.manual", lang)}
+                    </option>
+                  `,
+                  (e: Event) =>
+                    this.handleEditZone(index, {
+                      ...zone,
+                      [ZONE_STATE]: (e.target as HTMLSelectElement)
+                        .value as SmartIrrigationZoneState,
+                      [ZONE_DURATION]: 0,
+                    }),
+                )}
+                ${this._adv(
+                  this._selectRow(
+                    localize("panels.zones.labels.calculation-method", lang),
+                    html`
+                      ${["from_weather", "provided", "fixed"].map(
+                        (method) => html`
+                          <option
+                            value="${method}"
+                            ?selected=${(zone.calculation_method ??
+                              "from_weather") === method}
+                          >
+                            ${localize(
+                              `panels.zones.labels.calculation-methods.${method}`,
+                              lang,
+                            )}
+                          </option>
+                        `,
+                      )}
+                    `,
+                    (e: Event) =>
+                      this.handleEditZone(index, {
+                        ...zone,
+                        calculation_method: (e.target as HTMLSelectElement)
+                          .value,
+                      }),
+                  ),
+                )}
+                ${this._adv(
+                  html`<div class="setting-help">
+                    ${localize(
+                      `panels.zones.labels.calculation-method-help.${
+                        zone.calculation_method ?? "from_weather"
+                      }`,
+                      lang,
+                    )}
+                  </div>`,
+                )}
+                ${this._engineOptions(index, zone, lang)}
+                ${this._selectRow(
+                  this._labelWithHint("mapping", lang),
+                  this.renderTheOptions(this.mappings, zone.mapping),
+                  (e: Event) => {
+                    const v = (e.target as HTMLSelectElement).value;
+                    this.handleEditZone(index, {
+                      ...zone,
+                      [ZONE_MAPPING]: v === "" ? undefined : parseInt(v),
+                    });
+                  },
+                )}
+                ${this._selectRow(
+                  localize("panels.zones.labels.soil-type", lang),
+                  html`
+                    ${SOIL_TYPES.map(
+                      (soil) => html`
+                        <option
+                          value="${soil}"
+                          ?selected=${(zone.soil_type ?? "custom") === soil}
+                        >
+                          ${localize(
+                            `panels.zones.labels.soil-types.${soil}`,
+                            lang,
+                          )}
+                        </option>
+                      `,
+                    )}
+                  `,
+                  (e: Event) =>
+                    this.handleEditZone(index, {
+                      ...zone,
+                      // The number the choice stands for is written server
+                      // side, and comes back on the next read.
+                      soil_type: (e.target as HTMLSelectElement).value,
+                    } as SmartIrrigationZone),
+                )}
+                ${
+                  // A soil picked by name already stands for a drainage rate.
+                  // The number is asked only when the soil is "set myself", in
+                  // either mode: that is the one case where it is the answer.
+                  (zone.soil_type ?? "custom") === "custom"
+                    ? this._numRow(
+                        this._labelWithHint("drainage_rate", lang),
+                        output_unit(this.config, ZONE_DRAINAGE_RATE),
+                        zone.drainage_rate,
+                        (v) =>
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_DRAINAGE_RATE]: parseFloat(v),
+                          }),
+                        0.1,
+                      )
+                    : ""
+                }
+                ${this._selectRow(
+                  localize("panels.zones.labels.plant-type", lang),
+                  html`
+                    ${PLANT_TYPES.map(
+                      (plant) => html`
+                        <option
+                          value="${plant}"
+                          ?selected=${(zone.plant_type ?? "custom") === plant}
+                        >
+                          ${localize(
+                            `panels.zones.labels.plant-types.${plant}`,
+                            lang,
+                          )}
+                        </option>
+                      `,
+                    )}
+                  `,
+                  (e: Event) =>
+                    this.handleEditZone(index, {
+                      ...zone,
+                      plant_type: (e.target as HTMLSelectElement).value,
+                    } as SmartIrrigationZone),
+                )}
+                ${
+                  // Same for the crop: a planting picked by name stands for its
+                  // crop factor, which is asked only when it is "set myself".
+                  (zone.plant_type ?? "custom") === "custom"
+                    ? this._numRow(
+                        localize("panels.zones.labels.multiplier", lang),
+                        "",
+                        zone.multiplier,
+                        (v) =>
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_MULTIPLIER]: parseFloat(v),
+                          }),
+                        0.1,
+                      )
+                    : // In the advanced mode it is still shown, read-only: the
+                      // crop factor by month falls back on it (#905).
+                      this._adv(
+                        this._numRow(
+                          localize("panels.zones.labels.multiplier", lang),
+                          "",
+                          zone.multiplier,
+                          () => {},
+                          0.1,
+                          true,
+                        ),
+                      )
+                }
+                ${this._adv(this._cropFactorByMonth(zone, index, lang))}
+                ${this._adv(
+                  html`${this._numRow(
+                      localize("panels.zones.labels.available-water", lang),
+                      output_unit(this.config, ZONE_BUCKET),
+                      zone.available_water != null
+                        ? Number(zone.available_water).toFixed(1)
+                        : "",
+                      (v) => {
+                        const mm = parseFloat(v);
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_AVAILABLE_WATER]:
+                            isNaN(mm) || mm <= 0 ? null : mm,
+                        });
+                      },
+                      1,
+                    )}
+                    ${this._numRow(
+                      localize("panels.zones.labels.allowed-depletion", lang),
+                      "%",
+                      zone.allowed_depletion != null
+                        ? Number(zone.allowed_depletion).toFixed(0)
+                        : "",
+                      (v) => {
+                        const pct = parseFloat(v);
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_ALLOWED_DEPLETION]: isNaN(pct)
+                            ? null
+                            : Math.min(95, Math.max(5, pct)),
+                        });
+                      },
+                      5,
+                    )}
+                    <div class="setting-help">
+                      ${localize(
+                        "panels.zones.labels.available-water-help",
+                        lang,
+                      )}
+                    </div>`,
+                )}
+                ${this._adv(
+                  html`${this._numRow(
+                      localize(
+                        "panels.zones.labels.distribution-efficiency",
+                        lang,
+                      ),
+                      "%",
+                      zone.distribution_efficiency != null
+                        ? Number(zone.distribution_efficiency).toFixed(0)
+                        : "",
+                      (v) => {
+                        const pct = parseFloat(v);
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_DISTRIBUTION_EFFICIENCY]: isNaN(pct)
+                            ? null
+                            : Math.min(100, Math.max(5, pct)),
+                        });
+                      },
+                      5,
+                    )}
+                    <div class="setting-help">
+                      ${localize(
+                        "panels.zones.labels.distribution-efficiency-help",
+                        lang,
+                      )}
+                    </div>`,
+                )}
+                ${this._adv(
+                  this._numRow(
+                    this._labelWithHint("irrigation-threshold", lang),
+                    output_unit(this.config, ZONE_BUCKET),
+                    Number(zone.irrigation_threshold ?? 0).toFixed(1),
+                    (v) =>
+                      this.handleEditZone(index, {
+                        ...zone,
+                        [ZONE_IRRIGATION_THRESHOLD]: parseFloat(v),
+                      }),
+                    0.1,
+                  ),
+                )}
+                ${this._adv(
+                  this._numRow(
+                    this._labelWithHint("maximum-bucket", lang),
+                    output_unit(this.config, ZONE_BUCKET),
+                    Number(zone.maximum_bucket).toFixed(1),
+                    (v) =>
+                      this.handleEditZone(index, {
+                        ...zone,
+                        [ZONE_MAXIMUM_BUCKET]: parseFloat(v),
+                      }),
+                    0.1,
+                  ),
+                )}
+                ${this._adv(
+                  html`${this._numRow(
+                      localize(
+                        "panels.zones.labels.days-between-irrigation",
+                        lang,
+                      ),
+                      localize("panels.zones.labels.days", lang),
+                      zone.days_between_irrigation,
+                      (v) => {
+                        // Empty means "follow the general setting".
+                        const days = parseInt(v, 10);
+                        this.handleEditZone(index, {
+                          ...zone,
+                          [ZONE_DAYS_BETWEEN_IRRIGATION]: isNaN(days)
+                            ? null
+                            : Math.max(0, days),
+                        });
+                      },
+                      1,
+                    )}
+                    <div class="setting-help">
+                      ${localize(
+                        "panels.zones.labels.days-between-irrigation-help",
+                        lang,
+                      )}
+                    </div>`,
+                )}
+                ${this._adv(
                   this._entityRow(
                     localize("panels.zones.labels.soil-moisture-sensor", lang),
                     localize("panels.zones.labels.optional", lang),
@@ -2167,44 +2177,23 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       1,
                     )
                   : ""}
-                ${this._adv(
-                  this._numRow(
-                    localize("panels.zones.labels.lead-time", lang),
-                    "s",
-                    zone.lead_time,
-                    (v) =>
-                      this.handleEditZone(index, {
-                        ...zone,
-                        [ZONE_LEAD_TIME]: parseInt(v, 10),
-                      }),
-                    1,
-                  ),
+                <div class="zone-section">
+                  ${localize("panels.zones.sections.status", lang)}
+                </div>
+                ${this._bucketRow(zone, index, lang)}
+                ${this._valueRow(
+                  html`${localize("panels.zones.labels.et-deficiency", lang)}`,
+                  zone.et_deficiency != null
+                    ? `${this._n(Number(zone.et_deficiency), 2)} ${unit_text(
+                        this.config,
+                        ZONE_BUCKET,
+                      )}`
+                    : "—",
                 )}
-                ${this._adv(
-                  this._numRow(
-                    localize("panels.zones.labels.maximum-duration", lang),
-                    "s",
-                    zone.maximum_duration,
-                    (v) =>
-                      this.handleEditZone(index, {
-                        ...zone,
-                        [ZONE_MAXIMUM_DURATION]: parseInt(v, 10),
-                      }),
-                    1,
-                  ),
-                )}
-                ${this._numRow(
-                  localize("panels.zones.labels.duration", lang),
-                  UNIT_SECONDS,
-                  zone.duration,
-                  (v) =>
-                    this.handleEditZone(index, {
-                      ...zone,
-                      [ZONE_DURATION]: parseInt(v, 10),
-                    }),
-                  1,
-                  durationReadonly,
-                )}
+                <div class="setting-help">
+                  ${localize("panels.zones.labels.et-deficiency-help", lang)}
+                </div>
+                ${this._durationRow(zone, index, lang, durationReadonly)}
                 ${durationReadonly
                   ? html`<div class="setting-help">
                       ${localize(
@@ -2278,6 +2267,9 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       () => this.toggleExplanation(index),
                     )
                   : ""}
+              </div>
+
+              <div class="zone-danger">
                 ${this._actionBtn(
                   mdiDelete,
                   localize("common.actions.delete", lang),
@@ -2300,6 +2292,132 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
             </div>`
           : ""}
       </ha-card>
+    `;
+  }
+
+  /**
+   * The water balance, read; changed only after "Change" (#982).
+   *
+   * It was a free number field: a typo overwrote the balance, which "Reset
+   * bucket" does too, but only after asking. It is a value now, as on the
+   * card, and the field opens on request.
+   */
+  private _bucketRow(
+    zone: SmartIrrigationZone,
+    index: number,
+    lang: string,
+  ): TemplateResult {
+    const key = `bucket-${zone.id}`;
+    const label = this._labelWithHint("bucket", lang);
+    if (this._editing.has(key)) {
+      return html`${this._numRow(
+        label,
+        output_unit(this.config, ZONE_BUCKET),
+        Number(zone.bucket).toFixed(1),
+        (v) =>
+          this.handleEditZone(index, {
+            ...zone,
+            [ZONE_BUCKET]: parseFloat(v),
+          }),
+        0.1,
+      )}${this._doneRow(key, lang)}`;
+    }
+    return this._valueRow(
+      label,
+      `${this._n(Number(zone.bucket) || 0, 1)} ${unit_text(
+        this.config,
+        ZONE_BUCKET,
+      )}`,
+      key,
+      lang,
+    );
+  }
+
+  /**
+   * The duration as one says it, "52 min 7 s", where it is worked out
+   * (#982). It was a field of seconds, "3127", next to headers that said
+   * 00:52:07. In manual mode the duration is the user's, so it stays a field
+   * there, with the same words under it.
+   */
+  private _durationRow(
+    zone: SmartIrrigationZone,
+    index: number,
+    lang: string,
+    readonly: boolean,
+  ): TemplateResult {
+    const label = localize("panels.zones.labels.duration", lang);
+    if (readonly) {
+      return html`
+        <div class="setting-row">
+          <div class="setting-label">${label}</div>
+          <div class="value-field">
+            <span class="value-text"
+              >${this._friendlyDuration(Number(zone.duration) || 0)}</span
+            >
+          </div>
+        </div>
+      `;
+    }
+    return html`${this._numRow(
+        label,
+        UNIT_SECONDS,
+        zone.duration,
+        (v) =>
+          this.handleEditZone(index, {
+            ...zone,
+            [ZONE_DURATION]: parseInt(v, 10),
+          }),
+        1,
+      )}
+      <div class="setting-help">
+        = ${this._friendlyDuration(Number(zone.duration) || 0)}
+      </div>`;
+  }
+
+  /** A value, with a "Change" button that opens its field when it has a key. */
+  private _valueRow(
+    label: string | TemplateResult,
+    text: string,
+    key?: string,
+    lang?: string,
+  ): TemplateResult {
+    return html`
+      <div class="setting-row">
+        <div class="setting-label">${label}</div>
+        <div class="value-field">
+          <span class="value-text">${text}</span>
+          ${key
+            ? html`<ha-button
+                appearance="plain"
+                size="small"
+                @click=${() => {
+                  this._editing.add(key);
+                  this.requestUpdate();
+                }}
+              >
+                ${localize("panels.zones.actions.change", lang!)}
+              </ha-button>`
+            : ""}
+        </div>
+      </div>
+    `;
+  }
+
+  /** Closes a field opened with "Change". */
+  private _doneRow(key: string, lang: string): TemplateResult {
+    return html`
+      <div class="edit-done">
+        <ha-button
+          appearance="plain"
+          size="small"
+          @click=${() => {
+            this._editing.delete(key);
+            this.requestUpdate();
+          }}
+        >
+          ${localize("panels.zones.actions.done", lang)}
+        </ha-button>
+      </div>
     `;
   }
 
@@ -3089,6 +3207,46 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         flex-wrap: wrap;
         gap: 8px;
         padding-top: 8px;
+      }
+      /* The open zone in three parts: what it is, what it needs, where it
+         stands (#982). */
+      .zone-section {
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--secondary-text-color);
+        padding: 20px 0 4px;
+        border-bottom: 1px solid var(--divider-color);
+      }
+      .zone-section:first-child {
+        padding-top: 4px;
+      }
+      .value-field {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        min-height: 40px;
+      }
+      .value-text {
+        font-size: 16px;
+        font-variant-numeric: tabular-nums;
+      }
+      .edit-done {
+        display: flex;
+        justify-content: flex-end;
+      }
+      /* Deleting the zone, apart from what it does every day. */
+      .zone-danger {
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--divider-color);
+      }
+      .zone-danger ha-button {
+        width: auto;
       }
       /* The way to add a zone, after the zones: a button, not a form. */
       .add-zone-bar {
