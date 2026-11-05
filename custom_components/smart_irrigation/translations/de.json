@@ -5,7 +5,7 @@
         "name": "Dauer"
       },
       "bucket": {
-        "name": "Vorrat"
+        "name": "Wasserbilanz"
       },
       "et_value": {
         "name": "Angewandte ET"
@@ -23,7 +23,7 @@
         "name": "Wasserverbrauch"
       },
       "live_bucket": {
-        "name": "Vorrat in Echtzeit"
+        "name": "Wasserbilanz in Echtzeit"
       },
       "last_run_volume": {
         "name": "Menge des letzten Durchlaufs"
@@ -45,7 +45,7 @@
         "name": "Berechnen"
       },
       "reset_bucket": {
-        "name": "Vorrat zurücksetzen"
+        "name": "Wasserbilanz zurücksetzen"
       },
       "reset_usage": {
         "name": "Wasserverbrauch zurücksetzen"
@@ -151,7 +151,7 @@
         },
         "dry_run": {
           "name": "Probelauf",
-          "description": "Melden, was die Berechnung tun würde, ohne den Vorrat, die Zone oder die gesammelten Wetterdaten zu ändern"
+          "description": "Melden, was die Berechnung tun würde, ohne die Wasserbilanz, die Zone oder die gesammelten Wetterdaten zu ändern"
         }
       }
     },
@@ -169,7 +169,7 @@
         },
         "dry_run": {
           "name": "Probelauf",
-          "description": "Melden, was die Berechnung tun würde, ohne den Vorrat, die Zone oder die gesammelten Wetterdaten zu ändern"
+          "description": "Melden, was die Berechnung tun würde, ohne die Wasserbilanz, die Zone oder die gesammelten Wetterdaten zu ändern"
         }
       }
     },
@@ -188,42 +188,42 @@
       }
     },
     "set_bucket": {
-      "name": "Set bucket",
-      "description": "Set bucket for a zone to a specific value",
+      "name": "Wasserbilanz setzen",
+      "description": "Setzt die Wasserbilanz einer Zone auf einen Wert",
       "fields": {
         "entity": {
           "name": "Entity",
-          "description": "Zone to set bucket for"
+          "description": "Zone, deren Wasserbilanz gesetzt wird"
         },
         "new_bucket_value": {
-          "name": "New bucket value",
-          "description": "new value of the bucket"
+          "name": "Neue Wasserbilanz",
+          "description": "Neuer Wert der Wasserbilanz"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Set all buckets",
-      "description": "Set buckets for all zones to a specific value",
+      "name": "Alle Wasserbilanzen setzen",
+      "description": "Setzt die Wasserbilanz aller Zonen auf einen Wert",
       "fields": {
         "new_bucket_value": {
-          "name": "New bucket value",
-          "description": "new value of the bucket"
+          "name": "Neue Wasserbilanz",
+          "description": "Neuer Wert der Wasserbilanz"
         }
       }
     },
     "reset_bucket": {
-      "name": "Reset bucket",
-      "description": "Reset bucket for a zone to 0",
+      "name": "Wasserbilanz zurücksetzen",
+      "description": "Setzt die Wasserbilanz einer Zone auf 0 zurück",
       "fields": {
         "entity": {
           "name": "Entity",
-          "description": "Zone to reset bucket for"
+          "description": "Zone, deren Wasserbilanz zurückgesetzt wird"
         }
       }
     },
     "reset_all_buckets": {
-      "name": "Reset all buckets",
-      "description": "Reset bucket for all zones to 0"
+      "name": "Alle Wasserbilanzen zurücksetzen",
+      "description": "Setzt die Wasserbilanz aller Zonen auf 0 zurück"
     },
     "clear_all_weather_data": {
       "name": "Clear all weather data",
@@ -262,8 +262,8 @@
           "description": "Zone to set configuration values"
         },
         "new_bucket_value": {
-          "name": "New bucket value",
-          "description": "New value for the bucket"
+          "name": "Neue Wasserbilanz",
+          "description": "Neuer Wert der Wasserbilanz"
         },
         "new_multiplier_value": {
           "name": "New multiplier value",
@@ -295,7 +295,7 @@
     },
     "credit_watering": {
       "name": "Bewässerung gutschreiben",
-      "description": "Schreibt dem Eimer einer Zone das Wasser gut, das ein Lauf tatsächlich gebracht hat, statt ihn auf 0 zu setzen.",
+      "description": "Schreibt der Wasserbilanz einer Zone das Wasser gut, das ein Lauf tatsächlich gebracht hat, statt ihn auf 0 zu setzen.",
       "fields": {
         "seconds": {
           "name": "Sekunden",
@@ -307,7 +307,7 @@
   "issues": {
     "dry_zone_not_watered": {
       "title": "Zone {zone} ist trocken und nichts wird sie bewässern",
-      "description": "Der Vorrat der Zone **{zone}** ist seit {days} Tagen leer, und jedes Programm, das sie enthält, ist deaktiviert, ausgesetzt oder hat keinen aktiven Zeitplan.\n\nSchalte ein Programm, das diese Zone bewässert, wieder ein, aktiviere einen seiner Zeitpläne oder hebe seine Aussetzung auf. Der Hinweis verschwindet von selbst, sobald die Zone bewässert wird oder ein Programm sie wieder abdeckt."
+      "description": "Die Wasserbilanz der Zone **{zone}** ist seit {days} Tagen leer, und jedes Programm, das sie enthält, ist deaktiviert, ausgesetzt oder hat keinen aktiven Zeitplan.\n\nSchalte ein Programm, das diese Zone bewässert, wieder ein, aktiviere einen seiner Zeitpläne oder hebe seine Aussetzung auf. Der Hinweis verschwindet von selbst, sobald die Zone bewässert wird oder ein Programm sie wieder abdeckt."
     },
     "weather_silent": {
       "title": "Sensorgruppe {mapping}: Ein Wettersensor meldet sich nicht mehr",

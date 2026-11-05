@@ -2,6 +2,8 @@
 
 The below image shows a graphical representation of what this integration does.
 
+The words for each part, as the panel uses them, are in the [glossary](glossary.md).
+
 ![](assets/images/smart_irrigation_diagram.png)
 
 1. Snow and rain fall on the ground add moisture. Together, this makes up the `precipitation`.
