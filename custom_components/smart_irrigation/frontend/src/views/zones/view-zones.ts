@@ -116,7 +116,9 @@ import {
 import moment, { Moment } from "moment";
 
 /** The soils and plantings the panel offers, in the order it offers them. */
+// "default" is a zone still at the value it started with: nobody chose (#982).
 const SOIL_TYPES = [
+  "default",
   "sand",
   "sandy_loam",
   "loam",
@@ -125,6 +127,7 @@ const SOIL_TYPES = [
   "custom",
 ];
 const PLANT_TYPES = [
+  "default",
   "lawn",
   "vegetables",
   "flowers",
@@ -1936,10 +1939,20 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           value="${soil}"
                           ?selected=${(zone.soil_type ?? "custom") === soil}
                         >
-                          ${localize(
-                            `panels.zones.labels.soil-types.${soil}`,
-                            lang,
-                          )}
+                          ${soil === "default"
+                            ? localize(
+                                "panels.zones.labels.soil-types.default",
+                                lang,
+                                "{value}",
+                                `${this._n(
+                                  Number(zone.drainage_rate) || 0,
+                                  this.config?.units === CONF_METRIC ? 1 : 2,
+                                )} ${unit_text(this.config, ZONE_DRAINAGE_RATE)}`,
+                              )
+                            : localize(
+                                `panels.zones.labels.soil-types.${soil}`,
+                                lang,
+                              )}
                         </option>
                       `,
                     )}
@@ -1979,10 +1992,17 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           value="${plant}"
                           ?selected=${(zone.plant_type ?? "custom") === plant}
                         >
-                          ${localize(
-                            `panels.zones.labels.plant-types.${plant}`,
-                            lang,
-                          )}
+                          ${plant === "default"
+                            ? localize(
+                                "panels.zones.labels.plant-types.default",
+                                lang,
+                                "{value}",
+                                this._n(Number(zone.multiplier) || 0, 1),
+                              )
+                            : localize(
+                                `panels.zones.labels.plant-types.${plant}`,
+                                lang,
+                              )}
                         </option>
                       `,
                     )}

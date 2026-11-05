@@ -725,6 +725,7 @@
         "soil-type": "Boden",
         "plant-type": "Was hier wächst",
         "soil-types": {
+          "default": "Noch nicht gewählt – gerechnet mit {value}",
           "sand": "Sandig",
           "sandy_loam": "Sandiger Lehm",
           "loam": "Lehm",
@@ -733,6 +734,7 @@
           "custom": "Ich setze die Drainagerate selbst"
         },
         "plant-types": {
+          "default": "Noch nicht gewählt – gerechnet mit Koeffizient {value}",
           "lawn": "Rasen",
           "vegetables": "Gemüse",
           "flowers": "Blumen",

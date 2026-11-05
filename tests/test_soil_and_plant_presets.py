@@ -11,6 +11,7 @@ import pytest
 from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.presets import (
     CUSTOM,
+    NOT_CHOSEN,
     PLANT_TYPES,
     SOIL_TYPES,
     apply_preset,
@@ -97,11 +98,11 @@ def test_the_coefficient_every_zone_starts_with_is_no_planting():
     """1.0 is where a zone starts, and the vegetables' coefficient too.
 
     A zone nobody described read as "Vegetables" in the panel, a value never
-    chosen (UX review). Left at it, it is custom, and the number is shown.
+    chosen (UX review). Left at it, it is not chosen (#982).
     """
     zone = {const.ZONE_MULTIPLIER: 1.0}
 
-    assert describe_zone(zone)[const.ZONE_PLANT_TYPE] == CUSTOM
+    assert describe_zone(zone)[const.ZONE_PLANT_TYPE] == NOT_CHOSEN
 
 
 def test_vegetables_chosen_by_name_stay_vegetables():
@@ -154,3 +155,50 @@ def test_the_lookups_answer_nothing_for_nothing():
     assert drainage_rate_for(None) is None
     assert drainage_rate_for("moon dust") is None
     assert crop_coefficient_for(None) is None
+
+
+def test_a_drainage_rate_still_at_its_start_is_not_chosen():
+    """Today's starting value and the one older zones started with (#982)."""
+    for rate in (const.CONF_DEFAULT_DRAINAGE_RATE, 50.8):
+        zone = {const.ZONE_DRAINAGE_RATE: rate}
+
+        assert describe_zone(zone)[const.ZONE_SOIL_TYPE] == NOT_CHOSEN
+
+
+def test_a_new_zone_starts_at_loam_without_reading_as_loam():
+    """New zones drain like loam, but nobody chose loam for them."""
+    assert SOIL_TYPES["loam"] == const.CONF_DEFAULT_DRAINAGE_RATE
+    zone = {const.ZONE_DRAINAGE_RATE: SOIL_TYPES["loam"]}
+
+    assert describe_zone(zone)[const.ZONE_SOIL_TYPE] == NOT_CHOSEN
+
+
+def test_loam_chosen_by_name_stays_loam():
+    zone = {const.ZONE_SOIL_TYPE: "loam", const.ZONE_DRAINAGE_RATE: 8.0}
+
+    assert describe_zone(zone)[const.ZONE_SOIL_TYPE] == "loam"
+
+
+def test_a_typed_number_matching_no_start_or_preset_is_custom():
+    zone = {const.ZONE_DRAINAGE_RATE: 6.0, const.ZONE_MULTIPLIER: 0.6}
+
+    described = describe_zone(zone)
+    assert described[const.ZONE_SOIL_TYPE] == CUSTOM
+    assert described[const.ZONE_PLANT_TYPE] == CUSTOM
+
+
+def test_choosing_not_chosen_goes_back_to_the_start_and_stores_no_choice():
+    changes = apply_preset(
+        {const.ZONE_SOIL_TYPE: NOT_CHOSEN, const.ZONE_PLANT_TYPE: NOT_CHOSEN}
+    )
+
+    assert changes[const.ZONE_SOIL_TYPE] is None
+    assert changes[const.ZONE_DRAINAGE_RATE] == const.CONF_DEFAULT_DRAINAGE_RATE
+    assert changes[const.ZONE_PLANT_TYPE] is None
+    assert changes[const.ZONE_MULTIPLIER] == 1.0
+
+
+def test_a_new_zone_entry_starts_at_loam():
+    from custom_components.smart_irrigation.store import ZoneEntry
+
+    assert ZoneEntry().drainage_rate == SOIL_TYPES["loam"]
