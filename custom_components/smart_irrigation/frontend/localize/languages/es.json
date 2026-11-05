@@ -107,7 +107,6 @@
       "creating": "Creando...",
       "failed": "Algo ha salido mal y no se ha creado nada. Las otras pestañas siguen ahí si prefieres configurarla a mano.",
       "done": "Tu zona está lista.",
-      "done-note": "Aparece en Zonas, y su grupo de sensores en Grupos de sensores. Aquí no hay nada especial: edita cualquiera de los dos como los demás. Ejecuta una actualización y un cálculo cuando tus sensores hayan informado, y la zona empezará a dar una duración.",
       "steps": {
         "zone": {
           "question": "¿Qué estás regando?",

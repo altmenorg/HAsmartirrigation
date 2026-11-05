@@ -107,7 +107,6 @@
       "creating": "Luodaan...",
       "failed": "Jotain meni vikaan eikä mitään luotu. Muut välilehdet ovat edelleen käytettävissä, jos haluat mieluummin määrittää sen käsin.",
       "done": "Alueesi on valmis.",
-      "done-note": "Se näkyy kohdassa Alueet, ja sen anturiryhmä kohdassa Anturiryhmät. Niissä ei ole mitään erityistä: muokkaa kumpaakin kuten mitä tahansa muuta. Aja päivitys ja laskenta, kun anturisi ovat raportoineet, niin alue alkaa tuottaa keston.",
       "steps": {
         "zone": {
           "question": "Mitä kastelet?",

@@ -107,7 +107,6 @@
       "creating": "Creating...",
       "failed": "Something went wrong and nothing was created. The other tabs are still there if you would rather set it up by hand.",
       "done": "Your zone is ready.",
-      "done-note": "It appears under Zones, with its sensor group under Sensor groups. Nothing here is special: edit either of them as you would any other. Run an update and a calculation once your sensors have reported, and the zone will start producing a duration.",
       "steps": {
         "zone": {
           "question": "What are you watering?",
@@ -158,7 +157,13 @@
           "help": "This creates a calculation module, a sensor group and a zone, exactly as the other tabs would. Nothing is locked afterwards."
         }
       },
-      "step": "step"
+      "step": "step",
+      "done-note-zone": "It appears under Zones, with its sensor group under Sensor groups. Nothing here is special: edit either of them as you would any other.",
+      "done-next-static": "With a fixed amount per day it needs no readings: the next calculation works out what it is short of.",
+      "done-next-service": "Its weather comes from the weather service: once the service has reported, an update and a calculation give the zone a duration.",
+      "done-next-sensors": "Run an update and a calculation once your sensors have reported, and the zone will start producing a duration.",
+      "open-zone": "Open the zone",
+      "another": "Set up another zone"
     },
     "weatherservice": {
       "history": {

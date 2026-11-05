@@ -107,7 +107,6 @@
       "creating": "Creazione in corso...",
       "failed": "Qualcosa è andato storto e non è stato creato niente. Le altre schede sono sempre lì se preferisci configurarla a mano.",
       "done": "La tua zona è pronta.",
-      "done-note": "Compare sotto Zone, con il suo gruppo di sensori sotto Gruppi di sensori. Qui non c'è niente di speciale: modificali come qualsiasi altro. Esegui un aggiornamento e un calcolo quando i tuoi sensori hanno riportato i dati, e la zona inizierà a dare una durata.",
       "steps": {
         "zone": {
           "question": "Cosa stai irrigando?",

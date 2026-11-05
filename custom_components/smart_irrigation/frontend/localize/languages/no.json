@@ -107,7 +107,6 @@
       "creating": "Oppretter...",
       "failed": "Noe gikk galt, og ingenting ble opprettet. De andre fanene er der fortsatt om du heller vil sette det opp manuelt.",
       "done": "Sonen din er klar.",
-      "done-note": "Den ligger under Soner, med sensorgruppen sin under Sensorgrupper. Det er ingenting spesielt med den: rediger begge slik du ville gjort med alle andre. Kjør en oppdatering og en beregning når sensorene dine har meldt inn, og så begynner sonen å gi en varighet.",
       "steps": {
         "zone": {
           "question": "Hva vanner du?",

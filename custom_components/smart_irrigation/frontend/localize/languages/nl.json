@@ -107,7 +107,6 @@
       "creating": "Wordt aangemaakt...",
       "failed": "Er is iets misgegaan en er is niets aangemaakt. De andere tabbladen zijn er nog als je het liever met de hand instelt.",
       "done": "Je zone is klaar.",
-      "done-note": "Ze staat onder Zones, haar sensorgroep onder Sensorgroepen. Niets hieraan is bijzonder: bewerk beide zoals elke andere. Voer een update en een berekening uit zodra je sensoren hebben gemeld, en dan levert de zone een duur.",
       "steps": {
         "zone": {
           "question": "Wat bewater je?",

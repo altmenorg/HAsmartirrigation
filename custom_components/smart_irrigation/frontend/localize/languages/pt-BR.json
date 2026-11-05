@@ -107,7 +107,6 @@
       "creating": "Criando...",
       "failed": "Algo deu errado e nada foi criado. As outras abas continuam lá se você preferir configurar na mão.",
       "done": "Sua zona está pronta.",
-      "done-note": "Ela aparece em Zonas, com o grupo de sensores dela em Grupos de sensores. Nada aqui é especial: edite qualquer um dos dois como faria com outro. Rode uma atualização e um cálculo depois que seus sensores tiverem informado, e a zona começa a dar uma duração.",
       "steps": {
         "zone": {
           "question": "O que você está irrigando?",
