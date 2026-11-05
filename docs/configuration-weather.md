@@ -11,7 +11,7 @@ title: "Configuration: Weather"
 The **Weather** tab gathers what Smart Irrigation reads the weather from, and the checks that hold a run back on it. It has three pages:
 
 * **Weather service**: the [weather service](installation-weatherservice.md), then the location it is read for and how often it is read.
-* **Sensor groups**: which sensor or service provides each value the calculation reads (see [sensor groups](configuration-sensor-groups.md)).
+* **Sensor groups**: which sensor or service provides each value the calculation reads, and above them, whether their sensors are recorded at every change (see [sensor groups](configuration-sensor-groups.md#continuous-updates)).
 * **Skip on weather**: the rain forecast, and the rain, frost and wind measured when a run starts.
 
 The tab was called **Data** before; its pages keep their addresses.
@@ -25,11 +25,6 @@ The weather is read for Home Assistant's location unless you give other coordina
 If enabled, specify how often sensor update should happen (minutes, hours, days). You can also set up an update delay to be used to delay the first update. This is useful in case your sensors do not provide a value immediately after Home Assistant starts.
 
 As calculation needs weatherdata make sure to update your weather data at least once before calculating.
-
-### Continuous updates
-The **Continuous updates for sensors** card is only shown in advanced mode, or when the setting is already on. Continuous updates records every change of a sensor of the group, instead of one reading per update, so the averages the calculation works from, hour by hour and for the rain, follow the day more finely. Every [sensor group](configuration-sensor-groups.md) with sensors of its own is recorded this way, also one that takes the rest of its data from a weather service: its sensors are recorded as they change, and the service is still read once per update, so it costs no extra requests. A rain gauge gains the most from it: the replay of the rain places what falls between two of its reports, so a gauge that reports every ten minutes places its rain within ten minutes rather than within the hour of the update. The zones are not calculated again at each change; the scheduled calculation does that, once, from the readings recorded.
-
-It records and nothing more. It used to calculate the zones again at every change, which moved the bucket, and the trigger that accounts for the duration of the run, all day. The scheduled calculation now does that once, from the readings recorded, and the live estimate on the Info page and in the zone's live bucket entity shows where a zone stands in between without writing anything. Zones on a pure-sensor group are calculated at the scheduled time like any other. A sensor debounce setting controls how fast changes are recorded.
 
 ## Skip on weather
 

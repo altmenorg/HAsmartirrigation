@@ -643,7 +643,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
       // Below the weather service: where it is read for, and how often.
       if (this.section === "weather") {
-        return html`${r7}${r2}${showContinuous ? r4 : ""}`;
+        return html`${r7}${r2}`;
+      }
+      // Above the sensor groups: recording their sensors at every change
+      // decides how each group's readings are combined, so it sits with them.
+      if (this.section === "sensors") {
+        return showContinuous ? r4 : html``;
       }
       // The checks that hold a run back on the weather, beside the sensors
       // they read.
@@ -952,7 +957,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   private async _fetchLive(withPlanning: boolean): Promise<void> {
     if (!this.hass || this.config?.full_controller !== true) return;
     // The weather pages show no program.
-    if (this.section === "weather" || this.section === "skip") return;
+    if (
+      this.section === "weather" ||
+      this.section === "sensors" ||
+      this.section === "skip"
+    )
+      return;
     try {
       this.programsState = await this.hass.callWS({
         type: DOMAIN + "/programs_state",
