@@ -8,7 +8,11 @@ import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { loadHaForm } from "../../load-ha-elements";
 import { exportPath, Path } from "../../common/navigation";
-import { groupsWithRainFromService, navigate } from "../../helpers";
+import {
+  formatNumber,
+  groupsWithRainFromService,
+  navigate,
+} from "../../helpers";
 import {
   MAPPING_CURRENT_PRECIPITATION,
   MAPPING_DEWPOINT,
@@ -210,6 +214,15 @@ export class SmartIrrigationViewWeatherService extends LitElement {
     }
   }
 
+  /** A number for reading, as the user's number setting writes it. */
+  private _n(value: number, decimals: number): string {
+    return formatNumber(
+      value,
+      decimals,
+      (this.hass as any)?.locale,
+      this.hass?.language,
+    );
+  }
   render(): TemplateResult {
     if (!this.hass) {
       return html``;
@@ -521,7 +534,7 @@ export class SmartIrrigationViewWeatherService extends LitElement {
     if (value === undefined || value === null || isNaN(value)) {
       return "-";
     }
-    return value.toFixed(HISTORY_FIELD_DISPLAY[field]?.decimals ?? 1);
+    return this._n(value, HISTORY_FIELD_DISPLAY[field]?.decimals ?? 1);
   }
 
   static get styles(): CSSResultGroup {

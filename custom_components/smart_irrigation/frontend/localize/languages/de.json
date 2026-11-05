@@ -59,15 +59,15 @@
         "new-bucket-values-is": "Der neue Vorrat ist",
         "bucket": "Vorrat",
         "old-bucket-variable": "alter_Vorrat",
-        "max-bucket-variable": "max_bucket",
+        "max-bucket-variable": "max_Vorrat",
         "delta": "Veränderung",
         "bucket-less-than-zero-irrigation-necessary": "Wenn der Vorrat < 0 ist, ist eine Bewässerung nötig.",
         "steps-taken-to-calculate-duration": "Für eine exakte Berechnung der Dauer, wurden folgende Schritte durchgeführt",
         "precipitation-rate-defined-as": "Der Niederschlag ist",
         "precipitation-rate-is": "Die Niederschlagsrate ist",
         "duration-is-calculated-as": "Die Dauer ist",
-        "drainage": "drainage",
-        "drainage-rate": "drainage_rate",
+        "drainage": "Entwässerung",
+        "drainage-rate": "Entwässerungsrate",
         "hours": "Stunden",
         "precipitation-rate-variable": "Niederschlag",
         "multiplier-is-applied": "Der Multiplikator wird angewendet. Der Multiplikator ist",
@@ -78,7 +78,7 @@
         "duration-after-lead-time-is": "also ist die Dauer",
         "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Wenn der Vorrat >= 0 ist, ist keine Bewässerung nötig und die Dauer ist gleich",
         "maximum-bucket-is": "Der maximale Vorrat ist",
-        "drainage-rate-is": "Die Entwässerungsrate bei Sättigung (Bucket am Maximum) beträgt",
+        "drainage-rate-is": "Die Entwässerungsrate bei Sättigung (Vorrat am Maximum) beträgt",
         "current-drainage-is": "Die aktuelle Entwässerung wird berechnet als",
         "drainage-replayed": "Der Zeitraum wurde Stunde für Stunde nachgerechnet, sodass jeder Regen erst ab der Stunde versickert, in der er fiel. Entwässerung über",
         "no-drainage": "Die aktuelle Entwässerung beträgt 0, weil",
@@ -317,7 +317,7 @@
           "if-you-still-need-help": "Benötigst du weiterhin Hilfe, wende dich an das",
           "community-forum": "Community Forum",
           "or-open-a": "oder eröffne einen",
-          "github-issue": "Github Issue",
+          "github-issue": "GitHub-Issue",
           "english-only": "nur Englisch"
         },
         "translate": {
@@ -518,7 +518,7 @@
           "sources": {
             "none": "Keine",
             "none_et": "Keine (Smart Irrigation berechnet sie)",
-            "weather_service": "Weather service",
+            "weather_service": "Wetterdienst",
             "weather_service_et": "Fertige ET₀ vom Wetterdienst",
             "sensor": "Sensor",
             "static": "Fester Wert",
@@ -535,7 +535,7 @@
           "rain_hint_entity": "Regen, der gerade fällt, als Rate. Die Wetter-Entität sagt ihn nur vorher: Wähle einen Sensor, der Regen misst."
         }
       },
-      "description": "Füge eine oder mehrere Sensorgruppen hinzu, die Wetterdaten von Weather service, Sensoren oder einer Kombination daraus abrufen. Jede Sensorgruppe kann für eine oder mehrere Zonen verwendet werden",
+      "description": "Füge eine oder mehrere Sensorgruppen hinzu, die Wetterdaten vom Wetterdienst, Sensoren oder einer Kombination daraus abrufen. Jede Sensorgruppe kann für eine oder mehrere Zonen verwendet werden",
       "labels": {
         "mapping-name": "Name",
         "show-more": "{count, plural, one {# weitere Sensorgruppe anzeigen} other {# weitere Sensorgruppen anzeigen}}"
@@ -1312,7 +1312,7 @@
     "adjust_reset": "Zurücksetzen",
     "confirm_reset_adjustment": "Die Anpassung dieses Programms entfernen?",
     "main_settings": "Hauptprogramm: Start und Reihenfolge",
-    "main_settings_description": "Wie das Hauptprogramm bewässert: die Zonen nacheinander oder zusammen, die Pause zwischen zwei Zonen und Cycle and Soak. Sein Startauslöser steht weiter unten.",
+    "main_settings_description": "Wie das Hauptprogramm bewässert: die Zonen nacheinander oder zusammen, die Pause zwischen zwei Zonen und das Bewässern in Durchgängen mit Einsickern. Sein Startauslöser steht weiter unten.",
     "main_schedules_active": "Im Moment starten die Zeitpläne des Hauptprogramms die Bewässerung: der Startauslöser unten wird nicht verwendet. Du kannst ihn weiter bearbeiten, und er gilt wieder, wenn du diese Zeitpläne deaktivierst oder entfernst.",
     "mode_off": "Die volle Steuerung ist aus. Schalte sie unter Einstellungen, Allgemein ein.",
     "no_zone": "keine Zone",
@@ -1325,7 +1325,7 @@
     "off": "aus",
     "steps_title": "Schritte",
     "schedules_title": "Zeitpläne",
-    "passes_help": "Cycle and Soak für diesen Schritt: sein Wasser auf so viele Durchgänge verteilt, jede Zone sickert zwischen zwei Durchgängen so lange ein, wie in den Einstellungen des Hauptprogramms festgelegt. 1: in einem Zug.",
+    "passes_help": "In Durchgängen bewässern, für diesen Schritt: sein Wasser auf so viele Durchgänge verteilt, jede Zone sickert zwischen zwei Durchgängen so lange ein, wie in den Einstellungen des Hauptprogramms festgelegt. 1: in einem Zug.",
     "schedule_fallback_skip": "Diesen Tag auslassen",
     "schedule_fallback_previous": "Die Zeit des zuletzt gesehenen nehmen",
     "schedule_fallback_at": "Zu einer festen Zeit starten",
@@ -1370,7 +1370,7 @@
     "full_controller_label": "Volle Steuerung: Smart Irrigation übernimmt meine gesamte Bewässerung",
     "full_controller_title": "Volle Steuerung",
     "confirm_full_controller": "Volle Steuerung einschalten? Smart Irrigation steuert dann die Ventile und startet die Bewässerung selbst. Ein beim Start offen gefundenes Ventil, das keinem unserer Läufe gehört, wird geschlossen.",
-    "full_controller_description": "Schaltet die Ventilsteuerung ein und fügt einen Tab Bewässerung hinzu: Programme, Planung und Pumpen. Der Startauslöser, die Reihenfolge, die Pause zwischen Zonen und Cycle and Soak wandern dorthin, als Einstellungen des Hauptprogramms, und funktionieren wie bisher, bis du ein weiteres Programm hinzufügst. Beim Ausschalten kehrt exakt das vorherige Verhalten zurück. Ein beim Start offen gefundenes Ventil, das keinem unserer Läufe gehört, wird geschlossen.",
+    "full_controller_description": "Schaltet die Ventilsteuerung ein und fügt einen Tab Bewässerung hinzu: Programme, Planung und Pumpen. Der Startauslöser, die Reihenfolge, die Pause zwischen Zonen und das Bewässern in Durchgängen wandern dorthin, als Einstellungen des Hauptprogramms, und funktionieren wie bisher, bis du ein weiteres Programm hinzufügst. Beim Ausschalten kehrt exakt das vorherige Verhalten zurück. Ein beim Start offen gefundenes Ventil, das keinem unserer Läufe gehört, wird geschlossen.",
     "sequencing_label": "Zonenabfolge",
     "sequencing": {
       "sequential": "Sequenziell (eine Zone nach der anderen)",

@@ -283,7 +283,12 @@ export class SmartIrrigationCard extends LitElement {
   }
 
   private _depth(value: number): string {
-    return depthLabel(value, this.hass?.config?.unit_system?.length === "mi");
+    return depthLabel(
+      value,
+      this.hass?.config?.unit_system?.length === "mi",
+      this.hass?.locale,
+      this.hass?.language,
+    );
   }
 
   /** Where the zone stands now: the live estimate when there is one. */
