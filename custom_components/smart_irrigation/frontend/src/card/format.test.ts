@@ -72,8 +72,8 @@ describe("depthLabel in the user's number format", () => {
 
 describe("depthLabel", () => {
   it("labels without converting, because the API already did", () => {
-    expect(depthLabel(3.42, false)).toBe("3.4 mm");
-    expect(depthLabel(0.13, true)).toBe("0.13 in");
+    expect(depthLabel(3.42, false, { language: "en" })).toBe("3.4 mm");
+    expect(depthLabel(0.13, true, { language: "en" })).toBe("0.13 in");
   });
 });
 
