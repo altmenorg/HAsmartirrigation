@@ -68,6 +68,7 @@ import {
   WEATHER_SERVICES_WITHOUT_RAIN,
 } from "../../const";
 import {
+  displayName,
   formatNumber,
   engineModeLabel,
   getOptionsForMappingType,
@@ -672,7 +673,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     ).length;
 
     const result = html`
-      <ha-card header="${mapping.id}: ${mapping.name}">
+      <ha-card header="${displayName(mapping, this.mappings)}">
         <div class="card-content">
           <div class="card-content">
             <label for="name${mapping.id}"
@@ -2021,7 +2022,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
           <div class="si-head-text">
             <div class="si-title-row">
               <span class="si-title"
-                >${mapping.id}: ${mapping.name || "—"}</span
+                >${displayName(mapping, this.mappings)}</span
               >
             </div>
             <div class="si-sub">${subText}</div>

@@ -710,3 +710,29 @@ export const readingUses = (
 
 // In its own module so the card can use it without the panel's helpers.
 export { formatNumber } from "./number-format";
+
+/**
+ * A sensor group's or module's name as the user reads it.
+ *
+ * The id is internal and was put before every name ("1: Rasen Terrasse").
+ * It is only shown where it tells two apart: when another item in ``items``
+ * has the same name, or when the item has no name at all.
+ */
+export const displayName = (
+  item: { id?: number | string; name?: string },
+  items?: { id?: number | string; name?: string }[] | object,
+): string => {
+  const name = (item.name ?? "").trim();
+  if (!name) return item.id !== undefined ? `#${item.id}` : "—";
+  const others = Object.values(items ?? {}) as {
+    id?: number | string;
+    name?: string;
+  }[];
+  const twin = others.some(
+    (other) =>
+      other !== item &&
+      other.id !== item.id &&
+      (other.name ?? "").trim() === name,
+  );
+  return twin && item.id !== undefined ? `${name} (#${item.id})` : name;
+};

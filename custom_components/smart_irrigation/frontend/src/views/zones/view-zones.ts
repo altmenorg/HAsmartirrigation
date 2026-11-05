@@ -59,6 +59,7 @@ import {
   changedFields,
   deltaOfEvaporation,
   displayDepth,
+  displayName,
   displayTemperature,
   displayVolume,
   evaporationOfDelta,
@@ -1373,14 +1374,13 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
           /*html`<option value="${value["id"]}" ?selected="${
           zone.module === value["id"]
         }>
-          ${value["id"]}: ${value["name"]}
         </option>`*/
           (r = html`${r}
             <option
               value="${value["id"]}"
               ?selected="${selected === value["id"]}"
             >
-              ${label ? label(value) : `${value["id"]}: ${value["name"]}`}
+              ${label ? label(value) : displayName(value, thelist)}
             </option>`),
       );
       return r;

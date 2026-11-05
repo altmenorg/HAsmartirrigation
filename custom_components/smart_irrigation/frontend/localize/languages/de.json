@@ -583,15 +583,15 @@
         }
       },
       "description": "Füge ein oder mehrere Module hinzu. Module berechnen die Bewässerungsdauer. Jedes Modul hat seine eigene Konfiguration und kann zur Berechnung der Bewässerungsdauer für eine oder mehrere Zonen verwendet werden.",
-      "no_items": "Es ist noch kein Module angelegt.",
+      "no_items": "Es ist noch kein Modul angelegt.",
       "title": "Module"
     },
     "zones": {
       "actions": {
         "add": "Hinzufügen",
-        "calculate": "Bewässerungsdauer berechnen.",
+        "calculate": "Bewässerungsdauer berechnen",
         "information": "Information",
-        "update": "Wetterdaten aktualisieren.",
+        "update": "Wetterdaten aktualisieren",
         "reset-bucket": "Vorrat zurücksetzen",
         "view-weather-info": "Wetterdaten anzeigen",
         "view-weather-info-message": "Wetterdaten verfügbar für",

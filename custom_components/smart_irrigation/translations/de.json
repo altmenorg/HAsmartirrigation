@@ -125,12 +125,12 @@
   },
   "options": {
     "error": {
-      "invalid_coordinates": "Ungültige Koordinaten angegeben. Bitte überprüfen Sie die Werte für Breitengrad (-90 bis 90) und Längengrad (-180 bis 180)."
+      "invalid_coordinates": "Ungültige Koordinaten. Prüfe die Werte für Breitengrad (-90 bis 90) und Längengrad (-180 bis 180)."
     },
     "step": {
       "coordinates": {
         "title": "Standortkoordinaten",
-        "description": "Konfigurieren Sie die Standortkoordinaten für den Abruf von Wetterdaten. Bei Bedarf können Sie manuelle Koordinaten verwenden, die von Ihrem Home Assistant-Standort abweichen.",
+        "description": "Lege die Standortkoordinaten für den Abruf der Wetterdaten fest. Bei Bedarf kannst du eigene Koordinaten verwenden, die vom Standort deines Home Assistant abweichen.",
         "data": {
           "manual_coordinates_enabled": "Manuelle Koordinaten anstelle des Home Assistant-Standorts verwenden",
           "manual_latitude": "Breitengrad (Dezimalgrad, -90 bis 90)",
