@@ -112,12 +112,15 @@
     },
     "step": {
       "user": {
-        "title": "常规设置",
-        "description": "如果您在配置时需要帮助，请参阅文档。",
+        "title": "设置 Smart Irrigation",
+        "description": "Smart Irrigation 随后在侧边栏中它自己的面板里进行设置：它的设置向导会和您一起创建一个传感器组和第一个区域，天气服务也在那里选择。",
         "data": {
           "name": "集成的唯一名称"
         }
       }
+    },
+    "create_entry": {
+      "default": "Smart Irrigation 已安装。在侧边栏中打开 **Smart Irrigation**：[设置向导](/smart_irrigation/setup) 会和您一起创建第一个区域。"
     }
   },
   "options": {

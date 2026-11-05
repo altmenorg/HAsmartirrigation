@@ -1298,7 +1298,7 @@
     "min_seconds": "Minimum water",
     "max_seconds": "Maximum water",
     "adjust_seconds": "Time added (+) or removed (-)",
-    "step_bounds_help": "Order of application: the percentage first, then the time added or removed, then the minimum and the maximum. 0 for the minimum or maximum: none. A step that needs no water stays at zero: the minimum never starts it.",
+    "step_bounds_help": "Order of application: first the percentage of the program's \"Adjust durations\", when one is in force (it is set on the program, not here), then the time added or removed, then the minimum and the maximum. 0 for the minimum or maximum: none. A step that needs no water stays at zero: the minimum never starts it.",
     "min_deficit_mm": "Only water when the deficit is at least",
     "min_deficit_mm_help": "In mm, 0 to always water. Set, it replaces the zone's own threshold for this step. Fixed-duration steps are always watered.",
     "adjust_title": "Adjust durations",

@@ -157,7 +157,13 @@
           "help": "To ustvari računski modul, skupino senzorjev in cono, natanko tako, kot bi jih ostali zavihki. Nič ni potem zaklenjeno."
         }
       },
-      "step": "korak"
+      "step": "korak",
+      "done-note-zone": "Prikaže se pod Cone, njena skupina senzorjev pa pod Skupine senzorjev. Na njiju ni nič posebnega: uredi ju kot katerikoli drugi.",
+      "done-next-static": "S stalno količino na dan ne potrebuje meritev: naslednji izračun ugotovi, koliko ji manjka.",
+      "done-next-service": "Vremenske podatke dobi od vremenske storitve: ko storitev sporoči podatke, posodobitev in izračun dasta coni trajanje.",
+      "done-next-sensors": "Ko tvoji senzorji sporočijo podatke, zaženi posodobitev in izračun, in cona bo začela dajati trajanje.",
+      "open-zone": "Odpri cono",
+      "another": "Nastavi še eno cono"
     },
     "weatherservice": {
       "history": {
@@ -259,8 +265,8 @@
           }
         },
         "continuousupdates": {
-          "header": "Neprekinjene posodobitve senzorjev",
-          "description": "Zabeleži vsako spremembo senzorja skupine namesto ene meritve na posodobitev: urni izračun in dež tako temeljita na natančnejših podatkih. Dežemer, ki poroča vsakih deset minut, se prebere vsakih deset minut. Cone se ob vsaki spremembi ne preračunajo; to stori načrtovani izračun enkrat iz zabeleženih meritev. V skupini, ki uporablja tudi vremensko storitev, se njeni senzorji zabeležijo ob vsaki spremembi, storitev pa se še vedno prebere enkrat na posodobitev: brez dodatnih zahtev.",
+          "header": "Neprekinjene posodobitve za vse skupine senzorjev",
+          "description": "Ena nastavitev za vse skupine senzorjev spodaj. Zabeleži vsako spremembo senzorja skupine namesto ene meritve na posodobitev, zato urni izračun in dež temeljita na natančnejših podatkih: dežemer, ki poroča vsakih deset minut, se prebere vsakih deset minut. Cone se ob vsaki spremembi ne preračunajo; to stori načrtovani izračun enkrat iz zabeleženih meritev. V skupini, ki uporablja tudi vremensko storitev, se njeni senzorji zabeležijo, ko se spremenijo, storitev pa se še vedno prebere enkrat na posodobitev, zato ne povzroča dodatnih zahtev.",
           "labels": {
             "continuousupdates": "Vklopi neprekinjene posodobitve",
             "sensor_debounce": "Umirjanje senzorja (debounce)"
@@ -1292,7 +1298,7 @@
     "min_seconds": "Najmanj vode",
     "max_seconds": "Največ vode",
     "adjust_seconds": "Dodani (+) ali odvzeti (-) čas",
-    "step_bounds_help": "Vrstni red: najprej odstotek, nato dodani ali odvzeti čas, nato najmanjša in največja vrednost. 0 za najmanjšo ali največjo: brez. Korak, ki ne potrebuje vode, ostane na nič: najmanjša vrednost ga nikoli ne zažene.",
+    "step_bounds_help": "Vrstni red: najprej odstotek iz „Prilagodi trajanja“ programa, kadar ta velja (nastavi se v programu, ne tukaj), nato dodani ali odvzeti čas, nato najmanjša in največja vrednost. 0 za najmanjšo ali največjo: brez. Korak, ki ne potrebuje vode, ostane na nič: najmanjša vrednost ga nikoli ne zažene.",
     "min_deficit_mm": "Zalivaj samo, ko je primanjkljaj vsaj",
     "min_deficit_mm_help": "V mm, 0 za vedno zalivanje. Če je nastavljen, za ta korak nadomesti lasten prag cone. Koraki s fiksnim trajanjem se vedno zalivajo.",
     "adjust_title": "Prilagodi trajanja",
@@ -1475,7 +1481,8 @@
         "paused": "začasno ustavljeno",
         "suspended": "zadržano",
         "disabled": "izklopljeno"
-      }
+      },
+      "main_name": "Glavni program"
     },
     "editor": {
       "title": "Naslov",
