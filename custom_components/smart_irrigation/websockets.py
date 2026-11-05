@@ -20,6 +20,7 @@ from homeassistant.helpers.dispatcher import (
     async_dispatcher_connect,
     async_dispatcher_send,
 )
+from homeassistant.helpers.sun import get_astral_event_next
 from homeassistant.util import dt as dt_util
 from homeassistant.util.unit_system import METRIC_SYSTEM
 
@@ -765,6 +766,30 @@ def _trigger_start_base_and_offset(selected, total_duration):
     return "sunrise", -total_duration
 
 
+def _next_sun_trigger_start(hass, event, offset_seconds, start):
+    """The start a sun trigger fires at next, from the one worked out.
+
+    ``start`` is the next sunrise (or sunset) plus the offset. From the moment
+    that start is due until the sun event itself, the next sunrise is still
+    today while its start has gone by: the Info page showed a start in the
+    past, 06:13 at 06:30, and the planning left the run out. The tracker
+    (``async_track_sunrise`` with that offset) fires next at tomorrow's event,
+    and this gives that start, worked out as the triggers place theirs.
+    A start still ahead, or one that cannot be placed, is left as it is.
+    """
+    if start is None or start.tzinfo is None:
+        return start
+    now = dt_util.utcnow()
+    if start > now:
+        return start
+    offset = datetime.timedelta(seconds=offset_seconds)
+    try:
+        return get_astral_event_next(hass, event, now - offset) + offset
+    except Exception as e:  # noqa: BLE001 - the panel must not fail on it
+        _LOGGER.debug("Could not place the next %s start: %s", event, e)
+        return start
+
+
 def _next_clock_trigger_start(selected, total_duration, now):
     """When a clock-time trigger next fires, or None if it has no valid time.
 
@@ -1052,6 +1077,9 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
         if sunrise_time is None:
             sunrise_time = base_time
         next_irrigation_start = base_time + datetime.timedelta(seconds=offset_seconds)
+        next_irrigation_start = _next_sun_trigger_start(
+            hass, base_name, offset_seconds, next_irrigation_start
+        )
         # A clock-time or solar azimuth trigger is not measured from the sun
         # rising or setting, and the preview used to fall back to "finish at
         # sunrise" for them: the time shown was not the time the run would
