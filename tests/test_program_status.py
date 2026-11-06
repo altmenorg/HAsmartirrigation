@@ -1,7 +1,7 @@
 """The live state, the overview and the planning of the programs."""
 
 import asyncio
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock
 from zoneinfo import ZoneInfo
 
@@ -15,7 +15,7 @@ from custom_components.smart_irrigation.triggers import TriggersMixin
 from tests.runner_doubles import Coordinator, make_hass, make_store, zone
 
 PARIS = ZoneInfo("Europe/Paris")
-UTC = timezone.utc
+UTC = UTC
 
 
 class Status(ProgramSchedulerMixin, TriggersMixin, Coordinator):

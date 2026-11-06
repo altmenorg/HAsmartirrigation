@@ -1,7 +1,7 @@
 """A dry zone that no program will water is reported, once, and clears itself."""
 
 import asyncio
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -15,7 +15,7 @@ from custom_components.smart_irrigation.alerts import (
     unwatered,
 )
 
-NOW = datetime(2026, 10, 6, 12, 0, tzinfo=timezone.utc)
+NOW = datetime(2026, 10, 6, 12, 0, tzinfo=UTC)
 
 
 def _zone(zone_id=0, bucket=-20.0, **kw):
