@@ -2704,6 +2704,10 @@ class SmartIrrigationCoordinator(
         # The per-zone binary sensors are guarded the same way, and stayed
         # unavailable after a reload for the same reason.
         self.hass.data[const.DOMAIN].pop("zone_binary_sensors", None)
+        # Buttons and multiplier numbers have the same per-zone creation guard.
+        # Only discard runtime objects; keep the HA entity registry untouched.
+        self.hass.data[const.DOMAIN].pop("zone_buttons", None)
+        self.hass.data[const.DOMAIN].pop("multiplier_numbers", None)
 
         # remove subscriptions for coordinator
         while self._subscriptions:
