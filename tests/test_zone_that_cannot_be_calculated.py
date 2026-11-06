@@ -15,8 +15,6 @@ One broken zone used to break the night. It now costs that zone.
 
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import pytest
-
 from custom_components.smart_irrigation import const
 from custom_components.smart_irrigation.calculation import CalculationMixin
 

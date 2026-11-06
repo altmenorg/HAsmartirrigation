@@ -514,7 +514,7 @@ class TestBasicFunctionality:
             const.ZONE_THROUGHPUT: 10.0,
             const.ZONE_STATE: const.ZONE_STATE_AUTOMATIC,
         }
-        created_zone = await store.async_create_zone(zone_data)
+        await store.async_create_zone(zone_data)
 
         # Verify data persistence
         config = await store.async_get_config()

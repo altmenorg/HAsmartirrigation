@@ -23,13 +23,18 @@ Work on the `dev` branch; `master` only receives releases.
 
 ## Checks
 
-Every pull request runs these, and they must pass:
+Every pull request runs these, and they must pass. `scripts/check.sh` (or `make check`) runs them all at once, so you can run them before pushing:
 
 ```bash
-pytest tests/                                       # the test suite
-black --check custom_components/smart_irrigation/   # formatting
-ruff check custom_components/smart_irrigation/      # lint
+pytest tests/ -n auto                                     # the test suite, on every core
+black --check custom_components/smart_irrigation/ tests/ scripts/   # formatting
+ruff check custom_components/smart_irrigation/ tests/ scripts/      # lint
+python scripts/check_version.py                           # one version everywhere
+python scripts/check_links.py                             # the links between the pages of the docs
+python scripts/mypy_baseline.py                           # type errors may only go down
 ```
+
+The suite also runs on the minimum Home Assistant of `hacs.json`, and every night on the latest release and on the beta. A change that lowers the coverage under the floor of the workflow fails.
 
 The panel lives in `custom_components/smart_irrigation/frontend/` (TypeScript and Lit, Node 20):
 
