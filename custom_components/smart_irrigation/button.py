@@ -58,6 +58,8 @@ async def async_setup_entry(
 ) -> None:
     """Set up the per-zone action buttons."""
 
+    irrigate_all_created = False
+
     @callback
     def async_add_button_entity(config: dict) -> None:
         """Add the action buttons for one zone (once)."""
@@ -90,9 +92,45 @@ async def async_setup_entry(
         registered[config["id"]] = entities
         async_add_devices(entities)
 
+    @callback
+    def async_add_irrigate_buttons(zone_id=None) -> None:
+        """Add watering actions when valve control is enabled after setup."""
+        nonlocal irrigate_all_created
+        if zone_id is not None or not _direct_valve_control_enabled(hass):
+            return
+        entities: list[ButtonEntity] = []
+        if not irrigate_all_created:
+            entities.append(SmartIrrigationIrrigateAllButton(hass))
+            irrigate_all_created = True
+        coordinator = _coordinator(hass)
+        for zid, buttons in hass.data[const.DOMAIN].get("zone_buttons", {}).items():
+            if any(
+                isinstance(b, SmartIrrigationZoneIrrigateNowButton) for b in buttons
+            ):
+                continue
+            zone = coordinator.store.get_zone(zid)
+            if not zone:
+                continue
+            base = const.DOMAIN + "_" + slugify(zone[const.ZONE_NAME])
+            button = SmartIrrigationZoneIrrigateNowButton(
+                hass,
+                f"{BUTTON_PLATFORM}.{base}_irrigate_now",
+                zid,
+                zone[const.ZONE_NAME],
+            )
+            buttons.append(button)
+            entities.append(button)
+        if entities:
+            async_add_devices(entities)
+
     config_entry.async_on_unload(
         async_dispatcher_connect(
             hass, const.DOMAIN + "_register_entity", async_add_button_entity
+        )
+    )
+    config_entry.async_on_unload(
+        async_dispatcher_connect(
+            hass, const.DOMAIN + "_config_updated", async_add_irrigate_buttons
         )
     )
 
@@ -104,9 +142,8 @@ async def async_setup_entry(
         SmartIrrigationPostponeButton(hass, 48),
         SmartIrrigationResumeButton(hass),
     ]
-    if _direct_valve_control_enabled(hass):
-        hub_buttons.append(SmartIrrigationIrrigateAllButton(hass))
     async_add_devices(hub_buttons)
+    async_add_irrigate_buttons()
 
 
 class SmartIrrigationZoneButton(ButtonEntity):
@@ -141,7 +178,7 @@ class SmartIrrigationZoneButton(ButtonEntity):
     @callback
     def _async_zone_updated(self, zone_id=None):
         """Track zone renames so the friendly name stays current."""
-        if self._zone_id != zone_id or not (self.hass and self.hass.data):
+        if zone_id not in (None, self._zone_id) or not (self.hass and self.hass.data):
             return
         coordinator = _coordinator(self.hass)
         zone = coordinator.store.get_zone(self._zone_id) if coordinator else None
@@ -235,6 +272,11 @@ class SmartIrrigationZoneIrrigateNowButton(SmartIrrigationZoneButton):
 
     suffix = "irrigate_now"
     _attr_icon = "mdi:sprinkler"
+
+    @property
+    def available(self) -> bool:
+        """Keep the entity, but disable watering while valve control is off."""
+        return _direct_valve_control_enabled(self._hass)
 
     async def async_press(self) -> None:
         """Start a direct valve run for this zone (non-blocking)."""
@@ -336,6 +378,26 @@ class SmartIrrigationIrrigateAllButton(SmartIrrigationHubButton):
 
     suffix = "irrigate_all"
     _attr_icon = "mdi:sprinkler-variant"
+
+    @property
+    def available(self) -> bool:
+        """Keep the entity, but disable watering while valve control is off."""
+        return _direct_valve_control_enabled(self._hass)
+
+    async def async_added_to_hass(self) -> None:
+        """Follow the valve-control setting for this entity's lifetime."""
+        await super().async_added_to_hass()
+        self.async_on_remove(
+            async_dispatcher_connect(
+                self.hass, const.DOMAIN + "_config_updated", self._async_config_updated
+            )
+        )
+
+    @callback
+    def _async_config_updated(self, zone_id=None) -> None:
+        """Refresh availability after a global config change."""
+        if zone_id is None:
+            self.async_schedule_update_ha_state()
 
     async def async_press(self) -> None:
         """Start a direct valve run for all zones (non-blocking)."""

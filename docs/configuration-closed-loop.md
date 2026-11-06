@@ -50,6 +50,11 @@ It stands on its own: the zone's **Linked valve/switch** can be set with direct 
 
 ### Watering one zone by hand
 
+Enabling direct valve control also adds the **Irrigate now** button entities
+for existing zones and **Irrigate all** on the hub, without reloading the
+integration or restarting Home Assistant. Switching it off makes those buttons
+unavailable; switching it on again restores them with the same entity IDs.
+
 With direct valve control on, each zone with a linked valve has a **Water** button on its card in the Zones page. It asks for minutes, and left empty it waters the run the planning shows. The valve opens straight away, or takes its turn behind what is watering, and the water is credited to the zone's balance like any run of ours. It is the `smart_irrigation.water_zone` action, which an automation can call with the zone's entity or its `zone_id`.
 
 ### Hardware auto-off (MQTT on_time dead-man)
