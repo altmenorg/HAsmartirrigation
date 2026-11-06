@@ -34,7 +34,7 @@ python scripts/check_links.py                             # the links between th
 python scripts/mypy_baseline.py                           # type errors may only go down
 ```
 
-The suite also runs on the minimum Home Assistant of `hacs.json`, and every night on the latest release and on the beta. A change that lowers the coverage under the floor of the workflow fails.
+The suite also runs on the minimum Home Assistant of `hacs.json`, and every night on the latest release. A change that lowers the coverage under the floor of the workflow fails.
 
 The panel lives in `custom_components/smart_irrigation/frontend/` (TypeScript and Lit, Node 20):
 

@@ -5,8 +5,11 @@ on:
     branches: [main, master, dev]
   pull_request:
     branches: [main, master, dev]
-  # The test requirements follow the latest Home Assistant, so a nightly run
-  # catches a release that breaks the integration the day it lands (#979).
+  # The test requirements follow the latest Home Assistant the test plugin
+  # supports, so a nightly run catches a release that breaks the integration
+  # the day the plugin supports it (#979). A run on the Home Assistant beta is
+  # not possible: the plugin is only published for releases, and an older one
+  # does not load on a newer Home Assistant.
   schedule:
     - cron: "30 1 * * *"
   workflow_dispatch:
@@ -69,33 +72,11 @@ jobs:
       - name: Install the minimum Home Assistant
         run: |
           python -m pip install --upgrade pip
-          minimum=$(python -c "import json; print(json.load(open('hacs.json'))['homeassistant'])")
-          echo "Home Assistant $minimum"
-          pip install aiofiles "homeassistant==$minimum" pytest-homeassistant-custom-component
-
-      - name: Run the tests
-        run: pytest tests/ -n auto -q
-
-  # An early warning: the suite on the next Home Assistant, nightly. It may
-  # fail without failing the run.
-  home-assistant-beta:
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - name: Checkout Smart Irrigation
-        uses: actions/checkout@v7
-
-      - name: Set up Python
-        uses: actions/setup-python@v7
-        with:
-          python-version: '3.14'
-
-      - name: Install the Home Assistant beta
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.test.txt
-          pip install --upgrade --pre homeassistant
+          # The last patch of the minimum's month: the test plugin is published
+          # for those, not for every release, and a patch only fixes bugs.
+          minimum=$(python -c "import json; print(json.load(open('hacs.json'))['homeassistant'].rsplit('.', 1)[0])")
+          echo "Home Assistant $minimum.*"
+          pip install aiofiles "homeassistant==$minimum.*" "pytest-homeassistant-custom-component>=0.13"
           python -c "from homeassistant.const import __version__; print('Home Assistant', __version__)"
 
       - name: Run the tests
@@ -130,10 +111,14 @@ jobs:
         run: python scripts/check_links.py
 
   # The code predates type checking: the number of errors mypy finds is
-  # recorded, and may only go down.
+  # recorded, and may only go down. The count depends on the Home Assistant it
+  # reads the types of, so that is pinned: moving the pin means recording the
+  # count it gives in scripts/mypy_baseline.txt.
   types:
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
+    env:
+      MYPY_HOME_ASSISTANT: '2026.10.4'
     steps:
       - name: Checkout Smart Irrigation
         uses: actions/checkout@v7
@@ -146,7 +131,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.test.txt mypy==2.4.1
+          pip install aiofiles "homeassistant==$MYPY_HOME_ASSISTANT" mypy==2.4.1
 
       - name: Type check against the recorded ceiling
         run: python scripts/mypy_baseline.py
