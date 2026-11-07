@@ -157,7 +157,13 @@
           "help": "Dette opretter et beregningsmodul, en sensorgruppe og en zone, præcis som de andre faner ville. Bagefter er intet låst."
         }
       },
-      "step": "trin"
+      "step": "trin",
+      "done-note-zone": "Den vises under Zoner, med sin sensorgruppe under Sensorgrupper. Der er intet særligt ved dem: redigér dem som alle andre.",
+      "done-next-static": "Med en fast mængde pr. dag behøver den ingen målinger: næste beregning finder ud af, hvor meget den mangler.",
+      "done-next-service": "Vejret kommer fra vejrtjenesten: når tjenesten har meldt ind, giver en opdatering og en beregning zonen en varighed.",
+      "done-next-sensors": "Kør en opdatering og en beregning, når dine sensorer har meldt ind, så begynder zonen at give en varighed.",
+      "open-zone": "Åbn zonen",
+      "another": "Opsæt en zone mere"
     },
     "weatherservice": {
       "history": {
@@ -259,8 +265,8 @@
           }
         },
         "continuousupdates": {
-          "header": "Kontinuerlige opdateringer for sensorer (eksperimentel)",
-          "description": "Registrerer hver ændring af en sensor i gruppen i stedet for én måling pr. opdatering: timeberegningen og regnen arbejder dermed med finere data. En regnmåler, der melder hvert tiende minut, læses hvert tiende minut. Zonerne beregnes ikke igen ved hver ændring; den planlagte beregning gør det én gang ud fra de registrerede målinger. I en gruppe, der også bruger en vejrtjeneste, registreres dens sensorer ved hver ændring, og tjenesten læses stadig én gang pr. opdatering: ingen ekstra forespørgsler.",
+          "header": "Kontinuerlige opdateringer for alle sensorgrupper",
+          "description": "Én indstilling for alle sensorgrupper nedenfor. Den registrerer hver ændring af en gruppes sensor i stedet for én måling pr. opdatering, så timeberegningen og regnen arbejder med finere data: en regnmåler, der melder hvert tiende minut, læses hvert tiende minut. Zonerne beregnes ikke igen ved hver ændring; den planlagte beregning gør det én gang ud fra de registrerede målinger. I en gruppe, der også bruger en vejrtjeneste, registreres dens sensorer, når de ændrer sig, og tjenesten læses stadig én gang pr. opdatering, så det koster ingen ekstra forespørgsler.",
           "labels": {
             "continuousupdates": "Aktivér kontinuerlige opdateringer",
             "sensor_debounce": "Sensor-debounce"
@@ -1292,7 +1298,7 @@
     "min_seconds": "Mindste vandmængde",
     "max_seconds": "Største vandmængde",
     "adjust_seconds": "Tid lagt til (+) eller trukket fra (-)",
-    "step_bounds_help": "Rækkefølge: først procenten, så tiden lagt til eller trukket fra, så minimum og maksimum. 0 for minimum eller maksimum: intet. Et trin, der ikke behøver vand, bliver på nul: minimum starter det aldrig.",
+    "step_bounds_help": "Rækkefølge: først procenten fra programmets »Juster varigheder«, når en sådan gælder (den sættes på programmet, ikke her), så tiden lagt til eller trukket fra, så minimum og maksimum. 0 for minimum eller maksimum: intet. Et trin, der ikke behøver vand, bliver på nul: minimum starter det aldrig.",
     "min_deficit_mm": "Vand kun, når underskuddet er mindst",
     "min_deficit_mm_help": "I mm, 0 for altid at vande. Sat, erstatter den zonens egen tærskel for dette trin. Trin med fast varighed vandes altid.",
     "adjust_title": "Juster varigheder",
@@ -1475,7 +1481,8 @@
         "paused": "på pause",
         "suspended": "suspenderet",
         "disabled": "deaktiveret"
-      }
+      },
+      "main_name": "Hovedprogram"
     },
     "editor": {
       "title": "Titel",

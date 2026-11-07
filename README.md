@@ -146,18 +146,12 @@ Install the test requirements, then run the suite:
 ```bash
 pip install -r requirements.test.txt
 
-pytest                                            # everything
-pytest tests/                                     # integration / behavior tests
-pytest custom_components/smart_irrigation/tests/  # component unit tests
-pytest tests/test_services.py                     # a single file
+pytest                          # everything
+pytest tests/test_services.py   # a single file
+pytest -n auto                  # on every core
 ```
 
-The project has two test directories:
-
-- `tests/` — integration tests and component behavior tests
-- `custom_components/smart_irrigation/tests/` — unit tests for the custom component
-
-Tests use `pytest-asyncio`, so async test functions must be marked accordingly. A few test files that reference not-yet-implemented modules are parked with a `.disabled` extension until they are updated.
+All the tests live in `tests/`. `scripts/check.sh` runs every check the CI runs (the Python tests, ruff, black, the panel's lint and tests, and the bundle), so you can run them all before pushing.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full development and testing guide.
 

@@ -157,7 +157,13 @@
           "help": "Det här skapar en beräkningsmodul, en sensorgrupp och en zon, precis som de andra flikarna skulle göra. Efteråt är inget låst."
         }
       },
-      "step": "steg"
+      "step": "steg",
+      "done-note-zone": "Den visas under Zoner, med sin sensorgrupp under Sensorgrupper. Inget särskilt med dem: redigera dem som vilka andra som helst.",
+      "done-next-static": "Med en fast mängd per dag behöver den inga mätningar: nästa beräkning räknar ut hur mycket den saknar.",
+      "done-next-service": "Vädret kommer från vädertjänsten: när tjänsten har rapporterat ger en uppdatering och en beräkning zonen en varaktighet.",
+      "done-next-sensors": "Kör en uppdatering och en beräkning när dina sensorer har rapporterat, så börjar zonen ge en varaktighet.",
+      "open-zone": "Öppna zonen",
+      "another": "Ställ in en zon till"
     },
     "weatherservice": {
       "history": {
@@ -259,8 +265,8 @@
           }
         },
         "continuousupdates": {
-          "header": "Kontinuerliga uppdateringar för sensorer",
-          "description": "Registrerar varje ändring av en sensor i gruppen i stället för en mätning per uppdatering: timberäkningen och regnet arbetar därmed med finare data. En regnmätare som rapporterar var tionde minut läses var tionde minut. Zonerna beräknas inte om vid varje ändring; den schemalagda beräkningen gör det en gång utifrån de registrerade mätningarna. I en grupp som också använder en vädertjänst registreras dess sensorer vid varje ändring och tjänsten läses fortfarande en gång per uppdatering: inga extra förfrågningar.",
+          "header": "Kontinuerliga uppdateringar för alla sensorgrupper",
+          "description": "En inställning för alla sensorgrupper nedan. Den registrerar varje ändring av en grupps sensor i stället för en mätning per uppdatering, så att timberäkningen och regnet arbetar med finare data: en regnmätare som rapporterar var tionde minut läses var tionde minut. Zonerna beräknas inte om vid varje ändring; den schemalagda beräkningen gör det en gång utifrån de registrerade mätningarna. I en grupp som också använder en vädertjänst registreras dess sensorer när de ändras och tjänsten läses fortfarande en gång per uppdatering, så det kostar inga extra förfrågningar.",
           "labels": {
             "continuousupdates": "Aktivera kontinuerliga uppdateringar",
             "sensor_debounce": "Sensor-debounce"
@@ -1292,7 +1298,7 @@
     "min_seconds": "Minsta vattenmängd",
     "max_seconds": "Största vattenmängd",
     "adjust_seconds": "Tid som läggs till (+) eller dras av (-)",
-    "step_bounds_help": "Ordning: först procenten, sedan tiden som läggs till eller dras av, sedan minimum och maximum. 0 för minimum eller maximum: inget. Ett steg som inte behöver vatten stannar på noll: minimum startar det aldrig.",
+    "step_bounds_help": "Ordning: först procenten från programmets ”Justera varaktigheter”, när en sådan gäller (den ställs in på programmet, inte här), sedan tiden som läggs till eller dras av, sedan minimum och maximum. 0 för minimum eller maximum: inget. Ett steg som inte behöver vatten stannar på noll: minimum startar det aldrig.",
     "min_deficit_mm": "Vattna bara när underskottet är minst",
     "min_deficit_mm_help": "I mm, 0 för att alltid vattna. Angiven ersätter den zonens egen tröskel för det här steget. Steg med fast längd vattnas alltid.",
     "adjust_title": "Justera varaktigheter",
@@ -1475,7 +1481,8 @@
         "paused": "pausat",
         "suspended": "uppskjutet",
         "disabled": "inaktiverat"
-      }
+      },
+      "main_name": "Huvudprogram"
     },
     "editor": {
       "title": "Titel",

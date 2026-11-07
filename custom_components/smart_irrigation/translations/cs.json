@@ -108,16 +108,19 @@
       "single_instance_allowed": "Je povolena pouze jedna konfigurace Smart Irrigation."
     },
     "error": {
-      "name": "Zadejte jedinečný název integrace."
+      "name": "Zadejte pro integraci jedinečný název."
     },
     "step": {
       "user": {
-        "title": "Obecné nastavení",
-        "description": "Pokud potřebujete pomoc s konfigurací, podívejte se do dokumentace.",
+        "title": "Nastavit Smart Irrigation",
+        "description": "Smart Irrigation se nastavuje až potom ve vlastním panelu v postranní liště: jeho asistent nastavení s vámi vytvoří skupinu senzorů a první zónu a vybírá se tam i meteoslužba.",
         "data": {
           "name": "Jedinečný název integrace"
         }
       }
+    },
+    "create_entry": {
+      "default": "Smart Irrigation je nainstalováno. Otevřete **Smart Irrigation** v postranní liště: [asistent nastavení](/smart_irrigation/setup) s vámi vytvoří první zónu."
     }
   },
   "options": {

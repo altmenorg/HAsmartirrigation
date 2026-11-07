@@ -157,7 +157,13 @@
           "help": "Tým sa vytvorí výpočtový modul, skupina senzorov a zóna, presne ako by to urobili ostatné panely. Potom nie je nič pevne dané."
         }
       },
-      "step": "krok"
+      "step": "krok",
+      "done-note-zone": "Nájdete ju v sekcii Zóny a jej skupinu senzorov v sekcii Skupiny senzorov. Nie je na nich nič zvláštne: obe upravíte rovnako ako akékoľvek iné.",
+      "done-next-static": "S pevným množstvom za deň nepotrebuje žiadne merania: nasledujúci výpočet zistí, koľko jej chýba.",
+      "done-next-service": "Počasie získava z meteoslužby: keď služba pošle údaje, aktualizácia a výpočet dajú zóne trvanie.",
+      "done-next-sensors": "Keď vaše senzory pošlú hodnoty, spustite aktualizáciu a výpočet a zóna začne počítať trvanie.",
+      "open-zone": "Otvoriť zónu",
+      "another": "Nastaviť ďalšiu zónu"
     },
     "weatherservice": {
       "history": {
@@ -259,8 +265,8 @@
           }
         },
         "continuousupdates": {
-          "header": "Nepretržité aktualizácie pre senzory",
-          "description": "Zaznamenáva každú zmenu senzora skupiny namiesto jedného merania na aktualizáciu: hodinový výpočet aj dážď tak pracujú s jemnejšími údajmi. Zrážkomer, ktorý hlási každých desať minút, sa číta každých desať minút. Zóny sa pri každej zmene neprepočítavajú; urobí to plánovaný výpočet raz zo zaznamenaných meraní. V skupine, ktorá používa aj službu počasia, sa jej senzory zaznamenávajú pri každej zmene a služba sa stále číta raz za aktualizáciu: žiadne požiadavky navyše.",
+          "header": "Nepretržité aktualizácie pre všetky skupiny senzorov",
+          "description": "Jedno nastavenie pre všetky skupiny senzorov nižšie. Zaznamenáva každú zmenu senzora skupiny namiesto jedného merania na aktualizáciu, takže hodinový výpočet aj dážď pracujú s jemnejšími údajmi: zrážkomer, ktorý hlási každých desať minút, sa číta každých desať minút. Zóny sa pri každej zmene neprepočítavajú; urobí to plánovaný výpočet raz zo zaznamenaných meraní. V skupine, ktorá používa aj službu počasia, sa jej senzory zaznamenávajú pri každej zmene a služba sa stále číta raz za aktualizáciu, takže to nestojí žiadne požiadavky navyše.",
           "labels": {
             "continuousupdates": "Povoliť nepretržité aktualizácie",
             "sensor_debounce": "Debounce senzora"
@@ -1292,7 +1298,7 @@
     "min_seconds": "Minimum vody",
     "max_seconds": "Maximum vody",
     "adjust_seconds": "Čas pridaný (+) alebo ubraný (-)",
-    "step_bounds_help": "Poradie: najprv percento, potom pridaný alebo ubraný čas, potom minimum a maximum. 0 pre minimum alebo maximum: žiadne. Krok, ktorý nepotrebuje vodu, zostane na nule: minimum ho nikdy nespustí.",
+    "step_bounds_help": "Poradie použitia: najprv percento z „Úprava trvania“ programu, ak nejaké platí (nastavuje sa v programe, nie tu), potom pridaný alebo ubraný čas, potom minimum a maximum. 0 pre minimum alebo maximum: žiadne. Krok, ktorý nepotrebuje vodu, zostane na nule: minimum ho nikdy nespustí.",
     "min_deficit_mm": "Zalievať, iba ak je deficit aspoň",
     "min_deficit_mm_help": "V mm, 0 na polievanie vždy. Ak je nastavený, nahrádza pre tento krok vlastný prah zóny. Kroky s pevnou dobou sa polievajú vždy.",
     "adjust_title": "Úprava trvania",
@@ -1475,7 +1481,8 @@
         "paused": "pozastavený",
         "suspended": "odložený",
         "disabled": "vypnutý"
-      }
+      },
+      "main_name": "Hlavný program"
     },
     "editor": {
       "title": "Názov",
