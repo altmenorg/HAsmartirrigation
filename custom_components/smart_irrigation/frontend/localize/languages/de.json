@@ -597,7 +597,9 @@
         "view-weather-info-message": "Wetterdaten verfügbar für",
         "view-watering-calendar": "Bewässerungskalender anzeigen",
         "water": "Bewässern",
-        "calculating": "Wird berechnet …"
+        "calculating": "Wird berechnet …",
+        "change": "Ändern",
+        "done": "Fertig"
       },
       "cards": {
         "add-zone": {
@@ -786,6 +788,11 @@
       "calculation-feedback": {
         "nothing-new": "{zone}: Seit der letzten Berechnung gibt es keine neuen Messwerte, daher hat sich nichts geändert.",
         "failed": "{zone}: Die Berechnung ist fehlgeschlagen ({error})."
+      },
+      "sections": {
+        "zone": "Zone und Ventil",
+        "need": "Was sie braucht",
+        "status": "Wo sie steht"
       }
     },
     "history": {
