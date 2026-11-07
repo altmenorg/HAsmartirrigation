@@ -754,6 +754,7 @@
       "module-comes-from-the-group": "模块来自该区域的传感器组。在那里修改，使用该组的每个区域都会跟着变。",
       "status": {
         "estimate": "缺少 {short}：下次计算时约 {duration}（{volume}）。",
+        "estimate-ahead": "下次计算时约 {duration}（{volume}）。",
         "will-water": "下次启动时将浇 {duration}。",
         "idle": "无需浇水：还差 {short}。",
         "satisfied": "无需浇水：这个区域已经够了。",

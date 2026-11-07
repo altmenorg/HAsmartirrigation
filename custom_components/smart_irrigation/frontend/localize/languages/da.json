@@ -754,6 +754,7 @@
       "module-comes-from-the-group": "Modulet kommer fra denne zones sensorgruppe. Skift det dér, og alle zoner der bruger gruppen, følger med.",
       "status": {
         "estimate": "Mangler {short}: omkring {duration} ({volume}) ved næste beregning.",
+        "estimate-ahead": "Omkring {duration} ({volume}) ved næste beregning.",
         "will-water": "Vander {duration} ved næste start.",
         "idle": "Intet at vande: der mangler {short}.",
         "satisfied": "Intet at vande: denne zone har det den skal have.",

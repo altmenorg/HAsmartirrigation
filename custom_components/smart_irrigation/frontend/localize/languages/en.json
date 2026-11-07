@@ -754,6 +754,7 @@
       "module-comes-from-the-group": "The module comes from this zone's sensor group. Change it there, and every zone using that group follows.",
       "status": {
         "estimate": "Short by {short}: about {duration} ({volume}) at the next calculation.",
+        "estimate-ahead": "About {duration} ({volume}) at the next calculation.",
         "will-water": "Will water {duration} at the next start.",
         "idle": "Nothing to water: {short} short.",
         "satisfied": "Nothing to water: this zone has what it needs.",

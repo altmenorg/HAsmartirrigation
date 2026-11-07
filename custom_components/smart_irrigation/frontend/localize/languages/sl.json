@@ -754,6 +754,7 @@
       "module-comes-from-the-group": "Modul izhaja iz skupine senzorjev te cone. Spremeni ga tam, in vsaka cona, ki uporablja to skupino, mu sledi.",
       "status": {
         "estimate": "Primanjkuje {short}: približno {duration} ({volume}) ob naslednjem izračunu.",
+        "estimate-ahead": "Približno {duration} ({volume}) ob naslednjem izračunu.",
         "will-water": "Ob naslednjem zagonu bo zalivala {duration}.",
         "idle": "Nič ni treba zaliti: primanjkuje {short}.",
         "satisfied": "Nič ni treba zaliti: ta cona ima, kar potrebuje.",

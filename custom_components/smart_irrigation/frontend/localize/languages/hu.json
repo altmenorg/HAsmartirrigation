@@ -754,6 +754,7 @@
       "module-comes-from-the-group": "A modul ennek a zónának az érzékelőcsoportjából jön. Ott változtasd meg, és minden zóna, amely azt a csoportot használja, követi.",
       "status": {
         "estimate": "{short} hiányzik: kb. {duration} ({volume}) a következő számításnál.",
+        "estimate-ahead": "Körülbelül {duration} ({volume}) a következő számításkor.",
         "will-water": "A következő indításnál {duration} ideig öntöz.",
         "idle": "Nincs mit öntözni: {short} hiányzik.",
         "satisfied": "Nincs mit öntözni: ennek a zónának megvan, amire szüksége van.",

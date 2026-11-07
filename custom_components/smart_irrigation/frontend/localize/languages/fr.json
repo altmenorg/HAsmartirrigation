@@ -754,6 +754,7 @@
       "module-comes-from-the-group": "Le module vient du groupe de capteurs de cette zone. Modifie-le là-bas, et toutes les zones de ce groupe suivent.",
       "status": {
         "estimate": "Déficit de {short} : environ {duration} ({volume}) au prochain calcul.",
+        "estimate-ahead": "Environ {duration} ({volume}) au prochain calcul.",
         "will-water": "Arrosera {duration} au prochain départ.",
         "idle": "Rien à arroser : déficit de {short}.",
         "satisfied": "Rien à arroser : cette zone a ce qu'il lui faut.",

@@ -754,6 +754,7 @@
       "module-comes-from-the-group": "Moduł pochodzi z grupy czujników tej strefy. Zmień go tam, a każda strefa używająca tej grupy pójdzie za nim.",
       "status": {
         "estimate": "Brakuje {short}: około {duration} ({volume}) przy następnym obliczeniu.",
+        "estimate-ahead": "Około {duration} ({volume}) przy następnym obliczeniu.",
         "will-water": "Podleje {duration} przy następnym starcie.",
         "idle": "Nie ma czego podlewać: brakuje {short}.",
         "satisfied": "Nie ma czego podlewać: ta strefa ma to, czego potrzebuje.",

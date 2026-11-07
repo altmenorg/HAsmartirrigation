@@ -754,6 +754,7 @@
       "module-comes-from-the-group": "Modulen kommer fra sensorgruppen til denne sonen. Endre den der, og alle soner som bruker gruppen, følger etter.",
       "status": {
         "estimate": "Mangler {short}: omtrent {duration} ({volume}) ved neste beregning.",
+        "estimate-ahead": "Omtrent {duration} ({volume}) ved neste beregning.",
         "will-water": "Vanner {duration} ved neste start.",
         "idle": "Ingenting å vanne: det mangler {short}.",
         "satisfied": "Ingenting å vanne: denne sonen har det den trenger.",

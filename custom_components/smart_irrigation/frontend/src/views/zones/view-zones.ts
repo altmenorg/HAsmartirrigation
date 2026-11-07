@@ -775,15 +775,26 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       // estimate alone leaves out the rain in the forecast.
       const duration = planned ?? live.duration;
       kind = "watering";
-      text = t(
-        "estimate",
-        "{short}",
-        short ?? "",
-        "{duration}",
-        this._friendlyDuration(duration),
-        "{volume}",
-        this._volumeText(duration, zone.throughput),
-      );
+      // Not short yet, or by a hair, but the planning already counts what the
+      // zone loses before its start: say the run without a deficit, rather
+      // than "short by : about 12 s".
+      text = short
+        ? t(
+            "estimate",
+            "{short}",
+            short,
+            "{duration}",
+            this._friendlyDuration(duration),
+            "{volume}",
+            this._volumeText(duration, zone.throughput),
+          )
+        : t(
+            "estimate-ahead",
+            "{duration}",
+            this._friendlyDuration(duration),
+            "{volume}",
+            this._volumeText(duration, zone.throughput),
+          );
     } else if (short && threshold > 0) {
       text = t("under-threshold", "{short}", short);
     }

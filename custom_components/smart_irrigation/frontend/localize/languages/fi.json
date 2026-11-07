@@ -754,6 +754,7 @@
       "module-comes-from-the-group": "Moduuli tulee tämän alueen anturiryhmästä. Vaihda se siellä, niin jokainen tätä ryhmää käyttävä alue seuraa perässä.",
       "status": {
         "estimate": "{short} vajaa: noin {duration} ({volume}) seuraavassa laskennassa.",
+        "estimate-ahead": "Noin {duration} ({volume}) seuraavassa laskennassa.",
         "will-water": "Kastelee {duration} seuraavalla aloituksella.",
         "idle": "Ei kasteltavaa: {short} vajaa.",
         "satisfied": "Ei kasteltavaa: tällä alueella on se mitä se tarvitsee.",

@@ -754,6 +754,7 @@
       "module-comes-from-the-group": "Das Modul kommt von der Sensorgruppe dieser Zone. Ändere es dort, und jede Zone, die diese Gruppe nutzt, folgt.",
       "status": {
         "estimate": "Es fehlen {short}: etwa {duration} ({volume}) bei der nächsten Berechnung.",
+        "estimate-ahead": "Etwa {duration} ({volume}) bei der nächsten Berechnung.",
         "will-water": "Bewässert {duration} beim nächsten Start.",
         "idle": "Nichts zu bewässern: {short} fehlen.",
         "satisfied": "Nichts zu bewässern: diese Zone hat, was sie braucht.",

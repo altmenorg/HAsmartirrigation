@@ -754,6 +754,7 @@
       "module-comes-from-the-group": "De module komt van de sensorgroep van deze zone. Verander die daar, en elke zone die die groep gebruikt volgt.",
       "status": {
         "estimate": "{short} tekort: ongeveer {duration} ({volume}) bij de volgende berekening.",
+        "estimate-ahead": "Ongeveer {duration} ({volume}) bij de volgende berekening.",
         "will-water": "Bewatert {duration} bij de volgende start.",
         "idle": "Niets te bewateren: {short} tekort.",
         "satisfied": "Niets te bewateren: deze zone heeft wat ze nodig heeft.",

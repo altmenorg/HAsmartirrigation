@@ -754,6 +754,7 @@
       "module-comes-from-the-group": "Modul pochází ze skupiny senzorů této zóny. Změňte ho tam a každá zóna, která tuto skupinu používá, se přizpůsobí.",
       "status": {
         "estimate": "Chybí {short}: asi {duration} ({volume}) při příštím výpočtu.",
+        "estimate-ahead": "Asi {duration} ({volume}) při příštím výpočtu.",
         "will-water": "Při dalším startu bude zalévat {duration}.",
         "idle": "Není co zalévat: chybí {short}.",
         "satisfied": "Není co zalévat: tato zóna má, co potřebuje.",
