@@ -3,6 +3,13 @@ import { property, customElement, state } from "lit/decorators.js";
 import { HomeAssistant } from "custom-card-helpers";
 import { loadHaForm } from "./load-ha-elements";
 import { navigate } from "./helpers";
+import {
+  mdiCogOutline,
+  mdiHomeOutline,
+  mdiSprinklerVariant,
+  mdiWater,
+  mdiWeatherPartlyCloudy,
+} from "@mdi/js";
 
 import "./views/general/view-general.ts";
 import "./views/zones/view-zones.ts";
@@ -107,6 +114,19 @@ const WATERING_GROUP = {
 };
 
 /** The groups shown, the Watering one after Zones when the mode is on. */
+/**
+ * Each tab's icon. On a phone the five labels did not fit, and two tabs hid
+ * behind an arrow (#982); below 600 px a tab shows its icon over a short
+ * label, so all of them stay in view.
+ */
+const GROUP_ICONS: Record<string, string> = {
+  home: mdiHomeOutline,
+  zones: mdiSprinklerVariant,
+  watering: mdiWater,
+  data: mdiWeatherPartlyCloudy,
+  settings: mdiCogOutline,
+};
+
 const visibleGroups = (
   fullController: boolean,
 ): { id: string; pages: EMenuItems[] }[] =>
@@ -290,10 +310,7 @@ export class SmartIrrigationPanel extends LitElement {
                       panel="${group.pages[0]}"
                       .active=${groupOf(path.page).id === group.id}
                     >
-                      ${localize(
-                        `panels.groups.${group.id}`,
-                        this.hass.language,
-                      )}
+                      ${this._tabContent(group.id)}
                     </ha-tab-group-tab>
                   `,
                 )}
@@ -309,10 +326,7 @@ export class SmartIrrigationPanel extends LitElement {
                         : ""}"
                       @click=${() => this.navigateToPage(group.pages[0])}
                     >
-                      ${localize(
-                        `panels.groups.${group.id}`,
-                        this.hass.language,
-                      )}
+                      ${this._tabContent(group.id)}
                     </button>
                   `,
                 )}
@@ -322,6 +336,16 @@ export class SmartIrrigationPanel extends LitElement {
       </div>
       <div class="view">${this.getView(path)}</div>
     `;
+  }
+
+  /** A tab's icon (shown on a phone only) and its label. */
+  private _tabContent(id: string) {
+    return html`<span class="tab">
+      <ha-svg-icon class="tab-icon" .path=${GROUP_ICONS[id]}></ha-svg-icon>
+      <span class="tab-label"
+        >${localize(`panels.groups.${id}`, this.hass.language)}</span
+      >
+    </span>`;
   }
 
   /** The pages of the current group, when it holds more than one. */
@@ -631,6 +655,48 @@ export class SmartIrrigationPanel extends LitElement {
           --ha-tab-active-text-color: var(--app-header-text-color, white);
           --ha-tab-indicator-color: var(--app-header-text-color, white);
           --ha-tab-track-color: transparent;
+        }
+
+        .tab {
+          display: inline-flex;
+          align-items: center;
+        }
+        .tab-icon {
+          display: none;
+        }
+        /* On a phone: every tab in view, as an icon over a short label. */
+        @media (max-width: 600px) {
+          ha-tab-group,
+          .custom-tabs {
+            margin-left: 0;
+            margin-right: 0;
+          }
+          ha-tab-group-tab {
+            flex: 1 1 0;
+          }
+          ha-tab-group-tab::part(base) {
+            padding: 6px 2px;
+            justify-content: center;
+          }
+          .custom-tab {
+            flex: 1 1 0;
+            min-width: 0;
+            padding: 6px 2px;
+            line-height: normal;
+            letter-spacing: normal;
+          }
+          .tab {
+            flex-direction: column;
+            gap: 2px;
+          }
+          .tab-icon {
+            display: block;
+            --mdc-icon-size: 20px;
+          }
+          .tab-label {
+            font-size: 11px;
+            text-transform: none;
+          }
         }
 
         .custom-tabs {

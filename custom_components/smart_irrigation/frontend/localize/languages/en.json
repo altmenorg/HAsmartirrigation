@@ -602,7 +602,9 @@
       "cards": {
         "add-zone": {
           "actions": {
-            "add": "Add zone"
+            "add": "Add zone",
+            "assistant": "Set it up with the assistant",
+            "cancel": "Cancel"
           },
           "header": "Add zone"
         },
