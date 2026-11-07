@@ -157,7 +157,13 @@
           "help": "Tämä luo laskentamoduulin, anturiryhmän ja alueen, täsmälleen kuten muut välilehdet tekisivät. Jälkeenpäin mikään ei ole lukittu."
         }
       },
-      "step": "vaihe"
+      "step": "vaihe",
+      "done-note-zone": "Se näkyy kohdassa Vyöhykkeet ja sen anturiryhmä kohdassa Anturiryhmät. Niissä ei ole mitään erityistä: muokkaa niitä kuten mitä tahansa muita.",
+      "done-next-static": "Kiinteällä päivittäisellä määrällä se ei tarvitse lukemia: seuraava laskenta selvittää, paljonko siltä puuttuu.",
+      "done-next-service": "Sen säätiedot tulevat sääpalvelusta: kun palvelu on raportoinut, päivitys ja laskenta antavat alueelle keston.",
+      "done-next-sensors": "Suorita päivitys ja laskenta, kun anturisi ovat raportoineet, niin alue alkaa tuottaa keston.",
+      "open-zone": "Avaa alue",
+      "another": "Määritä toinen alue"
     },
     "weatherservice": {
       "history": {
@@ -259,8 +265,8 @@
           }
         },
         "continuousupdates": {
-          "header": "Jatkuvat päivitykset antureille (kokeellinen)",
-          "description": "Tallentaa jokaisen ryhmän anturin muutoksen yhden päivityskohtaisen lukeman sijaan: tuntilaskenta ja sade perustuvat näin tarkempiin tietoihin. Kymmenen minuutin välein raportoiva sademittari luetaan kymmenen minuutin välein. Vyöhykkeitä ei lasketa uudelleen jokaisella muutoksella; ajastettu laskenta tekee sen kerran tallennetuista lukemista. Ryhmässä, joka käyttää myös säätietopalvelua, sen anturit tallennetaan jokaisella muutoksella ja palvelua luetaan yhä kerran päivitystä kohden: ei lisäpyyntöjä.",
+          "header": "Jatkuvat päivitykset kaikille anturiryhmille",
+          "description": "Yksi asetus kaikille alla oleville anturiryhmille. Se tallentaa jokaisen ryhmän anturin muutoksen yhden päivityskohtaisen lukeman sijaan, joten tuntilaskenta ja sade perustuvat tarkempiin tietoihin: kymmenen minuutin välein raportoiva sademittari luetaan kymmenen minuutin välein. Vyöhykkeitä ei lasketa uudelleen jokaisella muutoksella; ajastettu laskenta tekee sen kerran tallennetuista lukemista. Ryhmässä, joka käyttää myös sääpalvelua, sen anturit tallennetaan niiden muuttuessa ja palvelua luetaan yhä kerran päivitystä kohden, joten se ei aiheuta lisäpyyntöjä.",
           "labels": {
             "continuousupdates": "Ota jatkuvat päivitykset käyttöön",
             "sensor_debounce": "Anturin debounce"
@@ -1292,7 +1298,7 @@
     "min_seconds": "Vähimmäisvesi",
     "max_seconds": "Enimmäisvesi",
     "adjust_seconds": "Lisätty (+) tai vähennetty (-) aika",
-    "step_bounds_help": "Järjestys: ensin prosentti, sitten lisätty tai vähennetty aika, sitten minimi ja maksimi. 0 minimille tai maksimille: ei mitään. Vaihe, joka ei tarvitse vettä, jää nollaan: minimi ei koskaan käynnistä sitä.",
+    "step_bounds_help": "Järjestys: ensin ohjelman ”Säädä kestoja” -prosentti, kun sellainen on voimassa (se asetetaan ohjelmassa, ei tässä), sitten lisätty tai vähennetty aika, sitten minimi ja maksimi. 0 minimille tai maksimille: ei mitään. Vaihe, joka ei tarvitse vettä, jää nollaan: minimi ei koskaan käynnistä sitä.",
     "min_deficit_mm": "Kastele vain, kun vajaus on vähintään",
     "min_deficit_mm_help": "Millimetreinä, 0 kastelee aina. Asetettuna se korvaa vyöhykkeen oman kynnyksen tässä vaiheessa. Kiinteän keston vaiheet kastellaan aina.",
     "adjust_title": "Säädä kestoja",
@@ -1475,7 +1481,8 @@
         "paused": "tauolla",
         "suspended": "keskeytetty",
         "disabled": "poistettu käytöstä"
-      }
+      },
+      "main_name": "Pääohjelma"
     },
     "editor": {
       "title": "Otsikko",

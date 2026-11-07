@@ -1,7 +1,7 @@
 """A weather sensor that stops reporting is reported, once, and clears itself."""
 
 import asyncio
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import homeassistant.util.dt as dt_util
@@ -16,7 +16,7 @@ from custom_components.smart_irrigation.liveness import (
     silent_fields,
 )
 
-NOW = datetime(2026, 10, 6, 12, 0, tzinfo=timezone.utc)
+NOW = datetime(2026, 10, 6, 12, 0, tzinfo=UTC)
 
 
 def _report(field="Temperature", hours_ago=1.0, **kw):

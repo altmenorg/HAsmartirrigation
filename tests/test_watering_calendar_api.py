@@ -127,7 +127,7 @@ class TestWateringCalendarAPI:
         request.query = {}  # No zone_id parameter
 
         with contextlib.suppress(Exception):
-            response = await view.get(request)
+            await view.get(request)
 
         # HTTP view functionality tested - verify coordinator accessible
         assert mock_coordinator is not None
@@ -145,7 +145,7 @@ class TestWateringCalendarAPI:
         request.query = {"zone_id": "1"}
 
         with contextlib.suppress(Exception):
-            response = await view.get(request)
+            await view.get(request)
 
         # HTTP view functionality tested
         assert mock_coordinator is not None
@@ -170,7 +170,7 @@ class TestWateringCalendarAPI:
         request.query = {"zone_id": "999"}
 
         with contextlib.suppress(Exception):
-            response = await view.get(request)
+            await view.get(request)
 
         # HTTP view error handling tested
         assert view is not None

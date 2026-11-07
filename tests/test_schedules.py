@@ -4,7 +4,7 @@ The sun and the clock are handed in, so every case is a plain date in a named
 zone, including the days the clock changes.
 """
 
-from datetime import date, datetime, time, timedelta, timezone
+from datetime import UTC, date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
 import pytest
@@ -19,7 +19,7 @@ from custom_components.smart_irrigation.schedules import (
 )
 
 PARIS = ZoneInfo("Europe/Paris")
-UTC = timezone.utc
+UTC = UTC
 
 
 def _sun(event, day):

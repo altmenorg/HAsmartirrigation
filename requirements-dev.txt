@@ -19,6 +19,8 @@ black>=26.10.1
 ruff>=0.17.3
 isort>=9.0.2
 pre-commit>=4.7.0
+# The CI pins the version, since its count of errors is the ceiling (scripts/mypy_baseline.py)
+mypy==2.4.1
 
 # Documentation
 markdown>=3.11.2

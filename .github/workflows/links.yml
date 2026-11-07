@@ -1,0 +1,34 @@
+name: Check links
+
+# The links between the pages of the docs are checked on every change by the
+# test workflow. This one checks the links to other sites, weekly, since a site
+# that is down for an hour should not fail a change (#979).
+on:
+  schedule:
+    - cron: "41 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Smart Irrigation
+        uses: actions/checkout@v7
+
+      - name: Check the links of the docs and the README
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --max-retries 3
+            --accept 200,206,429
+            --exclude "^https?://(localhost|127\.0\.0\.1|192\.168\.|homeassistant\.local)"
+            --exclude "my\.home-assistant\.io/redirect"
+            --root-dir "${{ github.workspace }}/docs"
+            "docs/*.md" README.md
+          fail: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

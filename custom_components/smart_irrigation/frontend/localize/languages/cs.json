@@ -157,7 +157,13 @@
           "help": "Tím se vytvoří výpočetní modul, skupina senzorů a zóna, přesně jako by to udělaly ostatní panely. Potom není nic pevně dané."
         }
       },
-      "step": "krok"
+      "step": "krok",
+      "done-note-zone": "Najdete ji v sekci Zóny a její skupinu senzorů v sekci Skupiny senzorů. Nejde o nic zvláštního: obě upravíte stejně jako jakékoli jiné.",
+      "done-next-static": "S pevným množstvím za den nepotřebuje žádná měření: příští výpočet zjistí, kolik jí chybí.",
+      "done-next-service": "Počasí získává z meteoslužby: jakmile služba pošle data, aktualizace a výpočet dají zóně dobu trvání.",
+      "done-next-sensors": "Jakmile vaše senzory pošlou hodnoty, spusťte aktualizaci a výpočet a zóna začne počítat dobu trvání.",
+      "open-zone": "Otevřít zónu",
+      "another": "Nastavit další zónu"
     },
     "weatherservice": {
       "history": {
@@ -259,8 +265,8 @@
           }
         },
         "continuousupdates": {
-          "header": "Průběžné aktualizace senzorů",
-          "description": "Zaznamenává každou změnu senzoru skupiny místo jednoho měření na aktualizaci: hodinový výpočet i déšť tak pracují s jemnějšími daty. Srážkoměr, který hlásí každých deset minut, se čte každých deset minut. Zóny se při každé změně nepřepočítávají; to udělá plánovaný výpočet jednou ze zaznamenaných měření. Ve skupině, která používá i službu počasí, se její senzory zaznamenávají při každé změně a služba se dál čte jednou za aktualizaci: žádné požadavky navíc.",
+          "header": "Průběžné aktualizace pro všechny skupiny senzorů",
+          "description": "Jedno nastavení pro všechny skupiny senzorů níže. Zaznamenává každou změnu senzoru skupiny místo jednoho měření na aktualizaci, takže hodinový výpočet i déšť pracují s jemnějšími daty: srážkoměr, který hlásí každých deset minut, se čte každých deset minut. Zóny se při každé změně nepřepočítávají; to udělá plánovaný výpočet jednou ze zaznamenaných měření. Ve skupině, která používá i službu počasí, se její senzory zaznamenávají při každé změně a služba se dál čte jednou za aktualizaci, takže to nestojí žádné požadavky navíc.",
           "labels": {
             "continuousupdates": "Povolit průběžné aktualizace",
             "sensor_debounce": "Debounce senzoru"
@@ -1292,7 +1298,7 @@
     "min_seconds": "Minimum vody",
     "max_seconds": "Maximum vody",
     "adjust_seconds": "Čas přidaný (+) nebo ubraný (-)",
-    "step_bounds_help": "Pořadí: nejprve procento, pak přidaný nebo ubraný čas, pak minimum a maximum. 0 pro minimum nebo maximum: žádné. Krok, který nepotřebuje vodu, zůstane na nule: minimum ho nikdy nespustí.",
+    "step_bounds_help": "Pořadí použití: nejprve procento z „Upravit doby trvání“ programu, pokud nějaké platí (nastavuje se v programu, ne zde), pak přidaný nebo ubraný čas, pak minimum a maximum. 0 pro minimum nebo maximum: žádné. Krok, který nepotřebuje vodu, zůstane na nule: minimum ho nikdy nespustí.",
     "min_deficit_mm": "Zavlažovat, jen když je deficit alespoň",
     "min_deficit_mm_help": "V mm, 0 pro zalévání vždy. Je-li nastaven, nahrazuje pro tento krok vlastní práh zóny. Kroky s pevnou dobou se zalévají vždy.",
     "adjust_title": "Upravit doby trvání",
@@ -1475,7 +1481,8 @@
         "paused": "pozastaven",
         "suspended": "přerušen",
         "disabled": "vypnuto"
-      }
+      },
+      "main_name": "Hlavní program"
     },
     "editor": {
       "title": "Název",

@@ -108,16 +108,19 @@
       "single_instance_allowed": "Soltanto una configurazione di Smart Irrigation è consentita."
     },
     "error": {
-      "name": "Specifica un nome univoco per questa istanza."
+      "name": "Dai all'integrazione un nome univoco."
     },
     "step": {
       "user": {
-        "title": "Impostazioni Generali",
-        "description": "Se hai bisogno di aiuto con la configurazione, consulta la documentazione.",
+        "title": "Configura Smart Irrigation",
+        "description": "Smart Irrigation si configura dopo, nel suo pannello nella barra laterale: il suo assistente di configurazione crea con te un gruppo di sensori e una prima zona, e anche il servizio meteo si sceglie lì.",
         "data": {
           "name": "Nome univoco per questa istanza"
         }
       }
+    },
+    "create_entry": {
+      "default": "Smart Irrigation è installato. Apri **Smart Irrigation** nella barra laterale: l'[assistente di configurazione](/smart_irrigation/setup) crea con te la tua prima zona."
     }
   },
   "options": {

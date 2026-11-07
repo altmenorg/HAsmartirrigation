@@ -14,7 +14,7 @@ the equation of time. Around 21 June the equation of time is about -1.7 minutes
 (the sun runs slow), so noon comes 1.7 minutes later.
 """
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 
 import pytest
 
@@ -26,7 +26,7 @@ from custom_components.smart_irrigation.helpers import (
 EQUATION_OF_TIME_21_JUNE_MIN = -1.7
 
 
-def _solar_noon_utc(longitude, day=datetime(2026, 6, 21, tzinfo=timezone.utc)):
+def _solar_noon_utc(longitude, day=datetime(2026, 6, 21, tzinfo=UTC)):
     minutes = 12 * 60 - 4 * longitude - EQUATION_OF_TIME_21_JUNE_MIN
     return day + timedelta(minutes=minutes)
 

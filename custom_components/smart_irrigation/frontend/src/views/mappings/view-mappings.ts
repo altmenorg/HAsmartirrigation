@@ -2151,20 +2151,17 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         })
         .map((z) => z.name)
         .join(", ");
-    const ignoring = provided ? names((e) => e !== "Passthrough") : "";
+    // When no zone of the group reads it, the note under the field already
+    // says so for all of them (et_unused): naming them again was the same
+    // message twice (#984).
+    const someRead = this.etUseOfZones(mapping.id).provided > 0;
+    const ignoring =
+      provided && someRead ? names((e) => e !== "Passthrough") : "";
     const waiting = !provided ? names((e) => e === "Passthrough") : "";
-    return html`
-      ${settingsEntries.map(([value]) =>
-        this.renderMappingSetting(index, value),
-      )}
-      ${hidden > 0
-        ? html`<div class="weather-note">
-            ${localize(
-              "panels.mappings.cards.mapping.hidden_sources",
-              lang,
-            ).replace("{n}", String(hidden))}
-          </div>`
-        : ""}
+    // What the zones make of the evapotranspiration is said right under its
+    // field, not after the last reading where it read as a note on the wind
+    // (#984).
+    const etNotes = html`
       ${ignoring
         ? html`<div class="weather-note">
             ${localize(
@@ -2179,6 +2176,23 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
               "panels.mappings.cards.mapping.et_missing",
               lang,
             ).replace("{zones}", waiting)}
+          </div>`
+        : ""}
+    `;
+    return html`
+      ${settingsEntries.map(
+        ([value]) =>
+          html`${this.renderMappingSetting(index, value)}${value ===
+          MAPPING_EVAPOTRANSPIRATION
+            ? etNotes
+            : ""}`,
+      )}
+      ${hidden > 0
+        ? html`<div class="weather-note">
+            ${localize(
+              "panels.mappings.cards.mapping.hidden_sources",
+              lang,
+            ).replace("{n}", String(hidden))}
           </div>`
         : ""}
     `;
