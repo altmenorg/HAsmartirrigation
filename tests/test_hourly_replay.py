@@ -565,7 +565,9 @@ def test_a_rate_sensor_says_when_its_previous_reading_was():
     ]
 
     CalculationMixin._record_rain_timing(
-        resultdata, const.MAPPING_CURRENT_PRECIPITATION, zip(stamps, [0.0, 2.4, 1.2])
+        resultdata,
+        const.MAPPING_CURRENT_PRECIPITATION,
+        zip(stamps, [0.0, 2.4, 1.2], strict=True),
     )
 
     assert resultdata[const.MAPPING_DATA_RAIN_TIMING][

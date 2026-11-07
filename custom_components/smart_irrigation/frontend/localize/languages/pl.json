@@ -157,7 +157,13 @@
           "help": "To tworzy moduł obliczeniowy, grupę czujników i strefę, dokładnie tak jak zrobiłyby to pozostałe zakładki. Potem nic nie jest zablokowane."
         }
       },
-      "step": "krok"
+      "step": "krok",
+      "done-note-zone": "Pojawia się w zakładce Strefy, a jej grupa czujników w zakładce Grupy czujników. Nie ma w nich nic szczególnego: edytuj je jak każde inne.",
+      "done-next-static": "Przy stałej ilości na dobę nie potrzebuje odczytów: następne obliczenie ustali, ile jej brakuje.",
+      "done-next-service": "Dane pogodowe pochodzą z serwisu pogodowego: gdy serwis przekaże dane, aktualizacja i obliczenie nadadzą strefie czas trwania.",
+      "done-next-sensors": "Uruchom aktualizację i obliczenie, gdy twoje czujniki przekażą odczyty, a strefa zacznie wyznaczać czas trwania.",
+      "open-zone": "Otwórz strefę",
+      "another": "Skonfiguruj kolejną strefę"
     },
     "weatherservice": {
       "history": {
@@ -259,8 +265,8 @@
           }
         },
         "continuousupdates": {
-          "header": "Ciągłe aktualizacje dla czujników (eksperymentalne)",
-          "description": "Zapisuje każdą zmianę czujnika grupy zamiast jednego odczytu na aktualizację: obliczenie godzinowe i deszcz opierają się więc na dokładniejszych danych. Deszczomierz raportujący co dziesięć minut jest odczytywany co dziesięć minut. Strefy nie są przeliczane przy każdej zmianie; robi to raz zaplanowane obliczenie na podstawie zapisanych odczytów. W grupie, która używa też serwisu pogodowego, jej czujniki są zapisywane przy każdej zmianie, a serwis nadal jest odczytywany raz na aktualizację: żadnych dodatkowych zapytań.",
+          "header": "Ciągłe aktualizacje dla wszystkich grup czujników",
+          "description": "Jedno ustawienie dla wszystkich grup czujników poniżej. Zapisuje każdą zmianę czujnika grupy zamiast jednego odczytu na aktualizację, więc obliczenie godzinowe i deszcz opierają się na dokładniejszych danych: deszczomierz raportujący co dziesięć minut jest odczytywany co dziesięć minut. Strefy nie są przeliczane przy każdej zmianie; robi to raz zaplanowane obliczenie na podstawie zapisanych odczytów. W grupie, która używa też serwisu pogodowego, jej czujniki są zapisywane przy każdej zmianie, a serwis nadal jest odczytywany raz na aktualizację, więc nie kosztuje to dodatkowych zapytań.",
           "labels": {
             "continuousupdates": "Włącz ciągłe aktualizacje",
             "sensor_debounce": "Opóźnienie czujnika (debounce)"
@@ -1292,7 +1298,7 @@
     "min_seconds": "Minimum wody",
     "max_seconds": "Maksimum wody",
     "adjust_seconds": "Czas dodany (+) lub odjęty (-)",
-    "step_bounds_help": "Kolejność: najpierw procent, potem czas dodany lub odjęty, potem minimum i maksimum. 0 dla minimum lub maksimum: brak. Krok, który nie potrzebuje wody, zostaje na zerze: minimum nigdy go nie uruchamia.",
+    "step_bounds_help": "Kolejność: najpierw procent z „Dostosuj czasy trwania” programu, jeśli taki obowiązuje (ustawia się go w programie, nie tutaj), potem czas dodany lub odjęty, potem minimum i maksimum. 0 dla minimum lub maksimum: brak. Krok, który nie potrzebuje wody, zostaje na zerze: minimum nigdy go nie uruchamia.",
     "min_deficit_mm": "Podlewaj tylko, gdy deficyt wynosi co najmniej",
     "min_deficit_mm_help": "W mm, 0, aby zawsze podlewać. Jeśli ustawiony, zastępuje w tym kroku własny próg strefy. Kroki o stałym czasie są zawsze podlewane.",
     "adjust_title": "Dostosuj czasy trwania",
@@ -1475,7 +1481,8 @@
         "paused": "wstrzymany",
         "suspended": "zawieszony",
         "disabled": "wyłączony"
-      }
+      },
+      "main_name": "Program główny"
     },
     "editor": {
       "title": "Tytuł",

@@ -3,7 +3,7 @@
 ``via_device`` (the parent's identifiers) is deprecated and stops working in
 Home Assistant 2027.8; ``via_device_id`` (the parent's id in the device
 registry) replaces it, and passing both is an error (#833). We support Home
-Assistant 2025.5 and up, which spans both forms, so the helper asks the running
+Assistant 2026.3 and up, which spans both forms, so the helper asks the running
 version which one it knows.
 """
 
@@ -62,7 +62,7 @@ def test_the_new_form_names_the_parent_by_its_device_id():
 
 
 def test_an_older_home_assistant_still_gets_the_identifiers():
-    """Supported down to 2025.5, which does not know via_device_id."""
+    """Supported down to 2026.3, which does not know via_device_id."""
     with patch.object(entity, "_via_device_id_supported", return_value=False):
         info = entity.zone_device_info(_hass(), 1, "Front lawn")
 
