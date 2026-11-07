@@ -5,7 +5,7 @@
         "name": "Időtartam"
       },
       "bucket": {
-        "name": "Tartalék"
+        "name": "Vízmérleg"
       },
       "et_value": {
         "name": "Alkalmazott ET"
@@ -23,7 +23,7 @@
         "name": "Vízfogyás"
       },
       "live_bucket": {
-        "name": "Tartalék élőben"
+        "name": "Vízmérleg élőben"
       },
       "last_run_volume": {
         "name": "Utolsó futás vízmennyisége"
@@ -45,7 +45,7 @@
         "name": "Számítás"
       },
       "reset_bucket": {
-        "name": "Tartalék nullázása"
+        "name": "Vízmérleg nullázása"
       },
       "reset_usage": {
         "name": "Vízfogyás nullázása"
@@ -151,7 +151,7 @@
         },
         "dry_run": {
           "name": "Próbafutás",
-          "description": "Jelentse, mit tenne a számítás, a tartalék, a zóna és az összegyűjtött időjárási adatok módosítása nélkül"
+          "description": "Jelentse, mit tenne a számítás, a vízmérleg, a zóna és az összegyűjtött időjárási adatok módosítása nélkül"
         }
       }
     },
@@ -169,7 +169,7 @@
         },
         "dry_run": {
           "name": "Próbafutás",
-          "description": "Jelentse, mit tenne a számítás, a tartalék, a zóna és az összegyűjtött időjárási adatok módosítása nélkül"
+          "description": "Jelentse, mit tenne a számítás, a vízmérleg, a zóna és az összegyűjtött időjárási adatok módosítása nélkül"
         }
       }
     },
@@ -188,42 +188,42 @@
       }
     },
     "set_bucket": {
-      "name": "Vödör beállítása",
-      "description": "Egy zóna vödrének beállítása egy adott értékre",
+      "name": "Vízmérleg beállítása",
+      "description": "Egy zóna vízmérlegének beállítása egy értékre",
       "fields": {
         "entity": {
           "name": "Entitás",
-          "description": "A zóna, amelynek a vödrét beállítja"
+          "description": "A zóna, amelynek a vízmérlegét beállítja"
         },
         "new_bucket_value": {
-          "name": "Új vödörérték",
-          "description": "a vödör új értéke"
+          "name": "Új vízmérleg",
+          "description": "A vízmérleg új értéke"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Összes vödör beállítása",
-      "description": "Az összes zóna vödrének beállítása egy adott értékre",
+      "name": "Összes vízmérleg beállítása",
+      "description": "Az összes zóna vízmérlegének beállítása egy értékre",
       "fields": {
         "new_bucket_value": {
-          "name": "Új vödörérték",
-          "description": "a vödör új értéke"
+          "name": "Új vízmérleg",
+          "description": "A vízmérleg új értéke"
         }
       }
     },
     "reset_bucket": {
-      "name": "Vödör visszaállítása",
-      "description": "Egy zóna vödrének visszaállítása 0-ra",
+      "name": "Vízmérleg visszaállítása",
+      "description": "Egy zóna vízmérlegének visszaállítása 0-ra",
       "fields": {
         "entity": {
           "name": "Entitás",
-          "description": "A zóna, amelynek a vödrét visszaállítja"
+          "description": "A zóna, amelynek a vízmérlegét visszaállítja"
         }
       }
     },
     "reset_all_buckets": {
-      "name": "Összes vödör visszaállítása",
-      "description": "Az összes zóna vödrének visszaállítása 0-ra"
+      "name": "Összes vízmérleg visszaállítása",
+      "description": "Az összes zóna vízmérlegének visszaállítása 0-ra"
     },
     "clear_all_weather_data": {
       "name": "Összes időjárási adat törlése",
@@ -262,8 +262,8 @@
           "description": "A zóna, amelynek a konfigurációs értékeit beállítja"
         },
         "new_bucket_value": {
-          "name": "Új vödörérték",
-          "description": "A vödör új értéke"
+          "name": "Új vízmérleg",
+          "description": "A vízmérleg új értéke"
         },
         "new_multiplier_value": {
           "name": "Új szorzóérték",
@@ -295,7 +295,7 @@
     },
     "credit_watering": {
       "name": "Öntözés jóváírása",
-      "description": "A zóna vödrébe jóváírja az öntözés által ténylegesen kijuttatott vizet, ahelyett hogy nullázná.",
+      "description": "A zóna vízmérlegéhez jóváírja az öntözés által ténylegesen kijuttatott vizet, ahelyett hogy nullázná.",
       "fields": {
         "seconds": {
           "name": "Másodperc",
@@ -307,7 +307,7 @@
   "issues": {
     "dry_zone_not_watered": {
       "title": "A(z) {zone} zóna száraz, és semmi sem fogja öntözni",
-      "description": "A(z) **{zone}** zóna vödre {days} napja üres, és minden program, amely tartalmazza, le van tiltva, fel van függesztve, vagy nincs engedélyezett ütemezése.\n\nKapcsolj vissza egy programot, amely ezt a zónát öntözi, engedélyezd az egyik ütemezését, vagy szüntesd meg a felfüggesztését. Az értesítés magától eltűnik, amint a zónát öntözik, vagy egy program újra lefedi."
+      "description": "A(z) **{zone}** zóna vízmérlege {days} napja üres, és minden program, amely tartalmazza, le van tiltva, fel van függesztve, vagy nincs engedélyezett ütemezése.\n\nKapcsolj vissza egy programot, amely ezt a zónát öntözi, engedélyezd az egyik ütemezését, vagy szüntesd meg a felfüggesztését. Az értesítés magától eltűnik, amint a zónát öntözik, vagy egy program újra lefedi."
     },
     "weather_silent": {
       "title": "{mapping} érzékelőcsoport: egy időjárás-érzékelő nem jelent többé",
@@ -330,8 +330,8 @@
       "description": "A(z) **{zone}** zóna nem lett kiszámítva: az érzékelőcsoportjának nincsenek mérései, amelyekből számolni lehetne. Amíg nincsenek, a zóna hiánya nem mozdul, és nem öntöz.\n\nEllenőrizd, hogy az érzékelőcsoportnak vannak-e forrásai, és hogy azok jelentenek-e, frissítsd az időjárási adatokat, majd számítsd ki a zónát. Az értesítés magától eltűnik a következő sikeres számításnál."
     },
     "zone_not_calculated_no_engine": {
-      "title": "A(z) {zone} zóna nem számítható: nincs számítási motor",
-      "description": "A(z) **{zone}** zónának nincs számítási motorja, így nem lesz kiszámítva, és nem öntöz.\n\nVálaszd ki, hogyan számítódjon, a kártyáján a Zónák lapon. Az értesítés magától eltűnik a következő sikeres számításnál."
+      "title": "A(z) {zone} zóna nem számítható: nincs modul",
+      "description": "A(z) **{zone}** zónának nincs modulja, így nem lesz kiszámítva, és nem öntöz.\n\nVálaszd ki, hogyan számítódjon, a kártyáján a Zónák lapon. Az értesítés magától eltűnik a következő sikeres számításnál."
     },
     "zone_not_calculated_nothing_from_engine": {
       "title": "A(z) {zone} zóna nem számítható: nincs evapotranszpiráció",
@@ -339,7 +339,7 @@
     },
     "zone_not_calculated_forecast_without_service": {
       "title": "A(z) {zone} zóna nem számítható: előrejelzés időjárás-szolgáltatás nélkül",
-      "description": "A(z) **{zone}** zóna számítási motorja napokkal előre tekint, ehhez időjárás-szolgáltatás kell, de nincs beállítva. A zóna nem öntöz, amíg nem számítható.\n\nÁllíts be egy időjárás-szolgáltatást, vagy állítsd a motor előrejelzési napjait 0-ra. Az értesítés magától eltűnik a következő sikeres számításnál."
+      "description": "A(z) **{zone}** zóna modulja napokkal előre tekint, ehhez időjárás-szolgáltatás kell, de nincs beállítva. A zóna nem öntöz, amíg nem számítható.\n\nÁllíts be egy időjárás-szolgáltatást, vagy állítsd a modul előrejelzési napjait 0-ra. Az értesítés magától eltűnik a következő sikeres számításnál."
     },
     "zone_not_calculated_error": {
       "title": "A(z) {zone} zóna nem számítható: hiba",

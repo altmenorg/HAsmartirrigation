@@ -24,7 +24,7 @@
       "size": "rozmiar",
       "throughput": "przepływ",
       "state": "stan",
-      "bucket": "bucket",
+      "bucket": "bilans wodny",
       "last_updated": "ostatnia aktualizacja",
       "last_calculated": "ostatnio obliczono",
       "number_of_data_points": "liczba punktów danych"
@@ -55,13 +55,13 @@
         "module-returned-evapotranspiration-deficiency": "Moduł zwrócił niedobór ewapotranspiracji ( = et0 * hour_multiplier * Kc + opady) wynoszący",
         "module-returned-hourly-evapotranspiration-deficiency": "Moduł zsumował deficyt evapotranspiracji roślin godzina po godzinie ( = suma godzinowych et0 * Kc + opad) w ciągu",
         "crop-factor-is": "Współczynnik roślinny wynosi",
-        "bucket-was": "Bucket wynosił",
-        "new-bucket-values-is": "Nowa wartość bucket wynosi",
-        "bucket": "bucket",
-        "old-bucket-variable": "old_bucket",
-        "max-bucket-variable": "max_bucket",
+        "bucket-was": "Bilans wodny wynosił",
+        "new-bucket-values-is": "Nowy bilans wodny wynosi",
+        "bucket": "bilans wodny",
+        "old-bucket-variable": "old_water_balance",
+        "max-bucket-variable": "max_water_balance",
         "delta": "delta",
-        "bucket-less-than-zero-irrigation-necessary": "Ponieważ bucket < 0, nawadnianie jest konieczne",
+        "bucket-less-than-zero-irrigation-necessary": "Ponieważ bilans wodny < 0, nawadnianie jest konieczne",
         "steps-taken-to-calculate-duration": "Aby obliczyć dokładny czas trwania, wykonano następujące kroki",
         "precipitation-rate-defined-as": "Natężenie opadów jest zdefiniowane jako",
         "precipitation-rate-is": "Intensywność opadu wynosi",
@@ -76,9 +76,9 @@
         "duration-after-maximum-duration-is": "zatem czas trwania wynosi",
         "lead-time-is-applied": "Na koniec stosowany jest czas wyprzedzenia. Czas wyprzedzenia wynosi",
         "duration-after-lead-time-is": "zatem ostateczny czas trwania wynosi",
-        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Ponieważ bucket >= 0, nawadnianie nie jest konieczne, a czas trwania ustawiono na",
-        "maximum-bucket-is": "Maksymalny rozmiar bucket wynosi",
-        "drainage-rate-is": "Natężenie drenażu przy nasyceniu (bucket na maksimum) wynosi",
+        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Ponieważ bilans wodny >= 0, nawadnianie nie jest konieczne, a czas trwania ustawiono na",
+        "maximum-bucket-is": "Maksymalny bilans wodny wynosi",
+        "drainage-rate-is": "Natężenie drenażu przy nasyceniu (bilans wodny na maksimum) wynosi",
         "current-drainage-is": "Bieżący drenaż jest obliczany jako",
         "drainage-replayed": "Okres przeliczono godzina po godzinie, więc każdy deszcz odpływa dopiero od godziny, w której spadł. Odpływ w ciągu",
         "no-drainage": "Bieżący drenaż wynosi 0, ponieważ",
@@ -151,10 +151,10 @@
           "question": "Gotowe do utworzenia",
           "zone": "Strefa",
           "environment": "Środowisko",
-          "engine": "Silnik obliczeniowy",
+          "engine": "Moduł",
           "sources": "Źródła",
           "from-the-service": "z serwisu pogodowego",
-          "help": "To tworzy moduł obliczeniowy, grupę czujników i strefę, dokładnie tak jak zrobiłyby to pozostałe zakładki. Potem nic nie jest zablokowane."
+          "help": "To tworzy moduł, grupę czujników i strefę, dokładnie tak jak zrobiłyby to pozostałe zakładki. Potem nic nie jest zablokowane."
         }
       },
       "step": "krok",
@@ -240,7 +240,7 @@
             "calc-when-manual": "Tylko na moje żądanie",
             "calc-when-hint": "Tuż przed każdym startem: w chwili wyzwalacza startu, ze świeżymi danymi pogodowymi. To dobry wybór, gdy podlewanie rozpoczyna Smart Irrigation (bezpośrednie sterowanie zaworami lub zdarzenie startu). O stałej porze: codziennie o godzinie podanej poniżej, gdy podlewanie rozpoczyna coś innego niż Smart Irrigation i odczytuje czasy, kiedy chce (Irrigation Unlimited, własny harmonogram). Tylko na moje żądanie: nic nie jest obliczane samoczynnie, użyj przycisków obliczania lub usług.",
             "calc-time": "Oblicz o",
-            "calc-time-hint": "Obliczenie dzienne: utracona woda jest dodawana do bucketa każdej strefy i ustawiane są czasy podlewania.",
+            "calc-time-hint": "Obliczenie dzienne: utracona woda jest dodawana do bilansu wodnego każdej strefy i ustawiane są czasy podlewania.",
             "hourly-calculation": "Obliczaj evapotranspirację godzina po godzinie",
             "hourly-calculation-hint": "Sumuje godzinowe równanie FAO-56 dla każdej godziny od ostatniego obliczenia, zamiast stosować równanie dzienne do średnich, które ukrywają, czy słońce i upał przyszły razem. Nowa instalacja startuje na nim; instalacja, która istniała wcześniej, zostaje przy równaniu dziennym do momentu przełączenia, bo oba dają inne liczby, a twoje nawadnianie nie powinno się zmieniać z powodu aktualizacji. Słońce każdej godziny bierze się z czujnika promieniowania lub natężenia światła, z godzinowej historii samego serwisu pogodowego, albo z dziennego zakresu temperatur. Warto to mieć, gdy odczyty przychodzą w ciągu dnia: jedna aktualizacja na dobę pozostawia jeden odczyt obowiązujący przez dwadzieścia cztery godziny, a wtedy żadna z form nie jest godna zaufania. Szklarnia bez własnego czujnika zostaje przy równaniu dziennym."
           }
@@ -250,7 +250,7 @@
             "warning-update-time-on-or-after-calc-time": "Ostrzeżenie: czas aktualizacji danych pogodowych jest równy lub późniejszy niż czas obliczania"
           },
           "header": "Automatyczna aktualizacja danych pogodowych",
-          "description": "Zbieraj i przechowuj dane pogodowe automatycznie. Dane pogodowe są wymagane do obliczania bucketów i czasów trwania stref.",
+          "description": "Zbieraj i przechowuj dane pogodowe automatycznie. Dane pogodowe są wymagane do obliczania bilansów wodnych i czasów trwania stref.",
           "labels": {
             "auto-update-enabled": "Automatycznie aktualizuj dane pogodowe",
             "auto-update-schedule": "Harmonogram aktualizacji",
@@ -527,9 +527,9 @@
           },
           "greenhouse": "Szklarnia",
           "greenhouse_description": "Środowisko zamknięte: szklarnia, tunel foliowy, wszystko pod szkłem lub folią. Do tych stref nie dociera deszcz, więc opad zostaje poza ich bilansem wodnym, a jego pola są ukryte. Dwie rzeczy trzeba ustawić samemu, bo nie da się ich odgadnąć: nadaj Prędkości wiatru stałą wartość blisko 0, bo obliczenie zakłada wolne powietrze, i użyj czujnika światła dla Promieniowania słonecznego, bo szyby filtrują niebo.",
-          "module": "Silnik obliczeniowy",
-          "module_description": "Ta grupa oferuje tylko źródła, które czyta ten silnik. Strefy, które jej używają, przejmują ten wybór.",
-          "module_undecided": "Silnik nie został jeszcze wybrany, więc oferowane są wszystkie źródła, a każda strefa używająca tej grupy zostaje przy swoim. Wybierz jeden, żeby widzieć tylko źródła, które czyta.",
+          "module": "Moduł",
+          "module_description": "Ta grupa oferuje tylko źródła, które czyta ten moduł. Strefy, które jej używają, przejmują ten wybór.",
+          "module_undecided": "Moduł nie został jeszcze wybrany, więc oferowane są wszystkie źródła, a każda strefa używająca tej grupy zostaje przy swoim. Wybierz jeden, żeby widzieć tylko źródła, które czyta.",
           "wind_height": "Wysokość anemometru (puste: 2 m)",
           "rain_not_from_entity": "Encja pogody nie podaje deszczu, który spadł, tylko prognozę: wybierz tu czujnik deszczu, inaczej strefy będą podlewane po każdej ulewie.",
           "rain_hint_entity": "Deszcz padający teraz, jako natężenie. Encja pogody tylko go prognozuje: wybierz czujnik mierzący deszcz."
@@ -592,17 +592,21 @@
         "calculate": "Oblicz",
         "information": "Informacje",
         "update": "Aktualizuj",
-        "reset-bucket": "Zeruj bucket",
+        "reset-bucket": "Zeruj bilans wodny",
         "view-weather-info": "Wyświetl dane pogodowe",
         "view-weather-info-message": "Dane pogodowe dostępne dla",
         "view-watering-calendar": "Wyświetl kalendarz podlewania",
         "water": "Podlej",
-        "calculating": "Obliczanie…"
+        "calculating": "Obliczanie…",
+        "change": "Zmień",
+        "done": "Gotowe"
       },
       "cards": {
         "add-zone": {
           "actions": {
-            "add": "Dodaj strefę"
+            "add": "Dodaj strefę",
+            "assistant": "Skonfiguruj z asystentem",
+            "cancel": "Anuluj"
           },
           "header": "Dodaj strefę"
         },
@@ -610,15 +614,16 @@
           "actions": {
             "calculate-all": "Oblicz wszystkie strefy",
             "update-all": "Aktualizuj wszystkie strefy",
-            "reset-all-buckets": "Zeruj wszystkie buckets",
+            "reset-all-buckets": "Zeruj wszystkie bilanse wodne",
             "clear-all-weatherdata": "Wyczyść wszystkie dane pogodowe"
           },
-          "header": "Akcje na wszystkich strefach"
+          "header": "Akcje na wszystkich strefach",
+          "reset-hint": "Te dwie czynności usuwają dane wszystkich stref. Każda najpierw pyta o potwierdzenie."
         }
       },
       "description": "Określ tutaj jedną lub więcej stref nawadniania. Czas trwania nawadniania jest obliczany dla każdej strefy w zależności od rozmiaru, przepływu, stanu, modułu i grupy czujników.",
       "labels": {
-        "bucket": "Bucket",
+        "bucket": "Bilans wodny",
         "et-deficiency": "Dzienny deficyt ET",
         "duration": "Czas trwania",
         "lead-time": "Czas wyprzedzenia",
@@ -647,13 +652,13 @@
           "manual": "Ręczny"
         },
         "throughput": "Przepływ",
-        "maximum-bucket": "Maksymalny bucket",
+        "maximum-bucket": "Maksymalny bilans wodny",
         "last_calculated": "Ostatnio obliczono",
         "data-last-updated": "Dane ostatnio zaktualizowane",
         "data-number-of-data-points": "Liczba punktów danych",
         "drainage_rate": "Natężenie drenażu",
         "linked-entity": "Połączony zawór/przełącznik",
-        "linked-entity-hint": "Zawór lub przełącznik nawadniający tę strefę. Za każdym razem, gdy działa (ręczne odkręcenie, automatyzacja lub sam Smart Irrigation, gdy włączone jest bezpośrednie sterowanie zaworem), bucket jest zasilany na podstawie czasu działania i przepływu strefy. Wymagane dla funkcji zamkniętej pętli.",
+        "linked-entity-hint": "Zawór lub przełącznik nawadniający tę strefę. Za każdym razem, gdy działa (ręczne odkręcenie, automatyzacja lub sam Smart Irrigation, gdy włączone jest bezpośrednie sterowanie zaworem), bilans wodny jest zasilany na podstawie czasu działania i przepływu strefy. Wymagane dla funkcji zamkniętej pętli.",
         "supply": "Pompa lub zawór główny",
         "supply-none": "Brak",
         "measured-flow-help": "Podczas kilku uruchomień przepływomierz strefy zmierzył przepływ różny od ustawionego powyżej. To tylko wskazówka, nigdy nie jest stosowana sama.",
@@ -700,7 +705,7 @@
         "distribution-efficiency-help": "Część wody opuszczającej zraszacze, która dociera do roślin, w %. Zraszacze na wietrze lub na zboczu tracą część, kroplowanie prawie nic. Zostaw puste dla 100%. Strefa przy 80% podlewa o 25% dłużej dla tej samej głębokości i zalicza tylko 80% tego, co dostarcza.",
         "days-between-irrigation-help": "Zostaw puste, aby stosować ustawienie ogólne (Ustawienia, Dni między nawadnianiami). Liczba zastępuje ustawienie ogólne tylko dla tej strefy: 1 podlewa ją codziennie, jeśli potrzebuje wody, 3 najwyżej co trzeci dzień, 0 usuwa ograniczenie. Dni liczone są od ostatniego podlania tej strefy.",
         "soil-moisture-sensor": "Czujnik wilgotności gleby",
-        "soil-moisture-sensor-hint": "Strefa pomija nawadnianie, dopóki gleba jest na progu lub powyżej. Zapas jest zachowany.",
+        "soil-moisture-sensor-hint": "Strefa pomija nawadnianie, dopóki gleba jest na progu lub powyżej. Bilans wodny jest zachowany.",
         "soil-moisture-threshold": "Pomiń od",
         "calculation-method": "Evapotranspiracja",
         "calculation-method-help": {
@@ -725,7 +730,8 @@
           "loam": "Ziemia gliniasta",
           "clay_loam": "Glina pylasta",
           "clay": "Glina",
-          "custom": "Szybkość drenażu ustawiam sam"
+          "custom": "Szybkość drenażu ustawiam sam",
+          "default": "Jeszcze nie wybrano – obliczane z {value}"
         },
         "plant-types": {
           "lawn": "Trawnik",
@@ -736,7 +742,8 @@
           "fruit_trees": "Drzewa owocowe",
           "vines": "Winorośl",
           "ground_cover": "Rośliny okrywowe",
-          "custom": "Współczynnik roślinny ustawiam sam"
+          "custom": "Współczynnik roślinny ustawiam sam",
+          "default": "Jeszcze nie wybrano – obliczane ze współczynnikiem roślinnym {value}"
         },
         "duration-readonly-automatic": "Obliczone za ciebie: nawadnianie tej strefy wynika z jej bilansu wodnego. Przestaw ją na ręczną, żeby wpisać czas samemu.",
         "duration-readonly-disabled": "Wyłączona strefa nigdy nie jest podlewana, więc nie ma czasu nawadniania.",
@@ -744,7 +751,7 @@
       },
       "no_items": "Nie zdefiniowano jeszcze żadnych stref.",
       "title": "Strefy",
-      "module-comes-from-the-group": "Silnik obliczeniowy pochodzi z grupy czujników tej strefy. Zmień go tam, a każda strefa używająca tej grupy pójdzie za nim.",
+      "module-comes-from-the-group": "Moduł pochodzi z grupy czujników tej strefy. Zmień go tam, a każda strefa używająca tej grupy pójdzie za nim.",
       "status": {
         "estimate": "Brakuje {short}: około {duration} ({volume}) przy następnym obliczeniu.",
         "will-water": "Podleje {duration} przy następnym starcie.",
@@ -757,9 +764,9 @@
         "problem": {
           "no_sensor_group": "Nie da się obliczyć: nie ma grupy czujników. Wybierz ją na tej karcie; do tego czasu nie jest podlewana.",
           "no_readings": "Nie da się obliczyć: jej grupa czujników nie ma odczytów. Nie jest podlewana, dopóki ich nie będzie.",
-          "no_engine": "Nie da się obliczyć: nie ma silnika obliczeniowego. Nie jest podlewana, dopóki go nie dostanie.",
+          "no_engine": "Nie da się obliczyć: nie ma modułu. Nie jest podlewana, dopóki go nie dostanie.",
           "nothing_from_engine": "Nie da się obliczyć: jej grupa czujników nie podaje ewapotranspiracji. Nie jest podlewana, dopóki jej nie poda.",
-          "forecast_without_service": "Nie da się obliczyć: jej silnik obliczeniowy patrzy naprzód, a żaden serwis pogodowy nie jest skonfigurowany. Nie jest podlewana.",
+          "forecast_without_service": "Nie da się obliczyć: jej moduł patrzy naprzód, a żaden serwis pogodowy nie jest skonfigurowany. Nie jest podlewana.",
           "error": "Nie da się obliczyć: {detail}. Nie jest podlewana, dopóki nie da się jej obliczyć."
         },
         "no-valve": "Brak powiązanego zaworu, więc ta strefa nie jest podlewana.",
@@ -784,6 +791,11 @@
       "calculation-feedback": {
         "nothing-new": "{zone}: brak nowych odczytów od ostatniego obliczenia, więc nic się nie zmieniło.",
         "failed": "{zone}: obliczenie nie powiodło się ({error})."
+      },
+      "sections": {
+        "zone": "Strefa i zawór",
+        "need": "Czego potrzebuje",
+        "status": "Na jakim jest etapie"
       }
     },
     "history": {
@@ -1363,7 +1375,7 @@
   },
   "observed_watering": {
     "title": "Obserwowane nawadnianie (zamknięta pętla)",
-    "description": "Automatycznie zasilaj bucket każdej strefy na podstawie rzeczywistego nawadniania, zamiast resetować bucket z automatyzacji. Po włączeniu wybierz w zakładce Strefy encję zaworu/przełącznika dla każdej strefy: gdy jest otwarty, bucket jest zasilany na podstawie czasu działania i przepływu strefy. Dla dokładnego rozliczenia możesz też wybrać licznik skumulowanej objętości (sumę typu wodomierza) dla każdej strefy, a zamiast tego użyta zostanie zmierzona objętość. Ważne: gdy ta funkcja jest włączona, jest jedynym, co zasila bucket, więc usuń wszelkie wywołania reset_bucket z automatyzacji nawadniania, aby uniknąć podwójnego liczenia.",
+    "description": "Automatycznie zasilaj bilans wodny każdej strefy na podstawie rzeczywistego nawadniania, zamiast resetować bilans wodny z automatyzacji. Po włączeniu wybierz w zakładce Strefy encję zaworu/przełącznika dla każdej strefy: gdy jest otwarty, bilans wodny jest zasilany na podstawie czasu działania i przepływu strefy. Dla dokładnego rozliczenia możesz też wybrać licznik skumulowanej objętości (sumę typu wodomierza) dla każdej strefy, a zamiast tego użyta zostanie zmierzona objętość. Ważne: gdy ta funkcja jest włączona, jest jedynym, co zasila bilans wodny, więc usuń wszelkie wywołania reset_bucket z automatyzacji nawadniania, aby uniknąć podwójnego liczenia.",
     "enabled_label": "Włącz obserwowane nawadnianie",
     "direct_control_label": "Pozwól Smart Irrigation sterować zaworem",
     "direct_control_description": "Gdy włączone, Smart Irrigation otwiera połączony zawór każdej strefy, czeka przez obliczony czas, a następnie go zamyka, bez potrzeby automatyzacji. Trwające działanie zostaje wznowione po ponownym uruchomieniu. Bezpieczeństwo: zawór, który potrafi zamknąć się sam, przy otwarciu dostaje czas trwania podlewania (Sonoff SWV w ZHA albo zawór, którego strefa ma ustawiony temat bezpieczeństwa MQTT), więc zamyka się nawet wtedy, gdy Home Assistant przestanie działać. Każdy inny zawór podlewa dalej, aż Home Assistant wróci: zapewnij mu sprzętowe zabezpieczenie (maksymalny czas działania).",
@@ -1388,7 +1400,7 @@
   },
   "calculation_log": {
     "title": "Dziennik obliczeń",
-    "description": "Zapisuje do pliku pełne dane wejściowe każdego obliczenia, żeby dwa dni, które wyglądają podobnie, ale nawadniają bardzo różnie, dało się później porównać. Każde obliczenie dopisuje jeden wiersz: odczyty grupy czujników i sposób ich scalenia, wartości pośrednie modułu (promieniowanie słoneczne, promieniowanie netto, ET0) oraz wynikowy zapas, czas i objętość. Domyślnie wyłączone; rozmiar pliku jest ograniczony, a plik jest rotowany, więc może zostać włączony na cały sezon.",
+    "description": "Zapisuje do pliku pełne dane wejściowe każdego obliczenia, żeby dwa dni, które wyglądają podobnie, ale nawadniają bardzo różnie, dało się później porównać. Każde obliczenie dopisuje jeden wiersz: odczyty grupy czujników i sposób ich scalenia, wartości pośrednie modułu (promieniowanie słoneczne, promieniowanie netto, ET0) oraz wynikowy bilans wodny, czas i objętość. Domyślnie wyłączone; rozmiar pliku jest ograniczony, a plik jest rotowany, więc może zostać włączony na cały sezon.",
     "enabled_label": "Zapisuj dane wejściowe obliczenia do pliku",
     "file_hint": "Zapisywane do config/smart_irrigation/calc_log.jsonl, jeden rekord JSON na wiersz. Najnowsze rekordy są też w pobieranej diagnostyce (współrzędne zaokrąglone, identyfikatory encji usunięte), więc można je dołączyć do zgłoszenia w jednym kroku."
   },

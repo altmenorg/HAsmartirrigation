@@ -5,7 +5,7 @@
         "name": "Duração"
       },
       "bucket": {
-        "name": "Reservatório"
+        "name": "Balanço hídrico"
       },
       "et_value": {
         "name": "ET aplicada"
@@ -23,7 +23,7 @@
         "name": "Água usada"
       },
       "live_bucket": {
-        "name": "Reservatório em direto"
+        "name": "Balanço hídrico em direto"
       },
       "last_run_volume": {
         "name": "Volume da última rega"
@@ -45,7 +45,7 @@
         "name": "Calcular"
       },
       "reset_bucket": {
-        "name": "Reiniciar o reservatório"
+        "name": "Reiniciar o balanço hídrico"
       },
       "reset_usage": {
         "name": "Reiniciar a água usada"
@@ -151,7 +151,7 @@
         },
         "dry_run": {
           "name": "Simulação",
-          "description": "Indicar o que o cálculo faria, sem alterar o reservatório, a zona nem os dados meteorológicos recolhidos"
+          "description": "Indicar o que o cálculo faria, sem alterar o balanço hídrico, a zona nem os dados meteorológicos recolhidos"
         }
       }
     },
@@ -169,7 +169,7 @@
         },
         "dry_run": {
           "name": "Simulação",
-          "description": "Indicar o que o cálculo faria, sem alterar o reservatório, a zona nem os dados meteorológicos recolhidos"
+          "description": "Indicar o que o cálculo faria, sem alterar o balanço hídrico, a zona nem os dados meteorológicos recolhidos"
         }
       }
     },
@@ -188,42 +188,42 @@
       }
     },
     "set_bucket": {
-      "name": "Definir bucket",
-      "description": "Definir o bucket de uma zona para um valor específico",
+      "name": "Definir balanço hídrico",
+      "description": "Definir o balanço hídrico de uma zona para um valor",
       "fields": {
         "entity": {
           "name": "Entidade",
-          "description": "Zona para a qual definir o bucket"
+          "description": "Zona para a qual definir o balanço hídrico"
         },
         "new_bucket_value": {
-          "name": "Novo valor do bucket",
-          "description": "novo valor do bucket"
+          "name": "Novo balanço hídrico",
+          "description": "Novo valor do balanço hídrico"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Definir todos os buckets",
-      "description": "Definir os buckets de todas as zonas para um valor específico",
+      "name": "Definir todos os balanços hídricos",
+      "description": "Definir o balanço hídrico de todas as zonas para um valor",
       "fields": {
         "new_bucket_value": {
-          "name": "Novo valor do bucket",
-          "description": "novo valor do bucket"
+          "name": "Novo balanço hídrico",
+          "description": "Novo valor do balanço hídrico"
         }
       }
     },
     "reset_bucket": {
-      "name": "Repor bucket",
-      "description": "Repor o bucket de uma zona a 0",
+      "name": "Repor balanço hídrico",
+      "description": "Repor o balanço hídrico de uma zona a 0",
       "fields": {
         "entity": {
           "name": "Entidade",
-          "description": "Zona para a qual repor o bucket"
+          "description": "Zona para a qual repor o balanço hídrico"
         }
       }
     },
     "reset_all_buckets": {
-      "name": "Repor todos os buckets",
-      "description": "Repor o bucket de todas as zonas a 0"
+      "name": "Repor todos os balanços hídricos",
+      "description": "Repor o balanço hídrico de todas as zonas a 0"
     },
     "clear_all_weather_data": {
       "name": "Limpar todos os dados meteorológicos",
@@ -262,8 +262,8 @@
           "description": "Zona para a qual definir os valores de configuração"
         },
         "new_bucket_value": {
-          "name": "Novo valor do bucket",
-          "description": "Novo valor para o bucket"
+          "name": "Novo balanço hídrico",
+          "description": "Novo valor para o balanço hídrico"
         },
         "new_multiplier_value": {
           "name": "Novo valor do multiplicador",
@@ -295,7 +295,7 @@
     },
     "credit_watering": {
       "name": "Creditar a rega",
-      "description": "Credita no balde de uma zona a água que uma rega realmente forneceu, em vez de o pôr a 0.",
+      "description": "Credita no balanço hídrico de uma zona a água que uma rega realmente forneceu, em vez de o pôr a 0.",
       "fields": {
         "seconds": {
           "name": "Segundos",
@@ -307,7 +307,7 @@
   "issues": {
     "dry_zone_not_watered": {
       "title": "A zona {zone} está seca e nada a vai regar",
-      "description": "O bucket da zona **{zone}** está seco há {days} dias, e todos os programas que a incluem estão desativados, suspensos ou sem agendamento ativado.\n\nReative um programa que regue esta zona, ative um dos seus agendamentos ou retire a suspensão. O aviso desaparece por si assim que a zona for regada ou um programa voltar a cobri-la."
+      "description": "O balanço hídrico da zona **{zone}** está seco há {days} dias, e todos os programas que a incluem estão desativados, suspensos ou sem agendamento ativado.\n\nReative um programa que regue esta zona, ative um dos seus agendamentos ou retire a suspensão. O aviso desaparece por si assim que a zona for regada ou um programa voltar a cobri-la."
     },
     "weather_silent": {
       "title": "Grupo de sensores {mapping}: um sensor meteorológico deixou de comunicar",
@@ -330,8 +330,8 @@
       "description": "A zona **{zone}** não foi calculada: o seu grupo de sensores não tem leituras a partir das quais calcular. Enquanto não as tiver, o défice da zona não se move e ela não é regada.\n\nVerifique se o grupo de sensores tem fontes e se elas comunicam, atualize os dados meteorológicos e depois calcule a zona. O aviso desaparece por si no próximo cálculo bem-sucedido."
     },
     "zone_not_calculated_no_engine": {
-      "title": "A zona {zone} não pode ser calculada: sem motor de cálculo",
-      "description": "A zona **{zone}** não tem motor de cálculo, por isso não é calculada nem regada.\n\nEscolha como é calculada no seu cartão, no separador Zonas. O aviso desaparece por si no próximo cálculo bem-sucedido."
+      "title": "A zona {zone} não pode ser calculada: sem módulo",
+      "description": "A zona **{zone}** não tem módulo, por isso não é calculada nem regada.\n\nEscolha como é calculada no seu cartão, no separador Zonas. O aviso desaparece por si no próximo cálculo bem-sucedido."
     },
     "zone_not_calculated_nothing_from_engine": {
       "title": "A zona {zone} não pode ser calculada: sem evapotranspiração",
@@ -339,7 +339,7 @@
     },
     "zone_not_calculated_forecast_without_service": {
       "title": "A zona {zone} não pode ser calculada: uma previsão sem serviço meteorológico",
-      "description": "O motor de cálculo da zona **{zone}** olha vários dias à frente, o que exige um serviço meteorológico, e não há nenhum configurado. A zona não é regada enquanto não puder ser calculada.\n\nConfigure um serviço meteorológico, ou defina a 0 os dias de previsão do motor. O aviso desaparece por si no próximo cálculo bem-sucedido."
+      "description": "O módulo da zona **{zone}** olha vários dias à frente, o que exige um serviço meteorológico, e não há nenhum configurado. A zona não é regada enquanto não puder ser calculada.\n\nConfigure um serviço meteorológico, ou defina a 0 os dias de previsão do módulo. O aviso desaparece por si no próximo cálculo bem-sucedido."
     },
     "zone_not_calculated_error": {
       "title": "A zona {zone} não pode ser calculada: um erro",

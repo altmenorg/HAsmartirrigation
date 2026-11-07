@@ -5,7 +5,7 @@
         "name": "Durata"
       },
       "bucket": {
-        "name": "Secchio"
+        "name": "Bilancio idrico"
       },
       "et_value": {
         "name": "ET applicata"
@@ -23,7 +23,7 @@
         "name": "Acqua utilizzata"
       },
       "live_bucket": {
-        "name": "Serbatoio in tempo reale"
+        "name": "Bilancio idrico in tempo reale"
       },
       "last_run_volume": {
         "name": "Volume dell'ultima irrigazione"
@@ -45,7 +45,7 @@
         "name": "Calcola"
       },
       "reset_bucket": {
-        "name": "Reimposta secchio"
+        "name": "Reimposta bilancio idrico"
       },
       "reset_usage": {
         "name": "Reimposta consumo d'acqua"
@@ -151,7 +151,7 @@
         },
         "dry_run": {
           "name": "Simulazione",
-          "description": "Riferire cosa farebbe il calcolo senza modificare il serbatoio, la zona o i dati meteo raccolti"
+          "description": "Riferire cosa farebbe il calcolo senza modificare il bilancio idrico, la zona o i dati meteo raccolti"
         }
       }
     },
@@ -169,7 +169,7 @@
         },
         "dry_run": {
           "name": "Simulazione",
-          "description": "Riferire cosa farebbe il calcolo senza modificare il serbatoio, la zona o i dati meteo raccolti"
+          "description": "Riferire cosa farebbe il calcolo senza modificare il bilancio idrico, la zona o i dati meteo raccolti"
         }
       }
     },
@@ -188,42 +188,42 @@
       }
     },
     "set_bucket": {
-      "name": "Imposta secchio",
-      "description": "Imposta il secchio per una zona ad uno specifico valore",
+      "name": "Imposta bilancio idrico",
+      "description": "Imposta il bilancio idrico di una zona a un valore",
       "fields": {
         "entity": {
           "name": "Entità",
-          "description": "Secchio da impostare per la zona"
+          "description": "Zona per cui impostare il bilancio idrico"
         },
         "new_bucket_value": {
-          "name": "Nuovo valore del secchio",
-          "description": "nuovo valore del secchio"
+          "name": "Nuovo bilancio idrico",
+          "description": "Nuovo valore del bilancio idrico"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Imposta tutti i secchi",
-      "description": "Imposta tutti i secchi per tutte le zona ad uno specifico valore",
+      "name": "Imposta tutti i bilanci idrici",
+      "description": "Imposta il bilancio idrico di tutte le zone a un valore",
       "fields": {
         "new_bucket_value": {
-          "name": "Nuovo valore secchio",
-          "description": "nuovo valore del secchio"
+          "name": "Nuovo bilancio idrico",
+          "description": "Nuovo valore del bilancio idrico"
         }
       }
     },
     "reset_bucket": {
-      "name": "Reimposta secchio",
-      "description": "Reimposta il secchio per una zona a 0",
+      "name": "Reimposta bilancio idrico",
+      "description": "Reimposta il bilancio idrico di una zona a 0",
       "fields": {
         "entity": {
           "name": "Entità",
-          "description": "Secchio da reimpostare per la zona"
+          "description": "Zona per cui reimpostare il bilancio idrico"
         }
       }
     },
     "reset_all_buckets": {
-      "name": "Reimposta tutti i secchi",
-      "description": "Reimposta tutti i secchi per tutte le zone a 0"
+      "name": "Reimposta tutti i bilanci idrici",
+      "description": "Reimposta il bilancio idrico di tutte le zone a 0"
     },
     "clear_all_weather_data": {
       "name": "Cancella tutti i dati meteo",
@@ -262,8 +262,8 @@
           "description": "Zona per impostare i valori di configurazione"
         },
         "new_bucket_value": {
-          "name": "Nuovo valore del secchio",
-          "description": "Nuovo valore per il secchio"
+          "name": "Nuovo bilancio idrico",
+          "description": "Nuovo valore per il bilancio idrico"
         },
         "new_multiplier_value": {
           "name": "Nuovo valore moltiplicatore",
@@ -295,7 +295,7 @@
     },
     "credit_watering": {
       "name": "Accredita l'irrigazione",
-      "description": "Accredita al secchio di una zona l'acqua che un'irrigazione ha davvero fornito, invece di azzerarlo.",
+      "description": "Accredita al bilancio idrico di una zona l'acqua che un'irrigazione ha davvero fornito, invece di azzerarlo.",
       "fields": {
         "seconds": {
           "name": "Secondi",
@@ -307,7 +307,7 @@
   "issues": {
     "dry_zone_not_watered": {
       "title": "La zona {zone} è asciutta e nulla la irrigherà",
-      "description": "Il secchio della zona **{zone}** è asciutto da {days} giorni, e ogni programma che la include è disattivato, sospeso o senza pianificazione attiva.\n\nRiattiva un programma che irriga questa zona, attiva una delle sue pianificazioni, oppure togli la sua sospensione. L'avviso scompare da solo quando la zona viene irrigata o un programma la copre di nuovo."
+      "description": "Il bilancio idrico della zona **{zone}** è asciutto da {days} giorni, e ogni programma che la include è disattivato, sospeso o senza pianificazione attiva.\n\nRiattiva un programma che irriga questa zona, attiva una delle sue pianificazioni, oppure togli la sua sospensione. L'avviso scompare da solo quando la zona viene irrigata o un programma la copre di nuovo."
     },
     "weather_silent": {
       "title": "Gruppo di sensori {mapping}: un sensore meteo ha smesso di riportare",
@@ -330,8 +330,8 @@
       "description": "La zona **{zone}** non è stata calcolata: il relativo gruppo di sensori non dispone di letture su cui basare il calcolo. Finché non ne avrà, il deficit della zona rimarrà invariato e la zona non verrà irrigata.\n\nVerifica che il gruppo di sensori disponga di fonti e che queste trasmettano i dati, aggiorna i dati meteorologici, quindi ricalcola la zona. L'avviso scomparirà automaticamente al successivo calcolo andato a buon fine."
     },
     "zone_not_calculated_no_engine": {
-      "title": "Non è possibile calcolare la zona {zone}: nessun motore di calcolo",
-      "description": "La zona **{zone}** non dispone di un motore di calcolo, pertanto non viene calcolata né irrigata.\n\nScegli come calcolarla nella scheda “Zone” della relativa scheda. L'avviso scomparirà automaticamente al successivo calcolo andato a buon fine."
+      "title": "Non è possibile calcolare la zona {zone}: nessun modulo",
+      "description": "La zona **{zone}** non dispone di un modulo, pertanto non viene calcolata né irrigata.\n\nScegli come calcolarla nella scheda “Zone” della relativa scheda. L'avviso scomparirà automaticamente al successivo calcolo andato a buon fine."
     },
     "zone_not_calculated_nothing_from_engine": {
       "title": "Non è possibile calcolare la zona {zone}: nessuna evapotraspirazione",
@@ -339,7 +339,7 @@
     },
     "zone_not_calculated_forecast_without_service": {
       "title": "Non è possibile calcolare la zona {zone}: previsione senza un servizio meteorologico",
-      "description": "Il motore di calcolo della zona **{zone}** effettua previsioni a giorni di distanza, il che richiede un servizio meteorologico, ma non ne è stato configurato nessuno. La zona non viene irrigata finché non sarà possibile effettuarne il calcolo.\n\nConfigurare un servizio meteorologico oppure impostare a 0 i giorni di previsione . L'avviso scomparirà automaticamente al successivo calcolo andato a buon fine."
+      "description": "Il modulo della zona **{zone}** effettua previsioni a giorni di distanza, il che richiede un servizio meteorologico, ma non ne è stato configurato nessuno. La zona non viene irrigata finché non sarà possibile effettuarne il calcolo.\n\nConfigurare un servizio meteorologico oppure impostare a 0 i giorni di previsione . L'avviso scomparirà automaticamente al successivo calcolo andato a buon fine."
     },
     "zone_not_calculated_error": {
       "title": "Impossibile calcolare la zona {zone}: si è verificato un errore",

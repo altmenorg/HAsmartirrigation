@@ -6,18 +6,19 @@ title: "Closed-loop watering"
 
 > Main page: [Configuration](configuration.md)
 
-By default Smart Irrigation runs **open loop**: it calculates a duration and fires an event, but it does not know whether (or how much) watering actually happened, so you reset the bucket from an automation. The closed-loop features remove that guesswork. They are all opt-in and configured in the panel under **General**.
+By default Smart Irrigation runs **open loop**: it calculates a duration and fires an event, but it does not know whether (or how much) watering actually happened, so you reset the water balance from an automation. The closed-loop features remove that guesswork. They are all opt-in and configured in the panel under **General**.
 
-## Observed watering (credit the bucket automatically)
+<a id="observed-watering-credit-the-bucket-automatically"></a>
+## Observed watering (credit the water balance automatically)
 
-When enabled, Smart Irrigation watches each zone's linked valve/switch. Whenever it runs (a manual tap, an automation, or Smart Irrigation itself), the zone's bucket is credited from the run time and the zone's throughput (`depth_mm = throughput_L_per_min x minutes / size_m2`). No more manual reset.
+When enabled, Smart Irrigation watches each zone's linked valve/switch. Whenever it runs (a manual tap, an automation, or Smart Irrigation itself), the zone's water balance is credited from the run time and the zone's throughput (`depth_mm = throughput_L_per_min x minutes / size_m2`). No more manual reset.
 
 To set it up:
 
 1. In **General**, turn on **Enable observed watering**.
 2. In **Zones**, set each zone's **Linked valve/switch** to the entity that waters that zone (a `switch`, `valve` or `input_boolean`).
 
-> Important: when observed watering is on it becomes the only thing crediting the bucket. Remove any `reset_bucket` service call from your irrigation automation, otherwise the bucket is accounted twice.
+> Important: when observed watering is on it becomes the only thing crediting the water balance. Remove any `reset_bucket` service call from your irrigation automation, otherwise the water balance is accounted twice.
 
 ### Optional: a cumulative volume meter (more precise)
 
@@ -27,7 +28,7 @@ It must be a **cumulative** water-meter total (state class `total_increasing`), 
 
 ### What the meter tells us about your throughput
 
-Every irrigation duration is derived from the zone's configured throughput: the bucket says how many mm are missing, the size turns that into litres, and the throughput turns litres into minutes. A throughput copied off a datasheet rather than measured at the tap is one of the quietest ways to water twice as long as intended, or half as long, for a whole season.
+Every irrigation duration is derived from the zone's configured throughput: the water balance says how many mm are missing, the size turns that into litres, and the throughput turns litres into minutes. A throughput copied off a datasheet rather than measured at the tap is one of the quietest ways to water twice as long as intended, or half as long, for a whole season.
 
 A zone with a volume meter gives the answer for free, since a run knows both how many litres came out and how long the valve was open. Smart Irrigation divides one by the other, smooths the result over several runs, and raises a repair notice in **Settings > Repairs** when it drifts more than 25% from what you configured. Runs shorter than two minutes are ignored: filling the pipe dominates them.
 
@@ -37,7 +38,7 @@ It only ever tells you. The zone's throughput is never rewritten, because pressu
 
 With **Let Smart Irrigation control the valve** on, Smart Irrigation opens each zone's linked valve, waits the calculated duration, then closes it. No execution automation needed. The start event still fires, so external executors keep working too.
 
-It stands on its own: the zone's **Linked valve/switch** can be set with direct valve control alone, without observed watering. The two answer different questions, and the difference matters when the same valve is used for other things -- filling a paddling pool, hosing the terrace. Direct valve control credits the bucket for the runs *it* performs, since it knows exactly what it delivered. Observed watering credits *any* run of that valve, which is what you want for a tap somebody opens by hand to water the same lawn, and not what you want if that valve also does something else. Leave observed watering off in that case.
+It stands on its own: the zone's **Linked valve/switch** can be set with direct valve control alone, without observed watering. The two answer different questions, and the difference matters when the same valve is used for other things -- filling a paddling pool, hosing the terrace. Direct valve control credits the water balance for the runs *it* performs, since it knows exactly what it delivered. Observed watering credits *any* run of that valve, which is what you want for a tap somebody opens by hand to water the same lawn, and not what you want if that valve also does something else. Leave observed watering off in that case.
 
 - **Zone sequencing**: **Sequential** runs one zone at a time (safe for water pressure); **Parallel** opens all eligible zones at once. This setting also decides how long the whole run is taken to be, which is what a start trigger works back from when it has to finish at sunrise: sequential is the sum of every zone's run time, parallel is the longest of them. It therefore applies whether Smart Irrigation opens the valves itself or an automation of your own does, and it is available in the general settings either way.
 - **Open confirmation**: before crediting, Smart Irrigation waits for the valve to report an on-state. If it never opens, the run is not credited (so the deficit stays and rolls over to the next day) and a `smart_irrigation_zone_problem` event is fired. A write-only valve with no readable state is given the benefit of the doubt.
@@ -106,7 +107,7 @@ Both lengthen the run without adding water to it, and a start trigger that has t
 Direct valve control fires events you can use to notify or react, so you do not need one automation per zone:
 
 - `smart_irrigation_irrigation_started` when a run begins. Data: `sequencing` (`sequential`/`parallel`) and `zones`, a list of `{zone_id, zone, seconds}` about to be watered.
-- `smart_irrigation_irrigation_finished` when the whole run is done. Data: `zones`, a list of `{zone_id, zone, seconds, volume_l, bucket}` that ran (volume delivered and the new bucket level), and `problems`, a list of `{zone_id, zone, reason}` for zones that delivered no water: the valve did not open (`valve_did_not_open`), or it opened and the zone's flow meter did not move (`no_flow`). A valve that watered but would not close is still in `zones`, since the water it delivered is credited, and is reported by its own `smart_irrigation_zone_problem` event.
+- `smart_irrigation_irrigation_finished` when the whole run is done. Data: `zones`, a list of `{zone_id, zone, seconds, volume_l, bucket}` that ran (volume delivered and the new water balance), and `problems`, a list of `{zone_id, zone, reason}` for zones that delivered no water: the valve did not open (`valve_did_not_open`), or it opened and the zone's flow meter did not move (`no_flow`). A valve that watered but would not close is still in `zones`, since the water it delivered is credited, and is reported by its own `smart_irrigation_zone_problem` event.
 - `smart_irrigation_zone_problem` the moment something goes wrong with a valve. Data: `zone_id`, `zone`, `entity_id`, `reason`: `valve_did_not_open`, `valve_did_not_close` (the close failed or the valve still reads open, retried once), or `no_flow` (the valve opened but the zone's flow meter did not move, so the run is not credited), `valve_closed_early` (full controller: the valve read `off` or `closed` while it should have been open, so the zone's run ends and is credited for the time it was open), or `supply_did_not_turn_on` (full controller: the pump or main valve the zone depends on never came on, so the zone's valve stays shut).
 
 Example: a single end-of-watering report for all zones.
@@ -137,7 +138,7 @@ mode: single
 ```
 {% endraw %}
 
-> If you previously had one automation per zone that opened the valve and called `reset_bucket`, remove them once direct valve control is on: Smart Irrigation now opens the valves and credits the bucket itself, so the old automations would double up. Keep only report/notification automations like the one above.
+> If you previously had one automation per zone that opened the valve and called `reset_bucket`, remove them once direct valve control is on: Smart Irrigation now opens the valves and credits the water balance itself, so the old automations would double up. Keep only report/notification automations like the one above.
 
 The legacy `smart_irrigation_start_irrigation_all_zones` event still fires too (it carries the trigger identity), for setups that drive watering from their own automation or an external executor instead of direct valve control.
 

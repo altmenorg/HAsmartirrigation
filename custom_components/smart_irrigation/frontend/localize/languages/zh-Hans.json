@@ -24,7 +24,7 @@
       "size": "面积",
       "throughput": "流量",
       "state": "状态",
-      "bucket": "bucket",
+      "bucket": "水量平衡",
       "last_updated": "上次更新",
       "last_calculated": "上次计算",
       "number_of_data_points": "数据点数量"
@@ -55,13 +55,13 @@
         "module-returned-evapotranspiration-deficiency": "模块返回的蒸散亏缺（ = et0 * hour_multiplier * Kc + precipitation）为",
         "module-returned-hourly-evapotranspiration-deficiency": "模块逐小时累加了作物蒸散亏缺（ = 每小时 et0 * Kc + 降水之和），时段为",
         "crop-factor-is": "作物系数为",
-        "bucket-was": "bucket 原值为",
-        "new-bucket-values-is": "新的 bucket 值为",
-        "bucket": "bucket",
-        "old-bucket-variable": "old_bucket",
-        "max-bucket-variable": "max_bucket",
+        "bucket-was": "原水量平衡为",
+        "new-bucket-values-is": "新的水量平衡为",
+        "bucket": "水量平衡",
+        "old-bucket-variable": "old_water_balance",
+        "max-bucket-variable": "max_water_balance",
         "delta": "delta",
-        "bucket-less-than-zero-irrigation-necessary": "由于 bucket < 0，需要进行灌溉",
+        "bucket-less-than-zero-irrigation-necessary": "由于水量平衡 < 0，需要进行灌溉",
         "steps-taken-to-calculate-duration": "为计算精确的持续时间，执行了以下步骤",
         "precipitation-rate-defined-as": "降水速率定义为",
         "precipitation-rate-is": "降水强度为",
@@ -76,9 +76,9 @@
         "duration-after-maximum-duration-is": "因此持续时间为",
         "lead-time-is-applied": "最后应用提前时间。提前时间为",
         "duration-after-lead-time-is": "因此最终持续时间为",
-        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "由于 bucket >= 0，无需灌溉，持续时间设置为",
-        "maximum-bucket-is": "最大 bucket 容量为",
-        "drainage-rate-is": "饱和时（bucket 处于最大值）的排水速率为",
+        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "由于水量平衡 >= 0，无需灌溉，持续时间设置为",
+        "maximum-bucket-is": "最大水量平衡为",
+        "drainage-rate-is": "饱和时（水量平衡处于最大值）的排水速率为",
         "current-drainage-is": "当前排水量的计算方式为",
         "drainage-replayed": "该时段已按小时逐一重算，每次降雨只从降落的那一小时开始排水。排水时长",
         "no-drainage": "当前排水量为 0，原因是",
@@ -151,7 +151,7 @@
           "question": "可以创建了",
           "zone": "区域",
           "environment": "环境",
-          "engine": "计算引擎",
+          "engine": "模块",
           "sources": "数据源",
           "from-the-service": "来自天气服务",
           "help": "这会创建一个计算模块、一个传感器组和一个区域，和用其他标签页创建的完全一样。之后一切都可以再改。"
@@ -240,7 +240,7 @@
             "calc-when-manual": "仅在我要求时",
             "calc-when-hint": "每次启动之前：在启动触发器的时间，使用最新的天气数据。当由 Smart Irrigation 启动浇水时（直接控制阀门或启动事件），这是正确的选择。在固定时间：每天在下方设定的时间，适用于由 Smart Irrigation 以外的程序启动浇水、并在自己方便时读取时长的情况（Irrigation Unlimited、你自己的计划）。仅在我要求时：不会自动计算任何内容，请使用计算按钮或服务。",
             "calc-time": "计算时间",
-            "calc-time-hint": "每日计算：流失的水量会加入每个区域的水桶（bucket），并设定浇水时长。",
+            "calc-time-hint": "每日计算：流失的水量会加入每个区域的水量平衡，并设定浇水时长。",
             "hourly-calculation": "逐小时计算蒸散量",
             "hourly-calculation-hint": "把 FAO-56 的小时方程在上次计算以来的每个小时上累加，而不是把日方程套用在平均值上，因为平均值会掩盖阳光和高温是否同时出现。新安装从这种方式开始；此功能出现之前就已存在的安装会保留日方程，直到你切换为止，因为两者给出的数字不同，而你的浇水不该因为一次更新而改变。每小时的阳光来自辐射或照度传感器、天气服务自身的小时历史，或当天的温度区间。当读数在一天里陆续到来时，这样做才有意义：每天只更新一次会让单个读数在二十四小时里一直生效，那时两种方式都不可信。没有自己传感器的温室保留日方程。"
           }
@@ -250,7 +250,7 @@
             "warning-update-time-on-or-after-calc-time": "警告：天气数据更新时间等于或晚于计算时间"
           },
           "header": "自动更新天气数据",
-          "description": "自动收集并存储天气数据。计算区域的 bucket 和持续时间需要天气数据。",
+          "description": "自动收集并存储天气数据。计算区域的水量平衡和持续时间需要天气数据。",
           "labels": {
             "auto-update-enabled": "自动更新天气数据",
             "auto-update-schedule": "更新计划",
@@ -290,7 +290,7 @@
         "master-switch": {
           "title": "Smart Irrigation",
           "label": "计算并浇水",
-          "description": "关闭后，Smart Irrigation 仍会获取天气数据并保留其传感器，但不进行任何计算，各区域的 bucket 保持不变，不打开任何阀门，也不运行任何程序。重新打开后，关闭期间的时间不计入。",
+          "description": "关闭后，Smart Irrigation 仍会获取天气数据并保留其传感器，但不进行任何计算，各区域的水量平衡保持不变，不打开任何阀门，也不运行任何程序。重新打开后，关闭期间的时间不计入。",
           "off-note": "已关闭：不计算，也不浇水。天气数据照常获取，重新打开时不会计入关闭期间的时间。",
           "confirm-off": "关闭 Smart Irrigation？正在进行的浇水会立即停止，在重新打开之前不会计算或浇水。"
         }
@@ -527,9 +527,9 @@
           },
           "greenhouse": "温室",
           "greenhouse_description": "封闭环境：温室、塑料大棚，以及任何玻璃或塑料覆盖之下的地方。雨到不了这些区域，因此降水不计入它们的水量平衡，相关字段也会隐藏。有两项需要你自己设置，因为无法推测：给风速一个接近 0 的静态值，因为计算假定的是露天；太阳辐射用光照传感器，因为覆盖材料会过滤天空。",
-          "module": "计算引擎",
-          "module_description": "该组只提供这个引擎会读取的数据源。使用它的区域会继承这一选择。",
-          "module_undecided": "还没有选择引擎，所以会提供全部数据源，使用该组的每个区域都保留各自的选择。选定一个后，就只会看到它会读取的数据源。",
+          "module": "模块",
+          "module_description": "该组只提供这个模块会读取的数据源。使用它的区域会继承这一选择。",
+          "module_undecided": "还没有选择模块，所以会提供全部数据源，使用该组的每个区域都保留各自的选择。选定一个后，就只会看到它会读取的数据源。",
           "wind_height": "风速计高度（留空：按 2 米）",
           "rain_not_from_entity": "天气实体不提供已降的雨，只提供预报：请在此选择雨量传感器，否则每场阵雨后区域都会被浇水。",
           "rain_hint_entity": "当前正在下的雨，以强度表示。天气实体只预报降雨：请选择一个测量降雨的传感器。"
@@ -592,17 +592,21 @@
         "calculate": "计算",
         "information": "信息",
         "update": "更新",
-        "reset-bucket": "重置 bucket",
+        "reset-bucket": "重置水量平衡",
         "view-weather-info": "查看天气数据",
         "view-weather-info-message": "可用天气数据：",
         "view-watering-calendar": "查看浇水日历",
         "water": "浇水",
-        "calculating": "正在计算…"
+        "calculating": "正在计算…",
+        "change": "更改",
+        "done": "完成"
       },
       "cards": {
         "add-zone": {
           "actions": {
-            "add": "添加区域"
+            "add": "添加区域",
+            "assistant": "用向导设置",
+            "cancel": "取消"
           },
           "header": "添加区域"
         },
@@ -610,21 +614,22 @@
           "actions": {
             "calculate-all": "计算所有区域",
             "update-all": "更新所有区域",
-            "reset-all-buckets": "重置所有 bucket",
+            "reset-all-buckets": "重置所有水量平衡",
             "clear-all-weatherdata": "清除所有天气数据"
           },
-          "header": "对所有区域的操作"
+          "header": "对所有区域的操作",
+          "reset-hint": "这两项会丢弃所有区域的数据。每项都会先询问。"
         }
       },
       "description": "在此处指定一个或多个灌溉区域。灌溉持续时间按区域计算，取决于面积、流量、状态、模块和传感器组。",
       "labels": {
-        "bucket": "Bucket",
+        "bucket": "水量平衡",
         "et-deficiency": "每日 ET 亏缺",
         "duration": "持续时间",
         "lead-time": "提前时间",
         "mapping": "传感器组",
         "maximum-duration": "最大持续时间",
-        "multiplier": "乘数",
+        "multiplier": "作物系数（Kc）",
         "name": "名称",
         "input-method": "输入方式",
         "input-methods": {
@@ -647,13 +652,13 @@
           "manual": "手动"
         },
         "throughput": "流量",
-        "maximum-bucket": "最大 bucket",
+        "maximum-bucket": "最大水量平衡",
         "last_calculated": "上次计算",
         "data-last-updated": "数据上次更新",
         "data-number-of-data-points": "数据点数量",
         "drainage_rate": "排水速率",
         "linked-entity": "关联的阀门/开关",
-        "linked-entity-hint": "为该区域浇水的阀门或开关。每当它运行时（手动开启、自动化，或在启用直接阀门控制时由 Smart Irrigation 自身运行），都会根据运行时间和该区域的流量为 bucket 计入水量。闭环功能需要此项。",
+        "linked-entity-hint": "为该区域浇水的阀门或开关。每当它运行时（手动开启、自动化，或在启用直接阀门控制时由 Smart Irrigation 自身运行），都会根据运行时间和该区域的流量为水量平衡计入水量。闭环功能需要此项。",
         "supply": "水泵或总阀",
         "supply-none": "无",
         "measured-flow-help": "经过几次浇水后，该区域的流量计测得的流量与上面设定的不同。这只是建议，绝不会自动应用。",
@@ -700,7 +705,7 @@
         "distribution-efficiency-help": "从出水器流出的水中到达植物的比例，单位 %。喷头在有风或坡地上会损失一部分，滴灌几乎没有损失。留空表示 100%。效率 80% 的区域，为达到同样的水深要多浇 25% 的时间，并且只记入其出水量的 80%。",
         "days-between-irrigation-help": "留空则遵循全局设置（设置，灌溉间隔天数）。填入数字则仅对该区域替代全局设置：1 表示只要需要就每天浇水，3 表示最多每三天一次，0 表示取消限制。天数从该区域上次浇水时算起。",
         "soil-moisture-sensor": "土壤湿度传感器",
-        "soil-moisture-sensor-hint": "只要土壤湿度等于或高于阈值，该区域就跳过本次浇水。水量余额会保留。",
+        "soil-moisture-sensor-hint": "只要土壤湿度等于或高于阈值，该区域就跳过本次浇水。水量平衡会保留。",
         "soil-moisture-threshold": "达到或超过此值时跳过",
         "calculation-method": "蒸散量",
         "calculation-method-help": {
@@ -725,7 +730,8 @@
           "loam": "壤土",
           "clay_loam": "黏壤土",
           "clay": "黏土",
-          "custom": "我自己设定排水速率"
+          "custom": "我自己设定排水速率",
+          "default": "尚未选择，按 {value} 计算"
         },
         "plant-types": {
           "lawn": "草坪",
@@ -736,7 +742,8 @@
           "fruit_trees": "果树",
           "vines": "藤本作物",
           "ground_cover": "地被植物",
-          "custom": "我自己设定作物系数"
+          "custom": "我自己设定作物系数",
+          "default": "尚未选择，按作物系数 {value} 计算"
         },
         "duration-readonly-automatic": "已为你算好：该区域的浇水时长来自它的水量平衡。想自己填时长，请把它改为手动。",
         "duration-readonly-disabled": "已停用的区域永远不会浇水，所以没有浇水时长。",
@@ -744,7 +751,7 @@
       },
       "no_items": "尚未定义任何区域。",
       "title": "区域",
-      "module-comes-from-the-group": "计算引擎来自该区域的传感器组。在那里修改，使用该组的每个区域都会跟着变。",
+      "module-comes-from-the-group": "模块来自该区域的传感器组。在那里修改，使用该组的每个区域都会跟着变。",
       "status": {
         "estimate": "缺少 {short}：下次计算时约 {duration}（{volume}）。",
         "will-water": "下次启动时将浇 {duration}。",
@@ -757,9 +764,9 @@
         "problem": {
           "no_sensor_group": "无法计算：没有传感器组。请在此卡片上选择一个；在此之前不会浇水。",
           "no_readings": "无法计算：其传感器组没有读数。在有读数之前不会浇水。",
-          "no_engine": "无法计算：没有计算引擎。在设置之前不会浇水。",
+          "no_engine": "无法计算：没有模块。在设置之前不会浇水。",
           "nothing_from_engine": "无法计算：其传感器组没有提供蒸散量。在提供之前不会浇水。",
-          "forecast_without_service": "无法计算：其引擎需要预报，但没有设置天气服务。不会浇水。",
+          "forecast_without_service": "无法计算：其模块需要预报，但没有设置天气服务。不会浇水。",
           "error": "无法计算：{detail}。在能够计算之前不会浇水。"
         },
         "no-valve": "未关联阀门，因此此区域不会浇水。",
@@ -777,13 +784,18 @@
         "error": "无法生成日历"
       },
       "water": {
-        "question": "现在为“{name}”浇水？阀门会立即打开；如果正在浇水，则排队等待。浇的水计入其水分平衡。",
+        "question": "现在为“{name}”浇水？阀门会立即打开；如果正在浇水，则排队等待。浇的水计入其水量平衡。",
         "minutes": "分钟，留空则为计划中的 {calculated}",
         "minutes-none": "分钟（计算结果无需浇水）"
       },
       "calculation-feedback": {
         "nothing-new": "{zone}：自上次计算以来没有新读数，因此没有变化。",
         "failed": "{zone}：计算失败（{error}）。"
+      },
+      "sections": {
+        "zone": "区域与阀门",
+        "need": "它的需求",
+        "status": "当前状态"
       }
     },
     "history": {
@@ -1363,7 +1375,7 @@
   },
   "observed_watering": {
     "title": "实测浇水（闭环）",
-    "description": "根据实际灌溉自动为各区域的 bucket 计入水量，而非通过自动化重置 bucket。启用后，请在“区域”选项卡中为每个区域选择一个阀门/开关实体：当其开启时，会根据运行时间和该区域的流量为 bucket 计入水量。若需精确核算，也可为每个区域选择一个累计水量计（类似水表的累计总量），届时将改用实测水量。重要提示：启用此功能后，它将成为唯一为 bucket 计水的来源，因此请从你的灌溉自动化中移除所有 reset_bucket 调用，以免重复计量。",
+    "description": "根据实际灌溉自动为各区域的水量平衡计入水量，而非通过自动化重置水量平衡。启用后，请在“区域”选项卡中为每个区域选择一个阀门/开关实体：当其开启时，会根据运行时间和该区域的流量为水量平衡计入水量。若需精确核算，也可为每个区域选择一个累计水量计（类似水表的累计总量），届时将改用实测水量。重要提示：启用此功能后，它将成为唯一为水量平衡计水的来源，因此请从你的灌溉自动化中移除所有 reset_bucket 调用，以免重复计量。",
     "enabled_label": "启用实测浇水",
     "direct_control_label": "让 Smart Irrigation 控制阀门",
     "direct_control_description": "启用后，Smart Irrigation 会打开每个区域关联的阀门，等待计算出的时长，然后将其关闭，无需自动化。进行中的运行会在重启后恢复。安全提示：能够自行关闭的阀门在打开时会收到本次运行的时长（ZHA 上的 Sonoff SWV，或其区域设置了 MQTT 安全主题的阀门），因此即使 Home Assistant 宕机，它也会关闭。其他阀门会一直浇水，直到 Home Assistant 恢复：请为它们设置硬件故障保护（最大运行时长）。",
@@ -1388,7 +1400,7 @@
   },
   "calculation_log": {
     "title": "计算日志",
-    "description": "把每次计算的全部输入写入文件，这样两个看起来相似却浇水差别很大的日子，事后可以拿来对比。每次计算追加一行：传感器组的读数以及它们是如何汇总的、模块的中间量（太阳辐射、净辐射、ET0），以及由此得出的水量余额、时长和用水量。默认关闭；文件大小有上限并会轮转，所以可以整个季节都开着。",
+    "description": "把每次计算的全部输入写入文件，这样两个看起来相似却浇水差别很大的日子，事后可以拿来对比。每次计算追加一行：传感器组的读数以及它们是如何汇总的、模块的中间量（太阳辐射、净辐射、ET0），以及由此得出的水量平衡、时长和用水量。默认关闭；文件大小有上限并会轮转，所以可以整个季节都开着。",
     "enabled_label": "把计算输入写入文件",
     "file_hint": "写入 config/smart_irrigation/calc_log.jsonl，每行一条 JSON 记录。最近的记录也包含在诊断下载里（坐标已取整，实体 ID 已移除），所以可以一步就附到问题报告上。"
   },
@@ -1497,11 +1509,11 @@
     "off": "已关闭"
   },
   "confirm": {
-    "delete_zone": "删除区域“{name}”？它的设置和水分平衡将会丢失。",
+    "delete_zone": "删除区域“{name}”？它的设置和水量平衡将会丢失。",
     "delete_mapping": "删除传感器组“{name}”？使用它的区域将没有天气数据。",
     "delete_module": "删除模块“{name}”？使用它的区域将无法再计算。",
-    "reset_bucket": "将“{name}”的水分平衡归零？",
-    "reset_all_buckets": "将所有区域的水分平衡归零？",
+    "reset_bucket": "将“{name}”的水量平衡归零？",
+    "reset_all_buckets": "将所有区域的水量平衡归零？",
     "clear_all_weather": "清除所有已收集的天气数据？下一次计算只会使用之后的读数。"
   }
 }

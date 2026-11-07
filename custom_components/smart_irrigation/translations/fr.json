@@ -5,7 +5,7 @@
         "name": "Durée d'arrosage"
       },
       "bucket": {
-        "name": "Seau"
+        "name": "Bilan hydrique"
       },
       "et_value": {
         "name": "ET appliquée"
@@ -23,7 +23,7 @@
         "name": "Eau utilisée"
       },
       "live_bucket": {
-        "name": "Réservoir en direct"
+        "name": "Bilan hydrique en direct"
       },
       "last_run_volume": {
         "name": "Volume du dernier arrosage"
@@ -45,7 +45,7 @@
         "name": "Calculer"
       },
       "reset_bucket": {
-        "name": "Vider le seau"
+        "name": "Réinitialiser le bilan hydrique"
       },
       "reset_usage": {
         "name": "Réinitialiser le compteur d'eau"
@@ -151,7 +151,7 @@
         },
         "dry_run": {
           "name": "Simulation",
-          "description": "Indiquer ce que le calcul ferait, sans toucher au bucket, à la zone ni aux données météo collectées"
+          "description": "Indiquer ce que le calcul ferait, sans toucher au bilan hydrique, à la zone ni aux données météo collectées"
         }
       }
     },
@@ -169,7 +169,7 @@
         },
         "dry_run": {
           "name": "Simulation",
-          "description": "Indiquer ce que le calcul ferait, sans toucher au bucket, à la zone ni aux données météo collectées"
+          "description": "Indiquer ce que le calcul ferait, sans toucher au bilan hydrique, à la zone ni aux données météo collectées"
         }
       }
     },
@@ -188,42 +188,42 @@
       }
     },
     "set_bucket": {
-      "name": "Définir le réservoir",
-      "description": "Définir le réservoir d'une zone à une valeur spécifique",
+      "name": "Définir le bilan hydrique",
+      "description": "Définir le bilan hydrique d'une zone à une valeur",
       "fields": {
         "entity": {
           "name": "Entité",
-          "description": "Zone pour laquelle définir le réservoir"
+          "description": "Zone pour laquelle définir le bilan hydrique"
         },
         "new_bucket_value": {
-          "name": "Nouvelle valeur du réservoir",
-          "description": "nouvelle valeur du réservoir"
+          "name": "Nouveau bilan hydrique",
+          "description": "Nouvelle valeur du bilan hydrique"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Définir tous les réservoirs",
-      "description": "Définir le réservoir de toutes les zones à une valeur spécifique",
+      "name": "Définir tous les bilans hydriques",
+      "description": "Définir le bilan hydrique de toutes les zones à une valeur",
       "fields": {
         "new_bucket_value": {
-          "name": "Nouvelle valeur du réservoir",
-          "description": "nouvelle valeur du réservoir"
+          "name": "Nouveau bilan hydrique",
+          "description": "Nouvelle valeur du bilan hydrique"
         }
       }
     },
     "reset_bucket": {
-      "name": "Réinitialiser le réservoir",
-      "description": "Réinitialiser le réservoir d'une zone à 0",
+      "name": "Réinitialiser le bilan hydrique",
+      "description": "Réinitialiser le bilan hydrique d'une zone à 0",
       "fields": {
         "entity": {
           "name": "Entité",
-          "description": "Zone pour laquelle réinitialiser le réservoir"
+          "description": "Zone pour laquelle réinitialiser le bilan hydrique"
         }
       }
     },
     "reset_all_buckets": {
-      "name": "Réinitialiser tous les réservoirs",
-      "description": "Réinitialiser le réservoir de toutes les zones à 0"
+      "name": "Réinitialiser tous les bilans hydriques",
+      "description": "Réinitialiser le bilan hydrique de toutes les zones à 0"
     },
     "clear_all_weather_data": {
       "name": "Effacer toutes les données météo",
@@ -262,8 +262,8 @@
           "description": "Zone pour laquelle définir les valeurs de configuration"
         },
         "new_bucket_value": {
-          "name": "Nouvelle valeur du réservoir",
-          "description": "Nouvelle valeur du réservoir"
+          "name": "Nouveau bilan hydrique",
+          "description": "Nouvelle valeur du bilan hydrique"
         },
         "new_multiplier_value": {
           "name": "Nouvelle valeur du multiplicateur",
@@ -295,7 +295,7 @@
     },
     "credit_watering": {
       "name": "Créditer l'arrosage",
-      "description": "Crédite le seau d'une zone de l'eau qu'un arrosage a réellement apportée, au lieu de le remettre à 0.",
+      "description": "Crédite le bilan hydrique d'une zone de l'eau qu'un arrosage a réellement apportée, au lieu de le remettre à 0.",
       "fields": {
         "seconds": {
           "name": "Secondes",
@@ -307,7 +307,7 @@
   "issues": {
     "dry_zone_not_watered": {
       "title": "Zone {zone} : sèche, et aucun programme ne l'arrosera",
-      "description": "Le seau de la zone **{zone}** est sec depuis {days} jours, et chaque programme qui l'inclut est désactivé, suspendu ou sans planning activé.\n\nRéactive un programme qui arrose cette zone, active l'un de ses plannings ou lève sa suspension. L'avis disparaît tout seul dès que la zone est arrosée ou qu'un programme la couvre de nouveau."
+      "description": "Le bilan hydrique de la zone **{zone}** est sec depuis {days} jours, et chaque programme qui l'inclut est désactivé, suspendu ou sans planning activé.\n\nRéactive un programme qui arrose cette zone, active l'un de ses plannings ou lève sa suspension. L'avis disparaît tout seul dès que la zone est arrosée ou qu'un programme la couvre de nouveau."
     },
     "weather_silent": {
       "title": "Groupe de capteurs {mapping} : un capteur météo ne répond plus",
@@ -330,8 +330,8 @@
       "description": "La zone **{zone}** n'a pas été calculée : son groupe de capteurs n'a aucun relevé sur lequel calculer. Tant que ce n'est pas le cas, le déficit de la zone ne bouge pas et elle n'est pas arrosée.\n\nVérifie que le groupe de capteurs a des sources et qu'elles envoient des valeurs, mets à jour les données météo, puis calcule la zone. L'avis disparaît tout seul au prochain calcul réussi."
     },
     "zone_not_calculated_no_engine": {
-      "title": "Zone {zone} : calcul impossible, aucun moteur de calcul",
-      "description": "La zone **{zone}** n'a pas de moteur de calcul : elle n'est donc ni calculée, ni arrosée.\n\nChoisis comment elle est calculée sur sa carte, dans l'onglet Zones. L'avis disparaît tout seul au prochain calcul réussi."
+      "title": "Zone {zone} : calcul impossible, aucun module",
+      "description": "La zone **{zone}** n'a pas de module : elle n'est donc ni calculée, ni arrosée.\n\nChoisis comment elle est calculée sur sa carte, dans l'onglet Zones. L'avis disparaît tout seul au prochain calcul réussi."
     },
     "zone_not_calculated_nothing_from_engine": {
       "title": "Zone {zone} : calcul impossible, aucune évapotranspiration",
@@ -339,7 +339,7 @@
     },
     "zone_not_calculated_forecast_without_service": {
       "title": "Zone {zone} : calcul impossible, une prévision sans service météo",
-      "description": "Le moteur de calcul de la zone **{zone}** regarde plusieurs jours à l'avance, ce qui demande un service météo, et aucun n'est configuré. La zone n'est pas arrosée tant qu'elle ne peut pas être calculée.\n\nConfigure un service météo, ou mets à 0 les jours de prévision du moteur. L'avis disparaît tout seul au prochain calcul réussi."
+      "description": "Le module de la zone **{zone}** regarde plusieurs jours à l'avance, ce qui demande un service météo, et aucun n'est configuré. La zone n'est pas arrosée tant qu'elle ne peut pas être calculée.\n\nConfigure un service météo, ou mets à 0 les jours de prévision du module. L'avis disparaît tout seul au prochain calcul réussi."
     },
     "zone_not_calculated_error": {
       "title": "Zone {zone} : calcul impossible, une erreur",

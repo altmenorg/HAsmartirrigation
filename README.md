@@ -13,7 +13,7 @@
 
 This integration calculates the time to run your irrigation system to compensate for moisture loss by [evapotranspiration](https://en.wikipedia.org/wiki/Evapotranspiration). Using this integration you water your garden, lawn or crops precisely enough to compensate what has evaporated. It takes into account precipitation (rain, snow) and moisture loss caused by evapotranspiration and adjusts accordingly.
 If it rains or snows less than the amount of moisture lost, then irrigation is required. Otherwise, no irrigation is required.
-The integration can take into account weather forecasts for the coming days and also keeps track of the total moisture lost or added ('bucket').
+The integration can take into account weather forecasts for the coming days and also keeps track of the total moisture lost or added (the water balance).
 Multiple zones are supported, each zone having its own configuration and set up. It can also open and close your valves itself, or leave that to your own automations and the blueprints it ships.
 
 ## ✨ Highlights
@@ -159,7 +159,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full development and testing guid
 
 Smart Irrigation exists thanks to [Jeroen ter Heerdt](https://github.com/jeroenterheerdt), who created it, designed its evapotranspiration model and maintained it for years. He passed the torch in June 2026, and the project carries on in the same spirit. Thank you, Jeroen, for building something so many gardens rely on, and for entrusting it to good hands. 🌱
 
-Thanks also to [JustChr](https://github.com/JustChr), whose [Smart Irrigation fork](https://github.com/JustChr/HAsmartirrigation) explored the closed-loop direction. The observed-watering bucket crediting, and parts of the direct valve control, are adapted from that work (MIT), and calculating the evapotranspiration hour by hour is an idea that fork tried first, though the equations here are written from FAO-56 and checked against the paper's own worked example.
+Thanks also to [JustChr](https://github.com/JustChr), whose [Smart Irrigation fork](https://github.com/JustChr/HAsmartirrigation) explored the closed-loop direction. The crediting of the water balance from observed watering, and parts of the direct valve control, are adapted from that work (MIT), and calculating the evapotranspiration hour by hour is an idea that fork tried first, though the equations here are written from FAO-56 and checked against the paper's own worked example.
 
 ## License
 

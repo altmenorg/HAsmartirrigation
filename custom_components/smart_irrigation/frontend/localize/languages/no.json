@@ -24,7 +24,7 @@
       "size": "størrelse",
       "throughput": "kapasitet",
       "state": "status",
-      "bucket": "bucket",
+      "bucket": "vannbalanse",
       "last_updated": "sist oppdatert",
       "last_calculated": "sist beregnet",
       "number_of_data_points": "antall datapunkter"
@@ -55,13 +55,13 @@
         "module-returned-evapotranspiration-deficiency": "Modulen returnerte evapotranspirasjonsunderskudd på",
         "module-returned-hourly-evapotranspiration-deficiency": "Modulen summerte underskuddet i plantenes fordamping time for time ( = summen av timenes et0 * Kc + nedbør) over",
         "crop-factor-is": "Vekstfaktoren er",
-        "bucket-was": "Bucket var",
-        "new-bucket-values-is": "Ny bucket verdien er",
-        "bucket": "bucket",
-        "old-bucket-variable": "gammel_bucket",
-        "max-bucket-variable": "max_bucket",
+        "bucket-was": "Vannbalansen var",
+        "new-bucket-values-is": "Ny vannbalanse er",
+        "bucket": "vannbalanse",
+        "old-bucket-variable": "gammel_vannbalanse",
+        "max-bucket-variable": "maks_vannbalanse",
         "delta": "delta",
-        "bucket-less-than-zero-irrigation-necessary": "Siden bucket < 0, Vanning er nødvendig.",
+        "bucket-less-than-zero-irrigation-necessary": "Siden vannbalansen < 0, er vanning nødvendig.",
         "steps-taken-to-calculate-duration": "For å beregne nøyaktig varighet, ble følgende trinn utført",
         "precipitation-rate-defined-as": "Nedbørshastigheten er definert som",
         "precipitation-rate-is": "Nedbørsintensiteten er",
@@ -76,9 +76,9 @@
         "duration-after-maximum-duration-is": "derfor er varigheten",
         "lead-time-is-applied": "Til slutt blir ledetiden brukt. Ledetiden er",
         "duration-after-lead-time-is": "derfor er den endelige varigheten",
-        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Siden bucket >= 0, Ingen vanning er nødvendig, og varigheten er satt til",
-        "maximum-bucket-is": "maksimum bucket stærrelse er",
-        "drainage-rate-is": "Dreneringsraten ved metning (bucket på maks) er",
+        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Siden vannbalansen >= 0, er ingen vanning nødvendig, og varigheten er satt til",
+        "maximum-bucket-is": "Maksimal vannbalanse er",
+        "drainage-rate-is": "Dreneringsraten ved metning (vannbalanse på maks) er",
         "current-drainage-is": "Nåværende drenering beregnes som",
         "drainage-replayed": "Perioden ble regnet ut på nytt time for time, så hver regnskur bare drenerer fra timen den falt. Drenering over",
         "no-drainage": "Nåværende drenering er 0 fordi",
@@ -151,7 +151,7 @@
           "question": "Klar til å opprette",
           "zone": "Sone",
           "environment": "Miljø",
-          "engine": "Beregningsmotor",
+          "engine": "Modul",
           "sources": "Kilder",
           "from-the-service": "fra værtjenesten",
           "help": "Dette oppretter en beregningsmodul, en sensorgruppe og en sone, akkurat som de andre fanene ville gjort. Etterpå er ingenting låst."
@@ -240,7 +240,7 @@
             "calc-when-manual": "Bare når jeg ber om det",
             "calc-when-hint": "Rett før hver start: på tidspunktet for starttriggeren, med det ferskeste været. Det riktige valget når Smart Irrigation starter vanningen (direkte ventilstyring eller start-hendelsen). På et fast tidspunkt: hver dag til tidspunktet nedenfor, for når noe annet enn Smart Irrigation starter vanningen og leser varighetene når det vil (Irrigation Unlimited, en egen tidsplan). Bare når jeg ber om det: ingenting beregnes av seg selv, bruk beregningsknappene eller tjenestene.",
             "calc-time": "Beregn kl.",
-            "calc-time-hint": "Den daglige beregningen: vanntapet legges til bucketen for hver sone, og vanningsvarighetene settes.",
+            "calc-time-hint": "Den daglige beregningen: vanntapet legges til vannbalansen for hver sone, og vanningsvarighetene settes.",
             "hourly-calculation": "Beregn fordamping time for time",
             "hourly-calculation-hint": "Summerer FAO-56s timeligning for hver time siden forrige beregning, i stedet for å bruke døgnligningen på gjennomsnitt som skjuler om sola og varmen kom samtidig. En ny installasjon starter med den; en installasjon som fantes fra før beholder døgnligningen til du bytter, for de to gir ulike tall, og vanningen din skal ikke endre seg av en oppdatering. Sola for hver time kommer fra en strålings- eller lyssensor, fra værtjenestens egen timehistorikk, eller fra dagens temperaturspenn. Det er verdt å ha når målinger kommer inn gjennom dagen: én oppdatering om dagen lar én enkelt måling gjelde i tjuefire timer, og da er ingen av formene til å stole på. Et drivhus uten egen sensor beholder døgnligningen."
           }
@@ -250,7 +250,7 @@
             "warning-update-time-on-or-after-calc-time": "Advarsel: Oppdateringstidspunkt for værdata på eller etter beregningstidspunktet"
           },
           "header": "Automatisk oppdatering av værdata",
-          "description": "Samle inn og lagre værdata automatisk. Værdata kreves for å beregne sone-buckets og varigheter.",
+          "description": "Samle inn og lagre værdata automatisk. Værdata kreves for å beregne vannbalanser og varigheter for sonene.",
           "labels": {
             "auto-update-enabled": "Oppdater værdata automatisk",
             "auto-update-schedule": "Oppdateringsplan",
@@ -527,9 +527,9 @@
           },
           "greenhouse": "Drivhus",
           "greenhouse_description": "Et lukket miljø: et drivhus, en plasttunnel, alt under glass eller plast. Det kommer ikke regn til disse sonene, så nedbør holdes utenfor vannbalansen deres, og feltene for den skjules. To ting må du sette selv, for de kan ikke gjettes: gi Vindhastighet en fast verdi nær 0, siden beregningen går ut fra fri luft, og bruk en lyssensor for Solinnstråling, siden glasset filtrerer himmelen.",
-          "module": "Beregningsmotor",
-          "module_description": "Denne gruppen tilbyr bare kildene denne motoren leser. Sonene som bruker den, overtar valget.",
-          "module_undecided": "Ingen motor er valgt ennå, så alle kilder tilbys, og hver sone som bruker denne gruppen beholder sin egen. Velg én for bare å se kildene den leser.",
+          "module": "Modul",
+          "module_description": "Denne gruppen tilbyr bare kildene denne modulen leser. Sonene som bruker den, overtar valget.",
+          "module_undecided": "Ingen modul er valgt ennå, så alle kilder tilbys, og hver sone som bruker denne gruppen beholder sin egen. Velg én for bare å se kildene den leser.",
           "wind_height": "Vindmålerens høyde (tom: 2 m)",
           "rain_not_from_entity": "Værentiteten gir ikke regnet som har falt, bare en prognose: velg en regnsensor her, ellers vannes sonene etter hver byge.",
           "rain_hint_entity": "Regn som faller nå, som intensitet. Værentiteten varsler det bare: velg en sensor som måler regn."
@@ -592,17 +592,21 @@
         "calculate": "Beregn",
         "information": "Informasjon",
         "update": "Oppdater",
-        "reset-bucket": "Nullstill bøtte",
+        "reset-bucket": "Nullstill vannbalanse",
         "view-weather-info": "Vis værdata",
         "view-weather-info-message": "Værdata tilgjengelig for",
         "view-watering-calendar": "Vis vanningskalender",
         "water": "Vann",
-        "calculating": "Beregner…"
+        "calculating": "Beregner…",
+        "change": "Endre",
+        "done": "Ferdig"
       },
       "cards": {
         "add-zone": {
           "actions": {
-            "add": "Legg til sone"
+            "add": "Legg til sone",
+            "assistant": "Sett den opp med assistenten",
+            "cancel": "Avbryt"
           },
           "header": "Legg til sone"
         },
@@ -610,21 +614,22 @@
           "actions": {
             "calculate-all": "Beregn alle soner",
             "update-all": "Oppdater alle soner",
-            "reset-all-buckets": "Nullstill alle bøtter",
+            "reset-all-buckets": "Nullstill alle vannbalanser",
             "clear-all-weatherdata": "Slett alle værdata"
           },
-          "header": "Handlinger på alle soner"
+          "header": "Handlinger på alle soner",
+          "reset-hint": "Disse to forkaster data fra alle soner. Begge spør først."
         }
       },
       "description": "Spesifiser en eller flere vanningssoner her. Vanningens varighet beregnes per sone, avhengig av størrelse, gjennomstrømning, tilstand, modul og sensorguppe.",
       "labels": {
-        "bucket": "Bøtte",
+        "bucket": "Vannbalanse",
         "et-deficiency": "Daglig ET-underskudd",
         "duration": "Varighet",
         "lead-time": "Ledetid",
         "mapping": "Sensorguppe",
         "maximum-duration": "Maksimal varighet",
-        "multiplier": "Multiplikator",
+        "multiplier": "Vekstfaktor (Kc)",
         "name": "Navn",
         "input-method": "Inndatametode",
         "input-methods": {
@@ -647,13 +652,13 @@
           "manual": "Manuell"
         },
         "throughput": "Gjennomstrømning",
-        "maximum-bucket": "Maksimal bøtte",
+        "maximum-bucket": "Maksimal vannbalanse",
         "last_calculated": "Sist beregnet",
         "data-last-updated": "Data sist oppdatert",
         "data-number-of-data-points": "Antall datapunkter",
         "drainage_rate": "Dreneringsrate",
         "linked-entity": "Tilknyttet ventil/bryter",
-        "linked-entity-hint": "Ventilen eller bryteren som vanner denne sonen. Hver gang den kjører (en manuell kran, en automasjon, eller Smart Irrigation selv når direkte ventilstyring er på), krediteres bucketen ut fra kjøretiden og sonens kapasitet. Påkrevd for funksjonene med lukket sløyfe.",
+        "linked-entity-hint": "Ventilen eller bryteren som vanner denne sonen. Hver gang den kjører (en manuell kran, en automasjon, eller Smart Irrigation selv når direkte ventilstyring er på), krediteres vannbalansen ut fra kjøretiden og sonens kapasitet. Påkrevd for funksjonene med lukket sløyfe.",
         "supply": "Pumpe eller hovedventil",
         "supply-none": "Ingen",
         "measured-flow-help": "Over flere kjøringer målte sonens strømningsmåler en strømning som avviker fra den som er satt ovenfor. Det er et råd, og det brukes aldri av seg selv.",
@@ -700,7 +705,7 @@
         "distribution-efficiency-help": "Andelen av vannet som forlater dysene og når plantene, i %. Spredere i vind eller i skråning mister noe, drypp nesten ingenting. La stå tomt for 100 %. En sone på 80 % vanner 25 % lenger for samme dybde, og krediterer bare 80 % av det den leverer.",
         "days-between-irrigation-help": "La stå tomt for å følge den generelle innstillingen (Innstillinger, Dager mellom vanninger). Et tall erstatter den generelle innstillingen for denne sonen alene: 1 vanner den hver dag hvis den trenger vann, 3 høyst hver tredje dag, 0 fjerner begrensningen. Dagene telles fra forrige gang denne sonen ble vannet.",
         "soil-moisture-sensor": "Jordfuktsensor",
-        "soil-moisture-sensor-hint": "Sonen sitter over en vanning så lenge jorda er på eller over grensen. Beholdningen tas vare på.",
+        "soil-moisture-sensor-hint": "Sonen sitter over en vanning så lenge jorda er på eller over grensen. Vannbalansen tas vare på.",
         "soil-moisture-threshold": "Hopp over fra",
         "calculation-method": "Fordamping",
         "calculation-method-help": {
@@ -725,7 +730,8 @@
           "loam": "Moldjord",
           "clay_loam": "Leirholdig moldjord",
           "clay": "Leire",
-          "custom": "Jeg setter dreneringshastigheten selv"
+          "custom": "Jeg setter dreneringshastigheten selv",
+          "default": "Ikke valgt ennå – beregnet med {value}"
         },
         "plant-types": {
           "lawn": "Plen",
@@ -736,7 +742,8 @@
           "fruit_trees": "Frukttrær",
           "vines": "Vinranker",
           "ground_cover": "Bunndekke",
-          "custom": "Jeg setter vekstkoeffisienten selv"
+          "custom": "Jeg setter vekstfaktoren selv",
+          "default": "Ikke valgt ennå – beregnet med vekstfaktor {value}"
         },
         "duration-readonly-automatic": "Beregnet for deg: vanningen til denne sonen kommer fra vannbalansen dens. Sett den til manuell for å skrive en varighet selv.",
         "duration-readonly-disabled": "En sone som er slått av, vannes aldri, så den har ingen vanningstid.",
@@ -744,7 +751,7 @@
       },
       "no_items": "Det er ingen definerte soner ennå.",
       "title": "Soner",
-      "module-comes-from-the-group": "Beregningsmotoren kommer fra sensorgruppen til denne sonen. Endre den der, og alle soner som bruker gruppen, følger etter.",
+      "module-comes-from-the-group": "Modulen kommer fra sensorgruppen til denne sonen. Endre den der, og alle soner som bruker gruppen, følger etter.",
       "status": {
         "estimate": "Mangler {short}: omtrent {duration} ({volume}) ved neste beregning.",
         "will-water": "Vanner {duration} ved neste start.",
@@ -757,9 +764,9 @@
         "problem": {
           "no_sensor_group": "Kan ikke beregnes: den har ingen sensorgruppe. Velg en på dette kortet; den vannes ikke før det.",
           "no_readings": "Kan ikke beregnes: sensorgruppen har ingen målinger. Den vannes ikke før den har det.",
-          "no_engine": "Kan ikke beregnes: den har ingen beregningsmotor. Den vannes ikke før den har en.",
+          "no_engine": "Kan ikke beregnes: den har ingen modul. Den vannes ikke før den har en.",
           "nothing_from_engine": "Kan ikke beregnes: sensorgruppen gir ingen fordampning. Den vannes ikke før den gjør det.",
-          "forecast_without_service": "Kan ikke beregnes: beregningsmotoren ser fremover, og ingen værtjeneste er satt opp. Den vannes ikke.",
+          "forecast_without_service": "Kan ikke beregnes: modulen ser fremover, og ingen værtjeneste er satt opp. Den vannes ikke.",
           "error": "Kan ikke beregnes: {detail}. Den vannes ikke før den kan beregnes."
         },
         "no-valve": "Ingen ventil tilknyttet, så denne sonen vannes ikke.",
@@ -784,6 +791,11 @@
       "calculation-feedback": {
         "nothing-new": "{zone}: ingen nye målinger siden forrige beregning, så ingenting er endret.",
         "failed": "{zone}: beregningen mislyktes ({error})."
+      },
+      "sections": {
+        "zone": "Sone og ventil",
+        "need": "Hva den trenger",
+        "status": "Hvor den står"
       }
     },
     "history": {
@@ -1363,7 +1375,7 @@
   },
   "observed_watering": {
     "title": "Observert vanning (lukket sløyfe)",
-    "description": "Krediter hver sones bucket automatisk fra reell vanning, i stedet for å nullstille bucketen fra en automasjon. Når dette er aktivert, velg en ventil/bryter-entitet per sone i Soner-fanen: mens den er åpen, krediteres bucketen ut fra kjøretiden og sonens kapasitet. For nøyaktig regnskap kan du også velge en kumulativ volummåler (en vannmålertotal) per sone, og det målte volumet brukes i stedet. Viktig: når dette er på er det det eneste som krediterer bucketen, så fjern ethvert reset_bucket-kall fra vanningsautomasjonen din for å unngå dobbelttelling.",
+    "description": "Krediter hver sones vannbalanse automatisk fra reell vanning, i stedet for å nullstille vannbalansen fra en automasjon. Når dette er aktivert, velg en ventil/bryter-entitet per sone i Soner-fanen: mens den er åpen, krediteres vannbalansen ut fra kjøretiden og sonens kapasitet. For nøyaktig regnskap kan du også velge en kumulativ volummåler (en vannmålertotal) per sone, og det målte volumet brukes i stedet. Viktig: når dette er på er det det eneste som krediterer vannbalansen, så fjern ethvert reset_bucket-kall fra vanningsautomasjonen din for å unngå dobbelttelling.",
     "enabled_label": "Aktiver observert vanning",
     "direct_control_label": "La Smart Irrigation styre ventilen",
     "direct_control_description": "Når dette er på, åpner Smart Irrigation hver sones tilknyttede ventil, venter den beregnede varigheten, og lukker den deretter, uten automasjon. En pågående kjøring gjenopptas etter en omstart. Sikkerhet: en ventil som kan lukke seg selv, får kjøringens lengde når den åpner (en Sonoff SWV på ZHA, eller en ventil der sonen har et MQTT-sikkerhetstema), så den lukker selv om Home Assistant går ned. Enhver annen ventil fortsetter å vanne til Home Assistant er tilbake: gi den en maskinvarebeskyttelse (en maksimal kjøretid).",
@@ -1388,7 +1400,7 @@
   },
   "calculation_log": {
     "title": "Beregningslogg",
-    "description": "Skriver hele grunnlaget for hver beregning til en fil, slik at to dager som ser like ut men vanner svært ulikt kan sammenlignes i ettertid. Hver beregning legger til én linje: sensorgruppens målinger og hvordan de ble slått sammen, modulens mellomresultater (solinnstråling, nettostråling, ET0) og den beholdningen, varigheten og mengden det gir. Av som standard; filen har en maksstørrelse og roteres, så den kan stå på en hel sesong.",
+    "description": "Skriver hele grunnlaget for hver beregning til en fil, slik at to dager som ser like ut men vanner svært ulikt kan sammenlignes i ettertid. Hver beregning legger til én linje: sensorgruppens målinger og hvordan de ble slått sammen, modulens mellomresultater (solinnstråling, nettostråling, ET0) og den vannbalansen, varigheten og mengden det gir. Av som standard; filen har en maksstørrelse og roteres, så den kan stå på en hel sesong.",
     "enabled_label": "Skriv beregningens grunnlag til en fil",
     "file_hint": "Skrives til config/smart_irrigation/calc_log.jsonl, én JSON-post per linje. De nyeste postene er også med i diagnostikk-nedlastingen (koordinater avrundet, entitets-id-er fjernet), så du kan legge dem ved en feilrapport i ett steg."
   },

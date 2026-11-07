@@ -24,7 +24,7 @@
       "size": "Tamaño",
       "throughput": "Rendimiento",
       "state": "Estado",
-      "bucket": "bucket",
+      "bucket": "balance hídrico",
       "last_updated": "última actualización",
       "last_calculated": "último cálculo",
       "number_of_data_points": "número de puntos de datos"
@@ -55,13 +55,13 @@
         "module-returned-evapotranspiration-deficiency": "El módulo devuelve una deficiencia de evapotranspiración de",
         "module-returned-hourly-evapotranspiration-deficiency": "El módulo ha sumado el déficit de evapotranspiración del cultivo hora a hora ( = suma de la et0 horaria * Kc + precipitación) a lo largo de",
         "crop-factor-is": "El factor de cultivo es",
-        "bucket-was": "El cubo era",
-        "new-bucket-values-is": "El nuevo valor del cubo es",
-        "bucket": "cubo",
-        "old-bucket-variable": "old_bucket",
-        "max-bucket-variable": "max_bucket",
+        "bucket-was": "El balance hídrico era",
+        "new-bucket-values-is": "El nuevo valor del balance hídrico es",
+        "bucket": "balance hídrico",
+        "old-bucket-variable": "old_water_balance",
+        "max-bucket-variable": "max_water_balance",
         "delta": "delta",
-        "bucket-less-than-zero-irrigation-necessary": "Dado que cubo < 0, el riego es necesario",
+        "bucket-less-than-zero-irrigation-necessary": "Dado que el balance hídrico < 0, el riego es necesario",
         "steps-taken-to-calculate-duration": "Para calcular la duración exacta, se siguieron los siguientes pasos",
         "precipitation-rate-defined-as": "La tasa de precipitación se define como",
         "precipitation-rate-is": "La tasa de precipitación es",
@@ -76,9 +76,9 @@
         "duration-after-maximum-duration-is": "por lo que la duración es",
         "lead-time-is-applied": "Por último, se suma el tiempo de arranque. El tiempo de arranque es",
         "duration-after-lead-time-is": "por lo que la duración final es",
-        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Como cubo >= 0, no es necesario regar y la duración se fija en",
-        "maximum-bucket-is": "El tamaño máximo de cubo es",
-        "drainage-rate-is": "La tasa de drenaje en saturación (bucket al máximo) es",
+        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Como el balance hídrico >= 0, no es necesario regar y la duración se fija en",
+        "maximum-bucket-is": "El balance hídrico máximo es",
+        "drainage-rate-is": "La tasa de drenaje en saturación (balance hídrico al máximo) es",
         "current-drainage-is": "El drenaje actual se calcula como",
         "drainage-replayed": "El periodo se recalculó hora a hora, de modo que cada lluvia solo drena desde la hora en que cayó. Drenaje en",
         "no-drainage": "El drenaje actual es 0 porque",
@@ -151,7 +151,7 @@
           "question": "Listo para crear",
           "zone": "Zona",
           "environment": "Entorno",
-          "engine": "Motor de cálculo",
+          "engine": "Módulo",
           "sources": "Fuentes",
           "from-the-service": "del servicio meteorológico",
           "help": "Esto crea un módulo de cálculo, un grupo de sensores y una zona, exactamente como lo harían las otras pestañas. Después nada queda fijado."
@@ -240,7 +240,7 @@
             "calc-when-manual": "Solo cuando lo pido",
             "calc-when-hint": "Justo antes de cada inicio: a la hora del disparador de inicio, con el tiempo más reciente. La elección correcta cuando Smart Irrigation inicia el riego (control directo de válvulas o el evento de inicio). A una hora fija: cada día a la hora indicada abajo, para cuando algo distinto de Smart Irrigation inicia el riego y lee las duraciones cuando quiere (Irrigation Unlimited, un horario propio). Solo cuando lo pido: no se calcula nada por sí solo, usa los botones de calcular o los servicios.",
             "calc-time": "Calcular a las",
-            "calc-time-hint": "El cálculo diario: el agua perdida se suma al bucket de cada zona y se fijan las duraciones del riego.",
+            "calc-time-hint": "El cálculo diario: el agua perdida se suma al balance hídrico de cada zona y se fijan las duraciones del riego.",
             "hourly-calculation": "Calcular la evapotranspiración hora a hora",
             "hourly-calculation-hint": "Suma la ecuación horaria de la FAO-56 en cada hora transcurrida desde el último cálculo, en lugar de aplicar la ecuación diaria a las medias, que esconden si el sol y el calor llegaron juntos. Una instalación nueva empieza con ella; una instalación que ya existía antes conserva la ecuación diaria hasta que la cambies, porque las dos dan números distintos y tu riego no debería cambiar por una actualización. El sol de cada hora viene de un sensor de radiación o de iluminancia, del histórico horario del propio servicio meteorológico, o del rango de temperatura del día. Merece la pena cuando las lecturas llegan repartidas a lo largo del día: una sola actualización al día deja una única lectura sostenida durante veinticuatro horas, y entonces ninguna de las dos formas es fiable. Un invernadero sin sensor propio conserva la ecuación diaria."
           }
@@ -250,7 +250,7 @@
             "warning-update-time-on-or-after-calc-time": "Advertencia: la hora de actualización de los datos meteorológicos es igual o posterior a la hora de cálculo"
           },
           "header": "Actualización automática de los datos meteorológicos",
-          "description": "Recopila y almacena datos meteorológicos automáticamente. Los datos meteorológicos son necesarios para calcular los buckets y las duraciones de las zonas.",
+          "description": "Recopila y almacena datos meteorológicos automáticamente. Los datos meteorológicos son necesarios para calcular los balances hídricos y las duraciones de las zonas.",
           "labels": {
             "auto-update-enabled": "Actualizar automáticamente los datos meteorológicos",
             "auto-update-schedule": "Programación de actualización",
@@ -290,7 +290,7 @@
         "master-switch": {
           "title": "Smart Irrigation",
           "label": "Calcular y regar",
-          "description": "Desactivado, Smart Irrigation sigue tomando sus lecturas meteorológicas y conserva sus sensores, pero no calcula nada, deja el cubo de cada zona tal como está, no abre ninguna válvula y no ejecuta ningún programa. Al volver a activarlo, el tiempo que estuvo desactivado no se cuenta.",
+          "description": "Desactivado, Smart Irrigation sigue tomando sus lecturas meteorológicas y conserva sus sensores, pero no calcula nada, deja el balance hídrico de cada zona tal como está, no abre ninguna válvula y no ejecuta ningún programa. Al volver a activarlo, el tiempo que estuvo desactivado no se cuenta.",
           "off-note": "Desactivado: no se calcula ni se riega nada. Las lecturas meteorológicas continúan, y el tiempo que esté desactivado no se contará cuando lo vuelvas a activar.",
           "confirm-off": "¿Desactivar Smart Irrigation? Lo que esté regando se detiene ahora, y no se calcula ni se riega nada hasta que se vuelva a activar."
         }
@@ -527,9 +527,9 @@
           },
           "greenhouse": "Invernadero",
           "greenhouse_description": "Un entorno cerrado: un invernadero, un túnel de plástico, cualquier cosa bajo cristal o plástico. A estas zonas no les llega la lluvia, así que la precipitación se deja fuera de su balance hídrico y sus campos se ocultan. Dos cosas hay que poner a mano, porque no se pueden adivinar: dale a Velocidad del viento un valor estático cercano a 0, porque el cálculo supone aire libre, y usa un sensor de luz para la Radiación solar, porque el acristalamiento filtra el cielo.",
-          "module": "Motor de cálculo",
-          "module_description": "Este grupo solo ofrece las fuentes que lee este motor. Las zonas que lo usan heredan la elección.",
-          "module_undecided": "Todavía no se ha elegido un motor, así que se ofrecen todas las fuentes y cada zona que usa este grupo conserva la suya. Elige uno para ver solo las fuentes que lee.",
+          "module": "Módulo",
+          "module_description": "Este grupo solo ofrece las fuentes que lee este módulo. Las zonas que lo usan heredan la elección.",
+          "module_undecided": "Todavía no se ha elegido un módulo, así que se ofrecen todas las fuentes y cada zona que usa este grupo conserva la suya. Elige uno para ver solo las fuentes que lee.",
           "wind_height": "Altura del anemómetro (vacío: a 2 m)",
           "rain_not_from_entity": "La entidad meteorológica no da la lluvia caída, solo un pronóstico: elige aquí un sensor de lluvia, o las zonas se regarán después de cada chaparrón.",
           "rain_hint_entity": "La lluvia que cae ahora, como intensidad. La entidad meteorológica solo la pronostica: elige un sensor que mida la lluvia."
@@ -592,17 +592,21 @@
         "calculate": "Calcular",
         "information": "Información",
         "update": "Actualizar",
-        "reset-bucket": "Resetear cubo",
+        "reset-bucket": "Resetear balance hídrico",
         "view-weather-info": "Ver datos meteorológicos",
         "view-weather-info-message": "Datos meteorológicos disponibles para",
         "view-watering-calendar": "Ver el calendario de riego",
         "water": "Regar",
-        "calculating": "Calculando…"
+        "calculating": "Calculando…",
+        "change": "Cambiar",
+        "done": "Hecho"
       },
       "cards": {
         "add-zone": {
           "actions": {
-            "add": "Añadir zona"
+            "add": "Añadir zona",
+            "assistant": "Configurar con el asistente",
+            "cancel": "Cancelar"
           },
           "header": "Añadir zona"
         },
@@ -610,15 +614,16 @@
           "actions": {
             "calculate-all": "Calcular todas las zonas",
             "update-all": "Actualizar todas las zonas",
-            "reset-all-buckets": "Resetear todos los cubos",
+            "reset-all-buckets": "Resetear todos los balances hídricos",
             "clear-all-weatherdata": "Borrar todos los datos meteorológicos"
           },
-          "header": "Acciones en todas las zonas"
+          "header": "Acciones en todas las zonas",
+          "reset-hint": "Estas dos acciones descartan los datos de todas las zonas. Cada una pregunta antes."
         }
       },
       "description": "Especifique aquí una o varias zonas de riego. La duración del riego se calcula por zona, en función del tamaño, el rendimiento, el estado, el módulo y el grupo de sensores.",
       "labels": {
-        "bucket": "Cubo",
+        "bucket": "Balance hídrico",
         "et-deficiency": "Déficit de ET diario",
         "duration": "Duración",
         "lead-time": "Tiempo de arranque",
@@ -647,13 +652,13 @@
           "manual": "Manual"
         },
         "throughput": "Rendimiento",
-        "maximum-bucket": "Cubo máximo",
+        "maximum-bucket": "Balance hídrico máximo",
         "last_calculated": "Último cálculo",
         "data-last-updated": "Datos actualizados por última vez",
         "data-number-of-data-points": "Número de puntos de datos",
         "drainage_rate": "Tasa de drenaje",
         "linked-entity": "Válvula/interruptor vinculado",
-        "linked-entity-hint": "La válvula o interruptor que riega esta zona. Cada vez que se acciona (un grifo manual, una automatización o la propia Smart Irrigation cuando el control directo de válvula está activado), el bucket se acredita a partir del tiempo de funcionamiento y el rendimiento de la zona. Necesario para las funciones de lazo cerrado.",
+        "linked-entity-hint": "La válvula o interruptor que riega esta zona. Cada vez que se acciona (un grifo manual, una automatización o la propia Smart Irrigation cuando el control directo de válvula está activado), el balance hídrico se acredita a partir del tiempo de funcionamiento y el rendimiento de la zona. Necesario para las funciones de lazo cerrado.",
         "supply": "Bomba o válvula principal",
         "supply-none": "Ninguno",
         "measured-flow-help": "A lo largo de varias ejecuciones, el caudalímetro de la zona midió un caudal distinto del configurado arriba. Es solo un consejo, nunca se aplica por sí solo.",
@@ -700,7 +705,7 @@
         "distribution-efficiency-help": "La parte del agua que sale de los emisores y llega a las plantas, en %. Los aspersores con viento o en pendiente pierden algo, el goteo casi nada. Déjalo vacío para 100 %. Una zona al 80 % riega un 25 % más tiempo para la misma lámina, y acredita solo el 80 % de lo que entrega.",
         "days-between-irrigation-help": "Déjalo vacío para seguir el ajuste general (Ajustes, Días entre riegos). Un número sustituye al ajuste general solo para esta zona: 1 la riega cada día si necesita agua, 3 como mucho cada tres días, 0 quita la restricción. Los días se cuentan desde la última vez que se regó esta zona.",
         "soil-moisture-sensor": "Sensor de humedad del suelo",
-        "soil-moisture-sensor-hint": "La zona se salta un ciclo mientras el suelo esté en el umbral o por encima. El depósito se conserva.",
+        "soil-moisture-sensor-hint": "La zona se salta un ciclo mientras el suelo esté en el umbral o por encima. El balance hídrico se conserva.",
         "soil-moisture-threshold": "Omitir a partir de",
         "calculation-method": "Evapotranspiración",
         "calculation-method-help": {
@@ -725,7 +730,8 @@
           "loam": "Franco",
           "clay_loam": "Franco arcilloso",
           "clay": "Arcilloso",
-          "custom": "Pongo yo la tasa de drenaje"
+          "custom": "Pongo yo la tasa de drenaje",
+          "default": "Aún sin elegir – calculado con {value}"
         },
         "plant-types": {
           "lawn": "Césped",
@@ -736,7 +742,8 @@
           "fruit_trees": "Frutales",
           "vines": "Viñas",
           "ground_cover": "Cubierta vegetal",
-          "custom": "Pongo yo el coeficiente de cultivo"
+          "custom": "Pongo yo el factor de cultivo",
+          "default": "Aún sin elegir – calculado con factor de cultivo {value}"
         },
         "duration-readonly-automatic": "Calculada por ti: el ciclo de esta zona sale de su balance hídrico. Ponla en manual para escribir una duración tú mismo.",
         "duration-readonly-disabled": "Una zona desactivada nunca se riega, así que no tiene tiempo de riego.",
@@ -744,7 +751,7 @@
       },
       "no_items": "Aún no hay zonas definidas.",
       "title": "Zonas",
-      "module-comes-from-the-group": "El motor de cálculo viene del grupo de sensores de esta zona. Cámbialo ahí, y todas las zonas que usan ese grupo lo siguen.",
+      "module-comes-from-the-group": "El módulo viene del grupo de sensores de esta zona. Cámbialo ahí, y todas las zonas que usan ese grupo lo siguen.",
       "status": {
         "estimate": "Faltan {short}: unos {duration} ({volume}) en el próximo cálculo.",
         "will-water": "Regará {duration} en el próximo inicio.",
@@ -757,9 +764,9 @@
         "problem": {
           "no_sensor_group": "No se puede calcular: no tiene grupo de sensores. Elige uno en esta tarjeta; hasta entonces no se riega.",
           "no_readings": "No se puede calcular: su grupo de sensores no tiene lecturas. No se riega hasta que las tenga.",
-          "no_engine": "No se puede calcular: no tiene motor de cálculo. No se riega hasta que tenga uno.",
+          "no_engine": "No se puede calcular: no tiene módulo. No se riega hasta que tenga uno.",
           "nothing_from_engine": "No se puede calcular: su grupo de sensores no da evapotranspiración. No se riega hasta que la dé.",
-          "forecast_without_service": "No se puede calcular: su motor mira los próximos días y no hay ningún servicio meteorológico configurado. No se riega.",
+          "forecast_without_service": "No se puede calcular: su módulo mira los próximos días y no hay ningún servicio meteorológico configurado. No se riega.",
           "error": "No se puede calcular: {detail}. No se riega hasta que se pueda calcular."
         },
         "no-valve": "Sin válvula vinculada, así que esta zona no se riega.",
@@ -784,6 +791,11 @@
       "calculation-feedback": {
         "nothing-new": "{zone}: no hay lecturas nuevas desde el último cálculo, así que no ha cambiado nada.",
         "failed": "{zone}: el cálculo ha fallado ({error})."
+      },
+      "sections": {
+        "zone": "Zona y válvula",
+        "need": "Lo que necesita",
+        "status": "Cómo está"
       }
     },
     "history": {
@@ -1363,7 +1375,7 @@
   },
   "observed_watering": {
     "title": "Riego observado (lazo cerrado)",
-    "description": "Acredita automáticamente el bucket de cada zona a partir del riego real, en lugar de restablecer el bucket desde una automatización. Una vez activado, elige una entidad de válvula/interruptor por zona en la pestaña Zonas: mientras está abierta, el bucket se acredita a partir del tiempo de funcionamiento y el rendimiento de la zona. Para una contabilidad exacta también puedes elegir un contador de volumen acumulado (un total de tipo contador de agua) por zona, y se utiliza el volumen medido en su lugar. Importante: cuando esto está activado es lo único que acredita el bucket, así que elimina cualquier llamada a reset_bucket de tu automatización de riego para evitar el doble conteo.",
+    "description": "Acredita automáticamente el balance hídrico de cada zona a partir del riego real, en lugar de restablecer el balance hídrico desde una automatización. Una vez activado, elige una entidad de válvula/interruptor por zona en la pestaña Zonas: mientras está abierta, el balance hídrico se acredita a partir del tiempo de funcionamiento y el rendimiento de la zona. Para una contabilidad exacta también puedes elegir un contador de volumen acumulado (un total de tipo contador de agua) por zona, y se utiliza el volumen medido en su lugar. Importante: cuando esto está activado es lo único que acredita el balance hídrico, así que elimina cualquier llamada a reset_bucket de tu automatización de riego para evitar el doble conteo.",
     "enabled_label": "Activar riego observado",
     "direct_control_label": "Permitir que Smart Irrigation controle la válvula",
     "direct_control_description": "Cuando está activado, Smart Irrigation abre la válvula vinculada de cada zona, espera la duración calculada y luego la cierra, sin necesidad de automatización. Un riego en curso se reanuda tras un reinicio. Seguridad: una válvula capaz de cerrarse sola recibe la duración del riego al abrirse (una Sonoff SWV en ZHA, o una válvula cuya zona tiene un tema MQTT de seguridad), así que se cierra aunque Home Assistant se caiga. Cualquier otra válvula sigue regando hasta que Home Assistant vuelva: dale un mecanismo de seguridad por hardware (un tiempo máximo de funcionamiento).",
@@ -1388,7 +1400,7 @@
   },
   "calculation_log": {
     "title": "Registro de cálculo",
-    "description": "Escribe en un archivo todas las entradas de cada cálculo, para poder comparar después dos días que se parecen pero riegan de forma muy distinta. Cada cálculo añade una línea: los registros del grupo de sensores y cómo se agregaron, los valores intermedios del módulo (radiación solar, radiación neta, ET0) y el depósito, la duración y el volumen resultantes. Desactivado por defecto; el archivo tiene un tamaño limitado y se rota, así que puede quedarse activado toda una temporada.",
+    "description": "Escribe en un archivo todas las entradas de cada cálculo, para poder comparar después dos días que se parecen pero riegan de forma muy distinta. Cada cálculo añade una línea: los registros del grupo de sensores y cómo se agregaron, los valores intermedios del módulo (radiación solar, radiación neta, ET0) y el balance hídrico, la duración y el volumen resultantes. Desactivado por defecto; el archivo tiene un tamaño limitado y se rota, así que puede quedarse activado toda una temporada.",
     "enabled_label": "Registrar en un archivo las entradas del cálculo",
     "file_hint": "Se escribe en config/smart_irrigation/calc_log.jsonl, un registro JSON por línea. Los registros más recientes también se incluyen en la descarga de diagnóstico (coordenadas redondeadas, identificadores de entidad eliminados), así que se pueden adjuntar a una incidencia en un solo paso."
   },

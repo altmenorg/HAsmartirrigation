@@ -47,7 +47,7 @@ Automatically adjust irrigation parameters based on the season or time of year.
 #### Adjustment Types
 
 1. **Multiplier Adjustments**: Scale the crop factor of the zones, which scales the evapotranspiration (1 changes nothing)
-2. **Threshold Adjustments**: Adjust the irrigation threshold (bucket level)
+2. **Threshold Adjustments**: Adjust the irrigation threshold (water balance)
 
 #### Example Configuration
 
@@ -113,7 +113,7 @@ automation:
           actual: "{{ timedelta(seconds=states('sensor.smart_irrigation_zone_1') | int(0)) }}"
 ```
 
-The bucket reset can be handled by a separate automation that triggers when the IU zone turns off (see the [Irrigation Unlimited reset bucket blueprint](usage-automations.md), which you can import in one click from the blueprints table).
+The water balance reset can be handled by a separate automation that triggers when the IU zone turns off (see the [Irrigation Unlimited reset water balance blueprint](usage-automations.md), which you can import in one click from the blueprints table).
 
 ## Irrigation-V5
 
@@ -129,11 +129,11 @@ V5 then runs for `1 x the value of our sensor` seconds, which is the calculated 
 
 > Keep the unit of our duration sensor as seconds. It has a `duration` device class, so Home Assistant lets you change the displayed unit per entity; switching it to minutes would make V5 read minutes as if they were seconds and water for a sixtieth of the time.
 
-### Crediting the bucket with Irrigation-V5
+### Crediting the water balance with Irrigation-V5
 
-V5 drives your own valve or solenoid entity, which means Smart Irrigation can simply watch that same entity: enable **observed watering** and set the zone's linked entity to the valve V5 operates (see [closed loop](configuration-closed-loop.md)). The bucket is then credited from the run that actually happened, and no reset automation is needed.
+V5 drives your own valve or solenoid entity, which means Smart Irrigation can simply watch that same entity: enable **observed watering** and set the zone's linked entity to the valve V5 operates (see [closed loop](configuration-closed-loop.md)). The water balance is then credited from the run that actually happened, and no reset automation is needed.
 
-If you prefer to stay open loop, call `smart_irrigation.reset_bucket` from your own automation when the valve turns off, and do **not** enable observed watering as well, or the bucket is credited twice.
+If you prefer to stay open loop, call `smart_irrigation.reset_bucket` from your own automation when the valve turns off, and do **not** enable observed watering as well, or the water balance is credited twice.
 
 ## Automation Blueprints
 

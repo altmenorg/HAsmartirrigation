@@ -42,7 +42,7 @@ The estimate is computed on the server for every zone, so the card asks for it e
 
 | Button | What it does |
 | --- | --- |
-| Water now (drop) | Runs that zone's valve for the calculated duration, and credits the bucket when it finishes. It takes **two taps**: the first arms it, the second runs it, and it disarms itself after five seconds. It only appears for a zone that has a [linked valve](configuration-zones.md), and only with [direct valve control](configuration-closed-loop.md) on. |
+| Water now (drop) | Runs that zone's valve for the calculated duration, and credits the water balance when it finishes. It takes **two taps**: the first arms it, the second runs it, and it disarms itself after five seconds. It only appears for a zone that has a [linked valve](configuration-zones.md), and only with [direct valve control](configuration-closed-loop.md) on. |
 | Calculate (calculator) | Runs the calculation for that zone now and commits it, as the panel's own button does. |
 | Start (play) | On a program row: runs the program now, or as soon as it is its turn. Only on an idle program. |
 | Pause / Resume | On a running or paused program: holds the watering and goes on from where it stopped. Pause calls the global `pause_watering` service, so it holds all the watering, not one program, and ends by itself after the service's default of 60 minutes if nobody resumes. |

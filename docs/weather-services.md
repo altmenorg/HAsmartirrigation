@@ -62,7 +62,7 @@ If you already have your national weather service in Home Assistant (DWD, Met.no
 Open-Meteo is the default service and also the one Smart Irrigation turns to for the data the others do not publish. With OpenWeatherMap, Pirate Weather or a weather entity, these still come from Open-Meteo, keyless and free:
 
 - **the sun**, hour by hour, for the hourly calculation when no radiation sensor is mapped, and the daily radiation and reference ET0;
-- **the hours of the days ahead**, for a zone whose engine looks ahead.
+- **the hours of the days ahead**, for a zone whose module looks ahead.
 
 Your own service's rain is never replaced by Open-Meteo's. With Open-Meteo itself, one more use:
 

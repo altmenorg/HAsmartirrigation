@@ -5,7 +5,7 @@
         "name": "Doba"
       },
       "bucket": {
-        "name": "Zásobník"
+        "name": "Vodní bilance"
       },
       "et_value": {
         "name": "Použitá ET"
@@ -23,7 +23,7 @@
         "name": "Spotřeba vody"
       },
       "live_bucket": {
-        "name": "Zásobník právě teď"
+        "name": "Vodní bilance právě teď"
       },
       "last_run_volume": {
         "name": "Objem posledního běhu"
@@ -45,7 +45,7 @@
         "name": "Spočítat"
       },
       "reset_bucket": {
-        "name": "Vynulovat zásobník"
+        "name": "Vynulovat vodní bilanci"
       },
       "reset_usage": {
         "name": "Vynulovat spotřebu vody"
@@ -151,7 +151,7 @@
         },
         "dry_run": {
           "name": "Nasucho",
-          "description": "Oznámit, co by výpočet udělal, bez změny zásobníku, zóny nebo posbíraných meteorologických dat"
+          "description": "Oznámit, co by výpočet udělal, bez změny vodní bilance, zóny nebo posbíraných meteorologických dat"
         }
       }
     },
@@ -169,7 +169,7 @@
         },
         "dry_run": {
           "name": "Nasucho",
-          "description": "Oznámit, co by výpočet udělal, bez změny zásobníku, zóny nebo posbíraných meteorologických dat"
+          "description": "Oznámit, co by výpočet udělal, bez změny vodní bilance, zóny nebo posbíraných meteorologických dat"
         }
       }
     },
@@ -188,42 +188,42 @@
       }
     },
     "set_bucket": {
-      "name": "Nastavit bucket",
-      "description": "Nastavit bucket zóny na konkrétní hodnotu",
+      "name": "Nastavit vodní bilanci",
+      "description": "Nastavit vodní bilanci zóny na konkrétní hodnotu",
       "fields": {
         "entity": {
           "name": "Entita",
-          "description": "Zóna, pro kterou se nastaví bucket"
+          "description": "Zóna, pro kterou se nastaví vodní bilance"
         },
         "new_bucket_value": {
-          "name": "Nová hodnota bucket",
-          "description": "nová hodnota bucket"
+          "name": "Nová vodní bilance",
+          "description": "Nová hodnota vodní bilance"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Nastavit všechny buckety",
-      "description": "Nastavit buckety všech zón na konkrétní hodnotu",
+      "name": "Nastavit všechny vodní bilance",
+      "description": "Nastavit vodní bilance všech zón na konkrétní hodnotu",
       "fields": {
         "new_bucket_value": {
-          "name": "Nová hodnota bucket",
-          "description": "nová hodnota bucket"
+          "name": "Nová vodní bilance",
+          "description": "Nová hodnota vodní bilance"
         }
       }
     },
     "reset_bucket": {
-      "name": "Resetovat bucket",
-      "description": "Resetovat bucket zóny na 0",
+      "name": "Resetovat vodní bilanci",
+      "description": "Resetovat vodní bilanci zóny na 0",
       "fields": {
         "entity": {
           "name": "Entita",
-          "description": "Zóna, pro kterou se resetuje bucket"
+          "description": "Zóna, pro kterou se resetuje vodní bilance"
         }
       }
     },
     "reset_all_buckets": {
-      "name": "Resetovat všechny buckety",
-      "description": "Resetovat bucket všech zón na 0"
+      "name": "Resetovat všechny vodní bilance",
+      "description": "Resetovat vodní bilance všech zón na 0"
     },
     "clear_all_weather_data": {
       "name": "Vymazat všechna meteorologická data",
@@ -262,8 +262,8 @@
           "description": "Zóna, pro kterou se nastaví konfigurační hodnoty"
         },
         "new_bucket_value": {
-          "name": "Nová hodnota bucket",
-          "description": "Nová hodnota pro bucket"
+          "name": "Nová vodní bilance",
+          "description": "Nová hodnota vodní bilance"
         },
         "new_multiplier_value": {
           "name": "Nová hodnota násobitele",
@@ -295,7 +295,7 @@
     },
     "credit_watering": {
       "name": "Připsat zavlažení",
-      "description": "Připíše do vědra zóny vodu, kterou zavlažení skutečně dodalo, místo jeho vynulování.",
+      "description": "Připíše vodní bilanci zóny vodu, kterou zavlažení skutečně dodalo, místo jejího vynulování.",
       "fields": {
         "seconds": {
           "name": "Sekundy",
@@ -307,7 +307,7 @@
   "issues": {
     "dry_zone_not_watered": {
       "title": "Zóna {zone} je suchá a nic ji nezavlaží",
-      "description": "Bucket zóny **{zone}** je suchý už {days} dní a každý program, který ji obsahuje, je vypnutý, pozastavený nebo nemá žádný zapnutý plán.\n\nZnovu zapněte program, který tuto zónu zavlažuje, zapněte některý z jeho plánů nebo zrušte jeho pozastavení. Oznámení zmizí samo, jakmile se zóna zavlaží nebo ji znovu pokryje nějaký program."
+      "description": "Vodní bilance zóny **{zone}** je záporná už {days} dní a každý program, který ji obsahuje, je vypnutý, pozastavený nebo nemá žádný zapnutý plán.\n\nZnovu zapněte program, který tuto zónu zavlažuje, zapněte některý z jeho plánů nebo zrušte jeho pozastavení. Oznámení zmizí samo, jakmile se zóna zavlaží nebo ji znovu pokryje nějaký program."
     },
     "weather_silent": {
       "title": "Skupina senzorů {mapping}: meteorologický senzor přestal hlásit",
@@ -330,8 +330,8 @@
       "description": "Zóna **{zone}** nebyla vypočítána: její skupina senzorů nemá žádná měření, ze kterých by šlo počítat. Dokud je mít nebude, deficit zóny se nehýbe a nezavlažuje se.\n\nZkontrolujte, že skupina senzorů má zdroje a že hlásí, aktualizujte data o počasí a pak zónu vypočítejte. Upozornění zmizí samo při příštím úspěšném výpočtu."
     },
     "zone_not_calculated_no_engine": {
-      "title": "Zónu {zone} nelze vypočítat: žádné výpočetní jádro",
-      "description": "Zóna **{zone}** nemá výpočetní jádro, takže se nepočítá a nezavlažuje.\n\nZvolte způsob výpočtu na její kartě na kartě Zóny. Upozornění zmizí samo při příštím úspěšném výpočtu."
+      "title": "Zónu {zone} nelze vypočítat: žádný modul",
+      "description": "Zóna **{zone}** nemá modul, takže se nepočítá a nezavlažuje.\n\nZvolte způsob výpočtu na její kartě na kartě Zóny. Upozornění zmizí samo při příštím úspěšném výpočtu."
     },
     "zone_not_calculated_nothing_from_engine": {
       "title": "Zónu {zone} nelze vypočítat: žádná evapotranspirace",
@@ -339,7 +339,7 @@
     },
     "zone_not_calculated_forecast_without_service": {
       "title": "Zónu {zone} nelze vypočítat: předpověď bez meteoslužby",
-      "description": "Výpočetní jádro zóny **{zone}** hledí dny dopředu, což vyžaduje meteoslužbu, a žádná není nastavena. Zóna se nezavlažuje, dokud ji nepůjde vypočítat.\n\nNastavte meteoslužbu, nebo nastavte dny předpovědi jádra na 0. Upozornění zmizí samo při příštím úspěšném výpočtu."
+      "description": "Modul zóny **{zone}** hledí dny dopředu, což vyžaduje meteoslužbu, a žádná není nastavena. Zóna se nezavlažuje, dokud ji nepůjde vypočítat.\n\nNastavte meteoslužbu, nebo nastavte dny předpovědi modulu na 0. Upozornění zmizí samo při příštím úspěšném výpočtu."
     },
     "zone_not_calculated_error": {
       "title": "Zónu {zone} nelze vypočítat: chyba",

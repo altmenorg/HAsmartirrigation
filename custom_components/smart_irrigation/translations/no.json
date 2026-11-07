@@ -5,7 +5,7 @@
         "name": "Varighet"
       },
       "bucket": {
-        "name": "Beholdning"
+        "name": "Vannbalanse"
       },
       "et_value": {
         "name": "Anvendt ET"
@@ -23,7 +23,7 @@
         "name": "Vannforbruk"
       },
       "live_bucket": {
-        "name": "Beholdning nå"
+        "name": "Vannbalanse nå"
       },
       "last_run_volume": {
         "name": "Mengde ved siste kjøring"
@@ -45,7 +45,7 @@
         "name": "Beregn"
       },
       "reset_bucket": {
-        "name": "Nullstill beholdningen"
+        "name": "Nullstill vannbalansen"
       },
       "reset_usage": {
         "name": "Nullstill vannforbruket"
@@ -151,7 +151,7 @@
         },
         "dry_run": {
           "name": "Prøvekjøring",
-          "description": "Fortell hva beregningen ville gjort uten å endre beholdningen, sonen eller de innsamlede værdataene"
+          "description": "Fortell hva beregningen ville gjort uten å endre vannbalansen, sonen eller de innsamlede værdataene"
         }
       }
     },
@@ -169,7 +169,7 @@
         },
         "dry_run": {
           "name": "Prøvekjøring",
-          "description": "Fortell hva beregningen ville gjort uten å endre beholdningen, sonen eller de innsamlede værdataene"
+          "description": "Fortell hva beregningen ville gjort uten å endre vannbalansen, sonen eller de innsamlede værdataene"
         }
       }
     },
@@ -188,42 +188,42 @@
       }
     },
     "set_bucket": {
-      "name": "Set bucket",
-      "description": "Set bucket for a zone to a specific value",
+      "name": "Sett vannbalanse",
+      "description": "Sett vannbalansen til en sone til en verdi",
       "fields": {
         "entity": {
           "name": "Entity",
-          "description": "Zone to set bucket for"
+          "description": "Sone som vannbalansen skal settes for"
         },
         "new_bucket_value": {
-          "name": "New bucket value",
-          "description": "new value of the bucket"
+          "name": "Ny vannbalanse",
+          "description": "Ny verdi for vannbalansen"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Set all buckets",
-      "description": "Set buckets for all zones to a specific value",
+      "name": "Sett alle vannbalanser",
+      "description": "Sett vannbalansen til alle soner til en verdi",
       "fields": {
         "new_bucket_value": {
-          "name": "New bucket value",
-          "description": "new value of the bucket"
+          "name": "Ny vannbalanse",
+          "description": "Ny verdi for vannbalansen"
         }
       }
     },
     "reset_bucket": {
-      "name": "Reset bucket",
-      "description": "Reset bucket for a zone to 0",
+      "name": "Nullstill vannbalanse",
+      "description": "Nullstill vannbalansen til en sone til 0",
       "fields": {
         "entity": {
           "name": "Entity",
-          "description": "Zone to reset bucket for"
+          "description": "Sone som vannbalansen skal nullstilles for"
         }
       }
     },
     "reset_all_buckets": {
-      "name": "Reset all buckets",
-      "description": "Reset bucket for all zones to 0"
+      "name": "Nullstill alle vannbalanser",
+      "description": "Nullstill vannbalansen til alle soner til 0"
     },
     "clear_all_weather_data": {
       "name": "Clear all weather data",
@@ -262,8 +262,8 @@
           "description": "Zone to set configuration values"
         },
         "new_bucket_value": {
-          "name": "New bucket value",
-          "description": "New value for the bucket"
+          "name": "Ny vannbalanse",
+          "description": "Ny verdi for vannbalansen"
         },
         "new_multiplier_value": {
           "name": "New multiplier value",
@@ -295,7 +295,7 @@
     },
     "credit_watering": {
       "name": "Godskriv vanning",
-      "description": "Godskriver en sones bøtte vannet en vanning faktisk ga, i stedet for å sette den til 0.",
+      "description": "Godskriver vannbalansen til en sone vannet en vanning faktisk ga, i stedet for å sette den til 0.",
       "fields": {
         "seconds": {
           "name": "Sekunder",
@@ -307,7 +307,7 @@
   "issues": {
     "dry_zone_not_watered": {
       "title": "Sone {zone} er tørr og ingenting kommer til å vanne den",
-      "description": "Bøtten til sone **{zone}** har vært tørr i {days} dager, og alle programmer som inkluderer den er deaktivert, suspendert eller har ingen aktivert tidsplan.\n\nSlå på et program som vanner denne sonen igjen, aktiver en av tidsplanene eller opphev suspensjonen. Varselet forsvinner av seg selv så snart sonen er vannet eller et program dekker den igjen."
+      "description": "Vannbalansen til sone **{zone}** har vært tørr i {days} dager, og alle programmer som inkluderer den er deaktivert, suspendert eller har ingen aktivert tidsplan.\n\nSlå på et program som vanner denne sonen igjen, aktiver en av tidsplanene eller opphev suspensjonen. Varselet forsvinner av seg selv så snart sonen er vannet eller et program dekker den igjen."
     },
     "weather_silent": {
       "title": "Sensorgruppe {mapping}: en værsensor har sluttet å rapportere",
@@ -330,8 +330,8 @@
       "description": "Sone **{zone}** ble ikke beregnet: sensorgruppen har ingen målinger å beregne ut fra. Inntil den har det, flytter sonens underskudd seg ikke, og den vannes ikke.\n\nSjekk at sensorgruppen har kilder og at de rapporterer, oppdater værdataene, og beregn deretter sonen. Varselet forsvinner av seg selv ved neste vellykkede beregning."
     },
     "zone_not_calculated_no_engine": {
-      "title": "Sone {zone} kan ikke beregnes: ingen beregningsmotor",
-      "description": "Sone **{zone}** har ingen beregningsmotor, så den beregnes ikke og vannes ikke.\n\nVelg hvordan den skal beregnes på kortet i fanen Soner. Varselet forsvinner av seg selv ved neste vellykkede beregning."
+      "title": "Sone {zone} kan ikke beregnes: ingen modul",
+      "description": "Sone **{zone}** har ingen modul, så den beregnes ikke og vannes ikke.\n\nVelg hvordan den skal beregnes på kortet i fanen Soner. Varselet forsvinner av seg selv ved neste vellykkede beregning."
     },
     "zone_not_calculated_nothing_from_engine": {
       "title": "Sone {zone} kan ikke beregnes: ingen fordampning",
@@ -339,7 +339,7 @@
     },
     "zone_not_calculated_forecast_without_service": {
       "title": "Sone {zone} kan ikke beregnes: et varsel uten værtjeneste",
-      "description": "Beregningsmotoren til sone **{zone}** ser dager fremover, noe som krever en værtjeneste, og ingen er satt opp. Sonen vannes ikke før den kan beregnes.\n\nSett opp en værtjeneste, eller sett motorens varseldager til 0. Varselet forsvinner av seg selv ved neste vellykkede beregning."
+      "description": "Modulen til sone **{zone}** ser dager fremover, noe som krever en værtjeneste, og ingen er satt opp. Sonen vannes ikke før den kan beregnes.\n\nSett opp en værtjeneste, eller sett modulens varseldager til 0. Varselet forsvinner av seg selv ved neste vellykkede beregning."
     },
     "zone_not_calculated_error": {
       "title": "Sone {zone} kan ikke beregnes: en feil",

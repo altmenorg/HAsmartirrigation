@@ -9,11 +9,11 @@ The words for each part, as the panel uses them, are in the [glossary](glossary.
 1. Snow and rain fall on the ground add moisture. Together, this makes up the `precipitation`.
 2. Sunshine, temperature, wind speed, place on earth and other factors influence the amount of moisture lost from the ground(`evapotranspiration`).
 3. The difference between `precipitation` and `evapotranspiration` is the `delta` or `nett precipitation`: negative values mean more moisture is lost than gets added by rain/snow, while positive values mean more moisture is added by rain/snow than what evaporates.
-4. At some point in the day (configurable) the `nett precipitation` is added/substracted from the `bucket,` which starts as empty. The bucket is calculated using this formula: `old_bucket + nett precipitation.
-5. If the bucket > 0, the `drainage rate` is taken into the account (if set) and subtracted from the bucket value. The actual drainage rate is determined dynamically by the fraction the bucket is of the maximum bucket value, following hydraulic conductivity method of [Brooks and Corey, Eq. 4-6](https://open.library.okstate.edu/rainorshine/chapter/1-8-models-for-soil-hydraulic-conductivity/). When it rained during the window, the window is replayed **hour by hour**: each hour gets its evapotranspiration, the rain that fell in it, then that hour's drainage. The evapotranspiration of each hour is the hourly equation's own figure when the hourly calculation is on, and otherwise follows the sun (in proportion to how high it stands, nothing at night). A rain that just fell is only drained from the hour it fell, not as if it had been in the soil since the previous calculation. When the rain is seen is taken from the readings of the rain sensor (a rain gauge's total, or a rain rate); when nothing says it, the rain is spread evenly over the window.
-6. If the `bucket` is below zero, irrigation is required.
+4. At some point in the day (configurable) the `nett precipitation` is added/substracted from the water balance (the `bucket` attribute), which starts at zero. The water balance is calculated using this formula: `old_bucket + nett precipitation.
+5. If the water balance > 0, the `drainage rate` is taken into the account (if set) and subtracted from the water balance value. The actual drainage rate is determined dynamically by the fraction the water balance is of the maximum water balance value, following hydraulic conductivity method of [Brooks and Corey, Eq. 4-6](https://open.library.okstate.edu/rainorshine/chapter/1-8-models-for-soil-hydraulic-conductivity/). When it rained during the window, the window is replayed **hour by hour**: each hour gets its evapotranspiration, the rain that fell in it, then that hour's drainage. The evapotranspiration of each hour is the hourly equation's own figure when the hourly calculation is on, and otherwise follows the sun (in proportion to how high it stands, nothing at night). A rain that just fell is only drained from the hour it fell, not as if it had been in the soil since the previous calculation. When the rain is seen is taken from the readings of the rain sensor (a rain gauge's total, or a rain rate); when nothing says it, the rain is spread evenly over the window.
+6. If the water balance is below zero, irrigation is required.
 7. Irrigation should run for `sensor.smart_irrigation_[zone_name]` seconds, which is 0 when `bucket >= 0` or when the deficit is below the zone's **irrigation threshold** — deep and infrequent beats a daily trickle.
-8. Afterwards the bucket has to be credited with the water that went in. Three ways, and you pick one: let Smart Irrigation [open the valve itself](configuration-closed-loop.md), which credits the run it performed; let it [watch the valve](configuration-closed-loop.md) and credit any run of it; or call [`credit_watering`](usage-services.md) from your own automation with how long the zone ran. Never two of them, or the water is counted twice. A [blueprint](usage-automations.md) does the third for you, per brand of controller.
+8. Afterwards the water balance has to be credited with the water that went in. Three ways, and you pick one: let Smart Irrigation [open the valve itself](configuration-closed-loop.md), which credits the run it performed; let it [watch the valve](configuration-closed-loop.md) and credit any run of it; or call [`credit_watering`](usage-services.md) from your own automation with how long the zone ran. Never two of them, or the water is counted twice. A [blueprint](usage-automations.md) does the third for you, per brand of controller.
 
 The whole of what is published and when it changes is on one page: [the output contract](usage-output-contract.md).
 
@@ -22,7 +22,7 @@ The whole of what is published and when it changes is on one page: [the output c
 The evapotranspiration the equation computes is a **reference**: what a short,
 well-watered grass surface would lose. A hedge, a vegetable bed and a lawn do
 not lose the same, and the difference is the **crop factor** `Kc`, which is the
-zone's multiplier:
+zone's crop factor setting:
 
     ETc = ET0 x Kc
 
@@ -30,7 +30,7 @@ It is applied to the evapotranspiration, before the water balance. That order
 matters, and it is worth saying why, because it used to be the other way round:
 the factor was applied at the very end, to the duration. That scaled the whole
 balance rather than the crop's water use, so a factor below 1 credited only that
-fraction of the rain that fell, and the bucket kept draining at the full
+fraction of the rain that fell, and the water balance kept draining at the full
 reference rate — reaching any threshold about `1/Kc` times too fast. No factor
 applied at the end can undo a decision about *when* to water.
 
@@ -60,30 +60,30 @@ day's temperature range is the last resort — the estimate FAO-56 gives for
 exactly that case.
 
 ## Weekly behavior example
-To understand how `precipitation`, `nett precipitation`, the `bucket` and irrigation interact, see let's look at an example behavior in a week.
+To understand how `precipitation`, `nett precipitation`, the water balance and irrigation interact, see let's look at an example behavior in a week.
 With this you should be able to do a sanity check against your confiruation and make sure everything is working together.
-The scenario is as follows: we will look at several days, including the precipitation and evapotranspiration for those days and the effects on the bucket and whether ot not irrigation should be triggered. Note that the values here are not representative of any real-life situation and the example below only uses one zone to keep things simple.
+The scenario is as follows: we will look at several days, including the precipitation and evapotranspiration for those days and the effects on the water balance and whether ot not irrigation should be triggered. Note that the values here are not representative of any real-life situation and the example below only uses one zone to keep things simple.
 
 ### Initialization
-Initially, the bucket is `0`, so the duration for irrigation is set to `0s`. 
+Initially, the water balance is `0`, so the duration for irrigation is set to `0s`. 
 
 ### Variables used
 * `P`: Precipitation
 * `Et`: Evapotranspiation
 * `D`: nett Precipitation or Delta (`=P-Et`)
-* `B`: Bucket
-* `Bu`: Bucket after calculation has happened (=`B+D`)
+* `B`: Water balance
+* `Bu`: Water balance after calculation has happened (=`B+D`)
 * `Du`: Duration for irrigation in seconds
 
 ### Scenario
 | Day | `P` | `Et` | `D` | `B` | `Bu` | `Du` | Notes |
 |---|---|---|---|---|---|---|---|
-|1|`0.5`|`0.1`|`0.4`|`0`|`0.4`|`0`|`P > Et` so bucket increased from `0` to `0.4`. Since `Bu > 0` no irrigation is required|
-|2|`0`|`0.6`|`-0.6`|`0.40`|`-0.2`|`180`|`P < Et`, so bucket decreased from `0.4` to `-0.2`. Since Bu < 0` irrigation is required and bucket is reset afterwards|
+|1|`0.5`|`0.1`|`0.4`|`0`|`0.4`|`0`|`P > Et` so water balance increased from `0` to `0.4`. Since `Bu > 0` no irrigation is required|
+|2|`0`|`0.6`|`-0.6`|`0.40`|`-0.2`|`180`|`P < Et`, so water balance decreased from `0.4` to `-0.2`. Since Bu < 0` irrigation is required and water balance is reset afterwards|
 |3|`1`|`0.2`|`0.8`|`0` (reset)|`0.8`|`0`|No irrigation required|
-|4|`0.2`|`0.4`|`-0.2`|`0.8`|`0.6`|`0`|No irrigation required even though `P < Et` and bucket was decreased from `0.8` to `0.6`|
-|5|`0`|`1.5`|`-1.5`|`0.6`|`-0.9`|`600`| Since `Bu < 0` irrigation is required and bucket is reset afterwards|
-|6|`0`|`0.4`|`-0.4`|`0` (reset)|`-0.4`|`300`|Since `Bu < 0` irrigation is required and bucket is reset afterwards|
+|4|`0.2`|`0.4`|`-0.2`|`0.8`|`0.6`|`0`|No irrigation required even though `P < Et` and water balance was decreased from `0.8` to `0.6`|
+|5|`0`|`1.5`|`-1.5`|`0.6`|`-0.9`|`600`| Since `Bu < 0` irrigation is required and water balance is reset afterwards|
+|6|`0`|`0.4`|`-0.4`|`0` (reset)|`-0.4`|`300`|Since `Bu < 0` irrigation is required and water balance is reset afterwards|
 |7|`0.5`|`0.2`|`0.3`|`0` (reset)|`0.3`|`0`|No irrigation required|
 
 ## When to irrigate

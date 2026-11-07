@@ -37,7 +37,7 @@ A repair issue also appears when one run of a zone cannot water what the zone lo
 two waterings (see *Maximum duration* in the [zone settings](configuration-zones.md)).
 
 ## A zone says it cannot be calculated
-When the calculation of an automatic zone fails, the zone keeps its last bucket and is not
+When the calculation of an automatic zone fails, the zone keeps its last water balance and is not
 watered. Smart Irrigation says so in three places until a calculation succeeds: the zone's
 line in the Zones tab (red, with the reason, instead of "nothing to water"), the zone's
 problem sensor (`binary_sensor.smart_irrigation_<zone>_problem`, on, with the reason in its
@@ -47,11 +47,11 @@ problem sensor (`binary_sensor.smart_irrigation_<zone>_problem`, on, with the re
   it on the zone's card.
 - **No weather readings**: the zone's sensor group has no readings. Check that it has
   sources and that they report, update the weather data, then calculate the zone.
-- **No calculation engine**: choose how the zone is calculated on its card.
+- **No module**: choose how the zone is calculated on its card.
 - **No evapotranspiration**: the zone takes its evapotranspiration from a sensor or a
   weather service, and the sensor group had none. Check that sensor or the service.
-- **A forecast without a weather service**: the engine looks days ahead, which needs a
-  weather service. Set one up, or set the engine's forecast days to 0.
+- **A forecast without a weather service**: the module looks days ahead, which needs a
+  weather service. Set one up, or set the module's forecast days to 0.
 - **An error**: the message is shown. If it keeps happening, please open an issue with it
   and the diagnostics file.
 
@@ -65,7 +65,7 @@ particular day watered the way it did, switch on the
 [calculation log](configuration-general.md) in the general settings. From then on every
 calculation appends one line to `config/smart_irrigation/calc_log.jsonl` with the sensor
 records and their aggregation, the module intermediates (solar radiation and whether it was
-measured or estimated, net radiation, ET0) and the resulting bucket, duration and volume - so
+measured or estimated, net radiation, ET0) and the resulting water balance, duration and volume - so
 two days can simply be diffed against each other. The most recent records are also included in
 the diagnostics download (coordinates rounded, entity ids removed), which makes them easy to
 attach to an issue.

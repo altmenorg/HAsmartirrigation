@@ -22,20 +22,20 @@ sensor.smart_irrigation_<zone name>
 - **The state is a number of whole seconds.** It is the time that zone needs the water on for.
 - **`0` means do nothing.** Not "run briefly": there is nothing owed, or what is owed is below the zone's threshold, so a run would be a trickle. Treat `0` as a skip.
 - It is never negative.
-- Its attributes carry the rest (the bucket, the water need, the units in use, the last calculation): see [entities](usage-entities.md).
+- Its attributes carry the rest (the water balance, the water need, the units in use, the last calculation): see [entities](usage-entities.md).
 
 How that number is produced, in order: the soil water deficit in millimetres, divided by the zone's precipitation rate, gives an hour fraction; that becomes seconds. Below the zone's **irrigation threshold** the result is `0`. Above the zone's **maximum duration** the result is that maximum. The zone's **lead time** is then added, and the whole is rounded to the second, so a zone with a lead time can publish slightly more than its maximum duration: the maximum bounds the watering, the lead time is the delay before water actually arrives.
 
-The crop factor is not applied here. It scales the evapotranspiration that fills the bucket, so the deficit already carries it.
+The crop factor is not applied here. It scales the evapotranspiration that lowers the water balance, so the deficit already carries it.
 
 ## When it changes
 
 1. **At the calculation time** (23:00 by default, or a schedule of your own, or the `calculate_all_zones` action). Every automatic zone gets a new duration.
 2. **At the start trigger**, just before the start event fires: rain that fell between the calculation and now shortens the run, zones sheltered from forecast rain are separated from exposed ones, and a zone whose own soil moisture sensor says it is wet is held back. So the duration you read when the event arrives is the one to use, not the one from the night.
-3. **After a run is credited**, if you use observed watering or direct valve control: crediting the bucket recomputes the duration from it, which normally lands on `0`.
+3. **After a run is credited**, if you use observed watering or direct valve control: crediting the water balance recomputes the duration from it, which normally lands on `0`.
 4. **Never on its own between those.** The number stands until one of the above.
 
-If you want a value that moves with the weather through the day, that is the **Live bucket** sensor, which is an estimate and is documented as one.
+If you want a value that moves with the weather through the day, that is the **Live water balance** sensor, which is an estimate and is documented as one.
 
 ## The events
 
@@ -81,11 +81,11 @@ data:
   seconds: 900
 ```
 
-Leave `seconds` out and the zone's own duration is credited. This credits the water the run put down, where `reset_bucket` sets the bucket to 0 whatever it did: a run cut short by the zone's maximum duration then lost the deficit it had not watered. `reset_bucket` still works, and is right when you want to say the soil is at field capacity.
+Leave `seconds` out and the zone's own duration is credited. This credits the water the run put down, where `reset_bucket` sets the water balance to 0 whatever it did: a run cut short by the zone's maximum duration then lost the deficit it had not watered. `reset_bucket` still works, and is right when you want to say the soil is at field capacity.
 
-**In closed loop** (observed watering or direct valve control), send nothing: the integration credits the bucket from the run itself. Calling `credit_watering` or `reset_bucket` as well counts the water twice, which empties the bucket and makes the next calculation ask for more than it should.
+**In closed loop** (observed watering or direct valve control), send nothing: the integration credits the water balance from the run itself. Calling `credit_watering` or `reset_bucket` as well counts the water twice, which pushes the water balance too high and makes the next calculation ask for less than it should.
 
-Never both, and never a blueprint that resets the bucket on top of a closed-loop setup. The [closed loop page](configuration-closed-loop.md) says which is which.
+Never both, and never a blueprint that resets the water balance on top of a closed-loop setup. The [closed loop page](configuration-closed-loop.md) says which is which.
 
 ## Promised, and not promised
 

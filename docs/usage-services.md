@@ -8,21 +8,22 @@ title: "Usage: Services"
 > Previous: [Entities](usage-entities.md)<br/>
 > Next: [Events](usage-events.md)
 
-After installation, the following services are available:
+After installation, the following services are available. The services that deal with the water balance (for instance "Reset water balance" in Home Assistant) keep ids with `bucket` in them, such as `smart_irrigation.reset_bucket`, so existing automations keep working.
+
 | Service | Description|
 | --- | --- |
 |`Smart Irrigation: calculate_zone`|Triggers the calculation of one specific zone. Note that used weather data is deleted afterwards by default unless you specify `delete_weather_data: false`. Specify `dry_run: true` to see what the calculation would do without changing anything -- see [Dry run](#dry-run) below.|
 |`Smart Irrigation: calculate_all_zones`|Triggers the calculation of all automatic zones. Use only if you disabled automatic refresh in the options. Note that after calculation weather data is deleted by default unless you specify `delete_weather_data: false`. Specify `dry_run: true` to see what the calculation would do without changing anything -- see [Dry run](#dry-run) below.|
 |`Smart Irrigation: clear_all_weather_data`|Deletes all weather data. Pick zones and only the weather data of their sensor groups is deleted (the other zones of those groups lose it too, since a group's data is shared).|
 |`Smart Irrigation: generate_watering_calendar`|Generate a 12-month watering calendar for a zone based on representative climate data.|
-|`Smart Irrigation: reset_all_buckets`|Resets all buckets to 0.|
+|`Smart Irrigation: reset_all_buckets`|Resets the water balance of every zone to 0.|
 |`Smart Irrigation: credit_watering`|Credits a zone with the water a run of your own delivered: its precipitation rate times `seconds` (the zone's duration when left out), less its lead time. Use it at the end of an irrigation automation rather than `reset_bucket`: a run cut short by the zone's maximum duration keeps the deficit it did not water.|
-|`Smart Irrigation: reset_bucket`|Resets one specific bucket to 0. It says the soil is back at field capacity, whatever the run delivered: `credit_watering` is the better end to an irrigation automation.|
-|`Smart Irrigation: set_all_buckets`|Sets all buckets to a specific `new_bucket_value` (required; the form suggests 0).|
+|`Smart Irrigation: reset_bucket`|Resets the water balance of one zone to 0. It says the soil is back at field capacity, whatever the run delivered: `credit_watering` is the better end to an irrigation automation.|
+|`Smart Irrigation: set_all_buckets`|Sets the water balance of every zone to `new_bucket_value` (required; the form suggests 0).|
 |`Smart Irrigation: set_all_multipliers`|Sets all multipliers to a specific `new_multiplier_value` (required; the form suggests 1.0).|
-|`Smart Irrigation: set_bucket`|Sets a specific bucket to to a specific `new_bucket_value` (required; the form suggests 0).|
+|`Smart Irrigation: set_bucket`|Sets the water balance of one zone to `new_bucket_value` (required; the form suggests 0).|
 |`Smart Irrigation: set_multiplier`|Sets a specific multiplier to a specific `new_multiplier_value` (required; the form suggests 1.0).|
-|`Smart Irrigation: set_zone`| Allows configuration for bucket (with `new_bucket_value` (default 0)), multiplier (with `new_multiplier_value` (default 1.0)), duration (with `new_duration_value` (default 0)), state (with `new_state_value` (default 'automatic')) and throughput (with `new_throughput_value` (default 50)) settings for a zone.|
+|`Smart Irrigation: set_zone`| Allows configuration for water balance (with `new_bucket_value` (default 0)), multiplier (with `new_multiplier_value` (default 1.0)), duration (with `new_duration_value` (default 0)), state (with `new_state_value` (default 'automatic')) and throughput (with `new_throughput_value` (default 50)) settings for a zone.|
 |`Smart Irrigation: update_all_zones`|Updates all automatic zones with weather data|
 |`Smart Irrigation: update_zone`|Updates one specific zone with weather data|
 |`Smart Irrigation: postpone_irrigation`|Holds watering back for `hours` (default 24), for rain the forecast missed or an afternoon on the lawn. It is a moment, not a countdown: it survives a restart and ends by itself. It resets nothing, so a zone that is short of water still is when it ends. `hours: 0` lifts it.|
@@ -35,7 +36,7 @@ After installation, the following services are available:
 ## Dry run
 
 `calculate_zone` and `calculate_all_zones` accept `dry_run: true`. A dry run computes
-the result and returns it without touching any of your irrigation data: the bucket, the
+the result and returns it without touching any of your irrigation data: the water balance, the
 zone, the collected weather data and the internal "last calculated" marker are all left
 exactly as they were.
 

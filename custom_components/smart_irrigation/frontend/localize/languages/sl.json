@@ -58,8 +58,8 @@
         "bucket-was": "Vodna bilanca je bila",
         "new-bucket-values-is": "Nova vodna bilanca je",
         "bucket": "vodna bilanca",
-        "old-bucket-variable": "old_bucket",
-        "max-bucket-variable": "max_bucket",
+        "old-bucket-variable": "old_water_balance",
+        "max-bucket-variable": "max_water_balance",
         "delta": "razlika",
         "bucket-less-than-zero-irrigation-necessary": "Ker je vodna bilanca < 0, je namakanje potrebno",
         "steps-taken-to-calculate-duration": "Za izračun točnega trajanja so bili narejeni naslednji koraki",
@@ -151,10 +151,10 @@
           "question": "Pripravljeno za ustvarjanje",
           "zone": "Cona",
           "environment": "Okolje",
-          "engine": "Računski modul",
+          "engine": "Modul",
           "sources": "Viri",
           "from-the-service": "iz vremenske storitve",
-          "help": "To ustvari računski modul, skupino senzorjev in cono, natanko tako, kot bi jih ostali zavihki. Nič ni potem zaklenjeno."
+          "help": "To ustvari modul, skupino senzorjev in cono, natanko tako, kot bi jih ostali zavihki. Nič ni potem zaklenjeno."
         }
       },
       "step": "korak",
@@ -527,7 +527,7 @@
           },
           "greenhouse": "Rastlinjak",
           "greenhouse_description": "Zaprto okolje: rastlinjak, plastenjak, karkoli pod steklom ali folijo. Dež teh con ne doseže, zato so padavine izpuščene iz njihove vodne bilance in njihova polja so skrita. Dve stvari moraš nastaviti sam, ker ju ni mogoče uganiti: Hitrosti vetra daj stalno vrednost blizu 0, ker izračun predpostavlja odprt prostor, za Sončno sevanje pa uporabi senzor svetlobe, ker zasteklitev filtrira nebo.",
-          "module": "Računski modul",
+          "module": "Modul",
           "module_description": "Ta skupina ponuja samo vire, ki jih ta modul bere. Cone, ki jo uporabljajo, podedujejo izbiro.",
           "module_undecided": "Modul še ni izbran, zato so na voljo vsi viri in vsaka cona, ki uporablja to skupino, ohrani svojega. Izberi enega, da vidiš samo vire, ki jih bere.",
           "wind_height": "Višina anemometra (prazno: merjeno na 2 m)",
@@ -597,12 +597,16 @@
         "view-weather-info-message": "Vremenski podatki na voljo za",
         "view-watering-calendar": "Prikaži koledar zalivanja",
         "water": "Zalij",
-        "calculating": "Računanje…"
+        "calculating": "Računanje…",
+        "change": "Spremeni",
+        "done": "Končano"
       },
       "cards": {
         "add-zone": {
           "actions": {
-            "add": "Dodaj cono"
+            "add": "Dodaj cono",
+            "assistant": "Nastavi s pomočnikom",
+            "cancel": "Prekliči"
           },
           "header": "Dodaj cono"
         },
@@ -613,7 +617,8 @@
             "reset-all-buckets": "Ponastavi vse vodne bilance",
             "clear-all-weatherdata": "Počisti vse vremenske podatke"
           },
-          "header": "Dejanja za vse cone"
+          "header": "Dejanja za vse cone",
+          "reset-hint": "Ti dve dejanji zavržeta podatke vseh con. Vsako se najprej vpraša."
         }
       },
       "description": "Tu določi eno ali več con namakanja. Trajanje namakanja se izračuna za vsako cono posebej, glede na velikost, pretok, stanje, modul in skupino senzorjev.",
@@ -725,7 +730,8 @@
           "loam": "Ilovica",
           "clay_loam": "Glinasta ilovica",
           "clay": "Glina",
-          "custom": "Hitrost drenaže nastavim sam"
+          "custom": "Hitrost drenaže nastavim sam",
+          "default": "Še ni izbrano – izračunano z {value}"
         },
         "plant-types": {
           "lawn": "Trata",
@@ -736,7 +742,8 @@
           "fruit_trees": "Sadno drevje",
           "vines": "Vinska trta",
           "ground_cover": "Pokrovne rastline",
-          "custom": "Koeficient rastline nastavim sam"
+          "custom": "Faktor rastline nastavim sam",
+          "default": "Še ni izbrano – izračunano s faktorjem rastline {value}"
         },
         "duration-readonly-automatic": "Izračunano zate: trajanje te cone izhaja iz njene vodne bilance. Nastavi jo na ročno, če želiš trajanje vnesti sam.",
         "duration-readonly-disabled": "Izklopljena cona se nikoli ne zaliva, zato nima časa delovanja.",
@@ -744,7 +751,7 @@
       },
       "no_items": "Nobena cona še ni določena.",
       "title": "Cone",
-      "module-comes-from-the-group": "Računski modul izhaja iz skupine senzorjev te cone. Spremeni ga tam, in vsaka cona, ki uporablja to skupino, mu sledi.",
+      "module-comes-from-the-group": "Modul izhaja iz skupine senzorjev te cone. Spremeni ga tam, in vsaka cona, ki uporablja to skupino, mu sledi.",
       "status": {
         "estimate": "Primanjkuje {short}: približno {duration} ({volume}) ob naslednjem izračunu.",
         "will-water": "Ob naslednjem zagonu bo zalivala {duration}.",
@@ -757,7 +764,7 @@
         "problem": {
           "no_sensor_group": "Ni mogoče izračunati: nima skupine senzorjev. Izberi jo na tej kartici; do takrat se ne zaliva.",
           "no_readings": "Ni mogoče izračunati: njena skupina senzorjev nima meritev. Do takrat se ne zaliva.",
-          "no_engine": "Ni mogoče izračunati: nima računskega modula. Dokler ga nima, se ne zaliva.",
+          "no_engine": "Ni mogoče izračunati: nima modula. Dokler ga nima, se ne zaliva.",
           "nothing_from_engine": "Ni mogoče izračunati: njena skupina senzorjev ne daje evapotranspiracije. Do takrat se ne zaliva.",
           "forecast_without_service": "Ni mogoče izračunati: njen modul gleda naprej, vremenska storitev pa ni nastavljena. Se ne zaliva.",
           "error": "Ni mogoče izračunati: {detail}. Dokler je ni mogoče izračunati, se ne zaliva."
@@ -784,6 +791,11 @@
       "calculation-feedback": {
         "nothing-new": "{zone}: od zadnjega izračuna ni novih meritev, zato se ni nič spremenilo.",
         "failed": "{zone}: izračun ni uspel ({error})."
+      },
+      "sections": {
+        "zone": "Cona in ventil",
+        "need": "Kaj potrebuje",
+        "status": "Kako je z njo"
       }
     },
     "history": {

@@ -36,7 +36,7 @@ It is the official Smart Irrigation integration for Home Assistant, available by
 
 ## How it works, in one paragraph
 
-Water leaves the soil by evaporation and through the leaves. How fast depends on the sun, the temperature, the humidity and the wind, and that is what the FAO-56 equation computes from your weather data. Smart Irrigation adds that loss to a per-zone "bucket", subtracts the rain, and when the bucket is short by more than the threshold you set, it converts the missing millimetres into a run time from the zone's own area and flow. After the run, the bucket goes back to zero and the cycle starts again. The [how it works](how-it-works.md) page tells it properly, and the [calculation explanation](usage-info.md) on each zone shows the numbers of the day.
+Water leaves the soil by evaporation and through the leaves. How fast depends on the sun, the temperature, the humidity and the wind, and that is what the FAO-56 equation computes from your weather data. Smart Irrigation adds that loss to a per-zone water balance, subtracts the rain, and when the water balance is short by more than the threshold you set, it converts the missing millimetres into a run time from the zone's own area and flow. After the run, the water balance goes back to zero and the cycle starts again. The [how it works](how-it-works.md) page tells it properly, and the [calculation explanation](usage-info.md) on each zone shows the numbers of the day.
 
 ## What you need
 
@@ -60,6 +60,6 @@ Smart Irrigation opens your valves itself only if you turn on direct valve contr
 
 ## Attribution
 
-**Smart Irrigation** was created by [Jeroen ter Heerdt](https://github.com/jeroenterheerdt) and its contributors. All credit for the underlying evapotranspiration calculation engine and the original design goes to them. He transferred the project in June 2026, and this is where the official Smart Irrigation is maintained and released.
+**Smart Irrigation** was created by [Jeroen ter Heerdt](https://github.com/jeroenterheerdt) and its contributors. All credit for the underlying evapotranspiration calculation and the original design goes to them. He transferred the project in June 2026, and this is where the official Smart Irrigation is maintained and released.
 
 The integration is distributed under the [MIT License](https://github.com/altmenorg/HAsmartirrigation/blob/master/LICENSE), © Jeroen ter Heerdt and contributors.

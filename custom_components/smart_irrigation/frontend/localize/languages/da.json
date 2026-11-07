@@ -24,7 +24,7 @@
       "size": "størrelse",
       "throughput": "gennemstrømning",
       "state": "tilstand",
-      "bucket": "bucket",
+      "bucket": "vandbalance",
       "last_updated": "senest opdateret",
       "last_calculated": "senest beregnet",
       "number_of_data_points": "antal datapunkter"
@@ -55,13 +55,13 @@
         "module-returned-evapotranspiration-deficiency": "Modulet returnerede et fordampningsunderskud ( = et0 * hour_multiplier * Kc + nedbør) på",
         "module-returned-hourly-evapotranspiration-deficiency": "Modulet lagde underskuddet i afgrødens fordampning sammen time for time ( = summen af timernes et0 * Kc + nedbør) over",
         "crop-factor-is": "Afgrødefaktoren er",
-        "bucket-was": "Bucket var",
-        "new-bucket-values-is": "Ny bucket-værdi er",
-        "bucket": "bucket",
-        "old-bucket-variable": "old_bucket",
-        "max-bucket-variable": "max_bucket",
+        "bucket-was": "Vandbalancen var",
+        "new-bucket-values-is": "Ny vandbalance er",
+        "bucket": "vandbalance",
+        "old-bucket-variable": "old_water_balance",
+        "max-bucket-variable": "max_water_balance",
         "delta": "delta",
-        "bucket-less-than-zero-irrigation-necessary": "Da bucket < 0, er vanding nødvendig",
+        "bucket-less-than-zero-irrigation-necessary": "Da vandbalancen < 0, er vanding nødvendig",
         "steps-taken-to-calculate-duration": "For at beregne den nøjagtige varighed blev følgende trin udført",
         "precipitation-rate-defined-as": "Nedbørshastigheden er defineret som",
         "precipitation-rate-is": "Nedbørsintensiteten er",
@@ -76,9 +76,9 @@
         "duration-after-maximum-duration-is": "derfor er varigheden",
         "lead-time-is-applied": "Til sidst lægges opstartstiden til. Opstartstiden er",
         "duration-after-lead-time-is": "derfor er den endelige varighed",
-        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Da bucket >= 0, er vanding ikke nødvendig, og varigheden sættes til",
-        "maximum-bucket-is": "Maksimal bucket-størrelse er",
-        "drainage-rate-is": "Drænhastighed ved mætning (bucket på maks) er",
+        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Da vandbalancen >= 0, er vanding ikke nødvendig, og varigheden sættes til",
+        "maximum-bucket-is": "Maksimal vandbalance er",
+        "drainage-rate-is": "Drænhastighed ved mætning (vandbalance på maks) er",
         "current-drainage-is": "Aktuel dræning beregnes som",
         "drainage-replayed": "Perioden blev genberegnet time for time, så hver regnbyge kun dræner fra den time, den faldt. Dræning over",
         "no-drainage": "Aktuel dræning er 0, fordi",
@@ -151,7 +151,7 @@
           "question": "Klar til at oprette",
           "zone": "Zone",
           "environment": "Miljø",
-          "engine": "Beregningsmotor",
+          "engine": "Modul",
           "sources": "Kilder",
           "from-the-service": "fra vejrtjenesten",
           "help": "Dette opretter et beregningsmodul, en sensorgruppe og en zone, præcis som de andre faner ville. Bagefter er intet låst."
@@ -240,7 +240,7 @@
             "calc-when-manual": "Kun når jeg beder om det",
             "calc-when-hint": "Lige før hver start: på tidspunktet for startudløseren, med det friskeste vejr. Det rigtige valg, når Smart Irrigation starter vandingen (direkte ventilstyring eller start-hændelsen). På et fast tidspunkt: hver dag på tidspunktet nedenfor, hvis noget andet end Smart Irrigation starter vandingen og læser varighederne, når det passer det (Irrigation Unlimited, en egen tidsplan). Kun når jeg beder om det: intet beregnes af sig selv, brug beregn-knapperne eller services.",
             "calc-time": "Beregn kl.",
-            "calc-time-hint": "Den daglige beregning: det tabte vand lægges til bucket for hver zone, og vandingsvarighederne sættes.",
+            "calc-time-hint": "Den daglige beregning: det tabte vand lægges til vandbalancen for hver zone, og vandingsvarighederne sættes.",
             "hourly-calculation": "Beregn fordampning time for time",
             "hourly-calculation-hint": "Lægger FAO-56's timeligning sammen for hver time siden sidste beregning i stedet for at bruge døgnligningen på gennemsnit, der skjuler om solen og varmen kom samtidig. En ny installation begynder med den; en installation der fandtes i forvejen, beholder døgnligningen indtil du skifter, for de to giver forskellige tal, og din vanding skal ikke ændre sig af en opdatering. Solen i hver time kommer fra en strålings- eller lyssensor, fra vejrtjenestens egen timehistorik, eller fra dagens temperaturspænd. Det er værd at have, når målinger kommer ind hen over dagen: én opdatering om dagen lader en enkelt måling gælde i fireogtyve timer, og så er ingen af formerne til at stole på. Et drivhus uden egen sensor beholder døgnligningen."
           }
@@ -250,7 +250,7 @@
             "warning-update-time-on-or-after-calc-time": "Advarsel: opdateringstidspunkt for vejrdata er på eller efter beregningstidspunktet"
           },
           "header": "Automatisk opdatering af vejrdata",
-          "description": "Indsaml og gem vejrdata automatisk. Vejrdata er nødvendige for at beregne zoners buckets og varigheder.",
+          "description": "Indsaml og gem vejrdata automatisk. Vejrdata er nødvendige for at beregne zoners vandbalancer og varigheder.",
           "labels": {
             "auto-update-enabled": "Opdatér vejrdata automatisk",
             "auto-update-schedule": "Opdateringsplan",
@@ -527,9 +527,9 @@
           },
           "greenhouse": "Drivhus",
           "greenhouse_description": "Et lukket miljø: et drivhus, en plasttunnel, alt under glas eller plast. Der kommer ingen regn til disse zoner, så nedbør holdes ude af deres vandbalance, og dens felter skjules. To ting skal du selv sætte, for de kan ikke gættes: giv Vindhastighed en fast værdi tæt på 0, da beregningen regner med fri luft, og brug en lyssensor til Solindstråling, da glasset filtrerer himlen.",
-          "module": "Beregningsmotor",
-          "module_description": "Denne gruppe tilbyder kun de kilder, denne motor læser. De zoner der bruger den, overtager valget.",
-          "module_undecided": "Der er endnu ikke valgt en motor, så alle kilder tilbydes, og hver zone der bruger denne gruppe, beholder sin egen. Vælg en for kun at se de kilder den læser.",
+          "module": "Modul",
+          "module_description": "Denne gruppe tilbyder kun de kilder, dette modul læser. De zoner der bruger den, overtager valget.",
+          "module_undecided": "Der er endnu ikke valgt et modul, så alle kilder tilbydes, og hver zone der bruger denne gruppe, beholder sin egen. Vælg et for kun at se de kilder det læser.",
           "wind_height": "Vindmålerens højde (tom: 2 m)",
           "rain_not_from_entity": "Vejrentiteten giver ikke den faldne regn, kun en prognose: vælg en regnsensor her, ellers vandes zonerne efter hver byge.",
           "rain_hint_entity": "Regn der falder nu, som intensitet. Vejrentiteten forudsiger den kun: vælg en sensor, der måler regn."
@@ -592,17 +592,21 @@
         "calculate": "Beregn",
         "information": "Information",
         "update": "Opdatér",
-        "reset-bucket": "Nulstil bucket",
+        "reset-bucket": "Nulstil vandbalance",
         "view-weather-info": "Se vejrdata",
         "view-weather-info-message": "Vejrdata tilgængelige for",
         "view-watering-calendar": "Se vandingskalender",
         "water": "Vand",
-        "calculating": "Beregner…"
+        "calculating": "Beregner…",
+        "change": "Skift",
+        "done": "Færdig"
       },
       "cards": {
         "add-zone": {
           "actions": {
-            "add": "Tilføj zone"
+            "add": "Tilføj zone",
+            "assistant": "Sæt den op med assistenten",
+            "cancel": "Annuller"
           },
           "header": "Tilføj zone"
         },
@@ -610,21 +614,22 @@
           "actions": {
             "calculate-all": "Beregn alle zoner",
             "update-all": "Opdatér alle zoner",
-            "reset-all-buckets": "Nulstil alle buckets",
+            "reset-all-buckets": "Nulstil alle vandbalancer",
             "clear-all-weatherdata": "Ryd alle vejrdata"
           },
-          "header": "Handlinger på alle zoner"
+          "header": "Handlinger på alle zoner",
+          "reset-hint": "Disse to kasserer data fra alle zoner. Hver spørger først."
         }
       },
       "description": "Angiv en eller flere vandingszoner her. Vandingsvarigheden beregnes pr. zone, afhængigt af størrelse, gennemstrømning, tilstand, modul og sensorgruppe.",
       "labels": {
-        "bucket": "Bucket",
+        "bucket": "Vandbalance",
         "et-deficiency": "Dagligt ET-underskud",
         "duration": "Varighed",
         "lead-time": "Opstartstid",
         "mapping": "Sensorgruppe",
         "maximum-duration": "Maksimal varighed",
-        "multiplier": "Multiplikator",
+        "multiplier": "Afgrødefaktor (Kc)",
         "name": "Navn",
         "input-method": "Indtastningsmetode",
         "input-methods": {
@@ -647,13 +652,13 @@
           "manual": "Manuel"
         },
         "throughput": "Gennemstrømning",
-        "maximum-bucket": "Maksimal bucket",
+        "maximum-bucket": "Maksimal vandbalance",
         "last_calculated": "Senest beregnet",
         "data-last-updated": "Data senest opdateret",
         "data-number-of-data-points": "Antal datapunkter",
         "drainage_rate": "Drænhastighed",
         "linked-entity": "Tilknyttet ventil/kontakt",
-        "linked-entity-hint": "Ventilen eller kontakten, der vander denne zone. Hver gang den kører (en manuel hane, en automatisering eller Smart Irrigation selv, når direkte ventilstyring er slået til), krediteres bucket'en ud fra køretiden og zonens gennemstrømning. Påkrævet for funktionerne med lukket sløjfe.",
+        "linked-entity-hint": "Ventilen eller kontakten, der vander denne zone. Hver gang den kører (en manuel hane, en automatisering eller Smart Irrigation selv, når direkte ventilstyring er slået til), krediteres vandbalancen ud fra køretiden og zonens gennemstrømning. Påkrævet for funktionerne med lukket sløjfe.",
         "supply": "Pumpe eller hovedventil",
         "supply-none": "Ingen",
         "measured-flow-help": "Over flere kørsler har zonens flowmåler målt et flow, der afviger fra det, der er angivet ovenfor. Det er kun et råd, og det anvendes aldrig af sig selv.",
@@ -700,7 +705,7 @@
         "distribution-efficiency-help": "Den andel af vandet fra dyserne, der når planterne, i %. Sprinklere i blæst eller på en skråning mister noget, drypvanding næsten intet. Lad feltet stå tomt for 100 %. En zone på 80 % vander 25 % længere for samme dybde og krediterer kun 80 % af det, den leverer.",
         "days-between-irrigation-help": "Lad feltet stå tomt for at følge den generelle indstilling (Indstillinger, Dage mellem vanding). Et tal erstatter den generelle indstilling for denne zone alene: 1 vander den hver dag, hvis den har brug for vand, 3 højst hver tredje dag, 0 fjerner begrænsningen. Dagene tælles fra sidste gang, denne zone blev vandet.",
         "soil-moisture-sensor": "Jordfugtsensor",
-        "soil-moisture-sensor-hint": "Zonen sidder en vanding over, så længe jorden er på eller over grænsen. Beholdningen bevares.",
+        "soil-moisture-sensor-hint": "Zonen sidder en vanding over, så længe jorden er på eller over grænsen. Vandbalancen bevares.",
         "soil-moisture-threshold": "Spring over fra",
         "calculation-method": "Fordampning",
         "calculation-method-help": {
@@ -725,7 +730,8 @@
           "loam": "Muld",
           "clay_loam": "Lerholdig muld",
           "clay": "Ler",
-          "custom": "Jeg sætter selv drænhastigheden"
+          "custom": "Jeg sætter selv drænhastigheden",
+          "default": "Endnu ikke valgt – beregnet med {value}"
         },
         "plant-types": {
           "lawn": "Græsplæne",
@@ -736,7 +742,8 @@
           "fruit_trees": "Frugttræer",
           "vines": "Vinranker",
           "ground_cover": "Bunddække",
-          "custom": "Jeg sætter selv afgrødekoefficienten"
+          "custom": "Jeg sætter selv afgrødefaktoren",
+          "default": "Endnu ikke valgt – beregnet med afgrødefaktor {value}"
         },
         "duration-readonly-automatic": "Beregnet for dig: denne zones vanding kommer fra dens vandbalance. Sæt den til manuel for selv at skrive en varighed.",
         "duration-readonly-disabled": "En zone der er slået fra, vandes aldrig, så den har ingen vandingstid.",
@@ -744,7 +751,7 @@
       },
       "no_items": "Der er endnu ikke defineret nogen zoner.",
       "title": "Zoner",
-      "module-comes-from-the-group": "Beregningsmotoren kommer fra denne zones sensorgruppe. Skift den dér, og alle zoner der bruger gruppen, følger med.",
+      "module-comes-from-the-group": "Modulet kommer fra denne zones sensorgruppe. Skift det dér, og alle zoner der bruger gruppen, følger med.",
       "status": {
         "estimate": "Mangler {short}: omkring {duration} ({volume}) ved næste beregning.",
         "will-water": "Vander {duration} ved næste start.",
@@ -757,9 +764,9 @@
         "problem": {
           "no_sensor_group": "Kan ikke beregnes: den har ingen sensorgruppe. Vælg en på dette kort; den vandes ikke indtil da.",
           "no_readings": "Kan ikke beregnes: dens sensorgruppe har ingen målinger. Den vandes ikke, før den har det.",
-          "no_engine": "Kan ikke beregnes: den har ingen beregningsmotor. Den vandes ikke, før den har en.",
+          "no_engine": "Kan ikke beregnes: den har intet modul. Den vandes ikke, før den har et.",
           "nothing_from_engine": "Kan ikke beregnes: dens sensorgruppe giver ingen evapotranspiration. Den vandes ikke, før den gør.",
-          "forecast_without_service": "Kan ikke beregnes: dens beregningsmotor ser fremad, og ingen vejrtjeneste er sat op. Den vandes ikke.",
+          "forecast_without_service": "Kan ikke beregnes: dens modul ser fremad, og ingen vejrtjeneste er sat op. Den vandes ikke.",
           "error": "Kan ikke beregnes: {detail}. Den vandes ikke, før den kan beregnes."
         },
         "no-valve": "Ingen ventil tilknyttet, så denne zone vandes ikke.",
@@ -784,6 +791,11 @@
       "calculation-feedback": {
         "nothing-new": "{zone}: ingen nye målinger siden sidste beregning, så intet er ændret.",
         "failed": "{zone}: beregningen mislykkedes ({error})."
+      },
+      "sections": {
+        "zone": "Zone og ventil",
+        "need": "Hvad den har brug for",
+        "status": "Hvor den står"
       }
     },
     "history": {
@@ -1363,7 +1375,7 @@
   },
   "observed_watering": {
     "title": "Observeret vanding (lukket sløjfe)",
-    "description": "Kreditér automatisk hver zones bucket ud fra reel vanding i stedet for at nulstille bucket'en fra en automatisering. Når funktionen er aktiveret, vælges en ventil/kontakt-entitet pr. zone under fanen Zoner: mens den er åben, krediteres bucket'en ud fra køretiden og zonens gennemstrømning. For nøjagtig bogføring kan du også vælge en akkumuleret volumenmåler (en samlet vandmåler) pr. zone, og den målte volumen anvendes i stedet. Vigtigt: når dette er slået til, er det det eneste, der krediterer bucket'en, så fjern ethvert reset_bucket-kald fra din vandingsautomatisering for at undgå dobbelttælling.",
+    "description": "Kreditér automatisk hver zones vandbalance ud fra reel vanding i stedet for at nulstille vandbalancen fra en automatisering. Når funktionen er aktiveret, vælges en ventil/kontakt-entitet pr. zone under fanen Zoner: mens den er åben, krediteres vandbalancen ud fra køretiden og zonens gennemstrømning. For nøjagtig bogføring kan du også vælge en akkumuleret volumenmåler (en samlet vandmåler) pr. zone, og den målte volumen anvendes i stedet. Vigtigt: når dette er slået til, er det det eneste, der krediterer vandbalancen, så fjern ethvert reset_bucket-kald fra din vandingsautomatisering for at undgå dobbelttælling.",
     "enabled_label": "Aktivér observeret vanding",
     "direct_control_label": "Lad Smart Irrigation styre ventilen",
     "direct_control_description": "Når funktionen er slået til, åbner Smart Irrigation hver zones tilknyttede ventil, venter den beregnede varighed og lukker den derefter, uden nogen automatisering. En igangværende kørsel genoptages efter en genstart. Sikkerhed: en ventil, der selv kan lukke, får kørslens længde med, når den åbner (en Sonoff SWV på ZHA eller en ventil, hvis zone har et MQTT-sikkerhedsemne), så den lukker, selv om Home Assistant går ned. Enhver anden ventil bliver ved med at vande, indtil Home Assistant er tilbage: giv den en hardware-failsafe (en maksimal køretid).",
@@ -1388,7 +1400,7 @@
   },
   "calculation_log": {
     "title": "Beregningslog",
-    "description": "Skriver hele grundlaget for hver beregning til en fil, så to dage der ligner hinanden men vander meget forskelligt kan sammenlignes bagefter. Hver beregning tilføjer én linje: sensorgruppens målinger og hvordan de blev sammenlagt, modulets mellemresultater (solindstråling, nettostråling, ET0) samt den beholdning, varighed og mængde det giver. Slået fra som standard; filen har en maksimal størrelse og roteres, så den kan stå tændt en hel sæson.",
+    "description": "Skriver hele grundlaget for hver beregning til en fil, så to dage der ligner hinanden men vander meget forskelligt kan sammenlignes bagefter. Hver beregning tilføjer én linje: sensorgruppens målinger og hvordan de blev sammenlagt, modulets mellemresultater (solindstråling, nettostråling, ET0) samt den vandbalance, varighed og mængde det giver. Slået fra som standard; filen har en maksimal størrelse og roteres, så den kan stå tændt en hel sæson.",
     "enabled_label": "Skriv beregningens grundlag til en fil",
     "file_hint": "Skrives til config/smart_irrigation/calc_log.jsonl, én JSON-post pr. linje. De nyeste poster er også med i diagnostik-downloadet (koordinater afrundet, entitets-id'er fjernet), så du kan vedhæfte dem til en fejlrapport i ét skridt."
   },

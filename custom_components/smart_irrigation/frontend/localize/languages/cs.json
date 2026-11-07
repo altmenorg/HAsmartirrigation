@@ -24,7 +24,7 @@
       "size": "velikost",
       "throughput": "průtok",
       "state": "stav",
-      "bucket": "bucket",
+      "bucket": "vodní bilance",
       "last_updated": "naposledy aktualizováno",
       "last_calculated": "naposledy vypočítáno",
       "number_of_data_points": "počet datových bodů"
@@ -55,13 +55,13 @@
         "module-returned-evapotranspiration-deficiency": "Modul vrátil deficit evapotranspirace ( = et0 * hour_multiplier * Kc + srážky) ve výši",
         "module-returned-hourly-evapotranspiration-deficiency": "Modul sečetl deficit evapotranspirace plodiny hodinu po hodině ( = součet hodinových et0 * Kc + srážky) za",
         "crop-factor-is": "Plodinový faktor je",
-        "bucket-was": "Bucket byl",
-        "new-bucket-values-is": "Nová hodnota bucket je",
-        "bucket": "bucket",
-        "old-bucket-variable": "old_bucket",
-        "max-bucket-variable": "max_bucket",
+        "bucket-was": "Vodní bilance byla",
+        "new-bucket-values-is": "Nová vodní bilance je",
+        "bucket": "vodní bilance",
+        "old-bucket-variable": "old_water_balance",
+        "max-bucket-variable": "max_water_balance",
         "delta": "delta",
-        "bucket-less-than-zero-irrigation-necessary": "Protože bucket < 0, zavlažování je nutné",
+        "bucket-less-than-zero-irrigation-necessary": "Protože vodní bilance < 0, zavlažování je nutné",
         "steps-taken-to-calculate-duration": "K výpočtu přesné doby trvání byly provedeny následující kroky",
         "precipitation-rate-defined-as": "Intenzita srážek je definována jako",
         "precipitation-rate-is": "Intenzita srážek je",
@@ -76,9 +76,9 @@
         "duration-after-maximum-duration-is": "tudíž doba trvání je",
         "lead-time-is-applied": "Nakonec se aplikuje předstihový čas. Předstihový čas je",
         "duration-after-lead-time-is": "tudíž konečná doba trvání je",
-        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Protože bucket >= 0, zavlažování není nutné a doba trvání je nastavena na",
-        "maximum-bucket-is": "Maximální velikost bucket je",
-        "drainage-rate-is": "Rychlost odvodnění při nasycení (bucket na maximu) je",
+        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Protože vodní bilance >= 0, zavlažování není nutné a doba trvání je nastavena na",
+        "maximum-bucket-is": "Maximální vodní bilance je",
+        "drainage-rate-is": "Rychlost odvodnění při nasycení (vodní bilance na maximu) je",
         "current-drainage-is": "Aktuální odvodnění se vypočítá jako",
         "drainage-replayed": "Období bylo přepočítáno hodinu po hodině, takže každý déšť odtéká až od hodiny, kdy spadl. Odtok za",
         "no-drainage": "Aktuální odvodnění je 0, protože",
@@ -151,10 +151,10 @@
           "question": "Připraveno k vytvoření",
           "zone": "Zóna",
           "environment": "Prostředí",
-          "engine": "Výpočetní jádro",
+          "engine": "Modul",
           "sources": "Zdroje",
           "from-the-service": "z meteoslužby",
-          "help": "Tím se vytvoří výpočetní modul, skupina senzorů a zóna, přesně jako by to udělaly ostatní panely. Potom není nic pevně dané."
+          "help": "Tím se vytvoří modul, skupina senzorů a zóna, přesně jako by to udělaly ostatní panely. Potom není nic pevně dané."
         }
       },
       "step": "krok",
@@ -240,7 +240,7 @@
             "calc-when-manual": "Jen na požádání",
             "calc-when-hint": "Těsně před každým startem: v čase startovacího spouštěče, s nejčerstvějším počasím. Správná volba, když zavlažování spouští Smart Irrigation (přímé řízení ventilů nebo událost startu). V pevný čas: každý den v čase níže, pro případ, že zavlažování spouští něco jiného než Smart Irrigation a čte doby, kdy se mu zachce (Irrigation Unlimited, vlastní plán). Jen na požádání: nic se nepočítá samo, použijte tlačítka výpočtu nebo služby.",
             "calc-time": "Vypočítat v",
-            "calc-time-hint": "Denní výpočet: ztracená voda se přičte k bucketu každé zóny a nastaví se doby zavlažování.",
+            "calc-time-hint": "Denní výpočet: ztracená voda se přičte k vodní bilanci každé zóny a nastaví se doby zavlažování.",
             "hourly-calculation": "Počítat evapotranspiraci hodinu po hodině",
             "hourly-calculation-hint": "Sčítá hodinovou rovnici FAO-56 za každou hodinu od posledního výpočtu, místo aby aplikoval denní rovnici na průměry, které skryjí, jestli slunce a horko přišly zároveň. Nová instalace na tom začíná; instalace, která existovala předtím, si nechává denní rovnici, dokud nepřepnete, protože obě dávají jiná čísla a vaše zavlažování se nemá měnit aktualizací. Slunce každé hodiny pochází ze senzoru radiace nebo osvětlenosti, z hodinové historie samotné meteoslužby, nebo z denního rozpětí teplot. Vyplatí se, když měření přicházejí v průběhu dne: jedna aktualizace za den nechá jedno jediné měření platit dvacet čtyři hodin, a pak není spolehlivá ani jedna z forem. Skleník bez vlastního senzoru si nechává denní rovnici."
           }
@@ -250,7 +250,7 @@
             "warning-update-time-on-or-after-calc-time": "Varování: čas aktualizace meteorologických dat je v době výpočtu nebo po ní"
           },
           "header": "Automatická aktualizace meteorologických dat",
-          "description": "Shromažďujte a ukládejte meteorologická data automaticky. Meteorologická data jsou potřebná k výpočtu bucketů a dob trvání zón.",
+          "description": "Shromažďujte a ukládejte meteorologická data automaticky. Meteorologická data jsou potřebná k výpočtu vodních bilancí a dob trvání zón.",
           "labels": {
             "auto-update-enabled": "Automaticky aktualizovat meteorologická data",
             "auto-update-schedule": "Plán aktualizací",
@@ -527,9 +527,9 @@
           },
           "greenhouse": "Skleník",
           "greenhouse_description": "Uzavřené prostředí: skleník, fóliovník, cokoli pod sklem nebo fólií. K těmto zónám se déšť nedostane, takže srážky zůstávají mimo jejich vodní bilanci a jejich pole se skryjí. Dvě věci musíte nastavit sami, protože je nelze odhadnout: dejte Rychlosti větru statickou hodnotu blízkou 0, protože výpočet předpokládá volný vzduch, a pro Solární radiaci použijte světelný senzor, protože zasklení filtruje nebe.",
-          "module": "Výpočetní jádro",
-          "module_description": "Tato skupina nabízí jen zdroje, které toto jádro čte. Zóny, které ji používají, volbu přebírají.",
-          "module_undecided": "Jádro dosud nebylo vybráno, takže se nabízejí všechny zdroje a každá zóna používající tuto skupinu si drží svoje. Vyberte jedno, abyste viděli jen zdroje, které čte.",
+          "module": "Modul",
+          "module_description": "Tato skupina nabízí jen zdroje, které tento modul čte. Zóny, které ji používají, volbu přebírají.",
+          "module_undecided": "Modul dosud nebyl vybrán, takže se nabízejí všechny zdroje a každá zóna používající tuto skupinu si drží svoje. Vyberte jeden, abyste viděli jen zdroje, které čte.",
           "wind_height": "Výška anemometru (prázdné: 2 m)",
           "rain_not_from_entity": "Entita počasí neposkytuje spadlý déšť, jen předpověď: zvolte zde srážkoměr, jinak se zóny budou zalévat po každé přeháňce.",
           "rain_hint_entity": "Déšť, který právě padá, jako intenzita. Entita počasí ho jen předpovídá: zvolte senzor, který déšť měří."
@@ -592,17 +592,21 @@
         "calculate": "Vypočítat",
         "information": "Informace",
         "update": "Aktualizovat",
-        "reset-bucket": "Resetovat bucket",
+        "reset-bucket": "Resetovat vodní bilanci",
         "view-weather-info": "Zobrazit meteorologická data",
         "view-weather-info-message": "Meteorologická data k dispozici pro",
         "view-watering-calendar": "Zobrazit zavlažovací kalendář",
         "water": "Zalít",
-        "calculating": "Počítá se…"
+        "calculating": "Počítá se…",
+        "change": "Změnit",
+        "done": "Hotovo"
       },
       "cards": {
         "add-zone": {
           "actions": {
-            "add": "Přidat zónu"
+            "add": "Přidat zónu",
+            "assistant": "Nastavit pomocí asistenta",
+            "cancel": "Zrušit"
           },
           "header": "Přidat zónu"
         },
@@ -610,15 +614,16 @@
           "actions": {
             "calculate-all": "Vypočítat všechny zóny",
             "update-all": "Aktualizovat všechny zóny",
-            "reset-all-buckets": "Resetovat všechny buckety",
+            "reset-all-buckets": "Resetovat všechny vodní bilance",
             "clear-all-weatherdata": "Vymazat všechna meteorologická data"
           },
-          "header": "Akce na všech zónách"
+          "header": "Akce na všech zónách",
+          "reset-hint": "Tyto dvě akce zahodí data všech zón. Každá se předtím zeptá."
         }
       },
       "description": "Zde zadejte jednu nebo více zavlažovacích zón. Doba zavlažování se počítá pro každou zónu zvlášť, v závislosti na velikosti, průtoku, stavu, modulu a skupině senzorů.",
       "labels": {
-        "bucket": "Bucket",
+        "bucket": "Vodní bilance",
         "et-deficiency": "Denní deficit ET",
         "duration": "Doba trvání",
         "lead-time": "Předstihový čas",
@@ -647,13 +652,13 @@
           "manual": "Ruční"
         },
         "throughput": "Průtok",
-        "maximum-bucket": "Maximální bucket",
+        "maximum-bucket": "Maximální vodní bilance",
         "last_calculated": "Naposledy vypočítáno",
         "data-last-updated": "Data naposledy aktualizována",
         "data-number-of-data-points": "Počet datových bodů",
         "drainage_rate": "Rychlost odvodnění",
         "linked-entity": "Propojený ventil/spínač",
-        "linked-entity-hint": "Ventil nebo spínač, který zavlažuje tuto zónu. Kdykoli se spustí (ruční kohoutek, automatizace nebo samotná Smart Irrigation při zapnutém přímém ovládání ventilu), bucket se připíše z doby běhu a průtoku zóny. Vyžadováno pro funkce s uzavřenou smyčkou.",
+        "linked-entity-hint": "Ventil nebo spínač, který zavlažuje tuto zónu. Kdykoli se spustí (ruční kohoutek, automatizace nebo samotná Smart Irrigation při zapnutém přímém ovládání ventilu), vodní bilance se připíše z doby běhu a průtoku zóny. Vyžadováno pro funkce s uzavřenou smyčkou.",
         "supply": "Čerpadlo nebo hlavní ventil",
         "supply-none": "Žádný",
         "measured-flow-help": "Během několika běhů naměřil průtokoměr zóny průtok, který se liší od nastaveného výše. Je to jen doporučení, nikdy se neuplatní samo.",
@@ -700,7 +705,7 @@
         "distribution-efficiency-help": "Podíl vody vycházející z výtoků, který se dostane k rostlinám, v %. Postřikovače ve větru nebo na svahu část ztrácejí, kapková závlaha téměř nic. Nechte prázdné pro 100 %. Zóna na 80 % zalévá o 25 % déle pro stejnou výšku vody a připočítá si jen 80 % toho, co dodá.",
         "days-between-irrigation-help": "Nechte prázdné, aby se držela obecného nastavení (Nastavení, Dny mezi zaléváním). Číslo nahradí obecné nastavení jen pro tuto zónu: 1 ji zalévá každý den, pokud potřebuje vodu, 3 nejvýše každý třetí den, 0 omezení ruší. Dny se počítají od posledního zalití této zóny.",
         "soil-moisture-sensor": "Senzor vlhkosti půdy",
-        "soil-moisture-sensor-hint": "Zóna vynechá zavlažování, dokud je půda na prahu nebo nad ním. Zásobník se zachovává.",
+        "soil-moisture-sensor-hint": "Zóna vynechá zavlažování, dokud je půda na prahu nebo nad ním. Vodní bilance se zachovává.",
         "soil-moisture-threshold": "Vynechat od",
         "calculation-method": "Evapotranspirace",
         "calculation-method-help": {
@@ -725,7 +730,8 @@
           "loam": "Hlinitá",
           "clay_loam": "Jílovitohlinitá",
           "clay": "Jílovitá",
-          "custom": "Rychlost drenáže nastavím sám"
+          "custom": "Rychlost drenáže nastavím sám",
+          "default": "Zatím nevybráno – počítá se s {value}"
         },
         "plant-types": {
           "lawn": "Trávník",
@@ -736,7 +742,8 @@
           "fruit_trees": "Ovocné dřeviny",
           "vines": "Vinná réva",
           "ground_cover": "Půdopokryvné rostliny",
-          "custom": "Plodinový koeficient nastavím sám"
+          "custom": "Plodinový faktor nastavím sám",
+          "default": "Zatím nevybráno – počítá se s plodinovým faktorem {value}"
         },
         "duration-readonly-automatic": "Spočítáno za vás: zavlažování této zóny vychází z její vodní bilance. Přepněte ji na ruční, chcete-li dobu zadat sami.",
         "duration-readonly-disabled": "Vypnutá zóna se nikdy nezalévá, takže nemá dobu zavlažování.",
@@ -744,7 +751,7 @@
       },
       "no_items": "Zatím nejsou definovány žádné zóny.",
       "title": "Zóny",
-      "module-comes-from-the-group": "Výpočetní jádro pochází ze skupiny senzorů této zóny. Změňte ho tam a každá zóna, která tuto skupinu používá, se přizpůsobí.",
+      "module-comes-from-the-group": "Modul pochází ze skupiny senzorů této zóny. Změňte ho tam a každá zóna, která tuto skupinu používá, se přizpůsobí.",
       "status": {
         "estimate": "Chybí {short}: asi {duration} ({volume}) při příštím výpočtu.",
         "will-water": "Při dalším startu bude zalévat {duration}.",
@@ -757,9 +764,9 @@
         "problem": {
           "no_sensor_group": "Nelze vypočítat: nemá skupinu senzorů. Zvolte ji na této kartě; do té doby se nezalévá.",
           "no_readings": "Nelze vypočítat: její skupina senzorů nemá žádná měření. Nezalévá se, dokud je mít nebude.",
-          "no_engine": "Nelze vypočítat: nemá výpočetní jádro. Nezalévá se, dokud ho mít nebude.",
+          "no_engine": "Nelze vypočítat: nemá modul. Nezalévá se, dokud ho mít nebude.",
           "nothing_from_engine": "Nelze vypočítat: její skupina senzorů nedává žádnou evapotranspiraci. Nezalévá se, dokud ji dávat nebude.",
-          "forecast_without_service": "Nelze vypočítat: její výpočetní jádro hledí dopředu a není nastavena žádná meteoslužba. Nezalévá se.",
+          "forecast_without_service": "Nelze vypočítat: její modul hledí dopředu a není nastavena žádná meteoslužba. Nezalévá se.",
           "error": "Nelze vypočítat: {detail}. Nezalévá se, dokud ji nepůjde vypočítat."
         },
         "no-valve": "Žádný propojený ventil, takže se tato zóna nezalévá.",
@@ -784,6 +791,11 @@
       "calculation-feedback": {
         "nothing-new": "{zone}: od posledního výpočtu žádná nová měření, takže se nic nezměnilo.",
         "failed": "{zone}: výpočet selhal ({error})."
+      },
+      "sections": {
+        "zone": "Zóna a ventil",
+        "need": "Co potřebuje",
+        "status": "Jak si stojí"
       }
     },
     "history": {
@@ -1363,7 +1375,7 @@
   },
   "observed_watering": {
     "title": "Sledované zavlažování (uzavřená smyčka)",
-    "description": "Automaticky připisujte bucket každé zóny ze skutečného zavlažování namísto resetování bucketu z automatizace. Po zapnutí vyberte v záložce Zóny pro každou zónu entitu ventilu/spínače: dokud je otevřený, bucket se připisuje z doby běhu a průtoku zóny. Pro přesné účtování můžete také pro každou zónu vybrat měřič kumulativního objemu (celkový stav typu vodoměru) a místo toho se použije naměřený objem. Důležité: když je toto zapnuto, je to jediná věc, která připisuje bucket, takže ze své zavlažovací automatizace odstraňte veškerá volání reset_bucket, abyste předešli dvojímu počítání.",
+    "description": "Automaticky připisujte vodní bilanci každé zóny ze skutečného zavlažování namísto resetování vodní bilance z automatizace. Po zapnutí vyberte v záložce Zóny pro každou zónu entitu ventilu/spínače: dokud je otevřený, vodní bilance se připisuje z doby běhu a průtoku zóny. Pro přesné účtování můžete také pro každou zónu vybrat měřič kumulativního objemu (celkový stav typu vodoměru) a místo toho se použije naměřený objem. Důležité: když je toto zapnuto, je to jediná věc, která připisuje vodní bilanci, takže ze své zavlažovací automatizace odstraňte veškerá volání reset_bucket, abyste předešli dvojímu počítání.",
     "enabled_label": "Povolit sledované zavlažování",
     "direct_control_label": "Nechat Smart Irrigation ovládat ventil",
     "direct_control_description": "Když je zapnuto, Smart Irrigation otevře propojený ventil každé zóny, počká vypočtenou dobu a poté jej zavře, bez potřeby automatizace. Probíhající běh pokračuje po restartu. Bezpečnost: ventil, který se umí zavřít sám, dostane při otevření délku běhu (Sonoff SWV přes ZHA, nebo ventil, jehož zóna má nastavené bezpečnostní MQTT téma), takže se zavře, i když Home Assistant vypadne. Každý jiný ventil zavlažuje dál, dokud se Home Assistant nevrátí: nastavte mu hardwarovou pojistku (maximální dobu běhu).",
@@ -1388,7 +1400,7 @@
   },
   "calculation_log": {
     "title": "Protokol výpočtu",
-    "description": "Zapisuje do souboru veškeré vstupy každého výpočtu, aby se dva dny, které vypadají stejně, ale zalévají velmi odlišně, daly později porovnat. Každý výpočet přidá jeden řádek: záznamy skupiny senzorů a jak byly sloučeny, mezivýsledky modulu (solární radiace, čistá radiace, ET0) a výsledný zásobník, dobu a objem. Ve výchozím stavu vypnuto; velikost souboru je omezená a soubor se rotuje, takže může zůstat zapnutý celou sezónu.",
+    "description": "Zapisuje do souboru veškeré vstupy každého výpočtu, aby se dva dny, které vypadají stejně, ale zalévají velmi odlišně, daly později porovnat. Každý výpočet přidá jeden řádek: záznamy skupiny senzorů a jak byly sloučeny, mezivýsledky modulu (solární radiace, čistá radiace, ET0) a výslednou vodní bilanci, dobu a objem. Ve výchozím stavu vypnuto; velikost souboru je omezená a soubor se rotuje, takže může zůstat zapnutý celou sezónu.",
     "enabled_label": "Zapisovat vstupy výpočtu do souboru",
     "file_hint": "Zapisuje se do config/smart_irrigation/calc_log.jsonl, jeden záznam JSON na řádek. Nejnovější záznamy jsou také součástí diagnostického souboru ke stažení (souřadnice zaokrouhlené, id entit odstraněna), takže je můžete k hlášení přiložit v jednom kroku."
   },

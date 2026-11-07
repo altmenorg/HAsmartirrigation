@@ -20,11 +20,11 @@ The weather service, the location, how often the weather is read and the checks 
 The first card, **Smart Irrigation**, has one switch, **Calculate and water**. It is on unless you turn it off. Off, Smart Irrigation:
 
 * keeps taking its weather readings and keeps its sensors up to date;
-* calculates nothing, and leaves every zone's bucket as it is;
+* calculates nothing, and leaves every zone's water balance as it is;
 * opens no valve, whether by direct valve control, the Water button of a zone or the hub's buttons, and runs no program of the [full controller](usage-full-controller.md). What is watering when you switch it off stops at once, and after a restart a run that was interrupted is closed rather than resumed;
 * fires no start event: a start trigger that is reached fires `smart_irrigation_irrigation_skipped` with the reason `irrigation_off` (see [events](usage-events.md)).
 
-Switched on again, the time it was off is not counted: each zone's next calculation starts at that moment, as after setting a bucket by hand, so the first run is not weeks of evaporation at once. The same switch is on the hub device as `switch.smart_irrigation_irrigation_enabled`, for an automation or a dashboard (the end of the season, for instance).
+Switched on again, the time it was off is not counted: each zone's next calculation starts at that moment, as after setting a water balance by hand, so the first run is not weeks of evaporation at once. The same switch is on the hub device as `switch.smart_irrigation_irrigation_enabled`, for an automation or a dashboard (the end of the season, for instance).
 
 It is not the same as postponing: a postponement holds the automatic watering back for a while and keeps calculating, so the zones are owed what the weather took meanwhile. This switch stops it all.
 
@@ -33,7 +33,7 @@ It is not the same as postponing: a postponement holds the automatic watering ba
 ### Calculating the watering duration
 One choice, **Watering duration calculated**, says when the durations are worked out:
 
-* **At a fixed time.** Every day at the time chosen below (**Calculate at**, 23:00 unless you change it), the water lost is added to each zone's bucket and the durations are set. Use it when something other than Smart Irrigation starts the watering and reads the durations whenever it likes (Irrigation Unlimited, or a schedule of your own).
+* **At a fixed time.** Every day at the time chosen below (**Calculate at**, 23:00 unless you change it), the water lost is added to each zone's water balance and the durations are set. Use it when something other than Smart Irrigation starts the watering and reads the durations whenever it likes (Irrigation Unlimited, or a schedule of your own).
 * **Just before each start.** The zones are calculated again at the time of the start trigger, with the freshest weather. There is no time to choose. Use it when Smart Irrigation itself starts the watering (direct valve control, or the start event). Because no evening calculation sets the durations with this choice, the start is placed using the live estimate of the run's length, and placed again at every weather reading.
 * **Only when I ask.** Nothing is calculated by itself. Use the calculate buttons or the [services](usage-services.md).
 
@@ -47,7 +47,7 @@ Each zone reads only the readings that arrived since its own last calculation, a
 
 Irrigation usually starts hours after the calculation, and it can rain in between. When the start trigger is reached, each automatic zone's duration is reworked against the rain collected since its calculation, so a night of rain shortens the run or cancels it instead of watering the full calculated amount on wet ground.
 
-The bucket itself is left alone by that. It is a running balance: irrigation credits it by the water actually applied and the next calculation adds the whole interval's rain, so crediting the rain at the start as well would count it twice. A run is only ever shortened this way, never lengthened, and a dry night leaves the calculated duration exactly as it is.
+The water balance itself is left alone by that. It is a running balance: irrigation credits it by the water actually applied and the next calculation adds the whole interval's rain, so crediting the rain at the start as well would count it twice. A run is only ever shortened this way, never lengthened, and a dry night leaves the calculated duration exactly as it is.
 
 Note that the run still starts at the time it was scheduled for. A trigger set to finish at sunrise works back from the duration known at calculation time, so a run shortened by rain finishes early rather than starting late.
 
@@ -69,20 +69,20 @@ A greenhouse is the exception and keeps the daily equation when it has no sensor
 **Nights, and why the result can read a few percent under Open-Meteo.** The hourly equation (FAO-56, Eq. 53) is built for the hours with sun, and the night is where it is least certain. A night hour has no radiation to measure, so the sky has to be assumed to know how much heat the ground loses, and a night's wind and dry air can add as much as they like. Two things are worth knowing:
 
 - **Which sky.** FAO-56 gives two ways. The preferred one carries the ratio of measured to clear-sky radiation from the daylight into the night, and that is what a calculation does whenever its window contains daylight. The other, which the paper calls "more approximate", assumes a ratio of 0.4 to 0.6 at night in humid climates and 0.7 to 0.8 in arid ones; Smart Irrigation reads it off the humidity of the hour, and uses it only when the window has no daylight to measure from (the live estimate in the small hours, a calculation over a few hours of night). Open-Meteo uses that second way for every night. On clear windy autumn days the first way loses more heat at night, so Smart Irrigation reads 5 to 10% under Open-Meteo's own evapotranspiration, almost all of it from the night hours, while the daylight hours agree to within a few percent. Both are FAO-56; neither is measured against the ground here.
-- **Nothing is negative.** A calm humid night prices a hair below zero, which is dew forming on the leaves and not water in the soil. Every hour is worth zero at the least, and a window's total never falls as the window grows, so a bucket never rises without rain. Open-Meteo reports 0.00 for those hours too.
+- **Nothing is negative.** A calm humid night prices a hair below zero, which is dew forming on the leaves and not water in the soil. Every hour is worth zero at the least, and a window's total never falls as the window grows, so a water balance never rises without rain. Open-Meteo reports 0.00 for those hours too.
 
 The American standard of the same equation (ASCE-EWRI 2005) goes further than FAO-56 at night, with a larger surface-resistance term (Cd of 0.96 against 0.24 by day, for the short reference). That would lower the night hours, not raise them. Smart Irrigation keeps FAO-56's single form, whose worked example is its test, and reports the difference rather than tune the model to another implementation.
 
-**Forecast days.** A zone whose engine looks ahead waters on the mean of today and the days to come, so a hot tomorrow raises today's run. Those days are now read hour by hour as well: each one is priced as its own 24 hours, and the measured window joins the average as the rate per day it implies. Every term of that mean is then hourly, which is the point, since averaging an hourly sum with a day computed from its own averages would put the bias straight back in.
+**Forecast days.** A zone whose module looks ahead waters on the mean of today and the days to come, so a hot tomorrow raises today's run. Those days are now read hour by hour as well: each one is priced as its own 24 hours, and the measured window joins the average as the rate per day it implies. Every term of that mean is then hourly, which is the point, since averaging an hourly sum with a day computed from its own averages would put the bias straight back in.
 
-With any other module, or when the hours cannot be reconstructed (no readings, a field missing everywhere, a greenhouse with no radiation or illuminance sensor, or fewer forecast days available than the engine asks for), the daily equation keeps being used, so switching it on never leaves a zone without a calculation. The calculation explanation says which form was used.
+With any other module, or when the hours cannot be reconstructed (no readings, a field missing everywhere, a greenhouse with no radiation or illuminance sensor, or fewer forecast days available than the module asks for), the daily equation keeps being used, so switching it on never leaves a zone without a calculation. The calculation explanation says which form was used.
 
 #### Just before each start
 The calculation at a fixed time prices the evapotranspiration, the temperature and the wind of the hours before it. A start trigger at sunset then waters on data some twenty hours old; only the rain was brought up to date at the start (rain since the calculation, the forecast, the rain history). With **Just before each start** the zones are calculated again, with fresh weather, at the time of the start trigger. It happens before every start, not only the first of the day: a second run on a hot afternoon waters for what the zones lost since the morning's run. Nothing is done when a zone was calculated within the hour, and a calculation that fails leaves the run to go ahead on the earlier numbers.
 
 ### Count only rain that reaches the roots
 
-On a new installation, and in the advanced mode of the **Calculating the watering duration** card. A shower smaller than a fifth of the evapotranspiration of the period wets the leaves and evaporates before the soil sees it, so it is not counted as water for the roots. It acts on the rain that fell, in every calculation, and has nothing to do with the rain forecast options of the [Skip on weather](configuration-weather.md#skipping-a-run) page. It is judged on the whole period between two calculations, not day by day, so a period of several days ignores less than a day-by-day reading would. It does not model runoff on heavy rain; the maximum bucket still caps what the soil keeps. An installation that already existed keeps its setting as it was, and the switch is shown when it is off.
+On a new installation, and in the advanced mode of the **Calculating the watering duration** card. A shower smaller than a fifth of the evapotranspiration of the period wets the leaves and evaporates before the soil sees it, so it is not counted as water for the roots. It acts on the rain that fell, in every calculation, and has nothing to do with the rain forecast options of the [Skip on weather](configuration-weather.md#skipping-a-run) page. It is judged on the whole period between two calculations, not day by day, so a period of several days ignores less than a day-by-day reading would. It does not model runoff on heavy rain; the maximum water balance still caps what the soil keeps. An installation that already existed keeps its setting as it was, and the switch is shown when it is off.
 
 ### Days between irrigation events
 Configure the minimum number of days that must pass between irrigation events. This setting allows you to control how frequently irrigation can occur, which is useful for:
@@ -110,7 +110,7 @@ The system automatically tracks the number of days since the last irrigation eve
 This feature works alongside existing precipitation forecasting - if both restrictions apply, both must be satisfied for irrigation to occur.
 
 ### Seasonal adjustments
-In advanced mode, the general settings have a **Seasonal adjustments** card. An adjustment covers a range of months (November to February is a range, and so is March to September) and some zones (`all`, or their numbers separated by commas), and does two things: its **multiplier** scales the crop factor of those zones for those months (1 changes nothing, 0.5 halves the water use), and its **threshold offset** is added to their irrigation threshold. Several adjustments that cover the same month multiply. They apply to the evapotranspiration, not to the duration, so the bucket follows the season.
+In advanced mode, the general settings have a **Seasonal adjustments** card. An adjustment covers a range of months (November to February is a range, and so is March to September) and some zones (`all`, or their numbers separated by commas), and does two things: its **crop factor multiplier** scales the crop factor of those zones for those months (1 changes nothing, 0.5 halves the water use), and its **threshold offset** is added to their irrigation threshold. Several adjustments that cover the same month multiply. They apply to the evapotranspiration, not to the duration, so the water balance follows the season.
 
 The same adjustments can be created from automations with the `create_seasonal_adjustment`, `update_seasonal_adjustment` and `delete_seasonal_adjustment` [actions](usage-services.md). For a crop with a crop factor for every month, the zone has a **Crop factor by month** table instead, which is easier than twelve adjustments.
 
@@ -125,7 +125,7 @@ Each record holds the complete chain:
 * **Identification**: local and UTC timestamp, zone, sensor group, calculation module, integration version.
 * **Inputs**: the interval used (start, end, hours) and, per field, the aggregated value, the aggregation method applied (average / sum / minimum / maximum / riemann sum / delta / ...), how many records went into it, their minimum and maximum, the source (sensor, weather service, static) and whether the value was carried over from the last entry.
 * **Module intermediates**: for PyETO the latitude, elevation, coastal flag, day of year, `et_rad`, `cs_rad`, `sol_rad` (and whether it was provided or estimated from temperature), `net_in_sol_rad`, `avp`, `net_out_lw_rad`, `net_rad` and `eto`, per day, plus the deltas list and its mean. The Passthrough and Static modules record their (fewer) inputs the same way.
-* **Outputs**: ET deficiency, interval multiplier, precipitation, delta, bucket before and after, maximum bucket, drainage rate and drainage, precipitation rate, resulting duration and the volume in m³.
+* **Outputs**: ET deficiency, interval multiplier, precipitation, delta, water balance before and after, maximum water balance, drainage rate and drainage, precipitation rate, resulting duration and the volume in m³.
 
 Dry runs (the `dry_run` option of the [calculate services](usage-services.md)) are logged too -
 they are exactly when you ask "why this number?" - but every record carries a `dry_run` flag,
@@ -161,7 +161,7 @@ The **Clear all weather data** action is still there for a deliberate reset.
 The **Start triggers** card holds the active trigger select. Its last choice is **None (Smart Irrigation starts no watering)**: nothing starts the watering, whatever the weather, while the durations are still calculated. It is the way to block Smart Irrigation from watering. The [Info page](usage-info.md) then says "No trigger is active". No message is shown for the default trigger.
 
 ### Full control and observed watering
-**Full control** turns on valve control and adds a Watering tab, where the start trigger, the sequencing and cycle and soak then live: see [the full controller](usage-full-controller.md). **Observed watering** credits the bucket with what really ran: see [observed watering](configuration-closed-loop.md).
+**Full control** turns on valve control and adds a Watering tab, where the start trigger, the sequencing and cycle and soak then live: see [the full controller](usage-full-controller.md). **Observed watering** credits the water balance with what really ran: see [observed watering](configuration-closed-loop.md).
 
 ## System
 

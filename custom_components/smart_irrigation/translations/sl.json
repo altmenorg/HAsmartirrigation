@@ -330,8 +330,8 @@
       "description": "Cona **{zone}** ni bila izračunana: njena skupina senzorjev nima meritev, iz katerih bi lahko računala. Dokler jih nima, se primanjkljaj cone ne spreminja in cona se ne zaliva.\n\nPreveri, ali ima skupina senzorjev vire in ali ti poročajo, posodobi vremenske podatke in nato izračunaj cono. Obvestilo izgine samo ob naslednjem uspešnem izračunu."
     },
     "zone_not_calculated_no_engine": {
-      "title": "Cone {zone} ni mogoče izračunati: ni računskega modula",
-      "description": "Cona **{zone}** nima računskega modula, zato se ne izračuna in ne zaliva.\n\nNa njeni kartici v zavihku Cone izberi, kako naj se izračuna. Obvestilo izgine samo ob naslednjem uspešnem izračunu."
+      "title": "Cone {zone} ni mogoče izračunati: ni modula",
+      "description": "Cona **{zone}** nima modula, zato se ne izračuna in ne zaliva.\n\nNa njeni kartici v zavihku Cone izberi, kako naj se izračuna. Obvestilo izgine samo ob naslednjem uspešnem izračunu."
     },
     "zone_not_calculated_nothing_from_engine": {
       "title": "Cone {zone} ni mogoče izračunati: ni evapotranspiracije",
@@ -339,7 +339,7 @@
     },
     "zone_not_calculated_forecast_without_service": {
       "title": "Cone {zone} ni mogoče izračunati: napoved brez vremenske storitve",
-      "description": "Računski modul cone **{zone}** gleda dneve naprej, za kar potrebuje vremensko storitev, ta pa ni nastavljena. Cona se ne zaliva, dokler je ni mogoče izračunati.\n\nNastavi vremensko storitev ali nastavi dneve napovedi modula na 0. Obvestilo izgine samo ob naslednjem uspešnem izračunu."
+      "description": "Modul cone **{zone}** gleda dneve naprej, za kar potrebuje vremensko storitev, ta pa ni nastavljena. Cona se ne zaliva, dokler je ni mogoče izračunati.\n\nNastavi vremensko storitev ali nastavi dneve napovedi modula na 0. Obvestilo izgine samo ob naslednjem uspešnem izračunu."
     },
     "zone_not_calculated_error": {
       "title": "Cone {zone} ni mogoče izračunati: napaka",

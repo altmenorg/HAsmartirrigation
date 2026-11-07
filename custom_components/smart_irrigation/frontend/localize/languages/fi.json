@@ -24,7 +24,7 @@
       "size": "koko",
       "throughput": "läpäisy",
       "state": "tila",
-      "bucket": "bucket",
+      "bucket": "vesitase",
       "last_updated": "viimeksi päivitetty",
       "last_calculated": "viimeksi laskettu",
       "number_of_data_points": "datapisteiden määrä"
@@ -55,13 +55,13 @@
         "module-returned-evapotranspiration-deficiency": "Moduuli palautti haihdunnan (evapotranspiraation) vajeen ( = et0 * hour_multiplier * Kc + sademäärä), joka on",
         "module-returned-hourly-evapotranspiration-deficiency": "Moduuli laski kasvin haihdunnan alijäämän yhteen tunti tunnilta ( = tuntikohtaisten et0 * Kc + sade -arvojen summa) ajalta",
         "crop-factor-is": "Kasvikerroin on",
-        "bucket-was": "Bucket oli",
-        "new-bucket-values-is": "Uusi bucket-arvo on",
-        "bucket": "bucket",
-        "old-bucket-variable": "old_bucket",
-        "max-bucket-variable": "max_bucket",
+        "bucket-was": "Vesitase oli",
+        "new-bucket-values-is": "Uusi vesitase on",
+        "bucket": "vesitase",
+        "old-bucket-variable": "old_water_balance",
+        "max-bucket-variable": "max_water_balance",
         "delta": "delta",
-        "bucket-less-than-zero-irrigation-necessary": "Koska bucket < 0, kastelu on tarpeen",
+        "bucket-less-than-zero-irrigation-necessary": "Koska vesitase < 0, kastelu on tarpeen",
         "steps-taken-to-calculate-duration": "Tarkan keston laskemiseksi suoritettiin seuraavat vaiheet",
         "precipitation-rate-defined-as": "Sademäärän nopeus määritellään seuraavasti",
         "precipitation-rate-is": "Sateen voimakkuus on",
@@ -76,9 +76,9 @@
         "duration-after-maximum-duration-is": "joten kesto on",
         "lead-time-is-applied": "Lopuksi sovelletaan ennakkoaikaa. Ennakkoaika on",
         "duration-after-lead-time-is": "joten lopullinen kesto on",
-        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Koska bucket >= 0, kastelu ei ole tarpeen ja kestoksi asetetaan",
-        "maximum-bucket-is": "Bucketin enimmäiskoko on",
-        "drainage-rate-is": "Valumisnopeus kyllästyneenä (bucket maksimissa) on",
+        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Koska vesitase >= 0, kastelu ei ole tarpeen ja kestoksi asetetaan",
+        "maximum-bucket-is": "Vesitaseen enimmäisarvo on",
+        "drainage-rate-is": "Valumisnopeus kyllästyneenä (vesitase maksimissa) on",
         "current-drainage-is": "Nykyinen valuminen lasketaan seuraavasti",
         "drainage-replayed": "Jakso laskettiin uudelleen tunti tunnilta, joten kukin sade valuu pois vasta siitä tunnista, jona se satoi. Valunta",
         "no-drainage": "Nykyinen valuminen on 0, koska",
@@ -151,7 +151,7 @@
           "question": "Valmis luomaan",
           "zone": "Alue",
           "environment": "Ympäristö",
-          "engine": "Laskentamoottori",
+          "engine": "Moduuli",
           "sources": "Lähteet",
           "from-the-service": "sääpalvelusta",
           "help": "Tämä luo laskentamoduulin, anturiryhmän ja alueen, täsmälleen kuten muut välilehdet tekisivät. Jälkeenpäin mikään ei ole lukittu."
@@ -240,7 +240,7 @@
             "calc-when-manual": "Vain pyydettäessä",
             "calc-when-hint": "Juuri ennen jokaista aloitusta: aloitusliipaisimen hetkellä, tuoreimmilla säätiedoilla. Oikea valinta, kun Smart Irrigation käynnistää kastelun (suora venttiiliohjaus tai aloitustapahtuma). Kiinteänä kellonaikana: joka päivä alla olevaan aikaan, kun kastelun käynnistää jokin muu kuin Smart Irrigation ja se lukee kestot milloin haluaa (Irrigation Unlimited, oma aikataulu). Vain pyydettäessä: mitään ei lasketa itsestään, käytä laskentapainikkeita tai palveluja.",
             "calc-time": "Laske kello",
-            "calc-time-hint": "Päivittäinen laskenta: menetetty vesi lisätään kunkin vyöhykkeen bucketiin ja kastelun kestot asetetaan.",
+            "calc-time-hint": "Päivittäinen laskenta: menetetty vesi lisätään kunkin vyöhykkeen vesitaseeseen ja kastelun kestot asetetaan.",
             "hourly-calculation": "Laske haihdunta tunti tunnilta",
             "hourly-calculation-hint": "Laskee FAO-56:n tuntiyhtälön yhteen jokaiselta tunnilta viime laskennan jälkeen sen sijaan että soveltaisi päiväyhtälöä keskiarvoihin, jotka peittävät sen, tulivatko aurinko ja helle yhtä aikaa. Uusi asennus aloittaa tällä; ennen tätä olemassa ollut asennus pitää päiväyhtälön kunnes vaihdat, koska nämä kaksi antavat eri luvut eikä kastelusi pidä muuttua päivityksestä. Kunkin tunnin aurinko tulee säteily- tai valoisuusanturista, sääpalvelun omasta tuntihistoriasta, tai päivän lämpötilavaihtelusta. Tästä on hyötyä, kun lukemia tulee pitkin päivää: yksi päivitys päivässä jättää yhden lukeman voimaan neljäksikymmeneksineljäksi tunniksi, ja silloin kumpaankaan muotoon ei voi luottaa. Kasvihuone ilman omaa anturia pitää päiväyhtälön."
           }
@@ -250,7 +250,7 @@
             "warning-update-time-on-or-after-calc-time": "Varoitus: säätietojen päivitysaika on laskenta-ajankohtana tai sen jälkeen"
           },
           "header": "Automaattinen säätietojen päivitys",
-          "description": "Kerää ja tallenna säätiedot automaattisesti. Säätietoja tarvitaan vyöhykkeiden bucketien ja kestojen laskemiseen.",
+          "description": "Kerää ja tallenna säätiedot automaattisesti. Säätietoja tarvitaan vyöhykkeiden vesitaseiden ja kestojen laskemiseen.",
           "labels": {
             "auto-update-enabled": "Päivitä säätiedot automaattisesti",
             "auto-update-schedule": "Päivitysaikataulu",
@@ -527,9 +527,9 @@
           },
           "greenhouse": "Kasvihuone",
           "greenhouse_description": "Suljettu ympäristö: kasvihuone, muovitunneli, mikä tahansa lasin tai muovin alla. Näille alueille ei tule sadetta, joten sade jätetään niiden vesitasapainon ulkopuolelle ja sen kentät piilotetaan. Kaksi asiaa sinun on asetettava itse, koska niitä ei voi arvata: anna Tuulen nopeudelle kiinteä arvo lähellä nollaa, koska laskenta olettaa vapaan ilman, ja käytä Auringon säteilylle valoanturia, koska lasitus suodattaa taivaan.",
-          "module": "Laskentamoottori",
-          "module_description": "Tämä ryhmä tarjoaa vain ne lähteet, joita tämä moottori lukee. Sitä käyttävät alueet perivät valinnan.",
-          "module_undecided": "Moottoria ei ole vielä valittu, joten kaikki lähteet tarjotaan ja jokainen tätä ryhmää käyttävä alue pitää omansa. Valitse yksi nähdäksesi vain ne lähteet, joita se lukee.",
+          "module": "Moduuli",
+          "module_description": "Tämä ryhmä tarjoaa vain ne lähteet, joita tämä moduuli lukee. Sitä käyttävät alueet perivät valinnan.",
+          "module_undecided": "Moduulia ei ole vielä valittu, joten kaikki lähteet tarjotaan ja jokainen tätä ryhmää käyttävä alue pitää omansa. Valitse yksi nähdäksesi vain ne lähteet, joita se lukee.",
           "wind_height": "Tuulimittarin korkeus (tyhjä: 2 m)",
           "rain_not_from_entity": "Sääentiteetti ei anna satanutta sadetta, vain ennusteen: valitse tähän sadeanturi, muuten vyöhykkeet kastellaan jokaisen sadekuuron jälkeen.",
           "rain_hint_entity": "Juuri nyt satava sade, intensiteettinä. Sääentiteetti vain ennustaa sen: valitse anturi, joka mittaa sadetta."
@@ -592,17 +592,21 @@
         "calculate": "Laske",
         "information": "Tiedot",
         "update": "Päivitä",
-        "reset-bucket": "Nollaa bucket",
+        "reset-bucket": "Nollaa vesitase",
         "view-weather-info": "Näytä säätiedot",
         "view-weather-info-message": "Säätietoja saatavilla:",
         "view-watering-calendar": "Näytä kastelukalenteri",
         "water": "Kastele",
-        "calculating": "Lasketaan…"
+        "calculating": "Lasketaan…",
+        "change": "Muuta",
+        "done": "Valmis"
       },
       "cards": {
         "add-zone": {
           "actions": {
-            "add": "Lisää vyöhyke"
+            "add": "Lisää vyöhyke",
+            "assistant": "Määritä se avustajalla",
+            "cancel": "Peruuta"
           },
           "header": "Lisää vyöhyke"
         },
@@ -610,21 +614,22 @@
           "actions": {
             "calculate-all": "Laske kaikki vyöhykkeet",
             "update-all": "Päivitä kaikki vyöhykkeet",
-            "reset-all-buckets": "Nollaa kaikki bucketit",
+            "reset-all-buckets": "Nollaa kaikki vesitaseet",
             "clear-all-weatherdata": "Tyhjennä kaikki säätiedot"
           },
-          "header": "Toiminnot kaikille vyöhykkeille"
+          "header": "Toiminnot kaikille vyöhykkeille",
+          "reset-hint": "Nämä kaksi hylkäävät kaikkien vyöhykkeiden tiedot. Kumpikin kysyy ensin."
         }
       },
       "description": "Määritä tässä yksi tai useampi kasteluvyöhyke. Kastelun kesto lasketaan vyöhykekohtaisesti koon, läpäisyn, tilan, moduulin ja anturiryhmän mukaan.",
       "labels": {
-        "bucket": "Bucket",
+        "bucket": "Vesitase",
         "et-deficiency": "Päivittäinen ET-alijäämä",
         "duration": "Kesto",
         "lead-time": "Ennakkoaika",
         "mapping": "Anturiryhmä",
         "maximum-duration": "Enimmäiskesto",
-        "multiplier": "Kerroin",
+        "multiplier": "Kasvikerroin (Kc)",
         "name": "Nimi",
         "input-method": "Syöttötapa",
         "input-methods": {
@@ -647,13 +652,13 @@
           "manual": "Manuaalinen"
         },
         "throughput": "Läpäisy",
-        "maximum-bucket": "Bucketin enimmäisarvo",
+        "maximum-bucket": "Vesitaseen enimmäisarvo",
         "last_calculated": "Viimeksi laskettu",
         "data-last-updated": "Tiedot viimeksi päivitetty",
         "data-number-of-data-points": "Datapisteiden määrä",
         "drainage_rate": "Valumisnopeus",
         "linked-entity": "Liitetty venttiili/kytkin",
-        "linked-entity-hint": "Venttiili tai kytkin, joka kastelee tämän vyöhykkeen. Aina kun se on käynnissä (manuaalinen hana, automaatio tai Smart Irrigation itse, kun suora venttiilin ohjaus on käytössä), bucketiin hyvitetään käyntiaika ja vyöhykkeen läpäisy. Vaaditaan suljetun silmukan ominaisuuksiin.",
+        "linked-entity-hint": "Venttiili tai kytkin, joka kastelee tämän vyöhykkeen. Aina kun se on käynnissä (manuaalinen hana, automaatio tai Smart Irrigation itse, kun suora venttiilin ohjaus on käytössä), vesitaseeseen hyvitetään käyntiaika ja vyöhykkeen läpäisy. Vaaditaan suljetun silmukan ominaisuuksiin.",
         "supply": "Pumppu tai pääventtiili",
         "supply-none": "Ei mitään",
         "measured-flow-help": "Usean ajon aikana vyöhykkeen virtausmittari mittasi virtauksen, joka poikkeaa yllä asetetusta. Se on vain neuvo, eikä sitä oteta koskaan käyttöön itsestään.",
@@ -700,7 +705,7 @@
         "distribution-efficiency-help": "Suuttimista tulevan veden osuus, joka päätyy kasveille, %:na. Sadettimet tuulessa tai rinteessä menettävät osan, tippukastelu lähes ei mitään. Jätä tyhjäksi arvolle 100 %. Alue arvolla 80 % kastelee 25 % kauemmin samalle vesikerrokselle ja hyvittää vain 80 % siitä, mitä se antaa.",
         "days-between-irrigation-help": "Jätä tyhjäksi, jos haluat noudattaa yleisasetusta (Asetukset, Kastelujen väliset päivät). Luku korvaa yleisasetuksen vain tälle alueelle: 1 kastelee sen joka päivä jos se tarvitsee vettä, 3 korkeintaan joka kolmas päivä, 0 poistaa rajoituksen. Päivät lasketaan siitä, kun tätä aluetta kasteltiin viimeksi.",
         "soil-moisture-sensor": "Maankosteusanturi",
-        "soil-moisture-sensor-hint": "Alue jää kastelun väliin niin kauan kuin maa on rajassa tai sen yli. Varanto säilytetään.",
+        "soil-moisture-sensor-hint": "Alue jää kastelun väliin niin kauan kuin maa on rajassa tai sen yli. Vesitase säilytetään.",
         "soil-moisture-threshold": "Ohita arvosta",
         "calculation-method": "Haihdunta",
         "calculation-method-help": {
@@ -725,7 +730,8 @@
           "loam": "Multamaa",
           "clay_loam": "Savinen multamaa",
           "clay": "Savi",
-          "custom": "Asetan kuivatusnopeuden itse"
+          "custom": "Asetan kuivatusnopeuden itse",
+          "default": "Ei vielä valittu – lasketaan arvolla {value}"
         },
         "plant-types": {
           "lawn": "Nurmikko",
@@ -736,7 +742,8 @@
           "fruit_trees": "Hedelmäpuut",
           "vines": "Viiniköynnökset",
           "ground_cover": "Maanpeitekasvit",
-          "custom": "Asetan kasvikertoimen itse"
+          "custom": "Asetan kasvikertoimen itse",
+          "default": "Ei vielä valittu – lasketaan kasvikertoimella {value}"
         },
         "duration-readonly-automatic": "Laskettu puolestasi: tämän alueen kastelu tulee sen vesitasapainosta. Aseta se käsikäytölle, jos haluat kirjoittaa keston itse.",
         "duration-readonly-disabled": "Pois päältä olevaa aluetta ei koskaan kastella, joten sillä ei ole kasteluaikaa.",
@@ -744,7 +751,7 @@
       },
       "no_items": "Vyöhykkeitä ei ole vielä määritetty.",
       "title": "Vyöhykkeet",
-      "module-comes-from-the-group": "Laskentamoottori tulee tämän alueen anturiryhmästä. Vaihda se siellä, niin jokainen tätä ryhmää käyttävä alue seuraa perässä.",
+      "module-comes-from-the-group": "Moduuli tulee tämän alueen anturiryhmästä. Vaihda se siellä, niin jokainen tätä ryhmää käyttävä alue seuraa perässä.",
       "status": {
         "estimate": "{short} vajaa: noin {duration} ({volume}) seuraavassa laskennassa.",
         "will-water": "Kastelee {duration} seuraavalla aloituksella.",
@@ -757,9 +764,9 @@
         "problem": {
           "no_sensor_group": "Ei voida laskea: sillä ei ole anturiryhmää. Valitse se tältä kortilta; ei kastella siihen asti.",
           "no_readings": "Ei voida laskea: sen anturiryhmällä ei ole lukemia. Ei kastella ennen kuin on.",
-          "no_engine": "Ei voida laskea: sillä ei ole laskentamoottoria. Ei kastella ennen kuin on.",
+          "no_engine": "Ei voida laskea: sillä ei ole moduulia. Ei kastella ennen kuin on.",
           "nothing_from_engine": "Ei voida laskea: sen anturiryhmä ei anna haihduntaa. Ei kastella ennen kuin antaa.",
-          "forecast_without_service": "Ei voida laskea: sen laskentamoottori katsoo eteenpäin, eikä sääpalvelua ole määritetty. Ei kastella.",
+          "forecast_without_service": "Ei voida laskea: sen moduuli katsoo eteenpäin, eikä sääpalvelua ole määritetty. Ei kastella.",
           "error": "Ei voida laskea: {detail}. Ei kastella ennen kuin laskenta onnistuu."
         },
         "no-valve": "Ei liitettyä venttiiliä, joten tätä aluetta ei kastella.",
@@ -784,6 +791,11 @@
       "calculation-feedback": {
         "nothing-new": "{zone}: ei uusia lukemia edellisen laskennan jälkeen, joten mikään ei muuttunut.",
         "failed": "{zone}: laskenta epäonnistui ({error})."
+      },
+      "sections": {
+        "zone": "Vyöhyke ja venttiili",
+        "need": "Mitä se tarvitsee",
+        "status": "Tilanne"
       }
     },
     "history": {
@@ -1363,7 +1375,7 @@
   },
   "observed_watering": {
     "title": "Havaittu kastelu (suljettu silmukka)",
-    "description": "Hyvitä jokaisen vyöhykkeen bucket automaattisesti todellisesta kastelusta sen sijaan, että nollaisit bucketin automaatiosta. Kun tämä on käytössä, valitse venttiili-/kytkinentiteetti kullekin vyöhykkeelle Vyöhykkeet-välilehdellä: kun se on auki, bucketiin hyvitetään käyntiaika ja vyöhykkeen läpäisy. Tarkkaa kirjanpitoa varten voit myös valita kumulatiivisen tilavuusmittarin (vesimittarityyppinen kokonaislukema) kullekin vyöhykkeelle, jolloin käytetään mitattua tilavuutta. Tärkeää: kun tämä on käytössä, se on ainoa asia, joka hyvittää bucketin, joten poista kaikki reset_bucket-kutsut kasteluautomaatiostasi kaksinkertaisen laskennan välttämiseksi.",
+    "description": "Hyvitä jokaisen vyöhykkeen vesitase automaattisesti todellisesta kastelusta sen sijaan, että nollaisit vesitaseen automaatiosta. Kun tämä on käytössä, valitse venttiili-/kytkinentiteetti kullekin vyöhykkeelle Vyöhykkeet-välilehdellä: kun se on auki, vesitaseeseen hyvitetään käyntiaika ja vyöhykkeen läpäisy. Tarkkaa kirjanpitoa varten voit myös valita kumulatiivisen tilavuusmittarin (vesimittarityyppinen kokonaislukema) kullekin vyöhykkeelle, jolloin käytetään mitattua tilavuutta. Tärkeää: kun tämä on käytössä, se on ainoa asia, joka hyvittää vesitaseen, joten poista kaikki reset_bucket-kutsut kasteluautomaatiostasi kaksinkertaisen laskennan välttämiseksi.",
     "enabled_label": "Ota havaittu kastelu käyttöön",
     "direct_control_label": "Anna Smart Irrigationin ohjata venttiiliä",
     "direct_control_description": "Kun tämä on käytössä, Smart Irrigation avaa kunkin vyöhykkeen liitetyn venttiilin, odottaa lasketun keston ja sulkee sen sitten, ilman automaatiota. Käynnissä oleva ajo jatkuu uudelleenkäynnistyksen jälkeen. Turvallisuus: venttiili, joka osaa sulkeutua itse, saa avautuessaan ajon keston (Sonoff SWV ZHA:ssa tai venttiili, jonka vyöhykkeelle on asetettu MQTT-turva-aihe), joten se sulkeutuu, vaikka Home Assistant kaatuisi. Mikä tahansa muu venttiili jatkaa kastelua, kunnes Home Assistant palaa: anna sille laitteistotason vikaturva (enimmäiskäyntiaika).",
@@ -1388,7 +1400,7 @@
   },
   "calculation_log": {
     "title": "Laskentaloki",
-    "description": "Kirjoittaa jokaisen laskennan koko lähtötiedot tiedostoon, jotta kaksi samanlaiselta näyttävää mutta hyvin eri tavalla kastelevaa päivää voi verrata jälkikäteen. Jokainen laskenta lisää yhden rivin: anturiryhmän lukemat ja miten ne yhdistettiin, moduulin välitulokset (auringon säteily, nettosäteily, ET0) sekä niistä syntyvä varanto, kesto ja määrä. Pois päältä oletuksena; tiedoston koko on rajattu ja se kierrätetään, joten se voi olla päällä koko kauden.",
+    "description": "Kirjoittaa jokaisen laskennan koko lähtötiedot tiedostoon, jotta kaksi samanlaiselta näyttävää mutta hyvin eri tavalla kastelevaa päivää voi verrata jälkikäteen. Jokainen laskenta lisää yhden rivin: anturiryhmän lukemat ja miten ne yhdistettiin, moduulin välitulokset (auringon säteily, nettosäteily, ET0) sekä niistä syntyvä vesitase, kesto ja määrä. Pois päältä oletuksena; tiedoston koko on rajattu ja se kierrätetään, joten se voi olla päällä koko kauden.",
     "enabled_label": "Kirjoita laskennan lähtötiedot tiedostoon",
     "file_hint": "Kirjoitetaan tiedostoon config/smart_irrigation/calc_log.jsonl, yksi JSON-tietue riviä kohden. Uusimmat tietueet ovat mukana myös vianmäärityksen latauksessa (koordinaatit pyöristetty, entiteettien tunnukset poistettu), joten voit liittää ne vikailmoitukseen yhdellä kertaa."
   },

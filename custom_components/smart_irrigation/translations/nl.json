@@ -5,7 +5,7 @@
         "name": "Duur"
       },
       "bucket": {
-        "name": "Emmer"
+        "name": "Waterbalans"
       },
       "et_value": {
         "name": "Toegepaste ET"
@@ -23,7 +23,7 @@
         "name": "Waterverbruik"
       },
       "live_bucket": {
-        "name": "Live emmer"
+        "name": "Live waterbalans"
       },
       "last_run_volume": {
         "name": "Volume laatste ronde"
@@ -45,7 +45,7 @@
         "name": "Berekenen"
       },
       "reset_bucket": {
-        "name": "Emmer terugzetten"
+        "name": "Waterbalans terugzetten"
       },
       "reset_usage": {
         "name": "Waterverbruik terugzetten"
@@ -151,7 +151,7 @@
         },
         "dry_run": {
           "name": "Proefrun",
-          "description": "Melden wat de berekening zou doen, zonder de emmer, de zone of de verzamelde weergegevens te wijzigen"
+          "description": "Melden wat de berekening zou doen, zonder de waterbalans, de zone of de verzamelde weergegevens te wijzigen"
         }
       }
     },
@@ -169,7 +169,7 @@
         },
         "dry_run": {
           "name": "Proefrun",
-          "description": "Melden wat de berekening zou doen, zonder de voorraad, de zone of de verzamelde weergegevens te wijzigen"
+          "description": "Melden wat de berekening zou doen, zonder de waterbalans, de zone of de verzamelde weergegevens te wijzigen"
         }
       }
     },
@@ -188,42 +188,42 @@
       }
     },
     "set_bucket": {
-      "name": "Stel emmer in",
-      "description": "Stel emmer in voor een zone met een specifieke waarde",
+      "name": "Stel waterbalans in",
+      "description": "Stel de waterbalans van een zone in op een waarde",
       "fields": {
         "entity": {
           "name": "Entiteit",
-          "description": "Zone voor de emmer in te stellen"
+          "description": "Zone waarvoor de waterbalans wordt ingesteld"
         },
         "new_bucket_value": {
-          "name": "Nieuwe emmer waarde",
-          "description": "nieuwe emmerwaarde"
+          "name": "Nieuwe waterbalans",
+          "description": "Nieuwe waarde van de waterbalans"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Stel alle emmers in",
-      "description": "Set buckets for all zones to a specific value",
+      "name": "Stel alle waterbalansen in",
+      "description": "Stel de waterbalans van alle zones in op een waarde",
       "fields": {
         "new_bucket_value": {
-          "name": "New bucket value",
-          "description": "new value of the bucket"
+          "name": "Nieuwe waterbalans",
+          "description": "Nieuwe waarde van de waterbalans"
         }
       }
     },
     "reset_bucket": {
-      "name": "Reset bucket",
-      "description": "Reset bucket for a zone to 0",
+      "name": "Waterbalans terugzetten",
+      "description": "Zet de waterbalans van een zone terug op 0",
       "fields": {
         "entity": {
           "name": "Entity",
-          "description": "Zone to reset bucket for"
+          "description": "Zone waarvoor de waterbalans wordt teruggezet"
         }
       }
     },
     "reset_all_buckets": {
-      "name": "Reset all buckets",
-      "description": "Reset bucket for all zones to 0"
+      "name": "Alle waterbalansen terugzetten",
+      "description": "Zet de waterbalans van alle zones terug op 0"
     },
     "clear_all_weather_data": {
       "name": "Clear all weather data",
@@ -262,8 +262,8 @@
           "description": "Zone to set configuration values"
         },
         "new_bucket_value": {
-          "name": "New bucket value",
-          "description": "New value for the bucket"
+          "name": "Nieuwe waterbalans",
+          "description": "Nieuwe waarde voor de waterbalans"
         },
         "new_multiplier_value": {
           "name": "New multiplier value",
@@ -295,7 +295,7 @@
     },
     "credit_watering": {
       "name": "Beregening bijschrijven",
-      "description": "Schrijft de emmer van een zone het water bij dat een beregening echt gaf, in plaats van hem op 0 te zetten.",
+      "description": "Schrijft de waterbalans van een zone het water bij dat een beregening echt gaf, in plaats van hem op 0 te zetten.",
       "fields": {
         "seconds": {
           "name": "Seconden",
@@ -307,7 +307,7 @@
   "issues": {
     "dry_zone_not_watered": {
       "title": "Zone {zone} is droog en niets zal haar bewateren",
-      "description": "De voorraad van zone **{zone}** is al {days} dagen droog, en elk programma dat haar bevat is uitgeschakeld, opgeschort of heeft geen ingeschakeld schema.\n\nZet een programma dat deze zone bewatert weer aan, schakel een van zijn schema's in, of hef de opschorting op. De melding verdwijnt vanzelf zodra de zone is bewaterd of een programma haar weer dekt."
+      "description": "De waterbalans van zone **{zone}** is al {days} dagen droog, en elk programma dat haar bevat is uitgeschakeld, opgeschort of heeft geen ingeschakeld schema.\n\nZet een programma dat deze zone bewatert weer aan, schakel een van zijn schema's in, of hef de opschorting op. De melding verdwijnt vanzelf zodra de zone is bewaterd of een programma haar weer dekt."
     },
     "weather_silent": {
       "title": "Sensorgroep {mapping}: een weersensor meldt zich niet meer",
@@ -330,8 +330,8 @@
       "description": "Zone **{zone}** is niet berekend: haar sensorgroep heeft geen metingen om mee te rekenen. Zolang dat zo is, beweegt het tekort van de zone niet en wordt ze niet bewaterd.\n\nControleer of de sensorgroep bronnen heeft en of die gegevens doorgeven, werk de weergegevens bij en bereken daarna de zone. De melding verdwijnt vanzelf bij de volgende geslaagde berekening."
     },
     "zone_not_calculated_no_engine": {
-      "title": "Zone {zone} kan niet berekend worden: geen berekeningsengine",
-      "description": "Zone **{zone}** heeft geen berekeningsengine, dus wordt ze niet berekend en niet bewaterd.\n\nKies op haar kaart in het tabblad Zones hoe ze berekend wordt. De melding verdwijnt vanzelf bij de volgende geslaagde berekening."
+      "title": "Zone {zone} kan niet berekend worden: geen module",
+      "description": "Zone **{zone}** heeft geen module, dus wordt ze niet berekend en niet bewaterd.\n\nKies op haar kaart in het tabblad Zones hoe ze berekend wordt. De melding verdwijnt vanzelf bij de volgende geslaagde berekening."
     },
     "zone_not_calculated_nothing_from_engine": {
       "title": "Zone {zone} kan niet berekend worden: geen verdamping",
@@ -339,7 +339,7 @@
     },
     "zone_not_calculated_forecast_without_service": {
       "title": "Zone {zone} kan niet berekend worden: een verwachting zonder weerdienst",
-      "description": "De berekeningsengine van zone **{zone}** kijkt dagen vooruit, wat een weerdienst vereist, en er is er geen ingesteld. De zone wordt niet bewaterd tot ze berekend kan worden.\n\nStel een weerdienst in, of zet de verwachtingsdagen van de engine op 0. De melding verdwijnt vanzelf bij de volgende geslaagde berekening."
+      "description": "De module van zone **{zone}** kijkt dagen vooruit, wat een weerdienst vereist, en er is er geen ingesteld. De zone wordt niet bewaterd tot ze berekend kan worden.\n\nStel een weerdienst in, of zet de verwachtingsdagen van de module op 0. De melding verdwijnt vanzelf bij de volgende geslaagde berekening."
     },
     "zone_not_calculated_error": {
       "title": "Zone {zone} kan niet berekend worden: een fout",

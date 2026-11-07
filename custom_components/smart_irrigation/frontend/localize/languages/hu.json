@@ -24,7 +24,7 @@
       "size": "méret",
       "throughput": "átfolyás",
       "state": "állapot",
-      "bucket": "vödör",
+      "bucket": "vízmérleg",
       "last_updated": "utolsó frissítés",
       "last_calculated": "utolsó számítás",
       "number_of_data_points": "adatpontok száma"
@@ -55,13 +55,13 @@
         "module-returned-evapotranspiration-deficiency": "A modul által visszaadott evapotranspirációs hiány ( = et0 * hour_multiplier * Kc + precipitation) értéke",
         "module-returned-hourly-evapotranspiration-deficiency": "A modul óránként összegezte a növényi evapotranszpiráció hiányát ( = az óránkénti et0 * Kc + csapadék összege) a következő időszakban",
         "crop-factor-is": "A növénytényező",
-        "bucket-was": "A vödör értéke volt",
-        "new-bucket-values-is": "Az új vödörérték",
-        "bucket": "vödör",
-        "old-bucket-variable": "old_bucket",
-        "max-bucket-variable": "max_bucket",
+        "bucket-was": "A vízmérleg értéke volt",
+        "new-bucket-values-is": "Az új vízmérleg",
+        "bucket": "vízmérleg",
+        "old-bucket-variable": "old_water_balance",
+        "max-bucket-variable": "max_water_balance",
         "delta": "delta",
-        "bucket-less-than-zero-irrigation-necessary": "Mivel a vödör < 0, az öntözés szükséges",
+        "bucket-less-than-zero-irrigation-necessary": "Mivel a vízmérleg < 0, az öntözés szükséges",
         "steps-taken-to-calculate-duration": "A pontos időtartam kiszámításához a következő lépéseket tettük",
         "precipitation-rate-defined-as": "A csapadékmennyiség a következőképpen van meghatározva",
         "precipitation-rate-is": "A csapadékintenzitás",
@@ -76,9 +76,9 @@
         "duration-after-maximum-duration-is": "így az időtartam",
         "lead-time-is-applied": "Végül hozzáadódik a felfutási idő. A felfutási idő",
         "duration-after-lead-time-is": "így a végső időtartam",
-        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Mivel a vödör >= 0, öntözésre nincs szükség, és az időtartam beállítása",
-        "maximum-bucket-is": "A maximális vödörméret",
-        "drainage-rate-is": "A vízelvezetési sebesség telített állapotban (a vödör maximumon)",
+        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Mivel a vízmérleg >= 0, öntözésre nincs szükség, és az időtartam beállítása",
+        "maximum-bucket-is": "A maximális vízmérleg",
+        "drainage-rate-is": "A vízelvezetési sebesség telített állapotban (a vízmérleg maximumon)",
         "current-drainage-is": "Az aktuális elvezetés a következőképpen kerül kiszámításra",
         "drainage-replayed": "Az időszakot óránként újraszámoltuk, így minden eső csak attól az órától szivárog el, amikor esett. Elszivárgás",
         "no-drainage": "Az aktuális elvezetés 0, mert",
@@ -151,7 +151,7 @@
           "question": "Kész a létrehozásra",
           "zone": "Zóna",
           "environment": "Környezet",
-          "engine": "Számítási motor",
+          "engine": "Modul",
           "sources": "Források",
           "from-the-service": "az időjárás-szolgáltatásból",
           "help": "Ez létrehoz egy számítási modult, egy érzékelőcsoportot és egy zónát, pontosan úgy, ahogy a többi fül tenné. Utána semmi nincs bezárva."
@@ -240,7 +240,7 @@
             "calc-when-manual": "Csak kérésre",
             "calc-when-hint": "Közvetlenül minden indítás előtt: az indítási kiváltó idején, a legfrissebb időjárással. A helyes választás, ha a Smart Irrigation indítja az öntözést (közvetlen szelepvezérlés vagy az indítási esemény). Rögzített időpontban: minden nap az alább megadott időben, ha az öntözést nem a Smart Irrigation indítja, hanem valami más, amely akkor olvassa ki az időtartamokat, amikor akarja (Irrigation Unlimited, saját ütemezés). Csak kérésre: semmi sem számítódik magától, használd a számítás gombokat vagy a szolgáltatásokat.",
             "calc-time": "Számítás ekkor",
-            "calc-time-hint": "A napi számítás: az elvesztett víz hozzáadódik minden zóna vödréhez, és beállítódnak az öntözési időtartamok.",
+            "calc-time-hint": "A napi számítás: az elvesztett víz hozzáadódik minden zóna vízmérlegéhez, és beállítódnak az öntözési időtartamok.",
             "hourly-calculation": "Az evapotranszpiráció számítása óránként",
             "hourly-calculation-hint": "A FAO-56 óránkénti egyenletét összegzi az utolsó számítás óta eltelt minden órára, ahelyett hogy a napi egyenletet átlagokra alkalmazná, amelyek elrejtik, hogy a nap és a hőség együtt jött-e. Új telepítés ezzel indul; a korábban létező telepítés a napi egyenletnél marad, amíg át nem váltasz, mert a kettő más számot ad, és az öntözésed ne változzon meg egy frissítéstől. Minden óra napsütése sugárzás- vagy megvilágításérzékelőből, az időjárás-szolgáltatás saját óránkénti előzményéből, vagy a nap hőmérséklet-tartományából származik. Akkor érdemes, ha a mérések a nap folyamán érkeznek: napi egyetlen frissítés egy mérést hagy huszonnégy órán át érvényben, és akkor egyik forma sem megbízható. A saját érzékelő nélküli üvegház a napi egyenletnél marad."
           }
@@ -250,7 +250,7 @@
             "warning-update-time-on-or-after-calc-time": "Figyelmeztetés: az időjárási adatok frissítési ideje a számítás idejére vagy az után esik"
           },
           "header": "Automatikus időjárásiadat-frissítés",
-          "description": "Az időjárási adatok automatikus gyűjtése és tárolása. Az időjárási adatok szükségesek a zónák vödreinek és időtartamainak kiszámításához.",
+          "description": "Az időjárási adatok automatikus gyűjtése és tárolása. Az időjárási adatok szükségesek a zónák vízmérlegeinek és időtartamainak kiszámításához.",
           "labels": {
             "auto-update-enabled": "Az időjárási adatok automatikus frissítése",
             "auto-update-schedule": "Frissítési ütemezés",
@@ -290,7 +290,7 @@
         "master-switch": {
           "title": "Smart Irrigation",
           "label": "Számolás és öntözés",
-          "description": "Kikapcsolva a Smart Irrigation továbbra is gyűjti az időjárási adatokat és megtartja az érzékelőit, de nem számol semmit, minden zóna vödrét változatlanul hagyja, egy szelepet sem nyit ki, és egy programot sem futtat. Újra bekapcsolva a kikapcsolt időt nem számítja bele.",
+          "description": "Kikapcsolva a Smart Irrigation továbbra is gyűjti az időjárási adatokat és megtartja az érzékelőit, de nem számol semmit, minden zóna vízmérlegét változatlanul hagyja, egy szelepet sem nyit ki, és egy programot sem futtat. Újra bekapcsolva a kikapcsolt időt nem számítja bele.",
           "off-note": "Kikapcsolva: semmi sem számolódik, és semmi sem öntöz. Az időjárási adatok gyűjtése folytatódik, és a kikapcsolt idő nem számít bele, amikor újra bekapcsolod.",
           "confirm-off": "Kikapcsolod a Smart Irrigationt? Ami most öntöz, azonnal leáll, és semmi sem számolódik vagy öntöz, amíg újra be nem kapcsolod."
         }
@@ -527,9 +527,9 @@
           },
           "greenhouse": "Üvegház",
           "greenhouse_description": "Zárt környezet: üvegház, fóliasátor, bármi üveg vagy fólia alatt. Ezekhez a zónákhoz nem ér el eső, így a csapadék kimarad a vízmérlegükből, és a mezői rejtve vannak. Két dolgot magadnak kell beállítanod, mert nem kitalálhatók: adj a Szélsebességnek 0-hoz közeli állandó értéket, mert a számítás szabad levegőt feltételez, és használj fényérzékelőt a Napsugárzáshoz, mert az üvegezés szűri az eget.",
-          "module": "Számítási motor",
-          "module_description": "Ez a csoport csak azokat a forrásokat ajánlja, amelyeket ez a motor olvas. Az őt használó zónák átveszik a választást.",
-          "module_undecided": "Még nincs motor kiválasztva, így minden forrás felajánlásra kerül, és minden zóna, amely ezt a csoportot használja, a sajátját tartja. Válassz egyet, hogy csak az általa olvasott forrásokat lásd.",
+          "module": "Modul",
+          "module_description": "Ez a csoport csak azokat a forrásokat ajánlja, amelyeket ez a modul olvas. Az őt használó zónák átveszik a választást.",
+          "module_undecided": "Még nincs modul kiválasztva, így minden forrás felajánlásra kerül, és minden zóna, amely ezt a csoportot használja, a sajátját tartja. Válassz egyet, hogy csak az általa olvasott forrásokat lásd.",
           "wind_height": "Szélmérő magassága (üres: 2 m)",
           "rain_not_from_entity": "Az időjárás-entitás nem adja meg a lehullott esőt, csak előrejelzést: válassz itt esőérzékelőt, különben a zónák minden zápor után öntözve lesznek.",
           "rain_hint_entity": "Az éppen hulló eső, intenzitásként. Az időjárás-entitás csak előre jelzi: válassz esőt mérő érzékelőt."
@@ -592,17 +592,21 @@
         "calculate": "Számítás",
         "information": "Információ",
         "update": "Frissítés",
-        "reset-bucket": "Vödör visszaállítása",
+        "reset-bucket": "Vízmérleg visszaállítása",
         "view-weather-info": "Időjárási adatok megtekintése",
         "view-weather-info-message": "Időjárási adatok elérhetők ehhez",
         "view-watering-calendar": "Öntözési naptár megtekintése",
         "water": "Öntözés",
-        "calculating": "Számítás…"
+        "calculating": "Számítás…",
+        "change": "Módosítás",
+        "done": "Kész"
       },
       "cards": {
         "add-zone": {
           "actions": {
-            "add": "Zóna hozzáadása"
+            "add": "Zóna hozzáadása",
+            "assistant": "Beállítás az asszisztenssel",
+            "cancel": "Mégse"
           },
           "header": "Zóna hozzáadása"
         },
@@ -610,21 +614,22 @@
           "actions": {
             "calculate-all": "Összes zóna kiszámítása",
             "update-all": "Összes zóna frissítése",
-            "reset-all-buckets": "Összes vödör visszaállítása",
+            "reset-all-buckets": "Összes vízmérleg visszaállítása",
             "clear-all-weatherdata": "Összes időjárási adat törlése"
           },
-          "header": "Műveletek az összes zónán"
+          "header": "Műveletek az összes zónán",
+          "reset-hint": "Ez a kettő minden zóna adatait elveti. Mindkettő előbb rákérdez."
         }
       },
       "description": "Adjon meg itt egy vagy több öntözési zónát. Az öntözési időtartam zónánként kerül kiszámításra, a méret, az átfolyás, az állapot, a modul és az érzékelőcsoport függvényében.",
       "labels": {
-        "bucket": "Vödör",
+        "bucket": "Vízmérleg",
         "et-deficiency": "Napi ET-hiány",
         "duration": "Időtartam",
         "lead-time": "Felfutási idő",
         "mapping": "Érzékelőcsoport",
         "maximum-duration": "Maximális időtartam",
-        "multiplier": "Szorzó",
+        "multiplier": "Növénytényező (Kc)",
         "name": "Név",
         "input-method": "Bevitel módja",
         "input-methods": {
@@ -647,13 +652,13 @@
           "manual": "Kézi"
         },
         "throughput": "Átfolyás",
-        "maximum-bucket": "Maximális vödör",
+        "maximum-bucket": "Maximális vízmérleg",
         "last_calculated": "Utolsó számítás",
         "data-last-updated": "Adatok utolsó frissítése",
         "data-number-of-data-points": "Adatpontok száma",
         "drainage_rate": "Elvezetési sebesség",
         "linked-entity": "Csatlakoztatott szelep/kapcsoló",
-        "linked-entity-hint": "A szelep vagy kapcsoló, amely ezt a zónát öntözi. Amikor működik (kézi nyitás, automatizálás vagy maga a Smart Irrigation, ha a közvetlen szelepvezérlés be van kapcsolva), a vödör a működési időből és a zóna átfolyásából töltődik fel. A zárt hurkú funkciókhoz szükséges.",
+        "linked-entity-hint": "A szelep vagy kapcsoló, amely ezt a zónát öntözi. Amikor működik (kézi nyitás, automatizálás vagy maga a Smart Irrigation, ha a közvetlen szelepvezérlés be van kapcsolva), a vízmérleg a működési időből és a zóna átfolyásából töltődik fel. A zárt hurkú funkciókhoz szükséges.",
         "supply": "Szivattyú vagy főszelep",
         "supply-none": "Nincs",
         "measured-flow-help": "Több futás alatt a zóna átfolyásmérője a fent beállítottól eltérő átfolyást mért. Ez csak tanács, soha nem alkalmazódik magától.",
@@ -700,7 +705,7 @@
         "distribution-efficiency-help": "A kifolyókból kijövő víz azon része, amely eljut a növényekhez, %-ban. A szélben vagy lejtőn működő szórófejek veszítenek valamennyit, a csepegtetés szinte semennyit. Hagyd üresen 100%-hoz. Egy 80%-os zóna 25%-kal tovább öntöz ugyanazon vízrétegért, és a kijuttatott víznek csak 80%-át számolja el.",
         "days-between-irrigation-help": "Hagyd üresen az általános beállítás követéséhez (Beállítások, Öntözések közötti napok). Egy szám csak erre a zónára írja felül az általános beállítást: az 1 minden nap öntözi, ha vízre van szüksége, a 3 legfeljebb háromnaponta, a 0 megszünteti a korlátozást. A napokat a zóna utolsó öntözésétől számoljuk.",
         "soil-moisture-sensor": "Talajnedvesség-érzékelő",
-        "soil-moisture-sensor-hint": "A zóna kihagy egy öntözést, amíg a talaj a küszöbön vagy fölötte van. A tartalék megmarad.",
+        "soil-moisture-sensor-hint": "A zóna kihagy egy öntözést, amíg a talaj a küszöbön vagy fölötte van. A vízmérleg megmarad.",
         "soil-moisture-threshold": "Kihagyás ettől",
         "calculation-method": "Evapotranszpiráció",
         "calculation-method-help": {
@@ -725,7 +730,8 @@
           "loam": "Vályog",
           "clay_loam": "Agyagos vályog",
           "clay": "Agyag",
-          "custom": "Magam állítom be a vízelvezetés mértékét"
+          "custom": "Magam állítom be a vízelvezetés mértékét",
+          "default": "Még nincs kiválasztva – számítás ezzel: {value}"
         },
         "plant-types": {
           "lawn": "Gyep",
@@ -736,7 +742,8 @@
           "fruit_trees": "Gyümölcsfák",
           "vines": "Szőlő",
           "ground_cover": "Talajtakaró",
-          "custom": "Magam állítom be a növényi együtthatót"
+          "custom": "Magam állítom be a növénytényezőt",
+          "default": "Még nincs kiválasztva – számítás {value} növénytényezővel"
         },
         "duration-readonly-automatic": "Kiszámolva helyetted: ennek a zónának az öntözése a vízmérlegéből jön. Állítsd kézire, ha magad írnál be időt.",
         "duration-readonly-disabled": "A kikapcsolt zóna soha nem kap vizet, így nincs öntözési ideje.",
@@ -744,7 +751,7 @@
       },
       "no_items": "Még nincs definiált zóna.",
       "title": "Zónák",
-      "module-comes-from-the-group": "A számítási motor ennek a zónának az érzékelőcsoportjából jön. Ott változtasd meg, és minden zóna, amely azt a csoportot használja, követi.",
+      "module-comes-from-the-group": "A modul ennek a zónának az érzékelőcsoportjából jön. Ott változtasd meg, és minden zóna, amely azt a csoportot használja, követi.",
       "status": {
         "estimate": "{short} hiányzik: kb. {duration} ({volume}) a következő számításnál.",
         "will-water": "A következő indításnál {duration} ideig öntöz.",
@@ -757,9 +764,9 @@
         "problem": {
           "no_sensor_group": "Nem számítható: nincs érzékelőcsoportja. Válassz egyet ezen a kártyán; addig nem öntöz.",
           "no_readings": "Nem számítható: az érzékelőcsoportjának nincsenek mérései. Addig nem öntöz.",
-          "no_engine": "Nem számítható: nincs számítási motorja. Addig nem öntöz, amíg nem lesz.",
+          "no_engine": "Nem számítható: nincs modulja. Addig nem öntöz, amíg nem lesz.",
           "nothing_from_engine": "Nem számítható: az érzékelőcsoportja nem ad evapotranszpirációt. Addig nem öntöz.",
-          "forecast_without_service": "Nem számítható: a motorja előre tekint, és nincs beállított időjárás-szolgáltatás. Nem öntöz.",
+          "forecast_without_service": "Nem számítható: a modulja előre tekint, és nincs beállított időjárás-szolgáltatás. Nem öntöz.",
           "error": "Nem számítható: {detail}. Addig nem öntöz, amíg nem számítható."
         },
         "no-valve": "Nincs csatolt szelep, így ez a zóna nem öntöz.",
@@ -784,6 +791,11 @@
       "calculation-feedback": {
         "nothing-new": "{zone}: nincs új mérés a legutóbbi számítás óta, így semmi sem változott.",
         "failed": "{zone}: a számítás nem sikerült ({error})."
+      },
+      "sections": {
+        "zone": "Zóna és szelep",
+        "need": "Amire szüksége van",
+        "status": "Állapota"
       }
     },
     "history": {
@@ -1363,7 +1375,7 @@
   },
   "observed_watering": {
     "title": "Megfigyelt öntözés (zárt hurok)",
-    "description": "Töltsd fel minden zóna vödrét automatikusan a valós öntözésből, ahelyett hogy a vödröt egy automatizálásból állítanád vissza. Az engedélyezés után válassz egy szelep/kapcsoló entitást zónánként a Zónák lapon: amíg nyitva van, a vödör a működési időből és a zóna átfolyásából töltődik fel. A pontos elszámoláshoz zónánként választhatsz egy kumulatív térfogatmérőt is (vízmérő jellegű összérték), és a mért térfogat lesz felhasználva helyette. Fontos: amikor ez be van kapcsolva, csak ez tölti fel a vödröt, ezért távolítsd el a reset_bucket hívást az öntözési automatizálásodból a dupla számolás elkerülése érdekében.",
+    "description": "Töltsd fel minden zóna vízmérlegét automatikusan a valós öntözésből, ahelyett hogy a vízmérleget egy automatizálásból állítanád vissza. Az engedélyezés után válassz egy szelep/kapcsoló entitást zónánként a Zónák lapon: amíg nyitva van, a vízmérleg a működési időből és a zóna átfolyásából töltődik fel. A pontos elszámoláshoz zónánként választhatsz egy kumulatív térfogatmérőt is (vízmérő jellegű összérték), és a mért térfogat lesz felhasználva helyette. Fontos: amikor ez be van kapcsolva, csak ez tölti fel a vízmérleget, ezért távolítsd el a reset_bucket hívást az öntözési automatizálásodból a dupla számolás elkerülése érdekében.",
     "enabled_label": "Megfigyelt öntözés engedélyezése",
     "direct_control_label": "A Smart Irrigation vezérelje a szelepet",
     "direct_control_description": "Bekapcsolva a Smart Irrigation kinyitja minden zóna csatlakoztatott szelepét, megvárja a kiszámított időtartamot, majd bezárja, automatizálás nélkül. A folyamatban lévő működés újraindítás után folytatódik. Biztonság: az önmagát zárni képes szelep nyitáskor megkapja a futás hosszát (egy Sonoff SWV ZHA-n, vagy egy szelep, amelynek zónájában MQTT biztonsági téma van beállítva), így akkor is bezár, ha a Home Assistant leáll. Minden más szelep tovább öntöz, amíg a Home Assistant vissza nem tér: adj neki hardveres vészleállítást (egy maximális működési időt).",
@@ -1388,7 +1400,7 @@
   },
   "calculation_log": {
     "title": "Számítási napló",
-    "description": "Minden számítás teljes bemenetét fájlba írja, így két egyformának tűnő, mégis nagyon eltérő öntözést eredményező nap utólag összehasonlítható. Minden számítás egy sort fűz hozzá: az érzékelőcsoport rekordjai és az alkalmazott aggregálás, a modul köztes értékei (napsugárzás, nettó sugárzás, ET0), valamint az eredményül kapott vödör, időtartam és vízmennyiség. Alapértelmezés szerint kikapcsolva; a fájl mérete korlátozott és forog, így egy egész szezonon át bekapcsolva hagyható.",
+    "description": "Minden számítás teljes bemenetét fájlba írja, így két egyformának tűnő, mégis nagyon eltérő öntözést eredményező nap utólag összehasonlítható. Minden számítás egy sort fűz hozzá: az érzékelőcsoport rekordjai és az alkalmazott aggregálás, a modul köztes értékei (napsugárzás, nettó sugárzás, ET0), valamint az eredményül kapott vízmérleg, időtartam és vízmennyiség. Alapértelmezés szerint kikapcsolva; a fájl mérete korlátozott és forog, így egy egész szezonon át bekapcsolva hagyható.",
     "enabled_label": "Számítási bemenetek naplózása fájlba",
     "file_hint": "A config/smart_irrigation/calc_log.jsonl fájlba kerül, soronként egy JSON rekord. A legutóbbi rekordok a diagnosztikai letöltésben is szerepelnek (kerekített koordinátákkal, entitásazonosítók nélkül), így egy lépésben csatolhatók egy hibajegyhez."
   },

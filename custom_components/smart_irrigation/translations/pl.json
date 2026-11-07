@@ -5,7 +5,7 @@
         "name": "Czas"
       },
       "bucket": {
-        "name": "Zapas"
+        "name": "Bilans wodny"
       },
       "et_value": {
         "name": "Zastosowana ET"
@@ -23,7 +23,7 @@
         "name": "Zużycie wody"
       },
       "live_bucket": {
-        "name": "Zapas na bieżąco"
+        "name": "Bilans wodny na bieżąco"
       },
       "last_run_volume": {
         "name": "Objętość ostatniego uruchomienia"
@@ -45,7 +45,7 @@
         "name": "Policz"
       },
       "reset_bucket": {
-        "name": "Zeruj zapas"
+        "name": "Zeruj bilans wodny"
       },
       "reset_usage": {
         "name": "Zeruj zużycie wody"
@@ -151,7 +151,7 @@
         },
         "dry_run": {
           "name": "Na próbę",
-          "description": "Zgłoś, co zrobiłoby obliczenie, bez zmiany zapasu, strefy ani zebranych danych pogodowych"
+          "description": "Zgłoś, co zrobiłoby obliczenie, bez zmiany bilansu wodnego, strefy ani zebranych danych pogodowych"
         }
       }
     },
@@ -169,7 +169,7 @@
         },
         "dry_run": {
           "name": "Na próbę",
-          "description": "Zgłoś, co zrobiłoby obliczenie, bez zmiany zapasu, strefy ani zebranych danych pogodowych"
+          "description": "Zgłoś, co zrobiłoby obliczenie, bez zmiany bilansu wodnego, strefy ani zebranych danych pogodowych"
         }
       }
     },
@@ -188,42 +188,42 @@
       }
     },
     "set_bucket": {
-      "name": "Ustaw bucket",
-      "description": "Ustaw bucket dla strefy na określoną wartość",
+      "name": "Ustaw bilans wodny",
+      "description": "Ustaw bilans wodny strefy na określoną wartość",
       "fields": {
         "entity": {
           "name": "Encja",
-          "description": "Strefa, dla której ustawić bucket"
+          "description": "Strefa, dla której ustawić bilans wodny"
         },
         "new_bucket_value": {
-          "name": "Nowa wartość bucket",
-          "description": "nowa wartość bucket"
+          "name": "Nowy bilans wodny",
+          "description": "Nowa wartość bilansu wodnego"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Ustaw wszystkie buckets",
-      "description": "Ustaw buckets dla wszystkich stref na określoną wartość",
+      "name": "Ustaw wszystkie bilanse wodne",
+      "description": "Ustaw bilanse wodne wszystkich stref na określoną wartość",
       "fields": {
         "new_bucket_value": {
-          "name": "Nowa wartość bucket",
-          "description": "nowa wartość bucket"
+          "name": "Nowy bilans wodny",
+          "description": "Nowa wartość bilansu wodnego"
         }
       }
     },
     "reset_bucket": {
-      "name": "Zeruj bucket",
-      "description": "Zeruj bucket dla strefy do 0",
+      "name": "Zeruj bilans wodny",
+      "description": "Zeruj bilans wodny strefy do 0",
       "fields": {
         "entity": {
           "name": "Encja",
-          "description": "Strefa, dla której wyzerować bucket"
+          "description": "Strefa, dla której wyzerować bilans wodny"
         }
       }
     },
     "reset_all_buckets": {
-      "name": "Zeruj wszystkie buckets",
-      "description": "Zeruj bucket dla wszystkich stref do 0"
+      "name": "Zeruj wszystkie bilanse wodne",
+      "description": "Zeruj bilanse wodne wszystkich stref do 0"
     },
     "clear_all_weather_data": {
       "name": "Wyczyść wszystkie dane pogodowe",
@@ -262,8 +262,8 @@
           "description": "Strefa, dla której ustawić wartości konfiguracji"
         },
         "new_bucket_value": {
-          "name": "Nowa wartość bucket",
-          "description": "Nowa wartość dla bucket"
+          "name": "Nowy bilans wodny",
+          "description": "Nowa wartość bilansu wodnego"
         },
         "new_multiplier_value": {
           "name": "Nowa wartość mnożnika",
@@ -295,7 +295,7 @@
     },
     "credit_watering": {
       "name": "Zalicz podlewanie",
-      "description": "Zalicza do wiadra strefy wodę, którą podlewanie faktycznie dostarczyło, zamiast go zerować.",
+      "description": "Zalicza do bilansu wodnego strefy wodę, którą podlewanie faktycznie dostarczyło, zamiast go zerować.",
       "fields": {
         "seconds": {
           "name": "Sekundy",
@@ -307,7 +307,7 @@
   "issues": {
     "dry_zone_not_watered": {
       "title": "Strefa {zone} jest sucha i nic jej nie podleje",
-      "description": "Bucket strefy **{zone}** jest suchy od {days} dni, a każdy program, który ją obejmuje, jest wyłączony, zawieszony lub nie ma włączonego harmonogramu.\n\nWłącz ponownie program podlewający tę strefę, włącz jeden z jego harmonogramów albo zdejmij jego zawieszenie. Powiadomienie zniknie samo, gdy strefa zostanie podlana lub program znów ją obejmie."
+      "description": "Bilans wodny strefy **{zone}** jest ujemny od {days} dni, a każdy program, który ją obejmuje, jest wyłączony, zawieszony lub nie ma włączonego harmonogramu.\n\nWłącz ponownie program podlewający tę strefę, włącz jeden z jego harmonogramów albo zdejmij jego zawieszenie. Powiadomienie zniknie samo, gdy strefa zostanie podlana lub program znów ją obejmie."
     },
     "weather_silent": {
       "title": "Grupa czujników {mapping}: czujnik pogodowy przestał raportować",
@@ -330,8 +330,8 @@
       "description": "Strefa **{zone}** nie została obliczona: jej grupa czujników nie ma odczytów, z których można liczyć. Dopóki ich nie ma, deficyt strefy się nie zmienia i strefa nie jest podlewana.\n\nSprawdź, czy grupa czujników ma źródła i czy one raportują, zaktualizuj dane pogodowe, a następnie oblicz strefę. Powiadomienie zniknie samo przy następnym udanym obliczeniu."
     },
     "zone_not_calculated_no_engine": {
-      "title": "Strefy {zone} nie da się obliczyć: brak silnika obliczeniowego",
-      "description": "Strefa **{zone}** nie ma silnika obliczeniowego, więc nie jest obliczana ani podlewana.\n\nWybierz sposób obliczania na jej karcie w zakładce Strefy. Powiadomienie zniknie samo przy następnym udanym obliczeniu."
+      "title": "Strefy {zone} nie da się obliczyć: brak modułu",
+      "description": "Strefa **{zone}** nie ma modułu, więc nie jest obliczana ani podlewana.\n\nWybierz sposób obliczania na jej karcie w zakładce Strefy. Powiadomienie zniknie samo przy następnym udanym obliczeniu."
     },
     "zone_not_calculated_nothing_from_engine": {
       "title": "Strefy {zone} nie da się obliczyć: brak ewapotranspiracji",
@@ -339,7 +339,7 @@
     },
     "zone_not_calculated_forecast_without_service": {
       "title": "Strefy {zone} nie da się obliczyć: prognoza bez serwisu pogodowego",
-      "description": "Silnik obliczeniowy strefy **{zone}** patrzy kilka dni naprzód, co wymaga serwisu pogodowego, a żaden nie jest skonfigurowany. Strefa nie jest podlewana, dopóki nie da się jej obliczyć.\n\nSkonfiguruj serwis pogodowy albo ustaw dni prognozy silnika na 0. Powiadomienie zniknie samo przy następnym udanym obliczeniu."
+      "description": "Moduł strefy **{zone}** patrzy kilka dni naprzód, co wymaga serwisu pogodowego, a żaden nie jest skonfigurowany. Strefa nie jest podlewana, dopóki nie da się jej obliczyć.\n\nSkonfiguruj serwis pogodowy albo ustaw dni prognozy modułu na 0. Powiadomienie zniknie samo przy następnym udanym obliczeniu."
     },
     "zone_not_calculated_error": {
       "title": "Strefy {zone} nie da się obliczyć: błąd",

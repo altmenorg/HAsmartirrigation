@@ -72,7 +72,7 @@ Open **Smart Irrigation** in the sidebar. The setup assistant asks four question
 Then, on the zone's card, fill in what only you know:
 
 - the **area** and the **flow** you measured;
-- **what the soil is** and **what grows there**, in words. Those two write the drainage rate and the crop coefficient behind them (FAO-56 values), which is what nobody can answer in millimetres an hour.
+- **what the soil is** and **what grows there**, in words. Those two write the drainage rate and the crop factor behind them (FAO-56 values), which is what nobody can answer in millimetres an hour.
 
 You now have a zone that computes a duration every night at 23:00.
 

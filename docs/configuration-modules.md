@@ -10,9 +10,9 @@ title: "Configuration: Modules"
 
 A module is the method used to work out how much water evaporated.
 
-**You no longer create or pick one.** A zone says how it is calculated, in plain words, on its own card: *calculated from the weather data*, *provided by a sensor or a service*, or *a fixed amount*. The module behind that answer is created and reused for you, one per zone, and its own settings (how many days to look ahead, the fixed amount) are on the zone card too. The engines page has left the panel's navigation, and the three modes below are what those three answers mean.
+**You no longer create or pick one.** A zone says how it is calculated, in plain words, on its own card: *calculated from the weather data*, *provided by a sensor or a service*, or *a fixed amount*. The module behind that answer is created and reused for you, one per zone, and its own settings (how many days to look ahead, the fixed amount) are on the zone card too. The modules page has left the panel's navigation, and the three modes below are what those three answers mean.
 
-The sensor group still records which kind of engine it feeds, because what sources a group has to provide depends on it. When one group feeds zones that are calculated differently, it records none and each zone answers for itself.
+The sensor group still records which kind of module it feeds, because what sources a group has to provide depends on it. When one group feeds zones that are calculated differently, it records none and each zone answers for itself.
 
 ## The three modes
 
@@ -30,7 +30,7 @@ If you are unsure, **Standard** with Open-Meteo is the shortest path to somethin
 
 ### Manual
 
-A fixed amount of evaporation per day, which you set yourself on the zone card (**Evaporation per day**), as a positive number: 4 means the zone loses 4 mm a day. No sensors and no weather service. Underneath, the engine stores it as the change to the bucket, -4; a positive value stored before v2026.10.7 added water every day instead, and is turned around when Smart Irrigation starts.
+A fixed amount of evaporation per day, which you set yourself on the zone card (**Evaporation per day**), as a positive number: 4 means the zone loses 4 mm a day. No sensors and no weather service. Underneath, the module stores it as the change to the water balance, -4; a positive value stored before v2026.10.7 added water every day instead, and is turned around when Smart Irrigation starts.
 
 It is coarser than the other two, but it is not the same as no integration at all: rain still counts against it, the water balance still tracks what you have already applied, and the duration still follows from your zone's size and throughput. Somewhere around 4 to 5 mm a day is a common starting point for a temperate summer, and worth adjusting by season.
 

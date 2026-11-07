@@ -5,7 +5,7 @@
         "name": "Längd"
       },
       "bucket": {
-        "name": "Förråd"
+        "name": "Vattenbalans"
       },
       "et_value": {
         "name": "Använd ET"
@@ -23,7 +23,7 @@
         "name": "Vattenförbrukning"
       },
       "live_bucket": {
-        "name": "Förråd just nu"
+        "name": "Vattenbalans just nu"
       },
       "last_run_volume": {
         "name": "Volym vid senaste körningen"
@@ -45,7 +45,7 @@
         "name": "Beräkna"
       },
       "reset_bucket": {
-        "name": "Nollställ förrådet"
+        "name": "Nollställ vattenbalansen"
       },
       "reset_usage": {
         "name": "Nollställ vattenförbrukningen"
@@ -151,7 +151,7 @@
         },
         "dry_run": {
           "name": "Testkörning",
-          "description": "Rapportera vad beräkningen skulle göra utan att ändra förrådet, zonen eller den insamlade väderdatan"
+          "description": "Rapportera vad beräkningen skulle göra utan att ändra vattenbalansen, zonen eller den insamlade väderdatan"
         }
       }
     },
@@ -169,7 +169,7 @@
         },
         "dry_run": {
           "name": "Testkörning",
-          "description": "Rapportera vad beräkningen skulle göra utan att ändra förrådet, zonen eller den insamlade väderdatan"
+          "description": "Rapportera vad beräkningen skulle göra utan att ändra vattenbalansen, zonen eller den insamlade väderdatan"
         }
       }
     },
@@ -188,42 +188,42 @@
       }
     },
     "set_bucket": {
-      "name": "Ställ in bucket",
-      "description": "Ställ in bucket för en zon till ett specifikt värde",
+      "name": "Ställ in vattenbalans",
+      "description": "Ställ in en zons vattenbalans till ett värde",
       "fields": {
         "entity": {
           "name": "Entitet",
-          "description": "Zon att ställa in bucket för"
+          "description": "Zon att ställa in vattenbalansen för"
         },
         "new_bucket_value": {
-          "name": "Nytt bucket-värde",
-          "description": "nytt värde för bucket"
+          "name": "Ny vattenbalans",
+          "description": "Nytt värde för vattenbalansen"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Ställ in alla buckets",
-      "description": "Ställ in buckets för alla zoner till ett specifikt värde",
+      "name": "Ställ in alla vattenbalanser",
+      "description": "Ställ in vattenbalansen för alla zoner till ett värde",
       "fields": {
         "new_bucket_value": {
-          "name": "Nytt bucket-värde",
-          "description": "nytt värde för bucket"
+          "name": "Ny vattenbalans",
+          "description": "Nytt värde för vattenbalansen"
         }
       }
     },
     "reset_bucket": {
-      "name": "Återställ bucket",
-      "description": "Återställ bucket för en zon till 0",
+      "name": "Återställ vattenbalans",
+      "description": "Återställ en zons vattenbalans till 0",
       "fields": {
         "entity": {
           "name": "Entitet",
-          "description": "Zon att återställa bucket för"
+          "description": "Zon att återställa vattenbalansen för"
         }
       }
     },
     "reset_all_buckets": {
-      "name": "Återställ alla buckets",
-      "description": "Återställ bucket för alla zoner till 0"
+      "name": "Återställ alla vattenbalanser",
+      "description": "Återställ vattenbalansen för alla zoner till 0"
     },
     "clear_all_weather_data": {
       "name": "Rensa all väderdata",
@@ -262,8 +262,8 @@
           "description": "Zon att ställa in konfigurationsvärden för"
         },
         "new_bucket_value": {
-          "name": "Nytt bucket-värde",
-          "description": "Nytt värde för bucket"
+          "name": "Ny vattenbalans",
+          "description": "Nytt värde för vattenbalansen"
         },
         "new_multiplier_value": {
           "name": "Nytt multiplikatorvärde",
@@ -295,7 +295,7 @@
     },
     "credit_watering": {
       "name": "Tillgodoräkna bevattning",
-      "description": "Tillgodoräknar en zons hink det vatten en bevattning faktiskt gav, i stället för att nollställa den.",
+      "description": "Tillgodoräknar en zons vattenbalans det vatten en bevattning faktiskt gav, i stället för att nollställa den.",
       "fields": {
         "seconds": {
           "name": "Sekunder",
@@ -307,7 +307,7 @@
   "issues": {
     "dry_zone_not_watered": {
       "title": "Zon {zone} är torr och inget kommer att vattna den",
-      "description": "Bucket för zon **{zone}** har varit torr i {days} dagar, och varje program som omfattar den är avstängt, uppskjutet eller saknar aktiverat schema.\n\nSlå på ett program som vattnar den här zonen, aktivera ett av dess scheman eller häv uppskjutningen. Aviseringen försvinner av sig själv när zonen vattnats eller ett program åter omfattar den."
+      "description": "Vattenbalansen för zon **{zone}** har varit torr i {days} dagar, och varje program som omfattar den är avstängt, uppskjutet eller saknar aktiverat schema.\n\nSlå på ett program som vattnar den här zonen, aktivera ett av dess scheman eller häv uppskjutningen. Aviseringen försvinner av sig själv när zonen vattnats eller ett program åter omfattar den."
     },
     "weather_silent": {
       "title": "Sensorgrupp {mapping}: en vädersensor har slutat rapportera",
@@ -330,8 +330,8 @@
       "description": "Zon **{zone}** beräknades inte: dess sensorgrupp har inga mätvärden att beräkna från. Tills den har det rör sig inte zonens underskott, och den vattnas inte.\n\nKontrollera att sensorgruppen har källor och att de rapporterar, uppdatera väderdata och beräkna sedan zonen. Meddelandet försvinner av sig självt vid nästa lyckade beräkning."
     },
     "zone_not_calculated_no_engine": {
-      "title": "Zon {zone} kan inte beräknas: ingen beräkningsmotor",
-      "description": "Zon **{zone}** har ingen beräkningsmotor, så den beräknas inte och vattnas inte.\n\nVälj hur den ska beräknas på dess kort på fliken Zoner. Meddelandet försvinner av sig självt vid nästa lyckade beräkning."
+      "title": "Zon {zone} kan inte beräknas: ingen modul",
+      "description": "Zon **{zone}** har ingen modul, så den beräknas inte och vattnas inte.\n\nVälj hur den ska beräknas på dess kort på fliken Zoner. Meddelandet försvinner av sig självt vid nästa lyckade beräkning."
     },
     "zone_not_calculated_nothing_from_engine": {
       "title": "Zon {zone} kan inte beräknas: ingen evapotranspiration",
@@ -339,7 +339,7 @@
     },
     "zone_not_calculated_forecast_without_service": {
       "title": "Zon {zone} kan inte beräknas: en prognos utan vädertjänst",
-      "description": "Beräkningsmotorn för zon **{zone}** tittar dagar framåt, vilket kräver en vädertjänst, och ingen är inställd. Zonen vattnas inte förrän den kan beräknas.\n\nStäll in en vädertjänst, eller sätt motorns prognosdagar till 0. Meddelandet försvinner av sig självt vid nästa lyckade beräkning."
+      "description": "Modulen för zon **{zone}** tittar dagar framåt, vilket kräver en vädertjänst, och ingen är inställd. Zonen vattnas inte förrän den kan beräknas.\n\nStäll in en vädertjänst, eller sätt modulens prognosdagar till 0. Meddelandet försvinner av sig självt vid nästa lyckade beräkning."
     },
     "zone_not_calculated_error": {
       "title": "Zon {zone} kan inte beräknas: ett fel",

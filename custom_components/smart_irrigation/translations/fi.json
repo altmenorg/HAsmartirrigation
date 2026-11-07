@@ -5,7 +5,7 @@
         "name": "Kesto"
       },
       "bucket": {
-        "name": "Varanto"
+        "name": "Vesitase"
       },
       "et_value": {
         "name": "Käytetty ET"
@@ -23,7 +23,7 @@
         "name": "Veden kulutus"
       },
       "live_bucket": {
-        "name": "Varanto juuri nyt"
+        "name": "Vesitase juuri nyt"
       },
       "last_run_volume": {
         "name": "Viimeisimmän ajon määrä"
@@ -45,7 +45,7 @@
         "name": "Laske"
       },
       "reset_bucket": {
-        "name": "Nollaa varanto"
+        "name": "Nollaa vesitase"
       },
       "reset_usage": {
         "name": "Nollaa veden kulutus"
@@ -151,7 +151,7 @@
         },
         "dry_run": {
           "name": "Koeajo",
-          "description": "Kerro, mitä laskenta tekisi, muuttamatta varantoa, aluetta tai kerättyjä säätietoja"
+          "description": "Kerro, mitä laskenta tekisi, muuttamatta vesitasetta, aluetta tai kerättyjä säätietoja"
         }
       }
     },
@@ -169,7 +169,7 @@
         },
         "dry_run": {
           "name": "Koeajo",
-          "description": "Kerro, mitä laskenta tekisi, muuttamatta varantoa, aluetta tai kerättyjä säätietoja"
+          "description": "Kerro, mitä laskenta tekisi, muuttamatta vesitasetta, aluetta tai kerättyjä säätietoja"
         }
       }
     },
@@ -188,42 +188,42 @@
       }
     },
     "set_bucket": {
-      "name": "Aseta bucket",
-      "description": "Aseta vyöhykkeen bucket tiettyyn arvoon",
+      "name": "Aseta vesitase",
+      "description": "Aseta vyöhykkeen vesitase arvoon",
       "fields": {
         "entity": {
           "name": "Entiteetti",
-          "description": "Vyöhyke, jonka bucket asetetaan"
+          "description": "Vyöhyke, jonka vesitase asetetaan"
         },
         "new_bucket_value": {
-          "name": "Uusi bucket-arvo",
-          "description": "bucketin uusi arvo"
+          "name": "Uusi vesitase",
+          "description": "Vesitaseen uusi arvo"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Aseta kaikki bucketit",
-      "description": "Aseta kaikkien vyöhykkeiden bucketit tiettyyn arvoon",
+      "name": "Aseta kaikki vesitaseet",
+      "description": "Aseta kaikkien vyöhykkeiden vesitase arvoon",
       "fields": {
         "new_bucket_value": {
-          "name": "Uusi bucket-arvo",
-          "description": "bucketin uusi arvo"
+          "name": "Uusi vesitase",
+          "description": "Vesitaseen uusi arvo"
         }
       }
     },
     "reset_bucket": {
-      "name": "Nollaa bucket",
-      "description": "Nollaa vyöhykkeen bucket arvoon 0",
+      "name": "Nollaa vesitase",
+      "description": "Nollaa vyöhykkeen vesitase arvoon 0",
       "fields": {
         "entity": {
           "name": "Entiteetti",
-          "description": "Vyöhyke, jonka bucket nollataan"
+          "description": "Vyöhyke, jonka vesitase nollataan"
         }
       }
     },
     "reset_all_buckets": {
-      "name": "Nollaa kaikki bucketit",
-      "description": "Nollaa kaikkien vyöhykkeiden bucket arvoon 0"
+      "name": "Nollaa kaikki vesitaseet",
+      "description": "Nollaa kaikkien vyöhykkeiden vesitase arvoon 0"
     },
     "clear_all_weather_data": {
       "name": "Tyhjennä kaikki säätiedot",
@@ -262,8 +262,8 @@
           "description": "Vyöhyke, jonka määritysarvot asetetaan"
         },
         "new_bucket_value": {
-          "name": "Uusi bucket-arvo",
-          "description": "Bucketin uusi arvo"
+          "name": "Uusi vesitase",
+          "description": "Vesitaseen uusi arvo"
         },
         "new_multiplier_value": {
           "name": "Uusi kertoimen arvo",
@@ -295,7 +295,7 @@
     },
     "credit_watering": {
       "name": "Hyvitä kastelu",
-      "description": "Hyvittää vyöhykkeen ämpäriin kastelun todella antaman veden sen nollaamisen sijaan.",
+      "description": "Hyvittää vyöhykkeen vesitaseeseen kastelun todella antaman veden sen nollaamisen sijaan.",
       "fields": {
         "seconds": {
           "name": "Sekunnit",
@@ -307,7 +307,7 @@
   "issues": {
     "dry_zone_not_watered": {
       "title": "Vyöhyke {zone} on kuiva, eikä mikään kastele sitä",
-      "description": "Vyöhykkeen **{zone}** bucket on ollut kuiva {days} päivää, ja jokainen sen sisältävä ohjelma on poistettu käytöstä, keskeytetty tai siinä ei ole yhtään käytössä olevaa aikataulua.\n\nOta käyttöön uudelleen ohjelma, joka kastelee tätä vyöhykettä, ota käyttöön jokin sen aikatauluista tai poista sen keskeytys. Ilmoitus poistuu itsestään, kun vyöhyke kastellaan tai jokin ohjelma kattaa sen taas."
+      "description": "Vyöhykkeen **{zone}** vesitase on ollut kuiva {days} päivää, ja jokainen sen sisältävä ohjelma on poistettu käytöstä, keskeytetty tai siinä ei ole yhtään käytössä olevaa aikataulua.\n\nOta käyttöön uudelleen ohjelma, joka kastelee tätä vyöhykettä, ota käyttöön jokin sen aikatauluista tai poista sen keskeytys. Ilmoitus poistuu itsestään, kun vyöhyke kastellaan tai jokin ohjelma kattaa sen taas."
     },
     "weather_silent": {
       "title": "Anturiryhmä {mapping}: säänanturi lakkasi raportoimasta",
@@ -330,8 +330,8 @@
       "description": "Vyöhykettä **{zone}** ei laskettu: sen anturiryhmällä ei ole lukemia, joista laskea. Siihen asti vyöhykkeen vajaus ei muutu eikä sitä kastella.\n\nTarkista, että anturiryhmällä on lähteitä ja että ne raportoivat, päivitä säätiedot ja laske sitten vyöhyke. Ilmoitus poistuu itsestään seuraavan onnistuneen laskennan yhteydessä."
     },
     "zone_not_calculated_no_engine": {
-      "title": "Vyöhykettä {zone} ei voida laskea: ei laskentamoottoria",
-      "description": "Vyöhykkeellä **{zone}** ei ole laskentamoottoria, joten sitä ei lasketa eikä kastella.\n\nValitse laskentatapa sen kortilta Alueet-välilehdellä. Ilmoitus poistuu itsestään seuraavan onnistuneen laskennan yhteydessä."
+      "title": "Vyöhykettä {zone} ei voida laskea: ei moduulia",
+      "description": "Vyöhykkeellä **{zone}** ei ole moduulia, joten sitä ei lasketa eikä kastella.\n\nValitse laskentatapa sen kortilta Alueet-välilehdellä. Ilmoitus poistuu itsestään seuraavan onnistuneen laskennan yhteydessä."
     },
     "zone_not_calculated_nothing_from_engine": {
       "title": "Vyöhykettä {zone} ei voida laskea: ei haihduntaa",
@@ -339,7 +339,7 @@
     },
     "zone_not_calculated_forecast_without_service": {
       "title": "Vyöhykettä {zone} ei voida laskea: ennuste ilman sääpalvelua",
-      "description": "Vyöhykkeen **{zone}** laskentamoottori katsoo päiviä eteenpäin, mikä vaatii sääpalvelun, eikä sellaista ole määritetty. Vyöhykettä ei kastella ennen kuin se voidaan laskea.\n\nMääritä sääpalvelu tai aseta moottorin ennustepäivät arvoon 0. Ilmoitus poistuu itsestään seuraavan onnistuneen laskennan yhteydessä."
+      "description": "Vyöhykkeen **{zone}** moduuli katsoo päiviä eteenpäin, mikä vaatii sääpalvelun, eikä sellaista ole määritetty. Vyöhykettä ei kastella ennen kuin se voidaan laskea.\n\nMääritä sääpalvelu tai aseta moduulin ennustepäivät arvoon 0. Ilmoitus poistuu itsestään seuraavan onnistuneen laskennan yhteydessä."
     },
     "zone_not_calculated_error": {
       "title": "Vyöhykettä {zone} ei voida laskea: virhe",

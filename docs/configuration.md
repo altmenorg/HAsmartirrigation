@@ -36,8 +36,8 @@ Two pages are in no tab, and both are reachable.
 - The [setup assistant](configuration-setup.md) is a button under **Settings**.
   It is for an installation that has nothing yet, so a tab inviting one that is
   already set up to set itself up was in the way.
-- The [calculation engines](configuration-modules.md) page is not in the
-  navigation at all, because a zone says how it is calculated and the engine
+- The [modules](configuration-modules.md) page is not in the
+  navigation at all, because a zone says how it is calculated and the module
   behind that answer is created and reused for you. Its address still works and
   it appears under Settings while it is open.
 
@@ -57,4 +57,4 @@ would hide decisions its owner made. A fresh installation starts on the
 standard one. Either way the choice is yours from then on, and nothing is lost
 in either direction: the settings keep their values.
 
-See also: [Closed-loop watering](configuration-closed-loop.md), which lets Smart Irrigation credit the bucket from real irrigation and, optionally, drive the valves itself.
+See also: [Closed-loop watering](configuration-closed-loop.md), which lets Smart Irrigation credit the water balance from real irrigation and, optionally, drive the valves itself.
