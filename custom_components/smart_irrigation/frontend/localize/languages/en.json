@@ -725,6 +725,7 @@
         "soil-type": "Soil",
         "plant-type": "What grows here",
         "soil-types": {
+          "default": "Not chosen yet – calculated with {value}",
           "sand": "Sandy",
           "sandy_loam": "Sandy loam",
           "loam": "Loam",
@@ -733,6 +734,7 @@
           "custom": "I set the drainage rate myself"
         },
         "plant-types": {
+          "default": "Not chosen yet – calculated with coefficient {value}",
           "lawn": "Lawn",
           "vegetables": "Vegetables",
           "flowers": "Flowers",

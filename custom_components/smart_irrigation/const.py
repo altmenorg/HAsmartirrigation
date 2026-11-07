@@ -451,7 +451,13 @@ CONF_DEFAULT_MAXIMUM_DURATION = (
     3600  # default maximum duration to one hour == 3600 seconds
 )
 CONF_DEFAULT_MAXIMUM_BUCKET = 24  # mm default maximum bucket of 24mm
-CONF_DEFAULT_DRAINAGE_RATE = 50.8  # mm / hour (=2 inch per hour)
+# The drainage rate a new zone starts with: loam's, the middle of the soils
+# the panel offers (presets.SOIL_TYPES). Zones made before kept 2 in/h, which
+# drains faster than sand and so threw away almost any surplus within a day,
+# whatever the soil (#982). Their stored value is not touched.
+CONF_DEFAULT_DRAINAGE_RATE = 8.0  # mm / hour
+# The starting value of zones made before: still read as "not chosen".
+CONF_PREVIOUS_DEFAULT_DRAINAGE_RATE = 50.8  # mm / hour (=2 inch per hour)
 CONF_DEFAULT_CONTINUOUS_UPDATES = False  # continuous updates are disabled by default
 CONF_CONTINUOUS_UPDATES = "continuousupdates"
 # Price the evapotranspiration of a calculation hour by hour (FAO-56 Eq. 53)

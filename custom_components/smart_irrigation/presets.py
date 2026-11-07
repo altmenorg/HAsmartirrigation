@@ -42,6 +42,18 @@ PLANT_TYPES: dict[str, float] = {
 # What a zone whose numbers match no preset is called.
 CUSTOM = "custom"
 
+# What a zone still at the value it started with is called: nobody chose a
+# soil or a planting for it (#982). It read "set myself" with the number,
+# which said who chose it wrongly.
+NOT_CHOSEN = "default"
+
+# The drainage rates a zone starts with: today's, and the one zones made
+# before started with.
+DEFAULT_DRAINAGE_RATES = (
+    const.CONF_DEFAULT_DRAINAGE_RATE,
+    const.CONF_PREVIOUS_DEFAULT_DRAINAGE_RATE,
+)
+
 # The crop coefficient every zone starts with (store.ZoneEntry). It is also
 # the vegetables' one, so a zone nobody described read as "Vegetables": a
 # value never chosen. Left at it, the coefficient says nothing about the
@@ -71,29 +83,36 @@ def _matching(value, table) -> str | None:
     return None
 
 
-def _matching_unless_default(value, table, default) -> str | None:
-    """The preset the value matches, unless it is the value a zone starts with."""
+def _is_one_of(value, defaults) -> bool:
+    """Whether the value is one of the starting values, within a hair."""
     try:
-        if abs(float(value) - default) < 1e-6:
-            return None
+        value = float(value)
     except (TypeError, ValueError):
-        return None
-    return _matching(value, table)
+        return False
+    return any(abs(value - default) < 1e-6 for default in defaults)
 
 
 def describe_zone(zone: dict) -> dict:
     """The soil and planting a zone's numbers correspond to.
 
-    A zone that was set up before this, or whose owner typed their own
-    numbers, matches nothing and is "custom": the panel then shows the numbers
-    themselves rather than claiming a soil the user never chose.
+    A soil or planting chosen by name is kept. A number still at the value
+    the zone started with is "not chosen" (#982). Any other number that
+    matches a preset reads as that preset, and one that matches nothing is
+    "custom": the panel then shows the number itself rather than claiming a
+    soil the user never chose.
     """
     zone = zone or {}
-    soil = zone.get(const.ZONE_SOIL_TYPE) or _matching(
-        zone.get(const.ZONE_DRAINAGE_RATE), SOIL_TYPES
+    drainage = zone.get(const.ZONE_DRAINAGE_RATE)
+    soil = zone.get(const.ZONE_SOIL_TYPE) or (
+        NOT_CHOSEN
+        if _is_one_of(drainage, DEFAULT_DRAINAGE_RATES)
+        else _matching(drainage, SOIL_TYPES)
     )
-    plant = zone.get(const.ZONE_PLANT_TYPE) or _matching_unless_default(
-        zone.get(const.ZONE_MULTIPLIER), PLANT_TYPES, DEFAULT_MULTIPLIER
+    multiplier = zone.get(const.ZONE_MULTIPLIER)
+    plant = zone.get(const.ZONE_PLANT_TYPE) or (
+        NOT_CHOSEN
+        if _is_one_of(multiplier, (DEFAULT_MULTIPLIER,))
+        else _matching(multiplier, PLANT_TYPES)
     )
     return {
         const.ZONE_SOIL_TYPE: soil or CUSTOM,
@@ -109,6 +128,13 @@ def apply_preset(changes: dict) -> dict:
     described as custom.
     """
     changes = dict(changes or {})
+    # "Not chosen" goes back to the starting value, and stores no choice.
+    if changes.get(const.ZONE_SOIL_TYPE) == NOT_CHOSEN:
+        changes[const.ZONE_SOIL_TYPE] = None
+        changes.setdefault(const.ZONE_DRAINAGE_RATE, const.CONF_DEFAULT_DRAINAGE_RATE)
+    if changes.get(const.ZONE_PLANT_TYPE) == NOT_CHOSEN:
+        changes[const.ZONE_PLANT_TYPE] = None
+        changes.setdefault(const.ZONE_MULTIPLIER, DEFAULT_MULTIPLIER)
     soil = changes.get(const.ZONE_SOIL_TYPE)
     if soil and soil != CUSTOM and const.ZONE_DRAINAGE_RATE not in changes:
         rate = drainage_rate_for(soil)
