@@ -5,7 +5,7 @@
         "name": "Duration"
       },
       "bucket": {
-        "name": "Bucket"
+        "name": "Water balance"
       },
       "et_value": {
         "name": "Applied ET"
@@ -23,7 +23,7 @@
         "name": "Water used"
       },
       "live_bucket": {
-        "name": "Live bucket"
+        "name": "Live water balance"
       },
       "last_run_volume": {
         "name": "Last run volume"
@@ -45,7 +45,7 @@
         "name": "Calculate"
       },
       "reset_bucket": {
-        "name": "Reset bucket"
+        "name": "Reset water balance"
       },
       "reset_usage": {
         "name": "Reset water usage"
@@ -151,7 +151,7 @@
         },
         "dry_run": {
           "name": "Dry run",
-          "description": "Report what the calculation would do without changing the bucket, the zone or the collected weather data"
+          "description": "Report what the calculation would do without changing the water balance, the zone or the collected weather data"
         }
       }
     },
@@ -169,7 +169,7 @@
         },
         "dry_run": {
           "name": "Dry run",
-          "description": "Report what the calculation would do without changing the bucket, the zone or the collected weather data"
+          "description": "Report what the calculation would do without changing the water balance, the zone or the collected weather data"
         }
       }
     },
@@ -188,42 +188,42 @@
       }
     },
     "set_bucket": {
-      "name": "Set bucket",
-      "description": "Set bucket for a zone to a specific value",
+      "name": "Set water balance",
+      "description": "Set the water balance of a zone to a value",
       "fields": {
         "entity": {
           "name": "Entity",
-          "description": "Zone to set bucket for"
+          "description": "Zone to set the water balance for"
         },
         "new_bucket_value": {
-          "name": "New bucket value",
-          "description": "new value of the bucket"
+          "name": "New water balance",
+          "description": "New value of the water balance"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Set all buckets",
-      "description": "Set buckets for all zones to a specific value",
+      "name": "Set all water balances",
+      "description": "Set the water balance of all zones to a value",
       "fields": {
         "new_bucket_value": {
-          "name": "New bucket value",
-          "description": "new value of the bucket"
+          "name": "New water balance",
+          "description": "New value of the water balance"
         }
       }
     },
     "reset_bucket": {
-      "name": "Reset bucket",
-      "description": "Reset bucket for a zone to 0",
+      "name": "Reset water balance",
+      "description": "Reset the water balance of a zone to 0",
       "fields": {
         "entity": {
           "name": "Entity",
-          "description": "Zone to reset bucket for"
+          "description": "Zone to reset the water balance for"
         }
       }
     },
     "reset_all_buckets": {
-      "name": "Reset all buckets",
-      "description": "Reset bucket for all zones to 0"
+      "name": "Reset all water balances",
+      "description": "Reset the water balance of all zones to 0"
     },
     "clear_all_weather_data": {
       "name": "Clear all weather data",
@@ -262,8 +262,8 @@
           "description": "Zone to set configuration values"
         },
         "new_bucket_value": {
-          "name": "New bucket value",
-          "description": "New value for the bucket"
+          "name": "New water balance",
+          "description": "New value for the water balance"
         },
         "new_multiplier_value": {
           "name": "New multiplier value",
@@ -295,7 +295,7 @@
     },
     "credit_watering": {
       "name": "Credit watering",
-      "description": "Credit a zone's bucket with the water a run actually delivered, instead of setting it to 0.",
+      "description": "Credit a zone's water balance with the water a run actually delivered, instead of setting it to 0.",
       "fields": {
         "seconds": {
           "name": "Seconds",
@@ -307,7 +307,7 @@
   "issues": {
     "dry_zone_not_watered": {
       "title": "Zone {zone} is dry and nothing will water it",
-      "description": "The bucket of zone **{zone}** has been dry for {days} days, and every program that includes it is disabled, suspended or has no enabled schedule.\n\nTurn a program that waters this zone back on, enable one of its schedules, or lift its suspension. The notice clears by itself once the zone is watered or a program covers it again."
+      "description": "The water balance of zone **{zone}** has been dry for {days} days, and every program that includes it is disabled, suspended or has no enabled schedule.\n\nTurn a program that waters this zone back on, enable one of its schedules, or lift its suspension. The notice clears by itself once the zone is watered or a program covers it again."
     },
     "weather_silent": {
       "title": "Sensor group {mapping}: a weather sensor stopped reporting",
@@ -330,8 +330,8 @@
       "description": "Zone **{zone}** was not calculated: its sensor group has no readings to calculate from. Until it has, the zone's deficit does not move and it is not watered.\n\nCheck that the sensor group has sources and that they report, update the weather data, then calculate the zone. The notice clears by itself at the next calculation that succeeds."
     },
     "zone_not_calculated_no_engine": {
-      "title": "Zone {zone} cannot be calculated: no calculation engine",
-      "description": "Zone **{zone}** has no calculation engine, so it is not calculated and not watered.\n\nChoose how it is calculated on its card in the Zones tab. The notice clears by itself at the next calculation that succeeds."
+      "title": "Zone {zone} cannot be calculated: no module",
+      "description": "Zone **{zone}** has no module, so it is not calculated and not watered.\n\nChoose how it is calculated on its card in the Zones tab. The notice clears by itself at the next calculation that succeeds."
     },
     "zone_not_calculated_nothing_from_engine": {
       "title": "Zone {zone} cannot be calculated: no evapotranspiration",
@@ -339,7 +339,7 @@
     },
     "zone_not_calculated_forecast_without_service": {
       "title": "Zone {zone} cannot be calculated: a forecast without a weather service",
-      "description": "The calculation engine of zone **{zone}** looks days ahead, which needs a weather service, and none is set up. The zone is not watered until it can be calculated.\n\nSet up a weather service, or set the engine's forecast days to 0. The notice clears by itself at the next calculation that succeeds."
+      "description": "The module of zone **{zone}** looks days ahead, which needs a weather service, and none is set up. The zone is not watered until it can be calculated.\n\nSet up a weather service, or set the module's forecast days to 0. The notice clears by itself at the next calculation that succeeds."
     },
     "zone_not_calculated_error": {
       "title": "Zone {zone} cannot be calculated: an error",

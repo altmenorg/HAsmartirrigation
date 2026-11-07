@@ -24,7 +24,7 @@
       "size": "Größe",
       "throughput": "Durchfluss",
       "state": "Zustand",
-      "bucket": "Bucket",
+      "bucket": "Wasserbilanz",
       "last_updated": "zuletzt aktualisiert",
       "last_calculated": "zuletzt berechnet",
       "number_of_data_points": "Anzahl der Datenpunkte"
@@ -55,13 +55,13 @@
         "module-returned-evapotranspiration-deficiency": "Das Modul berechnete einen Evapotranspirationsmangel von",
         "module-returned-hourly-evapotranspiration-deficiency": "Das Modul hat das Defizit der Pflanzen-Evapotranspiration Stunde für Stunde summiert ( = Summe der stündlichen et0 * Kc + Niederschlag) über",
         "crop-factor-is": "Der Pflanzenfaktor ist",
-        "bucket-was": "Der alte Vorrat war",
-        "new-bucket-values-is": "Der neue Vorrat ist",
-        "bucket": "Vorrat",
-        "old-bucket-variable": "alter_Vorrat",
-        "max-bucket-variable": "max_Vorrat",
+        "bucket-was": "Die alte Wasserbilanz war",
+        "new-bucket-values-is": "Die neue Wasserbilanz ist",
+        "bucket": "Wasserbilanz",
+        "old-bucket-variable": "alte_Wasserbilanz",
+        "max-bucket-variable": "max_Wasserbilanz",
         "delta": "Veränderung",
-        "bucket-less-than-zero-irrigation-necessary": "Wenn der Vorrat < 0 ist, ist eine Bewässerung nötig.",
+        "bucket-less-than-zero-irrigation-necessary": "Wenn die Wasserbilanz < 0 ist, ist eine Bewässerung nötig.",
         "steps-taken-to-calculate-duration": "Für eine exakte Berechnung der Dauer, wurden folgende Schritte durchgeführt",
         "precipitation-rate-defined-as": "Der Niederschlag ist",
         "precipitation-rate-is": "Die Niederschlagsrate ist",
@@ -76,9 +76,9 @@
         "duration-after-maximum-duration-is": "also ist die Dauer",
         "lead-time-is-applied": "Zuletzt wird die Vorlaufzeit angewendet. Die Vorlaufzeit ist",
         "duration-after-lead-time-is": "also ist die Dauer",
-        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Wenn der Vorrat >= 0 ist, ist keine Bewässerung nötig und die Dauer ist gleich",
-        "maximum-bucket-is": "Der maximale Vorrat ist",
-        "drainage-rate-is": "Die Entwässerungsrate bei Sättigung (Vorrat am Maximum) beträgt",
+        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Wenn die Wasserbilanz >= 0 ist, ist keine Bewässerung nötig und die Dauer ist gleich",
+        "maximum-bucket-is": "Die maximale Wasserbilanz ist",
+        "drainage-rate-is": "Die Entwässerungsrate bei Sättigung (Wasserbilanz am Maximum) beträgt",
         "current-drainage-is": "Die aktuelle Entwässerung wird berechnet als",
         "drainage-replayed": "Der Zeitraum wurde Stunde für Stunde nachgerechnet, sodass jeder Regen erst ab der Stunde versickert, in der er fiel. Entwässerung über",
         "no-drainage": "Die aktuelle Entwässerung beträgt 0, weil",
@@ -151,7 +151,7 @@
           "question": "Bereit zum Erstellen",
           "zone": "Zone",
           "environment": "Umgebung",
-          "engine": "Berechnungs-Engine",
+          "engine": "Modul",
           "sources": "Quellen",
           "from-the-service": "vom Wetterdienst",
           "help": "Damit werden ein Berechnungsmodul, eine Sensorgruppe und eine Zone erstellt, genau wie über die anderen Tabs. Danach ist nichts festgeschrieben."
@@ -240,7 +240,7 @@
             "calc-when-manual": "Nur auf Anfrage",
             "calc-when-hint": "Kurz vor jedem Start: zum Zeitpunkt des Startauslösers, mit dem aktuellsten Wetter. Die richtige Wahl, wenn Smart Irrigation die Bewässerung startet (direkte Ventilsteuerung oder das Startereignis). Zu einer festen Uhrzeit: jeden Tag zur unten angegebenen Zeit, wenn etwas anderes als Smart Irrigation die Bewässerung startet und die Dauern liest, wann es will (Irrigation Unlimited, ein eigener Zeitplan). Nur auf Anfrage: nichts wird von selbst berechnet, nutze die Berechnen-Schaltflächen oder die Dienste.",
             "calc-time": "Berechnen um",
-            "calc-time-hint": "Die tägliche Berechnung: das verlorene Wasser wird dem Vorrat jeder Zone hinzugefügt und die Bewässerungsdauern werden festgelegt.",
+            "calc-time-hint": "Die tägliche Berechnung: das verlorene Wasser wird der Wasserbilanz jeder Zone hinzugefügt und die Bewässerungsdauern werden festgelegt.",
             "hourly-calculation": "Evapotranspiration Stunde für Stunde berechnen",
             "hourly-calculation-hint": "Summiert die stündliche FAO-56-Gleichung über jede Stunde seit der letzten Berechnung, anstatt die Tagesgleichung auf Mittelwerte anzuwenden, die verbergen, ob Sonne und Hitze zusammen auftraten. Eine neue Installation beginnt damit; eine Installation, die es vorher schon gab, behält die Tagesgleichung, bis du umschaltest, denn die beiden ergeben unterschiedliche Zahlen und deine Bewässerung soll sich nicht durch ein Update ändern. Die Sonne jeder Stunde kommt aus einem Strahlungs- oder Lichtsensor, aus der stündlichen Historie des Wetterdienstes oder aus der Temperaturspanne des Tages. Es lohnt sich, wenn Messwerte über den Tag verteilt eintreffen: eine Aktualisierung pro Tag lässt einen einzigen Messwert über vierundzwanzig Stunden gelten, und dann ist keine der beiden Formen verlässlich. Ein Gewächshaus ohne eigenen Sensor behält die Tagesgleichung."
           }
@@ -527,9 +527,9 @@
           },
           "greenhouse": "Gewächshaus",
           "greenhouse_description": "Eine geschlossene Umgebung: ein Gewächshaus, ein Folientunnel, alles unter Glas oder Folie. Zu diesen Zonen kommt kein Regen, der Niederschlag bleibt daher aus ihrer Wasserbilanz heraus und seine Felder werden ausgeblendet. Zwei Dinge musst du selbst setzen, weil sie nicht zu erraten sind: gib der Windgeschwindigkeit einen statischen Wert nahe 0, da die Berechnung freie Luft annimmt, und nutze einen Lichtsensor für die Sonnenstrahlung, da die Verglasung den Himmel filtert.",
-          "module": "Berechnungs-Engine",
-          "module_description": "Diese Gruppe bietet nur die Quellen an, die diese Engine liest. Die Zonen, die sie nutzen, übernehmen die Wahl.",
-          "module_undecided": "Noch keine Engine gewählt, daher wird jede Quelle angeboten und jede Zone, die diese Gruppe nutzt, behält ihre eigene. Wähle eine, um nur die Quellen zu sehen, die sie liest.",
+          "module": "Modul",
+          "module_description": "Diese Gruppe bietet nur die Quellen an, die dieses Modul liest. Die Zonen, die sie nutzen, übernehmen die Wahl.",
+          "module_undecided": "Noch kein Modul gewählt, daher wird jede Quelle angeboten und jede Zone, die diese Gruppe nutzt, behält ihre eigene. Wähle eines, um nur die Quellen zu sehen, die es liest.",
           "wind_height": "Höhe des Windmessers (leer: auf 2 m)",
           "rain_not_from_entity": "Die Wetter-Entität meldet keinen gefallenen Regen, nur eine Vorhersage: Wähle hier einen Regensensor, sonst wird nach jedem Schauer bewässert.",
           "rain_hint_entity": "Regen, der gerade fällt, als Rate. Die Wetter-Entität sagt ihn nur vorher: Wähle einen Sensor, der Regen misst."
@@ -592,7 +592,7 @@
         "calculate": "Bewässerungsdauer berechnen",
         "information": "Information",
         "update": "Wetterdaten aktualisieren",
-        "reset-bucket": "Vorrat zurücksetzen",
+        "reset-bucket": "Wasserbilanz zurücksetzen",
         "view-weather-info": "Wetterdaten anzeigen",
         "view-weather-info-message": "Wetterdaten verfügbar für",
         "view-watering-calendar": "Bewässerungskalender anzeigen",
@@ -614,7 +614,7 @@
           "actions": {
             "calculate-all": "Alle Zonen berechnen",
             "update-all": "Alle Zonen aktualisieren",
-            "reset-all-buckets": "Alle Vorräte zurücksetzen",
+            "reset-all-buckets": "Alle Wasserbilanzen zurücksetzen",
             "clear-all-weatherdata": "Alle Wetterdaten löschen"
           },
           "header": "Aktionen für alle Zonen",
@@ -623,13 +623,13 @@
       },
       "description": "Füge eine oder mehrere Zonen hinzu. Die Bewässerungsdauer wird pro Zone, abhängig von Größe, Durchsatz, Status, Modul und Sensorgruppe berechnet.",
       "labels": {
-        "bucket": "Vorrat",
+        "bucket": "Wasserbilanz",
         "et-deficiency": "Täglicher ET-Mangel",
         "duration": "Dauer",
         "lead-time": "Vorlaufzeit",
         "mapping": "Sensorgruppe",
         "maximum-duration": "Maximale Dauer",
-        "multiplier": "Multiplikator",
+        "multiplier": "Pflanzenfaktor (Kc)",
         "name": "Name",
         "input-method": "Eingabeart",
         "input-methods": {
@@ -652,13 +652,13 @@
           "manual": "Manuell"
         },
         "throughput": "Durchfluss",
-        "maximum-bucket": "Maximaler Vorrat",
+        "maximum-bucket": "Maximale Wasserbilanz",
         "last_calculated": "Zuletzt berechnet",
         "data-last-updated": "Daten zuletzt aktualisiert",
         "data-number-of-data-points": "Anzahl der Messungen",
         "drainage_rate": "Entwässerungsrate",
         "linked-entity": "Verknüpftes Ventil/Schalter",
-        "linked-entity-hint": "Das Ventil oder der Schalter, der diese Zone bewässert. Immer wenn er läuft (ein manueller Wasserhahn, eine Automatisierung oder Smart Irrigation selbst bei aktivierter direkter Ventilsteuerung), wird der Eimer aus der Laufzeit und dem Durchsatz der Zone gutgeschrieben. Erforderlich für die Closed-Loop-Funktionen.",
+        "linked-entity-hint": "Das Ventil oder der Schalter, der diese Zone bewässert. Immer wenn er läuft (ein manueller Wasserhahn, eine Automatisierung oder Smart Irrigation selbst bei aktivierter direkter Ventilsteuerung), wird der Wasserbilanz gutgeschrieben, was Laufzeit und Durchsatz der Zone ergeben. Erforderlich für die Closed-Loop-Funktionen.",
         "supply": "Pumpe oder Hauptventil",
         "supply-none": "Keine",
         "measured-flow-help": "Über mehrere Läufe hat der Durchflusszähler der Zone einen Durchfluss gemessen, der vom oben eingestellten abweicht. Das ist nur ein Hinweis und wird nie von selbst übernommen.",
@@ -705,7 +705,7 @@
         "distribution-efficiency-help": "Der Anteil des aus den Ausbringern austretenden Wassers, der die Pflanzen erreicht, in %. Regner bei Wind oder am Hang verlieren etwas, Tropfbewässerung fast nichts. Leer lassen für 100 %. Eine Zone mit 80 % bewässert 25 % länger für dieselbe Menge und rechnet sich nur 80 % dessen an, was sie abgibt.",
         "days-between-irrigation-help": "Leer lassen, um der allgemeinen Einstellung zu folgen (Einstellungen, Tage zwischen Bewässerungen). Eine Zahl ersetzt die allgemeine Einstellung nur für diese Zone: 1 bewässert sie jeden Tag, wenn sie Wasser braucht, 3 höchstens jeden dritten Tag, 0 hebt die Einschränkung auf. Die Tage werden ab der letzten Bewässerung dieser Zone gezählt.",
         "soil-moisture-sensor": "Bodenfeuchtesensor",
-        "soil-moisture-sensor-hint": "Die Zone setzt einen Durchlauf aus, solange der Boden den Schwellwert erreicht oder überschreitet. Der Vorrat bleibt erhalten.",
+        "soil-moisture-sensor-hint": "Die Zone setzt einen Durchlauf aus, solange der Boden den Schwellwert erreicht oder überschreitet. Die Wasserbilanz bleibt erhalten.",
         "soil-moisture-threshold": "Überspringen ab",
         "calculation-method": "Evapotranspiration",
         "calculation-method-help": {
@@ -734,7 +734,7 @@
           "custom": "Ich setze die Drainagerate selbst"
         },
         "plant-types": {
-          "default": "Noch nicht gewählt – gerechnet mit Koeffizient {value}",
+          "default": "Noch nicht gewählt – gerechnet mit Pflanzenfaktor {value}",
           "lawn": "Rasen",
           "vegetables": "Gemüse",
           "flowers": "Blumen",
@@ -743,7 +743,7 @@
           "fruit_trees": "Obstbäume",
           "vines": "Reben",
           "ground_cover": "Bodendecker",
-          "custom": "Ich setze den Pflanzenkoeffizienten selbst"
+          "custom": "Ich setze den Pflanzenfaktor selbst"
         },
         "duration-readonly-automatic": "Für dich berechnet: der Durchlauf dieser Zone ergibt sich aus ihrer Wasserbilanz. Stelle sie auf manuell, um eine Dauer selbst einzutragen.",
         "duration-readonly-disabled": "Eine deaktivierte Zone wird nie bewässert, sie hat also keine Laufzeit.",
@@ -751,7 +751,7 @@
       },
       "no_items": "Es ist noch keine Zone vorhanden.",
       "title": "Zonen",
-      "module-comes-from-the-group": "Die Berechnungs-Engine kommt von der Sensorgruppe dieser Zone. Ändere sie dort, und jede Zone, die diese Gruppe nutzt, folgt.",
+      "module-comes-from-the-group": "Das Modul kommt von der Sensorgruppe dieser Zone. Ändere es dort, und jede Zone, die diese Gruppe nutzt, folgt.",
       "status": {
         "estimate": "Es fehlen {short}: etwa {duration} ({volume}) bei der nächsten Berechnung.",
         "will-water": "Bewässert {duration} beim nächsten Start.",
@@ -1375,7 +1375,7 @@
   },
   "observed_watering": {
     "title": "Beobachtete Bewässerung (Closed Loop)",
-    "description": "Schreibt den Eimer jeder Zone automatisch aus der tatsächlichen Bewässerung gut, anstatt den Eimer über eine Automatisierung zurückzusetzen. Nach der Aktivierung wählst du im Tab \"Zonen\" pro Zone ein Ventil/Schalter-Entity aus: Solange es geöffnet ist, wird der Eimer aus der Laufzeit und dem Durchsatz der Zone gutgeschrieben. Für eine exakte Abrechnung kannst du außerdem pro Zone einen kumulativen Volumenzähler (im Stil eines Wasserzählerstands) auswählen, dann wird das gemessene Volumen verwendet. Wichtig: Wenn diese Funktion aktiv ist, schreibt sie als Einzige den Eimer gut, entferne daher jeden reset_bucket-Aufruf aus deiner Bewässerungs-Automatisierung, um Doppelzählungen zu vermeiden.",
+    "description": "Schreibt der Wasserbilanz jeder Zone automatisch die tatsächliche Bewässerung gut, anstatt die Wasserbilanz über eine Automatisierung zurückzusetzen. Nach der Aktivierung wählst du im Tab \"Zonen\" pro Zone ein Ventil/Schalter-Entity aus: Solange es geöffnet ist, wird der Wasserbilanz gutgeschrieben, was Laufzeit und Durchsatz der Zone ergeben. Für eine exakte Abrechnung kannst du außerdem pro Zone einen kumulativen Volumenzähler (im Stil eines Wasserzählerstands) auswählen, dann wird das gemessene Volumen verwendet. Wichtig: Wenn diese Funktion aktiv ist, schreibt sie als Einzige der Wasserbilanz gut, entferne daher jeden reset_bucket-Aufruf aus deiner Bewässerungs-Automatisierung, um Doppelzählungen zu vermeiden.",
     "enabled_label": "Beobachtete Bewässerung aktivieren",
     "direct_control_label": "Smart Irrigation das Ventil steuern lassen",
     "direct_control_description": "Wenn aktiviert, öffnet Smart Irrigation das verknüpfte Ventil jeder Zone, wartet die berechnete Dauer ab und schließt es dann, ganz ohne Automatisierung. Ein laufender Vorgang wird nach einem Neustart fortgesetzt. Sicherheit: Ein Ventil, das sich selbst schließen kann, bekommt beim Öffnen die Dauer des Laufs mit (ein Sonoff SWV über ZHA oder ein Ventil, für dessen Zone ein MQTT-Sicherheitstopic eingestellt ist), sodass es auch schließt, wenn Home Assistant ausfällt. Jedes andere Ventil bewässert weiter, bis Home Assistant wieder läuft: Statte es mit einer Hardware-Ausfallsicherung aus (einer maximalen Laufzeit).",
@@ -1400,7 +1400,7 @@
   },
   "calculation_log": {
     "title": "Berechnungsprotokoll",
-    "description": "Schreibt die vollständigen Eingaben jeder Berechnung in eine Datei, damit zwei Tage, die sich gleichen und doch sehr unterschiedlich bewässern, hinterher verglichen werden können. Jede Berechnung hängt eine Zeile an: die Datensätze der Sensorgruppe und wie sie zusammengefasst wurden, die Zwischenwerte des Moduls (Sonnenstrahlung, Nettostrahlung, ET0) sowie den daraus entstehenden Vorrat, die Dauer und die Menge. Standardmäßig aus; die Datei ist in der Größe begrenzt und wird rotiert, sie kann also eine Saison lang eingeschaltet bleiben.",
+    "description": "Schreibt die vollständigen Eingaben jeder Berechnung in eine Datei, damit zwei Tage, die sich gleichen und doch sehr unterschiedlich bewässern, hinterher verglichen werden können. Jede Berechnung hängt eine Zeile an: die Datensätze der Sensorgruppe und wie sie zusammengefasst wurden, die Zwischenwerte des Moduls (Sonnenstrahlung, Nettostrahlung, ET0) sowie die daraus entstehende Wasserbilanz, die Dauer und die Menge. Standardmäßig aus; die Datei ist in der Größe begrenzt und wird rotiert, sie kann also eine Saison lang eingeschaltet bleiben.",
     "enabled_label": "Berechnungseingaben in eine Datei schreiben",
     "file_hint": "Wird nach config/smart_irrigation/calc_log.jsonl geschrieben, ein JSON-Datensatz je Zeile. Die neuesten Datensätze liegen auch im Diagnose-Download (Koordinaten gerundet, Entitäts-IDs entfernt), du kannst sie also in einem Schritt an ein Issue anhängen."
   },

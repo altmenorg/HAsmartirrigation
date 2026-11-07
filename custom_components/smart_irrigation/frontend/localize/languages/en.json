@@ -24,7 +24,7 @@
       "size": "size",
       "throughput": "throughput",
       "state": "state",
-      "bucket": "bucket",
+      "bucket": "water balance",
       "last_updated": "last updated",
       "last_calculated": "last calculated",
       "number_of_data_points": "number of data points"
@@ -55,13 +55,13 @@
         "module-returned-evapotranspiration-deficiency": "Module returned Crop evapotranspiration deficiency ( = et0 * hour_multiplier * Kc + precipitation) of",
         "module-returned-hourly-evapotranspiration-deficiency": "Module summed the Crop evapotranspiration deficiency hour by hour ( = sum of hourly et0 * Kc + precipitation) over",
         "crop-factor-is": "Crop factor is",
-        "bucket-was": "Bucket was",
-        "new-bucket-values-is": "New bucket value is",
-        "bucket": "bucket",
-        "old-bucket-variable": "old_bucket",
-        "max-bucket-variable": "max_bucket",
+        "bucket-was": "Water balance was",
+        "new-bucket-values-is": "New water balance is",
+        "bucket": "water balance",
+        "old-bucket-variable": "old_water_balance",
+        "max-bucket-variable": "max_water_balance",
         "delta": "delta",
-        "bucket-less-than-zero-irrigation-necessary": "Since bucket < 0, irrigation is necessary",
+        "bucket-less-than-zero-irrigation-necessary": "Since water balance < 0, irrigation is necessary",
         "steps-taken-to-calculate-duration": "To calculate the exact duration, the following steps were taken",
         "precipitation-rate-defined-as": "The precipitation rate is defined as",
         "precipitation-rate-is": "The precipitation rate is",
@@ -76,9 +76,9 @@
         "duration-after-maximum-duration-is": "hence the duration is",
         "lead-time-is-applied": "Finally, the lead time is applied. The lead time is",
         "duration-after-lead-time-is": "hence the final duration is",
-        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Since bucket >= 0, no irrigation is necessary and duration is set to",
-        "maximum-bucket-is": "Maximum bucket size is",
-        "drainage-rate-is": "Drainage rate when saturated (bucket at max) is",
+        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "Since water balance >= 0, no irrigation is necessary and duration is set to",
+        "maximum-bucket-is": "Maximum water balance is",
+        "drainage-rate-is": "Drainage rate when saturated (water balance at max) is",
         "current-drainage-is": "Current drainage is calculated as",
         "drainage-replayed": "The window was replayed hour by hour, so each rain drained only from the hour it fell. Drainage over",
         "no-drainage": "Current drainage is 0 because",
@@ -151,7 +151,7 @@
           "question": "Ready to create",
           "zone": "Zone",
           "environment": "Environment",
-          "engine": "Calculation engine",
+          "engine": "Module",
           "sources": "Sources",
           "from-the-service": "from the weather service",
           "help": "This creates a calculation module, a sensor group and a zone, exactly as the other tabs would. Nothing is locked afterwards."
@@ -240,7 +240,7 @@
             "calc-when-manual": "Only when I ask",
             "calc-when-hint": "Just before each start: at the time of the start trigger, with the freshest weather. The right choice when Smart Irrigation starts the watering (direct valve control or the start event). At a fixed time: every day at the time below, for something other than Smart Irrigation that starts the watering and reads the durations when it likes (Irrigation Unlimited, a schedule of your own). Only when I ask: nothing is calculated by itself, use the calculate buttons or the services.",
             "calc-time": "Calculate at",
-            "calc-time-hint": "The daily calculation: the water lost is added to the bucket of each zone and the watering durations are set.",
+            "calc-time-hint": "The daily calculation: the water lost is added to the water balance of each zone and the watering durations are set.",
             "hourly-calculation": "Calculate evapotranspiration hour by hour",
             "hourly-calculation-hint": "Sums the FAO-56 hourly equation over each hour since the last calculation, instead of applying the daily equation to the averages, which hides whether the sun and the heat came together. A new installation starts on it; an installation set up before it arrived keeps the daily equation until you switch, because the two give different numbers and your watering should not change on an update. The sun of each hour comes from a radiation or illuminance sensor, from the weather service's own hourly history, or from the day's temperature range. It is worth having when readings arrive through the day: one update a day leaves a single reading held across twenty-four hours, and neither form is trustworthy then. A greenhouse with no sensor of its own keeps the daily equation."
           }
@@ -250,7 +250,7 @@
             "warning-update-time-on-or-after-calc-time": "Warning: weather data update time on or after calculation time"
           },
           "header": "Automatic weather data update",
-          "description": "Collect and store weather data automatically. Weather data is required to calculate zone buckets and durations.",
+          "description": "Collect and store weather data automatically. Weather data is required to calculate zone water balances and durations.",
           "labels": {
             "auto-update-enabled": "Automatically update weather data",
             "auto-update-schedule": "Update schedule",
@@ -290,7 +290,7 @@
         "master-switch": {
           "title": "Smart Irrigation",
           "label": "Calculate and water",
-          "description": "Off, Smart Irrigation keeps taking its weather readings and keeps its sensors, but calculates nothing, leaves every bucket as it is, opens no valve and runs no program. Switched on again, the time it was off is not counted.",
+          "description": "Off, Smart Irrigation keeps taking its weather readings and keeps its sensors, but calculates nothing, leaves every water balance as it is, opens no valve and runs no program. Switched on again, the time it was off is not counted.",
           "off-note": "Switched off: nothing is calculated and nothing is watered. The weather readings carry on, and the time it is off will not be counted when it is switched on again.",
           "confirm-off": "Switch Smart Irrigation off? Whatever is watering stops now, and nothing is calculated or watered until it is switched on again."
         }
@@ -527,9 +527,9 @@
           },
           "greenhouse": "Greenhouse",
           "greenhouse_description": "An enclosed environment: a greenhouse, a polytunnel, anything under glass or plastic. No rain reaches these zones, so precipitation is left out of their water balance and its fields are hidden. Two things to set yourself, because they cannot be guessed: give Wind speed a static value near 0, since the calculation assumes open air, and use a light sensor for Solar Radiation, since the glazing filters the sky.",
-          "module": "Calculation engine",
-          "module_description": "This group only offers the sources this engine reads. The zones using it inherit the choice.",
-          "module_undecided": "No engine chosen yet, so every source is offered and each zone using this group keeps its own. Pick one to see only the sources it reads.",
+          "module": "Module",
+          "module_description": "This group only offers the sources this module reads. The zones using it inherit the choice.",
+          "module_undecided": "No module chosen yet, so every source is offered and each zone using this group keeps its own. Pick one to see only the sources it reads.",
           "wind_height": "Anemometer height (empty: taken at 2 m)",
           "rain_not_from_entity": "The weather entity reports no rain that fell, only a forecast: choose a rain sensor here, or the zones are watered after every shower.",
           "rain_hint_entity": "Rain falling now, as a rate. The weather entity only forecasts it: choose a sensor that measures rain."
@@ -592,7 +592,7 @@
         "calculate": "Calculate",
         "information": "Information",
         "update": "Update",
-        "reset-bucket": "Reset bucket",
+        "reset-bucket": "Reset water balance",
         "view-weather-info": "View weather data",
         "view-weather-info-message": "Weather data available for",
         "view-watering-calendar": "View watering calendar",
@@ -614,7 +614,7 @@
           "actions": {
             "calculate-all": "Calculate all zones",
             "update-all": "Update all zones",
-            "reset-all-buckets": "Reset all buckets",
+            "reset-all-buckets": "Reset all water balances",
             "clear-all-weatherdata": "Clear all weather data"
           },
           "header": "Actions on all zones",
@@ -623,7 +623,7 @@
       },
       "description": "Specify one or more irrigation zones here. The irrigation duration is calculated per zone, depending on size, throughput, state, module and sensor group.",
       "labels": {
-        "bucket": "Bucket",
+        "bucket": "Water balance",
         "et-deficiency": "Daily ET deficiency",
         "duration": "Duration",
         "lead-time": "Lead time",
@@ -652,13 +652,13 @@
           "manual": "Manual"
         },
         "throughput": "Throughput",
-        "maximum-bucket": "Maximum bucket",
+        "maximum-bucket": "Maximum water balance",
         "last_calculated": "Last calculated",
         "data-last-updated": "Data last updated",
         "data-number-of-data-points": "Number of data points",
         "drainage_rate": "Drainage rate",
         "linked-entity": "Linked valve/switch",
-        "linked-entity-hint": "The valve or switch that waters this zone. Smart Irrigation opens and closes it when direct valve control is on. With observed watering on, any run of it (a manual tap, an automation, or Smart Irrigation itself) credits the bucket from the run time and the zone's throughput.",
+        "linked-entity-hint": "The valve or switch that waters this zone. Smart Irrigation opens and closes it when direct valve control is on. With observed watering on, any run of it (a manual tap, an automation, or Smart Irrigation itself) credits the water balance from the run time and the zone's throughput.",
         "supply": "Pump or main valve",
         "supply-none": "None",
         "measured-flow-help": "Over several runs the zone's flow meter measured a flow that differs from the one set above. It is advice, never applied on its own.",
@@ -705,7 +705,7 @@
         "distribution-efficiency-help": "The share of the water leaving the emitters that reaches the plants, in %. Sprinklers in wind or on a slope lose some, drip loses almost none. Leave empty for 100%. A zone at 80% waters 25% longer for the same depth, and credits only 80% of what it delivers.",
         "days-between-irrigation-help": "Leave empty to follow the general setting (Settings, Days between irrigation). A number replaces the general setting for this zone alone: 1 waters it every day if it needs water, 3 at most every third day, 0 removes the restriction. The days are counted from the last time this zone was watered.",
         "soil-moisture-sensor": "Soil moisture sensor",
-        "soil-moisture-sensor-hint": "The zone sits out a run while the soil is at or above the threshold. The bucket is kept.",
+        "soil-moisture-sensor-hint": "The zone sits out a run while the soil is at or above the threshold. The water balance is kept.",
         "soil-moisture-threshold": "Skip at or above",
         "calculation-method": "Evapotranspiration",
         "calculation-method-help": {
@@ -734,7 +734,7 @@
           "custom": "I set the drainage rate myself"
         },
         "plant-types": {
-          "default": "Not chosen yet – calculated with coefficient {value}",
+          "default": "Not chosen yet – calculated with crop factor {value}",
           "lawn": "Lawn",
           "vegetables": "Vegetables",
           "flowers": "Flowers",
@@ -743,7 +743,7 @@
           "fruit_trees": "Fruit trees",
           "vines": "Vines",
           "ground_cover": "Ground cover",
-          "custom": "I set the crop coefficient myself"
+          "custom": "I set the crop factor myself"
         },
         "duration-readonly-automatic": "Calculated for you: this zone's run comes from its water balance. Set it to manual to type a duration yourself.",
         "duration-readonly-disabled": "A disabled zone is never watered, so it has no run time.",
@@ -751,7 +751,7 @@
       },
       "no_items": "There are no zones defined yet.",
       "title": "Zones",
-      "module-comes-from-the-group": "The calculation engine comes from this zone's sensor group. Change it there, and every zone using that group follows.",
+      "module-comes-from-the-group": "The module comes from this zone's sensor group. Change it there, and every zone using that group follows.",
       "status": {
         "estimate": "Short by {short}: about {duration} ({volume}) at the next calculation.",
         "will-water": "Will water {duration} at the next start.",
@@ -764,9 +764,9 @@
         "problem": {
           "no_sensor_group": "Cannot be calculated: it has no sensor group. Choose one on this card; not watered until then.",
           "no_readings": "Cannot be calculated: its sensor group has no readings. Not watered until it has.",
-          "no_engine": "Cannot be calculated: it has no calculation engine. Not watered until it has one.",
+          "no_engine": "Cannot be calculated: it has no module. Not watered until it has one.",
           "nothing_from_engine": "Cannot be calculated: its sensor group gives no evapotranspiration. Not watered until it does.",
-          "forecast_without_service": "Cannot be calculated: its engine looks ahead, and no weather service is set up. Not watered.",
+          "forecast_without_service": "Cannot be calculated: its module looks ahead, and no weather service is set up. Not watered.",
           "error": "Cannot be calculated: {detail}. Not watered until it can be."
         },
         "no-valve": "No valve linked, so this zone isn't watered.",
@@ -1375,7 +1375,7 @@
   },
   "observed_watering": {
     "title": "Observed watering (closed loop)",
-    "description": "Credit each zone's bucket automatically from real irrigation, instead of resetting the bucket from an automation. Once enabled, pick a valve/switch entity per zone in the Zones tab: while it is open, the bucket is credited from the run time and the zone's throughput. For exact accounting you can also pick a cumulative volume meter (a water-meter style total) per zone, and the measured volume is used instead. Important: when this is on it is the only thing crediting the bucket, so remove any reset_bucket call from your irrigation automation to avoid double counting.",
+    "description": "Credit each zone's water balance automatically from real irrigation, instead of resetting the water balance from an automation. Once enabled, pick a valve/switch entity per zone in the Zones tab: while it is open, the water balance is credited from the run time and the zone's throughput. For exact accounting you can also pick a cumulative volume meter (a water-meter style total) per zone, and the measured volume is used instead. Important: when this is on it is the only thing crediting the water balance, so remove any reset_bucket call from your irrigation automation to avoid double counting.",
     "enabled_label": "Enable observed watering",
     "direct_control_label": "Let Smart Irrigation control the valve",
     "direct_control_description": "When on, Smart Irrigation opens each zone's linked valve, waits the calculated duration, then closes it, with no automation needed. A run under way resumes after a restart. Safety: a valve that can close by itself is given the length of the run when it opens (a Sonoff SWV on ZHA, or a valve with an MQTT safety topic set in its zone), so it closes even if Home Assistant goes down. Any other valve keeps watering until Home Assistant is back: give it a hardware failsafe (a maximum runtime).",
@@ -1400,7 +1400,7 @@
   },
   "calculation_log": {
     "title": "Calculation log",
-    "description": "Write the complete input of every calculation to a file, so two days that look alike but water very differently can be compared afterwards. Each calculation appends one line: the sensor group records and how they were aggregated, the module intermediates (solar radiation, net radiation, ET0), and the resulting bucket, duration and volume. Off by default; the file is capped in size and rotated, so it can be left on for a season.",
+    "description": "Write the complete input of every calculation to a file, so two days that look alike but water very differently can be compared afterwards. Each calculation appends one line: the sensor group records and how they were aggregated, the module intermediates (solar radiation, net radiation, ET0), and the resulting water balance, duration and volume. Off by default; the file is capped in size and rotated, so it can be left on for a season.",
     "enabled_label": "Log calculation inputs to a file",
     "file_hint": "Written to config/smart_irrigation/calc_log.jsonl, one JSON record per line. The most recent records are also included in the diagnostics download (coordinates rounded, entity ids removed), so you can attach them to an issue in one step."
   },
