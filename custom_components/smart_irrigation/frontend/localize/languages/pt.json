@@ -157,7 +157,13 @@
           "help": "Isto cria um módulo de cálculo, um grupo de sensores e uma zona, exatamente como os outros separadores fariam. Depois nada fica fixo."
         }
       },
-      "step": "passo"
+      "step": "passo",
+      "done-note-zone": "Aparece em Zonas, com o seu grupo de sensores em Grupos de sensores. Não têm nada de especial: edite-os como quaisquer outros.",
+      "done-next-static": "Com uma quantidade fixa por dia não precisa de leituras: o próximo cálculo determina o que lhe falta.",
+      "done-next-service": "Os dados meteorológicos vêm do serviço meteorológico: assim que o serviço tiver reportado, uma atualização e um cálculo dão uma duração à zona.",
+      "done-next-sensors": "Execute uma atualização e um cálculo assim que os seus sensores tiverem reportado, e a zona começará a produzir uma duração.",
+      "open-zone": "Abrir a zona",
+      "another": "Configurar outra zona"
     },
     "weatherservice": {
       "history": {
@@ -259,8 +265,8 @@
           }
         },
         "continuousupdates": {
-          "header": "Atualizações contínuas para sensores",
-          "description": "Regista cada alteração de um sensor do grupo, em vez de uma leitura por atualização: o cálculo horário e a chuva trabalham assim com dados mais finos. Um pluviómetro que reporta a cada dez minutos é lido a cada dez minutos. As zonas não são recalculadas a cada alteração; o cálculo agendado fá-lo uma vez, a partir das leituras registadas. Num grupo que também usa um serviço meteorológico, os seus sensores são registados a cada alteração e o serviço continua a ser lido uma vez por atualização: nenhum pedido a mais.",
+          "header": "Atualizações contínuas para todos os grupos de sensores",
+          "description": "Uma única definição para todos os grupos de sensores abaixo. Regista cada alteração de um sensor de um grupo, em vez de uma leitura por atualização, pelo que o cálculo horário e a chuva trabalham com dados mais finos: um pluviómetro que reporta a cada dez minutos é lido a cada dez minutos. As zonas não são recalculadas a cada alteração; o cálculo agendado fá-lo uma vez, a partir das leituras registadas. Num grupo que também usa um serviço meteorológico, os seus sensores são registados quando mudam e o serviço continua a ser lido uma vez por atualização, pelo que não custa pedidos a mais.",
           "labels": {
             "continuousupdates": "Ativar atualizações contínuas",
             "sensor_debounce": "Debounce do sensor"
@@ -1292,7 +1298,7 @@
     "min_seconds": "Água mínima",
     "max_seconds": "Água máxima",
     "adjust_seconds": "Tempo acrescentado (+) ou retirado (-)",
-    "step_bounds_help": "Ordem de aplicação: primeiro a percentagem, depois o tempo acrescentado ou retirado, depois o mínimo e o máximo. 0 para o mínimo ou o máximo: nenhum. Um passo que não precisa de água fica a zero: o mínimo nunca o inicia.",
+    "step_bounds_help": "Ordem de aplicação: primeiro a percentagem de «Ajustar durações» do programa, quando há uma em vigor (define-se no programa, não aqui), depois o tempo acrescentado ou retirado, depois o mínimo e o máximo. 0 para o mínimo ou o máximo: nenhum. Um passo que não precisa de água fica a zero: o mínimo nunca o inicia.",
     "min_deficit_mm": "Regar apenas quando o défice for de, pelo menos,",
     "min_deficit_mm_help": "Em mm, 0 para regar sempre. Se definido, substitui o limiar da própria zona neste passo. Os passos de duração fixa são sempre regados.",
     "adjust_title": "Ajustar durações",
@@ -1475,7 +1481,8 @@
         "paused": "em pausa",
         "suspended": "suspenso",
         "disabled": "desativado"
-      }
+      },
+      "main_name": "Programa principal"
     },
     "editor": {
       "title": "Título",

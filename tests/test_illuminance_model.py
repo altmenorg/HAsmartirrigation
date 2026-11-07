@@ -110,7 +110,7 @@ def test_the_coordinator_reads_the_sun_where_the_garden_is():
     """Saint-Lumine-de-Coutais, noon UTC on 4 October: the sun stands some 38
     degrees up, and 40 000 lux is read against that, not against a constant."""
     coordinator = _coordinator(47.05, -1.73)
-    moment = dt.datetime(2026, 10, 4, 12, 0, tzinfo=dt.timezone.utc)
+    moment = dt.datetime(2026, 10, 4, 12, 0, tzinfo=dt.UTC)
 
     doy = moment.timetuple().tm_yday
     sin_elev = solar_elevation_sin(47.05, -1.73, doy, 12.0, 0.0)
@@ -126,7 +126,7 @@ def test_the_coordinator_reads_the_sun_where_the_garden_is():
 def test_the_same_light_at_night_on_the_other_side_of_the_world_is_dark_there():
     """Longitude counts: at the same UTC instant the sun is up in one place and
     down in the other."""
-    moment = dt.datetime(2026, 6, 21, 12, 0, tzinfo=dt.timezone.utc)
+    moment = dt.datetime(2026, 6, 21, 12, 0, tzinfo=dt.UTC)
     here = _coordinator(47.0, 0.0).radiation_from_illuminance(30_000, {}, when=moment)
     there = _coordinator(47.0, 180.0).radiation_from_illuminance(
         30_000, {}, when=moment

@@ -157,7 +157,13 @@
           "help": "Ez létrehoz egy számítási modult, egy érzékelőcsoportot és egy zónát, pontosan úgy, ahogy a többi fül tenné. Utána semmi nincs bezárva."
         }
       },
-      "step": "lépés"
+      "step": "lépés",
+      "done-note-zone": "A Zónák alatt jelenik meg, az érzékelőcsoportja pedig az Érzékelőcsoportok alatt. Nincs bennük semmi különleges: ugyanúgy szerkesztheted őket, mint bármelyik másikat.",
+      "done-next-static": "Napi fix mennyiséggel nincs szüksége mérésekre: a következő számítás kiszámolja, mennyi hiányzik neki.",
+      "done-next-service": "Az időjárást az időjárás-szolgáltatástól kapja: amint a szolgáltatás adatot küldött, egy frissítés és egy számítás időtartamot ad a zónának.",
+      "done-next-sensors": "Futtass egy frissítést és egy számítást, amint az érzékelőid adatot küldtek, és a zóna elkezd időtartamot adni.",
+      "open-zone": "Zóna megnyitása",
+      "another": "Újabb zóna beállítása"
     },
     "weatherservice": {
       "history": {
@@ -259,8 +265,8 @@
           }
         },
         "continuousupdates": {
-          "header": "Folyamatos frissítések az érzékelőkhöz",
-          "description": "A csoport érzékelőinek minden változását rögzíti, frissítésenként egy mérés helyett: így az órás számítás és az eső finomabb adatokra épül. A tízpercenként jelentő esőmérőt tízpercenként olvassa. A zónák nem számolódnak újra minden változáskor; az ütemezett számítás egyszer teszi meg a rögzített mérésekből. Az időjárás-szolgáltatást is használó csoportban az érzékelők minden változáskor rögzülnek, a szolgáltatást pedig továbbra is frissítésenként egyszer olvassa: nincs többletkérés.",
+          "header": "Folyamatos frissítések minden érzékelőcsoporthoz",
+          "description": "Egyetlen beállítás az alábbi összes érzékelőcsoporthoz. A csoport érzékelőinek minden változását rögzíti, frissítésenként egy mérés helyett, így az órás számítás és az eső finomabb adatokra épül: a tízpercenként jelentő esőmérőt tízpercenként olvassa. A zónák nem számolódnak újra minden változáskor; az ütemezett számítás egyszer teszi meg a rögzített mérésekből. Az időjárás-szolgáltatást is használó csoportban az érzékelők változáskor rögzülnek, a szolgáltatást pedig továbbra is frissítésenként egyszer olvassa, így nincs többletkérés.",
           "labels": {
             "continuousupdates": "Folyamatos frissítések engedélyezése",
             "sensor_debounce": "Érzékelő-pergésmentesítés"
@@ -1292,7 +1298,7 @@
     "min_seconds": "Minimális víz",
     "max_seconds": "Maximális víz",
     "adjust_seconds": "Hozzáadott (+) vagy levont (-) idő",
-    "step_bounds_help": "Sorrend: először a százalék, aztán a hozzáadott vagy levont idő, aztán a minimum és a maximum. 0 a minimumnál vagy maximumnál: nincs. Az a lépés, amelynek nem kell víz, nullán marad: a minimum sosem indítja el.",
+    "step_bounds_help": "Sorrend: először a program „Időtartamok módosítása” beállításának százaléka, ha van érvényben ilyen (a programnál állítható be, nem itt), aztán a hozzáadott vagy levont idő, aztán a minimum és a maximum. 0 a minimumnál vagy maximumnál: nincs. Az a lépés, amelynek nem kell víz, nullán marad: a minimum sosem indítja el.",
     "min_deficit_mm": "Csak akkor öntözzön, ha a hiány legalább",
     "min_deficit_mm_help": "Mm-ben, 0 esetén mindig öntöz. Ha meg van adva, ennél a lépésnél a zóna saját küszöbét váltja fel. A rögzített idejű lépések mindig öntöznek.",
     "adjust_title": "Időtartamok módosítása",
@@ -1475,7 +1481,8 @@
         "paused": "szünetel",
         "suspended": "felfüggesztve",
         "disabled": "letiltva"
-      }
+      },
+      "main_name": "Főprogram"
     },
     "editor": {
       "title": "Cím",

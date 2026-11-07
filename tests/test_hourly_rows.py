@@ -582,7 +582,7 @@ def test_an_hour_start_is_keyed_by_the_offset_it_was_written_in():
         _hour_start_timestamp(naive, 1.0) - 3600
     )
     assert _hour_start_timestamp(naive, 0.0) == pytest.approx(
-        naive.replace(tzinfo=datetime.timezone.utc).timestamp()
+        naive.replace(tzinfo=datetime.UTC).timestamp()
     )
 
 

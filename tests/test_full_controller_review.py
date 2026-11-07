@@ -7,7 +7,7 @@ typo that lifted a suspension, a new schedule that inherited an old one's run.
 """
 
 import asyncio
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 from zoneinfo import ZoneInfo
@@ -53,7 +53,7 @@ from tests.test_program_scheduler import (  # noqa: F401
 from tests.test_program_scheduler import _program as _scheduled_program
 
 PARIS = ZoneInfo("Europe/Paris")
-UTC = timezone.utc
+UTC = UTC
 
 
 def _record(plan, tour=0, step=0, started=()):

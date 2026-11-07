@@ -5,7 +5,7 @@ part when microsecond is 0. A parser that requires it rejects roughly one
 written value in a million, and the calculation consuming that value raises.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -33,7 +33,7 @@ def test_a_datetime_passes_straight_through():
 
 
 def test_an_offset_aware_timestamp_is_read_rather_than_rejected():
-    moment = datetime(2026, 9, 4, 11, 48, 43, tzinfo=timezone.utc)
+    moment = datetime(2026, 9, 4, 11, 48, 43, tzinfo=UTC)
     assert parse_datetime(moment.isoformat()) == moment
 
 

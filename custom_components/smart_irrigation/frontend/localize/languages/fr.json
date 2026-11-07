@@ -157,7 +157,13 @@
           "help": "Ceci crée un module de calcul, un groupe de capteurs et une zone, exactement comme les autres onglets le feraient. Rien n'est verrouillé ensuite."
         }
       },
-      "step": "étape"
+      "step": "étape",
+      "done-note-zone": "Elle apparaît dans Zones, avec son groupe de capteurs dans Groupes de capteurs. Rien de spécial ici : tu les modifies comme n'importe quels autres.",
+      "done-next-static": "Avec une quantité fixe par jour, elle n'a besoin d'aucun relevé : le prochain calcul détermine ce qui lui manque.",
+      "done-next-service": "Sa météo vient du service météo : dès que le service a répondu, une mise à jour puis un calcul donnent une durée à la zone.",
+      "done-next-sensors": "Lance une mise à jour puis un calcul une fois que tes capteurs ont remonté leurs valeurs, et la zone commencera à produire une durée.",
+      "open-zone": "Ouvrir la zone",
+      "another": "Configurer une autre zone"
     },
     "weatherservice": {
       "history": {
@@ -259,8 +265,8 @@
           }
         },
         "continuousupdates": {
-          "header": "Mises à jour continues pour les capteurs",
-          "description": "Enregistre chaque changement d'un capteur du groupe, au lieu d'un relevé par mise à jour : le calcul horaire et la pluie s'appuient ainsi sur des données plus fines. Un pluviomètre qui se met à jour toutes les dix minutes est lu toutes les dix minutes. Les zones ne sont pas recalculées à chaque changement ; le calcul programmé le fait, une fois, à partir des relevés enregistrés. Dans un groupe qui utilise aussi un service météo, ses capteurs sont enregistrés à chaque changement et le service est toujours lu une fois par mise à jour : aucune requête en plus.",
+          "header": "Mises à jour continues pour tous les groupes de capteurs",
+          "description": "Un seul réglage pour tous les groupes de capteurs ci-dessous. Il enregistre chaque changement d'un capteur d'un groupe, au lieu d'un relevé par mise à jour : le calcul horaire et la pluie s'appuient ainsi sur des données plus fines. Un pluviomètre qui se met à jour toutes les dix minutes est lu toutes les dix minutes. Les zones ne sont pas recalculées à chaque changement ; le calcul programmé le fait, une fois, à partir des relevés enregistrés. Dans un groupe qui utilise aussi un service météo, ses capteurs sont enregistrés à chaque changement et le service est toujours lu une fois par mise à jour : aucune requête en plus.",
           "labels": {
             "continuousupdates": "Activer les mises à jour continues",
             "sensor_debounce": "Anti-rebond capteur"
@@ -1292,7 +1298,7 @@
     "min_seconds": "Eau minimale",
     "max_seconds": "Eau maximale",
     "adjust_seconds": "Temps ajouté (+) ou retiré (-)",
-    "step_bounds_help": "Ordre d'application : d'abord le pourcentage, puis le temps ajouté ou retiré, puis le minimum et le maximum. 0 pour le minimum ou le maximum : aucun. Une étape qui n'a besoin d'aucune eau reste à zéro : le minimum ne la lance jamais.",
+    "step_bounds_help": "Ordre d'application : d'abord le pourcentage de « Ajuster les durées » du programme, s'il y en a un en cours (il se règle sur le programme, pas ici), puis le temps ajouté ou retiré, puis le minimum et le maximum. 0 pour le minimum ou le maximum : aucun. Une étape qui n'a besoin d'aucune eau reste à zéro : le minimum ne la lance jamais.",
     "min_deficit_mm": "N'arroser que si le déficit atteint au moins",
     "min_deficit_mm_help": "En mm, 0 pour toujours arroser. S'il est renseigné, il remplace le seuil de la zone pour cette étape. Les étapes à durée fixe sont toujours arrosées.",
     "adjust_title": "Ajuster les durées",
@@ -1475,7 +1481,8 @@
         "paused": "en pause",
         "suspended": "suspendu",
         "disabled": "désactivé"
-      }
+      },
+      "main_name": "Programme principal"
     },
     "editor": {
       "title": "Titre",

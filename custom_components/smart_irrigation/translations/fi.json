@@ -112,12 +112,15 @@
     },
     "step": {
       "user": {
-        "title": "Yleiset asetukset",
-        "description": "Jos tarvitset apua määrityksessä, katso ohjeet dokumentaatiosta.",
+        "title": "Määritä Smart Irrigation",
+        "description": "Smart Irrigation määritetään jälkeenpäin sen omassa paneelissa sivupalkissa: sen asennusavustaja luo kanssasi anturiryhmän ja ensimmäisen alueen, ja myös sääpalvelu valitaan siellä.",
         "data": {
           "name": "Integraation yksilöllinen nimi"
         }
       }
+    },
+    "create_entry": {
+      "default": "Smart Irrigation on asennettu. Avaa **Smart Irrigation** sivupalkista: [asennusavustaja](/smart_irrigation/setup) luo ensimmäisen alueesi kanssasi."
     }
   },
   "options": {
