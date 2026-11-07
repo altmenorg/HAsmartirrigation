@@ -16,16 +16,16 @@ help:
 	@echo "Code Quality:"
 	@echo "  lint        - Run linting (ruff)"
 	@echo "  format      - Format code (black)"
-	@echo "  check       - Run all CI checks (lint + format)"
+	@echo "  check       - Run every check the CI runs (scripts/check.sh)"
 	@echo ""
 	@echo "Utilities:"
 	@echo "  clean       - Remove virtual environment and cache files"
 
-# Setup virtual environment with Python 3.13
+# Setup virtual environment with Python 3.14 (what Home Assistant 2026.3 and up needs)
 setup:
 	@echo "Setting up Smart Irrigation development environment..."
-	@which python3.13 > /dev/null || (echo "❌ Python 3.13 not found. Install it first." && exit 1)
-	python3.13 -m venv .venv
+	@which python3.14 > /dev/null || (echo "❌ Python 3.14 not found. Install it first." && exit 1)
+	python3.14 -m venv .venv
 	./.venv/bin/pip install --upgrade pip
 	./.venv/bin/pip install -r requirements-dev.txt
 	@echo ""
@@ -37,18 +37,18 @@ install-dev:
 	./.venv/bin/pip install --upgrade pip
 	./.venv/bin/pip install -r requirements-dev.txt
 
-# Run all tests (exclude integration tests which have fixtures)
+# Run all tests, on every core
 test:
-	./.venv/bin/python -m pytest tests/ -v --ignore=tests/integration/
+	./.venv/bin/python -m pytest tests/ -n auto -q
 
 # Code formatting (matches CI requirements)
 format: install-dev
-	./.venv/bin/black .
+	./.venv/bin/black custom_components/smart_irrigation/ tests/ scripts/
 	@echo "✅ Code formatted"
 
 # Linting (matches CI requirements)
 lint: install-dev
-	./.venv/bin/ruff check custom_components/smart_irrigation/
+	./.venv/bin/ruff check custom_components/smart_irrigation/ tests/ scripts/
 	@echo "✅ Linting complete"
 
 # Clean up
@@ -60,7 +60,5 @@ clean:
 	@echo "✅ Cleaned up"
 
 # Run all CI quality checks
-check: install-dev
-	./.venv/bin/ruff check custom_components/smart_irrigation/
-	./.venv/bin/black --check .
-	@echo "✅ All CI checks passed"
+check:
+	PYTHON=./.venv/bin/python scripts/check.sh

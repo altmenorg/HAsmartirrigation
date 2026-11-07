@@ -23,7 +23,7 @@ def _via_device_id_supported() -> bool:
 
     ``via_device`` (the parent's identifiers) is deprecated and stops working
     in Home Assistant 2027.8, replaced by ``via_device_id`` (the parent's id in
-    the device registry). We support Home Assistant 2025.5 and up, which spans
+    the device registry). We support Home Assistant 2026.3 and up, which spans
     both, and passing both at once is an error, so ask this version which one
     it knows (#833).
     """

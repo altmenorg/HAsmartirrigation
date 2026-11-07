@@ -30,6 +30,11 @@ jobs:
         with:
           ref: ${{ github.event.release.tag_name || inputs.tag }}
 
+      # A tag whose version the integration does not carry would install one
+      # version and report another (#979).
+      - name: Check the tag matches the version
+        run: python3 scripts/check_version.py "${{ github.event.release.tag_name || inputs.tag }}"
+
       - name: Build smart_irrigation.zip
         run: |
           cd custom_components/smart_irrigation

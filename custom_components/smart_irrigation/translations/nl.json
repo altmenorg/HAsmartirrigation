@@ -112,12 +112,15 @@
     },
     "step": {
       "user": {
-        "title": "Algemene instellingen",
-        "description": "Als je hulp nodig hebt, zie de documentatie. De weerservice wordt achteraf geconfigureerd via het Smart Irrigation scherm.",
+        "title": "Smart Irrigation instellen",
+        "description": "Smart Irrigation wordt daarna ingesteld in een eigen paneel in de zijbalk: de installatieassistent maakt samen met je een sensorgroep en een eerste zone aan, en daar kies je ook de weerdienst.",
         "data": {
           "name": "Unieke naam van de integratie"
         }
       }
+    },
+    "create_entry": {
+      "default": "Smart Irrigation is geïnstalleerd. Open **Smart Irrigation** in de zijbalk: de [installatieassistent](/smart_irrigation/setup) maakt samen met je je eerste zone aan."
     }
   },
   "options": {

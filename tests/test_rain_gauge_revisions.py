@@ -170,7 +170,12 @@ def _rain(stamp, total):
 
 @pytest.mark.asyncio
 async def test_the_aggregate_reads_a_revision_as_a_revision():
-    now = datetime.now().replace(microsecond=0)
+    # Yesterday at noon, so the readings are in the past and on one day: run
+    # just after midnight, readings an hour apart straddled it, and the drop
+    # read as the gauge's midnight reset rather than a revision.
+    now = (datetime.now() - timedelta(days=1)).replace(
+        hour=12, minute=0, second=0, microsecond=0
+    )
     at = lambda minutes: (now - timedelta(minutes=minutes)).isoformat()  # noqa: E731
     mapping = {
         const.MAPPING_ID: 1,

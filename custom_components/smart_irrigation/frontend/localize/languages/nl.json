@@ -157,7 +157,13 @@
           "help": "Dit maakt een berekeningsmodule, een sensorgroep en een zone aan, net als de andere tabbladen zouden doen. Daarna staat niets vast."
         }
       },
-      "step": "stap"
+      "step": "stap",
+      "done-note-zone": "Hij staat onder Zones, met zijn sensorgroep onder Sensorgroepen. Er is niets bijzonders aan: bewerk ze zoals elke andere.",
+      "done-next-static": "Met een vaste hoeveelheid per dag heeft hij geen metingen nodig: de volgende berekening bepaalt hoeveel hij tekortkomt.",
+      "done-next-service": "Het weer komt van de weerdienst: zodra de dienst gegevens heeft gemeld, geven een update en een berekening de zone een duur.",
+      "done-next-sensors": "Voer een update en een berekening uit zodra je sensoren hebben gemeld, en de zone gaat een duur geven.",
+      "open-zone": "Zone openen",
+      "another": "Nog een zone instellen"
     },
     "weatherservice": {
       "history": {
@@ -259,8 +265,8 @@
           }
         },
         "continuousupdates": {
-          "header": "Continue updates voor sensoren",
-          "description": "Legt elke wijziging van een sensor van de groep vast, in plaats van één meting per update: de berekening per uur en de regen werken zo met fijnere gegevens. Een regenmeter die elke tien minuten meldt, wordt elke tien minuten gelezen. De zones worden niet bij elke wijziging opnieuw berekend; de geplande berekening doet dat één keer, uit de vastgelegde metingen. In een groep die ook een weerdienst gebruikt, worden de sensoren bij elke wijziging vastgelegd en wordt de dienst nog steeds één keer per update gelezen: geen extra verzoeken.",
+          "header": "Continue updates voor alle sensorgroepen",
+          "description": "Eén instelling voor alle sensorgroepen hieronder. Legt elke wijziging van een sensor van een groep vast, in plaats van één meting per update, zodat de berekening per uur en de regen met fijnere gegevens werken: een regenmeter die elke tien minuten meldt, wordt elke tien minuten gelezen. De zones worden niet bij elke wijziging opnieuw berekend; de geplande berekening doet dat één keer, uit de vastgelegde metingen. In een groep die ook een weerdienst gebruikt, worden de sensoren vastgelegd wanneer ze veranderen en wordt de dienst nog steeds één keer per update gelezen, dus het kost geen extra verzoeken.",
           "labels": {
             "continuousupdates": "Continue updates inschakelen",
             "sensor_debounce": "Sensor-debounce"
@@ -1292,7 +1298,7 @@
     "min_seconds": "Minimaal water",
     "max_seconds": "Maximaal water",
     "adjust_seconds": "Tijd erbij (+) of eraf (-)",
-    "step_bounds_help": "Volgorde: eerst het percentage, dan de tijd erbij of eraf, dan het minimum en het maximum. 0 voor minimum of maximum: geen. Een stap die geen water nodig heeft blijft op nul: het minimum start hem nooit.",
+    "step_bounds_help": "Volgorde: eerst het percentage van “Duren aanpassen” van het programma, als er een geldt (dat stel je in op het programma, niet hier), dan de tijd erbij of eraf, dan het minimum en het maximum. 0 voor minimum of maximum: geen. Een stap die geen water nodig heeft blijft op nul: het minimum start hem nooit.",
     "min_deficit_mm": "Alleen bewateren als het tekort minstens",
     "min_deficit_mm_help": "In mm, 0 om altijd te sproeien. Ingesteld vervangt hij voor deze stap de eigen drempel van de zone. Stappen met een vaste duur worden altijd besproeid.",
     "adjust_title": "Duren aanpassen",
@@ -1475,7 +1481,8 @@
         "paused": "gepauzeerd",
         "suspended": "opgeschort",
         "disabled": "uitgeschakeld"
-      }
+      },
+      "main_name": "Hoofdprogramma"
     },
     "editor": {
       "title": "Titel",

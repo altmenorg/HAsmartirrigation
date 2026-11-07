@@ -157,7 +157,13 @@
           "help": "Dette oppretter en beregningsmodul, en sensorgruppe og en sone, akkurat som de andre fanene ville gjort. Etterpå er ingenting låst."
         }
       },
-      "step": "steg"
+      "step": "steg",
+      "done-note-zone": "Den vises under Soner, med sensorgruppen sin under Sensorgrupper. Det er ikke noe spesielt med dem: rediger dem som alle andre.",
+      "done-next-static": "Med en fast mengde per dag trenger den ingen målinger: neste beregning finner ut hvor mye den mangler.",
+      "done-next-service": "Været kommer fra værtjenesten: når tjenesten har rapportert, gir en oppdatering og en beregning sonen en varighet.",
+      "done-next-sensors": "Kjør en oppdatering og en beregning når sensorene dine har rapportert, så begynner sonen å gi en varighet.",
+      "open-zone": "Åpne sonen",
+      "another": "Sett opp en sone til"
     },
     "weatherservice": {
       "history": {
@@ -259,8 +265,8 @@
           }
         },
         "continuousupdates": {
-          "header": "Kontinuerlige oppdateringer for sensorer (eksperimentell)",
-          "description": "Registrerer hver endring av en sensor i gruppen i stedet for én måling per oppdatering: timeberegningen og regnet arbeider dermed med finere data. En regnmåler som melder hvert tiende minutt, leses hvert tiende minutt. Sonene beregnes ikke på nytt ved hver endring; den planlagte beregningen gjør det én gang ut fra de registrerte målingene. I en gruppe som også bruker en værtjeneste, registreres sensorene ved hver endring, og tjenesten leses fortsatt én gang per oppdatering: ingen ekstra forespørsler.",
+          "header": "Kontinuerlige oppdateringer for alle sensorgrupper",
+          "description": "Én innstilling for alle sensorgruppene nedenfor. Den registrerer hver endring av en gruppes sensor i stedet for én måling per oppdatering, slik at timeberegningen og regnet arbeider med finere data: en regnmåler som melder hvert tiende minutt, leses hvert tiende minutt. Sonene beregnes ikke på nytt ved hver endring; den planlagte beregningen gjør det én gang ut fra de registrerte målingene. I en gruppe som også bruker en værtjeneste, registreres sensorene når de endrer seg, og tjenesten leses fortsatt én gang per oppdatering, så det koster ingen ekstra forespørsler.",
           "labels": {
             "continuousupdates": "Aktiver kontinuerlige oppdateringer",
             "sensor_debounce": "Sensor-debounce"
@@ -535,7 +541,7 @@
         "show-more": "{count, plural, one {Vis # sensorgruppe til} other {Vis # sensorgrupper til}}"
       },
       "no_items": "Det er ingen definerte sensorgupper ennå.",
-      "title": "Sensorgupper",
+      "title": "Sensorgrupper",
       "weather-records": {
         "title": "Værregistreringer (siste 10)",
         "timestamp": "Tid",
@@ -1292,7 +1298,7 @@
     "min_seconds": "Minimum vann",
     "max_seconds": "Maksimum vann",
     "adjust_seconds": "Tid lagt til (+) eller trukket fra (-)",
-    "step_bounds_help": "Rekkefølge: først prosenten, så tiden lagt til eller trukket fra, så minimum og maksimum. 0 for minimum eller maksimum: ingen. Et trinn som ikke trenger vann, blir stående på null: minimum starter det aldri.",
+    "step_bounds_help": "Rekkefølge: først prosenten fra programmets «Juster varighetene», når en slik gjelder (den settes på programmet, ikke her), så tiden lagt til eller trukket fra, så minimum og maksimum. 0 for minimum eller maksimum: ingen. Et trinn som ikke trenger vann, blir stående på null: minimum starter det aldri.",
     "min_deficit_mm": "Vann bare når underskuddet er minst",
     "min_deficit_mm_help": "I mm, 0 for å alltid vanne. Satt erstatter den sonens egen terskel for dette trinnet. Trinn med fast varighet vannes alltid.",
     "adjust_title": "Juster varighetene",
@@ -1475,7 +1481,8 @@
         "paused": "på pause",
         "suspended": "suspendert",
         "disabled": "deaktivert"
-      }
+      },
+      "main_name": "Hovedprogram"
     },
     "editor": {
       "title": "Tittel",

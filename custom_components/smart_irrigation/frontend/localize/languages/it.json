@@ -157,7 +157,13 @@
           "help": "Questo crea un modulo di calcolo, un gruppo di sensori e una zona, esattamente come farebbero le altre schede. Dopo niente resta bloccato."
         }
       },
-      "step": "passo"
+      "step": "passo",
+      "done-note-zone": "Compare in Zone, con il suo gruppo di sensori in Gruppi di sensori. Non hanno niente di speciale: modificali come qualsiasi altro.",
+      "done-next-static": "Con una quantità fissa al giorno non le servono letture: il prossimo calcolo stabilisce quanto le manca.",
+      "done-next-service": "Il meteo arriva dal servizio meteo: appena il servizio ha inviato i dati, un aggiornamento e un calcolo danno alla zona una durata.",
+      "done-next-sensors": "Esegui un aggiornamento e un calcolo quando i tuoi sensori hanno inviato i dati, e la zona inizierà a fornire una durata.",
+      "open-zone": "Apri la zona",
+      "another": "Configura un'altra zona"
     },
     "weatherservice": {
       "history": {
@@ -259,8 +265,8 @@
           }
         },
         "continuousupdates": {
-          "header": "Aggiornamenti continui per i sensori (sperimentale)",
-          "description": "Registra ogni variazione di un sensore del gruppo, invece di una lettura per aggiornamento: il calcolo orario e la pioggia lavorano così su dati più fini. Un pluviometro che si aggiorna ogni dieci minuti viene letto ogni dieci minuti. Le zone non vengono ricalcolate a ogni variazione; lo fa il calcolo programmato, una volta, dalle letture registrate. In un gruppo che usa anche un servizio meteo, i suoi sensori vengono registrati a ogni variazione e il servizio viene sempre letto una volta per aggiornamento: nessuna richiesta in più.",
+          "header": "Aggiornamenti continui per tutti i gruppi di sensori",
+          "description": "Un'unica impostazione per tutti i gruppi di sensori qui sotto. Registra ogni variazione di un sensore di un gruppo, invece di una lettura per aggiornamento, così il calcolo orario e la pioggia lavorano su dati più fini: un pluviometro che si aggiorna ogni dieci minuti viene letto ogni dieci minuti. Le zone non vengono ricalcolate a ogni variazione; lo fa il calcolo programmato, una volta, dalle letture registrate. In un gruppo che usa anche un servizio meteo, i suoi sensori vengono registrati quando cambiano e il servizio viene sempre letto una volta per aggiornamento, quindi non costa richieste in più.",
           "labels": {
             "continuousupdates": "Abilita gli aggiornamenti continui",
             "sensor_debounce": "Rimbalzo del sensore"
@@ -1292,7 +1298,7 @@
     "min_seconds": "Acqua minima",
     "max_seconds": "Acqua massima",
     "adjust_seconds": "Tempo aggiunto (+) o tolto (-)",
-    "step_bounds_help": "Ordine di applicazione: prima la percentuale, poi il tempo aggiunto o tolto, poi il minimo e il massimo. 0 per il minimo o il massimo: nessuno. Un passo che non ha bisogno d'acqua resta a zero: il minimo non lo avvia mai.",
+    "step_bounds_help": "Ordine di applicazione: prima la percentuale di «Regola le durate» del programma, quando ce n'è una in vigore (si imposta sul programma, non qui), poi il tempo aggiunto o tolto, poi il minimo e il massimo. 0 per il minimo o il massimo: nessuno. Un passo che non ha bisogno d'acqua resta a zero: il minimo non lo avvia mai.",
     "min_deficit_mm": "Irriga solo quando il deficit è almeno",
     "min_deficit_mm_help": "In mm, 0 per irrigare sempre. Se impostato, sostituisce la soglia della zona per questo passo. I passi a durata fissa vengono sempre irrigati.",
     "adjust_title": "Regola le durate",
@@ -1475,7 +1481,8 @@
         "paused": "in pausa",
         "suspended": "sospeso",
         "disabled": "disattivato"
-      }
+      },
+      "main_name": "Programma principale"
     },
     "editor": {
       "title": "Titolo",

@@ -1,7 +1,7 @@
 """Arming the schedules of the programs, and what happens when one is due."""
 
 import asyncio
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from types import SimpleNamespace
 from unittest.mock import ANY, AsyncMock, MagicMock, Mock, patch
 from zoneinfo import ZoneInfo
@@ -15,7 +15,7 @@ from custom_components.smart_irrigation.programs import normalize_programs
 from custom_components.smart_irrigation.valve_runner import ValveRunnerMixin
 
 PARIS = ZoneInfo("Europe/Paris")
-UTC = timezone.utc
+UTC = UTC
 
 
 def _utc(day, hour, minute=0):

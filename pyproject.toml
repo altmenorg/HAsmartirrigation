@@ -1,4 +1,6 @@
 [tool.ruff]
+# Home Assistant 2026.3 and up runs on Python 3.14 only.
+target-version = "py314"
 
 lint.select = [
   "E",  # pycodestyle

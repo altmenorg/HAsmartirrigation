@@ -6,6 +6,8 @@ title: "Installation"
 
 > Starting with nothing at all, not even Home Assistant? [From nothing to a watered garden](getting-started-from-scratch.md) walks the whole path in half an hour, hardware included, and comes back here for this part.
 
+Smart Irrigation needs Home Assistant 2026.3 or later.
+
 Installing the Smart Irrigation integration consists of a few steps:
 
 1. [Downloading the integration](installation-download.md).

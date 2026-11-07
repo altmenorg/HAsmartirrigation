@@ -11,6 +11,7 @@ field cannot do it again, for zones and for sensor groups alike.
 """
 
 import re
+from pathlib import Path
 
 import attr
 import pytest
@@ -23,9 +24,9 @@ NEW_CLASS = "\nclass "
 
 def _accepted_keys(view):
     """The const-backed keys a view's write schema allows."""
-    source = open(
-        "custom_components/smart_irrigation/websockets.py", encoding="utf-8"
-    ).read()
+    source = Path("custom_components/smart_irrigation/websockets.py").read_text(
+        encoding="utf-8"
+    )
     start = source.index("class " + view)
     block = source[start : source.index(NEW_CLASS, start + 10)]
     names = re.findall(r"vol\.Optional\(const\.([A-Z_]+)\)", block)

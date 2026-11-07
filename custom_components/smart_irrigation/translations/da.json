@@ -108,16 +108,19 @@
       "single_instance_allowed": "Kun én konfiguration af Smart Irrigation er tilladt."
     },
     "error": {
-      "name": "Angiv et unikt navn til integrationen."
+      "name": "Giv integrationen et unikt navn."
     },
     "step": {
       "user": {
-        "title": "Generel opsætning",
-        "description": "Hvis du har brug for hjælp til konfigurationen, så se dokumentationen.",
+        "title": "Opsæt Smart Irrigation",
+        "description": "Smart Irrigation sættes op bagefter i sit eget panel i sidebjælken: opsætningsassistenten opretter en sensorgruppe og en første zone sammen med dig, og vejrtjenesten vælges også der.",
         "data": {
           "name": "Unikt navn på integrationen"
         }
       }
+    },
+    "create_entry": {
+      "default": "Smart Irrigation er installeret. Åbn **Smart Irrigation** i sidebjælken: [opsætningsassistenten](/smart_irrigation/setup) opretter din første zone sammen med dig."
     }
   },
   "options": {

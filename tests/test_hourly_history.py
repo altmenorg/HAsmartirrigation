@@ -27,7 +27,7 @@ from custom_components.smart_irrigation.weathermodules.OpenMeteoClient import (
 )
 
 LAT, LON, ELEV = 51.538, 5.481, 13.0
-UTC = datetime.timezone.utc
+UTC = datetime.UTC
 # Open-Meteo's UTC stamps for 2 October 2026, local time being UTC+2.
 MIDNIGHT_LOCAL = datetime.datetime(2026, 10, 1, 22, 0, tzinfo=UTC)
 
