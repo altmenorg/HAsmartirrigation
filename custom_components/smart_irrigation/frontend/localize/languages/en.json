@@ -617,7 +617,8 @@
             "reset-all-buckets": "Reset all buckets",
             "clear-all-weatherdata": "Clear all weather data"
           },
-          "header": "Actions on all zones"
+          "header": "Actions on all zones",
+          "reset-hint": "These two discard data of every zone. Each asks first."
         }
       },
       "description": "Specify one or more irrigation zones here. The irrigation duration is calculated per zone, depending on size, throughput, state, module and sensor group.",

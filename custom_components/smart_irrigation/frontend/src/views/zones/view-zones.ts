@@ -2827,26 +2827,38 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
               false,
               this.isSaving,
             )}
-            ${this._actionBtn(
-              mdiPailRemove,
-              localize(
-                "panels.zones.cards.zone-actions.actions.reset-all-buckets",
+          </div>
+          <!-- The two that throw data away, apart from the two that refresh
+               it (#982): they already ask first, now they also look it. -->
+          <div class="bulk-danger">
+            <div class="setting-help">
+              ${localize(
+                "panels.zones.cards.zone-actions.reset-hint",
                 this.hass.language,
-              ),
-              () => this.handleResetAllBuckets(),
-              false,
-              this.isSaving,
-            )}
-            ${this._actionBtn(
-              mdiCloudOutline,
-              localize(
-                "panels.zones.cards.zone-actions.actions.clear-all-weatherdata",
-                this.hass.language,
-              ),
-              () => this.handleClearAllWeatherdata(),
-              false,
-              this.isSaving,
-            )}
+              )}
+            </div>
+            <div class="zone-actions-grid">
+              ${this._actionBtn(
+                mdiPailRemove,
+                localize(
+                  "panels.zones.cards.zone-actions.actions.reset-all-buckets",
+                  this.hass.language,
+                ),
+                () => this.handleResetAllBuckets(),
+                true,
+                this.isSaving,
+              )}
+              ${this._actionBtn(
+                mdiCloudOutline,
+                localize(
+                  "panels.zones.cards.zone-actions.actions.clear-all-weatherdata",
+                  this.hass.language,
+                ),
+                () => this.handleClearAllWeatherdata(),
+                true,
+                this.isSaving,
+              )}
+            </div>
           </div>
         </div>
       </ha-card>
@@ -3236,6 +3248,15 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       .edit-done {
         display: flex;
         justify-content: flex-end;
+      }
+      /* The actions for all zones that discard data, under a divider. */
+      .bulk-danger {
+        margin-top: 16px;
+        padding-top: 8px;
+        border-top: 1px solid var(--divider-color);
+      }
+      .bulk-danger .setting-help {
+        padding: 0 0 8px;
       }
       /* Deleting the zone, apart from what it does every day. */
       .zone-danger {
