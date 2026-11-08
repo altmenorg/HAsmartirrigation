@@ -27,6 +27,7 @@ from homeassistant.helpers.dispatcher import (
     async_dispatcher_connect,
     async_dispatcher_send,
 )
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.util import slugify
@@ -91,6 +92,8 @@ class SmartIrrigationZoneMultiplierEntity(NumberEntity, RestoreEntity):
 
     _attr_has_entity_name = True
     _attr_translation_key = "multiplier"
+    # A setting of the zone, as in the panel: listed under Configuration.
+    _attr_entity_category = EntityCategory.CONFIG
     _attr_native_min_value = 0.0
     _attr_native_max_value = 10.0
     _attr_native_step = 0.1
@@ -212,6 +215,8 @@ class SmartIrrigationPrecipitationThresholdNumber(NumberEntity):
     _attr_has_entity_name = True
     _attr_should_poll = False
     _attr_translation_key = "precipitation_threshold"
+    # A setting of the Skip on weather page: listed under Configuration.
+    _attr_entity_category = EntityCategory.CONFIG
     _attr_device_class = NumberDeviceClass.PRECIPITATION
     _attr_mode = NumberMode.BOX
     _attr_icon = "mdi:weather-pouring"
