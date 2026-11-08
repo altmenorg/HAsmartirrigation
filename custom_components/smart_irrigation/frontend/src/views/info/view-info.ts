@@ -18,6 +18,8 @@ import {
   SmartIrrigationZone,
 } from "../../types";
 import {
+  awaitsFirstCalculation,
+  calculationWhenKey,
   formatNumber,
   localizedDateTime,
   navigate,
@@ -189,14 +191,16 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
    * one "when" of a run that the card did not say (finding 11 of #982).
    */
   private _calculationWhen(): string {
-    const config = this.config;
-    if (config?.recalculate_before_start) {
-      return this.t("cards.next-run.calc-before-start");
-    }
-    if (config?.autocalcenabled) {
-      return this.t("cards.next-run.calc-daily", "{time}", config.calctime);
-    }
-    return this.t("cards.next-run.calc-manual");
+    return this.t(
+      `cards.next-run.${calculationWhenKey(this.config)}`,
+      "{time}",
+      this.config?.calctime ?? "",
+    );
+  }
+
+  /** The zones Smart Irrigation calculates (automatic ones). */
+  private _automaticZones(): SmartIrrigationZone[] {
+    return this.zones.filter((zone) => zone.state === "automatic");
   }
 
   private get _lang(): string {
@@ -579,6 +583,20 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       icon = "mdi:water-off-outline";
       headline = this.t("cards.next-run.headline-no-valve");
       sub = this.t("cards.next-run.sub-no-valve");
+    } else if (
+      !(zones.length && seconds > 0) &&
+      this._automaticZones().length &&
+      this._automaticZones().every(awaitsFirstCalculation)
+    ) {
+      // Nothing calculated yet: the zeros are the ones the zones were made
+      // with, and "no zone is short of water yet" read as a result.
+      icon = "mdi:timer-sand";
+      headline = this.t("cards.next-run.headline-not-calculated");
+      sub = this.t(
+        "cards.next-run.sub-not-calculated",
+        "{when}",
+        this._calculationWhen(),
+      );
     } else if (zones.length && seconds > 0) {
       icon = "mdi:water-outline";
       headline = start

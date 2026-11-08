@@ -14,6 +14,7 @@ import { customElement, property, state } from "lit/decorators.js";
 
 import {
   anyProgramActive,
+  awaitsFirstCalculation,
   programsPollDelay,
   deficitOf,
   depthLabel,
@@ -81,6 +82,8 @@ interface Zone {
   last_irrigation?: string | null;
   /** The valve this zone drives directly, when it drives one. */
   linked_entity?: string;
+  last_calculated?: string | null;
+  calculation_problem?: { code?: string } | null;
 }
 
 @customElement("smart-irrigation-card")
@@ -450,7 +453,9 @@ export class SmartIrrigationCard extends LitElement {
         <div class="zone-state ${needed ? "needed" : ""}">
           ${deficit > 0
             ? this._t("short_by", { value: this._depth(deficit) })
-            : this._t("no_need")}
+            : awaitsFirstCalculation(zone) && !now.live
+              ? this._t("not_calculated")
+              : this._t("no_need")}
           ${needed
             ? html`&middot;
               ${this._t("runs_for", {

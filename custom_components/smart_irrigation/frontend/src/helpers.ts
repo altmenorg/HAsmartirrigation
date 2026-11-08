@@ -833,3 +833,21 @@ export function suggestSources(
   }
   return suggested;
 }
+
+// Shared with the dashboard card, whose bundle does not load this module.
+export { awaitsFirstCalculation } from "./card/format";
+
+/**
+ * When the durations are worked out, as the key of the words that say it:
+ * before each start, daily at the calculation time, or only on request.
+ */
+export function calculationWhenKey(
+  config?: {
+    recalculate_before_start?: boolean;
+    autocalcenabled?: boolean;
+  } | null,
+): "calc-before-start" | "calc-daily" | "calc-manual" {
+  if (config?.recalculate_before_start) return "calc-before-start";
+  if (config?.autocalcenabled) return "calc-daily";
+  return "calc-manual";
+}
