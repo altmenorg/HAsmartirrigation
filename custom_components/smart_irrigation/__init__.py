@@ -2674,8 +2674,16 @@ class SmartIrrigationCoordinator(
         self.hass.data[const.DOMAIN]["zones"].pop(zone_id, None)
         # Forget its other entities too, or a zone added again under the same
         # id would find them "already created", and the install-wide binary
-        # sensors would still read the deleted zone's.
-        for registry in ("zone_child_sensors", "zone_binary_sensors"):
+        # sensors would still read the deleted zone's. A new zone takes the
+        # highest id plus one, so deleting the last zone and adding one reuses
+        # its id: without the buttons and the multiplier here, that zone had
+        # neither until a restart.
+        for registry in (
+            "zone_child_sensors",
+            "zone_binary_sensors",
+            "zone_buttons",
+            "multiplier_numbers",
+        ):
             (self.hass.data[const.DOMAIN].get(registry) or {}).pop(zone_id, None)
 
         # Remove the per-zone device, which drops all of its child entities too.
