@@ -93,6 +93,7 @@ from .const import (
     CONF_IRRIGATION_ENABLED,
     CONF_IRRIGATION_START_TRIGGERS,
     CONF_IU_IMPORT,
+    CONF_LAST_ZONE_ID,
     CONF_MANUAL_COORDINATES_ENABLED,
     CONF_MANUAL_ELEVATION,
     CONF_MANUAL_LATITUDE,
@@ -761,6 +762,12 @@ class Config:
     iu_import = attr.ib(type=dict, default=None)
     # Direct valve control as it was before the full controller forced it on.
     direct_valve_control_before_full_controller = attr.ib(type=bool, default=None)
+    # The highest zone id ever given. A new zone took the highest id in use
+    # plus one, so deleting the last zone and adding one gave the new zone the
+    # deleted one's id, and with it the deleted zone's entities: Home
+    # Assistant brings a deleted entity back, entity id and history, when its
+    # unique id comes back.
+    last_zone_id = attr.ib(type=int, default=None)
 
 
 class MigratableStore(Store):
@@ -1276,6 +1283,7 @@ class SmartIrrigationStorage:
                 direct_valve_control_before_full_controller=data["config"].get(
                     CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER
                 ),
+                last_zone_id=data["config"].get(CONF_LAST_ZONE_ID),
             )
 
             if "zones" in data:
@@ -1664,10 +1672,17 @@ class SmartIrrigationStorage:
         # zone_id = str(int(time.time()))
         # new_zone = ZoneEntry(**data, id=zone_id)
         new_zone = ZoneEntry(**data)
+        last = self.config.last_zone_id
         if not new_zone.id:
             zones = await self.async_get_zones()
-            new_zone = attr.evolve(new_zone, id=self.generate_next_id(zones))
-        self.zones[int(new_zone.id)] = new_zone
+            next_id = self.generate_next_id(zones)
+            if isinstance(last, int) and last >= next_id:
+                next_id = last + 1
+            new_zone = attr.evolve(new_zone, id=next_id)
+        zone_id = int(new_zone.id)
+        if not isinstance(last, int) or zone_id > last:
+            self.config = attr.evolve(self.config, last_zone_id=zone_id)
+        self.zones[zone_id] = new_zone
         self.async_schedule_save()
         return attr.asdict(new_zone)
 
