@@ -238,11 +238,11 @@
             "calc-when-time": "At a fixed time",
             "calc-when-start": "Just before each start",
             "calc-when-manual": "Only when I ask",
-            "calc-when-hint": "Just before each start: at the time of the start trigger, with the freshest weather. The right choice when Smart Irrigation starts the watering (direct valve control or the start event). At a fixed time: every day at the time below, for something other than Smart Irrigation that starts the watering and reads the durations when it likes (Irrigation Unlimited, a schedule of your own). Only when I ask: nothing is calculated by itself, use the calculate buttons or the services.",
+            "calc-when-hint": "Just before each start: at the start trigger, with the freshest weather, when Smart Irrigation starts the watering. At a fixed time: daily at the time below, when something else starts it and reads the durations (Irrigation Unlimited, a schedule). Only when I ask: by button or service.",
             "calc-time": "Calculate at",
             "calc-time-hint": "The daily calculation: the water lost is added to the water balance of each zone and the watering durations are set.",
             "hourly-calculation": "Calculate evapotranspiration hour by hour",
-            "hourly-calculation-hint": "Sums the FAO-56 hourly equation over each hour since the last calculation, instead of applying the daily equation to the averages, which hides whether the sun and the heat came together. A new installation starts on it; an installation set up before it arrived keeps the daily equation until you switch, because the two give different numbers and your watering should not change on an update. The sun of each hour comes from a radiation or illuminance sensor, from the weather service's own hourly history, or from the day's temperature range. It is worth having when readings arrive through the day: one update a day leaves a single reading held across twenty-four hours, and neither form is trustworthy then. A greenhouse with no sensor of its own keeps the daily equation."
+            "hourly-calculation-hint": "Adds up the FAO-56 hourly equation for each hour since the last calculation, instead of the daily one on averages, which hide whether sun and heat came together. Worth it when readings arrive through the day. New installs start on it; older ones keep the daily one until you switch."
           }
         },
         "automatic-update": {
@@ -266,7 +266,7 @@
         },
         "continuousupdates": {
           "header": "Continuous updates for all sensor groups",
-          "description": "One setting for every sensor group below. It records every change of a group's sensor, instead of one reading per update, so the hourly calculation and the rain work from finer data: a rain gauge that reports every ten minutes is read every ten minutes. The zones are not calculated again at each change; the scheduled calculation does that, once, from the readings recorded. In a group that also uses a weather service, its sensors are recorded as they change and the service is still read once per update, so it costs no extra requests.",
+          "description": "For every sensor group below: records each change of a group's sensors, not one reading per update, so the hourly calculation and the rain get finer data. Zones are still calculated on schedule, not at each change. A weather service in the group is still read once per update: no extra requests.",
           "labels": {
             "continuousupdates": "Enable continuous updates",
             "sensor_debounce": "Sensor debounce"
@@ -490,7 +490,7 @@
             "solar radiation": "The energy of the sun, the main driver of evaporation. Without it the calculation estimates it from the day's temperature range. Under glass, use a radiation sensor or a light sensor.",
             "precipitation": "Rain that fell, as a total, from a rain gauge of your own that adds up. With a weather service, leave it on None.",
             "current precipitation": "Rain falling now, as a rate. The weather service provides it; a rain sensor of your own is more precise.",
-            "evapotranspiration": "A ready-made evapotranspiration (ET₀), from your own sensor or from the weather service. Only the zones set to provided by a sensor or a service read it. For a zone calculated by Smart Irrigation this line is not used: the weather service then only supplies the inputs (temperature, humidity, wind, radiation) of Smart Irrigation's own calculation."
+            "evapotranspiration": "The water the plants lost (ET0), already calculated by your sensor or service. Read only by zones set to provided by a sensor or service; a zone Smart Irrigation calculates takes the weather inputs instead."
           },
           "items": {
             "dewpoint": "Dewpoint",
@@ -526,7 +526,7 @@
             "illuminance": "Light sensor (lux)"
           },
           "greenhouse": "Greenhouse",
-          "greenhouse_description": "An enclosed environment: a greenhouse, a polytunnel, anything under glass or plastic. No rain reaches these zones, so precipitation is left out of their water balance and its fields are hidden. Two things to set yourself, because they cannot be guessed: give Wind speed a static value near 0, since the calculation assumes open air, and use a light sensor for Solar Radiation, since the glazing filters the sky.",
+          "greenhouse_description": "Under glass or plastic: a greenhouse, a polytunnel. No rain reaches it, so precipitation is left out and its fields are hidden. Set two things yourself: Wind speed to a static value near 0, as the calculation assumes open air, and a light sensor for Solar radiation, as the glazing filters the sky.",
           "module": "Module",
           "module_description": "This group only offers the sources this module reads. The zones using it inherit the choice.",
           "module_undecided": "No module chosen yet, so every source is offered and each zone using this group keeps its own. Pick one to see only the sources it reads.",
@@ -1083,7 +1083,7 @@
     "active_default": "Default (sunrise minus total watering duration)",
     "active_hint": "Only the selected trigger starts the watering, once a day.",
     "usage_before": "When a trigger fires, Smart Irrigation emits the event ",
-    "usage_after": " — listen to it in an automation to start watering. The event data includes trigger_name, trigger_type and offset_minutes, so you can react differently per trigger. The precipitation skip and days-between-irrigation settings still apply: on a skip day no event is fired.",
+    "usage_after": " — react to it in an automation to start watering. Its data carries trigger_name, trigger_type and offset_minutes, to tell the triggers apart. On a day skipped for rain or for the days between irrigation, no event fires.",
     "add_trigger": "Add trigger",
     "edit_trigger": "Edit trigger",
     "delete_trigger": "Delete trigger",
@@ -1148,7 +1148,7 @@
   },
   "seasonal_adjustments": {
     "title": "Seasonal adjustments",
-    "description": "A crop factor and a threshold that follow the season. Each adjustment covers a range of months and some zones; several covering the same month multiply. The multiplier scales the zone's crop factor (1 changes nothing, 0.5 halves the water use) and the threshold adds to its irrigation threshold. A month-by-month crop factor can also be set in each zone.",
+    "description": "A crop factor and threshold that follow the season, for the months and zones you pick; several in one month multiply. The multiplier scales the zone's crop factor (1 no change, 0.5 half the water), the offset adds to its threshold. A zone can also have a crop factor per month.",
     "add": "Add an adjustment",
     "delete": "Delete",
     "new_name": "New adjustment",
@@ -1169,7 +1169,7 @@
     "effective_rain_label": "Count only rain that reaches the roots",
     "effective_rain_description": "Ignore a shower smaller than a fifth of the evapotranspiration of the period: it wets the leaves and evaporates. It is judged on the whole period between two calculations.",
     "forecast_label": "Take the forecast rain into account",
-    "forecast_description": "Below the threshold, each zone is watered for its deficit less the rain forecast for the next 24 hours, weighted by the probability the weather service gives: 4 mm forecast against a 10 mm deficit waters 6 mm. At or above the threshold, the run is skipped for the zones in the open. Zones in a greenhouse are not affected."
+    "forecast_description": "Below the threshold, each zone gets its deficit less the rain forecast for 24 hours, weighted by its probability: 4 mm forecast against a 10 mm deficit waters 6 mm. At or above it, zones in the open are skipped. Greenhouse zones are not affected."
   },
   "coordinate_config": {
     "title": "Location coordinates",
@@ -1183,7 +1183,7 @@
   },
   "days_between_irrigation": {
     "title": "Days between irrigation",
-    "description": "Configure the minimum number of days that must pass between irrigation events. This helps control watering frequency for water conservation and plant health management.\n\nTypical real-world use cases:\n• Lawn care: 1-2 day intervals prevent overwatering\n• Drought restrictions: 6+ day intervals for weekly watering\n• Deep-rooted plants: 3-7 day intervals for less frequent watering\n• Water conservation: Customizable based on climate and soil conditions",
+    "description": "The fewest days between two waterings of a zone; 0 is no limit. Lawns do well with short intervals, deep-rooted plants with 3 to 7 days and more water per run; 7 fits a once-a-week watering rule. A zone can set its own.",
     "label": "Minimum days between irrigation",
     "help_text": "Set to 0 to disable this feature. Values from 1-365 days are supported. This setting works alongside existing precipitation forecasting logic. A zone can have its own number of days in the Zones tab, which replaces this setting for that zone."
   },
@@ -1278,7 +1278,7 @@
     "schedule_hard_deadline": "Cut the run at the end time",
     "schedule_hard_deadline_help": "The run is cut at the end target: the zones that are open are closed and credited for what they watered, and what did not start is skipped.",
     "schedule_conditions": "Which conditions",
-    "schedule_conditions_help": "What can keep this schedule from watering. The rain, frost and wind are set under Weather, Skip on weather, the days since the last watering under Settings, General, and the soil moisture in each zone. This schedule obeys all of them; untick the ones it should ignore, the rain for a greenhouse for example. A postponement you asked for (24 h, 48 h) always applies.",
+    "schedule_conditions_help": "What can keep this schedule from watering: rain, frost and wind (Weather, Skip on weather), the days since the last watering (Settings, General) and each zone's soil moisture. Untick what it should ignore, the rain for a greenhouse for example. A postponement you asked for always applies.",
     "condition_postponed": "Postponed days (always on)",
     "condition_rain_sensor": "Rain sensor",
     "condition_freeze": "Frost",
@@ -1311,7 +1311,7 @@
     "min_seconds": "Minimum water",
     "max_seconds": "Maximum water",
     "adjust_seconds": "Time added (+) or removed (-)",
-    "step_bounds_help": "Order of application: first the percentage of the program's \"Adjust durations\", when one is in force (it is set on the program, not here), then the time added or removed, then the minimum and the maximum. 0 for the minimum or maximum: none. A step that needs no water stays at zero: the minimum never starts it.",
+    "step_bounds_help": "Applied in this order: the program's \"Adjust durations\" percentage, if one is in force (it is set on the program), the time added or removed, then minimum and maximum (0: none). A step that needs no water stays at zero; the minimum never starts it.",
     "min_deficit_mm": "Only water when the deficit is at least",
     "min_deficit_mm_help": "In mm, 0 to always water. Set, it replaces the zone's own threshold for this step. Fixed-duration steps are always watered.",
     "adjust_title": "Adjust durations",
@@ -1376,20 +1376,20 @@
   },
   "observed_watering": {
     "title": "Observed watering (closed loop)",
-    "description": "Credit each zone's water balance automatically from real irrigation, instead of resetting the water balance from an automation. Once enabled, pick a valve/switch entity per zone in the Zones tab: while it is open, the water balance is credited from the run time and the zone's throughput. For exact accounting you can also pick a cumulative volume meter (a water-meter style total) per zone, and the measured volume is used instead. Important: when this is on it is the only thing crediting the water balance, so remove any reset_bucket call from your irrigation automation to avoid double counting.",
+    "description": "Credits each zone's water balance from real watering, instead of an automation resetting it. Pick a valve or switch per zone under Zones: while it is open, run time times throughput is credited, or the volume a meter measured. Remove reset_bucket from your automations, or it counts twice.",
     "enabled_label": "Enable observed watering",
     "direct_control_label": "Let Smart Irrigation control the valve",
-    "direct_control_description": "When on, Smart Irrigation opens each zone's linked valve, waits the calculated duration, then closes it, with no automation needed. A run under way resumes after a restart. Safety: a valve that can close by itself is given the length of the run when it opens (a Sonoff SWV on ZHA, or a valve with an MQTT safety topic set in its zone), so it closes even if Home Assistant goes down. Any other valve keeps watering until Home Assistant is back: give it a hardware failsafe (a maximum runtime).",
+    "direct_control_description": "Smart Irrigation opens each zone's valve, waits the duration and closes it. A valve that can close itself (Sonoff SWV on ZHA, or with an MQTT safety topic) knows the run's length and closes even if Home Assistant fails. Any other keeps watering until Home Assistant is back: give it a hardware time limit.",
     "full_controller_label": "Full controller: Smart Irrigation runs all my watering",
     "full_controller_title": "Full controller",
     "confirm_full_controller": "Turn on the full controller? Smart Irrigation will drive the valves and start the watering itself. A valve found open at startup that no run of ours owns is closed.",
-    "full_controller_description": "Turns on valve control and adds a Watering tab: programs, planning and pumps. The start trigger, the sequencing, the pause between zones and cycle and soak move there, as the main program's settings, and keep working as before until you add another program. Switching it off brings back exactly the previous behaviour. A valve found open at startup that no run of ours owns is closed.",
+    "full_controller_description": "Turns on valve control and adds a Watering tab with programs, planning and pumps. Start trigger, sequencing, pause between zones and cycle and soak move there as the main program and work as before. Off restores the previous behaviour. A valve found open at startup with no run of ours is closed.",
     "sequencing_label": "Zone sequencing",
     "sequencing": {
       "sequential": "Sequential (one zone at a time)",
       "parallel": "Parallel (all zones at once)"
     },
-    "sequencing_description": "How your zones are watered. This sets what a start trigger works back from when it has to finish at sunrise: one after another takes the sum of every zone's run time, all at once takes the longest of them. It applies whether Smart Irrigation opens the valves itself or an automation of your own does.",
+    "sequencing_description": "How your zones are watered, whether Smart Irrigation or your own automation opens the valves. A start trigger that must finish at sunrise works back from it: one after another, from the sum of the run times; all at once, from the longest.",
     "passes_label": "Water in several passes",
     "passes_description": "Cycle and soak: the same water, split into shorter passes with a pause between them, so heavy soil takes it in instead of letting it run off. One pass waters in a single go, which is the default. A run too short to split is left alone.",
     "soak_label": "Soak between passes",
@@ -1401,7 +1401,7 @@
   },
   "calculation_log": {
     "title": "Calculation log",
-    "description": "Write the complete input of every calculation to a file, so two days that look alike but water very differently can be compared afterwards. Each calculation appends one line: the sensor group records and how they were aggregated, the module intermediates (solar radiation, net radiation, ET0), and the resulting water balance, duration and volume. Off by default; the file is capped in size and rotated, so it can be left on for a season.",
+    "description": "Writes every calculation's full input to a file, to compare two similar days that watered very differently: the sensor group's records and how they were combined, the module's intermediates (radiation, ET0), water balance, duration and volume. Off by default; capped and rotated, so it can stay on.",
     "enabled_label": "Log calculation inputs to a file",
     "file_hint": "Written to config/smart_irrigation/calc_log.jsonl, one JSON record per line. The most recent records are also included in the diagnostics download (coordinates rounded, entity ids removed), so you can attach them to an issue in one step."
   },
@@ -1422,7 +1422,7 @@
       "description": "Skip the run while a rain sensor says it is raining.",
       "sensor-hint": "A binary sensor that is on while it rains.",
       "history-label": "Shorten runs after recent rain",
-      "history-description": "For a zone that has no rain in millimetres at all: no gauge, and a weather service that gives none. The sensor's own history over the last five days is read, weighted so that yesterday counts for more than four days ago, and the run is shortened by it. A day of reported rain today takes the whole run; four days ago takes a tenth of it. It never touches the water balance, because it does not know how many millimetres fell: the deficit stays and is watered off once the weather turns. A zone whose sensor group does report rain in millimetres is left alone, since the balance already has it. This needs a sensor that stays on while it rains rather than one that pulses per tip."
+      "history-description": "For zones with no rain in mm at all. The sensor's last five days shorten the run, recent ones more: a full day of rain today takes all of it, four days ago a tenth. The water balance is untouched, so the deficit stays. Needs a sensor that stays on while it rains, not one that pulses per tip."
     },
     "freeze": {
       "title": "Freeze",
