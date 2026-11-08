@@ -736,3 +736,100 @@ export const displayName = (
   );
   return twin && item.id !== undefined ? `${name} (#${item.id})` : name;
 };
+
+/** The device classes a source's sensor carries, in Home Assistant's terms. */
+const SOURCE_DEVICE_CLASSES: Record<string, string[]> = {
+  [MAPPING_TEMPERATURE]: ["temperature"],
+  [MAPPING_DEWPOINT]: ["temperature"],
+  [MAPPING_HUMIDITY]: ["humidity"],
+  [MAPPING_PRESSURE]: ["atmospheric_pressure", "pressure"],
+  [MAPPING_WINDSPEED]: ["wind_speed"],
+  [MAPPING_SOLRAD]: ["irradiance"],
+  [MAPPING_PRECIPITATION]: ["precipitation"],
+  [MAPPING_CURRENT_PRECIPITATION]: ["precipitation_intensity"],
+};
+
+/** Classes only an outdoor sensor has: what makes a set of sensors a station. */
+const OUTDOOR_CLASSES = [
+  "wind_speed",
+  "irradiance",
+  "precipitation",
+  "precipitation_intensity",
+  "atmospheric_pressure",
+];
+
+// A dew point carries the class temperature: it is told apart by its name.
+const DEWPOINT_WORDS =
+  /dew|taupunkt|point[ _-]?de[ _-]?ros|rugiada|dauwpunt|rocío|rosný|harmatpont|duggpunkt|dugpunkt|kastepiste|ponto[ _-]?de[ _-]?orvalho|punkt[ _-]?rosy/i;
+
+interface SuggestState {
+  attributes?: { device_class?: string; friendly_name?: string };
+}
+interface SuggestEntity {
+  device_id?: string | null;
+  platform?: string;
+}
+
+/**
+ * The sensor the setup assistant suggests for each source (UX review, #978).
+ *
+ * A source gets a sensor only when the choice is clear: the one sensor of its
+ * device class, or, when there are several, the one that belongs to the same
+ * station as the outdoor sensors that are clear (wind, radiation, rain,
+ * pressure). A station is a device, or, for sensors without one, the start
+ * of their entity id ("sensor.garden_…"). The dew point and the temperature
+ * share a class and are told apart by the name. Anything less clear stays
+ * empty: a wrong sensor read into the calculation is worse than none.
+ */
+export function suggestSources(
+  sources: string[],
+  states: Record<string, SuggestState>,
+  entities: Record<string, SuggestEntity> = {},
+): Record<string, string> {
+  const sensors = Object.keys(states).filter(
+    (id) =>
+      id.startsWith("sensor.") &&
+      entities[id]?.platform !== "smart_irrigation" &&
+      !!states[id]?.attributes?.device_class,
+  );
+  const classOf = (id: string) => states[id].attributes!.device_class!;
+  const nameOf = (id: string) =>
+    `${id} ${states[id].attributes?.friendly_name ?? ""}`;
+  const stationOf = (id: string) => {
+    const device = entities[id]?.device_id;
+    if (device) return device;
+    const cut = id.indexOf("_", "sensor.".length);
+    return cut > 0 ? id.slice(0, cut) : id;
+  };
+
+  const candidates = (source: string): string[] =>
+    sensors.filter((id) => {
+      if (!(SOURCE_DEVICE_CLASSES[source] ?? []).includes(classOf(id)))
+        return false;
+      const dew = DEWPOINT_WORDS.test(nameOf(id));
+      if (source === MAPPING_DEWPOINT) return dew;
+      if (source === MAPPING_TEMPERATURE) return !dew;
+      return true;
+    });
+
+  // The stations of the outdoor sensors that are clear on their own.
+  const stations = new Set<string>();
+  for (const cls of OUTDOOR_CLASSES) {
+    const ofClass = sensors.filter((id) => classOf(id) === cls);
+    if (ofClass.length === 1) stations.add(stationOf(ofClass[0]));
+  }
+
+  const suggested: Record<string, string> = {};
+  for (const source of sources) {
+    const found = candidates(source);
+    if (found.length === 1) {
+      suggested[source] = found[0];
+      continue;
+    }
+    if (stations.size !== 1 || found.length === 0) continue;
+    const [station] = [...stations];
+    const atStation = found.filter((id) => stationOf(id) === station);
+    if (atStation.length === 1) suggested[source] = atStation[0];
+  }
+  return suggested;
+}
