@@ -366,7 +366,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     _LOGGER.info("Calling async_forward_entry_setups")
     await hass.config_entries.async_forward_entry_setups(
-        entry, [PLATFORM, "number", "button", "binary_sensor", "switch", "datetime"]
+        entry,
+        [PLATFORM, "number", "button", "binary_sensor", "switch", "datetime", "valve"],
     )
     _LOGGER.info("Finished calling async_forward_entry_setups")
 
@@ -489,6 +490,7 @@ async def async_unload_entry(hass: HomeAssistant, entry):
             hass.config_entries.async_forward_entry_unload(entry, "binary_sensor"),
             hass.config_entries.async_forward_entry_unload(entry, "switch"),
             hass.config_entries.async_forward_entry_unload(entry, "datetime"),
+            hass.config_entries.async_forward_entry_unload(entry, "valve"),
         )
     )
     if not unload_ok:
@@ -2683,6 +2685,7 @@ class SmartIrrigationCoordinator(
             "zone_binary_sensors",
             "zone_buttons",
             "multiplier_numbers",
+            "zone_valves",
         ):
             (self.hass.data[const.DOMAIN].get(registry) or {}).pop(zone_id, None)
 
@@ -2716,6 +2719,7 @@ class SmartIrrigationCoordinator(
         # Only discard runtime objects; keep the HA entity registry untouched.
         self.hass.data[const.DOMAIN].pop("zone_buttons", None)
         self.hass.data[const.DOMAIN].pop("multiplier_numbers", None)
+        self.hass.data[const.DOMAIN].pop("zone_valves", None)
 
         # remove subscriptions for coordinator
         while self._subscriptions:
