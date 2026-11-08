@@ -18,6 +18,8 @@ direct valve control is on and the zone has a linked valve.
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
+from typing import cast
 
 from homeassistant.components.valve import (
     ValveDeviceClass,
@@ -27,6 +29,7 @@ from homeassistant.components.valve import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ServiceValidationError
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
@@ -111,7 +114,7 @@ class SmartIrrigationZoneValve(ValveEntity):
         self._zone_id = zone_id
         self._zone_name = zone_name
         self._linked: str | None = None
-        self._unsub_valve = None
+        self._unsub_valve: Callable[[], None] | None = None
         self._attr_is_closed = True
 
     def _zone(self) -> dict | None:
@@ -127,9 +130,11 @@ class SmartIrrigationZoneValve(ValveEntity):
         return f"{const.DOMAIN}_{self._zone_id}_valve"
 
     @property
-    def device_info(self) -> dict:
+    def device_info(self) -> DeviceInfo:
         """On the zone's device."""
-        return zone_device_info(self._hass, self._zone_id, self._zone_name)
+        return cast(
+            DeviceInfo, zone_device_info(self._hass, self._zone_id, self._zone_name)
+        )
 
     @property
     def available(self) -> bool:
