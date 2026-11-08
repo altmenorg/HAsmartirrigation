@@ -77,7 +77,11 @@
         "name": "Bewässerung nötig"
       },
       "watering_now": {
-        "name": "Bewässert gerade"
+        "name": "Bewässert gerade",
+        "state": {
+          "on": "Ja",
+          "off": "Nein"
+        }
       },
       "problem": {
         "name": "Problem"
@@ -94,7 +98,7 @@
         "name": "Bei Niederschlag überspringen"
       },
       "irrigation_enabled": {
-        "name": "Aktiv"
+        "name": "Berechnen und bewässern"
       }
     },
     "datetime": {

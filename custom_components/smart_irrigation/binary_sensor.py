@@ -278,6 +278,12 @@ class SmartIrrigationZoneIrrigationNeededBinarySensor(SmartIrrigationZoneBinaryS
         """
         if bucket >= 0:
             return False
+        # A deficit of a hair, as the first calculation can leave, rounds to a
+        # duration of 0 s: nothing waters, so nothing is needed. It said "on"
+        # next to "Duration: 0 s".
+        duration = zone.get(const.ZONE_DURATION)
+        if duration is not None and duration <= 0:
+            return False
         try:
             coordinator = self._hass.data[const.DOMAIN]["coordinator"]
             threshold_mm = coordinator.irrigation_threshold_mm(zone)

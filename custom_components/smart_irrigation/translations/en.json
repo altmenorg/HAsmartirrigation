@@ -77,7 +77,11 @@
         "name": "Irrigation needed"
       },
       "watering_now": {
-        "name": "Watering now"
+        "name": "Watering now",
+        "state": {
+          "on": "Yes",
+          "off": "No"
+        }
       },
       "problem": {
         "name": "Problem"
@@ -94,7 +98,7 @@
         "name": "Skip on precipitation"
       },
       "irrigation_enabled": {
-        "name": "Active"
+        "name": "Calculate and water"
       }
     },
     "datetime": {
