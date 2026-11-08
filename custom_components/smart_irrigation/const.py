@@ -180,6 +180,8 @@ CONF_SUSPENSIONS = "suspensions"
 # the next one updates it: {"zones": {"c1_z2": 7}, "programs": [...], "supplies":
 # [...], "source": "yaml", "at": iso}. See iu_import_ha.py.
 CONF_IU_IMPORT = "iu_import"
+# The highest zone id ever given, so a deleted zone's id is not given again.
+CONF_LAST_ZONE_ID = "last_zone_id"
 # What direct valve control was when the full controller was switched on (which
 # forces it on), so that switching the controller off puts it back. None when the
 # controller was never switched on, or the value was already used.
