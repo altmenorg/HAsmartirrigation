@@ -290,7 +290,7 @@
         "master-switch": {
           "title": "Smart Irrigation",
           "label": "Berechnen und bewässern",
-          "description": "Ausgeschaltet erfasst Smart Irrigation weiter seine Wetterdaten und pflegt seine Sensoren, berechnet aber nichts, lässt jeden Wasserhaushalt unverändert, öffnet kein Ventil und führt kein Programm aus. Beim Wiedereinschalten wird die Zeit, in der es aus war, nicht mitgezählt.",
+          "description": "Ausgeschaltet erfasst Smart Irrigation weiter seine Wetterdaten und pflegt seine Sensoren, berechnet aber nichts, lässt jede Wasserbilanz unverändert, öffnet kein Ventil und führt kein Programm aus. Beim Wiedereinschalten wird die Zeit, in der es aus war, nicht mitgezählt.",
           "off-note": "Ausgeschaltet: Es wird nichts berechnet und nichts bewässert. Die Wetterdaten werden weiter erfasst, und die Zeit, in der es aus ist, wird beim Wiedereinschalten nicht mitgezählt.",
           "confirm-off": "Smart Irrigation ausschalten? Was gerade bewässert, stoppt sofort, und bis zum Wiedereinschalten wird nichts berechnet oder bewässert."
         }
