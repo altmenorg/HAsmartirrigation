@@ -2320,16 +2320,17 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     );
   }
 
-  /** Change a seasonal adjustment through the service, which also updates the one in use. */
-  private async _seasonalCall(
-    service: string,
-    data: Record<string, unknown>,
-  ): Promise<void> {
+  /**
+   * Create, change or remove a seasonal adjustment through the action, which
+   * also updates the one in use: no id creates, an id changes, and an id with
+   * `remove` removes (#1004).
+   */
+  private async _seasonalCall(data: Record<string, unknown>): Promise<void> {
     if (!this.hass) return;
     try {
-      await this.hass.callService(DOMAIN, service, data);
+      await this.hass.callService(DOMAIN, "set_seasonal_adjustment", data);
     } catch (error) {
-      console.error("Seasonal adjustment " + service + " failed:", error);
+      console.error("Seasonal adjustment failed:", error);
     }
     await this._fetchData();
   }
@@ -2349,7 +2350,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     const t = (key: string) => localize(`seasonal_adjustments.${key}`, lang);
     const adjustments = this.config.seasonal_adjustments || [];
     const update = (id: string, data: Record<string, unknown>) =>
-      this._seasonalCall("update_seasonal_adjustment", {
+      this._seasonalCall({
         adjustment_id: id,
         ...data,
       });
@@ -2422,8 +2423,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               </div>
               <ha-button
                 @click=${() =>
-                  this._seasonalCall("delete_seasonal_adjustment", {
+                  this._seasonalCall({
                     adjustment_id: a.id,
+                    remove: true,
                   })}
               >
                 ${t("delete")}
@@ -2434,7 +2436,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         <div class="card-actions">
           <ha-button
             @click=${() =>
-              this._seasonalCall("create_seasonal_adjustment", {
+              this._seasonalCall({
                 name: t("new_name"),
                 month_start: 6,
                 month_end: 8,

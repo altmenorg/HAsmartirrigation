@@ -62,6 +62,7 @@ from .calc_problem import (
 )
 from .calculation import CalculationMixin
 from .card import async_register_card
+from .deprecated_actions import deprecated
 from .engine_binding import EngineBindingMixin
 from .entity import device_by_identifier
 from .exceptions import SmartIrrigationError
@@ -2780,32 +2781,74 @@ def register_services(hass: HomeAssistant):
 
     coordinator = hass.data[const.DOMAIN]["coordinator"]
 
-    # These two support an optional response so `dry_run: true` can report what
-    # the calculation would have done without writing anything.
+    # One action each where there were "one zone" and "all zones" pairs: a
+    # target picks zones, no target means all (#1004). calculate supports an
+    # optional response so `dry_run: true` can report what the calculation
+    # would have done without writing anything.
     hass.services.async_register(
         const.DOMAIN,
-        const.SERVICE_CALCULATE_ALL_ZONES,
-        coordinator.handle_calculate_all_zones,
+        const.SERVICE_CALCULATE,
+        coordinator.handle_calculate,
         supports_response=SupportsResponse.OPTIONAL,
     )
     hass.services.async_register(
+        const.DOMAIN, const.SERVICE_UPDATE_WEATHER, coordinator.handle_update_weather
+    )
+    hass.services.async_register(
+        const.DOMAIN, const.SERVICE_SET_BUCKET, coordinator.handle_set_bucket
+    )
+    hass.services.async_register(
+        const.DOMAIN, const.SERVICE_SET_MULTIPLIER, coordinator.handle_set_multiplier
+    )
+    hass.services.async_register(
         const.DOMAIN,
-        const.SERVICE_CALCULATE_ZONE,
-        coordinator.handle_calculate_zone,
-        supports_response=SupportsResponse.OPTIONAL,
+        const.SERVICE_SET_SEASONAL_ADJUSTMENT,
+        coordinator.handle_set_seasonal_adjustment,
     )
 
-    hass.services.async_register(
-        const.DOMAIN,
-        const.SERVICE_UPDATE_ALL_ZONES,
-        coordinator.handle_update_all_zones,
-    )
-    hass.services.async_register(
-        const.DOMAIN, const.SERVICE_UPDATE_ZONE, coordinator.handle_update_zone
-    )
-    hass.services.async_register(
-        const.DOMAIN, const.SERVICE_RESET_BUCKET, coordinator.handle_reset_bucket
-    )
+    # The old names, working as before until deprecated_actions.REMOVED_IN,
+    # each call raising a repair issue that says what to use instead.
+    old_handlers = {
+        const.SERVICE_CALCULATE_ZONE: coordinator.handle_calculate_zone,
+        const.SERVICE_CALCULATE_ALL_ZONES: coordinator.handle_calculate_all_zones,
+        const.SERVICE_UPDATE_ZONE: coordinator.handle_update_zone,
+        const.SERVICE_UPDATE_ALL_ZONES: coordinator.handle_update_all_zones,
+        const.SERVICE_RESET_BUCKET: coordinator.handle_reset_bucket,
+        const.SERVICE_RESET_ALL_BUCKETS: coordinator.handle_reset_all_buckets,
+        const.SERVICE_SET_ALL_BUCKETS: coordinator.handle_set_all_buckets,
+        const.SERVICE_SET_ALL_MULTIPLIERS: coordinator.handle_set_all_multipliers,
+        const.SERVICE_CREATE_SEASONAL_ADJUSTMENT: (
+            coordinator.handle_create_seasonal_adjustment
+        ),
+        const.SERVICE_UPDATE_SEASONAL_ADJUSTMENT: (
+            coordinator.handle_update_seasonal_adjustment
+        ),
+        const.SERVICE_DELETE_SEASONAL_ADJUSTMENT: (
+            coordinator.handle_delete_seasonal_adjustment
+        ),
+        const.SERVICE_CREATE_RECURRING_SCHEDULE: (
+            coordinator.handle_create_recurring_schedule
+        ),
+        const.SERVICE_UPDATE_RECURRING_SCHEDULE: (
+            coordinator.handle_update_recurring_schedule
+        ),
+        const.SERVICE_DELETE_RECURRING_SCHEDULE: (
+            coordinator.handle_delete_recurring_schedule
+        ),
+    }
+    with_response = (const.SERVICE_CALCULATE_ZONE, const.SERVICE_CALCULATE_ALL_ZONES)
+    for action, handler in old_handlers.items():
+        hass.services.async_register(
+            const.DOMAIN,
+            action,
+            deprecated(hass, action, handler),
+            supports_response=(
+                SupportsResponse.OPTIONAL
+                if action in with_response
+                else SupportsResponse.NONE
+            ),
+        )
+
     hass.services.async_register(
         const.DOMAIN,
         const.SERVICE_CREDIT_WATERING,
@@ -2894,32 +2937,8 @@ def register_services(hass: HomeAssistant):
 
     hass.services.async_register(
         const.DOMAIN,
-        const.SERVICE_RESET_ALL_BUCKETS,
-        coordinator.handle_reset_all_buckets,
-    )
-
-    hass.services.async_register(
-        const.DOMAIN, const.SERVICE_SET_BUCKET, coordinator.handle_set_zone
-    )
-
-    hass.services.async_register(
-        const.DOMAIN, const.SERVICE_SET_ALL_BUCKETS, coordinator.handle_set_all_buckets
-    )
-
-    hass.services.async_register(
-        const.DOMAIN,
         const.SERVICE_CLEAR_WEATHERDATA,
         coordinator.handle_clear_weatherdata,
-    )
-
-    hass.services.async_register(
-        const.DOMAIN,
-        const.SERVICE_SET_ALL_MULTIPLIERS,
-        coordinator.handle_set_all_multipliers,
-    )
-
-    hass.services.async_register(
-        const.DOMAIN, const.SERVICE_SET_MULTIPLIER, coordinator.handle_set_zone
     )
 
     hass.services.async_register(
@@ -2930,41 +2949,4 @@ def register_services(hass: HomeAssistant):
         const.DOMAIN,
         const.SERVICE_GENERATE_WATERING_CALENDAR,
         coordinator.handle_generate_watering_calendar,
-    )
-
-    # Enhanced scheduling services
-    hass.services.async_register(
-        const.DOMAIN,
-        const.SERVICE_CREATE_RECURRING_SCHEDULE,
-        coordinator.handle_create_recurring_schedule,
-    )
-
-    hass.services.async_register(
-        const.DOMAIN,
-        const.SERVICE_UPDATE_RECURRING_SCHEDULE,
-        coordinator.handle_update_recurring_schedule,
-    )
-
-    hass.services.async_register(
-        const.DOMAIN,
-        const.SERVICE_DELETE_RECURRING_SCHEDULE,
-        coordinator.handle_delete_recurring_schedule,
-    )
-
-    hass.services.async_register(
-        const.DOMAIN,
-        const.SERVICE_CREATE_SEASONAL_ADJUSTMENT,
-        coordinator.handle_create_seasonal_adjustment,
-    )
-
-    hass.services.async_register(
-        const.DOMAIN,
-        const.SERVICE_UPDATE_SEASONAL_ADJUSTMENT,
-        coordinator.handle_update_seasonal_adjustment,
-    )
-
-    hass.services.async_register(
-        const.DOMAIN,
-        const.SERVICE_DELETE_SEASONAL_ADJUSTMENT,
-        coordinator.handle_delete_seasonal_adjustment,
     )

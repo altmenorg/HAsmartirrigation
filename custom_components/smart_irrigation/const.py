@@ -1062,6 +1062,11 @@ SERVICE_DELETE_RECURRING_SCHEDULE = "delete_recurring_schedule"
 SERVICE_CREATE_SEASONAL_ADJUSTMENT = "create_seasonal_adjustment"
 SERVICE_UPDATE_SEASONAL_ADJUSTMENT = "update_seasonal_adjustment"
 SERVICE_DELETE_SEASONAL_ADJUSTMENT = "delete_seasonal_adjustment"
+# One action where there were "one zone" and "all zones" pairs (#1004): a
+# target picks zones, no target means all of them.
+SERVICE_CALCULATE = "calculate"
+SERVICE_UPDATE_WEATHER = "update_weather"
+SERVICE_SET_SEASONAL_ADJUSTMENT = "set_seasonal_adjustment"
 
 # Events
 EVENT_RECURRING_SCHEDULE_TRIGGERED = "recurring_schedule_triggered"

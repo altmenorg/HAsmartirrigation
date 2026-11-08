@@ -4,6 +4,8 @@ This file contains example automations and configurations demonstrating the enha
 
 ## Recurring Schedule Examples
 
+> **Recurring schedules are on their way out.** They keep working until version 2027.11 at the earliest, and each call to `create_recurring_schedule`, `update_recurring_schedule` or `delete_recurring_schedule` raises a repair issue. The programs' schedules do the same and are in the panel, under **Watering** (full controller). See [actions on their way out](../docs/usage-services.md#actions-on-their-way-out).
+
 ### Example 1: Daily Early Morning Calculation
 ```yaml
 automation:
@@ -79,7 +81,7 @@ automation:
       - platform: template
         value_template: "{{ now().month == 3 and now().day == 1 }}"
     action:
-      - service: smart_irrigation.create_seasonal_adjustment
+      - service: smart_irrigation.set_seasonal_adjustment
         data:
           name: "Spring Growth Boost"
           month_start: 3
@@ -94,7 +96,7 @@ automation:
       - platform: template
         value_template: "{{ now().month == 6 and now().day == 1 }}"
     action:
-      - service: smart_irrigation.create_seasonal_adjustment
+      - service: smart_irrigation.set_seasonal_adjustment
         data:
           name: "Summer Heat Protection"
           month_start: 6
@@ -110,7 +112,7 @@ automation:
       - platform: template
         value_template: "{{ now().month == 9 and now().day == 1 }}"
     action:
-      - service: smart_irrigation.create_seasonal_adjustment
+      - service: smart_irrigation.set_seasonal_adjustment
         data:
           name: "Autumn Reduction"
           month_start: 9
@@ -125,7 +127,7 @@ automation:
       - platform: template
         value_template: "{{ now().month == 12 and now().day == 1 }}"
     action:
-      - service: smart_irrigation.create_seasonal_adjustment
+      - service: smart_irrigation.set_seasonal_adjustment
         data:
           name: "Winter Dormancy"
           month_start: 12
@@ -144,7 +146,7 @@ automation:
         value_template: "{{ now().month in [6, 7, 8] and now().day == 1 }}"
     action:
       # Lawn zones need more water in summer
-      - service: smart_irrigation.create_seasonal_adjustment
+      - service: smart_irrigation.set_seasonal_adjustment
         data:
           name: "Summer Lawn Boost"
           month_start: 6
@@ -154,7 +156,7 @@ automation:
           enabled: true
       
       # Garden zones are more drought-tolerant
-      - service: smart_irrigation.create_seasonal_adjustment
+      - service: smart_irrigation.set_seasonal_adjustment
         data:
           name: "Summer Garden Adjustment"
           month_start: 6
@@ -174,7 +176,7 @@ automation:
       - platform: time
         at: "23:30:00"
     action:
-      - service: smart_irrigation.calculate_all_zones
+      - service: smart_irrigation.calculate
       - delay:
           seconds: 30
       - service: smart_irrigation.sync_with_irrigation_unlimited
@@ -196,7 +198,7 @@ automation:
                 seconds: "{{ repeat.item.duration }}"
             - service: switch.turn_off
               entity_id: "{{ repeat.item.iu_entity }}"
-            - service: smart_irrigation.reset_bucket
+            - service: smart_irrigation.set_bucket
               target:
                 entity_id: "sensor.smart_irrigation_zone_{{ repeat.item.zone_id }}"
 ```
@@ -272,7 +274,7 @@ automation:
               1.0
             {% endif %}
       
-      - service: smart_irrigation.create_seasonal_adjustment
+      - service: smart_irrigation.set_seasonal_adjustment
         data:
           name: "Daily Temperature Adjustment"
           month_start: "{{ now().month }}"
@@ -281,7 +283,7 @@ automation:
           zones: "all"
           enabled: true
       
-      - service: smart_irrigation.calculate_all_zones
+      - service: smart_irrigation.calculate
 ```
 
 ### Example 2: Rain Delay Integration
@@ -352,7 +354,7 @@ automation:
             - service: switch.turn_off
               entity_id: "switch.irrigation_unlimited_c1_z{{ zone_id }}"
             
-            - service: smart_irrigation.reset_bucket
+            - service: smart_irrigation.set_bucket
               target:
                 entity_id: "{{ zone_entity }}"
             

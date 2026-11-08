@@ -142,8 +142,8 @@
   },
   "services": {
     "calculate_all_zones": {
-      "name": "Calculate all zones",
-      "description": "Calculate all zones in automatic mode",
+      "name": "Calculate all zones (deprecated)",
+      "description": "Deprecated: use smart_irrigation.calculate instead. Works until 2027.11. Calculate all zones in automatic mode",
       "fields": {
         "delete_weather_data": {
           "name": "Delete weather data",
@@ -156,8 +156,8 @@
       }
     },
     "calculate_zone": {
-      "name": "Calculate zone",
-      "description": "Calculate specified zone",
+      "name": "Calculate zone (deprecated)",
+      "description": "Deprecated: use smart_irrigation.calculate instead. Works until 2027.11. Calculate specified zone",
       "fields": {
         "entity": {
           "name": "Entity",
@@ -174,12 +174,12 @@
       }
     },
     "update_all_zones": {
-      "name": "Update all zones",
-      "description": "Update weatherdata for all zones in automatic mode"
+      "name": "Update all zones (deprecated)",
+      "description": "Deprecated: use smart_irrigation.update_weather instead. Works until 2027.11. Update weatherdata for all zones in automatic mode"
     },
     "update_zone": {
-      "name": "Update zone",
-      "description": "Update weatherdata for specified zone",
+      "name": "Update zone (deprecated)",
+      "description": "Deprecated: use smart_irrigation.update_weather instead. Works until 2027.11. Update weatherdata for specified zone",
       "fields": {
         "entity": {
           "name": "Entity",
@@ -189,21 +189,21 @@
     },
     "set_bucket": {
       "name": "Set water balance",
-      "description": "Set the water balance of a zone to a value",
+      "description": "Set the water balance of the zones picked, or of all zones when none is picked. Without a value it is the reset, to 0",
       "fields": {
         "entity": {
           "name": "Entity",
-          "description": "Zone to set the water balance for"
+          "description": "Zones to set the water balance for; none sets all"
         },
         "new_bucket_value": {
           "name": "New water balance",
-          "description": "New value of the water balance"
+          "description": "New value of the water balance; none is 0"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Set all water balances",
-      "description": "Set the water balance of all zones to a value",
+      "name": "Set all water balances (deprecated)",
+      "description": "Deprecated: use smart_irrigation.set_bucket instead. Works until 2027.11. Set the water balance of all zones to a value",
       "fields": {
         "new_bucket_value": {
           "name": "New water balance",
@@ -212,8 +212,8 @@
       }
     },
     "reset_bucket": {
-      "name": "Reset water balance",
-      "description": "Reset the water balance of a zone to 0",
+      "name": "Reset water balance (deprecated)",
+      "description": "Deprecated: use smart_irrigation.set_bucket instead. Works until 2027.11. Reset the water balance of a zone to 0",
       "fields": {
         "entity": {
           "name": "Entity",
@@ -222,8 +222,8 @@
       }
     },
     "reset_all_buckets": {
-      "name": "Reset all water balances",
-      "description": "Reset the water balance of all zones to 0"
+      "name": "Reset all water balances (deprecated)",
+      "description": "Deprecated: use smart_irrigation.set_bucket instead. Works until 2027.11. Reset the water balance of all zones to 0"
     },
     "clear_all_weather_data": {
       "name": "Clear all weather data",
@@ -231,11 +231,11 @@
     },
     "set_multiplier": {
       "name": "Set multiplier",
-      "description": "Set multiplier for a zone to a specific value",
+      "description": "Set the multiplier of the zones picked, or of all zones when none is picked",
       "fields": {
         "entity": {
           "name": "Entity",
-          "description": "Zone to set multiplier for"
+          "description": "Zones to set the multiplier for; none sets all"
         },
         "new_multiplier_value": {
           "name": "New multiplier value",
@@ -244,8 +244,8 @@
       }
     },
     "set_all_multipliers": {
-      "name": "Set all multipliers",
-      "description": "Set multipliers for all zones to a specific value",
+      "name": "Set all multipliers (deprecated)",
+      "description": "Deprecated: use smart_irrigation.set_multiplier instead. Works until 2027.11. Set multipliers for all zones to a specific value",
       "fields": {
         "new_multiplier_value": {
           "name": "New multiplier value",
@@ -476,8 +476,8 @@
       }
     },
     "create_recurring_schedule": {
-      "name": "Create recurring schedule",
-      "description": "Create a new recurring irrigation schedule.",
+      "name": "Create recurring schedule (deprecated)",
+      "description": "Deprecated: use the programs' schedules (Watering tab) instead. Works until 2027.11. Create a new recurring irrigation schedule.",
       "fields": {
         "name": {
           "name": "Name",
@@ -518,8 +518,8 @@
       }
     },
     "update_recurring_schedule": {
-      "name": "Update recurring schedule",
-      "description": "Update an existing recurring irrigation schedule.",
+      "name": "Update recurring schedule (deprecated)",
+      "description": "Deprecated: use the programs' schedules (Watering tab) instead. Works until 2027.11. Update an existing recurring irrigation schedule.",
       "fields": {
         "schedule_id": {
           "name": "Schedule ID",
@@ -536,8 +536,8 @@
       }
     },
     "delete_recurring_schedule": {
-      "name": "Delete recurring schedule",
-      "description": "Delete a recurring irrigation schedule.",
+      "name": "Delete recurring schedule (deprecated)",
+      "description": "Deprecated: use the programs' schedules (Watering tab) instead. Works until 2027.11. Delete a recurring irrigation schedule.",
       "fields": {
         "schedule_id": {
           "name": "Schedule ID",
@@ -546,8 +546,8 @@
       }
     },
     "create_seasonal_adjustment": {
-      "name": "Create seasonal adjustment",
-      "description": "Create a new seasonal adjustment for irrigation zones.",
+      "name": "Create seasonal adjustment (deprecated)",
+      "description": "Deprecated: use smart_irrigation.set_seasonal_adjustment instead. Works until 2027.11. Create a new seasonal adjustment for irrigation zones.",
       "fields": {
         "name": {
           "name": "Name",
@@ -580,8 +580,8 @@
       }
     },
     "update_seasonal_adjustment": {
-      "name": "Update seasonal adjustment",
-      "description": "Update an existing seasonal adjustment.",
+      "name": "Update seasonal adjustment (deprecated)",
+      "description": "Deprecated: use smart_irrigation.set_seasonal_adjustment instead. Works until 2027.11. Update an existing seasonal adjustment.",
       "fields": {
         "adjustment_id": {
           "name": "Adjustment ID",
@@ -598,8 +598,8 @@
       }
     },
     "delete_seasonal_adjustment": {
-      "name": "Delete seasonal adjustment",
-      "description": "Delete a seasonal adjustment.",
+      "name": "Delete seasonal adjustment (deprecated)",
+      "description": "Deprecated: use smart_irrigation.set_seasonal_adjustment instead. Works until 2027.11. Delete a seasonal adjustment.",
       "fields": {
         "adjustment_id": {
           "name": "Adjustment ID",
@@ -620,6 +620,76 @@
     "resume_irrigation": {
       "name": "Resume irrigation",
       "description": "Lift a postponement, whatever is left of it."
+    },
+    "calculate": {
+      "name": "Calculate",
+      "description": "Calculate the zones picked, or all zones in automatic mode when none is picked",
+      "fields": {
+        "entity": {
+          "name": "Entity",
+          "description": "Zones to calculate; none calculates all"
+        },
+        "delete_weather_data": {
+          "name": "Delete weather data",
+          "description": "Delete weather data for the zone after calculation"
+        },
+        "dry_run": {
+          "name": "Dry run",
+          "description": "Report what the calculation would do without changing the water balance, the zone or the collected weather data"
+        }
+      }
+    },
+    "update_weather": {
+      "name": "Update weather",
+      "description": "Fetch the weather for the zones picked, or for all zones when none is picked",
+      "fields": {
+        "entity": {
+          "name": "Entity",
+          "description": "Zones to update; none updates all"
+        }
+      }
+    },
+    "set_seasonal_adjustment": {
+      "name": "Set seasonal adjustment",
+      "description": "Create a seasonal adjustment, change one by its ID, or remove one by its ID with remove",
+      "fields": {
+        "adjustment_id": {
+          "name": "Adjustment ID",
+          "description": "The adjustment to change or remove; none creates one"
+        },
+        "remove": {
+          "name": "Remove",
+          "description": "Remove the adjustment with this ID"
+        },
+        "name": {
+          "name": "Name",
+          "description": "Name of the adjustment"
+        },
+        "enabled": {
+          "name": "Enabled",
+          "description": "Enable the adjustment"
+        },
+        "month_start": {
+          "name": "Start month",
+          "description": "Starting month (1-12)"
+        },
+        "month_end": {
+          "name": "End month",
+          "description": "Ending month (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Multiplier adjustment factor",
+          "description": "Multiplier adjustment factor"
+        },
+        "threshold_adjustment": {
+          "name": "Threshold adjustment",
+          "description": "Threshold adjustment in mm"
+        },
+        "zones": {
+          "name": "Zones",
+          "description": "Zone IDs to include or 'all'"
+        }
+      }
     }
   },
   "issues": {
@@ -666,6 +736,14 @@
     "zone_not_calculated_no_sensor_group": {
       "title": "Zone {zone} cannot be calculated: no sensor group",
       "description": "Zone **{zone}** has no sensor group, so there is nothing to calculate it from and it is not watered.\n\nChoose its sensor group on its card in the Zones tab, then calculate the zone. The notice clears by itself at the next calculation that succeeds."
+    },
+    "deprecated_action": {
+      "title": "The action {action} is going away",
+      "description": "An automation, a script or a dashboard called **{action}**. It still works, but it will be removed from version {version} on, in winter, outside the watering season.\n\nUse **{replacement}** instead: it does the same, and for all zones when no zone is picked. This notice comes back with each call to the old name, until none is left."
+    },
+    "deprecated_recurring_schedule": {
+      "title": "Recurring schedules are going away: {action}",
+      "description": "An automation, a script or a dashboard called **{action}**. Recurring schedules still work, but they will be removed from version {version} on, in winter, outside the watering season.\n\nThe programs' schedules do the same and are in the panel: set them up under **Watering**, then remove the recurring schedules and the calls to {action}."
     }
   }
 }

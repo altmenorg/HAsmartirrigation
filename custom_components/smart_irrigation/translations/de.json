@@ -142,8 +142,8 @@
   },
   "services": {
     "calculate_all_zones": {
-      "name": "Calculate all zones",
-      "description": "Calculate all zones in automatic mode",
+      "name": "Calculate all zones (veraltet)",
+      "description": "Veraltet: nutze stattdessen smart_irrigation.calculate. Funktioniert bis 2027.11. Calculate all zones in automatic mode",
       "fields": {
         "delete_weather_data": {
           "name": "Delete weather data",
@@ -156,8 +156,8 @@
       }
     },
     "calculate_zone": {
-      "name": "Calculate zone",
-      "description": "Calculate specified zone",
+      "name": "Calculate zone (veraltet)",
+      "description": "Veraltet: nutze stattdessen smart_irrigation.calculate. Funktioniert bis 2027.11. Calculate specified zone",
       "fields": {
         "entity": {
           "name": "Entity",
@@ -174,12 +174,12 @@
       }
     },
     "update_all_zones": {
-      "name": "Update all zones",
-      "description": "Update weatherdata for all zones in automatic mode"
+      "name": "Update all zones (veraltet)",
+      "description": "Veraltet: nutze stattdessen smart_irrigation.update_weather. Funktioniert bis 2027.11. Update weatherdata for all zones in automatic mode"
     },
     "update_zone": {
-      "name": "Update zone",
-      "description": "Update weatherdata for specified zone",
+      "name": "Update zone (veraltet)",
+      "description": "Veraltet: nutze stattdessen smart_irrigation.update_weather. Funktioniert bis 2027.11. Update weatherdata for specified zone",
       "fields": {
         "entity": {
           "name": "Entity",
@@ -189,21 +189,21 @@
     },
     "set_bucket": {
       "name": "Wasserbilanz setzen",
-      "description": "Setzt die Wasserbilanz einer Zone auf einen Wert",
+      "description": "Setzt die Wasserbilanz der gewählten Zonen, oder aller, wenn keine gewählt ist. Ohne Wert ist es das Zurücksetzen auf 0",
       "fields": {
         "entity": {
           "name": "Entity",
-          "description": "Zone, deren Wasserbilanz gesetzt wird"
+          "description": "Zonen, deren Wasserbilanz gesetzt wird; keine setzt alle"
         },
         "new_bucket_value": {
           "name": "Neue Wasserbilanz",
-          "description": "Neuer Wert der Wasserbilanz"
+          "description": "Neuer Wert der Wasserbilanz; keiner ist 0"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Alle Wasserbilanzen setzen",
-      "description": "Setzt die Wasserbilanz aller Zonen auf einen Wert",
+      "name": "Alle Wasserbilanzen setzen (veraltet)",
+      "description": "Veraltet: nutze stattdessen smart_irrigation.set_bucket. Funktioniert bis 2027.11. Setzt die Wasserbilanz aller Zonen auf einen Wert",
       "fields": {
         "new_bucket_value": {
           "name": "Neue Wasserbilanz",
@@ -212,8 +212,8 @@
       }
     },
     "reset_bucket": {
-      "name": "Wasserbilanz zurücksetzen",
-      "description": "Setzt die Wasserbilanz einer Zone auf 0 zurück",
+      "name": "Wasserbilanz zurücksetzen (veraltet)",
+      "description": "Veraltet: nutze stattdessen smart_irrigation.set_bucket. Funktioniert bis 2027.11. Setzt die Wasserbilanz einer Zone auf 0 zurück",
       "fields": {
         "entity": {
           "name": "Entity",
@@ -222,30 +222,30 @@
       }
     },
     "reset_all_buckets": {
-      "name": "Alle Wasserbilanzen zurücksetzen",
-      "description": "Setzt die Wasserbilanz aller Zonen auf 0 zurück"
+      "name": "Alle Wasserbilanzen zurücksetzen (veraltet)",
+      "description": "Veraltet: nutze stattdessen smart_irrigation.set_bucket. Funktioniert bis 2027.11. Setzt die Wasserbilanz aller Zonen auf 0 zurück"
     },
     "clear_all_weather_data": {
       "name": "Clear all weather data",
       "description": "Clear weather data for all zones"
     },
     "set_multiplier": {
-      "name": "Set multiplier",
-      "description": "Set multiplier for a zone to a specific value",
+      "name": "Multiplikator setzen",
+      "description": "Setzt den Multiplikator der gewählten Zonen, oder aller, wenn keine gewählt ist",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to set multiplier for"
+          "name": "Entität",
+          "description": "Zonen, deren Multiplikator gesetzt wird; keine setzt alle"
         },
         "new_multiplier_value": {
-          "name": "New multiplier value",
-          "description": "new value of the multiplier"
+          "name": "Neuer Multiplikator",
+          "description": "Neuer Wert des Multiplikators"
         }
       }
     },
     "set_all_multipliers": {
-      "name": "Set all multipliers",
-      "description": "Set multipliers for all zones to a specific value",
+      "name": "Set all multipliers (veraltet)",
+      "description": "Veraltet: nutze stattdessen smart_irrigation.set_multiplier. Funktioniert bis 2027.11. Set multipliers for all zones to a specific value",
       "fields": {
         "new_multiplier_value": {
           "name": "New multiplier value",
@@ -302,6 +302,76 @@
           "description": "Wie lange die Zone lief, in Sekunden. Leer: die Dauer der Zone."
         }
       }
+    },
+    "calculate": {
+      "name": "Berechnen",
+      "description": "Berechnet die gewählten Zonen, oder alle Zonen im Automatikmodus, wenn keine gewählt ist",
+      "fields": {
+        "entity": {
+          "name": "Entität",
+          "description": "Zu berechnende Zonen; keine berechnet alle"
+        },
+        "delete_weather_data": {
+          "name": "Wetterdaten löschen",
+          "description": "Die Wetterdaten nach der Berechnung löschen"
+        },
+        "dry_run": {
+          "name": "Probelauf",
+          "description": "Melden, was die Berechnung tun würde, ohne die Wasserbilanz, die Zone oder die gesammelten Wetterdaten zu ändern"
+        }
+      }
+    },
+    "update_weather": {
+      "name": "Wetter aktualisieren",
+      "description": "Holt das Wetter für die gewählten Zonen, oder für alle, wenn keine gewählt ist",
+      "fields": {
+        "entity": {
+          "name": "Entität",
+          "description": "Zu aktualisierende Zonen; keine aktualisiert alle"
+        }
+      }
+    },
+    "set_seasonal_adjustment": {
+      "name": "Saisonale Anpassung setzen",
+      "description": "Legt eine saisonale Anpassung an, ändert eine über ihre ID oder entfernt eine über ihre ID mit „Entfernen“",
+      "fields": {
+        "adjustment_id": {
+          "name": "ID der Anpassung",
+          "description": "Die zu ändernde oder zu entfernende Anpassung; keine legt eine an"
+        },
+        "remove": {
+          "name": "Entfernen",
+          "description": "Die Anpassung mit dieser ID entfernen"
+        },
+        "name": {
+          "name": "Name",
+          "description": "Name der Anpassung"
+        },
+        "enabled": {
+          "name": "Aktiv",
+          "description": "Die Anpassung einschalten"
+        },
+        "month_start": {
+          "name": "Erster Monat",
+          "description": "Erster Monat (1–12)"
+        },
+        "month_end": {
+          "name": "Letzter Monat",
+          "description": "Letzter Monat (1–12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Multiplikator",
+          "description": "Faktor auf den Pflanzenfaktor der Zone"
+        },
+        "threshold_adjustment": {
+          "name": "Versatz des Schwellwerts",
+          "description": "Versatz des Schwellwerts in mm"
+        },
+        "zones": {
+          "name": "Zonen",
+          "description": "Zonen-IDs oder „all“"
+        }
+      }
     }
   },
   "issues": {
@@ -348,6 +418,14 @@
     "zone_not_calculated_no_sensor_group": {
       "title": "Zone {zone} lässt sich nicht berechnen: keine Sensorgruppe",
       "description": "Zone **{zone}** hat keine Sensorgruppe, deshalb gibt es nichts, woraus sie berechnet werden könnte, und sie wird nicht bewässert.\n\nWähle ihre Sensorgruppe auf ihrer Karte unter Zonen und berechne dann die Zone. Der Hinweis verschwindet von selbst bei der nächsten Berechnung, die gelingt."
+    },
+    "deprecated_action": {
+      "title": "Die Aktion {action} fällt weg",
+      "description": "Eine Automatisierung, ein Skript oder ein Dashboard hat **{action}** aufgerufen. Sie funktioniert noch, wird aber ab Version {version} entfernt, im Winter, außerhalb der Bewässerungszeit.\n\nNutze stattdessen **{replacement}**: Sie tut dasselbe, und für alle Zonen, wenn keine gewählt ist. Dieser Hinweis kommt mit jedem Aufruf des alten Namens wieder, bis keiner mehr übrig ist."
+    },
+    "deprecated_recurring_schedule": {
+      "title": "Wiederkehrende Zeitpläne fallen weg: {action}",
+      "description": "Eine Automatisierung, ein Skript oder ein Dashboard hat **{action}** aufgerufen. Wiederkehrende Zeitpläne funktionieren noch, werden aber ab Version {version} entfernt, im Winter, außerhalb der Bewässerungszeit.\n\nDie Zeitpläne der Programme tun dasselbe und stehen im Panel: Richte sie unter **Bewässerung** ein und entferne danach die wiederkehrenden Zeitpläne und die Aufrufe von {action}."
     }
   }
 }

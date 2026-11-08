@@ -1930,7 +1930,7 @@ function _e(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
           </div>
         </div>
       </ha-card>
-    `}async _clearSupplyFromZones(e){if(e&&this.hass){for(const t of this.zones.filter(t=>t.supply_id===e))try{await Ra(this.hass,Object.assign(Object.assign({},t),{supply_id:null}))}catch(e){console.error("Error clearing the supply of a zone:",e)}this.zones=this.zones.map(t=>t.supply_id===e?Object.assign(Object.assign({},t),{supply_id:null}):t)}}async _seasonalCall(e,t){if(this.hass){try{await this.hass.callService(ds,e,t)}catch(t){console.error("Seasonal adjustment "+e+" failed:",t)}await this._fetchData()}}renderSeasonalAdjustmentsCard(){if(!this.config||!this.hass||"advanced"!==this.config.ui_mode)return V``;const e=this.hass.language,t=t=>as(`seasonal_adjustments.${t}`,e),s=this.config.seasonal_adjustments||[],i=(e,t)=>this._seasonalCall("update_seasonal_adjustment",Object.assign({adjustment_id:e},t));return V`
+    `}async _clearSupplyFromZones(e){if(e&&this.hass){for(const t of this.zones.filter(t=>t.supply_id===e))try{await Ra(this.hass,Object.assign(Object.assign({},t),{supply_id:null}))}catch(e){console.error("Error clearing the supply of a zone:",e)}this.zones=this.zones.map(t=>t.supply_id===e?Object.assign(Object.assign({},t),{supply_id:null}):t)}}async _seasonalCall(e){if(this.hass){try{await this.hass.callService(ds,"set_seasonal_adjustment",e)}catch(e){console.error("Seasonal adjustment failed:",e)}await this._fetchData()}}renderSeasonalAdjustmentsCard(){if(!this.config||!this.hass||"advanced"!==this.config.ui_mode)return V``;const e=this.hass.language,t=t=>as(`seasonal_adjustments.${t}`,e),s=this.config.seasonal_adjustments||[],i=(e,t)=>this._seasonalCall(Object.assign({adjustment_id:e},t));return V`
       <ha-card header="${t("title")}">
         <div class="card-content">${t("description")}</div>
         ${s.map(e=>{var s,a,n;return V`
@@ -1950,7 +1950,7 @@ function _e(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
                 ></ha-switch>
               </div>
               <ha-button
-                @click=${()=>this._seasonalCall("delete_seasonal_adjustment",{adjustment_id:e.id})}
+                @click=${()=>this._seasonalCall({adjustment_id:e.id,remove:!0})}
               >
                 ${t("delete")}
               </ha-button>
@@ -1958,7 +1958,7 @@ function _e(e,t){return(t,s,i)=>((e,t,s)=>(s.configurable=!0,s.enumerable=!0,Ref
           `})}
         <div class="card-actions">
           <ha-button
-            @click=${()=>this._seasonalCall("create_seasonal_adjustment",{name:t("new_name"),month_start:6,month_end:8,multiplier_adjustment:1,threshold_adjustment:0,zones:"all",enabled:!0})}
+            @click=${()=>this._seasonalCall({name:t("new_name"),month_start:6,month_end:8,multiplier_adjustment:1,threshold_adjustment:0,zones:"all",enabled:!0})}
           >
             ${t("add")}
           </ha-button>
