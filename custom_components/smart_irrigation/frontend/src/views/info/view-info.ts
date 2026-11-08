@@ -171,6 +171,34 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
     navigate(this, this._href(page));
   }
 
+  /** ``text`` as a way to the page where it is set. */
+  private _setIn(page: string, text: unknown): TemplateResult {
+    return html`<a
+      class="set-in"
+      href=${this._href(page)}
+      @click=${(e: Event) => {
+        e.preventDefault();
+        this._open(page);
+      }}
+      >${text}</a
+    >`;
+  }
+
+  /**
+   * When the durations are worked out, in the words of the setting: the
+   * one "when" of a run that the card did not say (finding 11 of #982).
+   */
+  private _calculationWhen(): string {
+    const config = this.config;
+    if (config?.recalculate_before_start) {
+      return this.t("cards.next-run.calc-before-start");
+    }
+    if (config?.autocalcenabled) {
+      return this.t("cards.next-run.calc-daily", "{time}", config.calctime);
+    }
+    return this.t("cards.next-run.calc-manual");
+  }
+
   private get _lang(): string {
     return this.hass?.language ?? "en";
   }
@@ -612,15 +640,29 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
               >`
             : ""}
           ${bySchedules
-            ? html`<span>${this.t("cards.next-run.main-schedules")}</span>`
+            ? html`<span
+                >${this._setIn(
+                  "programs",
+                  this.t("cards.next-run.main-schedules"),
+                )}</span
+              >`
             : html`<span>
                 ${this.t("cards.next-run.labels.trigger")}:
-                ${info?.trigger_name ??
-                this.t("cards.next-run.trigger-default")}
+                ${this._setIn(
+                  // With the full controller the trigger is the main
+                  // program's, and is set with it.
+                  this.config?.full_controller ? "programs" : "general",
+                  info?.trigger_name ??
+                    this.t("cards.next-run.trigger-default"),
+                )}
                 ${info?.trigger_accounts_for_duration
                   ? `(${this.t("cards.next-run.accounts-for-duration")})`
                   : ""}
               </span>`}
+          <span
+            >${this.t("cards.next-run.labels.calculation")}:
+            ${this._setIn("general", this._calculationWhen())}</span
+          >
           ${zones.length
             ? html`<span
                 >${this.t("cards.next-run.labels.zones")}:
@@ -988,6 +1030,11 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       }
 
       .no-valve a {
+        color: var(--primary-color);
+      }
+
+      /* Each "when" of the run leads to where it is set (finding 11). */
+      .hero-detail a.set-in {
         color: var(--primary-color);
       }
 
