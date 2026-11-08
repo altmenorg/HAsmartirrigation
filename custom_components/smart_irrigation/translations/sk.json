@@ -161,42 +161,42 @@
       }
     },
     "set_zone": {
-      "name": "Set the values of a zone",
-      "description": "Set all configurable values of a zone",
+      "name": "Nastavte hodnoty zóny",
+      "description": "Nastavte všetky konfigurovateľné hodnoty zóny",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to set configuration values"
+          "name": "Entita",
+          "description": "Zóna na nastavenie konfiguračných hodnôt"
         },
         "new_bucket_value": {
-          "name": "New bucket value",
-          "description": "New value for the bucket"
+          "name": "Nová hodnota vedra",
+          "description": "Nová hodnota pre vedro"
         },
         "new_multiplier_value": {
-          "name": "New multiplier value",
-          "description": "New value for the multiplier"
+          "name": "Nová hodnota násobiteľa",
+          "description": "Nová hodnota násobiteľa"
         },
         "new_duration_value": {
-          "name": "New duration value",
-          "description": "New value for the duration"
+          "name": "Nová hodnota trvania",
+          "description": "Nová hodnota trvania"
         },
         "new_state_value": {
-          "name": "New state value",
-          "description": "New value of the state"
+          "name": "Nová hodnota stavu",
+          "description": "Nová hodnota štátu"
         },
         "new_throughput_value": {
-          "name": "New throughput value",
-          "description": "New value for the throughput"
+          "name": "Nová hodnota priepustnosti",
+          "description": "Nová hodnota priepustnosti"
         }
       }
     },
     "generate_watering_calendar": {
-      "name": "Generate watering calendar",
-      "description": "Generate a 12-month watering calendar for irrigation zones based on representative climate data",
+      "name": "Vygenerovať kalendár polievania",
+      "description": "Vygenerujte 12-mesačný kalendár zavlažovania pre zavlažovacie zóny na základe reprezentatívnych klimatických údajov.",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to generate watering calendar for"
+          "name": "Entita",
+          "description": "Zóna pre generovanie zavlažovacieho kalendára"
         }
       }
     },
@@ -212,19 +212,6 @@
     }
   },
   "entity": {
-    "number": {
-      "multiplier": {
-        "name": "Násobiteľ"
-      },
-      "precipitation_threshold": {
-        "name": "Prah zrážok"
-      }
-    },
-    "switch": {
-      "skip_on_precipitation": {
-        "name": "Vynechať pri zrážkach"
-      }
-    },
     "sensor": {
       "duration": {
         "name": "Čas"
@@ -249,6 +236,14 @@
       },
       "live_bucket": {
         "name": "Zásobník práve teraz"
+      }
+    },
+    "number": {
+      "multiplier": {
+        "name": "Násobiteľ"
+      },
+      "precipitation_threshold": {
+        "name": "Prah zrážok"
       }
     },
     "button": {
@@ -284,9 +279,22 @@
       "problem": {
         "name": "Problém"
       }
+    },
+    "switch": {
+      "skip_on_precipitation": {
+        "name": "Vynechať zrážky"
+      }
     }
   },
   "issues": {
+    "missing_input": {
+      "title": "Zóna {zone}: nebolo možné nič vypočítať",
+      "description": "Evapotranspiráciu zóny **{zone}** nebolo možné vypočítať, pretože v meteorologických údajoch chýbala hodnota pre: **{missing}**.\n\nKým sa táto hodnota nedoplní, deficit v zóne sa nemení a zavlažovanie sa nespúšťa – zóna sa teda správa, akoby zavlažovanie vôbec nepotrebovala.\n\nSkontrolujte, či sú senzory priradené k týmto údajom funkčné, prípadne či ich meteorologická služba stále poskytuje. Problém sa vyrieši pri nasledujúcom úspešnom výpočte."
+    },
+    "undersized_zone": {
+      "title": "Zóna {zone}: jeden cyklus zavlažovania nedokáže nahradiť stratu vody",
+      "description": "Najdlhší zavlažovací cyklus v zóne **{zone}** dodá približne **{capacity} mm** vody, avšak v období medzi dvoma zavlažovaniami ({days} deň/dni) táto zóna stratí približne **{need} mm**. Deficit bude naďalej narastať, pokiaľ sa nezmenia poveternostné podmienky. \n\nNastavený limit predstavuje maximálnu dĺžku zavlažovania pre danú zónu. Ak chcete tento limit zvýšiť, môžete pridať viac zavlažovacích prvkov (kvapkačov), zvýšiť prietok vody alebo skrátiť interval medzi jednotlivými zavlažovaniami. Ak je tento limit nastavený zámerne, môžete toto upozornenie ignorovať."
+    },
     "throughput_mismatch": {
       "title": "Zóna {zone}: meraný prietok nezodpovedá nastavenému",
       "description": "Za posledných {samples} zavlažovaní nameral prietokomer na zóne **{zone}** asi **{measured}**, pričom zóna je nastavená na **{configured}**, teda o {percentage}% vedľa.\n\nKaždý čas zavlažovania sa odvodzuje z nastaveného prietoku, takže sú všetky zlé približne rovnako.\n\nAk meranie vyzerá správne, nastavte prietok zóny naň. Ak nie, skontrolujte, či merač počíta len túto zónu a či je tlak v potrubí taký, aký očakávate. Smart Irrigation hodnotu nikdy nemení za vás."
