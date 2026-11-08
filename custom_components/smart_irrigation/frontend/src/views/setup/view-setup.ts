@@ -4,6 +4,7 @@ import { mdiArrowLeft, mdiArrowRight, mdiCheck } from "@mdi/js";
 import { HomeAssistant } from "custom-card-helpers";
 import { loadHaForm } from "../../load-ha-elements";
 import {
+  calculateZone,
   fetchAllModules,
   fetchConfig,
   fetchMappings,
@@ -11,6 +12,7 @@ import {
   fetchZones,
   saveMapping,
   saveZone,
+  updateZone,
 } from "../../data/websockets";
 
 import {
@@ -20,12 +22,14 @@ import {
 } from "../../types";
 import {
   engineModeLabel,
+  formatDuration,
   missingRequiredSources,
   navigate,
   output_unit,
   setupRainToAsk,
   setupSourcesForEt,
   setupZoneMethod,
+  splitChosen,
   suggestSources,
 } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
@@ -111,6 +115,9 @@ class SmartIrrigationViewSetup extends LitElement {
   @state() private done = false;
   // The zone the assistant created, for the way to it.
   @state() private createdZoneId?: number;
+
+  /** "Calculate now" on the last page: running, or what it came to. */
+  @state() private calcResult?: { busy?: boolean; text?: string; ok?: boolean };
 
   // The answers.
   @state() private zoneName = "";
@@ -294,8 +301,22 @@ class SmartIrrigationViewSetup extends LitElement {
             <div class="done">${this.t("done")}</div>
             <div class="note">${this.t("done-note-zone")}</div>
             <div class="note">${this.t(next)}</div>
+            ${this.calcResult?.text
+              ? html`<div class=${this.calcResult.ok ? "done-calc" : "error"}>
+                  ${this.calcResult.text}
+                </div>`
+              : ""}
           </div>
           <div class="card-actions">
+            ${this.weather !== "static" && this.createdZoneId != undefined
+              ? html`<ha-button
+                  appearance="accent"
+                  .disabled=${!!this.calcResult?.busy}
+                  @click=${() => this._calculateNow()}
+                >
+                  ${this.t("calc-now")}
+                </ha-button>`
+              : ""}
             ${this.createdZoneId != undefined
               ? html`<ha-button
                   appearance="filled"
@@ -602,13 +623,31 @@ class SmartIrrigationViewSetup extends LitElement {
                       .map((s) => `${this.sourceName(s)}: ${this.sensors[s]}`),
                   ].join(", ")
                 : this.sensorsToAsk.length
-                  ? this.sensorsToAsk.map((s) => this.sourceName(s)).join(", ")
+                  ? this.reviewSensors()
                   : this.t("steps.review.from-the-service")}
           </div>
         </div>
       </div>
       <div class="note">${this.t("steps.review.help")}</div>
     `;
+  }
+
+  /**
+   * The sources a sensor was chosen for, then those left without one: the
+   * review listed every field asked, the empty ones too.
+   */
+  private reviewSensors(): string {
+    const { chosen, empty } = splitChosen(this.sensorsToAsk, this.sensors);
+    const names = (sources: string[]) =>
+      sources.map((s) => this.sourceName(s)).join(", ");
+    return [
+      names(chosen),
+      empty.length
+        ? `${this.t("steps.review.no-sensor")}: ${names(empty)}`
+        : "",
+    ]
+      .filter(Boolean)
+      .join("; ");
   }
 
   /** "(optional, suggested)" after a field's name, or nothing. */
@@ -738,10 +777,60 @@ class SmartIrrigationViewSetup extends LitElement {
     }
   }
 
+  /**
+   * Read the zone's weather and calculate it, as its own buttons do, and say
+   * what came of it. The last page asked for exactly that, without a button:
+   * on the sensors path the readings are there the moment the zone is.
+   */
+  private async _calculateNow(): Promise<void> {
+    if (!this.hass || this.createdZoneId == undefined) return;
+    const id = String(this.createdZoneId);
+    this.calcResult = { busy: true };
+    try {
+      await updateZone(this.hass, id);
+      await calculateZone(this.hass, id);
+      const zone = (await fetchZones(this.hass)).find(
+        (z) => String(z.id) === id,
+      ) as any;
+      const code = zone?.calculation_problem?.code;
+      if (code) {
+        const said = localize(
+          `panels.zones.status.problem.${code}`,
+          this.lng,
+          "{detail}",
+          zone.calculation_problem.detail ?? "",
+        );
+        this.calcResult = {
+          ok: false,
+          text:
+            said && !said.startsWith("Translation")
+              ? said
+              : this.t("calc-failed"),
+        };
+      } else if ((zone?.duration ?? 0) > 0) {
+        this.calcResult = {
+          ok: true,
+          text: localize(
+            "panels.setup.calc-duration",
+            this.lng,
+            "{duration}",
+            formatDuration(zone.duration),
+          ),
+        };
+      } else {
+        this.calcResult = { ok: true, text: this.t("calc-nothing") };
+      }
+    } catch (e) {
+      console.error("Setup wizard: could not calculate the zone", e);
+      this.calcResult = { ok: false, text: this.t("calc-failed") };
+    }
+  }
+
   /** Back to the first question, for another zone. */
   private _startOver(): void {
     this.done = false;
     this.createdZoneId = undefined;
+    this.calcResult = undefined;
     this.step = 0;
     this.error = undefined;
     this.zoneName = "";
@@ -857,6 +946,11 @@ class SmartIrrigationViewSetup extends LitElement {
         color: var(--error-color, #b71c1c);
         margin-top: 8px;
       }
+      .done-calc {
+        margin-top: 8px;
+        color: var(--success-color, #43a047);
+      }
+
       .done {
         font-size: 1.1em;
         font-weight: 600;

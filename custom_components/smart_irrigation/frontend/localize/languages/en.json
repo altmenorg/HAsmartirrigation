@@ -156,14 +156,19 @@
           "engine": "Module",
           "sources": "Sources",
           "from-the-service": "from the weather service",
+          "no-sensor": "no sensor",
           "help": "This creates a calculation module, a sensor group and a zone, exactly as the other tabs would. Nothing is locked afterwards."
         }
       },
       "step": "step",
       "done-note-zone": "It appears under Zones, with its sensor group under Sensor groups. Nothing here is special: edit either of them as you would any other.",
       "done-next-static": "With a fixed amount per day it needs no readings: the next calculation works out what it is short of.",
-      "done-next-service": "Its weather comes from the weather service: once the service has reported, an update and a calculation give the zone a duration.",
-      "done-next-sensors": "Run an update and a calculation once your sensors have reported, and the zone will start producing a duration.",
+      "done-next-service": "Its weather comes from the weather service, its duration with the first calculation. Calculate now fetches the weather and calculates the zone at once.",
+      "done-next-sensors": "Its duration comes with the first calculation. Calculate now reads your sensors and calculates the zone at once.",
+      "calc-now": "Calculate now",
+      "calc-duration": "Calculated: it waters {duration} at the next start.",
+      "calc-nothing": "Calculated: it is not short of water yet.",
+      "calc-failed": "The calculation did not work. The zone says why under Zones.",
       "open-zone": "Open the zone",
       "another": "Set up another zone"
     },
@@ -453,7 +458,8 @@
         },
         "no_valve_path": {
           "title": "Nothing here opens a valve",
-          "body": "Smart Irrigation calculates how long to water; something has to act on it. Either link a valve to a zone and turn on direct valve control, or write an automation on the start event (the blueprints do this for you). If an automation already does it, there is nothing to change."
+          "body": "Smart Irrigation calculates how long to water; something has to act on it. Either turn on direct valve control under Settings and then link a valve to each zone, or write an automation on the start event (the blueprints do this for you). If an automation already does it, there is nothing to change.",
+          "action": "To valve control"
         }
       }
     },
@@ -524,6 +530,7 @@
           "sources": {
             "none": "None",
             "none_et": "None (Smart Irrigation calculates it)",
+            "none_estimated": "None (estimated)",
             "weather_service": "Weather service",
             "weather_service_et": "Ready-made ET₀ from the weather service",
             "sensor": "Sensor",
@@ -665,6 +672,8 @@
         "drainage_rate": "Drainage rate",
         "linked-entity": "Linked valve/switch",
         "linked-entity-hint": "The valve or switch that waters this zone. With direct valve control, Smart Irrigation opens and closes it. With observed watering, every run of it (by hand, an automation or Smart Irrigation) credits the water balance from run time and throughput.",
+        "valve-off": "A valve can be linked once direct valve control or observed watering is on.",
+        "valve-off-link": "Turn on",
         "supply": "Pump or main valve",
         "supply-none": "None",
         "measured-flow-help": "Over several runs the zone's flow meter measured a flow that differs from the one set above. It is advice, never applied on its own.",
@@ -1175,7 +1184,8 @@
     "effective_rain_label": "Count only rain that reaches the roots",
     "effective_rain_description": "Ignore a shower smaller than a fifth of the evapotranspiration of the period: it wets the leaves and evaporates. It is judged on the whole period between two calculations.",
     "forecast_label": "Take the forecast rain into account",
-    "forecast_description": "Below the threshold, each zone gets its deficit less the rain forecast for 24 hours, weighted by its probability: 4 mm forecast against a 10 mm deficit waters 6 mm. At or above it, zones in the open are skipped. Greenhouse zones are not affected."
+    "forecast_description": "Below the threshold, each zone gets its deficit less the rain forecast for 24 hours, weighted by its probability: 4 mm forecast against a 10 mm deficit waters 6 mm. At or above it, zones in the open are skipped. Greenhouse zones are not affected.",
+    "forecast_set_up_service": "Set up a weather service"
   },
   "coordinate_config": {
     "title": "Location coordinates",

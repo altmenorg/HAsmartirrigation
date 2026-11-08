@@ -1,4 +1,11 @@
-import { CSSResultGroup, LitElement, TemplateResult, css, html } from "lit";
+import {
+  CSSResultGroup,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+  css,
+  html,
+} from "lit";
 import { property, customElement } from "lit/decorators.js";
 import { HomeAssistant, fireEvent } from "custom-card-helpers";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -293,6 +300,24 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       ticks += 1;
       this._fetchLive(ticks % 6 === 0);
     }, 5000);
+  }
+
+  /** The section a link asked for ("…/general/at/control"), once shown. */
+  private _scrolledTo?: string;
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    const wanted = this.path?.params?.at;
+    if (!wanted || wanted === this._scrolledTo) return;
+    if (!this.shadowRoot?.querySelector(`#section-${wanted}`)) return;
+    this._scrolledTo = wanted;
+    // The cards above it are still filling in, and move it down as they do:
+    // scroll once they have.
+    window.setTimeout(() => {
+      this.shadowRoot
+        ?.querySelector(`#section-${wanted}`)
+        ?.scrollIntoView({ block: "start" });
+    }, 400);
   }
 
   firstUpdated() {
@@ -668,7 +693,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         system: "mdi:cog-outline",
       };
       const heading = (key: string) =>
-        html`<div class="settings-section">
+        html`<div class="settings-section" id="section-${key}">
           <ha-icon icon=${icons[key]}></ha-icon>
           <div>
             <h2>${localize(`panels.general.sections.${key}`, lang)}</h2>
@@ -2855,9 +2880,29 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   this.hass.language,
                 )}
               </div>
+              ${this.config.use_weather_service
+                ? ""
+                : html`<div class="setting-hint">
+                    <a
+                      href="/${DOMAIN}/weatherservice"
+                      @click=${(e: Event) => {
+                        e.preventDefault();
+                        navigate(this, `/${DOMAIN}/weatherservice`);
+                      }}
+                      >${localize(
+                        "weather_skip.forecast_set_up_service",
+                        this.hass.language,
+                      )}</a
+                    >
+                  </div>`}
             </div>
             <ha-switch
               .checked=${!!(
+                this.config.skip_irrigation_on_precipitation ||
+                this.config.forecast_rain_credit
+              )}
+              .disabled=${!this.config.use_weather_service &&
+              !(
                 this.config.skip_irrigation_on_precipitation ||
                 this.config.forecast_rain_credit
               )}

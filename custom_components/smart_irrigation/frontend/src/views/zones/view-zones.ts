@@ -1665,7 +1665,26 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           lang,
                         ),
                       )}`
-                  : ""}
+                  : html`<div class="setting-row" id="zone-${zone.id}-valve">
+                      <div class="setting-label">
+                        ${localize("panels.zones.labels.linked-entity", lang)}
+                        <div class="setting-hint">
+                          ${localize("panels.zones.labels.valve-off", lang)}
+                        </div>
+                      </div>
+                      <a
+                        class="valve-off-link"
+                        href="/${DOMAIN}/general/at/control"
+                        @click=${(e: Event) => {
+                          e.preventDefault();
+                          navigate(this, `/${DOMAIN}/general/at/control`);
+                        }}
+                        >${localize(
+                          "panels.zones.labels.valve-off-link",
+                          lang,
+                        )}</a
+                      >
+                    </div>`}
                 ${this.config?.full_controller && zone.linked_entity
                   ? this._entitiesRows(
                       localize("panels.zones.labels.extra-valves", lang),
@@ -3059,6 +3078,11 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
       .zone-status--problem ha-icon {
         color: var(--error-color, #db4437);
+      }
+
+      .valve-off-link {
+        color: var(--primary-color);
+        white-space: nowrap;
       }
 
       .zone-status-link {

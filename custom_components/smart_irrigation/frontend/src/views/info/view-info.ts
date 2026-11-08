@@ -415,6 +415,13 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
             <div class="info-note">${this.t(`gaps.${gap}.body`)}</div>
           </div>
         </div>
+        ${gap === "no_valve_path"
+          ? html`<div class="card-actions">
+              <ha-button @click=${() => this._open("general/at/control")}>
+                ${this.t("gaps.no_valve_path.action")}
+              </ha-button>
+            </div>`
+          : ""}
       </ha-card>
     `;
   }

@@ -74,6 +74,7 @@ import {
   getOptionsForMappingType,
   handleError,
   newGroupSource,
+  noneAllowed,
   visibleGroups,
 } from "../../helpers";
 import {
@@ -654,6 +655,20 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     return engine?.consumes ?? null;
   }
 
+  /**
+   * The sources this group's engine cannot do without, or null when that is
+   * not known (no engine yet): then nothing is offered as optional.
+   */
+  private requiredSources(
+    mapping: SmartIrrigationMapping | undefined,
+  ): string[] | null {
+    if (!mapping || mapping.module === undefined || mapping.module === null) {
+      return null;
+    }
+    const engine = this.modules.find((m) => m.id === mapping.module);
+    return engine?.requires ?? null;
+  }
+
   private renderMapping(
     mapping: SmartIrrigationMapping,
     index: number,
@@ -945,8 +960,20 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         currentSource === MAPPING_CONF_SOURCE_WEATHER_SERVICE);
     // The rain rate of a weather entity has nothing to come from until a
     // sensor is chosen, which is what None says.
+    // A source the group's engine can do without (the assistant leaves such
+    // fields empty) can be None too, and a source already on None keeps
+    // showing it: without the option the select showed "Sensor", with no
+    // sensor behind it.
+    const required = this.requiredSources(this.mappings[index]);
+    const optional = required !== null && !required.includes(value);
     const offerNone =
-      isSpecialMapping || isPrecipitationDepth || serviceWithoutRain;
+      isSpecialMapping ||
+      isPrecipitationDepth ||
+      serviceWithoutRain ||
+      noneAllowed(value, currentSource, required);
+    const isRain =
+      value === MAPPING_PRECIPITATION ||
+      value === MAPPING_CURRENT_PRECIPITATION;
     // Every zone of the group waits for a ready-made evapotranspiration: None
     // would leave them without one, so it cannot be chosen (a group already on
     // None keeps showing it, and the note says what is missing).
@@ -988,7 +1015,9 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
             ${localize(
               value === MAPPING_EVAPOTRANSPIRATION
                 ? "panels.mappings.cards.mapping.sources.none_et"
-                : "panels.mappings.cards.mapping.sources.none",
+                : optional && !isRain
+                  ? "panels.mappings.cards.mapping.sources.none_estimated"
+                  : "panels.mappings.cards.mapping.sources.none",
               this.hass.language,
             )}
           </option>`

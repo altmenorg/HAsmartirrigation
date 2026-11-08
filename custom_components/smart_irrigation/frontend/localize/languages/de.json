@@ -156,14 +156,19 @@
           "engine": "Modul",
           "sources": "Quellen",
           "from-the-service": "vom Wetterdienst",
+          "no-sensor": "ohne Sensor",
           "help": "Damit werden ein Berechnungsmodul, eine Sensorgruppe und eine Zone erstellt, genau wie über die anderen Tabs. Danach ist nichts festgeschrieben."
         }
       },
       "step": "Schritt",
       "done-note-zone": "Sie erscheint unter Zonen, ihre Sensorgruppe unter Sensorgruppen. Nichts daran ist besonders: Bearbeite beide wie alle anderen.",
       "done-next-static": "Mit einem festen Betrag pro Tag braucht sie keine Messwerte: Die nächste Berechnung ermittelt, was ihr fehlt.",
-      "done-next-service": "Ihr Wetter kommt vom Wetterdienst: Sobald er gemeldet hat, liefern eine Aktualisierung und eine Berechnung die Dauer der Zone.",
-      "done-next-sensors": "Führe eine Aktualisierung und eine Berechnung aus, sobald deine Sensoren gemeldet haben, dann liefert die Zone eine Dauer.",
+      "done-next-service": "Ihr Wetter kommt vom Wetterdienst, ihre Dauer mit der ersten Berechnung. „Jetzt berechnen“ holt das Wetter und berechnet die Zone sofort.",
+      "done-next-sensors": "Ihre Dauer kommt mit der ersten Berechnung. „Jetzt berechnen“ liest deine Sensoren und berechnet die Zone sofort.",
+      "calc-now": "Jetzt berechnen",
+      "calc-duration": "Berechnet: Sie bewässert {duration} beim nächsten Start.",
+      "calc-nothing": "Berechnet: Ihr fehlt noch kein Wasser.",
+      "calc-failed": "Die Berechnung hat nicht geklappt. Unter Zonen steht an der Zone, warum.",
       "open-zone": "Zur Zone",
       "another": "Noch eine Zone anlegen"
     },
@@ -453,7 +458,8 @@
         },
         "no_valve_path": {
           "title": "Hier öffnet nichts ein Ventil",
-          "body": "Smart Irrigation berechnet, wie lange bewässert wird; etwas muss danach handeln. Verknüpfe ein Ventil mit einer Zone und schalte die direkte Ventilsteuerung ein, oder reagiere per Automatisierung auf das Startereignis (die Blueprints tun das). Tut das schon eine Automatisierung, bleibt alles."
+          "body": "Smart Irrigation berechnet, wie lange bewässert wird; etwas muss danach handeln. Schalte unter Einstellungen die direkte Ventilsteuerung ein und verknüpfe dann je Zone ein Ventil, oder reagiere per Automatisierung auf das Startereignis (die Blueprints tun das). Tut das schon eine Automatisierung, bleibt alles.",
+          "action": "Zur Ventilsteuerung"
         }
       }
     },
@@ -524,6 +530,7 @@
           "sources": {
             "none": "Keine",
             "none_et": "Keine (Smart Irrigation berechnet sie)",
+            "none_estimated": "Keine (wird geschätzt)",
             "weather_service": "Wetterdienst",
             "weather_service_et": "Fertige ET₀ vom Wetterdienst",
             "sensor": "Sensor",
@@ -665,6 +672,8 @@
         "drainage_rate": "Entwässerungsrate",
         "linked-entity": "Verknüpftes Ventil/Schalter",
         "linked-entity-hint": "Das Ventil oder der Schalter dieser Zone. Mit direkter Ventilsteuerung öffnet und schließt Smart Irrigation es. Mit beobachteter Bewässerung schreibt jeder Lauf (von Hand, per Automatisierung oder durch Smart Irrigation) der Wasserbilanz Laufzeit mal Durchfluss gut.",
+        "valve-off": "Ein Ventil lässt sich verknüpfen, sobald die direkte Ventilsteuerung oder die beobachtete Bewässerung an ist.",
+        "valve-off-link": "Einschalten",
         "supply": "Pumpe oder Hauptventil",
         "supply-none": "Keine",
         "measured-flow-help": "Über mehrere Läufe hat der Durchflusszähler der Zone einen Durchfluss gemessen, der vom oben eingestellten abweicht. Das ist nur ein Hinweis und wird nie von selbst übernommen.",
@@ -1175,7 +1184,8 @@
     "effective_rain_label": "Nur Regen zählen, der die Wurzeln erreicht",
     "effective_rain_description": "Einen Schauer ignorieren, der kleiner ist als ein Fünftel der Verdunstung des Zeitraums: Er benetzt die Blätter und verdunstet. Beurteilt wird über den gesamten Zeitraum zwischen zwei Berechnungen.",
     "forecast_label": "Vorhergesagten Regen berücksichtigen",
-    "forecast_description": "Unter der Schwelle bekommt jede Zone ihr Defizit abzüglich des für 24 Stunden vorhergesagten Regens, gewichtet mit seiner Wahrscheinlichkeit: 4 mm Vorhersage bei 10 mm Defizit ergeben 6 mm. Ab der Schwelle setzen Zonen im Freien aus. Zonen im Gewächshaus sind nicht betroffen."
+    "forecast_description": "Unter der Schwelle bekommt jede Zone ihr Defizit abzüglich des für 24 Stunden vorhergesagten Regens, gewichtet mit seiner Wahrscheinlichkeit: 4 mm Vorhersage bei 10 mm Defizit ergeben 6 mm. Ab der Schwelle setzen Zonen im Freien aus. Zonen im Gewächshaus sind nicht betroffen.",
+    "forecast_set_up_service": "Wetterdienst einrichten"
   },
   "coordinate_config": {
     "title": "Standortkoordinaten",
