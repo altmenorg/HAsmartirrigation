@@ -35,6 +35,7 @@ import {
   visibleGroups,
   setupRainToAsk,
   setupSourcesForEt,
+  suggestSources,
   setupZoneMethod,
 } from "./helpers";
 
@@ -519,5 +520,116 @@ describe("displayName", () => {
 
   it("falls back to the id for an item without a name", () => {
     expect(displayName({ id: 3, name: "" }, groups)).toBe("#3");
+  });
+});
+
+describe("suggestSources", () => {
+  const sensor = (device_class: string, friendly_name = "") => ({
+    attributes: { device_class, friendly_name },
+  });
+  const ALL = [
+    MAPPING_TEMPERATURE,
+    MAPPING_DEWPOINT,
+    MAPPING_HUMIDITY,
+    MAPPING_PRESSURE,
+    MAPPING_WINDSPEED,
+    MAPPING_SOLRAD,
+    MAPPING_PRECIPITATION,
+  ];
+
+  it("suggests the one sensor of each class (the test HA's DWD sensors)", () => {
+    const states = {
+      "sensor.nuernberg_temperatur": sensor("temperature"),
+      "sensor.nuernberg_luftfeuchte": sensor("humidity"),
+      "sensor.nuernberg_wind": sensor("wind_speed"),
+      "sensor.nuernberg_niederschlag": sensor("precipitation"),
+      "sensor.nuernberg_globalstrahlung": sensor("irradiance"),
+      "sensor.hecke_bodenfeuchte": sensor("moisture"),
+    };
+    expect(suggestSources(ALL, states)).toEqual({
+      [MAPPING_TEMPERATURE]: "sensor.nuernberg_temperatur",
+      [MAPPING_HUMIDITY]: "sensor.nuernberg_luftfeuchte",
+      [MAPPING_WINDSPEED]: "sensor.nuernberg_wind",
+      [MAPPING_PRECIPITATION]: "sensor.nuernberg_niederschlag",
+      [MAPPING_SOLRAD]: "sensor.nuernberg_globalstrahlung",
+    });
+  });
+
+  it("tells the dew point from the temperature by its name", () => {
+    const states = {
+      "sensor.station_temperature": sensor("temperature"),
+      "sensor.station_dew_point": sensor("temperature"),
+    };
+    expect(
+      suggestSources([MAPPING_TEMPERATURE, MAPPING_DEWPOINT], states),
+    ).toEqual({
+      [MAPPING_TEMPERATURE]: "sensor.station_temperature",
+      [MAPPING_DEWPOINT]: "sensor.station_dew_point",
+    });
+  });
+
+  it("among several, takes the one of the station the outdoor sensors belong to", () => {
+    const states = {
+      "sensor.living_room_temperature": sensor("temperature"),
+      "sensor.garden_temperature": sensor("temperature"),
+      "sensor.bathroom_humidity": sensor("humidity"),
+      "sensor.garden_humidity": sensor("humidity"),
+      "sensor.garden_wind": sensor("wind_speed"),
+    };
+    const entities = {
+      "sensor.garden_temperature": { device_id: "station" },
+      "sensor.garden_humidity": { device_id: "station" },
+      "sensor.garden_wind": { device_id: "station" },
+      "sensor.living_room_temperature": { device_id: "thermostat" },
+      "sensor.bathroom_humidity": { device_id: "fan" },
+    };
+    expect(
+      suggestSources([MAPPING_TEMPERATURE, MAPPING_HUMIDITY], states, entities),
+    ).toEqual({
+      [MAPPING_TEMPERATURE]: "sensor.garden_temperature",
+      [MAPPING_HUMIDITY]: "sensor.garden_humidity",
+    });
+  });
+
+  it("without devices, a station is the start of the entity ids", () => {
+    const states = {
+      "sensor.kwl_temperatur_aussen": sensor("temperature"),
+      "sensor.dwd_temperatur": sensor("temperature"),
+      "sensor.dwd_wind": sensor("wind_speed"),
+    };
+    expect(suggestSources([MAPPING_TEMPERATURE], states)).toEqual({
+      [MAPPING_TEMPERATURE]: "sensor.dwd_temperatur",
+    });
+  });
+
+  it("suggests nothing when it can't tell", () => {
+    const states = {
+      "sensor.kitchen_temperature": sensor("temperature"),
+      "sensor.office_temperature": sensor("temperature"),
+    };
+    expect(suggestSources([MAPPING_TEMPERATURE], states)).toEqual({});
+  });
+
+  it("leaves out the integration's own sensors and sensors without a class", () => {
+    const states = {
+      "sensor.smart_irrigation_lawn": sensor("precipitation"),
+      "sensor.garden_rain": sensor("precipitation"),
+      "sensor.template_temperature": { attributes: {} },
+    };
+    const entities = {
+      "sensor.smart_irrigation_lawn": { platform: "smart_irrigation" },
+    };
+    expect(
+      suggestSources(
+        [MAPPING_PRECIPITATION, MAPPING_TEMPERATURE],
+        states,
+        entities,
+      ),
+    ).toEqual({ [MAPPING_PRECIPITATION]: "sensor.garden_rain" });
+  });
+
+  it("only answers for the sources asked", () => {
+    const states = { "sensor.garden_wind": sensor("wind_speed") };
+    expect(suggestSources([MAPPING_TEMPERATURE], states)).toEqual({});
   });
 });

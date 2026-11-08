@@ -26,6 +26,7 @@ import {
   setupRainToAsk,
   setupSourcesForEt,
   setupZoneMethod,
+  suggestSources,
 } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
@@ -118,6 +119,8 @@ class SmartIrrigationViewSetup extends LitElement {
   @state() private underGlass = false;
   @state() private weather: WeatherAnswer = "service";
   @state() private sensors: Record<string, string> = {};
+  // The fields the assistant filled in itself, until the user changes them.
+  @state() private suggested: string[] = [];
   @state() private staticDelta = "";
   @state() private serviceSuppliesEt = false;
   // A weather entity as the service reports no rain that fell: the rain is
@@ -352,6 +355,7 @@ class SmartIrrigationViewSetup extends LitElement {
                   @click=${() => {
                     this.step += 1;
                     this.error = undefined;
+                    if (this.currentStep === "sensors") this._suggestSensors();
                   }}
                 >
                   ${this.t("next")}
@@ -530,6 +534,11 @@ class SmartIrrigationViewSetup extends LitElement {
             ${this.t("steps.sensors.rain-help-entity")}
           </div>`
         : ""}
+      ${this.suggested.length
+        ? html`<div class="note">
+            ${this.t("steps.sensors.suggested-note")}
+          </div>`
+        : ""}
       ${this.underGlass && this.sensorsToAsk.includes(MAPPING_SOLRAD)
         ? html`<div class="note">${this.t("steps.sensors.lux-hint")}</div>`
         : ""}
@@ -537,11 +546,7 @@ class SmartIrrigationViewSetup extends LitElement {
         (source) => html`
           <div class="setting-row">
             <div class="setting-label">
-              ${this.sourceName(source)}${this.optionalToAsk.includes(source)
-                ? html` <span class="step-count"
-                    >(${this.t("steps.sensors.optional")})</span
-                  >`
-                : ""}
+              ${this.sourceName(source)}${this.fieldTags(source)}
             </div>
             <ha-entity-picker
               class="entity-field"
@@ -553,6 +558,7 @@ class SmartIrrigationViewSetup extends LitElement {
                   ...this.sensors,
                   [source]: e.detail?.value ?? "",
                 };
+                this.suggested = this.suggested.filter((s) => s !== source);
               }}
             ></ha-entity-picker>
           </div>
@@ -603,6 +609,21 @@ class SmartIrrigationViewSetup extends LitElement {
       </div>
       <div class="note">${this.t("steps.review.help")}</div>
     `;
+  }
+
+  /** "(optional, suggested)" after a field's name, or nothing. */
+  private fieldTags(source: string): TemplateResult | string {
+    const tags = [
+      ...(this.optionalToAsk.includes(source)
+        ? [this.t("steps.sensors.optional")]
+        : []),
+      ...(this.suggested.includes(source)
+        ? [this.t("steps.sensors.suggested")]
+        : []),
+    ];
+    return tags.length
+      ? html` <span class="step-count">(${tags.join(", ")})</span>`
+      : "";
   }
 
   private choice(
@@ -729,7 +750,35 @@ class SmartIrrigationViewSetup extends LitElement {
     this.underGlass = false;
     this.weather = this.usesWeatherService ? "service" : "sensors";
     this.sensors = {};
+    this.suggested = [];
     this.staticDelta = "";
+  }
+
+  /**
+   * Fill the empty fields of the sensors step with the sensors this Home
+   * Assistant has, where only one fits (see suggestSources). Nothing the
+   * user picked is replaced. Not on the weather-service path: the rain asked
+   * for there must be measured, and a weather integration's own rain sensors
+   * can be a nowcast.
+   */
+  private _suggestSensors(): void {
+    if (!this.hass || (this.weather !== "sensors" && this.weather !== "et"))
+      return;
+    const empty = this.sensorsToAsk.filter((s) => !this.sensors[s]);
+    if (!empty.length) return;
+    const registry = (
+      this.hass as unknown as {
+        entities?: Record<string, { device_id?: string; platform?: string }>;
+      }
+    ).entities;
+    const found = suggestSources(empty, this.hass.states, registry ?? {});
+    const filled = Object.keys(found);
+    if (!filled.length) return;
+    this.sensors = { ...this.sensors, ...found };
+    this.suggested = [
+      ...this.suggested.filter((s) => !filled.includes(s)),
+      ...filled,
+    ];
   }
 
   static get styles(): CSSResultGroup {
