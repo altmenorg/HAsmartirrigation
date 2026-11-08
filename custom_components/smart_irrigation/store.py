@@ -1458,7 +1458,7 @@ class SmartIrrigationStorage:
             await self.async_factory_default_zones()
         if not self.modules:
             await self.async_factory_default_modules()
-        if not self.mappings:
+        if not self.mappings and self.weather_service_in_use():
             await self.async_factory_default_mappings()
 
     async def async_factory_default_zones(self):
@@ -1516,7 +1516,18 @@ class SmartIrrigationStorage:
         self.async_schedule_save()
 
     async def async_factory_default_mappings(self):
-        """Set up factory default mappings if none exist."""
+        """Set up the default sensor group, reading from the weather service.
+
+        Only with a weather service in use: without one, every source of the
+        group would be a sensor nobody chose, a group that looks set up and
+        never delivers anything. A fresh install has no service yet, so it
+        starts without a group; the assistant creates one with the zone, and
+        turning on a weather service later brings this one when the
+        integration reloads and there's no group.
+        """
+        service = self.weather_service_in_use()
+        if not service:
+            return
         mappings = [
             MAPPING_DEWPOINT,
             MAPPING_EVAPOTRANSPIRATION,
@@ -1529,11 +1540,7 @@ class SmartIrrigationStorage:
             MAPPING_WINDSPEED,
         ]
         conf = {
-            mapping_key: default_mapping_entry(
-                mapping_key,
-                self.config.use_weather_service,
-                self.weather_service_in_use(),
-            )
+            mapping_key: default_mapping_entry(mapping_key, True, service)
             for mapping_key in mappings
         }
         new_mapping1 = MappingEntry(
