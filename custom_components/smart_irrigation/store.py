@@ -93,6 +93,7 @@ from .const import (
     CONF_IRRIGATION_ENABLED,
     CONF_IRRIGATION_START_TRIGGERS,
     CONF_IU_IMPORT,
+    CONF_LAST_ZONE_ID,
     CONF_MANUAL_COORDINATES_ENABLED,
     CONF_MANUAL_ELEVATION,
     CONF_MANUAL_LATITUDE,
@@ -761,6 +762,12 @@ class Config:
     iu_import = attr.ib(type=dict, default=None)
     # Direct valve control as it was before the full controller forced it on.
     direct_valve_control_before_full_controller = attr.ib(type=bool, default=None)
+    # The highest zone id ever given. A new zone took the highest id in use
+    # plus one, so deleting the last zone and adding one gave the new zone the
+    # deleted one's id, and with it the deleted zone's entities: Home
+    # Assistant brings a deleted entity back, entity id and history, when its
+    # unique id comes back.
+    last_zone_id = attr.ib(type=int, default=None)
 
 
 class MigratableStore(Store):
@@ -1276,6 +1283,7 @@ class SmartIrrigationStorage:
                 direct_valve_control_before_full_controller=data["config"].get(
                     CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER
                 ),
+                last_zone_id=data["config"].get(CONF_LAST_ZONE_ID),
             )
 
             if "zones" in data:
@@ -1450,7 +1458,7 @@ class SmartIrrigationStorage:
             await self.async_factory_default_zones()
         if not self.modules:
             await self.async_factory_default_modules()
-        if not self.mappings:
+        if not self.mappings and self.weather_service_in_use():
             await self.async_factory_default_mappings()
 
     async def async_factory_default_zones(self):
@@ -1508,7 +1516,18 @@ class SmartIrrigationStorage:
         self.async_schedule_save()
 
     async def async_factory_default_mappings(self):
-        """Set up factory default mappings if none exist."""
+        """Set up the default sensor group, reading from the weather service.
+
+        Only with a weather service in use: without one, every source of the
+        group would be a sensor nobody chose, a group that looks set up and
+        never delivers anything. A fresh install has no service yet, so it
+        starts without a group; the assistant creates one with the zone, and
+        turning on a weather service later brings this one when the
+        integration reloads and there's no group.
+        """
+        service = self.weather_service_in_use()
+        if not service:
+            return
         mappings = [
             MAPPING_DEWPOINT,
             MAPPING_EVAPOTRANSPIRATION,
@@ -1521,11 +1540,7 @@ class SmartIrrigationStorage:
             MAPPING_WINDSPEED,
         ]
         conf = {
-            mapping_key: default_mapping_entry(
-                mapping_key,
-                self.config.use_weather_service,
-                self.weather_service_in_use(),
-            )
+            mapping_key: default_mapping_entry(mapping_key, True, service)
             for mapping_key in mappings
         }
         new_mapping1 = MappingEntry(
@@ -1664,10 +1679,17 @@ class SmartIrrigationStorage:
         # zone_id = str(int(time.time()))
         # new_zone = ZoneEntry(**data, id=zone_id)
         new_zone = ZoneEntry(**data)
+        last = self.config.last_zone_id
         if not new_zone.id:
             zones = await self.async_get_zones()
-            new_zone = attr.evolve(new_zone, id=self.generate_next_id(zones))
-        self.zones[int(new_zone.id)] = new_zone
+            next_id = self.generate_next_id(zones)
+            if isinstance(last, int) and last >= next_id:
+                next_id = last + 1
+            new_zone = attr.evolve(new_zone, id=next_id)
+        zone_id = int(new_zone.id)
+        if not isinstance(last, int) or zone_id > last:
+            self.config = attr.evolve(self.config, last_zone_id=zone_id)
+        self.zones[zone_id] = new_zone
         self.async_schedule_save()
         return attr.asdict(new_zone)
 
