@@ -12,6 +12,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import (
     async_dispatcher_connect,
 )
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
@@ -545,6 +546,13 @@ class SmartIrrigationZoneEntity(SensorEntity, RestoreEntity):
         _LOGGER.debug("%s is removed from hass", self.entity_id)
 
 
+# Child sensors that repeat an attribute of the duration sensor and that few
+# dashboards show: diagnostic, and left disabled on a zone created from now
+# on. Enabling one in the entity settings brings it back; an existing zone
+# keeps them as they are, the entity registry remembers (finding 22 of #982).
+DUPLICATE_DIAGNOSTIC_SUFFIXES = ("et_value", "et_deficiency", "current_drainage")
+
+
 class SmartIrrigationZoneChildSensor(SensorEntity):
     """Read-only per-zone sensor exposing one stored value (depth, in mm/inch).
 
@@ -573,6 +581,9 @@ class SmartIrrigationZoneChildSensor(SensorEntity):
         self._suffix = suffix
         self._data_key = data_key
         self._attr_translation_key = suffix
+        if suffix in DUPLICATE_DIAGNOSTIC_SUFFIXES:
+            self._attr_entity_category = EntityCategory.DIAGNOSTIC
+            self._attr_entity_registry_enabled_default = False
         self._value = self._read_value()
 
     def _read_value(self):
