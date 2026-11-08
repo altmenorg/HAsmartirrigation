@@ -2,13 +2,13 @@
   "entity": {
     "sensor": {
       "duration": {
-        "name": "Längd"
+        "name": "Bevattningstid"
       },
       "bucket": {
         "name": "Vattenbalans"
       },
       "et_value": {
-        "name": "Använd ET"
+        "name": "Nederbörd minus evapotranspiration"
       },
       "et_deficiency": {
         "name": "Dagligt ET-underskott"
@@ -17,7 +17,7 @@
         "name": "Aktuell dränering"
       },
       "last_irrigation": {
-        "name": "Senaste vattning"
+        "name": "Senaste bevattning"
       },
       "water_used": {
         "name": "Vattenförbrukning"
@@ -26,10 +26,10 @@
         "name": "Vattenbalans just nu"
       },
       "last_run_volume": {
-        "name": "Volym vid senaste körningen"
+        "name": "Vattenvolym vid senaste bevattningen"
       },
       "next_irrigation": {
-        "name": "Nästa vattning"
+        "name": "Nästa bevattning"
       }
     },
     "number": {
@@ -57,24 +57,24 @@
         "name": "Beräkna alla zoner"
       },
       "update_weather": {
-        "name": "Hämta vädret igen"
+        "name": "Uppdatera väderdata"
       },
       "irrigate_all": {
         "name": "Vattna alla zoner"
       },
       "postpone_24h": {
-        "name": "Skjut upp bevattning 24 h"
+        "name": "Skjut upp bevattningen i 24 timmar"
       },
       "postpone_48h": {
-        "name": "Skjut upp bevattning 48 h"
+        "name": "Skjut upp bevattningen i 48 timmar"
       },
       "resume_irrigation": {
-        "name": "Återuppta bevattning"
+        "name": "Återuppta bevattningen"
       }
     },
     "binary_sensor": {
       "irrigation_needed": {
-        "name": "Vattning behövs"
+        "name": "Bevattning behövs"
       },
       "watering_now": {
         "name": "Vattnar nu"
@@ -105,7 +105,7 @@
   },
   "config": {
     "abort": {
-      "single_instance_allowed": "Endast en enda konfiguration av Smart Irrigation tillåts."
+      "single_instance_allowed": "Det går bara att lägga till Smart Irrigation en gång."
     },
     "error": {
       "name": "Ge integrationen ett unikt namn."
@@ -113,26 +113,26 @@
     "step": {
       "user": {
         "title": "Ställ in Smart Irrigation",
-        "description": "Smart Irrigation ställs in efteråt i sin egen panel i sidofältet: installationsassistenten skapar en sensorgrupp och en första zon tillsammans med dig, och vädertjänsten väljs där också.",
+        "description": "Fortsätt sedan i panelen Smart Irrigation i sidofältet. Där hjälper installationsguiden dig att skapa en sensorgrupp och din första zon. Där väljer du också vädertjänst.",
         "data": {
           "name": "Unikt namn för integrationen"
         }
       }
     },
     "create_entry": {
-      "default": "Smart Irrigation är installerat. Öppna **Smart Irrigation** i sidofältet: [installationsassistenten](/smart_irrigation/setup) skapar din första zon tillsammans med dig."
+      "default": "Smart Irrigation är installerat. Öppna **Smart Irrigation** i sidofältet och följ [installationsguiden](/smart_irrigation/setup) för att skapa din första zon."
     }
   },
   "options": {
     "error": {
-      "invalid_coordinates": "Ogiltiga koordinater angivna. Kontrollera värdena för latitud (-90 till 90) och longitud (-180 till 180)."
+      "invalid_coordinates": "Ogiltiga koordinater. Kontrollera att latituden ligger mellan -90 och 90 och longituden mellan -180 och 180."
     },
     "step": {
       "coordinates": {
         "title": "Platskoordinater",
-        "description": "Konfigurera platskoordinater för hämtning av väderdata. Du kan använda manuella koordinater som skiljer sig från din Home Assistant-plats om det behövs.",
+        "description": "Ange koordinaterna för den plats som väderdata ska hämtas för. Du kan välja en annan plats än den som angetts i Home Assistant.",
         "data": {
-          "manual_coordinates_enabled": "Använd manuella koordinater istället för Home Assistant-platsen",
+          "manual_coordinates_enabled": "Ange koordinater manuellt i stället för att använda platsen i Home Assistant",
           "manual_latitude": "Latitud (decimalgrader, -90 till 90)",
           "manual_longitude": "Longitud (decimalgrader, -180 till 180)",
           "manual_elevation": "Höjd över havet (meter, valfritt)"
@@ -143,7 +143,7 @@
   "services": {
     "calculate_all_zones": {
       "name": "Beräkna alla zoner",
-      "description": "Beräkna alla zoner i automatiskt läge",
+      "description": "Beräkna bevattningsbehovet för alla zoner i automatiskt läge",
       "fields": {
         "delete_weather_data": {
           "name": "Radera väderdata",
@@ -151,13 +151,13 @@
         },
         "dry_run": {
           "name": "Testkörning",
-          "description": "Rapportera vad beräkningen skulle göra utan att ändra vattenbalansen, zonen eller den insamlade väderdatan"
+          "description": "Visa vad beräkningen skulle ge utan att ändra zonen, vattenbalansen eller insamlade väderdata"
         }
       }
     },
     "calculate_zone": {
       "name": "Beräkna zon",
-      "description": "Beräkna angiven zon",
+      "description": "Beräkna bevattningsbehovet för den angivna zonen",
       "fields": {
         "entity": {
           "name": "Entitet",
@@ -169,7 +169,7 @@
         },
         "dry_run": {
           "name": "Testkörning",
-          "description": "Rapportera vad beräkningen skulle göra utan att ändra vattenbalansen, zonen eller den insamlade väderdatan"
+          "description": "Visa vad beräkningen skulle ge utan att ändra zonen, vattenbalansen eller insamlade väderdata"
         }
       }
     },
@@ -189,7 +189,7 @@
     },
     "set_bucket": {
       "name": "Ställ in vattenbalans",
-      "description": "Ställ in en zons vattenbalans till ett värde",
+      "description": "Ange ett värde för zonens vattenbalans",
       "fields": {
         "entity": {
           "name": "Entitet",
@@ -203,7 +203,7 @@
     },
     "set_all_buckets": {
       "name": "Ställ in alla vattenbalanser",
-      "description": "Ställ in vattenbalansen för alla zoner till ett värde",
+      "description": "Ange samma vattenbalans för alla zoner",
       "fields": {
         "new_bucket_value": {
           "name": "Ny vattenbalans",
@@ -212,26 +212,26 @@
       }
     },
     "reset_bucket": {
-      "name": "Återställ vattenbalans",
-      "description": "Återställ en zons vattenbalans till 0",
+      "name": "Nollställ vattenbalansen",
+      "description": "Sätt zonens vattenbalans till 0",
       "fields": {
         "entity": {
           "name": "Entitet",
-          "description": "Zon att återställa vattenbalansen för"
+          "description": "Zon vars vattenbalans ska nollställas"
         }
       }
     },
     "reset_all_buckets": {
-      "name": "Återställ alla vattenbalanser",
-      "description": "Återställ vattenbalansen för alla zoner till 0"
+      "name": "Nollställ alla zoners vattenbalans",
+      "description": "Sätt vattenbalansen till 0 för alla zoner"
     },
     "clear_all_weather_data": {
-      "name": "Rensa all väderdata",
+      "name": "Rensa alla väderdata",
       "description": "Rensa väderdata för alla zoner"
     },
     "set_multiplier": {
       "name": "Ställ in multiplikator",
-      "description": "Ställ in multiplikator för en zon till ett specifikt värde",
+      "description": "Ange en multiplikator för zonen",
       "fields": {
         "entity": {
           "name": "Entitet",
@@ -239,17 +239,17 @@
         },
         "new_multiplier_value": {
           "name": "Nytt multiplikatorvärde",
-          "description": "nytt värde för multiplikatorn"
+          "description": "Nytt värde för multiplikatorn"
         }
       }
     },
     "set_all_multipliers": {
       "name": "Ställ in alla multiplikatorer",
-      "description": "Ställ in multiplikatorer för alla zoner till ett specifikt värde",
+      "description": "Ange samma multiplikator för alla zoner",
       "fields": {
         "new_multiplier_value": {
           "name": "Nytt multiplikatorvärde",
-          "description": "nytt värde för multiplikatorn"
+          "description": "Nytt värde för multiplikatorn"
         }
       }
     },
@@ -259,7 +259,7 @@
       "fields": {
         "entity": {
           "name": "Entitet",
-          "description": "Zon att ställa in konfigurationsvärden för"
+          "description": "Zon som inställningarna ska gälla för"
         },
         "new_bucket_value": {
           "name": "Ny vattenbalans",
@@ -270,12 +270,12 @@
           "description": "Nytt värde för multiplikatorn"
         },
         "new_duration_value": {
-          "name": "Nytt varaktighetsvärde",
-          "description": "Nytt värde för varaktigheten"
+          "name": "Ny bevattningstid",
+          "description": "Zonens nya bevattningstid"
         },
         "new_state_value": {
-          "name": "Nytt tillståndsvärde",
-          "description": "Nytt värde för tillståndet"
+          "name": "Nytt driftläge",
+          "description": "Zonens nya driftläge"
         },
         "new_throughput_value": {
           "name": "Nytt flödesvärde",
@@ -284,70 +284,388 @@
       }
     },
     "generate_watering_calendar": {
-      "name": "Generera bevattningskalender",
-      "description": "Generera en 12-månaders bevattningskalender för bevattningszoner baserat på representativa klimatdata",
+      "name": "Skapa bevattningskalender",
+      "description": "Skapa en bevattningskalender för tolv månader utifrån representativa klimatdata för bevattningszonerna",
       "fields": {
         "entity": {
           "name": "Entitet",
-          "description": "Zon att generera bevattningskalender för"
+          "description": "Zon som bevattningskalendern ska gälla för"
         }
       }
     },
     "credit_watering": {
       "name": "Tillgodoräkna bevattning",
-      "description": "Tillgodoräknar en zons vattenbalans det vatten en bevattning faktiskt gav, i stället för att nollställa den.",
+      "description": "Lägg den vattenmängd som faktiskt tillfördes vid bevattningen till zonens vattenbalans i stället för att nollställa den.",
       "fields": {
         "seconds": {
           "name": "Sekunder",
-          "description": "Hur länge zonen gick, i sekunder. Tomt: zonens varaktighet."
+          "description": "Hur länge zonen vattnades, i sekunder. Lämna fältet tomt för att använda zonens bevattningstid."
         }
       }
+    },
+    "run_program": {
+      "name": "Kör program",
+      "description": "Startar ett program i läget Fullständig bevattningsstyrning. Om ett annat program körs får programmet vänta på sin tur. Varje zon vattnas under den tid som Smart Irrigation har beräknat, om inte en annan tid anges i programsteget.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "Programmets id som det visas i programinställningarna."
+        },
+        "seconds": {
+          "name": "Sekunder",
+          "description": "Total bevattningstid för programmet. Tiden fördelas mellan stegen i proportion till deras planerade bevattningstider. Lämna tomt för att använda de planerade tiderna."
+        },
+        "mode": {
+          "name": "Läge",
+          "description": "Om bevattning redan pågår lägger ”queue” den nya körningen i kö. Med ”replace” avslutas den pågående körningen innan den nya startar."
+        }
+      }
+    },
+    "stop_program": {
+      "name": "Stoppa program",
+      "description": "Stoppar det valda programmet. Om det körs stängs ventilerna som vanligt och det vatten varje zon har fått räknas in i vattenbalansen. Om programmet väntar i kön tas det bort ur kön. Ett okänt program-id har ingen effekt. Använd stop_watering för att stoppa huvudprogrammet.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "Programmets id."
+        }
+      }
+    },
+    "set_program_enabled": {
+      "name": "Aktivera eller inaktivera ett program",
+      "description": "Aktiverar eller inaktiverar ett program i läget Fullständig bevattningsstyrning. Det har samma effekt som reglaget i programmets inställningar.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "Programmets id."
+        },
+        "enabled": {
+          "name": "Aktiverat",
+          "description": "Slå på för att aktivera eller av för att inaktivera."
+        }
+      }
+    },
+    "set_step_enabled": {
+      "name": "Aktivera eller inaktivera ett steg",
+      "description": "Aktiverar eller inaktiverar ett enskilt programsteg.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "Programmets id."
+        },
+        "step_id": {
+          "name": "Steg",
+          "description": "Stegets id som det visas i programmet."
+        },
+        "enabled": {
+          "name": "Aktiverat",
+          "description": "Slå på för att aktivera eller av för att inaktivera."
+        }
+      }
+    },
+    "set_schedule_enabled": {
+      "name": "Aktivera eller inaktivera ett schema",
+      "description": "Aktiverar eller inaktiverar ett av programmets scheman. Schemalagda starter uppdateras direkt.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "Programmets id."
+        },
+        "schedule_id": {
+          "name": "Schema",
+          "description": "Schemats id som det visas i programmet."
+        },
+        "enabled": {
+          "name": "Aktiverat",
+          "description": "Slå på för att aktivera eller av för att inaktivera."
+        }
+      }
+    },
+    "stop_watering": {
+      "name": "Stoppa bevattningen",
+      "description": "Stoppar pågående bevattning. Alla ventiler som Smart Irrigation har öppnat stängs och det vatten varje zon har fått räknas in i vattenbalansen. Program och zoner som väntar i kön avbryts också. Om du väljer zoner stoppas bara dessa."
+    },
+    "pause_watering": {
+      "name": "Pausa bevattningen",
+      "description": "Stänger de öppna ventilerna och pausar bevattningen även för de zoner som väntar. Det vatten som redan har tillförts räknas in i vattenbalansen. När bevattningen återupptas fortsätter den där den avbröts. Pausen avslutas automatiskt om du inte avslutar den tidigare.",
+      "fields": {
+        "minutes": {
+          "name": "Minuter",
+          "description": "Längsta tid innan bevattningen återupptas automatiskt."
+        }
+      }
+    },
+    "resume_watering": {
+      "name": "Återuppta pausad bevattning",
+      "description": "Fortsätter en pausad bevattning där den avbröts."
+    },
+    "next_step": {
+      "name": "Gå till nästa steg",
+      "description": "Avslutar bevattningen av zonerna i det aktuella programsteget och går vidare till nästa steg."
+    },
+    "suspend": {
+      "name": "Gör uppehåll i bevattningen",
+      "description": "Gör ett uppehåll i bevattningen för en zon eller ett program fram till en viss tidpunkt. Uppehållet hävs om du varken anger varaktighet eller sluttid, eller om du anger 0 timmar.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "Id för det program vars bevattning ska göra uppehåll."
+        },
+        "hours": {
+          "name": "Timmar",
+          "description": "Uppehållets längd. Ange 0 för att häva uppehållet."
+        },
+        "until": {
+          "name": "Till",
+          "description": "Tidpunkt då uppehållet upphör."
+        }
+      }
+    },
+    "adjust_program": {
+      "name": "Justera ett program",
+      "description": "Förlänger eller förkortar tillfälligt bevattningstiden i ett program i läget Fullständig bevattningsstyrning. Justeringen ersätter en eventuell tidigare justering och gäller körningar som startar därefter. Den upphör efter angivet antal timmar.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "Id för programmet som ska justeras."
+        },
+        "percent": {
+          "name": "Procent",
+          "description": "Bevattningstid per steg i procent av den planerade tiden. Värdet 120 ger 20 % längre bevattningstid."
+        },
+        "seconds": {
+          "name": "Sekunder",
+          "description": "Antal sekunder som läggs till bevattningstiden för varje steg. Ange ett negativt värde för att förkorta tiden."
+        },
+        "hours": {
+          "name": "Timmar",
+          "description": "Hur länge justeringen ska gälla. Lämna tomt om den ska gälla tills du återställer den."
+        },
+        "reset": {
+          "name": "Återställ",
+          "description": "Tar bort justeringen för det här programmet."
+        }
+      }
+    },
+    "water_zone": {
+      "name": "Vattna en zon",
+      "description": "Vattnar zonen nu eller när det blir dess tur om annan bevattning pågår. Om du inte anger någon tid används den bevattningstid som Smart Irrigation har beräknat för zonen.",
+      "fields": {
+        "zone_id": {
+          "name": "Zon-id",
+          "description": "Zonens id, som alternativ till zonens entitet."
+        },
+        "seconds": {
+          "name": "Sekunder",
+          "description": "Bevattningstid i sekunder. Lämna tomt för att använda den beräknade tiden."
+        },
+        "mode": {
+          "name": "Läge",
+          "description": "Om bevattning redan pågår lägger ”queue” den nya körningen i kö. Med ”replace” avslutas den pågående körningen innan den nya startar."
+        }
+      }
+    },
+    "use_measured_throughput": {
+      "name": "Använd uppmätt flöde",
+      "description": "Använder flödet som zonens mätare har uppmätt under tidigare bevattningar som nytt flöde för zonen. Mätvärdet är ett förslag tills du godkänner det med den här åtgärden.",
+      "fields": {
+        "zone_id": {
+          "name": "Zon-id",
+          "description": "Zonens id, som alternativ till zonens entitet."
+        }
+      }
+    },
+    "create_recurring_schedule": {
+      "name": "Skapa återkommande schema",
+      "description": "Skapar ett nytt schema för återkommande bevattning.",
+      "fields": {
+        "name": {
+          "name": "Namn",
+          "description": "Schemats namn."
+        },
+        "type": {
+          "name": "Schematyp",
+          "description": "Typ av schema: dagligen (daily), veckovis (weekly), månadsvis (monthly) eller med ett visst intervall (interval)."
+        },
+        "enabled": {
+          "name": "Aktiverat",
+          "description": "Aktivera schemat."
+        },
+        "time": {
+          "name": "Tid",
+          "description": "Starttid i formatet HH:MM."
+        },
+        "days_of_week": {
+          "name": "Veckodagar",
+          "description": "Veckodagar då veckoschemat ska köras."
+        },
+        "day_of_month": {
+          "name": "Dag i månaden",
+          "description": "Dag i månaden då månadsschemat ska köras (1–31)."
+        },
+        "interval_hours": {
+          "name": "Intervall i timmar",
+          "description": "Antal timmar mellan körningarna i ett intervallschema."
+        },
+        "zones": {
+          "name": "Zoner",
+          "description": "Id för zonerna som ska ingå, eller ”all” för alla zoner."
+        },
+        "action": {
+          "name": "Åtgärd",
+          "description": "Åtgärd som ska utföras: beräkna (calculate), uppdatera (update) eller vattna (irrigate)."
+        }
+      }
+    },
+    "update_recurring_schedule": {
+      "name": "Uppdatera återkommande schema",
+      "description": "Uppdaterar ett befintligt schema för återkommande bevattning.",
+      "fields": {
+        "schedule_id": {
+          "name": "Schema-id",
+          "description": "Id för schemat som ska uppdateras."
+        },
+        "name": {
+          "name": "Namn",
+          "description": "Schemats namn."
+        },
+        "enabled": {
+          "name": "Aktiverat",
+          "description": "Aktivera eller inaktivera schemat."
+        }
+      }
+    },
+    "delete_recurring_schedule": {
+      "name": "Ta bort återkommande schema",
+      "description": "Tar bort ett schema för återkommande bevattning.",
+      "fields": {
+        "schedule_id": {
+          "name": "Schema-id",
+          "description": "Id för schemat som ska tas bort."
+        }
+      }
+    },
+    "create_seasonal_adjustment": {
+      "name": "Skapa säsongsjustering",
+      "description": "Skapar en ny säsongsjustering för bevattningszoner.",
+      "fields": {
+        "name": {
+          "name": "Namn",
+          "description": "Säsongsjusteringens namn."
+        },
+        "enabled": {
+          "name": "Aktiverad",
+          "description": "Aktivera säsongsjusteringen."
+        },
+        "month_start": {
+          "name": "Startmånad",
+          "description": "Första månaden som justeringen gäller (1–12)."
+        },
+        "month_end": {
+          "name": "Slutmånad",
+          "description": "Sista månaden som justeringen gäller (1–12)."
+        },
+        "multiplier_adjustment": {
+          "name": "Justeringsfaktor för grödkoefficienten",
+          "description": "Faktor som zonens grödkoefficient multipliceras med under perioden."
+        },
+        "threshold_adjustment": {
+          "name": "Justering av bevattningströskeln",
+          "description": "Justering av bevattningströskeln i mm."
+        },
+        "zones": {
+          "name": "Zoner",
+          "description": "Id för zonerna som ska ingå, eller ”all” för alla zoner."
+        }
+      }
+    },
+    "update_seasonal_adjustment": {
+      "name": "Uppdatera säsongsjustering",
+      "description": "Uppdaterar en befintlig säsongsjustering.",
+      "fields": {
+        "adjustment_id": {
+          "name": "Justerings-id",
+          "description": "Id för säsongsjusteringen som ska uppdateras."
+        },
+        "name": {
+          "name": "Namn",
+          "description": "Säsongsjusteringens namn."
+        },
+        "enabled": {
+          "name": "Aktiverad",
+          "description": "Aktivera eller inaktivera säsongsjusteringen."
+        }
+      }
+    },
+    "delete_seasonal_adjustment": {
+      "name": "Ta bort säsongsjustering",
+      "description": "Tar bort en säsongsjustering.",
+      "fields": {
+        "adjustment_id": {
+          "name": "Justerings-id",
+          "description": "Id för säsongsjusteringen som ska tas bort."
+        }
+      }
+    },
+    "postpone_irrigation": {
+      "name": "Skjut upp bevattningen",
+      "description": "Skjuter upp bevattningen tillfälligt. Den återupptas automatiskt när väntetiden är slut. Zonernas vattenunderskott finns kvar och kompenseras vid nästa bevattning.",
+      "fields": {
+        "hours": {
+          "name": "Timmar",
+          "description": "Hur länge bevattningen ska skjutas upp. Ange 0 för att häva uppskjutningen."
+        }
+      }
+    },
+    "resume_irrigation": {
+      "name": "Återuppta uppskjuten bevattning",
+      "description": "Häver uppskjutningen även om väntetiden inte har löpt ut."
     }
   },
   "issues": {
     "dry_zone_not_watered": {
-      "title": "Zon {zone} är torr och inget kommer att vattna den",
-      "description": "Vattenbalansen för zon **{zone}** har varit torr i {days} dagar, och varje program som omfattar den är avstängt, uppskjutet eller saknar aktiverat schema.\n\nSlå på ett program som vattnar den här zonen, aktivera ett av dess scheman eller häv uppskjutningen. Aviseringen försvinner av sig själv när zonen vattnats eller ett program åter omfattar den."
+      "title": "Zon {zone} är torr och kommer inte att bevattnas",
+      "description": "Vattenbalansen visar att zon **{zone}** har varit torr i {days} dagar. Alla program som omfattar zonen är avstängda, tillfälligt spärrade eller saknar ett aktivt schema.\n\nAktivera ett program som vattnar zonen, slå på ett av dess scheman eller häv spärren. Meddelandet försvinner när zonen har vattnats eller åter omfattas av ett aktivt program."
     },
     "weather_silent": {
       "title": "Sensorgrupp {mapping}: en vädersensor har slutat rapportera",
-      "description": "Inget har tagits emot på över {hours} timmar från: **{sensors}**. Den senaste rapporten kom {since}.\n\nEtt så gammalt värde utelämnas från beräkningen, så den här sensorgruppens zoner beräknas på det som återstår, eller inte alls.\n\nKontrollera sensorns batteri, dess anslutning och dess entitet i Home Assistant. Aviseringen försvinner av sig själv så snart den rapporterar igen."
+      "description": "Följande sensorer har inte skickat mätvärden på över {hours} timmar: **{sensors}**. Det senaste värdet kom {since}.\n\nSå gamla mätvärden utelämnas. Bevattningsbehovet för sensorgruppens zoner beräknas med de värden som återstår, om det finns några.\n\nKontrollera sensorns batteri, anslutning och entitet i Home Assistant. Meddelandet försvinner när sensorn skickar ett nytt värde."
     },
     "missing_input": {
       "title": "Zon {zone}: inget kunde beräknas",
-      "description": "Evapotranspirationen för zon **{zone}** kunde inte beräknas eftersom väderdata saknade värde för: **{missing}**.\n\nTills det finns rör sig inte zonens underskott och den vattnas inte, vilket ser precis ut som en zon utan behov.\n\nKontrollera att sensorerna som är mappade till de fälten är tillgängliga, eller att vädertjänsten fortfarande skickar dem. Problemet försvinner vid nästa beräkning som kan göras."
+      "description": "Evapotranspirationen för zon **{zone}** kunde inte beräknas eftersom följande värden saknas i väderunderlaget: **{missing}**.\n\nSå länge värden saknas uppdateras inte zonens vattenunderskott och zonen vattnas inte. Då kan det se ut som om zonen inte behöver vatten.\n\nKontrollera att sensorerna för dessa värden är tillgängliga eller att vädertjänsten fortfarande skickar värdena. Meddelandet försvinner vid nästa lyckade beräkning."
     },
     "undersized_zone": {
-      "title": "Zon {zone}: en körning kan inte vattna det zonen förlorar",
-      "description": "Den längsta körningen för zon **{zone}** ger cirka **{capacity} mm**, men zonen förlorar cirka **{need} mm** mellan två vattningar ({days} dag(ar)). Dess underskott fortsätter att växa så länge vädret förblir som det är.\n\nTaket är zonens maximala varaktighet. Höj det, ge zonen fler droppare eller ett högre flöde, eller minska dagarna mellan bevattningarna. Om taket är avsiktligt kan du ignorera detta."
+      "title": "Zon {zone} förlorar mer vatten än en bevattning kan ersätta",
+      "description": "Vid längsta tillåtna bevattningstid får zon **{zone}** cirka **{capacity} mm** vatten. Mellan bevattningarna förlorar den cirka **{need} mm** (antal dagar mellan bevattningarna: {days}). Vattenunderskottet fortsätter att öka så länge vädret är detsamma.\n\nDu kan höja zonens maximala bevattningstid, öka antalet spridare eller droppställen, öka flödet eller korta intervallet mellan bevattningarna. Om tidsgränsen är avsiktlig kan du bortse från meddelandet."
     },
     "throughput_mismatch": {
-      "title": "Zon {zone}: det uppmätta flödet stämmer inte med det inställda",
-      "description": "Över de senaste {samples} körningarna mätte flödesmätaren på zon **{zone}** omkring **{measured}**, där zonen är inställd på **{configured}**, alltså {percentage}% fel.\n\nVarje vattningslängd härleds ur det inställda flödet, så de är alla fel med ungefär lika mycket.\n\nOm mätningen ser rätt ut, sätt zonens flöde till den. Om den inte gör det, kontrollera att mätaren bara räknar den här zonen och att trycket i ledningen är det du tror. Smart Irrigation ändrar aldrig värdet för dig."
+      "title": "Zon {zone}: uppmätt och inställt flöde skiljer sig åt",
+      "description": "Vid de senaste {samples} bevattningarna uppmättes ett flöde på cirka **{measured}** i zon **{zone}**. Det inställda flödet är **{configured}**. Avvikelsen är {percentage} %.\n\nAlla bevattningstider beräknas utifrån det inställda flödet. Därför blir avvikelsen ungefär lika stor för dem.\n\nOm mätningen stämmer kan du ange det uppmätta flödet i zonens inställningar. Kontrollera annars att mätaren bara mäter den här zonen och att vattentrycket är som förväntat. Smart Irrigation ändrar inte värdet automatiskt."
     },
     "zone_not_calculated_no_readings": {
-      "title": "Zon {zone} kan inte beräknas: inga vädermätvärden",
-      "description": "Zon **{zone}** beräknades inte: dess sensorgrupp har inga mätvärden att beräkna från. Tills den har det rör sig inte zonens underskott, och den vattnas inte.\n\nKontrollera att sensorgruppen har källor och att de rapporterar, uppdatera väderdata och beräkna sedan zonen. Meddelandet försvinner av sig självt vid nästa lyckade beräkning."
+      "title": "Bevattningsbehovet för zon {zone} kan inte beräknas utan väderdata",
+      "description": "Bevattningsbehovet för zon **{zone}** kunde inte beräknas eftersom sensorgruppen saknar mätvärden. Tills mätvärden finns uppdateras inte vattenunderskottet och zonen vattnas inte.\n\nKontrollera att sensorgruppen har datakällor och att de skickar värden. Uppdatera sedan väderdata och kör beräkningen för zonen. Meddelandet försvinner vid nästa lyckade beräkning."
     },
     "zone_not_calculated_no_engine": {
-      "title": "Zon {zone} kan inte beräknas: ingen modul",
-      "description": "Zon **{zone}** har ingen modul, så den beräknas inte och vattnas inte.\n\nVälj hur den ska beräknas på dess kort på fliken Zoner. Meddelandet försvinner av sig självt vid nästa lyckade beräkning."
+      "title": "Zon {zone} saknar beräkningsmodul",
+      "description": "Zon **{zone}** saknar en beräkningsmodul. Därför kan bevattningsbehovet inte beräknas och zonen vattnas inte.\n\nVälj beräkningsmetod på zonens kort på fliken Zoner. Meddelandet försvinner vid nästa lyckade beräkning."
     },
     "zone_not_calculated_nothing_from_engine": {
-      "title": "Zon {zone} kan inte beräknas: ingen evapotranspiration",
-      "description": "Zon **{zone}** hämtar sin evapotranspiration från en sensor eller en vädertjänst, och dess sensorgrupp hade ingen att ge. Tills den har det vattnas zonen inte.\n\nKontrollera sensorn som ger evapotranspirationen, eller vädertjänsten. Meddelandet försvinner av sig självt vid nästa lyckade beräkning."
+      "title": "Zon {zone} saknar ett värde för evapotranspiration",
+      "description": "Zon **{zone}** använder evapotranspiration från en sensor eller vädertjänst. Sensorgruppen saknar ett värde och zonen vattnas först när det finns ett.\n\nKontrollera sensorn eller vädertjänsten som ska ge värdet. Meddelandet försvinner vid nästa lyckade beräkning."
     },
     "zone_not_calculated_forecast_without_service": {
-      "title": "Zon {zone} kan inte beräknas: en prognos utan vädertjänst",
-      "description": "Modulen för zon **{zone}** tittar dagar framåt, vilket kräver en vädertjänst, och ingen är inställd. Zonen vattnas inte förrän den kan beräknas.\n\nStäll in en vädertjänst, eller sätt modulens prognosdagar till 0. Meddelandet försvinner av sig självt vid nästa lyckade beräkning."
+      "title": "Zon {zone} behöver prognosdata men saknar vädertjänst",
+      "description": "Beräkningsmodulen för zon **{zone}** använder en prognos för kommande dagar. Det kräver en vädertjänst, men ingen har angetts. Zonen vattnas först när bevattningsbehovet kan beräknas.\n\nVälj en vädertjänst eller ange 0 prognosdagar i modulen. Meddelandet försvinner vid nästa lyckade beräkning."
     },
     "zone_not_calculated_error": {
-      "title": "Zon {zone} kan inte beräknas: ett fel",
-      "description": "Beräkningen av zon **{zone}** misslyckades: {detail}\n\nZonen vattnas inte förrän den kan beräknas. Om det fortsätter att misslyckas, öppna ett issue med det här meddelandet och diagnostikfilen. Meddelandet försvinner av sig självt vid nästa lyckade beräkning."
+      "title": "Beräkningen för zon {zone} misslyckades",
+      "description": "Beräkningen för zon **{zone}** misslyckades: {detail}\n\nZonen vattnas först när bevattningsbehovet kan beräknas. Om felet kvarstår, gör en felanmälan och bifoga det här meddelandet och diagnostikfilen. Meddelandet försvinner vid nästa lyckade beräkning."
     },
     "zone_not_calculated_no_sensor_group": {
-      "title": "Zon {zone} kan inte beräknas: ingen sensorgrupp",
-      "description": "Zon **{zone}** har ingen sensorgrupp, så det finns inget att beräkna den från, och den vattnas inte.\n\nVälj dess sensorgrupp på dess kort på fliken Zoner och beräkna sedan zonen. Meddelandet försvinner av sig självt vid nästa lyckade beräkning."
+      "title": "Zon {zone} saknar en sensorgrupp",
+      "description": "Zon **{zone}** saknar en sensorgrupp. Därför kan bevattningsbehovet inte beräknas och zonen vattnas inte.\n\nVälj en sensorgrupp på zonens kort på fliken Zoner och kör sedan beräkningen för zonen. Meddelandet försvinner vid nästa lyckade beräkning."
     }
   }
 }

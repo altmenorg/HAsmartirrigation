@@ -18,6 +18,7 @@ from homeassistant.helpers.dispatcher import (
     async_dispatcher_connect,
     async_dispatcher_send,
 )
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import const
@@ -54,6 +55,8 @@ class SmartIrrigationSkipOnPrecipitationSwitch(SwitchEntity):
     _attr_has_entity_name = True
     _attr_should_poll = False
     _attr_translation_key = "skip_on_precipitation"
+    # A setting of the Skip on weather page: listed under Configuration.
+    _attr_entity_category = EntityCategory.CONFIG
     _attr_icon = "mdi:weather-pouring"
     # The setting it stands for, and its value when it was never set.
     _config_key = const.CONF_SKIP_IRRIGATION_ON_PRECIPITATION
