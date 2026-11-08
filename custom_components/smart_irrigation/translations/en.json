@@ -302,6 +302,324 @@
           "description": "How long the zone ran, in seconds. Empty: the zone's duration."
         }
       }
+    },
+    "run_program": {
+      "name": "Run program",
+      "description": "Run a program of the full controller now, or as soon as it is its turn when another one is running. The program waters its zones with the durations Smart Irrigation calculated, unless its steps say otherwise.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "The id of the program, as shown in its settings."
+        },
+        "seconds": {
+          "name": "Seconds",
+          "description": "A total duration for the whole program, shared between its steps in proportion to their planned durations. Left empty, the planned durations."
+        },
+        "mode": {
+          "name": "Mode",
+          "description": "What to do when something is already watering. Queue takes the turn behind it; replace stops it cleanly first."
+        }
+      }
+    },
+    "stop_program": {
+      "name": "Stop program",
+      "description": "Stop one program. If it is running, its open zones are closed the normal way and credited for what they delivered; if it is waiting for its turn, it is taken out of the queue. An unknown program does nothing. The main program is stopped with stop_watering.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "The id of the program."
+        }
+      }
+    },
+    "set_program_enabled": {
+      "name": "Enable or disable a program",
+      "description": "Switch a program of the full controller on or off, as the switch in its settings does.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "The id of the program."
+        },
+        "enabled": {
+          "name": "Enabled",
+          "description": "On to enable it, off to disable it."
+        }
+      }
+    },
+    "set_step_enabled": {
+      "name": "Enable or disable a step",
+      "description": "Switch one step of a program on or off.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "The id of the program."
+        },
+        "step_id": {
+          "name": "Step",
+          "description": "The id of the step, as shown in the program."
+        },
+        "enabled": {
+          "name": "Enabled",
+          "description": "On to enable it, off to disable it."
+        }
+      }
+    },
+    "set_schedule_enabled": {
+      "name": "Enable or disable a schedule",
+      "description": "Switch one schedule of a program on or off. The schedules are armed again at once.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "The id of the program."
+        },
+        "schedule_id": {
+          "name": "Schedule",
+          "description": "The id of the schedule, as shown in the program."
+        },
+        "enabled": {
+          "name": "Enabled",
+          "description": "On to enable it, off to disable it."
+        }
+      }
+    },
+    "stop_watering": {
+      "name": "Stop watering",
+      "description": "Stop the watering now. Every valve Smart Irrigation opened is closed, each zone is credited for the water it delivered, and the programs and the zones still waiting are ended. With zones chosen, only those are stopped."
+    },
+    "pause_watering": {
+      "name": "Pause watering",
+      "description": "Close the open valves and hold the watering, the zones still waiting included. What was delivered is credited, and after the resume the rest of the pass is watered. A pause that is not lifted ends by itself.",
+      "fields": {
+        "minutes": {
+          "name": "Minutes",
+          "description": "The longest the pause lasts before it lifts itself."
+        }
+      }
+    },
+    "resume_watering": {
+      "name": "Resume watering",
+      "description": "Go on with a paused watering from where it stopped."
+    },
+    "next_step": {
+      "name": "Next step",
+      "description": "End the zones of the step a program is on and go on to the next step."
+    },
+    "suspend": {
+      "name": "Suspend",
+      "description": "Keep a zone or a program from watering until a moment. With no duration and no date, or zero hours, the suspension is lifted.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "The id of a program to suspend."
+        },
+        "hours": {
+          "name": "Hours",
+          "description": "How long to suspend for. Zero lifts it."
+        },
+        "until": {
+          "name": "Until",
+          "description": "The moment the suspension ends."
+        }
+      }
+    },
+    "adjust_program": {
+      "name": "Adjust a program",
+      "description": "Make a program of the full controller water longer or shorter, for a while. The adjustment replaces the previous one (it never adds up), applies to the runs that start after it is set, and ends after the hours given.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "The id of the program to adjust."
+        },
+        "percent": {
+          "name": "Percent",
+          "description": "Multiplies the water of each step (120 waters 20 % longer)."
+        },
+        "seconds": {
+          "name": "Seconds",
+          "description": "Seconds of water added to each step (negative to take off)."
+        },
+        "hours": {
+          "name": "Hours",
+          "description": "How long the adjustment lasts. Left empty, until it is reset."
+        },
+        "reset": {
+          "name": "Reset",
+          "description": "Remove the adjustment of this program."
+        }
+      }
+    },
+    "water_zone": {
+      "name": "Water a zone",
+      "description": "Water a zone now, or as soon as it is its turn when something is watering. Without a duration, the zone waters for the duration Smart Irrigation calculated.",
+      "fields": {
+        "zone_id": {
+          "name": "Zone id",
+          "description": "The id of the zone, instead of its entity."
+        },
+        "seconds": {
+          "name": "Seconds",
+          "description": "Seconds of water. Left empty, the calculated duration."
+        },
+        "mode": {
+          "name": "Mode",
+          "description": "What to do when something is already watering. Queue takes the turn behind it; replace stops it cleanly first."
+        }
+      }
+    },
+    "use_measured_throughput": {
+      "name": "Use the measured throughput",
+      "description": "Set a zone's throughput to the flow its meter measured over its runs. The measurement is only ever advice; this is how to accept it.",
+      "fields": {
+        "zone_id": {
+          "name": "Zone id",
+          "description": "The id of the zone, instead of its entity."
+        }
+      }
+    },
+    "create_recurring_schedule": {
+      "name": "Create recurring schedule",
+      "description": "Create a new recurring irrigation schedule.",
+      "fields": {
+        "name": {
+          "name": "Name",
+          "description": "Name of the schedule"
+        },
+        "type": {
+          "name": "Schedule type",
+          "description": "Schedule type (daily, weekly, monthly, interval)"
+        },
+        "enabled": {
+          "name": "Enabled",
+          "description": "Enable the schedule"
+        },
+        "time": {
+          "name": "Time",
+          "description": "Time to run (HH:MM format)"
+        },
+        "days_of_week": {
+          "name": "Days of the week",
+          "description": "Days of week for weekly schedules"
+        },
+        "day_of_month": {
+          "name": "Day of the month",
+          "description": "Day of month for monthly schedules (1-31)"
+        },
+        "interval_hours": {
+          "name": "Interval in hours",
+          "description": "Interval in hours for interval schedules"
+        },
+        "zones": {
+          "name": "Zones",
+          "description": "Zone IDs to include or 'all'"
+        },
+        "action": {
+          "name": "Action",
+          "description": "Action to perform (calculate, update, irrigate)"
+        }
+      }
+    },
+    "update_recurring_schedule": {
+      "name": "Update recurring schedule",
+      "description": "Update an existing recurring irrigation schedule.",
+      "fields": {
+        "schedule_id": {
+          "name": "Schedule ID",
+          "description": "ID of the schedule to update"
+        },
+        "name": {
+          "name": "Name",
+          "description": "Name of the schedule"
+        },
+        "enabled": {
+          "name": "Enabled",
+          "description": "Enable/disable the schedule"
+        }
+      }
+    },
+    "delete_recurring_schedule": {
+      "name": "Delete recurring schedule",
+      "description": "Delete a recurring irrigation schedule.",
+      "fields": {
+        "schedule_id": {
+          "name": "Schedule ID",
+          "description": "ID of the schedule to delete"
+        }
+      }
+    },
+    "create_seasonal_adjustment": {
+      "name": "Create seasonal adjustment",
+      "description": "Create a new seasonal adjustment for irrigation zones.",
+      "fields": {
+        "name": {
+          "name": "Name",
+          "description": "Name of the adjustment"
+        },
+        "enabled": {
+          "name": "Enabled",
+          "description": "Enable the adjustment"
+        },
+        "month_start": {
+          "name": "Start month",
+          "description": "Starting month (1-12)"
+        },
+        "month_end": {
+          "name": "End month",
+          "description": "Ending month (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Multiplier adjustment factor",
+          "description": "Multiplier adjustment factor"
+        },
+        "threshold_adjustment": {
+          "name": "Threshold adjustment",
+          "description": "Threshold adjustment in mm"
+        },
+        "zones": {
+          "name": "Zones",
+          "description": "Zone IDs to include or 'all'"
+        }
+      }
+    },
+    "update_seasonal_adjustment": {
+      "name": "Update seasonal adjustment",
+      "description": "Update an existing seasonal adjustment.",
+      "fields": {
+        "adjustment_id": {
+          "name": "Adjustment ID",
+          "description": "ID of the adjustment to update"
+        },
+        "name": {
+          "name": "Name",
+          "description": "Name of the adjustment"
+        },
+        "enabled": {
+          "name": "Enabled",
+          "description": "Enable/disable the adjustment"
+        }
+      }
+    },
+    "delete_seasonal_adjustment": {
+      "name": "Delete seasonal adjustment",
+      "description": "Delete a seasonal adjustment.",
+      "fields": {
+        "adjustment_id": {
+          "name": "Adjustment ID",
+          "description": "ID of the adjustment to delete"
+        }
+      }
+    },
+    "postpone_irrigation": {
+      "name": "Postpone irrigation",
+      "description": "Hold watering back for a while, then let it resume by itself. Nothing is reset: a zone that is short of water still is when the postponement ends, and the next run makes it up.",
+      "fields": {
+        "hours": {
+          "name": "Hours",
+          "description": "How long to hold watering back. Zero lifts a postponement."
+        }
+      }
+    },
+    "resume_irrigation": {
+      "name": "Resume irrigation",
+      "description": "Lift a postponement, whatever is left of it."
     }
   },
   "issues": {
