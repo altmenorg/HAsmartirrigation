@@ -1382,7 +1382,7 @@
   },
   "observed_watering": {
     "title": "Beobachtete Bewässerung (Closed Loop)",
-    "description": "Schreibt der Wasserbilanz jeder Zone die echte Bewässerung gut, statt Zurücksetzen per Automatisierung. Wähle unter Zonen je Zone Ventil oder Schalter: solange offen, zählt Laufzeit mal Durchfluss oder die Menge eines Zählers. Entferne reset_bucket aus Automatisierungen, sonst zählt es doppelt.",
+    "description": "Schreibt der Wasserbilanz jeder Zone die echte Bewässerung gut, statt Zurücksetzen per Automatisierung. Wähle unter Zonen je Zone Ventil oder Schalter: solange offen, zählt Laufzeit mal Durchfluss oder die Menge eines Zählers. Entferne set_bucket- und reset_bucket-Aufrufe aus Automatisierungen, sonst zählt es doppelt.",
     "enabled_label": "Beobachtete Bewässerung aktivieren",
     "direct_control_label": "Smart Irrigation das Ventil steuern lassen",
     "direct_control_description": "Smart Irrigation öffnet das Ventil jeder Zone, wartet die Dauer und schließt es. Ein selbstschließendes Ventil (Sonoff SWV an ZHA oder mit MQTT-Sicherheitstopic) kennt die Dauer und schließt auch ohne Home Assistant. Jedes andere läuft, bis Home Assistant zurück ist: gib ihm eine Hardware-Höchstlaufzeit.",

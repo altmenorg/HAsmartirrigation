@@ -1382,7 +1382,7 @@
   },
   "observed_watering": {
     "title": "Observed watering (closed loop)",
-    "description": "Credits each zone's water balance from real watering, instead of an automation resetting it. Pick a valve or switch per zone under Zones: while it is open, run time times throughput is credited, or the volume a meter measured. Remove reset_bucket from your automations, or it counts twice.",
+    "description": "Credits each zone's water balance from real watering, instead of an automation resetting it. Pick a valve or switch per zone under Zones: while it is open, run time times throughput is credited, or the volume a meter measured. Remove set_bucket and reset_bucket calls from your automations, or it counts twice.",
     "enabled_label": "Enable observed watering",
     "direct_control_label": "Let Smart Irrigation control the valve",
     "direct_control_description": "Smart Irrigation opens each zone's valve, waits the duration and closes it. A valve that can close itself (Sonoff SWV on ZHA, or with an MQTT safety topic) knows the run's length and closes even if Home Assistant fails. Any other keeps watering until Home Assistant is back: give it a hardware time limit.",
