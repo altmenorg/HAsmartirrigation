@@ -39,6 +39,7 @@ from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 
 from . import const
+from .delivery import own_entities
 from .master_switch import irrigation_off
 from .observed_watering import NO_FLOW_GRACE
 from .program_runner import ProgramRunnerMixin
@@ -1738,6 +1739,22 @@ class ValveRunnerMixin(
         resumes the pass that was open and never credits water twice.
         """
         zone_id = int(zone.get(const.ZONE_ID))
+        own = own_entities(
+            getattr(self, "hass", None), self._zone_entities(zone, entity_id)
+        )
+        if own:
+            # Opening it would open this zone again, and so on (see
+            # own_entities). Saving such a link is refused now; one saved
+            # before stays harmless.
+            _LOGGER.error(
+                "Direct valve control: zone %s is linked to %s, a valve of Smart "
+                "Irrigation itself, not opened. Link the zone to the valve or "
+                "switch that waters it",
+                zone_id,
+                ", ".join(own),
+            )
+            self._report_valve_problem(zone, entity_id, PROBLEM_DID_NOT_OPEN)
+            return PROBLEM_DID_NOT_OPEN
         domain, on_svc, _off_svc = self._valve_services(entity_id)
         held = seconds + lead
         # Renew the observer's suppression for this pass: the window set for

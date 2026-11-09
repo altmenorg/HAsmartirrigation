@@ -71,6 +71,7 @@ import {
   waterVolume,
   formatNumber,
   navigate,
+  notOwnEntity,
 } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
 import { localize } from "../../../localize/localize";
@@ -984,6 +985,9 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
           // Save failed: clear the guard so it doesn't swallow a later refresh.
           this._suppressNextConfigUpdate = false;
           console.error("Failed to save zone:", error);
+          // Show what is stored, not what was refused: a field kept the value
+          // the backend did not take (a zone's own valve, for one).
+          this._fetchData();
         })
         .finally(() => {
           this.isSaving = false;
@@ -2650,6 +2654,19 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     `;
   }
 
+  /**
+   * Leaves out the entities Smart Irrigation provides itself. A zone's own
+   * valve entity opens the zone: linked as its valve, the zone opened itself,
+   * and every open queued another run, every 30 seconds without end. A search
+   * for "Ventil Rasen" picked the zone's own valve, "Rasen Terrasse". Its
+   * sensors are no meter or moisture sensor of the zone either.
+   */
+  private _notOwnEntity = (entity: { entity_id: string }): boolean =>
+    notOwnEntity(
+      this.hass as unknown as Parameters<typeof notOwnEntity>[0],
+      entity.entity_id,
+    );
+
   private _entityRow(
     label: string,
     unit: string,
@@ -2669,6 +2686,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           .value=${value || ""}
           .includeDomains=${includeDomains}
+          .entityFilter=${this._notOwnEntity}
           allow-custom-entity
           @value-changed=${(e: CustomEvent) => onCommit(e.detail?.value || "")}
         ></ha-entity-picker>
@@ -2702,6 +2720,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
             .hass=${this.hass}
             .value=${entityId}
             .includeDomains=${includeDomains}
+            .entityFilter=${this._notOwnEntity}
             allow-custom-entity
             @value-changed=${(e: CustomEvent) => {
               const value = (e.detail?.value || "").trim();

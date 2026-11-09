@@ -478,25 +478,25 @@ class ObservedWateringMixin:
         if max_bucket is not None and new_bucket > max_bucket:
             new_bucket = float(max_bucket)
 
-        # The duration is derived from the bucket, so recompute it here: crediting
-        # the bucket alone left the stale (pre-watering) duration on the zone
-        # sensor (#772). A bucket back at/above zero yields duration 0.
-        new_duration = self.duration_from_bucket(zone, new_bucket)
-
         # Also stamp the run time and accumulate the delivered volume (litres);
         # this is the single crediting path for both direct and observed runs.
         delivered_l = volume_l if water_l is None else water_l
         prev_used = zone.get(const.ZONE_WATER_USED) or 0.0
-        await self.store.async_update_zone(
-            zone_id,
-            {
-                const.ZONE_BUCKET: new_bucket,
-                const.ZONE_DURATION: new_duration,
-                const.ZONE_LAST_IRRIGATION: dt_util.utcnow(),
-                const.ZONE_WATER_USED: round(prev_used + delivered_l, 3),
-                const.ZONE_LAST_RUN_VOLUME: round(delivered_l, 3),
-            },
-        )
+        changes = {
+            const.ZONE_BUCKET: new_bucket,
+            const.ZONE_LAST_IRRIGATION: dt_util.utcnow(),
+            const.ZONE_WATER_USED: round(prev_used + delivered_l, 3),
+            const.ZONE_LAST_RUN_VOLUME: round(delivered_l, 3),
+        }
+        # A zone's duration is derived from the bucket, so recompute
+        # it here: crediting the bucket alone left the stale (pre-watering)
+        # duration on the zone sensor (#772). A bucket back at/above zero
+        # yields duration 0. A manual zone's duration is the one its owner
+        # entered: recomputed, it became 0 after its first run, and the zone
+        # was never watered again until someone typed it in anew.
+        if zone.get(const.ZONE_STATE) != const.ZONE_STATE_MANUAL:
+            changes[const.ZONE_DURATION] = self.duration_from_bucket(zone, new_bucket)
+        await self.store.async_update_zone(zone_id, changes)
         await self._record_irrigation_run(zone, delivered_l, seconds, started)
         # Refresh the zone sensor (it listens to _config_updated) and any open
         # panel (it listens to _update_frontend); _zone_irrigated lets the

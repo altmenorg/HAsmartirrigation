@@ -41,6 +41,7 @@ import {
   suggestSources,
   setupZoneMethod,
   splitChosen,
+  notOwnEntity,
 } from "./helpers";
 
 /**
@@ -760,5 +761,28 @@ describe("sources left without a sensor", () => {
         localize("panels.setup.calc-duration", lang, "{duration}", "D"),
       ).toContain("D");
     }
+  });
+});
+
+describe("entities a zone may be linked to", () => {
+  const hass = {
+    entities: {
+      "valve.smart_irrigation_rasen": { platform: "smart_irrigation" },
+      "sensor.smart_irrigation_rasen_water_used": {
+        platform: "smart_irrigation",
+      },
+      "switch.ventil_rasen": { platform: "template" },
+    },
+  };
+  it("leaves out what Smart Irrigation provides itself", () => {
+    expect(notOwnEntity(hass, "valve.smart_irrigation_rasen")).toBe(false);
+    expect(notOwnEntity(hass, "sensor.smart_irrigation_rasen_water_used")).toBe(
+      false,
+    );
+  });
+  it("offers the rest, registered or not", () => {
+    expect(notOwnEntity(hass, "switch.ventil_rasen")).toBe(true);
+    expect(notOwnEntity(hass, "switch.yaml_without_unique_id")).toBe(true);
+    expect(notOwnEntity(undefined, "switch.ventil_rasen")).toBe(true);
   });
 });
