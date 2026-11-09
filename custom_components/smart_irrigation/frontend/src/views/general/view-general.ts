@@ -31,6 +31,7 @@ import {
   navigate,
   readingUses,
   countLabel,
+  programCanRun,
 } from "../../helpers";
 import { loadHaForm } from "../../load-ha-elements";
 import "../../dialogs/trigger-dialog";
@@ -1144,20 +1145,27 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     // Starting a program is what the page is opened for most: its button heads
     // the program, with Stop beside it while it runs, and the options for this
     // one start folded under them. It stood under every setting.
-    const runHead = (program: SmartIrrigationProgram) => html`
-      <div class="si-actions plain">
-        ${this._actionBtn(mdiPlay, t("run_now"), () => run(program))}
-        ${["running", "waiting"].includes(stateOf(program.id)?.state)
-          ? this._actionBtn(
-              mdiStop,
-              t("stop_program"),
-              () => stopProgram(program),
-              true,
-            )
-          : ""}
-      </div>
-      ${runOptions(program.id)}
-    `;
+    // A program with no zone in its steps has nothing to start yet.
+    const runHead = (program: SmartIrrigationProgram) => {
+      const runs = ["running", "waiting"].includes(stateOf(program.id)?.state);
+      if (!programCanRun(program) && !runs) return html``;
+      return html`
+        <div class="si-actions plain">
+          ${programCanRun(program)
+            ? this._actionBtn(mdiPlay, t("run_now"), () => run(program))
+            : ""}
+          ${runs
+            ? this._actionBtn(
+                mdiStop,
+                t("stop_program"),
+                () => stopProgram(program),
+                true,
+              )
+            : ""}
+        </div>
+        ${programCanRun(program) ? runOptions(program.id) : ""}
+      `;
+    };
     const adjustBlock = (program: SmartIrrigationProgram) => {
       const id = program.id ?? "";
       const o = (ADJUST_OPTIONS[id] ||= {});

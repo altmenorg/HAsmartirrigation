@@ -910,3 +910,18 @@ export function countLabel(
   if (n === 1) return texts.one;
   return texts.many.replace("{n}", String(n));
 }
+
+/**
+ * Whether a program has anything to water: the main program always, another
+ * one once a step it runs has a zone. A new program headed its empty card
+ * with "Run now" (UX walk of 9 Nov., evening).
+ */
+export function programCanRun(program: {
+  main?: boolean;
+  steps?: { zones?: unknown[]; enabled?: boolean }[];
+}): boolean {
+  if (program.main) return true;
+  return (program.steps || []).some(
+    (step) => step.enabled !== false && (step.zones || []).length > 0,
+  );
+}

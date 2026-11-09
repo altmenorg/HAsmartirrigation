@@ -30,7 +30,7 @@ import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
 import { DOMAIN, ZONE_BUCKET } from "../../const";
-import { LiveState, wateringNow } from "../../card/format";
+import { LiveState, remainingDuration, wateringNow } from "../../card/format";
 import { askConfirmation } from "../../dialogs/confirmation-dialog";
 
 /**
@@ -387,41 +387,46 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                   ${this.t(
                     "cards.running.left",
                     "{time}",
-                    this.formatDuration(valve.remaining_seconds),
+                    remainingDuration(valve.remaining_seconds),
                     "{percent}",
                     String(valve.percent),
                   )}
                 </div>
               `,
             )}
-            ${programs.map(
-              (program) => html`
-                <div class="hero-sub">
-                  ${program.program_id === "main" &&
-                  (!program.name || program.name === "Main program")
-                    ? localize("programs.main_name", this._lang)
-                    : program.name ||
-                      this.t("cards.running.program")}${program.steps
-                    ? html`:
-                      ${this.t(
-                        "cards.running.step",
-                        "{step}",
-                        String(program.step ?? 1),
-                        "{steps}",
-                        String(program.steps),
-                      )}`
-                    : ""}
-                  ${program.remaining_seconds != null
-                    ? html`,
-                      ${this.t(
-                        "cards.running.program-left",
-                        "{time}",
-                        this.formatDuration(program.remaining_seconds),
-                      )}`
-                    : ""}
-                </div>
-              `,
-            )}
+            ${programs.map((program) => {
+              // Joined as text: the template's line breaks put a space
+              // before the comma ("Schritt 1/2 , noch 1 h 01 min").
+              const name =
+                program.program_id === "main" &&
+                (!program.name || program.name === "Main program")
+                  ? localize("programs.main_name", this._lang)
+                  : program.name || this.t("cards.running.program");
+              const bits: string[] = [];
+              if (program.steps) {
+                bits.push(
+                  this.t(
+                    "cards.running.step",
+                    "{step}",
+                    String(program.step ?? 1),
+                    "{steps}",
+                    String(program.steps),
+                  ),
+                );
+              }
+              if (program.remaining_seconds != null) {
+                bits.push(
+                  this.t(
+                    "cards.running.program-left",
+                    "{time}",
+                    remainingDuration(program.remaining_seconds),
+                  ),
+                );
+              }
+              return html`<div class="hero-sub">
+                ${bits.length ? `${name}: ${bits.join(", ")}` : name}
+              </div>`;
+            })}
           </div>
         </div>
         <div class="card-actions">

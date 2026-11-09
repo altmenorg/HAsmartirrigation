@@ -601,11 +601,30 @@ export class SmartIrrigationCard extends LitElement {
           }),
         );
       }
-      if (live) parts.push(`${live.percent}%`);
+      // A space before %, as the panel writes it.
+      if (live) parts.push(`${live.percent} %`);
       if (live && live.remaining_seconds != null) {
         parts.push(
           this._t("programs.remaining", {
             time: this._duration(live.remaining_seconds),
+          }),
+        );
+      }
+      // The main program run by its trigger waters zone by zone without a
+      // run of its own: its line was empty. It names the zones open now.
+      const open = this._live?.valves || [];
+      if (!live && running && open.length) {
+        parts.push(
+          open
+            .map((valve) => valve.zone)
+            .filter(Boolean)
+            .join(", "),
+        );
+        parts.push(
+          this._t("programs.remaining", {
+            time: this._duration(
+              Math.max(...open.map((valve) => valve.remaining_seconds)),
+            ),
           }),
         );
       }

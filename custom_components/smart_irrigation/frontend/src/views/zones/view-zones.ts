@@ -74,7 +74,12 @@ import {
   linkedValveDomains,
 } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
-import { LiveState, runningValve, wateringNow } from "../../card/format";
+import {
+  LiveState,
+  remainingDuration,
+  runningValve,
+  wateringNow,
+} from "../../card/format";
 import { localize } from "../../../localize/localize";
 import { askConfirmation, askNumber } from "../../dialogs/confirmation-dialog";
 import {
@@ -805,7 +810,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         text: t(
           this._live?.paused ? "running-paused" : "running",
           "{time}",
-          this._friendlyDuration(running.remaining_seconds),
+          remainingDuration(running.remaining_seconds),
         ),
         noValve: false,
       };
