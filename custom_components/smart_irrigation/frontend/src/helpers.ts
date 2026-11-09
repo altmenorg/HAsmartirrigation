@@ -897,3 +897,16 @@ export function linkedValveDomains(
   }
   return domains;
 }
+
+/**
+ * A count in words: none, one or several, each a text of its own. "0 step(s)
+ * · 0 schedule(s)" headed every program (UX walk of 9 Nov., evening).
+ */
+export function countLabel(
+  n: number,
+  texts: { none: string; one: string; many: string },
+): string {
+  if (n <= 0) return texts.none;
+  if (n === 1) return texts.one;
+  return texts.many.replace("{n}", String(n));
+}

@@ -1218,7 +1218,6 @@
     "step": "krok",
     "tour": "runda",
     "tours": "rundy",
-    "remaining": "pozostało",
     "no_valve": "Brak powiązanego zaworu, więc nie są podlewane:",
     "nothing_no_valve": "Nie ma czego podlewać w tym uruchomieniu: strefy, którym brakuje wody, nie mają powiązanego zaworu:"
   },
@@ -1351,8 +1350,6 @@
     "every_day": "codziennie",
     "anchor_start_short": "start o",
     "anchor_end_short": "skończony do",
-    "steps_count": "krok(i)",
-    "schedules_count": "harmonogram(y)",
     "off": "wyłączony",
     "steps_title": "Kroki",
     "schedules_title": "Harmonogramy",

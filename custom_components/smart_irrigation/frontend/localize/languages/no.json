@@ -1218,7 +1218,6 @@
     "step": "trinn",
     "tour": "runde",
     "tours": "runder",
-    "remaining": "igjen",
     "no_valve": "Ingen ventil tilknyttet, så de vannes ikke:",
     "nothing_no_valve": "Ingenting å vanne i denne kjøringen: sonene som mangler vann, har ingen ventil tilknyttet:"
   },
@@ -1351,8 +1350,6 @@
     "every_day": "hver dag",
     "anchor_start_short": "starter kl.",
     "anchor_end_short": "ferdig innen",
-    "steps_count": "trinn",
-    "schedules_count": "tidsplan(er)",
     "off": "av",
     "steps_title": "Trinn",
     "schedules_title": "Tidsplaner",

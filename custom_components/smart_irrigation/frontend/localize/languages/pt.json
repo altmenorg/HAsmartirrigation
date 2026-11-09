@@ -1218,7 +1218,6 @@
     "step": "etapa",
     "tour": "ronda",
     "tours": "rondas",
-    "remaining": "restante",
     "no_valve": "Sem válvula associada, por isso não são regadas:",
     "nothing_no_valve": "Nada para regar neste ciclo: as zonas com falta de água não têm válvula associada:"
   },
@@ -1351,8 +1350,6 @@
     "every_day": "todos os dias",
     "anchor_start_short": "começa às",
     "anchor_end_short": "concluído até às",
-    "steps_count": "etapa(s)",
-    "schedules_count": "agendamento(s)",
     "off": "desligado",
     "steps_title": "Etapas",
     "schedules_title": "Agendamentos",

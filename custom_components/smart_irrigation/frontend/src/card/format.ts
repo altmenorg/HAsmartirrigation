@@ -72,7 +72,7 @@ export const depthLabel = (
  *
  * The panel and the card wrote the same duration five ways: "00:02:00",
  * "1:00:00", "1 h 00 min", "60 min", "1 h 3 min". This is the one way, for a
- * duration that is read. A countdown that ticks keeps durationLabel.
+ * duration that is read; the time left is remainingDuration.
  */
 export const friendlyDuration = (seconds?: number | null): string => {
   const total = Math.max(0, Math.round(Number(seconds) || 0));
@@ -84,18 +84,15 @@ export const friendlyDuration = (seconds?: number | null): string => {
   return `${s} s`;
 };
 
-/** A countdown as m:ss, or h:mm:ss with hours. */
-export const durationLabel = (seconds: number): string => {
-  const total = Math.max(0, Math.round(seconds));
-  const h = Math.floor(total / 3600);
-  const m = Math.floor((total % 3600) / 60);
-  const s = total % 60;
-  const parts = h ? [h, m, s] : [m, s];
-  return parts
-    .map((part, index) =>
-      index ? String(part).padStart(2, "0") : String(part),
-    )
-    .join(":");
+/**
+ * Time left, said like any other duration: in whole minutes from 10 minutes
+ * on ("59 min", "1 h 02 min"), to the second below ("1 min 54 s"). The same
+ * run read "59 min 53 s" on Start, "59:53" in Planning and "59:33" or
+ * "1:01:49" on the card (UX walk of 9 Nov., evening).
+ */
+export const remainingDuration = (seconds?: number | null): string => {
+  const total = Math.max(0, Math.round(Number(seconds) || 0));
+  return friendlyDuration(total >= 600 ? Math.ceil(total / 60) * 60 : total);
 };
 
 /**
@@ -278,3 +275,14 @@ export function awaitsFirstCalculation(zone: {
     !zone.calculation_problem?.code
   );
 }
+
+/**
+ * A manual zone's run, in seconds, or null for a zone that is not manual. It
+ * waters its own duration at every start, whatever its water balance, so the
+ * card says that rather than "no watering needed" (UX walk of 9 Nov., evening).
+ */
+export const manualRun = (zone: {
+  state?: string;
+  duration?: number | null;
+}): number | null =>
+  zone.state === "manual" ? Math.max(0, Number(zone.duration) || 0) : null;

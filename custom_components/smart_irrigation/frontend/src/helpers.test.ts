@@ -43,6 +43,7 @@ import {
   splitChosen,
   linkedValveDomains,
   formatDuration,
+  countLabel,
 } from "./helpers";
 
 /**
@@ -806,4 +807,27 @@ describe("the texts of daily use", () => {
     expect(formatDuration(120)).toBe("2 min");
     expect(formatDuration(3600)).toBe("1 h 00 min");
   });
+});
+
+describe("a count in words", () => {
+  const texts = { none: "no steps", one: "1 step", many: "{n} steps" };
+  it("has a text for none, one and several", () => {
+    expect(countLabel(0, texts)).toBe("no steps");
+    expect(countLabel(1, texts)).toBe("1 step");
+    expect(countLabel(3, texts)).toBe("3 steps");
+  });
+  for (const lang of ["en", "de"]) {
+    it(`heads a program without brackets (${lang})`, () => {
+      for (const key of [
+        "steps_none",
+        "steps_one",
+        "steps_many",
+        "schedules_none",
+        "schedules_one",
+        "schedules_many",
+      ]) {
+        expect(localize(`programs.${key}`, lang)).not.toMatch(/\(|\//);
+      }
+    });
+  }
 });

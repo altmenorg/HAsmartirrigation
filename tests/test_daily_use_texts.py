@@ -64,3 +64,48 @@ def test_the_pump_page_has_no_signed_delays(lang):
 
 def test_the_german_observed_watering_is_german():
     assert "Closed Loop" not in _get("de", "observed_watering.title")
+
+
+# --- the evening walk of 9 Nov. ----------------------------------------------------
+
+
+@pytest.mark.parametrize("lang", ["en", "de"])
+def test_the_card_says_a_manual_zone_waters_at_every_start(lang):
+    """It said "no watering needed" for a zone the next start waters."""
+    runs = _get(lang, "card.manual_runs")
+    assert "{duration}" in runs
+    assert {"en": "every start", "de": "jedem Start"}[lang] in runs
+    assert _get(lang, "card.manual_no_duration")
+
+
+@pytest.mark.parametrize("lang", ["en", "de"])
+def test_planning_says_the_time_left_like_start(lang):
+    assert (
+        _get(lang, "planning.left") == {"en": "{time} left", "de": "noch {time}"}[lang]
+    )
+
+
+@pytest.mark.parametrize("lang", ["en", "de"])
+def test_a_program_heads_its_steps_and_schedules_without_brackets(lang):
+    for key in (
+        "steps_none",
+        "steps_one",
+        "steps_many",
+        "schedules_none",
+        "schedules_one",
+        "schedules_many",
+    ):
+        text = _get(lang, f"programs.{key}")
+        assert not re.search(r"\(|/", text), key
+    assert "{n}" in _get(lang, "programs.steps_many")
+    assert "{n}" in _get(lang, "programs.schedules_many")
+
+
+def test_the_old_bracket_texts_are_gone_everywhere():
+    for path in PANEL.glob("*.json"):
+        programs = json.loads(path.read_text("utf-8")).get("programs", {})
+        assert "steps_count" not in programs, path.name
+        assert "schedules_count" not in programs, path.name
+        assert "remaining" not in json.loads(path.read_text("utf-8")).get(
+            "planning", {}
+        ), path.name

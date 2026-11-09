@@ -1218,7 +1218,6 @@
     "step": "lépés",
     "tour": "kör",
     "tours": "kör",
-    "remaining": "van hátra",
     "no_valve": "Nincs csatolt szelep, így nem öntöz:",
     "nothing_no_valve": "Ebben a futásban nincs mit öntözni: a vízhiányos zónákhoz nincs szelep csatolva:"
   },
@@ -1351,8 +1350,6 @@
     "every_day": "minden nap",
     "anchor_start_short": "indul",
     "anchor_end_short": "kész",
-    "steps_count": "lépés",
-    "schedules_count": "ütemezés",
     "off": "ki",
     "steps_title": "Lépések",
     "schedules_title": "Ütemezések",

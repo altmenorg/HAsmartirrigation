@@ -1218,7 +1218,6 @@
     "step": "步骤",
     "tour": "轮",
     "tours": "轮",
-    "remaining": "剩余",
     "no_valve": "未关联阀门，因此不会浇水：",
     "nothing_no_valve": "本次运行无需浇水：缺水的区域没有关联阀门："
   },
@@ -1351,8 +1350,6 @@
     "every_day": "每天",
     "anchor_start_short": "开始于",
     "anchor_end_short": "完成于",
-    "steps_count": "个步骤",
-    "schedules_count": "个时间表",
     "off": "关",
     "steps_title": "步骤",
     "schedules_title": "时间表",

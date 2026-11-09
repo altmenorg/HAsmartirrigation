@@ -18,7 +18,8 @@ import {
   programsPollDelay,
   deficitOf,
   depthLabel,
-  durationLabel,
+  remainingDuration,
+  manualRun,
   friendlyDuration,
   momentLabel,
   nextStartState,
@@ -301,7 +302,7 @@ export class SmartIrrigationCard extends LitElement {
   }
 
   private _duration(seconds: number): string {
-    return durationLabel(seconds);
+    return remainingDuration(seconds);
   }
 
   private _moment(when: string): string {
@@ -442,7 +443,9 @@ export class SmartIrrigationCard extends LitElement {
     // Under full control a zone with no valve is left out of the run: say so,
     // with the way to its valve, rather than how long it "would run" (#969).
     const noValve = zoneWithoutValve(this._info, zone.id);
-    const needed = deficit > threshold && now.duration > 0 && !noValve;
+    const manual = manualRun(zone);
+    const needed =
+      manual === null && deficit > threshold && now.duration > 0 && !noValve;
     return html`
       <div class="zone">
         <div class="zone-name">
@@ -452,11 +455,17 @@ export class SmartIrrigationCard extends LitElement {
             : ""}
         </div>
         <div class="zone-state ${needed ? "needed" : ""}">
-          ${deficit > 0
-            ? this._t("short_by", { value: this._depth(deficit) })
-            : awaitsFirstCalculation(zone) && !now.live
-              ? this._t("not_calculated")
-              : this._t("no_need")}
+          ${manual !== null && !noValve
+            ? manual > 0
+              ? this._t("manual_runs", { duration: friendlyDuration(manual) })
+              : this._t("manual_no_duration")
+            : manual !== null
+              ? ""
+              : deficit > 0
+                ? this._t("short_by", { value: this._depth(deficit) })
+                : awaitsFirstCalculation(zone) && !now.live
+                  ? this._t("not_calculated")
+                  : this._t("no_need")}
           ${needed
             ? html`&middot;
               ${this._t("runs_for", {
@@ -464,7 +473,7 @@ export class SmartIrrigationCard extends LitElement {
               })}`
             : ""}
           ${noValve
-            ? html`&middot;
+            ? html`${manual !== null ? "" : html`&middot;`}
                 <a
                   class="no-valve"
                   href="/${DOMAIN}/zones/zone/${zone.id}"
