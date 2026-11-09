@@ -87,7 +87,7 @@ from .programs import ensure_main_program, normalize_programs
 from .scheduler import RecurringScheduleManager, SeasonalAdjustmentManager
 from .service_handlers import ServiceHandlersMixin
 from .skip_conditions import SkipConditionsMixin, thresholds_for_storage
-from .store import SmartIrrigationStorage, async_get_registry
+from .store import DATA_REGISTRY, SmartIrrigationStorage, async_get_registry
 from .supplies import normalize_supplies
 from .triggers import TriggersMixin
 from .valve_runner import ValveRunnerMixin
@@ -503,13 +503,16 @@ async def async_unload_entry(hass: HomeAssistant, entry):
 
 
 async def async_remove_entry(hass: HomeAssistant, entry):
-    """Remove Smart Irrigation config entry."""
+    """Remove Smart Irrigation config entry, and its data with it."""
     remove_panel(hass)
-    if const.DOMAIN in hass.data:
-        if "coordinator" in hass.data[const.DOMAIN]:
-            coordinator = hass.data[const.DOMAIN]["coordinator"]
-            await coordinator.async_delete_config()
-        del hass.data[const.DOMAIN]
+    # The store is loaded once and kept in hass.data under a key of its own,
+    # which outlived the entry: deleting the file left the zones, the groups
+    # and the settings in memory, and adding the integration again took them
+    # up and wrote them back. The store goes as well now, loaded or not.
+    store = await async_get_registry(hass)
+    await store.async_delete()
+    hass.data.pop(DATA_REGISTRY, None)
+    hass.data.pop(const.DOMAIN, None)
 
 
 def wind_at_two_metres(speed, height_m):
@@ -2768,10 +2771,6 @@ class SmartIrrigationCoordinator(
         # pumps off, so the setup that follows a reload cannot resume a run
         # (and switch the pump on) under their late cleanup.
         await self.async_wait_valve_runs(cancelled_runs)
-
-    async def async_delete_config(self):
-        """Wipe Smart Irrigation storage."""
-        await self.store.async_delete()
 
 
 @callback

@@ -145,7 +145,6 @@ def mock_coordinator(mock_store):
     coordinator.use_weather_service = False
     coordinator.update_subscriptions = AsyncMock()
     coordinator.async_unload = AsyncMock()
-    coordinator.async_delete_config = AsyncMock()
     coordinator.setup_SmartIrrigation_entities = AsyncMock()
 
     # Mock service handlers
