@@ -2060,12 +2060,12 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     // Short summary line: how many fields have a source, and how many zones
     // read the group. It counted every field, "None" ones included, under the
     // page's own title, and read "9 sensor groups" for one sensor group.
-    const numberofsources = Object.values(mapping.mappings || {}).filter(
-      (conf: any) => {
+    const numberofsources = this._shownSettings(mapping)
+      .settingsEntries.map(([, conf]) => conf)
+      .filter((conf: any) => {
         const source = typeof conf === "string" ? conf : conf?.source;
         return !!source && source !== MAPPING_CONF_SOURCE_NONE;
-      },
-    ).length;
+      }).length;
     const count = (n: number, key: string) =>
       localize(
         `panels.mappings.summary.${key}-${n === 1 ? "one" : "other"}`,
@@ -2168,11 +2168,17 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private renderMappingSettings(
-    mapping: SmartIrrigationMapping,
-    index: number,
-  ): TemplateResult {
-    // Render mapping settings in smaller chunks
+  /**
+   * The fields a sensor group shows, and those it would show without the
+   * readings its zones do not ask for. The summary counts the same fields as
+   * the card, so a group given the evapotranspiration ready-made does not
+   * count the readings it hides (#1008).
+   */
+  private _shownSettings(mapping: SmartIrrigationMapping): {
+    afterGreenhouse: [string, any][];
+    settingsEntries: [string, any][];
+    provided: boolean;
+  } {
     // Nothing falls on a greenhouse, so the two rain fields are not just
     // unused here, they are misleading: a rain gauge outside measures water
     // that never reaches these zones.
@@ -2211,6 +2217,15 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
           Number(y === MAPPING_EVAPOTRANSPIRATION) -
           Number(x === MAPPING_EVAPOTRANSPIRATION),
       );
+    return { afterGreenhouse, settingsEntries, provided };
+  }
+
+  private renderMappingSettings(
+    mapping: SmartIrrigationMapping,
+    index: number,
+  ): TemplateResult {
+    const { afterGreenhouse, settingsEntries, provided } =
+      this._shownSettings(mapping);
     const hidden = afterGreenhouse.length - settingsEntries.length;
     const lang = this.hass!.language;
 

@@ -671,6 +671,15 @@ export class SmartIrrigationPanel extends LitElement {
             margin-left: 0;
             margin-right: 0;
           }
+          /* The tabs share the width, centred, instead of sitting on the
+             left with the margins uneven (#1007). */
+          ha-tab-group::part(nav),
+          ha-tab-group::part(tabs) {
+            width: 100%;
+          }
+          ha-tab-group::part(tabs) {
+            justify-content: space-around;
+          }
           ha-tab-group-tab {
             flex: 1 1 0;
           }

@@ -81,6 +81,8 @@ import {
   UNIT_SECONDS,
   ZONE_BUCKET,
   ZONE_DRAINAGE_RATE,
+  DEFAULT_DRAINAGE_RATE_MM_H,
+  DEFAULT_CROP_FACTOR,
   ZONE_DURATION,
   ZONE_FLOW_SENSOR,
   ZONE_SOIL_MOISTURE_SENSOR,
@@ -128,6 +130,15 @@ const SOIL_TYPES = [
   "clay",
   "custom",
 ];
+// The drainage rate each soil stands for, in mm/h (presets.py SOIL_TYPES),
+// shown after its name so the choice says what it sets (#1009).
+export const SOIL_DRAINAGE_MM_H: Record<string, number> = {
+  sand: 25.0,
+  sandy_loam: 15.0,
+  loam: 8.0,
+  clay_loam: 4.0,
+  clay: 2.0,
+};
 const PLANT_TYPES = [
   "default",
   "lawn",
@@ -1995,14 +2006,31 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                                 lang,
                                 "{value}",
                                 `${this._n(
-                                  Number(zone.drainage_rate) || 0,
+                                  // The value choosing it gives: the zone's
+                                  // own while nobody chose, else the default
+                                  // it goes back to (#1011).
+                                  zone.soil_type === "default"
+                                    ? Number(zone.drainage_rate) || 0
+                                    : this.config?.units === CONF_METRIC
+                                      ? DEFAULT_DRAINAGE_RATE_MM_H
+                                      : DEFAULT_DRAINAGE_RATE_MM_H / 25.4,
                                   this.config?.units === CONF_METRIC ? 1 : 2,
                                 )} ${unit_text(this.config, ZONE_DRAINAGE_RATE)}`,
                               )
-                            : localize(
-                                `panels.zones.labels.soil-types.${soil}`,
-                                lang,
-                              )}
+                            : soil in SOIL_DRAINAGE_MM_H
+                              ? `${localize(
+                                  `panels.zones.labels.soil-types.${soil}`,
+                                  lang,
+                                )} (${this._n(
+                                  this.config?.units === CONF_METRIC
+                                    ? SOIL_DRAINAGE_MM_H[soil]
+                                    : SOIL_DRAINAGE_MM_H[soil] / 25.4,
+                                  this.config?.units === CONF_METRIC ? 0 : 2,
+                                )} ${unit_text(this.config, ZONE_DRAINAGE_RATE)})`
+                              : localize(
+                                  `panels.zones.labels.soil-types.${soil}`,
+                                  lang,
+                                )}
                         </option>
                       `,
                     )}
@@ -2047,7 +2075,12 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                                 "panels.zones.labels.plant-types.default",
                                 lang,
                                 "{value}",
-                                this._n(Number(zone.multiplier) || 0, 1),
+                                this._n(
+                                  zone.plant_type === "default"
+                                    ? Number(zone.multiplier) || 0
+                                    : DEFAULT_CROP_FACTOR,
+                                  1,
+                                ),
                               )
                             : localize(
                                 `panels.zones.labels.plant-types.${plant}`,
@@ -3338,11 +3371,12 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       /* The actions for all zones that discard data, under a divider. */
       .bulk-danger {
         margin-top: 16px;
-        padding-top: 8px;
+        padding-top: 16px;
         border-top: 1px solid var(--divider-color);
       }
+      /* Room between the hint and the buttons, which touched it (#1006). */
       .bulk-danger .setting-help {
-        padding: 0 0 8px;
+        padding: 0 0 12px;
       }
       /* Deleting the zone, apart from what it does every day. */
       .zone-danger {

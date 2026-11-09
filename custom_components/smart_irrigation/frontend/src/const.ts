@@ -185,6 +185,10 @@ export const ZONE_MAXIMUM_DURATION = "maximum_duration";
 export const ZONE_MAXIMUM_BUCKET = "maximum_bucket";
 export const ZONE_IRRIGATION_THRESHOLD = "irrigation_threshold";
 export const ZONE_DRAINAGE_RATE = "drainage_rate";
+// What "not chosen yet" sets a zone back to (const.py CONF_DEFAULT_DRAINAGE_RATE
+// in mm/h, presets.py DEFAULT_MULTIPLIER).
+export const DEFAULT_DRAINAGE_RATE_MM_H = 8.0;
+export const DEFAULT_CROP_FACTOR = 1.0;
 export const ZONE_CURRENT_DRAINAGE = "current_drainage";
 export const ZONE_LINKED_ENTITY = "linked_entity";
 export const ZONE_DAYS_BETWEEN_IRRIGATION = "days_between_irrigation";
