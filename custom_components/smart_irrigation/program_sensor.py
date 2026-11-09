@@ -8,6 +8,10 @@ is never polled.
 The state is one of idle, waiting, running, paused, suspended or disabled. The
 next start, the last run, the length of the suspension and, while it runs, the
 step it is on and how far along it is, are attributes.
+
+The name and the states come from the translations: in German the main
+program's sensor was "Smart Irrigation Program Main program", reading "idle".
+The entity ID stays the English one it always had.
 """
 
 import logging
@@ -39,7 +43,7 @@ _ICONS = {
 class SmartIrrigationProgramSensor(SensorEntity):
     """The state of one program of the full controller."""
 
-    _attr_has_entity_name = False
+    _attr_has_entity_name = True
     _attr_should_poll = False
 
     def __init__(self, hass: HomeAssistant, overview: dict) -> None:
@@ -49,14 +53,19 @@ class SmartIrrigationProgramSensor(SensorEntity):
         self.entity_id = (
             f"{PLATFORM}.{const.DOMAIN}_program_{slugify(self._program_id)}"
         )
+        # The main program has one name, which the panel does not let anyone
+        # change; another program is "Program <its name>".
+        self._attr_translation_key = (
+            "program_main" if overview.get("main") else "program"
+        )
+        self._attr_translation_placeholders = self._placeholders(overview)
+
+    def _placeholders(self, overview: dict) -> dict[str, str]:
+        return {"name": str(overview.get("name") or self._program_id)}
 
     @property
     def unique_id(self) -> str:
         return f"{const.DOMAIN}_program_{self._program_id}"
-
-    @property
-    def name(self) -> str:
-        return f"Program {self._overview.get('name') or self._program_id}"
 
     @property
     def native_value(self) -> str:
@@ -101,6 +110,11 @@ class SmartIrrigationProgramSensor(SensorEntity):
         """Take what the coordinator published and show it, if it changed."""
         if overview == self._overview:
             return
+        if overview.get("name") != self._overview.get("name"):
+            self._attr_translation_placeholders = self._placeholders(overview)
+            # Home Assistant keeps the name it worked out from the translation
+            # and its placeholders: a renamed program kept its old one.
+            self.__dict__.pop("name", None)
         self._overview = overview
         if self.hass is not None:
             self.async_write_ha_state()

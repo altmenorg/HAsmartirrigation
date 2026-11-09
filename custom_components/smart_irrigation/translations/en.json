@@ -30,6 +30,28 @@
       },
       "next_irrigation": {
         "name": "Next irrigation"
+      },
+      "program": {
+        "name": "Program {name}",
+        "state": {
+          "idle": "Idle",
+          "waiting": "Waiting",
+          "running": "Running",
+          "paused": "Paused",
+          "suspended": "Suspended",
+          "disabled": "Disabled"
+        }
+      },
+      "program_main": {
+        "name": "Main program",
+        "state": {
+          "idle": "Idle",
+          "waiting": "Waiting",
+          "running": "Running",
+          "paused": "Paused",
+          "suspended": "Suspended",
+          "disabled": "Disabled"
+        }
       }
     },
     "number": {

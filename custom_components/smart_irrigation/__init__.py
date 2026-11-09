@@ -728,6 +728,8 @@ class SmartIrrigationCoordinator(
         self._claimed_zones = set()
         self._direct_run_finished = {}
         self._sequential_cycle = None
+        # Parallel cycles of the main program under way (valve_runner).
+        self._parallel_cycles = 0
         self._valve_run_tasks = set()
 
         # set up sunrise tracking

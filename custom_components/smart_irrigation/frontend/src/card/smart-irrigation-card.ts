@@ -576,13 +576,18 @@ export class SmartIrrigationCard extends LitElement {
         ? `${this._t("next_start")} ${this._moment(program.next_start)}`
         : this._t("no_start");
     }
+    // No badge while the program only waits for its next start: "idle" read
+    // as "inactive" next to a program that is switched on, and the line under
+    // it already says when it starts.
     return html`
       <div class="zone program">
         <div class="zone-name">
           ${programLabel(program, this._t("programs.main_name"))}
-          <span class="chip ${running ? "on" : ""}"
-            >${this._t(`programs.states.${program.state}`)}</span
-          >
+          ${program.state === "idle"
+            ? ""
+            : html`<span class="chip ${running ? "on" : ""}"
+                >${this._t(`programs.states.${program.state}`)}</span
+              >`}
         </div>
         <div class="zone-state ${running ? "needed" : ""}">${detail}</div>
         ${running && live

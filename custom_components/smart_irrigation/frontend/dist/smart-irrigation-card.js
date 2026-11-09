@@ -105,9 +105,9 @@ const ht=t=>(e,i)=>{void 0!==i?i.addInitializer(()=>{customElements.define(t,e)}
       <div class="zone program">
         <div class="zone-name">
           ${((t,e)=>{var i;return"main"!==t.program_id||t.name&&"Main program"!==t.name?null!==(i=t.name)&&void 0!==i?i:t.program_id:e})(t,this._t("programs.main_name"))}
-          <span class="chip ${i?"on":""}"
-            >${this._t(`programs.states.${t.state}`)}</span
-          >
+          ${"idle"===t.state?"":W`<span class="chip ${i?"on":""}"
+                >${this._t(`programs.states.${t.state}`)}</span
+              >`}
         </div>
         <div class="zone-state ${i?"needed":""}">${l}</div>
         ${i&&e?W`<progress
