@@ -10,6 +10,8 @@ import {
   nextStartState,
   programLabel,
   retryDelay,
+  runningValve,
+  wateringNow,
   zoneActionEntity,
   zoneNow,
   zoneWithoutValve,
@@ -339,5 +341,60 @@ describe("programLabel", () => {
         "Hauptprogramm",
       ),
     ).toBe("Main program");
+  });
+});
+
+describe("runningValve", () => {
+  const live = {
+    valves: [
+      { zone_id: 1, zone: "Lawn", remaining_seconds: 300, percent: 50 },
+      { zone_id: 2, zone: "Hedge", remaining_seconds: 60, percent: 90 },
+    ],
+  };
+
+  it("finds the zone's valve, by number or text", () => {
+    expect(runningValve(live, 2)?.zone).toBe("Hedge");
+    expect(runningValve(live, "1" as any)?.zone).toBe("Lawn");
+  });
+
+  it("finds nothing for another zone, no zone or no live state", () => {
+    expect(runningValve(live, 3)).toBeUndefined();
+    expect(runningValve(live, undefined)).toBeUndefined();
+    expect(runningValve(null, 1)).toBeUndefined();
+    expect(runningValve({}, 1)).toBeUndefined();
+  });
+});
+
+describe("wateringNow", () => {
+  it("is false with nothing going on", () => {
+    expect(wateringNow(null)).toBe(false);
+    expect(wateringNow({})).toBe(false);
+    expect(
+      wateringNow({
+        paused: false,
+        cycle: false,
+        valves: [],
+        programs: [{ program_id: "main", state: "idle" }],
+      }),
+    ).toBe(false);
+  });
+
+  it("is true while a valve is open, a program runs, a cycle soaks or all is paused", () => {
+    expect(
+      wateringNow({
+        valves: [{ zone_id: 1, remaining_seconds: 10, percent: 1 }],
+      }),
+    ).toBe(true);
+    expect(
+      wateringNow({ programs: [{ program_id: "main", state: "running" }] }),
+    ).toBe(true);
+    expect(wateringNow({ cycle: true })).toBe(true);
+    expect(wateringNow({ paused: true })).toBe(true);
+  });
+
+  it("does not count a program that only waits", () => {
+    expect(
+      wateringNow({ programs: [{ program_id: "p1", state: "waiting" }] }),
+    ).toBe(false);
   });
 });

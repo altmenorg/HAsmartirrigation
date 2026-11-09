@@ -446,6 +446,14 @@
           "title": "Eine Zone wird nicht mehr berechnet",
           "body": "Ihr Wasserbedarf ist älter als der der anderen, sie bewässert also nach altem Wetter. Prüfe, ob ihre Sensorgruppe noch Daten erhält, und sieh im Protokoll nach, was die Berechnung zu ihr gesagt hat.",
           "never": "nie berechnet"
+        },
+        "running": {
+          "headline": "Bewässert gerade",
+          "headline-paused": "Bewässerung pausiert",
+          "left": "noch {time} ({percent} %)",
+          "program": "Programm",
+          "step": "Schritt {step}/{steps}",
+          "program-left": "noch {time}"
         }
       },
       "gaps": {
@@ -789,7 +797,9 @@
           "error": "Lässt sich nicht berechnen: {detail}. Bis dahin wird nicht bewässert."
         },
         "no-valve": "Kein Ventil verknüpft, daher wird diese Zone nicht bewässert.",
-        "no-valve-action": "Ventil verknüpfen"
+        "no-valve-action": "Ventil verknüpfen",
+        "running": "Bewässert gerade, noch {time}.",
+        "running-paused": "Bewässerung pausiert, noch {time}."
       },
       "calendar": {
         "title": "Bewässerungskalender (12 Monate, geschätzt)",
@@ -1526,7 +1536,9 @@
     "no_valve": "kein Ventil verknüpft, wird nicht bewässert",
     "no_trigger": "Kein Startauslöser",
     "not_scheduled": "Fällig, aber nicht eingeplant",
-    "off": "Ausgeschaltet"
+    "off": "Ausgeschaltet",
+    "watering_left": "bewässert, noch {time}",
+    "paused_left": "pausiert, noch {time}"
   },
   "confirm": {
     "delete_zone": "Die Zone „{name}“ löschen? Ihre Einstellungen und ihre Wasserbilanz gehen verloren.",

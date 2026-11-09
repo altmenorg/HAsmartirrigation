@@ -1145,6 +1145,23 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         program_id: program.id,
       }).then(() => this._fetchLive(false));
     };
+    // Starting a program is what the page is opened for most: its button heads
+    // the program, with Stop beside it while it runs, and the options for this
+    // one start folded under them. It stood under every setting.
+    const runHead = (program: SmartIrrigationProgram) => html`
+      <div class="si-actions plain">
+        ${this._actionBtn(mdiPlay, t("run_now"), () => run(program))}
+        ${["running", "waiting"].includes(stateOf(program.id)?.state)
+          ? this._actionBtn(
+              mdiStop,
+              t("stop_program"),
+              () => stopProgram(program),
+              true,
+            )
+          : ""}
+      </div>
+      ${runOptions(program.id)}
+    `;
     const adjustBlock = (program: SmartIrrigationProgram) => {
       const id = program.id ?? "";
       const o = (ADJUST_OPTIONS[id] ||= {});
@@ -1999,6 +2016,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       return html`
         <ha-card header="${programName(program)}">
           <div class="card-content">
+            ${runHead(program)}
             <div class="setting-note">${t("main_description")}</div>
             <div class="setting-hint row-hint">${t("main_steps_hint")}</div>
             <div class="setting-row">
@@ -2022,10 +2040,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               ${t("main_settings_description")}
             </div>
             ${this.renderExecutionSettings(lang, true)}
-            ${runOptions(program.id)}
-            <div class="si-actions">
-              ${this._actionBtn(mdiPlay, t("run_now"), () => run(program))}
-            </div>
           </div>
         </ha-card>
       `;
@@ -2048,6 +2062,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         ? html` · <em>${t("off")}</em>`
                         : ""}`,
                     html`
+                      ${runHead(program)}
                       ${this._textRow(t("name"), "", program.name, (v) =>
                         patch(index, { name: v }),
                       )}
@@ -2114,21 +2129,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                             })}
                         ></ha-switch>
                       </div>
-                      ${adjustBlock(program)} ${runOptions(program.id)}
+                      ${adjustBlock(program)}
                       <div class="si-actions">
-                        ${this._actionBtn(mdiPlay, t("run_now"), () =>
-                          run(program),
-                        )}
-                        ${["running", "waiting"].includes(
-                          stateOf(program.id)?.state,
-                        )
-                          ? this._actionBtn(
-                              mdiStop,
-                              t("stop_program"),
-                              () => stopProgram(program),
-                              true,
-                            )
-                          : ""}
                         ${this._actionBtn(
                           mdiDelete,
                           t("delete"),

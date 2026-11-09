@@ -73,6 +73,7 @@ import {
   navigate,
 } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
+import { LiveState, runningValve, wateringNow } from "../../card/format";
 import { localize } from "../../../localize/localize";
 import { askConfirmation, askNumber } from "../../dialogs/confirmation-dialog";
 import {
@@ -199,6 +200,11 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
   // Set just before an inline-edit save so we can ignore the _config_updated
   // event our own write echoes back (the local state is already up to date,
   // a refetch would only cause a flicker). External changes still refresh.
+  // What is being watered now (programs_state): a zone watered for an hour
+  // showed its plan meanwhile (UX walk of 9 Nov.).
+  private _live: LiveState | null = null;
+  private _liveTimer?: number;
+
   private _suppressNextConfigUpdate = false;
 
   // Prevent excessive re-renders
@@ -267,6 +273,10 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
    * Open a zone and bring it into view: at its valve field when it has no
    * valve under full control, which is what a link to it is for (#969). A
    * zone just added opens at its head: it has no valve yet by nature.
+   *
+   * The valve field comes to the middle of the screen with its list open:
+   * scrolled to the top it stood half under the tabs, and still had to be
+   * found and opened.
    */
   private _focusZone(id: number, atValve = true): void {
     this._expanded.add(id);
@@ -274,11 +284,32 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     this.updateComplete.then(() => {
       const zone = this.zones.find((z) => z.id === id);
       const root = this.shadowRoot;
-      const target =
-        (atValve && zone && this._noValve(zone)
+      const anchor =
+        atValve && zone && this._noValve(zone)
           ? root?.querySelector(`#zone-${id}-valve`)
-          : null) ?? root?.querySelector(`#zone-${id}`);
-      target?.scrollIntoView({ block: "start", behavior: "smooth" });
+          : null;
+      if (!anchor) {
+        root
+          ?.querySelector(`#zone-${id}`)
+          ?.scrollIntoView({ block: "start", behavior: "smooth" });
+        return;
+      }
+      // The anchor is an empty mark just before the field's row, or the row
+      // itself when Smart Irrigation does not switch valves.
+      const row =
+        anchor.childElementCount === 0 && anchor.nextElementSibling
+          ? anchor.nextElementSibling
+          : anchor;
+      row.scrollIntoView({ block: "center", behavior: "smooth" });
+      const picker = row.querySelector("ha-entity-picker") as
+        | (HTMLElement & { open?: () => Promise<void> })
+        | null;
+      if (!picker) return;
+      // Opened once the scroll has settled, so the list is not left behind.
+      window.setTimeout(() => {
+        if (typeof picker.open === "function") picker.open();
+        else picker.focus();
+      }, 450);
     });
   }
 
@@ -289,11 +320,35 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     //this._fetchData();
   }
 
+  /** What is watering now; again in 5 s while it does, in 30 s otherwise. */
+  private async _fetchLive(): Promise<void> {
+    if (this._liveTimer) window.clearTimeout(this._liveTimer);
+    this._liveTimer = undefined;
+    if (!this.hass || !this.isConnected) return;
+    const was = JSON.stringify(this._live?.valves ?? []);
+    try {
+      const state = await this.hass.callWS<any>({
+        type: DOMAIN + "/programs_state",
+      });
+      this._live = state?.live ?? null;
+    } catch (_error) {
+      this._live = null;
+    }
+    if (JSON.stringify(this._live?.valves ?? []) !== was)
+      this._scheduleUpdate();
+    if (!this.isConnected) return;
+    this._liveTimer = window.setTimeout(
+      () => this._fetchLive(),
+      wateringNow(this._live) ? 5000 : 30000,
+    );
+  }
+
   public hassSubscribe(): Promise<UnsubscribeFunc>[] {
     // Initial data fetch for UI setup with proper error handling
     this._fetchData().catch((error) => {
       console.error("Failed to fetch initial data:", error);
     });
+    this._fetchLive();
 
     return [
       this.hass!.connection.subscribeMessage(
@@ -692,15 +747,17 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         role=${kind === "problem" ? "alert" : "status"}
       >
         <ha-icon
-          icon=${kind === "watering"
-            ? "mdi:water-outline"
-            : kind === "off"
-              ? "mdi:pause-circle-outline"
-              : kind === "problem"
-                ? "mdi:alert-circle-outline"
-                : kind === "waiting"
-                  ? "mdi:timer-sand"
-                  : "mdi:check-circle-outline"}
+          icon=${kind === "running"
+            ? "mdi:water"
+            : kind === "watering"
+              ? "mdi:water-outline"
+              : kind === "off"
+                ? "mdi:pause-circle-outline"
+                : kind === "problem"
+                  ? "mdi:alert-circle-outline"
+                  : kind === "waiting"
+                    ? "mdi:timer-sand"
+                    : "mdi:check-circle-outline"}
         ></ha-icon>
         <span>${text}</span>
         ${noValve && zone.id != undefined && !this._expanded.has(zone.id)
@@ -714,6 +771,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         ${kind !== "off" &&
         kind !== "problem" &&
         kind !== "waiting" &&
+        kind !== "running" &&
         threshold > 0
           ? html`<span class="zone-status-numbers">
               ${t("threshold")}: ${this._n(threshold, 1)} ${unit}
@@ -745,6 +803,19 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     // A zone that has just watered sits a hair below zero, and "short 0.0 mm"
     // says nothing true.
     const short = deficit >= 0.05 ? `${this._n(deficit, 1)} ${unit}` : null;
+
+    const running = runningValve(this._live, zone.id);
+    if (running) {
+      return {
+        kind: "running",
+        text: t(
+          this._live?.paused ? "running-paused" : "running",
+          "{time}",
+          this._friendlyDuration(running.remaining_seconds),
+        ),
+        noValve: false,
+      };
+    }
 
     let kind = "idle";
     let text = short ? t("idle", "{short}", short) : t("satisfied");
@@ -2981,6 +3052,8 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    if (this._liveTimer) window.clearTimeout(this._liveTimer);
+    this._liveTimer = undefined;
     // Clean up global debounce timer
     if (this.globalDebounceTimer) {
       clearTimeout(this.globalDebounceTimer);
@@ -3126,6 +3199,15 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
       .zone-status--watering {
         background: rgba(3, 169, 244, 0.12);
+      }
+
+      .zone-status--running {
+        background: rgba(3, 169, 244, 0.24);
+        font-weight: 500;
+      }
+
+      .zone-status--running ha-icon {
+        color: var(--primary-color);
       }
 
       .zone-status--watering ha-icon {

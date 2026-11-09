@@ -19,6 +19,9 @@ import {
   deficitOf,
   depthLabel,
   durationLabel,
+  LiveState,
+  runningValve,
+  wateringNow,
   momentLabel,
   nextStartState,
   programLabel,
@@ -103,6 +106,9 @@ export class SmartIrrigationCard extends LitElement {
   @state() private _programs: Program[] = [];
   /** The program whose stop is waiting for a second tap. */
   @state() private _confirmingStop: string | null = null;
+
+  /** What is being watered now, from programs_state. */
+  @state() private _live: LiveState | null = null;
   private _confirmStopTimer?: number;
   private _programsTimer?: number;
   private _programsUnsupported = false;
@@ -186,6 +192,7 @@ export class SmartIrrigationCard extends LitElement {
           type: `${DOMAIN}/programs_state`,
         });
         this._programs = result?.programs ?? [];
+        this._live = result?.live ?? null;
       } catch (_e) {
         // Keep what is on screen. A server that does not know the command is
         // an older integration: stop asking.
@@ -199,7 +206,10 @@ export class SmartIrrigationCard extends LitElement {
     if (!this.isConnected) return;
     this._programsTimer = window.setTimeout(
       () => this._loadPrograms(),
-      programsPollDelay(anyProgramActive(this._programs)),
+      // A zone watered on its own runs no program: it is polled as fast.
+      programsPollDelay(
+        anyProgramActive(this._programs) || wateringNow(this._live),
+      ),
     );
   }
 
@@ -442,6 +452,29 @@ export class SmartIrrigationCard extends LitElement {
     // with the way to its valve, rather than how long it "would run" (#969).
     const noValve = zoneWithoutValve(this._info, zone.id);
     const needed = deficit > threshold && now.duration > 0 && !noValve;
+    const running = runningValve(this._live, zone.id);
+    if (running) {
+      return html`
+        <div class="zone">
+          <div class="zone-name">
+            ${zone.name}
+            ${zone.state !== "automatic"
+              ? html`<span class="chip">${this._t(zone.state)}</span>`
+              : ""}
+          </div>
+          <div class="zone-state needed running">
+            ${this._t(this._live?.paused ? "paused_left" : "watering_left", {
+              time: this._duration(running.remaining_seconds),
+            })}
+          </div>
+          <progress
+            class="program-bar"
+            max="100"
+            .value=${running.percent}
+          ></progress>
+        </div>
+      `;
+    }
     return html`
       <div class="zone">
         <div class="zone-name">
@@ -576,6 +609,7 @@ export class SmartIrrigationCard extends LitElement {
         ? `${this._t("next_start")} ${this._moment(program.next_start)}`
         : this._t("no_start");
     }
+    if (stopping) detail = this._t("programs.confirm_stop");
     return html`
       <div class="zone program">
         <div class="zone-name">
@@ -584,7 +618,13 @@ export class SmartIrrigationCard extends LitElement {
             >${this._t(`programs.states.${program.state}`)}</span
           >
         </div>
-        <div class="zone-state ${running ? "needed" : ""}">${detail}</div>
+        <div
+          class="zone-state ${running ? "needed" : ""} ${stopping
+            ? "confirm"
+            : ""}"
+        >
+          ${detail}
+        </div>
         ${running && live
           ? html`<progress
               class="program-bar"
@@ -621,7 +661,9 @@ export class SmartIrrigationCard extends LitElement {
             : ""}
           ${active
             ? this._programButton(
-                stopping ? "mdi:check" : "mdi:stop",
+                // A tick read as "done" while the program went on running:
+                // it stays a stop, red, and the line says to tap again.
+                "mdi:stop",
                 this._t(stopping ? "programs.confirm_stop" : "programs.stop"),
                 () => this._stopPressed(program),
                 stopping,
@@ -725,6 +767,12 @@ export class SmartIrrigationCard extends LitElement {
       color: var(--secondary-text-color);
     }
     ha-icon-button.confirming {
+      color: var(--error-color, #db4437);
+    }
+    .zone-state.confirm {
+      color: var(--error-color, #db4437);
+    }
+    .zone-state.running {
       color: var(--primary-color);
     }
     .chip {

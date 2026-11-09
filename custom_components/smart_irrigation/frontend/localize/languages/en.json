@@ -446,6 +446,14 @@
           "title": "A zone is no longer being calculated",
           "body": "Its water need is older than the others, so it is watering on old weather. Check that its sensor group still receives data, and look at the log for what the calculation said about it.",
           "never": "never calculated"
+        },
+        "running": {
+          "headline": "Watering now",
+          "headline-paused": "Watering paused",
+          "left": "{time} left ({percent} %)",
+          "program": "Program",
+          "step": "step {step}/{steps}",
+          "program-left": "{time} left"
         }
       },
       "gaps": {
@@ -789,7 +797,9 @@
           "error": "Cannot be calculated: {detail}. Not watered until it can be."
         },
         "no-valve": "No valve linked, so this zone isn't watered.",
-        "no-valve-action": "Link a valve"
+        "no-valve-action": "Link a valve",
+        "running": "Watering now, {time} left.",
+        "running-paused": "Watering paused, {time} left."
       },
       "calendar": {
         "title": "Watering calendar (12 months, estimated)",
@@ -1526,7 +1536,9 @@
     "no_valve": "no valve linked, not watered",
     "no_trigger": "No start trigger",
     "not_scheduled": "Owed, but not scheduled",
-    "off": "Switched off"
+    "off": "Switched off",
+    "watering_left": "watering, {time} left",
+    "paused_left": "paused, {time} left"
   },
   "confirm": {
     "delete_zone": "Delete the zone \"{name}\"? Its settings and water balance are lost.",

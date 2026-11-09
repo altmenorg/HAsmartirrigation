@@ -261,3 +261,47 @@ export function awaitsFirstCalculation(zone: {
     !zone.calculation_problem?.code
   );
 }
+
+/** What programs_state says is being watered now (``live``). */
+export interface LiveState {
+  paused?: boolean;
+  cycle?: boolean;
+  programs?: {
+    program_id?: string;
+    name?: string | null;
+    state?: string;
+    step?: number;
+    steps?: number;
+    percent?: number;
+    remaining_seconds?: number | null;
+  }[];
+  valves?: {
+    zone_id: number;
+    zone?: string | null;
+    remaining_seconds: number;
+    percent: number;
+  }[];
+}
+
+/**
+ * The run of ours a zone is in right now, or undefined.
+ *
+ * Only Bewässerung › Planung said a zone was being watered: Start, the zone
+ * and the card went on showing its plan, "nothing to water" or "would run
+ * 1 h", while its valve was open (UX walk of 9 Nov.).
+ */
+export const runningValve = (
+  live: LiveState | null | undefined,
+  zoneId: number | string | undefined,
+) =>
+  zoneId === undefined || zoneId === null
+    ? undefined
+    : live?.valves?.find((v) => Number(v.zone_id) === Number(zoneId));
+
+/** Whether anything of ours is watering, waiting its turn or paused. */
+export const wateringNow = (live: LiveState | null | undefined): boolean =>
+  !!live &&
+  (live.paused === true ||
+    !!live.cycle ||
+    (live.valves || []).length > 0 ||
+    (live.programs || []).some((p) => p.state === "running"));

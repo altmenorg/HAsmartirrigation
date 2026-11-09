@@ -29,6 +29,8 @@ import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
 import { DOMAIN, ZONE_BUCKET } from "../../const";
+import { LiveState, wateringNow } from "../../card/format";
+import { askConfirmation } from "../../dialogs/confirmation-dialog";
 
 /**
  * The Info view answers the one question the Zones view cannot: what will
@@ -38,6 +40,27 @@ import { DOMAIN, ZONE_BUCKET } from "../../const";
  * manufacture prose. Where there is nothing to report it says so, rather than
  * filling the space with a sentence that reads like information.
  */
+
+/**
+ * The live state, with the programs the overview has running and the live
+ * state does not: the main program run by the start trigger waters zone by
+ * zone without a program run of its own, and was left out of the card.
+ */
+const withOverviewRuns = (state: any): LiveState | null => {
+  const live: LiveState | null = state?.live ?? null;
+  if (!live) return null;
+  const known = new Set((live.programs || []).map((p) => p.program_id));
+  const more = (state?.programs || [])
+    .filter((p: any) => p?.state === "running" && !known.has(p.program_id))
+    .map((p: any) => ({
+      program_id: p.program_id,
+      name: p.name,
+      state: "running",
+    }));
+  return more.length
+    ? { ...live, programs: [...(live.programs || []), ...more] }
+    : live;
+};
 
 @customElement("smart-irrigation-view-info")
 class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
@@ -60,6 +83,12 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
 
   private _fetchRetries = 0;
 
+  // What is being watered now (programs_state), asked again every few
+  // seconds while something runs and now and then otherwise.
+  @property({ attribute: false })
+  private _live: LiveState | null = null;
+  private _liveTimer?: number;
+
   // Prevent excessive re-renders
   private _updateScheduled = false;
   private _scheduleUpdate() {
@@ -77,10 +106,38 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
     });
   }
 
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this._liveTimer) window.clearTimeout(this._liveTimer);
+    this._liveTimer = undefined;
+  }
+
+  /** What is watering now; again in 5 s while it does, in 30 s otherwise. */
+  private async _fetchLive(): Promise<void> {
+    if (this._liveTimer) window.clearTimeout(this._liveTimer);
+    this._liveTimer = undefined;
+    if (!this.hass || !this.isConnected) return;
+    try {
+      const state = await this.hass.callWS<any>({
+        type: DOMAIN + "/programs_state",
+      });
+      this._live = withOverviewRuns(state);
+    } catch (error) {
+      // An older backend, or a moment without one: show nothing about it.
+      this._live = null;
+    }
+    if (!this.isConnected) return;
+    this._liveTimer = window.setTimeout(
+      () => this._fetchLive(),
+      wateringNow(this._live) ? 5000 : 30000,
+    );
+  }
+
   public hassSubscribe(): Promise<UnsubscribeFunc>[] {
     this._fetchData().catch((error) => {
       console.error("Failed to fetch initial data:", error);
     });
+    this._fetchLive();
 
     return [
       this.hass!.connection.subscribeMessage(
@@ -88,6 +145,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
           this._fetchData().catch((error) => {
             console.error("Failed to fetch data on config update:", error);
           });
+          this._fetchLive();
         },
         {
           type: DOMAIN + "_config_updated",
@@ -276,10 +334,120 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
     // that stopped being calculated. Postponing is a choice, so it comes after
     // the answer it changes. The page used to open with a card that said what
     // the page is for, and on a phone the answer started at 600 px.
+    // What is watering right now comes before everything: it is what is
+    // happening, and stopping it is the one thing that cannot wait.
     return html`
-      ${this.renderDeliveryGap()} ${this.renderStaleZones()}
-      ${this.renderNextRun()} ${this.renderPostpone()} ${this.renderForecast()}
-      ${this.renderDecision()} ${this.renderEstimates()}
+      ${this.renderRunning()} ${this.renderDeliveryGap()}
+      ${this.renderStaleZones()} ${this.renderNextRun()}
+      ${this.renderPostpone()} ${this.renderForecast()} ${this.renderDecision()}
+      ${this.renderEstimates()}
+    `;
+  }
+
+  /**
+   * What is being watered now, with a way to pause and stop it.
+   *
+   * Only Bewässerung › Planung said so: a zone was watered for an hour while
+   * Start showed the next run, the zone its plan and the card "would run"
+   * (UX walk of 9 Nov.).
+   */
+  private renderRunning(): TemplateResult {
+    const live = this._live;
+    if (!wateringNow(live)) return html``;
+    const paused = live?.paused === true;
+    const valves = live?.valves || [];
+    const programs = (live?.programs || []).filter(
+      (p) => p.state === "running",
+    );
+    const control = async (service: string) => {
+      await this.hass!.callService(DOMAIN, service, {});
+      this._fetchLive();
+    };
+    const stop = async () => {
+      const ok = await askConfirmation(this.hass, {
+        text: localize("programs.confirm_stop", this._lang),
+        destructive: true,
+      });
+      if (ok) control("stop_watering");
+    };
+    return html`
+      <ha-card>
+        <div class="card-content hero running">
+          <ha-icon
+            icon=${paused ? "mdi:pause-circle-outline" : "mdi:water"}
+          ></ha-icon>
+          <div class="hero-text">
+            <div class="hero-headline">
+              ${this.t(
+                paused
+                  ? "cards.running.headline-paused"
+                  : "cards.running.headline",
+              )}
+            </div>
+            ${valves.map(
+              (valve) => html`
+                <div class="hero-sub">
+                  <a
+                    href="/${DOMAIN}/zones/zone/${valve.zone_id}"
+                    @click=${(e: Event) => {
+                      e.preventDefault();
+                      navigate(this, `/${DOMAIN}/zones/zone/${valve.zone_id}`);
+                    }}
+                    >${valve.zone}</a
+                  >:
+                  ${this.t(
+                    "cards.running.left",
+                    "{time}",
+                    this.formatDuration(valve.remaining_seconds),
+                    "{percent}",
+                    String(valve.percent),
+                  )}
+                </div>
+              `,
+            )}
+            ${programs.map(
+              (program) => html`
+                <div class="hero-sub">
+                  ${program.program_id === "main" &&
+                  (!program.name || program.name === "Main program")
+                    ? localize("programs.main_name", this._lang)
+                    : program.name ||
+                      this.t("cards.running.program")}${program.steps
+                    ? html`:
+                      ${this.t(
+                        "cards.running.step",
+                        "{step}",
+                        String(program.step ?? 1),
+                        "{steps}",
+                        String(program.steps),
+                      )}`
+                    : ""}
+                  ${program.remaining_seconds != null
+                    ? html`,
+                      ${this.t(
+                        "cards.running.program-left",
+                        "{time}",
+                        this.formatDuration(program.remaining_seconds),
+                      )}`
+                    : ""}
+                </div>
+              `,
+            )}
+          </div>
+        </div>
+        <div class="card-actions">
+          ${paused
+            ? html`<ha-button @click=${() => control("resume_watering")}>
+                ${localize("programs.resume", this._lang)}
+              </ha-button>`
+            : html`<ha-button @click=${() => control("pause_watering")}>
+                ${localize("programs.pause", this._lang)}
+              </ha-button>`}
+          <ha-button variant="danger" @click=${stop}>
+            ${localize("programs.stop", this._lang)}
+          </ha-button>
+        </div>
+      </ha-card>
     `;
   }
 
