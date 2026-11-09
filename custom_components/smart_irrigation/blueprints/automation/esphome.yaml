@@ -47,7 +47,7 @@ action:
       duration: "{{ states(duration) }}"
       valve: "{{ esphome_valve }}"
 
-  - service: smart_irrigation.reset_bucket
+  - service: smart_irrigation.set_bucket
     data: {}
     target:
       entity_id: !input irrigation_zone

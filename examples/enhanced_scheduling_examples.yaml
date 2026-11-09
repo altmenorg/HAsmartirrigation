@@ -4,6 +4,8 @@ This file contains example automations and configurations demonstrating the enha
 
 ## Recurring Schedule Examples
 
+> **Recurring schedules are on their way out.** They keep working until version 2027.11 at the earliest, and each call to `create_recurring_schedule`, `update_recurring_schedule` or `delete_recurring_schedule` raises a repair issue. The programs' schedules do the same and are in the panel, under **Watering** (full controller). See [actions on their way out](../docs/usage-services.md#actions-on-their-way-out).
+
 ### Example 1: Daily Early Morning Calculation
 ```yaml
 automation:
@@ -79,7 +81,7 @@ automation:
       - platform: template
         value_template: "{{ now().month == 3 and now().day == 1 }}"
     action:
-      - service: smart_irrigation.create_seasonal_adjustment
+      - service: smart_irrigation.set_seasonal_adjustment
         data:
           name: "Spring Growth Boost"
           month_start: 3
@@ -94,7 +96,7 @@ automation:
       - platform: template
         value_template: "{{ now().month == 6 and now().day == 1 }}"
     action:
-      - service: smart_irrigation.create_seasonal_adjustment
+      - service: smart_irrigation.set_seasonal_adjustment
         data:
           name: "Summer Heat Protection"
           month_start: 6
@@ -110,7 +112,7 @@ automation:
       - platform: template
         value_template: "{{ now().month == 9 and now().day == 1 }}"
     action:
-      - service: smart_irrigation.create_seasonal_adjustment
+      - service: smart_irrigation.set_seasonal_adjustment
         data:
           name: "Autumn Reduction"
           month_start: 9
@@ -125,7 +127,7 @@ automation:
       - platform: template
         value_template: "{{ now().month == 12 and now().day == 1 }}"
     action:
-      - service: smart_irrigation.create_seasonal_adjustment
+      - service: smart_irrigation.set_seasonal_adjustment
         data:
           name: "Winter Dormancy"
           month_start: 12
@@ -144,7 +146,7 @@ automation:
         value_template: "{{ now().month in [6, 7, 8] and now().day == 1 }}"
     action:
       # Lawn zones need more water in summer
-      - service: smart_irrigation.create_seasonal_adjustment
+      - service: smart_irrigation.set_seasonal_adjustment
         data:
           name: "Summer Lawn Boost"
           month_start: 6
@@ -154,7 +156,7 @@ automation:
           enabled: true
       
       # Garden zones are more drought-tolerant
-      - service: smart_irrigation.create_seasonal_adjustment
+      - service: smart_irrigation.set_seasonal_adjustment
         data:
           name: "Summer Garden Adjustment"
           month_start: 6
@@ -166,83 +168,7 @@ automation:
 
 ## Irrigation Unlimited Integration Examples
 
-### Example 1: Basic Zone Synchronization
-```yaml
-automation:
-  - alias: "Daily IU Sync"
-    trigger:
-      - platform: time
-        at: "23:30:00"
-    action:
-      - service: smart_irrigation.calculate_all_zones
-      - delay:
-          seconds: 30
-      - service: smart_irrigation.sync_with_irrigation_unlimited
-
-  - alias: "Smart Irrigation to IU Execution"
-    trigger:
-      - platform: event
-        event_type: smart_irrigation_irrigation_unlimited_sync_completed
-    condition:
-      - condition: template
-        value_template: "{{ trigger.event.data.synchronized_count > 0 }}"
-    action:
-      - repeat:
-          for_each: "{{ trigger.event.data.results.synchronized }}"
-          sequence:
-            - service: switch.turn_on
-              entity_id: "{{ repeat.item.iu_entity }}"
-            - delay:
-                seconds: "{{ repeat.item.duration }}"
-            - service: switch.turn_off
-              entity_id: "{{ repeat.item.iu_entity }}"
-            - service: smart_irrigation.reset_bucket
-              target:
-                entity_id: "sensor.smart_irrigation_zone_{{ repeat.item.zone_id }}"
-```
-
-### Example 2: Real-time Duration Updates
-```yaml
-automation:
-  - alias: "Real-time Duration Sync to IU"
-    trigger:
-      - platform: state
-        entity_id: 
-          - sensor.smart_irrigation_zone_1
-          - sensor.smart_irrigation_zone_2
-          - sensor.smart_irrigation_zone_3
-        attribute: duration
-    condition:
-      - condition: template
-        value_template: "{{ states(trigger.entity_id) | int > 0 }}"
-    action:
-      - service: smart_irrigation.send_zone_data_to_irrigation_unlimited
-        data:
-          zone_id: "{{ state_attr(trigger.entity_id, 'zone_id') }}"
-          data:
-            duration: "{{ states(trigger.entity_id) | int }}"
-            state: "ready"
-```
-
-### Example 3: IU Status Monitoring
-```yaml
-automation:
-  - alias: "Monitor IU Status"
-    trigger:
-      - platform: time_pattern
-        minutes: "/15"  # Every 15 minutes
-    action:
-      - service: smart_irrigation.get_irrigation_unlimited_status
-      - condition: template
-        value_template: "{{ states('sensor.smart_irrigation_iu_entities') | int > 0 }}"
-      - service: notify.home_assistant
-        data:
-          title: "Irrigation Status"
-          message: >
-            IU Integration Status: 
-            {{ state_attr('sensor.smart_irrigation_iu_entities', 'total_entities') }} entities found,
-            {{ state_attr('sensor.smart_irrigation_iu_entities', 'active_count') }} currently active
-```
+The actions these examples used (`sync_with_irrigation_unlimited`, `send_zone_data_to_irrigation_unlimited` and `get_irrigation_unlimited_status`) were removed: see [the sync services are gone](../docs/usage-enhanced-scheduling-integration.md#the-sync-services-are-gone). To hand Irrigation Unlimited the calculated durations, use the bundled blueprints `irrigation-unlimited-adjust-time-single-zone.yaml` and `irrigation-unlimited-adjust-time-sequence.yaml`, which call Irrigation Unlimited's own `adjust_time` action, and `irrigation-unlimited-reset-bucket.yaml` for the water balance afterwards. To move from Irrigation Unlimited to Smart Irrigation's own programs, see [coming from Irrigation Unlimited](../docs/usage-from-irrigation-unlimited.md).
 
 ## Weather-Responsive Examples
 
@@ -272,7 +198,7 @@ automation:
               1.0
             {% endif %}
       
-      - service: smart_irrigation.create_seasonal_adjustment
+      - service: smart_irrigation.set_seasonal_adjustment
         data:
           name: "Daily Temperature Adjustment"
           month_start: "{{ now().month }}"
@@ -281,7 +207,7 @@ automation:
           zones: "all"
           enabled: true
       
-      - service: smart_irrigation.calculate_all_zones
+      - service: smart_irrigation.calculate
 ```
 
 ### Example 2: Rain Delay Integration
@@ -336,13 +262,6 @@ automation:
             - condition: template
               value_template: "{{ duration > 0 }}"
             
-            - service: smart_irrigation.send_zone_data_to_irrigation_unlimited
-              data:
-                zone_id: "{{ zone_id }}"
-                data:
-                  duration: "{{ duration }}"
-                  state: "on"
-            
             - service: switch.turn_on
               entity_id: "switch.irrigation_unlimited_c1_z{{ zone_id }}"
             
@@ -352,7 +271,7 @@ automation:
             - service: switch.turn_off
               entity_id: "switch.irrigation_unlimited_c1_z{{ zone_id }}"
             
-            - service: smart_irrigation.reset_bucket
+            - service: smart_irrigation.set_bucket
               target:
                 entity_id: "{{ zone_entity }}"
             
@@ -364,6 +283,9 @@ automation:
 ```
 
 ### Example 2: Priority-Based Irrigation
+
+This example called `sync_with_irrigation_unlimited`, which was removed. With the full controller, the order of the zones is the order of the steps of a program: put the lawn first under **Watering**, then start the program from an automation:
+
 ```yaml
 automation:
   - alias: "Priority-Based Irrigation"
@@ -371,43 +293,9 @@ automation:
       - platform: event
         event_type: smart_irrigation_start_irrigation_all_zones
     action:
-      - variables:
-          # Define zone priorities (1 = highest)
-          zone_priorities:
-            1: 1  # Lawn
-            2: 1  # Lawn
-            3: 2  # Vegetable garden
-            4: 3  # Flower beds
-            5: 4  # Trees/shrubs
-      
-      # High priority zones first (lawn)
-      - repeat:
-          for_each: [1, 2]
-          sequence:
-            - variables:
-                zone_entity: "sensor.smart_irrigation_zone_{{ repeat.item }}"
-                duration: "{{ states(zone_entity) | int }}"
-            - condition: template
-              value_template: "{{ duration > 0 }}"
-            - service: smart_irrigation.sync_with_irrigation_unlimited
-              data:
-                zone_ids: ["{{ repeat.item }}"]
-      
-      # Wait for high priority zones to complete
-      - delay:
-          minutes: 30
-      
-      # Medium priority zones (vegetables)
-      - service: smart_irrigation.sync_with_irrigation_unlimited
+      - service: smart_irrigation.run_program
         data:
-          zone_ids: [3]
-      
-      # Low priority zones last
-      - delay:
-          minutes: 20
-      - service: smart_irrigation.sync_with_irrigation_unlimited
-        data:
-          zone_ids: [4, 5]
+          program_id: main
 ```
 
 ## Troubleshooting Automations

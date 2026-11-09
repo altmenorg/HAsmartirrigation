@@ -30,6 +30,6 @@
     entity_id: switch.irrigation_tap2
     service: switch.turn_off
   - data: {}
-    service: smart_irrigation.reset_bucket
+    service: smart_irrigation.set_bucket
     target:
       entity_id: sensor.smart_irrigation_[zone_name]

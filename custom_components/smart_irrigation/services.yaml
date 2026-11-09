@@ -1,6 +1,36 @@
+calculate:
+  name: Calculate
+  description: >-
+    Calculate the zones picked, or all zones when none is picked.
+  target:
+    entity:
+      domain: sensor
+  fields:
+    delete_weather_data:
+        required: false
+        example: false
+        default: true
+        selector:
+          boolean: {}
+    dry_run:
+        required: false
+        example: true
+        default: false
+        selector:
+          boolean: {}
+update_weather:
+  name: Update weather
+  description: >-
+    Fetch the weather for the zones picked, or for all zones when none is
+    picked.
+  target:
+    entity:
+      domain: sensor
 calculate_all_zones:
-  name: Calculate all zones
-  description: Calculate irrigation requirements for all zones.
+  name: Calculate all zones (deprecated)
+  description: >-
+    Deprecated: use smart_irrigation.calculate instead. Works until 2027.11.
+    Calculate irrigation requirements for all zones.
   fields:
     delete_weather_data:
         required: false
@@ -15,8 +45,10 @@ calculate_all_zones:
         selector:
           boolean: {}
 calculate_zone:
-  name: Calculate zone
-  description: Calculate irrigation requirements for a specific zone.
+  name: Calculate zone (deprecated)
+  description: >-
+    Deprecated: use smart_irrigation.calculate instead. Works until 2027.11.
+    Calculate irrigation requirements for a specific zone.
   target:
     entity:
       domain: sensor
@@ -34,36 +66,46 @@ calculate_zone:
         selector:
           boolean: {}
 update_all_zones:
-  name: Update all zones
-  description: Update irrigation settings for all zones.
+  name: Update all zones (deprecated)
+  description: >-
+    Deprecated: use smart_irrigation.update_weather instead. Works until 2027.11.
+    Update irrigation settings for all zones.
 update_zone:
-  name: Update zone
-  description: Update irrigation settings for a specific zone.
+  name: Update zone (deprecated)
+  description: >-
+    Deprecated: use smart_irrigation.update_weather instead. Works until 2027.11.
+    Update irrigation settings for a specific zone.
   target:
     entity:
       domain: sensor
 set_bucket:
-  name: Set bucket
-  description: Set the water bucket value for a specific zone.
+  name: Set water balance
+  description: >-
+    Set the water balance of the zones picked, or of all zones when none is
+    picked. Without a value it is the reset, to 0.
   target:
     entity:
       domain: sensor
   fields:
     new_bucket_value:
-      required: true
+      required: false
       example: -10
       default: 0
 set_all_buckets:
-  name: Set all buckets
-  description: Set the water bucket value for all zones.
+  name: Set all buckets (deprecated)
+  description: >-
+    Deprecated: use smart_irrigation.set_bucket instead. Works until 2027.11.
+    Set the water bucket value for all zones.
   fields:
     new_bucket_value:
       required: true
       example: -10
       default: 0
 reset_bucket:
-  name: Reset bucket
-  description: Reset the water bucket value for a specific zone.
+  name: Reset bucket (deprecated)
+  description: >-
+    Deprecated: use smart_irrigation.set_bucket instead. Works until 2027.11.
+    Reset the water bucket value for a specific zone.
   target:
     entity:
       domain: sensor
@@ -385,11 +427,15 @@ use_measured_throughput:
           max: 999
           mode: box
 reset_all_buckets:
-  name: Reset all buckets
-  description: Reset the water bucket value for all zones.
+  name: Reset all buckets (deprecated)
+  description: >-
+    Deprecated: use smart_irrigation.set_bucket instead. Works until 2027.11.
+    Reset the water bucket value for all zones.
 set_all_multipliers:
-  name: Set all multipliers
-  description: Set the irrigation multiplier value for all zones.
+  name: Set all multipliers (deprecated)
+  description: >-
+    Deprecated: use smart_irrigation.set_multiplier instead. Works until 2027.11.
+    Set the irrigation multiplier value for all zones.
   fields:
     new_multiplier_value:
       required: true
@@ -397,7 +443,9 @@ set_all_multipliers:
       default: 1.0
 set_multiplier:
   name: Set multiplier
-  description: Set the irrigation multiplier value for a specific zone.
+  description: >-
+    Set the multiplier of the zones picked, or of all zones when none is
+    picked.
   target:
     entity:
       domain: sensor
@@ -451,8 +499,10 @@ generate_watering_calendar:
 
 # Enhanced Scheduling Services
 create_recurring_schedule:
-  name: Create recurring schedule
-  description: Create a new recurring irrigation schedule.
+  name: Create recurring schedule (deprecated)
+  description: >-
+    Deprecated: use the programs' schedules (Watering tab) instead. Works until 2027.11.
+    Create a new recurring irrigation schedule.
   fields:
     name:
       required: true
@@ -534,8 +584,10 @@ create_recurring_schedule:
             - "irrigate"
 
 update_recurring_schedule:
-  name: Update recurring schedule
-  description: Update an existing recurring irrigation schedule.
+  name: Update recurring schedule (deprecated)
+  description: >-
+    Deprecated: use the programs' schedules (Watering tab) instead. Works until 2027.11.
+    Update an existing recurring irrigation schedule.
   fields:
     schedule_id:
       required: true
@@ -557,8 +609,10 @@ update_recurring_schedule:
         boolean:
 
 delete_recurring_schedule:
-  name: Delete recurring schedule
-  description: Delete a recurring irrigation schedule.
+  name: Delete recurring schedule (deprecated)
+  description: >-
+    Deprecated: use the programs' schedules (Watering tab) instead. Works until 2027.11.
+    Delete a recurring irrigation schedule.
   fields:
     schedule_id:
       required: true
@@ -567,9 +621,86 @@ delete_recurring_schedule:
       selector:
         text:
 
+set_seasonal_adjustment:
+  name: Set seasonal adjustment
+  description: >-
+    Create a seasonal adjustment, change one (with its adjustment_id) or
+    remove one (with its adjustment_id and remove).
+  fields:
+    adjustment_id:
+      required: false
+      example: "adjustment_xyz789"
+      description: "ID of the adjustment to change or remove; none creates one"
+      selector:
+        text:
+    remove:
+      required: false
+      example: true
+      default: false
+      description: "Remove the adjustment with this ID"
+      selector:
+        boolean:
+    name:
+      required: false
+      example: "Summer Boost"
+      description: "Name of the adjustment"
+      selector:
+        text:
+    enabled:
+      required: false
+      example: true
+      default: true
+      description: "Enable the adjustment"
+      selector:
+        boolean:
+    month_start:
+      required: false
+      example: 6
+      description: "Starting month (1-12)"
+      selector:
+        number:
+          min: 1
+          max: 12
+    month_end:
+      required: false
+      example: 8
+      description: "Ending month (1-12)"
+      selector:
+        number:
+          min: 1
+          max: 12
+    multiplier_adjustment:
+      required: false
+      example: 1.5
+      default: 1.0
+      description: "Multiplier adjustment factor"
+      selector:
+        number:
+          min: 0.1
+          max: 5.0
+          step: 0.1
+    threshold_adjustment:
+      required: false
+      example: -5.0
+      default: 0.0
+      description: "Threshold adjustment in mm"
+      selector:
+        number:
+          min: -50.0
+          max: 50.0
+          step: 0.5
+    zones:
+      required: false
+      example: "all"
+      description: "Zone IDs to include or 'all'"
+      selector:
+        text:
+
 create_seasonal_adjustment:
-  name: Create seasonal adjustment
-  description: Create a new seasonal adjustment for irrigation zones.
+  name: Create seasonal adjustment (deprecated)
+  description: >-
+    Deprecated: use smart_irrigation.set_seasonal_adjustment instead. Works until 2027.11.
+    Create a new seasonal adjustment for irrigation zones.
   fields:
     name:
       required: true
@@ -628,8 +759,10 @@ create_seasonal_adjustment:
         text:
 
 update_seasonal_adjustment:
-  name: Update seasonal adjustment
-  description: Update an existing seasonal adjustment.
+  name: Update seasonal adjustment (deprecated)
+  description: >-
+    Deprecated: use smart_irrigation.set_seasonal_adjustment instead. Works until 2027.11.
+    Update an existing seasonal adjustment.
   fields:
     adjustment_id:
       required: true
@@ -651,8 +784,10 @@ update_seasonal_adjustment:
         boolean:
 
 delete_seasonal_adjustment:
-  name: Delete seasonal adjustment
-  description: Delete a seasonal adjustment.
+  name: Delete seasonal adjustment (deprecated)
+  description: >-
+    Deprecated: use smart_irrigation.set_seasonal_adjustment instead. Works until 2027.11.
+    Delete a seasonal adjustment.
   fields:
     adjustment_id:
       required: true

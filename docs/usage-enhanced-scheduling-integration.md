@@ -10,6 +10,8 @@ Smart Irrigation includes recurring schedules and seasonal adjustments of its ow
 
 ### Recurring Schedules
 
+> **Recurring schedules are on their way out.** They keep working until version 2027.11 at the earliest, and each call to `create_recurring_schedule`, `update_recurring_schedule` or `delete_recurring_schedule` raises a repair issue. The programs' schedules do the same and are in the panel, under **Watering** (full controller). See [actions on their way out](usage-services.md#actions-on-their-way-out).
+
 Create flexible recurring schedules that automatically trigger irrigation calculations, updates, or irrigation events.
 
 #### Schedule Types
@@ -52,7 +54,7 @@ Automatically adjust irrigation parameters based on the season or time of year.
 #### Example Configuration
 
 ```yaml
-service: smart_irrigation.create_seasonal_adjustment
+service: smart_irrigation.set_seasonal_adjustment
 data:
   name: "Summer Boost"
   month_start: 6  # June
@@ -133,7 +135,7 @@ V5 then runs for `1 x the value of our sensor` seconds, which is the calculated 
 
 V5 drives your own valve or solenoid entity, which means Smart Irrigation can simply watch that same entity: enable **observed watering** and set the zone's linked entity to the valve V5 operates (see [closed loop](configuration-closed-loop.md)). The water balance is then credited from the run that actually happened, and no reset automation is needed.
 
-If you prefer to stay open loop, call `smart_irrigation.reset_bucket` from your own automation when the valve turns off, and do **not** enable observed watering as well, or the water balance is credited twice.
+If you prefer to stay open loop, call `smart_irrigation.set_bucket` from your own automation when the valve turns off, and do **not** enable observed watering as well, or the water balance is credited twice.
 
 ## Automation Blueprints
 
@@ -145,12 +147,8 @@ See [the blueprints page](usage-automations.md) for the full list and which one 
 
 #### Enhanced Scheduling Services
 
-- `smart_irrigation.create_recurring_schedule`
-- `smart_irrigation.update_recurring_schedule`
-- `smart_irrigation.delete_recurring_schedule`
-- `smart_irrigation.create_seasonal_adjustment`
-- `smart_irrigation.update_seasonal_adjustment`
-- `smart_irrigation.delete_seasonal_adjustment`
+- `smart_irrigation.set_seasonal_adjustment`: without `adjustment_id` it creates one, with it it changes that one, and with `remove: true` as well it removes it
+- `smart_irrigation.create_recurring_schedule`, `update_recurring_schedule`, `delete_recurring_schedule`: on their way out, see above
 
 ### Events
 
@@ -215,7 +213,7 @@ data:
 
 ```yaml
 # Summer irrigation boost
-service: smart_irrigation.create_seasonal_adjustment
+service: smart_irrigation.set_seasonal_adjustment
 data:
   name: "Summer Heat Adjustment"
   month_start: 6

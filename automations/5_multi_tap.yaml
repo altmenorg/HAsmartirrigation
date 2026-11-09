@@ -155,11 +155,11 @@ action:
                                 {{states('switch.sprinklercontroller_enable_zone_'+repeat.item.zid|string()
                                 == 'on')}}
                           then:
-                            - service: smart_irrigation.reset_bucket
+                            - service: smart_irrigation.set_bucket
                               target:
                                 entity_id: "{{repeat.item.sensor}}"
                               data: {}
-                  - service: smart_irrigation.reset_all_buckets
+                  - service: smart_irrigation.set_bucket
                     data: {}
                     enabled: false
                   - service: input_number.set_value

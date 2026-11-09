@@ -85,6 +85,42 @@ def _entity_ids(call) -> list:
     return list(eid)
 
 
+class _Call:
+    """The data of a service call, handed on to another handler."""
+
+    def __init__(self, data: dict) -> None:
+        self.data = data
+
+
+# Targets other than entities that a call can carry.
+_OTHER_TARGETS = ("device_id", "area_id", "floor_id", "label_id")
+
+
+def _all_zones(call, action: str) -> bool | None:
+    """Whether the call is for all zones (#1004).
+
+    True when it names no target at all; False when it names zones. None when
+    it names a target that came out empty, a template that matched nothing for
+    instance: that is no zone, not every zone, so the call does nothing rather
+    than reset or calculate the whole garden.
+    """
+    picked_otherwise = [k for k in _OTHER_TARGETS if call.data.get(k)]
+    if const.SERVICE_ENTITY_ID not in call.data and not picked_otherwise:
+        return True
+    picked = [e for e in _entity_ids(call) if e]
+    if picked_otherwise and not picked:
+        # An area or a device is a target too: read as "no target", it would
+        # have reset or set every zone. The zones are their sensors.
+        raise ServiceValidationError(
+            f"{action} picks zones by their sensor entity, not by "
+            f"{' or '.join(picked_otherwise)}"
+        )
+    if picked:
+        return False
+    _LOGGER.warning("%s called with an empty target: no zone to act on", action)
+    return None
+
+
 class ServiceHandlersMixin(ProgramAdjustMixin):
     """Service-call handlers for ``SmartIrrigationCoordinator``.
 
@@ -175,6 +211,77 @@ class ServiceHandlersMixin(ProgramAdjustMixin):
                         data = {}
                         data[const.ATTR_UPDATE] = const.ATTR_UPDATE
                         await self.async_update_zone_config(zone_id=zone_id, data=data)
+
+    # One action each where there were "one zone" and "all zones" pairs
+    # (#1004). A target picks zones; no target means all of them. The old
+    # names call the handlers below them, unchanged, for a year.
+
+    async def handle_calculate(self, call):
+        """Calculate the zones named, or all of them."""
+        all_zones = _all_zones(call, const.SERVICE_CALCULATE)
+        if all_zones is None:
+            return {"zones": []}
+        if all_zones:
+            return await self.handle_calculate_all_zones(call)
+        return await self.handle_calculate_zone(call)
+
+    async def handle_update_weather(self, call):
+        """Update the weather of the zones named, or of all of them."""
+        all_zones = _all_zones(call, const.SERVICE_UPDATE_WEATHER)
+        if all_zones is None:
+            return None
+        if all_zones:
+            return await self.handle_update_all_zones(call)
+        return await self.handle_update_zone(call)
+
+    async def handle_set_bucket(self, call):
+        """Set the water balance of the zones named, or of all; no value is 0.
+
+        Without a value it is the reset: 0, the soil at field capacity.
+        """
+        data = dict(call.data)
+        data.setdefault(const.ATTR_NEW_BUCKET_VALUE, 0)
+        all_zones = _all_zones(call, const.SERVICE_SET_BUCKET)
+        if all_zones is None:
+            return None
+        if not all_zones:
+            return await self.handle_set_zone(_Call(data))
+        extra = set(data) - {const.ATTR_NEW_BUCKET_VALUE, const.SERVICE_ENTITY_ID}
+        if extra:
+            raise ServiceValidationError(
+                f"Without a zone, set_bucket takes only new_bucket_value, "
+                f"not {', '.join(sorted(extra))}"
+            )
+        return await self.handle_set_all_buckets(_Call(data))
+
+    async def handle_set_multiplier(self, call):
+        """Set the multiplier of the zones named, or of all of them."""
+        all_zones = _all_zones(call, const.SERVICE_SET_MULTIPLIER)
+        if all_zones is None:
+            return None
+        if not all_zones:
+            return await self.handle_set_zone(call)
+        if const.ATTR_NEW_MULTIPLIER_VALUE not in call.data:
+            raise ServiceValidationError("set_multiplier needs new_multiplier_value")
+        return await self.handle_set_all_multipliers(call)
+
+    async def handle_set_seasonal_adjustment(self, call):
+        """Create, change or remove a seasonal adjustment.
+
+        Without adjustment_id it creates one; with it, it changes that one, and
+        with ``remove: true`` it removes it.
+        """
+        data = dict(call.data)
+        adjustment_id = data.get("adjustment_id")
+        if not adjustment_id:
+            data.pop("adjustment_id", None)
+            data.pop(const.ATTR_REMOVE, None)
+            return await self.handle_create_seasonal_adjustment(_Call(data))
+        if data.pop(const.ATTR_REMOVE, False):
+            return await self.handle_delete_seasonal_adjustment(
+                _Call({"adjustment_id": adjustment_id})
+            )
+        return await self.handle_update_seasonal_adjustment(_Call(data))
 
     async def handle_postpone_irrigation(self, call):
         """Hold watering back for a while, then let it resume by itself.

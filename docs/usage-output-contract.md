@@ -30,7 +30,7 @@ The crop factor is not applied here. It scales the evapotranspiration that lower
 
 ## When it changes
 
-1. **At the calculation time** (23:00 by default, or a schedule of your own, or the `calculate_all_zones` action). Every automatic zone gets a new duration.
+1. **At the calculation time** (23:00 by default, or a schedule of your own, or the `calculate` action). Every automatic zone gets a new duration.
 2. **At the start trigger**, just before the start event fires: rain that fell between the calculation and now shortens the run, zones sheltered from forecast rain are separated from exposed ones, and a zone whose own soil moisture sensor says it is wet is held back. So the duration you read when the event arrives is the one to use, not the one from the night.
 3. **After a run is credited**, if you use observed watering or direct valve control: crediting the water balance recomputes the duration from it, which normally lands on `0`.
 4. **Never on its own between those.** The number stands until one of the above.
@@ -81,9 +81,9 @@ data:
   seconds: 900
 ```
 
-Leave `seconds` out and the zone's own duration is credited. This credits the water the run put down, where `reset_bucket` sets the water balance to 0 whatever it did: a run cut short by the zone's maximum duration then lost the deficit it had not watered. `reset_bucket` still works, and is right when you want to say the soil is at field capacity.
+Leave `seconds` out and the zone's own duration is credited. This credits the water the run put down, where `set_bucket` without a value sets the water balance to 0 whatever it did: a run cut short by the zone's maximum duration then lost the deficit it had not watered. `set_bucket` without a value still works, and is right when you want to say the soil is at field capacity.
 
-**In closed loop** (observed watering or direct valve control), send nothing: the integration credits the water balance from the run itself. Calling `credit_watering` or `reset_bucket` as well counts the water twice, which pushes the water balance too high and makes the next calculation ask for less than it should.
+**In closed loop** (observed watering or direct valve control), send nothing: the integration credits the water balance from the run itself. Calling `credit_watering` or `set_bucket` as well counts the water twice, which pushes the water balance too high and makes the next calculation ask for less than it should.
 
 Never both, and never a blueprint that resets the water balance on top of a closed-loop setup. The [closed loop page](configuration-closed-loop.md) says which is which.
 

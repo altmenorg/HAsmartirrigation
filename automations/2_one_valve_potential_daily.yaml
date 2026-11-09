@@ -16,7 +16,7 @@ action:
   - service: switch.turn_off
     data: {}
     entity_id: switch.irrigation_tap1
-  - service: smart_irrigation.reset_bucket
+  - service: smart_irrigation.set_bucket
     data: {}
     entity_id: sensor.smart_irrigation_[zone_name]
 mode: single

@@ -30,4 +30,4 @@ When you translate the panel, use the word in the second or third column for the
 | mapping (in a text) | sensor group, Sensorgruppe |
 | crop coefficient, multiplier, Pflanzenkoeffizient, Multiplikator | crop factor, Pflanzenfaktor |
 
-"bucket" stays where it is code: the attribute `bucket`, the services `set_bucket`, `set_all_buckets`, `reset_bucket` and `reset_all_buckets`, and the entity ids ending in `_bucket`.
+"bucket" stays where it is code: the attribute `bucket`, the action `set_bucket` (and, until they go in 2027.11, `set_all_buckets`, `reset_bucket` and `reset_all_buckets`), and the entity ids ending in `_bucket`.

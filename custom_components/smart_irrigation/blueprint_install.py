@@ -11,7 +11,10 @@ one is laid down once: the ones installed are recorded, and a blueprint the
 user deleted stays deleted (#930). The whole copy can be switched off in the
 general settings. The flip side is that an improved blueprint reaches existing
 users through the import link in the docs rather than silently behind their
-back, which is the trade we want for something that opens valves.
+back, which is the trade we want for something that opens valves. The one
+exception is a copy still identical to one we shipped and had to change
+(broken, or calling an action on its way out): nobody edited it, so it is
+replaced.
 
 Every filesystem error is logged and swallowed: failing to lay down an example
 automation must never stop the integration from setting up.
@@ -47,9 +50,39 @@ BROKEN_SHIPPED_COPIES = {
 }
 
 
+# Copies we shipped that call actions on their way out (#1004), by file name
+# and by the SHA-256 of the version we shipped. Only versions that differ from
+# today's in nothing but the action names are here: replacing one changes no
+# input and no behaviour, so the automations made from it go on as before. A
+# copy edited by hand no longer matches, and an older version that differs in
+# more than the names is not ours to change under an automation; both keep
+# working on the old names until they go, and their calls raise the repair
+# issue that says so.
+OUTDATED_SHIPPED_COPIES = {
+    "esphome.yaml": {
+        "23ab5ccb27779a005daf11439c6ee60c5ac4e6ea94d7acc521eb1c5baaac3c57",
+    },
+    "irrigation-unlimited-reset-bucket.yaml": {
+        "cb28af6578c7d5c230c28ca1855c57df64759701da3a0d74836a1149f5cc2d1c",
+    },
+    "weather-responsive-scheduling.yaml": {
+        "262057a37a9a9bdec990168420acd21a4cbe8a1f8bea1e364fba6a4c324fcb26",
+    },
+    "simple-scheduler.yaml": {
+        "83050fbad5798e91000f1e11190d480c62101b041a6246a152a41d71d07aad5b",
+    },
+}
+
+
 def _is_broken_shipped_copy(target: Path) -> bool:
-    """Whether this file is, byte for byte, one we shipped broken."""
-    known = BROKEN_SHIPPED_COPIES.get(target.name)
+    """Whether this file is, byte for byte, one we shipped that is to go.
+
+    Broken (Home Assistant rejects it) or outdated (it calls an action on its
+    way out): either way nobody edited it, so the current file replaces it.
+    """
+    known = BROKEN_SHIPPED_COPIES.get(target.name, set()) | (
+        OUTDATED_SHIPPED_COPIES.get(target.name, set())
+    )
     if not known:
         return False
     try:

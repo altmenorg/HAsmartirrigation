@@ -135,7 +135,7 @@ action:
     value_template: "{{ current_wind <= wind_threshold }}"
 
   # Apply seasonal adjustments
-  - service: smart_irrigation.create_seasonal_adjustment
+  - service: smart_irrigation.set_seasonal_adjustment
     data:
       name: "Auto Seasonal Adjustment {{ now().strftime('%Y-%m') }}"
       enabled: true
@@ -153,7 +153,7 @@ action:
             zone_id: "{{ state_attr(zone_entity, 'zone_id') }}"
         
         # Calculate the zone
-        - service: smart_irrigation.calculate_zone
+        - service: smart_irrigation.calculate
           target:
             entity_id: "{{ zone_entity }}"
         

@@ -23,7 +23,7 @@ The [full controller](usage-full-controller.md) does the scheduling and the runn
 | Step with zones in parallel | A **step** with several zones, watered at the same time |
 | Delay between steps, including a negative one | **Wait after this step** or the program's **wait between steps**; a negative value overlaps the steps (up to an hour) |
 | `adjust_time` (`actual`, `percentage`, `increase`, `decrease`) | The step's duration: *calculated* (the default), *calculated times a percentage*, or *fixed*, with a minimum, a maximum and an offset in seconds (`min_seconds`, `max_seconds`, `adjust_seconds`). For a temporary change of a whole program, `smart_irrigation.adjust_program` (a `percent` and/or `seconds`, for some `hours` or until reset). You no longer need an automation to hand it the duration, because the calculated one is the default. |
-| `reset_bucket` after the run | Nothing to do: a run of ours credits the water balance itself, for the water that went through |
+| `reset_bucket` or `set_bucket` after the run | Nothing to do: a run of ours credits the water balance itself, for the water that went through |
 | `suspend` | `smart_irrigation.suspend`, for a zone or a program, for some hours or until a date |
 | `manual_run` | `smart_irrigation.water_zone` or `smart_irrigation.run_program`. A manual run joins the queue and takes its turn by default (`mode: queue`); `mode: replace` stops what is running first. `run_program` also takes `seconds`, a total shared between the steps, and `stop_program` ends one program. |
 | `cancel` | `smart_irrigation.stop_watering` |

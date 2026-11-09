@@ -18,7 +18,7 @@ To set it up:
 1. In **General**, turn on **Enable observed watering**.
 2. In **Zones**, set each zone's **Linked valve/switch** to the entity that waters that zone (a `switch`, `valve` or `input_boolean`).
 
-> Important: when observed watering is on it becomes the only thing crediting the water balance. Remove any `reset_bucket` service call from your irrigation automation, otherwise the water balance is accounted twice.
+> Important: when observed watering is on it becomes the only thing crediting the water balance. Remove any `set_bucket` or `reset_bucket` call from your irrigation automation, otherwise the water balance is accounted twice.
 
 ### Optional: a cumulative volume meter (more precise)
 
@@ -138,7 +138,7 @@ mode: single
 ```
 {% endraw %}
 
-> If you previously had one automation per zone that opened the valve and called `reset_bucket`, remove them once direct valve control is on: Smart Irrigation now opens the valves and credits the water balance itself, so the old automations would double up. Keep only report/notification automations like the one above.
+> If you previously had one automation per zone that opened the valve and called `set_bucket` or `reset_bucket`, remove them once direct valve control is on: Smart Irrigation now opens the valves and credits the water balance itself, so the old automations would double up. Keep only report/notification automations like the one above.
 
 The legacy `smart_irrigation_start_irrigation_all_zones` event still fires too (it carries the trigger identity), for setups that drive watering from their own automation or an external executor instead of direct valve control.
 
