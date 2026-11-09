@@ -77,7 +77,11 @@
         "name": "Öntözés szükséges"
       },
       "watering_now": {
-        "name": "Most öntöz"
+        "name": "Most öntöz",
+        "state": {
+          "on": "Igen",
+          "off": "Nem"
+        }
       },
       "problem": {
         "name": "Probléma"
@@ -94,7 +98,7 @@
         "name": "Kihagyás csapadék esetén"
       },
       "irrigation_enabled": {
-        "name": "Aktív"
+        "name": "Számolás és öntözés"
       }
     },
     "datetime": {
@@ -136,8 +140,8 @@
   },
   "services": {
     "calculate_all_zones": {
-      "name": "Összes zóna kiszámítása",
-      "description": "Az összes zóna kiszámítása automatikus módban",
+      "name": "Összes zóna kiszámítása (elavult)",
+      "description": "Elavult: használd helyette ezt: smart_irrigation.calculate. 2027.11-ig működik. Az összes zóna kiszámítása automatikus módban",
       "fields": {
         "delete_weather_data": {
           "name": "Időjárási adatok törlése",
@@ -150,8 +154,8 @@
       }
     },
     "calculate_zone": {
-      "name": "Zóna kiszámítása",
-      "description": "A megadott zóna kiszámítása",
+      "name": "Zóna kiszámítása (elavult)",
+      "description": "Elavult: használd helyette ezt: smart_irrigation.calculate. 2027.11-ig működik. A megadott zóna kiszámítása",
       "fields": {
         "entity": {
           "name": "Entitás",
@@ -168,12 +172,12 @@
       }
     },
     "update_all_zones": {
-      "name": "Összes zóna frissítése",
-      "description": "Az időjárási adatok frissítése az összes zónánál automatikus módban"
+      "name": "Összes zóna frissítése (elavult)",
+      "description": "Elavult: használd helyette ezt: smart_irrigation.update_weather. 2027.11-ig működik. Az időjárási adatok frissítése az összes zónánál automatikus módban"
     },
     "update_zone": {
-      "name": "Zóna frissítése",
-      "description": "Az időjárási adatok frissítése a megadott zónánál",
+      "name": "Zóna frissítése (elavult)",
+      "description": "Elavult: használd helyette ezt: smart_irrigation.update_weather. 2027.11-ig működik. Az időjárási adatok frissítése a megadott zónánál",
       "fields": {
         "entity": {
           "name": "Entitás",
@@ -183,21 +187,21 @@
     },
     "set_bucket": {
       "name": "Vízmérleg beállítása",
-      "description": "Egy zóna vízmérlegének beállítása egy értékre",
+      "description": "A kiválasztott zónák vízmérlegének beállítása, vagy kiválasztás nélkül az összes zónáé. Érték nélkül ez a visszaállítás, 0-ra",
       "fields": {
         "entity": {
           "name": "Entitás",
-          "description": "A zóna, amelynek a vízmérlegét beállítja"
+          "description": "A zónák, amelyek vízmérlegét beállítja; üresen mindet beállítja"
         },
         "new_bucket_value": {
           "name": "Új vízmérleg",
-          "description": "A vízmérleg új értéke"
+          "description": "A vízmérleg új értéke; üresen 0"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Összes vízmérleg beállítása",
-      "description": "Az összes zóna vízmérlegének beállítása egy értékre",
+      "name": "Összes vízmérleg beállítása (elavult)",
+      "description": "Elavult: használd helyette ezt: smart_irrigation.set_bucket. 2027.11-ig működik. Az összes zóna vízmérlegének beállítása egy értékre",
       "fields": {
         "new_bucket_value": {
           "name": "Új vízmérleg",
@@ -206,8 +210,8 @@
       }
     },
     "reset_bucket": {
-      "name": "Vízmérleg visszaállítása",
-      "description": "Egy zóna vízmérlegének visszaállítása 0-ra",
+      "name": "Vízmérleg visszaállítása (elavult)",
+      "description": "Elavult: használd helyette ezt: smart_irrigation.set_bucket. 2027.11-ig működik. Egy zóna vízmérlegének visszaállítása 0-ra",
       "fields": {
         "entity": {
           "name": "Entitás",
@@ -216,8 +220,8 @@
       }
     },
     "reset_all_buckets": {
-      "name": "Összes vízmérleg visszaállítása",
-      "description": "Az összes zóna vízmérlegének visszaállítása 0-ra"
+      "name": "Összes vízmérleg visszaállítása (elavult)",
+      "description": "Elavult: használd helyette ezt: smart_irrigation.set_bucket. 2027.11-ig működik. Az összes zóna vízmérlegének visszaállítása 0-ra"
     },
     "clear_all_weather_data": {
       "name": "Összes időjárási adat törlése",
@@ -225,11 +229,11 @@
     },
     "set_multiplier": {
       "name": "Szorzó beállítása",
-      "description": "Egy zóna szorzójának beállítása egy adott értékre",
+      "description": "A kiválasztott zónák szorzójának beállítása, vagy kiválasztás nélkül az összes zónáé",
       "fields": {
         "entity": {
           "name": "Entitás",
-          "description": "A zóna, amelynek a szorzóját beállítja"
+          "description": "A zónák, amelyek szorzóját beállítja; üresen mindet beállítja"
         },
         "new_multiplier_value": {
           "name": "Új szorzóérték",
@@ -238,8 +242,8 @@
       }
     },
     "set_all_multipliers": {
-      "name": "Összes szorzó beállítása",
-      "description": "Az összes zóna szorzójának beállítása egy adott értékre",
+      "name": "Összes szorzó beállítása (elavult)",
+      "description": "Elavult: használd helyette ezt: smart_irrigation.set_multiplier. 2027.11-ig működik. Az összes zóna szorzójának beállítása egy adott értékre",
       "fields": {
         "new_multiplier_value": {
           "name": "Új szorzóérték",
@@ -296,6 +300,394 @@
           "description": "Mennyi ideig öntözött a zóna, másodpercben. Üres: a zóna időtartama."
         }
       }
+    },
+    "run_program": {
+      "name": "Program futtatása",
+      "description": "A teljes vezérlő egy programjának futtatása most, vagy amint sorra kerül, ha egy másik program fut. A program a Smart Irrigation által kiszámított időtartamokkal öntözi a zónáit, hacsak a lépései mást nem írnak elő.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "A program azonosítója, ahogy a beállításaiban látható."
+        },
+        "seconds": {
+          "name": "Másodperc",
+          "description": "Teljes időtartam az egész programra, a lépések között a tervezett időtartamuk arányában elosztva. Üresen: a tervezett időtartamok."
+        },
+        "mode": {
+          "name": "Mód",
+          "description": "Mi történjen, ha valami már öntöz. A sorba állás (queue) utána következik; a csere (replace) előbb szabályosan leállítja."
+        }
+      }
+    },
+    "stop_program": {
+      "name": "Program leállítása",
+      "description": "Egy program leállítása. Ha fut, a nyitott zónái a szokásos módon bezárulnak, és jóváíródik nekik a kijuttatott víz; ha a sorára vár, kikerül a sorból. Ismeretlen program esetén nem történik semmi. A főprogramot a stop_watering állítja le.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "A program azonosítója."
+        }
+      }
+    },
+    "set_program_enabled": {
+      "name": "Program engedélyezése vagy letiltása",
+      "description": "A teljes vezérlő egy programjának be- vagy kikapcsolása, ahogy a beállításaiban lévő kapcsoló teszi.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "A program azonosítója."
+        },
+        "enabled": {
+          "name": "Engedélyezve",
+          "description": "Bekapcsolva engedélyezi, kikapcsolva letiltja."
+        }
+      }
+    },
+    "set_step_enabled": {
+      "name": "Lépés engedélyezése vagy letiltása",
+      "description": "Egy program egyik lépésének be- vagy kikapcsolása.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "A program azonosítója."
+        },
+        "step_id": {
+          "name": "Lépés",
+          "description": "A lépés azonosítója, ahogy a programban látható."
+        },
+        "enabled": {
+          "name": "Engedélyezve",
+          "description": "Bekapcsolva engedélyezi, kikapcsolva letiltja."
+        }
+      }
+    },
+    "set_schedule_enabled": {
+      "name": "Ütemezés engedélyezése vagy letiltása",
+      "description": "Egy program egyik ütemezésének be- vagy kikapcsolása. Az ütemezések azonnal újra élesítve lesznek.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "A program azonosítója."
+        },
+        "schedule_id": {
+          "name": "Ütemezés",
+          "description": "Az ütemezés azonosítója, ahogy a programban látható."
+        },
+        "enabled": {
+          "name": "Engedélyezve",
+          "description": "Bekapcsolva engedélyezi, kikapcsolva letiltja."
+        }
+      }
+    },
+    "stop_watering": {
+      "name": "Öntözés leállítása",
+      "description": "Az öntözés azonnali leállítása. Minden szelep, amelyet a Smart Irrigation nyitott ki, bezárul, minden zónának jóváíródik a kijuttatott víz, és a programok, valamint a még várakozó zónák befejeződnek. Ha zónák vannak kiválasztva, csak azok állnak le."
+    },
+    "pause_watering": {
+      "name": "Öntözés szüneteltetése",
+      "description": "A nyitott szelepek bezárása és az öntözés visszatartása, a még várakozó zónákat is beleértve. A kijuttatott víz jóváíródik, és a folytatás után a menet hátralévő része is öntözve lesz. A fel nem oldott szünet magától véget ér.",
+      "fields": {
+        "minutes": {
+          "name": "Perc",
+          "description": "A szünet leghosszabb időtartama, mielőtt magától feloldódik."
+        }
+      }
+    },
+    "resume_watering": {
+      "name": "Szüneteltetett öntözés folytatása",
+      "description": "Egy szüneteltetett öntözés folytatása onnan, ahol abbamaradt."
+    },
+    "next_step": {
+      "name": "Következő lépés",
+      "description": "A program aktuális lépésében lévő zónák befejezése, és továbblépés a következő lépésre."
+    },
+    "suspend": {
+      "name": "Felfüggesztés",
+      "description": "Egy zóna vagy program öntözésének megakadályozása egy adott időpontig. Időtartam és dátum nélkül, vagy nulla órával a felfüggesztés megszűnik.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "A felfüggesztendő program azonosítója."
+        },
+        "hours": {
+          "name": "Óra",
+          "description": "Mennyi időre szól a felfüggesztés. A nulla feloldja."
+        },
+        "until": {
+          "name": "Eddig",
+          "description": "Az időpont, amikor a felfüggesztés véget ér."
+        }
+      }
+    },
+    "adjust_program": {
+      "name": "Program módosítása",
+      "description": "A teljes vezérlő egy programjának hosszabb vagy rövidebb öntözése egy ideig. A módosítás felváltja az előzőt (sosem adódnak össze), a beállítása után induló futásokra vonatkozik, és a megadott órák után véget ér.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "A módosítandó program azonosítója."
+        },
+        "percent": {
+          "name": "Százalék",
+          "description": "Megszorozza minden lépés vízmennyiségét (120 esetén 20 %-kal tovább öntöz)."
+        },
+        "seconds": {
+          "name": "Másodperc",
+          "description": "Minden lépéshez hozzáadott másodpercnyi víz (negatív érték esetén levonás)."
+        },
+        "hours": {
+          "name": "Óra",
+          "description": "Meddig tart a módosítás. Üresen: amíg vissza nem állítják."
+        },
+        "reset": {
+          "name": "Visszaállítás",
+          "description": "A program módosításának eltávolítása."
+        }
+      }
+    },
+    "water_zone": {
+      "name": "Zóna öntözése",
+      "description": "Egy zóna öntözése most, vagy amint sorra kerül, ha valami öntöz. Időtartam nélkül a zóna a Smart Irrigation által kiszámított ideig öntöz.",
+      "fields": {
+        "zone_id": {
+          "name": "Zónaazonosító",
+          "description": "A zóna azonosítója az entitása helyett."
+        },
+        "seconds": {
+          "name": "Másodperc",
+          "description": "Az öntözés hossza másodpercben. Üresen: a kiszámított időtartam."
+        },
+        "mode": {
+          "name": "Mód",
+          "description": "Mi történjen, ha valami már öntöz. A sorba állás (queue) utána következik; a csere (replace) előbb szabályosan leállítja."
+        }
+      }
+    },
+    "use_measured_throughput": {
+      "name": "A mért átfolyás használata",
+      "description": "A zóna átfolyásának beállítása arra az áramlásra, amelyet a mérője a futásai során mért. A mérés mindig csak javaslat; így lehet elfogadni.",
+      "fields": {
+        "zone_id": {
+          "name": "Zónaazonosító",
+          "description": "A zóna azonosítója az entitása helyett."
+        }
+      }
+    },
+    "create_recurring_schedule": {
+      "name": "Ismétlődő ütemezés létrehozása (elavult)",
+      "description": "Elavult: használd helyette ezt: a programok ütemezései (Öntözés fül). 2027.11-ig működik. Új ismétlődő öntözési ütemezés létrehozása.",
+      "fields": {
+        "name": {
+          "name": "Név",
+          "description": "Az ütemezés neve"
+        },
+        "type": {
+          "name": "Ütemezés típusa",
+          "description": "Az ütemezés típusa (daily, weekly, monthly, interval)"
+        },
+        "enabled": {
+          "name": "Engedélyezve",
+          "description": "Az ütemezés engedélyezése"
+        },
+        "time": {
+          "name": "Időpont",
+          "description": "A futás időpontja (ÓÓ:PP formátumban)"
+        },
+        "days_of_week": {
+          "name": "A hét napjai",
+          "description": "A hét napjai heti ütemezésekhez"
+        },
+        "day_of_month": {
+          "name": "A hónap napja",
+          "description": "A hónap napja havi ütemezésekhez (1-31)"
+        },
+        "interval_hours": {
+          "name": "Időköz órában",
+          "description": "Időköz órában az időközös ütemezésekhez"
+        },
+        "zones": {
+          "name": "Zónák",
+          "description": "A bevonandó zónák azonosítói vagy 'all'"
+        },
+        "action": {
+          "name": "Művelet",
+          "description": "A végrehajtandó művelet (calculate, update, irrigate)"
+        }
+      }
+    },
+    "update_recurring_schedule": {
+      "name": "Ismétlődő ütemezés frissítése (elavult)",
+      "description": "Elavult: használd helyette ezt: a programok ütemezései (Öntözés fül). 2027.11-ig működik. Egy meglévő ismétlődő öntözési ütemezés frissítése.",
+      "fields": {
+        "schedule_id": {
+          "name": "Ütemezésazonosító",
+          "description": "A frissítendő ütemezés azonosítója"
+        },
+        "name": {
+          "name": "Név",
+          "description": "Az ütemezés neve"
+        },
+        "enabled": {
+          "name": "Engedélyezve",
+          "description": "Az ütemezés engedélyezése vagy letiltása"
+        }
+      }
+    },
+    "delete_recurring_schedule": {
+      "name": "Ismétlődő ütemezés törlése (elavult)",
+      "description": "Elavult: használd helyette ezt: a programok ütemezései (Öntözés fül). 2027.11-ig működik. Egy ismétlődő öntözési ütemezés törlése.",
+      "fields": {
+        "schedule_id": {
+          "name": "Ütemezésazonosító",
+          "description": "A törlendő ütemezés azonosítója"
+        }
+      }
+    },
+    "create_seasonal_adjustment": {
+      "name": "Szezonális igazítás létrehozása (elavult)",
+      "description": "Elavult: használd helyette ezt: smart_irrigation.set_seasonal_adjustment. 2027.11-ig működik. Új szezonális igazítás létrehozása az öntözési zónákhoz.",
+      "fields": {
+        "name": {
+          "name": "Név",
+          "description": "Az igazítás neve"
+        },
+        "enabled": {
+          "name": "Engedélyezve",
+          "description": "Az igazítás engedélyezése"
+        },
+        "month_start": {
+          "name": "Kezdő hónap",
+          "description": "Kezdő hónap (1-12)"
+        },
+        "month_end": {
+          "name": "Záró hónap",
+          "description": "Záró hónap (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Szorzó igazítási tényezője",
+          "description": "A szorzó igazítási tényezője"
+        },
+        "threshold_adjustment": {
+          "name": "Küszöb igazítása",
+          "description": "A küszöb igazítása mm-ben"
+        },
+        "zones": {
+          "name": "Zónák",
+          "description": "A bevonandó zónák azonosítói vagy 'all'"
+        }
+      }
+    },
+    "update_seasonal_adjustment": {
+      "name": "Szezonális igazítás frissítése (elavult)",
+      "description": "Elavult: használd helyette ezt: smart_irrigation.set_seasonal_adjustment. 2027.11-ig működik. Egy meglévő szezonális igazítás frissítése.",
+      "fields": {
+        "adjustment_id": {
+          "name": "Igazításazonosító",
+          "description": "A frissítendő igazítás azonosítója"
+        },
+        "name": {
+          "name": "Név",
+          "description": "Az igazítás neve"
+        },
+        "enabled": {
+          "name": "Engedélyezve",
+          "description": "Az igazítás engedélyezése vagy letiltása"
+        }
+      }
+    },
+    "delete_seasonal_adjustment": {
+      "name": "Szezonális igazítás törlése (elavult)",
+      "description": "Elavult: használd helyette ezt: smart_irrigation.set_seasonal_adjustment. 2027.11-ig működik. Egy szezonális igazítás törlése.",
+      "fields": {
+        "adjustment_id": {
+          "name": "Igazításazonosító",
+          "description": "A törlendő igazítás azonosítója"
+        }
+      }
+    },
+    "postpone_irrigation": {
+      "name": "Öntözés elhalasztása",
+      "description": "Az öntözés visszatartása egy ideig, majd magától folytatódik. Semmi nem nullázódik: egy zóna, amelynek vízhiánya van, a halasztás végén is hiányban lesz, és a következő futás pótolja.",
+      "fields": {
+        "hours": {
+          "name": "Óra",
+          "description": "Mennyi ideig legyen visszatartva az öntözés. A nulla feloldja a halasztást."
+        }
+      }
+    },
+    "resume_irrigation": {
+      "name": "Öntözés folytatása",
+      "description": "A halasztás feloldása, bármennyi is van még hátra belőle."
+    },
+    "calculate": {
+      "name": "Számítás",
+      "description": "A kiválasztott zónák kiszámítása, vagy kiválasztás nélkül az összes automatikus módú zónáé",
+      "fields": {
+        "entity": {
+          "name": "Entitás",
+          "description": "A kiszámítandó zónák; üresen mindet kiszámítja"
+        },
+        "delete_weather_data": {
+          "name": "Időjárási adatok törlése",
+          "description": "A zóna időjárási adatainak törlése a számítás után"
+        },
+        "dry_run": {
+          "name": "Próbafutás",
+          "description": "Jelentse, mit tenne a számítás, a vízmérleg, a zóna és az összegyűjtött időjárási adatok módosítása nélkül"
+        }
+      }
+    },
+    "update_weather": {
+      "name": "Időjárás frissítése",
+      "description": "Az időjárás lekérése a kiválasztott zónákhoz, vagy kiválasztás nélkül az összes zónához",
+      "fields": {
+        "entity": {
+          "name": "Entitás",
+          "description": "A frissítendő zónák; üresen mindet frissíti"
+        }
+      }
+    },
+    "set_seasonal_adjustment": {
+      "name": "Szezonális igazítás beállítása",
+      "description": "Szezonális igazítás létrehozása, egy meglévő módosítása az azonosítójával, vagy eltávolítása az azonosítójával és a remove mezővel",
+      "fields": {
+        "adjustment_id": {
+          "name": "Igazításazonosító",
+          "description": "A módosítandó vagy eltávolítandó igazítás; üresen újat hoz létre"
+        },
+        "remove": {
+          "name": "Eltávolítás",
+          "description": "Az ezzel az azonosítóval rendelkező igazítás eltávolítása"
+        },
+        "name": {
+          "name": "Név",
+          "description": "Az igazítás neve"
+        },
+        "enabled": {
+          "name": "Engedélyezve",
+          "description": "Az igazítás engedélyezése"
+        },
+        "month_start": {
+          "name": "Kezdő hónap",
+          "description": "Kezdő hónap (1-12)"
+        },
+        "month_end": {
+          "name": "Záró hónap",
+          "description": "Záró hónap (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Szorzó igazítási tényezője",
+          "description": "A szorzó igazítási tényezője"
+        },
+        "threshold_adjustment": {
+          "name": "Küszöb igazítása",
+          "description": "A küszöb igazítása mm-ben"
+        },
+        "zones": {
+          "name": "Zónák",
+          "description": "A bevonandó zónák azonosítói vagy 'all'"
+        }
+      }
     }
   },
   "issues": {
@@ -342,6 +734,14 @@
     "zone_not_calculated_no_sensor_group": {
       "title": "A(z) {zone} zóna nem számítható: nincs érzékelőcsoport",
       "description": "A(z) **{zone}** zónának nincs érzékelőcsoportja, így nincs miből kiszámítani, és nem öntöz.\n\nVálaszd ki az érzékelőcsoportját a kártyáján a Zónák lapon, majd számítsd ki a zónát. Az értesítés magától eltűnik a következő sikeres számításnál."
+    },
+    "deprecated_action": {
+      "title": "A(z) {action} művelet megszűnik",
+      "description": "Egy automatizálás, szkript vagy irányítópult meghívta a(z) **{action}** műveletet. Még működik, de a(z) {version} verziótól el lesz távolítva, télen, az öntözési szezonon kívül.\n\nHasználd helyette a(z) **{replacement}** műveletet: ugyanazt teszi, és az összes zónára, ha nincs zóna kiválasztva. Ez az értesítés a régi név minden hívásakor visszatér, amíg egy sem marad."
+    },
+    "deprecated_recurring_schedule": {
+      "title": "Az ismétlődő ütemezések megszűnnek: {action}",
+      "description": "Egy automatizálás, szkript vagy irányítópult meghívta a(z) **{action}** műveletet. Az ismétlődő ütemezések még működnek, de a(z) {version} verziótól el lesznek távolítva, télen, az öntözési szezonon kívül.\n\nA programok ütemezései ugyanezt teszik, és a panelen vannak: állítsd be őket az **Öntözés** alatt, majd távolítsd el az ismétlődő ütemezéseket és a(z) {action} hívásait."
     }
   }
 }

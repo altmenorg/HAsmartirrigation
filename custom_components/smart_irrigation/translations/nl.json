@@ -77,7 +77,11 @@
         "name": "Bewatering nodig"
       },
       "watering_now": {
-        "name": "Bewatert nu"
+        "name": "Bewatert nu",
+        "state": {
+          "on": "Ja",
+          "off": "Nee"
+        }
       },
       "problem": {
         "name": "Probleem"
@@ -94,7 +98,7 @@
         "name": "Overslaan bij neerslag"
       },
       "irrigation_enabled": {
-        "name": "Actief"
+        "name": "Berekenen en bewateren"
       }
     },
     "datetime": {
@@ -136,8 +140,8 @@
   },
   "services": {
     "calculate_all_zones": {
-      "name": "Bereken alle zone",
-      "description": "Bereken alle zones in automatische modus",
+      "name": "Bereken alle zones (verouderd)",
+      "description": "Verouderd: gebruik in plaats daarvan smart_irrigation.calculate. Werkt tot 2027.11. Bereken alle zones in automatische modus",
       "fields": {
         "delete_weather_data": {
           "name": "Weerdata verwijderen",
@@ -150,8 +154,8 @@
       }
     },
     "calculate_zone": {
-      "name": "Bereken zone",
-      "description": "Bereken gespecificeerde zone",
+      "name": "Bereken zone (verouderd)",
+      "description": "Verouderd: gebruik in plaats daarvan smart_irrigation.calculate. Werkt tot 2027.11. Bereken gespecificeerde zone",
       "fields": {
         "entity": {
           "name": "Entiteit",
@@ -168,12 +172,12 @@
       }
     },
     "update_all_zones": {
-      "name": "Update alle zones",
-      "description": "Update weerdata voor alle zones in automatische modus"
+      "name": "Update alle zones (verouderd)",
+      "description": "Verouderd: gebruik in plaats daarvan smart_irrigation.update_weather. Werkt tot 2027.11. Update weerdata voor alle zones in automatische modus"
     },
     "update_zone": {
-      "name": "Update zone",
-      "description": "Update weerdata voor gespecificeerde zone",
+      "name": "Update zone (verouderd)",
+      "description": "Verouderd: gebruik in plaats daarvan smart_irrigation.update_weather. Werkt tot 2027.11. Update weerdata voor gespecificeerde zone",
       "fields": {
         "entity": {
           "name": "Entiteit",
@@ -183,21 +187,21 @@
     },
     "set_bucket": {
       "name": "Stel waterbalans in",
-      "description": "Stel de waterbalans van een zone in op een waarde",
+      "description": "Stel de waterbalans in van de gekozen zones, of van alle zones als er geen is gekozen. Zonder waarde is het de reset, naar 0",
       "fields": {
         "entity": {
           "name": "Entiteit",
-          "description": "Zone waarvoor de waterbalans wordt ingesteld"
+          "description": "Zones waarvoor de waterbalans wordt ingesteld; geen stelt alle in"
         },
         "new_bucket_value": {
           "name": "Nieuwe waterbalans",
-          "description": "Nieuwe waarde van de waterbalans"
+          "description": "Nieuwe waarde van de waterbalans; geen is 0"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Stel alle waterbalansen in",
-      "description": "Stel de waterbalans van alle zones in op een waarde",
+      "name": "Stel alle waterbalansen in (verouderd)",
+      "description": "Verouderd: gebruik in plaats daarvan smart_irrigation.set_bucket. Werkt tot 2027.11. Stel de waterbalans van alle zones in op een waarde",
       "fields": {
         "new_bucket_value": {
           "name": "Nieuwe waterbalans",
@@ -206,8 +210,8 @@
       }
     },
     "reset_bucket": {
-      "name": "Waterbalans terugzetten",
-      "description": "Zet de waterbalans van een zone terug op 0",
+      "name": "Waterbalans terugzetten (verouderd)",
+      "description": "Verouderd: gebruik in plaats daarvan smart_irrigation.set_bucket. Werkt tot 2027.11. Zet de waterbalans van een zone terug op 0",
       "fields": {
         "entity": {
           "name": "Entity",
@@ -216,8 +220,8 @@
       }
     },
     "reset_all_buckets": {
-      "name": "Alle waterbalansen terugzetten",
-      "description": "Zet de waterbalans van alle zones terug op 0"
+      "name": "Alle waterbalansen terugzetten (verouderd)",
+      "description": "Verouderd: gebruik in plaats daarvan smart_irrigation.set_bucket. Werkt tot 2027.11. Zet de waterbalans van alle zones terug op 0"
     },
     "clear_all_weather_data": {
       "name": "Clear all weather data",
@@ -225,11 +229,11 @@
     },
     "set_multiplier": {
       "name": "Set multiplier",
-      "description": "Set multiplier for a zone to a specific value",
+      "description": "Stel de vermenigvuldiger in van de gekozen zones, of van alle zones als er geen is gekozen",
       "fields": {
         "entity": {
           "name": "Entity",
-          "description": "Zone to set multiplier for"
+          "description": "Zones waarvoor de vermenigvuldiger wordt ingesteld; geen stelt alle in"
         },
         "new_multiplier_value": {
           "name": "New multiplier value",
@@ -238,8 +242,8 @@
       }
     },
     "set_all_multipliers": {
-      "name": "Set all multipliers",
-      "description": "Set multipliers for all zones to a specific value",
+      "name": "Stel alle vermenigvuldigers in (verouderd)",
+      "description": "Verouderd: gebruik in plaats daarvan smart_irrigation.set_multiplier. Werkt tot 2027.11. Stel de vermenigvuldigers van alle zones in op een specifieke waarde",
       "fields": {
         "new_multiplier_value": {
           "name": "New multiplier value",
@@ -296,6 +300,394 @@
           "description": "Hoe lang de zone liep, in seconden. Leeg: de duur van de zone."
         }
       }
+    },
+    "run_program": {
+      "name": "Programma starten",
+      "description": "Start nu een programma van de volledige controller, of zodra het aan de beurt is als er al een ander loopt. Het programma bewatert zijn zones met de duur die Smart Irrigation heeft berekend, tenzij zijn stappen iets anders zeggen.",
+      "fields": {
+        "program_id": {
+          "name": "Programma",
+          "description": "Het id van het programma, zoals het in zijn instellingen staat."
+        },
+        "seconds": {
+          "name": "Seconden",
+          "description": "Een totale duur voor het hele programma, verdeeld over de stappen naar verhouding van hun geplande duur. Leeg: de geplande duur."
+        },
+        "mode": {
+          "name": "Modus",
+          "description": "Wat te doen als er al iets bewatert. Wachtrij sluit erachter aan; vervangen stopt het eerst netjes."
+        }
+      }
+    },
+    "stop_program": {
+      "name": "Programma stoppen",
+      "description": "Stop één programma. Als het loopt, worden de open zones op de normale manier gesloten en wordt bijgeschreven wat ze gaven; als het op zijn beurt wacht, wordt het uit de wachtrij gehaald. Een onbekend programma doet niets. Het hoofdprogramma stop je met stop_watering.",
+      "fields": {
+        "program_id": {
+          "name": "Programma",
+          "description": "Het id van het programma."
+        }
+      }
+    },
+    "set_program_enabled": {
+      "name": "Een programma in- of uitschakelen",
+      "description": "Zet een programma van de volledige controller aan of uit, zoals de schakelaar in zijn instellingen.",
+      "fields": {
+        "program_id": {
+          "name": "Programma",
+          "description": "Het id van het programma."
+        },
+        "enabled": {
+          "name": "Ingeschakeld",
+          "description": "Aan om het in te schakelen, uit om het uit te schakelen."
+        }
+      }
+    },
+    "set_step_enabled": {
+      "name": "Een stap in- of uitschakelen",
+      "description": "Zet één stap van een programma aan of uit.",
+      "fields": {
+        "program_id": {
+          "name": "Programma",
+          "description": "Het id van het programma."
+        },
+        "step_id": {
+          "name": "Stap",
+          "description": "Het id van de stap, zoals het in het programma staat."
+        },
+        "enabled": {
+          "name": "Ingeschakeld",
+          "description": "Aan om hem in te schakelen, uit om hem uit te schakelen."
+        }
+      }
+    },
+    "set_schedule_enabled": {
+      "name": "Een schema in- of uitschakelen",
+      "description": "Zet één schema van een programma aan of uit. De schema's worden meteen opnieuw ingesteld.",
+      "fields": {
+        "program_id": {
+          "name": "Programma",
+          "description": "Het id van het programma."
+        },
+        "schedule_id": {
+          "name": "Schema",
+          "description": "Het id van het schema, zoals het in het programma staat."
+        },
+        "enabled": {
+          "name": "Ingeschakeld",
+          "description": "Aan om het in te schakelen, uit om het uit te schakelen."
+        }
+      }
+    },
+    "stop_watering": {
+      "name": "Bewatering stoppen",
+      "description": "Stop de bewatering nu. Elke klep die Smart Irrigation opende wordt gesloten, elke zone krijgt het water bijgeschreven dat ze gaf, en de programma's en de zones die nog wachten worden beëindigd. Met gekozen zones worden alleen die gestopt."
+    },
+    "pause_watering": {
+      "name": "Bewatering pauzeren",
+      "description": "Sluit de open kleppen en houd de bewatering aan, ook de zones die nog wachten. Wat gegeven is wordt bijgeschreven, en na het hervatten wordt de rest van de ronde bewaterd. Een pauze die niet wordt opgeheven, eindigt vanzelf.",
+      "fields": {
+        "minutes": {
+          "name": "Minuten",
+          "description": "Hoe lang de pauze maximaal duurt voordat ze zichzelf opheft."
+        }
+      }
+    },
+    "resume_watering": {
+      "name": "Bewatering hervatten",
+      "description": "Ga verder met een gepauzeerde bewatering vanaf waar ze stopte."
+    },
+    "next_step": {
+      "name": "Volgende stap",
+      "description": "Beëindig de zones van de stap waar een programma op staat en ga door naar de volgende stap."
+    },
+    "suspend": {
+      "name": "Opschorten",
+      "description": "Houd een zone of een programma tot een bepaald moment van bewateren af. Zonder duur en zonder datum, of met nul uur, wordt de opschorting opgeheven.",
+      "fields": {
+        "program_id": {
+          "name": "Programma",
+          "description": "Het id van een programma om op te schorten."
+        },
+        "hours": {
+          "name": "Uren",
+          "description": "Hoe lang op te schorten. Nul heft het op."
+        },
+        "until": {
+          "name": "Tot",
+          "description": "Het moment waarop de opschorting eindigt."
+        }
+      }
+    },
+    "adjust_program": {
+      "name": "Een programma bijstellen",
+      "description": "Laat een programma van de volledige controller een tijdlang langer of korter bewateren. De bijstelling vervangt de vorige (ze telt nooit op), geldt voor de runs die starten nadat ze is ingesteld, en eindigt na het opgegeven aantal uren.",
+      "fields": {
+        "program_id": {
+          "name": "Programma",
+          "description": "Het id van het programma om bij te stellen."
+        },
+        "percent": {
+          "name": "Procent",
+          "description": "Vermenigvuldigt het water van elke stap (120 bewatert 20 % langer)."
+        },
+        "seconds": {
+          "name": "Seconden",
+          "description": "Seconden water die bij elke stap komen (negatief om af te trekken)."
+        },
+        "hours": {
+          "name": "Uren",
+          "description": "Hoe lang de bijstelling duurt. Leeg: tot ze wordt teruggezet."
+        },
+        "reset": {
+          "name": "Terugzetten",
+          "description": "Verwijder de bijstelling van dit programma."
+        }
+      }
+    },
+    "water_zone": {
+      "name": "Een zone bewateren",
+      "description": "Bewater een zone nu, of zodra ze aan de beurt is als er iets bewatert. Zonder duur bewatert de zone de duur die Smart Irrigation heeft berekend.",
+      "fields": {
+        "zone_id": {
+          "name": "Zone-id",
+          "description": "Het id van de zone, in plaats van haar entiteit."
+        },
+        "seconds": {
+          "name": "Seconden",
+          "description": "Seconden water. Leeg: de berekende duur."
+        },
+        "mode": {
+          "name": "Modus",
+          "description": "Wat te doen als er al iets bewatert. Wachtrij sluit erachter aan; vervangen stopt het eerst netjes."
+        }
+      }
+    },
+    "use_measured_throughput": {
+      "name": "De gemeten doorvoer gebruiken",
+      "description": "Zet de doorvoer van een zone op het debiet dat haar meter over haar runs heeft gemeten. De meting is altijd alleen een advies; zo neem je het over.",
+      "fields": {
+        "zone_id": {
+          "name": "Zone-id",
+          "description": "Het id van de zone, in plaats van haar entiteit."
+        }
+      }
+    },
+    "create_recurring_schedule": {
+      "name": "Terugkerend schema maken (verouderd)",
+      "description": "Verouderd: gebruik in plaats daarvan de schema's van de programma's (tabblad Bewatering). Werkt tot 2027.11. Maak een nieuw terugkerend bewateringsschema.",
+      "fields": {
+        "name": {
+          "name": "Naam",
+          "description": "Naam van het schema"
+        },
+        "type": {
+          "name": "Schematype",
+          "description": "Schematype (daily, weekly, monthly, interval)"
+        },
+        "enabled": {
+          "name": "Ingeschakeld",
+          "description": "Het schema inschakelen"
+        },
+        "time": {
+          "name": "Tijd",
+          "description": "Tijdstip van uitvoering (formaat HH:MM)"
+        },
+        "days_of_week": {
+          "name": "Dagen van de week",
+          "description": "Dagen van de week voor wekelijkse schema's"
+        },
+        "day_of_month": {
+          "name": "Dag van de maand",
+          "description": "Dag van de maand voor maandelijkse schema's (1-31)"
+        },
+        "interval_hours": {
+          "name": "Interval in uren",
+          "description": "Interval in uren voor intervalschema's"
+        },
+        "zones": {
+          "name": "Zones",
+          "description": "Zone-id's om op te nemen of 'all'"
+        },
+        "action": {
+          "name": "Actie",
+          "description": "Uit te voeren actie (calculate, update, irrigate)"
+        }
+      }
+    },
+    "update_recurring_schedule": {
+      "name": "Terugkerend schema bijwerken (verouderd)",
+      "description": "Verouderd: gebruik in plaats daarvan de schema's van de programma's (tabblad Bewatering). Werkt tot 2027.11. Werk een bestaand terugkerend bewateringsschema bij.",
+      "fields": {
+        "schedule_id": {
+          "name": "Schema-id",
+          "description": "Id van het schema om bij te werken"
+        },
+        "name": {
+          "name": "Naam",
+          "description": "Naam van het schema"
+        },
+        "enabled": {
+          "name": "Ingeschakeld",
+          "description": "Het schema in-/uitschakelen"
+        }
+      }
+    },
+    "delete_recurring_schedule": {
+      "name": "Terugkerend schema verwijderen (verouderd)",
+      "description": "Verouderd: gebruik in plaats daarvan de schema's van de programma's (tabblad Bewatering). Werkt tot 2027.11. Verwijder een terugkerend bewateringsschema.",
+      "fields": {
+        "schedule_id": {
+          "name": "Schema-id",
+          "description": "Id van het schema om te verwijderen"
+        }
+      }
+    },
+    "create_seasonal_adjustment": {
+      "name": "Seizoenscorrectie maken (verouderd)",
+      "description": "Verouderd: gebruik in plaats daarvan smart_irrigation.set_seasonal_adjustment. Werkt tot 2027.11. Maak een nieuwe seizoenscorrectie voor bewateringszones.",
+      "fields": {
+        "name": {
+          "name": "Naam",
+          "description": "Naam van de correctie"
+        },
+        "enabled": {
+          "name": "Ingeschakeld",
+          "description": "De correctie inschakelen"
+        },
+        "month_start": {
+          "name": "Beginmaand",
+          "description": "Beginmaand (1-12)"
+        },
+        "month_end": {
+          "name": "Eindmaand",
+          "description": "Eindmaand (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Correctiefactor van de vermenigvuldiger",
+          "description": "Correctiefactor van de vermenigvuldiger"
+        },
+        "threshold_adjustment": {
+          "name": "Drempelcorrectie",
+          "description": "Drempelcorrectie in mm"
+        },
+        "zones": {
+          "name": "Zones",
+          "description": "Zone-id's om op te nemen of 'all'"
+        }
+      }
+    },
+    "update_seasonal_adjustment": {
+      "name": "Seizoenscorrectie bijwerken (verouderd)",
+      "description": "Verouderd: gebruik in plaats daarvan smart_irrigation.set_seasonal_adjustment. Werkt tot 2027.11. Werk een bestaande seizoenscorrectie bij.",
+      "fields": {
+        "adjustment_id": {
+          "name": "Correctie-id",
+          "description": "Id van de correctie om bij te werken"
+        },
+        "name": {
+          "name": "Naam",
+          "description": "Naam van de correctie"
+        },
+        "enabled": {
+          "name": "Ingeschakeld",
+          "description": "De correctie in-/uitschakelen"
+        }
+      }
+    },
+    "delete_seasonal_adjustment": {
+      "name": "Seizoenscorrectie verwijderen (verouderd)",
+      "description": "Verouderd: gebruik in plaats daarvan smart_irrigation.set_seasonal_adjustment. Werkt tot 2027.11. Verwijder een seizoenscorrectie.",
+      "fields": {
+        "adjustment_id": {
+          "name": "Correctie-id",
+          "description": "Id van de correctie om te verwijderen"
+        }
+      }
+    },
+    "postpone_irrigation": {
+      "name": "Bewatering uitstellen",
+      "description": "Houd de bewatering een tijdje tegen en laat ze daarna vanzelf hervatten. Er wordt niets teruggezet: een zone met een watertekort heeft dat nog steeds als het uitstel afloopt, en de volgende run haalt het in.",
+      "fields": {
+        "hours": {
+          "name": "Uren",
+          "description": "Hoe lang de bewatering tegen te houden. Nul heft een uitstel op."
+        }
+      }
+    },
+    "resume_irrigation": {
+      "name": "Bewatering hervatten",
+      "description": "Hef een uitstel op, hoeveel er ook nog van over is."
+    },
+    "calculate": {
+      "name": "Berekenen",
+      "description": "Bereken de gekozen zones, of alle zones in automatische modus als er geen is gekozen",
+      "fields": {
+        "entity": {
+          "name": "Entiteit",
+          "description": "Zones om te berekenen; geen berekent alle"
+        },
+        "delete_weather_data": {
+          "name": "Weerdata verwijderen",
+          "description": "Verwijder de weerdata van de zone na de berekening"
+        },
+        "dry_run": {
+          "name": "Proefrun",
+          "description": "Meld wat de berekening zou doen, zonder de waterbalans, de zone of de verzamelde weerdata te wijzigen"
+        }
+      }
+    },
+    "update_weather": {
+      "name": "Weer bijwerken",
+      "description": "Haal het weer op voor de gekozen zones, of voor alle zones als er geen is gekozen",
+      "fields": {
+        "entity": {
+          "name": "Entiteit",
+          "description": "Zones om bij te werken; geen werkt alle bij"
+        }
+      }
+    },
+    "set_seasonal_adjustment": {
+      "name": "Seizoenscorrectie instellen",
+      "description": "Maak een seizoenscorrectie, wijzig er een via zijn id, of verwijder er een via zijn id met remove",
+      "fields": {
+        "adjustment_id": {
+          "name": "Correctie-id",
+          "description": "De correctie om te wijzigen of te verwijderen; geen maakt er een"
+        },
+        "remove": {
+          "name": "Verwijderen",
+          "description": "Verwijder de correctie met dit id"
+        },
+        "name": {
+          "name": "Naam",
+          "description": "Naam van de correctie"
+        },
+        "enabled": {
+          "name": "Ingeschakeld",
+          "description": "De correctie inschakelen"
+        },
+        "month_start": {
+          "name": "Beginmaand",
+          "description": "Beginmaand (1-12)"
+        },
+        "month_end": {
+          "name": "Eindmaand",
+          "description": "Eindmaand (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Correctiefactor van de vermenigvuldiger",
+          "description": "Correctiefactor van de vermenigvuldiger"
+        },
+        "threshold_adjustment": {
+          "name": "Drempelcorrectie",
+          "description": "Drempelcorrectie in mm"
+        },
+        "zones": {
+          "name": "Zones",
+          "description": "Zone-id's om op te nemen of 'all'"
+        }
+      }
     }
   },
   "issues": {
@@ -342,6 +734,14 @@
     "zone_not_calculated_no_sensor_group": {
       "title": "Zone {zone} kan niet berekend worden: geen sensorgroep",
       "description": "Zone **{zone}** heeft geen sensorgroep, dus er is niets om haar mee te berekenen en ze wordt niet bewaterd.\n\nKies haar sensorgroep op haar kaart in het tabblad Zones en bereken daarna de zone. De melding verdwijnt vanzelf bij de volgende geslaagde berekening."
+    },
+    "deprecated_action": {
+      "title": "De actie {action} verdwijnt",
+      "description": "Een automatisering, een script of een dashboard heeft **{action}** aangeroepen. Die werkt nog, maar wordt verwijderd vanaf versie {version}, in de winter, buiten het bewateringsseizoen.\n\nGebruik in plaats daarvan **{replacement}**: die doet hetzelfde, en voor alle zones als er geen zone is gekozen. Deze melding komt terug bij elke aanroep van de oude naam, tot er geen meer over is."
+    },
+    "deprecated_recurring_schedule": {
+      "title": "Terugkerende schema's verdwijnen: {action}",
+      "description": "Een automatisering, een script of een dashboard heeft **{action}** aangeroepen. Terugkerende schema's werken nog, maar worden verwijderd vanaf versie {version}, in de winter, buiten het bewateringsseizoen.\n\nDe schema's van de programma's doen hetzelfde en staan in het paneel: stel ze in onder **Bewatering**, en verwijder dan de terugkerende schema's en de aanroepen van {action}."
     }
   }
 }

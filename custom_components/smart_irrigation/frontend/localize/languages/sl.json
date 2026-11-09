@@ -156,14 +156,19 @@
           "engine": "Modul",
           "sources": "Viri",
           "from-the-service": "iz vremenske storitve",
+          "no-sensor": "brez senzorja",
           "help": "To ustvari modul, skupino senzorjev in cono, natanko tako, kot bi jih ostali zavihki. Nič ni potem zaklenjeno."
         }
       },
       "step": "korak",
       "done-note-zone": "Prikaže se pod Cone, njena skupina senzorjev pa pod Skupine senzorjev. Na njiju ni nič posebnega: uredi ju kot katerikoli drugi.",
       "done-next-static": "S stalno količino na dan ne potrebuje meritev: naslednji izračun ugotovi, koliko ji manjka.",
-      "done-next-service": "Vremenske podatke dobi od vremenske storitve: ko storitev sporoči podatke, posodobitev in izračun dasta coni trajanje.",
-      "done-next-sensors": "Ko tvoji senzorji sporočijo podatke, zaženi posodobitev in izračun, in cona bo začela dajati trajanje.",
+      "done-next-service": "Vreme dobi od vremenske storitve, trajanje pa s prvim izračunom. Izračunaj zdaj takoj pridobi vreme in izračuna cono.",
+      "done-next-sensors": "Trajanje dobi s prvim izračunom. Izračunaj zdaj takoj prebere tvoje senzorje in izračuna cono.",
+      "calc-now": "Izračunaj zdaj",
+      "calc-duration": "Izračunano: ob naslednjem zagonu zaliva {duration}.",
+      "calc-nothing": "Izračunano: vode ji še ne primanjkuje.",
+      "calc-failed": "Izračun ni uspel. Zakaj, piše pri coni na zavihku Cone.",
       "open-zone": "Odpri cono",
       "another": "Nastavi še eno cono"
     },
@@ -257,8 +262,8 @@
             "auto-update-enabled": "Samodejno posodabljaj vremenske podatke",
             "auto-update-schedule": "Urnik posodabljanja",
             "auto-update-time": "Posodobi ob",
-            "auto-update-interval": "Posodobi podatke senzorjev vsakih",
-            "auto-update-delay": "Zamik posodobitve"
+            "auto-update-interval": "Preberi vreme vsakih",
+            "auto-update-delay": "Zamik pred prvo posodobitvijo"
           },
           "options": {
             "minutes": "minut",
@@ -357,6 +362,8 @@
           "sequencing-parallel": "vse cone hkrati, zato je skupaj najdaljša cona",
           "headline-nothing": "Nič ni treba zaliti",
           "sub-nothing": "Nobeni coni še ne primanjkuje dovolj vode. Naslednji zagon bi bil {start}.",
+          "headline-not-calculated": "Še ni izračunano",
+          "sub-not-calculated": "Cone nimajo trajanja do prvega izračuna, {when}. Če želiš to storiti zdaj, na zavihku Cone izračunaj vse cone.",
           "next-program": "Naslednji program: {program}, {start}",
           "headline-watering": "Zalivanje {start}",
           "headline-watering-soon": "Zalivanje ob naslednjem zagonu",
@@ -452,7 +459,8 @@
         },
         "no_valve_path": {
           "title": "Nič tu ne odpre ventila",
-          "body": "Smart Irrigation izračuna, kako dolgo zalivati; nekaj mora to izvesti. Poveži ventil s cono in vklopi neposredno upravljanje ventilov, ali pa napiši avtomatizacijo na dogodek zagona (blueprinti to naredijo namesto tebe). Če to že počne kakšna avtomatizacija, ni treba ničesar spreminjati."
+          "body": "Smart Irrigation izračuna, kako dolgo zalivati; nekaj mora to izvesti. V Nastavitvah vklopi neposredno upravljanje ventilov in nato vsaki coni poveži ventil, ali pa napiši avtomatizacijo na dogodek zagona (blueprinti to naredijo namesto tebe). Če to že počne kakšna avtomatizacija, ni treba ničesar spreminjati.",
+          "action": "Na upravljanje ventilov"
         }
       }
     },
@@ -460,9 +468,10 @@
       "cards": {
         "add-mapping": {
           "actions": {
-            "add": "Dodaj skupino senzorjev"
+            "add": "Dodaj skupino senzorjev",
+            "cancel": "Prekliči"
           },
-          "header": "Dodaj skupine senzorjev"
+          "header": "Dodaj skupino senzorjev"
         },
         "mapping": {
           "aggregates": {
@@ -523,6 +532,7 @@
           "sources": {
             "none": "Brez",
             "none_et": "Brez (izračuna jo Smart Irrigation)",
+            "none_estimated": "Brez (ocenjeno)",
             "weather_service": "Vremenska storitev",
             "weather_service_et": "Že izračunana ET₀ iz vremenske storitve",
             "sensor": "Senzor",
@@ -664,6 +674,8 @@
         "drainage_rate": "Hitrost drenaže",
         "linked-entity": "Povezan ventil/stikalo",
         "linked-entity-hint": "Ventil ali stikalo, ki zaliva to cono. Smart Irrigation ga odpre in zapre, ko je vklopljeno neposredno upravljanje ventilov. Ko je vklopljeno opazovano zalivanje, vsak njegov zagon (ročni vklop, avtomatizacija ali Smart Irrigation sam) prišteje vodni bilanci glede na čas delovanja in pretok cone.",
+        "valve-off": "Ventil lahko povežeš, ko je vklopljeno neposredno upravljanje ventilov ali opazovano zalivanje.",
+        "valve-off-link": "Vklopi",
         "supply": "Črpalka ali glavni ventil",
         "supply-none": "Brez",
         "measured-flow-help": "V več zagonih je vodomer cone izmeril pretok, ki se razlikuje od zgoraj nastavljenega. To je nasvet, nikoli se ne uporabi samodejno.",
@@ -730,15 +742,16 @@
         "soil-type": "Tla",
         "plant-type": "Kaj tu raste",
         "soil-types": {
+          "default": "Še ni izbrano: {value}",
           "sand": "Peščena",
           "sandy_loam": "Peščena ilovica",
           "loam": "Ilovica",
           "clay_loam": "Glinasta ilovica",
           "clay": "Glina",
-          "custom": "Hitrost drenaže nastavim sam",
-          "default": "Še ni izbrano – izračunano z {value}"
+          "custom": "Hitrost drenaže nastavim sam"
         },
         "plant-types": {
+          "default": "Še ni izbrano: faktor {value}",
           "lawn": "Trata",
           "vegetables": "Zelenjava",
           "flowers": "Cvetje",
@@ -747,8 +760,7 @@
           "fruit_trees": "Sadno drevje",
           "vines": "Vinska trta",
           "ground_cover": "Pokrovne rastline",
-          "custom": "Faktor rastline nastavim sam",
-          "default": "Še ni izbrano – izračunano s faktorjem rastline {value}"
+          "custom": "Faktor rastline nastavim sam"
         },
         "duration-readonly-automatic": "Izračunano zate: trajanje te cone izhaja iz njene vodne bilance. Nastavi jo na ročno, če želiš trajanje vnesti sam.",
         "duration-readonly-disabled": "Izklopljena cona se nikoli ne zaliva, zato nima časa delovanja.",
@@ -764,6 +776,7 @@
         "idle": "Nič ni treba zaliti: primanjkuje {short}.",
         "satisfied": "Nič ni treba zaliti: ta cona ima, kar potrebuje.",
         "under-threshold": "Še nič ni treba zaliti: primanjkuje {short}, pod pragom te cone.",
+        "not-calculated": "Še ni izračunano: to se zgodi {when}.",
         "manual": "Zaliva samo, ko zahtevaš.",
         "disabled": "Izklopljeno: nikoli se ne zaliva in njena bilanca se ne vodi.",
         "threshold": "prag",
@@ -1085,8 +1098,8 @@
     "title": "Sprožilci zagona",
     "description": "Kdaj se zalivanje začne. Privzeto se konča ob sončnem vzhodu; dodaj sprožilec za drug trenutek: sončni zahod, azimut ali uro, z zamikom.",
     "active_label": "Aktivni sprožilec",
-    "active_default": "Privzeto (sončni vzhod minus skupno trajanje zalivanja)",
-    "active_hint": "Zalivanje zažene le izbrani sprožilec, enkrat na dan.",
+    "active_default": "Privzeto: konča do sončnega vzhoda",
+    "active_hint": "Zalivanje zažene le izbrani sprožilec, enkrat na dan. Privzeto zažene tako, da so vse cone končane do sončnega vzhoda; pri Brez Smart Irrigation ne zažene ničesar.",
     "usage_before": "Ko se sprožilec sproži, Smart Irrigation odda dogodek ",
     "usage_after": ": poslušaj ga v avtomatizaciji, da začneš zalivanje. Podatki dogodka vsebujejo trigger_name, trigger_type in offset_minutes, zato se lahko na vsak sprožilec odzoveš drugače. Nastavitvi preskoka zaradi padavin in dni med namakanji še vedno veljata: na dan preskoka se dogodek ne odda.",
     "add_trigger": "Dodaj sprožilec",
@@ -1148,7 +1161,7 @@
       "azimuth_explanation": "Sončni azimut je smer sonca na kompasu. 0°=sever, 90°=vzhod, 180°=jug, 270°=zahod. Vneseš lahko kateri koli kot (npr. 450° = 90°, -30° = 330°). Uporabi ga, da sprožiš namakanje, ko sonce doseže določen položaj.",
       "multiple_triggers": "Ustvariš lahko več sprožilcev, a namakanje začne samo tisti, ki je izbran kot aktiven. Ostali se ohranijo za pozneje."
     },
-    "active_none": "Brez (Smart Irrigation ne zažene nobenega zalivanja)",
+    "active_none": "Brez",
     "none_selected": "Noben sprožilec ni aktiven: Smart Irrigation ne zažene nobenega zalivanja, ne glede na vreme. Trajanja se še vedno izračunavajo; zalivanje zaženi sam ali z lastno avtomatizacijo."
   },
   "seasonal_adjustments": {
@@ -1174,7 +1187,8 @@
     "effective_rain_label": "Štej samo dež, ki doseže korenine",
     "effective_rain_description": "Prezri ploho, manjšo od petine evapotranspiracije obdobja: zmoči liste in izhlapi. Presoja se na celotnem obdobju med dvema izračunoma.",
     "forecast_label": "Upoštevaj napovedani dež",
-    "forecast_description": "Pod pragom se vsaka cona zaliva za svoj primanjkljaj, zmanjšan za dež, napovedan v naslednjih 24 urah, utežen z verjetnostjo, ki jo poda vremenska storitev: 4 mm napovedi ob primanjkljaju 10 mm zalije 6 mm. Na pragu ali nad njim se zagon za cone na prostem preskoči. Cone v rastlinjaku niso prizadete."
+    "forecast_description": "Pod pragom se vsaka cona zaliva za svoj primanjkljaj, zmanjšan za dež, napovedan v naslednjih 24 urah, utežen z verjetnostjo, ki jo poda vremenska storitev: 4 mm napovedi ob primanjkljaju 10 mm zalije 6 mm. Na pragu ali nad njim se zagon za cone na prostem preskoči. Cone v rastlinjaku niso prizadete.",
+    "forecast_set_up_service": "Nastavi vremensko storitev"
   },
   "coordinate_config": {
     "title": "Koordinate lokacije",
@@ -1380,7 +1394,7 @@
   },
   "observed_watering": {
     "title": "Opazovano zalivanje (zaprta zanka)",
-    "description": "Vodno bilanco vsake cone samodejno dopolni iz dejanskega namakanja, namesto da jo ponastavljaš z avtomatizacijo. Ko je vklopljeno, na zavihku Cone za vsako cono izberi entiteto ventila/stikala: dokler je odprt, se vodni bilanci prišteva glede na čas delovanja in pretok cone. Za natančno upoštevanje lahko za vsako cono izbereš tudi števec skupne prostornine (seštevek kot pri vodomeru), in takrat se uporabi izmerjena prostornina. Pomembno: ko je to vklopljeno, je to edino, kar prišteva vodni bilanci, zato iz svoje avtomatizacije namakanja odstrani vsak klic reset_bucket, da se izogneš dvojnemu štetju.",
+    "description": "Vodno bilanco vsake cone dopolni iz dejanskega zalivanja, namesto da jo ponastavlja avtomatizacija. Na zavihku Cone za vsako cono izberi ventil ali stikalo: dokler je odprt, se prišteje čas delovanja, pomnožen s pretokom, ali prostornina, ki jo je izmeril števec. Iz svojih avtomatizacij odstrani klice set_bucket in reset_bucket, sicer se šteje dvakrat.",
     "enabled_label": "Vklopi opazovano zalivanje",
     "direct_control_label": "Naj Smart Irrigation upravlja ventil",
     "direct_control_description": "Ko je vklopljeno, Smart Irrigation odpre povezan ventil vsake cone, počaka izračunano trajanje in ga nato zapre, brez avtomatizacije. Zalivanje v teku se po ponovnem zagonu nadaljuje. Varnost: ventil, ki se zna zapreti sam, ob odprtju prejme trajanje zalivanja (Sonoff SWV prek ZHA ali ventil, katerega cona ima nastavljeno varnostno temo MQTT), zato se zapre, tudi če Home Assistant preneha delovati. Vsak drug ventil zaliva naprej, dokler se Home Assistant ne vrne: zagotovi mu strojno varovalo (največji čas delovanja).",
@@ -1456,6 +1470,7 @@
     "skipped": "Zadržano",
     "short_by": "primanjkuje {value}",
     "no_need": "zalivanje ni potrebno",
+    "not_calculated": "še ni izračunano",
     "runs_for": "bi zalivala {duration}",
     "never_watered": "nikoli zalito",
     "last_watered": "nazadnje zalito {when}",

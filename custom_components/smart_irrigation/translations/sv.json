@@ -77,7 +77,11 @@
         "name": "Bevattning behövs"
       },
       "watering_now": {
-        "name": "Vattnar nu"
+        "name": "Vattnar nu",
+        "state": {
+          "on": "Ja",
+          "off": "Nej"
+        }
       },
       "problem": {
         "name": "Problem"
@@ -94,7 +98,7 @@
         "name": "Hoppa över vid nederbörd"
       },
       "irrigation_enabled": {
-        "name": "Aktiv"
+        "name": "Beräkna och vattna"
       }
     },
     "datetime": {
@@ -136,8 +140,8 @@
   },
   "services": {
     "calculate_all_zones": {
-      "name": "Beräkna alla zoner",
-      "description": "Beräkna bevattningsbehovet för alla zoner i automatiskt läge",
+      "name": "Beräkna alla zoner (utfasas)",
+      "description": "Utfasas: använd smart_irrigation.calculate i stället. Fungerar till 2027.11. Beräkna bevattningsbehovet för alla zoner i automatiskt läge",
       "fields": {
         "delete_weather_data": {
           "name": "Radera väderdata",
@@ -150,8 +154,8 @@
       }
     },
     "calculate_zone": {
-      "name": "Beräkna zon",
-      "description": "Beräkna bevattningsbehovet för den angivna zonen",
+      "name": "Beräkna zon (utfasas)",
+      "description": "Utfasas: använd smart_irrigation.calculate i stället. Fungerar till 2027.11. Beräkna bevattningsbehovet för den angivna zonen",
       "fields": {
         "entity": {
           "name": "Entitet",
@@ -168,12 +172,12 @@
       }
     },
     "update_all_zones": {
-      "name": "Uppdatera alla zoner",
-      "description": "Uppdatera väderdata för alla zoner i automatiskt läge"
+      "name": "Uppdatera alla zoner (utfasas)",
+      "description": "Utfasas: använd smart_irrigation.update_weather i stället. Fungerar till 2027.11. Uppdatera väderdata för alla zoner i automatiskt läge"
     },
     "update_zone": {
-      "name": "Uppdatera zon",
-      "description": "Uppdatera väderdata för angiven zon",
+      "name": "Uppdatera zon (utfasas)",
+      "description": "Utfasas: använd smart_irrigation.update_weather i stället. Fungerar till 2027.11. Uppdatera väderdata för angiven zon",
       "fields": {
         "entity": {
           "name": "Entitet",
@@ -183,21 +187,21 @@
     },
     "set_bucket": {
       "name": "Ställ in vattenbalans",
-      "description": "Ange ett värde för zonens vattenbalans",
+      "description": "Ange vattenbalansen för de valda zonerna, eller för alla zoner om ingen är vald. Utan värde nollställs vattenbalansen till 0",
       "fields": {
         "entity": {
           "name": "Entitet",
-          "description": "Zon att ställa in vattenbalansen för"
+          "description": "Zoner att ställa in vattenbalansen för. Ingen vald ger alla zoner"
         },
         "new_bucket_value": {
           "name": "Ny vattenbalans",
-          "description": "Nytt värde för vattenbalansen"
+          "description": "Nytt värde för vattenbalansen. Inget värde ger 0"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Ställ in alla vattenbalanser",
-      "description": "Ange samma vattenbalans för alla zoner",
+      "name": "Ställ in alla vattenbalanser (utfasas)",
+      "description": "Utfasas: använd smart_irrigation.set_bucket i stället. Fungerar till 2027.11. Ange samma vattenbalans för alla zoner",
       "fields": {
         "new_bucket_value": {
           "name": "Ny vattenbalans",
@@ -206,8 +210,8 @@
       }
     },
     "reset_bucket": {
-      "name": "Nollställ vattenbalansen",
-      "description": "Sätt zonens vattenbalans till 0",
+      "name": "Nollställ vattenbalansen (utfasas)",
+      "description": "Utfasas: använd smart_irrigation.set_bucket i stället. Fungerar till 2027.11. Sätt zonens vattenbalans till 0",
       "fields": {
         "entity": {
           "name": "Entitet",
@@ -216,8 +220,8 @@
       }
     },
     "reset_all_buckets": {
-      "name": "Nollställ alla zoners vattenbalans",
-      "description": "Sätt vattenbalansen till 0 för alla zoner"
+      "name": "Nollställ alla zoners vattenbalans (utfasas)",
+      "description": "Utfasas: använd smart_irrigation.set_bucket i stället. Fungerar till 2027.11. Sätt vattenbalansen till 0 för alla zoner"
     },
     "clear_all_weather_data": {
       "name": "Rensa alla väderdata",
@@ -225,11 +229,11 @@
     },
     "set_multiplier": {
       "name": "Ställ in multiplikator",
-      "description": "Ange en multiplikator för zonen",
+      "description": "Ange multiplikatorn för de valda zonerna, eller för alla zoner om ingen är vald",
       "fields": {
         "entity": {
           "name": "Entitet",
-          "description": "Zon att ställa in multiplikator för"
+          "description": "Zoner att ställa in multiplikatorn för. Ingen vald ger alla zoner"
         },
         "new_multiplier_value": {
           "name": "Nytt multiplikatorvärde",
@@ -238,8 +242,8 @@
       }
     },
     "set_all_multipliers": {
-      "name": "Ställ in alla multiplikatorer",
-      "description": "Ange samma multiplikator för alla zoner",
+      "name": "Ställ in alla multiplikatorer (utfasas)",
+      "description": "Utfasas: använd smart_irrigation.set_multiplier i stället. Fungerar till 2027.11. Ange samma multiplikator för alla zoner",
       "fields": {
         "new_multiplier_value": {
           "name": "Nytt multiplikatorvärde",
@@ -470,8 +474,8 @@
       }
     },
     "create_recurring_schedule": {
-      "name": "Skapa återkommande schema",
-      "description": "Skapar ett nytt schema för återkommande bevattning.",
+      "name": "Skapa återkommande schema (utfasas)",
+      "description": "Utfasas: använd programmens scheman (fliken Bevattning) i stället. Fungerar till 2027.11. Skapar ett nytt schema för återkommande bevattning.",
       "fields": {
         "name": {
           "name": "Namn",
@@ -512,8 +516,8 @@
       }
     },
     "update_recurring_schedule": {
-      "name": "Uppdatera återkommande schema",
-      "description": "Uppdaterar ett befintligt schema för återkommande bevattning.",
+      "name": "Uppdatera återkommande schema (utfasas)",
+      "description": "Utfasas: använd programmens scheman (fliken Bevattning) i stället. Fungerar till 2027.11. Uppdaterar ett befintligt schema för återkommande bevattning.",
       "fields": {
         "schedule_id": {
           "name": "Schema-id",
@@ -530,8 +534,8 @@
       }
     },
     "delete_recurring_schedule": {
-      "name": "Ta bort återkommande schema",
-      "description": "Tar bort ett schema för återkommande bevattning.",
+      "name": "Ta bort återkommande schema (utfasas)",
+      "description": "Utfasas: använd programmens scheman (fliken Bevattning) i stället. Fungerar till 2027.11. Tar bort ett schema för återkommande bevattning.",
       "fields": {
         "schedule_id": {
           "name": "Schema-id",
@@ -540,8 +544,8 @@
       }
     },
     "create_seasonal_adjustment": {
-      "name": "Skapa säsongsjustering",
-      "description": "Skapar en ny säsongsjustering för bevattningszoner.",
+      "name": "Skapa säsongsjustering (utfasas)",
+      "description": "Utfasas: använd smart_irrigation.set_seasonal_adjustment i stället. Fungerar till 2027.11. Skapar en ny säsongsjustering för bevattningszoner.",
       "fields": {
         "name": {
           "name": "Namn",
@@ -574,8 +578,8 @@
       }
     },
     "update_seasonal_adjustment": {
-      "name": "Uppdatera säsongsjustering",
-      "description": "Uppdaterar en befintlig säsongsjustering.",
+      "name": "Uppdatera säsongsjustering (utfasas)",
+      "description": "Utfasas: använd smart_irrigation.set_seasonal_adjustment i stället. Fungerar till 2027.11. Uppdaterar en befintlig säsongsjustering.",
       "fields": {
         "adjustment_id": {
           "name": "Justerings-id",
@@ -592,8 +596,8 @@
       }
     },
     "delete_seasonal_adjustment": {
-      "name": "Ta bort säsongsjustering",
-      "description": "Tar bort en säsongsjustering.",
+      "name": "Ta bort säsongsjustering (utfasas)",
+      "description": "Utfasas: använd smart_irrigation.set_seasonal_adjustment i stället. Fungerar till 2027.11. Tar bort en säsongsjustering.",
       "fields": {
         "adjustment_id": {
           "name": "Justerings-id",
@@ -614,6 +618,76 @@
     "resume_irrigation": {
       "name": "Återuppta uppskjuten bevattning",
       "description": "Häver uppskjutningen även om väntetiden inte har löpt ut."
+    },
+    "calculate": {
+      "name": "Beräkna",
+      "description": "Beräkna bevattningsbehovet för de valda zonerna, eller för alla zoner i automatiskt läge om ingen är vald",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zoner att beräkna. Ingen vald ger alla zoner"
+        },
+        "delete_weather_data": {
+          "name": "Radera väderdata",
+          "description": "Radera väderdata för zonen efter beräkning"
+        },
+        "dry_run": {
+          "name": "Testkörning",
+          "description": "Visa vad beräkningen skulle ge utan att ändra zonen, vattenbalansen eller insamlade väderdata"
+        }
+      }
+    },
+    "update_weather": {
+      "name": "Uppdatera väderdata",
+      "description": "Hämta väderdata för de valda zonerna, eller för alla zoner om ingen är vald",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zoner att uppdatera. Ingen vald ger alla zoner"
+        }
+      }
+    },
+    "set_seasonal_adjustment": {
+      "name": "Ställ in säsongsjustering",
+      "description": "Skapa en säsongsjustering, ändra en via dess id eller ta bort en via dess id med remove",
+      "fields": {
+        "adjustment_id": {
+          "name": "Justerings-id",
+          "description": "Justeringen som ska ändras eller tas bort. Inget id skapar en ny"
+        },
+        "remove": {
+          "name": "Ta bort",
+          "description": "Ta bort justeringen med detta id"
+        },
+        "name": {
+          "name": "Namn",
+          "description": "Säsongsjusteringens namn."
+        },
+        "enabled": {
+          "name": "Aktiverad",
+          "description": "Aktivera säsongsjusteringen."
+        },
+        "month_start": {
+          "name": "Startmånad",
+          "description": "Första månaden som justeringen gäller (1-12)."
+        },
+        "month_end": {
+          "name": "Slutmånad",
+          "description": "Sista månaden som justeringen gäller (1-12)."
+        },
+        "multiplier_adjustment": {
+          "name": "Justeringsfaktor för grödkoefficienten",
+          "description": "Faktor som zonens grödkoefficient multipliceras med under perioden."
+        },
+        "threshold_adjustment": {
+          "name": "Justering av bevattningströskeln",
+          "description": "Justering av bevattningströskeln i mm."
+        },
+        "zones": {
+          "name": "Zoner",
+          "description": "Id för zonerna som ska ingå, eller ”all” för alla zoner."
+        }
+      }
     }
   },
   "issues": {
@@ -660,6 +734,14 @@
     "zone_not_calculated_no_sensor_group": {
       "title": "Zon {zone} saknar en sensorgrupp",
       "description": "Zon **{zone}** saknar en sensorgrupp. Därför kan bevattningsbehovet inte beräknas och zonen vattnas inte.\n\nVälj en sensorgrupp på zonens kort på fliken Zoner och kör sedan beräkningen för zonen. Meddelandet försvinner vid nästa lyckade beräkning."
+    },
+    "deprecated_action": {
+      "title": "Åtgärden {action} försvinner",
+      "description": "En automation, ett skript eller en instrumentpanel anropade **{action}**. Den fungerar fortfarande, men den tas bort från och med version {version}, på vintern, utanför bevattningssäsongen.\n\nAnvänd **{replacement}** i stället: den gör samma sak, och för alla zoner om ingen zon är vald. Meddelandet visas igen vid varje anrop till det gamla namnet, tills inga anrop finns kvar."
+    },
+    "deprecated_recurring_schedule": {
+      "title": "Återkommande scheman försvinner: {action}",
+      "description": "En automation, ett skript eller en instrumentpanel anropade **{action}**. Återkommande scheman fungerar fortfarande, men de tas bort från och med version {version}, på vintern, utanför bevattningssäsongen.\n\nProgrammens scheman gör samma sak och finns i panelen: konfigurera dem under **Bevattning** och ta sedan bort de återkommande schemana och anropen till {action}."
     }
   }
 }

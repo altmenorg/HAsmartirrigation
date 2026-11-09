@@ -77,7 +77,11 @@
         "name": "Potrebno namakanje"
       },
       "watering_now": {
-        "name": "Namakanje poteka"
+        "name": "Namakanje poteka",
+        "state": {
+          "on": "Da",
+          "off": "Ne"
+        }
       },
       "problem": {
         "name": "Težava"
@@ -94,7 +98,7 @@
         "name": "Preskoči ob padavinah"
       },
       "irrigation_enabled": {
-        "name": "Aktivno"
+        "name": "Izračunaj in zalivaj"
       }
     },
     "datetime": {
@@ -136,8 +140,8 @@
   },
   "services": {
     "calculate_all_zones": {
-      "name": "Izračunaj vse cone",
-      "description": "Izračunaj vse cone v samodejnem načinu",
+      "name": "Izračunaj vse cone (opuščeno)",
+      "description": "Opuščeno: namesto tega uporabi smart_irrigation.calculate. Deluje do 2027.11. Izračunaj vse cone v samodejnem načinu",
       "fields": {
         "delete_weather_data": {
           "name": "Izbriši vremenske podatke",
@@ -150,8 +154,8 @@
       }
     },
     "calculate_zone": {
-      "name": "Izračunaj cono",
-      "description": "Izračunaj izbrano cono",
+      "name": "Izračunaj cono (opuščeno)",
+      "description": "Opuščeno: namesto tega uporabi smart_irrigation.calculate. Deluje do 2027.11. Izračunaj izbrano cono",
       "fields": {
         "entity": {
           "name": "Entiteta",
@@ -168,12 +172,12 @@
       }
     },
     "update_all_zones": {
-      "name": "Posodobi vse cone",
-      "description": "Posodobi vremenske podatke za vse cone v samodejnem načinu"
+      "name": "Posodobi vse cone (opuščeno)",
+      "description": "Opuščeno: namesto tega uporabi smart_irrigation.update_weather. Deluje do 2027.11. Posodobi vremenske podatke za vse cone v samodejnem načinu"
     },
     "update_zone": {
-      "name": "Posodobi cono",
-      "description": "Posodobi vremenske podatke za izbrano cono",
+      "name": "Posodobi cono (opuščeno)",
+      "description": "Opuščeno: namesto tega uporabi smart_irrigation.update_weather. Deluje do 2027.11. Posodobi vremenske podatke za izbrano cono",
       "fields": {
         "entity": {
           "name": "Entiteta",
@@ -183,21 +187,21 @@
     },
     "set_bucket": {
       "name": "Nastavi vodno bilanco",
-      "description": "Nastavi vodno bilanco cone na določeno vrednost",
+      "description": "Nastavi vodno bilanco izbranih con ali vseh con, če nobena ni izbrana. Brez vrednosti jo ponastavi na 0",
       "fields": {
         "entity": {
           "name": "Entiteta",
-          "description": "Cona, ki ji nastaviš vodno bilanco"
+          "description": "Cone, ki jim nastaviš vodno bilanco; brez izbire vse"
         },
         "new_bucket_value": {
           "name": "Nova vrednost vodne bilance",
-          "description": "nova vrednost vodne bilance"
+          "description": "Nova vrednost vodne bilance; brez vrednosti 0"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Nastavi vse vodne bilance",
-      "description": "Nastavi vodne bilance vseh con na določeno vrednost",
+      "name": "Nastavi vse vodne bilance (opuščeno)",
+      "description": "Opuščeno: namesto tega uporabi smart_irrigation.set_bucket. Deluje do 2027.11. Nastavi vodne bilance vseh con na določeno vrednost",
       "fields": {
         "new_bucket_value": {
           "name": "Nova vrednost vodne bilance",
@@ -206,8 +210,8 @@
       }
     },
     "reset_bucket": {
-      "name": "Ponastavi vodno bilanco",
-      "description": "Ponastavi vodno bilanco cone na 0",
+      "name": "Ponastavi vodno bilanco (opuščeno)",
+      "description": "Opuščeno: namesto tega uporabi smart_irrigation.set_bucket. Deluje do 2027.11. Ponastavi vodno bilanco cone na 0",
       "fields": {
         "entity": {
           "name": "Entiteta",
@@ -216,8 +220,8 @@
       }
     },
     "reset_all_buckets": {
-      "name": "Ponastavi vse vodne bilance",
-      "description": "Ponastavi vodne bilance vseh con na 0"
+      "name": "Ponastavi vse vodne bilance (opuščeno)",
+      "description": "Opuščeno: namesto tega uporabi smart_irrigation.set_bucket. Deluje do 2027.11. Ponastavi vodne bilance vseh con na 0"
     },
     "clear_all_weather_data": {
       "name": "Počisti vse vremenske podatke",
@@ -225,11 +229,11 @@
     },
     "set_multiplier": {
       "name": "Nastavi množitelj",
-      "description": "Nastavi množitelj cone na določeno vrednost",
+      "description": "Nastavi množitelj izbranih con ali vseh con, če nobena ni izbrana",
       "fields": {
         "entity": {
           "name": "Entiteta",
-          "description": "Cona, ki ji nastaviš množitelj"
+          "description": "Cone, ki jim nastaviš množitelj; brez izbire vse"
         },
         "new_multiplier_value": {
           "name": "Nova vrednost množitelja",
@@ -238,8 +242,8 @@
       }
     },
     "set_all_multipliers": {
-      "name": "Nastavi vse množitelje",
-      "description": "Nastavi množitelje vseh con na določeno vrednost",
+      "name": "Nastavi vse množitelje (opuščeno)",
+      "description": "Opuščeno: namesto tega uporabi smart_irrigation.set_multiplier. Deluje do 2027.11. Nastavi množitelje vseh con na določeno vrednost",
       "fields": {
         "new_multiplier_value": {
           "name": "Nova vrednost množitelja",
@@ -296,6 +300,394 @@
           "description": "Koliko časa je cona tekla, v sekundah. Prazno: trajanje cone."
         }
       }
+    },
+    "run_program": {
+      "name": "Zaženi program",
+      "description": "Zaženi program celotnega krmilnika zdaj ali, če teče drug, takoj ko pride na vrsto. Program zaliva svoje cone s trajanji, ki jih je izračunal Smart Irrigation, razen če njegovi koraki določajo drugače.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "ID programa, kot je prikazan v njegovih nastavitvah."
+        },
+        "seconds": {
+          "name": "Sekunde",
+          "description": "Skupno trajanje celotnega programa, razdeljeno med njegove korake sorazmerno z njihovimi načrtovanimi trajanji. Če je prazno, načrtovana trajanja."
+        },
+        "mode": {
+          "name": "Način",
+          "description": "Kaj storiti, ko že nekaj zaliva. queue se postavi v vrsto za njim; replace ga najprej pravilno ustavi."
+        }
+      }
+    },
+    "stop_program": {
+      "name": "Ustavi program",
+      "description": "Ustavi en program. Če teče, se njegove odprte cone zaprejo na običajen način in se jim prišteje dovedena voda; če čaka, da pride na vrsto, se odstrani iz vrste. Neznan program ne naredi ničesar. Glavni program ustaviš s stop_watering.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "ID programa."
+        }
+      }
+    },
+    "set_program_enabled": {
+      "name": "Vklopi ali izklopi program",
+      "description": "Vklopi ali izklopi program celotnega krmilnika, kot to stori stikalo v njegovih nastavitvah.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "ID programa."
+        },
+        "enabled": {
+          "name": "Vklopljeno",
+          "description": "Vklopljeno za vklop, izklopljeno za izklop."
+        }
+      }
+    },
+    "set_step_enabled": {
+      "name": "Vklopi ali izklopi korak",
+      "description": "Vklopi ali izklopi en korak programa.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "ID programa."
+        },
+        "step_id": {
+          "name": "Korak",
+          "description": "ID koraka, kot je prikazan v programu."
+        },
+        "enabled": {
+          "name": "Vklopljeno",
+          "description": "Vklopljeno za vklop, izklopljeno za izklop."
+        }
+      }
+    },
+    "set_schedule_enabled": {
+      "name": "Vklopi ali izklopi urnik",
+      "description": "Vklopi ali izklopi en urnik programa. Urniki se takoj znova aktivirajo.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "ID programa."
+        },
+        "schedule_id": {
+          "name": "Urnik",
+          "description": "ID urnika, kot je prikazan v programu."
+        },
+        "enabled": {
+          "name": "Vklopljeno",
+          "description": "Vklopljeno za vklop, izklopljeno za izklop."
+        }
+      }
+    },
+    "stop_watering": {
+      "name": "Ustavi zalivanje",
+      "description": "Takoj ustavi zalivanje. Vsak ventil, ki ga je odprl Smart Irrigation, se zapre, vsaki coni se prišteje voda, ki jo je dovedla, programi in cone, ki še čakajo, pa se končajo. Če izbereš cone, se ustavijo samo te."
+    },
+    "pause_watering": {
+      "name": "Začasno ustavi zalivanje",
+      "description": "Zapri odprte ventile in zadrži zalivanje, vključno s conami, ki še čakajo. Dovedena voda se prišteje, po nadaljevanju pa se zalije preostanek prehoda. Premor, ki ga ne prekličeš, se konča sam.",
+      "fields": {
+        "minutes": {
+          "name": "Minute",
+          "description": "Najdaljše trajanje premora, preden se prekliče sam."
+        }
+      }
+    },
+    "resume_watering": {
+      "name": "Nadaljuj zalivanje",
+      "description": "Nadaljuj začasno ustavljeno zalivanje tam, kjer se je ustavilo."
+    },
+    "next_step": {
+      "name": "Naslednji korak",
+      "description": "Končaj cone koraka, na katerem je program, in pojdi na naslednji korak."
+    },
+    "suspend": {
+      "name": "Zadrži",
+      "description": "Prepreči coni ali programu zalivanje do določenega trenutka. Brez trajanja in datuma ali z nič urami se zadržanje prekliče.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "ID programa, ki ga zadržiš."
+        },
+        "hours": {
+          "name": "Ure",
+          "description": "Kako dolgo zadržati. Nič ga prekliče."
+        },
+        "until": {
+          "name": "Do",
+          "description": "Trenutek, ko se zadržanje konča."
+        }
+      }
+    },
+    "adjust_program": {
+      "name": "Prilagodi program",
+      "description": "Za nekaj časa naj program celotnega krmilnika zaliva dlje ali krajše. Prilagoditev nadomesti prejšnjo (nikoli se ne sešteva), velja za zagone, ki se začnejo po njeni nastavitvi, in se konča po podanih urah.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "ID programa, ki ga prilagodiš."
+        },
+        "percent": {
+          "name": "Odstotek",
+          "description": "Pomnoži vodo vsakega koraka (120 zaliva 20 % dlje)."
+        },
+        "seconds": {
+          "name": "Sekunde",
+          "description": "Sekunde vode, dodane vsakemu koraku (negativno za odvzem)."
+        },
+        "hours": {
+          "name": "Ure",
+          "description": "Kako dolgo traja prilagoditev. Če je prazno, do ponastavitve."
+        },
+        "reset": {
+          "name": "Ponastavi",
+          "description": "Odstrani prilagoditev tega programa."
+        }
+      }
+    },
+    "water_zone": {
+      "name": "Zalij cono",
+      "description": "Zalij cono zdaj ali, če nekaj že zaliva, takoj ko pride na vrsto. Brez trajanja cona zaliva toliko časa, kot je izračunal Smart Irrigation.",
+      "fields": {
+        "zone_id": {
+          "name": "ID cone",
+          "description": "ID cone namesto njene entitete."
+        },
+        "seconds": {
+          "name": "Sekunde",
+          "description": "Sekunde vode. Če je prazno, izračunano trajanje."
+        },
+        "mode": {
+          "name": "Način",
+          "description": "Kaj storiti, ko že nekaj zaliva. queue se postavi v vrsto za njim; replace ga najprej pravilno ustavi."
+        }
+      }
+    },
+    "use_measured_throughput": {
+      "name": "Uporabi izmerjeni pretok",
+      "description": "Nastavi pretok cone na pretok, ki ga je njen števec izmeril med zalivanji. Meritev je vedno le nasvet; tako ga sprejmeš.",
+      "fields": {
+        "zone_id": {
+          "name": "ID cone",
+          "description": "ID cone namesto njene entitete."
+        }
+      }
+    },
+    "create_recurring_schedule": {
+      "name": "Ustvari ponavljajoči se urnik (opuščeno)",
+      "description": "Opuščeno: namesto tega uporabi urnike programov (zavihek Zalivanje). Deluje do 2027.11. Ustvari nov ponavljajoči se urnik namakanja.",
+      "fields": {
+        "name": {
+          "name": "Ime",
+          "description": "Ime urnika"
+        },
+        "type": {
+          "name": "Vrsta urnika",
+          "description": "Vrsta urnika (daily, weekly, monthly, interval)"
+        },
+        "enabled": {
+          "name": "Vklopljeno",
+          "description": "Vklopi urnik"
+        },
+        "time": {
+          "name": "Čas",
+          "description": "Čas zagona (oblika HH:MM)"
+        },
+        "days_of_week": {
+          "name": "Dnevi v tednu",
+          "description": "Dnevi v tednu za tedenske urnike"
+        },
+        "day_of_month": {
+          "name": "Dan v mesecu",
+          "description": "Dan v mesecu za mesečne urnike (1-31)"
+        },
+        "interval_hours": {
+          "name": "Interval v urah",
+          "description": "Interval v urah za intervalne urnike"
+        },
+        "zones": {
+          "name": "Cone",
+          "description": "ID-ji con, ki jih vključiš, ali 'all'"
+        },
+        "action": {
+          "name": "Dejanje",
+          "description": "Dejanje, ki se izvede (calculate, update, irrigate)"
+        }
+      }
+    },
+    "update_recurring_schedule": {
+      "name": "Posodobi ponavljajoči se urnik (opuščeno)",
+      "description": "Opuščeno: namesto tega uporabi urnike programov (zavihek Zalivanje). Deluje do 2027.11. Posodobi obstoječi ponavljajoči se urnik namakanja.",
+      "fields": {
+        "schedule_id": {
+          "name": "ID urnika",
+          "description": "ID urnika, ki ga posodobiš"
+        },
+        "name": {
+          "name": "Ime",
+          "description": "Ime urnika"
+        },
+        "enabled": {
+          "name": "Vklopljeno",
+          "description": "Vklopi/izklopi urnik"
+        }
+      }
+    },
+    "delete_recurring_schedule": {
+      "name": "Izbriši ponavljajoči se urnik (opuščeno)",
+      "description": "Opuščeno: namesto tega uporabi urnike programov (zavihek Zalivanje). Deluje do 2027.11. Izbriši ponavljajoči se urnik namakanja.",
+      "fields": {
+        "schedule_id": {
+          "name": "ID urnika",
+          "description": "ID urnika, ki ga izbrišeš"
+        }
+      }
+    },
+    "create_seasonal_adjustment": {
+      "name": "Ustvari sezonsko prilagoditev (opuščeno)",
+      "description": "Opuščeno: namesto tega uporabi smart_irrigation.set_seasonal_adjustment. Deluje do 2027.11. Ustvari novo sezonsko prilagoditev za cone namakanja.",
+      "fields": {
+        "name": {
+          "name": "Ime",
+          "description": "Ime prilagoditve"
+        },
+        "enabled": {
+          "name": "Vklopljeno",
+          "description": "Vklopi prilagoditev"
+        },
+        "month_start": {
+          "name": "Začetni mesec",
+          "description": "Začetni mesec (1-12)"
+        },
+        "month_end": {
+          "name": "Končni mesec",
+          "description": "Končni mesec (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Faktor prilagoditve množitelja",
+          "description": "Faktor prilagoditve množitelja"
+        },
+        "threshold_adjustment": {
+          "name": "Prilagoditev praga",
+          "description": "Prilagoditev praga v mm"
+        },
+        "zones": {
+          "name": "Cone",
+          "description": "ID-ji con, ki jih vključiš, ali 'all'"
+        }
+      }
+    },
+    "update_seasonal_adjustment": {
+      "name": "Posodobi sezonsko prilagoditev (opuščeno)",
+      "description": "Opuščeno: namesto tega uporabi smart_irrigation.set_seasonal_adjustment. Deluje do 2027.11. Posodobi obstoječo sezonsko prilagoditev.",
+      "fields": {
+        "adjustment_id": {
+          "name": "ID prilagoditve",
+          "description": "ID prilagoditve, ki jo posodobiš"
+        },
+        "name": {
+          "name": "Ime",
+          "description": "Ime prilagoditve"
+        },
+        "enabled": {
+          "name": "Vklopljeno",
+          "description": "Vklopi/izklopi prilagoditev"
+        }
+      }
+    },
+    "delete_seasonal_adjustment": {
+      "name": "Izbriši sezonsko prilagoditev (opuščeno)",
+      "description": "Opuščeno: namesto tega uporabi smart_irrigation.set_seasonal_adjustment. Deluje do 2027.11. Izbriši sezonsko prilagoditev.",
+      "fields": {
+        "adjustment_id": {
+          "name": "ID prilagoditve",
+          "description": "ID prilagoditve, ki jo izbrišeš"
+        }
+      }
+    },
+    "postpone_irrigation": {
+      "name": "Odloži namakanje",
+      "description": "Za nekaj časa zadrži zalivanje, nato naj se nadaljuje samo od sebe. Nič se ne ponastavi: cona, ki ji primanjkuje vode, jo še vedno potrebuje, ko se odlog konča, in naslednji zagon to nadoknadi.",
+      "fields": {
+        "hours": {
+          "name": "Ure",
+          "description": "Kako dolgo zadržati zalivanje. Nič prekliče odlog."
+        }
+      }
+    },
+    "resume_irrigation": {
+      "name": "Nadaljuj namakanje",
+      "description": "Prekliči odlog, ne glede na to, koliko ga je še ostalo."
+    },
+    "calculate": {
+      "name": "Izračunaj",
+      "description": "Izračunaj izbrane cone ali vse cone v samodejnem načinu, če nobena ni izbrana",
+      "fields": {
+        "entity": {
+          "name": "Entiteta",
+          "description": "Cone za izračun; brez izbire vse"
+        },
+        "delete_weather_data": {
+          "name": "Izbriši vremenske podatke",
+          "description": "Po izračunu izbriši vremenske podatke cone"
+        },
+        "dry_run": {
+          "name": "Poskusni zagon",
+          "description": "Sporoči, kaj bi izračun naredil, ne da bi spremenil vodno bilanco, cono ali zbrane vremenske podatke"
+        }
+      }
+    },
+    "update_weather": {
+      "name": "Posodobi vreme",
+      "description": "Pridobi vreme za izbrane cone ali za vse cone, če nobena ni izbrana",
+      "fields": {
+        "entity": {
+          "name": "Entiteta",
+          "description": "Cone za posodobitev; brez izbire vse"
+        }
+      }
+    },
+    "set_seasonal_adjustment": {
+      "name": "Nastavi sezonsko prilagoditev",
+      "description": "Ustvari sezonsko prilagoditev, spremeni obstoječo po njenem ID-ju ali jo odstrani po ID-ju z remove",
+      "fields": {
+        "adjustment_id": {
+          "name": "ID prilagoditve",
+          "description": "Prilagoditev, ki jo spremeniš ali odstraniš; brez nje se ustvari nova"
+        },
+        "remove": {
+          "name": "Odstrani",
+          "description": "Odstrani prilagoditev s tem ID-jem"
+        },
+        "name": {
+          "name": "Ime",
+          "description": "Ime prilagoditve"
+        },
+        "enabled": {
+          "name": "Vklopljeno",
+          "description": "Vklopi prilagoditev"
+        },
+        "month_start": {
+          "name": "Začetni mesec",
+          "description": "Začetni mesec (1-12)"
+        },
+        "month_end": {
+          "name": "Končni mesec",
+          "description": "Končni mesec (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Faktor prilagoditve množitelja",
+          "description": "Faktor prilagoditve množitelja"
+        },
+        "threshold_adjustment": {
+          "name": "Prilagoditev praga",
+          "description": "Prilagoditev praga v mm"
+        },
+        "zones": {
+          "name": "Cone",
+          "description": "ID-ji con, ki jih vključiš, ali 'all'"
+        }
+      }
     }
   },
   "issues": {
@@ -342,6 +734,14 @@
     "zone_not_calculated_no_sensor_group": {
       "title": "Cone {zone} ni mogoče izračunati: ni skupine senzorjev",
       "description": "Cona **{zone}** nima skupine senzorjev, zato je ni iz česa izračunati in se ne zaliva.\n\nNa njeni kartici v zavihku Cone izberi njeno skupino senzorjev in nato izračunaj cono. Obvestilo izgine samo ob naslednjem uspešnem izračunu."
+    },
+    "deprecated_action": {
+      "title": "Dejanje {action} bo odstranjeno",
+      "description": "Avtomatizacija, skripta ali nadzorna plošča je poklicala **{action}**. Še vedno deluje, a bo odstranjeno od različice {version} naprej, pozimi, zunaj sezone zalivanja.\n\nNamesto tega uporabi **{replacement}**: naredi isto, in to za vse cone, ko nobena cona ni izbrana. To obvestilo se vrne ob vsakem klicu starega imena, dokler ne ostane noben."
+    },
+    "deprecated_recurring_schedule": {
+      "title": "Ponavljajoči se urniki bodo odstranjeni: {action}",
+      "description": "Avtomatizacija, skripta ali nadzorna plošča je poklicala **{action}**. Ponavljajoči se urniki še vedno delujejo, a bodo odstranjeni od različice {version} naprej, pozimi, zunaj sezone zalivanja.\n\nUrniki programov naredijo isto in so na plošči: nastavi jih na zavihku **Zalivanje**, nato odstrani ponavljajoče se urnike in klice {action}."
     }
   }
 }

@@ -77,7 +77,11 @@
         "name": "需要浇水"
       },
       "watering_now": {
-        "name": "正在浇水"
+        "name": "正在浇水",
+        "state": {
+          "on": "是",
+          "off": "否"
+        }
       },
       "problem": {
         "name": "问题"
@@ -94,7 +98,7 @@
         "name": "有降水时跳过"
       },
       "irrigation_enabled": {
-        "name": "启用"
+        "name": "计算并浇水"
       }
     },
     "datetime": {
@@ -136,8 +140,8 @@
   },
   "services": {
     "calculate_all_zones": {
-      "name": "计算所有区域",
-      "description": "在自动模式下计算所有区域",
+      "name": "计算所有区域（已弃用）",
+      "description": "已弃用：请改用 smart_irrigation.calculate。可用至 2027.11。在自动模式下计算所有区域",
       "fields": {
         "delete_weather_data": {
           "name": "删除天气数据",
@@ -150,8 +154,8 @@
       }
     },
     "calculate_zone": {
-      "name": "计算区域",
-      "description": "计算指定的区域",
+      "name": "计算区域（已弃用）",
+      "description": "已弃用：请改用 smart_irrigation.calculate。可用至 2027.11。计算指定的区域",
       "fields": {
         "entity": {
           "name": "实体",
@@ -168,12 +172,12 @@
       }
     },
     "update_all_zones": {
-      "name": "更新所有区域",
-      "description": "在自动模式下更新所有区域的天气数据"
+      "name": "更新所有区域（已弃用）",
+      "description": "已弃用：请改用 smart_irrigation.update_weather。可用至 2027.11。在自动模式下更新所有区域的天气数据"
     },
     "update_zone": {
-      "name": "更新区域",
-      "description": "更新指定区域的天气数据",
+      "name": "更新区域（已弃用）",
+      "description": "已弃用：请改用 smart_irrigation.update_weather。可用至 2027.11。更新指定区域的天气数据",
       "fields": {
         "entity": {
           "name": "实体",
@@ -183,21 +187,21 @@
     },
     "set_bucket": {
       "name": "设置水量平衡",
-      "description": "将某个区域的水量平衡设置为一个值",
+      "description": "设置所选区域的水量平衡；未选择时设置所有区域。不提供值即为重置为 0",
       "fields": {
         "entity": {
           "name": "实体",
-          "description": "要设置水量平衡的区域"
+          "description": "要设置水量平衡的区域；不选则设置全部"
         },
         "new_bucket_value": {
           "name": "新的水量平衡",
-          "description": "水量平衡的新值"
+          "description": "水量平衡的新值；不填则为 0"
         }
       }
     },
     "set_all_buckets": {
-      "name": "设置所有水量平衡",
-      "description": "将所有区域的水量平衡设置为一个值",
+      "name": "设置所有水量平衡（已弃用）",
+      "description": "已弃用：请改用 smart_irrigation.set_bucket。可用至 2027.11。将所有区域的水量平衡设置为一个值",
       "fields": {
         "new_bucket_value": {
           "name": "新的水量平衡",
@@ -206,8 +210,8 @@
       }
     },
     "reset_bucket": {
-      "name": "重置水量平衡",
-      "description": "将某个区域的水量平衡重置为 0",
+      "name": "重置水量平衡（已弃用）",
+      "description": "已弃用：请改用 smart_irrigation.set_bucket。可用至 2027.11。将某个区域的水量平衡重置为 0",
       "fields": {
         "entity": {
           "name": "实体",
@@ -216,8 +220,8 @@
       }
     },
     "reset_all_buckets": {
-      "name": "重置所有水量平衡",
-      "description": "将所有区域的水量平衡重置为 0"
+      "name": "重置所有水量平衡（已弃用）",
+      "description": "已弃用：请改用 smart_irrigation.set_bucket。可用至 2027.11。将所有区域的水量平衡重置为 0"
     },
     "clear_all_weather_data": {
       "name": "清除所有天气数据",
@@ -225,11 +229,11 @@
     },
     "set_multiplier": {
       "name": "设置乘数",
-      "description": "将某个区域的乘数设置为特定值",
+      "description": "设置所选区域的乘数；未选择时设置所有区域",
       "fields": {
         "entity": {
           "name": "实体",
-          "description": "要设置乘数的区域"
+          "description": "要设置乘数的区域；不选则设置全部"
         },
         "new_multiplier_value": {
           "name": "新的乘数值",
@@ -238,8 +242,8 @@
       }
     },
     "set_all_multipliers": {
-      "name": "设置所有乘数",
-      "description": "将所有区域的乘数设置为特定值",
+      "name": "设置所有乘数（已弃用）",
+      "description": "已弃用：请改用 smart_irrigation.set_multiplier。可用至 2027.11。将所有区域的乘数设置为特定值",
       "fields": {
         "new_multiplier_value": {
           "name": "新的乘数值",
@@ -296,6 +300,394 @@
           "description": "区域浇水的时长（秒）。留空：区域的时长。"
         }
       }
+    },
+    "run_program": {
+      "name": "运行程序",
+      "description": "立即运行完整控制器的一个程序；如果另一个程序正在运行，则在轮到它时尽快运行。除非其步骤另有规定，程序按 Smart Irrigation 计算的时长为其区域浇水。",
+      "fields": {
+        "program_id": {
+          "name": "程序",
+          "description": "程序的 ID，显示在它的设置中。"
+        },
+        "seconds": {
+          "name": "秒",
+          "description": "整个程序的总时长，按各步骤计划时长的比例分配给各步骤。留空：使用计划时长。"
+        },
+        "mode": {
+          "name": "模式",
+          "description": "已有内容正在浇水时怎么做。排队（queue）排在它后面；替换（replace）先将其正常停止。"
+        }
+      }
+    },
+    "stop_program": {
+      "name": "停止程序",
+      "description": "停止一个程序。如果它正在运行，其打开的区域会按正常方式关闭，并计入已提供的水量；如果它正在等待轮次，则将其移出队列。未知的程序不做任何事。主程序用 stop_watering 停止。",
+      "fields": {
+        "program_id": {
+          "name": "程序",
+          "description": "程序的 ID。"
+        }
+      }
+    },
+    "set_program_enabled": {
+      "name": "启用或禁用程序",
+      "description": "开启或关闭完整控制器的一个程序，与其设置中的开关作用相同。",
+      "fields": {
+        "program_id": {
+          "name": "程序",
+          "description": "程序的 ID。"
+        },
+        "enabled": {
+          "name": "启用",
+          "description": "开启即启用，关闭即禁用。"
+        }
+      }
+    },
+    "set_step_enabled": {
+      "name": "启用或禁用步骤",
+      "description": "开启或关闭程序中的一个步骤。",
+      "fields": {
+        "program_id": {
+          "name": "程序",
+          "description": "程序的 ID。"
+        },
+        "step_id": {
+          "name": "步骤",
+          "description": "步骤的 ID，显示在程序中。"
+        },
+        "enabled": {
+          "name": "启用",
+          "description": "开启即启用，关闭即禁用。"
+        }
+      }
+    },
+    "set_schedule_enabled": {
+      "name": "启用或禁用时间表",
+      "description": "开启或关闭程序中的一个时间表。时间表会立即重新排定。",
+      "fields": {
+        "program_id": {
+          "name": "程序",
+          "description": "程序的 ID。"
+        },
+        "schedule_id": {
+          "name": "时间表",
+          "description": "时间表的 ID，显示在程序中。"
+        },
+        "enabled": {
+          "name": "启用",
+          "description": "开启即启用，关闭即禁用。"
+        }
+      }
+    },
+    "stop_watering": {
+      "name": "停止浇水",
+      "description": "立即停止浇水。Smart Irrigation 打开的每个阀门都会关闭，每个区域计入其已提供的水量，程序和仍在等待的区域都会结束。如果选择了区域，则只停止这些区域。"
+    },
+    "pause_watering": {
+      "name": "暂停浇水",
+      "description": "关闭打开的阀门并暂缓浇水，包括仍在等待的区域。已提供的水量会被计入，恢复后会浇完本轮剩余部分。未解除的暂停会自行结束。",
+      "fields": {
+        "minutes": {
+          "name": "分钟",
+          "description": "暂停自行解除前最多持续的时间。"
+        }
+      }
+    },
+    "resume_watering": {
+      "name": "继续浇水",
+      "description": "让已暂停的浇水从停下的地方继续。"
+    },
+    "next_step": {
+      "name": "下一步",
+      "description": "结束程序当前步骤中的区域，并进入下一步。"
+    },
+    "suspend": {
+      "name": "挂起",
+      "description": "在某一时刻之前阻止某个区域或程序浇水。不提供时长和日期，或为零小时时，解除挂起。",
+      "fields": {
+        "program_id": {
+          "name": "程序",
+          "description": "要挂起的程序的 ID。"
+        },
+        "hours": {
+          "name": "小时",
+          "description": "挂起多长时间。为零则解除。"
+        },
+        "until": {
+          "name": "直到",
+          "description": "挂起结束的时刻。"
+        }
+      }
+    },
+    "adjust_program": {
+      "name": "调整程序",
+      "description": "在一段时间内让完整控制器的某个程序浇得更久或更短。调整会替换之前的调整（从不叠加），适用于设置之后开始的运行，并在给定的小时数后结束。",
+      "fields": {
+        "program_id": {
+          "name": "程序",
+          "description": "要调整的程序的 ID。"
+        },
+        "percent": {
+          "name": "百分比",
+          "description": "将每个步骤的水量相乘（120 表示多浇 20 %）。"
+        },
+        "seconds": {
+          "name": "秒",
+          "description": "为每个步骤增加的浇水秒数（负数表示减少）。"
+        },
+        "hours": {
+          "name": "小时",
+          "description": "调整持续多久。留空：直到被重置。"
+        },
+        "reset": {
+          "name": "重置",
+          "description": "移除此程序的调整。"
+        }
+      }
+    },
+    "water_zone": {
+      "name": "为区域浇水",
+      "description": "立即为一个区域浇水；如果正在浇水，则在轮到它时尽快浇水。不提供时长时，区域按 Smart Irrigation 计算的时长浇水。",
+      "fields": {
+        "zone_id": {
+          "name": "区域 ID",
+          "description": "区域的 ID，用来代替它的实体。"
+        },
+        "seconds": {
+          "name": "秒",
+          "description": "浇水的秒数。留空：使用计算出的时长。"
+        },
+        "mode": {
+          "name": "模式",
+          "description": "已有内容正在浇水时怎么做。排队（queue）排在它后面；替换（replace）先将其正常停止。"
+        }
+      }
+    },
+    "use_measured_throughput": {
+      "name": "使用测得的流量",
+      "description": "将区域的流量设为其水表在各次运行中测得的流量。测量结果始终只是建议；用此操作来采纳它。",
+      "fields": {
+        "zone_id": {
+          "name": "区域 ID",
+          "description": "区域的 ID，用来代替它的实体。"
+        }
+      }
+    },
+    "create_recurring_schedule": {
+      "name": "创建循环时间表（已弃用）",
+      "description": "已弃用：请改用 程序的时间表（“浇水”标签页）。可用至 2027.11。创建新的循环浇水时间表。",
+      "fields": {
+        "name": {
+          "name": "名称",
+          "description": "时间表的名称"
+        },
+        "type": {
+          "name": "时间表类型",
+          "description": "时间表类型（daily、weekly、monthly、interval）"
+        },
+        "enabled": {
+          "name": "启用",
+          "description": "启用该时间表"
+        },
+        "time": {
+          "name": "时间",
+          "description": "运行时间（HH:MM 格式）"
+        },
+        "days_of_week": {
+          "name": "星期几",
+          "description": "每周时间表的星期几"
+        },
+        "day_of_month": {
+          "name": "每月几号",
+          "description": "每月时间表的日期（1-31）"
+        },
+        "interval_hours": {
+          "name": "间隔小时数",
+          "description": "间隔时间表的间隔小时数"
+        },
+        "zones": {
+          "name": "区域",
+          "description": "要包含的区域 ID，或 'all'"
+        },
+        "action": {
+          "name": "操作",
+          "description": "要执行的操作（calculate、update、irrigate）"
+        }
+      }
+    },
+    "update_recurring_schedule": {
+      "name": "更新循环时间表（已弃用）",
+      "description": "已弃用：请改用 程序的时间表（“浇水”标签页）。可用至 2027.11。更新现有的循环浇水时间表。",
+      "fields": {
+        "schedule_id": {
+          "name": "时间表 ID",
+          "description": "要更新的时间表的 ID"
+        },
+        "name": {
+          "name": "名称",
+          "description": "时间表的名称"
+        },
+        "enabled": {
+          "name": "启用",
+          "description": "启用或禁用该时间表"
+        }
+      }
+    },
+    "delete_recurring_schedule": {
+      "name": "删除循环时间表（已弃用）",
+      "description": "已弃用：请改用 程序的时间表（“浇水”标签页）。可用至 2027.11。删除一个循环浇水时间表。",
+      "fields": {
+        "schedule_id": {
+          "name": "时间表 ID",
+          "description": "要删除的时间表的 ID"
+        }
+      }
+    },
+    "create_seasonal_adjustment": {
+      "name": "创建季节性调整（已弃用）",
+      "description": "已弃用：请改用 smart_irrigation.set_seasonal_adjustment。可用至 2027.11。为浇水区域创建新的季节性调整。",
+      "fields": {
+        "name": {
+          "name": "名称",
+          "description": "调整的名称"
+        },
+        "enabled": {
+          "name": "启用",
+          "description": "启用该调整"
+        },
+        "month_start": {
+          "name": "开始月份",
+          "description": "开始月份（1-12）"
+        },
+        "month_end": {
+          "name": "结束月份",
+          "description": "结束月份（1-12）"
+        },
+        "multiplier_adjustment": {
+          "name": "乘数调整系数",
+          "description": "乘数调整系数"
+        },
+        "threshold_adjustment": {
+          "name": "阈值调整",
+          "description": "阈值调整（毫米）"
+        },
+        "zones": {
+          "name": "区域",
+          "description": "要包含的区域 ID，或 'all'"
+        }
+      }
+    },
+    "update_seasonal_adjustment": {
+      "name": "更新季节性调整（已弃用）",
+      "description": "已弃用：请改用 smart_irrigation.set_seasonal_adjustment。可用至 2027.11。更新现有的季节性调整。",
+      "fields": {
+        "adjustment_id": {
+          "name": "调整 ID",
+          "description": "要更新的调整的 ID"
+        },
+        "name": {
+          "name": "名称",
+          "description": "调整的名称"
+        },
+        "enabled": {
+          "name": "启用",
+          "description": "启用或禁用该调整"
+        }
+      }
+    },
+    "delete_seasonal_adjustment": {
+      "name": "删除季节性调整（已弃用）",
+      "description": "已弃用：请改用 smart_irrigation.set_seasonal_adjustment。可用至 2027.11。删除一个季节性调整。",
+      "fields": {
+        "adjustment_id": {
+          "name": "调整 ID",
+          "description": "要删除的调整的 ID"
+        }
+      }
+    },
+    "postpone_irrigation": {
+      "name": "推迟浇水",
+      "description": "暂缓浇水一段时间，之后自行恢复。不会重置任何东西：缺水的区域在推迟结束时仍然缺水，下一次运行会把它补上。",
+      "fields": {
+        "hours": {
+          "name": "小时",
+          "description": "暂缓浇水多长时间。为零则解除推迟。"
+        }
+      }
+    },
+    "resume_irrigation": {
+      "name": "恢复浇水",
+      "description": "解除推迟，无论还剩多少时间。"
+    },
+    "calculate": {
+      "name": "计算",
+      "description": "计算所选区域；未选择时，计算所有处于自动模式的区域",
+      "fields": {
+        "entity": {
+          "name": "实体",
+          "description": "要计算的区域；不选则计算全部"
+        },
+        "delete_weather_data": {
+          "name": "删除天气数据",
+          "description": "计算后删除该区域的天气数据"
+        },
+        "dry_run": {
+          "name": "试算",
+          "description": "报告计算会做什么，但不改动水量平衡、区域或已收集的天气数据"
+        }
+      }
+    },
+    "update_weather": {
+      "name": "更新天气",
+      "description": "为所选区域获取天气；未选择时，为所有区域获取",
+      "fields": {
+        "entity": {
+          "name": "实体",
+          "description": "要更新的区域；不选则更新全部"
+        }
+      }
+    },
+    "set_seasonal_adjustment": {
+      "name": "设置季节性调整",
+      "description": "创建季节性调整，按 ID 更改一个调整，或按 ID 配合 remove 移除一个调整",
+      "fields": {
+        "adjustment_id": {
+          "name": "调整 ID",
+          "description": "要更改或移除的调整；留空则新建一个"
+        },
+        "remove": {
+          "name": "移除",
+          "description": "移除具有此 ID 的调整"
+        },
+        "name": {
+          "name": "名称",
+          "description": "调整的名称"
+        },
+        "enabled": {
+          "name": "启用",
+          "description": "启用该调整"
+        },
+        "month_start": {
+          "name": "开始月份",
+          "description": "开始月份（1-12）"
+        },
+        "month_end": {
+          "name": "结束月份",
+          "description": "结束月份（1-12）"
+        },
+        "multiplier_adjustment": {
+          "name": "乘数调整系数",
+          "description": "乘数调整系数"
+        },
+        "threshold_adjustment": {
+          "name": "阈值调整",
+          "description": "阈值调整（毫米）"
+        },
+        "zones": {
+          "name": "区域",
+          "description": "要包含的区域 ID，或 'all'"
+        }
+      }
     }
   },
   "issues": {
@@ -342,6 +734,14 @@
     "zone_not_calculated_no_sensor_group": {
       "title": "区域 {zone} 无法计算：没有传感器组",
       "description": "区域 **{zone}** 没有传感器组，因此无从计算，也不会浇水。\n\n请在“区域”选项卡中该区域的卡片上选择其传感器组，然后计算该区域。下一次计算成功时，此通知会自行消失。"
+    },
+    "deprecated_action": {
+      "title": "操作 {action} 即将移除",
+      "description": "某个自动化、脚本或仪表板调用了 **{action}**。它目前仍然有效，但将从 {version} 版本起移除，时间在冬季、浇水季之外。\n\n请改用 **{replacement}**：它的作用相同，未选择区域时作用于所有区域。每次调用旧名称时此通知都会再次出现，直到不再有任何调用。"
+    },
+    "deprecated_recurring_schedule": {
+      "title": "循环时间表即将移除：{action}",
+      "description": "某个自动化、脚本或仪表板调用了 **{action}**。循环时间表目前仍然有效，但将从 {version} 版本起移除，时间在冬季、浇水季之外。\n\n程序的时间表可以做同样的事，并且就在面板中：在 **浇水** 下设置它们，然后移除循环时间表以及对 {action} 的调用。"
     }
   }
 }

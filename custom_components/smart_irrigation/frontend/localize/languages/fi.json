@@ -156,14 +156,19 @@
           "engine": "Moduuli",
           "sources": "Lähteet",
           "from-the-service": "sääpalvelusta",
+          "no-sensor": "ei anturia",
           "help": "Tämä luo laskentamoduulin, anturiryhmän ja alueen, täsmälleen kuten muut välilehdet tekisivät. Jälkeenpäin mikään ei ole lukittu."
         }
       },
       "step": "vaihe",
       "done-note-zone": "Se näkyy kohdassa Vyöhykkeet ja sen anturiryhmä kohdassa Anturiryhmät. Niissä ei ole mitään erityistä: muokkaa niitä kuten mitä tahansa muita.",
       "done-next-static": "Kiinteällä päivittäisellä määrällä se ei tarvitse lukemia: seuraava laskenta selvittää, paljonko siltä puuttuu.",
-      "done-next-service": "Sen säätiedot tulevat sääpalvelusta: kun palvelu on raportoinut, päivitys ja laskenta antavat alueelle keston.",
-      "done-next-sensors": "Suorita päivitys ja laskenta, kun anturisi ovat raportoineet, niin alue alkaa tuottaa keston.",
+      "done-next-service": "Sen säätiedot tulevat sääpalvelusta ja sen kesto ensimmäisestä laskennasta. Laske nyt hakee sään ja laskee alueen kerralla.",
+      "done-next-sensors": "Sen kesto saadaan ensimmäisestä laskennasta. Laske nyt lukee anturisi ja laskee alueen kerralla.",
+      "calc-now": "Laske nyt",
+      "calc-duration": "Laskettu: se kastelee {duration} seuraavalla aloituksella.",
+      "calc-nothing": "Laskettu: siltä ei vielä puutu vettä.",
+      "calc-failed": "Laskenta ei onnistunut. Alue kertoo syyn kohdassa Alueet.",
       "open-zone": "Avaa alue",
       "another": "Määritä toinen alue"
     },
@@ -257,8 +262,8 @@
             "auto-update-enabled": "Päivitä säätiedot automaattisesti",
             "auto-update-schedule": "Päivitysaikataulu",
             "auto-update-time": "Päivitä kello",
-            "auto-update-interval": "Päivitä anturitiedot välein",
-            "auto-update-delay": "Päivitysviive"
+            "auto-update-interval": "Lue sää välein",
+            "auto-update-delay": "Viive ennen ensimmäistä päivitystä"
           },
           "options": {
             "minutes": "minuuttia",
@@ -357,6 +362,8 @@
           "sequencing-parallel": "kaikki alueet yhtä aikaa, joten kokonaisaika on pisin alue",
           "headline-nothing": "Ei kasteltavaa",
           "sub-nothing": "Yhdeltäkään alueelta ei vielä puutu tarpeeksi vettä. Seuraava aloitus olisi {start}.",
+          "headline-not-calculated": "Ei vielä laskettu",
+          "sub-not-calculated": "Vyöhykkeillä ei ole kestoa ennen ensimmäistä laskentaa, joka tehdään {when}. Laske ne heti valitsemalla Laske kaikki vyöhykkeet kohdassa Alueet.",
           "next-program": "Seuraava ohjelma: {program}, {start}",
           "headline-watering": "Kastelu {start}",
           "headline-watering-soon": "Kastelu seuraavalla aloituksella",
@@ -452,7 +459,8 @@
         },
         "no_valve_path": {
           "title": "Mikään täällä ei avaa venttiiliä",
-          "body": "Smart Irrigation laskee, kuinka kauan kastellaan; jonkin täytyy toimia sen mukaan. Liitä venttiili alueeseen ja kytke suora venttiiliohjaus päälle, tai kirjoita automaatio aloitustapahtumaan (blueprintit tekevät tämän puolestasi). Jos automaatio tekee sen jo, mitään ei tarvitse muuttaa."
+          "body": "Smart Irrigation laskee, kuinka kauan kastellaan; jonkin täytyy toimia sen mukaan. Kytke joko suora venttiiliohjaus päälle kohdassa Asetukset ja liitä sitten venttiili jokaiseen alueeseen, tai kirjoita automaatio aloitustapahtumaan (blueprintit tekevät tämän puolestasi). Jos automaatio tekee sen jo, mitään ei tarvitse muuttaa.",
+          "action": "Venttiiliohjaukseen"
         }
       }
     },
@@ -460,9 +468,10 @@
       "cards": {
         "add-mapping": {
           "actions": {
-            "add": "Lisää anturiryhmä"
+            "add": "Lisää anturiryhmä",
+            "cancel": "Peruuta"
           },
-          "header": "Lisää anturiryhmiä"
+          "header": "Lisää anturiryhmä"
         },
         "mapping": {
           "aggregates": {
@@ -523,6 +532,7 @@
           "sources": {
             "none": "Ei mitään",
             "none_et": "Ei mitään (Smart Irrigation laskee sen)",
+            "none_estimated": "Ei mitään (arvioitu)",
             "weather_service": "Sääpalvelu",
             "weather_service_et": "Valmis ET₀ säätiedon tarjoajalta",
             "sensor": "Anturi",
@@ -664,6 +674,8 @@
         "drainage_rate": "Valumisnopeus",
         "linked-entity": "Liitetty venttiili/kytkin",
         "linked-entity-hint": "Venttiili tai kytkin, joka kastelee tämän vyöhykkeen. Aina kun se on käynnissä (manuaalinen hana, automaatio tai Smart Irrigation itse, kun suora venttiilin ohjaus on käytössä), vesitaseeseen hyvitetään käyntiaika ja vyöhykkeen läpäisy. Vaaditaan suljetun silmukan ominaisuuksiin.",
+        "valve-off": "Venttiilin voi liittää, kun suora venttiiliohjaus tai havaittu kastelu on käytössä.",
+        "valve-off-link": "Ota käyttöön",
         "supply": "Pumppu tai pääventtiili",
         "supply-none": "Ei mitään",
         "measured-flow-help": "Usean ajon aikana vyöhykkeen virtausmittari mittasi virtauksen, joka poikkeaa yllä asetetusta. Se on vain neuvo, eikä sitä oteta koskaan käyttöön itsestään.",
@@ -730,15 +742,16 @@
         "soil-type": "Maaperä",
         "plant-type": "Mitä täällä kasvaa",
         "soil-types": {
+          "default": "Ei vielä valittu: {value}",
           "sand": "Hiekkainen",
           "sandy_loam": "Hiekkainen multamaa",
           "loam": "Multamaa",
           "clay_loam": "Savinen multamaa",
           "clay": "Savi",
-          "custom": "Asetan kuivatusnopeuden itse",
-          "default": "Ei vielä valittu – lasketaan arvolla {value}"
+          "custom": "Asetan kuivatusnopeuden itse"
         },
         "plant-types": {
+          "default": "Ei vielä valittu: kerroin {value}",
           "lawn": "Nurmikko",
           "vegetables": "Vihannekset",
           "flowers": "Kukat",
@@ -747,8 +760,7 @@
           "fruit_trees": "Hedelmäpuut",
           "vines": "Viiniköynnökset",
           "ground_cover": "Maanpeitekasvit",
-          "custom": "Asetan kasvikertoimen itse",
-          "default": "Ei vielä valittu – lasketaan kasvikertoimella {value}"
+          "custom": "Asetan kasvikertoimen itse"
         },
         "duration-readonly-automatic": "Laskettu puolestasi: tämän alueen kastelu tulee sen vesitasapainosta. Aseta se käsikäytölle, jos haluat kirjoittaa keston itse.",
         "duration-readonly-disabled": "Pois päältä olevaa aluetta ei koskaan kastella, joten sillä ei ole kasteluaikaa.",
@@ -764,6 +776,7 @@
         "idle": "Ei kasteltavaa: {short} vajaa.",
         "satisfied": "Ei kasteltavaa: tällä alueella on se mitä se tarvitsee.",
         "under-threshold": "Ei vielä kasteltavaa: {short} vajaa, tämän alueen rajan alle.",
+        "not-calculated": "Ei vielä laskettu: se tapahtuu {when}.",
         "manual": "Kastelee vain kun pyydät.",
         "disabled": "Pois päältä: ei kastella koskaan, eikä sen tasapainoa pidetä.",
         "threshold": "raja",
@@ -1085,8 +1098,8 @@
     "title": "Käynnistyslaukaisimet",
     "description": "Milloin kastelu alkaa. Oletuksena se päättyy auringonnousuun; lisää laukaisin toiseen hetkeen: auringonlasku, atsimuutti tai kellonaika, siirtymällä.",
     "active_label": "Aktiivinen liipaisin",
-    "active_default": "Oletus (auringonnousu miinus kokonaiskasteluaika)",
-    "active_hint": "Vain valittu laukaisin käynnistää kastelun, kerran päivässä.",
+    "active_default": "Oletus: valmis auringonnousuun mennessä",
+    "active_hint": "Vain valittu laukaisin käynnistää kastelun, kerran päivässä. Oletus käynnistää niin, että jokainen alue on valmis auringonnousuun mennessä; vaihtoehdolla Ei mitään Smart Irrigation ei käynnistä mitään.",
     "usage_before": "Kun liipaisin laukeaa, Smart Irrigation lähettää tapahtuman ",
     "usage_after": " — kuuntele sitä automaatiossa aloittaaksesi kastelun. Tapahtuman tiedot sisältävät kentät trigger_name, trigger_type ja offset_minutes, joten voit reagoida eri tavoin liipaisinkohtaisesti. Sadeohitus- ja kastelujen väliset päivät -asetukset ovat edelleen voimassa: ohituspäivänä tapahtumaa ei lähetetä.",
     "add_trigger": "Lisää liipaisin",
@@ -1148,7 +1161,7 @@
       "azimuth_explanation": "Auringon atsimuutti on auringon kompassisuunta. 0°=Pohjoinen, 90°=Itä, 180°=Etelä, 270°=Länsi. Voit syöttää minkä tahansa kulma-arvon (esim. 450° = 90°, -30° = 330°). Käytä tätä laukaistaksesi kastelun, kun aurinko saavuttaa tietyn aseman.",
       "multiple_triggers": "Voit luoda useita liipaisimia, mutta vain aktiiviseksi valittu käynnistää kastelun. Muut säilytetään myöhempää varten."
     },
-    "active_none": "Ei mitään (Smart Irrigation ei aloita kastelua)",
+    "active_none": "Ei mitään",
     "none_selected": "Mikään liipaisin ei ole käytössä: Smart Irrigation ei aloita kastelua säästä riippumatta. Kestot lasketaan silti; aloita kastelu itse tai oman automaatiosi avulla."
   },
   "seasonal_adjustments": {
@@ -1174,7 +1187,8 @@
     "effective_rain_label": "Laske vain juuriin yltävä sade",
     "effective_rain_description": "Ohita jakson haihdunnan viidennestä pienempi sadekuuro: se kastelee lehdet ja haihtuu. Arvio tehdään koko kahden laskennan väliseltä jaksolta.",
     "forecast_label": "Ota ennustettu sade huomioon",
-    "forecast_description": "Kynnysarvon alapuolella kutakin aluetta kastellaan sen vajauksen verran vähennettynä seuraavan 24 tunnin ennustetulla sateella, painotettuna sääpalvelun antamalla todennäköisyydellä: 4 mm:n ennuste 10 mm:n vajauksella kastelee 6 mm. Kynnysarvon kohdalla tai sen yläpuolella kastelu ohitetaan ulkona sijaitsevilta alueilta. Kasvihuoneessa olevia alueita tämä ei koske."
+    "forecast_description": "Kynnysarvon alapuolella kutakin aluetta kastellaan sen vajauksen verran vähennettynä seuraavan 24 tunnin ennustetulla sateella, painotettuna sääpalvelun antamalla todennäköisyydellä: 4 mm:n ennuste 10 mm:n vajauksella kastelee 6 mm. Kynnysarvon kohdalla tai sen yläpuolella kastelu ohitetaan ulkona sijaitsevilta alueilta. Kasvihuoneessa olevia alueita tämä ei koske.",
+    "forecast_set_up_service": "Määritä sääpalvelu"
   },
   "coordinate_config": {
     "title": "Sijainnin koordinaatit",
@@ -1380,7 +1394,7 @@
   },
   "observed_watering": {
     "title": "Havaittu kastelu (suljettu silmukka)",
-    "description": "Hyvitä jokaisen vyöhykkeen vesitase automaattisesti todellisesta kastelusta sen sijaan, että nollaisit vesitaseen automaatiosta. Kun tämä on käytössä, valitse venttiili-/kytkinentiteetti kullekin vyöhykkeelle Vyöhykkeet-välilehdellä: kun se on auki, vesitaseeseen hyvitetään käyntiaika ja vyöhykkeen läpäisy. Tarkkaa kirjanpitoa varten voit myös valita kumulatiivisen tilavuusmittarin (vesimittarityyppinen kokonaislukema) kullekin vyöhykkeelle, jolloin käytetään mitattua tilavuutta. Tärkeää: kun tämä on käytössä, se on ainoa asia, joka hyvittää vesitaseen, joten poista kaikki reset_bucket-kutsut kasteluautomaatiostasi kaksinkertaisen laskennan välttämiseksi.",
+    "description": "Hyvitä jokaisen vyöhykkeen vesitase automaattisesti todellisesta kastelusta sen sijaan, että nollaisit vesitaseen automaatiosta. Kun tämä on käytössä, valitse venttiili-/kytkinentiteetti kullekin vyöhykkeelle Vyöhykkeet-välilehdellä: kun se on auki, vesitaseeseen hyvitetään käyntiaika ja vyöhykkeen läpäisy. Tarkkaa kirjanpitoa varten voit myös valita kumulatiivisen tilavuusmittarin (vesimittarityyppinen kokonaislukema) kullekin vyöhykkeelle, jolloin käytetään mitattua tilavuutta. Tärkeää: kun tämä on käytössä, se on ainoa asia, joka hyvittää vesitaseen, joten poista kaikki set_bucket- ja reset_bucket-kutsut kasteluautomaatiostasi kaksinkertaisen laskennan välttämiseksi.",
     "enabled_label": "Ota havaittu kastelu käyttöön",
     "direct_control_label": "Anna Smart Irrigationin ohjata venttiiliä",
     "direct_control_description": "Kun tämä on käytössä, Smart Irrigation avaa kunkin vyöhykkeen liitetyn venttiilin, odottaa lasketun keston ja sulkee sen sitten, ilman automaatiota. Käynnissä oleva ajo jatkuu uudelleenkäynnistyksen jälkeen. Turvallisuus: venttiili, joka osaa sulkeutua itse, saa avautuessaan ajon keston (Sonoff SWV ZHA:ssa tai venttiili, jonka vyöhykkeelle on asetettu MQTT-turva-aihe), joten se sulkeutuu, vaikka Home Assistant kaatuisi. Mikä tahansa muu venttiili jatkaa kastelua, kunnes Home Assistant palaa: anna sille laitteistotason vikaturva (enimmäiskäyntiaika).",
@@ -1456,6 +1470,7 @@
     "skipped": "Lykätty",
     "short_by": "puuttuu {value}",
     "no_need": "kastelua ei tarvita",
+    "not_calculated": "ei vielä laskettu",
     "runs_for": "kestäisi {duration}",
     "never_watered": "ei koskaan kasteltu",
     "last_watered": "viimeksi kasteltu {when}",

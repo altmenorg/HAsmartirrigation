@@ -77,7 +77,11 @@
         "name": "Irrigazione necessaria"
       },
       "watering_now": {
-        "name": "In irrigazione"
+        "name": "In irrigazione",
+        "state": {
+          "on": "Sì",
+          "off": "No"
+        }
       },
       "problem": {
         "name": "Problema"
@@ -94,7 +98,7 @@
         "name": "Salta in caso di pioggia"
       },
       "irrigation_enabled": {
-        "name": "Attivo"
+        "name": "Calcola e irriga"
       }
     },
     "datetime": {
@@ -136,8 +140,8 @@
   },
   "services": {
     "calculate_all_zones": {
-      "name": "Calcola tutte le zone",
-      "description": "Calcola tutte le zone in modalità automatica",
+      "name": "Calcola tutte le zone (deprecata)",
+      "description": "Deprecata: sostituita da smart_irrigation.calculate. Funziona fino alla 2027.11. Calcola tutte le zone in modalità automatica",
       "fields": {
         "delete_weather_data": {
           "name": "Cancellare i dati meteo",
@@ -150,8 +154,8 @@
       }
     },
     "calculate_zone": {
-      "name": "Calcola zona",
-      "description": "Calcola una zona specifica",
+      "name": "Calcola zona (deprecata)",
+      "description": "Deprecata: sostituita da smart_irrigation.calculate. Funziona fino alla 2027.11. Calcola la zona specificata",
       "fields": {
         "entity": {
           "name": "Entità",
@@ -168,12 +172,12 @@
       }
     },
     "update_all_zones": {
-      "name": "Aggiorna tutte le zone",
-      "description": "Aggiorna i dati meteo di tutte le zone in modo automatico"
+      "name": "Aggiorna tutte le zone (deprecata)",
+      "description": "Deprecata: sostituita da smart_irrigation.update_weather. Funziona fino alla 2027.11. Aggiorna i dati meteo di tutte le zone in modalità automatica"
     },
     "update_zone": {
-      "name": "Aggiorna zona",
-      "description": "Aggiorna i dati meteo di una zona specifica",
+      "name": "Aggiorna zona (deprecata)",
+      "description": "Deprecata: sostituita da smart_irrigation.update_weather. Funziona fino alla 2027.11. Aggiorna i dati meteo della zona specificata",
       "fields": {
         "entity": {
           "name": "Entità",
@@ -183,21 +187,21 @@
     },
     "set_bucket": {
       "name": "Imposta bilancio idrico",
-      "description": "Imposta il bilancio idrico di una zona a un valore",
+      "description": "Imposta il bilancio idrico delle zone scelte, o di tutte le zone se non ne è scelta nessuna. Senza valore è l'azzeramento, a 0",
       "fields": {
         "entity": {
           "name": "Entità",
-          "description": "Zona per cui impostare il bilancio idrico"
+          "description": "Zone per cui impostare il bilancio idrico; nessuna = tutte"
         },
         "new_bucket_value": {
           "name": "Nuovo bilancio idrico",
-          "description": "Nuovo valore del bilancio idrico"
+          "description": "Nuovo valore del bilancio idrico; senza valore, 0"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Imposta tutti i bilanci idrici",
-      "description": "Imposta il bilancio idrico di tutte le zone a un valore",
+      "name": "Imposta tutti i bilanci idrici (deprecata)",
+      "description": "Deprecata: sostituita da smart_irrigation.set_bucket. Funziona fino alla 2027.11. Imposta il bilancio idrico di tutte le zone a un valore",
       "fields": {
         "new_bucket_value": {
           "name": "Nuovo bilancio idrico",
@@ -206,8 +210,8 @@
       }
     },
     "reset_bucket": {
-      "name": "Reimposta bilancio idrico",
-      "description": "Reimposta il bilancio idrico di una zona a 0",
+      "name": "Azzera il bilancio idrico (deprecata)",
+      "description": "Deprecata: sostituita da smart_irrigation.set_bucket. Funziona fino alla 2027.11. Azzera il bilancio idrico di una zona",
       "fields": {
         "entity": {
           "name": "Entità",
@@ -216,8 +220,8 @@
       }
     },
     "reset_all_buckets": {
-      "name": "Reimposta tutti i bilanci idrici",
-      "description": "Reimposta il bilancio idrico di tutte le zone a 0"
+      "name": "Azzera tutti i bilanci idrici (deprecata)",
+      "description": "Deprecata: sostituita da smart_irrigation.set_bucket. Funziona fino alla 2027.11. Azzera il bilancio idrico di tutte le zone"
     },
     "clear_all_weather_data": {
       "name": "Cancella tutti i dati meteo",
@@ -225,11 +229,11 @@
     },
     "set_multiplier": {
       "name": "Imposta moltiplicatore",
-      "description": "Imposta moltiplicatore per una zona ad uno specifico valore",
+      "description": "Imposta il moltiplicatore delle zone scelte, o di tutte le zone se non ne è scelta nessuna",
       "fields": {
         "entity": {
           "name": "Entità",
-          "description": "Moltiplicatore da impostare per la zona"
+          "description": "Zone per cui impostare il moltiplicatore; nessuna = tutte"
         },
         "new_multiplier_value": {
           "name": "Nuovo valore di moltiplicazione",
@@ -238,8 +242,8 @@
       }
     },
     "set_all_multipliers": {
-      "name": "Imposta tutti i moltiplicatori",
-      "description": "Imposta i moltiplicatori per tutte le zone ad uno specifico valore",
+      "name": "Imposta tutti i moltiplicatori (deprecata)",
+      "description": "Deprecata: sostituita da smart_irrigation.set_multiplier. Funziona fino alla 2027.11. Imposta i moltiplicatori di tutte le zone a un valore specifico",
       "fields": {
         "new_multiplier_value": {
           "name": "Nuovo valore di moltiplicazione",
@@ -296,6 +300,394 @@
           "description": "Per quanto ha irrigato la zona, in secondi. Vuoto: la durata della zona."
         }
       }
+    },
+    "run_program": {
+      "name": "Avvia programma",
+      "description": "Avvia ora un programma del controller completo, o appena è il suo turno se un altro è in corso. Il programma irriga le sue zone con le durate calcolate da Smart Irrigation, a meno che i suoi passi non dicano altrimenti.",
+      "fields": {
+        "program_id": {
+          "name": "Programma",
+          "description": "L'id del programma, come mostrato nelle sue impostazioni."
+        },
+        "seconds": {
+          "name": "Secondi",
+          "description": "Una durata totale per l'intero programma, ripartita tra i suoi passi in proporzione alle durate previste. Se vuoto, le durate previste."
+        },
+        "mode": {
+          "name": "Modalità",
+          "description": "Cosa fare quando qualcosa sta già irrigando. Coda: prende il turno dietro; sostituisci: lo ferma prima in modo pulito."
+        }
+      }
+    },
+    "stop_program": {
+      "name": "Ferma programma",
+      "description": "Ferma un programma. Se è in corso, le sue zone aperte vengono chiuse nel modo normale e accreditate di quanto hanno erogato; se attende il suo turno, viene tolto dalla coda. Un programma sconosciuto non fa nulla. Il programma principale si ferma con stop_watering.",
+      "fields": {
+        "program_id": {
+          "name": "Programma",
+          "description": "L'id del programma."
+        }
+      }
+    },
+    "set_program_enabled": {
+      "name": "Attiva o disattiva un programma",
+      "description": "Attiva o disattiva un programma del controller completo, come fa l'interruttore nelle sue impostazioni.",
+      "fields": {
+        "program_id": {
+          "name": "Programma",
+          "description": "L'id del programma."
+        },
+        "enabled": {
+          "name": "Attivato",
+          "description": "Attivo per attivarlo, disattivo per disattivarlo."
+        }
+      }
+    },
+    "set_step_enabled": {
+      "name": "Attiva o disattiva un passo",
+      "description": "Attiva o disattiva un passo di un programma.",
+      "fields": {
+        "program_id": {
+          "name": "Programma",
+          "description": "L'id del programma."
+        },
+        "step_id": {
+          "name": "Passo",
+          "description": "L'id del passo, come mostrato nel programma."
+        },
+        "enabled": {
+          "name": "Attivato",
+          "description": "Attivo per attivarlo, disattivo per disattivarlo."
+        }
+      }
+    },
+    "set_schedule_enabled": {
+      "name": "Attiva o disattiva un orario",
+      "description": "Attiva o disattiva un orario di un programma. Gli orari vengono riarmati subito.",
+      "fields": {
+        "program_id": {
+          "name": "Programma",
+          "description": "L'id del programma."
+        },
+        "schedule_id": {
+          "name": "Orario",
+          "description": "L'id dell'orario, come mostrato nel programma."
+        },
+        "enabled": {
+          "name": "Attivato",
+          "description": "Attivo per attivarlo, disattivo per disattivarlo."
+        }
+      }
+    },
+    "stop_watering": {
+      "name": "Ferma l'irrigazione",
+      "description": "Ferma subito l'irrigazione. Ogni valvola aperta da Smart Irrigation viene chiusa, ogni zona viene accreditata dell'acqua erogata, e i programmi e le zone ancora in attesa vengono terminati. Con zone scelte, vengono fermate solo quelle."
+    },
+    "pause_watering": {
+      "name": "Metti in pausa l'irrigazione",
+      "description": "Chiude le valvole aperte e trattiene l'irrigazione, comprese le zone ancora in attesa. Quanto erogato viene accreditato, e alla ripresa viene irrigato il resto del passaggio. Una pausa che non viene tolta termina da sola.",
+      "fields": {
+        "minutes": {
+          "name": "Minuti",
+          "description": "La durata massima della pausa prima che si tolga da sola."
+        }
+      }
+    },
+    "resume_watering": {
+      "name": "Riprendi l'irrigazione",
+      "description": "Prosegue un'irrigazione in pausa dal punto in cui si è fermata."
+    },
+    "next_step": {
+      "name": "Passo successivo",
+      "description": "Termina le zone del passo in cui si trova un programma e passa al passo successivo."
+    },
+    "suspend": {
+      "name": "Sospendi",
+      "description": "Impedisce a una zona o a un programma di irrigare fino a un dato momento. Senza durata né data, o con zero ore, la sospensione viene tolta.",
+      "fields": {
+        "program_id": {
+          "name": "Programma",
+          "description": "L'id di un programma da sospendere."
+        },
+        "hours": {
+          "name": "Ore",
+          "description": "Per quanto tempo sospendere. Zero la toglie."
+        },
+        "until": {
+          "name": "Fino a",
+          "description": "Il momento in cui la sospensione termina."
+        }
+      }
+    },
+    "adjust_program": {
+      "name": "Regola un programma",
+      "description": "Fa irrigare un programma del controller completo più a lungo o più brevemente, per un certo tempo. La regolazione sostituisce la precedente (non si somma mai), si applica alle esecuzioni che partono dopo averla impostata e termina dopo le ore indicate.",
+      "fields": {
+        "program_id": {
+          "name": "Programma",
+          "description": "L'id del programma da regolare."
+        },
+        "percent": {
+          "name": "Percentuale",
+          "description": "Moltiplica l'acqua di ogni passo (120 irriga il 20 % più a lungo)."
+        },
+        "seconds": {
+          "name": "Secondi",
+          "description": "Secondi d'acqua aggiunti a ogni passo (negativi per toglierne)."
+        },
+        "hours": {
+          "name": "Ore",
+          "description": "Quanto dura la regolazione. Se vuoto, finché non viene azzerata."
+        },
+        "reset": {
+          "name": "Azzera",
+          "description": "Rimuove la regolazione di questo programma."
+        }
+      }
+    },
+    "water_zone": {
+      "name": "Irriga una zona",
+      "description": "Irriga una zona ora, o appena è il suo turno se qualcosa sta irrigando. Senza durata, la zona irriga per la durata calcolata da Smart Irrigation.",
+      "fields": {
+        "zone_id": {
+          "name": "Id zona",
+          "description": "L'id della zona, al posto della sua entità."
+        },
+        "seconds": {
+          "name": "Secondi",
+          "description": "Secondi d'acqua. Se vuoto, la durata calcolata."
+        },
+        "mode": {
+          "name": "Modalità",
+          "description": "Cosa fare quando qualcosa sta già irrigando. Coda: prende il turno dietro; sostituisci: lo ferma prima in modo pulito."
+        }
+      }
+    },
+    "use_measured_throughput": {
+      "name": "Usa la portata misurata",
+      "description": "Imposta la portata di una zona sul flusso misurato dal suo contatore durante le sue irrigazioni. La misura è sempre solo un consiglio; questo è il modo per accettarla.",
+      "fields": {
+        "zone_id": {
+          "name": "Id zona",
+          "description": "L'id della zona, al posto della sua entità."
+        }
+      }
+    },
+    "create_recurring_schedule": {
+      "name": "Crea pianificazione ricorrente (deprecata)",
+      "description": "Deprecata: sostituita dagli orari dei programmi (scheda Irrigazione). Funziona fino alla 2027.11. Crea una nuova pianificazione di irrigazione ricorrente.",
+      "fields": {
+        "name": {
+          "name": "Nome",
+          "description": "Nome della pianificazione"
+        },
+        "type": {
+          "name": "Tipo di pianificazione",
+          "description": "Tipo di pianificazione (daily, weekly, monthly, interval)"
+        },
+        "enabled": {
+          "name": "Attivata",
+          "description": "Attiva la pianificazione"
+        },
+        "time": {
+          "name": "Ora",
+          "description": "Ora di esecuzione (formato HH:MM)"
+        },
+        "days_of_week": {
+          "name": "Giorni della settimana",
+          "description": "Giorni della settimana per le pianificazioni settimanali"
+        },
+        "day_of_month": {
+          "name": "Giorno del mese",
+          "description": "Giorno del mese per le pianificazioni mensili (1-31)"
+        },
+        "interval_hours": {
+          "name": "Intervallo in ore",
+          "description": "Intervallo in ore per le pianificazioni a intervallo"
+        },
+        "zones": {
+          "name": "Zone",
+          "description": "ID delle zone da includere, o 'all'"
+        },
+        "action": {
+          "name": "Azione",
+          "description": "Azione da eseguire (calculate, update, irrigate)"
+        }
+      }
+    },
+    "update_recurring_schedule": {
+      "name": "Aggiorna pianificazione ricorrente (deprecata)",
+      "description": "Deprecata: sostituita dagli orari dei programmi (scheda Irrigazione). Funziona fino alla 2027.11. Aggiorna una pianificazione di irrigazione ricorrente esistente.",
+      "fields": {
+        "schedule_id": {
+          "name": "ID pianificazione",
+          "description": "ID della pianificazione da aggiornare"
+        },
+        "name": {
+          "name": "Nome",
+          "description": "Nome della pianificazione"
+        },
+        "enabled": {
+          "name": "Attivata",
+          "description": "Attiva o disattiva la pianificazione"
+        }
+      }
+    },
+    "delete_recurring_schedule": {
+      "name": "Elimina pianificazione ricorrente (deprecata)",
+      "description": "Deprecata: sostituita dagli orari dei programmi (scheda Irrigazione). Funziona fino alla 2027.11. Elimina una pianificazione di irrigazione ricorrente.",
+      "fields": {
+        "schedule_id": {
+          "name": "ID pianificazione",
+          "description": "ID della pianificazione da eliminare"
+        }
+      }
+    },
+    "create_seasonal_adjustment": {
+      "name": "Crea regolazione stagionale (deprecata)",
+      "description": "Deprecata: sostituita da smart_irrigation.set_seasonal_adjustment. Funziona fino alla 2027.11. Crea una nuova regolazione stagionale per le zone di irrigazione.",
+      "fields": {
+        "name": {
+          "name": "Nome",
+          "description": "Nome della regolazione"
+        },
+        "enabled": {
+          "name": "Attivata",
+          "description": "Attiva la regolazione"
+        },
+        "month_start": {
+          "name": "Mese di inizio",
+          "description": "Mese di inizio (1-12)"
+        },
+        "month_end": {
+          "name": "Mese di fine",
+          "description": "Mese di fine (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Fattore di regolazione del moltiplicatore",
+          "description": "Fattore di regolazione del moltiplicatore"
+        },
+        "threshold_adjustment": {
+          "name": "Regolazione della soglia",
+          "description": "Regolazione della soglia in mm"
+        },
+        "zones": {
+          "name": "Zone",
+          "description": "ID delle zone da includere, o 'all'"
+        }
+      }
+    },
+    "update_seasonal_adjustment": {
+      "name": "Aggiorna regolazione stagionale (deprecata)",
+      "description": "Deprecata: sostituita da smart_irrigation.set_seasonal_adjustment. Funziona fino alla 2027.11. Aggiorna una regolazione stagionale esistente.",
+      "fields": {
+        "adjustment_id": {
+          "name": "ID regolazione",
+          "description": "ID della regolazione da aggiornare"
+        },
+        "name": {
+          "name": "Nome",
+          "description": "Nome della regolazione"
+        },
+        "enabled": {
+          "name": "Attivata",
+          "description": "Attiva o disattiva la regolazione"
+        }
+      }
+    },
+    "delete_seasonal_adjustment": {
+      "name": "Elimina regolazione stagionale (deprecata)",
+      "description": "Deprecata: sostituita da smart_irrigation.set_seasonal_adjustment. Funziona fino alla 2027.11. Elimina una regolazione stagionale.",
+      "fields": {
+        "adjustment_id": {
+          "name": "ID regolazione",
+          "description": "ID della regolazione da eliminare"
+        }
+      }
+    },
+    "postpone_irrigation": {
+      "name": "Rinvia l'irrigazione",
+      "description": "Trattiene l'irrigazione per un po', poi la lascia riprendere da sola. Nulla viene azzerato: a una zona a cui manca acqua continua a mancare quando il rinvio termina, e la prossima esecuzione recupera.",
+      "fields": {
+        "hours": {
+          "name": "Ore",
+          "description": "Per quanto tempo trattenere l'irrigazione. Zero toglie un rinvio."
+        }
+      }
+    },
+    "resume_irrigation": {
+      "name": "Riprendi l'irrigazione",
+      "description": "Toglie un rinvio, qualunque cosa ne resti."
+    },
+    "calculate": {
+      "name": "Calcola",
+      "description": "Calcola le zone scelte, o tutte le zone in modalità automatica se non ne è scelta nessuna",
+      "fields": {
+        "entity": {
+          "name": "Entità",
+          "description": "Zone da calcolare; nessuna = tutte"
+        },
+        "delete_weather_data": {
+          "name": "Cancella i dati meteo",
+          "description": "Cancella i dati meteo della zona dopo il calcolo"
+        },
+        "dry_run": {
+          "name": "Simulazione",
+          "description": "Riferire cosa farebbe il calcolo senza modificare il bilancio idrico, la zona o i dati meteo raccolti"
+        }
+      }
+    },
+    "update_weather": {
+      "name": "Aggiorna il meteo",
+      "description": "Recupera il meteo per le zone scelte, o per tutte le zone se non ne è scelta nessuna",
+      "fields": {
+        "entity": {
+          "name": "Entità",
+          "description": "Zone da aggiornare; nessuna = tutte"
+        }
+      }
+    },
+    "set_seasonal_adjustment": {
+      "name": "Imposta regolazione stagionale",
+      "description": "Crea una regolazione stagionale, ne modifica una tramite il suo ID, o ne rimuove una tramite il suo ID con remove",
+      "fields": {
+        "adjustment_id": {
+          "name": "ID regolazione",
+          "description": "La regolazione da modificare o rimuovere; senza ID ne viene creata una"
+        },
+        "remove": {
+          "name": "Rimuovi",
+          "description": "Rimuove la regolazione con questo ID"
+        },
+        "name": {
+          "name": "Nome",
+          "description": "Nome della regolazione"
+        },
+        "enabled": {
+          "name": "Attivata",
+          "description": "Attiva la regolazione"
+        },
+        "month_start": {
+          "name": "Mese di inizio",
+          "description": "Mese di inizio (1-12)"
+        },
+        "month_end": {
+          "name": "Mese di fine",
+          "description": "Mese di fine (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Fattore di regolazione del moltiplicatore",
+          "description": "Fattore di regolazione del moltiplicatore"
+        },
+        "threshold_adjustment": {
+          "name": "Regolazione della soglia",
+          "description": "Regolazione della soglia in mm"
+        },
+        "zones": {
+          "name": "Zone",
+          "description": "ID delle zone da includere, o 'all'"
+        }
+      }
     }
   },
   "issues": {
@@ -342,6 +734,14 @@
     "zone_not_calculated_no_sensor_group": {
       "title": "Non è possibile calcolare la zona {zone}: nessun gruppo di sensori",
       "description": "La zona **{zone}** non ha alcun gruppo di sensori, quindi non c'è nulla su cui basare il calcolo e non viene irrigata.\n\nSeleziona il gruppo di sensori corrispondente nella scheda della zona, nella scheda “Zone”, quindi esegui il calcolo. L'avviso scomparirà automaticamente al successivo calcolo andato a buon fine."
+    },
+    "deprecated_action": {
+      "title": "L'azione {action} sta per essere rimossa",
+      "description": "Un'automazione, uno script o una dashboard ha chiamato **{action}**. Funziona ancora, ma verrà rimossa a partire dalla versione {version}, in inverno, fuori dalla stagione irrigua.\n\nUsa **{replacement}** al suo posto: fa la stessa cosa, e per tutte le zone quando non ne è scelta nessuna. Questo avviso ritorna a ogni chiamata del vecchio nome, finché non ne resta nessuna."
+    },
+    "deprecated_recurring_schedule": {
+      "title": "Le pianificazioni ricorrenti stanno per essere rimosse: {action}",
+      "description": "Un'automazione, uno script o una dashboard ha chiamato **{action}**. Le pianificazioni ricorrenti funzionano ancora, ma verranno rimosse a partire dalla versione {version}, in inverno, fuori dalla stagione irrigua.\n\nGli orari dei programmi fanno la stessa cosa e si trovano nel pannello: configurali in **Irrigazione**, poi rimuovi le pianificazioni ricorrenti e le chiamate a {action}."
     }
   }
 }

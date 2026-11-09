@@ -156,14 +156,19 @@
           "engine": "Módulo",
           "sources": "Fontes",
           "from-the-service": "do serviço de meteorologia",
+          "no-sensor": "nenhum sensor",
           "help": "Isso cria um módulo de cálculo, um grupo de sensores e uma zona, exatamente como as outras abas fariam. Depois nada fica travado."
         }
       },
       "step": "etapa",
       "done-note-zone": "Ela aparece em Zonas, com o grupo de sensores dela em Grupos de sensores. Não têm nada de especial: edite-os como qualquer outro.",
       "done-next-static": "Com uma quantidade fixa por dia ela não precisa de leituras: o próximo cálculo descobre quanto falta.",
-      "done-next-service": "O clima vem do serviço de meteorologia: assim que o serviço tiver reportado, uma atualização e um cálculo dão uma duração à zona.",
-      "done-next-sensors": "Execute uma atualização e um cálculo assim que seus sensores tiverem reportado, e a zona vai começar a produzir uma duração.",
+      "done-next-service": "O clima vem do serviço de meteorologia e a duração vem com o primeiro cálculo. Calcular agora busca o clima e calcula a zona de uma vez.",
+      "done-next-sensors": "A duração vem com o primeiro cálculo. Calcular agora lê seus sensores e calcula a zona de uma vez.",
+      "calc-now": "Calcular agora",
+      "calc-duration": "Calculado: irriga {duration} no próximo início.",
+      "calc-nothing": "Calculado: ainda não falta água.",
+      "calc-failed": "O cálculo não funcionou. A zona diz o motivo em Zonas.",
       "open-zone": "Abrir a zona",
       "another": "Configurar outra zona"
     },
@@ -257,8 +262,8 @@
             "auto-update-enabled": "Atualizar dados meteorológicos automaticamente",
             "auto-update-schedule": "Agendamento de atualização",
             "auto-update-time": "Atualizar às",
-            "auto-update-interval": "Atualizar dados do sensor a cada",
-            "auto-update-delay": "Atraso de atualização"
+            "auto-update-interval": "Ler o clima a cada",
+            "auto-update-delay": "Atraso antes da primeira atualização"
           },
           "options": {
             "minutes": "minutos",
@@ -357,6 +362,8 @@
           "sequencing-parallel": "todas as zonas ao mesmo tempo, então o total é a zona mais longa",
           "headline-nothing": "Nada para irrigar",
           "sub-nothing": "Nenhuma zona está com falta de água suficiente ainda. O próximo início seria {start}.",
+          "headline-not-calculated": "Ainda não calculado",
+          "sub-not-calculated": "As zonas não têm duração até o primeiro cálculo, {when}. Calcule todas as zonas em Zonas para fazer isso agora.",
           "next-program": "Próximo programa: {program}, {start}",
           "headline-watering": "Irrigação {start}",
           "headline-watering-soon": "Irrigação no próximo início",
@@ -452,7 +459,8 @@
         },
         "no_valve_path": {
           "title": "Aqui nada abre uma válvula",
-          "body": "O Smart Irrigation calcula quanto tempo irrigar; algo precisa agir a partir disso. Ou vincule uma válvula a uma zona e ligue o controle direto de válvulas, ou escreva uma automação no evento de início (os blueprints fazem isso por você). Se uma automação já faz isso, não há nada a mudar."
+          "body": "O Smart Irrigation calcula quanto tempo irrigar; algo precisa agir a partir disso. Ou ligue o controle direto de válvulas em Configurações e depois vincule uma válvula a cada zona, ou escreva uma automação no evento de início (os blueprints fazem isso por você). Se uma automação já faz isso, não há nada a mudar.",
+          "action": "Ir para o controle de válvulas"
         }
       }
     },
@@ -460,9 +468,10 @@
       "cards": {
         "add-mapping": {
           "actions": {
-            "add": "Adicionar grupo de sensores"
+            "add": "Adicionar grupo de sensores",
+            "cancel": "Cancelar"
           },
-          "header": "Adicionar grupos de sensores"
+          "header": "Adicionar grupo de sensores"
         },
         "mapping": {
           "aggregates": {
@@ -523,6 +532,7 @@
           "sources": {
             "none": "Nenhuma",
             "none_et": "Nenhuma (o Smart Irrigation calcula)",
+            "none_estimated": "Nenhuma (estimado)",
             "weather_service": "Serviço de meteorologia",
             "weather_service_et": "ET₀ pronta do serviço meteorológico",
             "sensor": "Sensor",
@@ -664,6 +674,8 @@
         "drainage_rate": "Taxa de drenagem",
         "linked-entity": "Válvula/interruptor vinculado",
         "linked-entity-hint": "A válvula ou interruptor que rega esta zona. Sempre que for acionado (uma torneira manual, uma automação ou o próprio Smart Irrigation quando o controle direto da válvula está ativo), o balanço hídrico é creditado a partir do tempo de funcionamento e da vazão da zona. Necessário para os recursos de malha fechada.",
+        "valve-off": "Dá para vincular uma válvula assim que o controle direto de válvulas ou a irrigação observada estiver ligado.",
+        "valve-off-link": "Ligar",
         "supply": "Bomba ou válvula principal",
         "supply-none": "Nenhuma",
         "measured-flow-help": "Ao longo de várias execuções, o medidor de vazão da zona mediu uma vazão diferente da definida acima. É uma sugestão, nunca aplicada sozinha.",
@@ -730,15 +742,16 @@
         "soil-type": "Solo",
         "plant-type": "O que cresce aqui",
         "soil-types": {
+          "default": "Ainda não escolhido: {value}",
           "sand": "Arenoso",
           "sandy_loam": "Franco-arenoso",
           "loam": "Franco",
           "clay_loam": "Franco-argiloso",
           "clay": "Argiloso",
-          "custom": "Eu mesmo defino a taxa de drenagem",
-          "default": "Ainda não escolhido – calculado com {value}"
+          "custom": "Eu mesmo defino a taxa de drenagem"
         },
         "plant-types": {
+          "default": "Ainda não escolhido: fator {value}",
           "lawn": "Gramado",
           "vegetables": "Hortaliças",
           "flowers": "Flores",
@@ -747,8 +760,7 @@
           "fruit_trees": "Árvores frutíferas",
           "vines": "Videiras",
           "ground_cover": "Forração",
-          "custom": "Eu mesmo defino o fator de cultura",
-          "default": "Ainda não escolhido – calculado com o fator de cultura {value}"
+          "custom": "Eu mesmo defino o fator de cultura"
         },
         "duration-readonly-automatic": "Calculada para você: o ciclo desta zona vem do balanço hídrico dela. Coloque em manual para digitar uma duração você mesmo.",
         "duration-readonly-disabled": "Uma zona desativada nunca é irrigada, então não tem tempo de irrigação.",
@@ -764,6 +776,7 @@
         "idle": "Nada para irrigar: faltam {short}.",
         "satisfied": "Nada para irrigar: esta zona tem o que precisa.",
         "under-threshold": "Ainda nada para irrigar: faltam {short}, abaixo do limite desta zona.",
+        "not-calculated": "Ainda não calculada: isso acontece {when}.",
         "manual": "Só irriga quando você pede.",
         "disabled": "Desativada: nunca é irrigada, e o balanço dela não é mantido.",
         "threshold": "limite",
@@ -1085,8 +1098,8 @@
     "title": "Gatilhos de início",
     "description": "Quando a irrigação começa. Por padrão ela termina ao nascer do sol; adicione um gatilho para outro momento: pôr do sol, azimute ou horário fixo, com um deslocamento.",
     "active_label": "Gatilho ativo",
-    "active_default": "Padrão (nascer do sol menos a duração total de rega)",
-    "active_hint": "Só o gatilho escolhido inicia a irrigação, uma vez por dia.",
+    "active_default": "Padrão: pronto até o nascer do sol",
+    "active_hint": "Só o gatilho escolhido inicia a irrigação, uma vez por dia. Padrão começa de forma que todas as zonas terminem até o nascer do sol; com Nenhum, o Smart Irrigation não inicia nada.",
     "usage_before": "Quando um gatilho dispara, o Smart Irrigation emite o evento ",
     "usage_after": " — escute-o em uma automação para iniciar a irrigação. Os dados do evento incluem trigger_name, trigger_type e offset_minutes, para que você possa reagir de forma diferente por gatilho. As configurações de pular por precipitação e de dias entre irrigações continuam valendo: em um dia de pulo, nenhum evento é disparado.",
     "add_trigger": "Adicionar gatilho",
@@ -1148,7 +1161,7 @@
       "azimuth_explanation": "O azimute solar é a direção do sol na bússola. 0°=Norte, 90°=Leste, 180°=Sul, 270°=Oeste. Você pode inserir qualquer valor de ângulo (por exemplo, 450° = 90°, -30° = 330°). Use isto para acionar a irrigação quando o sol atingir uma posição específica.",
       "multiple_triggers": "Você pode criar vários gatilhos, mas apenas o escolhido como ativo inicia a irrigação. Os outros ficam guardados para depois."
     },
-    "active_none": "Nenhum (o Smart Irrigation não inicia nenhuma irrigação)",
+    "active_none": "Nenhum",
     "none_selected": "Nenhum gatilho está ativo: o Smart Irrigation não inicia nenhuma irrigação, seja qual for o clima. As durações continuam sendo calculadas; inicie a irrigação você mesmo ou por uma automação sua."
   },
   "seasonal_adjustments": {
@@ -1174,7 +1187,8 @@
     "effective_rain_label": "Contar só a chuva que chega às raízes",
     "effective_rain_description": "Ignorar um aguaceiro menor que um quinto da evapotranspiração do período: ele molha as folhas e evapora. Ele é avaliado sobre todo o período entre dois cálculos.",
     "forecast_label": "Levar em conta a chuva prevista",
-    "forecast_description": "Abaixo do limite, cada zona é irrigada pelo seu déficit menos a chuva prevista para as próximas 24 horas, ponderada pela probabilidade informada pelo serviço de meteorologia: 4 mm previstos para um déficit de 10 mm irrigam 6 mm. A partir do limite, a irrigação é pulada nas zonas ao ar livre. As zonas em estufa não são afetadas."
+    "forecast_description": "Abaixo do limite, cada zona é irrigada pelo seu déficit menos a chuva prevista para as próximas 24 horas, ponderada pela probabilidade informada pelo serviço de meteorologia: 4 mm previstos para um déficit de 10 mm irrigam 6 mm. A partir do limite, a irrigação é pulada nas zonas ao ar livre. As zonas em estufa não são afetadas.",
+    "forecast_set_up_service": "Configurar um serviço de meteorologia"
   },
   "coordinate_config": {
     "title": "Coordenadas da localização",
@@ -1380,7 +1394,7 @@
   },
   "observed_watering": {
     "title": "Rega observada (malha fechada)",
-    "description": "Credite o balanço hídrico de cada zona automaticamente a partir da irrigação real, em vez de zerar o balanço hídrico por uma automação. Depois de ativado, escolha uma entidade de válvula/interruptor por zona na aba Zonas: enquanto estiver aberta, o balanço hídrico é creditado a partir do tempo de funcionamento e da vazão da zona. Para uma contabilização exata, você também pode escolher um medidor de volume acumulado (um total no estilo de hidrômetro) por zona, e o volume medido é usado em vez disso. Importante: quando isto está ativo, é a única coisa que credita o balanço hídrico, então remova qualquer chamada reset_bucket da sua automação de irrigação para evitar contagem dupla.",
+    "description": "Credite o balanço hídrico de cada zona a partir da irrigação real, em vez de uma automação zerá-lo. Escolha uma válvula ou interruptor por zona em Zonas: enquanto estiver aberto, é creditado o tempo de funcionamento vezes a vazão, ou o volume que um medidor mediu. Remova as chamadas set_bucket e reset_bucket das suas automações, senão a água é contada duas vezes.",
     "enabled_label": "Ativar rega observada",
     "direct_control_label": "Permitir que o Smart Irrigation controle a válvula",
     "direct_control_description": "Quando ativo, o Smart Irrigation abre a válvula vinculada de cada zona, aguarda a duração calculada e depois a fecha, sem precisar de automação. Uma execução em andamento é retomada após uma reinicialização. Segurança: uma válvula capaz de fechar sozinha recebe a duração da execução quando abre (uma Sonoff SWV no ZHA, ou uma válvula cuja zona tem um tópico MQTT de segurança), então ela fecha mesmo se o Home Assistant cair. Qualquer outra válvula continua irrigando até o Home Assistant voltar: dê a ela um mecanismo de segurança em hardware (um tempo máximo de funcionamento).",
@@ -1456,6 +1470,7 @@
     "skipped": "Adiado",
     "short_by": "faltam {value}",
     "no_need": "não precisa de irrigação",
+    "not_calculated": "ainda não calculada",
     "runs_for": "irrigaria {duration}",
     "never_watered": "nunca irrigada",
     "last_watered": "última irrigação {when}",

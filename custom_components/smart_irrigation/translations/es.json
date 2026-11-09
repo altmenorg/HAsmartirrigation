@@ -77,7 +77,11 @@
         "name": "Riego necesario"
       },
       "watering_now": {
-        "name": "Regando ahora"
+        "name": "Regando ahora",
+        "state": {
+          "on": "Sí",
+          "off": "No"
+        }
       },
       "problem": {
         "name": "Problema"
@@ -94,7 +98,7 @@
         "name": "Omitir si hay precipitación"
       },
       "irrigation_enabled": {
-        "name": "Activo"
+        "name": "Calcular y regar"
       }
     },
     "datetime": {
@@ -136,8 +140,8 @@
   },
   "services": {
     "calculate_all_zones": {
-      "name": "Calculate all zones",
-      "description": "Calculate all zones in automatic mode",
+      "name": "Calcular todas las zonas (obsoleta)",
+      "description": "Obsoleta: sustituida por smart_irrigation.calculate. Funciona hasta la 2027.11. Calcular todas las zonas en modo automático",
       "fields": {
         "delete_weather_data": {
           "name": "Delete weather data",
@@ -150,8 +154,8 @@
       }
     },
     "calculate_zone": {
-      "name": "Calculate zone",
-      "description": "Calculate specified zone",
+      "name": "Calcular zona (obsoleta)",
+      "description": "Obsoleta: sustituida por smart_irrigation.calculate. Funciona hasta la 2027.11. Calcular la zona indicada",
       "fields": {
         "entity": {
           "name": "Entity",
@@ -168,12 +172,12 @@
       }
     },
     "update_all_zones": {
-      "name": "Update all zones",
-      "description": "Update weatherdata for all zones in automatic mode"
+      "name": "Actualizar todas las zonas (obsoleta)",
+      "description": "Obsoleta: sustituida por smart_irrigation.update_weather. Funciona hasta la 2027.11. Actualizar los datos meteorológicos de todas las zonas en modo automático"
     },
     "update_zone": {
-      "name": "Update zone",
-      "description": "Update weatherdata for specified zone",
+      "name": "Actualizar zona (obsoleta)",
+      "description": "Obsoleta: sustituida por smart_irrigation.update_weather. Funciona hasta la 2027.11. Actualizar los datos meteorológicos de la zona indicada",
       "fields": {
         "entity": {
           "name": "Entity",
@@ -183,21 +187,21 @@
     },
     "set_bucket": {
       "name": "Establecer el balance hídrico",
-      "description": "Establecer el balance hídrico de una zona en un valor",
+      "description": "Establecer el balance hídrico de las zonas elegidas, o de todas las zonas si no se elige ninguna. Sin valor, es el reinicio a 0",
       "fields": {
         "entity": {
           "name": "Entity",
-          "description": "Zona para la que establecer el balance hídrico"
+          "description": "Zonas para las que establecer el balance hídrico; ninguna = todas"
         },
         "new_bucket_value": {
           "name": "Nuevo balance hídrico",
-          "description": "Nuevo valor del balance hídrico"
+          "description": "Nuevo valor del balance hídrico; sin valor, 0"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Establecer todos los balances hídricos",
-      "description": "Establecer el balance hídrico de todas las zonas en un valor",
+      "name": "Establecer todos los balances hídricos (obsoleta)",
+      "description": "Obsoleta: sustituida por smart_irrigation.set_bucket. Funciona hasta la 2027.11. Establecer el balance hídrico de todas las zonas en un valor",
       "fields": {
         "new_bucket_value": {
           "name": "Nuevo balance hídrico",
@@ -206,8 +210,8 @@
       }
     },
     "reset_bucket": {
-      "name": "Reiniciar el balance hídrico",
-      "description": "Reiniciar el balance hídrico de una zona a 0",
+      "name": "Reiniciar balance hídrico (obsoleta)",
+      "description": "Obsoleta: sustituida por smart_irrigation.set_bucket. Funciona hasta la 2027.11. Reiniciar a 0 el balance hídrico de una zona",
       "fields": {
         "entity": {
           "name": "Entity",
@@ -216,8 +220,8 @@
       }
     },
     "reset_all_buckets": {
-      "name": "Reiniciar todos los balances hídricos",
-      "description": "Reiniciar el balance hídrico de todas las zonas a 0"
+      "name": "Reiniciar todos los balances hídricos (obsoleta)",
+      "description": "Obsoleta: sustituida por smart_irrigation.set_bucket. Funciona hasta la 2027.11. Reiniciar a 0 el balance hídrico de todas las zonas"
     },
     "clear_all_weather_data": {
       "name": "Clear all weather data",
@@ -225,11 +229,11 @@
     },
     "set_multiplier": {
       "name": "Set multiplier",
-      "description": "Set multiplier for a zone to a specific value",
+      "description": "Establecer el multiplicador de las zonas elegidas, o de todas las zonas si no se elige ninguna",
       "fields": {
         "entity": {
           "name": "Entity",
-          "description": "Zone to set multiplier for"
+          "description": "Zonas para las que establecer el multiplicador; ninguna = todas"
         },
         "new_multiplier_value": {
           "name": "New multiplier value",
@@ -238,8 +242,8 @@
       }
     },
     "set_all_multipliers": {
-      "name": "Set all multipliers",
-      "description": "Set multipliers for all zones to a specific value",
+      "name": "Establecer todos los multiplicadores (obsoleta)",
+      "description": "Obsoleta: sustituida por smart_irrigation.set_multiplier. Funciona hasta la 2027.11. Establecer los multiplicadores de todas las zonas en un valor concreto",
       "fields": {
         "new_multiplier_value": {
           "name": "New multiplier value",
@@ -296,6 +300,394 @@
           "description": "Cuánto tiempo regó la zona, en segundos. Vacío: la duración de la zona."
         }
       }
+    },
+    "run_program": {
+      "name": "Ejecutar programa",
+      "description": "Ejecutar ahora un programa del controlador completo, o en cuanto le toque si otro se está ejecutando. El programa riega sus zonas con las duraciones que calculó Smart Irrigation, salvo que sus pasos indiquen otra cosa.",
+      "fields": {
+        "program_id": {
+          "name": "Programa",
+          "description": "El id del programa, tal como aparece en sus ajustes."
+        },
+        "seconds": {
+          "name": "Segundos",
+          "description": "Una duración total para todo el programa, repartida entre sus pasos en proporción a sus duraciones previstas. Si se deja vacío, las duraciones previstas."
+        },
+        "mode": {
+          "name": "Modo",
+          "description": "Qué hacer cuando ya se está regando algo. Cola: espera su turno detrás; reemplazar: lo detiene antes limpiamente."
+        }
+      }
+    },
+    "stop_program": {
+      "name": "Detener programa",
+      "description": "Detener un programa. Si se está ejecutando, sus zonas abiertas se cierran de la forma normal y se acreditan con lo que aportaron; si espera su turno, se saca de la cola. Un programa desconocido no hace nada. El programa principal se detiene con stop_watering.",
+      "fields": {
+        "program_id": {
+          "name": "Programa",
+          "description": "El id del programa."
+        }
+      }
+    },
+    "set_program_enabled": {
+      "name": "Activar o desactivar un programa",
+      "description": "Activar o desactivar un programa del controlador completo, como hace el interruptor de sus ajustes.",
+      "fields": {
+        "program_id": {
+          "name": "Programa",
+          "description": "El id del programa."
+        },
+        "enabled": {
+          "name": "Activado",
+          "description": "Activado para activarlo, desactivado para desactivarlo."
+        }
+      }
+    },
+    "set_step_enabled": {
+      "name": "Activar o desactivar un paso",
+      "description": "Activar o desactivar un paso de un programa.",
+      "fields": {
+        "program_id": {
+          "name": "Programa",
+          "description": "El id del programa."
+        },
+        "step_id": {
+          "name": "Paso",
+          "description": "El id del paso, tal como aparece en el programa."
+        },
+        "enabled": {
+          "name": "Activado",
+          "description": "Activado para activarlo, desactivado para desactivarlo."
+        }
+      }
+    },
+    "set_schedule_enabled": {
+      "name": "Activar o desactivar un horario",
+      "description": "Activar o desactivar un horario de un programa. Los horarios se vuelven a programar en el acto.",
+      "fields": {
+        "program_id": {
+          "name": "Programa",
+          "description": "El id del programa."
+        },
+        "schedule_id": {
+          "name": "Horario",
+          "description": "El id del horario, tal como aparece en el programa."
+        },
+        "enabled": {
+          "name": "Activado",
+          "description": "Activado para activarlo, desactivado para desactivarlo."
+        }
+      }
+    },
+    "stop_watering": {
+      "name": "Detener el riego",
+      "description": "Detener el riego ahora. Se cierran todas las válvulas que abrió Smart Irrigation, cada zona se acredita con el agua que aportó, y los programas y las zonas que aún esperan se terminan. Con zonas elegidas, solo se detienen esas."
+    },
+    "pause_watering": {
+      "name": "Pausar el riego",
+      "description": "Cerrar las válvulas abiertas y retener el riego, incluidas las zonas que aún esperan. Lo aportado se acredita, y tras reanudar se riega el resto de la pasada. Una pausa que no se levanta termina por sí sola.",
+      "fields": {
+        "minutes": {
+          "name": "Minutos",
+          "description": "Lo máximo que dura la pausa antes de levantarse por sí sola."
+        }
+      }
+    },
+    "resume_watering": {
+      "name": "Reanudar el riego",
+      "description": "Continuar un riego en pausa desde donde se detuvo."
+    },
+    "next_step": {
+      "name": "Paso siguiente",
+      "description": "Terminar las zonas del paso en el que está un programa y pasar al paso siguiente."
+    },
+    "suspend": {
+      "name": "Suspender",
+      "description": "Impedir que una zona o un programa riegue hasta un momento dado. Sin duración ni fecha, o con cero horas, la suspensión se levanta.",
+      "fields": {
+        "program_id": {
+          "name": "Programa",
+          "description": "El id de un programa que suspender."
+        },
+        "hours": {
+          "name": "Horas",
+          "description": "Cuánto tiempo suspender. Cero la levanta."
+        },
+        "until": {
+          "name": "Hasta",
+          "description": "El momento en que termina la suspensión."
+        }
+      }
+    },
+    "adjust_program": {
+      "name": "Ajustar un programa",
+      "description": "Hacer que un programa del controlador completo riegue más o menos tiempo, durante un tiempo. El ajuste reemplaza al anterior (nunca se suma), se aplica a las ejecuciones que empiezan después de fijarlo y termina tras las horas indicadas.",
+      "fields": {
+        "program_id": {
+          "name": "Programa",
+          "description": "El id del programa que ajustar."
+        },
+        "percent": {
+          "name": "Porcentaje",
+          "description": "Multiplica el agua de cada paso (120 riega un 20 % más)."
+        },
+        "seconds": {
+          "name": "Segundos",
+          "description": "Segundos de agua añadidos a cada paso (negativo para quitar)."
+        },
+        "hours": {
+          "name": "Horas",
+          "description": "Cuánto dura el ajuste. Si se deja vacío, hasta que se reinicie."
+        },
+        "reset": {
+          "name": "Reiniciar",
+          "description": "Quitar el ajuste de este programa."
+        }
+      }
+    },
+    "water_zone": {
+      "name": "Regar una zona",
+      "description": "Regar una zona ahora, o en cuanto le toque si algo está regando. Sin duración, la zona riega durante la duración que calculó Smart Irrigation.",
+      "fields": {
+        "zone_id": {
+          "name": "Id de zona",
+          "description": "El id de la zona, en lugar de su entidad."
+        },
+        "seconds": {
+          "name": "Segundos",
+          "description": "Segundos de agua. Si se deja vacío, la duración calculada."
+        },
+        "mode": {
+          "name": "Modo",
+          "description": "Qué hacer cuando ya se está regando algo. Cola: espera su turno detrás; reemplazar: lo detiene antes limpiamente."
+        }
+      }
+    },
+    "use_measured_throughput": {
+      "name": "Usar el caudal medido",
+      "description": "Fijar el caudal de una zona en el que su contador midió durante sus riegos. La medición es solo una sugerencia; así es como se acepta.",
+      "fields": {
+        "zone_id": {
+          "name": "Id de zona",
+          "description": "El id de la zona, en lugar de su entidad."
+        }
+      }
+    },
+    "create_recurring_schedule": {
+      "name": "Crear programación recurrente (obsoleta)",
+      "description": "Obsoleta: sustituida por los horarios de los programas (pestaña Riego). Funciona hasta la 2027.11. Crear una nueva programación de riego recurrente.",
+      "fields": {
+        "name": {
+          "name": "Nombre",
+          "description": "Nombre de la programación"
+        },
+        "type": {
+          "name": "Tipo de programación",
+          "description": "Tipo de programación (daily, weekly, monthly, interval)"
+        },
+        "enabled": {
+          "name": "Activada",
+          "description": "Activar la programación"
+        },
+        "time": {
+          "name": "Hora",
+          "description": "Hora de ejecución (formato HH:MM)"
+        },
+        "days_of_week": {
+          "name": "Días de la semana",
+          "description": "Días de la semana para programaciones semanales"
+        },
+        "day_of_month": {
+          "name": "Día del mes",
+          "description": "Día del mes para programaciones mensuales (1-31)"
+        },
+        "interval_hours": {
+          "name": "Intervalo en horas",
+          "description": "Intervalo en horas para programaciones por intervalo"
+        },
+        "zones": {
+          "name": "Zonas",
+          "description": "IDs de las zonas a incluir, o 'all'"
+        },
+        "action": {
+          "name": "Acción",
+          "description": "Acción a realizar (calculate, update, irrigate)"
+        }
+      }
+    },
+    "update_recurring_schedule": {
+      "name": "Actualizar programación recurrente (obsoleta)",
+      "description": "Obsoleta: sustituida por los horarios de los programas (pestaña Riego). Funciona hasta la 2027.11. Actualizar una programación de riego recurrente existente.",
+      "fields": {
+        "schedule_id": {
+          "name": "ID de la programación",
+          "description": "ID de la programación a actualizar"
+        },
+        "name": {
+          "name": "Nombre",
+          "description": "Nombre de la programación"
+        },
+        "enabled": {
+          "name": "Activada",
+          "description": "Activar o desactivar la programación"
+        }
+      }
+    },
+    "delete_recurring_schedule": {
+      "name": "Eliminar programación recurrente (obsoleta)",
+      "description": "Obsoleta: sustituida por los horarios de los programas (pestaña Riego). Funciona hasta la 2027.11. Eliminar una programación de riego recurrente.",
+      "fields": {
+        "schedule_id": {
+          "name": "ID de la programación",
+          "description": "ID de la programación a eliminar"
+        }
+      }
+    },
+    "create_seasonal_adjustment": {
+      "name": "Crear ajuste estacional (obsoleta)",
+      "description": "Obsoleta: sustituida por smart_irrigation.set_seasonal_adjustment. Funciona hasta la 2027.11. Crear un nuevo ajuste estacional para zonas de riego.",
+      "fields": {
+        "name": {
+          "name": "Nombre",
+          "description": "Nombre del ajuste"
+        },
+        "enabled": {
+          "name": "Activado",
+          "description": "Activar el ajuste"
+        },
+        "month_start": {
+          "name": "Mes de inicio",
+          "description": "Mes de inicio (1-12)"
+        },
+        "month_end": {
+          "name": "Mes de fin",
+          "description": "Mes de fin (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Factor de ajuste del multiplicador",
+          "description": "Factor de ajuste del multiplicador"
+        },
+        "threshold_adjustment": {
+          "name": "Ajuste del umbral",
+          "description": "Ajuste del umbral en mm"
+        },
+        "zones": {
+          "name": "Zonas",
+          "description": "IDs de las zonas a incluir, o 'all'"
+        }
+      }
+    },
+    "update_seasonal_adjustment": {
+      "name": "Actualizar ajuste estacional (obsoleta)",
+      "description": "Obsoleta: sustituida por smart_irrigation.set_seasonal_adjustment. Funciona hasta la 2027.11. Actualizar un ajuste estacional existente.",
+      "fields": {
+        "adjustment_id": {
+          "name": "ID del ajuste",
+          "description": "ID del ajuste a actualizar"
+        },
+        "name": {
+          "name": "Nombre",
+          "description": "Nombre del ajuste"
+        },
+        "enabled": {
+          "name": "Activado",
+          "description": "Activar o desactivar el ajuste"
+        }
+      }
+    },
+    "delete_seasonal_adjustment": {
+      "name": "Eliminar ajuste estacional (obsoleta)",
+      "description": "Obsoleta: sustituida por smart_irrigation.set_seasonal_adjustment. Funciona hasta la 2027.11. Eliminar un ajuste estacional.",
+      "fields": {
+        "adjustment_id": {
+          "name": "ID del ajuste",
+          "description": "ID del ajuste a eliminar"
+        }
+      }
+    },
+    "postpone_irrigation": {
+      "name": "Aplazar el riego",
+      "description": "Retener el riego durante un tiempo y dejar que se reanude solo. No se reinicia nada: a una zona a la que le falta agua le sigue faltando cuando termina el aplazamiento, y la próxima ejecución lo compensa.",
+      "fields": {
+        "hours": {
+          "name": "Horas",
+          "description": "Cuánto tiempo retener el riego. Cero levanta un aplazamiento."
+        }
+      }
+    },
+    "resume_irrigation": {
+      "name": "Reanudar el riego",
+      "description": "Levantar un aplazamiento, quede lo que quede de él."
+    },
+    "calculate": {
+      "name": "Calcular",
+      "description": "Calcular las zonas elegidas, o todas las zonas en modo automático si no se elige ninguna",
+      "fields": {
+        "entity": {
+          "name": "Entidad",
+          "description": "Zonas que calcular; ninguna = todas"
+        },
+        "delete_weather_data": {
+          "name": "Borrar datos meteorológicos",
+          "description": "Borrar los datos meteorológicos de la zona después del cálculo"
+        },
+        "dry_run": {
+          "name": "Simulación",
+          "description": "Informar de lo que haría el cálculo sin modificar el balance hídrico, la zona ni los datos meteorológicos recogidos"
+        }
+      }
+    },
+    "update_weather": {
+      "name": "Actualizar el tiempo",
+      "description": "Obtener el tiempo para las zonas elegidas, o para todas las zonas si no se elige ninguna",
+      "fields": {
+        "entity": {
+          "name": "Entidad",
+          "description": "Zonas que actualizar; ninguna = todas"
+        }
+      }
+    },
+    "set_seasonal_adjustment": {
+      "name": "Establecer ajuste estacional",
+      "description": "Crear un ajuste estacional, cambiar uno por su ID, o eliminar uno por su ID con remove",
+      "fields": {
+        "adjustment_id": {
+          "name": "ID del ajuste",
+          "description": "El ajuste que cambiar o eliminar; sin ID se crea uno"
+        },
+        "remove": {
+          "name": "Eliminar",
+          "description": "Eliminar el ajuste con este ID"
+        },
+        "name": {
+          "name": "Nombre",
+          "description": "Nombre del ajuste"
+        },
+        "enabled": {
+          "name": "Activado",
+          "description": "Activar el ajuste"
+        },
+        "month_start": {
+          "name": "Mes de inicio",
+          "description": "Mes de inicio (1-12)"
+        },
+        "month_end": {
+          "name": "Mes de fin",
+          "description": "Mes de fin (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Factor de ajuste del multiplicador",
+          "description": "Factor de ajuste del multiplicador"
+        },
+        "threshold_adjustment": {
+          "name": "Ajuste del umbral",
+          "description": "Ajuste del umbral en mm"
+        },
+        "zones": {
+          "name": "Zonas",
+          "description": "IDs de las zonas a incluir, o 'all'"
+        }
+      }
     }
   },
   "issues": {
@@ -342,6 +734,14 @@
     "zone_not_calculated_no_sensor_group": {
       "title": "La zona {zone} no se puede calcular: no hay grupo de sensores",
       "description": "La zona **{zone}** no tiene grupo de sensores, así que no hay nada con lo que calcularla y no se riega.\n\nElige su grupo de sensores en su tarjeta de la pestaña Zonas y luego calcula la zona. El aviso desaparece solo en el siguiente cálculo que salga bien."
+    },
+    "deprecated_action": {
+      "title": "La acción {action} va a desaparecer",
+      "description": "Una automatización, un script o un panel ha llamado a **{action}**. Todavía funciona, pero se eliminará a partir de la versión {version}, en invierno, fuera de la temporada de riego.\n\nUsa **{replacement}** en su lugar: hace lo mismo, y para todas las zonas cuando no se elige ninguna. Este aviso vuelve con cada llamada al nombre antiguo, hasta que no quede ninguna."
+    },
+    "deprecated_recurring_schedule": {
+      "title": "Las programaciones recurrentes van a desaparecer: {action}",
+      "description": "Una automatización, un script o un panel ha llamado a **{action}**. Las programaciones recurrentes todavía funcionan, pero se eliminarán a partir de la versión {version}, en invierno, fuera de la temporada de riego.\n\nLos horarios de los programas hacen lo mismo y están en el panel: configúralos en **Riego**, y luego elimina las programaciones recurrentes y las llamadas a {action}."
     }
   }
 }

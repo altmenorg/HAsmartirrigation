@@ -77,7 +77,11 @@
         "name": "Kastelu tarpeen"
       },
       "watering_now": {
-        "name": "Kastelee nyt"
+        "name": "Kastelee nyt",
+        "state": {
+          "on": "Kyllä",
+          "off": "Ei"
+        }
       },
       "problem": {
         "name": "Ongelma"
@@ -94,7 +98,7 @@
         "name": "Ohita sateella"
       },
       "irrigation_enabled": {
-        "name": "Käytössä"
+        "name": "Laske ja kastele"
       }
     },
     "datetime": {
@@ -136,8 +140,8 @@
   },
   "services": {
     "calculate_all_zones": {
-      "name": "Laske kaikki vyöhykkeet",
-      "description": "Laske kaikki automaattitilassa olevat vyöhykkeet",
+      "name": "Laske kaikki vyöhykkeet (vanhentunut)",
+      "description": "Vanhentunut: käytä sen sijaan smart_irrigation.calculate. Toimii versioon 2027.11 asti. Laske kaikki automaattitilassa olevat vyöhykkeet",
       "fields": {
         "delete_weather_data": {
           "name": "Poista säätiedot",
@@ -150,8 +154,8 @@
       }
     },
     "calculate_zone": {
-      "name": "Laske vyöhyke",
-      "description": "Laske määritetty vyöhyke",
+      "name": "Laske vyöhyke (vanhentunut)",
+      "description": "Vanhentunut: käytä sen sijaan smart_irrigation.calculate. Toimii versioon 2027.11 asti. Laske määritetty vyöhyke",
       "fields": {
         "entity": {
           "name": "Entiteetti",
@@ -168,12 +172,12 @@
       }
     },
     "update_all_zones": {
-      "name": "Päivitä kaikki vyöhykkeet",
-      "description": "Päivitä säätiedot kaikille automaattitilassa oleville vyöhykkeille"
+      "name": "Päivitä kaikki vyöhykkeet (vanhentunut)",
+      "description": "Vanhentunut: käytä sen sijaan smart_irrigation.update_weather. Toimii versioon 2027.11 asti. Päivitä säätiedot kaikille automaattitilassa oleville vyöhykkeille"
     },
     "update_zone": {
-      "name": "Päivitä vyöhyke",
-      "description": "Päivitä määritetyn vyöhykkeen säätiedot",
+      "name": "Päivitä vyöhyke (vanhentunut)",
+      "description": "Vanhentunut: käytä sen sijaan smart_irrigation.update_weather. Toimii versioon 2027.11 asti. Päivitä määritetyn vyöhykkeen säätiedot",
       "fields": {
         "entity": {
           "name": "Entiteetti",
@@ -183,21 +187,21 @@
     },
     "set_bucket": {
       "name": "Aseta vesitase",
-      "description": "Aseta vyöhykkeen vesitase arvoon",
+      "description": "Aseta valittujen vyöhykkeiden vesitase, tai kaikkien vyöhykkeiden, jos mitään ei ole valittu. Ilman arvoa se on nollaus, arvoon 0",
       "fields": {
         "entity": {
           "name": "Entiteetti",
-          "description": "Vyöhyke, jonka vesitase asetetaan"
+          "description": "Vyöhykkeet, joiden vesitase asetetaan; tyhjä asettaa kaikki"
         },
         "new_bucket_value": {
           "name": "Uusi vesitase",
-          "description": "Vesitaseen uusi arvo"
+          "description": "Vesitaseen uusi arvo; tyhjä on 0"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Aseta kaikki vesitaseet",
-      "description": "Aseta kaikkien vyöhykkeiden vesitase arvoon",
+      "name": "Aseta kaikki vesitaseet (vanhentunut)",
+      "description": "Vanhentunut: käytä sen sijaan smart_irrigation.set_bucket. Toimii versioon 2027.11 asti. Aseta kaikkien vyöhykkeiden vesitase arvoon",
       "fields": {
         "new_bucket_value": {
           "name": "Uusi vesitase",
@@ -206,8 +210,8 @@
       }
     },
     "reset_bucket": {
-      "name": "Nollaa vesitase",
-      "description": "Nollaa vyöhykkeen vesitase arvoon 0",
+      "name": "Nollaa vesitase (vanhentunut)",
+      "description": "Vanhentunut: käytä sen sijaan smart_irrigation.set_bucket. Toimii versioon 2027.11 asti. Nollaa vyöhykkeen vesitase arvoon 0",
       "fields": {
         "entity": {
           "name": "Entiteetti",
@@ -216,8 +220,8 @@
       }
     },
     "reset_all_buckets": {
-      "name": "Nollaa kaikki vesitaseet",
-      "description": "Nollaa kaikkien vyöhykkeiden vesitase arvoon 0"
+      "name": "Nollaa kaikki vesitaseet (vanhentunut)",
+      "description": "Vanhentunut: käytä sen sijaan smart_irrigation.set_bucket. Toimii versioon 2027.11 asti. Nollaa kaikkien vyöhykkeiden vesitase arvoon 0"
     },
     "clear_all_weather_data": {
       "name": "Tyhjennä kaikki säätiedot",
@@ -225,11 +229,11 @@
     },
     "set_multiplier": {
       "name": "Aseta kerroin",
-      "description": "Aseta vyöhykkeen kerroin tiettyyn arvoon",
+      "description": "Aseta valittujen vyöhykkeiden kerroin, tai kaikkien vyöhykkeiden, jos mitään ei ole valittu",
       "fields": {
         "entity": {
           "name": "Entiteetti",
-          "description": "Vyöhyke, jonka kerroin asetetaan"
+          "description": "Vyöhykkeet, joiden kerroin asetetaan; tyhjä asettaa kaikki"
         },
         "new_multiplier_value": {
           "name": "Uusi kertoimen arvo",
@@ -238,8 +242,8 @@
       }
     },
     "set_all_multipliers": {
-      "name": "Aseta kaikki kertoimet",
-      "description": "Aseta kaikkien vyöhykkeiden kertoimet tiettyyn arvoon",
+      "name": "Aseta kaikki kertoimet (vanhentunut)",
+      "description": "Vanhentunut: käytä sen sijaan smart_irrigation.set_multiplier. Toimii versioon 2027.11 asti. Aseta kaikkien vyöhykkeiden kertoimet tiettyyn arvoon",
       "fields": {
         "new_multiplier_value": {
           "name": "Uusi kertoimen arvo",
@@ -296,6 +300,394 @@
           "description": "Kuinka kauan vyöhyke kasteli, sekunteina. Tyhjä: vyöhykkeen kesto."
         }
       }
+    },
+    "run_program": {
+      "name": "Suorita ohjelma",
+      "description": "Suorita täyden ohjaimen ohjelma nyt, tai heti kun on sen vuoro, jos toinen ohjelma on käynnissä. Ohjelma kastelee vyöhykkeensä Smart Irrigationin laskemilla kestoilla, elleivät sen vaiheet määrää toisin.",
+      "fields": {
+        "program_id": {
+          "name": "Ohjelma",
+          "description": "Ohjelman tunniste, kuten se näkyy sen asetuksissa."
+        },
+        "seconds": {
+          "name": "Sekunnit",
+          "description": "Koko ohjelman kokonaiskesto, joka jaetaan vaiheiden kesken niiden suunniteltujen kestojen suhteessa. Tyhjänä: suunnitellut kestot."
+        },
+        "mode": {
+          "name": "Tila",
+          "description": "Mitä tehdään, kun jokin kastelee jo. Jono (queue) asettuu sen perään; korvaus (replace) pysäyttää sen ensin hallitusti."
+        }
+      }
+    },
+    "stop_program": {
+      "name": "Pysäytä ohjelma",
+      "description": "Pysäytä yksi ohjelma. Jos se on käynnissä, sen avoimet vyöhykkeet suljetaan normaalisti ja niille hyvitetään niiden antama vesi; jos se odottaa vuoroaan, se poistetaan jonosta. Tuntematon ohjelma ei tee mitään. Pääohjelma pysäytetään toiminnolla stop_watering.",
+      "fields": {
+        "program_id": {
+          "name": "Ohjelma",
+          "description": "Ohjelman tunniste."
+        }
+      }
+    },
+    "set_program_enabled": {
+      "name": "Ota ohjelma käyttöön tai poista käytöstä",
+      "description": "Kytke täyden ohjaimen ohjelma päälle tai pois, kuten sen asetusten kytkin tekee.",
+      "fields": {
+        "program_id": {
+          "name": "Ohjelma",
+          "description": "Ohjelman tunniste."
+        },
+        "enabled": {
+          "name": "Käytössä",
+          "description": "Päällä ottaa sen käyttöön, pois poistaa sen käytöstä."
+        }
+      }
+    },
+    "set_step_enabled": {
+      "name": "Ota vaihe käyttöön tai poista käytöstä",
+      "description": "Kytke ohjelman yksi vaihe päälle tai pois.",
+      "fields": {
+        "program_id": {
+          "name": "Ohjelma",
+          "description": "Ohjelman tunniste."
+        },
+        "step_id": {
+          "name": "Vaihe",
+          "description": "Vaiheen tunniste, kuten se näkyy ohjelmassa."
+        },
+        "enabled": {
+          "name": "Käytössä",
+          "description": "Päällä ottaa sen käyttöön, pois poistaa sen käytöstä."
+        }
+      }
+    },
+    "set_schedule_enabled": {
+      "name": "Ota aikataulu käyttöön tai poista käytöstä",
+      "description": "Kytke ohjelman yksi aikataulu päälle tai pois. Aikataulut viritetään heti uudelleen.",
+      "fields": {
+        "program_id": {
+          "name": "Ohjelma",
+          "description": "Ohjelman tunniste."
+        },
+        "schedule_id": {
+          "name": "Aikataulu",
+          "description": "Aikataulun tunniste, kuten se näkyy ohjelmassa."
+        },
+        "enabled": {
+          "name": "Käytössä",
+          "description": "Päällä ottaa sen käyttöön, pois poistaa sen käytöstä."
+        }
+      }
+    },
+    "stop_watering": {
+      "name": "Pysäytä kastelu",
+      "description": "Pysäytä kastelu nyt. Jokainen Smart Irrigationin avaama venttiili suljetaan, jokaiselle vyöhykkeelle hyvitetään sen antama vesi, ja ohjelmat sekä vielä odottavat vyöhykkeet päätetään. Jos vyöhykkeitä on valittu, vain ne pysäytetään."
+    },
+    "pause_watering": {
+      "name": "Tauota kastelu",
+      "description": "Sulje avoimet venttiilit ja pidätä kastelu, myös vielä odottavat vyöhykkeet. Annettu vesi hyvitetään, ja jatkamisen jälkeen kierroksen loppu kastellaan. Tauko, jota ei lopeteta, päättyy itsestään.",
+      "fields": {
+        "minutes": {
+          "name": "Minuutit",
+          "description": "Pisin aika, jonka tauko kestää ennen kuin se päättyy itsestään."
+        }
+      }
+    },
+    "resume_watering": {
+      "name": "Jatka tauotettua kastelua",
+      "description": "Jatka tauotettua kastelua siitä, mihin se jäi."
+    },
+    "next_step": {
+      "name": "Seuraava vaihe",
+      "description": "Päätä sen vaiheen vyöhykkeet, jossa ohjelma on, ja siirry seuraavaan vaiheeseen."
+    },
+    "suspend": {
+      "name": "Keskeytä",
+      "description": "Estä vyöhykettä tai ohjelmaa kastelemasta tiettyyn hetkeen asti. Ilman kestoa ja päivämäärää, tai nollalla tunnilla, keskeytys poistetaan.",
+      "fields": {
+        "program_id": {
+          "name": "Ohjelma",
+          "description": "Keskeytettävän ohjelman tunniste."
+        },
+        "hours": {
+          "name": "Tunnit",
+          "description": "Kuinka pitkäksi aikaa keskeytetään. Nolla poistaa keskeytyksen."
+        },
+        "until": {
+          "name": "Asti",
+          "description": "Hetki, jolloin keskeytys päättyy."
+        }
+      }
+    },
+    "adjust_program": {
+      "name": "Säädä ohjelmaa",
+      "description": "Saa täyden ohjaimen ohjelma kastelemaan pidempään tai lyhyemmin joksikin aikaa. Säätö korvaa edellisen (säädöt eivät koskaan summaudu), koskee sen asettamisen jälkeen alkavia ajoja ja päättyy annettujen tuntien jälkeen.",
+      "fields": {
+        "program_id": {
+          "name": "Ohjelma",
+          "description": "Säädettävän ohjelman tunniste."
+        },
+        "percent": {
+          "name": "Prosentti",
+          "description": "Kertoo jokaisen vaiheen vesimäärän (120 kastelee 20 % pidempään)."
+        },
+        "seconds": {
+          "name": "Sekunnit",
+          "description": "Jokaiseen vaiheeseen lisättävät sekunnit vettä (negatiivinen vähentää)."
+        },
+        "hours": {
+          "name": "Tunnit",
+          "description": "Kuinka kauan säätö kestää. Tyhjänä: kunnes se nollataan."
+        },
+        "reset": {
+          "name": "Nollaa",
+          "description": "Poista tämän ohjelman säätö."
+        }
+      }
+    },
+    "water_zone": {
+      "name": "Kastele vyöhyke",
+      "description": "Kastele vyöhyke nyt, tai heti kun on sen vuoro, jos jokin kastelee. Ilman kestoa vyöhyke kastelee Smart Irrigationin laskeman keston.",
+      "fields": {
+        "zone_id": {
+          "name": "Vyöhykkeen tunniste",
+          "description": "Vyöhykkeen tunniste sen entiteetin sijaan."
+        },
+        "seconds": {
+          "name": "Sekunnit",
+          "description": "Kastelun kesto sekunteina. Tyhjänä: laskettu kesto."
+        },
+        "mode": {
+          "name": "Tila",
+          "description": "Mitä tehdään, kun jokin kastelee jo. Jono (queue) asettuu sen perään; korvaus (replace) pysäyttää sen ensin hallitusti."
+        }
+      }
+    },
+    "use_measured_throughput": {
+      "name": "Käytä mitattua virtaamaa",
+      "description": "Aseta vyöhykkeen virtaamaksi virtaus, jonka sen mittari mittasi sen ajoissa. Mittaus on aina vain suositus; näin se hyväksytään.",
+      "fields": {
+        "zone_id": {
+          "name": "Vyöhykkeen tunniste",
+          "description": "Vyöhykkeen tunniste sen entiteetin sijaan."
+        }
+      }
+    },
+    "create_recurring_schedule": {
+      "name": "Luo toistuva aikataulu (vanhentunut)",
+      "description": "Vanhentunut: käytä sen sijaan ohjelmien aikatauluja (Kastelu-välilehti). Toimii versioon 2027.11 asti. Luo uusi toistuva kasteluaikataulu.",
+      "fields": {
+        "name": {
+          "name": "Nimi",
+          "description": "Aikataulun nimi"
+        },
+        "type": {
+          "name": "Aikataulun tyyppi",
+          "description": "Aikataulun tyyppi (daily, weekly, monthly, interval)"
+        },
+        "enabled": {
+          "name": "Käytössä",
+          "description": "Ota aikataulu käyttöön"
+        },
+        "time": {
+          "name": "Aika",
+          "description": "Suoritusaika (muodossa HH:MM)"
+        },
+        "days_of_week": {
+          "name": "Viikonpäivät",
+          "description": "Viikonpäivät viikoittaisille aikatauluille"
+        },
+        "day_of_month": {
+          "name": "Kuukauden päivä",
+          "description": "Kuukauden päivä kuukausittaisille aikatauluille (1-31)"
+        },
+        "interval_hours": {
+          "name": "Väli tunteina",
+          "description": "Väli tunteina välein toistuville aikatauluille"
+        },
+        "zones": {
+          "name": "Vyöhykkeet",
+          "description": "Mukaan otettavien vyöhykkeiden tunnisteet tai 'all'"
+        },
+        "action": {
+          "name": "Toiminto",
+          "description": "Suoritettava toiminto (calculate, update, irrigate)"
+        }
+      }
+    },
+    "update_recurring_schedule": {
+      "name": "Päivitä toistuva aikataulu (vanhentunut)",
+      "description": "Vanhentunut: käytä sen sijaan ohjelmien aikatauluja (Kastelu-välilehti). Toimii versioon 2027.11 asti. Päivitä olemassa oleva toistuva kasteluaikataulu.",
+      "fields": {
+        "schedule_id": {
+          "name": "Aikataulun tunniste",
+          "description": "Päivitettävän aikataulun tunniste"
+        },
+        "name": {
+          "name": "Nimi",
+          "description": "Aikataulun nimi"
+        },
+        "enabled": {
+          "name": "Käytössä",
+          "description": "Ota aikataulu käyttöön tai poista se käytöstä"
+        }
+      }
+    },
+    "delete_recurring_schedule": {
+      "name": "Poista toistuva aikataulu (vanhentunut)",
+      "description": "Vanhentunut: käytä sen sijaan ohjelmien aikatauluja (Kastelu-välilehti). Toimii versioon 2027.11 asti. Poista toistuva kasteluaikataulu.",
+      "fields": {
+        "schedule_id": {
+          "name": "Aikataulun tunniste",
+          "description": "Poistettavan aikataulun tunniste"
+        }
+      }
+    },
+    "create_seasonal_adjustment": {
+      "name": "Luo kausisäätö (vanhentunut)",
+      "description": "Vanhentunut: käytä sen sijaan smart_irrigation.set_seasonal_adjustment. Toimii versioon 2027.11 asti. Luo uusi kausisäätö kasteluvyöhykkeille.",
+      "fields": {
+        "name": {
+          "name": "Nimi",
+          "description": "Säädön nimi"
+        },
+        "enabled": {
+          "name": "Käytössä",
+          "description": "Ota säätö käyttöön"
+        },
+        "month_start": {
+          "name": "Alkukuukausi",
+          "description": "Aloituskuukausi (1-12)"
+        },
+        "month_end": {
+          "name": "Loppukuukausi",
+          "description": "Päättymiskuukausi (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Kertoimen säätökerroin",
+          "description": "Kertoimen säätökerroin"
+        },
+        "threshold_adjustment": {
+          "name": "Kynnysarvon säätö",
+          "description": "Kynnysarvon säätö millimetreinä"
+        },
+        "zones": {
+          "name": "Vyöhykkeet",
+          "description": "Mukaan otettavien vyöhykkeiden tunnisteet tai 'all'"
+        }
+      }
+    },
+    "update_seasonal_adjustment": {
+      "name": "Päivitä kausisäätö (vanhentunut)",
+      "description": "Vanhentunut: käytä sen sijaan smart_irrigation.set_seasonal_adjustment. Toimii versioon 2027.11 asti. Päivitä olemassa oleva kausisäätö.",
+      "fields": {
+        "adjustment_id": {
+          "name": "Säädön tunniste",
+          "description": "Päivitettävän säädön tunniste"
+        },
+        "name": {
+          "name": "Nimi",
+          "description": "Säädön nimi"
+        },
+        "enabled": {
+          "name": "Käytössä",
+          "description": "Ota säätö käyttöön tai poista se käytöstä"
+        }
+      }
+    },
+    "delete_seasonal_adjustment": {
+      "name": "Poista kausisäätö (vanhentunut)",
+      "description": "Vanhentunut: käytä sen sijaan smart_irrigation.set_seasonal_adjustment. Toimii versioon 2027.11 asti. Poista kausisäätö.",
+      "fields": {
+        "adjustment_id": {
+          "name": "Säädön tunniste",
+          "description": "Poistettavan säädön tunniste"
+        }
+      }
+    },
+    "postpone_irrigation": {
+      "name": "Lykkää kastelua",
+      "description": "Pidätä kastelua joksikin aikaa ja anna sen sitten jatkua itsestään. Mitään ei nollata: vyöhyke, jolta puuttuu vettä, on yhä vajaa lykkäyksen päättyessä, ja seuraava kastelu korvaa sen.",
+      "fields": {
+        "hours": {
+          "name": "Tunnit",
+          "description": "Kuinka kauan kastelua pidätetään. Nolla poistaa lykkäyksen."
+        }
+      }
+    },
+    "resume_irrigation": {
+      "name": "Jatka kastelua",
+      "description": "Poista lykkäys, riippumatta siitä, paljonko sitä on jäljellä."
+    },
+    "calculate": {
+      "name": "Laske",
+      "description": "Laske valitut vyöhykkeet, tai kaikki automaattitilassa olevat vyöhykkeet, jos mitään ei ole valittu",
+      "fields": {
+        "entity": {
+          "name": "Entiteetti",
+          "description": "Laskettavat vyöhykkeet; tyhjä laskee kaikki"
+        },
+        "delete_weather_data": {
+          "name": "Poista säätiedot",
+          "description": "Poista vyöhykkeen säätiedot laskennan jälkeen"
+        },
+        "dry_run": {
+          "name": "Koeajo",
+          "description": "Kerro, mitä laskenta tekisi, muuttamatta vesitasetta, vyöhykettä tai kerättyjä säätietoja"
+        }
+      }
+    },
+    "update_weather": {
+      "name": "Päivitä sää",
+      "description": "Hae sää valituille vyöhykkeille, tai kaikille vyöhykkeille, jos mitään ei ole valittu",
+      "fields": {
+        "entity": {
+          "name": "Entiteetti",
+          "description": "Päivitettävät vyöhykkeet; tyhjä päivittää kaikki"
+        }
+      }
+    },
+    "set_seasonal_adjustment": {
+      "name": "Aseta kausisäätö",
+      "description": "Luo kausisäätö, muuta säätöä sen tunnisteella tai poista säätö sen tunnisteella valinnalla remove",
+      "fields": {
+        "adjustment_id": {
+          "name": "Säädön tunniste",
+          "description": "Muutettava tai poistettava säätö; tyhjä luo uuden"
+        },
+        "remove": {
+          "name": "Poista",
+          "description": "Poista säätö, jolla on tämä tunniste"
+        },
+        "name": {
+          "name": "Nimi",
+          "description": "Säädön nimi"
+        },
+        "enabled": {
+          "name": "Käytössä",
+          "description": "Ota säätö käyttöön"
+        },
+        "month_start": {
+          "name": "Alkukuukausi",
+          "description": "Aloituskuukausi (1-12)"
+        },
+        "month_end": {
+          "name": "Loppukuukausi",
+          "description": "Päättymiskuukausi (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Kertoimen säätökerroin",
+          "description": "Kertoimen säätökerroin"
+        },
+        "threshold_adjustment": {
+          "name": "Kynnysarvon säätö",
+          "description": "Kynnysarvon säätö millimetreinä"
+        },
+        "zones": {
+          "name": "Vyöhykkeet",
+          "description": "Mukaan otettavien vyöhykkeiden tunnisteet tai 'all'"
+        }
+      }
     }
   },
   "issues": {
@@ -342,6 +734,14 @@
     "zone_not_calculated_no_sensor_group": {
       "title": "Vyöhykettä {zone} ei voida laskea: ei anturiryhmää",
       "description": "Vyöhykkeellä **{zone}** ei ole anturiryhmää, joten sitä ei voi laskea mistään eikä sitä kastella.\n\nValitse sen anturiryhmä sen kortilta Alueet-välilehdellä ja laske sitten vyöhyke. Ilmoitus poistuu itsestään seuraavan onnistuneen laskennan yhteydessä."
+    },
+    "deprecated_action": {
+      "title": "Toiminto {action} poistuu",
+      "description": "Automaatio, skripti tai kojelauta kutsui toimintoa **{action}**. Se toimii yhä, mutta se poistetaan versiosta {version} alkaen, talvella, kastelukauden ulkopuolella.\n\nKäytä sen sijaan toimintoa **{replacement}**: se tekee saman, ja kaikille vyöhykkeille, kun vyöhykettä ei ole valittu. Tämä ilmoitus palaa jokaisella vanhan nimen kutsulla, kunnes niitä ei ole enää jäljellä."
+    },
+    "deprecated_recurring_schedule": {
+      "title": "Toistuvat aikataulut poistuvat: {action}",
+      "description": "Automaatio, skripti tai kojelauta kutsui toimintoa **{action}**. Toistuvat aikataulut toimivat yhä, mutta ne poistetaan versiosta {version} alkaen, talvella, kastelukauden ulkopuolella.\n\nOhjelmien aikataulut tekevät saman, ja ne löytyvät paneelista: määritä ne kohdassa **Kastelu**, poista sitten toistuvat aikataulut ja kutsut toimintoon {action}."
     }
   }
 }

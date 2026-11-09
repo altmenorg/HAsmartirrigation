@@ -77,7 +77,11 @@
         "name": "Potřeba zavlažit"
       },
       "watering_now": {
-        "name": "Právě zalévá"
+        "name": "Právě zalévá",
+        "state": {
+          "on": "Ano",
+          "off": "Ne"
+        }
       },
       "problem": {
         "name": "Problém"
@@ -94,7 +98,7 @@
         "name": "Vynechat při srážkách"
       },
       "irrigation_enabled": {
-        "name": "Aktivní"
+        "name": "Počítat a zalévat"
       }
     },
     "datetime": {
@@ -136,8 +140,8 @@
   },
   "services": {
     "calculate_all_zones": {
-      "name": "Vypočítat všechny zóny",
-      "description": "Vypočítat všechny zóny v automatickém režimu",
+      "name": "Vypočítat všechny zóny (zastaralé)",
+      "description": "Zastaralé: použijte místo toho smart_irrigation.calculate. Funguje do 2027.11. Vypočítat všechny zóny v automatickém režimu",
       "fields": {
         "delete_weather_data": {
           "name": "Smazat meteorologická data",
@@ -150,8 +154,8 @@
       }
     },
     "calculate_zone": {
-      "name": "Vypočítat zónu",
-      "description": "Vypočítat zadanou zónu",
+      "name": "Vypočítat zónu (zastaralé)",
+      "description": "Zastaralé: použijte místo toho smart_irrigation.calculate. Funguje do 2027.11. Vypočítat zadanou zónu",
       "fields": {
         "entity": {
           "name": "Entita",
@@ -168,12 +172,12 @@
       }
     },
     "update_all_zones": {
-      "name": "Aktualizovat všechny zóny",
-      "description": "Aktualizovat meteorologická data pro všechny zóny v automatickém režimu"
+      "name": "Aktualizovat všechny zóny (zastaralé)",
+      "description": "Zastaralé: použijte místo toho smart_irrigation.update_weather. Funguje do 2027.11. Aktualizovat meteorologická data pro všechny zóny v automatickém režimu"
     },
     "update_zone": {
-      "name": "Aktualizovat zónu",
-      "description": "Aktualizovat meteorologická data pro zadanou zónu",
+      "name": "Aktualizovat zónu (zastaralé)",
+      "description": "Zastaralé: použijte místo toho smart_irrigation.update_weather. Funguje do 2027.11. Aktualizovat meteorologická data pro zadanou zónu",
       "fields": {
         "entity": {
           "name": "Entita",
@@ -183,21 +187,21 @@
     },
     "set_bucket": {
       "name": "Nastavit vodní bilanci",
-      "description": "Nastavit vodní bilanci zóny na konkrétní hodnotu",
+      "description": "Nastavit vodní bilanci zvolených zón, nebo všech zón, když není zvolena žádná. Bez hodnoty jde o reset, na 0",
       "fields": {
         "entity": {
           "name": "Entita",
-          "description": "Zóna, pro kterou se nastaví vodní bilance"
+          "description": "Zóny, pro které se nastaví vodní bilance; bez výběru všechny"
         },
         "new_bucket_value": {
           "name": "Nová vodní bilance",
-          "description": "Nová hodnota vodní bilance"
+          "description": "Nová hodnota vodní bilance; bez hodnoty 0"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Nastavit všechny vodní bilance",
-      "description": "Nastavit vodní bilance všech zón na konkrétní hodnotu",
+      "name": "Nastavit všechny vodní bilance (zastaralé)",
+      "description": "Zastaralé: použijte místo toho smart_irrigation.set_bucket. Funguje do 2027.11. Nastavit vodní bilance všech zón na konkrétní hodnotu",
       "fields": {
         "new_bucket_value": {
           "name": "Nová vodní bilance",
@@ -206,8 +210,8 @@
       }
     },
     "reset_bucket": {
-      "name": "Resetovat vodní bilanci",
-      "description": "Resetovat vodní bilanci zóny na 0",
+      "name": "Resetovat vodní bilanci (zastaralé)",
+      "description": "Zastaralé: použijte místo toho smart_irrigation.set_bucket. Funguje do 2027.11. Resetovat vodní bilanci zóny na 0",
       "fields": {
         "entity": {
           "name": "Entita",
@@ -216,8 +220,8 @@
       }
     },
     "reset_all_buckets": {
-      "name": "Resetovat všechny vodní bilance",
-      "description": "Resetovat vodní bilance všech zón na 0"
+      "name": "Resetovat všechny vodní bilance (zastaralé)",
+      "description": "Zastaralé: použijte místo toho smart_irrigation.set_bucket. Funguje do 2027.11. Resetovat vodní bilance všech zón na 0"
     },
     "clear_all_weather_data": {
       "name": "Vymazat všechna meteorologická data",
@@ -225,11 +229,11 @@
     },
     "set_multiplier": {
       "name": "Nastavit násobitel",
-      "description": "Nastavit násobitel zóny na konkrétní hodnotu",
+      "description": "Nastavit násobitel zvolených zón, nebo všech zón, když není zvolena žádná",
       "fields": {
         "entity": {
           "name": "Entita",
-          "description": "Zóna, pro kterou se nastaví násobitel"
+          "description": "Zóny, pro které se nastaví násobitel; bez výběru všechny"
         },
         "new_multiplier_value": {
           "name": "Nová hodnota násobitele",
@@ -238,8 +242,8 @@
       }
     },
     "set_all_multipliers": {
-      "name": "Nastavit všechny násobitele",
-      "description": "Nastavit násobitele všech zón na konkrétní hodnotu",
+      "name": "Nastavit všechny násobitele (zastaralé)",
+      "description": "Zastaralé: použijte místo toho smart_irrigation.set_multiplier. Funguje do 2027.11. Nastavit násobitele všech zón na konkrétní hodnotu",
       "fields": {
         "new_multiplier_value": {
           "name": "Nová hodnota násobitele",
@@ -296,6 +300,394 @@
           "description": "Jak dlouho zóna zavlažovala, v sekundách. Prázdné: doba zóny."
         }
       }
+    },
+    "run_program": {
+      "name": "Spustit program",
+      "description": "Spustit program plného řadiče nyní, nebo jakmile na něj přijde řada, když běží jiný. Program zalévá své zóny dobami, které vypočítala Smart Irrigation, pokud jeho kroky neříkají jinak.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "ID programu, jak je uvedeno v jeho nastavení."
+        },
+        "seconds": {
+          "name": "Sekundy",
+          "description": "Celková doba pro celý program, rozdělená mezi jeho kroky v poměru k jejich plánovaným dobám. Prázdné: plánované doby."
+        },
+        "mode": {
+          "name": "Režim",
+          "description": "Co dělat, když už něco zalévá. Fronta zařadí na řadu za ně; nahradit ho nejprve čistě zastaví."
+        }
+      }
+    },
+    "stop_program": {
+      "name": "Zastavit program",
+      "description": "Zastavit jeden program. Pokud běží, jeho otevřené zóny se zavřou běžným způsobem a připíše se jim, co dodaly; pokud čeká na svou řadu, vyřadí se z fronty. Neznámý program nedělá nic. Hlavní program se zastavuje pomocí stop_watering.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "ID programu."
+        }
+      }
+    },
+    "set_program_enabled": {
+      "name": "Povolit nebo zakázat program",
+      "description": "Zapnout nebo vypnout program plného řadiče, stejně jako přepínač v jeho nastavení.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "ID programu."
+        },
+        "enabled": {
+          "name": "Povoleno",
+          "description": "Zapnuto pro povolení, vypnuto pro zakázání."
+        }
+      }
+    },
+    "set_step_enabled": {
+      "name": "Povolit nebo zakázat krok",
+      "description": "Zapnout nebo vypnout jeden krok programu.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "ID programu."
+        },
+        "step_id": {
+          "name": "Krok",
+          "description": "ID kroku, jak je uvedeno v programu."
+        },
+        "enabled": {
+          "name": "Povoleno",
+          "description": "Zapnuto pro povolení, vypnuto pro zakázání."
+        }
+      }
+    },
+    "set_schedule_enabled": {
+      "name": "Povolit nebo zakázat rozvrh",
+      "description": "Zapnout nebo vypnout jeden rozvrh programu. Rozvrhy se ihned znovu nastaví.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "ID programu."
+        },
+        "schedule_id": {
+          "name": "Rozvrh",
+          "description": "ID rozvrhu, jak je uvedeno v programu."
+        },
+        "enabled": {
+          "name": "Povoleno",
+          "description": "Zapnuto pro povolení, vypnuto pro zakázání."
+        }
+      }
+    },
+    "stop_watering": {
+      "name": "Zastavit zavlažování",
+      "description": "Zastavit zavlažování nyní. Každý ventil, který Smart Irrigation otevřela, se zavře, každé zóně se připíše voda, kterou dodala, a programy i zóny, které ještě čekají, se ukončí. Se zvolenými zónami se zastaví jen ty."
+    },
+    "pause_watering": {
+      "name": "Pozastavit zavlažování",
+      "description": "Zavřít otevřené ventily a pozdržet zavlažování, včetně zón, které ještě čekají. Co bylo dodáno, se připíše, a po obnovení se zalije zbytek průchodu. Pozastavení, které se nezruší, skončí samo.",
+      "fields": {
+        "minutes": {
+          "name": "Minuty",
+          "description": "Nejdelší doba, po kterou pozastavení trvá, než se samo zruší."
+        }
+      }
+    },
+    "resume_watering": {
+      "name": "Pokračovat v zavlažování",
+      "description": "Pokračovat v pozastaveném zavlažování od místa, kde se zastavilo."
+    },
+    "next_step": {
+      "name": "Další krok",
+      "description": "Ukončit zóny kroku, na kterém program je, a přejít na další krok."
+    },
+    "suspend": {
+      "name": "Přerušit",
+      "description": "Zabránit zóně nebo programu v zavlažování až do určitého okamžiku. Bez doby a bez data, nebo s nulou hodin, se přerušení zruší.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "ID programu, který se má přerušit."
+        },
+        "hours": {
+          "name": "Hodiny",
+          "description": "Na jak dlouho přerušit. Nula ho zruší."
+        },
+        "until": {
+          "name": "Do",
+          "description": "Okamžik, kdy přerušení skončí."
+        }
+      }
+    },
+    "adjust_program": {
+      "name": "Upravit program",
+      "description": "Nechat program plného řadiče na čas zalévat déle nebo kratší dobu. Úprava nahrazuje předchozí (nikdy se nesčítá), platí pro běhy, které začnou po jejím nastavení, a končí po zadaných hodinách.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "ID programu, který se má upravit."
+        },
+        "percent": {
+          "name": "Procento",
+          "description": "Násobí vodu každého kroku (120 zalévá o 20 % déle)."
+        },
+        "seconds": {
+          "name": "Sekundy",
+          "description": "Sekundy vody přidané ke každému kroku (záporné pro ubrání)."
+        },
+        "hours": {
+          "name": "Hodiny",
+          "description": "Jak dlouho úprava trvá. Prázdné: dokud se nezruší."
+        },
+        "reset": {
+          "name": "Zrušit",
+          "description": "Odstranit úpravu tohoto programu."
+        }
+      }
+    },
+    "water_zone": {
+      "name": "Zalít zónu",
+      "description": "Zalít zónu nyní, nebo jakmile na ni přijde řada, když něco zalévá. Bez doby zóna zalévá po dobu, kterou vypočítala Smart Irrigation.",
+      "fields": {
+        "zone_id": {
+          "name": "ID zóny",
+          "description": "ID zóny, místo její entity."
+        },
+        "seconds": {
+          "name": "Sekundy",
+          "description": "Sekundy vody. Prázdné: vypočtená doba."
+        },
+        "mode": {
+          "name": "Režim",
+          "description": "Co dělat, když už něco zalévá. Fronta zařadí na řadu za ně; nahradit ho nejprve čistě zastaví."
+        }
+      }
+    },
+    "use_measured_throughput": {
+      "name": "Použít naměřený průtok",
+      "description": "Nastavit průtok zóny na průtok, který její měřič naměřil během jejích běhů. Měření je vždy jen doporučení; takto se přijímá.",
+      "fields": {
+        "zone_id": {
+          "name": "ID zóny",
+          "description": "ID zóny, místo její entity."
+        }
+      }
+    },
+    "create_recurring_schedule": {
+      "name": "Vytvořit opakovaný rozvrh (zastaralé)",
+      "description": "Zastaralé: použijte místo toho rozvrhy programů (záložka Zavlažování). Funguje do 2027.11. Vytvořit nový opakovaný rozvrh zavlažování.",
+      "fields": {
+        "name": {
+          "name": "Název",
+          "description": "Název rozvrhu"
+        },
+        "type": {
+          "name": "Typ rozvrhu",
+          "description": "Typ rozvrhu (daily, weekly, monthly, interval)"
+        },
+        "enabled": {
+          "name": "Povoleno",
+          "description": "Povolit rozvrh"
+        },
+        "time": {
+          "name": "Čas",
+          "description": "Čas spuštění (formát HH:MM)"
+        },
+        "days_of_week": {
+          "name": "Dny v týdnu",
+          "description": "Dny v týdnu pro týdenní rozvrhy"
+        },
+        "day_of_month": {
+          "name": "Den v měsíci",
+          "description": "Den v měsíci pro měsíční rozvrhy (1-31)"
+        },
+        "interval_hours": {
+          "name": "Interval v hodinách",
+          "description": "Interval v hodinách pro intervalové rozvrhy"
+        },
+        "zones": {
+          "name": "Zóny",
+          "description": "ID zahrnutých zón nebo 'all'"
+        },
+        "action": {
+          "name": "Akce",
+          "description": "Akce, která se provede (calculate, update, irrigate)"
+        }
+      }
+    },
+    "update_recurring_schedule": {
+      "name": "Aktualizovat opakovaný rozvrh (zastaralé)",
+      "description": "Zastaralé: použijte místo toho rozvrhy programů (záložka Zavlažování). Funguje do 2027.11. Aktualizovat existující opakovaný rozvrh zavlažování.",
+      "fields": {
+        "schedule_id": {
+          "name": "ID rozvrhu",
+          "description": "ID rozvrhu, který se má aktualizovat"
+        },
+        "name": {
+          "name": "Název",
+          "description": "Název rozvrhu"
+        },
+        "enabled": {
+          "name": "Povoleno",
+          "description": "Povolit/zakázat rozvrh"
+        }
+      }
+    },
+    "delete_recurring_schedule": {
+      "name": "Smazat opakovaný rozvrh (zastaralé)",
+      "description": "Zastaralé: použijte místo toho rozvrhy programů (záložka Zavlažování). Funguje do 2027.11. Smazat opakovaný rozvrh zavlažování.",
+      "fields": {
+        "schedule_id": {
+          "name": "ID rozvrhu",
+          "description": "ID rozvrhu, který se má smazat"
+        }
+      }
+    },
+    "create_seasonal_adjustment": {
+      "name": "Vytvořit sezónní úpravu (zastaralé)",
+      "description": "Zastaralé: použijte místo toho smart_irrigation.set_seasonal_adjustment. Funguje do 2027.11. Vytvořit novou sezónní úpravu pro zóny zavlažování.",
+      "fields": {
+        "name": {
+          "name": "Název",
+          "description": "Název úpravy"
+        },
+        "enabled": {
+          "name": "Povoleno",
+          "description": "Povolit úpravu"
+        },
+        "month_start": {
+          "name": "Počáteční měsíc",
+          "description": "Počáteční měsíc (1-12)"
+        },
+        "month_end": {
+          "name": "Koncový měsíc",
+          "description": "Koncový měsíc (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Faktor úpravy násobitele",
+          "description": "Faktor úpravy násobitele"
+        },
+        "threshold_adjustment": {
+          "name": "Úprava prahu",
+          "description": "Úprava prahu v mm"
+        },
+        "zones": {
+          "name": "Zóny",
+          "description": "ID zahrnutých zón nebo 'all'"
+        }
+      }
+    },
+    "update_seasonal_adjustment": {
+      "name": "Aktualizovat sezónní úpravu (zastaralé)",
+      "description": "Zastaralé: použijte místo toho smart_irrigation.set_seasonal_adjustment. Funguje do 2027.11. Aktualizovat existující sezónní úpravu.",
+      "fields": {
+        "adjustment_id": {
+          "name": "ID úpravy",
+          "description": "ID úpravy, která se má aktualizovat"
+        },
+        "name": {
+          "name": "Název",
+          "description": "Název úpravy"
+        },
+        "enabled": {
+          "name": "Povoleno",
+          "description": "Povolit/zakázat úpravu"
+        }
+      }
+    },
+    "delete_seasonal_adjustment": {
+      "name": "Smazat sezónní úpravu (zastaralé)",
+      "description": "Zastaralé: použijte místo toho smart_irrigation.set_seasonal_adjustment. Funguje do 2027.11. Smazat sezónní úpravu.",
+      "fields": {
+        "adjustment_id": {
+          "name": "ID úpravy",
+          "description": "ID úpravy, která se má smazat"
+        }
+      }
+    },
+    "postpone_irrigation": {
+      "name": "Odložit zavlažování",
+      "description": "Na čas pozdržet zavlažování a pak ho nechat pokračovat samo. Nic se neresetuje: zóně, které chybí voda, chybí i po skončení odkladu, a další běh to dožene.",
+      "fields": {
+        "hours": {
+          "name": "Hodiny",
+          "description": "Jak dlouho zavlažování pozdržet. Nula odklad zruší."
+        }
+      }
+    },
+    "resume_irrigation": {
+      "name": "Obnovit zavlažování",
+      "description": "Zrušit odklad, ať z něj zbývá cokoli."
+    },
+    "calculate": {
+      "name": "Vypočítat",
+      "description": "Vypočítat zvolené zóny, nebo všechny zóny v automatickém režimu, když není zvolena žádná",
+      "fields": {
+        "entity": {
+          "name": "Entita",
+          "description": "Zóny k výpočtu; bez výběru se vypočítají všechny"
+        },
+        "delete_weather_data": {
+          "name": "Smazat meteorologická data",
+          "description": "Smazat meteorologická data pro zónu po výpočtu"
+        },
+        "dry_run": {
+          "name": "Nasucho",
+          "description": "Oznámit, co by výpočet udělal, bez změny vodní bilance, zóny nebo posbíraných meteorologických dat"
+        }
+      }
+    },
+    "update_weather": {
+      "name": "Aktualizovat počasí",
+      "description": "Načíst počasí pro zvolené zóny, nebo pro všechny zóny, když není zvolena žádná",
+      "fields": {
+        "entity": {
+          "name": "Entita",
+          "description": "Zóny k aktualizaci; bez výběru se aktualizují všechny"
+        }
+      }
+    },
+    "set_seasonal_adjustment": {
+      "name": "Nastavit sezónní úpravu",
+      "description": "Vytvořit sezónní úpravu, změnit existující podle jejího ID, nebo ji podle ID odstranit pomocí remove",
+      "fields": {
+        "adjustment_id": {
+          "name": "ID úpravy",
+          "description": "Úprava, která se má změnit nebo odstranit; bez ní se vytvoří nová"
+        },
+        "remove": {
+          "name": "Odstranit",
+          "description": "Odstranit úpravu s tímto ID"
+        },
+        "name": {
+          "name": "Název",
+          "description": "Název úpravy"
+        },
+        "enabled": {
+          "name": "Povoleno",
+          "description": "Povolit úpravu"
+        },
+        "month_start": {
+          "name": "Počáteční měsíc",
+          "description": "Počáteční měsíc (1-12)"
+        },
+        "month_end": {
+          "name": "Koncový měsíc",
+          "description": "Koncový měsíc (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Faktor úpravy násobitele",
+          "description": "Faktor úpravy násobitele"
+        },
+        "threshold_adjustment": {
+          "name": "Úprava prahu",
+          "description": "Úprava prahu v mm"
+        },
+        "zones": {
+          "name": "Zóny",
+          "description": "ID zahrnutých zón nebo 'all'"
+        }
+      }
     }
   },
   "issues": {
@@ -342,6 +734,14 @@
     "zone_not_calculated_no_sensor_group": {
       "title": "Zónu {zone} nelze vypočítat: žádná skupina senzorů",
       "description": "Zóna **{zone}** nemá skupinu senzorů, takže ji není z čeho vypočítat a nezavlažuje se.\n\nZvolte její skupinu senzorů na její kartě na kartě Zóny a pak zónu vypočítejte. Upozornění zmizí samo při příštím úspěšném výpočtu."
+    },
+    "deprecated_action": {
+      "title": "Akce {action} končí",
+      "description": "Automatizace, skript nebo dashboard zavolal **{action}**. Stále funguje, ale od verze {version} bude odstraněna, v zimě, mimo zavlažovací sezónu.\n\nPoužijte místo ní **{replacement}**: dělá totéž, a pro všechny zóny, když není zvolena žádná. Toto oznámení se vrací s každým voláním starého názvu, dokud žádné nezůstane."
+    },
+    "deprecated_recurring_schedule": {
+      "title": "Opakované rozvrhy končí: {action}",
+      "description": "Automatizace, skript nebo dashboard zavolal **{action}**. Opakované rozvrhy stále fungují, ale od verze {version} budou odstraněny, v zimě, mimo zavlažovací sezónu.\n\nRozvrhy programů dělají totéž a jsou v panelu: nastavte je v sekci **Zavlažování**, pak odstraňte opakované rozvrhy a volání {action}."
     }
   }
 }

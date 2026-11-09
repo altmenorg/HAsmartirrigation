@@ -77,7 +77,11 @@
         "name": "Vanding nødvendig"
       },
       "watering_now": {
-        "name": "Vander nu"
+        "name": "Vander nu",
+        "state": {
+          "on": "Ja",
+          "off": "Nej"
+        }
       },
       "problem": {
         "name": "Problem"
@@ -94,7 +98,7 @@
         "name": "Spring over ved nedbør"
       },
       "irrigation_enabled": {
-        "name": "Aktiv"
+        "name": "Beregn og vand"
       }
     },
     "datetime": {
@@ -136,8 +140,8 @@
   },
   "services": {
     "calculate_all_zones": {
-      "name": "Beregn alle zoner",
-      "description": "Beregn alle zoner i automatisk tilstand",
+      "name": "Beregn alle zoner (udfases)",
+      "description": "Udfases: brug smart_irrigation.calculate i stedet. Virker indtil 2027.11. Beregn alle zoner i automatisk tilstand",
       "fields": {
         "delete_weather_data": {
           "name": "Slet vejrdata",
@@ -150,8 +154,8 @@
       }
     },
     "calculate_zone": {
-      "name": "Beregn zone",
-      "description": "Beregn angivet zone",
+      "name": "Beregn zone (udfases)",
+      "description": "Udfases: brug smart_irrigation.calculate i stedet. Virker indtil 2027.11. Beregn angivet zone",
       "fields": {
         "entity": {
           "name": "Entitet",
@@ -168,12 +172,12 @@
       }
     },
     "update_all_zones": {
-      "name": "Opdatér alle zoner",
-      "description": "Opdatér vejrdata for alle zoner i automatisk tilstand"
+      "name": "Opdatér alle zoner (udfases)",
+      "description": "Udfases: brug smart_irrigation.update_weather i stedet. Virker indtil 2027.11. Opdatér vejrdata for alle zoner i automatisk tilstand"
     },
     "update_zone": {
-      "name": "Opdatér zone",
-      "description": "Opdatér vejrdata for angivet zone",
+      "name": "Opdatér zone (udfases)",
+      "description": "Udfases: brug smart_irrigation.update_weather i stedet. Virker indtil 2027.11. Opdatér vejrdata for angivet zone",
       "fields": {
         "entity": {
           "name": "Entitet",
@@ -183,21 +187,21 @@
     },
     "set_bucket": {
       "name": "Indstil vandbalance",
-      "description": "Indstil en zones vandbalance til en værdi",
+      "description": "Indstil vandbalancen for de valgte zoner, eller for alle zoner, når ingen er valgt. Uden en værdi er det nulstillingen, til 0",
       "fields": {
         "entity": {
           "name": "Entitet",
-          "description": "Zone som vandbalancen skal indstilles for"
+          "description": "Zoner som vandbalancen skal indstilles for; ingen indstiller alle"
         },
         "new_bucket_value": {
           "name": "Ny vandbalance",
-          "description": "Ny værdi for vandbalancen"
+          "description": "Ny værdi for vandbalancen; ingen er 0"
         }
       }
     },
     "set_all_buckets": {
-      "name": "Indstil alle vandbalancer",
-      "description": "Indstil vandbalancen for alle zoner til en værdi",
+      "name": "Indstil alle vandbalancer (udfases)",
+      "description": "Udfases: brug smart_irrigation.set_bucket i stedet. Virker indtil 2027.11. Indstil vandbalancen for alle zoner til en værdi",
       "fields": {
         "new_bucket_value": {
           "name": "Ny vandbalance",
@@ -206,8 +210,8 @@
       }
     },
     "reset_bucket": {
-      "name": "Nulstil vandbalance",
-      "description": "Nulstil en zones vandbalance til 0",
+      "name": "Nulstil vandbalance (udfases)",
+      "description": "Udfases: brug smart_irrigation.set_bucket i stedet. Virker indtil 2027.11. Nulstil en zones vandbalance til 0",
       "fields": {
         "entity": {
           "name": "Entitet",
@@ -216,8 +220,8 @@
       }
     },
     "reset_all_buckets": {
-      "name": "Nulstil alle vandbalancer",
-      "description": "Nulstil vandbalancen for alle zoner til 0"
+      "name": "Nulstil alle vandbalancer (udfases)",
+      "description": "Udfases: brug smart_irrigation.set_bucket i stedet. Virker indtil 2027.11. Nulstil vandbalancen for alle zoner til 0"
     },
     "clear_all_weather_data": {
       "name": "Ryd alle vejrdata",
@@ -225,11 +229,11 @@
     },
     "set_multiplier": {
       "name": "Indstil multiplikator",
-      "description": "Indstil multiplikator for en zone til en bestemt værdi",
+      "description": "Indstil multiplikatoren for de valgte zoner, eller for alle zoner, når ingen er valgt",
       "fields": {
         "entity": {
           "name": "Entitet",
-          "description": "Zone som multiplikator skal indstilles for"
+          "description": "Zoner som multiplikatoren skal indstilles for; ingen indstiller alle"
         },
         "new_multiplier_value": {
           "name": "Ny multiplikatorværdi",
@@ -238,8 +242,8 @@
       }
     },
     "set_all_multipliers": {
-      "name": "Indstil alle multiplikatorer",
-      "description": "Indstil multiplikatorer for alle zoner til en bestemt værdi",
+      "name": "Indstil alle multiplikatorer (udfases)",
+      "description": "Udfases: brug smart_irrigation.set_multiplier i stedet. Virker indtil 2027.11. Indstil multiplikatorer for alle zoner til en bestemt værdi",
       "fields": {
         "new_multiplier_value": {
           "name": "Ny multiplikatorværdi",
@@ -296,6 +300,394 @@
           "description": "Hvor længe zonen kørte, i sekunder. Tom: zonens varighed."
         }
       }
+    },
+    "run_program": {
+      "name": "Kør program",
+      "description": "Kør et program i den fulde styring nu, eller så snart det er dets tur, når et andet kører. Programmet vander sine zoner med de varigheder, Smart Irrigation har beregnet, medmindre dets trin siger noget andet.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "Programmets id, som det vises i dets indstillinger."
+        },
+        "seconds": {
+          "name": "Sekunder",
+          "description": "En samlet varighed for hele programmet, fordelt mellem trinene i forhold til deres planlagte varigheder. Tom: de planlagte varigheder."
+        },
+        "mode": {
+          "name": "Tilstand",
+          "description": "Hvad der skal ske, når noget allerede vander. Queue stiller sig i kø bagved; replace stopper det pænt først."
+        }
+      }
+    },
+    "stop_program": {
+      "name": "Stop program",
+      "description": "Stop ét program. Hvis det kører, lukkes dets åbne zoner på normal vis og godskrives for det, de gav; hvis det venter på sin tur, tages det ud af køen. Et ukendt program gør intet. Hovedprogrammet stoppes med stop_watering.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "Programmets id."
+        }
+      }
+    },
+    "set_program_enabled": {
+      "name": "Aktivér eller deaktivér et program",
+      "description": "Slå et program i den fulde styring til eller fra, som kontakten i dets indstillinger gør.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "Programmets id."
+        },
+        "enabled": {
+          "name": "Aktiveret",
+          "description": "Til for at aktivere det, fra for at deaktivere det."
+        }
+      }
+    },
+    "set_step_enabled": {
+      "name": "Aktivér eller deaktivér et trin",
+      "description": "Slå ét trin i et program til eller fra.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "Programmets id."
+        },
+        "step_id": {
+          "name": "Trin",
+          "description": "Trinnets id, som det vises i programmet."
+        },
+        "enabled": {
+          "name": "Aktiveret",
+          "description": "Til for at aktivere det, fra for at deaktivere det."
+        }
+      }
+    },
+    "set_schedule_enabled": {
+      "name": "Aktivér eller deaktivér en tidsplan",
+      "description": "Slå én tidsplan i et program til eller fra. Tidsplanerne aktiveres igen med det samme.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "Programmets id."
+        },
+        "schedule_id": {
+          "name": "Tidsplan",
+          "description": "Tidsplanens id, som det vises i programmet."
+        },
+        "enabled": {
+          "name": "Aktiveret",
+          "description": "Til for at aktivere den, fra for at deaktivere den."
+        }
+      }
+    },
+    "stop_watering": {
+      "name": "Stop vanding",
+      "description": "Stop vandingen nu. Hver ventil, Smart Irrigation har åbnet, lukkes, hver zone godskrives for det vand, den fik, og programmerne og de zoner, der stadig venter, afsluttes. Med valgte zoner stoppes kun de."
+    },
+    "pause_watering": {
+      "name": "Sæt vanding på pause",
+      "description": "Luk de åbne ventiler og hold vandingen tilbage, også de zoner, der stadig venter. Det, der blev givet, godskrives, og efter genoptagelsen vandes resten af runden. En pause, der ikke ophæves, slutter af sig selv.",
+      "fields": {
+        "minutes": {
+          "name": "Minutter",
+          "description": "Det længste pausen varer, før den ophæver sig selv."
+        }
+      }
+    },
+    "resume_watering": {
+      "name": "Genoptag vanding",
+      "description": "Fortsæt en pauset vanding, hvor den stoppede."
+    },
+    "next_step": {
+      "name": "Næste trin",
+      "description": "Afslut zonerne i det trin, et program er på, og gå videre til næste trin."
+    },
+    "suspend": {
+      "name": "Suspender",
+      "description": "Forhindr en zone eller et program i at vande indtil et tidspunkt. Uden varighed og uden dato, eller med nul timer, ophæves suspensionen.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "Id for et program, der skal suspenderes."
+        },
+        "hours": {
+          "name": "Timer",
+          "description": "Hvor længe der skal suspenderes. Nul ophæver det."
+        },
+        "until": {
+          "name": "Indtil",
+          "description": "Tidspunktet, hvor suspensionen slutter."
+        }
+      }
+    },
+    "adjust_program": {
+      "name": "Justér et program",
+      "description": "Få et program i den fulde styring til at vande længere eller kortere i et stykke tid. Justeringen erstatter den forrige (den lægges aldrig sammen), gælder for de kørsler, der starter efter den er sat, og slutter efter de angivne timer.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "Id for programmet, der skal justeres."
+        },
+        "percent": {
+          "name": "Procent",
+          "description": "Ganger vandet i hvert trin (120 vander 20 % længere)."
+        },
+        "seconds": {
+          "name": "Sekunder",
+          "description": "Sekunder vand, der lægges til hvert trin (negativt for at trække fra)."
+        },
+        "hours": {
+          "name": "Timer",
+          "description": "Hvor længe justeringen varer. Tom: indtil den nulstilles."
+        },
+        "reset": {
+          "name": "Nulstil",
+          "description": "Fjern justeringen for dette program."
+        }
+      }
+    },
+    "water_zone": {
+      "name": "Vand en zone",
+      "description": "Vand en zone nu, eller så snart det er dens tur, når noget vander. Uden en varighed vander zonen i den varighed, Smart Irrigation har beregnet.",
+      "fields": {
+        "zone_id": {
+          "name": "Zone-id",
+          "description": "Zonens id, i stedet for dens entitet."
+        },
+        "seconds": {
+          "name": "Sekunder",
+          "description": "Sekunder vand. Tom: den beregnede varighed."
+        },
+        "mode": {
+          "name": "Tilstand",
+          "description": "Hvad der skal ske, når noget allerede vander. Queue stiller sig i kø bagved; replace stopper det pænt først."
+        }
+      }
+    },
+    "use_measured_throughput": {
+      "name": "Brug den målte gennemstrømning",
+      "description": "Sæt en zones gennemstrømning til den strøm, dens måler har målt over dens kørsler. Målingen er altid kun et råd; sådan accepterer du den.",
+      "fields": {
+        "zone_id": {
+          "name": "Zone-id",
+          "description": "Zonens id, i stedet for dens entitet."
+        }
+      }
+    },
+    "create_recurring_schedule": {
+      "name": "Opret tilbagevendende tidsplan (udfases)",
+      "description": "Udfases: brug programmernes tidsplaner (fanen Vanding) i stedet. Virker indtil 2027.11. Opret en ny tilbagevendende vandingstidsplan.",
+      "fields": {
+        "name": {
+          "name": "Navn",
+          "description": "Tidsplanens navn"
+        },
+        "type": {
+          "name": "Tidsplantype",
+          "description": "Tidsplantype (daily, weekly, monthly, interval)"
+        },
+        "enabled": {
+          "name": "Aktiveret",
+          "description": "Aktivér tidsplanen"
+        },
+        "time": {
+          "name": "Tidspunkt",
+          "description": "Tidspunkt for kørsel (format TT:MM)"
+        },
+        "days_of_week": {
+          "name": "Ugedage",
+          "description": "Ugedage for ugentlige tidsplaner"
+        },
+        "day_of_month": {
+          "name": "Dag i måneden",
+          "description": "Dag i måneden for månedlige tidsplaner (1-31)"
+        },
+        "interval_hours": {
+          "name": "Interval i timer",
+          "description": "Interval i timer for intervaltidsplaner"
+        },
+        "zones": {
+          "name": "Zoner",
+          "description": "Zone-id'er, der skal medtages, eller 'all'"
+        },
+        "action": {
+          "name": "Handling",
+          "description": "Handling, der skal udføres (calculate, update, irrigate)"
+        }
+      }
+    },
+    "update_recurring_schedule": {
+      "name": "Opdatér tilbagevendende tidsplan (udfases)",
+      "description": "Udfases: brug programmernes tidsplaner (fanen Vanding) i stedet. Virker indtil 2027.11. Opdatér en eksisterende tilbagevendende vandingstidsplan.",
+      "fields": {
+        "schedule_id": {
+          "name": "Tidsplan-id",
+          "description": "Id for tidsplanen, der skal opdateres"
+        },
+        "name": {
+          "name": "Navn",
+          "description": "Tidsplanens navn"
+        },
+        "enabled": {
+          "name": "Aktiveret",
+          "description": "Aktivér/deaktivér tidsplanen"
+        }
+      }
+    },
+    "delete_recurring_schedule": {
+      "name": "Slet tilbagevendende tidsplan (udfases)",
+      "description": "Udfases: brug programmernes tidsplaner (fanen Vanding) i stedet. Virker indtil 2027.11. Slet en tilbagevendende vandingstidsplan.",
+      "fields": {
+        "schedule_id": {
+          "name": "Tidsplan-id",
+          "description": "Id for tidsplanen, der skal slettes"
+        }
+      }
+    },
+    "create_seasonal_adjustment": {
+      "name": "Opret sæsonjustering (udfases)",
+      "description": "Udfases: brug smart_irrigation.set_seasonal_adjustment i stedet. Virker indtil 2027.11. Opret en ny sæsonjustering for vandingszoner.",
+      "fields": {
+        "name": {
+          "name": "Navn",
+          "description": "Justeringens navn"
+        },
+        "enabled": {
+          "name": "Aktiveret",
+          "description": "Aktivér justeringen"
+        },
+        "month_start": {
+          "name": "Startmåned",
+          "description": "Første måned (1-12)"
+        },
+        "month_end": {
+          "name": "Slutmåned",
+          "description": "Sidste måned (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Justeringsfaktor for multiplikator",
+          "description": "Justeringsfaktor for multiplikator"
+        },
+        "threshold_adjustment": {
+          "name": "Tærskeljustering",
+          "description": "Tærskeljustering i mm"
+        },
+        "zones": {
+          "name": "Zoner",
+          "description": "Zone-id'er, der skal medtages, eller 'all'"
+        }
+      }
+    },
+    "update_seasonal_adjustment": {
+      "name": "Opdatér sæsonjustering (udfases)",
+      "description": "Udfases: brug smart_irrigation.set_seasonal_adjustment i stedet. Virker indtil 2027.11. Opdatér en eksisterende sæsonjustering.",
+      "fields": {
+        "adjustment_id": {
+          "name": "Justerings-id",
+          "description": "Id for justeringen, der skal opdateres"
+        },
+        "name": {
+          "name": "Navn",
+          "description": "Justeringens navn"
+        },
+        "enabled": {
+          "name": "Aktiveret",
+          "description": "Aktivér/deaktivér justeringen"
+        }
+      }
+    },
+    "delete_seasonal_adjustment": {
+      "name": "Slet sæsonjustering (udfases)",
+      "description": "Udfases: brug smart_irrigation.set_seasonal_adjustment i stedet. Virker indtil 2027.11. Slet en sæsonjustering.",
+      "fields": {
+        "adjustment_id": {
+          "name": "Justerings-id",
+          "description": "Id for justeringen, der skal slettes"
+        }
+      }
+    },
+    "postpone_irrigation": {
+      "name": "Udsæt vanding",
+      "description": "Hold vandingen tilbage et stykke tid, og lad den derefter genoptage af sig selv. Intet nulstilles: en zone, der mangler vand, gør det stadig, når udsættelsen slutter, og den næste kørsel indhenter det.",
+      "fields": {
+        "hours": {
+          "name": "Timer",
+          "description": "Hvor længe vandingen skal holdes tilbage. Nul ophæver en udsættelse."
+        }
+      }
+    },
+    "resume_irrigation": {
+      "name": "Genoptag vanding",
+      "description": "Ophæv en udsættelse, uanset hvor meget der er tilbage af den."
+    },
+    "calculate": {
+      "name": "Beregn",
+      "description": "Beregn de valgte zoner, eller alle zoner i automatisk tilstand, når ingen er valgt",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zoner der skal beregnes; ingen beregner alle"
+        },
+        "delete_weather_data": {
+          "name": "Slet vejrdata",
+          "description": "Slet vejrdata for zonen efter beregning"
+        },
+        "dry_run": {
+          "name": "Prøvekørsel",
+          "description": "Fortæl hvad beregningen ville gøre uden at ændre vandbalancen, zonen eller de indsamlede vejrdata"
+        }
+      }
+    },
+    "update_weather": {
+      "name": "Opdatér vejret",
+      "description": "Hent vejret for de valgte zoner, eller for alle zoner, når ingen er valgt",
+      "fields": {
+        "entity": {
+          "name": "Entitet",
+          "description": "Zoner der skal opdateres; ingen opdaterer alle"
+        }
+      }
+    },
+    "set_seasonal_adjustment": {
+      "name": "Indstil sæsonjustering",
+      "description": "Opret en sæsonjustering, ændr en via dens id, eller fjern en via dens id med remove",
+      "fields": {
+        "adjustment_id": {
+          "name": "Justerings-id",
+          "description": "Justeringen der skal ændres eller fjernes; ingen opretter en"
+        },
+        "remove": {
+          "name": "Fjern",
+          "description": "Fjern justeringen med dette id"
+        },
+        "name": {
+          "name": "Navn",
+          "description": "Justeringens navn"
+        },
+        "enabled": {
+          "name": "Aktiveret",
+          "description": "Aktivér justeringen"
+        },
+        "month_start": {
+          "name": "Startmåned",
+          "description": "Første måned (1-12)"
+        },
+        "month_end": {
+          "name": "Slutmåned",
+          "description": "Sidste måned (1-12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Justeringsfaktor for multiplikator",
+          "description": "Justeringsfaktor for multiplikator"
+        },
+        "threshold_adjustment": {
+          "name": "Tærskeljustering",
+          "description": "Tærskeljustering i mm"
+        },
+        "zones": {
+          "name": "Zoner",
+          "description": "Zone-id'er, der skal medtages, eller 'all'"
+        }
+      }
     }
   },
   "issues": {
@@ -342,6 +734,14 @@
     "zone_not_calculated_no_sensor_group": {
       "title": "Zone {zone} kan ikke beregnes: ingen sensorgruppe",
       "description": "Zone **{zone}** har ingen sensorgruppe, så der er intet at beregne den ud fra, og den vandes ikke.\n\nVælg dens sensorgruppe på dens kort under fanen Zoner, og beregn så zonen. Meddelelsen forsvinder af sig selv ved næste vellykkede beregning."
+    },
+    "deprecated_action": {
+      "title": "Handlingen {action} forsvinder",
+      "description": "En automatisering, et script eller et dashboard kaldte **{action}**. Den virker stadig, men den fjernes fra version {version}, om vinteren, uden for vandingssæsonen.\n\nBrug **{replacement}** i stedet: den gør det samme, og for alle zoner, når ingen zone er valgt. Denne besked kommer igen ved hvert kald til det gamle navn, indtil der ikke er flere."
+    },
+    "deprecated_recurring_schedule": {
+      "title": "Tilbagevendende tidsplaner forsvinder: {action}",
+      "description": "En automatisering, et script eller et dashboard kaldte **{action}**. Tilbagevendende tidsplaner virker stadig, men de fjernes fra version {version}, om vinteren, uden for vandingssæsonen.\n\nProgrammernes tidsplaner gør det samme og findes i panelet: opsæt dem under **Vanding**, og fjern derefter de tilbagevendende tidsplaner og kaldene til {action}."
     }
   }
 }
