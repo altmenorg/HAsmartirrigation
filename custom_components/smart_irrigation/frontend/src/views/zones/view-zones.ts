@@ -57,6 +57,8 @@ import {
 } from "../../types";
 import {
   changedFields,
+  awaitsFirstCalculation,
+  calculationWhenKey,
   deltaOfEvaporation,
   displayDepth,
   displayName,
@@ -685,7 +687,9 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
               ? "mdi:pause-circle-outline"
               : kind === "problem"
                 ? "mdi:alert-circle-outline"
-                : "mdi:check-circle-outline"}
+                : kind === "waiting"
+                  ? "mdi:timer-sand"
+                  : "mdi:check-circle-outline"}
         ></ha-icon>
         <span>${text}</span>
         ${noValve && zone.id != undefined && !this._expanded.has(zone.id)
@@ -696,7 +700,10 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
               ${t("no-valve-action")}
             </button>`
           : ""}
-        ${kind !== "off" && kind !== "problem" && threshold > 0
+        ${kind !== "off" &&
+        kind !== "problem" &&
+        kind !== "waiting" &&
+        threshold > 0
           ? html`<span class="zone-status-numbers">
               ${t("threshold")}: ${this._n(threshold, 1)} ${unit}
             </span>`
@@ -797,6 +804,19 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
           );
     } else if (short && threshold > 0) {
       text = t("under-threshold", "{short}", short);
+    } else if (!short && awaitsFirstCalculation(zone)) {
+      // Not calculated yet: the zeros are the ones it was made with.
+      kind = "waiting";
+      text = t(
+        "not-calculated",
+        "{when}",
+        localize(
+          `panels.info.cards.next-run.${calculationWhenKey(this.config)}`,
+          lang,
+          "{time}",
+          this.config?.calctime ?? "",
+        ),
+      );
     }
     return { kind, text, noValve: false };
   }

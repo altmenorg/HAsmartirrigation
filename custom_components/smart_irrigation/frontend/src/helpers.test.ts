@@ -21,6 +21,8 @@ import {
   WEATHER_SERVICE_OPEN_METEO,
 } from "./const";
 import {
+  awaitsFirstCalculation,
+  calculationWhenKey,
   changedFields,
   displayDepth,
   displayName,
@@ -631,5 +633,67 @@ describe("suggestSources", () => {
   it("only answers for the sources asked", () => {
     const states = { "sensor.garden_wind": sensor("wind_speed") };
     expect(suggestSources([MAPPING_TEMPERATURE], states)).toEqual({});
+  });
+});
+
+describe("a zone before its first calculation", () => {
+  const fresh = { state: "automatic", last_calculated: null };
+
+  it("waits for it while automatic and never calculated", () => {
+    expect(awaitsFirstCalculation(fresh)).toBe(true);
+  });
+
+  it("no longer once it was calculated", () => {
+    expect(
+      awaitsFirstCalculation({ ...fresh, last_calculated: "2026-11-08T23:00" }),
+    ).toBe(false);
+  });
+
+  it("not when the calculation failed: the problem says why", () => {
+    expect(
+      awaitsFirstCalculation({
+        ...fresh,
+        calculation_problem: { code: "no_readings" },
+      }),
+    ).toBe(false);
+  });
+
+  it("not for a manual or disabled zone, which is never calculated", () => {
+    expect(awaitsFirstCalculation({ ...fresh, state: "manual" })).toBe(false);
+    expect(awaitsFirstCalculation({ ...fresh, state: "disabled" })).toBe(false);
+  });
+
+  it("names when the calculation comes", () => {
+    expect(calculationWhenKey({ autocalcenabled: true })).toBe("calc-daily");
+    expect(
+      calculationWhenKey({
+        autocalcenabled: true,
+        recalculate_before_start: true,
+      }),
+    ).toBe("calc-before-start");
+    expect(calculationWhenKey({ autocalcenabled: false })).toBe("calc-manual");
+    expect(calculationWhenKey(undefined)).toBe("calc-manual");
+  });
+
+  it("says so in en and de", () => {
+    for (const lang of ["en", "de"]) {
+      const zone = localize(
+        "panels.zones.status.not-calculated",
+        lang,
+        "{when}",
+        "X",
+      );
+      const sub = localize(
+        "panels.info.cards.next-run.sub-not-calculated",
+        lang,
+        "{when}",
+        "X",
+      );
+      expect(zone).toContain("X");
+      expect(sub).toContain("X");
+      expect(
+        localize("panels.info.cards.next-run.headline-not-calculated", lang),
+      ).not.toMatch(/^Translation/);
+    }
   });
 });

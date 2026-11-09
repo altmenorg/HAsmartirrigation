@@ -243,3 +243,21 @@ export const programLabel = (
   (!program.name || program.name === MAIN_PROGRAM_STORED_NAME)
     ? mainName
     : (program.name ?? program.program_id);
+
+/**
+ * A zone Smart Irrigation calculates that has not been calculated yet: right
+ * after the setup assistant, before the first calculation. Its water balance
+ * and duration are the zeros it was created with, not a result, so "has what
+ * it needs" would be a green tick on a guess.
+ */
+export function awaitsFirstCalculation(zone: {
+  state?: string;
+  last_calculated?: unknown;
+  calculation_problem?: { code?: string } | null;
+}): boolean {
+  return (
+    zone.state === "automatic" &&
+    !zone.last_calculated &&
+    !zone.calculation_problem?.code
+  );
+}
