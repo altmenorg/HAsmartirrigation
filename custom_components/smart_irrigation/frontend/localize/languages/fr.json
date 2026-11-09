@@ -1218,7 +1218,6 @@
     "step": "étape",
     "tour": "tour",
     "tours": "tours",
-    "remaining": "restant",
     "no_valve": "Aucune vanne liée, donc pas arrosées :",
     "nothing_no_valve": "Rien à arroser à ce départ : les zones en déficit n'ont aucune vanne liée :"
   },
@@ -1351,8 +1350,6 @@
     "every_day": "tous les jours",
     "anchor_start_short": "démarre à",
     "anchor_end_short": "fini à",
-    "steps_count": "étape(s)",
-    "schedules_count": "horaire(s)",
     "off": "désactivé",
     "steps_title": "Étapes",
     "schedules_title": "Horaires",

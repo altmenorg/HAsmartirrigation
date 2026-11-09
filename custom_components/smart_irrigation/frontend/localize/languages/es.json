@@ -1218,7 +1218,6 @@
     "step": "paso",
     "tour": "vuelta",
     "tours": "vueltas",
-    "remaining": "restante",
     "no_valve": "Sin válvula vinculada, así que no se riegan:",
     "nothing_no_valve": "Nada que regar en este ciclo: las zonas a las que les falta agua no tienen válvula vinculada:"
   },
@@ -1351,8 +1350,6 @@
     "every_day": "todos los días",
     "anchor_start_short": "empieza a las",
     "anchor_end_short": "terminado a las",
-    "steps_count": "paso(s)",
-    "schedules_count": "horario(s)",
     "off": "desactivado",
     "steps_title": "Pasos",
     "schedules_title": "Horarios",

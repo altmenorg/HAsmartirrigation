@@ -57,6 +57,7 @@ import {
 } from "./const";
 import { Dictionary, SmartIrrigationMapping } from "./types";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
+import { friendlyDuration } from "./card/format";
 
 export function getDomain(entity: string | HassEntity) {
   const entity_id: string =
@@ -167,17 +168,12 @@ export function output_unit(config, arg0: string): TemplateResult {
 }
 
 /**
- * Format a duration in seconds as hh:mm:ss, which reads far better than a raw
- * second count once a run is longer than a couple of minutes. Hours are not
- * capped at two digits, so a very long duration still shows correctly.
+ * A duration for reading: 1 h 05 min, 14 min 33 s. The same words everywhere
+ * in the panel and on the card (friendlyDuration, which lives with the card
+ * because the card's bundle does not load this file).
  */
 export function formatDuration(seconds?: number | null): string {
-  const total = Math.max(0, Math.round(Number(seconds) || 0));
-  const hours = Math.floor(total / 3600);
-  const minutes = Math.floor((total % 3600) / 60);
-  const secs = total % 60;
-  const pad = (v: number) => String(v).padStart(2, "0");
-  return `${pad(hours)}:${pad(minutes)}:${pad(secs)}`;
+  return friendlyDuration(seconds);
 }
 
 /**
@@ -880,4 +876,37 @@ export function noneAllowed(
     currentSource === MAPPING_CONF_SOURCE_NONE ||
     (required !== null && !required.includes(source))
   );
+}
+
+/**
+ * What may be linked as a zone's valve. A binary sensor can be watched, by
+ * observed watering, but not opened: it is offered only while Smart
+ * Irrigation does not open the valves. The full controller also opens a light
+ * or a cover, which some valves present themselves as.
+ */
+export function linkedValveDomains(
+  config?: {
+    direct_valve_control_enabled?: boolean;
+    full_controller?: boolean;
+  } | null,
+): string[] {
+  const domains = ["switch", "valve", "input_boolean"];
+  if (config?.full_controller) domains.push("light", "cover");
+  if (!config?.direct_valve_control_enabled && !config?.full_controller) {
+    domains.push("binary_sensor");
+  }
+  return domains;
+}
+
+/**
+ * A count in words: none, one or several, each a text of its own. "0 step(s)
+ * · 0 schedule(s)" headed every program (UX walk of 9 Nov., evening).
+ */
+export function countLabel(
+  n: number,
+  texts: { none: string; one: string; many: string },
+): string {
+  if (n <= 0) return texts.none;
+  if (n === 1) return texts.one;
+  return texts.many.replace("{n}", String(n));
 }

@@ -20,6 +20,7 @@ import {
 import {
   awaitsFirstCalculation,
   calculationWhenKey,
+  formatDuration,
   formatNumber,
   localizedDateTime,
   navigate,
@@ -269,21 +270,9 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
     return localize(`panels.info.${key}`, this._lang, ...args);
   }
 
-  /** Seconds as something a person reads, not a raw count. */
+  /** Seconds as something a person reads: the panel's one way (formatDuration). */
   private formatDuration(seconds?: number | null): string {
-    const total = Math.max(0, Math.round(seconds ?? 0));
-    const h = localize("common.units.hours", this._lang);
-    const m = localize("common.units.minutes", this._lang);
-    const s = localize("common.units.seconds", this._lang);
-    if (total < 60) {
-      return `${total} ${s}`;
-    }
-    if (total < 3600) {
-      return `${Math.round(total / 60)} ${m}`;
-    }
-    const hours = Math.floor(total / 3600);
-    const minutes = Math.round((total % 3600) / 60);
-    return minutes ? `${hours} ${h} ${minutes} ${m}` : `${hours} ${h}`;
+    return formatDuration(seconds);
   }
 
   /** A number for reading, as the user's number setting writes it. */
@@ -777,8 +766,11 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       headline = start
         ? this.t("cards.next-run.headline-watering", "{start}", start)
         : this.t("cards.next-run.headline-watering-soon");
+      // One zone and several are two texts: "{count} zone(s)" read badly.
       sub = this.t(
-        "cards.next-run.sub-watering",
+        zones.length === 1
+          ? "cards.next-run.sub-watering-one"
+          : "cards.next-run.sub-watering",
         "{count}",
         String(zones.length),
         "{duration}",

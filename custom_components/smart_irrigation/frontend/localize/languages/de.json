@@ -367,7 +367,7 @@
           "next-program": "Nächstes Programm: {program}, {start}",
           "headline-watering": "Bewässerung {start}",
           "headline-watering-soon": "Bewässerung beim nächsten Start",
-          "sub-watering": "{count} Zone(n), {duration} insgesamt.",
+          "sub-watering": "{count} Zonen, {duration} insgesamt.",
           "headline-postponed": "Die Bewässerung ist zurückgestellt",
           "sub-postponed": "Du hast sie verschoben. Sie setzt von selbst wieder ein, und nichts geht verloren: eine Zone, der Wasser fehlt, braucht es danach weiterhin.",
           "headline-skipped": "Heute keine Bewässerung",
@@ -381,7 +381,8 @@
           "sub-no-zones": "Smart Irrigation bewässert Zonen. Der Assistent legt die erste mit dir an.",
           "headline-off": "Smart Irrigation ist ausgeschaltet",
           "sub-off": "Es erfasst weiter seine Wetterdaten, berechnet und bewässert aber nichts, bis es wieder eingeschaltet wird.",
-          "open-settings": "Einstellungen öffnen"
+          "open-settings": "Einstellungen öffnen",
+          "sub-watering-one": "Eine Zone, {duration}."
         },
         "decision": {
           "title": "Wird übersprungen?",
@@ -499,8 +500,8 @@
             "source_does_not_exist": "Die Quelle existiert nicht. Gib eine gültige Quelle an, z. B. \"sensor.mysensor\"."
           },
           "hidden_sources": "{n} Messwert(e) nicht abgefragt: Die Verdunstung wird fertig geliefert, sie würden nur dazu dienen, sie neu zu berechnen.",
-          "et_ignored": "Zone(n) {zones} werden aus dem Wetter berechnet und lesen diese Verdunstung nicht. Stelle sie in der Zone auf von einem Sensor oder Dienst geliefert.",
-          "et_missing": "Zone(n) {zones} erwarten eine fertige Verdunstung: Wähle oben eine Quelle dafür.",
+          "et_ignored": "Aus dem Wetter berechnet, sie lesen diese Verdunstung also nicht: {zones}. Stelle sie in der Zone auf von einem Sensor oder Dienst geliefert.",
+          "et_missing": "Erwarten eine fertige Verdunstung: {zones}. Wähle oben eine Quelle dafür.",
           "et_unused": "Nicht verwendet: Alle Zonen dieser Gruppe werden von Smart Irrigation berechnet, das die Verdunstung aus den anderen Messwerten ableitet. Stelle eine Zone auf von einem Sensor oder Dienst geliefert, um hier einen fertigen Wert vorzugeben.",
           "et_needed": "Hier wird ein fertiger Wert benötigt: Die Zonen dieser Gruppe sind auf von einem Sensor oder Dienst geliefert eingestellt, daher wird Keine nicht angeboten.",
           "hints": {
@@ -660,7 +661,7 @@
           "direct": "Niederschlagsrate"
         },
         "input-method-hint": "Wie das abgegebene Wasser bekannt ist: aus Fläche und Durchfluss der Zone oder direkt als Niederschlagsrate, wenn du sie gemessen hast.",
-        "state-hint": "Automatisch: Smart Irrigation berechnet die Dauer aus der Wasserbilanz und bewässert zum Start. Manuell: Sie bewässert nur, wenn du es verlangst, für die Dauer, die du eingibst. Deaktiviert: wird nie bewässert, und ihre Bilanz wird nicht geführt.",
+        "state-hint": "Automatisch: Smart Irrigation berechnet die Dauer aus der Wasserbilanz und bewässert zum Start. Manuell: Sie bewässert bei jedem Start die Dauer, die du einträgst. Deaktiviert: wird nie bewässert, und ihre Bilanz wird nicht geführt.",
         "mapping-hint": "Die Sensorgruppe, aus der diese Zone ihr Wetter liest: ein Wetterdienst, deine eigenen Sensoren oder beides.",
         "bucket-hint": "Die Wasserbilanz der Zone. Negativ: Ihr fehlt Wasser. Null: Sie hat, was sie braucht. Bewässern bringt sie auf null zurück.",
         "maximum-bucket-hint": "Das meiste Wasser, das der Boden nach Annahme halten kann. Eine positive Bilanz geht nie darüber: Der Überschuss geht verloren.",
@@ -785,7 +786,7 @@
         "satisfied": "Nichts zu bewässern: diese Zone hat, was sie braucht.",
         "under-threshold": "Noch nichts zu bewässern: {short} fehlen, unter dem Schwellwert dieser Zone.",
         "not-calculated": "Noch nicht berechnet: das geschieht {when}.",
-        "manual": "Bewässert nur, wenn du es verlangst.",
+        "manual": "Bewässert bei jedem Start die Dauer, die du eingetragen hast.",
         "disabled": "Deaktiviert: wird nie bewässert, und ihre Bilanz wird nicht geführt.",
         "threshold": "Schwellwert",
         "problem": {
@@ -1228,9 +1229,9 @@
     "step": "Schritt",
     "tour": "Durchgang",
     "tours": "Durchgänge",
-    "remaining": "übrig",
     "no_valve": "Kein Ventil verknüpft, daher nicht bewässert:",
-    "nothing_no_valve": "In diesem Lauf wird nichts bewässert: Den Zonen, denen Wasser fehlt, ist kein Ventil verknüpft:"
+    "nothing_no_valve": "In diesem Lauf wird nichts bewässert: Den Zonen, denen Wasser fehlt, ist kein Ventil verknüpft:",
+    "left": "noch {time}"
   },
   "programs": {
     "title": "Programme",
@@ -1361,8 +1362,12 @@
     "every_day": "jeden Tag",
     "anchor_start_short": "startet um",
     "anchor_end_short": "fertig bis",
-    "steps_count": "Schritt(e)",
-    "schedules_count": "Zeitplan/-pläne",
+    "steps_none": "kein Schritt",
+    "steps_one": "1 Schritt",
+    "steps_many": "{n} Schritte",
+    "schedules_none": "kein Zeitplan",
+    "schedules_one": "1 Zeitplan",
+    "schedules_many": "{n} Zeitpläne",
     "off": "aus",
     "steps_title": "Schritte",
     "schedules_title": "Zeitpläne",
@@ -1370,7 +1375,7 @@
     "schedule_fallback_skip": "Diesen Tag auslassen",
     "schedule_fallback_previous": "Die Zeit des zuletzt gesehenen nehmen",
     "schedule_fallback_at": "Zu einer festen Zeit starten",
-    "main_steps_hint": "Um die Zonen und die Reihenfolge der Schritte zu wählen, füge unten ein Programm hinzu.",
+    "main_steps_hint": "Das Hauptprogramm bewässert alle Zonen. Für nur einige davon oder eine eigene Reihenfolge füge unten unter „Weitere Programme“ eines hinzu.",
     "summary_start_sunrise": "startet bei Sonnenaufgang",
     "summary_start_sunset": "startet bei Sonnenuntergang",
     "summary_end_sunrise": "fertig bei Sonnenaufgang",
@@ -1383,11 +1388,12 @@
     "cond_wind": "ab {value}",
     "cond_precipitation": "ab {value} Vorhersage",
     "cond_days_between": "mindestens {n} Tage",
-    "cond_soil": "{n} Zone(n) mit Sensor"
+    "cond_soil": "{n} Zonen mit Sensor",
+    "cond_soil_one": "{n} Zone mit Sensor"
   },
   "supplies": {
     "title": "Pumpen und Hauptventile",
-    "description": "Eine Pumpe oder ein Hauptventil vor den Zonenventilen läuft, solange eine damit versorgte Zone bewässert wird. Die Auswahl erfolgt in den Einstellungen jeder Zone. Die Verzögerungen sind in Sekunden und vorzeichenbehaftet.",
+    "description": "Eine Pumpe oder ein Hauptventil vor den Zonenventilen läuft, solange eine damit versorgte Zone bewässert wird. Die Auswahl erfolgt in den Einstellungen jeder Zone.",
     "name": "Name",
     "entities": "Entitäten",
     "entities_hint": "mehrere mit Kommas trennen",
@@ -1403,7 +1409,7 @@
     "kick_seconds_help": "Für eine Pumpe, deren Druckschalter erst nach einer Stromunterbrechung wieder anläuft: Sie wird vor jedem Start so lange ausgeschaltet, dann eingeschaltet. 0: direkt eingeschaltet (Standard)."
   },
   "observed_watering": {
-    "title": "Beobachtete Bewässerung (Closed Loop)",
+    "title": "Beobachtete Bewässerung",
     "description": "Schreibt der Wasserbilanz jeder Zone die echte Bewässerung gut, statt Zurücksetzen per Automatisierung. Wähle unter Zonen je Zone Ventil oder Schalter: solange offen, zählt Laufzeit mal Durchfluss oder die Menge eines Zählers. Entferne set_bucket- und reset_bucket-Aufrufe aus Automatisierungen, sonst zählt es doppelt.",
     "enabled_label": "Beobachtete Bewässerung aktivieren",
     "direct_control_label": "Smart Irrigation das Ventil steuern lassen",
@@ -1480,6 +1486,8 @@
     "skipped": "Zurückgestellt",
     "short_by": "fehlen {value}",
     "no_need": "keine Bewässerung nötig",
+    "manual_runs": "bewässert bei jedem Start {duration}",
+    "manual_no_duration": "keine Dauer eingetragen, wird nicht bewässert",
     "not_calculated": "noch nicht berechnet",
     "runs_for": "würde {duration} laufen",
     "never_watered": "nie bewässert",

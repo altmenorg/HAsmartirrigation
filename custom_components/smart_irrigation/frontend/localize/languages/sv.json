@@ -1218,7 +1218,6 @@
     "step": "steg",
     "tour": "varv",
     "tours": "varv",
-    "remaining": "kvar",
     "no_valve": "Följande zoner saknar en ansluten ventil och kan därför inte bevattnas:",
     "nothing_no_valve": "Ingen zon kan bevattnas den här gången. Följande zoner behöver vatten men saknar ansluten ventil:"
   },
@@ -1351,8 +1350,6 @@
     "every_day": "varje dag",
     "anchor_start_short": "startar kl.",
     "anchor_end_short": "klart senast",
-    "steps_count": "steg",
-    "schedules_count": "schema(n)",
     "off": "av",
     "steps_title": "Steg",
     "schedules_title": "Scheman",

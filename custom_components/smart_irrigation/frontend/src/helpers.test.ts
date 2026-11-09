@@ -41,6 +41,9 @@ import {
   suggestSources,
   setupZoneMethod,
   splitChosen,
+  linkedValveDomains,
+  formatDuration,
+  countLabel,
 } from "./helpers";
 
 /**
@@ -761,4 +764,70 @@ describe("sources left without a sensor", () => {
       ).toContain("D");
     }
   });
+});
+
+describe("the zone's valve field", () => {
+  it("offers a binary sensor only while it is watched, not opened", () => {
+    expect(linkedValveDomains({})).toContain("binary_sensor");
+    expect(
+      linkedValveDomains({ direct_valve_control_enabled: true }),
+    ).not.toContain("binary_sensor");
+    expect(linkedValveDomains({ full_controller: true })).not.toContain(
+      "binary_sensor",
+    );
+  });
+  it("opens a light or a cover only as the full controller", () => {
+    expect(linkedValveDomains({ full_controller: true })).toEqual(
+      expect.arrayContaining(["switch", "valve", "light", "cover"]),
+    );
+    expect(linkedValveDomains({ direct_valve_control_enabled: true })).toEqual([
+      "switch",
+      "valve",
+      "input_boolean",
+    ]);
+  });
+});
+
+describe("the texts of daily use", () => {
+  for (const lang of ["en", "de"]) {
+    it(`say what a manual zone does (${lang})`, () => {
+      const status = localize("panels.zones.status.manual", lang);
+      expect(status).not.toMatch(/only when you ask|nur, wenn du es verlangst/);
+    });
+    it(`say one zone and several apart (${lang})`, () => {
+      expect(
+        localize("panels.info.cards.next-run.sub-watering", lang),
+      ).not.toMatch(/\(s\)|\(n\)/);
+      expect(
+        localize("panels.info.cards.next-run.sub-watering-one", lang),
+      ).not.toMatch(/\(s\)|\(n\)/);
+    });
+  }
+  it("give the panel's durations one form", () => {
+    expect(formatDuration(120)).toBe("2 min");
+    expect(formatDuration(3600)).toBe("1 h 00 min");
+  });
+});
+
+describe("a count in words", () => {
+  const texts = { none: "no steps", one: "1 step", many: "{n} steps" };
+  it("has a text for none, one and several", () => {
+    expect(countLabel(0, texts)).toBe("no steps");
+    expect(countLabel(1, texts)).toBe("1 step");
+    expect(countLabel(3, texts)).toBe("3 steps");
+  });
+  for (const lang of ["en", "de"]) {
+    it(`heads a program without brackets (${lang})`, () => {
+      for (const key of [
+        "steps_none",
+        "steps_one",
+        "steps_many",
+        "schedules_none",
+        "schedules_one",
+        "schedules_many",
+      ]) {
+        expect(localize(`programs.${key}`, lang)).not.toMatch(/\(|\//);
+      }
+    });
+  }
 });
