@@ -447,6 +447,14 @@ class ProgramStatusMixin:
                     "live": running.get(program_id),
                     # The runtime adjustment in force, or None.
                     "adjustment": self.program_adjustment(program_id),
+                    # Whether there is anything to start: the card offered
+                    # "start" for a program with no zone in its steps.
+                    "can_run": main
+                    or any(
+                        step.get(const.STEP_ENABLED, True) is not False
+                        and step.get(const.STEP_ZONES)
+                        for step in program.get(const.PROGRAM_STEPS) or []
+                    ),
                 }
             )
         return overview

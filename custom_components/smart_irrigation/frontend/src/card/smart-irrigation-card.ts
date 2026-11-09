@@ -67,6 +67,8 @@ interface Program {
   next_start?: string | null;
   last_run?: string | null;
   suspended_until?: string | null;
+  // Absent from an older backend: then a program counts as startable.
+  can_run?: boolean;
   live?: {
     step: number;
     steps: number;
@@ -588,7 +590,8 @@ export class SmartIrrigationCard extends LitElement {
     const paused = program.state === "paused";
     const waiting = program.state === "waiting";
     const active = running || paused || waiting;
-    const startable = !active && program.state === "idle";
+    const startable =
+      !active && program.state === "idle" && program.can_run !== false;
     const stopping = this._confirmingStop === program.program_id;
     let detail = "";
     if (running || paused) {
