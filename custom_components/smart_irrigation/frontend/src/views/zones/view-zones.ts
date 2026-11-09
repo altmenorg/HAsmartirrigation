@@ -801,15 +801,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     return { kind, text, noValve: false };
   }
 
-  /**
-   * A field only the advanced panel shows.
-   *
-   * The standard panel keeps what a zone is (its name, what it waters with,
-   * where its weather comes from, what it is short of) and leaves out what
-   * tunes the model: the drainage law, the thresholds, the multiplier, the
-   * lead time. Those have sound defaults, and meeting them by accident is how
-   * a working installation gets broken.
-   */
   /** The crop factor of each month: a table for a crop that grows through the year. */
   private _cropFactorByMonth(
     zone: SmartIrrigationZone,
@@ -866,6 +857,15 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     `;
   }
 
+  /**
+   * A field only the advanced panel shows.
+   *
+   * The standard panel keeps what a zone is (its name, what it waters with,
+   * where its weather comes from, what it is short of) and leaves out what
+   * tunes the model: the drainage law, the thresholds, the multiplier, the
+   * lead time. Those have sound defaults, and meeting them by accident is how
+   * a working installation gets broken.
+   */
   private _adv(content: TemplateResult | string): TemplateResult | string {
     return this.config?.ui_mode === "advanced" ? content : "";
   }
@@ -2231,18 +2231,29 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                   ${localize("panels.zones.sections.status", lang)}
                 </div>
                 ${this._bucketRow(zone, index, lang)}
-                ${this._valueRow(
-                  html`${localize("panels.zones.labels.et-deficiency", lang)}`,
-                  zone.et_deficiency != null
-                    ? `${this._n(Number(zone.et_deficiency), 2)} ${unit_text(
-                        this.config,
-                        ZONE_BUCKET,
-                      )}`
-                    : "—",
-                )}
-                <div class="setting-help">
-                  ${localize("panels.zones.labels.et-deficiency-help", lang)}
-                </div>
+                ${
+                  // A figure to compare setups by: the advanced panel's.
+                  this._adv(html`
+                    ${this._valueRow(
+                      html`${localize(
+                        "panels.zones.labels.et-deficiency",
+                        lang,
+                      )}`,
+                      zone.et_deficiency != null
+                        ? `${this._n(Number(zone.et_deficiency), 2)} ${unit_text(
+                            this.config,
+                            ZONE_BUCKET,
+                          )}`
+                        : "—",
+                    )}
+                    <div class="setting-help">
+                      ${localize(
+                        "panels.zones.labels.et-deficiency-help",
+                        lang,
+                      )}
+                    </div>
+                  `)
+                }
                 ${this._durationRow(zone, index, lang, durationReadonly)}
                 ${durationReadonly
                   ? html`<div class="setting-help">

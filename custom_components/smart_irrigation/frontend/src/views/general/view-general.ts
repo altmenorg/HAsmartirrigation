@@ -566,11 +566,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           </div>`;
       }
 
-      r2 = html`<ha-card header="${localize(
-        "panels.general.cards.automatic-update.header",
-        this.hass.language,
-      )}",
-      this.hass.language)}">${r2}</ha-card>`;
+      r2 = html`<ha-card
+        header="${localize(
+          "panels.general.cards.automatic-update.header",
+          this.hass.language,
+        )}"
+        >${r2}</ha-card
+      >`;
 
       // Recording every change of a sensor is for those who have a rain gauge
       // or a sensor that moves all day: the advanced mode, unless it is already
@@ -2582,43 +2584,48 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 this.hass.language,
               )}
             </div>
-            <select
-              class="field"
-              @change=${(e: Event) =>
-                this.handleConfigChange({
-                  active_start_trigger: (e.target as HTMLSelectElement).value,
-                })}
-            >
-              <option
-                value="default"
-                ?selected=${(this.config.active_start_trigger || "default") ===
-                "default"}
+            <div class="select-wrap">
+              <select
+                class="field"
+                @change=${(e: Event) =>
+                  this.handleConfigChange({
+                    active_start_trigger: (e.target as HTMLSelectElement).value,
+                  })}
               >
-                ${localize(
-                  "irrigation_start_triggers.active_default",
-                  this.hass.language,
+                <option
+                  value="default"
+                  ?selected=${(this.config.active_start_trigger ||
+                    "default") === "default"}
+                >
+                  ${localize(
+                    "irrigation_start_triggers.active_default",
+                    this.hass.language,
+                  )}
+                </option>
+                ${triggers.map(
+                  (t) => html`
+                    <option
+                      value="${t.name}"
+                      ?selected=${this.config!.active_start_trigger === t.name}
+                    >
+                      ${t.name}
+                    </option>
+                  `,
                 )}
-              </option>
-              ${triggers.map(
-                (t) => html`
-                  <option
-                    value="${t.name}"
-                    ?selected=${this.config!.active_start_trigger === t.name}
-                  >
-                    ${t.name}
-                  </option>
-                `,
-              )}
-              <option
-                value="none"
-                ?selected=${this.config.active_start_trigger === "none"}
-              >
-                ${localize(
-                  "irrigation_start_triggers.active_none",
-                  this.hass.language,
-                )}
-              </option>
-            </select>
+                <option
+                  value="none"
+                  ?selected=${this.config.active_start_trigger === "none"}
+                >
+                  ${localize(
+                    "irrigation_start_triggers.active_none",
+                    this.hass.language,
+                  )}
+                </option>
+              </select>
+              <svg class="chev" viewBox="0 0 24 24">
+                <path d=${mdiMenuDown}></path>
+              </svg>
+            </div>
           </div>
           <div class="trigger-active-hint">
             ${localize(
@@ -3359,26 +3366,31 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         <div class="setting-label">
           ${localize("observed_watering.sequencing_label", lang)}
         </div>
-        <select
-          class="field"
-          @change=${(e: Event) =>
-            this.handleConfigChange({
-              zone_sequencing: (e.target as HTMLSelectElement).value,
-            })}
-        >
-          <option
-            value="sequential"
-            ?selected=${this.config.zone_sequencing === "sequential"}
+        <div class="select-wrap">
+          <select
+            class="field"
+            @change=${(e: Event) =>
+              this.handleConfigChange({
+                zone_sequencing: (e.target as HTMLSelectElement).value,
+              })}
           >
-            ${localize("observed_watering.sequencing.sequential", lang)}
-          </option>
-          <option
-            value="parallel"
-            ?selected=${this.config.zone_sequencing === "parallel"}
-          >
-            ${localize("observed_watering.sequencing.parallel", lang)}
-          </option>
-        </select>
+            <option
+              value="sequential"
+              ?selected=${this.config.zone_sequencing === "sequential"}
+            >
+              ${localize("observed_watering.sequencing.sequential", lang)}
+            </option>
+            <option
+              value="parallel"
+              ?selected=${this.config.zone_sequencing === "parallel"}
+            >
+              ${localize("observed_watering.sequencing.parallel", lang)}
+            </option>
+          </select>
+          <svg class="chev" viewBox="0 0 24 24">
+            <path d=${mdiMenuDown}></path>
+          </svg>
+        </div>
       </div>
       <div class="setting-note">
         ${localize("observed_watering.sequencing_description", lang)}
@@ -3691,16 +3703,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               }),
             1,
           )}
-          <div class="card-content">
-            <div
-              style="color: var(--secondary-text-color); font-size: 0.875rem; margin-top: 8px;"
-            >
-              ${localize(
-                "days_between_irrigation.help_text",
-                this.hass.language,
-              )}
-            </div>
-          </div>
         </div>
       </ha-card>
     `;

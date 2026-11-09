@@ -1190,8 +1190,7 @@
   "days_between_irrigation": {
     "title": "Dagen Tussen Irrigaties",
     "description": "Configureer het minimum aantal dagen dat moet verstrijken tussen irrigatie gebeurtenissen. Dit helpt bij het controleren van de bevloeiingsfrequentie voor waterbesparing en plantgezondheid beheer.\n\nTypische gebruikssituaties:\n• Gazonverzorging: 1-2 dag intervallen voorkomen overbewatering\n• Droogte beperkingen: 6+ dag intervallen voor wekelijkse bewatering\n• Diepwortelende planten: 3-7 dag intervallen voor minder frequente bewatering\n• Waterbesparing: aanpasbaar op basis van klimaat en bodemcondities",
-    "label": "Minimum dagen tussen irrigaties",
-    "help_text": "Stel in op 0 om deze functie uit te schakelen. Waarden van 1 tot 365 dagen worden ondersteund. Deze instelling werkt samen met de bestaande logica voor neerslagvoorspellingen. Voor een zone kan op het tabblad 'Zones' een afzonderlijk aantal dagen worden ingesteld. Deze waarde heeft voor die zone voorrang op de algemene instelling."
+    "label": "Minimum dagen tussen irrigaties"
   },
   "planning": {
     "title": "Planning",

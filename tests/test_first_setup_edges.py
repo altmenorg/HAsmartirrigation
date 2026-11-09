@@ -25,7 +25,21 @@ NEW_PANEL_KEYS = [
     "panels.zones.labels.valve-off-link",
     "panels.info.gaps.no_valve_path.action",
     "weather_skip.forecast_set_up_service",
+    "panels.mappings.cards.add-mapping.actions.cancel",
 ]
+
+# The options of the panel's selects, filled in as a zone shows them. The
+# select is 360 px wide: the longer ones were cut off mid-word ("Standard
+# (Sonnenaufgang minus gesamte Bewäss…"), so what they meant is in the hint.
+SELECT_OPTIONS = [
+    ("irrigation_start_triggers.active_default", {}),
+    ("irrigation_start_triggers.active_none", {}),
+    ("observed_watering.sequencing.sequential", {}),
+    ("observed_watering.sequencing.parallel", {}),
+    ("panels.zones.labels.soil-types.default", {"{value}": "50,8 mm/h"}),
+    ("panels.zones.labels.plant-types.default", {"{value}": "1,0"}),
+]
+SELECT_FITS = 40
 
 
 def _get(tree: dict, path: str):
@@ -67,3 +81,30 @@ def test_the_master_switch_has_the_panels_name(lang):
     entity = _load(ENTITIES, lang)["entity"]["switch"]["irrigation_enabled"]["name"]
     panel = _get(_load(PANEL, lang), "panels.general.cards.master-switch.label")
     assert entity == panel
+
+
+@pytest.mark.parametrize("lang", ["en", "de"])
+@pytest.mark.parametrize(("key", "values"), SELECT_OPTIONS)
+def test_a_select_option_fits_its_select(lang, key, values):
+    text = _get(_load(PANEL, lang), key)
+    for placeholder, value in values.items():
+        text = text.replace(placeholder, value)
+    assert len(text) <= SELECT_FITS, text
+
+
+@pytest.mark.parametrize("lang", ["en", "de"])
+def test_the_trigger_hint_says_what_default_and_none_do(lang):
+    """The option names got short; the hint carries what they mean."""
+    hint = _get(_load(PANEL, lang), "irrigation_start_triggers.active_hint")
+    sunrise, none = {"en": ("sunrise", "None"), "de": ("Sonnenaufgang", "Keiner")}[lang]
+    assert sunrise in hint and none in hint
+
+
+def test_days_between_says_it_once():
+    """The card's description already says 0 means no limit; the help text
+    below it said it again, and is gone in every language and from the view."""
+    for path in PANEL.glob("*.json"):
+        days = json.loads(path.read_text("utf-8")).get("days_between_irrigation", {})
+        assert "help_text" not in days, path.name
+    view = ROOT / "frontend" / "src" / "views" / "general" / "view-general.ts"
+    assert "days_between_irrigation.help_text" not in view.read_text("utf-8")

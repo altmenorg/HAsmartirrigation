@@ -1190,8 +1190,7 @@
   "days_between_irrigation": {
     "title": "Kastelujen väliset päivät",
     "description": "Määritä vähimmäismäärä päiviä, joiden on kuluttava kastelujen välillä. Tämä auttaa hallitsemaan kastelutiheyttä veden säästämiseksi ja kasvien terveyden ylläpitämiseksi.\n\nTyypillisiä käytännön käyttötapauksia:\n• Nurmikon hoito: 1–2 päivän välit estävät liikakastelun\n• Kuivuusrajoitukset: 6+ päivän välit viikoittaiseen kasteluun\n• Syväjuuriset kasvit: 3–7 päivän välit harvempaan kasteluun\n• Veden säästö: Mukautettavissa ilmaston ja maaperän olosuhteiden mukaan",
-    "label": "Vähimmäismäärä päiviä kastelujen välillä",
-    "help_text": "Aseta arvoon 0 poistaaksesi tämän ominaisuuden käytöstä. Arvot väliltä 1–365 päivää ovat tuettuja. Tämä asetus toimii yhdessä olemassa olevan sadeennustelogiikan kanssa."
+    "label": "Vähimmäismäärä päiviä kastelujen välillä"
   },
   "planning": {
     "title": "Suunnittelu",

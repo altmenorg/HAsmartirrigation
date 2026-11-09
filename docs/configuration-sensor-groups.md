@@ -18,7 +18,7 @@ It records and nothing more. It used to calculate the zones again at every chang
 With it on, a group's readings are combined differently: see the column *Expected aggregation for continuous updates* below.
 
 ## Adding a sensor group
-Enter a sensor group name and select `Add sensor groups`. Your sensor group is added and you 'wire up' the sensors.
+Select `Add sensor group` below the groups, enter a name and add it; with no group yet the field is already open. Your sensor group is added and you 'wire up' the sensors.
 
 ## Configuring a sensor group
 Apart from changing the name, you can specify the source where to retrieve the weather data metrics. Metrics can be retrieved from a weather service (assuming you set it up), a sensor or a static value. When using a sensor or static value as a source, take care to make sure the unit the integration expects is the same as your sensor provides. You can choose which aggregation to use like average, maximum, minimum etc.

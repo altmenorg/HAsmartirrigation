@@ -262,8 +262,8 @@
             "auto-update-enabled": "Automatisches Update der Wetterdaten",
             "auto-update-schedule": "Aktualisierungszeitplan",
             "auto-update-time": "Aktualisieren um",
-            "auto-update-interval": "Update der Sensordaten alle",
-            "auto-update-delay": "Update Verzögerung"
+            "auto-update-interval": "Wetterdaten lesen alle",
+            "auto-update-delay": "Erste Aktualisierung verzögern um"
           },
           "options": {
             "minutes": "Minuten",
@@ -467,7 +467,8 @@
       "cards": {
         "add-mapping": {
           "actions": {
-            "add": "Hinzufügen"
+            "add": "Hinzufügen",
+            "cancel": "Abbrechen"
           },
           "header": "Sensorgruppe hinzufügen"
         },
@@ -740,7 +741,7 @@
         "soil-type": "Boden",
         "plant-type": "Was hier wächst",
         "soil-types": {
-          "default": "Noch nicht gewählt – gerechnet mit {value}",
+          "default": "Noch nicht gewählt: {value}",
           "sand": "Sandig",
           "sandy_loam": "Sandiger Lehm",
           "loam": "Lehm",
@@ -749,7 +750,7 @@
           "custom": "Ich setze die Drainagerate selbst"
         },
         "plant-types": {
-          "default": "Noch nicht gewählt – gerechnet mit Pflanzenfaktor {value}",
+          "default": "Noch nicht gewählt: Faktor {value}",
           "lawn": "Rasen",
           "vegetables": "Gemüse",
           "flowers": "Blumen",
@@ -1095,8 +1096,8 @@
     "title": "Start-Auslöser",
     "description": "Wann die Bewässerung startet. Standardmäßig endet sie bei Sonnenaufgang; füge einen Auslöser für einen anderen Moment hinzu: Sonnenuntergang, Azimut oder Uhrzeit, mit Versatz.",
     "active_label": "Aktiver Auslöser",
-    "active_default": "Standard (Sonnenaufgang minus gesamte Bewässerungsdauer)",
-    "active_hint": "Nur der gewählte Auslöser startet die Bewässerung, einmal am Tag.",
+    "active_default": "Standard: fertig bis Sonnenaufgang",
+    "active_hint": "Nur der gewählte Auslöser startet die Bewässerung, einmal am Tag. Standard startet so, dass alle Zonen bis Sonnenaufgang fertig sind; mit Keiner startet Smart Irrigation nichts.",
     "usage_before": "Wenn ein Auslöser ausgelöst wird, sendet Smart Irrigation das Ereignis ",
     "usage_after": " — reagiere darauf in einer Automatisierung, um die Bewässerung zu starten. Die Daten enthalten trigger_name, trigger_type und offset_minutes, um die Auslöser zu unterscheiden. An einem Tag, der wegen Regen oder der Tage zwischen Bewässerungen aussetzt, kommt kein Ereignis.",
     "add_trigger": "Auslöser hinzufügen",
@@ -1158,7 +1159,7 @@
       "azimuth_explanation": "Das Sonnenazimut ist die Himmelsrichtung der Sonne. 0°=Nord, 90°=Ost, 180°=Süd, 270°=West. Du kannst einen beliebigen Winkelwert eingeben (z. B. 450°=90°, -30°=330°). Damit löst du die Bewässerung aus, wenn die Sonne eine bestimmte Position erreicht.",
       "multiple_triggers": "Du kannst mehrere Auslöser anlegen, aber nur der als aktiv gewählte startet die Bewässerung. Die anderen bleiben für später erhalten."
     },
-    "active_none": "Keiner (Smart Irrigation startet keine Bewässerung)",
+    "active_none": "Keiner",
     "none_selected": "Kein Auslöser ist aktiv: Smart Irrigation startet keine Bewässerung, egal wie das Wetter ist. Die Dauern werden weiterhin berechnet; starte die Bewässerung selbst oder über eine eigene Automatisierung."
   },
   "seasonal_adjustments": {
@@ -1200,8 +1201,7 @@
   "days_between_irrigation": {
     "title": "Tage zwischen Bewässerungen",
     "description": "Die Mindestzahl an Tagen zwischen zwei Bewässerungen einer Zone; 0 heißt keine Grenze. Rasen verträgt kurze Abstände, tiefwurzelnde Pflanzen 3 bis 7 Tage mit mehr Wasser je Lauf; 7 passt zu einer Vorgabe „einmal pro Woche“. Eine Zone kann ihren eigenen Wert haben.",
-    "label": "Mindest-Tage zwischen Bewässerungen",
-    "help_text": "Setze 0, um diese Funktion abzuschalten. Werte von 1-365 Tagen werden unterstützt. Diese Einstellung funktioniert zusammen mit der bestehenden Niederschlagsprognose-Logik."
+    "label": "Mindest-Tage zwischen Bewässerungen"
   },
   "planning": {
     "title": "Planung",

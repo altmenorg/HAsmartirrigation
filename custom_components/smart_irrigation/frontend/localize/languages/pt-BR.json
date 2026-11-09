@@ -1190,8 +1190,7 @@
   "days_between_irrigation": {
     "title": "Dias entre irrigações",
     "description": "Configure o número mínimo de dias que devem se passar entre os eventos de irrigação. Isto ajuda a controlar a frequência de irrigação para conservação de água e manejo da saúde das plantas.\n\nCasos de uso típicos do mundo real:\n• Cuidado com o gramado: intervalos de 1 a 2 dias evitam o excesso de irrigação\n• Restrições de seca: intervalos de 6+ dias para irrigação semanal\n• Plantas de raízes profundas: intervalos de 3 a 7 dias para irrigação menos frequente\n• Conservação de água: personalizável conforme as condições de clima e solo",
-    "label": "Mínimo de dias entre irrigações",
-    "help_text": "Defina como 0 para desativar este recurso. Valores de 1 a 365 dias são suportados. Esta configuração funciona em conjunto com a lógica de previsão de precipitação existente."
+    "label": "Mínimo de dias entre irrigações"
   },
   "planning": {
     "title": "Planejamento",

@@ -262,8 +262,8 @@
             "auto-update-enabled": "Automatically update weather data",
             "auto-update-schedule": "Update schedule",
             "auto-update-time": "Update at",
-            "auto-update-interval": "Update sensor data every",
-            "auto-update-delay": "Update delay"
+            "auto-update-interval": "Read the weather every",
+            "auto-update-delay": "Delay before the first update"
           },
           "options": {
             "minutes": "minutes",
@@ -467,9 +467,10 @@
       "cards": {
         "add-mapping": {
           "actions": {
-            "add": "Add sensor group"
+            "add": "Add sensor group",
+            "cancel": "Cancel"
           },
-          "header": "Add sensor groups"
+          "header": "Add sensor group"
         },
         "mapping": {
           "aggregates": {
@@ -740,7 +741,7 @@
         "soil-type": "Soil",
         "plant-type": "What grows here",
         "soil-types": {
-          "default": "Not chosen yet – calculated with {value}",
+          "default": "Not chosen yet: {value}",
           "sand": "Sandy",
           "sandy_loam": "Sandy loam",
           "loam": "Loam",
@@ -749,7 +750,7 @@
           "custom": "I set the drainage rate myself"
         },
         "plant-types": {
-          "default": "Not chosen yet – calculated with crop factor {value}",
+          "default": "Not chosen yet: factor {value}",
           "lawn": "Lawn",
           "vegetables": "Vegetables",
           "flowers": "Flowers",
@@ -1095,8 +1096,8 @@
     "title": "Start triggers",
     "description": "When the watering starts. By default it finishes at sunrise; add a trigger for another moment: sunset, an azimuth or a time, with an offset.",
     "active_label": "Active trigger",
-    "active_default": "Default (sunrise minus total watering duration)",
-    "active_hint": "Only the selected trigger starts the watering, once a day.",
+    "active_default": "Default: done by sunrise",
+    "active_hint": "Only the selected trigger starts the watering, once a day. Default starts so that every zone is done by sunrise; with None, Smart Irrigation starts nothing.",
     "usage_before": "When a trigger fires, Smart Irrigation emits the event ",
     "usage_after": " — react to it in an automation to start watering. Its data carries trigger_name, trigger_type and offset_minutes, to tell the triggers apart. On a day skipped for rain or for the days between irrigation, no event fires.",
     "add_trigger": "Add trigger",
@@ -1158,7 +1159,7 @@
       "azimuth_explanation": "Solar azimuth is the compass direction of the sun. 0°=North, 90°=East, 180°=South, 270°=West. You can enter any angle value (e.g., 450° = 90°, -30° = 330°). Use this to trigger irrigation when the sun reaches a specific position.",
       "multiple_triggers": "You can create several triggers, but only the one selected as active starts irrigation. The others are kept for later."
     },
-    "active_none": "None (Smart Irrigation starts no watering)",
+    "active_none": "None",
     "none_selected": "No trigger is active: Smart Irrigation starts no watering, whatever the weather. The durations are still calculated; start the watering yourself or from an automation of your own."
   },
   "seasonal_adjustments": {
@@ -1200,8 +1201,7 @@
   "days_between_irrigation": {
     "title": "Days between irrigation",
     "description": "The fewest days between two waterings of a zone; 0 is no limit. Lawns do well with short intervals, deep-rooted plants with 3 to 7 days and more water per run; 7 fits a once-a-week watering rule. A zone can set its own.",
-    "label": "Minimum days between irrigation",
-    "help_text": "Set to 0 to disable this feature. Values from 1-365 days are supported. This setting works alongside existing precipitation forecasting logic. A zone can have its own number of days in the Zones tab, which replaces this setting for that zone."
+    "label": "Minimum days between irrigation"
   },
   "planning": {
     "title": "Planning",

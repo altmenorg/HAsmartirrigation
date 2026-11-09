@@ -158,7 +158,7 @@ The **Clear all weather data** action is still there for a deliberate reset.
 ## Control
 
 ### Start triggers
-The **Start triggers** card holds the active trigger select. Its last choice is **None (Smart Irrigation starts no watering)**: nothing starts the watering, whatever the weather, while the durations are still calculated. It is the way to block Smart Irrigation from watering. The [Info page](usage-info.md) then says "No trigger is active". No message is shown for the default trigger.
+The **Start triggers** card holds the active trigger select. Its last choice is **None**: nothing starts the watering, whatever the weather, while the durations are still calculated. It is the way to block Smart Irrigation from watering. The [Info page](usage-info.md) then says "No trigger is active". No message is shown for the default trigger.
 
 ### Full control and observed watering
 **Full control** turns on valve control and adds a Watering tab, where the start trigger, the sequencing and cycle and soak then live: see [the full controller](usage-full-controller.md). **Observed watering** credits the water balance with what really ran: see [observed watering](configuration-closed-loop.md).

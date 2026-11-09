@@ -1190,8 +1190,7 @@
   "days_between_irrigation": {
     "title": "Dagar mellan bevattningstillfällen",
     "description": "Ange hur många dagar som minst ska gå mellan bevattningstillfällena. Anpassa intervallet efter växternas behov och hur du vill hushålla med vattnet.\n\nExempel:\n• Gräsmattor: 1–2 dagars intervall för att undvika övervattning\n• Bevattningsrestriktioner vid torka: minst 6 dagars intervall för bevattning en gång i veckan\n• Växter med djupa rötter: 3–7 dagars intervall för glesare bevattning\n• Vattenbesparing: anpassa intervallet efter klimat och markförhållanden",
-    "label": "Minsta antal dagar mellan bevattningstillfällena",
-    "help_text": "Ange 1–365 dagar eller 0 för att stänga av funktionen. Hänsyn tas också till nederbördsprognosen. På fliken Zoner kan du ange ett eget intervall för en zon. Det ersätter då den här inställningen för just den zonen."
+    "label": "Minsta antal dagar mellan bevattningstillfällena"
   },
   "planning": {
     "title": "Planering",
