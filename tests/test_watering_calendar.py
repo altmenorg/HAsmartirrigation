@@ -319,6 +319,29 @@ class TestWateringCalendar:
         assert zone_data["monthly_estimates"] == []
 
     @pytest.mark.asyncio
+    async def test_a_zone_without_sensor_group_is_no_warning(self, coordinator, caplog):
+        """A manual zone often reads no weather: no calendar, and nothing to warn.
+
+        It was logged as a warning every time the panel opened.
+        """
+        coordinator.store.get_zone.return_value = {
+            ZONE_ID: 1,
+            ZONE_NAME: "Hecken",
+            ZONE_STATE: "manual",
+            ZONE_MAPPING: None,
+            ZONE_MODULE: None,
+        }
+
+        with caplog.at_level("DEBUG"):
+            calendar_data = await coordinator.async_generate_watering_calendar(
+                zone_id=1
+            )
+
+        assert calendar_data[1]["monthly_estimates"] == []
+        assert "error" in calendar_data[1]
+        assert not [r for r in caplog.records if r.levelname == "WARNING"]
+
+    @pytest.mark.asyncio
     async def test_calculate_monthly_et_pyeto(self, coordinator, mock_pyeto_module):
         """Test monthly ET calculation using PyETO."""
         month_data = {

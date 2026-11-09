@@ -19,6 +19,7 @@ import {
   deficitOf,
   depthLabel,
   durationLabel,
+  friendlyDuration,
   momentLabel,
   nextStartState,
   programLabel,
@@ -459,7 +460,7 @@ export class SmartIrrigationCard extends LitElement {
           ${needed
             ? html`&middot;
               ${this._t("runs_for", {
-                duration: this._duration(now.duration),
+                duration: friendlyDuration(now.duration),
               })}`
             : ""}
           ${noValve

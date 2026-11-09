@@ -71,6 +71,7 @@ import {
   waterVolume,
   formatNumber,
   navigate,
+  linkedValveDomains,
 } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
 import { localize } from "../../../localize/localize";
@@ -78,7 +79,6 @@ import { askConfirmation, askNumber } from "../../dialogs/confirmation-dialog";
 import {
   CONF_METRIC,
   DOMAIN,
-  UNIT_SECONDS,
   ZONE_BUCKET,
   ZONE_DRAINAGE_RATE,
   DEFAULT_DRAINAGE_RATE_MM_H,
@@ -614,13 +614,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
    */
   /** A run time said the way one says it: 14 min 33 s, 1 h 05 min. */
   private _friendlyDuration(seconds: number): string {
-    const total = Math.max(0, Math.round(seconds || 0));
-    const h = Math.floor(total / 3600);
-    const m = Math.floor((total % 3600) / 60);
-    const sec = total % 60;
-    if (h > 0) return `${h} h ${String(m).padStart(2, "0")} min`;
-    if (m > 0) return sec ? `${m} min ${sec} s` : `${m} min`;
-    return `${sec} s`;
+    return formatDuration(seconds);
   }
 
   private _volumeText(seconds: number, throughput: number): string {
@@ -1478,8 +1472,8 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       "panels.zones.labels.states." + zone.state,
       lang,
     );
-    // "hh:mm:ss (12.3 L)" — the run time reads better than a raw second count,
-    // and the volume it implies is what actually matters when watering.
+    // "2 min (12.3 L)": the run time as it is said everywhere else, and the
+    // volume it implies, which is what actually matters when watering.
     const durationText = html`${formatDuration(zone.duration)}
     (${this._n(waterVolume(zone.duration, zone.throughput), 1)}
     ${output_unit(this.config, ZONE_WATER_VOLUME)})`;
@@ -1671,21 +1665,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                         localize("panels.zones.labels.linked-entity", lang),
                         localize("panels.zones.labels.optional", lang),
                         zone.linked_entity,
-                        this.config?.full_controller
-                          ? [
-                              "switch",
-                              "valve",
-                              "input_boolean",
-                              "binary_sensor",
-                              "light",
-                              "cover",
-                            ]
-                          : [
-                              "switch",
-                              "valve",
-                              "input_boolean",
-                              "binary_sensor",
-                            ],
+                        linkedValveDomains(this.config),
                         (v) =>
                           this.handleEditZone(index, {
                             ...zone,
@@ -2472,14 +2452,19 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         </div>
       `;
     }
+    // Entered in minutes, stored in seconds. It was entered in seconds (120
+    // for 2 min), while "Water" next to it asks in minutes.
+    const seconds = Number(zone.duration) || 0;
     return html`${this._numRow(
         label,
-        UNIT_SECONDS,
-        zone.duration,
+        localize("common.units.minutes", lang),
+        zone.duration === undefined || zone.duration === null
+          ? zone.duration
+          : +(seconds / 60).toFixed(2),
         (v) =>
           this.handleEditZone(index, {
             ...zone,
-            [ZONE_DURATION]: parseInt(v, 10),
+            [ZONE_DURATION]: Math.max(0, Math.round(parseFloat(v) * 60) || 0),
           }),
         1,
       )}

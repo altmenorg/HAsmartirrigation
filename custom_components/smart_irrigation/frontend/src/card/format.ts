@@ -67,7 +67,24 @@ export const depthLabel = (
     ? `${formatNumber(value, 2, locale, language)} in`
     : `${formatNumber(value, 1, locale, language)} mm`;
 
-/** A run length as hh:mm:ss, dropping the hours when there are none. */
+/**
+ * A run length said the way one says it: 1 h 05 min, 14 min 33 s, 2 min, 45 s.
+ *
+ * The panel and the card wrote the same duration five ways: "00:02:00",
+ * "1:00:00", "1 h 00 min", "60 min", "1 h 3 min". This is the one way, for a
+ * duration that is read. A countdown that ticks keeps durationLabel.
+ */
+export const friendlyDuration = (seconds?: number | null): string => {
+  const total = Math.max(0, Math.round(Number(seconds) || 0));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  if (h > 0) return `${h} h ${String(m).padStart(2, "0")} min`;
+  if (m > 0) return s ? `${m} min ${s} s` : `${m} min`;
+  return `${s} s`;
+};
+
+/** A countdown as m:ss, or h:mm:ss with hours. */
 export const durationLabel = (seconds: number): string => {
   const total = Math.max(0, Math.round(seconds));
   const h = Math.floor(total / 3600);

@@ -3882,7 +3882,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         const count = (this.zones || []).filter(
           (zone) => !!zone.soil_moisture_sensor,
         ).length;
-        return count > 0 ? t("cond_soil", "{n}", String(count)) : "";
+        if (count <= 0) return "";
+        return count === 1
+          ? t("cond_soil_one", "{n}", String(count))
+          : t("cond_soil", "{n}", String(count));
       }
       default:
         return "";

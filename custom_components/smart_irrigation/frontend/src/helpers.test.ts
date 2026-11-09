@@ -41,6 +41,8 @@ import {
   suggestSources,
   setupZoneMethod,
   splitChosen,
+  linkedValveDomains,
+  formatDuration,
 } from "./helpers";
 
 /**
@@ -760,5 +762,48 @@ describe("sources left without a sensor", () => {
         localize("panels.setup.calc-duration", lang, "{duration}", "D"),
       ).toContain("D");
     }
+  });
+});
+
+describe("the zone's valve field", () => {
+  it("offers a binary sensor only while it is watched, not opened", () => {
+    expect(linkedValveDomains({})).toContain("binary_sensor");
+    expect(
+      linkedValveDomains({ direct_valve_control_enabled: true }),
+    ).not.toContain("binary_sensor");
+    expect(linkedValveDomains({ full_controller: true })).not.toContain(
+      "binary_sensor",
+    );
+  });
+  it("opens a light or a cover only as the full controller", () => {
+    expect(linkedValveDomains({ full_controller: true })).toEqual(
+      expect.arrayContaining(["switch", "valve", "light", "cover"]),
+    );
+    expect(linkedValveDomains({ direct_valve_control_enabled: true })).toEqual([
+      "switch",
+      "valve",
+      "input_boolean",
+    ]);
+  });
+});
+
+describe("the texts of daily use", () => {
+  for (const lang of ["en", "de"]) {
+    it(`say what a manual zone does (${lang})`, () => {
+      const status = localize("panels.zones.status.manual", lang);
+      expect(status).not.toMatch(/only when you ask|nur, wenn du es verlangst/);
+    });
+    it(`say one zone and several apart (${lang})`, () => {
+      expect(
+        localize("panels.info.cards.next-run.sub-watering", lang),
+      ).not.toMatch(/\(s\)|\(n\)/);
+      expect(
+        localize("panels.info.cards.next-run.sub-watering-one", lang),
+      ).not.toMatch(/\(s\)|\(n\)/);
+    });
+  }
+  it("give the panel's durations one form", () => {
+    expect(formatDuration(120)).toBe("2 min");
+    expect(formatDuration(3600)).toBe("1 h 00 min");
   });
 });

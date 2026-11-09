@@ -6,6 +6,7 @@ import {
   deficitOf,
   depthLabel,
   durationLabel,
+  friendlyDuration,
   momentLabel,
   nextStartState,
   programLabel,
@@ -339,5 +340,19 @@ describe("programLabel", () => {
         "Hauptprogramm",
       ),
     ).toBe("Main program");
+  });
+});
+
+describe("a duration for reading", () => {
+  it("is said the same way everywhere", () => {
+    expect(friendlyDuration(3600)).toBe("1 h 00 min");
+    expect(friendlyDuration(3900)).toBe("1 h 05 min");
+    expect(friendlyDuration(873)).toBe("14 min 33 s");
+    expect(friendlyDuration(120)).toBe("2 min");
+    expect(friendlyDuration(45)).toBe("45 s");
+  });
+  it("has nothing below zero or for nothing", () => {
+    expect(friendlyDuration(-5)).toBe("0 s");
+    expect(friendlyDuration(undefined)).toBe("0 s");
   });
 });
