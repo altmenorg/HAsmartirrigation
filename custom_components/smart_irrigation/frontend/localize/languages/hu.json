@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "Információ",
-      "description": "Tekintse meg a következő öntözéssel és a rendszer állapotával kapcsolatos információkat.",
       "configuration-not-available": "A konfiguráció nem érhető el.",
       "cards": {
         "next-run": {

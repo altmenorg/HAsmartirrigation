@@ -44,6 +44,10 @@ invisible:
   installation can be correct, update its durations every night and never open
   a valve, in silence.
 
+These three stand above the sentence while they are true, since each needs
+something done. Everything else comes after it, the button to hold watering
+back first.
+
 ### Hold watering back
 
 One button postpones every zone for a day or two, for rain the forecast missed.

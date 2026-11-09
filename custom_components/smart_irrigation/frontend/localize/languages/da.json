@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "Info",
-      "description": "Se information om næste vanding og systemstatus.",
       "configuration-not-available": "Konfiguration ikke tilgængelig.",
       "cards": {
         "next-run": {

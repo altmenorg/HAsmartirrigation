@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "Pregled",
-      "description": "Kaj se bo zgodilo ob naslednjem zagonu in zakaj.",
       "configuration-not-available": "Nastavitev ni na voljo.",
       "cards": {
         "next-run": {

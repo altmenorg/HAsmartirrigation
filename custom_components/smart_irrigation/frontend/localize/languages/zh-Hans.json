@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "信息",
-      "description": "查看有关下次灌溉和系统状态的信息。",
       "configuration-not-available": "配置不可用。",
       "cards": {
         "next-run": {

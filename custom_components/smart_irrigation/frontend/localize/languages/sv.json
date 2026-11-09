@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "Info",
-      "description": "Vad som händer vid nästa bevattningsstart och varför.",
       "configuration-not-available": "Konfiguration inte tillgänglig.",
       "cards": {
         "next-run": {

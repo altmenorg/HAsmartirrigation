@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "Info",
-      "description": "Ce qui va se passer au prochain départ, et pourquoi.",
       "configuration-not-available": "Configuration indisponible.",
       "cards": {
         "next-run": {

@@ -108,3 +108,28 @@ def test_days_between_says_it_once():
         assert "help_text" not in days, path.name
     view = ROOT / "frontend" / "src" / "views" / "general" / "view-general.ts"
     assert "days_between_irrigation.help_text" not in view.read_text("utf-8")
+
+
+def test_start_opens_with_the_answer():
+    """Start opened with a card that only said what the page is for, then the
+    postponement, then the answer: on a phone at 600 px. Now only what needs
+    something done comes before the answer, and postponing after it."""
+    view = (ROOT / "frontend" / "src" / "views" / "info" / "view-info.ts").read_text(
+        "utf-8"
+    )
+    body = view[view.index("  render(): TemplateResult {") :]
+    order = [
+        body.index(f"this.{name}()")
+        for name in (
+            "renderDeliveryGap",
+            "renderStaleZones",
+            "renderNextRun",
+            "renderPostpone",
+            "renderForecast",
+        )
+    ]
+    assert order == sorted(order)
+    assert 'this.t("description")' not in body
+    for path in PANEL.glob("*.json"):
+        info = json.loads(path.read_text("utf-8"))["panels"]["info"]
+        assert "description" not in info, path.name

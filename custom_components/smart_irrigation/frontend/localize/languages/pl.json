@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "Informacje",
-      "description": "Wyświetl informacje o następnym nawadnianiu i stanie systemu.",
       "configuration-not-available": "Konfiguracja niedostępna.",
       "cards": {
         "next-run": {

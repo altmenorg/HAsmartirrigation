@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "Tiedot",
-      "description": "Tarkastele tietoja seuraavasta kastelusta ja järjestelmän tilasta.",
       "configuration-not-available": "Määritys ei ole saatavilla.",
       "cards": {
         "next-run": {

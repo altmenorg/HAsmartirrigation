@@ -336,7 +336,6 @@
     },
     "info": {
       "title": "Infos",
-      "description": "Informationen zur nächsten Bewässerung und zum Systemstatus anzeigen.",
       "configuration-not-available": "Konfiguration nicht verfügbar.",
       "cards": {
         "next-run": {

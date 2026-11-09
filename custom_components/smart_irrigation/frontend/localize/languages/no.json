@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "Info",
-      "description": "Vis informasjon om neste vanning og systemstatus.",
       "configuration-not-available": "Konfigurasjon ikke tilgjengelig.",
       "cards": {
         "next-run": {

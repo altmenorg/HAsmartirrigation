@@ -336,7 +336,6 @@
     },
     "info": {
       "title": "Info",
-      "description": "What will happen at the next start, and why.",
       "configuration-not-available": "Configuration not available.",
       "cards": {
         "next-run": {

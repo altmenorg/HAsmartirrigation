@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "Informácie",
-      "description": "Zobraziť informácie o ďalšom zavlažovaní a stave systému.",
       "configuration-not-available": "Konfigurácia nie je k dispozícii.",
       "cards": {
         "next-run": {

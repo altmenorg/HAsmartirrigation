@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "Info",
-      "description": "Bekijk informatie over de volgende irrigatie en de systeemstatus.",
       "configuration-not-available": "Configuratie niet beschikbaar.",
       "cards": {
         "next-run": {

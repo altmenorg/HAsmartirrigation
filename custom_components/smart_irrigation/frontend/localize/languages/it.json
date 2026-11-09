@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "Info",
-      "description": "Visualizza le informazioni sulla prossima irrigazione e sullo stato del sistema.",
       "configuration-not-available": "Configurazione non disponibile.",
       "cards": {
         "next-run": {
