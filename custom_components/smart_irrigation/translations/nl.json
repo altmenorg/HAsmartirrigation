@@ -107,16 +107,10 @@
     "abort": {
       "single_instance_allowed": "Slechts een enkele installatie van Smart Irrigation is toegestaan."
     },
-    "error": {
-      "name": "Geef de integratie een unieke naam."
-    },
     "step": {
       "user": {
         "title": "Smart Irrigation instellen",
-        "description": "Smart Irrigation wordt daarna ingesteld in een eigen paneel in de zijbalk: de installatieassistent maakt samen met je een sensorgroep en een eerste zone aan, en daar kies je ook de weerdienst.",
-        "data": {
-          "name": "Unieke naam van de integratie"
-        }
+        "description": "Smart Irrigation wordt daarna ingesteld in een eigen paneel in de zijbalk: de installatieassistent maakt samen met je een sensorgroep en een eerste zone aan, en daar kies je ook de weerdienst."
       }
     },
     "create_entry": {

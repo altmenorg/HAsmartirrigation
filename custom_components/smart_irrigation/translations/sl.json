@@ -107,16 +107,10 @@
     "abort": {
       "single_instance_allowed": "Dovoljena je samo ena konfiguracija Smart Irrigation."
     },
-    "error": {
-      "name": "Daj integraciji edinstveno ime."
-    },
     "step": {
       "user": {
         "title": "Nastavi Smart Irrigation",
-        "description": "Smart Irrigation nastaviš pozneje v njegovi plošči v stranski vrstici: njegov pomočnik za nastavitev s tabo ustvari skupino senzorjev in prvo cono, tam pa izbereš tudi vremensko storitev.",
-        "data": {
-          "name": "Edinstveno ime integracije"
-        }
+        "description": "Smart Irrigation nastaviš pozneje v njegovi plošči v stranski vrstici: njegov pomočnik za nastavitev s tabo ustvari skupino senzorjev in prvo cono, tam pa izbereš tudi vremensko storitev."
       }
     },
     "create_entry": {

@@ -107,16 +107,10 @@
     "abort": {
       "single_instance_allowed": "Apenas uma configuração do Smart Irrigation é permitida."
     },
-    "error": {
-      "name": "Dê um nome único à integração."
-    },
     "step": {
       "user": {
         "title": "Configurar o Smart Irrigation",
-        "description": "O Smart Irrigation é configurado depois, no próprio painel dele na barra lateral: o assistente de configuração cria com você um grupo de sensores e uma primeira zona, e o serviço de meteorologia também é escolhido lá.",
-        "data": {
-          "name": "Nome único da integração"
-        }
+        "description": "O Smart Irrigation é configurado depois, no próprio painel dele na barra lateral: o assistente de configuração cria com você um grupo de sensores e uma primeira zona, e o serviço de meteorologia também é escolhido lá."
       }
     },
     "create_entry": {

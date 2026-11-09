@@ -107,16 +107,10 @@
     "abort": {
       "single_instance_allowed": "只允许配置一个 Smart Irrigation 实例。"
     },
-    "error": {
-      "name": "请为该集成指定一个唯一名称。"
-    },
     "step": {
       "user": {
         "title": "设置 Smart Irrigation",
-        "description": "Smart Irrigation 随后在侧边栏中它自己的面板里进行设置：它的设置向导会和您一起创建一个传感器组和第一个区域，天气服务也在那里选择。",
-        "data": {
-          "name": "集成的唯一名称"
-        }
+        "description": "Smart Irrigation 随后在侧边栏中它自己的面板里进行设置：它的设置向导会和您一起创建一个传感器组和第一个区域，天气服务也在那里选择。"
       }
     },
     "create_entry": {
