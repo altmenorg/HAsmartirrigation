@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "Informacje",
-      "description": "Wyświetl informacje o następnym nawadnianiu i stanie systemu.",
       "configuration-not-available": "Konfiguracja niedostępna.",
       "cards": {
         "next-run": {
@@ -1190,8 +1189,7 @@
   "days_between_irrigation": {
     "title": "Dni między nawadnianiem",
     "description": "Skonfiguruj minimalną liczbę dni, które muszą upłynąć między zdarzeniami nawadniania. Pomaga to kontrolować częstotliwość podlewania w celu oszczędzania wody i dbania o zdrowie roślin.\n\nTypowe zastosowania w praktyce:\n• Pielęgnacja trawnika: odstępy 1–2 dni zapobiegają przelewaniu\n• Ograniczenia w czasie suszy: odstępy 6+ dni dla cotygodniowego podlewania\n• Rośliny głęboko ukorzenione: odstępy 3–7 dni dla rzadszego podlewania\n• Oszczędzanie wody: dostosowywalne w zależności od klimatu i warunków glebowych",
-    "label": "Minimalna liczba dni między nawadnianiem",
-    "help_text": "Ustaw na 0, aby wyłączyć tę funkcję. Obsługiwane są wartości od 1 do 365 dni. To ustawienie współdziała z istniejącą logiką prognozowania opadów."
+    "label": "Minimalna liczba dni między nawadnianiem"
   },
   "planning": {
     "title": "Planowanie",

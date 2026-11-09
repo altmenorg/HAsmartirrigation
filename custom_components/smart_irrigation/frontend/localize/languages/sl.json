@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "Pregled",
-      "description": "Kaj se bo zgodilo ob naslednjem zagonu in zakaj.",
       "configuration-not-available": "Nastavitev ni na voljo.",
       "cards": {
         "next-run": {
@@ -1190,8 +1189,7 @@
   "days_between_irrigation": {
     "title": "Dnevi med namakanji",
     "description": "Nastavi najmanjše število dni, ki morajo miniti med namakanji. To pomaga nadzorovati pogostost zalivanja za varčevanje z vodo in zdravje rastlin.\n\nTipični primeri uporabe:\n• Nega trate: intervali 1-2 dni preprečujejo prekomerno zalivanje\n• Omejitve med sušo: intervali 6+ dni za tedensko zalivanje\n• Rastline z globokimi koreninami: intervali 3-7 dni za redkejše zalivanje\n• Varčevanje z vodo: prilagodljivo glede na podnebje in tla",
-    "label": "Najmanjše število dni med namakanji",
-    "help_text": "Nastavi na 0, da to funkcijo izklopiš. Podprte so vrednosti od 1 do 365 dni. Ta nastavitev deluje skupaj z obstoječo logiko napovedi padavin. Cona ima lahko na zavihku Cone svoje število dni, ki za to cono nadomesti to nastavitev."
+    "label": "Najmanjše število dni med namakanji"
   },
   "planning": {
     "title": "Načrt",

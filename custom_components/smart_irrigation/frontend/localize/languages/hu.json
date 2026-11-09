@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "Információ",
-      "description": "Tekintse meg a következő öntözéssel és a rendszer állapotával kapcsolatos információkat.",
       "configuration-not-available": "A konfiguráció nem érhető el.",
       "cards": {
         "next-run": {
@@ -1190,8 +1189,7 @@
   "days_between_irrigation": {
     "title": "Öntözések közötti napok",
     "description": "Állítsa be az öntözési események között eltelő napok minimális számát. Ez segít szabályozni az öntözés gyakoriságát a vízmegtakarítás és a növények egészségének megőrzése érdekében.\n\nTipikus valós felhasználási esetek:\n• Gyepápolás: az 1-2 napos időközök megakadályozzák a túlöntözést\n• Aszálykorlátozások: 6+ napos időközök a heti öntözéshez\n• Mélygyökerű növények: 3-7 napos időközök a ritkább öntözéshez\n• Vízmegtakarítás: az éghajlat és a talajviszonyok alapján testreszabható",
-    "label": "Öntözések közötti minimális napok",
-    "help_text": "Állítsa 0-ra a funkció letiltásához. 1-365 nap közötti értékek támogatottak. Ez a beállítás a meglévő csapadék-előrejelzési logikával együtt működik. A Zónák lapon egy zónához saját napok száma is hozzárendelhető, amely az adott zóna esetében felülírja ezt a beállítást."
+    "label": "Öntözések közötti minimális napok"
   },
   "planning": {
     "title": "Tervezés",

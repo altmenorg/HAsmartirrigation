@@ -146,6 +146,6 @@ The legacy `smart_irrigation_start_irrigation_all_zones` event still fires too (
 
 Irrigation starts on a single **active trigger**, chosen in **General** under the start triggers. The triggers you define are the pool of options; only the selected one starts watering, so a run happens once per day.
 
-The default, **Default (sunrise minus total watering duration)**, times the run so it finishes right at sunrise. Add custom triggers (sunset, solar azimuth, offsets) below and pick one as the active trigger if you prefer.
+The default, **Default: done by sunrise**, times the run so it finishes right at sunrise. Add custom triggers (sunset, solar azimuth, offsets) below and pick one as the active trigger if you prefer.
 
 > Main page: [Configuration](configuration.md)

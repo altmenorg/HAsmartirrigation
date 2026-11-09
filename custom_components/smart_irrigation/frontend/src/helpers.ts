@@ -851,3 +851,33 @@ export function calculationWhenKey(
   if (config?.autocalcenabled) return "calc-daily";
   return "calc-manual";
 }
+
+/**
+ * The fields asked for, split into those a sensor was chosen for and those
+ * left empty, in the order asked.
+ */
+export function splitChosen(
+  asked: string[],
+  chosen: Record<string, string | undefined>,
+): { chosen: string[]; empty: string[] } {
+  return {
+    chosen: asked.filter((s) => !!chosen[s]),
+    empty: asked.filter((s) => !chosen[s]),
+  };
+}
+
+/**
+ * Whether a sensor group may leave a source without one: its engine does not
+ * require it, or it already has none (the select must say what is stored).
+ * With no engine known, ``required`` is null and only the second applies.
+ */
+export function noneAllowed(
+  source: string,
+  currentSource: string | undefined,
+  required: string[] | null,
+): boolean {
+  return (
+    currentSource === MAPPING_CONF_SOURCE_NONE ||
+    (required !== null && !required.includes(source))
+  );
+}

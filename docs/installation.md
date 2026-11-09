@@ -11,7 +11,7 @@ Smart Irrigation needs Home Assistant 2026.3 or later.
 Installing the Smart Irrigation integration consists of a few steps:
 
 1. [Downloading the integration](installation-download.md).
-2. Giving the integration a unique name. Setup is a single step — the weather service is no longer chosen during install; you configure it afterwards from the panel.
+2. Adding it in Home Assistant. Setup is a single step that asks nothing: the weather service, the sensor groups and the zones are set up afterwards in the panel, by its setup assistant.
 
 ![](assets/images/installation-1.png)
 

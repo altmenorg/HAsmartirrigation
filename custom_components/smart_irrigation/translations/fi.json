@@ -107,16 +107,10 @@
     "abort": {
       "single_instance_allowed": "Vain yksi Smart Irrigation -määritys on sallittu."
     },
-    "error": {
-      "name": "Anna integraatiolle yksilöllinen nimi."
-    },
     "step": {
       "user": {
         "title": "Määritä Smart Irrigation",
-        "description": "Smart Irrigation määritetään jälkeenpäin sen omassa paneelissa sivupalkissa: sen asennusavustaja luo kanssasi anturiryhmän ja ensimmäisen alueen, ja myös sääpalvelu valitaan siellä.",
-        "data": {
-          "name": "Integraation yksilöllinen nimi"
-        }
+        "description": "Smart Irrigation määritetään jälkeenpäin sen omassa paneelissa sivupalkissa: sen asennusavustaja luo kanssasi anturiryhmän ja ensimmäisen alueen, ja myös sääpalvelu valitaan siellä."
       }
     },
     "create_entry": {

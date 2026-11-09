@@ -64,3 +64,17 @@ def test_the_unit_system_does_not_change_the_answer():
     """Bucket and threshold are both stored in mm on any system (units.py)."""
     assert _sensor(_zone(-12.7, 10.2), US_CUSTOMARY_SYSTEM) is True
     assert _sensor(_zone(-7.6, 10.2), US_CUSTOMARY_SYSTEM) is False
+
+
+@pytest.mark.parametrize(
+    ("bucket", "duration", "needed"),
+    [
+        (-0.0002, 0, False),
+        (-3.0, 0, False),
+        (-3.0, 1200, True),
+    ],
+)
+def test_a_zone_that_runs_0_s_needs_nothing(bucket, duration, needed):
+    """A deficit too small to water: "needed" stood next to "Duration: 0 s"."""
+    zone = dict(_zone(bucket), **{const.ZONE_DURATION: duration})
+    assert _sensor(zone) is needed

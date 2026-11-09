@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "Info",
-      "description": "Se information om næste vanding og systemstatus.",
       "configuration-not-available": "Konfiguration ikke tilgængelig.",
       "cards": {
         "next-run": {
@@ -1190,8 +1189,7 @@
   "days_between_irrigation": {
     "title": "Dage mellem vanding",
     "description": "Konfigurér det mindste antal dage, der skal gå mellem vandingsbegivenheder. Dette hjælper med at styre vandingsfrekvensen til vandbesparelse og pleje af plantesundhed.\n\nTypiske anvendelser i den virkelige verden:\n• Plænepleje: 1-2 dages intervaller forhindrer overvanding\n• Tørkerestriktioner: 6+ dages intervaller til ugentlig vanding\n• Dybtrodede planter: 3-7 dages intervaller til mindre hyppig vanding\n• Vandbesparelse: Kan tilpasses ud fra klima- og jordforhold",
-    "label": "Mindste antal dage mellem vanding",
-    "help_text": "Sæt til 0 for at deaktivere denne funktion. Værdier fra 1-365 dage understøttes. Denne indstilling fungerer sammen med eksisterende logik for nedbørsprognoser."
+    "label": "Mindste antal dage mellem vanding"
   },
   "planning": {
     "title": "Planlægning",

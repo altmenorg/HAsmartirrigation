@@ -33,12 +33,14 @@ import {
   groupsWithRainFromService,
   missingRequiredSources,
   newGroupSource,
+  noneAllowed,
   readingUses,
   visibleGroups,
   setupRainToAsk,
   setupSourcesForEt,
   suggestSources,
   setupZoneMethod,
+  splitChosen,
 } from "./helpers";
 
 /**
@@ -694,6 +696,69 @@ describe("a zone before its first calculation", () => {
       expect(
         localize("panels.info.cards.next-run.headline-not-calculated", lang),
       ).not.toMatch(/^Translation/);
+    }
+  });
+});
+
+describe("sources left without a sensor", () => {
+  it("the review names the chosen ones and the empty ones apart", () => {
+    expect(
+      splitChosen([MAPPING_TEMPERATURE, MAPPING_DEWPOINT, MAPPING_WINDSPEED], {
+        [MAPPING_TEMPERATURE]: "sensor.t",
+        [MAPPING_DEWPOINT]: "",
+        [MAPPING_WINDSPEED]: "sensor.w",
+      }),
+    ).toEqual({
+      chosen: [MAPPING_TEMPERATURE, MAPPING_WINDSPEED],
+      empty: [MAPPING_DEWPOINT],
+    });
+  });
+
+  it("a group offers None for what its engine does not require", () => {
+    const required = [MAPPING_TEMPERATURE, MAPPING_WINDSPEED];
+    expect(
+      noneAllowed(MAPPING_PRESSURE, MAPPING_CONF_SOURCE_SENSOR, required),
+    ).toBe(true);
+    expect(
+      noneAllowed(MAPPING_TEMPERATURE, MAPPING_CONF_SOURCE_SENSOR, required),
+    ).toBe(false);
+  });
+
+  it("and keeps showing None where it is stored", () => {
+    expect(
+      noneAllowed(MAPPING_TEMPERATURE, MAPPING_CONF_SOURCE_NONE, [
+        MAPPING_TEMPERATURE,
+      ]),
+    ).toBe(true);
+    expect(noneAllowed(MAPPING_DEWPOINT, MAPPING_CONF_SOURCE_NONE, null)).toBe(
+      true,
+    );
+  });
+
+  it("without a known engine nothing else is optional", () => {
+    expect(
+      noneAllowed(MAPPING_DEWPOINT, MAPPING_CONF_SOURCE_SENSOR, null),
+    ).toBe(false);
+  });
+
+  it("has the words in en and de", () => {
+    for (const lang of ["en", "de"]) {
+      for (const key of [
+        "panels.setup.steps.review.no-sensor",
+        "panels.setup.calc-now",
+        "panels.setup.calc-nothing",
+        "panels.setup.calc-failed",
+        "panels.mappings.cards.mapping.sources.none_estimated",
+        "panels.zones.labels.valve-off",
+        "panels.zones.labels.valve-off-link",
+        "panels.info.gaps.no_valve_path.action",
+        "weather_skip.forecast_set_up_service",
+      ]) {
+        expect(localize(key, lang)).not.toMatch(/^Translation|^$/);
+      }
+      expect(
+        localize("panels.setup.calc-duration", lang, "{duration}", "D"),
+      ).toContain("D");
     }
   });
 });

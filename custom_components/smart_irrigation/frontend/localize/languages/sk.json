@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "Informácie",
-      "description": "Zobraziť informácie o ďalšom zavlažovaní a stave systému.",
       "configuration-not-available": "Konfigurácia nie je k dispozícii.",
       "cards": {
         "next-run": {
@@ -1190,8 +1189,7 @@
   "days_between_irrigation": {
     "title": "Dni Medzi Zavlažovaním",
     "description": "Nakonfigurujte minimálny počet dní, ktoré musia uplynúť medzi udalosťami zavlažovania. Toto pomáha kontrolovať frekvenciu zavlažovania pre úsporu vody a správu zdravia rastlín.\n\nTypické prípady použitia:\n• Starostlivosť o trávnik: intervaly 1-2 dní zabránia nadmernému zalievaniu\n• Obmedzenia sucha: intervaly 6+ dní pre týždenné zalievanie\n• Hlbokokorenné rastliny: intervaly 3-7 dní pre menej časté zalievanie\n• Úspora vody: prispôsobiteľné na základe podnebia a podmienok pôdy",
-    "label": "Minimálne dni medzi zavlažovaním",
-    "help_text": "Nastavte na 0 pre deaktiváciu tejto funkcie. Podporované sú hodnoty 1-365 dní. Toto nastavenie funguje spolu s existujúcou logikou predpovede zrážok."
+    "label": "Minimálne dni medzi zavlažovaním"
   },
   "planning": {
     "title": "Plánovanie",

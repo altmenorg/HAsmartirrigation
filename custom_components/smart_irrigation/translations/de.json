@@ -77,7 +77,11 @@
         "name": "Bewässerung nötig"
       },
       "watering_now": {
-        "name": "Bewässert gerade"
+        "name": "Bewässert gerade",
+        "state": {
+          "on": "Ja",
+          "off": "Nein"
+        }
       },
       "problem": {
         "name": "Problem"
@@ -94,7 +98,7 @@
         "name": "Bei Niederschlag überspringen"
       },
       "irrigation_enabled": {
-        "name": "Aktiv"
+        "name": "Berechnen und bewässern"
       }
     },
     "datetime": {
@@ -107,16 +111,10 @@
     "abort": {
       "single_instance_allowed": "Es ist nur eine Integration für Smart Irrigation zulässig."
     },
-    "error": {
-      "name": "Gib der Integration einen eindeutigen Namen."
-    },
     "step": {
       "user": {
         "title": "Smart Irrigation einrichten",
-        "description": "Eingerichtet wird Smart Irrigation danach in seinem eigenen Panel in der Seitenleiste: Der Assistent legt dort mit dir eine Sensorgruppe und eine erste Zone an, und dort wählst du auch den Wetterdienst.",
-        "data": {
-          "name": "Eindeutiger Name der Integration"
-        }
+        "description": "Eingerichtet wird Smart Irrigation danach in seinem eigenen Panel in der Seitenleiste: Der Assistent legt dort mit dir eine Sensorgruppe und eine erste Zone an, und dort wählst du auch den Wetterdienst."
       }
     },
     "create_entry": {

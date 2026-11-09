@@ -107,16 +107,10 @@
     "abort": {
       "single_instance_allowed": "Dozwolona jest tylko jedna konfiguracja Smart Irrigation."
     },
-    "error": {
-      "name": "Nadaj integracji unikalną nazwę."
-    },
     "step": {
       "user": {
         "title": "Skonfiguruj Smart Irrigation",
-        "description": "Smart Irrigation konfiguruje się potem we własnym panelu na pasku bocznym: jego asystent konfiguracji utworzy z tobą grupę czujników i pierwszą strefę, tam też wybiera się serwis pogodowy.",
-        "data": {
-          "name": "Unikalna nazwa integracji"
-        }
+        "description": "Smart Irrigation konfiguruje się potem we własnym panelu na pasku bocznym: jego asystent konfiguracji utworzy z tobą grupę czujników i pierwszą strefę, tam też wybiera się serwis pogodowy."
       }
     },
     "create_entry": {

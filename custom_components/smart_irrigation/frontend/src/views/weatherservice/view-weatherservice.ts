@@ -385,29 +385,42 @@ export class SmartIrrigationViewWeatherService extends LitElement {
                 </div>
               </div>`
             : ""}
+          ${this._use || this._info?.use_weather_service
+            ? this._renderSave(lang)
+            : ""}
+        </div>
+        ${this._info?.use_weather_service ? this._renderHistory(lang) : ""}
+      </ha-card>
+    `;
+  }
 
-          <div class="ws-actions">
-            <ha-button
-              appearance="filled"
-              ?disabled=${this._saving || this._entityMissing}
-              @click=${this._save}
-            >
-              ${this._saving
-                ? localize("panels.weatherservice.actions.saving", lang)
-                : localize("panels.weatherservice.actions.save", lang)}
-            </ha-button>
-          </div>
-          <div class="ws-note ws-reload-note">
+  /**
+   * Save, and what saving does. Without a service there is nothing to save,
+   * unless one was in use and is being turned off.
+   */
+  private _renderSave(lang: string): TemplateResult {
+    return html`
+      <div class="ws-actions">
+        <ha-button
+          appearance="filled"
+          ?disabled=${this._saving || this._entityMissing}
+          @click=${this._save}
+        >
+          ${this._saving
+            ? localize("panels.weatherservice.actions.saving", lang)
+            : localize("panels.weatherservice.actions.save", lang)}
+        </ha-button>
+      </div>
+      ${this._use
+        ? html`<div class="ws-note ws-reload-note">
             ${localize(
-              this._use && this._service === WEATHER_SERVICE_HA
+              this._service === WEATHER_SERVICE_HA
                 ? "panels.weatherservice.messages.reload-note-entity"
                 : "panels.weatherservice.messages.reload-note",
               lang,
             )}
-          </div>
-        </div>
-        ${this._renderHistory(lang)}
-      </ha-card>
+          </div>`
+        : ""}
     `;
   }
 

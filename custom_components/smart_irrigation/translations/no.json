@@ -107,16 +107,10 @@
     "abort": {
       "single_instance_allowed": "Kun én konfigurasjon av Smart Irrigation er tillatt."
     },
-    "error": {
-      "name": "Gi integrasjonen et unikt navn."
-    },
     "step": {
       "user": {
         "title": "Sett opp Smart Irrigation",
-        "description": "Smart Irrigation settes opp etterpå i sitt eget panel i sidemenyen: oppsettsassistenten oppretter en sensorgruppe og en første sone sammen med deg, og værtjenesten velges også der.",
-        "data": {
-          "name": "Unikt navn for integrasjonen"
-        }
+        "description": "Smart Irrigation settes opp etterpå i sitt eget panel i sidemenyen: oppsettsassistenten oppretter en sensorgruppe og en første sone sammen med deg, og værtjenesten velges også der."
       }
     },
     "create_entry": {

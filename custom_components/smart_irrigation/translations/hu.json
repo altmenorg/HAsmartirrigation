@@ -107,16 +107,10 @@
     "abort": {
       "single_instance_allowed": "A Smart Irrigation csak egyetlen konfigurációja engedélyezett."
     },
-    "error": {
-      "name": "Adjon egyedi nevet az integrációnak."
-    },
     "step": {
       "user": {
         "title": "Smart Irrigation beállítása",
-        "description": "A Smart Irrigation beállítása ezután a saját paneljén történik az oldalsávon: a beállítási segéd Önnel együtt létrehoz egy érzékelőcsoportot és egy első zónát, és az időjárás-szolgáltatást is ott választja ki.",
-        "data": {
-          "name": "Az integráció egyedi neve"
-        }
+        "description": "A Smart Irrigation beállítása ezután a saját paneljén történik az oldalsávon: a beállítási segéd Önnel együtt létrehoz egy érzékelőcsoportot és egy első zónát, és az időjárás-szolgáltatást is ott választja ki."
       }
     },
     "create_entry": {

@@ -331,7 +331,6 @@
     },
     "info": {
       "title": "Información",
-      "description": "Consulta información sobre el próximo riego y el estado del sistema.",
       "configuration-not-available": "Configuración no disponible.",
       "cards": {
         "next-run": {
@@ -1190,8 +1189,7 @@
   "days_between_irrigation": {
     "title": "Días Entre Riegos",
     "description": "Configure el número mínimo de días que deben pasar entre eventos de riego. Esto ayuda a controlar la frecuencia de riego para la conservación del agua y el manejo de la salud de las plantas.\n\nCasos de uso típicos:\n• Cuidado del césped: intervalos de 1-2 días previenen el exceso de riego\n• Restricciones de sequía: intervalos de 6+ días para riego semanal\n• Plantas de raíces profundas: intervalos de 3-7 días para riego menos frecuente\n• Conservación del agua: personalizable según el clima y las condiciones del suelo",
-    "label": "Días mínimos entre riegos",
-    "help_text": "Establezca en 0 para desactivar esta función. Se admiten valores de 1-365 días. Esta configuración funciona junto con la lógica de pronóstico de precipitación existente."
+    "label": "Días mínimos entre riegos"
   },
   "planning": {
     "title": "Planificación",

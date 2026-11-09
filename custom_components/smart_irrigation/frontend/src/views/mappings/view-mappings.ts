@@ -1,7 +1,7 @@
 import { TemplateResult, LitElement, html, css, CSSResultGroup } from "lit";
 import { repeat } from "lit/directives/repeat.js";
 import { query } from "lit/decorators.js";
-import { property, customElement } from "lit/decorators.js";
+import { property, customElement, state } from "lit/decorators.js";
 import { HomeAssistant } from "custom-card-helpers";
 import { loadHaForm } from "../../load-ha-elements";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -74,6 +74,7 @@ import {
   getOptionsForMappingType,
   handleError,
   newGroupSource,
+  noneAllowed,
   visibleGroups,
 } from "../../helpers";
 import {
@@ -110,6 +111,8 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
   // used to do nothing at all, and say nothing, on an empty name (#909).
   @property({ type: String })
   private newMappingName = "";
+  // Whether the field to add a group is open (always, with no group yet).
+  @state() private _addOpen = false;
 
   // True once the first data load has completed. Avoids tearing the whole view
   // down to a "loading" card on every background refresh (focus/scroll loss).
@@ -474,6 +477,7 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         // Clear the input field on successful save
         this.mappingNameInput.value = "";
         this.newMappingName = "";
+        this._addOpen = false;
         // The new group goes to the end of the list: show it.
         this.showAllMappings = true;
         // Refresh data to get the server-assigned ID
@@ -652,6 +656,20 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     }
     const engine = this.modules.find((m) => m.id === mapping.module);
     return engine?.consumes ?? null;
+  }
+
+  /**
+   * The sources this group's engine cannot do without, or null when that is
+   * not known (no engine yet): then nothing is offered as optional.
+   */
+  private requiredSources(
+    mapping: SmartIrrigationMapping | undefined,
+  ): string[] | null {
+    if (!mapping || mapping.module === undefined || mapping.module === null) {
+      return null;
+    }
+    const engine = this.modules.find((m) => m.id === mapping.module);
+    return engine?.requires ?? null;
   }
 
   private renderMapping(
@@ -945,8 +963,20 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         currentSource === MAPPING_CONF_SOURCE_WEATHER_SERVICE);
     // The rain rate of a weather entity has nothing to come from until a
     // sensor is chosen, which is what None says.
+    // A source the group's engine can do without (the assistant leaves such
+    // fields empty) can be None too, and a source already on None keeps
+    // showing it: without the option the select showed "Sensor", with no
+    // sensor behind it.
+    const required = this.requiredSources(this.mappings[index]);
+    const optional = required !== null && !required.includes(value);
     const offerNone =
-      isSpecialMapping || isPrecipitationDepth || serviceWithoutRain;
+      isSpecialMapping ||
+      isPrecipitationDepth ||
+      serviceWithoutRain ||
+      noneAllowed(value, currentSource, required);
+    const isRain =
+      value === MAPPING_PRECIPITATION ||
+      value === MAPPING_CURRENT_PRECIPITATION;
     // Every zone of the group waits for a ready-made evapotranspiration: None
     // would leave them without one, so it cannot be chosen (a group already on
     // None keeps showing it, and the note says what is missing).
@@ -988,7 +1018,9 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
             ${localize(
               value === MAPPING_EVAPOTRANSPIRATION
                 ? "panels.mappings.cards.mapping.sources.none_et"
-                : "panels.mappings.cards.mapping.sources.none",
+                : optional && !isRain
+                  ? "panels.mappings.cards.mapping.sources.none_estimated"
+                  : "panels.mappings.cards.mapping.sources.none",
               this.hass.language,
             )}
           </option>`
@@ -1892,19 +1924,42 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
         </div>
       </ha-card>
 
+      ${this.renderMappingsList()} ${this._renderAddMapping()}
+    `;
+  }
+
+  /**
+   * Adding a group, after the groups.
+   *
+   * The page opened with this form, above the groups, so everyone who came to
+   * look at a group scrolled past it; the zones page had the same and shows
+   * them first since #987. It is a button now, which opens the same field.
+   * With no group yet the field is open.
+   */
+  private _renderAddMapping(): TemplateResult {
+    const lang = this.hass!.language;
+    const empty = this.mappings.length === 0;
+    if (!empty && !this._addOpen) {
+      return html`
+        <div class="add-group-bar">
+          <ha-button
+            appearance="outlined"
+            @click=${() => this._openAddMapping()}
+          >
+            <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+            ${localize("panels.mappings.cards.add-mapping.header", lang)}
+          </ha-button>
+        </div>
+      `;
+    }
+    return html`
       <ha-card
-        header="${localize(
-          "panels.mappings.cards.add-mapping.header",
-          this.hass.language,
-        )}"
+        header="${localize("panels.mappings.cards.add-mapping.header", lang)}"
       >
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${localize(
-                "panels.mappings.labels.mapping-name",
-                this.hass.language,
-              )}
+              ${localize("panels.mappings.labels.mapping-name", lang)}
             </div>
             <input
               id="mappingNameInput"
@@ -1916,6 +1971,19 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
             />
           </div>
           <div class="si-form-actions">
+            ${empty
+              ? ""
+              : html`<ha-button
+                  appearance="plain"
+                  @click=${() => {
+                    this._addOpen = false;
+                  }}
+                >
+                  ${localize(
+                    "panels.mappings.cards.add-mapping.actions.cancel",
+                    lang,
+                  )}
+                </ha-button>`}
             <ha-button
               appearance="filled"
               @click="${this.handleAddMapping}"
@@ -1923,18 +1991,25 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
             >
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
               ${this.isSaving
-                ? localize("common.saving-messages.adding", this.hass.language)
+                ? localize("common.saving-messages.adding", lang)
                 : localize(
                     "panels.mappings.cards.add-mapping.actions.add",
-                    this.hass.language,
+                    lang,
                   )}
             </ha-button>
           </div>
         </div>
       </ha-card>
-
-      ${this.renderMappingsList()}
     `;
+  }
+
+  private _openAddMapping(): void {
+    this._addOpen = true;
+    this.updateComplete.then(() => {
+      const name = this.mappingNameInput;
+      name?.scrollIntoView({ block: "center", behavior: "smooth" });
+      name?.focus({ preventScroll: true });
+    });
   }
 
   private renderMappingsList(): TemplateResult {
@@ -2215,6 +2290,11 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     return css`
       ${globalStyle} ${modernStyle}
 
+      .add-group-bar {
+        display: flex;
+        justify-content: flex-end;
+        margin: 8px;
+      }
       /* .si-subgroup / .si-subgroup-title now live in modern-style (shared) */
       /* source radios laid out inline like the other field controls */
       .radio-group {

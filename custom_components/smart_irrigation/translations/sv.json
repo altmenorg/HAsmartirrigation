@@ -107,16 +107,10 @@
     "abort": {
       "single_instance_allowed": "Det går bara att lägga till Smart Irrigation en gång."
     },
-    "error": {
-      "name": "Ge integrationen ett unikt namn."
-    },
     "step": {
       "user": {
         "title": "Ställ in Smart Irrigation",
-        "description": "Fortsätt sedan i panelen Smart Irrigation i sidofältet. Där hjälper installationsguiden dig att skapa en sensorgrupp och din första zon. Där väljer du också vädertjänst.",
-        "data": {
-          "name": "Unikt namn för integrationen"
-        }
+        "description": "Fortsätt sedan i panelen Smart Irrigation i sidofältet. Där hjälper installationsguiden dig att skapa en sensorgrupp och din första zon. Där väljer du också vädertjänst."
       }
     },
     "create_entry": {

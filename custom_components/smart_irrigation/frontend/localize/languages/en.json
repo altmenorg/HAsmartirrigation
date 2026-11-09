@@ -156,14 +156,19 @@
           "engine": "Module",
           "sources": "Sources",
           "from-the-service": "from the weather service",
+          "no-sensor": "no sensor",
           "help": "This creates a calculation module, a sensor group and a zone, exactly as the other tabs would. Nothing is locked afterwards."
         }
       },
       "step": "step",
       "done-note-zone": "It appears under Zones, with its sensor group under Sensor groups. Nothing here is special: edit either of them as you would any other.",
       "done-next-static": "With a fixed amount per day it needs no readings: the next calculation works out what it is short of.",
-      "done-next-service": "Its weather comes from the weather service: once the service has reported, an update and a calculation give the zone a duration.",
-      "done-next-sensors": "Run an update and a calculation once your sensors have reported, and the zone will start producing a duration.",
+      "done-next-service": "Its weather comes from the weather service, its duration with the first calculation. Calculate now fetches the weather and calculates the zone at once.",
+      "done-next-sensors": "Its duration comes with the first calculation. Calculate now reads your sensors and calculates the zone at once.",
+      "calc-now": "Calculate now",
+      "calc-duration": "Calculated: it waters {duration} at the next start.",
+      "calc-nothing": "Calculated: it is not short of water yet.",
+      "calc-failed": "The calculation did not work. The zone says why under Zones.",
       "open-zone": "Open the zone",
       "another": "Set up another zone"
     },
@@ -257,8 +262,8 @@
             "auto-update-enabled": "Automatically update weather data",
             "auto-update-schedule": "Update schedule",
             "auto-update-time": "Update at",
-            "auto-update-interval": "Update sensor data every",
-            "auto-update-delay": "Update delay"
+            "auto-update-interval": "Read the weather every",
+            "auto-update-delay": "Delay before the first update"
           },
           "options": {
             "minutes": "minutes",
@@ -331,7 +336,6 @@
     },
     "info": {
       "title": "Info",
-      "description": "What will happen at the next start, and why.",
       "configuration-not-available": "Configuration not available.",
       "cards": {
         "next-run": {
@@ -455,7 +459,8 @@
         },
         "no_valve_path": {
           "title": "Nothing here opens a valve",
-          "body": "Smart Irrigation calculates how long to water; something has to act on it. Either link a valve to a zone and turn on direct valve control, or write an automation on the start event (the blueprints do this for you). If an automation already does it, there is nothing to change."
+          "body": "Smart Irrigation calculates how long to water; something has to act on it. Either turn on direct valve control under Settings and then link a valve to each zone, or write an automation on the start event (the blueprints do this for you). If an automation already does it, there is nothing to change.",
+          "action": "To valve control"
         }
       }
     },
@@ -463,9 +468,10 @@
       "cards": {
         "add-mapping": {
           "actions": {
-            "add": "Add sensor group"
+            "add": "Add sensor group",
+            "cancel": "Cancel"
           },
-          "header": "Add sensor groups"
+          "header": "Add sensor group"
         },
         "mapping": {
           "aggregates": {
@@ -526,6 +532,7 @@
           "sources": {
             "none": "None",
             "none_et": "None (Smart Irrigation calculates it)",
+            "none_estimated": "None (estimated)",
             "weather_service": "Weather service",
             "weather_service_et": "Ready-made ET₀ from the weather service",
             "sensor": "Sensor",
@@ -667,6 +674,8 @@
         "drainage_rate": "Drainage rate",
         "linked-entity": "Linked valve/switch",
         "linked-entity-hint": "The valve or switch that waters this zone. With direct valve control, Smart Irrigation opens and closes it. With observed watering, every run of it (by hand, an automation or Smart Irrigation) credits the water balance from run time and throughput.",
+        "valve-off": "A valve can be linked once direct valve control or observed watering is on.",
+        "valve-off-link": "Turn on",
         "supply": "Pump or main valve",
         "supply-none": "None",
         "measured-flow-help": "Over several runs the zone's flow meter measured a flow that differs from the one set above. It is advice, never applied on its own.",
@@ -733,7 +742,7 @@
         "soil-type": "Soil",
         "plant-type": "What grows here",
         "soil-types": {
-          "default": "Not chosen yet – calculated with {value}",
+          "default": "Not chosen yet: {value}",
           "sand": "Sandy",
           "sandy_loam": "Sandy loam",
           "loam": "Loam",
@@ -742,7 +751,7 @@
           "custom": "I set the drainage rate myself"
         },
         "plant-types": {
-          "default": "Not chosen yet – calculated with crop factor {value}",
+          "default": "Not chosen yet: factor {value}",
           "lawn": "Lawn",
           "vegetables": "Vegetables",
           "flowers": "Flowers",
@@ -1089,8 +1098,8 @@
     "title": "Start triggers",
     "description": "When the watering starts. By default it finishes at sunrise; add a trigger for another moment: sunset, an azimuth or a time, with an offset.",
     "active_label": "Active trigger",
-    "active_default": "Default (sunrise minus total watering duration)",
-    "active_hint": "Only the selected trigger starts the watering, once a day.",
+    "active_default": "Default: done by sunrise",
+    "active_hint": "Only the selected trigger starts the watering, once a day. Default starts so that every zone is done by sunrise; with None, Smart Irrigation starts nothing.",
     "usage_before": "When a trigger fires, Smart Irrigation emits the event ",
     "usage_after": " — react to it in an automation to start watering. Its data carries trigger_name, trigger_type and offset_minutes, to tell the triggers apart. On a day skipped for rain or for the days between irrigation, no event fires.",
     "add_trigger": "Add trigger",
@@ -1152,7 +1161,7 @@
       "azimuth_explanation": "Solar azimuth is the compass direction of the sun. 0°=North, 90°=East, 180°=South, 270°=West. You can enter any angle value (e.g., 450° = 90°, -30° = 330°). Use this to trigger irrigation when the sun reaches a specific position.",
       "multiple_triggers": "You can create several triggers, but only the one selected as active starts irrigation. The others are kept for later."
     },
-    "active_none": "None (Smart Irrigation starts no watering)",
+    "active_none": "None",
     "none_selected": "No trigger is active: Smart Irrigation starts no watering, whatever the weather. The durations are still calculated; start the watering yourself or from an automation of your own."
   },
   "seasonal_adjustments": {
@@ -1178,7 +1187,8 @@
     "effective_rain_label": "Count only rain that reaches the roots",
     "effective_rain_description": "Ignore a shower smaller than a fifth of the evapotranspiration of the period: it wets the leaves and evaporates. It is judged on the whole period between two calculations.",
     "forecast_label": "Take the forecast rain into account",
-    "forecast_description": "Below the threshold, each zone gets its deficit less the rain forecast for 24 hours, weighted by its probability: 4 mm forecast against a 10 mm deficit waters 6 mm. At or above it, zones in the open are skipped. Greenhouse zones are not affected."
+    "forecast_description": "Below the threshold, each zone gets its deficit less the rain forecast for 24 hours, weighted by its probability: 4 mm forecast against a 10 mm deficit waters 6 mm. At or above it, zones in the open are skipped. Greenhouse zones are not affected.",
+    "forecast_set_up_service": "Set up a weather service"
   },
   "coordinate_config": {
     "title": "Location coordinates",
@@ -1193,8 +1203,7 @@
   "days_between_irrigation": {
     "title": "Days between irrigation",
     "description": "The fewest days between two waterings of a zone; 0 is no limit. Lawns do well with short intervals, deep-rooted plants with 3 to 7 days and more water per run; 7 fits a once-a-week watering rule. A zone can set its own.",
-    "label": "Minimum days between irrigation",
-    "help_text": "Set to 0 to disable this feature. Values from 1-365 days are supported. This setting works alongside existing precipitation forecasting logic. A zone can have its own number of days in the Zones tab, which replaces this setting for that zone."
+    "label": "Minimum days between irrigation"
   },
   "planning": {
     "title": "Planning",

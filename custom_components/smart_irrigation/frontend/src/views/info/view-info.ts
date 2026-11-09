@@ -271,15 +271,15 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       `;
     }
 
+    // The answer first. Only what needs something done comes before it, while
+    // it is true: a gap that keeps the installation from watering, a zone
+    // that stopped being calculated. Postponing is a choice, so it comes after
+    // the answer it changes. The page used to open with a card that said what
+    // the page is for, and on a phone the answer started at 600 px.
     return html`
-      <ha-card header="${this.t("title")}">
-        <div class="card-content">${this.t("description")}</div>
-      </ha-card>
-
-      ${this.renderPostpone()} ${this.renderDeliveryGap()}
-      ${this.renderStaleZones()} ${this.renderNextRun()}
-      ${this.renderForecast()} ${this.renderDecision()}
-      ${this.renderEstimates()}
+      ${this.renderDeliveryGap()} ${this.renderStaleZones()}
+      ${this.renderNextRun()} ${this.renderPostpone()} ${this.renderForecast()}
+      ${this.renderDecision()} ${this.renderEstimates()}
     `;
   }
 
@@ -419,6 +419,13 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
             <div class="info-note">${this.t(`gaps.${gap}.body`)}</div>
           </div>
         </div>
+        ${gap === "no_valve_path"
+          ? html`<div class="card-actions">
+              <ha-button @click=${() => this._open("general/at/control")}>
+                ${this.t("gaps.no_valve_path.action")}
+              </ha-button>
+            </div>`
+          : ""}
       </ha-card>
     `;
   }
