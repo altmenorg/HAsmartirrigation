@@ -3374,9 +3374,10 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         padding-top: 16px;
         border-top: 1px solid var(--divider-color);
       }
-      /* Room between the hint and the buttons, which touched it (#1006). */
+      /* Room between the hint and the buttons, which touched it (#1006,
+         #1017): as much as between the card's title and its first row. */
       .bulk-danger .setting-help {
-        padding: 0 0 12px;
+        padding: 0 0 16px;
       }
       /* Deleting the zone, apart from what it does every day. */
       .zone-danger {

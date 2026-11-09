@@ -1063,14 +1063,22 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
         color: var(--primary-color);
       }
 
-      /* The trigger and the zones: true, and nobody's first question. */
+      /* The trigger and the zones: true, and nobody's first question. One
+         line each, under the headline's text rather than under its icon,
+         each starting with a capital (#1018). */
       .hero-detail {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 4px 20px;
+        flex-direction: column;
+        gap: 2px;
         padding-top: 0;
+        padding-left: calc(16px + 32px + 16px);
         color: var(--secondary-text-color);
         font-size: 0.9em;
+      }
+      .hero-detail > span {
+        display: block;
+      }
+      .hero-detail > span::first-letter {
+        text-transform: uppercase;
       }
 
       /* A line of days: what the sky is about to do. */
@@ -1160,12 +1168,14 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
          .info-note as a warning banner, which read as something wrong. */
       .postpone {
         flex-direction: row;
-        gap: 12px;
+        gap: 12px 16px;
         align-items: center;
         flex-wrap: wrap;
       }
 
+      /* The same icon size and text column as the card above (#1018). */
       .postpone ha-icon {
+        --mdc-icon-size: 32px;
         color: var(--secondary-text-color);
         flex: none;
       }

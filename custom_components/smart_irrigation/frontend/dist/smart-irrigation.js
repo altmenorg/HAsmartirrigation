@@ -3814,9 +3814,10 @@ s.version="2.31.0",i(ii),s.fn=fn,s.min=oi,s.max=li,s.now=di,s.utc=p,s.unix=_n,s.
         padding-top: 16px;
         border-top: 1px solid var(--divider-color);
       }
-      /* Room between the hint and the buttons, which touched it (#1006). */
+      /* Room between the hint and the buttons, which touched it (#1006,
+         #1017): as much as between the card's title and its first row. */
       .bulk-danger .setting-help {
-        padding: 0 0 12px;
+        padding: 0 0 16px;
       }
       /* Deleting the zone, apart from what it does every day. */
       .zone-danger {
@@ -5555,14 +5556,22 @@ s.version="2.31.0",i(ii),s.fn=fn,s.min=oi,s.max=li,s.now=di,s.utc=p,s.unix=_n,s.
         color: var(--primary-color);
       }
 
-      /* The trigger and the zones: true, and nobody's first question. */
+      /* The trigger and the zones: true, and nobody's first question. One
+         line each, under the headline's text rather than under its icon,
+         each starting with a capital (#1018). */
       .hero-detail {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 4px 20px;
+        flex-direction: column;
+        gap: 2px;
         padding-top: 0;
+        padding-left: calc(16px + 32px + 16px);
         color: var(--secondary-text-color);
         font-size: 0.9em;
+      }
+      .hero-detail > span {
+        display: block;
+      }
+      .hero-detail > span::first-letter {
+        text-transform: uppercase;
       }
 
       /* A line of days: what the sky is about to do. */
@@ -5652,12 +5661,14 @@ s.version="2.31.0",i(ii),s.fn=fn,s.min=oi,s.max=li,s.now=di,s.utc=p,s.unix=_n,s.
          .info-note as a warning banner, which read as something wrong. */
       .postpone {
         flex-direction: row;
-        gap: 12px;
+        gap: 12px 16px;
         align-items: center;
         flex-wrap: wrap;
       }
 
+      /* The same icon size and text column as the card above (#1018). */
       .postpone ha-icon {
+        --mdc-icon-size: 32px;
         color: var(--secondary-text-color);
         flex: none;
       }
@@ -6898,7 +6909,12 @@ s.version="2.31.0",i(ii),s.fn=fn,s.min=oi,s.max=li,s.now=di,s.utc=p,s.unix=_n,s.
           ha-tab-group-tab {
             flex: 1 1 0;
           }
+          /* The tab's inner box is inline and as wide as its content, so
+             centring inside it did nothing: it takes the tab's width
+             (#1016). */
           ha-tab-group-tab::part(base) {
+            width: 100%;
+            box-sizing: border-box;
             padding: 6px 2px;
             justify-content: center;
           }

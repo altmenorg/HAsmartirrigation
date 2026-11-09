@@ -683,7 +683,12 @@ export class SmartIrrigationPanel extends LitElement {
           ha-tab-group-tab {
             flex: 1 1 0;
           }
+          /* The tab's inner box is inline and as wide as its content, so
+             centring inside it did nothing: it takes the tab's width
+             (#1016). */
           ha-tab-group-tab::part(base) {
+            width: 100%;
+            box-sizing: border-box;
             padding: 6px 2px;
             justify-content: center;
           }
