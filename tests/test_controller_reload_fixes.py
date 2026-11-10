@@ -279,7 +279,7 @@ def test_the_program_sensor_is_on_the_hub_device_under_its_own_name():
 
     assert info["identifiers"] == {(const.DOMAIN, const.DOMAIN)}
     assert "via_device" not in info and "via_device_id" not in info
-    assert sensor.name == "Program Sandbox"
+    assert sensor.translation_placeholders == {"name": "Sandbox"}
     assert sensor.entity_id == "sensor.smart_irrigation_program_sandbox"
 
 

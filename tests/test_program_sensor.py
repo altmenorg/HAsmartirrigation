@@ -29,7 +29,9 @@ def _sensor(overview):
 def test_it_is_named_and_identified_by_the_program():
     sensor = _sensor(_overview())
 
-    assert sensor.name == "Program Evening"
+    # The name comes from the translations: "Program {name}" (test_program_entity).
+    assert sensor.translation_key == "program"
+    assert sensor.translation_placeholders == {"name": "Evening"}
     assert sensor.unique_id == "smart_irrigation_program_evening"
     assert sensor.entity_id == "sensor.smart_irrigation_program_evening"
 

@@ -1294,6 +1294,16 @@ class ValveRunnerMixin(
             },
         )
 
+    def _announce_cycle(self) -> None:
+        """Tell the program sensors that a cycle began or ended.
+
+        The main program's state follows the cycle, and its sensor reads the
+        state only when told: it stayed "idle" through a whole run.
+        """
+        notify = getattr(self, "_notify_programs", None)
+        if notify is not None:
+            notify()
+
     def _join_sequential_cycle(self, eligible) -> list:
         """Add zones to the sequential cycle already under way, and say which.
 
@@ -1371,7 +1381,17 @@ class ValveRunnerMixin(
                 "Direct valve control: running %d zone(s) (parallel)", len(eligible)
             )
             self._announce_start(sequencing, eligible)
-            results = await asyncio.gather(*(self._run_one_valve(z) for z in eligible))
+            # Counted, so the main program reads as running while it lasts:
+            # without a cycle record it said idle the whole time.
+            self._parallel_cycles = getattr(self, "_parallel_cycles", 0) + 1
+            self._announce_cycle()
+            try:
+                results = await asyncio.gather(
+                    *(self._run_one_valve(z) for z in eligible)
+                )
+            finally:
+                self._parallel_cycles = max(0, getattr(self, "_parallel_cycles", 1) - 1)
+                self._announce_cycle()
             self._report_finished(results)
             return
 
@@ -1409,6 +1429,7 @@ class ValveRunnerMixin(
         }
         cycle = self._sequential_cycle
         cancelled = False
+        self._announce_cycle()
         await self._persist_cycle()
         # Whether the pause between zones was already taken since the last
         # valve closed: a zone skipped after it must not cost a second one.
@@ -1464,6 +1485,7 @@ class ValveRunnerMixin(
         finally:
             self._sequential_cycle = None
             cycle["done"].set()
+            self._announce_cycle()
             if not cancelled:
                 await self._persist_cycle()
 

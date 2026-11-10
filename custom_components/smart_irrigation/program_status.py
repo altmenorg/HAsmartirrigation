@@ -165,7 +165,10 @@ class ProgramStatusMixin:
             "paused": self.watering_paused(),
             "programs": programs,
             "valves": self._open_valves(),
-            "cycle": self._sequential_cycle is not None,
+            # The main program's cycle: one zone after the other, or all at
+            # once (counted while it lasts).
+            "cycle": self._sequential_cycle is not None
+            or getattr(self, "_parallel_cycles", 0) > 0,
         }
 
     # --- overview ---------------------------------------------------------------------
