@@ -451,6 +451,7 @@
         "running": {
           "headline": "Bewässert gerade",
           "headline-paused": "Bewässerung pausiert",
+          "paused-until": "Bis {when}, danach geht es von selbst weiter.",
           "left": "noch {time} ({percent} %)",
           "program": "Programm",
           "step": "Schritt {step}/{steps}",
@@ -1225,6 +1226,7 @@
     "expected_skipped_precipitation": "Wird voraussichtlich übersprungen: Regen vorhergesagt ({mm} mm)",
     "nothing_now": "Im Moment wird nichts bewässert.",
     "paused": "Pausiert",
+    "paused_until": "Pausiert bis {when}, danach geht die Bewässerung von selbst weiter.",
     "waiting": "wartet auf seinen Einsatz",
     "step": "Schritt",
     "tour": "Durchgang",

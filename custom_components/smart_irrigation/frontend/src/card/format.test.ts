@@ -13,6 +13,7 @@ import {
   programLabel,
   retryDelay,
   runningValve,
+  liveValves,
   wateringNow,
   zoneActionEntity,
   zoneNow,
@@ -381,6 +382,42 @@ describe("runningValve", () => {
     expect(runningValve(live, undefined)).toBeUndefined();
     expect(runningValve(null, 1)).toBeUndefined();
     expect(runningValve({}, 1)).toBeUndefined();
+  });
+
+  it("finds a zone the pause holds, while paused", () => {
+    const held = {
+      paused: true,
+      valves: [],
+      held: [{ zone_id: 1, zone: "Lawn", remaining_seconds: 3540, percent: 1 }],
+    };
+    expect(runningValve(held, 1)?.remaining_seconds).toBe(3540);
+    // Not once the pause is over: the valve is open again, or the run gone.
+    expect(runningValve({ ...held, paused: false }, 1)).toBeUndefined();
+  });
+});
+
+describe("liveValves", () => {
+  it("lists the open valves, and the held ones while paused", () => {
+    const open = {
+      zone_id: 2,
+      zone: "Hedge",
+      remaining_seconds: 60,
+      percent: 50,
+    };
+    const held = {
+      zone_id: 1,
+      zone: "Lawn",
+      remaining_seconds: 300,
+      percent: 9,
+    };
+    expect(liveValves({ valves: [open] })).toEqual([open]);
+    expect(liveValves({ paused: true, valves: [], held: [held] })).toEqual([
+      held,
+    ]);
+    expect(liveValves({ paused: false, valves: [open], held: [held] })).toEqual(
+      [open],
+    );
+    expect(liveValves(null)).toEqual([]);
   });
 });
 

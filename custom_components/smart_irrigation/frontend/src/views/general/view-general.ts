@@ -20,7 +20,12 @@ import {
 } from "../../data/websockets";
 import { SubscribeMixin } from "../../subscribe-mixin";
 import { localize } from "../../../localize/localize";
-import { friendlyDuration, remainingDuration } from "../../card/format";
+import {
+  friendlyDuration,
+  liveValves,
+  momentLabel,
+  remainingDuration,
+} from "../../card/format";
 import {
   output_unit,
   unit_text,
@@ -787,11 +792,22 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     if (!live) return html``;
     const left = (seconds: number) =>
       t("left").replace("{time}", remainingDuration(seconds));
+    // A pause says when it lifts itself: nothing said it would (UX walk of
+    // 9 Nov., evening).
+    const pausedText = live.paused_until
+      ? t("paused_until").replace(
+          "{when}",
+          momentLabel(live.paused_until, lang, {
+            tomorrow: localize("card.tomorrow", lang),
+            yesterday: localize("card.yesterday", lang),
+          }),
+        )
+      : t("paused");
     const rows = [
       ...(live.paused
         ? [
             html`<div class="setting-note">
-              <strong>${t("paused")}</strong>
+              <strong>${pausedText}</strong>
             </div>`,
           ]
         : []),
@@ -809,7 +825,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           </div>
         `,
       ),
-      ...(live.valves || []).map(
+      ...liveValves(live).map(
         (v: any) => html`
           <div class="setting-note">
             ${v.zone}: ${left(v.remaining_seconds)} (${v.percent} %)

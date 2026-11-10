@@ -20,6 +20,7 @@ import {
   depthLabel,
   LiveState,
   runningValve,
+  liveValves,
   wateringNow,
   remainingDuration,
   manualRun,
@@ -596,6 +597,14 @@ export class SmartIrrigationCard extends LitElement {
     let detail = "";
     if (running || paused) {
       const parts: string[] = [];
+      // When the pause lifts itself: the chip said only "paused".
+      if (paused && this._live?.paused_until) {
+        parts.push(
+          this._t("programs.until", {
+            when: this._moment(this._live.paused_until),
+          }),
+        );
+      }
       if (live && live.steps) {
         parts.push(
           this._t("programs.step_of", {
@@ -614,9 +623,10 @@ export class SmartIrrigationCard extends LitElement {
         );
       }
       // The main program run by its trigger waters zone by zone without a
-      // run of its own: its line was empty. It names the zones open now.
-      const open = this._live?.valves || [];
-      if (!live && running && open.length) {
+      // run of its own: its line was empty. It names the zones open now, or
+      // those the pause holds.
+      const open = liveValves(this._live);
+      if (!live && open.length) {
         parts.push(
           open
             .map((valve) => valve.zone)

@@ -30,7 +30,13 @@ import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
 import { DOMAIN, ZONE_BUCKET } from "../../const";
-import { LiveState, remainingDuration, wateringNow } from "../../card/format";
+import {
+  LiveState,
+  liveValves,
+  momentLabel,
+  remainingDuration,
+  wateringNow,
+} from "../../card/format";
 import { askConfirmation } from "../../dialogs/confirmation-dialog";
 
 /**
@@ -52,7 +58,11 @@ const withOverviewRuns = (state: any): LiveState | null => {
   if (!live) return null;
   const known = new Set((live.programs || []).map((p) => p.program_id));
   const more = (state?.programs || [])
-    .filter((p: any) => p?.state === "running" && !known.has(p.program_id))
+    .filter(
+      (p: any) =>
+        (p?.state === "running" || p?.state === "paused") &&
+        !known.has(p.program_id),
+    )
     .map((p: any) => ({
       program_id: p.program_id,
       name: p.name,
@@ -344,7 +354,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
     const live = this._live;
     if (!wateringNow(live)) return html``;
     const paused = live?.paused === true;
-    const valves = live?.valves || [];
+    const valves = liveValves(live);
     const programs = (live?.programs || []).filter(
       (p) => p.state === "running",
     );
@@ -373,6 +383,18 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                   : "cards.running.headline",
               )}
             </div>
+            ${paused && live?.paused_until
+              ? html`<div class="hero-sub">
+                  ${this.t(
+                    "cards.running.paused-until",
+                    "{when}",
+                    momentLabel(live.paused_until, this._lang, {
+                      tomorrow: localize("card.tomorrow", this._lang),
+                      yesterday: localize("card.yesterday", this._lang),
+                    }),
+                  )}
+                </div>`
+              : ""}
             ${valves.map(
               (valve) => html`
                 <div class="hero-sub">

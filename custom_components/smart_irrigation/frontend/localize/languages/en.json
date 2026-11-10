@@ -451,6 +451,7 @@
         "running": {
           "headline": "Watering now",
           "headline-paused": "Watering paused",
+          "paused-until": "Until {when}, then it goes on by itself.",
           "left": "{time} left ({percent} %)",
           "program": "Program",
           "step": "step {step}/{steps}",
@@ -1225,6 +1226,7 @@
     "expected_skipped_precipitation": "Expected to be skipped: rain forecast ({mm} mm)",
     "nothing_now": "Nothing is watering now.",
     "paused": "Paused",
+    "paused_until": "Paused until {when}, then the watering goes on by itself.",
     "waiting": "waiting for its turn",
     "step": "step",
     "tour": "round",

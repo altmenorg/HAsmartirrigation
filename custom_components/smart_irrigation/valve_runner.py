@@ -1641,7 +1641,26 @@ class ValveRunnerMixin(
                 # What the pause leaves owed is kept, so a reload or a restart
                 # while it lasts does not lose it (the pause itself is kept).
                 await self._persist_owed(zone_id, entity_id, pending, lead, watered)
-                resumed = await self._wait_resume(control)
+                # Shown while it waits: the zone goes on with this after the pause.
+                self.held_by_pause()[zone_id] = {
+                    "zone_id": zone_id,
+                    "zone": zone_name,
+                    "remaining_seconds": int(
+                        sum(pending)
+                        + lead * len(pending)
+                        + soak * max(0, len(pending) - 1)
+                    ),
+                    "percent": (
+                        int(min(100.0, 100.0 * watered / duration))
+                        if duration > 0
+                        else 0
+                    ),
+                }
+                self._notify_programs()
+                try:
+                    resumed = await self._wait_resume(control)
+                finally:
+                    self.held_by_pause().pop(zone_id, None)
                 # Not reached when the wait is cancelled by a reload: the record
                 # stays for the next start.
                 await self._clear_owed(zone_id)
@@ -2479,7 +2498,22 @@ class ValveRunnerMixin(
         await self._close_zone_valves(zone, entity_id)
         await self._supply_after_expired_run(zone_id)
         control = self._run_controls().get(zone_id)
-        if control is not None and await self._wait_resume(control):
+        self.held_by_pause()[zone_id] = {
+            "zone_id": zone_id,
+            "zone": zone.get(const.ZONE_NAME),
+            "remaining_seconds": int(max(0.0, duration - elapsed)),
+            "percent": (
+                int(min(100.0, 100.0 * max(0.0, elapsed) / duration))
+                if duration > 0
+                else 0
+            ),
+        }
+        self._notify_programs()
+        try:
+            resumed = control is not None and await self._wait_resume(control)
+        finally:
+            self.held_by_pause().pop(zone_id, None)
+        if resumed:
             return True
         delivered = min(duration, max(0.0, elapsed))
         await self._remove_active_run(zone_id)

@@ -179,6 +179,23 @@ class WateringControlMixin:
     def watering_paused(self) -> bool:
         return self._pause_events()[0].is_set()
 
+    def pause_ends(self) -> datetime | None:
+        """When the pause lifts itself, or None while nothing is paused."""
+        if not self.watering_paused():
+            return None
+        return getattr(self, "_pause_until", None)
+
+    def held_by_pause(self) -> dict:
+        """The zones a pause interrupted, by id, with what each is still owed.
+
+        Their valves are closed while it lasts, so they are not among the open
+        valves, and the zone, Start and the card showed nothing of them.
+        """
+        held = getattr(self, "_held_by_pause", None)
+        if held is None:
+            held = self._held_by_pause = {}
+        return held
+
     def paused_seconds_total(self) -> float:
         """Every second spent paused since startup, on the loop clock.
 
@@ -208,11 +225,11 @@ class WateringControlMixin:
         if timer is not None and not timer.done():
             timer.cancel()
         self._pause_timer = self._spawn_valve_run(self._lift_pause_later(minutes * 60))
+        # When it lifts itself, for the panel and the card to say so.
+        self._pause_until = dt_util.utcnow() + timedelta(minutes=minutes)
         _LOGGER.info("Watering paused for at most %.0f minutes", minutes)
         self._notify_programs()
-        await self._persist_pause(
-            (dt_util.utcnow() + timedelta(minutes=minutes)).isoformat()
-        )
+        await self._persist_pause(self._pause_until.isoformat())
 
     async def _persist_pause(self, until) -> None:
         """Keep the end of the pause (or None) for a restart; full controller only."""
@@ -244,6 +261,7 @@ class WateringControlMixin:
             timer.cancel()
         seconds = max(1.0, (until - dt_util.utcnow()).total_seconds())
         self._pause_timer = self._spawn_valve_run(self._lift_pause_later(seconds))
+        self._pause_until = until
         _LOGGER.info("The pause goes on after the restart, for %.0f seconds", seconds)
         self._notify_programs()
 
@@ -260,6 +278,7 @@ class WateringControlMixin:
         if timer is not None and not timer.done() and timer is not current:
             timer.cancel()
         self._pause_timer = None
+        self._pause_until = None
         await self._persist_pause(None)
         if not pause.is_set():
             return
