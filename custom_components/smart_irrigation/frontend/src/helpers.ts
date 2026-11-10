@@ -881,3 +881,16 @@ export function noneAllowed(
     (required !== null && !required.includes(source))
   );
 }
+
+/**
+ * Whether an entity may be picked for a zone: anything but what Smart
+ * Irrigation provides itself. A zone linked to its own valve entity opened
+ * itself, every 30 seconds without end. Entities the registry does not know
+ * (a YAML switch without a unique id) are someone else's.
+ */
+export function notOwnEntity(
+  hass: { entities?: Record<string, { platform?: string }> } | undefined,
+  entityId: string,
+): boolean {
+  return hass?.entities?.[entityId]?.platform !== "smart_irrigation";
+}

@@ -2,6 +2,7 @@
 
 import datetime
 import logging
+from http import HTTPStatus
 
 import voluptuous as vol
 from dateutil import parser as dateutil_parser
@@ -26,7 +27,7 @@ from homeassistant.util.unit_system import METRIC_SYSTEM
 
 from . import const, iu_import_ha
 from .calcmodules.consumes import consumed_mappings, idle_options, required_mappings
-from .delivery import delivery_gap, stale_zones, zones_without_valve
+from .delivery import delivery_gap, own_entities, stale_zones, zones_without_valve
 from .engine_binding import (
     ENGINE_BY_METHOD,
     METHOD_FROM_WEATHER,
@@ -432,6 +433,21 @@ class SmartIrrigationZoneView(HomeAssistantView):
         hass = request.app["hass"]
         coordinator = hass.data[const.DOMAIN]["coordinator"]
         zone = int(data[const.ZONE_ID]) if const.ZONE_ID in data else None
+        own = own_entities(
+            hass,
+            [
+                data.get(const.ZONE_LINKED_ENTITY),
+                *(data.get(const.ZONE_EXTRA_ENTITIES) or []),
+            ],
+        )
+        if own:
+            # A zone's own valve entity opens the zone: linked, it opens
+            # itself without end (see own_entities).
+            return self.json_message(
+                f"{', '.join(own)} is a valve of Smart Irrigation itself. Link the "
+                "zone to the valve or switch that waters it.",
+                HTTPStatus.BAD_REQUEST,
+            )
         data = _without_server_owned_fields(data)
         # Entered in the unit system, stored in metric (units.py).
         data = zone_from_display(data, hass.config.units is METRIC_SYSTEM)

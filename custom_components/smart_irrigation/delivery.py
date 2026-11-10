@@ -15,6 +15,7 @@ the last one is worded as what it is, a reminder rather than an error.
 import datetime
 
 import homeassistant.util.dt as dt_util
+from homeassistant.helpers import entity_registry as er
 
 from . import const
 
@@ -168,3 +169,28 @@ def stale_zones(config: dict, zones, now=None) -> list:
             }
         )
     return stale
+
+
+def own_entities(hass, entity_ids) -> list[str]:
+    """The entities among ``entity_ids`` that Smart Irrigation provides itself.
+
+    A zone's valve is something else's: its own valve entity (one per zone,
+    there for dashboards and voice) opens the zone through Smart Irrigation.
+    A zone linked to one opened itself, and each open queued another run of
+    the same zone: a run every 30 seconds, each ending in "did not open",
+    without end. The panel's valve field offered them, and a search for
+    "Valve Lawn" picked the zone's own.
+    """
+    entity_ids = [e for e in entity_ids or [] if e]
+    if not entity_ids:
+        return []
+    try:
+        registry = er.async_get(hass)
+    except Exception:  # noqa: BLE001 - no registry, nothing known to be ours
+        return []
+    own = []
+    for entity_id in entity_ids:
+        entry = registry.async_get(entity_id)
+        if entry is not None and getattr(entry, "platform", None) == const.DOMAIN:
+            own.append(entity_id)
+    return own
