@@ -3829,6 +3829,9 @@ i.version="2.31.0",s(ss),i.fn=fn,i.min=os,i.max=ls,i.now=ds,i.utc=p,i.unix=_n,i.
          #1017): as much as between the card's title and its first row. */
       .bulk-danger .setting-help {
         padding: 0 0 16px;
+        /* The shared .setting-help draws a line under itself, which ran along
+           the top of the buttons: the "line above" of #1019. */
+        border-bottom: none;
       }
       /* Deleting the zone, apart from what it does every day. */
       .zone-danger {
