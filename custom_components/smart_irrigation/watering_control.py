@@ -76,6 +76,7 @@ def _number_validator(low: float, high: float, what: str):
 
 def parse_suspend_until(value) -> datetime:
     """A moment, from a datetime or an ISO string; ``ValueError`` if it is none."""
+    moment: datetime | None
     if isinstance(value, datetime):
         moment = value
     else:
@@ -165,6 +166,11 @@ WATER_ZONE_SCHEMA = vol.Schema(
 class WateringControlMixin:
     """Pause, resume, next step, suspension and manual runs."""
 
+    # When the pause lifts itself, and the zones it interrupted (by id, with
+    # what each is still owed): for the live state to say so.
+    _pause_until: datetime | None = None
+    _held_by_pause: dict[int, dict] | None = None
+
     # --- pause -----------------------------------------------------------------
 
     def _pause_events(self):
@@ -178,6 +184,26 @@ class WateringControlMixin:
 
     def watering_paused(self) -> bool:
         return self._pause_events()[0].is_set()
+
+    def held_by_pause(self) -> dict[int, dict]:
+        """The zones a pause interrupted, by id, with what each is still owed.
+
+        Their valves are closed while it lasts, so they are not among the open
+        valves, and the zone, Start and the card showed nothing of them.
+        """
+        if self._held_by_pause is None:
+            self._held_by_pause = {}
+        return self._held_by_pause
+
+    def pause_live(self) -> dict:
+        """What the live state says of a pause: when it ends, and what it holds."""
+        if not self.watering_paused():
+            return {"paused_until": None, "held": []}
+        until = self._pause_until
+        return {
+            "paused_until": until.isoformat() if until else None,
+            "held": sorted(self.held_by_pause().values(), key=lambda v: v["zone_id"]),
+        }
 
     def paused_seconds_total(self) -> float:
         """Every second spent paused since startup, on the loop clock.
@@ -208,11 +234,11 @@ class WateringControlMixin:
         if timer is not None and not timer.done():
             timer.cancel()
         self._pause_timer = self._spawn_valve_run(self._lift_pause_later(minutes * 60))
+        # When it lifts itself, for the panel and the card to say so.
+        self._pause_until = dt_util.utcnow() + timedelta(minutes=minutes)
         _LOGGER.info("Watering paused for at most %.0f minutes", minutes)
         self._notify_programs()
-        await self._persist_pause(
-            (dt_util.utcnow() + timedelta(minutes=minutes)).isoformat()
-        )
+        await self._persist_pause(self._pause_until.isoformat())
 
     async def _persist_pause(self, until) -> None:
         """Keep the end of the pause (or None) for a restart; full controller only."""
@@ -244,6 +270,7 @@ class WateringControlMixin:
             timer.cancel()
         seconds = max(1.0, (until - dt_util.utcnow()).total_seconds())
         self._pause_timer = self._spawn_valve_run(self._lift_pause_later(seconds))
+        self._pause_until = until
         _LOGGER.info("The pause goes on after the restart, for %.0f seconds", seconds)
         self._notify_programs()
 
@@ -260,6 +287,7 @@ class WateringControlMixin:
         if timer is not None and not timer.done() and timer is not current:
             timer.cancel()
         self._pause_timer = None
+        self._pause_until = None
         await self._persist_pause(None)
         if not pause.is_set():
             return

@@ -86,7 +86,11 @@ class ProgramStatusMixin:
         """The valves open under a run of ours: zone, seconds left, share done."""
         now = dt_util.utcnow()
         valves = []
+        # Held by a restored pause: closed, and listed among what it holds.
+        held = getattr(self, "_held_by_pause", None) or {}
         for zone_id, record in (self._active_valve_runs or {}).items():
+            if int(zone_id) in held:
+                continue
             started = dt_util.parse_datetime(record.get("started") or "")
             duration = float(record.get("duration") or 0.0)
             if started is None or duration <= 0:
@@ -163,6 +167,9 @@ class ProgramStatusMixin:
             )
         return {
             "paused": self.watering_paused(),
+            # When the pause lifts itself, and what it holds: the zones it
+            # interrupted, which go on with what they are owed.
+            **self.pause_live(),
             "programs": programs,
             "valves": self._open_valves(),
             # The main program's cycle: one zone after the other, or all at
@@ -450,6 +457,14 @@ class ProgramStatusMixin:
                     "live": running.get(program_id),
                     # The runtime adjustment in force, or None.
                     "adjustment": self.program_adjustment(program_id),
+                    # Whether there is anything to start: the card offered
+                    # "start" for a program with no zone in its steps.
+                    "can_run": main
+                    or any(
+                        step.get(const.STEP_ENABLED, True) is not False
+                        and step.get(const.STEP_ZONES)
+                        for step in program.get(const.PROGRAM_STEPS) or []
+                    ),
                 }
             )
         return overview

@@ -276,6 +276,69 @@ export function awaitsFirstCalculation(zone: {
   );
 }
 
+/** What programs_state says is being watered now (``live``). */
+export interface LiveState {
+  paused?: boolean;
+  /** When the pause lifts itself (ISO), while one lasts. */
+  paused_until?: string | null;
+  /** The zones a pause interrupted: closed, and owed the rest of their run. */
+  held?: {
+    zone_id: number;
+    zone?: string | null;
+    remaining_seconds: number;
+    percent: number;
+  }[];
+  cycle?: boolean;
+  programs?: {
+    program_id?: string;
+    name?: string | null;
+    state?: string;
+    step?: number;
+    steps?: number;
+    percent?: number;
+    remaining_seconds?: number | null;
+  }[];
+  valves?: {
+    zone_id: number;
+    zone?: string | null;
+    remaining_seconds: number;
+    percent: number;
+  }[];
+}
+
+/**
+ * The run of ours a zone is in right now, or undefined.
+ *
+ * Only Bewässerung › Planung said a zone was being watered: Start, the zone
+ * and the card went on showing its plan, "nothing to water" or "would run
+ * 1 h", while its valve was open (UX walk of 9 Nov.).
+ */
+export const runningValve = (
+  live: LiveState | null | undefined,
+  zoneId: number | string | undefined,
+) =>
+  zoneId === undefined || zoneId === null
+    ? undefined
+    : liveValves(live).find((v) => Number(v.zone_id) === Number(zoneId));
+
+/**
+ * The valves of the run: the open ones, and while paused the ones the pause
+ * closed, which go on with the rest of their run after it. A pause showed none
+ * of them, so nothing said what it held (UX walk of 9 Nov., evening).
+ */
+export const liveValves = (live: LiveState | null | undefined) => [
+  ...(live?.valves || []),
+  ...(live?.paused ? live?.held || [] : []),
+];
+
+/** Whether anything of ours is watering, waiting its turn or paused. */
+export const wateringNow = (live: LiveState | null | undefined): boolean =>
+  !!live &&
+  (live.paused === true ||
+    !!live.cycle ||
+    (live.valves || []).length > 0 ||
+    (live.programs || []).some((p) => p.state === "running"));
+
 /**
  * A manual zone's run, in seconds, or null for a zone that is not manual. It
  * waters its own duration at every start, whatever its water balance, so the

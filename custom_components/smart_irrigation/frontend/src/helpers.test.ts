@@ -45,6 +45,7 @@ import {
   linkedValveDomains,
   formatDuration,
   countLabel,
+  programCanRun,
   localizedDateTime,
   runStartOptions,
 } from "./helpers";
@@ -856,6 +857,22 @@ describe("a count in words", () => {
       }
     });
   }
+});
+
+describe("a program that can be started", () => {
+  it("is the main program, always", () => {
+    expect(programCanRun({ main: true, steps: [] })).toBe(true);
+  });
+  it("is another one once a step it runs has a zone", () => {
+    expect(programCanRun({ steps: [] })).toBe(false);
+    expect(programCanRun({ steps: [{ zones: [] }] })).toBe(false);
+    expect(programCanRun({ steps: [{ zones: [1], enabled: false }] })).toBe(
+      false,
+    );
+    expect(programCanRun({ steps: [{ zones: [] }, { zones: [2] }] })).toBe(
+      true,
+    );
+  });
 });
 
 describe("runStartOptions", () => {

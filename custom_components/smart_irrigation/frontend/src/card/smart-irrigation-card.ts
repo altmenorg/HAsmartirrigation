@@ -18,6 +18,10 @@ import {
   programsPollDelay,
   deficitOf,
   depthLabel,
+  LiveState,
+  runningValve,
+  liveValves,
+  wateringNow,
   remainingDuration,
   manualRun,
   friendlyDuration,
@@ -64,6 +68,8 @@ interface Program {
   next_start?: string | null;
   last_run?: string | null;
   suspended_until?: string | null;
+  // Absent from an older backend: then a program counts as startable.
+  can_run?: boolean;
   live?: {
     step: number;
     steps: number;
@@ -105,6 +111,9 @@ export class SmartIrrigationCard extends LitElement {
   @state() private _programs: Program[] = [];
   /** The program whose stop is waiting for a second tap. */
   @state() private _confirmingStop: string | null = null;
+
+  /** What is being watered now, from programs_state. */
+  @state() private _live: LiveState | null = null;
   private _confirmStopTimer?: number;
   private _programsTimer?: number;
   private _programsUnsupported = false;
@@ -188,6 +197,7 @@ export class SmartIrrigationCard extends LitElement {
           type: `${DOMAIN}/programs_state`,
         });
         this._programs = result?.programs ?? [];
+        this._live = result?.live ?? null;
       } catch (_e) {
         // Keep what is on screen. A server that does not know the command is
         // an older integration: stop asking.
@@ -201,7 +211,10 @@ export class SmartIrrigationCard extends LitElement {
     if (!this.isConnected) return;
     this._programsTimer = window.setTimeout(
       () => this._loadPrograms(),
-      programsPollDelay(anyProgramActive(this._programs)),
+      // A zone watered on its own runs no program: it is polled as fast.
+      programsPollDelay(
+        anyProgramActive(this._programs) || wateringNow(this._live),
+      ),
     );
   }
 
@@ -446,6 +459,29 @@ export class SmartIrrigationCard extends LitElement {
     const manual = manualRun(zone);
     const needed =
       manual === null && deficit > threshold && now.duration > 0 && !noValve;
+    const running = runningValve(this._live, zone.id);
+    if (running) {
+      return html`
+        <div class="zone">
+          <div class="zone-name">
+            ${zone.name}
+            ${zone.state !== "automatic"
+              ? html`<span class="chip">${this._t(zone.state)}</span>`
+              : ""}
+          </div>
+          <div class="zone-state needed running">
+            ${this._t(this._live?.paused ? "paused_left" : "watering_left", {
+              time: this._duration(running.remaining_seconds),
+            })}
+          </div>
+          <progress
+            class="program-bar"
+            max="100"
+            .value=${running.percent}
+          ></progress>
+        </div>
+      `;
+    }
     return html`
       <div class="zone">
         <div class="zone-name">
@@ -555,11 +591,20 @@ export class SmartIrrigationCard extends LitElement {
     const paused = program.state === "paused";
     const waiting = program.state === "waiting";
     const active = running || paused || waiting;
-    const startable = !active && program.state === "idle";
+    const startable =
+      !active && program.state === "idle" && program.can_run !== false;
     const stopping = this._confirmingStop === program.program_id;
     let detail = "";
     if (running || paused) {
       const parts: string[] = [];
+      // When the pause lifts itself: the chip said only "paused".
+      if (paused && this._live?.paused_until) {
+        parts.push(
+          this._t("programs.until", {
+            when: this._moment(this._live.paused_until),
+          }),
+        );
+      }
       if (live && live.steps) {
         parts.push(
           this._t("programs.step_of", {
@@ -568,11 +613,31 @@ export class SmartIrrigationCard extends LitElement {
           }),
         );
       }
-      if (live) parts.push(`${live.percent}%`);
+      // A space before %, as the panel writes it.
+      if (live) parts.push(`${live.percent} %`);
       if (live && live.remaining_seconds != null) {
         parts.push(
           this._t("programs.remaining", {
             time: this._duration(live.remaining_seconds),
+          }),
+        );
+      }
+      // The main program run by its trigger waters zone by zone without a
+      // run of its own: its line was empty. It names the zones open now, or
+      // those the pause holds.
+      const open = liveValves(this._live);
+      if (!live && open.length) {
+        parts.push(
+          open
+            .map((valve) => valve.zone)
+            .filter(Boolean)
+            .join(", "),
+        );
+        parts.push(
+          this._t("programs.remaining", {
+            time: this._duration(
+              Math.max(...open.map((valve) => valve.remaining_seconds)),
+            ),
           }),
         );
       }
@@ -586,6 +651,7 @@ export class SmartIrrigationCard extends LitElement {
         ? `${this._t("next_start")} ${this._moment(program.next_start)}`
         : this._t("no_start");
     }
+    if (stopping) detail = this._t("programs.confirm_stop");
     // No badge while the program only waits for its next start: "idle" read
     // as "inactive" next to a program that is switched on, and the line under
     // it already says when it starts.
@@ -599,7 +665,13 @@ export class SmartIrrigationCard extends LitElement {
                 >${this._t(`programs.states.${program.state}`)}</span
               >`}
         </div>
-        <div class="zone-state ${running ? "needed" : ""}">${detail}</div>
+        <div
+          class="zone-state ${running ? "needed" : ""} ${stopping
+            ? "confirm"
+            : ""}"
+        >
+          ${detail}
+        </div>
         ${running && live
           ? html`<progress
               class="program-bar"
@@ -636,7 +708,9 @@ export class SmartIrrigationCard extends LitElement {
             : ""}
           ${active
             ? this._programButton(
-                stopping ? "mdi:check" : "mdi:stop",
+                // A tick read as "done" while the program went on running:
+                // it stays a stop, red, and the line says to tap again.
+                "mdi:stop",
                 this._t(stopping ? "programs.confirm_stop" : "programs.stop"),
                 () => this._stopPressed(program),
                 stopping,
@@ -740,6 +814,12 @@ export class SmartIrrigationCard extends LitElement {
       color: var(--secondary-text-color);
     }
     ha-icon-button.confirming {
+      color: var(--error-color, #db4437);
+    }
+    .zone-state.confirm {
+      color: var(--error-color, #db4437);
+    }
+    .zone-state.running {
       color: var(--primary-color);
     }
     .chip {
