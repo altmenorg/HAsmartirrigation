@@ -29,6 +29,7 @@ def test_start_has_a_card_for_the_running_watering(language):
     assert set(running) == {
         "headline",
         "headline-paused",
+        "paused-until",
         "left",
         "program",
         "step",
@@ -37,6 +38,7 @@ def test_start_has_a_card_for_the_running_watering(language):
     assert "{time}" in running["left"] and "{percent}" in running["left"]
     assert "{step}" in running["step"] and "{steps}" in running["step"]
     assert "{time}" in running["program-left"]
+    assert "{when}" in running["paused-until"]
 
 
 @pytest.mark.parametrize("language", ["en", "de"])

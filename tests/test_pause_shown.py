@@ -57,7 +57,9 @@ async def test_the_live_state_says_what_the_pause_holds(monkeypatch, freezer):
         dt_util.utcnow() + timedelta(minutes=3), abs=timedelta(seconds=1)
     )
     # Both zones of the step were 9 s into their 20 s: 11 s owed, 45 % done.
-    assert [(v["zone_id"], v["remaining_seconds"], v["percent"]) for v in live["held"]] == [
+    assert [
+        (v["zone_id"], v["remaining_seconds"], v["percent"]) for v in live["held"]
+    ] == [
         (0, 11, 45),
         (1, 11, 45),
     ]

@@ -86,10 +86,10 @@ class ProgramStatusMixin:
         """The valves open under a run of ours: zone, seconds left, share done."""
         now = dt_util.utcnow()
         valves = []
-        held = self.held_by_pause()
+        # Held by a restored pause: closed, and listed among what it holds.
+        held = getattr(self, "_held_by_pause", None) or {}
         for zone_id, record in (self._active_valve_runs or {}).items():
             if int(zone_id) in held:
-                # Held by a restored pause: closed, and listed as held.
                 continue
             started = dt_util.parse_datetime(record.get("started") or "")
             duration = float(record.get("duration") or 0.0)
@@ -165,13 +165,11 @@ class ProgramStatusMixin:
                     "remaining_seconds": None,
                 }
             )
-        until = self.pause_ends()
         return {
             "paused": self.watering_paused(),
             # When the pause lifts itself, and what it holds: the zones it
             # interrupted, which go on with what they are owed.
-            "paused_until": until.isoformat() if until else None,
-            "held": sorted(self.held_by_pause().values(), key=lambda v: v["zone_id"]),
+            **self.pause_live(),
             "programs": programs,
             "valves": self._open_valves(),
             "cycle": self._sequential_cycle is not None,

@@ -76,6 +76,7 @@ def _number_validator(low: float, high: float, what: str):
 
 def parse_suspend_until(value) -> datetime:
     """A moment, from a datetime or an ISO string; ``ValueError`` if it is none."""
+    moment: datetime | None
     if isinstance(value, datetime):
         moment = value
     else:
@@ -165,6 +166,11 @@ WATER_ZONE_SCHEMA = vol.Schema(
 class WateringControlMixin:
     """Pause, resume, next step, suspension and manual runs."""
 
+    # When the pause lifts itself, and the zones it interrupted (by id, with
+    # what each is still owed): for the live state to say so.
+    _pause_until: datetime | None = None
+    _held_by_pause: dict[int, dict] | None = None
+
     # --- pause -----------------------------------------------------------------
 
     def _pause_events(self):
@@ -179,22 +185,25 @@ class WateringControlMixin:
     def watering_paused(self) -> bool:
         return self._pause_events()[0].is_set()
 
-    def pause_ends(self) -> datetime | None:
-        """When the pause lifts itself, or None while nothing is paused."""
-        if not self.watering_paused():
-            return None
-        return getattr(self, "_pause_until", None)
-
-    def held_by_pause(self) -> dict:
+    def held_by_pause(self) -> dict[int, dict]:
         """The zones a pause interrupted, by id, with what each is still owed.
 
         Their valves are closed while it lasts, so they are not among the open
         valves, and the zone, Start and the card showed nothing of them.
         """
-        held = getattr(self, "_held_by_pause", None)
-        if held is None:
-            held = self._held_by_pause = {}
-        return held
+        if self._held_by_pause is None:
+            self._held_by_pause = {}
+        return self._held_by_pause
+
+    def pause_live(self) -> dict:
+        """What the live state says of a pause: when it ends, and what it holds."""
+        if not self.watering_paused():
+            return {"paused_until": None, "held": []}
+        until = self._pause_until
+        return {
+            "paused_until": until.isoformat() if until else None,
+            "held": sorted(self.held_by_pause().values(), key=lambda v: v["zone_id"]),
+        }
 
     def paused_seconds_total(self) -> float:
         """Every second spent paused since startup, on the loop clock.
