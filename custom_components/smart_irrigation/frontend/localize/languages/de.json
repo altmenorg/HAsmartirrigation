@@ -828,7 +828,7 @@
         "start": "Beginn",
         "zone": "Zone",
         "duration": "Dauer",
-        "water": "Wasserverbrauch",
+        "water": "Wasser",
         "truncated": "Es werden die {count} neuesten von {total} Durchläufen gezeigt."
       },
       "charts": {
