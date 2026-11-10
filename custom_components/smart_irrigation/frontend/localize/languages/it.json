@@ -1218,7 +1218,6 @@
     "step": "passo",
     "tour": "giro",
     "tours": "giri",
-    "remaining": "rimanente",
     "no_valve": "Nessuna valvola collegata, quindi non irrigate:",
     "nothing_no_valve": "Niente da irrigare in questo ciclo: le zone a cui manca acqua non hanno nessuna valvola collegata:"
   },
@@ -1351,8 +1350,6 @@
     "every_day": "ogni giorno",
     "anchor_start_short": "inizia alle",
     "anchor_end_short": "finito entro le",
-    "steps_count": "passo/i",
-    "schedules_count": "orario/i",
     "off": "disattivato",
     "steps_title": "Passi",
     "schedules_title": "Orari",

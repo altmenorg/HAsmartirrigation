@@ -5,7 +5,9 @@ import {
   programsPollDelay,
   deficitOf,
   depthLabel,
-  durationLabel,
+  remainingDuration,
+  manualRun,
+  friendlyDuration,
   momentLabel,
   nextStartState,
   programLabel,
@@ -77,18 +79,35 @@ describe("depthLabel", () => {
   });
 });
 
-describe("durationLabel", () => {
-  it("drops the hours when there are none", () => {
-    expect(durationLabel(852)).toBe("14:12");
-    expect(durationLabel(59)).toBe("0:59");
+describe("the time left", () => {
+  it("is whole minutes from ten minutes on, rounded up", () => {
+    expect(remainingDuration(3589)).toBe("1 h 00 min");
+    expect(remainingDuration(3701)).toBe("1 h 02 min");
+    expect(remainingDuration(852)).toBe("15 min");
+    expect(remainingDuration(600)).toBe("10 min");
   });
 
-  it("keeps them when there are", () => {
-    expect(durationLabel(3723)).toBe("1:02:03");
+  it("is to the second below", () => {
+    expect(remainingDuration(114)).toBe("1 min 54 s");
+    expect(remainingDuration(59)).toBe("59 s");
   });
 
   it("never reads as a negative run", () => {
-    expect(durationLabel(-10)).toBe("0:00");
+    expect(remainingDuration(-10)).toBe("0 s");
+    expect(remainingDuration(undefined)).toBe("0 s");
+  });
+});
+
+describe("a manual zone's run", () => {
+  it("is its own duration, whatever its balance", () => {
+    expect(manualRun({ state: "manual", duration: 120 })).toBe(120);
+    expect(manualRun({ state: "manual", duration: 0 })).toBe(0);
+    expect(manualRun({ state: "manual" })).toBe(0);
+  });
+
+  it("is none for a zone that is not manual", () => {
+    expect(manualRun({ state: "automatic", duration: 120 })).toBeNull();
+    expect(manualRun({ state: "disabled", duration: 120 })).toBeNull();
   });
 });
 
@@ -339,5 +358,19 @@ describe("programLabel", () => {
         "Hauptprogramm",
       ),
     ).toBe("Main program");
+  });
+});
+
+describe("a duration for reading", () => {
+  it("is said the same way everywhere", () => {
+    expect(friendlyDuration(3600)).toBe("1 h 00 min");
+    expect(friendlyDuration(3900)).toBe("1 h 05 min");
+    expect(friendlyDuration(873)).toBe("14 min 33 s");
+    expect(friendlyDuration(120)).toBe("2 min");
+    expect(friendlyDuration(45)).toBe("45 s");
+  });
+  it("has nothing below zero or for nothing", () => {
+    expect(friendlyDuration(-5)).toBe("0 s");
+    expect(friendlyDuration(undefined)).toBe("0 s");
   });
 });

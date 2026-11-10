@@ -11,7 +11,7 @@ title: "Configuration: Zones"
 Specify one or more irrigation zones here. The integration calculates irrigation duration per zone, depending on size, throughput, state, [module](configuration-modules.md) and [sensor group](configuration-sensor-groups.md). A zone can be:
 * **disabled**: The zone is then not calculated and duration will be set to 0.
 * **automatic**: The zones duration is automatically calculated.
-* **manual**: You can specify the zones duration yourself.
+* **manual**: You set the duration yourself, in minutes. Every start waters the zone for that duration, whatever its water balance, and a run keeps it.
 
 > When entering any values in the configuration of this integration, take notice of the labels provided so you enter values in the correct units.
 

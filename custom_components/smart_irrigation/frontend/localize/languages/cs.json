@@ -1218,7 +1218,6 @@
     "step": "krok",
     "tour": "kolo",
     "tours": "kola",
-    "remaining": "zbývá",
     "no_valve": "Žádný propojený ventil, takže se nezalévají:",
     "nothing_no_valve": "V tomto běhu není co zalévat: zóny, kterým chybí voda, nemají propojený ventil:"
   },
@@ -1351,8 +1350,6 @@
     "every_day": "každý den",
     "anchor_start_short": "začíná v",
     "anchor_end_short": "hotovo do",
-    "steps_count": "krok(ů)",
-    "schedules_count": "rozvrh(ů)",
     "off": "vypnuto",
     "steps_title": "Kroky",
     "schedules_title": "Rozvrhy",

@@ -42,6 +42,11 @@ import {
   setupZoneMethod,
   splitChosen,
   notOwnEntity,
+  linkedValveDomains,
+  formatDuration,
+  countLabel,
+  localizedDateTime,
+  runStartOptions,
 } from "./helpers";
 
 /**
@@ -784,5 +789,104 @@ describe("entities a zone may be linked to", () => {
     expect(notOwnEntity(hass, "switch.ventil_rasen")).toBe(true);
     expect(notOwnEntity(hass, "switch.yaml_without_unique_id")).toBe(true);
     expect(notOwnEntity(undefined, "switch.ventil_rasen")).toBe(true);
+  });
+});
+
+describe("the zone's valve field", () => {
+  it("offers a binary sensor only while it is watched, not opened", () => {
+    expect(linkedValveDomains({})).toContain("binary_sensor");
+    expect(
+      linkedValveDomains({ direct_valve_control_enabled: true }),
+    ).not.toContain("binary_sensor");
+    expect(linkedValveDomains({ full_controller: true })).not.toContain(
+      "binary_sensor",
+    );
+  });
+  it("opens a light or a cover only as the full controller", () => {
+    expect(linkedValveDomains({ full_controller: true })).toEqual(
+      expect.arrayContaining(["switch", "valve", "light", "cover"]),
+    );
+    expect(linkedValveDomains({ direct_valve_control_enabled: true })).toEqual([
+      "switch",
+      "valve",
+      "input_boolean",
+    ]);
+  });
+});
+
+describe("the texts of daily use", () => {
+  for (const lang of ["en", "de"]) {
+    it(`say what a manual zone does (${lang})`, () => {
+      const status = localize("panels.zones.status.manual", lang);
+      expect(status).not.toMatch(/only when you ask|nur, wenn du es verlangst/);
+    });
+    it(`say one zone and several apart (${lang})`, () => {
+      expect(
+        localize("panels.info.cards.next-run.sub-watering", lang),
+      ).not.toMatch(/\(s\)|\(n\)/);
+      expect(
+        localize("panels.info.cards.next-run.sub-watering-one", lang),
+      ).not.toMatch(/\(s\)|\(n\)/);
+    });
+  }
+  it("give the panel's durations one form", () => {
+    expect(formatDuration(120)).toBe("2 min");
+    expect(formatDuration(3600)).toBe("1 h 00 min");
+  });
+});
+
+describe("a count in words", () => {
+  const texts = { none: "no steps", one: "1 step", many: "{n} steps" };
+  it("has a text for none, one and several", () => {
+    expect(countLabel(0, texts)).toBe("no steps");
+    expect(countLabel(1, texts)).toBe("1 step");
+    expect(countLabel(3, texts)).toBe("3 steps");
+  });
+  for (const lang of ["en", "de"]) {
+    it(`heads a program without brackets (${lang})`, () => {
+      for (const key of [
+        "steps_none",
+        "steps_one",
+        "steps_many",
+        "schedules_none",
+        "schedules_one",
+        "schedules_many",
+      ]) {
+        expect(localize(`programs.${key}`, lang)).not.toMatch(/\(|\//);
+      }
+    });
+  }
+});
+
+describe("runStartOptions", () => {
+  const now = new Date(2026, 10, 10, 6, 0);
+  const start = new Date(2026, 10, 9, 22, 49).toISOString();
+  const hass = (language: string) => ({ locale: { language } });
+
+  it("writes this year's run short and in the language", () => {
+    const options = runStartOptions(start, now);
+    expect(options.year).toBeUndefined();
+    expect(localizedDateTime(start, hass("de"), options)).toBe("09.11., 22:49");
+    expect(localizedDateTime(start, hass("en"), options)).toMatch(/^11\/09/);
+  });
+
+  it("adds the year to a run of another year", () => {
+    const old = new Date(2025, 6, 1, 7, 5).toISOString();
+    expect(localizedDateTime(old, hass("de"), runStartOptions(old, now))).toBe(
+      "01.07.25, 07:05",
+    );
+  });
+
+  it("is no ISO date any more", () => {
+    expect(
+      localizedDateTime(start, hass("de"), runStartOptions(start, now)),
+    ).not.toMatch(/2026-11-09/);
+  });
+
+  it("leaves a bad value to the formatter", () => {
+    expect(runStartOptions("nonsense", now).year).toBeUndefined();
+    expect(
+      localizedDateTime("nonsense", hass("de"), runStartOptions("x")),
+    ).toBe("-");
   });
 });

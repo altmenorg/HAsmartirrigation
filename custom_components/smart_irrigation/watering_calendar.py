@@ -70,6 +70,24 @@ class WateringCalendarMixin:
                 )
                 continue
 
+            if zone.get(const.ZONE_MAPPING) is None:
+                # A manual zone often has no sensor group: it waters a fixed
+                # time and reads no weather. It was logged as a warning every
+                # time the panel opened.
+                _LOGGER.debug(
+                    "[async_generate_watering_calendar]: zone %s has no sensor "
+                    "group, no calendar",
+                    zone_id,
+                )
+                calendar_data[zone_id] = {
+                    "zone_name": zone_name,
+                    "zone_id": zone_id,
+                    "monthly_estimates": [],
+                    "error": f"Zone {zone_id} missing mapping or module configuration",
+                    "generated_at": datetime.now().isoformat(),
+                }
+                continue
+
             try:
                 monthly_calendar = await self._calculate_monthly_watering_for_zone(zone)
                 calendar_data[zone_id] = {

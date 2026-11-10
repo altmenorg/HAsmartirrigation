@@ -20,6 +20,7 @@ import {
 } from "../../data/websockets";
 import { SubscribeMixin } from "../../subscribe-mixin";
 import { localize } from "../../../localize/localize";
+import { friendlyDuration, remainingDuration } from "../../card/format";
 import {
   output_unit,
   unit_text,
@@ -29,6 +30,7 @@ import {
   storedVolume,
   navigate,
   readingUses,
+  countLabel,
 } from "../../helpers";
 import { loadHaForm } from "../../load-ha-elements";
 import "../../dialogs/trigger-dialog";
@@ -782,11 +784,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     const t = (key: string) => localize(`planning.${key}`, lang);
     const live = state.live;
     if (!live) return html``;
-    const minutes = (seconds: number) => {
-      const m = Math.floor(seconds / 60);
-      const s = Math.round(seconds % 60);
-      return `${m}:${String(s).padStart(2, "0")}`;
-    };
+    const left = (seconds: number) =>
+      t("left").replace("{time}", remainingDuration(seconds));
     const rows = [
       ...(live.paused
         ? [
@@ -805,16 +804,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 ${p.step}/${p.steps}${p.tours > 1
                   ? html`, ${t("tour")} ${p.tour}/${p.tours}`
                   : ""},
-                ${p.percent} %, ${t("remaining")}
-                ${minutes(p.remaining_seconds || 0)}`}
+                ${p.percent} %, ${left(p.remaining_seconds || 0)}`}
           </div>
         `,
       ),
       ...(live.valves || []).map(
         (v: any) => html`
           <div class="setting-note">
-            ${v.zone}: ${t("remaining")} ${minutes(v.remaining_seconds)}
-            (${v.percent} %)
+            ${v.zone}: ${left(v.remaining_seconds)} (${v.percent} %)
           </div>
         `,
       ),
@@ -864,10 +861,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       (live.valves || []).length > 0 ||
       !!live.cycle;
     const anything = paused || running || (live.programs || []).length > 0;
-    const minutes = (seconds: number) =>
-      seconds < 60
-        ? `${Math.round(seconds)} s`
-        : `${Math.round(seconds / 60)} min`;
+    // The durations planned, in the form the rest of the panel uses: it said
+    // "62 min" where Start said "1 h 02 min".
+    const minutes = (seconds: number) => friendlyDuration(seconds);
     const planning = this.planning || [];
     return html`
       <ha-card header="${t("title")}">
@@ -2042,9 +2038,17 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   ${fold(
                     `program:${program.id}`,
                     html`<span class="fold-title">${program.name}</span> ·
-                      ${(program.steps || []).length} ${t("steps_count")} ·
-                      ${(program.schedules || []).length}
-                      ${t("schedules_count")}${program.enabled === false
+                      ${countLabel((program.steps || []).length, {
+                        none: t("steps_none"),
+                        one: t("steps_one"),
+                        many: t("steps_many"),
+                      })}
+                      ·
+                      ${countLabel((program.schedules || []).length, {
+                        none: t("schedules_none"),
+                        one: t("schedules_one"),
+                        many: t("schedules_many"),
+                      })}${program.enabled === false
                         ? html` · <em>${t("off")}</em>`
                         : ""}`,
                     html`
@@ -3882,7 +3886,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         const count = (this.zones || []).filter(
           (zone) => !!zone.soil_moisture_sensor,
         ).length;
-        return count > 0 ? t("cond_soil", "{n}", String(count)) : "";
+        if (count <= 0) return "";
+        return count === 1
+          ? t("cond_soil_one", "{n}", String(count))
+          : t("cond_soil", "{n}", String(count));
       }
       default:
         return "";

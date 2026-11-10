@@ -367,7 +367,7 @@
           "next-program": "Next program: {program}, {start}",
           "headline-watering": "Watering {start}",
           "headline-watering-soon": "Watering at the next start",
-          "sub-watering": "{count} zone(s), {duration} in all.",
+          "sub-watering": "{count} zones, {duration} in all.",
           "headline-postponed": "Watering is held back",
           "sub-postponed": "You postponed it. It resumes by itself, and nothing is lost: a zone that is short of water still is.",
           "headline-skipped": "No watering today",
@@ -381,7 +381,8 @@
           "sub-no-zones": "Smart Irrigation waters zones. The assistant sets up the first one with you.",
           "headline-off": "Smart Irrigation is switched off",
           "sub-off": "It keeps taking its weather readings, but calculates nothing and waters nothing until it is switched on again.",
-          "open-settings": "Open the settings"
+          "open-settings": "Open the settings",
+          "sub-watering-one": "One zone, {duration}."
         },
         "decision": {
           "title": "Will it be skipped?",
@@ -491,8 +492,8 @@
             "source_does_not_exist": "Source does not exist. Please enter a valid source, such as 'sensor.mysensor'."
           },
           "hidden_sources": "{n} reading(s) not asked: the evapotranspiration is given ready-made, they would only serve to recalculate it.",
-          "et_ignored": "Zone(s) {zones} are calculated from the weather and do not read this evapotranspiration. Set them to provided by a sensor or a service on the zone.",
-          "et_missing": "Zone(s) {zones} expect a ready-made evapotranspiration: choose a source for it above.",
+          "et_ignored": "Calculated from the weather, so they do not read this evapotranspiration: {zones}. Set them to provided by a sensor or a service on the zone.",
+          "et_missing": "Expecting a ready-made evapotranspiration: {zones}. Choose a source for it above.",
           "et_unused": "Not used: every zone of this group is calculated by Smart Irrigation, which works the evapotranspiration out from the other readings. Set a zone to provided by a sensor or a service to give a ready-made value here.",
           "et_needed": "A ready-made value is needed here: the zones of this group are set to provided by a sensor or a service, so None is not offered.",
           "hints": {
@@ -652,7 +653,7 @@
           "direct": "Precipitation rate"
         },
         "input-method-hint": "How the water delivered is known: from the area and the flow of the zone, or directly as a precipitation rate if you have measured it.",
-        "state-hint": "Automatic: Smart Irrigation calculates the duration from the water balance and waters at the start. Manual: it waters only when you ask, for the duration you type. Disabled: never watered, and its balance is not followed.",
+        "state-hint": "Automatic: Smart Irrigation calculates the duration from the water balance and waters at the start. Manual: it waters the duration you set, at every start. Disabled: never watered, and its balance is not followed.",
         "mapping-hint": "The group of sensors this zone reads its weather from: a weather service, your own sensors, or both.",
         "bucket-hint": "The water balance of the zone. Negative: it is short of water. Zero: it has what it needs. Watering brings it back to zero.",
         "maximum-bucket-hint": "The most water the soil is taken to hold. A positive balance never goes above it: the surplus is lost.",
@@ -777,7 +778,7 @@
         "satisfied": "Nothing to water: this zone has what it needs.",
         "under-threshold": "Nothing to water yet: {short} short, under this zone's threshold.",
         "not-calculated": "Not calculated yet: that happens {when}.",
-        "manual": "Waters only when you ask.",
+        "manual": "Waters the duration you set, at every start.",
         "disabled": "Disabled: never watered, and its balance is not kept.",
         "threshold": "threshold",
         "problem": {
@@ -1218,9 +1219,9 @@
     "step": "step",
     "tour": "round",
     "tours": "rounds",
-    "remaining": "left",
     "no_valve": "No valve linked, so not watered:",
-    "nothing_no_valve": "Nothing to water in this run: the zones short of water have no valve linked:"
+    "nothing_no_valve": "Nothing to water in this run: the zones short of water have no valve linked:",
+    "left": "{time} left"
   },
   "programs": {
     "title": "Programs",
@@ -1351,8 +1352,12 @@
     "every_day": "every day",
     "anchor_start_short": "starts at",
     "anchor_end_short": "done by",
-    "steps_count": "step(s)",
-    "schedules_count": "schedule(s)",
+    "steps_none": "no steps",
+    "steps_one": "1 step",
+    "steps_many": "{n} steps",
+    "schedules_none": "no schedule",
+    "schedules_one": "1 schedule",
+    "schedules_many": "{n} schedules",
     "off": "off",
     "steps_title": "Steps",
     "schedules_title": "Schedules",
@@ -1360,7 +1365,7 @@
     "schedule_fallback_skip": "Skip that day",
     "schedule_fallback_previous": "Use the time of the last one seen",
     "schedule_fallback_at": "Start at a fixed time",
-    "main_steps_hint": "To choose the zones and the order of the steps, add a program below.",
+    "main_steps_hint": "The main program waters every zone. To water only some of them, or in an order of your own, add one under Other programs below.",
     "summary_start_sunrise": "starts at sunrise",
     "summary_start_sunset": "starts at sunset",
     "summary_end_sunrise": "done by sunrise",
@@ -1373,11 +1378,12 @@
     "cond_wind": "from {value}",
     "cond_precipitation": "from {value} forecast",
     "cond_days_between": "at least {n} days",
-    "cond_soil": "{n} zone(s) with a sensor"
+    "cond_soil": "{n} zones with a sensor",
+    "cond_soil_one": "{n} zone with a sensor"
   },
   "supplies": {
     "title": "Pumps and main valves",
-    "description": "A pump or a main valve in front of the zone valves runs while a zone it feeds is being watered. Pick it in each zone's settings. The delays are in seconds and signed.",
+    "description": "A pump or a main valve in front of the zone valves runs while a zone it feeds is being watered. Pick it in each zone's settings.",
     "name": "Name",
     "entities": "Entities",
     "entities_hint": "separate several with commas",
@@ -1470,6 +1476,8 @@
     "skipped": "Held back",
     "short_by": "short {value}",
     "no_need": "no watering needed",
+    "manual_runs": "waters {duration} at every start",
+    "manual_no_duration": "no duration entered, not watered",
     "not_calculated": "not calculated yet",
     "runs_for": "would run {duration}",
     "never_watered": "never watered",

@@ -1218,7 +1218,6 @@
     "step": "korak",
     "tour": "krog",
     "tours": "krogi",
-    "remaining": "preostalo",
     "no_valve": "Ni povezanega ventila, zato se ne zaliva:",
     "nothing_no_valve": "V tem zagonu ni kaj zalivati: cone, ki jim primanjkuje vode, nimajo povezanega ventila:"
   },
@@ -1351,8 +1350,6 @@
     "every_day": "vsak dan",
     "anchor_start_short": "začne ob",
     "anchor_end_short": "končano do",
-    "steps_count": "korak(i)",
-    "schedules_count": "urnik(i)",
     "off": "izklopljeno",
     "steps_title": "Koraki",
     "schedules_title": "Urniki",

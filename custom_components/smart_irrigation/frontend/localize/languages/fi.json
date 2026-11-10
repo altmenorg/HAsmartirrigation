@@ -1218,7 +1218,6 @@
     "step": "vaihe",
     "tour": "kierros",
     "tours": "kierrosta",
-    "remaining": "jäljellä",
     "no_valve": "Ei liitettyä venttiiliä, joten ei kastella:",
     "nothing_no_valve": "Ei kasteltavaa tässä ajossa: vyöhykkeillä, joilta puuttuu vettä, ei ole liitettyä venttiiliä:"
   },
@@ -1351,8 +1350,6 @@
     "every_day": "joka päivä",
     "anchor_start_short": "alkaa klo",
     "anchor_end_short": "valmis klo",
-    "steps_count": "vaihetta",
-    "schedules_count": "aikataulua",
     "off": "pois",
     "steps_title": "Vaiheet",
     "schedules_title": "Aikataulut",

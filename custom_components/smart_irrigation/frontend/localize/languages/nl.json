@@ -1218,7 +1218,6 @@
     "step": "stap",
     "tour": "ronde",
     "tours": "rondes",
-    "remaining": "resterend",
     "no_valve": "Geen ventiel gekoppeld, dus niet bewaterd:",
     "nothing_no_valve": "Niets te bewateren in deze ronde: de zones die water tekortkomen hebben geen ventiel gekoppeld:"
   },
@@ -1351,8 +1350,6 @@
     "every_day": "elke dag",
     "anchor_start_short": "begint om",
     "anchor_end_short": "klaar om",
-    "steps_count": "stap(pen)",
-    "schedules_count": "schema('s)",
     "off": "uit",
     "steps_title": "Stappen",
     "schedules_title": "Schema's",
