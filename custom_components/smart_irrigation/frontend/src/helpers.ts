@@ -105,6 +105,30 @@ export function localizedDateTime(
 }
 
 /**
+ * How a run's start is written in the History table: day, month and time in
+ * the user's language ("09.11., 22:49"), the year only when it is not this one.
+ *
+ * It was "2026-11-09 22:49". On a phone that pushed the water column off the
+ * screen, and it was in no language (#1022).
+ */
+export function runStartOptions(
+  value: string | number | Date,
+  now: Date = new Date(),
+): Intl.DateTimeFormatOptions {
+  const options: Intl.DateTimeFormatOptions = {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+  const date = new Date(value);
+  if (!isNaN(date.getTime()) && date.getFullYear() !== now.getFullYear()) {
+    options.year = "2-digit";
+  }
+  return options;
+}
+
+/**
  * The same unit as plain text, for a sentence rather than a template.
  *
  * ``output_unit`` returns a lit template, because a square metre needs markup.
