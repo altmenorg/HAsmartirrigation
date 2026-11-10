@@ -22,6 +22,7 @@ import {
   displayVolume,
   formatDuration,
   localizedDateTime,
+  runStartOptions,
   output_unit,
 } from "../../helpers";
 import { DOMAIN, ZONE_WATER_VOLUME } from "../../const";
@@ -460,8 +461,7 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
     if (!start) {
       return "-";
     }
-    const stamp = moment(start);
-    return stamp.isValid() ? stamp.format("YYYY-MM-DD HH:mm") : "-";
+    return localizedDateTime(start, this.hass, runStartOptions(start));
   }
 
   static get styles(): CSSResultGroup {
@@ -493,19 +493,25 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
         color: var(--error-color);
       }
 
-      /* The table keeps four columns on any width by scrolling sideways. */
+      /* Four columns fit a phone: the zone takes what is left and wraps. The
+         table scrolls sideways only if even that is too wide. */
       .history-scroll {
         overflow-x: auto;
       }
       .history-table {
         display: grid;
-        grid-template-columns:
-          minmax(130px, auto) minmax(110px, 1fr)
-          minmax(90px, auto) minmax(80px, auto);
+        grid-template-columns: auto minmax(64px, 1fr) auto auto;
         gap: 8px;
         font-size: 0.85em;
-        min-width: 100%;
-        width: max-content;
+        width: 100%;
+        min-width: min-content;
+      }
+      .history-row span:not(:nth-child(2)) {
+        white-space: nowrap;
+      }
+      .history-row span:last-child,
+      .history-header span:last-child {
+        text-align: end;
       }
       .history-header {
         display: contents;

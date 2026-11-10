@@ -44,6 +44,8 @@ import {
   linkedValveDomains,
   formatDuration,
   countLabel,
+  localizedDateTime,
+  runStartOptions,
 } from "./helpers";
 
 /**
@@ -830,4 +832,37 @@ describe("a count in words", () => {
       }
     });
   }
+});
+
+describe("runStartOptions", () => {
+  const now = new Date(2026, 10, 10, 6, 0);
+  const start = new Date(2026, 10, 9, 22, 49).toISOString();
+  const hass = (language: string) => ({ locale: { language } });
+
+  it("writes this year's run short and in the language", () => {
+    const options = runStartOptions(start, now);
+    expect(options.year).toBeUndefined();
+    expect(localizedDateTime(start, hass("de"), options)).toBe("09.11., 22:49");
+    expect(localizedDateTime(start, hass("en"), options)).toMatch(/^11\/09/);
+  });
+
+  it("adds the year to a run of another year", () => {
+    const old = new Date(2025, 6, 1, 7, 5).toISOString();
+    expect(localizedDateTime(old, hass("de"), runStartOptions(old, now))).toBe(
+      "01.07.25, 07:05",
+    );
+  });
+
+  it("is no ISO date any more", () => {
+    expect(
+      localizedDateTime(start, hass("de"), runStartOptions(start, now)),
+    ).not.toMatch(/2026-11-09/);
+  });
+
+  it("leaves a bad value to the formatter", () => {
+    expect(runStartOptions("nonsense", now).year).toBeUndefined();
+    expect(
+      localizedDateTime("nonsense", hass("de"), runStartOptions("x")),
+    ).toBe("-");
+  });
 });
