@@ -30,6 +30,28 @@
       },
       "next_irrigation": {
         "name": "Volgende bewatering"
+      },
+      "program": {
+        "name": "Programma {name}",
+        "state": {
+          "idle": "Inactief",
+          "waiting": "Wachtend",
+          "running": "Bezig",
+          "paused": "Gepauzeerd",
+          "suspended": "Opgeschort",
+          "disabled": "Uitgeschakeld"
+        }
+      },
+      "program_main": {
+        "name": "Hoofdprogramma",
+        "state": {
+          "idle": "Inactief",
+          "waiting": "Wachtend",
+          "running": "Bezig",
+          "paused": "Gepauzeerd",
+          "suspended": "Opgeschort",
+          "disabled": "Uitgeschakeld"
+        }
       }
     },
     "number": {

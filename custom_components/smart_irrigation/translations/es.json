@@ -30,6 +30,28 @@
       },
       "next_irrigation": {
         "name": "Próximo riego"
+      },
+      "program": {
+        "name": "Programa {name}",
+        "state": {
+          "idle": "Inactivo",
+          "waiting": "En espera",
+          "running": "En marcha",
+          "paused": "En pausa",
+          "suspended": "Suspendido",
+          "disabled": "Desactivado"
+        }
+      },
+      "program_main": {
+        "name": "Programa principal",
+        "state": {
+          "idle": "Inactivo",
+          "waiting": "En espera",
+          "running": "En marcha",
+          "paused": "En pausa",
+          "suspended": "Suspendido",
+          "disabled": "Desactivado"
+        }
       }
     },
     "number": {

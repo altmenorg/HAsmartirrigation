@@ -367,7 +367,7 @@
           "next-program": "Nästa program: {program}, {start}",
           "headline-watering": "Vattnar {start}",
           "headline-watering-soon": "Vattnar vid nästa start",
-          "sub-watering": "Antal zoner: {count}. Sammanlagd tid: {duration}.",
+          "sub-watering": "{count} zoner, sammanlagt {duration}.",
           "headline-postponed": "Vattningen är uppskjuten",
           "sub-postponed": "Du har skjutit upp bevattningen. Den återupptas automatiskt och eventuellt kvarvarande vattenunderskott räknas med då.",
           "headline-skipped": "Ingen vattning i dag",
@@ -381,7 +381,8 @@
           "sub-no-zones": "Smart Irrigation vattnar zoner. Installationsguiden hjälper dig att skapa din första zon.",
           "headline-off": "Smart Irrigation är avstängt",
           "sub-off": "Väderdata hämtas fortfarande. Beräkning och bevattning återupptas när du slår på Smart Irrigation igen.",
-          "open-settings": "Öppna inställningarna"
+          "open-settings": "Öppna inställningarna",
+          "sub-watering-one": "En zon, {duration}."
         },
         "decision": {
           "title": "Kommer den att hoppas över?",
@@ -446,6 +447,15 @@
           "title": "En zon beräknas inte längre",
           "body": "Vattenbehovet för den här zonen beräknades tidigare än för övriga zoner. Bevattningen bygger därför på äldre väderdata. Kontrollera att zonens sensorgrupp fortfarande får data och läs beräkningsloggen för zonen.",
           "never": "aldrig beräknad"
+        },
+        "running": {
+          "headline": "Bevattnar nu",
+          "headline-paused": "Bevattningen är pausad",
+          "paused-until": "Till {when}, sedan fortsätter den av sig själv.",
+          "left": "{time} kvar ({percent} %)",
+          "program": "Program",
+          "step": "steg {step}/{steps}",
+          "program-left": "{time} kvar"
         }
       },
       "gaps": {
@@ -491,8 +501,8 @@
             "source_does_not_exist": "Källan finns inte. Ange en giltig källa, till exempel 'sensor.mysensor'."
           },
           "hidden_sources": "Antal mätvärden som inte behövs: {n}. Evapotranspirationen är redan beräknad, så värdena behövs bara om den ska beräknas på nytt.",
-          "et_ignored": "För {zones} beräknas evapotranspirationen utifrån väderdata. Om du vill använda värdet här väljer du ”Från en sensor eller vädertjänst” i zoninställningarna.",
-          "et_missing": "För {zones} behövs ett färdigberäknat värde på evapotranspirationen. Välj en källa ovan.",
+          "et_ignored": "Zoner där evapotranspirationen beräknas utifrån väderdata, så att värdet här inte läses: {zones}. Om du vill använda värdet här väljer du ”Från en sensor eller vädertjänst” i zoninställningarna.",
+          "et_missing": "Zoner som behöver ett färdigberäknat värde på evapotranspirationen: {zones}. Välj en källa ovan.",
           "et_unused": "Alla zoner i sensorgruppen använder Smart Irrigation för att beräkna evapotranspirationen från övriga mätvärden. Välj ”Från en sensor eller vädertjänst” i en zons inställningar om du vill använda ett färdigberäknat värde här.",
           "et_needed": "Här behövs ett färdigberäknat värde eftersom zonerna i gruppen är inställda på ”Från en sensor eller vädertjänst”. Därför går det inte att välja ”Ingen”.",
           "hints": {
@@ -652,7 +662,7 @@
           "direct": "Bevattningsintensitet"
         },
         "input-method-hint": "Bevattningsintensiteten kan beräknas från zonens yta och vattenflöde. Om du har mätt intensiteten kan du ange den direkt.",
-        "state-hint": "I automatiskt läge beräknar Smart Irrigation bevattningstiden utifrån vattenbalansen och vattnar vid nästa start. I manuellt läge startar du själv bevattningen och anger hur länge den ska pågå. En inaktiverad zon vattnas aldrig och dess vattenbalans följs inte upp.",
+        "state-hint": "I automatiskt läge beräknar Smart Irrigation bevattningstiden utifrån vattenbalansen och vattnar vid nästa start. I manuellt läge vattnas zonen den tid du har angett, vid varje start. En inaktiverad zon vattnas aldrig och dess vattenbalans följs inte upp.",
         "mapping-hint": "Sensorgruppen som ger zonen väderdata. Den kan använda en vädertjänst, dina egna sensorer eller båda.",
         "bucket-hint": "Ett negativt värde innebär att zonen har ett vattenunderskott. Vid noll har den tillräckligt med vatten. Bevattningen återställer vattenbalansen till noll.",
         "maximum-bucket-hint": "Den största vattenmängd som marken antas kunna hålla kvar. Vatten utöver den mängden räknas som förlorat i vattenbalansen.",
@@ -777,7 +787,7 @@
         "satisfied": "Ingen bevattning behövs. Zonen har tillräckligt med vatten.",
         "under-threshold": "Ingen bevattning ännu. Vattenunderskottet på {short} ligger under zonens bevattningströskel.",
         "not-calculated": "Inte beräknad ännu: det sker {when}.",
-        "manual": "Vattnas bara när du startar bevattningen manuellt.",
+        "manual": "Vattnas den tid du har angett, vid varje start.",
         "disabled": "Zonen är inaktiverad. Den vattnas aldrig och vattenbalansen följs inte upp.",
         "threshold": "gräns",
         "problem": {
@@ -789,7 +799,9 @@
           "error": "Kan inte beräknas: {detail}. Den vattnas inte förrän den kan beräknas."
         },
         "no-valve": "Ingen ventil kopplad, så den här zonen vattnas inte.",
-        "no-valve-action": "Koppla en ventil"
+        "no-valve-action": "Koppla en ventil",
+        "running": "Bevattnar nu, {time} kvar.",
+        "running-paused": "Bevattningen är pausad, {time} kvar."
       },
       "calendar": {
         "title": "Bevattningskalender (uppskattning för 12 månader)",
@@ -1214,12 +1226,14 @@
     "expected_skipped_precipitation": "Förväntas hoppas över: regn väntas ({mm} mm)",
     "nothing_now": "Ingenting vattnas just nu.",
     "paused": "Pausad",
+    "paused_until": "Pausad till {when}, sedan fortsätter bevattningen av sig själv.",
     "waiting": "väntar på sin tur",
     "step": "steg",
     "tour": "varv",
     "tours": "varv",
     "no_valve": "Följande zoner saknar en ansluten ventil och kan därför inte bevattnas:",
-    "nothing_no_valve": "Ingen zon kan bevattnas den här gången. Följande zoner behöver vatten men saknar ansluten ventil:"
+    "nothing_no_valve": "Ingen zon kan bevattnas den här gången. Följande zoner behöver vatten men saknar ansluten ventil:",
+    "left": "{time} kvar"
   },
   "programs": {
     "title": "Program",
@@ -1350,6 +1364,12 @@
     "every_day": "varje dag",
     "anchor_start_short": "startar kl.",
     "anchor_end_short": "klart senast",
+    "steps_none": "inga steg",
+    "steps_one": "1 steg",
+    "steps_many": "{n} steg",
+    "schedules_none": "inget schema",
+    "schedules_one": "1 schema",
+    "schedules_many": "{n} scheman",
     "off": "av",
     "steps_title": "Steg",
     "schedules_title": "Scheman",
@@ -1357,7 +1377,7 @@
     "schedule_fallback_skip": "Hoppa över den dagen",
     "schedule_fallback_previous": "Använd tiden för den senaste soluppgången eller solnedgången",
     "schedule_fallback_at": "Starta vid en fast tid",
-    "main_steps_hint": "Lägg till ett program nedan för att välja zonerna och stegens ordning.",
+    "main_steps_hint": "Huvudprogrammet vattnar alla zoner. Om du bara vill vattna några av dem, eller i en egen ordning, lägger du till ett under Andra program nedan.",
     "summary_start_sunrise": "startar vid soluppgång",
     "summary_start_sunset": "startar vid solnedgång",
     "summary_end_sunrise": "klart vid soluppgång",
@@ -1370,11 +1390,12 @@
     "cond_wind": "från {value}",
     "cond_precipitation": "från {value} i prognosen",
     "cond_days_between": "minst {n} dagar",
-    "cond_soil": "antal zoner med sensor: {n}"
+    "cond_soil": "antal zoner med sensor: {n}",
+    "cond_soil_one": "{n} zon med sensor"
   },
   "supplies": {
     "title": "Pumpar och huvudventiler",
-    "description": "En pump eller huvudventil uppströms om zonventilerna är i drift medan någon av dess zoner bevattnas. Välj vilken pump eller huvudventil som försörjer zonen i zonens inställningar. Fördröjningarna anges i sekunder och kan vara positiva eller negativa.",
+    "description": "En pump eller huvudventil uppströms om zonventilerna är i drift medan någon av dess zoner bevattnas. Välj vilken pump eller huvudventil som försörjer zonen i zonens inställningar.",
     "name": "Namn",
     "entities": "Entiteter",
     "entities_hint": "separera flera med kommatecken",
@@ -1467,6 +1488,8 @@
     "skipped": "Uppskjuten",
     "short_by": "underskott {value}",
     "no_need": "ingen bevattning behövs",
+    "manual_runs": "vattnar {duration} vid varje start",
+    "manual_no_duration": "ingen tid angiven, vattnas inte",
     "not_calculated": "inte beräknad ännu",
     "runs_for": "beräknad bevattningstid {duration}",
     "never_watered": "aldrig bevattnad",
@@ -1523,7 +1546,9 @@
     "no_valve": "ingen ventil kopplad, vattnas inte",
     "no_trigger": "Ingen startutlösare",
     "not_scheduled": "Behöver vatten men är inte schemalagd",
-    "off": "Avstängd"
+    "off": "Avstängd",
+    "watering_left": "bevattnar, {time} kvar",
+    "paused_left": "pausad, {time} kvar"
   },
   "confirm": {
     "delete_zone": "Ta bort zonen \"{name}\"? Dess inställningar och vattenbalans går förlorade.",

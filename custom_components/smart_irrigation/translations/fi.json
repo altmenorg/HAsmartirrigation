@@ -30,6 +30,28 @@
       },
       "next_irrigation": {
         "name": "Seuraava kastelu"
+      },
+      "program": {
+        "name": "Ohjelma {name}",
+        "state": {
+          "idle": "Lepotilassa",
+          "waiting": "Odottaa",
+          "running": "Käynnissä",
+          "paused": "Tauolla",
+          "suspended": "Keskeytetty",
+          "disabled": "Poistettu käytöstä"
+        }
+      },
+      "program_main": {
+        "name": "Pääohjelma",
+        "state": {
+          "idle": "Lepotilassa",
+          "waiting": "Odottaa",
+          "running": "Käynnissä",
+          "paused": "Tauolla",
+          "suspended": "Keskeytetty",
+          "disabled": "Poistettu käytöstä"
+        }
       }
     },
     "number": {

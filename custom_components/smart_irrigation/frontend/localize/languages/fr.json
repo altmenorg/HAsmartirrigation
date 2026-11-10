@@ -367,7 +367,7 @@
           "next-program": "Prochain programme : {program}, {start}",
           "headline-watering": "Arrosage {start}",
           "headline-watering-soon": "Arrosage au prochain départ",
-          "sub-watering": "{count} zone(s), {duration} en tout.",
+          "sub-watering": "{count} zones, {duration} en tout.",
           "headline-postponed": "Arrosage reporté",
           "sub-postponed": "Tu l'as reporté. Il reprend tout seul, et rien n'est perdu : une zone en déficit le reste.",
           "headline-skipped": "Pas d'arrosage aujourd'hui",
@@ -381,7 +381,8 @@
           "sub-no-zones": "Smart Irrigation arrose des zones. L'assistant crée la première avec toi.",
           "headline-off": "Smart Irrigation est désactivé",
           "sub-off": "Il continue ses relevés météo, mais ne calcule rien et n'arrose rien jusqu'à sa réactivation.",
-          "open-settings": "Ouvrir les réglages"
+          "open-settings": "Ouvrir les réglages",
+          "sub-watering-one": "Une zone, {duration}."
         },
         "decision": {
           "title": "L'arrosage sera-t-il annulé ?",
@@ -446,6 +447,15 @@
           "title": "Une zone n'est plus calculée",
           "body": "Son besoin en eau est plus ancien que celui des autres, elle arrose donc sur une météo périmée. Vérifie que son groupe de capteurs reçoit toujours des données, et regarde ce que le journal dit du calcul de cette zone.",
           "never": "jamais calculée"
+        },
+        "running": {
+          "headline": "Arrosage en cours",
+          "headline-paused": "Arrosage en pause",
+          "paused-until": "Jusqu'à {when}, puis il reprend tout seul.",
+          "left": "{time} restant ({percent} %)",
+          "program": "Programme",
+          "step": "étape {step}/{steps}",
+          "program-left": "{time} restant"
         }
       },
       "gaps": {
@@ -491,8 +501,8 @@
             "source_does_not_exist": "La source n'existe pas. Saisis une source valide, telle que \"sensor.mysensor\"."
           },
           "hidden_sources": "{n} mesure(s) non demandée(s) : l'évapotranspiration est fournie toute faite, elles ne serviraient qu'à la recalculer.",
-          "et_ignored": "La ou les zones {zones} sont calculées à partir de la météo et ne lisent pas cette évapotranspiration. Règle-les sur fournie par un capteur ou un service, dans la zone.",
-          "et_missing": "La ou les zones {zones} attendent une évapotranspiration toute faite : choisis une source pour elle ci-dessus.",
+          "et_ignored": "Zones calculées à partir de la météo, qui ne lisent donc pas cette évapotranspiration : {zones}. Règle-les sur fournie par un capteur ou un service, dans la zone.",
+          "et_missing": "Zones qui attendent une évapotranspiration toute faite : {zones}. Choisis une source pour elle ci-dessus.",
           "et_unused": "Non utilisée : toutes les zones de ce groupe sont calculées par Smart Irrigation, qui déduit l'évapotranspiration des autres mesures. Règle une zone sur fournie par un capteur ou un service pour donner une valeur toute faite ici.",
           "et_needed": "Une valeur toute faite est nécessaire ici : les zones de ce groupe sont réglées sur fournie par un capteur ou un service, donc Aucun n'est pas proposé.",
           "hints": {
@@ -652,7 +662,7 @@
           "direct": "Pluviométrie de l'arrosage"
         },
         "input-method-hint": "Comment on connaît l'eau apportée : à partir de la surface et du débit de la zone, ou directement par un taux de précipitation si tu l'as mesuré.",
-        "state-hint": "Automatique : Smart Irrigation calcule la durée d'arrosage à partir du bilan en eau et arrose au départ. Manuel : la zone n'arrose que si tu le demandes, pour la durée d'arrosage que tu saisis. Désactivé : jamais arrosée, et son bilan n'est pas suivi.",
+        "state-hint": "Automatique : Smart Irrigation calcule la durée d'arrosage à partir du bilan en eau et arrose au départ. Manuel : la zone arrose la durée que tu as réglée, à chaque départ. Désactivé : jamais arrosée, et son bilan n'est pas suivi.",
         "mapping-hint": "Le groupe de capteurs dont cette zone tire sa météo : un service météo, tes propres capteurs, ou les deux.",
         "bucket-hint": "Le bilan en eau de la zone. Négatif : il lui manque de l'eau. Zéro : elle a ce qu'il lui faut. L'arrosage le ramène à zéro.",
         "maximum-bucket-hint": "Le plus d'eau que le sol est supposé retenir. Un bilan positif ne le dépasse jamais : le surplus est perdu.",
@@ -777,7 +787,7 @@
         "satisfied": "Rien à arroser : cette zone a ce qu'il lui faut.",
         "under-threshold": "Rien à arroser pour l'instant : déficit de {short}, sous le seuil de cette zone.",
         "not-calculated": "Pas encore calculé : ce sera {when}.",
-        "manual": "N'arrose que si tu le demandes.",
+        "manual": "Arrose la durée que tu as réglée, à chaque départ.",
         "disabled": "Désactivée : jamais arrosée, et son bilan n'est pas suivi.",
         "threshold": "seuil",
         "problem": {
@@ -789,7 +799,9 @@
           "error": "Calcul impossible : {detail}. Pas d'arrosage tant que le calcul échoue."
         },
         "no-valve": "Aucune vanne liée : cette zone n'est donc pas arrosée.",
-        "no-valve-action": "Lier une vanne"
+        "no-valve-action": "Lier une vanne",
+        "running": "Arrosage en cours, {time} restant.",
+        "running-paused": "Arrosage en pause, {time} restant."
       },
       "calendar": {
         "title": "Calendrier d'arrosage (12 mois, estimé)",
@@ -1214,12 +1226,14 @@
     "expected_skipped_precipitation": "Devrait être sauté : pluie prévue ({mm} mm)",
     "nothing_now": "Rien n'arrose en ce moment.",
     "paused": "En pause",
+    "paused_until": "En pause jusqu'à {when}, puis l'arrosage reprend tout seul.",
     "waiting": "attend son tour",
     "step": "étape",
     "tour": "tour",
     "tours": "tours",
     "no_valve": "Aucune vanne liée, donc pas arrosées :",
-    "nothing_no_valve": "Rien à arroser à ce départ : les zones en déficit n'ont aucune vanne liée :"
+    "nothing_no_valve": "Rien à arroser à ce départ : les zones en déficit n'ont aucune vanne liée :",
+    "left": "{time} restant"
   },
   "programs": {
     "title": "Programmes",
@@ -1350,6 +1364,12 @@
     "every_day": "tous les jours",
     "anchor_start_short": "démarre à",
     "anchor_end_short": "fini à",
+    "steps_none": "aucune étape",
+    "steps_one": "1 étape",
+    "steps_many": "{n} étapes",
+    "schedules_none": "aucun horaire",
+    "schedules_one": "1 horaire",
+    "schedules_many": "{n} horaires",
     "off": "désactivé",
     "steps_title": "Étapes",
     "schedules_title": "Horaires",
@@ -1357,7 +1377,7 @@
     "schedule_fallback_skip": "Sauter ce jour",
     "schedule_fallback_previous": "Reprendre l'heure du dernier vu",
     "schedule_fallback_at": "Démarrer à une heure fixe",
-    "main_steps_hint": "Pour choisir les zones et l'ordre des étapes, ajoute un programme ci-dessous.",
+    "main_steps_hint": "Le programme principal arrose toutes les zones. Pour n'en arroser que certaines, ou dans ton propre ordre, ajoute-en un sous Autres programmes ci-dessous.",
     "summary_start_sunrise": "démarre au lever du soleil",
     "summary_start_sunset": "démarre au coucher du soleil",
     "summary_end_sunrise": "fini au lever du soleil",
@@ -1370,11 +1390,12 @@
     "cond_wind": "à partir de {value}",
     "cond_precipitation": "à partir de {value} prévus",
     "cond_days_between": "au moins {n} jours",
-    "cond_soil": "{n} zone(s) avec un capteur"
+    "cond_soil": "{n} zones avec un capteur",
+    "cond_soil_one": "{n} zone avec un capteur"
   },
   "supplies": {
     "title": "Pompes et vannes générales",
-    "description": "Une pompe ou une vanne générale placée devant les vannes de zone tourne pendant l'arrosage d'une zone qu'elle dessert. On la choisit dans les réglages de chaque zone. Les délais sont en secondes, avec un signe.",
+    "description": "Une pompe ou une vanne générale placée devant les vannes de zone tourne pendant l'arrosage d'une zone qu'elle dessert. On la choisit dans les réglages de chaque zone.",
     "name": "Nom",
     "entities": "Entités",
     "entities_hint": "séparer plusieurs entités par des virgules",
@@ -1467,6 +1488,8 @@
     "skipped": "Reporté",
     "short_by": "déficit {value}",
     "no_need": "pas d'arrosage nécessaire",
+    "manual_runs": "arrose {duration} à chaque départ",
+    "manual_no_duration": "aucune durée saisie, pas arrosée",
     "not_calculated": "pas encore calculé",
     "runs_for": "arroserait {duration}",
     "never_watered": "jamais arrosé",
@@ -1523,7 +1546,9 @@
     "no_valve": "aucune vanne liée, pas arrosée",
     "no_trigger": "Aucun déclencheur de départ",
     "not_scheduled": "À arroser, mais aucun départ programmé",
-    "off": "Désactivé"
+    "off": "Désactivé",
+    "watering_left": "arrosage en cours, {time} restant",
+    "paused_left": "en pause, {time} restant"
   },
   "confirm": {
     "delete_zone": "Supprimer la zone « {name} » ? Ses réglages et son bilan hydrique sont perdus.",

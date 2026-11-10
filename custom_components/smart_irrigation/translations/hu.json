@@ -30,6 +30,28 @@
       },
       "next_irrigation": {
         "name": "Következő öntözés"
+      },
+      "program": {
+        "name": "Program {name}",
+        "state": {
+          "idle": "Tétlen",
+          "waiting": "Várakozik",
+          "running": "Fut",
+          "paused": "Szünetel",
+          "suspended": "Felfüggesztve",
+          "disabled": "Letiltva"
+        }
+      },
+      "program_main": {
+        "name": "Főprogram",
+        "state": {
+          "idle": "Tétlen",
+          "waiting": "Várakozik",
+          "running": "Fut",
+          "paused": "Szünetel",
+          "suspended": "Felfüggesztve",
+          "disabled": "Letiltva"
+        }
       }
     },
     "number": {

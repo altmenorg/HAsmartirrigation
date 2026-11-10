@@ -367,7 +367,7 @@
           "next-program": "Następny program: {program}, {start}",
           "headline-watering": "Podlewanie {start}",
           "headline-watering-soon": "Podlewanie przy następnym starcie",
-          "sub-watering": "{count} strefa/y, {duration} razem.",
+          "sub-watering": "Strefy: {count}, razem {duration}.",
           "headline-postponed": "Podlewanie jest wstrzymane",
           "sub-postponed": "Odłożyłeś je. Wznowi się samo i nic nie przepada: strefie, której brakuje wody, brakuje jej i potem.",
           "headline-skipped": "Dziś bez podlewania",
@@ -381,7 +381,8 @@
           "sub-no-zones": "Smart Irrigation podlewa strefy. Asystent utworzy z tobą pierwszą.",
           "headline-off": "Smart Irrigation jest wyłączone",
           "sub-off": "Nadal pobiera dane pogodowe, ale niczego nie oblicza i nie podlewa do ponownego włączenia.",
-          "open-settings": "Otwórz ustawienia"
+          "open-settings": "Otwórz ustawienia",
+          "sub-watering-one": "Jedna strefa, {duration}."
         },
         "decision": {
           "title": "Czy zostanie pominięte?",
@@ -446,6 +447,15 @@
           "title": "Jedna strefa nie jest już obliczana",
           "body": "Jej potrzeba wody jest starsza niż pozostałych, więc podlewa według starej pogody. Sprawdź, czy jej grupa czujników wciąż dostaje dane, i zajrzyj do dziennika, co obliczenie o niej powiedziało.",
           "never": "nigdy nie obliczana"
+        },
+        "running": {
+          "headline": "Trwa podlewanie",
+          "headline-paused": "Podlewanie wstrzymane",
+          "paused-until": "Do {when}, potem wznowi się samo.",
+          "left": "Pozostało {time} ({percent} %)",
+          "program": "Program",
+          "step": "krok {step}/{steps}",
+          "program-left": "pozostało {time}"
         }
       },
       "gaps": {
@@ -491,8 +501,8 @@
             "source_does_not_exist": "Źródło nie istnieje. Podaj prawidłowe źródło, takie jak „sensor.mysensor”."
           },
           "hidden_sources": "Nie wymagane odczyty: {n}. Ewapotranspiracja jest podawana gotowa, służyłyby tylko do jej ponownego obliczenia.",
-          "et_ignored": "Strefy {zones} są obliczane na podstawie pogody i nie czytają tej ewapotranspiracji. Ustaw w strefie opcję dostarczane przez czujnik lub usługę.",
-          "et_missing": "Strefy {zones} oczekują gotowej ewapotranspiracji: wybierz dla niej źródło powyżej.",
+          "et_ignored": "Strefy obliczane na podstawie pogody, które dlatego nie czytają tej ewapotranspiracji: {zones}. Ustaw w strefie opcję dostarczane przez czujnik lub usługę.",
+          "et_missing": "Strefy, które oczekują gotowej ewapotranspiracji: {zones}. Wybierz dla niej źródło powyżej.",
           "et_unused": "Nieużywane: wszystkie strefy tej grupy są obliczane przez Smart Irrigation, który wyprowadza ewapotranspirację z pozostałych odczytów. Ustaw strefę na dostarczane przez czujnik lub usługę, aby podać tutaj gotową wartość.",
           "et_needed": "Potrzebna jest tu gotowa wartość: strefy tej grupy są ustawione na dostarczane przez czujnik lub usługę, więc opcja Brak nie jest dostępna.",
           "hints": {
@@ -652,7 +662,7 @@
           "direct": "Intensywność opadu"
         },
         "input-method-hint": "Skąd wiadomo, ile wody dostarczono: z powierzchni i przepływu strefy lub bezpośrednio jako natężenie opadu, jeśli je zmierzyłeś.",
-        "state-hint": "Automatyczny: Smart Irrigation oblicza czas trwania z bilansu wodnego i podlewa na starcie. Ręczny: podlewa tylko na Twoją prośbę, przez wpisany czas. Wyłączony: nigdy nie jest podlewana, a jej bilans nie jest prowadzony.",
+        "state-hint": "Automatyczny: Smart Irrigation oblicza czas trwania z bilansu wodnego i podlewa na starcie. Ręczny: przy każdym starcie podlewa przez ustawiony przez Ciebie czas. Wyłączony: nigdy nie jest podlewana, a jej bilans nie jest prowadzony.",
         "mapping-hint": "Grupa czujników, z której ta strefa czyta pogodę: usługa pogodowa, własne czujniki lub oba naraz.",
         "bucket-hint": "Bilans wodny strefy. Ujemny: brakuje jej wody. Zero: ma to, czego potrzebuje. Podlewanie przywraca go do zera.",
         "maximum-bucket-hint": "Najwięcej wody, jaką gleba może zatrzymać. Dodatni bilans nigdy jej nie przekracza: nadwyżka przepada.",
@@ -777,7 +787,7 @@
         "satisfied": "Nie ma czego podlewać: ta strefa ma to, czego potrzebuje.",
         "under-threshold": "Jeszcze nie ma czego podlewać: brakuje {short}, poniżej progu tej strefy.",
         "not-calculated": "Jeszcze nie obliczono: nastąpi to {when}.",
-        "manual": "Podlewa tylko wtedy, gdy o to poprosisz.",
+        "manual": "Przy każdym starcie podlewa przez ustawiony przez Ciebie czas.",
         "disabled": "Wyłączona: nigdy nie jest podlewana, a jej bilans nie jest prowadzony.",
         "threshold": "próg",
         "problem": {
@@ -789,7 +799,9 @@
           "error": "Nie da się obliczyć: {detail}. Nie jest podlewana, dopóki nie da się jej obliczyć."
         },
         "no-valve": "Brak powiązanego zaworu, więc ta strefa nie jest podlewana.",
-        "no-valve-action": "Powiąż zawór"
+        "no-valve-action": "Powiąż zawór",
+        "running": "Trwa podlewanie, pozostało {time}.",
+        "running-paused": "Podlewanie wstrzymane, pozostało {time}."
       },
       "calendar": {
         "title": "Kalendarz podlewania (12 miesięcy, szacunek)",
@@ -1214,12 +1226,14 @@
     "expected_skipped_precipitation": "Oczekiwane pominięcie: prognozowany deszcz ({mm} mm)",
     "nothing_now": "Nic teraz nie jest podlewane.",
     "paused": "Wstrzymano",
+    "paused_until": "Wstrzymano do {when}, potem podlewanie wznowi się samo.",
     "waiting": "czeka na swoją kolej",
     "step": "krok",
     "tour": "runda",
     "tours": "rundy",
     "no_valve": "Brak powiązanego zaworu, więc nie są podlewane:",
-    "nothing_no_valve": "Nie ma czego podlewać w tym uruchomieniu: strefy, którym brakuje wody, nie mają powiązanego zaworu:"
+    "nothing_no_valve": "Nie ma czego podlewać w tym uruchomieniu: strefy, którym brakuje wody, nie mają powiązanego zaworu:",
+    "left": "pozostało {time}"
   },
   "programs": {
     "title": "Programy",
@@ -1350,6 +1364,12 @@
     "every_day": "codziennie",
     "anchor_start_short": "start o",
     "anchor_end_short": "skończony do",
+    "steps_none": "brak kroków",
+    "steps_one": "1 krok",
+    "steps_many": "kroki: {n}",
+    "schedules_none": "brak harmonogramu",
+    "schedules_one": "1 harmonogram",
+    "schedules_many": "harmonogramy: {n}",
     "off": "wyłączony",
     "steps_title": "Kroki",
     "schedules_title": "Harmonogramy",
@@ -1357,7 +1377,7 @@
     "schedule_fallback_skip": "Pomiń ten dzień",
     "schedule_fallback_previous": "Użyj godziny ostatnio widzianego",
     "schedule_fallback_at": "Uruchom o stałej godzinie",
-    "main_steps_hint": "Aby wybrać strefy i kolejność kroków, dodaj program poniżej.",
+    "main_steps_hint": "Program główny podlewa wszystkie strefy. Aby podlewać tylko niektóre z nich albo we własnej kolejności, dodaj program poniżej w sekcji Inne programy.",
     "summary_start_sunrise": "start o wschodzie słońca",
     "summary_start_sunset": "start o zachodzie słońca",
     "summary_end_sunrise": "gotowe o wschodzie słońca",
@@ -1370,11 +1390,12 @@
     "cond_wind": "od {value}",
     "cond_precipitation": "od {value} w prognozie",
     "cond_days_between": "co najmniej {n} dni",
-    "cond_soil": "{n} stref(y) z czujnikiem"
+    "cond_soil": "Strefy z czujnikiem: {n}",
+    "cond_soil_one": "{n} strefa z czujnikiem"
   },
   "supplies": {
     "title": "Pompy i zawory główne",
-    "description": "Pompa lub zawór główny przed zaworami stref działa, gdy podlewana jest strefa, którą zasila. Wybiera się go w ustawieniach każdej strefy. Opóźnienia są w sekundach i ze znakiem.",
+    "description": "Pompa lub zawór główny przed zaworami stref działa, gdy podlewana jest strefa, którą zasila. Wybiera się go w ustawieniach każdej strefy.",
     "name": "Nazwa",
     "entities": "Encje",
     "entities_hint": "oddziel kilka przecinkami",
@@ -1467,6 +1488,8 @@
     "skipped": "Wstrzymane",
     "short_by": "brakuje {value}",
     "no_need": "podlewanie niepotrzebne",
+    "manual_runs": "podlewa {duration} przy każdym starcie",
+    "manual_no_duration": "nie wpisano czasu, nie jest podlewana",
     "not_calculated": "jeszcze nie obliczono",
     "runs_for": "trwałoby {duration}",
     "never_watered": "nigdy nie podlewana",
@@ -1523,7 +1546,9 @@
     "no_valve": "brak powiązanego zaworu, nie jest podlewana",
     "no_trigger": "Brak wyzwalacza startu",
     "not_scheduled": "Należne, ale niezaplanowane",
-    "off": "Wyłączone"
+    "off": "Wyłączone",
+    "watering_left": "podlewanie, pozostało {time}",
+    "paused_left": "wstrzymane, pozostało {time}"
   },
   "confirm": {
     "delete_zone": "Usunąć strefę „{name}”? Jej ustawienia i bilans wodny zostaną utracone.",

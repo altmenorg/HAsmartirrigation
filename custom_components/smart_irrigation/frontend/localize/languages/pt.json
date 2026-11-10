@@ -367,7 +367,7 @@
           "next-program": "Próximo programa: {program}, {start}",
           "headline-watering": "Rega {start}",
           "headline-watering-soon": "Rega no próximo início",
-          "sub-watering": "{count} zona(s), {duration} no total.",
+          "sub-watering": "{count} zonas, {duration} no total.",
           "headline-postponed": "A rega está adiada",
           "sub-postponed": "Foi adiada por si. Retoma sozinha e nada se perde: uma zona a quem falta água continua a faltar-lhe.",
           "headline-skipped": "Hoje não se rega",
@@ -381,7 +381,8 @@
           "sub-no-zones": "O Smart Irrigation rega zonas. O assistente cria a primeira consigo.",
           "headline-off": "O Smart Irrigation está desligado",
           "sub-off": "Continua a recolher os dados meteorológicos, mas não calcula nem rega nada até voltar a ser ligado.",
-          "open-settings": "Abrir as definições"
+          "open-settings": "Abrir as definições",
+          "sub-watering-one": "Uma zona, {duration}."
         },
         "decision": {
           "title": "Vai ser ignorado?",
@@ -446,6 +447,15 @@
           "title": "Uma zona já não está a ser calculada",
           "body": "A sua necessidade de água é mais antiga do que a das outras, por isso está a regar com o tempo de dias atrás. Verifique se o seu grupo de sensores continua a receber dados, e veja no registo o que o cálculo disse sobre ela.",
           "never": "nunca calculada"
+        },
+        "running": {
+          "headline": "A regar agora",
+          "headline-paused": "Rega em pausa",
+          "paused-until": "Até {when}, depois continua sozinha.",
+          "left": "Faltam {time} ({percent} %)",
+          "program": "Programa",
+          "step": "etapa {step}/{steps}",
+          "program-left": "faltam {time}"
         }
       },
       "gaps": {
@@ -491,8 +501,8 @@
             "source_does_not_exist": "A fonte não existe. Introduza uma fonte válida, como 'sensor.mysensor'."
           },
           "hidden_sources": "{n} leitura(s) não pedida(s): a evapotranspiração é fornecida já calculada, só serviriam para a recalcular.",
-          "et_ignored": "A(s) zona(s) {zones} são calculadas a partir do tempo e não leem esta evapotranspiração. Defina-as como fornecida por um sensor ou um serviço na zona.",
-          "et_missing": "A(s) zona(s) {zones} esperam uma evapotranspiração já calculada: escolha acima uma fonte para ela.",
+          "et_ignored": "Zonas calculadas a partir do tempo, que por isso não leem esta evapotranspiração: {zones}. Defina-as como fornecida por um sensor ou um serviço na zona.",
+          "et_missing": "Zonas que esperam uma evapotranspiração já calculada: {zones}. Escolha acima uma fonte para ela.",
           "et_unused": "Não utilizada: todas as zonas deste grupo são calculadas pelo Smart Irrigation, que deduz a evapotranspiração das outras leituras. Defina uma zona como fornecida por um sensor ou um serviço para dar aqui um valor já calculado.",
           "et_needed": "É necessário aqui um valor já calculado: as zonas deste grupo estão definidas como fornecida por um sensor ou um serviço, por isso Nenhuma não é oferecida.",
           "hints": {
@@ -652,7 +662,7 @@
           "direct": "Taxa de precipitação"
         },
         "input-method-hint": "Como se sabe a água fornecida: pela área e pelo caudal da zona, ou diretamente como taxa de precipitação, se a mediu.",
-        "state-hint": "Automático: o Smart Irrigation calcula a duração a partir do balanço hídrico e rega no início. Manual: só rega quando pedir, durante o tempo que indicar. Desativado: nunca é regada, e o seu balanço não é mantido.",
+        "state-hint": "Automático: o Smart Irrigation calcula a duração a partir do balanço hídrico e rega no início. Manual: rega a duração definida, em cada início. Desativado: nunca é regada, e o seu balanço não é mantido.",
         "mapping-hint": "O grupo de sensores de onde esta zona lê o tempo: um serviço meteorológico, os seus próprios sensores, ou ambos.",
         "bucket-hint": "O balanço hídrico da zona. Negativo: falta-lhe água. Zero: tem o que precisa. A rega repõe-no a zero.",
         "maximum-bucket-hint": "O máximo de água que se considera que o solo retém. Um balanço positivo nunca o ultrapassa: o excedente perde-se.",
@@ -777,7 +787,7 @@
         "satisfied": "Nada para regar: esta zona tem o que precisa.",
         "under-threshold": "Ainda nada para regar: faltam {short}, abaixo do limite desta zona.",
         "not-calculated": "Ainda não calculada: isso acontece {when}.",
-        "manual": "Só rega quando pedir.",
+        "manual": "Rega a duração definida, em cada início.",
         "disabled": "Desativada: nunca é regada, e o seu balanço não é mantido.",
         "threshold": "limite",
         "problem": {
@@ -789,7 +799,9 @@
           "error": "Não pode ser calculada: {detail}. Não é regada enquanto não puder ser calculada."
         },
         "no-valve": "Sem válvula associada, por isso esta zona não é regada.",
-        "no-valve-action": "Associar uma válvula"
+        "no-valve-action": "Associar uma válvula",
+        "running": "A regar agora, faltam {time}.",
+        "running-paused": "Rega em pausa, faltam {time}."
       },
       "calendar": {
         "title": "Calendário de rega (12 meses, estimado)",
@@ -1214,12 +1226,14 @@
     "expected_skipped_precipitation": "Previsto ser ignorado: chuva prevista ({mm} mm)",
     "nothing_now": "Neste momento, nada está a regar.",
     "paused": "Em pausa",
+    "paused_until": "Em pausa até {when}, depois a rega continua sozinha.",
     "waiting": "a aguardar a sua vez",
     "step": "etapa",
     "tour": "ronda",
     "tours": "rondas",
     "no_valve": "Sem válvula associada, por isso não são regadas:",
-    "nothing_no_valve": "Nada para regar neste ciclo: as zonas com falta de água não têm válvula associada:"
+    "nothing_no_valve": "Nada para regar neste ciclo: as zonas com falta de água não têm válvula associada:",
+    "left": "faltam {time}"
   },
   "programs": {
     "title": "Programas",
@@ -1350,6 +1364,12 @@
     "every_day": "todos os dias",
     "anchor_start_short": "começa às",
     "anchor_end_short": "concluído até às",
+    "steps_none": "sem etapas",
+    "steps_one": "1 etapa",
+    "steps_many": "{n} etapas",
+    "schedules_none": "sem agendamento",
+    "schedules_one": "1 agendamento",
+    "schedules_many": "{n} agendamentos",
     "off": "desligado",
     "steps_title": "Etapas",
     "schedules_title": "Agendamentos",
@@ -1357,7 +1377,7 @@
     "schedule_fallback_skip": "Saltar esse dia",
     "schedule_fallback_previous": "Usar a hora do último visto",
     "schedule_fallback_at": "Começar a uma hora fixa",
-    "main_steps_hint": "Para escolher as zonas e a ordem dos passos, adiciona um programa abaixo.",
+    "main_steps_hint": "O programa principal rega todas as zonas. Para regar só algumas, ou numa ordem à sua escolha, adicione um em Outros programas, abaixo.",
     "summary_start_sunrise": "começa ao nascer do sol",
     "summary_start_sunset": "começa ao pôr do sol",
     "summary_end_sunrise": "concluído ao nascer do sol",
@@ -1370,11 +1390,12 @@
     "cond_wind": "a partir de {value}",
     "cond_precipitation": "a partir de {value} previstos",
     "cond_days_between": "pelo menos {n} dias",
-    "cond_soil": "{n} zona(s) com sensor"
+    "cond_soil": "{n} zonas com sensor",
+    "cond_soil_one": "{n} zona com sensor"
   },
   "supplies": {
     "title": "Bombas e válvulas principais",
-    "description": "Uma bomba ou uma válvula principal antes das válvulas das zonas funciona enquanto uma zona que ela abastece está a ser regada. Escolhe-se nas definições de cada zona. Os atrasos são em segundos e com sinal.",
+    "description": "Uma bomba ou uma válvula principal antes das válvulas das zonas funciona enquanto uma zona que ela abastece está a ser regada. Escolhe-se nas definições de cada zona.",
     "name": "Nome",
     "entities": "Entidades",
     "entities_hint": "separe várias com vírgulas",
@@ -1467,6 +1488,8 @@
     "skipped": "Adiado",
     "short_by": "faltam {value}",
     "no_need": "não precisa de rega",
+    "manual_runs": "rega {duration} em cada início",
+    "manual_no_duration": "sem duração indicada, não é regada",
     "not_calculated": "ainda não calculada",
     "runs_for": "regaria {duration}",
     "never_watered": "nunca regada",
@@ -1523,7 +1546,9 @@
     "no_valve": "sem válvula associada, não é regada",
     "no_trigger": "Nenhum acionador de início",
     "not_scheduled": "Em atraso, mas não agendada",
-    "off": "Desligado"
+    "off": "Desligado",
+    "watering_left": "a regar, faltam {time}",
+    "paused_left": "em pausa, faltam {time}"
   },
   "confirm": {
     "delete_zone": "Eliminar a zona «{name}»? As suas definições e o seu balanço hídrico perdem-se.",

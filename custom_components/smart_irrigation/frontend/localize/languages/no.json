@@ -367,7 +367,7 @@
           "next-program": "Neste program: {program}, {start}",
           "headline-watering": "Vanner {start}",
           "headline-watering-soon": "Vanner ved neste start",
-          "sub-watering": "{count} sone(r), {duration} i alt.",
+          "sub-watering": "{count} soner, {duration} i alt.",
           "headline-postponed": "Vanningen er utsatt",
           "sub-postponed": "Du utsatte den. Den fortsetter av seg selv, og ingenting går tapt: en sone som mangler vann, gjør det fortsatt etterpå.",
           "headline-skipped": "Ingen vanning i dag",
@@ -381,7 +381,8 @@
           "sub-no-zones": "Smart Irrigation vanner soner. Assistenten setter opp den første sammen med deg.",
           "headline-off": "Smart Irrigation er slått av",
           "sub-off": "Den henter fortsatt værdata, men beregner og vanner ingenting før den slås på igjen.",
-          "open-settings": "Åpne innstillingene"
+          "open-settings": "Åpne innstillingene",
+          "sub-watering-one": "Én sone, {duration}."
         },
         "decision": {
           "title": "Blir den hoppet over?",
@@ -446,6 +447,15 @@
           "title": "En sone blir ikke lenger beregnet",
           "body": "Vannbehovet er eldre enn for de andre, så den vanner etter gammelt vær. Sjekk at sensorgruppen fortsatt får data, og se i loggen hva beregningen sa om den.",
           "never": "aldri beregnet"
+        },
+        "running": {
+          "headline": "Vanner nå",
+          "headline-paused": "Vanning satt på pause",
+          "paused-until": "Til {when}, deretter fortsetter den av seg selv.",
+          "left": "{time} igjen ({percent} %)",
+          "program": "Program",
+          "step": "trinn {step}/{steps}",
+          "program-left": "{time} igjen"
         }
       },
       "gaps": {
@@ -491,8 +501,8 @@
             "source_does_not_exist": "Kilden finnes ikke. Angi en gyldig kilde, for eksempel \"sensor.mysensor\"."
           },
           "hidden_sources": "{n} måling(er) ikke spurt om: evapotranspirasjonen oppgis ferdig, de ville bare brukes til å beregne den på nytt.",
-          "et_ignored": "Sone(r) {zones} beregnes ut fra været og leser ikke denne evapotranspirasjonen. Sett dem til levert av en sensor eller en tjeneste på sonen.",
-          "et_missing": "Sone(r) {zones} forventer en ferdig evapotranspirasjon: velg en kilde til den ovenfor.",
+          "et_ignored": "Soner som beregnes ut fra været og derfor ikke leser denne evapotranspirasjonen: {zones}. Sett dem til levert av en sensor eller en tjeneste på sonen.",
+          "et_missing": "Soner som forventer en ferdig evapotranspirasjon: {zones}. Velg en kilde til den ovenfor.",
           "et_unused": "Ikke brukt: alle sonene i denne gruppen beregnes av Smart Irrigation, som utleder evapotranspirasjonen fra de andre målingene. Sett en sone til levert av en sensor eller en tjeneste for å gi en ferdig verdi her.",
           "et_needed": "En ferdig verdi trengs her: sonene i denne gruppen er satt til levert av en sensor eller en tjeneste, så Ingen tilbys ikke.",
           "hints": {
@@ -652,7 +662,7 @@
           "direct": "Nedbørsintensitet"
         },
         "input-method-hint": "Hvordan vannet som leveres er kjent: ut fra arealet og vannmengden til sonen, eller direkte som en nedbørsintensitet hvis du har målt den.",
-        "state-hint": "Automatisk: Smart Irrigation beregner varigheten ut fra vannbalansen og vanner ved start. Manuell: den vanner bare når du ber om det, i den varigheten du skriver inn. Deaktivert: vannes aldri, og balansen føres ikke.",
+        "state-hint": "Automatisk: Smart Irrigation beregner varigheten ut fra vannbalansen og vanner ved start. Manuell: den vanner varigheten du har satt, ved hver start. Deaktivert: vannes aldri, og balansen føres ikke.",
         "mapping-hint": "Sensorgruppen denne sonen leser været fra: en værtjeneste, dine egne sensorer, eller begge deler.",
         "bucket-hint": "Vannbalansen til sonen. Negativ: den mangler vann. Null: den har det den trenger. Vanning bringer den tilbake til null.",
         "maximum-bucket-hint": "Det meste vannet jorda antas å holde. En positiv balanse går aldri over det: overskuddet går tapt.",
@@ -777,7 +787,7 @@
         "satisfied": "Ingenting å vanne: denne sonen har det den trenger.",
         "under-threshold": "Ennå ingenting å vanne: det mangler {short}, under grensen for denne sonen.",
         "not-calculated": "Ikke beregnet ennå: det skjer {when}.",
-        "manual": "Vanner bare når du ber om det.",
+        "manual": "Vanner varigheten du har satt, ved hver start.",
         "disabled": "Slått av: vannes aldri, og balansen føres ikke.",
         "threshold": "grense",
         "problem": {
@@ -789,7 +799,9 @@
           "error": "Kan ikke beregnes: {detail}. Den vannes ikke før den kan beregnes."
         },
         "no-valve": "Ingen ventil tilknyttet, så denne sonen vannes ikke.",
-        "no-valve-action": "Knytt til en ventil"
+        "no-valve-action": "Knytt til en ventil",
+        "running": "Vanner nå, {time} igjen.",
+        "running-paused": "Vanning satt på pause, {time} igjen."
       },
       "calendar": {
         "title": "Vanningskalender (12 måneder, anslått)",
@@ -1214,12 +1226,14 @@
     "expected_skipped_precipitation": "Forventes hoppet over: regn varslet ({mm} mm)",
     "nothing_now": "Ingenting vannes nå.",
     "paused": "Satt på pause",
+    "paused_until": "På pause til {when}, deretter fortsetter vanningen av seg selv.",
     "waiting": "venter på tur",
     "step": "trinn",
     "tour": "runde",
     "tours": "runder",
     "no_valve": "Ingen ventil tilknyttet, så de vannes ikke:",
-    "nothing_no_valve": "Ingenting å vanne i denne kjøringen: sonene som mangler vann, har ingen ventil tilknyttet:"
+    "nothing_no_valve": "Ingenting å vanne i denne kjøringen: sonene som mangler vann, har ingen ventil tilknyttet:",
+    "left": "{time} igjen"
   },
   "programs": {
     "title": "Programmer",
@@ -1350,6 +1364,12 @@
     "every_day": "hver dag",
     "anchor_start_short": "starter kl.",
     "anchor_end_short": "ferdig innen",
+    "steps_none": "ingen trinn",
+    "steps_one": "1 trinn",
+    "steps_many": "{n} trinn",
+    "schedules_none": "ingen tidsplan",
+    "schedules_one": "1 tidsplan",
+    "schedules_many": "{n} tidsplaner",
     "off": "av",
     "steps_title": "Trinn",
     "schedules_title": "Tidsplaner",
@@ -1357,7 +1377,7 @@
     "schedule_fallback_skip": "Hopp over den dagen",
     "schedule_fallback_previous": "Bruk tidspunktet for den sist sette",
     "schedule_fallback_at": "Start på et fast tidspunkt",
-    "main_steps_hint": "Legg til et program nedenfor for å velge sonene og rekkefølgen på trinnene.",
+    "main_steps_hint": "Hovedprogrammet vanner alle soner. For å vanne bare noen av dem, eller i din egen rekkefølge, legg til et under Andre programmer nedenfor.",
     "summary_start_sunrise": "starter ved soloppgang",
     "summary_start_sunset": "starter ved solnedgang",
     "summary_end_sunrise": "ferdig ved soloppgang",
@@ -1370,11 +1390,12 @@
     "cond_wind": "fra {value}",
     "cond_precipitation": "fra {value} i varselet",
     "cond_days_between": "minst {n} dager",
-    "cond_soil": "{n} sone(r) med sensor"
+    "cond_soil": "{n} soner med sensor",
+    "cond_soil_one": "{n} sone med sensor"
   },
   "supplies": {
     "title": "Pumper og hovedventiler",
-    "description": "En pumpe eller en hovedventil foran sonens ventiler går mens en sone den mater vannes. Den velges i hver sones innstillinger. Forsinkelsene er i sekunder og med fortegn.",
+    "description": "En pumpe eller en hovedventil foran sonens ventiler går mens en sone den mater vannes. Den velges i hver sones innstillinger.",
     "name": "Navn",
     "entities": "Entiteter",
     "entities_hint": "skill flere med komma",
@@ -1467,6 +1488,8 @@
     "skipped": "Utsatt",
     "short_by": "mangler {value}",
     "no_need": "ingen vanning nødvendig",
+    "manual_runs": "vanner {duration} ved hver start",
+    "manual_no_duration": "ingen varighet angitt, vannes ikke",
     "not_calculated": "ikke beregnet ennå",
     "runs_for": "ville gått {duration}",
     "never_watered": "aldri vannet",
@@ -1523,7 +1546,9 @@
     "no_valve": "ingen ventil tilknyttet, vannes ikke",
     "no_trigger": "Ingen startutløser",
     "not_scheduled": "Står igjen, men ikke planlagt",
-    "off": "Slått av"
+    "off": "Slått av",
+    "watering_left": "vanner, {time} igjen",
+    "paused_left": "på pause, {time} igjen"
   },
   "confirm": {
     "delete_zone": "Slette sonen «{name}»? Innstillingene og vannbalansen går tapt.",

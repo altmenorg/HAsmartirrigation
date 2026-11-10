@@ -381,7 +381,8 @@
           "sub-no-zones": "A Smart Irrigation zónákat öntöz. A segéd veled együtt beállítja az elsőt.",
           "headline-off": "A Smart Irrigation ki van kapcsolva",
           "sub-off": "Továbbra is gyűjti az időjárási adatokat, de nem számol és nem öntöz semmit, amíg újra be nem kapcsolod.",
-          "open-settings": "Beállítások megnyitása"
+          "open-settings": "Beállítások megnyitása",
+          "sub-watering-one": "Egy zóna, {duration}."
         },
         "decision": {
           "title": "Ki lesz hagyva?",
@@ -446,6 +447,15 @@
           "title": "Egy zónát már nem számol a rendszer",
           "body": "A vízigénye régebbi, mint a többinek, így régi időjárás alapján öntöz. Ellenőrizd, hogy az érzékelőcsoportja még kap-e adatot, és nézd meg a naplóban, mit mondott róla a számítás.",
           "never": "soha nem volt számítva"
+        },
+        "running": {
+          "headline": "Öntözés folyamatban",
+          "headline-paused": "Öntözés szüneteltetve",
+          "paused-until": "Eddig: {when}, utána magától folytatódik.",
+          "left": "{time} van hátra ({percent} %)",
+          "program": "Program",
+          "step": "{step}/{steps}. lépés",
+          "program-left": "{time} van hátra"
         }
       },
       "gaps": {
@@ -491,8 +501,8 @@
             "source_does_not_exist": "A forrás nem létezik. Kérjük, adjon meg egy érvényes forrást, például a „sensor.mysensor” értéket."
           },
           "hidden_sources": "{n} mérés nincs kérve: az evapotranszpirációt készen kapja, ezek csak az újraszámítására szolgálnának.",
-          "et_ignored": "A(z) {zones} zóna(k) az időjárásból számolnak, és nem olvassák ezt az evapotranszpirációt. Állítsd őket a zónán érzékelő vagy szolgáltatás adja értékre.",
-          "et_missing": "A(z) {zones} zóna(k) kész evapotranszpirációt várnak: válassz hozzá forrást fent.",
+          "et_ignored": "Az időjárásból számoló zónák, amelyek ezért nem olvassák ezt az evapotranszpirációt: {zones}. Állítsd őket a zónán érzékelő vagy szolgáltatás adja értékre.",
+          "et_missing": "Kész evapotranszpirációt váró zónák: {zones}. Válassz hozzá forrást fent.",
           "et_unused": "Nem használt: a csoport minden zónáját a Smart Irrigation számolja, amely az evapotranszpirációt a többi mérésből vezeti le. Állíts egy zónát érzékelő vagy szolgáltatás adja értékre, hogy itt kész értéket adhass meg.",
           "et_needed": "Itt kész érték kell: a csoport zónái érzékelő vagy szolgáltatás adja értékre vannak állítva, ezért a Nincs nem választható.",
           "hints": {
@@ -652,7 +662,7 @@
           "direct": "Csapadékintenzitás"
         },
         "input-method-hint": "Hogyan ismert a kijuttatott víz: a zóna területéből és átfolyásából, vagy közvetlenül csapadékintenzitásként, ha megmérted.",
-        "state-hint": "Automatikus: a Smart Irrigation a vízmérlegből számolja az időtartamot, és indításkor öntöz. Kézi: csak akkor öntöz, ha kéred, az általad megadott időtartamig. Letiltva: soha nem öntözi, és a mérlegét nem követi.",
+        "state-hint": "Automatikus: a Smart Irrigation a vízmérlegből számolja az időtartamot, és indításkor öntöz. Kézi: minden indításkor az általad beállított időtartamig öntöz. Letiltva: soha nem öntözi, és a mérlegét nem követi.",
         "mapping-hint": "Az érzékelőcsoport, amelyből ez a zóna az időjárását olvassa: időjárás-szolgáltatás, saját érzékelők, vagy mindkettő.",
         "bucket-hint": "A zóna vízmérlege. Negatív: vízhiányos. Nulla: megvan, amire szüksége van. Az öntözés visszaviszi nullára.",
         "maximum-bucket-hint": "A legtöbb víz, amelyet a talaj tartani képesnek tekintünk. A pozitív mérleg soha nem megy fölé: a felesleg elvész.",
@@ -777,7 +787,7 @@
         "satisfied": "Nincs mit öntözni: ennek a zónának megvan, amire szüksége van.",
         "under-threshold": "Még nincs mit öntözni: {short} hiányzik, a zóna küszöbe alatt.",
         "not-calculated": "Még nincs kiszámítva: ez {when} történik.",
-        "manual": "Csak akkor öntöz, ha kéred.",
+        "manual": "Minden indításkor az általad beállított időtartamig öntöz.",
         "disabled": "Kikapcsolva: soha nem kap vizet, és a mérlege nincs vezetve.",
         "threshold": "küszöb",
         "problem": {
@@ -789,7 +799,9 @@
           "error": "Nem számítható: {detail}. Addig nem öntöz, amíg nem számítható."
         },
         "no-valve": "Nincs csatolt szelep, így ez a zóna nem öntöz.",
-        "no-valve-action": "Szelep csatolása"
+        "no-valve-action": "Szelep csatolása",
+        "running": "Öntözés folyamatban, {time} van hátra.",
+        "running-paused": "Öntözés szüneteltetve, {time} van hátra."
       },
       "calendar": {
         "title": "Öntözési naptár (12 hónap, becslés)",
@@ -1214,12 +1226,14 @@
     "expected_skipped_precipitation": "Várhatóan kimarad: esőelőrejelzés ({mm} mm)",
     "nothing_now": "Jelenleg nem öntöz semmi.",
     "paused": "Szüneteltetve",
+    "paused_until": "Szüneteltetve eddig: {when}, utána az öntözés magától folytatódik.",
     "waiting": "a sorára vár",
     "step": "lépés",
     "tour": "kör",
     "tours": "kör",
     "no_valve": "Nincs csatolt szelep, így nem öntöz:",
-    "nothing_no_valve": "Ebben a futásban nincs mit öntözni: a vízhiányos zónákhoz nincs szelep csatolva:"
+    "nothing_no_valve": "Ebben a futásban nincs mit öntözni: a vízhiányos zónákhoz nincs szelep csatolva:",
+    "left": "{time} van hátra"
   },
   "programs": {
     "title": "Programok",
@@ -1350,6 +1364,12 @@
     "every_day": "minden nap",
     "anchor_start_short": "indul",
     "anchor_end_short": "kész",
+    "steps_none": "nincs lépés",
+    "steps_one": "1 lépés",
+    "steps_many": "{n} lépés",
+    "schedules_none": "nincs ütemezés",
+    "schedules_one": "1 ütemezés",
+    "schedules_many": "{n} ütemezés",
     "off": "ki",
     "steps_title": "Lépések",
     "schedules_title": "Ütemezések",
@@ -1357,7 +1377,7 @@
     "schedule_fallback_skip": "Az a nap kimarad",
     "schedule_fallback_previous": "Az utoljára látott időpontja",
     "schedule_fallback_at": "Indítás rögzített időpontban",
-    "main_steps_hint": "A zónák és a lépések sorrendjének kiválasztásához adj hozzá lent egy programot.",
+    "main_steps_hint": "A főprogram minden zónát öntöz. Ha csak néhányat szeretnél öntözni, vagy a saját sorrendedben, adj hozzá egyet lent a További programok alatt.",
     "summary_start_sunrise": "napkeltekor indul",
     "summary_start_sunset": "napnyugtakor indul",
     "summary_end_sunrise": "napkeltére kész",
@@ -1370,11 +1390,12 @@
     "cond_wind": "{value} felett",
     "cond_precipitation": "{value} előrejelzéstől",
     "cond_days_between": "legalább {n} nap",
-    "cond_soil": "{n} zóna érzékelővel"
+    "cond_soil": "{n} zóna érzékelővel",
+    "cond_soil_one": "{n} zóna érzékelővel"
   },
   "supplies": {
     "title": "Szivattyúk és főszelepek",
-    "description": "Egy szivattyú vagy egy főszelep a zónaszelepek előtt addig működik, amíg egy általa táplált zónát öntöznek. Az egyes zónák beállításaiban választható ki. A késleltetések másodpercben és előjelesen értendők.",
+    "description": "Egy szivattyú vagy egy főszelep a zónaszelepek előtt addig működik, amíg egy általa táplált zónát öntöznek. Az egyes zónák beállításaiban választható ki.",
     "name": "Név",
     "entities": "Entitások",
     "entities_hint": "többet vesszővel válassz el",
@@ -1467,6 +1488,8 @@
     "skipped": "Elhalasztva",
     "short_by": "hiányzik {value}",
     "no_need": "nincs szükség öntözésre",
+    "manual_runs": "minden indításkor {duration} ideig öntöz",
+    "manual_no_duration": "nincs megadott időtartam, nem öntözi",
     "not_calculated": "még nincs kiszámítva",
     "runs_for": "{duration} ideig futna",
     "never_watered": "még nem volt öntözve",
@@ -1523,7 +1546,9 @@
     "no_valve": "nincs csatolt szelep, nem öntöz",
     "no_trigger": "Nincs indítási kiváltó",
     "not_scheduled": "Esedékes, de nincs beütemezve",
-    "off": "Kikapcsolva"
+    "off": "Kikapcsolva",
+    "watering_left": "öntözés, {time} van hátra",
+    "paused_left": "szünetel, {time} van hátra"
   },
   "confirm": {
     "delete_zone": "Törlöd a(z) „{name}” zónát? A beállításai és a vízmérlege elvesznek.",

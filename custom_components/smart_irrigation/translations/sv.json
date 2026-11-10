@@ -30,6 +30,28 @@
       },
       "next_irrigation": {
         "name": "Nästa bevattning"
+      },
+      "program": {
+        "name": "Program {name}",
+        "state": {
+          "idle": "Inaktivt",
+          "waiting": "Väntar",
+          "running": "Körs",
+          "paused": "Pausat",
+          "suspended": "Uppskjutet",
+          "disabled": "Inaktiverat"
+        }
+      },
+      "program_main": {
+        "name": "Huvudprogram",
+        "state": {
+          "idle": "Inaktivt",
+          "waiting": "Väntar",
+          "running": "Körs",
+          "paused": "Pausat",
+          "suspended": "Uppskjutet",
+          "disabled": "Inaktiverat"
+        }
       }
     },
     "number": {

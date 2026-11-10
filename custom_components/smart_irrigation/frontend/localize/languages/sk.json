@@ -367,7 +367,7 @@
           "next-program": "Ďalší program: {program}, {start}",
           "headline-watering": "Zalievanie {start}",
           "headline-watering-soon": "Zalievanie pri ďalšom štarte",
-          "sub-watering": "{count} zón(y), celkovo {duration}.",
+          "sub-watering": "Zóny: {count}, celkovo {duration}.",
           "headline-postponed": "Zalievanie je odložené",
           "sub-postponed": "Odložili ste ho. Sám sa obnoví a nič sa nestratí: zóne, ktorej chýba voda, chýba aj potom.",
           "headline-skipped": "Dnes sa nezalieva",
@@ -381,7 +381,8 @@
           "sub-no-zones": "Smart Irrigation zalieva zóny. Asistent s vami nastaví prvú.",
           "headline-off": "Smart Irrigation je vypnuté",
           "sub-off": "Ďalej zbiera údaje o počasí, ale nič nepočíta a nič nezalieva, kým sa znova nezapne.",
-          "open-settings": "Otvoriť nastavenia"
+          "open-settings": "Otvoriť nastavenia",
+          "sub-watering-one": "Jedna zóna, {duration}."
         },
         "decision": {
           "title": "Bude vynechané?",
@@ -446,6 +447,15 @@
           "title": "Jedna zóna sa už nepočíta",
           "body": "Jej potreba vody je staršia než u ostatných, takže zalieva podľa starého počasia. Skontrolujte, či jej skupina senzorov stále dostáva údaje, a pozrite sa do protokolu, čo o nej výpočet povedal.",
           "never": "nikdy nepočítaná"
+        },
+        "running": {
+          "headline": "Práve sa zavlažuje",
+          "headline-paused": "Zavlažovanie pozastavené",
+          "paused-until": "Do {when}, potom bude samo pokračovať.",
+          "left": "Zostáva {time} ({percent} %)",
+          "program": "Program",
+          "step": "krok {step}/{steps}",
+          "program-left": "zostáva {time}"
         }
       },
       "gaps": {
@@ -491,8 +501,8 @@
             "source_does_not_exist": "Zdroj neexistuje. Zadajte platný zdroj, napríklad \"sensor.mysensor\"."
           },
           "hidden_sources": "Nevyžiadané merania: {n}. Evapotranspirácia sa zadáva hotová, slúžili by len na jej prepočet.",
-          "et_ignored": "Zóny {zones} sa počítajú z počasia a túto evapotranspiráciu nečítajú. Nastavte ich v zóne na možnosť poskytuje senzor alebo služba.",
-          "et_missing": "Zóny {zones} očakávajú hotovú evapotranspiráciu: vyberte pre ňu zdroj vyššie.",
+          "et_ignored": "Zóny počítané z počasia, ktoré preto túto evapotranspiráciu nečítajú: {zones}. Nastavte ich v zóne na možnosť poskytuje senzor alebo služba.",
+          "et_missing": "Zóny, ktoré očakávajú hotovú evapotranspiráciu: {zones}. Vyberte pre ňu zdroj vyššie.",
           "et_unused": "Nepoužíva sa: všetky zóny tejto skupiny počíta Smart Irrigation, ktorý evapotranspiráciu odvodzuje z ostatných meraní. Nastavte zónu na možnosť poskytuje senzor alebo služba, aby ste tu zadali hotovú hodnotu.",
           "et_needed": "Je potrebná hotová hodnota: zóny tejto skupiny sú nastavené na možnosť poskytuje senzor alebo služba, preto sa možnosť Nie je neponúka.",
           "hints": {
@@ -652,7 +662,7 @@
           "direct": "Intenzita zrážok"
         },
         "input-method-hint": "Ako sa zisťuje dodaná voda: z plochy a prietoku zóny, alebo priamo ako intenzita zrážok, ak ste ju zmerali.",
-        "state-hint": "Automatický: Smart Irrigation vypočíta čas z vodnej bilancie a zalieva pri štarte. Manuálny: zalieva len na vyžiadanie, na čas, ktorý zadáte. Zakázaný: nikdy sa nezalieva a jeho bilancia sa nevedie.",
+        "state-hint": "Automatický: Smart Irrigation vypočíta čas z vodnej bilancie a zalieva pri štarte. Manuálny: pri každom štarte zalieva čas, ktorý nastavíte. Zakázaný: nikdy sa nezalieva a jeho bilancia sa nevedie.",
         "mapping-hint": "Skupina senzorov, z ktorej táto zóna číta počasie: meteoslužba, vaše vlastné senzory, alebo oboje.",
         "bucket-hint": "Vodná bilancia zóny. Záporná: vody je málo. Nula: má, čo potrebuje. Zavlažovanie ju vráti na nulu.",
         "maximum-bucket-hint": "Najviac vody, ktorú pôda podľa predpokladu udrží. Kladná bilancia nikdy nepresiahne túto hodnotu: prebytok sa stráca.",
@@ -777,7 +787,7 @@
         "satisfied": "Nie je čo zalievať: táto zóna má, čo potrebuje.",
         "under-threshold": "Ešte nie je čo zalievať: chýba {short}, pod prahom tejto zóny.",
         "not-calculated": "Zatiaľ nevypočítané: stane sa tak {when}.",
-        "manual": "Zalieva len na vyžiadanie.",
+        "manual": "Pri každom štarte zalieva nastavený čas.",
         "disabled": "Vypnuté: nikdy sa nezalieva a jej bilancia sa nevedie.",
         "threshold": "prah",
         "problem": {
@@ -789,7 +799,9 @@
           "error": "Nedá sa vypočítať: {detail}. Kým sa nedá vypočítať, nezalieva sa."
         },
         "no-valve": "Nie je pripojený ventil, takže sa táto zóna nezalieva.",
-        "no-valve-action": "Pripojiť ventil"
+        "no-valve-action": "Pripojiť ventil",
+        "running": "Práve sa zavlažuje, zostáva {time}.",
+        "running-paused": "Zavlažovanie pozastavené, zostáva {time}."
       },
       "calendar": {
         "title": "Kalendár zalievania (12 mesiacov, odhad)",
@@ -1214,12 +1226,14 @@
     "expected_skipped_precipitation": "Očakáva sa vynechanie: predpoveď dažďa ({mm} mm)",
     "nothing_now": "Práve sa nič nezalieva.",
     "paused": "Pozastavené",
+    "paused_until": "Pozastavené do {when}, potom bude zavlažovanie samo pokračovať.",
     "waiting": "čaká na rad",
     "step": "krok",
     "tour": "kolo",
     "tours": "kolá",
     "no_valve": "Nie je pripojený ventil, takže sa nezalieva:",
-    "nothing_no_valve": "V tomto behu nie je čo zalievať: zóny, ktorým chýba voda, nemajú pripojený ventil:"
+    "nothing_no_valve": "V tomto behu nie je čo zalievať: zóny, ktorým chýba voda, nemajú pripojený ventil:",
+    "left": "zostáva {time}"
   },
   "programs": {
     "title": "Programy",
@@ -1350,6 +1364,12 @@
     "every_day": "každý deň",
     "anchor_start_short": "štart o",
     "anchor_end_short": "hotové do",
+    "steps_none": "žiadne kroky",
+    "steps_one": "1 krok",
+    "steps_many": "kroky: {n}",
+    "schedules_none": "žiadny rozvrh",
+    "schedules_one": "1 rozvrh",
+    "schedules_many": "rozvrhy: {n}",
     "off": "vypnuté",
     "steps_title": "Kroky",
     "schedules_title": "Rozvrhy",
@@ -1357,7 +1377,7 @@
     "schedule_fallback_skip": "Ten deň vynechať",
     "schedule_fallback_previous": "Použiť čas posledného zaznamenaného",
     "schedule_fallback_at": "Spustiť v pevný čas",
-    "main_steps_hint": "Ak chcete zvoliť zóny a poradie krokov, pridajte nižšie program.",
+    "main_steps_hint": "Hlavný program zalieva všetky zóny. Ak chcete zalievať len niektoré, alebo vo vlastnom poradí, pridajte program nižšie v časti Ďalšie programy.",
     "summary_start_sunrise": "začína pri východe slnka",
     "summary_start_sunset": "začína pri západe slnka",
     "summary_end_sunrise": "hotové pri východe slnka",
@@ -1370,11 +1390,12 @@
     "cond_wind": "od {value}",
     "cond_precipitation": "od {value} v predpovedi",
     "cond_days_between": "aspoň {n} dní",
-    "cond_soil": "{n} zón(y) so senzorom"
+    "cond_soil": "Zóny so senzorom: {n}",
+    "cond_soil_one": "{n} zóna so senzorom"
   },
   "supplies": {
     "title": "Čerpadlá a hlavné ventily",
-    "description": "Čerpadlo alebo hlavný ventil pred ventilmi zón beží, kým sa zalieva zóna, ktorú napája. Vyberá sa v nastaveniach každej zóny. Oneskorenia sú v sekundách a so znamienkom.",
+    "description": "Čerpadlo alebo hlavný ventil pred ventilmi zón beží, kým sa zalieva zóna, ktorú napája. Vyberá sa v nastaveniach každej zóny.",
     "name": "Názov",
     "entities": "Entity",
     "entities_hint": "viac oddeľte čiarkami",
@@ -1467,6 +1488,8 @@
     "skipped": "Odložené",
     "short_by": "chýba {value}",
     "no_need": "zavlažovanie nie je potrebné",
+    "manual_runs": "pri každom štarte zalieva {duration}",
+    "manual_no_duration": "čas nezadaný, nezalieva sa",
     "not_calculated": "zatiaľ nevypočítané",
     "runs_for": "bežalo by {duration}",
     "never_watered": "nikdy nezavlažované",
@@ -1523,7 +1546,9 @@
     "no_valve": "nie je pripojený ventil, nezalieva sa",
     "no_trigger": "Žiadny spúšťač štartu",
     "not_scheduled": "Na rade, ale nenaplánované",
-    "off": "Vypnuté"
+    "off": "Vypnuté",
+    "watering_left": "zavlažuje sa, zostáva {time}",
+    "paused_left": "pozastavené, zostáva {time}"
   },
   "confirm": {
     "delete_zone": "Odstrániť zónu „{name}“? Jej nastavenia a vodná bilancia sa stratia.",

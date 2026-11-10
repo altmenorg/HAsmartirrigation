@@ -30,6 +30,28 @@
       },
       "next_irrigation": {
         "name": "Naslednje namakanje"
+      },
+      "program": {
+        "name": "Program {name}",
+        "state": {
+          "idle": "Nedejavno",
+          "waiting": "Čaka",
+          "running": "Teče",
+          "paused": "Začasno ustavljeno",
+          "suspended": "Zadržano",
+          "disabled": "Izklopljeno"
+        }
+      },
+      "program_main": {
+        "name": "Glavni program",
+        "state": {
+          "idle": "Nedejavno",
+          "waiting": "Čaka",
+          "running": "Teče",
+          "paused": "Začasno ustavljeno",
+          "suspended": "Zadržano",
+          "disabled": "Izklopljeno"
+        }
       }
     },
     "number": {

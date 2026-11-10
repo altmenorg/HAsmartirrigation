@@ -381,7 +381,8 @@
           "sub-no-zones": "Smart Irrigation zaliva cone. Pomočnik s tabo nastavi prvo.",
           "headline-off": "Smart Irrigation je izklopljen",
           "sub-off": "Še naprej zbira vremenske podatke, vendar ne računa in ne zaliva ničesar, dokler ga znova ne vklopiš.",
-          "open-settings": "Odpri nastavitve"
+          "open-settings": "Odpri nastavitve",
+          "sub-watering-one": "Ena cona, {duration}."
         },
         "decision": {
           "title": "Bo preskočeno?",
@@ -446,6 +447,15 @@
           "title": "Cona se ne izračunava več",
           "body": "Njena potreba po vodi je starejša od ostalih, zato zaliva po starem vremenu. Preveri, ali njena skupina senzorjev še prejema podatke, in v dnevniku poglej, kaj je izračun o njej zapisal.",
           "never": "nikoli izračunano"
+        },
+        "running": {
+          "headline": "Zalivanje poteka",
+          "headline-paused": "Zalivanje začasno ustavljeno",
+          "paused-until": "Do {when}, nato se samo nadaljuje.",
+          "left": "Še {time} ({percent} %)",
+          "program": "Program",
+          "step": "korak {step}/{steps}",
+          "program-left": "še {time}"
         }
       },
       "gaps": {
@@ -491,8 +501,8 @@
             "source_does_not_exist": "Vir ne obstaja. Vnesi veljaven vir, na primer 'sensor.mysensor'."
           },
           "hidden_sources": "Meritve, po katerih se ne sprašuje: {n}. Evapotranspiracija je podana že izračunana, služile bi le za njen ponovni izračun.",
-          "et_ignored": "Cone {zones} se izračunavajo iz vremena in te evapotranspiracije ne berejo. V coni jih nastavi na podano s senzorjem ali storitvijo.",
-          "et_missing": "Cone {zones} pričakujejo že izračunano evapotranspiracijo: zgoraj ji izberi vir.",
+          "et_ignored": "Cone, ki se izračunavajo iz vremena in zato te evapotranspiracije ne berejo: {zones}. V coni jih nastavi na podano s senzorjem ali storitvijo.",
+          "et_missing": "Cone, ki pričakujejo že izračunano evapotranspiracijo: {zones}. Zgoraj ji izberi vir.",
           "et_unused": "Ni uporabljeno: vsako cono te skupine izračuna Smart Irrigation, ki evapotranspiracijo izpelje iz ostalih meritev. Nastavi cono na podano s senzorjem ali storitvijo, da tu podaš že izračunano vrednost.",
           "et_needed": "Tu je potrebna že izračunana vrednost: cone te skupine so nastavljene na podano s senzorjem ali storitvijo, zato Brez ni na voljo.",
           "hints": {
@@ -652,7 +662,7 @@
           "direct": "Intenzivnost namakanja"
         },
         "input-method-hint": "Kako je znana dovedena voda: iz površine in pretoka cone, ali neposredno kot intenzivnost namakanja, če si jo izmeril.",
-        "state-hint": "Samodejno: Smart Irrigation izračuna trajanje iz vodne bilance in zaliva ob zagonu. Ročno: zaliva samo, ko zahtevaš, za trajanje, ki ga vneseš. Izklopljeno: nikoli se ne zaliva in njena bilanca se ne spremlja.",
+        "state-hint": "Samodejno: Smart Irrigation izračuna trajanje iz vodne bilance in zaliva ob zagonu. Ročno: ob vsakem zagonu zaliva trajanje, ki ga nastaviš. Izklopljeno: nikoli se ne zaliva in njena bilanca se ne spremlja.",
         "mapping-hint": "Skupina senzorjev, iz katere ta cona bere vreme: vremenska storitev, tvoji lastni senzorji ali oboje.",
         "bucket-hint": "Vodna bilanca cone. Negativna: primanjkuje ji vode. Nič: ima, kar potrebuje. Zalivanje jo vrne na nič.",
         "maximum-bucket-hint": "Največ vode, ki naj bi jo tla zadržala. Pozitivna bilanca je nikoli ne preseže: presežek se izgubi.",
@@ -777,7 +787,7 @@
         "satisfied": "Nič ni treba zaliti: ta cona ima, kar potrebuje.",
         "under-threshold": "Še nič ni treba zaliti: primanjkuje {short}, pod pragom te cone.",
         "not-calculated": "Še ni izračunano: to se zgodi {when}.",
-        "manual": "Zaliva samo, ko zahtevaš.",
+        "manual": "Ob vsakem zagonu zaliva trajanje, ki ga nastaviš.",
         "disabled": "Izklopljeno: nikoli se ne zaliva in njena bilanca se ne vodi.",
         "threshold": "prag",
         "problem": {
@@ -789,7 +799,9 @@
           "error": "Ni mogoče izračunati: {detail}. Dokler je ni mogoče izračunati, se ne zaliva."
         },
         "no-valve": "Ni povezanega ventila, zato se ta cona ne zaliva.",
-        "no-valve-action": "Poveži ventil"
+        "no-valve-action": "Poveži ventil",
+        "running": "Zalivanje poteka, še {time}.",
+        "running-paused": "Zalivanje začasno ustavljeno, še {time}."
       },
       "calendar": {
         "title": "Koledar zalivanja (12 mesecev, ocena)",
@@ -1214,12 +1226,14 @@
     "expected_skipped_precipitation": "Pričakovan preskok: napovedan dež ({mm} mm)",
     "nothing_now": "Trenutno se nič ne zaliva.",
     "paused": "Začasno ustavljeno",
+    "paused_until": "Začasno ustavljeno do {when}, nato se zalivanje samo nadaljuje.",
     "waiting": "čaka na vrsto",
     "step": "korak",
     "tour": "krog",
     "tours": "krogi",
     "no_valve": "Ni povezanega ventila, zato se ne zaliva:",
-    "nothing_no_valve": "V tem zagonu ni kaj zalivati: cone, ki jim primanjkuje vode, nimajo povezanega ventila:"
+    "nothing_no_valve": "V tem zagonu ni kaj zalivati: cone, ki jim primanjkuje vode, nimajo povezanega ventila:",
+    "left": "še {time}"
   },
   "programs": {
     "title": "Programi",
@@ -1350,6 +1364,12 @@
     "every_day": "vsak dan",
     "anchor_start_short": "začne ob",
     "anchor_end_short": "končano do",
+    "steps_none": "brez korakov",
+    "steps_one": "1 korak",
+    "steps_many": "koraki: {n}",
+    "schedules_none": "brez urnika",
+    "schedules_one": "1 urnik",
+    "schedules_many": "urniki: {n}",
     "off": "izklopljeno",
     "steps_title": "Koraki",
     "schedules_title": "Urniki",
@@ -1357,7 +1377,7 @@
     "schedule_fallback_skip": "Preskoči ta dan",
     "schedule_fallback_previous": "Uporabi čas zadnjega videnega",
     "schedule_fallback_at": "Začni ob določeni uri",
-    "main_steps_hint": "Če želite izbrati cone in vrstni red korakov, spodaj dodajte program.",
+    "main_steps_hint": "Glavni program zaliva vse cone. Če želiš zalivati samo nekatere ali v svojem vrstnem redu, dodaj program spodaj pod Drugi programi.",
     "summary_start_sunrise": "začne ob sončnem vzhodu",
     "summary_start_sunset": "začne ob sončnem zahodu",
     "summary_end_sunrise": "končano ob sončnem vzhodu",
@@ -1370,11 +1390,12 @@
     "cond_wind": "od {value}",
     "cond_precipitation": "od {value} v napovedi",
     "cond_days_between": "vsaj {n} dni",
-    "cond_soil": "{n} con(e) s senzorjem"
+    "cond_soil": "Cone s senzorjem: {n}",
+    "cond_soil_one": "{n} cona s senzorjem"
   },
   "supplies": {
     "title": "Črpalke in glavni ventili",
-    "description": "Črpalka ali glavni ventil pred ventili con deluje, medtem ko se zaliva cona, ki jo napaja. Izbereš ga v nastavitvah vsake cone. Zamiki so v sekundah in imajo predznak.",
+    "description": "Črpalka ali glavni ventil pred ventili con deluje, medtem ko se zaliva cona, ki jo napaja. Izbereš ga v nastavitvah vsake cone.",
     "name": "Ime",
     "entities": "Entitete",
     "entities_hint": "več jih loči z vejicami",
@@ -1467,6 +1488,8 @@
     "skipped": "Zadržano",
     "short_by": "primanjkuje {value}",
     "no_need": "zalivanje ni potrebno",
+    "manual_runs": "ob vsakem zagonu zaliva {duration}",
+    "manual_no_duration": "trajanje ni vneseno, se ne zaliva",
     "not_calculated": "še ni izračunano",
     "runs_for": "bi zalivala {duration}",
     "never_watered": "nikoli zalito",
@@ -1523,7 +1546,9 @@
     "no_valve": "ni povezanega ventila, se ne zaliva",
     "no_trigger": "Ni sprožilca zagona",
     "not_scheduled": "Potrebno, a ni načrtovano",
-    "off": "Izklopljeno"
+    "off": "Izklopljeno",
+    "watering_left": "zalivanje, še {time}",
+    "paused_left": "začasno ustavljeno, še {time}"
   },
   "confirm": {
     "delete_zone": "Izbrišem cono »{name}«? Njene nastavitve in vodna bilanca se izgubijo.",

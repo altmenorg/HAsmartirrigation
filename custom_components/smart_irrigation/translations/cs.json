@@ -30,6 +30,28 @@
       },
       "next_irrigation": {
         "name": "Další zavlažování"
+      },
+      "program": {
+        "name": "Program {name}",
+        "state": {
+          "idle": "Nečinný",
+          "waiting": "Čeká",
+          "running": "Běží",
+          "paused": "Pozastaven",
+          "suspended": "Přerušen",
+          "disabled": "Vypnuto"
+        }
+      },
+      "program_main": {
+        "name": "Hlavní program",
+        "state": {
+          "idle": "Nečinný",
+          "waiting": "Čeká",
+          "running": "Běží",
+          "paused": "Pozastaven",
+          "suspended": "Přerušen",
+          "disabled": "Vypnuto"
+        }
       }
     },
     "number": {

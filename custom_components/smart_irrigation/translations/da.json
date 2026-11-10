@@ -30,6 +30,28 @@
       },
       "next_irrigation": {
         "name": "Næste vanding"
+      },
+      "program": {
+        "name": "Program {name}",
+        "state": {
+          "idle": "Inaktiv",
+          "waiting": "Venter",
+          "running": "Kører",
+          "paused": "På pause",
+          "suspended": "Suspenderet",
+          "disabled": "Deaktiveret"
+        }
+      },
+      "program_main": {
+        "name": "Hovedprogram",
+        "state": {
+          "idle": "Inaktiv",
+          "waiting": "Venter",
+          "running": "Kører",
+          "paused": "På pause",
+          "suspended": "Suspenderet",
+          "disabled": "Deaktiveret"
+        }
       }
     },
     "number": {

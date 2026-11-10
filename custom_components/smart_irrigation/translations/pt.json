@@ -30,6 +30,28 @@
       },
       "next_irrigation": {
         "name": "Próxima rega"
+      },
+      "program": {
+        "name": "Programa {name}",
+        "state": {
+          "idle": "Inativo",
+          "waiting": "Em espera",
+          "running": "Em execução",
+          "paused": "Em pausa",
+          "suspended": "Suspenso",
+          "disabled": "Desativado"
+        }
+      },
+      "program_main": {
+        "name": "Programa principal",
+        "state": {
+          "idle": "Inativo",
+          "waiting": "Em espera",
+          "running": "Em execução",
+          "paused": "Em pausa",
+          "suspended": "Suspenso",
+          "disabled": "Desativado"
+        }
       }
     },
     "number": {

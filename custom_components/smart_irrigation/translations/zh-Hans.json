@@ -30,6 +30,28 @@
       },
       "next_irrigation": {
         "name": "下次浇水"
+      },
+      "program": {
+        "name": "程序 {name}",
+        "state": {
+          "idle": "空闲",
+          "waiting": "等待中",
+          "running": "运行中",
+          "paused": "已暂停",
+          "suspended": "已挂起",
+          "disabled": "已禁用"
+        }
+      },
+      "program_main": {
+        "name": "主程序",
+        "state": {
+          "idle": "空闲",
+          "waiting": "等待中",
+          "running": "运行中",
+          "paused": "已暂停",
+          "suspended": "已挂起",
+          "disabled": "已禁用"
+        }
       }
     },
     "number": {

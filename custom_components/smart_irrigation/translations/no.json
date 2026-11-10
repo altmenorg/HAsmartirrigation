@@ -30,6 +30,28 @@
       },
       "next_irrigation": {
         "name": "Neste vanning"
+      },
+      "program": {
+        "name": "Program {name}",
+        "state": {
+          "idle": "Inaktiv",
+          "waiting": "Venter",
+          "running": "Kjører",
+          "paused": "På pause",
+          "suspended": "Suspendert",
+          "disabled": "Deaktivert"
+        }
+      },
+      "program_main": {
+        "name": "Hovedprogram",
+        "state": {
+          "idle": "Inaktiv",
+          "waiting": "Venter",
+          "running": "Kjører",
+          "paused": "På pause",
+          "suspended": "Suspendert",
+          "disabled": "Deaktivert"
+        }
       }
     },
     "number": {

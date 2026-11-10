@@ -30,6 +30,28 @@
       },
       "next_irrigation": {
         "name": "Следующий полив"
+      },
+      "program": {
+        "name": "Программа {name}",
+        "state": {
+          "idle": "Простаивает",
+          "waiting": "Ожидает",
+          "running": "Работает",
+          "paused": "На паузе",
+          "suspended": "Приостановлена",
+          "disabled": "Отключена"
+        }
+      },
+      "program_main": {
+        "name": "Основная программа",
+        "state": {
+          "idle": "Простаивает",
+          "waiting": "Ожидает",
+          "running": "Работает",
+          "paused": "На паузе",
+          "suspended": "Приостановлена",
+          "disabled": "Отключена"
+        }
       }
     },
     "number": {

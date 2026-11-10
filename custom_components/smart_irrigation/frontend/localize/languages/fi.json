@@ -367,7 +367,7 @@
           "next-program": "Seuraava ohjelma: {program}, {start}",
           "headline-watering": "Kastelu {start}",
           "headline-watering-soon": "Kastelu seuraavalla aloituksella",
-          "sub-watering": "{count} alue(tta), {duration} kaikkiaan.",
+          "sub-watering": "{count} aluetta, {duration} kaikkiaan.",
           "headline-postponed": "Kastelu on lykätty",
           "sub-postponed": "Lykkäsit sen. Se jatkuu itsestään, eikä mitään mene hukkaan: alue, jolta puuttuu vettä, on yhtä vajaa senkin jälkeen.",
           "headline-skipped": "Ei kastelua tänään",
@@ -381,7 +381,8 @@
           "sub-no-zones": "Smart Irrigation kastelee alueita. Avustaja luo ensimmäisen kanssasi.",
           "headline-off": "Smart Irrigation on pois päältä",
           "sub-off": "Se hakee edelleen säätiedot, mutta ei laske eikä kastele mitään ennen kuin se kytketään taas päälle.",
-          "open-settings": "Avaa asetukset"
+          "open-settings": "Avaa asetukset",
+          "sub-watering-one": "Yksi alue, {duration}."
         },
         "decision": {
           "title": "Ohitetaanko se?",
@@ -446,6 +447,15 @@
           "title": "Yhtä aluetta ei enää lasketa",
           "body": "Sen vedentarve on vanhempi kuin muiden, joten se kastelee vanhan sään mukaan. Tarkista, että sen anturiryhmä saa vielä tietoa, ja katso lokista mitä laskenta sanoi siitä.",
           "never": "ei koskaan laskettu"
+        },
+        "running": {
+          "headline": "Kastellaan nyt",
+          "headline-paused": "Kastelu tauolla",
+          "paused-until": "{when} asti, sitten se jatkuu itsestään.",
+          "left": "{time} jäljellä ({percent} %)",
+          "program": "Ohjelma",
+          "step": "vaihe {step}/{steps}",
+          "program-left": "{time} jäljellä"
         }
       },
       "gaps": {
@@ -491,8 +501,8 @@
             "source_does_not_exist": "Lähdettä ei ole olemassa. Anna kelvollinen lähde, kuten 'sensor.mysensor'."
           },
           "hidden_sources": "{n} lukemaa ei kysytä: haihdunta annetaan valmiina, ne palvelisivat vain sen uudelleenlaskentaa.",
-          "et_ignored": "Alueet {zones} lasketaan säästä eivätkä lue tätä haihduntaa. Aseta ne alueella arvoon anturin tai palvelun antama.",
-          "et_missing": "Alueet {zones} odottavat valmiiksi laskettua haihduntaa: valitse sille lähde yllä.",
+          "et_ignored": "Alueet, jotka lasketaan säästä eivätkä siksi lue tätä haihduntaa: {zones}. Aseta ne alueella arvoon anturin tai palvelun antama.",
+          "et_missing": "Alueet, jotka odottavat valmiiksi laskettua haihduntaa: {zones}. Valitse sille lähde yllä.",
           "et_unused": "Ei käytössä: Smart Irrigation laskee tämän ryhmän kaikki alueet ja johtaa haihdunnan muista mittauksista. Aseta alue arvoon anturin tai palvelun antama, jos haluat antaa tähän valmiin arvon.",
           "et_needed": "Tähän tarvitaan valmis arvo: tämän ryhmän alueet on asetettu arvoon anturin tai palvelun antama, joten vaihtoehtoa Ei mitään ei tarjota.",
           "hints": {
@@ -652,7 +662,7 @@
           "direct": "Sateen voimakkuus"
         },
         "input-method-hint": "Miten annettu vesi tiedetään: alueen pinta-alasta ja virtaamasta, tai suoraan sateen voimakkuutena, jos olet mitannut sen.",
-        "state-hint": "Automaattinen: Smart Irrigation laskee keston vesitasapainosta ja kastelee käynnistyksessä. Manuaalinen: kastelee vain kun pyydät, kirjoittamasi keston verran. Pois käytöstä: ei kastella koskaan, eikä sen tasapainoa seurata.",
+        "state-hint": "Automaattinen: Smart Irrigation laskee keston vesitasapainosta ja kastelee käynnistyksessä. Manuaalinen: kastelee asettamasi keston verran jokaisella aloituksella. Pois käytöstä: ei kastella koskaan, eikä sen tasapainoa seurata.",
         "mapping-hint": "Anturiryhmä, josta tämä alue lukee säänsä: sääpalvelu, omat anturisi tai molemmat.",
         "bucket-hint": "Alueen vesitasapaino. Negatiivinen: vettä puuttuu. Nolla: sillä on tarpeeksi. Kastelu palauttaa sen nollaan.",
         "maximum-bucket-hint": "Suurin vesimäärä, jonka maan oletetaan pidättävän. Positiivinen tasapaino ei koskaan ylitä sitä: ylimäärä menee hukkaan.",
@@ -777,7 +787,7 @@
         "satisfied": "Ei kasteltavaa: tällä alueella on se mitä se tarvitsee.",
         "under-threshold": "Ei vielä kasteltavaa: {short} vajaa, tämän alueen rajan alle.",
         "not-calculated": "Ei vielä laskettu: se tapahtuu {when}.",
-        "manual": "Kastelee vain kun pyydät.",
+        "manual": "Kastelee asettamasi keston verran jokaisella aloituksella.",
         "disabled": "Pois päältä: ei kastella koskaan, eikä sen tasapainoa pidetä.",
         "threshold": "raja",
         "problem": {
@@ -789,7 +799,9 @@
           "error": "Ei voida laskea: {detail}. Ei kastella ennen kuin laskenta onnistuu."
         },
         "no-valve": "Ei liitettyä venttiiliä, joten tätä aluetta ei kastella.",
-        "no-valve-action": "Liitä venttiili"
+        "no-valve-action": "Liitä venttiili",
+        "running": "Kastellaan nyt, {time} jäljellä.",
+        "running-paused": "Kastelu tauolla, {time} jäljellä."
       },
       "calendar": {
         "title": "Kastelukalenteri (12 kuukautta, arvio)",
@@ -1214,12 +1226,14 @@
     "expected_skipped_precipitation": "Odotetaan ohitettavan: sadetta ennustettu ({mm} mm)",
     "nothing_now": "Mitään ei kastella juuri nyt.",
     "paused": "Tauolla",
+    "paused_until": "Tauolla {when} asti, sitten kastelu jatkuu itsestään.",
     "waiting": "odottaa vuoroaan",
     "step": "vaihe",
     "tour": "kierros",
     "tours": "kierrosta",
     "no_valve": "Ei liitettyä venttiiliä, joten ei kastella:",
-    "nothing_no_valve": "Ei kasteltavaa tässä ajossa: vyöhykkeillä, joilta puuttuu vettä, ei ole liitettyä venttiiliä:"
+    "nothing_no_valve": "Ei kasteltavaa tässä ajossa: vyöhykkeillä, joilta puuttuu vettä, ei ole liitettyä venttiiliä:",
+    "left": "{time} jäljellä"
   },
   "programs": {
     "title": "Ohjelmat",
@@ -1350,6 +1364,12 @@
     "every_day": "joka päivä",
     "anchor_start_short": "alkaa klo",
     "anchor_end_short": "valmis klo",
+    "steps_none": "ei vaiheita",
+    "steps_one": "1 vaihe",
+    "steps_many": "{n} vaihetta",
+    "schedules_none": "ei aikataulua",
+    "schedules_one": "1 aikataulu",
+    "schedules_many": "{n} aikataulua",
     "off": "pois",
     "steps_title": "Vaiheet",
     "schedules_title": "Aikataulut",
@@ -1357,7 +1377,7 @@
     "schedule_fallback_skip": "Ohita se päivä",
     "schedule_fallback_previous": "Käytä viimeksi nähdyn aikaa",
     "schedule_fallback_at": "Aloita kiinteään aikaan",
-    "main_steps_hint": "Valitse vyöhykkeet ja vaiheiden järjestys lisäämällä alle ohjelma.",
+    "main_steps_hint": "Pääohjelma kastelee kaikki alueet. Jos haluat kastella vain osan niistä tai omassa järjestyksessäsi, lisää ohjelma alle kohtaan Muut ohjelmat.",
     "summary_start_sunrise": "alkaa auringonnousussa",
     "summary_start_sunset": "alkaa auringonlaskussa",
     "summary_end_sunrise": "valmis auringonnousuun mennessä",
@@ -1370,11 +1390,12 @@
     "cond_wind": "{value} alkaen",
     "cond_precipitation": "{value} ennusteessa alkaen",
     "cond_days_between": "vähintään {n} päivää",
-    "cond_soil": "{n} vyöhyke(ttä) anturilla"
+    "cond_soil": "{n} aluetta anturilla",
+    "cond_soil_one": "{n} alue anturilla"
   },
   "supplies": {
     "title": "Pumput ja pääventtiilit",
-    "description": "Pumppu tai pääventtiili vyöhykeventtiilien edessä on käynnissä, kun sen syöttämää vyöhykettä kastellaan. Se valitaan kunkin vyöhykkeen asetuksista. Viiveet ovat sekunteina ja etumerkillisiä.",
+    "description": "Pumppu tai pääventtiili vyöhykeventtiilien edessä on käynnissä, kun sen syöttämää vyöhykettä kastellaan. Se valitaan kunkin vyöhykkeen asetuksista.",
     "name": "Nimi",
     "entities": "Entiteetit",
     "entities_hint": "erota useampi pilkuilla",
@@ -1467,6 +1488,8 @@
     "skipped": "Lykätty",
     "short_by": "puuttuu {value}",
     "no_need": "kastelua ei tarvita",
+    "manual_runs": "kastelee {duration} jokaisella aloituksella",
+    "manual_no_duration": "kestoa ei annettu, ei kastella",
     "not_calculated": "ei vielä laskettu",
     "runs_for": "kestäisi {duration}",
     "never_watered": "ei koskaan kasteltu",
@@ -1523,7 +1546,9 @@
     "no_valve": "ei liitettyä venttiiliä, ei kastella",
     "no_trigger": "Ei aloitusliipaisinta",
     "not_scheduled": "Erääntynyt, mutta ei ajastettu",
-    "off": "Pois päältä"
+    "off": "Pois päältä",
+    "watering_left": "kastellaan, {time} jäljellä",
+    "paused_left": "tauolla, {time} jäljellä"
   },
   "confirm": {
     "delete_zone": "Poistetaanko vyöhyke \"{name}\"? Sen asetukset ja vesitase menetetään.",

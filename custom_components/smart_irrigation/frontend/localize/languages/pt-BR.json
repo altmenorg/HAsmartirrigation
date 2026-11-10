@@ -367,7 +367,7 @@
           "next-program": "Próximo programa: {program}, {start}",
           "headline-watering": "Irrigação {start}",
           "headline-watering-soon": "Irrigação no próximo início",
-          "sub-watering": "{count} zona(s), {duration} no total.",
+          "sub-watering": "{count} zonas, {duration} no total.",
           "headline-postponed": "A irrigação está adiada",
           "sub-postponed": "Você adiou. Ela retoma sozinha, e nada se perde: uma zona com falta de água continua com falta depois.",
           "headline-skipped": "Hoje não irriga",
@@ -381,7 +381,8 @@
           "sub-no-zones": "O Smart Irrigation irriga zonas. O assistente cria a primeira com você.",
           "headline-off": "O Smart Irrigation está desligado",
           "sub-off": "Ele continua coletando os dados meteorológicos, mas não calcula nem irriga nada até ser religado.",
-          "open-settings": "Abrir as configurações"
+          "open-settings": "Abrir as configurações",
+          "sub-watering-one": "Uma zona, {duration}."
         },
         "decision": {
           "title": "Vai ser pulado?",
@@ -446,6 +447,15 @@
           "title": "Uma zona não está mais sendo calculada",
           "body": "A necessidade de água dela é mais antiga que a das outras, então está irrigando com o tempo de dias atrás. Verifique se o grupo de sensores dela ainda recebe dados, e veja no registro o que o cálculo disse sobre ela.",
           "never": "nunca calculada"
+        },
+        "running": {
+          "headline": "Irrigando agora",
+          "headline-paused": "Irrigação pausada",
+          "paused-until": "Até {when}, depois continua sozinha.",
+          "left": "{time} restantes ({percent} %)",
+          "program": "Programa",
+          "step": "etapa {step}/{steps}",
+          "program-left": "{time} restantes"
         }
       },
       "gaps": {
@@ -491,8 +501,8 @@
             "source_does_not_exist": "A fonte não existe. Insira uma fonte válida, como 'sensor.mysensor'."
           },
           "hidden_sources": "{n} leitura(s) não pedida(s): a evapotranspiração é fornecida pronta, elas serviriam apenas para recalculá-la.",
-          "et_ignored": "A(s) zona(s) {zones} são calculadas a partir do tempo e não leem esta evapotranspiração. Defina-as como fornecida por um sensor ou um serviço na zona.",
-          "et_missing": "A(s) zona(s) {zones} esperam uma evapotranspiração pronta: escolha uma fonte para ela acima.",
+          "et_ignored": "Zonas calculadas a partir do tempo, que por isso não leem esta evapotranspiração: {zones}. Defina-as como fornecida por um sensor ou um serviço na zona.",
+          "et_missing": "Zonas que esperam uma evapotranspiração pronta: {zones}. Escolha uma fonte para ela acima.",
           "et_unused": "Não usada: todas as zonas deste grupo são calculadas pelo Smart Irrigation, que deduz a evapotranspiração das outras leituras. Defina uma zona como fornecida por um sensor ou um serviço para dar aqui um valor pronto.",
           "et_needed": "Um valor pronto é necessário aqui: as zonas deste grupo estão definidas como fornecida por um sensor ou um serviço, então Nenhuma não é oferecida.",
           "hints": {
@@ -652,7 +662,7 @@
           "direct": "Taxa de precipitação"
         },
         "input-method-hint": "Como se sabe a água entregue: pela área e pela vazão da zona, ou diretamente como taxa de precipitação, se você a mediu.",
-        "state-hint": "Automático: o Smart Irrigation calcula a duração a partir do balanço hídrico e irriga no início. Manual: só irriga quando você pede, pela duração que digitar. Desativado: nunca é irrigada, e o balanço dela não é mantido.",
+        "state-hint": "Automático: o Smart Irrigation calcula a duração a partir do balanço hídrico e irriga no início. Manual: irriga a duração que você definiu, a cada início. Desativado: nunca é irrigada, e o balanço dela não é mantido.",
         "mapping-hint": "O grupo de sensores de onde esta zona lê o tempo: um serviço de meteorologia, seus próprios sensores, ou ambos.",
         "bucket-hint": "O balanço hídrico da zona. Negativo: falta água. Zero: tem o que precisa. A irrigação o traz de volta a zero.",
         "maximum-bucket-hint": "O máximo de água que se considera que o solo retém. Um balanço positivo nunca passa disso: o excedente se perde.",
@@ -777,7 +787,7 @@
         "satisfied": "Nada para irrigar: esta zona tem o que precisa.",
         "under-threshold": "Ainda nada para irrigar: faltam {short}, abaixo do limite desta zona.",
         "not-calculated": "Ainda não calculada: isso acontece {when}.",
-        "manual": "Só irriga quando você pede.",
+        "manual": "Irriga a duração que você definiu, a cada início.",
         "disabled": "Desativada: nunca é irrigada, e o balanço dela não é mantido.",
         "threshold": "limite",
         "problem": {
@@ -789,7 +799,9 @@
           "error": "Não pode ser calculada: {detail}. Ela não é irrigada enquanto não puder ser calculada."
         },
         "no-valve": "Sem válvula vinculada, então esta zona não é irrigada.",
-        "no-valve-action": "Vincular uma válvula"
+        "no-valve-action": "Vincular uma válvula",
+        "running": "Irrigando agora, {time} restantes.",
+        "running-paused": "Irrigação pausada, {time} restantes."
       },
       "calendar": {
         "title": "Calendário de irrigação (12 meses, estimado)",
@@ -1214,12 +1226,14 @@
     "expected_skipped_precipitation": "Previsto ser ignorado: chuva prevista ({mm} mm)",
     "nothing_now": "Nada está irrigando agora.",
     "paused": "Pausado",
+    "paused_until": "Pausada até {when}, depois a irrigação continua sozinha.",
     "waiting": "aguardando a vez",
     "step": "etapa",
     "tour": "rodada",
     "tours": "rodadas",
     "no_valve": "Sem válvula vinculada, então não são irrigadas:",
-    "nothing_no_valve": "Nada para irrigar neste ciclo: as zonas com falta de água não têm válvula vinculada:"
+    "nothing_no_valve": "Nada para irrigar neste ciclo: as zonas com falta de água não têm válvula vinculada:",
+    "left": "{time} restantes"
   },
   "programs": {
     "title": "Programas",
@@ -1350,6 +1364,12 @@
     "every_day": "todos os dias",
     "anchor_start_short": "começa às",
     "anchor_end_short": "concluído até",
+    "steps_none": "nenhuma etapa",
+    "steps_one": "1 etapa",
+    "steps_many": "{n} etapas",
+    "schedules_none": "nenhum agendamento",
+    "schedules_one": "1 agendamento",
+    "schedules_many": "{n} agendamentos",
     "off": "desligado",
     "steps_title": "Etapas",
     "schedules_title": "Agendamentos",
@@ -1357,7 +1377,7 @@
     "schedule_fallback_skip": "Pular esse dia",
     "schedule_fallback_previous": "Usar o horário do último visto",
     "schedule_fallback_at": "Começar em um horário fixo",
-    "main_steps_hint": "Para escolher as zonas e a ordem das etapas, adicione um programa abaixo.",
+    "main_steps_hint": "O programa principal irriga todas as zonas. Para irrigar só algumas, ou na ordem que você quiser, adicione um em Outros programas, abaixo.",
     "summary_start_sunrise": "começa ao nascer do sol",
     "summary_start_sunset": "começa ao pôr do sol",
     "summary_end_sunrise": "concluído ao nascer do sol",
@@ -1370,11 +1390,12 @@
     "cond_wind": "a partir de {value}",
     "cond_precipitation": "a partir de {value} previstos",
     "cond_days_between": "pelo menos {n} dias",
-    "cond_soil": "{n} zona(s) com sensor"
+    "cond_soil": "{n} zonas com sensor",
+    "cond_soil_one": "{n} zona com sensor"
   },
   "supplies": {
     "title": "Bombas e válvulas principais",
-    "description": "Uma bomba ou uma válvula principal antes das válvulas das zonas funciona enquanto uma zona que ela abastece está sendo irrigada. Ela é escolhida nas configurações de cada zona. Os atrasos são em segundos e com sinal.",
+    "description": "Uma bomba ou uma válvula principal antes das válvulas das zonas funciona enquanto uma zona que ela abastece está sendo irrigada. Ela é escolhida nas configurações de cada zona.",
     "name": "Nome",
     "entities": "Entidades",
     "entities_hint": "separe várias com vírgulas",
@@ -1467,6 +1488,8 @@
     "skipped": "Adiado",
     "short_by": "faltam {value}",
     "no_need": "não precisa de irrigação",
+    "manual_runs": "irriga {duration} a cada início",
+    "manual_no_duration": "nenhuma duração informada, não é irrigada",
     "not_calculated": "ainda não calculada",
     "runs_for": "irrigaria {duration}",
     "never_watered": "nunca irrigada",
@@ -1523,7 +1546,9 @@
     "no_valve": "sem válvula vinculada, não é irrigada",
     "no_trigger": "Nenhum gatilho de início",
     "not_scheduled": "Pendente, mas não agendada",
-    "off": "Desligado"
+    "off": "Desligado",
+    "watering_left": "irrigando, {time} restantes",
+    "paused_left": "pausada, {time} restantes"
   },
   "confirm": {
     "delete_zone": "Excluir a zona \"{name}\"? As configurações e o balanço hídrico dela serão perdidos.",

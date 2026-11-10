@@ -30,6 +30,28 @@
       },
       "next_irrigation": {
         "name": "Następne nawadnianie"
+      },
+      "program": {
+        "name": "Program {name}",
+        "state": {
+          "idle": "Bezczynny",
+          "waiting": "Oczekuje",
+          "running": "Działa",
+          "paused": "Wstrzymany",
+          "suspended": "Zawieszony",
+          "disabled": "Wyłączony"
+        }
+      },
+      "program_main": {
+        "name": "Program główny",
+        "state": {
+          "idle": "Bezczynny",
+          "waiting": "Oczekuje",
+          "running": "Działa",
+          "paused": "Wstrzymany",
+          "suspended": "Zawieszony",
+          "disabled": "Wyłączony"
+        }
       }
     },
     "number": {

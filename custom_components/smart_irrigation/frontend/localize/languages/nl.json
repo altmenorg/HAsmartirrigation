@@ -367,7 +367,7 @@
           "next-program": "Volgend programma: {program}, {start}",
           "headline-watering": "Bewatering {start}",
           "headline-watering-soon": "Bewatering bij de volgende start",
-          "sub-watering": "{count} zone(s), {duration} in totaal.",
+          "sub-watering": "{count} zones, {duration} in totaal.",
           "headline-postponed": "De bewatering is uitgesteld",
           "sub-postponed": "Je hebt het uitgesteld. Het gaat van zichzelf weer door, en er gaat niets verloren: een zone die water tekortkomt, komt dat daarna nog steeds tekort.",
           "headline-skipped": "Vandaag geen bewatering",
@@ -381,7 +381,8 @@
           "sub-no-zones": "Smart Irrigation bewatert zones. De assistent maakt de eerste samen met je aan.",
           "headline-off": "Smart Irrigation is uitgeschakeld",
           "sub-off": "Het blijft weersinformatie verzamelen, maar berekent en beregent niets tot het weer ingeschakeld wordt.",
-          "open-settings": "Instellingen openen"
+          "open-settings": "Instellingen openen",
+          "sub-watering-one": "Eén zone, {duration}."
         },
         "decision": {
           "title": "Wordt de ronde overgeslagen?",
@@ -446,6 +447,15 @@
           "title": "Een zone wordt niet meer berekend",
           "body": "Haar waterbehoefte is ouder dan die van de andere, dus ze bewatert op oud weer. Controleer of haar sensorgroep nog gegevens ontvangt, en kijk in het log wat de berekening erover zei.",
           "never": "nooit berekend"
+        },
+        "running": {
+          "headline": "Nu aan het bewateren",
+          "headline-paused": "Bewatering gepauzeerd",
+          "paused-until": "Tot {when}, daarna gaat ze vanzelf verder.",
+          "left": "Nog {time} ({percent} %)",
+          "program": "Programma",
+          "step": "stap {step}/{steps}",
+          "program-left": "nog {time}"
         }
       },
       "gaps": {
@@ -491,8 +501,8 @@
             "source_does_not_exist": "De bron bestaat niet. Voer een geldige bron in, zoals \"sensor.mysensor\"."
           },
           "hidden_sources": "{n} meting(en) niet gevraagd: de verdamping wordt kant-en-klaar geleverd, ze zouden alleen dienen om haar opnieuw te berekenen.",
-          "et_ignored": "Zone(s) {zones} worden uit het weer berekend en lezen deze verdamping niet. Zet ze op geleverd door een sensor of een dienst bij de zone.",
-          "et_missing": "Zone(s) {zones} verwachten een kant-en-klare verdamping: kies hierboven een bron ervoor.",
+          "et_ignored": "Zones die uit het weer berekend worden en deze verdamping dus niet lezen: {zones}. Zet ze op geleverd door een sensor of een dienst bij de zone.",
+          "et_missing": "Zones die een kant-en-klare verdamping verwachten: {zones}. Kies hierboven een bron ervoor.",
           "et_unused": "Niet gebruikt: alle zones van deze groep worden door Smart Irrigation berekend, dat de verdamping uit de andere metingen afleidt. Zet een zone op geleverd door een sensor of een dienst om hier een kant-en-klare waarde te geven.",
           "et_needed": "Hier is een kant-en-klare waarde nodig: de zones van deze groep staan op geleverd door een sensor of een dienst, dus Geen wordt niet aangeboden.",
           "hints": {
@@ -652,7 +662,7 @@
           "direct": "Neerslagintensiteit"
         },
         "input-method-hint": "Hoe het geleverde water bekend is: uit de oppervlakte en de doorvoer van de zone, of rechtstreeks als neerslagintensiteit als je die hebt gemeten.",
-        "state-hint": "Automatisch: Smart Irrigation berekent de duur uit de waterbalans en bewatert bij de start. Manueel: ze bewatert alleen als je erom vraagt, voor de duur die je invult. Uit: nooit bewaterd, en haar balans wordt niet bijgehouden.",
+        "state-hint": "Automatisch: Smart Irrigation berekent de duur uit de waterbalans en bewatert bij de start. Manueel: ze bewatert de duur die je instelt, bij elke start. Uit: nooit bewaterd, en haar balans wordt niet bijgehouden.",
         "mapping-hint": "De sensorgroep waaruit deze zone haar weer leest: een weerdienst, je eigen sensoren, of beide.",
         "bucket-hint": "De waterbalans van de zone. Negatief: ze komt water tekort. Nul: ze heeft wat ze nodig heeft. Bewateren brengt haar terug naar nul.",
         "maximum-bucket-hint": "Het meeste water dat de bodem geacht wordt vast te houden. Een positieve balans komt er nooit boven: het overschot gaat verloren.",
@@ -777,7 +787,7 @@
         "satisfied": "Niets te bewateren: deze zone heeft wat ze nodig heeft.",
         "under-threshold": "Nog niets te bewateren: {short} tekort, onder de drempel van deze zone.",
         "not-calculated": "Nog niet berekend: dat gebeurt {when}.",
-        "manual": "Bewatert alleen als je het vraagt.",
+        "manual": "Bewatert de duur die je instelt, bij elke start.",
         "disabled": "Uitgeschakeld: wordt nooit bewaterd, en haar balans wordt niet bijgehouden.",
         "threshold": "drempel",
         "problem": {
@@ -789,7 +799,9 @@
           "error": "Kan niet berekend worden: {detail}. Niet bewaterd tot het wel kan."
         },
         "no-valve": "Geen ventiel gekoppeld, dus deze zone wordt niet bewaterd.",
-        "no-valve-action": "Ventiel koppelen"
+        "no-valve-action": "Ventiel koppelen",
+        "running": "Nu aan het bewateren, nog {time}.",
+        "running-paused": "Bewatering gepauzeerd, nog {time}."
       },
       "calendar": {
         "title": "Bewateringskalender (12 maanden, schatting)",
@@ -1214,12 +1226,14 @@
     "expected_skipped_precipitation": "Naar verwachting overgeslagen: regen verwacht ({mm} mm)",
     "nothing_now": "Er wordt nu niets bewaterd.",
     "paused": "Gepauzeerd",
+    "paused_until": "Gepauzeerd tot {when}, daarna gaat de bewatering vanzelf verder.",
     "waiting": "wacht op zijn beurt",
     "step": "stap",
     "tour": "ronde",
     "tours": "rondes",
     "no_valve": "Geen ventiel gekoppeld, dus niet bewaterd:",
-    "nothing_no_valve": "Niets te bewateren in deze ronde: de zones die water tekortkomen hebben geen ventiel gekoppeld:"
+    "nothing_no_valve": "Niets te bewateren in deze ronde: de zones die water tekortkomen hebben geen ventiel gekoppeld:",
+    "left": "nog {time}"
   },
   "programs": {
     "title": "Programma's",
@@ -1350,6 +1364,12 @@
     "every_day": "elke dag",
     "anchor_start_short": "begint om",
     "anchor_end_short": "klaar om",
+    "steps_none": "geen stappen",
+    "steps_one": "1 stap",
+    "steps_many": "{n} stappen",
+    "schedules_none": "geen schema",
+    "schedules_one": "1 schema",
+    "schedules_many": "{n} schema's",
     "off": "uit",
     "steps_title": "Stappen",
     "schedules_title": "Schema's",
@@ -1357,7 +1377,7 @@
     "schedule_fallback_skip": "Die dag overslaan",
     "schedule_fallback_previous": "De tijd van de laatst geziene gebruiken",
     "schedule_fallback_at": "Op een vaste tijd starten",
-    "main_steps_hint": "Voeg hieronder een programma toe om de zones en de volgorde van de stappen te kiezen.",
+    "main_steps_hint": "Het hoofdprogramma bewatert elke zone. Om er maar enkele te bewateren, of in je eigen volgorde, voeg je er hieronder een toe onder Andere programma's.",
     "summary_start_sunrise": "begint bij zonsopgang",
     "summary_start_sunset": "begint bij zonsondergang",
     "summary_end_sunrise": "klaar bij zonsopgang",
@@ -1370,11 +1390,12 @@
     "cond_wind": "vanaf {value}",
     "cond_precipitation": "vanaf {value} voorspeld",
     "cond_days_between": "minstens {n} dagen",
-    "cond_soil": "{n} zone(s) met een sensor"
+    "cond_soil": "{n} zones met een sensor",
+    "cond_soil_one": "{n} zone met een sensor"
   },
   "supplies": {
     "title": "Pompen en hoofdventielen",
-    "description": "Een pomp of een hoofdventiel vóór de zoneventielen draait terwijl een zone die erdoor gevoed wordt, wordt bewaterd. Kies hem in de instellingen van elke zone. De vertragingen zijn in seconden en met teken.",
+    "description": "Een pomp of een hoofdventiel vóór de zoneventielen draait terwijl een zone die erdoor gevoed wordt, wordt bewaterd. Kies hem in de instellingen van elke zone.",
     "name": "Naam",
     "entities": "Entiteiten",
     "entities_hint": "scheid meerdere met komma's",
@@ -1467,6 +1488,8 @@
     "skipped": "Uitgesteld",
     "short_by": "tekort {value}",
     "no_need": "geen beregening nodig",
+    "manual_runs": "bewatert {duration} bij elke start",
+    "manual_no_duration": "geen duur ingevuld, niet bewaterd",
     "not_calculated": "nog niet berekend",
     "runs_for": "zou {duration} lopen",
     "never_watered": "nooit beregend",
@@ -1523,7 +1546,9 @@
     "no_valve": "geen ventiel gekoppeld, niet bewaterd",
     "no_trigger": "Geen starttrigger",
     "not_scheduled": "Nodig, maar niet ingepland",
-    "off": "Uitgeschakeld"
+    "off": "Uitgeschakeld",
+    "watering_left": "bewateren, nog {time}",
+    "paused_left": "gepauzeerd, nog {time}"
   },
   "confirm": {
     "delete_zone": "De zone \"{name}\" verwijderen? De instellingen en de waterbalans gaan verloren.",

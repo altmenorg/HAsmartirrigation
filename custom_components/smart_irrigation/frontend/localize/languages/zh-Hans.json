@@ -381,7 +381,8 @@
           "sub-no-zones": "Smart Irrigation 为区域浇水。设置助手会和你一起设置第一个区域。",
           "headline-off": "Smart Irrigation 已关闭",
           "sub-off": "它仍会获取天气数据，但在重新打开之前不计算也不浇水。",
-          "open-settings": "打开设置"
+          "open-settings": "打开设置",
+          "sub-watering-one": "1 个区域，{duration}。"
         },
         "decision": {
           "title": "会被跳过吗？",
@@ -446,6 +447,15 @@
           "title": "有一个区域已经不再参与计算",
           "body": "它的需水量比其他区域的更旧，所以它是按过时的天气在浇水。请检查它的传感器组是否还在收到数据，并到日志里看看计算对它说了什么。",
           "never": "从未计算"
+        },
+        "running": {
+          "headline": "正在浇水",
+          "headline-paused": "浇水已暂停",
+          "paused-until": "直到 {when}，之后会自动继续。",
+          "left": "剩余 {time}（{percent} %）",
+          "program": "程序",
+          "step": "步骤 {step}/{steps}",
+          "program-left": "剩余 {time}"
         }
       },
       "gaps": {
@@ -491,8 +501,8 @@
             "source_does_not_exist": "来源不存在。请输入有效的来源，例如 'sensor.mysensor'。"
           },
           "hidden_sources": "未请求 {n} 项读数：蒸散量是现成提供的，这些读数只会用来重新计算它。",
-          "et_ignored": "区域 {zones} 是根据天气计算的，不会读取这个蒸散量。请在区域上把它们设为由传感器或服务提供。",
-          "et_missing": "区域 {zones} 需要现成的蒸散量：请在上方为它选择一个来源。",
+          "et_ignored": "根据天气计算、因此不会读取这个蒸散量的区域：{zones}。请在区域上把它们设为由传感器或服务提供。",
+          "et_missing": "需要现成蒸散量的区域：{zones}。请在上方为它选择一个来源。",
           "et_unused": "未使用：这个组的所有区域都由 Smart Irrigation 计算，它会根据其他读数推算蒸散量。请把某个区域设为由传感器或服务提供，才能在这里给出现成的值。",
           "et_needed": "这里需要现成的值：这个组的区域已设为由传感器或服务提供，所以不提供“无”选项。",
           "hints": {
@@ -652,7 +662,7 @@
           "direct": "降水强度"
         },
         "input-method-hint": "如何得知浇出的水量：根据区域的面积和流量，或者如果你测量过，直接用降水速率。",
-        "state-hint": "自动：Smart Irrigation 根据水量平衡计算时长，并在启动时浇水。手动：只在你要求时浇水，时长为你输入的值。已禁用：从不浇水，也不跟踪其平衡。",
+        "state-hint": "自动：Smart Irrigation 根据水量平衡计算时长，并在启动时浇水。手动：每次启动时按你设定的时长浇水。已禁用：从不浇水，也不跟踪其平衡。",
         "mapping-hint": "该区域读取天气所用的传感器组：天气服务、你自己的传感器，或两者兼用。",
         "bucket-hint": "该区域的水量平衡。负值：缺水。零：水量刚好。浇水会使它回到零。",
         "maximum-bucket-hint": "土壤被认为最多能保持的水量。正的平衡值不会超过它：多余的水会流失。",
@@ -777,7 +787,7 @@
         "satisfied": "无需浇水：这个区域已经够了。",
         "under-threshold": "暂时无需浇水：还差 {short}，低于该区域的阈值。",
         "not-calculated": "尚未计算（计算时机：{when}）。",
-        "manual": "只在你要求时浇水。",
+        "manual": "每次启动时按你设定的时长浇水。",
         "disabled": "已停用：永远不会浇水，也不为它记水量平衡。",
         "threshold": "阈值",
         "problem": {
@@ -789,7 +799,9 @@
           "error": "无法计算：{detail}。在能够计算之前不会浇水。"
         },
         "no-valve": "未关联阀门，因此此区域不会浇水。",
-        "no-valve-action": "关联阀门"
+        "no-valve-action": "关联阀门",
+        "running": "正在浇水，剩余 {time}。",
+        "running-paused": "浇水已暂停，剩余 {time}。"
       },
       "calendar": {
         "title": "浇水日历（12 个月，估算）",
@@ -1214,12 +1226,14 @@
     "expected_skipped_precipitation": "预计会被跳过：预报有雨（{mm} mm）",
     "nothing_now": "目前没有在浇水。",
     "paused": "已暂停",
+    "paused_until": "暂停到 {when}，之后浇水会自动继续。",
     "waiting": "等待轮到它",
     "step": "步骤",
     "tour": "轮",
     "tours": "轮",
     "no_valve": "未关联阀门，因此不会浇水：",
-    "nothing_no_valve": "本次运行无需浇水：缺水的区域没有关联阀门："
+    "nothing_no_valve": "本次运行无需浇水：缺水的区域没有关联阀门：",
+    "left": "剩余 {time}"
   },
   "programs": {
     "title": "程序",
@@ -1350,6 +1364,12 @@
     "every_day": "每天",
     "anchor_start_short": "开始于",
     "anchor_end_short": "完成于",
+    "steps_none": "没有步骤",
+    "steps_one": "1 个步骤",
+    "steps_many": "{n} 个步骤",
+    "schedules_none": "没有时间表",
+    "schedules_one": "1 个时间表",
+    "schedules_many": "{n} 个时间表",
     "off": "关",
     "steps_title": "步骤",
     "schedules_title": "时间表",
@@ -1357,7 +1377,7 @@
     "schedule_fallback_skip": "跳过那天",
     "schedule_fallback_previous": "使用最近一次看到的时间",
     "schedule_fallback_at": "在固定时间开始",
-    "main_steps_hint": "要选择区域和步骤顺序，请在下方添加一个程序。",
+    "main_steps_hint": "主程序会给每个区域浇水。若只想给其中一些区域浇水，或按你自己的顺序，请在下方“其他程序”中添加一个。",
     "summary_start_sunrise": "日出时开始",
     "summary_start_sunset": "日落时开始",
     "summary_end_sunrise": "日出前完成",
@@ -1370,11 +1390,12 @@
     "cond_wind": "{value} 起",
     "cond_precipitation": "预报 {value} 起",
     "cond_days_between": "至少 {n} 天",
-    "cond_soil": "{n} 个区域有传感器"
+    "cond_soil": "{n} 个区域有传感器",
+    "cond_soil_one": "{n} 个区域有传感器"
   },
   "supplies": {
     "title": "水泵和总阀",
-    "description": "位于区域阀门前面的水泵或总阀，会在它所供应的区域浇水期间运行。在每个区域的设置中选择它。延迟以秒为单位，且带符号。",
+    "description": "位于区域阀门前面的水泵或总阀，会在它所供应的区域浇水期间运行。在每个区域的设置中选择它。",
     "name": "名称",
     "entities": "实体",
     "entities_hint": "多个请用逗号分隔",
@@ -1467,6 +1488,8 @@
     "skipped": "已推迟",
     "short_by": "缺水 {value}",
     "no_need": "无需浇水",
+    "manual_runs": "每次启动浇 {duration}",
+    "manual_no_duration": "未输入时长，不浇水",
     "not_calculated": "尚未计算",
     "runs_for": "将运行 {duration}",
     "never_watered": "从未浇水",
@@ -1523,7 +1546,9 @@
     "no_valve": "未关联阀门，不浇水",
     "no_trigger": "没有启动触发器",
     "not_scheduled": "该浇水了，但未安排",
-    "off": "已关闭"
+    "off": "已关闭",
+    "watering_left": "正在浇水，剩余 {time}",
+    "paused_left": "已暂停，剩余 {time}"
   },
   "confirm": {
     "delete_zone": "删除区域“{name}”？它的设置和水量平衡将会丢失。",

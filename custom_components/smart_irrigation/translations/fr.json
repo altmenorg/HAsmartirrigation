@@ -30,6 +30,28 @@
       },
       "next_irrigation": {
         "name": "Prochain arrosage"
+      },
+      "program": {
+        "name": "Programme {name}",
+        "state": {
+          "idle": "Au repos",
+          "waiting": "En attente",
+          "running": "En cours",
+          "paused": "En pause",
+          "suspended": "Suspendu",
+          "disabled": "Désactivé"
+        }
+      },
+      "program_main": {
+        "name": "Programme principal",
+        "state": {
+          "idle": "Au repos",
+          "waiting": "En attente",
+          "running": "En cours",
+          "paused": "En pause",
+          "suspended": "Suspendu",
+          "disabled": "Désactivé"
+        }
       }
     },
     "number": {
