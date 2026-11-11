@@ -56,7 +56,7 @@
     },
     "number": {
       "multiplier": {
-        "name": "Multiplikator"
+        "name": "Pflanzenfaktor"
       },
       "precipitation_threshold": {
         "name": "Niederschlagsschwelle"
@@ -162,12 +162,12 @@
   },
   "services": {
     "calculate_all_zones": {
-      "name": "Calculate all zones (veraltet)",
-      "description": "Veraltet: nutze stattdessen smart_irrigation.calculate. Funktioniert bis 2027.11. Calculate all zones in automatic mode",
+      "name": "Alle Zonen berechnen (veraltet)",
+      "description": "Veraltet: nutze stattdessen smart_irrigation.calculate. Funktioniert bis 2027.11. Berechnet alle Zonen im Automatikmodus",
       "fields": {
         "delete_weather_data": {
-          "name": "Delete weather data",
-          "description": "Delete weather data after calculation"
+          "name": "Wetterdaten löschen",
+          "description": "Die Wetterdaten nach der Berechnung löschen"
         },
         "dry_run": {
           "name": "Probelauf",
@@ -176,16 +176,16 @@
       }
     },
     "calculate_zone": {
-      "name": "Calculate zone (veraltet)",
-      "description": "Veraltet: nutze stattdessen smart_irrigation.calculate. Funktioniert bis 2027.11. Calculate specified zone",
+      "name": "Zone berechnen (veraltet)",
+      "description": "Veraltet: nutze stattdessen smart_irrigation.calculate. Funktioniert bis 2027.11. Berechnet die angegebene Zone",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to calculate"
+          "name": "Entität",
+          "description": "Zu berechnende Zone"
         },
         "delete_weather_data": {
-          "name": "Delete weather data",
-          "description": "Delete weather data for the zone after calculation"
+          "name": "Wetterdaten löschen",
+          "description": "Die Wetterdaten der Zone nach der Berechnung löschen"
         },
         "dry_run": {
           "name": "Probelauf",
@@ -194,16 +194,16 @@
       }
     },
     "update_all_zones": {
-      "name": "Update all zones (veraltet)",
-      "description": "Veraltet: nutze stattdessen smart_irrigation.update_weather. Funktioniert bis 2027.11. Update weatherdata for all zones in automatic mode"
+      "name": "Alle Zonen aktualisieren (veraltet)",
+      "description": "Veraltet: nutze stattdessen smart_irrigation.update_weather. Funktioniert bis 2027.11. Holt das Wetter für alle Zonen im Automatikmodus"
     },
     "update_zone": {
-      "name": "Update zone (veraltet)",
-      "description": "Veraltet: nutze stattdessen smart_irrigation.update_weather. Funktioniert bis 2027.11. Update weatherdata for specified zone",
+      "name": "Zone aktualisieren (veraltet)",
+      "description": "Veraltet: nutze stattdessen smart_irrigation.update_weather. Funktioniert bis 2027.11. Holt das Wetter für die angegebene Zone",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to update"
+          "name": "Entität",
+          "description": "Zu aktualisierende Zone"
         }
       }
     },
@@ -212,7 +212,7 @@
       "description": "Setzt die Wasserbilanz der gewählten Zonen, oder aller, wenn keine gewählt ist. Ohne Wert ist es das Zurücksetzen auf 0",
       "fields": {
         "entity": {
-          "name": "Entity",
+          "name": "Entität",
           "description": "Zonen, deren Wasserbilanz gesetzt wird; keine setzt alle"
         },
         "new_bucket_value": {
@@ -236,7 +236,7 @@
       "description": "Veraltet: nutze stattdessen smart_irrigation.set_bucket. Funktioniert bis 2027.11. Setzt die Wasserbilanz einer Zone auf 0 zurück",
       "fields": {
         "entity": {
-          "name": "Entity",
+          "name": "Entität",
           "description": "Zone, deren Wasserbilanz zurückgesetzt wird"
         }
       }
@@ -246,70 +246,70 @@
       "description": "Veraltet: nutze stattdessen smart_irrigation.set_bucket. Funktioniert bis 2027.11. Setzt die Wasserbilanz aller Zonen auf 0 zurück"
     },
     "clear_all_weather_data": {
-      "name": "Clear all weather data",
-      "description": "Clear weather data for all zones"
+      "name": "Alle Wetterdaten löschen",
+      "description": "Löscht die Wetterdaten aller Zonen"
     },
     "set_multiplier": {
-      "name": "Multiplikator setzen",
-      "description": "Setzt den Multiplikator der gewählten Zonen, oder aller, wenn keine gewählt ist",
+      "name": "Pflanzenfaktor setzen",
+      "description": "Setzt den Pflanzenfaktor der gewählten Zonen, oder aller, wenn keine gewählt ist",
       "fields": {
         "entity": {
           "name": "Entität",
-          "description": "Zonen, deren Multiplikator gesetzt wird; keine setzt alle"
+          "description": "Zonen, deren Pflanzenfaktor gesetzt wird; keine setzt alle"
         },
         "new_multiplier_value": {
-          "name": "Neuer Multiplikator",
-          "description": "Neuer Wert des Multiplikators"
+          "name": "Neuer Pflanzenfaktor",
+          "description": "Neuer Wert des Pflanzenfaktors"
         }
       }
     },
     "set_all_multipliers": {
-      "name": "Set all multipliers (veraltet)",
-      "description": "Veraltet: nutze stattdessen smart_irrigation.set_multiplier. Funktioniert bis 2027.11. Set multipliers for all zones to a specific value",
+      "name": "Alle Pflanzenfaktoren setzen (veraltet)",
+      "description": "Veraltet: nutze stattdessen smart_irrigation.set_multiplier. Funktioniert bis 2027.11. Setzt den Pflanzenfaktor aller Zonen auf einen Wert",
       "fields": {
         "new_multiplier_value": {
-          "name": "New multiplier value",
-          "description": "new value of the multiplier"
+          "name": "Neuer Pflanzenfaktor",
+          "description": "Neuer Wert des Pflanzenfaktors"
         }
       }
     },
     "set_zone": {
-      "name": "Set the values of a zone",
-      "description": "Set all configurable values of a zone",
+      "name": "Werte einer Zone setzen",
+      "description": "Setzt alle einstellbaren Werte einer Zone",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to set configuration values"
+          "name": "Entität",
+          "description": "Zone, deren Werte gesetzt werden"
         },
         "new_bucket_value": {
           "name": "Neue Wasserbilanz",
           "description": "Neuer Wert der Wasserbilanz"
         },
         "new_multiplier_value": {
-          "name": "New multiplier value",
-          "description": "New value for the multiplier"
+          "name": "Neuer Pflanzenfaktor",
+          "description": "Neuer Wert des Pflanzenfaktors"
         },
         "new_duration_value": {
-          "name": "New duration value",
-          "description": "New value for the duration"
+          "name": "Neue Dauer",
+          "description": "Neuer Wert der Dauer"
         },
         "new_state_value": {
-          "name": "New state value",
-          "description": "New value of the state"
+          "name": "Neuer Zustand",
+          "description": "Neuer Wert des Zustands"
         },
         "new_throughput_value": {
-          "name": "New throughput value",
-          "description": "New value for the throughput"
+          "name": "Neuer Durchfluss",
+          "description": "Neuer Wert des Durchflusses"
         }
       }
     },
     "generate_watering_calendar": {
-      "name": "Generate watering calendar",
-      "description": "Generate a 12-month watering calendar for irrigation zones based on representative climate data",
+      "name": "Bewässerungskalender erstellen",
+      "description": "Erstellt einen Bewässerungskalender über 12 Monate für die Zonen, aus repräsentativen Klimadaten",
       "fields": {
         "entity": {
-          "name": "Entity",
-          "description": "Zone to generate watering calendar for"
+          "name": "Entität",
+          "description": "Zone, für die der Kalender erstellt wird"
         }
       }
     },
@@ -322,6 +322,324 @@
           "description": "Wie lange die Zone lief, in Sekunden. Leer: die Dauer der Zone."
         }
       }
+    },
+    "run_program": {
+      "name": "Programm starten",
+      "description": "Startet ein Programm der vollen Steuerung jetzt, oder sobald es an der Reihe ist, wenn schon ein anderes läuft. Das Programm bewässert seine Zonen mit den Dauern, die Smart Irrigation berechnet hat, sofern seine Schritte nichts anderes vorgeben.",
+      "fields": {
+        "program_id": {
+          "name": "Programm",
+          "description": "Die ID des Programms, wie sie in seinen Einstellungen steht."
+        },
+        "seconds": {
+          "name": "Sekunden",
+          "description": "Eine Gesamtdauer für das ganze Programm, auf seine Schritte verteilt im Verhältnis zu ihren geplanten Dauern. Leer: die geplanten Dauern."
+        },
+        "mode": {
+          "name": "Modus",
+          "description": "Was geschieht, wenn schon etwas bewässert: queue stellt sich dahinter an, replace beendet das Laufende vorher sauber."
+        }
+      }
+    },
+    "stop_program": {
+      "name": "Programm stoppen",
+      "description": "Stoppt ein Programm. Läuft es, werden seine offenen Zonen regulär geschlossen und bekommen gutgeschrieben, was sie gebracht haben; wartet es auf seine Reihe, wird es aus der Warteschlange genommen. Ein unbekanntes Programm bewirkt nichts. Das Hauptprogramm wird mit stop_watering gestoppt.",
+      "fields": {
+        "program_id": {
+          "name": "Programm",
+          "description": "Die ID des Programms."
+        }
+      }
+    },
+    "set_program_enabled": {
+      "name": "Programm ein- oder ausschalten",
+      "description": "Schaltet ein Programm der vollen Steuerung ein oder aus, wie der Schalter in seinen Einstellungen.",
+      "fields": {
+        "program_id": {
+          "name": "Programm",
+          "description": "Die ID des Programms."
+        },
+        "enabled": {
+          "name": "Aktiv",
+          "description": "An schaltet es ein, aus schaltet es aus."
+        }
+      }
+    },
+    "set_step_enabled": {
+      "name": "Schritt ein- oder ausschalten",
+      "description": "Schaltet einen Schritt eines Programms ein oder aus.",
+      "fields": {
+        "program_id": {
+          "name": "Programm",
+          "description": "Die ID des Programms."
+        },
+        "step_id": {
+          "name": "Schritt",
+          "description": "Die ID des Schritts, wie sie im Programm steht."
+        },
+        "enabled": {
+          "name": "Aktiv",
+          "description": "An schaltet es ein, aus schaltet es aus."
+        }
+      }
+    },
+    "set_schedule_enabled": {
+      "name": "Zeitplan ein- oder ausschalten",
+      "description": "Schaltet einen Zeitplan eines Programms ein oder aus. Die Zeitpläne werden sofort neu eingeplant.",
+      "fields": {
+        "program_id": {
+          "name": "Programm",
+          "description": "Die ID des Programms."
+        },
+        "schedule_id": {
+          "name": "Zeitplan",
+          "description": "Die ID des Zeitplans, wie sie im Programm steht."
+        },
+        "enabled": {
+          "name": "Aktiv",
+          "description": "An schaltet es ein, aus schaltet es aus."
+        }
+      }
+    },
+    "stop_watering": {
+      "name": "Bewässerung stoppen",
+      "description": "Stoppt die Bewässerung sofort. Jedes Ventil, das Smart Irrigation geöffnet hat, wird geschlossen, jeder Zone wird das gebrachte Wasser gutgeschrieben, und die Programme und die noch wartenden Zonen werden beendet. Mit gewählten Zonen werden nur diese gestoppt."
+    },
+    "pause_watering": {
+      "name": "Bewässerung pausieren",
+      "description": "Schließt die offenen Ventile und hält die Bewässerung an, auch die noch wartenden Zonen. Was gebracht wurde, wird gutgeschrieben, und nach dem Fortsetzen wird der Rest des Durchlaufs bewässert. Eine Pause, die nicht aufgehoben wird, endet von selbst.",
+      "fields": {
+        "minutes": {
+          "name": "Minuten",
+          "description": "Wie lange die Pause höchstens dauert, bevor sie von selbst endet."
+        }
+      }
+    },
+    "resume_watering": {
+      "name": "Bewässerung fortsetzen",
+      "description": "Setzt eine pausierte Bewässerung dort fort, wo sie angehalten wurde."
+    },
+    "next_step": {
+      "name": "Nächster Schritt",
+      "description": "Beendet die Zonen des Schritts, in dem ein Programm gerade ist, und geht zum nächsten Schritt."
+    },
+    "suspend": {
+      "name": "Aussetzen",
+      "description": "Hält eine Zone oder ein Programm bis zu einem Zeitpunkt vom Bewässern ab. Ohne Dauer und ohne Datum, oder mit null Stunden, wird das Aussetzen aufgehoben.",
+      "fields": {
+        "program_id": {
+          "name": "Programm",
+          "description": "Die ID eines Programms, das ausgesetzt wird."
+        },
+        "hours": {
+          "name": "Stunden",
+          "description": "Wie lange ausgesetzt wird. Null hebt es auf."
+        },
+        "until": {
+          "name": "Bis",
+          "description": "Der Zeitpunkt, an dem das Aussetzen endet."
+        }
+      }
+    },
+    "adjust_program": {
+      "name": "Programm anpassen",
+      "description": "Lässt ein Programm der vollen Steuerung eine Zeit lang länger oder kürzer bewässern. Die Anpassung ersetzt die vorige (sie addiert sich nie), gilt für die Läufe, die danach starten, und endet nach den angegebenen Stunden.",
+      "fields": {
+        "program_id": {
+          "name": "Programm",
+          "description": "Die ID des anzupassenden Programms."
+        },
+        "percent": {
+          "name": "Prozent",
+          "description": "Vervielfacht das Wasser jedes Schritts (120 bewässert 20 % länger)."
+        },
+        "seconds": {
+          "name": "Sekunden",
+          "description": "Sekunden Wasser, die jedem Schritt hinzugefügt werden (negativ zieht ab)."
+        },
+        "hours": {
+          "name": "Stunden",
+          "description": "Wie lange die Anpassung gilt. Leer: bis sie zurückgesetzt wird."
+        },
+        "reset": {
+          "name": "Zurücksetzen",
+          "description": "Die Anpassung dieses Programms entfernen."
+        }
+      }
+    },
+    "water_zone": {
+      "name": "Zone bewässern",
+      "description": "Bewässert eine Zone jetzt, oder sobald sie an der Reihe ist, wenn schon etwas bewässert. Ohne Dauer bewässert die Zone so lange, wie Smart Irrigation berechnet hat.",
+      "fields": {
+        "zone_id": {
+          "name": "Zonen-ID",
+          "description": "Die ID der Zone, statt ihrer Entität."
+        },
+        "seconds": {
+          "name": "Sekunden",
+          "description": "Sekunden Wasser. Leer: die berechnete Dauer."
+        },
+        "mode": {
+          "name": "Modus",
+          "description": "Was geschieht, wenn schon etwas bewässert: queue stellt sich dahinter an, replace beendet das Laufende vorher sauber."
+        }
+      }
+    },
+    "use_measured_throughput": {
+      "name": "Gemessenen Durchfluss verwenden",
+      "description": "Setzt den Durchfluss einer Zone auf den Wert, den ihr Zähler über ihre Läufe gemessen hat. Die Messung ist immer nur ein Vorschlag; so wird er übernommen.",
+      "fields": {
+        "zone_id": {
+          "name": "Zonen-ID",
+          "description": "Die ID der Zone, statt ihrer Entität."
+        }
+      }
+    },
+    "create_recurring_schedule": {
+      "name": "Wiederkehrenden Zeitplan anlegen (veraltet)",
+      "description": "Veraltet: nutze stattdessen die Zeitpläne der Programme (Reiter Bewässerung). Funktioniert bis 2027.11. Legt einen neuen wiederkehrenden Bewässerungszeitplan an.",
+      "fields": {
+        "name": {
+          "name": "Name",
+          "description": "Name des Zeitplans"
+        },
+        "type": {
+          "name": "Art des Zeitplans",
+          "description": "Art des Zeitplans (daily, weekly, monthly, interval)"
+        },
+        "enabled": {
+          "name": "Aktiv",
+          "description": "Den Zeitplan einschalten"
+        },
+        "time": {
+          "name": "Uhrzeit",
+          "description": "Uhrzeit des Starts (Format HH:MM)"
+        },
+        "days_of_week": {
+          "name": "Wochentage",
+          "description": "Wochentage für wöchentliche Zeitpläne"
+        },
+        "day_of_month": {
+          "name": "Tag im Monat",
+          "description": "Tag im Monat für monatliche Zeitpläne (1–31)"
+        },
+        "interval_hours": {
+          "name": "Intervall in Stunden",
+          "description": "Intervall in Stunden für Intervall-Zeitpläne"
+        },
+        "zones": {
+          "name": "Zonen",
+          "description": "Zonen-IDs oder „all“"
+        },
+        "action": {
+          "name": "Aktion",
+          "description": "Auszuführende Aktion (calculate, update, irrigate)"
+        }
+      }
+    },
+    "update_recurring_schedule": {
+      "name": "Wiederkehrenden Zeitplan ändern (veraltet)",
+      "description": "Veraltet: nutze stattdessen die Zeitpläne der Programme (Reiter Bewässerung). Funktioniert bis 2027.11. Ändert einen bestehenden wiederkehrenden Bewässerungszeitplan.",
+      "fields": {
+        "schedule_id": {
+          "name": "ID des Zeitplans",
+          "description": "ID des zu ändernden Zeitplans"
+        },
+        "name": {
+          "name": "Name",
+          "description": "Name des Zeitplans"
+        },
+        "enabled": {
+          "name": "Aktiv",
+          "description": "Den Zeitplan ein- oder ausschalten"
+        }
+      }
+    },
+    "delete_recurring_schedule": {
+      "name": "Wiederkehrenden Zeitplan löschen (veraltet)",
+      "description": "Veraltet: nutze stattdessen die Zeitpläne der Programme (Reiter Bewässerung). Funktioniert bis 2027.11. Löscht einen wiederkehrenden Bewässerungszeitplan.",
+      "fields": {
+        "schedule_id": {
+          "name": "ID des Zeitplans",
+          "description": "ID des zu löschenden Zeitplans"
+        }
+      }
+    },
+    "create_seasonal_adjustment": {
+      "name": "Saisonale Anpassung anlegen (veraltet)",
+      "description": "Veraltet: nutze stattdessen smart_irrigation.set_seasonal_adjustment. Funktioniert bis 2027.11. Legt eine neue saisonale Anpassung für Zonen an.",
+      "fields": {
+        "name": {
+          "name": "Name",
+          "description": "Name der Anpassung"
+        },
+        "enabled": {
+          "name": "Aktiv",
+          "description": "Die Anpassung einschalten"
+        },
+        "month_start": {
+          "name": "Erster Monat",
+          "description": "Erster Monat (1–12)"
+        },
+        "month_end": {
+          "name": "Letzter Monat",
+          "description": "Letzter Monat (1–12)"
+        },
+        "multiplier_adjustment": {
+          "name": "Multiplikator des Pflanzenfaktors",
+          "description": "Faktor auf den Pflanzenfaktor der Zone"
+        },
+        "threshold_adjustment": {
+          "name": "Schwellwert-Versatz",
+          "description": "Versatz des Schwellwerts in mm"
+        },
+        "zones": {
+          "name": "Zonen",
+          "description": "Zonen-IDs oder „all“"
+        }
+      }
+    },
+    "update_seasonal_adjustment": {
+      "name": "Saisonale Anpassung ändern (veraltet)",
+      "description": "Veraltet: nutze stattdessen smart_irrigation.set_seasonal_adjustment. Funktioniert bis 2027.11. Ändert eine bestehende saisonale Anpassung.",
+      "fields": {
+        "adjustment_id": {
+          "name": "ID der Anpassung",
+          "description": "ID der zu ändernden Anpassung"
+        },
+        "name": {
+          "name": "Name",
+          "description": "Name der Anpassung"
+        },
+        "enabled": {
+          "name": "Aktiv",
+          "description": "Die Anpassung ein- oder ausschalten"
+        }
+      }
+    },
+    "delete_seasonal_adjustment": {
+      "name": "Saisonale Anpassung löschen (veraltet)",
+      "description": "Veraltet: nutze stattdessen smart_irrigation.set_seasonal_adjustment. Funktioniert bis 2027.11. Löscht eine saisonale Anpassung.",
+      "fields": {
+        "adjustment_id": {
+          "name": "ID der Anpassung",
+          "description": "ID der zu löschenden Anpassung"
+        }
+      }
+    },
+    "postpone_irrigation": {
+      "name": "Bewässerung aufschieben",
+      "description": "Hält die Bewässerung eine Zeit lang zurück und lässt sie danach von selbst weiterlaufen. Nichts wird zurückgesetzt: Eine Zone, der Wasser fehlt, hat dieses Defizit auch noch, wenn das Aufschieben endet, und der nächste Lauf gleicht es aus.",
+      "fields": {
+        "hours": {
+          "name": "Stunden",
+          "description": "Wie lange die Bewässerung zurückgehalten wird. Null hebt das Aufschieben auf."
+        }
+      }
+    },
+    "resume_irrigation": {
+      "name": "Aufschieben aufheben",
+      "description": "Hebt das Aufschieben auf, egal wie viel davon noch übrig ist."
     },
     "calculate": {
       "name": "Berechnen",
@@ -380,11 +698,11 @@
           "description": "Letzter Monat (1–12)"
         },
         "multiplier_adjustment": {
-          "name": "Multiplikator",
+          "name": "Multiplikator des Pflanzenfaktors",
           "description": "Faktor auf den Pflanzenfaktor der Zone"
         },
         "threshold_adjustment": {
-          "name": "Versatz des Schwellwerts",
+          "name": "Schwellwert-Versatz",
           "description": "Versatz des Schwellwerts in mm"
         },
         "zones": {
