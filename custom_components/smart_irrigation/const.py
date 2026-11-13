@@ -34,6 +34,9 @@ SUPPORTED_LANGUAGES = [
 ]
 
 START_EVENT_FIRED_TODAY = "starteventfiredtoday"
+# The local day the flag above was set, so a flag left from a day Home
+# Assistant was not running at midnight is not taken for today's.
+START_EVENT_FIRED_ON = "starteventfiredon"
 
 # Irrigation start trigger configuration
 CONF_IRRIGATION_START_TRIGGERS = "irrigation_start_triggers"

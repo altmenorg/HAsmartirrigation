@@ -72,6 +72,7 @@ from .helpers import (
     check_time,
     convert_between,
     convert_mapping_to_metric,
+    fired_today,
     loadModules,
     mapping_sources_changed,
     relative_to_absolute_pressure,
@@ -673,6 +674,30 @@ class SmartIrrigationCoordinator(
         the_config = self.store.get_config()
         the_config[const.CONF_USE_WEATHER_SERVICE] = self.use_weather_service
         the_config[const.CONF_WEATHER_SERVICE] = self.weather_service
+        self._start_event_fired_today = fired_today(
+            the_config[const.START_EVENT_FIRED_TODAY],
+            the_config.get(const.START_EVENT_FIRED_ON),
+            dt_util.now().date(),
+        )
+        if (
+            the_config[const.START_EVENT_FIRED_TODAY]
+            and not self._start_event_fired_today
+        ):
+            # Set on a day that ended while Home Assistant was not running, so
+            # the midnight reset never came: today is still to be decided.
+            _LOGGER.info(
+                "Start event flag is from %s, not today: today is still undecided",
+                the_config.get(const.START_EVENT_FIRED_ON),
+            )
+            cleared = {
+                const.START_EVENT_FIRED_TODAY: False,
+                const.START_EVENT_FIRED_ON: None,
+            }
+            # The timers below are handed this copy and write it back whole:
+            # it has to say the same, or it puts the old flag back.
+            the_config.update(cleared)
+            hass.async_create_task(self.store.async_update_config(dict(cleared)))
+
         if the_config[const.CONF_AUTO_UPDATE_ENABLED]:
             # Fire-and-forget: schedule auto update timer setup in background
             hass.loop.create_task(self.set_up_auto_update_time(the_config))
@@ -682,10 +707,6 @@ class SmartIrrigationCoordinator(
         if the_config[const.CONF_AUTO_CLEAR_ENABLED]:
             # Fire-and-forget: schedule auto clear timer setup in background
             hass.loop.create_task(self.set_up_auto_clear_time(the_config))
-        if the_config[const.START_EVENT_FIRED_TODAY]:
-            self._start_event_fired_today = True
-        else:
-            self._start_event_fired_today = False
 
         # Names of triggers that have already fired today, so each trigger fires
         # independently (replaces the old single global "fired today" block).
