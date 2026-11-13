@@ -134,6 +134,21 @@ class RunControl:
         self.closed_early_at: datetime | None = None
         # Litres the meter counted over the passes so far.
         self.litres = 0.0
+        # Where the run is, for the live state: its passes (seconds of water
+        # each), the lead time each pass adds, the soak between two, the pass
+        # under way, the water delivered so far, and whether it is soaking (and
+        # until when). A zone in passes showed what was left of its pass, and
+        # nothing at all while it soaked (UX walk of 13 Nov., Q6, Q7).
+        self.plan: list = []
+        self.lead = 0.0
+        self.soak = 0.0
+        self.pass_index = 0
+        self.watered = 0.0
+        self.soak_until: datetime | None = None
+        self.max_litres: float | None = None
+        # What started the run, for the history: a program's id, "main" for the
+        # main program's cycle, "manual" for a zone watered by hand.
+        self.source: str | None = None
 
 
 def setting(config, key: str, default: float) -> float:
@@ -1566,6 +1581,7 @@ class ValveRunnerMixin(
         passes: int | None = None,
         max_litres: float | None = None,
         owed: tuple | None = None,
+        source: str | None = None,
     ):
         """Water one zone for its duration, in one pass or several, and credit.
 
@@ -1590,7 +1606,14 @@ class ValveRunnerMixin(
             )
             return None
         claimed.add(zone_id)
-        self._run_controls()[zone_id] = RunControl(*self._pause_events())
+        control = self._run_controls()[zone_id] = RunControl(*self._pause_events())
+        # A program says which it is; otherwise the main program's cycle, or a
+        # zone watered by hand.
+        main_cycle = (
+            getattr(self, "_sequential_cycle", None) is not None
+            or getattr(self, "_parallel_cycles", 0) > 0
+        )
+        control.source = source or ("main" if main_cycle else "manual")
         try:
             return await self._run_claimed_valve(
                 zone, entity_id, duration, passes, max_litres, owed
@@ -1649,6 +1672,11 @@ class ValveRunnerMixin(
         problem = None
         stopped = False
         control = self._run_controls().get(zone_id)
+        if control is not None:
+            control.plan = list(plan)
+            control.lead = lead
+            control.soak = soak
+            control.max_litres = max_litres or None
         pending = list(plan)
         first = True
         # Whether the soak before the next pass has been served (or is not owed:
@@ -1694,7 +1722,16 @@ class ValveRunnerMixin(
                 stopped = True
                 break
             if not first and soak and not soaked:
-                if await self._wait_or_stop(zone_id, soak):
+                if control is not None:
+                    control.watered = watered
+                    control.soak_until = dt_util.utcnow() + timedelta(seconds=soak)
+                    self._notify_programs()
+                try:
+                    interrupted = await self._wait_or_stop(zone_id, soak)
+                finally:
+                    if control is not None:
+                        control.soak_until = None
+                if interrupted:
                     # Stopped, or paused: both are dealt with at the top.
                     continue
                 soaked = True
@@ -1706,6 +1743,9 @@ class ValveRunnerMixin(
                     control.stop_reason = STOP_VOLUME_LIMIT
                     stopped = True
                     break
+            if control is not None:
+                control.pass_index = len(plan) - len(pending)
+                control.watered = watered
             problem = await self._run_one_pass(zone, entity_id, seconds, lead, budget)
             if control is not None and control.delivered is not None:
                 # Cut short during the pass (it says so by setting what it

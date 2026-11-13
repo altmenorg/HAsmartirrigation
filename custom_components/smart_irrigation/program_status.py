@@ -13,7 +13,8 @@ Three views of the same things, each cheap to build:
 
 import asyncio
 import logging
-from datetime import timedelta
+from datetime import datetime, timedelta
+from typing import Any, cast
 
 import homeassistant.util.dt as dt_util
 from homeassistant.helpers.dispatcher import async_dispatcher_send
@@ -97,15 +98,87 @@ class ProgramStatusMixin:
                 continue
             elapsed = max(0.0, (now - started).total_seconds())
             zone = self.store.get_zone(zone_id) or {}
-            valves.append(
+            entry = {
+                "zone_id": int(zone_id),
+                "zone": zone.get(const.ZONE_NAME),
+                "remaining_seconds": int(max(0.0, duration - elapsed)),
+                "percent": int(min(100.0, 100.0 * elapsed / duration)),
+            }
+            control = self._live_control(zone_id)
+            if control is not None:
+                entry.update(zone_progress(control, min(elapsed, duration), duration))
+            valves.append(entry)
+        return sorted(valves, key=lambda v: v["zone_id"])
+
+    def _zone_record(self, zone_id) -> dict:
+        # The coordinator's store: cast, as a mixin cannot declare it.
+        return cast(Any, self).store.get_zone(zone_id) or {}
+
+    def _live_control(self, zone_id):
+        controls = getattr(self, "_run_controls", None)
+        if controls is None:
+            return None
+        return controls().get(int(zone_id))
+
+    def _soaking(self) -> list:
+        """The zones soaking between two passes: closed, and not done yet."""
+        now = dt_util.utcnow()
+        soaking = []
+        controls = getattr(self, "_run_controls", None)
+        for zone_id, control in (controls() if controls else {}).items():
+            until = getattr(control, "soak_until", None)
+            if until is None:
+                continue
+            zone = self._zone_record(zone_id)
+            left = max(0.0, (until - now).total_seconds())
+            later = control.plan[control.pass_index + 1 :]
+            soaking.append(
                 {
                     "zone_id": int(zone_id),
                     "zone": zone.get(const.ZONE_NAME),
-                    "remaining_seconds": int(max(0.0, duration - elapsed)),
-                    "percent": int(min(100.0, 100.0 * elapsed / duration)),
+                    "until": until.isoformat(),
+                    "next_pass": control.pass_index + 2,
+                    "passes": len(control.plan),
+                    # What the zone still takes, soak and passes to come.
+                    "remaining_seconds": int(
+                        left
+                        + sum(later)
+                        + control.lead * len(later)
+                        + control.soak * max(0, len(later) - 1)
+                    ),
+                    "percent": water_percent(control, 0.0),
                 }
             )
-        return sorted(valves, key=lambda v: v["zone_id"])
+        return sorted(soaking, key=lambda v: v["zone_id"])
+
+    def _starting(self) -> list:
+        """The zones waiting for their supply to come up before they open."""
+        now = dt_util.utcnow()
+        priming = getattr(self, "_supply_priming_zones", None) or {}
+        starting = []
+        # A zone waiting behind the one priming its supply has no time of its
+        # own: it opens when that one does.
+        ends = {
+            info.get("supply"): info["until"]
+            for info in priming.values()
+            if info.get("until")
+        }
+        for zone_id, info in priming.items():
+            if info.get("supply") not in ends:
+                continue
+            zone = self._zone_record(zone_id)
+            until = dt_util.parse_datetime(info.get("until") or ends[info["supply"]])
+            starting.append(
+                {
+                    "zone_id": int(zone_id),
+                    "zone": zone.get(const.ZONE_NAME),
+                    "supply": info.get("supply"),
+                    "remaining_seconds": (
+                        int(max(0.0, (until - now).total_seconds())) if until else 0
+                    ),
+                }
+            )
+        return sorted(starting, key=lambda v: v["zone_id"])
 
     def async_live_state(self) -> dict:
         """What is being watered right now, in memory only."""
@@ -172,6 +245,10 @@ class ProgramStatusMixin:
             **self.pause_live(),
             "programs": programs,
             "valves": self._open_valves(),
+            # Between two passes, and while a pump comes up: nothing is open,
+            # and the run is not over (UX walk of 13 Nov., Q6, Q18).
+            "soaking": self._soaking(),
+            "starting": self._starting(),
             # The main program's cycle: one zone after the other, or all at
             # once (counted while it lasts).
             "cycle": self._sequential_cycle is not None
@@ -493,6 +570,7 @@ class ProgramStatusMixin:
         tz = dt_util.get_default_time_zone()
         planned = []
         forecasts: dict = {}
+        soak_minutes = float(getattr(config, const.CONF_SOAK_MINUTES, 0) or 0)
         sheltered = await self._planning_sheltered_zones()
         # The main program leaves a zone with no valve out of its run, and the
         # planning said "no zone of this run is short enough of water" over a
@@ -503,6 +581,10 @@ class ProgramStatusMixin:
         ]
         for program in getattr(config, const.CONF_PROGRAMS, None) or []:
             main = bool(program.get(const.PROGRAM_MAIN))
+            # The main program waters in the passes of its own settings.
+            main_passes = (
+                int(getattr(config, const.CONF_WATERING_PASSES, 1) or 1) if main else 1
+            )
             if program.get(const.PROGRAM_ENABLED) is False:
                 continue
             by_trigger = main and not self.main_program_uses_schedules()
@@ -532,6 +614,11 @@ class ProgramStatusMixin:
                             # What the zone is expected to water for, the
                             # same number under the name the panel shows.
                             "expected_seconds": int(m["seconds"]),
+                            # In passes with a soak between, and up to a
+                            # volume: the planning said "Hecken 2 min" over
+                            # an expected 19 min 45 s (UX walk of 13 Nov.).
+                            "passes": max(1, int(m.get("passes") or main_passes)),
+                            "max_litres": float(m.get("max_litres") or 0.0) or None,
                         }
                         for m in step["zones"]
                     ]
@@ -550,6 +637,7 @@ class ProgramStatusMixin:
                         "anchor": None,
                         "weather": True,
                         "tours": len(plan),
+                        "soak_seconds": int(soak_minutes * 60),
                         "expected_seconds": int(total),
                         "steps": steps,
                         "nothing_to_water": nothing,
@@ -606,6 +694,7 @@ class ProgramStatusMixin:
                             "weather": schedule.get(const.SCHEDULE_WEATHER)
                             is not False,
                             "tours": len(plan),
+                            "soak_seconds": int(soak_minutes * 60),
                             "expected_seconds": int(total),
                             "steps": steps,
                             "nothing_to_water": nothing,
@@ -613,7 +702,10 @@ class ProgramStatusMixin:
                             **prediction,
                         }
                     )
-        planned.sort(key=lambda item: item["start"])
+        # By the moment, not the text: the main program's start is written in
+        # local time, the schedules' in UTC, and 05:54+01:00 came after
+        # 05:00+00:00 (06:00 here).
+        planned.sort(key=lambda item: _moment(item["start"]))
         return planned
 
     async def _planning_sheltered_zones(self) -> set:
@@ -674,3 +766,54 @@ class ProgramStatusMixin:
             # The zones the rain does not reach water anyway.
             "sheltered_zone_ids": sorted(zone_ids & sheltered) if held else [],
         }
+
+
+def _moment(value) -> float:
+    """A start as a number to sort by, whatever its time zone."""
+    moment = (
+        value
+        if isinstance(value, datetime)
+        else dt_util.parse_datetime(str(value or ""))
+    )
+    if moment is None:
+        return float("inf")
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=dt_util.get_default_time_zone())
+    return moment.timestamp()
+
+
+def water_percent(control, current: float) -> int:
+    """The share of a zone's water delivered, ``current`` seconds into a pass."""
+    plan = getattr(control, "plan", None) or []
+    total = sum(plan) + getattr(control, "lead", 0.0) * len(plan)
+    if total <= 0:
+        return 0
+    done = getattr(control, "watered", 0.0) + current
+    return int(min(100.0, 100.0 * done / total))
+
+
+def zone_progress(control, elapsed: float, held: float) -> dict:
+    """What a zone in passes has left: its whole run, not the pass under way.
+
+    ``elapsed`` is how long the valve has been open in this pass, ``held`` how
+    long the pass holds it. A zone of 2 min in two passes said "58 s left (3 %)"
+    with a soak and a pass still to come (UX walk of 13 Nov., Q7).
+    """
+    plan = getattr(control, "plan", None) or []
+    if not plan:
+        return {}
+    later = plan[control.pass_index + 1 :]
+    progress = {
+        "remaining_seconds": int(
+            max(0.0, held - elapsed)
+            + sum(later)
+            + (control.lead + control.soak) * len(later)
+        ),
+        "percent": water_percent(control, elapsed),
+    }
+    if len(plan) > 1:
+        progress["pass"] = control.pass_index + 1
+        progress["passes"] = len(plan)
+    if getattr(control, "max_litres", None):
+        progress["max_litres"] = control.max_litres
+    return progress

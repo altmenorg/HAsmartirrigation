@@ -301,10 +301,48 @@ export interface LiveState {
   valves?: {
     zone_id: number;
     zone?: string | null;
+    /** What the zone has left: soaks and later passes included. */
+    remaining_seconds: number;
+    /** The share of the zone's water delivered. */
+    percent: number;
+    /** The pass under way and how many, for a zone watered in passes. */
+    pass?: number;
+    passes?: number;
+    /** The volume the zone stops at, in litres, when its step sets one. */
+    max_litres?: number;
+  }[];
+  /** Zones soaking between two passes: closed, and not done yet. */
+  soaking?: {
+    zone_id: number;
+    zone?: string | null;
+    /** When the next pass opens (ISO). */
+    until: string;
+    next_pass: number;
+    passes: number;
     remaining_seconds: number;
     percent: number;
   }[];
+  /** Zones waiting for their pump or main valve to come up. */
+  starting?: {
+    zone_id: number;
+    zone?: string | null;
+    supply?: string | null;
+    remaining_seconds: number;
+  }[];
 }
+
+/**
+ * The zone soaking between two passes, or undefined. While it soaked nothing
+ * said it was still in its run: Start read "watering" with no zone, the card
+ * showed it at rest (UX walk of 13 Nov., Q6).
+ */
+export const soakingZone = (
+  live: LiveState | null | undefined,
+  zoneId: number | string | undefined,
+) =>
+  zoneId === undefined || zoneId === null
+    ? undefined
+    : (live?.soaking || []).find((v) => Number(v.zone_id) === Number(zoneId));
 
 /**
  * The run of ours a zone is in right now, or undefined.
@@ -337,6 +375,8 @@ export const wateringNow = (live: LiveState | null | undefined): boolean =>
   (live.paused === true ||
     !!live.cycle ||
     (live.valves || []).length > 0 ||
+    (live.soaking || []).length > 0 ||
+    (live.starting || []).length > 0 ||
     (live.programs || []).some((p) => p.state === "running"));
 
 /**
