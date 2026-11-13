@@ -364,7 +364,6 @@
           "sub-nothing": "Ingen sone mangler nok vann ennå. Neste start ville vært {start}.",
           "headline-not-calculated": "Ikke beregnet ennå",
           "sub-not-calculated": "Sonene har ingen varighet før den første beregningen, {when}. Beregn alle soner under Soner for å gjøre det nå.",
-          "next-program": "Neste program: {program}, {start}",
           "headline-watering": "Vanner {start}",
           "headline-watering-soon": "Vanner ved neste start",
           "sub-watering": "{count} soner, {duration} i alt.",

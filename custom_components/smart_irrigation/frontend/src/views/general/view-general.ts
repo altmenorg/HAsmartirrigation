@@ -933,6 +933,21 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     ${this._programLabel(item.program_id, item.program)}
                     (${clock(item.start)} - ${clock(item.end)})
                   </div>
+                  ${item.waits_for
+                    ? html`<div class="setting-note">
+                        ${t("waits_for")
+                          .replace(
+                            "{program}",
+                            this._programLabel(
+                              item.waits_for.program_id,
+                              item.waits_for.program,
+                            ),
+                          )
+                          .replace("{start}", clock(item.expected_start))
+                          .replace("{end}", clock(item.expected_end))}
+                      </div>`
+                    : ""}
+                  ${this._wateredTwice(item.watered_twice, t("watered_twice"))}
                   ${item.steps.map(
                     (step: any, n: number) => html`
                       <div class="setting-note">
@@ -4095,6 +4110,33 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
    * the user's language. The planning and the live state showed "Main
    * program" in a French panel.
    */
+  /**
+   * The zones a run waters again right after the run it waits behind, one
+   * line per program: they got their water twice that morning, and nothing
+   * said so (UX walk of 13 Nov., Q1).
+   */
+  private _wateredTwice(twice: any[] | undefined, text: string) {
+    if (!twice?.length) return html``;
+    const byProgram = new Map<string, { label: string; zones: string[] }>();
+    for (const entry of twice) {
+      const key = entry.by?.program_id ?? "";
+      const group = byProgram.get(key) ?? {
+        label: this._programLabel(entry.by?.program_id, entry.by?.program),
+        zones: [],
+      };
+      group.zones.push(entry.zone);
+      byProgram.set(key, group);
+    }
+    return html`${[...byProgram.values()].map(
+      (group) =>
+        html`<div class="setting-note warning-note">
+          ${text
+            .replace("{zones}", group.zones.join(", "))
+            .replace("{program}", group.label)}
+        </div>`,
+    )}`;
+  }
+
   private _programLabel(id: string | undefined, name: string | undefined) {
     return id === "main" && (!name || name === "Main program")
       ? localize("programs.main_name", this.hass?.language ?? "en")
