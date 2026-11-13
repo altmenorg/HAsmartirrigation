@@ -178,6 +178,7 @@ from .const import (
     MODULE_ID,
     MODULE_NAME,
     MODULE_SCHEMA,
+    START_EVENT_FIRED_ON,
     START_EVENT_FIRED_TODAY,
     TRIGGER_CONF_ACCOUNT_FOR_DURATION,
     TRIGGER_CONF_ENABLED,
@@ -654,6 +655,7 @@ class Config:
     autoclearenabled = attr.ib(type=bool, default=CONF_DEFAULT_AUTO_CLEAR_ENABLED)
     cleardatatime = attr.ib(type=str, default=CONF_DEFAULT_CLEAR_TIME)
     starteventfiredtoday = attr.ib(type=bool, default=False)
+    starteventfiredon = attr.ib(type=str, default=None)
     continuousupdates = attr.ib(
         type=bool, default=CONF_DEFAULT_CONTINUOUS_UPDATES
     )  # continuous updates are disabled by default for now
@@ -1144,6 +1146,7 @@ class SmartIrrigationStorage:
                     CONF_CLEAR_TIME, CONF_DEFAULT_CLEAR_TIME
                 ),
                 starteventfiredtoday=data["config"].get(START_EVENT_FIRED_TODAY, False),
+                starteventfiredon=data["config"].get(START_EVENT_FIRED_ON),
                 continuousupdates=data["config"].get(
                     CONF_CONTINUOUS_UPDATES, CONF_DEFAULT_CONTINUOUS_UPDATES
                 ),
@@ -1609,9 +1612,20 @@ class SmartIrrigationStorage:
         """
         if not isinstance(data, dict) or "config" not in data:
             raise ValueError("Invalid backup: missing 'config'")
+        # The ids handed out so far, whether or not the backup knows them: a
+        # zone the backup leaves out keeps its entities until they are removed,
+        # and a new zone that took its id again would take them over too.
+        known = [self.config.last_zone_id, *self.zones]
         # _populate_from_data assigns to self only once fully rebuilt, so a bad
         # payload raises here without corrupting the live configuration.
         await self._populate_from_data(data)
+        highest = [
+            int(i)
+            for i in (*known, self.config.last_zone_id, *self.zones)
+            if isinstance(i, int) or str(i).isdigit()
+        ]
+        if highest:
+            self.config = attr.evolve(self.config, last_zone_id=max(highest))
         # A backup taken before zones were stored in metric carries no marker,
         # and is converted the same way.
         await self._async_store_zones_in_metric()
