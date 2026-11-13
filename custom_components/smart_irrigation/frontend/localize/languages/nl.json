@@ -1347,8 +1347,6 @@
     "min_deficit_mm_help": "In mm, 0 om altijd te sproeien. Ingesteld vervangt hij voor deze stap de eigen drempel van de zone. Stappen met een vaste duur worden altijd besproeid.",
     "adjust_title": "Duren aanpassen",
     "adjust_none": "Geen aanpassing van kracht.",
-    "adjust_active": "Van kracht: {percent} % en {seconds} s per stap, tot {until}.",
-    "adjust_until_reset": "het wordt gereset",
     "adjust_percent": "Procent",
     "adjust_hours": "Geldig voor",
     "adjust_help": "Laat dit programma langer of korter bewateren voor de rondes die starten nadat het is ingesteld. Het vervangt de vorige aanpassing. Uren leeg: tot het wordt gereset.",

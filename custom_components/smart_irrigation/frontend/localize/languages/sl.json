@@ -1347,8 +1347,6 @@
     "min_deficit_mm_help": "V mm, 0 za vedno zalivanje. Če je nastavljen, za ta korak nadomesti lasten prag cone. Koraki s fiksnim trajanjem se vedno zalivajo.",
     "adjust_title": "Prilagodi trajanja",
     "adjust_none": "Nobena prilagoditev ne velja.",
-    "adjust_active": "Velja: {percent} % in {seconds} s na korak, do {until}.",
-    "adjust_until_reset": "ponastavitve",
     "adjust_percent": "Odstotek",
     "adjust_hours": "Velja",
     "adjust_help": "Program zaliva dlje ali krajše pri zagonih, ki se začnejo po nastavitvi. Nadomesti prejšnjo prilagoditev. Prazne ure: do ponastavitve.",

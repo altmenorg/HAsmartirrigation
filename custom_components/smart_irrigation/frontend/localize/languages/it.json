@@ -1347,8 +1347,6 @@
     "min_deficit_mm_help": "In mm, 0 per irrigare sempre. Se impostato, sostituisce la soglia della zona per questo passo. I passi a durata fissa vengono sempre irrigati.",
     "adjust_title": "Regola le durate",
     "adjust_none": "Nessuna regolazione in vigore.",
-    "adjust_active": "In vigore: {percent} % e {seconds} s per passo, fino a {until}.",
-    "adjust_until_reset": "viene reimpostata",
     "adjust_percent": "Percentuale",
     "adjust_hours": "Valida per",
     "adjust_help": "Fa irrigare questo programma più a lungo o meno a lungo per i cicli che partono dopo l'impostazione. Sostituisce la regolazione precedente. Ore vuote: fino alla reimpostazione.",

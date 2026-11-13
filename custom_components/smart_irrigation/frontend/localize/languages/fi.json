@@ -1347,8 +1347,6 @@
     "min_deficit_mm_help": "Millimetreinä, 0 kastelee aina. Asetettuna se korvaa vyöhykkeen oman kynnyksen tässä vaiheessa. Kiinteän keston vaiheet kastellaan aina.",
     "adjust_title": "Säädä kestoja",
     "adjust_none": "Mitään säätöä ei ole voimassa.",
-    "adjust_active": "Voimassa: {percent} % ja {seconds} s vaihetta kohden, kunnes {until}.",
-    "adjust_until_reset": "se nollataan",
     "adjust_percent": "Prosentti",
     "adjust_hours": "Voimassa",
     "adjust_help": "Saa tämän ohjelman kastelemaan pidempään tai lyhyemmän aikaa asettamisen jälkeen alkavissa ajoissa. Se korvaa edellisen säädön. Tunnit tyhjä: kunnes se nollataan.",

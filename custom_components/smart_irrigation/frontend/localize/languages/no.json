@@ -1347,8 +1347,6 @@
     "min_deficit_mm_help": "I mm, 0 for å alltid vanne. Satt erstatter den sonens egen terskel for dette trinnet. Trinn med fast varighet vannes alltid.",
     "adjust_title": "Juster varighetene",
     "adjust_none": "Ingen justering gjelder.",
-    "adjust_active": "Gjelder: {percent} % og {seconds} s per trinn, til {until}.",
-    "adjust_until_reset": "den nullstilles",
     "adjust_percent": "Prosent",
     "adjust_hours": "Gyldig i",
     "adjust_help": "Gjør at dette programmet vanner lenger eller kortere for kjøringene som starter etter at det er satt. Den erstatter forrige justering. Timer tomt: til den nullstilles.",

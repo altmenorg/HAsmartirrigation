@@ -1347,8 +1347,6 @@
     "min_deficit_mm_help": "En mm, 0 para regar siempre. Si se indica, sustituye el umbral propio de la zona en este paso. Los pasos de duración fija siempre se riegan.",
     "adjust_title": "Ajustar las duraciones",
     "adjust_none": "Ningún ajuste en vigor.",
-    "adjust_active": "En vigor: {percent} % y {seconds} s por paso, hasta {until}.",
-    "adjust_until_reset": "se restablezca",
     "adjust_percent": "Porcentaje",
     "adjust_hours": "Válido durante",
     "adjust_help": "Hace que este programa riegue más o menos tiempo en las ejecuciones que empiecen después de aplicarlo. Reemplaza el ajuste anterior. Horas vacío: hasta que se restablezca.",

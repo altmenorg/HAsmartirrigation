@@ -25,6 +25,7 @@ record first, as for any run).
 import asyncio
 import logging
 from datetime import timedelta
+from typing import Any, cast
 
 import homeassistant.util.dt as dt_util
 
@@ -516,9 +517,13 @@ class ProgramRunnerMixin:
                     soak = self._soak_seconds() if hasattr(self, "_soak_seconds") else 0
                     wall = step_wall_seconds(step, soak)
                     ahead = overlap_seconds(delay, wall)
+                    # Counted from the valves opening, not from the pump coming
+                    # on: 30 s asked overlapped by 35 behind a pump with a 5 s
+                    # lead (UX walk of 13 Nov., Q17).
+                    lead = self._step_supply_lead(zones)
                     task = asyncio.ensure_future(self._run_step(run, step))
                     inflight.append((task, zones))
-                    if not await self._wait_overlap(run, task, wall - ahead):
+                    if not await self._wait_overlap(run, task, lead + wall - ahead):
                         return
                     continue
                 try:
@@ -528,6 +533,31 @@ class ProgramRunnerMixin:
                 if delay > 0 and not last:
                     if await self._sleep_or_stop(run.stop, delay):
                         return
+
+    def _step_supply_lead(self, zones: list) -> float:
+        """Seconds between a step's start and its valves opening.
+
+        A supply that is off and comes on ahead of the valves (a positive delay,
+        a kick) holds them shut that long; one already on, or one the valve
+        leads, does not. The slowest of the step's zones counts.
+        """
+        supply_for = getattr(self, "_supply_for_zone", None)
+        if supply_for is None:
+            return 0.0
+        coordinator = cast(Any, self)
+        runtime = coordinator._supply_runtime()
+        lead = 0.0
+        for zone_id in zones:
+            zone = coordinator.store.get_zone(int(zone_id))
+            supply = supply_for(zone) if zone is not None else None
+            if supply is None or supply[const.SUPPLY_ID] in runtime["on"]:
+                continue
+            delay = float(supply.get(const.SUPPLY_DELAY_BEFORE) or 0.0)
+            if delay < 0:
+                continue
+            kick = float(supply.get(const.SUPPLY_KICK_SECONDS) or 0.0)
+            lead = max(lead, delay + max(0.0, kick))
+        return lead
 
     async def _wait_overlap(
         self, run: ProgramRun, task: asyncio.Future, seconds: float

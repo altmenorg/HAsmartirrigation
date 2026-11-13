@@ -93,6 +93,7 @@ import {
   mdiPause,
   mdiStop,
   mdiSkipNext,
+  mdiCheck,
 } from "@mdi/js";
 
 /**
@@ -1182,23 +1183,51 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         ${programCanRun(program) ? runOptions(program.id) : ""}
       `;
     };
-    const adjustBlock = (program: SmartIrrigationProgram) => {
-      const id = program.id ?? "";
-      const o = (ADJUST_OPTIONS[id] ||= {});
-      const active = stateOf(program.id)?.adjustment as
+    // "50 %, until 21:05": what is in force, said as short as the card says it.
+    // It read "In force: 50 % and 0 s per step, until 13/11/2026, 21:05:14",
+    // and only inside the program (UX walk of 13 Nov., Q14).
+    const adjustmentOf = (program: SmartIrrigationProgram) =>
+      stateOf(program.id)?.adjustment as
         | { percent?: number; seconds?: number; until?: string | null }
         | null
         | undefined;
-      const summary = active
-        ? t("adjust_active")
-            .replace("{percent}", String(active.percent ?? 100))
-            .replace("{seconds}", String(active.seconds ?? 0))
-            .replace(
-              "{until}",
-              active.until
-                ? new Date(active.until).toLocaleString(lang)
-                : t("adjust_until_reset"),
+    const adjustText = (program: SmartIrrigationProgram) => {
+      const active = adjustmentOf(program);
+      if (!active) return "";
+      const percent = Number(active.percent ?? 100);
+      const seconds = Math.round(Number(active.seconds ?? 0));
+      const what = [
+        percent !== 100 ? `${percent} %` : "",
+        seconds !== 0
+          ? t("adjust_per_step").replace(
+              "{time}",
+              `${seconds > 0 ? "+" : "−"}${friendlyDuration(Math.abs(seconds))}`,
             )
+          : "",
+      ]
+        .filter(Boolean)
+        .join(", ");
+      return active.until
+        ? t("adjust_short")
+            .replace("{what}", what)
+            .replace(
+              "{when}",
+              momentLabel(active.until, lang, {
+                tomorrow: localize("card.tomorrow", lang),
+                yesterday: localize("card.yesterday", lang),
+              }),
+            )
+        : t("adjust_short_open").replace("{what}", what);
+    };
+    const adjustBlock = (program: SmartIrrigationProgram) => {
+      const id = program.id ?? "";
+      const o = (ADJUST_OPTIONS[id] ||= {});
+      const active = adjustmentOf(program);
+      // A program with no step has nothing to adjust: the fields stood in a
+      // new, empty one too.
+      if (!active && !(program.steps || []).length) return html``;
+      const summary = active
+        ? t("adjust_in_force").replace("{what}", adjustText(program))
         : t("adjust_none");
       const field = (
         label: string,
@@ -1229,44 +1258,51 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       return html`
         <div class="fold-section">${t("adjust_title")}</div>
         <div class="setting-note">${summary}</div>
-        ${field(t("adjust_percent"), "%", "percent", "100")}
-        ${field(
-          t("adjust_seconds"),
-          localize("common.units.seconds", lang),
-          "seconds",
-          "0",
-        )}
-        ${field(t("adjust_hours"), "h", "hours", "")}
-        <div class="setting-hint row-hint">${t("adjust_help")}</div>
-        <div class="si-actions">
-          ${this._actionBtn(mdiPlay, t("adjust_apply"), () => {
-            const data: Record<string, unknown> = {};
-            const percent = parseFloat(o.percent ?? "");
-            const seconds = parseFloat(o.seconds ?? "");
-            const hours = parseFloat(o.hours ?? "");
-            if (!isNaN(percent)) data.percent = percent;
-            if (!isNaN(seconds)) data.seconds = Math.round(seconds);
-            if (!isNaN(hours) && hours >= 1) data.hours = Math.round(hours);
-            if (data.percent === undefined && data.seconds === undefined) {
-              // It did nothing, and said nothing (#893).
-              toast(t("adjust_empty"));
-              return;
-            }
-            call(data);
-          })}
-          ${this._actionBtn(
-            mdiDelete,
-            t("adjust_reset"),
-            async () => {
-              if (!(await this._ask(t("confirm_reset_adjustment"), true)))
-                return;
-              call({ reset: true });
-            },
-            true,
-            // Nothing to reset while no adjustment is in force.
-            !active,
-          )}
-        </div>
+        ${active
+          ? html`<div class="si-actions">
+              ${this._actionBtn(
+                mdiDelete,
+                t("adjust_reset"),
+                async () => {
+                  if (!(await this._ask(t("confirm_reset_adjustment"), true)))
+                    return;
+                  call({ reset: true });
+                },
+                true,
+              )}
+            </div>`
+          : ""}
+        <details class="more">
+          <summary>${t(active ? "adjust_change" : "adjust_set")}</summary>
+          <div class="more-body">
+            ${field(t("adjust_percent"), "%", "percent", "100")}
+            ${field(
+              t("adjust_seconds"),
+              localize("common.units.seconds", lang),
+              "seconds",
+              "0",
+            )}
+            ${field(t("adjust_hours"), "h", "hours", "")}
+            <div class="setting-hint row-hint">${t("adjust_help")}</div>
+            <div class="si-actions">
+              ${this._actionBtn(mdiCheck, t("adjust_apply"), () => {
+                const data: Record<string, unknown> = {};
+                const percent = parseFloat(o.percent ?? "");
+                const seconds = parseFloat(o.seconds ?? "");
+                const hours = parseFloat(o.hours ?? "");
+                if (!isNaN(percent)) data.percent = percent;
+                if (!isNaN(seconds)) data.seconds = Math.round(seconds);
+                if (!isNaN(hours) && hours >= 1) data.hours = Math.round(hours);
+                if (data.percent === undefined && data.seconds === undefined) {
+                  // It did nothing, and said nothing (#893).
+                  toast(t("adjust_empty"));
+                  return;
+                }
+                call(data);
+              })}
+            </div>
+          </div>
+        </details>
       `;
     };
     const control = (service: string) =>
@@ -1378,13 +1414,37 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         const zones = (step.zones || []).filter((z) => z !== zoneId);
         patchStep({ zones: on ? [...zones, zoneId] : zones });
       };
+      // What changes how the step runs is in its head: the passes and its own
+      // wait or overlap. "Step 2 · Hedges · calculated" stood over two passes,
+      // and over a step that starts the next 30 s early (UX walk, Q15).
+      const passes = Math.max(1, Number(step.passes) || 1);
+      const ownDelay =
+        step.delay === null || step.delay === undefined
+          ? null
+          : Number(step.delay);
+      const extras = [
+        passes > 1 ? t("passes_short").replace("{n}", String(passes)) : "",
+        ownDelay !== null && ownDelay < 0
+          ? t("overlap_short").replace(
+              "{time}",
+              friendlyDuration(Math.abs(ownDelay)),
+            )
+          : "",
+        ownDelay !== null && ownDelay > 0
+          ? t("wait_short").replace("{time}", friendlyDuration(ownDelay))
+          : "",
+      ].filter(Boolean);
+      const minOverMax =
+        (step.min_seconds ?? 0) > 0 &&
+        (step.max_seconds ?? 0) > 0 &&
+        (step.min_seconds ?? 0) > (step.max_seconds ?? 0);
       return fold(
         `step:${step.id}`,
         html`<strong>${t("step")} ${stepIndex + 1}</strong> ·
           ${zoneNames(step.zones)} ·
-          ${durationText(step)}${step.enabled === false
-            ? html` · <em>${t("off")}</em>`
-            : ""}`,
+          ${durationText(step)}${extras.map(
+            (extra) => html` · ${extra}`,
+          )}${step.enabled === false ? html` · <em>${t("off")}</em>` : ""}`,
         html`
           <div class="setting-row">
             <div class="setting-label">${t("step_zones")}</div>
@@ -1482,6 +1542,20 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             1,
           )}
           <div class="setting-hint row-hint">${t("passes_help")}</div>
+          ${passes > 1
+            ? html`${this._numRow(
+                  localize("observed_watering.soak_label", lang),
+                  localize("observed_watering.minutes", lang),
+                  this.config?.soak_minutes ?? 15,
+                  (v) =>
+                    this.handleConfigChange({
+                      soak_minutes: Math.max(0, parseFloat(v) || 0),
+                    }),
+                )}
+                <div class="setting-hint row-hint">
+                  ${t("soak_shared_help")}
+                </div>`
+            : ""}
           ${more(
             `more:step:${step.id}`,
             (step.max_litres ?? 0) > 0 ||
@@ -1525,6 +1599,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 false,
                 0,
               )}
+              ${minOverMax
+                ? html`<div class="setting-hint row-hint warning-hint">
+                    ${t("min_over_max").replace(
+                      "{max}",
+                      friendlyDuration(step.max_seconds ?? 0),
+                    )}
+                  </div>`
+                : ""}
               ${this._numRow(
                 t("adjust_seconds"),
                 localize("common.units.seconds", lang),
@@ -2036,9 +2118,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       return html`
         <ha-card header="${programName(program)}">
           <div class="card-content">
+            <!-- What it is first, in one style, then its buttons: it opened
+                 on "Run now" with two descriptions under it, large and small
+                 (UX walk of 13 Nov., Q13). -->
+            <div class="setting-note">
+              ${t("main_description")} ${t("main_steps_hint")}
+            </div>
             ${runHead(program)}
-            <div class="setting-note">${t("main_description")}</div>
-            <div class="setting-hint row-hint">${t("main_steps_hint")}</div>
             <div class="setting-row">
               <div class="setting-label">${t("enabled")}</div>
               <ha-switch
@@ -2088,6 +2174,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         many: t("schedules_many"),
                       })}${program.enabled === false
                         ? html` · <em>${t("off")}</em>`
+                        : ""}${adjustmentOf(program)
+                        ? html` · <em>${adjustText(program)}</em>`
                         : ""}`,
                     html`
                       ${runHead(program)}
@@ -3447,6 +3535,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     if (!this.config) return html``;
     const config = this.config;
     const passes = Number(config.watering_passes ?? 1) || 1;
+    // The soak is one setting for every program: shown here too when a step of
+    // another program waters in passes, not only the main program (Q5).
+    const stepsInPasses = (config.programs || []).some((program: any) =>
+      (program.steps || []).some((step: any) => Number(step.passes) > 1),
+    );
     const sequential = config.zone_sequencing !== "parallel";
     return html`
       ${this._numRow(
@@ -3458,7 +3551,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             watering_passes: Math.min(6, Math.max(1, parseInt(v) || 1)),
           }),
       )}
-      ${passes > 1
+      ${passes > 1 || stepsInPasses
         ? html`${this._numRow(
               localize("observed_watering.soak_label", lang),
               localize("observed_watering.minutes", lang),

@@ -1347,8 +1347,6 @@
     "min_deficit_mm_help": "Em mm, 0 para sempre irrigar. Se definido, substitui o limite da própria zona nesta etapa. Etapas de duração fixa são sempre irrigadas.",
     "adjust_title": "Ajustar durações",
     "adjust_none": "Nenhum ajuste em vigor.",
-    "adjust_active": "Em vigor: {percent} % e {seconds} s por etapa, até {until}.",
-    "adjust_until_reset": "ser redefinido",
     "adjust_percent": "Porcentagem",
     "adjust_hours": "Válido por",
     "adjust_help": "Faz este programa irrigar por mais ou menos tempo nas execuções que começam depois de definido. Substitui o ajuste anterior. Horas vazio: até ser redefinido.",
