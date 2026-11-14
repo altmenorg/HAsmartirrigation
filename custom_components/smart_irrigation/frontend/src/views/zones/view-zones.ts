@@ -100,6 +100,7 @@ import {
   ZONE_LEAD_TIME,
   ZONE_LINKED_ENTITY,
   ZONE_SAFETY_OFF_TOPIC,
+  ZONE_SAFETY_OFF_ENTITY,
   ZONE_SUPPLY_ID,
   ZONE_EXTRA_ENTITIES,
   ZONE_SAFETY_OFF_STATE_KEY,
@@ -1854,6 +1855,23 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       <div class="setting-help">
                         ${localize(
                           "panels.zones.labels.confirm-timeout-help",
+                          lang,
+                        )}
+                      </div>
+                      ${this._entityRow(
+                        localize("panels.zones.labels.safety-off-entity", lang),
+                        localize("panels.zones.labels.optional", lang),
+                        zone.safety_off_entity ?? undefined,
+                        ["number", "input_number"],
+                        (v) =>
+                          this.handleEditZone(index, {
+                            ...zone,
+                            [ZONE_SAFETY_OFF_ENTITY]: v || null,
+                          }),
+                      )}
+                      <div class="setting-help">
+                        ${localize(
+                          "panels.zones.labels.safety-off-entity-help",
                           lang,
                         )}
                       </div>

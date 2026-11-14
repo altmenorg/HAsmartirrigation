@@ -197,6 +197,8 @@ export const ZONE_CROP_FACTOR_BY_MONTH = "crop_factor_by_month";
 export const ZONE_ALLOWED_DEPLETION = "allowed_depletion";
 export const ZONE_DISTRIBUTION_EFFICIENCY = "distribution_efficiency";
 export const ZONE_SAFETY_OFF_TOPIC = "safety_off_topic";
+// A number the valve reads its own open duration from (Gardena).
+export const ZONE_SAFETY_OFF_ENTITY = "safety_off_entity";
 export const ZONE_SUPPLY_ID = "supply_id";
 export const ZONE_EXTRA_ENTITIES = "extra_entities";
 export const ZONE_SAFETY_OFF_STATE_KEY = "safety_off_state_key";
