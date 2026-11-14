@@ -1233,7 +1233,8 @@
     "tours": "rundy",
     "no_valve": "Brak powiązanego zaworu, więc nie są podlewane:",
     "nothing_no_valve": "Nie ma czego podlewać w tym uruchomieniu: strefy, którym brakuje wody, nie mają powiązanego zaworu:",
-    "left": "pozostało {time}"
+    "left": "pozostało {time}",
+    "expected_skipped_suspended": "Nie uruchamia się: program jest zawieszony do {when}"
   },
   "programs": {
     "title": "Programy",
@@ -1389,7 +1390,12 @@
     "cond_precipitation": "od {value} w prognozie",
     "cond_days_between": "co najmniej {n} dni",
     "cond_soil": "Strefy z czujnikiem: {n}",
-    "cond_soil_one": "{n} strefa z czujnikiem"
+    "cond_soil_one": "{n} strefa z czujnikiem",
+    "confirm_run_replace": "Uruchomić {name} teraz? Trwające podlewanie zostanie najpierw zatrzymane, potem otworzą się jego zawory.",
+    "run_replacing": "Trwające podlewanie jest zatrzymywane; {name} rusza zaraz potem.",
+    "suspended_until": "Zawieszony do {when}: harmonogramy go nie uruchamiają.",
+    "suspended": "zawieszony",
+    "lift_suspension": "Znieś"
   },
   "supplies": {
     "title": "Pompy i zawory główne",

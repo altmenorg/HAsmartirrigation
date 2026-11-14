@@ -1233,7 +1233,8 @@
     "tours": "Durchgänge",
     "no_valve": "Kein Ventil verknüpft, daher nicht bewässert:",
     "nothing_no_valve": "In diesem Lauf wird nichts bewässert: Den Zonen, denen Wasser fehlt, ist kein Ventil verknüpft:",
-    "left": "noch {time}"
+    "left": "noch {time}",
+    "expected_skipped_suspended": "Findet nicht statt: Das Programm ist bis {when} ausgesetzt"
   },
   "programs": {
     "title": "Programme",
@@ -1400,7 +1401,12 @@
     "overlap_short": "startet den nächsten {time} früher",
     "wait_short": "wartet {time} vor dem nächsten",
     "soak_shared_help": "Eine Einsickerzeit für jeden Schritt in Durchgängen, in allen Programmen und im Hauptprogramm.",
-    "min_over_max": "Das Mindestwasser liegt über dem Höchstwasser: Es gilt das Höchstwasser, {max}."
+    "min_over_max": "Das Mindestwasser liegt über dem Höchstwasser: Es gilt das Höchstwasser, {max}.",
+    "confirm_run_replace": "{name} jetzt starten? Was gerade bewässert, wird zuerst gestoppt, dann öffnen sich seine Ventile.",
+    "run_replacing": "Was gerade bewässert hat, wird gestoppt; {name} startet direkt danach.",
+    "suspended_until": "Ausgesetzt bis {when}: Seine Zeitpläne starten es nicht.",
+    "suspended": "ausgesetzt",
+    "lift_suspension": "Aufheben"
   },
   "supplies": {
     "title": "Pumpen und Hauptventile",

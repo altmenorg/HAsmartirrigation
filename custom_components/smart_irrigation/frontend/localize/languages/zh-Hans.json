@@ -1233,7 +1233,8 @@
     "tours": "轮",
     "no_valve": "未关联阀门，因此不会浇水：",
     "nothing_no_valve": "本次运行无需浇水：缺水的区域没有关联阀门：",
-    "left": "剩余 {time}"
+    "left": "剩余 {time}",
+    "expected_skipped_suspended": "不运行：该程序已挂起至 {when}"
   },
   "programs": {
     "title": "程序",
@@ -1389,7 +1390,12 @@
     "cond_precipitation": "预报 {value} 起",
     "cond_days_between": "至少 {n} 天",
     "cond_soil": "{n} 个区域有传感器",
-    "cond_soil_one": "{n} 个区域有传感器"
+    "cond_soil_one": "{n} 个区域有传感器",
+    "confirm_run_replace": "现在运行 {name}？先停止正在进行的浇水，然后打开其阀门。",
+    "run_replacing": "正在停止当前浇水；{name} 随后立即开始。",
+    "suspended_until": "已挂起至 {when}：其计划不会启动它。",
+    "suspended": "已挂起",
+    "lift_suspension": "解除"
   },
   "supplies": {
     "title": "水泵和总阀",

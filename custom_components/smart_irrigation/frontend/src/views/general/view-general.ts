@@ -973,13 +973,22 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         class="setting-note"
                         style="opacity: 0.6; font-style: italic;"
                       >
-                        ${t("expected_skipped_precipitation").replace(
-                          "{mm}",
-                          String(
-                            Math.round((item.forecast?.forecast_mm ?? 0) * 10) /
-                              10,
-                          ),
-                        )}
+                        ${item.skipped_reason === "suspended"
+                          ? t("expected_skipped_suspended").replace(
+                              "{when}",
+                              momentLabel(item.suspended_until, lang, {
+                                tomorrow: localize("card.tomorrow", lang),
+                                yesterday: localize("card.yesterday", lang),
+                              }),
+                            )
+                          : t("expected_skipped_precipitation").replace(
+                              "{mm}",
+                              String(
+                                Math.round(
+                                  (item.forecast?.forecast_mm ?? 0) * 10,
+                                ) / 10,
+                              ),
+                            )}
                       </div>`
                     : ""}
                   ${item.tours > 1
@@ -1070,9 +1079,17 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       const name = programName(program);
       // It opens real valves, and nothing on the page used to say it had:
       // asked first, then told what came of it (#893).
-      if (!(await this._ask(t("confirm_run").replace("{name}", name)))) return;
       // Optional total duration and the replace mode, typed next to the button.
       const opts = RUN_OPTIONS[id ?? ""] || {};
+      // With "Replace what is running" the question says what it stops: it
+      // only said the valves would open (UX walk of 13 Nov., Q21).
+      const busy = (this.programsState?.programs || []).some((p: any) =>
+        ["running", "paused", "waiting"].includes(p.state),
+      );
+      const question = (
+        opts.replace && busy ? t("confirm_run_replace") : t("confirm_run")
+      ).replace("{name}", name);
+      if (!(await this._ask(question))) return;
       const seconds = Math.round(parseFloat(opts.seconds ?? ""));
       const data: Record<string, unknown> = { program_id: id };
       if (seconds > 0 && id !== "main") data.seconds = Math.min(seconds, 86400);
@@ -1089,11 +1106,15 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       }
       await this._fetchLive(false);
       const state = stateOf(id)?.state;
+      // A replacing run waits the moment the run before it takes to stop:
+      // "queued until it has finished" said the opposite of what happens.
       toast(
         (state === "running"
           ? t("run_started")
           : state === "waiting"
-            ? t("run_queued")
+            ? opts.replace
+              ? t("run_replacing")
+              : t("run_queued")
             : t("run_nothing")
         ).replace("{name}", name),
       );
@@ -1163,10 +1184,37 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     // the program, with Stop beside it while it runs, and the options for this
     // one start folded under them. It stood under every setting.
     // A program with no zone in its steps has nothing to start yet.
+    const suspendedLine = (program: SmartIrrigationProgram) => {
+      // Suspended by the suspend action: the card said so, this page did not,
+      // and nothing here could lift it (UX walk of 13 Nov., Q3).
+      const until = stateOf(program.id)?.suspended_until;
+      if (!until) return html``;
+      return html`
+        <div class="setting-row">
+          <div class="setting-label">
+            ${t("suspended_until").replace(
+              "{when}",
+              momentLabel(until, lang, {
+                tomorrow: localize("card.tomorrow", lang),
+                yesterday: localize("card.yesterday", lang),
+              }),
+            )}
+          </div>
+          ${this._actionBtn(mdiPlay, t("lift_suspension"), async () => {
+            await this.hass!.callService(DOMAIN, "suspend", {
+              program_id: program.id,
+              hours: 0,
+            });
+            await this._fetchLive(false);
+          })}
+        </div>
+      `;
+    };
     const runHead = (program: SmartIrrigationProgram) => {
       const runs = ["running", "waiting"].includes(stateOf(program.id)?.state);
-      if (!programCanRun(program) && !runs) return html``;
+      if (!programCanRun(program) && !runs) return suspendedLine(program);
       return html`
+        ${suspendedLine(program)}
         <div class="si-actions plain">
           ${programCanRun(program)
             ? this._actionBtn(mdiPlay, t("run_now"), () => run(program))
@@ -2174,6 +2222,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         many: t("schedules_many"),
                       })}${program.enabled === false
                         ? html` · <em>${t("off")}</em>`
+                        : ""}${stateOf(program.id)?.suspended_until
+                        ? html` · <em>${t("suspended")}</em>`
                         : ""}${adjustmentOf(program)
                         ? html` · <em>${adjustText(program)}</em>`
                         : ""}`,

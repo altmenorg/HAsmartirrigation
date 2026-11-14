@@ -1233,7 +1233,8 @@
     "tours": "giri",
     "no_valve": "Nessuna valvola collegata, quindi non irrigate:",
     "nothing_no_valve": "Niente da irrigare in questo ciclo: le zone a cui manca acqua non hanno nessuna valvola collegata:",
-    "left": "{time} rimanenti"
+    "left": "{time} rimanenti",
+    "expected_skipped_suspended": "Non viene eseguito: il programma è sospeso fino al {when}"
   },
   "programs": {
     "title": "Programmi",
@@ -1389,7 +1390,12 @@
     "cond_precipitation": "da {value} previsti",
     "cond_days_between": "almeno {n} giorni",
     "cond_soil": "{n} zone con sensore",
-    "cond_soil_one": "{n} zona con sensore"
+    "cond_soil_one": "{n} zona con sensore",
+    "confirm_run_replace": "Eseguire {name} ora? L'irrigazione in corso viene prima fermata, poi si aprono le sue valvole.",
+    "run_replacing": "L'irrigazione in corso si sta fermando; {name} parte subito dopo.",
+    "suspended_until": "Sospeso fino al {when}: le sue programmazioni non lo avviano.",
+    "suspended": "sospeso",
+    "lift_suspension": "Revoca"
   },
   "supplies": {
     "title": "Pompe e valvole principali",

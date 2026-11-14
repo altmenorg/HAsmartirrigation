@@ -1233,7 +1233,8 @@
     "tours": "vueltas",
     "no_valve": "Sin válvula vinculada, así que no se riegan:",
     "nothing_no_valve": "Nada que regar en este ciclo: las zonas a las que les falta agua no tienen válvula vinculada:",
-    "left": "quedan {time}"
+    "left": "quedan {time}",
+    "expected_skipped_suspended": "No se ejecuta: el programa está suspendido hasta el {when}"
   },
   "programs": {
     "title": "Programas",
@@ -1389,7 +1390,12 @@
     "cond_precipitation": "desde {value} previstos",
     "cond_days_between": "al menos {n} días",
     "cond_soil": "{n} zonas con sensor",
-    "cond_soil_one": "{n} zona con sensor"
+    "cond_soil_one": "{n} zona con sensor",
+    "confirm_run_replace": "¿Ejecutar {name} ahora? Primero se detiene el riego en curso y luego se abren sus válvulas.",
+    "run_replacing": "El riego en curso se está deteniendo; {name} empieza justo después.",
+    "suspended_until": "Suspendido hasta el {when}: sus horarios no lo inician.",
+    "suspended": "suspendido",
+    "lift_suspension": "Levantar"
   },
   "supplies": {
     "title": "Bombas y válvulas principales",

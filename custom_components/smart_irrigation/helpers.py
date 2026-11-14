@@ -936,3 +936,20 @@ def _refine_azimuth_time(
         else:
             start_time = mid_time
     return start_time
+
+
+def fired_today(flag, fired_on, today) -> bool:
+    """Whether the stored "a start has fired today" flag holds for ``today``.
+
+    The flag is cleared at midnight, but only while Home Assistant runs. Set on
+    a day that ended while it was off, it was read the next morning as today's:
+    the day counted as decided ("water") and no rain forecast, days between
+    irrigation or other skip condition was judged that day. ``fired_on`` is the
+    local day it was set; without one (stored before the day was kept) the flag
+    is taken as it always was.
+    """
+    if not flag:
+        return False
+    if not fired_on:
+        return True
+    return str(fired_on) == today.isoformat()

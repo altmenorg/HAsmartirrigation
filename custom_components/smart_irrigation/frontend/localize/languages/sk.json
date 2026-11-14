@@ -1233,7 +1233,8 @@
     "tours": "kolá",
     "no_valve": "Nie je pripojený ventil, takže sa nezalieva:",
     "nothing_no_valve": "V tomto behu nie je čo zalievať: zóny, ktorým chýba voda, nemajú pripojený ventil:",
-    "left": "zostáva {time}"
+    "left": "zostáva {time}",
+    "expected_skipped_suspended": "Nespustí sa: program je odložený do {when}"
   },
   "programs": {
     "title": "Programy",
@@ -1389,7 +1390,12 @@
     "cond_precipitation": "od {value} v predpovedi",
     "cond_days_between": "aspoň {n} dní",
     "cond_soil": "Zóny so senzorom: {n}",
-    "cond_soil_one": "{n} zóna so senzorom"
+    "cond_soil_one": "{n} zóna so senzorom",
+    "confirm_run_replace": "Spustiť {name} teraz? Prebiehajúce zavlažovanie sa najprv zastaví, potom sa otvoria jeho ventily.",
+    "run_replacing": "Prebiehajúce zavlažovanie sa zastavuje; {name} začne hneď potom.",
+    "suspended_until": "Odložený do {when}: jeho rozvrhy ho nespúšťajú.",
+    "suspended": "odložený",
+    "lift_suspension": "Zrušiť"
   },
   "supplies": {
     "title": "Čerpadlá a hlavné ventily",

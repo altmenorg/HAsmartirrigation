@@ -12,6 +12,7 @@
 
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import homeassistant.util.dt as dt_util
 import pytest
 from homeassistant.core import HassJob, HassJobType
 
@@ -122,7 +123,10 @@ async def test_a_start_with_nothing_to_water_does_not_reset_days_between():
     coordinator._reset_days_since_irrigation.assert_not_awaited()
     # The day is still marked as fired, so the trigger does not go again.
     coordinator.store.async_update_config.assert_awaited_with(
-        {const.START_EVENT_FIRED_TODAY: True}
+        {
+            const.START_EVENT_FIRED_TODAY: True,
+            const.START_EVENT_FIRED_ON: dt_util.now().date().isoformat(),
+        }
     )
 
 
