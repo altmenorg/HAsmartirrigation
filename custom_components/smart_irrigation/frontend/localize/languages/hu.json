@@ -1348,8 +1348,6 @@
     "min_deficit_mm_help": "Mm-ben, 0 esetén mindig öntöz. Ha meg van adva, ennél a lépésnél a zóna saját küszöbét váltja fel. A rögzített idejű lépések mindig öntöznek.",
     "adjust_title": "Időtartamok módosítása",
     "adjust_none": "Nincs érvényben módosítás.",
-    "adjust_active": "Érvényben: {percent} % és {seconds} s lépésenként, eddig: {until}.",
-    "adjust_until_reset": "visszaállítják",
     "adjust_percent": "Százalék",
     "adjust_hours": "Érvényes",
     "adjust_help": "Ez a program hosszabban vagy rövidebben öntöz azoknál a futásoknál, amelyek a beállítás után indulnak. Felváltja az előző módosítást. Üres óra: a visszaállításig.",

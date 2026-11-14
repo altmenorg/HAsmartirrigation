@@ -1348,8 +1348,6 @@
     "min_deficit_mm_help": "En mm, 0 pour toujours arroser. S'il est renseigné, il remplace le seuil de la zone pour cette étape. Les étapes à durée fixe sont toujours arrosées.",
     "adjust_title": "Ajuster les durées",
     "adjust_none": "Aucun ajustement en cours.",
-    "adjust_active": "En vigueur : {percent} % et {seconds} s par étape, jusqu'à {until}.",
-    "adjust_until_reset": "sa réinitialisation",
     "adjust_percent": "Pourcentage",
     "adjust_hours": "Valable",
     "adjust_help": "Fait arroser ce programme plus ou moins longtemps pour les départs qui suivent. Remplace l'ajustement précédent. Heures vides : jusqu'à la réinitialisation.",

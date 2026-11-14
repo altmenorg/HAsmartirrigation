@@ -1348,8 +1348,6 @@
     "min_deficit_mm_help": "I mm, 0 for altid at vande. Sat, erstatter den zonens egen tærskel for dette trin. Trin med fast varighed vandes altid.",
     "adjust_title": "Juster varigheder",
     "adjust_none": "Ingen justering er gældende.",
-    "adjust_active": "Gældende: {percent} % og {seconds} s pr. trin, indtil {until}.",
-    "adjust_until_reset": "den nulstilles",
     "adjust_percent": "Procent",
     "adjust_hours": "Gyldig i",
     "adjust_help": "Får dette program til at vande længere eller kortere i de kørsler, der starter efter indstillingen. Den erstatter den forrige justering. Timer tom: indtil den nulstilles.",

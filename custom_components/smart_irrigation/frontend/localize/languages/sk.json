@@ -1348,8 +1348,6 @@
     "min_deficit_mm_help": "V mm, 0 na polievanie vždy. Ak je nastavený, nahrádza pre tento krok vlastný prah zóny. Kroky s pevnou dobou sa polievajú vždy.",
     "adjust_title": "Úprava trvania",
     "adjust_none": "Žiadna úprava nie je v platnosti.",
-    "adjust_active": "V platnosti: {percent} % a {seconds} s na krok, do {until}.",
-    "adjust_until_reset": "obnovenia",
     "adjust_percent": "Percento",
     "adjust_hours": "Platné počas",
     "adjust_help": "Spôsobí, že tento program zalieva dlhšie alebo kratšie pri zavlažovaniach, ktoré sa začnú po jej nastavení. Nahrádza predchádzajúcu úpravu. Hodiny prázdne: do obnovenia.",

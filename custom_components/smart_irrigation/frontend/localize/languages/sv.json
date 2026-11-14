@@ -1348,8 +1348,6 @@
     "min_deficit_mm_help": "Ange vattenunderskottet i mm. Ange 0 för att alltid bevattna. Ett angivet värde ersätter zonens egen bevattningströskel i det här steget. Steg med fast bevattningstid körs alltid.",
     "adjust_title": "Justera bevattningstider",
     "adjust_none": "Ingen justering gäller.",
-    "adjust_active": "Gäller: {percent} % och {seconds} s per steg, till {until}.",
-    "adjust_until_reset": "den återställs",
     "adjust_percent": "Procent",
     "adjust_hours": "Giltig i",
     "adjust_help": "Ändrar bevattningstiden för körningar som startar efter att justeringen har sparats. Den ersätter föregående justering. Lämna antalet timmar tomt för att behålla justeringen tills du återställer den.",

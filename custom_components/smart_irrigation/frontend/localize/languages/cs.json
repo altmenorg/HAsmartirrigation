@@ -1348,8 +1348,6 @@
     "min_deficit_mm_help": "V mm, 0 pro zalévání vždy. Je-li nastaven, nahrazuje pro tento krok vlastní práh zóny. Kroky s pevnou dobou se zalévají vždy.",
     "adjust_title": "Upravit doby trvání",
     "adjust_none": "Žádná úprava není v platnosti.",
-    "adjust_active": "V platnosti: {percent} % a {seconds} s na krok, do {until}.",
-    "adjust_until_reset": "se obnoví",
     "adjust_percent": "Procenta",
     "adjust_hours": "Platné po dobu",
     "adjust_help": "Způsobí, že tento program zavlažuje déle nebo kratší dobu u běhů, které začnou po nastavení. Nahrazuje předchozí úpravu. Hodiny prázdné: do obnovení.",

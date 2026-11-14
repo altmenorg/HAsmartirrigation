@@ -1348,8 +1348,6 @@
     "min_deficit_mm_help": "Em mm, 0 para regar sempre. Se definido, substitui o limiar da própria zona neste passo. Os passos de duração fixa são sempre regados.",
     "adjust_title": "Ajustar durações",
     "adjust_none": "Nenhum ajuste em vigor.",
-    "adjust_active": "Em vigor: {percent} % e {seconds} s por etapa, até {until}.",
-    "adjust_until_reset": "ser reposto",
     "adjust_percent": "Percentagem",
     "adjust_hours": "Válido durante",
     "adjust_help": "Faz este programa regar mais ou menos tempo nas execuções que começam depois de definido. Substitui o ajuste anterior. Horas vazio: até ser reposto.",
