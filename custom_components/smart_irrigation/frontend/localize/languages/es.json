@@ -962,7 +962,8 @@
         },
         "nothing-waters": "La importación no riega nada. Irrigation Unlimited sigue regando hasta que lo desactives y actives estos horarios.",
         "blocked": "Resuelve primero lo marcado en rojo; hasta entonces no se puede importar nada.",
-        "full-controller-off": "El controlador completo está desactivado: los programas se importan, pero solo riegan cuando esté activado."
+        "full-controller-off": "El controlador completo está desactivado: los programas se importan, pero solo riegan cuando esté activado.",
+        "nothing-waters-iu-off": "La importación no riega nada, e Irrigation Unlimited no está en marcha: Home Assistant no lo cargó (mira su registro). Nada riega hasta que actives estos horarios."
       },
       "errors": {
         "generic": "La importación no se ha completado.",
@@ -986,7 +987,9 @@
         "next": "Los horarios de los programas nuevos están desactivados, así que sigue regando Irrigation Unlimited. Cuando estés listo, desactiva los controladores de Irrigation Unlimited y activa estos horarios en la página Programas.",
         "open-programs": "Abrir los programas",
         "next-off": "El controlador completo está desactivado, así que estos programas aún no riegan e Irrigation Unlimited sigue regando. Activa el controlador completo en los ajustes, luego desactiva Irrigation Unlimited y activa estos horarios.",
-        "open-settings": "Abrir los ajustes"
+        "open-settings": "Abrir los ajustes",
+        "next-iu-off": "Los horarios de los programas nuevos están desactivados e Irrigation Unlimited no está en marcha: nada riega por ahora. Revisa los programas y luego activa sus horarios.",
+        "next-off-iu-off": "El controlador completo está desactivado, así que estos programas aún no riegan, e Irrigation Unlimited no está en marcha: nada riega por ahora. Activa el controlador completo en los ajustes y luego los horarios de los programas."
       },
       "conflicts": {
         "zone_twice": "{zone} y {other} se convertirían ambas en {target}. Elige otra zona para una de ellas.",
@@ -1038,7 +1041,8 @@
           "uses": "Usa {uses}."
         },
         "left-off": "Se dejan desactivados, porque Irrigation Unlimited los tenía desactivados: {names}.",
-        "unrecorded": "Se dejan desactivados, porque la importación no registró cuáles de sus horarios tenía activados Irrigation Unlimited: {names}. Activa tú sus horarios, o vuelve a Irrigation Unlimited, importa de nuevo (así se registran) y vuelve a hacer el cambio."
+        "unrecorded": "Se dejan desactivados, porque la importación no registró cuáles de sus horarios tenía activados Irrigation Unlimited: {names}. Activa tú sus horarios, o vuelve a Irrigation Unlimited, importa de nuevo (así se registran) y vuelve a hacer el cambio.",
+        "main-also-waters": "El programa principal también riega {zones}, cada día desde el disparador: junto a Irrigation Unlimited, y tras el cambio junto a los programas importados, estas zonas reciben el agua dos veces. Si los programas importados lo riegan todo, desactiva el programa principal en Programas o pon el disparador en Ninguno."
       },
       "notes": {
         "blueprint_zone_gone": "una automatización de blueprint la alimenta desde la zona {zone}, que ya no existe: no se trae como calculada",

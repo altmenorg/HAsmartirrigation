@@ -962,7 +962,8 @@
         },
         "nothing-waters": "De import bewatert niets. Irrigation Unlimited blijft bewateren tot je het uitzet en deze schema's aanzet.",
         "blocked": "Los eerst op wat rood gemarkeerd is; tot dan kan er niets geïmporteerd worden.",
-        "full-controller-off": "De volledige controller is uit: de programma's worden geïmporteerd, maar bewateren pas als hij aan staat."
+        "full-controller-off": "De volledige controller is uit: de programma's worden geïmporteerd, maar bewateren pas als hij aan staat.",
+        "nothing-waters-iu-off": "De import bewatert niets, en Irrigation Unlimited draait niet: Home Assistant heeft het niet geladen (zie het logboek). Er wordt niets bewaterd tot je deze schema's aanzet."
       },
       "errors": {
         "generic": "De import is niet gelukt.",
@@ -986,7 +987,9 @@
         "next": "De schema's van nieuwe programma's staan uit, dus Irrigation Unlimited bewatert nog steeds. Als je klaar bent, zet je de controllers van Irrigation Unlimited uit en deze schema's aan, op de pagina Programma's.",
         "open-programs": "Programma's openen",
         "next-off": "De volledige controller is uit, dus deze programma's bewateren nog niet en Irrigation Unlimited blijft bewateren. Zet de volledige controller aan in de instellingen, zet daarna Irrigation Unlimited uit en deze schema's aan.",
-        "open-settings": "Instellingen openen"
+        "open-settings": "Instellingen openen",
+        "next-iu-off": "De schema's van de nieuwe programma's staan uit, en Irrigation Unlimited draait niet: er wordt nu niets bewaterd. Bekijk de programma's en zet daarna hun schema's aan.",
+        "next-off-iu-off": "De volledige controller is uit, dus deze programma's bewateren nog niet, en Irrigation Unlimited draait niet: er wordt nu niets bewaterd. Zet de volledige controller aan in de instellingen, daarna de schema's van de programma's."
       },
       "conflicts": {
         "zone_twice": "{zone} en {other} zouden allebei {target} worden. Kies een andere zone voor een van beide.",
@@ -1038,7 +1041,8 @@
           "uses": "Gebruikt {uses}."
         },
         "left-off": "Uit gelaten, omdat Irrigation Unlimited ze had uitgezet: {names}.",
-        "unrecorded": "Uit gelaten, omdat de import niet heeft vastgelegd welke van hun schema's Irrigation Unlimited aan had: {names}. Zet hun schema's zelf aan, of ga terug naar Irrigation Unlimited, importeer opnieuw (dat legt ze vast) en stap opnieuw over."
+        "unrecorded": "Uit gelaten, omdat de import niet heeft vastgelegd welke van hun schema's Irrigation Unlimited aan had: {names}. Zet hun schema's zelf aan, of ga terug naar Irrigation Unlimited, importeer opnieuw (dat legt ze vast) en stap opnieuw over.",
+        "main-also-waters": "Het hoofdprogramma bewatert ook {zones}, elke dag vanuit de trigger: naast Irrigation Unlimited, en na de overstap naast de geïmporteerde programma's, krijgen deze zones hun water twee keer. Als de geïmporteerde programma's alles bewateren, zet het hoofdprogramma uit onder Programma's, of zet de trigger op Geen."
       },
       "notes": {
         "blueprint_zone_gone": "een blueprint-automatisering voedt haar vanuit zone {zone}, die niet meer bestaat: ze wordt niet als berekend overgenomen",

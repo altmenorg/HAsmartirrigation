@@ -962,7 +962,8 @@
         },
         "nothing-waters": "Import niczego nie podlewa. Irrigation Unlimited podlewa dalej, dopóki go nie wyłączysz i nie włączysz tych harmonogramów.",
         "blocked": "Najpierw rozwiąż to, co jest zaznaczone na czerwono; do tego czasu nic nie da się zaimportować.",
-        "full-controller-off": "Pełny kontroler jest wyłączony: programy zostaną zaimportowane, ale zaczną podlewać dopiero po jego włączeniu."
+        "full-controller-off": "Pełny kontroler jest wyłączony: programy zostaną zaimportowane, ale zaczną podlewać dopiero po jego włączeniu.",
+        "nothing-waters-iu-off": "Import niczego nie podlewa, a Irrigation Unlimited nie działa: Home Assistant go nie wczytał (zobacz jego dziennik). Nic nie podlewa, dopóki nie włączysz tych harmonogramów."
       },
       "errors": {
         "generic": "Import się nie powiódł.",
@@ -986,7 +987,9 @@
         "next": "Harmonogramy nowych programów są wyłączone, więc nadal podlewa Irrigation Unlimited. Gdy będziesz gotowy, wyłącz kontrolery Irrigation Unlimited i włącz te harmonogramy na stronie Programy.",
         "open-programs": "Otwórz programy",
         "next-off": "Pełny kontroler jest wyłączony, więc te programy jeszcze nie podlewają, a Irrigation Unlimited podlewa dalej. Włącz pełny kontroler w ustawieniach, potem wyłącz Irrigation Unlimited i włącz te harmonogramy.",
-        "open-settings": "Otwórz ustawienia"
+        "open-settings": "Otwórz ustawienia",
+        "next-iu-off": "Harmonogramy nowych programów są wyłączone, a Irrigation Unlimited nie działa: na razie nic nie podlewa. Przejrzyj programy, a potem włącz ich harmonogramy.",
+        "next-off-iu-off": "Pełny kontroler jest wyłączony, więc te programy jeszcze nie podlewają, a Irrigation Unlimited nie działa: na razie nic nie podlewa. Włącz pełny kontroler w ustawieniach, a potem harmonogramy programów."
       },
       "conflicts": {
         "zone_twice": "{zone} i {other} stałyby się obie strefą {target}. Wybierz inną strefę dla jednej z nich.",
@@ -1038,7 +1041,8 @@
           "uses": "Używa {uses}."
         },
         "left-off": "Pozostawione wyłączone, bo Irrigation Unlimited miał je wyłączone: {names}.",
-        "unrecorded": "Pozostawione wyłączone, bo import nie zapisał, które z ich harmonogramów Irrigation Unlimited miał włączone: {names}. Włącz ich harmonogramy sam albo wróć do Irrigation Unlimited, zaimportuj ponownie (to je zapisze) i przełącz się jeszcze raz."
+        "unrecorded": "Pozostawione wyłączone, bo import nie zapisał, które z ich harmonogramów Irrigation Unlimited miał włączone: {names}. Włącz ich harmonogramy sam albo wróć do Irrigation Unlimited, zaimportuj ponownie (to je zapisze) i przełącz się jeszcze raz.",
+        "main-also-waters": "Program główny podlewa też {zones}, codziennie z wyzwalacza: obok Irrigation Unlimited, a po przełączeniu obok zaimportowanych programów, te strefy dostają wodę dwa razy. Jeśli zaimportowane programy podlewają wszystko, wyłącz program główny w Programach albo ustaw wyzwalacz na Brak."
       },
       "notes": {
         "blueprint_zone_gone": "automatyzacja z blueprintu zasila ją ze strefy {zone}, która już nie istnieje: nie jest przenoszona jako obliczona",

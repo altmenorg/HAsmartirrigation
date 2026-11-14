@@ -962,7 +962,8 @@
         },
         "nothing-waters": "Import nic nezalévá. Irrigation Unlimited zalévá dál, dokud ho nevypnete a nezapnete tyto rozvrhy.",
         "blocked": "Nejprve vyřešte to, co je označeno červeně; do té doby nelze nic importovat.",
-        "full-controller-off": "Plný řadič je vypnutý: programy se naimportují, ale zalévat budou až po jeho zapnutí."
+        "full-controller-off": "Plný řadič je vypnutý: programy se naimportují, ale zalévat budou až po jeho zapnutí.",
+        "nothing-waters-iu-off": "Import nic nezalévá a Irrigation Unlimited neběží: Home Assistant ho nenačetl (viz jeho protokol). Nic nezalévá, dokud nezapnete tyto rozvrhy."
       },
       "errors": {
         "generic": "Import se nezdařil.",
@@ -986,7 +987,9 @@
         "next": "Rozvrhy nových programů jsou vypnuté, takže zalévá stále Irrigation Unlimited. Až budete připraveni, vypněte řadiče Irrigation Unlimited a zapněte tyto rozvrhy na stránce Programy.",
         "open-programs": "Otevřít programy",
         "next-off": "Plný řadič je vypnutý, takže tyto programy zatím nezalévají a Irrigation Unlimited zalévá dál. Zapněte plný řadič v nastavení, pak vypněte Irrigation Unlimited a zapněte tyto rozvrhy.",
-        "open-settings": "Otevřít nastavení"
+        "open-settings": "Otevřít nastavení",
+        "next-iu-off": "Rozvrhy nových programů jsou vypnuté a Irrigation Unlimited neběží: zatím nic nezalévá. Zkontrolujte programy a pak zapněte jejich rozvrhy.",
+        "next-off-iu-off": "Plný řadič je vypnutý, takže tyto programy zatím nezalévají, a Irrigation Unlimited neběží: zatím nic nezalévá. Zapněte plný řadič v nastavení, pak rozvrhy programů."
       },
       "conflicts": {
         "zone_twice": "Z {zone} i {other} by se stala {target}. Vyberte pro jednu z nich jinou zónu.",
@@ -1038,7 +1041,8 @@
           "uses": "Používá {uses}."
         },
         "left-off": "Ponecháno vypnuté, protože je Irrigation Unlimited měl vypnuté: {names}.",
-        "unrecorded": "Ponecháno vypnuté, protože import nezaznamenal, které z jejich rozvrhů měl Irrigation Unlimited zapnuté: {names}. Zapněte jejich rozvrhy sami, nebo se vraťte k Irrigation Unlimited, importujte znovu (zaznamená je) a znovu přepněte."
+        "unrecorded": "Ponecháno vypnuté, protože import nezaznamenal, které z jejich rozvrhů měl Irrigation Unlimited zapnuté: {names}. Zapněte jejich rozvrhy sami, nebo se vraťte k Irrigation Unlimited, importujte znovu (zaznamená je) a znovu přepněte.",
+        "main-also-waters": "Hlavní program zalévá také {zones}, každý den ze spouštěče: vedle Irrigation Unlimited, a po přepnutí vedle importovaných programů, dostávají tyto zóny vodu dvakrát. Pokud importované programy zalévají vše, vypněte hlavní program v Programech, nebo nastavte spouštěč na Žádný."
       },
       "notes": {
         "blueprint_zone_gone": "napájí ji automatizace z blueprintu ze zóny {zone}, která už neexistuje: nepřevezme se jako vypočítaná",

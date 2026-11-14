@@ -962,7 +962,8 @@
         },
         "nothing-waters": "导入不会浇水。Irrigation Unlimited 会继续浇水，直到你关闭它并打开这些时间表。",
         "blocked": "请先解决标为红色的问题；在此之前无法导入。",
-        "full-controller-off": "完整控制器已关闭：程序会被导入，但只有在它打开后才会浇水。"
+        "full-controller-off": "完整控制器已关闭：程序会被导入，但只有在它打开后才会浇水。",
+        "nothing-waters-iu-off": "导入不会浇水，而且 Irrigation Unlimited 没有运行：Home Assistant 没有加载它（请查看其日志）。在你打开这些时间表之前，什么都不会浇水。"
       },
       "errors": {
         "generic": "导入未完成。",
@@ -986,7 +987,9 @@
         "next": "新程序的时间表处于关闭状态，所以仍由 Irrigation Unlimited 浇水。准备好后，请关闭 Irrigation Unlimited 的控制器，并在“程序”页面打开这些时间表。",
         "open-programs": "打开程序",
         "next-off": "完整控制器已关闭，所以这些程序还不会浇水，Irrigation Unlimited 会继续浇水。请在设置中打开完整控制器，然后关闭 Irrigation Unlimited 并打开这些时间表。",
-        "open-settings": "打开设置"
+        "open-settings": "打开设置",
+        "next-iu-off": "新程序的时间表已关闭，而且 Irrigation Unlimited 没有运行：目前什么都不会浇水。请检查这些程序，然后打开它们的时间表。",
+        "next-off-iu-off": "完整控制器已关闭，所以这些程序还不会浇水，而且 Irrigation Unlimited 没有运行：目前什么都不会浇水。请在设置中打开完整控制器，然后打开程序的时间表。"
       },
       "conflicts": {
         "zone_twice": "{zone} 和 {other} 都会变为 {target}。请为其中一个选择另一个区域。",
@@ -1038,7 +1041,8 @@
           "uses": "使用 {uses}。"
         },
         "left-off": "保持关闭，因为 Irrigation Unlimited 中它们已关闭：{names}。",
-        "unrecorded": "保持关闭，因为导入没有记录 Irrigation Unlimited 中打开了它们的哪些时间表：{names}。请自行打开它们的时间表，或切回 Irrigation Unlimited，重新导入（这会记录它们），再次切换。"
+        "unrecorded": "保持关闭，因为导入没有记录 Irrigation Unlimited 中打开了它们的哪些时间表：{names}。请自行打开它们的时间表，或切回 Irrigation Unlimited，重新导入（这会记录它们），再次切换。",
+        "main-also-waters": "主程序也会每天按触发器为 {zones} 浇水：与 Irrigation Unlimited 并行，切换后又与导入的程序并行，这些区域会被浇水两次。如果导入的程序已覆盖全部区域，请在“程序”中关闭主程序，或将触发器设为“无”。"
       },
       "notes": {
         "blueprint_zone_gone": "有蓝图自动化从区域 {zone} 为其提供数据，但该区域已不存在：不会按已计算导入",

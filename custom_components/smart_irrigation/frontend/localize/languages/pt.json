@@ -962,7 +962,8 @@
         },
         "nothing-waters": "A importação não rega nada. O Irrigation Unlimited continua a regar até o desligar e ativar estes agendamentos.",
         "blocked": "Resolva primeiro o que está marcado a vermelho; até lá nada pode ser importado.",
-        "full-controller-off": "O controlador completo está desligado: os programas são importados, mas só regam quando estiver ligado."
+        "full-controller-off": "O controlador completo está desligado: os programas são importados, mas só regam quando estiver ligado.",
+        "nothing-waters-iu-off": "A importação não rega nada e o Irrigation Unlimited não está a funcionar: o Home Assistant não o carregou (veja o registo dele). Nada rega até ativar estes agendamentos."
       },
       "errors": {
         "generic": "A importação não foi concluída.",
@@ -986,7 +987,9 @@
         "next": "Os agendamentos dos novos programas estão desligados, por isso é ainda o Irrigation Unlimited que rega. Quando estiver pronto, desligue os controladores do Irrigation Unlimited e ative estes agendamentos, na página Programas.",
         "open-programs": "Abrir os programas",
         "next-off": "O controlador completo está desligado, por isso estes programas ainda não regam e o Irrigation Unlimited continua a regar. Ative o controlador completo nas definições, depois desligue o Irrigation Unlimited e ative estes agendamentos.",
-        "open-settings": "Abrir as definições"
+        "open-settings": "Abrir as definições",
+        "next-iu-off": "Os agendamentos dos novos programas estão desligados e o Irrigation Unlimited não está a funcionar: nada rega por agora. Reveja os programas e depois ative os agendamentos deles.",
+        "next-off-iu-off": "O controlador completo está desligado, por isso estes programas ainda não regam, e o Irrigation Unlimited não está a funcionar: nada rega por agora. Ative o controlador completo nas definições e depois os agendamentos dos programas."
       },
       "conflicts": {
         "zone_twice": "{zone} e {other} tornar-se-iam ambas {target}. Escolha outra zona para uma delas.",
@@ -1038,7 +1041,8 @@
           "uses": "Usa {uses}."
         },
         "left-off": "Deixados desligados, porque o Irrigation Unlimited os tinha desligados: {names}.",
-        "unrecorded": "Deixados desligados, porque a importação não registou quais dos seus agendamentos o Irrigation Unlimited tinha ligados: {names}. Ligue os agendamentos deles manualmente, ou volte ao Irrigation Unlimited, importe de novo (isso regista-os) e faça a mudança outra vez."
+        "unrecorded": "Deixados desligados, porque a importação não registou quais dos seus agendamentos o Irrigation Unlimited tinha ligados: {names}. Ligue os agendamentos deles manualmente, ou volte ao Irrigation Unlimited, importe de novo (isso regista-os) e faça a mudança outra vez.",
+        "main-also-waters": "O programa principal também rega {zones}, todos os dias a partir do acionador: ao lado do Irrigation Unlimited, e após a mudança ao lado dos programas importados, estas zonas recebem a água duas vezes. Se os programas importados regam tudo, desligue o programa principal em Programas ou defina o acionador como Nenhum."
       },
       "notes": {
         "blueprint_zone_gone": "uma automação de blueprint alimenta-a a partir da zona {zone}, que já não existe: não passa como calculada",

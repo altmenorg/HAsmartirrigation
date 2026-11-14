@@ -962,7 +962,8 @@
         },
         "nothing-waters": "Irrigation Unlimited fortsätter att sköta bevattningen efter importen tills du inaktiverar det och aktiverar de importerade schemana.",
         "blocked": "Lös först det som är rödmarkerat; tills dess kan inget importeras.",
-        "full-controller-off": "Den fullständiga bevattningsstyrningen är av: programmen importeras, men vattnar först när den är på."
+        "full-controller-off": "Den fullständiga bevattningsstyrningen är av: programmen importeras, men vattnar först när den är på.",
+        "nothing-waters-iu-off": "Importen sköter ingen bevattning, och Irrigation Unlimited körs inte: Home Assistant laddade det inte (se dess logg). Inget bevattnas förrän du aktiverar de här schemana."
       },
       "errors": {
         "generic": "Importen gick inte igenom.",
@@ -986,7 +987,9 @@
         "next": "De nya programmens scheman är inaktiverade, så Irrigation Unlimited sköter fortfarande bevattningen. Granska programmen och byt sedan till Smart Irrigation längst upp på den här sidan.",
         "open-programs": "Öppna programmen",
         "next-off": "Den fullständiga bevattningsstyrningen är avstängd, så Irrigation Unlimited sköter fortfarande bevattningen. Aktivera den fullständiga bevattningsstyrningen i inställningarna och byt sedan till Smart Irrigation längst upp på den här sidan.",
-        "open-settings": "Öppna inställningarna"
+        "open-settings": "Öppna inställningarna",
+        "next-iu-off": "De nya programmens scheman är avstängda, och Irrigation Unlimited körs inte: inget bevattnas just nu. Gå igenom programmen och aktivera sedan deras scheman.",
+        "next-off-iu-off": "Den fullständiga bevattningsstyrningen är avstängd, så programmen bevattnar inte än, och Irrigation Unlimited körs inte: inget bevattnas just nu. Aktivera den fullständiga bevattningsstyrningen i inställningarna, sedan programmens scheman."
       },
       "conflicts": {
         "zone_twice": "{zone} och {other} skulle båda bli {target}. Välj en annan zon för en av dem.",
@@ -1038,7 +1041,8 @@
           "uses": "Använder {uses}."
         },
         "left-off": "Följande förblir inaktiverade eftersom de var inaktiverade i Irrigation Unlimited: {names}.",
-        "unrecorded": "Följande förblir inaktiverade eftersom importen saknar uppgift om vilka scheman som var aktiva i Irrigation Unlimited: {names}. Aktivera schemana själv eller byt tillbaka till Irrigation Unlimited, importera på nytt så att uppgifterna registreras och byt sedan till Smart Irrigation igen."
+        "unrecorded": "Följande förblir inaktiverade eftersom importen saknar uppgift om vilka scheman som var aktiva i Irrigation Unlimited: {names}. Aktivera schemana själv eller byt tillbaka till Irrigation Unlimited, importera på nytt så att uppgifterna registreras och byt sedan till Smart Irrigation igen.",
+        "main-also-waters": "Huvudprogrammet bevattnar också {zones}, varje dag från utlösaren: bredvid Irrigation Unlimited, och efter bytet bredvid de importerade programmen, får de här zonerna sitt vatten två gånger. Om de importerade programmen bevattnar allt, stäng av huvudprogrammet under Program eller sätt utlösaren till Ingen."
       },
       "notes": {
         "blueprint_zone_gone": "en automation baserad på en automationsmall hämtar tiden från zon {zone}, som inte längre finns. Bevattningstiden importeras därför inte som beräknad",

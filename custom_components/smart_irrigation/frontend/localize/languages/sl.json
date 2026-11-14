@@ -962,7 +962,8 @@
         },
         "nothing-waters": "Uvoz ničesar ne zaliva. Irrigation Unlimited zaliva naprej, dokler ga ne izklopiš in vklopiš teh urnikov.",
         "blocked": "Najprej razreši, kar je označeno z rdečo; do takrat ni mogoče ničesar uvoziti.",
-        "full-controller-off": "Celoten krmilnik je izklopljen: programi se uvozijo, a zalivajo šele, ko je vklopljen."
+        "full-controller-off": "Celoten krmilnik je izklopljen: programi se uvozijo, a zalivajo šele, ko je vklopljen.",
+        "nothing-waters-iu-off": "Uvoz ničesar ne zaliva, Irrigation Unlimited pa ne teče: Home Assistant ga ni naložil (glej njegov dnevnik). Nič ne zaliva, dokler ne vklopiš teh urnikov."
       },
       "errors": {
         "generic": "Uvoz ni uspel.",
@@ -986,7 +987,9 @@
         "next": "Urniki novih programov so izklopljeni, zato še vedno zaliva Irrigation Unlimited. Ko boš pripravljen, izklopi krmilnike Irrigation Unlimited in vklopi te urnike na strani Programi.",
         "open-programs": "Odpri programe",
         "next-off": "Celoten krmilnik je izklopljen, zato ti programi še ne zalivajo in Irrigation Unlimited zaliva naprej. Vklopi celoten krmilnik v nastavitvah, nato izklopi Irrigation Unlimited in vklopi te urnike.",
-        "open-settings": "Odpri nastavitve"
+        "open-settings": "Odpri nastavitve",
+        "next-iu-off": "Urniki novih programov so izklopljeni, Irrigation Unlimited pa ne teče: zaenkrat nič ne zaliva. Preglej programe, nato vklopi njihove urnike.",
+        "next-off-iu-off": "Celoten krmilnik je izklopljen, zato ti programi še ne zalivajo, Irrigation Unlimited pa ne teče: zaenkrat nič ne zaliva. Vklopi celoten krmilnik v nastavitvah, nato urnike programov."
       },
       "conflicts": {
         "zone_twice": "{zone} in {other} bi obe postali {target}. Za eno od njiju izberi drugo cono.",
@@ -1038,7 +1041,8 @@
           "uses": "Uporablja {uses}."
         },
         "left-off": "Ostali so izklopljeni, ker jih je imel Irrigation Unlimited izklopljene: {names}.",
-        "unrecorded": "Ostali so izklopljeni, ker uvoz ni zabeležil, katere od njihovih urnikov je imel Irrigation Unlimited vklopljene: {names}. Njihove urnike vklopi sam ali se vrni na Irrigation Unlimited, znova uvozi (to jih zabeleži) in znova preklopi."
+        "unrecorded": "Ostali so izklopljeni, ker uvoz ni zabeležil, katere od njihovih urnikov je imel Irrigation Unlimited vklopljene: {names}. Njihove urnike vklopi sam ali se vrni na Irrigation Unlimited, znova uvozi (to jih zabeleži) in znova preklopi.",
+        "main-also-waters": "Glavni program zaliva tudi {zones}, vsak dan iz sprožilca: poleg Irrigation Unlimited, po preklopu pa poleg uvoženih programov, te cone dobijo vodo dvakrat. Če uvoženi programi zalivajo vse, izklopi glavni program v Programih ali nastavi sprožilec na Brez."
       },
       "notes": {
         "blueprint_zone_gone": "avtomatizacija iz načrta (blueprint) jo napaja iz cone {zone}, ki ne obstaja več: ne prenese se kot izračunana",

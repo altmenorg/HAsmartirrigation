@@ -962,7 +962,8 @@
         },
         "nothing-waters": "Az importálás semmit sem öntöz. Az Irrigation Unlimited tovább öntöz, amíg ki nem kapcsolod, és be nem kapcsolod ezeket az ütemezéseket.",
         "blocked": "Előbb oldd meg, ami pirossal van jelölve; addig semmit sem lehet importálni.",
-        "full-controller-off": "A teljes vezérlő ki van kapcsolva: a programok importálódnak, de csak akkor öntöznek, ha bekapcsolod."
+        "full-controller-off": "A teljes vezérlő ki van kapcsolva: a programok importálódnak, de csak akkor öntöznek, ha bekapcsolod.",
+        "nothing-waters-iu-off": "Az importálás semmit sem öntöz, és az Irrigation Unlimited nem fut: a Home Assistant nem töltötte be (lásd a naplóját). Semmi sem öntöz, amíg be nem kapcsolod ezeket az ütemezéseket."
       },
       "errors": {
         "generic": "Az importálás nem sikerült.",
@@ -986,7 +987,9 @@
         "next": "Az új programok ütemezései ki vannak kapcsolva, így továbbra is az Irrigation Unlimited öntöz. Ha készen állsz, kapcsold ki az Irrigation Unlimited vezérlőit, és kapcsold be ezeket az ütemezéseket a Programok oldalon.",
         "open-programs": "Programok megnyitása",
         "next-off": "A teljes vezérlő ki van kapcsolva, így ezek a programok még nem öntöznek, az Irrigation Unlimited pedig tovább öntöz. Kapcsold be a teljes vezérlőt a beállításokban, majd kapcsold ki az Irrigation Unlimitedet, és kapcsold be ezeket az ütemezéseket.",
-        "open-settings": "Beállítások megnyitása"
+        "open-settings": "Beállítások megnyitása",
+        "next-iu-off": "Az új programok ütemezései ki vannak kapcsolva, és az Irrigation Unlimited nem fut: most semmi sem öntöz. Nézd át a programokat, majd kapcsold be az ütemezéseiket.",
+        "next-off-iu-off": "A teljes vezérlő ki van kapcsolva, így ezek a programok még nem öntöznek, és az Irrigation Unlimited nem fut: most semmi sem öntöz. Kapcsold be a teljes vezérlőt a beállításokban, majd a programok ütemezéseit."
       },
       "conflicts": {
         "zone_twice": "{zone} és {other} is {target} lenne. Válassz másik zónát az egyiküknek.",
@@ -1038,7 +1041,8 @@
           "uses": "Használja: {uses}."
         },
         "left-off": "Kikapcsolva maradtak, mert az Irrigation Unlimitedben ki voltak kapcsolva: {names}.",
-        "unrecorded": "Kikapcsolva maradtak, mert az importálás nem jegyezte fel, hogy az ütemezéseik közül melyek voltak bekapcsolva az Irrigation Unlimitedben: {names}. Kapcsold be magad az ütemezéseiket, vagy válts vissza az Irrigation Unlimitedre, importálj újra (ez feljegyzi őket), és válts át ismét."
+        "unrecorded": "Kikapcsolva maradtak, mert az importálás nem jegyezte fel, hogy az ütemezéseik közül melyek voltak bekapcsolva az Irrigation Unlimitedben: {names}. Kapcsold be magad az ütemezéseiket, vagy válts vissza az Irrigation Unlimitedre, importálj újra (ez feljegyzi őket), és válts át ismét.",
+        "main-also-waters": "A főprogram is öntözi ezeket: {zones}, minden nap a kiváltóból: az Irrigation Unlimited mellett, az átállás után pedig az importált programok mellett ezek a zónák kétszer kapnak vizet. Ha az importált programok mindent öntöznek, kapcsold ki a főprogramot a Programok alatt, vagy állítsd a kiváltót Nincs értékre."
       },
       "notes": {
         "blueprint_zone_gone": "egy blueprint-automatizálás táplálja a(z) {zone} zónából, amely már nem létezik: nem számoltként jön át",

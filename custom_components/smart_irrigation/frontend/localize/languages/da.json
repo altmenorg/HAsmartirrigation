@@ -962,7 +962,8 @@
         },
         "nothing-waters": "Importen vander ikke noget. Irrigation Unlimited bliver ved med at vande, indtil du slår den fra og disse tidsplaner til.",
         "blocked": "Løs først det, der er markeret med rødt; indtil da kan intet importeres.",
-        "full-controller-off": "Den fulde styring er slået fra: programmerne importeres, men vander først, når den er slået til."
+        "full-controller-off": "Den fulde styring er slået fra: programmerne importeres, men vander først, når den er slået til.",
+        "nothing-waters-iu-off": "Importen vander ikke noget, og Irrigation Unlimited kører ikke: Home Assistant indlæste den ikke (se dens log). Intet vandes, før du slår disse tidsplaner til."
       },
       "errors": {
         "generic": "Importen gik ikke igennem.",
@@ -986,7 +987,9 @@
         "next": "Tidsplanerne for nye programmer er slået fra, så det er stadig Irrigation Unlimited, der vander. Når du er klar, så slå Irrigation Unlimiteds controllere fra og disse tidsplaner til på siden Programmer.",
         "open-programs": "Åbn programmerne",
         "next-off": "Den fulde styring er slået fra, så disse programmer vander ikke endnu, og Irrigation Unlimited bliver ved med at vande. Slå den fulde styring til i indstillingerne, og slå derefter Irrigation Unlimited fra og disse tidsplaner til.",
-        "open-settings": "Åbn indstillingerne"
+        "open-settings": "Åbn indstillingerne",
+        "next-iu-off": "De nye programmers tidsplaner er slået fra, og Irrigation Unlimited kører ikke: intet vandes lige nu. Gennemse programmerne, og slå derefter deres tidsplaner til.",
+        "next-off-iu-off": "Den fulde styring er slået fra, så disse programmer vander ikke endnu, og Irrigation Unlimited kører ikke: intet vandes lige nu. Slå den fulde styring til i indstillingerne, derefter programmernes tidsplaner."
       },
       "conflicts": {
         "zone_twice": "{zone} og {other} ville begge blive til {target}. Vælg en anden zone til en af dem.",
@@ -1038,7 +1041,8 @@
           "uses": "Bruger {uses}."
         },
         "left-off": "Ladt være slået fra, da Irrigation Unlimited havde dem slået fra: {names}.",
-        "unrecorded": "Ladt være slået fra, da importen ikke har registreret, hvilke af deres tidsplaner Irrigation Unlimited havde slået til: {names}. Slå selv deres tidsplaner til, eller gå tilbage til Irrigation Unlimited, importér igen (så registreres de) og skift over igen."
+        "unrecorded": "Ladt være slået fra, da importen ikke har registreret, hvilke af deres tidsplaner Irrigation Unlimited havde slået til: {names}. Slå selv deres tidsplaner til, eller gå tilbage til Irrigation Unlimited, importér igen (så registreres de) og skift over igen.",
+        "main-also-waters": "Hovedprogrammet vander også {zones}, hver dag fra udløseren: ved siden af Irrigation Unlimited, og efter skiftet ved siden af de importerede programmer, får disse zoner deres vand to gange. Hvis de importerede programmer vander det hele, så slå hovedprogrammet fra under Programmer, eller sæt udløseren til Ingen."
       },
       "notes": {
         "blueprint_zone_gone": "en blueprint-automatisering forsyner den fra zone {zone}, som ikke findes mere: den hentes ikke over som beregnet",

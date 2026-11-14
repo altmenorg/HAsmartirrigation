@@ -962,7 +962,8 @@
         },
         "nothing-waters": "Tuonti ei kastele mitään. Irrigation Unlimited jatkaa kastelua, kunnes poistat sen käytöstä ja otat nämä aikataulut käyttöön.",
         "blocked": "Ratkaise ensin punaisella merkityt kohdat; siihen asti mitään ei voi tuoda.",
-        "full-controller-off": "Täysi ohjain on pois päältä: ohjelmat tuodaan, mutta ne kastelevat vasta, kun se on päällä."
+        "full-controller-off": "Täysi ohjain on pois päältä: ohjelmat tuodaan, mutta ne kastelevat vasta, kun se on päällä.",
+        "nothing-waters-iu-off": "Tuonti ei kastele mitään, eikä Irrigation Unlimited ole käynnissä: Home Assistant ei ladannut sitä (katso sen loki). Mitään ei kastella ennen kuin otat nämä aikataulut käyttöön."
       },
       "errors": {
         "generic": "Tuonti ei onnistunut.",
@@ -986,7 +987,9 @@
         "next": "Uusien ohjelmien aikataulut ovat pois päältä, joten Irrigation Unlimited kastelee yhä. Kun olet valmis, poista Irrigation Unlimitedin ohjaimet käytöstä ja ota nämä aikataulut käyttöön Ohjelmat-sivulla.",
         "open-programs": "Avaa ohjelmat",
         "next-off": "Täysi ohjain on pois päältä, joten nämä ohjelmat eivät vielä kastele ja Irrigation Unlimited jatkaa kastelua. Ota täysi ohjain käyttöön asetuksissa, poista sitten Irrigation Unlimited käytöstä ja ota nämä aikataulut käyttöön.",
-        "open-settings": "Avaa asetukset"
+        "open-settings": "Avaa asetukset",
+        "next-iu-off": "Uusien ohjelmien aikataulut ovat pois päältä, eikä Irrigation Unlimited ole käynnissä: mitään ei kastella nyt. Tarkista ohjelmat ja ota sitten niiden aikataulut käyttöön.",
+        "next-off-iu-off": "Täysi ohjain on pois päältä, joten nämä ohjelmat eivät vielä kastele, eikä Irrigation Unlimited ole käynnissä: mitään ei kastella nyt. Ota täysi ohjain käyttöön asetuksissa ja sitten ohjelmien aikataulut."
       },
       "conflicts": {
         "zone_twice": "Sekä {zone} että {other} muuttuisivat alueeksi {target}. Valitse toiselle niistä eri alue.",
@@ -1038,7 +1041,8 @@
           "uses": "Käyttää: {uses}."
         },
         "left-off": "Jätetty pois päältä, koska ne olivat pois päältä Irrigation Unlimitedissä: {names}.",
-        "unrecorded": "Jätetty pois päältä, koska tuonti ei tallentanut, mitkä niiden aikatauluista olivat päällä Irrigation Unlimitedissä: {names}. Ota niiden aikataulut käyttöön itse, tai palaa Irrigation Unlimitediin, tuo uudelleen (se tallentaa ne) ja vaihda uudelleen."
+        "unrecorded": "Jätetty pois päältä, koska tuonti ei tallentanut, mitkä niiden aikatauluista olivat päällä Irrigation Unlimitedissä: {names}. Ota niiden aikataulut käyttöön itse, tai palaa Irrigation Unlimitediin, tuo uudelleen (se tallentaa ne) ja vaihda uudelleen.",
+        "main-also-waters": "Pääohjelma kastelee myös {zones} joka päivä liipaisimen mukaan: Irrigation Unlimitedin rinnalla, ja vaihdon jälkeen tuotujen ohjelmien rinnalla, nämä alueet saavat vetensä kahdesti. Jos tuodut ohjelmat kastelevat kaiken, poista pääohjelma käytöstä kohdassa Ohjelmat tai aseta liipaisimeksi Ei mitään."
       },
       "notes": {
         "blueprint_zone_gone": "blueprint-automaatio syöttää sitä alueelta {zone}, jota ei enää ole: sitä ei tuoda laskettuna",
