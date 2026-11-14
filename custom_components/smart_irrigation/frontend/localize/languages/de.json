@@ -962,7 +962,8 @@
         },
         "nothing-waters": "Die Übernahme bewässert nichts. Irrigation Unlimited bewässert weiter, bis du es ausschaltest und diese Zeitpläne einschaltest.",
         "blocked": "Löse zuerst, was rot markiert ist; bis dahin lässt sich nichts übernehmen.",
-        "full-controller-off": "Der vollständige Controller ist aus: Die Programme werden übernommen, bewässern aber erst, wenn er an ist."
+        "full-controller-off": "Der vollständige Controller ist aus: Die Programme werden übernommen, bewässern aber erst, wenn er an ist.",
+        "nothing-waters-iu-off": "Die Übernahme bewässert nichts, und Irrigation Unlimited läuft nicht: Home Assistant hat es nicht eingerichtet (siehe sein Protokoll). Es bewässert nichts, bis du diese Zeitpläne einschaltest."
       },
       "errors": {
         "generic": "Die Übernahme hat nicht geklappt.",
@@ -986,7 +987,9 @@
         "next": "Die Zeitpläne neuer Programme sind aus, es bewässert also weiter Irrigation Unlimited. Sieh dir die Programme an und steig dann oben auf dieser Seite um.",
         "open-programs": "Zu den Programmen",
         "next-off": "Der vollständige Controller ist aus, diese Programme bewässern also noch nicht, und Irrigation Unlimited bewässert weiter. Schalte den vollständigen Controller in den Einstellungen ein und steig dann oben auf dieser Seite um.",
-        "open-settings": "Zu den Einstellungen"
+        "open-settings": "Zu den Einstellungen",
+        "next-iu-off": "Die Zeitpläne neuer Programme sind aus, und Irrigation Unlimited läuft nicht: Im Moment bewässert nichts. Sieh dir die Programme an und schalte dann ihre Zeitpläne ein.",
+        "next-off-iu-off": "Der vollständige Controller ist aus, diese Programme bewässern also noch nicht, und Irrigation Unlimited läuft nicht: Im Moment bewässert nichts. Schalte in den Einstellungen den vollständigen Controller ein, dann die Zeitpläne der Programme."
       },
       "conflicts": {
         "zone_twice": "{zone} und {other} würden beide zu {target}. Wähle für eine der beiden eine andere Zone.",
@@ -1038,7 +1041,8 @@
           "uses": "Nutzt {uses}."
         },
         "left-off": "Aus gelassen, weil Irrigation Unlimited sie ausgeschaltet hatte: {names}.",
-        "unrecorded": "Aus gelassen, weil die Übernahme nicht festgehalten hat, welche ihrer Zeitpläne Irrigation Unlimited an hatte: {names}. Schalte ihre Zeitpläne selbst ein, oder geh zurück zu Irrigation Unlimited, übernimm noch einmal (dabei wird es festgehalten) und steig erneut um."
+        "unrecorded": "Aus gelassen, weil die Übernahme nicht festgehalten hat, welche ihrer Zeitpläne Irrigation Unlimited an hatte: {names}. Schalte ihre Zeitpläne selbst ein, oder geh zurück zu Irrigation Unlimited, übernimm noch einmal (dabei wird es festgehalten) und steig erneut um.",
+        "main-also-waters": "Das Hauptprogramm bewässert {zones} ebenfalls, jeden Tag zum Startauslöser: Neben Irrigation Unlimited und nach dem Umstieg neben den übernommenen Programmen bekommen diese Zonen ihr Wasser doppelt. Bewässern die übernommenen Programme alles, schalte das Hauptprogramm unter Programme aus oder stelle den Startauslöser auf „Keiner“."
       },
       "notes": {
         "blueprint_zone_gone": "eine Blueprint-Automatisierung versorgt sie aus Zone {zone}, die es nicht mehr gibt: Sie wird nicht als berechnet übernommen",

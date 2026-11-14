@@ -305,9 +305,14 @@ async def async_preview(
     source, config, notes = await async_read_source(hass, source, text)
     links = links_from_automations(hass)
     snapshot = _snapshot(coordinator.store)
-    return await hass.async_add_executor_job(
+    result = await hass.async_add_executor_job(
         plan, config, snapshot, links, matches, source, notes
     )
+    # Whether IU waters at all as things stand: one whose configuration Home
+    # Assistant rejected does not, and the page said it "keeps watering until
+    # you switch it off". Outside the fingerprint, as it is no part of the plan.
+    result["iu_running"] = hass.services.has_service(DOMAIN_IU, "disable")
+    return result
 
 
 # --- the blueprints that already feed IU -------------------------------------
@@ -1329,6 +1334,52 @@ def _imported_programs(config) -> dict:
     }
 
 
+def _main_program_also_waters(coordinator, config, programs: dict) -> list:
+    """The zones of the imported programs the main program waters as well.
+
+    Switching the full controller on, as the import asks, starts the main
+    program too: the start trigger runs it every day, over every zone. Next to
+    IU's run, and after the cut-over next to the imported programs, those zones
+    got their water twice each morning, and the page said only IU watered.
+    Empty when the main program is off, or nothing starts it.
+    """
+    if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
+        return []
+    main = next(
+        (
+            p
+            for p in getattr(config, const.CONF_PROGRAMS, None) or []
+            if isinstance(p, dict)
+            and (
+                p.get(const.PROGRAM_MAIN) or p.get(const.PROGRAM_ID) == MAIN_PROGRAM_ID
+            )
+        ),
+        None,
+    )
+    if main is None or main.get(const.PROGRAM_ENABLED, True) is False:
+        return []
+    uses_schedules = getattr(coordinator, "main_program_uses_schedules", None)
+    if callable(uses_schedules) and uses_schedules() is True:
+        started = bool(_on(main))
+    else:
+        started = getattr(coordinator, "start_trigger_armed", False) is True
+    if not started:
+        return []
+    imported = {
+        zone_id
+        for program in programs.values()
+        if program.get(const.PROGRAM_ENABLED, True) is not False
+        for step in program.get(const.PROGRAM_STEPS) or []
+        for zone_id in step.get(const.STEP_ZONES) or []
+    }
+    return [
+        zone.get(const.ZONE_NAME) or str(zone_id)
+        for zone_id, zone in _zones_of(coordinator.store).items()
+        if zone_id in imported
+        and zone.get(const.ZONE_STATE) != const.ZONE_STATE_DISABLED
+    ]
+
+
 def _zones_off_in_iu(hass: HomeAssistant, coordinator, record: dict, programs: dict):
     """The zones IU runs switched off that water in an imported sequence here.
 
@@ -1444,6 +1495,7 @@ async def async_status(hass: HomeAssistant, coordinator) -> dict:
         "waters": waters,
         "both_on": waters == WATERS_BOTH,
         "zones_off_in_iu": _zones_off_in_iu(hass, coordinator, record, programs),
+        "main_also_waters": _main_program_also_waters(coordinator, config, programs),
         "follow_ups": follow_ups(hass),
     }
 
