@@ -683,6 +683,11 @@ ZONE_EXTRA_ENTITIES = "extra_entities"
 # single-channel device, "state_l1".."state_l4" for a multi-channel one.
 ZONE_SAFETY_OFF_STATE_KEY = "safety_off_state_key"
 CONF_DEFAULT_SAFETY_OFF_STATE_KEY = "state"
+# A number entity holding how long the zone's valve stays open once opened, for
+# a valve that closes by itself after its own duration (Gardena): the run's
+# length, plus the margin below, is written to it before each open. Without it
+# such a valve closes after its preset (1 min by default) in a 40 min run.
+ZONE_SAFETY_OFF_ENTITY = "safety_off_entity"
 # Seconds added to a pass's own length for the on_time value, so the device's
 # own auto-off lands just after Home Assistant's close rather than before it.
 SAFETY_OFF_TIME_MARGIN = 30

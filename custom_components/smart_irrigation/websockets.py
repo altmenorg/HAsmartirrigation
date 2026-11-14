@@ -350,6 +350,9 @@ class SmartIrrigationZoneView(HomeAssistantView):
                 vol.Optional(const.ZONE_LEAD_TIME): vol.Coerce(float),
                 vol.Optional(const.ZONE_SAFETY_OFF_TOPIC): vol.Any(str, None),
                 vol.Optional(const.ZONE_SAFETY_OFF_STATE_KEY): vol.Any(str, None),
+                vol.Optional(const.ZONE_SAFETY_OFF_ENTITY): vol.Any(
+                    cv.entity_domain(["number", "input_number"]), None
+                ),
                 vol.Optional(const.ZONE_SAFETY_OFF_MODE): vol.Any(
                     vol.In(const.SAFETY_OFF_MODES), None
                 ),

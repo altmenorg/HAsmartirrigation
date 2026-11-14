@@ -774,7 +774,9 @@
         },
         "duration-readonly-automatic": "Für dich berechnet: der Durchlauf dieser Zone ergibt sich aus ihrer Wasserbilanz. Stelle sie auf manuell, um eine Dauer selbst einzutragen.",
         "duration-readonly-disabled": "Eine deaktivierte Zone wird nie bewässert, sie hat also keine Laufzeit.",
-        "et-deficiency-help": "Was diese Zone pro Tag braucht: ETc, ET0 mal Pflanzenfaktor mit saisonaler Anpassung, vor Regen und vor der Skalierung aufs Intervall, also vergleichbar. ET0 allein steht im Attribut `eto` des Zonensensors, zum Abgleich mit einem Wetterdienst."
+        "et-deficiency-help": "Was diese Zone pro Tag braucht: ETc, ET0 mal Pflanzenfaktor mit saisonaler Anpassung, vor Regen und vor der Skalierung aufs Intervall, also vergleichbar. ET0 allein steht im Attribut `eto` des Zonensensors, zum Abgleich mit einem Wetterdienst.",
+        "safety-off-entity": "Eigene Dauer des Ventils",
+        "safety-off-entity-help": "Für ein Ventil, das nach einer eigenen Dauer selbst schließt, etwa Gardena (seine Zahl „Bewässerungsdauer“, ohne Änderung 1 min): diese Zahl hier wählen. Vor jedem Öffnen schreibt Smart Irrigation die Länge des Durchgangs plus 30 s hinein, damit das Ventil den ganzen Durchgang offen bleibt und trotzdem selbst schließt, falls Home Assistant ausfällt. Ohne sie schließt ein solches Ventil nach seiner voreingestellten Zeit."
       },
       "no_items": "Es ist noch keine Zone vorhanden.",
       "title": "Zonen",
