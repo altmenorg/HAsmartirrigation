@@ -1874,11 +1874,17 @@ class SmartIrrigationRestoreView(HomeAssistantView):
         """Replace the whole configuration with the supplied backup, then reload."""
         hass = request.app["hass"]
         coordinator = hass.data[const.DOMAIN]["coordinator"]
+        before = set(coordinator.store.zones)
         try:
             await coordinator.store.async_import(data)
         except (ValueError, KeyError, TypeError) as err:
             _LOGGER.error("[restore] invalid backup: %s", err)
             return self.json({"success": False, "error": str(err)}, status_code=400)
+        # A zone the backup leaves out goes with its device and entities, as
+        # when it is deleted: they stayed "unavailable", and the next new zone
+        # took them over, entity ids and all.
+        for zone_id in sorted(before - set(coordinator.store.zones)):
+            await coordinator.async_remove_entity(zone_id)
         # Reload the entry (after responding) so the running coordinator applies
         # the restored config: sensor subscriptions, weather client, schedules.
         entry = coordinator.entry

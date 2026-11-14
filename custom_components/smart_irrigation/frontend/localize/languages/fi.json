@@ -1233,7 +1233,8 @@
     "tours": "kierrosta",
     "no_valve": "Ei liitettyä venttiiliä, joten ei kastella:",
     "nothing_no_valve": "Ei kasteltavaa tässä ajossa: vyöhykkeillä, joilta puuttuu vettä, ei ole liitettyä venttiiliä:",
-    "left": "{time} jäljellä"
+    "left": "{time} jäljellä",
+    "expected_skipped_suspended": "Ei käynnisty: ohjelma on keskeytetty {when} asti"
   },
   "programs": {
     "title": "Ohjelmat",
@@ -1391,7 +1392,12 @@
     "cond_precipitation": "{value} ennusteessa alkaen",
     "cond_days_between": "vähintään {n} päivää",
     "cond_soil": "{n} aluetta anturilla",
-    "cond_soil_one": "{n} alue anturilla"
+    "cond_soil_one": "{n} alue anturilla",
+    "confirm_run_replace": "Suoritetaanko {name} nyt? Käynnissä oleva kastelu pysäytetään ensin, sitten sen venttiilit avautuvat.",
+    "run_replacing": "Käynnissä ollut kastelu pysäytetään; {name} alkaa heti sen jälkeen.",
+    "suspended_until": "Keskeytetty {when} asti: sen aikataulut eivät käynnistä sitä.",
+    "suspended": "keskeytetty",
+    "lift_suspension": "Poista"
   },
   "supplies": {
     "title": "Pumput ja pääventtiilit",

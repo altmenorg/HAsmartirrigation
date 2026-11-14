@@ -799,10 +799,7 @@ class TriggersMixin:
                     {const.CONF_PRECIPITATION_SKIPS_IN_A_ROW: 0}
                 )
             if not self._start_event_fired_today:
-                self._start_event_fired_today = True
-                await self.store.async_update_config(
-                    {const.START_EVENT_FIRED_TODAY: True}
-                )
+                await self._mark_start_event_fired()
             return watering
         watering = await self._any_zone_to_water()
         if watering:
@@ -822,9 +819,18 @@ class TriggersMixin:
                 name,
             )
         if not self._start_event_fired_today:
-            self._start_event_fired_today = True
-            await self.store.async_update_config({const.START_EVENT_FIRED_TODAY: True})
+            await self._mark_start_event_fired()
         return watering
+
+    async def _mark_start_event_fired(self) -> None:
+        """Today has had its start: kept with the day, to outlast a restart."""
+        self._start_event_fired_today = True
+        await self.store.async_update_config(
+            {
+                const.START_EVENT_FIRED_TODAY: True,
+                const.START_EVENT_FIRED_ON: dt_util.now().date().isoformat(),
+            }
+        )
 
     async def _prepare_watering_for_today(self, name, event_data, soil_moisture=True):
         """Decide whether today is a watering day, and prepare the day's run.
@@ -1421,7 +1427,10 @@ class TriggersMixin:
             # save config asynchronously - fire-and-forget since this is a callback
             self.hass.async_create_task(
                 self.store.async_update_config(
-                    {const.START_EVENT_FIRED_TODAY: self._start_event_fired_today}
+                    {
+                        const.START_EVENT_FIRED_TODAY: self._start_event_fired_today,
+                        const.START_EVENT_FIRED_ON: None,
+                    }
                 )
             )
 

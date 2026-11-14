@@ -30,7 +30,7 @@ from .programs import (
     plan_program,
     plan_wall_seconds,
 )
-from .schedules import ANCHOR_END, next_fire, upcoming
+from .schedules import ANCHOR_END, next_fire, schedule_skip_conditions, upcoming
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -257,12 +257,16 @@ class ProgramStatusMixin:
 
     # --- overview ---------------------------------------------------------------------
 
-    def program_adjustment(self, program_id) -> dict | None:
-        """The runtime adjustment in force for a program, or None."""
+    def program_adjustment(self, program_id, at=None) -> dict | None:
+        """The runtime adjustment in force for a program, or None.
+
+        ``at`` is the moment asked about, now by default: a run planned after
+        the adjustment ends is watered without it.
+        """
         return active_adjustment(
             getattr(self.store.config, const.CONF_PROGRAM_ADJUSTMENTS, None),
             program_id,
-            dt_util.utcnow(),
+            at or dt_util.utcnow(),
         )
 
     def zones_for_programs(self, zones) -> list:
@@ -289,13 +293,13 @@ class ProgramStatusMixin:
             result.append(zone)
         return result
 
-    def _program_totals(self, program: dict, zones) -> tuple:
+    def _program_totals(self, program: dict, zones, at=None) -> tuple:
         for_programs = self.zones_for_programs(zones)
         plan = drop_below_deficit(
             plan_program(
                 program,
                 for_programs,
-                self.program_adjustment(program.get(const.PROGRAM_ID)),
+                self.program_adjustment(program.get(const.PROGRAM_ID), at),
             ),
             for_programs,
         )
@@ -604,27 +608,35 @@ class ProgramStatusMixin:
             nothing = not plan
             placed_at_moment = nothing and total <= 0
             no_valve = without_valve if main else []
-            steps = [
-                {
-                    "zones": [
-                        {
-                            "zone_id": m["zone_id"],
-                            "zone": names.get(m["zone_id"]),
-                            "seconds": int(m["seconds"]),
-                            # What the zone is expected to water for, the
-                            # same number under the name the panel shows.
-                            "expected_seconds": int(m["seconds"]),
-                            # In passes with a soak between, and up to a
-                            # volume: the planning said "Hecken 2 min" over
-                            # an expected 19 min 45 s (UX walk of 13 Nov.).
-                            "passes": max(1, int(m.get("passes") or main_passes)),
-                            "max_litres": float(m.get("max_litres") or 0.0) or None,
-                        }
-                        for m in step["zones"]
-                    ]
-                }
-                for step in (plan[0] if plan else [])
-            ]
+
+            def steps_of(plan, main_passes=main_passes):
+                return [
+                    {
+                        "zones": [
+                            {
+                                "zone_id": m["zone_id"],
+                                "zone": names.get(m["zone_id"]),
+                                "seconds": int(m["seconds"]),
+                                # What the zone is expected to water for, the
+                                # same number under the name the panel shows.
+                                "expected_seconds": int(m["seconds"]),
+                                # In passes with a soak between, and up to a
+                                # volume: the planning said "Hecken 2 min" over
+                                # an expected 19 min 45 s (UX walk of 13 Nov.).
+                                "passes": max(1, int(m.get("passes") or main_passes)),
+                                "max_litres": float(m.get("max_litres") or 0.0) or None,
+                            }
+                            for m in step["zones"]
+                        ]
+                    }
+                    for step in (plan[0] if plan else [])
+                ]
+
+            steps = steps_of(plan)
+            # A run before the end of a suspension does not take place: the
+            # scheduler lets it pass. The planning listed it as any other.
+            suspended = self.suspended_until(const.SUSPEND_PROGRAM, program_id)
+            adjustment_now = None if main else self.program_adjustment(program_id, now)
             if by_trigger:
                 planned.append(
                     {
@@ -644,7 +656,14 @@ class ProgramStatusMixin:
                         "zones_without_valve": no_valve,
                         # The Info page says whether the trigger's run will be
                         # skipped, with every condition: not guessed here.
-                        "skipped_reason": None,
+                        "skipped_reason": (
+                            "suspended"
+                            if suspended is not None and trigger_start < suspended
+                            else None
+                        ),
+                        "suspended_until": (
+                            suspended.isoformat() if suspended is not None else None
+                        ),
                         "forecast": None,
                         "forecast_known": False,
                         "sheltered_zone_ids": [],
@@ -670,35 +689,53 @@ class ProgramStatusMixin:
                     until,
                 ):
                     start = result["target"] if placed_at_moment else result["fire"]
-                    prediction = (
-                        await self._planning_prediction(
-                            schedule, start, now, plan, sheltered, forecasts
+                    # The adjustment of the run's start, not of now: one that
+                    # ends before the run no longer lengthens or shortens it.
+                    run_plan, run_total = plan, total
+                    if not main and (
+                        self.program_adjustment(program_id, start) != adjustment_now
+                    ):
+                        run_plan, run_total = self._program_totals(
+                            program, zones, at=start
                         )
-                        if plan
-                        else {
+                    if suspended is not None and start < suspended:
+                        prediction = {
+                            "skipped_reason": "suspended",
+                            "forecast": None,
+                            "forecast_known": False,
+                            "sheltered_zone_ids": [],
+                        }
+                    elif run_plan:
+                        prediction = await self._planning_prediction(
+                            schedule, start, now, run_plan, sheltered, forecasts
+                        )
+                    else:
+                        prediction = {
                             "skipped_reason": None,
                             "forecast": None,
                             "forecast_known": False,
                             "sheltered_zone_ids": [],
                         }
-                    )
                     planned.append(
                         {
                             "program_id": program_id,
                             "program": program.get(const.PROGRAM_NAME) or program_id,
                             "schedule_id": schedule_id,
                             "start": start.isoformat(),
-                            "end": (start + timedelta(seconds=total)).isoformat(),
+                            "end": (start + timedelta(seconds=run_total)).isoformat(),
                             "target": result["target"].isoformat(),
                             "anchor": schedule.get(const.SCHEDULE_ANCHOR),
                             "weather": schedule.get(const.SCHEDULE_WEATHER)
                             is not False,
-                            "tours": len(plan),
+                            "tours": len(run_plan),
                             "soak_seconds": int(soak_minutes * 60),
-                            "expected_seconds": int(total),
-                            "steps": steps,
-                            "nothing_to_water": nothing,
+                            "expected_seconds": int(run_total),
+                            "steps": steps if run_plan is plan else steps_of(run_plan),
+                            "nothing_to_water": not run_plan,
                             "zones_without_valve": no_valve,
+                            "suspended_until": (
+                                suspended.isoformat() if suspended is not None else None
+                            ),
                             **prediction,
                         }
                     )
@@ -738,6 +775,11 @@ class ProgramStatusMixin:
             "sheltered_zone_ids": [],
         }
         if schedule.get(const.SCHEDULE_WEATHER) is False:
+            return none
+        conditions = schedule_skip_conditions(schedule)
+        if conditions is not None and "precipitation" not in conditions:
+            # The schedule left the rain forecast out of its conditions: the
+            # scheduler does not hold the run back for it, nor does this.
             return none
         if start - now > timedelta(hours=PLANNING_FORECAST_HOURS):
             return none
