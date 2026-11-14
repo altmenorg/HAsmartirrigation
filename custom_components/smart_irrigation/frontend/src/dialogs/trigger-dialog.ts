@@ -11,6 +11,7 @@ import {
   TRIGGER_TYPE_SUNSET,
   TRIGGER_TYPE_SOLAR_AZIMUTH,
   TRIGGER_TYPE_TIME,
+  TRIGGER_DEFAULT_AT,
   TRIGGER_CONF_TYPE,
   TRIGGER_CONF_NAME,
   TRIGGER_CONF_ENABLED,
@@ -26,7 +27,6 @@ export interface TriggerDialogParams {
 }
 
 /** The hour a fixed-time trigger falls back to when none has been set. */
-const TRIGGER_DEFAULT_AT = "06:00";
 
 /**
  * The trigger as the dialog should hold it while being edited.

@@ -117,8 +117,47 @@ async def test_the_check_vetoes_while_the_moment_is_ahead():
         "enabled": True,
         "available": True,
         "skip": True,
+        "active": True,
         "until": later,
     }
+
+
+@pytest.mark.asyncio
+async def test_a_run_after_the_postponement_ends_is_not_held_back():
+    """Postponed until 10:44, tomorrow's 06:12 run was said to be skipped."""
+    until = NOW + datetime.timedelta(hours=2)
+    coordinator = _coordinator({const.CONF_POSTPONE_UNTIL: until.isoformat()})
+
+    with patch(
+        "custom_components.smart_irrigation.skip_conditions.dt_util.utcnow",
+        return_value=NOW,
+    ):
+        tomorrow = await coordinator._evaluate_postponed(
+            run_start=NOW + datetime.timedelta(hours=20)
+        )
+        within = await coordinator._evaluate_postponed(
+            run_start=NOW + datetime.timedelta(hours=1)
+        )
+
+    # In force now, so the panel still shows it and offers to lift it.
+    assert tomorrow["active"] is True
+    assert tomorrow["skip"] is False
+    assert within["skip"] is True
+
+
+@pytest.mark.asyncio
+async def test_the_preview_of_a_later_run_reads_the_postponement_at_its_start():
+    until = NOW + datetime.timedelta(hours=2)
+    coordinator = _coordinator({const.CONF_POSTPONE_UNTIL: until.isoformat()})
+    coordinator._evaluate_postponed = AsyncMock(
+        return_value={"id": "postponed", "skip": False}
+    )
+    start = NOW + datetime.timedelta(hours=20)
+
+    result = await coordinator.async_evaluate_skip_conditions(run_start=start, only=[])
+
+    coordinator._evaluate_postponed.assert_awaited_once_with(run_start=start)
+    assert result["should_skip"] is False
 
 
 @pytest.mark.asyncio
@@ -133,6 +172,7 @@ async def test_it_ends_by_itself():
         check = await coordinator._evaluate_postponed()
 
     assert check["skip"] is False
+    assert check["active"] is False
     # Still reported, so the panel can say a postponement was in force.
     assert check["enabled"] is True
 

@@ -193,7 +193,11 @@ class SkipConditionsMixin:
         # raining" is a better answer than "it will rain".
         checks = []
         # First, because it is the user saying "not now" in as many words.
-        checks.append(await self._guarded("postponed", self._evaluate_postponed))
+        checks.append(
+            await self._guarded(
+                "postponed", lambda: self._evaluate_postponed(run_start=run_start)
+            )
+        )
         if applies("rain_sensor"):
             checks.append(
                 await self._guarded("rain_sensor", self._evaluate_rain_sensor)
@@ -776,18 +780,24 @@ class SkipConditionsMixin:
         report = await self._evaluate_soil_moisture()
         return {entry["zone_id"] for entry in report["zones"] if entry["held"]}
 
-    async def _evaluate_postponed(self) -> dict:
+    async def _evaluate_postponed(self, run_start=None) -> dict:
         """Report the postponement the user asked for, if it still holds.
 
         A postponement is a moment, not a countdown: it survives a restart, and
         it ends by itself. Nothing is cleared when it ends, so a zone that was
         short of water still is, and the next run makes it up.
+
+        ``skip`` is for the run being decided: one starting at ``run_start``,
+        or now. ``active`` is whether the postponement holds now. Postponed
+        until 10:44, the Start page said tomorrow's 06:12 run would be skipped,
+        and the zones' "next irrigation" sensors said so too.
         """
         result = {
             "id": "postponed",
             "enabled": False,
             "available": True,
             "skip": False,
+            "active": False,
             "until": None,
         }
         config = await self.store.async_get_config()
@@ -800,7 +810,10 @@ class SkipConditionsMixin:
             return result
         result["enabled"] = True
         result["until"] = until
-        result["skip"] = dt_util.utcnow() < dt_util.as_utc(moment)
+        ends = dt_util.as_utc(moment)
+        result["active"] = dt_util.utcnow() < ends
+        start = dt_util.as_utc(run_start) if run_start is not None else None
+        result["skip"] = (start or dt_util.utcnow()) < ends
         return result
 
     @staticmethod
