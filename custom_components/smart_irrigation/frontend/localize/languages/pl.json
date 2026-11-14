@@ -364,7 +364,6 @@
           "sub-nothing": "Żadnej strefie nie brakuje jeszcze dość wody. Następny start to {start}.",
           "headline-not-calculated": "Jeszcze nie obliczono",
           "sub-not-calculated": "Strefy nie mają czasu trwania aż do pierwszego obliczenia, {when}. Aby zrobić to teraz, oblicz wszystkie strefy w zakładce Strefy.",
-          "next-program": "Następny program: {program}, {start}",
           "headline-watering": "Podlewanie {start}",
           "headline-watering-soon": "Podlewanie przy następnym starcie",
           "sub-watering": "Strefy: {count}, razem {duration}.",

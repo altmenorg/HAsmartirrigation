@@ -364,7 +364,6 @@
           "sub-nothing": "Noch hat keine Zone genug Wasser verloren. Der nächste Start wäre {start}.",
           "headline-not-calculated": "Noch nicht berechnet",
           "sub-not-calculated": "Die Zonen haben bis zu ihrer ersten Berechnung keine Dauer; berechnet wird {when}. Unter Zonen geht es mit „Alle Zonen berechnen“ sofort.",
-          "next-program": "Nächstes Programm: {program}, {start}",
           "headline-watering": "Bewässerung {start}",
           "headline-watering-soon": "Bewässerung beim nächsten Start",
           "sub-watering": "{count} Zonen, {duration} insgesamt.",
@@ -382,7 +381,12 @@
           "headline-off": "Smart Irrigation ist ausgeschaltet",
           "sub-off": "Es erfasst weiter seine Wetterdaten, berechnet und bewässert aber nichts, bis es wieder eingeschaltet wird.",
           "open-settings": "Einstellungen öffnen",
-          "sub-watering-one": "Eine Zone, {duration}."
+          "sub-watering-one": "Eine Zone, {duration}.",
+          "next-runs": "Als Nächstes",
+          "run-waits": "wartet auf {program}, etwa {start} bis {end}",
+          "run-skipped": "wird voraussichtlich übersprungen: Regen vorhergesagt",
+          "run-twice": "{zones} zweimal hintereinander bewässert",
+          "run-suspended": "ausgesetzt bis {when}"
         },
         "decision": {
           "title": "Wird übersprungen?",
@@ -417,7 +421,8 @@
           "detail-raining": "Es regnet",
           "detail-dry": "Es regnet nicht",
           "detail-held": "setzt diesen Durchlauf aus",
-          "check-postponed": "Von dir verschoben"
+          "check-postponed": "Von dir verschoben",
+          "title-main": "Wird das Hauptprogramm übersprungen?"
         },
         "estimate": {
           "title": "Wo jede Zone jetzt steht",
@@ -1234,6 +1239,8 @@
     "no_valve": "Kein Ventil verknüpft, daher nicht bewässert:",
     "nothing_no_valve": "In diesem Lauf wird nichts bewässert: Den Zonen, denen Wasser fehlt, ist kein Ventil verknüpft:",
     "left": "noch {time}",
+    "waits_for": "Wartet auf {program}: etwa {start} bis {end}.",
+    "watered_twice": "{zones} bekommen zweimal hintereinander Wasser: {program} bewässert sie direkt davor.",
     "expected_skipped_suspended": "Findet nicht statt: Das Programm ist bis {when} ausgesetzt"
   },
   "programs": {

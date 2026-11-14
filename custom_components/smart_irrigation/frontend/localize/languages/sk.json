@@ -364,7 +364,6 @@
           "sub-nothing": "Žiadnej zóne ešte nechýba dosť vody. Ďalší štart by bol {start}.",
           "headline-not-calculated": "Zatiaľ nevypočítané",
           "sub-not-calculated": "Zóny nemajú trvanie až do svojho prvého výpočtu, {when}. Ak to chcete urobiť hneď, vypočítajte všetky zóny v sekcii Zóny.",
-          "next-program": "Ďalší program: {program}, {start}",
           "headline-watering": "Zalievanie {start}",
           "headline-watering-soon": "Zalievanie pri ďalšom štarte",
           "sub-watering": "Zóny: {count}, celkovo {duration}.",

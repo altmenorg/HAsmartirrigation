@@ -364,7 +364,6 @@
           "sub-nothing": "Nog geen zone komt genoeg water tekort. De volgende start zou {start} zijn.",
           "headline-not-calculated": "Nog niet berekend",
           "sub-not-calculated": "De zones hebben geen duur tot hun eerste berekening, {when}. Bereken alle zones onder Zones om dat nu te doen.",
-          "next-program": "Volgend programma: {program}, {start}",
           "headline-watering": "Bewatering {start}",
           "headline-watering-soon": "Bewatering bij de volgende start",
           "sub-watering": "{count} zones, {duration} in totaal.",

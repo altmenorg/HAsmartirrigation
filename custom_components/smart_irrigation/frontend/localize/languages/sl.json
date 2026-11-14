@@ -364,7 +364,6 @@
           "sub-nothing": "Nobeni coni še ne primanjkuje dovolj vode. Naslednji zagon bi bil {start}.",
           "headline-not-calculated": "Še ni izračunano",
           "sub-not-calculated": "Cone nimajo trajanja do prvega izračuna, {when}. Če želiš to storiti zdaj, na zavihku Cone izračunaj vse cone.",
-          "next-program": "Naslednji program: {program}, {start}",
           "headline-watering": "Zalivanje {start}",
           "headline-watering-soon": "Zalivanje ob naslednjem zagonu",
           "sub-watering": "Cone: {count}, skupaj {duration}.",

@@ -364,7 +364,6 @@
           "sub-nothing": "Egyetlen zónának sem hiányzik még elég víz. A következő indulás {start} lenne.",
           "headline-not-calculated": "Még nincs kiszámítva",
           "sub-not-calculated": "A zónáknak az első számításukig nincs időtartamuk; ez {when} történik. Ha most szeretnéd, a Zónák alatt válaszd az Összes zóna kiszámítása lehetőséget.",
-          "next-program": "Következő program: {program}, {start}",
           "headline-watering": "Öntözés {start}",
           "headline-watering-soon": "Öntözés a következő indításnál",
           "sub-watering": "{count} zóna, összesen {duration}.",

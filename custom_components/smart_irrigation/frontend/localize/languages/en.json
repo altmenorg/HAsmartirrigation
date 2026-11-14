@@ -364,7 +364,6 @@
           "sub-nothing": "No zone is short enough of water yet. The next start would be {start}.",
           "headline-not-calculated": "Not calculated yet",
           "sub-not-calculated": "The zones have no duration until their first calculation, {when}. Calculate all zones under Zones to do it now.",
-          "next-program": "Next program: {program}, {start}",
           "headline-watering": "Watering {start}",
           "headline-watering-soon": "Watering at the next start",
           "sub-watering": "{count} zones, {duration} in all.",
@@ -382,7 +381,12 @@
           "headline-off": "Smart Irrigation is switched off",
           "sub-off": "It keeps taking its weather readings, but calculates nothing and waters nothing until it is switched on again.",
           "open-settings": "Open the settings",
-          "sub-watering-one": "One zone, {duration}."
+          "sub-watering-one": "One zone, {duration}.",
+          "next-runs": "Next up",
+          "run-waits": "waits for {program}, about {start} to {end}",
+          "run-skipped": "expected to be skipped: rain forecast",
+          "run-twice": "{zones} watered twice in a row",
+          "run-suspended": "suspended until {when}"
         },
         "decision": {
           "title": "Will it be skipped?",
@@ -417,7 +421,8 @@
           "detail-raining": "It is raining",
           "detail-dry": "Not raining",
           "detail-held": "sits out this run",
-          "check-postponed": "Postponed by you"
+          "check-postponed": "Postponed by you",
+          "title-main": "Will the main program be skipped?"
         },
         "estimate": {
           "title": "Where each zone stands now",
@@ -1234,6 +1239,8 @@
     "no_valve": "No valve linked, so not watered:",
     "nothing_no_valve": "Nothing to water in this run: the zones short of water have no valve linked:",
     "left": "{time} left",
+    "waits_for": "Waits for {program}: about {start} to {end}.",
+    "watered_twice": "{zones} get their water twice in a row: {program} waters them just before.",
     "expected_skipped_suspended": "Does not run: the program is suspended until {when}"
   },
   "programs": {

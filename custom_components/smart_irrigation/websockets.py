@@ -35,6 +35,7 @@ from .engine_binding import (
     zone_has_engine,
 )
 from .master_switch import irrigation_off
+from .planning_sequence import sequence_planning
 from .presets import apply_preset, describe_zone
 from .skip_conditions import SkipConditionsMixin, thresholds_for_display
 from .units import zone_from_display, zone_to_display
@@ -873,12 +874,94 @@ async def websocket_get_planning(hass: HomeAssistant, connection, msg):
     if coordinator is None:
         connection.send_error(msg["id"], "not_ready", "Smart Irrigation is loading")
         return
+    days = msg.get("days", 3)
     connection.send_result(
         msg["id"],
-        await coordinator.async_planning(
-            msg.get("days", 3), trigger_start=await _trigger_start(hass, coordinator)
+        sequence_planning(
+            await coordinator.async_planning(
+                days, trigger_starts=await _trigger_starts(hass, coordinator, days)
+            )
         ),
     )
+
+
+async def _trigger_starts(hass: HomeAssistant, coordinator, days) -> list:
+    """Every start of the start trigger over the next days, the next one first.
+
+    The trigger starts the main program every day, and the planning listed it
+    once, on the next day, under a heading of three (UX walk of 13 Nov., Q10).
+    """
+    first, info = await _trigger_start_and_info(hass, coordinator)
+    if first is None:
+        return []
+    if first.tzinfo is None:
+        first = first.replace(tzinfo=dt_util.get_default_time_zone())
+    horizon = dt_util.utcnow() + datetime.timedelta(
+        days=max(1, min(int(days or 3), 14))
+    )
+    starts = [first]
+    config = await coordinator.store.async_get_config()
+    while len(starts) <= 15:
+        following = _following_trigger_start(
+            hass, coordinator, config, info, starts[-1]
+        )
+        if following is None or following <= starts[-1] or following > horizon:
+            break
+        starts.append(following)
+    return starts
+
+
+def _following_trigger_start(hass, coordinator, config, info, start):
+    """The trigger's start on the day after ``start``, or None if unknown.
+
+    A clock time comes back at the same time of day; a sunrise or sunset start
+    keeps its distance to the sun event, which moves; a solar azimuth start is
+    worked out again from the moment the sun reaches the angle.
+    """
+    base = info.get("trigger_base") or "sunrise"
+    if base in ("sunrise", "sunset") and hass.states.get("sun.sun") is None:
+        # Without sun data the first start is an assumed 6 AM: so are the next.
+        base = const.TRIGGER_TYPE_TIME
+    if base == const.TRIGGER_TYPE_TIME:
+        local = dt_util.as_local(start)
+        return dt_util.as_utc(local + datetime.timedelta(days=1))
+    if base in ("sunrise", "sunset"):
+        try:
+            event = get_astral_event_next(
+                hass, base, start - datetime.timedelta(hours=12)
+            )
+            following = get_astral_event_next(
+                hass, base, event + datetime.timedelta(minutes=1)
+            )
+        except Exception as e:  # noqa: BLE001 - the planning must not fail on it
+            _LOGGER.debug("Could not place the trigger's next %s: %s", base, e)
+            return None
+        return following + (start - event)
+    if base == const.TRIGGER_TYPE_SOLAR_AZIMUTH:
+        active = config.get(const.CONF_ACTIVE_START_TRIGGER)
+        selected = next(
+            (
+                t
+                for t in config.get(const.CONF_IRRIGATION_START_TRIGGERS, [])
+                if t.get(const.TRIGGER_CONF_NAME) == active
+            ),
+            None,
+        )
+        if selected is None:
+            return None
+        duration = float(info.get("next_irrigation_duration") or 0)
+        lead = selected.get(const.TRIGGER_CONF_OFFSET_MINUTES, 0) * 60
+        if selected.get(const.TRIGGER_CONF_ACCOUNT_FOR_DURATION, True):
+            lead -= duration
+        reached = start - datetime.timedelta(seconds=lead)
+        return _next_azimuth_trigger_start(
+            selected,
+            duration,
+            getattr(coordinator, "_latitude", None),
+            getattr(coordinator, "_effective_longitude", None),
+            reached + datetime.timedelta(minutes=1),
+        )
+    return None
 
 
 async def _trigger_start(hass: HomeAssistant, coordinator):
@@ -889,9 +972,17 @@ async def _trigger_start(hass: HomeAssistant, coordinator):
     """
     if getattr(coordinator, "main_program_uses_schedules", lambda: False)() is True:
         return None
+    start, _info = await _trigger_start_and_info(hass, coordinator)
+    return start
+
+
+async def _trigger_start_and_info(hass: HomeAssistant, coordinator):
+    """The trigger's next start, or None, and the Info data it comes from."""
+    if getattr(coordinator, "main_program_uses_schedules", lambda: False)() is True:
+        return None, {}
     info = await build_irrigation_info(hass, coordinator)
     start = _armed_trigger_start(info)
-    return dt_util.parse_datetime(start) if start else None
+    return (dt_util.parse_datetime(start) if start else None), info
 
 
 def _armed_trigger_start(info: dict) -> str | None:

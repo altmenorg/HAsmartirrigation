@@ -30,6 +30,7 @@ import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
 import { DOMAIN, ZONE_BUCKET } from "../../const";
+import { nextRuns } from "../../data/next-runs";
 import {
   LiveState,
   liveValves,
@@ -86,8 +87,9 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
 
   // The main program's next start when its own schedules start it.
   private mainScheduleStart: string | null = null;
-  // The soonest start of any program, with the full controller.
-  private nextProgram: { name: string; start: string } | null = null;
+  // The runs of the next morning (or evening), in the order they will water,
+  // from the planning, with the full controller.
+  private nextRuns: any[] = [];
 
   @property({ type: Boolean })
   private isLoading = true;
@@ -184,7 +186,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       // Started by the main program's schedules, the next start is theirs, not
       // the one worked out from the start trigger.
       this.mainScheduleStart = null;
-      this.nextProgram = null;
+      this.nextRuns = [];
       if ((config as any)?.full_controller === true) {
         try {
           const state = await this.hass!.callWS<any>({
@@ -195,24 +197,16 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
           if ((info as any)?.start_source === "main_schedules") {
             this.mainScheduleStart = main?.next_start ?? null;
           }
-          // The card above is the main program's run. Another program may
-          // start sooner, and was not mentioned anywhere on this page (#912):
-          // the soonest start of any program is named under it.
-          const soonest = programs
-            .filter((p: any) => p.next_start)
-            .sort(
-              (a: any, b: any) =>
-                Date.parse(a.next_start) - Date.parse(b.next_start),
-            )[0];
-          this.nextProgram = soonest
-            ? {
-                name:
-                  soonest.main && soonest.name === "Main program"
-                    ? localize("programs.main_name", this._lang)
-                    : soonest.name,
-                start: soonest.next_start,
-              }
-            : null;
+          // The card above is the main program's run. Other programs may
+          // start sooner, and "Next program: Morgens" stood among the main
+          // program's trigger and order as if they were Morgens' (UX walk of
+          // 13 Nov., Q11). The next runs are listed in the order they will
+          // water, each with what holds it back or makes it wait.
+          const planning = await this.hass!.callWS<any[]>({
+            type: DOMAIN + "/planning",
+            days: 2,
+          });
+          this.nextRuns = nextRuns(planning || [], Date.now());
         } catch (error) {
           console.error("Error fetching the programs' next starts:", error);
         }
@@ -834,23 +828,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
           </div>
         </div>
         <div class="card-content hero-detail">
-          ${this.nextProgram
-            ? html`<span
-                >${this.t(
-                  "cards.next-run.next-program",
-                  "{program}",
-                  this.nextProgram.name,
-                  "{start}",
-                  localizedDateTime(this.nextProgram.start, this.hass, {
-                    weekday: "long",
-                    day: "numeric",
-                    month: "short",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  }),
-                )}</span
-              >`
-            : ""}
+          ${this.renderNextRuns()}
           ${bySchedules
             ? html`<span
                 >${this._setIn(
@@ -912,12 +890,90 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
     `;
   }
 
+  /**
+   * The next runs, in the order they will water, then a heading for what
+   * follows: the trigger and the order below are the main program's (Q11).
+   */
+  private renderNextRuns(): TemplateResult {
+    if (!this.nextRuns.length) return html``;
+    const clock = (iso: string) =>
+      new Intl.DateTimeFormat(this._lang, {
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date(iso));
+    const when = (iso: string) =>
+      localizedDateTime(iso, this.hass, {
+        weekday: "short",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    const label = (id?: string, name?: string) =>
+      id === "main" && (!name || name === "Main program")
+        ? localize("programs.main_name", this._lang)
+        : (name ?? id ?? "");
+    return html`
+      <span class="next-runs-head">${this.t("cards.next-run.next-runs")}</span>
+      ${this.nextRuns.map((run: any) => {
+        const notes: string[] = [];
+        if (run.waits_for)
+          notes.push(
+            this.t(
+              "cards.next-run.run-waits",
+              "{program}",
+              label(run.waits_for.program_id, run.waits_for.program),
+              "{start}",
+              clock(run.expected_start),
+              "{end}",
+              clock(run.expected_end),
+            ),
+          );
+        if (run.skipped_reason === "suspended")
+          notes.push(
+            this.t(
+              "cards.next-run.run-suspended",
+              "{when}",
+              when(run.suspended_until),
+            ),
+          );
+        else if (run.skipped_reason)
+          notes.push(this.t("cards.next-run.run-skipped"));
+        const twice = (run.watered_twice || []).map((z: any) => z.zone);
+        return html`<span class="next-run"
+          >${when(run.start)}
+          ${label(run.program_id, run.program)}${notes.map(
+            (note) => html` · ${note}`,
+          )}${twice.length
+            ? html` ·
+                <span class="warning"
+                  >${this.t(
+                    "cards.next-run.run-twice",
+                    "{zones}",
+                    twice.join(", "),
+                  )}</span
+                >`
+            : ""}</span
+        >`;
+      })}
+      <span class="next-runs-head"
+        >${localize("programs.main_name", this._lang)}</span
+      >
+    `;
+  }
+
   /** The skip conditions, each with the numbers behind it. */
   private renderDecision(): TemplateResult {
     const preview = this.info?.skip_preview;
 
     return html`
-      <ha-card header="${this.t("cards.decision.title")}">
+      <ha-card
+        header="${
+          // The answer is for the main program's run: with other runs named
+          // above, "Will it be skipped?" read as about them (Q22).
+          this.nextRuns.length
+            ? this.t("cards.decision.title-main")
+            : this.t("cards.decision.title")
+        }"
+      >
         <div class="card-content">
           ${!preview
             ? html`<div class="info-note">
@@ -1266,6 +1322,14 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
       }
       .hero-detail > span::first-letter {
         text-transform: uppercase;
+      }
+      .hero-detail > span.next-runs-head {
+        color: var(--primary-text-color);
+        font-weight: 500;
+        margin-top: 4px;
+      }
+      .hero-detail .warning {
+        color: var(--warning-color, #ff9800);
       }
 
       /* A line of days: what the sky is about to do. */

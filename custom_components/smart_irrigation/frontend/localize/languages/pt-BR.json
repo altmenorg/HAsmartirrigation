@@ -364,7 +364,6 @@
           "sub-nothing": "Nenhuma zona está com falta de água suficiente ainda. O próximo início seria {start}.",
           "headline-not-calculated": "Ainda não calculado",
           "sub-not-calculated": "As zonas não têm duração até o primeiro cálculo, {when}. Calcule todas as zonas em Zonas para fazer isso agora.",
-          "next-program": "Próximo programa: {program}, {start}",
           "headline-watering": "Irrigação {start}",
           "headline-watering-soon": "Irrigação no próximo início",
           "sub-watering": "{count} zonas, {duration} no total.",

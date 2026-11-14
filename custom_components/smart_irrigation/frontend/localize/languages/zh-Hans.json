@@ -364,7 +364,6 @@
           "sub-nothing": "还没有区域缺水到需要浇的程度。下一次启动会是 {start}。",
           "headline-not-calculated": "尚未计算",
           "sub-not-calculated": "区域在首次计算之前没有时长（计算时机：{when}）。要立即计算，请在“区域”下计算所有区域。",
-          "next-program": "下一个程序：{program}，{start}",
           "headline-watering": "{start} 浇水",
           "headline-watering-soon": "下次启动时浇水",
           "sub-watering": "{count} 个区域，共 {duration}。",

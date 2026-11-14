@@ -475,14 +475,20 @@ class ProgramStatusMixin:
 
     # --- planning ---------------------------------------------------------------------
 
-    async def async_planning(self, days: int = 3, trigger_start=None) -> list:
+    async def async_planning(
+        self, days: int = 3, trigger_start=None, trigger_starts=None
+    ) -> list:
         """Every start of every schedule over the next days, soonest first.
 
         ``trigger_start`` is when the start trigger runs the main program next,
         as the Info page works it out. A main program without schedules of its
         own is started by that trigger alone, and the planning used to leave it
         out: "no program is planned" above a garden watered every morning.
+        ``trigger_starts`` are its starts on every day of the window, the next
+        one first: it was listed once under a heading of three days (Q10).
         """
+        if trigger_starts is None:
+            trigger_starts = [trigger_start] if trigger_start is not None else []
         config = self.store.config
         if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
             return []
@@ -495,7 +501,7 @@ class ProgramStatusMixin:
         now = dt_util.utcnow()
         until = now + timedelta(days=max(1, min(int(days), 14)))
         tz = dt_util.get_default_time_zone()
-        planned = []
+        planned: list[dict] = []
         forecasts: dict = {}
         sheltered = await self._planning_sheltered_zones()
         # The main program leaves a zone with no valve out of its run, and the
@@ -510,9 +516,8 @@ class ProgramStatusMixin:
             if program.get(const.PROGRAM_ENABLED) is False:
                 continue
             by_trigger = main and not self.main_program_uses_schedules()
-            if by_trigger and not (
-                trigger_start is not None and now <= trigger_start <= until
-            ):
+            trigger_in_window = [t for t in trigger_starts if now <= t <= until]
+            if by_trigger and not trigger_in_window:
                 continue
             program_id = program.get(const.PROGRAM_ID)
             if main:
@@ -551,14 +556,14 @@ class ProgramStatusMixin:
             suspended = self.suspended_until(const.SUSPEND_PROGRAM, program_id)
             adjustment_now = None if main else self.program_adjustment(program_id, now)
             if by_trigger:
-                planned.append(
+                planned.extend(
                     {
                         "program_id": program_id,
                         "program": program.get(const.PROGRAM_NAME) or program_id,
                         "schedule_id": None,
-                        "start": trigger_start.isoformat(),
-                        "end": (trigger_start + timedelta(seconds=total)).isoformat(),
-                        "target": trigger_start.isoformat(),
+                        "start": moment.isoformat(),
+                        "end": (moment + timedelta(seconds=total)).isoformat(),
+                        "target": moment.isoformat(),
                         "anchor": None,
                         "weather": True,
                         "tours": len(plan),
@@ -570,7 +575,7 @@ class ProgramStatusMixin:
                         # skipped, with every condition: not guessed here.
                         "skipped_reason": (
                             "suspended"
-                            if suspended is not None and trigger_start < suspended
+                            if suspended is not None and moment < suspended
                             else None
                         ),
                         "suspended_until": (
@@ -580,6 +585,7 @@ class ProgramStatusMixin:
                         "forecast_known": False,
                         "sheltered_zone_ids": [],
                     }
+                    for moment in trigger_in_window
                 )
                 continue
             for schedule in program.get(const.PROGRAM_SCHEDULES) or []:
