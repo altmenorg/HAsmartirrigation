@@ -381,7 +381,12 @@
           "headline-off": "Smart Irrigation je vypnuté",
           "sub-off": "Ďalej zbiera údaje o počasí, ale nič nepočíta a nič nezalieva, kým sa znova nezapne.",
           "open-settings": "Otvoriť nastavenia",
-          "sub-watering-one": "Jedna zóna, {duration}."
+          "sub-watering-one": "Jedna zóna, {duration}.",
+          "next-runs": "Na rade",
+          "run-waits": "čaká na {program}, približne {start} až {end}",
+          "run-skipped": "očakáva sa vynechanie: predpoveď dažďa",
+          "run-twice": "{zones}: zavlažené dvakrát po sebe",
+          "run-suspended": "odložený do {when}"
         },
         "decision": {
           "title": "Bude vynechané?",
@@ -416,7 +421,8 @@
           "detail-raining": "Prší",
           "detail-dry": "Neprší",
           "detail-held": "toto zavlažovanie vynecháva",
-          "check-postponed": "Odložené vami"
+          "check-postponed": "Odložené vami",
+          "title-main": "Bude hlavný program vynechaný?"
         },
         "estimate": {
           "title": "Kde ktorá zóna teraz stojí",
@@ -454,7 +460,14 @@
           "left": "Zostáva {time} ({percent} %)",
           "program": "Program",
           "step": "krok {step}/{steps}",
-          "program-left": "zostáva {time}"
+          "program-left": "zostáva {time}",
+          "headline-soaking": "Vsakovanie medzi dvoma dávkami",
+          "headline-starting": "Zavlažovanie sa spúšťa",
+          "pass": "dávka {pass} z {passes}",
+          "at-most": "najviac {volume}",
+          "soaking": "vsakovanie, ďalšia dávka o {when} ({pass} z {passes})",
+          "starting": "čaká sa, kým sa rozbehne {supply}",
+          "then": "Potom: {names}, čakajú na rad"
         }
       },
       "gaps": {
@@ -773,7 +786,9 @@
         },
         "duration-readonly-automatic": "Spočítané za vás: zavlažovanie tejto zóny vychádza z jej vodnej bilancie. Prepnite ju na ručnú, ak chcete čas zadať sami.",
         "duration-readonly-disabled": "Vypnutá zóna sa nikdy nezalieva, takže nemá čas zavlažovania.",
-        "et-deficiency-help": "Čo táto zóna potrebuje za deň: ETc, referenčná evapotranspirácia krát plodinový faktor, vrátane sezónnej úpravy. Pred prepočtom na interval a pred dažďom, čo je práve to, čo ju robí porovnateľnou medzi konfiguráciami. Senzor zóny nesie aj samotnú referenčnú hodnotu, ako atribút `eto`, na porovnanie s tým, čo zverejňuje meteoslužba."
+        "et-deficiency-help": "Čo táto zóna potrebuje za deň: ETc, referenčná evapotranspirácia krát plodinový faktor, vrátane sezónnej úpravy. Pred prepočtom na interval a pred dažďom, čo je práve to, čo ju robí porovnateľnou medzi konfiguráciami. Senzor zóny nesie aj samotnú referenčnú hodnotu, ako atribút `eto`, na porovnanie s tým, čo zverejňuje meteoslužba.",
+        "safety-off-entity": "Vlastný čas ventilu",
+        "safety-off-entity-help": "Pre ventil, ktorý sa sám zatvorí po vlastnom čase, napríklad Gardena (jeho číslo „čas zavlažovania“, 1 min, ak nebolo zmenené): vyberte tu toto číslo. Pred každým otvorením doň Smart Irrigation zapíše dĺžku dávky plus 30 s, takže ventil zostane otvorený počas celej dávky a aj tak sa sám zatvorí, ak sa Home Assistant zastaví. Bez toho sa taký ventil zatvorí po svojom prednastavenom čase."
       },
       "no_items": "Zatiaľ nie sú definované žiadne zóny.",
       "title": "Zóny",
@@ -839,7 +854,8 @@
         "zone": "Zóna",
         "duration": "Čas",
         "water": "Spotreba vody",
-        "truncated": "Zobrazených {count} najnovších z celkovo {total}."
+        "truncated": "Zobrazených {count} najnovších z celkovo {total}.",
+        "by_hand": "ručne"
       },
       "charts": {
         "total-title": "Celková spotreba vody za deň (posledných 30 dní)",
@@ -1222,7 +1238,7 @@
   },
   "planning": {
     "title": "Plánovanie",
-    "description": "Čo programy zavlažia počas nasledujúcich troch dní. Počasie tak ďaleko vopred nie je známe: zavlažovanie sa uskutoční, ak ho nič nezadrží.",
+    "description": "Čo programy zavlažia počas nasledujúcich troch dní. Zavlažovanie, ktoré môže zadržať dážď, je označené podľa dnešnej predpovede; rozhodne počasie v čase, keď má prebehnúť.",
     "nothing_planned": "Nie je naplánovaný žiadny program. Pridajte programu rozvrh.",
     "nothing_to_water": "Zatiaľ nie je čo polievať: žiadnej zóne tohto behu nechýba dosť vody.",
     "expected": "Očakávané trvanie:",
@@ -1237,6 +1253,15 @@
     "no_valve": "Nie je pripojený ventil, takže sa nezalieva:",
     "nothing_no_valve": "V tomto behu nie je čo zalievať: zóny, ktorým chýba voda, nemajú pripojený ventil:",
     "left": "zostáva {time}",
+    "pass_of": "dávka {pass} z {passes}",
+    "soaking": "vsakovanie, ďalšia dávka o {when} ({pass} z {passes})",
+    "starting": "čaká sa, kým sa rozbehne {supply}",
+    "in_passes": "v dávkach: {passes}",
+    "at_most": "najviac {volume}",
+    "soak_between": "Vsakovanie medzi dávkami: {time}",
+    "tours_each": "Počet kôl: {n}; časy vyššie platia pre jedno kolo",
+    "waits_for": "Čaká na {program}: približne {start} až {end}.",
+    "watered_twice": "{zones} dostanú vodu dvakrát po sebe: {program} ich zavlažuje tesne predtým.",
     "expected_skipped_suspended": "Nespustí sa: program je odložený do {when}"
   },
   "programs": {
@@ -1375,7 +1400,7 @@
     "off": "vypnuté",
     "steps_title": "Kroky",
     "schedules_title": "Rozvrhy",
-    "passes_help": "Cycle and soak pre tento krok: jeho voda rozdelená do toľkých dávok, každá zóna medzi dvoma dávkami vsakuje počas času nastaveného v nastaveniach hlavného programu. 1: naraz.",
+    "passes_help": "Cycle and soak pre tento krok: jeho voda rozdelená do toľkých dávok, každá zóna medzi dvoma dávkami vsakuje. 1: naraz.",
     "schedule_fallback_skip": "Ten deň vynechať",
     "schedule_fallback_previous": "Použiť čas posledného zaznamenaného",
     "schedule_fallback_at": "Spustiť v pevný čas",
@@ -1394,6 +1419,17 @@
     "cond_days_between": "aspoň {n} dní",
     "cond_soil": "Zóny so senzorom: {n}",
     "cond_soil_one": "{n} zóna so senzorom",
+    "adjust_per_step": "{time} na krok",
+    "adjust_short": "{what}, do {when}",
+    "adjust_short_open": "{what}, až do obnovenia",
+    "adjust_in_force": "V platnosti: {what}.",
+    "adjust_set": "Nastaviť úpravu",
+    "adjust_change": "Zmeniť úpravu",
+    "passes_short": "Dávky: {n}",
+    "overlap_short": "spustí ďalší o {time} skôr",
+    "wait_short": "čaká {time} pred ďalším",
+    "soak_shared_help": "Jeden čas vsakovania pre všetky kroky v dávkach, vo všetkých programoch aj v hlavnom programe.",
+    "min_over_max": "Minimum je vyššie ako maximum: platí maximum, {max}.",
     "confirm_run_replace": "Spustiť {name} teraz? Prebiehajúce zavlažovanie sa najprv zastaví, potom sa otvoria jeho ventily.",
     "run_replacing": "Prebiehajúce zavlažovanie sa zastavuje; {name} začne hneď potom.",
     "suspended_until": "Odložený do {when}: jeho rozvrhy ho nespúšťajú.",
@@ -1432,7 +1468,7 @@
       "sequential": "Postupne (jedna zóna po druhej)",
       "parallel": "Súbežne (všetky zóny naraz)"
     },
-    "sequencing_description": "Ako sa vaše zóny zalievajú. Tým sa určuje, od akého času počíta spúšťač štartu dozadu, keď má skončiť pri východe slnka: jedna po druhej dá súčet časov všetkých zón, všetky naraz najdlhšiu z nich. Platí to, či už ventily otvára Smart Irrigation sám, alebo vaša vlastná automatizácia.",
+    "sequencing_description": "Spúšťač štartu, ktorý má skončiť pri východe slnka, počíta dozadu od neho: jedna po druhej od súčtu časov; všetky naraz od najdlhšieho.",
     "passes_label": "Zalievať vo viacerých dávkach",
     "passes_description": "Cyklus a vsakovanie: to isté množstvo vody rozdelené do kratších dávok s pauzou medzi nimi, aby ju ťažká zem vsiakla namiesto toho, aby ju nechala odtiecť. Jedna dávka zalieva naraz, čo je predvolené. Zavlažovanie, ktoré je príliš krátke na rozdelenie, zostane nedotknuté.",
     "soak_label": "Vsakovanie medzi dávkami",
@@ -1541,7 +1577,9 @@
         "suspended": "odložený",
         "disabled": "vypnutý"
       },
-      "main_name": "Hlavný program"
+      "main_name": "Hlavný program",
+      "after": "spustí sa po {name}",
+      "next_in_line": "spustí sa ako ďalší"
     },
     "editor": {
       "title": "Názov",
@@ -1555,7 +1593,9 @@
     "not_scheduled": "Na rade, ale nenaplánované",
     "off": "Vypnuté",
     "watering_left": "zavlažuje sa, zostáva {time}",
-    "paused_left": "pozastavené, zostáva {time}"
+    "paused_left": "pozastavené, zostáva {time}",
+    "soaking": "vsakovanie, ďalšia dávka o {when} ({pass}/{passes})",
+    "pass_of": "dávka {pass}/{passes}"
   },
   "confirm": {
     "delete_zone": "Odstrániť zónu „{name}“? Jej nastavenia a vodná bilancia sa stratia.",

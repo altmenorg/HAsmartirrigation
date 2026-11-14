@@ -381,7 +381,12 @@
           "headline-off": "Smart Irrigation 已关闭",
           "sub-off": "它仍会获取天气数据，但在重新打开之前不计算也不浇水。",
           "open-settings": "打开设置",
-          "sub-watering-one": "1 个区域，{duration}。"
+          "sub-watering-one": "1 个区域，{duration}。",
+          "next-runs": "接下来",
+          "run-waits": "等待 {program}，约 {start} 至 {end}",
+          "run-skipped": "预计会被跳过：预报有雨",
+          "run-twice": "{zones} 连续浇两次",
+          "run-suspended": "已挂起至 {when}"
         },
         "decision": {
           "title": "会被跳过吗？",
@@ -416,7 +421,8 @@
           "detail-raining": "正在下雨",
           "detail-dry": "没有下雨",
           "detail-held": "这次不参与",
-          "check-postponed": "由你推迟"
+          "check-postponed": "由你推迟",
+          "title-main": "主程序会被跳过吗？"
         },
         "estimate": {
           "title": "各区域当前的状况",
@@ -454,7 +460,14 @@
           "left": "剩余 {time}（{percent} %）",
           "program": "程序",
           "step": "步骤 {step}/{steps}",
-          "program-left": "剩余 {time}"
+          "program-left": "剩余 {time}",
+          "headline-soaking": "两段之间正在渗透",
+          "headline-starting": "浇水正在启动",
+          "pass": "第 {pass} 段，共 {passes} 段",
+          "at-most": "最多 {volume}",
+          "soaking": "正在渗透，下一段于 {when}（第 {pass} 段，共 {passes} 段）",
+          "starting": "等待 {supply} 启动",
+          "then": "然后：{names}，等待轮到它们"
         }
       },
       "gaps": {
@@ -773,7 +786,9 @@
         },
         "duration-readonly-automatic": "已为你算好：该区域的浇水时长来自它的水量平衡。想自己填时长，请把它改为手动。",
         "duration-readonly-disabled": "已停用的区域永远不会浇水，所以没有浇水时长。",
-        "et-deficiency-help": "该区域每天需要的量：ETc，即参考蒸散量乘以作物系数，已包含季节性调整。它在按时间间隔换算之前、在扣除降雨之前，正因如此不同配置之间才可以互相比较。区域传感器还单独带有参考值，作为 `eto` 属性，便于和天气服务公布的数值对照。"
+        "et-deficiency-help": "该区域每天需要的量：ETc，即参考蒸散量乘以作物系数，已包含季节性调整。它在按时间间隔换算之前、在扣除降雨之前，正因如此不同配置之间才可以互相比较。区域传感器还单独带有参考值，作为 `eto` 属性，便于和天气服务公布的数值对照。",
+        "safety-off-entity": "阀门自身的时长",
+        "safety-off-entity-help": "适用于按自身时长到点自动关闭的阀门，例如 Gardena（它的“浇水时长”数值实体，未修改时为 1 分钟）：在此选择该数值实体。每次打开前，Smart Irrigation 会把该段时长加 30 秒写入其中，使阀门在整段期间保持打开，而 Home Assistant 停止时仍会自行关闭。不设置时，这类阀门会在其预设时间后关闭。"
       },
       "no_items": "尚未定义任何区域。",
       "title": "区域",
@@ -839,7 +854,8 @@
         "zone": "区域",
         "duration": "时长",
         "water": "用水量",
-        "truncated": "显示 {total} 次中最近的 {count} 次。"
+        "truncated": "显示 {total} 次中最近的 {count} 次。",
+        "by_hand": "手动"
       },
       "charts": {
         "total-title": "每日总用水量（最近 30 天）",
@@ -1222,7 +1238,7 @@
   },
   "planning": {
     "title": "规划",
-    "description": "程序在未来三天将浇哪些水。那么远的天气无从得知：如果没有任何因素阻止，浇水就会进行。",
+    "description": "程序在未来三天将浇哪些水。可能因雨被推迟的浇水会根据今天的预报标出；最终由届时的天气决定。",
     "nothing_planned": "没有计划中的程序。请为程序添加一个时间表。",
     "nothing_to_water": "暂时无需浇水：本次运行的区域都还不够缺水。",
     "expected": "预计时长：",
@@ -1237,6 +1253,15 @@
     "no_valve": "未关联阀门，因此不会浇水：",
     "nothing_no_valve": "本次运行无需浇水：缺水的区域没有关联阀门：",
     "left": "剩余 {time}",
+    "pass_of": "第 {pass} 段，共 {passes} 段",
+    "soaking": "正在渗透，下一段于 {when}（第 {pass} 段，共 {passes} 段）",
+    "starting": "等待 {supply} 启动",
+    "in_passes": "分 {passes} 段",
+    "at_most": "最多 {volume}",
+    "soak_between": "各段之间的渗透：{time}",
+    "tours_each": "{n} 轮；以上时间为一轮的时间",
+    "waits_for": "等待 {program}：约 {start} 至 {end}。",
+    "watered_twice": "{zones} 会连续浇两次水：{program} 刚在之前浇过它们。",
     "expected_skipped_suspended": "不运行：该程序已挂起至 {when}"
   },
   "programs": {
@@ -1375,7 +1400,7 @@
     "off": "关",
     "steps_title": "步骤",
     "schedules_title": "时间表",
-    "passes_help": "此步骤的 cycle and soak：水量分成这么多段，每个区域在两段之间按主程序设置中的时间渗透。1：一次浇完。",
+    "passes_help": "此步骤的 cycle and soak：水量分成这么多段，每个区域在两段之间渗透。1：一次浇完。",
     "schedule_fallback_skip": "跳过那天",
     "schedule_fallback_previous": "使用最近一次看到的时间",
     "schedule_fallback_at": "在固定时间开始",
@@ -1394,6 +1419,17 @@
     "cond_days_between": "至少 {n} 天",
     "cond_soil": "{n} 个区域有传感器",
     "cond_soil_one": "{n} 个区域有传感器",
+    "adjust_per_step": "每个步骤 {time}",
+    "adjust_short": "{what}，直到 {when}",
+    "adjust_short_open": "{what}，直到重置",
+    "adjust_in_force": "生效中：{what}。",
+    "adjust_set": "设置调整",
+    "adjust_change": "更改调整",
+    "passes_short": "{n} 段",
+    "overlap_short": "提前 {time} 开始下一个",
+    "wait_short": "下一个之前等待 {time}",
+    "soak_shared_help": "所有分段浇水的步骤共用一个渗透时间，适用于每个程序和主程序。",
+    "min_over_max": "最小值高于最大值：以最大值为准，{max}。",
     "confirm_run_replace": "现在运行 {name}？先停止正在进行的浇水，然后打开其阀门。",
     "run_replacing": "正在停止当前浇水；{name} 随后立即开始。",
     "suspended_until": "已挂起至 {when}：其计划不会启动它。",
@@ -1432,7 +1468,7 @@
       "sequential": "顺序（一次一个区域）",
       "parallel": "并行（所有区域同时）"
     },
-    "sequencing_description": "你的区域是如何浇水的。这决定了启动触发器在需要于日出前结束时，是从多长时间往回推算：一个接一个是所有区域时长之和，全部同时则取其中最长的。无论阀门是由 Smart Irrigation 自己打开，还是由你自己的自动化打开，都适用。",
+    "sequencing_description": "需要在日出前结束的启动触发器会从日出往回推算：一个接一个时，按时长之和；全部同时时，按最长的。",
     "passes_label": "分多段浇水",
     "passes_description": "循环与渗透：同样的水量分成几段较短的浇灌，中间留出间歇，让黏重的土壤吸进去，而不是任它流走。一段就是一次浇完，这是默认值。太短而无法拆分的浇水不作改动。",
     "soak_label": "各段之间的渗透",
@@ -1541,7 +1577,9 @@
         "suspended": "已挂起",
         "disabled": "已禁用"
       },
-      "main_name": "主程序"
+      "main_name": "主程序",
+      "after": "在 {name} 之后开始",
+      "next_in_line": "下一个开始"
     },
     "editor": {
       "title": "标题",
@@ -1555,7 +1593,9 @@
     "not_scheduled": "该浇水了，但未安排",
     "off": "已关闭",
     "watering_left": "正在浇水，剩余 {time}",
-    "paused_left": "已暂停，剩余 {time}"
+    "paused_left": "已暂停，剩余 {time}",
+    "soaking": "正在渗透，下一段于 {when}（{pass}/{passes}）",
+    "pass_of": "第 {pass}/{passes} 段"
   },
   "confirm": {
     "delete_zone": "删除区域“{name}”？它的设置和水量平衡将会丢失。",

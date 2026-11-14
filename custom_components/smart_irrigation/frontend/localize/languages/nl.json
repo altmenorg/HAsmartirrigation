@@ -381,7 +381,12 @@
           "headline-off": "Smart Irrigation is uitgeschakeld",
           "sub-off": "Het blijft weersinformatie verzamelen, maar berekent en beregent niets tot het weer ingeschakeld wordt.",
           "open-settings": "Instellingen openen",
-          "sub-watering-one": "Eén zone, {duration}."
+          "sub-watering-one": "Eén zone, {duration}.",
+          "next-runs": "Hierna",
+          "run-waits": "wacht op {program}, ongeveer van {start} tot {end}",
+          "run-skipped": "naar verwachting overgeslagen: regen verwacht",
+          "run-twice": "{zones} twee keer achter elkaar bewaterd",
+          "run-suspended": "opgeschort tot {when}"
         },
         "decision": {
           "title": "Wordt de ronde overgeslagen?",
@@ -416,7 +421,8 @@
           "detail-raining": "Het regent",
           "detail-dry": "Het regent niet",
           "detail-held": "slaat deze ronde over",
-          "check-postponed": "Door jou uitgesteld"
+          "check-postponed": "Door jou uitgesteld",
+          "title-main": "Wordt het hoofdprogramma overgeslagen?"
         },
         "estimate": {
           "title": "Waar elke zone nu staat",
@@ -454,7 +460,14 @@
           "left": "Nog {time} ({percent} %)",
           "program": "Programma",
           "step": "stap {step}/{steps}",
-          "program-left": "nog {time}"
+          "program-left": "nog {time}",
+          "headline-soaking": "Intrekken tussen twee beurten",
+          "headline-starting": "De bewatering start",
+          "pass": "beurt {pass} van {passes}",
+          "at-most": "hoogstens {volume}",
+          "soaking": "intrekken, volgende beurt om {when} ({pass} van {passes})",
+          "starting": "wacht tot {supply} op gang komt",
+          "then": "Daarna: {names}, wachten op hun beurt"
         }
       },
       "gaps": {
@@ -773,7 +786,9 @@
         },
         "duration-readonly-automatic": "Voor je berekend: de ronde van deze zone komt uit haar waterbalans. Zet haar op manueel om zelf een duur in te vullen.",
         "duration-readonly-disabled": "Een uitgeschakelde zone wordt nooit bewaterd, dus ze heeft geen looptijd.",
-        "et-deficiency-help": "Wat deze zone per dag nodig heeft: ETc, de referentieverdamping maal de gewasfactor, seizoenscorrectie inbegrepen. Vóór het schalen naar het interval en vóór de regen, en dat maakt het vergelijkbaar van de ene configuratie naar de andere. De zonesensor draagt het referentiegetal ook op zichzelf, als attribuut `eto`, om te vergelijken met wat een weerdienst publiceert."
+        "et-deficiency-help": "Wat deze zone per dag nodig heeft: ETc, de referentieverdamping maal de gewasfactor, seizoenscorrectie inbegrepen. Vóór het schalen naar het interval en vóór de regen, en dat maakt het vergelijkbaar van de ene configuratie naar de andere. De zonesensor draagt het referentiegetal ook op zichzelf, als attribuut `eto`, om te vergelijken met wat een weerdienst publiceert.",
+        "safety-off-entity": "Eigen duur van het ventiel",
+        "safety-off-entity-help": "Voor een ventiel dat na een eigen duur vanzelf sluit, zoals Gardena (zijn getal \"bewateringsduur\", 1 min tenzij gewijzigd): kies dat getal hier. Voor elke opening schrijft Smart Irrigation er de lengte van de beurt plus 30 s in, zodat het ventiel de hele beurt open blijft en toch vanzelf sluit als Home Assistant stopt. Zonder dit sluit zo'n ventiel na zijn vooraf ingestelde tijd."
       },
       "no_items": "Er zijn nog geen zones.",
       "title": "Zones",
@@ -839,7 +854,8 @@
         "zone": "Zone",
         "duration": "Duur",
         "water": "Waterverbruik",
-        "truncated": "De {count} meest recente rondes van {total} worden getoond."
+        "truncated": "De {count} meest recente rondes van {total} worden getoond.",
+        "by_hand": "met de hand"
       },
       "charts": {
         "total-title": "Totaal waterverbruik per dag (laatste 30 dagen)",
@@ -1222,7 +1238,7 @@
   },
   "planning": {
     "title": "Planning",
-    "description": "Wat de programma's de komende drie dagen gaan bewateren. Het weer is zo ver vooruit niet bekend: een ronde gaat door als niets hem tegenhoudt.",
+    "description": "Wat de programma's de komende drie dagen gaan bewateren. Een ronde die de regen kan tegenhouden, wordt gemarkeerd op basis van de verwachting van vandaag; het weer op het moment zelf beslist.",
     "nothing_planned": "Er is geen programma gepland. Voeg een schema toe aan een programma.",
     "nothing_to_water": "Voorlopig niets te sproeien: geen zone van deze beurt komt genoeg water tekort.",
     "expected": "Verwachte duur:",
@@ -1237,6 +1253,15 @@
     "no_valve": "Geen ventiel gekoppeld, dus niet bewaterd:",
     "nothing_no_valve": "Niets te bewateren in deze ronde: de zones die water tekortkomen hebben geen ventiel gekoppeld:",
     "left": "nog {time}",
+    "pass_of": "beurt {pass} van {passes}",
+    "soaking": "intrekken, volgende beurt om {when} ({pass} van {passes})",
+    "starting": "wacht tot {supply} op gang komt",
+    "in_passes": "in {passes} beurten",
+    "at_most": "hoogstens {volume}",
+    "soak_between": "Intrekken tussen de beurten: {time}",
+    "tours_each": "{n} rondes; de tijden hierboven gelden voor één ronde",
+    "waits_for": "Wacht op {program}: ongeveer van {start} tot {end}.",
+    "watered_twice": "{zones} krijgen twee keer achter elkaar water: {program} bewatert ze vlak ervoor.",
     "expected_skipped_suspended": "Draait niet: het programma is opgeschort tot {when}"
   },
   "programs": {
@@ -1375,7 +1400,7 @@
     "off": "uit",
     "steps_title": "Stappen",
     "schedules_title": "Schema's",
-    "passes_help": "Cycle and soak voor deze stap: het water verdeeld over zoveel beurten, elke zone trekt tussen twee beurten in gedurende de tijd die in de instellingen van het hoofdprogramma staat. 1: in één keer.",
+    "passes_help": "Cycle and soak voor deze stap: het water verdeeld over zoveel beurten, elke zone trekt tussen twee beurten in. 1: in één keer.",
     "schedule_fallback_skip": "Die dag overslaan",
     "schedule_fallback_previous": "De tijd van de laatst geziene gebruiken",
     "schedule_fallback_at": "Op een vaste tijd starten",
@@ -1394,6 +1419,17 @@
     "cond_days_between": "minstens {n} dagen",
     "cond_soil": "{n} zones met een sensor",
     "cond_soil_one": "{n} zone met een sensor",
+    "adjust_per_step": "{time} per stap",
+    "adjust_short": "{what}, tot {when}",
+    "adjust_short_open": "{what}, tot het wordt gereset",
+    "adjust_in_force": "Van kracht: {what}.",
+    "adjust_set": "Een aanpassing instellen",
+    "adjust_change": "De aanpassing wijzigen",
+    "passes_short": "{n} beurten",
+    "overlap_short": "start de volgende {time} eerder",
+    "wait_short": "wacht {time} voor de volgende",
+    "soak_shared_help": "Eén intrektijd voor elke stap in beurten, in elk programma en in het hoofdprogramma.",
+    "min_over_max": "Het minimum ligt boven het maximum: het maximum wint, {max}.",
     "confirm_run_replace": "{name} nu uitvoeren? Wat nu sproeit wordt eerst gestopt, daarna gaan de kleppen open.",
     "run_replacing": "Wat aan het sproeien was wordt gestopt; {name} begint direct daarna.",
     "suspended_until": "Opgeschort tot {when}: de schema's starten het niet.",
@@ -1432,7 +1468,7 @@
       "sequential": "Sequentieel (één zone tegelijk)",
       "parallel": "Parallel (alle zones tegelijk)"
     },
-    "sequencing_description": "Hoe je zones bewaterd worden. Dit bepaalt waarvan een starttrigger terugrekent als hij bij zonsopkomst klaar moet zijn: één na de ander geeft de som van alle looptijden, allemaal tegelijk de langste ervan. Het geldt of Smart Irrigation de ventielen zelf opent of een eigen automatisering.",
+    "sequencing_description": "Een starttrigger die bij zonsopkomst klaar moet zijn, rekent daarvandaan terug: één na de ander, vanaf de som van de looptijden; allemaal tegelijk, vanaf de langste.",
     "passes_label": "In meerdere beurten bewateren",
     "passes_description": "Cyclus en intrekken: hetzelfde water, verdeeld over kortere beurten met een pauze ertussen, zodat zware grond het opneemt in plaats van het te laten afstromen. Eén beurt bewatert in één keer, dat is de standaard. Een ronde die te kort is om te splitsen blijft ongemoeid.",
     "soak_label": "Intrekken tussen de beurten",
@@ -1541,7 +1577,9 @@
         "suspended": "opgeschort",
         "disabled": "uitgeschakeld"
       },
-      "main_name": "Hoofdprogramma"
+      "main_name": "Hoofdprogramma",
+      "after": "start na {name}",
+      "next_in_line": "start als volgende"
     },
     "editor": {
       "title": "Titel",
@@ -1555,7 +1593,9 @@
     "not_scheduled": "Nodig, maar niet ingepland",
     "off": "Uitgeschakeld",
     "watering_left": "bewateren, nog {time}",
-    "paused_left": "gepauzeerd, nog {time}"
+    "paused_left": "gepauzeerd, nog {time}",
+    "soaking": "intrekken, volgende beurt om {when} ({pass}/{passes})",
+    "pass_of": "beurt {pass}/{passes}"
   },
   "confirm": {
     "delete_zone": "De zone \"{name}\" verwijderen? De instellingen en de waterbalans gaan verloren.",

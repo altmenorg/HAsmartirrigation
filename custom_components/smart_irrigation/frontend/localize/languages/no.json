@@ -381,7 +381,12 @@
           "headline-off": "Smart Irrigation er slått av",
           "sub-off": "Den henter fortsatt værdata, men beregner og vanner ingenting før den slås på igjen.",
           "open-settings": "Åpne innstillingene",
-          "sub-watering-one": "Én sone, {duration}."
+          "sub-watering-one": "Én sone, {duration}.",
+          "next-runs": "Neste",
+          "run-waits": "venter på {program}, ca. {start} til {end}",
+          "run-skipped": "forventes hoppet over: regn varslet",
+          "run-twice": "{zones} vannet to ganger på rad",
+          "run-suspended": "suspendert til {when}"
         },
         "decision": {
           "title": "Blir den hoppet over?",
@@ -416,7 +421,8 @@
           "detail-raining": "Det regner",
           "detail-dry": "Det regner ikke",
           "detail-held": "sitter over denne vanningen",
-          "check-postponed": "Utsatt av deg"
+          "check-postponed": "Utsatt av deg",
+          "title-main": "Blir hovedprogrammet hoppet over?"
         },
         "estimate": {
           "title": "Hvor hver sone står nå",
@@ -454,7 +460,14 @@
           "left": "{time} igjen ({percent} %)",
           "program": "Program",
           "step": "trinn {step}/{steps}",
-          "program-left": "{time} igjen"
+          "program-left": "{time} igjen",
+          "headline-soaking": "Opptak mellom to omganger",
+          "headline-starting": "Vanningen starter",
+          "pass": "omgang {pass} av {passes}",
+          "at-most": "høyst {volume}",
+          "soaking": "opptak, neste omgang kl. {when} ({pass} av {passes})",
+          "starting": "venter på at {supply} kommer i gang",
+          "then": "Deretter: {names}, venter på tur"
         }
       },
       "gaps": {
@@ -773,7 +786,9 @@
         },
         "duration-readonly-automatic": "Beregnet for deg: vanningen til denne sonen kommer fra vannbalansen dens. Sett den til manuell for å skrive en varighet selv.",
         "duration-readonly-disabled": "En sone som er slått av, vannes aldri, så den har ingen vanningstid.",
-        "et-deficiency-help": "Hva denne sonen trenger per dag: ETc, referansefordampingen ganger vekstfaktoren, sesongjustering inkludert. Før skaleringen til intervallet og før regnet, og det er det som gjør tallet sammenlignbart fra ett oppsett til et annet. Sonesensoren bærer også referansetallet for seg, som attributtet `eto`, til å holde mot det en værtjeneste publiserer."
+        "et-deficiency-help": "Hva denne sonen trenger per dag: ETc, referansefordampingen ganger vekstfaktoren, sesongjustering inkludert. Før skaleringen til intervallet og før regnet, og det er det som gjør tallet sammenlignbart fra ett oppsett til et annet. Sonesensoren bærer også referansetallet for seg, som attributtet `eto`, til å holde mot det en værtjeneste publiserer.",
+        "safety-off-entity": "Ventilens egen varighet",
+        "safety-off-entity-help": "For en ventil som lukker av seg selv etter en egen varighet, som Gardena (tallet \"vanningsvarighet\", 1 min med mindre det er endret): velg det tallet her. Før hver åpning skriver Smart Irrigation omgangens lengde pluss 30 s til det, slik at ventilen holder seg åpen hele omgangen og likevel lukker av seg selv hvis Home Assistant stopper. Uten det lukker en slik ventil etter den forhåndsinnstilte tiden."
       },
       "no_items": "Det er ingen definerte soner ennå.",
       "title": "Soner",
@@ -839,7 +854,8 @@
         "zone": "Sone",
         "duration": "Varighet",
         "water": "Vannforbruk",
-        "truncated": "Viser de {count} nyeste vanningene av {total}."
+        "truncated": "Viser de {count} nyeste vanningene av {total}.",
+        "by_hand": "manuelt"
       },
       "charts": {
         "total-title": "Totalt vannforbruk per dag (siste 30 dager)",
@@ -1222,7 +1238,7 @@
   },
   "planning": {
     "title": "Planlegging",
-    "description": "Hva programmene kommer til å vanne de neste tre dagene. Været er ikke kjent så langt frem: en kjøring gjennomføres hvis ingenting holder den tilbake.",
+    "description": "Hva programmene kommer til å vanne de neste tre dagene. En kjøring som regnet kan holde tilbake, markeres ut fra dagens varsel; været når det er tid, avgjør.",
     "nothing_planned": "Ingen program er planlagt. Legg til en tidsplan i et program.",
     "nothing_to_water": "Ingenting å vanne foreløpig: ingen sone i denne kjøringen mangler nok vann.",
     "expected": "Forventet varighet:",
@@ -1237,6 +1253,15 @@
     "no_valve": "Ingen ventil tilknyttet, så de vannes ikke:",
     "nothing_no_valve": "Ingenting å vanne i denne kjøringen: sonene som mangler vann, har ingen ventil tilknyttet:",
     "left": "{time} igjen",
+    "pass_of": "omgang {pass} av {passes}",
+    "soaking": "opptak, neste omgang kl. {when} ({pass} av {passes})",
+    "starting": "venter på at {supply} kommer i gang",
+    "in_passes": "i {passes} omganger",
+    "at_most": "høyst {volume}",
+    "soak_between": "Opptak mellom omgangene: {time}",
+    "tours_each": "{n} runder; tidene over gjelder én runde",
+    "waits_for": "Venter på {program}: ca. {start} til {end}.",
+    "watered_twice": "{zones} får vann to ganger på rad: {program} vanner dem rett før.",
     "expected_skipped_suspended": "Kjører ikke: programmet er suspendert til {when}"
   },
   "programs": {
@@ -1375,7 +1400,7 @@
     "off": "av",
     "steps_title": "Trinn",
     "schedules_title": "Tidsplaner",
-    "passes_help": "Cycle and soak for dette trinnet: vannet delt i så mange omganger, og hver sone tar opp vann mellom to av dem i tiden som er satt i hovedprogrammets innstillinger. 1: på én gang.",
+    "passes_help": "Cycle and soak for dette trinnet: vannet delt i så mange omganger, og hver sone tar opp vann mellom to av dem. 1: på én gang.",
     "schedule_fallback_skip": "Hopp over den dagen",
     "schedule_fallback_previous": "Bruk tidspunktet for den sist sette",
     "schedule_fallback_at": "Start på et fast tidspunkt",
@@ -1394,6 +1419,17 @@
     "cond_days_between": "minst {n} dager",
     "cond_soil": "{n} soner med sensor",
     "cond_soil_one": "{n} sone med sensor",
+    "adjust_per_step": "{time} per trinn",
+    "adjust_short": "{what}, til {when}",
+    "adjust_short_open": "{what}, til den nullstilles",
+    "adjust_in_force": "Gjelder: {what}.",
+    "adjust_set": "Angi en justering",
+    "adjust_change": "Endre justeringen",
+    "passes_short": "{n} omganger",
+    "overlap_short": "starter neste {time} tidligere",
+    "wait_short": "venter {time} før neste",
+    "soak_shared_help": "Én opptakstid for alle trinn i omganger, i alle programmer og i hovedprogrammet.",
+    "min_over_max": "Minimum er over maksimum: maksimum gjelder, {max}.",
     "confirm_run_replace": "Kjøre {name} nå? Det som vanner nå stoppes først, deretter åpnes ventilene.",
     "run_replacing": "Det som vannet stoppes; {name} starter rett etterpå.",
     "suspended_until": "Suspendert til {when}: tidsplanene starter det ikke.",
@@ -1432,7 +1468,7 @@
       "sequential": "Sekvensiell (én sone om gangen)",
       "parallel": "Parallell (alle soner samtidig)"
     },
-    "sequencing_description": "Hvordan sonene dine vannes. Det bestemmer hva en startutløser regner tilbake fra når den skal være ferdig ved soloppgang: én om gangen gir summen av alle sonenes tid, alle på én gang gir den lengste av dem. Det gjelder både om Smart Irrigation åpner ventilene selv og om din egen automasjon gjør det.",
+    "sequencing_description": "En startutløser som skal være ferdig ved soloppgang, regner tilbake derfra: én om gangen, fra summen av tidene; alle på én gang, fra den lengste.",
     "passes_label": "Vann i flere omganger",
     "passes_description": "Syklus og opptak: samme mengde vann, delt i kortere runder med en pause mellom, slik at tung jord tar det opp i stedet for å la det renne av. Én runde vanner i ett strekk, og det er standard. En vanning som er for kort til å deles, blir ikke rørt.",
     "soak_label": "Opptak mellom omgangene",
@@ -1541,7 +1577,9 @@
         "suspended": "suspendert",
         "disabled": "deaktivert"
       },
-      "main_name": "Hovedprogram"
+      "main_name": "Hovedprogram",
+      "after": "starter etter {name}",
+      "next_in_line": "starter som neste"
     },
     "editor": {
       "title": "Tittel",
@@ -1555,7 +1593,9 @@
     "not_scheduled": "Står igjen, men ikke planlagt",
     "off": "Slått av",
     "watering_left": "vanner, {time} igjen",
-    "paused_left": "på pause, {time} igjen"
+    "paused_left": "på pause, {time} igjen",
+    "soaking": "opptak, neste omgang kl. {when} ({pass}/{passes})",
+    "pass_of": "omgang {pass}/{passes}"
   },
   "confirm": {
     "delete_zone": "Slette sonen «{name}»? Innstillingene og vannbalansen går tapt.",

@@ -381,7 +381,12 @@
           "headline-off": "Smart Irrigation är avstängt",
           "sub-off": "Väderdata hämtas fortfarande. Beräkning och bevattning återupptas när du slår på Smart Irrigation igen.",
           "open-settings": "Öppna inställningarna",
-          "sub-watering-one": "En zon, {duration}."
+          "sub-watering-one": "En zon, {duration}.",
+          "next-runs": "Härnäst",
+          "run-waits": "väntar på {program}, cirka {start} till {end}",
+          "run-skipped": "förväntas hoppas över: regn väntas",
+          "run-twice": "{zones} vattnas två gånger i rad",
+          "run-suspended": "uppskjutet till {when}"
         },
         "decision": {
           "title": "Kommer den att hoppas över?",
@@ -416,7 +421,8 @@
           "detail-raining": "Det regnar",
           "detail-dry": "Det regnar inte",
           "detail-held": "vattnas inte vid den här körningen",
-          "check-postponed": "Uppskjuten av dig"
+          "check-postponed": "Uppskjuten av dig",
+          "title-main": "Kommer huvudprogrammet att hoppas över?"
         },
         "estimate": {
           "title": "Aktuellt läge per zon",
@@ -454,7 +460,14 @@
           "left": "{time} kvar ({percent} %)",
           "program": "Program",
           "step": "steg {step}/{steps}",
-          "program-left": "{time} kvar"
+          "program-left": "{time} kvar",
+          "headline-soaking": "Paus för infiltration mellan två pass",
+          "headline-starting": "Bevattningen startar",
+          "pass": "pass {pass} av {passes}",
+          "at-most": "högst {volume}",
+          "soaking": "infiltration, nästa pass kl. {when} ({pass} av {passes})",
+          "starting": "väntar på att {supply} ska komma igång",
+          "then": "Sedan: {names}, som väntar på sin tur"
         }
       },
       "gaps": {
@@ -773,7 +786,9 @@
         },
         "duration-readonly-automatic": "Bevattningstiden beräknas utifrån zonens vattenbalans. Välj manuellt läge om du vill ange tiden själv.",
         "duration-readonly-disabled": "En inaktiverad zon vattnas aldrig och har därför ingen bevattningstid.",
-        "et-deficiency-help": "Zonens vattenbehov per dygn (ETc) beräknas genom att multiplicera referensevapotranspirationen med grödkoefficienten och ta hänsyn till säsongsjusteringen. Värdet visas före omräkning till beräkningsintervallet och före avdrag för nederbörd, så att du kan jämföra olika inställningar. Zonsensorns attribut `eto` visar referensevapotranspirationen separat för jämförelse med uppgifter från en vädertjänst."
+        "et-deficiency-help": "Zonens vattenbehov per dygn (ETc) beräknas genom att multiplicera referensevapotranspirationen med grödkoefficienten och ta hänsyn till säsongsjusteringen. Värdet visas före omräkning till beräkningsintervallet och före avdrag för nederbörd, så att du kan jämföra olika inställningar. Zonsensorns attribut `eto` visar referensevapotranspirationen separat för jämförelse med uppgifter från en vädertjänst.",
+        "safety-off-entity": "Ventilens egen bevattningstid",
+        "safety-off-entity-help": "För en ventil som stänger av sig själv efter en egen tid, till exempel Gardena (dess nummer \"bevattningstid\", 1 min om det inte ändrats): välj det numret här. Före varje öppning skriver Smart Irrigation passets längd plus 30 s till det, så att ventilen hålls öppen hela passet och ändå stänger av sig själv om Home Assistant stannar. Utan det stänger en sådan ventil efter sin förinställda tid."
       },
       "no_items": "Det finns inga zoner definierade ännu.",
       "title": "Zoner",
@@ -839,7 +854,8 @@
         "zone": "Zon",
         "duration": "Bevattningstid",
         "water": "Vattenförbrukning",
-        "truncated": "Visar de {count} senaste körningarna av {total}."
+        "truncated": "Visar de {count} senaste körningarna av {total}.",
+        "by_hand": "manuellt"
       },
       "charts": {
         "total-title": "Total vattenförbrukning per dag (senaste 30 dagarna)",
@@ -1222,7 +1238,7 @@
   },
   "planning": {
     "title": "Planering",
-    "description": "Visar vilka zoner programmen planerar att bevattna de närmaste tre dagarna. Eftersom vädret ännu är osäkert förutsätter planeringen att inget hindrar bevattningen.",
+    "description": "Visar vilka zoner programmen planerar att bevattna de närmaste tre dagarna. En körning som regnet kan stoppa markeras utifrån dagens prognos; vädret när det är dags avgör.",
     "nothing_planned": "Inget program är planerat. Lägg till ett schema i ett program.",
     "nothing_to_water": "Ingen bevattning behövs just nu. Vattenunderskottet är för litet i alla zoner som ingår i körningen.",
     "expected": "Beräknad bevattningstid:",
@@ -1237,6 +1253,15 @@
     "no_valve": "Följande zoner saknar en ansluten ventil och kan därför inte bevattnas:",
     "nothing_no_valve": "Ingen zon kan bevattnas den här gången. Följande zoner behöver vatten men saknar ansluten ventil:",
     "left": "{time} kvar",
+    "pass_of": "pass {pass} av {passes}",
+    "soaking": "infiltration, nästa pass kl. {when} ({pass} av {passes})",
+    "starting": "väntar på att {supply} ska komma igång",
+    "in_passes": "i {passes} pass",
+    "at_most": "högst {volume}",
+    "soak_between": "Paus för infiltration mellan passen: {time}",
+    "tours_each": "{n} varv; tiderna ovan gäller för ett varv",
+    "waits_for": "Väntar på {program}: cirka {start} till {end}.",
+    "watered_twice": "{zones} får vatten två gånger i rad: {program} vattnar dem precis innan.",
     "expected_skipped_suspended": "Körs inte: programmet är uppskjutet till {when}"
   },
   "programs": {
@@ -1375,7 +1400,7 @@
     "off": "av",
     "steps_title": "Steg",
     "schedules_title": "Scheman",
-    "passes_help": "Dela upp bevattningen i flera pass så att vattnet hinner tränga ner i marken mellan passen. Pausens längd anges i huvudprogrammets inställningar. Ange 1 för att bevattna i ett enda pass.",
+    "passes_help": "Dela upp bevattningen i flera pass så att vattnet hinner tränga ner i marken mellan passen. Ange 1 för att bevattna i ett enda pass.",
     "schedule_fallback_skip": "Hoppa över den dagen",
     "schedule_fallback_previous": "Använd tiden för den senaste soluppgången eller solnedgången",
     "schedule_fallback_at": "Starta vid en fast tid",
@@ -1394,6 +1419,17 @@
     "cond_days_between": "minst {n} dagar",
     "cond_soil": "antal zoner med sensor: {n}",
     "cond_soil_one": "{n} zon med sensor",
+    "adjust_per_step": "{time} per steg",
+    "adjust_short": "{what}, till {when}",
+    "adjust_short_open": "{what}, tills den återställs",
+    "adjust_in_force": "Gäller: {what}.",
+    "adjust_set": "Ange en justering",
+    "adjust_change": "Ändra justeringen",
+    "passes_short": "{n} pass",
+    "overlap_short": "startar nästa {time} tidigare",
+    "wait_short": "väntar {time} före nästa",
+    "soak_shared_help": "En gemensam infiltrationspaus för alla steg i pass, i alla program och i huvudprogrammet.",
+    "min_over_max": "Minimum är högre än maximum: maximum gäller, {max}.",
     "confirm_run_replace": "Kör {name} nu? Det som vattnar nu stoppas först, sedan öppnas ventilerna.",
     "run_replacing": "Det som vattnade stoppas; {name} startar direkt efter.",
     "suspended_until": "Uppskjutet till {when}: dess scheman startar det inte.",
@@ -1432,7 +1468,7 @@
       "sequential": "Sekventiell (en zon i taget)",
       "parallel": "Parallell (alla zoner samtidigt)"
     },
-    "sequencing_description": "Välj om zonerna ska bevattnas efter varandra eller samtidigt. För att bevattningen ska bli klar vid soluppgången räknas starttiden bakåt. Vid bevattning i följd används summan av zonernas bevattningstider. Vid samtidig bevattning används den längsta tiden. Det gäller oavsett om Smart Irrigation eller din egen automation öppnar ventilerna.",
+    "sequencing_description": "För att bevattningen ska bli klar vid soluppgången räknas starttiden bakåt. Vid bevattning i följd används summan av zonernas bevattningstider. Vid samtidig bevattning används den längsta tiden.",
     "passes_label": "Vattna i flera pass",
     "passes_description": "Vattenmängden delas upp i kortare pass med paus emellan så att vattnet hinner tränga ner även i tung jord. Det minskar ytavrinningen. Standardvärdet är ett pass, då allt vatten ges på en gång. Om bevattningstiden är för kort för att delas upp ges allt vatten i ett pass.",
     "soak_label": "Paus för infiltration mellan passen",
@@ -1541,7 +1577,9 @@
         "suspended": "uppskjutet",
         "disabled": "inaktiverat"
       },
-      "main_name": "Huvudprogram"
+      "main_name": "Huvudprogram",
+      "after": "startar efter {name}",
+      "next_in_line": "startar härnäst"
     },
     "editor": {
       "title": "Titel",
@@ -1555,7 +1593,9 @@
     "not_scheduled": "Behöver vatten men är inte schemalagd",
     "off": "Avstängd",
     "watering_left": "bevattnar, {time} kvar",
-    "paused_left": "pausad, {time} kvar"
+    "paused_left": "pausad, {time} kvar",
+    "soaking": "infiltration, nästa pass kl. {when} ({pass}/{passes})",
+    "pass_of": "pass {pass}/{passes}"
   },
   "confirm": {
     "delete_zone": "Ta bort zonen \"{name}\"? Dess inställningar och vattenbalans går förlorade.",

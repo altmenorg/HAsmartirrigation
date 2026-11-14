@@ -381,7 +381,12 @@
           "headline-off": "Smart Irrigation jest wyłączone",
           "sub-off": "Nadal pobiera dane pogodowe, ale niczego nie oblicza i nie podlewa do ponownego włączenia.",
           "open-settings": "Otwórz ustawienia",
-          "sub-watering-one": "Jedna strefa, {duration}."
+          "sub-watering-one": "Jedna strefa, {duration}.",
+          "next-runs": "Dalej",
+          "run-waits": "czeka na {program}, mniej więcej od {start} do {end}",
+          "run-skipped": "oczekiwane pominięcie: prognozowany deszcz",
+          "run-twice": "{zones}: podlewane dwa razy z rzędu",
+          "run-suspended": "zawieszony do {when}"
         },
         "decision": {
           "title": "Czy zostanie pominięte?",
@@ -416,7 +421,8 @@
           "detail-raining": "Pada",
           "detail-dry": "Nie pada",
           "detail-held": "pomija to nawadnianie",
-          "check-postponed": "Odłożone przez ciebie"
+          "check-postponed": "Odłożone przez ciebie",
+          "title-main": "Czy program główny zostanie pominięty?"
         },
         "estimate": {
           "title": "Na czym stoi teraz każda strefa",
@@ -454,7 +460,14 @@
           "left": "Pozostało {time} ({percent} %)",
           "program": "Program",
           "step": "krok {step}/{steps}",
-          "program-left": "pozostało {time}"
+          "program-left": "pozostało {time}",
+          "headline-soaking": "Wsiąkanie między dwoma przejściami",
+          "headline-starting": "Podlewanie się zaczyna",
+          "pass": "przejście {pass} z {passes}",
+          "at-most": "najwyżej {volume}",
+          "soaking": "wsiąkanie, następne przejście o {when} ({pass} z {passes})",
+          "starting": "czekanie, aż {supply} się uruchomi",
+          "then": "Potem: {names}, czekają na swoją kolej"
         }
       },
       "gaps": {
@@ -773,7 +786,9 @@
         },
         "duration-readonly-automatic": "Obliczone za ciebie: nawadnianie tej strefy wynika z jej bilansu wodnego. Przestaw ją na ręczną, żeby wpisać czas samemu.",
         "duration-readonly-disabled": "Wyłączona strefa nigdy nie jest podlewana, więc nie ma czasu nawadniania.",
-        "et-deficiency-help": "Czego ta strefa potrzebuje na dobę: ETc, evapotranspiracja odniesienia razy współczynnik roślinny, z korektą sezonową. Przed przeliczeniem na interwał i przed deszczem, i właśnie to czyni ją porównywalną między konfiguracjami. Czujnik strefy nosi też samą wartość odniesienia, jako atrybut `eto`, do porównania z tym, co publikuje serwis pogodowy."
+        "et-deficiency-help": "Czego ta strefa potrzebuje na dobę: ETc, evapotranspiracja odniesienia razy współczynnik roślinny, z korektą sezonową. Przed przeliczeniem na interwał i przed deszczem, i właśnie to czyni ją porównywalną między konfiguracjami. Czujnik strefy nosi też samą wartość odniesienia, jako atrybut `eto`, do porównania z tym, co publikuje serwis pogodowy.",
+        "safety-off-entity": "Własny czas zaworu",
+        "safety-off-entity-help": "Dla zaworu, który sam się zamyka po własnym czasie, np. Gardena (jego liczba „czas podlewania”, 1 min, jeśli jej nie zmieniono): wybierz tu tę liczbę. Przed każdym otwarciem Smart Irrigation wpisuje do niej długość przejścia plus 30 s, więc zawór pozostaje otwarty przez całe przejście, a mimo to sam się zamknie, jeśli Home Assistant przestanie działać. Bez tego taki zawór zamyka się po swoim ustawionym czasie."
       },
       "no_items": "Nie zdefiniowano jeszcze żadnych stref.",
       "title": "Strefy",
@@ -839,7 +854,8 @@
         "zone": "Strefa",
         "duration": "Czas",
         "water": "Zużycie wody",
-        "truncated": "Pokazano {count} najnowszych z {total}."
+        "truncated": "Pokazano {count} najnowszych z {total}.",
+        "by_hand": "ręcznie"
       },
       "charts": {
         "total-title": "Całkowite zużycie wody na dzień (ostatnie 30 dni)",
@@ -1222,7 +1238,7 @@
   },
   "planning": {
     "title": "Planowanie",
-    "description": "Co programy podleją w ciągu najbliższych trzech dni. Pogoda nie jest znana tak daleko naprzód: uruchomienie dojdzie do skutku, jeśli nic go nie wstrzyma.",
+    "description": "Co programy podleją w ciągu najbliższych trzech dni. Uruchomienie, które deszcz może wstrzymać, jest oznaczane według dzisiejszej prognozy; decyduje pogoda w chwili, gdy przypada.",
     "nothing_planned": "Żaden program nie jest zaplanowany. Dodaj harmonogram do programu.",
     "nothing_to_water": "Na razie nie ma czego podlewać: żadnej strefie tego uruchomienia nie brakuje dość wody.",
     "expected": "Oczekiwany czas trwania:",
@@ -1237,6 +1253,15 @@
     "no_valve": "Brak powiązanego zaworu, więc nie są podlewane:",
     "nothing_no_valve": "Nie ma czego podlewać w tym uruchomieniu: strefy, którym brakuje wody, nie mają powiązanego zaworu:",
     "left": "pozostało {time}",
+    "pass_of": "przejście {pass} z {passes}",
+    "soaking": "wsiąkanie, następne przejście o {when} ({pass} z {passes})",
+    "starting": "czekanie, aż {supply} się uruchomi",
+    "in_passes": "w przejściach: {passes}",
+    "at_most": "najwyżej {volume}",
+    "soak_between": "Wsiąkanie między przejściami: {time}",
+    "tours_each": "Rundy: {n}; czasy powyżej dotyczą jednej rundy",
+    "waits_for": "Czeka na {program}: mniej więcej od {start} do {end}.",
+    "watered_twice": "{zones} dostają wodę dwa razy z rzędu: {program} podlewa je tuż przedtem.",
     "expected_skipped_suspended": "Nie uruchamia się: program jest zawieszony do {when}"
   },
   "programs": {
@@ -1375,7 +1400,7 @@
     "off": "wyłączony",
     "steps_title": "Kroki",
     "schedules_title": "Harmonogramy",
-    "passes_help": "Cycle and soak dla tego kroku: jego woda podzielona na tyle przejść, a każda strefa wchłania między dwoma z nich przez czas ustawiony w ustawieniach programu głównego. 1: za jednym razem.",
+    "passes_help": "Cycle and soak dla tego kroku: jego woda podzielona na tyle przejść, a każda strefa wchłania między dwoma z nich. 1: za jednym razem.",
     "schedule_fallback_skip": "Pomiń ten dzień",
     "schedule_fallback_previous": "Użyj godziny ostatnio widzianego",
     "schedule_fallback_at": "Uruchom o stałej godzinie",
@@ -1394,6 +1419,17 @@
     "cond_days_between": "co najmniej {n} dni",
     "cond_soil": "Strefy z czujnikiem: {n}",
     "cond_soil_one": "{n} strefa z czujnikiem",
+    "adjust_per_step": "{time} na krok",
+    "adjust_short": "{what}, do {when}",
+    "adjust_short_open": "{what}, do zresetowania",
+    "adjust_in_force": "Obowiązuje: {what}.",
+    "adjust_set": "Ustaw korektę",
+    "adjust_change": "Zmień korektę",
+    "passes_short": "Przejścia: {n}",
+    "overlap_short": "uruchamia następny {time} wcześniej",
+    "wait_short": "czeka {time} przed następnym",
+    "soak_shared_help": "Jeden czas wsiąkania dla wszystkich kroków w przejściach, w każdym programie i w programie głównym.",
+    "min_over_max": "Minimum jest wyższe niż maksimum: wygrywa maksimum, {max}.",
     "confirm_run_replace": "Uruchomić {name} teraz? Trwające podlewanie zostanie najpierw zatrzymane, potem otworzą się jego zawory.",
     "run_replacing": "Trwające podlewanie jest zatrzymywane; {name} rusza zaraz potem.",
     "suspended_until": "Zawieszony do {when}: harmonogramy go nie uruchamiają.",
@@ -1432,7 +1468,7 @@
       "sequential": "Sekwencyjnie (jedna strefa naraz)",
       "parallel": "Równolegle (wszystkie strefy naraz)"
     },
-    "sequencing_description": "Jak nawadniane są twoje strefy. To ustala, od jakiego czasu wyzwalacz startu liczy wstecz, gdy ma skończyć o wschodzie słońca: jedna po drugiej daje sumę czasów wszystkich stref, wszystkie naraz najdłuższy z nich. Obowiązuje niezależnie od tego, czy zawory otwiera sam Smart Irrigation, czy twoja własna automatyzacja.",
+    "sequencing_description": "Wyzwalacz startu, który ma skończyć o wschodzie słońca, liczy od niego wstecz: jedna po drugiej, od sumy czasów; wszystkie naraz, od najdłuższego.",
     "passes_label": "Podlewaj w kilku przejściach",
     "passes_description": "Cykl i wsiąkanie: ta sama ilość wody podzielona na krótsze przejścia z przerwą między nimi, żeby ciężka gleba ją wchłonęła, a nie pozwoliła spłynąć. Jedno przejście podlewa za jednym razem i tak jest domyślnie. Nawadnianie zbyt krótkie, by je podzielić, zostaje bez zmian.",
     "soak_label": "Wsiąkanie między przejściami",
@@ -1541,7 +1577,9 @@
         "suspended": "zawieszony",
         "disabled": "wyłączony"
       },
-      "main_name": "Program główny"
+      "main_name": "Program główny",
+      "after": "startuje po {name}",
+      "next_in_line": "startuje jako następny"
     },
     "editor": {
       "title": "Tytuł",
@@ -1555,7 +1593,9 @@
     "not_scheduled": "Należne, ale niezaplanowane",
     "off": "Wyłączone",
     "watering_left": "podlewanie, pozostało {time}",
-    "paused_left": "wstrzymane, pozostało {time}"
+    "paused_left": "wstrzymane, pozostało {time}",
+    "soaking": "wsiąkanie, następne przejście o {when} ({pass}/{passes})",
+    "pass_of": "przejście {pass}/{passes}"
   },
   "confirm": {
     "delete_zone": "Usunąć strefę „{name}”? Jej ustawienia i bilans wodny zostaną utracone.",

@@ -381,7 +381,12 @@
           "headline-off": "Smart Irrigation on pois päältä",
           "sub-off": "Se hakee edelleen säätiedot, mutta ei laske eikä kastele mitään ennen kuin se kytketään taas päälle.",
           "open-settings": "Avaa asetukset",
-          "sub-watering-one": "Yksi alue, {duration}."
+          "sub-watering-one": "Yksi alue, {duration}.",
+          "next-runs": "Seuraavaksi",
+          "run-waits": "odottaa ohjelmaa {program}, noin {start}-{end}",
+          "run-skipped": "odotetaan ohitettavan: sadetta ennustettu",
+          "run-twice": "{zones} kastellaan kahdesti peräkkäin",
+          "run-suspended": "keskeytetty {when} asti"
         },
         "decision": {
           "title": "Ohitetaanko se?",
@@ -416,7 +421,8 @@
           "detail-raining": "Sataa",
           "detail-dry": "Ei sada",
           "detail-held": "jää tämän kastelun väliin",
-          "check-postponed": "Sinun lykkäämä"
+          "check-postponed": "Sinun lykkäämä",
+          "title-main": "Ohitetaanko pääohjelma?"
         },
         "estimate": {
           "title": "Missä kukin alue on nyt",
@@ -454,7 +460,14 @@
           "left": "{time} jäljellä ({percent} %)",
           "program": "Ohjelma",
           "step": "vaihe {step}/{steps}",
-          "program-left": "{time} jäljellä"
+          "program-left": "{time} jäljellä",
+          "headline-soaking": "Imeytys kahden erän välissä",
+          "headline-starting": "Kastelu käynnistyy",
+          "pass": "erä {pass}/{passes}",
+          "at-most": "enintään {volume}",
+          "soaking": "imeytys, seuraava erä klo {when} ({pass}/{passes})",
+          "starting": "odotetaan, että {supply} käynnistyy",
+          "then": "Sitten: {names}, odottavat vuoroaan"
         }
       },
       "gaps": {
@@ -773,7 +786,9 @@
         },
         "duration-readonly-automatic": "Laskettu puolestasi: tämän alueen kastelu tulee sen vesitasapainosta. Aseta se käsikäytölle, jos haluat kirjoittaa keston itse.",
         "duration-readonly-disabled": "Pois päältä olevaa aluetta ei koskaan kastella, joten sillä ei ole kasteluaikaa.",
-        "et-deficiency-help": "Mitä tämä alue tarvitsee päivässä: ETc, referenssihaihdunta kertaa kasvikerroin, kausisäätö mukaan lukien. Ennen jaksolle skaalausta ja ennen sadetta, mikä tekee siitä vertailukelpoisen määrityksestä toiseen. Alueen anturi kantaa myös referenssiluvun omanaan, attribuuttina `eto`, jota voi verrata siihen mitä sääpalvelu julkaisee."
+        "et-deficiency-help": "Mitä tämä alue tarvitsee päivässä: ETc, referenssihaihdunta kertaa kasvikerroin, kausisäätö mukaan lukien. Ennen jaksolle skaalausta ja ennen sadetta, mikä tekee siitä vertailukelpoisen määrityksestä toiseen. Alueen anturi kantaa myös referenssiluvun omanaan, attribuuttina `eto`, jota voi verrata siihen mitä sääpalvelu julkaisee.",
+        "safety-off-entity": "Venttiilin oma kesto",
+        "safety-off-entity-help": "Venttiilille, joka sulkeutuu itsestään oman kestonsa jälkeen, kuten Gardena (sen numero \"kastelun kesto\", 1 min ellei muutettu): valitse se numero tähän. Ennen jokaista avausta Smart Irrigation kirjoittaa siihen erän pituuden plus 30 s, jotta venttiili pysyy auki koko erän ajan ja sulkeutuu silti itsestään, jos Home Assistant pysähtyy. Ilman sitä tällainen venttiili sulkeutuu esiasetetun aikansa jälkeen."
       },
       "no_items": "Vyöhykkeitä ei ole vielä määritetty.",
       "title": "Vyöhykkeet",
@@ -839,7 +854,8 @@
         "zone": "Alue",
         "duration": "Kesto",
         "water": "Veden kulutus",
-        "truncated": "Näytetään {count} uusinta kastelua yhteensä {total} kastelusta."
+        "truncated": "Näytetään {count} uusinta kastelua yhteensä {total} kastelusta.",
+        "by_hand": "käsin"
       },
       "charts": {
         "total-title": "Veden kokonaiskulutus päivässä (viimeiset 30 päivää)",
@@ -1222,7 +1238,7 @@
   },
   "planning": {
     "title": "Suunnittelu",
-    "description": "Mitä ohjelmat kastelevat seuraavien kolmen päivän aikana. Säätä ei tiedetä niin pitkälle eteenpäin: ajo toteutuu, jos mikään ei pidättele sitä.",
+    "description": "Mitä ohjelmat kastelevat seuraavien kolmen päivän aikana. Ajo, jonka sade voi estää, merkitään tämän päivän ennusteen perusteella; sää ajon hetkellä ratkaisee.",
     "nothing_planned": "Yhtään ohjelmaa ei ole suunniteltu. Lisää ohjelmalle aikataulu.",
     "nothing_to_water": "Ei vielä kasteltavaa: millään tämän ajon vyöhykkeellä ei ole tarpeeksi vajetta.",
     "expected": "Odotettu kesto:",
@@ -1237,6 +1253,15 @@
     "no_valve": "Ei liitettyä venttiiliä, joten ei kastella:",
     "nothing_no_valve": "Ei kasteltavaa tässä ajossa: vyöhykkeillä, joilta puuttuu vettä, ei ole liitettyä venttiiliä:",
     "left": "{time} jäljellä",
+    "pass_of": "erä {pass}/{passes}",
+    "soaking": "imeytys, seuraava erä klo {when} ({pass}/{passes})",
+    "starting": "odotetaan, että {supply} käynnistyy",
+    "in_passes": "{passes} erässä",
+    "at_most": "enintään {volume}",
+    "soak_between": "Imeytys erien välissä: {time}",
+    "tours_each": "{n} kierrosta; yllä olevat ajat ovat yhdelle kierrokselle",
+    "waits_for": "Odottaa ohjelmaa {program}: noin {start}-{end}.",
+    "watered_twice": "{zones} saavat vetensä kahdesti peräkkäin: {program} kastelee ne juuri ennen.",
     "expected_skipped_suspended": "Ei käynnisty: ohjelma on keskeytetty {when} asti"
   },
   "programs": {
@@ -1375,7 +1400,7 @@
     "off": "pois",
     "steps_title": "Vaiheet",
     "schedules_title": "Aikataulut",
-    "passes_help": "Cycle and soak tälle vaiheelle: sen vesi jaetaan näin moneen erään, ja jokainen vyöhyke imeyttää kahden erän välillä pääohjelman asetuksissa määritetyn ajan. 1: kerralla.",
+    "passes_help": "Cycle and soak tälle vaiheelle: sen vesi jaetaan näin moneen erään, ja jokainen vyöhyke imeyttää kahden erän välillä. 1: kerralla.",
     "schedule_fallback_skip": "Ohita se päivä",
     "schedule_fallback_previous": "Käytä viimeksi nähdyn aikaa",
     "schedule_fallback_at": "Aloita kiinteään aikaan",
@@ -1394,6 +1419,17 @@
     "cond_days_between": "vähintään {n} päivää",
     "cond_soil": "{n} aluetta anturilla",
     "cond_soil_one": "{n} alue anturilla",
+    "adjust_per_step": "{time} vaihetta kohti",
+    "adjust_short": "{what}, {when} asti",
+    "adjust_short_open": "{what}, kunnes nollataan",
+    "adjust_in_force": "Voimassa: {what}.",
+    "adjust_set": "Aseta säätö",
+    "adjust_change": "Muuta säätöä",
+    "passes_short": "{n} erää",
+    "overlap_short": "aloittaa seuraavan {time} aiemmin",
+    "wait_short": "odottaa {time} ennen seuraavaa",
+    "soak_shared_help": "Yksi imeytysaika kaikille erissä kasteleville vaiheille, kaikissa ohjelmissa ja pääohjelmassa.",
+    "min_over_max": "Vähimmäismäärä ylittää enimmäismäärän: enimmäismäärä voittaa, {max}.",
     "confirm_run_replace": "Suoritetaanko {name} nyt? Käynnissä oleva kastelu pysäytetään ensin, sitten sen venttiilit avautuvat.",
     "run_replacing": "Käynnissä ollut kastelu pysäytetään; {name} alkaa heti sen jälkeen.",
     "suspended_until": "Keskeytetty {when} asti: sen aikataulut eivät käynnistä sitä.",
@@ -1432,7 +1468,7 @@
       "sequential": "Peräkkäin (yksi vyöhyke kerrallaan)",
       "parallel": "Rinnakkain (kaikki vyöhykkeet kerralla)"
     },
-    "sequencing_description": "Miten alueesi kastellaan. Tämä määrää, mistä kestosta aloitusliipaisin laskee taaksepäin, kun sen on määrä päättyä auringonnousuun: yksi kerrallaan antaa kaikkien alueiden aikojen summan, kaikki yhtä aikaa niistä pisimmän. Tämä pätee, avaako Smart Irrigation venttiilit itse vai tekeekö sen oma automaatiosi.",
+    "sequencing_description": "Aloitusliipaisin, jonka on määrä päättyä auringonnousuun, laskee siitä taaksepäin: yksi kerrallaan, aikojen summasta; kaikki yhtä aikaa, pisimmästä.",
     "passes_label": "Kastele useassa erässä",
     "passes_description": "Jaksotus ja imeytys: sama vesimäärä jaettuna lyhyempiin kierroksiin, joiden välissä on tauko, jotta raskas maa ottaa sen sisään sen sijaan että se valuisi pois. Yksi kierros kastelee kertaheitolla, ja se on oletus. Kastelua, joka on liian lyhyt jaettavaksi, ei kosketa.",
     "soak_label": "Imeytys erien välissä",
@@ -1541,7 +1577,9 @@
         "suspended": "keskeytetty",
         "disabled": "poistettu käytöstä"
       },
-      "main_name": "Pääohjelma"
+      "main_name": "Pääohjelma",
+      "after": "alkaa ohjelman {name} jälkeen",
+      "next_in_line": "alkaa seuraavaksi"
     },
     "editor": {
       "title": "Otsikko",
@@ -1555,7 +1593,9 @@
     "not_scheduled": "Erääntynyt, mutta ei ajastettu",
     "off": "Pois päältä",
     "watering_left": "kastellaan, {time} jäljellä",
-    "paused_left": "tauolla, {time} jäljellä"
+    "paused_left": "tauolla, {time} jäljellä",
+    "soaking": "imeytys, seuraava erä klo {when} ({pass}/{passes})",
+    "pass_of": "erä {pass}/{passes}"
   },
   "confirm": {
     "delete_zone": "Poistetaanko vyöhyke \"{name}\"? Sen asetukset ja vesitase menetetään.",

@@ -381,7 +381,12 @@
           "headline-off": "Smart Irrigation è disattivato",
           "sub-off": "Continua a raccogliere i dati meteo, ma non calcola e non irriga nulla finché non lo riattivi.",
           "open-settings": "Apri le impostazioni",
-          "sub-watering-one": "Una zona, {duration}."
+          "sub-watering-one": "Una zona, {duration}.",
+          "next-runs": "Prossimi",
+          "run-waits": "attende {program}, circa da {start} a {end}",
+          "run-skipped": "salto previsto: pioggia prevista",
+          "run-twice": "{zones} irrigate due volte di fila",
+          "run-suspended": "sospeso fino al {when}"
         },
         "decision": {
           "title": "Verrà saltato?",
@@ -416,7 +421,8 @@
           "detail-raining": "Sta piovendo",
           "detail-dry": "Non piove",
           "detail-held": "salta questo ciclo",
-          "check-postponed": "Rinviata da te"
+          "check-postponed": "Rinviata da te",
+          "title-main": "Il programma principale verrà saltato?"
         },
         "estimate": {
           "title": "Com'è ogni zona adesso",
@@ -454,7 +460,14 @@
           "left": "{time} rimanenti ({percent} %)",
           "program": "Programma",
           "step": "passo {step}/{steps}",
-          "program-left": "{time} rimanenti"
+          "program-left": "{time} rimanenti",
+          "headline-soaking": "Assorbimento tra due passaggi",
+          "headline-starting": "L'irrigazione sta partendo",
+          "pass": "passaggio {pass} di {passes}",
+          "at-most": "al massimo {volume}",
+          "soaking": "assorbimento, prossimo passaggio alle {when} ({pass} di {passes})",
+          "starting": "in attesa che {supply} si avvii",
+          "then": "Poi: {names}, in attesa del proprio turno"
         }
       },
       "gaps": {
@@ -773,7 +786,9 @@
         },
         "duration-readonly-automatic": "Calcolata per te: il ciclo di questa zona viene dal suo bilancio idrico. Mettila su manuale per scrivere tu una durata.",
         "duration-readonly-disabled": "Una zona disattivata non viene mai irrigata, quindi non ha un tempo di irrigazione.",
-        "et-deficiency-help": "Quello che serve a questa zona al giorno: ETc, l'evapotraspirazione di riferimento per il fattore colturale, regolazione stagionale compresa. Prima del ridimensionamento sull'intervallo e prima della pioggia, ed è questo che lo rende confrontabile da una configurazione all'altra. Il sensore della zona porta anche il valore di riferimento da solo, come attributo `eto`, da confrontare con quello che pubblica un servizio meteo."
+        "et-deficiency-help": "Quello che serve a questa zona al giorno: ETc, l'evapotraspirazione di riferimento per il fattore colturale, regolazione stagionale compresa. Prima del ridimensionamento sull'intervallo e prima della pioggia, ed è questo che lo rende confrontabile da una configurazione all'altra. Il sensore della zona porta anche il valore di riferimento da solo, come attributo `eto`, da confrontare con quello che pubblica un servizio meteo.",
+        "safety-off-entity": "Durata propria della valvola",
+        "safety-off-entity-help": "Per una valvola che si chiude da sola dopo una durata propria, come Gardena (il suo numero \"durata di irrigazione\", 1 min se non modificato): scegli qui quel numero. Prima di ogni apertura, Smart Irrigation vi scrive la durata del passaggio più 30 s, così la valvola resta aperta per tutto il passaggio e si chiude comunque da sola se Home Assistant si ferma. Senza, una valvola del genere si chiude dopo il suo tempo preimpostato."
       },
       "no_items": "Non ci sono ancora zone definite.",
       "title": "Zone",
@@ -839,7 +854,8 @@
         "zone": "Zona",
         "duration": "Durata",
         "water": "Acqua usata",
-        "truncated": "Vengono mostrati i {count} cicli più recenti su {total}."
+        "truncated": "Vengono mostrati i {count} cicli più recenti su {total}.",
+        "by_hand": "a mano"
       },
       "charts": {
         "total-title": "Acqua totale usata al giorno (ultimi 30 giorni)",
@@ -1222,7 +1238,7 @@
   },
   "planning": {
     "title": "Pianificazione",
-    "description": "Cosa irrigheranno i programmi nei prossimi tre giorni. Il meteo non è noto con così tanto anticipo: un ciclo parte se nulla lo trattiene.",
+    "description": "Cosa irrigheranno i programmi nei prossimi tre giorni. Un ciclo che la pioggia potrebbe trattenere è segnalato in base alla previsione di oggi; decide il meteo al momento previsto.",
     "nothing_planned": "Nessun programma pianificato. Aggiungi un orario a un programma.",
     "nothing_to_water": "Niente da irrigare per ora: a nessuna zona di questo ciclo manca abbastanza acqua.",
     "expected": "Durata prevista:",
@@ -1237,6 +1253,15 @@
     "no_valve": "Nessuna valvola collegata, quindi non irrigate:",
     "nothing_no_valve": "Niente da irrigare in questo ciclo: le zone a cui manca acqua non hanno nessuna valvola collegata:",
     "left": "{time} rimanenti",
+    "pass_of": "passaggio {pass} di {passes}",
+    "soaking": "assorbimento, prossimo passaggio alle {when} ({pass} di {passes})",
+    "starting": "in attesa che {supply} si avvii",
+    "in_passes": "in {passes} passaggi",
+    "at_most": "al massimo {volume}",
+    "soak_between": "Assorbimento tra i passaggi: {time}",
+    "tours_each": "{n} giri; i tempi qui sopra sono per un giro",
+    "waits_for": "Attende {program}: circa da {start} a {end}.",
+    "watered_twice": "{zones} ricevono l'acqua due volte di fila: {program} le irriga subito prima.",
     "expected_skipped_suspended": "Non viene eseguito: il programma è sospeso fino al {when}"
   },
   "programs": {
@@ -1375,7 +1400,7 @@
     "off": "disattivato",
     "steps_title": "Passi",
     "schedules_title": "Orari",
-    "passes_help": "Cycle and soak per questo passo: la sua acqua divisa in altrettanti passaggi, e ogni zona assorbe tra due passaggi per il tempo impostato nelle impostazioni del programma principale. 1: in una volta sola.",
+    "passes_help": "Cycle and soak per questo passo: la sua acqua divisa in altrettanti passaggi, e ogni zona assorbe tra due passaggi. 1: in una volta sola.",
     "schedule_fallback_skip": "Saltare quel giorno",
     "schedule_fallback_previous": "Usare l'ora dell'ultimo visto",
     "schedule_fallback_at": "Partire a un'ora fissa",
@@ -1394,6 +1419,17 @@
     "cond_days_between": "almeno {n} giorni",
     "cond_soil": "{n} zone con sensore",
     "cond_soil_one": "{n} zona con sensore",
+    "adjust_per_step": "{time} per passo",
+    "adjust_short": "{what}, fino a {when}",
+    "adjust_short_open": "{what}, finché non viene reimpostata",
+    "adjust_in_force": "In vigore: {what}.",
+    "adjust_set": "Imposta una regolazione",
+    "adjust_change": "Modifica la regolazione",
+    "passes_short": "{n} passaggi",
+    "overlap_short": "avvia il successivo {time} prima",
+    "wait_short": "attende {time} prima del successivo",
+    "soak_shared_help": "Un unico tempo di assorbimento per tutti i passi in passaggi, in ogni programma e nel programma principale.",
+    "min_over_max": "Il minimo supera il massimo: prevale il massimo, {max}.",
     "confirm_run_replace": "Eseguire {name} ora? L'irrigazione in corso viene prima fermata, poi si aprono le sue valvole.",
     "run_replacing": "L'irrigazione in corso si sta fermando; {name} parte subito dopo.",
     "suspended_until": "Sospeso fino al {when}: le sue programmazioni non lo avviano.",
@@ -1432,7 +1468,7 @@
       "sequential": "Sequenziale (una zona alla volta)",
       "parallel": "Parallelo (tutte le zone contemporaneamente)"
     },
-    "sequencing_description": "Come vengono irrigate le tue zone. Questo stabilisce da quale durata un trigger di avvio conta a ritroso quando deve finire all'alba: una dopo l'altra dà la somma dei tempi di tutte le zone, tutte insieme il più lungo di essi. Vale sia che Smart Irrigation apra le valvole da sé, sia che lo faccia una tua automazione.",
+    "sequencing_description": "Un trigger di avvio che deve finire all'alba conta a ritroso da essa: una dopo l'altra, dalla somma dei tempi; tutte insieme, dal più lungo.",
     "passes_label": "Irrigare in più passaggi",
     "passes_description": "Ciclo e assorbimento: la stessa acqua, divisa in passaggi più brevi con una pausa tra loro, così un terreno pesante la assorbe invece di lasciarla scorrere via. Un passaggio irriga in una volta sola, ed è l'impostazione predefinita. Un ciclo troppo breve per essere diviso resta com'è.",
     "soak_label": "Assorbimento tra i passaggi",
@@ -1541,7 +1577,9 @@
         "suspended": "sospeso",
         "disabled": "disattivato"
       },
-      "main_name": "Programma principale"
+      "main_name": "Programma principale",
+      "after": "parte dopo {name}",
+      "next_in_line": "parte per prossimo"
     },
     "editor": {
       "title": "Titolo",
@@ -1555,7 +1593,9 @@
     "not_scheduled": "Dovuta, ma non pianificata",
     "off": "Disattivato",
     "watering_left": "irrigazione in corso, {time} rimanenti",
-    "paused_left": "in pausa, {time} rimanenti"
+    "paused_left": "in pausa, {time} rimanenti",
+    "soaking": "assorbimento, prossimo passaggio alle {when} ({pass}/{passes})",
+    "pass_of": "passaggio {pass}/{passes}"
   },
   "confirm": {
     "delete_zone": "Eliminare la zona «{name}»? Le sue impostazioni e il suo bilancio idrico vanno persi.",

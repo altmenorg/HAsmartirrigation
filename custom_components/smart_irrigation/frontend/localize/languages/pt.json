@@ -381,7 +381,12 @@
           "headline-off": "O Smart Irrigation está desligado",
           "sub-off": "Continua a recolher os dados meteorológicos, mas não calcula nem rega nada até voltar a ser ligado.",
           "open-settings": "Abrir as definições",
-          "sub-watering-one": "Uma zona, {duration}."
+          "sub-watering-one": "Uma zona, {duration}.",
+          "next-runs": "A seguir",
+          "run-waits": "aguarda {program}, por volta de {start} a {end}",
+          "run-skipped": "previsto ser ignorado: chuva prevista",
+          "run-twice": "{zones} regadas duas vezes seguidas",
+          "run-suspended": "suspenso até {when}"
         },
         "decision": {
           "title": "Vai ser ignorado?",
@@ -416,7 +421,8 @@
           "detail-raining": "Está a chover",
           "detail-dry": "Não está a chover",
           "detail-held": "fica de fora deste ciclo",
-          "check-postponed": "Adiada por si"
+          "check-postponed": "Adiada por si",
+          "title-main": "O programa principal vai ser ignorado?"
         },
         "estimate": {
           "title": "Como está cada zona agora",
@@ -454,7 +460,14 @@
           "left": "Faltam {time} ({percent} %)",
           "program": "Programa",
           "step": "etapa {step}/{steps}",
-          "program-left": "faltam {time}"
+          "program-left": "faltam {time}",
+          "headline-soaking": "Absorção entre duas passagens",
+          "headline-starting": "A rega está a começar",
+          "pass": "passagem {pass} de {passes}",
+          "at-most": "no máximo {volume}",
+          "soaking": "absorção, próxima passagem às {when} ({pass} de {passes})",
+          "starting": "a aguardar que {supply} arranque",
+          "then": "Depois: {names}, a aguardar a sua vez"
         }
       },
       "gaps": {
@@ -773,7 +786,9 @@
         },
         "duration-readonly-automatic": "Calculada para você: o ciclo desta zona vem do seu balanço hídrico. Ponha-a em manual para escrever uma duração.",
         "duration-readonly-disabled": "Uma zona desativada nunca é regada, por isso não tem tempo de rega.",
-        "et-deficiency-help": "O que esta zona precisa por dia: ETc, a evapotranspiração de referência vezes o fator de cultura, ajuste sazonal incluído. Antes do ajuste ao intervalo e antes da chuva, e é isso que a torna comparável de uma configuração para outra. O sensor da zona também transporta o valor de referência sozinho, no atributo `eto`, para comparar com o que um serviço meteorológico publica."
+        "et-deficiency-help": "O que esta zona precisa por dia: ETc, a evapotranspiração de referência vezes o fator de cultura, ajuste sazonal incluído. Antes do ajuste ao intervalo e antes da chuva, e é isso que a torna comparável de uma configuração para outra. O sensor da zona também transporta o valor de referência sozinho, no atributo `eto`, para comparar com o que um serviço meteorológico publica.",
+        "safety-off-entity": "Duração própria da válvula",
+        "safety-off-entity-help": "Para uma válvula que fecha sozinha após uma duração própria, como a Gardena (o seu número \"duração de rega\", 1 min se não for alterado): escolha esse número aqui. Antes de cada abertura, o Smart Irrigation escreve nele a duração da passagem mais 30 s, para que a válvula fique aberta durante toda a passagem e mesmo assim feche sozinha se o Home Assistant parar. Sem isso, uma válvula destas fecha após o seu tempo predefinido."
       },
       "no_items": "Ainda não existem zonas definidas.",
       "title": "Zonas",
@@ -839,7 +854,8 @@
         "zone": "Zona",
         "duration": "Duração",
         "water": "Água usada",
-        "truncated": "A mostrar os {count} ciclos mais recentes de {total}."
+        "truncated": "A mostrar os {count} ciclos mais recentes de {total}.",
+        "by_hand": "à mão"
       },
       "charts": {
         "total-title": "Água total usada por dia (últimos 30 dias)",
@@ -1222,7 +1238,7 @@
   },
   "planning": {
     "title": "Planeamento",
-    "description": "O que os programas vão regar nos próximos três dias. O tempo não é conhecido com tanta antecedência: uma execução avança se nada a impedir.",
+    "description": "O que os programas vão regar nos próximos três dias. Uma execução que a chuva possa impedir é assinalada com base na previsão de hoje; decide o tempo que fizer na altura.",
     "nothing_planned": "Nenhum programa planeado. Adicione um agendamento a um programa.",
     "nothing_to_water": "Nada para regar por agora: a nenhuma zona desta rega falta água suficiente.",
     "expected": "Duração prevista:",
@@ -1237,6 +1253,15 @@
     "no_valve": "Sem válvula associada, por isso não são regadas:",
     "nothing_no_valve": "Nada para regar neste ciclo: as zonas com falta de água não têm válvula associada:",
     "left": "faltam {time}",
+    "pass_of": "passagem {pass} de {passes}",
+    "soaking": "absorção, próxima passagem às {when} ({pass} de {passes})",
+    "starting": "a aguardar que {supply} arranque",
+    "in_passes": "em {passes} passagens",
+    "at_most": "no máximo {volume}",
+    "soak_between": "Absorção entre as passagens: {time}",
+    "tours_each": "{n} rondas; os tempos acima são para uma ronda",
+    "waits_for": "Aguarda {program}: por volta de {start} a {end}.",
+    "watered_twice": "{zones} recebem a sua água duas vezes seguidas: {program} rega-as imediatamente antes.",
     "expected_skipped_suspended": "Não é executado: o programa está suspenso até {when}"
   },
   "programs": {
@@ -1375,7 +1400,7 @@
     "off": "desligado",
     "steps_title": "Etapas",
     "schedules_title": "Agendamentos",
-    "passes_help": "Cycle and soak para este passo: a sua água repartida em tantas passagens, e cada zona absorve entre duas delas durante o tempo definido nas definições do programa principal. 1: de uma só vez.",
+    "passes_help": "Cycle and soak para esta etapa: a sua água repartida em tantas passagens, e cada zona absorve entre duas delas. 1: de uma só vez.",
     "schedule_fallback_skip": "Saltar esse dia",
     "schedule_fallback_previous": "Usar a hora do último visto",
     "schedule_fallback_at": "Começar a uma hora fixa",
@@ -1394,6 +1419,17 @@
     "cond_days_between": "pelo menos {n} dias",
     "cond_soil": "{n} zonas com sensor",
     "cond_soil_one": "{n} zona com sensor",
+    "adjust_per_step": "{time} por etapa",
+    "adjust_short": "{what}, até {when}",
+    "adjust_short_open": "{what}, até ser reposto",
+    "adjust_in_force": "Em vigor: {what}.",
+    "adjust_set": "Definir um ajuste",
+    "adjust_change": "Alterar o ajuste",
+    "passes_short": "{n} passagens",
+    "overlap_short": "inicia a seguinte {time} mais cedo",
+    "wait_short": "aguarda {time} antes da seguinte",
+    "soak_shared_help": "Um único tempo de absorção para todas as etapas em passagens, em todos os programas e no programa principal.",
+    "min_over_max": "O mínimo é superior ao máximo: prevalece o máximo, {max}.",
     "confirm_run_replace": "Executar {name} agora? A rega em curso é primeiro parada e depois as suas válvulas abrem.",
     "run_replacing": "A rega em curso está a ser parada; {name} começa logo a seguir.",
     "suspended_until": "Suspenso até {when}: os seus horários não o iniciam.",
@@ -1432,7 +1468,7 @@
       "sequential": "Sequencial (uma zona de cada vez)",
       "parallel": "Paralelo (todas as zonas em simultâneo)"
     },
-    "sequencing_description": "Como as suas zonas são regadas. Isto define a partir de que duração um acionador de início conta para trás quando tem de terminar ao amanhecer: uma a seguir à outra dá a soma dos tempos de todas as zonas, todas ao mesmo tempo dá o mais longo deles. Aplica-se tanto se o Smart Irrigation abrir as válvulas como se for uma automatização sua.",
+    "sequencing_description": "Um acionador de início que tem de terminar ao amanhecer conta para trás a partir dele: uma a seguir à outra, a partir da soma dos tempos; todas ao mesmo tempo, a partir do mais longo.",
     "passes_label": "Regar em várias passagens",
     "passes_description": "Ciclo e absorção: a mesma água, dividida em passagens mais curtas com uma pausa entre elas, para que um solo pesado a absorva em vez de a deixar escorrer. Uma passagem rega de uma só vez, e é o que está definido por omissão. Um ciclo demasiado curto para dividir fica como está.",
     "soak_label": "Absorção entre as passagens",
@@ -1541,7 +1577,9 @@
         "suspended": "suspenso",
         "disabled": "desativado"
       },
-      "main_name": "Programa principal"
+      "main_name": "Programa principal",
+      "after": "começa depois de {name}",
+      "next_in_line": "começa a seguir"
     },
     "editor": {
       "title": "Título",
@@ -1555,7 +1593,9 @@
     "not_scheduled": "Em atraso, mas não agendada",
     "off": "Desligado",
     "watering_left": "a regar, faltam {time}",
-    "paused_left": "em pausa, faltam {time}"
+    "paused_left": "em pausa, faltam {time}",
+    "soaking": "absorção, próxima passagem às {when} ({pass}/{passes})",
+    "pass_of": "passagem {pass}/{passes}"
   },
   "confirm": {
     "delete_zone": "Eliminar a zona «{name}»? As suas definições e o seu balanço hídrico perdem-se.",

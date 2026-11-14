@@ -381,7 +381,12 @@
           "headline-off": "Smart Irrigation er slået fra",
           "sub-off": "Den henter stadig vejrdata, men beregner og vander intet, før den slås til igen.",
           "open-settings": "Åbn indstillingerne",
-          "sub-watering-one": "Én zone, {duration}."
+          "sub-watering-one": "Én zone, {duration}.",
+          "next-runs": "Næste",
+          "run-waits": "venter på {program}, ca. {start} til {end}",
+          "run-skipped": "forventes sprunget over: regn i udsigt",
+          "run-twice": "{zones} vandet to gange i træk",
+          "run-suspended": "suspenderet til {when}"
         },
         "decision": {
           "title": "Bliver den sprunget over?",
@@ -416,7 +421,8 @@
           "detail-raining": "Det regner",
           "detail-dry": "Det regner ikke",
           "detail-held": "sidder denne vanding over",
-          "check-postponed": "Udskudt af dig"
+          "check-postponed": "Udskudt af dig",
+          "title-main": "Bliver hovedprogrammet sprunget over?"
         },
         "estimate": {
           "title": "Hvor hver zone står nu",
@@ -454,7 +460,14 @@
           "left": "{time} tilbage ({percent} %)",
           "program": "Program",
           "step": "trin {step}/{steps}",
-          "program-left": "{time} tilbage"
+          "program-left": "{time} tilbage",
+          "headline-soaking": "Optagelse mellem to omgange",
+          "headline-starting": "Vandingen starter",
+          "pass": "omgang {pass} af {passes}",
+          "at-most": "højst {volume}",
+          "soaking": "optagelse, næste omgang kl. {when} ({pass} af {passes})",
+          "starting": "venter på at {supply} kommer op",
+          "then": "Derefter: {names}, venter på deres tur"
         }
       },
       "gaps": {
@@ -773,7 +786,9 @@
         },
         "duration-readonly-automatic": "Beregnet for dig: denne zones vanding kommer fra dens vandbalance. Sæt den til manuel for selv at skrive en varighed.",
         "duration-readonly-disabled": "En zone der er slået fra, vandes aldrig, så den har ingen vandingstid.",
-        "et-deficiency-help": "Hvad denne zone har brug for pr. dag: ETc, referencefordampningen gange afgrødefaktoren, sæsonjustering inkluderet. Før skaleringen til intervallet og før regnen, og det er det, der gør tallet sammenligneligt fra en opsætning til en anden. Zonesensoren bærer også referencetallet for sig selv, som attributten `eto`, til at holde op mod hvad en vejrtjeneste offentliggør."
+        "et-deficiency-help": "Hvad denne zone har brug for pr. dag: ETc, referencefordampningen gange afgrødefaktoren, sæsonjustering inkluderet. Før skaleringen til intervallet og før regnen, og det er det, der gør tallet sammenligneligt fra en opsætning til en anden. Zonesensoren bærer også referencetallet for sig selv, som attributten `eto`, til at holde op mod hvad en vejrtjeneste offentliggør.",
+        "safety-off-entity": "Ventilens egen varighed",
+        "safety-off-entity-help": "Til en ventil, der lukker af sig selv efter sin egen varighed, som Gardena (dens tal \"vandingsvarighed\", 1 min medmindre det er ændret): vælg det tal her. Før hver åbning skriver Smart Irrigation omgangens længde plus 30 s til det, så ventilen bliver åben hele omgangen og alligevel lukker af sig selv, hvis Home Assistant stopper. Uden det lukker sådan en ventil efter sin forudindstillede tid."
       },
       "no_items": "Der er endnu ikke defineret nogen zoner.",
       "title": "Zoner",
@@ -839,7 +854,8 @@
         "zone": "Zone",
         "duration": "Varighed",
         "water": "Vandforbrug",
-        "truncated": "Viser de {count} nyeste vandinger ud af {total}."
+        "truncated": "Viser de {count} nyeste vandinger ud af {total}.",
+        "by_hand": "manuelt"
       },
       "charts": {
         "total-title": "Samlet vandforbrug pr. dag (seneste 30 dage)",
@@ -1222,7 +1238,7 @@
   },
   "planning": {
     "title": "Planlægning",
-    "description": "Hvad programmerne vander de næste tre dage. Vejret kendes ikke så langt frem: en kørsel gennemføres, hvis intet holder den tilbage.",
+    "description": "Hvad programmerne vander de næste tre dage. En kørsel, som regnen kan holde tilbage, markeres ud fra dagens prognose; vejret, når det er tid, afgør det.",
     "nothing_planned": "Intet program er planlagt. Tilføj en tidsplan til et program.",
     "nothing_to_water": "Intet at vande lige nu: ingen zone i denne kørsel mangler vand nok.",
     "expected": "Forventet varighed:",
@@ -1237,6 +1253,15 @@
     "no_valve": "Ingen ventil tilknyttet, så de vandes ikke:",
     "nothing_no_valve": "Intet at vande i denne kørsel: zonerne, der mangler vand, har ingen ventil tilknyttet:",
     "left": "{time} tilbage",
+    "pass_of": "omgang {pass} af {passes}",
+    "soaking": "optagelse, næste omgang kl. {when} ({pass} af {passes})",
+    "starting": "venter på at {supply} kommer op",
+    "in_passes": "i {passes} omgange",
+    "at_most": "højst {volume}",
+    "soak_between": "Optagelse mellem omgangene: {time}",
+    "tours_each": "{n} runder; tiderne ovenfor gælder for én runde",
+    "waits_for": "Venter på {program}: ca. {start} til {end}.",
+    "watered_twice": "{zones} får vand to gange i træk: {program} vander dem lige før.",
     "expected_skipped_suspended": "Kører ikke: programmet er suspenderet til {when}"
   },
   "programs": {
@@ -1375,7 +1400,7 @@
     "off": "fra",
     "steps_title": "Trin",
     "schedules_title": "Tidsplaner",
-    "passes_help": "Cycle and soak for dette trin: vandet delt i så mange omgange, og hver zone optager mellem to af dem i den tid, der er sat i hovedprogrammets indstillinger. 1: i én omgang.",
+    "passes_help": "Cycle and soak for dette trin: vandet delt i så mange omgange, og hver zone optager mellem to af dem. 1: i én omgang.",
     "schedule_fallback_skip": "Spring den dag over",
     "schedule_fallback_previous": "Brug tidspunktet for den sidst sete",
     "schedule_fallback_at": "Start på et fast tidspunkt",
@@ -1394,6 +1419,17 @@
     "cond_days_between": "mindst {n} dage",
     "cond_soil": "{n} zoner med en sensor",
     "cond_soil_one": "{n} zone med en sensor",
+    "adjust_per_step": "{time} pr. trin",
+    "adjust_short": "{what}, indtil {when}",
+    "adjust_short_open": "{what}, indtil den nulstilles",
+    "adjust_in_force": "Gældende: {what}.",
+    "adjust_set": "Indstil en justering",
+    "adjust_change": "Skift justeringen",
+    "passes_short": "{n} omgange",
+    "overlap_short": "starter den næste {time} før",
+    "wait_short": "venter {time} før den næste",
+    "soak_shared_help": "Én optagelsestid for alle trin i omgange, i alle programmer og i hovedprogrammet.",
+    "min_over_max": "Minimum er over maksimum: maksimum gælder, {max}.",
     "confirm_run_replace": "Kør {name} nu? Det, der vander nu, stoppes først, og derefter åbnes ventilerne.",
     "run_replacing": "Det, der vandede, stoppes; {name} starter lige efter.",
     "suspended_until": "Suspenderet til {when}: tidsplanerne starter det ikke.",
@@ -1432,7 +1468,7 @@
       "sequential": "Sekventiel (én zone ad gangen)",
       "parallel": "Parallel (alle zoner på én gang)"
     },
-    "sequencing_description": "Hvordan dine zoner vandes. Det bestemmer, hvad en startudløser regner tilbage fra, når den skal være færdig ved solopgang: én ad gangen giver summen af alle zoners tid, alle på én gang giver den længste af dem. Det gælder både hvis Smart Irrigation selv åbner ventilerne, og hvis din egen automatisering gør det.",
+    "sequencing_description": "En startudløser, der skal være færdig ved solopgang, regner tilbage derfra: én ad gangen, fra summen af tiderne; alle på én gang, fra den længste.",
     "passes_label": "Vand i flere omgange",
     "passes_description": "Cyklus og optagelse: samme mængde vand, delt i kortere omgange med en pause imellem, så tung jord tager det til sig i stedet for at lade det løbe af. Én omgang vander i ét stræk, og det er standard. En vanding der er for kort at dele, bliver ikke rørt.",
     "soak_label": "Optagelse mellem omgangene",
@@ -1541,7 +1577,9 @@
         "suspended": "suspenderet",
         "disabled": "deaktiveret"
       },
-      "main_name": "Hovedprogram"
+      "main_name": "Hovedprogram",
+      "after": "starter efter {name}",
+      "next_in_line": "starter som næste"
     },
     "editor": {
       "title": "Titel",
@@ -1555,7 +1593,9 @@
     "not_scheduled": "Skyldig, men ikke planlagt",
     "off": "Slået fra",
     "watering_left": "vander, {time} tilbage",
-    "paused_left": "på pause, {time} tilbage"
+    "paused_left": "på pause, {time} tilbage",
+    "soaking": "optagelse, næste omgang kl. {when} ({pass}/{passes})",
+    "pass_of": "omgang {pass}/{passes}"
   },
   "confirm": {
     "delete_zone": "Slet zonen \"{name}\"? Dens indstillinger og vandbalance går tabt.",
