@@ -53,10 +53,12 @@ In **Settings, General**, the card **Import from Irrigation Unlimited** opens a 
 Nothing is changed before you have seen it all:
 
 1. **Zones**: each IU zone is matched to one of your zones (by the one you choose, then by its valve, the blueprint that feeds it, or its name) or created. A zone you already have keeps its settings and only gets the fields it had empty.
-2. **Programs and supplies**: what each IU sequence and controller becomes, step by step. A sequence fed by Smart Irrigation's durations (an adjust-time automation) waters the calculated duration; the others keep IU's fixed times.
+2. **Programs and supplies**: what each IU sequence and controller becomes, step by step. A sequence fed by Smart Irrigation's durations (an adjust-time automation) waters the calculated duration; the others keep IU's fixed times. The automation may adjust the sequence (with its `zones`) or each zone's own entity (`binary_sensor.irrigation_unlimited_c1_z1`, …): IU applies a zone's adjustment inside every sequence that waters it, so a step whose zones are all fed that way is calculated too.
 3. **The report**: what was carried over exactly, what was approximated (a cron expression turned into times, for example) and what has no equivalent here.
 
-The schedules of new programs are created **switched off**, so IU keeps watering until you are ready to [switch over](#switching-over). Importing again later updates what the earlier import made, in place, and removes what IU no longer has; the wizard asks before it removes anything. Only an administrator can import.
+The schedules of new programs are created **switched off**, so IU keeps watering until you are ready to [switch over](#switching-over). The wizard says so differently when IU is not running, for instance because Home Assistant rejected its configuration: nothing waters then until you switch the schedules on.
+
+Switching the full controller on, which the programs need, also starts the **main program**: the start trigger runs it every day over every zone. Next to IU, and after the switch next to the imported programs, those zones would be watered twice. The import page names them while that is so; if the imported programs water everything, switch the main program off under Programs, or set the start trigger to **None**. Importing again later updates what the earlier import made, in place, and removes what IU no longer has; the wizard asks before it removes anything. Only an administrator can import.
 
 ### Switching over
 

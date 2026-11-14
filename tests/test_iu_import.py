@@ -822,3 +822,91 @@ def test_zones_that_start_together_still_do_when_the_repeats_are_held_to_six():
     assert first[const.STEP_SECONDS] == 300 * 8
     assert first[const.STEP_DELAY] == -(300 * 8 / 6)
     assert second[const.STEP_SECONDS] == 480 * 8
+
+
+# A garden as written by hand (UX walk of 14 Nov.): one sequence, every
+# duration a 1 min placeholder, and one automation per zone handing IU the
+# calculated duration with ``adjust_time`` on the zone's own entity.
+HAND_WRITTEN = {
+    "controllers": [
+        {
+            "name": "Garden",
+            "sequences": [
+                {
+                    "name": "Daily",
+                    "delay": "00:01",
+                    "schedules": [{"time": "03:30", "duration": "00:01"}],
+                    "zones": [
+                        {"zone_id": 1, "duration": "00:01"},
+                        {"zone_id": 2, "duration": "00:01"},
+                        {"zone_id": 3, "duration": "00:01"},
+                    ],
+                }
+            ],
+            "zones": [
+                {"name": "Lawn west", "entity_id": "valve.lawn_west"},
+                {"name": "Lawn east", "entity_id": "valve.lawn_east"},
+                {"name": "Hedges", "entity_id": "valve.hedges"},
+            ],
+        }
+    ]
+}
+
+
+def test_an_automation_on_each_zone_feeds_the_sequence_steps():
+    """IU applies a zone's adjustment inside the sequences that water it.
+
+    The steps were imported fixed at what the placeholders left: nothing, the
+    1 min of the schedule shared after 2 min of delays.
+    """
+    plan = plan_import(
+        HAND_WRITTEN,
+        links=[
+            Link(si_zone_id=0, iu_zone="c1_z1"),
+            Link(si_zone_id=1, iu_zone="c1_z2"),
+            Link(si_zone_id=2, iu_zone="c1_z3"),
+        ],
+    )
+
+    [daily] = plan["programs"]
+    assert [s["mode"] for s in daily["steps"]] == [DURATION_CALCULATED] * 3
+    assert daily["delay"] == 60
+    assert daily["schedules"][0]["time"] == "03:30"
+
+
+def test_a_step_is_fed_only_when_all_its_zones_are():
+    config = {
+        "controllers": [
+            {
+                "sequences": [
+                    {
+                        "schedules": [{"time": "06:00"}],
+                        "zones": [
+                            {"zone_id": [1, 2], "duration": "00:10"},
+                            {"zone_id": 3, "duration": "00:05"},
+                        ],
+                    }
+                ],
+                "zones": [
+                    {"entity_id": "valve.a"},
+                    {"entity_id": "valve.b"},
+                    {"entity_id": "valve.c"},
+                ],
+            }
+        ]
+    }
+
+    plan = plan_import(
+        config,
+        links=[
+            Link(si_zone_id=0, iu_zone="c1_z1"),
+            Link(si_zone_id=2, iu_zone="c1_z3"),
+        ],
+    )
+
+    [program] = plan["programs"]
+    assert [s["mode"] for s in program["steps"]] == [
+        DURATION_FIXED,
+        DURATION_CALCULATED,
+    ]
+    assert program["steps"][0]["seconds"] == 600

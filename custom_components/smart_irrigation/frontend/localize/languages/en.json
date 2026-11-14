@@ -962,7 +962,8 @@
         },
         "nothing-waters": "Nothing is watered by the import. Irrigation Unlimited keeps watering until you switch it off and these schedules on.",
         "blocked": "Resolve what is marked in red first; until then nothing can be imported.",
-        "full-controller-off": "The full controller is off: the programs are imported, but they only water once it is on."
+        "full-controller-off": "The full controller is off: the programs are imported, but they only water once it is on.",
+        "nothing-waters-iu-off": "The import waters nothing, and Irrigation Unlimited is not running: Home Assistant did not set it up (see its log). Nothing waters until you switch these schedules on."
       },
       "errors": {
         "generic": "The import did not go through.",
@@ -986,7 +987,9 @@
         "next": "The schedules of new programs are off, so Irrigation Unlimited is still the one watering. Look at the programs, then switch over at the top of this page.",
         "open-programs": "Open the programs",
         "next-off": "The full controller is off, so these programs do not water yet, and Irrigation Unlimited goes on watering. Switch the full controller on in the settings, then switch over at the top of this page.",
-        "open-settings": "Open the settings"
+        "open-settings": "Open the settings",
+        "next-iu-off": "The schedules of new programs are off, and Irrigation Unlimited is not running: nothing waters for now. Look at the programs, then switch their schedules on.",
+        "next-off-iu-off": "The full controller is off, so these programs do not water yet, and Irrigation Unlimited is not running: nothing waters for now. Switch the full controller on in the settings, then the programs' schedules."
       },
       "conflicts": {
         "zone_twice": "{zone} and {other} would both become {target}. Choose another zone for one of them.",
@@ -1038,7 +1041,8 @@
           "uses": "Uses {uses}."
         },
         "left-off": "Left off, as Irrigation Unlimited had them switched off: {names}.",
-        "unrecorded": "Left off, as the import has no record of which of their schedules Irrigation Unlimited had on: {names}. Switch their schedules on yourself, or go back to Irrigation Unlimited, import again (it records them) and switch over again."
+        "unrecorded": "Left off, as the import has no record of which of their schedules Irrigation Unlimited had on: {names}. Switch their schedules on yourself, or go back to Irrigation Unlimited, import again (it records them) and switch over again.",
+        "main-also-waters": "The main program waters {zones} as well, every day from the start trigger: next to Irrigation Unlimited, and after the switch next to the imported programs, these zones get their water twice. If the imported programs water everything, switch the main program off under Programs, or set the start trigger to None."
       },
       "notes": {
         "blueprint_zone_gone": "a blueprint automation feeds it from zone {zone}, which does not exist any more: it is not taken as calculated",

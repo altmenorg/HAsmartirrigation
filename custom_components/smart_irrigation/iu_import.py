@@ -1342,7 +1342,9 @@ def plan_import(
     for controller in controllers:
         for sequence in controller.sequences:
             programs.extend(
-                _plan_sequence(controller, sequence, fed_step, granularity, report)
+                _plan_sequence(
+                    controller, sequence, fed_step, granularity, report, fed_zone
+                )
             )
         for zone in controller.zones:
             programs.extend(_plan_zone_schedules(controller, zone, fed_zone, report))
@@ -1489,8 +1491,26 @@ def _schedules_of(schedules: list, report: Report, lead: float = 0.0) -> list:
     return made
 
 
-def _plan_sequence(controller, sequence, fed_step, granularity, report) -> list:
+def _step_fed(sequence, step, fed_step, fed_zone) -> bool:
+    """Whether Smart Irrigation already feeds this step its duration.
+
+    By an automation on the sequence (``adjust_time`` with its zones), or on
+    each zone of the step itself: IU applies a zone's own adjustment inside
+    every sequence that waters it (``IUSequenceRun``, "should not really be
+    here ... a breaking change if removed"). An automation per zone entity is
+    how such a link is often written by hand; its steps were imported fixed,
+    at the placeholder durations IU never used.
+    """
+    if (sequence.key, step.position) in fed_step:
+        return True
+    return bool(step.zones) and all(zone.key in fed_zone for zone in step.zones)
+
+
+def _plan_sequence(
+    controller, sequence, fed_step, granularity, report, fed_zone=None
+) -> list:
     """One program per sequence, and one more per distinct schedule duration."""
+    fed_zone = fed_zone or {}
     groups: dict = {}
     for schedule in sequence.schedules:
         groups.setdefault(schedule.duration, []).append(schedule)
@@ -1499,7 +1519,7 @@ def _plan_sequence(controller, sequence, fed_step, granularity, report) -> list:
     groups = dict(
         sorted(groups.items(), key=lambda kv: (kv[0] is not None, kv[0] or 0))
     )
-    any_fed = any((sequence.key, s.position) in fed_step for s in sequence.steps)
+    any_fed = any(_step_fed(sequence, s, fed_step, fed_zone) for s in sequence.steps)
     if any_fed and len(groups) > 1:
         report.add(
             f"{sequence.where}.schedules",
@@ -1526,7 +1546,7 @@ def _plan_sequence(controller, sequence, fed_step, granularity, report) -> list:
         for step in sequence.steps:
             if not step.zones:
                 continue
-            fed = (sequence.key, step.position) in fed_step
+            fed = _step_fed(sequence, step, fed_step, fed_zone)
             passes = step.repeat
             if passes > MAX_PASSES:
                 report.add(

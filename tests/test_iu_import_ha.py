@@ -1547,3 +1547,79 @@ async def test_without_a_record_of_ious_on_and_off_nothing_is_switched_on(hass):
     await _import(coordinator, config)
     await iu_import_ha.async_cutover(hass, coordinator, "smart_irrigation")
     assert _schedules_on(coordinator) == {"iu_c1_1": [True, False], "iu_c1_2": [True]}
+
+
+@pytest.mark.parametrize("running", [True, False])
+async def test_the_preview_says_whether_iu_waters_at_all(running):
+    """IU whose configuration Home Assistant rejected waters nothing.
+
+    The page said "Irrigation Unlimited keeps watering until you switch it
+    off" over a configuration IU had refused (a ``name`` on a sequence zone,
+    UX walk of 14 Nov.). Outside the fingerprint: apply still matches.
+    """
+    coordinator = FakeCoordinator()
+    hass, connection = _ws(coordinator)
+    hass.services.has_service = lambda domain, service: running
+    with (
+        patch.object(
+            iu_import_ha,
+            "async_read_source",
+            AsyncMock(return_value=("yaml", CONFIG, [])),
+        ),
+        patch.object(iu_import_ha, "links_from_automations", return_value=[]),
+    ):
+        await _call(websockets.websocket_iu_import_preview, hass, connection)
+        preview = connection.send_result.call_args.args[1]
+        assert preview["iu_running"] is running
+
+        await _call(
+            websockets.websocket_iu_import_apply,
+            hass,
+            connection,
+            fingerprint=preview["fingerprint"],
+        )
+    assert set(coordinator.programs()) == {"iu_c1_1", "iu_c1_2"}
+
+
+async def test_the_main_program_watering_the_same_zones_is_said(hass):
+    """The full controller the import asks for starts the main program too.
+
+    Its start trigger runs it every day over every zone: next to IU, and after
+    the cut-over next to the imported programs, those zones were watered twice
+    while the page said only IU watered (UX walk of 14 Nov.).
+    """
+    await _iu_in(hass, (True, True))
+    coordinator = await _imported()
+    zones = sorted(
+        (zone.name for zone in coordinator.store.zones.values()), key=str.lower
+    )
+    assert zones
+
+    # Nothing starts it: no trigger armed, no schedule of its own.
+    coordinator.start_trigger_armed = False
+    status = await iu_import_ha.async_status(hass, coordinator)
+    assert status["main_also_waters"] == []
+
+    coordinator.start_trigger_armed = True
+    status = await iu_import_ha.async_status(hass, coordinator)
+    assert sorted(status["main_also_waters"], key=str.lower) == zones
+
+    # Switched off under Programs: said no more.
+    programs = [
+        {**p, "enabled": False} if p.get("main") else p
+        for p in coordinator.store.config.programs
+    ]
+    await coordinator.async_update_config({"programs": programs})
+    status = await iu_import_ha.async_status(hass, coordinator)
+    assert status["main_also_waters"] == []
+
+
+async def test_with_the_full_controller_off_the_main_program_waters_nothing(hass):
+    await _iu_in(hass, (True, True))
+    coordinator = await _imported()
+    coordinator.start_trigger_armed = True
+    coordinator.store.config = attr.evolve(
+        coordinator.store.config, full_controller=False
+    )
+    status = await iu_import_ha.async_status(hass, coordinator)
+    assert status["main_also_waters"] == []

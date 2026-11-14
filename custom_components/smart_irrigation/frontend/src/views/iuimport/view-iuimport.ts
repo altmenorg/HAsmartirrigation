@@ -798,7 +798,15 @@ export class SmartIrrigationViewIuImport extends LitElement {
         ? html`<div class="error" role="alert">
             ${this.t("report.blocked")}
           </div>`
-        : html`<div class="note">${this.t("report.nothing-waters")}</div>`}
+        : html`<div class="note">
+            ${this.t(
+              // IU that is not running waters nothing either: "IU keeps
+              // watering until you switch it off" was not so.
+              this.preview?.iu_running === false
+                ? "report.nothing-waters-iu-off"
+                : "report.nothing-waters",
+            )}
+          </div>`}
     `;
   }
 
@@ -820,9 +828,11 @@ export class SmartIrrigationViewIuImport extends LitElement {
             <li>${this.t("done.programs", "count", result.programs.length)}</li>
           </ul>
           <div class="note">
-            ${this.fullController
-              ? this.t("done.next")
-              : this.t("done.next-off")}
+            ${this.t(
+              `done.${this.fullController ? "next" : "next-off"}${
+                this.preview?.iu_running === false ? "-iu-off" : ""
+              }`,
+            )}
           </div>
           <div class="si-form-actions">
             <ha-button
