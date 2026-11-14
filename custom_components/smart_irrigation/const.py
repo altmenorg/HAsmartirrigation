@@ -754,6 +754,9 @@ HISTORY_ZONE_ID = "zone_id"
 HISTORY_ZONE_NAME = "zone_name"
 HISTORY_DURATION = "duration"
 HISTORY_WATER_USED = "water_used"
+# What started the run: a program's id, "main", "manual", or none (watered
+# from outside, or before this was kept).
+HISTORY_PROGRAM_ID = "program_id"
 # Older runs are pruned whenever a new one is recorded. The panel charts a
 # month, so a quarter of history covers it with room to look further back while
 # keeping the storage file small. The entry cap is a second guard for setups

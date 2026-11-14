@@ -25,6 +25,9 @@ the switching, in the order a pump needs and in the places a run can end:
 
 import asyncio
 import logging
+from datetime import timedelta
+
+import homeassistant.util.dt as dt_util
 
 from . import const
 from .supplies import SupplyHolds, find_supply, usable
@@ -115,17 +118,64 @@ class SupplyRunnerMixin:
         supply_id = supply[const.SUPPLY_ID]
         runtime["holds"].acquire(supply_id, token)
         self._supply_cancel_off(supply_id)
-        async with self._supply_lock(supply_id):
-            if supply_id in runtime["on"]:
-                return 0.0
-            delay = float(supply.get(const.SUPPLY_DELAY_BEFORE) or 0.0)
-            if delay < 0:
-                return -delay
-            if not await self._supply_turn_on(supply):
-                raise SupplyDidNotStart(supply_id)
-            if delay > 0 and await self._wait_or_stop(zone_id, delay):
-                return None
+        priming = self._supply_priming()
+        lock = self._supply_lock(supply_id)
+        if lock.locked():
+            # Another zone has the pump coming up: this one opens after it and
+            # is shown with it, the time taken from the one priming (Q18).
+            priming[int(zone_id)] = {
+                "supply": supply.get(const.SUPPLY_NAME) or supply_id,
+                "until": None,
+            }
+            self._notify_priming()
+        try:
+            await lock.acquire()
+        finally:
+            priming.pop(int(zone_id), None)
+        try:
+            return await self._supply_up(supply, zone_id)
+        finally:
+            lock.release()
+
+    def _notify_priming(self) -> None:
+        notify = getattr(self, "_notify_programs", None)
+        if notify is not None:
+            notify()
+
+    async def _supply_up(self, supply: dict, zone_id):
+        """The part of _supply_before_open done with the supply's lock held."""
+        runtime = self._supply_runtime()
+        supply_id = supply[const.SUPPLY_ID]
+        if supply_id in runtime["on"]:
             return 0.0
+        delay = float(supply.get(const.SUPPLY_DELAY_BEFORE) or 0.0)
+        if delay < 0:
+            return -delay
+        if not await self._supply_turn_on(supply):
+            raise SupplyDidNotStart(supply_id)
+        if delay > 0:
+            # Shown while it lasts: the program said "watering" with no zone
+            # open while the pump came up (UX walk of 13 Nov., Q18).
+            priming = self._supply_priming()
+            priming[int(zone_id)] = {
+                "supply": supply.get(const.SUPPLY_NAME) or supply_id,
+                "until": (dt_util.utcnow() + timedelta(seconds=delay)).isoformat(),
+            }
+            self._notify_priming()
+            try:
+                if await self._wait_or_stop(zone_id, delay):
+                    return None
+            finally:
+                priming.pop(int(zone_id), None)
+        return 0.0
+
+    def _supply_priming(self) -> dict:
+        """The zones waiting for their supply to come up: {zone_id: info}."""
+        priming: dict | None = getattr(self, "_supply_priming_zones", None)
+        if priming is None:
+            priming = {}
+            self._supply_priming_zones = priming
+        return priming
 
     async def _supply_turn_on(self, supply: dict) -> bool:
         """Switch the supply on, with its lock held. Recorded as on only if it is."""

@@ -36,6 +36,7 @@ import {
   navigate,
   readingUses,
   countLabel,
+  formatNumber,
   programCanRun,
 } from "../../helpers";
 import { loadHaForm } from "../../load-ha-elements";
@@ -828,7 +829,38 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       ...liveValves(live).map(
         (v: any) => html`
           <div class="setting-note">
-            ${v.zone}: ${left(v.remaining_seconds)} (${v.percent} %)
+            ${v.zone}: ${left(v.remaining_seconds)} (${v.percent}
+            %)${v.passes
+              ? `, ${t("pass_of")
+                  .replace("{pass}", String(v.pass))
+                  .replace("{passes}", String(v.passes))}`
+              : ""}
+          </div>
+        `,
+      ),
+      // Between two passes, and while a pump comes up: nothing is open, and
+      // the run goes on (UX walk of 13 Nov., Q6, Q18).
+      ...(live.soaking || []).map(
+        (v: any) => html`
+          <div class="setting-note">
+            ${v.zone}:
+            ${t("soaking")
+              .replace(
+                "{when}",
+                momentLabel(v.until, lang, {
+                  tomorrow: localize("card.tomorrow", lang),
+                  yesterday: localize("card.yesterday", lang),
+                }),
+              )
+              .replace("{pass}", String(v.next_pass))
+              .replace("{passes}", String(v.passes))}
+          </div>
+        `,
+      ),
+      ...(live.starting || []).map(
+        (v: any) => html`
+          <div class="setting-note">
+            ${v.zone}: ${t("starting").replace("{supply}", v.supply || "")}
           </div>
         `,
       ),
@@ -938,10 +970,26 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       <div class="setting-note">
                         ${n + 1}.
                         ${step.zones
-                          .map(
-                            (z: any) =>
-                              `${z.zone} ${minutes(z.expected_seconds ?? z.seconds)}`,
-                          )
+                          .map((z: any) => {
+                            // In passes, and up to a volume: "Hecken 2 min"
+                            // stood over an expected 19 min 45 s (Q9, Q24).
+                            let text = `${z.zone} ${minutes(z.expected_seconds ?? z.seconds)}`;
+                            if ((z.passes ?? 1) > 1) {
+                              text += ` ${t("in_passes").replace("{passes}", String(z.passes))}`;
+                            }
+                            if (z.max_litres) {
+                              text += ` ${t("at_most").replace(
+                                "{volume}",
+                                `${formatNumber(
+                                  displayVolume(z.max_litres, this.config),
+                                  1,
+                                  (this.hass as any)?.locale,
+                                  lang,
+                                )} ${unit_text(this.config, ZONE_WATER_VOLUME)}`,
+                              )}`;
+                            }
+                            return text;
+                          })
                           .join(" + ")}
                       </div>
                     `,
@@ -990,9 +1038,19 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                             )}
                       </div>`
                     : ""}
+                  ${item.steps.some((s: any) =>
+                    s.zones.some((z: any) => (z.passes ?? 1) > 1),
+                  ) && item.soak_seconds
+                    ? html`<div class="setting-note">
+                        ${t("soak_between").replace(
+                          "{time}",
+                          minutes(item.soak_seconds),
+                        )}
+                      </div>`
+                    : ""}
                   ${item.tours > 1
                     ? html`<div class="setting-note">
-                        ${item.tours} ${t("tours")}
+                        ${t("tours_each").replace("{n}", String(item.tours))}
                       </div>`
                     : ""}
                 </div>

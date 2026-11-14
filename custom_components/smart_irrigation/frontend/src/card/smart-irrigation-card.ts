@@ -20,6 +20,7 @@ import {
   depthLabel,
   LiveState,
   runningValve,
+  soakingZone,
   liveValves,
   wateringNow,
   remainingDuration,
@@ -460,6 +461,32 @@ export class SmartIrrigationCard extends LitElement {
     const needed =
       manual === null && deficit > threshold && now.duration > 0 && !noValve;
     const running = runningValve(this._live, zone.id);
+    const soaking = soakingZone(this._live, zone.id);
+    if (soaking) {
+      // Between two passes: closed, and not done (UX walk of 13 Nov., Q6).
+      return html`
+        <div class="zone">
+          <div class="zone-name">
+            ${zone.name}
+            ${zone.state !== "automatic"
+              ? html`<span class="chip">${this._t(zone.state)}</span>`
+              : ""}
+          </div>
+          <div class="zone-state needed running">
+            ${this._t("soaking", {
+              when: this._moment(soaking.until),
+              pass: String(soaking.next_pass),
+              passes: String(soaking.passes),
+            })}
+          </div>
+          <progress
+            class="program-bar"
+            max="100"
+            .value=${soaking.percent}
+          ></progress>
+        </div>
+      `;
+    }
     if (running) {
       return html`
         <div class="zone">
@@ -472,7 +499,12 @@ export class SmartIrrigationCard extends LitElement {
           <div class="zone-state needed running">
             ${this._t(this._live?.paused ? "paused_left" : "watering_left", {
               time: this._duration(running.remaining_seconds),
-            })}
+            })}${(running as any).passes
+              ? ` · ${this._t("pass_of", {
+                  pass: String((running as any).pass),
+                  passes: String((running as any).passes),
+                })}`
+              : ""}
           </div>
           <progress
             class="program-bar"
@@ -642,6 +674,19 @@ export class SmartIrrigationCard extends LitElement {
         );
       }
       detail = parts.join(" · ");
+    } else if (waiting) {
+      // It waits for the run under way, which a person can see there: it said
+      // "waiting" and "no start planned" at once (UX walk of 13 Nov., Q8).
+      const ahead = (this._programs || []).find(
+        (p) =>
+          p.program_id !== program.program_id &&
+          (p.state === "running" || p.state === "paused"),
+      );
+      detail = ahead
+        ? this._t("programs.after", {
+            name: programLabel(ahead, this._t("programs.main_name")),
+          })
+        : this._t("programs.next_in_line");
     } else if (program.state === "suspended" && program.suspended_until) {
       detail = this._t("programs.until", {
         when: this._moment(program.suspended_until),

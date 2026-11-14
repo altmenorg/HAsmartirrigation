@@ -34,6 +34,14 @@ def test_start_has_a_card_for_the_running_watering(language):
         "program",
         "step",
         "program-left",
+        # Passes, soaks, the pump coming up and the queue (UX walk of 13 Nov.).
+        "headline-soaking",
+        "headline-starting",
+        "pass",
+        "at-most",
+        "soaking",
+        "starting",
+        "then",
     }
     assert "{time}" in running["left"] and "{percent}" in running["left"]
     assert "{step}" in running["step"] and "{steps}" in running["step"]

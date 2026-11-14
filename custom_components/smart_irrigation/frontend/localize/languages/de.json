@@ -455,7 +455,14 @@
           "left": "noch {time} ({percent} %)",
           "program": "Programm",
           "step": "Schritt {step}/{steps}",
-          "program-left": "noch {time}"
+          "program-left": "noch {time}",
+          "headline-soaking": "Einsickern zwischen zwei Durchgängen",
+          "headline-starting": "Bewässerung startet",
+          "pass": "Durchgang {pass} von {passes}",
+          "at-most": "höchstens {volume}",
+          "soaking": "sickert ein, weiter um {when} (Durchgang {pass} von {passes})",
+          "starting": "wartet, bis {supply} angelaufen ist",
+          "then": "Danach: {names}, wartet auf den Einsatz"
         }
       },
       "gaps": {
@@ -840,7 +847,8 @@
         "zone": "Zone",
         "duration": "Dauer",
         "water": "Wasser",
-        "truncated": "Es werden die {count} neuesten von {total} Durchläufen gezeigt."
+        "truncated": "Es werden die {count} neuesten von {total} Durchläufen gezeigt.",
+        "by_hand": "von Hand"
       },
       "charts": {
         "total-title": "Gesamter Wasserverbrauch pro Tag (letzte 30 Tage)",
@@ -1229,11 +1237,18 @@
     "paused_until": "Pausiert bis {when}, danach geht die Bewässerung von selbst weiter.",
     "waiting": "wartet auf seinen Einsatz",
     "step": "Schritt",
-    "tour": "Durchgang",
-    "tours": "Durchgänge",
+    "tour": "Runde",
+    "tours": "Runden",
     "no_valve": "Kein Ventil verknüpft, daher nicht bewässert:",
     "nothing_no_valve": "In diesem Lauf wird nichts bewässert: Den Zonen, denen Wasser fehlt, ist kein Ventil verknüpft:",
     "left": "noch {time}",
+    "pass_of": "Durchgang {pass} von {passes}",
+    "soaking": "sickert ein, weiter um {when} (Durchgang {pass} von {passes})",
+    "starting": "wartet, bis {supply} angelaufen ist",
+    "in_passes": "in {passes} Durchgängen",
+    "at_most": "höchstens {volume}",
+    "soak_between": "Einsickern zwischen den Durchgängen: {time}",
+    "tours_each": "{n} Runden, die Zeiten oben gelten je Runde",
     "expected_skipped_suspended": "Findet nicht statt: Das Programm ist bis {when} ausgesetzt"
   },
   "programs": {
@@ -1540,7 +1555,9 @@
         "suspended": "ausgesetzt",
         "disabled": "deaktiviert"
       },
-      "main_name": "Hauptprogramm"
+      "main_name": "Hauptprogramm",
+      "after": "startet nach {name}",
+      "next_in_line": "startet als Nächstes"
     },
     "editor": {
       "title": "Titel",
@@ -1554,7 +1571,9 @@
     "not_scheduled": "Fällig, aber nicht eingeplant",
     "off": "Ausgeschaltet",
     "watering_left": "bewässert, noch {time}",
-    "paused_left": "pausiert, noch {time}"
+    "paused_left": "pausiert, noch {time}",
+    "soaking": "sickert ein, weiter um {when} (Durchgang {pass}/{passes})",
+    "pass_of": "Durchgang {pass}/{passes}"
   },
   "confirm": {
     "delete_zone": "Die Zone „{name}“ löschen? Ihre Einstellungen und ihre Wasserbilanz gehen verloren.",

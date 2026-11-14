@@ -138,6 +138,7 @@ from .const import (
     CONF_ZONE_SEQUENCING,
     DOMAIN,
     HISTORY_DURATION,
+    HISTORY_PROGRAM_ID,
     HISTORY_START,
     HISTORY_WATER_USED,
     HISTORY_ZONE_ID,
@@ -637,6 +638,7 @@ class IrrigationHistoryEntry:
     zone_name = attr.ib(type=str, default=None)
     duration = attr.ib(type=float, default=0.0)
     water_used = attr.ib(type=float, default=0.0)
+    program_id: str | None = attr.ib(default=None)
 
 
 @attr.s(slots=True, frozen=True)
@@ -1444,6 +1446,7 @@ class SmartIrrigationStorage:
                         zone_name=run.get(HISTORY_ZONE_NAME),
                         duration=run.get(HISTORY_DURATION, 0.0),
                         water_used=run.get(HISTORY_WATER_USED, 0.0),
+                        program_id=run.get(HISTORY_PROGRAM_ID),
                     )
                 )
 

@@ -890,8 +890,11 @@ async def _trigger_start(hass: HomeAssistant, coordinator):
     if getattr(coordinator, "main_program_uses_schedules", lambda: False)() is True:
         return None
     info = await build_irrigation_info(hass, coordinator)
-    start = _armed_trigger_start(info)
-    return dt_util.parse_datetime(start) if start else None
+    start = dt_util.parse_datetime(_armed_trigger_start(info) or "")
+    if start is not None and start.tzinfo is None:
+        # Compared with aware times: a naive one made the planning fail.
+        start = start.replace(tzinfo=dt_util.get_default_time_zone())
+    return start
 
 
 def _armed_trigger_start(info: dict) -> str | None:
@@ -1086,7 +1089,7 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
             base_time = sunrise_time or next_setting_time
         if base_time is None:
             # No sun data at all: assume 6 AM tomorrow.
-            now = datetime.datetime.now()
+            now = dt_util.now()
             base_time = now.replace(hour=6, minute=0, second=0, microsecond=0)
             if base_time <= now:
                 base_time += datetime.timedelta(days=1)
@@ -1257,7 +1260,7 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
     except Exception as e:
         _LOGGER.error("Error calculating irrigation info: %s", e)
         # Return fallback data on error
-        now = datetime.datetime.now()
+        now = dt_util.now()
         sunrise_time = now.replace(hour=6, minute=0, second=0, microsecond=0)
         if sunrise_time <= now:
             sunrise_time += datetime.timedelta(days=1)

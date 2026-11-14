@@ -455,7 +455,14 @@
           "left": "{time} left ({percent} %)",
           "program": "Program",
           "step": "step {step}/{steps}",
-          "program-left": "{time} left"
+          "program-left": "{time} left",
+          "headline-soaking": "Soaking between two passes",
+          "headline-starting": "Watering is starting",
+          "pass": "pass {pass} of {passes}",
+          "at-most": "at most {volume}",
+          "soaking": "soaking, next pass at {when} ({pass} of {passes})",
+          "starting": "waiting for {supply} to come up",
+          "then": "Then: {names}, waiting for their turn"
         }
       },
       "gaps": {
@@ -840,7 +847,8 @@
         "zone": "Zone",
         "duration": "Duration",
         "water": "Water used",
-        "truncated": "Showing the {count} most recent runs out of {total}."
+        "truncated": "Showing the {count} most recent runs out of {total}.",
+        "by_hand": "by hand"
       },
       "charts": {
         "total-title": "Total water used per day (last 30 days)",
@@ -1234,6 +1242,13 @@
     "no_valve": "No valve linked, so not watered:",
     "nothing_no_valve": "Nothing to water in this run: the zones short of water have no valve linked:",
     "left": "{time} left",
+    "pass_of": "pass {pass} of {passes}",
+    "soaking": "soaking, next pass at {when} ({pass} of {passes})",
+    "starting": "waiting for {supply} to come up",
+    "in_passes": "in {passes} passes",
+    "at_most": "at most {volume}",
+    "soak_between": "Soaking between the passes: {time}",
+    "tours_each": "{n} rounds; the times above are for one round",
     "expected_skipped_suspended": "Does not run: the program is suspended until {when}"
   },
   "programs": {
@@ -1540,7 +1555,9 @@
         "suspended": "suspended",
         "disabled": "disabled"
       },
-      "main_name": "Main program"
+      "main_name": "Main program",
+      "after": "starts after {name}",
+      "next_in_line": "starts next"
     },
     "editor": {
       "title": "Title",
@@ -1554,7 +1571,9 @@
     "not_scheduled": "Owed, but not scheduled",
     "off": "Switched off",
     "watering_left": "watering, {time} left",
-    "paused_left": "paused, {time} left"
+    "paused_left": "paused, {time} left",
+    "soaking": "soaking, next pass at {when} ({pass}/{passes})",
+    "pass_of": "pass {pass}/{passes}"
   },
   "confirm": {
     "delete_zone": "Delete the zone \"{name}\"? Its settings and water balance are lost.",
