@@ -237,6 +237,8 @@ export interface IrrigationHistoryRecord {
   zone_name: string | null;
   duration: number;
   water_used: number;
+  /** What started it: a program's id, "main", "manual", or none (from outside). */
+  program_id?: string | null;
 }
 
 export interface IrrigationHistory {

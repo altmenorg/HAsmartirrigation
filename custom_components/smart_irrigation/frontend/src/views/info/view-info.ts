@@ -22,14 +22,16 @@ import {
   calculationWhenKey,
   formatDuration,
   formatNumber,
+  displayVolume,
   localizedDateTime,
   navigate,
   output_unit,
+  unit_text,
 } from "../../helpers";
 import { globalStyle } from "../../styles/global-style";
 import { modernStyle } from "../../styles/modern-style";
 import { localize } from "../../../localize/localize";
-import { DOMAIN, ZONE_BUCKET } from "../../const";
+import { DOMAIN, ZONE_BUCKET, ZONE_WATER_VOLUME } from "../../const";
 import {
   LiveState,
   liveValves,
@@ -355,9 +357,38 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
     if (!wateringNow(live)) return html``;
     const paused = live?.paused === true;
     const valves = liveValves(live);
+    const soaking = live?.soaking || [];
+    const starting = live?.starting || [];
     const programs = (live?.programs || []).filter(
       (p) => p.state === "running",
     );
+    // Waiting their turn behind this run: a toast said so, then nothing did
+    // (UX walk of 13 Nov., Q8).
+    const waiting = (live?.programs || []).filter((p) => p.state === "waiting");
+    const programName = (p: { program_id?: string; name?: string | null }) =>
+      p.program_id === "main" && (!p.name || p.name === "Main program")
+        ? localize("programs.main_name", this._lang)
+        : p.name || this.t("cards.running.program");
+    // With no valve open, "watering" was wrong: the zones soak between two
+    // passes, or the pump is coming up (UX walk of 13 Nov., Q6, Q18).
+    const headline = paused
+      ? "cards.running.headline-paused"
+      : valves.length
+        ? "cards.running.headline"
+        : starting.length
+          ? "cards.running.headline-starting"
+          : soaking.length
+            ? "cards.running.headline-soaking"
+            : "cards.running.headline";
+    const zoneLink = (zoneId: number, name?: string | null) =>
+      html`<a
+        href="/${DOMAIN}/zones/zone/${zoneId}"
+        @click=${(e: Event) => {
+          e.preventDefault();
+          navigate(this, `/${DOMAIN}/zones/zone/${zoneId}`);
+        }}
+        >${name}</a
+      >`;
     const control = async (service: string) => {
       await this.hass!.callService(DOMAIN, service, {});
       this._fetchLive();
@@ -376,13 +407,7 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
             icon=${paused ? "mdi:pause-circle-outline" : "mdi:water"}
           ></ha-icon>
           <div class="hero-text">
-            <div class="hero-headline">
-              ${this.t(
-                paused
-                  ? "cards.running.headline-paused"
-                  : "cards.running.headline",
-              )}
-            </div>
+            <div class="hero-headline">${this.t(headline)}</div>
             ${paused && live?.paused_until
               ? html`<div class="hero-sub">
                   ${this.t(
@@ -395,26 +420,74 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                   )}
                 </div>`
               : ""}
-            ${valves.map(
-              (valve) => html`
-                <div class="hero-sub">
-                  <a
-                    href="/${DOMAIN}/zones/zone/${valve.zone_id}"
-                    @click=${(e: Event) => {
-                      e.preventDefault();
-                      navigate(this, `/${DOMAIN}/zones/zone/${valve.zone_id}`);
-                    }}
-                    >${valve.zone}</a
-                  >:
+            ${valves.map((shown) => {
+              const valve = shown as any;
+              // The whole zone's time and water, its pass, and the volume it
+              // stops at: "58 s (3 %)" was the pass alone (Q7, Q24).
+              const bits = [
+                this.t(
+                  "cards.running.left",
+                  "{time}",
+                  remainingDuration(valve.remaining_seconds),
+                  "{percent}",
+                  String(valve.percent),
+                ),
+              ];
+              if (valve.passes) {
+                bits.push(
+                  this.t(
+                    "cards.running.pass",
+                    "{pass}",
+                    String(valve.pass),
+                    "{passes}",
+                    String(valve.passes),
+                  ),
+                );
+              }
+              if (valve.max_litres) {
+                bits.push(
+                  this.t(
+                    "cards.running.at-most",
+                    "{volume}",
+                    `${this._n(
+                      displayVolume(valve.max_litres, this.config),
+                      1,
+                    )} ${unit_text(this.config, ZONE_WATER_VOLUME)}`,
+                  ),
+                );
+              }
+              return html`<div class="hero-sub">
+                ${zoneLink(valve.zone_id, valve.zone)}: ${bits.join(", ")}
+              </div>`;
+            })}
+            ${soaking.map(
+              (zone) =>
+                html`<div class="hero-sub">
+                  ${zoneLink(zone.zone_id, zone.zone)}:
                   ${this.t(
-                    "cards.running.left",
-                    "{time}",
-                    remainingDuration(valve.remaining_seconds),
-                    "{percent}",
-                    String(valve.percent),
+                    "cards.running.soaking",
+                    "{when}",
+                    momentLabel(zone.until, this._lang, {
+                      tomorrow: localize("card.tomorrow", this._lang),
+                      yesterday: localize("card.yesterday", this._lang),
+                    }),
+                    "{pass}",
+                    String(zone.next_pass),
+                    "{passes}",
+                    String(zone.passes),
                   )}
-                </div>
-              `,
+                </div>`,
+            )}
+            ${starting.map(
+              (zone) =>
+                html`<div class="hero-sub">
+                  ${zoneLink(zone.zone_id, zone.zone)}:
+                  ${this.t(
+                    "cards.running.starting",
+                    "{supply}",
+                    zone.supply || "",
+                  )}
+                </div>`,
             )}
             ${programs.map((program) => {
               // Joined as text: the template's line breaks put a space
@@ -449,6 +522,15 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
                 ${bits.length ? `${name}: ${bits.join(", ")}` : name}
               </div>`;
             })}
+            ${waiting.length
+              ? html`<div class="hero-sub">
+                  ${this.t(
+                    "cards.running.then",
+                    "{names}",
+                    waiting.map(programName).join(", "),
+                  )}
+                </div>`
+              : ""}
           </div>
         </div>
         <div class="card-actions">

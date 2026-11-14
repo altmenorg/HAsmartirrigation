@@ -646,7 +646,10 @@ class ProgramRunnerMixin:
             return None
         try:
             return await self._run_one_valve(
-                zone, passes=passes, max_litres=max_litres or None
+                zone,
+                passes=passes,
+                max_litres=max_litres or None,
+                source=run.program_id,
             )
         except asyncio.CancelledError:
             raise

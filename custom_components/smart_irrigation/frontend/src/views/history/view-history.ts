@@ -90,6 +90,22 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
     ];
   }
 
+  /**
+   * What started a run, under its zone: twelve rows of one evening said
+   * nothing of which program watered (UX walk of 13 Nov., Q16).
+   */
+  private _source(record: { program_id?: string | null }): string {
+    const lang = this.hass?.language ?? "en";
+    const id = record.program_id;
+    if (!id) return "";
+    if (id === "manual") return localize("panels.history.table.by_hand", lang);
+    if (id === "main") return localize("programs.main_name", lang);
+    const program = (this._config?.programs || []).find(
+      (p: any) => p.id === id,
+    );
+    return program?.name || "";
+  }
+
   private async _fetchData(): Promise<void> {
     if (!this.hass) {
       return;
@@ -277,7 +293,13 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
                       (record) => html`
                         <div class="history-row">
                           <span>${this._formatStart(record.start)}</span>
-                          <span>${record.zone_name || "-"}</span>
+                          <span
+                            >${record.zone_name || "-"}${this._source(record)
+                              ? html`<span class="history-source"
+                                  >${this._source(record)}</span
+                                >`
+                              : ""}</span
+                          >
                           <span>${formatDuration(record.duration)}</span>
                           <span
                             >${this._n(
@@ -512,6 +534,11 @@ export class SmartIrrigationViewHistory extends SubscribeMixin(LitElement) {
       .history-row span:last-child,
       .history-header span:last-child {
         text-align: end;
+      }
+      .history-source {
+        display: block;
+        font-size: 0.85em;
+        color: var(--secondary-text-color);
       }
       .history-header {
         display: contents;

@@ -528,6 +528,13 @@ class ObservedWateringMixin:
         duration = float(seconds) if seconds is not None else 0.0
         if started is None:
             started = end - timedelta(seconds=duration)
+        # Which program watered it: twelve rows of one evening said nothing of
+        # it (UX walk of 13 Nov., Q16). A run of ours carries it.
+        controls = getattr(self, "_run_controls", None)
+        zone_id = zone.get(const.ZONE_ID)
+        control = (
+            controls().get(int(zone_id)) if controls and zone_id is not None else None
+        )
         try:
             await self.store.async_add_irrigation_history(
                 {
@@ -536,6 +543,7 @@ class ObservedWateringMixin:
                     const.HISTORY_ZONE_NAME: zone.get(const.ZONE_NAME),
                     const.HISTORY_DURATION: round(duration, 1),
                     const.HISTORY_WATER_USED: round(volume_l, 3),
+                    const.HISTORY_PROGRAM_ID: getattr(control, "source", None),
                 }
             )
         except Exception as e:  # noqa: BLE001
