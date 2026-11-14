@@ -23,7 +23,7 @@ pre-commit>=4.7.0
 mypy==2.4.1
 
 # Documentation
-markdown>=3.11.2
+markdown>=3.11.3
 
 # Testing dependencies
 pytest
