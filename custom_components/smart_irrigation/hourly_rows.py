@@ -739,6 +739,8 @@ def summed_hourly_eto(
     tz=None,
     solar_series=None,
     per_hour=None,
+    history=None,
+    history_keys=(),
 ):
     """``(millimetres, hours)`` over the window, or None.
 
@@ -749,6 +751,12 @@ def summed_hourly_eto(
 
     ``per_hour``, when a list, receives ``[middle of the hour, mm]`` for each
     hour, which is when the window's evapotranspiration happened.
+
+    ``history`` and ``history_keys``: a weather service's own hourly entries,
+    and the row keys to take from them instead of the readings (#961). A group
+    that reads some inputs from the service and measures the others gets the
+    service's hour-long figures for the first and keeps its sensors for the
+    rest.
     """
     rows = build_hourly_rows(
         readings,
@@ -764,6 +772,8 @@ def summed_hourly_eto(
     )
     if not rows:
         return None
+    if history and history_keys:
+        merge_history_into_rows(rows, history, history_keys, tz, tz_offset_h)
     hours = sum(row["coverage_h"] for row in rows)
     if hours <= 0:
         return None
@@ -788,6 +798,45 @@ def _keep_per_hour(per_hour, rows, priced) -> None:
         start = row.get("hour_start")
         if isinstance(start, datetime.datetime):
             per_hour.append([start + datetime.timedelta(minutes=30), millimetres])
+
+
+# The keys of an hourly row a weather service's entry can fill, by the field of
+# the sensor group that feeds each one.
+HISTORY_ROW_KEYS = {
+    const.MAPPING_TEMPERATURE: "temperature",
+    const.MAPPING_HUMIDITY: "humidity",
+    const.MAPPING_WINDSPEED: "wind_2m",
+    const.MAPPING_SOLRAD: "solar_mj_h",
+    const.MAPPING_PRESSURE: "pressure_kpa",
+}
+
+
+def merge_history_into_rows(rows, entries, keys, tz=None, tz_offset_h=0.0) -> int:
+    """Put a service's own figure for ``keys`` into each row, in place.
+
+    The rows are those of the readings, so the window, the coverage of each
+    hour and every key not named stay what the readings made them. An hour the
+    history has no usable entry for keeps its readings: the latest hours may
+    not be published yet. Returns how many hours took the history.
+    """
+    by_hour = {}
+    for entry in entries or []:
+        try:
+            row = _row_from_entry(entry, tz, tz_offset_h)
+        except (AttributeError, KeyError, OSError, TypeError, ValueError):
+            _LOGGER.debug("An entry of the hourly history was skipped", exc_info=True)
+            continue
+        by_hour[row["hour_start"]] = row
+    merged = 0
+    for row in rows:
+        source = by_hour.get(row["hour_start"])
+        if source is None:
+            continue
+        for key in keys:
+            if source.get(key) is not None:
+                row[key] = source[key]
+        merged += 1
+    return merged
 
 
 def _row_from_entry(entry, tz=None, tz_offset_h=0.0):

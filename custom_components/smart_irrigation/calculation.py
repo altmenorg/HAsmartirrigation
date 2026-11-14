@@ -29,6 +29,7 @@ from .calcmodules.consumes import sourced_fields
 from .engine_binding import zone_has_engine
 from .helpers import loadModules, parse_datetime
 from .hourly_rows import (
+    HISTORY_ROW_KEYS,
     SystemLocalTime,
     forecast_eto_by_day,
     summed_hourly_eto,
@@ -95,6 +96,34 @@ def et_inputs_from_the_service(mapping) -> bool:
             return False
         from_service = True
     return from_service
+
+
+def et_row_keys_from_the_service(mapping) -> tuple:
+    """The keys of the hourly rows a sensor group reads from the weather service.
+
+    For a group that measures some inputs of the ET and reads the others from
+    the service (#961): those come from the service's own hourly history, the
+    measured ones from the group's sensors. A dew point from the service stands
+    for the humidity when nothing else feeds it.
+    """
+    mappings = (mapping or {}).get(const.MAPPING_MAPPINGS) or {}
+
+    def _source(field):
+        the_map = mappings.get(field)
+        if not isinstance(the_map, dict):
+            return None
+        source = the_map.get(const.MAPPING_CONF_SOURCE)
+        return None if source == const.MAPPING_CONF_SOURCE_NONE else source
+
+    service = const.MAPPING_CONF_SOURCE_WEATHER_SERVICE
+    keys = [key for field, key in HISTORY_ROW_KEYS.items() if _source(field) == service]
+    if (
+        "humidity" not in keys
+        and _source(const.MAPPING_HUMIDITY) is None
+        and _source(const.MAPPING_DEWPOINT) == service
+    ):
+        keys.append("humidity")
+    return tuple(keys)
 
 
 # A drop to below this share of the previous total is a counter reset even
@@ -1611,6 +1640,14 @@ class CalculationMixin:
                 estimated_solar = solar_series is not None
             if solar_series is None:
                 return None
+        # A group that measures some inputs and reads the others from Open-Meteo
+        # takes Open-Meteo's own hourly figures for those (#961).
+        history_keys = et_row_keys_from_the_service(mapping)
+        history_entries = (
+            await self._open_meteo_history_entries(mapping, since)
+            if history_keys
+            else None
+        )
         result = summed_hourly_eto(
             mapping.get(const.MAPPING_DATA),
             since,
@@ -1622,6 +1659,8 @@ class CalculationMixin:
             tz=SystemLocalTime(),
             solar_series=solar_series,
             per_hour=per_hour,
+            history=history_entries,
+            history_keys=history_keys if history_entries else (),
         )
         if result is None:
             _LOGGER.debug(
@@ -1639,13 +1678,18 @@ class CalculationMixin:
                 return None
         _LOGGER.debug(
             "[calculate-module]: zone %s: %.3f mm of reference ET summed over "
-            "%.2f hours%s",
+            "%.2f hours%s%s",
             zone.get(const.ZONE_ID),
             result[0],
             result[1],
             (
                 " (the sun estimated from the temperature range)"
                 if estimated_solar
+                else ""
+            ),
+            (
+                f" ({', '.join(history_keys)} from Open-Meteo's hourly history)"
+                if history_entries
                 else ""
             ),
         )
@@ -1706,25 +1750,13 @@ class CalculationMixin:
         greenhouse keeps summing its own readings: the history would overrule
         them. Any failure also falls back to them.
         """
-        if (
-            since is None
-            or not getattr(self, "use_weather_service", False)
-            or getattr(self, "weather_service", None) != const.CONF_WEATHER_SERVICE_OM
-            or (mapping or {}).get(const.MAPPING_GREENHOUSE)
-        ):
+        if not et_inputs_from_the_service(mapping):
             return None
-        fetch = getattr(
-            getattr(self, "_WeatherServiceClient", None), "get_hourly_history", None
-        )
-        if fetch is None:
+        entries = await self._open_meteo_history_entries(mapping, since)
+        if not entries:
             return None
+        now = datetime.now()
         try:
-            if not et_inputs_from_the_service(mapping):
-                return None
-            now = datetime.now()
-            entries = await self.hass.async_add_executor_job(fetch, since, now)
-            if not entries:
-                return None
             result = summed_hourly_eto_from_history(
                 entries,
                 since,
@@ -1747,6 +1779,35 @@ class CalculationMixin:
         except Exception:  # noqa: BLE001 - the readings are the fallback
             _LOGGER.debug("The hourly history could not be used", exc_info=True)
             return None
+
+    async def _open_meteo_history_entries(self, mapping, since):
+        """Open-Meteo's hourly entries from ``since`` to now, or None.
+
+        None for another service, a greenhouse (no sky reading describes the
+        air under glass), a client that keeps no history, or any failure: the
+        readings are then used as they always were.
+        """
+        if (
+            since is None
+            or not getattr(self, "use_weather_service", False)
+            or getattr(self, "weather_service", None) != const.CONF_WEATHER_SERVICE_OM
+            or (mapping or {}).get(const.MAPPING_GREENHOUSE)
+        ):
+            return None
+        fetch = getattr(
+            getattr(self, "_WeatherServiceClient", None), "get_hourly_history", None
+        )
+        if fetch is None:
+            return None
+        try:
+            entries = await self.hass.async_add_executor_job(
+                fetch, since, datetime.now()
+            )
+        except Exception:  # noqa: BLE001 - the readings are the fallback
+            _LOGGER.debug("The hourly history could not be fetched", exc_info=True)
+            return None
+        # A list of hourly entries, or nothing usable.
+        return list(entries) if isinstance(entries, list | tuple) and entries else None
 
     def _under_glass(self, zone, weatherdata):
         """The weather data, told to dim an estimated sun for a greenhouse.
