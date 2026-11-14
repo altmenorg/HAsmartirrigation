@@ -334,6 +334,8 @@ export interface IuImportPreview {
   previous: { source?: string; at?: string };
   report: { items: IuImportReportItem[]; counts: Record<string, number> };
   fingerprint: string;
+  /** Whether IU is set up and waters; false when Home Assistant rejected it. */
+  iu_running?: boolean;
 }
 
 export interface IuImportRequest {
@@ -397,6 +399,8 @@ export interface IuImportStatus {
   both_on: boolean;
   /** Zones IU runs switched off that a step of an imported sequence waters. */
   zones_off_in_iu?: { zone: string; program: string }[];
+  /** The imported programs' zones the main program waters as well. */
+  main_also_waters?: string[];
   follow_ups: IuFollowUp[];
 }
 
