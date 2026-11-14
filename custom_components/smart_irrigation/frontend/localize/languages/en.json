@@ -774,7 +774,9 @@
         },
         "duration-readonly-automatic": "Calculated for you: this zone's run comes from its water balance. Set it to manual to type a duration yourself.",
         "duration-readonly-disabled": "A disabled zone is never watered, so it has no run time.",
-        "et-deficiency-help": "What this zone needs per day: ETc, ET0 times the crop factor with the seasonal adjustment, before rain and before scaling to the interval, so it compares across setups. ET0 alone is the zone sensor's `eto` attribute, to check against a weather service."
+        "et-deficiency-help": "What this zone needs per day: ETc, ET0 times the crop factor with the seasonal adjustment, before rain and before scaling to the interval, so it compares across setups. ET0 alone is the zone sensor's `eto` attribute, to check against a weather service.",
+        "safety-off-entity": "Valve's own duration",
+        "safety-off-entity-help": "For a valve that closes by itself after a duration of its own, such as Gardena (its \"watering duration\" number, 1 min unless changed): pick that number here. Before each open, Smart Irrigation writes the pass's length plus 30 s to it, so the valve stays open for the whole pass and still closes by itself if Home Assistant stops. Without it, such a valve closes after its preset time."
       },
       "no_items": "There are no zones defined yet.",
       "title": "Zones",

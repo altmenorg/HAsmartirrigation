@@ -31,6 +31,7 @@ import math
 from collections import deque
 from datetime import datetime, timedelta
 from functools import partial
+from typing import Any, cast
 
 import homeassistant.util.dt as dt_util
 import voluptuous as vol
@@ -647,6 +648,92 @@ class ValveRunnerMixin(
                 e,
             )
 
+    async def _set_valve_duration(self, zone: dict, held: float) -> None:
+        """Write the pass's length to the valve's own duration, before it opens.
+
+        A valve that closes by itself after its own duration (Gardena: the
+        "watering duration" number, 1 min unless changed) closed a 40 min pass
+        after that minute, while the run went on counting it as open. The
+        length of the pass plus ``SAFETY_OFF_TIME_MARGIN`` is written, in the
+        entity's unit, rounded up to its step, so Home Assistant's close comes
+        first and the valve's own is the dead-man.
+
+        Best-effort like the other dead-men: a missing entity or a failed write
+        is logged and the valve opens all the same. A pass longer than the
+        entity allows gets its maximum, with a warning: the valve will then
+        close before the pass ends.
+        """
+        entity_id = zone.get(const.ZONE_SAFETY_OFF_ENTITY)
+        if not entity_id:
+            return
+        if zone.get(const.ZONE_SAFETY_OFF_MODE) == const.SAFETY_OFF_MODE_OFF:
+            return
+        hass = cast(Any, self).hass
+        state = hass.states.get(entity_id)
+        if state is None:
+            self._safety_off_failed(
+                ("duration", entity_id),
+                "Direct valve control: the valve duration entity %s does not "
+                "exist; the valve opens with its own preset duration",
+                entity_id,
+            )
+            return
+        attributes = state.attributes
+        unit = str(attributes.get("unit_of_measurement") or "s").strip().lower()
+        per_unit = {"h": 3600.0, "min": 60.0, "s": 1.0}.get(unit)
+        if per_unit is None:
+            self._safety_off_failed(
+                ("duration", entity_id),
+                "Direct valve control: the unit %r of %s is not a duration; "
+                "nothing written to it",
+                unit,
+                entity_id,
+            )
+            return
+        seconds = max(0.0, held) + const.SAFETY_OFF_TIME_MARGIN
+        step = float(attributes.get("step") or 1) or 1.0
+        value = math.ceil(seconds / per_unit / step) * step
+        low = attributes.get("min")
+        high = attributes.get("max")
+        if low is not None:
+            value = max(value, float(low))
+        if high is not None and value > float(high):
+            self._safety_off_failed(
+                ("duration-max", entity_id),
+                "Direct valve control: a pass of %ss is longer than %s allows "
+                "(%s %s); the valve will close before the pass ends",
+                int(held),
+                entity_id,
+                high,
+                unit,
+            )
+            value = float(high)
+        if value == int(value):
+            value = int(value)
+        domain = entity_id.split(".", 1)[0]
+        try:
+            await hass.services.async_call(
+                domain,
+                "set_value",
+                {"entity_id": entity_id, "value": value},
+                blocking=True,
+            )
+            _LOGGER.debug(
+                "Direct valve control: set %s to %s %s before opening",
+                entity_id,
+                value,
+                unit,
+            )
+        except asyncio.CancelledError:
+            raise
+        except Exception as e:  # noqa: BLE001 - the duration must never block a run
+            self._safety_off_failed(
+                ("duration", entity_id),
+                "Direct valve control: could not set %s before opening: %s",
+                entity_id,
+                e,
+            )
+
     def _timed_open_data(self, zone: dict, held: float, entity_id: str | None):
         """The ZHA command that opens a valve and bounds it, or None.
 
@@ -849,6 +936,8 @@ class ValveRunnerMixin(
         """
         failed = set()
         self._timed_opens().pop(zone.get(const.ZONE_ID), None)
+        if timer_seconds is not None:
+            await self._set_valve_duration(zone, timer_seconds)
         if entities is None:
             entities = self._zone_entities(zone, primary)
         for index, entity_id in enumerate(entities):
