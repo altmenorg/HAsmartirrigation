@@ -105,6 +105,7 @@ import {
   ZONE_EXTRA_ENTITIES,
   ZONE_SAFETY_OFF_STATE_KEY,
   ZONE_SAFETY_OFF_MODE,
+  ZONE_SAFETY_OFF_REQUIRED,
   ZONE_CONFIRM_TIMEOUT,
   ZONE_OPEN_RESENDS,
   ZONE_MAPPING,
@@ -969,6 +970,18 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
    * lead time. Those have sound defaults, and meeting them by accident is how
    * a working installation gets broken.
    */
+  /** Whether the zone's valve has a timer of its own that Smart Irrigation
+   * can set: a duration entity, an MQTT topic, or a ZHA valve. Only then is
+   * "skip the watering without it" offered: for any other valve it would mean
+   * never watering. */
+  private _canSetValveTimer(zone: SmartIrrigationZone): boolean {
+    if ((zone.safety_off_mode || "auto") === "off") return false;
+    if (zone.safety_off_entity || zone.safety_off_topic) return true;
+    const linked = zone.linked_entity;
+    const registry = (this.hass as any)?.entities;
+    return Boolean(linked && registry?.[linked]?.platform === "zha");
+  }
+
   private _adv(content: TemplateResult | string): TemplateResult | string {
     return this.config?.ui_mode === "advanced" ? content : "";
   }
@@ -1938,6 +1951,46 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           lang,
                         )}
                       </div>
+                      ${this._canSetValveTimer(zone)
+                        ? html`
+                            ${this._selectRow(
+                              localize(
+                                "panels.zones.labels.safety-off-required",
+                                lang,
+                              ),
+                              html`
+                                ${["open", "skip"].map(
+                                  (m) => html`
+                                    <option
+                                      value=${m}
+                                      ?selected=${(zone.safety_off_required
+                                        ? "skip"
+                                        : "open") === m}
+                                    >
+                                      ${localize(
+                                        `panels.zones.labels.safety-off-required-${m}`,
+                                        lang,
+                                      )}
+                                    </option>
+                                  `,
+                                )}
+                              `,
+                              (e: Event) =>
+                                this.handleEditZone(index, {
+                                  ...zone,
+                                  [ZONE_SAFETY_OFF_REQUIRED]:
+                                    (e.target as HTMLSelectElement).value ===
+                                    "skip",
+                                }),
+                            )}
+                            <div class="setting-help">
+                              ${localize(
+                                "panels.zones.labels.safety-off-required-help",
+                                lang,
+                              )}
+                            </div>
+                          `
+                        : ""}
                     `)
                   : ""}
                 ${this._adv(

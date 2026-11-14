@@ -230,6 +230,7 @@ from .const import (
     ZONE_PRECIPITATION_SUPERSEDED,
     ZONE_SAFETY_OFF_ENTITY,
     ZONE_SAFETY_OFF_MODE,
+    ZONE_SAFETY_OFF_REQUIRED,
     ZONE_SAFETY_OFF_STATE_KEY,
     ZONE_SAFETY_OFF_TOPIC,
     ZONE_SIZE,
@@ -332,6 +333,7 @@ class ZoneEntry:
     safety_off_mode = attr.ib(type=str, default=None)
     # The valve's own duration, set before each open (see const).
     safety_off_entity = attr.ib(type=str, default=None)
+    safety_off_required = attr.ib(type=bool, default=None)
     # How long the valves are given to confirm, and how often the open is sent
     # again meanwhile (see ZONE_CONFIRM_TIMEOUT). None keeps the defaults.
     confirm_timeout = attr.ib(type=float, default=None)
@@ -1359,6 +1361,7 @@ class SmartIrrigationStorage:
                         safety_off_state_key=zone.get(ZONE_SAFETY_OFF_STATE_KEY, None),
                         safety_off_mode=zone.get(ZONE_SAFETY_OFF_MODE, None),
                         safety_off_entity=zone.get(ZONE_SAFETY_OFF_ENTITY, None),
+                        safety_off_required=zone.get(ZONE_SAFETY_OFF_REQUIRED, None),
                         confirm_timeout=zone.get(ZONE_CONFIRM_TIMEOUT, None),
                         open_resends=zone.get(ZONE_OPEN_RESENDS, None),
                         supply_id=zone.get(ZONE_SUPPLY_ID, None),

@@ -702,6 +702,11 @@ SAFETY_OFF_MODE_OFF = "off"
 # differs between devices.
 SAFETY_OFF_MODE_ZHA = "zha"
 SAFETY_OFF_MODES = (SAFETY_OFF_MODE_AUTO, SAFETY_OFF_MODE_OFF, SAFETY_OFF_MODE_ZHA)
+# A zone that would rather skip a watering than open its valve without the
+# valve's own timer (#893): when none of the ways of setting it succeeds, the
+# valve stays shut, or is shut at once, and the zone reports
+# ``valve_timer_not_set``. Off by default: the valve then opens all the same.
+ZONE_SAFETY_OFF_REQUIRED = "safety_off_required"
 # How long this zone's valves are given to say they opened or closed, in
 # seconds, and how many times the open is sent again in that time. None keeps
 # the runner's defaults: 8 s and no resend, or 30 s and two resends with the

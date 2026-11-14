@@ -90,6 +90,9 @@ _VALVE_UNUSABLE = (None, "", "unknown", "unavailable")
 # Reasons carried by the zone_problem event and the end-of-watering summary.
 PROBLEM_DID_NOT_OPEN = "valve_did_not_open"
 PROBLEM_DID_NOT_CLOSE = "valve_did_not_close"
+# The zone asks for the valve's own timer (ZONE_SAFETY_OFF_REQUIRED) and it
+# could not be set: the valve was left shut, or shut at once.
+PROBLEM_TIMER_NOT_SET = "valve_timer_not_set"
 PROBLEM_NO_FLOW = "no_flow"
 # Not a fault: the zone's run was stopped before it delivered anything.
 PROBLEM_STOPPED = "stopped"
@@ -111,6 +114,17 @@ VALVE_VERIFY_INTERVAL = 60.0
 _VALVE_OFF_STATES = ("off", "closed", "closing")
 PROBLEM_CLOSED_EARLY = "valve_closed_early"
 STOP_VALVE_CLOSED_EARLY = "valve_closed_early"
+
+
+class ValveTimerNotSet(Exception):
+    """The valve's own timer could not be set, and the zone will not open without it."""
+
+
+def timer_required(zone) -> bool:
+    """Whether the zone opens its valve only with the valve's own timer set."""
+    return bool((zone or {}).get(const.ZONE_SAFETY_OFF_REQUIRED)) and (
+        (zone or {}).get(const.ZONE_SAFETY_OFF_MODE) != const.SAFETY_OFF_MODE_OFF
+    )
 
 
 class RunControl:
@@ -554,19 +568,19 @@ class ValveRunnerMixin(
         entity_id: str | None,
         *,
         known_only: bool = False,
-    ) -> None:
+    ) -> bool:
         """Arm the dead-man of a ZHA valve: "on with timed off" on its On/Off cluster.
 
         A known model that counts seconds gets the time in seconds; any other
         gets the ZCL unit (tenths of a second). ``known_only`` (the "auto" mode)
-        arms nothing for a model that is not known.
+        arms nothing for a model that is not known. Whether it was armed.
         """
         target = self._zha_target(entity_id)
         if target is None:
-            return
+            return False
         seconds = self._zha_counts_seconds(entity_id)
         if known_only and not seconds:
-            return
+            return False
         ieee, endpoint_id = target
         on_time = int(math.ceil(max(0.0, held))) + const.SAFETY_OFF_TIME_MARGIN
         # Seconds are clamped to the 16 bits (about 18 hours); tenths are not
@@ -582,7 +596,7 @@ class ValveRunnerMixin(
                 entity_id,
                 on_time,
             )
-            return
+            return False
         try:
             # One bounded attempt: a silent (asleep) device must not hold the
             # start of a pass for the 16 s the blocking call would take.
@@ -605,10 +619,12 @@ class ValveRunnerMixin(
                 entity_id,
                 repr(e) if not str(e) else e,
             )
+            return False
+        return True
 
     async def _arm_safety_off(
         self, zone: dict, held: float, entity_id: str | None = None
-    ) -> None:
+    ) -> bool:
         """Arm a hardware dead-man on the zone's valve, if one is configured.
 
         Publishes an "on with timed off" to the zone's MQTT set-topic so the
@@ -627,19 +643,19 @@ class ValveRunnerMixin(
         A missing topic, an MQTT stack that is not set up, or any publish error
         must never break the run (the close still happens the usual way), so the
         whole thing is best-effort and swallows its failures with a warning.
+        Returns whether a dead-man was armed.
         """
         if zone.get(const.ZONE_SAFETY_OFF_MODE) == const.SAFETY_OFF_MODE_OFF:
-            return
+            return False
         topic = zone.get(const.ZONE_SAFETY_OFF_TOPIC)
         if not topic:
-            await self._arm_zha_safety_off(
+            return await self._arm_zha_safety_off(
                 zone,
                 held,
                 entity_id or zone.get(const.ZONE_LINKED_ENTITY),
                 known_only=zone.get(const.ZONE_SAFETY_OFF_MODE)
                 != const.SAFETY_OFF_MODE_ZHA,
             )
-            return
         key = (
             zone.get(const.ZONE_SAFETY_OFF_STATE_KEY)
             or const.CONF_DEFAULT_SAFETY_OFF_STATE_KEY
@@ -662,8 +678,10 @@ class ValveRunnerMixin(
                 topic,
                 e,
             )
+            return False
+        return True
 
-    async def _set_valve_duration(self, zone: dict, held: float) -> None:
+    async def _set_valve_duration(self, zone: dict, held: float) -> bool | None:
         """Write the pass's length to the valve's own duration, before it opens.
 
         A valve that closes by itself after its own duration (Gardena: the
@@ -677,12 +695,14 @@ class ValveRunnerMixin(
         is logged and the valve opens all the same. A pass longer than the
         entity allows gets its maximum, with a warning: the valve will then
         close before the pass ends.
+
+        None when the zone names no such entity, else whether it was written.
         """
         entity_id = zone.get(const.ZONE_SAFETY_OFF_ENTITY)
         if not entity_id:
-            return
+            return None
         if zone.get(const.ZONE_SAFETY_OFF_MODE) == const.SAFETY_OFF_MODE_OFF:
-            return
+            return None
         hass = cast(Any, self).hass
         state = hass.states.get(entity_id)
         if state is None:
@@ -692,7 +712,7 @@ class ValveRunnerMixin(
                 "exist; the valve opens with its own preset duration",
                 entity_id,
             )
-            return
+            return False
         attributes = state.attributes
         unit = str(attributes.get("unit_of_measurement") or "s").strip().lower()
         per_unit = {"h": 3600.0, "min": 60.0, "s": 1.0}.get(unit)
@@ -704,7 +724,7 @@ class ValveRunnerMixin(
                 unit,
                 entity_id,
             )
-            return
+            return False
         seconds = max(0.0, held) + const.SAFETY_OFF_TIME_MARGIN
         step = float(attributes.get("step") or 1) or 1.0
         value = math.ceil(seconds / per_unit / step) * step
@@ -748,6 +768,8 @@ class ValveRunnerMixin(
                 entity_id,
                 e,
             )
+            return False
+        return True
 
     def _timed_open_data(self, zone: dict, held: float, entity_id: str | None):
         """The ZHA command that opens a valve and bounds it, or None.
@@ -769,6 +791,39 @@ class ValveRunnerMixin(
         return self._zha_timed_off_data(
             ieee, endpoint_id, min(on_time, const.ZHA_MAX_ON_TIME)
         )
+
+    def _durations_written(self) -> set:
+        """The zones whose valve's own duration was written for the pass under way."""
+        written = getattr(self, "_valve_durations_written", None)
+        if written is None:
+            written = self._valve_durations_written = set()
+        return written
+
+    def _can_set_timer(self, zone: dict, entity_id: str | None) -> bool:
+        """Whether the zone has some way of giving its valve its own timer.
+
+        Its own duration entity, an MQTT topic, or a ZHA valve the mode arms:
+        any ZHA valve in "zha", a known seconds-counting model in "auto".
+        """
+        if zone.get(const.ZONE_SAFETY_OFF_MODE) == const.SAFETY_OFF_MODE_OFF:
+            return False
+        if zone.get(const.ZONE_SAFETY_OFF_ENTITY) or zone.get(
+            const.ZONE_SAFETY_OFF_TOPIC
+        ):
+            return True
+        if self._zha_target(entity_id) is None:
+            return False
+        return zone.get(
+            const.ZONE_SAFETY_OFF_MODE
+        ) == const.SAFETY_OFF_MODE_ZHA or self._zha_counts_seconds(entity_id)
+
+    def _timer_set(self, zone: dict, timed_open: bool) -> bool:
+        """Whether the pass under way gave the zone's valve its own timer so far.
+
+        Opened with its timer, or its own duration written. The separate arm,
+        when it is still to come, is the caller's to add.
+        """
+        return timed_open or zone.get(const.ZONE_ID) in self._durations_written()
 
     def _timed_opens(self) -> dict:
         """The timed-open commands of the passes under way, by zone id."""
@@ -951,10 +1006,23 @@ class ValveRunnerMixin(
         """
         failed = set()
         self._timed_opens().pop(zone.get(const.ZONE_ID), None)
-        if timer_seconds is not None:
-            await self._set_valve_duration(zone, timer_seconds)
+        self._durations_written().discard(zone.get(const.ZONE_ID))
+        required = timer_seconds is not None and timer_required(zone)
         if entities is None:
             entities = self._zone_entities(zone, primary)
+        if required and not self._can_set_timer(
+            zone, entities[0] if entities else primary
+        ):
+            # No way of setting it at all: not opened, rather than opened and
+            # shut at once.
+            raise ValveTimerNotSet
+        if timer_seconds is not None:
+            written = await self._set_valve_duration(zone, timer_seconds)
+            if written:
+                self._durations_written().add(zone.get(const.ZONE_ID))
+            elif written is False and required:
+                # Named, and it could not be written: nothing is opened.
+                raise ValveTimerNotSet
         for index, entity_id in enumerate(entities):
             domain, on_svc, _off = self._valve_services(entity_id)
             try:
@@ -964,9 +1032,18 @@ class ValveRunnerMixin(
                     and await self._open_with_timer(zone, entity_id, timer_seconds)
                 ):
                     pass
+                elif (
+                    index == 0
+                    and required
+                    and self._timed_open_data(zone, timer_seconds, entity_id)
+                    is not None
+                ):
+                    # Opened with its timer or not at all: the open with it
+                    # failed, and the normal one would carry none.
+                    raise ValveTimerNotSet
                 else:
                     await self._async_call_valve_service(domain, on_svc, entity_id)
-            except asyncio.CancelledError:
+            except (asyncio.CancelledError, ValveTimerNotSet):
                 raise
             except Exception as e:  # noqa: BLE001 - the primary's failure is the run's
                 if index == 0:
@@ -1980,9 +2057,14 @@ class ValveRunnerMixin(
                     if control is not None:
                         control.delivered = 0.0
                     return None
-            failed = await self._open_zone_valves(
-                zone, entity_id, entities, timer_seconds=held
-            )
+            try:
+                failed = await self._open_zone_valves(
+                    zone, entity_id, entities, timer_seconds=held
+                )
+            except ValveTimerNotSet:
+                closed = True
+                self._report_valve_problem(zone, entity_id, PROBLEM_TIMER_NOT_SET)
+                return PROBLEM_TIMER_NOT_SET
 
             # Confirm the valve actually opened before counting/crediting: a
             # valve that never opens would otherwise clear the deficit while
@@ -2015,8 +2097,14 @@ class ValveRunnerMixin(
             await self._add_active_run(zone_id, entity_id, started, held)
             # Hardware dead-man: tell the device to shut itself off after the
             # pass, in case Home Assistant never sends the close below.
+            armed = self._timer_set(zone, timed_open)
             if not timed_open:
-                await self._arm_safety_off(zone, held, entity_id)
+                armed = await self._arm_safety_off(zone, held, entity_id) or armed
+            if not armed and timer_required(zone):
+                # Open without its own timer: shut at once by the finally below,
+                # and nothing credited.
+                self._report_valve_problem(zone, entity_id, PROBLEM_TIMER_NOT_SET)
+                return PROBLEM_TIMER_NOT_SET
             control_here = self._run_controls().get(zone_id)
             if (
                 max_litres
@@ -2851,17 +2939,26 @@ class ValveRunnerMixin(
                 if supply is not None:
                     await self._supply_ensure_on(supply)
                 resume_zone = self._zone_or_stub(zone_id)
-                failed = await self._open_zone_valves(
-                    resume_zone,
-                    entity_id,
-                    entities,
-                    timer_seconds=max(
-                        0.0,
-                        duration
-                        - elapsed
-                        - (dt_util.utcnow() - resume_t0).total_seconds(),
-                    ),
-                )
+                try:
+                    failed = await self._open_zone_valves(
+                        resume_zone,
+                        entity_id,
+                        entities,
+                        timer_seconds=max(
+                            0.0,
+                            duration
+                            - elapsed
+                            - (dt_util.utcnow() - resume_t0).total_seconds(),
+                        ),
+                    )
+                except ValveTimerNotSet:
+                    # The valve may still be open from before the restart: the
+                    # finally shuts it, and what it delivered is credited.
+                    self._report_valve_problem(
+                        resume_zone, entity_id, PROBLEM_TIMER_NOT_SET
+                    )
+                    held_override = min(duration, max(0.0, elapsed))
+            if held_override is None:
                 confirmed = await self._confirm_zone_valves(
                     resume_zone, entity_id, failed, entities
                 )
@@ -2887,11 +2984,28 @@ class ValveRunnerMixin(
                 )
                 # Re-arm the hardware dead-man for the remaining time after a
                 # restart.
+                armed = self._timer_set(resume_zone, timed_open)
                 if not timed_open:
-                    await self._arm_safety_off(
-                        self.store.get_zone(zone_id) or {}, remaining
+                    armed = (
+                        await self._arm_safety_off(
+                            self.store.get_zone(zone_id) or {}, remaining
+                        )
+                        or armed
                     )
-                if await self._wait_or_stop(zone_id, remaining):
+                if not armed and timer_required(resume_zone):
+                    # Open without its own timer: shut at once by the finally,
+                    # what it delivered until now credited.
+                    self._report_valve_problem(
+                        resume_zone, entity_id, PROBLEM_TIMER_NOT_SET
+                    )
+                    held_override = min(
+                        duration,
+                        max(
+                            0.0,
+                            elapsed + (dt_util.utcnow() - resume_t0).total_seconds(),
+                        ),
+                    )
+                elif await self._wait_or_stop(zone_id, remaining):
                     # Stopped or paused: credit what the valve delivered until now.
                     delivered = min(
                         duration,

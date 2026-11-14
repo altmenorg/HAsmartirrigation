@@ -205,6 +205,8 @@ export const ZONE_SUPPLY_ID = "supply_id";
 export const ZONE_EXTRA_ENTITIES = "extra_entities";
 export const ZONE_SAFETY_OFF_STATE_KEY = "safety_off_state_key";
 export const ZONE_SAFETY_OFF_MODE = "safety_off_mode";
+// Skip a watering rather than open the valve without its own timer (#893).
+export const ZONE_SAFETY_OFF_REQUIRED = "safety_off_required";
 export const ZONE_CONFIRM_TIMEOUT = "confirm_timeout";
 export const ZONE_OPEN_RESENDS = "open_resends";
 export const ZONE_FLOW_SENSOR = "flow_sensor";

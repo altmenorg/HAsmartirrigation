@@ -357,6 +357,7 @@ class SmartIrrigationZoneView(HomeAssistantView):
                 vol.Optional(const.ZONE_SAFETY_OFF_MODE): vol.Any(
                     vol.In(const.SAFETY_OFF_MODES), None
                 ),
+                vol.Optional(const.ZONE_SAFETY_OFF_REQUIRED): vol.Any(bool, None),
                 vol.Optional(const.ZONE_CONFIRM_TIMEOUT): vol.Any(
                     None,
                     vol.All(
