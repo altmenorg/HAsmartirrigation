@@ -1232,7 +1232,8 @@
     "tours": "kör",
     "no_valve": "Nincs csatolt szelep, így nem öntöz:",
     "nothing_no_valve": "Ebben a futásban nincs mit öntözni: a vízhiányos zónákhoz nincs szelep csatolva:",
-    "left": "{time} van hátra"
+    "left": "{time} van hátra",
+    "expected_skipped_suspended": "Nem fut le: a program fel van függesztve eddig: {when}"
   },
   "programs": {
     "title": "Programok",
@@ -1390,7 +1391,12 @@
     "cond_precipitation": "{value} előrejelzéstől",
     "cond_days_between": "legalább {n} nap",
     "cond_soil": "{n} zóna érzékelővel",
-    "cond_soil_one": "{n} zóna érzékelővel"
+    "cond_soil_one": "{n} zóna érzékelővel",
+    "confirm_run_replace": "Elindítod most: {name}? A folyamatban lévő öntözés előbb leáll, aztán kinyílnak a szelepei.",
+    "run_replacing": "A folyamatban lévő öntözés leáll; utána rögtön indul: {name}.",
+    "suspended_until": "Felfüggesztve eddig: {when}; az ütemezései nem indítják el.",
+    "suspended": "felfüggesztve",
+    "lift_suspension": "Feloldás"
   },
   "supplies": {
     "title": "Szivattyúk és főszelepek",

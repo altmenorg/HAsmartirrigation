@@ -1232,7 +1232,8 @@
     "tours": "kola",
     "no_valve": "Žádný propojený ventil, takže se nezalévají:",
     "nothing_no_valve": "V tomto běhu není co zalévat: zóny, kterým chybí voda, nemají propojený ventil:",
-    "left": "zbývá {time}"
+    "left": "zbývá {time}",
+    "expected_skipped_suspended": "Nespustí se: program je přerušen do {when}"
   },
   "programs": {
     "title": "Programy",
@@ -1390,7 +1391,12 @@
     "cond_precipitation": "od {value} v předpovědi",
     "cond_days_between": "alespoň {n} dní",
     "cond_soil": "Zóny se senzorem: {n}",
-    "cond_soil_one": "{n} zóna se senzorem"
+    "cond_soil_one": "{n} zóna se senzorem",
+    "confirm_run_replace": "Spustit {name} nyní? Probíhající zalévání se nejprve zastaví, pak se otevřou jeho ventily.",
+    "run_replacing": "Probíhající zalévání se zastavuje; {name} začne hned potom.",
+    "suspended_until": "Přerušen do {when}: jeho rozvrhy ho nespouštějí.",
+    "suspended": "přerušen",
+    "lift_suspension": "Zrušit"
   },
   "supplies": {
     "title": "Čerpadla a hlavní ventily",

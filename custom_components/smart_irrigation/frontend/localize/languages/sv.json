@@ -1232,7 +1232,8 @@
     "tours": "varv",
     "no_valve": "Följande zoner saknar en ansluten ventil och kan därför inte bevattnas:",
     "nothing_no_valve": "Ingen zon kan bevattnas den här gången. Följande zoner behöver vatten men saknar ansluten ventil:",
-    "left": "{time} kvar"
+    "left": "{time} kvar",
+    "expected_skipped_suspended": "Körs inte: programmet är uppskjutet till {when}"
   },
   "programs": {
     "title": "Program",
@@ -1390,7 +1391,12 @@
     "cond_precipitation": "från {value} i prognosen",
     "cond_days_between": "minst {n} dagar",
     "cond_soil": "antal zoner med sensor: {n}",
-    "cond_soil_one": "{n} zon med sensor"
+    "cond_soil_one": "{n} zon med sensor",
+    "confirm_run_replace": "Kör {name} nu? Det som vattnar nu stoppas först, sedan öppnas ventilerna.",
+    "run_replacing": "Det som vattnade stoppas; {name} startar direkt efter.",
+    "suspended_until": "Uppskjutet till {when}: dess scheman startar det inte.",
+    "suspended": "uppskjutet",
+    "lift_suspension": "Häv"
   },
   "supplies": {
     "title": "Pumpar och huvudventiler",

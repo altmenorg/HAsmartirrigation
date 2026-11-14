@@ -1232,7 +1232,8 @@
     "tours": "krogi",
     "no_valve": "Ni povezanega ventila, zato se ne zaliva:",
     "nothing_no_valve": "V tem zagonu ni kaj zalivati: cone, ki jim primanjkuje vode, nimajo povezanega ventila:",
-    "left": "še {time}"
+    "left": "še {time}",
+    "expected_skipped_suspended": "Se ne izvede: program je zadržan do {when}"
   },
   "programs": {
     "title": "Programi",
@@ -1390,7 +1391,12 @@
     "cond_precipitation": "od {value} v napovedi",
     "cond_days_between": "vsaj {n} dni",
     "cond_soil": "Cone s senzorjem: {n}",
-    "cond_soil_one": "{n} cona s senzorjem"
+    "cond_soil_one": "{n} cona s senzorjem",
+    "confirm_run_replace": "Zaženem {name} zdaj? Trenutno zalivanje se najprej ustavi, nato se odprejo njegovi ventili.",
+    "run_replacing": "Trenutno zalivanje se ustavlja; {name} se začne takoj zatem.",
+    "suspended_until": "Zadržano do {when}: urniki ga ne zaženejo.",
+    "suspended": "zadržano",
+    "lift_suspension": "Odpravi"
   },
   "supplies": {
     "title": "Črpalke in glavni ventili",

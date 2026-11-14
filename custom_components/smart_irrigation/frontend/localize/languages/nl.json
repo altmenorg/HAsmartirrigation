@@ -1232,7 +1232,8 @@
     "tours": "rondes",
     "no_valve": "Geen ventiel gekoppeld, dus niet bewaterd:",
     "nothing_no_valve": "Niets te bewateren in deze ronde: de zones die water tekortkomen hebben geen ventiel gekoppeld:",
-    "left": "nog {time}"
+    "left": "nog {time}",
+    "expected_skipped_suspended": "Draait niet: het programma is opgeschort tot {when}"
   },
   "programs": {
     "title": "Programma's",
@@ -1390,7 +1391,12 @@
     "cond_precipitation": "vanaf {value} voorspeld",
     "cond_days_between": "minstens {n} dagen",
     "cond_soil": "{n} zones met een sensor",
-    "cond_soil_one": "{n} zone met een sensor"
+    "cond_soil_one": "{n} zone met een sensor",
+    "confirm_run_replace": "{name} nu uitvoeren? Wat nu sproeit wordt eerst gestopt, daarna gaan de kleppen open.",
+    "run_replacing": "Wat aan het sproeien was wordt gestopt; {name} begint direct daarna.",
+    "suspended_until": "Opgeschort tot {when}: de schema's starten het niet.",
+    "suspended": "opgeschort",
+    "lift_suspension": "Opheffen"
   },
   "supplies": {
     "title": "Pompen en hoofdventielen",

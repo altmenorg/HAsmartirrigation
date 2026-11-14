@@ -927,7 +927,15 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
               clock(run.expected_end),
             ),
           );
-        if (run.skipped_reason)
+        if (run.skipped_reason === "suspended")
+          notes.push(
+            this.t(
+              "cards.next-run.run-suspended",
+              "{when}",
+              when(run.suspended_until),
+            ),
+          );
+        else if (run.skipped_reason)
           notes.push(this.t("cards.next-run.run-skipped"));
         const twice = (run.watered_twice || []).map((z: any) => z.zone);
         return html`<span class="next-run"

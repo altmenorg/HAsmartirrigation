@@ -1232,7 +1232,8 @@
     "tours": "tours",
     "no_valve": "Aucune vanne liée, donc pas arrosées :",
     "nothing_no_valve": "Rien à arroser à ce départ : les zones en déficit n'ont aucune vanne liée :",
-    "left": "{time} restant"
+    "left": "{time} restant",
+    "expected_skipped_suspended": "Ne s'exécute pas : le programme est suspendu jusqu'au {when}"
   },
   "programs": {
     "title": "Programmes",
@@ -1390,7 +1391,12 @@
     "cond_precipitation": "à partir de {value} prévus",
     "cond_days_between": "au moins {n} jours",
     "cond_soil": "{n} zones avec un capteur",
-    "cond_soil_one": "{n} zone avec un capteur"
+    "cond_soil_one": "{n} zone avec un capteur",
+    "confirm_run_replace": "Lancer {name} maintenant ? L'arrosage en cours est d'abord arrêté, puis ses vannes s'ouvrent.",
+    "run_replacing": "L'arrosage en cours s'arrête ; {name} démarre juste après.",
+    "suspended_until": "Suspendu jusqu'au {when} : ses horaires ne le lancent pas.",
+    "suspended": "suspendu",
+    "lift_suspension": "Lever"
   },
   "supplies": {
     "title": "Pompes et vannes générales",

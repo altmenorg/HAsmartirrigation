@@ -385,7 +385,8 @@
           "next-runs": "Next up",
           "run-waits": "waits for {program}, about {start} to {end}",
           "run-skipped": "expected to be skipped: rain forecast",
-          "run-twice": "{zones} watered twice in a row"
+          "run-twice": "{zones} watered twice in a row",
+          "run-suspended": "suspended until {when}"
         },
         "decision": {
           "title": "Will it be skipped?",
@@ -1239,7 +1240,8 @@
     "nothing_no_valve": "Nothing to water in this run: the zones short of water have no valve linked:",
     "left": "{time} left",
     "waits_for": "Waits for {program}: about {start} to {end}.",
-    "watered_twice": "{zones} get their water twice in a row: {program} waters them just before."
+    "watered_twice": "{zones} get their water twice in a row: {program} waters them just before.",
+    "expected_skipped_suspended": "Does not run: the program is suspended until {when}"
   },
   "programs": {
     "title": "Programs",
@@ -1397,7 +1399,12 @@
     "cond_precipitation": "from {value} forecast",
     "cond_days_between": "at least {n} days",
     "cond_soil": "{n} zones with a sensor",
-    "cond_soil_one": "{n} zone with a sensor"
+    "cond_soil_one": "{n} zone with a sensor",
+    "confirm_run_replace": "Run {name} now? What is watering is stopped first, then its valves open.",
+    "run_replacing": "What was watering is being stopped; {name} starts straight after.",
+    "suspended_until": "Suspended until {when}: its schedules do not start it.",
+    "suspended": "suspended",
+    "lift_suspension": "Lift"
   },
   "supplies": {
     "title": "Pumps and main valves",

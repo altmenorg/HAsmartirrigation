@@ -1232,7 +1232,8 @@
     "tours": "runder",
     "no_valve": "Ingen ventil tilknyttet, så de vandes ikke:",
     "nothing_no_valve": "Intet at vande i denne kørsel: zonerne, der mangler vand, har ingen ventil tilknyttet:",
-    "left": "{time} tilbage"
+    "left": "{time} tilbage",
+    "expected_skipped_suspended": "Kører ikke: programmet er suspenderet til {when}"
   },
   "programs": {
     "title": "Programmer",
@@ -1390,7 +1391,12 @@
     "cond_precipitation": "fra {value} i prognosen",
     "cond_days_between": "mindst {n} dage",
     "cond_soil": "{n} zoner med en sensor",
-    "cond_soil_one": "{n} zone med en sensor"
+    "cond_soil_one": "{n} zone med en sensor",
+    "confirm_run_replace": "Kør {name} nu? Det, der vander nu, stoppes først, og derefter åbnes ventilerne.",
+    "run_replacing": "Det, der vandede, stoppes; {name} starter lige efter.",
+    "suspended_until": "Suspenderet til {when}: tidsplanerne starter det ikke.",
+    "suspended": "suspenderet",
+    "lift_suspension": "Ophæv"
   },
   "supplies": {
     "title": "Pumper og hovedventiler",

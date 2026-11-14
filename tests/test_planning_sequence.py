@@ -138,6 +138,19 @@ async def test_the_main_program_is_planned_on_every_day_the_trigger_starts_it():
     assert {p["program_id"] for p in planned} == {"main"}
 
 
+async def test_a_suspension_holds_back_the_trigger_s_runs_before_its_end():
+    """Each day's start is judged on its own: the suspension ends between them."""
+    hass, coord = _status([_MAIN])
+    coord._planned_run_seconds = AsyncMock(return_value=600)
+    coord.suspended_until = lambda kind, ident: _utc(2, 0)
+
+    planned = await coord.async_planning(
+        3, trigger_starts=[_utc(1, 6), _utc(2, 6), _utc(3, 6)]
+    )
+
+    assert [p["skipped_reason"] for p in planned] == ["suspended", None, None]
+
+
 async def test_a_trigger_start_beyond_the_window_is_left_out():
     hass, coord = _status([_MAIN])
     coord._planned_run_seconds = AsyncMock(return_value=600)
@@ -224,6 +237,7 @@ TEXTS = {
         "{end}",
     },
     ("panels", "info", "cards", "next-run", "run-skipped"): set(),
+    ("panels", "info", "cards", "next-run", "run-suspended"): {"{when}"},
     ("panels", "info", "cards", "next-run", "run-twice"): {"{zones}"},
     ("panels", "info", "cards", "decision", "title-main"): set(),
 }

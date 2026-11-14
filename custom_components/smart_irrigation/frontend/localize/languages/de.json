@@ -385,7 +385,8 @@
           "next-runs": "Als Nächstes",
           "run-waits": "wartet auf {program}, etwa {start} bis {end}",
           "run-skipped": "wird voraussichtlich übersprungen: Regen vorhergesagt",
-          "run-twice": "{zones} zweimal hintereinander bewässert"
+          "run-twice": "{zones} zweimal hintereinander bewässert",
+          "run-suspended": "ausgesetzt bis {when}"
         },
         "decision": {
           "title": "Wird übersprungen?",
@@ -1239,7 +1240,8 @@
     "nothing_no_valve": "In diesem Lauf wird nichts bewässert: Den Zonen, denen Wasser fehlt, ist kein Ventil verknüpft:",
     "left": "noch {time}",
     "waits_for": "Wartet auf {program}: etwa {start} bis {end}.",
-    "watered_twice": "{zones} bekommen zweimal hintereinander Wasser: {program} bewässert sie direkt davor."
+    "watered_twice": "{zones} bekommen zweimal hintereinander Wasser: {program} bewässert sie direkt davor.",
+    "expected_skipped_suspended": "Findet nicht statt: Das Programm ist bis {when} ausgesetzt"
   },
   "programs": {
     "title": "Programme",
@@ -1397,7 +1399,12 @@
     "cond_precipitation": "ab {value} Vorhersage",
     "cond_days_between": "mindestens {n} Tage",
     "cond_soil": "{n} Zonen mit Sensor",
-    "cond_soil_one": "{n} Zone mit Sensor"
+    "cond_soil_one": "{n} Zone mit Sensor",
+    "confirm_run_replace": "{name} jetzt starten? Was gerade bewässert, wird zuerst gestoppt, dann öffnen sich seine Ventile.",
+    "run_replacing": "Was gerade bewässert hat, wird gestoppt; {name} startet direkt danach.",
+    "suspended_until": "Ausgesetzt bis {when}: Seine Zeitpläne starten es nicht.",
+    "suspended": "ausgesetzt",
+    "lift_suspension": "Aufheben"
   },
   "supplies": {
     "title": "Pumpen und Hauptventile",
