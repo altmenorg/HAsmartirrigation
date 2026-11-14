@@ -78,6 +78,8 @@ import {
   TRIGGER_TYPE_SUNRISE,
   TRIGGER_TYPE_SUNSET,
   TRIGGER_TYPE_SOLAR_AZIMUTH,
+  TRIGGER_TYPE_TIME,
+  TRIGGER_DEFAULT_AT,
   DOMAIN,
   MAPPING_TEMPERATURE,
   MAPPING_WINDSPEED,
@@ -2758,7 +2760,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     );
 
     let offsetText = "";
-    if (trigger.type === TRIGGER_TYPE_SUNRISE && trigger.offset_minutes === 0) {
+    if (trigger.type === TRIGGER_TYPE_TIME && !trigger.offset_minutes) {
+      // A clock time is its time: it read "Fixed time - 0m after", without
+      // the 20:30 it starts at.
+      offsetText = trigger.at || TRIGGER_DEFAULT_AT;
+    } else if (
+      trigger.type === TRIGGER_TYPE_SUNRISE &&
+      trigger.offset_minutes === 0
+    ) {
       offsetText = localize(
         "irrigation_start_triggers.offset_auto",
         this.hass.language,

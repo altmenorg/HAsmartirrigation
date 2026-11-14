@@ -989,6 +989,18 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
             )
             for zone_id, estimate in (zone_estimates or {}).items()
         }
+        # A manual zone waters the duration it was given, whatever its bucket:
+        # it read "would water 4 s" beside a fixed 10 min, and the next-run
+        # sensor took those seconds once durations were estimated.
+        for zone in zones:
+            key = str(zone.get(const.ZONE_ID))
+            if zone.get(const.ZONE_STATE) == const.ZONE_STATE_MANUAL and isinstance(
+                zone_estimates.get(key), dict
+            ):
+                zone_estimates[key] = {
+                    **zone_estimates[key],
+                    "duration": zone.get(const.ZONE_DURATION),
+                }
 
         # Calculate total duration and get enabled zones that need irrigation
         total_duration = await coordinator.get_total_duration_all_enabled_zones(

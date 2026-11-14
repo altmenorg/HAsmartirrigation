@@ -475,8 +475,11 @@ class SmartIrrigationViewInfo extends SubscribeMixin(LitElement) {
    * easy to do and easy to forget. A postponement ends by itself.
    */
   private renderPostpone(): TemplateResult {
+    // Whether it holds now, not whether it holds back the next run: one that
+    // ends before tomorrow's start still has to be shown, and lifted.
     const postponed = (this.info as any)?.skip_preview?.checks?.find(
-      (check: any) => check.id === "postponed" && check.skip,
+      (check: any) =>
+        check.id === "postponed" && (check.active ?? check.skip) === true,
     );
     return html`
       <ha-card>

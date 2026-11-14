@@ -57,6 +57,8 @@ export const TRIGGER_TYPE_SUNRISE = "sunrise";
 export const TRIGGER_TYPE_SUNSET = "sunset";
 export const TRIGGER_TYPE_SOLAR_AZIMUTH = "solar_azimuth";
 export const TRIGGER_TYPE_TIME = "time";
+// The clock time a new time trigger starts at, and one without its own.
+export const TRIGGER_DEFAULT_AT = "06:00";
 export const TRIGGER_CONF_TYPE = "type";
 export const TRIGGER_CONF_OFFSET_MINUTES = "offset_minutes";
 export const TRIGGER_CONF_AZIMUTH_ANGLE = "azimuth_angle";
