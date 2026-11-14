@@ -364,7 +364,6 @@
           "sub-nothing": "Ingen zon har ännu så stort vattenunderskott att den behöver vattnas. Nästa möjliga start är {start}.",
           "headline-not-calculated": "Inte beräknad ännu",
           "sub-not-calculated": "Zonerna har ingen bevattningstid förrän den första beräkningen, {when}. Använd Beräkna alla zoner på fliken Zoner för att göra det nu.",
-          "next-program": "Nästa program: {program}, {start}",
           "headline-watering": "Vattnar {start}",
           "headline-watering-soon": "Vattnar vid nästa start",
           "sub-watering": "{count} zoner, sammanlagt {duration}.",

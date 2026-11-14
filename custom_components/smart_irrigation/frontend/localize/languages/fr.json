@@ -364,7 +364,6 @@
           "sub-nothing": "Aucune zone n'est assez en déficit. Le prochain départ serait {start}.",
           "headline-not-calculated": "Pas encore calculé",
           "sub-not-calculated": "Les zones n'ont pas de durée avant leur premier calcul, {when}. Calcule toutes les zones dans Zones pour le faire maintenant.",
-          "next-program": "Prochain programme : {program}, {start}",
           "headline-watering": "Arrosage {start}",
           "headline-watering-soon": "Arrosage au prochain départ",
           "sub-watering": "{count} zones, {duration} en tout.",

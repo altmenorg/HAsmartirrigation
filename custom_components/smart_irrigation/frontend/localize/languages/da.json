@@ -364,7 +364,6 @@
           "sub-nothing": "Ingen zone mangler vand nok endnu. Næste start ville være {start}.",
           "headline-not-calculated": "Endnu ikke beregnet",
           "sub-not-calculated": "Zonerne har ingen varighed før deres første beregning, {when}. Beregn alle zoner under Zoner for at gøre det nu.",
-          "next-program": "Næste program: {program}, {start}",
           "headline-watering": "Vander {start}",
           "headline-watering-soon": "Vander ved næste start",
           "sub-watering": "{count} zoner, {duration} i alt.",

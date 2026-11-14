@@ -364,7 +364,6 @@
           "sub-nothing": "Жодній зоні ще не бракує води достатньо сильно. Наступний запуск був би {start}.",
           "headline-not-calculated": "Ще не розраховано",
           "sub-not-calculated": "Зони не мають тривалості до першого розрахунку, {when}. Щоб зробити це зараз, розрахуйте всі зони на вкладці «Зони».",
-          "next-program": "Наступна програма: {program}, {start}",
           "headline-watering": "Полив {start}",
           "headline-watering-soon": "Полив при наступному запуску",
           "sub-watering": "Зон: {count}, усього {duration}.",

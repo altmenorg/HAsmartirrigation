@@ -139,8 +139,10 @@ export const modernStyle = css`
   .row-hint {
     margin: -6px 0 12px 0;
   }
-  /* A hint that says a setting will not do what it reads as. */
-  .setting-hint.warning-hint {
+  /* A hint that says a setting will not do what it reads as, and a line
+     that warns: something will happen that was likely not meant. */
+  .setting-hint.warning-hint,
+  .setting-note.warning-note {
     color: var(--warning-color, #ff9800);
   }
   /* Folded blocks of the Programs page: a program, a step, a schedule. */

@@ -364,7 +364,6 @@
           "sub-nothing": "Yhdeltäkään alueelta ei vielä puutu tarpeeksi vettä. Seuraava aloitus olisi {start}.",
           "headline-not-calculated": "Ei vielä laskettu",
           "sub-not-calculated": "Vyöhykkeillä ei ole kestoa ennen ensimmäistä laskentaa, joka tehdään {when}. Laske ne heti valitsemalla Laske kaikki vyöhykkeet kohdassa Alueet.",
-          "next-program": "Seuraava ohjelma: {program}, {start}",
           "headline-watering": "Kastelu {start}",
           "headline-watering-soon": "Kastelu seuraavalla aloituksella",
           "sub-watering": "{count} aluetta, {duration} kaikkiaan.",
