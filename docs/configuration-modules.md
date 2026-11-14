@@ -55,7 +55,7 @@ Two settings of its own:
 
 ## Adding a module
 
-The modules page is not one of the four tabs of the panel (Home, Zones, Data and Settings), so you rarely open it: a zone creates the module behind it for you. If you do open it, select a mode and choose `Add module`. It can then be configured, and picked from any sensor group.
+The modules page is not one of the tabs of the panel (Home, Zones, Weather and Settings, and Watering with the full controller), so you rarely open it: a zone creates the module behind it for you. If you do open it, select a mode and choose `Add module`. It can then be configured, and picked from any sensor group.
 
 Most people never need to come here: the [setup assistant](configuration-setup.md) under **Settings > General** creates the module, the sensor group and the zone together, from what you answer.
 

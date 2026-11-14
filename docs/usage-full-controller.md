@@ -12,6 +12,10 @@ By default Smart Irrigation decides **how long** each zone waters and leaves the
 
 It is **off by default**, and turning it on changes nothing until you add to it. Nothing on this page appears in the panel until it is on.
 
+<p align="center">
+  <img src="assets/images/panel-programs.png" alt="The Watering tab: the main program, its schedules and the order of its zones" width="860">
+</p>
+
 ## Turning it on
 
 On the [General page](configuration-general.md), in the card with direct valve control: **Full controller: Smart Irrigation runs all my watering**.
@@ -121,6 +125,10 @@ The buttons of the Programs card, and these [services](usage-services.md):
 | `smart_irrigation.use_measured_throughput` | Takes the flow a zone's meter measured as its throughput. The measurement is advice and is never applied on its own. |
 
 ## Seeing what is going on
+
+<p align="center">
+  <img src="assets/images/panel-planning.png" alt="The Planning page: what the programs will water over the next three days" width="860">
+</p>
 
 - The **Planning** card lists what the programs will water over the next three days, with the zones and minutes, and shows what is watering now: the step, the round, how far along, the valves that are open and for how much longer. Each planned run carries its expected seconds. For a run in the next 48 hours (as far as the rain forecast reaches) it also says when the forecast would hold it back: `skipped_reason` is `precipitation`, with the forecast and threshold behind it. A run that ignores the weather, or one further away, gets no reason: the weather is not known days ahead, and a planned run goes ahead if nothing holds it back. Only forecast conditions are predicted, not what the sensors read now. The planning leaves out the disabled programs, and the main program unless it has [schedules of its own](#schedules-of-the-main-program), and ignores suspensions and postponements: a suspended program still appears. For each run, `steps` lists the zones of the first round only, while `expected_seconds` covers all the rounds. The data also carries `forecast_known` (whether a forecast could be read) and `sheltered_zone_ids` (the zones that still run on a day the rain holds back), but the panel shows only the forecast rain (`forecast_mm`).
 - <a id="dry-zone-notice"></a>**A dry zone nothing will water.** Once a day, an automatic zone whose water balance has been dry for more than 3 days while no program covers it raises a repair notice (one per zone) and fires `smart_irrigation_zone_unwatered`. Dry means a deficit of at least half the zone's maximum water balance, or its irrigation threshold when that is larger (never under 1 mm). Covered means the main program is on, or another program is enabled, not suspended, has an enabled schedule and an enabled step with the zone. A zone you suspended yourself is left alone. The notice clears when the zone is watered or a program covers it again. The count of dry days starts again after a restart or after any reload of the integration. The check also runs at once whenever the programs are changed, so a zone that a new program covers stops being a candidate straight away.

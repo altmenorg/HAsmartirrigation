@@ -11,35 +11,48 @@
   <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/images/smart_irrigation_horizontal.svg?sanitize=true" alt="Smart Irrigation" width="720">
 </p>
 
-This integration calculates the time to run your irrigation system to compensate for moisture loss by [evapotranspiration](https://en.wikipedia.org/wiki/Evapotranspiration). Using this integration you water your garden, lawn or crops precisely enough to compensate what has evaporated. It takes into account precipitation (rain, snow) and moisture loss caused by evapotranspiration and adjusts accordingly.
-If it rains or snows less than the amount of moisture lost, then irrigation is required. Otherwise, no irrigation is required.
-The integration can take into account weather forecasts for the coming days and also keeps track of the total moisture lost or added (the water balance).
-Multiple zones are supported, each zone having its own configuration and set up. It can open and close your valves itself, run your whole irrigation (programs, schedules, pumps) with its **full controller**, or leave the watering to your own automations and the blueprints it ships.
+**Smart Irrigation waters your garden from Home Assistant, with the water the weather actually took out of it.**
+
+It works out, zone by zone, how much water the plants lost to [evapotranspiration](https://en.wikipedia.org/wiki/Evapotranspiration) and got back from the rain, and it waters the difference: not a fixed fifteen minutes, not the day after a storm, and more in a heatwave. Then it runs the watering itself, as much of it as you want it to.
+
+## Three ways to use it
+
+1. **It calculates, you water.** Each zone gets a duration, a water balance and the reasons behind them, as entities and events. Your own automation, a blueprint for your controller (Rain Bird, Hydrawise, Rachio, OpenSprinkler, B-hyve, ESPHome), or [Irrigation Unlimited](https://github.com/rgc99/irrigation_unlimited) does the watering.
+2. **It opens the valves.** With **direct valve control**, Smart Irrigation waters each zone for its duration: zones in turn or together, cycle and soak so clay takes the water in, a pause between zones, a watchdog for a valve left open, and the water actually delivered credited to the zone.
+3. **It runs your whole irrigation.** The **full controller** (optional, off by default) adds programs, schedules, pumps and a planning: everything a dedicated irrigation controller does, fed by the calculated durations.
 
 ## ✨ Highlights
 
-- 🗓️ **A full irrigation controller** (optional, off by default). Programs of ordered steps, one zone or several at once, watered for the calculated duration or a share of it; schedules anchored to a start or to an end ("done by sunrise"), on the days you choose; pumps and main valves with their delays; a planning of what will run and why; pause, resume, queue and suspend. It imports an [Irrigation Unlimited](https://github.com/rgc99/irrigation_unlimited) configuration in a few clicks.
-- 🎛️ **A panel in four tabs, with a standard and an advanced mode.** Home, Zones, Weather and Settings (and Watering with the full controller), built with native Home Assistant components and saving as you type. A new installation starts in the standard mode, with a setup assistant that asks one question at a time and creates the first zone. The advanced mode opens every setting. The soil and the crop are chosen by name.
-- 🃏 **A dashboard card**, served by the integration: what each zone is short of, how long it would run, when, and why not, with a button to water on the spot.
-- 🚰 **Direct valve control.** Smart Irrigation can open the valves itself, with cycle and soak (the same water in several passes so clay takes it in), a pause between zones, and a watchdog that closes a valve left open. Each zone is also a `valve` entity, for dashboards and voice assistants.
-- ⏻ **One switch for the winter**: **Calculate and water** stops all calculation and watering, from Settings or as a switch entity.
-- ☀️ **An hourly FAO-56 calculation.** Evapotranspiration computed hour by hour from the Penman-Monteith equation, with or without a radiation sensor and with forecast days, checked against the paper's own worked example.
-- 🌱 **Greenhouse mode.** Under glass the sky is not what reaches the plant: a lux sensor inside answers it, and without one the glass dims the sun.
-- 🛑 **Skip conditions.** A rain sensor, frost, wind, a soil moisture sensor per zone and the rain forecast can each hold a run back, and the Home page says which one and on what numbers.
-- 📐 **Controller blueprints** for Rain Bird, Hydrawise, Rachio, OpenSprinkler and B-hyve, besides plain valves, ESPHome and Irrigation Unlimited.
-- 🌍 **20 languages, out of the box.** The panel *and* the config flow are fully translated: English, French, German, Spanish, Italian, Dutch, Norwegian, Slovak, Slovenian, Polish, Portuguese, Brazilian Portuguese, Czech, Russian, Ukrainian, Simplified Chinese, Swedish, Danish, Finnish and Hungarian. Everything except English and French was machine-translated, so if yours reads oddly, [correct it on Weblate](https://hosted.weblate.org/engage/smart-irrigation/), in the browser and with no account on GitHub, or [in the JSON file directly](CONTRIBUTING.md#translations).
-- 🌦️ **Switch weather service on the fly** between Open-Meteo, OpenWeatherMap and Pirate Weather, and update the API key, without removing and re-adding the integration.
-- 💾 **One-click Backup / Restore** of your entire configuration as a JSON file.
-- ⏰ **Flexible start triggers** around sunrise, sunset, solar azimuth or a fixed time, with one active at a time, firing an identifiable event for your automations.
+**The controller**
+
+- 🗓️ **Programs** of ordered steps, one zone or several at once, watered for the calculated duration or a share of it, with passes, waits, limits and a minimum deficit per step.
+- ⏰ **Schedules** anchored to a start or to an end ("done by sunrise"): days of the week, every N days, odd or even days, months, a period of the year. Each one shows what can hold it back.
+- 🚿 **Pumps and main valves** with their delays, the other valves of a zone, and a confirmation that a valve really opened.
+- 📅 **A planning** of what will run, when and why, and the running watering shown on the Home page, the zones and the card. Pause, resume, queue, suspend, run now.
+- 🔁 **Imports an Irrigation Unlimited configuration** in a few clicks.
+
+**The calculation**
+
+- ☀️ **FAO-56, hour by hour.** Evapotranspiration from the Penman-Monteith equation, with or without a radiation sensor, checked against the paper's own worked example, and a water balance replayed in five-minute steps.
+- 🌦️ **Your sensors, a weather service, or both**: Open-Meteo, OpenWeatherMap, Pirate Weather, or any weather integration of Home Assistant, switched on the fly.
+- 🛑 **Skip conditions**: a rain sensor, frost, wind, soil moisture and the rain forecast can each hold a run back, and the Home page says which one and on what numbers.
+- 🌱 **Greenhouse mode**: under glass, a lux sensor inside tells the sun that reaches the plants.
+
+**Everyday use**
+
+- 🎛️ **A panel built with Home Assistant's own components**, in a standard and an advanced mode, with a setup assistant that creates your first zone. The soil and the crop are chosen by name.
+- 🃏 **A dashboard card**, served by the integration: where each zone stands, how long it would run, when, and a button to water on the spot.
+- 🔌 **Entities for everything**: a `valve` per zone for dashboards and voice assistants, a master switch, **Calculate and water**, to stop it all for the winter, sensors, buttons and events for your automations.
+- 🌍 **20 languages** for the panel and everything Home Assistant shows: corrections are welcome on [Weblate](https://hosted.weblate.org/engage/smart-irrigation/), in the browser.
+- 💾 **Backup and restore** of the whole configuration in one file.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/images/panel-zones.png" alt="Smart Irrigation — Zones panel (Home Assistant-native UI)" width="860">
-  <br><em>The HA-native configuration panel — instant-save editing, native controls, everything in one place.</em>
+  <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/images/panel-home.png" alt="The Home page: the next watering, why, and what could hold it back" width="860">
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/images/panel-info.png" alt="Info page: the next run and whether it will be skipped" width="420">
-  <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/images/panel-sensor-groups.png" alt="Sensor groups configuration" width="420">
+  <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/images/panel-zones.png" alt="The Zones page: each zone, where it stands and how long it would water" width="420">
+  <img src="https://raw.githubusercontent.com/altmenorg/HAsmartirrigation/master/images/panel-programs.png" alt="A program of the full controller: its steps and its schedules" width="420">
 </p>
 
 ## Installation
