@@ -14,16 +14,18 @@
 This integration calculates the time to run your irrigation system to compensate for moisture loss by [evapotranspiration](https://en.wikipedia.org/wiki/Evapotranspiration). Using this integration you water your garden, lawn or crops precisely enough to compensate what has evaporated. It takes into account precipitation (rain, snow) and moisture loss caused by evapotranspiration and adjusts accordingly.
 If it rains or snows less than the amount of moisture lost, then irrigation is required. Otherwise, no irrigation is required.
 The integration can take into account weather forecasts for the coming days and also keeps track of the total moisture lost or added (the water balance).
-Multiple zones are supported, each zone having its own configuration and set up. It can also open and close your valves itself, or leave that to your own automations and the blueprints it ships.
+Multiple zones are supported, each zone having its own configuration and set up. It can open and close your valves itself, run your whole irrigation (programs, schedules, pumps) with its **full controller**, or leave the watering to your own automations and the blueprints it ships.
 
 ## ✨ Highlights
 
-- 🎛️ **A panel in four tabs, with a standard and an advanced mode.** Home, Zones, Data and Settings, built with native Home Assistant components and saving as you type. A new installation starts in the standard mode, with a setup assistant that asks one question at a time and creates the first zone. The advanced mode opens every setting. The soil and the crop are chosen by name.
+- 🗓️ **A full irrigation controller** (optional, off by default). Programs of ordered steps, one zone or several at once, watered for the calculated duration or a share of it; schedules anchored to a start or to an end ("done by sunrise"), on the days you choose; pumps and main valves with their delays; a planning of what will run and why; pause, resume, queue and suspend. It imports an [Irrigation Unlimited](https://github.com/rgc99/irrigation_unlimited) configuration in a few clicks.
+- 🎛️ **A panel in four tabs, with a standard and an advanced mode.** Home, Zones, Weather and Settings (and Watering with the full controller), built with native Home Assistant components and saving as you type. A new installation starts in the standard mode, with a setup assistant that asks one question at a time and creates the first zone. The advanced mode opens every setting. The soil and the crop are chosen by name.
 - 🃏 **A dashboard card**, served by the integration: what each zone is short of, how long it would run, when, and why not, with a button to water on the spot.
-- 🚰 **Direct valve control.** Smart Irrigation can open the valves itself, with cycle and soak (the same water in several passes so clay takes it in), a pause between zones, and a watchdog that closes a valve left open.
+- 🚰 **Direct valve control.** Smart Irrigation can open the valves itself, with cycle and soak (the same water in several passes so clay takes it in), a pause between zones, and a watchdog that closes a valve left open. Each zone is also a `valve` entity, for dashboards and voice assistants.
+- ⏻ **One switch for the winter**: **Calculate and water** stops all calculation and watering, from Settings or as a switch entity.
 - ☀️ **An hourly FAO-56 calculation.** Evapotranspiration computed hour by hour from the Penman-Monteith equation, with or without a radiation sensor and with forecast days, checked against the paper's own worked example.
 - 🌱 **Greenhouse mode.** Under glass the sky is not what reaches the plant: a lux sensor inside answers it, and without one the glass dims the sun.
-- 🛑 **Skip conditions.** A rain sensor, frost, wind, a soil moisture sensor per zone and the rain forecast can each hold a run back, and the Info page says which one and on what numbers.
+- 🛑 **Skip conditions.** A rain sensor, frost, wind, a soil moisture sensor per zone and the rain forecast can each hold a run back, and the Home page says which one and on what numbers.
 - 📐 **Controller blueprints** for Rain Bird, Hydrawise, Rachio, OpenSprinkler and B-hyve, besides plain valves, ESPHome and Irrigation Unlimited.
 - 🌍 **20 languages, out of the box.** The panel *and* the config flow are fully translated: English, French, German, Spanish, Italian, Dutch, Norwegian, Slovak, Slovenian, Polish, Portuguese, Brazilian Portuguese, Czech, Russian, Ukrainian, Simplified Chinese, Swedish, Danish, Finnish and Hungarian. Everything except English and French was machine-translated, so if yours reads oddly, [correct it on Weblate](https://hosted.weblate.org/engage/smart-irrigation/), in the browser and with no account on GitHub, or [in the JSON file directly](CONTRIBUTING.md#translations).
 - 🌦️ **Switch weather service on the fly** between Open-Meteo, OpenWeatherMap and Pirate Weather, and update the API key, without removing and re-adding the integration.
@@ -53,14 +55,7 @@ Full documentation: **[altmenorg.github.io/HAsmartirrigation](https://altmenorg.
 
 ## Recent improvements
 
-Since the project moved here in June 2026, the stable v2026.10.2 gathered seven betas and three release candidates:
-
-- A **four-tab panel** (Home, Zones, Data, Settings) with a **standard and an advanced mode**, a setup assistant, and a **dashboard card** that can water a zone on demand.
-- **Direct valve control** with cycle and soak, a pause between zones and a valve watchdog, and **controller blueprints** for Rain Bird, Hydrawise, Rachio, OpenSprinkler and B-hyve.
-- **Hour-by-hour FAO-56 evapotranspiration**, a **greenhouse mode**, and **skip conditions** (rain sensor, frost, wind, soil moisture, forecast rain).
-- **Per-zone settings**: days between irrigation, crop factor by month, soil and crop chosen by name, and seasonal adjustments edited in the panel.
-- Several corrections to the water balance, among them the saturation vapour pressure (the evapotranspiration was too low for everybody), rain counters, and recurring schedules that never ran. The [v2026.10.1 release notes](https://github.com/altmenorg/HAsmartirrigation/releases/tag/v2026.10.1) list them with the changes in amounts.
-- **20 languages**, with corrections welcome on [Hosted Weblate](https://hosted.weblate.org/engage/smart-irrigation/).
+**v2026.11.0** (November 2026) brings the **full controller**, a panel reworked from end to end, the water balance replayed in five-minute steps, a Home Assistant weather entity as a weather service, one switch to stop everything, and one name for each thing in all 20 languages (a [glossary](docs/glossary.md) lists them). Some actions were merged into one, and the old names keep working until v2027.11. The [release notes](https://github.com/altmenorg/HAsmartirrigation/releases/tag/v2026.11.0) say what changes for everyone and what to check before updating; Smart Irrigation now needs **Home Assistant 2026.3** or later.
 
 ## Irrigation start triggers
 
@@ -96,7 +91,7 @@ These features are driven by **services and blueprints**:
 
 - 🔁 **Recurring schedules** (on their way out: they keep working until 2027.11; the programs' schedules under **Watering** replace them) — daily / weekly / monthly / interval-based schedules via the `smart_irrigation.create_recurring_schedule` service.
 - 🍂 **Seasonal adjustments** — adjust the crop factor and the threshold by month, in the panel (advanced mode) or with services.
-- 🔗 **Irrigation Unlimited**: Smart Irrigation hands its calculated durations to the [Irrigation Unlimited](https://github.com/rgc99/irrigation_unlimited) component through blueprints and automations (`adjust_time`).
+- 🔗 **Irrigation Unlimited**: Smart Irrigation hands its calculated durations to the [Irrigation Unlimited](https://github.com/rgc99/irrigation_unlimited) component through blueprints and automations (`adjust_time`), or [imports its configuration](docs/usage-from-irrigation-unlimited.md) into the full controller.
 - 📐 **Automation blueprints** — ready-to-use blueprints, installed with the integration, for plain valves, ESPHome, Irrigation Unlimited and off-the-shelf controllers (Rain Bird, Hydrawise, Rachio, OpenSprinkler, B-hyve): see the [automations](docs/usage-automations.md) and [controllers](docs/usage-controllers.md) pages.
 
 See the [enhanced scheduling documentation](docs/usage-enhanced-scheduling-integration.md) for details and examples.
