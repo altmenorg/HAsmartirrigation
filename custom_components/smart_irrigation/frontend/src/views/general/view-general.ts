@@ -3978,27 +3978,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
     return html`
       <ha-card>
-        <h1 class="card-header">
-          <span
-            >${localize("observed_watering.title", lang)}<si-info
+        ${this._switchHeader(
+          html`${localize("observed_watering.title", lang)}<si-info
               >${localize("observed_watering.description", lang)}</si-info
-            ></span
-          >
-        </h1>
+            >`,
+          !!this.config.observed_watering_enabled,
+          (on) => this.handleConfigChange({ observed_watering_enabled: on }),
+        )}
         <div class="card-content">
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize("observed_watering.enabled_label", lang)}
-            </div>
-            <ha-switch
-              .checked=${this.config.observed_watering_enabled}
-              @change=${(e: Event) =>
-                this.handleConfigChange({
-                  observed_watering_enabled: (e.target as any).checked,
-                })}
-            ></ha-switch>
-          </div>
-
           ${this.config.observed_watering_enabled &&
           this.config.ui_mode === "advanced"
             ? html`${this._numRow(
@@ -4301,7 +4288,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   /** Whether Smart Irrigation lays its example blueprints down (#930). */
   /** A card's title with the switch that turns it on: no "Enabled" row. */
   private _switchHeader(
-    title: string,
+    title: unknown,
     checked: boolean,
     onChange: (checked: boolean) => void,
   ): TemplateResult {
@@ -4333,23 +4320,15 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     if (!this.config || !this.hass) return html``;
     const lang = this.hass.language;
     return html`
-      <ha-card header="${localize("blueprints.title", lang)}">
-        <div class="card-content">
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize("blueprints.install_label", lang)}<si-info
-                >${localize("blueprints.install_help", lang)}</si-info
-              >
-            </div>
-            <ha-switch
-              .checked=${this.config.install_blueprints !== false}
-              @change=${(e: Event) =>
-                this.handleConfigChange({
-                  install_blueprints: (e.target as any).checked,
-                })}
-            ></ha-switch>
-          </div>
-        </div>
+      <ha-card>
+        ${this._switchHeader(
+          html`${localize("blueprints.title", lang)}<si-info
+              >${localize("blueprints.install_label", lang)}.
+              ${localize("blueprints.install_help", lang)}</si-info
+            >`,
+          this.config.install_blueprints !== false,
+          (on) => this.handleConfigChange({ install_blueprints: on }),
+        )}
       </ha-card>
     `;
   }
@@ -4360,35 +4339,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
     return html`
       <ha-card>
-        <h1 class="card-header">
-          <span
-            >${localize("calculation_log.title", lang)}<si-info
-              >${localize("calculation_log.description", lang)}</si-info
-            ></span
-          >
-        </h1>
-        <div class="card-content">
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize("calculation_log.enabled_label", lang)}
-            </div>
-            <ha-switch
-              .checked=${this.config.calc_log_enabled}
-              @change=${(e: Event) =>
-                this.handleConfigChange({
-                  calc_log_enabled: (e.target as any).checked,
-                })}
-            ></ha-switch>
-          </div>
-          ${this.config.calc_log_enabled
-            ? html`<div
-                class="zoneline"
-                style="color: var(--secondary-text-color); font-style: italic;"
-              >
-                ${localize("calculation_log.file_hint", lang)}
-              </div>`
-            : ""}
-        </div>
+        ${this._switchHeader(
+          html`${localize("calculation_log.title", lang)}<si-info
+              >${localize("calculation_log.description", lang)}
+              ${localize("calculation_log.file_hint", lang)}</si-info
+            >`,
+          !!this.config.calc_log_enabled,
+          (on) => this.handleConfigChange({ calc_log_enabled: on }),
+        )}
       </ha-card>
     `;
   }

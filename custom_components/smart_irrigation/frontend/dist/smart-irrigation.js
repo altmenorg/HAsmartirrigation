@@ -2792,24 +2792,10 @@ function _e(e,t){return(t,i,s)=>((e,t,i)=>(i.configurable=!0,i.enumerable=!0,Ref
           </div>`:""}
     </div>`}renderObservedWateringCard(){var e,t;if(!this.config||!this.data||!this.hass)return V``;const i=this.hass.language;return"advanced"!==this.config.ui_mode?V``:V`
       <ha-card>
-        <h1 class="card-header">
-          <span
-            >${oi("observed_watering.title",i)}<si-info
+        ${this._switchHeader(V`${oi("observed_watering.title",i)}<si-info
               >${oi("observed_watering.description",i)}</si-info
-            ></span
-          >
-        </h1>
+            >`,!!this.config.observed_watering_enabled,e=>this.handleConfigChange({observed_watering_enabled:e}))}
         <div class="card-content">
-          <div class="setting-row">
-            <div class="setting-label">
-              ${oi("observed_watering.enabled_label",i)}
-            </div>
-            <ha-switch
-              .checked=${this.config.observed_watering_enabled}
-              @change=${e=>this.handleConfigChange({observed_watering_enabled:e.target.checked})}
-            ></ha-switch>
-          </div>
-
           ${this.config.observed_watering_enabled&&"advanced"===this.config.ui_mode?V`${this._numRow(V`${oi("observed_watering.leak_label",i)}<si-info
                     >${oi("observed_watering.leak_description",i)}</si-info
                   >`,"L",null!==(e=this.config.leak_alert_litres)&&void 0!==e?e:0,e=>this.handleConfigChange({leak_alert_litres:Math.min(1e3,Math.max(0,parseFloat(e)||0))}))}`:""}
@@ -2910,47 +2896,18 @@ function _e(e,t){return(t,i,s)=>((e,t,i)=>(i.configurable=!0,i.enumerable=!0,Ref
         @change=${e=>i(e.target.checked)}
       ></ha-switch>
     </div>`}renderBlueprintsCard(){if(!this.config||!this.hass)return V``;const e=this.hass.language;return V`
-      <ha-card header="${oi("blueprints.title",e)}">
-        <div class="card-content">
-          <div class="setting-row">
-            <div class="setting-label">
-              ${oi("blueprints.install_label",e)}<si-info
-                >${oi("blueprints.install_help",e)}</si-info
-              >
-            </div>
-            <ha-switch
-              .checked=${!1!==this.config.install_blueprints}
-              @change=${e=>this.handleConfigChange({install_blueprints:e.target.checked})}
-            ></ha-switch>
-          </div>
-        </div>
+      <ha-card>
+        ${this._switchHeader(V`${oi("blueprints.title",e)}<si-info
+              >${oi("blueprints.install_label",e)}.
+              ${oi("blueprints.install_help",e)}</si-info
+            >`,!1!==this.config.install_blueprints,e=>this.handleConfigChange({install_blueprints:e}))}
       </ha-card>
     `}renderCalculationLogCard(){if(!this.config||!this.data||!this.hass)return V``;const e=this.hass.language;return V`
       <ha-card>
-        <h1 class="card-header">
-          <span
-            >${oi("calculation_log.title",e)}<si-info
-              >${oi("calculation_log.description",e)}</si-info
-            ></span
-          >
-        </h1>
-        <div class="card-content">
-          <div class="setting-row">
-            <div class="setting-label">
-              ${oi("calculation_log.enabled_label",e)}
-            </div>
-            <ha-switch
-              .checked=${this.config.calc_log_enabled}
-              @change=${e=>this.handleConfigChange({calc_log_enabled:e.target.checked})}
-            ></ha-switch>
-          </div>
-          ${this.config.calc_log_enabled?V`<div
-                class="zoneline"
-                style="color: var(--secondary-text-color); font-style: italic;"
-              >
-                ${oi("calculation_log.file_hint",e)}
-              </div>`:""}
-        </div>
+        ${this._switchHeader(V`${oi("calculation_log.title",e)}<si-info
+              >${oi("calculation_log.description",e)}
+              ${oi("calculation_log.file_hint",e)}</si-info
+            >`,!!this.config.calc_log_enabled,e=>this.handleConfigChange({calc_log_enabled:e}))}
       </ha-card>
     `}renderCoordinateCard(){if(!this.config||!this.data||!this.hass)return V``;const e=this.hass.config,t=(null==e?void 0:e.latitude)||0,i=(null==e?void 0:e.longitude)||0,s=(null==e?void 0:e.elevation)||0;return V`
       <ha-card>
