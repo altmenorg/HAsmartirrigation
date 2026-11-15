@@ -19,7 +19,7 @@ from custom_components.smart_irrigation import const, websockets
 from custom_components.smart_irrigation.planning_sequence import sequence_planning
 from tests.test_program_status import (
     _paris_clock,  # noqa: F401
-    )
+)
 
 LANGUAGES = (
     Path(__file__).parent.parent

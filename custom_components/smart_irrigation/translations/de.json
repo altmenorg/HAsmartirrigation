@@ -127,6 +127,9 @@
       },
       "irrigation_enabled": {
         "name": "Berechnen und bewässern"
+      },
+      "program_on": {
+        "name": "Programm {name} an"
       }
     },
     "datetime": {
