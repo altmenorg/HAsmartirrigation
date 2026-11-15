@@ -22,6 +22,7 @@ from .llm_api import (
     _ANNOTATIONS,
     _TOOL_RESULT,
     _coordinator,
+    _parameters,
     _ReadOnlyTool,
     _result,
     _timeline_summary,
@@ -68,7 +69,7 @@ class GetZoneSettingsTool(_ReadOnlyTool):
         "Every stored setting of one zone (metric: m2, l/min, mm, seconds): "
         "the fields SaveZone takes."
     )
-    parameters = vol.Schema({vol.Required("zone_id"): int})
+    parameters = _parameters({vol.Required("zone_id"): int})
 
     async def async_call(
         self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
@@ -129,6 +130,15 @@ class GetSettingsTool(_ReadOnlyTool):
         return _result(await async_config_for_display(hass))
 
 
+def _make(device) -> str | None:
+    """The make of a device; a child device of 2026.10 has none of its own."""
+    return getattr(device, "manufacturer", None)
+
+
+def _model(device) -> str | None:
+    return getattr(device, "model", None)
+
+
 # The domains an irrigation setup is made of, searched by default.
 ENTITY_DOMAINS = ("valve", "switch", "sensor", "binary_sensor", "weather", "number")
 
@@ -146,7 +156,7 @@ class FindEntitiesTool(_ReadOnlyTool):
         "binary_sensor, weather, number). Smart Irrigation's own entities are "
         "left out."
     )
-    parameters = vol.Schema(
+    parameters = _parameters(
         {
             vol.Optional("search", default=""): str,
             vol.Optional("domains"): [str],
@@ -179,7 +189,7 @@ class FindEntitiesTool(_ReadOnlyTool):
             )
             text = f"{state.entity_id} {name}"
             if device is not None:
-                text += f" {device.manufacturer or ''} {device.model or ''}"
+                text += f" {_make(device) or ''} {_model(device) or ''}"
             if not all(word in text.casefold() for word in words):
                 continue
             found.append(
@@ -189,8 +199,8 @@ class FindEntitiesTool(_ReadOnlyTool):
                     "state": state.state,
                     "unit": state.attributes.get("unit_of_measurement"),
                     "device_class": state.attributes.get("device_class"),
-                    "manufacturer": device.manufacturer if device else None,
-                    "model": device.model if device else None,
+                    "manufacturer": _make(device),
+                    "model": _model(device),
                     "integration": entry.platform if entry is not None else None,
                 }
             )
@@ -234,7 +244,7 @@ class SaveZoneTool(_WriteTool):
         "maximum_duration (s), multiplier, soil and plant settings, "
         "supply_id... Metric figures. Returns the zone as saved."
     )
-    parameters = vol.Schema({vol.Required("zone"): dict})
+    parameters = _parameters({vol.Required("zone"): dict})
 
     async def async_call(
         self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
@@ -272,7 +282,7 @@ class DeleteZoneTool(_DeleteTool):
         "Delete a zone and its history. It cannot be undone: confirm with the "
         "user first."
     )
-    parameters = vol.Schema({vol.Required("zone_id"): int})
+    parameters = _parameters({vol.Required("zone_id"): int})
 
     async def async_call(
         self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
@@ -301,7 +311,7 @@ class SaveSensorGroupTool(_WriteTool):
         "sensor with its entity and unit, a static value, or none), "
         "greenhouse, module. Read GetSensorGroups first for the exact shape."
     )
-    parameters = vol.Schema({vol.Required("group"): dict})
+    parameters = _parameters({vol.Required("group"): dict})
 
     async def async_call(
         self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
@@ -333,7 +343,7 @@ class DeleteSensorGroupTool(_DeleteTool):
         "Delete a sensor group. The zones that read it are left without one: "
         "confirm with the user first."
     )
-    parameters = vol.Schema({vol.Required("group_id"): int})
+    parameters = _parameters({vol.Required("group_id"): int})
 
     async def async_call(
         self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
@@ -364,7 +374,7 @@ class SaveSettingsTool(_WriteTool):
         "change, as GetSettings returns them (unit system of Home Assistant). "
         "Programs are better changed with SaveProgram."
     )
-    parameters = vol.Schema({vol.Required("settings"): dict})
+    parameters = _parameters({vol.Required("settings"): dict})
 
     async def async_call(
         self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
@@ -402,7 +412,7 @@ class SaveProgramTool(_WriteTool):
         "Refused when a zone it names matches none. Returns the program as "
         "saved and its run, as PreviewProgram does."
     )
-    parameters = vol.Schema({vol.Required("program"): dict})
+    parameters = _parameters({vol.Required("program"): dict})
 
     async def async_call(
         self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
@@ -449,7 +459,7 @@ class DeleteProgramTool(_DeleteTool):
         "Delete a watering program (not the main one) and its schedules: "
         "confirm with the user first."
     )
-    parameters = vol.Schema({vol.Required("program_id"): str})
+    parameters = _parameters({vol.Required("program_id"): str})
 
     async def async_call(
         self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context

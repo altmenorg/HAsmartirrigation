@@ -106,6 +106,12 @@ class _ReadOnlyTool(llm.Tool):
         )
 
 
+def _parameters(schema: dict) -> Any:
+    """A tool's parameters. Home Assistant 2026.10 types them as probatio, the
+    successor of voluptuous it moved to; voluptuous schemas still work."""
+    return vol.Schema(schema)
+
+
 def _number(value) -> float | None:
     try:
         return round(float(value), 2)
@@ -267,7 +273,7 @@ class GetPlanningTool(_ReadOnlyTool):
         "and seconds of each step, and whether the weather or a suspension is "
         "expected to hold it back."
     )
-    parameters = vol.Schema(
+    parameters = _parameters(
         {vol.Optional("days", default=3): vol.All(int, vol.Range(min=1, max=14))}
     )
 
@@ -304,7 +310,7 @@ class PreviewProgramTool(_ReadOnlyTool):
         "zone, and zones the run leaves out (no valve, or disabled). Nothing is "
         "saved and no valve opens. A step names its zones by name or id."
     )
-    parameters = vol.Schema({vol.Required("program"): dict})
+    parameters = _parameters({vol.Required("program"): dict})
 
     async def async_call(
         self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
