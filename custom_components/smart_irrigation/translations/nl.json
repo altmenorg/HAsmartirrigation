@@ -113,6 +113,9 @@
       },
       "any_problem": {
         "name": "Probleem"
+      },
+      "observed_watering": {
+        "name": "Waargenomen beregening"
       }
     },
     "switch": {

@@ -113,6 +113,9 @@
       },
       "any_problem": {
         "name": "Проблема"
+      },
+      "observed_watering": {
+        "name": "Наблюдаемый полив"
       }
     },
     "switch": {

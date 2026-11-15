@@ -113,6 +113,9 @@
       },
       "any_problem": {
         "name": "Problém"
+      },
+      "observed_watering": {
+        "name": "Sledované zavlažovanie"
       }
     },
     "switch": {

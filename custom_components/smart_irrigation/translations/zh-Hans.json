@@ -113,6 +113,9 @@
       },
       "any_problem": {
         "name": "问题"
+      },
+      "observed_watering": {
+        "name": "观察到的浇水"
       }
     },
     "switch": {

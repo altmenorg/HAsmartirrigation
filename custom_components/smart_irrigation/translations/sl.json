@@ -113,6 +113,9 @@
       },
       "any_problem": {
         "name": "Težava"
+      },
+      "observed_watering": {
+        "name": "Opazovano zalivanje"
       }
     },
     "switch": {

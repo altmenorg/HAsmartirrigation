@@ -18,6 +18,8 @@ To set it up:
 1. In **General**, turn on **Enable observed watering**.
 2. In **Zones**, set each zone's **Linked valve/switch** to the entity that waters that zone (a `switch`, `valve` or `input_boolean`).
 
+The Smart Irrigation device has an **Observed watering** binary sensor (`binary_sensor.smart_irrigation_observed_watering`), on while the option is: one automation shared between several installs can read it to know whether it must reset the water balance itself.
+
 > Important: when observed watering is on it becomes the only thing crediting the water balance. Remove any `set_bucket` or `reset_bucket` call from your irrigation automation, otherwise the water balance is accounted twice.
 
 ### Optional: leave short runs out

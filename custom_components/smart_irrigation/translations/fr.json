@@ -113,6 +113,9 @@
       },
       "any_problem": {
         "name": "Problème"
+      },
+      "observed_watering": {
+        "name": "Arrosage observé"
       }
     },
     "switch": {

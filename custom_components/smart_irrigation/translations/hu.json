@@ -113,6 +113,9 @@
       },
       "any_problem": {
         "name": "Probléma"
+      },
+      "observed_watering": {
+        "name": "Megfigyelt öntözés"
       }
     },
     "switch": {
