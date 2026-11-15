@@ -32,6 +32,7 @@ Smart Irrigation fork (https://github.com/JustChr/HAsmartirrigation), MIT.
 import logging
 import math
 from datetime import datetime, timedelta
+from typing import Any
 
 import homeassistant.util.dt as dt_util
 from homeassistant.core import Event, callback
@@ -71,6 +72,10 @@ _VOLUME_TO_LITRES = {
 
 class ObservedWateringMixin:
     """Credit a zone's bucket for observed runs of its linked valve."""
+
+    # Given by the coordinator that inherits this mixin.
+    hass: Any
+    store: Any
 
     async def async_setup_observed_watering(self) -> None:
         """(Re)subscribe to linked-valve state changes per the current config.
