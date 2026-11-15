@@ -312,11 +312,11 @@
           "mode-water": "Calcular y regar",
           "mode-calculate": "Solo calcular",
           "mode-off": "Detener todo",
-          "description": "Desactivado, Smart Irrigation sigue tomando sus lecturas meteorológicas y conserva sus sensores, pero no calcula nada, deja el balance hídrico de cada zona tal como está, no abre ninguna válvula y no ejecuta ningún programa. Al volver a activarlo, el tiempo que estuvo desactivado no se cuenta.",
           "off-note": "Desactivado: no se calcula ni se riega nada. Las lecturas meteorológicas continúan, y el tiempo que esté desactivado no se contará cuando lo vuelvas a activar.",
           "calculate-note": "Solo calcular: Smart Irrigation calcula los balances hídricos y las duraciones y envía su evento de inicio, pero no abre ninguna válvula. Tu propia automatización, Irrigation Unlimited o tu controlador riega con esas duraciones.",
           "confirm-off": "¿Desactivar Smart Irrigation? Lo que esté regando se detiene ahora, y no se calcula ni se riega nada hasta que se vuelva a activar.",
-          "confirm-calculate": "¿Solo calcular? Smart Irrigation deja de abrir las válvulas: lo que esté regando se detiene ahora y, a partir de ahora, tu propia automatización riega con sus duraciones."
+          "confirm-calculate": "¿Solo calcular? Smart Irrigation deja de abrir las válvulas: lo que esté regando se detiene ahora y, a partir de ahora, tu propia automatización riega con sus duraciones.",
+          "water-note": "Calcular y regar: Smart Irrigation calcula lo que necesita cada zona y abre él mismo las válvulas, con sus programas. El programa principal riega todas las zonas en sus horarios."
         }
       },
       "description": "Esta página provee configuraciones globales.",

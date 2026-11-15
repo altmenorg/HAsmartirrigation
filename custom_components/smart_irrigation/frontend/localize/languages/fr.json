@@ -312,11 +312,11 @@
           "mode-water": "Calculer et arroser",
           "mode-calculate": "Calculer seulement",
           "mode-off": "Tout arrêter",
-          "description": "Désactivé, Smart Irrigation continue ses relevés météo et garde ses capteurs, mais ne calcule rien, laisse le bilan hydrique de chaque zone tel quel, n'ouvre aucune vanne et ne lance aucun programme. Une fois réactivé, le temps passé à l'arrêt n'est pas compté.",
           "off-note": "Désactivé : rien n'est calculé et rien n'est arrosé. Les relevés météo continuent, et le temps passé à l'arrêt ne sera pas compté quand tu le réactiveras.",
           "calculate-note": "Calcul seulement : Smart Irrigation calcule les bilans hydriques et les durées et envoie son événement de départ, mais n'ouvre aucune vanne. Ton automatisation, Irrigation Unlimited ou ton contrôleur arrose avec ces durées.",
           "confirm-off": "Désactiver Smart Irrigation ? Tout arrosage en cours s'arrête maintenant, et rien n'est calculé ni arrosé jusqu'à sa réactivation.",
-          "confirm-calculate": "Calculer seulement ? Smart Irrigation cesse d'ouvrir les vannes : ce qu'il arrose s'arrête maintenant, et c'est ton automatisation qui arrose désormais avec ses durées."
+          "confirm-calculate": "Calculer seulement ? Smart Irrigation cesse d'ouvrir les vannes : ce qu'il arrose s'arrête maintenant, et c'est ton automatisation qui arrose désormais avec ses durées.",
+          "water-note": "Calculer et arroser : Smart Irrigation calcule ce dont chaque zone a besoin et ouvre lui-même les vannes, avec ses programmes. Le programme principal arrose toutes les zones à ses horaires."
         }
       },
       "description": "Cette page fournit les réglages globaux.",

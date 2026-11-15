@@ -312,11 +312,11 @@
           "mode-water": "Berekenen en beregenen",
           "mode-calculate": "Alleen berekenen",
           "mode-off": "Alles stoppen",
-          "description": "Uitgeschakeld blijft Smart Irrigation weersinformatie verzamelen en houdt het zijn sensoren, maar berekent het niets, laat het de waterbalans van elke zone zoals die is, opent het geen ventiel en voert het geen programma uit. Weer ingeschakeld telt de tijd dat het uit stond niet mee.",
           "off-note": "Uitgeschakeld: er wordt niets berekend en niets beregend. De weersinformatie wordt verder verzameld, en de tijd dat het uit staat telt niet mee als je het weer inschakelt.",
           "calculate-note": "Alleen berekenen: Smart Irrigation berekent waterbalansen en duren en stuurt zijn startevent, maar opent geen klep. Je eigen automatisering, Irrigation Unlimited of je controller beregent met die duren.",
           "confirm-off": "Smart Irrigation uitschakelen? Wat nu beregent stopt meteen, en er wordt niets berekend of beregend tot het weer ingeschakeld wordt.",
-          "confirm-calculate": "Alleen berekenen? Smart Irrigation opent geen kleppen meer: wat het beregent stopt nu, en voortaan beregent je eigen automatisering met zijn duren."
+          "confirm-calculate": "Alleen berekenen? Smart Irrigation opent geen kleppen meer: wat het beregent stopt nu, en voortaan beregent je eigen automatisering met zijn duren.",
+          "water-note": "Berekenen en beregenen: Smart Irrigation berekent wat elke zone nodig heeft en opent de kleppen zelf, met zijn programma's. Het hoofdprogramma beregent alle zones volgens zijn schema's."
         }
       },
       "description": "Dit zijn de algemene instellingen.",

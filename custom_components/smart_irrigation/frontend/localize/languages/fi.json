@@ -312,11 +312,11 @@
           "mode-water": "Laske ja kastele",
           "mode-calculate": "Vain laskenta",
           "mode-off": "Pysäytä kaikki",
-          "description": "Pois päältä Smart Irrigation hakee edelleen säätiedot ja pitää anturinsa, mutta ei laske mitään, jättää jokaisen vyöhykkeen vesitaseen ennalleen, ei avaa yhtään venttiiliä eikä aja yhtään ohjelmaa. Kun se kytketään taas päälle, pois päältä oltua aikaa ei lasketa.",
           "off-note": "Pois päältä: mitään ei lasketa eikä mitään kastella. Säätietojen haku jatkuu, eikä pois päältä oltua aikaa lasketa, kun kytket sen taas päälle.",
           "calculate-note": "Vain laskenta: Smart Irrigation laskee vesitaseet ja kestot ja lähettää aloitustapahtumansa, mutta ei avaa venttiileitä. Oma automaatiosi, Irrigation Unlimited tai ohjaimesi kastelee näillä kestoilla.",
           "confirm-off": "Kytketäänkö Smart Irrigation pois päältä? Käynnissä oleva kastelu pysähtyy heti, eikä mitään lasketa tai kastella ennen kuin se kytketään taas päälle.",
-          "confirm-calculate": "Vain laskenta? Smart Irrigation lopettaa venttiilien avaamisen: käynnissä oleva kastelu pysähtyy nyt, ja jatkossa oma automaatiosi kastelee sen kestoilla."
+          "confirm-calculate": "Vain laskenta? Smart Irrigation lopettaa venttiilien avaamisen: käynnissä oleva kastelu pysähtyy nyt, ja jatkossa oma automaatiosi kastelee sen kestoilla.",
+          "water-note": "Laske ja kastele: Smart Irrigation laskee, mitä kukin vyöhyke tarvitsee, ja avaa venttiilit itse ohjelmillaan. Pääohjelma kastelee kaikki vyöhykkeet aikataulujensa mukaan."
         }
       },
       "description": "Tämä sivu tarjoaa yleiset asetukset.",

@@ -312,11 +312,11 @@
           "mode-water": "Obliczaj i podlewaj",
           "mode-calculate": "Tylko obliczaj",
           "mode-off": "Zatrzymaj wszystko",
-          "description": "Po wyłączeniu Smart Irrigation nadal pobiera dane pogodowe i zachowuje swoje czujniki, ale niczego nie oblicza, zostawia bilans wodny każdej strefy bez zmian, nie otwiera żadnego zaworu i nie uruchamia żadnego programu. Po ponownym włączeniu czas wyłączenia nie jest liczony.",
           "off-note": "Wyłączone: nic nie jest obliczane ani podlewane. Dane pogodowe są nadal pobierane, a czas wyłączenia nie zostanie policzony, gdy włączysz je ponownie.",
           "calculate-note": "Tylko obliczanie: Smart Irrigation liczy bilanse wodne i czasy oraz wysyła zdarzenie startu, ale nie otwiera żadnego zaworu. Podlewa Twoja automatyzacja, Irrigation Unlimited lub sterownik z tymi czasami.",
           "confirm-off": "Wyłączyć Smart Irrigation? Trwające podlewanie zatrzyma się teraz, a nic nie będzie obliczane ani podlewane do ponownego włączenia.",
-          "confirm-calculate": "Tylko obliczać? Smart Irrigation przestaje otwierać zawory: to, co podlewa, zatrzyma się teraz, a od teraz podlewa Twoja automatyzacja z jego czasami."
+          "confirm-calculate": "Tylko obliczać? Smart Irrigation przestaje otwierać zawory: to, co podlewa, zatrzyma się teraz, a od teraz podlewa Twoja automatyzacja z jego czasami.",
+          "water-note": "Obliczaj i podlewaj: Smart Irrigation oblicza, czego potrzebuje każda strefa, i sam otwiera zawory swoimi programami. Program główny podlewa wszystkie strefy według swoich harmonogramów."
         }
       },
       "description": "Ta strona zawiera ustawienia globalne.",

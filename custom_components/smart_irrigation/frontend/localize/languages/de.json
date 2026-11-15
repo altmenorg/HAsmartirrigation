@@ -312,11 +312,11 @@
           "mode-water": "Berechnen und bewässern",
           "mode-calculate": "Nur berechnen",
           "mode-off": "Alles anhalten",
-          "description": "Ausgeschaltet erfasst Smart Irrigation weiter seine Wetterdaten und pflegt seine Sensoren, berechnet aber nichts, lässt jede Wasserbilanz unverändert, öffnet kein Ventil und führt kein Programm aus. Beim Wiedereinschalten wird die Zeit, in der es aus war, nicht mitgezählt.",
           "off-note": "Ausgeschaltet: Es wird nichts berechnet und nichts bewässert. Die Wetterdaten werden weiter erfasst, und die Zeit, in der es aus ist, wird beim Wiedereinschalten nicht mitgezählt.",
           "calculate-note": "Nur berechnen: Smart Irrigation berechnet Wasserbilanzen und Dauern und löst sein Startereignis aus, öffnet aber kein Ventil. Deine eigene Automatisierung, Irrigation Unlimited oder dein Controller bewässert mit diesen Dauern.",
           "confirm-off": "Smart Irrigation ausschalten? Was gerade bewässert, stoppt sofort, und bis zum Wiedereinschalten wird nichts berechnet oder bewässert.",
-          "confirm-calculate": "Nur berechnen? Smart Irrigation öffnet keine Ventile mehr: was es gerade bewässert, stoppt jetzt, und ab jetzt bewässert deine eigene Automatisierung mit seinen Dauern."
+          "confirm-calculate": "Nur berechnen? Smart Irrigation öffnet keine Ventile mehr: was es gerade bewässert, stoppt jetzt, und ab jetzt bewässert deine eigene Automatisierung mit seinen Dauern.",
+          "water-note": "Berechnen und bewässern: Smart Irrigation berechnet, was jede Zone braucht, und öffnet die Ventile selbst, mit seinen Programmen. Das Hauptprogramm bewässert alle Zonen zu seinen Zeitplänen."
         }
       },
       "description": "Diese Seite ist für allgemeine Einstellungen.",

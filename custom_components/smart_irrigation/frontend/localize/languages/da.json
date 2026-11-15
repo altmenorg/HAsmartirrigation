@@ -312,11 +312,11 @@
           "mode-water": "Beregn og vand",
           "mode-calculate": "Kun beregn",
           "mode-off": "Stop alt",
-          "description": "Slået fra bliver Smart Irrigation ved med at hente vejrdata og beholder sine sensorer, men beregner intet, lader hver zones vandbalance være, som den er, åbner ingen ventil og kører intet program. Når den slås til igen, tælles tiden, hvor den var slået fra, ikke med.",
           "off-note": "Slået fra: intet beregnes, og intet vandes. Vejrdata hentes fortsat, og tiden, hvor den er slået fra, tælles ikke med, når du slår den til igen.",
           "calculate-note": "Kun beregn: Smart Irrigation beregner vandbalancer og varigheder og sender sin starthændelse, men åbner ingen ventil. Din egen automatisering, Irrigation Unlimited eller din controller vander med de varigheder.",
           "confirm-off": "Slå Smart Irrigation fra? Det, der vander, stopper nu, og intet beregnes eller vandes, før den slås til igen.",
-          "confirm-calculate": "Kun beregne? Smart Irrigation holder op med at åbne ventilerne: det, den vander, stopper nu, og fremover vander din egen automatisering med dens varigheder."
+          "confirm-calculate": "Kun beregne? Smart Irrigation holder op med at åbne ventilerne: det, den vander, stopper nu, og fremover vander din egen automatisering med dens varigheder.",
+          "water-note": "Beregn og vand: Smart Irrigation beregner, hvad hver zone har brug for, og åbner selv ventilerne med sine programmer. Hovedprogrammet vander alle zoner efter sine tidsplaner."
         }
       },
       "description": "Denne side indeholder globale indstillinger.",

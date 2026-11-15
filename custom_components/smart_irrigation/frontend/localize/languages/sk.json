@@ -312,11 +312,11 @@
           "mode-water": "Počítať a zavlažovať",
           "mode-calculate": "Len počítať",
           "mode-off": "Všetko zastaviť",
-          "description": "Keď je vypnuté, Smart Irrigation ďalej zbiera údaje o počasí a ponecháva si svoje senzory, ale nič nepočíta, necháva vodnú bilanciu každej zóny bez zmeny, neotvára žiadny ventil a nespúšťa žiadny program. Po opätovnom zapnutí sa čas, keď bolo vypnuté, nezapočítava.",
           "off-note": "Vypnuté: nič sa nepočíta a nič sa nezalieva. Údaje o počasí sa zbierajú ďalej a čas vypnutia sa nezapočíta, keď ho znova zapnete.",
           "calculate-note": "Len počítanie: Smart Irrigation počíta vodné bilancie a doby a posiela štartovaciu udalosť, ale neotvorí žiadny ventil. Zavlažuje vaša automatizácia, Irrigation Unlimited alebo váš ovládač s týmito dobami.",
           "confirm-off": "Vypnúť Smart Irrigation? Prebiehajúce zalievanie sa hneď zastaví a nič sa nepočíta ani nezalieva, kým sa znova nezapne.",
-          "confirm-calculate": "Len počítať? Smart Irrigation prestane otvárať ventily: čo práve zavlažuje, sa teraz zastaví, a odteraz zavlažuje vaša automatizácia s jeho dobami."
+          "confirm-calculate": "Len počítať? Smart Irrigation prestane otvárať ventily: čo práve zavlažuje, sa teraz zastaví, a odteraz zavlažuje vaša automatizácia s jeho dobami.",
+          "water-note": "Počítať a zavlažovať: Smart Irrigation vypočíta, čo každá zóna potrebuje, a sám otvára ventily svojimi programami. Hlavný program zavlažuje všetky zóny podľa svojich plánov."
         }
       },
       "description": "Táto stránka poskytuje globálne nastavenia.",

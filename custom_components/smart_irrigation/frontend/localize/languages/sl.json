@@ -312,11 +312,11 @@
           "mode-water": "Računaj in zalivaj",
           "mode-calculate": "Samo računaj",
           "mode-off": "Ustavi vse",
-          "description": "Ko je izklopljen, Smart Irrigation še naprej zbira vremenske podatke in obdrži svoje senzorje, vendar ne računa ničesar, pusti vodno bilanco vsake cone nespremenjeno, ne odpre nobenega ventila in ne zažene nobenega programa. Ko ga znova vklopiš, se čas, ko je bil izklopljen, ne šteje.",
           "off-note": "Izklopljeno: nič se ne računa in nič se ne zaliva. Vremenski podatki se še naprej zbirajo, čas izklopa pa se ne bo štel, ko ga znova vklopiš.",
           "calculate-note": "Samo računanje: Smart Irrigation izračuna vodne bilance in trajanja ter pošlje začetni dogodek, a ne odpre nobenega ventila. Zaliva vaša avtomatizacija, Irrigation Unlimited ali vaš krmilnik s temi trajanji.",
           "confirm-off": "Izklopim Smart Irrigation? Zalivanje, ki poteka, se takoj ustavi, in nič se ne računa ali zaliva, dokler ga znova ne vklopiš.",
-          "confirm-calculate": "Samo računati? Smart Irrigation preneha odpirati ventile: kar zaliva, se zdaj ustavi, odslej pa zaliva vaša avtomatizacija z njegovimi trajanji."
+          "confirm-calculate": "Samo računati? Smart Irrigation preneha odpirati ventile: kar zaliva, se zdaj ustavi, odslej pa zaliva vaša avtomatizacija z njegovimi trajanji.",
+          "water-note": "Računaj in zalivaj: Smart Irrigation izračuna, kaj potrebuje vsako območje, in sam odpira ventile s svojimi programi. Glavni program zaliva vsa območja po svojih urnikih."
         }
       },
       "description": "Ta stran vsebuje splošne nastavitve.",

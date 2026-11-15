@@ -312,11 +312,11 @@
           "mode-water": "Calcola e irriga",
           "mode-calculate": "Solo calcolo",
           "mode-off": "Ferma tutto",
-          "description": "Da disattivato, Smart Irrigation continua a raccogliere i dati meteo e mantiene i suoi sensori, ma non calcola nulla, lascia invariato il bilancio idrico di ogni zona, non apre nessuna valvola e non avvia nessun programma. Quando lo riattivi, il tempo in cui era spento non viene contato.",
           "off-note": "Disattivato: non si calcola e non si irriga nulla. I dati meteo continuano a essere raccolti, e il tempo in cui resta spento non verrà contato quando lo riattivi.",
           "calculate-note": "Solo calcolo: Smart Irrigation calcola bilanci idrici e durate e invia il suo evento di avvio, ma non apre nessuna valvola. La tua automazione, Irrigation Unlimited o il tuo controller irriga con quelle durate.",
           "confirm-off": "Disattivare Smart Irrigation? Qualsiasi irrigazione in corso si ferma subito, e nulla viene calcolato o irrigato finché non lo riattivi.",
-          "confirm-calculate": "Solo calcolo? Smart Irrigation smette di aprire le valvole: ciò che sta irrigando si ferma ora e, da adesso, irriga la tua automazione con le sue durate."
+          "confirm-calculate": "Solo calcolo? Smart Irrigation smette di aprire le valvole: ciò che sta irrigando si ferma ora e, da adesso, irriga la tua automazione con le sue durate.",
+          "water-note": "Calcola e irriga: Smart Irrigation calcola ciò che serve a ogni zona e apre da solo le valvole, con i suoi programmi. Il programma principale irriga tutte le zone secondo le sue pianificazioni."
         }
       },
       "description": "Questa pagina fornisce le impostazioni globali.",

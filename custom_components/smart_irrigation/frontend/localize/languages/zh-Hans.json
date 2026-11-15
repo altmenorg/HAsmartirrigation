@@ -312,11 +312,11 @@
           "mode-water": "计算并浇水",
           "mode-calculate": "仅计算",
           "mode-off": "全部停止",
-          "description": "关闭后，Smart Irrigation 仍会获取天气数据并保留其传感器，但不进行任何计算，各区域的水量平衡保持不变，不打开任何阀门，也不运行任何程序。重新打开后，关闭期间的时间不计入。",
           "off-note": "已关闭：不计算，也不浇水。天气数据照常获取，重新打开时不会计入关闭期间的时间。",
           "calculate-note": "仅计算：Smart Irrigation 计算水量平衡和时长并发送开始事件，但不打开任何阀门。由你的自动化、Irrigation Unlimited 或控制器按这些时长浇水。",
           "confirm-off": "关闭 Smart Irrigation？正在进行的浇水会立即停止，在重新打开之前不会计算或浇水。",
-          "confirm-calculate": "仅计算？Smart Irrigation 将不再打开阀门：正在进行的浇水会立即停止，此后由你的自动化按其时长浇水。"
+          "confirm-calculate": "仅计算？Smart Irrigation 将不再打开阀门：正在进行的浇水会立即停止，此后由你的自动化按其时长浇水。",
+          "water-note": "计算并浇水：Smart Irrigation 计算每个区域的需求，并通过其程序自行打开阀门。主程序按其时间表浇灌所有区域。"
         }
       },
       "description": "此页面提供全局设置。",

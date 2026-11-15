@@ -1852,6 +1852,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         toast(t("yaml_applied"));
       };
       return html`
+        <div class="fold-section">YAML<si-info>${t("yaml_help")}</si-info></div>
         <ha-yaml-editor
           .hass=${this.hass}
           .defaultValue=${edit.initial}
@@ -1922,8 +1923,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     // In YAML, the button that was "Edit in YAML" goes back to the form.
     const backButton = (program: SmartIrrigationProgram) =>
       html`${this._actionBtn(mdiFormSelect, t("yaml_back"), () =>
-          closeYaml(program.id ?? ""),
-        )}<si-info>${t("yaml_help")}</si-info> `;
+        closeYaml(program.id ?? ""),
+      )} `;
 
     const renderStep = (
       program: SmartIrrigationProgram,
@@ -4134,7 +4135,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   ? t("off-note")
                   : mode === "calculate"
                     ? t("calculate-note")
-                    : t("description")}</si-info
+                    : t("water-note")}</si-info
               >
             </div>
             <div class="select-wrap">

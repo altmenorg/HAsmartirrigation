@@ -312,11 +312,11 @@
           "mode-water": "Beräkna och vattna",
           "mode-calculate": "Bara beräkna",
           "mode-off": "Stoppa allt",
-          "description": "När Smart Irrigation är avstängt fortsätter väderdata att samlas in och sensorerna finns kvar. Ingen bevattningstid beräknas, vattenbalanserna ligger kvar och inga ventiler öppnas eller program körs. När du slår på funktionen igen räknas tiden den var avstängd inte med.",
           "off-note": "Smart Irrigation är avstängt. Beräkning och bevattning är pausade, men väderdata samlas fortfarande in. Tiden som funktionen är avstängd räknas inte med när du slår på den igen.",
           "calculate-note": "Bara beräkna: Smart Irrigation beräknar vattenbalanser och varaktigheter och skickar sin starthändelse, men öppnar ingen ventil. Din egen automation, Irrigation Unlimited eller din styrenhet vattnar med de varaktigheterna.",
           "confirm-off": "Vill du stänga av Smart Irrigation? Pågående bevattning avbryts direkt. Beräkningarna och bevattningen pausas tills du slår på funktionen igen.",
-          "confirm-calculate": "Bara beräkna? Smart Irrigation slutar öppna ventilerna: det som vattnas stoppas nu, och från och med nu vattnar din egen automation med dess varaktigheter."
+          "confirm-calculate": "Bara beräkna? Smart Irrigation slutar öppna ventilerna: det som vattnas stoppas nu, och från och med nu vattnar din egen automation med dess varaktigheter.",
+          "water-note": "Beräkna och vattna: Smart Irrigation beräknar vad varje zon behöver och öppnar ventilerna själv, med sina program. Huvudprogrammet vattnar alla zoner enligt sina scheman."
         }
       },
       "description": "Här ändrar du inställningar som gäller hela integrationen.",

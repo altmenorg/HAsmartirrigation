@@ -312,11 +312,11 @@
           "mode-water": "Počítat a zavlažovat",
           "mode-calculate": "Jen počítat",
           "mode-off": "Vše zastavit",
-          "description": "Když je vypnuté, Smart Irrigation dál načítá meteorologická data a ponechává si své senzory, ale nic nepočítá, nechává vodní bilanci každé zóny beze změny, neotevírá žádný ventil a nespouští žádný program. Po opětovném zapnutí se doba, kdy bylo vypnuté, nezapočítává.",
           "off-note": "Vypnuto: nic se nepočítá a nic se nezalévá. Meteorologická data se načítají dál a doba vypnutí se nezapočítá, až ho znovu zapnete.",
           "calculate-note": "Jen počítat: Smart Irrigation počítá vodní bilance a doby a posílá startovní událost, ale neotevře žádný ventil. Zavlažuje vaše automatizace, Irrigation Unlimited nebo váš ovladač s těmito dobami.",
           "confirm-off": "Vypnout Smart Irrigation? Probíhající zalévání se hned zastaví a nic se nepočítá ani nezalévá, dokud se znovu nezapne.",
-          "confirm-calculate": "Jen počítat? Smart Irrigation přestane otevírat ventily: co právě zavlažuje, se teď zastaví, a od teď zavlažuje vaše automatizace s jeho dobami."
+          "confirm-calculate": "Jen počítat? Smart Irrigation přestane otevírat ventily: co právě zavlažuje, se teď zastaví, a od teď zavlažuje vaše automatizace s jeho dobami.",
+          "water-note": "Počítat a zavlažovat: Smart Irrigation spočítá, co každá zóna potřebuje, a sám otevírá ventily svými programy. Hlavní program zavlažuje všechny zóny podle svých plánů."
         }
       },
       "description": "Tato stránka poskytuje globální nastavení.",

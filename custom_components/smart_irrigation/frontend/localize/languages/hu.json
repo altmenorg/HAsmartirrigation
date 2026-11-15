@@ -312,11 +312,11 @@
           "mode-water": "Számol és öntöz",
           "mode-calculate": "Csak számol",
           "mode-off": "Minden leállítása",
-          "description": "Kikapcsolva a Smart Irrigation továbbra is gyűjti az időjárási adatokat és megtartja az érzékelőit, de nem számol semmit, minden zóna vízmérlegét változatlanul hagyja, egy szelepet sem nyit ki, és egy programot sem futtat. Újra bekapcsolva a kikapcsolt időt nem számítja bele.",
           "off-note": "Kikapcsolva: semmi sem számolódik, és semmi sem öntöz. Az időjárási adatok gyűjtése folytatódik, és a kikapcsolt idő nem számít bele, amikor újra bekapcsolod.",
           "calculate-note": "Csak számol: a Smart Irrigation kiszámolja a vízmérlegeket és az időtartamokat, és elküldi az indítási eseményt, de egy szelepet sem nyit. A saját automatizálásod, az Irrigation Unlimited vagy a vezérlőd öntöz ezekkel az időkkel.",
           "confirm-off": "Kikapcsolod a Smart Irrigationt? Ami most öntöz, azonnal leáll, és semmi sem számolódik vagy öntöz, amíg újra be nem kapcsolod.",
-          "confirm-calculate": "Csak számoljon? A Smart Irrigation nem nyit több szelepet: amit éppen öntöz, most leáll, és mostantól a saját automatizálásod öntöz az időtartamaival."
+          "confirm-calculate": "Csak számoljon? A Smart Irrigation nem nyit több szelepet: amit éppen öntöz, most leáll, és mostantól a saját automatizálásod öntöz az időtartamaival.",
+          "water-note": "Számol és öntöz: a Smart Irrigation kiszámolja, mire van szüksége minden zónának, és maga nyitja a szelepeket a programjaival. A főprogram az ütemezései szerint öntöz minden zónát."
         }
       },
       "description": "Ez az oldal globális beállításokat biztosít.",

@@ -312,11 +312,11 @@
           "mode-water": "Calculate and water",
           "mode-calculate": "Calculate only",
           "mode-off": "Stop everything",
-          "description": "Off, Smart Irrigation keeps taking its weather readings and keeps its sensors, but calculates nothing, leaves every water balance as it is, opens no valve and runs no program. Switched on again, the time it was off is not counted.",
           "off-note": "Switched off: nothing is calculated and nothing is watered. The weather readings carry on, and the time it is off will not be counted when it is switched on again.",
           "calculate-note": "Calculating only: Smart Irrigation works out the water balances and the durations and fires its start event, but opens no valve. Your own automation, Irrigation Unlimited or your controller does the watering with those durations.",
           "confirm-off": "Switch Smart Irrigation off? Whatever is watering stops now, and nothing is calculated or watered until it is switched on again.",
-          "confirm-calculate": "Calculate only? Smart Irrigation stops opening the valves: whatever it is watering stops now, and from now on your own automation does the watering with its durations."
+          "confirm-calculate": "Calculate only? Smart Irrigation stops opening the valves: whatever it is watering stops now, and from now on your own automation does the watering with its durations.",
+          "water-note": "Calculating and watering: Smart Irrigation works out what each zone needs and opens the valves itself, with its programs. The main program waters every zone at its schedules."
         }
       },
       "description": "This page provides global settings.",
