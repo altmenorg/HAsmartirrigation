@@ -30,6 +30,11 @@ def _call(name, **args):
     return llm.ToolInput(tool_name=name, tool_args=args)
 
 
+def _data(result):
+    """What a tool returned: a ToolResult on Home Assistant 2026.10 and later."""
+    return getattr(result, "data", result)
+
+
 def _coordinator():
     zones = [
         {
@@ -147,6 +152,8 @@ async def test_the_tools_are_read_only_and_described():
     voluptuous_openapi = pytest.importorskip("voluptuous_openapi")
     for tool in instance.tools:
         assert tool.description
+        # Tagged with the integration that provides it (Home Assistant 2026.10).
+        assert tool.integration == "smart_irrigation"
         # What an assistant is sent: the parameters as JSON schema.
         voluptuous_openapi.convert(tool.parameters)
 
@@ -154,7 +161,9 @@ async def test_the_tools_are_read_only_and_described():
 async def test_zones_say_where_they_stand():
     hass = _hass(_coordinator())
 
-    result = await llm_api.GetZonesTool().async_call(hass, _call("GetZones"), None)
+    result = _data(
+        await llm_api.GetZonesTool().async_call(hass, _call("GetZones"), None)
+    )
 
     lawn, pots = result["result"]
     assert lawn["deficit_mm"] == 4.25
@@ -167,8 +176,8 @@ async def test_zones_say_where_they_stand():
 async def test_programs_name_their_zones():
     hass = _hass(_coordinator())
 
-    result = await llm_api.GetProgramsTool().async_call(
-        hass, _call("GetPrograms"), None
+    result = _data(
+        await llm_api.GetProgramsTool().async_call(hass, _call("GetPrograms"), None)
     )
 
     assert result["result"]["full_controller"] is True
@@ -181,8 +190,10 @@ async def test_a_preview_is_summed_up_per_zone():
     coordinator = _coordinator()
     hass = _hass(coordinator)
 
-    result = await llm_api.PreviewProgramTool().async_call(
-        hass, _call("PreviewProgram", program={"name": "P"}), None
+    result = _data(
+        await llm_api.PreviewProgramTool().async_call(
+            hass, _call("PreviewProgram", program={"name": "P"}), None
+        )
     )
 
     coordinator.async_program_preview.assert_awaited_once_with({"name": "P"})

@@ -23,7 +23,6 @@ import voluptuous as vol
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import llm
-from homeassistant.util.json import JsonObjectType
 
 from . import const
 
@@ -65,6 +64,29 @@ def _coordinator(hass: HomeAssistant):
     return coordinator
 
 
+# Home Assistant 2026.10 records which integration provides a tool, wraps what
+# a tool returns in a ToolResult and lets a tool say it only reads; older ones
+# have none of this, and take the plain dict.
+_TOOL_RESULT = getattr(llm, "ToolResult", None)
+_ANNOTATIONS = getattr(llm, "ToolAnnotations", None)
+
+
+def _result(data) -> Any:
+    """What a tool returns, in the form this Home Assistant expects."""
+    payload = {"success": True, "result": data}
+    return _TOOL_RESULT(data=payload) if _TOOL_RESULT is not None else payload
+
+
+class _ReadOnlyTool(llm.Tool):
+    """A tool of Smart Irrigation's that only reads."""
+
+    integration = const.DOMAIN
+    if _ANNOTATIONS is not None:
+        annotations = _ANNOTATIONS(
+            read_only=True, destructive=False, idempotent=True, open_world=False
+        )
+
+
 def _number(value) -> float | None:
     try:
         return round(float(value), 2)
@@ -75,7 +97,7 @@ def _number(value) -> float | None:
 # --- the tools ------------------------------------------------------------------
 
 
-class GetZonesTool(llm.Tool):
+class GetZonesTool(_ReadOnlyTool):
     """The zones, and where each one stands."""
 
     name = "GetZones"
@@ -89,7 +111,7 @@ class GetZonesTool(llm.Tool):
 
     async def async_call(
         self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
-    ) -> JsonObjectType:
+    ) -> Any:
         coordinator = _coordinator(hass)
         groups = {
             int(m[const.MAPPING_ID]): m.get(const.MAPPING_NAME)
@@ -120,10 +142,10 @@ class GetZonesTool(llm.Tool):
                     ),
                 }
             )
-        return {"success": True, "result": zones}
+        return _result(zones)
 
 
-class GetIrrigationInfoTool(llm.Tool):
+class GetIrrigationInfoTool(_ReadOnlyTool):
     """The next run, and why each zone is or is not in it."""
 
     name = "GetIrrigationInfo"
@@ -135,13 +157,10 @@ class GetIrrigationInfoTool(llm.Tool):
 
     async def async_call(
         self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
-    ) -> JsonObjectType:
+    ) -> Any:
         from .websockets import build_irrigation_info
 
-        return {
-            "success": True,
-            "result": await build_irrigation_info(hass, _coordinator(hass)),
-        }
+        return _result(await build_irrigation_info(hass, _coordinator(hass)))
 
 
 def _program_for_reading(program: dict, names: dict) -> dict:
@@ -161,7 +180,7 @@ def _program_for_reading(program: dict, names: dict) -> dict:
     return readable
 
 
-class GetProgramsTool(llm.Tool):
+class GetProgramsTool(_ReadOnlyTool):
     """The programs of the full controller."""
 
     name = "GetPrograms"
@@ -174,24 +193,23 @@ class GetProgramsTool(llm.Tool):
 
     async def async_call(
         self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
-    ) -> JsonObjectType:
+    ) -> Any:
         coordinator = _coordinator(hass)
         config = coordinator.store.config
         names = {
             int(z[const.ZONE_ID]): z.get(const.ZONE_NAME)
             for z in await coordinator.store.async_get_zones()
         }
-        return {
-            "success": True,
-            "result": {
+        return _result(
+            {
                 "full_controller": getattr(config, const.CONF_FULL_CONTROLLER, False)
                 is True,
                 "programs": [
                     _program_for_reading(p, names)
                     for p in getattr(config, const.CONF_PROGRAMS, None) or []
                 ],
-            },
-        }
+            }
+        )
 
 
 def _timeline_summary(timeline: dict) -> list:
@@ -220,7 +238,7 @@ def _timeline_summary(timeline: dict) -> list:
     return list(rows.values())
 
 
-class GetPlanningTool(llm.Tool):
+class GetPlanningTool(_ReadOnlyTool):
     """What the programs will water over the next days."""
 
     name = "GetPlanning"
@@ -236,7 +254,7 @@ class GetPlanningTool(llm.Tool):
 
     async def async_call(
         self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
-    ) -> JsonObjectType:
+    ) -> Any:
         from .planning_sequence import sequence_planning
         from .websockets import _trigger_starts
 
@@ -252,10 +270,10 @@ class GetPlanningTool(llm.Tool):
             run = {k: v for k, v in item.items() if k != "timeline"}
             run["zones_in_order"] = _timeline_summary(item.get("timeline") or {})
             runs.append(run)
-        return {"success": True, "result": runs}
+        return _result(runs)
 
 
-class PreviewProgramTool(llm.Tool):
+class PreviewProgramTool(_ReadOnlyTool):
     """A program as written, cleaned and dry-run. Nothing is saved."""
 
     name = "PreviewProgram"
@@ -271,14 +289,14 @@ class PreviewProgramTool(llm.Tool):
 
     async def async_call(
         self, hass: HomeAssistant, tool_input: llm.ToolInput, llm_context
-    ) -> JsonObjectType:
+    ) -> Any:
         preview = await _coordinator(hass).async_program_preview(
             tool_input.tool_args["program"]
         )
         timeline = preview.pop("timeline")
         preview["total_seconds"] = timeline.get("total")
         preview["zones_in_order"] = _timeline_summary(timeline)
-        return {"success": True, "result": preview}
+        return _result(preview)
 
 
 # --- the API --------------------------------------------------------------------
