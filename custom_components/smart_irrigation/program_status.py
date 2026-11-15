@@ -50,6 +50,11 @@ PLANNING_FORECAST_HOURS = 48
 class ProgramStatusMixin:
     """The live state, overview and planning of the programs."""
 
+    # The coordinator this is mixed into has them (declared for the type
+    # checker only: no value, so nothing is set on the class).
+    hass: Any
+    store: Any
+
     def _notify_programs(self) -> None:
         """Tell the program sensors and the panel that something changed."""
         try:

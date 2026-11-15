@@ -96,7 +96,7 @@ class GetZonesTool(llm.Tool):
             for m in await coordinator.store.async_get_mappings()
             if const.MAPPING_ID in m
         }
-        zones = []
+        zones: list[Any] = []
         for zone in await coordinator.store.async_get_zones():
             bucket = _number(zone.get(const.ZONE_BUCKET))
             mapping = zone.get(const.ZONE_MAPPING)
@@ -247,7 +247,7 @@ class GetPlanningTool(llm.Tool):
                 days, trigger_starts=await _trigger_starts(hass, coordinator, days)
             )
         )
-        runs = []
+        runs: list[Any] = []
         for item in planned:
             run = {k: v for k, v in item.items() if k != "timeline"}
             run["zones_in_order"] = _timeline_summary(item.get("timeline") or {})
