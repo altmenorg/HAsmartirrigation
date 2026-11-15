@@ -84,6 +84,7 @@ from .liveness import WeatherLivenessMixin
 from .llm_api import async_sync_llm_api
 from .master_switch import irrigation_off, watering_off
 from .observed_watering import ObservedWateringMixin
+from .one_choice import migration_changes, seed_main_schedules
 from .panel import async_register_panel, remove_panel
 from .program_adjust import ADJUST_PROGRAM_SCHEMA
 from .program_notify import async_setup_program_notify
@@ -403,6 +404,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     await coordinator.seasonal_adjustment_manager.async_load_adjustments()
 
     await coordinator.update_subscriptions()
+
+    # Moved once to the one choice of 2026.11, before anything is armed: it
+    # keeps watering as it did (one_choice.py).
+    try:
+        changes = migration_changes(coordinator.store.config)
+        if changes:
+            await coordinator.store.async_update_config(changes)
+            if len(changes) > 1:
+                _LOGGER.info(
+                    "Moved to the single setting of what Smart Irrigation does: %s",
+                    ", ".join(sorted(k for k in changes if k != "one_choice_migrated")),
+                )
+    except Exception as err:  # noqa: BLE001 - never hold the setup up
+        _LOGGER.warning("Could not move to the single setting yet: %s", err)
 
     # Closed-loop bucket: start watching linked valves if the feature is enabled.
     await coordinator.async_setup_observed_watering()
@@ -895,8 +910,10 @@ class SmartIrrigationCoordinator(
             data[const.CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER] = current is True
         data[const.CONF_DIRECT_VALVE_CONTROL_ENABLED] = True
         stored = getattr(self.store.config, const.CONF_PROGRAMS, None)
-        data[const.CONF_PROGRAMS] = ensure_main_program(
-            data.get(const.CONF_PROGRAMS, stored)
+        # The main program is started by its schedules: one without any gets
+        # the moment the start trigger had (one_choice.py).
+        data[const.CONF_PROGRAMS] = seed_main_schedules(
+            config, ensure_main_program(data.get(const.CONF_PROGRAMS, stored))
         )
         return data
 

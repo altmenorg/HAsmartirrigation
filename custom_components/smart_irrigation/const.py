@@ -205,6 +205,8 @@ CONF_LAST_ZONE_ID = "last_zone_id"
 # forces it on), so that switching the controller off puts it back. None when the
 # controller was never switched on, or the value was already used.
 CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER = "direct_valve_control_before_full_controller"
+# Set once the installation was moved to the one choice of 2026.11 (one_choice.py).
+CONF_ONE_CHOICE_MIGRATED = "one_choice_migrated"
 SUSPEND_ZONE = "zone"
 SUSPEND_PROGRAM = "program"
 # A cycle older than this is not resumed: it belongs to another day's watering.

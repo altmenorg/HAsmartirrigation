@@ -44,7 +44,6 @@ import "./program-timeline";
 import { Timeline } from "../../data/timeline";
 import { programFromYaml, programToYaml } from "../../data/program-yaml";
 import { notifyTargets } from "../../data/notify-targets";
-import { calculateOnlyNote } from "../../common/calculate-only";
 import "../../dialogs/trigger-dialog";
 import { askConfirmation } from "../../dialogs/confirmation-dialog";
 import {
@@ -715,7 +714,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       const r14 = this.renderSuppliesCard();
 
       // The full controller, right after how much of the panel to show.
-      const r15 = this.renderFullControllerCard();
 
       // The way to the setup assistant, which is no longer a tab. It comes first:
       // it is where somebody who has nothing set up wants to start.
@@ -786,23 +784,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             >
           </div> </ha-card
         >${r18} ${heading("calculation")}${r1}${r8}${r13}${r10}
-        ${heading("control")}${r15}${r9}${full ? "" : r5}
+        ${heading("control")}${r9}${full ? "" : r5}
         ${heading("system")}${r11}${r16}${r19}${r12}${r17}`;
 
       return r;
     }
-  }
-
-  /** While calculating only, said above what it holds. */
-  renderCalculateOnlyNote() {
-    if (
-      !this.config ||
-      !this.hass ||
-      this.config.irrigation_enabled === false ||
-      this.config.watering_enabled !== false
-    )
-      return html``;
-    return calculateOnlyNote(this.hass.language);
   }
 
   /** One page of the Watering tab. ``triggers`` is the start trigger card. */
@@ -815,19 +801,21 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         </div>
       </ha-card>`;
     }
-    const held = this.renderCalculateOnlyNote();
     if (this.section === "planning") {
-      return html`${held}${this.renderPlanningCard()}`;
+      return html`${this.renderPlanningCard()}`;
     }
     if (this.section === "supplies") {
-      return html`${held}${this.renderSuppliesCard()}`;
+      return html`${this.renderSuppliesCard()}`;
     }
     // The main program, everything of it in one card (how it starts, the order
     // and pauses of its zones, running it), then the start trigger it uses
     // when it has no schedule of its own, then the other programs. Its
     // settings used to come after all the other programs, and nothing showed
     // which "Run now" belonged to which program (#893).
-    return html`${held}${this.renderProgramsCard("main")} ${triggers}
+    // The main program is started by its schedules: the start trigger card
+    // is for calculating only (one_choice.py).
+    void triggers;
+    return html`${this.renderProgramsCard("main")}
     ${this.renderProgramsCard("others")}`;
   }
 
@@ -2660,14 +2648,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             ${yamlOpen(program.id ?? "")
               ? yamlBlock(program.id ?? "", index)
               : html`${preview(program, null)}
-                  <div class="setting-row">
-                    <div class="setting-label">${t("program_enabled")}</div>
-                    <ha-switch
-                      .checked=${program.enabled !== false}
-                      @change=${(e: Event) =>
-                        patch(index, { enabled: (e.target as any).checked })}
-                    ></ha-switch>
-                  </div>
                   <div class="fold-section">${t("schedules_title")}</div>
                   <div class="setting-hint row-hint">
                     ${t("main_schedules_hint")}
@@ -3883,6 +3863,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   renderObservedWateringCard() {
     if (!this.config || !this.data || !this.hass) return html``;
     const lang = this.hass.language;
+    // When Smart Irrigation waters, observed watering is on by itself: the
+    // card is for the advanced panel, or for calculating only.
+    if (
+      this.config.full_controller === true &&
+      this.config.ui_mode !== "advanced"
+    )
+      return html``;
 
     return html`
       <ha-card header="${localize("observed_watering.title", lang)}">
@@ -3921,38 +3908,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   ${localize("observed_watering.leak_description", lang)}
                 </div>`
             : ""}
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize("observed_watering.direct_control_label", lang)}
-            </div>
-            <ha-switch
-              .checked=${this.config.direct_valve_control_enabled}
-              .disabled=${this.config.full_controller === true}
-              @change=${(e: Event) =>
-                this.handleConfigChange({
-                  direct_valve_control_enabled: (e.target as any).checked,
-                })}
-            ></ha-switch>
-          </div>
-
-          ${this.config.direct_valve_control_enabled
-            ? html`
-                <div class="setting-note">
-                  ${this.config.full_controller === true
-                    ? html`<strong
-                          >${localize(
-                            "observed_watering.direct_control_locked",
-                            lang,
-                          )}</strong
-                        ><br />`
-                    : ""}
-                  ${localize(
-                    "observed_watering.direct_control_description",
-                    lang,
-                  )}
-                </div>
-              `
-            : ""}
           ${this.config.full_controller === true
             ? ""
             : this.renderExecutionSettings(lang, false)}
@@ -3975,12 +3930,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       localize(`panels.general.cards.master-switch.${key}`, lang);
     // One list for two settings: off stops everything, calculating only
     // holds the watering and keeps the balances current.
+    // Calculate and water is the full controller; calculate only leaves the
+    // watering to an automation of one's own (one_choice.py).
     const mode =
       this.config.irrigation_enabled === false
         ? "off"
-        : this.config.watering_enabled === false
-          ? "calculate"
-          : "water";
+        : this.config.full_controller === true
+          ? "water"
+          : "calculate";
     const modes = ["water", "calculate", "off"] as const;
     return html`
       <ha-card class="master-switch" header="${t("title")}">
@@ -3997,7 +3954,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     ? t("confirm-off")
                     : next === "calculate" && mode === "water"
                       ? t("confirm-calculate")
-                      : null;
+                      : next === "water" && mode !== "water"
+                        ? localize(
+                            "observed_watering.confirm_full_controller",
+                            lang,
+                          )
+                        : null;
                 if (ask && !(await this._ask(ask))) {
                   target.value = mode;
                   return;
@@ -4005,10 +3967,22 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 this.handleConfigChange(
                   next === "off"
                     ? { irrigation_enabled: false }
-                    : {
-                        irrigation_enabled: true,
-                        watering_enabled: next === "water",
-                      },
+                    : next === "water"
+                      ? {
+                          irrigation_enabled: true,
+                          watering_enabled: true,
+                          full_controller: true,
+                          // What is watered outside the programs counts too.
+                          ...(mode === "water"
+                            ? {}
+                            : { observed_watering_enabled: true }),
+                        }
+                      : {
+                          irrigation_enabled: true,
+                          watering_enabled: true,
+                          full_controller: false,
+                          direct_valve_control_enabled: false,
+                        },
                 )
                   .then(() => this._fetchData())
                   .catch(() => undefined);
@@ -4034,62 +4008,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     `;
   }
 
-  renderFullControllerCard(): TemplateResult {
-    if (!this.config || !this.hass) return html``;
-    const lang = this.hass.language;
-    return html`
-      <ha-card
-        header="${localize("observed_watering.full_controller_title", lang)}"
-      >
-        <div class="card-content">
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize("observed_watering.full_controller_label", lang)}
-            </div>
-            <ha-switch
-              .checked=${this.config.full_controller === true}
-              @change=${async (e: Event) => {
-                const target = e.target as any;
-                const on = target.checked === true;
-                if (
-                  on &&
-                  !(await this._ask(
-                    localize("observed_watering.confirm_full_controller", lang),
-                  ))
-                ) {
-                  target.checked = false;
-                  return;
-                }
-                // The main program the backend creates comes back with a
-                // reload, once the save is done rather than after a guessed
-                // delay.
-                this.handleConfigChange({
-                  full_controller: on,
-                  // Switching it on drives the valves, which the backend
-                  // turns on too; mirrored here since our own save is not
-                  // echoed back.
-                  ...(on ? { direct_valve_control_enabled: true } : {}),
-                })
-                  .then(() => this._fetchData())
-                  .catch(() => undefined);
-              }}
-            ></ha-switch>
-          </div>
-          <div class="setting-note">
-            ${localize("observed_watering.full_controller_description", lang)}
-          </div>
-        </div>
-      </ha-card>
-    `;
-  }
-
-  /**
-   * The sequencing, the pause between zones and cycle and soak.
-   *
-   * In full controller mode they are the main program's and are shown in the
-   * Watering tab, cycle and soak included whatever the panel mode: whoever
-   * turned the controller on is past the simple panel.
-   */
   renderExecutionSettings(lang: string, full: boolean): TemplateResult {
     if (!this.config) return html``;
     return html`

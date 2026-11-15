@@ -302,10 +302,9 @@
           "mode-off": "Stop alt",
           "description": "Slået fra bliver Smart Irrigation ved med at hente vejrdata og beholder sine sensorer, men beregner intet, lader hver zones vandbalance være, som den er, åbner ingen ventil og kører intet program. Når den slås til igen, tælles tiden, hvor den var slået fra, ikke med.",
           "off-note": "Slået fra: intet beregnes, og intet vandes. Vejrdata hentes fortsat, og tiden, hvor den er slået fra, tælles ikke med, når du slår den til igen.",
-          "calculate-note": "Kun beregn: vandbalancer og varigheder holdes ajour, men ingen ventil åbner, intet program kører, og starthændelsen sendes ikke. Intet andet ændres: tilbage på Beregn og vand fortsætter alt som før.",
+          "calculate-note": "Kun beregn: Smart Irrigation beregner vandbalancer og varigheder og sender sin starthændelse, men åbner ingen ventil. Din egen automatisering, Irrigation Unlimited eller din controller vander med de varigheder.",
           "confirm-off": "Slå Smart Irrigation fra? Det, der vander, stopper nu, og intet beregnes eller vandes, før den slås til igen.",
-          "confirm-calculate": "Kun beregn? Al igangværende vanding stopper nu, og intet starter, før du igen vælger Beregn og vand.",
-          "calculate-banner": "Kun beregn: ingen ventil åbner, og intet program kører. Vælg Beregn og vand under Indstillinger, Generelt for at genoptage vandingen."
+          "confirm-calculate": "Kun beregne? Smart Irrigation holder op med at åbne ventilerne: det, den vander, stopper nu, og fremover vander din egen automatisering med dens varigheder."
         }
       },
       "description": "Denne side indeholder globale indstillinger.",
@@ -392,9 +391,7 @@
           "run-waits": "venter på {program}, ca. {start} til {end}",
           "run-skipped": "forventes sprunget over: regn i udsigt",
           "run-twice": "{zones} vandet to gange i træk",
-          "run-suspended": "suspenderet til {when}",
-          "headline-calculate": "Smart Irrigation beregner kun",
-          "sub-calculate": "Vandbalancer og varigheder holdes ajour, men intet vandes, før du igen vælger Beregn og vand."
+          "run-suspended": "suspenderet til {when}"
         },
         "decision": {
           "title": "Bliver den sprunget over?",
@@ -704,7 +701,7 @@
         "drainage_rate": "Drænhastighed",
         "linked-entity": "Tilknyttet ventil/kontakt",
         "linked-entity-hint": "Ventilen eller kontakten, der vander denne zone. Hver gang den kører (en manuel hane, en automatisering eller Smart Irrigation selv, når direkte ventilstyring er slået til), krediteres vandbalancen ud fra køretiden og zonens gennemstrømning. Påkrævet for funktionerne med lukket sløjfe.",
-        "valve-off": "En ventil kan knyttes til, når direkte ventilstyring eller observeret vanding er slået til.",
+        "valve-off": "En ventil kan tilknyttes, når Smart Irrigation vander (Beregn og vand), eller observeret vanding er slået til.",
         "valve-off-link": "Slå til",
         "supply": "Pumpe eller hovedventil",
         "supply-none": "Ingen",
@@ -1509,12 +1506,7 @@
     "title": "Observeret vanding (lukket sløjfe)",
     "description": "Krediterer hver zones vandbalance ud fra reel vanding i stedet for at en automatisering nulstiller den. Vælg en ventil eller kontakt pr. zone under Zoner: mens den er åben, krediteres køretid gange gennemstrømning, eller den mængde en måler har målt. Fjern kald til set_bucket og reset_bucket fra dine automatiseringer, ellers tælles vandet dobbelt.",
     "enabled_label": "Aktivér observeret vanding",
-    "direct_control_label": "Lad Smart Irrigation styre ventilen",
-    "direct_control_description": "Når funktionen er slået til, åbner Smart Irrigation hver zones tilknyttede ventil, venter den beregnede varighed og lukker den derefter, uden nogen automatisering. En igangværende kørsel genoptages efter en genstart. Sikkerhed: en ventil, der selv kan lukke, får kørslens længde med, når den åbner (en Sonoff SWV på ZHA eller en ventil, hvis zone har et MQTT-sikkerhedsemne), så den lukker, selv om Home Assistant går ned. Enhver anden ventil bliver ved med at vande, indtil Home Assistant er tilbage: giv den en hardware-failsafe (en maksimal køretid).",
-    "full_controller_label": "Fuld styring: Smart Irrigation klarer al min vanding",
-    "full_controller_title": "Fuld styring",
     "confirm_full_controller": "Slå fuld styring til? Smart Irrigation styrer så ventilerne og starter selv vandingen. En ventil, der findes åben ved opstart, og som ingen af vores kørsler ejer, lukkes.",
-    "full_controller_description": "Slår ventilstyring til og tilføjer fanen Vanding: programmer, planlægning og pumper. Startudløseren, rækkefølgen, pausen mellem zoner og cycle and soak flytter dertil som hovedprogrammets indstillinger og virker som før, indtil du tilføjer et andet program. Slås den fra, vender præcis den tidligere adfærd tilbage. En ventil, der findes åben ved opstart, og som ingen af vores kørsler ejer, lukkes.",
     "sequencing_label": "Zonesekvensering",
     "sequencing": {
       "sequential": "Sekventiel (én zone ad gangen)",
@@ -1528,7 +1520,6 @@
     "pause_between_zones_description": "En ventetid mellem to zoner i en vanding én ad gangen: tid til at trykket i ledningen kommer igen, eller til at en langsom ventil lukker helt, før den næste åbner.",
     "minutes": "minutter",
     "seconds": "sekunder",
-    "direct_control_locked": "Den fulde styring styrer ventilerne: slå den fra først for at ændre dette.",
     "set_aside_label": "Sæt en zone til side efter så mange mislykkede vandinger",
     "set_aside_description": "En ventil, der så mange gange i træk ikke åbnede, ikke gav vand eller ikke kunne få sin egen timer sat, sættes til side: intet program vander zonen, før den tages i brug igen, i stedet for at fejle hver morgen. Du får besked med det samme (programmernes notifikationer, en reparation i Home Assistant, zonens problemsensor). Den kommer selv tilbage, når dens ventil ses åbne, prøvet i hånden efter reparation. 0: aldrig.",
     "leak_label": "Lækagealarm fra",
@@ -1656,7 +1647,6 @@
     "no_trigger": "Ingen startudløser",
     "not_scheduled": "Skyldig, men ikke planlagt",
     "off": "Slået fra",
-    "calculate_only": "Kun beregning",
     "watering_left": "vander, {time} tilbage",
     "paused_left": "på pause, {time} tilbage",
     "soaking": "optagelse, næste omgang kl. {when} ({pass}/{passes})",

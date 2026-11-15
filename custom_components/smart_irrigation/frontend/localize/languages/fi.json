@@ -302,10 +302,9 @@
           "mode-off": "Pysäytä kaikki",
           "description": "Pois päältä Smart Irrigation hakee edelleen säätiedot ja pitää anturinsa, mutta ei laske mitään, jättää jokaisen vyöhykkeen vesitaseen ennalleen, ei avaa yhtään venttiiliä eikä aja yhtään ohjelmaa. Kun se kytketään taas päälle, pois päältä oltua aikaa ei lasketa.",
           "off-note": "Pois päältä: mitään ei lasketa eikä mitään kastella. Säätietojen haku jatkuu, eikä pois päältä oltua aikaa lasketa, kun kytket sen taas päälle.",
-          "calculate-note": "Vain laskenta: vesitaseet ja kestot pysyvät ajan tasalla, mutta mikään venttiili ei aukea, mikään ohjelma ei käynnisty eikä aloitustapahtumaa lähetetä. Muuta ei muuteta: takaisin Laske ja kastele -tilaan kaikki jatkuu kuten ennen.",
+          "calculate-note": "Vain laskenta: Smart Irrigation laskee vesitaseet ja kestot ja lähettää aloitustapahtumansa, mutta ei avaa venttiileitä. Oma automaatiosi, Irrigation Unlimited tai ohjaimesi kastelee näillä kestoilla.",
           "confirm-off": "Kytketäänkö Smart Irrigation pois päältä? Käynnissä oleva kastelu pysähtyy heti, eikä mitään lasketa tai kastella ennen kuin se kytketään taas päälle.",
-          "confirm-calculate": "Vain laskenta? Käynnissä oleva kastelu pysähtyy nyt, eikä mitään käynnisty ennen kuin valitset taas Laske ja kastele.",
-          "calculate-banner": "Vain laskenta: mikään venttiili ei aukea eikä mikään ohjelma käynnisty. Valitse Laske ja kastele kohdassa Asetukset, Yleiset jatkaaksesi kastelua."
+          "confirm-calculate": "Vain laskenta? Smart Irrigation lopettaa venttiilien avaamisen: käynnissä oleva kastelu pysähtyy nyt, ja jatkossa oma automaatiosi kastelee sen kestoilla."
         }
       },
       "description": "Tämä sivu tarjoaa yleiset asetukset.",
@@ -392,9 +391,7 @@
           "run-waits": "odottaa ohjelmaa {program}, noin {start}-{end}",
           "run-skipped": "odotetaan ohitettavan: sadetta ennustettu",
           "run-twice": "{zones} kastellaan kahdesti peräkkäin",
-          "run-suspended": "keskeytetty {when} asti",
-          "headline-calculate": "Smart Irrigation vain laskee",
-          "sub-calculate": "Vesitaseet ja kestot pysyvät ajan tasalla, mutta mitään ei kastella ennen kuin valitset taas Laske ja kastele."
+          "run-suspended": "keskeytetty {when} asti"
         },
         "decision": {
           "title": "Ohitetaanko se?",
@@ -704,7 +701,7 @@
         "drainage_rate": "Valumisnopeus",
         "linked-entity": "Liitetty venttiili/kytkin",
         "linked-entity-hint": "Venttiili tai kytkin, joka kastelee tämän vyöhykkeen. Aina kun se on käynnissä (manuaalinen hana, automaatio tai Smart Irrigation itse, kun suora venttiilin ohjaus on käytössä), vesitaseeseen hyvitetään käyntiaika ja vyöhykkeen läpäisy. Vaaditaan suljetun silmukan ominaisuuksiin.",
-        "valve-off": "Venttiilin voi liittää, kun suora venttiiliohjaus tai havaittu kastelu on käytössä.",
+        "valve-off": "Venttiilin voi liittää, kun Smart Irrigation kastelee (Laske ja kastele) tai havaittu kastelu on päällä.",
         "valve-off-link": "Ota käyttöön",
         "supply": "Pumppu tai pääventtiili",
         "supply-none": "Ei mitään",
@@ -1509,12 +1506,7 @@
     "title": "Havaittu kastelu (suljettu silmukka)",
     "description": "Hyvitä jokaisen vyöhykkeen vesitase automaattisesti todellisesta kastelusta sen sijaan, että nollaisit vesitaseen automaatiosta. Kun tämä on käytössä, valitse venttiili-/kytkinentiteetti kullekin vyöhykkeelle Vyöhykkeet-välilehdellä: kun se on auki, vesitaseeseen hyvitetään käyntiaika ja vyöhykkeen läpäisy. Tarkkaa kirjanpitoa varten voit myös valita kumulatiivisen tilavuusmittarin (vesimittarityyppinen kokonaislukema) kullekin vyöhykkeelle, jolloin käytetään mitattua tilavuutta. Tärkeää: kun tämä on käytössä, se on ainoa asia, joka hyvittää vesitaseen, joten poista kaikki set_bucket- ja reset_bucket-kutsut kasteluautomaatiostasi kaksinkertaisen laskennan välttämiseksi.",
     "enabled_label": "Ota havaittu kastelu käyttöön",
-    "direct_control_label": "Anna Smart Irrigationin ohjata venttiiliä",
-    "direct_control_description": "Kun tämä on käytössä, Smart Irrigation avaa kunkin vyöhykkeen liitetyn venttiilin, odottaa lasketun keston ja sulkee sen sitten, ilman automaatiota. Käynnissä oleva ajo jatkuu uudelleenkäynnistyksen jälkeen. Turvallisuus: venttiili, joka osaa sulkeutua itse, saa avautuessaan ajon keston (Sonoff SWV ZHA:ssa tai venttiili, jonka vyöhykkeelle on asetettu MQTT-turva-aihe), joten se sulkeutuu, vaikka Home Assistant kaatuisi. Mikä tahansa muu venttiili jatkaa kastelua, kunnes Home Assistant palaa: anna sille laitteistotason vikaturva (enimmäiskäyntiaika).",
-    "full_controller_label": "Täysi ohjain: Smart Irrigation hoitaa kaiken kasteluni",
-    "full_controller_title": "Täysi ohjain",
     "confirm_full_controller": "Otetaanko täysi ohjain käyttöön? Smart Irrigation ohjaa silloin venttiilejä ja käynnistää kastelun itse. Käynnistyksessä avoimena löytynyt venttiili, jota mikään meidän ajomme ei omista, suljetaan.",
-    "full_controller_description": "Ottaa venttiilien ohjauksen käyttöön ja lisää Kastelu-välilehden: ohjelmat, suunnittelu ja pumput. Aloitusliipaisin, järjestys, vyöhykkeiden välinen tauko ja cycle and soak siirtyvät sinne pääohjelman asetuksina ja toimivat kuten ennen, kunnes lisäät toisen ohjelman. Pois kytkettynä palaa täsmälleen aiempi toiminta. Käynnistyksessä avoimena löytynyt venttiili, jota mikään meidän ajomme ei omista, suljetaan.",
     "sequencing_label": "Vyöhykkeiden järjestys",
     "sequencing": {
       "sequential": "Peräkkäin (yksi vyöhyke kerrallaan)",
@@ -1528,7 +1520,6 @@
     "pause_between_zones_description": "Odotus kahden alueen välillä peräkkäisessä kastelussa: aikaa linjan paineen palautumiselle tai hitaan venttiilin sulkeutumiselle ennen kuin seuraava avautuu.",
     "minutes": "minuuttia",
     "seconds": "sekuntia",
-    "direct_control_locked": "Täysi ohjain ohjaa venttiilejä: kytke se ensin pois muuttaaksesi tätä.",
     "set_aside_label": "Siirrä vyöhyke sivuun näin monen epäonnistuneen kastelun jälkeen",
     "set_aside_description": "Venttiili, joka näin monta kertaa peräkkäin ei auennut, ei antanut vettä tai jonka omaa ajastinta ei voitu asettaa, siirretään sivuun: mikään ohjelma ei kastele vyöhykettä ennen kuin se otetaan takaisin käyttöön, sen sijaan että se epäonnistuisi joka aamu. Saat tiedon heti (ohjelmien ilmoitukset, korjaus Home Assistantissa, vyöhykkeen ongelma-anturi). Se palaa itsestään, kun sen venttiilin nähdään aukeavan, käsin kokeiltuna korjauksen jälkeen. 0: ei koskaan.",
     "leak_label": "Vuotohälytys alkaen",
@@ -1656,7 +1647,6 @@
     "no_trigger": "Ei aloitusliipaisinta",
     "not_scheduled": "Erääntynyt, mutta ei ajastettu",
     "off": "Pois päältä",
-    "calculate_only": "Vain laskenta",
     "watering_left": "kastellaan, {time} jäljellä",
     "paused_left": "tauolla, {time} jäljellä",
     "soaking": "imeytys, seuraava erä klo {when} ({pass}/{passes})",

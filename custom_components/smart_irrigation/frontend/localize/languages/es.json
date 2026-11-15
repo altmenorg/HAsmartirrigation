@@ -302,10 +302,9 @@
           "mode-off": "Detener todo",
           "description": "Desactivado, Smart Irrigation sigue tomando sus lecturas meteorológicas y conserva sus sensores, pero no calcula nada, deja el balance hídrico de cada zona tal como está, no abre ninguna válvula y no ejecuta ningún programa. Al volver a activarlo, el tiempo que estuvo desactivado no se cuenta.",
           "off-note": "Desactivado: no se calcula ni se riega nada. Las lecturas meteorológicas continúan, y el tiempo que esté desactivado no se contará cuando lo vuelvas a activar.",
-          "calculate-note": "Solo calcular: los balances hídricos y las duraciones siguen al día, pero ninguna válvula se abre, ningún programa se lanza y no se envía el evento de inicio. Nada más cambia: al volver a Calcular y regar, todo sigue como antes.",
+          "calculate-note": "Solo calcular: Smart Irrigation calcula los balances hídricos y las duraciones y envía su evento de inicio, pero no abre ninguna válvula. Tu propia automatización, Irrigation Unlimited o tu controlador riega con esas duraciones.",
           "confirm-off": "¿Desactivar Smart Irrigation? Lo que esté regando se detiene ahora, y no se calcula ni se riega nada hasta que se vuelva a activar.",
-          "confirm-calculate": "¿Solo calcular? Cualquier riego en curso se detiene ahora y nada empieza hasta que vuelvas a elegir Calcular y regar.",
-          "calculate-banner": "Solo calcular: ninguna válvula se abre y ningún programa se lanza. Elige Calcular y regar en Ajustes, General para retomar el riego."
+          "confirm-calculate": "¿Solo calcular? Smart Irrigation deja de abrir las válvulas: lo que esté regando se detiene ahora y, a partir de ahora, tu propia automatización riega con sus duraciones."
         }
       },
       "description": "Esta página provee configuraciones globales.",
@@ -392,9 +391,7 @@
           "run-waits": "espera a {program}, aprox. de {start} a {end}",
           "run-skipped": "se prevé que se omita: previsión de lluvia",
           "run-twice": "{zones} regadas dos veces seguidas",
-          "run-suspended": "suspendido hasta el {when}",
-          "headline-calculate": "Smart Irrigation solo calcula",
-          "sub-calculate": "Los balances hídricos y las duraciones siguen al día, pero no se riega nada hasta que vuelvas a elegir Calcular y regar."
+          "run-suspended": "suspendido hasta el {when}"
         },
         "decision": {
           "title": "¿Se va a omitir?",
@@ -704,7 +701,7 @@
         "drainage_rate": "Tasa de drenaje",
         "linked-entity": "Válvula/interruptor vinculado",
         "linked-entity-hint": "La válvula o interruptor que riega esta zona. Cada vez que se acciona (un grifo manual, una automatización o la propia Smart Irrigation cuando el control directo de válvula está activado), el balance hídrico se acredita a partir del tiempo de funcionamiento y el rendimiento de la zona. Necesario para las funciones de lazo cerrado.",
-        "valve-off": "Se puede vincular una válvula cuando el control directo de válvulas o el riego observado está activado.",
+        "valve-off": "Se puede vincular una válvula en cuanto Smart Irrigation riega (Calcular y regar) o el riego observado está activado.",
         "valve-off-link": "Activar",
         "supply": "Bomba o válvula principal",
         "supply-none": "Ninguno",
@@ -1509,12 +1506,7 @@
     "title": "Riego observado (lazo cerrado)",
     "description": "Acredita el balance hídrico de cada zona a partir del riego real, en lugar de que una automatización lo restablezca. Elige una válvula o un interruptor por zona en Zonas: mientras está abierto, se acredita el tiempo de funcionamiento por el caudal, o el volumen que midió un contador. Elimina las llamadas a set_bucket y reset_bucket de tus automatizaciones, o se contará dos veces.",
     "enabled_label": "Activar riego observado",
-    "direct_control_label": "Permitir que Smart Irrigation controle la válvula",
-    "direct_control_description": "Cuando está activado, Smart Irrigation abre la válvula vinculada de cada zona, espera la duración calculada y luego la cierra, sin necesidad de automatización. Un riego en curso se reanuda tras un reinicio. Seguridad: una válvula capaz de cerrarse sola recibe la duración del riego al abrirse (una Sonoff SWV en ZHA, o una válvula cuya zona tiene un tema MQTT de seguridad), así que se cierra aunque Home Assistant se caiga. Cualquier otra válvula sigue regando hasta que Home Assistant vuelva: dale un mecanismo de seguridad por hardware (un tiempo máximo de funcionamiento).",
-    "full_controller_label": "Controlador completo: Smart Irrigation se encarga de todo mi riego",
-    "full_controller_title": "Controlador completo",
     "confirm_full_controller": "¿Activar el controlador completo? Smart Irrigation manejará las válvulas e iniciará el riego por sí mismo. Una válvula encontrada abierta al arrancar que ninguna ejecución nuestra posee se cierra.",
-    "full_controller_description": "Activa el control de válvulas y añade una pestaña Riego: programas, planificación y bombas. El disparador de inicio, la secuencia, la pausa entre zonas y cycle and soak pasan allí, como ajustes del programa principal, y siguen funcionando como antes hasta que añadas otro programa. Al desactivarlo vuelve exactamente el comportamiento anterior. Una válvula encontrada abierta al arrancar que ninguna ejecución nuestra posee se cierra.",
     "sequencing_label": "Secuenciación de zonas",
     "sequencing": {
       "sequential": "Secuencial (una zona a la vez)",
@@ -1528,7 +1520,6 @@
     "pause_between_zones_description": "Una espera entre dos zonas de un ciclo secuencial: tiempo para que se recupere la presión de la línea, o para que una válvula lenta acabe de cerrarse antes de que se abra la siguiente.",
     "minutes": "minutos",
     "seconds": "segundos",
-    "direct_control_locked": "El controlador completo maneja las válvulas: desactívalo primero para cambiar esto.",
     "set_aside_label": "Apartar una zona tras este número de riegos fallidos",
     "set_aside_description": "Una válvula que no se abrió, no dio agua o cuyo temporizador no se pudo ajustar este número de veces seguidas se aparta: ningún programa riega la zona hasta que se reactive, en vez de fallar cada mañana. Se te avisa al momento (notificaciones de los programas, una reparación en Home Assistant, el sensor de problema de la zona). Vuelve sola cuando se ve abrirse su válvula, probada a mano una vez reparada. 0: nunca.",
     "leak_label": "Alerta de fuga a partir de",
@@ -1656,7 +1647,6 @@
     "no_trigger": "Ningún disparador de inicio",
     "not_scheduled": "Pendiente, pero sin programar",
     "off": "Desactivado",
-    "calculate_only": "Solo calcular",
     "watering_left": "regando, quedan {time}",
     "paused_left": "en pausa, quedan {time}",
     "soaking": "absorbiendo, próxima pasada a las {when} ({pass}/{passes})",

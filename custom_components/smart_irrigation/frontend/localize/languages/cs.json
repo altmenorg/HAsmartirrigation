@@ -302,10 +302,9 @@
           "mode-off": "Vše zastavit",
           "description": "Když je vypnuté, Smart Irrigation dál načítá meteorologická data a ponechává si své senzory, ale nic nepočítá, nechává vodní bilanci každé zóny beze změny, neotevírá žádný ventil a nespouští žádný program. Po opětovném zapnutí se doba, kdy bylo vypnuté, nezapočítává.",
           "off-note": "Vypnuto: nic se nepočítá a nic se nezalévá. Meteorologická data se načítají dál a doba vypnutí se nezapočítá, až ho znovu zapnete.",
-          "calculate-note": "Jen počítat: vodní bilance a doby zůstávají aktuální, ale žádný ventil se neotevře, žádný program se nespustí a startovní událost se neodešle. Nic jiného se nemění: zpět na Počítat a zavlažovat vše pokračuje jako dřív.",
+          "calculate-note": "Jen počítat: Smart Irrigation počítá vodní bilance a doby a posílá startovní událost, ale neotevře žádný ventil. Zavlažuje vaše automatizace, Irrigation Unlimited nebo váš ovladač s těmito dobami.",
           "confirm-off": "Vypnout Smart Irrigation? Probíhající zalévání se hned zastaví a nic se nepočítá ani nezalévá, dokud se znovu nezapne.",
-          "confirm-calculate": "Jen počítat? Probíhající zavlažování se teď zastaví a nic se nespustí, dokud znovu nezvolíte Počítat a zavlažovat.",
-          "calculate-banner": "Jen počítat: žádný ventil se neotevře a žádný program se nespustí. Pro obnovení zvolte Počítat a zavlažovat v Nastavení, Obecné."
+          "confirm-calculate": "Jen počítat? Smart Irrigation přestane otevírat ventily: co právě zavlažuje, se teď zastaví, a od teď zavlažuje vaše automatizace s jeho dobami."
         }
       },
       "description": "Tato stránka poskytuje globální nastavení.",
@@ -392,9 +391,7 @@
           "run-waits": "čeká na {program}, přibližně {start} až {end}",
           "run-skipped": "očekává se přeskočení: předpověď deště",
           "run-twice": "{zones}: zavlaženo dvakrát po sobě",
-          "run-suspended": "přerušeno do {when}",
-          "headline-calculate": "Smart Irrigation jen počítá",
-          "sub-calculate": "Vodní bilance a doby zůstávají aktuální, ale nic se nezavlažuje, dokud znovu nezvolíte Počítat a zavlažovat."
+          "run-suspended": "přerušeno do {when}"
         },
         "decision": {
           "title": "Bude vynecháno?",
@@ -704,7 +701,7 @@
         "drainage_rate": "Rychlost odvodnění",
         "linked-entity": "Propojený ventil/spínač",
         "linked-entity-hint": "Ventil nebo spínač, který zavlažuje tuto zónu. Kdykoli se spustí (ruční kohoutek, automatizace nebo samotná Smart Irrigation při zapnutém přímém ovládání ventilu), vodní bilance se připíše z doby běhu a průtoku zóny. Vyžadováno pro funkce s uzavřenou smyčkou.",
-        "valve-off": "Ventil lze přiřadit, jakmile je zapnuto přímé řízení ventilů nebo sledované zavlažování.",
+        "valve-off": "Ventil lze propojit, jakmile Smart Irrigation zavlažuje (Počítat a zavlažovat) nebo je zapnuté sledované zavlažování.",
         "valve-off-link": "Zapnout",
         "supply": "Čerpadlo nebo hlavní ventil",
         "supply-none": "Žádný",
@@ -1509,12 +1506,7 @@
     "title": "Sledované zavlažování (uzavřená smyčka)",
     "description": "Připisuje vodní bilanci každé zóny ze skutečného zavlažování, místo aby ji resetovala automatizace. V sekci Zóny vyberte pro každou zónu ventil nebo spínač: dokud je otevřený, připisuje se doba běhu krát průtok, nebo objem naměřený měřičem. Ze svých automatizací odstraňte volání set_bucket a reset_bucket, jinak se voda započítá dvakrát.",
     "enabled_label": "Povolit sledované zavlažování",
-    "direct_control_label": "Nechat Smart Irrigation ovládat ventil",
-    "direct_control_description": "Když je zapnuto, Smart Irrigation otevře propojený ventil každé zóny, počká vypočtenou dobu a poté jej zavře, bez potřeby automatizace. Probíhající běh pokračuje po restartu. Bezpečnost: ventil, který se umí zavřít sám, dostane při otevření délku běhu (Sonoff SWV přes ZHA, nebo ventil, jehož zóna má nastavené bezpečnostní MQTT téma), takže se zavře, i když Home Assistant vypadne. Každý jiný ventil zavlažuje dál, dokud se Home Assistant nevrátí: nastavte mu hardwarovou pojistku (maximální dobu běhu).",
-    "full_controller_label": "Plný řadič: Smart Irrigation řídí všechno moje zavlažování",
-    "full_controller_title": "Plný řadič",
     "confirm_full_controller": "Zapnout plný řadič? Smart Irrigation bude ovládat ventily a sám spouštět zavlažování. Ventil nalezený při startu otevřený, který nepatří žádnému našemu běhu, se zavře.",
-    "full_controller_description": "Zapne řízení ventilů a přidá kartu Zavlažování: programy, plánování a čerpadla. Spouštěč startu, řazení, pauza mezi zónami a cycle and soak se přesunou tam jako nastavení hlavního programu a fungují jako dříve, dokud nepřidáte další program. Po vypnutí se vrátí přesně předchozí chování. Ventil nalezený při startu otevřený, který nepatří žádnému našemu běhu, se zavře.",
     "sequencing_label": "Pořadí zón",
     "sequencing": {
       "sequential": "Postupně (jedna zóna po druhé)",
@@ -1528,7 +1520,6 @@
     "pause_between_zones_description": "Čekání mezi dvěma zónami postupného zavlažování: čas, aby se obnovil tlak v potrubí nebo aby pomalý ventil dovřel, než se otevře další.",
     "minutes": "minut",
     "seconds": "sekund",
-    "direct_control_locked": "Plný řadič ovládá ventily: pro změnu jej nejprve vypněte.",
     "set_aside_label": "Odložit zónu po tolika neúspěšných bězích",
     "set_aside_description": "Ventil, který se tolikrát po sobě neotevřel, nedal vodu nebo nešel nastavit jeho vlastní časovač, se odloží: žádný program zónu nezavlažuje, dokud se znovu nezařadí, místo aby každé ráno selhal. Dozvíte se to hned (oznámení programů, oprava v Home Assistantu, senzor problému zóny). Vrátí se sama, když se její ventil otevře, třeba při ruční zkoušce po opravě. 0: nikdy.",
     "leak_label": "Upozornění na únik od",
@@ -1656,7 +1647,6 @@
     "no_trigger": "Žádný spouštěč startu",
     "not_scheduled": "Na řadě, ale nenaplánováno",
     "off": "Vypnuto",
-    "calculate_only": "Jen počítá",
     "watering_left": "zavlažuje se, zbývá {time}",
     "paused_left": "pozastaveno, zbývá {time}",
     "soaking": "vsakování, další dávka v {when} ({pass}/{passes})",

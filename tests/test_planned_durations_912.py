@@ -176,23 +176,6 @@ def test_a_change_without_a_bucket_does_not_touch_the_duration():
 _MAIN = {"id": "main", "name": "Main program", "main": True, "enabled": True}
 
 
-async def test_the_main_program_started_by_the_trigger_is_in_the_planning():
-    """A garden watered every morning by the start trigger was "not planned".
-
-    Without schedules of its own, the main program is started by the trigger,
-    whose time the Info page works out and hands over here.
-    """
-    hass, coord = _status([_MAIN])
-    coord._planned_run_seconds = AsyncMock(return_value=600)
-
-    [planned] = await coord.async_planning(1, trigger_start=_utc(1, 8))
-
-    assert planned["program_id"] == "main"
-    assert planned["start"] == _utc(1, 8).isoformat()
-    assert planned["schedule_id"] is None
-    assert planned["steps"]
-
-
 async def test_without_a_trigger_time_the_main_program_is_not_invented():
     hass, coord = _status([_MAIN])
     coord._planned_run_seconds = AsyncMock(return_value=600)

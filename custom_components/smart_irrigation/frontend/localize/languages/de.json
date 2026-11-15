@@ -302,10 +302,9 @@
           "mode-off": "Alles anhalten",
           "description": "Ausgeschaltet erfasst Smart Irrigation weiter seine Wetterdaten und pflegt seine Sensoren, berechnet aber nichts, lässt jede Wasserbilanz unverändert, öffnet kein Ventil und führt kein Programm aus. Beim Wiedereinschalten wird die Zeit, in der es aus war, nicht mitgezählt.",
           "off-note": "Ausgeschaltet: Es wird nichts berechnet und nichts bewässert. Die Wetterdaten werden weiter erfasst, und die Zeit, in der es aus ist, wird beim Wiedereinschalten nicht mitgezählt.",
-          "calculate-note": "Nur berechnen: Wasserbilanzen und Dauern bleiben aktuell, aber kein Ventil öffnet, kein Programm läuft und das Startereignis wird nicht ausgelöst. Sonst wird nichts geändert: zurück auf Berechnen und bewässern läuft alles wie vorher weiter.",
+          "calculate-note": "Nur berechnen: Smart Irrigation berechnet Wasserbilanzen und Dauern und löst sein Startereignis aus, öffnet aber kein Ventil. Deine eigene Automatisierung, Irrigation Unlimited oder dein Controller bewässert mit diesen Dauern.",
           "confirm-off": "Smart Irrigation ausschalten? Was gerade bewässert, stoppt sofort, und bis zum Wiedereinschalten wird nichts berechnet oder bewässert.",
-          "confirm-calculate": "Nur berechnen? Jede laufende Bewässerung stoppt jetzt, und nichts startet, bis du wieder Berechnen und bewässern wählst.",
-          "calculate-banner": "Nur berechnen: Kein Ventil öffnet und kein Programm läuft. Wähle Berechnen und bewässern unter Einstellungen, Allgemein, um die Bewässerung fortzusetzen."
+          "confirm-calculate": "Nur berechnen? Smart Irrigation öffnet keine Ventile mehr: was es gerade bewässert, stoppt jetzt, und ab jetzt bewässert deine eigene Automatisierung mit seinen Dauern."
         }
       },
       "description": "Diese Seite ist für allgemeine Einstellungen.",
@@ -392,9 +391,7 @@
           "run-waits": "wartet auf {program}, etwa {start} bis {end}",
           "run-skipped": "wird voraussichtlich übersprungen: Regen vorhergesagt",
           "run-twice": "{zones} zweimal hintereinander bewässert",
-          "run-suspended": "ausgesetzt bis {when}",
-          "headline-calculate": "Smart Irrigation berechnet nur",
-          "sub-calculate": "Wasserbilanzen und Dauern bleiben aktuell, aber es wird nichts bewässert, bis du wieder Berechnen und bewässern wählst."
+          "run-suspended": "ausgesetzt bis {when}"
         },
         "decision": {
           "title": "Wird übersprungen?",
@@ -704,7 +701,7 @@
         "drainage_rate": "Entwässerungsrate",
         "linked-entity": "Verknüpftes Ventil/Schalter",
         "linked-entity-hint": "Das Ventil oder der Schalter dieser Zone. Mit direkter Ventilsteuerung öffnet und schließt Smart Irrigation es. Mit beobachteter Bewässerung schreibt jeder Lauf (von Hand, per Automatisierung oder durch Smart Irrigation) der Wasserbilanz Laufzeit mal Durchfluss gut.",
-        "valve-off": "Ein Ventil lässt sich verknüpfen, sobald die direkte Ventilsteuerung oder die beobachtete Bewässerung an ist.",
+        "valve-off": "Ein Ventil kann verknüpft werden, sobald Smart Irrigation bewässert (Berechnen und bewässern) oder die beobachtete Bewässerung aktiv ist.",
         "valve-off-link": "Einschalten",
         "supply": "Pumpe oder Hauptventil",
         "supply-none": "Keine",
@@ -1509,12 +1506,7 @@
     "title": "Beobachtete Bewässerung",
     "description": "Schreibt der Wasserbilanz jeder Zone die echte Bewässerung gut, statt Zurücksetzen per Automatisierung. Wähle unter Zonen je Zone Ventil oder Schalter: solange offen, zählt Laufzeit mal Durchfluss oder die Menge eines Zählers. Entferne set_bucket- und reset_bucket-Aufrufe aus Automatisierungen, sonst zählt es doppelt.",
     "enabled_label": "Beobachtete Bewässerung aktivieren",
-    "direct_control_label": "Smart Irrigation das Ventil steuern lassen",
-    "direct_control_description": "Smart Irrigation öffnet das Ventil jeder Zone, wartet die Dauer und schließt es. Ein selbstschließendes Ventil (Sonoff SWV an ZHA oder mit MQTT-Sicherheitstopic) kennt die Dauer und schließt auch ohne Home Assistant. Jedes andere läuft, bis Home Assistant zurück ist: gib ihm eine Hardware-Höchstlaufzeit.",
-    "full_controller_label": "Volle Steuerung: Smart Irrigation übernimmt meine gesamte Bewässerung",
-    "full_controller_title": "Volle Steuerung",
     "confirm_full_controller": "Volle Steuerung einschalten? Smart Irrigation steuert dann die Ventile und startet die Bewässerung selbst. Ein beim Start offen gefundenes Ventil, das keinem unserer Läufe gehört, wird geschlossen.",
-    "full_controller_description": "Schaltet die Ventilsteuerung ein und bringt den Tab Bewässerung: Programme, Planung, Pumpen. Startauslöser, Reihenfolge, Pause und Durchgänge wandern als Hauptprogramm dorthin und wirken wie bisher. Aus stellt den alten Stand her. Ein beim Start offenes Ventil ohne unseren Lauf wird geschlossen.",
     "sequencing_label": "Zonenabfolge",
     "sequencing": {
       "sequential": "Sequenziell (eine Zone nach der anderen)",
@@ -1528,7 +1520,6 @@
     "pause_between_zones_description": "Eine Wartezeit zwischen zwei Zonen eines sequenziellen Durchlaufs: Zeit, damit sich der Leitungsdruck erholt oder ein langsames Ventil schließt, bevor das nächste öffnet.",
     "minutes": "Minuten",
     "seconds": "Sekunden",
-    "direct_control_locked": "Die volle Steuerung steuert die Ventile: Schalte sie zuerst aus, um das zu ändern.",
     "set_aside_label": "Zone nach so vielen fehlgeschlagenen Läufen zurückstellen",
     "set_aside_description": "Ein Ventil, das so oft hintereinander nicht geöffnet, kein Wasser gegeben oder seinen eigenen Timer nicht gesetzt bekommen hat, wird zurückgestellt: Kein Programm bewässert die Zone, bis sie wieder aufgenommen wird, statt jeden Morgen zu scheitern. Du wirst sofort informiert (Benachrichtigungen der Programme, Reparatur in Home Assistant, Problemsensor der Zone). Sie kommt von selbst zurück, wenn sich ihr Ventil öffnet, etwa von Hand getestet. 0: nie.",
     "leak_label": "Leckalarm ab",
@@ -1656,7 +1647,6 @@
     "no_trigger": "Kein Startauslöser",
     "not_scheduled": "Fällig, aber nicht eingeplant",
     "off": "Ausgeschaltet",
-    "calculate_only": "Nur berechnen",
     "watering_left": "bewässert, noch {time}",
     "paused_left": "pausiert, noch {time}",
     "soaking": "sickert ein, weiter um {when} (Durchgang {pass}/{passes})",

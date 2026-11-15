@@ -141,24 +141,29 @@ def _trigger_coordinator(programs, *, full=True, total=1800):
 
 
 @pytest.mark.asyncio
-async def test_without_schedules_the_historical_trigger_arms_exactly_as_before():
-    for programs, full in (
-        ([_main()], True),
-        ([_main([{"time": "06:00", "enabled": False}])], True),
-        # The controller off: the programs are not looked at at all.
-        ([_main([{"time": "06:00"}])], False),
-    ):
-        coordinator = _trigger_coordinator(programs, full=full)
-        assert coordinator.main_program_uses_schedules() is False
+async def test_with_the_controller_the_trigger_never_starts_the_main_program():
+    # The main program is started by its schedules only (one_choice.py), with
+    # or without any switched on; the trigger is for "Calculate only".
+    for programs in ([_main()], [_main([{"time": "06:00", "enabled": False}])]):
+        coordinator = _trigger_coordinator(programs, full=True)
+        assert coordinator.main_program_uses_schedules() is True
         with patch(
             "custom_components.smart_irrigation.triggers.async_track_sunrise"
         ) as track:
-            track.return_value = lambda: None
             await coordinator.register_start_event()
+        assert coordinator.start_trigger_armed is False
+        track.assert_not_called()
 
-        assert coordinator.start_trigger_armed is True
-        track.assert_called_once()
-        coordinator.get_total_duration_all_enabled_zones.assert_awaited()
+    # The controller off: the trigger arms as it always did.
+    coordinator = _trigger_coordinator([_main([{"time": "06:00"}])], full=False)
+    assert coordinator.main_program_uses_schedules() is False
+    with patch(
+        "custom_components.smart_irrigation.triggers.async_track_sunrise"
+    ) as track:
+        track.return_value = lambda: None
+        await coordinator.register_start_event()
+    assert coordinator.start_trigger_armed is True
+    track.assert_called_once()
 
 
 @pytest.mark.asyncio
@@ -245,20 +250,17 @@ async def test_with_schedules_no_trigger_type_is_armed_either():
 
 
 @pytest.mark.asyncio
-async def test_the_trigger_comes_back_when_every_schedule_is_gone():
+async def test_the_trigger_does_not_come_back_when_every_schedule_is_gone():
     coordinator = _trigger_coordinator([_main([{"time": "06:00"}])])
     with patch(
         "custom_components.smart_irrigation.triggers.async_track_sunrise"
     ) as track:
-        track.return_value = lambda: None
         await coordinator.register_start_event()
-        assert coordinator.start_trigger_armed is False
-
         coordinator.store.config.programs = normalize_programs([_main([])])
         await coordinator.register_start_event()
 
-    assert coordinator.start_trigger_armed is True
-    track.assert_called_once()
+    assert coordinator.start_trigger_armed is False
+    track.assert_not_called()
 
 
 # --- re-arming on a change -------------------------------------------------------------
@@ -307,27 +309,27 @@ async def _save(coordinator, changes):
 
 
 @pytest.mark.asyncio
-async def test_the_trigger_is_armed_again_when_the_last_schedule_is_removed():
+async def test_removing_the_last_schedule_does_not_hand_the_start_to_the_trigger():
     coordinator = _config_coordinator([_main([{"time": "06:00"}])])
 
     await _save(coordinator, {const.CONF_PROGRAMS: [_main([])]})
 
-    coordinator.register_start_event.assert_awaited_once()
-    assert coordinator.main_program_uses_schedules() is False
-
-
-@pytest.mark.asyncio
-async def test_the_trigger_is_let_go_when_a_schedule_is_added():
-    coordinator = _config_coordinator([_main()])
-
-    await _save(coordinator, {const.CONF_PROGRAMS: [_main([{"time": "06:00"}])]})
-
-    coordinator.register_start_event.assert_awaited_once()
+    coordinator.register_start_event.assert_not_awaited()
     assert coordinator.main_program_uses_schedules() is True
 
 
 @pytest.mark.asyncio
-async def test_the_trigger_is_armed_again_when_the_only_schedule_is_disabled():
+async def test_adding_a_schedule_changes_nothing_about_who_starts():
+    coordinator = _config_coordinator([_main()])
+
+    await _save(coordinator, {const.CONF_PROGRAMS: [_main([{"time": "06:00"}])]})
+
+    coordinator.register_start_event.assert_not_awaited()
+    assert coordinator.main_program_uses_schedules() is True
+
+
+@pytest.mark.asyncio
+async def test_disabling_the_only_schedule_does_not_arm_the_trigger():
     coordinator = _config_coordinator([_main([{"time": "06:00"}])])
     [schedule] = coordinator.store.config.programs[0][const.PROGRAM_SCHEDULES]
 
@@ -336,7 +338,7 @@ async def test_the_trigger_is_armed_again_when_the_only_schedule_is_disabled():
         {const.CONF_PROGRAMS: [_main([{**schedule, "enabled": False}])]},
     )
 
-    coordinator.register_start_event.assert_awaited_once()
+    coordinator.register_start_event.assert_not_awaited()
 
 
 @pytest.mark.asyncio
@@ -1017,10 +1019,8 @@ async def test_setting_an_adjustment_arms_the_schedules_again():
 
 
 @pytest.mark.asyncio
-async def test_an_armed_legacy_trigger_is_cancelled_by_the_schedules_and_comes_back(
-    caplog,
-):
-    coordinator = _trigger_coordinator([_main()])
+async def test_an_armed_trigger_is_cancelled_when_the_controller_goes_on():
+    coordinator = _trigger_coordinator([_main()], full=False)
     unsubs = []
 
     def _track(*args, **kwargs):
@@ -1035,31 +1035,20 @@ async def test_an_armed_legacy_trigger_is_cancelled_by_the_schedules_and_comes_b
         assert coordinator.start_trigger_armed is True
         assert coordinator._track_sunrise_event_unsub is unsubs[0]
 
-        coordinator.store.config.programs = normalize_programs(
-            [_main([{"time": "03:30"}])]
-        )
+        coordinator.store.config.full_controller = True
         await coordinator.register_start_event()
 
-        # The listener that was armed is cancelled, not merely left alone.
-        unsubs[0].assert_called_once()
-        assert coordinator._track_sunrise_event_unsub is None
-        assert coordinator.start_trigger_armed is False
-        assert len(unsubs) == 1
-
-        caplog.clear()
-        with caplog.at_level("INFO"):
-            coordinator.store.config.programs = normalize_programs([_main([])])
-            await coordinator.register_start_event()
-
-    assert len(unsubs) == 2
-    assert coordinator._track_sunrise_event_unsub is unsubs[1]
-    assert coordinator.start_trigger_armed is True
-    assert "Legacy start irrigation event" in caplog.text
+    # The listener that was armed is cancelled, not merely left alone.
+    unsubs[0].assert_called_once()
+    assert coordinator._track_sunrise_event_unsub is None
+    assert coordinator.start_trigger_armed is False
+    assert len(unsubs) == 1
 
 
 @pytest.mark.asyncio
 async def test_a_registration_begun_before_the_schedules_cannot_arm_after_them():
-    coordinator = _trigger_coordinator([_main()])
+    # Begun while the trigger starts the cycle: the controller off.
+    coordinator = _trigger_coordinator([_main()], full=False)
     estimate_running = asyncio.Event()
     estimate_done = asyncio.Event()
     calls = {"n": 0}
@@ -1087,7 +1076,9 @@ async def test_a_registration_begun_before_the_schedules_cannot_arm_after_them()
     ):
         before = asyncio.ensure_future(coordinator.register_start_event())
         await estimate_running.wait()
-        # The save: the schedules take over, and the start is registered again.
+        # The save: the controller on, the schedules take over, and the start
+        # is registered again.
+        coordinator.store.config.full_controller = True
         coordinator.store.config.programs = normalize_programs(
             [_main([{"time": "03:30"}])]
         )

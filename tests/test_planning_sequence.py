@@ -19,9 +19,7 @@ from custom_components.smart_irrigation import const, websockets
 from custom_components.smart_irrigation.planning_sequence import sequence_planning
 from tests.test_program_status import (
     _paris_clock,  # noqa: F401
-    _status,
-    _utc,
-)
+    )
 
 LANGUAGES = (
     Path(__file__).parent.parent
@@ -125,39 +123,6 @@ def test_the_order_is_by_moment_whatever_the_time_zone():
 
 
 _MAIN = {"id": "main", "name": "Main program", "main": True, "enabled": True}
-
-
-async def test_the_main_program_is_planned_on_every_day_the_trigger_starts_it():
-    hass, coord = _status([_MAIN])
-    coord._planned_run_seconds = AsyncMock(return_value=600)
-    starts = [_utc(1, 6), _utc(2, 6), _utc(3, 6)]
-
-    planned = await coord.async_planning(3, trigger_starts=starts)
-
-    assert [p["start"] for p in planned] == [s.isoformat() for s in starts]
-    assert {p["program_id"] for p in planned} == {"main"}
-
-
-async def test_a_suspension_holds_back_the_trigger_s_runs_before_its_end():
-    """Each day's start is judged on its own: the suspension ends between them."""
-    hass, coord = _status([_MAIN])
-    coord._planned_run_seconds = AsyncMock(return_value=600)
-    coord.suspended_until = lambda kind, ident: _utc(2, 0)
-
-    planned = await coord.async_planning(
-        3, trigger_starts=[_utc(1, 6), _utc(2, 6), _utc(3, 6)]
-    )
-
-    assert [p["skipped_reason"] for p in planned] == ["suspended", None, None]
-
-
-async def test_a_trigger_start_beyond_the_window_is_left_out():
-    hass, coord = _status([_MAIN])
-    coord._planned_run_seconds = AsyncMock(return_value=600)
-
-    planned = await coord.async_planning(1, trigger_starts=[_utc(1, 6), _utc(5, 6)])
-
-    assert [p["start"] for p in planned] == [_utc(1, 6).isoformat()]
 
 
 def test_a_clock_trigger_comes_back_at_the_same_time_of_day():

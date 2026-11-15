@@ -302,10 +302,9 @@
           "mode-off": "Alles stoppen",
           "description": "Uitgeschakeld blijft Smart Irrigation weersinformatie verzamelen en houdt het zijn sensoren, maar berekent het niets, laat het de waterbalans van elke zone zoals die is, opent het geen ventiel en voert het geen programma uit. Weer ingeschakeld telt de tijd dat het uit stond niet mee.",
           "off-note": "Uitgeschakeld: er wordt niets berekend en niets beregend. De weersinformatie wordt verder verzameld, en de tijd dat het uit staat telt niet mee als je het weer inschakelt.",
-          "calculate-note": "Alleen berekenen: waterbalansen en duren blijven actueel, maar geen klep gaat open, geen programma loopt en het startevent wordt niet verstuurd. Verder verandert er niets: terug op Berekenen en beregenen gaat alles verder zoals voorheen.",
+          "calculate-note": "Alleen berekenen: Smart Irrigation berekent waterbalansen en duren en stuurt zijn startevent, maar opent geen klep. Je eigen automatisering, Irrigation Unlimited of je controller beregent met die duren.",
           "confirm-off": "Smart Irrigation uitschakelen? Wat nu beregent stopt meteen, en er wordt niets berekend of beregend tot het weer ingeschakeld wordt.",
-          "confirm-calculate": "Alleen berekenen? Elke lopende beregening stopt nu, en niets start tot je weer Berekenen en beregenen kiest.",
-          "calculate-banner": "Alleen berekenen: geen klep gaat open en geen programma loopt. Kies Berekenen en beregenen in Instellingen, Algemeen om de beregening te hervatten."
+          "confirm-calculate": "Alleen berekenen? Smart Irrigation opent geen kleppen meer: wat het beregent stopt nu, en voortaan beregent je eigen automatisering met zijn duren."
         }
       },
       "description": "Dit zijn de algemene instellingen.",
@@ -392,9 +391,7 @@
           "run-waits": "wacht op {program}, ongeveer van {start} tot {end}",
           "run-skipped": "naar verwachting overgeslagen: regen verwacht",
           "run-twice": "{zones} twee keer achter elkaar bewaterd",
-          "run-suspended": "opgeschort tot {when}",
-          "headline-calculate": "Smart Irrigation berekent alleen",
-          "sub-calculate": "Waterbalansen en duren blijven actueel, maar er wordt niets beregend tot je weer Berekenen en beregenen kiest."
+          "run-suspended": "opgeschort tot {when}"
         },
         "decision": {
           "title": "Wordt de ronde overgeslagen?",
@@ -704,7 +701,7 @@
         "drainage_rate": "Afvoersnelheid",
         "linked-entity": "Gekoppelde klep/schakelaar",
         "linked-entity-hint": "De klep of schakelaar die deze zone bewatert. Telkens als die actief is (een handmatige kraan, een automatisering of Smart Irrigation zelf wanneer directe klepbesturing aanstaat), wordt de waterbalans bijgewerkt op basis van de looptijd en de doorvoer van de zone. Vereist voor de closed-loop-functies.",
-        "valve-off": "Een klep kan gekoppeld worden zodra directe klepbesturing of waargenomen bewatering aanstaat.",
+        "valve-off": "Een klep kan gekoppeld worden zodra Smart Irrigation beregent (Berekenen en beregenen) of waargenomen beregening aan staat.",
         "valve-off-link": "Aanzetten",
         "supply": "Pomp of hoofdventiel",
         "supply-none": "Geen",
@@ -1509,12 +1506,7 @@
     "title": "Waargenomen bewatering (closed loop)",
     "description": "Schrijft de waterbalans van elke zone bij op basis van echte bewatering, in plaats van dat een automatisering hem terugzet. Kies per zone een klep of schakelaar onder Zones: zolang die open is, wordt looptijd maal doorvoer bijgeschreven, of het volume dat een meter mat. Verwijder de set_bucket- en reset_bucket-aanroepen uit je automatiseringen, anders telt het dubbel.",
     "enabled_label": "Waargenomen bewatering inschakelen",
-    "direct_control_label": "Smart Irrigation de klep laten besturen",
-    "direct_control_description": "Wanneer dit aanstaat, opent Smart Irrigation de gekoppelde klep van elke zone, wacht de berekende duur af en sluit hem daarna, zonder automatisering. Een lopende beurt wordt na een herstart hervat. Veiligheid: een klep die zichzelf kan sluiten, krijgt bij het openen de duur van de beurt mee (een Sonoff SWV via ZHA, of een klep waarvoor in de zone een MQTT-veiligheidstopic is ingesteld), zodat hij ook sluit als Home Assistant uitvalt. Elke andere klep blijft bewateren tot Home Assistant terug is: geef hem een hardwarematige beveiliging (een maximale looptijd).",
-    "full_controller_label": "Volledige controller: Smart Irrigation beheert al mijn bewatering",
-    "full_controller_title": "Volledige controller",
     "confirm_full_controller": "De volledige controller inschakelen? Smart Irrigation stuurt dan de ventielen aan en start het bewateren zelf. Een ventiel dat bij het opstarten open staat en door geen enkele ronde van ons wordt beheerd, wordt gesloten.",
-    "full_controller_description": "Schakelt ventielbesturing in en voegt een tabblad Bewatering toe: programma's, planning en pompen. De starttrigger, de volgorde, de pauze tussen zones en cycle and soak verhuizen daarheen, als instellingen van het hoofdprogramma, en blijven werken als voorheen tot je een ander programma toevoegt. Uitschakelen brengt exact het vorige gedrag terug. Een ventiel dat bij het opstarten open staat en door geen enkele ronde van ons wordt beheerd, wordt gesloten.",
     "sequencing_label": "Volgorde van zones",
     "sequencing": {
       "sequential": "Sequentieel (één zone tegelijk)",
@@ -1528,7 +1520,6 @@
     "pause_between_zones_description": "Een wachttijd tussen twee zones van een opeenvolgende ronde: tijd voor de leidingdruk om te herstellen, of voor een langzaam ventiel om te sluiten voordat het volgende opengaat.",
     "minutes": "minuten",
     "seconds": "seconden",
-    "direct_control_locked": "De volledige controller stuurt de ventielen aan: schakel hem eerst uit om dit te wijzigen.",
     "set_aside_label": "Een zone na zoveel mislukte beurten opzijzetten",
     "set_aside_description": "Een klep die zoveel keer achter elkaar niet openging, geen water gaf of zijn eigen timer niet kon instellen, wordt opzijgezet: geen programma beregent de zone tot ze weer wordt ingeschakeld, in plaats van elke ochtend te mislukken. Je wordt meteen verwittigd (meldingen van de programma's, een reparatie in Home Assistant, de probleemsensor van de zone). Ze komt vanzelf terug als haar klep opengaat, met de hand getest na herstel. 0: nooit.",
     "leak_label": "Lekalarm vanaf",
@@ -1656,7 +1647,6 @@
     "no_trigger": "Geen starttrigger",
     "not_scheduled": "Nodig, maar niet ingepland",
     "off": "Uitgeschakeld",
-    "calculate_only": "Alleen berekenen",
     "watering_left": "bewateren, nog {time}",
     "paused_left": "gepauzeerd, nog {time}",
     "soaking": "intrekken, volgende beurt om {when} ({pass}/{passes})",

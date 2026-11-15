@@ -302,10 +302,9 @@
           "mode-off": "Ustavi vse",
           "description": "Ko je izklopljen, Smart Irrigation še naprej zbira vremenske podatke in obdrži svoje senzorje, vendar ne računa ničesar, pusti vodno bilanco vsake cone nespremenjeno, ne odpre nobenega ventila in ne zažene nobenega programa. Ko ga znova vklopiš, se čas, ko je bil izklopljen, ne šteje.",
           "off-note": "Izklopljeno: nič se ne računa in nič se ne zaliva. Vremenski podatki se še naprej zbirajo, čas izklopa pa se ne bo štel, ko ga znova vklopiš.",
-          "calculate-note": "Samo računanje: vodne bilance in trajanja ostajajo posodobljeni, a noben ventil se ne odpre, noben program se ne zažene in začetni dogodek se ne pošlje. Nič drugega se ne spremeni: nazaj na Računaj in zalivaj se vse nadaljuje kot prej.",
+          "calculate-note": "Samo računanje: Smart Irrigation izračuna vodne bilance in trajanja ter pošlje začetni dogodek, a ne odpre nobenega ventila. Zaliva vaša avtomatizacija, Irrigation Unlimited ali vaš krmilnik s temi trajanji.",
           "confirm-off": "Izklopim Smart Irrigation? Zalivanje, ki poteka, se takoj ustavi, in nič se ne računa ali zaliva, dokler ga znova ne vklopiš.",
-          "confirm-calculate": "Samo računati? Vsako zalivanje, ki poteka, se zdaj ustavi in nič se ne zažene, dokler znova ne izberete Računaj in zalivaj.",
-          "calculate-banner": "Samo računanje: noben ventil se ne odpre in noben program se ne zažene. Za nadaljevanje izberite Računaj in zalivaj v Nastavitvah, Splošno."
+          "confirm-calculate": "Samo računati? Smart Irrigation preneha odpirati ventile: kar zaliva, se zdaj ustavi, odslej pa zaliva vaša avtomatizacija z njegovimi trajanji."
         }
       },
       "description": "Ta stran vsebuje splošne nastavitve.",
@@ -392,9 +391,7 @@
           "run-waits": "čaka na {program}, približno od {start} do {end}",
           "run-skipped": "pričakovan preskok: napovedan dež",
           "run-twice": "{zones}: zalito dvakrat zapored",
-          "run-suspended": "zadržano do {when}",
-          "headline-calculate": "Smart Irrigation samo računa",
-          "sub-calculate": "Vodne bilance in trajanja ostajajo posodobljeni, a nič se ne zaliva, dokler znova ne izberete Računaj in zalivaj."
+          "run-suspended": "zadržano do {when}"
         },
         "decision": {
           "title": "Bo preskočeno?",
@@ -704,7 +701,7 @@
         "drainage_rate": "Hitrost drenaže",
         "linked-entity": "Povezan ventil/stikalo",
         "linked-entity-hint": "Ventil ali stikalo, ki zaliva to cono. Smart Irrigation ga odpre in zapre, ko je vklopljeno neposredno upravljanje ventilov. Ko je vklopljeno opazovano zalivanje, vsak njegov zagon (ročni vklop, avtomatizacija ali Smart Irrigation sam) prišteje vodni bilanci glede na čas delovanja in pretok cone.",
-        "valve-off": "Ventil lahko povežeš, ko je vklopljeno neposredno upravljanje ventilov ali opazovano zalivanje.",
+        "valve-off": "Ventil lahko povežete, ko Smart Irrigation zaliva (Računaj in zalivaj) ali je vklopljeno opazovano zalivanje.",
         "valve-off-link": "Vklopi",
         "supply": "Črpalka ali glavni ventil",
         "supply-none": "Brez",
@@ -1509,12 +1506,7 @@
     "title": "Opazovano zalivanje (zaprta zanka)",
     "description": "Vodno bilanco vsake cone dopolni iz dejanskega zalivanja, namesto da jo ponastavlja avtomatizacija. Na zavihku Cone za vsako cono izberi ventil ali stikalo: dokler je odprt, se prišteje čas delovanja, pomnožen s pretokom, ali prostornina, ki jo je izmeril števec. Iz svojih avtomatizacij odstrani klice set_bucket in reset_bucket, sicer se šteje dvakrat.",
     "enabled_label": "Vklopi opazovano zalivanje",
-    "direct_control_label": "Naj Smart Irrigation upravlja ventil",
-    "direct_control_description": "Ko je vklopljeno, Smart Irrigation odpre povezan ventil vsake cone, počaka izračunano trajanje in ga nato zapre, brez avtomatizacije. Zalivanje v teku se po ponovnem zagonu nadaljuje. Varnost: ventil, ki se zna zapreti sam, ob odprtju prejme trajanje zalivanja (Sonoff SWV prek ZHA ali ventil, katerega cona ima nastavljeno varnostno temo MQTT), zato se zapre, tudi če Home Assistant preneha delovati. Vsak drug ventil zaliva naprej, dokler se Home Assistant ne vrne: zagotovi mu strojno varovalo (največji čas delovanja).",
-    "full_controller_label": "Celoten krmilnik: Smart Irrigation upravlja vse moje zalivanje",
-    "full_controller_title": "Celoten krmilnik",
     "confirm_full_controller": "Vklopim celoten krmilnik? Smart Irrigation bo upravljal ventile in sam zaganjal zalivanje. Ventil, ki je ob zagonu odprt in ga ne upravlja nobeno naše zalivanje, se zapre.",
-    "full_controller_description": "Vklopi upravljanje ventilov in doda zavihek Zalivanje: programi, načrt in črpalke. Sprožilec zagona, zaporedje, premor med conami ter cikel in vpijanje se preselijo tja kot nastavitve glavnega programa in delujejo kot prej, dokler ne dodaš drugega programa. Izklop vrne natanko prejšnje delovanje. Ventil, ki je ob zagonu odprt in ga ne upravlja nobeno naše zalivanje, se zapre.",
     "sequencing_label": "Zaporedje con",
     "sequencing": {
       "sequential": "Zaporedno (ena cona naenkrat)",
@@ -1528,7 +1520,6 @@
     "pause_between_zones_description": "Čakanje med dvema conama pri zaporednem zalivanju: čas, da se tlak v cevi obnovi ali da se počasen ventil zapre, preden se odpre naslednji.",
     "minutes": "minut",
     "seconds": "sekund",
-    "direct_control_locked": "Ventile upravlja celoten krmilnik: najprej ga izklopi, če želiš to spremeniti.",
     "set_aside_label": "Odloži območje po toliko neuspelih zalivanjih",
     "set_aside_description": "Ventil, ki se tolikokrat zapored ni odprl, ni dal vode ali mu ni bilo mogoče nastaviti lastnega časovnika, se odloži: noben program ne zaliva območja, dokler ga ne vrnete, namesto da bi vsako jutro odpovedal. Obveščeni ste takoj (obvestila programov, popravilo v Home Assistantu, senzor težave območja). Vrne se samo, ko se njegov ventil odpre, na primer ročno preizkušen po popravilu. 0: nikoli.",
     "leak_label": "Opozorilo puščanja od",
@@ -1656,7 +1647,6 @@
     "no_trigger": "Ni sprožilca zagona",
     "not_scheduled": "Potrebno, a ni načrtovano",
     "off": "Izklopljeno",
-    "calculate_only": "Samo računanje",
     "watering_left": "zalivanje, še {time}",
     "paused_left": "začasno ustavljeno, še {time}",
     "soaking": "vpijanje, naslednji prehod ob {when} ({pass}/{passes})",

@@ -302,10 +302,9 @@
           "mode-off": "Zatrzymaj wszystko",
           "description": "Po wyłączeniu Smart Irrigation nadal pobiera dane pogodowe i zachowuje swoje czujniki, ale niczego nie oblicza, zostawia bilans wodny każdej strefy bez zmian, nie otwiera żadnego zaworu i nie uruchamia żadnego programu. Po ponownym włączeniu czas wyłączenia nie jest liczony.",
           "off-note": "Wyłączone: nic nie jest obliczane ani podlewane. Dane pogodowe są nadal pobierane, a czas wyłączenia nie zostanie policzony, gdy włączysz je ponownie.",
-          "calculate-note": "Tylko obliczanie: bilanse wodne i czasy pozostają aktualne, ale żaden zawór się nie otwiera, żaden program nie startuje i zdarzenie startu nie jest wysyłane. Nic innego się nie zmienia: po powrocie do Obliczaj i podlewaj wszystko działa jak wcześniej.",
+          "calculate-note": "Tylko obliczanie: Smart Irrigation liczy bilanse wodne i czasy oraz wysyła zdarzenie startu, ale nie otwiera żadnego zaworu. Podlewa Twoja automatyzacja, Irrigation Unlimited lub sterownik z tymi czasami.",
           "confirm-off": "Wyłączyć Smart Irrigation? Trwające podlewanie zatrzyma się teraz, a nic nie będzie obliczane ani podlewane do ponownego włączenia.",
-          "confirm-calculate": "Tylko obliczać? Każde trwające podlewanie zatrzyma się teraz i nic nie wystartuje, dopóki znów nie wybierzesz Obliczaj i podlewaj.",
-          "calculate-banner": "Tylko obliczanie: żaden zawór się nie otwiera i żaden program nie startuje. Wybierz Obliczaj i podlewaj w Ustawieniach, Ogólne, aby wznowić podlewanie."
+          "confirm-calculate": "Tylko obliczać? Smart Irrigation przestaje otwierać zawory: to, co podlewa, zatrzyma się teraz, a od teraz podlewa Twoja automatyzacja z jego czasami."
         }
       },
       "description": "Ta strona zawiera ustawienia globalne.",
@@ -392,9 +391,7 @@
           "run-waits": "czeka na {program}, mniej więcej od {start} do {end}",
           "run-skipped": "oczekiwane pominięcie: prognozowany deszcz",
           "run-twice": "{zones}: podlewane dwa razy z rzędu",
-          "run-suspended": "zawieszony do {when}",
-          "headline-calculate": "Smart Irrigation tylko oblicza",
-          "sub-calculate": "Bilanse wodne i czasy pozostają aktualne, ale nic nie jest podlewane, dopóki znów nie wybierzesz Obliczaj i podlewaj."
+          "run-suspended": "zawieszony do {when}"
         },
         "decision": {
           "title": "Czy zostanie pominięte?",
@@ -704,7 +701,7 @@
         "drainage_rate": "Natężenie drenażu",
         "linked-entity": "Połączony zawór/przełącznik",
         "linked-entity-hint": "Zawór lub przełącznik nawadniający tę strefę. Za każdym razem, gdy działa (ręczne odkręcenie, automatyzacja lub sam Smart Irrigation, gdy włączone jest bezpośrednie sterowanie zaworem), bilans wodny jest zasilany na podstawie czasu działania i przepływu strefy. Wymagane dla funkcji zamkniętej pętli.",
-        "valve-off": "Zawór można powiązać, gdy włączone jest bezpośrednie sterowanie zaworami lub obserwowane podlewanie.",
+        "valve-off": "Zawór można połączyć, gdy Smart Irrigation podlewa (Obliczaj i podlewaj) lub obserwowane podlewanie jest włączone.",
         "valve-off-link": "Włącz",
         "supply": "Pompa lub zawór główny",
         "supply-none": "Brak",
@@ -1509,12 +1506,7 @@
     "title": "Obserwowane nawadnianie (zamknięta pętla)",
     "description": "Zasila bilans wodny każdej strefy na podstawie rzeczywistego podlewania, zamiast resetowania go przez automatyzację. Wybierz w zakładce Strefy zawór lub przełącznik dla każdej strefy: gdy jest otwarty, zaliczany jest czas działania razy przepływ albo objętość zmierzona przez licznik. Usuń wywołania set_bucket i reset_bucket ze swoich automatyzacji, inaczej woda zostanie policzona dwa razy.",
     "enabled_label": "Włącz obserwowane nawadnianie",
-    "direct_control_label": "Pozwól Smart Irrigation sterować zaworem",
-    "direct_control_description": "Gdy włączone, Smart Irrigation otwiera połączony zawór każdej strefy, czeka przez obliczony czas, a następnie go zamyka, bez potrzeby automatyzacji. Trwające działanie zostaje wznowione po ponownym uruchomieniu. Bezpieczeństwo: zawór, który potrafi zamknąć się sam, przy otwarciu dostaje czas trwania podlewania (Sonoff SWV w ZHA albo zawór, którego strefa ma ustawiony temat bezpieczeństwa MQTT), więc zamyka się nawet wtedy, gdy Home Assistant przestanie działać. Każdy inny zawór podlewa dalej, aż Home Assistant wróci: zapewnij mu sprzętowe zabezpieczenie (maksymalny czas działania).",
-    "full_controller_label": "Pełny kontroler: Smart Irrigation prowadzi całe moje podlewanie",
-    "full_controller_title": "Pełny kontroler",
     "confirm_full_controller": "Włączyć pełny kontroler? Smart Irrigation będzie sterować zaworami i sam uruchamiać podlewanie. Zawór znaleziony otwarty przy starcie, którego nie posiada żadne nasze uruchomienie, zostaje zamknięty.",
-    "full_controller_description": "Włącza sterowanie zaworami i dodaje kartę Podlewanie: programy, planowanie i pompy. Wyzwalacz startu, kolejność, przerwa między strefami oraz cycle and soak przenoszą się tam jako ustawienia programu głównego i działają jak dotąd, dopóki nie dodasz innego programu. Wyłączenie przywraca dokładnie poprzednie zachowanie. Zawór znaleziony otwarty przy starcie, którego nie posiada żadne nasze uruchomienie, zostaje zamknięty.",
     "sequencing_label": "Sekwencjonowanie stref",
     "sequencing": {
       "sequential": "Sekwencyjnie (jedna strefa naraz)",
@@ -1528,7 +1520,6 @@
     "pause_between_zones_description": "Oczekiwanie między dwiema strefami nawadniania po kolei: czas, by ciśnienie w instalacji wróciło albo by wolny zaworek zamknął się przed otwarciem następnego.",
     "minutes": "minut",
     "seconds": "sekund",
-    "direct_control_locked": "Pełny kontroler steruje zaworami: najpierw go wyłącz, aby to zmienić.",
     "set_aside_label": "Odłóż strefę po tylu nieudanych podlewaniach",
     "set_aside_description": "Zawór, który tyle razy z rzędu się nie otworzył, nie dał wody lub nie dało się ustawić jego własnego timera, zostaje odłożony: żaden program nie podlewa strefy, dopóki nie zostanie przywrócona, zamiast zawodzić każdego ranka. Dowiesz się od razu (powiadomienia programów, naprawa w Home Assistant, czujnik problemu strefy). Wraca sama, gdy jej zawór się otworzy, np. sprawdzony ręcznie po naprawie. 0: nigdy.",
     "leak_label": "Alarm wycieku od",
@@ -1656,7 +1647,6 @@
     "no_trigger": "Brak wyzwalacza startu",
     "not_scheduled": "Należne, ale niezaplanowane",
     "off": "Wyłączone",
-    "calculate_only": "Tylko obliczanie",
     "watering_left": "podlewanie, pozostało {time}",
     "paused_left": "wstrzymane, pozostało {time}",
     "soaking": "wsiąkanie, następne przejście o {when} ({pass}/{passes})",

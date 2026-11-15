@@ -302,10 +302,9 @@
           "mode-off": "Ferma tutto",
           "description": "Da disattivato, Smart Irrigation continua a raccogliere i dati meteo e mantiene i suoi sensori, ma non calcola nulla, lascia invariato il bilancio idrico di ogni zona, non apre nessuna valvola e non avvia nessun programma. Quando lo riattivi, il tempo in cui era spento non viene contato.",
           "off-note": "Disattivato: non si calcola e non si irriga nulla. I dati meteo continuano a essere raccolti, e il tempo in cui resta spento non verrà contato quando lo riattivi.",
-          "calculate-note": "Solo calcolo: bilanci idrici e durate restano aggiornati, ma nessuna valvola si apre, nessun programma parte e l'evento di avvio non viene inviato. Nient'altro cambia: tornando a Calcola e irriga, tutto riprende come prima.",
+          "calculate-note": "Solo calcolo: Smart Irrigation calcola bilanci idrici e durate e invia il suo evento di avvio, ma non apre nessuna valvola. La tua automazione, Irrigation Unlimited o il tuo controller irriga con quelle durate.",
           "confirm-off": "Disattivare Smart Irrigation? Qualsiasi irrigazione in corso si ferma subito, e nulla viene calcolato o irrigato finché non lo riattivi.",
-          "confirm-calculate": "Solo calcolo? Ogni irrigazione in corso si ferma ora e nulla parte finché non scegli di nuovo Calcola e irriga.",
-          "calculate-banner": "Solo calcolo: nessuna valvola si apre e nessun programma parte. Scegli Calcola e irriga in Impostazioni, Generale per riprendere l'irrigazione."
+          "confirm-calculate": "Solo calcolo? Smart Irrigation smette di aprire le valvole: ciò che sta irrigando si ferma ora e, da adesso, irriga la tua automazione con le sue durate."
         }
       },
       "description": "Questa pagina fornisce le impostazioni globali.",
@@ -392,9 +391,7 @@
           "run-waits": "attende {program}, circa da {start} a {end}",
           "run-skipped": "salto previsto: pioggia prevista",
           "run-twice": "{zones} irrigate due volte di fila",
-          "run-suspended": "sospeso fino al {when}",
-          "headline-calculate": "Smart Irrigation fa solo calcoli",
-          "sub-calculate": "Bilanci idrici e durate restano aggiornati, ma non si irriga nulla finché non scegli di nuovo Calcola e irriga."
+          "run-suspended": "sospeso fino al {when}"
         },
         "decision": {
           "title": "Verrà saltato?",
@@ -704,7 +701,7 @@
         "drainage_rate": "Tasso di drenaggio",
         "linked-entity": "Valvola/interruttore collegato",
         "linked-entity-hint": "La valvola o l'interruttore che irriga questa zona. Ogni volta che si attiva (un rubinetto manuale, un'automazione o Smart Irrigation stesso quando il controllo diretto della valvola è attivo), il bilancio idrico viene accreditato in base al tempo di funzionamento e alla portata della zona. Necessario per le funzioni ad anello chiuso.",
-        "valve-off": "Una valvola può essere collegata appena il controllo diretto delle valvole o l'irrigazione osservata è attivo.",
+        "valve-off": "Una valvola si può collegare non appena Smart Irrigation irriga (Calcola e irriga) o l'irrigazione osservata è attiva.",
         "valve-off-link": "Attiva",
         "supply": "Pompa o valvola principale",
         "supply-none": "Nessuna",
@@ -1509,12 +1506,7 @@
     "title": "Irrigazione osservata (anello chiuso)",
     "description": "Accredita il bilancio idrico di ogni zona in base all'irrigazione reale, invece di farlo azzerare da un'automazione. Scegli una valvola o un interruttore per ogni zona in Zone: mentre è aperto, viene accreditato il tempo di funzionamento per la portata, oppure il volume misurato da un contatore. Rimuovi le chiamate set_bucket e reset_bucket dalle tue automazioni, altrimenti l'acqua viene contata due volte.",
     "enabled_label": "Attiva l'irrigazione osservata",
-    "direct_control_label": "Consenti a Smart Irrigation di controllare la valvola",
-    "direct_control_description": "Quando è attivo, Smart Irrigation apre la valvola collegata di ogni zona, attende la durata calcolata, poi la chiude, senza bisogno di automazioni. Un'irrigazione in corso riprende dopo un riavvio. Sicurezza: una valvola in grado di chiudersi da sola riceve la durata dell'irrigazione quando si apre (una Sonoff SWV su ZHA, o una valvola la cui zona ha un topic MQTT di sicurezza), quindi si chiude anche se Home Assistant si arresta. Ogni altra valvola continua a irrigare finché Home Assistant non torna: dotala di una protezione hardware (un tempo di funzionamento massimo).",
-    "full_controller_label": "Controller completo: Smart Irrigation gestisce tutta la mia irrigazione",
-    "full_controller_title": "Controller completo",
     "confirm_full_controller": "Attivare il controller completo? Smart Irrigation gestirà le valvole e avvierà l'irrigazione da solo. Una valvola trovata aperta all'avvio che nessun nostro ciclo possiede viene chiusa.",
-    "full_controller_description": "Attiva il controllo delle valvole e aggiunge una scheda Irrigazione: programmi, pianificazione e pompe. Il trigger di avvio, la sequenza, la pausa tra le zone e cycle and soak si spostano lì, come impostazioni del programma principale, e continuano a funzionare come prima finché non aggiungi un altro programma. Disattivarlo ripristina esattamente il comportamento precedente. Una valvola trovata aperta all'avvio che nessun nostro ciclo possiede viene chiusa.",
     "sequencing_label": "Sequenza delle zone",
     "sequencing": {
       "sequential": "Sequenziale (una zona alla volta)",
@@ -1528,7 +1520,6 @@
     "pause_between_zones_description": "Un'attesa tra due zone di un ciclo sequenziale: il tempo perché la pressione della linea si riprenda, o perché una valvola lenta finisca di chiudersi prima che si apra la successiva.",
     "minutes": "minuti",
     "seconds": "secondi",
-    "direct_control_locked": "Il controller completo gestisce le valvole: disattivalo prima per cambiare questo.",
     "set_aside_label": "Mettere da parte una zona dopo questi irrigazioni fallite",
     "set_aside_description": "Una valvola che non si è aperta, non ha dato acqua o il cui timer non si è potuto impostare per questo numero di volte di fila viene messa da parte: nessun programma irriga la zona finché non viene riattivata, invece di fallire ogni mattina. Vieni avvisato subito (notifiche dei programmi, una riparazione in Home Assistant, il sensore di problema della zona). Torna da sola quando la sua valvola si apre, provata a mano una volta riparata. 0: mai.",
     "leak_label": "Allarme perdita da",
@@ -1656,7 +1647,6 @@
     "no_trigger": "Nessun trigger di avvio",
     "not_scheduled": "Dovuta, ma non pianificata",
     "off": "Disattivato",
-    "calculate_only": "Solo calcolo",
     "watering_left": "irrigazione in corso, {time} rimanenti",
     "paused_left": "in pausa, {time} rimanenti",
     "soaking": "assorbimento, prossimo passaggio alle {when} ({pass}/{passes})",

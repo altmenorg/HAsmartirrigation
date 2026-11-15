@@ -302,10 +302,9 @@
           "mode-off": "Všetko zastaviť",
           "description": "Keď je vypnuté, Smart Irrigation ďalej zbiera údaje o počasí a ponecháva si svoje senzory, ale nič nepočíta, necháva vodnú bilanciu každej zóny bez zmeny, neotvára žiadny ventil a nespúšťa žiadny program. Po opätovnom zapnutí sa čas, keď bolo vypnuté, nezapočítava.",
           "off-note": "Vypnuté: nič sa nepočíta a nič sa nezalieva. Údaje o počasí sa zbierajú ďalej a čas vypnutia sa nezapočíta, keď ho znova zapnete.",
-          "calculate-note": "Len počítanie: vodné bilancie a doby zostávajú aktuálne, ale žiadny ventil sa neotvorí, žiadny program sa nespustí a štartovacia udalosť sa neodošle. Nič iné sa nemení: späť na Počítať a zavlažovať všetko pokračuje ako predtým.",
+          "calculate-note": "Len počítanie: Smart Irrigation počíta vodné bilancie a doby a posiela štartovaciu udalosť, ale neotvorí žiadny ventil. Zavlažuje vaša automatizácia, Irrigation Unlimited alebo váš ovládač s týmito dobami.",
           "confirm-off": "Vypnúť Smart Irrigation? Prebiehajúce zalievanie sa hneď zastaví a nič sa nepočíta ani nezalieva, kým sa znova nezapne.",
-          "confirm-calculate": "Len počítať? Prebiehajúce zavlažovanie sa teraz zastaví a nič sa nespustí, kým znova nezvolíte Počítať a zavlažovať.",
-          "calculate-banner": "Len počítanie: žiadny ventil sa neotvorí a žiadny program sa nespustí. Na obnovenie zvoľte Počítať a zavlažovať v Nastaveniach, Všeobecné."
+          "confirm-calculate": "Len počítať? Smart Irrigation prestane otvárať ventily: čo práve zavlažuje, sa teraz zastaví, a odteraz zavlažuje vaša automatizácia s jeho dobami."
         }
       },
       "description": "Táto stránka poskytuje globálne nastavenia.",
@@ -392,9 +391,7 @@
           "run-waits": "čaká na {program}, približne {start} až {end}",
           "run-skipped": "očakáva sa vynechanie: predpoveď dažďa",
           "run-twice": "{zones}: zavlažené dvakrát po sebe",
-          "run-suspended": "odložený do {when}",
-          "headline-calculate": "Smart Irrigation len počíta",
-          "sub-calculate": "Vodné bilancie a doby zostávajú aktuálne, ale nič sa nezavlažuje, kým znova nezvolíte Počítať a zavlažovať."
+          "run-suspended": "odložený do {when}"
         },
         "decision": {
           "title": "Bude vynechané?",
@@ -704,7 +701,7 @@
         "drainage_rate": "Rýchlosť odvodnenia",
         "linked-entity": "Prepojený ventil/spínač",
         "linked-entity-hint": "Ventil alebo spínač, ktorý zavlažuje túto zónu. Vždy keď je spustený (ručným kohútikom, automatizáciou alebo samotnou Smart Irrigation pri zapnutom priamom ovládaní ventilu), sa vodnej bilancii pripíše hodnota z času behu a priepustnosti zóny. Vyžaduje sa pre funkcie uzavretej slučky.",
-        "valve-off": "Ventil sa dá priradiť, keď je zapnuté priame riadenie ventilov alebo sledované zavlažovanie.",
+        "valve-off": "Ventil sa dá prepojiť, keď Smart Irrigation zavlažuje (Počítať a zavlažovať) alebo je zapnuté sledované zavlažovanie.",
         "valve-off-link": "Zapnúť",
         "supply": "Čerpadlo alebo hlavný ventil",
         "supply-none": "Žiadny",
@@ -1509,12 +1506,7 @@
     "title": "Sledované zavlažovanie (uzavretá slučka)",
     "description": "Pripisuje vodnej bilancii každej zóny zo skutočného zavlažovania, namiesto toho, aby ju resetovala automatizácia. V sekcii Zóny vyberte pre každú zónu ventil alebo spínač: kým je otvorený, pripisuje sa čas behu krát priepustnosť, alebo objem nameraný meračom. Zo svojich automatizácií odstráňte volania set_bucket a reset_bucket, inak sa voda započíta dvakrát.",
     "enabled_label": "Povoliť sledované zavlažovanie",
-    "direct_control_label": "Nechať Smart Irrigation ovládať ventil",
-    "direct_control_description": "Keď je zapnuté, Smart Irrigation otvorí prepojený ventil každej zóny, počká vypočítanú dobu a potom ho zatvorí, bez potreby automatizácie. Prebiehajúci beh pokračuje po reštarte. Bezpečnosť: ventil, ktorý sa vie zatvoriť sám, dostane pri otvorení dĺžku behu (Sonoff SWV cez ZHA alebo ventil, ktorého zóna má nastavenú bezpečnostnú MQTT tému), takže sa zatvorí, aj keď Home Assistant vypadne. Každý iný ventil zavlažuje ďalej, kým sa Home Assistant nevráti: dajte mu hardvérovú poistku (maximálnu dobu behu).",
-    "full_controller_label": "Plný ovládač: Smart Irrigation riadi všetko moje zavlažovanie",
-    "full_controller_title": "Plný ovládač",
     "confirm_full_controller": "Zapnúť plný ovládač? Smart Irrigation bude ovládať ventily a sám spúšťať zavlažovanie. Ventil, ktorý sa pri štarte nájde otvorený a nepatrí žiadnemu nášmu zavlažovaniu, sa zatvorí.",
-    "full_controller_description": "Zapne ovládanie ventilov a pridá kartu Zavlažovanie: programy, plánovanie a čerpadlá. Spúšťač štartu, poradie, pauza medzi zónami a cycle and soak sa presunú tam ako nastavenia hlavného programu a fungujú ako predtým, kým nepridáte ďalší program. Vypnutie vráti presne predchádzajúce správanie. Ventil, ktorý sa pri štarte nájde otvorený a nepatrí žiadnemu nášmu zavlažovaniu, sa zatvorí.",
     "sequencing_label": "Poradie zón",
     "sequencing": {
       "sequential": "Postupne (jedna zóna po druhej)",
@@ -1528,7 +1520,6 @@
     "pause_between_zones_description": "Čakanie medzi dvoma zónami postupného zavlažovania: čas, aby sa obnovil tlak v potrubí alebo aby pomalý ventil dovrel, kým sa otvorí ďalší.",
     "minutes": "minút",
     "seconds": "sekúnd",
-    "direct_control_locked": "Plný ovládač riadi ventily: ak to chcete zmeniť, najprv ho vypnite.",
     "set_aside_label": "Odložiť zónu po toľkých neúspešných behoch",
     "set_aside_description": "Ventil, ktorý sa toľkokrát po sebe neotvoril, nedal vodu alebo sa nedal nastaviť jeho vlastný časovač, sa odloží: žiadny program zónu nezavlažuje, kým sa znova nezaradí, namiesto toho, aby každé ráno zlyhal. Dozviete sa to hneď (upozornenia programov, oprava v Home Assistante, senzor problému zóny). Vráti sa sama, keď sa jej ventil otvorí, napríklad pri ručnej skúške po oprave. 0: nikdy.",
     "leak_label": "Upozornenie na únik od",
@@ -1656,7 +1647,6 @@
     "no_trigger": "Žiadny spúšťač štartu",
     "not_scheduled": "Na rade, ale nenaplánované",
     "off": "Vypnuté",
-    "calculate_only": "Len počíta",
     "watering_left": "zavlažuje sa, zostáva {time}",
     "paused_left": "pozastavené, zostáva {time}",
     "soaking": "vsakovanie, ďalšia dávka o {when} ({pass}/{passes})",

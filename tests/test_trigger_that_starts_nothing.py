@@ -56,23 +56,6 @@ async def test_the_zone_sensor_has_no_next_run_under_the_none_trigger():
     assert runs[0] is None
 
 
-async def test_the_programs_give_the_main_program_no_start_nothing_will_act_on():
-    from tests.test_controller_gaps import _call
-    from tests.test_main_program_schedules import _main, _status_with
-
-    hass, coord = _status_with([_main()])
-    hass.data = {const.DOMAIN: {"coordinator": coord}}
-    for armed, expected in ((True, START.isoformat()), (False, None)):
-        with patch.object(
-            websockets,
-            "build_irrigation_info",
-            AsyncMock(return_value={**ARMED, "start_trigger_armed": armed}),
-        ):
-            connection = await _call(hass, websockets.websocket_get_programs_state)
-        [main] = connection.send_result.call_args.args[1]["programs"]
-        assert main["next_start"] == expected
-
-
 async def test_the_planning_leaves_out_a_main_run_nothing_will_start():
     coordinator = MagicMock()
     coordinator.main_program_uses_schedules = lambda: False

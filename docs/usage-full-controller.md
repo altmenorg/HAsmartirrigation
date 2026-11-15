@@ -18,15 +18,17 @@ It is **off by default**, and turning it on changes nothing until you add to it.
 
 ## Turning it on
 
-On the [General page](configuration-general.md), in the card with direct valve control: **Full controller: Smart Irrigation runs all my watering**.
+The full controller is what **Calculate and water** means: choose it in [Settings, General](configuration-general.md#calculate-and-water-calculate-only-or-stop-everything), in the first card's list, **What Smart Irrigation does**. There is no other switch to turn on.
 
-Switching it on:
+Choosing it:
 
-- turns on [direct valve control](configuration-closed-loop.md), since it opens and closes the valves itself. While the full controller is on, that switch is locked on in the panel ("The full controller drives the valves: switch it off first to change this");
-- creates a **main program**, which is what runs today: your start trigger, the sequencing, the pause between zones and cycle and soak, all as you set them. Nothing is copied: change those settings and the main program follows. They move from the General page to the **Programs** page, where they are the main program's settings;
+- lets Smart Irrigation open and close the valves itself, and turns on [observed watering](configuration-closed-loop.md), so a watering by hand counts too;
+- creates a **main program**, which waters every zone. It is started by its own **schedules** only. The first time, it gets one that starts it as your start trigger did (done by sunrise by default), so nothing changes in when you water. Its order of zones, passes, soak and pause between zones are on its card;
 - adds a **Watering** tab to the panel, with three pages: **Planning**, **Programs** and **Pumps**. The cards below are in it.
 
-Switching it off brings back the previous behaviour: direct valve control returns to what it was before you switched the full controller on (off if it was off), unless you set it yourself in the same change. Your programs and supplies stay stored for the day you switch it on again. If you switched the full controller on with an older version, nothing was remembered, and direct valve control stays on.
+Choosing **Calculate only** goes back to calculating for an automation of your own: Smart Irrigation fires its start event at the start trigger and opens no valve. Your programs and supplies stay stored for the day you choose Calculate and water again.
+
+Up to 2026.11.0 this took two switches, **Full controller** and **Let Smart Irrigation control the valve**, and the main program could also be started by the start trigger or switched off on its own. An installation is moved over once, keeping its watering as it was: direct valve control alone becomes Calculate and water, the active start trigger becomes a schedule of the main program, and a main program that was switched off keeps its schedules switched off.
 
 One thing is different from the moment it is on: **a valve found open at startup that no run of ours owns is closed.** After a crash or a restart, a valve left open by a run nobody resumes would water until someone noticed. A reading that says nothing (`unavailable`, `unknown`) is never taken for an open valve. That startup alignment also closes a zone's extra valves, and it looks at the supplies: a pump or main valve that is on while nothing holds it is switched off, and one whose state cannot be read yet is looked at again 30 and 120 seconds later, since its entity often comes up after Home Assistant has started.
 

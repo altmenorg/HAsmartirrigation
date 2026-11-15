@@ -34,7 +34,6 @@ from .helpers import (
     normalize_azimuth_angle,
 )
 from .master_switch import irrigation_off, watering_off
-from .programs import main_has_enabled_schedules
 from .rain_history import MAX_FACTOR, MIN_FACTOR, rain_suppression
 from .units import depth_from_display
 
@@ -67,13 +66,13 @@ class TriggersMixin:
     def main_program_uses_schedules(self) -> bool:
         """Whether the main program's own schedules start the cycle.
 
-        True only with the full controller on and at least one enabled schedule
-        on the main program. Otherwise the historical start trigger does.
+        Always with the full controller on: the start trigger is for
+        "Calculate only", where it fires the start event of an automation
+        (one_choice.py). A main program whose schedules are all off starts on
+        its own no more.
         """
         config = self.store.config
-        if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
-            return False
-        return main_has_enabled_schedules(getattr(config, const.CONF_PROGRAMS, None))
+        return getattr(config, const.CONF_FULL_CONTROLLER, False) is True
 
     async def _planned_run_seconds(self) -> int:
         """How long the run is expected to take, for placing the start.

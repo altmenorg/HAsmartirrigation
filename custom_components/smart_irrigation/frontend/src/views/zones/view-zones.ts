@@ -46,7 +46,6 @@ import {
   fetchIrrigationInfo,
   putBackZone,
 } from "../../data/websockets";
-import { calculateOnlyNote } from "../../common/calculate-only";
 import { SubscribeMixin } from "../../subscribe-mixin";
 
 import {
@@ -1807,10 +1806,10 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       </div>
                       <a
                         class="valve-off-link"
-                        href="/${DOMAIN}/general/at/control"
+                        href="/${DOMAIN}/general"
                         @click=${(e: Event) => {
                           e.preventDefault();
-                          navigate(this, `/${DOMAIN}/general/at/control`);
+                          navigate(this, `/${DOMAIN}/general`);
                         }}
                         >${localize(
                           "panels.zones.labels.valve-off-link",
@@ -3116,10 +3115,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
           ${localize("panels.zones.description", this.hass.language)}
         </div>
       </ha-card>
-      ${this.config?.irrigation_enabled !== false &&
-      this.config?.watering_enabled === false
-        ? calculateOnlyNote(this.hass.language)
-        : ""}
       ${repeat(
         this.zones,
         (zone) => zone.id ?? zone.name,

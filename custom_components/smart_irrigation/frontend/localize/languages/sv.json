@@ -302,10 +302,9 @@
           "mode-off": "Stoppa allt",
           "description": "När Smart Irrigation är avstängt fortsätter väderdata att samlas in och sensorerna finns kvar. Ingen bevattningstid beräknas, vattenbalanserna ligger kvar och inga ventiler öppnas eller program körs. När du slår på funktionen igen räknas tiden den var avstängd inte med.",
           "off-note": "Smart Irrigation är avstängt. Beräkning och bevattning är pausade, men väderdata samlas fortfarande in. Tiden som funktionen är avstängd räknas inte med när du slår på den igen.",
-          "calculate-note": "Bara beräkna: vattenbalanser och varaktigheter hålls aktuella, men ingen ventil öppnar, inget program körs och starthändelsen skickas inte. Inget annat ändras: tillbaka på Beräkna och vattna fortsätter allt som förut.",
+          "calculate-note": "Bara beräkna: Smart Irrigation beräknar vattenbalanser och varaktigheter och skickar sin starthändelse, men öppnar ingen ventil. Din egen automation, Irrigation Unlimited eller din styrenhet vattnar med de varaktigheterna.",
           "confirm-off": "Vill du stänga av Smart Irrigation? Pågående bevattning avbryts direkt. Beräkningarna och bevattningen pausas tills du slår på funktionen igen.",
-          "confirm-calculate": "Bara beräkna? All pågående bevattning stoppas nu, och inget startar förrän du väljer Beräkna och vattna igen.",
-          "calculate-banner": "Bara beräkna: ingen ventil öppnar och inget program körs. Välj Beräkna och vattna under Inställningar, Allmänt för att återuppta bevattningen."
+          "confirm-calculate": "Bara beräkna? Smart Irrigation slutar öppna ventilerna: det som vattnas stoppas nu, och från och med nu vattnar din egen automation med dess varaktigheter."
         }
       },
       "description": "Här ändrar du inställningar som gäller hela integrationen.",
@@ -392,9 +391,7 @@
           "run-waits": "väntar på {program}, cirka {start} till {end}",
           "run-skipped": "förväntas hoppas över: regn väntas",
           "run-twice": "{zones} vattnas två gånger i rad",
-          "run-suspended": "uppskjutet till {when}",
-          "headline-calculate": "Smart Irrigation beräknar bara",
-          "sub-calculate": "Vattenbalanser och varaktigheter hålls aktuella, men inget vattnas förrän du väljer Beräkna och vattna igen."
+          "run-suspended": "uppskjutet till {when}"
         },
         "decision": {
           "title": "Kommer den att hoppas över?",
@@ -704,7 +701,7 @@
         "drainage_rate": "Dräneringshastighet",
         "linked-entity": "Länkad ventil/brytare",
         "linked-entity-hint": "Ventilen eller brytaren som styr bevattningen i zonen. När direkt ventilstyrning är aktiverad öppnar och stänger Smart Irrigation ventilen. Om observerad bevattning är aktiverad räknas varje bevattning in i vattenbalansen utifrån bevattningstiden och zonens flöde, oavsett om du startar den manuellt, via en automation eller med Smart Irrigation.",
-        "valve-off": "En ventil kan kopplas när direkt ventilstyrning eller observerad bevattning är aktiverad.",
+        "valve-off": "En ventil kan kopplas när Smart Irrigation vattnar (Beräkna och vattna) eller observerad bevattning är på.",
         "valve-off-link": "Aktivera",
         "supply": "Pump eller huvudventil",
         "supply-none": "Ingen",
@@ -1509,12 +1506,7 @@
     "title": "Observerad bevattning (återkoppling)",
     "description": "Låt den faktiska bevattningen räknas in i varje zons vattenbalans i stället för att en automation nollställer den. Välj en ventil eller brytare för varje zon på fliken Zoner. Medan den är öppen räknas bevattningstiden gånger flödet in, eller den volym som en vattenmätare har mätt. Ta bort anrop till set_bucket och reset_bucket i dina automationer, så att vattnet inte räknas dubbelt.",
     "enabled_label": "Aktivera observerad bevattning",
-    "direct_control_label": "Låt Smart Irrigation styra ventilen",
-    "direct_control_description": "Smart Irrigation öppnar varje zons ventil, väntar den beräknade bevattningstiden och stänger sedan ventilen. Ingen separat automation behövs. Efter en omstart återupptas en pågående körning. En självstängande ventil får bevattningstiden när den öppnas och stänger även om Home Assistant slutar fungera. Det gäller exempelvis Sonoff SWV via ZHA och ventiler med ett MQTT-ämne för säkerhetsavstängning angivet i zonen. Andra ventiler fortsätter bevattna tills Home Assistant är i drift igen. Ställ därför in en maximal körtid i själva utrustningen för dessa ventiler.",
-    "full_controller_label": "Fullständig bevattningsstyrning: låt Smart Irrigation sköta all bevattning",
-    "full_controller_title": "Fullständig bevattningsstyrning",
     "confirm_full_controller": "Vill du aktivera fullständig bevattningsstyrning? Smart Irrigation styr då ventilerna och startar bevattningen automatiskt. Ventiler som är öppna vid start stängs om de inte ingår i någon pågående körning som Smart Irrigation styr.",
-    "full_controller_description": "Aktiverar ventilstyrningen och lägger till fliken Bevattning med program, planering och pumpar. Startutlösaren, zonernas bevattningsordning, pausen mellan zonerna och bevattning i flera pass flyttas dit och blir inställningar för huvudprogrammet. De fungerar som tidigare tills du lägger till ett annat program. Om funktionen stängs av fungerar bevattningen som förut. Ventiler som är öppna vid start stängs om de inte ingår i någon pågående körning som Smart Irrigation styr.",
     "sequencing_label": "Bevattningsordning för zonerna",
     "sequencing": {
       "sequential": "Sekventiell (en zon i taget)",
@@ -1528,7 +1520,6 @@
     "pause_between_zones_description": "En paus när zonerna bevattnas efter varandra ger ledningstrycket tid att återhämta sig och en långsam ventil tid att stänga innan nästa öppnar.",
     "minutes": "minuter",
     "seconds": "sekunder",
-    "direct_control_locked": "Ventilerna styrs av fullständig bevattningsstyrning. Stäng av funktionen innan du ändrar inställningen.",
     "set_aside_label": "Ställ en zon åt sidan efter så många misslyckade bevattningar",
     "set_aside_description": "En ventil som så många gånger i rad inte öppnade, inte gav vatten eller inte fick sin egen timer satt ställs åt sidan: inget program vattnar zonen förrän den tas i bruk igen, i stället för att misslyckas varje morgon. Du får veta det direkt (programmens aviseringar, en reparation i Home Assistant, zonens problemsensor). Den kommer tillbaka av sig själv när ventilen ses öppna, provad för hand efter reparation. 0: aldrig.",
     "leak_label": "Läckagelarm från",
@@ -1656,7 +1647,6 @@
     "no_trigger": "Ingen startutlösare",
     "not_scheduled": "Behöver vatten men är inte schemalagd",
     "off": "Avstängd",
-    "calculate_only": "Bara beräkning",
     "watering_left": "bevattnar, {time} kvar",
     "paused_left": "pausad, {time} kvar",
     "soaking": "infiltration, nästa pass kl. {when} ({pass}/{passes})",

@@ -427,7 +427,6 @@ export class SmartIrrigationCard extends LitElement {
         : this._t(
             {
               off: "off",
-              calculate_only: "calculate_only",
               no_trigger: "no_trigger",
               skipped: "skipped",
               not_scheduled: "not_scheduled",

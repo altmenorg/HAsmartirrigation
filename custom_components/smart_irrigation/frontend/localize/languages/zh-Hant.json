@@ -302,10 +302,9 @@
           "mode-off": "全部停止",
           "description": "關閉時，Smart Irrigation 仍會持續讀取氣象資料並保留其感測器，但不會進行任何計算、不會變動任何水量平衡、不會開啟任何閥門，也不會執行任何程式。重新開啟後，關閉期間的時間不會被計入。",
           "off-note": "已關閉：不進行任何計算，也不澆水。氣象讀數會持續進行，重新開啟時不會計入關閉期間的時間。",
-          "calculate-note": "僅計算：水量平衡和時長保持更新，但不會打開任何閥門、不會執行任何程式，也不會傳送開始事件。其他都不變：切回計算並澆水後，一切照舊繼續。",
+          "calculate-note": "僅計算：Smart Irrigation 計算水量平衡和時長並傳送開始事件，但不打開任何閥門。由你的自動化、Irrigation Unlimited 或控制器按這些時長澆水。",
           "confirm-off": "要關閉 Smart Irrigation 嗎？正在澆水的項目會立即停止，在重新開啟之前不會進行任何計算或澆水。",
-          "confirm-calculate": "僅計算？正在進行的澆水會立即停止，在你重新選擇計算並澆水之前不會開始任何澆水。",
-          "calculate-banner": "僅計算：不會打開任何閥門，也不會執行任何程式。在設定 > 一般中選擇計算並澆水即可恢復澆水。"
+          "confirm-calculate": "僅計算？Smart Irrigation 將不再打開閥門：正在進行的澆水會立即停止，此後由你的自動化按其時長澆水。"
         }
       },
       "description": "此頁面提供全域設定。",
@@ -392,9 +391,7 @@
           "run-waits": "等待 {program}，約 {start} 至 {end}",
           "run-skipped": "預計略過：預報有雨",
           "run-twice": "{zones} 連續澆水兩次",
-          "run-suspended": "已擱置至 {when}",
-          "headline-calculate": "Smart Irrigation 僅在計算",
-          "sub-calculate": "水量平衡和時長保持更新，但在你重新選擇計算並澆水之前不會澆水。"
+          "run-suspended": "已擱置至 {when}"
         },
         "decision": {
           "title": "會被略過嗎？",
@@ -704,7 +701,7 @@
         "drainage_rate": "排水率",
         "linked-entity": "連結的閥門／開關",
         "linked-entity-hint": "為此區域澆水的閥門或開關。使用直接閥門控制時，Smart Irrigation 會開啟與關閉它。使用觀察式澆水時，每次執行（手動、自動化或 Smart Irrigation）都會依運作時間與出水率計入水量平衡。",
-        "valve-off": "啟用直接閥門控制或觀察式澆水後，才能連結閥門。",
+        "valve-off": "當 Smart Irrigation 負責澆水（計算並澆水）或已開啟觀察澆水時，即可連結閥門。",
         "valve-off-link": "開啟",
         "supply": "水泵或主閥",
         "supply-none": "無",
@@ -1509,12 +1506,7 @@
     "title": "觀察式澆水（閉環）",
     "description": "依實際澆水量計入各區域的水量平衡，而不是由自動化來重設。請在「區域」下為每個區域選擇閥門或開關：閥門開啟期間，會計入運作時間乘以出水率的水量，或水表測得的水量。請從你的自動化中移除 set_bucket 與 reset_bucket 的呼叫，否則會重複計算。",
     "enabled_label": "啟用觀察式澆水",
-    "direct_control_label": "讓 Smart Irrigation 控制閥門",
-    "direct_control_description": "Smart Irrigation 會開啟每個區域的閥門，等待該時間長度後關閉。可自行關閉的閥門（ZHA 上的 Sonoff SWV，或使用 MQTT 安全主題）知道該次執行的長度，即使 Home Assistant 故障也會關閉。其他閥門則會一直澆水，直到 Home Assistant 恢復：請為它設定硬體的時間限制。",
-    "full_controller_label": "完整控制器：由 Smart Irrigation 負責我所有的澆水",
-    "full_controller_title": "完整控制器",
     "confirm_full_controller": "要開啟完整控制器嗎？Smart Irrigation 會自行驅動閥門並啟動澆水。啟動時發現已開啟、但不屬於我們任何一次執行的閥門，會被關閉。",
-    "full_controller_description": "開啟閥門控制，並新增一個「澆水」分頁，包含程式、規劃與水泵。啟動觸發條件、排序、區域之間的暫停與循環浸潤會移到那裡成為主程式，運作方式不變。關閉則恢復先前的行為。啟動時發現已開啟、但不屬於我們任何一次執行的閥門，會被關閉。",
     "sequencing_label": "區域排序",
     "sequencing": {
       "sequential": "依序（一次一個區域）",
@@ -1528,7 +1520,6 @@
     "pause_between_zones_description": "依序執行時，兩個區域之間的等待：讓管線壓力恢復，或讓較慢的閥門在下一個開啟前完全關閉。",
     "minutes": "分鐘",
     "seconds": "秒",
-    "direct_control_locked": "完整控制器正在驅動閥門：請先將其關閉才能變更此設定。",
     "set_aside_label": "失敗多少次後擱置區域",
     "set_aside_description": "閥門連續這麼多次未打開、沒有出水或無法設定其內建計時器時，該區域將被擱置：在恢復之前沒有程式會為它澆水，而不是每天早上都失敗。你會立即收到提醒（程式通知、Home Assistant 中的修復項目、區域的問題感測器）。修好後手動試開閥門時，區域會自動恢復。0：從不。",
     "leak_label": "漏水警報閾值",
@@ -1656,7 +1647,6 @@
     "no_trigger": "沒有啟動觸發條件",
     "not_scheduled": "應澆水但未排程",
     "off": "已關閉",
-    "calculate_only": "僅計算",
     "watering_left": "澆水中，剩餘 {time}",
     "paused_left": "已暫停，剩餘 {time}",
     "soaking": "浸潤中，下一輪於 {when}（{pass}/{passes}）",

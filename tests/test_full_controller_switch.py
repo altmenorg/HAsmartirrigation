@@ -53,7 +53,18 @@ async def test_switching_it_on_drives_the_valves_and_makes_the_main_program():
     written = await _update(_coordinator(), {const.CONF_FULL_CONTROLLER: True})
 
     assert written[const.CONF_DIRECT_VALVE_CONTROL_ENABLED] is True
-    assert written[const.CONF_PROGRAMS] == [default_main_program()]
+    [main] = written[const.CONF_PROGRAMS]
+    assert {k: v for k, v in main.items() if k != "schedules"} == (
+        default_main_program()
+    )
+    # Started by its schedules: it gets the start trigger's moment, done by
+    # sunrise by default (one_choice.py).
+    [schedule] = main["schedules"]
+    assert (schedule["type"], schedule["event"], schedule["anchor"]) == (
+        "sun",
+        "sunrise",
+        "end",
+    )
 
 
 @pytest.mark.asyncio

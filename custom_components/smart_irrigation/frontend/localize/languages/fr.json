@@ -302,10 +302,9 @@
           "mode-off": "Tout arrêter",
           "description": "Désactivé, Smart Irrigation continue ses relevés météo et garde ses capteurs, mais ne calcule rien, laisse le bilan hydrique de chaque zone tel quel, n'ouvre aucune vanne et ne lance aucun programme. Une fois réactivé, le temps passé à l'arrêt n'est pas compté.",
           "off-note": "Désactivé : rien n'est calculé et rien n'est arrosé. Les relevés météo continuent, et le temps passé à l'arrêt ne sera pas compté quand tu le réactiveras.",
-          "calculate-note": "Calcul seulement : les bilans hydriques et les durées restent à jour, mais aucune vanne ne s'ouvre, aucun programme ne se lance et l'événement de départ n'est pas envoyé. Rien d'autre n'est modifié : de retour sur Calculer et arroser, tout reprend comme avant.",
+          "calculate-note": "Calcul seulement : Smart Irrigation calcule les bilans hydriques et les durées et envoie son événement de départ, mais n'ouvre aucune vanne. Ton automatisation, Irrigation Unlimited ou ton contrôleur arrose avec ces durées.",
           "confirm-off": "Désactiver Smart Irrigation ? Tout arrosage en cours s'arrête maintenant, et rien n'est calculé ni arrosé jusqu'à sa réactivation.",
-          "confirm-calculate": "Calculer seulement ? Tout arrosage en cours s'arrête maintenant, et rien ne démarre jusqu'à ce que tu choisisses de nouveau Calculer et arroser.",
-          "calculate-banner": "Calcul seulement : aucune vanne ne s'ouvre et aucun programme ne se lance. Choisis Calculer et arroser dans Réglages, Général pour reprendre l'arrosage."
+          "confirm-calculate": "Calculer seulement ? Smart Irrigation cesse d'ouvrir les vannes : ce qu'il arrose s'arrête maintenant, et c'est ton automatisation qui arrose désormais avec ses durées."
         }
       },
       "description": "Cette page fournit les réglages globaux.",
@@ -392,9 +391,7 @@
           "run-waits": "attend {program}, environ de {start} à {end}",
           "run-skipped": "devrait être sauté : pluie prévue",
           "run-twice": "{zones} arrosées deux fois de suite",
-          "run-suspended": "suspendu jusqu'au {when}",
-          "headline-calculate": "Smart Irrigation calcule seulement",
-          "sub-calculate": "Les bilans hydriques et les durées restent à jour, mais rien n'est arrosé jusqu'à ce que tu choisisses de nouveau Calculer et arroser."
+          "run-suspended": "suspendu jusqu'au {when}"
         },
         "decision": {
           "title": "L'arrosage sera-t-il annulé ?",
@@ -704,7 +701,7 @@
         "drainage_rate": "Taux de drainage",
         "linked-entity": "Vanne/interrupteur lié",
         "linked-entity-hint": "La vanne ou l'interrupteur qui arrose cette zone. Smart Irrigation l'ouvre et la ferme quand le pilotage direct est activé. Avec l'arrosage observé activé, chacune de ses ouvertures (à la main, par une automatisation, ou par Smart Irrigation) crédite le bilan hydrique d'après la durée d'arrosage et le débit de la zone.",
-        "valve-off": "Une vanne peut être liée dès que le pilotage direct des vannes ou l'arrosage observé est activé.",
+        "valve-off": "Une vanne peut être liée dès que Smart Irrigation arrose (Calculer et arroser) ou que l'arrosage observé est activé.",
         "valve-off-link": "Activer",
         "supply": "Pompe ou vanne générale",
         "supply-none": "Aucune",
@@ -1509,12 +1506,7 @@
     "title": "Arrosage observé (boucle fermée)",
     "description": "Crédite le bilan hydrique de chaque zone à partir de l'arrosage réel, au lieu qu'une automatisation le réinitialise. Choisis une vanne ou un interrupteur par zone dans Zones : tant qu'il est ouvert, la durée d'arrosage multipliée par le débit est créditée, ou le volume mesuré par un compteur. Retire les appels à set_bucket et reset_bucket de tes automatisations, sinon l'eau est comptée deux fois.",
     "enabled_label": "Activer l'arrosage observé",
-    "direct_control_label": "Laisser Smart Irrigation piloter la vanne",
-    "direct_control_description": "Une fois activé, Smart Irrigation ouvre la vanne liée de chaque zone, attend la durée d'arrosage calculée, puis la referme, sans automatisation. Un arrosage en cours reprend après un redémarrage. Sécurité : une vanne capable de se fermer seule reçoit la durée de l'arrosage à son ouverture (une Sonoff SWV en ZHA, ou une vanne dont la zone a un sujet MQTT de sécurité), elle se ferme donc même si Home Assistant tombe. Toute autre vanne continue d'arroser jusqu'au retour de Home Assistant : donne-lui un failsafe matériel (une durée d'ouverture maximale).",
-    "full_controller_label": "Contrôleur complet : Smart Irrigation gère tout mon arrosage",
-    "full_controller_title": "Contrôleur complet",
     "confirm_full_controller": "Activer le contrôleur complet ? Smart Irrigation pilotera les vannes et lancera l'arrosage lui-même. Une vanne trouvée ouverte au démarrage sans arrosage de notre part est refermée.",
-    "full_controller_description": "Active le pilotage des vannes et ajoute un onglet Arrosage : programmes, planning et pompes. Le déclencheur, l'enchaînement, la pause entre zones et le cycle-and-soak y passent, comme réglages du programme principal, et fonctionnent comme avant tant que tu n'ajoutes pas d'autre programme. Le désactiver rétablit exactement le comportement précédent. Une vanne trouvée ouverte au démarrage sans arrosage de notre part est refermée.",
     "sequencing_label": "Séquencement des zones",
     "sequencing": {
       "sequential": "Séquentiel (une zone à la fois)",
@@ -1528,7 +1520,6 @@
     "pause_between_zones_description": "Une attente entre deux zones d'un arrosage séquentiel : le temps que la pression revienne, ou qu'une vanne lente finisse de se fermer avant que la suivante s'ouvre.",
     "minutes": "minutes",
     "seconds": "secondes",
-    "direct_control_locked": "Le contrôleur complet pilote les vannes : désactive-le d'abord pour changer ceci.",
     "set_aside_label": "Mettre une zone de côté après ce nombre d'échecs",
     "set_aside_description": "Une vanne qui ne s'est pas ouverte, n'a pas donné d'eau ou dont la minuterie n'a pas pu être réglée ce nombre de fois de suite est mise de côté : aucun programme n'arrose la zone tant qu'elle n'est pas remise en service, au lieu d'échouer chaque matin. Vous êtes prévenu tout de suite (notifications des programmes, réparation dans Home Assistant, capteur de problème de la zone). Elle revient d'elle-même quand on voit sa vanne s'ouvrir, essayée à la main une fois réparée. 0 : jamais.",
     "leak_label": "Alerte de fuite à partir de",
@@ -1656,7 +1647,6 @@
     "no_trigger": "Aucun déclencheur de départ",
     "not_scheduled": "À arroser, mais aucun départ programmé",
     "off": "Désactivé",
-    "calculate_only": "Calcul seulement",
     "watering_left": "arrosage en cours, {time} restant",
     "paused_left": "en pause, {time} restant",
     "soaking": "absorption, prochaine passe à {when} ({pass}/{passes})",

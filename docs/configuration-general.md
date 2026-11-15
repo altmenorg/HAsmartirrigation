@@ -19,11 +19,11 @@ The weather service, the location, how often the weather is read and the checks 
 ### Calculate and water, calculate only, or stop everything
 The first card, **Smart Irrigation**, has one list, **What Smart Irrigation does**:
 
-* **Calculate and water**, the usual;
-* **Calculate only**: the water balances and durations stay current, but nothing starts a watering. No valve opens (direct valve control, the Water button of a zone, the hub's buttons), no program of the [full controller](usage-full-controller.md) runs, and a start trigger that is reached fires `smart_irrigation_irrigation_skipped` with the reason `calculate_only` instead of the start event, so an automation of your own does not water either. A watering by hand is still credited with [observed watering](configuration-closed-loop.md). Nothing else is changed: back to **Calculate and water**, everything carries on as it was, programs, valves and settings included. The panel says so on the Home tab, the Watering tab and the Zones page;
+* **Calculate and water**: Smart Irrigation waters, with the [full controller](usage-full-controller.md): programs, schedules, pumps, and a **Watering** tab;
+* **Calculate only**, the choice of a new installation: Smart Irrigation works out the water balances and durations and fires its start event at the [start trigger](#when-does-it-run-the-active-start-trigger), and an automation of your own, Irrigation Unlimited or your controller does the watering with those durations. Smart Irrigation opens no valve. A watering by hand can still be credited with [observed watering](configuration-closed-loop.md);
 * **Stop everything**, described below.
 
-Choosing **Calculate only** or **Stop everything** stops what is watering at once.
+Leaving **Calculate and water** stops what Smart Irrigation is watering at once.
 
 #### Stop everything
 Smart Irrigation:

@@ -108,6 +108,7 @@ from .const import (
     CONF_MANUAL_LONGITUDE,
     CONF_METRIC,
     CONF_OBSERVED_WATERING_ENABLED,
+    CONF_ONE_CHOICE_MIGRATED,
     CONF_PAUSE_BETWEEN_ZONES,
     CONF_PAUSE_UNTIL,
     CONF_PAUSED_OWED,
@@ -791,6 +792,8 @@ class Config:
     iu_import = attr.ib(type=dict, default=None)
     # Direct valve control as it was before the full controller forced it on.
     direct_valve_control_before_full_controller = attr.ib(type=bool, default=None)
+    # Moved to the one choice of 2026.11 (one_choice.py).
+    one_choice_migrated = attr.ib(type=bool, default=False)
     # The highest zone id ever given. A new zone took the highest id in use
     # plus one, so deleting the last zone and adding one gave the new zone the
     # deleted one's id, and with it the deleted zone's entities: Home
@@ -1331,6 +1334,7 @@ class SmartIrrigationStorage:
                 direct_valve_control_before_full_controller=data["config"].get(
                     CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER
                 ),
+                one_choice_migrated=data["config"].get(CONF_ONE_CHOICE_MIGRATED, False),
                 last_zone_id=data["config"].get(CONF_LAST_ZONE_ID),
             )
 

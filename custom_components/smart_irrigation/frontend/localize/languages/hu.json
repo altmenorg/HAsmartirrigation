@@ -302,10 +302,9 @@
           "mode-off": "Minden leállítása",
           "description": "Kikapcsolva a Smart Irrigation továbbra is gyűjti az időjárási adatokat és megtartja az érzékelőit, de nem számol semmit, minden zóna vízmérlegét változatlanul hagyja, egy szelepet sem nyit ki, és egy programot sem futtat. Újra bekapcsolva a kikapcsolt időt nem számítja bele.",
           "off-note": "Kikapcsolva: semmi sem számolódik, és semmi sem öntöz. Az időjárási adatok gyűjtése folytatódik, és a kikapcsolt idő nem számít bele, amikor újra bekapcsolod.",
-          "calculate-note": "Csak számol: a vízmérlegek és az időtartamok naprakészek maradnak, de egyik szelep sem nyílik ki, egyik program sem indul, és az indítási esemény sem megy ki. Más nem változik: a Számol és öntöz módra visszaváltva minden úgy folytatódik, mint előtte.",
+          "calculate-note": "Csak számol: a Smart Irrigation kiszámolja a vízmérlegeket és az időtartamokat, és elküldi az indítási eseményt, de egy szelepet sem nyit. A saját automatizálásod, az Irrigation Unlimited vagy a vezérlőd öntöz ezekkel az időkkel.",
           "confirm-off": "Kikapcsolod a Smart Irrigationt? Ami most öntöz, azonnal leáll, és semmi sem számolódik vagy öntöz, amíg újra be nem kapcsolod.",
-          "confirm-calculate": "Csak számoljon? Minden folyamatban lévő öntözés most leáll, és semmi sem indul, amíg újra a Számol és öntöz módot nem választod.",
-          "calculate-banner": "Csak számol: egyik szelep sem nyílik ki, és egyik program sem indul. Az öntözés folytatásához válaszd a Számol és öntöz módot a Beállítások, Általános oldalon."
+          "confirm-calculate": "Csak számoljon? A Smart Irrigation nem nyit több szelepet: amit éppen öntöz, most leáll, és mostantól a saját automatizálásod öntöz az időtartamaival."
         }
       },
       "description": "Ez az oldal globális beállításokat biztosít.",
@@ -392,9 +391,7 @@
           "run-waits": "vár erre: {program}, kb. {start} és {end} között",
           "run-skipped": "várhatóan kimarad: esőelőrejelzés",
           "run-twice": "{zones}: kétszer egymás után öntözve",
-          "run-suspended": "felfüggesztve eddig: {when}",
-          "headline-calculate": "A Smart Irrigation csak számol",
-          "sub-calculate": "A vízmérlegek és az időtartamok naprakészek maradnak, de semmit sem öntöz, amíg újra a Számol és öntöz módot nem választod."
+          "run-suspended": "felfüggesztve eddig: {when}"
         },
         "decision": {
           "title": "Ki lesz hagyva?",
@@ -704,7 +701,7 @@
         "drainage_rate": "Elvezetési sebesség",
         "linked-entity": "Csatlakoztatott szelep/kapcsoló",
         "linked-entity-hint": "A szelep vagy kapcsoló, amely ezt a zónát öntözi. Amikor működik (kézi nyitás, automatizálás vagy maga a Smart Irrigation, ha a közvetlen szelepvezérlés be van kapcsolva), a vízmérleg a működési időből és a zóna átfolyásából töltődik fel. A zárt hurkú funkciókhoz szükséges.",
-        "valve-off": "Szelepet akkor csatolhatsz, ha a közvetlen szelepvezérlés vagy a megfigyelt öntözés be van kapcsolva.",
+        "valve-off": "Szelep akkor kapcsolható, ha a Smart Irrigation öntöz (Számol és öntöz), vagy a megfigyelt öntözés be van kapcsolva.",
         "valve-off-link": "Bekapcsolás",
         "supply": "Szivattyú vagy főszelep",
         "supply-none": "Nincs",
@@ -1509,12 +1506,7 @@
     "title": "Megfigyelt öntözés (zárt hurok)",
     "description": "Töltsd fel minden zóna vízmérlegét automatikusan a valós öntözésből, ahelyett hogy a vízmérleget egy automatizálásból állítanád vissza. Az engedélyezés után válassz egy szelep/kapcsoló entitást zónánként a Zónák lapon: amíg nyitva van, a vízmérleg a működési időből és a zóna átfolyásából töltődik fel. A pontos elszámoláshoz zónánként választhatsz egy kumulatív térfogatmérőt is (vízmérő jellegű összérték), és a mért térfogat lesz felhasználva helyette. Fontos: amikor ez be van kapcsolva, csak ez tölti fel a vízmérleget, ezért távolítsd el a set_bucket és reset_bucket hívásokat az öntözési automatizálásodból a dupla számolás elkerülése érdekében.",
     "enabled_label": "Megfigyelt öntözés engedélyezése",
-    "direct_control_label": "A Smart Irrigation vezérelje a szelepet",
-    "direct_control_description": "Bekapcsolva a Smart Irrigation kinyitja minden zóna csatlakoztatott szelepét, megvárja a kiszámított időtartamot, majd bezárja, automatizálás nélkül. A folyamatban lévő működés újraindítás után folytatódik. Biztonság: az önmagát zárni képes szelep nyitáskor megkapja a futás hosszát (egy Sonoff SWV ZHA-n, vagy egy szelep, amelynek zónájában MQTT biztonsági téma van beállítva), így akkor is bezár, ha a Home Assistant leáll. Minden más szelep tovább öntöz, amíg a Home Assistant vissza nem tér: adj neki hardveres vészleállítást (egy maximális működési időt).",
-    "full_controller_label": "Teljes vezérlő: a Smart Irrigation intézi az összes öntözésemet",
-    "full_controller_title": "Teljes vezérlő",
     "confirm_full_controller": "Bekapcsolod a teljes vezérlőt? A Smart Irrigation vezérli majd a szelepeket, és maga indítja az öntözést. Az indításkor nyitva talált szelep, amelyet egyik futásunk sem birtokol, bezáródik.",
-    "full_controller_description": "Bekapcsolja a szelepvezérlést, és hozzáad egy Öntözés fület: programok, tervezés és szivattyúk. Az indítási kiváltó, a sorrend, a zónák közti szünet és a cycle and soak oda költözik, a főprogram beállításaiként, és a régi módon működik tovább, amíg nem adsz hozzá másik programot. Kikapcsolva pontosan a korábbi viselkedés tér vissza. Az indításkor nyitva talált szelep, amelyet egyik futásunk sem birtokol, bezáródik.",
     "sequencing_label": "Zóna sorrend",
     "sequencing": {
       "sequential": "Szekvenciális (egy zóna egyszerre)",
@@ -1528,7 +1520,6 @@
     "pause_between_zones_description": "Várakozás egy egymás utáni öntözés két zónája között: idő arra, hogy a vezetéki nyomás visszaálljon, vagy hogy egy lassú szelep bezárjon, mielőtt a következő kinyílik.",
     "minutes": "perc",
     "seconds": "másodperc",
-    "direct_control_locked": "A teljes vezérlő vezérli a szelepeket: ennek módosításához előbb kapcsold ki.",
     "set_aside_label": "Zóna félretétele ennyi sikertelen öntözés után",
     "set_aside_description": "Az a szelep, amely ennyiszer egymás után nem nyílt ki, nem adott vizet, vagy nem lehetett beállítani a saját időzítőjét, félre lesz téve: egyik program sem öntözi a zónát, amíg vissza nem állítják, ahelyett hogy minden reggel hibázna. Azonnal értesítést kapsz (a programok értesítései, javítás a Home Assistantban, a zóna problémaérzékelője). Magától visszatér, ha a szelepe kinyílik, például javítás után kézzel kipróbálva. 0: soha.",
     "leak_label": "Szivárgásriasztás ettől",
@@ -1656,7 +1647,6 @@
     "no_trigger": "Nincs indítási kiváltó",
     "not_scheduled": "Esedékes, de nincs beütemezve",
     "off": "Kikapcsolva",
-    "calculate_only": "Csak számol",
     "watering_left": "öntözés, {time} van hátra",
     "paused_left": "szünetel, {time} van hátra",
     "soaking": "beszivárgás, következő szakasz: {when} ({pass}/{passes})",

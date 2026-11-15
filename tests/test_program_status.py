@@ -118,6 +118,8 @@ async def test_the_planning_leaves_out_the_main_program_and_disabled_ones():
             _program([{"time": "06:00"}], enabled=False),
         ]
     )
+    # A main program without a schedule starts on its own no more.
+    coord._planned_run_seconds = AsyncMock(return_value=0)
 
     assert await coord.async_planning(3) == []
 

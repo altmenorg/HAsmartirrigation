@@ -302,10 +302,9 @@
           "mode-off": "Stop everything",
           "description": "Off, Smart Irrigation keeps taking its weather readings and keeps its sensors, but calculates nothing, leaves every water balance as it is, opens no valve and runs no program. Switched on again, the time it was off is not counted.",
           "off-note": "Switched off: nothing is calculated and nothing is watered. The weather readings carry on, and the time it is off will not be counted when it is switched on again.",
-          "calculate-note": "Calculating only: the water balances and durations stay current, but no valve opens, no program runs and the start event is not fired. Nothing else is changed: back to Calculate and water, everything carries on as it was.",
+          "calculate-note": "Calculating only: Smart Irrigation works out the water balances and the durations and fires its start event, but opens no valve. Your own automation, Irrigation Unlimited or your controller does the watering with those durations.",
           "confirm-off": "Switch Smart Irrigation off? Whatever is watering stops now, and nothing is calculated or watered until it is switched on again.",
-          "confirm-calculate": "Calculate only? Whatever is watering stops now, and nothing starts until you choose Calculate and water again.",
-          "calculate-banner": "Calculating only: no valve opens and no program runs. Choose Calculate and water in Settings, General to take the watering up again."
+          "confirm-calculate": "Calculate only? Smart Irrigation stops opening the valves: whatever it is watering stops now, and from now on your own automation does the watering with its durations."
         }
       },
       "description": "This page provides global settings.",
@@ -392,9 +391,7 @@
           "run-waits": "waits for {program}, about {start} to {end}",
           "run-skipped": "expected to be skipped: rain forecast",
           "run-twice": "{zones} watered twice in a row",
-          "run-suspended": "suspended until {when}",
-          "headline-calculate": "Smart Irrigation is calculating only",
-          "sub-calculate": "The water balances and durations stay current, but nothing is watered until you choose Calculate and water again."
+          "run-suspended": "suspended until {when}"
         },
         "decision": {
           "title": "Will it be skipped?",
@@ -704,7 +701,7 @@
         "drainage_rate": "Drainage rate",
         "linked-entity": "Linked valve/switch",
         "linked-entity-hint": "The valve or switch that waters this zone. With direct valve control, Smart Irrigation opens and closes it. With observed watering, every run of it (by hand, an automation or Smart Irrigation) credits the water balance from run time and throughput.",
-        "valve-off": "A valve can be linked once direct valve control or observed watering is on.",
+        "valve-off": "A valve can be linked once Smart Irrigation waters (Calculate and water) or observed watering is on.",
         "valve-off-link": "Turn on",
         "supply": "Pump or main valve",
         "supply-none": "None",
@@ -1509,12 +1506,7 @@
     "title": "Observed watering (closed loop)",
     "description": "Credits each zone's water balance from real watering, instead of an automation resetting it. Pick a valve or switch per zone under Zones: while it is open, run time times throughput is credited, or the volume a meter measured. Remove set_bucket and reset_bucket calls from your automations, or it counts twice.",
     "enabled_label": "Enable observed watering",
-    "direct_control_label": "Let Smart Irrigation control the valve",
-    "direct_control_description": "Smart Irrigation opens each zone's valve, waits the duration and closes it. A valve that can close itself (Sonoff SWV on ZHA, or with an MQTT safety topic) knows the run's length and closes even if Home Assistant fails. Any other keeps watering until Home Assistant is back: give it a hardware time limit.",
-    "full_controller_label": "Full controller: Smart Irrigation runs all my watering",
-    "full_controller_title": "Full controller",
     "confirm_full_controller": "Turn on the full controller? Smart Irrigation will drive the valves and start the watering itself. A valve found open at startup that no run of ours owns is closed.",
-    "full_controller_description": "Turns on valve control and adds a Watering tab with programs, planning and pumps. Start trigger, sequencing, pause between zones and cycle and soak move there as the main program and work as before. Off restores the previous behaviour. A valve found open at startup with no run of ours is closed.",
     "sequencing_label": "Zone sequencing",
     "sequencing": {
       "sequential": "Sequential (one zone at a time)",
@@ -1528,7 +1520,6 @@
     "pause_between_zones_description": "A wait between two zones of a sequential run: time for the line pressure to recover, or for a slow valve to finish closing before the next one opens.",
     "minutes": "minutes",
     "seconds": "seconds",
-    "direct_control_locked": "The full controller drives the valves: switch it off first to change this.",
     "set_aside_label": "Set a zone aside after this many failed runs",
     "set_aside_description": "A valve that did not open, gave no water or could not have its own timer set this many runs in a row is set aside: no program waters the zone until it is put back, rather than failing every morning. You are told at once (the programs' notifications, a repair in Home Assistant, the zone's problem sensor). It comes back by itself when its valve is seen opening, tried by hand once repaired. 0: never.",
     "leak_label": "Leak alert after",
@@ -1656,7 +1647,6 @@
     "no_trigger": "No start trigger",
     "not_scheduled": "Owed, but not scheduled",
     "off": "Switched off",
-    "calculate_only": "Calculating only",
     "watering_left": "watering, {time} left",
     "paused_left": "paused, {time} left",
     "soaking": "soaking, next pass at {when} ({pass}/{passes})",
