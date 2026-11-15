@@ -1510,6 +1510,12 @@
     "enabled_label": "Registrar en un archivo las entradas del cálculo",
     "file_hint": "Se escribe en config/smart_irrigation/calc_log.jsonl, un registro JSON por línea. Los registros más recientes también se incluyen en la descarga de diagnóstico (coordenadas redondeadas, identificadores de entidad eliminados), así que se pueden adjuntar a una incidencia en un solo paso."
   },
+  "ai_api": {
+    "title": "Acceso para IA",
+    "description": "Permite que un asistente lea Smart Irrigation: las zonas y su balance hídrico, el próximo riego y por qué se retiene una zona, los programas y la planificación, y que compruebe un programa antes de guardarlo. No cambia nada ni abre ninguna válvula. Desactivado por defecto: con un asistente en la nube, lo que lee sale de tu casa.",
+    "enabled_label": "Ofrecer Smart Irrigation a los asistentes",
+    "how": "Para Claude, ChatGPT u otro cliente MCP, añade la integración \"Model Context Protocol Server\" de Home Assistant y marca Smart Irrigation en sus opciones. Un agente de conversación de Home Assistant (Assist) también puede usarlo, marcándolo en sus opciones."
+  },
   "blueprints": {
     "title": "Blueprints",
     "install_label": "Instalar los blueprints de ejemplo",

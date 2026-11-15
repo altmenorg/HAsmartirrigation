@@ -1510,6 +1510,12 @@
     "enabled_label": "Kirjoita laskennan lähtötiedot tiedostoon",
     "file_hint": "Kirjoitetaan tiedostoon config/smart_irrigation/calc_log.jsonl, yksi JSON-tietue riviä kohden. Uusimmat tietueet ovat mukana myös vianmäärityksen latauksessa (koordinaatit pyöristetty, entiteettien tunnukset poistettu), joten voit liittää ne vikailmoitukseen yhdellä kertaa."
   },
+  "ai_api": {
+    "title": "Tekoälyn käyttöoikeus",
+    "description": "Antaa avustajan lukea Smart Irrigationia: vyöhykkeet ja niiden vesitaseen, seuraavan kastelun ja miksi vyöhyke jätetään odottamaan, ohjelmat ja aikataulun, sekä tarkistaa ohjelman ennen kuin tallennat sen. Se ei muuta mitään eikä avaa venttiiliä. Oletuksena pois: pilviavustajalla sen lukema tieto lähtee kotoasi.",
+    "enabled_label": "Tarjoa Smart Irrigation avustajille",
+    "how": "Claudea, ChatGPT:tä tai muuta MCP-asiakasta varten lisää Home Assistantin integraatio \"Model Context Protocol Server\" ja valitse sen asetuksista Smart Irrigation. Myös Home Assistantin keskusteluagentti (Assist) voi käyttää sitä, valittuna sen asetuksista."
+  },
   "blueprints": {
     "title": "Blueprintit",
     "install_label": "Asenna esimerkkiblueprintit",

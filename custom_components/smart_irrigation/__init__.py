@@ -80,6 +80,7 @@ from .helpers import (
 from .hourly_et import solar_elevation_sin
 from .live_estimate import LiveEstimateMixin
 from .liveness import WeatherLivenessMixin
+from .llm_api import async_sync_llm_api
 from .master_switch import irrigation_off
 from .observed_watering import ObservedWateringMixin
 from .panel import async_register_panel, remove_panel
@@ -438,6 +439,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # Full controller: once everything is up, a valve left open that no run owns
     # is closed. Later than the resume, because entities load at their own pace.
     async_at_started(hass, coordinator.async_align_valves)
+    # Offered to assistants only when turned on (read only, see llm_api.py).
+    async_sync_llm_api(
+        hass, getattr(coordinator.store.config, const.CONF_AI_API_ENABLED, False)
+    )
     return True
 
 
@@ -499,6 +504,7 @@ async def async_unload_entry(hass: HomeAssistant, entry):
         return False
 
     remove_panel(hass)
+    async_sync_llm_api(hass, False)
     coordinator = hass.data[const.DOMAIN]["coordinator"]
     await coordinator.async_unload()
     return True
@@ -1043,6 +1049,8 @@ class SmartIrrigationCoordinator(
             # Switched off: whatever is watering or waiting stops now.
             _LOGGER.info("Smart Irrigation switched off: everything watering stops")
             await self.async_stop_watering()
+        if const.CONF_AI_API_ENABLED in data:
+            async_sync_llm_api(self.hass, data.get(const.CONF_AI_API_ENABLED))
         async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated")
 
     async def _start_windows_now(self) -> None:

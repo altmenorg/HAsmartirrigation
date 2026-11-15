@@ -1510,6 +1510,12 @@
     "enabled_label": "Invoer van de berekening naar een bestand loggen",
     "file_hint": "Wordt geschreven naar config/smart_irrigation/calc_log.jsonl, één JSON-record per regel. De meest recente records zitten ook in de diagnose-download (coördinaten afgerond, entiteit-id's verwijderd), zodat je ze in één stap aan een issue kunt hangen."
   },
+  "ai_api": {
+    "title": "Toegang voor AI",
+    "description": "Laat een assistent Smart Irrigation lezen: de zones en hun waterbalans, de volgende beregening en waarom een zone wordt tegengehouden, de programma's en de planning, en een programma controleren voordat je het opslaat. Het wijzigt niets en opent geen klep. Standaard uit: met een assistent in de cloud verlaat wat hij leest je huis.",
+    "enabled_label": "Smart Irrigation aanbieden aan assistenten",
+    "how": "Voor Claude, ChatGPT of een andere MCP-client: voeg de Home Assistant-integratie 'Model Context Protocol Server' toe en vink Smart Irrigation aan in de opties. Ook een gespreksagent van Home Assistant (Assist) kan het krijgen via zijn opties."
+  },
   "blueprints": {
     "title": "Blueprints",
     "install_label": "Voorbeeld-blueprints installeren",

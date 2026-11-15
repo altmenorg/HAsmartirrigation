@@ -1510,6 +1510,12 @@
     "enabled_label": "Log calculation inputs to a file",
     "file_hint": "Written to config/smart_irrigation/calc_log.jsonl, one JSON record per line. The most recent records are also included in the diagnostics download (coordinates rounded, entity ids removed), so you can attach them to an issue in one step."
   },
+  "ai_api": {
+    "title": "AI access",
+    "description": "Lets an assistant read Smart Irrigation: the zones and their water balance, the next watering and why a zone is held back, the programs and the planning, and check a program before you save it. It changes nothing and opens no valve. Off by default: what it reads leaves your home with a cloud assistant.",
+    "enabled_label": "Offer Smart Irrigation to assistants",
+    "how": "For Claude, ChatGPT or another MCP client, add Home Assistant's \"Model Context Protocol Server\" integration and tick Smart Irrigation in its options. A conversation agent of Home Assistant (Assist) can also be given it in its options."
+  },
   "blueprints": {
     "title": "Blueprints",
     "install_label": "Install the example blueprints",

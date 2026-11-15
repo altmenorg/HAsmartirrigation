@@ -1510,6 +1510,12 @@
     "enabled_label": "Számítási bemenetek naplózása fájlba",
     "file_hint": "A config/smart_irrigation/calc_log.jsonl fájlba kerül, soronként egy JSON rekord. A legutóbbi rekordok a diagnosztikai letöltésben is szerepelnek (kerekített koordinátákkal, entitásazonosítók nélkül), így egy lépésben csatolhatók egy hibajegyhez."
   },
+  "ai_api": {
+    "title": "Hozzáférés MI számára",
+    "description": "Lehetővé teszi, hogy egy asszisztens olvassa a Smart Irrigationt: a zónákat és vízmérlegüket, a következő öntözést és hogy miért van egy zóna visszatartva, a programokat és az ütemtervet, valamint mentés előtt ellenőrizzen egy programot. Semmit nem módosít, és nem nyit szelepet. Alapértelmezés szerint ki: felhős asszisztenssel, amit olvas, elhagyja az otthonod.",
+    "enabled_label": "Smart Irrigation felkínálása asszisztenseknek",
+    "how": "Claude, ChatGPT vagy más MCP-kliens esetén add hozzá a Home Assistant „Model Context Protocol Server” integrációját, és a beállításaiban jelöld be a Smart Irrigationt. A Home Assistant beszélgetési ügynöke (Assist) is megkaphatja a saját beállításaiban."
+  },
   "blueprints": {
     "title": "Blueprintek",
     "install_label": "Példa blueprintek telepítése",

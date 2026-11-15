@@ -704,6 +704,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // Whether the bundled blueprints are copied (#930).
       const r16 = this.renderBlueprintsCard();
 
+      // Offered to assistants (an LLM API of Home Assistant), read only.
+      const r19 = this.renderAiApiCard();
+
       // How much of the panel to show.
       const r11 = this.renderPanelModeCard();
 
@@ -786,7 +789,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           </div> </ha-card
         >${r18} ${heading("calculation")}${r1}${r8}${r13}${r10}
         ${heading("control")}${r15}${r9}${full ? "" : r5}
-        ${heading("system")}${r11}${r16}${r12}${r17}`;
+        ${heading("system")}${r11}${r16}${r19}${r12}${r17}`;
 
       return r;
     }
@@ -4049,6 +4052,36 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           <div class="setting-help">
             ${localize("blueprints.install_help", lang)}
           </div>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  renderAiApiCard() {
+    if (!this.config || !this.hass) return html``;
+    const lang = this.hass.language;
+    const on = this.config.ai_api_enabled === true;
+    return html`
+      <ha-card header="${localize("ai_api.title", lang)}">
+        <div class="card-content">${localize("ai_api.description", lang)}</div>
+        <div class="card-content">
+          <div class="setting-row">
+            <div class="setting-label">
+              ${localize("ai_api.enabled_label", lang)}
+            </div>
+            <ha-switch
+              .checked=${on}
+              @change=${(e: Event) =>
+                this.handleConfigChange({
+                  ai_api_enabled: (e.target as any).checked,
+                })}
+            ></ha-switch>
+          </div>
+          ${on
+            ? html`<div class="setting-help">
+                ${localize("ai_api.how", lang)}
+              </div>`
+            : ""}
         </div>
       </ha-card>
     `;

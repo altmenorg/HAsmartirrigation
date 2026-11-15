@@ -1510,6 +1510,12 @@
     "enabled_label": "把计算输入写入文件",
     "file_hint": "写入 config/smart_irrigation/calc_log.jsonl，每行一条 JSON 记录。最近的记录也包含在诊断下载里（坐标已取整，实体 ID 已移除），所以可以一步就附到问题报告上。"
   },
+  "ai_api": {
+    "title": "AI 访问",
+    "description": "允许助手读取 Smart Irrigation：各区域及其水分平衡、下一次浇水以及某区域被暂缓的原因、程序和计划，并在你保存前检查程序。它不会更改任何内容，也不会打开任何阀门。默认关闭：使用云端助手时，它读取的内容会离开你的家。",
+    "enabled_label": "向助手提供 Smart Irrigation",
+    "how": "对于 Claude、ChatGPT 或其他 MCP 客户端，请添加 Home Assistant 的“Model Context Protocol Server”集成，并在其选项中勾选 Smart Irrigation。Home Assistant 的对话代理（Assist）也可以在其选项中使用它。"
+  },
   "blueprints": {
     "title": "蓝图",
     "install_label": "安装示例蓝图",

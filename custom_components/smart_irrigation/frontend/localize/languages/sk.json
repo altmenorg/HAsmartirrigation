@@ -1510,6 +1510,12 @@
     "enabled_label": "Zapisovať vstupy výpočtu do súboru",
     "file_hint": "Zapisuje sa do config/smart_irrigation/calc_log.jsonl, jeden záznam JSON na riadok. Najnovšie záznamy sú aj súčasťou diagnostického súboru na stiahnutie (súradnice zaokrúhlené, id entít odstránené), takže ich môžete k hláseniu priložiť v jednom kroku."
   },
+  "ai_api": {
+    "title": "Prístup pre AI",
+    "description": "Umožní asistentovi čítať Smart Irrigation: zóny a ich vodnú bilanciu, ďalšie zavlažovanie a prečo je zóna zadržaná, programy a plán, a skontrolovať program pred uložením. Nič nemení a neotvára žiadny ventil. Predvolene vypnuté: s asistentom v cloude to, čo číta, opúšťa váš domov.",
+    "enabled_label": "Ponúknuť Smart Irrigation asistentom",
+    "how": "Pre Claude, ChatGPT alebo iného klienta MCP pridajte integráciu Home Assistant „Model Context Protocol Server“ a v jej možnostiach zaškrtnite Smart Irrigation. Konverzačný agent Home Assistant (Assist) ho môže dostať aj vo svojich možnostiach."
+  },
   "blueprints": {
     "title": "Blueprinty",
     "install_label": "Inštalovať ukážkové blueprinty",

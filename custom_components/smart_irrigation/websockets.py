@@ -116,6 +116,7 @@ class SmartIrrigationConfigView(HomeAssistantView):
                 ),
                 vol.Optional(const.CONF_SENSOR_DEBOUNCE): cv.string,
                 vol.Optional(const.CONF_CALC_LOG_ENABLED): cv.boolean,
+                vol.Optional(const.CONF_AI_API_ENABLED): cv.boolean,
                 vol.Optional(const.CONF_INSTALL_BLUEPRINTS): cv.boolean,
                 vol.Optional(const.CONF_USE_WEATHER_SERVICE): cv.boolean,
                 vol.Optional(const.CONF_WEATHER_SERVICE): cv.string,

@@ -20,6 +20,7 @@ from .const import (
     CONF_ACTIVE_PROGRAM_RUN,
     CONF_ACTIVE_START_TRIGGER,
     CONF_ACTIVE_VALVE_RUNS,
+    CONF_AI_API_ENABLED,
     CONF_AUTO_CALC_ENABLED,
     CONF_AUTO_CLEAR_ENABLED,
     CONF_AUTO_UPDATE_DELAY,
@@ -33,6 +34,7 @@ from .const import (
     CONF_DAYS_BETWEEN_IRRIGATION,
     CONF_DAYS_SINCE_LAST_IRRIGATION,
     CONF_DEFAULT_ACTIVE_START_TRIGGER,
+    CONF_DEFAULT_AI_API_ENABLED,
     CONF_DEFAULT_AUTO_CALC_ENABLED,
     CONF_DEFAULT_AUTO_CLEAR_ENABLED,
     CONF_DEFAULT_AUTO_UPDATE_DELAY,
@@ -689,6 +691,7 @@ class Config:
     # Opt-in calculation audit log (#12): append every calculation's inputs,
     # intermediates and outputs to a JSON Lines file so days can be diffed.
     calc_log_enabled = attr.ib(type=bool, default=CONF_DEFAULT_CALC_LOG_ENABLED)
+    ai_api_enabled = attr.ib(type=bool, default=CONF_DEFAULT_AI_API_ENABLED)
     # Whether the bundled blueprints are copied at all, and the ones that were
     # (blueprint_install.py): a blueprint somebody deleted is not laid down
     # again. None until the first run that records them.
@@ -1108,6 +1111,7 @@ class SmartIrrigationStorage:
             supplies=[],
             sensor_debounce=CONF_DEFAULT_SENSOR_DEBOUNCE,
             calc_log_enabled=CONF_DEFAULT_CALC_LOG_ENABLED,
+            ai_api_enabled=CONF_DEFAULT_AI_API_ENABLED,
         )
         zones: OrderedDict[str, ZoneEntry] = OrderedDict()
         modules: OrderedDict[str, ModuleEntry] = OrderedDict()
@@ -1179,6 +1183,9 @@ class SmartIrrigationStorage:
                 ),
                 calc_log_enabled=data["config"].get(
                     CONF_CALC_LOG_ENABLED, CONF_DEFAULT_CALC_LOG_ENABLED
+                ),
+                ai_api_enabled=data["config"].get(
+                    CONF_AI_API_ENABLED, CONF_DEFAULT_AI_API_ENABLED
                 ),
                 install_blueprints=data["config"].get(
                     CONF_INSTALL_BLUEPRINTS, CONF_DEFAULT_INSTALL_BLUEPRINTS

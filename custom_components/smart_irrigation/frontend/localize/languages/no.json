@@ -1510,6 +1510,12 @@
     "enabled_label": "Skriv beregningens grunnlag til en fil",
     "file_hint": "Skrives til config/smart_irrigation/calc_log.jsonl, én JSON-post per linje. De nyeste postene er også med i diagnostikk-nedlastingen (koordinater avrundet, entitets-id-er fjernet), så du kan legge dem ved en feilrapport i ett steg."
   },
+  "ai_api": {
+    "title": "Tilgang for KI",
+    "description": "Lar en assistent lese Smart Irrigation: sonene og vannbalansen deres, neste vanning og hvorfor en sone holdes tilbake, programmene og planen, og sjekke et program før du lagrer det. Den endrer ingenting og åpner ingen ventil. Av som standard: med en skyassistent forlater det den leser, hjemmet ditt.",
+    "enabled_label": "Tilby Smart Irrigation til assistenter",
+    "how": "For Claude, ChatGPT eller en annen MCP-klient: legg til Home Assistant-integrasjonen «Model Context Protocol Server» og huk av Smart Irrigation i alternativene. En samtaleagent i Home Assistant (Assist) kan også få den i sine alternativer."
+  },
   "blueprints": {
     "title": "Blueprints",
     "install_label": "Installer eksempel-blueprints",
