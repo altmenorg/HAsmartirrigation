@@ -1512,9 +1512,11 @@
   },
   "ai_api": {
     "title": "Dostęp dla AI",
-    "description": "Pozwala asystentowi czytać Smart Irrigation: strefy i ich bilans wodny, następne podlewanie i dlaczego strefa jest wstrzymana, programy i harmonogram, oraz sprawdzić program przed zapisaniem. Niczego nie zmienia i nie otwiera żadnego zaworu. Domyślnie wyłączone: przy asystencie w chmurze to, co czyta, opuszcza Twój dom.",
+    "description": "Pozwala asystentowi czytać Smart Irrigation: strefy i ich bilans wodny, następne podlewanie i dlaczego strefa jest wstrzymana, programy i harmonogram, ustawienia, oraz sprawdzić program przed zapisaniem. Nigdy nie uruchamia podlewania i nie otwiera zaworu. Domyślnie wyłączone: przy asystencie w chmurze to, co czyta, opuszcza Twój dom.",
     "enabled_label": "Udostępnij Smart Irrigation asystentom",
-    "how": "Dla Claude, ChatGPT lub innego klienta MCP dodaj integrację Home Assistant „Model Context Protocol Server” i zaznacz w jej opcjach Smart Irrigation. Agent konwersacji Home Assistant (Assist) także może z niego korzystać, po zaznaczeniu w swoich opcjach."
+    "how": "Dla Claude, ChatGPT lub innego klienta MCP dodaj integrację Home Assistant „Model Context Protocol Server” i zaznacz w jej opcjach Smart Irrigation. Agent konwersacji Home Assistant (Assist) także może z niego korzystać, po zaznaczeniu w swoich opcjach.",
+    "write_label": "Pozwól asystentom zmieniać konfigurację",
+    "write_help": "Asystent może wtedy tworzyć, zmieniać i usuwać strefy, grupy czujników i programy oraz zmieniać ustawienia, z tymi samymi kontrolami co ten panel. Nadal nie uruchamia podlewania i nie może zmienić tego dostępu. Po wyłączeniu jego następna rozmowa znów może tylko czytać."
   },
   "blueprints": {
     "title": "Blueprinty",

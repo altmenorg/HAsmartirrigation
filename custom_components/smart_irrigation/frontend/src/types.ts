@@ -74,6 +74,7 @@ export class SmartIrrigationConfig {
   pause_between_zones?: number;
   calc_log_enabled: boolean;
   ai_api_enabled?: boolean;
+  ai_api_write_enabled?: boolean;
   install_blueprints?: boolean;
 
   constructor() {

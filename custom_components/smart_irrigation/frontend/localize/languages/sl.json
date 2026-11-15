@@ -1512,9 +1512,11 @@
   },
   "ai_api": {
     "title": "Dostop za UI",
-    "description": "Pomočniku omogoči branje Smart Irrigation: cone in njihovo vodno bilanco, naslednje zalivanje in zakaj je cona zadržana, programe in načrt, ter preverjanje programa, preden ga shranite. Ničesar ne spremeni in ne odpre nobenega ventila. Privzeto izklopljeno: pri pomočniku v oblaku to, kar prebere, zapusti vaš dom.",
+    "description": "Pomočniku omogoči branje Smart Irrigation: cone in njihovo vodno bilanco, naslednje zalivanje in zakaj je cona zadržana, programe in načrt, nastavitve, ter preverjanje programa, preden se shrani. Nikoli ne zažene zalivanja in ne odpre ventila. Privzeto izklopljeno: pri pomočniku v oblaku to, kar prebere, zapusti vaš dom.",
     "enabled_label": "Ponudi Smart Irrigation pomočnikom",
-    "how": "Za Claude, ChatGPT ali drugega odjemalca MCP dodajte integracijo Home Assistant »Model Context Protocol Server« in v njenih možnostih označite Smart Irrigation. Tudi pogovorni agent Home Assistant (Assist) ga lahko dobi v svojih možnostih."
+    "how": "Za Claude, ChatGPT ali drugega odjemalca MCP dodajte integracijo Home Assistant »Model Context Protocol Server« in v njenih možnostih označite Smart Irrigation. Tudi pogovorni agent Home Assistant (Assist) ga lahko dobi v svojih možnostih.",
+    "write_label": "Dovoli pomočnikom spreminjati nastavitve",
+    "write_help": "Pomočnik lahko nato ustvarja, spreminja in briše cone, skupine senzorjev in programe ter spreminja nastavitve, z enakimi preverjanji kot ta plošča. Še vedno ne zažene zalivanja in tega dostopa ne more spremeniti. Izklopljeno lahko njegov naslednji pogovor spet samo bere."
   },
   "blueprints": {
     "title": "Načrti (blueprints)",

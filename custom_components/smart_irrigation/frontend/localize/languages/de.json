@@ -1512,9 +1512,11 @@
   },
   "ai_api": {
     "title": "Zugriff für KI",
-    "description": "Lässt einen Assistenten Smart Irrigation lesen: die Zonen und ihre Wasserbilanz, die nächste Bewässerung und warum eine Zone zurückgehalten wird, die Programme und die Planung, und ein Programm prüfen, bevor du es speicherst. Er ändert nichts und öffnet kein Ventil. Standardmäßig aus: Mit einem Cloud-Assistenten verlässt, was er liest, dein Zuhause.",
+    "description": "Lässt einen Assistenten Smart Irrigation lesen: die Zonen und ihre Wasserbilanz, die nächste Bewässerung und warum eine Zone zurückgehalten wird, die Programme und die Planung, die Einstellungen, und ein Programm prüfen, bevor es gespeichert wird. Er startet nie eine Bewässerung und öffnet kein Ventil. Standardmäßig aus: Mit einem Cloud-Assistenten verlässt, was er liest, dein Zuhause.",
     "enabled_label": "Smart Irrigation für Assistenten anbieten",
-    "how": "Für Claude, ChatGPT oder einen anderen MCP-Client füge die Home-Assistant-Integration „Model Context Protocol Server“ hinzu und hake in ihren Optionen Smart Irrigation an. Auch ein Konversationsagent von Home Assistant (Assist) kann es in seinen Optionen erhalten."
+    "how": "Für Claude, ChatGPT oder einen anderen MCP-Client füge die Home-Assistant-Integration „Model Context Protocol Server“ hinzu und hake in ihren Optionen Smart Irrigation an. Auch ein Konversationsagent von Home Assistant (Assist) kann es in seinen Optionen erhalten.",
+    "write_label": "Assistenten die Konfiguration ändern lassen",
+    "write_help": "Der Assistent kann dann Zonen, Sensorgruppen und Programme anlegen, ändern und löschen und die Einstellungen ändern, mit denselben Prüfungen wie dieses Panel. Er startet weiterhin keine Bewässerung und kann diesen Zugriff nicht ändern. Ausgeschaltet kann sein nächstes Gespräch wieder nur lesen."
   },
   "blueprints": {
     "title": "Blueprints",

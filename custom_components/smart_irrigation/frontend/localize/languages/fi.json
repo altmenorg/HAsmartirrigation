@@ -1512,9 +1512,11 @@
   },
   "ai_api": {
     "title": "Tekoälyn käyttöoikeus",
-    "description": "Antaa avustajan lukea Smart Irrigationia: vyöhykkeet ja niiden vesitaseen, seuraavan kastelun ja miksi vyöhyke jätetään odottamaan, ohjelmat ja aikataulun, sekä tarkistaa ohjelman ennen kuin tallennat sen. Se ei muuta mitään eikä avaa venttiiliä. Oletuksena pois: pilviavustajalla sen lukema tieto lähtee kotoasi.",
+    "description": "Antaa avustajan lukea Smart Irrigationia: vyöhykkeet ja niiden vesitaseen, seuraavan kastelun ja miksi vyöhyke jätetään odottamaan, ohjelmat ja aikataulun, asetukset, sekä tarkistaa ohjelman ennen tallennusta. Se ei koskaan käynnistä kastelua eikä avaa venttiiliä. Oletuksena pois: pilviavustajalla sen lukema tieto lähtee kotoasi.",
     "enabled_label": "Tarjoa Smart Irrigation avustajille",
-    "how": "Claudea, ChatGPT:tä tai muuta MCP-asiakasta varten lisää Home Assistantin integraatio \"Model Context Protocol Server\" ja valitse sen asetuksista Smart Irrigation. Myös Home Assistantin keskusteluagentti (Assist) voi käyttää sitä, valittuna sen asetuksista."
+    "how": "Claudea, ChatGPT:tä tai muuta MCP-asiakasta varten lisää Home Assistantin integraatio \"Model Context Protocol Server\" ja valitse sen asetuksista Smart Irrigation. Myös Home Assistantin keskusteluagentti (Assist) voi käyttää sitä, valittuna sen asetuksista.",
+    "write_label": "Anna avustajien muuttaa asetuksia",
+    "write_help": "Avustaja voi silloin luoda, muuttaa ja poistaa vyöhykkeitä, anturiryhmiä ja ohjelmia sekä muuttaa asetuksia samoin tarkistuksin kuin tämä paneeli. Se ei edelleenkään käynnistä kastelua eikä voi muuttaa tätä käyttöoikeutta. Pois päältä sen seuraava keskustelu voi taas vain lukea."
   },
   "blueprints": {
     "title": "Blueprintit",

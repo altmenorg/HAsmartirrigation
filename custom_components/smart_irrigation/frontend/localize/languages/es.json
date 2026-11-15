@@ -1512,9 +1512,11 @@
   },
   "ai_api": {
     "title": "Acceso para IA",
-    "description": "Permite que un asistente lea Smart Irrigation: las zonas y su balance hídrico, el próximo riego y por qué se retiene una zona, los programas y la planificación, y que compruebe un programa antes de guardarlo. No cambia nada ni abre ninguna válvula. Desactivado por defecto: con un asistente en la nube, lo que lee sale de tu casa.",
+    "description": "Permite que un asistente lea Smart Irrigation: las zonas y su balance hídrico, el próximo riego y por qué se retiene una zona, los programas y la planificación, los ajustes, y que compruebe un programa antes de guardarlo. Nunca lanza un riego ni abre una válvula. Desactivado por defecto: con un asistente en la nube, lo que lee sale de tu casa.",
     "enabled_label": "Ofrecer Smart Irrigation a los asistentes",
-    "how": "Para Claude, ChatGPT u otro cliente MCP, añade la integración \"Model Context Protocol Server\" de Home Assistant y marca Smart Irrigation en sus opciones. Un agente de conversación de Home Assistant (Assist) también puede usarlo, marcándolo en sus opciones."
+    "how": "Para Claude, ChatGPT u otro cliente MCP, añade la integración \"Model Context Protocol Server\" de Home Assistant y marca Smart Irrigation en sus opciones. Un agente de conversación de Home Assistant (Assist) también puede usarlo, marcándolo en sus opciones.",
+    "write_label": "Dejar que los asistentes cambien la configuración",
+    "write_help": "El asistente puede entonces crear, cambiar y borrar zonas, grupos de sensores y programas, y cambiar los ajustes, con las mismas comprobaciones que este panel. Sigue sin lanzar riegos y no puede cambiar este acceso. Desactivado, su siguiente conversación solo puede leer."
   },
   "blueprints": {
     "title": "Blueprints",

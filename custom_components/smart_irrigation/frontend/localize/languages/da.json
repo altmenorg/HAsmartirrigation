@@ -1512,9 +1512,11 @@
   },
   "ai_api": {
     "title": "Adgang for AI",
-    "description": "Lader en assistent læse Smart Irrigation: zonerne og deres vandbalance, næste vanding og hvorfor en zone holdes tilbage, programmerne og planen, og kontrollere et program, før du gemmer det. Den ændrer intet og åbner ingen ventil. Slået fra som standard: med en cloud-assistent forlader det, den læser, dit hjem.",
+    "description": "Lader en assistent læse Smart Irrigation: zonerne og deres vandbalance, næste vanding og hvorfor en zone holdes tilbage, programmerne og planen, indstillingerne, og kontrollere et program, før det gemmes. Den starter aldrig en vanding og åbner ingen ventil. Slået fra som standard: med en cloud-assistent forlader det, den læser, dit hjem.",
     "enabled_label": "Tilbyd Smart Irrigation til assistenter",
-    "how": "For Claude, ChatGPT eller en anden MCP-klient: tilføj Home Assistants integration \"Model Context Protocol Server\", og sæt flueben ved Smart Irrigation i dens indstillinger. En samtaleagent i Home Assistant (Assist) kan også få den i sine indstillinger."
+    "how": "For Claude, ChatGPT eller en anden MCP-klient: tilføj Home Assistants integration \"Model Context Protocol Server\", og sæt flueben ved Smart Irrigation i dens indstillinger. En samtaleagent i Home Assistant (Assist) kan også få den i sine indstillinger.",
+    "write_label": "Lad assistenter ændre konfigurationen",
+    "write_help": "Assistenten kan så oprette, ændre og slette zoner, sensorgrupper og programmer og ændre indstillingerne, med de samme kontroller som dette panel. Den starter stadig ingen vanding og kan ikke ændre denne adgang. Slået fra kan dens næste samtale igen kun læse."
   },
   "blueprints": {
     "title": "Blueprints",

@@ -146,7 +146,12 @@ async def test_the_tools_are_read_only_and_described():
         "GetPrograms",
         "GetPlanning",
         "PreviewProgram",
+        "GetZoneSettings",
+        "GetSensorGroups",
+        "GetSettings",
+        "FindEntities",
     ]
+    assert "nothing you call changes the configuration" in instance.api_prompt
     assert "nothing you call changes" in instance.api_prompt
     # Installed with Home Assistant's conversation, not always in the tests.
     voluptuous_openapi = pytest.importorskip("voluptuous_openapi")

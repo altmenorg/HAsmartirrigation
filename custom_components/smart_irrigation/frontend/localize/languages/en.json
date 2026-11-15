@@ -1512,9 +1512,11 @@
   },
   "ai_api": {
     "title": "AI access",
-    "description": "Lets an assistant read Smart Irrigation: the zones and their water balance, the next watering and why a zone is held back, the programs and the planning, and check a program before you save it. It changes nothing and opens no valve. Off by default: what it reads leaves your home with a cloud assistant.",
+    "description": "Lets an assistant read Smart Irrigation: the zones and their water balance, the next watering and why a zone is held back, the programs and the planning, the settings, and check a program before it is saved. It never runs a watering or opens a valve. Off by default: with a cloud assistant, what it reads leaves your home.",
     "enabled_label": "Offer Smart Irrigation to assistants",
-    "how": "For Claude, ChatGPT or another MCP client, add Home Assistant's \"Model Context Protocol Server\" integration and tick Smart Irrigation in its options. A conversation agent of Home Assistant (Assist) can also be given it in its options."
+    "how": "For Claude, ChatGPT or another MCP client, add Home Assistant's \"Model Context Protocol Server\" integration and tick Smart Irrigation in its options. A conversation agent of Home Assistant (Assist) can also be given it in its options.",
+    "write_label": "Let assistants change the configuration",
+    "write_help": "The assistant can then create, change and delete zones, sensor groups and programs, and change the settings, with the same checks as this panel. It still runs no watering and cannot change this access. Turn it off and its next conversation can only read again."
   },
   "blueprints": {
     "title": "Blueprints",

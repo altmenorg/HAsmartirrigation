@@ -10,46 +10,31 @@ zone save from the panel (#813, #812). This compares the two lists so the next
 field cannot do it again, for zones and for sensor groups alike.
 """
 
-import re
-from pathlib import Path
-
 import attr
 import pytest
 
-from custom_components.smart_irrigation import const
+from custom_components.smart_irrigation import websockets
 from custom_components.smart_irrigation.store import MappingEntry, ZoneEntry
 
-NEW_CLASS = "\nclass "
 
-
-def _accepted_keys(view):
-    """The const-backed keys a view's write schema allows."""
-    source = Path("custom_components/smart_irrigation/websockets.py").read_text(
-        encoding="utf-8"
-    )
-    start = source.index("class " + view)
-    block = source[start : source.index(NEW_CLASS, start + 10)]
-    names = re.findall(r"vol\.Optional\(const\.([A-Z_]+)\)", block)
-    return {
-        getattr(const, name)
-        for name in names
-        if isinstance(getattr(const, name, None), str)
-    }
+def _accepted_keys(schema):
+    """The keys a write schema allows (shared by the panel and the assistant)."""
+    return {str(key) for key in schema.schema}
 
 
 @pytest.mark.parametrize(
-    ("model", "view"),
+    ("model", "schema"),
     [
-        (ZoneEntry, "SmartIrrigationZoneView"),
-        (MappingEntry, "SmartIrrigationMappingView"),
+        (ZoneEntry, websockets.ZONE_SAVE_SCHEMA),
+        (MappingEntry, websockets.MAPPING_SAVE_SCHEMA),
     ],
     ids=["zone", "sensor-group"],
 )
-def test_every_field_is_accepted_by_its_endpoint(model, view):
+def test_every_field_is_accepted_by_its_endpoint(model, schema):
     """A field the API returns but the endpoint rejects fails every save."""
     fields = set(attr.fields_dict(model).keys())
 
-    missing = sorted(fields - _accepted_keys(view))
+    missing = sorted(fields - _accepted_keys(schema))
 
     assert not missing, (
         "these fields are returned by the API but rejected on save, which "

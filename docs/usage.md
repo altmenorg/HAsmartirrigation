@@ -17,5 +17,5 @@ Once Smart Irrigation is installed, the following things will be created in Home
 - Or let Smart Irrigation run the whole watering itself, programs, schedules, pump and all: the [full controller](usage-full-controller.md), an option that is off by default. Coming from Irrigation Unlimited? [This page](usage-from-irrigation-unlimited.md) says where everything went.
 
 Also in this section:
-- Ask an assistant (Claude, ChatGPT, Assist) about your watering, or let it help you write a program: [Assistants (AI)](usage-assistants.md), off by default and read only.
+- Ask an assistant (Claude, ChatGPT, Assist) about your watering, or let it help you set things up: [Assistants (AI)](usage-assistants.md), off by default; it only reads unless you let it configure Smart Irrigation.
 - [Troubleshooting](usage-troubleshooting.md) information.

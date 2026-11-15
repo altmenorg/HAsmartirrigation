@@ -7,11 +7,16 @@ ChatGPT...), and a conversation agent of Home Assistant (Assist) can use it as
 well: Smart Irrigation runs no server of its own, Home Assistant does the
 authentication and the transport.
 
-Read only for now: the zones and where they stand, the next run and why a
-zone is held back, the programs and the planning, and a dry run of a program
-as written (the YAML editor's ``program_preview``), so an assistant can write
-a program, check it, and hand it over to be pasted in the panel. Nothing here
-changes the configuration or opens a valve.
+It reads the zones and where they stand, the next run and why a zone is held
+back, the programs and the planning, the settings and sensor groups, the
+entities of Home Assistant a setup is made of, and dry-runs a program as
+written (the YAML editor's ``program_preview``).
+
+With a second setting (``const.CONF_AI_API_WRITE_ENABLED``, off by default)
+it also configures Smart Irrigation: zones, sensor groups, settings and
+programs, through the paths the panel saves with (llm_config_tools.py). No
+tool runs a watering or opens a valve, and none changes the assistant's own
+access.
 """
 
 from __future__ import annotations
@@ -48,13 +53,27 @@ Irrigation calculated unless it is a percent of it or a fixed number of \
 seconds. Schedules say when a program starts (or must be done). The main \
 program waters every zone in the classic cycle.
 
-You can only read and dry-run here: nothing you call changes the \
-configuration or opens a valve. To change a program, write it in YAML (the \
-shape GetPrograms returns, zones named by name), check it with \
-PreviewProgram, and give it to the user to paste in Smart Irrigation, \
-Watering, Programs, "Edit in YAML" or "New program in YAML". Durations are in \
-seconds and depths in mm unless a field says otherwise. Weekdays are numbered \
-from 0 (Monday) to 6 (Sunday)."""
+Durations are in seconds and depths in mm unless a field says otherwise. \
+Weekdays are numbered from 0 (Monday) to 6 (Sunday). No tool here runs a \
+watering or opens a valve."""
+
+READ_ONLY_PROMPT = """You can only read and dry-run: nothing you call \
+changes the configuration. To change a program, write it in YAML (the shape \
+GetPrograms returns, zones named by name), check it with PreviewProgram, and \
+give it to the user to paste in Smart Irrigation, Watering, Programs, "Edit in \
+YAML" or "New program in YAML". Other changes are made by the user in the \
+panel."""
+
+WRITE_PROMPT = """You can also configure Smart Irrigation: SaveZone, \
+DeleteZone, SaveSensorGroup, DeleteSensorGroup, SaveSettings, SaveProgram and \
+DeleteProgram. Read before you write (GetZoneSettings, GetSensorGroups, \
+GetSettings, GetPrograms) and send only the fields you change, with the id of \
+what you change. Use FindEntities to find the user's valves, switches and \
+sensors, ask the user what you cannot tell (soil, plants, sprinklers, a \
+pump), and say what you are about to change before you change it. Check a \
+program with PreviewProgram before SaveProgram. Zone figures are metric (m2, \
+l/min, mm); settings are in the unit system of Home Assistant, as GetSettings \
+returns them."""
 
 
 def _coordinator(hass: HomeAssistant):
@@ -303,22 +322,33 @@ class PreviewProgramTool(_ReadOnlyTool):
 
 
 class SmartIrrigationAPI(llm.API):
-    """Smart Irrigation's tools, read only."""
+    """Smart Irrigation's tools: reading, and configuring when allowed."""
 
     async def async_get_api_instance(
         self, llm_context: llm.LLMContext
     ) -> llm.APIInstance:
+        from .llm_config_tools import reading_tools, writing_tools
+
+        tools: list[llm.Tool] = [
+            GetZonesTool(),
+            GetIrrigationInfoTool(),
+            GetProgramsTool(),
+            GetPlanningTool(),
+            PreviewProgramTool(),
+            *reading_tools(),
+        ]
+        # Asked each time an assistant starts: turning writing off takes the
+        # writing tools away from the next conversation.
+        coordinator = (self.hass.data.get(const.DOMAIN) or {}).get("coordinator")
+        config = getattr(getattr(coordinator, "store", None), "config", None)
+        writes = getattr(config, const.CONF_AI_API_WRITE_ENABLED, False) is True
+        if writes:
+            tools += writing_tools()
         return llm.APIInstance(
             api=self,
-            api_prompt=API_PROMPT,
+            api_prompt=f"{API_PROMPT}\n\n{WRITE_PROMPT if writes else READ_ONLY_PROMPT}",
             llm_context=llm_context,
-            tools=[
-                GetZonesTool(),
-                GetIrrigationInfoTool(),
-                GetProgramsTool(),
-                GetPlanningTool(),
-                PreviewProgramTool(),
-            ],
+            tools=tools,
         )
 
 

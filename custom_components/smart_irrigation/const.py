@@ -523,6 +523,10 @@ CONF_DEFAULT_CALC_LOG_ENABLED = False
 # MCP server and Assist can use; see llm_api.py). Read only. Off by default.
 CONF_AI_API_ENABLED = "ai_api_enabled"
 CONF_DEFAULT_AI_API_ENABLED = False
+# And let it configure Smart Irrigation (zones, sensor groups, settings,
+# programs) as the panel does. Never a watering. Off by default.
+CONF_AI_API_WRITE_ENABLED = "ai_api_write_enabled"
+CONF_DEFAULT_AI_API_WRITE_ENABLED = False
 # Whether the bundled blueprints are copied into the blueprint folders at all
 # (#930), and the ones that were, as "domain/file.yaml": a blueprint the user
 # deleted is not laid down again. None until the first run that records them.

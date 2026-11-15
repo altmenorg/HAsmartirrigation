@@ -1512,9 +1512,11 @@
   },
   "ai_api": {
     "title": "AI 访问",
-    "description": "允许助手读取 Smart Irrigation：各区域及其水分平衡、下一次浇水以及某区域被暂缓的原因、程序和计划，并在你保存前检查程序。它不会更改任何内容，也不会打开任何阀门。默认关闭：使用云端助手时，它读取的内容会离开你的家。",
+    "description": "允许助手读取 Smart Irrigation：各区域及其水分平衡、下一次浇水以及某区域被暂缓的原因、程序和计划、设置，并在程序保存前进行检查。它从不启动浇水，也不会打开任何阀门。默认关闭：使用云端助手时，它读取的内容会离开你的家。",
     "enabled_label": "向助手提供 Smart Irrigation",
-    "how": "对于 Claude、ChatGPT 或其他 MCP 客户端，请添加 Home Assistant 的“Model Context Protocol Server”集成，并在其选项中勾选 Smart Irrigation。Home Assistant 的对话代理（Assist）也可以在其选项中使用它。"
+    "how": "对于 Claude、ChatGPT 或其他 MCP 客户端，请添加 Home Assistant 的“Model Context Protocol Server”集成，并在其选项中勾选 Smart Irrigation。Home Assistant 的对话代理（Assist）也可以在其选项中使用它。",
+    "write_label": "允许助手修改配置",
+    "write_help": "助手随后可以创建、修改和删除区域、传感器组和程序，并修改设置，检查方式与本面板相同。它仍不会启动浇水，也无法更改此访问权限。关闭后，它的下一次对话只能读取。"
   },
   "blueprints": {
     "title": "蓝图",

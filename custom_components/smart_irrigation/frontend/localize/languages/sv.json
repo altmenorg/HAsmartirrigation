@@ -1512,9 +1512,11 @@
   },
   "ai_api": {
     "title": "Åtkomst för AI",
-    "description": "Låter en assistent läsa Smart Irrigation: zonerna och deras vattenbalans, nästa bevattning och varför en zon hålls tillbaka, programmen och planeringen, och kontrollera ett program innan du sparar det. Den ändrar ingenting och öppnar ingen ventil. Av som standard: med en molnassistent lämnar det den läser ditt hem.",
+    "description": "Låter en assistent läsa Smart Irrigation: zonerna och deras vattenbalans, nästa bevattning och varför en zon hålls tillbaka, programmen och planeringen, inställningarna, och kontrollera ett program innan det sparas. Den startar aldrig en bevattning och öppnar ingen ventil. Av som standard: med en molnassistent lämnar det den läser ditt hem.",
     "enabled_label": "Erbjud Smart Irrigation till assistenter",
-    "how": "För Claude, ChatGPT eller en annan MCP-klient: lägg till Home Assistants integration \"Model Context Protocol Server\" och kryssa i Smart Irrigation i dess alternativ. En konversationsagent i Home Assistant (Assist) kan också få den i sina alternativ."
+    "how": "För Claude, ChatGPT eller en annan MCP-klient: lägg till Home Assistants integration \"Model Context Protocol Server\" och kryssa i Smart Irrigation i dess alternativ. En konversationsagent i Home Assistant (Assist) kan också få den i sina alternativ.",
+    "write_label": "Låt assistenter ändra konfigurationen",
+    "write_help": "Assistenten kan då skapa, ändra och ta bort zoner, sensorgrupper och program, och ändra inställningarna, med samma kontroller som den här panelen. Den startar fortfarande ingen bevattning och kan inte ändra den här åtkomsten. Avstängd kan nästa samtal åter bara läsa."
   },
   "blueprints": {
     "title": "Blueprints",

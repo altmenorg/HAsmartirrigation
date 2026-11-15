@@ -1512,9 +1512,11 @@
   },
   "ai_api": {
     "title": "Tilgang for KI",
-    "description": "Lar en assistent lese Smart Irrigation: sonene og vannbalansen deres, neste vanning og hvorfor en sone holdes tilbake, programmene og planen, og sjekke et program før du lagrer det. Den endrer ingenting og åpner ingen ventil. Av som standard: med en skyassistent forlater det den leser, hjemmet ditt.",
+    "description": "Lar en assistent lese Smart Irrigation: sonene og vannbalansen deres, neste vanning og hvorfor en sone holdes tilbake, programmene og planen, innstillingene, og sjekke et program før det lagres. Den starter aldri en vanning og åpner ingen ventil. Av som standard: med en skyassistent forlater det den leser, hjemmet ditt.",
     "enabled_label": "Tilby Smart Irrigation til assistenter",
-    "how": "For Claude, ChatGPT eller en annen MCP-klient: legg til Home Assistant-integrasjonen «Model Context Protocol Server» og huk av Smart Irrigation i alternativene. En samtaleagent i Home Assistant (Assist) kan også få den i sine alternativer."
+    "how": "For Claude, ChatGPT eller en annen MCP-klient: legg til Home Assistant-integrasjonen «Model Context Protocol Server» og huk av Smart Irrigation i alternativene. En samtaleagent i Home Assistant (Assist) kan også få den i sine alternativer.",
+    "write_label": "La assistenter endre konfigurasjonen",
+    "write_help": "Assistenten kan da opprette, endre og slette soner, sensorgrupper og programmer, og endre innstillingene, med de samme kontrollene som dette panelet. Den starter fortsatt ingen vanning og kan ikke endre denne tilgangen. Slått av kan neste samtale bare lese igjen."
   },
   "blueprints": {
     "title": "Blueprints",

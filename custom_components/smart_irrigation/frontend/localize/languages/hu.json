@@ -1512,9 +1512,11 @@
   },
   "ai_api": {
     "title": "Hozzáférés MI számára",
-    "description": "Lehetővé teszi, hogy egy asszisztens olvassa a Smart Irrigationt: a zónákat és vízmérlegüket, a következő öntözést és hogy miért van egy zóna visszatartva, a programokat és az ütemtervet, valamint mentés előtt ellenőrizzen egy programot. Semmit nem módosít, és nem nyit szelepet. Alapértelmezés szerint ki: felhős asszisztenssel, amit olvas, elhagyja az otthonod.",
+    "description": "Lehetővé teszi, hogy egy asszisztens olvassa a Smart Irrigationt: a zónákat és vízmérlegüket, a következő öntözést és hogy miért van egy zóna visszatartva, a programokat és az ütemtervet, a beállításokat, valamint mentés előtt ellenőrizzen egy programot. Soha nem indít öntözést és nem nyit szelepet. Alapértelmezés szerint ki: felhős asszisztenssel, amit olvas, elhagyja az otthonod.",
     "enabled_label": "Smart Irrigation felkínálása asszisztenseknek",
-    "how": "Claude, ChatGPT vagy más MCP-kliens esetén add hozzá a Home Assistant „Model Context Protocol Server” integrációját, és a beállításaiban jelöld be a Smart Irrigationt. A Home Assistant beszélgetési ügynöke (Assist) is megkaphatja a saját beállításaiban."
+    "how": "Claude, ChatGPT vagy más MCP-kliens esetén add hozzá a Home Assistant „Model Context Protocol Server” integrációját, és a beállításaiban jelöld be a Smart Irrigationt. A Home Assistant beszélgetési ügynöke (Assist) is megkaphatja a saját beállításaiban.",
+    "write_label": "Az asszisztensek módosíthatják a beállításokat",
+    "write_help": "Az asszisztens ekkor zónákat, érzékelőcsoportokat és programokat hozhat létre, módosíthat és törölhet, és módosíthatja a beállításokat, ugyanazokkal az ellenőrzésekkel, mint ez a panel. Továbbra sem indít öntözést, és ezt a hozzáférést nem módosíthatja. Kikapcsolva a következő beszélgetése ismét csak olvashat."
   },
   "blueprints": {
     "title": "Blueprintek",

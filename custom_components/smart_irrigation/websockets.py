@@ -88,89 +88,81 @@ async def handle_subscribe_updates(hass: HomeAssistant, connection, msg):
     connection.send_result(msg["id"])
 
 
+CONFIG_SAVE_SCHEMA = vol.Schema(
+    {
+        vol.Optional(const.CONF_CALC_TIME): cv.string,
+        vol.Optional(const.CONF_UNITS): cv.string,
+        vol.Optional(const.CONF_AUTO_CALC_ENABLED): cv.boolean,
+        vol.Optional(const.CONF_AUTO_UPDATE_ENABLED): cv.boolean,
+        vol.Optional(const.CONF_AUTO_UPDATE_SCHEDULE): cv.string,
+        vol.Optional(const.CONF_AUTO_UPDATE_DELAY): cv.string,
+        vol.Optional(const.CONF_AUTO_UPDATE_INTERVAL): cv.string,
+        vol.Optional(const.CONF_AUTO_CLEAR_ENABLED): cv.boolean,
+        vol.Optional(const.CONF_CLEAR_TIME): cv.string,
+        vol.Optional(const.CONF_CONTINUOUS_UPDATES): cv.boolean,
+        vol.Optional(const.CONF_HOURLY_CALCULATION): cv.boolean,
+        vol.Optional(const.CONF_FORECAST_RAIN_CREDIT): cv.boolean,
+        vol.Optional(const.CONF_EFFECTIVE_RAIN): cv.boolean,
+        vol.Optional(const.CONF_RECALCULATE_BEFORE_START): cv.boolean,
+        vol.Optional(const.CONF_UI_MODE): vol.In(
+            [const.CONF_UI_MODE_STANDARD, const.CONF_UI_MODE_ADVANCED]
+        ),
+        vol.Optional(const.CONF_SENSOR_DEBOUNCE): cv.string,
+        vol.Optional(const.CONF_CALC_LOG_ENABLED): cv.boolean,
+        vol.Optional(const.CONF_AI_API_ENABLED): cv.boolean,
+        vol.Optional(const.CONF_AI_API_WRITE_ENABLED): cv.boolean,
+        vol.Optional(const.CONF_INSTALL_BLUEPRINTS): cv.boolean,
+        vol.Optional(const.CONF_USE_WEATHER_SERVICE): cv.boolean,
+        vol.Optional(const.CONF_WEATHER_SERVICE): cv.string,
+        vol.Optional(const.CONF_IRRIGATION_START_TRIGGERS): vol.Coerce(list),
+        vol.Optional(const.CONF_ACTIVE_START_TRIGGER): cv.string,
+        vol.Optional(const.CONF_SKIP_IRRIGATION_ON_PRECIPITATION): cv.boolean,
+        vol.Optional(const.CONF_OBSERVED_WATERING_ENABLED): cv.boolean,
+        vol.Optional(const.CONF_DIRECT_VALVE_CONTROL_ENABLED): cv.boolean,
+        vol.Optional(const.CONF_FULL_CONTROLLER): cv.boolean,
+        vol.Optional(const.CONF_IRRIGATION_ENABLED): cv.boolean,
+        vol.Optional(const.CONF_PROGRAMS): vol.Coerce(list),
+        vol.Optional(const.CONF_SUPPLIES): vol.Coerce(list),
+        vol.Optional(const.CONF_ZONE_SEQUENCING): vol.In(
+            const.CONF_ZONE_SEQUENCING_OPTIONS
+        ),
+        # Cycle and soak, and the pause between two zones.
+        vol.Optional(const.CONF_WATERING_PASSES): vol.All(
+            vol.Coerce(int),
+            vol.Range(min=1, max=const.CONF_MAX_WATERING_PASSES),
+        ),
+        vol.Optional(const.CONF_SOAK_MINUTES): vol.All(
+            vol.Coerce(float), vol.Range(min=0, max=240)
+        ),
+        vol.Optional(const.CONF_PAUSE_BETWEEN_ZONES): vol.All(
+            vol.Coerce(float), vol.Range(min=0, max=3600)
+        ),
+        vol.Optional(const.CONF_PRECIPITATION_THRESHOLD_MM): vol.Coerce(float),
+        vol.Optional(const.CONF_SKIP_ON_FREEZE): cv.boolean,
+        vol.Optional(const.CONF_FREEZE_THRESHOLD): vol.Any(None, vol.Coerce(float)),
+        vol.Optional(const.CONF_FREEZE_SENSOR): vol.Any(None, cv.string),
+        vol.Optional(const.CONF_SKIP_ON_WIND): cv.boolean,
+        vol.Optional(const.CONF_WIND_THRESHOLD): vol.Any(None, vol.Coerce(float)),
+        vol.Optional(const.CONF_WIND_SENSOR): vol.Any(None, cv.string),
+        vol.Optional(const.CONF_SKIP_ON_RAIN_SENSOR): cv.boolean,
+        vol.Optional(const.CONF_RAIN_HISTORY_ENABLED): cv.boolean,
+        vol.Optional(const.CONF_RAIN_SENSOR): vol.Any(None, cv.string),
+        vol.Optional(const.CONF_DAYS_BETWEEN_IRRIGATION): vol.Coerce(int),
+        vol.Optional(const.CONF_MANUAL_COORDINATES_ENABLED): cv.boolean,
+        vol.Optional(const.CONF_MANUAL_LATITUDE): vol.Any(None, vol.Coerce(float)),
+        vol.Optional(const.CONF_MANUAL_LONGITUDE): vol.Any(None, vol.Coerce(float)),
+        vol.Optional(const.CONF_MANUAL_ELEVATION): vol.Any(None, vol.Coerce(float)),
+    }
+)
+
+
 class SmartIrrigationConfigView(HomeAssistantView):
     """View to handle Smart Irrigation configuration updates via HTTP API."""
 
     url = "/api/" + const.DOMAIN + "/config"
     name = "api:" + const.DOMAIN + ":config"
 
-    @RequestDataValidator(
-        vol.Schema(
-            {
-                vol.Optional(const.CONF_CALC_TIME): cv.string,
-                vol.Optional(const.CONF_UNITS): cv.string,
-                vol.Optional(const.CONF_AUTO_CALC_ENABLED): cv.boolean,
-                vol.Optional(const.CONF_AUTO_UPDATE_ENABLED): cv.boolean,
-                vol.Optional(const.CONF_AUTO_UPDATE_SCHEDULE): cv.string,
-                vol.Optional(const.CONF_AUTO_UPDATE_DELAY): cv.string,
-                vol.Optional(const.CONF_AUTO_UPDATE_INTERVAL): cv.string,
-                vol.Optional(const.CONF_AUTO_CLEAR_ENABLED): cv.boolean,
-                vol.Optional(const.CONF_CLEAR_TIME): cv.string,
-                vol.Optional(const.CONF_CONTINUOUS_UPDATES): cv.boolean,
-                vol.Optional(const.CONF_HOURLY_CALCULATION): cv.boolean,
-                vol.Optional(const.CONF_FORECAST_RAIN_CREDIT): cv.boolean,
-                vol.Optional(const.CONF_EFFECTIVE_RAIN): cv.boolean,
-                vol.Optional(const.CONF_RECALCULATE_BEFORE_START): cv.boolean,
-                vol.Optional(const.CONF_UI_MODE): vol.In(
-                    [const.CONF_UI_MODE_STANDARD, const.CONF_UI_MODE_ADVANCED]
-                ),
-                vol.Optional(const.CONF_SENSOR_DEBOUNCE): cv.string,
-                vol.Optional(const.CONF_CALC_LOG_ENABLED): cv.boolean,
-                vol.Optional(const.CONF_AI_API_ENABLED): cv.boolean,
-                vol.Optional(const.CONF_INSTALL_BLUEPRINTS): cv.boolean,
-                vol.Optional(const.CONF_USE_WEATHER_SERVICE): cv.boolean,
-                vol.Optional(const.CONF_WEATHER_SERVICE): cv.string,
-                vol.Optional(const.CONF_IRRIGATION_START_TRIGGERS): vol.Coerce(list),
-                vol.Optional(const.CONF_ACTIVE_START_TRIGGER): cv.string,
-                vol.Optional(const.CONF_SKIP_IRRIGATION_ON_PRECIPITATION): cv.boolean,
-                vol.Optional(const.CONF_OBSERVED_WATERING_ENABLED): cv.boolean,
-                vol.Optional(const.CONF_DIRECT_VALVE_CONTROL_ENABLED): cv.boolean,
-                vol.Optional(const.CONF_FULL_CONTROLLER): cv.boolean,
-                vol.Optional(const.CONF_IRRIGATION_ENABLED): cv.boolean,
-                vol.Optional(const.CONF_PROGRAMS): vol.Coerce(list),
-                vol.Optional(const.CONF_SUPPLIES): vol.Coerce(list),
-                vol.Optional(const.CONF_ZONE_SEQUENCING): vol.In(
-                    const.CONF_ZONE_SEQUENCING_OPTIONS
-                ),
-                # Cycle and soak, and the pause between two zones.
-                vol.Optional(const.CONF_WATERING_PASSES): vol.All(
-                    vol.Coerce(int),
-                    vol.Range(min=1, max=const.CONF_MAX_WATERING_PASSES),
-                ),
-                vol.Optional(const.CONF_SOAK_MINUTES): vol.All(
-                    vol.Coerce(float), vol.Range(min=0, max=240)
-                ),
-                vol.Optional(const.CONF_PAUSE_BETWEEN_ZONES): vol.All(
-                    vol.Coerce(float), vol.Range(min=0, max=3600)
-                ),
-                vol.Optional(const.CONF_PRECIPITATION_THRESHOLD_MM): vol.Coerce(float),
-                vol.Optional(const.CONF_SKIP_ON_FREEZE): cv.boolean,
-                vol.Optional(const.CONF_FREEZE_THRESHOLD): vol.Any(
-                    None, vol.Coerce(float)
-                ),
-                vol.Optional(const.CONF_FREEZE_SENSOR): vol.Any(None, cv.string),
-                vol.Optional(const.CONF_SKIP_ON_WIND): cv.boolean,
-                vol.Optional(const.CONF_WIND_THRESHOLD): vol.Any(
-                    None, vol.Coerce(float)
-                ),
-                vol.Optional(const.CONF_WIND_SENSOR): vol.Any(None, cv.string),
-                vol.Optional(const.CONF_SKIP_ON_RAIN_SENSOR): cv.boolean,
-                vol.Optional(const.CONF_RAIN_HISTORY_ENABLED): cv.boolean,
-                vol.Optional(const.CONF_RAIN_SENSOR): vol.Any(None, cv.string),
-                vol.Optional(const.CONF_DAYS_BETWEEN_IRRIGATION): vol.Coerce(int),
-                vol.Optional(const.CONF_MANUAL_COORDINATES_ENABLED): cv.boolean,
-                vol.Optional(const.CONF_MANUAL_LATITUDE): vol.Any(
-                    None, vol.Coerce(float)
-                ),
-                vol.Optional(const.CONF_MANUAL_LONGITUDE): vol.Any(
-                    None, vol.Coerce(float)
-                ),
-                vol.Optional(const.CONF_MANUAL_ELEVATION): vol.Any(
-                    None, vol.Coerce(float)
-                ),
-            }
-        )
-    )
+    @RequestDataValidator(CONFIG_SAVE_SCHEMA)
     async def post(self, request, data):
         """Handle config update request."""
         _LOGGER.debug("[websocket]: request: %s %s", request, data)
@@ -217,59 +209,64 @@ class SmartIrrigationAllModuleView(HomeAssistantView):
     name = "api:" + const.DOMAIN + ":allmodules"
 
 
+MAPPING_SAVE_SCHEMA = vol.Schema(
+    {
+        vol.Optional(const.MAPPING_ID): vol.Coerce(int),
+        vol.Optional(const.MAPPING_NAME): cv.string,
+        vol.Optional(const.MAPPING_MAPPINGS): vol.Coerce(dict),
+        vol.Optional(const.MAPPING_GREENHOUSE): cv.boolean,
+        vol.Optional(const.MAPPING_MODULE): vol.Or(int, str, None),
+        vol.Optional(const.ATTR_REMOVE): cv.boolean,
+        # The following fields are server-computed. They are accepted
+        # here (as ``object``) so that older frontends which echo them
+        # back on save do not fail schema validation (see #680), but
+        # they are stripped before being passed to the store so the
+        # server remains authoritative.
+        vol.Optional(const.MAPPING_DATA): object,
+        vol.Optional(const.MAPPING_DATA_LAST_UPDATED): object,
+        vol.Optional(const.MAPPING_DATA_LAST_SERVICE_FETCH): object,
+        vol.Optional(const.MAPPING_DATA_LAST_ENTRY): object,
+        vol.Optional(const.MAPPING_DATA_LAST_CALCULATION): object,
+    }
+)
+
+
 class SmartIrrigationMappingView(HomeAssistantView):
     """View to handle Smart Irrigation mapping configuration via HTTP API."""
 
     url = "/api/" + const.DOMAIN + "/mappings"
     name = "api:" + const.DOMAIN + ":mapping"
 
-    @RequestDataValidator(
-        vol.Schema(
-            {
-                vol.Optional(const.MAPPING_ID): vol.Coerce(int),
-                vol.Optional(const.MAPPING_NAME): cv.string,
-                vol.Optional(const.MAPPING_MAPPINGS): vol.Coerce(dict),
-                vol.Optional(const.MAPPING_GREENHOUSE): cv.boolean,
-                vol.Optional(const.MAPPING_MODULE): vol.Or(int, str, None),
-                vol.Optional(const.ATTR_REMOVE): cv.boolean,
-                # The following fields are server-computed. They are accepted
-                # here (as ``object``) so that older frontends which echo them
-                # back on save do not fail schema validation (see #680), but
-                # they are stripped before being passed to the store so the
-                # server remains authoritative.
-                vol.Optional(const.MAPPING_DATA): object,
-                vol.Optional(const.MAPPING_DATA_LAST_UPDATED): object,
-                vol.Optional(const.MAPPING_DATA_LAST_SERVICE_FETCH): object,
-                vol.Optional(const.MAPPING_DATA_LAST_ENTRY): object,
-                vol.Optional(const.MAPPING_DATA_LAST_CALCULATION): object,
-            }
-        )
-    )
+    @RequestDataValidator(MAPPING_SAVE_SCHEMA)
     async def post(self, request, data):
         """Handle config update request."""
         _LOGGER.debug("[websocket]: request: %s %s", request, data)
-        hass = request.app["hass"]
-        coordinator = hass.data[const.DOMAIN]["coordinator"]
-        mapping = int(data[const.MAPPING_ID]) if const.MAPPING_ID in data else None
-        # Strip server-computed fields so clients cannot overwrite them via
-        # the config API. These are populated by the coordinator when sensor
-        # data is collected or calculations run, and the store's
-        # ``async_update_mapping`` otherwise preserves existing values.
-        sanitized = {
-            key: value
-            for key, value in data.items()
-            if key
-            not in (
-                const.MAPPING_DATA,
-                const.MAPPING_DATA_LAST_UPDATED,
-                const.MAPPING_DATA_LAST_SERVICE_FETCH,
-                const.MAPPING_DATA_LAST_ENTRY,
-                const.MAPPING_DATA_LAST_CALCULATION,
-            )
-        }
-        await coordinator.async_update_mapping_config(mapping, sanitized)
-        async_dispatcher_send(hass, const.DOMAIN + "_update_frontend")
+        await async_save_mapping(request.app["hass"], data)
         return self.json({"success": True})
+
+
+async def async_save_mapping(hass: HomeAssistant, data: dict) -> None:
+    """Save a sensor group as its page does (MAPPING_SAVE_SCHEMA); remove: deleted."""
+    coordinator = hass.data[const.DOMAIN]["coordinator"]
+    mapping = int(data[const.MAPPING_ID]) if const.MAPPING_ID in data else None
+    # Strip server-computed fields so clients cannot overwrite them via
+    # the config API. These are populated by the coordinator when sensor
+    # data is collected or calculations run, and the store's
+    # ``async_update_mapping`` otherwise preserves existing values.
+    sanitized = {
+        key: value
+        for key, value in data.items()
+        if key
+        not in (
+            const.MAPPING_DATA,
+            const.MAPPING_DATA_LAST_UPDATED,
+            const.MAPPING_DATA_LAST_SERVICE_FETCH,
+            const.MAPPING_DATA_LAST_ENTRY,
+            const.MAPPING_DATA_LAST_CALCULATION,
+        )
+    }
+    await coordinator.async_update_mapping_config(mapping, sanitized)
+    async_dispatcher_send(hass, const.DOMAIN + "_update_frontend")
 
 
 # What a zone records about itself, as opposed to what the user configures. The
@@ -314,184 +311,181 @@ def _without_server_owned_fields(data):
     return {key: value for key, value in data.items() if key not in dropped}
 
 
+ZONE_SAVE_SCHEMA = vol.Schema(
+    {
+        vol.Optional(const.ZONE_ID): vol.Coerce(int),
+        vol.Optional(const.ZONE_NAME): cv.string,
+        vol.Optional(const.ZONE_SIZE): cv.positive_float,
+        vol.Optional(const.ZONE_THROUGHPUT): cv.positive_float,
+        vol.Optional(const.ZONE_STATE): vol.In(const.ZONE_STATES),
+        vol.Optional(const.ZONE_DURATION): vol.Or(float, int, str, None),
+        vol.Optional(const.ZONE_BUCKET): vol.Or(float, int, str, None),
+        vol.Optional(const.ZONE_DELTA): vol.Or(float, int, str, None),
+        vol.Optional(const.ZONE_MODULE): vol.Or(int, str, None),
+        # How this zone is calculated, in the panel's words. The engine
+        # behind it is created or reused server side (engine_binding).
+        vol.Optional(const.ZONE_CALCULATION_METHOD): vol.In(list(ENGINE_BY_METHOD)),
+        vol.Optional(const.ZONE_METHOD_CONFIG): dict,
+        vol.Optional(const.ATTR_REMOVE): cv.boolean,
+        vol.Optional(const.ATTR_CALCULATE): cv.boolean,
+        vol.Optional(const.ATTR_CALCULATE_ALL): cv.boolean,
+        vol.Optional(const.ATTR_DRY_RUN): cv.boolean,
+        vol.Optional(const.ATTR_UPDATE): cv.boolean,
+        vol.Optional(const.ATTR_UPDATE_ALL): cv.boolean,
+        vol.Optional(const.ATTR_RESET_ALL_BUCKETS): cv.boolean,
+        vol.Optional(const.ATTR_OVERRIDE_CACHE): cv.boolean,
+        vol.Optional(const.ZONE_EXPLANATION): vol.Coerce(str),
+        vol.Optional(const.ZONE_MULTIPLIER): vol.Coerce(float),
+        vol.Optional(const.ZONE_MAPPING): vol.Or(int, str, None),
+        vol.Optional(const.ZONE_LEAD_TIME): vol.Coerce(float),
+        vol.Optional(const.ZONE_SAFETY_OFF_TOPIC): vol.Any(str, None),
+        vol.Optional(const.ZONE_SAFETY_OFF_STATE_KEY): vol.Any(str, None),
+        vol.Optional(const.ZONE_SAFETY_OFF_ENTITY): vol.Any(
+            cv.entity_domain(["number", "input_number"]), None
+        ),
+        vol.Optional(const.ZONE_SAFETY_OFF_MODE): vol.Any(
+            vol.In(const.SAFETY_OFF_MODES), None
+        ),
+        vol.Optional(const.ZONE_SAFETY_OFF_REQUIRED): vol.Any(bool, None),
+        vol.Optional(const.ZONE_CONFIRM_TIMEOUT): vol.Any(
+            None,
+            vol.All(
+                vol.Coerce(float),
+                vol.Range(min=const.CONFIRM_TIMEOUT_MIN, max=const.CONFIRM_TIMEOUT_MAX),
+            ),
+        ),
+        vol.Optional(const.ZONE_OPEN_RESENDS): vol.Any(
+            None,
+            vol.All(vol.Coerce(int), vol.Range(min=0, max=const.OPEN_RESENDS_MAX)),
+        ),
+        vol.Optional(const.ZONE_SUPPLY_ID): vol.Any(str, None),
+        vol.Optional(const.ZONE_EXTRA_ENTITIES): vol.Any([str], None),
+        vol.Optional(const.ZONE_SOIL_TYPE): vol.Any(str, None),
+        vol.Optional(const.ZONE_PLANT_TYPE): vol.Any(str, None),
+        vol.Optional(const.ZONE_MAXIMUM_DURATION): vol.Coerce(float),
+        vol.Optional(const.ZONE_MAXIMUM_BUCKET): vol.Or(float, int, None),
+        vol.Optional(const.ZONE_LAST_CALCULATED): vol.Or(None, str, datetime.datetime),
+        vol.Optional(const.ZONE_LAST_UPDATED): vol.Or(None, str, datetime.datetime),
+        vol.Optional(const.ZONE_NUMBER_OF_DATA_POINTS): vol.Or(int, None),
+        vol.Optional(const.ATTR_CLEAR_ALL_WEATHERDATA): cv.boolean,
+        vol.Optional(const.ZONE_DRAINAGE_RATE): vol.Or(float, int, None),
+        vol.Optional(const.ZONE_CURRENT_DRAINAGE): vol.Or(float, int, None),
+        vol.Optional(const.ZONE_LINKED_ENTITY): vol.Any(None, cv.string),
+        vol.Optional(const.ZONE_DAYS_SINCE_IRRIGATION): vol.Or(int, float, None),
+        vol.Optional(const.ZONE_DAYS_BETWEEN_IRRIGATION): vol.Or(
+            vol.All(int, vol.Range(min=0, max=365)), None
+        ),
+        vol.Optional(const.ZONE_CROP_FACTOR_BY_MONTH): vol.Any(
+            None,
+            vol.All([vol.Any(None, vol.Coerce(float))], vol.Length(12, 12)),
+        ),
+        vol.Optional(const.ZONE_AVAILABLE_WATER): vol.Or(float, int, None),
+        vol.Optional(const.ZONE_ALLOWED_DEPLETION): vol.Or(float, int, None),
+        vol.Optional(const.ZONE_DISTRIBUTION_EFFICIENCY): vol.Or(float, int, None),
+        vol.Optional(const.ZONE_FLOW_SENSOR): vol.Any(None, cv.string),
+        vol.Optional(const.ZONE_SOIL_MOISTURE_SENSOR): vol.Any(None, cv.string),
+        vol.Optional(const.ZONE_SOIL_MOISTURE_THRESHOLD): vol.Any(
+            None, vol.Coerce(float)
+        ),
+        vol.Optional(const.ZONE_INPUT_METHOD): vol.In(const.ZONE_INPUT_METHODS),
+        vol.Optional(const.ZONE_PRECIPITATION_RATE): vol.Or(float, int, None),
+        vol.Optional(const.ZONE_ET_DEFICIENCY): vol.Or(float, int, None),
+        vol.Optional(const.ZONE_ETO): vol.Or(float, int, None),
+        vol.Optional(const.ZONE_LAST_IRRIGATION): vol.Or(None, str, datetime.datetime),
+        vol.Optional(const.ZONE_WATER_USED): vol.Or(float, int, None),
+        vol.Optional(const.ZONE_LAST_RUN_VOLUME): vol.Or(float, int, None),
+        vol.Optional(const.ZONE_PRECIPITATION_SUPERSEDED): vol.Or(float, int, None),
+        vol.Optional(const.ZONE_IRRIGATION_THRESHOLD): vol.Or(float, int, None),
+        vol.Optional(const.ZONE_MEASURED_THROUGHPUT): vol.Or(float, int, None),
+        vol.Optional(const.ZONE_MEASURED_THROUGHPUT_SAMPLES): vol.Or(int, None),
+        vol.Optional(const.ZONE_LAST_CONSUMED_AT): vol.Or(None, str, datetime.datetime),
+        vol.Optional(const.ZONE_CALCULATION_PROBLEM): vol.Or(None, dict),
+    }
+)
+
+
+async def async_save_zone(
+    hass: HomeAssistant, data: dict, from_display: bool = True
+) -> tuple:
+    """Save a zone as the zones page does: ``(zone id, None)`` or ``(None, error)``.
+
+    ``data`` has been through ZONE_SAVE_SCHEMA. Without an id, a new zone is
+    created. ``from_display``: the numbers are in the unit system of Home
+    Assistant, as the panel sends them; an assistant sends them in metric, as
+    it reads them.
+    """
+    coordinator = hass.data[const.DOMAIN]["coordinator"]
+    zone = int(data[const.ZONE_ID]) if const.ZONE_ID in data else None
+    own = own_entities(
+        hass,
+        [
+            data.get(const.ZONE_LINKED_ENTITY),
+            *(data.get(const.ZONE_EXTRA_ENTITIES) or []),
+        ],
+    )
+    if own:
+        # A zone's own valve entity opens the zone: linked, it opens
+        # itself without end (see own_entities).
+        return (
+            None,
+            f"{', '.join(own)} is a valve of Smart Irrigation itself. Link the "
+            "zone to the valve or switch that waters it.",
+        )
+    data = _without_server_owned_fields(data)
+    # Entered in the unit system, stored in metric (units.py).
+    if from_display:
+        data = zone_from_display(data, hass.config.units is METRIC_SYSTEM)
+    # "How is this zone calculated" is answered in the panel's words; the
+    # engine it implies is bound after the zone exists, since a new zone
+    # has no id until it is saved.
+    # A soil or a planting chosen in words is stored as the number it
+    # stands for, which is what the calculation reads (presets.py).
+    data = apply_preset(data)
+    method = data.pop(const.ZONE_CALCULATION_METHOD, None)
+    method_config = data.pop(const.ZONE_METHOD_CONFIG, None)
+    saved = await coordinator.async_update_zone_config(zone, data)
+    zone_id = zone if zone is not None else _last_zone_id(saved, coordinator)
+    if method is None and method_config and zone_id is not None:
+        # The panel sends only what changed, so a change to the engine's
+        # own options (how many days to look ahead, the fixed amount)
+        # arrives without the method, which did not change. Reading the
+        # zone's current method here is what makes such a change stick:
+        # without it the options were dropped and the old value came back
+        # on the next refresh (#851).
+        method = _zone_method(coordinator, coordinator.store.get_zone(int(zone_id)))
+    if method is None and zone is None and zone_id is not None:
+        # A zone added on the zones page arrives without a method, and
+        # without one it had no engine at all unless its group lent it
+        # one: it was never calculated, while its card said "from the
+        # weather" (#907). It gets its own engine, of the kind the card
+        # shows, with the options of the group's when it borrowed that one.
+        # An engine we do not recognise is left as it is.
+        new_zone = coordinator.store.get_zone(int(zone_id))
+        if new_zone and not zone_has_engine(coordinator.store, new_zone):
+            method = METHOD_FROM_WEATHER
+        elif new_zone:
+            method = _zone_method(coordinator, new_zone)
+            if method is not None and method_config is None:
+                method_config = _zone_method_config(coordinator, new_zone) or None
+    if method is not None and zone_id is not None:
+        await coordinator.async_set_zone_method(int(zone_id), method, method_config)
+    async_dispatcher_send(hass, const.DOMAIN + "_update_frontend")
+    return zone_id, None
+
+
 class SmartIrrigationZoneView(HomeAssistantView):
     """View to handle Smart Irrigation zone configuration via HTTP API."""
 
     url = "/api/" + const.DOMAIN + "/zones"
     name = "api:" + const.DOMAIN + ":zones"
 
-    @RequestDataValidator(
-        vol.Schema(
-            {
-                vol.Optional(const.ZONE_ID): vol.Coerce(int),
-                vol.Optional(const.ZONE_NAME): cv.string,
-                vol.Optional(const.ZONE_SIZE): cv.positive_float,
-                vol.Optional(const.ZONE_THROUGHPUT): cv.positive_float,
-                vol.Optional(const.ZONE_STATE): vol.In(const.ZONE_STATES),
-                vol.Optional(const.ZONE_DURATION): vol.Or(float, int, str, None),
-                vol.Optional(const.ZONE_BUCKET): vol.Or(float, int, str, None),
-                vol.Optional(const.ZONE_DELTA): vol.Or(float, int, str, None),
-                vol.Optional(const.ZONE_MODULE): vol.Or(int, str, None),
-                # How this zone is calculated, in the panel's words. The engine
-                # behind it is created or reused server side (engine_binding).
-                vol.Optional(const.ZONE_CALCULATION_METHOD): vol.In(
-                    list(ENGINE_BY_METHOD)
-                ),
-                vol.Optional(const.ZONE_METHOD_CONFIG): dict,
-                vol.Optional(const.ATTR_REMOVE): cv.boolean,
-                vol.Optional(const.ATTR_CALCULATE): cv.boolean,
-                vol.Optional(const.ATTR_CALCULATE_ALL): cv.boolean,
-                vol.Optional(const.ATTR_DRY_RUN): cv.boolean,
-                vol.Optional(const.ATTR_UPDATE): cv.boolean,
-                vol.Optional(const.ATTR_UPDATE_ALL): cv.boolean,
-                vol.Optional(const.ATTR_RESET_ALL_BUCKETS): cv.boolean,
-                vol.Optional(const.ATTR_OVERRIDE_CACHE): cv.boolean,
-                vol.Optional(const.ZONE_EXPLANATION): vol.Coerce(str),
-                vol.Optional(const.ZONE_MULTIPLIER): vol.Coerce(float),
-                vol.Optional(const.ZONE_MAPPING): vol.Or(int, str, None),
-                vol.Optional(const.ZONE_LEAD_TIME): vol.Coerce(float),
-                vol.Optional(const.ZONE_SAFETY_OFF_TOPIC): vol.Any(str, None),
-                vol.Optional(const.ZONE_SAFETY_OFF_STATE_KEY): vol.Any(str, None),
-                vol.Optional(const.ZONE_SAFETY_OFF_ENTITY): vol.Any(
-                    cv.entity_domain(["number", "input_number"]), None
-                ),
-                vol.Optional(const.ZONE_SAFETY_OFF_MODE): vol.Any(
-                    vol.In(const.SAFETY_OFF_MODES), None
-                ),
-                vol.Optional(const.ZONE_SAFETY_OFF_REQUIRED): vol.Any(bool, None),
-                vol.Optional(const.ZONE_CONFIRM_TIMEOUT): vol.Any(
-                    None,
-                    vol.All(
-                        vol.Coerce(float),
-                        vol.Range(
-                            min=const.CONFIRM_TIMEOUT_MIN, max=const.CONFIRM_TIMEOUT_MAX
-                        ),
-                    ),
-                ),
-                vol.Optional(const.ZONE_OPEN_RESENDS): vol.Any(
-                    None,
-                    vol.All(
-                        vol.Coerce(int), vol.Range(min=0, max=const.OPEN_RESENDS_MAX)
-                    ),
-                ),
-                vol.Optional(const.ZONE_SUPPLY_ID): vol.Any(str, None),
-                vol.Optional(const.ZONE_EXTRA_ENTITIES): vol.Any([str], None),
-                vol.Optional(const.ZONE_SOIL_TYPE): vol.Any(str, None),
-                vol.Optional(const.ZONE_PLANT_TYPE): vol.Any(str, None),
-                vol.Optional(const.ZONE_MAXIMUM_DURATION): vol.Coerce(float),
-                vol.Optional(const.ZONE_MAXIMUM_BUCKET): vol.Or(float, int, None),
-                vol.Optional(const.ZONE_LAST_CALCULATED): vol.Or(
-                    None, str, datetime.datetime
-                ),
-                vol.Optional(const.ZONE_LAST_UPDATED): vol.Or(
-                    None, str, datetime.datetime
-                ),
-                vol.Optional(const.ZONE_NUMBER_OF_DATA_POINTS): vol.Or(int, None),
-                vol.Optional(const.ATTR_CLEAR_ALL_WEATHERDATA): cv.boolean,
-                vol.Optional(const.ZONE_DRAINAGE_RATE): vol.Or(float, int, None),
-                vol.Optional(const.ZONE_CURRENT_DRAINAGE): vol.Or(float, int, None),
-                vol.Optional(const.ZONE_LINKED_ENTITY): vol.Any(None, cv.string),
-                vol.Optional(const.ZONE_DAYS_SINCE_IRRIGATION): vol.Or(
-                    int, float, None
-                ),
-                vol.Optional(const.ZONE_DAYS_BETWEEN_IRRIGATION): vol.Or(
-                    vol.All(int, vol.Range(min=0, max=365)), None
-                ),
-                vol.Optional(const.ZONE_CROP_FACTOR_BY_MONTH): vol.Any(
-                    None,
-                    vol.All([vol.Any(None, vol.Coerce(float))], vol.Length(12, 12)),
-                ),
-                vol.Optional(const.ZONE_AVAILABLE_WATER): vol.Or(float, int, None),
-                vol.Optional(const.ZONE_ALLOWED_DEPLETION): vol.Or(float, int, None),
-                vol.Optional(const.ZONE_DISTRIBUTION_EFFICIENCY): vol.Or(
-                    float, int, None
-                ),
-                vol.Optional(const.ZONE_FLOW_SENSOR): vol.Any(None, cv.string),
-                vol.Optional(const.ZONE_SOIL_MOISTURE_SENSOR): vol.Any(None, cv.string),
-                vol.Optional(const.ZONE_SOIL_MOISTURE_THRESHOLD): vol.Any(
-                    None, vol.Coerce(float)
-                ),
-                vol.Optional(const.ZONE_INPUT_METHOD): vol.In(const.ZONE_INPUT_METHODS),
-                vol.Optional(const.ZONE_PRECIPITATION_RATE): vol.Or(float, int, None),
-                vol.Optional(const.ZONE_ET_DEFICIENCY): vol.Or(float, int, None),
-                vol.Optional(const.ZONE_ETO): vol.Or(float, int, None),
-                vol.Optional(const.ZONE_LAST_IRRIGATION): vol.Or(
-                    None, str, datetime.datetime
-                ),
-                vol.Optional(const.ZONE_WATER_USED): vol.Or(float, int, None),
-                vol.Optional(const.ZONE_LAST_RUN_VOLUME): vol.Or(float, int, None),
-                vol.Optional(const.ZONE_PRECIPITATION_SUPERSEDED): vol.Or(
-                    float, int, None
-                ),
-                vol.Optional(const.ZONE_IRRIGATION_THRESHOLD): vol.Or(float, int, None),
-                vol.Optional(const.ZONE_MEASURED_THROUGHPUT): vol.Or(float, int, None),
-                vol.Optional(const.ZONE_MEASURED_THROUGHPUT_SAMPLES): vol.Or(int, None),
-                vol.Optional(const.ZONE_LAST_CONSUMED_AT): vol.Or(
-                    None, str, datetime.datetime
-                ),
-                vol.Optional(const.ZONE_CALCULATION_PROBLEM): vol.Or(None, dict),
-            }
-        )
-    )
+    @RequestDataValidator(ZONE_SAVE_SCHEMA)
     async def post(self, request, data):
         """Handle config update request."""
         _LOGGER.debug("[websocket]: request: %s %s", request, data)
-        hass = request.app["hass"]
-        coordinator = hass.data[const.DOMAIN]["coordinator"]
-        zone = int(data[const.ZONE_ID]) if const.ZONE_ID in data else None
-        own = own_entities(
-            hass,
-            [
-                data.get(const.ZONE_LINKED_ENTITY),
-                *(data.get(const.ZONE_EXTRA_ENTITIES) or []),
-            ],
-        )
-        if own:
-            # A zone's own valve entity opens the zone: linked, it opens
-            # itself without end (see own_entities).
-            return self.json_message(
-                f"{', '.join(own)} is a valve of Smart Irrigation itself. Link the "
-                "zone to the valve or switch that waters it.",
-                HTTPStatus.BAD_REQUEST,
-            )
-        data = _without_server_owned_fields(data)
-        # Entered in the unit system, stored in metric (units.py).
-        data = zone_from_display(data, hass.config.units is METRIC_SYSTEM)
-        # "How is this zone calculated" is answered in the panel's words; the
-        # engine it implies is bound after the zone exists, since a new zone
-        # has no id until it is saved.
-        # A soil or a planting chosen in words is stored as the number it
-        # stands for, which is what the calculation reads (presets.py).
-        data = apply_preset(data)
-        method = data.pop(const.ZONE_CALCULATION_METHOD, None)
-        method_config = data.pop(const.ZONE_METHOD_CONFIG, None)
-        saved = await coordinator.async_update_zone_config(zone, data)
-        zone_id = zone if zone is not None else _last_zone_id(saved, coordinator)
-        if method is None and method_config and zone_id is not None:
-            # The panel sends only what changed, so a change to the engine's
-            # own options (how many days to look ahead, the fixed amount)
-            # arrives without the method, which did not change. Reading the
-            # zone's current method here is what makes such a change stick:
-            # without it the options were dropped and the old value came back
-            # on the next refresh (#851).
-            method = _zone_method(coordinator, coordinator.store.get_zone(int(zone_id)))
-        if method is None and zone is None and zone_id is not None:
-            # A zone added on the zones page arrives without a method, and
-            # without one it had no engine at all unless its group lent it
-            # one: it was never calculated, while its card said "from the
-            # weather" (#907). It gets its own engine, of the kind the card
-            # shows, with the options of the group's when it borrowed that one.
-            # An engine we do not recognise is left as it is.
-            new_zone = coordinator.store.get_zone(int(zone_id))
-            if new_zone and not zone_has_engine(coordinator.store, new_zone):
-                method = METHOD_FROM_WEATHER
-            elif new_zone:
-                method = _zone_method(coordinator, new_zone)
-                if method is not None and method_config is None:
-                    method_config = _zone_method_config(coordinator, new_zone) or None
-        if method is not None and zone_id is not None:
-            await coordinator.async_set_zone_method(int(zone_id), method, method_config)
-        async_dispatcher_send(hass, const.DOMAIN + "_update_frontend")
+        _zone_id, error = await async_save_zone(request.app["hass"], data)
+        if error is not None:
+            return self.json_message(error, HTTPStatus.BAD_REQUEST)
         return self.json({"success": True})
 
 
@@ -506,6 +500,11 @@ def _last_zone_id(saved, coordinator):
 @async_response
 async def websocket_get_config(hass: HomeAssistant, connection, msg):
     """Publish config data."""
+    connection.send_result(msg["id"], await async_config_for_display(hass))
+
+
+async def async_config_for_display(hass: HomeAssistant) -> dict:
+    """The configuration as the panel shows it, in the unit system of Home Assistant."""
     coordinator = hass.data[const.DOMAIN]["coordinator"]
     config = await coordinator.store.async_get_config()
 
@@ -537,8 +536,7 @@ async def websocket_get_config(hass: HomeAssistant, connection, msg):
                 threshold_mm,
             )
 
-    config = thresholds_for_display(config, hass.config.units is METRIC_SYSTEM)
-    connection.send_result(msg["id"], config)
+    return thresholds_for_display(config, hass.config.units is METRIC_SYSTEM)
 
 
 @async_response

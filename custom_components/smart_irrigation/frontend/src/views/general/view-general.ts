@@ -4079,8 +4079,23 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           </div>
           ${on
             ? html`<div class="setting-help">
-                ${localize("ai_api.how", lang)}
-              </div>`
+                  ${localize("ai_api.how", lang)}
+                </div>
+                <div class="setting-row">
+                  <div class="setting-label">
+                    ${localize("ai_api.write_label", lang)}
+                  </div>
+                  <ha-switch
+                    .checked=${this.config.ai_api_write_enabled === true}
+                    @change=${(e: Event) =>
+                      this.handleConfigChange({
+                        ai_api_write_enabled: (e.target as any).checked,
+                      })}
+                  ></ha-switch>
+                </div>
+                <div class="setting-help">
+                  ${localize("ai_api.write_help", lang)}
+                </div>`
             : ""}
         </div>
       </ha-card>

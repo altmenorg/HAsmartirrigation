@@ -1512,9 +1512,11 @@
   },
   "ai_api": {
     "title": "Accès pour l'IA",
-    "description": "Permet à un assistant de lire Smart Irrigation : les zones et leur bilan hydrique, le prochain arrosage et pourquoi une zone est retenue, les programmes et le planning, et de vérifier un programme avant que tu l'enregistres. Il ne modifie rien et n'ouvre aucune vanne. Désactivé par défaut : avec un assistant dans le cloud, ce qu'il lit quitte ta maison.",
+    "description": "Permet à un assistant de lire Smart Irrigation : les zones et leur bilan hydrique, le prochain arrosage et pourquoi une zone est retenue, les programmes et le planning, les réglages, et de vérifier un programme avant qu'il soit enregistré. Il ne lance jamais d'arrosage et n'ouvre aucune vanne. Désactivé par défaut : avec un assistant dans le cloud, ce qu'il lit quitte ta maison.",
     "enabled_label": "Proposer Smart Irrigation aux assistants",
-    "how": "Pour Claude, ChatGPT ou un autre client MCP, ajoute l'intégration « Model Context Protocol Server » de Home Assistant et coche Smart Irrigation dans ses options. Un agent de conversation de Home Assistant (Assist) peut aussi l'utiliser, à cocher dans ses options."
+    "how": "Pour Claude, ChatGPT ou un autre client MCP, ajoute l'intégration « Model Context Protocol Server » de Home Assistant et coche Smart Irrigation dans ses options. Un agent de conversation de Home Assistant (Assist) peut aussi l'utiliser, à cocher dans ses options.",
+    "write_label": "Laisser les assistants modifier la configuration",
+    "write_help": "L'assistant peut alors créer, modifier et supprimer des zones, des groupes de capteurs et des programmes, et changer les réglages, avec les mêmes contrôles que ce panel. Il ne lance toujours aucun arrosage et ne peut pas changer cet accès. Désactivé, sa prochaine conversation ne peut plus que lire."
   },
   "blueprints": {
     "title": "Blueprints",

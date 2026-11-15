@@ -1512,9 +1512,11 @@
   },
   "ai_api": {
     "title": "Prístup pre AI",
-    "description": "Umožní asistentovi čítať Smart Irrigation: zóny a ich vodnú bilanciu, ďalšie zavlažovanie a prečo je zóna zadržaná, programy a plán, a skontrolovať program pred uložením. Nič nemení a neotvára žiadny ventil. Predvolene vypnuté: s asistentom v cloude to, čo číta, opúšťa váš domov.",
+    "description": "Umožní asistentovi čítať Smart Irrigation: zóny a ich vodnú bilanciu, ďalšie zavlažovanie a prečo je zóna zadržaná, programy a plán, nastavenia, a skontrolovať program pred uložením. Nikdy nespúšťa zavlažovanie a neotvára ventil. Predvolene vypnuté: s asistentom v cloude to, čo číta, opúšťa váš domov.",
     "enabled_label": "Ponúknuť Smart Irrigation asistentom",
-    "how": "Pre Claude, ChatGPT alebo iného klienta MCP pridajte integráciu Home Assistant „Model Context Protocol Server“ a v jej možnostiach zaškrtnite Smart Irrigation. Konverzačný agent Home Assistant (Assist) ho môže dostať aj vo svojich možnostiach."
+    "how": "Pre Claude, ChatGPT alebo iného klienta MCP pridajte integráciu Home Assistant „Model Context Protocol Server“ a v jej možnostiach zaškrtnite Smart Irrigation. Konverzačný agent Home Assistant (Assist) ho môže dostať aj vo svojich možnostiach.",
+    "write_label": "Nechať asistentov meniť konfiguráciu",
+    "write_help": "Asistent potom môže vytvárať, meniť a mazať zóny, skupiny senzorov a programy a meniť nastavenia, s rovnakými kontrolami ako tento panel. Stále nespúšťa zavlažovanie a nemôže tento prístup zmeniť. Po vypnutí môže jeho ďalšia konverzácia opäť len čítať."
   },
   "blueprints": {
     "title": "Blueprinty",
