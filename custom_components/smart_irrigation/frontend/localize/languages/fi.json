@@ -114,7 +114,10 @@
           "name": "Nimi",
           "size": "Pinta-ala",
           "throughput": "Virtaama",
-          "throughput-help": "Kuinka paljon vettä tämä alue antaa minuutissa. Mittaa se jos voit, sen sijaan että otat sen tuotetiedoista: siitä johdetaan jokainen kesto, ja se on hiljaisin tapa kastella kaksi kertaa niin kauan kuin tarkoitit."
+          "throughput-help": "Kuinka paljon vettä tämä alue antaa minuutissa. Mittaa se jos voit, sen sijaan että otat sen tuotetiedoista: siitä johdetaan jokainen kesto, ja se on hiljaisin tapa kastella kaksi kertaa niin kauan kuin tarkoitit.",
+          "valve": "Venttiili",
+          "valve-help": "Venttiili tai kytkin, joka kastelee tämän vyöhykkeen. Ilman sitä vyöhyke lasketaan mutta ei kastella, kunnes liität sellaisen Vyöhykkeissä.",
+          "valve-help-calculate": "Jos Smart Irrigationin pitää nähdä, milloin vyöhyke kastellaan käsin tai automaatiollasi, jotta se laskee sen veden."
         },
         "environment": {
           "question": "Missä se kasvaa?",
@@ -157,7 +160,14 @@
           "sources": "Lähteet",
           "from-the-service": "sääpalvelusta",
           "no-sensor": "ei anturia",
-          "help": "Tämä luo laskentamoduulin, anturiryhmän ja alueen, täsmälleen kuten muut välilehdet tekisivät. Jälkeenpäin mikään ei ole lukittu."
+          "help": "Tämä luo anturiryhmän ja vyöhykkeen, kuten muut välilehdet tekisivät. Mitään ei lukita jälkeenpäin.",
+          "mode": "Smart Irrigation",
+          "no-valve": "ei mitään"
+        },
+        "mode": {
+          "question": "Mitä Smart Irrigationin pitää tehdä?",
+          "water-help": "Se laskee, mitä kukin vyöhyke tarvitsee, ja avaa venttiilit itse pääohjelmalla, joka kastelee kaikki vyöhykkeet auringonnousuun mennessä. Aikataulua voi muuttaa myöhemmin.",
+          "calculate-help": "Se laskee, mitä kukin vyöhyke tarvitsee; automaatiosi, Irrigation Unlimited tai ohjaimesi avaa venttiilit."
         }
       },
       "step": "vaihe",
@@ -170,7 +180,9 @@
       "calc-nothing": "Laskettu: siltä ei vielä puutu vettä.",
       "calc-failed": "Laskenta ei onnistunut. Alue kertoo syyn kohdassa Alueet.",
       "open-zone": "Avaa alue",
-      "another": "Määritä toinen alue"
+      "another": "Määritä toinen alue",
+      "done-next-water": "Pääohjelma kastelee sen muiden vyöhykkeiden kanssa auringonnousuun mennessä. Löydät sen Kastelu-välilehdeltä.",
+      "done-next-no-valve": "Liitä siihen venttiili Vyöhykkeissä, jotta se kastellaan."
     },
     "weatherservice": {
       "history": {

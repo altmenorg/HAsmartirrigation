@@ -114,7 +114,10 @@
           "name": "名稱",
           "size": "面積",
           "throughput": "出水率",
-          "throughput-help": "此區域每分鐘送出的水量。如果可以，請實際量測，而不要採用規格表上的數值：所有時間長度都是由它推算而來，而且它最容易讓你不知不覺多澆一倍的水。"
+          "throughput-help": "此區域每分鐘送出的水量。如果可以，請實際量測，而不要採用規格表上的數值：所有時間長度都是由它推算而來，而且它最容易讓你不知不覺多澆一倍的水。",
+          "valve": "閥門",
+          "valve-help": "澆灌此區域的閥門或開關。沒有它，區域會被計算但不會澆水，直到你在「區域」中關聯一個。",
+          "valve-help-calculate": "如果 Smart Irrigation 需要知道此區域何時被手動或由你的自動化澆水，以便計入這些水。"
         },
         "environment": {
           "question": "它種在哪裡？",
@@ -157,7 +160,14 @@
           "sources": "來源",
           "from-the-service": "來自氣象服務",
           "no-sensor": "沒有感測器",
-          "help": "這會建立一個計算模組、一個感測器群組與一個區域，與其他分頁的做法完全相同。之後不會鎖定任何設定。"
+          "help": "這會建立一個感測器群組和一個區域，與其他分頁完全相同。之後沒有任何鎖定。",
+          "mode": "Smart Irrigation",
+          "no-valve": "無"
+        },
+        "mode": {
+          "question": "Smart Irrigation 應該做什麼？",
+          "water-help": "它計算每個區域的需求並自行開啟閥門，由主程式澆灌所有區域，在日出前完成。之後可以修改其排程。",
+          "calculate-help": "它計算每個區域的需求；由你的自動化、Irrigation Unlimited 或控制器開啟閥門。"
         }
       },
       "step": "步驟",
@@ -170,7 +180,9 @@
       "calc-nothing": "計算完成：目前尚未缺水。",
       "calc-failed": "計算失敗。原因會顯示在「區域」下的該區域中。",
       "open-zone": "開啟區域",
-      "another": "設定另一個區域"
+      "another": "設定另一個區域",
+      "done-next-water": "主程式會與其他區域一起澆灌它，在日出前完成。你可以在「澆水」中找到它。",
+      "done-next-no-valve": "在「區域」中為它關聯一個閥門，才能澆水。"
     },
     "weatherservice": {
       "history": {

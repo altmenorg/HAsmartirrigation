@@ -10,6 +10,7 @@ import {
   fetchMappings,
   fetchWeatherService,
   fetchZones,
+  saveConfig,
   saveMapping,
   saveZone,
   updateZone,
@@ -120,6 +121,11 @@ class SmartIrrigationViewSetup extends LitElement {
   @state() private calcResult?: { busy?: boolean; text?: string; ok?: boolean };
 
   // The answers.
+  // What Smart Irrigation does, asked with the first zone only: the list at
+  // the top of Settings says it afterwards.
+  @state() private mode: "water" | "calculate" = "water";
+  @state() private firstZone = false;
+  @state() private valve = "";
   @state() private zoneName = "";
   @state() private zoneSize = "";
   @state() private zoneThroughput = "";
@@ -142,12 +148,19 @@ class SmartIrrigationViewSetup extends LitElement {
 
   private async _load(): Promise<void> {
     if (!this.hass) return;
-    const [config, allModules, service] = await Promise.all([
+    const [config, allModules, service, zones] = await Promise.all([
       fetchConfig(this.hass),
       fetchAllModules(this.hass),
       fetchWeatherService(this.hass).catch(() => undefined),
+      fetchZones(this.hass).catch(() => []),
     ]);
     this.config = config;
+    this.firstZone = zones.length === 0;
+    // A first zone suggests watering; a later one follows what is chosen.
+    this.mode =
+      this.firstZone || (config as any)?.full_controller === true
+        ? "water"
+        : "calculate";
     this.allModules = allModules;
     this.serviceSuppliesEt = !!(service as any)?.supplies_evapotranspiration;
     this.serviceHasRain = (service as any)?.supplies_rain !== false;
@@ -246,7 +259,9 @@ class SmartIrrigationViewSetup extends LitElement {
   }
 
   private get steps(): string[] {
-    const steps = ["zone", "environment", "weather"];
+    const steps = this.firstZone
+      ? ["mode", "zone", "environment", "weather"]
+      : ["zone", "environment", "weather"];
     if (this.sensorsToAsk.length || this.weather === "static") {
       steps.push("sensors");
     }
@@ -301,6 +316,13 @@ class SmartIrrigationViewSetup extends LitElement {
             <div class="done">${this.t("done")}</div>
             <div class="note">${this.t("done-note-zone")}</div>
             <div class="note">${this.t(next)}</div>
+            ${this.mode === "water"
+              ? html`<div class="note">
+                  ${this.t(
+                    this.valve ? "done-next-water" : "done-next-no-valve",
+                  )}
+                </div>`
+              : ""}
             ${this.calcResult?.text
               ? html`<div class=${this.calcResult.ok ? "done-calc" : "error"}>
                   ${this.calcResult.text}
@@ -390,6 +412,8 @@ class SmartIrrigationViewSetup extends LitElement {
 
   private renderStep(): TemplateResult {
     switch (this.currentStep) {
+      case "mode":
+        return this.renderModeStep();
       case "zone":
         return this.renderZoneStep();
       case "environment":
@@ -401,6 +425,31 @@ class SmartIrrigationViewSetup extends LitElement {
       default:
         return this.renderReviewStep();
     }
+  }
+
+  /** What Smart Irrigation does: the list at the top of Settings, asked once. */
+  private renderModeStep(): TemplateResult {
+    const label = (key: string) =>
+      localize(`panels.general.cards.master-switch.${key}`, this.lng);
+    return html`
+      <h3>${this.t("steps.mode.question")}</h3>
+      ${this.choice(
+        this.mode === "water",
+        label("mode-water"),
+        this.t("steps.mode.water-help"),
+        () => {
+          this.mode = "water";
+        },
+      )}
+      ${this.choice(
+        this.mode === "calculate",
+        label("mode-calculate"),
+        this.t("steps.mode.calculate-help"),
+        () => {
+          this.mode = "calculate";
+        },
+      )}
+    `;
   }
 
   private renderZoneStep(): TemplateResult {
@@ -454,6 +503,30 @@ class SmartIrrigationViewSetup extends LitElement {
         />
       </div>
       <div class="note">${this.t("steps.zone.throughput-help")}</div>
+      <div class="setting-row">
+        <div class="setting-label">
+          ${this.t("steps.zone.valve")}${this.mode === "water"
+            ? ""
+            : html` <span class="unit"
+                >(${this.t("steps.sensors.optional")})</span
+              >`}
+        </div>
+        <ha-entity-picker
+          class="entity-field"
+          .hass=${this.hass}
+          .value=${this.valve}
+          .includeDomains=${["valve", "switch", "input_boolean"]}
+          @value-changed=${(e: CustomEvent) =>
+            (this.valve = e.detail?.value ?? "")}
+        ></ha-entity-picker>
+      </div>
+      <div class="note">
+        ${this.t(
+          this.mode === "water"
+            ? "steps.zone.valve-help"
+            : "steps.zone.valve-help-calculate",
+        )}
+      </div>
     `;
   }
 
@@ -592,9 +665,26 @@ class SmartIrrigationViewSetup extends LitElement {
     return html`
       <h3>${this.t("steps.review.question")}</h3>
       <div class="settings">
+        ${this.firstZone
+          ? html`<div class="setting-row">
+              <div class="setting-label">${this.t("steps.review.mode")}</div>
+              <div class="review-value">
+                ${localize(
+                  `panels.general.cards.master-switch.mode-${this.mode}`,
+                  this.lng,
+                )}
+              </div>
+            </div>`
+          : ""}
         <div class="setting-row">
           <div class="setting-label">${this.t("steps.review.zone")}</div>
           <div class="review-value">${this.zoneName}</div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">${this.t("steps.zone.valve")}</div>
+          <div class="review-value">
+            ${this.valve || this.t("steps.review.no-valve")}
+          </div>
         </div>
         <div class="setting-row">
           <div class="setting-label">${this.t("steps.review.environment")}</div>
@@ -734,6 +824,29 @@ class SmartIrrigationViewSetup extends LitElement {
     this.error = undefined;
 
     try {
+      // What Smart Irrigation does, chosen with the first zone, as the list
+      // at the top of Settings writes it (one_choice.mode_changes).
+      if (this.firstZone) {
+        const water = this.mode === "water";
+        if (water !== ((this.config as any)?.full_controller === true)) {
+          await saveConfig(
+            this.hass,
+            (water
+              ? {
+                  irrigation_enabled: true,
+                  watering_enabled: true,
+                  full_controller: true,
+                  observed_watering_enabled: true,
+                }
+              : {
+                  irrigation_enabled: true,
+                  watering_enabled: true,
+                  full_controller: false,
+                  direct_valve_control_enabled: false,
+                }) as any,
+          );
+        }
+      }
       // The engine is not created here. The zone is saved with the method it
       // is calculated by, and the integration gives it an engine of its own
       // with the options that go with it, exactly as for a zone added on the
@@ -758,6 +871,7 @@ class SmartIrrigationViewSetup extends LitElement {
         throughput: Number(this.zoneThroughput),
         state: "automatic",
         [ZONE_MAPPING]: created?.id,
+        ...(this.valve ? { linked_entity: this.valve } : {}),
         ...setupZoneMethod(this.engineName, this.staticDelta),
       } as any);
 
@@ -836,6 +950,9 @@ class SmartIrrigationViewSetup extends LitElement {
     this.zoneName = "";
     this.zoneSize = "";
     this.zoneThroughput = "";
+    this.valve = "";
+    // The mode is chosen: the next zone follows it.
+    this.firstZone = false;
     this.underGlass = false;
     this.weather = this.usesWeatherService ? "service" : "sensors";
     this.sensors = {};

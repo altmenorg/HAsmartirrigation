@@ -114,7 +114,10 @@
           "name": "Name",
           "size": "Area",
           "throughput": "Throughput",
-          "throughput-help": "How much water this zone delivers per minute. Measure it if you can, rather than taking it from a datasheet: it is what every duration is derived from, and it is the quietest way to water twice as long as you meant to."
+          "throughput-help": "How much water this zone delivers per minute. Measure it if you can, rather than taking it from a datasheet: it is what every duration is derived from, and it is the quietest way to water twice as long as you meant to.",
+          "valve": "Valve",
+          "valve-help": "The valve or switch that waters this zone. Without one, the zone is calculated but not watered until you link one in Zones.",
+          "valve-help-calculate": "If Smart Irrigation should see when this zone is watered by hand or by your automation, to count that water."
         },
         "environment": {
           "question": "Where does it grow?",
@@ -157,7 +160,14 @@
           "sources": "Sources",
           "from-the-service": "from the weather service",
           "no-sensor": "no sensor",
-          "help": "This creates a calculation module, a sensor group and a zone, exactly as the other tabs would. Nothing is locked afterwards."
+          "help": "This creates a sensor group and a zone, exactly as the other tabs would. Nothing is locked afterwards.",
+          "mode": "Smart Irrigation",
+          "no-valve": "none"
+        },
+        "mode": {
+          "question": "What should Smart Irrigation do?",
+          "water-help": "It works out what each zone needs and opens the valves itself, with a main program that waters every zone, done by sunrise. You can change its schedule afterwards.",
+          "calculate-help": "It works out what each zone needs; your automation, Irrigation Unlimited or your controller opens the valves."
         }
       },
       "step": "step",
@@ -170,7 +180,9 @@
       "calc-nothing": "Calculated: it is not short of water yet.",
       "calc-failed": "The calculation did not work. The zone says why under Zones.",
       "open-zone": "Open the zone",
-      "another": "Set up another zone"
+      "another": "Set up another zone",
+      "done-next-water": "The main program waters it with the other zones, done by sunrise. You find it under Watering.",
+      "done-next-no-valve": "Link it to a valve in Zones so that it is watered."
     },
     "weatherservice": {
       "history": {

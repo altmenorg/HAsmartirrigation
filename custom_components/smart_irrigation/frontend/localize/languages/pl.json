@@ -114,7 +114,10 @@
           "name": "Nazwa",
           "size": "Powierzchnia",
           "throughput": "Przepływ",
-          "throughput-help": "Ile wody ta strefa podaje na minutę. Zmierz to, jeśli możesz, zamiast brać z karty katalogowej: z tego wyprowadzany jest każdy czas, i to najcichszy sposób, żeby podlewać dwa razy dłużej, niż chciałeś."
+          "throughput-help": "Ile wody ta strefa podaje na minutę. Zmierz to, jeśli możesz, zamiast brać z karty katalogowej: z tego wyprowadzany jest każdy czas, i to najcichszy sposób, żeby podlewać dwa razy dłużej, niż chciałeś.",
+          "valve": "Zawór",
+          "valve-help": "Zawór lub przełącznik, który podlewa tę strefę. Bez niego strefa jest liczona, ale nie podlewana, dopóki nie podłączysz go w Strefach.",
+          "valve-help-calculate": "Jeśli Smart Irrigation ma widzieć, kiedy strefa jest podlewana ręcznie lub przez twoją automatyzację, by liczyć tę wodę."
         },
         "environment": {
           "question": "Gdzie to rośnie?",
@@ -157,7 +160,14 @@
           "sources": "Źródła",
           "from-the-service": "z serwisu pogodowego",
           "no-sensor": "brak czujnika",
-          "help": "To tworzy moduł, grupę czujników i strefę, dokładnie tak jak zrobiłyby to pozostałe zakładki. Potem nic nie jest zablokowane."
+          "help": "To tworzy grupę czujników i strefę, dokładnie tak jak inne karty. Nic nie jest potem zablokowane.",
+          "mode": "Smart Irrigation",
+          "no-valve": "brak"
+        },
+        "mode": {
+          "question": "Co ma robić Smart Irrigation?",
+          "water-help": "Oblicza, czego potrzebuje każda strefa, i sam otwiera zawory, z programem głównym, który podlewa wszystkie strefy do wschodu słońca. Harmonogram możesz potem zmienić.",
+          "calculate-help": "Oblicza, czego potrzebuje każda strefa; zawory otwiera twoja automatyzacja, Irrigation Unlimited lub sterownik."
         }
       },
       "step": "krok",
@@ -170,7 +180,9 @@
       "calc-nothing": "Obliczono: na razie nie brakuje jej wody.",
       "calc-failed": "Obliczenie się nie udało. Strefa podaje powód w zakładce Strefy.",
       "open-zone": "Otwórz strefę",
-      "another": "Skonfiguruj kolejną strefę"
+      "another": "Skonfiguruj kolejną strefę",
+      "done-next-water": "Program główny podlewa ją z innymi strefami, do wschodu słońca. Znajdziesz go w Podlewaniu.",
+      "done-next-no-valve": "Podłącz do niej zawór w Strefach, aby była podlewana."
     },
     "weatherservice": {
       "history": {

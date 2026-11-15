@@ -114,7 +114,10 @@
           "name": "Navn",
           "size": "Areal",
           "throughput": "Vannmengde",
-          "throughput-help": "Hvor mye vann denne sonen gir per minutt. Mål det hvis du kan, i stedet for å ta det fra et datablad: det er det hver varighet er utledet fra, og den stilleste måten å vanne dobbelt så lenge som du mente."
+          "throughput-help": "Hvor mye vann denne sonen gir per minutt. Mål det hvis du kan, i stedet for å ta det fra et datablad: det er det hver varighet er utledet fra, og den stilleste måten å vanne dobbelt så lenge som du mente.",
+          "valve": "Ventil",
+          "valve-help": "Ventilen eller bryteren som vanner denne sonen. Uten blir sonen beregnet men ikke vannet, til du kobler en til under Soner.",
+          "valve-help-calculate": "Hvis Smart Irrigation skal se når sonen vannes for hånd eller av automasjonen din, for å telle det vannet."
         },
         "environment": {
           "question": "Hvor vokser det?",
@@ -157,7 +160,14 @@
           "sources": "Kilder",
           "from-the-service": "fra værtjenesten",
           "no-sensor": "ingen sensor",
-          "help": "Dette oppretter en beregningsmodul, en sensorgruppe og en sone, akkurat som de andre fanene ville gjort. Etterpå er ingenting låst."
+          "help": "Dette lager en sensorgruppe og en sone, akkurat som de andre fanene ville. Ingenting er låst etterpå.",
+          "mode": "Smart Irrigation",
+          "no-valve": "ingen"
+        },
+        "mode": {
+          "question": "Hva skal Smart Irrigation gjøre?",
+          "water-help": "Det beregner hva hver sone trenger og åpner ventilene selv, med et hovedprogram som vanner alle soner, ferdig ved soloppgang. Du kan endre tidsplanen etterpå.",
+          "calculate-help": "Det beregner hva hver sone trenger; automasjonen din, Irrigation Unlimited eller kontrolleren din åpner ventilene."
         }
       },
       "step": "steg",
@@ -170,7 +180,9 @@
       "calc-nothing": "Beregnet: den mangler ikke vann ennå.",
       "calc-failed": "Beregningen fungerte ikke. Sonen forteller hvorfor under Soner.",
       "open-zone": "Åpne sonen",
-      "another": "Sett opp en sone til"
+      "another": "Sett opp en sone til",
+      "done-next-water": "Hovedprogrammet vanner den med de andre sonene, ferdig ved soloppgang. Du finner det under Vanning.",
+      "done-next-no-valve": "Koble en ventil til den under Soner så den blir vannet."
     },
     "weatherservice": {
       "history": {

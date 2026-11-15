@@ -114,7 +114,10 @@
           "name": "Name",
           "size": "Fläche",
           "throughput": "Durchfluss",
-          "throughput-help": "Wie viel Wasser diese Zone pro Minute abgibt. Miss es, wenn du kannst, statt es einem Datenblatt zu entnehmen: davon wird jede Dauer abgeleitet, und es ist der leiseste Weg, doppelt so lange zu bewässern wie gewollt."
+          "throughput-help": "Wie viel Wasser diese Zone pro Minute abgibt. Miss es, wenn du kannst, statt es einem Datenblatt zu entnehmen: davon wird jede Dauer abgeleitet, und es ist der leiseste Weg, doppelt so lange zu bewässern wie gewollt.",
+          "valve": "Ventil",
+          "valve-help": "Das Ventil oder der Schalter, der diese Zone bewässert. Ohne wird die Zone berechnet, aber nicht bewässert, bis du eines unter Zonen verknüpfst.",
+          "valve-help-calculate": "Falls Smart Irrigation sehen soll, wann diese Zone von Hand oder von deiner Automatisierung bewässert wird, um dieses Wasser zu zählen."
         },
         "environment": {
           "question": "Wo wächst es?",
@@ -157,7 +160,14 @@
           "sources": "Quellen",
           "from-the-service": "vom Wetterdienst",
           "no-sensor": "ohne Sensor",
-          "help": "Damit werden ein Berechnungsmodul, eine Sensorgruppe und eine Zone erstellt, genau wie über die anderen Tabs. Danach ist nichts festgeschrieben."
+          "help": "Dies legt eine Sensorgruppe und eine Zone an, genau wie die anderen Tabs. Danach ist nichts festgelegt.",
+          "mode": "Smart Irrigation",
+          "no-valve": "keines"
+        },
+        "mode": {
+          "question": "Was soll Smart Irrigation tun?",
+          "water-help": "Es berechnet, was jede Zone braucht, und öffnet die Ventile selbst, mit einem Hauptprogramm, das alle Zonen bis Sonnenaufgang bewässert. Den Zeitplan kannst du danach ändern.",
+          "calculate-help": "Es berechnet, was jede Zone braucht; deine Automatisierung, Irrigation Unlimited oder dein Steuergerät öffnet die Ventile."
         }
       },
       "step": "Schritt",
@@ -170,7 +180,9 @@
       "calc-nothing": "Berechnet: Ihr fehlt noch kein Wasser.",
       "calc-failed": "Die Berechnung hat nicht geklappt. Unter Zonen steht an der Zone, warum.",
       "open-zone": "Zur Zone",
-      "another": "Noch eine Zone anlegen"
+      "another": "Noch eine Zone anlegen",
+      "done-next-water": "Das Hauptprogramm bewässert sie mit den anderen Zonen bis Sonnenaufgang. Du findest es unter Bewässerung.",
+      "done-next-no-valve": "Verknüpfe sie unter Zonen mit einem Ventil, damit sie bewässert wird."
     },
     "weatherservice": {
       "history": {

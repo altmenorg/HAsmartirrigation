@@ -114,7 +114,10 @@
           "name": "名称",
           "size": "面积",
           "throughput": "流量",
-          "throughput-help": "这个区域每分钟出多少水。能测就实测，而不要照抄产品参数表：所有时长都是由它推出来的，而它也是最不声不响地让你浇两倍时长的原因。"
+          "throughput-help": "这个区域每分钟出多少水。能测就实测，而不要照抄产品参数表：所有时长都是由它推出来的，而它也是最不声不响地让你浇两倍时长的原因。",
+          "valve": "阀门",
+          "valve-help": "浇灌此区域的阀门或开关。没有它，区域会被计算但不会浇水，直到你在“区域”中关联一个。",
+          "valve-help-calculate": "如果 Smart Irrigation 需要知道此区域何时被手动或由你的自动化浇水，以便计入这些水。"
         },
         "environment": {
           "question": "它长在哪里？",
@@ -157,7 +160,14 @@
           "sources": "数据源",
           "from-the-service": "来自天气服务",
           "no-sensor": "无传感器",
-          "help": "这会创建一个计算模块、一个传感器组和一个区域，和用其他标签页创建的完全一样。之后一切都可以再改。"
+          "help": "这会创建一个传感器组和一个区域，与其他选项卡完全相同。之后没有任何锁定。",
+          "mode": "Smart Irrigation",
+          "no-valve": "无"
+        },
+        "mode": {
+          "question": "Smart Irrigation 应该做什么？",
+          "water-help": "它计算每个区域的需求并自行打开阀门，由主程序浇灌所有区域，在日出前完成。之后可以修改其时间表。",
+          "calculate-help": "它计算每个区域的需求；由你的自动化、Irrigation Unlimited 或控制器打开阀门。"
         }
       },
       "step": "步",
@@ -170,7 +180,9 @@
       "calc-nothing": "已计算：它目前还不缺水。",
       "calc-failed": "计算没有成功。原因显示在“区域”下的该区域中。",
       "open-zone": "打开区域",
-      "another": "再设置一个区域"
+      "another": "再设置一个区域",
+      "done-next-water": "主程序会与其他区域一起浇灌它，在日出前完成。你可以在“浇水”中找到它。",
+      "done-next-no-valve": "在“区域”中为它关联一个阀门，才能浇水。"
     },
     "weatherservice": {
       "history": {

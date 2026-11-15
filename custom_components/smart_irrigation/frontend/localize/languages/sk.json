@@ -114,7 +114,10 @@
           "name": "Názov",
           "size": "Plocha",
           "throughput": "Prietok",
-          "throughput-help": "Koľko vody táto zóna dodá za minútu. Zmerajte to, ak môžete, namiesto toho, aby ste to brali z katalógového listu: odvodzuje sa z toho každý čas a je to najtichší spôsob, ako zalievať dvakrát dlhšie, než ste chceli."
+          "throughput-help": "Koľko vody táto zóna dodá za minútu. Zmerajte to, ak môžete, namiesto toho, aby ste to brali z katalógového listu: odvodzuje sa z toho každý čas a je to najtichší spôsob, ako zalievať dvakrát dlhšie, než ste chceli.",
+          "valve": "Ventil",
+          "valve-help": "Ventil alebo spínač, ktorý zavlažuje túto zónu. Bez neho sa zóna počíta, ale nezavlažuje, kým ho neprepojíš v Zónach.",
+          "valve-help-calculate": "Ak má Smart Irrigation vidieť, kedy je zóna zalievaná ručne alebo tvojou automatizáciou, aby tú vodu započítal."
         },
         "environment": {
           "question": "Kde to rastie?",
@@ -157,7 +160,14 @@
           "sources": "Zdroje",
           "from-the-service": "z meteoslužby",
           "no-sensor": "žiadny senzor",
-          "help": "Tým sa vytvorí modul, skupina senzorov a zóna, presne ako by to urobili ostatné panely. Potom nie je nič pevne dané."
+          "help": "Týmto sa vytvorí skupina senzorov a zóna, presne ako v ostatných kartách. Nič nie je potom uzamknuté.",
+          "mode": "Smart Irrigation",
+          "no-valve": "žiadny"
+        },
+        "mode": {
+          "question": "Čo má Smart Irrigation robiť?",
+          "water-help": "Vypočíta, čo každá zóna potrebuje, a sám otvára ventily, s hlavným programom, ktorý zaleje všetky zóny do východu slnka. Jeho plán môžeš potom zmeniť.",
+          "calculate-help": "Vypočíta, čo každá zóna potrebuje; ventily otvára tvoja automatizácia, Irrigation Unlimited alebo tvoj ovládač."
         }
       },
       "step": "krok",
@@ -170,7 +180,9 @@
       "calc-nothing": "Vypočítané: zatiaľ jej voda nechýba.",
       "calc-failed": "Výpočet sa nepodaril. Prečo, uvádza zóna v sekcii Zóny.",
       "open-zone": "Otvoriť zónu",
-      "another": "Nastaviť ďalšiu zónu"
+      "another": "Nastaviť ďalšiu zónu",
+      "done-next-water": "Hlavný program ju zalieva s ostatnými zónami, hotovo do východu slnka. Nájdeš ho v Zavlažovaní.",
+      "done-next-no-valve": "Prepoj s ňou ventil v Zónach, aby sa zalievala."
     },
     "weatherservice": {
       "history": {

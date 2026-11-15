@@ -114,7 +114,10 @@
           "name": "Nome",
           "size": "Área",
           "throughput": "Vazão",
-          "throughput-help": "Quanta água esta zona entrega por minuto. Meça se puder, em vez de tirar de uma ficha técnica: é daí que sai cada duração, e é a forma mais silenciosa de irrigar o dobro do tempo que você pretendia."
+          "throughput-help": "Quanta água esta zona entrega por minuto. Meça se puder, em vez de tirar de uma ficha técnica: é daí que sai cada duração, e é a forma mais silenciosa de irrigar o dobro do tempo que você pretendia.",
+          "valve": "Válvula",
+          "valve-help": "A válvula ou o interruptor que irriga esta zona. Sem ela, a zona é calculada mas não irrigada, até você vincular uma em Zonas.",
+          "valve-help-calculate": "Se o Smart Irrigation deve ver quando esta zona é irrigada à mão ou pela sua automação, para contar essa água."
         },
         "environment": {
           "question": "Onde isso cresce?",
@@ -157,7 +160,14 @@
           "sources": "Fontes",
           "from-the-service": "do serviço de meteorologia",
           "no-sensor": "nenhum sensor",
-          "help": "Isso cria um módulo de cálculo, um grupo de sensores e uma zona, exatamente como as outras abas fariam. Depois nada fica travado."
+          "help": "Isso cria um grupo de sensores e uma zona, exatamente como as outras abas fariam. Nada fica travado depois.",
+          "mode": "Smart Irrigation",
+          "no-valve": "nenhuma"
+        },
+        "mode": {
+          "question": "O que o Smart Irrigation deve fazer?",
+          "water-help": "Ele calcula o que cada zona precisa e abre as válvulas sozinho, com um programa principal que irriga todas as zonas, terminado ao nascer do sol. Você pode mudar o horário depois.",
+          "calculate-help": "Ele calcula o que cada zona precisa; sua automação, o Irrigation Unlimited ou seu controlador abre as válvulas."
         }
       },
       "step": "etapa",
@@ -170,7 +180,9 @@
       "calc-nothing": "Calculado: ainda não falta água.",
       "calc-failed": "O cálculo não funcionou. A zona diz o motivo em Zonas.",
       "open-zone": "Abrir a zona",
-      "another": "Configurar outra zona"
+      "another": "Configurar outra zona",
+      "done-next-water": "O programa principal a irriga com as outras zonas, terminado ao nascer do sol. Você o encontra em Irrigação.",
+      "done-next-no-valve": "Vincule uma válvula a ela em Zonas para que seja irrigada."
     },
     "weatherservice": {
       "history": {

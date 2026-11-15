@@ -114,7 +114,10 @@
           "name": "Nom",
           "size": "Surface",
           "throughput": "Débit",
-          "throughput-help": "La quantité d'eau que cette zone délivre par minute. Mesure-la plutôt que de la lire sur une fiche technique : c'est de là que découlent toutes les durées d'arrosage, et c'est la façon la plus discrète d'arroser deux fois trop longtemps."
+          "throughput-help": "La quantité d'eau que cette zone délivre par minute. Mesure-la plutôt que de la lire sur une fiche technique : c'est de là que découlent toutes les durées d'arrosage, et c'est la façon la plus discrète d'arroser deux fois trop longtemps.",
+          "valve": "Vanne",
+          "valve-help": "La vanne ou l'interrupteur qui arrose cette zone. Sans elle, la zone est calculée mais pas arrosée, jusqu'à ce que tu en lies une dans Zones.",
+          "valve-help-calculate": "Si Smart Irrigation doit voir quand cette zone est arrosée à la main ou par ton automatisation, pour compter cette eau."
         },
         "environment": {
           "question": "Où cela pousse-t-il ?",
@@ -157,7 +160,14 @@
           "sources": "Sources",
           "from-the-service": "depuis le service météo",
           "no-sensor": "aucun capteur",
-          "help": "Ceci crée un module de calcul, un groupe de capteurs et une zone, exactement comme les autres onglets le feraient. Rien n'est verrouillé ensuite."
+          "help": "Ceci crée un groupe de capteurs et une zone, exactement comme les autres onglets le feraient. Rien n'est verrouillé ensuite.",
+          "mode": "Smart Irrigation",
+          "no-valve": "aucune"
+        },
+        "mode": {
+          "question": "Que doit faire Smart Irrigation ?",
+          "water-help": "Il calcule ce dont chaque zone a besoin et ouvre lui-même les vannes, avec un programme principal qui arrose toutes les zones, fini au lever du soleil. Tu pourras changer son horaire ensuite.",
+          "calculate-help": "Il calcule ce dont chaque zone a besoin ; ton automatisation, Irrigation Unlimited ou ton programmateur ouvre les vannes."
         }
       },
       "step": "étape",
@@ -170,7 +180,9 @@
       "calc-nothing": "Calculé : elle ne manque pas encore d'eau.",
       "calc-failed": "Le calcul n'a pas abouti. La zone en donne la raison dans Zones.",
       "open-zone": "Ouvrir la zone",
-      "another": "Configurer une autre zone"
+      "another": "Configurer une autre zone",
+      "done-next-water": "Le programme principal l'arrose avec les autres zones, pour qu'elle ait fini au lever du soleil. Tu le retrouves dans Arrosage.",
+      "done-next-no-valve": "Lie-lui une vanne dans Zones pour qu'elle soit arrosée."
     },
     "weatherservice": {
       "history": {

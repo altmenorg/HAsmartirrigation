@@ -114,7 +114,10 @@
           "name": "Név",
           "size": "Terület",
           "throughput": "Átfolyás",
-          "throughput-help": "Mennyi vizet ad ez a zóna percenként. Mérd meg, ha tudod, ahelyett hogy adatlapról venned: ebből vezet le minden időt, és ez a leghalkabb módja annak, hogy kétszer annyi ideig öntözz, mint akartad."
+          "throughput-help": "Mennyi vizet ad ez a zóna percenként. Mérd meg, ha tudod, ahelyett hogy adatlapról venned: ebből vezet le minden időt, és ez a leghalkabb módja annak, hogy kétszer annyi ideig öntözz, mint akartad.",
+          "valve": "Szelep",
+          "valve-help": "A zónát öntöző szelep vagy kapcsoló. Nélküle a zóna számolódik, de nem öntöződik, amíg nem kapcsolsz hozzá egyet a Zónákban.",
+          "valve-help-calculate": "Ha a Smart Irrigationnek látnia kell, mikor öntözöd kézzel vagy automatizálással ezt a zónát, hogy beszámítsa a vizet."
         },
         "environment": {
           "question": "Hol nő?",
@@ -157,7 +160,14 @@
           "sources": "Források",
           "from-the-service": "az időjárás-szolgáltatásból",
           "no-sensor": "nincs érzékelő",
-          "help": "Ez létrehoz egy számítási modult, egy érzékelőcsoportot és egy zónát, pontosan úgy, ahogy a többi fül tenné. Utána semmi nincs bezárva."
+          "help": "Ez létrehoz egy érzékelőcsoportot és egy zónát, pont ahogy a többi lap tenné. Utána semmi sincs rögzítve.",
+          "mode": "Smart Irrigation",
+          "no-valve": "nincs"
+        },
+        "mode": {
+          "question": "Mit csináljon a Smart Irrigation?",
+          "water-help": "Kiszámolja, mire van szüksége minden zónának, és maga nyitja a szelepeket, egy főprogrammal, amely napkeltére minden zónát megöntöz. Az ütemezést később módosíthatod.",
+          "calculate-help": "Kiszámolja, mire van szüksége minden zónának; a szelepeket az automatizálásod, az Irrigation Unlimited vagy a vezérlőd nyitja."
         }
       },
       "step": "lépés",
@@ -170,7 +180,9 @@
       "calc-nothing": "Kiszámítva: még nincs vízhiánya.",
       "calc-failed": "A számítás nem sikerült. Hogy miért, azt a zóna a Zónák alatt mutatja.",
       "open-zone": "Zóna megnyitása",
-      "another": "Újabb zóna beállítása"
+      "another": "Újabb zóna beállítása",
+      "done-next-water": "A főprogram a többi zónával együtt öntözi, napkeltére végez. Az Öntözés lapon találod.",
+      "done-next-no-valve": "Kapcsolj hozzá szelepet a Zónákban, hogy öntözve legyen."
     },
     "weatherservice": {
       "history": {

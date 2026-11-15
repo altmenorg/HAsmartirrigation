@@ -114,7 +114,10 @@
           "name": "Nome",
           "size": "Area",
           "throughput": "Portata",
-          "throughput-help": "Quanta acqua eroga questa zona al minuto. Misurala se puoi, invece di prenderla da una scheda tecnica: è da lì che deriva ogni durata, ed è il modo più silenzioso per irrigare il doppio del previsto."
+          "throughput-help": "Quanta acqua eroga questa zona al minuto. Misurala se puoi, invece di prenderla da una scheda tecnica: è da lì che deriva ogni durata, ed è il modo più silenzioso per irrigare il doppio del previsto.",
+          "valve": "Valvola",
+          "valve-help": "La valvola o l'interruttore che irriga questa zona. Senza, la zona viene calcolata ma non irrigata finché non ne colleghi una in Zone.",
+          "valve-help-calculate": "Se Smart Irrigation deve vedere quando questa zona viene irrigata a mano o dalla tua automazione, per contare quell'acqua."
         },
         "environment": {
           "question": "Dove cresce?",
@@ -157,7 +160,14 @@
           "sources": "Sorgenti",
           "from-the-service": "dal servizio meteo",
           "no-sensor": "nessun sensore",
-          "help": "Questo crea un modulo di calcolo, un gruppo di sensori e una zona, esattamente come farebbero le altre schede. Dopo niente resta bloccato."
+          "help": "Crea un gruppo di sensori e una zona, esattamente come farebbero le altre schede. Nulla resta bloccato dopo.",
+          "mode": "Smart Irrigation",
+          "no-valve": "nessuna"
+        },
+        "mode": {
+          "question": "Cosa deve fare Smart Irrigation?",
+          "water-help": "Calcola ciò che serve a ogni zona e apre da solo le valvole, con un programma principale che irriga tutte le zone, finito all'alba. Potrai cambiarne la pianificazione dopo.",
+          "calculate-help": "Calcola ciò che serve a ogni zona; la tua automazione, Irrigation Unlimited o il tuo programmatore apre le valvole."
         }
       },
       "step": "passo",
@@ -170,7 +180,9 @@
       "calc-nothing": "Calcolato: non le manca ancora acqua.",
       "calc-failed": "Il calcolo non è riuscito. La zona ne indica il motivo in Zone.",
       "open-zone": "Apri la zona",
-      "another": "Configura un'altra zona"
+      "another": "Configura un'altra zona",
+      "done-next-water": "Il programma principale la irriga con le altre zone, finito all'alba. Lo trovi in Irrigazione.",
+      "done-next-no-valve": "Collegale una valvola in Zone perché venga irrigata."
     },
     "weatherservice": {
       "history": {

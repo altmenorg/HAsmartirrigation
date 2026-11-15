@@ -114,7 +114,10 @@
           "name": "Navn",
           "size": "Areal",
           "throughput": "Vandmængde",
-          "throughput-help": "Hvor meget vand denne zone giver pr. minut. Mål det hvis du kan, i stedet for at tage det fra et datablad: det er det, hver varighed udledes af, og den mest lydløse måde at vande dobbelt så længe som du mente."
+          "throughput-help": "Hvor meget vand denne zone giver pr. minut. Mål det hvis du kan, i stedet for at tage det fra et datablad: det er det, hver varighed udledes af, og den mest lydløse måde at vande dobbelt så længe som du mente.",
+          "valve": "Ventil",
+          "valve-help": "Ventilen eller kontakten der vander denne zone. Uden bliver zonen beregnet men ikke vandet, indtil du tilknytter en under Zoner.",
+          "valve-help-calculate": "Hvis Smart Irrigation skal se, hvornår zonen vandes manuelt eller af din automatisering, for at tælle det vand med."
         },
         "environment": {
           "question": "Hvor vokser det?",
@@ -157,7 +160,14 @@
           "sources": "Kilder",
           "from-the-service": "fra vejrtjenesten",
           "no-sensor": "ingen sensor",
-          "help": "Dette opretter et beregningsmodul, en sensorgruppe og en zone, præcis som de andre faner ville. Bagefter er intet låst."
+          "help": "Dette opretter en sensorgruppe og en zone, præcis som de andre faner ville. Intet er låst bagefter.",
+          "mode": "Smart Irrigation",
+          "no-valve": "ingen"
+        },
+        "mode": {
+          "question": "Hvad skal Smart Irrigation gøre?",
+          "water-help": "Det beregner, hvad hver zone har brug for, og åbner selv ventilerne, med et hovedprogram der vander alle zoner, færdig ved solopgang. Du kan ændre tidsplanen bagefter.",
+          "calculate-help": "Det beregner, hvad hver zone har brug for; din automatisering, Irrigation Unlimited eller din styring åbner ventilerne."
         }
       },
       "step": "trin",
@@ -170,7 +180,9 @@
       "calc-nothing": "Beregnet: den mangler ikke vand endnu.",
       "calc-failed": "Beregningen lykkedes ikke. Zonen fortæller hvorfor under Zoner.",
       "open-zone": "Åbn zonen",
-      "another": "Opsæt en zone mere"
+      "another": "Opsæt en zone mere",
+      "done-next-water": "Hovedprogrammet vander den med de andre zoner, færdig ved solopgang. Du finder det under Vanding.",
+      "done-next-no-valve": "Tilknyt en ventil under Zoner, så den bliver vandet."
     },
     "weatherservice": {
       "history": {

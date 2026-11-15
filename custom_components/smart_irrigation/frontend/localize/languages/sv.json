@@ -114,7 +114,10 @@
           "name": "Namn",
           "size": "Yta",
           "throughput": "Flöde",
-          "throughput-help": "Hur mycket vatten zonen får per minut. Mät helst flödet på plats i stället för att använda värdet i databladet. Flödet avgör bevattningstiden, och ett felaktigt värde kan göra att du vattnar dubbelt så länge som avsett."
+          "throughput-help": "Hur mycket vatten zonen får per minut. Mät helst flödet på plats i stället för att använda värdet i databladet. Flödet avgör bevattningstiden, och ett felaktigt värde kan göra att du vattnar dubbelt så länge som avsett.",
+          "valve": "Ventil",
+          "valve-help": "Ventilen eller brytaren som vattnar zonen. Utan beräknas zonen men vattnas inte förrän du kopplar en under Zoner.",
+          "valve-help-calculate": "Om Smart Irrigation ska se när zonen vattnas för hand eller av din automation, för att räkna det vattnet."
         },
         "environment": {
           "question": "Var växer växterna?",
@@ -157,7 +160,14 @@
           "sources": "Källor",
           "from-the-service": "från vädertjänsten",
           "no-sensor": "ingen sensor",
-          "help": "Guiden skapar en beräkningsmodul, en sensorgrupp och en zon. Du kan ändra dem på respektive flik efteråt, precis som om du hade skapat dem manuellt."
+          "help": "Detta skapar en sensorgrupp och en zon, precis som de andra flikarna skulle. Inget är låst efteråt.",
+          "mode": "Smart Irrigation",
+          "no-valve": "ingen"
+        },
+        "mode": {
+          "question": "Vad ska Smart Irrigation göra?",
+          "water-help": "Det beräknar vad varje zon behöver och öppnar ventilerna själv, med ett huvudprogram som vattnar alla zoner, klart vid soluppgång. Du kan ändra schemat efteråt.",
+          "calculate-help": "Det beräknar vad varje zon behöver; din automation, Irrigation Unlimited eller din styrenhet öppnar ventilerna."
         }
       },
       "step": "steg",
@@ -170,7 +180,9 @@
       "calc-nothing": "Beräknad: zonen behöver inget vatten ännu.",
       "calc-failed": "Beräkningen misslyckades. Orsaken visas för zonen på fliken Zoner.",
       "open-zone": "Öppna zonen",
-      "another": "Ställ in en zon till"
+      "another": "Ställ in en zon till",
+      "done-next-water": "Huvudprogrammet vattnar den med de andra zonerna, klart vid soluppgång. Du hittar det under Bevattning.",
+      "done-next-no-valve": "Koppla en ventil till den under Zoner så att den vattnas."
     },
     "weatherservice": {
       "history": {

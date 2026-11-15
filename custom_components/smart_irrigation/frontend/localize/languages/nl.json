@@ -114,7 +114,10 @@
           "name": "Naam",
           "size": "Oppervlakte",
           "throughput": "Debiet",
-          "throughput-help": "Hoeveel water deze zone per minuut geeft. Meet het als je kunt, in plaats van het uit een datasheet te halen: elke duur wordt eruit afgeleid, en het is de stilste manier om twee keer zo lang te bewateren als je bedoelde."
+          "throughput-help": "Hoeveel water deze zone per minuut geeft. Meet het als je kunt, in plaats van het uit een datasheet te halen: elke duur wordt eruit afgeleid, en het is de stilste manier om twee keer zo lang te bewateren als je bedoelde.",
+          "valve": "Klep",
+          "valve-help": "De klep of schakelaar die deze zone beregent. Zonder wordt de zone berekend maar niet beregend, tot je er een koppelt in Zones.",
+          "valve-help-calculate": "Als Smart Irrigation moet zien wanneer deze zone met de hand of door je automatisering wordt beregend, om dat water te tellen."
         },
         "environment": {
           "question": "Waar groeit het?",
@@ -157,7 +160,14 @@
           "sources": "Bronnen",
           "from-the-service": "van de weerdienst",
           "no-sensor": "geen sensor",
-          "help": "Dit maakt een berekeningsmodule, een sensorgroep en een zone aan, net als de andere tabbladen zouden doen. Daarna staat niets vast."
+          "help": "Dit maakt een sensorgroep en een zone aan, precies zoals de andere tabbladen zouden doen. Daarna ligt niets vast.",
+          "mode": "Smart Irrigation",
+          "no-valve": "geen"
+        },
+        "mode": {
+          "question": "Wat moet Smart Irrigation doen?",
+          "water-help": "Het berekent wat elke zone nodig heeft en opent de kleppen zelf, met een hoofdprogramma dat alle zones beregent, klaar bij zonsopgang. Het schema kun je daarna wijzigen.",
+          "calculate-help": "Het berekent wat elke zone nodig heeft; je automatisering, Irrigation Unlimited of je controller opent de kleppen."
         }
       },
       "step": "stap",
@@ -170,7 +180,9 @@
       "calc-nothing": "Berekend: er is nog geen watertekort.",
       "calc-failed": "De berekening is niet gelukt. De zone vertelt waarom onder Zones.",
       "open-zone": "Zone openen",
-      "another": "Nog een zone instellen"
+      "another": "Nog een zone instellen",
+      "done-next-water": "Het hoofdprogramma beregent haar met de andere zones, klaar bij zonsopgang. Je vindt het onder Bewatering.",
+      "done-next-no-valve": "Koppel er in Zones een klep aan zodat ze beregend wordt."
     },
     "weatherservice": {
       "history": {

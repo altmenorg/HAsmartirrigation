@@ -114,7 +114,10 @@
           "name": "Ime",
           "size": "Površina",
           "throughput": "Pretok",
-          "throughput-help": "Koliko vode ta cona dovede na minuto. Če lahko, ga izmeri, namesto da ga prepišeš s podatkovnega lista: iz njega izhaja vsako trajanje, in to je najbolj neopazen način, da zalivaš dvakrat dlje, kot si nameraval."
+          "throughput-help": "Koliko vode ta cona dovede na minuto. Če lahko, ga izmeri, namesto da ga prepišeš s podatkovnega lista: iz njega izhaja vsako trajanje, in to je najbolj neopazen način, da zalivaš dvakrat dlje, kot si nameraval.",
+          "valve": "Ventil",
+          "valve-help": "Ventil ali stikalo, ki zaliva to območje. Brez njega se območje izračuna, ne pa zalije, dokler ga ne povežeš v Območjih.",
+          "valve-help-calculate": "Če naj Smart Irrigation vidi, kdaj se območje zaliva ročno ali s tvojo avtomatizacijo, da to vodo upošteva."
         },
         "environment": {
           "question": "Kje raste?",
@@ -157,7 +160,14 @@
           "sources": "Viri",
           "from-the-service": "iz vremenske storitve",
           "no-sensor": "brez senzorja",
-          "help": "To ustvari modul, skupino senzorjev in cono, natanko tako, kot bi jih ostali zavihki. Nič ni potem zaklenjeno."
+          "help": "To ustvari skupino senzorjev in območje, natanko tako kot drugi zavihki. Pozneje ni nič zaklenjeno.",
+          "mode": "Smart Irrigation",
+          "no-valve": "noben"
+        },
+        "mode": {
+          "question": "Kaj naj počne Smart Irrigation?",
+          "water-help": "Izračuna, kaj potrebuje vsako območje, in sam odpira ventile, z glavnim programom, ki zalije vsa območja do sončnega vzhoda. Urnik lahko spremeniš pozneje.",
+          "calculate-help": "Izračuna, kaj potrebuje vsako območje; ventile odpira tvoja avtomatizacija, Irrigation Unlimited ali tvoj krmilnik."
         }
       },
       "step": "korak",
@@ -170,7 +180,9 @@
       "calc-nothing": "Izračunano: vode ji še ne primanjkuje.",
       "calc-failed": "Izračun ni uspel. Zakaj, piše pri coni na zavihku Cone.",
       "open-zone": "Odpri cono",
-      "another": "Nastavi še eno cono"
+      "another": "Nastavi še eno cono",
+      "done-next-water": "Glavni program ga zaliva z ostalimi območji, končano do sončnega vzhoda. Najdeš ga pod Zalivanje.",
+      "done-next-no-valve": "Poveži ga z ventilom v Območjih, da bo zalito."
     },
     "weatherservice": {
       "history": {

@@ -114,7 +114,10 @@
           "name": "Název",
           "size": "Plocha",
           "throughput": "Průtok",
-          "throughput-help": "Kolik vody tato zóna dodá za minutu. Změřte to, pokud můžete, místo abyste to brali z katalogového listu: odvozuje se z toho každá doba a je to nejtišší způsob, jak zalévat dvakrát déle, než jste chtěli."
+          "throughput-help": "Kolik vody tato zóna dodá za minutu. Změřte to, pokud můžete, místo abyste to brali z katalogového listu: odvozuje se z toho každá doba a je to nejtišší způsob, jak zalévat dvakrát déle, než jste chtěli.",
+          "valve": "Ventil",
+          "valve-help": "Ventil nebo spínač, který tuto zónu zavlažuje. Bez něj se zóna počítá, ale nezavlažuje, dokud jej nepropojíš v Zónách.",
+          "valve-help-calculate": "Pokud má Smart Irrigation vidět, kdy je zóna zalévána ručně nebo tvou automatizací, aby tu vodu započítal."
         },
         "environment": {
           "question": "Kde to roste?",
@@ -157,7 +160,14 @@
           "sources": "Zdroje",
           "from-the-service": "z meteoslužby",
           "no-sensor": "žádný senzor",
-          "help": "Tím se vytvoří modul, skupina senzorů a zóna, přesně jako by to udělaly ostatní panely. Potom není nic pevně dané."
+          "help": "Tím se vytvoří skupina senzorů a zóna, přesně jako v ostatních kartách. Nic není potom uzamčeno.",
+          "mode": "Smart Irrigation",
+          "no-valve": "žádný"
+        },
+        "mode": {
+          "question": "Co má Smart Irrigation dělat?",
+          "water-help": "Spočítá, co každá zóna potřebuje, a sám otevírá ventily, s hlavním programem, který zalije všechny zóny do východu slunce. Jeho plán můžeš potom změnit.",
+          "calculate-help": "Spočítá, co každá zóna potřebuje; ventily otevírá tvoje automatizace, Irrigation Unlimited nebo tvůj ovladač."
         }
       },
       "step": "krok",
@@ -170,7 +180,9 @@
       "calc-nothing": "Vypočteno: zatím jí voda nechybí.",
       "calc-failed": "Výpočet se nezdařil. Proč, uvádí zóna v sekci Zóny.",
       "open-zone": "Otevřít zónu",
-      "another": "Nastavit další zónu"
+      "another": "Nastavit další zónu",
+      "done-next-water": "Hlavní program ji zalévá s ostatními zónami, hotovo do východu slunce. Najdeš ho v Zavlažování.",
+      "done-next-no-valve": "Propoj s ní ventil v Zónách, aby se zalévala."
     },
     "weatherservice": {
       "history": {
