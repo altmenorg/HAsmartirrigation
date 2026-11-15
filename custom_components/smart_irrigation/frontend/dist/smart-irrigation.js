@@ -1665,28 +1665,28 @@ function _e(e,t){return(t,i,s)=>((e,t,i)=>(i.configurable=!0,i.enumerable=!0,Ref
                 </div>
               `}):V`<div class="card-content">${i("nothing_planned")}</div>`}
       </ha-card>
-    `}async _fetchLive(e){var t;if(this.hass&&!0===(null===(t=this.config)||void 0===t?void 0:t.full_controller)&&"weather"!==this.section&&"sensors"!==this.section&&"skip"!==this.section)try{this.programsState=await this.hass.callWS({type:ui+"/programs_state"}),e&&(this.planning=await this.hass.callWS({type:ui+"/planning",days:3}),await this._fetchStartSource()),this._scheduleUpdate()}catch(e){console.error("Error fetching the programs' state:",e)}}_preview(e,t){var i;const s=JSON.stringify(t),a=En[e];return a&&a.key===s&&Date.now()-a.at<6e4||(null==a?void 0:a.pending)||!this.hass||(En[e]=Object.assign(Object.assign({},a||{}),{key:s,at:Date.now(),pending:!0}),window.setTimeout(async()=>{try{const i=await this.hass.callWS({type:ui+"/program_preview",program:t});En[e]={key:s,at:Date.now(),data:i}}catch(t){console.error("Error drawing the program:",t),En[e]={key:s,at:Date.now(),data:null==a?void 0:a.data}}this._scheduleUpdate()},400)),null===(i=En[e])||void 0===i?void 0:i.data}_yamlPreview(e,t,i){const s=Dn[e];if(!s||!this.hass)return;const a=((e,t)=>{if(!e||"object"!=typeof e||Array.isArray(e))return null;const i=Object.assign({},e);return delete i.main,t&&(i.id=t.id),i})(t,i);if(!a)return s.preview=void 0,s.error=oi("programs.yaml_not_a_program",this.hass.language),void this._scheduleUpdate();const n=JSON.stringify(a);s.key=n,window.setTimeout(async()=>{var t;if(Dn[e]===s&&s.key===n){try{const e=await this.hass.callWS({type:ui+"/program_preview",program:a});if(s.key!==n)return;s.preview=e,s.error=void 0}catch(e){s.preview=void 0,s.error=null!==(t=null==e?void 0:e.message)&&void 0!==t?t:String(e)}this._scheduleUpdate()}},400)}async _fetchStartSource(){var e,t;if(this.hass&&!0===(null===(e=this.config)||void 0===e?void 0:e.full_controller))try{const e=await on(this.hass);this.startSource=null!==(t=null==e?void 0:e.start_source)&&void 0!==t?t:"trigger",this._scheduleUpdate()}catch(e){console.error("Error fetching what starts the main program:",e)}}renderProgramsCard(e="others"){if(!this.config||!this.hass||!0!==this.config.full_controller)return V``;const t=this.hass.language,i=e=>oi(`programs.${e}`,t),s=this.config.programs||[],a=e=>{this.config=Object.assign(Object.assign({},this.config),{programs:e}),this.handleConfigChange({programs:e}),this._scheduleUpdate()},n=(e,t)=>a(s.map((i,s)=>s===e?Object.assign(Object.assign({},i),t):i)),r=(e,t=0)=>{const i=parseFloat(e);return isNaN(i)?t:i},o=e=>this._programLabel(e.main?"main":e.id,e.name),l=e=>hi(this,"hass-notification",{message:e}),d=async e=>{var t,s,a,n;const r=e.id,d=o(e),c=Cn[null!=r?r:""]||{},u=((null===(t=this.programsState)||void 0===t?void 0:t.programs)||[]).some(e=>["running","paused","waiting"].includes(e.state)),p=(c.replace&&u?i("confirm_run_replace"):i("confirm_run")).replace("{name}",d);if(!await this._ask(p))return;const g=Math.round(parseFloat(null!==(s=c.seconds)&&void 0!==s?s:"")),m={program_id:r};g>0&&"main"!==r&&(m.seconds=Math.min(g,86400)),c.replace&&(m.mode="replace");try{await this.hass.callService(ui,"run_program",m)}catch(e){return void l(i("run_failed").replace("{name}",d).replace("{error}",null!==(a=null==e?void 0:e.message)&&void 0!==a?a:String(e)))}await this._fetchLive(!1);const v=null===(n=h(r))||void 0===n?void 0:n.state;l(("running"===v?i("run_started"):"waiting"===v?c.replace?i("run_replacing"):i("run_queued"):i("run_nothing")).replace("{name}",d))},h=e=>{var t;return((null===(t=this.programsState)||void 0===t?void 0:t.programs)||[]).find(t=>t.program_id===e)},c=async e=>{await this._ask(i("confirm_stop_program").replace("{name}",e.name),!0)&&this.hass.callService(ui,"stop_program",{program_id:e.id}).then(()=>this._fetchLive(!1))},u=e=>{var s;const a=null===(s=h(e.id))||void 0===s?void 0:s.suspended_until;return a?V`
+    `}async _fetchLive(e){var t;if(this.hass&&!0===(null===(t=this.config)||void 0===t?void 0:t.full_controller)&&"weather"!==this.section&&"sensors"!==this.section&&"skip"!==this.section)try{this.programsState=await this.hass.callWS({type:ui+"/programs_state"}),e&&(this.planning=await this.hass.callWS({type:ui+"/planning",days:3}),await this._fetchStartSource()),this._scheduleUpdate()}catch(e){console.error("Error fetching the programs' state:",e)}}_preview(e,t){var i;const s=JSON.stringify(t),a=En[e];return a&&a.key===s&&Date.now()-a.at<6e4||(null==a?void 0:a.pending)||!this.hass||(En[e]=Object.assign(Object.assign({},a||{}),{key:s,at:Date.now(),pending:!0}),window.setTimeout(async()=>{try{const i=await this.hass.callWS({type:ui+"/program_preview",program:t});En[e]={key:s,at:Date.now(),data:i}}catch(t){console.error("Error drawing the program:",t),En[e]={key:s,at:Date.now(),data:null==a?void 0:a.data}}this._scheduleUpdate()},400)),null===(i=En[e])||void 0===i?void 0:i.data}_yamlPreview(e,t,i){const s=Dn[e];if(!s||!this.hass)return;const a=((e,t)=>{if(!e||"object"!=typeof e||Array.isArray(e))return null;const i=Object.assign({},e);return delete i.main,t&&(i.id=t.id),i})(t,i);if(!a)return s.preview=void 0,s.error=oi("programs.yaml_not_a_program",this.hass.language),void this._scheduleUpdate();const n=JSON.stringify(a);s.key=n,window.setTimeout(async()=>{var t;if(Dn[e]===s&&s.key===n){try{const e=await this.hass.callWS({type:ui+"/program_preview",program:a});if(s.key!==n)return;s.preview=e,s.error=void 0}catch(e){s.preview=void 0,s.error=null!==(t=null==e?void 0:e.message)&&void 0!==t?t:String(e)}this._scheduleUpdate()}},400)}async _fetchStartSource(){var e,t;if(this.hass&&!0===(null===(e=this.config)||void 0===e?void 0:e.full_controller))try{const e=await on(this.hass);this.startSource=null!==(t=null==e?void 0:e.start_source)&&void 0!==t?t:"trigger",this._scheduleUpdate()}catch(e){console.error("Error fetching what starts the main program:",e)}}renderProgramsCard(e="others"){var t,i;if(!this.config||!this.hass||!0!==this.config.full_controller)return V``;const s=this.hass.language,a=e=>oi(`programs.${e}`,s),n=this.config.programs||[],r=e=>{this.config=Object.assign(Object.assign({},this.config),{programs:e}),this.handleConfigChange({programs:e}),this._scheduleUpdate()},o=(e,t)=>r(n.map((i,s)=>s===e?Object.assign(Object.assign({},i),t):i)),l=(e,t=0)=>{const i=parseFloat(e);return isNaN(i)?t:i},d=e=>this._programLabel(e.main?"main":e.id,e.name),h=e=>hi(this,"hass-notification",{message:e}),c=async e=>{var t,i,s,n;const r=e.id,o=d(e),l=Cn[null!=r?r:""]||{},c=((null===(t=this.programsState)||void 0===t?void 0:t.programs)||[]).some(e=>["running","paused","waiting"].includes(e.state)),p=(l.replace&&c?a("confirm_run_replace"):a("confirm_run")).replace("{name}",o);if(!await this._ask(p))return;const g=Math.round(parseFloat(null!==(i=l.seconds)&&void 0!==i?i:"")),m={program_id:r};g>0&&"main"!==r&&(m.seconds=Math.min(g,86400)),l.replace&&(m.mode="replace");try{await this.hass.callService(ui,"run_program",m)}catch(e){return void h(a("run_failed").replace("{name}",o).replace("{error}",null!==(s=null==e?void 0:e.message)&&void 0!==s?s:String(e)))}await this._fetchLive(!1);const v=null===(n=u(r))||void 0===n?void 0:n.state;h(("running"===v?a("run_started"):"waiting"===v?l.replace?a("run_replacing"):a("run_queued"):a("run_nothing")).replace("{name}",o))},u=e=>{var t;return((null===(t=this.programsState)||void 0===t?void 0:t.programs)||[]).find(t=>t.program_id===e)},p=async e=>{await this._ask(a("confirm_stop_program").replace("{name}",e.name),!0)&&this.hass.callService(ui,"stop_program",{program_id:e.id}).then(()=>this._fetchLive(!1))},g=e=>{var t;const i=null===(t=u(e.id))||void 0===t?void 0:t.suspended_until;return i?V`
         <div class="setting-row">
           <div class="setting-label">
-            ${i("suspended_until").replace("{when}",sa(a,t,{tomorrow:oi("card.tomorrow",t),yesterday:oi("card.yesterday",t)}))}
+            ${a("suspended_until").replace("{when}",sa(i,s,{tomorrow:oi("card.tomorrow",s),yesterday:oi("card.yesterday",s)}))}
           </div>
-          ${this._actionBtn(Ba,i("lift_suspension"),async()=>{await this.hass.callService(ui,"suspend",{program_id:e.id,hours:0}),await this._fetchLive(!1)})}
+          ${this._actionBtn(Ba,a("lift_suspension"),async()=>{await this.hass.callService(ui,"suspend",{program_id:e.id,hours:0}),await this._fetchLive(!1)})}
         </div>
-      `:V``},p=e=>{var s;const a=["running","waiting"].includes(null===(s=h(e.id))||void 0===s?void 0:s.state);return Ca(e)||a?V`
-        ${u(e)}
+      `:V``},m=e=>{var t;const i=["running","waiting"].includes(null===(t=u(e.id))||void 0===t?void 0:t.state);return Ca(e)||i?V`
+        ${g(e)}
         <div class="si-actions plain">
-          ${Ca(e)?this._actionBtn(Ba,i("run_now"),()=>d(e)):""}
-          ${a?this._actionBtn(Va,i("stop_program"),()=>c(e),!0):""}
+          ${Ca(e)?this._actionBtn(Ba,a("run_now"),()=>c(e)):""}
+          ${i?this._actionBtn(Va,a("stop_program"),()=>p(e),!0):""}
         </div>
-        ${Ca(e)?(e=>{var s,a,n;return V`
+        ${Ca(e)?(e=>{var t,i,n;return V`
       <details class="more">
-        <summary>${i("run_options")}</summary>
+        <summary>${a("run_options")}</summary>
         <div class="more-body">
           ${"main"===e?"":V`<div class="setting-row">
                   <div class="setting-label">
-                    ${i("run_seconds")}
+                    ${a("run_seconds")}
                     <span class="unit"
-                      >(${oi("common.units.seconds",t)})</span
+                      >(${oi("common.units.seconds",s)})</span
                     >
                   </div>
                   <input
@@ -1694,25 +1694,25 @@ function _e(e,t){return(t,i,s)=>((e,t,i)=>(i.configurable=!0,i.enumerable=!0,Ref
                     type="number"
                     min="1"
                     max="86400"
-                    .value=${null!==(a=null===(s=Cn[null!=e?e:""])||void 0===s?void 0:s.seconds)&&void 0!==a?a:""}
+                    .value=${null!==(i=null===(t=Cn[null!=e?e:""])||void 0===t?void 0:t.seconds)&&void 0!==i?i:""}
                     @input=${t=>{var i;(Cn[i=null!=e?e:""]||(Cn[i]={})).seconds=t.target.value}}
                   />
                 </div>
                 <div class="setting-hint row-hint">
-                  ${i("run_seconds_help")}
+                  ${a("run_seconds_help")}
                 </div>`}
           <div class="setting-row">
-            <div class="setting-label">${i("run_replace")}</div>
+            <div class="setting-label">${a("run_replace")}</div>
             <ha-switch
               .checked=${!0===(null===(n=Cn[null!=e?e:""])||void 0===n?void 0:n.replace)}
               @change=${t=>{var i;(Cn[i=null!=e?e:""]||(Cn[i]={})).replace=t.target.checked}}
             ></ha-switch>
           </div>
-          <div class="setting-hint row-hint">${i("run_replace_help")}</div>
+          <div class="setting-hint row-hint">${a("run_replace_help")}</div>
         </div>
       </details>
     `})(e.id):""}
-      `:u(e)},g=e=>{var t;return null===(t=h(e.id))||void 0===t?void 0:t.adjustment},m=e=>{var s,a;const n=g(e);if(!n)return"";const r=Number(null!==(s=n.percent)&&void 0!==s?s:100),o=Math.round(Number(null!==(a=n.seconds)&&void 0!==a?a:0)),l=[100!==r?`${r} %`:"",0!==o?i("adjust_per_step").replace("{time}",`${o>0?"+":"−"}${ta(Math.abs(o))}`):""].filter(Boolean).join(", ");return n.until?i("adjust_short").replace("{what}",l).replace("{when}",sa(n.until,t,{tomorrow:oi("card.tomorrow",t),yesterday:oi("card.yesterday",t)})):i("adjust_short_open").replace("{what}",l)},v=e=>{var s;const a=null!==(s=e.id)&&void 0!==s?s:"",n=Hn[a]||(Hn[a]={}),r=g(e);if(!r&&!(e.steps||[]).length)return V``;const o=r?i("adjust_in_force").replace("{what}",m(e)):i("adjust_none"),d=(e,t,i,s)=>{var a;return V`
+      `:g(e)},v=e=>{var t;return null===(t=u(e.id))||void 0===t?void 0:t.adjustment},f=e=>{var t,i;const n=v(e);if(!n)return"";const r=Number(null!==(t=n.percent)&&void 0!==t?t:100),o=Math.round(Number(null!==(i=n.seconds)&&void 0!==i?i:0)),l=[100!==r?`${r} %`:"",0!==o?a("adjust_per_step").replace("{time}",`${o>0?"+":"−"}${ta(Math.abs(o))}`):""].filter(Boolean).join(", ");return n.until?a("adjust_short").replace("{what}",l).replace("{when}",sa(n.until,s,{tomorrow:oi("card.tomorrow",s),yesterday:oi("card.yesterday",s)})):a("adjust_short_open").replace("{what}",l)},_=e=>{var t;const i=null!==(t=e.id)&&void 0!==t?t:"",n=Hn[i]||(Hn[i]={}),r=v(e);if(!r&&!(e.steps||[]).length)return V``;const o=r?a("adjust_in_force").replace("{what}",f(e)):a("adjust_none"),l=(e,t,i,s)=>{var a;return V`
         <div class="setting-row">
           <div class="setting-label">
             ${e}${t?V` <span class="unit">(${t})</span>`:""}
@@ -1725,25 +1725,25 @@ function _e(e,t){return(t,i,s)=>((e,t,i)=>(i.configurable=!0,i.enumerable=!0,Ref
             @input=${e=>{n[i]=e.target.value}}
           />
         </div>
-      `},h=t=>this.hass.callService(ui,"adjust_program",Object.assign({program_id:e.id},t)).then(()=>this._fetchLive(!1));return V`
-        <div class="fold-section">${i("adjust_title")}</div>
+      `},d=t=>this.hass.callService(ui,"adjust_program",Object.assign({program_id:e.id},t)).then(()=>this._fetchLive(!1));return V`
+        <div class="fold-section">${a("adjust_title")}</div>
         <div class="setting-note">${o}</div>
         ${r?V`<div class="si-actions">
-              ${this._actionBtn(La,i("adjust_reset"),async()=>{await this._ask(i("confirm_reset_adjustment"),!0)&&h({reset:!0})},!0)}
+              ${this._actionBtn(La,a("adjust_reset"),async()=>{await this._ask(a("confirm_reset_adjustment"),!0)&&d({reset:!0})},!0)}
             </div>`:""}
         <details class="more">
-          <summary>${i(r?"adjust_change":"adjust_set")}</summary>
+          <summary>${a(r?"adjust_change":"adjust_set")}</summary>
           <div class="more-body">
-            ${d(i("adjust_percent"),"%","percent","100")}
-            ${d(i("adjust_seconds"),oi("common.units.seconds",t),"seconds","0")}
-            ${d(i("adjust_hours"),"h","hours","")}
-            <div class="setting-hint row-hint">${i("adjust_help")}</div>
+            ${l(a("adjust_percent"),"%","percent","100")}
+            ${l(a("adjust_seconds"),oi("common.units.seconds",s),"seconds","0")}
+            ${l(a("adjust_hours"),"h","hours","")}
+            <div class="setting-hint row-hint">${a("adjust_help")}</div>
             <div class="si-actions">
-              ${this._actionBtn(Na,i("adjust_apply"),()=>{var e,t,s;const a={},r=parseFloat(null!==(e=n.percent)&&void 0!==e?e:""),o=parseFloat(null!==(t=n.seconds)&&void 0!==t?t:""),d=parseFloat(null!==(s=n.hours)&&void 0!==s?s:"");isNaN(r)||(a.percent=r),isNaN(o)||(a.seconds=Math.round(o)),!isNaN(d)&&d>=1&&(a.hours=Math.round(d)),void 0!==a.percent||void 0!==a.seconds?h(a):l(i("adjust_empty"))})}
+              ${this._actionBtn(Na,a("adjust_apply"),()=>{var e,t,i;const s={},r=parseFloat(null!==(e=n.percent)&&void 0!==e?e:""),o=parseFloat(null!==(t=n.seconds)&&void 0!==t?t:""),l=parseFloat(null!==(i=n.hours)&&void 0!==i?i:"");isNaN(r)||(s.percent=r),isNaN(o)||(s.seconds=Math.round(o)),!isNaN(l)&&l>=1&&(s.hours=Math.round(l)),void 0!==s.percent||void 0!==s.seconds?d(s):h(a("adjust_empty"))})}
             </div>
           </div>
         </details>
-      `},f=()=>Math.random().toString(36).slice(2,8),_=e=>new Intl.DateTimeFormat(t,{weekday:"short"}).format(new Date(2024,0,1+e)),w=e=>new Intl.DateTimeFormat(t,{month:"short"}).format(new Date(2024,e,1)),y=e=>(e||[]).map(e=>{var t,s;return null!==(s=null===(t=this.zones.find(t=>t.id===e))||void 0===t?void 0:t.name)&&void 0!==s?s:i("deleted_zone")}).join(" + ")||i("no_zone"),b=(e,t,i)=>V`
+      `},w=()=>Math.random().toString(36).slice(2,8),y=e=>new Intl.DateTimeFormat(s,{weekday:"short"}).format(new Date(2024,0,1+e)),b=e=>new Intl.DateTimeFormat(s,{month:"short"}).format(new Date(2024,e,1)),$=e=>(e||[]).map(e=>{var t,i;return null!==(i=null===(t=this.zones.find(t=>t.id===e))||void 0===t?void 0:t.name)&&void 0!==i?i:a("deleted_zone")}).join(" + ")||a("no_zone"),x=(e,t,i)=>V`
       <details
         class="fold"
         ?open=${this._isOpen(e)}
@@ -1752,59 +1752,59 @@ function _e(e,t){return(t,i,s)=>((e,t,i)=>(i.configurable=!0,i.enumerable=!0,Ref
         <summary>${t}</summary>
         <div class="fold-body">${i}</div>
       </details>
-    `,$=(e,t,s)=>V`
+    `,k=(e,t,i)=>V`
       <details
         class="more"
         ?open=${this._isOpen(e)||t&&!An.has(e)}
         @toggle=${t=>{const i=t.target.open;this._setOpen(e,i),i?An.delete(e):An.add(e)}}
       >
         <summary>
-          ${i("more_options")}${t?V` · <em>${i("more_options_set")}</em>`:""}
+          ${a("more_options")}${t?V` · <em>${a("more_options_set")}</em>`:""}
         </summary>
-        <div class="more-body">${s}</div>
+        <div class="more-body">${i}</div>
       </details>
-    `,x=(e,s)=>{var a;const n=null!==(a=e.id)&&void 0!==a?a:"";if(null!==s&&!this._isOpen(s))return V``;const r=this._preview(n,e);return V`
-        <div class="fold-section">${i("preview_title")}</div>
-        <div class="setting-hint row-hint">${i("preview_help")}</div>
+    `,S=(e,t)=>{var i;const n=null!==(i=e.id)&&void 0!==i?i:"";if(null!==t&&!this._isOpen(t))return V``;const r=this._preview(n,e);return V`
+        <div class="fold-section">${a("preview_title")}</div>
+        <div class="setting-hint row-hint">${a("preview_help")}</div>
         ${r?V`<si-program-timeline
               .timeline=${r.timeline}
-              .lang=${t}
+              .lang=${s}
             ></si-program-timeline>`:V`<div class="setting-note">…</div>`}
-      `},k=async(e,t)=>{await(async()=>{var e,t,i,s,a,n,r;if(customElements.get("ha-yaml-editor"))return;const o=document.createElement("partial-panel-resolver").getRoutes([{component_name:"developer-tools",url_path:"a"}]);await(null===(i=null===(t=null===(e=null==o?void 0:o.routes)||void 0===e?void 0:e.a)||void 0===t?void 0:t.load)||void 0===i?void 0:i.call(t));const l=document.createElement("developer-tools-router");await(null===(r=null===(n=null===(a=null===(s=null==l?void 0:l.routerOptions)||void 0===s?void 0:s.routes)||void 0===a?void 0:a.service)||void 0===n?void 0:n.load)||void 0===r?void 0:r.call(n))})().catch(()=>{}),Dn[e]={initial:t,value:t,valid:!0},this._yamlPreview(e,t,e?s.find(t=>t.id===e):void 0),this._scheduleUpdate()},S=e=>{delete Dn[e],this._scheduleUpdate()},z=(e,n)=>{const r=Dn[e],o=null===n?void 0:s[n],d=r.preview,h=d?[...d.unknown_zone_names.map(e=>`"${e}"`),...d.unknown_zones.map(e=>`#${e}`)]:[],c=(null==d?void 0:d.zones_not_watered)||[];return V`
-        <div class="setting-hint row-hint">${i("yaml_help")}</div>
+      `},z=e=>void 0!==Dn[e],T=async(e,t)=>{await(async()=>{var e,t,i,s,a,n,r;if(customElements.get("ha-yaml-editor"))return;const o=document.createElement("partial-panel-resolver").getRoutes([{component_name:"developer-tools",url_path:"a"}]);await(null===(i=null===(t=null===(e=null==o?void 0:o.routes)||void 0===e?void 0:e.a)||void 0===t?void 0:t.load)||void 0===i?void 0:i.call(t));const l=document.createElement("developer-tools-router");await(null===(r=null===(n=null===(a=null===(s=null==l?void 0:l.routerOptions)||void 0===s?void 0:s.routes)||void 0===a?void 0:a.service)||void 0===n?void 0:n.load)||void 0===r?void 0:r.call(n))})().catch(()=>{}),Dn[e]={initial:t,value:t,valid:!0},this._yamlPreview(e,t,e?n.find(t=>t.id===e):void 0),this._scheduleUpdate()},M=e=>{delete Dn[e],this._scheduleUpdate()},O=(e,t)=>{const i=Dn[e],o=null===t?void 0:n[t],l=i.preview,d=l?[...l.unknown_zone_names.map(e=>`"${e}"`),...l.unknown_zones.map(e=>`#${e}`)]:[],c=(null==l?void 0:l.zones_not_watered)||[];return V`
+        <div class="setting-hint row-hint">${a("yaml_help")}</div>
         <ha-yaml-editor
           .hass=${this.hass}
-          .defaultValue=${r.initial}
-          @value-changed=${t=>{t.stopPropagation();const{value:i,isValid:s}=t.detail||{};r.value=i,r.valid=!1!==s,r.valid&&this._yamlPreview(e,i,o),this._scheduleUpdate()}}
+          .defaultValue=${i.initial}
+          @value-changed=${t=>{t.stopPropagation();const{value:s,isValid:a}=t.detail||{};i.value=s,i.valid=!1!==a,i.valid&&this._yamlPreview(e,s,o),this._scheduleUpdate()}}
         ></ha-yaml-editor>
-        ${r.valid?r.error?V`<div class="setting-hint row-hint warning-hint">
-                ${r.error}
+        ${i.valid?i.error?V`<div class="setting-hint row-hint warning-hint">
+                ${i.error}
               </div>`:"":V`<div class="setting-hint row-hint warning-hint">
-              ${i("yaml_invalid")}
+              ${a("yaml_invalid")}
             </div>`}
-        ${h.length?V`<div class="setting-hint row-hint warning-hint">
-              ${i("yaml_unknown_zones").replace("{zones}",h.join(", "))}
+        ${d.length?V`<div class="setting-hint row-hint warning-hint">
+              ${a("yaml_unknown_zones").replace("{zones}",d.join(", "))}
             </div>`:""}
         ${c.length?V`<div class="setting-hint row-hint warning-hint">
-              ${i("yaml_not_watered").replace("{zones}",c.map(e=>{var t;return null!==(t=e.zone)&&void 0!==t?t:`#${e.zone_id}`}).join(", "))}
+              ${a("yaml_not_watered").replace("{zones}",c.map(e=>{var t;return null!==(t=e.zone)&&void 0!==t?t:`#${e.zone_id}`}).join(", "))}
             </div>`:""}
-        ${d&&r.valid&&!r.error?V`<si-program-timeline
-              .timeline=${d.timeline}
-              .lang=${t}
+        ${l&&i.valid&&!i.error?V`<si-program-timeline
+              .timeline=${l.timeline}
+              .lang=${s}
             ></si-program-timeline>`:""}
         <div class="si-actions">
-          ${this._actionBtn(Na,i("yaml_apply"),()=>{if(!d)return;const t=Object.assign(Object.assign({},d.program),{main:!1});null===n?(this._setOpen(`program:${t.id}`,!0),a([...s,t])):a(s.map((e,i)=>i===n?t:e)),S(e),l(i("yaml_applied"))},!1,!r.valid||!d||!!r.error)}
-          ${this._actionBtn(Ra,i("yaml_cancel"),()=>S(e))}
+          ${this._actionBtn(Na,a("yaml_apply"),()=>{if(!l)return;const i=Object.assign(Object.assign({},l.program),{main:!0===(null==o?void 0:o.main)});null===t?(this._setOpen(`program:${i.id}`,!0),r([...n,i])):r(n.map((e,s)=>s===t?i:e)),M(e),h(a("yaml_applied"))},!1,!i.valid||!l||!!i.error)}
+          ${this._actionBtn(Ra,a("yaml_cancel"),()=>M(e))}
         </div>
-      `},T=e=>V`<div class="si-actions plain">
-        ${this._actionBtn("M8,3A2,2 0 0,0 6,5V9A2,2 0 0,1 4,11H3V13H4A2,2 0 0,1 6,15V19A2,2 0 0,0 8,21H10V19H8V14A2,2 0 0,0 6,12A2,2 0 0,0 8,10V5H10V3M16,3A2,2 0 0,1 18,5V9A2,2 0 0,0 20,11H21V13H20A2,2 0 0,0 18,15V19A2,2 0 0,1 16,21H14V19H16V14A2,2 0 0,1 18,12A2,2 0 0,1 16,10V5H14V3H16Z",i("yaml_edit"),()=>{var t;return k(null!==(t=e.id)&&void 0!==t?t:"",((e,t)=>{var i,s,a,n,r;const o=new Map;for(const e of t){const t=String(null!==(i=e.name)&&void 0!==i?i:"").trim().toLowerCase();o.set(t,(null!==(s=o.get(t))&&void 0!==s?s:0)+1)}const l=e=>{var i;const s=t.find(t=>t.id===e),a=String(null!==(i=null==s?void 0:s.name)&&void 0!==i?i:"").trim().toLowerCase();return s&&a&&1===o.get(a)&&!/^-?\d+$/.test(a)?String(s.name).trim():e},d={id:e.id,name:e.name};return!1===e.enabled&&(d.enabled=!1),e.delay&&(d.delay=e.delay),(null!==(a=e.tours)&&void 0!==a?a:1)>1&&(d.tours=e.tours),d.steps=(e.steps||[]).map(e=>{const t=wn(e,vn,["zones","mode","percent","seconds"]),i={id:e.id,zones:(e.zones||[]).map(l)};return e.mode&&"calculated"!==e.mode&&(i.mode=e.mode),"percent"===e.mode&&(i.percent=e.percent),"fixed"===e.mode&&(i.seconds=e.seconds),delete t.id,Object.assign(Object.assign({},i),t)}),d.schedules=(e.schedules||[]).map(e=>{const t="sun"===e.type?["time"]:["event","offset_minutes"];return wn(e,fn,t)}),(null===(r=null===(n=e.notify)||void 0===n?void 0:n.targets)||void 0===r?void 0:r.length)&&(d.notify=Object.assign({},e.notify)),d})(e,this.zones))})}
-      </div>`,M=(e,s,a,o)=>{var l,d,h,c,u,p,g,m,v,f,_,w,x,k,S,z,T;const M=t=>n(s,{steps:(e.steps||[]).map((e,i)=>i===o?Object.assign(Object.assign({},e),t):e)}),O=(e,t)=>{const i=(a.zones||[]).filter(t=>t!==e);M({zones:t?[...i,e]:i})},A=Math.max(1,Number(a.passes)||1),C=null===a.delay||void 0===a.delay?null:Number(a.delay),H=[A>1?i("passes_short").replace("{n}",String(A)):"",null!==C&&C<0?i("overlap_short").replace("{time}",ta(Math.abs(C))):"",null!==C&&C>0?i("wait_short").replace("{time}",ta(C)):""].filter(Boolean),E=(null!==(l=a.min_seconds)&&void 0!==l?l:0)>0&&(null!==(d=a.max_seconds)&&void 0!==d?d:0)>0&&(null!==(h=a.min_seconds)&&void 0!==h?h:0)>(null!==(c=a.max_seconds)&&void 0!==c?c:0);return b(`step:${a.id}`,V`<strong>${i("step")} ${o+1}</strong> ·
-          ${y(a.zones)} ·
-          ${(e=>"fixed"===e.mode?`${e.seconds} s`:"percent"===e.mode?`${i("mode_calculated_short")} × ${e.percent} %`:i("mode_calculated_short"))(a)}${H.map(e=>V` · ${e}`)}${!1===a.enabled?V` · <em>${i("off")}</em>`:""}`,V`
+      `},A=e=>V`<div class="si-actions plain">
+        ${this._actionBtn("M8,3A2,2 0 0,0 6,5V9A2,2 0 0,1 4,11H3V13H4A2,2 0 0,1 6,15V19A2,2 0 0,0 8,21H10V19H8V14A2,2 0 0,0 6,12A2,2 0 0,0 8,10V5H10V3M16,3A2,2 0 0,1 18,5V9A2,2 0 0,0 20,11H21V13H20A2,2 0 0,0 18,15V19A2,2 0 0,1 16,21H14V19H16V14A2,2 0 0,1 18,12A2,2 0 0,1 16,10V5H14V3H16Z",a("yaml_edit"),()=>{var t;return T(null!==(t=e.id)&&void 0!==t?t:"",((e,t)=>{var i,s,a,n,r;const o=new Map;for(const e of t){const t=String(null!==(i=e.name)&&void 0!==i?i:"").trim().toLowerCase();o.set(t,(null!==(s=o.get(t))&&void 0!==s?s:0)+1)}const l=e=>{var i;const s=t.find(t=>t.id===e),a=String(null!==(i=null==s?void 0:s.name)&&void 0!==i?i:"").trim().toLowerCase();return s&&a&&1===o.get(a)&&!/^-?\d+$/.test(a)?String(s.name).trim():e},d={id:e.id,name:e.name};return!1===e.enabled&&(d.enabled=!1),e.delay&&(d.delay=e.delay),(null!==(a=e.tours)&&void 0!==a?a:1)>1&&(d.tours=e.tours),d.steps=(e.steps||[]).map(e=>{const t=wn(e,vn,["zones","mode","percent","seconds"]),i={id:e.id,zones:(e.zones||[]).map(l)};return e.mode&&"calculated"!==e.mode&&(i.mode=e.mode),"percent"===e.mode&&(i.percent=e.percent),"fixed"===e.mode&&(i.seconds=e.seconds),delete t.id,Object.assign(Object.assign({},i),t)}),d.schedules=(e.schedules||[]).map(e=>{const t="sun"===e.type?["time"]:["event","offset_minutes"];return wn(e,fn,t)}),(null===(r=null===(n=e.notify)||void 0===n?void 0:n.targets)||void 0===r?void 0:r.length)&&(d.notify=Object.assign({},e.notify)),e.main&&delete d.steps,d})(e,this.zones))})}
+      </div>`,C=(e,t,i,n)=>{var r,d,h,c,u,p,g,m,v,f,_,w,y,b,S,z,T;const M=i=>o(t,{steps:(e.steps||[]).map((e,t)=>t===n?Object.assign(Object.assign({},e),i):e)}),O=(e,t)=>{const s=(i.zones||[]).filter(t=>t!==e);M({zones:t?[...s,e]:s})},A=Math.max(1,Number(i.passes)||1),C=null===i.delay||void 0===i.delay?null:Number(i.delay),H=[A>1?a("passes_short").replace("{n}",String(A)):"",null!==C&&C<0?a("overlap_short").replace("{time}",ta(Math.abs(C))):"",null!==C&&C>0?a("wait_short").replace("{time}",ta(C)):""].filter(Boolean),E=(null!==(r=i.min_seconds)&&void 0!==r?r:0)>0&&(null!==(d=i.max_seconds)&&void 0!==d?d:0)>0&&(null!==(h=i.min_seconds)&&void 0!==h?h:0)>(null!==(c=i.max_seconds)&&void 0!==c?c:0);return x(`step:${i.id}`,V`<strong>${a("step")} ${n+1}</strong> ·
+          ${$(i.zones)} ·
+          ${(e=>"fixed"===e.mode?`${e.seconds} s`:"percent"===e.mode?`${a("mode_calculated_short")} × ${e.percent} %`:a("mode_calculated_short"))(i)}${H.map(e=>V` · ${e}`)}${!1===i.enabled?V` · <em>${a("off")}</em>`:""}`,V`
           <div class="setting-row">
-            <div class="setting-label">${i("step_zones")}</div>
+            <div class="setting-label">${a("step_zones")}</div>
             <div>
-              ${(a.zones||[]).filter(e=>!this.zones.some(t=>t.id===e)).map(e=>V`
+              ${(i.zones||[]).filter(e=>!this.zones.some(t=>t.id===e)).map(e=>V`
                     <label
                       style="margin-right: 12px; white-space: nowrap; color: var(--warning-color, #ff9800);"
                     >
@@ -1813,14 +1813,14 @@ function _e(e,t){return(t,i,s)=>((e,t,i)=>(i.configurable=!0,i.enumerable=!0,Ref
                         checked
                         @change=${t=>O(e,t.target.checked)}
                       />
-                      &#9888; ${i("deleted_zone")}
+                      &#9888; ${a("deleted_zone")}
                     </label>
                   `)}
               ${this.zones.map(e=>V`
                   <label style="margin-right: 12px; white-space: nowrap;">
                     <input
                       type="checkbox"
-                      .checked=${(a.zones||[]).includes(e.id)}
+                      .checked=${(i.zones||[]).includes(e.id)}
                       @change=${t=>O(e.id,t.target.checked)}
                     />
                     ${e.name}
@@ -1828,206 +1828,206 @@ function _e(e,t){return(t,i,s)=>((e,t,i)=>(i.configurable=!0,i.enumerable=!0,Ref
                 `)}
             </div>
           </div>
-          <div class="setting-hint row-hint">${i("step_zones_help")}</div>
-          ${this._selectRow(i("step_duration"),V`
+          <div class="setting-hint row-hint">${a("step_zones_help")}</div>
+          ${this._selectRow(a("step_duration"),V`
               <option
                 value="calculated"
-                ?selected=${"calculated"===a.mode}
+                ?selected=${"calculated"===i.mode}
               >
-                ${i("mode_calculated")}
+                ${a("mode_calculated")}
               </option>
-              <option value="percent" ?selected=${"percent"===a.mode}>
-                ${i("mode_percent")}
+              <option value="percent" ?selected=${"percent"===i.mode}>
+                ${a("mode_percent")}
               </option>
-              <option value="fixed" ?selected=${"fixed"===a.mode}>
-                ${i("mode_fixed")}
+              <option value="fixed" ?selected=${"fixed"===i.mode}>
+                ${a("mode_fixed")}
               </option>
             `,e=>M({mode:e.target.value}))}
-          ${"percent"===a.mode?this._numRow(i("percent"),"%",a.percent,e=>M({percent:Math.max(0,r(e,100))}),1,!1,0):""}
-          ${"fixed"===a.mode?this._numRow(i("seconds"),"",a.seconds,e=>M({seconds:Math.max(0,r(e))}),1,!1,0):""}
-          ${this._numRow(i("passes"),"",a.passes,e=>M({passes:Math.max(1,Math.round(r(e,1)))}),1,!1,1)}
-          <div class="setting-hint row-hint">${i("passes_help")}</div>
-          ${A>1?V`${this._numRow(oi("observed_watering.soak_label",t),oi("observed_watering.minutes",t),null!==(p=null===(u=this.config)||void 0===u?void 0:u.soak_minutes)&&void 0!==p?p:15,e=>this.handleConfigChange({soak_minutes:Math.max(0,parseFloat(e)||0)}))}
+          ${"percent"===i.mode?this._numRow(a("percent"),"%",i.percent,e=>M({percent:Math.max(0,l(e,100))}),1,!1,0):""}
+          ${"fixed"===i.mode?this._numRow(a("seconds"),"",i.seconds,e=>M({seconds:Math.max(0,l(e))}),1,!1,0):""}
+          ${this._numRow(a("passes"),"",i.passes,e=>M({passes:Math.max(1,Math.round(l(e,1)))}),1,!1,1)}
+          <div class="setting-hint row-hint">${a("passes_help")}</div>
+          ${A>1?V`${this._numRow(oi("observed_watering.soak_label",s),oi("observed_watering.minutes",s),null!==(p=null===(u=this.config)||void 0===u?void 0:u.soak_minutes)&&void 0!==p?p:15,e=>this.handleConfigChange({soak_minutes:Math.max(0,parseFloat(e)||0)}))}
                 <div class="setting-hint row-hint">
-                  ${i("soak_shared_help")}
+                  ${a("soak_shared_help")}
                 </div>`:""}
-          ${$(`more:step:${a.id}`,(null!==(g=a.max_litres)&&void 0!==g?g:0)>0||(null!==(m=a.min_seconds)&&void 0!==m?m:0)>0||(null!==(v=a.max_seconds)&&void 0!==v?v:0)>0||0!==(null!==(f=a.adjust_seconds)&&void 0!==f?f:0)||(null!==(_=a.min_deficit_mm)&&void 0!==_?_:0)>0||null!==a.delay&&void 0!==a.delay,V`
-              ${this._numRow(i("max_litres"),da(this.config,vs),+ga(null!==(w=a.max_litres)&&void 0!==w?w:0,this.config).toFixed(2),e=>M({max_litres:Math.max(0,ma(r(e),this.config))}),1,!1,0)}
-              <div class="setting-hint row-hint">${i("max_litres_help")}</div>
-              ${this._numRow(i("min_seconds"),oi("common.units.seconds",t),null!==(x=a.min_seconds)&&void 0!==x?x:0,e=>M({min_seconds:Math.max(0,Math.round(r(e)))}),1,!1,0)}
-              ${this._numRow(i("max_seconds"),oi("common.units.seconds",t),null!==(k=a.max_seconds)&&void 0!==k?k:0,e=>M({max_seconds:Math.max(0,Math.round(r(e)))}),1,!1,0)}
+          ${k(`more:step:${i.id}`,(null!==(g=i.max_litres)&&void 0!==g?g:0)>0||(null!==(m=i.min_seconds)&&void 0!==m?m:0)>0||(null!==(v=i.max_seconds)&&void 0!==v?v:0)>0||0!==(null!==(f=i.adjust_seconds)&&void 0!==f?f:0)||(null!==(_=i.min_deficit_mm)&&void 0!==_?_:0)>0||null!==i.delay&&void 0!==i.delay,V`
+              ${this._numRow(a("max_litres"),da(this.config,vs),+ga(null!==(w=i.max_litres)&&void 0!==w?w:0,this.config).toFixed(2),e=>M({max_litres:Math.max(0,ma(l(e),this.config))}),1,!1,0)}
+              <div class="setting-hint row-hint">${a("max_litres_help")}</div>
+              ${this._numRow(a("min_seconds"),oi("common.units.seconds",s),null!==(y=i.min_seconds)&&void 0!==y?y:0,e=>M({min_seconds:Math.max(0,Math.round(l(e)))}),1,!1,0)}
+              ${this._numRow(a("max_seconds"),oi("common.units.seconds",s),null!==(b=i.max_seconds)&&void 0!==b?b:0,e=>M({max_seconds:Math.max(0,Math.round(l(e)))}),1,!1,0)}
               ${E?V`<div class="setting-hint row-hint warning-hint">
-                    ${i("min_over_max").replace("{max}",ta(null!==(S=a.max_seconds)&&void 0!==S?S:0))}
+                    ${a("min_over_max").replace("{max}",ta(null!==(S=i.max_seconds)&&void 0!==S?S:0))}
                   </div>`:""}
-              ${this._numRow(i("adjust_seconds"),oi("common.units.seconds",t),null!==(z=a.adjust_seconds)&&void 0!==z?z:0,e=>M({adjust_seconds:Math.max(-21600,Math.min(21600,Math.round(r(e))))}))}
-              <div class="setting-hint row-hint">${i("step_bounds_help")}</div>
-              ${this._numRow(i("min_deficit_mm"),"mm",null!==(T=a.min_deficit_mm)&&void 0!==T?T:0,e=>M({min_deficit_mm:Math.max(0,r(e))}),1,!1,0)}
+              ${this._numRow(a("adjust_seconds"),oi("common.units.seconds",s),null!==(z=i.adjust_seconds)&&void 0!==z?z:0,e=>M({adjust_seconds:Math.max(-21600,Math.min(21600,Math.round(l(e))))}))}
+              <div class="setting-hint row-hint">${a("step_bounds_help")}</div>
+              ${this._numRow(a("min_deficit_mm"),"mm",null!==(T=i.min_deficit_mm)&&void 0!==T?T:0,e=>M({min_deficit_mm:Math.max(0,l(e))}),1,!1,0)}
               <div class="setting-hint row-hint">
-                ${i("min_deficit_mm_help")}
+                ${a("min_deficit_mm_help")}
               </div>
-              ${this._textRow(i("step_delay"),oi("common.units.seconds",t),null===a.delay||void 0===a.delay?"":a.delay,e=>M({delay:""===e.trim()?null:r(e)}))}
-              <div class="setting-hint row-hint">${i("step_delay_help")}</div>
+              ${this._textRow(a("step_delay"),oi("common.units.seconds",s),null===i.delay||void 0===i.delay?"":i.delay,e=>M({delay:""===e.trim()?null:l(e)}))}
+              <div class="setting-hint row-hint">${a("step_delay_help")}</div>
             `)}
           <div class="setting-row">
-            <div class="setting-label">${i("enabled")}</div>
+            <div class="setting-label">${a("enabled")}</div>
             <ha-switch
-              .checked=${!1!==a.enabled}
+              .checked=${!1!==i.enabled}
               @change=${e=>M({enabled:e.target.checked})}
             ></ha-switch>
           </div>
           <div class="si-actions">
-            ${this._actionBtn(La,i("delete_step"),async()=>{await this._ask(i("confirm_delete_step"),!0)&&n(s,{steps:(e.steps||[]).filter((e,t)=>t!==o)})},!0)}
+            ${this._actionBtn(La,a("delete_step"),async()=>{await this._ask(a("confirm_delete_step"),!0)&&o(t,{steps:(e.steps||[]).filter((e,t)=>t!==n)})},!0)}
           </div>
-        `)},O=(e,s,a,o)=>{var l,d,h,c;const u=t=>n(s,{schedules:(e.schedules||[]).map((e,i)=>i===o?Object.assign(Object.assign({},e),t):e)}),p=(e,t,i)=>{const s=(e||[]).filter(e=>e!==t);return i?[...s,t].sort((e,t)=>e-t):s};return b(`schedule:${a.id}`,V`<strong>${i("schedule")} ${o+1}</strong> ·
-          ${(e=>{var t,s;const a="end"===e.anchor?"end":"start",n=e.offset_minutes?` ${e.offset_minutes>0?"+":""}${e.offset_minutes} min`:"",r="sun"===e.type?`${i(`summary_${a}_${"sunset"===e.event?"sunset":"sunrise"}`)}${n}`:`${i("end"===a?"anchor_end_short":"anchor_start_short")} ${e.time}`,o=(e.weekdays||[]).length>0?e.weekdays.map(e=>_(e)).join(", "):(null!==(t=e.every_n_days)&&void 0!==t?t:1)>1?`${i("schedule_every")} ${e.every_n_days} ${i("schedule_days")}`:i("every_day");return`${o} · ${r}${(null!==(s=e.every_n_days)&&void 0!==s?s:1)>1&&(e.weekdays||[]).length>0||"even"===e.parity||"odd"===e.parity||(e.days_of_month||[]).length>0||(e.months||[]).length>0||e.from_date||e.until_date?` · ${i("more_options_set")}`:""}`})(a)}${!1===a.enabled?V` · <em>${i("off")}</em>`:""}`,V`
-          ${this._selectRow(i("schedule_moment"),V`
-              <option value="time" ?selected=${"time"===a.type}>
-                ${i("moment_time")}
+        `)},H=(e,t,i,n)=>{var r,d,h,c;const u=i=>o(t,{schedules:(e.schedules||[]).map((e,t)=>t===n?Object.assign(Object.assign({},e),i):e)}),p=(e,t,i)=>{const s=(e||[]).filter(e=>e!==t);return i?[...s,t].sort((e,t)=>e-t):s};return x(`schedule:${i.id}`,V`<strong>${a("schedule")} ${n+1}</strong> ·
+          ${(e=>{var t,i;const s="end"===e.anchor?"end":"start",n=e.offset_minutes?` ${e.offset_minutes>0?"+":""}${e.offset_minutes} min`:"",r="sun"===e.type?`${a(`summary_${s}_${"sunset"===e.event?"sunset":"sunrise"}`)}${n}`:`${a("end"===s?"anchor_end_short":"anchor_start_short")} ${e.time}`,o=(e.weekdays||[]).length>0?e.weekdays.map(e=>y(e)).join(", "):(null!==(t=e.every_n_days)&&void 0!==t?t:1)>1?`${a("schedule_every")} ${e.every_n_days} ${a("schedule_days")}`:a("every_day");return`${o} · ${r}${(null!==(i=e.every_n_days)&&void 0!==i?i:1)>1&&(e.weekdays||[]).length>0||"even"===e.parity||"odd"===e.parity||(e.days_of_month||[]).length>0||(e.months||[]).length>0||e.from_date||e.until_date?` · ${a("more_options_set")}`:""}`})(i)}${!1===i.enabled?V` · <em>${a("off")}</em>`:""}`,V`
+          ${this._selectRow(a("schedule_moment"),V`
+              <option value="time" ?selected=${"time"===i.type}>
+                ${a("moment_time")}
               </option>
               <option
                 value="sunrise"
-                ?selected=${"sun"===a.type&&"sunrise"===a.event}
+                ?selected=${"sun"===i.type&&"sunrise"===i.event}
               >
-                ${i("moment_sunrise")}
+                ${a("moment_sunrise")}
               </option>
               <option
                 value="sunset"
-                ?selected=${"sun"===a.type&&"sunset"===a.event}
+                ?selected=${"sun"===i.type&&"sunset"===i.event}
               >
-                ${i("moment_sunset")}
+                ${a("moment_sunset")}
               </option>
             `,e=>{const t=e.target.value;u("time"===t?{type:"time"}:{type:"sun",event:t})})}
-          ${"time"===a.type?this._timeRow(i("schedule_time"),a.time,e=>u({time:e})):this._numRow(i("schedule_offset"),oi("common.units.minutes",t),a.offset_minutes,e=>u({offset_minutes:Math.round(r(e))}))}
-          ${this._selectRow(i("schedule_anchor"),V`
-              <option value="start" ?selected=${"end"!==a.anchor}>
-                ${i("anchor_start")}
+          ${"time"===i.type?this._timeRow(a("schedule_time"),i.time,e=>u({time:e})):this._numRow(a("schedule_offset"),oi("common.units.minutes",s),i.offset_minutes,e=>u({offset_minutes:Math.round(l(e))}))}
+          ${this._selectRow(a("schedule_anchor"),V`
+              <option value="start" ?selected=${"end"!==i.anchor}>
+                ${a("anchor_start")}
               </option>
-              <option value="end" ?selected=${"end"===a.anchor}>
-                ${i("anchor_end")}
+              <option value="end" ?selected=${"end"===i.anchor}>
+                ${a("anchor_end")}
               </option>
             `,e=>u({anchor:e.target.value}))}
-          <div class="setting-hint row-hint">${i("schedule_anchor_help")}</div>
+          <div class="setting-hint row-hint">${a("schedule_anchor_help")}</div>
           <div class="setting-row">
-            <div class="setting-label">${i("schedule_weekdays")}</div>
+            <div class="setting-label">${a("schedule_weekdays")}</div>
             <div>
               ${[0,1,2,3,4,5,6].map(e=>V`
                   <label style="margin-right: 10px; white-space: nowrap;">
                     <input
                       type="checkbox"
-                      .checked=${(a.weekdays||[]).includes(e)}
-                      @change=${t=>u({weekdays:p(a.weekdays,e,t.target.checked)})}
+                      .checked=${(i.weekdays||[]).includes(e)}
+                      @change=${t=>u({weekdays:p(i.weekdays,e,t.target.checked)})}
                     />
-                    ${_(e)}
+                    ${y(e)}
                   </label>
                 `)}
             </div>
           </div>
           <div class="setting-hint row-hint">
-            ${i("schedule_weekdays_help")}
+            ${a("schedule_weekdays_help")}
           </div>
           <div class="setting-row">
-            <div class="setting-label">${i("schedule_weather")}</div>
+            <div class="setting-label">${a("schedule_weather")}</div>
             <ha-switch
-              .checked=${!1!==a.weather}
+              .checked=${!1!==i.weather}
               @change=${e=>u({weather:e.target.checked})}
             ></ha-switch>
           </div>
-          <div class="setting-hint row-hint">${i("schedule_weather_help")}</div>
-          ${$(`more:schedule:${a.id}`,!!a.fallback_time||!0===a.hard_deadline||(null!==(l=a.every_n_days)&&void 0!==l?l:1)>1||"even"===a.parity||"odd"===a.parity||(a.days_of_month||[]).length>0||(a.months||[]).length>0||!!a.from_date||!!a.until_date||void 0!==a.skip_conditions,V`
-              ${this._numRow(i("schedule_every"),i("schedule_days"),null!==(d=a.every_n_days)&&void 0!==d?d:1,e=>u({every_n_days:Math.max(1,Math.round(r(e,1)))}))}
-              ${(null!==(h=a.every_n_days)&&void 0!==h?h:1)>1?this._numRow(i("schedule_every_offset"),i("schedule_days"),null!==(c=a.every_offset)&&void 0!==c?c:0,e=>u({every_offset:Math.max(0,Math.round(r(e)))})):""}
+          <div class="setting-hint row-hint">${a("schedule_weather_help")}</div>
+          ${k(`more:schedule:${i.id}`,!!i.fallback_time||!0===i.hard_deadline||(null!==(r=i.every_n_days)&&void 0!==r?r:1)>1||"even"===i.parity||"odd"===i.parity||(i.days_of_month||[]).length>0||(i.months||[]).length>0||!!i.from_date||!!i.until_date||void 0!==i.skip_conditions,V`
+              ${this._numRow(a("schedule_every"),a("schedule_days"),null!==(d=i.every_n_days)&&void 0!==d?d:1,e=>u({every_n_days:Math.max(1,Math.round(l(e,1)))}))}
+              ${(null!==(h=i.every_n_days)&&void 0!==h?h:1)>1?this._numRow(a("schedule_every_offset"),a("schedule_days"),null!==(c=i.every_offset)&&void 0!==c?c:0,e=>u({every_offset:Math.max(0,Math.round(l(e)))})):""}
               <div class="setting-hint row-hint">
-                ${i("schedule_every_help")}
+                ${a("schedule_every_help")}
               </div>
-              ${this._selectRow(i("schedule_parity"),V`
+              ${this._selectRow(a("schedule_parity"),V`
                   <option
                     value="any"
-                    ?selected=${"even"!==a.parity&&"odd"!==a.parity}
+                    ?selected=${"even"!==i.parity&&"odd"!==i.parity}
                   >
-                    ${i("parity_any")}
+                    ${a("parity_any")}
                   </option>
-                  <option value="even" ?selected=${"even"===a.parity}>
-                    ${i("parity_even")}
+                  <option value="even" ?selected=${"even"===i.parity}>
+                    ${a("parity_even")}
                   </option>
-                  <option value="odd" ?selected=${"odd"===a.parity}>
-                    ${i("parity_odd")}
+                  <option value="odd" ?selected=${"odd"===i.parity}>
+                    ${a("parity_odd")}
                   </option>
                 `,e=>u({parity:e.target.value}))}
-              ${this._textRow(i("schedule_days_of_month"),`1, 15, ${i("last_word")}`,(a.days_of_month||[]).map(e=>"last"===e?i("last_word"):e).join(", "),e=>u({days_of_month:e.split(/[,;\s]+/).map(e=>e.trim().toLowerCase()).map(e=>e===i("last_word").toLowerCase()?"last":e).filter(e=>"last"===e||/^\d+$/.test(e)&&Number(e)>=1&&Number(e)<=31).map(e=>"last"===e?e:Number(e))}))}
+              ${this._textRow(a("schedule_days_of_month"),`1, 15, ${a("last_word")}`,(i.days_of_month||[]).map(e=>"last"===e?a("last_word"):e).join(", "),e=>u({days_of_month:e.split(/[,;\s]+/).map(e=>e.trim().toLowerCase()).map(e=>e===a("last_word").toLowerCase()?"last":e).filter(e=>"last"===e||/^\d+$/.test(e)&&Number(e)>=1&&Number(e)<=31).map(e=>"last"===e?e:Number(e))}))}
               <div class="setting-hint row-hint">
-                ${i("schedule_days_of_month_help")}
+                ${a("schedule_days_of_month_help")}
               </div>
               <div class="setting-row">
-                <div class="setting-label">${i("schedule_months")}</div>
+                <div class="setting-label">${a("schedule_months")}</div>
                 <div>
                   ${[0,1,2,3,4,5,6,7,8,9,10,11].map(e=>V`
                       <label style="margin-right: 10px; white-space: nowrap;">
                         <input
                           type="checkbox"
-                          .checked=${(a.months||[]).includes(e+1)}
-                          @change=${t=>u({months:p(a.months,e+1,t.target.checked)})}
+                          .checked=${(i.months||[]).includes(e+1)}
+                          @change=${t=>u({months:p(i.months,e+1,t.target.checked)})}
                         />
-                        ${w(e)}
+                        ${b(e)}
                       </label>
                     `)}
                 </div>
               </div>
               <div class="setting-hint row-hint">
-                ${i("schedule_months_help")}
+                ${a("schedule_months_help")}
               </div>
-              ${this._monthDayRow(i("schedule_from"),a.from_date,w,e=>u({from_date:e}))}
-              ${this._monthDayRow(i("schedule_until"),a.until_date,w,e=>u({until_date:e}))}
+              ${this._monthDayRow(a("schedule_from"),i.from_date,b,e=>u({from_date:e}))}
+              ${this._monthDayRow(a("schedule_until"),i.until_date,b,e=>u({until_date:e}))}
               <div class="setting-hint row-hint">
-                ${i("schedule_period_help")}
+                ${a("schedule_period_help")}
               </div>
-              ${"sun"===a.type?V`
-                    ${this._selectRow(i("schedule_fallback_time"),V`
-                        <option value="" ?selected=${!a.fallback_time}>
-                          ${i("schedule_fallback_skip")}
+              ${"sun"===i.type?V`
+                    ${this._selectRow(a("schedule_fallback_time"),V`
+                        <option value="" ?selected=${!i.fallback_time}>
+                          ${a("schedule_fallback_skip")}
                         </option>
                         <option
                           value="previous"
-                          ?selected=${"previous"===a.fallback_time}
+                          ?selected=${"previous"===i.fallback_time}
                         >
-                          ${i("schedule_fallback_previous")}
+                          ${a("schedule_fallback_previous")}
                         </option>
                         <option
                           value="at"
-                          ?selected=${!!a.fallback_time&&"previous"!==a.fallback_time}
+                          ?selected=${!!i.fallback_time&&"previous"!==i.fallback_time}
                         >
-                          ${i("schedule_fallback_at")}
+                          ${a("schedule_fallback_at")}
                         </option>
-                      `,e=>{const t=e.target.value,i=a.fallback_time&&"previous"!==a.fallback_time?a.fallback_time:"06:00";u({fallback_time:"at"===t?i:t||null})})}
-                    ${a.fallback_time&&"previous"!==a.fallback_time?this._timeRow(i("schedule_time"),a.fallback_time,e=>u({fallback_time:e||null})):""}
+                      `,e=>{const t=e.target.value,s=i.fallback_time&&"previous"!==i.fallback_time?i.fallback_time:"06:00";u({fallback_time:"at"===t?s:t||null})})}
+                    ${i.fallback_time&&"previous"!==i.fallback_time?this._timeRow(a("schedule_time"),i.fallback_time,e=>u({fallback_time:e||null})):""}
                     <div class="setting-hint row-hint">
-                      ${i("schedule_fallback_time_help")}
+                      ${a("schedule_fallback_time_help")}
                     </div>
                   `:""}
-              ${"end"!==a.anchor||e.main?"":V`
+              ${"end"!==i.anchor||e.main?"":V`
                     <div class="setting-row">
                       <div class="setting-label">
-                        ${i("schedule_hard_deadline")}
+                        ${a("schedule_hard_deadline")}
                       </div>
                       <ha-switch
-                        .checked=${!0===a.hard_deadline}
+                        .checked=${!0===i.hard_deadline}
                         @change=${e=>u({hard_deadline:e.target.checked})}
                       ></ha-switch>
                     </div>
                     <div class="setting-hint row-hint">
-                      ${i("schedule_hard_deadline_help")}
+                      ${a("schedule_hard_deadline_help")}
                     </div>
                   `}
-              ${!1!==a.weather?V`
+              ${!1!==i.weather?V`
                     <div class="setting-label" style="margin-top: 8px;">
-                      ${i("schedule_conditions")}
+                      ${a("schedule_conditions")}
                     </div>
                     <div class="setting-hint row-hint">
-                      ${i("schedule_conditions_help")}
+                      ${a("schedule_conditions_help")}
                     </div>
                     ${Mn.every(e=>"postponed"===e||!this._conditionSetting(e))?V`<div class="setting-hint row-hint">
-                          ${i("conditions_none")}
+                          ${a("conditions_none")}
                         </div>`:""}
-                    ${Mn.map(e=>{var t;const s="postponed"===e,n=null!==(t=a.skip_conditions)&&void 0!==t?t:Mn,r=s?i("cond_postponed"):this._conditionSetting(e);return V`
+                    ${Mn.map(e=>{var t;const s="postponed"===e,n=null!==(t=i.skip_conditions)&&void 0!==t?t:Mn,r=s?a("cond_postponed"):this._conditionSetting(e);return V`
                         <div class=${r?"":"cond-off"}>
                           <label style="white-space: nowrap;">
                             <input
@@ -2036,49 +2036,49 @@ function _e(e,t){return(t,i,s)=>((e,t,i)=>(i.configurable=!0,i.enumerable=!0,Ref
                               ?disabled=${s||!r}
                               @change=${t=>{const i=t.target.checked,s=Mn.filter(t=>t===e?i:n.includes(t));u({skip_conditions:s.length===Mn.length?void 0:s})}}
                             />
-                            ${i(`condition_${e}`)}
+                            ${a(`condition_${e}`)}
                           </label>
                           <span class="cond-setting">
-                            · ${r||i("cond_off")}
+                            · ${r||a("cond_off")}
                           </span>
                         </div>
                       `})}
                   `:""}
             `)}
           <div class="setting-row">
-            <div class="setting-label">${i("enabled")}</div>
+            <div class="setting-label">${a("enabled")}</div>
             <ha-switch
-              .checked=${!1!==a.enabled}
+              .checked=${!1!==i.enabled}
               @change=${e=>u({enabled:e.target.checked})}
             ></ha-switch>
           </div>
           <div class="si-actions">
-            ${this._actionBtn(La,i("delete_schedule"),async()=>{await this._ask(i("confirm_delete_schedule"),!0)&&n(s,{schedules:(e.schedules||[]).filter((e,t)=>t!==o)})},!0)}
+            ${this._actionBtn(La,a("delete_schedule"),async()=>{await this._ask(a("confirm_delete_schedule"),!0)&&o(t,{schedules:(e.schedules||[]).filter((e,t)=>t!==n)})},!0)}
           </div>
-        `)},A=(e,t)=>V`
-      ${(e.schedules||[]).map((i,s)=>O(e,t,i,s))}
+        `)},E=(e,t)=>V`
+      ${(e.schedules||[]).map((i,s)=>H(e,t,i,s))}
       <div class="si-actions">
-        ${this._actionBtn(Wa,i("add_schedule"),()=>n(t,{schedules:[...e.schedules||[],{id:this._openNew("schedule","schedule_"+f()),enabled:!0,type:"time",time:"06:00",event:"sunrise",offset_minutes:0,anchor:"start",weekdays:[],every_n_days:1,every_offset:0,parity:"any",months:[],from_date:null,until_date:null,weather:!0}]}))}
+        ${this._actionBtn(Wa,a("add_schedule"),()=>o(t,{schedules:[...e.schedules||[],{id:this._openNew("schedule","schedule_"+w()),enabled:!0,type:"time",time:"06:00",event:"sunrise",offset_minutes:0,anchor:"start",weekdays:[],every_n_days:1,every_offset:0,parity:"any",months:[],from_date:null,until_date:null,weather:!0}]}))}
       </div>
-    `,C=(e,t)=>{var s;const a=null!==(s=e.notify)&&void 0!==s?s:{targets:[],when:"finish",start:!1},r=(e=>{var t;const i=Object.keys(e.states||{}).filter(e=>e.startsWith("notify.")).map(t=>{var i,s;return{id:t,name:(null===(s=null===(i=e.states[t])||void 0===i?void 0:i.attributes)||void 0===s?void 0:s.friendly_name)||t}}),s=new Map(i.map(e=>[e.id,e.name])),a=Object.keys((null===(t=e.services)||void 0===t?void 0:t.notify)||{}).filter(e=>!yn.has(e)).map(e=>`notify.${e}`),n=new Set(a),r=e=>`notify.mobile_app_${e.slice(7)}`,o=a.filter(e=>!s.has(e)).map(e=>{const t=i.find(t=>r(t.id)===e);return{id:e,name:t?t.name:e}});return[{id:"persistent_notification",name:"persistent_notification"},...[...i.filter(e=>!n.has(r(e.id))),...o].sort((e,t)=>e.name.localeCompare(t.name))]})(this.hass),o=new Set(r.map(e=>e.id));for(const e of a.targets)o.has(e)||r.push({id:e,name:e});const l=e=>{const i=Object.assign(Object.assign({},a),e);n(t,{notify:i.targets.length?i:void 0})};return V`
-        <div class="fold-section">${i("notify_title")}</div>
-        <div class="setting-hint row-hint">${i("notify_help")}</div>
-        ${r.map(e=>V`
+    `,D=(e,t)=>{var i;const s=null!==(i=e.notify)&&void 0!==i?i:{targets:[],when:"finish",start:!1},n=(e=>{var t;const i=Object.keys(e.states||{}).filter(e=>e.startsWith("notify.")).map(t=>{var i,s;return{id:t,name:(null===(s=null===(i=e.states[t])||void 0===i?void 0:i.attributes)||void 0===s?void 0:s.friendly_name)||t}}),s=new Map(i.map(e=>[e.id,e.name])),a=Object.keys((null===(t=e.services)||void 0===t?void 0:t.notify)||{}).filter(e=>!yn.has(e)).map(e=>`notify.${e}`),n=new Set(a),r=e=>`notify.mobile_app_${e.slice(7)}`,o=a.filter(e=>!s.has(e)).map(e=>{const t=i.find(t=>r(t.id)===e);return{id:e,name:t?t.name:e}});return[{id:"persistent_notification",name:"persistent_notification"},...[...i.filter(e=>!n.has(r(e.id))),...o].sort((e,t)=>e.name.localeCompare(t.name))]})(this.hass),r=new Set(n.map(e=>e.id));for(const e of s.targets)r.has(e)||n.push({id:e,name:e});const l=e=>{const i=Object.assign(Object.assign({},s),e);o(t,{notify:i.targets.length?i:void 0})};return V`
+        <div class="fold-section">${a("notify_title")}</div>
+        <div class="setting-hint row-hint">${a("notify_help")}</div>
+        ${n.map(e=>V`
             <div>
               <label>
                 <input
                   type="checkbox"
-                  .checked=${a.targets.includes(e.id)}
-                  @change=${t=>{const i=t.target.checked;l({targets:i?[...a.targets,e.id]:a.targets.filter(t=>t!==e.id)})}}
+                  .checked=${s.targets.includes(e.id)}
+                  @change=${t=>{const i=t.target.checked;l({targets:i?[...s.targets,e.id]:s.targets.filter(t=>t!==e.id)})}}
                 />
-                ${"persistent_notification"===e.id?i("notify_persistent"):e.name}
+                ${"persistent_notification"===e.id?a("notify_persistent"):e.name}
               </label>
             </div>
           `)}
-        ${r.length<=1?V`<div class="setting-note">${i("notify_none")}</div>`:""}
-        ${a.targets.length?V`
+        ${n.length<=1?V`<div class="setting-note">${a("notify_none")}</div>`:""}
+        ${s.targets.length?V`
               <div class="setting-row">
-                <div class="setting-label">${i("notify_when")}</div>
+                <div class="setting-label">${a("notify_when")}</div>
                 <select
                   class="field"
                   @change=${e=>{const t=e.target.value;l("start_and_finish"===t?{when:"finish",start:!0}:{when:t,start:!1})}}
@@ -2086,92 +2086,96 @@ function _e(e,t){return(t,i,s)=>((e,t,i)=>(i.configurable=!0,i.enumerable=!0,Ref
                   ${[["start_and_finish","notify_when_start_and_finish"],["finish","notify_when_finish"],["problems","notify_when_problems"]].map(([e,t])=>V`
                       <option
                         value=${e}
-                        ?selected=${e===("problems"===a.when?"problems":a.start?"start_and_finish":"finish")}
+                        ?selected=${e===("problems"===s.when?"problems":s.start?"start_and_finish":"finish")}
                       >
-                        ${i(t)}
+                        ${a(t)}
                       </option>
                     `)}
                 </select>
               </div>
             `:""}
-      `};if("main"===e){const e=s.findIndex(e=>e.main),a=s[e];return a?V`
-        <ha-card header="${o(a)}">
+      `};if("main"===e){const e=n.findIndex(e=>e.main),r=n[e];return r?V`
+        <ha-card header="${d(r)}">
           <div class="card-content">
             <!-- What it is first, in one style, then its buttons: it opened
                  on "Run now" with two descriptions under it, large and small
                  (UX walk of 13 Nov., Q13). -->
             <div class="setting-note">
-              ${i("main_description")} ${i("main_steps_hint")}
+              ${a("main_description")} ${a("main_steps_hint")}
             </div>
-            ${p(a)} ${x(a,null)}
-            <div class="setting-row">
-              <div class="setting-label">${i("enabled")}</div>
-              <ha-switch
-                .checked=${!1!==a.enabled}
-                @change=${t=>n(e,{enabled:t.target.checked})}
-              ></ha-switch>
-            </div>
-            <div class="fold-section">${i("schedules_title")}</div>
-            <div class="setting-hint row-hint">${i("main_schedules_hint")}</div>
-            ${"main_schedules"===this.startSource?V`<div class="setting-note">
-                  <strong>${i("main_schedules_active")}</strong>
-                </div>`:""}
-            ${A(a,e)} ${C(a,e)}
-            <div class="fold-section">${i("sequencing_title")}</div>
+            ${m(r)}
+            ${z(null!==(t=r.id)&&void 0!==t?t:"")?O(null!==(i=r.id)&&void 0!==i?i:"",e):V`${A(r)} ${S(r,null)}
+                  <div class="setting-row">
+                    <div class="setting-label">${a("enabled")}</div>
+                    <ha-switch
+                      .checked=${!1!==r.enabled}
+                      @change=${t=>o(e,{enabled:t.target.checked})}
+                    ></ha-switch>
+                  </div>
+                  <div class="fold-section">${a("schedules_title")}</div>
+                  <div class="setting-hint row-hint">
+                    ${a("main_schedules_hint")}
+                  </div>
+                  ${"main_schedules"===this.startSource?V`<div class="setting-note">
+                        <strong>${a("main_schedules_active")}</strong>
+                      </div>`:""}
+                  ${E(r,e)}
+                  ${D(r,e)}`}
+            <div class="fold-section">${a("sequencing_title")}</div>
             <div class="setting-hint row-hint">
-              ${i("main_settings_description")}
+              ${a("main_settings_description")}
             </div>
-            ${this.renderExecutionSettings(t,!0)}
+            ${this.renderExecutionSettings(s,!0)}
           </div>
         </ha-card>
       `:V``}return V`
-      <ha-card header="${i("others_title")}">
-        <div class="card-content">${i("description")}</div>
-        ${s.map((e,o)=>{var l,d,c,u,_,w;return e.main?"":V`
+      <ha-card header="${a("others_title")}">
+        <div class="card-content">${a("description")}</div>
+        ${n.map((e,t)=>{var i,d,h,c,p;return e.main?"":V`
                 <div class="card-content">
-                  ${b(`program:${e.id}`,V`<span class="fold-title">${e.name}</span> ·
-                      ${Aa((e.steps||[]).length,{none:i("steps_none"),one:i("steps_one"),many:i("steps_many")})}
+                  ${x(`program:${e.id}`,V`<span class="fold-title">${e.name}</span> ·
+                      ${Aa((e.steps||[]).length,{none:a("steps_none"),one:a("steps_one"),many:a("steps_many")})}
                       ·
-                      ${Aa((e.schedules||[]).length,{none:i("schedules_none"),one:i("schedules_one"),many:i("schedules_many")})}${!1===e.enabled?V` · <em>${i("off")}</em>`:""}${(null===(l=h(e.id))||void 0===l?void 0:l.suspended_until)?V` · <em>${i("suspended")}</em>`:""}${g(e)?V` · <em>${m(e)}</em>`:""}`,(w=null!==(d=e.id)&&void 0!==d?d:"",void 0!==Dn[w]?V`${p(e)}
-                        ${z(null!==(c=e.id)&&void 0!==c?c:"",o)}`:V`
-                          ${p(e)} ${T(e)}
-                          ${this._textRow(i("name"),"",e.name,e=>n(o,{name:e}))}
-                          ${x(e,`program:${e.id}`)}
-                          <div class="fold-section">${i("steps_title")}</div>
-                          ${(e.steps||[]).map((t,i)=>M(e,o,t,i))}
+                      ${Aa((e.schedules||[]).length,{none:a("schedules_none"),one:a("schedules_one"),many:a("schedules_many")})}${!1===e.enabled?V` · <em>${a("off")}</em>`:""}${(null===(i=u(e.id))||void 0===i?void 0:i.suspended_until)?V` · <em>${a("suspended")}</em>`:""}${v(e)?V` · <em>${f(e)}</em>`:""}`,z(null!==(d=e.id)&&void 0!==d?d:"")?V`${m(e)}
+                        ${O(null!==(h=e.id)&&void 0!==h?h:"",t)}`:V`
+                          ${m(e)} ${A(e)}
+                          ${this._textRow(a("name"),"",e.name,e=>o(t,{name:e}))}
+                          ${S(e,`program:${e.id}`)}
+                          <div class="fold-section">${a("steps_title")}</div>
+                          ${(e.steps||[]).map((i,s)=>C(e,t,i,s))}
                           <div class="si-actions">
-                            ${this._actionBtn(Wa,i("add_step"),()=>n(o,{steps:[...e.steps||[],{id:this._openNew("step","step_"+f()),zones:[],mode:"calculated",percent:100,seconds:0,passes:1,max_litres:0,min_seconds:0,max_seconds:0,adjust_seconds:0,delay:null,enabled:!0}]}))}
+                            ${this._actionBtn(Wa,a("add_step"),()=>o(t,{steps:[...e.steps||[],{id:this._openNew("step","step_"+w()),zones:[],mode:"calculated",percent:100,seconds:0,passes:1,max_litres:0,min_seconds:0,max_seconds:0,adjust_seconds:0,delay:null,enabled:!0}]}))}
                           </div>
                           <div class="fold-section">
-                            ${i("schedules_title")}
+                            ${a("schedules_title")}
                           </div>
-                          ${A(e,o)}
-                          ${this._numRow(i("delay"),oi("common.units.seconds",t),null!==(u=e.delay)&&void 0!==u?u:0,e=>n(o,{delay:r(e)}))}
+                          ${E(e,t)}
+                          ${this._numRow(a("delay"),oi("common.units.seconds",s),null!==(c=e.delay)&&void 0!==c?c:0,e=>o(t,{delay:l(e)}))}
                           <div class="setting-hint row-hint">
-                            ${i("delay_help")}
+                            ${a("delay_help")}
                           </div>
-                          ${this._numRow(i("tours"),"",null!==(_=e.tours)&&void 0!==_?_:1,e=>n(o,{tours:Math.max(1,Math.round(r(e,1)))}),1,!1,1)}
+                          ${this._numRow(a("tours"),"",null!==(p=e.tours)&&void 0!==p?p:1,e=>o(t,{tours:Math.max(1,Math.round(l(e,1)))}),1,!1,1)}
                           <div class="setting-hint row-hint">
-                            ${i("tours_help")}
+                            ${a("tours_help")}
                           </div>
                           <div class="setting-row">
-                            <div class="setting-label">${i("enabled")}</div>
+                            <div class="setting-label">${a("enabled")}</div>
                             <ha-switch
                               .checked=${!1!==e.enabled}
-                              @change=${e=>n(o,{enabled:e.target.checked})}
+                              @change=${e=>o(t,{enabled:e.target.checked})}
                             ></ha-switch>
                           </div>
-                          ${C(e,o)}
-                          ${v(e)}
+                          ${D(e,t)}
+                          ${_(e)}
                           <div class="si-actions">
-                            ${this._actionBtn(La,i("delete"),async()=>{await this._ask(i("confirm_delete_program").replace("{name}",e.name),!0)&&a(s.filter((e,t)=>t!==o))},!0)}
+                            ${this._actionBtn(La,a("delete"),async()=>{await this._ask(a("confirm_delete_program").replace("{name}",e.name),!0)&&r(n.filter((e,i)=>i!==t))},!0)}
                           </div>
-                        `))}
+                        `)}
                 </div>
               `})}
         <div class="card-content">
           <div class="si-actions">
-            ${this._actionBtn(Wa,i("add"),()=>a([...s,{id:this._openNew("program","program_"+f()),name:`${i("new_program")} ${s.length}`,enabled:!0,steps:[],delay:0,tours:1,schedules:[]}]))}
+            ${this._actionBtn(Wa,a("add"),()=>r([...n,{id:this._openNew("program","program_"+w()),name:`${a("new_program")} ${n.length}`,enabled:!0,steps:[],delay:0,tours:1,schedules:[]}]))}
           </div>
         </div>
       </ha-card>

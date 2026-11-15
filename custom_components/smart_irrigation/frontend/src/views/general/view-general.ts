@@ -1705,7 +1705,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       const notWatered = found?.zones_not_watered || [];
       const apply = () => {
         if (!found) return;
-        const cleaned = { ...found.program, main: false };
+        // The main program stays the main one; any other never becomes it.
+        const cleaned = { ...found.program, main: replacing?.main === true };
         if (index === null) {
           // A new program is unfolded on its form, its timeline at the top.
           this._setOpen(`program:${cleaned.id}`, true);
@@ -2598,23 +2599,29 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             <div class="setting-note">
               ${t("main_description")} ${t("main_steps_hint")}
             </div>
-            ${runHead(program)} ${preview(program, null)}
-            <div class="setting-row">
-              <div class="setting-label">${t("enabled")}</div>
-              <ha-switch
-                .checked=${program.enabled !== false}
-                @change=${(e: Event) =>
-                  patch(index, { enabled: (e.target as any).checked })}
-              ></ha-switch>
-            </div>
-            <div class="fold-section">${t("schedules_title")}</div>
-            <div class="setting-hint row-hint">${t("main_schedules_hint")}</div>
-            ${this.startSource === "main_schedules"
-              ? html`<div class="setting-note">
-                  <strong>${t("main_schedules_active")}</strong>
-                </div>`
-              : ""}
-            ${renderSchedules(program, index)} ${renderNotify(program, index)}
+            ${runHead(program)}
+            ${yamlOpen(program.id ?? "")
+              ? yamlBlock(program.id ?? "", index)
+              : html`${yamlButton(program)} ${preview(program, null)}
+                  <div class="setting-row">
+                    <div class="setting-label">${t("enabled")}</div>
+                    <ha-switch
+                      .checked=${program.enabled !== false}
+                      @change=${(e: Event) =>
+                        patch(index, { enabled: (e.target as any).checked })}
+                    ></ha-switch>
+                  </div>
+                  <div class="fold-section">${t("schedules_title")}</div>
+                  <div class="setting-hint row-hint">
+                    ${t("main_schedules_hint")}
+                  </div>
+                  ${this.startSource === "main_schedules"
+                    ? html`<div class="setting-note">
+                        <strong>${t("main_schedules_active")}</strong>
+                      </div>`
+                    : ""}
+                  ${renderSchedules(program, index)}
+                  ${renderNotify(program, index)}`}
             <div class="fold-section">${t("sequencing_title")}</div>
             <div class="setting-hint row-hint">
               ${t("main_settings_description")}

@@ -160,3 +160,22 @@ describe("notifications in YAML", () => {
     expect(programToYaml(program, zones).notify).toBeUndefined();
   });
 });
+
+describe("the main program in YAML", () => {
+  it("has its name, schedules and notifications, and no steps", () => {
+    const main = {
+      id: "main",
+      name: "Main program",
+      enabled: true,
+      main: true,
+      schedules: [],
+    };
+    const yaml = programToYaml(main as any, zones);
+    expect(yaml.steps).toBeUndefined();
+    expect(yaml.id).toBe("main");
+    expect(programFromYaml({ name: "Morning" }, main as any)).toEqual({
+      id: "main",
+      name: "Morning",
+    });
+  });
+});

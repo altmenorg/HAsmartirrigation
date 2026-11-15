@@ -107,6 +107,8 @@ export const programToYaml = (
     return compact(schedule as unknown as Plain, SCHEDULE_DEFAULTS, skip);
   });
   if (program.notify?.targets?.length) out.notify = { ...program.notify };
+  // The main program waters every zone in the order of the settings: no steps.
+  if (program.main) delete out.steps;
   return out;
 };
 
