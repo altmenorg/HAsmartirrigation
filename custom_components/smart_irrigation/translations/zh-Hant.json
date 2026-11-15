@@ -1,0 +1,769 @@
+{
+  "entity": {
+    "sensor": {
+      "duration": {
+        "name": "時間長度"
+      },
+      "bucket": {
+        "name": "水量平衡"
+      },
+      "et_value": {
+        "name": "已套用蒸發散量"
+      },
+      "et_deficiency": {
+        "name": "每日蒸發散不足量"
+      },
+      "current_drainage": {
+        "name": "目前排水量"
+      },
+      "last_irrigation": {
+        "name": "上次灑水"
+      },
+      "water_used": {
+        "name": "用水量"
+      },
+      "live_bucket": {
+        "name": "即時水量平衡"
+      },
+      "last_run_volume": {
+        "name": "上次執行水量"
+      },
+      "next_irrigation": {
+        "name": "下次灑水"
+      },
+      "program": {
+        "name": "程式 {name}",
+        "state": {
+          "idle": "閒置",
+          "waiting": "等待中",
+          "running": "執行中",
+          "paused": "已暫停",
+          "suspended": "已擱置",
+          "disabled": "已停用"
+        }
+      },
+      "program_main": {
+        "name": "主程式",
+        "state": {
+          "idle": "閒置",
+          "waiting": "等待中",
+          "running": "執行中",
+          "paused": "已暫停",
+          "suspended": "已擱置",
+          "disabled": "已停用"
+        }
+      }
+    },
+    "number": {
+      "multiplier": {
+        "name": "乘數"
+      },
+      "precipitation_threshold": {
+        "name": "降雨量閾值"
+      }
+    },
+    "button": {
+      "calculate": {
+        "name": "計算"
+      },
+      "reset_bucket": {
+        "name": "重設水量平衡"
+      },
+      "reset_usage": {
+        "name": "重設用水量"
+      },
+      "irrigate_now": {
+        "name": "立即灑水"
+      },
+      "calculate_all": {
+        "name": "計算所有區域"
+      },
+      "update_weather": {
+        "name": "更新氣象資料"
+      },
+      "irrigate_all": {
+        "name": "為所有區域灑水"
+      },
+      "postpone_24h": {
+        "name": "延後澆水 24 小時"
+      },
+      "postpone_48h": {
+        "name": "延後澆水 48 小時"
+      },
+      "resume_irrigation": {
+        "name": "恢復澆水"
+      }
+    },
+    "binary_sensor": {
+      "irrigation_needed": {
+        "name": "需要灑水"
+      },
+      "watering_now": {
+        "name": "正在澆水",
+        "state": {
+          "on": "是",
+          "off": "否"
+        }
+      },
+      "problem": {
+        "name": "有問題"
+      },
+      "any_zone_needs_water": {
+        "name": "有區域需要澆水"
+      },
+      "any_problem": {
+        "name": "有問題"
+      }
+    },
+    "switch": {
+      "skip_on_precipitation": {
+        "name": "降雨時略過"
+      },
+      "irrigation_enabled": {
+        "name": "計算並澆水"
+      }
+    },
+    "datetime": {
+      "postponed_until": {
+        "name": "澆水延後至"
+      }
+    }
+  },
+  "config": {
+    "abort": {
+      "single_instance_allowed": "Smart Irrigation 只能設定一組。"
+    },
+    "step": {
+      "user": {
+        "title": "設定 Smart Irrigation",
+        "description": "之後請在側邊欄的 Smart Irrigation 專屬面板中進行設定：設定精靈會陪你建立感測器群組與第一個區域，氣象服務也在那裡選擇。"
+      }
+    },
+    "create_entry": {
+      "default": "Smart Irrigation 已安裝。請開啟側邊欄的 **Smart Irrigation**：[設定精靈](/smart_irrigation/setup)會陪你建立第一個區域。"
+    }
+  },
+  "options": {
+    "error": {
+      "invalid_coordinates": "提供的座標無效。請檢查緯度（-90 至 90）與經度（-180 至 180）的值。"
+    },
+    "step": {
+      "coordinates": {
+        "title": "位置座標",
+        "description": "設定用於取得氣象資料的位置座標。如有需要，你可以手動輸入與 Home Assistant 位置不同的座標。",
+        "data": {
+          "manual_coordinates_enabled": "使用手動座標，而非 Home Assistant 位置",
+          "manual_latitude": "緯度（十進位度數，-90 至 90）",
+          "manual_longitude": "經度（十進位度數，-180 至 180）",
+          "manual_elevation": "海拔高度（公尺，選填）"
+        }
+      }
+    }
+  },
+  "services": {
+    "calculate_all_zones": {
+      "name": "計算所有區域（已棄用）",
+      "description": "已棄用：請改用 smart_irrigation.calculate。2027.11 前仍可使用。計算所有自動模式的區域",
+      "fields": {
+        "delete_weather_data": {
+          "name": "刪除氣象資料",
+          "description": "計算後刪除氣象資料"
+        },
+        "dry_run": {
+          "name": "模擬執行",
+          "description": "回報計算會執行的內容，但不會變更水量平衡、區域或已收集的氣象資料"
+        }
+      }
+    },
+    "calculate_zone": {
+      "name": "計算區域（已棄用）",
+      "description": "已棄用：請改用 smart_irrigation.calculate。2027.11 前仍可使用。計算指定的區域",
+      "fields": {
+        "entity": {
+          "name": "實體",
+          "description": "要計算的區域"
+        },
+        "delete_weather_data": {
+          "name": "刪除氣象資料",
+          "description": "計算後刪除該區域的氣象資料"
+        },
+        "dry_run": {
+          "name": "模擬執行",
+          "description": "回報計算會執行的內容，但不會變更水量平衡、區域或已收集的氣象資料"
+        }
+      }
+    },
+    "update_all_zones": {
+      "name": "更新所有區域（已棄用）",
+      "description": "已棄用：請改用 smart_irrigation.update_weather。2027.11 前仍可使用。更新所有自動模式區域的氣象資料"
+    },
+    "update_zone": {
+      "name": "更新區域（已棄用）",
+      "description": "已棄用：請改用 smart_irrigation.update_weather。2027.11 前仍可使用。更新指定區域的氣象資料",
+      "fields": {
+        "entity": {
+          "name": "實體",
+          "description": "要更新的區域"
+        }
+      }
+    },
+    "set_bucket": {
+      "name": "設定水量平衡",
+      "description": "設定所選區域的水量平衡；未選擇區域時則設定所有區域。未提供數值時即為重設為 0",
+      "fields": {
+        "entity": {
+          "name": "實體",
+          "description": "要設定水量平衡的區域；未選擇則設定全部"
+        },
+        "new_bucket_value": {
+          "name": "新的水量平衡",
+          "description": "水量平衡的新值；未提供則為 0"
+        }
+      }
+    },
+    "set_all_buckets": {
+      "name": "設定所有水量平衡（已棄用）",
+      "description": "已棄用：請改用 smart_irrigation.set_bucket。2027.11 前仍可使用。將所有區域的水量平衡設為指定值",
+      "fields": {
+        "new_bucket_value": {
+          "name": "新的水量平衡",
+          "description": "水量平衡的新值"
+        }
+      }
+    },
+    "reset_bucket": {
+      "name": "重設水量平衡（已棄用）",
+      "description": "已棄用：請改用 smart_irrigation.set_bucket。2027.11 前仍可使用。將區域的水量平衡重設為 0",
+      "fields": {
+        "entity": {
+          "name": "實體",
+          "description": "要重設水量平衡的區域"
+        }
+      }
+    },
+    "reset_all_buckets": {
+      "name": "重設所有水量平衡（已棄用）",
+      "description": "已棄用：請改用 smart_irrigation.set_bucket。2027.11 前仍可使用。將所有區域的水量平衡重設為 0"
+    },
+    "clear_all_weather_data": {
+      "name": "清除所有氣象資料",
+      "description": "清除所有區域的氣象資料"
+    },
+    "set_multiplier": {
+      "name": "設定乘數",
+      "description": "設定所選區域的乘數；未選擇區域時則設定所有區域",
+      "fields": {
+        "entity": {
+          "name": "實體",
+          "description": "要設定乘數的區域；未選擇則設定全部"
+        },
+        "new_multiplier_value": {
+          "name": "新的乘數值",
+          "description": "乘數的新值"
+        }
+      }
+    },
+    "set_all_multipliers": {
+      "name": "設定所有乘數（已棄用）",
+      "description": "已棄用：請改用 smart_irrigation.set_multiplier。2027.11 前仍可使用。將所有區域的乘數設為指定值",
+      "fields": {
+        "new_multiplier_value": {
+          "name": "新的乘數值",
+          "description": "乘數的新值"
+        }
+      }
+    },
+    "set_zone": {
+      "name": "設定區域的值",
+      "description": "設定區域所有可設定的值",
+      "fields": {
+        "entity": {
+          "name": "實體",
+          "description": "要設定值的區域"
+        },
+        "new_bucket_value": {
+          "name": "新的水量平衡",
+          "description": "水量平衡的新值"
+        },
+        "new_multiplier_value": {
+          "name": "新的乘數值",
+          "description": "乘數的新值"
+        },
+        "new_duration_value": {
+          "name": "新的時間長度值",
+          "description": "時間長度的新值"
+        },
+        "new_state_value": {
+          "name": "新的狀態值",
+          "description": "狀態的新值"
+        },
+        "new_throughput_value": {
+          "name": "新的出水率值",
+          "description": "出水率的新值"
+        }
+      }
+    },
+    "generate_watering_calendar": {
+      "name": "產生澆水行事曆",
+      "description": "依據具代表性的氣候資料，為灑水區域產生 12 個月的澆水行事曆",
+      "fields": {
+        "entity": {
+          "name": "實體",
+          "description": "要產生澆水行事曆的區域"
+        }
+      }
+    },
+    "credit_watering": {
+      "name": "計入澆水量",
+      "description": "將實際送出的水量計入區域的水量平衡，而不是將其設為 0。",
+      "fields": {
+        "seconds": {
+          "name": "秒數",
+          "description": "區域執行的時間（秒）。留空則使用該區域的時間長度。"
+        }
+      }
+    },
+    "run_program": {
+      "name": "執行程式",
+      "description": "立即執行完整控制器的程式；若有其他程式正在執行，則在輪到它時執行。除非步驟另有指定，否則程式會依 Smart Irrigation 計算出的時間長度為其區域澆水。",
+      "fields": {
+        "program_id": {
+          "name": "程式",
+          "description": "程式的 ID，顯示於其設定中。"
+        },
+        "seconds": {
+          "name": "秒數",
+          "description": "整個程式的總時間長度，會依各步驟的預定時間長度比例分配給各步驟。留空則使用預定的時間長度。"
+        },
+        "mode": {
+          "name": "模式",
+          "description": "已有項目正在澆水時的處理方式。「排入佇列」會排在其後；「取代」則會先完整停止目前的澆水。"
+        }
+      }
+    },
+    "stop_program": {
+      "name": "停止程式",
+      "description": "停止單一程式。若程式正在執行，其開啟的區域會以正常方式關閉，並計入已送出的水量；若正在等待輪到它，則會從佇列中移除。未知的程式不會有任何動作。主程式請使用 stop_watering 停止。",
+      "fields": {
+        "program_id": {
+          "name": "程式",
+          "description": "程式的 ID。"
+        }
+      }
+    },
+    "set_program_enabled": {
+      "name": "啟用或停用程式",
+      "description": "開啟或關閉完整控制器的程式，作用與其設定中的開關相同。",
+      "fields": {
+        "program_id": {
+          "name": "程式",
+          "description": "程式的 ID。"
+        },
+        "enabled": {
+          "name": "已啟用",
+          "description": "開啟為啟用，關閉為停用。"
+        }
+      }
+    },
+    "set_step_enabled": {
+      "name": "啟用或停用步驟",
+      "description": "開啟或關閉程式中的某個步驟。",
+      "fields": {
+        "program_id": {
+          "name": "程式",
+          "description": "程式的 ID。"
+        },
+        "step_id": {
+          "name": "步驟",
+          "description": "步驟的 ID，顯示於程式中。"
+        },
+        "enabled": {
+          "name": "已啟用",
+          "description": "開啟為啟用，關閉為停用。"
+        }
+      }
+    },
+    "set_schedule_enabled": {
+      "name": "啟用或停用排程",
+      "description": "開啟或關閉程式中的某個排程。排程會立即重新生效。",
+      "fields": {
+        "program_id": {
+          "name": "程式",
+          "description": "程式的 ID。"
+        },
+        "schedule_id": {
+          "name": "排程",
+          "description": "排程的 ID，顯示於程式中。"
+        },
+        "enabled": {
+          "name": "已啟用",
+          "description": "開啟為啟用，關閉為停用。"
+        }
+      }
+    },
+    "stop_watering": {
+      "name": "停止澆水",
+      "description": "立即停止澆水。Smart Irrigation 開啟的所有閥門都會關閉，各區域會計入已送出的水量，程式與仍在等待的區域也會結束。若已選擇區域，則只停止這些區域。"
+    },
+    "pause_watering": {
+      "name": "暫停澆水",
+      "description": "關閉已開啟的閥門並暫停澆水，包含仍在等待的區域。已送出的水量會被計入，恢復後會繼續完成該輪剩餘的澆水。若未解除暫停，暫停會自行結束。",
+      "fields": {
+        "minutes": {
+          "name": "分鐘",
+          "description": "暫停最長持續多久後會自行解除。"
+        }
+      }
+    },
+    "resume_watering": {
+      "name": "恢復澆水",
+      "description": "從暫停處繼續已暫停的澆水。"
+    },
+    "next_step": {
+      "name": "下一步驟",
+      "description": "結束程式目前所在步驟的區域，並繼續下一個步驟。"
+    },
+    "suspend": {
+      "name": "擱置",
+      "description": "讓區域或程式在某個時間點之前不進行澆水。若未指定時間長度與日期，或為 0 小時，則會解除擱置。",
+      "fields": {
+        "program_id": {
+          "name": "程式",
+          "description": "要擱置的程式 ID。"
+        },
+        "hours": {
+          "name": "小時",
+          "description": "擱置多久。填 0 則解除擱置。"
+        },
+        "until": {
+          "name": "直到",
+          "description": "擱置結束的時間點。"
+        }
+      }
+    },
+    "adjust_program": {
+      "name": "調整程式",
+      "description": "在一段時間內，讓完整控制器的程式澆水時間變長或變短。此調整會取代先前的調整（不會累加），套用於設定之後開始的執行，並於指定的小時數後結束。",
+      "fields": {
+        "program_id": {
+          "name": "程式",
+          "description": "要調整的程式 ID。"
+        },
+        "percent": {
+          "name": "百分比",
+          "description": "將各步驟的水量乘以此比例（120 表示多澆 20 %）。"
+        },
+        "seconds": {
+          "name": "秒數",
+          "description": "為各步驟增加的澆水秒數（負數表示減少）。"
+        },
+        "hours": {
+          "name": "小時",
+          "description": "調整持續多久。留空則持續到重設為止。"
+        },
+        "reset": {
+          "name": "重設",
+          "description": "移除此程式的調整。"
+        }
+      }
+    },
+    "water_zone": {
+      "name": "為區域澆水",
+      "description": "立即為區域澆水；若有其他項目正在澆水，則在輪到它時進行。未指定時間長度時，區域會依 Smart Irrigation 計算出的時間長度澆水。",
+      "fields": {
+        "zone_id": {
+          "name": "區域 ID",
+          "description": "區域的 ID，用來取代其實體。"
+        },
+        "seconds": {
+          "name": "秒數",
+          "description": "澆水秒數。留空則使用計算出的時間長度。"
+        },
+        "mode": {
+          "name": "模式",
+          "description": "已有項目正在澆水時的處理方式。「排入佇列」會排在其後；「取代」則會先完整停止目前的澆水。"
+        }
+      }
+    },
+    "use_measured_throughput": {
+      "name": "採用實測出水率",
+      "description": "將區域的出水率設為其流量計在多次執行中測得的流量。測量結果僅供建議，透過此動作即可採用。",
+      "fields": {
+        "zone_id": {
+          "name": "區域 ID",
+          "description": "區域的 ID，用來取代其實體。"
+        }
+      }
+    },
+    "create_recurring_schedule": {
+      "name": "建立週期排程（已棄用）",
+      "description": "已棄用：請改用程式的排程（「澆水」分頁）。2027.11 前仍可使用。建立新的週期灑水排程。",
+      "fields": {
+        "name": {
+          "name": "名稱",
+          "description": "排程名稱"
+        },
+        "type": {
+          "name": "排程類型",
+          "description": "排程類型（每日、每週、每月、間隔）"
+        },
+        "enabled": {
+          "name": "已啟用",
+          "description": "啟用排程"
+        },
+        "time": {
+          "name": "時間",
+          "description": "執行時間（HH:MM 格式）"
+        },
+        "days_of_week": {
+          "name": "星期幾",
+          "description": "每週排程的星期幾"
+        },
+        "day_of_month": {
+          "name": "每月幾號",
+          "description": "每月排程的日期（1-31）"
+        },
+        "interval_hours": {
+          "name": "間隔小時數",
+          "description": "間隔排程的間隔小時數"
+        },
+        "zones": {
+          "name": "區域",
+          "description": "要包含的區域 ID，或填 'all'"
+        },
+        "action": {
+          "name": "動作",
+          "description": "要執行的動作（calculate、update、irrigate）"
+        }
+      }
+    },
+    "update_recurring_schedule": {
+      "name": "更新週期排程（已棄用）",
+      "description": "已棄用：請改用程式的排程（「澆水」分頁）。2027.11 前仍可使用。更新現有的週期灑水排程。",
+      "fields": {
+        "schedule_id": {
+          "name": "排程 ID",
+          "description": "要更新的排程 ID"
+        },
+        "name": {
+          "name": "名稱",
+          "description": "排程名稱"
+        },
+        "enabled": {
+          "name": "已啟用",
+          "description": "啟用／停用排程"
+        }
+      }
+    },
+    "delete_recurring_schedule": {
+      "name": "刪除週期排程（已棄用）",
+      "description": "已棄用：請改用程式的排程（「澆水」分頁）。2027.11 前仍可使用。刪除週期灑水排程。",
+      "fields": {
+        "schedule_id": {
+          "name": "排程 ID",
+          "description": "要刪除的排程 ID"
+        }
+      }
+    },
+    "create_seasonal_adjustment": {
+      "name": "建立季節性調整（已棄用）",
+      "description": "已棄用：請改用 smart_irrigation.set_seasonal_adjustment。2027.11 前仍可使用。為灑水區域建立新的季節性調整。",
+      "fields": {
+        "name": {
+          "name": "名稱",
+          "description": "調整名稱"
+        },
+        "enabled": {
+          "name": "已啟用",
+          "description": "啟用調整"
+        },
+        "month_start": {
+          "name": "開始月份",
+          "description": "起始月份（1-12）"
+        },
+        "month_end": {
+          "name": "結束月份",
+          "description": "結束月份（1-12）"
+        },
+        "multiplier_adjustment": {
+          "name": "乘數調整係數",
+          "description": "乘數調整係數"
+        },
+        "threshold_adjustment": {
+          "name": "閾值調整",
+          "description": "閾值調整（公釐）"
+        },
+        "zones": {
+          "name": "區域",
+          "description": "要包含的區域 ID，或填 'all'"
+        }
+      }
+    },
+    "update_seasonal_adjustment": {
+      "name": "更新季節性調整（已棄用）",
+      "description": "已棄用：請改用 smart_irrigation.set_seasonal_adjustment。2027.11 前仍可使用。更新現有的季節性調整。",
+      "fields": {
+        "adjustment_id": {
+          "name": "調整 ID",
+          "description": "要更新的調整 ID"
+        },
+        "name": {
+          "name": "名稱",
+          "description": "調整名稱"
+        },
+        "enabled": {
+          "name": "已啟用",
+          "description": "啟用／停用調整"
+        }
+      }
+    },
+    "delete_seasonal_adjustment": {
+      "name": "刪除季節性調整（已棄用）",
+      "description": "已棄用：請改用 smart_irrigation.set_seasonal_adjustment。2027.11 前仍可使用。刪除季節性調整。",
+      "fields": {
+        "adjustment_id": {
+          "name": "調整 ID",
+          "description": "要刪除的調整 ID"
+        }
+      }
+    },
+    "postpone_irrigation": {
+      "name": "延後灑水",
+      "description": "暫緩澆水一段時間，之後自動恢復。不會重設任何內容：缺水的區域在延後結束時仍然缺水，下一次執行會補足。",
+      "fields": {
+        "hours": {
+          "name": "小時",
+          "description": "暫緩澆水多久。填 0 則解除延後。"
+        }
+      }
+    },
+    "resume_irrigation": {
+      "name": "恢復灑水",
+      "description": "解除延後，無論還剩多少時間。"
+    },
+    "calculate": {
+      "name": "計算",
+      "description": "計算所選的區域；未選擇時則計算所有自動模式的區域",
+      "fields": {
+        "entity": {
+          "name": "實體",
+          "description": "要計算的區域；未選擇則計算全部"
+        },
+        "delete_weather_data": {
+          "name": "刪除氣象資料",
+          "description": "計算後刪除該區域的氣象資料"
+        },
+        "dry_run": {
+          "name": "模擬執行",
+          "description": "回報計算會執行的內容，但不會變更水量平衡、區域或已收集的氣象資料"
+        }
+      }
+    },
+    "update_weather": {
+      "name": "更新氣象資料",
+      "description": "取得所選區域的氣象資料；未選擇時則取得所有區域的氣象資料",
+      "fields": {
+        "entity": {
+          "name": "實體",
+          "description": "要更新的區域；未選擇則更新全部"
+        }
+      }
+    },
+    "set_seasonal_adjustment": {
+      "name": "設定季節性調整",
+      "description": "建立季節性調整、依 ID 變更，或搭配 remove 依 ID 移除",
+      "fields": {
+        "adjustment_id": {
+          "name": "調整 ID",
+          "description": "要變更或移除的調整；未提供則建立新的調整"
+        },
+        "remove": {
+          "name": "移除",
+          "description": "移除此 ID 的調整"
+        },
+        "name": {
+          "name": "名稱",
+          "description": "調整名稱"
+        },
+        "enabled": {
+          "name": "已啟用",
+          "description": "啟用調整"
+        },
+        "month_start": {
+          "name": "開始月份",
+          "description": "起始月份（1-12）"
+        },
+        "month_end": {
+          "name": "結束月份",
+          "description": "結束月份（1-12）"
+        },
+        "multiplier_adjustment": {
+          "name": "乘數調整係數",
+          "description": "乘數調整係數"
+        },
+        "threshold_adjustment": {
+          "name": "閾值調整",
+          "description": "閾值調整（公釐）"
+        },
+        "zones": {
+          "name": "區域",
+          "description": "要包含的區域 ID，或填 'all'"
+        }
+      }
+    }
+  },
+  "issues": {
+    "dry_zone_not_watered": {
+      "title": "區域 {zone} 缺水，且沒有任何項目會為它澆水",
+      "description": "區域 **{zone}** 的水量平衡已缺水 {days} 天，而包含它的所有程式都已停用、已擱置，或沒有啟用的排程。\n\n請重新啟用會為此區域澆水的程式、啟用其中一個排程，或解除擱置。區域獲得澆水或有程式再次涵蓋它後，此通知會自動清除。"
+    },
+    "weather_silent": {
+      "title": "感測器群組 {mapping}：有氣象感測器停止回報",
+      "description": "已超過 {hours} 小時未收到來自 **{sensors}** 的資料。上次回報時間為 {since}。\n\n如此舊的讀數不會納入計算，因此此感測器群組的區域會以剩餘的資料進行計算，或完全無法計算。\n\n請檢查感測器的電池、連線，以及它在 Home Assistant 中的實體。感測器再次回報後，此通知會自動清除。"
+    },
+    "missing_input": {
+      "title": "區域 {zone}：無法進行任何計算",
+      "description": "無法計算區域 **{zone}** 的蒸發散量，因為氣象資料中缺少以下項目的值：**{missing}**。\n\n在補齊之前，區域的缺水量不會變動，也不會澆水，看起來就像是不需要澆水的區域。\n\n請檢查對應到這些欄位的感測器是否可用，或氣象服務是否仍在傳送這些資料。下次能完成計算時，此問題會自動清除。"
+    },
+    "undersized_zone": {
+      "title": "區域 {zone}：單次執行的澆水量補不上流失量",
+      "description": "區域 **{zone}** 最長的一次執行約可送出 **{capacity} 公釐**，但該區域在兩次澆水之間（{days} 天）約流失 **{need} 公釐**。只要天氣維持現狀，其缺水量就會持續增加。\n\n上限即為區域的最長時間長度。請調高上限、為區域增加灑水器或提高出水率，或縮短灑水間隔天數。若上限是刻意設定的，可以忽略此通知。"
+    },
+    "throughput_mismatch": {
+      "title": "區域 {zone}：實測流量與設定的出水率不符",
+      "description": "在最近 {samples} 次執行中，區域 **{zone}** 的流量計測得約 **{measured}**，而該區域設定為 **{configured}**，相差 {percentage}%。\n\n所有灑水時間長度都是依設定的出水率推算，因此全都會偏差大致相同的幅度。\n\n如果測量結果看起來正確，請將區域的出水率設為該值。若不正確，請檢查流量計是否只計算此區域，以及自來水壓力是否符合預期。Smart Irrigation 絕不會自動為你變更此值。"
+    },
+    "zone_not_calculated_no_readings": {
+      "title": "區域 {zone} 無法計算：沒有氣象讀數",
+      "description": "區域 **{zone}** 未進行計算：其感測器群組沒有可供計算的讀數。在有讀數之前，區域的缺水量不會變動，也不會澆水。\n\n請檢查感測器群組是否有來源且正常回報，更新氣象資料後再計算該區域。下次計算成功時，此通知會自動清除。"
+    },
+    "zone_not_calculated_no_engine": {
+      "title": "區域 {zone} 無法計算：沒有模組",
+      "description": "區域 **{zone}** 沒有模組，因此不會進行計算，也不會澆水。\n\n請在「區域」分頁中該區域的卡片上選擇計算方式。下次計算成功時，此通知會自動清除。"
+    },
+    "zone_not_calculated_nothing_from_engine": {
+      "title": "區域 {zone} 無法計算：沒有蒸發散量",
+      "description": "區域 **{zone}** 的蒸發散量取自感測器或氣象服務，但其感測器群組沒有提供。在有資料之前，該區域不會澆水。\n\n請檢查提供蒸發散量的感測器或氣象服務。下次計算成功時，此通知會自動清除。"
+    },
+    "zone_not_calculated_forecast_without_service": {
+      "title": "區域 {zone} 無法計算：需要預報但沒有氣象服務",
+      "description": "區域 **{zone}** 的模組會預看未來幾天，這需要氣象服務，但目前尚未設定。在能夠計算之前，該區域不會澆水。\n\n請設定氣象服務，或將模組的預報天數設為 0。下次計算成功時，此通知會自動清除。"
+    },
+    "zone_not_calculated_error": {
+      "title": "區域 {zone} 無法計算：發生錯誤",
+      "description": "區域 **{zone}** 的計算失敗：{detail}\n\n在能夠計算之前，該區域不會澆水。若持續失敗，請附上此訊息與診斷檔案提出 issue。下次計算成功時，此通知會自動清除。"
+    },
+    "zone_not_calculated_no_sensor_group": {
+      "title": "區域 {zone} 無法計算：沒有感測器群組",
+      "description": "區域 **{zone}** 沒有感測器群組，因此沒有可供計算的資料，也不會澆水。\n\n請在「區域」分頁中該區域的卡片上選擇其感測器群組，然後計算該區域。下次計算成功時，此通知會自動清除。"
+    },
+    "deprecated_action": {
+      "title": "動作 {action} 即將移除",
+      "description": "有自動化、腳本或儀表板呼叫了 **{action}**。它目前仍可運作，但將自 {version} 版起移除，並安排在冬季、非澆水季節進行。\n\n請改用 **{replacement}**：功能相同，且未選擇區域時會套用於所有區域。每次呼叫舊名稱時，此通知都會再次出現，直到不再有任何呼叫為止。"
+    },
+    "deprecated_recurring_schedule": {
+      "title": "週期排程即將移除：{action}",
+      "description": "有自動化、腳本或儀表板呼叫了 **{action}**。週期排程目前仍可運作，但將自 {version} 版起移除，並安排在冬季、非澆水季節進行。\n\n程式的排程功能相同，且位於面板中：請在 **澆水** 下設定，然後移除週期排程與對 {action} 的呼叫。"
+    }
+  }
+}

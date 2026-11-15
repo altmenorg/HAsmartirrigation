@@ -1,0 +1,1642 @@
+{
+  "common": {
+    "loading": "載入中",
+    "saving": "儲存中",
+    "actions": {
+      "delete": "刪除"
+    },
+    "labels": {
+      "module": "模組",
+      "no": "否",
+      "select": "選取",
+      "yes": "是",
+      "enabled": "已啟用",
+      "disabled": "已停用",
+      "before": "之前",
+      "after": "之後"
+    },
+    "units": {
+      "seconds": "秒",
+      "minutes": "分鐘",
+      "hours": "小時"
+    },
+    "attributes": {
+      "size": "面積",
+      "throughput": "出水率",
+      "state": "狀態",
+      "bucket": "水量平衡",
+      "last_updated": "上次更新",
+      "last_calculated": "上次計算",
+      "number_of_data_points": "資料點數量"
+    },
+    "loading-messages": {
+      "configuration": "正在載入設定…",
+      "modules": "正在載入模組…",
+      "general": "載入中…"
+    },
+    "saving-messages": {
+      "adding": "新增中…",
+      "saving": "儲存中…"
+    },
+    "modes": {
+      "manual": "手動",
+      "standard": "標準",
+      "advanced": "進階"
+    }
+  },
+  "defaults": {
+    "default-zone": "預設區域",
+    "default-mapping": "預設感測器群組"
+  },
+  "module": {
+    "calculation": {
+      "explanation": {
+        "formatting-note": "注意：此說明使用「.」作為小數點，並顯示四捨五入後的公制數值。",
+        "module-returned-evapotranspiration-deficiency": "模組傳回的作物蒸發散不足量（ = et0 * hour_multiplier * Kc + 降雨量）為",
+        "module-returned-hourly-evapotranspiration-deficiency": "模組逐小時加總的作物蒸發散不足量（ = 每小時 et0 * Kc + 降雨量 的總和），期間為",
+        "crop-factor-is": "作物係數為",
+        "bucket-was": "水量平衡原為",
+        "new-bucket-values-is": "新的水量平衡為",
+        "bucket": "水量平衡",
+        "old-bucket-variable": "old_water_balance",
+        "max-bucket-variable": "max_water_balance",
+        "delta": "delta",
+        "bucket-less-than-zero-irrigation-necessary": "由於水量平衡 < 0，因此需要灑水",
+        "steps-taken-to-calculate-duration": "為了計算確切的時間長度，執行了以下步驟",
+        "precipitation-rate-defined-as": "降雨率定義為",
+        "precipitation-rate-is": "降雨率為",
+        "duration-is-calculated-as": "時間長度的計算方式為",
+        "drainage": "排水量",
+        "drainage-rate": "drainage_rate",
+        "hours": "小時",
+        "precipitation-rate-variable": "precipitation_rate",
+        "multiplier-is-applied": "接著套用乘數。乘數為",
+        "duration-after-multiplier-is": "因此時間長度為",
+        "maximum-duration-is-applied": "然後套用最長時間長度。最長時間長度為",
+        "duration-after-maximum-duration-is": "因此時間長度為",
+        "lead-time-is-applied": "最後套用提前時間。提前時間為",
+        "duration-after-lead-time-is": "因此最終時間長度為",
+        "bucket-larger-than-or-equal-to-zero-no-irrigation-necessary": "由於水量平衡 >= 0，因此不需要灑水，時間長度設為",
+        "maximum-bucket-is": "最大水量平衡為",
+        "drainage-rate-is": "飽和時（水量平衡達最大值）的排水率為",
+        "current-drainage-is": "目前排水量的計算方式為",
+        "drainage-replayed": "此時間範圍已逐小時重新模擬，因此每次降雨只會從降下的那一小時開始排水。排水量為",
+        "no-drainage": "目前排水量為 0，因為",
+        "below-irrigation-threshold": "缺水量尚未達到此區域的灑水閾值，因此不需要灑水，時間長度設為 0。缺水量／閾值："
+      }
+    }
+  },
+  "calcmodules": {
+    "pyeto": {
+      "description": "根據你自己的氣象感測器（溫度、濕度、氣壓、風速與太陽輻射）進行完整計算。這是最精確的選項，但需要的資料也最多。"
+    },
+    "static": {
+      "description": "每天固定的蒸發量，由你自行設定。不需要感測器，也不需要氣象服務。"
+    },
+    "passthrough": {
+      "description": "採用已存在的蒸發散量數值，來源可以是感測器，或會發布該數值的氣象服務。若你有這類資料，建議採用此方式。"
+    }
+  },
+  "panels": {
+    "setup": {
+      "title": "設定",
+      "description": "引導你建立第一個區域的方式。它一次只問一個問題，而且只會問你先前的回答尚未決定的問題。",
+      "next": "下一步",
+      "back": "上一步",
+      "create": "建立",
+      "creating": "建立中…",
+      "failed": "發生錯誤，沒有建立任何項目。如果你想手動設定，其他分頁仍然可用。",
+      "done": "你的區域已準備就緒。",
+      "steps": {
+        "zone": {
+          "question": "你要澆水的是什麼？",
+          "help": "一個區域就是一個閥門，負責澆灌一塊區域。",
+          "name": "名稱",
+          "size": "面積",
+          "throughput": "出水率",
+          "throughput-help": "此區域每分鐘送出的水量。如果可以，請實際量測，而不要採用規格表上的數值：所有時間長度都是由它推算而來，而且它最容易讓你不知不覺多澆一倍的水。"
+        },
+        "environment": {
+          "question": "它種在哪裡？",
+          "outdoors": "戶外",
+          "outdoors-help": "露天環境。雨水會淋到，且天空狀況值得參考。",
+          "under-glass": "玻璃或塑膠覆蓋下",
+          "under-glass-help": "溫室、隧道式塑膠棚或日光室。不會有雨水，而且預報所描述的天氣是這些植物不會經歷的。"
+        },
+        "weather": {
+          "question": "蒸發量數值要從哪裡取得？",
+          "service": "你設定的氣象服務",
+          "service-help": "不需要另外安裝任何東西。Smart Irrigation 會取得你所在位置的氣象資料，並據此計算蒸發散量。",
+          "no-service-indoors": "此處不提供氣象服務：它描述的是天空的狀況，而這些植物並不在那片天空下。",
+          "sensors": "我自己的氣象感測器",
+          "sensors-help": "你有溫度、濕度等感測器。這是最精確的選項，因為它量測的是植物實際所在之處。",
+          "et": "已經會回報蒸發散量的感測器",
+          "et-help": "已有其他東西計算出蒸發散量，Smart Irrigation 應直接採用該數值。",
+          "static": "每天固定的量",
+          "static-help": "不需要感測器，也不需要服務。你只需提供一個數字，每天都會使用它。雖然粗略，但仍會追蹤你已經澆過的水量。",
+          "service-help-entity": "目前的數值與預報來自你的天氣實體，Smart Irrigation 會據此計算蒸發散量。降雨量則來自你的雨量感測器，會在下一步中詢問。"
+        },
+        "sensors": {
+          "question": "它應該讀取哪些實體？",
+          "help": "只會詢問計算實際用到的實體。",
+          "help-optional": "標示為選填的欄位可以留空：缺少的氣象數值會以估算補上；沒有雨量感測器時，則不會計入任何降雨。",
+          "suggested-note": "標示為建議的欄位已根據你 Home Assistant 中的感測器自動填入。請確認每一項都是你要的。",
+          "optional": "選填",
+          "suggested": "建議",
+          "lux-hint": "在玻璃覆蓋下，光照感測器可以替代太陽輻射：請在此選擇你的照度實體，之後在感測器群組中將其來源設為光照感測器（lux）。",
+          "static-question": "每天蒸發多少？",
+          "static-help": "水深，單位與你的區域所使用的單位相同。在溫帶地區的夏季，每天約 4 至 5 公釐是常見的數值。",
+          "static-label": "每日蒸發量",
+          "rain-help-entity": "此天氣實體只會預報降雨。請為其中一個欄位選擇可量測降雨的感測器：降雨率或累積雨量計。沒有雨量感測器嗎？請改用 Open-Meteo。"
+        },
+        "review": {
+          "question": "準備建立",
+          "zone": "區域",
+          "environment": "環境",
+          "engine": "模組",
+          "sources": "來源",
+          "from-the-service": "來自氣象服務",
+          "no-sensor": "沒有感測器",
+          "help": "這會建立一個計算模組、一個感測器群組與一個區域，與其他分頁的做法完全相同。之後不會鎖定任何設定。"
+        }
+      },
+      "step": "步驟",
+      "done-note-zone": "它會出現在「區域」下，其感測器群組則在「感測器群組」下。這裡沒有任何特殊之處：你可以像編輯其他項目一樣編輯它們。",
+      "done-next-static": "使用每日固定量時不需要任何讀數：下次計算會算出它還缺少多少水。",
+      "done-next-service": "它的氣象資料來自氣象服務，時間長度則在第一次計算時得出。按下「立即計算」會立刻取得氣象資料並計算該區域。",
+      "done-next-sensors": "它的時間長度會在第一次計算時得出。按下「立即計算」會立刻讀取你的感測器並計算該區域。",
+      "calc-now": "立即計算",
+      "calc-duration": "計算完成：下次啟動時會澆水 {duration}。",
+      "calc-nothing": "計算完成：目前尚未缺水。",
+      "calc-failed": "計算失敗。原因會顯示在「區域」下的該區域中。",
+      "open-zone": "開啟區域",
+      "another": "設定另一個區域"
+    },
+    "weatherservice": {
+      "history": {
+        "title": "歷史記錄",
+        "refresh": "重新整理",
+        "last-update": "上次更新",
+        "time": "取得時間",
+        "sensor-group": "感測器群組",
+        "no-data": "尚未從氣象服務取得任何資料。"
+      },
+      "title": "氣象服務",
+      "description": "檢視並變更用於取得氣象資料的氣象服務，無需重新安裝整合。API 金鑰會經過驗證，變更會立即套用。",
+      "labels": {
+        "use-weather-service": "使用氣象服務",
+        "service": "氣象服務",
+        "api-key": "API 金鑰",
+        "ha-weather-entity": "Home Assistant 中的天氣實體",
+        "weather-entity": "天氣實體"
+      },
+      "actions": {
+        "save": "儲存",
+        "saving": "儲存中…",
+        "open-sensor-groups": "開啟感測器群組"
+      },
+      "messages": {
+        "no-service": "未使用氣象服務，氣象資料僅來自你自己的感測器。",
+        "saved": "氣象服務已更新並套用。",
+        "reload-note": "儲存時會向服務驗證 API 金鑰，並立即套用變更。",
+        "owm-onecall-hint": "OpenWeatherMap 需要 One Call API 3.0 方案（One Call by Call）。每日 1000 次呼叫以內免費，但必須綁定信用卡啟用，且新金鑰可能需要等待數小時才能生效。單純的預設金鑰會被拒絕。",
+        "ha-entity-hint": "目前的數值與預報來自此實體，太陽輻射與參考蒸發散量則來自 Open-Meteo。它只預報降雨：請在「目前降雨量」下為每個感測器群組指定雨量感測器。",
+        "rain-groups-on-service": "{count, plural, one {# 個感測器群組仍從氣象服務取得} other {# 個感測器群組仍從氣象服務取得}}降雨量，但該服務未回報任何降雨量：{groups}。請在「目前降雨量」下選擇雨量感測器，否則每次降雨後區域仍會澆水。",
+        "reload-note-entity": "儲存時會檢查該實體是否存在，並立即套用變更。",
+        "invalid-entity": "請選擇天氣實體：此實體已不存在，或不是天氣實體。"
+      }
+    },
+    "backuprestore": {
+      "title": "備份／還原",
+      "description": "將完整的 Smart Irrigation 設定匯出為 JSON 檔案，或從先前的備份還原。",
+      "cards": {
+        "backup": {
+          "title": "備份",
+          "description": "將完整設定（一般設定、區域、模組與感測器群組）下載為 JSON 檔案。"
+        },
+        "restore": {
+          "title": "還原",
+          "description": "載入先前匯出的 JSON 檔案，以取代目前的設定。"
+        }
+      },
+      "actions": {
+        "export": "匯出為 JSON",
+        "choose-file": "選擇備份檔案…",
+        "restore": "還原此備份",
+        "restoring": "還原中…"
+      },
+      "messages": {
+        "exported": "備份檔案已下載。",
+        "restored": "設定已還原，正在重新載入整合。",
+        "invalid-file": "此檔案不是有效的 Smart Irrigation 備份。",
+        "confirm-title": "要取代整份設定嗎？",
+        "summary": "此備份包含",
+        "confirm-warning": "還原會覆寫目前所有的一般設定、區域、模組與感測器群組，且無法復原。",
+        "reload-note": "還原會取代所有內容，並重新載入整合以套用變更。"
+      }
+    },
+    "general": {
+      "cards": {
+        "automatic-duration-calculation": {
+          "header": "計算澆水時間長度",
+          "description": "每個區域的澆水時間長度取決於其水量平衡：即天氣從土壤中帶走的水量，減去降雨量。你可以在此選擇計算的時機。何時開始澆水則由其他設定決定，也就是啟動觸發條件。",
+          "labels": {
+            "calc-when": "澆水時間長度的計算時機",
+            "calc-when-time": "在固定時間",
+            "calc-when-start": "每次啟動前",
+            "calc-when-manual": "僅在我要求時",
+            "calc-when-hint": "每次啟動前：在啟動觸發時，使用最新的氣象資料，於 Smart Irrigation 開始澆水時計算。在固定時間：每天在下方指定的時間計算，適用於由其他項目啟動澆水並讀取時間長度的情況（Irrigation Unlimited、排程）。僅在我要求時：透過按鈕或服務觸發。",
+            "calc-time": "計算時間",
+            "calc-time-hint": "每日計算：流失的水量會加入各區域的水量平衡，並設定澆水時間長度。",
+            "hourly-calculation": "逐小時計算蒸發散量",
+            "hourly-calculation-hint": "針對自上次計算以來的每個小時，加總 FAO-56 逐時方程式，而不是使用以平均值計算的每日方程式，因為平均值會掩蓋日照與高溫是否同時出現。當讀數在一天中陸續送達時很值得使用。新安裝預設使用此方式；舊的安裝則維持每日計算，直到你切換為止。"
+          }
+        },
+        "automatic-update": {
+          "errors": {
+            "warning-update-time-on-or-after-calc-time": "警告：氣象資料更新時間等於或晚於計算時間"
+          },
+          "header": "自動更新氣象資料",
+          "description": "自動收集並儲存氣象資料。計算區域水量平衡與時間長度時需要氣象資料。",
+          "labels": {
+            "auto-update-enabled": "自動更新氣象資料",
+            "auto-update-schedule": "更新排程",
+            "auto-update-time": "更新時間",
+            "auto-update-interval": "氣象資料讀取間隔",
+            "auto-update-delay": "首次更新前的延遲"
+          },
+          "options": {
+            "minutes": "分鐘",
+            "hours": "小時",
+            "days": "天"
+          }
+        },
+        "continuousupdates": {
+          "header": "所有感測器群組的持續更新",
+          "description": "針對下方每個感測器群組：記錄群組感測器的每一次變化，而不是每次更新只記一筆讀數，讓逐小時計算與降雨量取得更細緻的資料。區域仍依排程計算，而非每次變化就計算。群組中的氣象服務仍然每次更新只讀取一次：不會產生額外的請求。",
+          "labels": {
+            "continuousupdates": "啟用持續更新",
+            "sensor_debounce": "感測器防彈跳"
+          }
+        },
+        "panel-mode": {
+          "header": "面板",
+          "labels": {
+            "advanced": "進階設定",
+            "advanced-hint": "顯示用於調校模型的設定：排水、閾值、乘數，以及區域向前預看的天數。這些設定都有合理的預設值；除非你確定需要，否則請保持關閉。無論開關與否，你的設定值都會保留。"
+          }
+        },
+        "setup-assistant": {
+          "description": "最多四個問題，就會為你建立感測器群組與區域，並自動選擇各自所需的項目。適用於第一個區域、再新增一個，或重新開始。",
+          "open": "開啟精靈"
+        },
+        "iu-import": {
+          "description": "要從 Irrigation Unlimited 轉移過來嗎？將它的區域、序列與排程匯入這裡，並可先預覽所有內容。",
+          "open": "匯入"
+        },
+        "master-switch": {
+          "title": "Smart Irrigation",
+          "label": "計算並澆水",
+          "description": "關閉時，Smart Irrigation 仍會持續讀取氣象資料並保留其感測器，但不會進行任何計算、不會變動任何水量平衡、不會開啟任何閥門，也不會執行任何程式。重新開啟後，關閉期間的時間不會被計入。",
+          "off-note": "已關閉：不進行任何計算，也不澆水。氣象讀數會持續進行，重新開啟時不會計入關閉期間的時間。",
+          "confirm-off": "要關閉 Smart Irrigation 嗎？正在澆水的項目會立即停止，在重新開啟之前不會進行任何計算或澆水。"
+        }
+      },
+      "description": "此頁面提供全域設定。",
+      "title": "一般",
+      "sections": {
+        "calculation": "計算",
+        "control": "控制",
+        "system": "系統",
+        "calculation-sub": "每個區域需要多少水，以及何時計算。",
+        "control-sub": "什麼會開啟閥門，以及什麼會啟動一次執行。",
+        "system-sub": "面板、藍圖、設定精靈，以及從 Irrigation Unlimited 轉移。"
+      },
+      "moved-to-weather": "氣象服務、位置、氣象資料的讀取頻率與略過檢查都在此分頁："
+    },
+    "help": {
+      "title": "說明",
+      "cards": {
+        "how-to-get-help": {
+          "title": "如何取得協助",
+          "first-read-the": "首先，請閱讀",
+          "wiki": "Wiki",
+          "if-you-still-need-help": "如果你仍需要協助，請至",
+          "community-forum": "社群論壇",
+          "or-open-a": "或開啟",
+          "github-issue": "GitHub Issue",
+          "english-only": "僅限英文"
+        },
+        "translate": {
+          "title": "協助翻譯",
+          "text": "除了英文與法文外，此面板的翻譯皆為機器翻譯，尚未經過母語人士檢查。如果你的語言中有某個詞或句子讀起來怪怪的，可以直接在瀏覽器中修正，不需要任何技術知識。",
+          "link": "在 Weblate 上翻譯"
+        }
+      }
+    },
+    "info": {
+      "title": "資訊",
+      "configuration-not-available": "無法取得設定。",
+      "cards": {
+        "next-run": {
+          "title": "下次執行",
+          "labels": {
+            "start": "開始時間",
+            "duration": "總時間長度",
+            "zones": "澆水中的區域",
+            "trigger": "觸發條件",
+            "calculation": "計算",
+            "no-valve": "未連結閥門，因此不會澆水"
+          },
+          "no-start": "尚無法算出啟動時間。",
+          "nothing-to-water": "無需澆水：沒有任何區域達到灑水閾值。",
+          "trigger-default": "預設，於日出時結束",
+          "calc-daily": "每天 {time}",
+          "calc-before-start": "每次啟動前",
+          "calc-manual": "僅在你要求時",
+          "main-schedules": "由主程式的排程啟動（目前不使用啟動觸發條件）",
+          "accounts-for-duration": "由結束時間往回推算，使執行在該時間結束",
+          "starts-at-trigger": "於該時間點開始",
+          "sequencing-sequential": "一次一個區域，因此總時間為所有區域加總",
+          "estimated": "預估值：區域會在啟動前再次計算。",
+          "sequencing-parallel": "所有區域同時進行，因此總時間為最長區域的時間",
+          "headline-nothing": "無需澆水",
+          "sub-nothing": "目前沒有任何區域缺水到需要澆水。下次啟動為 {start}。",
+          "headline-not-calculated": "尚未計算",
+          "sub-not-calculated": "區域在第一次計算之前沒有時間長度，{when}。若要立即計算，請在「區域」下按「計算所有區域」。",
+          "headline-watering": "將於 {start} 澆水",
+          "headline-watering-soon": "將於下次啟動時澆水",
+          "sub-watering": "共 {count} 個區域，合計 {duration}。",
+          "headline-postponed": "澆水已暫緩",
+          "sub-postponed": "你已延後澆水。它會自動恢復，且不會有任何損失：缺水的區域仍然缺水。",
+          "headline-skipped": "今天不澆水",
+          "headline-not-scheduled": "有一次執行待辦，但沒有排程會啟動它",
+          "sub-not-scheduled": "上方的時間是它將啟動的時間。目前沒有任何啟動觸發條件處於待命狀態，這會在作用中的觸發條件被停用或未註冊時發生。請在「設定」下檢查觸發條件，若看起來正確，進行一次計算即可重新待命。",
+          "headline-no-trigger": "沒有作用中的觸發條件",
+          "sub-no-trigger": "Smart Irrigation 不會啟動任何澆水。請在設定中選擇啟動觸發條件，它才會澆水。",
+          "headline-no-valve": "沒有任何項目會澆水",
+          "sub-no-valve": "缺水的區域沒有連結閥門，因此不會澆水。請為每個區域連結一個閥門。",
+          "headline-no-zones": "尚無區域",
+          "sub-no-zones": "Smart Irrigation 為區域澆水。精靈會陪你設定第一個區域。",
+          "headline-off": "Smart Irrigation 已關閉",
+          "sub-off": "它會繼續讀取氣象資料，但在重新開啟之前不會進行任何計算，也不會澆水。",
+          "open-settings": "開啟設定",
+          "sub-watering-one": "一個區域，{duration}。",
+          "next-runs": "接下來",
+          "run-waits": "等待 {program}，約 {start} 至 {end}",
+          "run-skipped": "預計略過：預報有雨",
+          "run-twice": "{zones} 連續澆水兩次",
+          "run-suspended": "已擱置至 {when}"
+        },
+        "decision": {
+          "title": "會被略過嗎？",
+          "will-run": "沒有任何條件阻擋這次執行。",
+          "will-skip": "這次執行將被略過。",
+          "preview-note": "剛剛才評估過。預報在啟動前仍可能改變。",
+          "unavailable": "無法評估略過條件。",
+          "last-title": "最近一次實際決定",
+          "last-none": "尚未決定任何一次執行。",
+          "last-skipped": "已略過",
+          "last-ran": "已照常執行",
+          "check-precipitation": "降雨預報",
+          "check-days_between": "灑水間隔天數",
+          "state-off": "關閉",
+          "state-unavailable": "無法檢查",
+          "state-passing": "未阻擋",
+          "state-blocking": "阻擋中",
+          "detail-forecast": "預報",
+          "detail-expected": "預期降雨（依機率加權）",
+          "detail-anyway-deficit": "仍會照常執行：將澆水的區域缺水 {deficit} 公釐，超過預期降雨量的兩倍。",
+          "detail-anyway-skips": "仍會照常執行：預報已連續 {days} 天讓這次執行被暫緩。",
+          "detail-threshold": "閾值",
+          "detail-days-since": "距上次執行的天數",
+          "detail-days-required": "所需天數",
+          "check-rain_sensor": "雨量感測器",
+          "check-freeze": "結冰",
+          "check-wind": "風",
+          "check-soil_moisture": "土壤濕度",
+          "detail-now": "目前",
+          "detail-tonight": "今晚（預報低溫）",
+          "detail-weather-service": "氣象服務",
+          "detail-raining": "正在下雨",
+          "detail-dry": "沒有下雨",
+          "detail-held": "略過這次執行",
+          "check-postponed": "已被你延後",
+          "title-main": "主程式會被略過嗎？"
+        },
+        "estimate": {
+          "title": "各區域目前的狀況",
+          "note": "以自上次計算以來收集到的讀數進行試算所得的估計值。不會寫入任何內容：區域在下次計算之前，仍保留上次計算的值。",
+          "none": "目前還無法估計任何區域。",
+          "labels": {
+            "now": "目前",
+            "at-last-calculation": "上次計算時",
+            "would-water": "預計澆水",
+            "last-irrigation": "上次澆水"
+          },
+          "nothing": "無",
+          "never-watered": "從未",
+          "no-valve": "無，未連結閥門"
+        },
+        "postpone": {
+          "prompt": "有預報沒預料到的降雨，或有你自己的理由嗎？",
+          "for-24": "暫緩 24 小時",
+          "for-48": "暫緩 48 小時",
+          "until": "澆水暫緩至",
+          "resume": "立即恢復"
+        },
+        "forecast": {
+          "today": "今天"
+        },
+        "stale": {
+          "title": "有區域不再被計算",
+          "body": "它的水量需求比其他區域更舊，因此是依舊的氣象資料在澆水。請檢查其感測器群組是否仍在接收資料，並查看記錄中關於該區域的計算說明。",
+          "never": "從未計算"
+        },
+        "running": {
+          "headline": "正在澆水",
+          "headline-paused": "澆水已暫停",
+          "paused-until": "直到 {when}，之後會自動繼續。",
+          "left": "剩餘 {time}（{percent} %）",
+          "program": "程式",
+          "step": "步驟 {step}/{steps}",
+          "program-left": "剩餘 {time}",
+          "headline-soaking": "兩輪之間浸潤中",
+          "headline-starting": "澆水即將開始",
+          "pass": "第 {pass} 輪，共 {passes} 輪",
+          "at-most": "最多 {volume}",
+          "soaking": "浸潤中，下一輪於 {when}（第 {pass} 輪，共 {passes} 輪）",
+          "starting": "等待 {supply} 啟動",
+          "then": "接著：{names}，等待輪到它們"
+        }
+      },
+      "gaps": {
+        "auto_calc_off": {
+          "title": "沒有計算任何澆水時間長度",
+          "body": "澆水時間長度設為「僅在我要求時」，因此各區域的時間長度不會自行更新。請在「設定」下選擇「在固定時間」或「每次啟動前」，或在需要執行時手動計算。"
+        },
+        "no_automatic_zone": {
+          "title": "沒有區域會自行澆水",
+          "body": "每個區域都是手動或已停用，因此啟動後不會觸及任何區域。請將區域設為自動，才會依排程澆水。"
+        },
+        "no_valve_path": {
+          "title": "這裡沒有任何項目會開啟閥門",
+          "body": "Smart Irrigation 負責計算澆水多久；還需要有東西去執行。你可以在「設定」下開啟直接閥門控制，然後為每個區域連結閥門，或針對啟動事件撰寫自動化（藍圖會為你處理這件事）。如果已有自動化在處理，就不需要變更。",
+          "action": "前往閥門控制"
+        }
+      }
+    },
+    "mappings": {
+      "cards": {
+        "add-mapping": {
+          "actions": {
+            "add": "新增感測器群組",
+            "cancel": "取消"
+          },
+          "header": "新增感測器群組"
+        },
+        "mapping": {
+          "aggregates": {
+            "average": "平均值",
+            "first": "第一筆",
+            "last": "最後一筆",
+            "maximum": "最大值",
+            "median": "中位數",
+            "minimum": "最小值",
+            "riemannsum": "黎曼和",
+            "sum": "總和",
+            "delta": "差值"
+          },
+          "errors": {
+            "cannot-delete-mapping-because-zones-use-it": "你無法刪除此感測器群組，因為至少有一個區域正在使用它。",
+            "invalid_source": "來源無效",
+            "source_does_not_exist": "來源不存在。請輸入有效的來源，例如 'sensor.mysensor'。"
+          },
+          "hidden_sources": "有 {n} 筆讀數不需提供：蒸發散量已是現成的數值，這些讀數只會用來重新計算它。",
+          "et_ignored": "這些區域是根據氣象資料計算，因此不會讀取此蒸發散量：{zones}。請在區域上將其設為由感測器或服務提供。",
+          "et_missing": "以下區域預期使用現成的蒸發散量：{zones}。請在上方為它選擇來源。",
+          "et_unused": "未使用：此群組的每個區域都由 Smart Irrigation 計算，它會根據其他讀數推算出蒸發散量。若要在此提供現成的數值，請將區域設為由感測器或服務提供。",
+          "et_needed": "這裡需要現成的數值：此群組的區域已設為由感測器或服務提供，因此不提供「無」選項。",
+          "hints": {
+            "temperature": "氣溫，在遮蔭處量測。每日最低溫與最高溫均取自此值。",
+            "dewpoint": "空氣達到飽和時的溫度，可得知空氣含有多少水氣。這裡使用氣象服務即可。",
+            "humidity": "空氣的相對濕度。乾燥的空氣會從植物中帶走更多水分。",
+            "pressure": "大氣壓力。它對結果的影響很小：使用氣象服務即可。",
+            "windspeed": "風會把葉片周圍的濕氣帶走。在玻璃覆蓋下，請設為接近 0 的固定值。",
+            "solar radiation": "太陽的能量，是蒸發的主要驅動力。若沒有此項，計算會根據當日溫差來估算。在玻璃覆蓋下，請使用輻射感測器或光照感測器。",
+            "precipitation": "已降下的雨量（總量），來自你自己會累計的雨量計。若使用氣象服務，請保持為「無」。",
+            "current precipitation": "目前正在下的雨，以降雨率表示。氣象服務會提供此值；你自己的雨量感測器則更精確。",
+            "evapotranspiration": "植物流失的水量（ET0），已由你的感測器或服務計算好。只有設為由感測器或服務提供的區域才會讀取；由 Smart Irrigation 計算的區域則改用氣象輸入。"
+          },
+          "items": {
+            "dewpoint": "露點",
+            "evapotranspiration": "蒸發散量",
+            "humidity": "濕度",
+            "maximum temperature": "最高溫度",
+            "minimum temperature": "最低溫度",
+            "precipitation": "總降雨量",
+            "current precipitation": "目前降雨量",
+            "pressure": "氣壓",
+            "solar radiation": "太陽輻射",
+            "temperature": "溫度",
+            "windspeed": "風速"
+          },
+          "pressure_types": {
+            "absolute": "絕對值",
+            "relative": "相對值"
+          },
+          "pressure-type": "氣壓類型為",
+          "sensor-aggregate-use-the": "讀數的合併方式",
+          "sensor-entity": "感測器實體",
+          "static_value": "數值",
+          "input-units": "輸入提供的單位為",
+          "source": "來源",
+          "sources": {
+            "none": "無",
+            "none_et": "無（由 Smart Irrigation 計算）",
+            "none_estimated": "無（估算）",
+            "weather_service": "氣象服務",
+            "weather_service_et": "氣象服務提供的現成 ET₀",
+            "sensor": "感測器",
+            "static": "固定值",
+            "radiation_sensor": "輻射感測器",
+            "illuminance": "光照感測器（lux）"
+          },
+          "greenhouse": "溫室",
+          "greenhouse_description": "玻璃或塑膠覆蓋下：溫室、隧道式塑膠棚。不會有雨水，因此不納入降雨量，其欄位也會隱藏。請自行設定兩項：風速設為接近 0 的固定值（因為計算假設為露天環境），以及太陽輻射使用光照感測器（因為玻璃會過濾天空的光線）。",
+          "module": "模組",
+          "module_description": "此群組只提供此模組會讀取的來源。使用它的區域會沿用此選擇。",
+          "module_undecided": "尚未選擇模組，因此會提供所有來源，且使用此群組的每個區域各自保留自己的選擇。選擇一個模組後，就只會看到它會讀取的來源。",
+          "wind_height": "風速計高度（留空：以 2 公尺計）",
+          "rain_not_from_entity": "此天氣實體不會回報已降下的雨量，只有預報：請在此選擇雨量感測器，否則每次降雨後區域仍會澆水。",
+          "rain_hint_entity": "目前正在下的雨，以降雨率表示。此天氣實體只提供預報：請選擇可量測降雨的感測器。"
+        }
+      },
+      "description": "新增一個或多個感測器群組，從氣象服務、感測器或兩者的組合取得氣象資料。你可以將每個感測器群組對應到一個或多個區域",
+      "labels": {
+        "mapping-name": "名稱",
+        "show-more": "{count, plural, one {再顯示 # 個感測器群組} other {再顯示 # 個感測器群組}}"
+      },
+      "no_items": "尚未定義任何感測器群組。",
+      "title": "感測器群組",
+      "weather-records": {
+        "title": "氣象記錄（最近 10 筆）",
+        "timestamp": "時間",
+        "temperature": "溫度",
+        "humidity": "濕度",
+        "precipitation": "降雨",
+        "retrieval-time": "取得時間",
+        "no-data": "此感測器群組沒有可用的氣象資料"
+      },
+      "summary": {
+        "sources-one": "{n} 個來源",
+        "sources-other": "{n} 個來源",
+        "zones-one": "{n} 個區域",
+        "zones-other": "{n} 個區域"
+      }
+    },
+    "modules": {
+      "cards": {
+        "add-module": {
+          "actions": {
+            "add": "新增模組"
+          },
+          "header": "新增模組"
+        },
+        "module": {
+          "errors": {
+            "cannot-delete-module-because-zones-use-it": "你無法刪除此模組，因為至少有一個區域正在使用它。"
+          },
+          "labels": {
+            "configuration": "設定",
+            "required": "表示必填欄位"
+          },
+          "translated-options": {
+            "DontEstimate": "不估算",
+            "EstimateFromSunHours": "依日照時數估算",
+            "EstimateFromTemp": "依溫度估算",
+            "EstimateFromSunHoursAndTemperature": "依日照時數與溫度的平均值估算"
+          }
+        }
+      },
+      "description": "新增一個或多個計算灑水時間長度的模組。每個模組都有自己的設定，可用於計算一個或多個區域的時間長度。",
+      "no_items": "尚未定義任何模組。",
+      "title": "模組"
+    },
+    "zones": {
+      "actions": {
+        "add": "新增",
+        "calculate": "計算",
+        "information": "資訊",
+        "update": "更新",
+        "reset-bucket": "重設水量平衡",
+        "view-weather-info": "檢視氣象資料",
+        "view-weather-info-message": "可用的氣象資料：",
+        "view-watering-calendar": "檢視澆水行事曆",
+        "water": "澆水",
+        "calculating": "計算中…",
+        "change": "變更",
+        "done": "完成"
+      },
+      "cards": {
+        "add-zone": {
+          "actions": {
+            "add": "新增區域",
+            "assistant": "使用精靈設定",
+            "cancel": "取消"
+          },
+          "header": "新增區域"
+        },
+        "zone-actions": {
+          "actions": {
+            "calculate-all": "計算所有區域",
+            "update-all": "更新所有區域",
+            "reset-all-buckets": "重設所有水量平衡",
+            "clear-all-weatherdata": "清除所有氣象資料"
+          },
+          "header": "對所有區域的動作",
+          "reset-hint": "這兩項操作會捨棄每個區域的資料。每項操作都會先詢問確認。"
+        }
+      },
+      "description": "在此指定一個或多個灑水區域。灑水時間長度會依各區域的面積、出水率、狀態、模組與感測器群組分別計算。",
+      "labels": {
+        "bucket": "水量平衡",
+        "et-deficiency": "每日蒸發散不足量",
+        "duration": "時間長度",
+        "lead-time": "提前時間",
+        "mapping": "感測器群組",
+        "maximum-duration": "最長時間長度",
+        "multiplier": "作物係數（Kc）",
+        "name": "名稱",
+        "input-method": "輸入方式",
+        "input-methods": {
+          "throughput": "出水率與面積",
+          "direct": "降雨率"
+        },
+        "input-method-hint": "如何得知送出的水量：依區域的面積與流量計算，或者若你已測量過，也可直接以降雨率表示。",
+        "state-hint": "自動：Smart Irrigation 依水量平衡計算時間長度，並在啟動時澆水。手動：每次啟動都澆你設定的時間長度。已停用：永遠不澆水，也不追蹤其水量平衡。",
+        "mapping-hint": "此區域讀取氣象資料的感測器群組：可以是氣象服務、你自己的感測器，或兩者。",
+        "bucket-hint": "區域的水量平衡。負值：缺水。零：水量剛好。澆水會使其回到零。",
+        "maximum-bucket-hint": "土壤被視為最多能容納的水量。正的水量平衡不會超過此值：多餘的水會流失。",
+        "irrigation-threshold-hint": "達到此缺水量時，區域才會澆水。低於此值時，區域不會處理，缺水量會累積到下次計算。",
+        "drainage_rate-hint": "土壤排出多餘水分的速度。如果你不清楚自己的土壤，請保留預設值：0 表示多餘的水永遠不會排出。",
+        "precipitation-rate": "降雨率",
+        "size": "面積",
+        "state": "狀態",
+        "states": {
+          "automatic": "自動",
+          "disabled": "已停用",
+          "manual": "手動"
+        },
+        "throughput": "出水率",
+        "maximum-bucket": "最大水量平衡",
+        "last_calculated": "上次計算",
+        "data-last-updated": "資料上次更新",
+        "data-number-of-data-points": "資料點數量",
+        "drainage_rate": "排水率",
+        "linked-entity": "連結的閥門／開關",
+        "linked-entity-hint": "為此區域澆水的閥門或開關。使用直接閥門控制時，Smart Irrigation 會開啟與關閉它。使用觀察式澆水時，每次執行（手動、自動化或 Smart Irrigation）都會依運作時間與出水率計入水量平衡。",
+        "valve-off": "啟用直接閥門控制或觀察式澆水後，才能連結閥門。",
+        "valve-off-link": "開啟",
+        "supply": "水泵或主閥",
+        "supply-none": "無",
+        "measured-flow-help": "在多次執行中，該區域的流量計測得的流量與上方設定的不同。這只是建議，絕不會自動套用。",
+        "use-measured-flow": "採用實測流量",
+        "extra-valves": "區域的其他閥門",
+        "extra-valves-hint": "與它一起開啟與關閉",
+        "flow-sensor": "累計水量計",
+        "flow-sensor-hint": "用於精確計入水量，而不是出水率 x 時間：請使用累計的水表總量（狀態類別 total_increasing），而不是瞬時流量。單位會自動讀取（L、mL、m³、gal、ft³）。",
+        "confirm-timeout": "等待閥門確認",
+        "open-resends": "重新送出開啟指令",
+        "confirm-timeout-help": "閥門回報已開啟或已關閉的等待時間，以及這段期間重新送出開啟指令的頻率。留空：8 秒、不重送（完整控制器：30 秒、兩次）；關閉則為 5 秒，一律嘗試兩次。對於 Gardena 等雲端閥門：請等待更久、重送 0 次，因為每個指令都會計入配額。",
+        "safety-off-topic": "安全關閉 MQTT 主題",
+        "safety-off-state-key": "安全關閉狀態鍵",
+        "safety-off-mode": "安全關閉模式",
+        "safety-off-mode-auto": "自動（MQTT 主題，或 ZHA 上的 Sonoff SWV）",
+        "safety-off-mode-zha": "ZHA 定時關閉",
+        "safety-off-mode-off": "關閉（無 dead-man 機制）",
+        "safety-off-mode-help": "自動：若已設定上方的 MQTT 主題則使用之，或使用 ZHA 上的 Sonoff SWV。ZHA 定時關閉：任何 ZHA 閥門，使用標準的定時關閉指令，除 SWV 外未經測試。關閉：此區域不使用硬體 dead-man 機制。",
+        "safety-off-required": "無法設定閥門自身的計時器時",
+        "safety-off-required-open": "仍然澆水",
+        "safety-off-required-skip": "讓閥門保持關閉",
+        "safety-off-required-help": "每次澆水都會為閥門設定它自己的計時器，因此即使 Home Assistant 在執行途中停止，閥門仍會自行關閉。當設定失敗時（閥門休眠、MQTT 中斷），預設仍會澆水，但沒有這層安全保障。選擇讓閥門保持關閉則會改為略過澆水：區域會回報問題，並將它應得的水量留到下次澆水時補上。",
+        "safety-off-topic-help": "選用的硬體 dead-man 機制：閥門裝置的 MQTT 設定主題（例如 zigbee2mqtt/my_valve/set）。Smart Irrigation 會送出「開啟並設定定時關閉」，因此即使 Home Assistant 在執行途中停止，裝置也會自行關閉。狀態鍵：\"state\" 或 \"state_l1\"…\"state_l4\"。其韌體需支援 on_time：請先測試。",
+        "optional": "選填",
+        "irrigation-threshold": "灑水閾值",
+        "days": "天",
+        "days-between-irrigation": "灑水間隔天數",
+        "crop-factor-by-month": "各月份作物係數",
+        "crop-factor-by-month-help": "適用於用水量隨生長變化的作物：每個月份的作物係數（Kc），從一月開始。留空的月份會使用上方的作物係數；十二個月全部留空，則全年使用該作物係數。季節性調整仍會疊加套用。",
+        "months": {
+          "1": "1 月",
+          "2": "2 月",
+          "3": "3 月",
+          "4": "4 月",
+          "5": "5 月",
+          "6": "6 月",
+          "7": "7 月",
+          "8": "8 月",
+          "9": "9 月",
+          "10": "10 月",
+          "11": "11 月",
+          "12": "12 月"
+        },
+        "available-water": "有效水分",
+        "allowed-depletion": "容許消耗率",
+        "available-water-help": "此區域土壤可為植物保存的水量（公釐）：根深（公尺）乘以每公尺土壤的保水量（FAO-56：砂土 50–110、壤土 130–180、黏土 120–200）。缺水量不會超過此值，超過容許比例（預設 50%）後，植物吸水會減少。留空：不使用。",
+        "distribution-efficiency": "分布效率",
+        "distribution-efficiency-help": "灑水器送出的水中，實際到達植物的比例（%）。有風或在斜坡上的噴灌會流失一部分，滴灌則幾乎不會。留空：100%。設為 80% 時，區域的澆水時間會延長 25%，並只計入所送出水量的 80%。",
+        "days-between-irrigation-help": "留空則沿用一般設定（設定，灑水間隔天數）。填入數字則只套用於此區域，從其上次澆水起算：1 為需要時每天澆水，3 為最多每三天一次，0 為不限制。",
+        "soil-moisture-sensor": "土壤濕度感測器",
+        "soil-moisture-sensor-hint": "當土壤濕度達到或高於閾值時，區域會略過該次執行。水量平衡會保留。",
+        "soil-moisture-threshold": "達到或高於此值時略過",
+        "calculation-method": "蒸發散量",
+        "calculation-method-help": {
+          "from_weather": "依你的量測值：溫度、濕度、風、日照。",
+          "provided": "你已有以公釐為單位的蒸發散量；直接採用。",
+          "fixed": "每天固定若干公釐，不論天氣如何。"
+        },
+        "calculation-methods": {
+          "from_weather": "由 Smart Irrigation 計算",
+          "provided": "由感測器或服務提供",
+          "fixed": "固定量"
+        },
+        "forecast-days": "向前預看",
+        "forecast-days-help": "0：區域只補天氣實際帶走的水量。1：同時納入明天，2：納入明天與後天，依此類推。未來幾天越熱，今天澆的水就越多。這不是降雨略過功能，降雨略過是另一項獨立的設定。",
+        "fixed-amount": "每日蒸發量",
+        "engine-shared-help": "此設定只屬於這個區域：每個區域各有自己的設定，在此變更不會影響其他任何地方。",
+        "soil-type": "土壤",
+        "plant-type": "種植的作物",
+        "soil-types": {
+          "default": "尚未選擇：{value}",
+          "sand": "砂土",
+          "sandy_loam": "砂質壤土",
+          "loam": "壤土",
+          "clay_loam": "黏質壤土",
+          "clay": "黏土",
+          "custom": "我自己設定排水率"
+        },
+        "plant-types": {
+          "default": "尚未選擇：係數 {value}",
+          "lawn": "草坪",
+          "vegetables": "蔬菜",
+          "flowers": "花卉",
+          "shrubs": "灌木",
+          "hedge": "樹籬",
+          "fruit_trees": "果樹",
+          "vines": "葡萄藤",
+          "ground_cover": "地被植物",
+          "custom": "我自己設定作物係數"
+        },
+        "duration-readonly-automatic": "已為你計算好：此區域的執行時間取決於其水量平衡。若要自行輸入時間長度，請將其設為手動。",
+        "duration-readonly-disabled": "已停用的區域永遠不會澆水，因此沒有運作時間。",
+        "et-deficiency-help": "此區域每天所需的水量：ETc，即 ET0 乘以作物係數並套用季節性調整，在計入降雨之前、換算為間隔之前，因此可在不同設定間比較。單獨的 ET0 為區域感測器的 `eto` 屬性，可用來與氣象服務對照。",
+        "safety-off-entity": "閥門自身的時間長度",
+        "safety-off-entity-help": "適用於會依自身時間長度自動關閉的閥門，例如 Gardena（其「澆水時間長度」數值，除非更改，預設為 1 分鐘）：請在此選擇該數值。每次開啟前，Smart Irrigation 會將該輪的長度加上 30 秒寫入其中，使閥門在整輪期間保持開啟，且即使 Home Assistant 停止，閥門仍會自行關閉。若沒有此設定，此類閥門會在其預設時間後關閉。"
+      },
+      "no_items": "尚未定義任何區域。",
+      "title": "區域",
+      "module-comes-from-the-group": "模組來自此區域的感測器群組。請在那裡變更，使用該群組的每個區域都會跟著變更。",
+      "status": {
+        "estimate": "缺水 {short}：下次計算時約需 {duration}（{volume}）。",
+        "estimate-ahead": "下次計算時約需 {duration}（{volume}）。",
+        "will-water": "下次啟動時將澆水 {duration}。",
+        "idle": "無需澆水：缺水 {short}。",
+        "satisfied": "無需澆水：此區域水量充足。",
+        "under-threshold": "尚無需澆水：缺水 {short}，低於此區域的閾值。",
+        "not-calculated": "尚未計算：將於{when}進行。",
+        "manual": "每次啟動都澆你設定的時間長度。",
+        "disabled": "已停用：永遠不澆水，也不保留其水量平衡。",
+        "threshold": "閾值",
+        "problem": {
+          "no_sensor_group": "無法計算：它沒有感測器群組。請在此卡片上選擇一個；在此之前不會澆水。",
+          "no_readings": "無法計算：其感測器群組沒有讀數。在有讀數之前不會澆水。",
+          "no_engine": "無法計算：它沒有模組。在有模組之前不會澆水。",
+          "nothing_from_engine": "無法計算：其感測器群組未提供蒸發散量。在提供之前不會澆水。",
+          "forecast_without_service": "無法計算：其模組會預看未來，但尚未設定氣象服務。不會澆水。",
+          "error": "無法計算：{detail}。在能夠計算之前不會澆水。"
+        },
+        "no-valve": "未連結閥門，因此此區域不會澆水。",
+        "no-valve-action": "連結閥門",
+        "running": "正在澆水，剩餘 {time}。",
+        "running-paused": "澆水已暫停，剩餘 {time}。"
+      },
+      "calendar": {
+        "title": "澆水行事曆（12 個月，估計值）",
+        "caveat": "這是規劃用的估計值，並非你的實際氣象：各月份是依你的緯度與典型的季節模式模擬而成，因此大陸型氣候的夏季看起來會比實際更熱更乾。它不會影響任何設定、不會進行任何計算，也不會澆水。",
+        "month": "月份",
+        "et": "ET",
+        "precipitation": "降雨量",
+        "watering": "澆水",
+        "avg-temp": "平均溫度",
+        "none": "此區域沒有可用的澆水行事曆資料",
+        "error": "無法產生行事曆"
+      },
+      "water": {
+        "question": "要現在為「{name}」澆水嗎？其閥門會立即開啟，若有其他項目正在澆水則會排隊等候。這些水量會計入其水量平衡。",
+        "minutes": "分鐘數，留空則採用規劃的 {calculated}",
+        "minutes-none": "分鐘數（計算結果無需澆水）"
+      },
+      "calculation-feedback": {
+        "nothing-new": "{zone}：自上次計算以來沒有新的讀數，因此沒有任何變動。",
+        "failed": "{zone}：計算失敗（{error}）。"
+      },
+      "sections": {
+        "zone": "區域與閥門",
+        "need": "所需水量",
+        "status": "目前狀況"
+      }
+    },
+    "history": {
+      "title": "歷史記錄",
+      "description": "Smart Irrigation 計入各區域的每一次灑水執行：何時開始、澆了多久，以及用了多少水。執行記錄來自直接閥門控制與觀察式澆水，並保留 90 天。",
+      "refresh": "重新整理",
+      "no-data": "尚未記錄任何灑水執行。",
+      "table": {
+        "title": "灑水執行記錄",
+        "start": "開始",
+        "zone": "區域",
+        "duration": "時間長度",
+        "water": "用水量",
+        "truncated": "顯示最近 {count} 次執行，共 {total} 次。",
+        "by_hand": "手動"
+      },
+      "charts": {
+        "total-title": "每日總用水量（最近 30 天）",
+        "per-zone-title": "各區域每日用水量（最近 30 天）",
+        "no-data": "此期間沒有用水。"
+      }
+    },
+    "groups": {
+      "home": "首頁",
+      "zones": "區域",
+      "data": "氣象",
+      "settings": "設定",
+      "watering": "澆水"
+    },
+    "planning": {
+      "title": "規劃"
+    },
+    "programs": {
+      "title": "程式"
+    },
+    "supplies": {
+      "title": "水泵與閥門"
+    },
+    "iu_import": {
+      "title": "從 Irrigation Unlimited 匯入",
+      "description": "匯入你的 Irrigation Unlimited 設定：它的區域、序列與排程會變成這裡的區域、程式及其排程。在變更任何內容之前，你可以先看到所有內容，且在你開啟排程之前不會澆任何水。",
+      "loading": "正在尋找 Irrigation Unlimited 設定…",
+      "step": "步驟",
+      "back": "上一步",
+      "next": "下一步",
+      "import": "匯入",
+      "importing": "匯入中…",
+      "source": {
+        "question": "要使用哪個設定？",
+        "help": "Smart Irrigation 會讀取 Home Assistant 載入的設定，或 Irrigation Unlimited 自己的對話方塊所保留的設定。你也可以貼上它的 YAML。",
+        "yaml-help": "Home Assistant 載入的 irrigation_unlimited 區段，包含其套件、!include 與 !secret。",
+        "entry-help": "Irrigation Unlimited 自己的對話方塊所保留的內容。",
+        "none-found": "找不到 Irrigation Unlimited 設定。如果已不再安裝 Irrigation Unlimited，且其設定位於套件中，Home Assistant 就不會載入它：請貼在下方。",
+        "paste": "貼上 YAML",
+        "paste-help": "irrigation_unlimited 區段，或其下的內容。此處不會解析 !include、!secret 與 !env_var：請將這些值直接寫出，或從 configuration.yaml 匯入。",
+        "previous": "先前已於 {at} 匯入。再次匯入會更新該次匯入所建立的內容。",
+        "unreadable": "Home Assistant 無法讀取它："
+      },
+      "zones": {
+        "question": "每個區域要如何處理？",
+        "help": "Irrigation Unlimited 的區域會變成你的某個區域，或是新的區域。既有區域會保留其設定與計算方式：只會補上它所缺少的部分。",
+        "none": "此設定沒有任何區域。",
+        "links": "{count, plural, one {# 個調整時間的自動化會從 Smart Irrigation 提供資料給 Irrigation Unlimited：該步驟將在此處計算。} other {# 個調整時間的自動化會從 Smart Irrigation 提供資料給 Irrigation Unlimited：這些步驟將在此處計算。}}",
+        "becomes": "{zone} 的處理方式",
+        "new": "新區域",
+        "creates": "將建立新區域，並包含其閥門與水泵。",
+        "uses": "將成為 {zone}：{reason}。",
+        "reason": {
+          "valve": "相同的閥門",
+          "blueprint": "有調整時間的自動化從此區域提供資料給它",
+          "name": "相同的名稱",
+          "imported": "由先前的匯入所建立",
+          "chosen": "你的選擇"
+        },
+        "fills": "將補上：",
+        "fields": {
+          "linked_entity": "閥門",
+          "supply_id": "水泵",
+          "extra_entities": "更多閥門",
+          "confirm_timeout": "確認等待時間（秒）",
+          "open_resends": "重送次數",
+          "flow_sensor": "流量感測器"
+        },
+        "left": "已不在 Irrigation Unlimited 中，維持原樣：{zones}。"
+      },
+      "programs": {
+        "question": "程式",
+        "help": "每個序列都會變成一個程式，有自己排程的區域也是如此。若序列的排程有不同的時間長度，則每種時間長度會各成為一個程式。",
+        "none": "此設定沒有可匯入的排程。",
+        "action": {
+          "create": "新增",
+          "update": "已更新"
+        },
+        "calculated": "已計算",
+        "passes": "{count} 輪",
+        "step-off": "關閉",
+        "no-schedules": "沒有排程。",
+        "schedules-off": "其排程已關閉，直到你開啟為止。",
+        "schedules-stay-on": "你已開啟其排程：它們會維持原樣。",
+        "disabled": "在 Irrigation Unlimited 中已關閉，這裡也一樣。",
+        "removed": "已不在 Irrigation Unlimited 中，已移除：{programs}。"
+      },
+      "supplies": {
+        "title": "水泵與主閥",
+        "create": "新增：{name}（{entities}）。",
+        "update": "已更新：{name}（{entities}）。",
+        "removed": "已不在 Irrigation Unlimited 中，已移除：{supplies}。"
+      },
+      "schedule": {
+        "sunrise": "日出",
+        "sunset": "日落",
+        "done-by": "在 {time} 前完成",
+        "every": "每 {count} 天",
+        "odd": "奇數日",
+        "even": "偶數日",
+        "days-of-month": "每月第 {days} 天",
+        "last": "最後",
+        "off-in-iu": "在 Irrigation Unlimited 中已關閉"
+      },
+      "report": {
+        "question": "哪些內容無法完全匯入",
+        "help": "Irrigation Unlimited 的每個選項都有對應規則。以下是只能近似轉換或被省略的項目；其餘內容都會原樣匯入。",
+        "all-carried": "所有內容都會原樣匯入。",
+        "outcome": {
+          "not_carried": "未匯入",
+          "unknown": "匯入功能不認識",
+          "approximated": "近似轉換"
+        },
+        "summary-title": "匯入會做什麼",
+        "summary": {
+          "zones": "區域：新增 {created} 個、補齊 {filled} 個、直接沿用 {used} 個",
+          "programs": "程式：新增 {created} 個、更新 {updated} 個、移除 {removed} 個",
+          "supplies": "水泵與主閥：新增 {created} 個、更新 {updated} 個、移除 {removed} 個"
+        },
+        "nothing-waters": "匯入本身不會澆水。在你將其關閉並開啟這些排程之前，Irrigation Unlimited 會持續澆水。",
+        "blocked": "請先解決標示為紅色的項目；在此之前無法匯入。",
+        "full-controller-off": "完整控制器已關閉：程式會匯入，但要等到開啟後才會澆水。",
+        "nothing-waters-iu-off": "匯入本身不會澆水，且 Irrigation Unlimited 並未執行：Home Assistant 並未將它設定完成（請查看其記錄）。在你開啟這些排程之前不會澆水。"
+      },
+      "errors": {
+        "generic": "匯入未成功。",
+        "changed": "自這次預覽以來，設定或你的區域已有變更。以下是現在匯入會做的事：請重新檢視後再匯入。",
+        "no_source": "找不到 Irrigation Unlimited 設定。請貼上其 YAML。",
+        "yaml_unreadable": "Home Assistant 無法讀取其設定。",
+        "yaml_invalid": "貼上的 YAML 無法讀取。",
+        "yaml_missing": "請貼上要匯入的 YAML。",
+        "yaml_not_iu": "貼上的 YAML 不是 Irrigation Unlimited 設定。",
+        "unknown_zone": "該區域已不存在。",
+        "zone_not_created": "無法建立區域。",
+        "not_ready": "Smart Irrigation 尚未就緒。",
+        "conflicts": "請先解決標示為紅色的項目。",
+        "too_big": "此內容遠大於 Irrigation Unlimited 的設定，因此不會讀取。",
+        "not_finite": "設定中含有無限大或非數字的值（.inf 或 .nan），而 Irrigation Unlimited 不會有這類值。"
+      },
+      "done": {
+        "title": "已匯入。",
+        "zones": "區域：新增 {created} 個、補齊 {updated} 個",
+        "programs": "{count, plural, one {# 個程式} other {# 個程式}}",
+        "next": "新程式的排程為關閉狀態，因此仍由 Irrigation Unlimited 負責澆水。請查看程式，然後在本頁頂端切換。",
+        "open-programs": "開啟程式",
+        "next-off": "完整控制器已關閉，因此這些程式還不會澆水，Irrigation Unlimited 會繼續澆水。請在設定中開啟完整控制器，然後在本頁頂端切換。",
+        "open-settings": "開啟設定",
+        "next-iu-off": "新程式的排程為關閉狀態，且 Irrigation Unlimited 並未執行：目前不會澆任何水。請查看程式，然後開啟其排程。",
+        "next-off-iu-off": "完整控制器已關閉，因此這些程式還不會澆水，且 Irrigation Unlimited 並未執行：目前不會澆任何水。請在設定中開啟完整控制器，然後開啟程式的排程。"
+      },
+      "conflicts": {
+        "zone_twice": "{zone} 與 {other} 都會變成 {target}。請為其中一個選擇其他區域。",
+        "calculated_needs_zone": "{zone} 目前由 Smart Irrigation 計算，資料來自由調整時間的自動化供應資料的那個區域。請選擇該區域或另一個既有區域。",
+        "program_exists": "有一個程式「{name}」（{id}）擋住了：它並非由任何匯入所建立。請先在「澆水」、「程式」中重新命名或刪除它（需開啟完整控制器）。",
+        "supply_exists": "有一個水泵「{name}」（{id}）擋住了：它並非由任何匯入所建立。請先在「澆水」、「水泵與閥門」中重新命名或刪除它（需開啟完整控制器）。"
+      },
+      "confirm_remove": "此次匯入會刪除先前匯入所建立、但 Irrigation Unlimited 已不再有的項目：{names}。要繼續嗎？",
+      "cutover": {
+        "title": "由誰澆水：Irrigation Unlimited 還是 Smart Irrigation",
+        "iu-waters": "由 Irrigation Unlimited 澆水。匯入的排程在你切換之前都是關閉的。",
+        "si-waters": "自 {at} 起由 Smart Irrigation 澆水。Irrigation Unlimited 的控制器已關閉。",
+        "si-waters-now": "由 Smart Irrigation 澆水：匯入的排程已開啟，Irrigation Unlimited 的控制器已關閉。",
+        "nobody-waters": "沒有任何項目澆水：Irrigation Unlimited 的控制器已關閉，匯入的排程也已關閉。",
+        "both-on": "兩者都會澆水：Irrigation Unlimited 有控制器開啟，且匯入的排程也已開啟。請關閉 Irrigation Unlimited 或這些排程。",
+        "full-controller-off": "完整控制器已關閉：請先在設定中開啟，否則匯入的程式不會澆水。",
+        "programs": "匯入的程式",
+        "schedules-on": "{count} 個排程中有 {on} 個已開啟",
+        "open-programs": "切換之前，請先在「程式」頁面查看它們",
+        "open-programs-after": "開啟程式",
+        "zones-off": "Irrigation Unlimited 將這些區域關閉，並從其序列中排除；在這裡它們會隨其程式澆水：{list}。如果它們應該保持乾燥，請在程式中關閉其步驟。",
+        "controllers": "Irrigation Unlimited 的控制器",
+        "iu-not-running": "Irrigation Unlimited 並未執行：沒有需要關閉的項目。",
+        "no-controllers": "找不到任何項目。",
+        "on": "開啟",
+        "off": "關閉",
+        "unknown": "未知",
+        "over": "切換到 Smart Irrigation",
+        "back": "切換回 Irrigation Unlimited",
+        "iu-off-again": "再次關閉 Irrigation Unlimited",
+        "confirm-over": "Irrigation Unlimited 的控制器將被關閉，而 Irrigation Unlimited 原本開啟的排程會在這裡開啟。從下一個排程起，由 Smart Irrigation 澆水。你可以隨時切換回去。",
+        "confirm-back": "匯入的排程將被關閉，Irrigation Unlimited 的控制器則重新開啟。由 Irrigation Unlimited 重新負責澆水。",
+        "errors": {
+          "generic": "操作未成功。",
+          "full_controller_off": "請先開啟完整控制器：沒有它就不會澆水。",
+          "not_imported": "尚未匯入任何內容。",
+          "iu_failed": "Irrigation Unlimited 沒有接受切換。此步驟所做的變更已復原：請看上方確認由誰澆水。",
+          "not_switched": "澆水尚未交給 Smart Irrigation，因此沒有可切換回去的內容。",
+          "iu_not_running": "Irrigation Unlimited 並未執行：無法再次澆水。請先將它啟動。"
+        },
+        "follow-ups": {
+          "title": "仍在使用 Irrigation Unlimited 的項目",
+          "help": "這些自動化與腳本使用了 Irrigation Unlimited 的服務或實體。切換完成後，請變更或移除它們：系統不會替你變更任何內容。",
+          "none": "沒有任何自動化或腳本使用 Irrigation Unlimited。",
+          "automation": "自動化",
+          "script": "腳本",
+          "edit": "編輯",
+          "adjust-time": "將 Smart Irrigation 計算出的時間長度交給 Irrigation Unlimited。切換之後它就沒有作用了：匯入的步驟會在這裡計算。請移除它。",
+          "uses": "使用 {uses}。"
+        },
+        "left-off": "維持關閉，因為 Irrigation Unlimited 原本就將它們關閉：{names}。",
+        "unrecorded": "維持關閉，因為匯入沒有記錄 Irrigation Unlimited 原本開啟了它們的哪些排程：{names}。請自行開啟它們的排程，或切換回 Irrigation Unlimited，重新匯入（匯入會記錄這些資訊）後再次切換。",
+        "main-also-waters": "主程式也會為 {zones} 澆水，每天由啟動觸發條件開始：在 Irrigation Unlimited 旁邊，以及切換後在匯入的程式旁邊，這些區域會被澆兩次水。如果匯入的程式已涵蓋所有澆水，請在「程式」下關閉主程式，或將啟動觸發條件設為「無」。"
+      },
+      "notes": {
+        "blueprint_zone_gone": "有藍圖自動化從區域 {zone} 提供資料給它，但該區域已不存在：不會視為已計算",
+        "calculated_schedule_durations": "已計算的時間長度：不會使用排程的時間長度",
+        "check_back_partial": "等待 {wait, number} 秒，重送 {resends, plural, one {# 次} other {# 次}}；{lost} 未匯入",
+        "check_back_states": "IU 不檢查此閥門；Smart Irrigation 一律會確認",
+        "cron_days_both": "cron {cron}：每月日期與星期幾同時指定",
+        "cron_expanded": "cron {cron} 已轉成 {count, plural, one {# 個時間排程} other {# 個時間排程}}",
+        "cron_fields": "cron {cron}：cron 運算式有五個欄位",
+        "cron_not_carried": "cron {cron} 未匯入",
+        "cron_too_many": "cron {cron}：每天超過 {max, number} 次",
+        "cron_unreadable": "cron {cron}：無法讀取此 cron 運算式",
+        "different_bounds": "其區域的上下限不同；全部都以最長時間澆水",
+        "every_limit": "每 {every, number} 天：Smart Irrigation 最多支援到 {max, number}",
+        "every_not_number": "{value} 不是天數",
+        "feeds_other_zone": "有自動化從區域 {from} 提供資料給它，但它對應的是區域 {to}：其計算出的時間長度為該區域的時間長度",
+        "full_controller_off": "完整控制器已關閉：程式會匯入，但要等到開啟後才會澆水",
+        "held_to_limit": "{seconds, number} 秒已限制為 {limit, number} 秒，這是 Smart Irrigation 允許的最大值",
+        "lead_kept": "保留 {time}：若依供水裝置的提前時間 {lead, number} 秒往前移，會改變日期",
+        "lead_time": "區域「{zone}」的提前時間為 {lead, number} 秒，Smart Irrigation 會將此時間加到每個固定執行上：除非將提前時間設為 0 或縮短步驟，否則它會比在 IU 中多澆這麼久",
+        "no_configuration": "沒有 Irrigation Unlimited 設定",
+        "no_step_zone": "沒有任何步驟包含區域",
+        "no_time": "{value} 中沒有一天中的時間",
+        "no_zone_id": "此控制器中沒有 zone_id 為 {ref} 的區域",
+        "not_litres": "{value} 不是公升數",
+        "not_options": "{value} 不是一組選項",
+        "off_in_iu_matched": "在 IU 中已關閉並對應到「{zone}」，該區域維持原樣：程式會將它排除",
+        "offset_limit": "偏移量 {offset, number} 分鐘：Smart Irrigation 允許 {max, number}",
+        "offset_rounded": "{seconds, number} 秒的偏移量會四捨五入為 {minutes, number} 分鐘：Smart Irrigation 在此以分鐘為單位運作",
+        "one_queue": "{count} 個控制器：它們的程式會依序執行，因為完整控制器只有一個佇列",
+        "overlap": "{count} 個區域與序列有排程：在它們的執行重疊之處，IU 會同時澆水，完整控制器則會依序澆水",
+        "passes_held": "{repeats, number} 次重複已限制為 {max, number} 輪",
+        "period_needs_both": "{from} 至 {until} 的期間需要兩個日期：排程會全年執行",
+        "program_per_duration": "{count} 個程式，每種排程時間長度各一個",
+        "rule_entity_states": "Smart Irrigation 一律送出開啟與關閉指令",
+        "rule_master_check_back": "主控的確認；供水裝置不會被確認",
+        "rule_master_volume": "主控上的水量計；Smart Irrigation 讀取的是每個區域的水量計",
+        "rule_step_repeat": "輪數：每一輪都是完整的 IU 執行，但輪與輪之間的等待是浸潤設定，而非步驟的延遲",
+        "rule_step_volume": "步驟的最大公升數：是對定時執行的上限，而不是「直到達到此水量」",
+        "rule_threshold": "沒有「略過比此更短的執行」；最接近的是步驟的最小缺水量（公釐）",
+        "rule_zone_duration": "IU 對手動執行的預設值；water_zone 有自己的時間長度",
+        "rule_zone_volume": "區域的流量感測器；Smart Irrigation 會讀取其單位，不使用 IU 的比例係數",
+        "schedule_name": "排程「{name}」不會保留名稱",
+        "seconds_dropped": "{time} 會視為 {minute}：Smart Irrigation 在整分鐘啟動",
+        "sun_event": "{event}：只認得日出與日落",
+        "supply_leads_again": "等待 {wait, number} 秒後，供水裝置會關閉並重新提前啟動：下一個區域會比在 IU 中最多晚 {lead, number} 秒開啟",
+        "supply_stays_on": "{seconds, number} 秒：供水裝置會保持開啟，直到最後一個區域完成",
+        "tags_not_followed": "貼上的 YAML 中不會處理 {tags}：這些值會依文字原樣讀取。請從 configuration.yaml 匯入以便解析它們",
+        "tours_held": "{repeats, number} 次重複已限制為 {max, number}",
+        "unknown_option": "不是 Irrigation Unlimited 認得的選項",
+        "unknown_values": "{values} 不是 {option}",
+        "unknown_values_off": "{values} 不是 {option}：此排程已停用",
+        "wait_held": "{seconds, number} 秒的等待已限制為 {held, number} 秒",
+        "zone_keeps_own": "區域「{zone}」保留自己的 {kept}",
+        "zone_no_valve": "區域「{zone}」沒有閥門：它會被建立，但在連結閥門之前不會澆水",
+        "zone_schedule_duration": "區域的排程需要時間長度：未匯入",
+        "zone_taken": "區域 {zone} 已屬於「{name}」：它會取得自己專屬的區域"
+      }
+    },
+    "skip": {
+      "title": "依氣象略過",
+      "description": "當下列任一檢查成立時，就會暫緩執行：預報的降雨，或啟動時量測到的降雨、結冰與風。",
+      "soil-moisture": "土壤濕度是依區域設定，因為每個區域都有自己的感測器。",
+      "open-zones": "開啟區域"
+    }
+  },
+  "title": "Smart Irrigation",
+  "irrigation_start_triggers": {
+    "title": "啟動觸發條件",
+    "description": "澆水何時開始。預設會在日出時完成；可新增觸發條件指定其他時間：日落、方位角或時間，並可加上偏移。",
+    "active_label": "作用中的觸發條件",
+    "active_default": "預設：在日出前完成",
+    "active_hint": "只有選取的觸發條件會啟動澆水，每天一次。預設會讓每個區域在日出前完成；選擇「無」時，Smart Irrigation 不會啟動任何澆水。",
+    "usage_before": "當觸發條件觸發時，Smart Irrigation 會發出事件 ",
+    "usage_after": " — 請在自動化中回應它以開始澆水。其資料包含 trigger_name、trigger_type 與 offset_minutes，可用來區分不同的觸發條件。在因降雨或灑水間隔天數而略過的日子，不會觸發任何事件。",
+    "add_trigger": "新增觸發條件",
+    "edit_trigger": "編輯觸發條件",
+    "delete_trigger": "刪除觸發條件",
+    "trigger_types": {
+      "sunrise": "日出",
+      "sunset": "日落",
+      "solar_azimuth": "太陽方位角",
+      "time": "固定時間"
+    },
+    "fields": {
+      "name": {
+        "name": "觸發條件名稱",
+        "description": "用來識別此觸發條件的描述性名稱"
+      },
+      "type": {
+        "name": "觸發條件類型",
+        "description": "要觸發的太陽事件類型"
+      },
+      "enabled": {
+        "name": "已啟用",
+        "description": "此觸發條件目前是否為作用中"
+      },
+      "offset_minutes": {
+        "name": "之前（-）或之後（+），單位為分鐘",
+        "description": "太陽事件之前（-）或之後（+）的分鐘數。對於日出觸發條件，填 0 則依區域總時間長度自動計時。"
+      },
+      "azimuth_angle": {
+        "name": "方位角（度）",
+        "description": "太陽方位角，單位為度，0=北、90=東、180=南、270=西"
+      },
+      "account_for_duration": {
+        "name": "考慮時間長度",
+        "description": "啟用時，灑水會提早開始，以便在指定時間完成。停用時，灑水會剛好在指定時間開始。"
+      },
+      "at": {
+        "name": "時間"
+      }
+    },
+    "dialog": {
+      "add_title": "新增灑水啟動觸發條件",
+      "edit_title": "編輯灑水啟動觸發條件",
+      "cancel": "取消",
+      "save": "儲存",
+      "delete": "刪除",
+      "help": "當此觸發條件觸發時，Smart Irrigation 會發出以下事件，請在自動化中使用它來開始澆水。事件資料包含此觸發條件的名稱（與類型／偏移），因此你可以針對它做出回應："
+    },
+    "offset_auto": "自動（依區域總時間長度計算）",
+    "confirm_delete": "確定要刪除觸發條件「{name}」嗎？",
+    "validation": {
+      "name_required": "必須填寫觸發條件名稱",
+      "azimuth_invalid": "方位角必須是有效的數字",
+      "time_invalid": "請輸入有效的時間，格式為 HH:MM。"
+    },
+    "help": {
+      "sunrise_offset": "日出觸發條件：使用負值表示在日出前開始，正值表示在日出後開始。設為 0 則會自動提早開始，以在日出前完成所有區域。",
+      "sunset_offset": "日落觸發條件：使用負值表示在日落前開始，正值表示在日落後開始。",
+      "azimuth_explanation": "太陽方位角是太陽的羅盤方向。0°=北、90°=東、180°=南、270°=西。你可以輸入任何角度值（例如 450° = 90°、-30° = 330°）。可用此功能在太陽到達特定位置時觸發灑水。",
+      "multiple_triggers": "你可以建立多個觸發條件，但只有被選為作用中的那一個會啟動灑水。其餘的會保留供之後使用。"
+    },
+    "active_none": "無",
+    "none_selected": "沒有作用中的觸發條件：無論天氣如何，Smart Irrigation 都不會啟動任何澆水。時間長度仍會計算；請自行或透過你自己的自動化啟動澆水。"
+  },
+  "seasonal_adjustments": {
+    "title": "季節性調整",
+    "description": "隨季節變化的作物係數與閾值，套用於你選擇的月份與區域；同一個月份有多項時會相乘。乘數會調整區域的作物係數（1 為不變，0.5 為水量減半），偏移量則加到其閾值上。區域也可以按月份設定作物係數。",
+    "add": "新增調整",
+    "delete": "刪除",
+    "new_name": "新的調整",
+    "name": "名稱",
+    "month_start": "起始月份",
+    "month_end": "結束月份",
+    "multiplier": "作物係數乘數",
+    "threshold": "閾值偏移量",
+    "zones": "區域",
+    "zones_hint": "全部，或以逗號分隔的區域編號。",
+    "enabled": "已啟用"
+  },
+  "weather_skip": {
+    "title": "降雨預報",
+    "description": "預報有雨時，Smart Irrigation 會減少澆水。此功能需要設定氣象服務。",
+    "threshold_label": "略過執行的雨量門檻",
+    "threshold_description": "預報今天與明天的降雨量（公釐）達到此最小值時，會略過灑水。",
+    "effective_rain_label": "只計入能到達根部的雨量",
+    "effective_rain_description": "忽略小於該期間蒸發散量五分之一的陣雨：它只會打濕葉片然後蒸發。此判斷是針對兩次計算之間的整段期間。",
+    "forecast_label": "納入預報降雨",
+    "forecast_description": "低於閾值時，每個區域的缺水量會減去 24 小時預報降雨量（依其機率加權）：預報 4 公釐、缺水 10 公釐，則澆水 6 公釐。達到或高於閾值時，戶外區域會被略過。溫室區域不受影響。",
+    "forecast_set_up_service": "設定氣象服務"
+  },
+  "coordinate_config": {
+    "title": "位置座標",
+    "description": "設定用於取得氣象資料的位置座標。如有需要，你可以手動輸入與 Home Assistant 位置不同的座標。",
+    "manual_enabled": "使用手動座標",
+    "use_ha_location": "使用 Home Assistant 位置",
+    "latitude": "緯度（十進位度數）",
+    "longitude": "經度（十進位度數）",
+    "elevation": "海拔高度（公尺）",
+    "current_ha_coords": "目前的 Home Assistant 座標"
+  },
+  "days_between_irrigation": {
+    "title": "灑水間隔天數",
+    "description": "同一個區域兩次澆水之間最少相隔的天數；0 表示不限制。草坪適合較短的間隔；根系較深的植物適合間隔 3 至 7 天，每次澆較多水；7 天則符合每週澆水一次的規則。每個區域也可以自行設定。",
+    "label": "灑水最小間隔天數"
+  },
+  "planning": {
+    "title": "規劃",
+    "description": "程式在未來三天內預計澆水的內容。可能因降雨而暫緩的執行會依今天的預報標示；實際如何則由到期當下的天氣決定。",
+    "nothing_planned": "沒有規劃任何程式。請為程式新增排程。",
+    "nothing_to_water": "目前無需澆水：此次執行的區域都沒有缺水到需要澆水。",
+    "expected": "預期時間長度：",
+    "expected_skipped_precipitation": "預計略過：降雨預報（{mm} 公釐）",
+    "nothing_now": "目前沒有任何項目在澆水。",
+    "paused": "已暫停",
+    "paused_until": "已暫停至 {when}，之後澆水會自動繼續。",
+    "waiting": "等待輪到它",
+    "step": "步驟",
+    "tour": "輪",
+    "tours": "輪",
+    "no_valve": "未連結閥門，因此不會澆水：",
+    "nothing_no_valve": "此次執行無需澆水：缺水的區域沒有連結閥門：",
+    "left": "剩餘 {time}",
+    "pass_of": "第 {pass} 輪，共 {passes} 輪",
+    "soaking": "浸潤中，下一輪於 {when}（第 {pass} 輪，共 {passes} 輪）",
+    "starting": "等待 {supply} 啟動",
+    "in_passes": "分 {passes} 輪",
+    "at_most": "最多 {volume}",
+    "soak_between": "各輪之間浸潤：{time}",
+    "tours_each": "{n} 輪；上方時間為單一輪的時間",
+    "waits_for": "等待 {program}：約 {start} 至 {end}。",
+    "watered_twice": "{zones} 會連續澆兩次水：{program} 剛好在其之前為它們澆水。",
+    "expected_skipped_suspended": "不會執行：程式已擱置至 {when}"
+  },
+  "timeline": {
+    "title": "執行時間軸",
+    "water": "澆水",
+    "fill": "管線充水",
+    "soak": "浸潤",
+    "pass": "第 {n} 輪",
+    "total": "共 {time}",
+    "nothing": "目前無需澆水：此程式中沒有任何區域需要水，或沒有任何區域有閥門。"
+  },
+  "programs": {
+    "title": "程式",
+    "description": "程式會依序為其步驟澆水。一個步驟可以是一個區域，或同時澆水的多個區域，預設採用 Smart Irrigation 為其計算出的時間長度。多個程式不會同時執行：下一個會等待輪到它。",
+    "main_description": "為每個區域澆水，依下方的設定依序或同時進行。它由啟動觸發條件啟動，或在啟用其自己的排程後由排程啟動。",
+    "run_options": "執行選項",
+    "adjust_empty": "請輸入百分比或秒數以調整時間長度。",
+    "more_options": "更多選項",
+    "more_options_set": "含更多規則",
+    "sequencing_title": "區域與暫停的順序",
+    "others_title": "其他程式",
+    "confirm_run": "要現在執行 {name} 嗎？其閥門會立即開啟。",
+    "run_started": "{name} 已開始。",
+    "run_queued": "{name} 已排入佇列：會在目前澆水的項目結束後開始。",
+    "run_nothing": "{name} 找不到需要澆水的項目。",
+    "run_failed": "{name} 無法啟動：{error}",
+    "main_schedules_hint": "沒有啟用的排程時，由本頁下方設定的啟動觸發條件啟動主程式。一旦啟用任何一個排程，這些排程就會取代該觸發條件。它的設定會保留，若排程被停用或移除，它就會恢復作用。",
+    "name": "名稱",
+    "step": "步驟",
+    "step_zones": "區域",
+    "step_zones_help": "在同一步驟中勾選的區域會同時澆水。",
+    "step_duration": "時間長度",
+    "mode_calculated": "由 Smart Irrigation 計算",
+    "mode_percent": "計算值乘以百分比",
+    "mode_fixed": "固定",
+    "percent": "計算水量的百分比",
+    "seconds": "澆水秒數",
+    "passes": "分多輪澆水",
+    "step_delay": "此步驟後的等待",
+    "step_delay_help": "留空：沿用程式的等待時間。負值：下一個步驟會在本步驟結束前這麼久開始。",
+    "delay": "步驟之間的等待",
+    "delay_help": "每個步驟後等待的秒數，用於管線壓力恢復或較慢的閥門。負值：每個步驟會在前一個步驟結束前這麼久開始（兩者重疊）。",
+    "tours": "輪數",
+    "tours_help": "整個步驟清單會依此次數澆水，每一輪各分得一部分水量。與「分輪」不同，分輪是在繼續之前先重複同一個步驟，而這裡的輪是在其他區域澆水時讓每個區域浸潤。",
+    "enabled": "已啟用",
+    "add_step": "新增步驟",
+    "delete_step": "刪除步驟",
+    "add": "新增程式",
+    "delete": "刪除程式",
+    "schedule": "排程",
+    "add_schedule": "新增排程",
+    "delete_schedule": "刪除排程",
+    "schedule_moment": "於",
+    "moment_time": "一天中的某個時間",
+    "moment_sunrise": "日出",
+    "moment_sunset": "日落",
+    "schedule_time": "時間",
+    "schedule_offset": "在太陽之前（-）或之後（+）",
+    "schedule_anchor": "該時間點是程式",
+    "anchor_start": "開始",
+    "anchor_end": "必須完成",
+    "schedule_anchor_help": "選擇「必須完成」時，程式會依其需要澆水的總長度提早開始，使其在該時間點完成。",
+    "schedule_weekdays": "星期幾",
+    "schedule_weekdays_help": "未勾選：每天。",
+    "schedule_every": "每",
+    "schedule_days": "天",
+    "schedule_every_offset": "偏移",
+    "schedule_every_help": "每 3 天且偏移 0、1 或 2，可讓三個程式輪流執行，三天輪一次，絕不會在同一天。",
+    "schedule_parity": "每月的日期",
+    "parity_any": "全部",
+    "parity_even": "偶數日",
+    "parity_odd": "奇數日",
+    "schedule_days_of_month": "每月的特定日期",
+    "schedule_days_of_month_help": "以逗號分隔的日期數字，並以「last」表示當月最後一天（例如 1, 15, last）。月份太短而沒有某一天時就會略過。留空：不限日期。此項會與其他篩選條件疊加。",
+    "schedule_fallback_time": "若沒有日出或日落",
+    "schedule_fallback_time_help": "適用於沒有日出或日落的日子（極晝或極夜）。",
+    "schedule_months": "月份",
+    "schedule_months_help": "未勾選：每個月。",
+    "schedule_from": "從",
+    "schedule_until": "到",
+    "schedule_period_help": "一年中的某段期間，可以跨越新年（例如從 11 月到 3 月）。留空：全年。",
+    "schedule_weather": "納入氣象考量",
+    "schedule_hard_deadline": "在結束時間中止執行",
+    "schedule_hard_deadline_help": "執行會在結束目標時間中止：已開啟的區域會被關閉，並計入已澆的水量，尚未開始的則會略過。",
+    "schedule_conditions": "哪些條件",
+    "schedule_conditions_help": "可能使此排程不澆水的條件：降雨、結冰與風（氣象，依氣象略過）、距上次澆水的天數（設定，一般），以及各區域的土壤濕度。請取消勾選應忽略的項目，例如溫室就不需要降雨條件。你要求的延後一律會套用。",
+    "condition_postponed": "延後的天數（一律開啟）",
+    "condition_rain_sensor": "雨量感測器",
+    "condition_freeze": "結冰",
+    "condition_wind": "風",
+    "condition_precipitation": "降雨預報",
+    "condition_days_between": "距上次澆水的天數",
+    "condition_soil_moisture": "土壤濕度",
+    "schedule_weather_help": "降雨、結冰、風、濕潤的土壤與你延後的天數，都可能暫緩或縮短這次執行。若是不在乎這些條件的溫室滴灌管線，請將它關閉。",
+    "pause": "暫停",
+    "resume": "繼續",
+    "next_step": "下一步驟",
+    "stop": "停止",
+    "confirm_stop": "要現在停止所有澆水嗎？所有閥門都會關閉，進行中的執行也會結束。",
+    "confirm_delete_program": "要刪除程式「{name}」及其步驟與排程嗎？",
+    "confirm_delete_step": "要刪除此步驟嗎？",
+    "confirm_delete_schedule": "要刪除此排程嗎？",
+    "deleted_zone": "（已刪除的區域）",
+    "controls_help": "用於進行中的澆水。「暫停」會關閉閥門並暫緩所有項目；恢復後會繼續澆其餘的水。「下一步驟」會結束程式目前所在的區域。「停止」則結束所有項目。",
+    "max_litres": "水量上限",
+    "max_litres_help": "當此步驟中某區域的水表累計達到此水量時，該區域就會停止，單位為公升或加侖，依面板顯示水量的單位而定。0：不限制。水表只會每隔一段時間回報一次，因此水量並不精確。沒有水表的區域會忽略此設定。",
+    "new_program": "程式",
+    "main_name": "主程式",
+    "run_now": "立即執行",
+    "run_seconds": "總時間長度",
+    "run_seconds_help": "選填。留空：採用預定的時間長度。否則整個程式會持續此時間長度，並依各步驟預定時間長度的比例分配給各步驟。",
+    "run_replace": "取代正在執行的項目",
+    "run_replace_help": "關閉：程式會排在正在澆水的項目後面等待。開啟：會先完整停止正在澆水的項目。",
+    "stop_program": "停止此程式",
+    "confirm_stop_program": "要停止程式「{name}」嗎？其已開啟的區域會被關閉，若正在等待則會離開佇列。",
+    "min_seconds": "最少水量",
+    "max_seconds": "最多水量",
+    "adjust_seconds": "增加（+）或減少（-）的時間",
+    "step_bounds_help": "依此順序套用：程式的「調整時間長度」百分比（若有生效，該設定位於程式上）、增加或減少的時間，然後是最小值與最大值（0：無）。不需要澆水的步驟會維持為零；最小值不會讓它啟動。",
+    "min_deficit_mm": "只在缺水量至少達到以下值時才澆水",
+    "min_deficit_mm_help": "單位為公釐，0 表示一律澆水。設定後，此步驟會以此值取代區域本身的閾值。固定時間長度的步驟一律會澆水。",
+    "adjust_title": "調整時間長度",
+    "adjust_none": "目前沒有生效中的調整。",
+    "adjust_percent": "百分比",
+    "adjust_hours": "有效時間",
+    "adjust_help": "讓此程式在設定之後開始的執行中澆水更久或更短。它會取代先前的調整。小時留空：持續到重設為止。",
+    "adjust_apply": "套用",
+    "adjust_reset": "重設",
+    "confirm_reset_adjustment": "要移除此程式的調整嗎？",
+    "main_settings": "主程式：啟動與排序",
+    "main_settings_description": "主程式的澆水方式：區域依序或同時進行、兩個區域之間的暫停，以及循環浸潤。其啟動觸發條件在下方。",
+    "main_schedules_active": "目前由主程式的排程啟動澆水：下方的啟動觸發條件並未使用。它仍可編輯，若這些排程被停用或移除，它就會恢復作用。",
+    "mode_off": "完整控制器已關閉。請在「設定」、「一般」中開啟。",
+    "no_zone": "沒有區域",
+    "mode_calculated_short": "已計算",
+    "every_day": "每天",
+    "anchor_start_short": "開始時間",
+    "anchor_end_short": "完成時間",
+    "steps_none": "沒有步驟",
+    "steps_one": "1 個步驟",
+    "steps_many": "{n} 個步驟",
+    "schedules_none": "沒有排程",
+    "schedules_one": "1 個排程",
+    "schedules_many": "{n} 個排程",
+    "off": "關閉",
+    "steps_title": "步驟",
+    "schedules_title": "排程",
+    "passes_help": "此步驟的循環浸潤：將其水量分成這麼多輪，每個區域在兩輪之間浸潤。1：一次完成。",
+    "schedule_fallback_skip": "略過該日",
+    "schedule_fallback_previous": "使用最近一次的時間",
+    "schedule_fallback_at": "在固定時間開始",
+    "main_steps_hint": "主程式會為每個區域澆水。若只想澆其中一些區域，或要自訂順序，請在下方的「其他程式」中新增一個。",
+    "summary_start_sunrise": "於日出時開始",
+    "summary_start_sunset": "於日落時開始",
+    "summary_end_sunrise": "在日出前完成",
+    "summary_end_sunset": "在日落前完成",
+    "last_word": "最後",
+    "conditions_none": "沒有開啟任何條件：降雨、結冰與風請在「氣象」、「依氣象略過」中設定，距上次澆水的天數則在「設定」、「一般」中設定。",
+    "cond_postponed": "首頁的「延後」按鈕",
+    "cond_off": "已關閉",
+    "cond_freeze": "{value} 或以下",
+    "cond_wind": "自 {value} 起",
+    "cond_precipitation": "預報自 {value} 起",
+    "cond_days_between": "至少 {n} 天",
+    "cond_soil": "{n} 個區域有感測器",
+    "cond_soil_one": "{n} 個區域有感測器",
+    "adjust_per_step": "每個步驟 {time}",
+    "adjust_short": "{what}，直到 {when}",
+    "adjust_short_open": "{what}，直到重設為止",
+    "adjust_in_force": "生效中：{what}。",
+    "adjust_set": "設定調整",
+    "adjust_change": "變更調整",
+    "passes_short": "{n} 輪",
+    "overlap_short": "提早 {time} 開始下一個",
+    "wait_short": "等待 {time} 後再進行下一個",
+    "soak_shared_help": "所有分輪的步驟共用同一個浸潤時間，涵蓋每個程式與主程式。",
+    "min_over_max": "最小值高於最大值：以最大值為準，{max}。",
+    "confirm_run_replace": "要現在執行 {name} 嗎？會先停止正在澆水的項目，然後開啟其閥門。",
+    "run_replacing": "正在澆水的項目正在停止；{name} 隨後立即開始。",
+    "suspended_until": "已擱置至 {when}：其排程不會啟動它。",
+    "suspended": "已擱置",
+    "lift_suspension": "解除",
+    "preview_title": "執行會做什麼",
+    "preview_help": "每個區域各佔一行，顯示 Smart Irrigation 現在會澆水的時間長度。它們會隨天氣變化，因此實際開始時的執行可能不同。",
+    "yaml_edit": "以 YAML 編輯",
+    "yaml_help": "以文字呈現的程式。步驟可用名稱或編號指定區域，省略的內容會採用預設值。在你套用之前不會儲存任何內容：下方的時間軸會顯示程式將會做什麼。",
+    "yaml_apply": "套用",
+    "yaml_cancel": "取消",
+    "yaml_invalid": "這不是有效的 YAML。",
+    "yaml_not_a_program": "這不是程式：程式是一組鍵（name、steps、schedules）。",
+    "yaml_unknown_zones": "找不到區域，或有兩個區域共用的名稱，已略過：{zones}",
+    "yaml_not_watered": "未納入此次執行（沒有閥門，或已停用）：{zones}",
+    "yaml_applied": "程式已儲存",
+    "yaml_new": "以 YAML 新增程式",
+    "yaml_new_title": "新增程式"
+  },
+  "supplies": {
+    "title": "水泵與主閥",
+    "description": "位於區域閥門前方的水泵或主閥，會在它所供水的區域澆水時運轉。請在各區域的設定中選擇它。",
+    "name": "名稱",
+    "entities": "實體",
+    "entities_hint": "多個請以逗號分隔",
+    "delay_before": "提前延遲",
+    "delay_before_help": "正值：水泵或主閥會在區域閥門開啟前這麼久開啟。負值：區域閥門先開啟，水泵或主閥在這麼久之後才開啟。",
+    "delay_after": "延後延遲",
+    "delay_after_help": "正值：區域閥門關閉後，水泵或主閥會再維持開啟這麼久。負值：它會在區域閥門關閉前這麼久先關閉，使水泵不會對著已關閉的閥門加壓。",
+    "enabled": "已啟用",
+    "add": "新增水泵或主閥",
+    "delete": "刪除",
+    "confirm_delete": "要刪除「{name}」嗎？使用它的區域將不再有水泵或主閥。",
+    "kick_seconds": "啟動前斷電",
+    "kick_seconds_help": "適用於壓力控制器需要斷電後才會重新啟動的水泵：每次啟動前會先關閉這麼久，然後再開啟。0：直接開啟（預設）。"
+  },
+  "observed_watering": {
+    "title": "觀察式澆水（閉環）",
+    "description": "依實際澆水量計入各區域的水量平衡，而不是由自動化來重設。請在「區域」下為每個區域選擇閥門或開關：閥門開啟期間，會計入運作時間乘以出水率的水量，或水表測得的水量。請從你的自動化中移除 set_bucket 與 reset_bucket 的呼叫，否則會重複計算。",
+    "enabled_label": "啟用觀察式澆水",
+    "direct_control_label": "讓 Smart Irrigation 控制閥門",
+    "direct_control_description": "Smart Irrigation 會開啟每個區域的閥門，等待該時間長度後關閉。可自行關閉的閥門（ZHA 上的 Sonoff SWV，或使用 MQTT 安全主題）知道該次執行的長度，即使 Home Assistant 故障也會關閉。其他閥門則會一直澆水，直到 Home Assistant 恢復：請為它設定硬體的時間限制。",
+    "full_controller_label": "完整控制器：由 Smart Irrigation 負責我所有的澆水",
+    "full_controller_title": "完整控制器",
+    "confirm_full_controller": "要開啟完整控制器嗎？Smart Irrigation 會自行驅動閥門並啟動澆水。啟動時發現已開啟、但不屬於我們任何一次執行的閥門，會被關閉。",
+    "full_controller_description": "開啟閥門控制，並新增一個「澆水」分頁，包含程式、規劃與水泵。啟動觸發條件、排序、區域之間的暫停與循環浸潤會移到那裡成為主程式，運作方式不變。關閉則恢復先前的行為。啟動時發現已開啟、但不屬於我們任何一次執行的閥門，會被關閉。",
+    "sequencing_label": "區域排序",
+    "sequencing": {
+      "sequential": "依序（一次一個區域）",
+      "parallel": "並行（所有區域同時）"
+    },
+    "sequencing_description": "必須在日出時完成的啟動觸發條件會由此往回推算：依序時，從各執行時間的總和推算；同時時，則從最長者推算。",
+    "passes_label": "分多輪澆水",
+    "passes_description": "循環浸潤：相同的水量分成較短的幾輪，輪與輪之間暫停，讓黏重的土壤能吸收，而不是讓水流失。一輪表示一次澆完，這是預設值。太短而無法分割的執行則不處理。",
+    "soak_label": "各輪之間的浸潤",
+    "pause_between_zones_label": "區域之間的暫停",
+    "pause_between_zones_description": "依序執行時，兩個區域之間的等待：讓管線壓力恢復，或讓較慢的閥門在下一個開啟前完全關閉。",
+    "minutes": "分鐘",
+    "seconds": "秒",
+    "direct_control_locked": "完整控制器正在驅動閥門：請先將其關閉才能變更此設定。"
+  },
+  "calculation_log": {
+    "title": "計算記錄",
+    "description": "將每次計算的完整輸入寫入檔案，用於比較兩個相似卻澆水量差異很大的日子：感測器群組的記錄與其合併方式、模組的中間值（輻射、ET0）、水量平衡、時間長度與水量。預設關閉；有容量上限並會輪替，因此可以持續開啟。",
+    "enabled_label": "將計算輸入記錄到檔案",
+    "file_hint": "寫入 config/smart_irrigation/calc_log.jsonl，每行一筆 JSON 記錄。最近的記錄也會包含在診斷下載中（座標已四捨五入、實體 ID 已移除），因此你可以一步將它們附加到 issue。"
+  },
+  "ai_api": {
+    "title": "AI 存取",
+    "description": "讓助理讀取 Smart Irrigation：區域及其水量平衡、下次澆水與區域被暫緩的原因、程式與規劃、設定，以及在儲存前檢查程式。它絕不會執行澆水或開啟閥門。預設關閉：若使用雲端助理，它所讀取的內容會離開你的家。",
+    "enabled_label": "提供 Smart Irrigation 給助理",
+    "how": "對於 Claude、ChatGPT 或其他 MCP 用戶端，請新增 Home Assistant 的「Model Context Protocol Server」整合，並在其選項中勾選 Smart Irrigation。Home Assistant 的對話代理（Assist）也可以在其選項中提供它。",
+    "write_label": "允許助理變更設定",
+    "write_help": "助理接著可以建立、變更與刪除區域、感測器群組與程式，並變更設定，檢查方式與此面板相同。它仍然不會執行澆水，也無法變更此存取權限。將它關閉後，其下一次對話就只能再次讀取。"
+  },
+  "blueprints": {
+    "title": "藍圖",
+    "install_label": "安裝範例藍圖",
+    "install_help": "Smart Irrigation 會將其範例藍圖複製到你的藍圖資料夾，每個只複製一次：你刪除的藍圖不會被放回去。關閉此選項則完全不複製；已存在的藍圖會維持原樣。"
+  },
+  "measured_skip": {
+    "title": "依量測條件略過",
+    "description": "在每次執行開始時檢查，來源為感測器或氣象服務。無法讀取的感測器絕不會阻止執行。",
+    "enabled": "已啟用",
+    "threshold": "閾值",
+    "sensor": "感測器",
+    "sensor-optional": "感測器（選填）",
+    "rain": {
+      "title": "雨量感測器",
+      "description": "當雨量感測器顯示正在下雨時，略過執行。",
+      "sensor-hint": "在下雨時會開啟的二元感測器。",
+      "history-label": "近期降雨後縮短執行",
+      "history-description": "適用於完全沒有以公釐為單位降雨資料的區域。感測器最近五天的狀況會縮短執行時間，越近的影響越大：今天整天下雨會完全取消，四天前則只減少十分之一。水量平衡不受影響，因此缺水量仍會保留。需要在下雨期間持續保持開啟的感測器，而不是每次翻斗才脈衝一次的感測器。"
+    },
+    "freeze": {
+      "title": "結冰",
+      "description": "當溫度等於或低於閾值時，略過執行。",
+      "sensor-hint": "留空：使用氣象服務目前的溫度。"
+    },
+    "wind": {
+      "title": "風",
+      "description": "當風速等於或高於閾值時，略過執行：強風中的噴灌只會澆到步道，而不是花圃。",
+      "sensor-hint": "留空：使用氣象服務目前 10 公尺高度的風速。"
+    },
+    "source": {
+      "sensor": "讀取 {sensor}。",
+      "service": "讀取氣象服務目前的值。",
+      "nothing": "沒有感測器也沒有氣象服務：此檢查不會暫緩任何執行。",
+      "same": "與感測器群組 {groups} 相同的來源，用於蒸發量。",
+      "other": "就蒸發量而言，感測器群組在其他地方讀取此值：{groups}。",
+      "service-short": "氣象服務",
+      "static-short": "固定值",
+      "group": "「{group}」",
+      "adopt": "這裡也使用 {sensor}"
+    }
+  },
+  "card": {
+    "next_start": "下次啟動",
+    "no_start": "未排定啟動時間",
+    "skipped": "已暫緩",
+    "short_by": "缺水 {value}",
+    "no_need": "無需澆水",
+    "manual_runs": "每次啟動澆水 {duration}",
+    "manual_no_duration": "未輸入時間長度，不會澆水",
+    "not_calculated": "尚未計算",
+    "runs_for": "將執行 {duration}",
+    "never_watered": "從未澆水",
+    "last_watered": "上次澆水 {when}",
+    "calculate": "立即計算",
+    "water_now": "立即澆水",
+    "confirm_water": "再按一次以立即澆水",
+    "watering": "澆水",
+    "nothing_to_water": "目前無需澆水",
+    "loading": "正在讀取區域…",
+    "manual": "手動",
+    "disabled": "已停用",
+    "no_zones": "尚無區域。請開啟 Smart Irrigation 面板新增。",
+    "tomorrow": "明天",
+    "yesterday": "昨天",
+    "live_since": "依自 {when} 起的讀數即時估計",
+    "reasons": {
+      "precipitation": "降雨預報",
+      "days_between": "灑水間隔天數",
+      "rain_sensor": "雨量感測器",
+      "freeze": "結冰",
+      "wind": "風",
+      "soil_moisture": "土壤濕度",
+      "postponed": "已延後"
+    },
+    "programs": {
+      "title": "程式",
+      "start": "開始",
+      "stop": "停止",
+      "confirm_stop": "再按一次以停止",
+      "pause": "暫停",
+      "resume": "繼續",
+      "next_step": "下一步驟",
+      "step_of": "步驟 {step}/{steps}",
+      "remaining": "剩餘 {time}",
+      "until": "直到 {when}",
+      "states": {
+        "idle": "閒置",
+        "running": "執行中",
+        "waiting": "等待中",
+        "paused": "已暫停",
+        "suspended": "已擱置",
+        "disabled": "已停用"
+      },
+      "main_name": "主程式",
+      "after": "在 {name} 之後開始",
+      "next_in_line": "下一個開始"
+    },
+    "editor": {
+      "title": "標題",
+      "zones": "區域（留空則為全部）",
+      "show_next_start": "顯示下次啟動",
+      "compact": "只顯示會澆水的區域",
+      "show_programs": "顯示程式（完整控制器）"
+    },
+    "no_valve": "未連結閥門，不會澆水",
+    "no_trigger": "沒有啟動觸發條件",
+    "not_scheduled": "應澆水但未排程",
+    "off": "已關閉",
+    "watering_left": "澆水中，剩餘 {time}",
+    "paused_left": "已暫停，剩餘 {time}",
+    "soaking": "浸潤中，下一輪於 {when}（{pass}/{passes}）",
+    "pass_of": "第 {pass}/{passes} 輪"
+  },
+  "confirm": {
+    "delete_zone": "要刪除區域「{name}」嗎？其設定與水量平衡將會遺失。",
+    "delete_mapping": "要刪除感測器群組「{name}」嗎？使用它的區域將沒有氣象資料。",
+    "delete_module": "要刪除模組「{name}」嗎？使用它的區域將無法再計算。",
+    "reset_bucket": "要將「{name}」的水量平衡重設為零嗎？",
+    "reset_all_buckets": "要將所有區域的水量平衡重設為零嗎？",
+    "clear_all_weather": "要清除所有已收集的氣象資料嗎？下次計算將只有之後取得的讀數。"
+  }
+}
