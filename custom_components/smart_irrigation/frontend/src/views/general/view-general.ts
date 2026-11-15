@@ -2047,7 +2047,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             `,
           )}
           <div class="setting-row">
-            <div class="setting-label">${t("enabled")}</div>
+            <div class="setting-label">${t("step_enabled")}</div>
             <ha-switch
               .checked=${step.enabled !== false}
               @change=${(e: Event) =>
@@ -2451,7 +2451,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             `,
           )}
           <div class="setting-row">
-            <div class="setting-label">${t("enabled")}</div>
+            <div class="setting-label">${t("schedule_enabled")}</div>
             <ha-switch
               .checked=${schedule.enabled !== false}
               @change=${(e: Event) =>
@@ -2627,7 +2627,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               ? yamlBlock(program.id ?? "", index)
               : html`${yamlButton(program)} ${preview(program, null)}
                   <div class="setting-row">
-                    <div class="setting-label">${t("enabled")}</div>
+                    <div class="setting-label">${t("program_enabled")}</div>
                     <ha-switch
                       .checked=${program.enabled !== false}
                       @change=${(e: Event) =>
@@ -2751,7 +2751,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                             ${t("tours_help")}
                           </div>
                           <div class="setting-row">
-                            <div class="setting-label">${t("enabled")}</div>
+                            <div class="setting-label">
+                              ${t("program_enabled")}
+                            </div>
                             <ha-switch
                               .checked=${program.enabled !== false}
                               @change=${(e: Event) =>
