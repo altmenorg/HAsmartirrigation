@@ -1099,7 +1099,6 @@
         "off_in_iu_matched": "uitgezet in IU en gekoppeld aan \"{zone}\", die blijft zoals ze is: de programma's laten haar weg",
         "offset_limit": "een verschuiving van {offset, number} min: Smart Irrigation staat {max, number} toe",
         "offset_rounded": "de verschuiving van {seconds, number} s wordt afgerond op {minutes, number} min: Smart Irrigation rekent daar in minuten",
-        "one_queue": "{count} controllers: hun programma's lopen na elkaar, omdat de volledige controller één wachtrij heeft",
         "overlap": "{count} zones en reeksen hebben schema's: waar hun beurten overlappen, bewatert IU ze tegelijk, de volledige controller na elkaar",
         "passes_held": "{repeats, number} herhalingen worden beperkt tot {max, number} beurten",
         "period_needs_both": "de periode {from} tot {until} heeft beide dagen nodig: het schema geldt het hele jaar",

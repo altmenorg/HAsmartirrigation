@@ -1099,7 +1099,6 @@
         "off_in_iu_matched": "вимкнена в IU і зіставлена з «{zone}», яка лишається як є: програми її пропускають",
         "offset_limit": "зсув {offset, number} хв: Smart Irrigation допускає {max, number}",
         "offset_rounded": "зсув {seconds, number} с округлюється до {minutes, number} хв: тут Smart Irrigation рахує в хвилинах",
-        "one_queue": "контролерів: {count}; їхні програми виконуються одна за одною, бо повний контролер має одну чергу",
         "overlap": "зон і послідовностей із розкладами: {count}; де їхні поливи перетинаються, IU поливає їх одночасно, повний контролер по черзі",
         "passes_held": "повторів: {repeats, number}, обмежено до проходів: {max, number}",
         "period_needs_both": "період з {from} по {until} потребує обох дат: розклад діє весь рік",

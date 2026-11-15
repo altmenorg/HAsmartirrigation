@@ -1099,7 +1099,6 @@
         "off_in_iu_matched": "az IU-ban kikapcsolva, és a(z) „{zone}” zónához rendelve, amely változatlan marad: a programok kihagyják",
         "offset_limit": "{offset, number} perces eltolás: a Smart Irrigation {max, number} percet enged",
         "offset_rounded": "a {seconds, number} s eltolás {minutes, number} percre kerekítve: a Smart Irrigation ott percekben számol",
-        "one_queue": "{count} vezérlő: a programjaik egymás után futnak, mert a teljes vezérlőnek egy sora van",
         "overlap": "{count} zónának és szekvenciának van ütemezése: ahol a futásaik átfedik egymást, az IU egyszerre öntözi őket, a teljes vezérlő egymás után",
         "passes_held": "{repeats, number} ismétlés {max, number} szakaszra korlátozva",
         "period_needs_both": "a(z) {from} és {until} közötti időszakhoz mindkét nap kell: az ütemezés egész évben fut",

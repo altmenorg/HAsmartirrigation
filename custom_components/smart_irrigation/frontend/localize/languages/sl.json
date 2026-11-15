@@ -1099,7 +1099,6 @@
         "off_in_iu_matched": "izklopljeno v IU in povezano s \"{zone}\", ki ostane, kot je: programi jo izpustijo",
         "offset_limit": "zamik {offset, number} min: Smart Irrigation dovoli {max, number}",
         "offset_rounded": "zamik {seconds, number} s se zaokroži na {minutes, number} min: Smart Irrigation tam računa v minutah",
-        "one_queue": "krmilniki: {count}; njihovi programi tečejo drug za drugim, ker ima celoten krmilnik eno vrsto",
         "overlap": "cone in zaporedja z urniki: {count}; kjer se njihova zalivanja prekrivajo, jih IU zaliva hkrati, celoten krmilnik drugo za drugim",
         "passes_held": "ponovitve: {repeats, number}, omejeno na prehode: {max, number}",
         "period_needs_both": "obdobje od {from} do {until} potrebuje oba dneva: urnik velja vse leto",

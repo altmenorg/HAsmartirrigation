@@ -74,7 +74,7 @@ After the switch, importing again keeps the on or off you gave each schedule, an
 
 ### What the import does not carry over
 
-- Several controllers become one queue: their programs run one after the other.
+- A controller with a master becomes a supply, and its programs water beside the other controllers', as in IU. Controllers without a master share the mains: their programs run one after the other.
 - Runs that IU overlapped run one after the other.
 - A step's `repeat` becomes passes: the water in parts with a soak between, not full runs.
 - `entity_states`, `threshold`, a zone's default duration for manual runs, the master's `check_back` and `volume`, an unbounded `cron`, a sun event other than sunrise and sunset.

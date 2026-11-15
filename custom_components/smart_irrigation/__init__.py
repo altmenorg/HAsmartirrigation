@@ -108,6 +108,7 @@ from .triggers import TriggersMixin
 from .valve_runner import ValveRunnerMixin
 from .watering_calendar import WateringCalendarMixin
 from .watering_control import (
+    NEXT_STEP_SCHEMA,
     PAUSE_WATERING_SCHEMA,
     RUN_PROGRAM_SCHEMA,
     SET_PROGRAM_ENABLED_SCHEMA,
@@ -2976,7 +2977,10 @@ def register_services(hass: HomeAssistant):
         const.DOMAIN, const.SERVICE_RESUME_WATERING, coordinator.handle_resume_watering
     )
     hass.services.async_register(
-        const.DOMAIN, const.SERVICE_NEXT_STEP, coordinator.handle_next_step
+        const.DOMAIN,
+        const.SERVICE_NEXT_STEP,
+        coordinator.handle_next_step,
+        schema=NEXT_STEP_SCHEMA,
     )
     hass.services.async_register(
         const.DOMAIN,

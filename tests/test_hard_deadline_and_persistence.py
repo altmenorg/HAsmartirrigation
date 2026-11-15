@@ -183,7 +183,7 @@ async def test_the_deadline_is_kept_in_the_record_of_the_run(monkeypatch):
     seen = {}
 
     async def _look():
-        seen["record"] = coord.store.config.active_program_run
+        seen["record"] = coord.store.config.active_program_run["evening"]
 
     sleeps.on(300, _look)
 
@@ -197,7 +197,7 @@ async def test_a_run_without_a_deadline_has_none_in_its_record(monkeypatch):
     seen = {}
 
     async def _look():
-        seen["record"] = coord.store.config.active_program_run
+        seen["record"] = coord.store.config.active_program_run["evening"]
 
     sleeps.on(300, _look)
 

@@ -1298,16 +1298,23 @@ def plan_import(
                 const.SUPPLY_ENABLED: controller.enabled,
             }
         )
-    if len(controllers) > 1 and any(
-        c.sequences or any(z.schedules for z in c.zones) for c in controllers
-    ):
+    # A controller with a master becomes a supply, and its programs take their
+    # turns on it, beside the other controllers' as in IU. Zones without a
+    # supply share the mains: the programs of controllers with no master wait
+    # for one another.
+    unmastered = [
+        c
+        for c in controllers
+        if not c.entities and (c.sequences or any(z.schedules for z in c.zones))
+    ]
+    if len(unmastered) > 1:
         report.add(
             "controllers",
             APPROXIMATED,
-            f"{len(controllers)} controllers: their programs run one after the "
-            "other, as the full controller has one queue",
-            code="one_queue",
-            params={"count": len(controllers)},
+            f"{len(unmastered)} controllers without a master: their programs run "
+            "one after the other, as zones without a supply share one queue",
+            code="shared_queue",
+            params={"count": len(unmastered)},
         )
 
     for controller in controllers:

@@ -427,7 +427,13 @@
     },
     "next_step": {
       "name": "Next step",
-      "description": "End the zones of the step a program is on and go on to the next step."
+      "description": "End the zones of the step a program is on and go on to the next step. Programs on supplies of their own can water side by side: without a program, every program that is running moves on.",
+      "fields": {
+        "program_id": {
+          "name": "Program",
+          "description": "The id of the program to move on; empty for every program."
+        }
+      }
     },
     "suspend": {
       "name": "Suspend",

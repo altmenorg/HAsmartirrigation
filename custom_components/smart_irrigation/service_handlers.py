@@ -440,7 +440,7 @@ class ServiceHandlersMixin(ProgramAdjustMixin):
 
     async def handle_next_step(self, call):
         """End the zones of the step a program is on, and go on to the next."""
-        await self.async_skip_step()
+        await self.async_skip_step(call.data.get(const.ATTR_PROGRAM_ID))
 
     @staticmethod
     def _check_suspend_input(hours, until) -> None:

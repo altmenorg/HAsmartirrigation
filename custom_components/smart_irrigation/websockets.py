@@ -895,7 +895,8 @@ async def websocket_get_planning(hass: HomeAssistant, connection, msg):
         sequence_planning(
             await coordinator.async_planning(
                 days, trigger_starts=await _trigger_starts(hass, coordinator, days)
-            )
+            ),
+            keys=lambda item: coordinator.program_turn_keys(item.get("program_id")),
         ),
     )
 

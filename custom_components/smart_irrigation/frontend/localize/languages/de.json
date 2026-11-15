@@ -1099,7 +1099,7 @@
         "off_in_iu_matched": "in IU ausgeschaltet und „{zone}“ zugeordnet, die bleibt, wie sie ist: Die Programme lassen sie aus",
         "offset_limit": "ein Versatz von {offset, number} min: Smart Irrigation erlaubt {max, number}",
         "offset_rounded": "der Versatz von {seconds, number} s wird auf {minutes, number} min gerundet: Smart Irrigation rechnet dort in Minuten",
-        "one_queue": "{count} Controller: Deren Programme laufen nacheinander, da der vollständige Controller nur eine Warteschlange hat",
+        "shared_queue": "{count} Controller ohne Master: Ihre Programme laufen nacheinander, da Zonen ohne Versorgung eine gemeinsame Warteschlange haben",
         "overlap": "{count} Zonen und Sequenzen haben Zeitpläne: Wo sich ihre Läufe überschneiden, bewässert IU sie gleichzeitig, der vollständige Controller nacheinander",
         "passes_held": "{repeats, number} Wiederholungen werden auf {max, number} Durchgänge begrenzt",
         "period_needs_both": "der Zeitraum {from} bis {until} braucht beide Tage: Der Zeitplan gilt das ganze Jahr",
@@ -1286,7 +1286,7 @@
   },
   "programs": {
     "title": "Programme",
-    "description": "Ein Programm bewässert seine Schritte nacheinander. Ein Schritt ist eine Zone oder mehrere, die zusammen bewässert werden, und dauert standardmäßig so lange, wie Smart Irrigation es für ihn berechnet hat. Mehrere Programme laufen nie gleichzeitig: Das nächste wartet, bis es an der Reihe ist.",
+    "description": "Ein Programm bewässert seine Schritte nacheinander. Ein Schritt ist eine Zone oder mehrere, die zusammen bewässert werden, und dauert standardmäßig so lange, wie Smart Irrigation es für ihn berechnet hat. Programme, deren Zonen sich eine Versorgung teilen oder keine haben, laufen nie gleichzeitig: Das nächste wartet, bis es an der Reihe ist. Programme an eigenen Versorgungen bewässern gleichzeitig.",
     "main_description": "Bewässert alle Zonen, nacheinander oder zusammen, zu seinen Zeitplänen.",
     "run_options": "Optionen für diesen Start",
     "adjust_empty": "Gib einen Prozentsatz oder Sekunden ein, um die Dauern anzupassen.",

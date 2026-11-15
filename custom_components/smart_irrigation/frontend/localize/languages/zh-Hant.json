@@ -1099,7 +1099,6 @@
         "off_in_iu_matched": "在 IU 中已關閉並對應到「{zone}」，該區域維持原樣：程式會將它排除",
         "offset_limit": "偏移量 {offset, number} 分鐘：Smart Irrigation 允許 {max, number}",
         "offset_rounded": "{seconds, number} 秒的偏移量會四捨五入為 {minutes, number} 分鐘：Smart Irrigation 在此以分鐘為單位運作",
-        "one_queue": "{count} 個控制器：它們的程式會依序執行，因為完整控制器只有一個佇列",
         "overlap": "{count} 個區域與序列有排程：在它們的執行重疊之處，IU 會同時澆水，完整控制器則會依序澆水",
         "passes_held": "{repeats, number} 次重複已限制為 {max, number} 輪",
         "period_needs_both": "{from} 至 {until} 的期間需要兩個日期：排程會全年執行",

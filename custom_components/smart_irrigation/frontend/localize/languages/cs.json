@@ -1099,7 +1099,6 @@
         "off_in_iu_matched": "vypnuto v IU a přiřazeno k „{zone}“, která zůstává, jak je: programy ji vynechávají",
         "offset_limit": "posun o {offset, number} min: Smart Irrigation dovoluje {max, number}",
         "offset_rounded": "posun o {seconds, number} s se zaokrouhlí na {minutes, number} min: Smart Irrigation tam počítá v minutách",
-        "one_queue": "řadiče: {count}; jejich programy běží jeden po druhém, protože plný řadič má jednu frontu",
         "overlap": "zóny a sekvence s rozvrhy: {count}; kde se jejich běhy překrývají, IU je zalévá současně, plný řadič jednu po druhé",
         "passes_held": "{repeats, number} opakování se omezí na počet dávek {max, number}",
         "period_needs_both": "období {from} až {until} potřebuje oba dny: rozvrh platí celý rok",
