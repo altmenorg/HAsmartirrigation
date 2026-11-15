@@ -1522,7 +1522,9 @@
     "seconds": "sekunder",
     "direct_control_locked": "Ventilerna styrs av fullständig bevattningsstyrning. Stäng av funktionen innan du ändrar inställningen.",
     "set_aside_label": "Ställ en zon åt sidan efter så många misslyckade bevattningar",
-    "set_aside_description": "En ventil som så många gånger i rad inte öppnade, inte gav vatten eller inte fick sin egen timer satt ställs åt sidan: inget program vattnar zonen förrän den tas i bruk igen, i stället för att misslyckas varje morgon. Du får veta det direkt (programmens aviseringar, en reparation i Home Assistant, zonens problemsensor). Den kommer tillbaka av sig själv när ventilen ses öppna, provad för hand efter reparation. 0: aldrig."
+    "set_aside_description": "En ventil som så många gånger i rad inte öppnade, inte gav vatten eller inte fick sin egen timer satt ställs åt sidan: inget program vattnar zonen förrän den tas i bruk igen, i stället för att misslyckas varje morgon. Du får veta det direkt (programmens aviseringar, en reparation i Home Assistant, zonens problemsensor). Den kommer tillbaka av sig själv när ventilen ses öppna, provad för hand efter reparation. 0: aldrig.",
+    "leak_label": "Läckagelarm från",
+    "leak_description": "Räknar en zons vattenmätare så många liter med alla ventiler stängda meddelas ett läckage: hubbens Läckage-sensor, händelsen smart_irrigation_leak, en reparation och programmens aviseringar. Bara för en mätare som mäter enbart trädgården: en husmätare räknar även kranarna. 0: inte bevakad."
   },
   "calculation_log": {
     "title": "Beräkningslogg",
@@ -1678,6 +1680,8 @@
       "supply_did_not_turn_on": "pumpen eller huvudventilen startade inte",
       "supply_did_not_turn_off": "pumpen eller huvudventilen stannade inte",
       "zone_set_aside": "ställd åt sidan efter flera misslyckanden: vattnas inte förrän den tas i bruk igen"
-    }
+    },
+    "title_leak": "Vatten rinner med alla ventiler stängda",
+    "leak_line": "{litres} L räknade med ventilerna stängda ({zones}). Kontrollera läckage eller en ventil som står öppen."
   }
 }

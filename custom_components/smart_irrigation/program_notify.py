@@ -163,6 +163,7 @@ class ProgramNotifier:
             (const.EVENT_PROGRAM_FINISHED, self._program_finished),
             (const.EVENT_ZONE_PROBLEM, self._zone_problem),
             (const.EVENT_SUPPLY_PROBLEM, self._supply_problem),
+            (const.EVENT_LEAK, self._leak),
         ):
             self._unsubs.append(listen(f"{const.DOMAIN}_{event}", handler))
 
@@ -222,6 +223,37 @@ class ProgramNotifier:
     @callback
     def _supply_problem(self, event: Event) -> None:
         self._problem_now(event.data.get("supply"), event.data.get("reason"))
+
+    @callback
+    def _leak(self, event: Event) -> None:
+        """Water with every valve closed: every program that notifies is told."""
+        config = self.coordinator.store.config
+        if getattr(config, const.CONF_FULL_CONTROLLER, False) is not True:
+            return
+        targets: list[str] = []
+        for program in getattr(config, const.CONF_PROGRAMS, None) or []:
+            notify = normalize_notify(program.get(const.PROGRAM_NOTIFY))
+            for target in (notify or {}).get(const.NOTIFY_TARGETS, []):
+                if target not in targets:
+                    targets.append(target)
+        if not targets:
+            return
+        self.hass.async_create_task(self._send_leak(targets, dict(event.data)))
+
+    async def _send_leak(self, targets: list[str], data: dict) -> None:
+        t = await _text(self.hass)
+        program = {const.PROGRAM_ID: "leak"}
+        await self._send(
+            program,
+            {const.NOTIFY_TARGETS: targets},
+            t("title_leak"),
+            t(
+                "leak_line",
+                litres=_number(data.get("litres") or 0),
+                zones=", ".join(data.get("zones") or []),
+            ),
+            urgent=True,
+        )
 
     def _started(self, program_id, data: dict) -> None:
         found = self._program(program_id)

@@ -1522,7 +1522,9 @@
     "seconds": "seconds",
     "direct_control_locked": "The full controller drives the valves: switch it off first to change this.",
     "set_aside_label": "Set a zone aside after this many failed runs",
-    "set_aside_description": "A valve that did not open, gave no water or could not have its own timer set this many runs in a row is set aside: no program waters the zone until it is put back, rather than failing every morning. You are told at once (the programs' notifications, a repair in Home Assistant, the zone's problem sensor). It comes back by itself when its valve is seen opening, tried by hand once repaired. 0: never."
+    "set_aside_description": "A valve that did not open, gave no water or could not have its own timer set this many runs in a row is set aside: no program waters the zone until it is put back, rather than failing every morning. You are told at once (the programs' notifications, a repair in Home Assistant, the zone's problem sensor). It comes back by itself when its valve is seen opening, tried by hand once repaired. 0: never.",
+    "leak_label": "Leak alert after",
+    "leak_description": "With every valve closed, a zone's volume meter that counts this many litres is told as a leak: the hub's Leak sensor, the event smart_irrigation_leak, a repair and the programs' notifications. Only for a meter that measures the garden alone: a house meter also counts the taps. 0: not watched."
   },
   "calculation_log": {
     "title": "Calculation log",
@@ -1678,6 +1680,8 @@
       "supply_did_not_turn_on": "the pump or main valve did not start",
       "supply_did_not_turn_off": "the pump or main valve did not stop",
       "zone_set_aside": "set aside after several failed runs: not watered until it is put back"
-    }
+    },
+    "title_leak": "Water is flowing with every valve closed",
+    "leak_line": "{litres} L counted with every valve closed ({zones}). Check for a leak or a valve stuck open."
   }
 }

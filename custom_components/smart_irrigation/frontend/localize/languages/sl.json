@@ -1522,7 +1522,9 @@
     "seconds": "sekund",
     "direct_control_locked": "Ventile upravlja celoten krmilnik: najprej ga izklopi, če želiš to spremeniti.",
     "set_aside_label": "Odloži območje po toliko neuspelih zalivanjih",
-    "set_aside_description": "Ventil, ki se tolikokrat zapored ni odprl, ni dal vode ali mu ni bilo mogoče nastaviti lastnega časovnika, se odloži: noben program ne zaliva območja, dokler ga ne vrnete, namesto da bi vsako jutro odpovedal. Obveščeni ste takoj (obvestila programov, popravilo v Home Assistantu, senzor težave območja). Vrne se samo, ko se njegov ventil odpre, na primer ročno preizkušen po popravilu. 0: nikoli."
+    "set_aside_description": "Ventil, ki se tolikokrat zapored ni odprl, ni dal vode ali mu ni bilo mogoče nastaviti lastnega časovnika, se odloži: noben program ne zaliva območja, dokler ga ne vrnete, namesto da bi vsako jutro odpovedal. Obveščeni ste takoj (obvestila programov, popravilo v Home Assistantu, senzor težave območja). Vrne se samo, ko se njegov ventil odpre, na primer ročno preizkušen po popravilu. 0: nikoli.",
+    "leak_label": "Opozorilo puščanja od",
+    "leak_description": "Če vodomer območja ob zaprtih ventilih našteje toliko litrov, se javi puščanje: senzor Puščanje na hubu, dogodek smart_irrigation_leak, popravilo in obvestila programov. Samo za vodomer, ki meri samo vrt: hišni vodomer šteje tudi pipe. 0: ni nadzorovano."
   },
   "calculation_log": {
     "title": "Dnevnik izračunov",
@@ -1678,6 +1680,8 @@
       "supply_did_not_turn_on": "črpalka ali glavni ventil se ni zagnal",
       "supply_did_not_turn_off": "črpalka ali glavni ventil se ni ustavil",
       "zone_set_aside": "odloženo po več neuspehih: se ne zaliva, dokler ga ne vrnete"
-    }
+    },
+    "title_leak": "Voda teče, čeprav so vsi ventili zaprti",
+    "leak_line": "{litres} L našteto ob zaprtih ventilih ({zones}). Preverite puščanje ali odprt ventil."
   }
 }

@@ -114,6 +114,9 @@
       "any_problem": {
         "name": "有問題"
       },
+      "leak": {
+        "name": "漏水"
+      },
       "observed_watering": {
         "name": "觀察到的澆水"
       }
@@ -778,6 +781,10 @@
           }
         }
       }
+    },
+    "leak": {
+      "title": "所有閥門關閉時仍有水流",
+      "description": "水表 **{meter}** 在 {zones} 的所有閥門關閉時計量了 {litres} 公升。可能有管線漏水或閥門卡在開啟狀態。\n\n水表靜止半小時後提醒會自動消失。`smart_irrigation_leak` 事件和漏水感測器可讓自動化關閉總閥。"
     }
   }
 }

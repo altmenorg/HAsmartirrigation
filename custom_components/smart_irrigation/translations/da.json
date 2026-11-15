@@ -114,6 +114,9 @@
       "any_problem": {
         "name": "Problem"
       },
+      "leak": {
+        "name": "Lækage"
+      },
       "observed_watering": {
         "name": "Observeret vanding"
       }
@@ -778,6 +781,10 @@
           }
         }
       }
+    },
+    "leak": {
+      "title": "Der løber vand med alle ventiler lukket",
+      "description": "Måleren **{meter}** talte {litres} L, mens alle ventiler i {zones} var lukket. Et rør lækker måske, eller en ventil hænger åben.\n\nMeldingen forsvinder af sig selv, når måleren har stået stille en halv time. Hændelsen `smart_irrigation_leak` og Lækage-sensoren lader en automatisering lukke en hovedventil."
     }
   }
 }

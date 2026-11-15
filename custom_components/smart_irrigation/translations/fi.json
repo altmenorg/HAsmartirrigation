@@ -114,6 +114,9 @@
       "any_problem": {
         "name": "Ongelma"
       },
+      "leak": {
+        "name": "Vuoto"
+      },
       "observed_watering": {
         "name": "Havaittu kastelu"
       }
@@ -778,6 +781,10 @@
           }
         }
       }
+    },
+    "leak": {
+      "title": "Vettä virtaa kaikkien venttiilien ollessa kiinni",
+      "description": "Mittari **{meter}** laski {litres} l, kun kaikki vyöhykkeiden {zones} venttiilit olivat kiinni. Putki saattaa vuotaa tai venttiili olla jumissa auki.\n\nIlmoitus poistuu itsestään, kun mittari on pysynyt paikallaan puoli tuntia. Tapahtuma `smart_irrigation_leak` ja Vuoto-anturi antavat automaation sulkea pääventtiilin."
     }
   }
 }

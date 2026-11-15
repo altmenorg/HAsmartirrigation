@@ -249,7 +249,7 @@
             "calc-time": "Calculer à",
             "calc-time-hint": "Le calcul quotidien : l'eau perdue est ajoutée au bilan hydrique de chaque zone et les durées d'arrosage sont fixées.",
             "hourly-calculation": "Calculer l'évapotranspiration heure par heure",
-            "hourly-calculation-hint": "Somme l'équation horaire FAO-56 sur chaque heure depuis le dernier calcul, au lieu d'appliquer l'équation journalière à des moyennes, qui masquent si le soleil et la chaleur sont arrivés ensemble. Une nouvelle installation démarre dessus ; une installation antérieure garde l'équation journalière jusqu'à ce que tu bascules, parce que les deux donnent des nombres différents et que ton arrosage ne doit pas changer sur une mise à jour. Le soleil de chaque heure vient d'un capteur de rayonnement ou de luminosité, de l'historique horaire du service météo, ou de l'amplitude thermique du jour. Utile quand les relevés arrivent au fil de la journée : une seule mise à jour par jour laisse un unique relevé tenu sur vingt-quatre heures, et aucune des deux formes n'est alors fiable. Une serre sans capteur propre garde l'équation journalière."
+            "hourly-calculation-hint": "Additionne l'équation horaire FAO-56, heure par heure depuis le dernier calcul, au lieu d'appliquer l'équation journalière à des moyennes, qui masquent si le soleil et la chaleur sont arrivés ensemble. Une nouvelle installation démarre dessus ; une installation antérieure garde l'équation journalière jusqu'à ce que tu bascules, parce que les deux donnent des nombres différents et que ton arrosage ne doit pas changer sur une mise à jour. Le soleil de chaque heure vient d'un capteur de rayonnement ou de luminosité, de l'historique horaire du service météo, ou de l'amplitude thermique du jour. Utile quand les relevés arrivent au fil de la journée : une seule mise à jour par jour laisse un unique relevé tenu sur vingt-quatre heures, et aucune des deux formes n'est alors fiable. Une serre sans capteur propre garde l'équation journalière."
           }
         },
         "automatic-update": {
@@ -1522,7 +1522,9 @@
     "seconds": "secondes",
     "direct_control_locked": "Le contrôleur complet pilote les vannes : désactive-le d'abord pour changer ceci.",
     "set_aside_label": "Mettre une zone de côté après ce nombre d'échecs",
-    "set_aside_description": "Une vanne qui ne s'est pas ouverte, n'a pas donné d'eau ou dont la minuterie n'a pas pu être réglée ce nombre de fois de suite est mise de côté : aucun programme n'arrose la zone tant qu'elle n'est pas remise en service, au lieu d'échouer chaque matin. Vous êtes prévenu tout de suite (notifications des programmes, réparation dans Home Assistant, capteur de problème de la zone). Elle revient d'elle-même quand on voit sa vanne s'ouvrir, essayée à la main une fois réparée. 0 : jamais."
+    "set_aside_description": "Une vanne qui ne s'est pas ouverte, n'a pas donné d'eau ou dont la minuterie n'a pas pu être réglée ce nombre de fois de suite est mise de côté : aucun programme n'arrose la zone tant qu'elle n'est pas remise en service, au lieu d'échouer chaque matin. Vous êtes prévenu tout de suite (notifications des programmes, réparation dans Home Assistant, capteur de problème de la zone). Elle revient d'elle-même quand on voit sa vanne s'ouvrir, essayée à la main une fois réparée. 0 : jamais.",
+    "leak_label": "Alerte de fuite à partir de",
+    "leak_description": "Toutes les vannes fermées, un compteur de zone qui compte ce nombre de litres déclenche une alerte de fuite : capteur Fuite de l'appareil Smart Irrigation, événement smart_irrigation_leak, réparation et notifications des programmes. Seulement pour un compteur qui ne mesure que le jardin : un compteur de la maison compte aussi les robinets. 0 : pas surveillé."
   },
   "calculation_log": {
     "title": "Journal de calcul",
@@ -1678,6 +1680,8 @@
       "supply_did_not_turn_on": "la pompe ou la vanne maîtresse n'a pas démarré",
       "supply_did_not_turn_off": "la pompe ou la vanne maîtresse ne s'est pas arrêtée",
       "zone_set_aside": "mise de côté après plusieurs échecs : pas arrosée tant qu'elle n'est pas remise en service"
-    }
+    },
+    "title_leak": "De l'eau coule alors que toutes les vannes sont fermées",
+    "leak_line": "{litres} L comptés vannes fermées ({zones}). Vérifiez s'il y a une fuite ou une vanne restée ouverte."
   }
 }

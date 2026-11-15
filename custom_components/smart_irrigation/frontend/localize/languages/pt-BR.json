@@ -1522,7 +1522,9 @@
     "seconds": "segundos",
     "direct_control_locked": "O controlador completo comanda as válvulas: desative-o primeiro para alterar isto.",
     "set_aside_label": "Deixar uma zona de lado após este número de regas com falha",
-    "set_aside_description": "Uma válvula que não abriu, não deu água ou cujo temporizador não pôde ser definido este número de vezes seguidas é deixada de lado: nenhum programa rega a zona até ela ser reativada, em vez de falhar toda manhã. Você é avisado na hora (notificações dos programas, um reparo no Home Assistant, o sensor de problema da zona). Ela volta sozinha quando a válvula é vista abrindo, testada à mão depois de consertada. 0: nunca."
+    "set_aside_description": "Uma válvula que não abriu, não deu água ou cujo temporizador não pôde ser definido este número de vezes seguidas é deixada de lado: nenhum programa rega a zona até ela ser reativada, em vez de falhar toda manhã. Você é avisado na hora (notificações dos programas, um reparo no Home Assistant, o sensor de problema da zona). Ela volta sozinha quando a válvula é vista abrindo, testada à mão depois de consertada. 0: nunca.",
+    "leak_label": "Alerta de vazamento a partir de",
+    "leak_description": "Com todas as válvulas fechadas, um medidor de zona que contar estes litros alerta um vazamento: o sensor Vazamento do hub, o evento smart_irrigation_leak, um reparo e as notificações dos programas. Só para um medidor que mede apenas o jardim: um medidor da casa também conta as torneiras. 0: não monitorado."
   },
   "calculation_log": {
     "title": "Registro de cálculo",
@@ -1678,6 +1680,8 @@
       "supply_did_not_turn_on": "a bomba ou válvula principal não ligou",
       "supply_did_not_turn_off": "a bomba ou válvula principal não desligou",
       "zone_set_aside": "deixada de lado após várias falhas: não é regada até ser reativada"
-    }
+    },
+    "title_leak": "Está correndo água com todas as válvulas fechadas",
+    "leak_line": "{litres} L contados com as válvulas fechadas ({zones}). Verifique se há vazamento ou uma válvula aberta."
   }
 }

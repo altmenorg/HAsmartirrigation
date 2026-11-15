@@ -3837,6 +3837,24 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             ></ha-switch>
           </div>
 
+          ${this.config.observed_watering_enabled &&
+          this.config.ui_mode === "advanced"
+            ? html`${this._numRow(
+                  localize("observed_watering.leak_label", lang),
+                  "L",
+                  this.config.leak_alert_litres ?? 0,
+                  (v) =>
+                    this.handleConfigChange({
+                      leak_alert_litres: Math.min(
+                        1000,
+                        Math.max(0, parseFloat(v) || 0),
+                      ),
+                    }),
+                )}
+                <div class="setting-help">
+                  ${localize("observed_watering.leak_description", lang)}
+                </div>`
+            : ""}
           <div class="setting-row">
             <div class="setting-label">
               ${localize("observed_watering.direct_control_label", lang)}
@@ -3854,13 +3872,18 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           ${this.config.direct_valve_control_enabled
             ? html`
                 <div class="setting-note">
+                  ${this.config.full_controller === true
+                    ? html`<strong
+                          >${localize(
+                            "observed_watering.direct_control_locked",
+                            lang,
+                          )}</strong
+                        ><br />`
+                    : ""}
                   ${localize(
                     "observed_watering.direct_control_description",
                     lang,
                   )}
-                  ${this.config.full_controller === true
-                    ? localize("observed_watering.direct_control_locked", lang)
-                    : ""}
                 </div>
               `
             : ""}
@@ -4109,18 +4132,20 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               )}
             </div>`
         : ""}
-      ${this._numRow(
-        localize("observed_watering.set_aside_label", lang),
-        "",
-        config.set_aside_after ?? 0,
-        (v) =>
-          this.handleConfigChange({
-            set_aside_after: Math.min(10, Math.max(0, parseInt(v) || 0)),
-          }),
-      )}
-      <div class="card-content">
-        ${localize("observed_watering.set_aside_description", lang)}
-      </div>
+      ${config.ui_mode === "advanced"
+        ? html`${this._numRow(
+              localize("observed_watering.set_aside_label", lang),
+              "",
+              config.set_aside_after ?? 0,
+              (v) =>
+                this.handleConfigChange({
+                  set_aside_after: Math.min(10, Math.max(0, parseInt(v) || 0)),
+                }),
+            )}
+            <div class="card-content">
+              ${localize("observed_watering.set_aside_description", lang)}
+            </div>`
+        : ""}
     `;
   }
 

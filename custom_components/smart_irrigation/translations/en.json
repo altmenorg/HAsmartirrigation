@@ -114,6 +114,9 @@
       "any_problem": {
         "name": "Problem"
       },
+      "leak": {
+        "name": "Leak"
+      },
       "observed_watering": {
         "name": "Observed watering"
       }
@@ -778,6 +781,10 @@
           }
         }
       }
+    },
+    "leak": {
+      "title": "Water flows with every valve closed",
+      "description": "The meter **{meter}** counted {litres} L while every valve of {zones} was closed. A pipe may leak, or a valve may be stuck open.\n\nIt clears by itself once the meter has stood still for half an hour. The event `smart_irrigation_leak` and the hub's Leak sensor let an automation close a main valve."
     }
   }
 }

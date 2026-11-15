@@ -1522,7 +1522,9 @@
     "seconds": "sekuntia",
     "direct_control_locked": "Täysi ohjain ohjaa venttiilejä: kytke se ensin pois muuttaaksesi tätä.",
     "set_aside_label": "Siirrä vyöhyke sivuun näin monen epäonnistuneen kastelun jälkeen",
-    "set_aside_description": "Venttiili, joka näin monta kertaa peräkkäin ei auennut, ei antanut vettä tai jonka omaa ajastinta ei voitu asettaa, siirretään sivuun: mikään ohjelma ei kastele vyöhykettä ennen kuin se otetaan takaisin käyttöön, sen sijaan että se epäonnistuisi joka aamu. Saat tiedon heti (ohjelmien ilmoitukset, korjaus Home Assistantissa, vyöhykkeen ongelma-anturi). Se palaa itsestään, kun sen venttiilin nähdään aukeavan, käsin kokeiltuna korjauksen jälkeen. 0: ei koskaan."
+    "set_aside_description": "Venttiili, joka näin monta kertaa peräkkäin ei auennut, ei antanut vettä tai jonka omaa ajastinta ei voitu asettaa, siirretään sivuun: mikään ohjelma ei kastele vyöhykettä ennen kuin se otetaan takaisin käyttöön, sen sijaan että se epäonnistuisi joka aamu. Saat tiedon heti (ohjelmien ilmoitukset, korjaus Home Assistantissa, vyöhykkeen ongelma-anturi). Se palaa itsestään, kun sen venttiilin nähdään aukeavan, käsin kokeiltuna korjauksen jälkeen. 0: ei koskaan.",
+    "leak_label": "Vuotohälytys alkaen",
+    "leak_description": "Jos vyöhykkeen vesimittari laskee näin monta litraa kaikkien venttiilien ollessa kiinni, ilmoitetaan vuodosta: keskittimen Vuoto-anturi, tapahtuma smart_irrigation_leak, korjaus ja ohjelmien ilmoitukset. Vain mittarille, joka mittaa pelkkää puutarhaa: talon mittari laskee myös hanat. 0: ei valvota."
   },
   "calculation_log": {
     "title": "Laskentaloki",
@@ -1678,6 +1680,8 @@
       "supply_did_not_turn_on": "pumppu tai pääventtiili ei käynnistynyt",
       "supply_did_not_turn_off": "pumppu tai pääventtiili ei pysähtynyt",
       "zone_set_aside": "siirretty sivuun useiden epäonnistumisten jälkeen: ei kastella ennen käyttöönottoa"
-    }
+    },
+    "title_leak": "Vettä virtaa kaikkien venttiilien ollessa kiinni",
+    "leak_line": "{litres} l laskettu venttiilien ollessa kiinni ({zones}). Tarkista vuoto tai auki jäänyt venttiili."
   }
 }

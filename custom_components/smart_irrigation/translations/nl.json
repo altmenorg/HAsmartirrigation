@@ -114,6 +114,9 @@
       "any_problem": {
         "name": "Probleem"
       },
+      "leak": {
+        "name": "Lek"
+      },
       "observed_watering": {
         "name": "Waargenomen beregening"
       }
@@ -778,6 +781,10 @@
           }
         }
       }
+    },
+    "leak": {
+      "title": "Er stroomt water terwijl alle kleppen dicht zijn",
+      "description": "De meter **{meter}** telde {litres} L terwijl alle kleppen van {zones} dicht waren. Er lekt misschien een leiding of een klep staat vast open.\n\nDe melding verdwijnt vanzelf als de meter een half uur stilstaat. Het event `smart_irrigation_leak` en de Lek-sensor laten een automatisering een hoofdklep sluiten."
     }
   }
 }

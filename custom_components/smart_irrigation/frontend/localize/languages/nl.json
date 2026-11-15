@@ -1522,7 +1522,9 @@
     "seconds": "seconden",
     "direct_control_locked": "De volledige controller stuurt de ventielen aan: schakel hem eerst uit om dit te wijzigen.",
     "set_aside_label": "Een zone na zoveel mislukte beurten opzijzetten",
-    "set_aside_description": "Een klep die zoveel keer achter elkaar niet openging, geen water gaf of zijn eigen timer niet kon instellen, wordt opzijgezet: geen programma beregent de zone tot ze weer wordt ingeschakeld, in plaats van elke ochtend te mislukken. Je wordt meteen verwittigd (meldingen van de programma's, een reparatie in Home Assistant, de probleemsensor van de zone). Ze komt vanzelf terug als haar klep opengaat, met de hand getest na herstel. 0: nooit."
+    "set_aside_description": "Een klep die zoveel keer achter elkaar niet openging, geen water gaf of zijn eigen timer niet kon instellen, wordt opzijgezet: geen programma beregent de zone tot ze weer wordt ingeschakeld, in plaats van elke ochtend te mislukken. Je wordt meteen verwittigd (meldingen van de programma's, een reparatie in Home Assistant, de probleemsensor van de zone). Ze komt vanzelf terug als haar klep opengaat, met de hand getest na herstel. 0: nooit.",
+    "leak_label": "Lekalarm vanaf",
+    "leak_description": "Telt de watermeter van een zone zoveel liter terwijl alle kleppen dicht zijn, dan wordt een lek gemeld: de Lek-sensor van de hub, het event smart_irrigation_leak, een reparatie en de meldingen van de programma's. Alleen voor een meter die enkel de tuin meet: een huismeter telt ook de kranen. 0: niet bewaakt."
   },
   "calculation_log": {
     "title": "Berekeningslog",
@@ -1678,6 +1680,8 @@
       "supply_did_not_turn_on": "de pomp of hoofdklep startte niet",
       "supply_did_not_turn_off": "de pomp of hoofdklep stopte niet",
       "zone_set_aside": "opzijgezet na meerdere mislukte beurten: geen beregening tot ze weer wordt ingeschakeld"
-    }
+    },
+    "title_leak": "Er stroomt water terwijl alle kleppen dicht zijn",
+    "leak_line": "{litres} L geteld met alle kleppen dicht ({zones}). Controleer op een lek of een klep die openstaat."
   }
 }

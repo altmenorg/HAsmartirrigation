@@ -1522,7 +1522,9 @@
     "seconds": "secondi",
     "direct_control_locked": "Il controller completo gestisce le valvole: disattivalo prima per cambiare questo.",
     "set_aside_label": "Mettere da parte una zona dopo questi irrigazioni fallite",
-    "set_aside_description": "Una valvola che non si è aperta, non ha dato acqua o il cui timer non si è potuto impostare per questo numero di volte di fila viene messa da parte: nessun programma irriga la zona finché non viene riattivata, invece di fallire ogni mattina. Vieni avvisato subito (notifiche dei programmi, una riparazione in Home Assistant, il sensore di problema della zona). Torna da sola quando la sua valvola si apre, provata a mano una volta riparata. 0: mai."
+    "set_aside_description": "Una valvola che non si è aperta, non ha dato acqua o il cui timer non si è potuto impostare per questo numero di volte di fila viene messa da parte: nessun programma irriga la zona finché non viene riattivata, invece di fallire ogni mattina. Vieni avvisato subito (notifiche dei programmi, una riparazione in Home Assistant, il sensore di problema della zona). Torna da sola quando la sua valvola si apre, provata a mano una volta riparata. 0: mai.",
+    "leak_label": "Allarme perdita da",
+    "leak_description": "A valvole chiuse, un contatore di zona che conta questi litri segnala una perdita: il sensore Perdita dell'hub, l'evento smart_irrigation_leak, una riparazione e le notifiche dei programmi. Solo per un contatore che misura solo il giardino: un contatore di casa conta anche i rubinetti. 0: non sorvegliato."
   },
   "calculation_log": {
     "title": "Registro del calcolo",
@@ -1678,6 +1680,8 @@
       "supply_did_not_turn_on": "la pompa o valvola principale non si è avviata",
       "supply_did_not_turn_off": "la pompa o valvola principale non si è fermata",
       "zone_set_aside": "messa da parte dopo vari fallimenti: non irrigata finché non viene riattivata"
-    }
+    },
+    "title_leak": "Scorre acqua con tutte le valvole chiuse",
+    "leak_line": "{litres} L contati a valvole chiuse ({zones}). Controlla se c'è una perdita o una valvola rimasta aperta."
   }
 }

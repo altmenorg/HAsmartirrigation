@@ -114,6 +114,9 @@
       "any_problem": {
         "name": "Problem"
       },
+      "leak": {
+        "name": "Leck"
+      },
       "observed_watering": {
         "name": "Beobachtete Bewässerung"
       }
@@ -778,6 +781,10 @@
           }
         }
       }
+    },
+    "leak": {
+      "title": "Wasser fließt bei geschlossenen Ventilen",
+      "description": "Der Zähler **{meter}** hat {litres} L gezählt, während alle Ventile von {zones} geschlossen waren. Eine Leitung könnte lecken oder ein Ventil offen hängen.\n\nDie Meldung verschwindet von selbst, wenn der Zähler eine halbe Stunde stillsteht. Das Ereignis `smart_irrigation_leak` und der Leck-Sensor erlauben einer Automatisierung, ein Hauptventil zu schließen."
     }
   }
 }

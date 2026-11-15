@@ -76,6 +76,8 @@ export class SmartIrrigationConfig {
   pause_between_zones?: number;
   /** Failed runs in a row before a zone is set aside; 0: never. */
   set_aside_after?: number;
+  /** Litres a meter may count with every valve closed; 0: not watched. */
+  leak_alert_litres?: number;
   /** Each zone's failed runs in a row, and since when it is set aside. */
   zone_failures?: Record<
     string,

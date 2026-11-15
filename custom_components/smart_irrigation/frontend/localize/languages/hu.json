@@ -1522,7 +1522,9 @@
     "seconds": "másodperc",
     "direct_control_locked": "A teljes vezérlő vezérli a szelepeket: ennek módosításához előbb kapcsold ki.",
     "set_aside_label": "Zóna félretétele ennyi sikertelen öntözés után",
-    "set_aside_description": "Az a szelep, amely ennyiszer egymás után nem nyílt ki, nem adott vizet, vagy nem lehetett beállítani a saját időzítőjét, félre lesz téve: egyik program sem öntözi a zónát, amíg vissza nem állítják, ahelyett hogy minden reggel hibázna. Azonnal értesítést kapsz (a programok értesítései, javítás a Home Assistantban, a zóna problémaérzékelője). Magától visszatér, ha a szelepe kinyílik, például javítás után kézzel kipróbálva. 0: soha."
+    "set_aside_description": "Az a szelep, amely ennyiszer egymás után nem nyílt ki, nem adott vizet, vagy nem lehetett beállítani a saját időzítőjét, félre lesz téve: egyik program sem öntözi a zónát, amíg vissza nem állítják, ahelyett hogy minden reggel hibázna. Azonnal értesítést kapsz (a programok értesítései, javítás a Home Assistantban, a zóna problémaérzékelője). Magától visszatér, ha a szelepe kinyílik, például javítás után kézzel kipróbálva. 0: soha.",
+    "leak_label": "Szivárgásriasztás ettől",
+    "leak_description": "Ha egy zóna vízórája ennyi litert számol, miközben minden szelep zárva van, szivárgást jelez: a hub Szivárgás érzékelője, a smart_irrigation_leak esemény, egy javítás és a programok értesítései. Csak olyan órához, amely kizárólag a kertet méri: a ház vízórája a csapokat is számolja. 0: nincs figyelve."
   },
   "calculation_log": {
     "title": "Számítási napló",
@@ -1678,6 +1680,8 @@
       "supply_did_not_turn_on": "a szivattyú vagy főszelep nem indult el",
       "supply_did_not_turn_off": "a szivattyú vagy főszelep nem állt le",
       "zone_set_aside": "félretéve több hiba után: nem öntözi, amíg vissza nem állítják"
-    }
+    },
+    "title_leak": "Víz folyik, pedig minden szelep zárva",
+    "leak_line": "{litres} L számolva zárt szelepekkel ({zones}). Ellenőrizd, nincs-e szivárgás vagy nyitva maradt szelep."
   }
 }

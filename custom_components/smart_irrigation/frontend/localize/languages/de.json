@@ -1522,7 +1522,9 @@
     "seconds": "Sekunden",
     "direct_control_locked": "Die volle Steuerung steuert die Ventile: Schalte sie zuerst aus, um das zu ändern.",
     "set_aside_label": "Zone nach so vielen fehlgeschlagenen Läufen zurückstellen",
-    "set_aside_description": "Ein Ventil, das so oft hintereinander nicht geöffnet, kein Wasser gegeben oder seinen eigenen Timer nicht gesetzt bekommen hat, wird zurückgestellt: Kein Programm bewässert die Zone, bis sie wieder aufgenommen wird, statt jeden Morgen zu scheitern. Du wirst sofort informiert (Benachrichtigungen der Programme, Reparatur in Home Assistant, Problemsensor der Zone). Sie kommt von selbst zurück, wenn sich ihr Ventil öffnet, etwa von Hand getestet. 0: nie."
+    "set_aside_description": "Ein Ventil, das so oft hintereinander nicht geöffnet, kein Wasser gegeben oder seinen eigenen Timer nicht gesetzt bekommen hat, wird zurückgestellt: Kein Programm bewässert die Zone, bis sie wieder aufgenommen wird, statt jeden Morgen zu scheitern. Du wirst sofort informiert (Benachrichtigungen der Programme, Reparatur in Home Assistant, Problemsensor der Zone). Sie kommt von selbst zurück, wenn sich ihr Ventil öffnet, etwa von Hand getestet. 0: nie.",
+    "leak_label": "Leckalarm ab",
+    "leak_description": "Zählt der Wasserzähler einer Zone bei geschlossenen Ventilen so viele Liter, wird ein Leck gemeldet: Leck-Sensor am Hub, Ereignis smart_irrigation_leak, eine Reparatur und die Benachrichtigungen der Programme. Nur für einen Zähler, der nur den Garten misst: ein Hauszähler zählt auch die Wasserhähne. 0: nicht überwacht."
   },
   "calculation_log": {
     "title": "Berechnungsprotokoll",
@@ -1678,6 +1680,8 @@
       "supply_did_not_turn_on": "die Pumpe oder das Hauptventil ist nicht angelaufen",
       "supply_did_not_turn_off": "die Pumpe oder das Hauptventil hat nicht gestoppt",
       "zone_set_aside": "nach mehreren Fehlläufen zurückgestellt: wird nicht bewässert, bis sie wieder aufgenommen wird"
-    }
+    },
+    "title_leak": "Wasser fließt bei geschlossenen Ventilen",
+    "leak_line": "{litres} L bei geschlossenen Ventilen gezählt ({zones}). Auf ein Leck oder ein offen gebliebenes Ventil prüfen."
   }
 }

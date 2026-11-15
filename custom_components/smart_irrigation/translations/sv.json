@@ -114,6 +114,9 @@
       "any_problem": {
         "name": "Problem"
       },
+      "leak": {
+        "name": "Läckage"
+      },
       "observed_watering": {
         "name": "Observerad bevattning"
       }
@@ -778,6 +781,10 @@
           }
         }
       }
+    },
+    "leak": {
+      "title": "Vatten rinner med alla ventiler stängda",
+      "description": "Mätaren **{meter}** räknade {litres} L medan alla ventiler i {zones} var stängda. Ett rör kan läcka eller en ventil ha fastnat öppen.\n\nMeddelandet försvinner av sig självt när mätaren stått still en halvtimme. Händelsen `smart_irrigation_leak` och Läckage-sensorn låter en automation stänga en huvudventil."
     }
   }
 }

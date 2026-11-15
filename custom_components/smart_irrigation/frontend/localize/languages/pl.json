@@ -1522,7 +1522,9 @@
     "seconds": "sekund",
     "direct_control_locked": "Pełny kontroler steruje zaworami: najpierw go wyłącz, aby to zmienić.",
     "set_aside_label": "Odłóż strefę po tylu nieudanych podlewaniach",
-    "set_aside_description": "Zawór, który tyle razy z rzędu się nie otworzył, nie dał wody lub nie dało się ustawić jego własnego timera, zostaje odłożony: żaden program nie podlewa strefy, dopóki nie zostanie przywrócona, zamiast zawodzić każdego ranka. Dowiesz się od razu (powiadomienia programów, naprawa w Home Assistant, czujnik problemu strefy). Wraca sama, gdy jej zawór się otworzy, np. sprawdzony ręcznie po naprawie. 0: nigdy."
+    "set_aside_description": "Zawór, który tyle razy z rzędu się nie otworzył, nie dał wody lub nie dało się ustawić jego własnego timera, zostaje odłożony: żaden program nie podlewa strefy, dopóki nie zostanie przywrócona, zamiast zawodzić każdego ranka. Dowiesz się od razu (powiadomienia programów, naprawa w Home Assistant, czujnik problemu strefy). Wraca sama, gdy jej zawór się otworzy, np. sprawdzony ręcznie po naprawie. 0: nigdy.",
+    "leak_label": "Alarm wycieku od",
+    "leak_description": "Gdy licznik strefy naliczy tyle litrów przy zamkniętych zaworach, zgłaszany jest wyciek: czujnik Wyciek huba, zdarzenie smart_irrigation_leak, naprawa i powiadomienia programów. Tylko dla licznika, który mierzy wyłącznie ogród: licznik domowy liczy też krany. 0: bez nadzoru."
   },
   "calculation_log": {
     "title": "Dziennik obliczeń",
@@ -1678,6 +1680,8 @@
       "supply_did_not_turn_on": "pompa lub zawór główny nie ruszyły",
       "supply_did_not_turn_off": "pompa lub zawór główny się nie zatrzymały",
       "zone_set_aside": "odłożona po kilku nieudanych próbach: nie jest podlewana, dopóki nie zostanie przywrócona"
-    }
+    },
+    "title_leak": "Woda płynie przy zamkniętych zaworach",
+    "leak_line": "{litres} l naliczono przy zamkniętych zaworach ({zones}). Sprawdź, czy nie ma wycieku lub otwartego zaworu."
   }
 }

@@ -1522,7 +1522,9 @@
     "seconds": "sekunder",
     "direct_control_locked": "Den fulde styring styrer ventilerne: slå den fra først for at ændre dette.",
     "set_aside_label": "Sæt en zone til side efter så mange mislykkede vandinger",
-    "set_aside_description": "En ventil, der så mange gange i træk ikke åbnede, ikke gav vand eller ikke kunne få sin egen timer sat, sættes til side: intet program vander zonen, før den tages i brug igen, i stedet for at fejle hver morgen. Du får besked med det samme (programmernes notifikationer, en reparation i Home Assistant, zonens problemsensor). Den kommer selv tilbage, når dens ventil ses åbne, prøvet i hånden efter reparation. 0: aldrig."
+    "set_aside_description": "En ventil, der så mange gange i træk ikke åbnede, ikke gav vand eller ikke kunne få sin egen timer sat, sættes til side: intet program vander zonen, før den tages i brug igen, i stedet for at fejle hver morgen. Du får besked med det samme (programmernes notifikationer, en reparation i Home Assistant, zonens problemsensor). Den kommer selv tilbage, når dens ventil ses åbne, prøvet i hånden efter reparation. 0: aldrig.",
+    "leak_label": "Lækagealarm fra",
+    "leak_description": "Tæller en zones vandmåler så mange liter med alle ventiler lukket, meldes en lækage: hubbens Lækage-sensor, hændelsen smart_irrigation_leak, en reparation og programmernes notifikationer. Kun for en måler, der kun måler haven: en husmåler tæller også hanerne. 0: ikke overvåget."
   },
   "calculation_log": {
     "title": "Beregningslog",
@@ -1678,6 +1680,8 @@
       "supply_did_not_turn_on": "pumpen eller hovedventilen startede ikke",
       "supply_did_not_turn_off": "pumpen eller hovedventilen stoppede ikke",
       "zone_set_aside": "sat til side efter flere fejl: vandes ikke, før den tages i brug igen"
-    }
+    },
+    "title_leak": "Der løber vand med alle ventiler lukket",
+    "leak_line": "{litres} L talt med ventilerne lukket ({zones}). Tjek for lækage eller en ventil, der står åben."
   }
 }

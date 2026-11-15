@@ -114,6 +114,9 @@
       "any_problem": {
         "name": "Probléma"
       },
+      "leak": {
+        "name": "Szivárgás"
+      },
       "observed_watering": {
         "name": "Megfigyelt öntözés"
       }
@@ -778,6 +781,10 @@
           }
         }
       }
+    },
+    "leak": {
+      "title": "Víz folyik zárt szelepekkel",
+      "description": "A(z) **{meter}** óra {litres} L-t számolt, miközben {zones} minden szelepe zárva volt. Egy cső szivároghat, vagy egy szelep nyitva ragadt.\n\nA jelzés magától megszűnik, ha az óra fél órán át áll. A `smart_irrigation_leak` esemény és a Szivárgás érzékelő lehetővé teszi, hogy egy automatizálás elzárjon egy főszelepet."
     }
   }
 }

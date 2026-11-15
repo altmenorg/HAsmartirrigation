@@ -114,6 +114,9 @@
       "any_problem": {
         "name": "Problema"
       },
+      "leak": {
+        "name": "Vazamento"
+      },
       "observed_watering": {
         "name": "Rega observada"
       }
@@ -778,6 +781,10 @@
           }
         }
       }
+    },
+    "leak": {
+      "title": "Está correndo água com todas as válvulas fechadas",
+      "description": "O medidor **{meter}** contou {litres} L enquanto todas as válvulas de {zones} estavam fechadas. Pode haver um vazamento ou uma válvula travada aberta.\n\nO alerta some sozinho quando o medidor fica parado por meia hora. O evento `smart_irrigation_leak` e o sensor Vazamento permitem que uma automação feche uma válvula principal."
     }
   }
 }

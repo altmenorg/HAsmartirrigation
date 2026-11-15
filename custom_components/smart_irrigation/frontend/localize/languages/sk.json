@@ -1522,7 +1522,9 @@
     "seconds": "sekúnd",
     "direct_control_locked": "Plný ovládač riadi ventily: ak to chcete zmeniť, najprv ho vypnite.",
     "set_aside_label": "Odložiť zónu po toľkých neúspešných behoch",
-    "set_aside_description": "Ventil, ktorý sa toľkokrát po sebe neotvoril, nedal vodu alebo sa nedal nastaviť jeho vlastný časovač, sa odloží: žiadny program zónu nezavlažuje, kým sa znova nezaradí, namiesto toho, aby každé ráno zlyhal. Dozviete sa to hneď (upozornenia programov, oprava v Home Assistante, senzor problému zóny). Vráti sa sama, keď sa jej ventil otvorí, napríklad pri ručnej skúške po oprave. 0: nikdy."
+    "set_aside_description": "Ventil, ktorý sa toľkokrát po sebe neotvoril, nedal vodu alebo sa nedal nastaviť jeho vlastný časovač, sa odloží: žiadny program zónu nezavlažuje, kým sa znova nezaradí, namiesto toho, aby každé ráno zlyhal. Dozviete sa to hneď (upozornenia programov, oprava v Home Assistante, senzor problému zóny). Vráti sa sama, keď sa jej ventil otvorí, napríklad pri ručnej skúške po oprave. 0: nikdy.",
+    "leak_label": "Upozornenie na únik od",
+    "leak_description": "Ak vodomer zóny napočíta pri zatvorených ventiloch toľko litrov, ohlási sa únik: senzor Únik na hube, udalosť smart_irrigation_leak, oprava a upozornenia programov. Len pre vodomer, ktorý meria iba záhradu: domový vodomer počíta aj kohútiky. 0: nesledované."
   },
   "calculation_log": {
     "title": "Protokol výpočtu",
@@ -1678,6 +1680,8 @@
       "supply_did_not_turn_on": "čerpadlo alebo hlavný ventil sa nespustil",
       "supply_did_not_turn_off": "čerpadlo alebo hlavný ventil sa nezastavil",
       "zone_set_aside": "odložená po niekoľkých neúspechoch: nezavlažuje sa, kým sa znova nezaradí"
-    }
+    },
+    "title_leak": "Voda tečie, hoci sú všetky ventily zatvorené",
+    "leak_line": "{litres} l napočítaných pri zatvorených ventiloch ({zones}). Skontrolujte únik alebo otvorený ventil."
   }
 }

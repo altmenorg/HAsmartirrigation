@@ -114,6 +114,9 @@
       "any_problem": {
         "name": "Problema"
       },
+      "leak": {
+        "name": "Perdita"
+      },
       "observed_watering": {
         "name": "Irrigazione osservata"
       }
@@ -778,6 +781,10 @@
           }
         }
       }
+    },
+    "leak": {
+      "title": "Scorre acqua con tutte le valvole chiuse",
+      "description": "Il contatore **{meter}** ha contato {litres} L mentre tutte le valvole di {zones} erano chiuse. Un tubo potrebbe perdere o una valvola essere bloccata aperta.\n\nL'avviso sparisce da solo quando il contatore resta fermo mezz'ora. L'evento `smart_irrigation_leak` e il sensore Perdita permettono a un'automazione di chiudere una valvola principale."
     }
   }
 }

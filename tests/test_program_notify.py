@@ -280,7 +280,7 @@ async def test_a_target_that_is_gone_is_skipped(caplog):
 
 def test_the_listeners_come_and_go():
     hass = _hass()
-    unsubs = [MagicMock() for _ in range(6)]
+    unsubs = [MagicMock() for _ in range(7)]
     hass.bus.async_listen = MagicMock(side_effect=unsubs)
 
     notifier = program_notify.async_setup_program_notify(hass, MagicMock())

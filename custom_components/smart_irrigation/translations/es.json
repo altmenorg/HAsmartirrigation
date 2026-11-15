@@ -114,6 +114,9 @@
       "any_problem": {
         "name": "Problema"
       },
+      "leak": {
+        "name": "Fuga"
+      },
       "observed_watering": {
         "name": "Riego observado"
       }
@@ -778,6 +781,10 @@
           }
         }
       }
+    },
+    "leak": {
+      "title": "Corre agua con todas las válvulas cerradas",
+      "description": "El contador **{meter}** contó {litres} L mientras todas las válvulas de {zones} estaban cerradas. Puede haber una fuga o una válvula atascada abierta.\n\nEl aviso desaparece solo cuando el contador se queda quieto media hora. El evento `smart_irrigation_leak` y el sensor Fuga permiten a una automatización cerrar una válvula maestra."
     }
   }
 }

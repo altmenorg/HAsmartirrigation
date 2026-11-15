@@ -135,6 +135,9 @@ CONFIG_SAVE_SCHEMA = vol.Schema(
         vol.Optional(const.CONF_SOAK_MINUTES): vol.All(
             vol.Coerce(float), vol.Range(min=0, max=240)
         ),
+        vol.Optional(const.CONF_LEAK_ALERT_LITRES): vol.All(
+            vol.Coerce(float), vol.Range(min=0, max=const.LEAK_ALERT_LITRES_MAX)
+        ),
         vol.Optional(const.CONF_SET_ASIDE_AFTER): vol.All(
             vol.Coerce(int), vol.Range(min=0, max=const.SET_ASIDE_AFTER_MAX)
         ),

@@ -114,6 +114,9 @@
       "any_problem": {
         "name": "Problém"
       },
+      "leak": {
+        "name": "Únik"
+      },
       "observed_watering": {
         "name": "Sledované zavlažovanie"
       }
@@ -778,6 +781,10 @@
           }
         }
       }
+    },
+    "leak": {
+      "title": "Voda tečie pri zatvorených ventiloch",
+      "description": "Vodomer **{meter}** napočítal {litres} l, kým boli všetky ventily {zones} zatvorené. Môže unikať potrubie alebo zostal otvorený ventil.\n\nUpozornenie zmizne samo, keď vodomer pol hodiny stojí. Udalosť `smart_irrigation_leak` a senzor Únik umožnia automatizácii zavrieť hlavný ventil."
     }
   }
 }

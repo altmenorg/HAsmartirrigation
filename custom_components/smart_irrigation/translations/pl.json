@@ -114,6 +114,9 @@
       "any_problem": {
         "name": "Problem"
       },
+      "leak": {
+        "name": "Wyciek"
+      },
       "observed_watering": {
         "name": "Obserwowane podlewanie"
       }
@@ -778,6 +781,10 @@
           }
         }
       }
+    },
+    "leak": {
+      "title": "Woda płynie przy zamkniętych zaworach",
+      "description": "Licznik **{meter}** naliczył {litres} l, gdy wszystkie zawory {zones} były zamknięte. Rura może przeciekać albo zawór utknął otwarty.\n\nAlarm znika sam, gdy licznik stoi przez pół godziny. Zdarzenie `smart_irrigation_leak` i czujnik Wyciek pozwalają automatyzacji zamknąć zawór główny."
     }
   }
 }

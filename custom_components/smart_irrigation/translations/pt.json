@@ -114,6 +114,9 @@
       "any_problem": {
         "name": "Problema"
       },
+      "leak": {
+        "name": "Fuga"
+      },
       "observed_watering": {
         "name": "Rega observada"
       }
@@ -778,6 +781,10 @@
           }
         }
       }
+    },
+    "leak": {
+      "title": "Corre água com todas as válvulas fechadas",
+      "description": "O contador **{meter}** contou {litres} L enquanto todas as válvulas de {zones} estavam fechadas. Pode haver uma fuga ou uma válvula presa aberta.\n\nO alerta desaparece sozinho quando o contador fica parado meia hora. O evento `smart_irrigation_leak` e o sensor Fuga permitem a uma automação fechar uma válvula principal."
     }
   }
 }

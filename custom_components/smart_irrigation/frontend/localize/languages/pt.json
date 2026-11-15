@@ -1522,7 +1522,9 @@
     "seconds": "segundos",
     "direct_control_locked": "O controlador completo comanda as válvulas: desative-o primeiro para alterar isto.",
     "set_aside_label": "Pôr uma zona de parte após este número de regas falhadas",
-    "set_aside_description": "Uma válvula que não abriu, não deu água ou cujo temporizador não pôde ser definido este número de vezes seguidas é posta de parte: nenhum programa rega a zona até ser reativada, em vez de falhar todas as manhãs. É avisado de imediato (notificações dos programas, uma reparação no Home Assistant, o sensor de problema da zona). Volta sozinha quando a sua válvula é vista a abrir, testada à mão depois de reparada. 0: nunca."
+    "set_aside_description": "Uma válvula que não abriu, não deu água ou cujo temporizador não pôde ser definido este número de vezes seguidas é posta de parte: nenhum programa rega a zona até ser reativada, em vez de falhar todas as manhãs. É avisado de imediato (notificações dos programas, uma reparação no Home Assistant, o sensor de problema da zona). Volta sozinha quando a sua válvula é vista a abrir, testada à mão depois de reparada. 0: nunca.",
+    "leak_label": "Alerta de fuga a partir de",
+    "leak_description": "Com todas as válvulas fechadas, um contador de zona que conte estes litros dá alerta de fuga: o sensor Fuga do hub, o evento smart_irrigation_leak, uma reparação e as notificações dos programas. Só para um contador que mede apenas o jardim: um contador da casa também conta as torneiras. 0: não vigiado."
   },
   "calculation_log": {
     "title": "Registo de cálculo",
@@ -1678,6 +1680,8 @@
       "supply_did_not_turn_on": "a bomba ou válvula principal não arrancou",
       "supply_did_not_turn_off": "a bomba ou válvula principal não parou",
       "zone_set_aside": "posta de parte após várias falhas: não é regada até ser reativada"
-    }
+    },
+    "title_leak": "Corre água com todas as válvulas fechadas",
+    "leak_line": "{litres} L contados com as válvulas fechadas ({zones}). Verifique se há uma fuga ou uma válvula aberta."
   }
 }

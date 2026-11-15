@@ -114,6 +114,9 @@
       "any_problem": {
         "name": "Problème"
       },
+      "leak": {
+        "name": "Fuite"
+      },
       "observed_watering": {
         "name": "Arrosage observé"
       }
@@ -778,6 +781,10 @@
           }
         }
       }
+    },
+    "leak": {
+      "title": "De l'eau coule, toutes les vannes fermées",
+      "description": "Le compteur **{meter}** a compté {litres} L alors que toutes les vannes de {zones} étaient fermées. Un tuyau fuit peut-être, ou une vanne est restée ouverte.\n\nL'alerte disparaît d'elle-même quand le compteur ne bouge plus pendant une demi-heure. L'événement `smart_irrigation_leak` et le capteur Fuite permettent à une automatisation de fermer une vanne maîtresse."
     }
   }
 }

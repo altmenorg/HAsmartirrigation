@@ -114,6 +114,9 @@
       "any_problem": {
         "name": "Težava"
       },
+      "leak": {
+        "name": "Puščanje"
+      },
       "observed_watering": {
         "name": "Opazovano zalivanje"
       }
@@ -778,6 +781,10 @@
           }
         }
       }
+    },
+    "leak": {
+      "title": "Voda teče ob zaprtih ventilih",
+      "description": "Vodomer **{meter}** je naštel {litres} L, ko so bili vsi ventili {zones} zaprti. Morda pušča cev ali se je ventil zataknil odprt.\n\nOpozorilo izgine samo, ko vodomer pol ure miruje. Dogodek `smart_irrigation_leak` in senzor Puščanje omogočata avtomatizaciji, da zapre glavni ventil."
     }
   }
 }

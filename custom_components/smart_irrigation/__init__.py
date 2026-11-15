@@ -78,6 +78,7 @@ from .helpers import (
     relative_to_absolute_pressure,
 )
 from .hourly_et import solar_elevation_sin
+from .leak_watch import LeakWatchMixin
 from .live_estimate import LiveEstimateMixin
 from .liveness import WeatherLivenessMixin
 from .llm_api import async_sync_llm_api
@@ -450,6 +451,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # A zone whose valve keeps failing, set aside when asked (set_aside.py).
     coordinator.async_setup_set_aside()
     entry.async_on_unload(coordinator.async_teardown_set_aside)
+    # The meters between the runs (leak_watch.py), set up with the observer.
+    entry.async_on_unload(coordinator.async_teardown_leak_watch)
     return True
 
 
@@ -547,6 +550,7 @@ def wind_at_two_metres(speed, height_m):
 
 class SmartIrrigationCoordinator(
     EngineBindingMixin,
+    LeakWatchMixin,
     ObservedWateringMixin,
     FlowCalibrationMixin,
     LiveEstimateMixin,

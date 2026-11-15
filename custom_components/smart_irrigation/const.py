@@ -190,6 +190,11 @@ SET_ASIDE_AFTER_MAX = 10
 # Each zone's failed runs in a row, and since when it is set aside:
 # {"3": {"count": 2, "reason": "no_flow", "set_aside": iso}}.
 CONF_ZONE_FAILURES = "zone_failures"
+# Litres a meter may count with every valve closed before a leak is told;
+# 0: not watched (leak_watch.py).
+CONF_LEAK_ALERT_LITRES = "leak_alert_litres"
+CONF_DEFAULT_LEAK_ALERT_LITRES = 0
+LEAK_ALERT_LITRES_MAX = 1000
 # What the last import of an Irrigation Unlimited configuration created, so that
 # the next one updates it: {"zones": {"c1_z2": 7}, "programs": [...], "supplies":
 # [...], "source": "yaml", "at": iso}. See iu_import_ha.py.
@@ -996,6 +1001,8 @@ EVENT_IRRIGATE_FINISHED = "irrigation_finished"
 # Fired (as smart_irrigation_zone_problem) when a direct-control valve fails to
 # open, so users can wire a notification automation.
 EVENT_ZONE_PROBLEM = "zone_problem"
+# Water counted by a zone's meter with every valve closed (leak_watch.py).
+EVENT_LEAK = "leak"
 # A supply (pump or main valve) that did not do what it was told.
 EVENT_SUPPLY_PROBLEM = "supply_problem"
 # Every switch of a valve or a supply by the full controller.

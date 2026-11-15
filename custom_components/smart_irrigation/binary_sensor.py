@@ -13,6 +13,7 @@ For the whole install (on the hub device), one entity to automate or show
 instead of one per zone:
 - any_zone_needs_water: on while a zone's irrigation_needed is on.
 - any_problem: on while a zone's problem is on.
+- leak: on while a zone's meter counts water with every valve closed.
 - observed_watering: on while observed watering is turned on, for an
   automation shared between installs to know whether it must reset the
   water balance itself (discussion #1012).
@@ -92,8 +93,64 @@ async def async_setup_entry(
                 hass, "any_problem", "problem", "mdi:alert-circle-outline"
             ),
             SmartIrrigationObservedWateringBinarySensor(hass),
+            SmartIrrigationLeakBinarySensor(hass),
         ]
     )
+
+
+class SmartIrrigationLeakBinarySensor(BinarySensorEntity):
+    """On while a zone's meter counts water with every valve closed.
+
+    On the hub device, for an automation that closes a main valve or a
+    dashboard. Watched only when the option is set (leak_watch.py).
+    """
+
+    _attr_has_entity_name = True
+    _attr_should_poll = False
+    _attr_translation_key = "leak"
+    _attr_device_class = BinarySensorDeviceClass.MOISTURE
+    _attr_icon = "mdi:pipe-leak"
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        self._hass = hass
+        self.entity_id = f"{BINARY_PLATFORM}.{const.DOMAIN}_leak"
+        self._attr_is_on = False
+        self._meters: dict = {}
+
+    @property
+    def unique_id(self) -> str:
+        return f"{const.DOMAIN}_leak"
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        return cast(DeviceInfo, hub_device_info(self._hass))
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        """The meters counting, and how many litres since the valves closed."""
+        return {"meters": self._meters}
+
+    @callback
+    def _recompute(self) -> None:
+        coordinator = (self._hass.data.get(const.DOMAIN) or {}).get("coordinator")
+        leaking = getattr(coordinator, "leaking_meters", None)
+        meters = leaking() if callable(leaking) else {}
+        self._meters = {k: round(v, 1) for k, v in meters.items()}
+        self._attr_is_on = bool(meters)
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        self._recompute()
+        self.async_on_remove(
+            async_dispatcher_connect(
+                self._hass, const.DOMAIN + "_leak_changed", self._async_refresh
+            )
+        )
+
+    @callback
+    def _async_refresh(self) -> None:
+        self._recompute()
+        self.async_write_ha_state()
 
 
 class SmartIrrigationObservedWateringBinarySensor(BinarySensorEntity):

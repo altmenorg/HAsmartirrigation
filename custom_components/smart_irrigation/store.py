@@ -60,6 +60,7 @@ from .const import (
     CONF_DEFAULT_IRRIGATION_ENABLED,
     CONF_DEFAULT_IRRIGATION_START_TRIGGERS,
     CONF_DEFAULT_IRRIGATION_THRESHOLD,
+    CONF_DEFAULT_LEAK_ALERT_LITRES,
     CONF_DEFAULT_MAXIMUM_BUCKET,
     CONF_DEFAULT_MAXIMUM_DURATION,
     CONF_DEFAULT_OBSERVED_WATERING_ENABLED,
@@ -100,6 +101,7 @@ from .const import (
     CONF_IRRIGATION_START_TRIGGERS,
     CONF_IU_IMPORT,
     CONF_LAST_ZONE_ID,
+    CONF_LEAK_ALERT_LITRES,
     CONF_MANUAL_COORDINATES_ENABLED,
     CONF_MANUAL_ELEVATION,
     CONF_MANUAL_LATITUDE,
@@ -784,6 +786,7 @@ class Config:
     suspensions = attr.ib(type=dict, default=None)
     set_aside_after = attr.ib(type=int, default=CONF_DEFAULT_SET_ASIDE_AFTER)
     zone_failures = attr.ib(type=dict, default=None)
+    leak_alert_litres = attr.ib(type=float, default=CONF_DEFAULT_LEAK_ALERT_LITRES)
     # What the last Irrigation Unlimited import created (iu_import_ha.py).
     iu_import = attr.ib(type=dict, default=None)
     # Direct valve control as it was before the full controller forced it on.
@@ -1321,6 +1324,9 @@ class SmartIrrigationStorage:
                     CONF_SET_ASIDE_AFTER, CONF_DEFAULT_SET_ASIDE_AFTER
                 ),
                 zone_failures=data["config"].get(CONF_ZONE_FAILURES),
+                leak_alert_litres=data["config"].get(
+                    CONF_LEAK_ALERT_LITRES, CONF_DEFAULT_LEAK_ALERT_LITRES
+                ),
                 iu_import=data["config"].get(CONF_IU_IMPORT),
                 direct_valve_control_before_full_controller=data["config"].get(
                     CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER
