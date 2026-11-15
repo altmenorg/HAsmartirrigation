@@ -20,7 +20,7 @@ The weather service, the location, how often the weather is read and the checks 
 The first card, **Smart Irrigation**, has one list, **What Smart Irrigation does**:
 
 * **Calculate and water**: Smart Irrigation waters, with the [full controller](usage-full-controller.md): programs, schedules, pumps, and a **Watering** tab;
-* **Calculate only**, the choice of a new installation: Smart Irrigation works out the water balances and durations and fires its start event at the [start trigger](#when-does-it-run-the-active-start-trigger), and an automation of your own, Irrigation Unlimited or your controller does the watering with those durations. Smart Irrigation opens no valve. A watering by hand can still be credited with [observed watering](configuration-closed-loop.md);
+* **Calculate only**, the choice of a new installation: Smart Irrigation works out the water balances and durations and fires its start event at the [start trigger](#start-triggers), and an automation of your own, Irrigation Unlimited or your controller does the watering with those durations. Smart Irrigation opens no valve. A watering by hand can still be credited with [observed watering](configuration-closed-loop.md);
 * **Stop everything**, described below.
 
 Leaving **Calculate and water** stops what Smart Irrigation is watering at once.
