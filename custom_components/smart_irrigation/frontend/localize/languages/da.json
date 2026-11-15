@@ -1293,7 +1293,7 @@
     "title": "Programmer",
     "description": "Et program vander sine trin et efter et. Et trin er én zone, eller flere der vandes samtidig, og varer som standard den tid, Smart Irrigation har beregnet til det. Flere programmer kører aldrig samtidig: det næste venter på sin tur.",
     "main_description": "Vander hver zone, én efter én eller samtidig som angivet nedenfor. Det startes af startudløseren, eller af sine egne tidsplaner, så snart én er aktiveret.",
-    "run_options": "Startindstillinger",
+    "run_options": "Indstillinger for denne start",
     "adjust_empty": "Angiv en procentdel eller sekunder for at justere varighederne.",
     "more_options": "Flere indstillinger",
     "more_options_set": "med flere regler",
@@ -1337,6 +1337,7 @@
     "moment_time": "Et tidspunkt på dagen",
     "moment_sunrise": "Solopgang",
     "moment_sunset": "Solnedgang",
+    "moment_azimuth": "Når solen når et azimut",
     "schedule_time": "Tidspunkt",
     "schedule_offset": "Før (-) eller efter (+) solen",
     "schedule_anchor": "Dette tidspunkt er, når programmet",
@@ -1435,8 +1436,10 @@
     "main_steps_hint": "Hovedprogrammet vander alle zoner. For kun at vande nogle af dem, eller i din egen rækkefølge, skal du tilføje et under Andre programmer nedenfor.",
     "summary_start_sunrise": "starter ved solopgang",
     "summary_start_sunset": "starter ved solnedgang",
+    "summary_start_azimuth": "starter, når solen står i {deg}°",
     "summary_end_sunrise": "færdig ved solopgang",
     "summary_end_sunset": "færdig ved solnedgang",
+    "summary_end_azimuth": "færdig, når solen står i {deg}°",
     "last_word": "sidste",
     "conditions_none": "Ingen betingelse er slået til: regn, frost og vind indstilles under Vejr, Spring over efter vejret, og dagene siden sidste vanding under Indstillinger, Generelt.",
     "cond_postponed": "Udsæt-knapperne på startsiden",
@@ -1481,7 +1484,9 @@
     "notify_when_start_and_finish": "Ved start og slut på hver vanding",
     "notify_when_finish": "Ved slut på hver vanding",
     "notify_when_problems": "Kun når noget går galt",
-    "notify_none": "Home Assistant har endnu intet notifikationsmål: tilføj mobilappen eller en notify-integration."
+    "notify_none": "Home Assistant har endnu intet notifikationsmål: tilføj mobilappen eller en notify-integration.",
+    "schedule_azimuth": "Solens azimut",
+    "schedule_azimuth_help": "Grader med uret fra nord: 90 øst, 180 syd, 270 vest. Til et bed, som skyggen fra en mur eller et træ forlader i det øjeblik."
   },
   "supplies": {
     "title": "Pumper og hovedventiler",

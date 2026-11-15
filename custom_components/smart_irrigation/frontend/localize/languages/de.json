@@ -1293,7 +1293,7 @@
     "title": "Programme",
     "description": "Ein Programm bewässert seine Schritte nacheinander. Ein Schritt ist eine Zone oder mehrere, die zusammen bewässert werden, und dauert standardmäßig so lange, wie Smart Irrigation es für ihn berechnet hat. Mehrere Programme laufen nie gleichzeitig: Das nächste wartet, bis es an der Reihe ist.",
     "main_description": "Bewässert jede Zone, nacheinander oder gemeinsam, wie unten eingestellt. Es wird vom Startauslöser gestartet, oder von seinen eigenen Zeitplänen, sobald einer aktiviert ist.",
-    "run_options": "Startoptionen",
+    "run_options": "Optionen für diesen Start",
     "adjust_empty": "Gib einen Prozentsatz oder Sekunden ein, um die Dauern anzupassen.",
     "more_options": "Weitere Optionen",
     "more_options_set": "mit weiteren Regeln",
@@ -1337,6 +1337,7 @@
     "moment_time": "Eine Uhrzeit",
     "moment_sunrise": "Sonnenaufgang",
     "moment_sunset": "Sonnenuntergang",
+    "moment_azimuth": "Wenn die Sonne einen Azimut erreicht",
     "schedule_time": "Uhrzeit",
     "schedule_offset": "Vor (-) oder nach (+) der Sonne",
     "schedule_anchor": "Dieser Zeitpunkt ist, wann das Programm",
@@ -1435,8 +1436,10 @@
     "main_steps_hint": "Das Hauptprogramm bewässert alle Zonen. Für nur einige davon oder eine eigene Reihenfolge füge unten unter „Weitere Programme“ eines hinzu.",
     "summary_start_sunrise": "startet bei Sonnenaufgang",
     "summary_start_sunset": "startet bei Sonnenuntergang",
+    "summary_start_azimuth": "startet, wenn die Sonne bei {deg}° steht",
     "summary_end_sunrise": "fertig bei Sonnenaufgang",
     "summary_end_sunset": "fertig bei Sonnenuntergang",
+    "summary_end_azimuth": "fertig, wenn die Sonne bei {deg}° steht",
     "last_word": "letzter",
     "conditions_none": "Keine Bedingung ist eingeschaltet: Regen, Frost und Wind stellst du unter Wetter, Aussetzen bei Wetter ein, die Tage seit der letzten Bewässerung unter Einstellungen, Allgemein.",
     "cond_postponed": "die Aufschieben-Tasten der Startseite",
@@ -1481,7 +1484,9 @@
     "notify_when_start_and_finish": "Zu Beginn und am Ende jeder Bewässerung",
     "notify_when_finish": "Am Ende jeder Bewässerung",
     "notify_when_problems": "Nur wenn etwas schiefgeht",
-    "notify_none": "Home Assistant hat noch kein Benachrichtigungsziel: füge die Mobile App oder eine Notify-Integration hinzu."
+    "notify_none": "Home Assistant hat noch kein Benachrichtigungsziel: füge die Mobile App oder eine Notify-Integration hinzu.",
+    "schedule_azimuth": "Azimut der Sonne",
+    "schedule_azimuth_help": "Grad im Uhrzeigersinn ab Norden: 90 Ost, 180 Süd, 270 West. Für ein Beet, das der Schatten einer Mauer oder eines Baums in diesem Moment verlässt."
   },
   "supplies": {
     "title": "Pumpen und Hauptventile",

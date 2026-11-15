@@ -1293,7 +1293,7 @@
     "title": "Programok",
     "description": "Egy program egymás után öntözi a lépéseit. Egy lépés egy zóna, vagy több együtt öntözött zóna, és alapértelmezés szerint annyi ideig tart, amennyit a Smart Irrigation kiszámolt hozzá. Több program sosem fut egyszerre: a következő megvárja a sorát.",
     "main_description": "Minden zónát öntöz, egymás után vagy együtt, ahogy lejjebb be van állítva. Az indítási kiváltó indítja, vagy a saját ütemezései, amint egy be van kapcsolva.",
-    "run_options": "Indítási beállítások",
+    "run_options": "Ennek az indításnak a beállításai",
     "adjust_empty": "Adj meg százalékot vagy másodperceket az időtartamok módosításához.",
     "more_options": "További beállítások",
     "more_options_set": "további szabályokkal",
@@ -1337,6 +1337,7 @@
     "moment_time": "Egy napszak",
     "moment_sunrise": "Napkelte",
     "moment_sunset": "Napnyugta",
+    "moment_azimuth": "Amikor a nap elér egy azimutot",
     "schedule_time": "Idő",
     "schedule_offset": "A nap előtt (-) vagy után (+)",
     "schedule_anchor": "Ez az időpont az, amikor a program",
@@ -1435,8 +1436,10 @@
     "main_steps_hint": "A főprogram minden zónát öntöz. Ha csak néhányat szeretnél öntözni, vagy a saját sorrendedben, adj hozzá egyet lent a További programok alatt.",
     "summary_start_sunrise": "napkeltekor indul",
     "summary_start_sunset": "napnyugtakor indul",
+    "summary_start_azimuth": "indul, amikor a nap {deg}°-on áll",
     "summary_end_sunrise": "napkeltére kész",
     "summary_end_sunset": "napnyugtára kész",
+    "summary_end_azimuth": "kész, amikor a nap {deg}°-on áll",
     "last_word": "utolsó",
     "conditions_none": "Egyik feltétel sincs bekapcsolva: az eső, a fagy és a szél az Időjárás, Kihagyás időjárás miatt részben, az utolsó öntözés óta eltelt napok a Beállítások, Általános részben állíthatók.",
     "cond_postponed": "a kezdőlap Halasztás gombjai",
@@ -1481,7 +1484,9 @@
     "notify_when_start_and_finish": "Minden öntözés elején és végén",
     "notify_when_finish": "Minden öntözés végén",
     "notify_when_problems": "Csak ha valami elromlik",
-    "notify_none": "A Home Assistantban még nincs értesítési cél: add hozzá a mobilalkalmazást vagy egy notify integrációt."
+    "notify_none": "A Home Assistantban még nincs értesítési cél: add hozzá a mobilalkalmazást vagy egy notify integrációt.",
+    "schedule_azimuth": "A nap azimutja",
+    "schedule_azimuth_help": "Fok az óramutató járásával északtól: 90 kelet, 180 dél, 270 nyugat. Olyan ágyáshoz, amelyről egy fal vagy fa árnyéka abban a pillanatban lehúzódik."
   },
   "supplies": {
     "title": "Szivattyúk és főszelepek",

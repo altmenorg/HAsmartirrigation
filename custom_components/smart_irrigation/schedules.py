@@ -55,7 +55,9 @@ PARITY_ANY = "any"
 PARITY_EVEN = "even"
 PARITY_ODD = "odd"
 PARITIES = (PARITY_ANY, PARITY_EVEN, PARITY_ODD)
-SUN_EVENTS = ("sunrise", "sunset")
+# "azimuth": the moment the sun reaches the schedule's bearing that day.
+SUN_EVENTS = ("sunrise", "sunset", "azimuth")
+DEFAULT_AZIMUTH = 180.0
 
 MAX_OFFSET_MINUTES = 12 * 60
 MAX_EVERY_N_DAYS = 60
@@ -216,6 +218,14 @@ def normalize_schedule(
         const.SCHEDULE_UNTIL: _month_day(schedule.get(const.SCHEDULE_UNTIL)),
         const.SCHEDULE_WEATHER: schedule.get(const.SCHEDULE_WEATHER) is not False,
     }
+    if stored[const.SCHEDULE_EVENT] == "azimuth":
+        try:
+            bearing = float(schedule.get(const.SCHEDULE_AZIMUTH, DEFAULT_AZIMUTH))
+        except (TypeError, ValueError):
+            bearing = DEFAULT_AZIMUTH
+        if bearing != bearing or bearing in (float("inf"), float("-inf")):
+            bearing = DEFAULT_AZIMUTH
+        stored[const.SCHEDULE_AZIMUTH] = round(bearing % 360.0, 1)
     # Stored only when set, so that a schedule that uses neither stays as it was.
     days_of_month = _days_of_month(schedule.get(const.SCHEDULE_DAYS_OF_MONTH))
     if days_of_month:
@@ -319,6 +329,9 @@ def target_on(schedule: dict, day: date, sun, tz) -> datetime | None:
     """
     if schedule.get(const.SCHEDULE_TYPE) == SCHEDULE_TYPE_SUN:
         event = schedule.get(const.SCHEDULE_EVENT) or "sunrise"
+        if event == "azimuth":
+            # The sun's bearing is a sun event of its own, asked as such.
+            event = f"azimuth:{schedule.get(const.SCHEDULE_AZIMUTH, DEFAULT_AZIMUTH)}"
         moment = sun(event, day)
         if moment is None:
             return _polar_target(schedule, event, day, sun, tz)

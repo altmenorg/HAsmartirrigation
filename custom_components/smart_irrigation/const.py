@@ -266,6 +266,9 @@ SCHEDULE_ENABLED = "enabled"
 SCHEDULE_TYPE = "type"
 SCHEDULE_TIME = "time"
 SCHEDULE_EVENT = "event"
+# With the event "azimuth": the sun's bearing, in degrees clockwise from north,
+# at which the schedule starts (or ends).
+SCHEDULE_AZIMUTH = "azimuth"
 SCHEDULE_OFFSET_MINUTES = "offset_minutes"
 SCHEDULE_ANCHOR = "anchor"
 SCHEDULE_WEEKDAYS = "weekdays"

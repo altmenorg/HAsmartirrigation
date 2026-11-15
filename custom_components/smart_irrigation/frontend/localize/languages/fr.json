@@ -1293,7 +1293,7 @@
     "title": "Programmes",
     "description": "Un programme arrose ses étapes l'une après l'autre. Une étape est une zone, ou plusieurs arrosées en même temps, et prend par défaut la durée calculée par Smart Irrigation. Deux programmes ne tournent jamais en même temps : le suivant attend son tour.",
     "main_description": "Arrose toutes les zones, l'une après l'autre ou ensemble comme réglé plus bas. Il est lancé par le déclencheur de départ, ou par ses propres horaires dès qu'un est activé.",
-    "run_options": "Options de lancement",
+    "run_options": "Options de ce lancement",
     "adjust_empty": "Indique un pourcentage ou des secondes pour ajuster les durées.",
     "more_options": "Plus d'options",
     "more_options_set": "avec d'autres règles",
@@ -1337,6 +1337,7 @@
     "moment_time": "Une heure",
     "moment_sunrise": "Le lever du soleil",
     "moment_sunset": "Le coucher du soleil",
+    "moment_azimuth": "Quand le soleil atteint un azimut",
     "schedule_time": "Heure",
     "schedule_offset": "Avant (-) ou après (+) le soleil",
     "schedule_anchor": "Ce moment est celui où le programme",
@@ -1435,8 +1436,10 @@
     "main_steps_hint": "Le programme principal arrose toutes les zones. Pour n'en arroser que certaines, ou dans ton propre ordre, ajoute-en un sous Autres programmes ci-dessous.",
     "summary_start_sunrise": "démarre au lever du soleil",
     "summary_start_sunset": "démarre au coucher du soleil",
+    "summary_start_azimuth": "démarre quand le soleil est à {deg}°",
     "summary_end_sunrise": "fini au lever du soleil",
     "summary_end_sunset": "fini au coucher du soleil",
+    "summary_end_azimuth": "fini quand le soleil est à {deg}°",
     "last_word": "dernier",
     "conditions_none": "Aucune condition n'est activée : la pluie, le gel et le vent se règlent dans Météo, Sauter selon la météo, et les jours depuis le dernier arrosage dans Réglages, Général.",
     "cond_postponed": "les boutons Reporter de l'accueil",
@@ -1481,7 +1484,9 @@
     "notify_when_start_and_finish": "Au début et à la fin de chaque arrosage",
     "notify_when_finish": "Juste à la fin de chaque arrosage",
     "notify_when_problems": "Uniquement en cas de souci",
-    "notify_none": "Home Assistant n'a pas encore de cible de notification : ajoutez l'application mobile ou une intégration de notification."
+    "notify_none": "Home Assistant n'a pas encore de cible de notification : ajoutez l'application mobile ou une intégration de notification.",
+    "schedule_azimuth": "Azimut du soleil",
+    "schedule_azimuth_help": "Degrés depuis le nord dans le sens horaire : 90 est, 180 sud, 270 ouest. Pour un massif que l'ombre d'un mur ou d'un arbre quitte à ce moment-là."
   },
   "supplies": {
     "title": "Pompes et vannes générales",

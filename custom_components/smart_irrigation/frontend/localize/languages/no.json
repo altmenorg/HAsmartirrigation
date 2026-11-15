@@ -1293,7 +1293,7 @@
     "title": "Programmer",
     "description": "Et program vanner trinnene sine etter hverandre. Et trinn er én sone, eller flere som vannes samtidig, og varer som standard så lenge som Smart Irrigation har beregnet for det. Flere programmer kjører aldri samtidig: det neste venter på tur.",
     "main_description": "Vanner alle sonene, én etter én eller samtidig slik det er satt nedenfor. Det startes av starttriggeren, eller av sine egne tidsplaner så snart én er aktivert.",
-    "run_options": "Startvalg",
+    "run_options": "Valg for denne starten",
     "adjust_empty": "Skriv inn en prosent eller sekunder for å justere varighetene.",
     "more_options": "Flere valg",
     "more_options_set": "med flere regler",
@@ -1337,6 +1337,7 @@
     "moment_time": "Et tidspunkt på dagen",
     "moment_sunrise": "Soloppgang",
     "moment_sunset": "Solnedgang",
+    "moment_azimuth": "Når solen når et asimut",
     "schedule_time": "Tid",
     "schedule_offset": "Før (-) eller etter (+) solen",
     "schedule_anchor": "Dette tidspunktet er når programmet",
@@ -1435,8 +1436,10 @@
     "main_steps_hint": "Hovedprogrammet vanner alle soner. For å vanne bare noen av dem, eller i din egen rekkefølge, legg til et under Andre programmer nedenfor.",
     "summary_start_sunrise": "starter ved soloppgang",
     "summary_start_sunset": "starter ved solnedgang",
+    "summary_start_azimuth": "starter når solen står i {deg}°",
     "summary_end_sunrise": "ferdig ved soloppgang",
     "summary_end_sunset": "ferdig ved solnedgang",
+    "summary_end_azimuth": "ferdig når solen står i {deg}°",
     "last_word": "siste",
     "conditions_none": "Ingen betingelse er slått på: regn, frost og vind stilles inn i Vær, Hopp over etter været, og dagene siden siste vanning i Innstillinger, Generelt.",
     "cond_postponed": "Utsett-knappene på startsiden",
@@ -1481,7 +1484,9 @@
     "notify_when_start_and_finish": "Ved start og slutt på hver vanning",
     "notify_when_finish": "Ved slutt på hver vanning",
     "notify_when_problems": "Bare når noe går galt",
-    "notify_none": "Home Assistant har ingen varslingsmottaker ennå: legg til mobilappen eller en notify-integrasjon."
+    "notify_none": "Home Assistant har ingen varslingsmottaker ennå: legg til mobilappen eller en notify-integrasjon.",
+    "schedule_azimuth": "Solens asimut",
+    "schedule_azimuth_help": "Grader med klokken fra nord: 90 øst, 180 sør, 270 vest. For et bed som skyggen av en mur eller et tre forlater i det øyeblikket."
   },
   "supplies": {
     "title": "Pumper og hovedventiler",

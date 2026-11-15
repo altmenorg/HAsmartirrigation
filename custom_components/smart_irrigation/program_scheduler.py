@@ -31,8 +31,10 @@ a day, and the same holds on the zones the run is about to water.
 """
 
 import asyncio
+import datetime
 import logging
 from functools import partial
+from typing import Any
 
 import homeassistant.util.dt as dt_util
 from homeassistant.core import callback
@@ -40,6 +42,7 @@ from homeassistant.helpers.event import async_track_point_in_utc_time
 from homeassistant.helpers.sun import get_astral_event_date
 
 from . import const
+from .helpers import find_next_solar_azimuth_time
 from .master_switch import watering_off
 from .programs import (
     drop_below_deficit,
@@ -56,6 +59,10 @@ _LOGGER = logging.getLogger(__name__)
 class ProgramSchedulerMixin:
     """Arm the schedules of the programs and start them when they come due."""
 
+    # Given by the coordinator that inherits this mixin.
+    hass: Any
+    store: Any
+
     def _program_timers(self) -> dict:
         timers = getattr(self, "_program_schedule_timers", None)
         if timers is None:
@@ -69,8 +76,30 @@ class ProgramSchedulerMixin:
         self._program_timers().clear()
 
     def _sun_moment(self, event: str, day):
-        """Sunrise or sunset on a local date, or None."""
+        """Sunrise, sunset or a bearing of the sun on a local date, or None.
+
+        ``azimuth:<degrees>``: the moment that day the sun reaches that bearing,
+        from the same place the calculation uses.
+        """
+        if event.startswith("azimuth:"):
+            return self._azimuth_moment(float(event.partition(":")[2]), day)
         return get_astral_event_date(self.hass, event, day)
+
+    def _azimuth_moment(self, bearing: float, day):
+        tz = dt_util.get_default_time_zone()
+        start = datetime.datetime.combine(day, datetime.time(0, 0), tzinfo=tz)
+        latitude = getattr(self, "_effective_latitude", None)
+        if latitude is None:
+            latitude = self.hass.config.latitude
+        longitude = getattr(self, "_effective_longitude", None)
+        if longitude is None:
+            longitude = self.hass.config.longitude
+        found = find_next_solar_azimuth_time(
+            float(latitude), float(longitude), bearing, start, max_days=1
+        )
+        if found is None or found.astimezone(tz).date() != day:
+            return None
+        return found
 
     async def register_program_schedules(self) -> None:
         """Arm the next occurrence of every schedule, cancelling what was armed."""

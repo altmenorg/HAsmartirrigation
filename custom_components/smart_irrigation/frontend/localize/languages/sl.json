@@ -1293,7 +1293,7 @@
     "title": "Programi",
     "description": "Program zaliva svoje korake drug za drugim. Korak je ena cona ali več con, ki se zalivajo skupaj, in privzeto traja toliko, kot je zanj izračunal Smart Irrigation. Več programov nikoli ne teče hkrati: naslednji počaka na vrsto.",
     "main_description": "Zaliva vse cone, eno za drugo ali skupaj, kot je nastavljeno spodaj. Zažene ga sprožilec zagona ali njegovi lastni urniki, takoj ko je en vklopljen.",
-    "run_options": "Možnosti zagona",
+    "run_options": "Možnosti tega zagona",
     "adjust_empty": "Vnesi odstotek ali sekunde, da prilagodiš trajanja.",
     "more_options": "Več možnosti",
     "more_options_set": "z dodatnimi pravili",
@@ -1337,6 +1337,7 @@
     "moment_time": "Ura dneva",
     "moment_sunrise": "Sončni vzhod",
     "moment_sunset": "Sončni zahod",
+    "moment_azimuth": "Ko sonce doseže azimut",
     "schedule_time": "Ura",
     "schedule_offset": "Pred (-) ali po (+) soncu",
     "schedule_anchor": "Ta trenutek je, ko program",
@@ -1435,8 +1436,10 @@
     "main_steps_hint": "Glavni program zaliva vse cone. Če želiš zalivati samo nekatere ali v svojem vrstnem redu, dodaj program spodaj pod Drugi programi.",
     "summary_start_sunrise": "začne ob sončnem vzhodu",
     "summary_start_sunset": "začne ob sončnem zahodu",
+    "summary_start_azimuth": "začne, ko je sonce na {deg}°",
     "summary_end_sunrise": "končano ob sončnem vzhodu",
     "summary_end_sunset": "končano ob sončnem zahodu",
+    "summary_end_azimuth": "končano, ko je sonce na {deg}°",
     "last_word": "zadnji",
     "conditions_none": "Noben pogoj ni vklopljen: dež, zmrzal in veter se nastavijo v Vreme, Preskok zaradi vremena, dnevi od zadnjega zalivanja pa v Nastavitve, Splošno.",
     "cond_postponed": "gumbi Odloži na začetni strani",
@@ -1481,7 +1484,9 @@
     "notify_when_start_and_finish": "Na začetku in koncu vsakega zalivanja",
     "notify_when_finish": "Na koncu vsakega zalivanja",
     "notify_when_problems": "Samo ko gre kaj narobe",
-    "notify_none": "Home Assistant še nima cilja obvestil: dodajte mobilno aplikacijo ali integracijo notify."
+    "notify_none": "Home Assistant še nima cilja obvestil: dodajte mobilno aplikacijo ali integracijo notify.",
+    "schedule_azimuth": "Azimut sonca",
+    "schedule_azimuth_help": "Stopinje v smeri urinega kazalca od severa: 90 vzhod, 180 jug, 270 zahod. Za gredo, ki jo senca zidu ali drevesa v tistem trenutku zapusti."
   },
   "supplies": {
     "title": "Črpalke in glavni ventili",

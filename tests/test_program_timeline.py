@@ -253,3 +253,61 @@ def test_main_settings_are_read_and_bounded():
         const.CONF_PAUSE_BETWEEN_ZONES: 0.0,
     }
     assert main_settings({"sequencing": "sideways", "passes": "two"}) == {}
+
+
+# --- a schedule at a bearing of the sun
+
+
+def test_an_azimuth_schedule_keeps_its_bearing():
+    from custom_components.smart_irrigation.schedules import normalize_schedule
+
+    stored = normalize_schedule(
+        {"type": "sun", "event": "azimuth", "azimuth": 450}, set()
+    )
+    assert stored["event"] == "azimuth"
+    assert stored["azimuth"] == 90.0
+    plain = normalize_schedule({"type": "sun", "event": "sunrise"}, set())
+    assert "azimuth" not in plain
+
+
+def test_an_azimuth_schedule_asks_the_sun_for_its_bearing():
+    from datetime import UTC, date, datetime
+    from zoneinfo import ZoneInfo
+
+    from custom_components.smart_irrigation.schedules import target_on
+
+    asked = []
+
+    def sun(event, day):
+        asked.append(event)
+        return datetime(2026, 6, 1, 10, 0, tzinfo=UTC)
+
+    moment = target_on(
+        {"type": "sun", "event": "azimuth", "azimuth": 135.0, "offset_minutes": 5},
+        date(2026, 6, 1),
+        sun,
+        ZoneInfo("Europe/Paris"),
+    )
+    assert asked == ["azimuth:135.0"]
+    assert moment == datetime(2026, 6, 1, 10, 5, tzinfo=UTC)
+
+
+def test_the_bearing_is_found_on_the_day():
+    from datetime import date
+    from types import SimpleNamespace
+
+    from custom_components.smart_irrigation.program_scheduler import (
+        ProgramSchedulerMixin,
+    )
+
+    host = SimpleNamespace(
+        _effective_latitude=48.85,
+        _effective_longitude=2.35,
+        hass=SimpleNamespace(config=SimpleNamespace(latitude=0, longitude=0)),
+    )
+    found = ProgramSchedulerMixin._azimuth_moment(host, 180.0, date(2026, 6, 21))
+    assert found is not None
+    # Solar noon in Paris, in UTC: a little before noon.
+    from datetime import UTC
+
+    assert 11 <= found.astimezone(UTC).hour <= 12

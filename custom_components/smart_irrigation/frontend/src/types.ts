@@ -190,7 +190,9 @@ export interface SmartIrrigationSchedule {
   enabled: boolean;
   type: "time" | "sun";
   time: string;
-  event: "sunrise" | "sunset";
+  event: "sunrise" | "sunset" | "azimuth";
+  /** With the event azimuth: the sun's bearing, degrees from north. */
+  azimuth?: number;
   offset_minutes: number;
   /** Whether the moment is when the program starts or when it must be done. */
   anchor: "start" | "end";

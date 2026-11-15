@@ -1293,7 +1293,7 @@
     "title": "程式",
     "description": "程式會依序為其步驟澆水。一個步驟可以是一個區域，或同時澆水的多個區域，預設採用 Smart Irrigation 為其計算出的時間長度。多個程式不會同時執行：下一個會等待輪到它。",
     "main_description": "為每個區域澆水，依下方的設定依序或同時進行。它由啟動觸發條件啟動，或在啟用其自己的排程後由排程啟動。",
-    "run_options": "執行選項",
+    "run_options": "本次執行的選項",
     "adjust_empty": "請輸入百分比或秒數以調整時間長度。",
     "more_options": "更多選項",
     "more_options_set": "含更多規則",
@@ -1337,6 +1337,7 @@
     "moment_time": "一天中的某個時間",
     "moment_sunrise": "日出",
     "moment_sunset": "日落",
+    "moment_azimuth": "太陽到達某個方位角時",
     "schedule_time": "時間",
     "schedule_offset": "在太陽之前（-）或之後（+）",
     "schedule_anchor": "該時間點是程式",
@@ -1435,8 +1436,10 @@
     "main_steps_hint": "主程式會為每個區域澆水。若只想澆其中一些區域，或要自訂順序，請在下方的「其他程式」中新增一個。",
     "summary_start_sunrise": "於日出時開始",
     "summary_start_sunset": "於日落時開始",
+    "summary_start_azimuth": "太陽位於 {deg}° 時開始",
     "summary_end_sunrise": "在日出前完成",
     "summary_end_sunset": "在日落前完成",
+    "summary_end_azimuth": "太陽位於 {deg}° 時完成",
     "last_word": "最後",
     "conditions_none": "沒有開啟任何條件：降雨、結冰與風請在「氣象」、「依氣象略過」中設定，距上次澆水的天數則在「設定」、「一般」中設定。",
     "cond_postponed": "首頁的「延後」按鈕",
@@ -1481,7 +1484,9 @@
     "notify_when_start_and_finish": "每次澆水開始和結束時",
     "notify_when_finish": "每次澆水結束時",
     "notify_when_problems": "僅在發生問題時",
-    "notify_none": "Home Assistant 還沒有通知目標：請新增行動應用程式或通知整合。"
+    "notify_none": "Home Assistant 還沒有通知目標：請新增行動應用程式或通知整合。",
+    "schedule_azimuth": "太陽方位角",
+    "schedule_azimuth_help": "從正北順時針計的度數：90 為東，180 為南，270 為西。適用於牆或樹的陰影在那一刻離開的花圃。"
   },
   "supplies": {
     "title": "水泵與主閥",

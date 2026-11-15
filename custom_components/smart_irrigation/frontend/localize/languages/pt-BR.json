@@ -1293,7 +1293,7 @@
     "title": "Programas",
     "description": "Um programa irriga suas etapas uma após a outra. Uma etapa é uma zona, ou várias irrigadas juntas, e por padrão dura o tempo que o Smart Irrigation calculou para ela. Vários programas nunca rodam ao mesmo tempo: o próximo espera a sua vez.",
     "main_description": "Irriga todas as zonas, uma após a outra ou juntas, como definido mais abaixo. É iniciado pelo gatilho de início, ou pelos próprios agendamentos assim que um é ativado.",
-    "run_options": "Opções de início",
+    "run_options": "Opções desta execução",
     "adjust_empty": "Informe uma porcentagem ou segundos para ajustar as durações.",
     "more_options": "Mais opções",
     "more_options_set": "com mais regras",
@@ -1337,6 +1337,7 @@
     "moment_time": "Um horário do dia",
     "moment_sunrise": "Nascer do sol",
     "moment_sunset": "Pôr do sol",
+    "moment_azimuth": "Quando o sol atinge um azimute",
     "schedule_time": "Horário",
     "schedule_offset": "Antes (-) ou depois (+) do sol",
     "schedule_anchor": "Esse momento é quando o programa",
@@ -1435,8 +1436,10 @@
     "main_steps_hint": "O programa principal irriga todas as zonas. Para irrigar só algumas, ou na ordem que você quiser, adicione um em Outros programas, abaixo.",
     "summary_start_sunrise": "começa ao nascer do sol",
     "summary_start_sunset": "começa ao pôr do sol",
+    "summary_start_azimuth": "começa quando o sol está a {deg}°",
     "summary_end_sunrise": "concluído ao nascer do sol",
     "summary_end_sunset": "concluído ao pôr do sol",
+    "summary_end_azimuth": "termina quando o sol está a {deg}°",
     "last_word": "último",
     "conditions_none": "Nenhuma condição está ativada: a chuva, a geada e o vento são definidos em Clima, Pular por causa do clima, e os dias desde a última irrigação em Configurações, Geral.",
     "cond_postponed": "os botões Adiar da página inicial",
@@ -1481,7 +1484,9 @@
     "notify_when_start_and_finish": "No início e no fim de cada rega",
     "notify_when_finish": "No fim de cada rega",
     "notify_when_problems": "Só se algo der errado",
-    "notify_none": "O Home Assistant ainda não tem destino de notificação: adicione o app móvel ou uma integração de notificações."
+    "notify_none": "O Home Assistant ainda não tem destino de notificação: adicione o app móvel ou uma integração de notificações.",
+    "schedule_azimuth": "Azimute do sol",
+    "schedule_azimuth_help": "Graus no sentido horário a partir do norte: 90 leste, 180 sul, 270 oeste. Para um canteiro que a sombra de um muro ou de uma árvore deixa nesse momento."
   },
   "supplies": {
     "title": "Bombas e válvulas principais",

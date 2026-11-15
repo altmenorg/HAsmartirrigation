@@ -1293,7 +1293,7 @@
     "title": "Programma's",
     "description": "Een programma bewatert zijn stappen na elkaar. Een stap is één zone, of meerdere zones die samen worden bewaterd, en duurt standaard zo lang als Smart Irrigation ervoor berekende. Meerdere programma's draaien nooit tegelijk: het volgende wacht op zijn beurt.",
     "main_description": "Bewatert alle zones, na elkaar of samen zoals hieronder ingesteld. Het wordt gestart door de starttrigger, of door zijn eigen schema's zodra er één is ingeschakeld.",
-    "run_options": "Startopties",
+    "run_options": "Opties voor deze start",
     "adjust_empty": "Vul een percentage of seconden in om de duur aan te passen.",
     "more_options": "Meer opties",
     "more_options_set": "met meer regels",
@@ -1337,6 +1337,7 @@
     "moment_time": "Een tijdstip van de dag",
     "moment_sunrise": "Zonsopgang",
     "moment_sunset": "Zonsondergang",
+    "moment_azimuth": "Als de zon een azimut bereikt",
     "schedule_time": "Tijd",
     "schedule_offset": "Voor (-) of na (+) de zon",
     "schedule_anchor": "Dat moment is wanneer het programma",
@@ -1435,8 +1436,10 @@
     "main_steps_hint": "Het hoofdprogramma bewatert elke zone. Om er maar enkele te bewateren, of in je eigen volgorde, voeg je er hieronder een toe onder Andere programma's.",
     "summary_start_sunrise": "begint bij zonsopgang",
     "summary_start_sunset": "begint bij zonsondergang",
+    "summary_start_azimuth": "start als de zon op {deg}° staat",
     "summary_end_sunrise": "klaar bij zonsopgang",
     "summary_end_sunset": "klaar bij zonsondergang",
+    "summary_end_azimuth": "klaar als de zon op {deg}° staat",
     "last_word": "laatste",
     "conditions_none": "Er is geen voorwaarde ingeschakeld: de regen, vorst en wind worden ingesteld in Weer, Overslaan op basis van het weer, en de dagen sinds de laatste bewatering in Instellingen, Algemeen.",
     "cond_postponed": "de Uitstellen-knoppen van de startpagina",
@@ -1481,7 +1484,9 @@
     "notify_when_start_and_finish": "Bij het begin en einde van elke beregening",
     "notify_when_finish": "Aan het einde van elke beregening",
     "notify_when_problems": "Alleen als er iets misgaat",
-    "notify_none": "Home Assistant heeft nog geen meldingsdoel: voeg de mobiele app of een notify-integratie toe."
+    "notify_none": "Home Assistant heeft nog geen meldingsdoel: voeg de mobiele app of een notify-integratie toe.",
+    "schedule_azimuth": "Azimut van de zon",
+    "schedule_azimuth_help": "Graden met de klok mee vanaf het noorden: 90 oost, 180 zuid, 270 west. Voor een perk dat de schaduw van een muur of boom op dat moment verlaat."
   },
   "supplies": {
     "title": "Pompen en hoofdventielen",

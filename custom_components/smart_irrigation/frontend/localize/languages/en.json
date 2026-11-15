@@ -1293,7 +1293,7 @@
     "title": "Programs",
     "description": "A program waters its steps one after the other. A step is one zone, or several watered together, and by default takes the duration Smart Irrigation calculated for it. Several programs never run at the same time: the next one waits its turn.",
     "main_description": "Waters every zone, one after the other or together as set below. It is started by the start trigger, or by its own schedules once one is enabled.",
-    "run_options": "Run options",
+    "run_options": "Options for this run",
     "adjust_empty": "Enter a percentage or seconds to adjust the durations.",
     "more_options": "More options",
     "more_options_set": "with more rules",
@@ -1337,6 +1337,7 @@
     "moment_time": "A time of day",
     "moment_sunrise": "Sunrise",
     "moment_sunset": "Sunset",
+    "moment_azimuth": "When the sun reaches a bearing",
     "schedule_time": "Time",
     "schedule_offset": "Before (-) or after (+) the sun",
     "schedule_anchor": "That moment is when the program",
@@ -1435,8 +1436,10 @@
     "main_steps_hint": "The main program waters every zone. To water only some of them, or in an order of your own, add one under Other programs below.",
     "summary_start_sunrise": "starts at sunrise",
     "summary_start_sunset": "starts at sunset",
+    "summary_start_azimuth": "starts when the sun is at {deg}°",
     "summary_end_sunrise": "done by sunrise",
     "summary_end_sunset": "done by sunset",
+    "summary_end_azimuth": "done when the sun is at {deg}°",
     "last_word": "last",
     "conditions_none": "No condition is turned on: the rain, frost and wind are set under Weather, Skip on weather, and the days since the last watering under Settings, General.",
     "cond_postponed": "the Postpone buttons of the Home page",
@@ -1481,7 +1484,9 @@
     "notify_when_start_and_finish": "At the start and at the end of each watering",
     "notify_when_finish": "At the end of each watering",
     "notify_when_problems": "Only when something goes wrong",
-    "notify_none": "Home Assistant has no notification target yet: add the mobile app or a notify integration."
+    "notify_none": "Home Assistant has no notification target yet: add the mobile app or a notify integration.",
+    "schedule_azimuth": "Sun's bearing",
+    "schedule_azimuth_help": "Degrees clockwise from north: 90 east, 180 south, 270 west. For a bed that the shade of a wall or a tree leaves at that moment."
   },
   "supplies": {
     "title": "Pumps and main valves",

@@ -1420,9 +1420,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         </div>
       `;
     };
-    const runHead = (program: SmartIrrigationProgram) => {
+    // ``extra``: an action of the program shown beside Run now (Edit in YAML).
+    const runHead = (
+      program: SmartIrrigationProgram,
+      extra: TemplateResult | string = "",
+    ) => {
       const runs = ["running", "waiting"].includes(stateOf(program.id)?.state);
-      if (!programCanRun(program) && !runs) return suspendedLine(program);
       return html`
         ${suspendedLine(program)}
         <div class="si-actions plain">
@@ -1437,6 +1440,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 true,
               )
             : ""}
+          ${extra}
         </div>
         ${programCanRun(program) ? runOptions(program.id) : ""}
       `;
@@ -1597,9 +1601,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // "starts at sunrise", not "starts at Sunrise": the sun takes its own
       // phrase in each language.
       const moment =
-        schedule.type === "sun"
-          ? `${t(`summary_${anchor}_${schedule.event === "sunset" ? "sunset" : "sunrise"}`)}${offset}`
-          : `${t(anchor === "end" ? "anchor_end_short" : "anchor_start_short")} ${schedule.time}`;
+        schedule.type === "sun" && schedule.event === "azimuth"
+          ? `${t(`summary_${anchor}_azimuth`).replace("{deg}", String(schedule.azimuth ?? 180))}${offset}`
+          : schedule.type === "sun"
+            ? `${t(`summary_${anchor}_${schedule.event === "sunset" ? "sunset" : "sunrise"}`)}${offset}`
+            : `${t(anchor === "end" ? "anchor_end_short" : "anchor_start_short")} ${schedule.time}`;
       const days =
         (schedule.weekdays || []).length > 0
           ? schedule.weekdays.map((d) => weekdayName(d)).join(", ")
@@ -1781,25 +1787,23 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       `;
     };
     const yamlButton = (program: SmartIrrigationProgram) =>
-      html`<div class="si-actions plain">
-        ${this._actionBtn(mdiCodeBraces, t("yaml_edit"), () =>
-          openYaml(
-            program.id ?? "",
-            programToYaml(
-              program,
-              this.zones,
-              program.main
-                ? {
-                    sequencing: this.config?.zone_sequencing ?? "sequential",
-                    passes: this.config?.watering_passes ?? 1,
-                    soak_minutes: this.config?.soak_minutes ?? 15,
-                    pause_between_zones: this.config?.pause_between_zones ?? 0,
-                  }
-                : undefined,
-            ),
+      html`${this._actionBtn(mdiCodeBraces, t("yaml_edit"), () =>
+        openYaml(
+          program.id ?? "",
+          programToYaml(
+            program,
+            this.zones,
+            program.main
+              ? {
+                  sequencing: this.config?.zone_sequencing ?? "sequential",
+                  passes: this.config?.watering_passes ?? 1,
+                  soak_minutes: this.config?.soak_minutes ?? 15,
+                  pause_between_zones: this.config?.pause_between_zones ?? 0,
+                }
+              : undefined,
           ),
-        )}
-      </div>`;
+        ),
+      )} `;
 
     const renderStep = (
       program: SmartIrrigationProgram,
@@ -2120,16 +2124,43 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               >
                 ${t("moment_sunset")}
               </option>
+              <option
+                value="azimuth"
+                ?selected=${schedule.type === "sun" &&
+                schedule.event === "azimuth"}
+              >
+                ${t("moment_azimuth")}
+              </option>
             `,
             (e: Event) => {
               const value = (e.target as HTMLSelectElement).value;
               patchSchedule(
                 value === "time"
                   ? { type: "time" }
-                  : { type: "sun", event: value as "sunrise" | "sunset" },
+                  : {
+                      type: "sun",
+                      event: value as "sunrise" | "sunset" | "azimuth",
+                      ...(value === "azimuth"
+                        ? { azimuth: schedule.azimuth ?? 180 }
+                        : {}),
+                    },
               );
             },
           )}
+          ${schedule.type === "sun" && schedule.event === "azimuth"
+            ? html`${this._numRow(
+                  t("schedule_azimuth"),
+                  "°",
+                  schedule.azimuth ?? 180,
+                  (v) =>
+                    patchSchedule({
+                      azimuth: ((num(v, 180) % 360) + 360) % 360,
+                    }),
+                )}
+                <div class="setting-hint row-hint">
+                  ${t("schedule_azimuth_help")}
+                </div>`
+            : ""}
           ${schedule.type === "time"
             ? this._timeRow(t("schedule_time"), schedule.time, (v) =>
                 patchSchedule({ time: v }),
@@ -2622,10 +2653,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             <div class="setting-note">
               ${t("main_description")} ${t("main_steps_hint")}
             </div>
-            ${runHead(program)}
+            ${runHead(
+              program,
+              yamlOpen(program.id ?? "") ? "" : yamlButton(program),
+            )}
             ${yamlOpen(program.id ?? "")
               ? yamlBlock(program.id ?? "", index)
-              : html`${yamlButton(program)} ${preview(program, null)}
+              : html`${preview(program, null)}
                   <div class="setting-row">
                     <div class="setting-label">${t("program_enabled")}</div>
                     <ha-switch
@@ -2687,7 +2721,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       ? html`${runHead(program)}
                         ${yamlBlock(program.id ?? "", index)}`
                       : html`
-                          ${runHead(program)} ${yamlButton(program)}
+                          ${runHead(program, yamlButton(program))}
                           ${this._textRow(t("name"), "", program.name, (v) =>
                             patch(index, { name: v }),
                           )}

@@ -1293,7 +1293,7 @@
     "title": "Program",
     "description": "Programmet kör ett steg i taget. I varje steg bevattnas en zon eller flera zoner samtidigt, normalt under den tid som Smart Irrigation har beräknat. Bara ett program körs åt gången. Övriga väntar på sin tur.",
     "main_description": "Bevattnar alla zoner, en i taget eller samtidigt enligt inställningarna nedan. Startutlösaren startar programmet tills du aktiverar ett eget schema för det.",
-    "run_options": "Startalternativ",
+    "run_options": "Alternativ för den här starten",
     "adjust_empty": "Ange en procentsats eller sekunder för att justera tiderna.",
     "more_options": "Fler alternativ",
     "more_options_set": "med fler regler",
@@ -1337,6 +1337,7 @@
     "moment_time": "En tid på dygnet",
     "moment_sunrise": "Soluppgång",
     "moment_sunset": "Solnedgång",
+    "moment_azimuth": "När solen når en azimut",
     "schedule_time": "Tid",
     "schedule_offset": "Före (-) eller efter (+) soluppgången eller solnedgången",
     "schedule_anchor": "Vid den angivna tidpunkten ska programmet",
@@ -1435,8 +1436,10 @@
     "main_steps_hint": "Huvudprogrammet vattnar alla zoner. Om du bara vill vattna några av dem, eller i en egen ordning, lägger du till ett under Andra program nedan.",
     "summary_start_sunrise": "startar vid soluppgång",
     "summary_start_sunset": "startar vid solnedgång",
+    "summary_start_azimuth": "startar när solen står i {deg}°",
     "summary_end_sunrise": "klart vid soluppgång",
     "summary_end_sunset": "klart vid solnedgång",
+    "summary_end_azimuth": "klar när solen står i {deg}°",
     "last_word": "sista",
     "conditions_none": "Inget villkor är aktiverat. Regn, frost och vind ställs in under Väder → Vädervillkor för bevattning. Intervallet mellan bevattningarna anges under Inställningar → Allmänt.",
     "cond_postponed": "knapparna ”Skjut upp” på startsidan",
@@ -1481,7 +1484,9 @@
     "notify_when_start_and_finish": "I början och slutet av varje bevattning",
     "notify_when_finish": "I slutet av varje bevattning",
     "notify_when_problems": "Bara när något går fel",
-    "notify_none": "Home Assistant har inget aviseringsmål än: lägg till mobilappen eller en notify-integration."
+    "notify_none": "Home Assistant har inget aviseringsmål än: lägg till mobilappen eller en notify-integration.",
+    "schedule_azimuth": "Solens azimut",
+    "schedule_azimuth_help": "Grader medurs från norr: 90 öst, 180 syd, 270 väst. För en rabatt som skuggan från en mur eller ett träd lämnar i det ögonblicket."
   },
   "supplies": {
     "title": "Pumpar och huvudventiler",

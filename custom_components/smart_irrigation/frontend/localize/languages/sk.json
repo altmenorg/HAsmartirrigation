@@ -1293,7 +1293,7 @@
     "title": "Programy",
     "description": "Program zalieva svoje kroky jeden za druhým. Krok je jedna zóna alebo viac zón zavlažovaných spolu a štandardne má trvanie, ktoré preňho vypočítala Smart Irrigation. Viac programov nikdy nebeží naraz: ďalší čaká na rad.",
     "main_description": "Zalieva všetky zóny, jednu po druhej alebo spolu podľa nastavenia nižšie. Spúšťa ho spúšťač štartu, alebo jeho vlastné rozvrhy, hneď ako je jeden zapnutý.",
-    "run_options": "Možnosti spustenia",
+    "run_options": "Voľby tohto spustenia",
     "adjust_empty": "Zadajte percento alebo sekundy na úpravu trvaní.",
     "more_options": "Ďalšie možnosti",
     "more_options_set": "s ďalšími pravidlami",
@@ -1337,6 +1337,7 @@
     "moment_time": "Denný čas",
     "moment_sunrise": "Východ slnka",
     "moment_sunset": "Západ slnka",
+    "moment_azimuth": "Keď slnko dosiahne azimut",
     "schedule_time": "Čas",
     "schedule_offset": "Pred (-) alebo po (+) slnku",
     "schedule_anchor": "Tento okamih je, keď program",
@@ -1435,8 +1436,10 @@
     "main_steps_hint": "Hlavný program zalieva všetky zóny. Ak chcete zalievať len niektoré, alebo vo vlastnom poradí, pridajte program nižšie v časti Ďalšie programy.",
     "summary_start_sunrise": "začína pri východe slnka",
     "summary_start_sunset": "začína pri západe slnka",
+    "summary_start_azimuth": "začne, keď je slnko na {deg}°",
     "summary_end_sunrise": "hotové pri východe slnka",
     "summary_end_sunset": "hotové pri západe slnka",
+    "summary_end_azimuth": "hotovo, keď je slnko na {deg}°",
     "last_word": "posledný",
     "conditions_none": "Žiadna podmienka nie je zapnutá: dážď, mráz a vietor sa nastavujú v Počasie, Vynechanie podľa počasia a dni od posledného zalievania v Nastavenia, Všeobecné.",
     "cond_postponed": "tlačidlá Odložiť na úvodnej stránke",
@@ -1481,7 +1484,9 @@
     "notify_when_start_and_finish": "Na začiatku a na konci každého zavlažovania",
     "notify_when_finish": "Na konci každého zavlažovania",
     "notify_when_problems": "Len keď sa niečo pokazí",
-    "notify_none": "Home Assistant zatiaľ nemá cieľ upozornení: pridajte mobilnú aplikáciu alebo integráciu notify."
+    "notify_none": "Home Assistant zatiaľ nemá cieľ upozornení: pridajte mobilnú aplikáciu alebo integráciu notify.",
+    "schedule_azimuth": "Azimut slnka",
+    "schedule_azimuth_help": "Stupne v smere hodín od severu: 90 východ, 180 juh, 270 západ. Pre záhon, z ktorého v tej chvíli odchádza tieň múru alebo stromu."
   },
   "supplies": {
     "title": "Čerpadlá a hlavné ventily",

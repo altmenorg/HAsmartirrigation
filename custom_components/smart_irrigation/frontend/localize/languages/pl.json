@@ -1293,7 +1293,7 @@
     "title": "Programy",
     "description": "Program podlewa swoje kroki jeden po drugim. Krok to jedna strefa lub kilka podlewanych razem i domyślnie trwa tyle, ile Smart Irrigation dla niego obliczył. Kilka programów nigdy nie działa jednocześnie: następny czeka na swoją kolej.",
     "main_description": "Podlewa wszystkie strefy, jedną po drugiej albo razem, jak ustawiono niżej. Uruchamia go wyzwalacz startu albo jego własne harmonogramy, gdy tylko jeden jest włączony.",
-    "run_options": "Opcje uruchomienia",
+    "run_options": "Opcje tego uruchomienia",
     "adjust_empty": "Podaj procent lub sekundy, aby dostosować czasy.",
     "more_options": "Więcej opcji",
     "more_options_set": "z dodatkowymi regułami",
@@ -1337,6 +1337,7 @@
     "moment_time": "Pora dnia",
     "moment_sunrise": "Wschód słońca",
     "moment_sunset": "Zachód słońca",
+    "moment_azimuth": "Gdy słońce osiągnie azymut",
     "schedule_time": "Godzina",
     "schedule_offset": "Przed (-) lub po (+) słońcu",
     "schedule_anchor": "Ten moment to chwila, w której program",
@@ -1435,8 +1436,10 @@
     "main_steps_hint": "Program główny podlewa wszystkie strefy. Aby podlewać tylko niektóre z nich albo we własnej kolejności, dodaj program poniżej w sekcji Inne programy.",
     "summary_start_sunrise": "start o wschodzie słońca",
     "summary_start_sunset": "start o zachodzie słońca",
+    "summary_start_azimuth": "startuje, gdy słońce jest na {deg}°",
     "summary_end_sunrise": "gotowe o wschodzie słońca",
     "summary_end_sunset": "gotowe o zachodzie słońca",
+    "summary_end_azimuth": "gotowe, gdy słońce jest na {deg}°",
     "last_word": "ostatni",
     "conditions_none": "Żaden warunek nie jest włączony: deszcz, przymrozek i wiatr ustawia się w Pogoda, Pomijanie z powodu pogody, a dni od ostatniego podlewania w Ustawienia, Ogólne.",
     "cond_postponed": "przyciski Odrocz na stronie głównej",
@@ -1481,7 +1484,9 @@
     "notify_when_start_and_finish": "Na początku i na końcu każdego podlewania",
     "notify_when_finish": "Na końcu każdego podlewania",
     "notify_when_problems": "Tylko gdy coś pójdzie nie tak",
-    "notify_none": "Home Assistant nie ma jeszcze celu powiadomień: dodaj aplikację mobilną lub integrację notify."
+    "notify_none": "Home Assistant nie ma jeszcze celu powiadomień: dodaj aplikację mobilną lub integrację notify.",
+    "schedule_azimuth": "Azymut słońca",
+    "schedule_azimuth_help": "Stopnie zgodnie z ruchem wskazówek zegara od północy: 90 wschód, 180 południe, 270 zachód. Dla grządki, z której cień muru lub drzewa schodzi w tej chwili."
   },
   "supplies": {
     "title": "Pompy i zawory główne",
