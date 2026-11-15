@@ -90,6 +90,7 @@ from .program_scheduler import ProgramSchedulerMixin
 from .programs import ensure_main_program, normalize_programs
 from .scheduler import RecurringScheduleManager, SeasonalAdjustmentManager
 from .service_handlers import ServiceHandlersMixin
+from .set_aside import SetAsideMixin
 from .skip_conditions import SkipConditionsMixin, thresholds_for_storage
 from .store import DATA_REGISTRY, SmartIrrigationStorage, async_get_registry
 from .supplies import normalize_supplies
@@ -446,6 +447,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     )
     # Full controller: the programs that name someone to tell (program_notify.py).
     entry.async_on_unload(async_setup_program_notify(hass, coordinator).stop)
+    # A zone whose valve keeps failing, set aside when asked (set_aside.py).
+    coordinator.async_setup_set_aside()
+    entry.async_on_unload(coordinator.async_teardown_set_aside)
     return True
 
 
@@ -553,6 +557,7 @@ class SmartIrrigationCoordinator(
     ProgramSchedulerMixin,
     SkipConditionsMixin,
     ServiceHandlersMixin,
+    SetAsideMixin,
     TriggersMixin,
     WateringCalendarMixin,
     CalculationMixin,

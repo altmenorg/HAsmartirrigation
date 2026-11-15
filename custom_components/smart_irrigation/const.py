@@ -179,6 +179,13 @@ ATTR_RESET = "reset"
 # What is suspended until when: {"zone:3": iso, "program:evening": iso}. Kept apart
 # from the zones and the programs, which the panel sends back whole.
 CONF_SUSPENSIONS = "suspensions"
+# Failed runs in a row before a zone is set aside (set_aside.py); 0: never.
+CONF_SET_ASIDE_AFTER = "set_aside_after"
+CONF_DEFAULT_SET_ASIDE_AFTER = 0
+SET_ASIDE_AFTER_MAX = 10
+# Each zone's failed runs in a row, and since when it is set aside:
+# {"3": {"count": 2, "reason": "no_flow", "set_aside": iso}}.
+CONF_ZONE_FAILURES = "zone_failures"
 # What the last import of an Irrigation Unlimited configuration created, so that
 # the next one updates it: {"zones": {"c1_z2": 7}, "programs": [...], "supplies":
 # [...], "source": "yaml", "at": iso}. See iu_import_ha.py.

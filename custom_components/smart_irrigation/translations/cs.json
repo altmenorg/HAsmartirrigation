@@ -767,6 +767,17 @@
     "deprecated_recurring_schedule": {
       "title": "Opakované rozvrhy končí: {action}",
       "description": "Automatizace, skript nebo dashboard zavolal **{action}**. Opakované rozvrhy stále fungují, ale od verze {version} budou odstraněny, v zimě, mimo zavlažovací sezónu.\n\nRozvrhy programů dělají totéž a jsou v panelu: nastavte je v sekci **Zavlažování**, pak odstraňte opakované rozvrhy a volání {action}."
+    },
+    "zone_set_aside": {
+      "title": "Zóna {zone} je odložena",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Znovu zařadit zónu {zone}",
+            "description": "Ventil zóny **{zone}** selhal {count}krát za sebou (neotevřel se, nedal vodu, nebo nešel nastavit jeho časovač), proto ji Smart Irrigation přestal zavlažovat.\n\nZkontrolujte ventil, napájení nebo baterie a přívod vody. Zóna se vrátí sama, když se její ventil otevře, například při ruční zkoušce. Nebo ji zařaďte hned.\n\nSmart Irrigation bude zónu {zone} znovu zavlažovat od příštího běhu a neúspěchy začne počítat od nuly."
+          }
+        }
+      }
     }
   }
 }

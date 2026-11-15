@@ -767,6 +767,17 @@
     "deprecated_recurring_schedule": {
       "title": "Las programaciones recurrentes van a desaparecer: {action}",
       "description": "Una automatización, un script o un panel ha llamado a **{action}**. Las programaciones recurrentes todavía funcionan, pero se eliminarán a partir de la versión {version}, en invierno, fuera de la temporada de riego.\n\nLos horarios de los programas hacen lo mismo y están en el panel: configúralos en **Riego**, y luego elimina las programaciones recurrentes y las llamadas a {action}."
+    },
+    "zone_set_aside": {
+      "title": "La zona {zone} está apartada",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Reactivar la zona {zone}",
+            "description": "La válvula de la zona **{zone}** falló {count} veces seguidas (no se abrió, no dio agua o no se pudo ajustar su temporizador), así que Smart Irrigation dejó de regarla.\n\nRevisa la válvula, su alimentación o pilas y la llegada de agua. La zona vuelve sola cuando se ve abrirse su válvula, por ejemplo al probarla a mano. O reactívala ahora.\n\nSmart Irrigation volverá a regar la zona {zone} desde su próximo riego y contará sus fallos desde cero."
+          }
+        }
+      }
     }
   }
 }

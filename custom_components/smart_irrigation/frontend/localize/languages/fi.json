@@ -821,7 +821,9 @@
         "no-valve": "Ei liitettyä venttiiliä, joten tätä aluetta ei kastella.",
         "no-valve-action": "Liitä venttiili",
         "running": "Kastellaan nyt, {time} jäljellä.",
-        "running-paused": "Kastelu tauolla, {time} jäljellä."
+        "running-paused": "Kastelu tauolla, {time} jäljellä.",
+        "set-aside": "Siirretty sivuun {count} peräkkäisen epäonnistumisen jälkeen: ei kastella ennen käyttöönottoa.",
+        "put-back": "Ota takaisin käyttöön"
       },
       "calendar": {
         "title": "Kastelukalenteri (12 kuukautta, arvio)",
@@ -1464,10 +1466,10 @@
     "notify_title": "Ilmoitukset",
     "notify_help": "Kerro jollekulle, kun tämä ohjelma on kastellut: puhelin, ilmoitusentiteetti tai ilmoitus Home Assistantissa. Mitään ei lähetetä, kun yhtään kohdetta ei ole valittu. Sulkeutumaton venttiili ja vastaamaton pumppu ilmoitetaan heti.",
     "notify_persistent": "Ilmoitus Home Assistantissa",
-    "notify_when": "Milloin",
-    "notify_when_finish": "Jokaisen kastelun jälkeen",
-    "notify_when_problems": "Vain kun jokin meni vikaan",
-    "notify_start": "Myös alussa",
+    "notify_when": "Milloin ilmoitetaan",
+    "notify_when_start_and_finish": "Jokaisen kastelun alussa ja lopussa",
+    "notify_when_finish": "Jokaisen kastelun lopussa",
+    "notify_when_problems": "Vain kun jokin menee vikaan",
     "notify_none": "Home Assistantissa ei ole vielä ilmoituskohdetta: lisää mobiilisovellus tai notify-integraatio."
   },
   "supplies": {
@@ -1510,7 +1512,9 @@
     "pause_between_zones_description": "Odotus kahden alueen välillä peräkkäisessä kastelussa: aikaa linjan paineen palautumiselle tai hitaan venttiilin sulkeutumiselle ennen kuin seuraava avautuu.",
     "minutes": "minuuttia",
     "seconds": "sekuntia",
-    "direct_control_locked": "Täysi ohjain ohjaa venttiilejä: kytke se ensin pois muuttaaksesi tätä."
+    "direct_control_locked": "Täysi ohjain ohjaa venttiilejä: kytke se ensin pois muuttaaksesi tätä.",
+    "set_aside_label": "Siirrä vyöhyke sivuun näin monen epäonnistuneen kastelun jälkeen",
+    "set_aside_description": "Venttiili, joka näin monta kertaa peräkkäin ei auennut, ei antanut vettä tai jonka omaa ajastinta ei voitu asettaa, siirretään sivuun: mikään ohjelma ei kastele vyöhykettä ennen kuin se otetaan takaisin käyttöön, sen sijaan että se epäonnistuisi joka aamu. Saat tiedon heti (ohjelmien ilmoitukset, korjaus Home Assistantissa, vyöhykkeen ongelma-anturi). Se palaa itsestään, kun sen venttiilin nähdään aukeavan, käsin kokeiltuna korjauksen jälkeen. 0: ei koskaan."
   },
   "calculation_log": {
     "title": "Laskentaloki",
@@ -1663,7 +1667,8 @@
       "no_flow": "venttiili aukesi, mutta vettä ei virrannut",
       "valve_timer_not_set": "venttiilin omaa ajastinta ei voitu asettaa, se pysyi kiinni",
       "supply_did_not_turn_on": "pumppu tai pääventtiili ei käynnistynyt",
-      "supply_did_not_turn_off": "pumppu tai pääventtiili ei pysähtynyt"
+      "supply_did_not_turn_off": "pumppu tai pääventtiili ei pysähtynyt",
+      "zone_set_aside": "siirretty sivuun useiden epäonnistumisten jälkeen: ei kastella ennen käyttöönottoa"
     }
   }
 }

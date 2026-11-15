@@ -821,7 +821,9 @@
         "no-valve": "Nincs csatolt szelep, így ez a zóna nem öntöz.",
         "no-valve-action": "Szelep csatolása",
         "running": "Öntözés folyamatban, {time} van hátra.",
-        "running-paused": "Öntözés szüneteltetve, {time} van hátra."
+        "running-paused": "Öntözés szüneteltetve, {time} van hátra.",
+        "set-aside": "Félretéve {count} egymást követő hiba után: nem öntözi, amíg vissza nem állítják.",
+        "put-back": "Visszaállítás"
       },
       "calendar": {
         "title": "Öntözési naptár (12 hónap, becslés)",
@@ -1464,10 +1466,10 @@
     "notify_title": "Értesítések",
     "notify_help": "Szólj valakinek, ha ez a program öntözött: telefon, értesítési entitás vagy értesítés a Home Assistantban. Amíg nincs bejelölt cél, semmi sem megy ki. A be nem záródó szelepet és a nem válaszoló szivattyút azonnal jelzi.",
     "notify_persistent": "Értesítés a Home Assistantban",
-    "notify_when": "Mikor",
-    "notify_when_finish": "Minden öntözés után",
-    "notify_when_problems": "Csak ha valami elromlott",
-    "notify_start": "Indításkor is",
+    "notify_when": "Mikor értesítsen",
+    "notify_when_start_and_finish": "Minden öntözés elején és végén",
+    "notify_when_finish": "Minden öntözés végén",
+    "notify_when_problems": "Csak ha valami elromlik",
     "notify_none": "A Home Assistantban még nincs értesítési cél: add hozzá a mobilalkalmazást vagy egy notify integrációt."
   },
   "supplies": {
@@ -1510,7 +1512,9 @@
     "pause_between_zones_description": "Várakozás egy egymás utáni öntözés két zónája között: idő arra, hogy a vezetéki nyomás visszaálljon, vagy hogy egy lassú szelep bezárjon, mielőtt a következő kinyílik.",
     "minutes": "perc",
     "seconds": "másodperc",
-    "direct_control_locked": "A teljes vezérlő vezérli a szelepeket: ennek módosításához előbb kapcsold ki."
+    "direct_control_locked": "A teljes vezérlő vezérli a szelepeket: ennek módosításához előbb kapcsold ki.",
+    "set_aside_label": "Zóna félretétele ennyi sikertelen öntözés után",
+    "set_aside_description": "Az a szelep, amely ennyiszer egymás után nem nyílt ki, nem adott vizet, vagy nem lehetett beállítani a saját időzítőjét, félre lesz téve: egyik program sem öntözi a zónát, amíg vissza nem állítják, ahelyett hogy minden reggel hibázna. Azonnal értesítést kapsz (a programok értesítései, javítás a Home Assistantban, a zóna problémaérzékelője). Magától visszatér, ha a szelepe kinyílik, például javítás után kézzel kipróbálva. 0: soha."
   },
   "calculation_log": {
     "title": "Számítási napló",
@@ -1663,7 +1667,8 @@
       "no_flow": "a szelep kinyílt, de nem folyt víz",
       "valve_timer_not_set": "a szelep saját időzítőjét nem sikerült beállítani, zárva maradt",
       "supply_did_not_turn_on": "a szivattyú vagy főszelep nem indult el",
-      "supply_did_not_turn_off": "a szivattyú vagy főszelep nem állt le"
+      "supply_did_not_turn_off": "a szivattyú vagy főszelep nem állt le",
+      "zone_set_aside": "félretéve több hiba után: nem öntözi, amíg vissza nem állítják"
     }
   }
 }

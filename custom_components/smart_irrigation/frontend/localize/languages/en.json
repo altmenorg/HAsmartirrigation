@@ -821,7 +821,9 @@
         "no-valve": "No valve linked, so this zone isn't watered.",
         "no-valve-action": "Link a valve",
         "running": "Watering now, {time} left.",
-        "running-paused": "Watering paused, {time} left."
+        "running-paused": "Watering paused, {time} left.",
+        "set-aside": "Set aside after {count} failed runs in a row: not watered until it is put back.",
+        "put-back": "Put back"
       },
       "calendar": {
         "title": "Watering calendar (12 months, estimated)",
@@ -1464,10 +1466,10 @@
     "notify_title": "Notifications",
     "notify_help": "Tell someone when this program has watered: a phone, a notification entity, or a notification in Home Assistant. Nothing is sent while no target is ticked. A valve that does not close and a pump that does not answer are told at once.",
     "notify_persistent": "Notification in Home Assistant",
-    "notify_when": "When",
-    "notify_when_finish": "After each watering",
-    "notify_when_problems": "Only when something went wrong",
-    "notify_start": "Also when it starts",
+    "notify_when": "When to tell",
+    "notify_when_start_and_finish": "At the start and at the end of each watering",
+    "notify_when_finish": "At the end of each watering",
+    "notify_when_problems": "Only when something goes wrong",
     "notify_none": "Home Assistant has no notification target yet: add the mobile app or a notify integration."
   },
   "supplies": {
@@ -1510,7 +1512,9 @@
     "pause_between_zones_description": "A wait between two zones of a sequential run: time for the line pressure to recover, or for a slow valve to finish closing before the next one opens.",
     "minutes": "minutes",
     "seconds": "seconds",
-    "direct_control_locked": "The full controller drives the valves: switch it off first to change this."
+    "direct_control_locked": "The full controller drives the valves: switch it off first to change this.",
+    "set_aside_label": "Set a zone aside after this many failed runs",
+    "set_aside_description": "A valve that did not open, gave no water or could not have its own timer set this many runs in a row is set aside: no program waters the zone until it is put back, rather than failing every morning. You are told at once (the programs' notifications, a repair in Home Assistant, the zone's problem sensor). It comes back by itself when its valve is seen opening, tried by hand once repaired. 0: never."
   },
   "calculation_log": {
     "title": "Calculation log",
@@ -1663,7 +1667,8 @@
       "no_flow": "the valve opened but no water flowed",
       "valve_timer_not_set": "the valve's own timer could not be set, so it stayed shut",
       "supply_did_not_turn_on": "the pump or main valve did not start",
-      "supply_did_not_turn_off": "the pump or main valve did not stop"
+      "supply_did_not_turn_off": "the pump or main valve did not stop",
+      "zone_set_aside": "set aside after several failed runs: not watered until it is put back"
     }
   }
 }

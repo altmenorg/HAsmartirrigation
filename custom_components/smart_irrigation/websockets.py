@@ -134,6 +134,9 @@ CONFIG_SAVE_SCHEMA = vol.Schema(
         vol.Optional(const.CONF_SOAK_MINUTES): vol.All(
             vol.Coerce(float), vol.Range(min=0, max=240)
         ),
+        vol.Optional(const.CONF_SET_ASIDE_AFTER): vol.All(
+            vol.Coerce(int), vol.Range(min=0, max=const.SET_ASIDE_AFTER_MAX)
+        ),
         vol.Optional(const.CONF_PAUSE_BETWEEN_ZONES): vol.All(
             vol.Coerce(float), vol.Range(min=0, max=3600)
         ),
@@ -892,6 +895,19 @@ async def websocket_get_planning(hass: HomeAssistant, connection, msg):
                 days, trigger_starts=await _trigger_starts(hass, coordinator, days)
             )
         ),
+    )
+
+
+@async_response
+async def websocket_put_back_zone(hass: HomeAssistant, connection, msg):
+    """Water a zone set aside after failed runs again (set_aside.py)."""
+    coordinator = _coordinator_or_none(hass)
+    if coordinator is None:
+        connection.send_error(msg["id"], "not_ready", "Smart Irrigation is loading")
+        return
+    connection.send_result(
+        msg["id"],
+        {"put_back": await coordinator.async_put_back_zone(int(msg["zone_id"]))},
     )
 
 
@@ -2103,6 +2119,17 @@ async def async_register_websockets(hass: HomeAssistant):
             {
                 vol.Required("type"): const.DOMAIN + "/planning",
                 vol.Optional("days", default=3): vol.Coerce(int),
+            }
+        ),
+    )
+    async_register_command(
+        hass,
+        const.DOMAIN + "/put_back_zone",
+        websocket_put_back_zone,
+        websocket_api.BASE_COMMAND_MESSAGE_SCHEMA.extend(
+            {
+                vol.Required("type"): const.DOMAIN + "/put_back_zone",
+                vol.Required("zone_id"): vol.Coerce(int),
             }
         ),
     )

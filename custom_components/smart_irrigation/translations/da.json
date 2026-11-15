@@ -767,6 +767,17 @@
     "deprecated_recurring_schedule": {
       "title": "Tilbagevendende tidsplaner forsvinder: {action}",
       "description": "En automatisering, et script eller et dashboard kaldte **{action}**. Tilbagevendende tidsplaner virker stadig, men de fjernes fra version {version}, om vinteren, uden for vandingssæsonen.\n\nProgrammernes tidsplaner gør det samme og findes i panelet: opsæt dem under **Vanding**, og fjern derefter de tilbagevendende tidsplaner og kaldene til {action}."
+    },
+    "zone_set_aside": {
+      "title": "Zone {zone} er sat til side",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Tag zone {zone} i brug igen",
+            "description": "Ventilen i zone **{zone}** fejlede {count} gange i træk (åbnede ikke, gav intet vand, eller dens timer kunne ikke sættes), så Smart Irrigation holdt op med at vande den.\n\nTjek ventilen, strøm eller batterier og vandtilførslen. Zonen kommer selv tilbage, når dens ventil ses åbne, fx prøvet i hånden. Eller tag den i brug nu.\n\nSmart Irrigation vander zone {zone} igen fra næste vanding og tæller fejlene fra nul."
+          }
+        }
+      }
     }
   }
 }

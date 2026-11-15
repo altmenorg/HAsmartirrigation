@@ -767,6 +767,17 @@
     "deprecated_recurring_schedule": {
       "title": "Les planifications récurrentes vont disparaître : {action}",
       "description": "Une automatisation, un script ou un tableau de bord a appelé **{action}**. Les planifications récurrentes fonctionnent encore, mais elles seront retirées à partir de la version {version}, en hiver, hors de la saison d'arrosage.\n\nLes horaires des programmes font la même chose et se trouvent dans le panneau : configure-les dans **Arrosage**, puis supprime les planifications récurrentes et les appels à {action}."
+    },
+    "zone_set_aside": {
+      "title": "La zone {zone} est mise de côté",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Remettre la zone {zone} en service",
+            "description": "La vanne de la zone **{zone}** a échoué {count} fois de suite (elle ne s'est pas ouverte, n'a pas donné d'eau, ou sa minuterie n'a pas pu être réglée), donc Smart Irrigation a cessé de l'arroser.\n\nVérifiez la vanne, son alimentation ou ses piles et son arrivée d'eau. La zone revient d'elle-même quand on voit sa vanne s'ouvrir, par exemple en l'essayant à la main. Ou remettez-la en service maintenant.\n\nSmart Irrigation arrosera de nouveau la zone {zone} dès son prochain arrosage, et recomptera ses échecs à partir de zéro."
+          }
+        }
+      }
     }
   }
 }

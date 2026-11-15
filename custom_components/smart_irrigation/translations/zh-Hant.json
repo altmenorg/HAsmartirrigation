@@ -767,6 +767,17 @@
     "deprecated_recurring_schedule": {
       "title": "週期排程即將移除：{action}",
       "description": "有自動化、腳本或儀表板呼叫了 **{action}**。週期排程目前仍可運作，但將自 {version} 版起移除，並安排在冬季、非澆水季節進行。\n\n程式的排程功能相同，且位於面板中：請在 **澆水** 下設定，然後移除週期排程與對 {action} 的呼叫。"
+    },
+    "zone_set_aside": {
+      "title": "區域 {zone} 已被擱置",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "恢復區域 {zone}",
+            "description": "區域 **{zone}** 的閥門連續 {count} 次失敗（未打開、沒有出水，或無法設定其計時器），因此 Smart Irrigation 停止為它澆水。\n\n請檢查閥門、電源或電池以及供水。看到閥門打開時（例如手動試開），區域會自動恢復。也可以現在恢復它。\n\nSmart Irrigation 將從下一次澆水起重新為區域 {zone} 澆水，並從零開始計算失敗次數。"
+          }
+        }
+      }
     }
   }
 }

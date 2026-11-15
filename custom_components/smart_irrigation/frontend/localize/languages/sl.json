@@ -821,7 +821,9 @@
         "no-valve": "Ni povezanega ventila, zato se ta cona ne zaliva.",
         "no-valve-action": "Poveži ventil",
         "running": "Zalivanje poteka, še {time}.",
-        "running-paused": "Zalivanje začasno ustavljeno, še {time}."
+        "running-paused": "Zalivanje začasno ustavljeno, še {time}.",
+        "set-aside": "Odloženo po {count} zaporednih neuspehih: se ne zaliva, dokler ga ne vrnete.",
+        "put-back": "Vrni v uporabo"
       },
       "calendar": {
         "title": "Koledar zalivanja (12 mesecev, ocena)",
@@ -1464,10 +1466,10 @@
     "notify_title": "Obvestila",
     "notify_help": "Obvesti nekoga, ko je ta program zalival: telefon, entiteta obvestil ali obvestilo v Home Assistantu. Dokler ni označen noben cilj, se nič ne pošlje. Ventil, ki se ne zapre, in črpalka, ki se ne odzove, se javita takoj.",
     "notify_persistent": "Obvestilo v Home Assistantu",
-    "notify_when": "Kdaj",
-    "notify_when_finish": "Po vsakem zalivanju",
-    "notify_when_problems": "Samo če je šlo kaj narobe",
-    "notify_start": "Tudi ob začetku",
+    "notify_when": "Kdaj obvestiti",
+    "notify_when_start_and_finish": "Na začetku in koncu vsakega zalivanja",
+    "notify_when_finish": "Na koncu vsakega zalivanja",
+    "notify_when_problems": "Samo ko gre kaj narobe",
     "notify_none": "Home Assistant še nima cilja obvestil: dodajte mobilno aplikacijo ali integracijo notify."
   },
   "supplies": {
@@ -1510,7 +1512,9 @@
     "pause_between_zones_description": "Čakanje med dvema conama pri zaporednem zalivanju: čas, da se tlak v cevi obnovi ali da se počasen ventil zapre, preden se odpre naslednji.",
     "minutes": "minut",
     "seconds": "sekund",
-    "direct_control_locked": "Ventile upravlja celoten krmilnik: najprej ga izklopi, če želiš to spremeniti."
+    "direct_control_locked": "Ventile upravlja celoten krmilnik: najprej ga izklopi, če želiš to spremeniti.",
+    "set_aside_label": "Odloži območje po toliko neuspelih zalivanjih",
+    "set_aside_description": "Ventil, ki se tolikokrat zapored ni odprl, ni dal vode ali mu ni bilo mogoče nastaviti lastnega časovnika, se odloži: noben program ne zaliva območja, dokler ga ne vrnete, namesto da bi vsako jutro odpovedal. Obveščeni ste takoj (obvestila programov, popravilo v Home Assistantu, senzor težave območja). Vrne se samo, ko se njegov ventil odpre, na primer ročno preizkušen po popravilu. 0: nikoli."
   },
   "calculation_log": {
     "title": "Dnevnik izračunov",
@@ -1663,7 +1667,8 @@
       "no_flow": "ventil se je odprl, a voda ni tekla",
       "valve_timer_not_set": "lastnega časovnika ventila ni bilo mogoče nastaviti, ostal je zaprt",
       "supply_did_not_turn_on": "črpalka ali glavni ventil se ni zagnal",
-      "supply_did_not_turn_off": "črpalka ali glavni ventil se ni ustavil"
+      "supply_did_not_turn_off": "črpalka ali glavni ventil se ni ustavil",
+      "zone_set_aside": "odloženo po več neuspehih: se ne zaliva, dokler ga ne vrnete"
     }
   }
 }

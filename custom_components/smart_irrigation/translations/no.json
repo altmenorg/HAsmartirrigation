@@ -767,6 +767,17 @@
     "deprecated_recurring_schedule": {
       "title": "Gjentakende tidsplaner forsvinner: {action}",
       "description": "En automasjon, et skript eller et dashbord kalte **{action}**. Gjentakende tidsplaner virker fortsatt, men de fjernes fra versjon {version}, om vinteren, utenfor vanningssesongen.\n\nProgrammenes tidsplaner gjør det samme og finnes i panelet: sett dem opp under **Vanning**, og fjern deretter de gjentakende tidsplanene og kallene til {action}."
+    },
+    "zone_set_aside": {
+      "title": "Sone {zone} er satt til side",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Ta sone {zone} i bruk igjen",
+            "description": "Ventilen i sone **{zone}** feilet {count} ganger på rad (åpnet ikke, ga ikke vann, eller timeren kunne ikke settes), så Smart Irrigation sluttet å vanne den.\n\nSjekk ventilen, strøm eller batterier og vanntilførselen. Sonen kommer tilbake av seg selv når ventilen ses åpne, for eksempel prøvd for hånd. Eller ta den i bruk nå.\n\nSmart Irrigation vanner sone {zone} igjen fra neste vanning og teller feilene fra null."
+          }
+        }
+      }
     }
   }
 }

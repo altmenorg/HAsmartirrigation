@@ -767,6 +767,17 @@
     "deprecated_recurring_schedule": {
       "title": "循环时间表即将移除：{action}",
       "description": "某个自动化、脚本或仪表板调用了 **{action}**。循环时间表目前仍然有效，但将从 {version} 版本起移除，时间在冬季、浇水季之外。\n\n程序的时间表可以做同样的事，并且就在面板中：在 **浇水** 下设置它们，然后移除循环时间表以及对 {action} 的调用。"
+    },
+    "zone_set_aside": {
+      "title": "区域 {zone} 已被搁置",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "恢复区域 {zone}",
+            "description": "区域 **{zone}** 的阀门连续 {count} 次失败（未打开、没有出水，或无法设置其定时器），因此 Smart Irrigation 停止了对它浇水。\n\n请检查阀门、电源或电池以及供水。看到阀门打开时（例如手动试开），区域会自动恢复。也可以现在恢复它。\n\nSmart Irrigation 将从下一次浇水起重新为区域 {zone} 浇水，并从零开始计算失败次数。"
+          }
+        }
+      }
     }
   }
 }

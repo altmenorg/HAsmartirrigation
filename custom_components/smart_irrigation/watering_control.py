@@ -366,6 +366,11 @@ class WateringControlMixin:
         return until
 
     def is_suspended(self, kind: str, ident) -> bool:
+        # A zone set aside after failed runs is kept from watering the same
+        # way, by every runner and in the planning (set_aside.py).
+        set_aside = getattr(self, "zone_set_aside", None)
+        if kind == const.SUSPEND_ZONE and callable(set_aside) and set_aside(ident):
+            return True
         return self.suspended_until(kind, ident) is not None
 
     async def async_suspend(self, kind: str, ident, hours=None, until=None) -> object:

@@ -821,7 +821,9 @@
         "no-valve": "Ingen ventil kopplad, så den här zonen vattnas inte.",
         "no-valve-action": "Koppla en ventil",
         "running": "Bevattnar nu, {time} kvar.",
-        "running-paused": "Bevattningen är pausad, {time} kvar."
+        "running-paused": "Bevattningen är pausad, {time} kvar.",
+        "set-aside": "Ställd åt sidan efter {count} misslyckanden i rad: vattnas inte förrän den tas i bruk igen.",
+        "put-back": "Ta i bruk igen"
       },
       "calendar": {
         "title": "Bevattningskalender (uppskattning för 12 månader)",
@@ -1464,10 +1466,10 @@
     "notify_title": "Aviseringar",
     "notify_help": "Meddela någon när det här programmet har vattnat: en telefon, en aviseringsentitet eller en avisering i Home Assistant. Inget skickas så länge inget mål är markerat. En ventil som inte stänger och en pump som inte svarar meddelas direkt.",
     "notify_persistent": "Avisering i Home Assistant",
-    "notify_when": "När",
-    "notify_when_finish": "Efter varje bevattning",
-    "notify_when_problems": "Bara när något gick fel",
-    "notify_start": "Även vid start",
+    "notify_when": "När det aviseras",
+    "notify_when_start_and_finish": "I början och slutet av varje bevattning",
+    "notify_when_finish": "I slutet av varje bevattning",
+    "notify_when_problems": "Bara när något går fel",
     "notify_none": "Home Assistant har inget aviseringsmål än: lägg till mobilappen eller en notify-integration."
   },
   "supplies": {
@@ -1510,7 +1512,9 @@
     "pause_between_zones_description": "En paus när zonerna bevattnas efter varandra ger ledningstrycket tid att återhämta sig och en långsam ventil tid att stänga innan nästa öppnar.",
     "minutes": "minuter",
     "seconds": "sekunder",
-    "direct_control_locked": "Ventilerna styrs av fullständig bevattningsstyrning. Stäng av funktionen innan du ändrar inställningen."
+    "direct_control_locked": "Ventilerna styrs av fullständig bevattningsstyrning. Stäng av funktionen innan du ändrar inställningen.",
+    "set_aside_label": "Ställ en zon åt sidan efter så många misslyckade bevattningar",
+    "set_aside_description": "En ventil som så många gånger i rad inte öppnade, inte gav vatten eller inte fick sin egen timer satt ställs åt sidan: inget program vattnar zonen förrän den tas i bruk igen, i stället för att misslyckas varje morgon. Du får veta det direkt (programmens aviseringar, en reparation i Home Assistant, zonens problemsensor). Den kommer tillbaka av sig själv när ventilen ses öppna, provad för hand efter reparation. 0: aldrig."
   },
   "calculation_log": {
     "title": "Beräkningslogg",
@@ -1663,7 +1667,8 @@
       "no_flow": "ventilen öppnade men inget vatten flödade",
       "valve_timer_not_set": "ventilens egen timer kunde inte ställas, den förblev stängd",
       "supply_did_not_turn_on": "pumpen eller huvudventilen startade inte",
-      "supply_did_not_turn_off": "pumpen eller huvudventilen stannade inte"
+      "supply_did_not_turn_off": "pumpen eller huvudventilen stannade inte",
+      "zone_set_aside": "ställd åt sidan efter flera misslyckanden: vattnas inte förrän den tas i bruk igen"
     }
   }
 }

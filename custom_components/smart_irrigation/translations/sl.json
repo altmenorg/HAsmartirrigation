@@ -767,6 +767,17 @@
     "deprecated_recurring_schedule": {
       "title": "Ponavljajoči se urniki bodo odstranjeni: {action}",
       "description": "Avtomatizacija, skripta ali nadzorna plošča je poklicala **{action}**. Ponavljajoči se urniki še vedno delujejo, a bodo odstranjeni od različice {version} naprej, pozimi, zunaj sezone zalivanja.\n\nUrniki programov naredijo isto in so na plošči: nastavi jih na zavihku **Zalivanje**, nato odstrani ponavljajoče se urnike in klice {action}."
+    },
+    "zone_set_aside": {
+      "title": "Območje {zone} je odloženo",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Vrni območje {zone} v uporabo",
+            "description": "Ventil območja **{zone}** je odpovedal {count}-krat zapored (ni se odprl, ni dal vode, ali mu ni bilo mogoče nastaviti časovnika), zato ga Smart Irrigation ne zaliva več.\n\nPreverite ventil, napajanje ali baterije in dovod vode. Območje se vrne samo, ko se njegov ventil odpre, na primer ročno preizkušen. Ali ga vrnite zdaj.\n\nSmart Irrigation bo območje {zone} spet zalival od naslednjega zalivanja in neuspehe štel od nič."
+          }
+        }
+      }
     }
   }
 }

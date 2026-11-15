@@ -767,6 +767,17 @@
     "deprecated_recurring_schedule": {
       "title": "Recurring schedules are going away: {action}",
       "description": "An automation, a script or a dashboard called **{action}**. Recurring schedules still work, but they will be removed from version {version} on, in winter, outside the watering season.\n\nThe programs' schedules do the same and are in the panel: set them up under **Watering**, then remove the recurring schedules and the calls to {action}."
+    },
+    "zone_set_aside": {
+      "title": "Zone {zone} is set aside",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Put zone {zone} back",
+            "description": "The valve of zone **{zone}** failed {count} runs in a row (it did not open, gave no water, or its own timer could not be set), so Smart Irrigation stopped watering it.\n\nCheck the valve, its power or batteries and its water supply. The zone comes back by itself when its valve is seen opening, for instance when you try it by hand. Or put it back now.\n\nSmart Irrigation will water zone {zone} again from its next run, and count its failures from zero."
+          }
+        }
+      }
     }
   }
 }

@@ -21,6 +21,7 @@ Per-zone status entities inspired by JustChr's Smart Irrigation fork (MIT).
 """
 
 import logging
+from typing import cast
 
 from homeassistant.components.binary_sensor import DOMAIN as BINARY_PLATFORM
 from homeassistant.components.binary_sensor import (
@@ -30,6 +31,7 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EVENT_STATE_CHANGED, EntityCategory
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
@@ -119,8 +121,8 @@ class SmartIrrigationObservedWateringBinarySensor(BinarySensorEntity):
         return f"{const.DOMAIN}_observed_watering"
 
     @property
-    def device_info(self) -> dict:
-        return hub_device_info(self._hass)
+    def device_info(self) -> DeviceInfo:
+        return cast(DeviceInfo, hub_device_info(self._hass))
 
     @callback
     def _recompute(self) -> None:
@@ -495,6 +497,12 @@ class SmartIrrigationZoneProblemBinarySensor(
         self.async_on_remove(
             async_dispatcher_connect(
                 self._hass, const.DOMAIN + "_zone_irrigated", self._async_run_ok
+            )
+        )
+        # A zone set aside and put back has no problem left to show.
+        self.async_on_remove(
+            async_dispatcher_connect(
+                self._hass, const.DOMAIN + "_zone_put_back", self._async_run_ok
             )
         )
 

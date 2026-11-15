@@ -767,6 +767,17 @@
     "deprecated_recurring_schedule": {
       "title": "Az ismétlődő ütemezések megszűnnek: {action}",
       "description": "Egy automatizálás, szkript vagy irányítópult meghívta a(z) **{action}** műveletet. Az ismétlődő ütemezések még működnek, de a(z) {version} verziótól el lesznek távolítva, télen, az öntözési szezonon kívül.\n\nA programok ütemezései ugyanezt teszik, és a panelen vannak: állítsd be őket az **Öntözés** alatt, majd távolítsd el az ismétlődő ütemezéseket és a(z) {action} hívásait."
+    },
+    "zone_set_aside": {
+      "title": "{zone} zóna félre van téve",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "{zone} zóna visszaállítása",
+            "description": "A(z) **{zone}** zóna szelepe {count}-szor egymás után hibázott (nem nyílt ki, nem adott vizet, vagy nem lehetett beállítani az időzítőjét), ezért a Smart Irrigation abbahagyta az öntözését.\n\nEllenőrizd a szelepet, a tápellátását vagy elemeit és a vízellátást. A zóna magától visszatér, ha a szelepe kinyílik, például kézzel kipróbálva. Vagy állítsd vissza most.\n\nA Smart Irrigation a következő öntözéstől újra öntözi a(z) {zone} zónát, és nulláról kezdi számolni a hibákat."
+          }
+        }
+      }
     }
   }
 }

@@ -44,6 +44,7 @@ import {
   fetchWateringCalendar,
   fetchMappingWeatherRecords,
   fetchIrrigationInfo,
+  putBackZone,
 } from "../../data/websockets";
 import { SubscribeMixin } from "../../subscribe-mixin";
 
@@ -739,6 +740,12 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     );
   }
 
+  /** The zone's record when it is set aside after failed runs. */
+  private _setAside(zone: SmartIrrigationZone) {
+    const record = this.config?.zone_failures?.[String(zone.id)];
+    return record?.set_aside ? record : null;
+  }
+
   private _zoneStatus(zone: SmartIrrigationZone, lang: string) {
     const { kind, text, noValve } = this._zoneStatusOf(zone, lang);
     const t = (key: string) => localize(`panels.zones.status.${key}`, lang);
@@ -769,6 +776,17 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
               @click=${() => this._focusZone(zone.id!)}
             >
               ${t("no-valve-action")}
+            </button>`
+          : ""}
+        ${this._setAside(zone) && zone.id != undefined && this.hass
+          ? html`<button
+              class="zone-status-link"
+              @click=${async () => {
+                await putBackZone(this.hass!, zone.id!);
+                this._fetchData();
+              }}
+            >
+              ${t("put-back")}
             </button>`
           : ""}
         ${kind !== "off" &&
@@ -828,6 +846,14 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     } else if (zone.state === SmartIrrigationZoneState.Manual) {
       kind = "off";
       text = t("manual");
+    } else if (this._setAside(zone)) {
+      // Its valve failed too many runs in a row: no runner opens it.
+      kind = "problem";
+      text = t(
+        "set-aside",
+        "{count}",
+        String(this._setAside(zone)?.count ?? ""),
+      );
     } else if (zone.calculation_problem?.code) {
       // The last calculation failed: whatever the bucket says, it is stale,
       // and "has what it needs" would be a green tick on a zone that is not

@@ -767,6 +767,17 @@
     "deprecated_recurring_schedule": {
       "title": "Harmonogramy cykliczne zostaną usunięte: {action}",
       "description": "Automatyzacja, skrypt lub dashboard wywołał **{action}**. Harmonogramy cykliczne nadal działają, ale zostaną usunięte od wersji {version}, zimą, poza sezonem podlewania.\n\nHarmonogramy programów robią to samo i są w panelu: skonfiguruj je w zakładce **Podlewanie**, a potem usuń harmonogramy cykliczne i wywołania {action}."
+    },
+    "zone_set_aside": {
+      "title": "Strefa {zone} jest odłożona",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Przywróć strefę {zone}",
+            "description": "Zawór strefy **{zone}** zawiódł {count} razy z rzędu (nie otworzył się, nie dał wody lub nie dało się ustawić jego timera), więc Smart Irrigation przestał ją podlewać.\n\nSprawdź zawór, jego zasilanie lub baterie i doprowadzenie wody. Strefa wraca sama, gdy jej zawór się otworzy, np. sprawdzony ręcznie. Albo przywróć ją teraz.\n\nSmart Irrigation znów będzie podlewać strefę {zone} od następnego podlewania i zacznie liczyć niepowodzenia od zera."
+          }
+        }
+      }
     }
   }
 }

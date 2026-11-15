@@ -767,6 +767,17 @@
     "deprecated_recurring_schedule": {
       "title": "Återkommande scheman försvinner: {action}",
       "description": "En automation, ett skript eller en instrumentpanel anropade **{action}**. Återkommande scheman fungerar fortfarande, men de tas bort från och med version {version}, på vintern, utanför bevattningssäsongen.\n\nProgrammens scheman gör samma sak och finns i panelen: konfigurera dem under **Bevattning** och ta sedan bort de återkommande schemana och anropen till {action}."
+    },
+    "zone_set_aside": {
+      "title": "Zon {zone} är ställd åt sidan",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Ta zon {zone} i bruk igen",
+            "description": "Ventilen i zon **{zone}** misslyckades {count} gånger i rad (öppnade inte, gav inget vatten, eller dess timer kunde inte ställas), så Smart Irrigation slutade vattna den.\n\nKontrollera ventilen, strömmen eller batterierna och vattentillförseln. Zonen kommer tillbaka av sig själv när ventilen ses öppna, till exempel provad för hand. Eller ta den i bruk nu.\n\nSmart Irrigation vattnar zon {zone} igen från nästa bevattning och räknar misslyckandena från noll."
+          }
+        }
+      }
     }
   }
 }

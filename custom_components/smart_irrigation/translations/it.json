@@ -767,6 +767,17 @@
     "deprecated_recurring_schedule": {
       "title": "Le pianificazioni ricorrenti stanno per essere rimosse: {action}",
       "description": "Un'automazione, uno script o una dashboard ha chiamato **{action}**. Le pianificazioni ricorrenti funzionano ancora, ma verranno rimosse a partire dalla versione {version}, in inverno, fuori dalla stagione irrigua.\n\nGli orari dei programmi fanno la stessa cosa e si trovano nel pannello: configurali in **Irrigazione**, poi rimuovi le pianificazioni ricorrenti e le chiamate a {action}."
+    },
+    "zone_set_aside": {
+      "title": "La zona {zone} è messa da parte",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Riattiva la zona {zone}",
+            "description": "La valvola della zona **{zone}** ha fallito {count} volte di fila (non si è aperta, non ha dato acqua, o il suo timer non si è potuto impostare), quindi Smart Irrigation ha smesso di irrigarla.\n\nControlla la valvola, l'alimentazione o le batterie e l'arrivo dell'acqua. La zona torna da sola quando la sua valvola si apre, per esempio provandola a mano. Oppure riattivala ora.\n\nSmart Irrigation irrigherà di nuovo la zona {zone} dalla prossima irrigazione e conterà i fallimenti da zero."
+          }
+        }
+      }
     }
   }
 }

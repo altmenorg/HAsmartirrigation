@@ -767,6 +767,17 @@
     "deprecated_recurring_schedule": {
       "title": "Os agendamentos recorrentes vão desaparecer: {action}",
       "description": "Uma automatização, um script ou um painel chamou **{action}**. Os agendamentos recorrentes ainda funcionam, mas serão removidos a partir da versão {version}, no inverno, fora da época de rega.\n\nOs agendamentos dos programas fazem o mesmo e estão no painel: configure-os em **Rega**, depois remova os agendamentos recorrentes e as chamadas a {action}."
+    },
+    "zone_set_aside": {
+      "title": "A zona {zone} está posta de parte",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Reativar a zona {zone}",
+            "description": "A válvula da zona **{zone}** falhou {count} vezes seguidas (não abriu, não deu água, ou o seu temporizador não pôde ser definido), por isso o Smart Irrigation deixou de a regar.\n\nVerifique a válvula, a alimentação ou as pilhas e a chegada de água. A zona volta sozinha quando a sua válvula é vista a abrir, por exemplo testada à mão. Ou reative-a agora.\n\nO Smart Irrigation voltará a regar a zona {zone} a partir da próxima rega e contará as falhas a partir de zero."
+          }
+        }
+      }
     }
   }
 }

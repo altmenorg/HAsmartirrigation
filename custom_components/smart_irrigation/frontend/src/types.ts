@@ -72,6 +72,13 @@ export class SmartIrrigationConfig {
   watering_passes?: number;
   soak_minutes?: number;
   pause_between_zones?: number;
+  /** Failed runs in a row before a zone is set aside; 0: never. */
+  set_aside_after?: number;
+  /** Each zone's failed runs in a row, and since when it is set aside. */
+  zone_failures?: Record<
+    string,
+    { count?: number; reason?: string; set_aside?: string | null }
+  > | null;
   calc_log_enabled: boolean;
   ai_api_enabled?: boolean;
   ai_api_write_enabled?: boolean;

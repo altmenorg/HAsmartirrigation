@@ -107,7 +107,7 @@ Each program, the main one included, has a **Notifications** section: tick whom 
 - the **notify entities** of Home Assistant;
 - the **notify actions** that are not an entity, such as `notify.mobile_app_<phone>` of the companion app. On a phone, a run that went wrong comes through with a high priority (Android) and as time-sensitive (iOS), and each program replaces its own previous notification.
 
-**When**: after each watering, or only when something went wrong. **Also when it starts** adds a notification with the zones about to be watered. A valve that does not close and a pump or main valve that does not do what it is told are told at once, to the program under way, without waiting for the end of the run.
+**When to tell**: at the start and at the end of each watering (the start lists the zones about to be watered), only at the end, or only when something goes wrong. A valve that does not close and a pump or main valve that does not do what it is told are told at once, to the program under way, without waiting for the end of the run.
 
 It is off until a target is ticked, and it changes nothing to a run. The events (`smart_irrigation_program_finished`, `smart_irrigation_irrigation_finished`...) are still fired, so an automation of your own keeps working beside it. In YAML:
 

@@ -821,7 +821,9 @@
         "no-valve": "Nie je pripojený ventil, takže sa táto zóna nezalieva.",
         "no-valve-action": "Pripojiť ventil",
         "running": "Práve sa zavlažuje, zostáva {time}.",
-        "running-paused": "Zavlažovanie pozastavené, zostáva {time}."
+        "running-paused": "Zavlažovanie pozastavené, zostáva {time}.",
+        "set-aside": "Odložená po {count} neúspechoch za sebou: nezavlažuje sa, kým sa znova nezaradí.",
+        "put-back": "Znova zaradiť"
       },
       "calendar": {
         "title": "Kalendár zalievania (12 mesiacov, odhad)",
@@ -1464,10 +1466,10 @@
     "notify_title": "Upozornenia",
     "notify_help": "Dať niekomu vedieť, že tento program zavlažoval: telefón, entita upozornení alebo upozornenie v Home Assistante. Kým nie je zaškrtnutý žiadny cieľ, nič sa neposiela. Ventil, ktorý sa nezavrie, a čerpadlo, ktoré neodpovedá, sa hlásia hneď.",
     "notify_persistent": "Upozornenie v Home Assistante",
-    "notify_when": "Kedy",
-    "notify_when_finish": "Po každom zavlažovaní",
-    "notify_when_problems": "Len keď sa niečo pokazilo",
-    "notify_start": "Aj pri štarte",
+    "notify_when": "Kedy upozorniť",
+    "notify_when_start_and_finish": "Na začiatku a na konci každého zavlažovania",
+    "notify_when_finish": "Na konci každého zavlažovania",
+    "notify_when_problems": "Len keď sa niečo pokazí",
     "notify_none": "Home Assistant zatiaľ nemá cieľ upozornení: pridajte mobilnú aplikáciu alebo integráciu notify."
   },
   "supplies": {
@@ -1510,7 +1512,9 @@
     "pause_between_zones_description": "Čakanie medzi dvoma zónami postupného zavlažovania: čas, aby sa obnovil tlak v potrubí alebo aby pomalý ventil dovrel, kým sa otvorí ďalší.",
     "minutes": "minút",
     "seconds": "sekúnd",
-    "direct_control_locked": "Plný ovládač riadi ventily: ak to chcete zmeniť, najprv ho vypnite."
+    "direct_control_locked": "Plný ovládač riadi ventily: ak to chcete zmeniť, najprv ho vypnite.",
+    "set_aside_label": "Odložiť zónu po toľkých neúspešných behoch",
+    "set_aside_description": "Ventil, ktorý sa toľkokrát po sebe neotvoril, nedal vodu alebo sa nedal nastaviť jeho vlastný časovač, sa odloží: žiadny program zónu nezavlažuje, kým sa znova nezaradí, namiesto toho, aby každé ráno zlyhal. Dozviete sa to hneď (upozornenia programov, oprava v Home Assistante, senzor problému zóny). Vráti sa sama, keď sa jej ventil otvorí, napríklad pri ručnej skúške po oprave. 0: nikdy."
   },
   "calculation_log": {
     "title": "Protokol výpočtu",
@@ -1663,7 +1667,8 @@
       "no_flow": "ventil sa otvoril, ale voda netiekla",
       "valve_timer_not_set": "vlastný časovač ventilu sa nedal nastaviť, zostal zatvorený",
       "supply_did_not_turn_on": "čerpadlo alebo hlavný ventil sa nespustil",
-      "supply_did_not_turn_off": "čerpadlo alebo hlavný ventil sa nezastavil"
+      "supply_did_not_turn_off": "čerpadlo alebo hlavný ventil sa nezastavil",
+      "zone_set_aside": "odložená po niekoľkých neúspechoch: nezavlažuje sa, kým sa znova nezaradí"
     }
   }
 }

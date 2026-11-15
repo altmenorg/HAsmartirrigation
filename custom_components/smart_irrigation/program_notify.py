@@ -31,7 +31,7 @@ _LANGUAGES = Path(__file__).parent / const.LANGUAGE_FILES_DIR
 # Home Assistant language codes served by a file of another name.
 _ALIASES = {"nb": "no", "nn": "no"}
 # Told at once rather than in the summary.
-_URGENT_ZONE_PROBLEMS = ("valve_did_not_close",)
+_URGENT_ZONE_PROBLEMS = ("valve_did_not_close", "zone_set_aside")
 
 _tables: dict[str, dict] = {}
 

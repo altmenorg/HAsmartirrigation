@@ -821,7 +821,9 @@
         "no-valve": "Kein Ventil verknüpft, daher wird diese Zone nicht bewässert.",
         "no-valve-action": "Ventil verknüpfen",
         "running": "Bewässert gerade, noch {time}.",
-        "running-paused": "Bewässerung pausiert, noch {time}."
+        "running-paused": "Bewässerung pausiert, noch {time}.",
+        "set-aside": "Nach {count} Fehlläufen in Folge zurückgestellt: wird nicht bewässert, bis sie wieder aufgenommen wird.",
+        "put-back": "Wieder aufnehmen"
       },
       "calendar": {
         "title": "Bewässerungskalender (12 Monate, geschätzt)",
@@ -1464,10 +1466,10 @@
     "notify_title": "Benachrichtigungen",
     "notify_help": "Jemanden informieren, wenn dieses Programm bewässert hat: ein Telefon, eine Benachrichtigungsentität oder eine Benachrichtigung in Home Assistant. Solange kein Ziel angehakt ist, wird nichts gesendet. Ein Ventil, das nicht schließt, und eine Pumpe, die nicht reagiert, werden sofort gemeldet.",
     "notify_persistent": "Benachrichtigung in Home Assistant",
-    "notify_when": "Wann",
-    "notify_when_finish": "Nach jeder Bewässerung",
-    "notify_when_problems": "Nur wenn etwas schiefging",
-    "notify_start": "Auch beim Start",
+    "notify_when": "Wann informieren",
+    "notify_when_start_and_finish": "Zu Beginn und am Ende jeder Bewässerung",
+    "notify_when_finish": "Am Ende jeder Bewässerung",
+    "notify_when_problems": "Nur wenn etwas schiefgeht",
     "notify_none": "Home Assistant hat noch kein Benachrichtigungsziel: füge die Mobile App oder eine Notify-Integration hinzu."
   },
   "supplies": {
@@ -1510,7 +1512,9 @@
     "pause_between_zones_description": "Eine Wartezeit zwischen zwei Zonen eines sequenziellen Durchlaufs: Zeit, damit sich der Leitungsdruck erholt oder ein langsames Ventil schließt, bevor das nächste öffnet.",
     "minutes": "Minuten",
     "seconds": "Sekunden",
-    "direct_control_locked": "Die volle Steuerung steuert die Ventile: Schalte sie zuerst aus, um das zu ändern."
+    "direct_control_locked": "Die volle Steuerung steuert die Ventile: Schalte sie zuerst aus, um das zu ändern.",
+    "set_aside_label": "Zone nach so vielen fehlgeschlagenen Läufen zurückstellen",
+    "set_aside_description": "Ein Ventil, das so oft hintereinander nicht geöffnet, kein Wasser gegeben oder seinen eigenen Timer nicht gesetzt bekommen hat, wird zurückgestellt: Kein Programm bewässert die Zone, bis sie wieder aufgenommen wird, statt jeden Morgen zu scheitern. Du wirst sofort informiert (Benachrichtigungen der Programme, Reparatur in Home Assistant, Problemsensor der Zone). Sie kommt von selbst zurück, wenn sich ihr Ventil öffnet, etwa von Hand getestet. 0: nie."
   },
   "calculation_log": {
     "title": "Berechnungsprotokoll",
@@ -1663,7 +1667,8 @@
       "no_flow": "das Ventil hat geöffnet, aber es floss kein Wasser",
       "valve_timer_not_set": "der eigene Timer des Ventils ließ sich nicht setzen, es blieb zu",
       "supply_did_not_turn_on": "die Pumpe oder das Hauptventil ist nicht angelaufen",
-      "supply_did_not_turn_off": "die Pumpe oder das Hauptventil hat nicht gestoppt"
+      "supply_did_not_turn_off": "die Pumpe oder das Hauptventil hat nicht gestoppt",
+      "zone_set_aside": "nach mehreren Fehlläufen zurückgestellt: wird nicht bewässert, bis sie wieder aufgenommen wird"
     }
   }
 }

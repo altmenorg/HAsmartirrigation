@@ -821,7 +821,9 @@
         "no-valve": "Sem válvula vinculada, então esta zona não é irrigada.",
         "no-valve-action": "Vincular uma válvula",
         "running": "Irrigando agora, {time} restantes.",
-        "running-paused": "Irrigação pausada, {time} restantes."
+        "running-paused": "Irrigação pausada, {time} restantes.",
+        "set-aside": "Deixada de lado após {count} falhas seguidas: não é regada até ser reativada.",
+        "put-back": "Reativar"
       },
       "calendar": {
         "title": "Calendário de irrigação (12 meses, estimado)",
@@ -1464,10 +1466,10 @@
     "notify_title": "Notificações",
     "notify_help": "Avisar alguém quando este programa regar: um celular, uma entidade de notificação ou uma notificação no Home Assistant. Nada é enviado enquanto nenhum destino estiver marcado. Uma válvula que não fecha e uma bomba que não responde são avisadas na hora.",
     "notify_persistent": "Notificação no Home Assistant",
-    "notify_when": "Quando",
-    "notify_when_finish": "Depois de cada rega",
-    "notify_when_problems": "Só se algo deu errado",
-    "notify_start": "Também ao começar",
+    "notify_when": "Quando avisar",
+    "notify_when_start_and_finish": "No início e no fim de cada rega",
+    "notify_when_finish": "No fim de cada rega",
+    "notify_when_problems": "Só se algo der errado",
     "notify_none": "O Home Assistant ainda não tem destino de notificação: adicione o app móvel ou uma integração de notificações."
   },
   "supplies": {
@@ -1510,7 +1512,9 @@
     "pause_between_zones_description": "Uma espera entre duas zonas de um ciclo sequencial: tempo para a pressão da linha se recuperar, ou para uma válvula lenta terminar de fechar antes de a próxima abrir.",
     "minutes": "minutos",
     "seconds": "segundos",
-    "direct_control_locked": "O controlador completo comanda as válvulas: desative-o primeiro para alterar isto."
+    "direct_control_locked": "O controlador completo comanda as válvulas: desative-o primeiro para alterar isto.",
+    "set_aside_label": "Deixar uma zona de lado após este número de regas com falha",
+    "set_aside_description": "Uma válvula que não abriu, não deu água ou cujo temporizador não pôde ser definido este número de vezes seguidas é deixada de lado: nenhum programa rega a zona até ela ser reativada, em vez de falhar toda manhã. Você é avisado na hora (notificações dos programas, um reparo no Home Assistant, o sensor de problema da zona). Ela volta sozinha quando a válvula é vista abrindo, testada à mão depois de consertada. 0: nunca."
   },
   "calculation_log": {
     "title": "Registro de cálculo",
@@ -1663,7 +1667,8 @@
       "no_flow": "a válvula abriu mas não saiu água",
       "valve_timer_not_set": "não foi possível definir o temporizador da válvula, ela ficou fechada",
       "supply_did_not_turn_on": "a bomba ou válvula principal não ligou",
-      "supply_did_not_turn_off": "a bomba ou válvula principal não desligou"
+      "supply_did_not_turn_off": "a bomba ou válvula principal não desligou",
+      "zone_set_aside": "deixada de lado após várias falhas: não é regada até ser reativada"
     }
   }
 }

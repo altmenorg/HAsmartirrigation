@@ -821,7 +821,9 @@
         "no-valve": "Ingen ventil tilknyttet, så denne sonen vannes ikke.",
         "no-valve-action": "Knytt til en ventil",
         "running": "Vanner nå, {time} igjen.",
-        "running-paused": "Vanning satt på pause, {time} igjen."
+        "running-paused": "Vanning satt på pause, {time} igjen.",
+        "set-aside": "Satt til side etter {count} feil på rad: vannes ikke før den tas i bruk igjen.",
+        "put-back": "Ta i bruk igjen"
       },
       "calendar": {
         "title": "Vanningskalender (12 måneder, anslått)",
@@ -1464,10 +1466,10 @@
     "notify_title": "Varsler",
     "notify_help": "Gi noen beskjed når dette programmet har vannet: en telefon, en varslingsentitet eller et varsel i Home Assistant. Ingenting sendes så lenge ingen mottaker er krysset av. En ventil som ikke lukker og en pumpe som ikke svarer, varsles med en gang.",
     "notify_persistent": "Varsel i Home Assistant",
-    "notify_when": "Når",
-    "notify_when_finish": "Etter hver vanning",
-    "notify_when_problems": "Bare når noe gikk galt",
-    "notify_start": "Også ved start",
+    "notify_when": "Når det varsles",
+    "notify_when_start_and_finish": "Ved start og slutt på hver vanning",
+    "notify_when_finish": "Ved slutt på hver vanning",
+    "notify_when_problems": "Bare når noe går galt",
     "notify_none": "Home Assistant har ingen varslingsmottaker ennå: legg til mobilappen eller en notify-integrasjon."
   },
   "supplies": {
@@ -1510,7 +1512,9 @@
     "pause_between_zones_description": "En ventetid mellom to soner i en vanning én om gangen: tid til at trykket i ledningen kommer igjen, eller til at en langsom ventil rekker å lukke før den neste åpner.",
     "minutes": "minutter",
     "seconds": "sekunder",
-    "direct_control_locked": "Den fulle kontrolleren styrer ventilene: slå den av først for å endre dette."
+    "direct_control_locked": "Den fulle kontrolleren styrer ventilene: slå den av først for å endre dette.",
+    "set_aside_label": "Sett en sone til side etter så mange mislykkede vanninger",
+    "set_aside_description": "En ventil som så mange ganger på rad ikke åpnet, ikke ga vann eller ikke fikk satt sin egen timer, settes til side: ingen programmer vanner sonen før den tas i bruk igjen, i stedet for å feile hver morgen. Du får beskjed med en gang (programmenes varsler, en reparasjon i Home Assistant, sonens problemsensor). Den kommer tilbake av seg selv når ventilen ses åpne, prøvd for hånd etter reparasjon. 0: aldri."
   },
   "calculation_log": {
     "title": "Beregningslogg",
@@ -1663,7 +1667,8 @@
       "no_flow": "ventilen åpnet, men det rant ikke vann",
       "valve_timer_not_set": "ventilens egen timer kunne ikke settes, den ble stengt",
       "supply_did_not_turn_on": "pumpen eller hovedventilen startet ikke",
-      "supply_did_not_turn_off": "pumpen eller hovedventilen stoppet ikke"
+      "supply_did_not_turn_off": "pumpen eller hovedventilen stoppet ikke",
+      "zone_set_aside": "satt til side etter flere feil: vannes ikke før den tas i bruk igjen"
     }
   }
 }

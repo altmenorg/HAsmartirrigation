@@ -154,6 +154,13 @@ export const deleteZone = (
   });
 };
 
+/** Water a zone set aside after failed runs again. */
+export const putBackZone = (
+  hass: HomeAssistant,
+  zoneId: number,
+): Promise<{ put_back: boolean }> =>
+  hass.callWS({ type: DOMAIN + "/put_back_zone", zone_id: zoneId });
+
 export const fetchModules = (
   hass: HomeAssistant,
 ): Promise<SmartIrrigationModule[]> =>

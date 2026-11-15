@@ -767,6 +767,17 @@
     "deprecated_recurring_schedule": {
       "title": "Wiederkehrende Zeitpläne fallen weg: {action}",
       "description": "Eine Automatisierung, ein Skript oder ein Dashboard hat **{action}** aufgerufen. Wiederkehrende Zeitpläne funktionieren noch, werden aber ab Version {version} entfernt, im Winter, außerhalb der Bewässerungszeit.\n\nDie Zeitpläne der Programme tun dasselbe und stehen im Panel: Richte sie unter **Bewässerung** ein und entferne danach die wiederkehrenden Zeitpläne und die Aufrufe von {action}."
+    },
+    "zone_set_aside": {
+      "title": "Zone {zone} ist zurückgestellt",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Zone {zone} wieder aufnehmen",
+            "description": "Das Ventil der Zone **{zone}** ist {count}-mal hintereinander gescheitert (nicht geöffnet, kein Wasser, oder sein eigener Timer ließ sich nicht setzen), daher bewässert Smart Irrigation sie nicht mehr.\n\nPrüfe das Ventil, seine Stromversorgung oder Batterien und die Wasserzufuhr. Die Zone kommt von selbst zurück, wenn sich ihr Ventil öffnet, zum Beispiel von Hand getestet. Oder nimm sie jetzt wieder auf.\n\nSmart Irrigation bewässert die Zone {zone} ab dem nächsten Lauf wieder und zählt ihre Fehlläufe von null."
+          }
+        }
+      }
     }
   }
 }

@@ -821,7 +821,9 @@
         "no-valve": "未連結閥門，因此此區域不會澆水。",
         "no-valve-action": "連結閥門",
         "running": "正在澆水，剩餘 {time}。",
-        "running-paused": "澆水已暫停，剩餘 {time}。"
+        "running-paused": "澆水已暫停，剩餘 {time}。",
+        "set-aside": "連續 {count} 次失敗後已擱置：恢復前不會澆水。",
+        "put-back": "恢復"
       },
       "calendar": {
         "title": "澆水行事曆（12 個月，估計值）",
@@ -1464,10 +1466,10 @@
     "notify_title": "通知",
     "notify_help": "在此程式澆水後通知某人：手機、通知實體或 Home Assistant 中的通知。未勾選任何目標時不會傳送。閥門未關閉或水泵無回應時會立即通知。",
     "notify_persistent": "Home Assistant 中的通知",
-    "notify_when": "何時",
-    "notify_when_finish": "每次澆水後",
+    "notify_when": "何時通知",
+    "notify_when_start_and_finish": "每次澆水開始和結束時",
+    "notify_when_finish": "每次澆水結束時",
     "notify_when_problems": "僅在發生問題時",
-    "notify_start": "開始時也通知",
     "notify_none": "Home Assistant 還沒有通知目標：請新增行動應用程式或通知整合。"
   },
   "supplies": {
@@ -1510,7 +1512,9 @@
     "pause_between_zones_description": "依序執行時，兩個區域之間的等待：讓管線壓力恢復，或讓較慢的閥門在下一個開啟前完全關閉。",
     "minutes": "分鐘",
     "seconds": "秒",
-    "direct_control_locked": "完整控制器正在驅動閥門：請先將其關閉才能變更此設定。"
+    "direct_control_locked": "完整控制器正在驅動閥門：請先將其關閉才能變更此設定。",
+    "set_aside_label": "失敗多少次後擱置區域",
+    "set_aside_description": "閥門連續這麼多次未打開、沒有出水或無法設定其內建計時器時，該區域將被擱置：在恢復之前沒有程式會為它澆水，而不是每天早上都失敗。你會立即收到提醒（程式通知、Home Assistant 中的修復項目、區域的問題感測器）。修好後手動試開閥門時，區域會自動恢復。0：從不。"
   },
   "calculation_log": {
     "title": "計算記錄",
@@ -1663,7 +1667,8 @@
       "no_flow": "閥門已打開但沒有水流",
       "valve_timer_not_set": "無法設定閥門內建的計時器，閥門保持關閉",
       "supply_did_not_turn_on": "水泵或總閥沒有啟動",
-      "supply_did_not_turn_off": "水泵或總閥沒有停止"
+      "supply_did_not_turn_off": "水泵或總閥沒有停止",
+      "zone_set_aside": "多次失敗後已擱置：恢復前不會澆水"
     }
   }
 }

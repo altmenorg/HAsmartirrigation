@@ -821,7 +821,9 @@
         "no-valve": "Ingen ventil tilknyttet, så denne zone vandes ikke.",
         "no-valve-action": "Tilknyt en ventil",
         "running": "Vander nu, {time} tilbage.",
-        "running-paused": "Vanding på pause, {time} tilbage."
+        "running-paused": "Vanding på pause, {time} tilbage.",
+        "set-aside": "Sat til side efter {count} fejl i træk: vandes ikke, før den tages i brug igen.",
+        "put-back": "Tag i brug igen"
       },
       "calendar": {
         "title": "Vandingskalender (12 måneder, anslået)",
@@ -1464,10 +1466,10 @@
     "notify_title": "Notifikationer",
     "notify_help": "Giv nogen besked, når dette program har vandet: en telefon, en notifikationsentitet eller en notifikation i Home Assistant. Intet sendes, så længe intet mål er markeret. En ventil, der ikke lukker, og en pumpe, der ikke svarer, meldes med det samme.",
     "notify_persistent": "Notifikation i Home Assistant",
-    "notify_when": "Hvornår",
-    "notify_when_finish": "Efter hver vanding",
-    "notify_when_problems": "Kun når noget gik galt",
-    "notify_start": "Også ved start",
+    "notify_when": "Hvornår der gives besked",
+    "notify_when_start_and_finish": "Ved start og slut på hver vanding",
+    "notify_when_finish": "Ved slut på hver vanding",
+    "notify_when_problems": "Kun når noget går galt",
     "notify_none": "Home Assistant har endnu intet notifikationsmål: tilføj mobilappen eller en notify-integration."
   },
   "supplies": {
@@ -1510,7 +1512,9 @@
     "pause_between_zones_description": "En ventetid mellem to zoner i en vanding én ad gangen: tid til at trykket i ledningen kommer igen, eller til at en langsom ventil lukker helt, før den næste åbner.",
     "minutes": "minutter",
     "seconds": "sekunder",
-    "direct_control_locked": "Den fulde styring styrer ventilerne: slå den fra først for at ændre dette."
+    "direct_control_locked": "Den fulde styring styrer ventilerne: slå den fra først for at ændre dette.",
+    "set_aside_label": "Sæt en zone til side efter så mange mislykkede vandinger",
+    "set_aside_description": "En ventil, der så mange gange i træk ikke åbnede, ikke gav vand eller ikke kunne få sin egen timer sat, sættes til side: intet program vander zonen, før den tages i brug igen, i stedet for at fejle hver morgen. Du får besked med det samme (programmernes notifikationer, en reparation i Home Assistant, zonens problemsensor). Den kommer selv tilbage, når dens ventil ses åbne, prøvet i hånden efter reparation. 0: aldrig."
   },
   "calculation_log": {
     "title": "Beregningslog",
@@ -1663,7 +1667,8 @@
       "no_flow": "ventilen åbnede, men der løb intet vand",
       "valve_timer_not_set": "ventilens egen timer kunne ikke sættes, den blev lukket",
       "supply_did_not_turn_on": "pumpen eller hovedventilen startede ikke",
-      "supply_did_not_turn_off": "pumpen eller hovedventilen stoppede ikke"
+      "supply_did_not_turn_off": "pumpen eller hovedventilen stoppede ikke",
+      "zone_set_aside": "sat til side efter flere fejl: vandes ikke, før den tages i brug igen"
     }
   }
 }

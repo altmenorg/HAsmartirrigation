@@ -71,6 +71,7 @@ from .const import (
     CONF_DEFAULT_RECURRING_SCHEDULES,
     CONF_DEFAULT_SEASONAL_ADJUSTMENTS,
     CONF_DEFAULT_SENSOR_DEBOUNCE,
+    CONF_DEFAULT_SET_ASIDE_AFTER,
     CONF_DEFAULT_SKIP_IRRIGATION_ON_PRECIPITATION,
     CONF_DEFAULT_SKIP_ON_FREEZE,
     CONF_DEFAULT_SKIP_ON_RAIN_SENSOR,
@@ -120,6 +121,7 @@ from .const import (
     CONF_RECURRING_SCHEDULES,
     CONF_SEASONAL_ADJUSTMENTS,
     CONF_SENSOR_DEBOUNCE,
+    CONF_SET_ASIDE_AFTER,
     CONF_SKIP_IRRIGATION_ON_PRECIPITATION,
     CONF_SKIP_ON_FREEZE,
     CONF_SKIP_ON_RAIN_SENSOR,
@@ -139,6 +141,7 @@ from .const import (
     CONF_WIND_SENSOR,
     CONF_WIND_THRESHOLD,
     CONF_ZONE_ENGINES_SPLIT,
+    CONF_ZONE_FAILURES,
     CONF_ZONE_SEQUENCING,
     DOMAIN,
     HISTORY_DURATION,
@@ -776,6 +779,8 @@ class Config:
     queued_manual_runs = attr.ib(type=list, default=None)
     program_adjustments = attr.ib(type=dict, default=None)
     suspensions = attr.ib(type=dict, default=None)
+    set_aside_after = attr.ib(type=int, default=CONF_DEFAULT_SET_ASIDE_AFTER)
+    zone_failures = attr.ib(type=dict, default=None)
     # What the last Irrigation Unlimited import created (iu_import_ha.py).
     iu_import = attr.ib(type=dict, default=None)
     # Direct valve control as it was before the full controller forced it on.
@@ -1306,6 +1311,10 @@ class SmartIrrigationStorage:
                 queued_manual_runs=data["config"].get(CONF_QUEUED_MANUAL_RUNS),
                 program_adjustments=data["config"].get(CONF_PROGRAM_ADJUSTMENTS),
                 suspensions=data["config"].get(CONF_SUSPENSIONS),
+                set_aside_after=data["config"].get(
+                    CONF_SET_ASIDE_AFTER, CONF_DEFAULT_SET_ASIDE_AFTER
+                ),
+                zone_failures=data["config"].get(CONF_ZONE_FAILURES),
                 iu_import=data["config"].get(CONF_IU_IMPORT),
                 direct_valve_control_before_full_controller=data["config"].get(
                     CONF_DIRECT_VALVE_BEFORE_FULL_CONTROLLER

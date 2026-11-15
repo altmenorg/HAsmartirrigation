@@ -2529,34 +2529,42 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 <div class="setting-label">${t("notify_when")}</div>
                 <select
                   class="field"
-                  @change=${(e: Event) =>
-                    set({
-                      when: (e.target as HTMLSelectElement).value as
-                        | "finish"
-                        | "problems",
-                    })}
+                  @change=${(e: Event) => {
+                    // Three choices for two fields: the start is told only
+                    // along with the end.
+                    const value = (e.target as HTMLSelectElement).value;
+                    set(
+                      value === "start_and_finish"
+                        ? { when: "finish", start: true }
+                        : {
+                            when: value as "finish" | "problems",
+                            start: false,
+                          },
+                    );
+                  }}
                 >
-                  <option
-                    value="finish"
-                    ?selected=${notify.when !== "problems"}
-                  >
-                    ${t("notify_when_finish")}
-                  </option>
-                  <option
-                    value="problems"
-                    ?selected=${notify.when === "problems"}
-                  >
-                    ${t("notify_when_problems")}
-                  </option>
+                  ${(
+                    [
+                      ["start_and_finish", "notify_when_start_and_finish"],
+                      ["finish", "notify_when_finish"],
+                      ["problems", "notify_when_problems"],
+                    ] as const
+                  ).map(
+                    ([value, label]) => html`
+                      <option
+                        value=${value}
+                        ?selected=${value ===
+                        (notify.when === "problems"
+                          ? "problems"
+                          : notify.start
+                            ? "start_and_finish"
+                            : "finish")}
+                      >
+                        ${t(label)}
+                      </option>
+                    `,
+                  )}
                 </select>
-              </div>
-              <div class="setting-row">
-                <div class="setting-label">${t("notify_start")}</div>
-                <ha-switch
-                  .checked=${notify.start === true}
-                  @change=${(e: Event) =>
-                    set({ start: (e.target as any).checked })}
-                ></ha-switch>
               </div>
             `
           : ""}
@@ -4055,6 +4063,18 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               )}
             </div>`
         : ""}
+      ${this._numRow(
+        localize("observed_watering.set_aside_label", lang),
+        "",
+        config.set_aside_after ?? 0,
+        (v) =>
+          this.handleConfigChange({
+            set_aside_after: Math.min(10, Math.max(0, parseInt(v) || 0)),
+          }),
+      )}
+      <div class="card-content">
+        ${localize("observed_watering.set_aside_description", lang)}
+      </div>
     `;
   }
 

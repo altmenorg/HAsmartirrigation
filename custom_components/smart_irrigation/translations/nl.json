@@ -767,6 +767,17 @@
     "deprecated_recurring_schedule": {
       "title": "Terugkerende schema's verdwijnen: {action}",
       "description": "Een automatisering, een script of een dashboard heeft **{action}** aangeroepen. Terugkerende schema's werken nog, maar worden verwijderd vanaf versie {version}, in de winter, buiten het bewateringsseizoen.\n\nDe schema's van de programma's doen hetzelfde en staan in het paneel: stel ze in onder **Bewatering**, en verwijder dan de terugkerende schema's en de aanroepen van {action}."
+    },
+    "zone_set_aside": {
+      "title": "Zone {zone} is opzijgezet",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Zone {zone} weer inschakelen",
+            "description": "De klep van zone **{zone}** mislukte {count} keer op rij (ging niet open, gaf geen water, of de eigen timer kon niet worden ingesteld), dus Smart Irrigation beregent ze niet meer.\n\nControleer de klep, de voeding of batterijen en de watertoevoer. De zone komt vanzelf terug als haar klep opengaat, bijvoorbeeld met de hand getest. Of schakel ze nu weer in.\n\nSmart Irrigation beregent zone {zone} weer vanaf de volgende beurt en telt de mislukkingen opnieuw vanaf nul."
+          }
+        }
+      }
     }
   }
 }

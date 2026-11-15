@@ -821,7 +821,9 @@
         "no-valve": "Aucune vanne liée : cette zone n'est donc pas arrosée.",
         "no-valve-action": "Lier une vanne",
         "running": "Arrosage en cours, {time} restant.",
-        "running-paused": "Arrosage en pause, {time} restant."
+        "running-paused": "Arrosage en pause, {time} restant.",
+        "set-aside": "Mise de côté après {count} échecs de suite : pas arrosée tant qu'elle n'est pas remise en service.",
+        "put-back": "Remettre en service"
       },
       "calendar": {
         "title": "Calendrier d'arrosage (12 mois, estimé)",
@@ -1464,10 +1466,10 @@
     "notify_title": "Notifications",
     "notify_help": "Prévenir quelqu'un quand ce programme a arrosé : un téléphone, une entité de notification ou une notification dans Home Assistant. Rien n'est envoyé tant qu'aucune cible n'est cochée. Une vanne qui ne se ferme pas et une pompe qui ne répond pas sont signalées tout de suite.",
     "notify_persistent": "Notification dans Home Assistant",
-    "notify_when": "Quand",
-    "notify_when_finish": "Après chaque arrosage",
-    "notify_when_problems": "Seulement en cas de problème",
-    "notify_start": "Aussi au départ",
+    "notify_when": "Quand prévenir",
+    "notify_when_start_and_finish": "Au début et à la fin de chaque arrosage",
+    "notify_when_finish": "Juste à la fin de chaque arrosage",
+    "notify_when_problems": "Uniquement en cas de souci",
     "notify_none": "Home Assistant n'a pas encore de cible de notification : ajoutez l'application mobile ou une intégration de notification."
   },
   "supplies": {
@@ -1510,7 +1512,9 @@
     "pause_between_zones_description": "Une attente entre deux zones d'un arrosage séquentiel : le temps que la pression revienne, ou qu'une vanne lente finisse de se fermer avant que la suivante s'ouvre.",
     "minutes": "minutes",
     "seconds": "secondes",
-    "direct_control_locked": "Le contrôleur complet pilote les vannes : désactive-le d'abord pour changer ceci."
+    "direct_control_locked": "Le contrôleur complet pilote les vannes : désactive-le d'abord pour changer ceci.",
+    "set_aside_label": "Mettre une zone de côté après ce nombre d'échecs",
+    "set_aside_description": "Une vanne qui ne s'est pas ouverte, n'a pas donné d'eau ou dont la minuterie n'a pas pu être réglée ce nombre de fois de suite est mise de côté : aucun programme n'arrose la zone tant qu'elle n'est pas remise en service, au lieu d'échouer chaque matin. Vous êtes prévenu tout de suite (notifications des programmes, réparation dans Home Assistant, capteur de problème de la zone). Elle revient d'elle-même quand on voit sa vanne s'ouvrir, essayée à la main une fois réparée. 0 : jamais."
   },
   "calculation_log": {
     "title": "Journal de calcul",
@@ -1663,7 +1667,8 @@
       "no_flow": "la vanne s'est ouverte mais l'eau n'a pas coulé",
       "valve_timer_not_set": "la minuterie de la vanne n'a pas pu être réglée, elle est restée fermée",
       "supply_did_not_turn_on": "la pompe ou la vanne maîtresse n'a pas démarré",
-      "supply_did_not_turn_off": "la pompe ou la vanne maîtresse ne s'est pas arrêtée"
+      "supply_did_not_turn_off": "la pompe ou la vanne maîtresse ne s'est pas arrêtée",
+      "zone_set_aside": "mise de côté après plusieurs échecs : pas arrosée tant qu'elle n'est pas remise en service"
     }
   }
 }

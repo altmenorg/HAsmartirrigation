@@ -821,7 +821,9 @@
         "no-valve": "Brak powiązanego zaworu, więc ta strefa nie jest podlewana.",
         "no-valve-action": "Powiąż zawór",
         "running": "Trwa podlewanie, pozostało {time}.",
-        "running-paused": "Podlewanie wstrzymane, pozostało {time}."
+        "running-paused": "Podlewanie wstrzymane, pozostało {time}.",
+        "set-aside": "Odłożona po {count} nieudanych próbach z rzędu: nie jest podlewana, dopóki nie zostanie przywrócona.",
+        "put-back": "Przywróć"
       },
       "calendar": {
         "title": "Kalendarz podlewania (12 miesięcy, szacunek)",
@@ -1464,10 +1466,10 @@
     "notify_title": "Powiadomienia",
     "notify_help": "Daj komuś znać, gdy ten program podlał: telefon, encja powiadomień lub powiadomienie w Home Assistant. Nic nie jest wysyłane, dopóki żaden cel nie jest zaznaczony. Zawór, który się nie zamyka, i pompa, która nie odpowiada, są zgłaszane od razu.",
     "notify_persistent": "Powiadomienie w Home Assistant",
-    "notify_when": "Kiedy",
-    "notify_when_finish": "Po każdym podlewaniu",
-    "notify_when_problems": "Tylko gdy coś poszło nie tak",
-    "notify_start": "Także przy starcie",
+    "notify_when": "Kiedy powiadamiać",
+    "notify_when_start_and_finish": "Na początku i na końcu każdego podlewania",
+    "notify_when_finish": "Na końcu każdego podlewania",
+    "notify_when_problems": "Tylko gdy coś pójdzie nie tak",
     "notify_none": "Home Assistant nie ma jeszcze celu powiadomień: dodaj aplikację mobilną lub integrację notify."
   },
   "supplies": {
@@ -1510,7 +1512,9 @@
     "pause_between_zones_description": "Oczekiwanie między dwiema strefami nawadniania po kolei: czas, by ciśnienie w instalacji wróciło albo by wolny zaworek zamknął się przed otwarciem następnego.",
     "minutes": "minut",
     "seconds": "sekund",
-    "direct_control_locked": "Pełny kontroler steruje zaworami: najpierw go wyłącz, aby to zmienić."
+    "direct_control_locked": "Pełny kontroler steruje zaworami: najpierw go wyłącz, aby to zmienić.",
+    "set_aside_label": "Odłóż strefę po tylu nieudanych podlewaniach",
+    "set_aside_description": "Zawór, który tyle razy z rzędu się nie otworzył, nie dał wody lub nie dało się ustawić jego własnego timera, zostaje odłożony: żaden program nie podlewa strefy, dopóki nie zostanie przywrócona, zamiast zawodzić każdego ranka. Dowiesz się od razu (powiadomienia programów, naprawa w Home Assistant, czujnik problemu strefy). Wraca sama, gdy jej zawór się otworzy, np. sprawdzony ręcznie po naprawie. 0: nigdy."
   },
   "calculation_log": {
     "title": "Dziennik obliczeń",
@@ -1663,7 +1667,8 @@
       "no_flow": "zawór się otworzył, ale woda nie popłynęła",
       "valve_timer_not_set": "nie udało się ustawić własnego timera zaworu, pozostał zamknięty",
       "supply_did_not_turn_on": "pompa lub zawór główny nie ruszyły",
-      "supply_did_not_turn_off": "pompa lub zawór główny się nie zatrzymały"
+      "supply_did_not_turn_off": "pompa lub zawór główny się nie zatrzymały",
+      "zone_set_aside": "odłożona po kilku nieudanych próbach: nie jest podlewana, dopóki nie zostanie przywrócona"
     }
   }
 }
