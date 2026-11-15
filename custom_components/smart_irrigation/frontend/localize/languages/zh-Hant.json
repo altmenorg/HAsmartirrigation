@@ -1460,7 +1460,7 @@
     "suspended_until": "已擱置至 {when}：其排程不會啟動它。",
     "suspended": "已擱置",
     "lift_suspension": "解除",
-    "preview_title": "執行會做什麼",
+    "preview_title": "下一次澆水會做什麼",
     "preview_help": "每個區域各佔一行，顯示 Smart Irrigation 現在會澆水的時間長度。它們會隨天氣變化，因此實際開始時的執行可能不同。",
     "yaml_back": "返回編輯器",
     "yaml_edit": "以 YAML 編輯",
@@ -1700,6 +1700,8 @@
     "overlap": "重疊 {time}",
     "tours": "全部重來，{n} 遍",
     "notify": "通知",
-    "empty": "目前無需澆水。"
+    "empty": "目前無需澆水。",
+    "idle": "目前無需澆水",
+    "no_water": "暫無"
   }
 }

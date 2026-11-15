@@ -38,6 +38,8 @@ export interface ProgramFlow {
   steps: FlowStep[];
   supplies: FlowSupply[];
   tours: number;
+  /** Zones of the program with no water to give now: shown, not left out. */
+  idle: { zoneId: number; name: string }[];
 }
 
 interface SupplyLike {
@@ -57,6 +59,8 @@ export const programFlow = (
   timeline: Timeline | null | undefined,
   zones: ZoneLike[] = [],
   supplies: SupplyLike[] = [],
+  // Every zone the program can water, watered now or not (``idle``).
+  programZones: { id: number; name: string }[] = [],
 ): ProgramFlow => {
   const segments = timeline?.segments || [];
   const names = new Map(
@@ -114,5 +118,9 @@ export const programFlow = (
       before: Number(s.delay_before) || 0,
       after: Number(s.delay_after) || 0,
     }));
-  return { steps, supplies: flowSupplies, tours };
+  const watered = new Set(steps.flatMap((s) => s.zones.map((z) => z.zoneId)));
+  const idle = programZones
+    .filter((z) => !watered.has(z.id))
+    .map((z) => ({ zoneId: z.id, name: z.name }));
+  return { steps, supplies: flowSupplies, tours, idle };
 };

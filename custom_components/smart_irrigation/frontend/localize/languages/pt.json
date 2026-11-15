@@ -1460,7 +1460,7 @@
     "suspended_until": "Suspenso até {when}: os seus horários não o iniciam.",
     "suspended": "suspenso",
     "lift_suspension": "Levantar",
-    "preview_title": "O que uma rega faria",
+    "preview_title": "O que faria a próxima rega",
     "preview_help": "Cada zona na sua linha, com as durações que o Smart Irrigation regaria agora. Seguem o tempo, por isso uma rega pode diferir quando começar.",
     "yaml_back": "Voltar ao editor",
     "yaml_edit": "Editar em YAML",
@@ -1700,6 +1700,8 @@
     "overlap": "sobrepõe-se {time}",
     "tours": "Tudo de novo, {n} voltas",
     "notify": "Notificação",
-    "empty": "Nada a regar por agora."
+    "empty": "Nada a regar por agora.",
+    "idle": "Sem necessidade de água agora",
+    "no_water": "nada por agora"
   }
 }

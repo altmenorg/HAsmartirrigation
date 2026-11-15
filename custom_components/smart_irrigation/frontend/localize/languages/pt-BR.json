@@ -1460,7 +1460,7 @@
     "suspended_until": "Suspenso até {when}: os horários dele não o iniciam.",
     "suspended": "suspenso",
     "lift_suspension": "Retomar",
-    "preview_title": "O que uma irrigação faria",
+    "preview_title": "O que faria a próxima irrigação",
     "preview_help": "Cada zona em sua linha, com as durações que o Smart Irrigation irrigaria agora. Elas seguem o clima, então uma irrigação pode mudar quando começar.",
     "yaml_back": "Voltar ao editor",
     "yaml_edit": "Editar em YAML",
@@ -1700,6 +1700,8 @@
     "overlap": "sobrepõe {time}",
     "tours": "Tudo de novo, {n} voltas",
     "notify": "Notificação",
-    "empty": "Nada a irrigar agora."
+    "empty": "Nada a irrigar agora.",
+    "idle": "Sem necessidade de água agora",
+    "no_water": "nada por enquanto"
   }
 }

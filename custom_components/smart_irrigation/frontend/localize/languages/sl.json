@@ -1460,7 +1460,7 @@
     "suspended_until": "Zadržano do {when}: urniki ga ne zaženejo.",
     "suspended": "zadržano",
     "lift_suspension": "Odpravi",
-    "preview_title": "Kaj bi naredilo zalivanje",
+    "preview_title": "Kaj bi naredilo naslednje zalivanje",
     "preview_help": "Vsaka cona v svoji vrstici, s trajanji, ki bi jih Smart Irrigation zalival zdaj. Sledijo vremenu, zato se lahko zalivanje ob začetku razlikuje.",
     "yaml_back": "Nazaj v urejevalnik",
     "yaml_edit": "Uredi v YAML",
@@ -1700,6 +1700,8 @@
     "overlap": "prekriva za {time}",
     "tours": "Vse znova, {n} krogi",
     "notify": "Obvestilo",
-    "empty": "Trenutno ni kaj zaliti."
+    "empty": "Trenutno ni kaj zaliti.",
+    "idle": "Zdaj ni potrebe po vodi",
+    "no_water": "zdaj nič"
   }
 }

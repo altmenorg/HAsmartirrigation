@@ -86,4 +86,17 @@ describe("programFlow", () => {
   it("is empty when nothing would be watered", () => {
     expect(programFlow(null).steps).toEqual([]);
   });
+
+  it("names the zones of the program that need no water now", () => {
+    const flow = programFlow(
+      timeline([seg(2, 0, "water", 0, 74)]),
+      [],
+      [],
+      [
+        { id: 1, name: "Potager" },
+        { id: 2, name: "Serre" },
+      ],
+    );
+    expect(flow.idle).toEqual([{ zoneId: 1, name: "Potager" }]);
+  });
 });

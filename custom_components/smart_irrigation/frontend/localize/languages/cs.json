@@ -1460,7 +1460,7 @@
     "suspended_until": "Přerušen do {when}: jeho rozvrhy ho nespouštějí.",
     "suspended": "přerušen",
     "lift_suspension": "Zrušit",
-    "preview_title": "Co by zalévání udělalo",
+    "preview_title": "Co by udělalo příští zavlažování",
     "preview_help": "Každá zóna na vlastním řádku, s dobami, které by Smart Irrigation zaléval teď. Řídí se počasím, takže zalévání se při startu může lišit.",
     "yaml_back": "Zpět do editoru",
     "yaml_edit": "Upravit v YAML",
@@ -1700,6 +1700,8 @@
     "overlap": "překrývá o {time}",
     "tours": "Vše znovu, {n} kola",
     "notify": "Oznámení",
-    "empty": "Teď není co zalévat."
+    "empty": "Teď není co zalévat.",
+    "idle": "Teď není potřeba voda",
+    "no_water": "teď nic"
   }
 }

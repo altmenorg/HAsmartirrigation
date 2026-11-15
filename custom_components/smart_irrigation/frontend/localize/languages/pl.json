@@ -1460,7 +1460,7 @@
     "suspended_until": "Zawieszony do {when}: harmonogramy go nie uruchamiają.",
     "suspended": "zawieszony",
     "lift_suspension": "Znieś",
-    "preview_title": "Co zrobiłoby podlewanie",
+    "preview_title": "Co zrobiłoby następne podlewanie",
     "preview_help": "Każda strefa w osobnym wierszu, z czasami, które Smart Irrigation podlałby teraz. Zależą od pogody, więc podlewanie może się różnić w chwili startu.",
     "yaml_back": "Wróć do edytora",
     "yaml_edit": "Edytuj w YAML",
@@ -1700,6 +1700,8 @@
     "overlap": "nakłada się o {time}",
     "tours": "Wszystko od nowa, {n} rundy",
     "notify": "Powiadomienie",
-    "empty": "Teraz nic do podlania."
+    "empty": "Teraz nic do podlania.",
+    "idle": "Teraz bez potrzeby wody",
+    "no_water": "na razie nic"
   }
 }

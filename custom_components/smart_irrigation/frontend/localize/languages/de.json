@@ -1460,7 +1460,7 @@
     "suspended_until": "Ausgesetzt bis {when}: Seine Zeitpläne starten es nicht.",
     "suspended": "ausgesetzt",
     "lift_suspension": "Aufheben",
-    "preview_title": "Was eine Bewässerung tun würde",
+    "preview_title": "Was die nächste Bewässerung tun würde",
     "preview_help": "Jede Zone in einer eigenen Zeile, mit den Dauern, die Smart Irrigation jetzt bewässern würde. Sie folgen dem Wetter, daher kann ein Lauf beim Start abweichen.",
     "yaml_back": "Zurück zum Editor",
     "yaml_edit": "In YAML bearbeiten",
@@ -1700,6 +1700,8 @@
     "overlap": "überlappt um {time}",
     "tours": "Alles noch einmal, {n} Runden",
     "notify": "Benachrichtigung",
-    "empty": "Gerade nichts zu bewässern."
+    "empty": "Gerade nichts zu bewässern.",
+    "idle": "Jetzt kein Wasser nötig",
+    "no_water": "gerade nichts"
   }
 }

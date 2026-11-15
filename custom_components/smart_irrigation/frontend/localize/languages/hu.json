@@ -1460,7 +1460,7 @@
     "suspended_until": "Felfüggesztve eddig: {when}; az ütemezései nem indítják el.",
     "suspended": "felfüggesztve",
     "lift_suspension": "Feloldás",
-    "preview_title": "Mit tenne egy öntözés",
+    "preview_title": "Mit tenne a következő öntözés",
     "preview_help": "Minden zóna a saját sorában, azokkal az időtartamokkal, amelyeket a Smart Irrigation most öntözne. Az időjárást követik, így egy öntözés induláskor eltérhet.",
     "yaml_back": "Vissza a szerkesztőhöz",
     "yaml_edit": "Szerkesztés YAML-ben",
@@ -1700,6 +1700,8 @@
     "overlap": "átfedés {time}",
     "tours": "Minden újra, {n} forduló",
     "notify": "Értesítés",
-    "empty": "Most nincs mit öntözni."
+    "empty": "Most nincs mit öntözni.",
+    "idle": "Most nem kell víz",
+    "no_water": "most semmi"
   }
 }

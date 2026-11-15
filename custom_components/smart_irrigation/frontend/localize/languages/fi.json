@@ -1460,7 +1460,7 @@
     "suspended_until": "Keskeytetty {when} asti: sen aikataulut eivät käynnistä sitä.",
     "suspended": "keskeytetty",
     "lift_suspension": "Poista",
-    "preview_title": "Mitä kastelu tekisi",
+    "preview_title": "Mitä seuraava kastelu tekisi",
     "preview_help": "Jokainen vyöhyke omalla rivillään, kestoilla, jotka Smart Irrigation kastelisi nyt. Ne seuraavat säätä, joten kastelu voi poiketa alkaessaan.",
     "yaml_back": "Takaisin editoriin",
     "yaml_edit": "Muokkaa YAML-muodossa",
@@ -1700,6 +1700,8 @@
     "overlap": "limittyy {time}",
     "tours": "Kaikki uudelleen, {n} kierrosta",
     "notify": "Ilmoitus",
-    "empty": "Ei kasteltavaa nyt."
+    "empty": "Ei kasteltavaa nyt.",
+    "idle": "Ei vedentarvetta nyt",
+    "no_water": "ei mitään nyt"
   }
 }

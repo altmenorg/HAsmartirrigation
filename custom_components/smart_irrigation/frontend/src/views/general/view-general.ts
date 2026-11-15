@@ -1719,6 +1719,27 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       </details>
     `;
 
+    // Every zone a program can water: the main program every zone with a
+    // valve that is not off, another the zones of its steps that are on.
+    const programZones = (program: SmartIrrigationProgram) => {
+      const ids = program.main
+        ? this.zones
+            .filter((z) => z.linked_entity && String(z.state) !== "disabled")
+            .map((z) => z.id)
+        : [
+            ...new Set(
+              (program.steps || [])
+                .filter((s) => s.enabled !== false)
+                .flatMap((s) => s.zones || []),
+            ),
+          ];
+      return ids
+        .map((id) => ({
+          id: Number(id),
+          name: this.zones.find((z) => z.id === id)?.name ?? `#${id}`,
+        }))
+        .filter((z) => !isNaN(z.id));
+    };
     // A run drawn as a flow (objects and arrows, in order) or on a time axis.
     const drawRun = (program: SmartIrrigationProgram, timeline: any) => {
       const key = program.id ?? "";
@@ -1747,6 +1768,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 timeline,
                 this.zones as any,
                 (this.config?.supplies || []) as any,
+                programZones(program),
               )}
               .schedules=${schedules.map((s) => scheduleText(s))}
               .weather=${schedules.some((s) => s.weather !== false)}

@@ -1460,7 +1460,7 @@
     "suspended_until": "已挂起至 {when}：其计划不会启动它。",
     "suspended": "已挂起",
     "lift_suspension": "解除",
-    "preview_title": "一次浇水会做什么",
+    "preview_title": "下一次浇水会做什么",
     "preview_help": "每个区域一行，显示 Smart Irrigation 现在会浇的时长。时长随天气变化，因此实际开始时可能不同。",
     "yaml_back": "返回编辑器",
     "yaml_edit": "以 YAML 编辑",
@@ -1700,6 +1700,8 @@
     "overlap": "重叠 {time}",
     "tours": "全部重来，{n} 遍",
     "notify": "通知",
-    "empty": "目前无需浇水。"
+    "empty": "目前无需浇水。",
+    "idle": "目前无需浇水",
+    "no_water": "暂无"
   }
 }

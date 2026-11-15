@@ -1460,7 +1460,7 @@
     "suspended_until": "Uppskjutet till {when}: dess scheman startar det inte.",
     "suspended": "uppskjutet",
     "lift_suspension": "Häv",
-    "preview_title": "Vad en bevattning skulle göra",
+    "preview_title": "Vad nästa bevattning skulle göra",
     "preview_help": "Varje zon på en egen rad, med de tider Smart Irrigation skulle vattna nu. De följer vädret, så en bevattning kan bli annorlunda när den startar.",
     "yaml_back": "Tillbaka till redigeraren",
     "yaml_edit": "Redigera i YAML",
@@ -1700,6 +1700,8 @@
     "overlap": "överlappar {time}",
     "tours": "Allt igen, {n} varv",
     "notify": "Avisering",
-    "empty": "Inget att vattna just nu."
+    "empty": "Inget att vattna just nu.",
+    "idle": "Inget vattenbehov nu",
+    "no_water": "inget just nu"
   }
 }

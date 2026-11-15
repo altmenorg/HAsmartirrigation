@@ -1460,7 +1460,7 @@
     "suspended_until": "Suspended until {when}: its schedules do not start it.",
     "suspended": "suspended",
     "lift_suspension": "Lift",
-    "preview_title": "What a run would do",
+    "preview_title": "What the next watering would do",
     "preview_help": "Each zone on its own line, with the durations Smart Irrigation would water now. They follow the weather, so a run may differ when it starts.",
     "yaml_back": "Back to the editor",
     "yaml_edit": "Edit in YAML",
@@ -1700,6 +1700,8 @@
     "overlap": "overlaps by {time}",
     "tours": "Everything again, {n} rounds",
     "notify": "Notification",
-    "empty": "Nothing to water right now."
+    "empty": "Nothing to water right now.",
+    "idle": "No water needed now",
+    "no_water": "nothing now"
   }
 }

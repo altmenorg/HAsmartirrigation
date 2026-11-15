@@ -45,7 +45,7 @@ export class SmartIrrigationProgramFlow extends LitElement {
 
   render() {
     const flow = this.flow;
-    if (!flow || !flow.steps.length) {
+    if (!flow || (!flow.steps.length && !flow.idle.length)) {
       return html`<div class="empty">${this._t("empty")}</div>`;
     }
     const seconds = (s: number) => friendlyDuration(Math.abs(s));
@@ -138,6 +138,27 @@ export class SmartIrrigationProgramFlow extends LitElement {
             </div>
           `,
         )}
+        ${flow.idle.length
+          ? html`${flow.steps.length ? nothing : this._arrow()}
+              <div class="step idle">
+                <div class="step-head">
+                  <span>${this._t("idle")}</span>
+                </div>
+                <div class="valves">
+                  ${flow.idle.map(
+                    (zone) => html`
+                      <button
+                        class="node valve"
+                        @click=${() => this._openZone(zone.zoneId)}
+                      >
+                        <div class="title">${zone.name}</div>
+                        <div class="sub">${this._t("no_water")}</div>
+                      </button>
+                    `,
+                  )}
+                </div>
+              </div>`
+          : nothing}
         ${flow.tours > 1
           ? html`<div class="note loop">
               ↻ ${this._t("tours", { n: String(flow.tours) })}
@@ -286,6 +307,10 @@ export class SmartIrrigationProgramFlow extends LitElement {
     }
     .loop {
       margin-top: 8px;
+    }
+    .idle {
+      margin-top: 10px;
+      opacity: 0.55;
     }
     @media (max-width: 500px) {
       .side {

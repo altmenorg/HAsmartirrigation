@@ -1460,7 +1460,7 @@
     "suspended_until": "Opgeschort tot {when}: de schema's starten het niet.",
     "suspended": "opgeschort",
     "lift_suspension": "Opheffen",
-    "preview_title": "Wat een beregening zou doen",
+    "preview_title": "Wat de volgende beregening zou doen",
     "preview_help": "Elke zone op een eigen regel, met de duur die Smart Irrigation nu zou beregenen. Die volgt het weer, dus een beregening kan bij de start anders uitvallen.",
     "yaml_back": "Terug naar de editor",
     "yaml_edit": "Bewerken in YAML",
@@ -1700,6 +1700,8 @@
     "overlap": "overlapt {time}",
     "tours": "Alles opnieuw, {n} rondes",
     "notify": "Melding",
-    "empty": "Nu niets te beregenen."
+    "empty": "Nu niets te beregenen.",
+    "idle": "Nu geen water nodig",
+    "no_water": "nu niets"
   }
 }

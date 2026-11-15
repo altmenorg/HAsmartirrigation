@@ -1460,7 +1460,7 @@
     "suspended_until": "Suspenderet til {when}: tidsplanerne starter det ikke.",
     "suspended": "suspenderet",
     "lift_suspension": "Ophæv",
-    "preview_title": "Hvad en vanding ville gøre",
+    "preview_title": "Hvad den næste vanding ville gøre",
     "preview_help": "Hver zone på sin egen linje, med de varigheder Smart Irrigation ville vande nu. De følger vejret, så en vanding kan afvige, når den starter.",
     "yaml_back": "Tilbage til editoren",
     "yaml_edit": "Rediger i YAML",
@@ -1700,6 +1700,8 @@
     "overlap": "overlapper {time}",
     "tours": "Det hele igen, {n} runder",
     "notify": "Notifikation",
-    "empty": "Intet at vande lige nu."
+    "empty": "Intet at vande lige nu.",
+    "idle": "Intet vandbehov nu",
+    "no_water": "intet lige nu"
   }
 }

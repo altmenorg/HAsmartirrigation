@@ -1460,7 +1460,7 @@
     "suspended_until": "Suspendert til {when}: tidsplanene starter det ikke.",
     "suspended": "suspendert",
     "lift_suspension": "Opphev",
-    "preview_title": "Hva en vanning ville gjort",
+    "preview_title": "Hva neste vanning ville gjøre",
     "preview_help": "Hver sone på sin egen linje, med varighetene Smart Irrigation ville vannet nå. De følger været, så en vanning kan bli annerledes når den starter.",
     "yaml_back": "Tilbake til redigeringen",
     "yaml_edit": "Rediger i YAML",
@@ -1700,6 +1700,8 @@
     "overlap": "overlapper {time}",
     "tours": "Alt på nytt, {n} runder",
     "notify": "Varsel",
-    "empty": "Ingenting å vanne nå."
+    "empty": "Ingenting å vanne nå.",
+    "idle": "Ikke behov for vann nå",
+    "no_water": "ingenting nå"
   }
 }
