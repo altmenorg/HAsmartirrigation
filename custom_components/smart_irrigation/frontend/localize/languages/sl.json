@@ -1220,8 +1220,7 @@
     "multiplier": "Množitelj faktorja rastline",
     "threshold": "Zamik praga",
     "zones": "Cone",
-    "zones_hint": "all ali številke con, ločene z vejicami.",
-    "enabled": "Vklopljeno"
+    "zones_hint": "all ali številke con, ločene z vejicami."
   },
   "weather_skip": {
     "title": "Napoved dežja",
@@ -1289,7 +1288,7 @@
   "programs": {
     "title": "Programi",
     "description": "Program zaliva svoje korake drug za drugim. Korak je ena cona ali več con, ki se zalivajo skupaj, in privzeto traja toliko, kot je zanj izračunal Smart Irrigation. Več programov nikoli ne teče hkrati: naslednji počaka na vrsto.",
-    "main_description": "Zaliva vse cone, eno za drugo ali skupaj, kot je nastavljeno spodaj. Zažene ga sprožilec zagona ali njegovi lastni urniki, takoj ko je en vklopljen.",
+    "main_description": "Zaliva vsa območja, drugo za drugim ali skupaj, po svojih urnikih.",
     "run_options": "Možnosti tega zagona",
     "adjust_empty": "Vnesi odstotek ali sekunde, da prilagodiš trajanja.",
     "more_options": "Več možnosti",
@@ -1465,10 +1464,10 @@
     "lift_suspension": "Odpravi",
     "preview_title": "Kaj bi naredilo zalivanje",
     "preview_help": "Vsaka cona v svoji vrstici, s trajanji, ki bi jih Smart Irrigation zalival zdaj. Sledijo vremenu, zato se lahko zalivanje ob začetku razlikuje.",
+    "yaml_back": "Nazaj v urejevalnik",
     "yaml_edit": "Uredi v YAML",
     "yaml_help": "Program kot besedilo. Korak navede svoje cone z imenom ali številko, kar je izpuščeno, pa dobi privzeto vrednost. Nič se ne shrani, dokler ne uveljavite: časovnica spodaj kaže, kaj bi naredil program.",
     "yaml_apply": "Uveljavi",
-    "yaml_cancel": "Prekliči",
     "yaml_invalid": "To ni veljaven YAML.",
     "yaml_not_a_program": "To ni program: program je nabor ključev (name, steps, schedules).",
     "yaml_unknown_zones": "Cone ni mogoče najti ali ime delita dve coni, izpuščeno: {zones}",
@@ -1495,7 +1494,6 @@
     "delay_before_help": "Pozitivno: črpalka ali glavni ventil se vklopi toliko pred odprtjem ventila cone. Negativno: ventil cone se odpre najprej, črpalka ali glavni ventil pa se vklopi toliko pozneje.",
     "delay_after": "Zamik po",
     "delay_after_help": "Pozitivno: črpalka ali glavni ventil ostane vklopljen toliko po zaprtju ventila cone. Negativno: izklopi se toliko pred zaprtjem ventila cone, da črpalka nikoli ne potiska proti zaprtemu ventilu.",
-    "enabled": "Vklopljeno",
     "add": "Dodaj črpalko ali glavni ventil",
     "delete": "Izbriši",
     "confirm_delete": "Izbrišem »{name}«? Cone, ki ga uporabljajo, ne bodo več imele črpalke ali glavnega ventila.",
@@ -1539,7 +1537,6 @@
   "measured_skip": {
     "title": "Preskok glede na izmerjene razmere",
     "description": "Preveri se ob začetku vsakega zagona, iz senzorja ali vremenske storitve. Senzor, ki ga ni mogoče prebrati, nikoli ne ustavi zagona.",
-    "enabled": "Vklopljeno",
     "threshold": "Prag",
     "sensor": "Senzor",
     "sensor-optional": "Senzor (neobvezno)",

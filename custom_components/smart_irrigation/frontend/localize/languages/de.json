@@ -1220,8 +1220,7 @@
     "multiplier": "Multiplikator des Pflanzenfaktors",
     "threshold": "Schwellwert-Versatz",
     "zones": "Zonen",
-    "zones_hint": "alle oder die Nummern der Zonen, durch Kommas getrennt.",
-    "enabled": "Aktiviert"
+    "zones_hint": "alle oder die Nummern der Zonen, durch Kommas getrennt."
   },
   "weather_skip": {
     "title": "Regenvorhersage",
@@ -1289,7 +1288,7 @@
   "programs": {
     "title": "Programme",
     "description": "Ein Programm bewässert seine Schritte nacheinander. Ein Schritt ist eine Zone oder mehrere, die zusammen bewässert werden, und dauert standardmäßig so lange, wie Smart Irrigation es für ihn berechnet hat. Mehrere Programme laufen nie gleichzeitig: Das nächste wartet, bis es an der Reihe ist.",
-    "main_description": "Bewässert jede Zone, nacheinander oder gemeinsam, wie unten eingestellt. Es wird vom Startauslöser gestartet, oder von seinen eigenen Zeitplänen, sobald einer aktiviert ist.",
+    "main_description": "Bewässert alle Zonen, nacheinander oder zusammen, zu seinen Zeitplänen.",
     "run_options": "Optionen für diesen Start",
     "adjust_empty": "Gib einen Prozentsatz oder Sekunden ein, um die Dauern anzupassen.",
     "more_options": "Weitere Optionen",
@@ -1465,10 +1464,10 @@
     "lift_suspension": "Aufheben",
     "preview_title": "Was eine Bewässerung tun würde",
     "preview_help": "Jede Zone in einer eigenen Zeile, mit den Dauern, die Smart Irrigation jetzt bewässern würde. Sie folgen dem Wetter, daher kann ein Lauf beim Start abweichen.",
+    "yaml_back": "Zurück zum Editor",
     "yaml_edit": "In YAML bearbeiten",
     "yaml_help": "Das Programm als Text. Ein Schritt nennt seine Zonen mit Namen oder Nummer, und was fehlt, nimmt seinen Standardwert. Gespeichert wird erst beim Übernehmen: Die Zeitleiste darunter zeigt, was das Programm tun würde.",
     "yaml_apply": "Übernehmen",
-    "yaml_cancel": "Abbrechen",
     "yaml_invalid": "Das ist kein gültiges YAML.",
     "yaml_not_a_program": "Das ist kein Programm: Ein Programm ist eine Menge von Schlüsseln (name, steps, schedules).",
     "yaml_unknown_zones": "Zone nicht gefunden oder Name von zwei Zonen geteilt, ausgelassen: {zones}",
@@ -1495,7 +1494,6 @@
     "delay_before_help": "Positiv: Die Pumpe oder das Hauptventil geht so lange vor dem Öffnen des Zonenventils an. Negativ: Das Zonenventil öffnet zuerst, und die Pumpe oder das Hauptventil geht so lange danach an.",
     "delay_after": "Verzögerung danach",
     "delay_after_help": "Positiv: Die Pumpe oder das Hauptventil bleibt so lange nach dem Schließen des Zonenventils an. Negativ: Die Abschaltung erfolgt so lange vor dem Schließen des Zonenventils, damit eine Pumpe nie gegen ein geschlossenes Ventil drückt.",
-    "enabled": "Aktiviert",
     "add": "Pumpe oder Hauptventil hinzufügen",
     "delete": "Löschen",
     "confirm_delete": "„{name}“ löschen? Die Zonen, die diesen Eintrag nutzen, haben dann keine Pumpe und kein Hauptventil mehr.",
@@ -1539,7 +1537,6 @@
   "measured_skip": {
     "title": "Bei gemessenen Bedingungen überspringen",
     "description": "Wird zu Beginn jedes Durchlaufs geprüft, aus einem Sensor oder dem Wetterdienst. Ein Sensor, der nicht gelesen werden kann, verhindert nie einen Durchlauf.",
-    "enabled": "Aktiviert",
     "threshold": "Schwellwert",
     "sensor": "Sensor",
     "sensor-optional": "Sensor (optional)",

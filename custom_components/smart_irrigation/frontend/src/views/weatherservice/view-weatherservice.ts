@@ -240,10 +240,14 @@ export class SmartIrrigationViewWeatherService extends LitElement {
     }
 
     return html`
-      <ha-card header="${localize("panels.weatherservice.title", lang)}">
-        <div class="card-content ws-description">
-          ${localize("panels.weatherservice.description", lang)}
-        </div>
+      <ha-card>
+        <h1 class="card-header">
+          <span
+            >${localize("panels.weatherservice.title", lang)}<si-info
+              >${localize("panels.weatherservice.description", lang)}</si-info
+            ></span
+          >
+        </h1>
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">

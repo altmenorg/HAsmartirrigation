@@ -1916,12 +1916,17 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     }
 
     return html`
-      <ha-card
-        header="${localize("panels.mappings.title", this.hass.language)}"
-      >
-        <div class="card-content">
-          ${localize("panels.mappings.description", this.hass.language)}
-        </div>
+      <ha-card>
+        <h1 class="card-header">
+          <span
+            >${localize("panels.mappings.title", this.hass.language)}<si-info
+              >${localize(
+                "panels.mappings.description",
+                this.hass.language,
+              )}</si-info
+            ></span
+          >
+        </h1>
       </ha-card>
 
       ${this.renderMappingsList()} ${this._renderAddMapping()}

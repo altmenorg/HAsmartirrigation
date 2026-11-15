@@ -1220,8 +1220,7 @@
     "multiplier": "Násobitel plodinového faktoru",
     "threshold": "Posun prahu",
     "zones": "Zóny",
-    "zones_hint": "všechny, nebo čísla zón oddělená čárkami.",
-    "enabled": "Povoleno"
+    "zones_hint": "všechny, nebo čísla zón oddělená čárkami."
   },
   "weather_skip": {
     "title": "Předpověď deště",
@@ -1289,7 +1288,7 @@
   "programs": {
     "title": "Programy",
     "description": "Program zavlažuje své kroky jeden po druhém. Krok je jedna zóna nebo několik zón zavlažovaných společně a ve výchozím stavu trvá tak dlouho, jak pro něj Smart Irrigation vypočítala. Více programů nikdy neběží současně: další čeká, až na něj přijde řada.",
-    "main_description": "Zavlažuje každou zónu, jednu po druhé nebo společně podle nastavení níže. Spouští ho spouštěč startu, nebo jeho vlastní rozvrhy, jakmile je jeden zapnutý.",
+    "main_description": "Zavlažuje všechny zóny, jednu po druhé nebo společně, podle svých plánů.",
     "run_options": "Volby tohoto spuštění",
     "adjust_empty": "Zadejte procento nebo sekundy pro úpravu dob.",
     "more_options": "Další možnosti",
@@ -1465,10 +1464,10 @@
     "lift_suspension": "Zrušit",
     "preview_title": "Co by zalévání udělalo",
     "preview_help": "Každá zóna na vlastním řádku, s dobami, které by Smart Irrigation zaléval teď. Řídí se počasím, takže zalévání se při startu může lišit.",
+    "yaml_back": "Zpět do editoru",
     "yaml_edit": "Upravit v YAML",
     "yaml_help": "Program jako text. Krok uvádí své zóny jménem nebo číslem a co chybí, má výchozí hodnotu. Nic se neuloží, dokud nepoužijete: časová osa níže ukazuje, co by program udělal.",
     "yaml_apply": "Použít",
-    "yaml_cancel": "Zrušit",
     "yaml_invalid": "Toto není platný YAML.",
     "yaml_not_a_program": "Toto není program: program je sada klíčů (name, steps, schedules).",
     "yaml_unknown_zones": "Zóna nenalezena nebo jméno sdílené dvěma zónami, vynecháno: {zones}",
@@ -1495,7 +1494,6 @@
     "delay_before_help": "Kladné: čerpadlo nebo hlavní ventil se zapne o tolik dříve, než se otevře ventil zóny. Záporné: ventil zóny se otevře první a čerpadlo nebo hlavní ventil se zapne o tolik později.",
     "delay_after": "Zpoždění po",
     "delay_after_help": "Kladné: čerpadlo nebo hlavní ventil zůstane zapnutý o tolik déle po zavření ventilu zóny. Záporné: vypne se o tolik dříve, než se ventil zóny zavře, aby čerpadlo nikdy netlačilo proti zavřenému ventilu.",
-    "enabled": "Zapnuto",
     "add": "Přidat čerpadlo nebo hlavní ventil",
     "delete": "Smazat",
     "confirm_delete": "Smazat „{name}“? Zóny, které jej používají, už nebudou mít čerpadlo ani hlavní ventil.",
@@ -1539,7 +1537,6 @@
   "measured_skip": {
     "title": "Vynechat podle měřených podmínek",
     "description": "Kontroluje se na začátku každého zavlažování, ze senzoru nebo z meteoslužby. Senzor, který nelze přečíst, zavlažování nikdy nezastaví.",
-    "enabled": "Zapnuto",
     "threshold": "Prah",
     "sensor": "Senzor",
     "sensor-optional": "Senzor (nepovinné)",

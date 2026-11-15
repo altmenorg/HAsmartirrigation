@@ -11,6 +11,7 @@ import {
   mdiWeatherPartlyCloudy,
 } from "@mdi/js";
 
+import "./common/si-info";
 import "./views/general/view-general.ts";
 import "./views/zones/view-zones.ts";
 import "./views/modules/view-modules.ts";

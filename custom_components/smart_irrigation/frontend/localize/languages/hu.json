@@ -1220,8 +1220,7 @@
     "multiplier": "Növénytényező-szorzó",
     "threshold": "Küszöb eltolása",
     "zones": "Zónák",
-    "zones_hint": "mind, vagy a zónák számai vesszővel elválasztva.",
-    "enabled": "Bekapcsolva"
+    "zones_hint": "mind, vagy a zónák számai vesszővel elválasztva."
   },
   "weather_skip": {
     "title": "Csapadék-előrejelzés",
@@ -1289,7 +1288,7 @@
   "programs": {
     "title": "Programok",
     "description": "Egy program egymás után öntözi a lépéseit. Egy lépés egy zóna, vagy több együtt öntözött zóna, és alapértelmezés szerint annyi ideig tart, amennyit a Smart Irrigation kiszámolt hozzá. Több program sosem fut egyszerre: a következő megvárja a sorát.",
-    "main_description": "Minden zónát öntöz, egymás után vagy együtt, ahogy lejjebb be van állítva. Az indítási kiváltó indítja, vagy a saját ütemezései, amint egy be van kapcsolva.",
+    "main_description": "Minden zónát öntöz, egymás után vagy együtt, az ütemezései szerint.",
     "run_options": "Ennek az indításnak a beállításai",
     "adjust_empty": "Adj meg százalékot vagy másodperceket az időtartamok módosításához.",
     "more_options": "További beállítások",
@@ -1465,10 +1464,10 @@
     "lift_suspension": "Feloldás",
     "preview_title": "Mit tenne egy öntözés",
     "preview_help": "Minden zóna a saját sorában, azokkal az időtartamokkal, amelyeket a Smart Irrigation most öntözne. Az időjárást követik, így egy öntözés induláskor eltérhet.",
+    "yaml_back": "Vissza a szerkesztőhöz",
     "yaml_edit": "Szerkesztés YAML-ben",
     "yaml_help": "A program szövegként. Egy lépés névvel vagy számmal adja meg a zónáit, a kihagyott értékek az alapértelmezést kapják. Semmi sem mentődik az alkalmazásig: az alábbi idővonal mutatja, mit tenne a program.",
     "yaml_apply": "Alkalmaz",
-    "yaml_cancel": "Mégse",
     "yaml_invalid": "Ez nem érvényes YAML.",
     "yaml_not_a_program": "Ez nem program: a program kulcsok halmaza (name, steps, schedules).",
     "yaml_unknown_zones": "Nem található zóna, vagy két zóna közös neve, kihagyva: {zones}",
@@ -1495,7 +1494,6 @@
     "delay_before_help": "Pozitív: a szivattyú vagy a főszelep ennyivel a zónaszelep nyitása előtt kapcsol be. Negatív: a zónaszelep nyit először, és a szivattyú vagy a főszelep ennyivel később kapcsol be.",
     "delay_after": "Késleltetés utána",
     "delay_after_help": "Pozitív: a szivattyú vagy a főszelep ennyivel a zónaszelep zárása után marad bekapcsolva. Negatív: ennyivel a zónaszelep zárása előtt kapcsol ki, így a szivattyú sosem nyom zárt szelepnek.",
-    "enabled": "Engedélyezve",
     "add": "Szivattyú vagy főszelep hozzáadása",
     "delete": "Törlés",
     "confirm_delete": "Törlöd a(z) „{name}” elemet? Az azt használó zónáknak nem lesz többé szivattyújuk vagy főszelepük.",
@@ -1539,7 +1537,6 @@
   "measured_skip": {
     "title": "Kihagyás mért körülmények alapján",
     "description": "Minden öntözés elején ellenőrzésre kerül, érzékelőből vagy az időjárás-szolgáltatásból. Egy érzékelő, amit nem lehet kiolvasni, soha nem akadályoz meg öntözést.",
-    "enabled": "Bekapcsolva",
     "threshold": "Küszöb",
     "sensor": "Érzékelő",
     "sensor-optional": "Érzékelő (nem kötelező)",

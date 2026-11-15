@@ -643,11 +643,10 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
           "",
           config.forecast_days ?? 0,
           (v) => save({ forecast_days: parseInt(v, 10) || 0 }),
-        )}
-        <div class="setting-help">
-          ${localize("panels.zones.labels.forecast-days-help", lang)}
-          ${localize("panels.zones.labels.engine-shared-help", lang)}
-        </div>
+        )}<si-info
+          >${localize("panels.zones.labels.forecast-days-help", lang)}
+          ${localize("panels.zones.labels.engine-shared-help", lang)}</si-info
+        >
       `;
     }
     if (method === "fixed") {
@@ -659,10 +658,9 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
           // adds to the bucket: typed as is, 4 mm watered nothing, ever.
           evaporationOfDelta(config.delta),
           (v) => save({ delta: deltaOfEvaporation(v) }),
-        )}
-        <div class="setting-help">
-          ${localize("panels.zones.labels.engine-shared-help", lang)}
-        </div>
+        )}<si-info
+          >${localize("panels.zones.labels.engine-shared-help", lang)}</si-info
+        >
       `;
     }
     return "";
@@ -956,7 +954,12 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     return html`
       <div class="setting-row">
         <div class="setting-label">
-          ${localize("panels.zones.labels.crop-factor-by-month", lang)}
+          ${localize("panels.zones.labels.crop-factor-by-month", lang)}<si-info
+            >${localize(
+              "panels.zones.labels.crop-factor-by-month-help",
+              lang,
+            )}</si-info
+          >
         </div>
       </div>
       <div class="month-grid">
@@ -981,9 +984,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
             </label>
           `,
         )}
-      </div>
-      <div class="setting-help">
-        ${localize("panels.zones.labels.crop-factor-by-month-help", lang)}
       </div>
     `;
   }
@@ -1799,10 +1799,15 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                       )}`
                   : html`<div class="setting-row" id="zone-${zone.id}-valve">
                       <div class="setting-label">
-                        ${localize("panels.zones.labels.linked-entity", lang)}
-                        <div class="setting-hint">
-                          ${localize("panels.zones.labels.valve-off", lang)}
-                        </div>
+                        ${localize(
+                          "panels.zones.labels.linked-entity",
+                          lang,
+                        )}<si-info
+                          >${localize(
+                            "panels.zones.labels.valve-off",
+                            lang,
+                          )}</si-info
+                        >
                       </div>
                       <a
                         class="valve-off-link"
@@ -1877,7 +1882,15 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                         1,
                       )}
                       ${this._numRow(
-                        localize("panels.zones.labels.open-resends", lang),
+                        html`${localize(
+                            "panels.zones.labels.open-resends",
+                            lang,
+                          )}<si-info
+                            >${localize(
+                              "panels.zones.labels.confirm-timeout-help",
+                              lang,
+                            )}</si-info
+                          >`,
                         "",
                         zone.open_resends,
                         (v) => {
@@ -1892,14 +1905,16 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                         },
                         1,
                       )}
-                      <div class="setting-help">
-                        ${localize(
-                          "panels.zones.labels.confirm-timeout-help",
-                          lang,
-                        )}
-                      </div>
                       ${this._entityRow(
-                        localize("panels.zones.labels.safety-off-entity", lang),
+                        html`${localize(
+                            "panels.zones.labels.safety-off-entity",
+                            lang,
+                          )}<si-info
+                            >${localize(
+                              "panels.zones.labels.safety-off-entity-help",
+                              lang,
+                            )}</si-info
+                          >`,
                         localize("panels.zones.labels.optional", lang),
                         zone.safety_off_entity ?? undefined,
                         ["number", "input_number"],
@@ -1909,12 +1924,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                             [ZONE_SAFETY_OFF_ENTITY]: v || null,
                           }),
                       )}
-                      <div class="setting-help">
-                        ${localize(
-                          "panels.zones.labels.safety-off-entity-help",
-                          lang,
-                        )}
-                      </div>
                       ${this._textRow(
                         localize("panels.zones.labels.safety-off-topic", lang),
                         localize("panels.zones.labels.optional", lang),
@@ -1941,7 +1950,20 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           )
                         : ""}
                       ${this._selectRow(
-                        localize("panels.zones.labels.safety-off-mode", lang),
+                        html`${html`${localize(
+                              "panels.zones.labels.safety-off-mode",
+                              lang,
+                            )}<si-info
+                              >${localize(
+                                "panels.zones.labels.safety-off-topic-help",
+                                lang,
+                              )}</si-info
+                            >`}<si-info
+                            >${localize(
+                              "panels.zones.labels.safety-off-mode-help",
+                              lang,
+                            )}</si-info
+                          >`,
                         html`
                           ${["auto", "zha", "off"].map(
                             (m) => html`
@@ -1966,25 +1988,18 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                             ).value,
                           }),
                       )}
-                      <div class="setting-help">
-                        ${localize(
-                          "panels.zones.labels.safety-off-topic-help",
-                          lang,
-                        )}
-                      </div>
-                      <div class="setting-help">
-                        ${localize(
-                          "panels.zones.labels.safety-off-mode-help",
-                          lang,
-                        )}
-                      </div>
                       ${this._canSetValveTimer(zone)
                         ? html`
                             ${this._selectRow(
-                              localize(
-                                "panels.zones.labels.safety-off-required",
-                                lang,
-                              ),
+                              html`${localize(
+                                  "panels.zones.labels.safety-off-required",
+                                  lang,
+                                )}<si-info
+                                  >${localize(
+                                    "panels.zones.labels.safety-off-required-help",
+                                    lang,
+                                  )}</si-info
+                                >`,
                               html`
                                 ${["open", "skip"].map(
                                   (m) => html`
@@ -2010,12 +2025,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                                     "skip",
                                 }),
                             )}
-                            <div class="setting-help">
-                              ${localize(
-                                "panels.zones.labels.safety-off-required-help",
-                                lang,
-                              )}
-                            </div>
                           `
                         : ""}
                     `)
@@ -2042,10 +2051,15 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                   this.config?.observed_watering_enabled && zone.linked_entity
                     ? html`
                         ${this._numRow(
-                          localize(
-                            "panels.zones.labels.observed-ignore-seconds",
-                            lang,
-                          ),
+                          html`${localize(
+                              "panels.zones.labels.observed-ignore-seconds",
+                              lang,
+                            )}<si-info
+                              >${localize(
+                                "panels.zones.labels.observed-ignore-seconds-help",
+                                lang,
+                              )}</si-info
+                            >`,
                           "s",
                           zone.observed_ignore_seconds,
                           (v) => {
@@ -2061,12 +2075,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           },
                           1,
                         )}
-                        <div class="setting-help">
-                          ${localize(
-                            "panels.zones.labels.observed-ignore-seconds-help",
-                            lang,
-                          )}
-                        </div>
                       `
                     : "",
                 )}
@@ -2317,72 +2325,73 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 ${this._adv(this._cropFactorByMonth(zone, index, lang))}
                 ${this._adv(
                   html`${this._numRow(
-                      localize("panels.zones.labels.available-water", lang),
-                      output_unit(this.config, ZONE_BUCKET),
-                      zone.available_water != null
-                        ? Number(zone.available_water).toFixed(1)
-                        : "",
-                      (v) => {
-                        const mm = parseFloat(v);
-                        this.handleEditZone(index, {
-                          ...zone,
-                          [ZONE_AVAILABLE_WATER]:
-                            isNaN(mm) || mm <= 0 ? null : mm,
-                        });
-                      },
-                      1,
-                    )}
-                    ${this._numRow(
-                      localize("panels.zones.labels.allowed-depletion", lang),
-                      "%",
-                      zone.allowed_depletion != null
-                        ? Number(zone.allowed_depletion).toFixed(0)
-                        : "",
-                      (v) => {
-                        const pct = parseFloat(v);
-                        this.handleEditZone(index, {
-                          ...zone,
-                          [ZONE_ALLOWED_DEPLETION]: isNaN(pct)
-                            ? null
-                            : Math.min(95, Math.max(5, pct)),
-                        });
-                      },
-                      5,
-                    )}
-                    <div class="setting-help">
-                      ${localize(
-                        "panels.zones.labels.available-water-help",
+                    localize("panels.zones.labels.available-water", lang),
+                    output_unit(this.config, ZONE_BUCKET),
+                    zone.available_water != null
+                      ? Number(zone.available_water).toFixed(1)
+                      : "",
+                    (v) => {
+                      const mm = parseFloat(v);
+                      this.handleEditZone(index, {
+                        ...zone,
+                        [ZONE_AVAILABLE_WATER]:
+                          isNaN(mm) || mm <= 0 ? null : mm,
+                      });
+                    },
+                    1,
+                  )}
+                  ${this._numRow(
+                    html`${localize(
+                        "panels.zones.labels.allowed-depletion",
                         lang,
-                      )}
-                    </div>`,
+                      )}<si-info
+                        >${localize(
+                          "panels.zones.labels.available-water-help",
+                          lang,
+                        )}</si-info
+                      >`,
+                    "%",
+                    zone.allowed_depletion != null
+                      ? Number(zone.allowed_depletion).toFixed(0)
+                      : "",
+                    (v) => {
+                      const pct = parseFloat(v);
+                      this.handleEditZone(index, {
+                        ...zone,
+                        [ZONE_ALLOWED_DEPLETION]: isNaN(pct)
+                          ? null
+                          : Math.min(95, Math.max(5, pct)),
+                      });
+                    },
+                    5,
+                  )}`,
                 )}
                 ${this._adv(
                   html`${this._numRow(
-                      localize(
+                    html`${localize(
                         "panels.zones.labels.distribution-efficiency",
                         lang,
-                      ),
-                      "%",
-                      zone.distribution_efficiency != null
-                        ? Number(zone.distribution_efficiency).toFixed(0)
-                        : "",
-                      (v) => {
-                        const pct = parseFloat(v);
-                        this.handleEditZone(index, {
-                          ...zone,
-                          [ZONE_DISTRIBUTION_EFFICIENCY]: isNaN(pct)
-                            ? null
-                            : Math.min(100, Math.max(5, pct)),
-                        });
-                      },
-                      5,
-                    )}
-                    <div class="setting-help">
-                      ${localize(
-                        "panels.zones.labels.distribution-efficiency-help",
-                        lang,
-                      )}
-                    </div>`,
+                      )}<si-info
+                        >${localize(
+                          "panels.zones.labels.distribution-efficiency-help",
+                          lang,
+                        )}</si-info
+                      >`,
+                    "%",
+                    zone.distribution_efficiency != null
+                      ? Number(zone.distribution_efficiency).toFixed(0)
+                      : "",
+                    (v) => {
+                      const pct = parseFloat(v);
+                      this.handleEditZone(index, {
+                        ...zone,
+                        [ZONE_DISTRIBUTION_EFFICIENCY]: isNaN(pct)
+                          ? null
+                          : Math.min(100, Math.max(5, pct)),
+                      });
+                    },
+                    5,
+                  )}`,
                 )}
                 ${this._adv(
                   this._numRow(
@@ -2412,30 +2421,29 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                 )}
                 ${this._adv(
                   html`${this._numRow(
-                      localize(
+                    html`${localize(
                         "panels.zones.labels.days-between-irrigation",
                         lang,
-                      ),
-                      localize("panels.zones.labels.days", lang),
-                      zone.days_between_irrigation,
-                      (v) => {
-                        // Empty means "follow the general setting".
-                        const days = parseInt(v, 10);
-                        this.handleEditZone(index, {
-                          ...zone,
-                          [ZONE_DAYS_BETWEEN_IRRIGATION]: isNaN(days)
-                            ? null
-                            : Math.max(0, days),
-                        });
-                      },
-                      1,
-                    )}
-                    <div class="setting-help">
-                      ${localize(
-                        "panels.zones.labels.days-between-irrigation-help",
-                        lang,
-                      )}
-                    </div>`,
+                      )}<si-info
+                        >${localize(
+                          "panels.zones.labels.days-between-irrigation-help",
+                          lang,
+                        )}</si-info
+                      >`,
+                    localize("panels.zones.labels.days", lang),
+                    zone.days_between_irrigation,
+                    (v) => {
+                      // Empty means "follow the general setting".
+                      const days = parseInt(v, 10);
+                      this.handleEditZone(index, {
+                        ...zone,
+                        [ZONE_DAYS_BETWEEN_IRRIGATION]: isNaN(days)
+                          ? null
+                          : Math.max(0, days),
+                      });
+                    },
+                    1,
+                  )}`,
                 )}
                 ${this._adv(
                   this._entityRow(
@@ -2478,10 +2486,15 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                   // A figure to compare setups by: the advanced panel's.
                   this._adv(html`
                     ${this._valueRow(
-                      html`${localize(
-                        "panels.zones.labels.et-deficiency",
-                        lang,
-                      )}`,
+                      html`${html`${localize(
+                          "panels.zones.labels.et-deficiency",
+                          lang,
+                        )}`}<si-info
+                          >${localize(
+                            "panels.zones.labels.et-deficiency-help",
+                            lang,
+                          )}</si-info
+                        >`,
                       zone.et_deficiency != null
                         ? `${this._n(Number(zone.et_deficiency), 2)} ${unit_text(
                             this.config,
@@ -2489,12 +2502,6 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
                           )}`
                         : "—",
                     )}
-                    <div class="setting-help">
-                      ${localize(
-                        "panels.zones.labels.et-deficiency-help",
-                        lang,
-                      )}
-                    </div>
                   `)
                 }
                 ${this._durationRow(zone, index, lang, durationReadonly)}
@@ -2677,10 +2684,9 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
             [ZONE_DURATION]: Math.max(0, Math.round(parseFloat(v) * 60) || 0),
           }),
         1,
-      )}
-      <div class="setting-help">
-        = ${this._friendlyDuration(Number(zone.duration) || 0)}
-      </div>`;
+      )}<si-info
+        >= ${this._friendlyDuration(Number(zone.duration) || 0)}</si-info
+      >`;
   }
 
   /** A value, with a "Change" button that opens its field when it has a key. */
@@ -2732,7 +2738,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
   // --- modern row helpers (HA-native controls) ---
   private _textRow(
-    label: string,
+    label: string | TemplateResult,
     unit: string | TemplateResult,
     value: any,
     onCommit: (v: string) => void,
@@ -2819,10 +2825,9 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
 
   /** A label with one plain sentence under it. */
   private _labelWithHint(name: string, lang: string): TemplateResult {
-    return html`${localize(`panels.zones.labels.${name}`, lang)}
-      <div class="setting-hint">
-        ${localize(`panels.zones.labels.${name}-hint`, lang)}
-      </div>`;
+    return html`${localize(`panels.zones.labels.${name}`, lang)}<si-info
+        >${localize(`panels.zones.labels.${name}-hint`, lang)}</si-info
+      >`;
   }
 
   private _selectRow(
@@ -2859,7 +2864,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     );
 
   private _entityRow(
-    label: string,
+    label: string | TemplateResult,
     unit: string,
     value: string | undefined,
     includeDomains: string[],
@@ -2870,7 +2875,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
       <div class="setting-row">
         <div class="setting-label">
           ${label}${unit ? html` <span class="unit">(${unit})</span>` : ""}
-          ${hint ? html`<div class="setting-hint">${hint}</div>` : ""}
+          ${hint ? html`<si-info>${hint}</si-info>` : ""}
         </div>
         <ha-entity-picker
           class="entity-field"
@@ -2902,8 +2907,7 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
         <div class="setting-row">
           <div class="setting-label">
             ${n === 0
-              ? html`${label}
-                ${hint ? html`<div class="setting-hint">${hint}</div>` : ""}`
+              ? html`${label} ${hint ? html`<si-info>${hint}</si-info>` : ""}`
               : ""}
           </div>
           <ha-entity-picker
@@ -3110,10 +3114,17 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
     }
 
     return html`
-      <ha-card header="${localize("panels.zones.title", this.hass.language)}">
-        <div class="card-content">
-          ${localize("panels.zones.description", this.hass.language)}
-        </div>
+      <ha-card>
+        <h1 class="card-header">
+          <span
+            >${localize("panels.zones.title", this.hass.language)}<si-info
+              >${localize(
+                "panels.zones.description",
+                this.hass.language,
+              )}</si-info
+            ></span
+          >
+        </h1>
       </ha-card>
       ${repeat(
         this.zones,

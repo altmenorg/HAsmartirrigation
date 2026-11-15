@@ -1220,8 +1220,7 @@
     "multiplier": "Multiplikator for afgrødefaktor",
     "threshold": "Forskydning af grænse",
     "zones": "Zoner",
-    "zones_hint": "alle, eller zonenumrene adskilt af kommaer.",
-    "enabled": "Aktiveret"
+    "zones_hint": "alle, eller zonenumrene adskilt af kommaer."
   },
   "weather_skip": {
     "title": "Regnvarsel",
@@ -1289,7 +1288,7 @@
   "programs": {
     "title": "Programmer",
     "description": "Et program vander sine trin et efter et. Et trin er én zone, eller flere der vandes samtidig, og varer som standard den tid, Smart Irrigation har beregnet til det. Flere programmer kører aldrig samtidig: det næste venter på sin tur.",
-    "main_description": "Vander hver zone, én efter én eller samtidig som angivet nedenfor. Det startes af startudløseren, eller af sine egne tidsplaner, så snart én er aktiveret.",
+    "main_description": "Vander alle zoner, efter hinanden eller sammen, efter sine tidsplaner.",
     "run_options": "Indstillinger for denne start",
     "adjust_empty": "Angiv en procentdel eller sekunder for at justere varighederne.",
     "more_options": "Flere indstillinger",
@@ -1465,10 +1464,10 @@
     "lift_suspension": "Ophæv",
     "preview_title": "Hvad en vanding ville gøre",
     "preview_help": "Hver zone på sin egen linje, med de varigheder Smart Irrigation ville vande nu. De følger vejret, så en vanding kan afvige, når den starter.",
+    "yaml_back": "Tilbage til editoren",
     "yaml_edit": "Rediger i YAML",
     "yaml_help": "Programmet som tekst. Et trin angiver sine zoner med navn eller nummer, og det udeladte får sin standardværdi. Intet gemmes, før du anvender: tidslinjen nedenfor viser, hvad programmet ville gøre.",
     "yaml_apply": "Anvend",
-    "yaml_cancel": "Annuller",
     "yaml_invalid": "Dette er ikke gyldig YAML.",
     "yaml_not_a_program": "Dette er ikke et program: et program er et sæt nøgler (name, steps, schedules).",
     "yaml_unknown_zones": "Zone ikke fundet, eller navn som to zoner deler, udeladt: {zones}",
@@ -1495,7 +1494,6 @@
     "delay_before_help": "Positiv: pumpen eller hovedventilen tændes så lang tid, før zoneventilen åbner. Negativ: zoneventilen åbner først, og pumpen eller hovedventilen tændes så lang tid efter.",
     "delay_after": "Forsinkelse efter",
     "delay_after_help": "Positiv: pumpen eller hovedventilen forbliver tændt så lang tid, efter zoneventilen lukker. Negativ: den slukkes så lang tid, før zoneventilen lukker, så en pumpe aldrig presser mod en lukket ventil.",
-    "enabled": "Aktiveret",
     "add": "Tilføj en pumpe eller hovedventil",
     "delete": "Slet",
     "confirm_delete": "Slet \"{name}\"? De zoner, der bruger den, har så ikke længere en pumpe eller hovedventil.",
@@ -1539,7 +1537,6 @@
   "measured_skip": {
     "title": "Spring over ved målte forhold",
     "description": "Tjekkes ved starten af hver vanding, fra en sensor eller fra vejrtjenesten. En sensor der ikke kan læses, stopper aldrig en vanding.",
-    "enabled": "Slået til",
     "threshold": "Grænse",
     "sensor": "Sensor",
     "sensor-optional": "Sensor (valgfri)",

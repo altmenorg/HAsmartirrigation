@@ -1220,8 +1220,7 @@
     "multiplier": "Faktor för justering av grödkoefficienten",
     "threshold": "Justering av bevattningströskeln",
     "zones": "Zoner",
-    "zones_hint": "Ange all för alla zoner eller skriv zonnumren åtskilda med kommatecken.",
-    "enabled": "Aktiverad"
+    "zones_hint": "Ange all för alla zoner eller skriv zonnumren åtskilda med kommatecken."
   },
   "weather_skip": {
     "title": "Regnprognos",
@@ -1289,7 +1288,7 @@
   "programs": {
     "title": "Program",
     "description": "Programmet kör ett steg i taget. I varje steg bevattnas en zon eller flera zoner samtidigt, normalt under den tid som Smart Irrigation har beräknat. Bara ett program körs åt gången. Övriga väntar på sin tur.",
-    "main_description": "Bevattnar alla zoner, en i taget eller samtidigt enligt inställningarna nedan. Startutlösaren startar programmet tills du aktiverar ett eget schema för det.",
+    "main_description": "Vattnar alla zoner, efter varandra eller samtidigt, enligt sina scheman.",
     "run_options": "Alternativ för den här starten",
     "adjust_empty": "Ange en procentsats eller sekunder för att justera tiderna.",
     "more_options": "Fler alternativ",
@@ -1465,10 +1464,10 @@
     "lift_suspension": "Häv",
     "preview_title": "Vad en bevattning skulle göra",
     "preview_help": "Varje zon på en egen rad, med de tider Smart Irrigation skulle vattna nu. De följer vädret, så en bevattning kan bli annorlunda när den startar.",
+    "yaml_back": "Tillbaka till redigeraren",
     "yaml_edit": "Redigera i YAML",
     "yaml_help": "Programmet som text. Ett steg anger sina zoner med namn eller nummer, och det som utelämnas får sitt standardvärde. Inget sparas förrän du tillämpar: tidslinjen nedan visar vad programmet skulle göra.",
     "yaml_apply": "Tillämpa",
-    "yaml_cancel": "Avbryt",
     "yaml_invalid": "Det här är inte giltig YAML.",
     "yaml_not_a_program": "Det här är inte ett program: ett program är en uppsättning nycklar (name, steps, schedules).",
     "yaml_unknown_zones": "Zon hittades inte, eller namn som två zoner delar, utelämnad: {zones}",
@@ -1495,7 +1494,6 @@
     "delay_before_help": "Positivt: pumpen eller huvudventilen slås på så här länge innan zonventilen öppnas. Negativt: zonventilen öppnas först, och pumpen eller huvudventilen slås på så här länge efteråt.",
     "delay_after": "Fördröjning efter",
     "delay_after_help": "Med ett positivt värde fortsätter pumpen att gå eller huvudventilen att vara öppen så här länge efter att zonventilen stängts. Med ett negativt värde stängs pumpen eller huvudventilen av så här länge innan zonventilen stängs. Det hindrar pumpen från att arbeta mot en stängd ventil.",
-    "enabled": "Aktiverad",
     "add": "Lägg till en pump eller huvudventil",
     "delete": "Ta bort",
     "confirm_delete": "Ta bort ”{name}”? Zonerna som använder den har inte längre någon pump eller huvudventil.",
@@ -1539,7 +1537,6 @@
   "measured_skip": {
     "title": "Hoppa över vid uppmätta förhållanden",
     "description": "Villkoren kontrolleras inför varje körning med uppgifter från en sensor eller vädertjänsten. Om ett sensorvärde saknas hindrar det inte bevattningen.",
-    "enabled": "På",
     "threshold": "Gräns",
     "sensor": "Sensor",
     "sensor-optional": "Sensor (valfri)",

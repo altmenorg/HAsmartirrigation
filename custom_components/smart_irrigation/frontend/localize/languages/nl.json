@@ -1220,8 +1220,7 @@
     "multiplier": "Vermenigvuldiger gewasfactor",
     "threshold": "Drempelcorrectie",
     "zones": "Zones",
-    "zones_hint": "alle, of de nummers van de zones, gescheiden door komma's.",
-    "enabled": "Ingeschakeld"
+    "zones_hint": "alle, of de nummers van de zones, gescheiden door komma's."
   },
   "weather_skip": {
     "title": "Regenverwachting",
@@ -1289,7 +1288,7 @@
   "programs": {
     "title": "Programma's",
     "description": "Een programma bewatert zijn stappen na elkaar. Een stap is één zone, of meerdere zones die samen worden bewaterd, en duurt standaard zo lang als Smart Irrigation ervoor berekende. Meerdere programma's draaien nooit tegelijk: het volgende wacht op zijn beurt.",
-    "main_description": "Bewatert alle zones, na elkaar of samen zoals hieronder ingesteld. Het wordt gestart door de starttrigger, of door zijn eigen schema's zodra er één is ingeschakeld.",
+    "main_description": "Bewatert alle zones, na elkaar of samen, volgens zijn schema's.",
     "run_options": "Opties voor deze start",
     "adjust_empty": "Vul een percentage of seconden in om de duur aan te passen.",
     "more_options": "Meer opties",
@@ -1465,10 +1464,10 @@
     "lift_suspension": "Opheffen",
     "preview_title": "Wat een beregening zou doen",
     "preview_help": "Elke zone op een eigen regel, met de duur die Smart Irrigation nu zou beregenen. Die volgt het weer, dus een beregening kan bij de start anders uitvallen.",
+    "yaml_back": "Terug naar de editor",
     "yaml_edit": "Bewerken in YAML",
     "yaml_help": "Het programma als tekst. Een stap noemt zijn zones bij naam of nummer, en wat wordt weggelaten krijgt de standaardwaarde. Er wordt niets opgeslagen tot je toepast: de tijdlijn hieronder toont wat het programma zou doen.",
     "yaml_apply": "Toepassen",
-    "yaml_cancel": "Annuleren",
     "yaml_invalid": "Dit is geen geldige YAML.",
     "yaml_not_a_program": "Dit is geen programma: een programma is een verzameling sleutels (name, steps, schedules).",
     "yaml_unknown_zones": "Zone niet gevonden, of naam die twee zones delen, weggelaten: {zones}",
@@ -1495,7 +1494,6 @@
     "delay_before_help": "Positief: de pomp of het hoofdventiel gaat zoveel eerder aan dan het zoneventiel opent. Negatief: het zoneventiel opent eerst, en de pomp of het hoofdventiel gaat zoveel later aan.",
     "delay_after": "Vertraging erna",
     "delay_after_help": "Positief: de pomp of het hoofdventiel blijft zoveel langer aan nadat het zoneventiel sluit. Negatief: die gaat zoveel eerder uit dan het zoneventiel sluit, zodat een pomp nooit tegen een gesloten ventiel duwt.",
-    "enabled": "Ingeschakeld",
     "add": "Een pomp of hoofdventiel toevoegen",
     "delete": "Verwijderen",
     "confirm_delete": "\"{name}\" verwijderen? De zones die het gebruiken hebben dan geen pomp of hoofdventiel meer.",
@@ -1539,7 +1537,6 @@
   "measured_skip": {
     "title": "Overslaan op gemeten omstandigheden",
     "description": "Wordt gecontroleerd aan het begin van elke ronde, vanuit een sensor of de weerdienst. Een sensor die niet gelezen kan worden houdt een ronde nooit tegen.",
-    "enabled": "Aan",
     "threshold": "Drempel",
     "sensor": "Sensor",
     "sensor-optional": "Sensor (optioneel)",

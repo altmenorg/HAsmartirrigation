@@ -1220,8 +1220,7 @@
     "multiplier": "作物係數乘數",
     "threshold": "閾值偏移量",
     "zones": "區域",
-    "zones_hint": "全部，或以逗號分隔的區域編號。",
-    "enabled": "已啟用"
+    "zones_hint": "全部，或以逗號分隔的區域編號。"
   },
   "weather_skip": {
     "title": "降雨預報",
@@ -1289,7 +1288,7 @@
   "programs": {
     "title": "程式",
     "description": "程式會依序為其步驟澆水。一個步驟可以是一個區域，或同時澆水的多個區域，預設採用 Smart Irrigation 為其計算出的時間長度。多個程式不會同時執行：下一個會等待輪到它。",
-    "main_description": "為每個區域澆水，依下方的設定依序或同時進行。它由啟動觸發條件啟動，或在啟用其自己的排程後由排程啟動。",
+    "main_description": "依其排程澆灌所有區域，依序或同時進行。",
     "run_options": "本次執行的選項",
     "adjust_empty": "請輸入百分比或秒數以調整時間長度。",
     "more_options": "更多選項",
@@ -1465,10 +1464,10 @@
     "lift_suspension": "解除",
     "preview_title": "執行會做什麼",
     "preview_help": "每個區域各佔一行，顯示 Smart Irrigation 現在會澆水的時間長度。它們會隨天氣變化，因此實際開始時的執行可能不同。",
+    "yaml_back": "返回編輯器",
     "yaml_edit": "以 YAML 編輯",
     "yaml_help": "以文字呈現的程式。步驟可用名稱或編號指定區域，省略的內容會採用預設值。在你套用之前不會儲存任何內容：下方的時間軸會顯示程式將會做什麼。",
     "yaml_apply": "套用",
-    "yaml_cancel": "取消",
     "yaml_invalid": "這不是有效的 YAML。",
     "yaml_not_a_program": "這不是程式：程式是一組鍵（name、steps、schedules）。",
     "yaml_unknown_zones": "找不到區域，或有兩個區域共用的名稱，已略過：{zones}",
@@ -1495,7 +1494,6 @@
     "delay_before_help": "正值：水泵或主閥會在區域閥門開啟前這麼久開啟。負值：區域閥門先開啟，水泵或主閥在這麼久之後才開啟。",
     "delay_after": "延後延遲",
     "delay_after_help": "正值：區域閥門關閉後，水泵或主閥會再維持開啟這麼久。負值：它會在區域閥門關閉前這麼久先關閉，使水泵不會對著已關閉的閥門加壓。",
-    "enabled": "已啟用",
     "add": "新增水泵或主閥",
     "delete": "刪除",
     "confirm_delete": "要刪除「{name}」嗎？使用它的區域將不再有水泵或主閥。",
@@ -1539,7 +1537,6 @@
   "measured_skip": {
     "title": "依量測條件略過",
     "description": "在每次執行開始時檢查，來源為感測器或氣象服務。無法讀取的感測器絕不會阻止執行。",
-    "enabled": "已啟用",
     "threshold": "閾值",
     "sensor": "感測器",
     "sensor-optional": "感測器（選填）",

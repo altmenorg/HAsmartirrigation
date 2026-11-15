@@ -1220,8 +1220,7 @@
     "multiplier": "Multiplicateur du facteur cultural",
     "threshold": "Décalage du seuil",
     "zones": "Zones",
-    "zones_hint": "all, ou les numéros des zones, séparés par des virgules.",
-    "enabled": "Activé"
+    "zones_hint": "all, ou les numéros des zones, séparés par des virgules."
   },
   "weather_skip": {
     "title": "Pluie prévue",
@@ -1289,7 +1288,7 @@
   "programs": {
     "title": "Programmes",
     "description": "Un programme arrose ses étapes l'une après l'autre. Une étape est une zone, ou plusieurs arrosées en même temps, et prend par défaut la durée calculée par Smart Irrigation. Deux programmes ne tournent jamais en même temps : le suivant attend son tour.",
-    "main_description": "Arrose toutes les zones, l'une après l'autre ou ensemble comme réglé plus bas. Il est lancé par le déclencheur de départ, ou par ses propres horaires dès qu'un est activé.",
+    "main_description": "Arrose toutes les zones, l'une après l'autre ou ensemble, à ses horaires.",
     "run_options": "Options de ce lancement",
     "adjust_empty": "Indique un pourcentage ou des secondes pour ajuster les durées.",
     "more_options": "Plus d'options",
@@ -1465,10 +1464,10 @@
     "lift_suspension": "Lever",
     "preview_title": "Ce que ferait un arrosage",
     "preview_help": "Une ligne par zone, avec les durées que Smart Irrigation arroserait maintenant. Elles suivent la météo : l'arrosage peut différer au moment où il démarre.",
+    "yaml_back": "Revenir à l'éditeur",
     "yaml_edit": "Modifier en YAML",
     "yaml_help": "Le programme sous forme de texte. Une étape désigne ses zones par leur nom ou leur numéro, et ce qui est omis prend sa valeur par défaut. Rien n'est enregistré avant d'appliquer : la frise ci-dessous montre ce que ferait le programme.",
     "yaml_apply": "Appliquer",
-    "yaml_cancel": "Annuler",
     "yaml_invalid": "Ce n'est pas du YAML valide.",
     "yaml_not_a_program": "Ce n'est pas un programme : un programme est un ensemble de clés (name, steps, schedules).",
     "yaml_unknown_zones": "Zone introuvable, ou nom partagé par deux zones, ignorée : {zones}",
@@ -1495,7 +1494,6 @@
     "delay_before_help": "Positif : la pompe ou la vanne générale démarre ce temps avant l'ouverture de la vanne de zone. Négatif : la vanne de zone s'ouvre d'abord, et la pompe ou la vanne générale démarre ce temps après.",
     "delay_after": "Délai après",
     "delay_after_help": "Positif : la pompe ou la vanne générale reste en marche ce temps après la fermeture de la vanne de zone. Négatif : elle s'arrête ce temps avant la fermeture de la vanne de zone, pour qu'une pompe ne pousse jamais contre une vanne fermée.",
-    "enabled": "Activée",
     "add": "Ajouter une pompe ou une vanne générale",
     "delete": "Supprimer",
     "confirm_delete": "Supprimer « {name} » ? Les zones qui l'utilisent n'auront plus de pompe ni de vanne générale.",
@@ -1539,7 +1537,6 @@
   "measured_skip": {
     "title": "Ne pas arroser selon les mesures",
     "description": "Vérifié au début de chaque arrosage, avec un capteur ou le service météo. Un capteur illisible n'empêche jamais d'arroser.",
-    "enabled": "Activé",
     "threshold": "Seuil",
     "sensor": "Capteur",
     "sensor-optional": "Capteur (facultatif)",

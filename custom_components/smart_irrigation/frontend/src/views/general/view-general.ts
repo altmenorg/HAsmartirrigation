@@ -93,6 +93,7 @@ import {
 import {
   mdiPlus,
   mdiPencil,
+  mdiFormSelect,
   mdiDelete,
   mdiMenuDown,
   mdiMinus,
@@ -416,9 +417,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         <div class="card-content">
           ${this._selectRow(
             html`${localize(`${base}.calc-when`, this.hass.language)}
-              <div class="setting-hint">
+              <si-info>
                 ${localize(`${base}.calc-when-hint`, this.hass.language)}
-              </div>`,
+              </si-info>`,
             html`
               <option value="time" ?selected=${calcWhen === "time"}>
                 ${localize(`${base}.calc-when-time`, this.hass.language)}
@@ -455,13 +456,15 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${localize(`${base}.hourly-calculation`, this.hass.language)}
-              <div class="setting-hint">
-                ${localize(
+              ${localize(
+                `${base}.hourly-calculation`,
+                this.hass.language,
+              )}<si-info
+                >${localize(
                   `${base}.hourly-calculation-hint`,
                   this.hass.language,
-                )}
-              </div>
+                )}</si-info
+              >
             </div>
             <ha-switch
               .checked=${this.config.hourly_calculation}
@@ -483,13 +486,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     ${localize(
                       "weather_skip.effective_rain_label",
                       this.hass.language,
-                    )}
-                    <div class="setting-hint">
-                      ${localize(
+                    )}<si-info
+                      >${localize(
                         "weather_skip.effective_rain_description",
                         this.hass.language,
-                      )}
-                    </div>
+                      )}</si-info
+                    >
                   </div>
                   <ha-switch
                     .checked=${!!this.config.effective_rain}
@@ -763,12 +765,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // opens the valves, and the panel itself. The weather, its location and
       // how often it is read are on the Weather tab, with the skip checks.
       // The master switch stays above everything it switches.
-      const r = html`<ha-card
-          header="${localize("panels.general.title", lang)}"
-        >
-          <div class="card-content">
-            ${localize("panels.general.description", lang)}
-          </div>
+      const r = html`<ha-card>
+          <h1 class="card-header">
+            <span
+              >${localize("panels.general.title", lang)}<si-info
+                >${localize("panels.general.description", lang)}</si-info
+              ></span
+            >
+          </h1>
           <div class="card-content moved-to-weather">
             ${localize("panels.general.moved-to-weather", lang)}
             <a
@@ -1324,29 +1328,28 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           ${id === "main"
             ? ""
             : html`<div class="setting-row">
-                  <div class="setting-label">
-                    ${t("run_seconds")}
-                    <span class="unit"
-                      >(${localize("common.units.seconds", lang)})</span
-                    >
-                  </div>
-                  <input
-                    class="field"
-                    type="number"
-                    min="1"
-                    max="86400"
-                    .value=${RUN_OPTIONS[id ?? ""]?.seconds ?? ""}
-                    @input=${(e: Event) => {
-                      const o = (RUN_OPTIONS[id ?? ""] ||= {});
-                      o.seconds = (e.target as HTMLInputElement).value;
-                    }}
-                  />
+                <div class="setting-label">
+                  ${t("run_seconds")}
+                  <span class="unit"
+                    >(${localize("common.units.seconds", lang)})</span
+                  ><si-info>${t("run_seconds_help")}</si-info>
                 </div>
-                <div class="setting-hint row-hint">
-                  ${t("run_seconds_help")}
-                </div>`}
+                <input
+                  class="field"
+                  type="number"
+                  min="1"
+                  max="86400"
+                  .value=${RUN_OPTIONS[id ?? ""]?.seconds ?? ""}
+                  @input=${(e: Event) => {
+                    const o = (RUN_OPTIONS[id ?? ""] ||= {});
+                    o.seconds = (e.target as HTMLInputElement).value;
+                  }}
+                />
+              </div>`}
           <div class="setting-row">
-            <div class="setting-label">${t("run_replace")}</div>
+            <div class="setting-label">
+              ${t("run_replace")}<si-info>${t("run_replace_help")}</si-info>
+            </div>
             <ha-switch
               .checked=${RUN_OPTIONS[id ?? ""]?.replace === true}
               @change=${(e: Event) => {
@@ -1355,7 +1358,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               }}
             ></ha-switch>
           </div>
-          <div class="setting-hint row-hint">${t("run_replace_help")}</div>
         </div>
       </details>
     `;
@@ -1658,8 +1660,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       if (foldKey !== null && !this._isOpen(foldKey)) return html``;
       const data = this._preview(id, program);
       return html`
-        <div class="fold-section">${t("preview_title")}</div>
-        <div class="setting-hint row-hint">${t("preview_help")}</div>
+        <div class="fold-section">
+          ${t("preview_title")}<si-info>${t("preview_help")}</si-info>
+        </div>
         ${data
           ? html`<si-program-timeline
               .timeline=${data.timeline}
@@ -1718,7 +1721,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         toast(t("yaml_applied"));
       };
       return html`
-        <div class="setting-hint row-hint">${t("yaml_help")}</div>
         <ha-yaml-editor
           .hass=${this.hass}
           .defaultValue=${edit.initial}
@@ -1767,7 +1769,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             false,
             !edit.valid || !found || !!edit.error,
           )}
-          ${this._actionBtn(mdiClose, t("yaml_cancel"), () => closeYaml(id))}
         </div>
       `;
     };
@@ -1789,6 +1790,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           ),
         ),
       )} `;
+
+    // In YAML, the button that was "Edit in YAML" goes back to the form.
+    const backButton = (program: SmartIrrigationProgram) =>
+      html`${this._actionBtn(mdiFormSelect, t("yaml_back"), () =>
+          closeYaml(program.id ?? ""),
+        )}<si-info>${t("yaml_help")}</si-info> `;
 
     const renderStep = (
       program: SmartIrrigationProgram,
@@ -1839,7 +1846,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           )}${step.enabled === false ? html` · <em>${t("off")}</em>` : ""}`,
         html`
           <div class="setting-row">
-            <div class="setting-label">${t("step_zones")}</div>
+            <div class="setting-label">
+              ${t("step_zones")}<si-info>${t("step_zones_help")}</si-info>
+            </div>
             <div>
               ${(step.zones || [])
                 .filter((id) => !this.zones.some((z) => z.id === id))
@@ -1879,7 +1888,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               )}
             </div>
           </div>
-          <div class="setting-hint row-hint">${t("step_zones_help")}</div>
           ${this._selectRow(
             t("step_duration"),
             html`
@@ -1925,7 +1933,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               )
             : ""}
           ${this._numRow(
-            t("passes"),
+            html`${t("passes")}<si-info>${t("passes_help")}</si-info>`,
             "",
             step.passes,
             (v) => patchStep({ passes: Math.max(1, Math.round(num(v, 1))) }),
@@ -1933,20 +1941,18 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             false,
             1,
           )}
-          <div class="setting-hint row-hint">${t("passes_help")}</div>
           ${passes > 1
             ? html`${this._numRow(
-                  localize("observed_watering.soak_label", lang),
-                  localize("observed_watering.minutes", lang),
-                  this.config?.soak_minutes ?? 15,
-                  (v) =>
-                    this.handleConfigChange({
-                      soak_minutes: Math.max(0, parseFloat(v) || 0),
-                    }),
-                )}
-                <div class="setting-hint row-hint">
-                  ${t("soak_shared_help")}
-                </div>`
+                html`${localize("observed_watering.soak_label", lang)}<si-info
+                    >${t("soak_shared_help")}</si-info
+                  >`,
+                localize("observed_watering.minutes", lang),
+                this.config?.soak_minutes ?? 15,
+                (v) =>
+                  this.handleConfigChange({
+                    soak_minutes: Math.max(0, parseFloat(v) || 0),
+                  }),
+              )}`
             : ""}
           ${more(
             `more:step:${step.id}`,
@@ -1958,7 +1964,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               (step.delay !== null && step.delay !== undefined),
             html`
               ${this._numRow(
-                t("max_litres"),
+                html`${t("max_litres")}<si-info
+                    >${t("max_litres_help")}</si-info
+                  >`,
                 unit_text(this.config, ZONE_WATER_VOLUME),
                 // Stored in litres, shown and typed in the unit of the panel.
                 +displayVolume(step.max_litres ?? 0, this.config).toFixed(2),
@@ -1970,7 +1978,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 false,
                 0,
               )}
-              <div class="setting-hint row-hint">${t("max_litres_help")}</div>
               ${this._numRow(
                 t("min_seconds"),
                 localize("common.units.seconds", lang),
@@ -2000,7 +2007,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   </div>`
                 : ""}
               ${this._numRow(
-                t("adjust_seconds"),
+                html`${t("adjust_seconds")}<si-info
+                    >${t("step_bounds_help")}</si-info
+                  >`,
                 localize("common.units.seconds", lang),
                 step.adjust_seconds ?? 0,
                 (v) =>
@@ -2011,9 +2020,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     ),
                   }),
               )}
-              <div class="setting-hint row-hint">${t("step_bounds_help")}</div>
               ${this._numRow(
-                t("min_deficit_mm"),
+                html`${t("min_deficit_mm")}<si-info
+                    >${t("min_deficit_mm_help")}</si-info
+                  >`,
                 "mm",
                 step.min_deficit_mm ?? 0,
                 (v) => patchStep({ min_deficit_mm: Math.max(0, num(v)) }),
@@ -2021,18 +2031,16 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 false,
                 0,
               )}
-              <div class="setting-hint row-hint">
-                ${t("min_deficit_mm_help")}
-              </div>
               ${this._textRow(
-                t("step_delay"),
+                html`${t("step_delay")}<si-info
+                    >${t("step_delay_help")}</si-info
+                  >`,
                 localize("common.units.seconds", lang),
                 step.delay === null || step.delay === undefined
                   ? ""
                   : step.delay,
                 (v) => patchStep({ delay: v.trim() === "" ? null : num(v) }),
               )}
-              <div class="setting-hint row-hint">${t("step_delay_help")}</div>
             `,
           )}
           <div class="setting-row">
@@ -2134,17 +2142,16 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           )}
           ${schedule.type === "sun" && schedule.event === "azimuth"
             ? html`${this._numRow(
-                  t("schedule_azimuth"),
-                  "°",
-                  schedule.azimuth ?? 180,
-                  (v) =>
-                    patchSchedule({
-                      azimuth: ((num(v, 180) % 360) + 360) % 360,
-                    }),
-                )}
-                <div class="setting-hint row-hint">
-                  ${t("schedule_azimuth_help")}
-                </div>`
+                html`${t("schedule_azimuth")}<si-info
+                    >${t("schedule_azimuth_help")}</si-info
+                  >`,
+                "°",
+                schedule.azimuth ?? 180,
+                (v) =>
+                  patchSchedule({
+                    azimuth: ((num(v, 180) % 360) + 360) % 360,
+                  }),
+              )}`
             : ""}
           ${schedule.type === "time"
             ? this._timeRow(t("schedule_time"), schedule.time, (v) =>
@@ -2157,7 +2164,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 (v) => patchSchedule({ offset_minutes: Math.round(num(v)) }),
               )}
           ${this._selectRow(
-            t("schedule_anchor"),
+            html`${t("schedule_anchor")}<si-info
+                >${t("schedule_anchor_help")}</si-info
+              >`,
             html`
               <option value="start" ?selected=${schedule.anchor !== "end"}>
                 ${t("anchor_start")}
@@ -2173,9 +2182,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   | "end",
               }),
           )}
-          <div class="setting-hint row-hint">${t("schedule_anchor_help")}</div>
           <div class="setting-row">
-            <div class="setting-label">${t("schedule_weekdays")}</div>
+            <div class="setting-label">
+              ${t("schedule_weekdays")}<si-info
+                >${t("schedule_weekdays_help")}</si-info
+              >
+            </div>
             <div>
               ${[0, 1, 2, 3, 4, 5, 6].map(
                 (day) => html`
@@ -2198,18 +2210,18 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               )}
             </div>
           </div>
-          <div class="setting-hint row-hint">
-            ${t("schedule_weekdays_help")}
-          </div>
           <div class="setting-row">
-            <div class="setting-label">${t("schedule_weather")}</div>
+            <div class="setting-label">
+              ${t("schedule_weather")}<si-info
+                >${t("schedule_weather_help")}</si-info
+              >
+            </div>
             <ha-switch
               .checked=${schedule.weather !== false}
               @change=${(e: Event) =>
                 patchSchedule({ weather: (e.target as any).checked })}
             ></ha-switch>
           </div>
-          <div class="setting-hint row-hint">${t("schedule_weather_help")}</div>
           ${more(
             `more:schedule:${schedule.id}`,
             !!schedule.fallback_time ||
@@ -2224,7 +2236,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               schedule.skip_conditions !== undefined,
             html`
               ${this._numRow(
-                t("schedule_every"),
+                html`${t("schedule_every")}<si-info
+                    >${t("schedule_every_help")}</si-info
+                  >`,
                 t("schedule_days"),
                 schedule.every_n_days ?? 1,
                 (v) =>
@@ -2243,9 +2257,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       }),
                   )
                 : ""}
-              <div class="setting-hint row-hint">
-                ${t("schedule_every_help")}
-              </div>
               ${this._selectRow(
                 t("schedule_parity"),
                 html`
@@ -2270,7 +2281,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   }),
               )}
               ${this._textRow(
-                t("schedule_days_of_month"),
+                html`${t("schedule_days_of_month")}<si-info
+                    >${t("schedule_days_of_month_help")}</si-info
+                  >`,
                 `1, 15, ${t("last_word")}`,
                 (schedule.days_of_month || [])
                   .map((day) => (day === "last" ? t("last_word") : day))
@@ -2294,11 +2307,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       .map((part) => (part === "last" ? part : Number(part))),
                   }),
               )}
-              <div class="setting-hint row-hint">
-                ${t("schedule_days_of_month_help")}
-              </div>
               <div class="setting-row">
-                <div class="setting-label">${t("schedule_months")}</div>
+                <div class="setting-label">
+                  ${t("schedule_months")}<si-info
+                    >${t("schedule_months_help")}</si-info
+                  >
+                </div>
                 <div>
                   ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(
                     (month) => html`
@@ -2323,9 +2337,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   )}
                 </div>
               </div>
-              <div class="setting-hint row-hint">
-                ${t("schedule_months_help")}
-              </div>
               ${this._monthDayRow(
                 t("schedule_from"),
                 schedule.from_date,
@@ -2333,18 +2344,19 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 (v) => patchSchedule({ from_date: v }),
               )}
               ${this._monthDayRow(
-                t("schedule_until"),
+                html`${t("schedule_until")}<si-info
+                    >${t("schedule_period_help")}</si-info
+                  >`,
                 schedule.until_date,
                 monthName,
                 (v) => patchSchedule({ until_date: v }),
               )}
-              <div class="setting-hint row-hint">
-                ${t("schedule_period_help")}
-              </div>
               ${schedule.type === "sun"
                 ? html`
                     ${this._selectRow(
-                      t("schedule_fallback_time"),
+                      html`${t("schedule_fallback_time")}<si-info
+                          >${t("schedule_fallback_time_help")}</si-info
+                        >`,
                       html`
                         <option value="" ?selected=${!schedule.fallback_time}>
                           ${t("schedule_fallback_skip")}
@@ -2384,16 +2396,15 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                           (v) => patchSchedule({ fallback_time: v || null }),
                         )
                       : ""}
-                    <div class="setting-hint row-hint">
-                      ${t("schedule_fallback_time_help")}
-                    </div>
                   `
                 : ""}
               ${schedule.anchor === "end" && !program.main
                 ? html`
                     <div class="setting-row">
                       <div class="setting-label">
-                        ${t("schedule_hard_deadline")}
+                        ${t("schedule_hard_deadline")}<si-info
+                          >${t("schedule_hard_deadline_help")}</si-info
+                        >
                       </div>
                       <ha-switch
                         .checked=${schedule.hard_deadline === true}
@@ -2403,18 +2414,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                           })}
                       ></ha-switch>
                     </div>
-                    <div class="setting-hint row-hint">
-                      ${t("schedule_hard_deadline_help")}
-                    </div>
                   `
                 : ""}
               ${schedule.weather !== false
                 ? html`
                     <div class="setting-label" style="margin-top: 8px;">
-                      ${t("schedule_conditions")}
-                    </div>
-                    <div class="setting-hint row-hint">
-                      ${t("schedule_conditions_help")}
+                      ${t("schedule_conditions")}<si-info
+                        >${t("schedule_conditions_help")}</si-info
+                      >
                     </div>
                     ${SKIP_CONDITION_IDS.every(
                       (id) => id === "postponed" || !this._conditionSetting(id),
@@ -2549,8 +2556,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         });
       };
       return html`
-        <div class="fold-section">${t("notify_title")}</div>
-        <div class="setting-hint row-hint">${t("notify_help")}</div>
+        <div class="fold-section">
+          ${t("notify_title")}<si-info>${t("notify_help")}</si-info>
+        </div>
         ${choices.map(
           (choice) => html`
             <div>
@@ -2636,18 +2644,21 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                  on "Run now" with two descriptions under it, large and small
                  (UX walk of 13 Nov., Q13). -->
             <div class="setting-note">
-              ${t("main_description")} ${t("main_steps_hint")}
+              ${t("main_description")}<si-info>${t("main_steps_hint")}</si-info>
             </div>
             ${runHead(
               program,
-              yamlOpen(program.id ?? "") ? "" : yamlButton(program),
+              yamlOpen(program.id ?? "")
+                ? backButton(program)
+                : yamlButton(program),
             )}
             ${yamlOpen(program.id ?? "")
               ? yamlBlock(program.id ?? "", index)
               : html`${preview(program, null)}
-                  <div class="fold-section">${t("schedules_title")}</div>
-                  <div class="setting-hint row-hint">
-                    ${t("main_schedules_hint")}
+                  <div class="fold-section">
+                    ${t("schedules_title")}<si-info
+                      >${t("main_schedules_hint")}</si-info
+                    >
                   </div>
                   ${this.startSource === "main_schedules"
                     ? html`<div class="setting-note">
@@ -2656,9 +2667,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     : ""}
                   ${renderSchedules(program, index)}
                   ${renderNotify(program, index)}
-                  <div class="fold-section">${t("sequencing_title")}</div>
-                  <div class="setting-hint row-hint">
-                    ${t("main_settings_description")}
+                  <div class="fold-section">
+                    ${t("sequencing_title")}<si-info
+                      >${t("main_settings_description")}</si-info
+                    >
                   </div>
                   ${this.renderExecutionSettings(lang, true)}`}
           </div>
@@ -2667,8 +2679,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     }
 
     return html`
-      <ha-card header="${t("others_title")}">
-        <div class="card-content">${t("description")}</div>
+      <ha-card>
+        <h1 class="card-header">
+          <span
+            >${t("others_title")}<si-info>${t("description")}</si-info></span
+          >
+        </h1>
         ${programs.map((program, index) =>
           program.main
             ? ""
@@ -2695,7 +2711,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         ? html` · <em>${adjustText(program)}</em>`
                         : ""}`,
                     yamlOpen(program.id ?? "")
-                      ? html`${runHead(program)}
+                      ? html`${runHead(program, backButton(program))}
                         ${yamlBlock(program.id ?? "", index)}`
                       : html`
                           ${runHead(program, yamlButton(program))}
@@ -2738,16 +2754,17 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                           </div>
                           ${renderSchedules(program, index)}
                           ${this._numRow(
-                            t("delay"),
+                            html`${t("delay")}<si-info
+                                >${t("delay_help")}</si-info
+                              >`,
                             localize("common.units.seconds", lang),
                             program.delay ?? 0,
                             (v) => patch(index, { delay: num(v) }),
                           )}
-                          <div class="setting-hint row-hint">
-                            ${t("delay_help")}
-                          </div>
                           ${this._numRow(
-                            t("tours"),
+                            html`${t("tours")}<si-info
+                                >${t("tours_help")}</si-info
+                              >`,
                             "",
                             program.tours ?? 1,
                             (v) =>
@@ -2758,9 +2775,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                             false,
                             1,
                           )}
-                          <div class="setting-hint row-hint">
-                            ${t("tours_help")}
-                          </div>
                           <div class="setting-row">
                             <div class="setting-label">
                               ${t("program_enabled")}
@@ -2848,11 +2862,18 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       return isNaN(n) ? 0 : n;
     };
     return html`
-      <ha-card header="${t("title")}">
-        <div class="card-content">${t("description")}</div>
+      <ha-card>
+        <h1 class="card-header">
+          <span>${t("title")}<si-info>${t("description")}</si-info></span>
+        </h1>
         ${supplies.map(
           (supply, index) => html`
             <div class="card-content">
+              ${this._switchTitle(
+                supply.name || t("title"),
+                supply.enabled !== false,
+                (on) => patch(index, { enabled: on }),
+              )}
               ${this._textRow(t("name"), "", supply.name, (v) =>
                 patch(index, { name: v }),
               )}
@@ -2898,21 +2919,25 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 )
               }
               ${this._numRow(
-                t("delay_before"),
+                html`${t("delay_before")}<si-info
+                    >${t("delay_before_help")}</si-info
+                  >`,
                 localize("common.units.seconds", lang),
                 supply.delay_before,
                 (v) => patch(index, { delay_before: seconds(v) }),
               )}
-              <div class="setting-hint row-hint">${t("delay_before_help")}</div>
               ${this._numRow(
-                t("delay_after"),
+                html`${t("delay_after")}<si-info
+                    >${t("delay_after_help")}</si-info
+                  >`,
                 localize("common.units.seconds", lang),
                 supply.delay_after,
                 (v) => patch(index, { delay_after: seconds(v) }),
               )}
-              <div class="setting-hint row-hint">${t("delay_after_help")}</div>
               ${this._numRow(
-                t("kick_seconds"),
+                html`${t("kick_seconds")}<si-info
+                    >${t("kick_seconds_help")}</si-info
+                  >`,
                 localize("common.units.seconds", lang),
                 supply.kick_seconds ?? 0,
                 (v) =>
@@ -2923,15 +2948,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 false,
                 0,
               )}
-              <div class="setting-hint row-hint">${t("kick_seconds_help")}</div>
-              <div class="setting-row">
-                <div class="setting-label">${t("enabled")}</div>
-                <ha-switch
-                  .checked=${supply.enabled !== false}
-                  @change=${(e: Event) =>
-                    patch(index, { enabled: (e.target as any).checked })}
-                ></ha-switch>
-              </div>
               <div class="si-actions">
                 ${this._actionBtn(
                   mdiDelete,
@@ -3029,11 +3045,16 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         ...data,
       });
     return html`
-      <ha-card header="${t("title")}">
-        <div class="card-content">${t("description")}</div>
+      <ha-card>
+        <h1 class="card-header">
+          <span>${t("title")}<si-info>${t("description")}</si-info></span>
+        </h1>
         ${adjustments.map(
           (a) => html`
             <div class="card-content si-subgroup">
+              ${this._switchTitle(a.name, a.enabled !== false, (on) =>
+                update(a.id, { enabled: on }),
+              )}
               ${this._textRow(t("name"), "", a.name, (v) =>
                 update(a.id, { name: v || a.name }),
               )}
@@ -3079,22 +3100,13 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 0.5,
               )}
               ${this._textRow(
-                t("zones"),
+                html`${t("zones")}<si-info>${t("zones_hint")}</si-info>`,
                 "",
                 Array.isArray(a.zones)
                   ? a.zones.join(", ")
                   : (a.zones ?? "all"),
                 (v) => update(a.id, { zones: v.trim() || "all" }),
               )}
-              <div class="setting-hint">${t("zones_hint")}</div>
-              <div class="setting-row">
-                <div class="setting-label">${t("enabled")}</div>
-                <ha-switch
-                  .checked=${a.enabled !== false}
-                  @change=${(e: Event) =>
-                    update(a.id, { enabled: (e.target as any).checked })}
-                ></ha-switch>
-              </div>
               <ha-button
                 @click=${() =>
                   this._seasonalCall({
@@ -3138,10 +3150,17 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     if (!this.hass) return html``;
     const lang = this.hass.language;
     return html`
-      <ha-card header="${localize("panels.setup.title", lang)}">
-        <div class="card-content">
-          ${localize("panels.general.cards.setup-assistant.description", lang)}
-        </div>
+      <ha-card>
+        <h1 class="card-header">
+          <span
+            >${localize("panels.setup.title", lang)}<si-info
+              >${localize(
+                "panels.general.cards.setup-assistant.description",
+                lang,
+              )}</si-info
+            ></span
+          >
+        </h1>
         <div class="card-actions">
           <ha-button
             @click=${() => {
@@ -3168,10 +3187,17 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     if (!this.hass) return html``;
     const lang = this.hass.language;
     return html`
-      <ha-card header="${localize("panels.iu_import.title", lang)}">
-        <div class="card-content">
-          ${localize("panels.general.cards.iu-import.description", lang)}
-        </div>
+      <ha-card>
+        <h1 class="card-header">
+          <span
+            >${localize("panels.iu_import.title", lang)}<si-info
+              >${localize(
+                "panels.general.cards.iu-import.description",
+                lang,
+              )}</si-info
+            ></span
+          >
+        </h1>
         <div class="card-actions">
           <ha-button
             @click=${() => {
@@ -3196,18 +3222,20 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     const triggers = this.config.irrigation_start_triggers || [];
 
     return html`
-      <ha-card
-        header="${localize(
-          "irrigation_start_triggers.title",
-          this.hass.language,
-        )}"
-      >
-        <div class="card-content">
-          ${localize(
-            "irrigation_start_triggers.description",
-            this.hass.language,
-          )}
-        </div>
+      <ha-card>
+        <h1 class="card-header">
+          <span
+            >${localize(
+              "irrigation_start_triggers.title",
+              this.hass.language,
+            )}<si-info
+              >${localize(
+                "irrigation_start_triggers.description",
+                this.hass.language,
+              )}</si-info
+            ></span
+          >
+        </h1>
 
         ${this.config?.full_controller === true
           ? // The full controller starts the watering itself: an automation
@@ -3529,24 +3557,31 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     if (!this.config || !this.data || !this.hass) return html``;
 
     return html`
-      <ha-card header="${localize("weather_skip.title", this.hass.language)}">
-        <div class="card-content">
-          ${localize("weather_skip.description", this.hass.language)}
-        </div>
+      <ha-card>
+        <h1 class="card-header">
+          <span
+            >${localize("weather_skip.title", this.hass.language)}<si-info
+              >${localize(
+                "weather_skip.description",
+                this.hass.language,
+              )}</si-info
+            ></span
+          >
+        </h1>
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
               ${localize("weather_skip.forecast_label", this.hass.language)}
-              <div class="setting-hint">
+              <si-info>
                 ${localize(
                   "weather_skip.forecast_description",
                   this.hass.language,
                 )}
-              </div>
+              </si-info>
               ${this.config.use_weather_service
                 ? ""
-                : html`<div class="setting-hint">
-                    <a
+                : html`<si-info
+                    ><a
                       href="/${DOMAIN}/weatherservice"
                       @click=${(e: Event) => {
                         e.preventDefault();
@@ -3556,8 +3591,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                         "weather_skip.forecast_set_up_service",
                         this.hass.language,
                       )}</a
-                    >
-                  </div>`}
+                    ></si-info
+                  >`}
             </div>
             <ha-switch
               .checked=${!!(
@@ -3619,10 +3654,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       hint: string,
     ) => html`
       <div class="setting-row">
-        <div class="setting-label">
-          ${label}
-          <div class="setting-hint">${hint}</div>
-        </div>
+        <div class="setting-label">${label}<si-info>${hint}</si-info></div>
         <ha-entity-picker
           class="entity-field"
           .hass=${this.hass}
@@ -3634,13 +3666,31 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         ></ha-entity-picker>
       </div>
     `;
-    const section = (title: string, description: string, body: unknown) => html`
+    const section = (
+      title: string,
+      description: string,
+      body: unknown,
+      key?: string,
+    ) => html`
       <div class="si-subgroup">
-        <div class="si-subgroup-title">${title}</div>
-        <div class="setting-hint">${description}</div>
+        ${key
+          ? this._switchTitle(
+              html`${title}<si-info>${description}</si-info>`,
+              !!(this.config as any)[key],
+              (on) => this.handleConfigChange({ [key]: on }),
+            )
+          : html`<div class="si-subgroup-title">
+              ${title}<si-info>${description}</si-info>
+            </div>`}
         ${body}
       </div>
     `;
+    const sectionOn = (
+      key: string,
+      title: string,
+      description: string,
+      body: unknown,
+    ) => section(title, description, body, key);
     const threshold = (
       key: string,
       value: number | null | undefined,
@@ -3660,20 +3710,16 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       );
 
     return html`
-      <ha-card header="${t("title")}">
-        <div class="card-content">${t("description")}</div>
+      <ha-card>
+        <h1 class="card-header">
+          <span>${t("title")}<si-info>${t("description")}</si-info></span>
+        </h1>
         <div class="card-content">
-          ${section(
+          ${sectionOn(
+            "skip_on_rain_sensor",
             t("rain.title"),
             t("rain.description"),
             html`
-              <div class="setting-row">
-                <div class="setting-label">${t("enabled")}</div>
-                ${toggle(
-                  "skip_on_rain_sensor",
-                  this.config.skip_on_rain_sensor,
-                )}
-              </div>
               ${this.config.skip_on_rain_sensor
                 ? html`${entity(
                     "rain_sensor",
@@ -3699,14 +3745,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 : ""}
             `,
           )}
-          ${section(
+          ${sectionOn(
+            "skip_on_freeze",
             t("freeze.title"),
             t("freeze.description"),
             html`
-              <div class="setting-row">
-                <div class="setting-label">${t("enabled")}</div>
-                ${toggle("skip_on_freeze", this.config.skip_on_freeze)}
-              </div>
               ${this.config.skip_on_freeze
                 ? html`${threshold(
                     "freeze_threshold",
@@ -3730,14 +3773,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 : ""}
             `,
           )}
-          ${section(
+          ${sectionOn(
+            "skip_on_wind",
             t("wind.title"),
             t("wind.description"),
             html`
-              <div class="setting-row">
-                <div class="setting-label">${t("enabled")}</div>
-                ${toggle("skip_on_wind", this.config.skip_on_wind)}
-              </div>
               ${this.config.skip_on_wind
                 ? html`${threshold(
                     "wind_threshold",
@@ -3771,10 +3811,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     if (!this.hass) return html``;
     const lang = this.hass.language;
     return html`
-      <ha-card header="${localize("panels.skip.title", lang)}">
-        <div class="card-content">
-          ${localize("panels.skip.description", lang)}
-        </div>
+      <ha-card>
+        <h1 class="card-header">
+          <span
+            >${localize("panels.skip.title", lang)}<si-info
+              >${localize("panels.skip.description", lang)}</si-info
+            ></span
+          >
+        </h1>
       </ha-card>
       ${cards}
       <ha-card>
@@ -3865,10 +3909,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     if (this.config.ui_mode !== "advanced") return html``;
 
     return html`
-      <ha-card header="${localize("observed_watering.title", lang)}">
-        <div class="card-content">
-          ${localize("observed_watering.description", lang)}
-        </div>
+      <ha-card>
+        <h1 class="card-header">
+          <span
+            >${localize("observed_watering.title", lang)}<si-info
+              >${localize("observed_watering.description", lang)}</si-info
+            ></span
+          >
+        </h1>
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
@@ -3886,37 +3934,44 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           ${this.config.observed_watering_enabled &&
           this.config.ui_mode === "advanced"
             ? html`${this._numRow(
-                  localize("observed_watering.leak_label", lang),
-                  "L",
-                  this.config.leak_alert_litres ?? 0,
-                  (v) =>
-                    this.handleConfigChange({
-                      leak_alert_litres: Math.min(
-                        1000,
-                        Math.max(0, parseFloat(v) || 0),
-                      ),
-                    }),
-                )}
-                <div class="setting-help">
-                  ${localize("observed_watering.leak_description", lang)}
-                </div>`
+                html`${localize("observed_watering.leak_label", lang)}<si-info
+                    >${localize(
+                      "observed_watering.leak_description",
+                      lang,
+                    )}</si-info
+                  >`,
+                "L",
+                this.config.leak_alert_litres ?? 0,
+                (v) =>
+                  this.handleConfigChange({
+                    leak_alert_litres: Math.min(
+                      1000,
+                      Math.max(0, parseFloat(v) || 0),
+                    ),
+                  }),
+              )}`
             : ""}
           ${this.config.full_controller === true
             ? html`${this._numRow(
-                  localize("observed_watering.set_aside_label", lang),
-                  "",
-                  this.config.set_aside_after ?? 0,
-                  (v) =>
-                    this.handleConfigChange({
-                      set_aside_after: Math.min(
-                        10,
-                        Math.max(0, parseInt(v) || 0),
-                      ),
-                    }),
-                )}
-                <div class="setting-help">
-                  ${localize("observed_watering.set_aside_description", lang)}
-                </div>`
+                html`${localize(
+                    "observed_watering.set_aside_label",
+                    lang,
+                  )}<si-info
+                    >${localize(
+                      "observed_watering.set_aside_description",
+                      lang,
+                    )}</si-info
+                  >`,
+                "",
+                this.config.set_aside_after ?? 0,
+                (v) =>
+                  this.handleConfigChange({
+                    set_aside_after: Math.min(
+                      10,
+                      Math.max(0, parseInt(v) || 0),
+                    ),
+                  }),
+              )}`
             : ""}
           ${this.config.full_controller === true
             ? ""
@@ -3953,7 +4008,15 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       <ha-card class="master-switch" header="${t("title")}">
         <div class="card-content">
           <div class="setting-row">
-            <div class="setting-label">${t("mode")}</div>
+            <div class="setting-label">
+              ${t("mode")}<si-info
+                >${mode === "off"
+                  ? t("off-note")
+                  : mode === "calculate"
+                    ? t("calculate-note")
+                    : t("description")}</si-info
+              >
+            </div>
             <select
               class="field"
               @change=${async (e: Event) => {
@@ -4006,13 +4069,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               )}
             </select>
           </div>
-          <div class="setting-note">
-            ${mode === "off"
-              ? t("off-note")
-              : mode === "calculate"
-                ? t("calculate-note")
-                : t("description")}
-          </div>
         </div>
       </ha-card>
     `;
@@ -4026,7 +4082,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                the valves or an automation of your own does. -->
       <div class="setting-row">
         <div class="setting-label">
-          ${localize("observed_watering.sequencing_label", lang)}
+          ${localize("observed_watering.sequencing_label", lang)}${full
+            ? ""
+            : html`<si-info
+                >${localize(
+                  "observed_watering.sequencing_description",
+                  lang,
+                )}</si-info
+              >`}
         </div>
         <div class="select-wrap">
           <select
@@ -4054,11 +4117,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           </svg>
         </div>
       </div>
-      ${full
-        ? ""
-        : html`<div class="setting-note">
-            ${localize("observed_watering.sequencing_description", lang)}
-          </div>`}
       ${this.config.direct_valve_control_enabled &&
       (full || this.config.ui_mode === "advanced")
         ? this.renderCycleAndSoak(lang)
@@ -4086,7 +4144,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     const sequential = config.zone_sequencing !== "parallel";
     return html`
       ${this._numRow(
-        localize("observed_watering.passes_label", lang),
+        html`${localize("observed_watering.passes_label", lang)}<si-info
+            >${localize("observed_watering.passes_description", lang)}</si-info
+          >`,
         "",
         passes,
         (v) =>
@@ -4096,36 +4156,33 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       )}
       ${passes > 1 || stepsInPasses
         ? html`${this._numRow(
-              localize("observed_watering.soak_label", lang),
-              localize("observed_watering.minutes", lang),
-              config.soak_minutes ?? 15,
-              (v) =>
-                this.handleConfigChange({
-                  soak_minutes: Math.max(0, parseFloat(v) || 0),
-                }),
-            )}
-            <div class="setting-note">
-              ${localize("observed_watering.passes_description", lang)}
-            </div>`
-        : html`<div class="setting-note">
-            ${localize("observed_watering.passes_description", lang)}
-          </div>`}
+            localize("observed_watering.soak_label", lang),
+            localize("observed_watering.minutes", lang),
+            config.soak_minutes ?? 15,
+            (v) =>
+              this.handleConfigChange({
+                soak_minutes: Math.max(0, parseFloat(v) || 0),
+              }),
+          )}`
+        : ""}
       ${sequential
         ? html`${this._numRow(
-              localize("observed_watering.pause_between_zones_label", lang),
-              localize("observed_watering.seconds", lang),
-              config.pause_between_zones ?? 0,
-              (v) =>
-                this.handleConfigChange({
-                  pause_between_zones: Math.max(0, parseFloat(v) || 0),
-                }),
-            )}
-            <div class="setting-note">
-              ${localize(
-                "observed_watering.pause_between_zones_description",
+            html`${localize(
+                "observed_watering.pause_between_zones_label",
                 lang,
-              )}
-            </div>`
+              )}<si-info
+                >${localize(
+                  "observed_watering.pause_between_zones_description",
+                  lang,
+                )}</si-info
+              >`,
+            localize("observed_watering.seconds", lang),
+            config.pause_between_zones ?? 0,
+            (v) =>
+              this.handleConfigChange({
+                pause_between_zones: Math.max(0, parseFloat(v) || 0),
+              }),
+          )}`
         : ""}
     `;
   }
@@ -4154,13 +4211,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             ${localize(
               "panels.general.cards.panel-mode.labels.advanced",
               this.hass.language,
-            )}
-            <div class="setting-hint">
-              ${localize(
+            )}<si-info
+              >${localize(
                 "panels.general.cards.panel-mode.labels.advanced-hint",
                 this.hass.language,
-              )}
-            </div>
+              )}</si-info
+            >
           </div>
           <ha-switch
             .checked=${advanced}
@@ -4175,6 +4231,36 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   }
 
   /** Whether Smart Irrigation lays its example blueprints down (#930). */
+  /** A card's title with the switch that turns it on: no "Enabled" row. */
+  private _switchHeader(
+    title: string,
+    checked: boolean,
+    onChange: (checked: boolean) => void,
+  ): TemplateResult {
+    return html`<h1 class="card-header si-head">
+      <span>${title}</span>
+      <ha-switch
+        .checked=${checked}
+        @change=${(e: Event) => onChange((e.target as any).checked)}
+      ></ha-switch>
+    </h1>`;
+  }
+
+  /** The same, for a part of a card. */
+  private _switchTitle(
+    title: unknown,
+    checked: boolean,
+    onChange: (checked: boolean) => void,
+  ): TemplateResult {
+    return html`<div class="si-subgroup-title si-head">
+      <span>${title}</span>
+      <ha-switch
+        .checked=${checked}
+        @change=${(e: Event) => onChange((e.target as any).checked)}
+      ></ha-switch>
+    </div>`;
+  }
+
   renderBlueprintsCard() {
     if (!this.config || !this.hass) return html``;
     const lang = this.hass.language;
@@ -4183,7 +4269,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
-              ${localize("blueprints.install_label", lang)}
+              ${localize("blueprints.install_label", lang)}<si-info
+                >${localize("blueprints.install_help", lang)}</si-info
+              >
             </div>
             <ha-switch
               .checked=${this.config.install_blueprints !== false}
@@ -4192,9 +4280,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   install_blueprints: (e.target as any).checked,
                 })}
             ></ha-switch>
-          </div>
-          <div class="setting-help">
-            ${localize("blueprints.install_help", lang)}
           </div>
         </div>
       </ha-card>
@@ -4206,10 +4291,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     const lang = this.hass.language;
 
     return html`
-      <ha-card header="${localize("calculation_log.title", lang)}">
-        <div class="card-content">
-          ${localize("calculation_log.description", lang)}
-        </div>
+      <ha-card>
+        <h1 class="card-header">
+          <span
+            >${localize("calculation_log.title", lang)}<si-info
+              >${localize("calculation_log.description", lang)}</si-info
+            ></span
+          >
+        </h1>
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
@@ -4246,12 +4335,8 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     const haElevation = haCoords?.elevation || 0;
 
     return html`
-      <ha-card
-        header="${localize("coordinate_config.title", this.hass.language)}"
-      >
-        <div class="card-content">
-          ${localize("coordinate_config.description", this.hass.language)}
-        </div>
+      <ha-card>
+        <h1 class="card-header"><span>${localize("coordinate_config.title", this.hass.language)}<si-info>${localize("coordinate_config.description", this.hass.language)}</si-info></span></h1>
         <div class="card-content">
           <div class="setting-row">
             <div class="setting-label">
@@ -4350,15 +4435,20 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     if (!this.config || !this.data || !this.hass) return html``;
 
     return html`
-      <ha-card
-        header="${localize(
-          "days_between_irrigation.title",
-          this.hass.language,
-        )}"
-      >
-        <div class="card-content">
-          ${localize("days_between_irrigation.description", this.hass.language)}
-        </div>
+      <ha-card>
+        <h1 class="card-header">
+          <span
+            >${localize(
+              "days_between_irrigation.title",
+              this.hass.language,
+            )}<si-info
+              >${localize(
+                "days_between_irrigation.description",
+                this.hass.language,
+              )}</si-info
+            ></span
+          >
+        </h1>
 
         <div class="card-content">
           ${this._numRow(
@@ -4449,7 +4539,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
 
   // --- modern row helpers (HA-native controls) ---
   private _textRow(
-    label: string,
+    label: string | TemplateResult,
     unit: string | TemplateResult,
     value: any,
     onCommit: (v: string) => void,
@@ -4473,7 +4563,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   // Time picker. ha-time-input isn't reliably registered on this panel, so we
   // use the native <input type="time"> (real HH:MM picker, same stored format).
   private _timeRow(
-    label: string,
+    label: string | TemplateResult,
     value: any,
     onCommit: (v: string) => void,
     hint = "",
@@ -4481,7 +4571,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     return html`
       <div class="setting-row">
         <div class="setting-label">
-          ${label}${hint ? html`<div class="setting-hint">${hint}</div>` : ""}
+          ${label}${hint ? html`<si-info>${hint}</si-info>` : ""}
         </div>
         <input
           class="field"
@@ -4562,7 +4652,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   // typed. No month: none (the whole year). A day past the end of the month
   // picked is brought back to its last day; 29 February is a real day.
   private _monthDayRow(
-    label: string,
+    label: string | TemplateResult,
     value: string | null | undefined,
     monthName: (i: number) => string,
     onCommit: (v: string | null) => void,
@@ -4626,7 +4716,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   }
 
   private _numRow(
-    label: string,
+    label: string | TemplateResult,
     unit: string | TemplateResult,
     value: any,
     onCommit: (v: string) => void,

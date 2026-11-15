@@ -212,6 +212,13 @@ export const modernStyle = css`
   .fold-title {
     font-weight: 500;
   }
+  /* A title with the switch that turns it on, on its right: no "Enabled". */
+  .si-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
   .setting-hint {
     font-size: 0.8rem;
     font-weight: normal;

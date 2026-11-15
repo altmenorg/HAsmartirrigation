@@ -1220,8 +1220,7 @@
     "multiplier": "Moltiplicatore del fattore colturale",
     "threshold": "Scostamento della soglia",
     "zones": "Zone",
-    "zones_hint": "tutte, oppure i numeri delle zone, separati da virgole.",
-    "enabled": "Attivata"
+    "zones_hint": "tutte, oppure i numeri delle zone, separati da virgole."
   },
   "weather_skip": {
     "title": "Previsione di pioggia",
@@ -1289,7 +1288,7 @@
   "programs": {
     "title": "Programmi",
     "description": "Un programma irriga i suoi passi uno dopo l'altro. Un passo è una zona, o più zone irrigate insieme, e per impostazione predefinita dura quanto calcolato da Smart Irrigation per esso. Più programmi non girano mai contemporaneamente: il successivo aspetta il suo turno.",
-    "main_description": "Irriga tutte le zone, una dopo l'altra o insieme come impostato più in basso. Viene avviato dal trigger di avvio, o dai suoi orari appena uno è attivo.",
+    "main_description": "Irriga tutte le zone, una dopo l'altra o insieme, secondo le sue pianificazioni.",
     "run_options": "Opzioni di questo avvio",
     "adjust_empty": "Indica una percentuale o dei secondi per regolare le durate.",
     "more_options": "Altre opzioni",
@@ -1465,10 +1464,10 @@
     "lift_suspension": "Revoca",
     "preview_title": "Cosa farebbe un'irrigazione",
     "preview_help": "Ogni zona sulla sua riga, con le durate che Smart Irrigation irrigherebbe ora. Seguono il meteo, quindi un'irrigazione può cambiare quando parte.",
+    "yaml_back": "Torna all'editor",
     "yaml_edit": "Modifica in YAML",
     "yaml_help": "Il programma come testo. Un passo indica le sue zone per nome o per numero, e ciò che manca prende il valore predefinito. Nulla viene salvato prima di applicare: la linea temporale qui sotto mostra cosa farebbe il programma.",
     "yaml_apply": "Applica",
-    "yaml_cancel": "Annulla",
     "yaml_invalid": "Questo non è YAML valido.",
     "yaml_not_a_program": "Questo non è un programma: un programma è un insieme di chiavi (name, steps, schedules).",
     "yaml_unknown_zones": "Zona non trovata, o nome condiviso da due zone, esclusa: {zones}",
@@ -1495,7 +1494,6 @@
     "delay_before_help": "Positivo: la pompa o la valvola principale si accende con questo anticipo rispetto all'apertura della valvola della zona. Negativo: prima si apre la valvola della zona, e la pompa o la valvola principale si accende dopo questo tempo.",
     "delay_after": "Ritardo dopo",
     "delay_after_help": "Positivo: la pompa o la valvola principale resta accesa per questo tempo dopo la chiusura della valvola della zona. Negativo: si spegne con questo anticipo rispetto alla chiusura della valvola della zona, così una pompa non spinge mai contro una valvola chiusa.",
-    "enabled": "Attivata",
     "add": "Aggiungi una pompa o valvola principale",
     "delete": "Elimina",
     "confirm_delete": "Eliminare \"{name}\"? Le zone che lo usano non avranno più né pompa né valvola principale.",
@@ -1539,7 +1537,6 @@
   "measured_skip": {
     "title": "Salta in base alle condizioni misurate",
     "description": "Verificato all'inizio di ogni ciclo, da un sensore o dal servizio meteo. Un sensore che non si riesce a leggere non blocca mai un ciclo.",
-    "enabled": "Attivo",
     "threshold": "Soglia",
     "sensor": "Sensore",
     "sensor-optional": "Sensore (opzionale)",

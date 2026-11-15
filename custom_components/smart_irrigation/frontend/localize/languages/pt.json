@@ -1220,8 +1220,7 @@
     "multiplier": "Multiplicador do fator de cultura",
     "threshold": "Desvio do limite",
     "zones": "Zonas",
-    "zones_hint": "todas, ou os números das zonas, separados por vírgulas.",
-    "enabled": "Ativado"
+    "zones_hint": "todas, ou os números das zonas, separados por vírgulas."
   },
   "weather_skip": {
     "title": "Previsão de chuva",
@@ -1289,7 +1288,7 @@
   "programs": {
     "title": "Programas",
     "description": "Um programa rega as suas etapas uma a seguir à outra. Uma etapa é uma zona, ou várias regadas em conjunto, e por predefinição dura o tempo que o Smart Irrigation calculou para ela. Vários programas nunca funcionam ao mesmo tempo: o seguinte aguarda a sua vez.",
-    "main_description": "Rega todas as zonas, uma após a outra ou em conjunto, como definido mais abaixo. É iniciado pelo acionador de início, ou pelos seus próprios agendamentos assim que um é ativado.",
+    "main_description": "Rega todas as zonas, uma a seguir à outra ou em conjunto, nos seus horários.",
     "run_options": "Opções deste arranque",
     "adjust_empty": "Indique uma percentagem ou segundos para ajustar as durações.",
     "more_options": "Mais opções",
@@ -1465,10 +1464,10 @@
     "lift_suspension": "Levantar",
     "preview_title": "O que uma rega faria",
     "preview_help": "Cada zona na sua linha, com as durações que o Smart Irrigation regaria agora. Seguem o tempo, por isso uma rega pode diferir quando começar.",
+    "yaml_back": "Voltar ao editor",
     "yaml_edit": "Editar em YAML",
     "yaml_help": "O programa como texto. Um passo indica as suas zonas pelo nome ou pelo número, e o que é omitido toma o valor predefinido. Nada é guardado antes de aplicar: a linha temporal abaixo mostra o que o programa faria.",
     "yaml_apply": "Aplicar",
-    "yaml_cancel": "Cancelar",
     "yaml_invalid": "Isto não é YAML válido.",
     "yaml_not_a_program": "Isto não é um programa: um programa é um conjunto de chaves (name, steps, schedules).",
     "yaml_unknown_zones": "Zona não encontrada, ou nome partilhado por duas zonas, ignorada: {zones}",
@@ -1495,7 +1494,6 @@
     "delay_before_help": "Positivo: a bomba ou a válvula principal liga este tempo antes de a válvula da zona abrir. Negativo: a válvula da zona abre primeiro, e a bomba ou a válvula principal liga este tempo depois.",
     "delay_after": "Atraso depois",
     "delay_after_help": "Positivo: a bomba ou a válvula principal continua ligada este tempo depois de a válvula da zona fechar. Negativo: desliga este tempo antes de a válvula da zona fechar, para que uma bomba nunca empurre contra uma válvula fechada.",
-    "enabled": "Ativada",
     "add": "Adicionar uma bomba ou válvula principal",
     "delete": "Eliminar",
     "confirm_delete": "Eliminar \"{name}\"? As zonas que o utilizam ficarão sem bomba nem válvula principal.",
@@ -1539,7 +1537,6 @@
   "measured_skip": {
     "title": "Ignorar com base nas condições medidas",
     "description": "Verificado no início de cada ciclo, a partir de um sensor ou do serviço meteorológico. Um sensor que não se consegue ler nunca impede um ciclo.",
-    "enabled": "Ativo",
     "threshold": "Limite",
     "sensor": "Sensor",
     "sensor-optional": "Sensor (opcional)",

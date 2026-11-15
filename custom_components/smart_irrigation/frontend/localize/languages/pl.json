@@ -1220,8 +1220,7 @@
     "multiplier": "Mnożnik współczynnika roślinnego",
     "threshold": "Przesunięcie progu",
     "zones": "Strefy",
-    "zones_hint": "wszystkie lub numery stref oddzielone przecinkami.",
-    "enabled": "Włączona"
+    "zones_hint": "wszystkie lub numery stref oddzielone przecinkami."
   },
   "weather_skip": {
     "title": "Prognoza deszczu",
@@ -1289,7 +1288,7 @@
   "programs": {
     "title": "Programy",
     "description": "Program podlewa swoje kroki jeden po drugim. Krok to jedna strefa lub kilka podlewanych razem i domyślnie trwa tyle, ile Smart Irrigation dla niego obliczył. Kilka programów nigdy nie działa jednocześnie: następny czeka na swoją kolej.",
-    "main_description": "Podlewa wszystkie strefy, jedną po drugiej albo razem, jak ustawiono niżej. Uruchamia go wyzwalacz startu albo jego własne harmonogramy, gdy tylko jeden jest włączony.",
+    "main_description": "Podlewa wszystkie strefy, jedna po drugiej lub razem, według swoich harmonogramów.",
     "run_options": "Opcje tego uruchomienia",
     "adjust_empty": "Podaj procent lub sekundy, aby dostosować czasy.",
     "more_options": "Więcej opcji",
@@ -1465,10 +1464,10 @@
     "lift_suspension": "Znieś",
     "preview_title": "Co zrobiłoby podlewanie",
     "preview_help": "Każda strefa w osobnym wierszu, z czasami, które Smart Irrigation podlałby teraz. Zależą od pogody, więc podlewanie może się różnić w chwili startu.",
+    "yaml_back": "Wróć do edytora",
     "yaml_edit": "Edytuj w YAML",
     "yaml_help": "Program jako tekst. Krok wskazuje swoje strefy nazwą lub numerem, a to, co pominięte, przyjmuje wartość domyślną. Nic nie jest zapisywane przed zastosowaniem: oś czasu poniżej pokazuje, co zrobiłby program.",
     "yaml_apply": "Zastosuj",
-    "yaml_cancel": "Anuluj",
     "yaml_invalid": "To nie jest poprawny YAML.",
     "yaml_not_a_program": "To nie jest program: program to zestaw kluczy (name, steps, schedules).",
     "yaml_unknown_zones": "Nie znaleziono strefy lub nazwa należy do dwóch stref, pominięto: {zones}",
@@ -1495,7 +1494,6 @@
     "delay_before_help": "Dodatnie: pompa lub zawór główny włącza się o tyle wcześniej, niż otworzy się zawór strefy. Ujemne: zawór strefy otwiera się pierwszy, a pompa lub zawór główny włącza się o tyle później.",
     "delay_after": "Opóźnienie po",
     "delay_after_help": "Dodatnie: pompa lub zawór główny pozostaje włączony o tyle dłużej po zamknięciu zaworu strefy. Ujemne: wyłącza się o tyle wcześniej, niż zamknie się zawór strefy, aby pompa nigdy nie tłoczyła na zamknięty zawór.",
-    "enabled": "Włączone",
     "add": "Dodaj pompę lub zawór główny",
     "delete": "Usuń",
     "confirm_delete": "Usunąć „{name}”? Strefy, które go używają, nie będą już miały pompy ani zaworu głównego.",
@@ -1539,7 +1537,6 @@
   "measured_skip": {
     "title": "Pomiń według zmierzonych warunków",
     "description": "Sprawdzane na początku każdego nawadniania, z czujnika albo z serwisu pogodowego. Czujnik, którego nie da się odczytać, nigdy nie zatrzymuje nawadniania.",
-    "enabled": "Włączone",
     "threshold": "Próg",
     "sensor": "Czujnik",
     "sensor-optional": "Czujnik (opcjonalnie)",

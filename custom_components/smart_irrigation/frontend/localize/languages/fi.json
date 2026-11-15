@@ -1220,8 +1220,7 @@
     "multiplier": "Kasvikertoimen kerroin",
     "threshold": "Rajan siirtymä",
     "zones": "Alueet",
-    "zones_hint": "kaikki, tai alueiden numerot pilkuilla erotettuina.",
-    "enabled": "Käytössä"
+    "zones_hint": "kaikki, tai alueiden numerot pilkuilla erotettuina."
   },
   "weather_skip": {
     "title": "Sade-ennuste",
@@ -1289,7 +1288,7 @@
   "programs": {
     "title": "Ohjelmat",
     "description": "Ohjelma kastelee vaiheensa yksi kerrallaan. Vaihe on yksi vyöhyke tai useampi yhtä aikaa kasteltava, ja se kestää oletuksena sen ajan, jonka Smart Irrigation on sille laskenut. Useita ohjelmia ei koskaan ajeta yhtä aikaa: seuraava odottaa vuoroaan.",
-    "main_description": "Kastelee jokaisen vyöhykkeen, peräkkäin tai yhtä aikaa alla asetetulla tavalla. Sen käynnistää aloitusliipaisin, tai sen omat aikataulut heti kun yksi on käytössä.",
+    "main_description": "Kastelee kaikki vyöhykkeet peräkkäin tai yhdessä aikataulujensa mukaan.",
     "run_options": "Tämän käynnistyksen asetukset",
     "adjust_empty": "Anna prosentti tai sekunnit kestojen säätämiseksi.",
     "more_options": "Lisää asetuksia",
@@ -1465,10 +1464,10 @@
     "lift_suspension": "Poista",
     "preview_title": "Mitä kastelu tekisi",
     "preview_help": "Jokainen vyöhyke omalla rivillään, kestoilla, jotka Smart Irrigation kastelisi nyt. Ne seuraavat säätä, joten kastelu voi poiketa alkaessaan.",
+    "yaml_back": "Takaisin editoriin",
     "yaml_edit": "Muokkaa YAML-muodossa",
     "yaml_help": "Ohjelma tekstinä. Vaihe nimeää vyöhykkeensä nimellä tai numerolla, ja pois jätetty saa oletusarvonsa. Mitään ei tallenneta ennen käyttöönottoa: alla oleva aikajana näyttää, mitä ohjelma tekisi.",
     "yaml_apply": "Ota käyttöön",
-    "yaml_cancel": "Peruuta",
     "yaml_invalid": "Tämä ei ole kelvollista YAMLia.",
     "yaml_not_a_program": "Tämä ei ole ohjelma: ohjelma on joukko avaimia (name, steps, schedules).",
     "yaml_unknown_zones": "Vyöhykettä ei löydy, tai kahden vyöhykkeen yhteinen nimi, jätetty pois: {zones}",
@@ -1495,7 +1494,6 @@
     "delay_before_help": "Positiivinen: pumppu tai pääventtiili käynnistyy niin kauan ennen kuin vyöhykeventtiili avautuu. Negatiivinen: vyöhykeventtiili avautuu ensin, ja pumppu tai pääventtiili käynnistyy niin kauan sen jälkeen.",
     "delay_after": "Viive jälkeen",
     "delay_after_help": "Positiivinen: pumppu tai pääventtiili pysyy päällä niin kauan vyöhykeventtiilin sulkeutumisen jälkeen. Negatiivinen: se sammuu niin kauan ennen vyöhykeventtiilin sulkeutumista, jotta pumppu ei koskaan paina suljettua venttiiliä vasten.",
-    "enabled": "Käytössä",
     "add": "Lisää pumppu tai pääventtiili",
     "delete": "Poista",
     "confirm_delete": "Poistetaanko ”{name}”? Sitä käyttävillä vyöhykkeillä ei ole enää pumppua eikä pääventtiiliä.",
@@ -1539,7 +1537,6 @@
   "measured_skip": {
     "title": "Ohita mitattujen olosuhteiden perusteella",
     "description": "Tarkistetaan jokaisen kastelun alussa, anturista tai sääpalvelusta. Anturi, jota ei saada luettua, ei koskaan estä kastelua.",
-    "enabled": "Käytössä",
     "threshold": "Raja",
     "sensor": "Anturi",
     "sensor-optional": "Anturi (valinnainen)",
