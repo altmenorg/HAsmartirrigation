@@ -42,6 +42,7 @@ export const FETCHABLE_LANGUAGES = [
   "sv",
   "uk",
   "zh-Hans",
+  "zh-Hant",
 ];
 
 const languages: any = { en: en };

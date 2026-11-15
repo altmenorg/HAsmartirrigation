@@ -38,6 +38,7 @@ const FILES = [
   "sv",
   "uk",
   "zh-Hans",
+  "zh-Hant",
 ];
 
 /** Home Assistant language codes that are served by a file of another name. */
