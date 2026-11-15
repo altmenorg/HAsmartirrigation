@@ -785,6 +785,17 @@
     "leak": {
       "title": "Vettä virtaa kaikkien venttiilien ollessa kiinni",
       "description": "Mittari **{meter}** laski {litres} l, kun kaikki vyöhykkeiden {zones} venttiilit olivat kiinni. Putki saattaa vuotaa tai venttiili olla jumissa auki.\n\nIlmoitus poistuu itsestään, kun mittari on pysynyt paikallaan puoli tuntia. Tapahtuma `smart_irrigation_leak` ja Vuoto-anturi antavat automaation sulkea pääventtiilin."
+    },
+    "moved_to_calculate_and_water": {
+      "title": "Suora venttiiliohjaus on nyt \"Laske ja kastele\"",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Kastelusi jatkuu kuten ennen",
+            "description": "Smart Irrigationilla on nyt yksi asetus sille, mitä se tekee: **Laske ja kastele**, **Vain laskenta** tai **Pysäytä kaikki**, Asetukset-välilehdellä. Asennuksesi avasi venttiilit itse, joten se siirrettiin tilaan **Laske ja kastele**.\n\nVyöhykkeesi kastellaan kuten ennen, samaan aikaan: aloituslaukaisimesta tuli pääohjelman aikataulu uudella **Kastelu**-välilehdellä. Valitse **Vain laskenta**, jos Smart Irrigationin ei enää pidä avata venttiileitä."
+          }
+        }
+      }
     }
   }
 }

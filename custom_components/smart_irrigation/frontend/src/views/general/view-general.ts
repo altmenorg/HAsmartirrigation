@@ -701,9 +701,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       // Whether the bundled blueprints are copied (#930).
       const r16 = this.renderBlueprintsCard();
 
-      // Offered to assistants (an LLM API of Home Assistant), read only.
-      const r19 = this.renderAiApiCard();
-
       // How much of the panel to show.
       const r11 = this.renderPanelModeCard();
 
@@ -785,7 +782,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           </div> </ha-card
         >${r18} ${heading("calculation")}${r1}${r8}${r13}${r10}
         ${heading("control")}${r9}${full ? "" : r5}
-        ${heading("system")}${r11}${r16}${r19}${r12}${r17}`;
+        ${heading("system")}${r11}${r16}${r12}${r17}`;
 
       return r;
     }
@@ -2658,12 +2655,12 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                       </div>`
                     : ""}
                   ${renderSchedules(program, index)}
-                  ${renderNotify(program, index)}`}
-            <div class="fold-section">${t("sequencing_title")}</div>
-            <div class="setting-hint row-hint">
-              ${t("main_settings_description")}
-            </div>
-            ${this.renderExecutionSettings(lang, true)}
+                  ${renderNotify(program, index)}
+                  <div class="fold-section">${t("sequencing_title")}</div>
+                  <div class="setting-hint row-hint">
+                    ${t("main_settings_description")}
+                  </div>
+                  ${this.renderExecutionSettings(lang, true)}`}
           </div>
         </ha-card>
       `;
@@ -3863,13 +3860,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   renderObservedWateringCard() {
     if (!this.config || !this.data || !this.hass) return html``;
     const lang = this.hass.language;
-    // When Smart Irrigation waters, observed watering is on by itself: the
-    // card is for the advanced panel, or for calculating only.
-    if (
-      this.config.full_controller === true &&
-      this.config.ui_mode !== "advanced"
-    )
-      return html``;
+    // Observed watering is turned on with "Calculate and water" and left as it
+    // was otherwise: switching it by hand is for the advanced panel.
+    if (this.config.ui_mode !== "advanced") return html``;
 
     return html`
       <ha-card header="${localize("observed_watering.title", lang)}">
@@ -3906,6 +3899,23 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                 )}
                 <div class="setting-help">
                   ${localize("observed_watering.leak_description", lang)}
+                </div>`
+            : ""}
+          ${this.config.full_controller === true
+            ? html`${this._numRow(
+                  localize("observed_watering.set_aside_label", lang),
+                  "",
+                  this.config.set_aside_after ?? 0,
+                  (v) =>
+                    this.handleConfigChange({
+                      set_aside_after: Math.min(
+                        10,
+                        Math.max(0, parseInt(v) || 0),
+                      ),
+                    }),
+                )}
+                <div class="setting-help">
+                  ${localize("observed_watering.set_aside_description", lang)}
                 </div>`
             : ""}
           ${this.config.full_controller === true
@@ -4044,10 +4054,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           </svg>
         </div>
       </div>
-      <div class="setting-note">
-        ${localize("observed_watering.sequencing_description", lang)}
-      </div>
-
+      ${full
+        ? ""
+        : html`<div class="setting-note">
+            ${localize("observed_watering.sequencing_description", lang)}
+          </div>`}
       ${this.config.direct_valve_control_enabled &&
       (full || this.config.ui_mode === "advanced")
         ? this.renderCycleAndSoak(lang)
@@ -4093,10 +4104,10 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   soak_minutes: Math.max(0, parseFloat(v) || 0),
                 }),
             )}
-            <div class="card-content">
+            <div class="setting-note">
               ${localize("observed_watering.passes_description", lang)}
             </div>`
-        : html`<div class="card-content">
+        : html`<div class="setting-note">
             ${localize("observed_watering.passes_description", lang)}
           </div>`}
       ${sequential
@@ -4109,25 +4120,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   pause_between_zones: Math.max(0, parseFloat(v) || 0),
                 }),
             )}
-            <div class="card-content">
+            <div class="setting-note">
               ${localize(
                 "observed_watering.pause_between_zones_description",
                 lang,
               )}
-            </div>`
-        : ""}
-      ${config.ui_mode === "advanced"
-        ? html`${this._numRow(
-              localize("observed_watering.set_aside_label", lang),
-              "",
-              config.set_aside_after ?? 0,
-              (v) =>
-                this.handleConfigChange({
-                  set_aside_after: Math.min(10, Math.max(0, parseInt(v) || 0)),
-                }),
-            )}
-            <div class="card-content">
-              ${localize("observed_watering.set_aside_description", lang)}
             </div>`
         : ""}
     `;
@@ -4199,51 +4196,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           <div class="setting-help">
             ${localize("blueprints.install_help", lang)}
           </div>
-        </div>
-      </ha-card>
-    `;
-  }
-
-  renderAiApiCard() {
-    if (!this.config || !this.hass) return html``;
-    const lang = this.hass.language;
-    const on = this.config.ai_api_enabled === true;
-    return html`
-      <ha-card header="${localize("ai_api.title", lang)}">
-        <div class="card-content">${localize("ai_api.description", lang)}</div>
-        <div class="card-content">
-          <div class="setting-row">
-            <div class="setting-label">
-              ${localize("ai_api.enabled_label", lang)}
-            </div>
-            <ha-switch
-              .checked=${on}
-              @change=${(e: Event) =>
-                this.handleConfigChange({
-                  ai_api_enabled: (e.target as any).checked,
-                })}
-            ></ha-switch>
-          </div>
-          ${on
-            ? html`<div class="setting-help">
-                  ${localize("ai_api.how", lang)}
-                </div>
-                <div class="setting-row">
-                  <div class="setting-label">
-                    ${localize("ai_api.write_label", lang)}
-                  </div>
-                  <ha-switch
-                    .checked=${this.config.ai_api_write_enabled === true}
-                    @change=${(e: Event) =>
-                      this.handleConfigChange({
-                        ai_api_write_enabled: (e.target as any).checked,
-                      })}
-                  ></ha-switch>
-                </div>
-                <div class="setting-help">
-                  ${localize("ai_api.write_help", lang)}
-                </div>`
-            : ""}
         </div>
       </ha-card>
     `;

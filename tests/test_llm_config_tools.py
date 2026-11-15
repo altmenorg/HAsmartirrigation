@@ -1,7 +1,7 @@
 """An assistant configuring Smart Irrigation (llm_config_tools.py).
 
-Only with the second setting on. Every write goes through the path the panel
-saves with; none runs a watering, and none changes the assistant's own access.
+Every write goes through the path the panel saves with; none runs a
+watering.
 """
 
 from types import SimpleNamespace
@@ -27,11 +27,10 @@ def _context():
     )
 
 
-def _coordinator(write=False, programs=None):
+def _coordinator(programs=None):
     zones = {0: {const.ZONE_ID: 0, const.ZONE_NAME: "Lawn"}}
     store = SimpleNamespace(
         config=SimpleNamespace(
-            ai_api_write_enabled=write,
             programs=(
                 programs
                 if programs is not None
@@ -73,24 +72,17 @@ def _hass(coordinator):
 # --- offered only when allowed
 
 
-async def test_the_writing_tools_come_with_the_second_setting():
-    for write, expected in ((False, False), (True, True)):
-        hass = _hass(_coordinator(write=write))
-        api = llm_api.SmartIrrigationAPI(hass=hass, id="smart_irrigation", name="SI")
+async def test_the_writing_tools_are_always_offered():
+    hass = _hass(_coordinator())
+    api = llm_api.SmartIrrigationAPI(hass=hass, id="smart_irrigation", name="SI")
 
-        instance = await api.async_get_api_instance(_context())
+    instance = await api.async_get_api_instance(_context())
 
-        names = {tool.name for tool in instance.tools}
-        assert ("SaveZone" in names) is expected
-        assert ("DeleteProgram" in names) is expected
-        assert ("SaveSettings" in names) is expected
-        assert ("can also configure" in instance.api_prompt) is expected
-        # Nothing ever runs a watering.
-        assert not any("Run" in name or "Water" in name for name in names)
-
-
-def test_off_by_default():
-    assert const.CONF_DEFAULT_AI_API_WRITE_ENABLED is False
+    names = {tool.name for tool in instance.tools}
+    assert {"SaveZone", "DeleteProgram", "SaveSettings"} <= names
+    assert "can also configure" in instance.api_prompt
+    # Nothing ever runs a watering.
+    assert not any("Run" in name or "Water" in name for name in names)
 
 
 # --- reading
@@ -115,7 +107,7 @@ async def test_sensor_groups_come_without_their_readings():
 async def test_a_zone_is_saved_the_way_the_panel_saves_it(monkeypatch):
     save = AsyncMock(return_value=(0, None))
     monkeypatch.setattr(ws, "async_save_zone", save)
-    hass = _hass(_coordinator(write=True))
+    hass = _hass(_coordinator())
 
     result = _data(
         await llm_config_tools.SaveZoneTool().async_call(
@@ -143,7 +135,7 @@ async def test_a_zone_is_saved_the_way_the_panel_saves_it(monkeypatch):
 async def test_a_zone_that_does_not_validate_is_refused(monkeypatch):
     save = AsyncMock()
     monkeypatch.setattr(ws, "async_save_zone", save)
-    hass = _hass(_coordinator(write=True))
+    hass = _hass(_coordinator())
 
     result = _data(
         await llm_config_tools.SaveZoneTool().async_call(
@@ -158,7 +150,7 @@ async def test_a_zone_that_does_not_validate_is_refused(monkeypatch):
 async def test_an_unknown_zone_is_not_created_under_its_id(monkeypatch):
     save = AsyncMock()
     monkeypatch.setattr(ws, "async_save_zone", save)
-    hass = _hass(_coordinator(write=True))
+    hass = _hass(_coordinator())
 
     result = _data(
         await llm_config_tools.SaveZoneTool().async_call(
@@ -174,7 +166,7 @@ async def test_the_panel_refusal_is_passed_on(monkeypatch):
     monkeypatch.setattr(
         ws, "async_save_zone", AsyncMock(return_value=(None, "a valve of its own"))
     )
-    hass = _hass(_coordinator(write=True))
+    hass = _hass(_coordinator())
 
     result = _data(
         await llm_config_tools.SaveZoneTool().async_call(
@@ -188,7 +180,7 @@ async def test_the_panel_refusal_is_passed_on(monkeypatch):
 async def test_deleting_a_zone_removes_it(monkeypatch):
     save = AsyncMock(return_value=(0, None))
     monkeypatch.setattr(ws, "async_save_zone", save)
-    hass = _hass(_coordinator(write=True))
+    hass = _hass(_coordinator())
 
     await llm_config_tools.DeleteZoneTool().async_call(
         hass, _call("DeleteZone", zone_id=0), None
@@ -200,24 +192,8 @@ async def test_deleting_a_zone_removes_it(monkeypatch):
 # --- settings
 
 
-async def test_the_assistant_cannot_change_its_own_access():
-    coordinator = _coordinator(write=True)
-    hass = _hass(coordinator)
-
-    result = _data(
-        await llm_config_tools.SaveSettingsTool().async_call(
-            hass,
-            _call("SaveSettings", settings={"ai_api_write_enabled": False}),
-            None,
-        )
-    )
-
-    assert result["success"] is False
-    coordinator.async_update_config.assert_not_awaited()
-
-
 async def test_settings_are_saved_through_the_panel_schema():
-    coordinator = _coordinator(write=True)
+    coordinator = _coordinator()
     hass = _hass(coordinator)
 
     result = _data(
@@ -241,7 +217,7 @@ async def test_settings_are_saved_through_the_panel_schema():
 
 
 async def test_a_new_program_is_added_and_the_main_one_kept():
-    coordinator = _coordinator(write=True)
+    coordinator = _coordinator()
     hass = _hass(coordinator)
 
     result = _data(
@@ -257,7 +233,6 @@ async def test_a_new_program_is_added_and_the_main_one_kept():
 
 async def test_a_program_with_its_id_is_replaced_in_place():
     coordinator = _coordinator(
-        write=True,
         programs=[
             {"id": "main", "main": True},
             {"id": "old", "name": "Old"},
@@ -276,7 +251,7 @@ async def test_a_program_with_its_id_is_replaced_in_place():
 
 
 async def test_a_program_naming_an_unknown_zone_is_refused():
-    coordinator = _coordinator(write=True)
+    coordinator = _coordinator()
     hass = _hass(coordinator)
 
     result = _data(
@@ -294,9 +269,7 @@ async def test_a_program_naming_an_unknown_zone_is_refused():
 
 
 async def test_the_main_program_is_never_deleted():
-    coordinator = _coordinator(
-        write=True, programs=[{"id": "main", "main": True}, {"id": "p"}]
-    )
+    coordinator = _coordinator(programs=[{"id": "main", "main": True}, {"id": "p"}])
     hass = _hass(coordinator)
 
     refused = _data(

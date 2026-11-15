@@ -1409,7 +1409,7 @@
     "adjust_reset": "Nulstil",
     "confirm_reset_adjustment": "Fjerne dette programs justering?",
     "main_settings": "Hovedprogram: start og rækkefølge",
-    "main_settings_description": "Hvordan hovedprogrammet vander: zonerne efter hinanden eller sammen, pausen mellem to zoner og cycle and soak. Dets startudløser er nedenfor.",
+    "main_settings_description": "Hvordan hovedprogrammet vander: zonerne efter hinanden eller sammen, pausen mellem to zoner og cycle and soak.",
     "main_schedules_active": "Lige nu er det hovedprogrammets tidsplaner, der starter vandingen: startudløseren nedenfor bruges ikke. Du kan stadig redigere den, og den kommer tilbage, hvis du slår de tidsplaner fra eller fjerner dem.",
     "mode_off": "Den fulde styring er slået fra. Slå den til under Indstillinger, Generelt.",
     "no_zone": "ingen zone",
@@ -1530,14 +1530,6 @@
     "description": "Skriver hele grundlaget for hver beregning til en fil, så to dage der ligner hinanden men vander meget forskelligt kan sammenlignes bagefter. Hver beregning tilføjer én linje: sensorgruppens målinger og hvordan de blev sammenlagt, modulets mellemresultater (solindstråling, nettostråling, ET0) samt den vandbalance, varighed og mængde det giver. Slået fra som standard; filen har en maksimal størrelse og roteres, så den kan stå tændt en hel sæson.",
     "enabled_label": "Skriv beregningens grundlag til en fil",
     "file_hint": "Skrives til config/smart_irrigation/calc_log.jsonl, én JSON-post pr. linje. De nyeste poster er også med i diagnostik-downloadet (koordinater afrundet, entitets-id'er fjernet), så du kan vedhæfte dem til en fejlrapport i ét skridt."
-  },
-  "ai_api": {
-    "title": "Adgang for AI",
-    "description": "Lader en assistent læse Smart Irrigation: zonerne og deres vandbalance, næste vanding og hvorfor en zone holdes tilbage, programmerne og planen, indstillingerne, og kontrollere et program, før det gemmes. Den starter aldrig en vanding og åbner ingen ventil. Slået fra som standard: med en cloud-assistent forlader det, den læser, dit hjem.",
-    "enabled_label": "Tilbyd Smart Irrigation til assistenter",
-    "how": "For Claude, ChatGPT eller en anden MCP-klient: tilføj Home Assistants integration \"Model Context Protocol Server\", og sæt flueben ved Smart Irrigation i dens indstillinger. En samtaleagent i Home Assistant (Assist) kan også få den i sine indstillinger.",
-    "write_label": "Lad assistenter ændre konfigurationen",
-    "write_help": "Assistenten kan så oprette, ændre og slette zoner, sensorgrupper og programmer og ændre indstillingerne, med de samme kontroller som dette panel. Den starter stadig ingen vanding og kan ikke ændre denne adgang. Slået fra kan dens næste samtale igen kun læse."
   },
   "blueprints": {
     "title": "Blueprints",

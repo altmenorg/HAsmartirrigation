@@ -785,6 +785,17 @@
     "leak": {
       "title": "Scorre acqua con tutte le valvole chiuse",
       "description": "Il contatore **{meter}** ha contato {litres} L mentre tutte le valvole di {zones} erano chiuse. Un tubo potrebbe perdere o una valvola essere bloccata aperta.\n\nL'avviso sparisce da solo quando il contatore resta fermo mezz'ora. L'evento `smart_irrigation_leak` e il sensore Perdita permettono a un'automazione di chiudere una valvola principale."
+    },
+    "moved_to_calculate_and_water": {
+      "title": "Il controllo diretto delle valvole ora è «Calcola e irriga»",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "La tua irrigazione continua come prima",
+            "description": "Smart Irrigation ora ha un'unica impostazione per ciò che fa: **Calcola e irriga**, **Solo calcolo** o **Ferma tutto**, nella scheda Impostazioni. La tua installazione apriva da sola le valvole, quindi è passata a **Calcola e irriga**.\n\nLe tue zone vengono irrigate come prima, nello stesso momento: il trigger di avvio è diventato una pianificazione del programma principale, nella nuova scheda **Irrigazione**. Scegli **Solo calcolo** se Smart Irrigation non deve più aprire le valvole."
+          }
+        }
+      }
     }
   }
 }

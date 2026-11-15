@@ -785,6 +785,17 @@
     "leak": {
       "title": "Vatten rinner med alla ventiler stängda",
       "description": "Mätaren **{meter}** räknade {litres} L medan alla ventiler i {zones} var stängda. Ett rör kan läcka eller en ventil ha fastnat öppen.\n\nMeddelandet försvinner av sig självt när mätaren stått still en halvtimme. Händelsen `smart_irrigation_leak` och Läckage-sensorn låter en automation stänga en huvudventil."
+    },
+    "moved_to_calculate_and_water": {
+      "title": "Direkt ventilstyrning heter nu ”Beräkna och vattna”",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Din bevattning fortsätter som förut",
+            "description": "Smart Irrigation har nu en enda inställning för vad det gör: **Beräkna och vattna**, **Bara beräkna** eller **Stoppa allt**, på fliken Inställningar. Din installation öppnade ventilerna själv och har därför flyttats till **Beräkna och vattna**.\n\nDina zoner vattnas som förut, vid samma tidpunkt: startutlösaren har blivit ett schema för huvudprogrammet på den nya fliken **Bevattning**. Välj **Bara beräkna** om Smart Irrigation inte längre ska öppna ventilerna."
+          }
+        }
+      }
     }
   }
 }

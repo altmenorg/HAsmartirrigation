@@ -43,7 +43,7 @@ It is not the same as postponing: a postponement holds the automatic watering ba
 One choice, **Watering duration calculated**, says when the durations are worked out:
 
 * **At a fixed time.** Every day at the time chosen below (**Calculate at**, 23:00 unless you change it), the water lost is added to each zone's water balance and the durations are set. Use it when something other than Smart Irrigation starts the watering and reads the durations whenever it likes (Irrigation Unlimited, or a schedule of your own).
-* **Just before each start.** The zones are calculated again at the time of the start trigger, with the freshest weather. There is no time to choose. Use it when Smart Irrigation itself starts the watering (direct valve control, or the start event). Because no evening calculation sets the durations with this choice, the start is placed using the live estimate of the run's length, and placed again at every weather reading.
+* **Just before each start.** The zones are calculated again at the time of the start trigger, with the freshest weather. There is no time to choose. Use it when Smart Irrigation itself starts the watering (Calculate and water, or the start event of Calculate only). Because no evening calculation sets the durations with this choice, the start is placed using the live estimate of the run's length, and placed again at every weather reading.
 * **Only when I ask.** Nothing is calculated by itself. Use the calculate buttons or the [services](usage-services.md).
 
 What starts the watering is decided elsewhere, by the start trigger (see below). Under the choice, **Calculate evapotranspiration hour by hour** stays: it changes the form of the equation, not the moment of the calculation.
@@ -170,7 +170,7 @@ The **Clear all weather data** action is still there for a deliberate reset.
 The **Start triggers** card holds the active trigger select. Its last choice is **None**: nothing starts the watering, whatever the weather, while the durations are still calculated. It is the way to block Smart Irrigation from watering. The [Info page](usage-info.md) then says "No trigger is active". No message is shown for the default trigger.
 
 ### Full control and observed watering
-**Full control** turns on valve control and adds a Watering tab, where the start trigger, the sequencing and cycle and soak then live: see [the full controller](usage-full-controller.md). **Observed watering** credits the water balance with what really ran: see [observed watering](configuration-closed-loop.md).
+**Calculate and water** adds the Watering tab, where the main program's schedules, the order of the zones and cycle and soak live: see [the full controller](usage-full-controller.md). **Observed watering** (advanced panel) credits the water balance with what really ran: see [observed watering](configuration-closed-loop.md).
 
 ## System
 

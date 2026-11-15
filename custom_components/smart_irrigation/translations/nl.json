@@ -785,6 +785,17 @@
     "leak": {
       "title": "Er stroomt water terwijl alle kleppen dicht zijn",
       "description": "De meter **{meter}** telde {litres} L terwijl alle kleppen van {zones} dicht waren. Er lekt misschien een leiding of een klep staat vast open.\n\nDe melding verdwijnt vanzelf als de meter een half uur stilstaat. Het event `smart_irrigation_leak` en de Lek-sensor laten een automatisering een hoofdklep sluiten."
+    },
+    "moved_to_calculate_and_water": {
+      "title": "Directe klepbediening heet nu \"Berekenen en beregenen\"",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Uw beregening gaat door zoals voorheen",
+            "description": "Smart Irrigation heeft nu één instelling voor wat het doet: **Berekenen en beregenen**, **Alleen berekenen** of **Alles stoppen**, op het tabblad Instellingen. Uw installatie opende de kleppen zelf en is daarom overgezet naar **Berekenen en beregenen**.\n\nUw zones worden beregend zoals voorheen, op hetzelfde moment: de starttrigger is een schema van het hoofdprogramma geworden, op het nieuwe tabblad **Bewatering**. Kies **Alleen berekenen** als Smart Irrigation de kleppen niet meer moet openen."
+          }
+        }
+      }
     }
   }
 }

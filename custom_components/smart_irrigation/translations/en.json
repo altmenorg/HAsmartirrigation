@@ -785,6 +785,17 @@
     "leak": {
       "title": "Water flows with every valve closed",
       "description": "The meter **{meter}** counted {litres} L while every valve of {zones} was closed. A pipe may leak, or a valve may be stuck open.\n\nIt clears by itself once the meter has stood still for half an hour. The event `smart_irrigation_leak` and the hub's Leak sensor let an automation close a main valve."
+    },
+    "moved_to_calculate_and_water": {
+      "title": "Direct valve control is now \"Calculate and water\"",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Your watering goes on as before",
+            "description": "Smart Irrigation now has one setting for what it does: **Calculate and water**, **Calculate only** or **Stop everything**, in the Settings tab. Your installation opened the valves itself, so it was moved to **Calculate and water**.\n\nYour zones are watered as before, at the same moment: the start trigger became a schedule of the main program, in the new **Watering** tab. Choose **Calculate only** if Smart Irrigation should no longer open the valves."
+          }
+        }
+      }
     }
   }
 }

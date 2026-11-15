@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from homeassistant.components.repairs import RepairsFlow
+from homeassistant.components.repairs import ConfirmRepairFlow, RepairsFlow
 from homeassistant.core import HomeAssistant
 
 from . import const
+from .one_choice import ISSUE_MOVED
 from .set_aside import ISSUE_PREFIX
 
 
@@ -35,6 +36,9 @@ async def async_create_fix_flow(
     hass: HomeAssistant, issue_id: str, data: dict[str, Any] | None
 ) -> RepairsFlow:
     """The flow that fixes ``issue_id``."""
+    if issue_id == ISSUE_MOVED:
+        # A notice: confirming it is all there is to do.
+        return ConfirmRepairFlow()
     if issue_id.startswith(ISSUE_PREFIX):
         zone_id = (data or {}).get("zone_id")
         if zone_id is None:

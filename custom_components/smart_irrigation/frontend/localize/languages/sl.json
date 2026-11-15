@@ -1409,7 +1409,7 @@
     "adjust_reset": "Ponastavi",
     "confirm_reset_adjustment": "Odstranim prilagoditev tega programa?",
     "main_settings": "Glavni program: zagon in zaporedje",
-    "main_settings_description": "Kako zaliva glavni program: cone drugo za drugo ali skupaj, premor med dvema conama ter cikel in vpijanje. Njegov sprožilec zagona je spodaj.",
+    "main_settings_description": "Kako zaliva glavni program: cone drugo za drugo ali skupaj, premor med dvema conama ter cikel in vpijanje.",
     "main_schedules_active": "Za zdaj zalivanje zaganjajo urniki glavnega programa: spodnji sprožilec zagona se ne uporablja. Ostane urejljiv in se vrne, če so ti urniki izklopljeni ali odstranjeni.",
     "mode_off": "Celoten krmilnik je izklopljen. Vklopi ga v Nastavitve, Splošno.",
     "no_zone": "brez cone",
@@ -1530,14 +1530,6 @@
     "description": "Celoten vhod vsakega izračuna zapiši v datoteko, da lahko pozneje primerjaš dva dneva, ki sta si podobna, a zalivata zelo različno. Vsak izračun doda eno vrstico: zapise skupine senzorjev in kako so bili združeni, vmesne rezultate modula (sončno sevanje, neto sevanje, ET0) ter nastalo vodno bilanco, trajanje in prostornino. Privzeto izklopljeno; velikost datoteke je omejena in se kroži, zato ga lahko pustiš vklopljenega vso sezono.",
     "enabled_label": "Zapisuj vhode izračuna v datoteko",
     "file_hint": "Zapisano v config/smart_irrigation/calc_log.jsonl, en zapis JSON na vrstico. Najnovejši zapisi so vključeni tudi v prenos diagnostike (koordinate zaokrožene, ID-ji entitet odstranjeni), zato jih lahko v enem koraku priložiš zahtevku."
-  },
-  "ai_api": {
-    "title": "Dostop za UI",
-    "description": "Pomočniku omogoči branje Smart Irrigation: cone in njihovo vodno bilanco, naslednje zalivanje in zakaj je cona zadržana, programe in načrt, nastavitve, ter preverjanje programa, preden se shrani. Nikoli ne zažene zalivanja in ne odpre ventila. Privzeto izklopljeno: pri pomočniku v oblaku to, kar prebere, zapusti vaš dom.",
-    "enabled_label": "Ponudi Smart Irrigation pomočnikom",
-    "how": "Za Claude, ChatGPT ali drugega odjemalca MCP dodajte integracijo Home Assistant »Model Context Protocol Server« in v njenih možnostih označite Smart Irrigation. Tudi pogovorni agent Home Assistant (Assist) ga lahko dobi v svojih možnostih.",
-    "write_label": "Dovoli pomočnikom spreminjati nastavitve",
-    "write_help": "Pomočnik lahko nato ustvarja, spreminja in briše cone, skupine senzorjev in programe ter spreminja nastavitve, z enakimi preverjanji kot ta plošča. Še vedno ne zažene zalivanja in tega dostopa ne more spremeniti. Izklopljeno lahko njegov naslednji pogovor spet samo bere."
   },
   "blueprints": {
     "title": "Načrti (blueprints)",

@@ -785,6 +785,17 @@
     "leak": {
       "title": "Der løber vand med alle ventiler lukket",
       "description": "Måleren **{meter}** talte {litres} L, mens alle ventiler i {zones} var lukket. Et rør lækker måske, eller en ventil hænger åben.\n\nMeldingen forsvinder af sig selv, når måleren har stået stille en halv time. Hændelsen `smart_irrigation_leak` og Lækage-sensoren lader en automatisering lukke en hovedventil."
+    },
+    "moved_to_calculate_and_water": {
+      "title": "Direkte ventilstyring hedder nu \"Beregn og vand\"",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Din vanding fortsætter som før",
+            "description": "Smart Irrigation har nu én indstilling for, hvad det gør: **Beregn og vand**, **Kun beregn** eller **Stop alt**, under fanen Indstillinger. Din installation åbnede selv ventilerne og er derfor flyttet til **Beregn og vand**.\n\nDine zoner vandes som før, på samme tidspunkt: starttriggeren er blevet en tidsplan for hovedprogrammet under den nye fane **Vanding**. Vælg **Kun beregn**, hvis Smart Irrigation ikke længere skal åbne ventilerne."
+          }
+        }
+      }
     }
   }
 }

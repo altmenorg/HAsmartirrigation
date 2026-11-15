@@ -1409,7 +1409,7 @@
     "adjust_reset": "Réinitialiser",
     "confirm_reset_adjustment": "Supprimer l'ajustement de ce programme ?",
     "main_settings": "Programme principal : départ et enchaînement",
-    "main_settings_description": "Comment le programme principal arrose : les zones l'une après l'autre ou ensemble, la pause entre deux zones et le cycle-and-soak. Son déclencheur est plus bas.",
+    "main_settings_description": "Comment le programme principal arrose : les zones l'une après l'autre ou ensemble, la pause entre deux zones et le cycle-and-soak.",
     "main_schedules_active": "Pour l'instant, ce sont les horaires du programme principal qui lancent l'arrosage : le déclencheur ci-dessous n'est pas utilisé. Tu peux toujours le modifier, et il revient si tu désactives ou supprimes ces horaires.",
     "mode_off": "Le contrôleur complet est désactivé. Active-le dans Réglages, Général.",
     "no_zone": "aucune zone",
@@ -1530,14 +1530,6 @@
     "description": "Écrit dans un fichier l'intégralité des données d'entrée de chaque calcul, afin de pouvoir comparer après coup deux journées qui se ressemblent mais qui arrosent très différemment. Chaque calcul ajoute une ligne : les relevés du groupe de capteurs et la façon dont ils ont été agrégés, les valeurs intermédiaires du module (rayonnement solaire, rayonnement net, ET0), ainsi que le bilan hydrique, la durée d'arrosage et le volume obtenus. Désactivé par défaut ; la taille du fichier est limitée et il est archivé par rotation, il peut donc rester activé toute une saison.",
     "enabled_label": "Journaliser les données de calcul dans un fichier",
     "file_hint": "Écrit dans config/smart_irrigation/calc_log.jsonl, un enregistrement JSON par ligne. Les enregistrements les plus récents sont aussi inclus dans le téléchargement des diagnostics (coordonnées arrondies, identifiants d'entités supprimés), pour les joindre à un ticket en une seule étape."
-  },
-  "ai_api": {
-    "title": "Accès pour l'IA",
-    "description": "Permet à un assistant de lire Smart Irrigation : les zones et leur bilan hydrique, le prochain arrosage et pourquoi une zone est retenue, les programmes et le planning, les réglages, et de vérifier un programme avant qu'il soit enregistré. Il ne lance jamais d'arrosage et n'ouvre aucune vanne. Désactivé par défaut : avec un assistant dans le cloud, ce qu'il lit quitte ta maison.",
-    "enabled_label": "Proposer Smart Irrigation aux assistants",
-    "how": "Pour Claude, ChatGPT ou un autre client MCP, ajoute l'intégration « Model Context Protocol Server » de Home Assistant et coche Smart Irrigation dans ses options. Un agent de conversation de Home Assistant (Assist) peut aussi l'utiliser, à cocher dans ses options.",
-    "write_label": "Laisser les assistants modifier la configuration",
-    "write_help": "L'assistant peut alors créer, modifier et supprimer des zones, des groupes de capteurs et des programmes, et changer les réglages, avec les mêmes contrôles que ce panel. Il ne lance toujours aucun arrosage et ne peut pas changer cet accès. Désactivé, sa prochaine conversation ne peut plus que lire."
   },
   "blueprints": {
     "title": "Blueprints",

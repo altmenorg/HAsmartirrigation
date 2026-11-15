@@ -1409,7 +1409,7 @@
     "adjust_reset": "Obnovit",
     "confirm_reset_adjustment": "Odebrat úpravu tohoto programu?",
     "main_settings": "Hlavní program: start a řazení",
-    "main_settings_description": "Jak hlavní program zavlažuje: zóny jednu po druhé nebo společně, pauza mezi dvěma zónami a cycle and soak. Jeho spouštěč startu je níže.",
+    "main_settings_description": "Jak hlavní program zavlažuje: zóny jednu po druhé nebo společně, pauza mezi dvěma zónami a cycle and soak.",
     "main_schedules_active": "Zavlažování teď spouštějí rozvrhy hlavního programu: spouštěč startu níže se nepoužívá. Můžete ho dál upravovat a vrátí se, pokud tyto rozvrhy vypnete nebo odstraníte.",
     "mode_off": "Plný řadič je vypnutý. Zapněte jej v Nastavení, Obecné.",
     "no_zone": "žádná zóna",
@@ -1530,14 +1530,6 @@
     "description": "Zapisuje do souboru veškeré vstupy každého výpočtu, aby se dva dny, které vypadají stejně, ale zalévají velmi odlišně, daly později porovnat. Každý výpočet přidá jeden řádek: záznamy skupiny senzorů a jak byly sloučeny, mezivýsledky modulu (solární radiace, čistá radiace, ET0) a výslednou vodní bilanci, dobu a objem. Ve výchozím stavu vypnuto; velikost souboru je omezená a soubor se rotuje, takže může zůstat zapnutý celou sezónu.",
     "enabled_label": "Zapisovat vstupy výpočtu do souboru",
     "file_hint": "Zapisuje se do config/smart_irrigation/calc_log.jsonl, jeden záznam JSON na řádek. Nejnovější záznamy jsou také součástí diagnostického souboru ke stažení (souřadnice zaokrouhlené, id entit odstraněna), takže je můžete k hlášení přiložit v jednom kroku."
-  },
-  "ai_api": {
-    "title": "Přístup pro AI",
-    "description": "Umožní asistentovi číst Smart Irrigation: zóny a jejich vodní bilanci, příští zalévání a proč je zóna zadržena, programy a plán, nastavení, a zkontrolovat program před uložením. Nikdy nespouští zalévání a neotevírá ventil. Ve výchozím stavu vypnuto: s asistentem v cloudu to, co čte, opouští váš domov.",
-    "enabled_label": "Nabídnout Smart Irrigation asistentům",
-    "how": "Pro Claude, ChatGPT nebo jiného klienta MCP přidejte integraci Home Assistant „Model Context Protocol Server“ a v jejích možnostech zaškrtněte Smart Irrigation. Konverzační agent Home Assistant (Assist) ho také může dostat ve svých možnostech.",
-    "write_label": "Nechat asistenty měnit konfiguraci",
-    "write_help": "Asistent pak může vytvářet, měnit a mazat zóny, skupiny senzorů a programy a měnit nastavení, se stejnými kontrolami jako tento panel. Stále nespouští zalévání a nemůže tento přístup změnit. Po vypnutí může jeho další konverzace opět jen číst."
   },
   "blueprints": {
     "title": "Blueprinty",

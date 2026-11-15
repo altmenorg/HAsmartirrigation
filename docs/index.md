@@ -19,7 +19,7 @@ It is the official Smart Irrigation integration for Home Assistant, available by
 ## Three ways to use it
 
 1. **It calculates, you water.** Each zone gets a duration, a water balance and the reasons behind them, as entities and events. Your own automation, a [blueprint for your controller](usage-controllers.md) (Rain Bird, Hydrawise, Rachio, OpenSprinkler, B-hyve, ESPHome), or Irrigation Unlimited does the watering.
-2. **It opens the valves.** With [direct valve control](configuration-closed-loop.md), Smart Irrigation waters each zone for its duration: in turn or together, with cycle and soak so clay takes the water in, a pause between zones, a watchdog for a valve left open, and the water actually delivered credited to the zone.
+2. **It opens the valves.** With **Calculate and water**, Smart Irrigation waters each zone for its duration: in turn or together, with cycle and soak so clay takes the water in, a pause between zones, a watchdog for a valve left open, and the water actually delivered credited to the zone.
 3. **It runs your whole irrigation.** The [full controller](usage-full-controller.md), off until you switch it on, adds programs of ordered steps, schedules ("done by sunrise", every other day, only in summer), pumps and main valves, and a planning of what will run and why. It can [import an Irrigation Unlimited configuration](usage-from-irrigation-unlimited.md).
 
 ## What it does
@@ -48,7 +48,7 @@ Water leaves the soil by evaporation and through the leaves. How fast depends on
 - **Weather data**, which can be your own sensors, or a weather service: Open-Meteo needs no account, OpenWeatherMap and Pirate Weather need a free API key.
 - **A few minutes.** The setup assistant asks what it needs, one question at a time, and creates the first zone for you.
 
-Smart Irrigation opens your valves itself only if you turn on direct valve control or the full controller. Otherwise it calculates, and you decide what listens.
+Smart Irrigation opens your valves itself only if you choose **Calculate and water**. Otherwise it calculates, and you decide what listens.
 
 > **Use this integration at your own risk.** We assume no responsibility for any inconvenience caused by using it. Always use common sense before deciding to irrigate on the numbers it provides: watering during heavy rain can cause flooding.
 

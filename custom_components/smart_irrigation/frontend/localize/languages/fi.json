@@ -1409,7 +1409,7 @@
     "adjust_reset": "Nollaa",
     "confirm_reset_adjustment": "Poistetaanko tämän ohjelman säätö?",
     "main_settings": "Pääohjelma: aloitus ja järjestys",
-    "main_settings_description": "Miten pääohjelma kastelee: vyöhykkeet peräkkäin tai yhdessä, kahden vyöhykkeen välinen tauko ja cycle and soak. Sen aloitusliipaisin on alla.",
+    "main_settings_description": "Miten pääohjelma kastelee: vyöhykkeet peräkkäin tai yhdessä, kahden vyöhykkeen välinen tauko ja cycle and soak.",
     "main_schedules_active": "Tällä hetkellä pääohjelman aikataulut käynnistävät kastelun: alla olevaa aloitusliipaisinta ei käytetä. Voit edelleen muokata sitä, ja se palaa, jos poistat nämä aikataulut käytöstä tai poistat ne.",
     "mode_off": "Täysi ohjain on pois päältä. Ota se käyttöön kohdassa Asetukset, Yleiset.",
     "no_zone": "ei vyöhykettä",
@@ -1530,14 +1530,6 @@
     "description": "Kirjoittaa jokaisen laskennan koko lähtötiedot tiedostoon, jotta kaksi samanlaiselta näyttävää mutta hyvin eri tavalla kastelevaa päivää voi verrata jälkikäteen. Jokainen laskenta lisää yhden rivin: anturiryhmän lukemat ja miten ne yhdistettiin, moduulin välitulokset (auringon säteily, nettosäteily, ET0) sekä niistä syntyvä vesitase, kesto ja määrä. Pois päältä oletuksena; tiedoston koko on rajattu ja se kierrätetään, joten se voi olla päällä koko kauden.",
     "enabled_label": "Kirjoita laskennan lähtötiedot tiedostoon",
     "file_hint": "Kirjoitetaan tiedostoon config/smart_irrigation/calc_log.jsonl, yksi JSON-tietue riviä kohden. Uusimmat tietueet ovat mukana myös vianmäärityksen latauksessa (koordinaatit pyöristetty, entiteettien tunnukset poistettu), joten voit liittää ne vikailmoitukseen yhdellä kertaa."
-  },
-  "ai_api": {
-    "title": "Tekoälyn käyttöoikeus",
-    "description": "Antaa avustajan lukea Smart Irrigationia: vyöhykkeet ja niiden vesitaseen, seuraavan kastelun ja miksi vyöhyke jätetään odottamaan, ohjelmat ja aikataulun, asetukset, sekä tarkistaa ohjelman ennen tallennusta. Se ei koskaan käynnistä kastelua eikä avaa venttiiliä. Oletuksena pois: pilviavustajalla sen lukema tieto lähtee kotoasi.",
-    "enabled_label": "Tarjoa Smart Irrigation avustajille",
-    "how": "Claudea, ChatGPT:tä tai muuta MCP-asiakasta varten lisää Home Assistantin integraatio \"Model Context Protocol Server\" ja valitse sen asetuksista Smart Irrigation. Myös Home Assistantin keskusteluagentti (Assist) voi käyttää sitä, valittuna sen asetuksista.",
-    "write_label": "Anna avustajien muuttaa asetuksia",
-    "write_help": "Avustaja voi silloin luoda, muuttaa ja poistaa vyöhykkeitä, anturiryhmiä ja ohjelmia sekä muuttaa asetuksia samoin tarkistuksin kuin tämä paneeli. Se ei edelleenkään käynnistä kastelua eikä voi muuttaa tätä käyttöoikeutta. Pois päältä sen seuraava keskustelu voi taas vain lukea."
   },
   "blueprints": {
     "title": "Blueprintit",

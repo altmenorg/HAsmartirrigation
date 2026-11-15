@@ -785,6 +785,17 @@
     "leak": {
       "title": "Wasser fließt bei geschlossenen Ventilen",
       "description": "Der Zähler **{meter}** hat {litres} L gezählt, während alle Ventile von {zones} geschlossen waren. Eine Leitung könnte lecken oder ein Ventil offen hängen.\n\nDie Meldung verschwindet von selbst, wenn der Zähler eine halbe Stunde stillsteht. Das Ereignis `smart_irrigation_leak` und der Leck-Sensor erlauben einer Automatisierung, ein Hauptventil zu schließen."
+    },
+    "moved_to_calculate_and_water": {
+      "title": "Die direkte Ventilsteuerung heißt jetzt „Berechnen und bewässern“",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Ihre Bewässerung läuft wie bisher",
+            "description": "Smart Irrigation hat jetzt eine einzige Einstellung für das, was es tut: **Berechnen und bewässern**, **Nur berechnen** oder **Alles anhalten**, im Tab Einstellungen. Ihre Installation hat die Ventile selbst geöffnet und wurde daher auf **Berechnen und bewässern** umgestellt.\n\nIhre Zonen werden wie bisher zur selben Zeit bewässert: Der Start-Auslöser wurde zu einem Zeitplan des Hauptprogramms im neuen Tab **Bewässerung**. Wählen Sie **Nur berechnen**, wenn Smart Irrigation die Ventile nicht mehr öffnen soll."
+          }
+        }
+      }
     }
   }
 }

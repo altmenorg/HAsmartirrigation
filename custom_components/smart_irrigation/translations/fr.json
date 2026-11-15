@@ -785,6 +785,17 @@
     "leak": {
       "title": "De l'eau coule, toutes les vannes fermées",
       "description": "Le compteur **{meter}** a compté {litres} L alors que toutes les vannes de {zones} étaient fermées. Un tuyau fuit peut-être, ou une vanne est restée ouverte.\n\nL'alerte disparaît d'elle-même quand le compteur ne bouge plus pendant une demi-heure. L'événement `smart_irrigation_leak` et le capteur Fuite permettent à une automatisation de fermer une vanne maîtresse."
+    },
+    "moved_to_calculate_and_water": {
+      "title": "Le pilotage des vannes est devenu « Calculer et arroser »",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Votre arrosage continue comme avant",
+            "description": "Smart Irrigation a maintenant un seul réglage pour ce qu'il fait : **Calculer et arroser**, **Calculer seulement** ou **Tout arrêter**, dans l'onglet Réglages. Votre installation ouvrait elle-même les vannes : elle est passée en **Calculer et arroser**.\n\nVos zones sont arrosées comme avant, au même moment : le déclencheur de départ est devenu un horaire du programme principal, dans le nouvel onglet **Arrosage**. Choisissez **Calculer seulement** si Smart Irrigation ne doit plus ouvrir les vannes."
+          }
+        }
+      }
     }
   }
 }

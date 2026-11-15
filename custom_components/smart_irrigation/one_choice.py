@@ -26,6 +26,15 @@ from .programs import (
     normalize_programs,
 )
 
+# The repair that tells, once, that direct valve control became "Calculate and
+# water": a notice only, confirmed to go away.
+ISSUE_MOVED = "moved_to_calculate_and_water"
+
+
+def moved_the_valves(changes: dict) -> bool:
+    """Whether the move turned direct valve control into the controller."""
+    return changes.get(const.CONF_FULL_CONTROLLER) is True
+
 
 def _value(config: Any, key: str, default=None):
     if isinstance(config, dict):

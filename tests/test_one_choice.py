@@ -105,3 +105,24 @@ def test_a_main_program_without_schedules_is_seeded_once():
     assert len(seeded[0]["schedules"]) == 1
     again = seed_main_schedules({}, seeded)
     assert again == seeded
+
+
+def test_only_the_valves_moved_to_the_controller_are_told():
+    from custom_components.smart_irrigation.one_choice import moved_the_valves
+
+    moved = migration_changes({const.CONF_DIRECT_VALVE_CONTROL_ENABLED: True})
+    assert moved_the_valves(moved) is True
+    assert moved_the_valves(migration_changes({})) is False
+    assert (
+        moved_the_valves(migration_changes({const.CONF_FULL_CONTROLLER: True})) is False
+    )
+
+
+async def test_the_notice_is_confirmed_away():
+    from homeassistant.components.repairs import ConfirmRepairFlow
+
+    from custom_components.smart_irrigation import repairs
+    from custom_components.smart_irrigation.one_choice import ISSUE_MOVED
+
+    flow = await repairs.async_create_fix_flow(None, ISSUE_MOVED, None)
+    assert isinstance(flow, ConfirmRepairFlow)

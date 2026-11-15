@@ -1409,7 +1409,7 @@
     "adjust_reset": "Reimposta",
     "confirm_reset_adjustment": "Rimuovere la regolazione di questo programma?",
     "main_settings": "Programma principale: avvio e sequenza",
-    "main_settings_description": "Come irriga il programma principale: le zone una dopo l'altra o insieme, la pausa tra due zone e cycle and soak. Il suo trigger di avvio è qui sotto.",
+    "main_settings_description": "Come irriga il programma principale: le zone una dopo l'altra o insieme, la pausa tra due zone e cycle and soak.",
     "main_schedules_active": "Per ora sono gli orari del programma principale ad avviare l'irrigazione: il trigger di avvio qui sotto non viene usato. Puoi sempre modificarlo, e torna in uso se disattivi o elimini quegli orari.",
     "mode_off": "Il controller completo è disattivato. Attivalo in Impostazioni, Generale.",
     "no_zone": "nessuna zona",
@@ -1530,14 +1530,6 @@
     "description": "Scrive in un file tutti i dati di ingresso di ogni calcolo, così due giorni che si assomigliano ma irrigano in modo molto diverso possono essere confrontati dopo. Ogni calcolo aggiunge una riga: le letture del gruppo di sensori e come sono state aggregate, i valori intermedi del modulo (radiazione solare, radiazione netta, ET0) e il bilancio idrico, la durata e il volume che ne risultano. Disattivato per impostazione predefinita; il file ha una dimensione massima e viene ruotato, quindi può restare attivo per un'intera stagione.",
     "enabled_label": "Registrare i dati di ingresso del calcolo in un file",
     "file_hint": "Scritto in config/smart_irrigation/calc_log.jsonl, un record JSON per riga. I record più recenti sono inclusi anche nel download della diagnostica (coordinate arrotondate, id delle entità rimossi), così puoi allegarli a una segnalazione in un solo passaggio."
-  },
-  "ai_api": {
-    "title": "Accesso per l'IA",
-    "description": "Permette a un assistente di leggere Smart Irrigation: le zone e il loro bilancio idrico, la prossima irrigazione e perché una zona è trattenuta, i programmi e la pianificazione, le impostazioni, e di verificare un programma prima di salvarlo. Non avvia mai un'irrigazione e non apre alcuna valvola. Disattivato per impostazione predefinita: con un assistente nel cloud, ciò che legge esce da casa tua.",
-    "enabled_label": "Offri Smart Irrigation agli assistenti",
-    "how": "Per Claude, ChatGPT o un altro client MCP, aggiungi l'integrazione \"Model Context Protocol Server\" di Home Assistant e spunta Smart Irrigation nelle sue opzioni. Anche un agente di conversazione di Home Assistant (Assist) può usarlo, dalle sue opzioni.",
-    "write_label": "Lascia che gli assistenti modifichino la configurazione",
-    "write_help": "L'assistente può allora creare, modificare ed eliminare zone, gruppi di sensori e programmi, e cambiare le impostazioni, con gli stessi controlli di questo pannello. Continua a non avviare irrigazioni e non può cambiare questo accesso. Disattivato, la sua prossima conversazione può solo leggere."
   },
   "blueprints": {
     "title": "Blueprint",

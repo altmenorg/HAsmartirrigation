@@ -1,7 +1,8 @@
 """Smart Irrigation for an assistant: an LLM API of Home Assistant.
 
-Off by default (``const.CONF_AI_API_ENABLED``). Turned on, Smart Irrigation
-registers an API with Home Assistant's LLM helper. Home Assistant's own Model
+Smart Irrigation registers an API with Home Assistant's LLM helper. Nothing
+is offered until the user picks it: in the options of Home Assistant's own
+Model Context Protocol Server, or of a conversation agent. Home Assistant's own Model
 Context Protocol Server integration then offers it to an MCP client (Claude,
 ChatGPT...), and a conversation agent of Home Assistant (Assist) can use it as
 well: Smart Irrigation runs no server of its own, Home Assistant does the
@@ -12,8 +13,7 @@ back, the programs and the planning, the settings and sensor groups, the
 entities of Home Assistant a setup is made of, and dry-runs a program as
 written (the YAML editor's ``program_preview``).
 
-With a second setting (``const.CONF_AI_API_WRITE_ENABLED``, off by default)
-it also configures Smart Irrigation: zones, sensor groups, settings and
+It also configures Smart Irrigation: zones, sensor groups, settings and
 programs, through the paths the panel saves with (llm_config_tools.py). No
 tool runs a watering or opens a valve, and none changes the assistant's own
 access.
@@ -56,13 +56,6 @@ program waters every zone in the classic cycle.
 Durations are in seconds and depths in mm unless a field says otherwise. \
 Weekdays are numbered from 0 (Monday) to 6 (Sunday). No tool here runs a \
 watering or opens a valve."""
-
-READ_ONLY_PROMPT = """You can only read and dry-run: nothing you call \
-changes the configuration. To change a program, write it in YAML (the shape \
-GetPrograms returns, zones named by name), check it with PreviewProgram, and \
-give it to the user to paste in Smart Irrigation, Watering, Programs, "Edit in \
-YAML" or "New program in YAML". Other changes are made by the user in the \
-panel."""
 
 WRITE_PROMPT = """You can also configure Smart Irrigation: SaveZone, \
 DeleteZone, SaveSensorGroup, DeleteSensorGroup, SaveSettings, SaveProgram and \
@@ -343,16 +336,10 @@ class SmartIrrigationAPI(llm.API):
             PreviewProgramTool(),
             *reading_tools(),
         ]
-        # Asked each time an assistant starts: turning writing off takes the
-        # writing tools away from the next conversation.
-        coordinator = (self.hass.data.get(const.DOMAIN) or {}).get("coordinator")
-        config = getattr(getattr(coordinator, "store", None), "config", None)
-        writes = getattr(config, const.CONF_AI_API_WRITE_ENABLED, False) is True
-        if writes:
-            tools += writing_tools()
+        tools += writing_tools()
         return llm.APIInstance(
             api=self,
-            api_prompt=f"{API_PROMPT}\n\n{WRITE_PROMPT if writes else READ_ONLY_PROMPT}",
+            api_prompt=f"{API_PROMPT}\n\n{WRITE_PROMPT}",
             llm_context=llm_context,
             tools=tools,
         )

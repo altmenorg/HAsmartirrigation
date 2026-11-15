@@ -785,6 +785,17 @@
     "leak": {
       "title": "Voda tečie pri zatvorených ventiloch",
       "description": "Vodomer **{meter}** napočítal {litres} l, kým boli všetky ventily {zones} zatvorené. Môže unikať potrubie alebo zostal otvorený ventil.\n\nUpozornenie zmizne samo, keď vodomer pol hodiny stojí. Udalosť `smart_irrigation_leak` a senzor Únik umožnia automatizácii zavrieť hlavný ventil."
+    },
+    "moved_to_calculate_and_water": {
+      "title": "Priame ovládanie ventilov je teraz „Počítať a zavlažovať“",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Vaše zavlažovanie pokračuje ako doteraz",
+            "description": "Smart Irrigation má teraz jediné nastavenie toho, čo robí: **Počítať a zavlažovať**, **Len počítať** alebo **Všetko zastaviť**, na karte Nastavenia. Vaša inštalácia sama otvárala ventily, preto bola prevedená na **Počítať a zavlažovať**.\n\nVaše zóny sa zavlažujú ako doteraz, v rovnakom čase: spúšťač štartu sa stal plánom hlavného programu na novej karte **Zavlažovanie**. Zvoľte **Len počítať**, ak už Smart Irrigation nemá otvárať ventily."
+          }
+        }
+      }
     }
   }
 }

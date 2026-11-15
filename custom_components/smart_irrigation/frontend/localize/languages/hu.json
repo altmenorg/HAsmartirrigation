@@ -1409,7 +1409,7 @@
     "adjust_reset": "Visszaállítás",
     "confirm_reset_adjustment": "Eltávolítod ennek a programnak a módosítását?",
     "main_settings": "Főprogram: indítás és sorrend",
-    "main_settings_description": "Hogyan öntöz a főprogram: a zónákat egymás után vagy együtt, a két zóna közti szünetet és a cycle and soak-ot. Az indítási kiváltója lejjebb van.",
+    "main_settings_description": "Hogyan öntöz a főprogram: a zónákat egymás után vagy együtt, a két zóna közti szünetet és a cycle and soak-ot.",
     "main_schedules_active": "Jelenleg a főprogram ütemezései indítják az öntözést: a lenti indítási kiváltó nincs használatban. Továbbra is szerkesztheted, és visszatér, ha kikapcsolod vagy törlöd ezeket az ütemezéseket.",
     "mode_off": "A teljes vezérlő ki van kapcsolva. Kapcsold be a Beállítások, Általános részben.",
     "no_zone": "nincs zóna",
@@ -1530,14 +1530,6 @@
     "description": "Minden számítás teljes bemenetét fájlba írja, így két egyformának tűnő, mégis nagyon eltérő öntözést eredményező nap utólag összehasonlítható. Minden számítás egy sort fűz hozzá: az érzékelőcsoport rekordjai és az alkalmazott aggregálás, a modul köztes értékei (napsugárzás, nettó sugárzás, ET0), valamint az eredményül kapott vízmérleg, időtartam és vízmennyiség. Alapértelmezés szerint kikapcsolva; a fájl mérete korlátozott és forog, így egy egész szezonon át bekapcsolva hagyható.",
     "enabled_label": "Számítási bemenetek naplózása fájlba",
     "file_hint": "A config/smart_irrigation/calc_log.jsonl fájlba kerül, soronként egy JSON rekord. A legutóbbi rekordok a diagnosztikai letöltésben is szerepelnek (kerekített koordinátákkal, entitásazonosítók nélkül), így egy lépésben csatolhatók egy hibajegyhez."
-  },
-  "ai_api": {
-    "title": "Hozzáférés MI számára",
-    "description": "Lehetővé teszi, hogy egy asszisztens olvassa a Smart Irrigationt: a zónákat és vízmérlegüket, a következő öntözést és hogy miért van egy zóna visszatartva, a programokat és az ütemtervet, a beállításokat, valamint mentés előtt ellenőrizzen egy programot. Soha nem indít öntözést és nem nyit szelepet. Alapértelmezés szerint ki: felhős asszisztenssel, amit olvas, elhagyja az otthonod.",
-    "enabled_label": "Smart Irrigation felkínálása asszisztenseknek",
-    "how": "Claude, ChatGPT vagy más MCP-kliens esetén add hozzá a Home Assistant „Model Context Protocol Server” integrációját, és a beállításaiban jelöld be a Smart Irrigationt. A Home Assistant beszélgetési ügynöke (Assist) is megkaphatja a saját beállításaiban.",
-    "write_label": "Az asszisztensek módosíthatják a beállításokat",
-    "write_help": "Az asszisztens ekkor zónákat, érzékelőcsoportokat és programokat hozhat létre, módosíthat és törölhet, és módosíthatja a beállításokat, ugyanazokkal az ellenőrzésekkel, mint ez a panel. Továbbra sem indít öntözést, és ezt a hozzáférést nem módosíthatja. Kikapcsolva a következő beszélgetése ismét csak olvashat."
   },
   "blueprints": {
     "title": "Blueprintek",

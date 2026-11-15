@@ -1409,7 +1409,7 @@
     "adjust_reset": "Repor",
     "confirm_reset_adjustment": "Remover o ajuste deste programa?",
     "main_settings": "Programa principal: início e sequenciamento",
-    "main_settings_description": "Como o programa principal rega: as zonas uma a seguir à outra ou em conjunto, a pausa entre duas zonas e cycle and soak. O seu acionador de início está abaixo.",
+    "main_settings_description": "Como o programa principal rega: as zonas uma a seguir à outra ou em conjunto, a pausa entre duas zonas e cycle and soak.",
     "main_schedules_active": "Por agora são os agendamentos do programa principal que iniciam a rega: o acionador de início abaixo não é usado. Pode continuar a editá-lo, e volta a ser usado se desativar ou remover esses agendamentos.",
     "mode_off": "O controlador completo está desligado. Ative-o em Definições, Geral.",
     "no_zone": "nenhuma zona",
@@ -1530,14 +1530,6 @@
     "description": "Escreve num ficheiro todos os dados de entrada de cada cálculo, para que dois dias que parecem iguais mas regam de forma muito diferente possam ser comparados depois. Cada cálculo acrescenta uma linha: os registos do grupo de sensores e como foram agregados, os valores intermédios do módulo (radiação solar, radiação líquida, ET0) e o balanço hídrico, a duração e o volume resultantes. Desligado por omissão; o ficheiro tem um tamanho máximo e é rodado, por isso pode ficar ligado durante uma estação inteira.",
     "enabled_label": "Registar os dados de entrada do cálculo num ficheiro",
     "file_hint": "Escrito em config/smart_irrigation/calc_log.jsonl, um registo JSON por linha. Os registos mais recentes também são incluídos na transferência de diagnóstico (coordenadas arredondadas, ids de entidades removidos), por isso podem ser anexados a um problema num só passo."
-  },
-  "ai_api": {
-    "title": "Acesso para IA",
-    "description": "Permite que um assistente leia o Smart Irrigation: as zonas e o seu balanço hídrico, a próxima rega e porque uma zona é retida, os programas e o planeamento, as definições, e que verifique um programa antes de ser guardado. Nunca inicia uma rega nem abre uma válvula. Desligado por predefinição: com um assistente na nuvem, o que lê sai de sua casa.",
-    "enabled_label": "Oferecer o Smart Irrigation aos assistentes",
-    "how": "Para o Claude, o ChatGPT ou outro cliente MCP, adicione a integração \"Model Context Protocol Server\" do Home Assistant e marque Smart Irrigation nas suas opções. Um agente de conversação do Home Assistant (Assist) também o pode usar, nas suas opções.",
-    "write_label": "Deixar os assistentes alterar a configuração",
-    "write_help": "O assistente pode então criar, alterar e eliminar zonas, grupos de sensores e programas, e alterar as definições, com as mesmas verificações deste painel. Continua sem iniciar regas e não pode alterar este acesso. Desligado, a sua próxima conversa só pode ler."
   },
   "blueprints": {
     "title": "Blueprints",

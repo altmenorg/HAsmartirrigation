@@ -1409,7 +1409,7 @@
     "adjust_reset": "重設",
     "confirm_reset_adjustment": "要移除此程式的調整嗎？",
     "main_settings": "主程式：啟動與排序",
-    "main_settings_description": "主程式的澆水方式：區域依序或同時進行、兩個區域之間的暫停，以及循環浸潤。其啟動觸發條件在下方。",
+    "main_settings_description": "主程式的澆水方式：區域依序或同時進行、兩個區域之間的暫停，以及循環浸潤。",
     "main_schedules_active": "目前由主程式的排程啟動澆水：下方的啟動觸發條件並未使用。它仍可編輯，若這些排程被停用或移除，它就會恢復作用。",
     "mode_off": "完整控制器已關閉。請在「設定」、「一般」中開啟。",
     "no_zone": "沒有區域",
@@ -1530,14 +1530,6 @@
     "description": "將每次計算的完整輸入寫入檔案，用於比較兩個相似卻澆水量差異很大的日子：感測器群組的記錄與其合併方式、模組的中間值（輻射、ET0）、水量平衡、時間長度與水量。預設關閉；有容量上限並會輪替，因此可以持續開啟。",
     "enabled_label": "將計算輸入記錄到檔案",
     "file_hint": "寫入 config/smart_irrigation/calc_log.jsonl，每行一筆 JSON 記錄。最近的記錄也會包含在診斷下載中（座標已四捨五入、實體 ID 已移除），因此你可以一步將它們附加到 issue。"
-  },
-  "ai_api": {
-    "title": "AI 存取",
-    "description": "讓助理讀取 Smart Irrigation：區域及其水量平衡、下次澆水與區域被暫緩的原因、程式與規劃、設定，以及在儲存前檢查程式。它絕不會執行澆水或開啟閥門。預設關閉：若使用雲端助理，它所讀取的內容會離開你的家。",
-    "enabled_label": "提供 Smart Irrigation 給助理",
-    "how": "對於 Claude、ChatGPT 或其他 MCP 用戶端，請新增 Home Assistant 的「Model Context Protocol Server」整合，並在其選項中勾選 Smart Irrigation。Home Assistant 的對話代理（Assist）也可以在其選項中提供它。",
-    "write_label": "允許助理變更設定",
-    "write_help": "助理接著可以建立、變更與刪除區域、感測器群組與程式，並變更設定，檢查方式與此面板相同。它仍然不會執行澆水，也無法變更此存取權限。將它關閉後，其下一次對話就只能再次讀取。"
   },
   "blueprints": {
     "title": "藍圖",

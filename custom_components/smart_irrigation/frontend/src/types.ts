@@ -84,8 +84,6 @@ export class SmartIrrigationConfig {
     { count?: number; reason?: string; set_aside?: string | null }
   > | null;
   calc_log_enabled: boolean;
-  ai_api_enabled?: boolean;
-  ai_api_write_enabled?: boolean;
   install_blueprints?: boolean;
 
   constructor() {

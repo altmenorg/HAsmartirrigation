@@ -1409,7 +1409,7 @@
     "adjust_reset": "Zurücksetzen",
     "confirm_reset_adjustment": "Die Anpassung dieses Programms entfernen?",
     "main_settings": "Hauptprogramm: Start und Reihenfolge",
-    "main_settings_description": "Wie das Hauptprogramm bewässert: die Zonen nacheinander oder zusammen, die Pause zwischen zwei Zonen und das Bewässern in Durchgängen mit Einsickern. Sein Startauslöser steht weiter unten.",
+    "main_settings_description": "Wie das Hauptprogramm bewässert: die Zonen nacheinander oder zusammen, die Pause zwischen zwei Zonen und das Bewässern in Durchgängen mit Einsickern.",
     "main_schedules_active": "Im Moment starten die Zeitpläne des Hauptprogramms die Bewässerung: der Startauslöser unten wird nicht verwendet. Du kannst ihn weiter bearbeiten, und er gilt wieder, wenn du diese Zeitpläne deaktivierst oder entfernst.",
     "mode_off": "Die volle Steuerung ist aus. Schalte sie unter Einstellungen, Allgemein ein.",
     "no_zone": "keine Zone",
@@ -1530,14 +1530,6 @@
     "description": "Schreibt die Eingaben jeder Berechnung in eine Datei, um ähnliche Tage zu vergleichen, die sehr verschieden bewässerten: Daten der Sensorgruppe und ihre Zusammenfassung, Zwischenwerte des Moduls (Strahlung, ET0), Wasserbilanz, Dauer, Menge. Standardmäßig aus; begrenzt und rotiert, darf also laufen.",
     "enabled_label": "Berechnungseingaben in eine Datei schreiben",
     "file_hint": "Wird nach config/smart_irrigation/calc_log.jsonl geschrieben, ein JSON-Datensatz je Zeile. Die neuesten Datensätze liegen auch im Diagnose-Download (Koordinaten gerundet, Entitäts-IDs entfernt), du kannst sie also in einem Schritt an ein Issue anhängen."
-  },
-  "ai_api": {
-    "title": "Zugriff für KI",
-    "description": "Lässt einen Assistenten Smart Irrigation lesen: die Zonen und ihre Wasserbilanz, die nächste Bewässerung und warum eine Zone zurückgehalten wird, die Programme und die Planung, die Einstellungen, und ein Programm prüfen, bevor es gespeichert wird. Er startet nie eine Bewässerung und öffnet kein Ventil. Standardmäßig aus: Mit einem Cloud-Assistenten verlässt, was er liest, dein Zuhause.",
-    "enabled_label": "Smart Irrigation für Assistenten anbieten",
-    "how": "Für Claude, ChatGPT oder einen anderen MCP-Client füge die Home-Assistant-Integration „Model Context Protocol Server“ hinzu und hake in ihren Optionen Smart Irrigation an. Auch ein Konversationsagent von Home Assistant (Assist) kann es in seinen Optionen erhalten.",
-    "write_label": "Assistenten die Konfiguration ändern lassen",
-    "write_help": "Der Assistent kann dann Zonen, Sensorgruppen und Programme anlegen, ändern und löschen und die Einstellungen ändern, mit denselben Prüfungen wie dieses Panel. Er startet weiterhin keine Bewässerung und kann diesen Zugriff nicht ändern. Ausgeschaltet kann sein nächstes Gespräch wieder nur lesen."
   },
   "blueprints": {
     "title": "Blueprints",

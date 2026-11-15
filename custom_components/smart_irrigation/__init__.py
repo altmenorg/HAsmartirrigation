@@ -34,6 +34,9 @@ from homeassistant.helpers import (
 from homeassistant.helpers import (
     entity_registry as er,
 )
+from homeassistant.helpers import (
+    issue_registry as ir,
+)
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.dispatcher import (
     async_dispatcher_connect,
@@ -84,7 +87,12 @@ from .liveness import WeatherLivenessMixin
 from .llm_api import async_sync_llm_api
 from .master_switch import irrigation_off, watering_off
 from .observed_watering import ObservedWateringMixin
-from .one_choice import migration_changes, seed_main_schedules
+from .one_choice import (
+    ISSUE_MOVED,
+    migration_changes,
+    moved_the_valves,
+    seed_main_schedules,
+)
 from .panel import async_register_panel, remove_panel
 from .program_adjust import ADJUST_PROGRAM_SCHEMA
 from .program_notify import async_setup_program_notify
@@ -416,6 +424,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                     "Moved to the single setting of what Smart Irrigation does: %s",
                     ", ".join(sorted(k for k in changes if k != "one_choice_migrated")),
                 )
+            if moved_the_valves(changes):
+                # Said once, on the Repairs page: the watering goes on as it
+                # did, now from the Watering tab.
+                ir.async_create_issue(
+                    hass,
+                    const.DOMAIN,
+                    ISSUE_MOVED,
+                    is_fixable=True,
+                    is_persistent=True,
+                    severity=ir.IssueSeverity.WARNING,
+                    translation_key=ISSUE_MOVED,
+                )
     except Exception as err:  # noqa: BLE001 - never hold the setup up
         _LOGGER.warning("Could not move to the single setting yet: %s", err)
 
@@ -457,10 +477,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # Full controller: once everything is up, a valve left open that no run owns
     # is closed. Later than the resume, because entities load at their own pace.
     async_at_started(hass, coordinator.async_align_valves)
-    # Offered to assistants only when turned on (read only, see llm_api.py).
-    async_sync_llm_api(
-        hass, getattr(coordinator.store.config, const.CONF_AI_API_ENABLED, False)
-    )
+    # Offered to assistants: Home Assistant's MCP server or a conversation
+    # agent uses it once the user ticks Smart Irrigation there (llm_api.py).
+    async_sync_llm_api(hass, True)
     # Full controller: the programs that name someone to tell (program_notify.py).
     entry.async_on_unload(async_setup_program_notify(hass, coordinator).stop)
     # A zone whose valve keeps failing, set aside when asked (set_aside.py).
@@ -1080,8 +1099,6 @@ class SmartIrrigationCoordinator(
             # waiting stops now.
             _LOGGER.info("Smart Irrigation no longer waters: everything watering stops")
             await self.async_stop_watering()
-        if const.CONF_AI_API_ENABLED in data:
-            async_sync_llm_api(self.hass, data.get(const.CONF_AI_API_ENABLED))
         async_dispatcher_send(self.hass, const.DOMAIN + "_config_updated")
 
     async def _start_windows_now(self) -> None:

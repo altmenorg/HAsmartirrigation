@@ -785,6 +785,17 @@
     "leak": {
       "title": "Woda płynie przy zamkniętych zaworach",
       "description": "Licznik **{meter}** naliczył {litres} l, gdy wszystkie zawory {zones} były zamknięte. Rura może przeciekać albo zawór utknął otwarty.\n\nAlarm znika sam, gdy licznik stoi przez pół godziny. Zdarzenie `smart_irrigation_leak` i czujnik Wyciek pozwalają automatyzacji zamknąć zawór główny."
+    },
+    "moved_to_calculate_and_water": {
+      "title": "Bezpośrednie sterowanie zaworami to teraz „Obliczaj i podlewaj”",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Twoje podlewanie działa jak dotąd",
+            "description": "Smart Irrigation ma teraz jedno ustawienie określające, co robi: **Obliczaj i podlewaj**, **Tylko obliczaj** lub **Zatrzymaj wszystko**, na karcie Ustawienia. Twoja instalacja sama otwierała zawory, więc przełączono ją na **Obliczaj i podlewaj**.\n\nTwoje strefy są podlewane jak dotąd, o tej samej porze: wyzwalacz startu stał się harmonogramem programu głównego na nowej karcie **Podlewanie**. Wybierz **Tylko obliczaj**, jeśli Smart Irrigation nie ma już otwierać zaworów."
+          }
+        }
+      }
     }
   }
 }

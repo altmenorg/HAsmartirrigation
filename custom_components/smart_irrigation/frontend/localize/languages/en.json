@@ -1409,7 +1409,7 @@
     "adjust_reset": "Reset",
     "confirm_reset_adjustment": "Remove the adjustment of this program?",
     "main_settings": "Main program: start and sequencing",
-    "main_settings_description": "How the main program waters: the zones one after the other or together, the pause between two zones and cycle and soak. Its start trigger is below.",
+    "main_settings_description": "How the main program waters: the zones one after the other or together, the pause between two zones and cycle and soak.",
     "main_schedules_active": "For now the main program's schedules start the watering: the start trigger below is not used. It stays editable, and it comes back if those schedules are disabled or removed.",
     "mode_off": "The full controller is off. Turn it on in Settings, General.",
     "no_zone": "no zone",
@@ -1530,14 +1530,6 @@
     "description": "Writes every calculation's full input to a file, to compare two similar days that watered very differently: the sensor group's records and how they were combined, the module's intermediates (radiation, ET0), water balance, duration and volume. Off by default; capped and rotated, so it can stay on.",
     "enabled_label": "Log calculation inputs to a file",
     "file_hint": "Written to config/smart_irrigation/calc_log.jsonl, one JSON record per line. The most recent records are also included in the diagnostics download (coordinates rounded, entity ids removed), so you can attach them to an issue in one step."
-  },
-  "ai_api": {
-    "title": "AI access",
-    "description": "Lets an assistant read Smart Irrigation: the zones and their water balance, the next watering and why a zone is held back, the programs and the planning, the settings, and check a program before it is saved. It never runs a watering or opens a valve. Off by default: with a cloud assistant, what it reads leaves your home.",
-    "enabled_label": "Offer Smart Irrigation to assistants",
-    "how": "For Claude, ChatGPT or another MCP client, add Home Assistant's \"Model Context Protocol Server\" integration and tick Smart Irrigation in its options. A conversation agent of Home Assistant (Assist) can also be given it in its options.",
-    "write_label": "Let assistants change the configuration",
-    "write_help": "The assistant can then create, change and delete zones, sensor groups and programs, and change the settings, with the same checks as this panel. It still runs no watering and cannot change this access. Turn it off and its next conversation can only read again."
   },
   "blueprints": {
     "title": "Blueprints",

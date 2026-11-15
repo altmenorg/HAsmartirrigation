@@ -785,6 +785,17 @@
     "leak": {
       "title": "Corre agua con todas las válvulas cerradas",
       "description": "El contador **{meter}** contó {litres} L mientras todas las válvulas de {zones} estaban cerradas. Puede haber una fuga o una válvula atascada abierta.\n\nEl aviso desaparece solo cuando el contador se queda quieto media hora. El evento `smart_irrigation_leak` y el sensor Fuga permiten a una automatización cerrar una válvula maestra."
+    },
+    "moved_to_calculate_and_water": {
+      "title": "El control directo de válvulas ahora es «Calcular y regar»",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Su riego continúa como antes",
+            "description": "Smart Irrigation tiene ahora un solo ajuste para lo que hace: **Calcular y regar**, **Solo calcular** o **Detener todo**, en la pestaña Ajustes. Su instalación abría las válvulas por sí misma, así que pasó a **Calcular y regar**.\n\nSus zonas se riegan como antes, en el mismo momento: el disparador de inicio se convirtió en un horario del programa principal, en la nueva pestaña **Riego**. Elija **Solo calcular** si Smart Irrigation ya no debe abrir las válvulas."
+          }
+        }
+      }
     }
   }
 }

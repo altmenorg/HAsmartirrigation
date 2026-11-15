@@ -94,10 +94,6 @@ def _coordinator():
 # --- turning it on and off
 
 
-def test_off_by_default():
-    assert const.CONF_DEFAULT_AI_API_ENABLED is False
-
-
 def test_registered_when_on_and_taken_away_when_off(monkeypatch):
     unregister = MagicMock()
     register = MagicMock(return_value=unregister)
@@ -135,12 +131,12 @@ def test_a_name_already_taken_is_not_fatal(monkeypatch):
 # --- the API
 
 
-async def test_the_tools_are_read_only_and_described():
+async def test_the_tools_are_described():
     api = llm_api.SmartIrrigationAPI(hass=_hass(), id="smart_irrigation", name="SI")
     instance = await api.async_get_api_instance(_context())
 
     names = [tool.name for tool in instance.tools]
-    assert names == [
+    assert names[:9] == [
         "GetZones",
         "GetIrrigationInfo",
         "GetPrograms",
@@ -151,8 +147,7 @@ async def test_the_tools_are_read_only_and_described():
         "GetSettings",
         "FindEntities",
     ]
-    assert "nothing you call changes the configuration" in instance.api_prompt
-    assert "nothing you call changes" in instance.api_prompt
+    assert "No tool here runs a watering" in instance.api_prompt
     # Installed with Home Assistant's conversation, not always in the tests.
     voluptuous_openapi = pytest.importorskip("voluptuous_openapi")
     for tool in instance.tools:

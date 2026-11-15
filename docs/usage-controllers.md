@@ -18,7 +18,7 @@ If your valves are wired to a commercial controller, you do not have to replace 
 | OpenSprinkler | [hass-opensprinkler](https://github.com/vinteo/hass-opensprinkler) (HACS) | `opensprinkler.run_station` | seconds | 64800 s |
 | Orbit B-hyve | [bhyve-home-assistant](https://github.com/sebr/bhyve-home-assistant) (HACS) | `bhyve.start_watering` | minutes | 1440 min |
 
-This is different from [direct valve control](configuration-closed-loop.md), which opens and closes a `switch` or `valve` entity itself. A controller does not expose its zones that way: you hand it a duration, it starts its own timer and stops on its own. That is what the blueprints do.
+This is different from **Calculate and water**, where Smart Irrigation opens and closes a `switch` or `valve` entity itself. A controller does not expose its zones that way: you hand it a duration, it starts its own timer and stops on its own. That is what the blueprints do.
 
 **These blueprints have not yet been confirmed on real hardware.** They were written against each integration's documented actions and their templates are rendered by Home Assistant's own module in our tests, but we do not own the controllers. If you do, a word in the [discussions](https://github.com/altmenorg/HAsmartirrigation/discussions) saying it works, or what it needed, is the most useful contribution there is.
 

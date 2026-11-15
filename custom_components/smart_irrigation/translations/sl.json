@@ -785,6 +785,17 @@
     "leak": {
       "title": "Voda teče ob zaprtih ventilih",
       "description": "Vodomer **{meter}** je naštel {litres} L, ko so bili vsi ventili {zones} zaprti. Morda pušča cev ali se je ventil zataknil odprt.\n\nOpozorilo izgine samo, ko vodomer pol ure miruje. Dogodek `smart_irrigation_leak` in senzor Puščanje omogočata avtomatizaciji, da zapre glavni ventil."
+    },
+    "moved_to_calculate_and_water": {
+      "title": "Neposredno krmiljenje ventilov je zdaj »Računaj in zalivaj«",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Vaše zalivanje teče kot prej",
+            "description": "Smart Irrigation ima zdaj eno samo nastavitev za to, kar počne: **Računaj in zalivaj**, **Samo računaj** ali **Ustavi vse**, na zavihku Nastavitve. Vaša namestitev je sama odpirala ventile, zato je bila preklopljena na **Računaj in zalivaj**.\n\nVaša območja se zalivajo kot prej, ob istem času: sprožilec začetka je postal urnik glavnega programa na novem zavihku **Zalivanje**. Izberite **Samo računaj**, če Smart Irrigation ne sme več odpirati ventilov."
+          }
+        }
+      }
     }
   }
 }

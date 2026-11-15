@@ -1409,7 +1409,7 @@
     "adjust_reset": "Resetuj",
     "confirm_reset_adjustment": "Usunąć korektę tego programu?",
     "main_settings": "Program główny: start i kolejność",
-    "main_settings_description": "Jak podlewa program główny: strefy jedna po drugiej lub razem, przerwa między dwiema strefami oraz cycle and soak. Jego wyzwalacz startu jest poniżej.",
+    "main_settings_description": "Jak podlewa program główny: strefy jedna po drugiej lub razem, przerwa między dwiema strefami oraz cycle and soak.",
     "main_schedules_active": "Na razie podlewanie uruchamiają harmonogramy programu głównego: wyzwalacz startu poniżej nie jest używany. Nadal możesz go edytować i wraca on, jeśli wyłączysz lub usuniesz te harmonogramy.",
     "mode_off": "Pełny kontroler jest wyłączony. Włącz go w Ustawienia, Ogólne.",
     "no_zone": "brak strefy",
@@ -1530,14 +1530,6 @@
     "description": "Zapisuje do pliku pełne dane wejściowe każdego obliczenia, żeby dwa dni, które wyglądają podobnie, ale nawadniają bardzo różnie, dało się później porównać. Każde obliczenie dopisuje jeden wiersz: odczyty grupy czujników i sposób ich scalenia, wartości pośrednie modułu (promieniowanie słoneczne, promieniowanie netto, ET0) oraz wynikowy bilans wodny, czas i objętość. Domyślnie wyłączone; rozmiar pliku jest ograniczony, a plik jest rotowany, więc może zostać włączony na cały sezon.",
     "enabled_label": "Zapisuj dane wejściowe obliczenia do pliku",
     "file_hint": "Zapisywane do config/smart_irrigation/calc_log.jsonl, jeden rekord JSON na wiersz. Najnowsze rekordy są też w pobieranej diagnostyce (współrzędne zaokrąglone, identyfikatory encji usunięte), więc można je dołączyć do zgłoszenia w jednym kroku."
-  },
-  "ai_api": {
-    "title": "Dostęp dla AI",
-    "description": "Pozwala asystentowi czytać Smart Irrigation: strefy i ich bilans wodny, następne podlewanie i dlaczego strefa jest wstrzymana, programy i harmonogram, ustawienia, oraz sprawdzić program przed zapisaniem. Nigdy nie uruchamia podlewania i nie otwiera zaworu. Domyślnie wyłączone: przy asystencie w chmurze to, co czyta, opuszcza Twój dom.",
-    "enabled_label": "Udostępnij Smart Irrigation asystentom",
-    "how": "Dla Claude, ChatGPT lub innego klienta MCP dodaj integrację Home Assistant „Model Context Protocol Server” i zaznacz w jej opcjach Smart Irrigation. Agent konwersacji Home Assistant (Assist) także może z niego korzystać, po zaznaczeniu w swoich opcjach.",
-    "write_label": "Pozwól asystentom zmieniać konfigurację",
-    "write_help": "Asystent może wtedy tworzyć, zmieniać i usuwać strefy, grupy czujników i programy oraz zmieniać ustawienia, z tymi samymi kontrolami co ten panel. Nadal nie uruchamia podlewania i nie może zmienić tego dostępu. Po wyłączeniu jego następna rozmowa znów może tylko czytać."
   },
   "blueprints": {
     "title": "Blueprinty",

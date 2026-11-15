@@ -7,18 +7,16 @@ title: "Usage: Assistants (AI)"
 
 > Main page: [Usage](usage.md)<br/>
 
-Smart Irrigation can be offered to an assistant: Claude, ChatGPT or any other client of the Model Context Protocol (MCP), or a conversation agent of Home Assistant (Assist). The assistant can then answer questions such as "why was the lawn not watered this morning?", "what will run tomorrow?" or "which zone is the driest?", and, if you let it, set Smart Irrigation up with you: "add a zone for the vegetable garden on the second valve", "water the hedges every other evening".
+Smart Irrigation can be offered to an assistant: Claude, ChatGPT or any other client of the Model Context Protocol (MCP), or a conversation agent of Home Assistant (Assist). The assistant can then answer questions such as "why was the lawn not watered this morning?", "what will run tomorrow?" or "which zone is the driest?", and set Smart Irrigation up with you: "add a zone for the vegetable garden on the second valve", "water the hedges every other evening".
 
-It is **off by default**, and **reads only** until you turn on the second switch. Whatever you allow, the assistant never runs a watering, never opens a valve, and cannot change its own access.
+There is nothing to turn on in Smart Irrigation: it offers itself to Home Assistant (an API of Home Assistant's LLM helper, no server of its own), and no assistant sees it until you pick it there. Whatever it is asked, the assistant never runs a watering and never opens a valve.
 
-## Turning it on
+## Using it
 
-1. In Smart Irrigation, **Settings**, **AI access**, turn on **Offer Smart Irrigation to assistants**. Smart Irrigation then registers an API with Home Assistant; it runs no server of its own.
-2. To let the assistant change the configuration as well, turn on **Let assistants change the configuration** under it.
-3. For an MCP client: add Home Assistant's own **Model Context Protocol Server** integration (Settings, Devices & services, Add integration) and tick **Smart Irrigation** in its options. Connect the client to Home Assistant as that integration's page explains; Home Assistant does the authentication.
-4. For Assist: in the options of your conversation agent, tick **Smart Irrigation** among the APIs it may use.
+- **With an MCP client**: add Home Assistant's own **Model Context Protocol Server** integration (Settings, Devices & services, Add integration) and tick **Smart Irrigation** in its options. Connect the client to Home Assistant as that integration's page explains; Home Assistant does the authentication.
+- **With Assist**: in the options of your conversation agent, tick **Smart Irrigation** among the APIs it may use.
 
-Turn the first switch off and the API is taken away at once. Turn the second one off and the next conversation can only read again.
+Untick it there and the assistant no longer reaches Smart Irrigation.
 
 ## What the assistant can read
 
@@ -34,7 +32,7 @@ Turn the first switch off and the API is taken away at once. Turn the second one
 | `FindEntities` | The valves, switches, sensors and weather entities of Home Assistant, with their unit, device class and the make and model of their device: what the assistant needs to ask you the right questions. |
 | `PreviewProgram` | A program as the assistant wrote it, cleaned the way a save cleans it and dry-run on the zones as they are now: each zone's start, end and water, the total, and the zones it could not find. Nothing is saved. |
 
-## What it can change, when you let it
+## What it can change
 
 | Tool | What it does |
 | --- | --- |
@@ -45,10 +43,10 @@ Turn the first switch off and the API is taken away at once. Turn the second one
 
 Every change goes through the path the panel saves with, so the same checks apply: a zone cannot be linked to one of Smart Irrigation's own valves, an unknown setting is refused, a program is cleaned the same way. The assistant is told to say what it is about to change, and most clients ask you before a tool that writes; deleting is marked as such. Each change is written in Home Assistant's log (`An assistant saved zone 3`, at the info level).
 
-## Without the second switch: writing a program together
+## Writing a program together
 
 Ask for the program you want ("water the vegetable garden and the greenhouse together every other evening, then the hedges"). The assistant writes it in the [YAML shape of the program editor](usage-full-controller.md#a-program-in-yaml), checks it with `PreviewProgram` and gives it to you. Paste it in **Watering**, **Programs**, with **Edit in YAML** on a **New program** or on an existing one: the timeline shows what it would do before you apply it.
 
 ## Privacy
 
-The assistant receives what these tools return: zone names, entity ids and the names and models of your devices, the weather-based figures and the schedules. With a cloud assistant, that leaves your home. Leave the option off if you do not want that.
+The assistant receives what these tools return: zone names, entity ids and the names and models of your devices, the weather-based figures and the schedules. With a cloud assistant, that leaves your home. Do not tick Smart Irrigation in the MCP server or the conversation agent if you do not want that.

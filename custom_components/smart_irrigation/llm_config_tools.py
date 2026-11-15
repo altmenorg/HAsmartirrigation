@@ -1,11 +1,9 @@
 """The assistant's tools to read and change Smart Irrigation's configuration.
 
-The reading ones are always offered with the API (llm_api.py). The writing
-ones only when the user turned on ``const.CONF_AI_API_WRITE_ENABLED`` as well.
+Both are offered with the API (llm_api.py).
 Every write goes through the path the panel saves with (the same schemas and
 the same helpers in websockets.py), so an assistant gets the same checks as
-the panel. None of them runs a watering or opens a valve, and none can change
-the assistant's own access.
+the panel. None of them runs a watering or opens a valve.
 """
 
 from __future__ import annotations
@@ -361,10 +359,6 @@ class DeleteSensorGroupTool(_DeleteTool):
         return _result({"deleted": group_id})
 
 
-# Settings an assistant does not change: its own access is the user's.
-_SETTINGS_KEPT = (const.CONF_AI_API_ENABLED, const.CONF_AI_API_WRITE_ENABLED)
-
-
 class SaveSettingsTool(_WriteTool):
     """Change general settings."""
 
@@ -382,11 +376,6 @@ class SaveSettingsTool(_WriteTool):
         from .websockets import CONFIG_SAVE_SCHEMA
 
         raw = dict(tool_input.tool_args["settings"])
-        kept = [key for key in _SETTINGS_KEPT if key in raw]
-        if kept:
-            return _error(
-                f"Not saved: {', '.join(kept)} can only be changed by the user"
-            )
         try:
             data = CONFIG_SAVE_SCHEMA(raw)
         except vol.Invalid as e:

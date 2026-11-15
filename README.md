@@ -18,7 +18,7 @@ It works out, zone by zone, how much water the plants lost to [evapotranspiratio
 ## Three ways to use it
 
 1. **It calculates, you water.** Each zone gets a duration, a water balance and the reasons behind them, as entities and events. Your own automation, a blueprint for your controller (Rain Bird, Hydrawise, Rachio, OpenSprinkler, B-hyve, ESPHome), or [Irrigation Unlimited](https://github.com/rgc99/irrigation_unlimited) does the watering.
-2. **It opens the valves.** With **direct valve control**, Smart Irrigation waters each zone for its duration: zones in turn or together, cycle and soak so clay takes the water in, a pause between zones, a watchdog for a valve left open, and the water actually delivered credited to the zone.
+2. **It opens the valves.** With **Calculate and water**, Smart Irrigation waters each zone for its duration: zones in turn or together, cycle and soak so clay takes the water in, a pause between zones, a watchdog for a valve left open, and the water actually delivered credited to the zone.
 3. **It runs your whole irrigation.** The **full controller** (optional, off by default) adds programs, schedules, pumps and a planning: everything a dedicated irrigation controller does, fed by the calculated durations.
 
 ## ✨ Highlights
@@ -72,7 +72,7 @@ Full documentation: **[altmenorg.github.io/HAsmartirrigation](https://altmenorg.
 
 ## Irrigation start triggers
 
-Smart Irrigation computes irrigation **durations**, and either opens the valves itself (direct valve control) or leaves the watering to your own automation. A **start trigger** schedules a start relative to a solar event (sunrise, sunset or solar azimuth, ± an offset) or at a fixed clock time, and fires the Home Assistant event `smart_irrigation_start_irrigation_all_zones` so an automation can react.
+Smart Irrigation computes irrigation **durations**, and either opens the valves itself (**Calculate and water**) or leaves the watering to your own automation (**Calculate only**). A **start trigger** schedules a start relative to a solar event (sunrise, sunset or solar azimuth, ± an offset) or at a fixed clock time, and fires the Home Assistant event `smart_irrigation_start_irrigation_all_zones` so an automation can react.
 
 You can define several triggers, but only the one selected as active starts the watering, once per day. Besides your own triggers, the choice offers **Default** (finish at sunrise: sunrise minus the planned length of the run) and **None** (Smart Irrigation starts no watering). The event data identifies which trigger fired:
 

@@ -1409,7 +1409,7 @@
     "adjust_reset": "Återställ",
     "confirm_reset_adjustment": "Ta bort justeringen av det här programmet?",
     "main_settings": "Huvudprogram: start och bevattningsordning",
-    "main_settings_description": "Välj om zonerna ska bevattnas efter varandra eller samtidigt. Här ställer du även in pausen mellan zonerna och hur bevattningen delas upp i pass med tid för infiltration. Huvudprogrammets startutlösare finns längre ned.",
+    "main_settings_description": "Välj om zonerna ska bevattnas efter varandra eller samtidigt. Här ställer du även in pausen mellan zonerna och hur bevattningen delas upp i pass med tid för infiltration.",
     "main_schedules_active": "Huvudprogrammet startas för närvarande av sina scheman. Du kan fortfarande redigera startutlösaren nedan. Den används igen om du inaktiverar eller tar bort alla scheman.",
     "mode_off": "Fullständig bevattningsstyrning är avstängd. Aktivera den under Inställningar → Allmänt.",
     "no_zone": "ingen zon",
@@ -1530,14 +1530,6 @@
     "description": "Spara underlaget för varje beräkning så att du i efterhand kan jämföra varför bevattningen skiljer sig mellan två till synes likartade dagar. Varje rad i loggen innehåller sensorgruppens mätvärden och hur de sammanställts, modulens mellanresultat (solinstrålning, nettostrålning, ET0) samt beräknad vattenbalans, bevattningstid och vattenvolym. Loggning är avstängd som standard. Filstorleken är begränsad och loggfilerna roteras, så loggningen kan vara på en hel säsong.",
     "enabled_label": "Skriv beräkningens underlag till en fil",
     "file_hint": "Sparas i config/smart_irrigation/calc_log.jsonl med en JSON-post per rad. De senaste posterna ingår även när du laddar ned diagnostiken, med avrundade koordinater och borttagna entitets-id:n. Du kan då bifoga dem till en felrapport."
-  },
-  "ai_api": {
-    "title": "Åtkomst för AI",
-    "description": "Låter en assistent läsa Smart Irrigation: zonerna och deras vattenbalans, nästa bevattning och varför en zon hålls tillbaka, programmen och planeringen, inställningarna, och kontrollera ett program innan det sparas. Den startar aldrig en bevattning och öppnar ingen ventil. Av som standard: med en molnassistent lämnar det den läser ditt hem.",
-    "enabled_label": "Erbjud Smart Irrigation till assistenter",
-    "how": "För Claude, ChatGPT eller en annan MCP-klient: lägg till Home Assistants integration \"Model Context Protocol Server\" och kryssa i Smart Irrigation i dess alternativ. En konversationsagent i Home Assistant (Assist) kan också få den i sina alternativ.",
-    "write_label": "Låt assistenter ändra konfigurationen",
-    "write_help": "Assistenten kan då skapa, ändra och ta bort zoner, sensorgrupper och program, och ändra inställningarna, med samma kontroller som den här panelen. Den startar fortfarande ingen bevattning och kan inte ändra den här åtkomsten. Avstängd kan nästa samtal åter bara läsa."
   },
   "blueprints": {
     "title": "Blueprints",

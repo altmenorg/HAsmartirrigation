@@ -52,7 +52,7 @@ Pick the one that matches how your valves are actually driven:
 
 With Irrigation Unlimited, note that it exposes **binary sensors**, not switches: Smart Irrigation tells it how long to run through `adjust_time` and IU does the running. Do not drive the valve yourself in parallel, or the two will fight.
 
-If you use **observed watering** or **direct valve control** (see [closed loop](configuration-closed-loop.md)), turn off the blueprint's option "Credit the run to the water balance" (the Rain Bird, Hydrawise, Rachio, OpenSprinkler and B-hyve blueprints have it; the standard one always credits, so leave it out): the integration credits the water balance itself and the two would count twice. The ESPHome blueprint, the `simple-scheduler` script, the Irrigation Unlimited reset blueprint and the example automations below still call `set_bucket` without a value, which sets the water balance to 0 instead of crediting the run.
+If you use **observed watering** or **Calculate and water** (see [closed loop](configuration-closed-loop.md)), turn off the blueprint's option "Credit the run to the water balance" (the Rain Bird, Hydrawise, Rachio, OpenSprinkler and B-hyve blueprints have it; the standard one always credits, so leave it out): the integration credits the water balance itself and the two would count twice. The ESPHome blueprint, the `simple-scheduler` script, the Irrigation Unlimited reset blueprint and the example automations below still call `set_bucket` without a value, which sets the water balance to 0 instead of crediting the run.
 
 ### Example 1: one valve, once per week irrigation if duration > 0 or if the water balance < - 25 mm:
 
