@@ -148,3 +148,15 @@ describe("programFromYaml", () => {
     expect(programFromYaml("text")).toBeNull();
   });
 });
+
+describe("notifications in YAML", () => {
+  it("are written when the program names someone, and left out otherwise", () => {
+    const notify = {
+      targets: ["notify.mobile_app_pixel"],
+      when: "problems" as const,
+      start: false,
+    };
+    expect(programToYaml({ ...program, notify }, zones).notify).toEqual(notify);
+    expect(programToYaml(program, zones).notify).toBeUndefined();
+  });
+});

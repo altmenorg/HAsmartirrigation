@@ -97,7 +97,26 @@ schedules:
     weekdays: [0, 2, 4]                     # 0 is Monday
 ```
 
-A step names its zones by name (case aside) or by number; a name two zones share is not guessed, use the number. What is left out takes its default, the same as the form: a calculated duration, one pass, the program's wait, a schedule that starts at its moment every day with the weather taken into account. The keys are the ones described above: for a step `zones`, `mode` (`calculated`, `percent` or `fixed`), `percent`, `seconds`, `passes`, `delay`, `max_litres`, `min_seconds`, `max_seconds`, `adjust_seconds`, `min_deficit_mm` and `enabled`; for the program `name`, `enabled`, `delay`, `tours`, `steps` and `schedules`; for a schedule `type` (`time` or `sun`), `time`, `event` (`sunrise` or `sunset`), `offset_minutes`, `anchor` (`start` or `end`), `weekdays`, `every_n_days`, `every_offset`, `parity`, `days_of_month`, `months`, `from_date`, `until_date`, `weather`, `skip_conditions`, `hard_deadline` and `fallback_time`. The `id` lines keep a program, a step or a schedule the same one across an edit (a schedule remembers its last run under its id): keep them when you edit, leave them out of a new program. An assistant can write and check a program for you: see [Assistants (AI)](usage-assistants.md).
+A step names its zones by name (case aside) or by number; a name two zones share is not guessed, use the number. What is left out takes its default, the same as the form: a calculated duration, one pass, the program's wait, a schedule that starts at its moment every day with the weather taken into account. The keys are the ones described above: for a step `zones`, `mode` (`calculated`, `percent` or `fixed`), `percent`, `seconds`, `passes`, `delay`, `max_litres`, `min_seconds`, `max_seconds`, `adjust_seconds`, `min_deficit_mm` and `enabled`; for the program `name`, `enabled`, `delay`, `tours`, `steps`, `schedules` and `notify` (see below); for a schedule `type` (`time` or `sun`), `time`, `event` (`sunrise` or `sunset`), `offset_minutes`, `anchor` (`start` or `end`), `weekdays`, `every_n_days`, `every_offset`, `parity`, `days_of_month`, `months`, `from_date`, `until_date`, `weather`, `skip_conditions`, `hard_deadline` and `fallback_time`. The `id` lines keep a program, a step or a schedule the same one across an edit (a schedule remembers its last run under its id): keep them when you edit, leave them out of a new program. An assistant can write and check a program for you: see [Assistants (AI)](usage-assistants.md).
+
+### Being told when a program has watered
+
+Each program, the main one included, has a **Notifications** section: tick whom to tell, and a summary is sent when the program has watered, one line per zone (minutes and, with a flow meter, litres) and one per problem (a valve that did not open, a run where no water flowed...). The targets are:
+
+- **Notification in Home Assistant**: a persistent notification, replaced by the next run of the same program;
+- the **notify entities** of Home Assistant;
+- the **notify actions** that are not an entity, such as `notify.mobile_app_<phone>` of the companion app. On a phone, a run that went wrong comes through with a high priority (Android) and as time-sensitive (iOS), and each program replaces its own previous notification.
+
+**When**: after each watering, or only when something went wrong. **Also when it starts** adds a notification with the zones about to be watered. A valve that does not close and a pump or main valve that does not do what it is told are told at once, to the program under way, without waiting for the end of the run.
+
+It is off until a target is ticked, and it changes nothing to a run. The events (`smart_irrigation_program_finished`, `smart_irrigation_irrigation_finished`...) are still fired, so an automation of your own keeps working beside it. In YAML:
+
+```yaml
+notify:
+  targets: [notify.mobile_app_pixel, persistent_notification]
+  when: problems        # or finish
+  start: false
+```
 
 ## Schedules
 

@@ -215,6 +215,38 @@ def normalize_step(step, used: set, position: int = 0) -> dict | None:
     return normalized
 
 
+# A notify entity or action, or a persistent notification.
+NOTIFY_TARGET_PATTERN = re.compile(r"notify\.[a-z0-9_]+|persistent_notification")
+
+
+def normalize_notify(raw) -> dict | None:
+    """A program's notification settings as stored, or None for none.
+
+    Targets are notify entity ids, ``notify.<action>`` names (the phone apps)
+    or ``persistent_notification``; anything else is dropped. Without a target
+    nothing is stored, so a program that does not notify stays as it was.
+    """
+    if not isinstance(raw, dict):
+        return None
+    targets: list[str] = []
+    for target in raw.get(const.NOTIFY_TARGETS) or []:
+        if not isinstance(target, str):
+            continue
+        target = target.strip()
+        if NOTIFY_TARGET_PATTERN.fullmatch(target) and target not in targets:
+            targets.append(target)
+    if not targets:
+        return None
+    when = raw.get(const.NOTIFY_WHEN)
+    return {
+        const.NOTIFY_TARGETS: targets,
+        const.NOTIFY_WHEN: (
+            when if when in const.NOTIFY_WHEN_CHOICES else const.NOTIFY_WHEN_FINISH
+        ),
+        const.NOTIFY_START: raw.get(const.NOTIFY_START) is True,
+    }
+
+
 def normalize_programs(programs, reserved_schedule_ids=None) -> list:
     """The programs as they are stored: well formed, ids unique, main kept.
 
@@ -260,6 +292,9 @@ def normalize_programs(programs, reserved_schedule_ids=None) -> list:
                 schedule.pop(const.SCHEDULE_HARD_DEADLINE, None)
             if schedules:
                 main[const.PROGRAM_SCHEDULES] = schedules
+            notify = normalize_notify(program.get(const.PROGRAM_NOTIFY))
+            if notify:
+                main[const.PROGRAM_NOTIFY] = notify
             cleaned.append(main)
             continue
         program_id = unique_id(
@@ -274,28 +309,28 @@ def normalize_programs(programs, reserved_schedule_ids=None) -> list:
             )
             if s is not None
         ]
-        cleaned.append(
-            {
-                const.PROGRAM_ID: program_id,
-                const.PROGRAM_NAME: name or f"Program {position + 1}",
-                const.PROGRAM_ENABLED: program.get(const.PROGRAM_ENABLED) is not False,
-                const.PROGRAM_MAIN: False,
-                const.PROGRAM_STEPS: steps,
-                const.PROGRAM_DELAY: _number(
-                    program.get(const.PROGRAM_DELAY),
-                    0.0,
-                    -float(MAX_OVERLAP_SECONDS),
-                    float(MAX_DELAY_SECONDS),
-                ),
-                const.PROGRAM_TOURS: _count(
-                    program.get(const.PROGRAM_TOURS), 1, MAX_TOURS
-                ),
-                const.PROGRAM_SCHEDULES: normalize_schedules(
-                    program.get(const.PROGRAM_SCHEDULES),
-                    reserved_schedule_ids.get(program_id),
-                ),
-            }
-        )
+        other = {
+            const.PROGRAM_ID: program_id,
+            const.PROGRAM_NAME: name or f"Program {position + 1}",
+            const.PROGRAM_ENABLED: program.get(const.PROGRAM_ENABLED) is not False,
+            const.PROGRAM_MAIN: False,
+            const.PROGRAM_STEPS: steps,
+            const.PROGRAM_DELAY: _number(
+                program.get(const.PROGRAM_DELAY),
+                0.0,
+                -float(MAX_OVERLAP_SECONDS),
+                float(MAX_DELAY_SECONDS),
+            ),
+            const.PROGRAM_TOURS: _count(program.get(const.PROGRAM_TOURS), 1, MAX_TOURS),
+            const.PROGRAM_SCHEDULES: normalize_schedules(
+                program.get(const.PROGRAM_SCHEDULES),
+                reserved_schedule_ids.get(program_id),
+            ),
+        }
+        notify = normalize_notify(program.get(const.PROGRAM_NOTIFY))
+        if notify:
+            other[const.PROGRAM_NOTIFY] = notify
+        cleaned.append(other)
     # The main program, when there is one, always comes first.
     cleaned.sort(key=lambda p: 0 if p.get(const.PROGRAM_MAIN) else 1)
     return cleaned

@@ -1462,7 +1462,15 @@
     "yaml_not_watered": "Laissées hors de l'arrosage (sans vanne, ou désactivées) : {zones}",
     "yaml_applied": "Programme enregistré",
     "yaml_new": "Nouveau programme en YAML",
-    "yaml_new_title": "Nouveau programme"
+    "yaml_new_title": "Nouveau programme",
+    "notify_title": "Notifications",
+    "notify_help": "Prévenir quelqu'un quand ce programme a arrosé : un téléphone, une entité de notification ou une notification dans Home Assistant. Rien n'est envoyé tant qu'aucune cible n'est cochée. Une vanne qui ne se ferme pas et une pompe qui ne répond pas sont signalées tout de suite.",
+    "notify_persistent": "Notification dans Home Assistant",
+    "notify_when": "Quand",
+    "notify_when_finish": "Après chaque arrosage",
+    "notify_when_problems": "Seulement en cas de problème",
+    "notify_start": "Aussi au départ",
+    "notify_none": "Home Assistant n'a pas encore de cible de notification : ajoutez l'application mobile ou une intégration de notification."
   },
   "supplies": {
     "title": "Pompes et vannes générales",
@@ -1640,5 +1648,24 @@
     "reset_bucket": "Remettre à zéro le bilan hydrique de « {name} » ?",
     "reset_all_buckets": "Remettre à zéro le bilan hydrique de toutes les zones ?",
     "clear_all_weather": "Effacer toutes les données météo collectées ? Le prochain calcul n'aura que les relevés qui suivent."
+  },
+  "notify": {
+    "title_done": "{program} : arrosage terminé",
+    "title_problem": "{program} : un problème",
+    "title_started": "{program} : l'arrosage commence",
+    "zone_line": "{zone} : {minutes} min",
+    "zone_volume": ", {litres} L",
+    "problem_line": "{zone} : {reason}",
+    "nothing": "Aucune zone n'avait besoin d'eau.",
+    "stopped": "Arrêté avant la fin.",
+    "cut": "Écourté pour finir à son heure limite.",
+    "reasons": {
+      "valve_did_not_open": "la vanne ne s'est pas ouverte",
+      "valve_did_not_close": "la vanne ne s'est pas fermée",
+      "no_flow": "la vanne s'est ouverte mais l'eau n'a pas coulé",
+      "valve_timer_not_set": "la minuterie de la vanne n'a pas pu être réglée, elle est restée fermée",
+      "supply_did_not_turn_on": "la pompe ou la vanne maîtresse n'a pas démarré",
+      "supply_did_not_turn_off": "la pompe ou la vanne maîtresse ne s'est pas arrêtée"
+    }
   }
 }

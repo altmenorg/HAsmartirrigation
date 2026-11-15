@@ -1462,7 +1462,15 @@
     "yaml_not_watered": "Jätetty kastelun ulkopuolelle (ei venttiiliä tai poistettu käytöstä): {zones}",
     "yaml_applied": "Ohjelma tallennettu",
     "yaml_new": "Uusi ohjelma YAML-muodossa",
-    "yaml_new_title": "Uusi ohjelma"
+    "yaml_new_title": "Uusi ohjelma",
+    "notify_title": "Ilmoitukset",
+    "notify_help": "Kerro jollekulle, kun tämä ohjelma on kastellut: puhelin, ilmoitusentiteetti tai ilmoitus Home Assistantissa. Mitään ei lähetetä, kun yhtään kohdetta ei ole valittu. Sulkeutumaton venttiili ja vastaamaton pumppu ilmoitetaan heti.",
+    "notify_persistent": "Ilmoitus Home Assistantissa",
+    "notify_when": "Milloin",
+    "notify_when_finish": "Jokaisen kastelun jälkeen",
+    "notify_when_problems": "Vain kun jokin meni vikaan",
+    "notify_start": "Myös alussa",
+    "notify_none": "Home Assistantissa ei ole vielä ilmoituskohdetta: lisää mobiilisovellus tai notify-integraatio."
   },
   "supplies": {
     "title": "Pumput ja pääventtiilit",
@@ -1640,5 +1648,24 @@
     "reset_bucket": "Nollataanko vyöhykkeen \"{name}\" vesitase?",
     "reset_all_buckets": "Nollataanko kaikkien vyöhykkeiden vesitase?",
     "clear_all_weather": "Tyhjennetäänkö kaikki kerätyt säätiedot? Seuraavassa laskennassa on vain sen jälkeiset mittaukset."
+  },
+  "notify": {
+    "title_done": "{program}: kastelu valmis",
+    "title_problem": "{program}: ongelma",
+    "title_started": "{program}: kastelu alkaa",
+    "zone_line": "{zone}: {minutes} min",
+    "zone_volume": ", {litres} l",
+    "problem_line": "{zone}: {reason}",
+    "nothing": "Mikään vyöhyke ei tarvinnut vettä.",
+    "stopped": "Pysäytetty ennen loppua.",
+    "cut": "Lyhennetty, jotta se valmistuu ajoissa.",
+    "reasons": {
+      "valve_did_not_open": "venttiili ei auennut",
+      "valve_did_not_close": "venttiili ei sulkeutunut",
+      "no_flow": "venttiili aukesi, mutta vettä ei virrannut",
+      "valve_timer_not_set": "venttiilin omaa ajastinta ei voitu asettaa, se pysyi kiinni",
+      "supply_did_not_turn_on": "pumppu tai pääventtiili ei käynnistynyt",
+      "supply_did_not_turn_off": "pumppu tai pääventtiili ei pysähtynyt"
+    }
   }
 }

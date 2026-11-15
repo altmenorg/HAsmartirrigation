@@ -1462,7 +1462,15 @@
     "yaml_not_watered": "Kimarad az öntözésből (nincs szelep vagy letiltva): {zones}",
     "yaml_applied": "Program mentve",
     "yaml_new": "Új program YAML-ben",
-    "yaml_new_title": "Új program"
+    "yaml_new_title": "Új program",
+    "notify_title": "Értesítések",
+    "notify_help": "Szólj valakinek, ha ez a program öntözött: telefon, értesítési entitás vagy értesítés a Home Assistantban. Amíg nincs bejelölt cél, semmi sem megy ki. A be nem záródó szelepet és a nem válaszoló szivattyút azonnal jelzi.",
+    "notify_persistent": "Értesítés a Home Assistantban",
+    "notify_when": "Mikor",
+    "notify_when_finish": "Minden öntözés után",
+    "notify_when_problems": "Csak ha valami elromlott",
+    "notify_start": "Indításkor is",
+    "notify_none": "A Home Assistantban még nincs értesítési cél: add hozzá a mobilalkalmazást vagy egy notify integrációt."
   },
   "supplies": {
     "title": "Szivattyúk és főszelepek",
@@ -1640,5 +1648,24 @@
     "reset_bucket": "Nullázod a(z) „{name}” vízmérlegét?",
     "reset_all_buckets": "Nullázod az összes zóna vízmérlegét?",
     "clear_all_weather": "Törlöd az összes gyűjtött időjárási adatot? A következő számításban csak az utána érkező mérések lesznek."
+  },
+  "notify": {
+    "title_done": "{program}: öntözés kész",
+    "title_problem": "{program}: probléma",
+    "title_started": "{program}: öntözés indul",
+    "zone_line": "{zone}: {minutes} perc",
+    "zone_volume": ", {litres} L",
+    "problem_line": "{zone}: {reason}",
+    "nothing": "Egyik zónának sem kellett víz.",
+    "stopped": "A vége előtt leállítva.",
+    "cut": "Lerövidítve, hogy határidőre végezzen.",
+    "reasons": {
+      "valve_did_not_open": "a szelep nem nyílt ki",
+      "valve_did_not_close": "a szelep nem zárt be",
+      "no_flow": "a szelep kinyílt, de nem folyt víz",
+      "valve_timer_not_set": "a szelep saját időzítőjét nem sikerült beállítani, zárva maradt",
+      "supply_did_not_turn_on": "a szivattyú vagy főszelep nem indult el",
+      "supply_did_not_turn_off": "a szivattyú vagy főszelep nem állt le"
+    }
   }
 }

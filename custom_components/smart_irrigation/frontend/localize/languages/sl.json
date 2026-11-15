@@ -1462,7 +1462,15 @@
     "yaml_not_watered": "Izpuščeno iz zalivanja (brez ventila ali onemogočeno): {zones}",
     "yaml_applied": "Program shranjen",
     "yaml_new": "Nov program v YAML",
-    "yaml_new_title": "Nov program"
+    "yaml_new_title": "Nov program",
+    "notify_title": "Obvestila",
+    "notify_help": "Obvesti nekoga, ko je ta program zalival: telefon, entiteta obvestil ali obvestilo v Home Assistantu. Dokler ni označen noben cilj, se nič ne pošlje. Ventil, ki se ne zapre, in črpalka, ki se ne odzove, se javita takoj.",
+    "notify_persistent": "Obvestilo v Home Assistantu",
+    "notify_when": "Kdaj",
+    "notify_when_finish": "Po vsakem zalivanju",
+    "notify_when_problems": "Samo če je šlo kaj narobe",
+    "notify_start": "Tudi ob začetku",
+    "notify_none": "Home Assistant še nima cilja obvestil: dodajte mobilno aplikacijo ali integracijo notify."
   },
   "supplies": {
     "title": "Črpalke in glavni ventili",
@@ -1640,5 +1648,24 @@
     "reset_bucket": "Ponastavim vodno bilanco cone »{name}« na nič?",
     "reset_all_buckets": "Ponastavim vodno bilanco vseh con na nič?",
     "clear_all_weather": "Izbrišem vse zbrane vremenske podatke? Naslednji izračun bo imel le poznejše meritve."
+  },
+  "notify": {
+    "title_done": "{program}: zalivanje končano",
+    "title_problem": "{program}: težava",
+    "title_started": "{program}: zalivanje se začenja",
+    "zone_line": "{zone}: {minutes} min",
+    "zone_volume": ", {litres} L",
+    "problem_line": "{zone}: {reason}",
+    "nothing": "Nobeno območje ni potrebovalo vode.",
+    "stopped": "Ustavljeno pred koncem.",
+    "cut": "Skrajšano, da konča pravočasno.",
+    "reasons": {
+      "valve_did_not_open": "ventil se ni odprl",
+      "valve_did_not_close": "ventil se ni zaprl",
+      "no_flow": "ventil se je odprl, a voda ni tekla",
+      "valve_timer_not_set": "lastnega časovnika ventila ni bilo mogoče nastaviti, ostal je zaprt",
+      "supply_did_not_turn_on": "črpalka ali glavni ventil se ni zagnal",
+      "supply_did_not_turn_off": "črpalka ali glavni ventil se ni ustavil"
+    }
   }
 }

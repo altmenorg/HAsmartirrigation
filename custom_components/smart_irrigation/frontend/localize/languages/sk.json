@@ -1462,7 +1462,15 @@
     "yaml_not_watered": "Vynechané zo zavlažovania (bez ventilu alebo vypnuté): {zones}",
     "yaml_applied": "Program uložený",
     "yaml_new": "Nový program v YAML",
-    "yaml_new_title": "Nový program"
+    "yaml_new_title": "Nový program",
+    "notify_title": "Upozornenia",
+    "notify_help": "Dať niekomu vedieť, že tento program zavlažoval: telefón, entita upozornení alebo upozornenie v Home Assistante. Kým nie je zaškrtnutý žiadny cieľ, nič sa neposiela. Ventil, ktorý sa nezavrie, a čerpadlo, ktoré neodpovedá, sa hlásia hneď.",
+    "notify_persistent": "Upozornenie v Home Assistante",
+    "notify_when": "Kedy",
+    "notify_when_finish": "Po každom zavlažovaní",
+    "notify_when_problems": "Len keď sa niečo pokazilo",
+    "notify_start": "Aj pri štarte",
+    "notify_none": "Home Assistant zatiaľ nemá cieľ upozornení: pridajte mobilnú aplikáciu alebo integráciu notify."
   },
   "supplies": {
     "title": "Čerpadlá a hlavné ventily",
@@ -1640,5 +1648,24 @@
     "reset_bucket": "Vynulovať vodnú bilanciu zóny „{name}“?",
     "reset_all_buckets": "Vynulovať vodnú bilanciu všetkých zón?",
     "clear_all_weather": "Vymazať všetky zozbierané údaje o počasí? Ďalší výpočet bude mať len nasledujúce merania."
+  },
+  "notify": {
+    "title_done": "{program}: zavlažovanie dokončené",
+    "title_problem": "{program}: problém",
+    "title_started": "{program}: zavlažovanie začína",
+    "zone_line": "{zone}: {minutes} min",
+    "zone_volume": ", {litres} l",
+    "problem_line": "{zone}: {reason}",
+    "nothing": "Žiadna zóna nepotrebovala vodu.",
+    "stopped": "Zastavené pred koncom.",
+    "cut": "Skrátené, aby skončilo včas.",
+    "reasons": {
+      "valve_did_not_open": "ventil sa neotvoril",
+      "valve_did_not_close": "ventil sa nezavrel",
+      "no_flow": "ventil sa otvoril, ale voda netiekla",
+      "valve_timer_not_set": "vlastný časovač ventilu sa nedal nastaviť, zostal zatvorený",
+      "supply_did_not_turn_on": "čerpadlo alebo hlavný ventil sa nespustil",
+      "supply_did_not_turn_off": "čerpadlo alebo hlavný ventil sa nezastavil"
+    }
   }
 }

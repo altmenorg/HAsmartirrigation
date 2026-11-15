@@ -85,6 +85,7 @@ from .master_switch import irrigation_off
 from .observed_watering import ObservedWateringMixin
 from .panel import async_register_panel, remove_panel
 from .program_adjust import ADJUST_PROGRAM_SCHEMA
+from .program_notify import async_setup_program_notify
 from .program_scheduler import ProgramSchedulerMixin
 from .programs import ensure_main_program, normalize_programs
 from .scheduler import RecurringScheduleManager, SeasonalAdjustmentManager
@@ -443,6 +444,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     async_sync_llm_api(
         hass, getattr(coordinator.store.config, const.CONF_AI_API_ENABLED, False)
     )
+    # Full controller: the programs that name someone to tell (program_notify.py).
+    entry.async_on_unload(async_setup_program_notify(hass, coordinator).stop)
     return True
 
 

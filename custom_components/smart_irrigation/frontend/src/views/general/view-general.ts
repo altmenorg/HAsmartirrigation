@@ -43,6 +43,7 @@ import { loadHaForm, loadHaYamlEditor } from "../../load-ha-elements";
 import "./program-timeline";
 import { Timeline } from "../../data/timeline";
 import { programFromYaml, programToYaml } from "../../data/program-yaml";
+import { notifyTargets } from "../../data/notify-targets";
 import "../../dialogs/trigger-dialog";
 import { askConfirmation } from "../../dialogs/confirmation-dialog";
 import {
@@ -2481,6 +2482,93 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       </div>
     `;
 
+    // Whom the program tells when it has watered (program_notify.py).
+    const renderNotify = (program: SmartIrrigationProgram, index: number) => {
+      const notify = program.notify ?? {
+        targets: [],
+        when: "finish" as const,
+        start: false,
+      };
+      const choices = notifyTargets(this.hass!);
+      const known = new Set(choices.map((c) => c.id));
+      // A target that has gone stays listed, so it can be unticked.
+      for (const id of notify.targets)
+        if (!known.has(id)) choices.push({ id, name: id });
+      const set = (changes: Partial<typeof notify>) => {
+        const next = { ...notify, ...changes };
+        patch(index, {
+          notify: next.targets.length ? next : undefined,
+        });
+      };
+      return html`
+        <div class="fold-section">${t("notify_title")}</div>
+        <div class="setting-hint row-hint">${t("notify_help")}</div>
+        ${choices.map(
+          (choice) => html`
+            <div>
+              <label>
+                <input
+                  type="checkbox"
+                  .checked=${notify.targets.includes(choice.id)}
+                  @change=${(e: Event) => {
+                    const on = (e.target as HTMLInputElement).checked;
+                    set({
+                      targets: on
+                        ? [...notify.targets, choice.id]
+                        : notify.targets.filter((x) => x !== choice.id),
+                    });
+                  }}
+                />
+                ${choice.id === "persistent_notification"
+                  ? t("notify_persistent")
+                  : choice.name}
+              </label>
+            </div>
+          `,
+        )}
+        ${choices.length <= 1
+          ? html`<div class="setting-note">${t("notify_none")}</div>`
+          : ""}
+        ${notify.targets.length
+          ? html`
+              <div class="setting-row">
+                <div class="setting-label">${t("notify_when")}</div>
+                <select
+                  class="field"
+                  @change=${(e: Event) =>
+                    set({
+                      when: (e.target as HTMLSelectElement).value as
+                        | "finish"
+                        | "problems",
+                    })}
+                >
+                  <option
+                    value="finish"
+                    ?selected=${notify.when !== "problems"}
+                  >
+                    ${t("notify_when_finish")}
+                  </option>
+                  <option
+                    value="problems"
+                    ?selected=${notify.when === "problems"}
+                  >
+                    ${t("notify_when_problems")}
+                  </option>
+                </select>
+              </div>
+              <div class="setting-row">
+                <div class="setting-label">${t("notify_start")}</div>
+                <ha-switch
+                  .checked=${notify.start === true}
+                  @change=${(e: Event) =>
+                    set({ start: (e.target as any).checked })}
+                ></ha-switch>
+              </div>
+            `
+          : ""}
+      `;
+    };
+
     if (part === "main") {
       const index = programs.findIndex((p) => p.main);
       const program = programs[index];
@@ -2510,7 +2598,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                   <strong>${t("main_schedules_active")}</strong>
                 </div>`
               : ""}
-            ${renderSchedules(program, index)}
+            ${renderSchedules(program, index)} ${renderNotify(program, index)}
             <div class="fold-section">${t("sequencing_title")}</div>
             <div class="setting-hint row-hint">
               ${t("main_settings_description")}
@@ -2626,6 +2714,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                                 })}
                             ></ha-switch>
                           </div>
+                          ${renderNotify(program, index)}
                           ${adjustBlock(program)}
                           <div class="si-actions">
                             ${this._actionBtn(

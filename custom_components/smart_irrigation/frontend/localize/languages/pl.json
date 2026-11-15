@@ -1462,7 +1462,15 @@
     "yaml_not_watered": "Pominięte w podlewaniu (brak zaworu lub wyłączone): {zones}",
     "yaml_applied": "Program zapisany",
     "yaml_new": "Nowy program w YAML",
-    "yaml_new_title": "Nowy program"
+    "yaml_new_title": "Nowy program",
+    "notify_title": "Powiadomienia",
+    "notify_help": "Daj komuś znać, gdy ten program podlał: telefon, encja powiadomień lub powiadomienie w Home Assistant. Nic nie jest wysyłane, dopóki żaden cel nie jest zaznaczony. Zawór, który się nie zamyka, i pompa, która nie odpowiada, są zgłaszane od razu.",
+    "notify_persistent": "Powiadomienie w Home Assistant",
+    "notify_when": "Kiedy",
+    "notify_when_finish": "Po każdym podlewaniu",
+    "notify_when_problems": "Tylko gdy coś poszło nie tak",
+    "notify_start": "Także przy starcie",
+    "notify_none": "Home Assistant nie ma jeszcze celu powiadomień: dodaj aplikację mobilną lub integrację notify."
   },
   "supplies": {
     "title": "Pompy i zawory główne",
@@ -1640,5 +1648,24 @@
     "reset_bucket": "Wyzerować bilans wodny strefy „{name}”?",
     "reset_all_buckets": "Wyzerować bilans wodny wszystkich stref?",
     "clear_all_weather": "Wyczyścić wszystkie zebrane dane pogodowe? Następne obliczenie będzie miało tylko późniejsze odczyty."
+  },
+  "notify": {
+    "title_done": "{program}: podlewanie zakończone",
+    "title_problem": "{program}: problem",
+    "title_started": "{program}: podlewanie się zaczyna",
+    "zone_line": "{zone}: {minutes} min",
+    "zone_volume": ", {litres} l",
+    "problem_line": "{zone}: {reason}",
+    "nothing": "Żadna strefa nie potrzebowała wody.",
+    "stopped": "Zatrzymano przed końcem.",
+    "cut": "Skrócono, aby zdążyć na czas.",
+    "reasons": {
+      "valve_did_not_open": "zawór się nie otworzył",
+      "valve_did_not_close": "zawór się nie zamknął",
+      "no_flow": "zawór się otworzył, ale woda nie popłynęła",
+      "valve_timer_not_set": "nie udało się ustawić własnego timera zaworu, pozostał zamknięty",
+      "supply_did_not_turn_on": "pompa lub zawór główny nie ruszyły",
+      "supply_did_not_turn_off": "pompa lub zawór główny się nie zatrzymały"
+    }
   }
 }

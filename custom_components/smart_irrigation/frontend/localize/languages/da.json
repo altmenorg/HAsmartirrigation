@@ -1462,7 +1462,15 @@
     "yaml_not_watered": "Holdt uden for vandingen (ingen ventil eller deaktiveret): {zones}",
     "yaml_applied": "Program gemt",
     "yaml_new": "Nyt program i YAML",
-    "yaml_new_title": "Nyt program"
+    "yaml_new_title": "Nyt program",
+    "notify_title": "Notifikationer",
+    "notify_help": "Giv nogen besked, når dette program har vandet: en telefon, en notifikationsentitet eller en notifikation i Home Assistant. Intet sendes, så længe intet mål er markeret. En ventil, der ikke lukker, og en pumpe, der ikke svarer, meldes med det samme.",
+    "notify_persistent": "Notifikation i Home Assistant",
+    "notify_when": "Hvornår",
+    "notify_when_finish": "Efter hver vanding",
+    "notify_when_problems": "Kun når noget gik galt",
+    "notify_start": "Også ved start",
+    "notify_none": "Home Assistant har endnu intet notifikationsmål: tilføj mobilappen eller en notify-integration."
   },
   "supplies": {
     "title": "Pumper og hovedventiler",
@@ -1640,5 +1648,24 @@
     "reset_bucket": "Nulstil vandbalancen for \"{name}\"?",
     "reset_all_buckets": "Nulstil vandbalancen for alle zoner?",
     "clear_all_weather": "Slet alle indsamlede vejrdata? Den næste beregning har kun de efterfølgende målinger."
+  },
+  "notify": {
+    "title_done": "{program}: vanding færdig",
+    "title_problem": "{program}: et problem",
+    "title_started": "{program}: vanding starter",
+    "zone_line": "{zone}: {minutes} min",
+    "zone_volume": ", {litres} L",
+    "problem_line": "{zone}: {reason}",
+    "nothing": "Ingen zone havde brug for vand.",
+    "stopped": "Stoppet før slut.",
+    "cut": "Afkortet for at nå sin frist.",
+    "reasons": {
+      "valve_did_not_open": "ventilen åbnede ikke",
+      "valve_did_not_close": "ventilen lukkede ikke",
+      "no_flow": "ventilen åbnede, men der løb intet vand",
+      "valve_timer_not_set": "ventilens egen timer kunne ikke sættes, den blev lukket",
+      "supply_did_not_turn_on": "pumpen eller hovedventilen startede ikke",
+      "supply_did_not_turn_off": "pumpen eller hovedventilen stoppede ikke"
+    }
   }
 }

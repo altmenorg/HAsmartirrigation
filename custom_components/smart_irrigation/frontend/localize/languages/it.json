@@ -1462,7 +1462,15 @@
     "yaml_not_watered": "Escluse dall'irrigazione (senza valvola o disattivate): {zones}",
     "yaml_applied": "Programma salvato",
     "yaml_new": "Nuovo programma in YAML",
-    "yaml_new_title": "Nuovo programma"
+    "yaml_new_title": "Nuovo programma",
+    "notify_title": "Notifiche",
+    "notify_help": "Avvisa qualcuno quando questo programma ha irrigato: un telefono, un'entità di notifica o una notifica in Home Assistant. Non viene inviato nulla finché nessuna destinazione è selezionata. Una valvola che non si chiude e una pompa che non risponde vengono segnalate subito.",
+    "notify_persistent": "Notifica in Home Assistant",
+    "notify_when": "Quando",
+    "notify_when_finish": "Dopo ogni irrigazione",
+    "notify_when_problems": "Solo se qualcosa è andato storto",
+    "notify_start": "Anche all'avvio",
+    "notify_none": "Home Assistant non ha ancora una destinazione di notifica: aggiungi l'app mobile o un'integrazione di notifica."
   },
   "supplies": {
     "title": "Pompe e valvole principali",
@@ -1640,5 +1648,24 @@
     "reset_bucket": "Azzerare il bilancio idrico di «{name}»?",
     "reset_all_buckets": "Azzerare il bilancio idrico di tutte le zone?",
     "clear_all_weather": "Cancellare tutti i dati meteo raccolti? Il prossimo calcolo avrà solo le letture successive."
+  },
+  "notify": {
+    "title_done": "{program}: irrigazione terminata",
+    "title_problem": "{program}: un problema",
+    "title_started": "{program}: inizia l'irrigazione",
+    "zone_line": "{zone}: {minutes} min",
+    "zone_volume": ", {litres} L",
+    "problem_line": "{zone}: {reason}",
+    "nothing": "Nessuna zona aveva bisogno d'acqua.",
+    "stopped": "Fermato prima della fine.",
+    "cut": "Accorciato per finire entro il suo limite.",
+    "reasons": {
+      "valve_did_not_open": "la valvola non si è aperta",
+      "valve_did_not_close": "la valvola non si è chiusa",
+      "no_flow": "la valvola si è aperta ma l'acqua non è passata",
+      "valve_timer_not_set": "non è stato possibile impostare il timer della valvola, è rimasta chiusa",
+      "supply_did_not_turn_on": "la pompa o valvola principale non si è avviata",
+      "supply_did_not_turn_off": "la pompa o valvola principale non si è fermata"
+    }
   }
 }

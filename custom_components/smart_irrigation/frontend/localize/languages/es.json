@@ -1462,7 +1462,15 @@
     "yaml_not_watered": "Fuera del riego (sin válvula o desactivadas): {zones}",
     "yaml_applied": "Programa guardado",
     "yaml_new": "Nuevo programa en YAML",
-    "yaml_new_title": "Nuevo programa"
+    "yaml_new_title": "Nuevo programa",
+    "notify_title": "Notificaciones",
+    "notify_help": "Avisar a alguien cuando este programa haya regado: un teléfono, una entidad de notificación o una notificación en Home Assistant. No se envía nada mientras no haya un destino marcado. Una válvula que no se cierra y una bomba que no responde se avisan al momento.",
+    "notify_persistent": "Notificación en Home Assistant",
+    "notify_when": "Cuándo",
+    "notify_when_finish": "Después de cada riego",
+    "notify_when_problems": "Solo si algo salió mal",
+    "notify_start": "También al empezar",
+    "notify_none": "Home Assistant aún no tiene destino de notificación: añade la app móvil o una integración de notificaciones."
   },
   "supplies": {
     "title": "Bombas y válvulas principales",
@@ -1640,5 +1648,24 @@
     "reset_bucket": "¿Poner a cero el balance hídrico de «{name}»?",
     "reset_all_buckets": "¿Poner a cero el balance hídrico de todas las zonas?",
     "clear_all_weather": "¿Borrar todos los datos meteorológicos recogidos? El próximo cálculo solo tendrá las lecturas posteriores."
+  },
+  "notify": {
+    "title_done": "{program}: riego terminado",
+    "title_problem": "{program}: un problema",
+    "title_started": "{program}: empieza el riego",
+    "zone_line": "{zone}: {minutes} min",
+    "zone_volume": ", {litres} L",
+    "problem_line": "{zone}: {reason}",
+    "nothing": "Ninguna zona necesitaba agua.",
+    "stopped": "Detenido antes del final.",
+    "cut": "Acortado para terminar a su hora límite.",
+    "reasons": {
+      "valve_did_not_open": "la válvula no se abrió",
+      "valve_did_not_close": "la válvula no se cerró",
+      "no_flow": "la válvula se abrió pero no fluyó agua",
+      "valve_timer_not_set": "no se pudo ajustar el temporizador de la válvula, se quedó cerrada",
+      "supply_did_not_turn_on": "la bomba o válvula maestra no arrancó",
+      "supply_did_not_turn_off": "la bomba o válvula maestra no se detuvo"
+    }
   }
 }

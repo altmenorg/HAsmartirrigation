@@ -1462,7 +1462,15 @@
     "yaml_not_watered": "Fora da irrigação (sem válvula ou desativadas): {zones}",
     "yaml_applied": "Programa salvo",
     "yaml_new": "Novo programa em YAML",
-    "yaml_new_title": "Novo programa"
+    "yaml_new_title": "Novo programa",
+    "notify_title": "Notificações",
+    "notify_help": "Avisar alguém quando este programa regar: um celular, uma entidade de notificação ou uma notificação no Home Assistant. Nada é enviado enquanto nenhum destino estiver marcado. Uma válvula que não fecha e uma bomba que não responde são avisadas na hora.",
+    "notify_persistent": "Notificação no Home Assistant",
+    "notify_when": "Quando",
+    "notify_when_finish": "Depois de cada rega",
+    "notify_when_problems": "Só se algo deu errado",
+    "notify_start": "Também ao começar",
+    "notify_none": "O Home Assistant ainda não tem destino de notificação: adicione o app móvel ou uma integração de notificações."
   },
   "supplies": {
     "title": "Bombas e válvulas principais",
@@ -1640,5 +1648,24 @@
     "reset_bucket": "Zerar o balanço hídrico de \"{name}\"?",
     "reset_all_buckets": "Zerar o balanço hídrico de todas as zonas?",
     "clear_all_weather": "Apagar todos os dados de clima coletados? O próximo cálculo terá apenas as leituras seguintes."
+  },
+  "notify": {
+    "title_done": "{program}: rega concluída",
+    "title_problem": "{program}: um problema",
+    "title_started": "{program}: a rega começa",
+    "zone_line": "{zone}: {minutes} min",
+    "zone_volume": ", {litres} L",
+    "problem_line": "{zone}: {reason}",
+    "nothing": "Nenhuma zona precisava de água.",
+    "stopped": "Parado antes do fim.",
+    "cut": "Encurtado para terminar no limite.",
+    "reasons": {
+      "valve_did_not_open": "a válvula não abriu",
+      "valve_did_not_close": "a válvula não fechou",
+      "no_flow": "a válvula abriu mas não saiu água",
+      "valve_timer_not_set": "não foi possível definir o temporizador da válvula, ela ficou fechada",
+      "supply_did_not_turn_on": "a bomba ou válvula principal não ligou",
+      "supply_did_not_turn_off": "a bomba ou válvula principal não desligou"
+    }
   }
 }

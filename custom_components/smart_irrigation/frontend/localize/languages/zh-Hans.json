@@ -1462,7 +1462,15 @@
     "yaml_not_watered": "未纳入浇水（无阀门或已停用）：{zones}",
     "yaml_applied": "程序已保存",
     "yaml_new": "以 YAML 新建程序",
-    "yaml_new_title": "新程序"
+    "yaml_new_title": "新程序",
+    "notify_title": "通知",
+    "notify_help": "在此程序浇水后通知某人：手机、通知实体或 Home Assistant 中的通知。未勾选任何目标时不会发送。阀门未关闭或水泵无响应时会立即通知。",
+    "notify_persistent": "Home Assistant 中的通知",
+    "notify_when": "何时",
+    "notify_when_finish": "每次浇水后",
+    "notify_when_problems": "仅在出问题时",
+    "notify_start": "开始时也通知",
+    "notify_none": "Home Assistant 还没有通知目标：请添加移动应用或通知集成。"
   },
   "supplies": {
     "title": "水泵和总阀",
@@ -1640,5 +1648,24 @@
     "reset_bucket": "将“{name}”的水量平衡归零？",
     "reset_all_buckets": "将所有区域的水量平衡归零？",
     "clear_all_weather": "清除所有已收集的天气数据？下一次计算只会使用之后的读数。"
+  },
+  "notify": {
+    "title_done": "{program}：浇水完成",
+    "title_problem": "{program}：出现问题",
+    "title_started": "{program}：开始浇水",
+    "zone_line": "{zone}：{minutes} 分钟",
+    "zone_volume": "，{litres} 升",
+    "problem_line": "{zone}：{reason}",
+    "nothing": "没有区域需要浇水。",
+    "stopped": "在结束前已停止。",
+    "cut": "为在截止时间前完成而缩短。",
+    "reasons": {
+      "valve_did_not_open": "阀门没有打开",
+      "valve_did_not_close": "阀门没有关闭",
+      "no_flow": "阀门已打开但没有水流",
+      "valve_timer_not_set": "无法设置阀门自带的定时器，阀门保持关闭",
+      "supply_did_not_turn_on": "水泵或总阀没有启动",
+      "supply_did_not_turn_off": "水泵或总阀没有停止"
+    }
   }
 }

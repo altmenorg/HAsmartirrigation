@@ -214,6 +214,15 @@ export interface SmartIrrigationProgram {
   delay?: number;
   tours?: number;
   schedules?: SmartIrrigationSchedule[];
+  /** Whom to tell when it has watered; absent: nobody. */
+  notify?: SmartIrrigationProgramNotify;
+}
+
+/** A program's notifications: notify entities or actions, or persistent_notification. */
+export interface SmartIrrigationProgramNotify {
+  targets: string[];
+  when: "finish" | "problems";
+  start: boolean;
 }
 
 /** A pump or a main valve that runs while a zone it feeds is being watered. */

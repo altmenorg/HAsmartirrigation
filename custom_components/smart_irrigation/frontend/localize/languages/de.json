@@ -1462,7 +1462,15 @@
     "yaml_not_watered": "Vom Lauf ausgenommen (kein Ventil oder deaktiviert): {zones}",
     "yaml_applied": "Programm gespeichert",
     "yaml_new": "Neues Programm in YAML",
-    "yaml_new_title": "Neues Programm"
+    "yaml_new_title": "Neues Programm",
+    "notify_title": "Benachrichtigungen",
+    "notify_help": "Jemanden informieren, wenn dieses Programm bewässert hat: ein Telefon, eine Benachrichtigungsentität oder eine Benachrichtigung in Home Assistant. Solange kein Ziel angehakt ist, wird nichts gesendet. Ein Ventil, das nicht schließt, und eine Pumpe, die nicht reagiert, werden sofort gemeldet.",
+    "notify_persistent": "Benachrichtigung in Home Assistant",
+    "notify_when": "Wann",
+    "notify_when_finish": "Nach jeder Bewässerung",
+    "notify_when_problems": "Nur wenn etwas schiefging",
+    "notify_start": "Auch beim Start",
+    "notify_none": "Home Assistant hat noch kein Benachrichtigungsziel: füge die Mobile App oder eine Notify-Integration hinzu."
   },
   "supplies": {
     "title": "Pumpen und Hauptventile",
@@ -1640,5 +1648,24 @@
     "reset_bucket": "Die Wasserbilanz von „{name}“ auf null zurücksetzen?",
     "reset_all_buckets": "Die Wasserbilanz aller Zonen auf null zurücksetzen?",
     "clear_all_weather": "Alle gesammelten Wetterdaten löschen? Die nächste Berechnung hat nur die danach folgenden Messwerte."
+  },
+  "notify": {
+    "title_done": "{program}: Bewässerung fertig",
+    "title_problem": "{program}: ein Problem",
+    "title_started": "{program}: Bewässerung beginnt",
+    "zone_line": "{zone}: {minutes} min",
+    "zone_volume": ", {litres} L",
+    "problem_line": "{zone}: {reason}",
+    "nothing": "Keine Zone brauchte Wasser.",
+    "stopped": "Vor dem Ende gestoppt.",
+    "cut": "Gekürzt, um bis zur Frist fertig zu sein.",
+    "reasons": {
+      "valve_did_not_open": "das Ventil hat nicht geöffnet",
+      "valve_did_not_close": "das Ventil hat nicht geschlossen",
+      "no_flow": "das Ventil hat geöffnet, aber es floss kein Wasser",
+      "valve_timer_not_set": "der eigene Timer des Ventils ließ sich nicht setzen, es blieb zu",
+      "supply_did_not_turn_on": "die Pumpe oder das Hauptventil ist nicht angelaufen",
+      "supply_did_not_turn_off": "die Pumpe oder das Hauptventil hat nicht gestoppt"
+    }
   }
 }

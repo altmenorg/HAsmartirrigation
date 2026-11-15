@@ -1462,7 +1462,15 @@
     "yaml_not_watered": "Vynecháno ze zalévání (bez ventilu nebo vypnuto): {zones}",
     "yaml_applied": "Program uložen",
     "yaml_new": "Nový program v YAML",
-    "yaml_new_title": "Nový program"
+    "yaml_new_title": "Nový program",
+    "notify_title": "Oznámení",
+    "notify_help": "Dát někomu vědět, že tento program zavlažoval: telefon, entita oznámení nebo oznámení v Home Assistantu. Dokud není zaškrtnut žádný cíl, nic se neposílá. Ventil, který se nezavře, a čerpadlo, které neodpovídá, se hlásí hned.",
+    "notify_persistent": "Oznámení v Home Assistantu",
+    "notify_when": "Kdy",
+    "notify_when_finish": "Po každém zavlažování",
+    "notify_when_problems": "Jen když se něco pokazilo",
+    "notify_start": "Také při startu",
+    "notify_none": "Home Assistant zatím nemá cíl oznámení: přidejte mobilní aplikaci nebo integraci notify."
   },
   "supplies": {
     "title": "Čerpadla a hlavní ventily",
@@ -1640,5 +1648,24 @@
     "reset_bucket": "Vynulovat vodní bilanci zóny „{name}“?",
     "reset_all_buckets": "Vynulovat vodní bilanci všech zón?",
     "clear_all_weather": "Vymazat všechna nasbíraná data o počasí? Další výpočet bude mít jen následující měření."
+  },
+  "notify": {
+    "title_done": "{program}: zavlažování dokončeno",
+    "title_problem": "{program}: problém",
+    "title_started": "{program}: zavlažování začíná",
+    "zone_line": "{zone}: {minutes} min",
+    "zone_volume": ", {litres} l",
+    "problem_line": "{zone}: {reason}",
+    "nothing": "Žádná zóna nepotřebovala vodu.",
+    "stopped": "Zastaveno před koncem.",
+    "cut": "Zkráceno, aby skončilo včas.",
+    "reasons": {
+      "valve_did_not_open": "ventil se neotevřel",
+      "valve_did_not_close": "ventil se nezavřel",
+      "no_flow": "ventil se otevřel, ale voda neprotekla",
+      "valve_timer_not_set": "vlastní časovač ventilu nešel nastavit, zůstal zavřený",
+      "supply_did_not_turn_on": "čerpadlo nebo hlavní ventil se nespustil",
+      "supply_did_not_turn_off": "čerpadlo nebo hlavní ventil se nezastavil"
+    }
   }
 }

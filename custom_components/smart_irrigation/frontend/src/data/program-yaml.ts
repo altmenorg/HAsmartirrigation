@@ -106,6 +106,7 @@ export const programToYaml = (
       schedule.type === "sun" ? ["time"] : ["event", "offset_minutes"];
     return compact(schedule as unknown as Plain, SCHEDULE_DEFAULTS, skip);
   });
+  if (program.notify?.targets?.length) out.notify = { ...program.notify };
   return out;
 };
 

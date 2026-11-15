@@ -1462,7 +1462,15 @@
     "yaml_not_watered": "Utanför bevattningen (ingen ventil eller inaktiverad): {zones}",
     "yaml_applied": "Program sparat",
     "yaml_new": "Nytt program i YAML",
-    "yaml_new_title": "Nytt program"
+    "yaml_new_title": "Nytt program",
+    "notify_title": "Aviseringar",
+    "notify_help": "Meddela någon när det här programmet har vattnat: en telefon, en aviseringsentitet eller en avisering i Home Assistant. Inget skickas så länge inget mål är markerat. En ventil som inte stänger och en pump som inte svarar meddelas direkt.",
+    "notify_persistent": "Avisering i Home Assistant",
+    "notify_when": "När",
+    "notify_when_finish": "Efter varje bevattning",
+    "notify_when_problems": "Bara när något gick fel",
+    "notify_start": "Även vid start",
+    "notify_none": "Home Assistant har inget aviseringsmål än: lägg till mobilappen eller en notify-integration."
   },
   "supplies": {
     "title": "Pumpar och huvudventiler",
@@ -1640,5 +1648,24 @@
     "reset_bucket": "Nollställa vattenbalansen för \"{name}\"?",
     "reset_all_buckets": "Nollställa vattenbalansen för alla zoner?",
     "clear_all_weather": "Vill du rensa alla insamlade väderdata? Nästa beräkning kommer bara att använda mätvärden som samlas in efter rensningen."
+  },
+  "notify": {
+    "title_done": "{program}: bevattning klar",
+    "title_problem": "{program}: ett problem",
+    "title_started": "{program}: bevattning börjar",
+    "zone_line": "{zone}: {minutes} min",
+    "zone_volume": ", {litres} L",
+    "problem_line": "{zone}: {reason}",
+    "nothing": "Ingen zon behövde vatten.",
+    "stopped": "Stoppad före slutet.",
+    "cut": "Förkortad för att bli klar i tid.",
+    "reasons": {
+      "valve_did_not_open": "ventilen öppnade inte",
+      "valve_did_not_close": "ventilen stängde inte",
+      "no_flow": "ventilen öppnade men inget vatten flödade",
+      "valve_timer_not_set": "ventilens egen timer kunde inte ställas, den förblev stängd",
+      "supply_did_not_turn_on": "pumpen eller huvudventilen startade inte",
+      "supply_did_not_turn_off": "pumpen eller huvudventilen stannade inte"
+    }
   }
 }

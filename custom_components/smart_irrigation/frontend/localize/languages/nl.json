@@ -1462,7 +1462,15 @@
     "yaml_not_watered": "Buiten de beregening gelaten (geen klep of uitgeschakeld): {zones}",
     "yaml_applied": "Programma opgeslagen",
     "yaml_new": "Nieuw programma in YAML",
-    "yaml_new_title": "Nieuw programma"
+    "yaml_new_title": "Nieuw programma",
+    "notify_title": "Meldingen",
+    "notify_help": "Iemand laten weten dat dit programma heeft beregend: een telefoon, een meldingsentiteit of een melding in Home Assistant. Er wordt niets verstuurd zolang geen doel is aangevinkt. Een klep die niet sluit en een pomp die niet reageert, worden meteen gemeld.",
+    "notify_persistent": "Melding in Home Assistant",
+    "notify_when": "Wanneer",
+    "notify_when_finish": "Na elke beregening",
+    "notify_when_problems": "Alleen als er iets misging",
+    "notify_start": "Ook bij de start",
+    "notify_none": "Home Assistant heeft nog geen meldingsdoel: voeg de mobiele app of een notify-integratie toe."
   },
   "supplies": {
     "title": "Pompen en hoofdventielen",
@@ -1640,5 +1648,24 @@
     "reset_bucket": "De waterbalans van \"{name}\" op nul zetten?",
     "reset_all_buckets": "De waterbalans van alle zones op nul zetten?",
     "clear_all_weather": "Alle verzamelde weergegevens wissen? De volgende berekening heeft alleen de metingen die daarna komen."
+  },
+  "notify": {
+    "title_done": "{program}: beregening klaar",
+    "title_problem": "{program}: een probleem",
+    "title_started": "{program}: beregening begint",
+    "zone_line": "{zone}: {minutes} min",
+    "zone_volume": ", {litres} L",
+    "problem_line": "{zone}: {reason}",
+    "nothing": "Geen enkele zone had water nodig.",
+    "stopped": "Voor het einde gestopt.",
+    "cut": "Ingekort om op tijd klaar te zijn.",
+    "reasons": {
+      "valve_did_not_open": "de klep ging niet open",
+      "valve_did_not_close": "de klep ging niet dicht",
+      "no_flow": "de klep ging open maar er stroomde geen water",
+      "valve_timer_not_set": "de eigen timer van de klep kon niet worden ingesteld, hij bleef dicht",
+      "supply_did_not_turn_on": "de pomp of hoofdklep startte niet",
+      "supply_did_not_turn_off": "de pomp of hoofdklep stopte niet"
+    }
   }
 }

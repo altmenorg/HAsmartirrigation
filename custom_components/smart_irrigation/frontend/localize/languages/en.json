@@ -1462,7 +1462,15 @@
     "yaml_not_watered": "Left out of the run (no valve, or disabled): {zones}",
     "yaml_applied": "Program saved",
     "yaml_new": "New program in YAML",
-    "yaml_new_title": "New program"
+    "yaml_new_title": "New program",
+    "notify_title": "Notifications",
+    "notify_help": "Tell someone when this program has watered: a phone, a notification entity, or a notification in Home Assistant. Nothing is sent while no target is ticked. A valve that does not close and a pump that does not answer are told at once.",
+    "notify_persistent": "Notification in Home Assistant",
+    "notify_when": "When",
+    "notify_when_finish": "After each watering",
+    "notify_when_problems": "Only when something went wrong",
+    "notify_start": "Also when it starts",
+    "notify_none": "Home Assistant has no notification target yet: add the mobile app or a notify integration."
   },
   "supplies": {
     "title": "Pumps and main valves",
@@ -1640,5 +1648,24 @@
     "reset_bucket": "Set the water balance of \"{name}\" back to zero?",
     "reset_all_buckets": "Set the water balance of every zone back to zero?",
     "clear_all_weather": "Clear all the weather data collected? The next calculation only has the readings that come after."
+  },
+  "notify": {
+    "title_done": "{program}: watering done",
+    "title_problem": "{program}: a problem",
+    "title_started": "{program}: watering starts",
+    "zone_line": "{zone}: {minutes} min",
+    "zone_volume": ", {litres} L",
+    "problem_line": "{zone}: {reason}",
+    "nothing": "No zone needed water.",
+    "stopped": "Stopped before the end.",
+    "cut": "Cut short to be done by its deadline.",
+    "reasons": {
+      "valve_did_not_open": "the valve did not open",
+      "valve_did_not_close": "the valve did not close",
+      "no_flow": "the valve opened but no water flowed",
+      "valve_timer_not_set": "the valve's own timer could not be set, so it stayed shut",
+      "supply_did_not_turn_on": "the pump or main valve did not start",
+      "supply_did_not_turn_off": "the pump or main valve did not stop"
+    }
   }
 }

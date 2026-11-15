@@ -212,6 +212,16 @@ PROGRAM_DELAY = "delay"
 # The whole list watered this many times, each with its share of the water.
 PROGRAM_TOURS = "tours"
 PROGRAM_SCHEDULES = "schedules"
+# Whom a program tells when it has watered (see program_notify.py): stored
+# only when it names a target.
+PROGRAM_NOTIFY = "notify"
+NOTIFY_TARGETS = "targets"
+NOTIFY_WHEN = "when"
+NOTIFY_WHEN_FINISH = "finish"
+NOTIFY_WHEN_PROBLEMS = "problems"
+NOTIFY_WHEN_CHOICES = (NOTIFY_WHEN_FINISH, NOTIFY_WHEN_PROBLEMS)
+NOTIFY_START = "start"
+NOTIFY_PERSISTENT = "persistent_notification"
 # Keys inside a step of a program (see programs.py).
 STEP_ID = "id"
 STEP_ZONES = "zones"
