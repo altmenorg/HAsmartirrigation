@@ -2730,44 +2730,49 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
           ? html`
               <div class="setting-row">
                 <div class="setting-label">${t("notify_when")}</div>
-                <select
-                  class="field"
-                  @change=${(e: Event) => {
-                    // Three choices for two fields: the start is told only
-                    // along with the end.
-                    const value = (e.target as HTMLSelectElement).value;
-                    set(
-                      value === "start_and_finish"
-                        ? { when: "finish", start: true }
-                        : {
-                            when: value as "finish" | "problems",
-                            start: false,
-                          },
-                    );
-                  }}
-                >
-                  ${(
-                    [
-                      ["start_and_finish", "notify_when_start_and_finish"],
-                      ["finish", "notify_when_finish"],
-                      ["problems", "notify_when_problems"],
-                    ] as const
-                  ).map(
-                    ([value, label]) => html`
-                      <option
-                        value=${value}
-                        ?selected=${value ===
-                        (notify.when === "problems"
-                          ? "problems"
-                          : notify.start
-                            ? "start_and_finish"
-                            : "finish")}
-                      >
-                        ${t(label)}
-                      </option>
-                    `,
-                  )}
-                </select>
+                <div class="select-wrap">
+                  <select
+                    class="field"
+                    @change=${(e: Event) => {
+                      // Three choices for two fields: the start is told only
+                      // along with the end.
+                      const value = (e.target as HTMLSelectElement).value;
+                      set(
+                        value === "start_and_finish"
+                          ? { when: "finish", start: true }
+                          : {
+                              when: value as "finish" | "problems",
+                              start: false,
+                            },
+                      );
+                    }}
+                  >
+                    ${(
+                      [
+                        ["start_and_finish", "notify_when_start_and_finish"],
+                        ["finish", "notify_when_finish"],
+                        ["problems", "notify_when_problems"],
+                      ] as const
+                    ).map(
+                      ([value, label]) => html`
+                        <option
+                          value=${value}
+                          ?selected=${value ===
+                          (notify.when === "problems"
+                            ? "problems"
+                            : notify.start
+                              ? "start_and_finish"
+                              : "finish")}
+                        >
+                          ${t(label)}
+                        </option>
+                      `,
+                    )}
+                  </select>
+                  <svg class="chev" viewBox="0 0 24 24">
+                    <path d=${mdiMenuDown}></path>
+                  </svg>
+                </div>
               </div>
             `
           : ""}
@@ -4132,57 +4137,62 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                     : t("description")}</si-info
               >
             </div>
-            <select
-              class="field"
-              @change=${async (e: Event) => {
-                const target = e.target as HTMLSelectElement;
-                const next = target.value as (typeof modes)[number];
-                const ask =
-                  next === "off"
-                    ? t("confirm-off")
-                    : next === "calculate" && mode === "water"
-                      ? t("confirm-calculate")
-                      : next === "water" && mode !== "water"
-                        ? localize(
-                            "observed_watering.confirm_full_controller",
-                            lang,
-                          )
-                        : null;
-                if (ask && !(await this._ask(ask))) {
-                  target.value = mode;
-                  return;
-                }
-                this.handleConfigChange(
-                  next === "off"
-                    ? { irrigation_enabled: false }
-                    : next === "water"
-                      ? {
-                          irrigation_enabled: true,
-                          watering_enabled: true,
-                          full_controller: true,
-                          // What is watered outside the programs counts too.
-                          ...(mode === "water"
-                            ? {}
-                            : { observed_watering_enabled: true }),
-                        }
-                      : {
-                          irrigation_enabled: true,
-                          watering_enabled: true,
-                          full_controller: false,
-                          direct_valve_control_enabled: false,
-                        },
-                )
-                  .then(() => this._fetchData())
-                  .catch(() => undefined);
-              }}
-            >
-              ${modes.map(
-                (value) =>
-                  html`<option value=${value} ?selected=${value === mode}>
-                    ${t(`mode-${value}`)}
-                  </option>`,
-              )}
-            </select>
+            <div class="select-wrap">
+              <select
+                class="field"
+                @change=${async (e: Event) => {
+                  const target = e.target as HTMLSelectElement;
+                  const next = target.value as (typeof modes)[number];
+                  const ask =
+                    next === "off"
+                      ? t("confirm-off")
+                      : next === "calculate" && mode === "water"
+                        ? t("confirm-calculate")
+                        : next === "water" && mode !== "water"
+                          ? localize(
+                              "observed_watering.confirm_full_controller",
+                              lang,
+                            )
+                          : null;
+                  if (ask && !(await this._ask(ask))) {
+                    target.value = mode;
+                    return;
+                  }
+                  this.handleConfigChange(
+                    next === "off"
+                      ? { irrigation_enabled: false }
+                      : next === "water"
+                        ? {
+                            irrigation_enabled: true,
+                            watering_enabled: true,
+                            full_controller: true,
+                            // What is watered outside the programs counts too.
+                            ...(mode === "water"
+                              ? {}
+                              : { observed_watering_enabled: true }),
+                          }
+                        : {
+                            irrigation_enabled: true,
+                            watering_enabled: true,
+                            full_controller: false,
+                            direct_valve_control_enabled: false,
+                          },
+                  )
+                    .then(() => this._fetchData())
+                    .catch(() => undefined);
+                }}
+              >
+                ${modes.map(
+                  (value) =>
+                    html`<option value=${value} ?selected=${value === mode}>
+                      ${t(`mode-${value}`)}
+                    </option>`,
+                )}
+              </select>
+              <svg class="chev" viewBox="0 0 24 24">
+                <path d=${mdiMenuDown}></path>
+              </svg>
+            </div>
           </div>
         </div>
       </ha-card>

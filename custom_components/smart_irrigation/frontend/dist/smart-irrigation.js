@@ -2600,19 +2600,24 @@ function _e(e,t){return(t,i,s)=>((e,t,i)=>(i.configurable=!0,i.enumerable=!0,Ref
         ${s.targets.length?V`
               <div class="setting-row">
                 <div class="setting-label">${n("notify_when")}</div>
-                <select
-                  class="field"
-                  @change=${e=>{const t=e.target.value;o("start_and_finish"===t?{when:"finish",start:!0}:{when:t,start:!1})}}
-                >
-                  ${[["start_and_finish","notify_when_start_and_finish"],["finish","notify_when_finish"],["problems","notify_when_problems"]].map(([e,t])=>V`
-                      <option
-                        value=${e}
-                        ?selected=${e===("problems"===s.when?"problems":s.start?"start_and_finish":"finish")}
-                      >
-                        ${n(t)}
-                      </option>
-                    `)}
-                </select>
+                <div class="select-wrap">
+                  <select
+                    class="field"
+                    @change=${e=>{const t=e.target.value;o("start_and_finish"===t?{when:"finish",start:!0}:{when:t,start:!1})}}
+                  >
+                    ${[["start_and_finish","notify_when_start_and_finish"],["finish","notify_when_finish"],["problems","notify_when_problems"]].map(([e,t])=>V`
+                        <option
+                          value=${e}
+                          ?selected=${e===("problems"===s.when?"problems":s.start?"start_and_finish":"finish")}
+                        >
+                          ${n(t)}
+                        </option>
+                      `)}
+                  </select>
+                  <svg class="chev" viewBox="0 0 24 24">
+                    <path d=${La}></path>
+                  </svg>
+                </div>
               </div>
             `:""}
       `};if("main"===e){const e=r.findIndex(e=>e.main),o=r[e];return o?V`
@@ -3044,14 +3049,19 @@ function _e(e,t){return(t,i,s)=>((e,t,i)=>(i.configurable=!0,i.enumerable=!0,Ref
                 >${t("off"===i?"off-note":"calculate"===i?"calculate-note":"description")}</si-info
               >
             </div>
-            <select
-              class="field"
-              @change=${async s=>{const a=s.target,n=a.value,r="off"===n?t("confirm-off"):"calculate"===n&&"water"===i?t("confirm-calculate"):"water"===n&&"water"!==i?li("observed_watering.confirm_full_controller",e):null;!r||await this._ask(r)?this.handleConfigChange("off"===n?{irrigation_enabled:!1}:"water"===n?Object.assign({irrigation_enabled:!0,watering_enabled:!0,full_controller:!0},"water"===i?{}:{observed_watering_enabled:!0}):{irrigation_enabled:!0,watering_enabled:!0,full_controller:!1,direct_valve_control_enabled:!1}).then(()=>this._fetchData()).catch(()=>{}):a.value=i}}
-            >
-              ${["water","calculate","off"].map(e=>V`<option value=${e} ?selected=${e===i}>
-                    ${t(`mode-${e}`)}
-                  </option>`)}
-            </select>
+            <div class="select-wrap">
+              <select
+                class="field"
+                @change=${async s=>{const a=s.target,n=a.value,r="off"===n?t("confirm-off"):"calculate"===n&&"water"===i?t("confirm-calculate"):"water"===n&&"water"!==i?li("observed_watering.confirm_full_controller",e):null;!r||await this._ask(r)?this.handleConfigChange("off"===n?{irrigation_enabled:!1}:"water"===n?Object.assign({irrigation_enabled:!0,watering_enabled:!0,full_controller:!0},"water"===i?{}:{observed_watering_enabled:!0}):{irrigation_enabled:!0,watering_enabled:!0,full_controller:!1,direct_valve_control_enabled:!1}).then(()=>this._fetchData()).catch(()=>{}):a.value=i}}
+              >
+                ${["water","calculate","off"].map(e=>V`<option value=${e} ?selected=${e===i}>
+                      ${t(`mode-${e}`)}
+                    </option>`)}
+              </select>
+              <svg class="chev" viewBox="0 0 24 24">
+                <path d=${La}></path>
+              </svg>
+            </div>
           </div>
         </div>
       </ha-card>
