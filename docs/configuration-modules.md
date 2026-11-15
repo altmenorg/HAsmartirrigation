@@ -10,7 +10,7 @@ title: "Configuration: Modules"
 
 A module is the method used to work out how much water evaporated.
 
-**You no longer create or pick one.** A zone says how it is calculated, in plain words, on its own card: *calculated from the weather data*, *provided by a sensor or a service*, or *a fixed amount*. The module behind that answer is created and reused for you, one per zone, and its own settings (how many days to look ahead, the fixed amount) are on the zone card too. The modules page has left the panel's navigation, and the three modes below are what those three answers mean.
+**You no longer create or pick one.** A zone says how it is calculated, in plain words, on its own card: *calculated from the weather data*, *provided by a sensor or a service*, or *a fixed amount*. The module behind that answer is created and reused for you, one per zone, and its own settings (how many days to look ahead, coastal, the fixed amount) are on the zone card too. There is no modules page any more: the three modes below are what those three answers mean.
 
 The sensor group still records which kind of module it feeds, because what sources a group has to provide depends on it. When one group feeds zones that are calculated differently, it records none and each zone answers for itself.
 
@@ -50,20 +50,12 @@ It reads temperature, dewpoint, humidity, pressure, wind speed and solar radiati
 
 Two settings of its own:
 
-- _Coastal_: enable it if your location is on or near the coast of a large land mass, or anywhere air masses are influenced by a nearby body of water. It adjusts the radiation estimate.
+- _Coastal_ (the zone's **Coastal site**, advanced panel): enable it if your location is on or near the coast of a large land mass, or anywhere air masses are influenced by a nearby body of water. It adjusts the radiation estimate.
 - _Forecast days_: how many forecast days to fold into the calculation. `0` uses today's weather only; a higher value averages today's evapotranspiration with the forecast evapotranspiration of that many upcoming days, so a hot tomorrow raises today's run. It never reads forecast rain: a cloudy, humid day ahead only lowers the average a little, whatever it is forecast to rain. To hold a run back ahead of rain, use the rain forecast condition under [Skipping a run](configuration-weather.md#skipping-a-run). Requires a weather service.
 
-## Adding a module
+## Adding and deleting a module
 
-The modules page is not one of the tabs of the panel (Home, Zones, Weather and Settings, and Watering with the full controller), so you rarely open it: a zone creates the module behind it for you. If you do open it, select a mode and choose `Add module`. It can then be configured, and picked from any sensor group.
-
-Most people never need to come here: the [setup assistant](configuration-setup.md) under **Settings > General** creates the module, the sensor group and the zone together, from what you answer.
-
-## Deleting a module
-
-![](assets/images/configuration-modules-1.png)
-
-Use the button at the bottom. A module can only be deleted once nothing uses it.
+A zone creates the module behind it when you choose how it is calculated, and a module nothing uses any more is removed. The [setup assistant](configuration-setup.md) under **Settings > General** creates the module, the sensor group and the zone together, from what you answer.
 
 > Main page: [Configuration](configuration.md)<br/>
 > Previous: [Zone configuration](configuration-zones.md)<br/>

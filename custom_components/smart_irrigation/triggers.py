@@ -1104,6 +1104,10 @@ class TriggersMixin:
         """
         if not held:
             return
+        # Kept for the day: a step with a minimum deficit of its own reads the
+        # run the bucket implies, and would water these zones all the same
+        # (program_status.zones_for_programs).
+        self._days_held_zones = (dt_util.now().date(), set(held))
         try:
             zones = await self.store.async_get_zones()
         except Exception as e:  # noqa: BLE001 - never block the run over this
@@ -1358,7 +1362,11 @@ class TriggersMixin:
         what happened.
         """
         config = await self.store.async_get_config()
-        if not config.get(const.CONF_RAIN_HISTORY_ENABLED):
+        # A part of the rain sensor check: switched off with it, as the panel
+        # shows it, rather than acting on unseen.
+        if not config.get(const.CONF_RAIN_HISTORY_ENABLED) or not config.get(
+            const.CONF_SKIP_ON_RAIN_SENSOR
+        ):
             return None
         suppression = await rain_suppression(
             self.hass, config.get(const.CONF_RAIN_SENSOR)

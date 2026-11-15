@@ -248,6 +248,31 @@ def test_the_coordinator_hands_the_threshold_free_run_to_the_planner():
     assert planned[DURATION_IGNORING_THRESHOLD] == 3600
 
 
+def test_a_zone_held_by_its_days_between_gets_no_run_from_its_bucket():
+    import homeassistant.util.dt as dt_util
+
+    coord = _coordinator(
+        [zone(0, **{const.ZONE_BUCKET: -15.0, const.ZONE_IRRIGATION_THRESHOLD: 20})]
+    )
+    coord.store.get_config = lambda: {}
+    coord._seasonal_factors = lambda zone: (1.0, 0.0)
+    coord._days_held_zones = (dt_util.now().date(), {0})
+
+    [planned] = SmartIrrigationCoordinator.zones_for_programs(
+        coord, [coord.store.get_zone(0)]
+    )
+
+    # A step with a minimum deficit of its own would have watered it.
+    assert DURATION_IGNORING_THRESHOLD not in planned
+
+    # Held yesterday is not held today.
+    coord._days_held_zones = (dt_util.now().date().replace(year=2000), {0})
+    [planned] = SmartIrrigationCoordinator.zones_for_programs(
+        coord, [coord.store.get_zone(0)]
+    )
+    assert DURATION_IGNORING_THRESHOLD in planned
+
+
 # --- the planning skips what the step will skip (#971) ---------------------------
 
 from custom_components.smart_irrigation.programs import (  # noqa: E402

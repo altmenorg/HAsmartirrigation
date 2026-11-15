@@ -126,6 +126,9 @@ const SKIP_CONDITION_IDS = [
 const UNFOLDED = new Set<string>();
 // "More options" that hold a setting open by themselves; one closed by
 // hand stays closed.
+// Schedules set to "some conditions" whose list still holds them all: the
+// list shows until one is unticked (a full list is stored as no list).
+const PICKING_CONDITIONS = new Set<string>();
 const FOLDED_BY_HAND = new Set<string>();
 
 /** What is typed next to "Run now" and in the adjust block, by program id. */
@@ -2082,6 +2085,14 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
             n === scheduleIndex ? { ...s, ...changes } : s,
           ),
         });
+      // All the conditions, some of them (the list), or no weather at all.
+      const weatherMode =
+        schedule.weather === false
+          ? "none"
+          : schedule.skip_conditions !== undefined ||
+              PICKING_CONDITIONS.has(schedule.id ?? "")
+            ? "some"
+            : "all";
       const toggle = (
         list: number[] | undefined,
         value: number,
@@ -2210,18 +2221,79 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               )}
             </div>
           </div>
-          <div class="setting-row">
-            <div class="setting-label">
-              ${t("schedule_weather")}<si-info
-                >${t("schedule_weather_help")}</si-info
-              >
-            </div>
-            <ha-switch
-              .checked=${schedule.weather !== false}
-              @change=${(e: Event) =>
-                patchSchedule({ weather: (e.target as any).checked })}
-            ></ha-switch>
-          </div>
+          ${this._selectRow(
+            html`${t("schedule_weather")}<si-info
+                >${t("schedule_weather_help")}
+                ${t("schedule_conditions_help")}</si-info
+              >`,
+            html`${(["all", "some", "none"] as const).map(
+              (mode) =>
+                html`<option value=${mode} ?selected=${mode === weatherMode}>
+                  ${t(`schedule_weather_${mode}`)}
+                </option>`,
+            )}`,
+            (e: Event) => {
+              const mode = (e.target as HTMLSelectElement).value;
+              const key = schedule.id ?? "";
+              if (mode === "some") PICKING_CONDITIONS.add(key);
+              else PICKING_CONDITIONS.delete(key);
+              patchSchedule(
+                mode === "none"
+                  ? { weather: false }
+                  : mode === "all"
+                    ? { weather: true, skip_conditions: undefined }
+                    : { weather: true },
+              );
+            },
+          )}
+          ${weatherMode === "some"
+            ? html`<div class="conditions">
+                ${SKIP_CONDITION_IDS.every(
+                  (id) => id === "postponed" || !this._conditionSetting(id),
+                )
+                  ? html`<div class="setting-hint row-hint">
+                      ${t("conditions_none")}
+                    </div>`
+                  : ""}
+                ${SKIP_CONDITION_IDS.map((id) => {
+                  const always = id === "postponed";
+                  const active = schedule.skip_conditions ?? SKIP_CONDITION_IDS;
+                  // Off in Settings: nothing to obey or ignore here. The
+                  // schedule's choice is kept for when it is turned on.
+                  const setting = always
+                    ? t("cond_postponed")
+                    : this._conditionSetting(id);
+                  return html`
+                    <div class=${setting ? "" : "cond-off"}>
+                      <label style="white-space: nowrap;">
+                        <input
+                          type="checkbox"
+                          .checked=${always || active.includes(id)}
+                          ?disabled=${always || !setting}
+                          @change=${(e: Event) => {
+                            const on = (e.target as HTMLInputElement).checked;
+                            const next = SKIP_CONDITION_IDS.filter((c) =>
+                              c === id ? on : active.includes(c),
+                            );
+                            // All of them is the default: stored as no field.
+                            patchSchedule({
+                              skip_conditions:
+                                next.length === SKIP_CONDITION_IDS.length
+                                  ? undefined
+                                  : next,
+                            });
+                          }}
+                        />
+                        ${t(`condition_${id}`)}
+                      </label>
+                      <span class="cond-setting">
+                        · ${setting || t("cond_off")}
+                      </span>
+                    </div>
+                  `;
+                })}
+              </div>`
+            : ""}
           ${more(
             `more:schedule:${schedule.id}`,
             !!schedule.fallback_time ||
@@ -2232,8 +2304,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
               (schedule.days_of_month || []).length > 0 ||
               (schedule.months || []).length > 0 ||
               !!schedule.from_date ||
-              !!schedule.until_date ||
-              schedule.skip_conditions !== undefined,
+              !!schedule.until_date,
             html`
               ${this._numRow(
                 html`${t("schedule_every")}<si-info
@@ -2414,61 +2485,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                           })}
                       ></ha-switch>
                     </div>
-                  `
-                : ""}
-              ${schedule.weather !== false
-                ? html`
-                    <div class="setting-label" style="margin-top: 8px;">
-                      ${t("schedule_conditions")}<si-info
-                        >${t("schedule_conditions_help")}</si-info
-                      >
-                    </div>
-                    ${SKIP_CONDITION_IDS.every(
-                      (id) => id === "postponed" || !this._conditionSetting(id),
-                    )
-                      ? html`<div class="setting-hint row-hint">
-                          ${t("conditions_none")}
-                        </div>`
-                      : ""}
-                    ${SKIP_CONDITION_IDS.map((id) => {
-                      const always = id === "postponed";
-                      const active =
-                        schedule.skip_conditions ?? SKIP_CONDITION_IDS;
-                      // Off in Settings: nothing to obey or ignore here. The
-                      // schedule's choice is kept for when it is turned on.
-                      const setting = always
-                        ? t("cond_postponed")
-                        : this._conditionSetting(id);
-                      return html`
-                        <div class=${setting ? "" : "cond-off"}>
-                          <label style="white-space: nowrap;">
-                            <input
-                              type="checkbox"
-                              .checked=${always || active.includes(id)}
-                              ?disabled=${always || !setting}
-                              @change=${(e: Event) => {
-                                const on = (e.target as HTMLInputElement)
-                                  .checked;
-                                const next = SKIP_CONDITION_IDS.filter((c) =>
-                                  c === id ? on : active.includes(c),
-                                );
-                                // All of them is the default: stored as no field.
-                                patchSchedule({
-                                  skip_conditions:
-                                    next.length === SKIP_CONDITION_IDS.length
-                                      ? undefined
-                                      : next,
-                                });
-                              }}
-                            />
-                            ${t(`condition_${id}`)}
-                          </label>
-                          <span class="cond-setting">
-                            · ${setting || t("cond_off")}
-                          </span>
-                        </div>
-                      `;
-                    })}
                   `
                 : ""}
             `,
@@ -2753,14 +2769,6 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
                             ${t("schedules_title")}
                           </div>
                           ${renderSchedules(program, index)}
-                          ${this._numRow(
-                            html`${t("delay")}<si-info
-                                >${t("delay_help")}</si-info
-                              >`,
-                            localize("common.units.seconds", lang),
-                            program.delay ?? 0,
-                            (v) => patch(index, { delay: num(v) }),
-                          )}
                           ${this._numRow(
                             html`${t("tours")}<si-info
                                 >${t("tours_help")}</si-info
@@ -4631,8 +4639,21 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         );
       }
       case "days_between": {
-        const days = config.days_between_irrigation ?? 0;
-        return days > 0 ? t("cond_days_between", "{n}", String(days)) : "";
+        // A zone's own days count as much as the general ones: the condition
+        // holds those zones back even when the general setting is 0.
+        const general = config.days_between_irrigation ?? 0;
+        const own = (this.zones || [])
+          .map((zone: any) => zone.days_between_irrigation)
+          .filter((d: any) => typeof d === "number" && d > 0);
+        const all = general > 0 ? [general, ...own] : own;
+        if (!all.length) return "";
+        const low = Math.min(...all);
+        const high = Math.max(...all);
+        return t(
+          "cond_days_between",
+          "{n}",
+          low === high ? String(low) : `${low}-${high}`,
+        );
       }
       case "soil_moisture": {
         const count = (this.zones || []).filter(

@@ -309,18 +309,31 @@ def normalize_programs(programs, reserved_schedule_ids=None) -> list:
             )
             if s is not None
         ]
+        delay = _number(
+            program.get(const.PROGRAM_DELAY),
+            0.0,
+            -float(MAX_OVERLAP_SECONDS),
+            float(MAX_DELAY_SECONDS),
+        )
+        if delay:
+            # The wait between steps is a step's own (one setting rather than a
+            # program's default and a step's override): a delay given for the
+            # program goes to each step without one, which plans the same run.
+            steps = [
+                (
+                    {**step, const.STEP_DELAY: delay}
+                    if step.get(const.STEP_DELAY) is None
+                    else step
+                )
+                for step in steps
+            ]
         other = {
             const.PROGRAM_ID: program_id,
             const.PROGRAM_NAME: name or f"Program {position + 1}",
             const.PROGRAM_ENABLED: program.get(const.PROGRAM_ENABLED) is not False,
             const.PROGRAM_MAIN: False,
             const.PROGRAM_STEPS: steps,
-            const.PROGRAM_DELAY: _number(
-                program.get(const.PROGRAM_DELAY),
-                0.0,
-                -float(MAX_OVERLAP_SECONDS),
-                float(MAX_DELAY_SECONDS),
-            ),
+            const.PROGRAM_DELAY: 0.0,
             const.PROGRAM_TOURS: _count(program.get(const.PROGRAM_TOURS), 1, MAX_TOURS),
             const.PROGRAM_SCHEDULES: normalize_schedules(
                 program.get(const.PROGRAM_SCHEDULES),

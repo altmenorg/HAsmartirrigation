@@ -70,7 +70,6 @@ import {
 import {
   displayName,
   formatNumber,
-  engineModeLabel,
   getOptionsForMappingType,
   handleError,
   newGroupSource,
@@ -670,157 +669,6 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     }
     const engine = this.modules.find((m) => m.id === mapping.module);
     return engine?.requires ?? null;
-  }
-
-  private renderMapping(
-    mapping: SmartIrrigationMapping,
-    index: number,
-  ): TemplateResult {
-    if (!this.hass) {
-      return html``;
-    }
-
-    // Use caching to avoid re-rendering unchanged mappings
-    const cacheKey = `${mapping.id}_${JSON.stringify(mapping).slice(0, 100)}`;
-    if (this.mappingCache.has(cacheKey)) {
-      return this.mappingCache.get(cacheKey)!;
-    }
-
-    const numberofzonesusingthismapping = this.zones.filter(
-      (o) => o.mapping === mapping.id,
-    ).length;
-
-    const result = html`
-      <ha-card header="${displayName(mapping, this.mappings)}">
-        <div class="card-content">
-          <div class="card-content">
-            <label for="name${mapping.id}"
-              >${localize(
-                "panels.mappings.labels.mapping-name",
-                this.hass.language,
-              )}:</label
-            >
-            <input
-              id="name${mapping.id}"
-              type="text"
-              .value="${mapping.name}"
-              @change="${(e: Event) =>
-                this.handleEditMapping(index, {
-                  ...mapping,
-                  name: (e.target as HTMLInputElement).value,
-                })}"
-            />
-            <div class="setting-row">
-              <div class="setting-label">
-                ${localize(
-                  "panels.mappings.cards.mapping.greenhouse",
-                  this.hass.language,
-                )}
-              </div>
-              <ha-switch
-                .checked=${!!mapping.greenhouse}
-                @change=${(e: Event) =>
-                  this.handleEditMapping(index, {
-                    ...mapping,
-                    greenhouse: (e.target as any).checked,
-                  })}
-              ></ha-switch>
-            </div>
-            <div class="setting-row">
-              <div class="setting-label">
-                ${localize(
-                  "panels.mappings.cards.mapping.module",
-                  this.hass.language,
-                )}
-              </div>
-              <select
-                @change=${(e: Event) => {
-                  const v = (e.target as HTMLSelectElement).value;
-                  this.handleEditMapping(index, {
-                    ...mapping,
-                    [MAPPING_MODULE]: v === "" ? undefined : parseInt(v),
-                  });
-                }}
-              >
-                <option
-                  value=""
-                  ?selected=${mapping.module === undefined ||
-                  mapping.module === null}
-                >
-                  ---${localize("common.labels.select", this.hass.language)}---
-                </option>
-                ${this.modules.map(
-                  (m) =>
-                    html`<option
-                      value="${m.id}"
-                      ?selected=${m.id === mapping.module}
-                    >
-                      ${engineModeLabel(m.name, this.hass!.language)}
-                    </option>`,
-                )}
-              </select>
-            </div>
-            <div class="weather-note">
-              ${localize(
-                mapping.module === undefined || mapping.module === null
-                  ? "panels.mappings.cards.mapping.module_undecided"
-                  : "panels.mappings.cards.mapping.module_description",
-                this.hass.language,
-              )}
-            </div>
-            ${mapping.greenhouse
-              ? html`<div class="weather-note">
-                  ${localize(
-                    "panels.mappings.cards.mapping.greenhouse_description",
-                    this.hass.language,
-                  )}
-                </div>`
-              : ""}
-            ${Object.entries(mapping.mappings)
-              // Nothing falls on a greenhouse, so the two rain fields are not
-              // just unused here, they are misleading: a rain gauge outside
-              // measures water that never reaches these zones.
-              .filter(
-                ([value]) =>
-                  !mapping.greenhouse ||
-                  (value !== MAPPING_PRECIPITATION &&
-                    value !== MAPPING_CURRENT_PRECIPITATION),
-              )
-              // Offer only what this group's engine reads. A group with no
-              // engine yet keeps every source: hiding fields before the user
-              // has said how the group produces its evapotranspiration would
-              // be guessing on their behalf.
-              .filter(([value]) => {
-                const consumes = this.consumedSources(mapping);
-                return consumes === null || consumes.includes(value);
-              })
-              .map(([value]) => this.renderMappingSetting(index, value))}
-            ${numberofzonesusingthismapping
-              ? html`<div class="weather-note">
-                  ${localize(
-                    "panels.mappings.cards.mapping.errors.cannot-delete-mapping-because-zones-use-it",
-                    this.hass.language,
-                  )}
-                </div>`
-              : html` <div
-                  class="action-button"
-                  @click="${(e: Event) => this.handleRemoveMapping(e, index)}"
-                >
-                  <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-                    <path fill="#404040" d="${mdiDelete}" />
-                  </svg>
-                  <span class="action-button-label">
-                    ${localize("common.actions.delete", this.hass.language)}
-                  </span>
-                </div>`}
-          </div>
-        </div>
-      </ha-card>
-    `;
-
-    // Cache the result for next render
-    this.mappingCache.set(cacheKey, result);
-    return result;
   }
   renderMappingSetting(index: number, value: string): TemplateResult {
     const mapping = this.mappings[index];
@@ -2299,12 +2147,6 @@ class SmartIrrigationViewMappings extends SubscribeMixin(LitElement) {
     this.showAllMappings = true;
     this._scheduleUpdate();
   }
-
-  /*
-  ${Object.entries(this.mappings).map(([key, value]) =>
-          this.renderMapping(value, value["id"])
-        )}
-        */
 
   static get styles(): CSSResultGroup {
     return css`

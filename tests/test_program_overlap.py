@@ -291,9 +291,25 @@ def test_normalisation_keeps_a_negative_delay_within_bounds():
             )
         ]
     )
-    assert program["delay"] == -MAX_OVERLAP_SECONDS
+    # The program's delay, bounded, goes to the step that had none.
+    assert program["delay"] == 0.0
     delays = [s["delay"] for s in program["steps"]]
-    assert delays == [-30.0, -float(MAX_OVERLAP_SECONDS), 6 * 3600.0, None]
+    assert delays == [
+        -30.0,
+        -float(MAX_OVERLAP_SECONDS),
+        6 * 3600.0,
+        -float(MAX_OVERLAP_SECONDS),
+    ]
+
+
+def test_a_programs_delay_goes_to_its_steps_and_plans_the_same_run():
+    raw = _program(
+        delay=120,
+        steps=[{"zones": [0]}, {"zones": [1], "delay": 0}, {"zones": [2]}],
+    )
+    [program] = normalize_programs([raw])
+    assert program["delay"] == 0.0
+    assert [s["delay"] for s in program["steps"]] == [120.0, 0.0, 120.0]
 
 
 def test_overlap_seconds():

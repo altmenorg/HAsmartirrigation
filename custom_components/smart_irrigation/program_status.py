@@ -325,9 +325,17 @@ class ProgramStatusMixin:
         from_bucket = getattr(self, "duration_from_bucket", None)
         if from_bucket is None:
             return list(zones)
+        # A zone held back today by its days between irrigation keeps its
+        # deficit for the next run: no step waters it, minimum or not.
+        held_on, held = getattr(self, "_days_held_zones", None) or (None, set())
+        if held_on != dt_util.now().date():
+            held = set()
         result = []
         for zone in zones:
-            if zone.get(const.ZONE_STATE) == const.ZONE_STATE_AUTOMATIC:
+            if (
+                zone.get(const.ZONE_STATE) == const.ZONE_STATE_AUTOMATIC
+                and zone.get(const.ZONE_ID) not in held
+            ):
                 try:
                     bucket = float(zone.get(const.ZONE_BUCKET) or 0.0)
                     seconds = from_bucket(zone, bucket, ignore_threshold=True)

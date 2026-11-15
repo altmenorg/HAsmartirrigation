@@ -647,6 +647,18 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
           >${localize("panels.zones.labels.forecast-days-help", lang)}
           ${localize("panels.zones.labels.engine-shared-help", lang)}</si-info
         >
+        <div class="setting-row">
+          <div class="setting-label">
+            ${localize("panels.zones.labels.coastal", lang)}<si-info
+              >${localize("panels.zones.labels.coastal-help", lang)}</si-info
+            >
+          </div>
+          <ha-switch
+            .checked=${config.coastal === true}
+            @change=${(e: Event) =>
+              save({ coastal: (e.target as any).checked })}
+          ></ha-switch>
+        </div>
       `;
     }
     if (method === "fixed") {

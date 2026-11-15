@@ -222,7 +222,7 @@ def _mapping(*sourced):
     }
 
 
-def _coordinator(zones, mapping, *, enabled=True, factor=0.5):
+def _coordinator(zones, mapping, *, enabled=True, factor=0.5, sensor_check=True):
     class _Coordinator(TriggersMixin):
         pass
 
@@ -232,6 +232,7 @@ def _coordinator(zones, mapping, *, enabled=True, factor=0.5):
     coordinator.store.async_get_config = AsyncMock(
         return_value={
             const.CONF_RAIN_HISTORY_ENABLED: enabled,
+            const.CONF_SKIP_ON_RAIN_SENSOR: sensor_check,
             const.CONF_RAIN_SENSOR: "binary_sensor.rain",
         }
     )
@@ -291,6 +292,18 @@ async def test_a_zone_that_has_rain_in_millimetres_is_left_alone(field):
 async def test_switched_off_it_does_nothing_at_all():
     coordinator = _coordinator(
         [_zone()], _mapping(const.MAPPING_TEMPERATURE), enabled=False
+    )
+
+    assert await _apply(coordinator, factor=0.9) is None
+    coordinator.store.async_update_zone.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_it_goes_with_the_rain_sensor_check():
+    # The panel hides it once the rain sensor check is off: it stopped then
+    # acting unseen.
+    coordinator = _coordinator(
+        [_zone()], _mapping(const.MAPPING_TEMPERATURE), sensor_check=False
     )
 
     assert await _apply(coordinator, factor=0.9) is None
