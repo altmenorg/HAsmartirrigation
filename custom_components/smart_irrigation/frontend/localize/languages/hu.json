@@ -1137,7 +1137,8 @@
         "zone_keeps_own": "a(z) „{zone}” zóna megtartja a saját értékeit: {kept}",
         "zone_no_valve": "a(z) „{zone}” zónának nincs szelepe: létrejön, de csak akkor öntöz, ha szelepet kapcsolsz hozzá",
         "zone_schedule_duration": "egy zóna ütemezéséhez időtartam kell: nem jön át",
-        "zone_taken": "a(z) {zone} zóna már a(z) „{name}” zónáé: saját zónát kap"
+        "zone_taken": "a(z) {zone} zóna már a(z) „{name}” zónáé: saját zónát kap",
+        "shared_queue": "{count} vezérlő főszelep nélkül: a programjaik egymás után futnak, mert az ellátás nélküli zónák egy közös sort használnak"
       }
     },
     "skip": {
@@ -1297,7 +1298,7 @@
   },
   "programs": {
     "title": "Programok",
-    "description": "Egy program egymás után öntözi a lépéseit. Egy lépés egy zóna, vagy több együtt öntözött zóna, és alapértelmezés szerint annyi ideig tart, amennyit a Smart Irrigation kiszámolt hozzá. Több program sosem fut egyszerre: a következő megvárja a sorát.",
+    "description": "Egy program egymás után öntözi a lépéseit. Egy lépés egy zóna, vagy több együtt öntözött zóna, és alapértelmezés szerint annyi ideig tart, amennyit a Smart Irrigation kiszámolt hozzá. Azok a programok, amelyek zónái közös ellátáson vannak vagy nincs ellátásuk, sosem futnak egyszerre: a következő kivárja a sorát. A saját ellátású programok párhuzamosan öntöznek.",
     "main_description": "Minden zónát öntöz, egymás után vagy együtt, az ütemezései szerint.",
     "run_options": "Ennek az indításnak a beállításai",
     "adjust_empty": "Adj meg százalékot vagy másodperceket az időtartamok módosításához.",

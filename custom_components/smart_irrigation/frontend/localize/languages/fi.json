@@ -1137,7 +1137,8 @@
         "zone_keeps_own": "alue ”{zone}” säilyttää omat arvonsa kohteille {kept}",
         "zone_no_valve": "alueella ”{zone}” ei ole venttiiliä: se luodaan, mutta se kastelee vasta, kun venttiili on liitetty",
         "zone_schedule_duration": "alueen aikataulu tarvitsee keston: sitä ei siirretä",
-        "zone_taken": "alue {zone} kuuluu jo kohteelle ”{name}”: se saa oman alueen"
+        "zone_taken": "alue {zone} kuuluu jo kohteelle ”{name}”: se saa oman alueen",
+        "shared_queue": "{count} ohjainta ilman pääventtiiliä: niiden ohjelmat ajetaan peräkkäin, koska vyöhykkeet ilman syöttöä jakavat yhden jonon"
       }
     },
     "skip": {
@@ -1297,7 +1298,7 @@
   },
   "programs": {
     "title": "Ohjelmat",
-    "description": "Ohjelma kastelee vaiheensa yksi kerrallaan. Vaihe on yksi vyöhyke tai useampi yhtä aikaa kasteltava, ja se kestää oletuksena sen ajan, jonka Smart Irrigation on sille laskenut. Useita ohjelmia ei koskaan ajeta yhtä aikaa: seuraava odottaa vuoroaan.",
+    "description": "Ohjelma kastelee vaiheensa yksi kerrallaan. Vaihe on yksi vyöhyke tai useampi yhtä aikaa kasteltava, ja se kestää oletuksena sen ajan, jonka Smart Irrigation on sille laskenut. Ohjelmat, joiden vyöhykkeet jakavat syötön tai joilla ei ole sitä, eivät koskaan toimi yhtä aikaa: seuraava odottaa vuoroaan. Omalla syötöllään toimivat ohjelmat kastelevat rinnakkain.",
     "main_description": "Kastelee kaikki vyöhykkeet peräkkäin tai yhdessä aikataulujensa mukaan.",
     "run_options": "Tämän käynnistyksen asetukset",
     "adjust_empty": "Anna prosentti tai sekunnit kestojen säätämiseksi.",

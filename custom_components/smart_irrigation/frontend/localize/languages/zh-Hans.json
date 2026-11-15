@@ -1137,7 +1137,8 @@
         "zone_keeps_own": "区域“{zone}”保留自己的 {kept}",
         "zone_no_valve": "区域“{zone}”没有阀门：会被创建，但在关联阀门之前不会浇水",
         "zone_schedule_duration": "区域的时间表需要时长：不导入",
-        "zone_taken": "区域 {zone} 已属于“{name}”：它会获得自己的区域"
+        "zone_taken": "区域 {zone} 已属于“{name}”：它会获得自己的区域",
+        "shared_queue": "{count} 个没有主阀的控制器：它们的程序依次运行，因为没有供水的区域共用一个队列"
       }
     },
     "skip": {
@@ -1297,7 +1298,7 @@
   },
   "programs": {
     "title": "程序",
-    "description": "程序会依次浇它的各个步骤。一个步骤是一个区域，或同时浇水的多个区域，默认使用 Smart Irrigation 为它计算出的时长。多个程序绝不会同时运行：下一个会等待轮到它。",
+    "description": "程序会依次浇它的各个步骤。一个步骤是一个区域，或同时浇水的多个区域，默认使用 Smart Irrigation 为它计算出的时长。区域共用一个供水或没有供水的程序永远不会同时运行：下一个会等待轮到它。拥有各自供水的程序会并行浇水。",
     "main_description": "按其时间表浇灌所有区域，依次或同时进行。",
     "run_options": "本次运行的选项",
     "adjust_empty": "请输入百分比或秒数来调整时长。",

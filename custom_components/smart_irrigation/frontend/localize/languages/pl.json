@@ -1137,7 +1137,8 @@
         "zone_keeps_own": "strefa „{zone}” zachowuje własne wartości dla {kept}",
         "zone_no_valve": "strefa „{zone}” nie ma zaworu: zostanie utworzona, ale nie będzie podlewać, dopóki jakiś nie zostanie powiązany",
         "zone_schedule_duration": "harmonogram strefy wymaga czasu trwania: nie jest przenoszony",
-        "zone_taken": "strefa {zone} należy już do „{name}”: dostaje własną strefę"
+        "zone_taken": "strefa {zone} należy już do „{name}”: dostaje własną strefę",
+        "shared_queue": "{count} sterowniki bez zaworu głównego: ich programy działają jeden po drugim, bo strefy bez zasilania dzielą jedną kolejkę"
       }
     },
     "skip": {
@@ -1297,7 +1298,7 @@
   },
   "programs": {
     "title": "Programy",
-    "description": "Program podlewa swoje kroki jeden po drugim. Krok to jedna strefa lub kilka podlewanych razem i domyślnie trwa tyle, ile Smart Irrigation dla niego obliczył. Kilka programów nigdy nie działa jednocześnie: następny czeka na swoją kolej.",
+    "description": "Program podlewa swoje kroki jeden po drugim. Krok to jedna strefa lub kilka podlewanych razem i domyślnie trwa tyle, ile Smart Irrigation dla niego obliczył. Programy, których strefy dzielą zasilanie albo go nie mają, nigdy nie działają jednocześnie: następny czeka na swoją kolej. Programy z własnym zasilaniem podlewają równolegle.",
     "main_description": "Podlewa wszystkie strefy, jedna po drugiej lub razem, według swoich harmonogramów.",
     "run_options": "Opcje tego uruchomienia",
     "adjust_empty": "Podaj procent lub sekundy, aby dostosować czasy.",

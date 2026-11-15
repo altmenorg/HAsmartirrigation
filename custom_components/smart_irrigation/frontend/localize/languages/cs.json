@@ -1137,7 +1137,8 @@
         "zone_keeps_own": "zóna „{zone}“ si ponechává vlastní hodnoty pro {kept}",
         "zone_no_valve": "zóna „{zone}“ nemá ventil: vytvoří se, ale zalévat bude až po propojení ventilu",
         "zone_schedule_duration": "rozvrh zóny potřebuje dobu trvání: nepřevezme se",
-        "zone_taken": "zóna {zone} už patří k „{name}“: dostane vlastní zónu"
+        "zone_taken": "zóna {zone} už patří k „{name}“: dostane vlastní zónu",
+        "shared_queue": "{count} ovladače bez hlavního ventilu: jejich programy běží jeden po druhém, protože zóny bez napájení sdílejí jednu frontu"
       }
     },
     "skip": {
@@ -1297,7 +1298,7 @@
   },
   "programs": {
     "title": "Programy",
-    "description": "Program zavlažuje své kroky jeden po druhém. Krok je jedna zóna nebo několik zón zavlažovaných společně a ve výchozím stavu trvá tak dlouho, jak pro něj Smart Irrigation vypočítala. Více programů nikdy neběží současně: další čeká, až na něj přijde řada.",
+    "description": "Program zavlažuje své kroky jeden po druhém. Krok je jedna zóna nebo několik zón zavlažovaných společně a ve výchozím stavu trvá tak dlouho, jak pro něj Smart Irrigation vypočítala. Programy, jejichž zóny sdílejí napájení nebo žádné nemají, nikdy neběží současně: další čeká, až na něj přijde řada. Programy s vlastním napájením zavlažují souběžně.",
     "main_description": "Zavlažuje všechny zóny, jednu po druhé nebo společně, podle svých plánů.",
     "run_options": "Volby tohoto spuštění",
     "adjust_empty": "Zadejte procento nebo sekundy pro úpravu dob.",

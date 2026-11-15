@@ -1137,7 +1137,8 @@
         "zone_keeps_own": "sonen «{zone}» beholder sine egne verdier for {kept}",
         "zone_no_valve": "sonen «{zone}» har ingen ventil: den opprettes, men vanner ikke før en er koblet til",
         "zone_schedule_duration": "en tidsplan for en sone trenger en varighet: den kommer ikke med",
-        "zone_taken": "sone {zone} hører allerede til «{name}»: den får en egen sone"
+        "zone_taken": "sone {zone} hører allerede til «{name}»: den får en egen sone",
+        "shared_queue": "{count} kontrollere uten hovedventil: programmene deres kjører etter hverandre, fordi soner uten forsyning deler én kø"
       }
     },
     "skip": {
@@ -1297,7 +1298,7 @@
   },
   "programs": {
     "title": "Programmer",
-    "description": "Et program vanner trinnene sine etter hverandre. Et trinn er én sone, eller flere som vannes samtidig, og varer som standard så lenge som Smart Irrigation har beregnet for det. Flere programmer kjører aldri samtidig: det neste venter på tur.",
+    "description": "Et program vanner trinnene sine etter hverandre. Et trinn er én sone, eller flere som vannes samtidig, og varer som standard så lenge som Smart Irrigation har beregnet for det. Programmer der sonene deler en forsyning, eller ikke har noen, kjører aldri samtidig: det neste venter på tur. Programmer med egen forsyning vanner side om side.",
     "main_description": "Vanner alle soner, etter hverandre eller samtidig, etter sine tidsplaner.",
     "run_options": "Valg for denne starten",
     "adjust_empty": "Skriv inn en prosent eller sekunder for å justere varighetene.",

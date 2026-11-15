@@ -1137,7 +1137,8 @@
         "zone_keeps_own": "zone \"{zone}\" houdt haar eigen waarden voor {kept}",
         "zone_no_valve": "zone \"{zone}\" heeft geen klep: ze wordt aangemaakt, maar bewatert pas als er een gekoppeld is",
         "zone_schedule_duration": "een schema van een zone heeft een duur nodig: het komt niet mee",
-        "zone_taken": "zone {zone} hoort al bij \"{name}\": ze krijgt een eigen zone"
+        "zone_taken": "zone {zone} hoort al bij \"{name}\": ze krijgt een eigen zone",
+        "shared_queue": "{count} controllers zonder hoofdklep: hun programma's lopen na elkaar, omdat zones zonder voeding één wachtrij delen"
       }
     },
     "skip": {
@@ -1297,7 +1298,7 @@
   },
   "programs": {
     "title": "Programma's",
-    "description": "Een programma bewatert zijn stappen na elkaar. Een stap is één zone, of meerdere zones die samen worden bewaterd, en duurt standaard zo lang als Smart Irrigation ervoor berekende. Meerdere programma's draaien nooit tegelijk: het volgende wacht op zijn beurt.",
+    "description": "Een programma bewatert zijn stappen na elkaar. Een stap is één zone, of meerdere zones die samen worden bewaterd, en duurt standaard zo lang als Smart Irrigation ervoor berekende. Programma's waarvan de zones een voeding delen, of er geen hebben, lopen nooit tegelijk: de volgende wacht op zijn beurt. Programma's op een eigen voeding beregenen naast elkaar.",
     "main_description": "Bewatert alle zones, na elkaar of samen, volgens zijn schema's.",
     "run_options": "Opties voor deze start",
     "adjust_empty": "Vul een percentage of seconden in om de duur aan te passen.",

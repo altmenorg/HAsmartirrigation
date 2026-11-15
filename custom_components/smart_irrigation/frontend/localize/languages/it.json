@@ -1137,7 +1137,8 @@
         "zone_keeps_own": "la zona \"{zone}\" mantiene i propri valori per {kept}",
         "zone_no_valve": "la zona \"{zone}\" non ha valvola: viene creata, ma non irriga finché non ne viene collegata una",
         "zone_schedule_duration": "l'orario di una zona richiede una durata: non viene portato",
-        "zone_taken": "la zona {zone} appartiene già a \"{name}\": riceve una zona propria"
+        "zone_taken": "la zona {zone} appartiene già a \"{name}\": riceve una zona propria",
+        "shared_queue": "{count} controller senza valvola principale: i loro programmi vanno uno dopo l'altro, perché le zone senza alimentazione condividono una sola coda"
       }
     },
     "skip": {
@@ -1297,7 +1298,7 @@
   },
   "programs": {
     "title": "Programmi",
-    "description": "Un programma irriga i suoi passi uno dopo l'altro. Un passo è una zona, o più zone irrigate insieme, e per impostazione predefinita dura quanto calcolato da Smart Irrigation per esso. Più programmi non girano mai contemporaneamente: il successivo aspetta il suo turno.",
+    "description": "Un programma irriga i suoi passi uno dopo l'altro. Un passo è una zona, o più zone irrigate insieme, e per impostazione predefinita dura quanto calcolato da Smart Irrigation per esso. I programmi le cui zone condividono un'alimentazione, o non ne hanno, non girano mai insieme: il successivo aspetta il suo turno. Quelli con un'alimentazione propria irrigano in parallelo.",
     "main_description": "Irriga tutte le zone, una dopo l'altra o insieme, secondo le sue pianificazioni.",
     "run_options": "Opzioni di questo avvio",
     "adjust_empty": "Indica una percentuale o dei secondi per regolare le durate.",

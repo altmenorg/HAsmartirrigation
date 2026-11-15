@@ -1137,7 +1137,8 @@
         "zone_keeps_own": "la zone « {zone} » garde ses propres valeurs pour {kept}",
         "zone_no_valve": "la zone « {zone} » n'a pas de vanne : elle est créée, mais n'arrose pas tant qu'aucune n'est liée",
         "zone_schedule_duration": "un horaire de zone a besoin d'une durée : il n'est pas repris",
-        "zone_taken": "la zone {zone} appartient déjà à « {name} » : elle reçoit sa propre zone"
+        "zone_taken": "la zone {zone} appartient déjà à « {name} » : elle reçoit sa propre zone",
+        "shared_queue": "{count} contrôleurs sans vanne maîtresse : leurs programmes passent l'un après l'autre, car les zones sans alimentation partagent une même file d'attente"
       }
     },
     "skip": {
@@ -1297,7 +1298,7 @@
   },
   "programs": {
     "title": "Programmes",
-    "description": "Un programme arrose ses étapes l'une après l'autre. Une étape est une zone, ou plusieurs arrosées en même temps, et prend par défaut la durée calculée par Smart Irrigation. Deux programmes ne tournent jamais en même temps : le suivant attend son tour.",
+    "description": "Un programme arrose ses étapes l'une après l'autre. Une étape est une zone, ou plusieurs arrosées en même temps, et prend par défaut la durée calculée par Smart Irrigation. Les programmes dont les zones partagent une alimentation, ou n'en ont pas, ne tournent jamais en même temps : le suivant attend son tour. Ceux qui ont chacun leur alimentation arrosent côte à côte.",
     "main_description": "Arrose toutes les zones, l'une après l'autre ou ensemble, à ses horaires.",
     "run_options": "Options de ce lancement",
     "adjust_empty": "Indique un pourcentage ou des secondes pour ajuster les durées.",

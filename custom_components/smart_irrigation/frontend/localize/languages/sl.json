@@ -1137,7 +1137,8 @@
         "zone_keeps_own": "cona \"{zone}\" obdrži lastne vrednosti za {kept}",
         "zone_no_valve": "cona \"{zone}\" nima ventila: ustvari se, a zaliva šele, ko je povezan ventil",
         "zone_schedule_duration": "urnik cone potrebuje trajanje: ne prenese se",
-        "zone_taken": "cona {zone} že pripada \"{name}\": dobi lastno cono"
+        "zone_taken": "cona {zone} že pripada \"{name}\": dobi lastno cono",
+        "shared_queue": "{count} krmilniki brez glavnega ventila: njihovi programi tečejo drug za drugim, ker si območja brez napajanja delijo eno vrsto"
       }
     },
     "skip": {
@@ -1297,7 +1298,7 @@
   },
   "programs": {
     "title": "Programi",
-    "description": "Program zaliva svoje korake drug za drugim. Korak je ena cona ali več con, ki se zalivajo skupaj, in privzeto traja toliko, kot je zanj izračunal Smart Irrigation. Več programov nikoli ne teče hkrati: naslednji počaka na vrsto.",
+    "description": "Program zaliva svoje korake drug za drugim. Korak je ena cona ali več con, ki se zalivajo skupaj, in privzeto traja toliko, kot je zanj izračunal Smart Irrigation. Programi, katerih območja si delijo napajanje ali ga nimajo, nikoli ne tečejo hkrati: naslednji počaka na vrsto. Programi z lastnim napajanjem zalivajo vzporedno.",
     "main_description": "Zaliva vsa območja, drugo za drugim ali skupaj, po svojih urnikih.",
     "run_options": "Možnosti tega zagona",
     "adjust_empty": "Vnesi odstotek ali sekunde, da prilagodiš trajanja.",

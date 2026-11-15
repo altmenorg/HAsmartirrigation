@@ -1137,7 +1137,8 @@
         "zone_keeps_own": "zonen ”{zone}” behåller sina egna värden för {kept}",
         "zone_no_valve": "zonen ”{zone}” skapas utan ventil och kan bevattnas först när du har kopplat en ventil till den",
         "zone_schedule_duration": "zonens schema saknar bevattningstid och importeras därför inte",
-        "zone_taken": "zon {zone} hör redan till ”{name}”. En separat zon skapas för den zon som importeras"
+        "zone_taken": "zon {zone} hör redan till ”{name}”. En separat zon skapas för den zon som importeras",
+        "shared_queue": "{count} styrenheter utan huvudventil: deras program körs efter varandra, eftersom zoner utan försörjning delar en kö"
       }
     },
     "skip": {
@@ -1297,7 +1298,7 @@
   },
   "programs": {
     "title": "Program",
-    "description": "Programmet kör ett steg i taget. I varje steg bevattnas en zon eller flera zoner samtidigt, normalt under den tid som Smart Irrigation har beräknat. Bara ett program körs åt gången. Övriga väntar på sin tur.",
+    "description": "Programmet kör ett steg i taget. I varje steg bevattnas en zon eller flera zoner samtidigt, normalt under den tid som Smart Irrigation har beräknat. Bara ett program körs åt gången. Program vars zoner delar en försörjning, eller saknar en, körs aldrig samtidigt: nästa väntar på sin tur. Program med egen försörjning vattnar sida vid sida.",
     "main_description": "Vattnar alla zoner, efter varandra eller samtidigt, enligt sina scheman.",
     "run_options": "Alternativ för den här starten",
     "adjust_empty": "Ange en procentsats eller sekunder för att justera tiderna.",

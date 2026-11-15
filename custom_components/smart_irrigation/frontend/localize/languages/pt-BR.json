@@ -1137,7 +1137,8 @@
         "zone_keeps_own": "a zona \"{zone}\" mantém os próprios valores de {kept}",
         "zone_no_valve": "a zona \"{zone}\" não tem válvula: ela é criada, mas só irriga quando uma for vinculada",
         "zone_schedule_duration": "um agendamento de zona precisa de uma duração: ele não vem",
-        "zone_taken": "a zona {zone} já pertence a \"{name}\": ela ganha uma zona própria"
+        "zone_taken": "a zona {zone} já pertence a \"{name}\": ela ganha uma zona própria",
+        "shared_queue": "{count} controladores sem válvula mestra: seus programas rodam um após o outro, porque zonas sem alimentação compartilham uma única fila"
       }
     },
     "skip": {
@@ -1297,7 +1298,7 @@
   },
   "programs": {
     "title": "Programas",
-    "description": "Um programa irriga suas etapas uma após a outra. Uma etapa é uma zona, ou várias irrigadas juntas, e por padrão dura o tempo que o Smart Irrigation calculou para ela. Vários programas nunca rodam ao mesmo tempo: o próximo espera a sua vez.",
+    "description": "Um programa irriga suas etapas uma após a outra. Uma etapa é uma zona, ou várias irrigadas juntas, e por padrão dura o tempo que o Smart Irrigation calculou para ela. Programas cujas zonas compartilham uma alimentação, ou não têm nenhuma, nunca rodam ao mesmo tempo: o próximo espera sua vez. Os que têm alimentação própria irrigam lado a lado.",
     "main_description": "Irriga todas as zonas, uma após a outra ou juntas, nos seus horários.",
     "run_options": "Opções desta execução",
     "adjust_empty": "Informe uma porcentagem ou segundos para ajustar as durações.",

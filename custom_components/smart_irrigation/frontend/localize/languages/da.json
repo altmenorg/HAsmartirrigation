@@ -1137,7 +1137,8 @@
         "zone_keeps_own": "zonen \"{zone}\" beholder sine egne værdier for {kept}",
         "zone_no_valve": "zonen \"{zone}\" har ingen ventil: den oprettes, men vander først, når en er tilknyttet",
         "zone_schedule_duration": "en zones tidsplan skal have en varighed: den kommer ikke med",
-        "zone_taken": "zone {zone} tilhører allerede \"{name}\": den får sin egen zone"
+        "zone_taken": "zone {zone} tilhører allerede \"{name}\": den får sin egen zone",
+        "shared_queue": "{count} styringer uden hovedventil: deres programmer kører efter hinanden, fordi zoner uden forsyning deler én kø"
       }
     },
     "skip": {
@@ -1297,7 +1298,7 @@
   },
   "programs": {
     "title": "Programmer",
-    "description": "Et program vander sine trin et efter et. Et trin er én zone, eller flere der vandes samtidig, og varer som standard den tid, Smart Irrigation har beregnet til det. Flere programmer kører aldrig samtidig: det næste venter på sin tur.",
+    "description": "Et program vander sine trin et efter et. Et trin er én zone, eller flere der vandes samtidig, og varer som standard den tid, Smart Irrigation har beregnet til det. Programmer, hvis zoner deler en forsyning eller ingen har, kører aldrig samtidig: den næste venter på sin tur. Programmer med hver sin forsyning vander side om side.",
     "main_description": "Vander alle zoner, efter hinanden eller sammen, efter sine tidsplaner.",
     "run_options": "Indstillinger for denne start",
     "adjust_empty": "Angiv en procentdel eller sekunder for at justere varighederne.",

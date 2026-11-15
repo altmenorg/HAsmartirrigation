@@ -1137,7 +1137,8 @@
         "zone_keeps_own": "la zona «{zone}» conserva sus propios valores de {kept}",
         "zone_no_valve": "la zona «{zone}» no tiene válvula: se crea, pero no riega hasta que se vincule una",
         "zone_schedule_duration": "un horario de zona necesita una duración: no se trae",
-        "zone_taken": "la zona {zone} ya pertenece a «{name}»: recibe una zona propia"
+        "zone_taken": "la zona {zone} ya pertenece a «{name}»: recibe una zona propia",
+        "shared_queue": "{count} controladores sin válvula maestra: sus programas van uno tras otro, porque las zonas sin suministro comparten una misma cola"
       }
     },
     "skip": {
@@ -1297,7 +1298,7 @@
   },
   "programs": {
     "title": "Programas",
-    "description": "Un programa riega sus pasos uno tras otro. Un paso es una zona, o varias regadas a la vez, y por defecto dura lo que Smart Irrigation calculó para él. Varios programas nunca se ejecutan a la vez: el siguiente espera su turno.",
+    "description": "Un programa riega sus pasos uno tras otro. Un paso es una zona, o varias regadas a la vez, y por defecto dura lo que Smart Irrigation calculó para él. Los programas cuyas zonas comparten un suministro, o no tienen ninguno, nunca funcionan a la vez: el siguiente espera su turno. Los que tienen su propio suministro riegan en paralelo.",
     "main_description": "Riega todas las zonas, una tras otra o juntas, en sus horarios.",
     "run_options": "Opciones de este arranque",
     "adjust_empty": "Indica un porcentaje o segundos para ajustar las duraciones.",
