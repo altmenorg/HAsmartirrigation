@@ -296,10 +296,16 @@
         },
         "master-switch": {
           "title": "Smart Irrigation",
-          "label": "Calcular e irrigar",
+          "mode": "O que o Smart Irrigation faz",
+          "mode-water": "Calcular e regar",
+          "mode-calculate": "Só calcular",
+          "mode-off": "Parar tudo",
           "description": "Desligado, o Smart Irrigation continua coletando os dados meteorológicos e mantém seus sensores, mas não calcula nada, deixa o balanço hídrico de cada zona como está, não abre nenhuma válvula e não executa nenhum programa. Ao ser religado, o tempo em que ficou desligado não é contado.",
           "off-note": "Desligado: nada é calculado e nada é irrigado. Os dados meteorológicos continuam sendo coletados, e o tempo desligado não será contado quando você religá-lo.",
-          "confirm-off": "Desligar o Smart Irrigation? O que estiver irrigando para agora, e nada é calculado nem irrigado até ele ser religado."
+          "calculate-note": "Só calcular: os balanços hídricos e as durações continuam atualizados, mas nenhuma válvula abre, nenhum programa inicia e o evento de início não é enviado. Nada mais muda: de volta a Calcular e regar, tudo continua como antes.",
+          "confirm-off": "Desligar o Smart Irrigation? O que estiver irrigando para agora, e nada é calculado nem irrigado até ele ser religado.",
+          "confirm-calculate": "Só calcular? Qualquer rega em andamento para agora, e nada começa até você escolher de novo Calcular e regar.",
+          "calculate-banner": "Só calcular: nenhuma válvula abre e nenhum programa inicia. Escolha Calcular e regar em Configurações, Geral para retomar a rega."
         }
       },
       "description": "Esta página fornece configurações globais.",
@@ -386,7 +392,9 @@
           "run-waits": "aguarda {program}, por volta de {start} a {end}",
           "run-skipped": "previsto ser ignorado: chuva prevista",
           "run-twice": "{zones} irrigadas duas vezes seguidas",
-          "run-suspended": "suspenso até {when}"
+          "run-suspended": "suspenso até {when}",
+          "headline-calculate": "O Smart Irrigation só está calculando",
+          "sub-calculate": "Os balanços hídricos e as durações continuam atualizados, mas nada é regado até você escolher de novo Calcular e regar."
         },
         "decision": {
           "title": "Vai ser pulado?",
@@ -1638,6 +1646,7 @@
     "no_trigger": "Nenhum gatilho de início",
     "not_scheduled": "Pendente, mas não agendada",
     "off": "Desligado",
+    "calculate_only": "Só calcular",
     "watering_left": "irrigando, {time} restantes",
     "paused_left": "pausada, {time} restantes",
     "soaking": "absorvendo, próxima passagem às {when} ({pass}/{passes})",

@@ -296,10 +296,16 @@
         },
         "master-switch": {
           "title": "Smart Irrigation",
-          "label": "Beräkna och vattna",
+          "mode": "Vad Smart Irrigation gör",
+          "mode-water": "Beräkna och vattna",
+          "mode-calculate": "Bara beräkna",
+          "mode-off": "Stoppa allt",
           "description": "När Smart Irrigation är avstängt fortsätter väderdata att samlas in och sensorerna finns kvar. Ingen bevattningstid beräknas, vattenbalanserna ligger kvar och inga ventiler öppnas eller program körs. När du slår på funktionen igen räknas tiden den var avstängd inte med.",
           "off-note": "Smart Irrigation är avstängt. Beräkning och bevattning är pausade, men väderdata samlas fortfarande in. Tiden som funktionen är avstängd räknas inte med när du slår på den igen.",
-          "confirm-off": "Vill du stänga av Smart Irrigation? Pågående bevattning avbryts direkt. Beräkningarna och bevattningen pausas tills du slår på funktionen igen."
+          "calculate-note": "Bara beräkna: vattenbalanser och varaktigheter hålls aktuella, men ingen ventil öppnar, inget program körs och starthändelsen skickas inte. Inget annat ändras: tillbaka på Beräkna och vattna fortsätter allt som förut.",
+          "confirm-off": "Vill du stänga av Smart Irrigation? Pågående bevattning avbryts direkt. Beräkningarna och bevattningen pausas tills du slår på funktionen igen.",
+          "confirm-calculate": "Bara beräkna? All pågående bevattning stoppas nu, och inget startar förrän du väljer Beräkna och vattna igen.",
+          "calculate-banner": "Bara beräkna: ingen ventil öppnar och inget program körs. Välj Beräkna och vattna under Inställningar, Allmänt för att återuppta bevattningen."
         }
       },
       "description": "Här ändrar du inställningar som gäller hela integrationen.",
@@ -386,7 +392,9 @@
           "run-waits": "väntar på {program}, cirka {start} till {end}",
           "run-skipped": "förväntas hoppas över: regn väntas",
           "run-twice": "{zones} vattnas två gånger i rad",
-          "run-suspended": "uppskjutet till {when}"
+          "run-suspended": "uppskjutet till {when}",
+          "headline-calculate": "Smart Irrigation beräknar bara",
+          "sub-calculate": "Vattenbalanser och varaktigheter hålls aktuella, men inget vattnas förrän du väljer Beräkna och vattna igen."
         },
         "decision": {
           "title": "Kommer den att hoppas över?",
@@ -1638,6 +1646,7 @@
     "no_trigger": "Ingen startutlösare",
     "not_scheduled": "Behöver vatten men är inte schemalagd",
     "off": "Avstängd",
+    "calculate_only": "Bara beräkning",
     "watering_left": "bevattnar, {time} kvar",
     "paused_left": "pausad, {time} kvar",
     "soaking": "infiltration, nästa pass kl. {when} ({pass}/{passes})",

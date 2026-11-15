@@ -16,17 +16,26 @@ title: "Configuration: General"
 
 The weather service, the location, how often the weather is read and the checks that skip a run are on the **Weather** tab: see [Weather configuration](configuration-weather.md).
 
-### Switching Smart Irrigation off
-The first card, **Smart Irrigation**, has one switch, **Calculate and water**. It is on unless you turn it off. Off, Smart Irrigation:
+### Calculate and water, calculate only, or stop everything
+The first card, **Smart Irrigation**, has one list, **What Smart Irrigation does**:
+
+* **Calculate and water**, the usual;
+* **Calculate only**: the water balances and durations stay current, but nothing starts a watering. No valve opens (direct valve control, the Water button of a zone, the hub's buttons), no program of the [full controller](usage-full-controller.md) runs, and a start trigger that is reached fires `smart_irrigation_irrigation_skipped` with the reason `calculate_only` instead of the start event, so an automation of your own does not water either. A watering by hand is still credited with [observed watering](configuration-closed-loop.md). Nothing else is changed: back to **Calculate and water**, everything carries on as it was, programs, valves and settings included. The panel says so on the Home tab, the Watering tab and the Zones page;
+* **Stop everything**, described below.
+
+Choosing **Calculate only** or **Stop everything** stops what is watering at once.
+
+#### Stop everything
+Smart Irrigation:
 
 * keeps taking its weather readings and keeps its sensors up to date;
 * calculates nothing, and leaves every zone's water balance as it is;
-* opens no valve, whether by direct valve control, the Water button of a zone or the hub's buttons, and runs no program of the [full controller](usage-full-controller.md). What is watering when you switch it off stops at once, and after a restart a run that was interrupted is closed rather than resumed;
+* opens no valve and runs no program. After a restart a run that was interrupted is closed rather than resumed;
 * fires no start event: a start trigger that is reached fires `smart_irrigation_irrigation_skipped` with the reason `irrigation_off` (see [events](usage-events.md)).
 
-Switched on again, the time it was off is not counted: each zone's next calculation starts at that moment, as after setting a water balance by hand, so the first run is not weeks of evaporation at once. The same switch is on the hub device as `switch.smart_irrigation_irrigation_enabled`, for an automation or a dashboard (the end of the season, for instance).
+Back to calculating, the time it was stopped is not counted: each zone's next calculation starts at that moment, as after setting a water balance by hand, so the first run is not weeks of evaporation at once. The hub device's switch **Calculate and water** (`switch.smart_irrigation_irrigation_enabled`) is off while everything is stopped, for an automation or a dashboard (the end of the season, for instance).
 
-It is not the same as postponing: a postponement holds the automatic watering back for a while and keeps calculating, so the zones are owed what the weather took meanwhile. This switch stops it all.
+It is not the same as postponing: a postponement holds the automatic watering back for a while and keeps calculating, so the zones are owed what the weather took meanwhile.
 
 ## Calculation
 

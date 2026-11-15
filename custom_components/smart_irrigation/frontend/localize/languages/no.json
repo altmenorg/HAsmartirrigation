@@ -296,10 +296,16 @@
         },
         "master-switch": {
           "title": "Smart Irrigation",
-          "label": "Beregn og vann",
+          "mode": "Hva Smart Irrigation gjør",
+          "mode-water": "Beregn og vann",
+          "mode-calculate": "Bare beregn",
+          "mode-off": "Stopp alt",
           "description": "Slått av fortsetter Smart Irrigation å hente værdata og beholder sensorene sine, men beregner ingenting, lar vannbalansen i hver sone være som den er, åpner ingen ventil og kjører ingen program. Når den slås på igjen, telles ikke tiden den var av.",
           "off-note": "Slått av: ingenting beregnes og ingenting vannes. Værdata hentes fortsatt, og tiden den er av telles ikke når du slår den på igjen.",
-          "confirm-off": "Slå av Smart Irrigation? Det som vanner nå stopper med en gang, og ingenting beregnes eller vannes før den slås på igjen."
+          "calculate-note": "Bare beregn: vannbalanser og varigheter holdes oppdatert, men ingen ventil åpner, ingen programmer kjører og starthendelsen sendes ikke. Ingenting annet endres: tilbake på Beregn og vann fortsetter alt som før.",
+          "confirm-off": "Slå av Smart Irrigation? Det som vanner nå stopper med en gang, og ingenting beregnes eller vannes før den slås på igjen.",
+          "confirm-calculate": "Bare beregne? All pågående vanning stopper nå, og ingenting starter før du velger Beregn og vann igjen.",
+          "calculate-banner": "Bare beregn: ingen ventil åpner og ingen programmer kjører. Velg Beregn og vann under Innstillinger, Generelt for å ta opp igjen vanningen."
         }
       },
       "description": "Denne siden gir globale innstillinger.",
@@ -386,7 +392,9 @@
           "run-waits": "venter på {program}, ca. {start} til {end}",
           "run-skipped": "forventes hoppet over: regn varslet",
           "run-twice": "{zones} vannet to ganger på rad",
-          "run-suspended": "suspendert til {when}"
+          "run-suspended": "suspendert til {when}",
+          "headline-calculate": "Smart Irrigation bare beregner",
+          "sub-calculate": "Vannbalanser og varigheter holdes oppdatert, men ingenting vannes før du velger Beregn og vann igjen."
         },
         "decision": {
           "title": "Blir den hoppet over?",
@@ -1638,6 +1646,7 @@
     "no_trigger": "Ingen startutløser",
     "not_scheduled": "Står igjen, men ikke planlagt",
     "off": "Slått av",
+    "calculate_only": "Bare beregning",
     "watering_left": "vanner, {time} igjen",
     "paused_left": "på pause, {time} igjen",
     "soaking": "opptak, neste omgang kl. {when} ({pass}/{passes})",

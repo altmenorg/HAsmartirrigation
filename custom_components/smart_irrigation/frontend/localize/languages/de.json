@@ -296,10 +296,16 @@
         },
         "master-switch": {
           "title": "Smart Irrigation",
-          "label": "Berechnen und bewässern",
+          "mode": "Was Smart Irrigation tut",
+          "mode-water": "Berechnen und bewässern",
+          "mode-calculate": "Nur berechnen",
+          "mode-off": "Alles anhalten",
           "description": "Ausgeschaltet erfasst Smart Irrigation weiter seine Wetterdaten und pflegt seine Sensoren, berechnet aber nichts, lässt jede Wasserbilanz unverändert, öffnet kein Ventil und führt kein Programm aus. Beim Wiedereinschalten wird die Zeit, in der es aus war, nicht mitgezählt.",
           "off-note": "Ausgeschaltet: Es wird nichts berechnet und nichts bewässert. Die Wetterdaten werden weiter erfasst, und die Zeit, in der es aus ist, wird beim Wiedereinschalten nicht mitgezählt.",
-          "confirm-off": "Smart Irrigation ausschalten? Was gerade bewässert, stoppt sofort, und bis zum Wiedereinschalten wird nichts berechnet oder bewässert."
+          "calculate-note": "Nur berechnen: Wasserbilanzen und Dauern bleiben aktuell, aber kein Ventil öffnet, kein Programm läuft und das Startereignis wird nicht ausgelöst. Sonst wird nichts geändert: zurück auf Berechnen und bewässern läuft alles wie vorher weiter.",
+          "confirm-off": "Smart Irrigation ausschalten? Was gerade bewässert, stoppt sofort, und bis zum Wiedereinschalten wird nichts berechnet oder bewässert.",
+          "confirm-calculate": "Nur berechnen? Jede laufende Bewässerung stoppt jetzt, und nichts startet, bis du wieder Berechnen und bewässern wählst.",
+          "calculate-banner": "Nur berechnen: Kein Ventil öffnet und kein Programm läuft. Wähle Berechnen und bewässern unter Einstellungen, Allgemein, um die Bewässerung fortzusetzen."
         }
       },
       "description": "Diese Seite ist für allgemeine Einstellungen.",
@@ -386,7 +392,9 @@
           "run-waits": "wartet auf {program}, etwa {start} bis {end}",
           "run-skipped": "wird voraussichtlich übersprungen: Regen vorhergesagt",
           "run-twice": "{zones} zweimal hintereinander bewässert",
-          "run-suspended": "ausgesetzt bis {when}"
+          "run-suspended": "ausgesetzt bis {when}",
+          "headline-calculate": "Smart Irrigation berechnet nur",
+          "sub-calculate": "Wasserbilanzen und Dauern bleiben aktuell, aber es wird nichts bewässert, bis du wieder Berechnen und bewässern wählst."
         },
         "decision": {
           "title": "Wird übersprungen?",
@@ -1638,6 +1646,7 @@
     "no_trigger": "Kein Startauslöser",
     "not_scheduled": "Fällig, aber nicht eingeplant",
     "off": "Ausgeschaltet",
+    "calculate_only": "Nur berechnen",
     "watering_left": "bewässert, noch {time}",
     "paused_left": "pausiert, noch {time}",
     "soaking": "sickert ein, weiter um {when} (Durchgang {pass}/{passes})",

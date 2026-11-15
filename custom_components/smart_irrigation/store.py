@@ -80,6 +80,7 @@ from .const import (
     CONF_DEFAULT_SOIL_MOISTURE_THRESHOLD,
     CONF_DEFAULT_SUPPLIES,
     CONF_DEFAULT_USE_WEATHER_SERVICE,
+    CONF_DEFAULT_WATERING_ENABLED,
     CONF_DEFAULT_WATERING_PASSES,
     CONF_DEFAULT_WEATHER_SERVICE,
     CONF_DEFAULT_ZONE_INPUT_METHOD,
@@ -134,6 +135,7 @@ from .const import (
     CONF_UI_MODE_STANDARD,
     CONF_UNITS,
     CONF_USE_WEATHER_SERVICE,
+    CONF_WATERING_ENABLED,
     CONF_WATERING_PASSES,
     CONF_WEATHER_SERVICE,
     CONF_WEATHER_SERVICE_OWM,
@@ -757,6 +759,7 @@ class Config:
     # Full controller mode and its programs (see programs.py).
     full_controller = attr.ib(type=bool, default=CONF_DEFAULT_FULL_CONTROLLER)
     irrigation_enabled = attr.ib(type=bool, default=CONF_DEFAULT_IRRIGATION_ENABLED)
+    watering_enabled = attr.ib(type=bool, default=CONF_DEFAULT_WATERING_ENABLED)
     programs = attr.ib(
         type=list, default=attr.Factory(lambda: list(CONF_DEFAULT_PROGRAMS))
     )
@@ -1279,6 +1282,9 @@ class SmartIrrigationStorage:
                 ),
                 irrigation_enabled=data["config"].get(
                     CONF_IRRIGATION_ENABLED, CONF_DEFAULT_IRRIGATION_ENABLED
+                ),
+                watering_enabled=data["config"].get(
+                    CONF_WATERING_ENABLED, CONF_DEFAULT_WATERING_ENABLED
                 ),
                 full_controller=data["config"].get(
                     CONF_FULL_CONTROLLER, CONF_DEFAULT_FULL_CONTROLLER

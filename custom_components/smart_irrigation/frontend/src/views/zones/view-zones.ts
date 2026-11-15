@@ -46,6 +46,7 @@ import {
   fetchIrrigationInfo,
   putBackZone,
 } from "../../data/websockets";
+import { calculateOnlyNote } from "../../common/calculate-only";
 import { SubscribeMixin } from "../../subscribe-mixin";
 
 import {
@@ -3115,7 +3116,10 @@ class SmartIrrigationViewZones extends SubscribeMixin(LitElement) {
           ${localize("panels.zones.description", this.hass.language)}
         </div>
       </ha-card>
-
+      ${this.config?.irrigation_enabled !== false &&
+      this.config?.watering_enabled === false
+        ? calculateOnlyNote(this.hass.language)
+        : ""}
       ${repeat(
         this.zones,
         (zone) => zone.id ?? zone.name,

@@ -34,7 +34,7 @@ from .engine_binding import (
     method_of_engine,
     zone_has_engine,
 )
-from .master_switch import irrigation_off
+from .master_switch import irrigation_off, watering_off
 from .planning_sequence import sequence_planning
 from .presets import apply_preset, describe_zone
 from .skip_conditions import SkipConditionsMixin, thresholds_for_display
@@ -121,6 +121,7 @@ CONFIG_SAVE_SCHEMA = vol.Schema(
         vol.Optional(const.CONF_DIRECT_VALVE_CONTROL_ENABLED): cv.boolean,
         vol.Optional(const.CONF_FULL_CONTROLLER): cv.boolean,
         vol.Optional(const.CONF_IRRIGATION_ENABLED): cv.boolean,
+        vol.Optional(const.CONF_WATERING_ENABLED): cv.boolean,
         vol.Optional(const.CONF_PROGRAMS): vol.Coerce(list),
         vol.Optional(const.CONF_SUPPLIES): vol.Coerce(list),
         vol.Optional(const.CONF_ZONE_SEQUENCING): vol.In(
@@ -1340,6 +1341,8 @@ async def build_irrigation_info(hass: HomeAssistant, coordinator) -> dict:
         irrigation_info = {
             # False while the master switch is off: nothing below will start.
             "irrigation_enabled": not irrigation_off(coordinator.store),
+            # False while calculating only: calculated, but nothing starts.
+            "watering_enabled": not watering_off(coordinator.store),
             "next_irrigation_start": (
                 next_irrigation_start.isoformat() if next_irrigation_start else None
             ),

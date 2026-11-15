@@ -296,10 +296,16 @@
         },
         "master-switch": {
           "title": "Smart Irrigation",
-          "label": "Računaj in zalivaj",
+          "mode": "Kaj počne Smart Irrigation",
+          "mode-water": "Računaj in zalivaj",
+          "mode-calculate": "Samo računaj",
+          "mode-off": "Ustavi vse",
           "description": "Ko je izklopljen, Smart Irrigation še naprej zbira vremenske podatke in obdrži svoje senzorje, vendar ne računa ničesar, pusti vodno bilanco vsake cone nespremenjeno, ne odpre nobenega ventila in ne zažene nobenega programa. Ko ga znova vklopiš, se čas, ko je bil izklopljen, ne šteje.",
           "off-note": "Izklopljeno: nič se ne računa in nič se ne zaliva. Vremenski podatki se še naprej zbirajo, čas izklopa pa se ne bo štel, ko ga znova vklopiš.",
-          "confirm-off": "Izklopim Smart Irrigation? Zalivanje, ki poteka, se takoj ustavi, in nič se ne računa ali zaliva, dokler ga znova ne vklopiš."
+          "calculate-note": "Samo računanje: vodne bilance in trajanja ostajajo posodobljeni, a noben ventil se ne odpre, noben program se ne zažene in začetni dogodek se ne pošlje. Nič drugega se ne spremeni: nazaj na Računaj in zalivaj se vse nadaljuje kot prej.",
+          "confirm-off": "Izklopim Smart Irrigation? Zalivanje, ki poteka, se takoj ustavi, in nič se ne računa ali zaliva, dokler ga znova ne vklopiš.",
+          "confirm-calculate": "Samo računati? Vsako zalivanje, ki poteka, se zdaj ustavi in nič se ne zažene, dokler znova ne izberete Računaj in zalivaj.",
+          "calculate-banner": "Samo računanje: noben ventil se ne odpre in noben program se ne zažene. Za nadaljevanje izberite Računaj in zalivaj v Nastavitvah, Splošno."
         }
       },
       "description": "Ta stran vsebuje splošne nastavitve.",
@@ -386,7 +392,9 @@
           "run-waits": "čaka na {program}, približno od {start} do {end}",
           "run-skipped": "pričakovan preskok: napovedan dež",
           "run-twice": "{zones}: zalito dvakrat zapored",
-          "run-suspended": "zadržano do {when}"
+          "run-suspended": "zadržano do {when}",
+          "headline-calculate": "Smart Irrigation samo računa",
+          "sub-calculate": "Vodne bilance in trajanja ostajajo posodobljeni, a nič se ne zaliva, dokler znova ne izberete Računaj in zalivaj."
         },
         "decision": {
           "title": "Bo preskočeno?",
@@ -1638,6 +1646,7 @@
     "no_trigger": "Ni sprožilca zagona",
     "not_scheduled": "Potrebno, a ni načrtovano",
     "off": "Izklopljeno",
+    "calculate_only": "Samo računanje",
     "watering_left": "zalivanje, še {time}",
     "paused_left": "začasno ustavljeno, še {time}",
     "soaking": "vpijanje, naslednji prehod ob {when} ({pass}/{passes})",

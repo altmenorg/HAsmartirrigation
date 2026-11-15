@@ -296,10 +296,16 @@
         },
         "master-switch": {
           "title": "Smart Irrigation",
-          "label": "Laske ja kastele",
+          "mode": "Mitä Smart Irrigation tekee",
+          "mode-water": "Laske ja kastele",
+          "mode-calculate": "Vain laskenta",
+          "mode-off": "Pysäytä kaikki",
           "description": "Pois päältä Smart Irrigation hakee edelleen säätiedot ja pitää anturinsa, mutta ei laske mitään, jättää jokaisen vyöhykkeen vesitaseen ennalleen, ei avaa yhtään venttiiliä eikä aja yhtään ohjelmaa. Kun se kytketään taas päälle, pois päältä oltua aikaa ei lasketa.",
           "off-note": "Pois päältä: mitään ei lasketa eikä mitään kastella. Säätietojen haku jatkuu, eikä pois päältä oltua aikaa lasketa, kun kytket sen taas päälle.",
-          "confirm-off": "Kytketäänkö Smart Irrigation pois päältä? Käynnissä oleva kastelu pysähtyy heti, eikä mitään lasketa tai kastella ennen kuin se kytketään taas päälle."
+          "calculate-note": "Vain laskenta: vesitaseet ja kestot pysyvät ajan tasalla, mutta mikään venttiili ei aukea, mikään ohjelma ei käynnisty eikä aloitustapahtumaa lähetetä. Muuta ei muuteta: takaisin Laske ja kastele -tilaan kaikki jatkuu kuten ennen.",
+          "confirm-off": "Kytketäänkö Smart Irrigation pois päältä? Käynnissä oleva kastelu pysähtyy heti, eikä mitään lasketa tai kastella ennen kuin se kytketään taas päälle.",
+          "confirm-calculate": "Vain laskenta? Käynnissä oleva kastelu pysähtyy nyt, eikä mitään käynnisty ennen kuin valitset taas Laske ja kastele.",
+          "calculate-banner": "Vain laskenta: mikään venttiili ei aukea eikä mikään ohjelma käynnisty. Valitse Laske ja kastele kohdassa Asetukset, Yleiset jatkaaksesi kastelua."
         }
       },
       "description": "Tämä sivu tarjoaa yleiset asetukset.",
@@ -386,7 +392,9 @@
           "run-waits": "odottaa ohjelmaa {program}, noin {start}-{end}",
           "run-skipped": "odotetaan ohitettavan: sadetta ennustettu",
           "run-twice": "{zones} kastellaan kahdesti peräkkäin",
-          "run-suspended": "keskeytetty {when} asti"
+          "run-suspended": "keskeytetty {when} asti",
+          "headline-calculate": "Smart Irrigation vain laskee",
+          "sub-calculate": "Vesitaseet ja kestot pysyvät ajan tasalla, mutta mitään ei kastella ennen kuin valitset taas Laske ja kastele."
         },
         "decision": {
           "title": "Ohitetaanko se?",
@@ -1638,6 +1646,7 @@
     "no_trigger": "Ei aloitusliipaisinta",
     "not_scheduled": "Erääntynyt, mutta ei ajastettu",
     "off": "Pois päältä",
+    "calculate_only": "Vain laskenta",
     "watering_left": "kastellaan, {time} jäljellä",
     "paused_left": "tauolla, {time} jäljellä",
     "soaking": "imeytys, seuraava erä klo {when} ({pass}/{passes})",

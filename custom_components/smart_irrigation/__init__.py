@@ -81,7 +81,7 @@ from .hourly_et import solar_elevation_sin
 from .live_estimate import LiveEstimateMixin
 from .liveness import WeatherLivenessMixin
 from .llm_api import async_sync_llm_api
-from .master_switch import irrigation_off
+from .master_switch import irrigation_off, watering_off
 from .observed_watering import ObservedWateringMixin
 from .panel import async_register_panel, remove_panel
 from .program_adjust import ADJUST_PROGRAM_SCHEMA
@@ -1005,6 +1005,7 @@ class SmartIrrigationCoordinator(
         # schedulers below already write the changes to the store.
         was_full = getattr(self.store.config, const.CONF_FULL_CONTROLLER, False) is True
         was_off = irrigation_off(self.store)
+        was_watering = not watering_off(self.store)
         # Who starts the main program's cycle (its own schedules, or the start
         # trigger) before and after this change.
         was_scheduled = self.main_program_uses_schedules()
@@ -1053,9 +1054,10 @@ class SmartIrrigationCoordinator(
         ):
             _LOGGER.debug("calling register start event from async_update_config")
             await self.register_start_event()
-        if not was_off and data.get(const.CONF_IRRIGATION_ENABLED) is False:
-            # Switched off: whatever is watering or waiting stops now.
-            _LOGGER.info("Smart Irrigation switched off: everything watering stops")
+        if was_watering and watering_off(self.store):
+            # Switched off, or to calculating only: whatever is watering or
+            # waiting stops now.
+            _LOGGER.info("Smart Irrigation no longer waters: everything watering stops")
             await self.async_stop_watering()
         if const.CONF_AI_API_ENABLED in data:
             async_sync_llm_api(self.hass, data.get(const.CONF_AI_API_ENABLED))

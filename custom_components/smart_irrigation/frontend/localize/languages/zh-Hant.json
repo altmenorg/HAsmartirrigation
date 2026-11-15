@@ -296,10 +296,16 @@
         },
         "master-switch": {
           "title": "Smart Irrigation",
-          "label": "計算並澆水",
+          "mode": "Smart Irrigation 做什麼",
+          "mode-water": "計算並澆水",
+          "mode-calculate": "僅計算",
+          "mode-off": "全部停止",
           "description": "關閉時，Smart Irrigation 仍會持續讀取氣象資料並保留其感測器，但不會進行任何計算、不會變動任何水量平衡、不會開啟任何閥門，也不會執行任何程式。重新開啟後，關閉期間的時間不會被計入。",
           "off-note": "已關閉：不進行任何計算，也不澆水。氣象讀數會持續進行，重新開啟時不會計入關閉期間的時間。",
-          "confirm-off": "要關閉 Smart Irrigation 嗎？正在澆水的項目會立即停止，在重新開啟之前不會進行任何計算或澆水。"
+          "calculate-note": "僅計算：水量平衡和時長保持更新，但不會打開任何閥門、不會執行任何程式，也不會傳送開始事件。其他都不變：切回計算並澆水後，一切照舊繼續。",
+          "confirm-off": "要關閉 Smart Irrigation 嗎？正在澆水的項目會立即停止，在重新開啟之前不會進行任何計算或澆水。",
+          "confirm-calculate": "僅計算？正在進行的澆水會立即停止，在你重新選擇計算並澆水之前不會開始任何澆水。",
+          "calculate-banner": "僅計算：不會打開任何閥門，也不會執行任何程式。在設定 > 一般中選擇計算並澆水即可恢復澆水。"
         }
       },
       "description": "此頁面提供全域設定。",
@@ -386,7 +392,9 @@
           "run-waits": "等待 {program}，約 {start} 至 {end}",
           "run-skipped": "預計略過：預報有雨",
           "run-twice": "{zones} 連續澆水兩次",
-          "run-suspended": "已擱置至 {when}"
+          "run-suspended": "已擱置至 {when}",
+          "headline-calculate": "Smart Irrigation 僅在計算",
+          "sub-calculate": "水量平衡和時長保持更新，但在你重新選擇計算並澆水之前不會澆水。"
         },
         "decision": {
           "title": "會被略過嗎？",
@@ -1638,6 +1646,7 @@
     "no_trigger": "沒有啟動觸發條件",
     "not_scheduled": "應澆水但未排程",
     "off": "已關閉",
+    "calculate_only": "僅計算",
     "watering_left": "澆水中，剩餘 {time}",
     "paused_left": "已暫停，剩餘 {time}",
     "soaking": "浸潤中，下一輪於 {when}（{pass}/{passes}）",

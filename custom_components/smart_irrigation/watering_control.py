@@ -30,7 +30,7 @@ from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 
 from . import const
-from .master_switch import irrigation_off
+from .master_switch import watering_off
 from .programs import find_program
 
 _LOGGER = logging.getLogger(__name__)
@@ -502,7 +502,7 @@ class WateringControlMixin:
             is not True
         ):
             return False
-        if irrigation_off(config):
+        if watering_off(config):
             _LOGGER.info(
                 "Smart Irrigation is switched off: zone %s is not watered", zone_id
             )

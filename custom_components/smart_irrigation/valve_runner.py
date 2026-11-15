@@ -41,7 +41,7 @@ from homeassistant.helpers import entity_registry as er
 
 from . import const
 from .delivery import own_entities
-from .master_switch import irrigation_off
+from .master_switch import watering_off
 from .observed_watering import NO_FLOW_GRACE
 from .program_runner import ProgramRunnerMixin
 from .program_status import ProgramStatusMixin
@@ -1519,7 +1519,7 @@ class ValveRunnerMixin(
         cfg = self.store.config
         if getattr(cfg, const.CONF_DIRECT_VALVE_CONTROL_ENABLED, False) is not True:
             return
-        if irrigation_off(cfg):
+        if watering_off(cfg):
             _LOGGER.info("Smart Irrigation is switched off: no valve is opened")
             return
         if getattr(cfg, const.CONF_FULL_CONTROLLER, False) is True:
@@ -2513,7 +2513,7 @@ class ValveRunnerMixin(
         owed = self._owed_records()
         if not runs and not cycle and not program_run and not owed:
             return
-        if irrigation_off(self.store):
+        if watering_off(self.store):
             await self._drop_interrupted_runs(runs)
             return
         if runs:

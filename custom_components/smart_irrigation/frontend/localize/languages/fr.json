@@ -296,10 +296,16 @@
         },
         "master-switch": {
           "title": "Smart Irrigation",
-          "label": "Calculer et arroser",
+          "mode": "Ce que fait Smart Irrigation",
+          "mode-water": "Calculer et arroser",
+          "mode-calculate": "Calculer seulement",
+          "mode-off": "Tout arrêter",
           "description": "Désactivé, Smart Irrigation continue ses relevés météo et garde ses capteurs, mais ne calcule rien, laisse le bilan hydrique de chaque zone tel quel, n'ouvre aucune vanne et ne lance aucun programme. Une fois réactivé, le temps passé à l'arrêt n'est pas compté.",
           "off-note": "Désactivé : rien n'est calculé et rien n'est arrosé. Les relevés météo continuent, et le temps passé à l'arrêt ne sera pas compté quand tu le réactiveras.",
-          "confirm-off": "Désactiver Smart Irrigation ? Tout arrosage en cours s'arrête maintenant, et rien n'est calculé ni arrosé jusqu'à sa réactivation."
+          "calculate-note": "Calcul seulement : les bilans hydriques et les durées restent à jour, mais aucune vanne ne s'ouvre, aucun programme ne se lance et l'événement de départ n'est pas envoyé. Rien d'autre n'est modifié : de retour sur Calculer et arroser, tout reprend comme avant.",
+          "confirm-off": "Désactiver Smart Irrigation ? Tout arrosage en cours s'arrête maintenant, et rien n'est calculé ni arrosé jusqu'à sa réactivation.",
+          "confirm-calculate": "Calculer seulement ? Tout arrosage en cours s'arrête maintenant, et rien ne démarre jusqu'à ce que tu choisisses de nouveau Calculer et arroser.",
+          "calculate-banner": "Calcul seulement : aucune vanne ne s'ouvre et aucun programme ne se lance. Choisis Calculer et arroser dans Réglages, Général pour reprendre l'arrosage."
         }
       },
       "description": "Cette page fournit les réglages globaux.",
@@ -386,7 +392,9 @@
           "run-waits": "attend {program}, environ de {start} à {end}",
           "run-skipped": "devrait être sauté : pluie prévue",
           "run-twice": "{zones} arrosées deux fois de suite",
-          "run-suspended": "suspendu jusqu'au {when}"
+          "run-suspended": "suspendu jusqu'au {when}",
+          "headline-calculate": "Smart Irrigation calcule seulement",
+          "sub-calculate": "Les bilans hydriques et les durées restent à jour, mais rien n'est arrosé jusqu'à ce que tu choisisses de nouveau Calculer et arroser."
         },
         "decision": {
           "title": "L'arrosage sera-t-il annulé ?",
@@ -1638,6 +1646,7 @@
     "no_trigger": "Aucun déclencheur de départ",
     "not_scheduled": "À arroser, mais aucun départ programmé",
     "off": "Désactivé",
+    "calculate_only": "Calcul seulement",
     "watering_left": "arrosage en cours, {time} restant",
     "paused_left": "en pause, {time} restant",
     "soaking": "absorption, prochaine passe à {when} ({pass}/{passes})",

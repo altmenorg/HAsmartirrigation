@@ -296,10 +296,16 @@
         },
         "master-switch": {
           "title": "Smart Irrigation",
-          "label": "Počítať a zalievať",
+          "mode": "Čo Smart Irrigation robí",
+          "mode-water": "Počítať a zavlažovať",
+          "mode-calculate": "Len počítať",
+          "mode-off": "Všetko zastaviť",
           "description": "Keď je vypnuté, Smart Irrigation ďalej zbiera údaje o počasí a ponecháva si svoje senzory, ale nič nepočíta, necháva vodnú bilanciu každej zóny bez zmeny, neotvára žiadny ventil a nespúšťa žiadny program. Po opätovnom zapnutí sa čas, keď bolo vypnuté, nezapočítava.",
           "off-note": "Vypnuté: nič sa nepočíta a nič sa nezalieva. Údaje o počasí sa zbierajú ďalej a čas vypnutia sa nezapočíta, keď ho znova zapnete.",
-          "confirm-off": "Vypnúť Smart Irrigation? Prebiehajúce zalievanie sa hneď zastaví a nič sa nepočíta ani nezalieva, kým sa znova nezapne."
+          "calculate-note": "Len počítanie: vodné bilancie a doby zostávajú aktuálne, ale žiadny ventil sa neotvorí, žiadny program sa nespustí a štartovacia udalosť sa neodošle. Nič iné sa nemení: späť na Počítať a zavlažovať všetko pokračuje ako predtým.",
+          "confirm-off": "Vypnúť Smart Irrigation? Prebiehajúce zalievanie sa hneď zastaví a nič sa nepočíta ani nezalieva, kým sa znova nezapne.",
+          "confirm-calculate": "Len počítať? Prebiehajúce zavlažovanie sa teraz zastaví a nič sa nespustí, kým znova nezvolíte Počítať a zavlažovať.",
+          "calculate-banner": "Len počítanie: žiadny ventil sa neotvorí a žiadny program sa nespustí. Na obnovenie zvoľte Počítať a zavlažovať v Nastaveniach, Všeobecné."
         }
       },
       "description": "Táto stránka poskytuje globálne nastavenia.",
@@ -386,7 +392,9 @@
           "run-waits": "čaká na {program}, približne {start} až {end}",
           "run-skipped": "očakáva sa vynechanie: predpoveď dažďa",
           "run-twice": "{zones}: zavlažené dvakrát po sebe",
-          "run-suspended": "odložený do {when}"
+          "run-suspended": "odložený do {when}",
+          "headline-calculate": "Smart Irrigation len počíta",
+          "sub-calculate": "Vodné bilancie a doby zostávajú aktuálne, ale nič sa nezavlažuje, kým znova nezvolíte Počítať a zavlažovať."
         },
         "decision": {
           "title": "Bude vynechané?",
@@ -1638,6 +1646,7 @@
     "no_trigger": "Žiadny spúšťač štartu",
     "not_scheduled": "Na rade, ale nenaplánované",
     "off": "Vypnuté",
+    "calculate_only": "Len počíta",
     "watering_left": "zavlažuje sa, zostáva {time}",
     "paused_left": "pozastavené, zostáva {time}",
     "soaking": "vsakovanie, ďalšia dávka o {when} ({pass}/{passes})",

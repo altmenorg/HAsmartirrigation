@@ -40,7 +40,7 @@ from homeassistant.helpers.event import async_track_point_in_utc_time
 from homeassistant.helpers.sun import get_astral_event_date
 
 from . import const
-from .master_switch import irrigation_off
+from .master_switch import watering_off
 from .programs import (
     drop_below_deficit,
     find_program,
@@ -301,7 +301,7 @@ class ProgramSchedulerMixin:
         ):
             await self.register_program_schedules()
             return
-        if irrigation_off(config):
+        if watering_off(config):
             # Placed again for its next occurrence, which may find it switched
             # on; this one does not run.
             _LOGGER.info(

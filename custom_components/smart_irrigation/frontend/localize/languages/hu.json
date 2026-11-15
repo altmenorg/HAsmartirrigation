@@ -296,10 +296,16 @@
         },
         "master-switch": {
           "title": "Smart Irrigation",
-          "label": "Számolás és öntözés",
+          "mode": "Mit csinál a Smart Irrigation",
+          "mode-water": "Számol és öntöz",
+          "mode-calculate": "Csak számol",
+          "mode-off": "Minden leállítása",
           "description": "Kikapcsolva a Smart Irrigation továbbra is gyűjti az időjárási adatokat és megtartja az érzékelőit, de nem számol semmit, minden zóna vízmérlegét változatlanul hagyja, egy szelepet sem nyit ki, és egy programot sem futtat. Újra bekapcsolva a kikapcsolt időt nem számítja bele.",
           "off-note": "Kikapcsolva: semmi sem számolódik, és semmi sem öntöz. Az időjárási adatok gyűjtése folytatódik, és a kikapcsolt idő nem számít bele, amikor újra bekapcsolod.",
-          "confirm-off": "Kikapcsolod a Smart Irrigationt? Ami most öntöz, azonnal leáll, és semmi sem számolódik vagy öntöz, amíg újra be nem kapcsolod."
+          "calculate-note": "Csak számol: a vízmérlegek és az időtartamok naprakészek maradnak, de egyik szelep sem nyílik ki, egyik program sem indul, és az indítási esemény sem megy ki. Más nem változik: a Számol és öntöz módra visszaváltva minden úgy folytatódik, mint előtte.",
+          "confirm-off": "Kikapcsolod a Smart Irrigationt? Ami most öntöz, azonnal leáll, és semmi sem számolódik vagy öntöz, amíg újra be nem kapcsolod.",
+          "confirm-calculate": "Csak számoljon? Minden folyamatban lévő öntözés most leáll, és semmi sem indul, amíg újra a Számol és öntöz módot nem választod.",
+          "calculate-banner": "Csak számol: egyik szelep sem nyílik ki, és egyik program sem indul. Az öntözés folytatásához válaszd a Számol és öntöz módot a Beállítások, Általános oldalon."
         }
       },
       "description": "Ez az oldal globális beállításokat biztosít.",
@@ -386,7 +392,9 @@
           "run-waits": "vár erre: {program}, kb. {start} és {end} között",
           "run-skipped": "várhatóan kimarad: esőelőrejelzés",
           "run-twice": "{zones}: kétszer egymás után öntözve",
-          "run-suspended": "felfüggesztve eddig: {when}"
+          "run-suspended": "felfüggesztve eddig: {when}",
+          "headline-calculate": "A Smart Irrigation csak számol",
+          "sub-calculate": "A vízmérlegek és az időtartamok naprakészek maradnak, de semmit sem öntöz, amíg újra a Számol és öntöz módot nem választod."
         },
         "decision": {
           "title": "Ki lesz hagyva?",
@@ -1638,6 +1646,7 @@
     "no_trigger": "Nincs indítási kiváltó",
     "not_scheduled": "Esedékes, de nincs beütemezve",
     "off": "Kikapcsolva",
+    "calculate_only": "Csak számol",
     "watering_left": "öntözés, {time} van hátra",
     "paused_left": "szünetel, {time} van hátra",
     "soaking": "beszivárgás, következő szakasz: {when} ({pass}/{passes})",

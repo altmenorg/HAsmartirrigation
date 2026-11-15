@@ -296,10 +296,16 @@
         },
         "master-switch": {
           "title": "Smart Irrigation",
-          "label": "Obliczaj i podlewaj",
+          "mode": "Co robi Smart Irrigation",
+          "mode-water": "Obliczaj i podlewaj",
+          "mode-calculate": "Tylko obliczaj",
+          "mode-off": "Zatrzymaj wszystko",
           "description": "Po wyłączeniu Smart Irrigation nadal pobiera dane pogodowe i zachowuje swoje czujniki, ale niczego nie oblicza, zostawia bilans wodny każdej strefy bez zmian, nie otwiera żadnego zaworu i nie uruchamia żadnego programu. Po ponownym włączeniu czas wyłączenia nie jest liczony.",
           "off-note": "Wyłączone: nic nie jest obliczane ani podlewane. Dane pogodowe są nadal pobierane, a czas wyłączenia nie zostanie policzony, gdy włączysz je ponownie.",
-          "confirm-off": "Wyłączyć Smart Irrigation? Trwające podlewanie zatrzyma się teraz, a nic nie będzie obliczane ani podlewane do ponownego włączenia."
+          "calculate-note": "Tylko obliczanie: bilanse wodne i czasy pozostają aktualne, ale żaden zawór się nie otwiera, żaden program nie startuje i zdarzenie startu nie jest wysyłane. Nic innego się nie zmienia: po powrocie do Obliczaj i podlewaj wszystko działa jak wcześniej.",
+          "confirm-off": "Wyłączyć Smart Irrigation? Trwające podlewanie zatrzyma się teraz, a nic nie będzie obliczane ani podlewane do ponownego włączenia.",
+          "confirm-calculate": "Tylko obliczać? Każde trwające podlewanie zatrzyma się teraz i nic nie wystartuje, dopóki znów nie wybierzesz Obliczaj i podlewaj.",
+          "calculate-banner": "Tylko obliczanie: żaden zawór się nie otwiera i żaden program nie startuje. Wybierz Obliczaj i podlewaj w Ustawieniach, Ogólne, aby wznowić podlewanie."
         }
       },
       "description": "Ta strona zawiera ustawienia globalne.",
@@ -386,7 +392,9 @@
           "run-waits": "czeka na {program}, mniej więcej od {start} do {end}",
           "run-skipped": "oczekiwane pominięcie: prognozowany deszcz",
           "run-twice": "{zones}: podlewane dwa razy z rzędu",
-          "run-suspended": "zawieszony do {when}"
+          "run-suspended": "zawieszony do {when}",
+          "headline-calculate": "Smart Irrigation tylko oblicza",
+          "sub-calculate": "Bilanse wodne i czasy pozostają aktualne, ale nic nie jest podlewane, dopóki znów nie wybierzesz Obliczaj i podlewaj."
         },
         "decision": {
           "title": "Czy zostanie pominięte?",
@@ -1638,6 +1646,7 @@
     "no_trigger": "Brak wyzwalacza startu",
     "not_scheduled": "Należne, ale niezaplanowane",
     "off": "Wyłączone",
+    "calculate_only": "Tylko obliczanie",
     "watering_left": "podlewanie, pozostało {time}",
     "paused_left": "wstrzymane, pozostało {time}",
     "soaking": "wsiąkanie, następne przejście o {when} ({pass}/{passes})",

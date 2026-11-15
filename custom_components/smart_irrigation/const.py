@@ -108,6 +108,10 @@ CONF_DEFAULT_FULL_CONTROLLER = False
 # bucket as it is, opens no valve and runs no program (see master_switch.py).
 CONF_IRRIGATION_ENABLED = "irrigation_enabled"
 CONF_DEFAULT_IRRIGATION_ENABLED = True
+# Off with the master switch on: Smart Irrigation calculates and keeps every
+# balance and duration current, but starts no watering (master_switch.py).
+CONF_WATERING_ENABLED = "watering_enabled"
+CONF_DEFAULT_WATERING_ENABLED = True
 # The programs of the full controller: an ordered list of dicts (see programs.py).
 CONF_PROGRAMS = "programs"
 CONF_DEFAULT_PROGRAMS = []

@@ -79,7 +79,7 @@ def test_watering_now_reads_yes_or_no(lang, on, off):
 @pytest.mark.parametrize("lang", ["en", "de"])
 def test_the_master_switch_has_the_panels_name(lang):
     entity = _load(ENTITIES, lang)["entity"]["switch"]["irrigation_enabled"]["name"]
-    panel = _get(_load(PANEL, lang), "panels.general.cards.master-switch.label")
+    panel = _get(_load(PANEL, lang), "panels.general.cards.master-switch.mode-water")
     assert entity == panel
 
 

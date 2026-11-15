@@ -44,6 +44,7 @@ import "./program-timeline";
 import { Timeline } from "../../data/timeline";
 import { programFromYaml, programToYaml } from "../../data/program-yaml";
 import { notifyTargets } from "../../data/notify-targets";
+import { calculateOnlyNote } from "../../common/calculate-only";
 import "../../dialogs/trigger-dialog";
 import { askConfirmation } from "../../dialogs/confirmation-dialog";
 import {
@@ -790,6 +791,18 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     }
   }
 
+  /** While calculating only, said above what it holds. */
+  renderCalculateOnlyNote() {
+    if (
+      !this.config ||
+      !this.hass ||
+      this.config.irrigation_enabled === false ||
+      this.config.watering_enabled !== false
+    )
+      return html``;
+    return calculateOnlyNote(this.hass.language);
+  }
+
   /** One page of the Watering tab. ``triggers`` is the start trigger card. */
   renderWateringSection(triggers: TemplateResult) {
     if (!this.config || !this.hass) return html``;
@@ -800,18 +813,19 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
         </div>
       </ha-card>`;
     }
+    const held = this.renderCalculateOnlyNote();
     if (this.section === "planning") {
-      return html`${this.renderPlanningCard()}`;
+      return html`${held}${this.renderPlanningCard()}`;
     }
     if (this.section === "supplies") {
-      return html`${this.renderSuppliesCard()}`;
+      return html`${held}${this.renderSuppliesCard()}`;
     }
     // The main program, everything of it in one card (how it starts, the order
     // and pauses of its zones, running it), then the start trigger it uses
     // when it has no schedule of its own, then the other programs. Its
     // settings used to come after all the other programs, and nothing showed
     // which "Run now" belonged to which program (#893).
-    return html`${this.renderProgramsCard("main")} ${triggers}
+    return html`${held}${this.renderProgramsCard("main")} ${triggers}
     ${this.renderProgramsCard("others")}`;
   }
 
@@ -3870,29 +3884,61 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     const lang = this.hass.language;
     const t = (key: string) =>
       localize(`panels.general.cards.master-switch.${key}`, lang);
-    const on = this.config.irrigation_enabled !== false;
+    // One list for two settings: off stops everything, calculating only
+    // holds the watering and keeps the balances current.
+    const mode =
+      this.config.irrigation_enabled === false
+        ? "off"
+        : this.config.watering_enabled === false
+          ? "calculate"
+          : "water";
+    const modes = ["water", "calculate", "off"] as const;
     return html`
       <ha-card class="master-switch" header="${t("title")}">
         <div class="card-content">
           <div class="setting-row">
-            <div class="setting-label">${t("label")}</div>
-            <ha-switch
-              .checked=${on}
+            <div class="setting-label">${t("mode")}</div>
+            <select
+              class="field"
               @change=${async (e: Event) => {
-                const target = e.target as any;
-                const enable = target.checked === true;
-                if (!enable && !(await this._ask(t("confirm-off")))) {
-                  target.checked = true;
+                const target = e.target as HTMLSelectElement;
+                const next = target.value as (typeof modes)[number];
+                const ask =
+                  next === "off"
+                    ? t("confirm-off")
+                    : next === "calculate" && mode === "water"
+                      ? t("confirm-calculate")
+                      : null;
+                if (ask && !(await this._ask(ask))) {
+                  target.value = mode;
                   return;
                 }
-                this.handleConfigChange({ irrigation_enabled: enable })
+                this.handleConfigChange(
+                  next === "off"
+                    ? { irrigation_enabled: false }
+                    : {
+                        irrigation_enabled: true,
+                        watering_enabled: next === "water",
+                      },
+                )
                   .then(() => this._fetchData())
                   .catch(() => undefined);
               }}
-            ></ha-switch>
+            >
+              ${modes.map(
+                (value) =>
+                  html`<option value=${value} ?selected=${value === mode}>
+                    ${t(`mode-${value}`)}
+                  </option>`,
+              )}
+            </select>
           </div>
           <div class="setting-note">
-            ${on ? t("description") : t("off-note")}
+            ${mode === "off"
+              ? t("off-note")
+              : mode === "calculate"
+                ? t("calculate-note")
+                : t("description")}
           </div>
         </div>
       </ha-card>
@@ -4847,6 +4893,20 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       .setting-note {
         padding: 10px 0 12px;
         line-height: 1.4;
+      }
+
+      /* What the switch just above means: set as the hint under a label is
+         (the Panel card), not as a paragraph of its own under a divider. */
+      .setting-row:has(+ .setting-note),
+      .setting-row:has(+ .setting-help) {
+        border-bottom: 0;
+      }
+      .setting-row + .setting-note,
+      .setting-help {
+        font-size: 0.8rem;
+        color: var(--secondary-text-color);
+        line-height: 1.4;
+        padding: 0 0 12px;
       }
 
       /* number + unit-select on a single line (e.g. update interval) */

@@ -296,10 +296,16 @@
         },
         "master-switch": {
           "title": "Smart Irrigation",
-          "label": "Berekenen en beregenen",
+          "mode": "Wat Smart Irrigation doet",
+          "mode-water": "Berekenen en beregenen",
+          "mode-calculate": "Alleen berekenen",
+          "mode-off": "Alles stoppen",
           "description": "Uitgeschakeld blijft Smart Irrigation weersinformatie verzamelen en houdt het zijn sensoren, maar berekent het niets, laat het de waterbalans van elke zone zoals die is, opent het geen ventiel en voert het geen programma uit. Weer ingeschakeld telt de tijd dat het uit stond niet mee.",
           "off-note": "Uitgeschakeld: er wordt niets berekend en niets beregend. De weersinformatie wordt verder verzameld, en de tijd dat het uit staat telt niet mee als je het weer inschakelt.",
-          "confirm-off": "Smart Irrigation uitschakelen? Wat nu beregent stopt meteen, en er wordt niets berekend of beregend tot het weer ingeschakeld wordt."
+          "calculate-note": "Alleen berekenen: waterbalansen en duren blijven actueel, maar geen klep gaat open, geen programma loopt en het startevent wordt niet verstuurd. Verder verandert er niets: terug op Berekenen en beregenen gaat alles verder zoals voorheen.",
+          "confirm-off": "Smart Irrigation uitschakelen? Wat nu beregent stopt meteen, en er wordt niets berekend of beregend tot het weer ingeschakeld wordt.",
+          "confirm-calculate": "Alleen berekenen? Elke lopende beregening stopt nu, en niets start tot je weer Berekenen en beregenen kiest.",
+          "calculate-banner": "Alleen berekenen: geen klep gaat open en geen programma loopt. Kies Berekenen en beregenen in Instellingen, Algemeen om de beregening te hervatten."
         }
       },
       "description": "Dit zijn de algemene instellingen.",
@@ -386,7 +392,9 @@
           "run-waits": "wacht op {program}, ongeveer van {start} tot {end}",
           "run-skipped": "naar verwachting overgeslagen: regen verwacht",
           "run-twice": "{zones} twee keer achter elkaar bewaterd",
-          "run-suspended": "opgeschort tot {when}"
+          "run-suspended": "opgeschort tot {when}",
+          "headline-calculate": "Smart Irrigation berekent alleen",
+          "sub-calculate": "Waterbalansen en duren blijven actueel, maar er wordt niets beregend tot je weer Berekenen en beregenen kiest."
         },
         "decision": {
           "title": "Wordt de ronde overgeslagen?",
@@ -1638,6 +1646,7 @@
     "no_trigger": "Geen starttrigger",
     "not_scheduled": "Nodig, maar niet ingepland",
     "off": "Uitgeschakeld",
+    "calculate_only": "Alleen berekenen",
     "watering_left": "bewateren, nog {time}",
     "paused_left": "gepauzeerd, nog {time}",
     "soaking": "intrekken, volgende beurt om {when} ({pass}/{passes})",

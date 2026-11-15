@@ -296,10 +296,16 @@
         },
         "master-switch": {
           "title": "Smart Irrigation",
-          "label": "Calculate and water",
+          "mode": "What Smart Irrigation does",
+          "mode-water": "Calculate and water",
+          "mode-calculate": "Calculate only",
+          "mode-off": "Stop everything",
           "description": "Off, Smart Irrigation keeps taking its weather readings and keeps its sensors, but calculates nothing, leaves every water balance as it is, opens no valve and runs no program. Switched on again, the time it was off is not counted.",
           "off-note": "Switched off: nothing is calculated and nothing is watered. The weather readings carry on, and the time it is off will not be counted when it is switched on again.",
-          "confirm-off": "Switch Smart Irrigation off? Whatever is watering stops now, and nothing is calculated or watered until it is switched on again."
+          "calculate-note": "Calculating only: the water balances and durations stay current, but no valve opens, no program runs and the start event is not fired. Nothing else is changed: back to Calculate and water, everything carries on as it was.",
+          "confirm-off": "Switch Smart Irrigation off? Whatever is watering stops now, and nothing is calculated or watered until it is switched on again.",
+          "confirm-calculate": "Calculate only? Whatever is watering stops now, and nothing starts until you choose Calculate and water again.",
+          "calculate-banner": "Calculating only: no valve opens and no program runs. Choose Calculate and water in Settings, General to take the watering up again."
         }
       },
       "description": "This page provides global settings.",
@@ -386,7 +392,9 @@
           "run-waits": "waits for {program}, about {start} to {end}",
           "run-skipped": "expected to be skipped: rain forecast",
           "run-twice": "{zones} watered twice in a row",
-          "run-suspended": "suspended until {when}"
+          "run-suspended": "suspended until {when}",
+          "headline-calculate": "Smart Irrigation is calculating only",
+          "sub-calculate": "The water balances and durations stay current, but nothing is watered until you choose Calculate and water again."
         },
         "decision": {
           "title": "Will it be skipped?",
@@ -1638,6 +1646,7 @@
     "no_trigger": "No start trigger",
     "not_scheduled": "Owed, but not scheduled",
     "off": "Switched off",
+    "calculate_only": "Calculating only",
     "watering_left": "watering, {time} left",
     "paused_left": "paused, {time} left",
     "soaking": "soaking, next pass at {when} ({pass}/{passes})",

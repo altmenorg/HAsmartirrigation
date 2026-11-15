@@ -25,3 +25,22 @@ def irrigation_off(config) -> bool:
     else:
         value = getattr(config, const.CONF_IRRIGATION_ENABLED, None)
     return value is False
+
+
+def watering_off(config) -> bool:
+    """Whether nothing may start watering: switched off, or calculating only.
+
+    "Calculate only" keeps the balances and durations current and holds every
+    way a watering starts: the valves driven by Smart Irrigation, the programs
+    and the start event an automation of one's own listens to. Nothing else is
+    changed, so "Calculate and water" takes everything up as it was.
+    """
+    if irrigation_off(config):
+        return True
+    if not isinstance(config, dict) and hasattr(config, "config"):
+        config = getattr(config, "config", None)
+    if isinstance(config, dict):
+        value = config.get(const.CONF_WATERING_ENABLED)
+    else:
+        value = getattr(config, const.CONF_WATERING_ENABLED, None)
+    return value is False
