@@ -1669,5 +1669,15 @@
     },
     "title_leak": "Vatten rinner med alla ventiler stängda",
     "leak_line": "{litres} L räknade med ventilerna stängda ({zones}). Kontrollera läckage eller en ventil som står öppen."
+  },
+  "week": {
+    "title": "De kommande dagarna",
+    "help": "Varje bevattning är ett block i programmets färg; skrafferat, infiltrationspauserna; blekt, en bevattning vädret kan hindra. Håll över ett block för dess zoner, klicka för att öppna programmet. Kommande dagar beror på prognosen.",
+    "days": "{n} dagar",
+    "today": "I dag",
+    "tomorrow": "I morgon",
+    "held": "Vädret kan hindra den",
+    "nothing": "Inget att vattna",
+    "empty": "Inget program planerat."
   }
 }

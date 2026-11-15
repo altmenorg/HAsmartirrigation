@@ -1669,5 +1669,15 @@
     },
     "title_leak": "Scorre acqua con tutte le valvole chiuse",
     "leak_line": "{litres} L contati a valvole chiuse ({zones}). Controlla se c'è una perdita o una valvola rimasta aperta."
+  },
+  "week": {
+    "title": "I prossimi giorni",
+    "help": "Ogni irrigazione è un blocco del colore del suo programma; tratteggiate le pause di assorbimento; sbiadita un'irrigazione che il meteo può impedire. Passa su un blocco per le sue zone, clicca per aprire il programma. I giorni futuri dipendono dalla previsione.",
+    "days": "{n} giorni",
+    "today": "Oggi",
+    "tomorrow": "Domani",
+    "held": "Il meteo potrebbe impedirla",
+    "nothing": "Niente da irrigare",
+    "empty": "Nessun programma previsto."
   }
 }

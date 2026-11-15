@@ -1669,5 +1669,15 @@
     },
     "title_leak": "De l'eau coule alors que toutes les vannes sont fermées",
     "leak_line": "{litres} L comptés vannes fermées ({zones}). Vérifiez s'il y a une fuite ou une vanne restée ouverte."
+  },
+  "week": {
+    "title": "Les prochains jours",
+    "help": "Chaque arrosage est un bloc, de la couleur de son programme ; hachurées, les pauses d'infiltration ; estompé, un arrosage que la météo risque d'empêcher. Survole un bloc pour ses zones, clique pour ouvrir son programme. Les jours à venir dépendent de la prévision.",
+    "days": "{n} jours",
+    "today": "Aujourd'hui",
+    "tomorrow": "Demain",
+    "held": "La météo risque de l'empêcher",
+    "nothing": "Rien à arroser",
+    "empty": "Aucun programme n'est prévu."
   }
 }

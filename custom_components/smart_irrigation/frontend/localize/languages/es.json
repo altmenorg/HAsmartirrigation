@@ -1669,5 +1669,15 @@
     },
     "title_leak": "Corre agua con todas las válvulas cerradas",
     "leak_line": "{litres} L contados con las válvulas cerradas ({zones}). Comprueba si hay una fuga o una válvula abierta."
+  },
+  "week": {
+    "title": "Los próximos días",
+    "help": "Cada riego es un bloque del color de su programa; rayadas, las pausas de infiltración; atenuado, un riego que el tiempo puede impedir. Pasa sobre un bloque para ver sus zonas, haz clic para abrir su programa. Los días futuros dependen de la previsión.",
+    "days": "{n} días",
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "held": "El tiempo puede impedirlo",
+    "nothing": "Nada que regar",
+    "empty": "No hay ningún programa previsto."
   }
 }

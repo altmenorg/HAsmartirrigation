@@ -1669,5 +1669,15 @@
     },
     "title_leak": "Water is flowing with every valve closed",
     "leak_line": "{litres} L counted with every valve closed ({zones}). Check for a leak or a valve stuck open."
+  },
+  "week": {
+    "title": "The next days",
+    "help": "Each run a block, its colour its program's; hatched, the soaks; faded, a run the weather may hold back. Hover a block for its zones, click it to open its program. Days ahead depend on the forecast.",
+    "days": "{n} days",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "held": "The weather may hold it back",
+    "nothing": "Nothing to water",
+    "empty": "No program is planned."
   }
 }

@@ -41,6 +41,7 @@ import {
 } from "../../helpers";
 import { loadHaForm, loadHaYamlEditor } from "../../load-ha-elements";
 import "./program-timeline";
+import "./week-view";
 import { Timeline } from "../../data/timeline";
 import { programFromYaml, programToYaml } from "../../data/program-yaml";
 import { notifyTargets } from "../../data/notify-targets";
@@ -199,6 +200,9 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) startSource?: string;
   private _liveTimer?: number;
   private _unfolded = UNFOLDED;
+
+  // How many days the week view shows (3, 7 or 14).
+  private _weekDays = 7;
 
   private _isOpen(key: string): boolean {
     return this._unfolded.has(key);
@@ -817,7 +821,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       </ha-card>`;
     }
     if (this.section === "planning") {
-      return html`${this.renderPlanningCard()}`;
+      return html`${this.renderWeekCard()} ${this.renderPlanningCard()}`;
     }
     if (this.section === "supplies") {
       return html`${this.renderSuppliesCard()}`;
@@ -943,6 +947,41 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
    * Only in full controller mode. The weather is not known days ahead: a planned
    * run is one that goes ahead if nothing holds it back.
    */
+  /** The next days at a glance: a row per day, each run a block (week-view.ts). */
+  renderWeekCard() {
+    if (!this.config || !this.hass || this.config.full_controller !== true) {
+      return html``;
+    }
+    const lang = this.hass.language;
+    return html`<ha-card>
+      <h1 class="card-header">
+        <span
+          >${localize("week.title", lang)}<si-info
+            >${localize("week.help", lang)}</si-info
+          ></span
+        >
+      </h1>
+      <div class="card-content">
+        <si-week-view
+          .planning=${this.planning || []}
+          .lang=${lang}
+          .days=${this._weekDays}
+          .programLabel=${(id: string, name: string) =>
+            this._programLabel(id, name)}
+          @days-changed=${(e: CustomEvent) => {
+            this._weekDays = e.detail.days;
+            this._fetchLive(true);
+          }}
+          @open-program=${(e: CustomEvent) => {
+            const id = e.detail.program_id;
+            if (id && id !== "main") this._setOpen(`program:${id}`, true);
+            navigate(this, `/${DOMAIN}/programs`);
+          }}
+        ></si-week-view>
+      </div>
+    </ha-card>`;
+  }
+
   renderPlanningCard() {
     if (!this.config || !this.hass || this.config.full_controller !== true) {
       return html``;
@@ -979,7 +1018,11 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
     // The durations planned, in the form the rest of the panel uses: it said
     // "62 min" where Start said "1 h 02 min".
     const minutes = (seconds: number) => friendlyDuration(seconds);
-    const planning = this.planning || [];
+    // The week above shows up to 14 days; the list keeps to the next three.
+    const listUntil = Date.now() + 3 * 86400 * 1000;
+    const planning = (this.planning || []).filter(
+      (item: any) => new Date(item.start).getTime() < listUntil,
+    );
     return html`
       <ha-card header="${t("title")}">
         <div class="card-content">
@@ -1165,7 +1208,7 @@ export class SmartIrrigationViewGeneral extends SubscribeMixin(LitElement) {
       if (withPlanning) {
         this.planning = await this.hass.callWS({
           type: DOMAIN + "/planning",
-          days: 3,
+          days: Math.max(3, this._weekDays),
         });
         await this._fetchStartSource();
       }

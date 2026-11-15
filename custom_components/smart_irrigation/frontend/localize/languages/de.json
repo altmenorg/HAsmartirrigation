@@ -1669,5 +1669,15 @@
     },
     "title_leak": "Wasser fließt bei geschlossenen Ventilen",
     "leak_line": "{litres} L bei geschlossenen Ventilen gezählt ({zones}). Auf ein Leck oder ein offen gebliebenes Ventil prüfen."
+  },
+  "week": {
+    "title": "Die nächsten Tage",
+    "help": "Jede Bewässerung ein Block in der Farbe ihres Programms; schraffiert die Sickerpausen; blass, was das Wetter verhindern könnte. Fahre über einen Block für seine Zonen, klicke, um sein Programm zu öffnen. Kommende Tage hängen von der Vorhersage ab.",
+    "days": "{n} Tage",
+    "today": "Heute",
+    "tomorrow": "Morgen",
+    "held": "Das Wetter könnte sie verhindern",
+    "nothing": "Nichts zu bewässern",
+    "empty": "Kein Programm geplant."
   }
 }

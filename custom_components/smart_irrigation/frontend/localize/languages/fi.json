@@ -1669,5 +1669,15 @@
     },
     "title_leak": "Vettä virtaa kaikkien venttiilien ollessa kiinni",
     "leak_line": "{litres} l laskettu venttiilien ollessa kiinni ({zones}). Tarkista vuoto tai auki jäänyt venttiili."
+  },
+  "week": {
+    "title": "Seuraavat päivät",
+    "help": "Jokainen kastelu on lohko ohjelmansa värissä; viivoitettuna imeytystauot; haaleana kastelu, jonka sää voi estää. Vie osoitin lohkon päälle nähdäksesi vyöhykkeet, napsauta avataksesi ohjelman. Tulevat päivät riippuvat ennusteesta.",
+    "days": "{n} päivää",
+    "today": "Tänään",
+    "tomorrow": "Huomenna",
+    "held": "Sää voi estää sen",
+    "nothing": "Ei kasteltavaa",
+    "empty": "Ei suunniteltuja ohjelmia."
   }
 }

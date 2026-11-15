@@ -1669,5 +1669,15 @@
     },
     "title_leak": "Víz folyik, pedig minden szelep zárva",
     "leak_line": "{litres} L számolva zárt szelepekkel ({zones}). Ellenőrizd, nincs-e szivárgás vagy nyitva maradt szelep."
+  },
+  "week": {
+    "title": "A következő napok",
+    "help": "Minden öntözés egy blokk a programja színében; vonalkázva a beszivárgási szünetek; halványan az öntözés, amelyet az időjárás megakadályozhat. Vidd az egeret egy blokkra a zónáiért, kattints a program megnyitásához. A további napok az előrejelzéstől függnek.",
+    "days": "{n} nap",
+    "today": "Ma",
+    "tomorrow": "Holnap",
+    "held": "Az időjárás megakadályozhatja",
+    "nothing": "Nincs mit öntözni",
+    "empty": "Nincs tervezett program."
   }
 }

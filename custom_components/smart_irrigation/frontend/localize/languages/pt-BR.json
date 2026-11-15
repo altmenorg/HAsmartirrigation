@@ -1669,5 +1669,15 @@
     },
     "title_leak": "Está correndo água com todas as válvulas fechadas",
     "leak_line": "{litres} L contados com as válvulas fechadas ({zones}). Verifique se há vazamento ou uma válvula aberta."
+  },
+  "week": {
+    "title": "Os próximos dias",
+    "help": "Cada irrigação é um bloco da cor do seu programa; hachuradas, as pausas de infiltração; esmaecida, uma irrigação que o tempo pode impedir. Passe sobre um bloco para ver as zonas, clique para abrir o programa. Os próximos dias dependem da previsão.",
+    "days": "{n} dias",
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "held": "O tempo pode impedi-la",
+    "nothing": "Nada a irrigar",
+    "empty": "Nenhum programa previsto."
   }
 }

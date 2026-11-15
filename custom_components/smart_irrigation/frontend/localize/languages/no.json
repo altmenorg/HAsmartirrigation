@@ -1669,5 +1669,15 @@
     },
     "title_leak": "Det renner vann med alle ventiler stengt",
     "leak_line": "{litres} L talt med ventilene stengt ({zones}). Sjekk for lekkasje eller en ventil som står åpen."
+  },
+  "week": {
+    "title": "De neste dagene",
+    "help": "Hver vanning er en blokk i programmets farge; skravert, infiltrasjonspausene; blek, en vanning været kan hindre. Hold over en blokk for sonene, klikk for å åpne programmet. Kommende dager avhenger av varselet.",
+    "days": "{n} dager",
+    "today": "I dag",
+    "tomorrow": "I morgen",
+    "held": "Været kan hindre den",
+    "nothing": "Ingenting å vanne",
+    "empty": "Ingen program planlagt."
   }
 }

@@ -1669,5 +1669,15 @@
     },
     "title_leak": "Der løber vand med alle ventiler lukket",
     "leak_line": "{litres} L talt med ventilerne lukket ({zones}). Tjek for lækage eller en ventil, der står åben."
+  },
+  "week": {
+    "title": "De næste dage",
+    "help": "Hver vanding er en blok i sit programs farve; skraveret, nedsivningspauserne; falmet, en vanding vejret kan forhindre. Hold musen over en blok for dens zoner, klik for at åbne programmet. Kommende dage afhænger af prognosen.",
+    "days": "{n} dage",
+    "today": "I dag",
+    "tomorrow": "I morgen",
+    "held": "Vejret kan forhindre den",
+    "nothing": "Intet at vande",
+    "empty": "Intet program planlagt."
   }
 }

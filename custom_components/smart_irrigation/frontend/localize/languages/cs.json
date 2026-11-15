@@ -1669,5 +1669,15 @@
     },
     "title_leak": "Voda teče, i když jsou všechny ventily zavřené",
     "leak_line": "{litres} l napočítáno při zavřených ventilech ({zones}). Zkontrolujte únik nebo otevřený ventil."
+  },
+  "week": {
+    "title": "Příští dny",
+    "help": "Každé zavlažování je blok v barvě svého programu; šrafované pauzy na vsakování; vybledlé zavlažování, kterému může zabránit počasí. Najeď na blok pro jeho zóny, klikni pro otevření programu. Další dny závisí na předpovědi.",
+    "days": "{n} dní",
+    "today": "Dnes",
+    "tomorrow": "Zítra",
+    "held": "Počasí mu může zabránit",
+    "nothing": "Nic k zalití",
+    "empty": "Není naplánován žádný program."
   }
 }

@@ -1669,5 +1669,15 @@
     },
     "title_leak": "Voda teče, čeprav so vsi ventili zaprti",
     "leak_line": "{litres} L našteto ob zaprtih ventilih ({zones}). Preverite puščanje ali odprt ventil."
+  },
+  "week": {
+    "title": "Naslednji dnevi",
+    "help": "Vsako zalivanje je blok v barvi svojega programa; šrafirano so premori za vpijanje; zbledelo zalivanje, ki ga vreme lahko prepreči. Premakni miško nad blok za njegova območja, klikni za odpiranje programa. Prihodnji dnevi so odvisni od napovedi.",
+    "days": "{n} dni",
+    "today": "Danes",
+    "tomorrow": "Jutri",
+    "held": "Vreme ga lahko prepreči",
+    "nothing": "Nič za zaliti",
+    "empty": "Noben program ni načrtovan."
   }
 }

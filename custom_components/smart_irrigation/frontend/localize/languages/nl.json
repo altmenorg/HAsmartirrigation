@@ -1669,5 +1669,15 @@
     },
     "title_leak": "Er stroomt water terwijl alle kleppen dicht zijn",
     "leak_line": "{litres} L geteld met alle kleppen dicht ({zones}). Controleer op een lek of een klep die openstaat."
+  },
+  "week": {
+    "title": "De komende dagen",
+    "help": "Elke beregening een blok in de kleur van haar programma; gearceerd de inzakpauzes; vervaagd wat het weer kan tegenhouden. Beweeg over een blok voor de zones, klik om het programma te openen. Komende dagen hangen af van de voorspelling.",
+    "days": "{n} dagen",
+    "today": "Vandaag",
+    "tomorrow": "Morgen",
+    "held": "Het weer kan dit tegenhouden",
+    "nothing": "Niets te beregenen",
+    "empty": "Geen programma gepland."
   }
 }

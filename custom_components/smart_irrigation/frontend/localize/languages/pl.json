@@ -1669,5 +1669,15 @@
     },
     "title_leak": "Woda płynie przy zamkniętych zaworach",
     "leak_line": "{litres} l naliczono przy zamkniętych zaworach ({zones}). Sprawdź, czy nie ma wycieku lub otwartego zaworu."
+  },
+  "week": {
+    "title": "Najbliższe dni",
+    "help": "Każde podlewanie to blok w kolorze swojego programu; kreskowane przerwy na wsiąkanie; wyblakłe podlewanie, które pogoda może wstrzymać. Najedź na blok, by zobaczyć strefy, kliknij, by otworzyć program. Kolejne dni zależą od prognozy.",
+    "days": "{n} dni",
+    "today": "Dziś",
+    "tomorrow": "Jutro",
+    "held": "Pogoda może je wstrzymać",
+    "nothing": "Nic do podlania",
+    "empty": "Brak zaplanowanych programów."
   }
 }
